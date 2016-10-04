@@ -1,0 +1,46 @@
+GLogiK=$PWD CD=. {
+    AUTHORS
+    COPYING
+    ChangeLog
+    NEWS
+    README
+    VERSION
+    configure.ac
+    Makefile.am
+    .gitignore
+    tools=tools/ {
+        Makefile
+    }
+    macro=m4/ {
+    }
+    doc=doc/ {
+        README
+    }
+    srcfiles=src/ {
+        Makefile.am
+        include=include/ {
+		log.h
+	}
+	binaries=bin/ {
+            Makefile.am
+            daemon=daemon/ {
+                Makefile.am
+                main.cpp
+		daemon.cpp
+		daemon.h
+		exception.cpp
+		exception.h
+		globals.h
+            }
+            foo=foo/ {
+                Makefile.am
+                main.cpp
+		core.cpp
+		core.h
+		exception.cpp
+		exception.h
+            }
+        }
+    }
+}
+

@@ -1,0 +1,146 @@
+# Process this file with autoconf to produce a configure script.
+
+m4_define([GLOGIK_NAME], [GLogiK])
+m4_define(GLOGIK_VERSION,regexp(m4_include(VERSION),[version \([-.0-9A-Za-z]+\)],[\1]))
+
+# project infos
+AC_INIT(GLOGIK_NAME, GLOGIK_VERSION, [netbox253@gmail.com])
+
+AC_CONFIG_HEADERS([config.h])
+
+#AC_CONFIG_MACRO_DIR([m4])
+
+AC_CONFIG_SRCDIR([src/bin/foo/main.cpp])
+
+# Automake initialisation
+AM_INIT_AUTOMAKE
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CXXCPP
+AC_LANG(C++)
+AC_PROG_INSTALL
+AC_PROG_LN_S
+
+# Checks for headers
+#AC_CHECK_HEADERS(climits)
+
+# libtool requirement and setup
+#LT_PREREQ([2.2.10])
+#LT_INIT([disable-static])
+
+dnl C++ flags
+#AM_CXXFLAGS="-Wall"
+
+dnl preprocessor arguments
+#AM_CPPFLAGS="-I\$(top_srcdir)/src/libs -I\$(top_builddir)/src/include"
+AM_CPPFLAGS="-I\$(top_srcdir)/src"
+AC_SUBST(AM_CPPFLAGS)
+
+
+
+dnl -------------------------------------------------------------------------
+dnl                     declare custom configure options
+dnl -------------------------------------------------------------------------
+
+dnl enable -Wl,--as-needed by default to prevent overlinking
+AC_ARG_ENABLE( [as-needed],
+               AC_HELP_STRING( [--enable-as-needed], [Enable overlinking protection]),
+               [enable_as_needed=$enableval], [enable_as_needed=no])
+
+dnl do we want to -Wall flag ?
+AC_ARG_ENABLE( [gcc-wall],
+               AC_HELP_STRING( [--enable-gcc-wall], [Enable gcc -Wall flag]),
+               [enable_gcc_wall=$enableval], [enable_gcc_wall=no])
+
+dnl do we want to -Werror flag ?
+AC_ARG_ENABLE( [gcc-werror],
+               AC_HELP_STRING( [--enable-gcc-werror], [Enable gcc -Werror flag]),
+               [enable_gcc_werror=$enableval], [enable_gcc_werror=no])
+
+AC_ARG_VAR(DEBUG_LOG_LEVEL, [Maximum debug log level (default NONE). NONE|ERROR|WARNING|INFO|DEBUG])
+
+
+dnl -------------------------------------------------------------------------
+dnl             run tests and do things accordingly to results
+dnl -------------------------------------------------------------------------
+
+AC_MSG_CHECKING([whether we want overlinking protection])
+if test "$enable_as_needed" = yes; then
+    AC_MSG_RESULT([yes])
+    AX_APPEND_LINK_FLAGS([-Wl,--as-needed], [AM_LDFLAGS])
+else
+    AC_MSG_RESULT([no])
+fi
+
+AC_MSG_CHECKING([whether we want gcc -Wall])
+if test "$enable_gcc_wall" = yes; then
+    AC_MSG_RESULT([yes])
+    AS_VAR_APPEND(AM_CXXFLAGS,["-Wall"])
+else
+    AC_MSG_RESULT([no])
+fi
+
+AC_MSG_CHECKING([whether we want gcc -Werror])
+if test "$enable_gcc_werror" = yes; then
+    AC_MSG_RESULT([yes])
+    AS_VAR_APPEND(AM_CXXFLAGS,[" -Werror"])
+else
+    AC_MSG_RESULT([no])
+fi
+
+
+
+AC_SUBST(AM_CXXFLAGS)
+AC_SUBST(AM_LDFLAGS)
+
+dnl -------------------------------------------------------------------------
+dnl                       defining macro variables
+dnl -------------------------------------------------------------------------
+
+AS_IF([[test "x$DEBUG_LOG_LEVEL" = "x"]], [DEBUG_LOG_LEVEL="NONE"])
+AC_DEFINE_UNQUOTED([DEBUG_LOG_LEVEL], ["${DEBUG_LOG_LEVEL}"], [Maximum debug log level])
+
+dnl -------------------------------------------------------------------------
+dnl -------------------------------------------------------------------------
+dnl -------------------------------------------------------------------------
+
+#PKG_CHECK_MODULES([SDL], [sdl >= 1.2.13])
+#PKG_CHECK_MODULES([SDLMIXER], [SDL_mixer >= 1.2.11])
+PKG_CHECK_MODULES([LIBUSB], libusb-1.0 >= 1.0.0)
+#,,
+#                  AC_MSG_ERROR([*** Required libusb-1.0 >= 1.0.0 not installed ***]))
+
+AC_CONFIG_FILES([
+        Makefile
+        src/Makefile
+        src/bin/Makefile
+        src/bin/daemon/Makefile
+	])
+
+# Generate config.status and launch it.
+AC_OUTPUT
+
+dnl -------------------------------------------------------------------------
+dnl                             show summary
+dnl -------------------------------------------------------------------------
+AC_MSG_NOTICE([
+
+ $PACKAGE_NAME $VERSION configured with :
+-------------------------------
+        prefix:                 ${prefix}
+        exec_prefix:            ${exec_prefix}
+        libdir:                 ${libdir}
+        bindir:                 ${bindir}
+        sysconfdir:             ${sysconfdir}
+        datadir:                ${datadir}
+
+        pkglibdir:              ${libdir}/$PACKAGE
+        srcdir:                 ${srcdir}
+
+        compiler:               ${CXX}
+        CXXFLAGS:               ${CXXFLAGS}
+        LDFLAGS:                ${LDFLAGS}
+
+])
+
