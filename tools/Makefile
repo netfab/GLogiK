@@ -1,7 +1,8 @@
 SHELL = /bin/sh
 top_srcdir = ..
 build_dir= ../build
-PREFIX_DIR=/tmp/devcxx/GLogiK
+PREFIX_DEV_DIR=/tmp/devcxx
+PREFIX_DIR=$(PREFIX_DEV_DIR)/GLogiK
 LANG=C
 CXXFLAGS="-march=sandybridge -mtune=generic -O2 -pipe -mmmx -msse -msse2"
 
@@ -40,6 +41,7 @@ configure_it: init_dir
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
 
 build_it:
+	find $(PREFIX_DEV_DIR) -type f -name 'glogikd-debug-*.log' -delete
 	cd $(build_dir) && make
 
 install_it:
