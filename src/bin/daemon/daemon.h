@@ -3,6 +3,7 @@
 #include <sys/types.h>
 
 #include <fstream>
+#include <sstream>
 #include <string>
 
 #ifndef __GKLOGIK_DAEMON_H__
@@ -27,6 +28,8 @@ class GLogiKDaemon
 
 		std::string pid_file_name;
 		std::ofstream pid_file;
+
+		std::ostringstream buffer;
 
 		void daemonize(void);
 		void parse_command_line(const int& argc, char *argv[]);

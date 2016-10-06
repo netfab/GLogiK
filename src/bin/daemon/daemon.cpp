@@ -24,7 +24,7 @@
 namespace GLogiK
 {
 
-GLogiKDaemon::GLogiKDaemon() : pid(0), log_fd(NULL), pid_file_name("")
+GLogiKDaemon::GLogiKDaemon() : pid(0), log_fd(NULL), pid_file_name(""), buffer("", std::ios_base::app)
 {
 	openlog(GLOGIK_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 	FILELog::ReportingLevel() = FILELog::FromString(DEBUG_LOG_LEVEL);
@@ -62,10 +62,9 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			this->pid_file.open(this->pid_file_name.c_str(), std::ofstream::trunc);
 		}
 		catch (const std::ofstream::failure & e) {
-			std::ostringstream buffer;
-			buffer	<< "Fail to open PID file : " << this->pid_file_name
-				<< " : " << e.what();
-			throw GLogiKExcept( buffer.str() );
+			this->buffer.str( "Fail to open PID file : " );
+			this->buffer << this->pid_file_name << " : " << e.what();
+			throw GLogiKExcept( this->buffer.str() );
 		}
 
 		syslog(LOG_INFO, "living in %ld", (long)this->pid);
@@ -73,13 +72,11 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
-		std::string msg = e.what();
-		if(errno != 0) {
-			msg += " : ";
-			msg += strerror(errno);
-		}
-		syslog( LOG_ERR, msg.c_str() );
-		LOG(ERROR) << msg.c_str();
+		this->buffer.str( e.what() );
+		if(errno != 0)
+			this->buffer << " : " << strerror(errno);
+		syslog( LOG_ERR, this->buffer.str().c_str() );
+		LOG(ERROR) << this->buffer.str();
 		return EXIT_FAILURE;
 	}
 
