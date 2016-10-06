@@ -50,6 +50,7 @@ GLogiKDaemon::~GLogiKDaemon()
 int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 
 	syslog(LOG_INFO, "starting");
+	LOG(INFO) << "starting";
 
 	try {
 		this->parse_command_line(argc, argv);
@@ -68,6 +69,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 		}
 
 		syslog(LOG_INFO, "living in %ld", (long)this->pid);
+		LOG(INFO) << "living in " << (long)this->pid;
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
@@ -96,7 +98,7 @@ void GLogiKDaemon::daemonize() {
 	if(this->pid > 0)
 		exit(EXIT_SUCCESS);
 
-	LOG(DEBUG4) << "First fork ! pid:" << getpid();
+	LOG(DEBUG3) << "First fork ! pid:" << getpid();
 
 	if(setsid() == -1)
 		throw GLogiKExcept("session creation failure");
@@ -112,7 +114,7 @@ void GLogiKDaemon::daemonize() {
 	if(this->pid > 0)
 		exit(EXIT_SUCCESS);
 	
-	LOG(DEBUG4) << "Second fork ! pid:" << getpid();
+	LOG(DEBUG3) << "Second fork ! pid:" << getpid();
 
 	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	if(chdir("/") == -1)
