@@ -1,4 +1,5 @@
 GLogiK=$PWD CD=. {
+    .gitignore
     AUTHORS
     COPYING
     ChangeLog
