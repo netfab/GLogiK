@@ -41,10 +41,10 @@ configure_it: init_dir
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
 
 build_it:
-	find $(PREFIX_DEV_DIR) -type f -name 'glogikd-debug-*.log' -delete
 	cd $(build_dir) && make
 
 install_it:
+	find $(PREFIX_DEV_DIR) -type f -name 'glogikd-debug-*.log' -delete
 	cd $(build_dir) && make install
 
 uninstall_it:
