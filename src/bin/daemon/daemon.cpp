@@ -24,7 +24,7 @@
 namespace GLogiK
 {
 
-GLogiKDaemon::GLogiKDaemon() : pid(0), log_fd(NULL), pid_file_name(NULL)
+GLogiKDaemon::GLogiKDaemon() : pid(0), log_fd(NULL), pid_file_name("")
 {
 	openlog(GLOGIK_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 	FILELog::ReportingLevel() = FILELog::FromString(DEBUG_LOG_LEVEL);
@@ -56,16 +56,15 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 
 		this->daemonize();
 
-		if(this->pid_file_name != NULL) {
-			this->pid_file.exceptions( std::ofstream::failbit );
-			try {
-				this->pid_file.open(this->pid_file_name, std::ofstream::app);
-			}
-			catch (const std::ofstream::failure & e) {
-				std::string msg = "Fail to open PID file : ";
-				//msg += e.what();
-				throw GLogiKExcept(msg + e.what());
-			}
+		this->pid_file.exceptions( std::ofstream::failbit );
+		try {
+			this->pid_file.open(this->pid_file_name.c_str(), std::ofstream::trunc);
+		}
+		catch (const std::ofstream::failure & e) {
+			std::ostringstream buffer;
+			buffer	<< "Fail to open PID file : " << this->pid_file_name
+				<< " : " << e.what();
+			throw GLogiKExcept( buffer.str() );
 		}
 
 		syslog(LOG_INFO, "living in %ld", (long)this->pid);
@@ -136,6 +135,7 @@ void GLogiKDaemon::daemonize() {
 }
 
 void GLogiKDaemon::parse_command_line(const int& argc, char *argv[]) {
+	LOG(DEBUG2) << "starting GLogiKDaemon::parse_command_line()";
 
 	struct option long_options[] = {
 		{"pid-file", 1, 0, 'p'},
@@ -147,14 +147,17 @@ void GLogiKDaemon::parse_command_line(const int& argc, char *argv[]) {
 	while( ( value = getopt_long(argc, argv, "p:", long_options, &option_index)) != -1) {
 		switch( value ) {
 			case 'p':
-				if(optarg)
-					this->pid_file_name = std::string(optarg).c_str();
+				if(optarg) {
+					this->pid_file_name = optarg;
+					LOG(DEBUG3) << "Got PID file : " << this->pid_file_name;
+				}
 			break;
 			default:
 				break;
 		}
 	}
-	if(this->pid_file_name == NULL)
+
+	if( this->pid_file_name.empty() )
 		throw GLogiKExcept("You must specify pid file with -p");
 }
 

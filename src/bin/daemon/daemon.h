@@ -3,6 +3,7 @@
 #include <sys/types.h>
 
 #include <fstream>
+#include <string>
 
 #ifndef __GKLOGIK_DAEMON_H__
 #define __GKLOGIK_DAEMON_H__
@@ -24,7 +25,7 @@ class GLogiKDaemon
 		pid_t pid;
 		FILE* log_fd;
 
-		const char* pid_file_name;
+		std::string pid_file_name;
 		std::ofstream pid_file;
 
 		void daemonize(void);
