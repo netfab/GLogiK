@@ -58,6 +58,7 @@ AC_ARG_ENABLE( [gcc-werror],
                AC_HELP_STRING( [--enable-gcc-werror], [Enable gcc -Werror flag]),
                [enable_gcc_werror=$enableval], [enable_gcc_werror=no])
 
+AC_ARG_VAR(DEBUG_DIR, [Directory where debug file will be written])
 AC_ARG_VAR(DEBUG_LOG_LEVEL, [Maximum debug log level (default NONE). NONE|ERROR|WARNING|INFO|DEBUG])
 
 
@@ -99,7 +100,9 @@ dnl                       defining macro variables
 dnl -------------------------------------------------------------------------
 
 AS_IF([[test "x$DEBUG_LOG_LEVEL" = "x"]], [DEBUG_LOG_LEVEL="NONE"])
+AS_IF([[test "x$DEBUG_DIR" = "x"]], [DEBUG_DIR="/tmp"])
 AC_DEFINE_UNQUOTED([DEBUG_LOG_LEVEL], ["${DEBUG_LOG_LEVEL}"], [Maximum debug log level])
+AC_DEFINE_UNQUOTED([DEBUG_DIR], ["${DEBUG_DIR}"], [Directory for debug file])
 
 dnl -------------------------------------------------------------------------
 dnl -------------------------------------------------------------------------

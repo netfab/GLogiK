@@ -1,7 +1,7 @@
 SHELL = /bin/sh
 top_srcdir = ..
 build_dir= ../build
-PREFIX_DIR=/tmp/GLogiK
+PREFIX_DIR=/tmp/devcxx/GLogiK
 LANG=C
 CXXFLAGS="-march=sandybridge -mtune=generic -O2 -pipe -mmmx -msse -msse2"
 
@@ -35,7 +35,7 @@ autoreconf_it:
 
 configure_it: init_dir
 	cd $(build_dir) && $(top_srcdir)/configure CXXFLAGS=$(CXXFLAGS) \
-	DEBUG_LOG_LEVEL=DEBUG1 \
+	DEBUG_LOG_LEVEL=DEBUG1 DEBUG_DIR=/tmp/devcxx \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
 

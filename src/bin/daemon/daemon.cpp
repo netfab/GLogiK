@@ -8,9 +8,11 @@
 #include <syslog.h>
 #include <unistd.h>
 #include <errno.h>
+#include <getopt.h>
 
 #include <string>
 #include <sstream>
+#include <fstream>
 
 #include <config.h>
 
@@ -22,14 +24,14 @@
 namespace GLogiK
 {
 
-GLogiKDaemon::GLogiKDaemon() : pid(0), log_fd(NULL)
+GLogiKDaemon::GLogiKDaemon() : pid(0), log_fd(NULL), pid_file_name(NULL)
 {
 	openlog(GLOGIK_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 	FILELog::ReportingLevel() = FILELog::FromString(DEBUG_LOG_LEVEL);
 
 	if( FILELog::ReportingLevel() != NONE ) {
 		std::stringstream log_file;
-		log_file << "/tmp/glogikd-debug-" << getpid() << ".log";
+		log_file << DEBUG_DIR << "/glogikd-debug-" << getpid() << ".log";
 		this->log_fd = std::fopen( log_file.str().c_str(), "w" );
 	}
 	if( this->log_fd == NULL )
@@ -50,14 +52,31 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 	syslog(LOG_INFO, "starting");
 
 	try {
+		this->parse_command_line(argc, argv);
+
 		this->daemonize();
+
+		if(this->pid_file_name != NULL) {
+			this->pid_file.exceptions( std::ofstream::failbit );
+			try {
+				this->pid_file.open(this->pid_file_name, std::ofstream::app);
+			}
+			catch (const std::ofstream::failure & e) {
+				std::string msg = "Fail to open PID file : ";
+				//msg += e.what();
+				throw GLogiKExcept(msg + e.what());
+			}
+		}
+
 		syslog(LOG_INFO, "living in %ld", (long)this->pid);
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
 		std::string msg = e.what();
-		msg += " : ";
-		msg += strerror(errno);
+		if(errno != 0) {
+			msg += " : ";
+			msg += strerror(errno);
+		}
 		syslog( LOG_ERR, msg.c_str() );
 		LOG(ERROR) << msg.c_str();
 		return EXIT_FAILURE;
@@ -66,7 +85,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 }
 
 void GLogiKDaemon::daemonize() {
-	int fd = 0;
+	//int fd = 0;
 
 	LOG(DEBUG2) << "starting GLogiKDaemon::daemonize()";
 
@@ -101,17 +120,43 @@ void GLogiKDaemon::daemonize() {
 		throw GLogiKExcept("change directory failure");
 
 	// closing opened descriptors
-	for(fd = sysconf(_SC_OPEN_MAX); fd > 0; fd--)
-		close(fd);
+	//for(fd = sysconf(_SC_OPEN_MAX); fd > 0; fd--)
+	//	close(fd);
+	std::fclose(stdin);
+	std::fclose(stdout);
+	std::fclose(stderr);
 	
 	// reopening standard outputs
-	stdin = fopen("/dev/null", "r");
-	stdout = fopen("/dev/null", "w+");
-	stderr = fopen("/dev/null", "w+");
+	stdin = std::fopen("/dev/null", "r");
+	stdout = std::fopen("/dev/null", "w+");
+	stderr = std::fopen("/dev/null", "w+");
 
 	this->pid = getpid();
+	LOG(INFO) << "daemonized !";
 }
 
+void GLogiKDaemon::parse_command_line(const int& argc, char *argv[]) {
+
+	struct option long_options[] = {
+		{"pid-file", 1, 0, 'p'},
+		{NULL, 0, 0, 0}
+	};
+
+	int value, option_index = 0;
+
+	while( ( value = getopt_long(argc, argv, "p:", long_options, &option_index)) != -1) {
+		switch( value ) {
+			case 'p':
+				if(optarg)
+					this->pid_file_name = std::string(optarg).c_str();
+			break;
+			default:
+				break;
+		}
+	}
+	if(this->pid_file_name == NULL)
+		throw GLogiKExcept("You must specify pid file with -p");
+}
 
 } // namespace GLogiK
 

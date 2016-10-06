@@ -2,6 +2,8 @@
 #include <cstdio>
 #include <sys/types.h>
 
+#include <fstream>
+
 #ifndef __GKLOGIK_DAEMON_H__
 #define __GKLOGIK_DAEMON_H__
 
@@ -15,14 +17,18 @@ class GLogiKDaemon
 		GLogiKDaemon(void);
 		~GLogiKDaemon(void);
 
-		int run( const int& argc, char *argv[] );
+		int run(const int& argc, char *argv[]);
 
 	protected:
 	private:
 		pid_t pid;
 		FILE* log_fd;
 
+		const char* pid_file_name;
+		std::ofstream pid_file;
+
 		void daemonize(void);
+		void parse_command_line(const int& argc, char *argv[]);
 };
 
 } // namespace GLogiK
