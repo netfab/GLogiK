@@ -4,6 +4,7 @@
 #include <cstring>
 #include <csignal>
 #include <sys/stat.h>
+
 #include <errno.h>
 
 #include <sys/types.h>
@@ -18,6 +19,7 @@
 #include <config.h>
 
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 
 #include "exception.h"
 #include "daemon.h"
@@ -25,6 +27,7 @@
 #include "include/log.h"
 
 namespace po = boost::program_options;
+namespace fs = boost::filesystem;
 
 namespace GLogiK
 {
@@ -62,16 +65,31 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 
 		this->daemonize();
 
+		fs::path path(this->pid_file_name);
+
+		if( fs::exists(path) ) {
+			this->buffer.str( "PID file " );
+			this->buffer << this->pid_file_name << " already exist";
+			throw GLogiKExcept( this->buffer.str() );
+		}
+
 		this->pid_file.exceptions( std::ofstream::failbit );
 		try {
 			this->pid_file.open(this->pid_file_name.c_str(), std::ofstream::trunc);
+			this->pid_file << (long)this->pid;
+
+			fs::permissions(path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 		}
 		catch (const std::ofstream::failure & e) {
 			this->buffer.str( "Fail to open PID file : " );
 			this->buffer << this->pid_file_name << " : " << e.what();
 			throw GLogiKExcept( this->buffer.str() );
 		}
-		this->pid_file << (long)this->pid;
+		catch (const fs::filesystem_error & e) {
+			this->buffer.str( "Set permissions failure on PID file : " );
+			this->buffer << this->pid_file_name << " : " << e.what();
+			throw GLogiKExcept( this->buffer.str() );
+		}
 
 		syslog(LOG_INFO, "living in %ld", (long)this->pid);
 		LOG(INFO) << "living in " << (long)this->pid;
