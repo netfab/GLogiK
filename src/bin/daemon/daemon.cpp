@@ -3,12 +3,13 @@
 #include <cstdlib>
 #include <cstring>
 #include <csignal>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <syslog.h>
-#include <unistd.h>
 #include <errno.h>
-#include <getopt.h>
+
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <syslog.h>
 
 #include <string>
 #include <sstream>
@@ -16,10 +17,14 @@
 
 #include <config.h>
 
+#include <boost/program_options.hpp>
+
 #include "exception.h"
 #include "daemon.h"
 #include "globals.h"
 #include "include/log.h"
+
+namespace po = boost::program_options;
 
 namespace GLogiK
 {
@@ -137,28 +142,20 @@ void GLogiKDaemon::daemonize() {
 void GLogiKDaemon::parse_command_line(const int& argc, char *argv[]) {
 	LOG(DEBUG2) << "starting GLogiKDaemon::parse_command_line()";
 
-	struct option long_options[] = {
-		{"pid-file", 1, 0, 'p'},
-		{NULL, 0, 0, 0}
-	};
+	po::options_description desc("Allowed options");
+	desc.add_options()
+		("help", "produce help message")
+		("pid-file,p", po::value(&this->pid_file_name), "PID file")
+	;
 
-	int value, option_index = 0;
-
-	while( ( value = getopt_long(argc, argv, "p:", long_options, &option_index)) != -1) {
-		switch( value ) {
-			case 'p':
-				if(optarg) {
-					this->pid_file_name = optarg;
-					LOG(DEBUG3) << "Got PID file : " << this->pid_file_name;
-				}
-			break;
-			default:
-				break;
-		}
+	po::variables_map vm;
+	try {
+		po::store(po::parse_command_line(argc, argv, desc), vm);
 	}
-
-	if( this->pid_file_name.empty() )
-		throw GLogiKExcept("You must specify pid file with -p");
+	catch( std::exception & e ) {
+		throw GLogiKExcept( e.what() );
+	}
+	po::notify(vm);
 }
 
 } // namespace GLogiK

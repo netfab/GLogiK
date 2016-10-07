@@ -114,6 +114,9 @@ PKG_CHECK_MODULES([LIBUSB], libusb-1.0 >= 1.0.0)
 #,,
 #                  AC_MSG_ERROR([*** Required libusb-1.0 >= 1.0.0 not installed ***]))
 
+AX_BOOST_BASE([1.56.0])
+AX_BOOST_PROGRAM_OPTIONS
+
 AC_CONFIG_FILES([
         Makefile
         src/Makefile
