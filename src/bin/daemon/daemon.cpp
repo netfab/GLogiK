@@ -66,6 +66,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			this->buffer << this->pid_file_name << " : " << e.what();
 			throw GLogiKExcept( this->buffer.str() );
 		}
+		this->pid_file << (long)this->pid;
 
 		syslog(LOG_INFO, "living in %ld", (long)this->pid);
 		LOG(INFO) << "living in " << (long)this->pid;
