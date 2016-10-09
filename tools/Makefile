@@ -19,7 +19,10 @@ MAINTAINERCLEANFILES = \
     depcomp \
     install-sh \
     missing \
-    configure
+    configure \
+    config.guess \
+    config.sub \
+    compile
 
 all:
 	@echo "Available targets :"
