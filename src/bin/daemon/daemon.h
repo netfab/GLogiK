@@ -31,8 +31,11 @@ class GLogiKDaemon
 
 		std::ostringstream buffer;
 
+		static bool daemon;
+
 		void daemonize(void);
 		void parse_command_line(const int& argc, char *argv[]);
+		static void handle_signal(int sig);
 };
 
 } // namespace GLogiK

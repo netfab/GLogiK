@@ -32,7 +32,9 @@ namespace fs = boost::filesystem;
 namespace GLogiK
 {
 
-GLogiKDaemon::GLogiKDaemon() : pid(0), log_fd(NULL), pid_file_name(""), buffer("", std::ios_base::app)
+bool GLogiKDaemon::daemon = false;
+
+GLogiKDaemon::GLogiKDaemon() :	pid(0), log_fd(NULL), pid_file_name(""), buffer("", std::ios_base::app)
 {
 	openlog(GLOGIK_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 	FILELog::ReportingLevel() = FILELog::FromString(DEBUG_LOG_LEVEL);
@@ -50,6 +52,16 @@ GLogiKDaemon::GLogiKDaemon() : pid(0), log_fd(NULL), pid_file_name(""), buffer("
 
 GLogiKDaemon::~GLogiKDaemon()
 {
+	if( this->pid_file.is_open() ) {
+		this->pid_file.close();
+		if( unlink(this->pid_file_name.c_str()) != 0 ) {
+			this->buffer.str( "failed to unlink PID file" );
+			const char * msg = this->buffer.str().c_str();
+			syslog(LOG_ERR, msg);
+			LOG(ERROR) << msg;
+		}
+	}
+
 	if( this->log_fd != NULL )
 		fclose(this->log_fd);
 	closelog();
@@ -63,47 +75,48 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 	try {
 		this->parse_command_line(argc, argv);
 
-		this->daemonize();
+		if( this->daemon ) {
+			this->daemonize();
 
-		fs::path path(this->pid_file_name);
+			syslog(LOG_INFO, "living in %ld", (long)this->pid);
+			LOG(INFO) << "living in " << (long)this->pid;
 
-		if( fs::exists(path) ) {
-			this->buffer.str( "PID file " );
-			this->buffer << this->pid_file_name << " already exist";
-			throw GLogiKExcept( this->buffer.str() );
+			std::signal(SIGINT, this->handle_signal);
+			std::signal(SIGHUP, this->handle_signal);
+
+			while( this->daemon ) {
+				sleep(1);
+			}
+
+		}
+		else {
+			LOG(INFO) << "non-daemon mode";
+			;
 		}
 
-		this->pid_file.exceptions( std::ofstream::failbit );
-		try {
-			this->pid_file.open(this->pid_file_name.c_str(), std::ofstream::trunc);
-			this->pid_file << (long)this->pid;
-
-			fs::permissions(path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
-		}
-		catch (const std::ofstream::failure & e) {
-			this->buffer.str( "Fail to open PID file : " );
-			this->buffer << this->pid_file_name << " : " << e.what();
-			throw GLogiKExcept( this->buffer.str() );
-		}
-		catch (const fs::filesystem_error & e) {
-			this->buffer.str( "Set permissions failure on PID file : " );
-			this->buffer << this->pid_file_name << " : " << e.what();
-			throw GLogiKExcept( this->buffer.str() );
-		}
-
-		syslog(LOG_INFO, "living in %ld", (long)this->pid);
-		LOG(INFO) << "living in " << (long)this->pid;
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
 		this->buffer.str( e.what() );
 		if(errno != 0)
 			this->buffer << " : " << strerror(errno);
-		syslog( LOG_ERR, this->buffer.str().c_str() );
-		LOG(ERROR) << this->buffer.str();
+		const char * msg = this->buffer.str().c_str();
+		syslog( LOG_ERR, msg );
+		LOG(ERROR) << msg;
 		return EXIT_FAILURE;
 	}
 
+}
+
+void GLogiKDaemon::handle_signal(int sig) {
+	LOG(DEBUG2) << "starting handle_signal()";
+	switch( sig ) {
+		case SIGINT: {
+			LOG(DEBUG3) << "got SIGINT, terminating";
+			GLogiKDaemon::daemon = false;
+			signal(SIGINT, SIG_DFL);
+		}
+	}
 }
 
 void GLogiKDaemon::daemonize() {
@@ -125,7 +138,7 @@ void GLogiKDaemon::daemonize() {
 		throw GLogiKExcept("session creation failure");
 
 	// Ignore signal sent from child to parent process
-	//signal(SIGCHLD, SIG_IGN);
+	signal(SIGCHLD, SIG_IGN);
 
 	this->pid = fork();
 	if(this->pid == -1)
@@ -155,6 +168,34 @@ void GLogiKDaemon::daemonize() {
 
 	this->pid = getpid();
 	LOG(INFO) << "daemonized !";
+
+	fs::path path(this->pid_file_name);
+
+	if( fs::exists(path) ) {
+		this->buffer.str( "PID file " );
+		this->buffer << this->pid_file_name << " already exist";
+		throw GLogiKExcept( this->buffer.str() );
+	}
+
+	this->pid_file.exceptions( std::ofstream::failbit );
+	try {
+		this->pid_file.open(this->pid_file_name.c_str(), std::ofstream::trunc);
+		this->pid_file << (long)this->pid;
+		this->pid_file.flush();
+
+		fs::permissions(path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
+	}
+	catch (const std::ofstream::failure & e) {
+		this->buffer.str( "Fail to open PID file : " );
+		this->buffer << this->pid_file_name << " : " << e.what();
+		throw GLogiKExcept( this->buffer.str() );
+	}
+	catch (const fs::filesystem_error & e) {
+		this->buffer.str( "Set permissions failure on PID file : " );
+		this->buffer << this->pid_file_name << " : " << e.what();
+		throw GLogiKExcept( this->buffer.str() );
+	}
+	LOG(INFO) << "created PID file : " << this->pid_file_name;
 }
 
 void GLogiKDaemon::parse_command_line(const int& argc, char *argv[]) {
@@ -163,6 +204,7 @@ void GLogiKDaemon::parse_command_line(const int& argc, char *argv[]) {
 	po::options_description desc("Allowed options");
 	desc.add_options()
 		("help", "produce help message")
+		("daemonize,d", po::bool_switch(&this->daemon)->default_value(false))
 		("pid-file,p", po::value(&this->pid_file_name), "PID file")
 	;
 
