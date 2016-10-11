@@ -55,15 +55,14 @@ GLogiKDaemon::~GLogiKDaemon()
 	if( this->pid_file.is_open() ) {
 		this->pid_file.close();
 		if( unlink(this->pid_file_name.c_str()) != 0 ) {
-			this->buffer.str( "failed to unlink PID file" );
-			const char * msg = this->buffer.str().c_str();
+			const char * msg = "failed to unlink PID file";
 			syslog(LOG_ERR, msg);
 			LOG(ERROR) << msg;
 		}
 	}
 
 	if( this->log_fd != NULL )
-		fclose(this->log_fd);
+		std::fclose(this->log_fd);
 	closelog();
 }
 
@@ -112,9 +111,11 @@ void GLogiKDaemon::handle_signal(int sig) {
 	LOG(DEBUG2) << "starting handle_signal()";
 	switch( sig ) {
 		case SIGINT: {
-			LOG(DEBUG3) << "got SIGINT, terminating";
+			const char * msg = "got SIGINT, exiting ...";
+			syslog(LOG_INFO, msg);
+			LOG(INFO) << msg;
 			GLogiKDaemon::daemon = false;
-			signal(SIGINT, SIG_DFL);
+			std::signal(SIGINT, SIG_DFL);
 		}
 	}
 }
@@ -138,7 +139,7 @@ void GLogiKDaemon::daemonize() {
 		throw GLogiKExcept("session creation failure");
 
 	// Ignore signal sent from child to parent process
-	signal(SIGCHLD, SIG_IGN);
+	std::signal(SIGCHLD, SIG_IGN);
 
 	this->pid = fork();
 	if(this->pid == -1)
