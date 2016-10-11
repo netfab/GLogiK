@@ -1,7 +1,7 @@
 
-#ifndef __GLOGIK_GLOBALS_H__
-#define __GLOGIK_GLOBALS_H__
+#ifndef __GLOGIKD_GLOBALS_H__
+#define __GLOGIKD_GLOBALS_H__
 
-#define GLOGIK_DAEMON_NAME "GLogiKd"
+#define GLOGIKD_DAEMON_NAME "GLogiKd"
 
 #endif

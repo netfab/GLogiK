@@ -1,11 +1,11 @@
 
-#ifndef __GLOGIK_EXCEPTION_H__
-#define __GLOGIK_EXCEPTION_H__
+#ifndef __GLOGIKD_EXCEPTION_H__
+#define __GLOGIKD_EXCEPTION_H__
 
 #include <exception>
 #include <string>
 
-namespace GLogiK
+namespace GLogiKd
 {
 
 class GLogiKExcept : public std::exception
@@ -20,7 +20,7 @@ class GLogiKExcept : public std::exception
 
 };
 
-} // namespace GLogiK
+} // namespace GLogiKd
 
 #endif
 

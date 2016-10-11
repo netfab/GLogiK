@@ -6,7 +6,7 @@
 #include "daemon.h"
 #include "exception.h"
 
-using namespace GLogiK;
+using namespace GLogiKd;
 
 int main(int argc, char *argv[]) {
 	//try {

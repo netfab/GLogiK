@@ -6,11 +6,11 @@
 #include <sstream>
 #include <string>
 
-#ifndef __GKLOGIK_DAEMON_H__
-#define __GKLOGIK_DAEMON_H__
+#ifndef __GLOGIKD_DAEMON_H__
+#define __GLOGIKD_DAEMON_H__
 
 
-namespace GLogiK
+namespace GLogiKd
 {
 
 class GLogiKDaemon
@@ -38,6 +38,6 @@ class GLogiKDaemon
 		static void handle_signal(int sig);
 };
 
-} // namespace GLogiK
+} // namespace GLogiKd
 
 #endif

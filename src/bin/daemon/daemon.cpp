@@ -29,14 +29,14 @@
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
-namespace GLogiK
+namespace GLogiKd
 {
 
 bool GLogiKDaemon::daemon = false;
 
 GLogiKDaemon::GLogiKDaemon() :	pid(0), log_fd(NULL), pid_file_name(""), buffer("", std::ios_base::app)
 {
-	openlog(GLOGIK_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
+	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 	FILELog::ReportingLevel() = FILELog::FromString(DEBUG_LOG_LEVEL);
 
 	if( FILELog::ReportingLevel() != NONE ) {
@@ -68,17 +68,15 @@ GLogiKDaemon::~GLogiKDaemon()
 
 int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 
-	syslog(LOG_INFO, "starting");
-	LOG(INFO) << "starting";
+	const char * msg = "starting ...";
+	syslog(LOG_INFO, msg);
+	LOG(INFO) << msg;
 
 	try {
 		this->parse_command_line(argc, argv);
 
 		if( this->daemon ) {
 			this->daemonize();
-
-			syslog(LOG_INFO, "living in %ld", (long)this->pid);
-			LOG(INFO) << "living in " << (long)this->pid;
 
 			std::signal(SIGINT, this->handle_signal);
 			std::signal(SIGHUP, this->handle_signal);
@@ -219,5 +217,5 @@ void GLogiKDaemon::parse_command_line(const int& argc, char *argv[]) {
 	po::notify(vm);
 }
 
-} // namespace GLogiK
+} // namespace GLogiKd
 

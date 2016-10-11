@@ -1,5 +1,5 @@
-#ifndef __GLOGIK_LOG_H__
-#define __GLOGIK_LOG_H__
+#ifndef __GLOGIKD_LOG_H__
+#define __GLOGIKD_LOG_H__
 
 // http://stackoverflow.com/questions/5028302/small-logger-class
 // http://www.drdobbs.com/cpp/logging-in-c/201804215
@@ -8,7 +8,7 @@
 #include <string>
 #include <cstdio>
 
-namespace GLogiK
+namespace GLogiKd
 {
 
 inline std::string NowTime();
@@ -177,6 +177,6 @@ inline std::string NowTime()
 
 #endif //WIN32
 
-}
+} // namespace GLogiKd
 
-#endif //__GLOGIK_LOG_H__
+#endif //__GLOGIKD_LOG_H__
