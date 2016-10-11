@@ -6,6 +6,8 @@
 #include <sstream>
 #include <string>
 
+#include <boost/atomic.hpp>
+
 #ifndef __GLOGIKD_DAEMON_H__
 #define __GLOGIKD_DAEMON_H__
 
@@ -21,6 +23,9 @@ class GLogiKDaemon
 
 		int run(const int& argc, char *argv[]);
 
+		static bool isItEnabled(void);
+		static void disableDaemon(void);
+
 	protected:
 	private:
 		pid_t pid;
@@ -31,7 +36,7 @@ class GLogiKDaemon
 
 		std::ostringstream buffer;
 
-		static bool daemon;
+		static boost::atomic<bool> daemon;
 
 		void daemonize(void);
 		void parse_command_line(const int& argc, char *argv[]);

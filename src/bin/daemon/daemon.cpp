@@ -26,13 +26,15 @@
 #include "globals.h"
 #include "include/log.h"
 
+#include "devices_manager.h"
+
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
 namespace GLogiKd
 {
 
-bool GLogiKDaemon::daemon = false;
+boost::atomic<bool> GLogiKDaemon::daemon;
 
 GLogiKDaemon::GLogiKDaemon() :	pid(0), log_fd(NULL), pid_file_name(""), buffer("", std::ios_base::app)
 {
@@ -75,6 +77,8 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 	try {
 		this->parse_command_line(argc, argv);
 
+		DevicesManager d;
+
 		if( this->daemon ) {
 			this->daemonize();
 
@@ -103,6 +107,14 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 		return EXIT_FAILURE;
 	}
 
+}
+
+void GLogiKDaemon::disableDaemon( void ) {
+	GLogiKDaemon::daemon = false;
+}
+
+bool GLogiKDaemon::isItEnabled() {
+	return GLogiKDaemon::daemon;
 }
 
 void GLogiKDaemon::handle_signal(int sig) {
@@ -200,10 +212,12 @@ void GLogiKDaemon::daemonize() {
 void GLogiKDaemon::parse_command_line(const int& argc, char *argv[]) {
 	LOG(DEBUG2) << "starting GLogiKDaemon::parse_command_line()";
 
+	bool d = false;
+
 	po::options_description desc("Allowed options");
 	desc.add_options()
 		("help", "produce help message")
-		("daemonize,d", po::bool_switch(&this->daemon)->default_value(false))
+		("daemonize,d", po::bool_switch(&d)->default_value(false))
 		("pid-file,p", po::value(&this->pid_file_name), "PID file")
 	;
 
@@ -215,6 +229,10 @@ void GLogiKDaemon::parse_command_line(const int& argc, char *argv[]) {
 		throw GLogiKExcept( e.what() );
 	}
 	po::notify(vm);
+
+	if (vm.count("daemonize")) {
+		GLogiKDaemon::daemon = vm["daemonize"].as<bool>();
+	}
 }
 
 } // namespace GLogiKd
