@@ -56,6 +56,7 @@ GLogiKDaemon::~GLogiKDaemon()
 {
 	if( this->pid_file.is_open() ) {
 		this->pid_file.close();
+		LOG(INFO) << "destroying PID file";
 		if( unlink(this->pid_file_name.c_str()) != 0 ) {
 			const char * msg = "failed to unlink PID file";
 			syslog(LOG_ERR, msg);
@@ -63,6 +64,7 @@ GLogiKDaemon::~GLogiKDaemon()
 		}
 	}
 
+	LOG(INFO) << "bye !";
 	if( this->log_fd != NULL )
 		std::fclose(this->log_fd);
 	closelog();
@@ -79,13 +81,13 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 
 		DevicesManager d;
 
-		if( this->daemon ) {
+		if( GLogiKDaemon::isItEnabled() ) {
 			this->daemonize();
 
 			std::signal(SIGINT, this->handle_signal);
 			std::signal(SIGHUP, this->handle_signal);
 
-			while( this->daemon ) {
+			while( GLogiKDaemon::isItEnabled() ) {
 				sleep(1);
 			}
 
@@ -124,7 +126,7 @@ void GLogiKDaemon::handle_signal(int sig) {
 			const char * msg = "got SIGINT, exiting ...";
 			syslog(LOG_INFO, msg);
 			LOG(INFO) << msg;
-			GLogiKDaemon::daemon = false;
+			GLogiKDaemon::disableDaemon();
 			std::signal(SIGINT, SIG_DFL);
 		}
 	}
