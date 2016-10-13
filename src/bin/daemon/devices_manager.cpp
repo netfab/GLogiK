@@ -1,6 +1,8 @@
 
 #include <libudev.h>
 
+#include <string>
+
 #include "devices_manager.h"
 #include "include/log.h"
 
@@ -40,6 +42,9 @@ void DevicesManager::startMonitoring(void) {
 	if( udev_monitor_filter_add_match_subsystem_devtype(this->monitor, "hidraw", NULL) < 0 )
 		throw GLogiKExcept("hidraw monitor filtering init failure");
 
+	if( udev_monitor_filter_add_match_subsystem_devtype(this->monitor, "input", NULL) < 0 )
+		throw GLogiKExcept("input monitor filtering init failure");
+
 	if( udev_monitor_enable_receiving(this->monitor) < 0 )
 		throw GLogiKExcept("monitor enabling failure");
 
@@ -53,16 +58,29 @@ void DevicesManager::startMonitoring(void) {
 	struct udev_device *dev = NULL;
 	int ret = 0;
 
+	std::string str;
 	while( GLogiKDaemon::is_daemon_enabled() ) {
 		ret = poll(this->fds, 1, 6000);
+		// receive data ?
 		if( ret > 0 ) {
 			dev = udev_monitor_receive_device(this->monitor);
 			if(dev) {
+				#if 0
+				const char* p1 = udev_device_get_devnode(dev);
+				const char* p2 = udev_device_get_subsystem(dev);
+				const char* p3 = udev_device_get_devtype(dev);
+				const char* p4 = udev_device_get_action(dev);
 				LOG(DEBUG3) << "Got device";
-				LOG(DEBUG3) << "	Node : " << udev_device_get_devnode(dev);
-				LOG(DEBUG3) << "	Subsystem : " << udev_device_get_subsystem(dev);
-				LOG(DEBUG3) << "	Devtype : " << udev_device_get_devtype(dev);
-				LOG(DEBUG3) << "	Action : " << udev_device_get_action(dev);
+				str = ( p1 != NULL ) ? p1 : "(null)";
+				LOG(DEBUG3) << "	Node : " << str;
+				str = ( p2 != NULL ) ? p2 : "(null)";
+				LOG(DEBUG3) << "	Subsystem : " << str;
+				str = ( p3 != NULL ) ? p3 : "(null)";
+				LOG(DEBUG3) << "	Devtype : " << str;
+				str = ( p4 != NULL ) ? p4 : "(null)";
+				LOG(DEBUG3) << "	Action : " << str;
+				#endif
+
 				udev_device_unref(dev);
 			}
 			else {
