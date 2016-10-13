@@ -87,7 +87,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			std::signal(SIGINT, GLogiKDaemon::handle_signal);
 			std::signal(SIGHUP, GLogiKDaemon::handle_signal);
 
-			d.monitor();
+			d.startMonitoring();
 		}
 		else {
 			LOG(INFO) << "non-daemon mode";

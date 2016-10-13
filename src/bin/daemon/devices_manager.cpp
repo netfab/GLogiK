@@ -10,13 +10,15 @@
 namespace GLogiKd
 {
 
-DevicesManager::DevicesManager() {
+DevicesManager::DevicesManager() : udev(NULL), monitor(NULL), fd_(-1) {
+	this->fds[0].fd = -1;
+	this->fds[0].events = POLLIN;
 }
 
 DevicesManager::~DevicesManager() {
-	if(this->mon) {
+	if(this->monitor) {
 		LOG(DEBUG3) << "unref monitor object";
-		udev_monitor_unref(this->mon);
+		udev_monitor_unref(this->monitor);
 	}
 	if(this->udev) {
 		LOG(DEBUG3) << "unref udev context";
@@ -24,26 +26,49 @@ DevicesManager::~DevicesManager() {
 	}
 }
 
-void DevicesManager::monitor(void) {
-
-	LOG(DEBUG2) << "starting DevicesManager::monitor()";
+void DevicesManager::startMonitoring(void) {
+	LOG(DEBUG2) << "starting DevicesManager::startMonitoring()";
 
 	this->udev = udev_new();
 	if ( this->udev == NULL )
 		throw GLogiKExcept("udev context init failure");
 
-	this->mon = udev_monitor_new_from_netlink(this->udev, "udev");
-	if( this->mon == NULL )
+	this->monitor = udev_monitor_new_from_netlink(this->udev, "udev");
+	if( this->monitor == NULL )
 		throw GLogiKExcept("allocating udev monitor failure");
 
-	if( udev_monitor_filter_add_match_subsystem_devtype(this->mon, "hidraw", NULL) < 0 )
+	if( udev_monitor_filter_add_match_subsystem_devtype(this->monitor, "hidraw", NULL) < 0 )
 		throw GLogiKExcept("hidraw monitor filtering init failure");
 
-	if( udev_monitor_enable_receiving(mon) < 0 )
+	if( udev_monitor_enable_receiving(this->monitor) < 0 )
 		throw GLogiKExcept("monitor enabling failure");
 
+	this->fd_ = udev_monitor_get_fd(this->monitor);
+	if( this->fd_ < 0 )
+		throw GLogiKExcept("can't get the monitor file descriptor");
+
+	this->fds[0].fd = this->fd_;
+	this->fds[0].events = POLLIN;
+
+	struct udev_device *dev = NULL;
+	int ret = 0;
+
 	while( GLogiKDaemon::is_daemon_enabled() ) {
-		sleep(1);
+		ret = poll(this->fds, 1, 6000);
+		if( ret > 0 ) {
+			dev = udev_monitor_receive_device(this->monitor);
+			if(dev) {
+				LOG(DEBUG3) << "Got device";
+				LOG(DEBUG3) << "	Node : " << udev_device_get_devnode(dev);
+				LOG(DEBUG3) << "	Subsystem : " << udev_device_get_subsystem(dev);
+				LOG(DEBUG3) << "	Devtype : " << udev_device_get_devtype(dev);
+				LOG(DEBUG3) << "	Action : " << udev_device_get_action(dev);
+				udev_device_unref(dev);
+			}
+			else {
+				LOG(DEBUG3) << "No Device from receive_device(). An error occured";
+			}
+		}
 	}
 
 }

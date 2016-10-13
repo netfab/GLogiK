@@ -2,6 +2,8 @@
 #ifndef __GLOGIKD_DEVICES_MANAGER_H__
 #define __GLOGIKD_DEVICES_MANAGER_H__
 
+#include <poll.h>
+
 
 namespace GLogiKd
 {
@@ -12,12 +14,14 @@ class DevicesManager
 		DevicesManager(void);
 		~DevicesManager(void);
 
-		void monitor(void);
+		void startMonitoring(void);
 	protected:
 
 	private:
 		struct udev *udev;
-		struct udev_monitor *mon;
+		struct udev_monitor *monitor;
+		struct pollfd fds[1];
+		int fd_;
 
 };
 
