@@ -110,9 +110,8 @@ dnl -------------------------------------------------------------------------
 
 #PKG_CHECK_MODULES([SDL], [sdl >= 1.2.13])
 #PKG_CHECK_MODULES([SDLMIXER], [SDL_mixer >= 1.2.11])
-PKG_CHECK_MODULES([LIBUSB], libusb-1.0 >= 1.0.0)
-#,,
-#                  AC_MSG_ERROR([*** Required libusb-1.0 >= 1.0.0 not installed ***]))
+PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.0])
+PKG_CHECK_MODULES([LIBUDEV], [libudev])
 
 AX_BOOST_BASE([1.56.0])
 AX_BOOST_PROGRAM_OPTIONS

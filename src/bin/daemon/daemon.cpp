@@ -34,7 +34,7 @@ namespace fs = boost::filesystem;
 namespace GLogiKd
 {
 
-boost::atomic<bool> GLogiKDaemon::daemonized;
+boost::atomic<bool> GLogiKDaemon::daemonized_;
 
 GLogiKDaemon::GLogiKDaemon() :	pid_(0), log_fd_(NULL), pid_file_name_(""), buffer_("", std::ios_base::app)
 {
@@ -87,10 +87,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			std::signal(SIGINT, GLogiKDaemon::handle_signal);
 			std::signal(SIGHUP, GLogiKDaemon::handle_signal);
 
-			while( GLogiKDaemon::is_daemon_enabled() ) {
-				sleep(1);
-			}
-
+			d.monitor();
 		}
 		else {
 			LOG(INFO) << "non-daemon mode";
@@ -112,11 +109,11 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 }
 
 void GLogiKDaemon::disable_daemon( void ) {
-	GLogiKDaemon::daemonized = false;
+	GLogiKDaemon::daemonized_ = false;
 }
 
 bool GLogiKDaemon::is_daemon_enabled() {
-	return GLogiKDaemon::daemonized;
+	return GLogiKDaemon::daemonized_;
 }
 
 void GLogiKDaemon::handle_signal(int sig) {
@@ -233,7 +230,7 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	po::notify(vm);
 
 	if (vm.count("daemonize")) {
-		GLogiKDaemon::daemonized = vm["daemonize"].as<bool>();
+		GLogiKDaemon::daemonized_ = vm["daemonize"].as<bool>();
 	}
 }
 
