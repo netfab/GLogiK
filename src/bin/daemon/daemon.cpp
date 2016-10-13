@@ -186,6 +186,8 @@ void GLogiKDaemon::daemonize() {
 		this->buffer_ << this->pid_file_name_ << " already exist";
 		throw GLogiKExcept( this->buffer_.str() );
 	}
+	// if path not found reset errno
+	errno = 0;
 
 	this->pid_file_.exceptions( std::ofstream::failbit );
 	try {
