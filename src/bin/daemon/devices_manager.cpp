@@ -8,7 +8,7 @@ namespace GLogiKd
 {
 
 DevicesManager::DevicesManager() {
-	LOG(INFO) << GLogiKDaemon::isItEnabled();
+	LOG(INFO) << GLogiKDaemon::is_daemon_enabled();
 }
 
 DevicesManager::~DevicesManager() {

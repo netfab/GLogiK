@@ -23,23 +23,20 @@ class GLogiKDaemon
 
 		int run(const int& argc, char *argv[]);
 
-		static bool isItEnabled(void);
-		static void disableDaemon(void);
+		static bool is_daemon_enabled(void);
+		static void disable_daemon(void);
 
 	protected:
 	private:
-		pid_t pid;
-		FILE* log_fd;
-
-		std::string pid_file_name;
-		std::ofstream pid_file;
-
-		std::ostringstream buffer;
-
-		static boost::atomic<bool> daemon;
+		pid_t pid_;
+		FILE* log_fd_;
+		std::string pid_file_name_;
+		std::ofstream pid_file_;
+		std::ostringstream buffer_;
+		static boost::atomic<bool> daemonized;
 
 		void daemonize(void);
-		void parse_command_line(const int& argc, char *argv[]);
+		void parseCommandLine(const int& argc, char *argv[]);
 		static void handle_signal(int sig);
 };
 
