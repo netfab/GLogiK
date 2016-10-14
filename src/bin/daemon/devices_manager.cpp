@@ -1,7 +1,8 @@
 
-#include <libudev.h>
 
 #include <string>
+
+#include <libudev.h>
 
 #include "devices_manager.h"
 #include "include/log.h"
@@ -64,28 +65,27 @@ void DevicesManager::startMonitoring(void) {
 		// receive data ?
 		if( ret > 0 ) {
 			dev = udev_monitor_receive_device(this->monitor);
-			if(dev) {
-				#if 0
-				const char* p1 = udev_device_get_devnode(dev);
-				const char* p2 = udev_device_get_subsystem(dev);
-				const char* p3 = udev_device_get_devtype(dev);
-				const char* p4 = udev_device_get_action(dev);
-				LOG(DEBUG3) << "Got device";
-				str = ( p1 != NULL ) ? p1 : "(null)";
-				LOG(DEBUG3) << "	Node : " << str;
-				str = ( p2 != NULL ) ? p2 : "(null)";
-				LOG(DEBUG3) << "	Subsystem : " << str;
-				str = ( p3 != NULL ) ? p3 : "(null)";
-				LOG(DEBUG3) << "	Devtype : " << str;
-				str = ( p4 != NULL ) ? p4 : "(null)";
-				LOG(DEBUG3) << "	Action : " << str;
-				#endif
 
-				udev_device_unref(dev);
-			}
-			else {
-				LOG(DEBUG3) << "No Device from receive_device(). An error occured";
-			}
+			if( dev == NULL )
+				throw GLogiKExcept("no device from receive_device(), something is wrong");
+
+			#if GLOGIKD_DEVICES_MANAGER_DEBUG
+			const char* p1 = udev_device_get_devnode(dev);
+			const char* p2 = udev_device_get_subsystem(dev);
+			const char* p3 = udev_device_get_devtype(dev);
+			const char* p4 = udev_device_get_action(dev);
+			LOG(DEBUG3) << "Got device";
+			str = ( p1 != NULL ) ? p1 : "(null)";
+			LOG(DEBUG3) << "	Node : " << str;
+			str = ( p2 != NULL ) ? p2 : "(null)";
+			LOG(DEBUG3) << "	Subsystem : " << str;
+			str = ( p3 != NULL ) ? p3 : "(null)";
+			LOG(DEBUG3) << "	Devtype : " << str;
+			str = ( p4 != NULL ) ? p4 : "(null)";
+			LOG(DEBUG3) << "	Action : " << str;
+			#endif
+
+			udev_device_unref(dev);
 		}
 	}
 

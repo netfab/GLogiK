@@ -4,6 +4,7 @@
 
 #include <poll.h>
 
+#define GLOGIKD_DEVICES_MANAGER_DEBUG 0
 
 namespace GLogiKd
 {
