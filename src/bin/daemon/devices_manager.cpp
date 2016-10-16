@@ -10,6 +10,8 @@
 #include "exception.h"
 #include "daemon.h"
 
+#include "logitech_g15.h"
+
 namespace GLogiKd
 {
 
@@ -84,6 +86,15 @@ void DevicesManager::startMonitoring(void) {
 			str = ( p4 != NULL ) ? p4 : "(null)";
 			LOG(DEBUG3) << "	Action : " << str;
 			#endif
+
+			KeyboardDriver* a = new LogitechG15();
+
+			LOG(DEBUG3) << a->getDriverName();
+			if( a->searchDevice("046d", "c22d") ) {
+				LOG(DEBUG3) << "found !";
+			}
+
+			delete a;
 
 			udev_device_unref(dev);
 		}

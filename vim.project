@@ -13,6 +13,7 @@ GLogiK=$PWD CD=. {
         Makefile
     }
     macro=m4/ {
+	ax_boost_atomic.m4
     }
     doc=doc/ {
         README
@@ -34,6 +35,10 @@ GLogiK=$PWD CD=. {
 		exception.cpp
 		exception.h
 		globals.h
+		logitech_g15.cpp
+		logitech_g15.h
+		keyboard_driver.cpp
+		keyboard_driver.h
             }
             foo=foo/ {
                 Makefile.am
