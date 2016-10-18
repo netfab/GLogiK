@@ -40,7 +40,7 @@ autoreconf_it:
 configure_it: init_dir
 	cd $(build_dir) && $(top_srcdir)/configure CXXFLAGS=$(CXXFLAGS) \
 	DEBUG_DIR=/tmp/devcxx \
-	DEBUG_LOG_LEVEL=DEBUG3 \
+	DEBUG_LOG_LEVEL=DEBUG4 \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
 

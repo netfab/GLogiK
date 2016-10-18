@@ -1,5 +1,7 @@
 
 
+#include <cstring>
+
 #include <string>
 
 #include <libudev.h>
@@ -29,6 +31,101 @@ DevicesManager::~DevicesManager() {
 		LOG(DEBUG3) << "unref udev context";
 		udev_unref(this->udev);
 	}
+}
+
+void DevicesManager::searchSupportedDevices(KeyboardDriver* driver) {
+
+	struct udev_enumerate *enumerate;
+	struct udev_list_entry *devices, *dev_list_entry;
+	struct udev_device *dev;
+
+	enumerate = udev_enumerate_new(this->udev);
+	if ( enumerate == NULL )
+		throw GLogiKExcept("udev enumerate object creation failure");
+
+	try {
+		if( udev_enumerate_add_match_subsystem(enumerate, "hidraw") < 0 )
+			throw GLogiKExcept("hidraw enumerate filtering init failure");
+
+		if( udev_enumerate_add_match_subsystem(enumerate, "input") < 0 )
+			throw GLogiKExcept("input enumerate filtering init failure");
+
+		if( udev_enumerate_scan_devices(enumerate) < 0 )
+			throw GLogiKExcept("enumerate_scan_devices failure");
+
+		devices = udev_enumerate_get_list_entry(enumerate);
+		if( devices == NULL )
+			throw GLogiKExcept("devices empty list or failure");
+
+		udev_list_entry_foreach(dev_list_entry, devices) {
+			// Get the filename of the /sys entry for the device
+			// and create a udev_device object (dev) representing it
+			const char* path = udev_list_entry_get_name(dev_list_entry);
+			if( path == NULL )
+				throw GLogiKExcept("entry_get_name failure");
+
+			dev = udev_device_new_from_syspath(this->udev, path);
+			if( dev == NULL )
+				throw GLogiKExcept("new_from_syspath failure");
+
+			const char* devss = udev_device_get_subsystem(dev);
+			if( devss == NULL )
+				throw GLogiKExcept("get_subsystem failure");
+
+			if( std::strcmp(devss, "hidraw") == 0 ) {
+				// path to the device node in /dev
+				const char* devnode = udev_device_get_devnode(dev);
+				if( devnode == NULL )
+					throw GLogiKExcept("get_devnode failure");
+
+				dev = udev_device_get_parent_with_subsystem_devtype(dev, "usb", "usb_device");
+				if( dev == NULL )
+					throw GLogiKExcept("unable to find parent usb device");
+
+				const char* vendor_id    = udev_device_get_sysattr_value(dev,"idVendor");
+				const char* product_id   = udev_device_get_sysattr_value(dev,"idProduct");
+				const char* manufacturer = udev_device_get_sysattr_value(dev,"manufacturer");
+				const char* product      = udev_device_get_sysattr_value(dev,"product");
+				const char* serial       = udev_device_get_sysattr_value(dev,"serial");
+
+				vendor_id = (vendor_id == NULL) ? "(null)" : vendor_id;
+				product_id = (product_id == NULL) ? "(null)" : product_id;
+				manufacturer = (manufacturer == NULL) ? "(null)" : manufacturer;
+				product = (product == NULL) ? "(null)" : product;
+				serial = (serial == NULL) ? "(null)" : serial;
+
+				std::vector<device>::iterator it;
+				for(it = driver->getSupportedDevicesFirst(); it != driver->getSupportedDevicesEnd(); ++it) {
+					if( std::strcmp( (*it).vendor_id, vendor_id ) == 0 )
+						if( std::strcmp( (*it).product_id, product_id ) == 0 ) {
+							#if GLOGIKD_DEVICES_MANAGER_DEBUG
+							LOG(DEBUG3)	<< "Device found !\n"
+									<< "	Path		: " << path << "\n"
+									<< "	Subsystem	: " << devss << "\n"
+									<< "	Device Node	: " << devnode << "\n"
+									<< "	Vendor ID	: " << vendor_id << "\n"
+									<< "	Product ID	: " << product_id << "\n"
+									<< "	Manufacturer	: " << manufacturer << "\n"
+									<< "	Product		: " << product << "\n"
+									<< "	Serial		: " << serial << "\n";
+							#endif
+						}
+				}
+			}
+
+			udev_device_unref(dev);
+
+		}
+
+	}
+	catch ( const GLogiKExcept & e ) {
+		// Free the enumerator object
+		udev_enumerate_unref(enumerate);
+		throw;
+	}
+
+	// Free the enumerator object
+	udev_enumerate_unref(enumerate);
 }
 
 void DevicesManager::startMonitoring(void) {
@@ -61,44 +158,29 @@ void DevicesManager::startMonitoring(void) {
 	struct udev_device *dev = NULL;
 	int ret = 0;
 
-	std::string str;
+	KeyboardDriver* a = new LogitechG15();
+
 	while( GLogiKDaemon::is_daemon_enabled() ) {
 		ret = poll(this->fds, 1, 6000);
 		// receive data ?
 		if( ret > 0 ) {
 			dev = udev_monitor_receive_device(this->monitor);
-
 			if( dev == NULL )
 				throw GLogiKExcept("no device from receive_device(), something is wrong");
 
-			#if GLOGIKD_DEVICES_MANAGER_DEBUG
-			const char* p1 = udev_device_get_devnode(dev);
-			const char* p2 = udev_device_get_subsystem(dev);
-			const char* p3 = udev_device_get_devtype(dev);
-			const char* p4 = udev_device_get_action(dev);
-			LOG(DEBUG3) << "Got device";
-			str = ( p1 != NULL ) ? p1 : "(null)";
-			LOG(DEBUG3) << "	Node : " << str;
-			str = ( p2 != NULL ) ? p2 : "(null)";
-			LOG(DEBUG3) << "	Subsystem : " << str;
-			str = ( p3 != NULL ) ? p3 : "(null)";
-			LOG(DEBUG3) << "	Devtype : " << str;
-			str = ( p4 != NULL ) ? p4 : "(null)";
-			LOG(DEBUG3) << "	Action : " << str;
-			#endif
+			const char* action = udev_device_get_action(dev);
+			if( action == NULL )
+				throw GLogiKExcept("device_get_action() failure");
 
-			KeyboardDriver* a = new LogitechG15();
-
-			LOG(DEBUG3) << a->getDriverName();
-			if( a->searchDevice("046d", "c22d") ) {
-				LOG(DEBUG3) << "found !";
+			if( std::strcmp(action, "add") == 0 ) {
+				this->searchSupportedDevices(a);
 			}
-
-			delete a;
 
 			udev_device_unref(dev);
 		}
 	}
+
+	delete a;
 
 }
 

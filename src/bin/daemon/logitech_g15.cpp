@@ -30,7 +30,6 @@ LogitechG15::LogitechG15() {
 }
 
 LogitechG15::~LogitechG15() {
-	LOG(DEBUG3) << "LogitechG15 destructor";
 }
 
 

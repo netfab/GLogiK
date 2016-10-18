@@ -4,6 +4,8 @@
 
 #include <poll.h>
 
+#include "keyboard_driver.h"
+
 #define GLOGIKD_DEVICES_MANAGER_DEBUG 0
 
 namespace GLogiKd
@@ -16,6 +18,8 @@ class DevicesManager
 		~DevicesManager(void);
 
 		void startMonitoring(void);
+		void searchSupportedDevices(KeyboardDriver*);
+
 	protected:
 
 	private:

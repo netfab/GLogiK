@@ -26,7 +26,9 @@ class KeyboardDriver
 		virtual ~KeyboardDriver();
 
 		virtual const char* getDriverName() const = 0;
-		bool searchDevice(const char*, const char*);
+
+		std::vector<device>::iterator getSupportedDevicesFirst(void);
+		std::vector<device>::iterator getSupportedDevicesEnd(void);
 
 	protected:
 		std::vector<device>::iterator device_iterator_;

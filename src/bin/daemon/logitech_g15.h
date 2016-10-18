@@ -14,7 +14,7 @@ class LogitechG15 : public KeyboardDriver
 	public:
 		LogitechG15();
 		~LogitechG15();
-		
+
 		const char* getDriverName() const { return "Logitech G15"; };
 
 	protected:
