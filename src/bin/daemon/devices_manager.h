@@ -20,7 +20,7 @@ class DevicesManager
 		~DevicesManager(void);
 
 		void startMonitoring(void);
-		void searchSupportedDevices();
+		void searchSupportedDevices(void);
 
 	protected:
 

@@ -38,7 +38,7 @@ DevicesManager::~DevicesManager() {
 	this->drivers.clear();
 }
 
-void DevicesManager::searchSupportedDevices() {
+void DevicesManager::searchSupportedDevices(void) {
 
 	struct udev_enumerate *enumerate;
 	struct udev_list_entry *devices, *dev_list_entry;
@@ -167,6 +167,8 @@ void DevicesManager::startMonitoring(void) {
 	int ret = 0;
 
 	this->drivers.push_back( new LogitechG15() );
+
+	this->searchSupportedDevices();
 
 	while( GLogiKDaemon::is_daemon_enabled() ) {
 		ret = poll(this->fds, 1, 6000);
