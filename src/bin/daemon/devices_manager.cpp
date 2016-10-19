@@ -57,6 +57,8 @@ void DevicesManager::searchSupportedDevices(KeyboardDriver* driver) {
 		if( devices == NULL )
 			throw GLogiKExcept("devices empty list or failure");
 
+		std::vector<device>::iterator it;
+
 		udev_list_entry_foreach(dev_list_entry, devices) {
 			// Get the filename of the /sys entry for the device
 			// and create a udev_device object (dev) representing it
@@ -94,7 +96,6 @@ void DevicesManager::searchSupportedDevices(KeyboardDriver* driver) {
 				product = (product == NULL) ? "(null)" : product;
 				serial = (serial == NULL) ? "(null)" : serial;
 
-				std::vector<device>::iterator it;
 				for(it = driver->getSupportedDevicesFirst(); it != driver->getSupportedDevicesEnd(); ++it) {
 					if( std::strcmp( (*it).vendor_id, vendor_id ) == 0 )
 						if( std::strcmp( (*it).product_id, product_id ) == 0 ) {
