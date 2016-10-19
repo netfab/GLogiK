@@ -31,9 +31,14 @@ DevicesManager::~DevicesManager() {
 		LOG(DEBUG3) << "unref udev context";
 		udev_unref(this->udev);
 	}
+
+	for(std::vector<KeyboardDriver*>::iterator it = this->drivers.begin(); it != this->drivers.end(); ++it) {
+		delete (*it);
+	}
+	this->drivers.clear();
 }
 
-void DevicesManager::searchSupportedDevices(KeyboardDriver* driver) {
+void DevicesManager::searchSupportedDevices() {
 
 	struct udev_enumerate *enumerate;
 	struct udev_list_entry *devices, *dev_list_entry;
@@ -56,8 +61,6 @@ void DevicesManager::searchSupportedDevices(KeyboardDriver* driver) {
 		devices = udev_enumerate_get_list_entry(enumerate);
 		if( devices == NULL )
 			throw GLogiKExcept("devices empty list or failure");
-
-		std::vector<device>::iterator it;
 
 		udev_list_entry_foreach(dev_list_entry, devices) {
 			// Get the filename of the /sys entry for the device
@@ -96,21 +99,25 @@ void DevicesManager::searchSupportedDevices(KeyboardDriver* driver) {
 				product = (product == NULL) ? "(null)" : product;
 				serial = (serial == NULL) ? "(null)" : serial;
 
-				for(it = driver->getSupportedDevicesFirst(); it != driver->getSupportedDevicesEnd(); ++it) {
-					if( std::strcmp( (*it).vendor_id, vendor_id ) == 0 )
-						if( std::strcmp( (*it).product_id, product_id ) == 0 ) {
-							#if GLOGIKD_DEVICES_MANAGER_DEBUG
-							LOG(DEBUG3)	<< "Device found !\n"
-									<< "	Path		: " << path << "\n"
-									<< "	Subsystem	: " << devss << "\n"
-									<< "	Device Node	: " << devnode << "\n"
-									<< "	Vendor ID	: " << vendor_id << "\n"
-									<< "	Product ID	: " << product_id << "\n"
-									<< "	Manufacturer	: " << manufacturer << "\n"
-									<< "	Product		: " << product << "\n"
-									<< "	Serial		: " << serial << "\n";
-							#endif
-						}
+				for(std::vector<KeyboardDriver*>::iterator drivers_it = this->drivers.begin();
+					drivers_it != this->drivers.end(); ++drivers_it) {
+					for(std::vector<device>::iterator it = (*drivers_it)->getSupportedDevicesFirst();
+						it != (*drivers_it)->getSupportedDevicesEnd(); ++it) {
+						if( std::strcmp( (*it).vendor_id, vendor_id ) == 0 )
+							if( std::strcmp( (*it).product_id, product_id ) == 0 ) {
+								#if GLOGIKD_DEVICES_MANAGER_DEBUG
+								LOG(DEBUG3)	<< "Device found !\n"
+										<< "	Path		: " << path << "\n"
+										<< "	Subsystem	: " << devss << "\n"
+										<< "	Device Node	: " << devnode << "\n"
+										<< "	Vendor ID	: " << vendor_id << "\n"
+										<< "	Product ID	: " << product_id << "\n"
+										<< "	Manufacturer	: " << manufacturer << "\n"
+										<< "	Product		: " << product << "\n"
+										<< "	Serial		: " << serial << "\n";
+								#endif
+							}
+					}
 				}
 			}
 
@@ -159,7 +166,7 @@ void DevicesManager::startMonitoring(void) {
 	struct udev_device *dev = NULL;
 	int ret = 0;
 
-	KeyboardDriver* a = new LogitechG15();
+	this->drivers.push_back( new LogitechG15() );
 
 	while( GLogiKDaemon::is_daemon_enabled() ) {
 		ret = poll(this->fds, 1, 6000);
@@ -174,14 +181,12 @@ void DevicesManager::startMonitoring(void) {
 				throw GLogiKExcept("device_get_action() failure");
 
 			if( std::strcmp(action, "add") == 0 ) {
-				this->searchSupportedDevices(a);
+				this->searchSupportedDevices();
 			}
 
 			udev_device_unref(dev);
 		}
 	}
-
-	delete a;
 
 }
 

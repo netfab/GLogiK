@@ -4,6 +4,8 @@
 
 #include <poll.h>
 
+#include <vector>
+
 #include "keyboard_driver.h"
 
 #define GLOGIKD_DEVICES_MANAGER_DEBUG 0
@@ -18,7 +20,7 @@ class DevicesManager
 		~DevicesManager(void);
 
 		void startMonitoring(void);
-		void searchSupportedDevices(KeyboardDriver*);
+		void searchSupportedDevices();
 
 	protected:
 
@@ -27,6 +29,8 @@ class DevicesManager
 		struct udev_monitor *monitor;
 		struct pollfd fds[1];
 		int fd_;
+
+		std::vector<KeyboardDriver*> drivers;
 
 };
 
