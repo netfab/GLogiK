@@ -41,8 +41,6 @@ DevicesManager::~DevicesManager() {
 void DevicesManager::searchSupportedDevices(void) {
 
 	struct udev_enumerate *enumerate;
-	struct udev_list_entry *devices, *dev_list_entry;
-	struct udev_device *dev;
 
 	enumerate = udev_enumerate_new(this->udev);
 	if ( enumerate == NULL )
@@ -58,10 +56,11 @@ void DevicesManager::searchSupportedDevices(void) {
 		if( udev_enumerate_scan_devices(enumerate) < 0 )
 			throw GLogiKExcept("enumerate_scan_devices failure");
 
-		devices = udev_enumerate_get_list_entry(enumerate);
+		struct udev_list_entry *devices = udev_enumerate_get_list_entry(enumerate);
 		if( devices == NULL )
 			throw GLogiKExcept("devices empty list or failure");
 
+		struct udev_list_entry *dev_list_entry;
 		udev_list_entry_foreach(dev_list_entry, devices) {
 			// Get the filename of the /sys entry for the device
 			// and create a udev_device object (dev) representing it
@@ -69,7 +68,7 @@ void DevicesManager::searchSupportedDevices(void) {
 			if( path == NULL )
 				throw GLogiKExcept("entry_get_name failure");
 
-			dev = udev_device_new_from_syspath(this->udev, path);
+			struct udev_device *dev = udev_device_new_from_syspath(this->udev, path);
 			if( dev == NULL )
 				throw GLogiKExcept("new_from_syspath failure");
 
@@ -127,6 +126,7 @@ void DevicesManager::searchSupportedDevices(void) {
 								found.driver_ID		= (*drivers_it)->getDriverID();
 
 								this->detected_devices_.push_back(found);
+
 								udev_device_unref(dev);
 								throw DeviceFound(product);
 							}
