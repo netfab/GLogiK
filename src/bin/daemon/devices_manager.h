@@ -42,7 +42,7 @@ class DevicesManager
 		struct pollfd fds[1];
 		int fd_;
 
-		std::vector<KeyboardDriver*> drivers;
+		std::vector<KeyboardDriver*> drivers_;
 		std::vector<DetectedDevice> detected_devices_;
 
 };

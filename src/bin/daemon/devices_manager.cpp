@@ -32,10 +32,10 @@ DevicesManager::~DevicesManager() {
 		udev_unref(this->udev);
 	}
 
-	for(std::vector<KeyboardDriver*>::iterator it = this->drivers.begin(); it != this->drivers.end(); ++it) {
+	for(std::vector<KeyboardDriver*>::iterator it = this->drivers_.begin(); it != this->drivers_.end(); ++it) {
 		delete (*it);
 	}
-	this->drivers.clear();
+	this->drivers_.clear();
 }
 
 void DevicesManager::searchSupportedDevices(void) {
@@ -99,8 +99,8 @@ void DevicesManager::searchSupportedDevices(void) {
 				product = (product == NULL) ? "(null)" : product;
 				serial = (serial == NULL) ? "(null)" : serial;
 
-				for(std::vector<KeyboardDriver*>::iterator drivers_it = this->drivers.begin();
-					drivers_it != this->drivers.end(); ++drivers_it) {
+				for(std::vector<KeyboardDriver*>::iterator drivers_it = this->drivers_.begin();
+					drivers_it != this->drivers_.end(); ++drivers_it) {
 					for(std::vector<device>::iterator it = (*drivers_it)->getSupportedDevicesFirst();
 						it != (*drivers_it)->getSupportedDevicesEnd(); ++it) {
 						if( std::strcmp( (*it).vendor_id, vendor_id ) == 0 )
@@ -182,7 +182,7 @@ void DevicesManager::startMonitoring(void) {
 	struct udev_device *dev = NULL;
 	int ret = 0;
 
-	this->drivers.push_back( new LogitechG15() );
+	this->drivers_.push_back( new LogitechG15() );
 
 	this->searchSupportedDevices();
 
