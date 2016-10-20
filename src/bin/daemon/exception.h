@@ -20,6 +20,18 @@ class GLogiKExcept : public std::exception
 
 };
 
+class DeviceFound : public std::exception
+{
+        public :
+                DeviceFound( const std::string& msg = "" );
+                virtual ~DeviceFound( void ) throw();
+                virtual const char* what( void ) const throw();
+
+        protected :
+            std::string message;
+
+};
+
 } // namespace GLogiKd
 
 #endif

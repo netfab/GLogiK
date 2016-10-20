@@ -8,10 +8,22 @@
 
 #include "keyboard_driver.h"
 
-#define GLOGIKD_DEVICES_MANAGER_DEBUG 0
+#define GLOGIKD_DEVICES_MANAGER_DEBUG 1
 
 namespace GLogiKd
 {
+
+struct DetectedDevice {
+	const char* name;
+	const char* vendor_id;
+	const char* product_id;
+	const char* hidraw_dev_node;
+	//const char* input_dev_node;
+	const char* manufacturer;
+	const char* product;
+	const char* serial;
+	unsigned int driver_ID;
+};
 
 class DevicesManager
 {
@@ -31,6 +43,7 @@ class DevicesManager
 		int fd_;
 
 		std::vector<KeyboardDriver*> drivers;
+		std::vector<DetectedDevice> detected_devices_;
 
 };
 

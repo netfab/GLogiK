@@ -30,6 +30,8 @@ class KeyboardDriver
 		std::vector<device>::iterator getSupportedDevicesFirst(void);
 		std::vector<device>::iterator getSupportedDevicesEnd(void);
 
+		virtual unsigned int getDriverID() const = 0;
+
 	protected:
 		std::vector<device>::iterator device_iterator_;
 		std::vector<device> supported_devices_;

@@ -116,20 +116,36 @@ void DevicesManager::searchSupportedDevices(void) {
 										<< "	Product		: " << product << "\n"
 										<< "	Serial		: " << serial << "\n";
 								#endif
+								DetectedDevice found;
+								found.name		= (*it).name;
+								found.vendor_id		= vendor_id;
+								found.product_id	= product_id;
+								found.hidraw_dev_node	= devnode;
+								found.manufacturer	= manufacturer;
+								found.product		= product;
+								found.serial		= serial;
+								found.driver_ID		= (*drivers_it)->getDriverID();
+
+								this->detected_devices_.push_back(found);
+								udev_device_unref(dev);
+								throw DeviceFound(product);
 							}
-					}
-				}
-			}
+					} // for
+				} // for
+			} // if subsystem == hidraw
 
 			udev_device_unref(dev);
 
-		}
+		} // udev_list_entry_foreach
 
 	}
 	catch ( const GLogiKExcept & e ) {
 		// Free the enumerator object
 		udev_enumerate_unref(enumerate);
 		throw;
+	}
+	catch ( const DeviceFound & e ) {
+		LOG(DEBUG3) << "Device found : " << e.what();
 	}
 
 	// Free the enumerator object

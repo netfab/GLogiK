@@ -3,6 +3,7 @@
 #define __GLOGIKD_LOGITECH_G15_DRIVER_H__
 
 #include "keyboard_driver.h"
+#include "globals.h"
 
 namespace GLogiKd
 {
@@ -16,6 +17,7 @@ class LogitechG15 : public KeyboardDriver
 		~LogitechG15();
 
 		const char* getDriverName() const { return "Logitech G15"; };
+		unsigned int getDriverID() const { return GLOGIKD_DRIVER_ID_G15; };
 
 	protected:
 	private:
