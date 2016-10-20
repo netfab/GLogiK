@@ -26,8 +26,8 @@ GLogiK=$PWD CD=. {
 	binaries=bin/ {
             Makefile.am
             daemon=daemon/ {
-                Makefile.am
-                main.cpp
+		Makefile.am
+		main.cpp
 		daemon.cpp
 		daemon.h
 		devices_manager.cpp
