@@ -179,18 +179,15 @@ void DevicesManager::startMonitoring(void) {
 	this->fds[0].fd = this->fd_;
 	this->fds[0].events = POLLIN;
 
-	struct udev_device *dev = NULL;
-	int ret = 0;
-
 	this->drivers_.push_back( new LogitechG15() );
 
 	this->searchSupportedDevices();
 
 	while( GLogiKDaemon::is_daemon_enabled() ) {
-		ret = poll(this->fds, 1, 6000);
+		int ret = poll(this->fds, 1, 6000);
 		// receive data ?
 		if( ret > 0 ) {
-			dev = udev_monitor_receive_device(this->monitor);
+			struct udev_device *dev = udev_monitor_receive_device(this->monitor);
 			if( dev == NULL )
 				throw GLogiKExcept("no device from receive_device(), something is wrong");
 
