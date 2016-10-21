@@ -1,54 +1,54 @@
 GLogiK=$PWD CD=. {
-    .gitignore
-    AUTHORS
-    COPYING
-    ChangeLog
-    NEWS
-    README
-    VERSION
-    configure.ac
-    Makefile.am
-    .gitignore
-    tools=tools/ {
-        Makefile
-    }
-    macro=m4/ {
-	ax_boost_atomic.m4
-    }
-    doc=doc/ {
-        README
-    }
-    srcfiles=src/ {
-        Makefile.am
-        include=include/ {
-		log.h
+	.gitignore
+	AUTHORS
+	COPYING
+	ChangeLog
+	NEWS
+	README
+	VERSION
+	configure.ac
+	Makefile.am
+	.gitignore
+	tools=tools/ {
+		Makefile
 	}
-	binaries=bin/ {
-            Makefile.am
-            daemon=daemon/ {
+	macro=m4/ {
+		ax_boost_atomic.m4
+	}
+	doc=doc/ {
+		README
+	}
+	srcfiles=src/ {
 		Makefile.am
-		main.cpp
-		daemon.cpp
-		daemon.h
-		devices_manager.cpp
-		devices_manager.h
-		exception.cpp
-		exception.h
-		globals.h
-		logitech_g15.cpp
-		logitech_g15.h
-		keyboard_driver.cpp
-		keyboard_driver.h
-            }
-            foo=foo/ {
-                Makefile.am
-                main.cpp
-		core.cpp
-		core.h
-		exception.cpp
-		exception.h
-            }
-        }
-    }
+		include=include/ {
+			log.h
+		}
+		binaries=bin/ {
+			Makefile.am
+			daemon=daemon/ {
+				Makefile.am
+				main.cpp
+				daemon.cpp
+				daemon.h
+				devices_manager.cpp
+				devices_manager.h
+				exception.cpp
+				exception.h
+				globals.h
+				logitech_g15.cpp
+				logitech_g15.h
+				keyboard_driver.cpp
+				keyboard_driver.h
+			}
+			foo=foo/ {
+				Makefile.am
+				main.cpp
+				core.cpp
+				core.h
+				exception.cpp
+				exception.h
+			}
+		}
+	}
 }
 
