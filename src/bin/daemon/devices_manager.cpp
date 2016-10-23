@@ -17,7 +17,7 @@
 namespace GLogiKd
 {
 
-DevicesManager::DevicesManager() : udev(NULL), monitor(NULL), fd_(-1) {
+DevicesManager::DevicesManager() {
 	this->fds[0].fd = -1;
 	this->fds[0].events = POLLIN;
 }

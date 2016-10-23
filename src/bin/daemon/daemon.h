@@ -28,9 +28,9 @@ class GLogiKDaemon
 
 	protected:
 	private:
-		pid_t pid_;
-		FILE* log_fd_;
-		std::string pid_file_name_;
+		pid_t pid_ = 0;
+		FILE* log_fd_ = nullptr;
+		std::string pid_file_name_ = "";
 		std::ofstream pid_file_;
 		std::ostringstream buffer_;
 		static boost::atomic<bool> daemonized_;

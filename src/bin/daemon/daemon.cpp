@@ -36,7 +36,7 @@ namespace GLogiKd
 
 boost::atomic<bool> GLogiKDaemon::daemonized_;
 
-GLogiKDaemon::GLogiKDaemon() :	pid_(0), log_fd_(NULL), pid_file_name_(""), buffer_("", std::ios_base::app)
+GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app)
 {
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 	FILELog::ReportingLevel() = FILELog::FromString(DEBUG_LOG_LEVEL);
