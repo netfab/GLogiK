@@ -32,6 +32,9 @@ LogitechG15::LogitechG15() {
 LogitechG15::~LogitechG15() {
 }
 
+void LogitechG15::init() {
+	LOG(DEBUG3) << "init G15 !";
+}
 
 } // namespace GLogiKd
 

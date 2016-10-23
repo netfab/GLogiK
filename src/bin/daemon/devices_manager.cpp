@@ -38,6 +38,40 @@ DevicesManager::~DevicesManager() {
 	this->drivers_.clear();
 }
 
+void DevicesManager::initializeDrivers(void) {
+	for(std::vector<DetectedDevice>::iterator d_it = this->detected_devices_.begin();
+		d_it != this->detected_devices_.end(); ++d_it) {
+
+		bool initializing = true;
+
+		for(std::vector<DetectedDevice>::iterator i_it = this->initialized_devices_.begin();
+			i_it != this->initialized_devices_.end(); ++i_it) {
+				if( (std::strcmp( (*d_it).vendor_id, (*i_it).vendor_id ) == 0) and
+					(std::strcmp( (*d_it).product_id, (*i_it).product_id ) == 0) and
+					(std::strcmp( (*d_it).hidraw_dev_node, (*i_it).hidraw_dev_node ) == 0) ) {
+						LOG(DEBUG3) << "Device "  << (*d_it).vendor_id << ":" << (*d_it).product_id
+									<< " - " << (*d_it).hidraw_dev_node << " already initialized";
+						initializing = false;
+						break; // jump to next detected device
+				}
+		} // for
+
+		if( initializing ) {
+			for(std::vector<KeyboardDriver*>::iterator drivers_it = this->drivers_.begin();
+				drivers_it != this->drivers_.end(); ++drivers_it) {
+				if( (*d_it).driver_ID == (*drivers_it)->getDriverID() ) {
+
+					(*drivers_it)->init(); // initialization
+
+					this->initialized_devices_.push_back( (*d_it) );
+					break;
+				}
+			} // for
+		}
+	} // for
+	this->detected_devices_.clear();
+}
+
 void DevicesManager::searchSupportedDevices(void) {
 
 	struct udev_enumerate *enumerate;
@@ -201,6 +235,7 @@ void DevicesManager::startMonitoring(void) {
 	this->drivers_.push_back( new LogitechG15() );
 
 	this->searchSupportedDevices();
+	this->initializeDrivers();
 
 	while( GLogiKDaemon::is_daemon_enabled() ) {
 		int ret = poll(this->fds, 1, 6000);
@@ -216,6 +251,7 @@ void DevicesManager::startMonitoring(void) {
 
 			if( std::strcmp(action, "add") == 0 ) {
 				this->searchSupportedDevices();
+				this->initializeDrivers();
 			}
 
 			udev_device_unref(dev);

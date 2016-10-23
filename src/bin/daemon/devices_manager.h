@@ -32,7 +32,6 @@ class DevicesManager
 		~DevicesManager(void);
 
 		void startMonitoring(void);
-		void searchSupportedDevices(void);
 
 	protected:
 
@@ -44,7 +43,10 @@ class DevicesManager
 
 		std::vector<KeyboardDriver*> drivers_;
 		std::vector<DetectedDevice> detected_devices_;
+		std::vector<DetectedDevice> initialized_devices_;
 
+		void searchSupportedDevices(void);
+		void initializeDrivers(void);
 };
 
 } // namespace GLogiKd
