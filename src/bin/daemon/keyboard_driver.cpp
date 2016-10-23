@@ -11,12 +11,8 @@ KeyboardDriver::KeyboardDriver() {
 KeyboardDriver::~KeyboardDriver() {
 }
 
-std::vector<device>::iterator KeyboardDriver::getSupportedDevicesFirst(void) {
-	return supported_devices_.begin();
-}
-
-std::vector<device>::iterator KeyboardDriver::getSupportedDevicesEnd(void) {
-	return supported_devices_.end();
+std::vector<KeyboardDevice> KeyboardDriver::getSupportedDevices(void) const {
+	return this->supported_devices_;
 }
 
 } // namespace GLogiKd

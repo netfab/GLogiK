@@ -8,15 +8,10 @@
 namespace GLogiKd
 {
 
-struct device {
+struct KeyboardDevice {
 	const char* name;
 	const char* vendor_id;
 	const char* product_id;
-	device(const char* n, const char* v, const char* p) {
-		name = n;
-		vendor_id = v;
-		product_id = p;
-	}
 };
 
 class KeyboardDriver
@@ -27,16 +22,14 @@ class KeyboardDriver
 
 		virtual const char* getDriverName() const = 0;
 
-		std::vector<device>::iterator getSupportedDevicesFirst(void);
-		std::vector<device>::iterator getSupportedDevicesEnd(void);
+		std::vector<KeyboardDevice> getSupportedDevices(void) const;
 
 		virtual unsigned int getDriverID() const = 0;
 
 		virtual void init() = 0;
 
 	protected:
-		std::vector<device>::iterator device_iterator_;
-		std::vector<device> supported_devices_;
+		std::vector<KeyboardDevice> supported_devices_;
 
 	private:
 

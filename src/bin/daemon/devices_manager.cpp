@@ -46,6 +46,7 @@ void DevicesManager::initializeDrivers(void) {
 
 		for(std::vector<DetectedDevice>::iterator i_it = this->initialized_devices_.begin();
 			i_it != this->initialized_devices_.end(); ++i_it) {
+		//for(const auto& i_it : this->initialized_devices_) {
 				if( (std::strcmp( (*d_it).vendor_id, (*i_it).vendor_id ) == 0) and
 					(std::strcmp( (*d_it).product_id, (*i_it).product_id ) == 0) and
 					(std::strcmp( (*d_it).hidraw_dev_node, (*i_it).hidraw_dev_node ) == 0) ) {
@@ -133,19 +134,18 @@ void DevicesManager::searchSupportedDevices(void) {
 				serial = (serial == NULL) ? "(null)" : serial;
 
 				try {
-					for(std::vector<KeyboardDriver*>::iterator drivers_it = this->drivers_.begin();
-						drivers_it != this->drivers_.end(); ++drivers_it) {
-						for(std::vector<device>::iterator it = (*drivers_it)->getSupportedDevicesFirst();
-							it != (*drivers_it)->getSupportedDevicesEnd(); ++it) {
-							if( std::strcmp( (*it).vendor_id, vendor_id ) == 0 )
-								if( std::strcmp( (*it).product_id, product_id ) == 0 ) {
+					for(const auto& driver : this->drivers_) {
+						for(const auto& device : driver->getSupportedDevices()) {
+							if( std::strcmp( device.vendor_id, vendor_id ) == 0 )
+								if( std::strcmp( device.product_id, product_id ) == 0 ) {
 
 									bool already_detected = false;
-									for(std::vector<DetectedDevice>::iterator d_it = this->detected_devices_.begin();
-										d_it != this->detected_devices_.end(); ++d_it) {
-										if( (std::strcmp( (*d_it).vendor_id, vendor_id ) == 0) and
-											(std::strcmp( (*d_it).product_id, product_id ) == 0) and
-											(std::strcmp( (*d_it).hidraw_dev_node, devnode ) == 0) ) {
+									//for(std::vector<DetectedDevice>::iterator d_it = this->detected_devices_.begin();
+									//	d_it != this->detected_devices_.end(); ++d_it) {
+									for(const auto& det_dev : this->detected_devices_) {
+										if( (std::strcmp( det_dev.vendor_id, vendor_id ) == 0) and
+											(std::strcmp( det_dev.product_id, product_id ) == 0) and
+											(std::strcmp( det_dev.hidraw_dev_node, devnode ) == 0) ) {
 												LOG(DEBUG3) << "Device "  << vendor_id << ":" << product_id
 															<< " - " << devnode << " already detected";
 												already_detected = true;
@@ -167,14 +167,14 @@ void DevicesManager::searchSupportedDevices(void) {
 										#endif
 
 										DetectedDevice found;
-										found.name				= (*it).name;
+										found.name				= device.name;
 										found.vendor_id			= vendor_id;
 										found.product_id		= product_id;
 										found.hidraw_dev_node	= devnode;
 										found.manufacturer		= manufacturer;
 										found.product			= product;
 										found.serial			= serial;
-										found.driver_ID			= (*drivers_it)->getDriverID();
+										found.driver_ID			= driver->getDriverID();
 
 										this->detected_devices_.push_back(found);
 										throw DeviceFound(product);
