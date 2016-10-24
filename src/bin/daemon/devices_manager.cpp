@@ -39,6 +39,7 @@ DevicesManager::~DevicesManager() {
 }
 
 void DevicesManager::initializeDrivers(void) {
+	LOG(DEBUG2) << "starting DevicesManager::initializeDrivers()";
 	for(const auto& det_dev : this->detected_devices_) {
 
 		bool initializing = true;
@@ -68,6 +69,7 @@ void DevicesManager::initializeDrivers(void) {
 }
 
 void DevicesManager::searchSupportedDevices(void) {
+	LOG(DEBUG2) << "starting DevicesManager::searchSupportedDevices()";
 
 	struct udev_enumerate *enumerate;
 
