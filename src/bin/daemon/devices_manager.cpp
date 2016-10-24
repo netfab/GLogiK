@@ -32,39 +32,33 @@ DevicesManager::~DevicesManager() {
 		udev_unref(this->udev);
 	}
 
-	for(std::vector<KeyboardDriver*>::iterator it = this->drivers_.begin(); it != this->drivers_.end(); ++it) {
-		delete (*it);
+	for(const auto& driver : this->drivers_) {
+		delete driver;
 	}
 	this->drivers_.clear();
 }
 
 void DevicesManager::initializeDrivers(void) {
-	for(std::vector<DetectedDevice>::iterator d_it = this->detected_devices_.begin();
-		d_it != this->detected_devices_.end(); ++d_it) {
+	for(const auto& det_dev : this->detected_devices_) {
 
 		bool initializing = true;
 
-		for(std::vector<DetectedDevice>::iterator i_it = this->initialized_devices_.begin();
-			i_it != this->initialized_devices_.end(); ++i_it) {
-		//for(const auto& i_it : this->initialized_devices_) {
-				if( (std::strcmp( (*d_it).vendor_id, (*i_it).vendor_id ) == 0) and
-					(std::strcmp( (*d_it).product_id, (*i_it).product_id ) == 0) and
-					(std::strcmp( (*d_it).hidraw_dev_node, (*i_it).hidraw_dev_node ) == 0) ) {
-						LOG(DEBUG3) << "Device "  << (*d_it).vendor_id << ":" << (*d_it).product_id
-									<< " - " << (*d_it).hidraw_dev_node << " already initialized";
+		for(const auto& init_dev : this->initialized_devices_) {
+				if(	(std::strcmp( det_dev.vendor_id, init_dev.vendor_id ) == 0) and
+					(std::strcmp( det_dev.product_id, init_dev.product_id ) == 0) and
+					(std::strcmp( det_dev.hidraw_dev_node, init_dev.hidraw_dev_node ) == 0) ) {
+						LOG(DEBUG3) << "Device "  << det_dev.vendor_id << ":" << det_dev.product_id
+									<< " - " << det_dev.hidraw_dev_node << " already initialized";
 						initializing = false;
 						break; // jump to next detected device
 				}
 		} // for
 
 		if( initializing ) {
-			for(std::vector<KeyboardDriver*>::iterator drivers_it = this->drivers_.begin();
-				drivers_it != this->drivers_.end(); ++drivers_it) {
-				if( (*d_it).driver_ID == (*drivers_it)->getDriverID() ) {
-
-					(*drivers_it)->init(); // initialization
-
-					this->initialized_devices_.push_back( (*d_it) );
+			for(const auto& driver : this->drivers_) {
+				if( det_dev.driver_ID == driver->getDriverID() ) {
+					driver->init(); // initialization
+					this->initialized_devices_.push_back( det_dev );
 					break;
 				}
 			} // for
@@ -140,8 +134,6 @@ void DevicesManager::searchSupportedDevices(void) {
 								if( std::strcmp( device.product_id, product_id ) == 0 ) {
 
 									bool already_detected = false;
-									//for(std::vector<DetectedDevice>::iterator d_it = this->detected_devices_.begin();
-									//	d_it != this->detected_devices_.end(); ++d_it) {
 									for(const auto& det_dev : this->detected_devices_) {
 										if( (std::strcmp( det_dev.vendor_id, vendor_id ) == 0) and
 											(std::strcmp( det_dev.product_id, product_id ) == 0) and
