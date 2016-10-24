@@ -3,6 +3,7 @@
 #include <cstring>
 
 #include <string>
+#include <sstream>
 
 #include <libudev.h>
 
@@ -148,17 +149,16 @@ void DevicesManager::searchSupportedDevices(void) {
 									}
 
 									if( ! already_detected ) {
-										#if GLOGIKD_DEVICES_MANAGER_DEBUG
-										LOG(DEBUG3)	<< "Device found !\n"
-													<< "	Path		: " << path << "\n"
-													<< "	Subsystem	: " << devss << "\n"
-													<< "	Device Node	: " << devnode << "\n"
-													<< "	Vendor ID	: " << vendor_id << "\n"
-													<< "	Product ID	: " << product_id << "\n"
-													<< "	Manufacturer	: " << manufacturer << "\n"
-													<< "	Product		: " << product << "\n"
-													<< "	Serial		: " << serial << "\n";
-										#endif
+										std::ostringstream s;
+										s	<< "Device found !\n"
+											<< "	Path		: " << path << "\n"
+											<< "	Subsystem	: " << devss << "\n"
+											<< "	Device Node	: " << devnode << "\n"
+											<< "	Vendor ID	: " << vendor_id << "\n"
+											<< "	Product ID	: " << product_id << "\n"
+											<< "	Manufacturer	: " << manufacturer << "\n"
+											<< "	Product		: " << product << "\n"
+											<< "	Serial		: " << serial << "\n";
 
 										DetectedDevice found;
 										found.name				= device.name;
@@ -171,14 +171,14 @@ void DevicesManager::searchSupportedDevices(void) {
 										found.driver_ID			= driver->getDriverID();
 
 										this->detected_devices_.push_back(found);
-										throw DeviceFound(product);
+										throw DeviceFound(s.str());
 									}
 								}
 						} // for
 					} // for
 				}
 				catch ( const DeviceFound & e ) {
-					LOG(DEBUG3) << "Device found : " << e.what();
+					LOG(DEBUG3) << e.what();
 				}
 			} // if subsystem == hidraw
 
@@ -193,7 +193,7 @@ void DevicesManager::searchSupportedDevices(void) {
 		throw;
 	}
 
-	LOG(DEBUG3) << "Found " << this->detected_devices_.size() << " device(s)";
+	LOG(DEBUG2) << "Found " << this->detected_devices_.size() << " device(s)";
 
 	// Free the enumerator object
 	udev_enumerate_unref(enumerate);

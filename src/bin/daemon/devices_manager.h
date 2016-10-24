@@ -8,8 +8,6 @@
 
 #include "keyboard_driver.h"
 
-#define GLOGIKD_DEVICES_MANAGER_DEBUG 1
-
 namespace GLogiKd
 {
 
