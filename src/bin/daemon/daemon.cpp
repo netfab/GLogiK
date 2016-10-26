@@ -101,12 +101,11 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
-		this->buffer_.str( e.what() );
+		std::ostringstream buff(e.what(), std::ios_base::app);
 		if(errno != 0)
-			this->buffer_ << " : " << strerror(errno);
-		const char * msg = this->buffer_.str().c_str();
-		syslog( LOG_ERR, msg );
-		LOG(ERROR) << msg;
+			buff << " : " << strerror(errno);
+		syslog( LOG_ERR, buff.str().c_str() );
+		LOG(ERROR) << buff.str();
 		return EXIT_FAILURE;
 	}
 
