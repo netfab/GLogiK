@@ -59,6 +59,10 @@ AC_ARG_ENABLE( [gcc-werror],
                AC_HELP_STRING( [--enable-gcc-werror], [Enable gcc -Werror flag]),
                [enable_gcc_werror=$enableval], [enable_gcc_werror=no])
 
+AC_ARG_ENABLE( [debug],
+				AC_HELP_STRING( [--enable-debug], [Enable debugging, default: no]),
+				[enable_debugging=$enableval], [enable_debugging=no])
+
 AC_ARG_VAR(DEBUG_DIR, [Directory where debug file will be written])
 AC_ARG_VAR(DEBUG_LOG_LEVEL, [Maximum debug log level (default NONE). NONE|ERROR|WARNING|INFO|DEBUG])
 
@@ -91,6 +95,13 @@ else
     AC_MSG_RESULT([no])
 fi
 
+AC_MSG_CHECKING([whether we want debugging])
+if test "$enable_debugging" = yes; then
+    AC_MSG_RESULT([yes])
+	AC_DEFINE_UNQUOTED([DEBUGGING_ENABLED], [1], [Debugging])
+else
+    AC_MSG_RESULT([no])
+fi
 
 
 AC_SUBST(AM_CXXFLAGS)
@@ -119,6 +130,7 @@ AX_BOOST_PROGRAM_OPTIONS
 AX_BOOST_SYSTEM
 AX_BOOST_FILESYSTEM
 AX_BOOST_ATOMIC
+AX_BOOST_IOSTREAMS
 
 AC_CONFIG_FILES([
         Makefile

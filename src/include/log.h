@@ -8,8 +8,20 @@
 #include <string>
 #include <cstdio>
 
+#include <boost/iostreams/device/null.hpp>
+#include <boost/iostreams/stream.hpp>
+
+#include <config.h>
+
 namespace GLogiKd
 {
+
+#ifndef DEBUGGING_ENABLED
+
+static boost::iostreams::stream<boost::iostreams::null_sink> nullout { boost::iostreams::null_sink{} };
+#define LOG(level) nullout
+
+#else
 
 inline std::string NowTime();
 
@@ -176,6 +188,8 @@ inline std::string NowTime()
 }
 
 #endif //WIN32
+
+#endif // ifndef DEBUGGING_ENABLED
 
 } // namespace GLogiKd
 
