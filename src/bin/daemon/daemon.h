@@ -5,8 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-
-#include <boost/atomic.hpp>
+#include <atomic>
 
 #ifndef __GLOGIKD_DAEMON_H__
 #define __GLOGIKD_DAEMON_H__
@@ -33,7 +32,7 @@ class GLogiKDaemon
 		std::string pid_file_name_ = "";
 		std::ofstream pid_file_;
 		std::ostringstream buffer_;
-		static boost::atomic<bool> daemonized_;
+		static std::atomic<bool> daemonized_;
 
 		void daemonize(void);
 		void parseCommandLine(const int& argc, char *argv[]);

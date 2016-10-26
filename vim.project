@@ -13,7 +13,6 @@ GLogiK=$PWD CD=. {
 		Makefile
 	}
 	macro=m4/ {
-		ax_boost_atomic.m4
 	}
 	doc=doc/ {
 		README

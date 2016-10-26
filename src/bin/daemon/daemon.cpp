@@ -34,7 +34,7 @@ namespace fs = boost::filesystem;
 namespace GLogiKd
 {
 
-boost::atomic<bool> GLogiKDaemon::daemonized_;
+std::atomic<bool> GLogiKDaemon::daemonized_(false);
 
 GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app)
 {
