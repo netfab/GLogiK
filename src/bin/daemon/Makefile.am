@@ -17,4 +17,3 @@ GLogiKd_SOURCES = \
 		keyboard_driver.cpp keyboard_driver.h \
 		exception.cpp exception.h \
 		globals.h
-

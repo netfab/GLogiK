@@ -98,7 +98,7 @@ fi
 AC_MSG_CHECKING([whether we want debugging])
 if test "$enable_debugging" = yes; then
     AC_MSG_RESULT([yes])
-	AC_DEFINE_UNQUOTED([DEBUGGING_ENABLED], [1], [Debugging])
+	AC_DEFINE_UNQUOTED([DEBUGGING_ON], [1], [Debugging])
 else
     AC_MSG_RESULT([no])
 fi

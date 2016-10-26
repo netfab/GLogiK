@@ -16,9 +16,10 @@
 namespace GLogiKd
 {
 
-#ifndef DEBUGGING_ENABLED
+#ifndef DEBUGGING_ON
 
-static boost::iostreams::stream<boost::iostreams::null_sink> nullout { boost::iostreams::null_sink{} };
+static boost::iostreams::null_sink nullsink;
+static boost::iostreams::stream<boost::iostreams::null_sink> nullout( nullsink );
 #define LOG(level) nullout
 
 #else
@@ -189,7 +190,7 @@ inline std::string NowTime()
 
 #endif //WIN32
 
-#endif // ifndef DEBUGGING_ENABLED
+#endif // ifndef DEBUGGING_ON
 
 } // namespace GLogiKd
 
