@@ -16,10 +16,10 @@
 #include <sstream>
 #include <fstream>
 
-#include <config.h>
-
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
+
+#include <config.h>
 
 #include "exception.h"
 #include "daemon.h"
