@@ -11,7 +11,7 @@
 #include "include/log.h"
 
 #include "exception.h"
-#include "daemon.h"
+#include "daemon_control.h"
 
 #include "logitech_g15.h"
 
@@ -231,7 +231,7 @@ void DevicesManager::startMonitoring(void) {
 	this->searchSupportedDevices();
 	this->initializeDrivers();
 
-	while( GLogiKDaemon::is_daemon_enabled() ) {
+	while( DaemonControl::is_daemon_enabled() ) {
 		int ret = poll(this->fds, 1, 6000);
 		// receive data ?
 		if( ret > 0 ) {

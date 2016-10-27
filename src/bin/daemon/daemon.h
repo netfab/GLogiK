@@ -1,29 +1,27 @@
 
+#ifndef __GLOGIKD_DAEMON_H__
+#define __GLOGIKD_DAEMON_H__
+
 #include <cstdio>
 #include <sys/types.h>
 
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <atomic>
 
-#ifndef __GLOGIKD_DAEMON_H__
-#define __GLOGIKD_DAEMON_H__
+#include "daemon_control.h"
 
 
 namespace GLogiKd
 {
 
-class GLogiKDaemon
+class GLogiKDaemon : public DaemonControl
 {
 	public:
 		GLogiKDaemon(void);
 		~GLogiKDaemon(void);
 
 		int run(const int& argc, char *argv[]);
-
-		static bool is_daemon_enabled(void);
-		static void disable_daemon(void);
 
 	protected:
 	private:
@@ -32,7 +30,6 @@ class GLogiKDaemon
 		std::string pid_file_name_ = "";
 		std::ofstream pid_file_;
 		std::ostringstream buffer_;
-		static std::atomic<bool> daemonized_;
 
 		void daemonize(void);
 		void parseCommandLine(const int& argc, char *argv[]);

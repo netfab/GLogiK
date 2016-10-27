@@ -34,8 +34,6 @@ namespace fs = boost::filesystem;
 namespace GLogiKd
 {
 
-std::atomic<bool> GLogiKDaemon::daemonized_(false);
-
 GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app)
 {
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
@@ -109,14 +107,6 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 		return EXIT_FAILURE;
 	}
 
-}
-
-void GLogiKDaemon::disable_daemon( void ) {
-	GLogiKDaemon::daemonized_ = false;
-}
-
-bool GLogiKDaemon::is_daemon_enabled() {
-	return GLogiKDaemon::daemonized_;
 }
 
 void GLogiKDaemon::handle_signal(int sig) {

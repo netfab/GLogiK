@@ -29,6 +29,8 @@ GLogiK=$PWD CD=. {
 				main.cpp
 				daemon.cpp
 				daemon.h
+				daemon_control.cpp
+				daemon_control.h
 				devices_manager.cpp
 				devices_manager.h
 				exception.cpp
