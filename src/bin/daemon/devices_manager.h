@@ -16,7 +16,7 @@ struct DetectedDevice {
 	const char* vendor_id;
 	const char* product_id;
 	const char* hidraw_dev_node;
-	//const char* input_dev_node;
+	const char* input_dev_node;
 	const char* manufacturer;
 	const char* product;
 	const char* serial;

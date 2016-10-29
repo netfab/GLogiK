@@ -59,7 +59,8 @@ void DevicesManager::initializeDrivers(void) {
 		if( initializing ) {
 			for(const auto& driver : this->drivers_) {
 				if( det_dev.driver_ID == driver->getDriverID() ) {
-					driver->init(); // initialization
+					//driver->init(det_dev.vendor_id, det_dev.product_id, det_dev.hidraw_dev_node); // initialization
+					//driver->init(); // initialization
 					this->initialized_devices_.push_back( det_dev );
 					break;
 				}
@@ -73,26 +74,24 @@ void DevicesManager::searchSupportedDevices(void) {
 	LOG(DEBUG2) << "starting DevicesManager::searchSupportedDevices()";
 
 	struct udev_enumerate *enumerate;
+	struct udev_list_entry *devices, *dev_list_entry;
 
 	enumerate = udev_enumerate_new(this->udev);
 	if ( enumerate == NULL )
 		throw GLogiKExcept("udev enumerate object creation failure");
 
 	try {
+		LOG(DEBUG2) << "hidraw enumerate";
 		if( udev_enumerate_add_match_subsystem(enumerate, "hidraw") < 0 )
 			throw GLogiKExcept("hidraw enumerate filtering init failure");
-
-		if( udev_enumerate_add_match_subsystem(enumerate, "input") < 0 )
-			throw GLogiKExcept("input enumerate filtering init failure");
 
 		if( udev_enumerate_scan_devices(enumerate) < 0 )
 			throw GLogiKExcept("enumerate_scan_devices failure");
 
-		struct udev_list_entry *devices = udev_enumerate_get_list_entry(enumerate);
+		devices = udev_enumerate_get_list_entry(enumerate);
 		if( devices == NULL )
 			throw GLogiKExcept("devices empty list or failure");
 
-		struct udev_list_entry *dev_list_entry;
 		udev_list_entry_foreach(dev_list_entry, devices) {
 			// Get the filename of the /sys entry for the device
 			// and create a udev_device object (dev) representing it
@@ -105,88 +104,195 @@ void DevicesManager::searchSupportedDevices(void) {
 				throw GLogiKExcept("new_from_syspath failure");
 
 			const char* devss = udev_device_get_subsystem(dev);
-			if( devss == NULL )
+			if( devss == NULL ) {
+				udev_device_unref(dev);
 				throw GLogiKExcept("get_subsystem failure");
+			}
 
-			if( std::strcmp(devss, "hidraw") == 0 ) {
-				// path to the device node in /dev
-				const char* devnode = udev_device_get_devnode(dev);
-				if( devnode == NULL )
-					throw GLogiKExcept("get_devnode failure");
+			// path to the HIDRAW device node in /dev
+			const char* devnode = udev_device_get_devnode(dev);
+			if( devnode == NULL ) {
+				udev_device_unref(dev);
+				throw GLogiKExcept("get_devnode failure");
+			}
 
-				dev = udev_device_get_parent_with_subsystem_devtype(dev, "usb", "usb_device");
-				if( dev == NULL )
-					throw GLogiKExcept("unable to find parent usb device");
+			dev = udev_device_get_parent_with_subsystem_devtype(dev, "usb", "usb_device");
+			if( dev == NULL )
+				throw GLogiKExcept("unable to find parent usb device");
 
-				const char* vendor_id    = udev_device_get_sysattr_value(dev,"idVendor");
-				const char* product_id   = udev_device_get_sysattr_value(dev,"idProduct");
-				const char* manufacturer = udev_device_get_sysattr_value(dev,"manufacturer");
-				const char* product      = udev_device_get_sysattr_value(dev,"product");
-				const char* serial       = udev_device_get_sysattr_value(dev,"serial");
+			const char* vendor_id    = udev_device_get_sysattr_value(dev,"idVendor");
+			const char* product_id   = udev_device_get_sysattr_value(dev,"idProduct");
+			const char* manufacturer = udev_device_get_sysattr_value(dev,"manufacturer");
+			const char* product      = udev_device_get_sysattr_value(dev,"product");
+			const char* serial       = udev_device_get_sysattr_value(dev,"serial");
 
-				vendor_id = (vendor_id == NULL) ? "(null)" : vendor_id;
-				product_id = (product_id == NULL) ? "(null)" : product_id;
-				manufacturer = (manufacturer == NULL) ? "(null)" : manufacturer;
-				product = (product == NULL) ? "(null)" : product;
-				serial = (serial == NULL) ? "(null)" : serial;
+			vendor_id = (vendor_id == NULL) ? "(null)" : vendor_id;
+			product_id = (product_id == NULL) ? "(null)" : product_id;
+			manufacturer = (manufacturer == NULL) ? "(null)" : manufacturer;
+			product = (product == NULL) ? "(null)" : product;
+			serial = (serial == NULL) ? "(null)" : serial;
 
-				try {
-					for(const auto& driver : this->drivers_) {
-						for(const auto& device : driver->getSupportedDevices()) {
-							if( std::strcmp( device.vendor_id, vendor_id ) == 0 )
-								if( std::strcmp( device.product_id, product_id ) == 0 ) {
-
-									bool already_detected = false;
-									for(const auto& det_dev : this->detected_devices_) {
-										if( (std::strcmp( det_dev.vendor_id, vendor_id ) == 0) and
-											(std::strcmp( det_dev.product_id, product_id ) == 0) and
-											(std::strcmp( det_dev.hidraw_dev_node, devnode ) == 0) ) {
-												LOG(DEBUG3) << "Device "  << vendor_id << ":" << product_id
-															<< " - " << devnode << " already detected";
-												already_detected = true;
-												break;
-										}
-									}
-
-									if( ! already_detected ) {
-										std::ostringstream s;
-										s	<< "Device found !\n"
-											<< "	Path		: " << path << "\n"
-											<< "	Subsystem	: " << devss << "\n"
-											<< "	Device Node	: " << devnode << "\n"
-											<< "	Vendor ID	: " << vendor_id << "\n"
-											<< "	Product ID	: " << product_id << "\n"
-											<< "	Manufacturer	: " << manufacturer << "\n"
-											<< "	Product		: " << product << "\n"
-											<< "	Serial		: " << serial << "\n";
-
-										DetectedDevice found;
-										found.name				= device.name;
-										found.vendor_id			= vendor_id;
-										found.product_id		= product_id;
-										found.hidraw_dev_node	= devnode;
-										found.manufacturer		= manufacturer;
-										found.product			= product;
-										found.serial			= serial;
-										found.driver_ID			= driver->getDriverID();
-
-										this->detected_devices_.push_back(found);
-										throw DeviceFound(s.str());
+			try {
+				for(const auto& driver : this->drivers_) {
+					for(const auto& device : driver->getSupportedDevices()) {
+						if( std::strcmp( device.vendor_id, vendor_id ) == 0 )
+							if( std::strcmp( device.product_id, product_id ) == 0 ) {
+/*
+								struct udev_list_entry *devs, *devs_list_entry;
+								devs = udev_device_get_sysattr_list_entry( dev );
+								udev_list_entry_foreach( devs_list_entry, devs ) {
+									const char* attr = udev_list_entry_get_name( devs_list_entry );
+									if( attr != nullptr ) {
+										LOG(DEBUG4) << attr << " " << udev_device_get_sysattr_value(dev, attr);
 									}
 								}
-						} // for
+								LOG(DEBUG4) << "--";
+*/
+								bool already_detected = false;
+								for(const auto& det_dev : this->detected_devices_) {
+									if( (std::strcmp( det_dev.vendor_id, vendor_id ) == 0) and
+										(std::strcmp( det_dev.product_id, product_id ) == 0) and
+										(std::strcmp( det_dev.hidraw_dev_node, devnode ) == 0) ) {
+											LOG(DEBUG3) << "Device "  << vendor_id << ":" << product_id
+														<< " - " << devnode << " already detected";
+											already_detected = true;
+											break;
+									}
+								}
+
+								if( ! already_detected ) {
+									std::ostringstream s;
+									s	<< "Device found !\n"
+										<< "	Path		: " << path << "\n"
+										<< "	Subsystem	: " << devss << "\n"
+										<< "	Device Node	: " << devnode << "\n"
+										<< "	Vendor ID	: " << vendor_id << "\n"
+										<< "	Product ID	: " << product_id << "\n"
+										<< "	Manufacturer	: " << manufacturer << "\n"
+										<< "	Product		: " << product << "\n"
+										<< "	Serial		: " << serial << "\n";
+
+									DetectedDevice found;
+									found.name				= device.name;
+									found.vendor_id			= vendor_id;
+									found.product_id		= product_id;
+									found.hidraw_dev_node	= devnode;
+									found.input_dev_node	= nullptr;
+									found.manufacturer		= manufacturer;
+									found.product			= product;
+									found.serial			= serial;
+									found.driver_ID			= driver->getDriverID();
+
+									this->detected_devices_.push_back(found);
+									throw DeviceFound(s.str());
+								}
+							}
 					} // for
-				}
-				catch ( const DeviceFound & e ) {
-					LOG(DEBUG3) << e.what();
-				}
-			} // if subsystem == hidraw
-
+				} // for
+			}
+			catch ( const DeviceFound & e ) {
+				LOG(DEBUG3) << e.what();
+			}
 			udev_device_unref(dev);
-
 		} // udev_list_entry_foreach
 
-	}
+		// ---
+		// ---
+		// ---
+
+		// Free the enumerator object
+		udev_enumerate_unref(enumerate);
+
+		enumerate = udev_enumerate_new(this->udev);
+		if ( enumerate == NULL )
+			throw GLogiKExcept("udev enumerate object creation failure");
+
+		// ---
+		// ---
+		// ---
+
+		LOG(DEBUG2) << "input enumerate";
+		if( udev_enumerate_add_match_subsystem(enumerate, "input") < 0 )
+			throw GLogiKExcept("input enumerate filtering init failure");
+
+		if( udev_enumerate_scan_devices(enumerate) < 0 )
+			throw GLogiKExcept("enumerate_scan_devices failure");
+
+		devices = udev_enumerate_get_list_entry(enumerate);
+		if( devices == NULL )
+			throw GLogiKExcept("devices empty list or failure");
+
+		udev_list_entry_foreach(dev_list_entry, devices) {
+			// Get the filename of the /sys entry for the device
+			// and create a udev_device object (dev) representing it
+			const char* path = udev_list_entry_get_name(dev_list_entry);
+			if( path == NULL )
+				throw GLogiKExcept("entry_get_name failure");
+
+			struct udev_device *dev = udev_device_new_from_syspath(this->udev, path);
+			if( dev == NULL )
+				throw GLogiKExcept("new_from_syspath failure");
+
+			if( udev_device_get_property_value(dev, "ID_INPUT_KEYBOARD") == nullptr ) {
+				udev_device_unref(dev);
+				continue;
+			}
+
+/*
+			struct udev_list_entry *devs, *devs_list_entry;
+			devs = udev_device_get_properties_list_entry( dev );
+			udev_list_entry_foreach( devs_list_entry, devs ) {
+				const char* attr = udev_list_entry_get_name( devs_list_entry );
+				if( attr != nullptr ) {
+					LOG(DEBUG4) << attr << " : " << udev_device_get_property_value(dev, attr);
+				}
+			}
+			LOG(DEBUG4) << "--";
+			LOG(DEBUG4) << "--";
+			LOG(DEBUG4) << "--";
+*/
+			const char* vendor_id = udev_device_get_property_value(dev, "ID_VENDOR_ID");
+			const char* product_id = udev_device_get_property_value(dev, "ID_MODEL_ID");
+			if( (vendor_id == nullptr) or (product_id == nullptr) ) {
+				udev_device_unref(dev);
+				continue;
+			}
+
+			for( auto& detected : this->detected_devices_ ) {
+				if( detected.input_dev_node != nullptr )
+					continue; // skipping already found event device
+
+				if( std::strcmp( detected.vendor_id, vendor_id ) == 0 )
+					if( std::strcmp( detected.product_id, product_id ) == 0 ) {
+/*
+						struct udev_list_entry *devs, *devs_list_entry;
+						devs = udev_device_get_properties_list_entry( dev );
+						udev_list_entry_foreach( devs_list_entry, devs ) {
+							const char* attr = udev_list_entry_get_name( devs_list_entry );
+							if( attr != nullptr ) {
+								LOG(DEBUG4) << attr << " : " << udev_device_get_property_value(dev, attr);
+							}
+						}
+						LOG(DEBUG4) << "--";
+						LOG(DEBUG4) << "--";
+						LOG(DEBUG4) << "--";
+*/
+						// path to the event device node in /dev/input/
+						const char* devnode = udev_device_get_devnode(dev);
+						if( devnode == nullptr ) {
+							udev_device_unref(dev);
+							continue;
+						}
+
+						detected.input_dev_node = devnode;
+						LOG(DEBUG3) << "Vid:Pid : " << vendor_id << ":" << product_id << " found event input : " << devnode;
+					}
+			}
+
+			udev_device_unref(dev);
+		} // udev_list_entry_foreach
+
+	} // try
 	catch ( const GLogiKExcept & e ) {
 		// Free the enumerator object
 		udev_enumerate_unref(enumerate);
