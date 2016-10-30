@@ -70,6 +70,36 @@ void DevicesManager::initializeDrivers(void) {
 	this->detected_devices_.clear();
 }
 
+#if GLOGIKD_GLOBAL_DEBUG
+void deviceProperties(struct udev_device *dev, const char* subsystem) {
+	struct udev_list_entry *devs, *devs_list_entry;
+
+	if( std::strcmp( subsystem, "input" ) == 0 )
+		devs = udev_device_get_properties_list_entry( dev );
+	else if( std::strcmp( subsystem, "hidraw" ) == 0 )
+		devs = udev_device_get_sysattr_list_entry( dev );
+
+	const char* value = nullptr;
+	udev_list_entry_foreach( devs_list_entry, devs ) {
+		const char* attr = udev_list_entry_get_name( devs_list_entry );
+		if( attr == nullptr )
+			continue;
+		if( std::strcmp( subsystem, "input" ) == 0 )
+			value = udev_device_get_property_value(dev, attr);
+		else if( std::strcmp( subsystem, "hidraw" ) == 0 )
+			value = udev_device_get_sysattr_value(dev, attr);
+
+		if( value == nullptr )
+			value = "(null)";
+
+		LOG(DEBUG4) << attr << " : " << value;
+	}
+	LOG(DEBUG4) << "--";
+	LOG(DEBUG4) << "--";
+	LOG(DEBUG4) << "--";
+}
+#endif
+
 void DevicesManager::searchSupportedDevices(void) {
 	LOG(DEBUG2) << "starting DevicesManager::searchSupportedDevices()";
 
@@ -137,17 +167,10 @@ void DevicesManager::searchSupportedDevices(void) {
 					for(const auto& device : driver->getSupportedDevices()) {
 						if( std::strcmp( device.vendor_id, vendor_id ) == 0 )
 							if( std::strcmp( device.product_id, product_id ) == 0 ) {
-/*
-								struct udev_list_entry *devs, *devs_list_entry;
-								devs = udev_device_get_sysattr_list_entry( dev );
-								udev_list_entry_foreach( devs_list_entry, devs ) {
-									const char* attr = udev_list_entry_get_name( devs_list_entry );
-									if( attr != nullptr ) {
-										LOG(DEBUG4) << attr << " " << udev_device_get_sysattr_value(dev, attr);
-									}
-								}
-								LOG(DEBUG4) << "--";
-*/
+
+								/* GLOGIKD_GLOBAL_DEBUG */
+								//deviceProperties(dev, devss);
+
 								bool already_detected = false;
 								for(const auto& det_dev : this->detected_devices_) {
 									if( (std::strcmp( det_dev.vendor_id, vendor_id ) == 0) and
@@ -233,24 +256,20 @@ void DevicesManager::searchSupportedDevices(void) {
 			if( dev == NULL )
 				throw GLogiKExcept("new_from_syspath failure");
 
+			const char* devss = udev_device_get_subsystem(dev);
+			if( devss == NULL ) {
+				udev_device_unref(dev);
+				throw GLogiKExcept("get_subsystem failure");
+			}
+
 			if( udev_device_get_property_value(dev, "ID_INPUT_KEYBOARD") == nullptr ) {
 				udev_device_unref(dev);
 				continue;
 			}
 
-/*
-			struct udev_list_entry *devs, *devs_list_entry;
-			devs = udev_device_get_properties_list_entry( dev );
-			udev_list_entry_foreach( devs_list_entry, devs ) {
-				const char* attr = udev_list_entry_get_name( devs_list_entry );
-				if( attr != nullptr ) {
-					LOG(DEBUG4) << attr << " : " << udev_device_get_property_value(dev, attr);
-				}
-			}
-			LOG(DEBUG4) << "--";
-			LOG(DEBUG4) << "--";
-			LOG(DEBUG4) << "--";
-*/
+			/* GLOGIKD_GLOBAL_DEBUG */
+			//deviceProperties(dev, devss);
+
 			const char* vendor_id = udev_device_get_property_value(dev, "ID_VENDOR_ID");
 			const char* product_id = udev_device_get_property_value(dev, "ID_MODEL_ID");
 			if( (vendor_id == nullptr) or (product_id == nullptr) ) {
@@ -264,19 +283,9 @@ void DevicesManager::searchSupportedDevices(void) {
 
 				if( std::strcmp( detected.vendor_id, vendor_id ) == 0 )
 					if( std::strcmp( detected.product_id, product_id ) == 0 ) {
-/*
-						struct udev_list_entry *devs, *devs_list_entry;
-						devs = udev_device_get_properties_list_entry( dev );
-						udev_list_entry_foreach( devs_list_entry, devs ) {
-							const char* attr = udev_list_entry_get_name( devs_list_entry );
-							if( attr != nullptr ) {
-								LOG(DEBUG4) << attr << " : " << udev_device_get_property_value(dev, attr);
-							}
-						}
-						LOG(DEBUG4) << "--";
-						LOG(DEBUG4) << "--";
-						LOG(DEBUG4) << "--";
-*/
+						/* GLOGIKD_GLOBAL_DEBUG */
+						//deviceProperties(dev, devss);
+
 						// path to the event device node in /dev/input/
 						const char* devnode = udev_device_get_devnode(dev);
 						if( devnode == nullptr ) {

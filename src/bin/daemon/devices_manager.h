@@ -8,6 +8,8 @@
 
 #include "keyboard_driver.h"
 
+#include "globals.h"
+
 namespace GLogiKd
 {
 
@@ -22,6 +24,10 @@ struct DetectedDevice {
 	const char* serial;
 	unsigned int driver_ID;
 };
+
+#if GLOGIKD_GLOBAL_DEBUG
+void deviceProperties(struct udev_device *dev, const char* subsystem);
+#endif
 
 class DevicesManager
 {
