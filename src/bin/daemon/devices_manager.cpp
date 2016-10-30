@@ -3,7 +3,6 @@
 #include <cstring>
 
 #include <string>
-#include <sstream>
 
 #include <libudev.h>
 
@@ -184,16 +183,15 @@ void DevicesManager::searchSupportedDevices(void) {
 								}
 
 								if( ! already_detected ) {
-									std::ostringstream s;
-									s	<< "Device found !\n"
-										<< "	Path		: " << path << "\n"
-										<< "	Subsystem	: " << devss << "\n"
-										<< "	Device Node	: " << devnode << "\n"
-										<< "	Vendor ID	: " << vendor_id << "\n"
-										<< "	Product ID	: " << product_id << "\n"
-										<< "	Manufacturer	: " << manufacturer << "\n"
-										<< "	Product		: " << product << "\n"
-										<< "	Serial		: " << serial << "\n";
+									LOG(DEBUG3)	<< "Device found !\n"
+											<< "	Path		: " << path << "\n"
+											<< "	Subsystem	: " << devss << "\n"
+											<< "	Device Node	: " << devnode << "\n"
+											<< "	Vendor ID	: " << vendor_id << "\n"
+											<< "	Product ID	: " << product_id << "\n"
+											<< "	Manufacturer	: " << manufacturer << "\n"
+											<< "	Product		: " << product << "\n"
+											<< "	Serial		: " << serial << "\n";
 
 									DetectedDevice found;
 									found.name				= device.name;
@@ -207,14 +205,13 @@ void DevicesManager::searchSupportedDevices(void) {
 									found.driver_ID			= driver->getDriverID();
 
 									this->detected_devices_.push_back(found);
-									throw DeviceFound(s.str());
+									throw DeviceFound();
 								}
 							}
 					} // for
 				} // for
 			}
 			catch ( const DeviceFound & e ) {
-				LOG(DEBUG3) << e.what();
 			}
 			udev_device_unref(dev);
 		} // udev_list_entry_foreach
