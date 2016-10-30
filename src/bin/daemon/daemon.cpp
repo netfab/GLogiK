@@ -50,7 +50,7 @@ GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app)
 	LOG2FILE::Stream() = this->log_fd_;
 #endif
 
-	if( this->log_fd_ == NULL )
+	if( this->log_fd_ == nullptr )
 		syslog(LOG_INFO, "debug file not opened");
 }
 
@@ -67,7 +67,7 @@ GLogiKDaemon::~GLogiKDaemon()
 	}
 
 	LOG(INFO) << "bye !";
-	if( this->log_fd_ != NULL )
+	if( this->log_fd_ != nullptr )
 		std::fclose(this->log_fd_);
 	closelog();
 }

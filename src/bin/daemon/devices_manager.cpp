@@ -106,7 +106,7 @@ void DevicesManager::searchSupportedDevices(void) {
 	struct udev_list_entry *devices, *dev_list_entry;
 
 	enumerate = udev_enumerate_new(this->udev);
-	if ( enumerate == NULL )
+	if ( enumerate == nullptr )
 		throw GLogiKExcept("udev enumerate object creation failure");
 
 	try {
@@ -118,48 +118,48 @@ void DevicesManager::searchSupportedDevices(void) {
 			throw GLogiKExcept("enumerate_scan_devices failure");
 
 		devices = udev_enumerate_get_list_entry(enumerate);
-		if( devices == NULL )
+		if( devices == nullptr )
 			throw GLogiKExcept("devices empty list or failure");
 
 		udev_list_entry_foreach(dev_list_entry, devices) {
 			// Get the filename of the /sys entry for the device
 			// and create a udev_device object (dev) representing it
 			const char* path = udev_list_entry_get_name(dev_list_entry);
-			if( path == NULL )
+			if( path == nullptr )
 				throw GLogiKExcept("entry_get_name failure");
 
 			struct udev_device *dev = udev_device_new_from_syspath(this->udev, path);
-			if( dev == NULL )
+			if( dev == nullptr )
 				throw GLogiKExcept("new_from_syspath failure");
 
 			const char* devss = udev_device_get_subsystem(dev);
-			if( devss == NULL ) {
+			if( devss == nullptr ) {
 				udev_device_unref(dev);
 				throw GLogiKExcept("get_subsystem failure");
 			}
 
 			// path to the HIDRAW device node in /dev
 			const char* devnode = udev_device_get_devnode(dev);
-			if( devnode == NULL ) {
+			if( devnode == nullptr ) {
 				udev_device_unref(dev);
 				throw GLogiKExcept("get_devnode failure");
 			}
 
 			dev = udev_device_get_parent_with_subsystem_devtype(dev, "usb", "usb_device");
-			if( dev == NULL )
+			if( dev == nullptr )
 				throw GLogiKExcept("unable to find parent usb device");
 
-			const char* vendor_id    = udev_device_get_sysattr_value(dev,"idVendor");
-			const char* product_id   = udev_device_get_sysattr_value(dev,"idProduct");
-			const char* manufacturer = udev_device_get_sysattr_value(dev,"manufacturer");
-			const char* product      = udev_device_get_sysattr_value(dev,"product");
-			const char* serial       = udev_device_get_sysattr_value(dev,"serial");
+			const char* vendor_id	= udev_device_get_sysattr_value(dev,"idVendor");
+			const char* product_id	= udev_device_get_sysattr_value(dev,"idProduct");
+			const char* manufact	= udev_device_get_sysattr_value(dev,"manufacturer");
+			const char* product		= udev_device_get_sysattr_value(dev,"product");
+			const char* serial		= udev_device_get_sysattr_value(dev,"serial");
 
-			vendor_id = (vendor_id == NULL) ? "(null)" : vendor_id;
-			product_id = (product_id == NULL) ? "(null)" : product_id;
-			manufacturer = (manufacturer == NULL) ? "(null)" : manufacturer;
-			product = (product == NULL) ? "(null)" : product;
-			serial = (serial == NULL) ? "(null)" : serial;
+			vendor_id	= (vendor_id == nullptr)	? "(null)" : vendor_id;
+			product_id	= (product_id == nullptr)	? "(null)" : product_id;
+			manufact	= (manufact == nullptr)		? "(null)" : manufact;
+			product		= (product == nullptr)		? "(null)" : product;
+			serial		= (serial == nullptr)		? "(null)" : serial;
 
 			try {
 				for(const auto& driver : this->drivers_) {
@@ -189,7 +189,7 @@ void DevicesManager::searchSupportedDevices(void) {
 											<< "	Device Node	: " << devnode << "\n"
 											<< "	Vendor ID	: " << vendor_id << "\n"
 											<< "	Product ID	: " << product_id << "\n"
-											<< "	Manufacturer	: " << manufacturer << "\n"
+											<< "	Manufact.	: " << manufact << "\n"
 											<< "	Product		: " << product << "\n"
 											<< "	Serial		: " << serial << "\n";
 
@@ -199,7 +199,7 @@ void DevicesManager::searchSupportedDevices(void) {
 									found.product_id		= product_id;
 									found.hidraw_dev_node	= devnode;
 									found.input_dev_node	= nullptr;
-									found.manufacturer		= manufacturer;
+									found.manufacturer		= manufact;
 									found.product			= product;
 									found.serial			= serial;
 									found.driver_ID			= driver->getDriverID();
@@ -224,7 +224,7 @@ void DevicesManager::searchSupportedDevices(void) {
 		udev_enumerate_unref(enumerate);
 
 		enumerate = udev_enumerate_new(this->udev);
-		if ( enumerate == NULL )
+		if ( enumerate == nullptr )
 			throw GLogiKExcept("udev enumerate object creation failure");
 
 		// ---
@@ -239,22 +239,22 @@ void DevicesManager::searchSupportedDevices(void) {
 			throw GLogiKExcept("enumerate_scan_devices failure");
 
 		devices = udev_enumerate_get_list_entry(enumerate);
-		if( devices == NULL )
+		if( devices == nullptr )
 			throw GLogiKExcept("devices empty list or failure");
 
 		udev_list_entry_foreach(dev_list_entry, devices) {
 			// Get the filename of the /sys entry for the device
 			// and create a udev_device object (dev) representing it
 			const char* path = udev_list_entry_get_name(dev_list_entry);
-			if( path == NULL )
+			if( path == nullptr )
 				throw GLogiKExcept("entry_get_name failure");
 
 			struct udev_device *dev = udev_device_new_from_syspath(this->udev, path);
-			if( dev == NULL )
+			if( dev == nullptr )
 				throw GLogiKExcept("new_from_syspath failure");
 
 			const char* devss = udev_device_get_subsystem(dev);
-			if( devss == NULL ) {
+			if( devss == nullptr ) {
 				udev_device_unref(dev);
 				throw GLogiKExcept("get_subsystem failure");
 			}
@@ -315,17 +315,17 @@ void DevicesManager::startMonitoring(void) {
 	LOG(DEBUG2) << "starting DevicesManager::startMonitoring()";
 
 	this->udev = udev_new();
-	if ( this->udev == NULL )
+	if ( this->udev == nullptr )
 		throw GLogiKExcept("udev context init failure");
 
 	this->monitor = udev_monitor_new_from_netlink(this->udev, "udev");
-	if( this->monitor == NULL )
+	if( this->monitor == nullptr )
 		throw GLogiKExcept("allocating udev monitor failure");
 
-	if( udev_monitor_filter_add_match_subsystem_devtype(this->monitor, "hidraw", NULL) < 0 )
+	if( udev_monitor_filter_add_match_subsystem_devtype(this->monitor, "hidraw", nullptr) < 0 )
 		throw GLogiKExcept("hidraw monitor filtering init failure");
 
-	if( udev_monitor_filter_add_match_subsystem_devtype(this->monitor, "input", NULL) < 0 )
+	if( udev_monitor_filter_add_match_subsystem_devtype(this->monitor, "input", nullptr) < 0 )
 		throw GLogiKExcept("input monitor filtering init failure");
 
 	if( udev_monitor_enable_receiving(this->monitor) < 0 )
@@ -348,11 +348,11 @@ void DevicesManager::startMonitoring(void) {
 		// receive data ?
 		if( ret > 0 ) {
 			struct udev_device *dev = udev_monitor_receive_device(this->monitor);
-			if( dev == NULL )
+			if( dev == nullptr )
 				throw GLogiKExcept("no device from receive_device(), something is wrong");
 
 			const char* action = udev_device_get_action(dev);
-			if( action == NULL )
+			if( action == nullptr )
 				throw GLogiKExcept("device_get_action() failure");
 
 			if( std::strcmp(action, "add") == 0 ) {
