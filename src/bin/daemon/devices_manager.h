@@ -4,6 +4,7 @@
 
 #include <poll.h>
 
+#include <string>
 #include <vector>
 
 #include "keyboard_driver.h"
@@ -14,19 +15,19 @@ namespace GLogiKd
 {
 
 struct DetectedDevice {
-	const char* name;
-	const char* vendor_id;
-	const char* product_id;
-	const char* hidraw_dev_node;
-	const char* input_dev_node;
-	const char* manufacturer;
-	const char* product;
-	const char* serial;
+	std::string name;
+	std::string vendor_id;
+	std::string product_id;
+	std::string hidraw_dev_node;
+	std::string input_dev_node;
+	std::string manufacturer;
+	std::string product;
+	std::string serial;
 	unsigned int driver_ID;
 };
 
 #if GLOGIKD_GLOBAL_DEBUG
-void deviceProperties(struct udev_device *dev, const char* subsystem);
+void deviceProperties(struct udev_device *dev, const std::string &subsystem);
 #endif
 
 class DevicesManager
@@ -36,6 +37,7 @@ class DevicesManager
 		~DevicesManager(void);
 
 		void startMonitoring(void);
+		static std::string getString(const char* s) { return s == nullptr ? "" : s; };
 
 	protected:
 

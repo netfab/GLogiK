@@ -1,7 +1,5 @@
 
 
-#include <cstring>
-
 #include <string>
 
 #include <libudev.h>
@@ -45,9 +43,9 @@ void DevicesManager::initializeDrivers(void) {
 		bool initializing = true;
 
 		for(const auto& init_dev : this->initialized_devices_) {
-				if(	(std::strcmp( det_dev.vendor_id, init_dev.vendor_id ) == 0) and
-					(std::strcmp( det_dev.product_id, init_dev.product_id ) == 0) and
-					(std::strcmp( det_dev.hidraw_dev_node, init_dev.hidraw_dev_node ) == 0) ) {
+				if(	( det_dev.vendor_id == init_dev.vendor_id ) and
+					( det_dev.product_id == init_dev.product_id ) and
+					( det_dev.hidraw_dev_node == init_dev.hidraw_dev_node ) ) {
 						LOG(DEBUG3) << "Device "  << det_dev.vendor_id << ":" << det_dev.product_id
 									<< " - " << det_dev.hidraw_dev_node << " already initialized";
 						initializing = false;
@@ -58,7 +56,7 @@ void DevicesManager::initializeDrivers(void) {
 		if( initializing ) {
 			for(const auto& driver : this->drivers_) {
 				if( det_dev.driver_ID == driver->getDriverID() ) {
-					//driver->init(det_dev.vendor_id, det_dev.product_id, det_dev.hidraw_dev_node); // initialization
+					driver->init(det_dev.vendor_id.c_str(), det_dev.product_id.c_str(), det_dev.input_dev_node.c_str()); // initialization
 					//driver->init(); // initialization
 					this->initialized_devices_.push_back( det_dev );
 					break;
@@ -70,26 +68,24 @@ void DevicesManager::initializeDrivers(void) {
 }
 
 #if GLOGIKD_GLOBAL_DEBUG
-void deviceProperties(struct udev_device *dev, const char* subsystem) {
+void deviceProperties(struct udev_device *dev, const std::string &subsystem) {
 	struct udev_list_entry *devs, *devs_list_entry;
 
-	if( std::strcmp( subsystem, "input" ) == 0 )
+	if( subsystem == "input" )
 		devs = udev_device_get_properties_list_entry( dev );
-	else if( std::strcmp( subsystem, "hidraw" ) == 0 )
+	else if( subsystem == "hidraw" )
 		devs = udev_device_get_sysattr_list_entry( dev );
 
 	const char* value = nullptr;
+	std::string attr;
 	udev_list_entry_foreach( devs_list_entry, devs ) {
-		const char* attr = udev_list_entry_get_name( devs_list_entry );
-		if( attr == nullptr )
+		attr = DevicesManager::getString( udev_list_entry_get_name( devs_list_entry ) );
+		if( attr == "" )
 			continue;
-		if( std::strcmp( subsystem, "input" ) == 0 )
-			value = udev_device_get_property_value(dev, attr);
-		else if( std::strcmp( subsystem, "hidraw" ) == 0 )
-			value = udev_device_get_sysattr_value(dev, attr);
-
-		if( value == nullptr )
-			value = "(null)";
+		if( subsystem == "input" )
+			value = udev_device_get_property_value(dev, attr.c_str());
+		else if( subsystem == "hidraw" )
+			value = udev_device_get_sysattr_value(dev, attr.c_str());
 
 		LOG(DEBUG4) << attr << " : " << value;
 	}
@@ -124,23 +120,23 @@ void DevicesManager::searchSupportedDevices(void) {
 		udev_list_entry_foreach(dev_list_entry, devices) {
 			// Get the filename of the /sys entry for the device
 			// and create a udev_device object (dev) representing it
-			const char* path = udev_list_entry_get_name(dev_list_entry);
-			if( path == nullptr )
+			std::string path = this->getString( udev_list_entry_get_name(dev_list_entry) );
+			if( path == "" )
 				throw GLogiKExcept("entry_get_name failure");
 
-			struct udev_device *dev = udev_device_new_from_syspath(this->udev, path);
+			struct udev_device *dev = udev_device_new_from_syspath(this->udev, path.c_str());
 			if( dev == nullptr )
 				throw GLogiKExcept("new_from_syspath failure");
 
-			const char* devss = udev_device_get_subsystem(dev);
-			if( devss == nullptr ) {
+			std::string devss = this->getString( udev_device_get_subsystem(dev) );
+			if( devss == "" ) {
 				udev_device_unref(dev);
 				throw GLogiKExcept("get_subsystem failure");
 			}
 
 			// path to the HIDRAW device node in /dev
-			const char* devnode = udev_device_get_devnode(dev);
-			if( devnode == nullptr ) {
+			std::string devnode = this->getString( udev_device_get_devnode(dev) );
+			if( devnode == "" ) {
 				udev_device_unref(dev);
 				throw GLogiKExcept("get_devnode failure");
 			}
@@ -149,32 +145,26 @@ void DevicesManager::searchSupportedDevices(void) {
 			if( dev == nullptr )
 				throw GLogiKExcept("unable to find parent usb device");
 
-			const char* vendor_id	= udev_device_get_sysattr_value(dev,"idVendor");
-			const char* product_id	= udev_device_get_sysattr_value(dev,"idProduct");
-			const char* manufact	= udev_device_get_sysattr_value(dev,"manufacturer");
-			const char* product		= udev_device_get_sysattr_value(dev,"product");
-			const char* serial		= udev_device_get_sysattr_value(dev,"serial");
-
-			vendor_id	= (vendor_id == nullptr)	? "(null)" : vendor_id;
-			product_id	= (product_id == nullptr)	? "(null)" : product_id;
-			manufact	= (manufact == nullptr)		? "(null)" : manufact;
-			product		= (product == nullptr)		? "(null)" : product;
-			serial		= (serial == nullptr)		? "(null)" : serial;
+			std::string vendor_id	= this->getString( udev_device_get_sysattr_value(dev,"idVendor") );
+			std::string product_id	= this->getString( udev_device_get_sysattr_value(dev,"idProduct") );
+			std::string manufact	= this->getString( udev_device_get_sysattr_value(dev,"manufacturer") );
+			std::string product		= this->getString( udev_device_get_sysattr_value(dev,"product") );
+			std::string serial		= this->getString( udev_device_get_sysattr_value(dev,"serial") );
 
 			try {
 				for(const auto& driver : this->drivers_) {
 					for(const auto& device : driver->getSupportedDevices()) {
-						if( std::strcmp( device.vendor_id, vendor_id ) == 0 )
-							if( std::strcmp( device.product_id, product_id ) == 0 ) {
+						if( device.vendor_id == vendor_id )
+							if( device.product_id == product_id ) {
 
 								/* GLOGIKD_GLOBAL_DEBUG */
 								//deviceProperties(dev, devss);
 
 								bool already_detected = false;
 								for(const auto& det_dev : this->detected_devices_) {
-									if( (std::strcmp( det_dev.vendor_id, vendor_id ) == 0) and
-										(std::strcmp( det_dev.product_id, product_id ) == 0) and
-										(std::strcmp( det_dev.hidraw_dev_node, devnode ) == 0) ) {
+									if( ( det_dev.vendor_id == vendor_id ) and
+										( det_dev.product_id == product_id ) and
+										( det_dev.hidraw_dev_node == devnode ) ) {
 											LOG(DEBUG3) << "Device "  << vendor_id << ":" << product_id
 														<< " - " << devnode << " already detected";
 											already_detected = true;
@@ -198,7 +188,7 @@ void DevicesManager::searchSupportedDevices(void) {
 									found.vendor_id			= vendor_id;
 									found.product_id		= product_id;
 									found.hidraw_dev_node	= devnode;
-									found.input_dev_node	= nullptr;
+									found.input_dev_node	= "";
 									found.manufacturer		= manufact;
 									found.product			= product;
 									found.serial			= serial;
@@ -245,16 +235,16 @@ void DevicesManager::searchSupportedDevices(void) {
 		udev_list_entry_foreach(dev_list_entry, devices) {
 			// Get the filename of the /sys entry for the device
 			// and create a udev_device object (dev) representing it
-			const char* path = udev_list_entry_get_name(dev_list_entry);
-			if( path == nullptr )
+			std::string path = this->getString( udev_list_entry_get_name(dev_list_entry) );
+			if( path == "" )
 				throw GLogiKExcept("entry_get_name failure");
 
-			struct udev_device *dev = udev_device_new_from_syspath(this->udev, path);
+			struct udev_device *dev = udev_device_new_from_syspath(this->udev, path.c_str());
 			if( dev == nullptr )
 				throw GLogiKExcept("new_from_syspath failure");
 
-			const char* devss = udev_device_get_subsystem(dev);
-			if( devss == nullptr ) {
+			std::string devss = this->getString( udev_device_get_subsystem(dev) );
+			if( devss == "" ) {
 				udev_device_unref(dev);
 				throw GLogiKExcept("get_subsystem failure");
 			}
@@ -267,31 +257,32 @@ void DevicesManager::searchSupportedDevices(void) {
 			/* GLOGIKD_GLOBAL_DEBUG */
 			//deviceProperties(dev, devss);
 
-			const char* vendor_id = udev_device_get_property_value(dev, "ID_VENDOR_ID");
-			const char* product_id = udev_device_get_property_value(dev, "ID_MODEL_ID");
-			if( (vendor_id == nullptr) or (product_id == nullptr) ) {
+			std::string vendor_id = this->getString( udev_device_get_property_value(dev, "ID_VENDOR_ID") );
+			std::string product_id = this->getString( udev_device_get_property_value(dev, "ID_MODEL_ID") );
+			if( (vendor_id == "") or (product_id == "") ) {
 				udev_device_unref(dev);
 				continue;
 			}
 
 			for( auto& detected : this->detected_devices_ ) {
-				if( detected.input_dev_node != nullptr )
+				if( detected.input_dev_node != "" )
 					continue; // skipping already found event device
 
-				if( std::strcmp( detected.vendor_id, vendor_id ) == 0 )
-					if( std::strcmp( detected.product_id, product_id ) == 0 ) {
+				if( detected.vendor_id == vendor_id )
+					if( detected.product_id == product_id ) {
 						/* GLOGIKD_GLOBAL_DEBUG */
 						//deviceProperties(dev, devss);
 
 						// path to the event device node in /dev/input/
-						const char* devnode = udev_device_get_devnode(dev);
-						if( devnode == nullptr ) {
+						std::string devnode = this->getString( udev_device_get_devnode(dev) );
+						if( devnode == "" ) {
 							udev_device_unref(dev);
 							continue;
 						}
 
 						detected.input_dev_node = devnode;
-						LOG(DEBUG3) << "Vid:Pid : " << vendor_id << ":" << product_id << " found event input : " << devnode;
+						LOG(DEBUG3) << "Vid:Pid : " << vendor_id << ":" << product_id
+									<< " found event input : " << detected.input_dev_node;
 					}
 			}
 
@@ -351,11 +342,11 @@ void DevicesManager::startMonitoring(void) {
 			if( dev == nullptr )
 				throw GLogiKExcept("no device from receive_device(), something is wrong");
 
-			const char* action = udev_device_get_action(dev);
-			if( action == nullptr )
+			std::string action = this->getString( udev_device_get_action(dev) );
+			if( action == "" )
 				throw GLogiKExcept("device_get_action() failure");
 
-			if( std::strcmp(action, "add") == 0 ) {
+			if( action == "add" ) {
 				this->searchSupportedDevices();
 				this->initializeDrivers();
 			}
