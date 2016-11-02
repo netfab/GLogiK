@@ -44,7 +44,7 @@ class KeyboardDriver
 
 		void openDevNode(const char* hidraw_dev_node);
 		void closeDevNode(void);
-		void monitorDevice(const char* hidraw_dev_node);
+		void monitorDevice(void);
 };
 
 } // namespace GLogiKd

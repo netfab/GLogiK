@@ -9,7 +9,7 @@ LogitechG15::LogitechG15() {
 	// extended initializer lists only available with -std=c++11 or -std=gnu++11
 	this->supported_devices_ = {
 		// name, vendor_id, product_id
-		{ "Logitech G510", VENDOR_LOGITECH, "c22e" },
+		{ "Logitech G510", VENDOR_LOGITECH, "c22d" },
 		{ "Logitech G510", VENDOR_LOGITECH, "c30f" }
 		};
 }

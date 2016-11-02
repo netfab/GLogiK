@@ -37,12 +37,18 @@ void KeyboardDriver::disconnectDevice(void) {
 
 void KeyboardDriver::connectDevice(const char* hidraw_dev_node) {
 	LOG(DEBUG2) << "KeyboardDriver::connectDevice()";
-	this->monitorThread_ = std::thread(&KeyboardDriver::monitorDevice, this, hidraw_dev_node);
+	try {
+		this->openDevNode(hidraw_dev_node);
+		this->monitorThread_ = std::thread(&KeyboardDriver::monitorDevice, this);
+	}
+	catch ( const GLogiKExcept & e ) {
+		LOG(DEBUG3) << "Fails to open device node";
+	}
+
 }
 
-void KeyboardDriver::monitorDevice(const char* hidraw_dev_node) {
+void KeyboardDriver::monitorDevice(void) {
 	LOG(DEBUG2) << "KeyboardDriver::monitorDevice()";
-	this->openDevNode(hidraw_dev_node);
 	while( this->isConnected() and DaemonControl::is_daemon_enabled() ) {
 		poll(this->fds, 1, 6000);
 
