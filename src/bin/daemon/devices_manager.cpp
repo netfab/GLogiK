@@ -72,23 +72,29 @@ void DevicesManager::initializeDrivers(void) {
 	LOG(DEBUG2) << "---";
 }
 
-void DevicesManager::cleanDriver(const std::string &devnode, const std::string &usec) {
-	LOG(DEBUG2) << "DevicesManager::stopDriver() - " << devnode << " " << usec;
-	bool stopped = false;
+void DevicesManager::cleanDrivers(void) {
+	LOG(DEBUG2) << "DevicesManager::cleanDrivers()";
+
 	for(auto it = this->initialized_devices_.begin(); it != this->initialized_devices_.end();) {
-		if( ((*it).input_dev_node == devnode) and ((*it).usec == usec) ) {
-			LOG(DEBUG3) << "erasing initialized driver : "
-						<< (*it).vendor_id << ":" << (*it).product_id << ":" << (*it).input_dev_node;
-			it = this->initialized_devices_.erase(it);
-			stopped = true;
-			break;
+		bool stop_it = true;
+		for(const auto& det_dev : this->detected_devices_) {
+			if( ((*it).input_dev_node == det_dev.input_dev_node) and ((*it).usec == det_dev.usec )
+				and ((*it).vendor_id == det_dev.vendor_id ) and ((*it).product_id == det_dev.product_id ) ) {
+				stop_it = false;
+				++it;
+				break;
+			}
 		}
-		else
-			++it;
+
+		if(stop_it) {
+			LOG(DEBUG3) << "erasing initialized driver : "
+						<< (*it).vendor_id << ":" << (*it).product_id
+						<< ":" << (*it).input_dev_node << ":" << (*it).usec;
+						it = this->initialized_devices_.erase(it);
+		}
 	}
-	if( ! stopped ) {
-		LOG(WARNING) << "driver for devnode - usec " << devnode << " - " << usec << " not found/stopped";
-	}
+
+	this->detected_devices_.clear();
 	LOG(DEBUG2) << "Initialized " << this->initialized_devices_.size() << " device(s)";
 	LOG(DEBUG2) << "---";
 }
@@ -290,8 +296,8 @@ void DevicesManager::startMonitoring(void) {
 				this->initializeDrivers();
 			}
 			if( action == "remove" ) {
-				std::string usec = this->getString( udev_device_get_property_value(dev, "USEC_INITIALIZED"));
-				this->cleanDriver(devnode, usec);
+				this->searchSupportedDevices();
+				this->cleanDrivers();
 			}
 
 			udev_device_unref(dev);

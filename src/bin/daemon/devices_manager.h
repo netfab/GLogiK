@@ -53,7 +53,7 @@ class DevicesManager
 
 		void searchSupportedDevices(void);
 		void initializeDrivers(void);
-		void cleanDriver(const std::string &devnode, const std::string &usec);
+		void cleanDrivers(void);
 };
 
 } // namespace GLogiKd
