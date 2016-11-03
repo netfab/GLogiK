@@ -110,7 +110,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 }
 
 void GLogiKDaemon::handle_signal(int sig) {
-	LOG(DEBUG2) << "starting handle_signal()";
+	LOG(DEBUG2) << "handle_signal()";
 	switch( sig ) {
 		case SIGINT: {
 			const char * msg = "got SIGINT, exiting ...";
@@ -125,7 +125,7 @@ void GLogiKDaemon::handle_signal(int sig) {
 void GLogiKDaemon::daemonize() {
 	//int fd = 0;
 
-	LOG(DEBUG2) << "starting GLogiKDaemon::daemonize()";
+	LOG(DEBUG2) << "GLogiKDaemon::daemonize()";
 
 	this->pid_ = fork();
 	if(this->pid_ == -1)
@@ -204,7 +204,7 @@ void GLogiKDaemon::daemonize() {
 }
 
 void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
-	LOG(DEBUG2) << "starting GLogiKDaemon::parse_command_line()";
+	LOG(DEBUG2) << "GLogiKDaemon::parse_command_line()";
 
 	bool d = false;
 

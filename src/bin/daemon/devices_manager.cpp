@@ -37,17 +37,18 @@ DevicesManager::~DevicesManager() {
 }
 
 void DevicesManager::initializeDrivers(void) {
-	LOG(DEBUG2) << "starting DevicesManager::initializeDrivers()";
+	LOG(DEBUG2) << "DevicesManager::initializeDrivers()";
 	for(const auto& det_dev : this->detected_devices_) {
 
 		bool initializing = true;
 
 		for(const auto& init_dev : this->initialized_devices_) {
-				if(	( det_dev.vendor_id == init_dev.vendor_id ) and
-					( det_dev.product_id == init_dev.product_id ) and
-					( det_dev.hidraw_dev_node == init_dev.hidraw_dev_node ) ) {
+				if(	(det_dev.vendor_id == init_dev.vendor_id) and
+					(det_dev.product_id == init_dev.product_id) and
+					(det_dev.input_dev_node == init_dev.input_dev_node) and
+					(det_dev.usec == init_dev.usec) ) {
 						LOG(DEBUG3) << "Device "  << det_dev.vendor_id << ":" << det_dev.product_id
-									<< " - " << det_dev.hidraw_dev_node << " already initialized";
+									<< " - " << det_dev.input_dev_node << " already initialized";
 						initializing = false;
 						break; // jump to next detected device
 				}
@@ -56,8 +57,10 @@ void DevicesManager::initializeDrivers(void) {
 		if( initializing ) {
 			for(const auto& driver : this->drivers_) {
 				if( det_dev.driver_ID == driver->getDriverID() ) {
-					driver->init(det_dev.vendor_id.c_str(), det_dev.product_id.c_str(), det_dev.input_dev_node.c_str()); // initialization
-					//driver->init(); // initialization
+					LOG(DEBUG3) << "initializing "
+								<< det_dev.vendor_id << ":" << det_dev.product_id
+								<< ":" << det_dev.input_dev_node << ":" << det_dev.usec;
+					driver->init(det_dev.vendor_id.c_str(), det_dev.product_id.c_str()); // initialization
 					this->initialized_devices_.push_back( det_dev );
 					break;
 				}
@@ -65,6 +68,29 @@ void DevicesManager::initializeDrivers(void) {
 		}
 	} // for
 	this->detected_devices_.clear();
+	LOG(DEBUG2) << "Initialized " << this->initialized_devices_.size() << " device(s)";
+	LOG(DEBUG2) << "---";
+}
+
+void DevicesManager::cleanDriver(const std::string &devnode, const std::string &usec) {
+	LOG(DEBUG2) << "DevicesManager::stopDriver() - " << devnode << " " << usec;
+	bool stopped = false;
+	for(auto it = this->initialized_devices_.begin(); it != this->initialized_devices_.end();) {
+		if( ((*it).input_dev_node == devnode) and ((*it).usec == usec) ) {
+			LOG(DEBUG3) << "erasing initialized driver : "
+						<< (*it).vendor_id << ":" << (*it).product_id << ":" << (*it).input_dev_node;
+			it = this->initialized_devices_.erase(it);
+			stopped = true;
+			break;
+		}
+		else
+			++it;
+	}
+	if( ! stopped ) {
+		LOG(WARNING) << "driver for devnode - usec " << devnode << " - " << usec << " not found/stopped";
+	}
+	LOG(DEBUG2) << "Initialized " << this->initialized_devices_.size() << " device(s)";
+	LOG(DEBUG2) << "---";
 }
 
 #if GLOGIKD_GLOBAL_DEBUG
@@ -96,7 +122,7 @@ void deviceProperties(struct udev_device *dev, const std::string &subsystem) {
 #endif
 
 void DevicesManager::searchSupportedDevices(void) {
-	LOG(DEBUG2) << "starting DevicesManager::searchSupportedDevices()";
+	LOG(DEBUG2) << "DevicesManager::searchSupportedDevices()";
 
 	struct udev_enumerate *enumerate;
 	struct udev_list_entry *devices, *dev_list_entry;
@@ -106,122 +132,11 @@ void DevicesManager::searchSupportedDevices(void) {
 		throw GLogiKExcept("udev enumerate object creation failure");
 
 	try {
-		LOG(DEBUG2) << "hidraw enumerate";
-		if( udev_enumerate_add_match_subsystem(enumerate, "hidraw") < 0 )
-			throw GLogiKExcept("hidraw enumerate filtering init failure");
-
-		if( udev_enumerate_scan_devices(enumerate) < 0 )
-			throw GLogiKExcept("enumerate_scan_devices failure");
-
-		devices = udev_enumerate_get_list_entry(enumerate);
-		if( devices == nullptr )
-			throw GLogiKExcept("devices empty list or failure");
-
-		udev_list_entry_foreach(dev_list_entry, devices) {
-			// Get the filename of the /sys entry for the device
-			// and create a udev_device object (dev) representing it
-			std::string path = this->getString( udev_list_entry_get_name(dev_list_entry) );
-			if( path == "" )
-				throw GLogiKExcept("entry_get_name failure");
-
-			struct udev_device *dev = udev_device_new_from_syspath(this->udev, path.c_str());
-			if( dev == nullptr )
-				throw GLogiKExcept("new_from_syspath failure");
-
-			std::string devss = this->getString( udev_device_get_subsystem(dev) );
-			if( devss == "" ) {
-				udev_device_unref(dev);
-				throw GLogiKExcept("get_subsystem failure");
-			}
-
-			// path to the HIDRAW device node in /dev
-			std::string devnode = this->getString( udev_device_get_devnode(dev) );
-			if( devnode == "" ) {
-				udev_device_unref(dev);
-				throw GLogiKExcept("get_devnode failure");
-			}
-
-			dev = udev_device_get_parent_with_subsystem_devtype(dev, "usb", "usb_device");
-			if( dev == nullptr )
-				throw GLogiKExcept("unable to find parent usb device");
-
-			std::string vendor_id	= this->getString( udev_device_get_sysattr_value(dev,"idVendor") );
-			std::string product_id	= this->getString( udev_device_get_sysattr_value(dev,"idProduct") );
-			std::string manufact	= this->getString( udev_device_get_sysattr_value(dev,"manufacturer") );
-			std::string product		= this->getString( udev_device_get_sysattr_value(dev,"product") );
-			std::string serial		= this->getString( udev_device_get_sysattr_value(dev,"serial") );
-
-			try {
-				for(const auto& driver : this->drivers_) {
-					for(const auto& device : driver->getSupportedDevices()) {
-						if( device.vendor_id == vendor_id )
-							if( device.product_id == product_id ) {
-
-								/* GLOGIKD_GLOBAL_DEBUG */
-								//deviceProperties(dev, devss);
-
-								bool already_detected = false;
-								for(const auto& det_dev : this->detected_devices_) {
-									if( ( det_dev.vendor_id == vendor_id ) and
-										( det_dev.product_id == product_id ) and
-										( det_dev.hidraw_dev_node == devnode ) ) {
-											LOG(DEBUG3) << "Device "  << vendor_id << ":" << product_id
-														<< " - " << devnode << " already detected";
-											already_detected = true;
-											break;
-									}
-								}
-
-								if( ! already_detected ) {
-									LOG(DEBUG3)	<< "Device found !\n"
-											<< "	Path		: " << path << "\n"
-											<< "	Subsystem	: " << devss << "\n"
-											<< "	Device Node	: " << devnode << "\n"
-											<< "	Vendor ID	: " << vendor_id << "\n"
-											<< "	Product ID	: " << product_id << "\n"
-											<< "	Manufact.	: " << manufact << "\n"
-											<< "	Product		: " << product << "\n"
-											<< "	Serial		: " << serial << "\n";
-
-									DetectedDevice found;
-									found.name				= device.name;
-									found.vendor_id			= vendor_id;
-									found.product_id		= product_id;
-									found.hidraw_dev_node	= devnode;
-									found.input_dev_node	= "";
-									found.manufacturer		= manufact;
-									found.product			= product;
-									found.serial			= serial;
-									found.driver_ID			= driver->getDriverID();
-
-									this->detected_devices_.push_back(found);
-									throw DeviceFound();
-								}
-							}
-					} // for
-				} // for
-			}
-			catch ( const DeviceFound & e ) {
-			}
-			udev_device_unref(dev);
-		} // udev_list_entry_foreach
-
 		// ---
 		// ---
 		// ---
 
-		// Free the enumerator object
-		udev_enumerate_unref(enumerate);
-
-		enumerate = udev_enumerate_new(this->udev);
-		if ( enumerate == nullptr )
-			throw GLogiKExcept("udev enumerate object creation failure");
-
-		// ---
-		// ---
-		// ---
-
-		LOG(DEBUG2) << "input enumerate";
+		//LOG(DEBUG2) << "input enumerate";
 		if( udev_enumerate_add_match_subsystem(enumerate, "input") < 0 )
 			throw GLogiKExcept("input enumerate filtering init failure");
 
@@ -264,26 +179,43 @@ void DevicesManager::searchSupportedDevices(void) {
 				continue;
 			}
 
-			for( auto& detected : this->detected_devices_ ) {
-				if( detected.input_dev_node != "" )
-					continue; // skipping already found event device
+			for(const auto& driver : this->drivers_) {
+				for(const auto& device : driver->getSupportedDevices()) {
+					if( device.vendor_id == vendor_id )
+						if( device.product_id == product_id ) {
 
-				if( detected.vendor_id == vendor_id )
-					if( detected.product_id == product_id ) {
-						/* GLOGIKD_GLOBAL_DEBUG */
-						//deviceProperties(dev, devss);
+							// path to the event device node in /dev/input/
+							std::string devnode = this->getString( udev_device_get_devnode(dev) );
+							if( devnode == "" ) {
+								udev_device_unref(dev);
+								continue;
+							}
 
-						// path to the event device node in /dev/input/
-						std::string devnode = this->getString( udev_device_get_devnode(dev) );
-						if( devnode == "" ) {
-							udev_device_unref(dev);
-							continue;
+							/* GLOGIKD_GLOBAL_DEBUG */
+							//deviceProperties(dev, devss);
+
+							std::string vendor = this->getString( udev_device_get_property_value(dev, "ID_VENDOR") );
+							std::string model = this->getString( udev_device_get_property_value(dev, "ID_MODEL") );
+							std::string serial = this->getString( udev_device_get_property_value(dev, "ID_SERIAL") );
+							std::string usec = this->getString( udev_device_get_property_value(dev, "USEC_INITIALIZED") );
+
+							DetectedDevice found;
+							found.name				= device.name;
+							found.vendor_id			= vendor_id;
+							found.product_id		= product_id;
+							found.input_dev_node	= devnode;
+							found.vendor			= vendor;
+							found.model				= model;
+							found.serial			= serial;
+							found.usec				= usec;
+							found.driver_ID			= driver->getDriverID();
+
+							this->detected_devices_.push_back(found);
+
+							LOG(DEBUG3) << "Vid:Pid:DevNode:usec : " << vendor_id
+										<< ":" << product_id << ":" << devnode << ":" << usec;
 						}
-
-						detected.input_dev_node = devnode;
-						LOG(DEBUG3) << "Vid:Pid : " << vendor_id << ":" << product_id
-									<< " found event input : " << detected.input_dev_node;
-					}
+				}
 			}
 
 			udev_device_unref(dev);
@@ -303,7 +235,7 @@ void DevicesManager::searchSupportedDevices(void) {
 }
 
 void DevicesManager::startMonitoring(void) {
-	LOG(DEBUG2) << "starting DevicesManager::startMonitoring()";
+	LOG(DEBUG2) << "DevicesManager::startMonitoring()";
 
 	this->udev = udev_new();
 	if ( this->udev == nullptr )
@@ -312,10 +244,10 @@ void DevicesManager::startMonitoring(void) {
 	this->monitor = udev_monitor_new_from_netlink(this->udev, "udev");
 	if( this->monitor == nullptr )
 		throw GLogiKExcept("allocating udev monitor failure");
-
+/*
 	if( udev_monitor_filter_add_match_subsystem_devtype(this->monitor, "hidraw", nullptr) < 0 )
 		throw GLogiKExcept("hidraw monitor filtering init failure");
-
+*/
 	if( udev_monitor_filter_add_match_subsystem_devtype(this->monitor, "input", nullptr) < 0 )
 		throw GLogiKExcept("input monitor filtering init failure");
 
@@ -346,9 +278,20 @@ void DevicesManager::startMonitoring(void) {
 			if( action == "" )
 				throw GLogiKExcept("device_get_action() failure");
 
+			std::string devnode = this->getString( udev_device_get_devnode(dev) );
+			if( devnode == "" ) // filtering empty events
+				continue;
+
+			//if( devnode == "/dev/input/event21" )
+			//	continue;
+
 			if( action == "add" ) {
 				this->searchSupportedDevices();
 				this->initializeDrivers();
+			}
+			if( action == "remove" ) {
+				std::string usec = this->getString( udev_device_get_property_value(dev, "USEC_INITIALIZED"));
+				this->cleanDriver(devnode, usec);
 			}
 
 			udev_device_unref(dev);

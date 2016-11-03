@@ -3,11 +3,6 @@
 #define __GLOGIKD_KEYBOARD_DRIVER_H__
 
 #include <vector>
-#include <string>
-#include <atomic>
-#include <thread>
-
-#include <poll.h>
 
 namespace GLogiKd
 {
@@ -29,22 +24,12 @@ class KeyboardDriver
 
 		std::vector<KeyboardDevice> getSupportedDevices(void) const;
 
-		virtual void init(const char* vendor_id, const char* product_id, const char* hidraw_dev_node) = 0;
-		bool isConnected(void) const;
-		void disconnectDevice(void);
-		void connectDevice(const char* hidraw_dev_node);
+		virtual void init(const char* vendor_id, const char* product_id) = 0;
 
 	protected:
 		std::vector<KeyboardDevice> supported_devices_;
 
 	private:
-		struct pollfd fds[1] = { {-1, POLLIN} };
-		std::atomic<bool> connected_;
-		std::thread monitorThread_;
-
-		void openDevNode(const char* hidraw_dev_node);
-		void closeDevNode(void);
-		void monitorDevice(void);
 };
 
 } // namespace GLogiKd

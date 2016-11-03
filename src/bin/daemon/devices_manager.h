@@ -18,11 +18,11 @@ struct DetectedDevice {
 	std::string name;
 	std::string vendor_id;
 	std::string product_id;
-	std::string hidraw_dev_node;
 	std::string input_dev_node;
-	std::string manufacturer;
-	std::string product;
+	std::string vendor;
+	std::string model;
 	std::string serial;
+	std::string usec;
 	unsigned int driver_ID;
 };
 
@@ -53,6 +53,7 @@ class DevicesManager
 
 		void searchSupportedDevices(void);
 		void initializeDrivers(void);
+		void cleanDriver(const std::string &devnode, const std::string &usec);
 };
 
 } // namespace GLogiKd
