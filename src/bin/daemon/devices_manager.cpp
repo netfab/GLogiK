@@ -161,8 +161,10 @@ void DevicesManager::searchSupportedDevices(void) {
 				throw GLogiKExcept("entry_get_name failure");
 
 			struct udev_device *dev = udev_device_new_from_syspath(this->udev, path.c_str());
-			if( dev == nullptr )
-				throw GLogiKExcept("new_from_syspath failure");
+			if( dev == nullptr ) {
+				LOG(DEBUG3) << "new_from_syspath failure with path : " << path;
+				continue;
+			}
 
 			std::string devss = this->getString( udev_device_get_subsystem(dev) );
 			if( devss == "" ) {
@@ -288,15 +290,13 @@ void DevicesManager::startMonitoring(void) {
 			if( devnode == "" ) // filtering empty events
 				continue;
 
-			//if( devnode == "/dev/input/event21" )
-			//	continue;
+			LOG(DEBUG3) << "Action : " << action;
+			this->searchSupportedDevices();
 
 			if( action == "add" ) {
-				this->searchSupportedDevices();
 				this->initializeDrivers();
 			}
-			if( action == "remove" ) {
-				this->searchSupportedDevices();
+			else if( action == "remove" ) {
 				this->cleanDrivers();
 			}
 
