@@ -68,8 +68,8 @@ void DevicesManager::initializeDrivers(void) {
 		}
 	} // for
 	this->detected_devices_.clear();
-	LOG(DEBUG2) << "Initialized " << this->initialized_devices_.size() << " device(s)";
-	LOG(DEBUG2) << "---";
+	LOG(DEBUG3) << "Device(s) initialized : " << this->initialized_devices_.size();
+	LOG(DEBUG3) << "---";
 }
 
 void DevicesManager::cleanDrivers(void) {
@@ -95,8 +95,8 @@ void DevicesManager::cleanDrivers(void) {
 	}
 
 	this->detected_devices_.clear();
-	LOG(DEBUG2) << "Initialized " << this->initialized_devices_.size() << " device(s)";
-	LOG(DEBUG2) << "---";
+	LOG(DEBUG3) << "Device(s) initialized : " << this->initialized_devices_.size();
+	LOG(DEBUG3) << "---";
 }
 
 #if GLOGIKD_GLOBAL_DEBUG
@@ -236,7 +236,7 @@ void DevicesManager::searchSupportedDevices(void) {
 		throw;
 	}
 
-	LOG(DEBUG2) << "Found " << this->detected_devices_.size() << " device(s)";
+	LOG(DEBUG3) << "Found " << this->detected_devices_.size() << " device(s)";
 
 	// Free the enumerator object
 	udev_enumerate_unref(enumerate);
