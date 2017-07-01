@@ -101,7 +101,8 @@ void DevicesManager::cleanDrivers(void) {
 
 #if GLOGIKD_GLOBAL_DEBUG
 void deviceProperties(struct udev_device *dev, const std::string &subsystem) {
-	struct udev_list_entry *devs, *devs_list_entry;
+	struct udev_list_entry *devs = nullptr;
+	struct udev_list_entry *devs_list_entry = nullptr;
 
 	if( subsystem == "input" )
 		devs = udev_device_get_properties_list_entry( dev );
