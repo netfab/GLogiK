@@ -5,3 +5,5 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-gcc-wall --enable-gcc-werror --enable-as-ne
 
 SUBDIRS = src
 
+EXTRA_DIST = src/include/log.h
+
