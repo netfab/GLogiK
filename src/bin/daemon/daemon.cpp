@@ -15,6 +15,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <iostream>
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -106,7 +107,10 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 		LOG(ERROR) << buff.str();
 		return EXIT_FAILURE;
 	}
-
+	catch ( const DisplayHelp & e ) {
+		std::cout << "\n" << e.what() << "\n";
+		return EXIT_SUCCESS;
+	}
 }
 
 void GLogiKDaemon::handle_signal(int sig) {
@@ -210,9 +214,9 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 
 	po::options_description desc("Allowed options");
 	desc.add_options()
-		("help", "produce help message")
-		("daemonize,d", po::bool_switch(&d)->default_value(false))
-		("pid-file,p", po::value(&this->pid_file_name_), "PID file")
+		("help,h", "produce help message")
+		("daemonize,d", po::bool_switch(&d)->default_value(false), "run in daemon mode")
+		("pid-file,p", po::value(&this->pid_file_name_), "define the PID file")
 	;
 
 	po::variables_map vm;
@@ -223,6 +227,14 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 		throw GLogiKExcept( e.what() );
 	}
 	po::notify(vm);
+
+	if (vm.count("help")) {
+		const char * msg = "displaying help";
+		syslog(LOG_INFO, msg);
+		LOG(INFO) << msg;
+		desc.print( this->buffer_ );
+		throw DisplayHelp( this->buffer_.str() );
+	}
 
 	if (vm.count("daemonize")) {
 		GLogiKDaemon::daemonized_ = vm["daemonize"].as<bool>();
