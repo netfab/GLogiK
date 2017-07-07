@@ -23,6 +23,7 @@ class LogitechG15 : public KeyboardDriver
 
 	protected:
 	private:
+		void logLibG15Error(const char* msg, int ret);
 };
 
 } // namespace GLogiKd
