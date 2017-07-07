@@ -161,6 +161,7 @@ void GLogiKDaemon::daemonize() {
 	if(chdir("/") == -1)
 		throw GLogiKExcept("change directory failure");
 
+#ifndef DEBUGGING_ON
 	// closing opened descriptors
 	//for(fd = sysconf(_SC_OPEN_MAX); fd > 0; fd--)
 	//	close(fd);
@@ -172,6 +173,7 @@ void GLogiKDaemon::daemonize() {
 	stdin = std::fopen("/dev/null", "r");
 	stdout = std::fopen("/dev/null", "w+");
 	stderr = std::fopen("/dev/null", "w+");
+#endif
 
 	this->pid_ = getpid();
 	LOG(INFO) << "daemonized !";

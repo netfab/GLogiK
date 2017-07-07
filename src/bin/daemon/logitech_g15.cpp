@@ -1,6 +1,8 @@
 
 #include <sstream>
 
+#include <config.h>
+
 #include "include/log.h"
 #include <syslog.h>
 
@@ -17,7 +19,10 @@ LogitechG15::LogitechG15() {
 		{ "Logitech G510", VENDOR_LOGITECH, "c22d" },
 		//{ "Logitech G510", VENDOR_LOGITECH, "c30f" }
 		};
-	libg15Debug(1);
+
+#ifdef DEBUGGING_ON
+	libg15Debug(G15_LOG_WARN);
+#endif
 }
 
 LogitechG15::~LogitechG15() {
