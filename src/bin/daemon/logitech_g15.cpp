@@ -40,7 +40,7 @@ void LogitechG15::init(const char* vendor_id, const char* product_id) {
 	unsigned int vendor = std::stoul(vendor_id, nullptr, 16);
 	unsigned int product = std::stoul(product_id, nullptr, 16);
 
-	int ret = setupLibG15(vendor, product, 1);
+	int ret = setupLibG15(vendor, product, 0);
 
 	if ( ret != G15_NO_ERROR ) {
 		this->logLibG15Error( "LogitechG15::setupLibG15() failure return code : ", ret);
