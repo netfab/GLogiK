@@ -120,6 +120,8 @@ dnl -------------------------------------------------------------------------
 dnl -------------------------------------------------------------------------
 dnl -------------------------------------------------------------------------
 
+AC_SEARCH_LIBS(setupLibG15, g15, [], AC_MSG_ERROR([Could not locate libg15. Is it installed?], [1]))
+
 #PKG_CHECK_MODULES([SDL], [sdl >= 1.2.13])
 #PKG_CHECK_MODULES([SDLMIXER], [SDL_mixer >= 1.2.11])
 PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.0])
