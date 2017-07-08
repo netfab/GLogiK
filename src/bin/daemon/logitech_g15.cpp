@@ -21,7 +21,7 @@ LogitechG15::LogitechG15() {
 		};
 
 #ifdef DEBUGGING_ON
-	libg15Debug(G15_LOG_WARN);
+	libg15Debug(G15_LOG_INFO);
 #endif
 }
 
