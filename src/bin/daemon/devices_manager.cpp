@@ -62,7 +62,7 @@ void DevicesManager::initializeDrivers(void) {
 					LOG(DEBUG3) << "initializing "
 								<< det_dev.vendor_id << ":" << det_dev.product_id
 								<< ":" << det_dev.input_dev_node << ":" << det_dev.usec;
-					driver->init(det_dev.vendor_id.c_str(), det_dev.product_id.c_str()); // initialization
+					driver->initializeDevice(det_dev.vendor_id.c_str(), det_dev.product_id.c_str()); // initialization
 					this->initialized_devices_.push_back( det_dev );
 					break;
 				}

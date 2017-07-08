@@ -31,7 +31,7 @@ LogitechG15::~LogitechG15() {
 		this->closeDevice();
 }
 
-void LogitechG15::init(const char* vendor_id, const char* product_id) {
+void LogitechG15::initializeDevice(const char* vendor_id, const char* product_id) {
 	LOG(DEBUG3) << "initializing libg15 device Vid:Pid - "
 				<< vendor_id << ":" << product_id;
 
