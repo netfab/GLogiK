@@ -93,6 +93,16 @@ void DevicesManager::cleanDrivers(void) {
 							<< ":" << (*it).input_dev_node << ":" << (*it).usec;
 			LOG(WARNING)	<< "Did you unplug your device before properly closing it ?";
 			LOG(WARNING)	<< "You will get libusb warnings/errors if you do this.";
+
+			for(const auto& driver : this->drivers_) {
+				if( (*it).driver_ID == driver->getDriverID() ) {
+					LOG(WARNING) << "device closing attempt "
+								<< (*it).vendor_id << ":" << (*it).product_id
+								<< ":" << (*it).input_dev_node << ":" << (*it).usec;
+					driver->closeDevice(); // closing
+					break;
+				}
+			} // for
 			it = this->initialized_devices_.erase(it);
 		}
 	}

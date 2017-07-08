@@ -25,6 +25,7 @@ class KeyboardDriver
 		std::vector<KeyboardDevice> getSupportedDevices(void) const;
 
 		virtual void init(const char* vendor_id, const char* product_id) = 0;
+		virtual void closeDevice(void) = 0;
 
 	protected:
 		std::vector<KeyboardDevice> supported_devices_;

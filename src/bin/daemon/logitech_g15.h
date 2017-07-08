@@ -20,9 +20,11 @@ class LogitechG15 : public KeyboardDriver
 		unsigned int getDriverID() const { return GLOGIKD_DRIVER_ID_G15; };
 
 		void init(const char* vendor_id, const char* product_id);
+		void closeDevice(void);
 
 	protected:
 	private:
+		bool initialized;
 		void logLibG15Error(const char* msg, int ret);
 };
 
