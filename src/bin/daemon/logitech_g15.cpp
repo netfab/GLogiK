@@ -26,14 +26,14 @@ LogitechG15::LogitechG15() {
 }
 
 LogitechG15::~LogitechG15() {
+	LOG(DEBUG3) << "exiting libg15";
 	int ret = exitLibG15();
 	if ( ret != G15_NO_ERROR )
-		this->logLibG15Error( "LogitechG15::exitLibG15() failure. Return code : ", ret);
-	LOG(DEBUG3) << "LogitechG15 cleaned";
+		this->logLibG15Error("exitLibG15() failure. Return code : ", ret);
 }
 
 void LogitechG15::init(const char* vendor_id, const char* product_id) {
-	LOG(DEBUG2) << "LogitechG15::init() Vid:Pid = "
+	LOG(DEBUG3) << "initializing libg15 device Vid:Pid - "
 				<< vendor_id << ":" << product_id;
 
 	unsigned int vendor = std::stoul(vendor_id, nullptr, 16);
@@ -42,7 +42,7 @@ void LogitechG15::init(const char* vendor_id, const char* product_id) {
 	int ret = setupLibG15(vendor, product, 0);
 
 	if ( ret != G15_NO_ERROR )
-		this->logLibG15Error( "LogitechG15::setupLibG15() failure. Return code : ", ret);
+		this->logLibG15Error("setupLibG15() failure. Return code : ", ret);
 }
 
 void LogitechG15::logLibG15Error(const char* msg, int ret) {

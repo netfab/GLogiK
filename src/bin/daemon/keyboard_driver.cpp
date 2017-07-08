@@ -8,11 +8,9 @@ namespace GLogiKd
 {
 
 KeyboardDriver::KeyboardDriver() {
-	LOG(DEBUG2) << "KeyboardDriver:: constructor";
 }
 
 KeyboardDriver::~KeyboardDriver() {
-	LOG(DEBUG2) << "KeyboardDriver:: destructor";
 }
 
 std::vector<KeyboardDevice> KeyboardDriver::getSupportedDevices(void) const {

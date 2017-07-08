@@ -57,6 +57,7 @@ GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app)
 
 GLogiKDaemon::~GLogiKDaemon()
 {
+	LOG(DEBUG2) << "exiting daemon process";
 	if( this->pid_file_.is_open() ) {
 		this->pid_file_.close();
 		LOG(INFO) << "destroying PID file";
@@ -75,9 +76,10 @@ GLogiKDaemon::~GLogiKDaemon()
 
 int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 
-	const char * msg = "starting ...";
-	syslog(LOG_INFO, msg);
-	LOG(INFO) << msg;
+	this->buffer_.str( "Starting " );
+	this->buffer_ << GLOGIKD_DAEMON_NAME << " vers. " << VERSION ;
+	syslog(LOG_INFO, this->buffer_.str().c_str() );
+	LOG(INFO) << this->buffer_.str();
 
 	try {
 		this->parseCommandLine(argc, argv);
@@ -93,6 +95,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			d.startMonitoring();
 		}
 		else {
+			syslog(LOG_INFO, "non-daemon mode" );
 			LOG(INFO) << "non-daemon mode";
 			;
 		}
@@ -114,10 +117,9 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 }
 
 void GLogiKDaemon::handle_signal(int sig) {
-	LOG(DEBUG2) << "handle_signal()";
 	switch( sig ) {
 		case SIGINT: {
-			const char * msg = "got SIGINT, exiting ...";
+			const char * msg = "catch SIGINT signal : bye bye";
 			syslog(LOG_INFO, msg);
 			LOG(INFO) << msg;
 			GLogiKDaemon::disable_daemon();
@@ -129,7 +131,7 @@ void GLogiKDaemon::handle_signal(int sig) {
 void GLogiKDaemon::daemonize() {
 	//int fd = 0;
 
-	LOG(DEBUG2) << "GLogiKDaemon::daemonize()";
+	LOG(DEBUG2) << "daemonizing process";
 
 	this->pid_ = fork();
 	if(this->pid_ == -1)
@@ -139,7 +141,7 @@ void GLogiKDaemon::daemonize() {
 	if(this->pid_ > 0)
 		exit(EXIT_SUCCESS);
 
-	LOG(DEBUG3) << "First fork ! pid:" << getpid();
+	LOG(DEBUG3) << "first fork ! pid:" << getpid();
 
 	if(setsid() == -1)
 		throw GLogiKExcept("session creation failure");
@@ -155,7 +157,7 @@ void GLogiKDaemon::daemonize() {
 	if(this->pid_ > 0)
 		exit(EXIT_SUCCESS);
 	
-	LOG(DEBUG3) << "Second fork ! pid:" << getpid();
+	LOG(DEBUG3) << "second fork ! pid:" << getpid();
 
 	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	if(chdir("/") == -1)
@@ -210,7 +212,7 @@ void GLogiKDaemon::daemonize() {
 }
 
 void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
-	LOG(DEBUG2) << "GLogiKDaemon::parse_command_line()";
+	LOG(DEBUG2) << "parsing command line arguments";
 
 	bool d = false;
 

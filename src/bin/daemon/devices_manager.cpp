@@ -21,6 +21,7 @@ DevicesManager::DevicesManager() {
 }
 
 DevicesManager::~DevicesManager() {
+	LOG(DEBUG2) << "exiting devices manager";
 	if(this->monitor) {
 		LOG(DEBUG3) << "unref monitor object";
 		udev_monitor_unref(this->monitor);
@@ -30,6 +31,7 @@ DevicesManager::~DevicesManager() {
 		udev_unref(this->udev);
 	}
 
+	LOG(DEBUG2) << "closing drivers";
 	for(const auto& driver : this->drivers_) {
 		delete driver;
 	}
@@ -37,7 +39,7 @@ DevicesManager::~DevicesManager() {
 }
 
 void DevicesManager::initializeDrivers(void) {
-	LOG(DEBUG2) << "DevicesManager::initializeDrivers()";
+	LOG(DEBUG2) << "initializing detected devices";
 	for(const auto& det_dev : this->detected_devices_) {
 
 		bool initializing = true;
@@ -47,7 +49,7 @@ void DevicesManager::initializeDrivers(void) {
 					(det_dev.product_id == init_dev.product_id) and
 					(det_dev.input_dev_node == init_dev.input_dev_node) and
 					(det_dev.usec == init_dev.usec) ) {
-						LOG(DEBUG3) << "Device "  << det_dev.vendor_id << ":" << det_dev.product_id
+						LOG(DEBUG3) << "device "  << det_dev.vendor_id << ":" << det_dev.product_id
 									<< " - " << det_dev.input_dev_node << " already initialized";
 						initializing = false;
 						break; // jump to next detected device
@@ -68,13 +70,12 @@ void DevicesManager::initializeDrivers(void) {
 		}
 	} // for
 	this->detected_devices_.clear();
-	LOG(DEBUG3) << "Device(s) initialized : " << this->initialized_devices_.size();
+	LOG(DEBUG3) << "device(s) initialized : " << this->initialized_devices_.size();
 	LOG(DEBUG3) << "---";
 }
 
 void DevicesManager::cleanDrivers(void) {
-	LOG(DEBUG2) << "DevicesManager::cleanDrivers()";
-
+	LOG(DEBUG2) << "checking for unplugged initialized devices";
 	for(auto it = this->initialized_devices_.begin(); it != this->initialized_devices_.end();) {
 		bool stop_it = true;
 		for(const auto& det_dev : this->detected_devices_) {
@@ -87,15 +88,17 @@ void DevicesManager::cleanDrivers(void) {
 		}
 
 		if(stop_it) {
-			LOG(DEBUG3) << "erasing initialized driver : "
-						<< (*it).vendor_id << ":" << (*it).product_id
-						<< ":" << (*it).input_dev_node << ":" << (*it).usec;
-						it = this->initialized_devices_.erase(it);
+			LOG(WARNING)	<< "erasing unplugged initialized driver : "
+							<< (*it).vendor_id << ":" << (*it).product_id
+							<< ":" << (*it).input_dev_node << ":" << (*it).usec;
+			LOG(WARNING)	<< "Did you unplug your device before properly closing it ?";
+			LOG(WARNING)	<< "You will get libusb warnings/errors if you do this.";
+			it = this->initialized_devices_.erase(it);
 		}
 	}
 
 	this->detected_devices_.clear();
-	LOG(DEBUG3) << "Device(s) initialized : " << this->initialized_devices_.size();
+	LOG(DEBUG3) << "number of devices still initialized : " << this->initialized_devices_.size();
 	LOG(DEBUG3) << "---";
 }
 
@@ -129,7 +132,7 @@ void deviceProperties(struct udev_device *dev, const std::string &subsystem) {
 #endif
 
 void DevicesManager::searchSupportedDevices(void) {
-	LOG(DEBUG2) << "DevicesManager::searchSupportedDevices()";
+	LOG(DEBUG2) << "searching for supported devices";
 
 	struct udev_enumerate *enumerate;
 	struct udev_list_entry *devices, *dev_list_entry;
@@ -221,7 +224,7 @@ void DevicesManager::searchSupportedDevices(void) {
 
 							this->detected_devices_.push_back(found);
 
-							LOG(DEBUG3) << "Vid:Pid:DevNode:usec : " << vendor_id
+							LOG(DEBUG3) << "found device - Vid:Pid:DevNode:usec : " << vendor_id
 										<< ":" << product_id << ":" << devnode << ":" << usec;
 						}
 				}
@@ -237,14 +240,14 @@ void DevicesManager::searchSupportedDevices(void) {
 		throw;
 	}
 
-	LOG(DEBUG3) << "Found " << this->detected_devices_.size() << " device(s)";
+	LOG(DEBUG2) << "found " << this->detected_devices_.size() << " device(s)";
 
 	// Free the enumerator object
 	udev_enumerate_unref(enumerate);
 }
 
 void DevicesManager::startMonitoring(void) {
-	LOG(DEBUG2) << "DevicesManager::startMonitoring()";
+	LOG(DEBUG2) << "initializing libudev";
 
 	this->udev = udev_new();
 	if ( this->udev == nullptr )
@@ -269,6 +272,8 @@ void DevicesManager::startMonitoring(void) {
 
 	this->fds[0].fd = this->fd_;
 	this->fds[0].events = POLLIN;
+
+	LOG(DEBUG2) << "loading known drivers";
 
 	this->drivers_.push_back( new LogitechG15() );
 
