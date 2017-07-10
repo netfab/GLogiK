@@ -1,8 +1,7 @@
 
-#include <sstream>
-
 #include <config.h>
 
+#include "exception.h"
 #include "include/log.h"
 #include <syslog.h>
 
@@ -13,7 +12,7 @@
 namespace GLogiKd
 {
 
-LogitechG15::LogitechG15() : initialized(false) {
+LogitechG15::LogitechG15() : initialized(false), buffer_("", std::ios_base::app) {
 	this->supported_devices_ = {
 		// name, vendor_id, product_id
 		{ "Logitech G510", VENDOR_LOGITECH, "c22d" },
@@ -27,45 +26,47 @@ LogitechG15::LogitechG15() : initialized(false) {
 
 LogitechG15::~LogitechG15() {
 	LOG(DEBUG3) << "exiting libg15";
-	if( this->initialized )
-		this->closeDevice();
+	if( this->initialized ) {
+		try {
+			this->closeDevice();
+		}
+		catch ( const GLogiKExcept & e ) {
+			syslog( LOG_ERR, e.what() );
+			LOG(ERROR) << e.what();
+		}
+	}
 }
 
 void LogitechG15::initializeDevice(const char* vendor_id, const char* product_id) {
 	LOG(DEBUG3) << "initializing libg15 device Vid:Pid - "
 				<< vendor_id << ":" << product_id;
 
-	// FIXME
-	if( this->initialized ) {
-		LOG(WARNING) << "Device already initialized";
-		return;
-	}
+	if( this->initialized )
+		throw GLogiKExcept("device already initialized");
 
 	unsigned int vendor = std::stoul(vendor_id, nullptr, 16);
 	unsigned int product = std::stoul(product_id, nullptr, 16);
 
 	int ret = setupLibG15(vendor, product, 0);
 
-	// FIXME exception
-	if ( ret != G15_NO_ERROR )
-		this->logLibG15Error("setupLibG15() failure. Return code : ", ret);
-	else
-		this->initialized = true;
-}
+	if ( ret != G15_NO_ERROR ) {
+		this->buffer_.str("libg15 initialization failure. Return code : ");
+		this->buffer_ << ret;
+		throw GLogiKExcept( this->buffer_.str() );
+	}
 
-void LogitechG15::logLibG15Error(const char* msg, int ret) {
-		std::ostringstream buff(msg, std::ios_base::app);
-		buff << ret;
-		syslog( LOG_ERR, buff.str().c_str() );
-		LOG(ERROR) << buff.str();
+	this->initialized = true;
 }
 
 void LogitechG15::closeDevice() {
+	LOG(DEBUG3) << "closing libg15 device";
 	int ret = exitLibG15();
-	if ( ret != G15_NO_ERROR )
-		this->logLibG15Error("exitLibG15() failure. Return code : ", ret);
-	LOG(DEBUG3) << "closed device";
 	this->initialized = false;
+	if ( ret != G15_NO_ERROR ) {
+		this->buffer_.str("libg15 exit failure. Return code : ");
+		this->buffer_ << ret;
+		throw GLogiKExcept( this->buffer_.str() );
+	}
 }
 
 } // namespace GLogiKd

@@ -3,12 +3,13 @@
 #include <string>
 
 #include <libudev.h>
-
-#include "devices_manager.h"
-#include "include/log.h"
+#include <syslog.h>
 
 #include "exception.h"
+#include "include/log.h"
 #include "daemon_control.h"
+
+#include "devices_manager.h"
 
 #include "logitech_g15.h"
 
@@ -56,17 +57,24 @@ void DevicesManager::initializeDrivers(void) {
 				}
 		} // for
 
-		if( initializing ) {
-			for(const auto& driver : this->drivers_) {
-				if( det_dev.driver_ID == driver->getDriverID() ) {
-					LOG(DEBUG3) << "initializing "
-								<< det_dev.vendor_id << ":" << det_dev.product_id
-								<< ":" << det_dev.input_dev_node << ":" << det_dev.usec;
-					driver->initializeDevice(det_dev.vendor_id.c_str(), det_dev.product_id.c_str()); // initialization
-					this->initialized_devices_.push_back( det_dev );
-					break;
-				}
-			} // for
+		try {
+			if( initializing ) {
+				for(const auto& driver : this->drivers_) {
+					if( det_dev.driver_ID == driver->getDriverID() ) {
+						LOG(DEBUG3) << "initializing "
+									<< det_dev.vendor_id << ":" << det_dev.product_id
+									<< ":" << det_dev.input_dev_node << ":" << det_dev.usec;
+						driver->initializeDevice(det_dev.vendor_id.c_str(), det_dev.product_id.c_str()); // initialization
+						this->initialized_devices_.push_back( det_dev );
+						break;
+					}
+				} // for
+			}
+		}
+		catch ( const GLogiKExcept & e ) {
+			//std::ostringstream buff(e.what(), std::ios_base::app);
+			syslog( LOG_ERR, e.what() );
+			LOG(ERROR) << e.what();
 		}
 	} // for
 	this->detected_devices_.clear();
@@ -87,22 +95,30 @@ void DevicesManager::cleanDrivers(void) {
 			}
 		}
 
-		if(stop_it) {
-			LOG(WARNING)	<< "erasing unplugged initialized driver : "
-							<< (*it).vendor_id << ":" << (*it).product_id
-							<< ":" << (*it).input_dev_node << ":" << (*it).usec;
-			LOG(WARNING)	<< "Did you unplug your device before properly closing it ?";
-			LOG(WARNING)	<< "You will get libusb warnings/errors if you do this.";
-
-			for(const auto& driver : this->drivers_) {
-				if( (*it).driver_ID == driver->getDriverID() ) {
-					LOG(WARNING) << "device closing attempt "
+		try {
+			if(stop_it) {
+				LOG(WARNING)	<< "erasing unplugged initialized driver : "
 								<< (*it).vendor_id << ":" << (*it).product_id
 								<< ":" << (*it).input_dev_node << ":" << (*it).usec;
-					driver->closeDevice(); // closing
-					break;
-				}
-			} // for
+				LOG(WARNING)	<< "Did you unplug your device before properly closing it ?";
+				LOG(WARNING)	<< "You will get libusb warnings/errors if you do this.";
+
+				for(const auto& driver : this->drivers_) {
+					if( (*it).driver_ID == driver->getDriverID() ) {
+						LOG(WARNING) << "device closing attempt "
+									<< (*it).vendor_id << ":" << (*it).product_id
+									<< ":" << (*it).input_dev_node << ":" << (*it).usec;
+						driver->closeDevice(); // closing
+						break;
+					}
+				} // for
+
+				it = this->initialized_devices_.erase(it);
+			}
+		}
+		catch ( const GLogiKExcept & e ) {
+			syslog( LOG_ERR, e.what() );
+			LOG(ERROR) << e.what();
 			it = this->initialized_devices_.erase(it);
 		}
 	}

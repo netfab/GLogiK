@@ -2,6 +2,8 @@
 #ifndef __GLOGIKD_LOGITECH_G15_DRIVER_H__
 #define __GLOGIKD_LOGITECH_G15_DRIVER_H__
 
+#include <sstream>
+
 #include "keyboard_driver.h"
 #include "globals.h"
 
@@ -25,7 +27,7 @@ class LogitechG15 : public KeyboardDriver
 	protected:
 	private:
 		bool initialized;
-		void logLibG15Error(const char* msg, int ret);
+		std::ostringstream buffer_;
 };
 
 } // namespace GLogiKd
