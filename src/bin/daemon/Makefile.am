@@ -14,7 +14,10 @@ GLogiKd_SOURCES = \
 		daemon.cpp daemon.h \
 		daemon_control.cpp daemon_control.h \
 		devices_manager.cpp devices_manager.h \
-		logitech_g15.cpp logitech_g15.h \
 		keyboard_driver.cpp keyboard_driver.h \
 		exception.cpp exception.h \
 		globals.h
+
+# TODO
+# logitech_g15.cpp logitech_g15.h
+
