@@ -15,9 +15,7 @@ namespace GLogiKd
 {
 
 struct DetectedDevice {
-	std::string name;
-	std::string vendor_id;
-	std::string product_id;
+	KeyboardDevice device;
 	std::string input_dev_node;
 	std::string vendor;
 	std::string model;

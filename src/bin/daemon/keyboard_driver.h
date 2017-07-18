@@ -2,15 +2,16 @@
 #ifndef __GLOGIKD_KEYBOARD_DRIVER_H__
 #define __GLOGIKD_KEYBOARD_DRIVER_H__
 
+#include <string>
 #include <vector>
 
 namespace GLogiKd
 {
 
 struct KeyboardDevice {
-	const char* name;
-	const char* vendor_id;
-	const char* product_id;
+	std::string name;
+	std::string vendor_id;
+	std::string product_id;
 };
 
 class KeyboardDriver

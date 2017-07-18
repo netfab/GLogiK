@@ -48,12 +48,14 @@ void DevicesManager::initializeDrivers(void) {
 		bool initializing = true;
 
 		for(const auto& init_dev : this->initialized_devices_) {
-				if(	(det_dev.vendor_id == init_dev.vendor_id) and
-					(det_dev.product_id == init_dev.product_id) and
+				if(	(det_dev.device.vendor_id == init_dev.device.vendor_id) and
+					(det_dev.device.product_id == init_dev.device.product_id) and
 					(det_dev.input_dev_node == init_dev.input_dev_node) and
 					(det_dev.usec == init_dev.usec) ) {
-						LOG(DEBUG3) << "device "  << det_dev.vendor_id << ":" << det_dev.product_id
-									<< " - " << det_dev.input_dev_node << " already initialized";
+						LOG(DEBUG3) << "device "
+									<< det_dev.device.vendor_id << ":"
+									<< det_dev.device.product_id << " - "
+									<< det_dev.input_dev_node << " already initialized";
 						initializing = false;
 						break; // jump to next detected device
 				}
@@ -63,10 +65,13 @@ void DevicesManager::initializeDrivers(void) {
 			if( initializing ) {
 				for(const auto& driver : this->drivers_) {
 					if( det_dev.driver_ID == driver->getDriverID() ) {
-						LOG(DEBUG3) << "initializing "
-									<< det_dev.vendor_id << ":" << det_dev.product_id
+						LOG(DEBUG3) << "initializing " << det_dev.device.vendor_id
+									<< ":" << det_dev.device.product_id
 									<< ":" << det_dev.input_dev_node << ":" << det_dev.usec;
-						driver->initializeDevice(det_dev.vendor_id.c_str(), det_dev.product_id.c_str()); // initialization
+						// initialization
+						driver->initializeDevice(
+							det_dev.device.vendor_id.c_str(),
+							det_dev.device.product_id.c_str() );
 						this->initialized_devices_.push_back( det_dev );
 						break;
 					}
@@ -90,7 +95,8 @@ void DevicesManager::cleanDrivers(void) {
 		bool stop_it = true;
 		for(const auto& det_dev : this->detected_devices_) {
 			if( ((*it).input_dev_node == det_dev.input_dev_node) and ((*it).usec == det_dev.usec )
-				and ((*it).vendor_id == det_dev.vendor_id ) and ((*it).product_id == det_dev.product_id ) ) {
+				and ((*it).device.vendor_id == det_dev.device.vendor_id )
+				and ((*it).device.product_id == det_dev.device.product_id ) ) {
 				stop_it = false;
 				++it;
 				break;
@@ -100,7 +106,7 @@ void DevicesManager::cleanDrivers(void) {
 		try {
 			if(stop_it) {
 				LOG(WARNING)	<< "erasing unplugged initialized driver : "
-								<< (*it).vendor_id << ":" << (*it).product_id
+								<< (*it).device.vendor_id << ":" << (*it).device.product_id
 								<< ":" << (*it).input_dev_node << ":" << (*it).usec;
 				LOG(WARNING)	<< "Did you unplug your device before properly closing it ?";
 				LOG(WARNING)	<< "You will get libusb warnings/errors if you do this.";
@@ -108,7 +114,7 @@ void DevicesManager::cleanDrivers(void) {
 				for(const auto& driver : this->drivers_) {
 					if( (*it).driver_ID == driver->getDriverID() ) {
 						LOG(WARNING) << "device closing attempt "
-									<< (*it).vendor_id << ":" << (*it).product_id
+									<< (*it).device.vendor_id << ":" << (*it).device.product_id
 									<< ":" << (*it).input_dev_node << ":" << (*it).usec;
 						driver->closeDevice(); // closing
 						break;
@@ -240,9 +246,7 @@ void DevicesManager::searchSupportedDevices(void) {
 							std::string usec = this->getString( udev_device_get_property_value(dev, "USEC_INITIALIZED") );
 
 							DetectedDevice found;
-							found.name				= device.name;
-							found.vendor_id			= vendor_id;
-							found.product_id		= product_id;
+							found.device			= device;
 							found.input_dev_node	= devnode;
 							found.vendor			= vendor;
 							found.model				= model;
