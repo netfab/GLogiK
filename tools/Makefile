@@ -4,7 +4,16 @@ build_dir= ../build
 PREFIX_DEV_DIR=/var/tmp/devcxx
 PREFIX_DIR=$(PREFIX_DEV_DIR)/GLogiK
 LANG=C
-CXXFLAGS="-march=sandybridge -mtune=generic -O2 -pipe -mmmx -msse -msse2"
+
+#
+# CXXFLAGS="-march=sandybridge -mtune=generic -O2 -pipe -mmmx -msse -msse2"
+# CXXFLAGS="-march=sandybridge -mtune=generic -O2 -pipe -mmmx -msse -msse2 -I$(PREFIX_DEV_DIR)/libg15/include"
+#
+# XXX
+# Link with libg15 in custom path - configure phase
+#
+#		CXXFLAGS=$(CXXFLAGS) \
+#		LDFLAGS="-L$(PREFIX_DEV_DIR)/libg15/lib -Wl,-rpath -Wl,$(PREFIX_DEV_DIR)/libg15/lib" \
 
 #MACROFILES= libtool.m4 ltoptions.m4 ltsugar.m4 ltversion.m4 lt~obsolete.m4
 #	cd $(top_srcdir)/m4 && rm -v $(MACROFILES)
@@ -38,7 +47,7 @@ autoreconf_it:
 
 
 configure_it: init_dir
-	cd $(build_dir) && $(top_srcdir)/configure CXXFLAGS=$(CXXFLAGS) \
+	cd $(build_dir) && $(top_srcdir)/configure \
 	--enable-debug DEBUG_DIR=$(PREFIX_DEV_DIR) DEBUG_LOG_LEVEL=DEBUG4 \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)

@@ -20,7 +20,7 @@ LogitechG15::LogitechG15() : initialized(false), buffer_("", std::ios_base::app)
 		};
 
 #ifdef DEBUGGING_ON
-	libg15Debug(G15_LOG_INFO);
+	libg15Debug(G15_LOG_WARN);
 #endif
 }
 

@@ -8,7 +8,6 @@ GLogiK=$PWD/.. CD=. {
 	VERSION
 	configure.ac
 	Makefile.am
-	.gitignore
 	tools=tools/ {
 		Makefile
 	}
