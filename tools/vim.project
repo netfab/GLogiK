@@ -37,6 +37,8 @@ GLogiK=$PWD/.. CD=. {
 				globals.h
 				logitech_g15.cpp
 				logitech_g15.h
+				logitech_G510.cpp
+				logitech_G510.h
 				keyboard_driver.cpp
 				keyboard_driver.h
 			}

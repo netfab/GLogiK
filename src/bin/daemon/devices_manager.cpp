@@ -13,6 +13,7 @@
 
 // TODO
 //#include "logitech_g15.h"
+#include "logitech_G510.h"
 
 namespace GLogiKd
 {
@@ -304,6 +305,7 @@ void DevicesManager::startMonitoring(void) {
 
 	// TODO
 	//this->drivers_.push_back( new LogitechG15() );
+	this->drivers_.push_back( new LogitechG510() );
 
 	this->searchSupportedDevices();
 	this->initializeDrivers();

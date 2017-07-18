@@ -15,6 +15,7 @@ GLogiKd_SOURCES = \
 		daemon_control.cpp daemon_control.h \
 		devices_manager.cpp devices_manager.h \
 		keyboard_driver.cpp keyboard_driver.h \
+		logitech_G510.cpp logitech_G510.h \
 		exception.cpp exception.h \
 		globals.h
 
