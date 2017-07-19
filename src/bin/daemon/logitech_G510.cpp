@@ -20,10 +20,9 @@ LogitechG510::LogitechG510() : buffer_("", std::ios_base::app) {
 LogitechG510::~LogitechG510() {
 }
 
-void LogitechG510::initializeDevice(const char* vendor_id, const char* product_id) {
-	LOG(DEBUG3) << "initializing G510 device Vid:Pid - "
-				<< vendor_id << ":" << product_id;
-
+void LogitechG510::initializeDevice(const KeyboardDevice & device) {
+	LOG(DEBUG3) << "Trying to initialize " << device.name << "("
+				<< device.vendor_id << ":" << device.product_id << ")";
 }
 
 void LogitechG510::closeDevice() {

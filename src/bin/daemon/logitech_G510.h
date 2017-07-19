@@ -21,7 +21,7 @@ class LogitechG510 : public KeyboardDriver
 		const char* getDriverName() const { return "Logitech G510/G510s"; };
 		unsigned int getDriverID() const { return GLOGIKD_DRIVER_ID_G510; };
 
-		void initializeDevice(const char* vendor_id, const char* product_id);
+		void initializeDevice(const KeyboardDevice & device);
 		void closeDevice(void);
 
 	protected:
