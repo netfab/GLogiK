@@ -4,6 +4,10 @@
 
 #include <string>
 #include <vector>
+#include <sstream>
+
+
+#include <libusb-1.0/libusb.h>
 
 namespace GLogiKd
 {
@@ -29,9 +33,16 @@ class KeyboardDriver
 		virtual void closeDevice(void) = 0;
 
 	protected:
+		std::ostringstream buffer_;
 		std::vector<KeyboardDevice> supported_devices_;
 
+		void initializeLibusb(void);
+		void closeLibusb(void);
+		int handleLibusbError(int error_code);
+
 	private:
+		libusb_context *context_;
+		libusb_device **list_;
 };
 
 } // namespace GLogiKd

@@ -2,8 +2,6 @@
 #ifndef __GLOGIKD_LOGITECH_G510_DRIVER_H__
 #define __GLOGIKD_LOGITECH_G510_DRIVER_H__
 
-#include <sstream>
-
 #include "keyboard_driver.h"
 #include "globals.h"
 
@@ -26,7 +24,6 @@ class LogitechG510 : public KeyboardDriver
 
 	protected:
 	private:
-		std::ostringstream buffer_;
 };
 
 } // namespace GLogiKd
