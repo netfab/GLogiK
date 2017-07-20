@@ -50,8 +50,9 @@ class DevicesManager
 		std::vector<DetectedDevice> initialized_devices_;
 
 		void searchSupportedDevices(void);
-		void initializeDrivers(void);
-		void cleanDrivers(void);
+		void initializeDevices(void);
+		void closeInitializedDevices(void);
+		void cleanUnpluggedDevices(void);
 };
 
 } // namespace GLogiKd

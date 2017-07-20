@@ -38,7 +38,7 @@ class KeyboardDriver
 
 		void initializeLibusb(void);
 		void closeLibusb(void);
-		int handleLibusbError(int error_code);
+		int handleLibusbError(int error_code, const char* except_msg);
 
 	private:
 		libusb_context *context_;

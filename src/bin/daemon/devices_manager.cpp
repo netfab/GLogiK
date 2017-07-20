@@ -34,6 +34,8 @@ DevicesManager::~DevicesManager() {
 		udev_unref(this->udev);
 	}
 
+	this->closeInitializedDevices();
+
 	LOG(DEBUG2) << "closing drivers";
 	for(const auto& driver : this->drivers_) {
 		delete driver;
@@ -41,7 +43,7 @@ DevicesManager::~DevicesManager() {
 	this->drivers_.clear();
 }
 
-void DevicesManager::initializeDrivers(void) {
+void DevicesManager::initializeDevices(void) {
 	LOG(DEBUG2) << "initializing detected devices";
 	for(const auto& det_dev : this->detected_devices_) {
 
@@ -87,7 +89,21 @@ void DevicesManager::initializeDrivers(void) {
 	LOG(DEBUG3) << "---";
 }
 
-void DevicesManager::cleanDrivers(void) {
+
+void DevicesManager::closeInitializedDevices(void) {
+	LOG(DEBUG2) << "closing initialized devices";
+
+	for(const auto& init_dev : this->initialized_devices_) {
+		for(const auto& driver : this->drivers_) {
+			if( init_dev.driver_ID == driver->getDriverID() ) {
+				driver->closeDevice(); // FIXME
+			}
+		}
+	}
+	this->initialized_devices_.clear();
+}
+
+void DevicesManager::cleanUnpluggedDevices(void) {
 	LOG(DEBUG2) << "checking for unplugged initialized devices";
 	for(auto it = this->initialized_devices_.begin(); it != this->initialized_devices_.end();) {
 		bool stop_it = true;
@@ -114,7 +130,7 @@ void DevicesManager::cleanDrivers(void) {
 						LOG(WARNING) << "device closing attempt "
 									<< (*it).device.vendor_id << ":" << (*it).device.product_id
 									<< ":" << (*it).input_dev_node << ":" << (*it).usec;
-						driver->closeDevice(); // closing
+						driver->closeDevice(); // closing FIXME
 						break;
 					}
 				} // for
@@ -310,7 +326,7 @@ void DevicesManager::startMonitoring(void) {
 	this->drivers_.push_back( new LogitechG510() );
 
 	this->searchSupportedDevices();
-	this->initializeDrivers();
+	this->initializeDevices();
 
 	while( DaemonControl::is_daemon_enabled() ) {
 		int ret = poll(this->fds, 1, 6000);
@@ -332,10 +348,10 @@ void DevicesManager::startMonitoring(void) {
 			this->searchSupportedDevices();
 
 			if( action == "add" ) {
-				this->initializeDrivers();
+				this->initializeDevices();
 			}
 			else if( action == "remove" ) {
-				this->cleanDrivers();
+				this->cleanUnpluggedDevices();
 			}
 
 			udev_device_unref(dev);
