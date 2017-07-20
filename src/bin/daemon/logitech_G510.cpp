@@ -28,7 +28,6 @@ void LogitechG510::initializeDevice(const KeyboardDevice & device) {
 
 void LogitechG510::closeDevice() {
 	LOG(DEBUG3) << "closing G510 device";
-	this->closeLibusb();
 }
 
 } // namespace GLogiKd

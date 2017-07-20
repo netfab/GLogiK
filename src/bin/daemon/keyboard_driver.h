@@ -37,12 +37,15 @@ class KeyboardDriver
 		std::vector<KeyboardDevice> supported_devices_;
 
 		void initializeLibusb(void);
-		void closeLibusb(void);
-		int handleLibusbError(int error_code, const char* except_msg);
 
 	private:
+		static bool libusb_status_;			/* is libusb initialized ? */
+		static unsigned int drivers_cnt_;	/* initialized drivers counter */
 		libusb_context *context_;
 		libusb_device **list_;
+
+		void closeLibusb(void);
+		int handleLibusbError(int error_code, const char* except_msg);
 };
 
 } // namespace GLogiKd

@@ -4,16 +4,22 @@
 #include "exception.h"
 #include "include/log.h"
 #include "keyboard_driver.h"
-#include "daemon_control.h"
 
 
 namespace GLogiKd
 {
 
+bool KeyboardDriver::libusb_status_ = false;
+unsigned int KeyboardDriver::drivers_cnt_ = 0;
+
 KeyboardDriver::KeyboardDriver() : buffer_("", std::ios_base::app), context_(nullptr) {
+	KeyboardDriver::drivers_cnt_++;
 }
 
 KeyboardDriver::~KeyboardDriver() {
+	KeyboardDriver::drivers_cnt_--;
+	if (KeyboardDriver::libusb_status_ and KeyboardDriver::drivers_cnt_ == 0)
+		this->closeLibusb();
 }
 
 std::vector<KeyboardDevice> KeyboardDriver::getSupportedDevices(void) const {
@@ -21,10 +27,11 @@ std::vector<KeyboardDevice> KeyboardDriver::getSupportedDevices(void) const {
 }
 
 void KeyboardDriver::initializeLibusb(void) {
+	LOG(DEBUG4) << "initializing libusb";
 	int ret_value = libusb_init( &(this->context_) );
 	this->handleLibusbError(ret_value, "libusb initialization failure");
-	//if (this->handleLibusbError(ret_value) != LIBUSB_SUCCESS)
-	//	throw GLogiKExcept("libusb initialization failure");
+
+	KeyboardDriver::libusb_status_ = true;
 
 #ifdef DEBUGGING_ON
 	libusb_set_debug(this->context_, LIBUSB_LOG_LEVEL_WARNING);
@@ -39,7 +46,9 @@ void KeyboardDriver::initializeLibusb(void) {
 }
 
 void KeyboardDriver::closeLibusb(void) {
+	LOG(DEBUG4) << "closing libusb";
 	libusb_exit(this->context_);
+	KeyboardDriver::libusb_status_ = false;
 }
 
 int KeyboardDriver::handleLibusbError(int error_code, const char* except_msg) {
