@@ -20,9 +20,10 @@ LogitechG510::LogitechG510() {
 LogitechG510::~LogitechG510() {
 }
 
-void LogitechG510::initializeDevice(const KeyboardDevice & device) {
+void LogitechG510::initializeDevice(const KeyboardDevice & device, const unsigned int bus, const unsigned int num) {
 	LOG(DEBUG3) << "Trying to initialize " << device.name << "("
-				<< device.vendor_id << ":" << device.product_id << ")";
+				<< device.vendor_id << ":" << device.product_id << "), device "
+				<< num << " on bus " << bus;
 	this->initializeLibusb();
 }
 

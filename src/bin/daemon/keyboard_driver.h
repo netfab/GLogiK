@@ -29,7 +29,7 @@ class KeyboardDriver
 
 		std::vector<KeyboardDevice> getSupportedDevices(void) const;
 
-		virtual void initializeDevice(const KeyboardDevice &device) = 0;
+		virtual void initializeDevice(const KeyboardDevice &device, const unsigned int bus, const unsigned int num) = 0;
 		virtual void closeDevice(void) = 0;
 
 	protected:
