@@ -341,12 +341,9 @@ void DevicesManager::startMonitoring(void) {
 	this->monitor = udev_monitor_new_from_netlink(this->udev, "udev");
 	if( this->monitor == nullptr )
 		throw GLogiKExcept("allocating udev monitor failure");
-/*
-	if( udev_monitor_filter_add_match_subsystem_devtype(this->monitor, "hidraw", nullptr) < 0 )
-		throw GLogiKExcept("hidraw monitor filtering init failure");
-*/
-	if( udev_monitor_filter_add_match_subsystem_devtype(this->monitor, "input", nullptr) < 0 )
-		throw GLogiKExcept("input monitor filtering init failure");
+
+	if( udev_monitor_filter_add_match_subsystem_devtype(this->monitor, "usb", nullptr) < 0 )
+		throw GLogiKExcept("usb monitor filtering init failure");
 
 	if( udev_monitor_enable_receiving(this->monitor) < 0 )
 		throw GLogiKExcept("monitor enabling failure");
