@@ -1,6 +1,8 @@
 
 #include <stdexcept>
 #include <string>
+#include <iostream>
+#include <sstream>
 
 #include <libudev.h>
 #include <syslog.h>
@@ -67,26 +69,29 @@ void DevicesManager::initializeDevices(void) {
 			if( initializing ) {
 				for(const auto& driver : this->drivers_) {
 					if( det_dev.driver_ID == driver->getDriverID() ) {
-						LOG(DEBUG3) << "initializing " << det_dev.device.vendor_id
-									<< ":" << det_dev.device.product_id
-									<< ":" << det_dev.input_dev_node << ":" << det_dev.usec;
 						// initialization
 						driver->initializeDevice( det_dev.device, det_dev.device_bus, det_dev.device_num );
 						this->initialized_devices_.push_back( det_dev );
+
+						std::ostringstream buffer("", std::ios_base::app);
+
+						buffer << det_dev.device.name
+							<< "(" << det_dev.device.vendor_id << ":" << det_dev.device.product_id
+							<< ") on bus " << det_dev.device_bus << " initialized";
+						LOG(INFO) << buffer.str();
+						syslog(LOG_INFO, buffer.str().c_str());
 						break;
 					}
 				} // for
 			}
 		}
 		catch ( const GLogiKExcept & e ) {
-			//std::ostringstream buff(e.what(), std::ios_base::app);
 			syslog( LOG_ERR, e.what() );
 			LOG(ERROR) << e.what();
 		}
 	} // for
 	this->detected_devices_.clear();
-	LOG(DEBUG3) << "device(s) initialized : " << this->initialized_devices_.size();
-	LOG(DEBUG3) << "---";
+	LOG(INFO) << "device(s) initialized : " << this->initialized_devices_.size();
 }
 
 
@@ -97,6 +102,14 @@ void DevicesManager::closeInitializedDevices(void) {
 		for(const auto& driver : this->drivers_) {
 			if( init_dev.driver_ID == driver->getDriverID() ) {
 				driver->closeDevice( init_dev.device, init_dev.device_bus, init_dev.device_num );
+
+				std::ostringstream buffer("", std::ios_base::app);
+
+				buffer << init_dev.device.name
+					<< "(" << init_dev.device.vendor_id << ":" << init_dev.device.product_id
+					<< ") on bus " << init_dev.device_bus << " closed";
+				LOG(INFO) << buffer.str();
+				syslog(LOG_INFO, buffer.str().c_str());
 			}
 		}
 	}
