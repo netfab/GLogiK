@@ -6,6 +6,8 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
+#include <sstream>
 
 #include "keyboard_driver.h"
 
@@ -47,6 +49,7 @@ class DevicesManager
 		struct pollfd fds[1];
 		int fd_ = -1;
 
+		std::ostringstream buffer_;
 		std::vector<KeyboardDriver*> drivers_;
 		std::vector<DetectedDevice> detected_devices_;
 		std::vector<DetectedDevice> initialized_devices_;
