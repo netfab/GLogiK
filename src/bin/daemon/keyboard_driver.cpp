@@ -33,10 +33,6 @@ void KeyboardDriver::initializeLibusb(void) {
 
 	KeyboardDriver::libusb_status_ = true;
 
-#ifdef DEBUGGING_ON
-	libusb_set_debug(this->context_, LIBUSB_LOG_LEVEL_WARNING);
-#endif
-
 	libusb_device **list;
 	int num_devices = libusb_get_device_list(this->context_, &(list));
 	if( num_devices <= 0 )
