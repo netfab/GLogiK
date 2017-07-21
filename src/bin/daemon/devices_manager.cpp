@@ -274,9 +274,11 @@ void DevicesManager::searchSupportedDevices(void) {
 								num = std::stoi(this->toString( udev_device_get_sysattr_value(dev, "devnum")));
 							}
 							catch (const std::invalid_argument& ia) {
+								udev_device_unref(dev);
 								throw GLogiKExcept("stoi invalid argument");
 							}
 							catch (const std::out_of_range& oor) {
+								udev_device_unref(dev);
 								throw GLogiKExcept("stoi out of range");
 							}
 
