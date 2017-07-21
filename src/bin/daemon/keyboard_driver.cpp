@@ -59,7 +59,7 @@ int KeyboardDriver::handleLibusbError(int error_code, const char* except_msg) {
 		case LIBUSB_SUCCESS:
 			break;
 		default:
-			LOG(DEBUG4) << "handleLibusbError: (" <<  libusb_error_name(error_code) << ") "
+			LOG(ERROR) << "handleLibusbError: (" <<  libusb_error_name(error_code) << ") "
 						<< libusb_strerror((libusb_error)error_code);
 			throw GLogiKExcept(except_msg);
 			break;

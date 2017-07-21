@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <cstdio>
+#include <iomanip>
 
 #include <boost/iostreams/device/null.hpp>
 #include <boost/iostreams/stream.hpp>
@@ -34,7 +35,7 @@ class Log
 public:
     Log();
     virtual ~Log();
-    std::ostringstream& Get(TLogLevel level = INFO);
+    std::ostringstream& Get(TLogLevel level = INFO, const char* func = "");
 public:
     static TLogLevel& ReportingLevel();
     static std::string ToString(TLogLevel level);
@@ -52,12 +53,13 @@ Log<T>::Log()
 }
 
 template <typename T>
-std::ostringstream& Log<T>::Get(TLogLevel level)
+std::ostringstream& Log<T>::Get(TLogLevel level, const char* func)
 {
-    os << "- " << NowTime();
-    os << " " << ToString(level) << ": ";
-    os << std::string(level > DEBUG ? level - DEBUG : 0, '\t');
-    return os;
+	os << "- " << NowTime();
+	os << " " << std::setfill(' ') << std::setw(32) << func;
+	os << " " << std::setfill(' ') << std::setw(8) << ToString(level) << ":   ";
+	os << std::string(level > DEBUG ? level - DEBUG : 0, '\t');
+	return os;
 }
 
 template <typename T>
@@ -102,7 +104,7 @@ TLogLevel Log<T>::FromString(const std::string& level)
         return ERROR;
     if (level == "NONE")
         return NONE;
-    Log<T>().Get(WARNING) << "Unknown logging level '" << level << "'. Using NONE level as default.";
+    Log<T>().Get(WARNING, __func__) << "Unknown logging level '" << level << "'. Using NONE level as default.";
     return NONE;
 }
 
@@ -150,7 +152,7 @@ class FILELOG_DECLSPEC FILELog : public Log<LOG2FILE> {};
 #define LOG(level) \
     if (level > FILELOG_MAX_LEVEL) ;\
     else if (level > FILELog::ReportingLevel() || !LOG2FILE::Stream()) ; \
-    else FILELog().Get(level)
+    else FILELog().Get(level, __func__)
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 
