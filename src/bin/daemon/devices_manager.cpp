@@ -152,25 +152,36 @@ void DevicesManager::cleanUnpluggedDevices(void) {
 
 #if GLOGIKD_GLOBAL_DEBUG
 void deviceProperties(struct udev_device *dev, const std::string &subsystem) {
-	struct udev_list_entry *devs = nullptr;
+	struct udev_list_entry *devs_props = nullptr;
+	struct udev_list_entry *devs_attr = nullptr;
 	struct udev_list_entry *devs_list_entry = nullptr;
 
-	if( subsystem == "input" )
-		devs = udev_device_get_properties_list_entry( dev );
-	else if( subsystem == "hidraw" )
-		devs = udev_device_get_sysattr_list_entry( dev );
+	devs_props = udev_device_get_properties_list_entry( dev );
+	devs_attr = udev_device_get_sysattr_list_entry( dev );
 
-	const char* value = nullptr;
+	LOG(DEBUG4) << "--";
+	LOG(DEBUG4)	<< "Device properties";
+	LOG(DEBUG4)	<< "--";
+
+	std::string value;
 	std::string attr;
-	udev_list_entry_foreach( devs_list_entry, devs ) {
+	udev_list_entry_foreach( devs_list_entry, devs_props ) {
 		attr = DevicesManager::getString( udev_list_entry_get_name( devs_list_entry ) );
 		if( attr == "" )
 			continue;
-		if( subsystem == "input" )
-			value = udev_device_get_property_value(dev, attr.c_str());
-		else if( subsystem == "hidraw" )
-			value = udev_device_get_sysattr_value(dev, attr.c_str());
 
+		value = DevicesManager::getString( udev_device_get_property_value(dev, attr.c_str()) );
+		LOG(DEBUG4) << attr << " : " << value;
+	}
+	LOG(DEBUG4) << "--";
+	LOG(DEBUG4) << "/sys attributes";
+	LOG(DEBUG4) << "--";
+	udev_list_entry_foreach( devs_list_entry, devs_attr ) {
+		attr = DevicesManager::getString( udev_list_entry_get_name( devs_list_entry ) );
+		if( attr == "" )
+			continue;
+
+		value = DevicesManager::getString( udev_device_get_sysattr_value(dev, attr.c_str()) );
 		LOG(DEBUG4) << attr << " : " << value;
 	}
 	LOG(DEBUG4) << "--";
@@ -187,7 +198,7 @@ void DevicesManager::searchSupportedDevices(void) {
 
 	enumerate = udev_enumerate_new(this->udev);
 	if ( enumerate == nullptr )
-		throw GLogiKExcept("udev enumerate object creation failure");
+		throw GLogiKExcept("usb enumerate object creation failure");
 
 	try {
 		// ---
@@ -195,11 +206,11 @@ void DevicesManager::searchSupportedDevices(void) {
 		// ---
 
 		//LOG(DEBUG2) << "input enumerate";
-		if( udev_enumerate_add_match_subsystem(enumerate, "input") < 0 )
-			throw GLogiKExcept("input enumerate filtering init failure");
+		if( udev_enumerate_add_match_subsystem(enumerate, "usb") < 0 )
+			throw GLogiKExcept("usb enumerate filtering init failure");
 
 		if( udev_enumerate_scan_devices(enumerate) < 0 )
-			throw GLogiKExcept("enumerate_scan_devices failure");
+			throw GLogiKExcept("usb numerate_scan_devices failure");
 
 		devices = udev_enumerate_get_list_entry(enumerate);
 		if( devices == nullptr )
@@ -218,19 +229,15 @@ void DevicesManager::searchSupportedDevices(void) {
 				continue;
 			}
 
+#if GLOGIKD_GLOBAL_DEBUG
 			std::string devss = this->getString( udev_device_get_subsystem(dev) );
 			if( devss == "" ) {
 				udev_device_unref(dev);
 				throw GLogiKExcept("get_subsystem failure");
 			}
 
-			if( udev_device_get_property_value(dev, "ID_INPUT_KEYBOARD") == nullptr ) {
-				udev_device_unref(dev);
-				continue;
-			}
-
-			/* GLOGIKD_GLOBAL_DEBUG */
 			//deviceProperties(dev, devss);
+#endif
 
 			std::string vendor_id = this->getString( udev_device_get_property_value(dev, "ID_VENDOR_ID") );
 			std::string product_id = this->getString( udev_device_get_property_value(dev, "ID_MODEL_ID") );
@@ -251,8 +258,9 @@ void DevicesManager::searchSupportedDevices(void) {
 								continue;
 							}
 
-							/* GLOGIKD_GLOBAL_DEBUG */
-							//deviceProperties(dev, devss);
+#if GLOGIKD_GLOBAL_DEBUG
+							deviceProperties(dev, devss);
+#endif
 
 							std::string vendor = this->getString( udev_device_get_property_value(dev, "ID_VENDOR") );
 							std::string model = this->getString( udev_device_get_property_value(dev, "ID_MODEL") );

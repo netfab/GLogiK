@@ -42,6 +42,13 @@ void KeyboardDriver::initializeLibusb(void) {
 	if( num_devices <= 0 )
 		this->handleLibusbError(num_devices, "error getting USB devices list (or zero!)");
 
+	for (int idx = 0; idx < num_devices; ++idx) {
+		libusb_device *device = list[idx];
+		LOG(DEBUG4) << "bus num: " << (int)libusb_get_bus_number(device);
+		LOG(DEBUG4) << "device address: " << (int)libusb_get_device_address(device);
+	}
+
+
 	libusb_free_device_list(list, 1);
 }
 
