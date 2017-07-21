@@ -214,7 +214,7 @@ void DevicesManager::searchSupportedDevices(void) {
 
 		devices = udev_enumerate_get_list_entry(enumerate);
 		if( devices == nullptr )
-			throw GLogiKExcept("devices empty list or failure");
+			throw GLogiKExcept("usb devices empty list or failure");
 
 		udev_list_entry_foreach(dev_list_entry, devices) {
 			// Get the filename of the /sys entry for the device
@@ -251,7 +251,7 @@ void DevicesManager::searchSupportedDevices(void) {
 					if( device.vendor_id == vendor_id )
 						if( device.product_id == product_id ) {
 
-							// path to the event device node in /dev/input/
+							// path to the event device node in /dev
 							std::string devnode = this->getString( udev_device_get_devnode(dev) );
 							if( devnode == "" ) {
 								udev_device_unref(dev);
