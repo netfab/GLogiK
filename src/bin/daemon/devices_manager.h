@@ -35,7 +35,7 @@ class DevicesManager
 		~DevicesManager(void);
 
 		void startMonitoring(void);
-		static std::string getString(const char* s) { return s == nullptr ? "" : s; };
+		static std::string toString(const char* s) { return s == nullptr ? "" : s; };
 
 	protected:
 

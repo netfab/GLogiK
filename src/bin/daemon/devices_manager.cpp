@@ -166,22 +166,22 @@ void deviceProperties(struct udev_device *dev, const std::string &subsystem) {
 	std::string value;
 	std::string attr;
 	udev_list_entry_foreach( devs_list_entry, devs_props ) {
-		attr = DevicesManager::getString( udev_list_entry_get_name( devs_list_entry ) );
+		attr = DevicesManager::toString( udev_list_entry_get_name( devs_list_entry ) );
 		if( attr == "" )
 			continue;
 
-		value = DevicesManager::getString( udev_device_get_property_value(dev, attr.c_str()) );
+		value = DevicesManager::toString( udev_device_get_property_value(dev, attr.c_str()) );
 		LOG(DEBUG4) << attr << " : " << value;
 	}
 	LOG(DEBUG4) << "--";
 	LOG(DEBUG4) << "/sys attributes";
 	LOG(DEBUG4) << "--";
 	udev_list_entry_foreach( devs_list_entry, devs_attr ) {
-		attr = DevicesManager::getString( udev_list_entry_get_name( devs_list_entry ) );
+		attr = DevicesManager::toString( udev_list_entry_get_name( devs_list_entry ) );
 		if( attr == "" )
 			continue;
 
-		value = DevicesManager::getString( udev_device_get_sysattr_value(dev, attr.c_str()) );
+		value = DevicesManager::toString( udev_device_get_sysattr_value(dev, attr.c_str()) );
 		LOG(DEBUG4) << attr << " : " << value;
 	}
 	LOG(DEBUG4) << "--";
@@ -219,7 +219,7 @@ void DevicesManager::searchSupportedDevices(void) {
 		udev_list_entry_foreach(dev_list_entry, devices) {
 			// Get the filename of the /sys entry for the device
 			// and create a udev_device object (dev) representing it
-			std::string path = this->getString( udev_list_entry_get_name(dev_list_entry) );
+			std::string path = this->toString( udev_list_entry_get_name(dev_list_entry) );
 			if( path == "" )
 				throw GLogiKExcept("entry_get_name failure");
 
@@ -230,7 +230,7 @@ void DevicesManager::searchSupportedDevices(void) {
 			}
 
 #if GLOGIKD_GLOBAL_DEBUG
-			std::string devss = this->getString( udev_device_get_subsystem(dev) );
+			std::string devss = this->toString( udev_device_get_subsystem(dev) );
 			if( devss == "" ) {
 				udev_device_unref(dev);
 				throw GLogiKExcept("get_subsystem failure");
@@ -239,8 +239,8 @@ void DevicesManager::searchSupportedDevices(void) {
 			//deviceProperties(dev, devss);
 #endif
 
-			std::string vendor_id = this->getString( udev_device_get_property_value(dev, "ID_VENDOR_ID") );
-			std::string product_id = this->getString( udev_device_get_property_value(dev, "ID_MODEL_ID") );
+			std::string vendor_id = this->toString( udev_device_get_property_value(dev, "ID_VENDOR_ID") );
+			std::string product_id = this->toString( udev_device_get_property_value(dev, "ID_MODEL_ID") );
 			if( (vendor_id == "") or (product_id == "") ) {
 				udev_device_unref(dev);
 				continue;
@@ -252,7 +252,7 @@ void DevicesManager::searchSupportedDevices(void) {
 						if( device.product_id == product_id ) {
 
 							// path to the event device node in /dev
-							std::string devnode = this->getString( udev_device_get_devnode(dev) );
+							std::string devnode = this->toString( udev_device_get_devnode(dev) );
 							if( devnode == "" ) {
 								udev_device_unref(dev);
 								continue;
@@ -262,10 +262,10 @@ void DevicesManager::searchSupportedDevices(void) {
 							deviceProperties(dev, devss);
 #endif
 
-							std::string vendor = this->getString( udev_device_get_property_value(dev, "ID_VENDOR") );
-							std::string model = this->getString( udev_device_get_property_value(dev, "ID_MODEL") );
-							std::string serial = this->getString( udev_device_get_property_value(dev, "ID_SERIAL") );
-							std::string usec = this->getString( udev_device_get_property_value(dev, "USEC_INITIALIZED") );
+							std::string vendor = this->toString( udev_device_get_property_value(dev, "ID_VENDOR") );
+							std::string model = this->toString( udev_device_get_property_value(dev, "ID_MODEL") );
+							std::string serial = this->toString( udev_device_get_property_value(dev, "ID_SERIAL") );
+							std::string usec = this->toString( udev_device_get_property_value(dev, "USEC_INITIALIZED") );
 
 							DetectedDevice found;
 							found.device			= device;
@@ -344,11 +344,11 @@ void DevicesManager::startMonitoring(void) {
 			if( dev == nullptr )
 				throw GLogiKExcept("no device from receive_device(), something is wrong");
 
-			std::string action = this->getString( udev_device_get_action(dev) );
+			std::string action = this->toString( udev_device_get_action(dev) );
 			if( action == "" )
 				throw GLogiKExcept("device_get_action() failure");
 
-			std::string devnode = this->getString( udev_device_get_devnode(dev) );
+			std::string devnode = this->toString( udev_device_get_devnode(dev) );
 			if( devnode == "" ) // filtering empty events
 				continue;
 
