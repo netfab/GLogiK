@@ -1,5 +1,5 @@
 
-
+#include <stdexcept>
 #include <string>
 
 #include <libudev.h>
@@ -267,6 +267,19 @@ void DevicesManager::searchSupportedDevices(void) {
 							std::string serial = this->toString( udev_device_get_property_value(dev, "ID_SERIAL") );
 							std::string usec = this->toString( udev_device_get_property_value(dev, "USEC_INITIALIZED") );
 
+							unsigned int bus, num = 0;
+
+							try {
+								bus = std::stoi(this->toString( udev_device_get_sysattr_value(dev, "busnum")));
+								num = std::stoi(this->toString( udev_device_get_sysattr_value(dev, "devnum")));
+							}
+							catch (const std::invalid_argument& ia) {
+								throw GLogiKExcept("stoi invalid argument");
+							}
+							catch (const std::out_of_range& oor) {
+								throw GLogiKExcept("stoi out of range");
+							}
+
 							DetectedDevice found;
 							found.device			= device;
 							found.input_dev_node	= devnode;
@@ -275,11 +288,14 @@ void DevicesManager::searchSupportedDevices(void) {
 							found.serial			= serial;
 							found.usec				= usec;
 							found.driver_ID			= driver->getDriverID();
+							found.device_bus		= bus;
+							found.device_num		= num;
 
 							this->detected_devices_.push_back(found);
 
-							LOG(DEBUG3) << "found device - Vid:Pid:DevNode:usec : " << vendor_id
-										<< ":" << product_id << ":" << devnode << ":" << usec;
+							LOG(DEBUG3) << "found device - Vid:Pid:DevNode:usec | bus:num : " << vendor_id
+										<< ":" << product_id << ":" << devnode << ":" << usec
+										<< " | " << bus << ":" << num;
 						}
 				}
 			}

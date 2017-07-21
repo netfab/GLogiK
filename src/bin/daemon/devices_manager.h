@@ -22,6 +22,8 @@ struct DetectedDevice {
 	std::string serial;
 	std::string usec;
 	unsigned int driver_ID;
+	unsigned int device_bus;
+	unsigned int device_num;
 };
 
 #if GLOGIKD_GLOBAL_DEBUG
