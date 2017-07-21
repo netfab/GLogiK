@@ -24,7 +24,6 @@ GLogiK=$PWD/.. CD=. {
 		binaries=bin/ {
 			Makefile.am
 			daemon=daemon/ {
-				test
 				Makefile.am
 				main.cpp
 				daemon.cpp

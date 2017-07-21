@@ -30,7 +30,7 @@ class KeyboardDriver
 		std::vector<KeyboardDevice> getSupportedDevices(void) const;
 
 		virtual void initializeDevice(const KeyboardDevice &device, const unsigned int bus, const unsigned int num) = 0;
-		virtual void closeDevice(void) = 0;
+		virtual void closeDevice(const KeyboardDevice &device, const unsigned int bus, const unsigned int num) = 0;
 
 	protected:
 		std::ostringstream buffer_;

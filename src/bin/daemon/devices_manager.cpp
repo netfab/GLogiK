@@ -96,7 +96,7 @@ void DevicesManager::closeInitializedDevices(void) {
 	for(const auto& init_dev : this->initialized_devices_) {
 		for(const auto& driver : this->drivers_) {
 			if( init_dev.driver_ID == driver->getDriverID() ) {
-				driver->closeDevice(); // FIXME
+				driver->closeDevice( init_dev.device, init_dev.device_bus, init_dev.device_num );
 			}
 		}
 	}
@@ -130,7 +130,7 @@ void DevicesManager::cleanUnpluggedDevices(void) {
 						LOG(WARNING) << "device closing attempt "
 									<< (*it).device.vendor_id << ":" << (*it).device.product_id
 									<< ":" << (*it).input_dev_node << ":" << (*it).usec;
-						driver->closeDevice(); // closing FIXME
+						driver->closeDevice( (*it).device, (*it).device_bus, (*it).device_num );
 						break;
 					}
 				} // for

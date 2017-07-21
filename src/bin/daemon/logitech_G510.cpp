@@ -27,8 +27,10 @@ void LogitechG510::initializeDevice(const KeyboardDevice & device, const unsigne
 	this->initializeLibusb();
 }
 
-void LogitechG510::closeDevice() {
-	LOG(DEBUG3) << "closing G510 device";
+void LogitechG510::closeDevice(const KeyboardDevice &device, const unsigned int bus, const unsigned int num) {
+	LOG(DEBUG3) << "Trying to close " << device.name << "("
+				<< device.vendor_id << ":" << device.product_id << "), device "
+				<< num << " on bus " << bus;
 }
 
 } // namespace GLogiKd
