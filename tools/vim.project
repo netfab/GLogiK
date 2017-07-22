@@ -13,9 +13,6 @@ GLogiK=$PWD/.. CD=. {
 	}
 	macro=m4/ {
 	}
-	doc=doc/ {
-		README
-	}
 	srcfiles=src/ {
 		Makefile.am
 		include=include/ {
