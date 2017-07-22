@@ -1,8 +1,46 @@
-#ifndef __GLOGIKD_LOG_H__
-#define __GLOGIKD_LOG_H__
+/*
+ *	Code in this file is a slightly modified version of the code
+ *	available in this article :
+ *
+ *		http://www.drdobbs.com/cpp/logging-in-c/201804215
+ *
+ *	The code published in this article can be used
+ *		« w/o any restrictions ».
+ *	See the following mail in doc/ directory :
+ *		Re: Logging In C++ Dr. Dobb's article.txt
+ *
+ *
+ *	Modifications of the original code are pusblished
+ *	under the GNU GPLv3.
+ *
+ */
+
+/*
+ *
+ *	This file is part of GLogiK project.
+ *	GLogiKd, daemon to handle special features on gaming keyboards
+ *	Copyright (C) 2016-2017  Fabrice Delliaux <netbox253@gmail.com>
+ *
+ *	This program is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
 // http://stackoverflow.com/questions/5028302/small-logger-class
-// http://www.drdobbs.com/cpp/logging-in-c/201804215
+
+
+#ifndef __GLOGIKD_LOG_H__
+#define __GLOGIKD_LOG_H__
 
 #include <sstream>
 #include <string>

@@ -1,0 +1,108 @@
+Delivered-To: netbox253@gmail.com
+Received: by 10.37.202.211 with SMTP id a202csp2078273ybg;
+        Tue, 4 Oct 2016 03:53:21 -0700 (PDT)
+X-Received: by 10.36.185.69 with SMTP id k5mr16384804iti.21.1475578401180;
+        Tue, 04 Oct 2016 03:53:21 -0700 (PDT)
+Return-Path: <petru.marginean@gmail.com>
+Received: from mail-it0-x22f.google.com (mail-it0-x22f.google.com. [2607:f8b0:4001:c0b::22f])
+        by mx.google.com with ESMTPS id t189si21005953itb.57.2016.10.04.03.53.21
+        for <netbox253@gmail.com>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 04 Oct 2016 03:53:21 -0700 (PDT)
+Received-SPF: pass (google.com: domain of petru.marginean@gmail.com designates 2607:f8b0:4001:c0b::22f as permitted sender) client-ip=2607:f8b0:4001:c0b::22f;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@gmail.com;
+       spf=pass (google.com: domain of petru.marginean@gmail.com designates 2607:f8b0:4001:c0b::22f as permitted sender) smtp.mailfrom=petru.marginean@gmail.com;
+       dmarc=pass (p=NONE dis=NONE) header.from=gmail.com
+Received: by mail-it0-x22f.google.com with SMTP id r192so133701662ita.0
+        for <netbox253@gmail.com>; Tue, 04 Oct 2016 03:53:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to;
+        bh=NFiGJdxxFaJiHzqi9fy4XpE8mhBM1FFH1oLLWmfNad8=;
+        b=rYIbiT8DOQPUqcoBPBVoNQporED4APFtbGfqyVIfmp657wUiZsEGRje/RkiD9d7jF8
+         CZ4OgVz9Con+IhnF1iHoQKRn3KUnsoQvlNi9RjYjdNIw8jul3mP9NUFZqSVgKthrTqFJ
+         7YqS0qPtf7LSyTeL9e/gLSdzlbCDsOMFRZH68m400hqQT3m3Xm6LULWWPzeiC3S6ZY4I
+         gmJC7UfhdHtm2a4BmY66r5QGWeTtfO/8HwtI20Ykhta4/gCu9k5Yp1fxMXpgBM4dXwxj
+         xBF5ljK07AOLCOBRWpUhqTI1MvAooUFhlwYkZKcs3CS2ymb6w0OfdONvOjZmN68wRDag
+         zqOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to;
+        bh=NFiGJdxxFaJiHzqi9fy4XpE8mhBM1FFH1oLLWmfNad8=;
+        b=nMpW1lYs17qX9S35OoMxHKS1iDL5Yb0iHbyZy3IWf99fdbB6eso50S7aUwq58cVBJ/
+         4K69Oenc+33B+9y2EO3n7n38lNzJz/PCo/132wZzewior5JdQhSBJn3I9D7UE7ZjqZHt
+         dIyWIXXyl99lej8l5Zh/2PzO9InSvtBsMaO7sco3USkvMEVsFdKjeBaybjianUnzmZC3
+         C3LEI5IDt91bAXg5UsE481UVPkWYGufGU7Ys87lyhnRUlm2MihfAzTtSM2REIZsTLv9E
+         GLsOp/hRDsdhnXjmNihmnPRDRW5jsdG4vQvOiw7nVEOXDImceo/RgBZyoh/3CeOvkgv9
+         151g==
+X-Gm-Message-State: AA6/9RnMeE4FescG93MA7qY4dRVz6xOq6pDPlnTgwxqkmpVIe1dyXUlLm+aPTYei94qZ4KiAydSbdEgr08tylw==
+X-Received: by 10.36.185.30 with SMTP id w30mr3647149ite.97.1475578400421;
+ Tue, 04 Oct 2016 03:53:20 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 10.36.163.74 with HTTP; Tue, 4 Oct 2016 03:53:19 -0700 (PDT)
+Received: by 10.36.163.74 with HTTP; Tue, 4 Oct 2016 03:53:19 -0700 (PDT)
+In-Reply-To: <20161004092651.2337fe75@coreI5.fabnetwork>
+References: <20161004092651.2337fe75@coreI5.fabnetwork>
+From: Petru Marginean <petru.marginean@gmail.com>
+Date: Tue, 4 Oct 2016 06:53:19 -0400
+Message-ID: <CAEXDwtzxbbJTrpx-tj1TSRYZLRML7zYpWSTkJhjo3Pgc8H2iRw@mail.gmail.com>
+Subject: Re: Logging In C++ Dr. Dobb's article
+To: Fabrice Delliaux <netbox253@gmail.com>
+Content-Type: multipart/alternative; boundary=f403045d9832653f33053e07de69
+
+--f403045d9832653f33053e07de69
+Content-Type: text/plain; charset=UTF-8
+
+The code can be used w/o any restrictions.
+
+It would be appreciated if you would add a comment in the header with your
+source/code author.
+
+Good luck,
+Petru
+
+On Oct 4, 2016 03:27, "Fabrice Delliaux" <netbox253@gmail.com> wrote:
+
+>
+>
+> Hi,
+>
+> What is the license of the code on the article about Logging In C++
+> published on drdobbs.com ?
+>
+> Thank you.
+>
+> 1. http://www.drdobbs.com/cpp/logging-in-c/201804215
+>
+
+--f403045d9832653f33053e07de69
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<p dir=3D"ltr">The code can be used w/o any restrictions.</p>
+<p dir=3D"ltr">It would be appreciated if you would add a comment in the he=
+ader with your source/code author.</p>
+<p dir=3D"ltr">Good luck,<br>
+Petru</p>
+<div class=3D"gmail_extra"><br><div class=3D"gmail_quote">On Oct 4, 2016 03=
+:27, &quot;Fabrice Delliaux&quot; &lt;<a href=3D"mailto:netbox253@gmail.com=
+">netbox253@gmail.com</a>&gt; wrote:<br type=3D"attribution"><blockquote cl=
+ass=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;p=
+adding-left:1ex"><br>
+<br>
+Hi,<br>
+<br>
+What is the license of the code on the article about Logging In C++<br>
+published on <a href=3D"http://drdobbs.com" rel=3D"noreferrer" target=3D"_b=
+lank">drdobbs.com</a> ?<br>
+<br>
+Thank you.<br>
+<br>
+1. <a href=3D"http://www.drdobbs.com/cpp/logging-in-c/201804215" rel=3D"nor=
+eferrer" target=3D"_blank">http://www.drdobbs.com/cpp/<wbr>logging-in-c/201=
+804215</a><br>
+</blockquote></div></div>
+
+--f403045d9832653f33053e07de69--
