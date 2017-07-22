@@ -56,7 +56,7 @@ class KeyboardDriver
 		std::ostringstream buffer_;
 		std::vector<KeyboardDevice> supported_devices_;
 
-		void initializeLibusb(void);
+		void initializeLibusb(const unsigned int bus, const unsigned int num);
 
 	private:
 		static bool libusb_status_;			/* is libusb initialized ? */

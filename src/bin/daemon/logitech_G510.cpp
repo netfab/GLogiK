@@ -44,7 +44,7 @@ void LogitechG510::initializeDevice(const KeyboardDevice & device, const unsigne
 	LOG(DEBUG3) << "Trying to initialize " << device.name << "("
 				<< device.vendor_id << ":" << device.product_id << "), device "
 				<< num << " on bus " << bus;
-	this->initializeLibusb();
+	this->initializeLibusb(bus, num);
 }
 
 void LogitechG510::closeDevice(const KeyboardDevice &device, const unsigned int bus, const unsigned int num) {

@@ -46,7 +46,7 @@ std::vector<KeyboardDevice> KeyboardDriver::getSupportedDevices(void) const {
 	return this->supported_devices_;
 }
 
-void KeyboardDriver::initializeLibusb(void) {
+void KeyboardDriver::initializeLibusb(const unsigned int bus, const unsigned int num) {
 	LOG(DEBUG4) << "initializing libusb";
 	int ret_value = libusb_init( &(this->context_) );
 	this->handleLibusbError(ret_value, "libusb initialization failure");
@@ -58,12 +58,23 @@ void KeyboardDriver::initializeLibusb(void) {
 	if( num_devices <= 0 )
 		this->handleLibusbError(num_devices, "error getting USB devices list (or zero!)");
 
+	libusb_device *device = nullptr;
 	for (int idx = 0; idx < num_devices; ++idx) {
-		libusb_device *device = list[idx];
-		LOG(DEBUG4) << "bus num: " << (int)libusb_get_bus_number(device);
-		LOG(DEBUG4) << "device address: " << (int)libusb_get_device_address(device);
+		device = list[idx];
+		if( (int)libusb_get_bus_number(device) == bus and
+			(int)libusb_get_device_address(device) == num ) {
+			break;
+		}
+		device = nullptr;
 	}
 
+	if( device == nullptr ) {
+		this->buffer_.str("libusb cannot find device ");
+		this->buffer_ << num << " on bus " << bus;
+		throw GLogiKExcept(this->buffer_.str());
+	}
+
+	LOG(DEBUG3) << "libusb found device " << num << " on bus " << bus;
 
 	libusb_free_device_list(list, 1);
 }
