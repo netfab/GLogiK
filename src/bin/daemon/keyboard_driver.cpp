@@ -111,8 +111,12 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const unsign
 
 	this->initializeLibusb(bus, num);
 
-	// FIXME catch std::bad_alloc
-	current_device.virtual_keyboard = this->initializeVirtualKeyboard();
+	try {
+		current_device.virtual_keyboard = this->initializeVirtualKeyboard();
+	}
+	catch (const std::bad_alloc& e) {
+		throw GLogiKExcept("virtual keyboard allocation failure");
+	}
 
 	this->initialized_devices_.push_back( current_device );
 }
