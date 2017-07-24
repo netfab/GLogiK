@@ -124,6 +124,7 @@ dnl -------------------------------------------------------------------------
 #PKG_CHECK_MODULES([SDLMIXER], [SDL_mixer >= 1.2.11])
 PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.0])
 PKG_CHECK_MODULES([LIBUDEV], [libudev])
+PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
 
 AX_BOOST_BASE([1.56.0])
 AX_BOOST_PROGRAM_OPTIONS

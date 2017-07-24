@@ -23,6 +23,7 @@
 
 #include "exception.h"
 #include "include/log.h"
+
 #include "keyboard_driver.h"
 
 
@@ -76,6 +77,8 @@ void KeyboardDriver::initializeLibusb(const unsigned int bus, const unsigned int
 
 	LOG(DEBUG3) << "libusb found device " << num << " on bus " << bus;
 
+	// TODO open device
+
 	libusb_free_device_list(list, 1);
 }
 
@@ -97,6 +100,47 @@ int KeyboardDriver::handleLibusbError(int error_code, const char* except_msg) {
 	}
 
 	return error_code;
+}
+
+void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const unsigned int bus, const unsigned int num) {
+	LOG(DEBUG3) << "Trying to initialize " << device.name << "("
+				<< device.vendor_id << ":" << device.product_id << "), device "
+				<< num << " on bus " << bus;
+
+	InitializedDevice current_device = { device, bus, num, nullptr };
+
+	this->initializeLibusb(bus, num);
+
+	// FIXME catch std::bad_alloc
+	current_device.virtual_keyboard = this->initializeVirtualKeyboard();
+
+	this->initialized_devices_.push_back( current_device );
+}
+
+void KeyboardDriver::closeDevice(const KeyboardDevice &device, const unsigned int bus, const unsigned int num) {
+	LOG(DEBUG3) << "Trying to close " << device.name << "("
+				<< device.vendor_id << ":" << device.product_id << "), device "
+				<< num << " on bus " << bus;
+
+	bool found = false;
+	for(auto it = this->initialized_devices_.begin(); it != this->initialized_devices_.end();) {
+		if( ((*it).bus == bus) and ((*it).num == num) ) {
+			delete (*it).virtual_keyboard;
+			(*it).virtual_keyboard = nullptr;
+			found = true;
+			it = this->initialized_devices_.erase(it);
+			break;
+		}
+		else {
+			++it;
+		}
+	}
+	if ( ! found ) // FIXME
+			throw GLogiKExcept("keyboard not found in initialized devices");
+}
+
+VirtualKeyboard* KeyboardDriver::initializeVirtualKeyboard( void ) {
+	return new VirtualKeyboard();
 }
 
 } // namespace GLogiKd

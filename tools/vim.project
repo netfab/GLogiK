@@ -38,6 +38,8 @@ GLogiK=$PWD/.. CD=. {
 				logitech_G510.h
 				keyboard_driver.cpp
 				keyboard_driver.h
+				virtual_keyboard.cpp
+				virtual_keyboard.h
 			}
 			foo=foo/ {
 				Makefile.am
