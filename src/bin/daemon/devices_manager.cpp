@@ -116,14 +116,20 @@ void DevicesManager::closeInitializedDevices(void) {
 
 	for(const auto& init_dev : this->initialized_devices_) {
 		for(const auto& driver : this->drivers_) {
-			if( init_dev.driver_ID == driver->getDriverID() ) {
-				driver->closeDevice( init_dev.device, init_dev.device_bus, init_dev.device_num );
+			try {
+				if( init_dev.driver_ID == driver->getDriverID() ) {
+					driver->closeDevice( init_dev.device, init_dev.device_bus, init_dev.device_num );
 
-				this->buffer_.str( init_dev.device.name );
-				this->buffer_	<< "(" << init_dev.device.vendor_id << ":" << init_dev.device.product_id
-								<< ") on bus " << init_dev.device_bus << " closed";
-				LOG(INFO) << this->buffer_.str();
-				syslog(LOG_INFO, this->buffer_.str().c_str());
+					this->buffer_.str( init_dev.device.name );
+					this->buffer_	<< "(" << init_dev.device.vendor_id << ":" << init_dev.device.product_id
+									<< ") on bus " << init_dev.device_bus << " closed";
+					LOG(INFO) << this->buffer_.str();
+					syslog(LOG_INFO, this->buffer_.str().c_str());
+				}
+			}
+			catch ( const GLogiKExcept & e ) {
+				syslog( LOG_ERR, e.what() );
+				LOG(ERROR) << e.what();
 			}
 		}
 	}

@@ -135,8 +135,12 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &device, const unsigned in
 			++it;
 		}
 	}
-	if ( ! found ) // FIXME
-			throw GLogiKExcept("keyboard not found in initialized devices");
+	if ( ! found ) {
+		this->buffer_.str("device ");
+		this->buffer_ << num << " on bus " << bus;
+		this->buffer_ << " not found in initialized devices";
+		throw GLogiKExcept(this->buffer_.str());
+	}
 }
 
 VirtualKeyboard* KeyboardDriver::initializeVirtualKeyboard( void ) {
