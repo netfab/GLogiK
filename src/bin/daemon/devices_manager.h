@@ -26,7 +26,6 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
 #include <sstream>
 
 #include "keyboard_driver.h"

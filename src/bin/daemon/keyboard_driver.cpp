@@ -19,6 +19,8 @@
  *
  */
 
+#include <iostream>
+
 #include <config.h>
 
 #include "exception.h"

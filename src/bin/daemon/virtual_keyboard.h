@@ -22,7 +22,6 @@
 #ifndef __GLOGIKD_VIRTUAL_KEYBOARD_H__
 #define __GLOGIKD_VIRTUAL_KEYBOARD_H__
 
-#include <iostream>
 #include <sstream>
 
 #include <libevdev/libevdev.h>

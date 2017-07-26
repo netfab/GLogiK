@@ -19,7 +19,6 @@
  *
  */
 
-#include <string>
 #include "exception.h"
 
 namespace GLogiKd
