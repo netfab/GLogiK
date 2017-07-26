@@ -31,7 +31,7 @@ namespace GLogiKd
 {
 
 VirtualKeyboard::VirtualKeyboard(const char* device_name) {
-	LOG(DEBUG3) << "virtual keyboard constructor";
+	LOG(DEBUG3) << "initializating " << device_name;
 
 	this->dev = libevdev_new();
 	libevdev_set_name(dev, device_name);
@@ -47,7 +47,7 @@ VirtualKeyboard::VirtualKeyboard(const char* device_name) {
 }
 
 VirtualKeyboard::~VirtualKeyboard() {
-	LOG(DEBUG3) << "virtual keyboard destructor";
+	LOG(DEBUG3) << "destroying " << libevdev_get_name(this->dev);
 
 	this->foo();
 

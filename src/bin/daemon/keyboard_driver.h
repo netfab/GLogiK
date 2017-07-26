@@ -34,9 +34,9 @@ namespace GLogiKd
 {
 
 struct KeyboardDevice {
-	std::string name;
-	std::string vendor_id;
-	std::string product_id;
+	const char* name;
+	const char* vendor_id;
+	const char* product_id;
 };
 
 struct InitializedDevice {
