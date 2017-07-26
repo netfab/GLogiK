@@ -65,7 +65,7 @@ class KeyboardDriver
 		std::vector<KeyboardDevice> supported_devices_;
 
 		void initializeLibusb(const unsigned int bus, const unsigned int num);
-		VirtualKeyboard* initializeVirtualKeyboard( void );
+		VirtualKeyboard* initializeVirtualKeyboard( const char* device_name );
 
 	private:
 		static bool libusb_status_;			/* is libusb initialized ? */

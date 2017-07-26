@@ -30,11 +30,11 @@
 namespace GLogiKd
 {
 
-VirtualKeyboard::VirtualKeyboard() {
+VirtualKeyboard::VirtualKeyboard(const char* device_name) {
 	LOG(DEBUG3) << "virtual keyboard constructor";
 
 	this->dev = libevdev_new();
-	libevdev_set_name(dev, "test device");
+	libevdev_set_name(dev, device_name);
 
 	libevdev_enable_event_type(this->dev, EV_KEY);
 	libevdev_enable_event_code(this->dev, EV_KEY, KEY_A, NULL);

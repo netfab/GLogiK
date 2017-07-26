@@ -31,7 +31,7 @@ namespace GLogiKd
 class VirtualKeyboard
 {
 	public:
-		VirtualKeyboard();
+		VirtualKeyboard(const char* device_name);
 		~VirtualKeyboard();
 		void foo(void);
 

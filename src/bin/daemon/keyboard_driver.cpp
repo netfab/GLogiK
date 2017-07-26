@@ -111,8 +111,11 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const unsign
 
 	this->initializeLibusb(bus, num);
 
+	this->buffer_.str("Virtual ");
+	this->buffer_ << device.name << " b" << bus << "d" << num;
+
 	try {
-		current_device.virtual_keyboard = this->initializeVirtualKeyboard();
+		current_device.virtual_keyboard = this->initializeVirtualKeyboard(this->buffer_.str().c_str());
 	}
 	catch (const std::bad_alloc& e) {
 		throw GLogiKExcept("virtual keyboard allocation failure");
@@ -147,8 +150,8 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &device, const unsigned in
 	}
 }
 
-VirtualKeyboard* KeyboardDriver::initializeVirtualKeyboard( void ) {
-	return new VirtualKeyboard();
+VirtualKeyboard* KeyboardDriver::initializeVirtualKeyboard( const char* device_name ) {
+	return new VirtualKeyboard(device_name);
 }
 
 } // namespace GLogiKd
