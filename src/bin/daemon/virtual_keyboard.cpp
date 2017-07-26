@@ -34,7 +34,7 @@ VirtualKeyboard::VirtualKeyboard(const char* device_name) {
 	LOG(DEBUG3) << "initializating " << device_name;
 
 	this->dev = libevdev_new();
-	libevdev_set_name(dev, device_name);
+	libevdev_set_name(this->dev, device_name);
 
 	libevdev_enable_event_type(this->dev, EV_KEY);
 	libevdev_enable_event_code(this->dev, EV_KEY, KEY_A, NULL);
@@ -42,8 +42,10 @@ VirtualKeyboard::VirtualKeyboard(const char* device_name) {
 	int err = libevdev_uinput_create_from_device(this->dev,
 				LIBEVDEV_UINPUT_OPEN_MANAGED, &this->uidev);
 
-	if (err != 0)
+	if (err != 0) {
+		libevdev_free(this->dev);
 		throw GLogiKExcept("virtual device creation failure");
+	}
 }
 
 VirtualKeyboard::~VirtualKeyboard() {
@@ -52,6 +54,7 @@ VirtualKeyboard::~VirtualKeyboard() {
 	this->foo();
 
 	libevdev_uinput_destroy(this->uidev);
+	libevdev_free(this->dev);
 }
 
 void VirtualKeyboard::foo(void) {
