@@ -38,7 +38,17 @@ VirtualKeyboard::VirtualKeyboard(const char* device_name) : buffer_("", std::ios
 	libevdev_set_name(this->dev, device_name);
 
 	this->enable_event_type(EV_KEY);
-	this->enable_event_code(EV_KEY, KEY_A);
+
+	{	/* linux/input-event-codes.h */
+		unsigned int i = 0;
+
+		for (i = KEY_ESC; i <= KEY_KPDOT; i++)
+			this->enable_event_code(EV_KEY, i);
+		for (i = KEY_ZENKAKUHANKAKU; i <= KEY_F24; i++)
+			this->enable_event_code(EV_KEY, i);
+		for (i = KEY_PLAYCD; i <= KEY_MICMUTE; i++)
+			this->enable_event_code(EV_KEY, i);
+	}
 
 	int err = libevdev_uinput_create_from_device(this->dev,
 				LIBEVDEV_UINPUT_OPEN_MANAGED, &this->uidev);
