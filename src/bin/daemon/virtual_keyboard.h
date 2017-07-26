@@ -22,6 +22,9 @@
 #ifndef __GLOGIKD_VIRTUAL_KEYBOARD_H__
 #define __GLOGIKD_VIRTUAL_KEYBOARD_H__
 
+#include <iostream>
+#include <sstream>
+
 #include <libevdev/libevdev.h>
 #include <libevdev/libevdev-uinput.h>
 
@@ -39,6 +42,12 @@ class VirtualKeyboard
 	private:
 		struct libevdev *dev;
 		struct libevdev_uinput *uidev;
+
+		std::ostringstream buffer_;
+
+		void free_device_and_throw(void);
+		void enable_event_type(unsigned int type);
+		void enable_event_code(unsigned int type, unsigned int code);
 };
 
 } // namespace GLogiKd

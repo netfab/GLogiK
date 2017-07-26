@@ -30,14 +30,14 @@
 namespace GLogiKd
 {
 
-VirtualKeyboard::VirtualKeyboard(const char* device_name) {
+VirtualKeyboard::VirtualKeyboard(const char* device_name) : buffer_("", std::ios_base::app) {
 	LOG(DEBUG3) << "initializating " << device_name;
 
 	this->dev = libevdev_new();
 	libevdev_set_name(this->dev, device_name);
 
-	libevdev_enable_event_type(this->dev, EV_KEY);
-	libevdev_enable_event_code(this->dev, EV_KEY, KEY_A, NULL);
+	this->enable_event_type(EV_KEY);
+	this->enable_event_code(EV_KEY, KEY_A);
 
 	int err = libevdev_uinput_create_from_device(this->dev,
 				LIBEVDEV_UINPUT_OPEN_MANAGED, &this->uidev);
@@ -55,6 +55,27 @@ VirtualKeyboard::~VirtualKeyboard() {
 
 	libevdev_uinput_destroy(this->uidev);
 	libevdev_free(this->dev);
+}
+
+void VirtualKeyboard::free_device_and_throw(void) {
+	libevdev_free(this->dev);
+	throw GLogiKExcept(this->buffer_.str());
+}
+
+void VirtualKeyboard::enable_event_type(unsigned int type) {
+	if ( libevdev_enable_event_type(this->dev, type) != 0 ) {
+		this->buffer_.str("enable event type failure : ");
+		this->buffer_ << type;
+		throw GLogiKExcept(this->buffer_.str());
+	}
+}
+
+void VirtualKeyboard::enable_event_code(unsigned int type, unsigned int code) {
+	if ( libevdev_enable_event_code(this->dev, type, code, nullptr) != 0 ) {
+		this->buffer_.str("enable event code failure : type ");
+		this->buffer_ << type << " code " << code;
+		this->free_device_and_throw();
+	}
 }
 
 void VirtualKeyboard::foo(void) {
