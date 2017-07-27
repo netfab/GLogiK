@@ -23,6 +23,8 @@
 #include <thread>
 #include <chrono>
 
+#include <cstring>
+
 #include "virtual_keyboard.h"
 
 #include "exception.h"
@@ -53,9 +55,10 @@ VirtualKeyboard::VirtualKeyboard(const char* device_name) : buffer_("", std::ios
 	int err = libevdev_uinput_create_from_device(this->dev,
 				LIBEVDEV_UINPUT_OPEN_MANAGED, &this->uidev);
 
-	if (err != 0) {
-		libevdev_free(this->dev);
-		throw GLogiKExcept("virtual device creation failure");
+	if (err < 0) {
+		this->buffer_.str("virtual device creation failure : ");
+		this->buffer_ << strerror( -(err) );
+		this->free_device_and_throw();
 	}
 }
 
