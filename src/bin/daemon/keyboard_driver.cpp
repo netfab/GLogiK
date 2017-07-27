@@ -77,6 +77,7 @@ void KeyboardDriver::initializeLibusb(InitializedDevice & current_device) {
 	if( current_device.usb_device == nullptr ) {
 		this->buffer_.str("libusb cannot find device ");
 		this->buffer_ << current_device.num << " on bus " << current_device.bus;
+		libusb_free_device_list(list, 1);
 		throw GLogiKExcept(this->buffer_.str());
 	}
 
