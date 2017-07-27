@@ -80,7 +80,7 @@ void VirtualKeyboard::enable_event_type(unsigned int type) {
 	if ( libevdev_enable_event_type(this->dev, type) != 0 ) {
 		this->buffer_.str("enable event type failure : ");
 		this->buffer_ << type;
-		throw GLogiKExcept(this->buffer_.str());
+		this->free_device_and_throw();
 	}
 }
 
