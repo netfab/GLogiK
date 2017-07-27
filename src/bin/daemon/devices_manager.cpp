@@ -103,8 +103,10 @@ void DevicesManager::initializeDevices(void) {
 			}
 		}
 		catch ( const GLogiKExcept & e ) {
-			syslog( LOG_ERR, e.what() );
-			LOG(ERROR) << e.what();
+			this->buffer_.str("device initialization failure : ");
+			this->buffer_ << e.what();
+			LOG(ERROR) << this->buffer_.str();
+			syslog(LOG_ERR, this->buffer_.str().c_str());
 		}
 	} // for
 	this->detected_devices_.clear();

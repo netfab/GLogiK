@@ -133,7 +133,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const unsign
 	else {
 		this->handleLibusbError(ret);
 		libusb_close( current_device.usb_handle );
-		throw GLogiKExcept("get_configuration error");
+		throw GLogiKExcept("libusb get_configuration error");
 	}
 
 	this->buffer_.str("Virtual ");
