@@ -52,14 +52,18 @@ std::vector<KeyboardDevice> KeyboardDriver::getSupportedDevices(void) const {
 void KeyboardDriver::initializeLibusb(InitializedDevice & current_device) {
 	LOG(DEBUG4) << "initializing libusb";
 	int ret_value = libusb_init( &(this->context_) );
-	this->handleLibusbError(ret_value, "libusb initialization failure");
+	if ( this->handleLibusbError(ret_value) ) {
+		throw GLogiKExcept("libusb initialization failure");
+	}
 
 	KeyboardDriver::libusb_status_ = true;
 
 	libusb_device **list;
 	int num_devices = libusb_get_device_list(this->context_, &(list));
-	if( num_devices <= 0 )
-		this->handleLibusbError(num_devices, "error getting USB devices list (or zero!)");
+	if( num_devices < 0 ) {
+		this->handleLibusbError(num_devices);
+		throw GLogiKExcept("error getting USB devices list");
+	}
 
 	for (int idx = 0; idx < num_devices; ++idx) {
 		current_device.usb_device = list[idx];
@@ -78,25 +82,31 @@ void KeyboardDriver::initializeLibusb(InitializedDevice & current_device) {
 
 	LOG(DEBUG3) << "libusb found device " << current_device.num << " on bus " << current_device.bus;
 
-	// TODO open device
+	ret_value = libusb_open( current_device.usb_device, &(current_device.usb_handle) );
+	if( this->handleLibusbError(ret_value) ) {
+		throw GLogiKExcept("opening device failure");
+	}
 
 	libusb_free_device_list(list, 1);
 }
 
 void KeyboardDriver::closeLibusb(void) {
 	LOG(DEBUG4) << "closing libusb";
+	unsigned int s = this->initialized_devices_.size();
+	if( s != 0 ) { /* sanity check */
+		LOG(WARNING) << "closing libusb while " << s << " device(s) not closed !";
+	}
 	libusb_exit(this->context_);
 	KeyboardDriver::libusb_status_ = false;
 }
 
-int KeyboardDriver::handleLibusbError(int error_code, const char* except_msg) {
+int KeyboardDriver::handleLibusbError(int error_code) {
 	switch(error_code) {
 		case LIBUSB_SUCCESS:
 			break;
 		default:
 			LOG(ERROR) << "handleLibusbError: (" <<  libusb_error_name(error_code) << ") "
 						<< libusb_strerror((libusb_error)error_code);
-			throw GLogiKExcept(except_msg);
 			break;
 	}
 
@@ -108,9 +118,20 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const unsign
 				<< device.vendor_id << ":" << device.product_id << "), device "
 				<< num << " on bus " << bus;
 
-	InitializedDevice current_device = { device, bus, num, nullptr, nullptr };
+	InitializedDevice current_device = { device, bus, num, nullptr, nullptr, nullptr };
 
 	this->initializeLibusb(current_device);
+
+	int b = -1;
+	int * pB = &b;
+	int ret = libusb_get_configuration(current_device.usb_handle, pB);
+	if( ret == 0 ) {
+		LOG(DEBUG3) << "current conf: " << b;
+	}
+	else {
+		this->handleLibusbError(ret);
+		throw GLogiKExcept("get_configuration error");
+	}
 
 	this->buffer_.str("Virtual ");
 	this->buffer_ << device.name << " b" << bus << "d" << num;
@@ -135,6 +156,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &device, const unsigned in
 		if( ((*it).bus == bus) and ((*it).num == num) ) {
 			delete (*it).virtual_keyboard;
 			(*it).virtual_keyboard = nullptr;
+			libusb_close( (*it).usb_handle );
 			found = true;
 			it = this->initialized_devices_.erase(it);
 			break;

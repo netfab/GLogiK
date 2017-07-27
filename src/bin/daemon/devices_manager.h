@@ -45,6 +45,7 @@ struct DetectedDevice {
 	unsigned int driver_ID;
 	unsigned int device_bus;
 	unsigned int device_num;
+	int b_conf_value;
 };
 
 #if GLOGIKD_GLOBAL_DEBUG

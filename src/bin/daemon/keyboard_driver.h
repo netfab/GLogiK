@@ -44,6 +44,7 @@ struct InitializedDevice {
 	unsigned int bus;
 	unsigned int num;
 	libusb_device *usb_device;
+	libusb_device_handle *usb_handle;
 	VirtualKeyboard *virtual_keyboard;
 };
 
@@ -77,7 +78,7 @@ class KeyboardDriver
 		std::vector<InitializedDevice> initialized_devices_;
 
 		void closeLibusb(void);
-		int handleLibusbError(int error_code, const char* except_msg);
+		int handleLibusbError(int error_code);
 };
 
 } // namespace GLogiKd
