@@ -43,6 +43,7 @@ struct InitializedDevice {
 	KeyboardDevice device;
 	unsigned int bus;
 	unsigned int num;
+	libusb_device *usb_device;
 	VirtualKeyboard *virtual_keyboard;
 };
 
@@ -64,7 +65,7 @@ class KeyboardDriver
 		std::ostringstream buffer_;
 		std::vector<KeyboardDevice> supported_devices_;
 
-		void initializeLibusb(const unsigned int bus, const unsigned int num);
+		void initializeLibusb(InitializedDevice & current_device);
 		VirtualKeyboard* initializeVirtualKeyboard( const char* device_name );
 
 	private:

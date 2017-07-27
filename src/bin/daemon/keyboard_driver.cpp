@@ -49,7 +49,7 @@ std::vector<KeyboardDevice> KeyboardDriver::getSupportedDevices(void) const {
 	return this->supported_devices_;
 }
 
-void KeyboardDriver::initializeLibusb(const unsigned int bus, const unsigned int num) {
+void KeyboardDriver::initializeLibusb(InitializedDevice & current_device) {
 	LOG(DEBUG4) << "initializing libusb";
 	int ret_value = libusb_init( &(this->context_) );
 	this->handleLibusbError(ret_value, "libusb initialization failure");
@@ -61,23 +61,22 @@ void KeyboardDriver::initializeLibusb(const unsigned int bus, const unsigned int
 	if( num_devices <= 0 )
 		this->handleLibusbError(num_devices, "error getting USB devices list (or zero!)");
 
-	libusb_device *device = nullptr;
 	for (int idx = 0; idx < num_devices; ++idx) {
-		device = list[idx];
-		if( (int)libusb_get_bus_number(device) == bus and
-			(int)libusb_get_device_address(device) == num ) {
+		current_device.usb_device = list[idx];
+		if( (int)libusb_get_bus_number(current_device.usb_device) == current_device.bus and
+			(int)libusb_get_device_address(current_device.usb_device) == current_device.num ) {
 			break;
 		}
-		device = nullptr;
+		current_device.usb_device = nullptr;
 	}
 
-	if( device == nullptr ) {
+	if( current_device.usb_device == nullptr ) {
 		this->buffer_.str("libusb cannot find device ");
-		this->buffer_ << num << " on bus " << bus;
+		this->buffer_ << current_device.num << " on bus " << current_device.bus;
 		throw GLogiKExcept(this->buffer_.str());
 	}
 
-	LOG(DEBUG3) << "libusb found device " << num << " on bus " << bus;
+	LOG(DEBUG3) << "libusb found device " << current_device.num << " on bus " << current_device.bus;
 
 	// TODO open device
 
@@ -105,13 +104,13 @@ int KeyboardDriver::handleLibusbError(int error_code, const char* except_msg) {
 }
 
 void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const unsigned int bus, const unsigned int num) {
-	LOG(DEBUG3) << "Trying to initialize " << device.name << "("
+	LOG(DEBUG3) << "trying to initialize " << device.name << "("
 				<< device.vendor_id << ":" << device.product_id << "), device "
 				<< num << " on bus " << bus;
 
-	InitializedDevice current_device = { device, bus, num, nullptr };
+	InitializedDevice current_device = { device, bus, num, nullptr, nullptr };
 
-	this->initializeLibusb(bus, num);
+	this->initializeLibusb(current_device);
 
 	this->buffer_.str("Virtual ");
 	this->buffer_ << device.name << " b" << bus << "d" << num;
@@ -127,7 +126,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const unsign
 }
 
 void KeyboardDriver::closeDevice(const KeyboardDevice &device, const unsigned int bus, const unsigned int num) {
-	LOG(DEBUG3) << "Trying to close " << device.name << "("
+	LOG(DEBUG3) << "trying to close " << device.name << "("
 				<< device.vendor_id << ":" << device.product_id << "), device "
 				<< num << " on bus " << bus;
 
