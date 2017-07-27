@@ -122,7 +122,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const unsign
 
 	InitializedDevice current_device = { device, bus, num, nullptr, nullptr, nullptr };
 
-	this->initializeLibusb(current_device);
+	this->initializeLibusb(current_device); /* device opened */
 
 	int b = -1;
 	int * pB = &b;
@@ -132,6 +132,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const unsign
 	}
 	else {
 		this->handleLibusbError(ret);
+		libusb_close( current_device.usb_handle );
 		throw GLogiKExcept("get_configuration error");
 	}
 
@@ -142,6 +143,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const unsign
 		current_device.virtual_keyboard = this->initializeVirtualKeyboard(this->buffer_.str().c_str());
 	}
 	catch (const std::bad_alloc& e) {
+		libusb_close( current_device.usb_handle );
 		throw GLogiKExcept("virtual keyboard allocation failure");
 	}
 
