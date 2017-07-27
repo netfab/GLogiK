@@ -85,6 +85,7 @@ void KeyboardDriver::initializeLibusb(InitializedDevice & current_device) {
 
 	ret_value = libusb_open( current_device.usb_device, &(current_device.usb_handle) );
 	if( this->handleLibusbError(ret_value) ) {
+		libusb_free_device_list(list, 1);
 		throw GLogiKExcept("opening device failure");
 	}
 
