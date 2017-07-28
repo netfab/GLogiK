@@ -168,6 +168,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "--";
 
+		/* virtual keyboard */
 		this->buffer_.str("Virtual ");
 		this->buffer_ << device.name << " b" << (unsigned int)bus << "d" << (unsigned int)num;
 
@@ -177,7 +178,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		libusb_close( current_device.usb_handle );
 		throw;
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e) { /* handle new VirtualKeyboard() failure */
 		libusb_close( current_device.usb_handle );
 		throw GLogiKExcept("virtual keyboard allocation failure");
 	}
