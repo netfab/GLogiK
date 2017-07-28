@@ -126,9 +126,11 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 
 	this->initializeLibusb(current_device); /* device opened */
 
+	int ret = 0;
+
 	int b = -1;
 	int * pB = &b;
-	int ret = libusb_get_configuration(current_device.usb_handle, pB);
+	ret = libusb_get_configuration(current_device.usb_handle, pB);
 	if( ret == 0 ) {
 		LOG(DEBUG3) << "current conf: " << b;
 	}
@@ -139,10 +141,16 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	}
 
 	struct libusb_device_descriptor device_descriptor;
-	libusb_get_device_descriptor(current_device.usb_device, &device_descriptor);
-	LOG(DEBUG4) << "--"
-	LOG(DEBUG4) << "device descriptor"
-	LOG(DEBUG4) << "--"
+	ret = libusb_get_device_descriptor(current_device.usb_device, &device_descriptor);
+	if( ret != 0 ) {
+		this->handleLibusbError(ret);
+		libusb_close( current_device.usb_handle );
+		throw GLogiKExcept("libusb get_device_descriptor failure");
+	}
+
+	LOG(DEBUG4) << "--";
+	LOG(DEBUG4) << "device descriptor";
+	LOG(DEBUG4) << "--";
 	LOG(DEBUG4) << "bLength            : " << (unsigned int)device_descriptor.bLength;
 	LOG(DEBUG4) << "bDescriptorType    : " << (unsigned int)device_descriptor.bDescriptorType;
 	LOG(DEBUG4) << "bcdUSB             : " << std::bitset<16>( (unsigned int)device_descriptor.bcdUSB ).to_string();
@@ -157,9 +165,9 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	LOG(DEBUG4) << "iProduct           : " << (unsigned int)device_descriptor.iProduct;
 	LOG(DEBUG4) << "iSerialNumber      : " << (unsigned int)device_descriptor.iSerialNumber;
 	LOG(DEBUG4) << "bNumConfigurations : " << (unsigned int)device_descriptor.bNumConfigurations;
-	LOG(DEBUG4) << "--"
-	LOG(DEBUG4) << "--"
-	LOG(DEBUG4) << "--"
+	LOG(DEBUG4) << "--";
+	LOG(DEBUG4) << "--";
+	LOG(DEBUG4) << "--";
 
 	this->buffer_.str("Virtual ");
 	this->buffer_ << device.name << " b" << (unsigned int)bus << "d" << (unsigned int)num;
