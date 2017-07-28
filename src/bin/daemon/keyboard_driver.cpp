@@ -134,20 +134,15 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		int b = -1;
 		int * pB = &b;
 		ret = libusb_get_configuration(current_device.usb_handle, pB);
-		if( ret == 0 ) {
-			LOG(DEBUG3) << "current conf: " << b;
-		}
-		else {
-			this->handleLibusbError(ret);
+		if ( this->handleLibusbError(ret) )
 			throw GLogiKExcept("libusb get_configuration error");
-		}
+
+		LOG(DEBUG3) << "current conf: " << b;
 
 		struct libusb_device_descriptor device_descriptor;
 		ret = libusb_get_device_descriptor(current_device.usb_device, &device_descriptor);
-		if( ret != 0 ) {
-			this->handleLibusbError(ret);
+		if ( this->handleLibusbError(ret) )
 			throw GLogiKExcept("libusb get_device_descriptor failure");
-		}
 
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "device descriptor";
@@ -174,8 +169,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		for ( i = 0; i < (unsigned int)device_descriptor.bNumConfigurations; i++) {
 			struct libusb_config_descriptor * config_descriptor = nullptr;
 			ret = libusb_get_config_descriptor(current_device.usb_device, i, &config_descriptor);
-			if ( ret != 0 ) {
-				this->handleLibusbError(ret);
+			if ( this->handleLibusbError(ret) ) {
 				this->buffer_.str("get_config_descriptor failure with index : ");
 				this->buffer_ << i;
 				LOG(ERROR) << this->buffer_.str();
