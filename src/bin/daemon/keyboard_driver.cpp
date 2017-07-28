@@ -168,6 +168,37 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "--";
 
+		unsigned int i = 0;
+		for ( i = 0; i < (unsigned int)device_descriptor.bNumConfigurations; i++) {
+			struct libusb_config_descriptor * config_descriptor = nullptr;
+			ret = libusb_get_config_descriptor(current_device.usb_device, i, &config_descriptor);
+			if ( ret != 0 ) {
+				this->handleLibusbError(ret);
+				this->buffer_.str("get_config_descriptor failure with index : ");
+				this->buffer_ << i;
+				LOG(ERROR) << this->buffer_.str();
+				// FIXME syslog
+			}
+			else {
+				LOG(DEBUG3) << "--";
+				LOG(DEBUG3) << "config descriptor";
+				LOG(DEBUG3) << "--";
+				LOG(DEBUG3) << "bLength             : " << (unsigned int)config_descriptor->bLength;
+				LOG(DEBUG3) << "bDescriptorType     : " << (unsigned int)config_descriptor->bDescriptorType;
+				LOG(DEBUG3) << "wTotalLength        : " << (unsigned int)config_descriptor->wTotalLength;
+				LOG(DEBUG3) << "bNumInterfaces      : " << (unsigned int)config_descriptor->bNumInterfaces;
+				LOG(DEBUG3) << "bConfigurationValue : " << (unsigned int)config_descriptor->bConfigurationValue;
+				LOG(DEBUG3) << "iConfiguration      : " << (unsigned int)config_descriptor->iConfiguration;
+				LOG(DEBUG3) << "bmAttributes        : " << (unsigned int)config_descriptor->bmAttributes;
+				LOG(DEBUG3) << "MaxPower            : " << (unsigned int)config_descriptor->MaxPower;
+				LOG(DEBUG3) << "--";
+				LOG(DEBUG3) << "--";
+				LOG(DEBUG3) << "--";
+
+				libusb_free_config_descriptor( config_descriptor );
+			}
+		}
+
 		/* virtual keyboard */
 		this->buffer_.str("Virtual ");
 		this->buffer_ << device.name << " b" << (unsigned int)bus << "d" << (unsigned int)num;
