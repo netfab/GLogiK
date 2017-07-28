@@ -24,6 +24,8 @@
 
 #include <config.h>
 
+#include <syslog.h>
+
 #include "exception.h"
 #include "include/log.h"
 
@@ -177,7 +179,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 				this->buffer_.str("get_config_descriptor failure with index : ");
 				this->buffer_ << i;
 				LOG(ERROR) << this->buffer_.str();
-				// FIXME syslog
+				syslog(LOG_ERR, this->buffer_.str().c_str());
 			}
 			else {
 				LOG(DEBUG3) << "--";
