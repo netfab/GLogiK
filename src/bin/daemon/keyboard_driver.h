@@ -22,6 +22,8 @@
 #ifndef __GLOGIKD_KEYBOARD_DRIVER_H__
 #define __GLOGIKD_KEYBOARD_DRIVER_H__
 
+#include <cstdint>
+
 #include <string>
 #include <vector>
 #include <sstream>
@@ -41,8 +43,8 @@ struct KeyboardDevice {
 
 struct InitializedDevice {
 	KeyboardDevice device;
-	unsigned int bus;
-	unsigned int num;
+	uint8_t bus;
+	uint8_t num;
 	libusb_device *usb_device;
 	libusb_device_handle *usb_handle;
 	VirtualKeyboard *virtual_keyboard;
@@ -55,12 +57,12 @@ class KeyboardDriver
 		virtual ~KeyboardDriver();
 
 		virtual const char* getDriverName() const = 0;
-		virtual unsigned int getDriverID() const = 0;
+		virtual uint16_t getDriverID() const = 0;
 
 		std::vector<KeyboardDevice> getSupportedDevices(void) const;
 
-		virtual void initializeDevice(const KeyboardDevice &device, const unsigned int bus, const unsigned int num);
-		virtual void closeDevice(const KeyboardDevice &device, const unsigned int bus, const unsigned int num);
+		virtual void initializeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num);
+		virtual void closeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num);
 
 	protected:
 		std::ostringstream buffer_;
@@ -71,7 +73,7 @@ class KeyboardDriver
 
 	private:
 		static bool libusb_status_;			/* is libusb initialized ? */
-		static unsigned int drivers_cnt_;	/* initialized drivers counter */
+		static uint8_t drivers_cnt_;		/* initialized drivers counter */
 		libusb_context *context_;
 		libusb_device **list_;
 

@@ -25,6 +25,6 @@
 #define GLOGIKD_GLOBAL_DEBUG 1
 #define GLOGIKD_DAEMON_NAME "GLogiKd"
 
-#define GLOGIKD_DRIVER_ID_G510 ( 1 << 1 )
+#define GLOGIKD_DRIVER_ID_G510 ( 1 << 0 )
 
 #endif

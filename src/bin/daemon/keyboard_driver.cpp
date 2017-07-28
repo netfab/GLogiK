@@ -33,7 +33,7 @@ namespace GLogiKd
 {
 
 bool KeyboardDriver::libusb_status_ = false;
-unsigned int KeyboardDriver::drivers_cnt_ = 0;
+uint8_t KeyboardDriver::drivers_cnt_ = 0;
 
 KeyboardDriver::KeyboardDriver() : buffer_("", std::ios_base::app), context_(nullptr) {
 	KeyboardDriver::drivers_cnt_++;
@@ -81,7 +81,8 @@ void KeyboardDriver::initializeLibusb(InitializedDevice & current_device) {
 		throw GLogiKExcept(this->buffer_.str());
 	}
 
-	LOG(DEBUG3) << "libusb found device " << current_device.num << " on bus " << current_device.bus;
+	LOG(DEBUG3) << "libusb found device " << (unsigned int)current_device.num
+				<< " on bus " << (unsigned int)current_device.bus;
 
 	ret_value = libusb_open( current_device.usb_device, &(current_device.usb_handle) );
 	if( this->handleLibusbError(ret_value) ) {
@@ -115,10 +116,10 @@ int KeyboardDriver::handleLibusbError(int error_code) {
 	return error_code;
 }
 
-void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const unsigned int bus, const unsigned int num) {
+void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num) {
 	LOG(DEBUG3) << "trying to initialize " << device.name << "("
 				<< device.vendor_id << ":" << device.product_id << "), device "
-				<< num << " on bus " << bus;
+				<< (unsigned int)num << " on bus " << (unsigned int)bus;
 
 	InitializedDevice current_device = { device, bus, num, nullptr, nullptr, nullptr };
 
@@ -141,7 +142,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const unsign
 	LOG(DEBUG3) << "bNumConfigurations : " << (unsigned int)device_descriptor.bNumConfigurations;
 
 	this->buffer_.str("Virtual ");
-	this->buffer_ << device.name << " b" << bus << "d" << num;
+	this->buffer_ << device.name << " b" << (unsigned int)bus << "d" << (unsigned int)num;
 
 	try {
 		current_device.virtual_keyboard = this->initializeVirtualKeyboard(this->buffer_.str().c_str());
@@ -154,10 +155,10 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const unsign
 	this->initialized_devices_.push_back( current_device );
 }
 
-void KeyboardDriver::closeDevice(const KeyboardDevice &device, const unsigned int bus, const unsigned int num) {
+void KeyboardDriver::closeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num) {
 	LOG(DEBUG3) << "trying to close " << device.name << "("
 				<< device.vendor_id << ":" << device.product_id << "), device "
-				<< num << " on bus " << bus;
+				<< (unsigned int)num << " on bus " << (unsigned int)bus;
 
 	bool found = false;
 	for(auto it = this->initialized_devices_.begin(); it != this->initialized_devices_.end();) {

@@ -94,7 +94,7 @@ void DevicesManager::initializeDevices(void) {
 
 						this->buffer_.str( det_dev.device.name );
 						this->buffer_	<< "(" << det_dev.device.vendor_id << ":" << det_dev.device.product_id
-										<< ") on bus " << det_dev.device_bus << " initialized";
+										<< ") on bus " << (unsigned int)det_dev.device_bus << " initialized";
 						LOG(INFO) << this->buffer_.str();
 						syslog(LOG_INFO, this->buffer_.str().c_str());
 						break;
@@ -125,7 +125,7 @@ void DevicesManager::closeInitializedDevices(void) {
 
 					this->buffer_.str( init_dev.device.name );
 					this->buffer_	<< "(" << init_dev.device.vendor_id << ":" << init_dev.device.product_id
-									<< ") on bus " << init_dev.device_bus << " closed";
+									<< ") on bus " << (unsigned int)init_dev.device_bus << " closed";
 					LOG(INFO) << this->buffer_.str();
 					syslog(LOG_INFO, this->buffer_.str().c_str());
 				}
@@ -303,7 +303,7 @@ void DevicesManager::searchSupportedDevices(void) {
 							std::string serial = this->toString( udev_device_get_property_value(dev, "ID_SERIAL") );
 							std::string usec = this->toString( udev_device_get_property_value(dev, "USEC_INITIALIZED") );
 
-							unsigned int bus, num = 0;
+							uint8_t bus, num = 0;
 							int b_conf = 0;
 
 							try {
@@ -336,7 +336,7 @@ void DevicesManager::searchSupportedDevices(void) {
 
 							LOG(DEBUG3) << "found device - Vid:Pid:DevNode:usec | bus:num : " << vendor_id
 										<< ":" << product_id << ":" << devnode << ":" << usec
-										<< " | " << bus << ":" << num;
+										<< " | " << (unsigned int)bus << ":" << (unsigned int)num;
 						}
 				}
 			}
