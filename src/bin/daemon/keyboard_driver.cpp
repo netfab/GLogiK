@@ -136,6 +136,10 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const unsign
 		throw GLogiKExcept("libusb get_configuration error");
 	}
 
+	struct libusb_device_descriptor device_descriptor;
+	libusb_get_device_descriptor(current_device.usb_device, &device_descriptor);
+	LOG(DEBUG3) << "bNumConfigurations : " << (unsigned int)device_descriptor.bNumConfigurations;
+
 	this->buffer_.str("Virtual ");
 	this->buffer_ << device.name << " b" << bus << "d" << num;
 
