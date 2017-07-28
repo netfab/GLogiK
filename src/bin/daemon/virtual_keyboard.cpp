@@ -34,7 +34,7 @@ namespace GLogiKd
 {
 
 VirtualKeyboard::VirtualKeyboard(const char* device_name) : buffer_("", std::ios_base::app) {
-	LOG(DEBUG3) << "initializating " << device_name;
+	LOG(DEBUG3) << "initializing " << device_name;
 
 	this->dev = libevdev_new();
 	libevdev_set_name(this->dev, device_name);
