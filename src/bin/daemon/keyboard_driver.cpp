@@ -20,6 +20,7 @@
  */
 
 #include <iostream>
+#include <bitset>
 
 #include <config.h>
 
@@ -139,7 +140,26 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 
 	struct libusb_device_descriptor device_descriptor;
 	libusb_get_device_descriptor(current_device.usb_device, &device_descriptor);
-	LOG(DEBUG3) << "bNumConfigurations : " << (unsigned int)device_descriptor.bNumConfigurations;
+	LOG(DEBUG4) << "--"
+	LOG(DEBUG4) << "device descriptor"
+	LOG(DEBUG4) << "--"
+	LOG(DEBUG4) << "bLength            : " << (unsigned int)device_descriptor.bLength;
+	LOG(DEBUG4) << "bDescriptorType    : " << (unsigned int)device_descriptor.bDescriptorType;
+	LOG(DEBUG4) << "bcdUSB             : " << std::bitset<16>( (unsigned int)device_descriptor.bcdUSB ).to_string();
+	LOG(DEBUG4) << "bDeviceClass       : " << (unsigned int)device_descriptor.bDeviceClass;
+	LOG(DEBUG4) << "bDeviceSubClass    : " << (unsigned int)device_descriptor.bDeviceSubClass;
+	LOG(DEBUG4) << "bDeviceProtocol    : " << (unsigned int)device_descriptor.bDeviceProtocol;
+	LOG(DEBUG4) << "bMaxPacketSize0    : " << (unsigned int)device_descriptor.bMaxPacketSize0;
+	LOG(DEBUG4) << "idVendor           : " << std::hex << (unsigned int)device_descriptor.idVendor;
+	LOG(DEBUG4) << "idProduct          : " << std::hex << (unsigned int)device_descriptor.idProduct;
+	LOG(DEBUG4) << "bcdDevice          : " << std::bitset<16>( (unsigned int)device_descriptor.bcdDevice ).to_string();
+	LOG(DEBUG4) << "iManufacturer      : " << (unsigned int)device_descriptor.iManufacturer;
+	LOG(DEBUG4) << "iProduct           : " << (unsigned int)device_descriptor.iProduct;
+	LOG(DEBUG4) << "iSerialNumber      : " << (unsigned int)device_descriptor.iSerialNumber;
+	LOG(DEBUG4) << "bNumConfigurations : " << (unsigned int)device_descriptor.bNumConfigurations;
+	LOG(DEBUG4) << "--"
+	LOG(DEBUG4) << "--"
+	LOG(DEBUG4) << "--"
 
 	this->buffer_.str("Virtual ");
 	this->buffer_ << device.name << " b" << (unsigned int)bus << "d" << (unsigned int)num;
