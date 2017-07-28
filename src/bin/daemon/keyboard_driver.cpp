@@ -174,25 +174,25 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 				this->buffer_ << i;
 				LOG(ERROR) << this->buffer_.str();
 				syslog(LOG_ERR, this->buffer_.str().c_str());
+				continue;
 			}
-			else {
-				LOG(DEBUG3) << "--";
-				LOG(DEBUG3) << "config descriptor";
-				LOG(DEBUG3) << "--";
-				LOG(DEBUG3) << "bLength             : " << (unsigned int)config_descriptor->bLength;
-				LOG(DEBUG3) << "bDescriptorType     : " << (unsigned int)config_descriptor->bDescriptorType;
-				LOG(DEBUG3) << "wTotalLength        : " << (unsigned int)config_descriptor->wTotalLength;
-				LOG(DEBUG3) << "bNumInterfaces      : " << (unsigned int)config_descriptor->bNumInterfaces;
-				LOG(DEBUG3) << "bConfigurationValue : " << (unsigned int)config_descriptor->bConfigurationValue;
-				LOG(DEBUG3) << "iConfiguration      : " << (unsigned int)config_descriptor->iConfiguration;
-				LOG(DEBUG3) << "bmAttributes        : " << (unsigned int)config_descriptor->bmAttributes;
-				LOG(DEBUG3) << "MaxPower            : " << (unsigned int)config_descriptor->MaxPower;
-				LOG(DEBUG3) << "--";
-				LOG(DEBUG3) << "--";
-				LOG(DEBUG3) << "--";
 
-				libusb_free_config_descriptor( config_descriptor );
-			}
+			LOG(DEBUG3) << "--";
+			LOG(DEBUG3) << "config descriptor";
+			LOG(DEBUG3) << "--";
+			LOG(DEBUG3) << "bLength             : " << (unsigned int)config_descriptor->bLength;
+			LOG(DEBUG3) << "bDescriptorType     : " << (unsigned int)config_descriptor->bDescriptorType;
+			LOG(DEBUG3) << "wTotalLength        : " << (unsigned int)config_descriptor->wTotalLength;
+			LOG(DEBUG3) << "bNumInterfaces      : " << (unsigned int)config_descriptor->bNumInterfaces;
+			LOG(DEBUG3) << "bConfigurationValue : " << (unsigned int)config_descriptor->bConfigurationValue;
+			LOG(DEBUG3) << "iConfiguration      : " << (unsigned int)config_descriptor->iConfiguration;
+			LOG(DEBUG3) << "bmAttributes        : " << (unsigned int)config_descriptor->bmAttributes;
+			LOG(DEBUG3) << "MaxPower            : " << (unsigned int)config_descriptor->MaxPower;
+			LOG(DEBUG3) << "--";
+			LOG(DEBUG3) << "--";
+			LOG(DEBUG3) << "--";
+
+			libusb_free_config_descriptor( config_descriptor );
 		}
 
 		/* virtual keyboard */
