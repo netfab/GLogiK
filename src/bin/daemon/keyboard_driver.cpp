@@ -165,35 +165,67 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "--";
 
-		unsigned int i = 0;
-		for ( i = 0; i < (unsigned int)device_descriptor.bNumConfigurations; i++) {
-			struct libusb_config_descriptor * config_descriptor = nullptr;
-			ret = libusb_get_config_descriptor(current_device.usb_device, i, &config_descriptor);
-			if ( this->handleLibusbError(ret) ) {
-				this->buffer_.str("get_config_descriptor failure with index : ");
-				this->buffer_ << i;
-				LOG(ERROR) << this->buffer_.str();
-				syslog(LOG_ERR, this->buffer_.str().c_str());
-				continue;
+		unsigned int num_conf = (unsigned int)device_descriptor.bNumConfigurations;
+		struct libusb_config_descriptor * config_descriptor = nullptr;
+
+		if ( num_conf != 1 ) {
+			LOG(ERROR) << "bNumConfiguration value : " << num_conf;
+			LOG(ERROR) << "Number of configurations currently unsupported. Please report a bug.";
+
+			for (unsigned int i = 0; i < num_conf; i++) {
+				ret = libusb_get_config_descriptor(current_device.usb_device, i, &config_descriptor);
+				if ( this->handleLibusbError(ret) ) {
+					this->buffer_.str("get_config_descriptor failure with index : ");
+					this->buffer_ << i;
+					LOG(ERROR) << this->buffer_.str();
+					syslog(LOG_ERR, this->buffer_.str().c_str());
+					continue;
+				}
+
+				LOG(DEBUG4) << "--";
+				LOG(DEBUG4) << "config descriptor";
+				LOG(DEBUG4) << "--";
+				LOG(DEBUG4) << "bLength             : " << (unsigned int)config_descriptor->bLength;
+				LOG(DEBUG4) << "bDescriptorType     : " << (unsigned int)config_descriptor->bDescriptorType;
+				LOG(DEBUG4) << "wTotalLength        : " << (unsigned int)config_descriptor->wTotalLength;
+				LOG(DEBUG4) << "bNumInterfaces      : " << (unsigned int)config_descriptor->bNumInterfaces;
+				LOG(DEBUG4) << "bConfigurationValue : " << (unsigned int)config_descriptor->bConfigurationValue;
+				LOG(DEBUG4) << "iConfiguration      : " << (unsigned int)config_descriptor->iConfiguration;
+				LOG(DEBUG4) << "bmAttributes        : " << (unsigned int)config_descriptor->bmAttributes;
+				LOG(DEBUG4) << "MaxPower            : " << (unsigned int)config_descriptor->MaxPower;
+				LOG(DEBUG4) << "--";
+				LOG(DEBUG4) << "--";
+				LOG(DEBUG4) << "--";
+
+				libusb_free_config_descriptor( config_descriptor );
 			}
 
-			LOG(DEBUG4) << "--";
-			LOG(DEBUG4) << "config descriptor";
-			LOG(DEBUG4) << "--";
-			LOG(DEBUG4) << "bLength             : " << (unsigned int)config_descriptor->bLength;
-			LOG(DEBUG4) << "bDescriptorType     : " << (unsigned int)config_descriptor->bDescriptorType;
-			LOG(DEBUG4) << "wTotalLength        : " << (unsigned int)config_descriptor->wTotalLength;
-			LOG(DEBUG4) << "bNumInterfaces      : " << (unsigned int)config_descriptor->bNumInterfaces;
-			LOG(DEBUG4) << "bConfigurationValue : " << (unsigned int)config_descriptor->bConfigurationValue;
-			LOG(DEBUG4) << "iConfiguration      : " << (unsigned int)config_descriptor->iConfiguration;
-			LOG(DEBUG4) << "bmAttributes        : " << (unsigned int)config_descriptor->bmAttributes;
-			LOG(DEBUG4) << "MaxPower            : " << (unsigned int)config_descriptor->MaxPower;
-			LOG(DEBUG4) << "--";
-			LOG(DEBUG4) << "--";
-			LOG(DEBUG4) << "--";
-
-			libusb_free_config_descriptor( config_descriptor );
+			throw GLogiKExcept("bNumConfiguration != 1. Please report a bug.");
 		}
+
+		ret = libusb_get_config_descriptor(current_device.usb_device, 0, &config_descriptor);
+		if ( this->handleLibusbError(ret) ) {
+			this->buffer_.str("get_config_descriptor failure with index 0 ! ");
+			LOG(ERROR) << this->buffer_.str();
+			syslog(LOG_ERR, this->buffer_.str().c_str());
+		}
+
+		LOG(DEBUG4) << "--";
+		LOG(DEBUG4) << "config descriptor";
+		LOG(DEBUG4) << "--";
+		LOG(DEBUG4) << "bLength             : " << (unsigned int)config_descriptor->bLength;
+		LOG(DEBUG4) << "bDescriptorType     : " << (unsigned int)config_descriptor->bDescriptorType;
+		LOG(DEBUG4) << "wTotalLength        : " << (unsigned int)config_descriptor->wTotalLength;
+		LOG(DEBUG4) << "bNumInterfaces      : " << (unsigned int)config_descriptor->bNumInterfaces;
+		LOG(DEBUG4) << "bConfigurationValue : " << (unsigned int)config_descriptor->bConfigurationValue;
+		LOG(DEBUG4) << "iConfiguration      : " << (unsigned int)config_descriptor->iConfiguration;
+		LOG(DEBUG4) << "bmAttributes        : " << (unsigned int)config_descriptor->bmAttributes;
+		LOG(DEBUG4) << "MaxPower            : " << (unsigned int)config_descriptor->MaxPower;
+		LOG(DEBUG4) << "--";
+		LOG(DEBUG4) << "--";
+		LOG(DEBUG4) << "--";
+
+		libusb_free_config_descriptor( config_descriptor );
 
 		/* virtual keyboard */
 		this->buffer_.str("Virtual ");
