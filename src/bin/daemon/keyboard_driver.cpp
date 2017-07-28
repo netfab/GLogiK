@@ -128,52 +128,54 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 
 	int ret = 0;
 
-	int b = -1;
-	int * pB = &b;
-	ret = libusb_get_configuration(current_device.usb_handle, pB);
-	if( ret == 0 ) {
-		LOG(DEBUG3) << "current conf: " << b;
-	}
-	else {
-		this->handleLibusbError(ret);
-		libusb_close( current_device.usb_handle );
-		throw GLogiKExcept("libusb get_configuration error");
-	}
-
-	struct libusb_device_descriptor device_descriptor;
-	ret = libusb_get_device_descriptor(current_device.usb_device, &device_descriptor);
-	if( ret != 0 ) {
-		this->handleLibusbError(ret);
-		libusb_close( current_device.usb_handle );
-		throw GLogiKExcept("libusb get_device_descriptor failure");
-	}
-
-	LOG(DEBUG4) << "--";
-	LOG(DEBUG4) << "device descriptor";
-	LOG(DEBUG4) << "--";
-	LOG(DEBUG4) << "bLength            : " << (unsigned int)device_descriptor.bLength;
-	LOG(DEBUG4) << "bDescriptorType    : " << (unsigned int)device_descriptor.bDescriptorType;
-	LOG(DEBUG4) << "bcdUSB             : " << std::bitset<16>( (unsigned int)device_descriptor.bcdUSB ).to_string();
-	LOG(DEBUG4) << "bDeviceClass       : " << (unsigned int)device_descriptor.bDeviceClass;
-	LOG(DEBUG4) << "bDeviceSubClass    : " << (unsigned int)device_descriptor.bDeviceSubClass;
-	LOG(DEBUG4) << "bDeviceProtocol    : " << (unsigned int)device_descriptor.bDeviceProtocol;
-	LOG(DEBUG4) << "bMaxPacketSize0    : " << (unsigned int)device_descriptor.bMaxPacketSize0;
-	LOG(DEBUG4) << "idVendor           : " << std::hex << (unsigned int)device_descriptor.idVendor;
-	LOG(DEBUG4) << "idProduct          : " << std::hex << (unsigned int)device_descriptor.idProduct;
-	LOG(DEBUG4) << "bcdDevice          : " << std::bitset<16>( (unsigned int)device_descriptor.bcdDevice ).to_string();
-	LOG(DEBUG4) << "iManufacturer      : " << (unsigned int)device_descriptor.iManufacturer;
-	LOG(DEBUG4) << "iProduct           : " << (unsigned int)device_descriptor.iProduct;
-	LOG(DEBUG4) << "iSerialNumber      : " << (unsigned int)device_descriptor.iSerialNumber;
-	LOG(DEBUG4) << "bNumConfigurations : " << (unsigned int)device_descriptor.bNumConfigurations;
-	LOG(DEBUG4) << "--";
-	LOG(DEBUG4) << "--";
-	LOG(DEBUG4) << "--";
-
-	this->buffer_.str("Virtual ");
-	this->buffer_ << device.name << " b" << (unsigned int)bus << "d" << (unsigned int)num;
-
 	try {
+		int b = -1;
+		int * pB = &b;
+		ret = libusb_get_configuration(current_device.usb_handle, pB);
+		if( ret == 0 ) {
+			LOG(DEBUG3) << "current conf: " << b;
+		}
+		else {
+			this->handleLibusbError(ret);
+			throw GLogiKExcept("libusb get_configuration error");
+		}
+
+		struct libusb_device_descriptor device_descriptor;
+		ret = libusb_get_device_descriptor(current_device.usb_device, &device_descriptor);
+		if( ret != 0 ) {
+			this->handleLibusbError(ret);
+			throw GLogiKExcept("libusb get_device_descriptor failure");
+		}
+
+		LOG(DEBUG4) << "--";
+		LOG(DEBUG4) << "device descriptor";
+		LOG(DEBUG4) << "--";
+		LOG(DEBUG4) << "bLength            : " << (unsigned int)device_descriptor.bLength;
+		LOG(DEBUG4) << "bDescriptorType    : " << (unsigned int)device_descriptor.bDescriptorType;
+		LOG(DEBUG4) << "bcdUSB             : " << std::bitset<16>( (unsigned int)device_descriptor.bcdUSB ).to_string();
+		LOG(DEBUG4) << "bDeviceClass       : " << (unsigned int)device_descriptor.bDeviceClass;
+		LOG(DEBUG4) << "bDeviceSubClass    : " << (unsigned int)device_descriptor.bDeviceSubClass;
+		LOG(DEBUG4) << "bDeviceProtocol    : " << (unsigned int)device_descriptor.bDeviceProtocol;
+		LOG(DEBUG4) << "bMaxPacketSize0    : " << (unsigned int)device_descriptor.bMaxPacketSize0;
+		LOG(DEBUG4) << "idVendor           : " << std::hex << (unsigned int)device_descriptor.idVendor;
+		LOG(DEBUG4) << "idProduct          : " << std::hex << (unsigned int)device_descriptor.idProduct;
+		LOG(DEBUG4) << "bcdDevice          : " << std::bitset<16>( (unsigned int)device_descriptor.bcdDevice ).to_string();
+		LOG(DEBUG4) << "iManufacturer      : " << (unsigned int)device_descriptor.iManufacturer;
+		LOG(DEBUG4) << "iProduct           : " << (unsigned int)device_descriptor.iProduct;
+		LOG(DEBUG4) << "iSerialNumber      : " << (unsigned int)device_descriptor.iSerialNumber;
+		LOG(DEBUG4) << "bNumConfigurations : " << (unsigned int)device_descriptor.bNumConfigurations;
+		LOG(DEBUG4) << "--";
+		LOG(DEBUG4) << "--";
+		LOG(DEBUG4) << "--";
+
+		this->buffer_.str("Virtual ");
+		this->buffer_ << device.name << " b" << (unsigned int)bus << "d" << (unsigned int)num;
+
 		current_device.virtual_keyboard = this->initializeVirtualKeyboard(this->buffer_.str().c_str());
+	}
+	catch ( const GLogiKExcept & e ) {
+		libusb_close( current_device.usb_handle );
+		throw;
 	}
 	catch (const std::bad_alloc& e) {
 		libusb_close( current_device.usb_handle );
