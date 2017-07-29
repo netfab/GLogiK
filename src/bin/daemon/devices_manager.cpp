@@ -186,7 +186,7 @@ void DevicesManager::cleanUnpluggedDevices(void) {
 	LOG(DEBUG3) << "---";
 }
 
-#if GLOGIKD_GLOBAL_DEBUG
+#if DEBUGGING_ON
 void deviceProperties(struct udev_device *dev, const std::string &subsystem) {
 	struct udev_list_entry *devs_props = nullptr;
 	struct udev_list_entry *devs_attr = nullptr;
@@ -265,7 +265,7 @@ void DevicesManager::searchSupportedDevices(void) {
 				continue;
 			}
 
-#if GLOGIKD_GLOBAL_DEBUG
+#if DEBUGGING_ON
 			std::string devss = this->toString( udev_device_get_subsystem(dev) );
 			if( devss == "" ) {
 				udev_device_unref(dev);
@@ -294,7 +294,7 @@ void DevicesManager::searchSupportedDevices(void) {
 								continue;
 							}
 
-#if GLOGIKD_GLOBAL_DEBUG
+#if DEBUGGING_ON
 							deviceProperties(dev, devss);
 #endif
 

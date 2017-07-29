@@ -30,6 +30,8 @@
 #include <vector>
 #include <sstream>
 
+#include <config.h>
+
 #include "keyboard_driver.h"
 
 #include "globals.h"
@@ -50,7 +52,7 @@ struct DetectedDevice {
 	int b_conf_value;
 };
 
-#if GLOGIKD_GLOBAL_DEBUG
+#if DEBUGGING_ON
 void deviceProperties(struct udev_device *dev, const std::string &subsystem);
 #endif
 
