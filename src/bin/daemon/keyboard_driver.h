@@ -50,6 +50,12 @@ struct InitializedDevice {
 	VirtualKeyboard *virtual_keyboard;
 };
 
+struct DescriptorValues {
+	uint8_t b_configuration_value;
+	uint8_t b_interface_number;
+	uint8_t b_alternate_setting;
+};
+
 class KeyboardDriver
 {
 	public:
@@ -71,6 +77,8 @@ class KeyboardDriver
 		void initializeLibusb(InitializedDevice & current_device);
 		VirtualKeyboard* initializeVirtualKeyboard( const char* device_name );
 
+		DescriptorValues expected_usb_descriptors_;
+
 	private:
 		static bool libusb_status_;			/* is libusb initialized ? */
 		static uint8_t drivers_cnt_;		/* initialized drivers counter */
@@ -81,6 +89,7 @@ class KeyboardDriver
 
 		void closeLibusb(void);
 		int handleLibusbError(int error_code);
+		void setDeviceConfiguration(const InitializedDevice & current_device, const libusb_device_descriptor & device_descriptor);
 };
 
 } // namespace GLogiKd

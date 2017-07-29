@@ -39,6 +39,7 @@ bool KeyboardDriver::libusb_status_ = false;
 uint8_t KeyboardDriver::drivers_cnt_ = 0;
 
 KeyboardDriver::KeyboardDriver() : buffer_("", std::ios_base::app), context_(nullptr) {
+	this->expected_usb_descriptors_ = { 0, 0, 0 };
 	KeyboardDriver::drivers_cnt_++;
 }
 
@@ -131,14 +132,6 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	int ret = 0;
 
 	try {
-		int b = -1;
-		int * pB = &b;
-		ret = libusb_get_configuration(current_device.usb_handle, pB);
-		if ( this->handleLibusbError(ret) )
-			throw GLogiKExcept("libusb get_configuration error");
-
-		LOG(DEBUG3) << "current conf: " << b;
-
 		struct libusb_device_descriptor device_descriptor;
 		ret = libusb_get_device_descriptor(current_device.usb_device, &device_descriptor);
 		if ( this->handleLibusbError(ret) )
@@ -165,34 +158,19 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "--";
 
-		unsigned int i = 0;
-		for ( i = 0; i < (unsigned int)device_descriptor.bNumConfigurations; i++) {
-			struct libusb_config_descriptor * config_descriptor = nullptr;
-			ret = libusb_get_config_descriptor(current_device.usb_device, i, &config_descriptor);
-			if ( this->handleLibusbError(ret) ) {
-				this->buffer_.str("get_config_descriptor failure with index : ");
-				this->buffer_ << i;
-				LOG(ERROR) << this->buffer_.str();
-				syslog(LOG_ERR, this->buffer_.str().c_str());
-				continue;
-			}
+		LOG(INFO) << "device has " << (unsigned int)device_descriptor.bNumConfigurations
+					<< " possible configuration(s)";
 
-			LOG(DEBUG4) << "--";
-			LOG(DEBUG4) << "config descriptor";
-			LOG(DEBUG4) << "--";
-			LOG(DEBUG4) << "bLength             : " << (unsigned int)config_descriptor->bLength;
-			LOG(DEBUG4) << "bDescriptorType     : " << (unsigned int)config_descriptor->bDescriptorType;
-			LOG(DEBUG4) << "wTotalLength        : " << (unsigned int)config_descriptor->wTotalLength;
-			LOG(DEBUG4) << "bNumInterfaces      : " << (unsigned int)config_descriptor->bNumInterfaces;
-			LOG(DEBUG4) << "bConfigurationValue : " << (unsigned int)config_descriptor->bConfigurationValue;
-			LOG(DEBUG4) << "iConfiguration      : " << (unsigned int)config_descriptor->iConfiguration;
-			LOG(DEBUG4) << "bmAttributes        : " << (unsigned int)config_descriptor->bmAttributes;
-			LOG(DEBUG4) << "MaxPower            : " << (unsigned int)config_descriptor->MaxPower;
-			LOG(DEBUG4) << "--";
-			LOG(DEBUG4) << "--";
-			LOG(DEBUG4) << "--";
+		int b = -1;
+		ret = libusb_get_configuration(current_device.usb_handle, &b);
+		if ( this->handleLibusbError(ret) )
+			throw GLogiKExcept("libusb get_configuration error");
 
-			libusb_free_config_descriptor( config_descriptor );
+		LOG(INFO) << "current active configuration value : " << b;
+		if ( b != (int)(this->expected_usb_descriptors_.b_configuration_value) ) {
+			LOG(INFO) << "wanted configuration : " << (int)(this->expected_usb_descriptors_.b_configuration_value);
+			LOG(INFO) << "will try to set the active configuration to the wanted value";
+			this->setDeviceConfiguration( current_device, device_descriptor );
 		}
 
 		/* virtual keyboard */
@@ -211,6 +189,107 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	}
 
 	this->initialized_devices_.push_back( current_device );
+}
+
+void KeyboardDriver::setDeviceConfiguration(const InitializedDevice & current_device, const libusb_device_descriptor & device_descriptor) {
+	unsigned int i, j, k = 0;
+	int ret = 0;
+	for (i = 0; i < (unsigned int)device_descriptor.bNumConfigurations; i++) {
+		struct libusb_config_descriptor * config_descriptor = nullptr;
+		ret = libusb_get_config_descriptor(current_device.usb_device, i, &config_descriptor);
+		if ( this->handleLibusbError(ret) ) {
+			this->buffer_.str("get_config_descriptor failure with index : ");
+			this->buffer_ << i;
+			LOG(ERROR) << this->buffer_.str();
+			syslog(LOG_ERR, this->buffer_.str().c_str());
+			continue;
+		}
+
+		LOG(DEBUG4) << "--";
+		LOG(DEBUG4) << "config descriptor";
+		LOG(DEBUG4) << "--";
+		LOG(DEBUG4) << "bLength             : " << (unsigned int)config_descriptor->bLength;
+		LOG(DEBUG4) << "bDescriptorType     : " << (unsigned int)config_descriptor->bDescriptorType;
+		LOG(DEBUG4) << "wTotalLength        : " << (unsigned int)config_descriptor->wTotalLength;
+		LOG(DEBUG4) << "bNumInterfaces      : " << (unsigned int)config_descriptor->bNumInterfaces;
+		LOG(DEBUG4) << "bConfigurationValue : " << (unsigned int)config_descriptor->bConfigurationValue;
+		LOG(DEBUG4) << "iConfiguration      : " << (unsigned int)config_descriptor->iConfiguration;
+		LOG(DEBUG4) << "bmAttributes        : " << (unsigned int)config_descriptor->bmAttributes;
+		LOG(DEBUG4) << "MaxPower            : " << (unsigned int)config_descriptor->MaxPower;
+		/* TODO extra extra_length */
+		LOG(DEBUG4) << "--";
+		LOG(DEBUG4) << "--";
+		LOG(DEBUG4) << "--";
+
+		LOG(INFO) << "configuration " << (unsigned int)config_descriptor->bConfigurationValue
+					<< " has " << (unsigned int)config_descriptor->bNumInterfaces << " interface(s)";
+
+		if ( config_descriptor->bConfigurationValue != this->expected_usb_descriptors_.b_configuration_value ) {
+			continue; /* skip non expected configuration */
+		}
+
+		for (j = 0; j < (unsigned int)config_descriptor->bNumInterfaces; j++) {
+			const struct libusb_interface *iface = &(config_descriptor->interface[j]);
+			LOG(INFO) << "interface " << j << " has " << iface->num_altsetting << " alternate settings";
+
+			for (k = 0; k < (unsigned int)iface->num_altsetting; k++) {
+				const struct libusb_interface_descriptor * as_descriptor = &(iface->altsetting[k]);
+
+				LOG(DEBUG4) << "--";
+				LOG(DEBUG4) << "interface descriptor";
+				LOG(DEBUG4) << "--";
+				LOG(DEBUG4) << "bLength            : " << (unsigned int)as_descriptor->bLength;
+				LOG(DEBUG4) << "bDescriptorType    : " << (unsigned int)as_descriptor->bDescriptorType;
+				LOG(DEBUG4) << "bInterfaceNumber   : " << (unsigned int)as_descriptor->bInterfaceNumber;
+				LOG(DEBUG4) << "bAlternateSetting  : " << (unsigned int)as_descriptor->bAlternateSetting;
+				LOG(DEBUG4) << "bNumEndpoints      : " << (unsigned int)as_descriptor->bNumEndpoints;
+				LOG(DEBUG4) << "bInterfaceClass    : " << (unsigned int)as_descriptor->bInterfaceClass;
+				LOG(DEBUG4) << "bInterfaceSubClass : " << (unsigned int)as_descriptor->bInterfaceSubClass;
+				LOG(DEBUG4) << "bInterfaceProtocol : " << (unsigned int)as_descriptor->bInterfaceProtocol;
+				LOG(DEBUG4) << "iInterface         : " << (unsigned int)as_descriptor->iInterface;
+				/* TODO extra extra_length */
+				LOG(DEBUG4) << "--";
+				LOG(DEBUG4) << "--";
+				LOG(DEBUG4) << "--";
+
+				LOG(INFO) << "interface " << j << " alternate setting " << (unsigned int)as_descriptor->bAlternateSetting
+							<< " has " << (unsigned int)as_descriptor->bNumEndpoints << " endpoints";
+
+				if ( as_descriptor->bInterfaceNumber != this->expected_usb_descriptors_.b_interface_number) {
+					continue; /* skip non expected interface */
+				}
+
+				if ( as_descriptor->bAlternateSetting != this->expected_usb_descriptors_.b_alternate_setting) {
+					continue; /* skip non expected alternate setting */
+				}
+
+				if( as_descriptor->bInterfaceClass != LIBUSB_CLASS_HID ) {
+					LOG(DEBUG3) << "interface " << j << " alternate settings " << k << " is not for HID device, skipping it";
+					continue; /* sanity check */
+				}
+
+				/* specs found */
+				ret = libusb_kernel_driver_active(current_device.usb_handle, (int)as_descriptor->bInterfaceNumber);
+				if( ret < 0 ) {
+					this->handleLibusbError(ret);
+					throw GLogiKExcept("libusb kernel_driver_active error");
+				}
+				if( ret ) {
+					LOG(INFO) << "active";
+				}
+				else {
+					LOG(INFO) << "inactive";
+				}
+
+			}
+		}
+
+			//ret = libusb_set_configuration(current_device.usb_handle, (int)this->b_config_value_);
+			//if ( this->handleLibusbError(ret) )
+			//	throw GLogiKExcept("libusb set_configuration failure");
+		libusb_free_config_descriptor( config_descriptor );
+	}
+
 }
 
 void KeyboardDriver::closeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num) {
