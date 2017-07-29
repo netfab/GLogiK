@@ -155,11 +155,13 @@ void DevicesManager::cleanUnpluggedDevices(void) {
 
 		try {
 			if(stop_it) {
+#if DEBUGGING_ON
 				LOG(WARNING)	<< "erasing unplugged initialized driver : "
 								<< (*it).device.vendor_id << ":" << (*it).device.product_id
 								<< ":" << (*it).input_dev_node << ":" << (*it).usec;
 				LOG(WARNING)	<< "Did you unplug your device before properly closing it ?";
 				LOG(WARNING)	<< "You will get libusb warnings/errors if you do this.";
+#endif
 
 				for(const auto& driver : this->drivers_) {
 					if( (*it).driver_ID == driver->getDriverID() ) {
