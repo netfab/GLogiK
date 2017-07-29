@@ -112,8 +112,11 @@ int KeyboardDriver::handleLibusbError(int error_code) {
 		case LIBUSB_SUCCESS:
 			break;
 		default:
-			LOG(ERROR) << "handleLibusbError: (" <<  libusb_error_name(error_code) << ") "
-						<< libusb_strerror((libusb_error)error_code);
+			this->buffer_.str("libusb error ( ");
+			this->buffer_ << libusb_error_name(error_code) << ") : "
+					<< libusb_strerror((libusb_error)error_code);
+			LOG(ERROR) << this->buffer_.str();
+			syslog(LOG_ERR, this->buffer_.str().c_str());
 			break;
 	}
 
