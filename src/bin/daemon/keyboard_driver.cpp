@@ -137,6 +137,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		if ( this->handleLibusbError(ret) )
 			throw GLogiKExcept("libusb get_device_descriptor failure");
 
+#if DEBUGGING_ON
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "device descriptor";
 		LOG(DEBUG4) << "--";
@@ -160,6 +161,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 
 		LOG(INFO) << "device has " << (unsigned int)device_descriptor.bNumConfigurations
 					<< " possible configuration(s)";
+#endif
 
 		int b = -1;
 		ret = libusb_get_configuration(current_device.usb_handle, &b);
@@ -205,6 +207,7 @@ void KeyboardDriver::setDeviceConfiguration(const InitializedDevice & current_de
 			continue;
 		}
 
+#if DEBUGGING_ON
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "config descriptor";
 		LOG(DEBUG4) << "--";
@@ -223,6 +226,7 @@ void KeyboardDriver::setDeviceConfiguration(const InitializedDevice & current_de
 
 		LOG(INFO) << "configuration " << (unsigned int)config_descriptor->bConfigurationValue
 					<< " has " << (unsigned int)config_descriptor->bNumInterfaces << " interface(s)";
+#endif
 
 		if ( config_descriptor->bConfigurationValue != this->expected_usb_descriptors_.b_configuration_value ) {
 			continue; /* skip non expected configuration */
@@ -235,6 +239,7 @@ void KeyboardDriver::setDeviceConfiguration(const InitializedDevice & current_de
 			for (k = 0; k < (unsigned int)iface->num_altsetting; k++) {
 				const struct libusb_interface_descriptor * as_descriptor = &(iface->altsetting[k]);
 
+#if DEBUGGING_ON
 				LOG(DEBUG4) << "--";
 				LOG(DEBUG4) << "interface descriptor";
 				LOG(DEBUG4) << "--";
@@ -254,6 +259,7 @@ void KeyboardDriver::setDeviceConfiguration(const InitializedDevice & current_de
 
 				LOG(INFO) << "interface " << j << " alternate setting " << (unsigned int)as_descriptor->bAlternateSetting
 							<< " has " << (unsigned int)as_descriptor->bNumEndpoints << " endpoints";
+#endif
 
 				if ( as_descriptor->bInterfaceNumber != this->expected_usb_descriptors_.b_interface_number) {
 					continue; /* skip non expected interface */
