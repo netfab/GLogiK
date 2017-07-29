@@ -163,9 +163,11 @@ void DevicesManager::cleanUnpluggedDevices(void) {
 
 				for(const auto& driver : this->drivers_) {
 					if( (*it).driver_ID == driver->getDriverID() ) {
-						LOG(WARNING) << "device closing attempt "
-									<< (*it).device.vendor_id << ":" << (*it).device.product_id
+						this->buffer_.str("warning : device closing attempt ");
+						this->buffer_ << (*it).device.vendor_id << ":" << (*it).device.product_id
 									<< ":" << (*it).input_dev_node << ":" << (*it).usec;
+						LOG(WARNING) << this->buffer_.str();
+						syslog(LOG_WARNING, this->buffer_.str().c_str());
 						driver->closeDevice( (*it).device, (*it).device_bus, (*it).device_num );
 						break;
 					}
