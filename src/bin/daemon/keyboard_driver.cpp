@@ -133,7 +133,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	this->initializeLibusb(current_device); /* device opened */
 
 	try {
-		this->setDeviceConfiguration( current_device );
+		this->findExpectedUSBInterface( current_device );
 
 /*
 		int b = -1;
@@ -145,7 +145,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		if ( b != (int)(this->expected_usb_descriptors_.b_configuration_value) ) {
 			LOG(INFO) << "wanted configuration : " << (int)(this->expected_usb_descriptors_.b_configuration_value);
 			LOG(INFO) << "will try to set the active configuration to the wanted value";
-			this->setDeviceConfiguration( current_device );
+			this->findExpectedUSBInterface( current_device );
 		}
 */
 
@@ -167,7 +167,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	this->initialized_devices_.push_back( current_device );
 }
 
-void KeyboardDriver::setDeviceConfiguration(const InitializedDevice & current_device) {
+void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_device) {
 	unsigned int i, j, k = 0;
 	int ret = 0;
 
@@ -301,7 +301,7 @@ void KeyboardDriver::setDeviceConfiguration(const InitializedDevice & current_de
 					}
 
 					LOG(INFO) << "successfully detached the kernel driver :)";
-					this->reattach_driver_ = true;
+					this->reattach_driver_ = true; /* want to reattach this interface to kernel driver on close */
 				}
 				else {
 					LOG(INFO) << "interface " << numInt << " is currently free :)";

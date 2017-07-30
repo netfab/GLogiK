@@ -91,7 +91,7 @@ class KeyboardDriver
 
 		void closeLibusb(void);
 		int handleLibusbError(int error_code);
-		void setDeviceConfiguration(const InitializedDevice & current_device);
+		void findExpectedUSBInterface(const InitializedDevice & current_device);
 };
 
 } // namespace GLogiKd
