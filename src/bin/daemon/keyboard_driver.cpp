@@ -38,7 +38,7 @@ namespace GLogiKd
 bool KeyboardDriver::libusb_status_ = false;
 uint8_t KeyboardDriver::drivers_cnt_ = 0;
 
-KeyboardDriver::KeyboardDriver() : buffer_("", std::ios_base::app), context_(nullptr) {
+KeyboardDriver::KeyboardDriver() : buffer_("", std::ios_base::app), context_(nullptr), reattach_driver_(false) {
 	this->expected_usb_descriptors_ = { 0, 0, 0 };
 	KeyboardDriver::drivers_cnt_++;
 }
@@ -132,40 +132,10 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 
 	this->initializeLibusb(current_device); /* device opened */
 
-	int ret = 0;
-
 	try {
-		struct libusb_device_descriptor device_descriptor;
-		ret = libusb_get_device_descriptor(current_device.usb_device, &device_descriptor);
-		if ( this->handleLibusbError(ret) )
-			throw GLogiKExcept("libusb get_device_descriptor failure");
+		this->setDeviceConfiguration( current_device );
 
-#if DEBUGGING_ON
-		LOG(DEBUG4) << "--";
-		LOG(DEBUG4) << "device descriptor";
-		LOG(DEBUG4) << "--";
-		LOG(DEBUG4) << "bLength            : " << (unsigned int)device_descriptor.bLength;
-		LOG(DEBUG4) << "bDescriptorType    : " << (unsigned int)device_descriptor.bDescriptorType;
-		LOG(DEBUG4) << "bcdUSB             : " << std::bitset<16>( (unsigned int)device_descriptor.bcdUSB ).to_string();
-		LOG(DEBUG4) << "bDeviceClass       : " << (unsigned int)device_descriptor.bDeviceClass;
-		LOG(DEBUG4) << "bDeviceSubClass    : " << (unsigned int)device_descriptor.bDeviceSubClass;
-		LOG(DEBUG4) << "bDeviceProtocol    : " << (unsigned int)device_descriptor.bDeviceProtocol;
-		LOG(DEBUG4) << "bMaxPacketSize0    : " << (unsigned int)device_descriptor.bMaxPacketSize0;
-		LOG(DEBUG4) << "idVendor           : " << std::hex << (unsigned int)device_descriptor.idVendor;
-		LOG(DEBUG4) << "idProduct          : " << std::hex << (unsigned int)device_descriptor.idProduct;
-		LOG(DEBUG4) << "bcdDevice          : " << std::bitset<16>( (unsigned int)device_descriptor.bcdDevice ).to_string();
-		LOG(DEBUG4) << "iManufacturer      : " << (unsigned int)device_descriptor.iManufacturer;
-		LOG(DEBUG4) << "iProduct           : " << (unsigned int)device_descriptor.iProduct;
-		LOG(DEBUG4) << "iSerialNumber      : " << (unsigned int)device_descriptor.iSerialNumber;
-		LOG(DEBUG4) << "bNumConfigurations : " << (unsigned int)device_descriptor.bNumConfigurations;
-		LOG(DEBUG4) << "--";
-		LOG(DEBUG4) << "--";
-		LOG(DEBUG4) << "--";
-
-		LOG(INFO) << "device has " << (unsigned int)device_descriptor.bNumConfigurations
-					<< " possible configuration(s)";
-#endif
-
+/*
 		int b = -1;
 		ret = libusb_get_configuration(current_device.usb_handle, &b);
 		if ( this->handleLibusbError(ret) )
@@ -175,8 +145,9 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		if ( b != (int)(this->expected_usb_descriptors_.b_configuration_value) ) {
 			LOG(INFO) << "wanted configuration : " << (int)(this->expected_usb_descriptors_.b_configuration_value);
 			LOG(INFO) << "will try to set the active configuration to the wanted value";
-			this->setDeviceConfiguration( current_device, device_descriptor );
+			this->setDeviceConfiguration( current_device );
 		}
+*/
 
 		/* virtual keyboard */
 		this->buffer_.str("Virtual ");
@@ -196,9 +167,41 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	this->initialized_devices_.push_back( current_device );
 }
 
-void KeyboardDriver::setDeviceConfiguration(const InitializedDevice & current_device, const libusb_device_descriptor & device_descriptor) {
+void KeyboardDriver::setDeviceConfiguration(const InitializedDevice & current_device) {
 	unsigned int i, j, k = 0;
 	int ret = 0;
+
+	struct libusb_device_descriptor device_descriptor;
+	ret = libusb_get_device_descriptor(current_device.usb_device, &device_descriptor);
+	if ( this->handleLibusbError(ret) )
+		throw GLogiKExcept("libusb get_device_descriptor failure");
+
+#if DEBUGGING_ON
+	LOG(DEBUG4) << "--";
+	LOG(DEBUG4) << "device descriptor";
+	LOG(DEBUG4) << "--";
+	LOG(DEBUG4) << "bLength            : " << (unsigned int)device_descriptor.bLength;
+	LOG(DEBUG4) << "bDescriptorType    : " << (unsigned int)device_descriptor.bDescriptorType;
+	LOG(DEBUG4) << "bcdUSB             : " << std::bitset<16>( (unsigned int)device_descriptor.bcdUSB ).to_string();
+	LOG(DEBUG4) << "bDeviceClass       : " << (unsigned int)device_descriptor.bDeviceClass;
+	LOG(DEBUG4) << "bDeviceSubClass    : " << (unsigned int)device_descriptor.bDeviceSubClass;
+	LOG(DEBUG4) << "bDeviceProtocol    : " << (unsigned int)device_descriptor.bDeviceProtocol;
+	LOG(DEBUG4) << "bMaxPacketSize0    : " << (unsigned int)device_descriptor.bMaxPacketSize0;
+	LOG(DEBUG4) << "idVendor           : " << std::hex << (unsigned int)device_descriptor.idVendor;
+	LOG(DEBUG4) << "idProduct          : " << std::hex << (unsigned int)device_descriptor.idProduct;
+	LOG(DEBUG4) << "bcdDevice          : " << std::bitset<16>( (unsigned int)device_descriptor.bcdDevice ).to_string();
+	LOG(DEBUG4) << "iManufacturer      : " << (unsigned int)device_descriptor.iManufacturer;
+	LOG(DEBUG4) << "iProduct           : " << (unsigned int)device_descriptor.iProduct;
+	LOG(DEBUG4) << "iSerialNumber      : " << (unsigned int)device_descriptor.iSerialNumber;
+	LOG(DEBUG4) << "bNumConfigurations : " << (unsigned int)device_descriptor.bNumConfigurations;
+	LOG(DEBUG4) << "--";
+	LOG(DEBUG4) << "--";
+	LOG(DEBUG4) << "--";
+
+	LOG(INFO) << "device has " << (unsigned int)device_descriptor.bNumConfigurations
+				<< " possible configuration(s)";
+#endif
+
 	for (i = 0; i < (unsigned int)device_descriptor.bNumConfigurations; i++) {
 		struct libusb_config_descriptor * config_descriptor = nullptr;
 		ret = libusb_get_config_descriptor(current_device.usb_device, i, &config_descriptor);
@@ -211,6 +214,9 @@ void KeyboardDriver::setDeviceConfiguration(const InitializedDevice & current_de
 		}
 
 #if DEBUGGING_ON
+		LOG(DEBUG1) << "configuration " << (unsigned int)config_descriptor->bConfigurationValue
+					<< " has " << (unsigned int)config_descriptor->bNumInterfaces << " interface(s)";
+
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "config descriptor";
 		LOG(DEBUG4) << "--";
@@ -226,9 +232,6 @@ void KeyboardDriver::setDeviceConfiguration(const InitializedDevice & current_de
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "--";
-
-		LOG(INFO) << "configuration " << (unsigned int)config_descriptor->bConfigurationValue
-					<< " has " << (unsigned int)config_descriptor->bNumInterfaces << " interface(s)";
 #endif
 
 		if ( config_descriptor->bConfigurationValue != this->expected_usb_descriptors_.b_configuration_value ) {
@@ -237,12 +240,15 @@ void KeyboardDriver::setDeviceConfiguration(const InitializedDevice & current_de
 
 		for (j = 0; j < (unsigned int)config_descriptor->bNumInterfaces; j++) {
 			const struct libusb_interface *iface = &(config_descriptor->interface[j]);
-			LOG(INFO) << "interface " << j << " has " << iface->num_altsetting << " alternate settings";
+			LOG(DEBUG2) << "interface " << j << " has " << iface->num_altsetting << " alternate settings";
 
 			for (k = 0; k < (unsigned int)iface->num_altsetting; k++) {
 				const struct libusb_interface_descriptor * as_descriptor = &(iface->altsetting[k]);
 
 #if DEBUGGING_ON
+				LOG(DEBUG3) << "interface " << j << " alternate setting " << (unsigned int)as_descriptor->bAlternateSetting
+							<< " has " << (unsigned int)as_descriptor->bNumEndpoints << " endpoints";
+
 				LOG(DEBUG4) << "--";
 				LOG(DEBUG4) << "interface descriptor";
 				LOG(DEBUG4) << "--";
@@ -259,9 +265,6 @@ void KeyboardDriver::setDeviceConfiguration(const InitializedDevice & current_de
 				LOG(DEBUG4) << "--";
 				LOG(DEBUG4) << "--";
 				LOG(DEBUG4) << "--";
-
-				LOG(INFO) << "interface " << j << " alternate setting " << (unsigned int)as_descriptor->bAlternateSetting
-							<< " has " << (unsigned int)as_descriptor->bNumEndpoints << " endpoints";
 #endif
 
 				if ( as_descriptor->bInterfaceNumber != this->expected_usb_descriptors_.b_interface_number) {
@@ -278,16 +281,30 @@ void KeyboardDriver::setDeviceConfiguration(const InitializedDevice & current_de
 				}
 
 				/* specs found */
-				ret = libusb_kernel_driver_active(current_device.usb_handle, (int)as_descriptor->bInterfaceNumber);
+				LOG(INFO) << "found the expected interface, keep going on this road";
+
+				int numInt = (int)as_descriptor->bInterfaceNumber;
+				ret = libusb_kernel_driver_active(current_device.usb_handle, numInt);
 				if( ret < 0 ) {
 					this->handleLibusbError(ret);
 					throw GLogiKExcept("libusb kernel_driver_active error");
 				}
 				if( ret ) {
-					LOG(INFO) << "active";
+					LOG(INFO) << "kernel driver currently attached to the interface " << numInt << ", trying to detach it";
+					ret = libusb_detach_kernel_driver(current_device.usb_handle, numInt); /* detaching */
+					if( this->handleLibusbError(ret) ) {
+						this->buffer_.str("detaching the kernel driver from USB interface ");
+						this->buffer_ << numInt << " failed, this is fatal";
+						LOG(ERROR) << this->buffer_.str();
+						syslog(LOG_ERR, this->buffer_.str().c_str());
+						throw GLogiKExcept(this->buffer_.str());
+					}
+
+					LOG(INFO) << "successfully detached the kernel driver :)";
+					this->reattach_driver_ = true;
 				}
 				else {
-					LOG(INFO) << "inactive";
+					LOG(INFO) << "interface " << numInt << " is currently free :)";
 				}
 
 			}
@@ -311,7 +328,24 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &device, const uint8_t bus
 		if( ((*it).bus == bus) and ((*it).num == num) ) {
 			delete (*it).virtual_keyboard;
 			(*it).virtual_keyboard = nullptr;
+
+			if( this->reattach_driver_ ) {
+				int numInt = (int)this->expected_usb_descriptors_.b_interface_number;
+				LOG(INFO) << "trying to attach kernel driver to interface " << numInt;
+				int ret = libusb_attach_kernel_driver((*it).usb_handle, numInt); /* re-attach */
+				if( this->handleLibusbError(ret) ) {
+					this->buffer_.str("failed to reattach kernel driver to interface ");
+					this->buffer_ << numInt;
+					LOG(ERROR) << this->buffer_.str();
+					syslog(LOG_ERR, this->buffer_.str().c_str());
+				}
+				else {
+					LOG(INFO) << "successfully attached kernel driver :)";
+				}
+			}
+
 			libusb_close( (*it).usb_handle );
+
 			found = true;
 			it = this->initialized_devices_.erase(it);
 			break;
