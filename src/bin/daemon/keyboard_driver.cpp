@@ -253,7 +253,7 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 						throw GLogiKExcept(this->buffer_.str());
 					}
 
-					LOG(INFO) << "successfully detached the kernel driver from the interface" << numInt;
+					LOG(INFO) << "successfully detached the kernel driver from the interface " << numInt;
 					this->reattach_.push_back(numInt);
 				}
 				else {
@@ -280,7 +280,7 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 	unsigned int i, j, k = 0;
 	int ret = 0;
 
-	LOG(DEBUG3) << "trying to find excpected interface";
+	LOG(DEBUG3) << "trying to find expected interface";
 
 	struct libusb_device_descriptor device_descriptor;
 	ret = libusb_get_device_descriptor(current_device.usb_device, &device_descriptor);
