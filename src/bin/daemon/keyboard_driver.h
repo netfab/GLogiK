@@ -84,7 +84,7 @@ class KeyboardDriver
 		static uint8_t drivers_cnt_;		/* initialized drivers counter */
 		libusb_context *context_;
 		libusb_device **list_;
-		std::vector<int> interfaces_to_reattach;
+		std::vector<int> reattach_;
 
 		std::vector<InitializedDevice> initialized_devices_;
 

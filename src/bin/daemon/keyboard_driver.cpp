@@ -125,8 +125,7 @@ int KeyboardDriver::handleLibusbError(int error_code) {
 
 void KeyboardDriver::attachInterfaces(libusb_device_handle * usb_handle) {
 	int ret = 0;
-	for(auto it = this->interfaces_to_reattach.begin();
-			it != this->interfaces_to_reattach.end();) {
+	for(auto it = this->reattach_.begin(); it != this->reattach_.end();) {
 		int numInt = (*it);
 		LOG(INFO) << "trying to attach kernel driver to interface " << numInt;
 		ret = libusb_attach_kernel_driver(usb_handle, numInt); /* re-attach */
@@ -141,7 +140,7 @@ void KeyboardDriver::attachInterfaces(libusb_device_handle * usb_handle) {
 		}
 		it++;
 	}
-	this->interfaces_to_reattach.clear();
+	this->reattach_.clear();
 }
 
 void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num) {
@@ -175,6 +174,21 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	this->initialized_devices_.push_back( current_device );
 }
 
+/*
+ * This function is trying to (in this order) :
+ *	- check the current active configuration value
+ *	- if previous value matches the wanted one, simply return, else :
+ *	- detach all interfaces from kernel drivers
+ *	- set the wanted configuration
+ *	- re-attach all the previously attached interfaces
+ *
+ * In the comments on libusb/core.c, you can find :
+ *		-#	libusb will be unable to set a configuration if other programs or
+ *			drivers have claimed interfaces. In particular, this means that kernel
+ *			drivers must be detached from all the interfaces before
+ *			libusb_set_configuration() may succeed.
+ *
+ */
 void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) {
 	unsigned int i, j, k = 0;
 	int ret = 0;
@@ -240,7 +254,7 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 					}
 
 					LOG(INFO) << "successfully detached the kernel driver from the interface" << numInt;
-					interfaces_to_reattach.push_back(numInt);
+					this->reattach_.push_back(numInt);
 				}
 				else {
 					LOG(INFO) << "interface " << numInt << " is currently free :)";
@@ -401,7 +415,7 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 					}
 
 					LOG(INFO) << "successfully detached the kernel driver from the interface, will re-attach it later on close";
-					interfaces_to_reattach.push_back(numInt);
+					this->reattach_.push_back(numInt);
 				}
 				else {
 					LOG(INFO) << "interface " << numInt << " is currently free :)";
