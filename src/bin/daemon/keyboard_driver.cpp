@@ -123,7 +123,7 @@ int KeyboardDriver::handleLibusbError(int error_code) {
 	return error_code;
 }
 
-void KeyboardDriver::attachInterfaces(libusb_device_handle * usb_handle) {
+void KeyboardDriver::attachDriversToInterfaces(libusb_device_handle * usb_handle) {
 	int ret = 0;
 	for(auto it = this->reattach_.begin(); it != this->reattach_.end();) {
 		int numInt = (*it);
@@ -178,9 +178,9 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
  * This function is trying to (in this order) :
  *	- check the current active configuration value
  *	- if previous value matches the wanted one, simply return, else :
- *	- detach all interfaces from kernel drivers
+ *	- detach all kernel drivers from all interfaces
  *	- set the wanted configuration
- *	- re-attach all the previously attached interfaces
+ *	- re-attach all the previously attached drivers to interfaces
  *
  * In the comments on libusb/core.c, you can find :
  *		-#	libusb will be unable to set a configuration if other programs or
@@ -269,11 +269,11 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 	/* trying to set configuration */
 	ret = libusb_set_configuration(current_device.usb_handle, (int)this->expected_usb_descriptors_.b_configuration_value);
 	if ( this->handleLibusbError(ret) ) {
-		this->attachInterfaces( current_device.usb_handle );		/* trying to re-attach all interfaces */
+		this->attachDriversToInterfaces( current_device.usb_handle );		/* trying to re-attach all interfaces */
 		throw GLogiKExcept("libusb set_configuration failure");
 	}
 
-	this->attachInterfaces( current_device.usb_handle );			/* trying to re-attach all interfaces */
+	this->attachDriversToInterfaces( current_device.usb_handle );			/* trying to re-attach all interfaces */
 }
 
 void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_device) {
@@ -440,7 +440,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &device, const uint8_t bus
 			delete (*it).virtual_keyboard;
 			(*it).virtual_keyboard = nullptr;
 
-			this->attachInterfaces( (*it).usb_handle );			/* trying to re-attach all interfaces */
+			this->attachDriversToInterfaces( (*it).usb_handle );			/* trying to re-attach all interfaces */
 
 			libusb_close( (*it).usb_handle );
 
