@@ -223,6 +223,7 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 				int numInt = (int)as_descriptor->bInterfaceNumber;
 				ret = libusb_kernel_driver_active(current_device.usb_handle, numInt);
 				if( ret < 0 ) {
+					libusb_free_config_descriptor( config_descriptor ); /* free */
 					this->handleLibusbError(ret);
 					throw GLogiKExcept("libusb kernel_driver_active error");
 				}
@@ -230,6 +231,7 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 					LOG(INFO) << "kernel driver currently attached to the interface " << numInt << ", trying to detach it";
 					ret = libusb_detach_kernel_driver(current_device.usb_handle, numInt); /* detaching */
 					if( this->handleLibusbError(ret) ) {
+						libusb_free_config_descriptor( config_descriptor ); /* free */
 						this->buffer_.str("detaching the kernel driver from USB interface ");
 						this->buffer_ << numInt << " failed, this is fatal";
 						LOG(ERROR) << this->buffer_.str();
@@ -247,7 +249,7 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 			} /* for ->num_altsetting */
 		} /* for ->bNumInterfaces */
 
-		libusb_free_config_descriptor( config_descriptor );
+		libusb_free_config_descriptor( config_descriptor ); /* free */
 	} /* for .bNumConfigurations */
 
 	/* trying to set configuration */
@@ -330,6 +332,7 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 #endif
 
 		if ( config_descriptor->bConfigurationValue != this->expected_usb_descriptors_.b_configuration_value ) {
+			libusb_free_config_descriptor( config_descriptor ); /* free */
 			continue; /* skip non expected configuration */
 		}
 
@@ -381,6 +384,7 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 				int numInt = (int)as_descriptor->bInterfaceNumber;
 				ret = libusb_kernel_driver_active(current_device.usb_handle, numInt);
 				if( ret < 0 ) {
+					libusb_free_config_descriptor( config_descriptor ); /* free */
 					this->handleLibusbError(ret);
 					throw GLogiKExcept("libusb kernel_driver_active error");
 				}
@@ -388,6 +392,7 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 					LOG(INFO) << "kernel driver currently attached to the interface " << numInt << ", trying to detach it";
 					ret = libusb_detach_kernel_driver(current_device.usb_handle, numInt); /* detaching */
 					if( this->handleLibusbError(ret) ) {
+						libusb_free_config_descriptor( config_descriptor ); /* free */
 						this->buffer_.str("detaching the kernel driver from USB interface ");
 						this->buffer_ << numInt << " failed, this is fatal";
 						LOG(ERROR) << this->buffer_.str();
@@ -405,7 +410,7 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 			} /* for ->num_altsetting */
 		} /* for ->bNumInterfaces */
 
-		libusb_free_config_descriptor( config_descriptor );
+		libusb_free_config_descriptor( config_descriptor ); /* free */
 	} /* for .bNumConfigurations */
 
 }
