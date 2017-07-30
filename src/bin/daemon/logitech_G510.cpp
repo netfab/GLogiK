@@ -36,6 +36,7 @@ LogitechG510::LogitechG510() {
 		{ "Logitech G510/G510s", VENDOR_LOGITECH, "c22d" },
 		};
 
+	// 		{ configuration, interface, alternate_setting }
 	this->expected_usb_descriptors_ = { 1, 1, 0 };
 }
 

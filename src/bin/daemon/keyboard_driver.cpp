@@ -38,7 +38,7 @@ namespace GLogiKd
 bool KeyboardDriver::libusb_status_ = false;
 uint8_t KeyboardDriver::drivers_cnt_ = 0;
 
-KeyboardDriver::KeyboardDriver() : buffer_("", std::ios_base::app), context_(nullptr), reattach_driver_(false) {
+KeyboardDriver::KeyboardDriver() : buffer_("", std::ios_base::app), context_(nullptr) {
 	this->expected_usb_descriptors_ = { 0, 0, 0 };
 	KeyboardDriver::drivers_cnt_++;
 }
@@ -123,6 +123,27 @@ int KeyboardDriver::handleLibusbError(int error_code) {
 	return error_code;
 }
 
+void KeyboardDriver::attachInterfaces(libusb_device_handle * usb_handle) {
+	int ret = 0;
+	for(auto it = this->interfaces_to_reattach.begin();
+			it != this->interfaces_to_reattach.end();) {
+		int numInt = (*it);
+		LOG(INFO) << "trying to attach kernel driver to interface " << numInt;
+		ret = libusb_attach_kernel_driver(usb_handle, numInt); /* re-attach */
+		if( this->handleLibusbError(ret) ) {
+			this->buffer_.str("failed to reattach kernel driver to interface ");
+			this->buffer_ << numInt;
+			LOG(ERROR) << this->buffer_.str();
+			syslog(LOG_ERR, this->buffer_.str().c_str());
+		}
+		else {
+			LOG(INFO) << "success :)";
+		}
+		it++;
+	}
+	this->interfaces_to_reattach.clear();
+}
+
 void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num) {
 	LOG(DEBUG3) << "trying to initialize " << device.name << "("
 				<< device.vendor_id << ":" << device.product_id << "), device "
@@ -133,21 +154,8 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	this->initializeLibusb(current_device); /* device opened */
 
 	try {
-		this->findExpectedUSBInterface( current_device );
-
-/*
-		int b = -1;
-		ret = libusb_get_configuration(current_device.usb_handle, &b);
-		if ( this->handleLibusbError(ret) )
-			throw GLogiKExcept("libusb get_configuration error");
-
-		LOG(INFO) << "current active configuration value : " << b;
-		if ( b != (int)(this->expected_usb_descriptors_.b_configuration_value) ) {
-			LOG(INFO) << "wanted configuration : " << (int)(this->expected_usb_descriptors_.b_configuration_value);
-			LOG(INFO) << "will try to set the active configuration to the wanted value";
-			this->findExpectedUSBInterface( current_device );
-		}
-*/
+		this->setConfiguration(current_device);
+		this->findExpectedUSBInterface(current_device);
 
 		/* virtual keyboard */
 		this->buffer_.str("Virtual ");
@@ -167,9 +175,96 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	this->initialized_devices_.push_back( current_device );
 }
 
+void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) {
+	unsigned int i, j, k = 0;
+	int ret = 0;
+	LOG(DEBUG3) << "setting usb device configuration";
+
+	int b = -1;
+	ret = libusb_get_configuration(current_device.usb_handle, &b);
+	if ( this->handleLibusbError(ret) )
+		throw GLogiKExcept("libusb get_configuration error");
+
+	LOG(DEBUG3) << "current active configuration value : " << b;
+	if ( b == (int)(this->expected_usb_descriptors_.b_configuration_value) ) {
+		LOG(INFO) << "current active configuration value matches the wanted value, skipping configuration";
+		return;
+	}
+
+	LOG(INFO) << "wanted configuration : " << (int)(this->expected_usb_descriptors_.b_configuration_value);
+	LOG(INFO) << "will try to set the active configuration to the wanted value";
+
+	/* have to detach all interfaces first */
+
+	struct libusb_device_descriptor device_descriptor;
+	ret = libusb_get_device_descriptor(current_device.usb_device, &device_descriptor);
+	if ( this->handleLibusbError(ret) )
+		throw GLogiKExcept("libusb get_device_descriptor failure");
+
+	for (i = 0; i < (unsigned int)device_descriptor.bNumConfigurations; i++) {
+		/* configuration descriptor */
+		struct libusb_config_descriptor * config_descriptor = nullptr;
+		ret = libusb_get_config_descriptor(current_device.usb_device, i, &config_descriptor);
+		if ( this->handleLibusbError(ret) ) {
+			this->buffer_.str("get_config_descriptor failure with index : ");
+			this->buffer_ << i;
+			LOG(ERROR) << this->buffer_.str();
+			syslog(LOG_ERR, this->buffer_.str().c_str());
+			continue;
+		}
+
+		for (j = 0; j < (unsigned int)config_descriptor->bNumInterfaces; j++) {
+			const struct libusb_interface *iface = &(config_descriptor->interface[j]);
+
+			for (k = 0; k < (unsigned int)iface->num_altsetting; k++) {
+				/* interface alt_setting descriptor */
+				const struct libusb_interface_descriptor * as_descriptor = &(iface->altsetting[k]);
+
+				int numInt = (int)as_descriptor->bInterfaceNumber;
+				ret = libusb_kernel_driver_active(current_device.usb_handle, numInt);
+				if( ret < 0 ) {
+					this->handleLibusbError(ret);
+					throw GLogiKExcept("libusb kernel_driver_active error");
+				}
+				if( ret ) {
+					LOG(INFO) << "kernel driver currently attached to the interface " << numInt << ", trying to detach it";
+					ret = libusb_detach_kernel_driver(current_device.usb_handle, numInt); /* detaching */
+					if( this->handleLibusbError(ret) ) {
+						this->buffer_.str("detaching the kernel driver from USB interface ");
+						this->buffer_ << numInt << " failed, this is fatal";
+						LOG(ERROR) << this->buffer_.str();
+						syslog(LOG_ERR, this->buffer_.str().c_str());
+						throw GLogiKExcept(this->buffer_.str());
+					}
+
+					LOG(INFO) << "successfully detached the kernel driver from the interface" << numInt;
+					interfaces_to_reattach.push_back(numInt);
+				}
+				else {
+					LOG(INFO) << "interface " << numInt << " is currently free :)";
+				}
+
+			} /* for ->num_altsetting */
+		} /* for ->bNumInterfaces */
+
+		libusb_free_config_descriptor( config_descriptor );
+	} /* for .bNumConfigurations */
+
+	/* trying to set configuration */
+	ret = libusb_set_configuration(current_device.usb_handle, (int)this->expected_usb_descriptors_.b_configuration_value);
+	if ( this->handleLibusbError(ret) ) {
+		this->attachInterfaces( current_device.usb_handle );		/* trying to re-attach all interfaces */
+		throw GLogiKExcept("libusb set_configuration failure");
+	}
+
+	this->attachInterfaces( current_device.usb_handle );			/* trying to re-attach all interfaces */
+}
+
 void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_device) {
 	unsigned int i, j, k = 0;
 	int ret = 0;
+
+	LOG(DEBUG3) << "trying to find excpected interface";
 
 	struct libusb_device_descriptor device_descriptor;
 	ret = libusb_get_device_descriptor(current_device.usb_device, &device_descriptor);
@@ -301,20 +396,17 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 					}
 
 					LOG(INFO) << "successfully detached the kernel driver from the interface, will re-attach it later on close";
-					this->reattach_driver_ = true; /* want to reattach this interface to kernel driver on close */
+					interfaces_to_reattach.push_back(numInt);
 				}
 				else {
 					LOG(INFO) << "interface " << numInt << " is currently free :)";
 				}
 
-			}
-		}
+			} /* for ->num_altsetting */
+		} /* for ->bNumInterfaces */
 
-			//ret = libusb_set_configuration(current_device.usb_handle, (int)this->b_config_value_);
-			//if ( this->handleLibusbError(ret) )
-			//	throw GLogiKExcept("libusb set_configuration failure");
 		libusb_free_config_descriptor( config_descriptor );
-	}
+	} /* for .bNumConfigurations */
 
 }
 
@@ -329,20 +421,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &device, const uint8_t bus
 			delete (*it).virtual_keyboard;
 			(*it).virtual_keyboard = nullptr;
 
-			if( this->reattach_driver_ ) {
-				int numInt = (int)this->expected_usb_descriptors_.b_interface_number;
-				LOG(INFO) << "trying to attach kernel driver to interface " << numInt;
-				int ret = libusb_attach_kernel_driver((*it).usb_handle, numInt); /* re-attach */
-				if( this->handleLibusbError(ret) ) {
-					this->buffer_.str("failed to reattach kernel driver to interface ");
-					this->buffer_ << numInt;
-					LOG(ERROR) << this->buffer_.str();
-					syslog(LOG_ERR, this->buffer_.str().c_str());
-				}
-				else {
-					LOG(INFO) << "successfully attached kernel driver :)";
-				}
-			}
+			this->attachInterfaces( (*it).usb_handle );			/* trying to re-attach all interfaces */
 
 			libusb_close( (*it).usb_handle );
 

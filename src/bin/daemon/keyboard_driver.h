@@ -84,14 +84,15 @@ class KeyboardDriver
 		static uint8_t drivers_cnt_;		/* initialized drivers counter */
 		libusb_context *context_;
 		libusb_device **list_;
-		bool reattach_driver_;				/* whether we want to reattach kernel
-											 * driver on close if we detach it */
+		std::vector<int> interfaces_to_reattach;
 
 		std::vector<InitializedDevice> initialized_devices_;
 
 		void closeLibusb(void);
 		int handleLibusbError(int error_code);
+		void setConfiguration(const InitializedDevice & current_device);
 		void findExpectedUSBInterface(const InitializedDevice & current_device);
+		void attachInterfaces(libusb_device_handle * usb_handle);
 };
 
 } // namespace GLogiKd
