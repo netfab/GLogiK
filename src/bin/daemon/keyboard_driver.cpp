@@ -300,7 +300,7 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 						throw GLogiKExcept(this->buffer_.str());
 					}
 
-					LOG(INFO) << "successfully detached the kernel driver :)";
+					LOG(INFO) << "successfully detached the kernel driver from the interface, will re-attach it later on close";
 					this->reattach_driver_ = true; /* want to reattach this interface to kernel driver on close */
 				}
 				else {
