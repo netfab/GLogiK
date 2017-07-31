@@ -84,7 +84,8 @@ class KeyboardDriver
 		static uint8_t drivers_cnt_;		/* initialized drivers counter */
 		libusb_context *context_;
 		libusb_device **list_;
-		std::vector<int> reattach_;
+		std::vector<int> to_attach_;
+		std::vector<int> to_release_;
 
 		std::vector<InitializedDevice> initialized_devices_;
 
@@ -92,6 +93,7 @@ class KeyboardDriver
 		int handleLibusbError(int error_code);
 		void setConfiguration(const InitializedDevice & current_device);
 		void findExpectedUSBInterface(const InitializedDevice & current_device);
+		void releaseInterfaces(libusb_device_handle * usb_handle);
 		void attachDriversToInterfaces(libusb_device_handle * usb_handle);
 };
 

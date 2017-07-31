@@ -123,9 +123,29 @@ int KeyboardDriver::handleLibusbError(int error_code) {
 	return error_code;
 }
 
+void KeyboardDriver::releaseInterfaces(libusb_device_handle * usb_handle) {
+	int ret = 0;
+	for(auto it = this->to_release_.begin(); it != this->to_release_.end();) {
+		int numInt = (*it);
+		LOG(INFO) << "trying to release claimed interface " << numInt;
+		ret = libusb_release_interface(usb_handle, numInt); /* release */
+		if( this->handleLibusbError(ret) ) {
+			this->buffer_.str("failed to release interface ");
+			this->buffer_ << numInt;
+			LOG(ERROR) << this->buffer_.str();
+			syslog(LOG_ERR, this->buffer_.str().c_str());
+		}
+		else {
+			LOG(INFO) << "success :)";
+		}
+		it++;
+	}
+	this->to_release_.clear();
+}
+
 void KeyboardDriver::attachDriversToInterfaces(libusb_device_handle * usb_handle) {
 	int ret = 0;
-	for(auto it = this->reattach_.begin(); it != this->reattach_.end();) {
+	for(auto it = this->to_attach_.begin(); it != this->to_attach_.end();) {
 		int numInt = (*it);
 		LOG(INFO) << "trying to attach kernel driver to interface " << numInt;
 		ret = libusb_attach_kernel_driver(usb_handle, numInt); /* re-attach */
@@ -140,7 +160,7 @@ void KeyboardDriver::attachDriversToInterfaces(libusb_device_handle * usb_handle
 		}
 		it++;
 	}
-	this->reattach_.clear();
+	this->to_attach_.clear();
 }
 
 void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num) {
@@ -254,7 +274,7 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 					}
 
 					LOG(INFO) << "successfully detached the kernel driver from the interface " << numInt;
-					this->reattach_.push_back(numInt);
+					this->to_attach_.push_back(numInt);
 				}
 				else {
 					LOG(INFO) << "interface " << numInt << " is currently free :)";
@@ -415,11 +435,39 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 					}
 
 					LOG(INFO) << "successfully detached the kernel driver from the interface, will re-attach it later on close";
-					this->reattach_.push_back(numInt);
+					this->to_attach_.push_back(numInt);
 				}
 				else {
 					LOG(INFO) << "interface " << numInt << " is currently free :)";
 				}
+
+				/* claiming interface */
+				LOG(INFO) << "trying to claim interface " << numInt;
+				ret = libusb_claim_interface(current_device.usb_handle, numInt);
+				if( this->handleLibusbError(ret) ) {
+					throw GLogiKExcept("error claiming interface");
+				}
+				this->to_release_.push_back(numInt);
+
+				/* once that the interface is claimed, check that the right configuration is set */
+				int b = -1;
+				ret = libusb_get_configuration(current_device.usb_handle, &b);
+				if ( this->handleLibusbError(ret) ) {
+					this->releaseInterfaces( current_device.usb_handle );	/* release */
+					throw GLogiKExcept("libusb get_configuration error");
+				}
+
+				LOG(DEBUG3) << "current active configuration value : " << b;
+				if ( b != (int)(this->expected_usb_descriptors_.b_configuration_value) ) {
+					this->releaseInterfaces( current_device.usb_handle );	/* release */
+					this->buffer_.str("error : wrong configuration value ");
+					this->buffer_ << b << ", what a pity :(";
+					LOG(ERROR) << this->buffer_.str();
+					syslog(LOG_ERR, this->buffer_.str().c_str());
+					throw GLogiKExcept("wrong configuration value");
+				}
+
+				LOG(INFO) << "all done !";
 
 			} /* for ->num_altsetting */
 		} /* for ->bNumInterfaces */
@@ -440,6 +488,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &device, const uint8_t bus
 			delete (*it).virtual_keyboard;
 			(*it).virtual_keyboard = nullptr;
 
+			this->releaseInterfaces( (*it).usb_handle );
 			this->attachDriversToInterfaces( (*it).usb_handle );			/* trying to re-attach all interfaces */
 
 			libusb_close( (*it).usb_handle );
