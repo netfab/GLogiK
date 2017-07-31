@@ -127,7 +127,7 @@ void KeyboardDriver::releaseInterfaces(libusb_device_handle * usb_handle) {
 	int ret = 0;
 	for(auto it = this->to_release_.begin(); it != this->to_release_.end();) {
 		int numInt = (*it);
-		LOG(INFO) << "trying to release claimed interface " << numInt;
+		LOG(DEBUG1) << "trying to release claimed interface " << numInt;
 		ret = libusb_release_interface(usb_handle, numInt); /* release */
 		if( this->handleLibusbError(ret) ) {
 			this->buffer_.str("failed to release interface ");
@@ -136,7 +136,7 @@ void KeyboardDriver::releaseInterfaces(libusb_device_handle * usb_handle) {
 			syslog(LOG_ERR, this->buffer_.str().c_str());
 		}
 		else {
-			LOG(INFO) << "success :)";
+			LOG(DEBUG2) << "success :)";
 		}
 		it++;
 	}
@@ -147,7 +147,7 @@ void KeyboardDriver::attachDrivers(libusb_device_handle * usb_handle) {
 	int ret = 0;
 	for(auto it = this->to_attach_.begin(); it != this->to_attach_.end();) {
 		int numInt = (*it);
-		LOG(INFO) << "trying to attach kernel driver to interface " << numInt;
+		LOG(DEBUG1) << "trying to attach kernel driver to interface " << numInt;
 		ret = libusb_attach_kernel_driver(usb_handle, numInt); /* re-attach */
 		if( this->handleLibusbError(ret) ) {
 			this->buffer_.str("failed to reattach kernel driver to interface ");
@@ -156,7 +156,7 @@ void KeyboardDriver::attachDrivers(libusb_device_handle * usb_handle) {
 			syslog(LOG_ERR, this->buffer_.str().c_str());
 		}
 		else {
-			LOG(INFO) << "success :)";
+			LOG(DEBUG2) << "success :)";
 		}
 		it++;
 	}
