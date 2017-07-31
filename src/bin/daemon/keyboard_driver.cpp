@@ -451,6 +451,7 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 				this->to_release_.push_back(numInt);
 
 				/* once that the interface is claimed, check that the right configuration is set */
+				LOG(DEBUG3) << "checking current active configuration";
 				int b = -1;
 				ret = libusb_get_configuration(current_device.usb_handle, &b);
 				if ( this->handleLibusbError(ret) ) {
