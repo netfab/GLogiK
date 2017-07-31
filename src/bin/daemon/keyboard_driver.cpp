@@ -39,7 +39,7 @@ bool KeyboardDriver::libusb_status_ = false;
 uint8_t KeyboardDriver::drivers_cnt_ = 0;
 
 KeyboardDriver::KeyboardDriver() : buffer_("", std::ios_base::app), context_(nullptr) {
-	this->expected_usb_descriptors_ = { 0, 0, 0 };
+	this->expected_usb_descriptors_ = { 0, 0, 0, 0 };
 	KeyboardDriver::drivers_cnt_++;
 }
 
@@ -298,7 +298,7 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 }
 
 void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_device) {
-	unsigned int i, j, k = 0;
+	unsigned int i, j, k, l = 0;
 	int ret = 0;
 
 	LOG(DEBUG1) << "trying to find expected interface";
@@ -409,7 +409,13 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 				}
 
 				if( as_descriptor->bInterfaceClass != LIBUSB_CLASS_HID ) {
-					LOG(DEBUG3) << "interface " << j << " alternate settings " << k << " is not for HID device, skipping it";
+					LOG(WARNING) << "interface " << j << " alternate settings " << k << " is not for HID device, skipping it";
+					continue; /* sanity check */
+				}
+
+				if ( as_descriptor->bNumEndpoints != this->expected_usb_descriptors_.b_num_endpoints) {
+					LOG(WARNING) << "skipping settings. num_endpoints: " << (unsigned int)as_descriptor->bNumEndpoints
+							<< " expected: " << (unsigned int)this->expected_usb_descriptors_.b_num_endpoints;
 					continue; /* sanity check */
 				}
 
@@ -474,6 +480,31 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 
 				LOG(INFO) << "all done ! " << current_device.device.name << " interface " << numInt
 							<< " opened and ready for I/O transfers";
+
+				for (l = 0; l < (unsigned int)as_descriptor->bNumEndpoints; l++) {
+					const struct libusb_endpoint_descriptor * ep = &(as_descriptor->endpoint[l]);
+
+#if DEBUGGING_ON
+					LOG(DEBUG3) << "int. " << j << " alt_s. " << (unsigned int)as_descriptor->bAlternateSetting
+								<< " endpoint " << l;
+
+					LOG(DEBUG4) << "--";
+					LOG(DEBUG4) << "endpoint descriptor";
+					LOG(DEBUG4) << "--";
+					LOG(DEBUG4) << "bLength            : " << (unsigned int)ep->bLength;
+					LOG(DEBUG4) << "bDescriptorType    : " << (unsigned int)ep->bDescriptorType;
+					LOG(DEBUG4) << "bEndpointAddress   : " << (unsigned int)ep->bEndpointAddress;
+					LOG(DEBUG4) << "bmAttributes       : " << (unsigned int)ep->bmAttributes;
+					LOG(DEBUG4) << "wMaxPacketSize     : " << (unsigned int)ep->wMaxPacketSize;
+					LOG(DEBUG4) << "bInterval          : " << (unsigned int)ep->bInterval;
+					LOG(DEBUG4) << "bRefresh           : " << (unsigned int)ep->bRefresh;
+					LOG(DEBUG4) << "bSynchAddress      : " << (unsigned int)ep->bSynchAddress;
+					/* TODO extra extra_length */
+					LOG(DEBUG4) << "--";
+					LOG(DEBUG4) << "--";
+					LOG(DEBUG4) << "--";
+#endif
+				}
 
 			} /* for ->num_altsetting */
 		} /* for ->bNumInterfaces */

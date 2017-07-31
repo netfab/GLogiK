@@ -54,6 +54,7 @@ struct DescriptorValues {
 	uint8_t b_configuration_value;
 	uint8_t b_interface_number;
 	uint8_t b_alternate_setting;
+	uint8_t b_num_endpoints;
 };
 
 class KeyboardDriver
