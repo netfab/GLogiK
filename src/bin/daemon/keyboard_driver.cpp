@@ -212,7 +212,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) {
 	unsigned int i, j, k = 0;
 	int ret = 0;
-	LOG(DEBUG3) << "setting usb device configuration";
+	LOG(DEBUG1) << "setting up usb device configuration";
 
 	int b = -1;
 	ret = libusb_get_configuration(current_device.usb_handle, &b);
@@ -225,8 +225,8 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 		return;
 	}
 
-	LOG(INFO) << "wanted configuration : " << (int)(this->expected_usb_descriptors_.b_configuration_value);
-	LOG(INFO) << "will try to set the active configuration to the wanted value";
+	LOG(DEBUG2) << "wanted configuration : " << (int)(this->expected_usb_descriptors_.b_configuration_value);
+	LOG(DEBUG2) << "will try to set the active configuration to the wanted value";
 
 	/* have to detach all interfaces first */
 
@@ -262,7 +262,7 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 					throw GLogiKExcept("libusb kernel_driver_active error");
 				}
 				if( ret ) {
-					LOG(INFO) << "kernel driver currently attached to the interface " << numInt << ", trying to detach it";
+					LOG(DEBUG3) << "kernel driver currently attached to the interface " << numInt << ", trying to detach it";
 					ret = libusb_detach_kernel_driver(current_device.usb_handle, numInt); /* detaching */
 					if( this->handleLibusbError(ret) ) {
 						libusb_free_config_descriptor( config_descriptor ); /* free */
@@ -273,11 +273,11 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 						throw GLogiKExcept(this->buffer_.str());
 					}
 
-					LOG(INFO) << "successfully detached the kernel driver from the interface " << numInt;
+					LOG(DEBUG3) << "successfully detached the kernel driver from the interface " << numInt;
 					this->to_attach_.push_back(numInt);
 				}
 				else {
-					LOG(INFO) << "interface " << numInt << " is currently free :)";
+					LOG(DEBUG3) << "interface " << numInt << " is currently free :)";
 				}
 
 			} /* for ->num_altsetting */
@@ -287,6 +287,7 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 	} /* for .bNumConfigurations */
 
 	/* trying to set configuration */
+	LOG(DEBUG2) << "checking current active configuration";
 	ret = libusb_set_configuration(current_device.usb_handle, (int)this->expected_usb_descriptors_.b_configuration_value);
 	if ( this->handleLibusbError(ret) ) {
 		this->attachDrivers( current_device.usb_handle );		/* trying to re-attach all interfaces */
@@ -300,7 +301,7 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 	unsigned int i, j, k = 0;
 	int ret = 0;
 
-	LOG(DEBUG3) << "trying to find expected interface";
+	LOG(DEBUG1) << "trying to find expected interface";
 
 	struct libusb_device_descriptor device_descriptor;
 	ret = libusb_get_device_descriptor(current_device.usb_device, &device_descriptor);
@@ -308,6 +309,9 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 		throw GLogiKExcept("libusb get_device_descriptor failure");
 
 #if DEBUGGING_ON
+	LOG(DEBUG2) << "device has " << (unsigned int)device_descriptor.bNumConfigurations
+				<< " possible configuration(s)";
+
 	LOG(DEBUG4) << "--";
 	LOG(DEBUG4) << "device descriptor";
 	LOG(DEBUG4) << "--";
@@ -328,9 +332,6 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 	LOG(DEBUG4) << "--";
 	LOG(DEBUG4) << "--";
 	LOG(DEBUG4) << "--";
-
-	LOG(INFO) << "device has " << (unsigned int)device_descriptor.bNumConfigurations
-				<< " possible configuration(s)";
 #endif
 
 	for (i = 0; i < (unsigned int)device_descriptor.bNumConfigurations; i++) {
@@ -345,7 +346,7 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 		}
 
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "configuration " << (unsigned int)config_descriptor->bConfigurationValue
+		LOG(DEBUG2) << "configuration " << (unsigned int)config_descriptor->bConfigurationValue
 					<< " has " << (unsigned int)config_descriptor->bNumInterfaces << " interface(s)";
 
 		LOG(DEBUG4) << "--";
@@ -413,7 +414,7 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 				}
 
 				/* specs found */
-				LOG(INFO) << "found the expected interface, keep going on this road";
+				LOG(DEBUG1) << "found the expected interface, keep going on this road";
 
 				int numInt = (int)as_descriptor->bInterfaceNumber;
 				ret = libusb_kernel_driver_active(current_device.usb_handle, numInt);
@@ -423,7 +424,7 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 					throw GLogiKExcept("libusb kernel_driver_active error");
 				}
 				if( ret ) {
-					LOG(INFO) << "kernel driver currently attached to the interface " << numInt << ", trying to detach it";
+					LOG(DEBUG1) << "kernel driver currently attached to the interface " << numInt << ", trying to detach it";
 					ret = libusb_detach_kernel_driver(current_device.usb_handle, numInt); /* detaching */
 					if( this->handleLibusbError(ret) ) {
 						libusb_free_config_descriptor( config_descriptor ); /* free */
@@ -434,15 +435,15 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 						throw GLogiKExcept(this->buffer_.str());
 					}
 
-					LOG(INFO) << "successfully detached the kernel driver from the interface, will re-attach it later on close";
+					LOG(DEBUG1) << "successfully detached the kernel driver from the interface, will re-attach it later on close";
 					this->to_attach_.push_back(numInt);
 				}
 				else {
-					LOG(INFO) << "interface " << numInt << " is currently free :)";
+					LOG(DEBUG1) << "interface " << numInt << " is currently free :)";
 				}
 
 				/* claiming interface */
-				LOG(INFO) << "trying to claim interface " << numInt;
+				LOG(DEBUG1) << "trying to claim interface " << numInt;
 				ret = libusb_claim_interface(current_device.usb_handle, numInt);
 				if( this->handleLibusbError(ret) ) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
