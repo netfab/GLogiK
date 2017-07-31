@@ -445,6 +445,7 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 				LOG(INFO) << "trying to claim interface " << numInt;
 				ret = libusb_claim_interface(current_device.usb_handle, numInt);
 				if( this->handleLibusbError(ret) ) {
+					libusb_free_config_descriptor( config_descriptor ); /* free */
 					throw GLogiKExcept("error claiming interface");
 				}
 				this->to_release_.push_back(numInt);
@@ -454,12 +455,14 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 				ret = libusb_get_configuration(current_device.usb_handle, &b);
 				if ( this->handleLibusbError(ret) ) {
 					this->releaseInterfaces( current_device.usb_handle );	/* release */
+					libusb_free_config_descriptor( config_descriptor ); /* free */
 					throw GLogiKExcept("libusb get_configuration error");
 				}
 
 				LOG(DEBUG3) << "current active configuration value : " << b;
 				if ( b != (int)(this->expected_usb_descriptors_.b_configuration_value) ) {
 					this->releaseInterfaces( current_device.usb_handle );	/* release */
+					libusb_free_config_descriptor( config_descriptor ); /* free */
 					this->buffer_.str("error : wrong configuration value ");
 					this->buffer_ << b << ", what a pity :(";
 					LOG(ERROR) << this->buffer_.str();
