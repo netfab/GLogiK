@@ -94,7 +94,7 @@ class KeyboardDriver
 		void setConfiguration(const InitializedDevice & current_device);
 		void findExpectedUSBInterface(const InitializedDevice & current_device);
 		void releaseInterfaces(libusb_device_handle * usb_handle);
-		void attachDriversToInterfaces(libusb_device_handle * usb_handle);
+		void attachDrivers(libusb_device_handle * usb_handle);
 };
 
 } // namespace GLogiKd

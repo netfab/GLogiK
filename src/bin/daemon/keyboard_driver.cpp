@@ -143,7 +143,7 @@ void KeyboardDriver::releaseInterfaces(libusb_device_handle * usb_handle) {
 	this->to_release_.clear();
 }
 
-void KeyboardDriver::attachDriversToInterfaces(libusb_device_handle * usb_handle) {
+void KeyboardDriver::attachDrivers(libusb_device_handle * usb_handle) {
 	int ret = 0;
 	for(auto it = this->to_attach_.begin(); it != this->to_attach_.end();) {
 		int numInt = (*it);
@@ -289,11 +289,11 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 	/* trying to set configuration */
 	ret = libusb_set_configuration(current_device.usb_handle, (int)this->expected_usb_descriptors_.b_configuration_value);
 	if ( this->handleLibusbError(ret) ) {
-		this->attachDriversToInterfaces( current_device.usb_handle );		/* trying to re-attach all interfaces */
+		this->attachDrivers( current_device.usb_handle );		/* trying to re-attach all interfaces */
 		throw GLogiKExcept("libusb set_configuration failure");
 	}
 
-	this->attachDriversToInterfaces( current_device.usb_handle );			/* trying to re-attach all interfaces */
+	this->attachDrivers( current_device.usb_handle );			/* trying to re-attach all interfaces */
 }
 
 void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_device) {
@@ -489,7 +489,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &device, const uint8_t bus
 			(*it).virtual_keyboard = nullptr;
 
 			this->releaseInterfaces( (*it).usb_handle );
-			this->attachDriversToInterfaces( (*it).usb_handle );			/* trying to re-attach all interfaces */
+			this->attachDrivers( (*it).usb_handle );			/* trying to re-attach all interfaces */
 
 			libusb_close( (*it).usb_handle );
 
