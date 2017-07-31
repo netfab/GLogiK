@@ -467,7 +467,8 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 					throw GLogiKExcept("wrong configuration value");
 				}
 
-				LOG(INFO) << "all done !";
+				LOG(INFO) << "all done ! " << current_device.device.name << " interface " << numInt
+							<< " opened and ready for I/O transfers";
 
 			} /* for ->num_altsetting */
 		} /* for ->bNumInterfaces */
