@@ -360,7 +360,8 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 		LOG(DEBUG4) << "iConfiguration      : " << (unsigned int)config_descriptor->iConfiguration;
 		LOG(DEBUG4) << "bmAttributes        : " << (unsigned int)config_descriptor->bmAttributes;
 		LOG(DEBUG4) << "MaxPower            : " << (unsigned int)config_descriptor->MaxPower;
-		/* TODO extra extra_length */
+		/* TODO extra */
+		LOG(DEBUG4) << "extra_length        : " << (int)config_descriptor->extra_length;
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "--";
@@ -394,7 +395,8 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 				LOG(DEBUG4) << "bInterfaceSubClass : " << (unsigned int)as_descriptor->bInterfaceSubClass;
 				LOG(DEBUG4) << "bInterfaceProtocol : " << (unsigned int)as_descriptor->bInterfaceProtocol;
 				LOG(DEBUG4) << "iInterface         : " << (unsigned int)as_descriptor->iInterface;
-				/* TODO extra extra_length */
+				/* TODO extra */
+				LOG(DEBUG4) << "extra_length       : " << (int)as_descriptor->extra_length;
 				LOG(DEBUG4) << "--";
 				LOG(DEBUG4) << "--";
 				LOG(DEBUG4) << "--";
@@ -491,15 +493,16 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 					LOG(DEBUG4) << "--";
 					LOG(DEBUG4) << "endpoint descriptor";
 					LOG(DEBUG4) << "--";
-					LOG(DEBUG4) << "bLength            : " << (unsigned int)ep->bLength;
-					LOG(DEBUG4) << "bDescriptorType    : " << (unsigned int)ep->bDescriptorType;
-					LOG(DEBUG4) << "bEndpointAddress   : " << (unsigned int)ep->bEndpointAddress;
-					LOG(DEBUG4) << "bmAttributes       : " << (unsigned int)ep->bmAttributes;
-					LOG(DEBUG4) << "wMaxPacketSize     : " << (unsigned int)ep->wMaxPacketSize;
-					LOG(DEBUG4) << "bInterval          : " << (unsigned int)ep->bInterval;
-					LOG(DEBUG4) << "bRefresh           : " << (unsigned int)ep->bRefresh;
-					LOG(DEBUG4) << "bSynchAddress      : " << (unsigned int)ep->bSynchAddress;
-					/* TODO extra extra_length */
+					LOG(DEBUG4) << "bLength          : " << (unsigned int)ep->bLength;
+					LOG(DEBUG4) << "bDescriptorType  : " << (unsigned int)ep->bDescriptorType;
+					LOG(DEBUG4) << "bEndpointAddress : " << (unsigned int)ep->bEndpointAddress;
+					LOG(DEBUG4) << "bmAttributes     : " << (unsigned int)ep->bmAttributes;
+					LOG(DEBUG4) << "wMaxPacketSize   : " << (unsigned int)ep->wMaxPacketSize;
+					LOG(DEBUG4) << "bInterval        : " << (unsigned int)ep->bInterval;
+					LOG(DEBUG4) << "bRefresh         : " << (unsigned int)ep->bRefresh;
+					LOG(DEBUG4) << "bSynchAddress    : " << (unsigned int)ep->bSynchAddress;
+					/* TODO extra */
+					LOG(DEBUG4) << "extra_length     : " << (int)ep->extra_length;
 					LOG(DEBUG4) << "--";
 					LOG(DEBUG4) << "--";
 					LOG(DEBUG4) << "--";
