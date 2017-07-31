@@ -308,12 +308,10 @@ void DevicesManager::searchSupportedDevices(void) {
 							std::string usec = this->toString( udev_device_get_property_value(dev, "USEC_INITIALIZED") );
 
 							uint8_t bus, num = 0;
-							int b_conf = 0;
 
 							try {
 								bus = std::stoi(this->toString( udev_device_get_sysattr_value(dev, "busnum")));
 								num = std::stoi(this->toString( udev_device_get_sysattr_value(dev, "devnum")));
-								b_conf = std::stoi(this->toString( udev_device_get_sysattr_value(dev, "bConfigurationValue")));
 							}
 							catch (const std::invalid_argument& ia) {
 								udev_device_unref(dev);
@@ -334,7 +332,6 @@ void DevicesManager::searchSupportedDevices(void) {
 							found.driver_ID			= driver->getDriverID();
 							found.device_bus		= bus;
 							found.device_num		= num;
-							found.b_conf_value		= b_conf;
 
 							this->detected_devices_.push_back(found);
 

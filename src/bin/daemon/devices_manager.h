@@ -49,7 +49,6 @@ struct DetectedDevice {
 	uint16_t driver_ID;
 	uint8_t device_bus;
 	uint8_t device_num;
-	int b_conf_value;
 };
 
 #if DEBUGGING_ON
