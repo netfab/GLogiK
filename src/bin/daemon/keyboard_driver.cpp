@@ -177,8 +177,8 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		this->findExpectedUSBInterface(current_device);
 	}
 	catch ( const GLogiKExcept & e ) {
-		/* if we ever claimed or detach some interfaces, set them back
-		 * to the same state where we found them */
+		/* if we ever claimed or detached some interfaces, set them back
+		 * to the same state in which we found them */
 		this->releaseInterfaces( current_device.usb_handle );
 		this->attachDrivers( current_device.usb_handle );
 		libusb_close( current_device.usb_handle );
@@ -193,8 +193,8 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		current_device.virtual_keyboard = this->initializeVirtualKeyboard(this->buffer_.str().c_str());
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		/* if we claimed or detach some interfaces, set them back
-		 * to the same state where we found them */
+		/* if we ever claimed or detached some interfaces, set them back
+		 * to the same state in which we found them */
 		this->releaseInterfaces( current_device.usb_handle );
 		this->attachDrivers( current_device.usb_handle );
 		libusb_close( current_device.usb_handle );
