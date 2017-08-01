@@ -28,6 +28,8 @@
 #include <vector>
 #include <sstream>
 
+#include <thread>
+
 #include <libusb-1.0/libusb.h>
 
 #include "virtual_keyboard.h"
@@ -45,10 +47,12 @@ struct InitializedDevice {
 	KeyboardDevice device;
 	uint8_t bus;
 	uint8_t num;
+	bool listen_status;
 	libusb_device *usb_device;
 	libusb_device_handle *usb_handle;
 	VirtualKeyboard *virtual_keyboard;
 	std::vector<libusb_endpoint_descriptor> endpoints;
+	std::thread::id listen_thread_id;
 };
 
 struct DescriptorValues {
@@ -90,6 +94,7 @@ class KeyboardDriver
 		std::vector<int> to_release_;
 
 		std::vector<InitializedDevice> initialized_devices_;
+		std::vector<std::thread> threads_;
 
 		void closeLibusb(void);
 		int handleLibusbError(int error_code);
@@ -97,6 +102,7 @@ class KeyboardDriver
 		void findExpectedUSBInterface(InitializedDevice & current_device);
 		void releaseInterfaces(libusb_device_handle * usb_handle);
 		void attachDrivers(libusb_device_handle * usb_handle);
+		void listenLoop(const InitializedDevice & current_device);
 };
 
 } // namespace GLogiKd

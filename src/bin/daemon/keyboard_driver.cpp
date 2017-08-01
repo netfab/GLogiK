@@ -22,6 +22,9 @@
 #include <iostream>
 #include <bitset>
 
+#include <functional>
+#include <chrono>
+
 #include <config.h>
 
 #include <syslog.h>
@@ -29,6 +32,7 @@
 #include "exception.h"
 #include "include/log.h"
 
+#include "daemon_control.h"
 #include "keyboard_driver.h"
 
 
@@ -163,12 +167,22 @@ void KeyboardDriver::attachDrivers(libusb_device_handle * usb_handle) {
 	this->to_attach_.clear();
 }
 
+void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
+	LOG(INFO) << "spawned listening thread for " << current_device.device.name
+				<< " on bus " << (unsigned int)current_device.bus;
+	while( DaemonControl::is_daemon_enabled() and current_device.listen_status ) {
+		LOG(INFO) << "pause of 10 seconds starting";
+		std::this_thread::sleep_for(std::chrono::seconds(10));
+		LOG(INFO) << "pause of 10 seconds ended";
+	}
+}
+
 void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num) {
 	LOG(DEBUG3) << "trying to initialize " << device.name << "("
 				<< device.vendor_id << ":" << device.product_id << "), device "
 				<< (unsigned int)num << " on bus " << (unsigned int)bus;
 
-	InitializedDevice current_device = { device, bus, num, nullptr, nullptr, nullptr };
+	InitializedDevice current_device = { device, bus, num, false, nullptr, nullptr, nullptr };
 
 	this->initializeLibusb(current_device); /* device opened */
 
@@ -200,6 +214,12 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		libusb_close( current_device.usb_handle );
 		throw GLogiKExcept("virtual keyboard allocation failure");
 	}
+
+	// FIXME exceptions ?
+	current_device.listen_status = true;
+	std::thread listen_thread(&KeyboardDriver::listenLoop, this, current_device);
+	current_device.listen_thread_id = listen_thread.get_id();
+	this->threads_.push_back( std::move(listen_thread) );
 
 	this->initialized_devices_.push_back( current_device );
 }
@@ -534,8 +554,22 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &device, const uint8_t bus
 				<< (unsigned int)num << " on bus " << (unsigned int)bus;
 
 	bool found = false;
+
 	for(auto it = this->initialized_devices_.begin(); it != this->initialized_devices_.end();) {
 		if( ((*it).bus == bus) and ((*it).num == num) ) {
+
+			for(auto it2 = this->threads_.begin(); it2 != this->threads_.end();) {
+				if( (*it).listen_thread_id == (*it2).get_id() ) {
+					LOG(INFO) << "waiting for " << device.name << " listening thread";
+					(*it2).join();
+					it2 = this->threads_.erase(it2);
+					break;
+				}
+				else {
+					it2++;
+				}
+			}
+
 			delete (*it).virtual_keyboard;
 			(*it).virtual_keyboard = nullptr;
 
