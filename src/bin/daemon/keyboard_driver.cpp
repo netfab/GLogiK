@@ -297,7 +297,7 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 	this->attachDrivers( current_device.usb_handle );			/* trying to re-attach all interfaces */
 }
 
-void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_device) {
+void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device) {
 	unsigned int i, j, k, l = 0;
 	int ret = 0;
 
@@ -480,11 +480,11 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 					throw GLogiKExcept("wrong configuration value");
 				}
 
-				LOG(INFO) << "all done ! " << current_device.device.name << " interface " << numInt
-							<< " opened and ready for I/O transfers";
-
 				for (l = 0; l < (unsigned int)as_descriptor->bNumEndpoints; l++) {
 					const struct libusb_endpoint_descriptor * ep = &(as_descriptor->endpoint[l]);
+
+					/* storing endpoint for later usage */
+					current_device.endpoints.push_back(*ep);
 
 #if DEBUGGING_ON
 					LOG(DEBUG3) << "int. " << j << " alt_s. " << (unsigned int)as_descriptor->bAlternateSetting
@@ -508,6 +508,9 @@ void KeyboardDriver::findExpectedUSBInterface(const InitializedDevice & current_
 					LOG(DEBUG4) << "--";
 #endif
 				}
+
+				LOG(INFO) << "all done ! " << current_device.device.name << " interface " << numInt
+							<< " opened and ready for I/O transfers";
 
 			} /* for ->num_altsetting */
 		} /* for ->bNumInterfaces */

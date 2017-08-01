@@ -48,6 +48,7 @@ struct InitializedDevice {
 	libusb_device *usb_device;
 	libusb_device_handle *usb_handle;
 	VirtualKeyboard *virtual_keyboard;
+	std::vector<libusb_endpoint_descriptor> endpoints;
 };
 
 struct DescriptorValues {
@@ -93,7 +94,7 @@ class KeyboardDriver
 		void closeLibusb(void);
 		int handleLibusbError(int error_code);
 		void setConfiguration(const InitializedDevice & current_device);
-		void findExpectedUSBInterface(const InitializedDevice & current_device);
+		void findExpectedUSBInterface(InitializedDevice & current_device);
 		void releaseInterfaces(libusb_device_handle * usb_handle);
 		void attachDrivers(libusb_device_handle * usb_handle);
 };
