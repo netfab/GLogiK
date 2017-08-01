@@ -175,18 +175,28 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	try {
 		this->setConfiguration(current_device);
 		this->findExpectedUSBInterface(current_device);
-
-		/* virtual keyboard */
-		this->buffer_.str("Virtual ");
-		this->buffer_ << device.name << " b" << (unsigned int)bus << "d" << (unsigned int)num;
-
-		current_device.virtual_keyboard = this->initializeVirtualKeyboard(this->buffer_.str().c_str());
 	}
 	catch ( const GLogiKExcept & e ) {
+		/* if we ever claimed or detach some interfaces, set them back
+		 * to the same state where we found them */
+		this->releaseInterfaces( current_device.usb_handle );
+		this->attachDrivers( current_device.usb_handle );
 		libusb_close( current_device.usb_handle );
 		throw;
 	}
-	catch (const std::bad_alloc& e) { /* handle new VirtualKeyboard() failure */
+
+	/* virtual keyboard */
+	this->buffer_.str("Virtual ");
+	this->buffer_ << device.name << " b" << (unsigned int)bus << "d" << (unsigned int)num;
+
+	try {
+		current_device.virtual_keyboard = this->initializeVirtualKeyboard(this->buffer_.str().c_str());
+	}
+	catch (const std::bad_alloc& e) { /* handle new() failure */
+		/* if we claimed or detach some interfaces, set them back
+		 * to the same state where we found them */
+		this->releaseInterfaces( current_device.usb_handle );
+		this->attachDrivers( current_device.usb_handle );
 		libusb_close( current_device.usb_handle );
 		throw GLogiKExcept("virtual keyboard allocation failure");
 	}
@@ -290,7 +300,6 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 	LOG(DEBUG2) << "checking current active configuration";
 	ret = libusb_set_configuration(current_device.usb_handle, (int)this->expected_usb_descriptors_.b_configuration_value);
 	if ( this->handleLibusbError(ret) ) {
-		this->attachDrivers( current_device.usb_handle );		/* trying to re-attach all interfaces */
 		throw GLogiKExcept("libusb set_configuration failure");
 	}
 
@@ -418,7 +427,8 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 				if ( as_descriptor->bNumEndpoints != this->expected_usb_descriptors_.b_num_endpoints) {
 					LOG(WARNING) << "skipping settings. num_endpoints: " << (unsigned int)as_descriptor->bNumEndpoints
 							<< " expected: " << (unsigned int)this->expected_usb_descriptors_.b_num_endpoints;
-					continue; /* sanity check */
+					libusb_free_config_descriptor( config_descriptor ); /* free */
+					throw GLogiKExcept("num_endpoints does not match");
 				}
 
 				/* specs found */
@@ -444,7 +454,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 					}
 
 					LOG(DEBUG1) << "successfully detached the kernel driver from the interface, will re-attach it later on close";
-					this->to_attach_.push_back(numInt);
+					this->to_attach_.push_back(numInt);	/* detached */
 				}
 				else {
 					LOG(DEBUG1) << "interface " << numInt << " is currently free :)";
@@ -452,26 +462,24 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 
 				/* claiming interface */
 				LOG(DEBUG1) << "trying to claim interface " << numInt;
-				ret = libusb_claim_interface(current_device.usb_handle, numInt);
+				ret = libusb_claim_interface(current_device.usb_handle, numInt);	/* claiming */
 				if( this->handleLibusbError(ret) ) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
 					throw GLogiKExcept("error claiming interface");
 				}
-				this->to_release_.push_back(numInt);
+				this->to_release_.push_back(numInt);	/* claimed */
 
 				/* once that the interface is claimed, check that the right configuration is set */
 				LOG(DEBUG3) << "checking current active configuration";
 				int b = -1;
 				ret = libusb_get_configuration(current_device.usb_handle, &b);
 				if ( this->handleLibusbError(ret) ) {
-					this->releaseInterfaces( current_device.usb_handle );	/* release */
 					libusb_free_config_descriptor( config_descriptor ); /* free */
 					throw GLogiKExcept("libusb get_configuration error");
 				}
 
 				LOG(DEBUG3) << "current active configuration value : " << b;
 				if ( b != (int)(this->expected_usb_descriptors_.b_configuration_value) ) {
-					this->releaseInterfaces( current_device.usb_handle );	/* release */
 					libusb_free_config_descriptor( config_descriptor ); /* free */
 					this->buffer_.str("error : wrong configuration value ");
 					this->buffer_ << b << ", what a pity :(";
