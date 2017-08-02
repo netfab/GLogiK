@@ -22,7 +22,7 @@
 #include <iostream>
 #include <bitset>
 
-#include <functional>
+#include <utility>
 #include <chrono>
 
 #include <config.h>
