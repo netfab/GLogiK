@@ -65,7 +65,7 @@ static boost::iostreams::stream<boost::iostreams::null_sink> nullout( nullsink )
 
 inline std::string NowTime();
 
-enum TLogLevel {NONE, ERROR, WARNING, INFO, DEBUG, DEBUG1, DEBUG2, DEBUG3, DEBUG4};
+enum TLogLevel {NONE, ERROR, WARNING, INFO, DEBUG, DEBUG1, DEBUG2, DEBUG3, DEBUG4, DEBUG5};
 
 template <typename T>
 class Log
@@ -117,13 +117,15 @@ TLogLevel& Log<T>::ReportingLevel()
 template <typename T>
 std::string Log<T>::ToString(TLogLevel level)
 {
-	static const char* const buffer[] = {"NONE", "ERROR", "WARNING", "INFO", "DEBUG", "DEBUG1", "DEBUG2", "DEBUG3", "DEBUG4"};
+	static const char* const buffer[] = {"NONE", "ERROR", "WARNING", "INFO", "DEBUG", "DEBUG1", "DEBUG2", "DEBUG3", "DEBUG4", "DEBUG5"};
     return buffer[level];
 }
 
 template <typename T>
 TLogLevel Log<T>::FromString(const std::string& level)
 {
+    if (level == "DEBUG5")
+        return DEBUG5;
     if (level == "DEBUG4")
         return DEBUG4;
     if (level == "DEBUG3")

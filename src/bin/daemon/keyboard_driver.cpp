@@ -198,7 +198,9 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 				}
 				break;
 			case LIBUSB_ERROR_TIMEOUT:
-				LOG(DEBUG) << "timeout reached";
+#if DEBUGGING_ON
+				LOG(DEBUG5) << "timeout reached";
+#endif
 				break;
 			default:
 				this->handleLibusbError(ret);
