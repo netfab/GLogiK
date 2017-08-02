@@ -38,6 +38,7 @@ LogitechG510::LogitechG510() {
 
 	// 		{ configuration, interface, alternate_setting, num_endpoints }
 	this->expected_usb_descriptors_ = { 1, 1, 0, 2 };
+	this->interrupt_key_read_length = 8;
 }
 
 LogitechG510::~LogitechG510() {

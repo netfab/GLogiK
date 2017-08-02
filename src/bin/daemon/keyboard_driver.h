@@ -47,6 +47,7 @@ struct InitializedDevice {
 	KeyboardDevice device;
 	uint8_t bus;
 	uint8_t num;
+	uint8_t keys_endpoint;
 	bool listen_status;
 	libusb_device *usb_device;
 	libusb_device_handle *usb_handle;
@@ -84,6 +85,7 @@ class KeyboardDriver
 		VirtualKeyboard* initializeVirtualKeyboard( const char* device_name );
 
 		DescriptorValues expected_usb_descriptors_;
+		int interrupt_key_read_length;
 
 	private:
 		static bool libusb_status_;			/* is libusb initialized ? */

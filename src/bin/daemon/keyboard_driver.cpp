@@ -23,7 +23,7 @@
 #include <bitset>
 
 #include <utility>
-#include <chrono>
+//#include <chrono>
 
 #include <config.h>
 
@@ -42,7 +42,7 @@ namespace GLogiKd
 bool KeyboardDriver::libusb_status_ = false;
 uint8_t KeyboardDriver::drivers_cnt_ = 0;
 
-KeyboardDriver::KeyboardDriver() : buffer_("", std::ios_base::app), context_(nullptr) {
+KeyboardDriver::KeyboardDriver() : buffer_("", std::ios_base::app), interrupt_key_read_length(-1), context_(nullptr) {
 	this->expected_usb_descriptors_ = { 0, 0, 0, 0 };
 	KeyboardDriver::drivers_cnt_++;
 }
@@ -170,10 +170,40 @@ void KeyboardDriver::attachDrivers(libusb_device_handle * usb_handle) {
 void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 	LOG(INFO) << "spawned listening thread for " << current_device.device.name
 				<< " on bus " << (unsigned int)current_device.bus;
+
 	while( DaemonControl::is_daemon_enabled() and current_device.listen_status ) {
-		LOG(INFO) << "pause of 10 seconds starting";
-		std::this_thread::sleep_for(std::chrono::seconds(10));
-		LOG(INFO) << "pause of 10 seconds ended";
+		//LOG(INFO) << "pause of 10 seconds starting";
+		//std::this_thread::sleep_for(std::chrono::seconds(10));
+		//LOG(INFO) << "pause of 10 seconds ended";
+		int actual_length = 0;
+		unsigned char buffer[16] = {
+			0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0
+			};
+
+		int ret = libusb_interrupt_transfer(current_device.usb_handle, current_device.keys_endpoint,
+			(unsigned char*)buffer, this->interrupt_key_read_length, &actual_length, 10);
+
+		switch(ret) {
+			case 0:
+				if( actual_length > 0 ) {
+#if DEBUGGING_ON
+					LOG(DEBUG) << "exp. rl: " << this->interrupt_key_read_length
+								<< " act_l: " << actual_length << ", xBuf[0]: "
+								<< std::hex << (unsigned int)buffer[0];
+					for( unsigned int i = 0; i < (unsigned int)actual_length; i++ ) {
+						LOG(DEBUG1) << std::hex << (unsigned int)buffer[i];
+					}
+#endif
+				}
+				break;
+			case LIBUSB_ERROR_TIMEOUT:
+				LOG(DEBUG) << "timeout reached";
+				break;
+			default:
+				this->handleLibusbError(ret);
+				break;
+		}
 	}
 }
 
@@ -182,7 +212,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 				<< device.vendor_id << ":" << device.product_id << "), device "
 				<< (unsigned int)num << " on bus " << (unsigned int)bus;
 
-	InitializedDevice current_device = { device, bus, num, false, nullptr, nullptr, nullptr };
+	InitializedDevice current_device = { device, bus, num, 0, false, nullptr, nullptr, nullptr };
 
 	this->initializeLibusb(current_device); /* device opened */
 
@@ -521,6 +551,13 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 					/* storing endpoint for later usage */
 					current_device.endpoints.push_back(*ep);
 
+					if( (unsigned int)ep->bEndpointAddress & LIBUSB_ENDPOINT_IN ) {
+						unsigned int addr = (unsigned int)ep->bEndpointAddress;
+						LOG(DEBUG1) << "found keys endpoint, address 0x" << std::hex << addr
+									<< " MaxPacketSize " << (unsigned int)ep->wMaxPacketSize;
+						current_device.keys_endpoint = addr & 0xff;
+					}
+
 #if DEBUGGING_ON
 					LOG(DEBUG3) << "int. " << j << " alt_s. " << (unsigned int)as_descriptor->bAlternateSetting
 								<< " endpoint " << l;
@@ -542,6 +579,14 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 					LOG(DEBUG4) << "--";
 					LOG(DEBUG4) << "--";
 #endif
+				}
+
+				if(current_device.keys_endpoint == 0) {
+					libusb_free_config_descriptor( config_descriptor ); /* free */
+					this->buffer_.str("error : keys endpoint not found ! ");
+					LOG(ERROR) << this->buffer_.str();
+					syslog(LOG_ERR, this->buffer_.str().c_str());
+					throw GLogiKExcept("keys endpoint not found");
 				}
 
 				LOG(INFO) << "all done ! " << current_device.device.name << " interface " << numInt
