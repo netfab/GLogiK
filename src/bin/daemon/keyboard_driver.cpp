@@ -215,11 +215,18 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		throw GLogiKExcept("virtual keyboard allocation failure");
 	}
 
-	// FIXME exceptions ?
+	/* spawn listening thread */
 	current_device.listen_status = true;
-	std::thread listen_thread(&KeyboardDriver::listenLoop, this, current_device);
-	current_device.listen_thread_id = listen_thread.get_id();
-	this->threads_.push_back( std::move(listen_thread) );
+	try {
+		std::thread listen_thread(&KeyboardDriver::listenLoop, this, current_device);
+		current_device.listen_thread_id = listen_thread.get_id();
+		this->threads_.push_back( std::move(listen_thread) );
+	}
+	catch (const std::system_error& e) {
+		this->buffer_.str("error while spawning listening thread : ");
+		this->buffer_ << e.what();
+		throw GLogiKExcept(this->buffer_.str());
+	}
 
 	this->initialized_devices_.push_back( current_device );
 }
