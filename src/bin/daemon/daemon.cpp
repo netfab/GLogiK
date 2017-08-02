@@ -60,8 +60,6 @@ GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app)
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 
 #ifdef DEBUGGING_ON
-	FILELog::ReportingLevel() = FILELog::FromString(DEBUG_LOG_LEVEL);
-
 	if( FILELog::ReportingLevel() != NONE ) {
 		std::stringstream log_file;
 		log_file << DEBUG_DIR << "/glogikd-debug-" << getpid() << ".log";
