@@ -40,5 +40,21 @@ LogitechG510::LogitechG510() : KeyboardDriver(INTERRUPT_READ_MAX_LENGTH, { 1, 1,
 LogitechG510::~LogitechG510() {
 }
 
+void LogitechG510::processKeyEvent(unsigned int * pressed_keys, unsigned char * buffer, unsigned int actual_length) {
+
+	switch(actual_length) {
+		case 2:
+			LOG(DEBUG) << "2 bytes !";
+			break;
+		case 5:
+			LOG(DEBUG) << "5 bytes !";
+			break;
+		default:
+			LOG(DEBUG) << "not implemented: " << actual_length << " bytes !";
+			break;
+	}
+
+}
+
 } // namespace GLogiKd
 

@@ -94,6 +94,7 @@ class KeyboardDriver
 		DescriptorValues expected_usb_descriptors_;
 		int interrupt_key_read_length;
 
+		virtual void processKeyEvent(unsigned int * pressed_keys, unsigned char * buffer, unsigned int actual_length) = 0;
 		virtual int getPressedKeys(const InitializedDevice & current_device, unsigned int * pressed_keys);
 
 	private:

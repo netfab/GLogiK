@@ -191,6 +191,8 @@ int KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, uns
 					return KEY_SKIPPED;
 				}
 
+				this->processKeyEvent(pressed_keys, buffer, actual_length);
+
 				return KEY_PROCESSED;
 			}
 			break;
