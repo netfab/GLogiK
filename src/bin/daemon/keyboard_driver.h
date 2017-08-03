@@ -103,7 +103,7 @@ class KeyboardDriver
 		void setConfiguration(const InitializedDevice & current_device);
 		void findExpectedUSBInterface(InitializedDevice & current_device);
 		void releaseInterfaces(libusb_device_handle * usb_handle);
-		void attachDrivers(libusb_device_handle * usb_handle);
+		void attachKernelDrivers(libusb_device_handle * usb_handle);
 		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
 		void listenLoop(const InitializedDevice & current_device);
 };

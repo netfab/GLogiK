@@ -141,28 +141,22 @@ void KeyboardDriver::releaseInterfaces(libusb_device_handle * usb_handle) {
 			LOG(ERROR) << this->buffer_.str();
 			syslog(LOG_ERR, this->buffer_.str().c_str());
 		}
-		else {
-			LOG(DEBUG2) << "success :)";
-		}
 		it++;
 	}
 	this->to_release_.clear();
 }
 
-void KeyboardDriver::attachDrivers(libusb_device_handle * usb_handle) {
+void KeyboardDriver::attachKernelDrivers(libusb_device_handle * usb_handle) {
 	int ret = 0;
 	for(auto it = this->to_attach_.begin(); it != this->to_attach_.end();) {
 		int numInt = (*it);
 		LOG(DEBUG1) << "trying to attach kernel driver to interface " << numInt;
-		ret = libusb_attach_kernel_driver(usb_handle, numInt); /* re-attach */
+		ret = libusb_attach_kernel_driver(usb_handle, numInt); /* attaching */
 		if( this->handleLibusbError(ret) ) {
-			this->buffer_.str("failed to reattach kernel driver to interface ");
+			this->buffer_.str("failed to attach kernel driver to interface ");
 			this->buffer_ << numInt;
 			LOG(ERROR) << this->buffer_.str();
 			syslog(LOG_ERR, this->buffer_.str().c_str());
-		}
-		else {
-			LOG(DEBUG2) << "success :)";
 		}
 		it++;
 	}
@@ -229,7 +223,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		/* if we ever claimed or detached some interfaces, set them back
 		 * to the same state in which we found them */
 		this->releaseInterfaces( current_device.usb_handle );
-		this->attachDrivers( current_device.usb_handle );
+		this->attachKernelDrivers( current_device.usb_handle );
 		libusb_close( current_device.usb_handle );
 		throw;
 	}
@@ -245,7 +239,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		/* if we ever claimed or detached some interfaces, set them back
 		 * to the same state in which we found them */
 		this->releaseInterfaces( current_device.usb_handle );
-		this->attachDrivers( current_device.usb_handle );
+		this->attachKernelDrivers( current_device.usb_handle );
 		libusb_close( current_device.usb_handle );
 		throw GLogiKExcept("virtual keyboard allocation failure");
 	}
@@ -283,7 +277,6 @@ void KeyboardDriver::detachKernelDriver(libusb_device_handle * usb_handle, int n
 			throw GLogiKExcept(this->buffer_.str());
 		}
 
-		LOG(DEBUG1) << "successfully detached the kernel driver from the interface, will re-attach it later on close";
 		this->to_attach_.push_back(numInt);	/* detached */
 	}
 	else {
@@ -373,7 +366,7 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 		throw GLogiKExcept("libusb set_configuration failure");
 	}
 
-	this->attachDrivers( current_device.usb_handle );			/* trying to re-attach all interfaces */
+	this->attachKernelDrivers( current_device.usb_handle );
 }
 
 void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device) {
@@ -623,7 +616,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &device, const uint8_t bus
 			(*it).virtual_keyboard = nullptr;
 
 			this->releaseInterfaces( (*it).usb_handle );
-			this->attachDrivers( (*it).usb_handle );			/* trying to re-attach all interfaces */
+			this->attachKernelDrivers( (*it).usb_handle );
 
 			libusb_close( (*it).usb_handle );
 
