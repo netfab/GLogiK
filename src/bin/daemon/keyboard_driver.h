@@ -37,6 +37,13 @@
 namespace GLogiKd
 {
 
+enum
+{
+	KEY_PROCESSED = 0,
+	KEY_TIMEDOUT,
+	KEY_SKIPPED
+};
+
 struct KeyboardDevice {
 	const char* name;
 	const char* vendor_id;
@@ -87,6 +94,8 @@ class KeyboardDriver
 		DescriptorValues expected_usb_descriptors_;
 		int interrupt_key_read_length;
 
+		virtual int getPressedKeys(const InitializedDevice & current_device, unsigned int * pressed_keys);
+
 	private:
 		static bool libusb_status_;			/* is libusb initialized ? */
 		static uint8_t drivers_cnt_;		/* initialized drivers counter */
@@ -106,6 +115,7 @@ class KeyboardDriver
 		void attachKernelDrivers(libusb_device_handle * usb_handle);
 		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
 		void listenLoop(const InitializedDevice & current_device);
+
 };
 
 } // namespace GLogiKd

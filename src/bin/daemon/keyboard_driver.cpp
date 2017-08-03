@@ -163,6 +163,52 @@ void KeyboardDriver::attachKernelDrivers(libusb_device_handle * usb_handle) {
 	this->to_attach_.clear();
 }
 
+int KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, unsigned int * pressed_keys) {
+	int actual_length = 0;
+	unsigned char buffer[16] = {
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0
+		};
+
+	int ret = libusb_interrupt_transfer(current_device.usb_handle, current_device.keys_endpoint,
+		(unsigned char*)buffer, this->interrupt_key_read_length, &actual_length, 10);
+
+	switch(ret) {
+		case 0:
+			if( actual_length > 0 ) {
+#if DEBUGGING_ON
+				LOG(DEBUG)	<< "exp. rl: " << this->interrupt_key_read_length
+							<< " act_l: " << actual_length << ", xBuf[0]: "
+							<< std::hex << (unsigned int)buffer[0];
+				for( unsigned int i = 0; i < (unsigned int)actual_length; i++ ) {
+					LOG(DEBUG1) << std::hex << (unsigned int)buffer[i];
+				}
+#endif
+				if((unsigned int)buffer[0] == 1) {
+#if DEBUGGING_ON
+					LOG(DEBUG) << "skip standard key";
+#endif
+					return KEY_SKIPPED;
+				}
+
+				return KEY_PROCESSED;
+			}
+			break;
+		case LIBUSB_ERROR_TIMEOUT:
+#if DEBUGGING_ON
+			LOG(DEBUG5) << "timeout reached";
+#endif
+			return KEY_TIMEDOUT;
+			break;
+		default:
+			LOG(DEBUG) << "getPressedKeys interrupt read error";
+			return this->handleLibusbError(ret);
+			break;
+	}
+
+	return KEY_TIMEDOUT;
+}
+
 void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 	LOG(INFO) << "spawned listening thread for " << current_device.device.name
 				<< " on bus " << (unsigned int)current_device.bus;
@@ -171,36 +217,12 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 		//LOG(INFO) << "pause of 10 seconds starting";
 		//std::this_thread::sleep_for(std::chrono::seconds(10));
 		//LOG(INFO) << "pause of 10 seconds ended";
-		int actual_length = 0;
-		unsigned char buffer[16] = {
-			0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0
-			};
 
-		int ret = libusb_interrupt_transfer(current_device.usb_handle, current_device.keys_endpoint,
-			(unsigned char*)buffer, this->interrupt_key_read_length, &actual_length, 10);
-
-		switch(ret) {
-			case 0:
-				if( actual_length > 0 ) {
-#if DEBUGGING_ON
-					LOG(DEBUG) << "exp. rl: " << this->interrupt_key_read_length
-								<< " act_l: " << actual_length << ", xBuf[0]: "
-								<< std::hex << (unsigned int)buffer[0];
-					for( unsigned int i = 0; i < (unsigned int)actual_length; i++ ) {
-						LOG(DEBUG1) << std::hex << (unsigned int)buffer[i];
-					}
-#endif
-					current_device.virtual_keyboard->foo();
-				}
-				break;
-			case LIBUSB_ERROR_TIMEOUT:
-#if DEBUGGING_ON
-				LOG(DEBUG5) << "timeout reached";
-#endif
-				break;
-			default:
-				this->handleLibusbError(ret);
+		unsigned int pressed_keys;
+		int ret = this->getPressedKeys(current_device, &pressed_keys);
+		switch( ret ) {
+			case KEY_PROCESSED:
+				current_device.virtual_keyboard->foo();
 				break;
 		}
 	}
