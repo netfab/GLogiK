@@ -266,6 +266,31 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	this->initialized_devices_.push_back( current_device );
 }
 
+void KeyboardDriver::detachKernelDriver(libusb_device_handle * usb_handle, int numInt) {
+	int ret = libusb_kernel_driver_active(usb_handle, numInt);
+	if( ret < 0 ) {
+		this->handleLibusbError(ret);
+		throw GLogiKExcept("libusb kernel_driver_active error");
+	}
+	if( ret ) {
+		LOG(DEBUG1) << "kernel driver currently attached to the interface " << numInt << ", trying to detach it";
+		ret = libusb_detach_kernel_driver(usb_handle, numInt); /* detaching */
+		if( this->handleLibusbError(ret) ) {
+			this->buffer_.str("detaching the kernel driver from USB interface ");
+			this->buffer_ << numInt << " failed, this is fatal";
+			LOG(ERROR) << this->buffer_.str();
+			syslog(LOG_ERR, this->buffer_.str().c_str());
+			throw GLogiKExcept(this->buffer_.str());
+		}
+
+		LOG(DEBUG1) << "successfully detached the kernel driver from the interface, will re-attach it later on close";
+		this->to_attach_.push_back(numInt);	/* detached */
+	}
+	else {
+		LOG(DEBUG1) << "interface " << numInt << " is currently free :)";
+	}
+}
+
 /*
  * This function is trying to (in this order) :
  *	- check the current active configuration value
@@ -327,31 +352,14 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 				const struct libusb_interface_descriptor * as_descriptor = &(iface->altsetting[k]);
 
 				int numInt = (int)as_descriptor->bInterfaceNumber;
-				ret = libusb_kernel_driver_active(current_device.usb_handle, numInt);
-				if( ret < 0 ) {
+
+				try {
+					this->detachKernelDriver(current_device.usb_handle, numInt);
+				}
+				catch ( const GLogiKExcept & e ) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
-					this->handleLibusbError(ret);
-					throw GLogiKExcept("libusb kernel_driver_active error");
+					throw;
 				}
-				if( ret ) {
-					LOG(DEBUG3) << "kernel driver currently attached to the interface " << numInt << ", trying to detach it";
-					ret = libusb_detach_kernel_driver(current_device.usb_handle, numInt); /* detaching */
-					if( this->handleLibusbError(ret) ) {
-						libusb_free_config_descriptor( config_descriptor ); /* free */
-						this->buffer_.str("detaching the kernel driver from USB interface ");
-						this->buffer_ << numInt << " failed, this is fatal";
-						LOG(ERROR) << this->buffer_.str();
-						syslog(LOG_ERR, this->buffer_.str().c_str());
-						throw GLogiKExcept(this->buffer_.str());
-					}
-
-					LOG(DEBUG3) << "successfully detached the kernel driver from the interface " << numInt;
-					this->to_attach_.push_back(numInt);
-				}
-				else {
-					LOG(DEBUG3) << "interface " << numInt << " is currently free :)";
-				}
-
 			} /* for ->num_altsetting */
 		} /* for ->bNumInterfaces */
 
@@ -497,29 +505,13 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 				LOG(DEBUG1) << "found the expected interface, keep going on this road";
 
 				int numInt = (int)as_descriptor->bInterfaceNumber;
-				ret = libusb_kernel_driver_active(current_device.usb_handle, numInt);
-				if( ret < 0 ) {
-					libusb_free_config_descriptor( config_descriptor ); /* free */
-					this->handleLibusbError(ret);
-					throw GLogiKExcept("libusb kernel_driver_active error");
-				}
-				if( ret ) {
-					LOG(DEBUG1) << "kernel driver currently attached to the interface " << numInt << ", trying to detach it";
-					ret = libusb_detach_kernel_driver(current_device.usb_handle, numInt); /* detaching */
-					if( this->handleLibusbError(ret) ) {
-						libusb_free_config_descriptor( config_descriptor ); /* free */
-						this->buffer_.str("detaching the kernel driver from USB interface ");
-						this->buffer_ << numInt << " failed, this is fatal";
-						LOG(ERROR) << this->buffer_.str();
-						syslog(LOG_ERR, this->buffer_.str().c_str());
-						throw GLogiKExcept(this->buffer_.str());
-					}
 
-					LOG(DEBUG1) << "successfully detached the kernel driver from the interface, will re-attach it later on close";
-					this->to_attach_.push_back(numInt);	/* detached */
+				try {
+					this->detachKernelDriver(current_device.usb_handle, numInt);
 				}
-				else {
-					LOG(DEBUG1) << "interface " << numInt << " is currently free :)";
+				catch ( const GLogiKExcept & e ) {
+					libusb_free_config_descriptor( config_descriptor ); /* free */
+					throw;
 				}
 
 				/* claiming interface */
