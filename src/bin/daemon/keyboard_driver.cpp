@@ -42,8 +42,9 @@ namespace GLogiKd
 bool KeyboardDriver::libusb_status_ = false;
 uint8_t KeyboardDriver::drivers_cnt_ = 0;
 
-KeyboardDriver::KeyboardDriver(int key_read_length) : buffer_("", std::ios_base::app), context_(nullptr) {
-	this->expected_usb_descriptors_ = { 0, 0, 0, 0 };
+KeyboardDriver::KeyboardDriver(int key_read_length, DescriptorValues values) :
+		buffer_("", std::ios_base::app), context_(nullptr) {
+	this->expected_usb_descriptors_ = values;
 	this->interrupt_key_read_length = key_read_length;
 	KeyboardDriver::drivers_cnt_++;
 }

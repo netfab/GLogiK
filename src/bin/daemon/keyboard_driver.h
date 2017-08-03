@@ -66,7 +66,7 @@ struct DescriptorValues {
 class KeyboardDriver
 {
 	public:
-		KeyboardDriver(int key_read_length);
+		KeyboardDriver(int key_read_length, DescriptorValues values);
 		virtual ~KeyboardDriver();
 
 		virtual const char* getDriverName() const = 0;
