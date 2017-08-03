@@ -31,6 +31,7 @@ namespace GLogiKd
 {
 
 #define VENDOR_LOGITECH "046d"
+#define INTERRUPT_KEY_READ_LENGTH 8
 
 class LogitechG510 : public KeyboardDriver
 {
