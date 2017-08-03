@@ -65,8 +65,6 @@ VirtualKeyboard::VirtualKeyboard(const char* device_name) : buffer_("", std::ios
 VirtualKeyboard::~VirtualKeyboard() {
 	LOG(DEBUG3) << "destroying " << libevdev_get_name(this->dev);
 
-	this->foo();
-
 	libevdev_uinput_destroy(this->uidev);
 	libevdev_free(this->dev);
 }

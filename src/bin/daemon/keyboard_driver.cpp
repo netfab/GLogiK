@@ -197,6 +197,7 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 						LOG(DEBUG1) << std::hex << (unsigned int)buffer[i];
 					}
 #endif
+					current_device.virtual_keyboard->foo();
 				}
 				break;
 			case LIBUSB_ERROR_TIMEOUT:
