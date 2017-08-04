@@ -44,7 +44,7 @@ class LogitechG510 : public KeyboardDriver
 
 	protected:
 	private:
-		void processKeyEvent(unsigned int * pressed_keys, unsigned char * buffer, unsigned int actual_length);
+		void processKeyEvent(unsigned int * pressed_keys, unsigned int actual_length);
 };
 
 } // namespace GLogiKd

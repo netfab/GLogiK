@@ -37,6 +37,8 @@
 namespace GLogiKd
 {
 
+#define KEYS_BUFFER_LENGTH 16
+
 enum
 {
 	KEY_PROCESSED = 0,
@@ -87,6 +89,7 @@ class KeyboardDriver
 	protected:
 		std::ostringstream buffer_;
 		std::vector<KeyboardDevice> supported_devices_;
+		unsigned char keys_buffer_[KEYS_BUFFER_LENGTH];
 
 		void initializeLibusb(InitializedDevice & current_device);
 		VirtualKeyboard* initializeVirtualKeyboard( const char* device_name );
@@ -94,7 +97,7 @@ class KeyboardDriver
 		DescriptorValues expected_usb_descriptors_;
 		int interrupt_key_read_length;
 
-		virtual void processKeyEvent(unsigned int * pressed_keys, unsigned char * buffer, unsigned int actual_length) = 0;
+		virtual void processKeyEvent(unsigned int * pressed_keys, unsigned int actual_length) = 0;
 		virtual int getPressedKeys(const InitializedDevice & current_device, unsigned int * pressed_keys);
 
 	private:

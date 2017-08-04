@@ -40,7 +40,7 @@ LogitechG510::LogitechG510() : KeyboardDriver(INTERRUPT_READ_MAX_LENGTH, { 1, 1,
 LogitechG510::~LogitechG510() {
 }
 
-void LogitechG510::processKeyEvent(unsigned int * pressed_keys, unsigned char * buffer, unsigned int actual_length) {
+void LogitechG510::processKeyEvent(unsigned int * pressed_keys, unsigned int actual_length) {
 
 	switch(actual_length) {
 		case 2:

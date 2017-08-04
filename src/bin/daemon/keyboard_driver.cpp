@@ -45,6 +45,14 @@ uint8_t KeyboardDriver::drivers_cnt_ = 0;
 KeyboardDriver::KeyboardDriver(int key_read_length, DescriptorValues values) :
 		buffer_("", std::ios_base::app), context_(nullptr) {
 	this->expected_usb_descriptors_ = values;
+
+	if( key_read_length > KEYS_BUFFER_LENGTH ) {
+		this->buffer_.str("warning : interrupt read length too large, set it to max buffer length");
+		LOG(WARNING) << this->buffer_.str();
+		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		key_read_length = KEYS_BUFFER_LENGTH;
+	}
+
 	this->interrupt_key_read_length = key_read_length;
 	KeyboardDriver::drivers_cnt_++;
 }
@@ -165,13 +173,11 @@ void KeyboardDriver::attachKernelDrivers(libusb_device_handle * usb_handle) {
 
 int KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, unsigned int * pressed_keys) {
 	int actual_length = 0;
-	unsigned char buffer[16] = {
-		0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0
-		};
+
+	std::fill_n(this->keys_buffer_, KEYS_BUFFER_LENGTH, 0);
 
 	int ret = libusb_interrupt_transfer(current_device.usb_handle, current_device.keys_endpoint,
-		(unsigned char*)buffer, this->interrupt_key_read_length, &actual_length, 10);
+		(unsigned char*)this->keys_buffer_, this->interrupt_key_read_length, &actual_length, 10);
 
 	switch(ret) {
 		case 0:
@@ -179,19 +185,19 @@ int KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, uns
 #if DEBUGGING_ON
 				LOG(DEBUG)	<< "exp. rl: " << this->interrupt_key_read_length
 							<< " act_l: " << actual_length << ", xBuf[0]: "
-							<< std::hex << (unsigned int)buffer[0];
+							<< std::hex << (unsigned int)this->keys_buffer_[0];
 				for( unsigned int i = 0; i < (unsigned int)actual_length; i++ ) {
-					LOG(DEBUG1) << std::hex << (unsigned int)buffer[i];
+					LOG(DEBUG1) << std::hex << (unsigned int)this->keys_buffer_[i];
 				}
 #endif
-				if((unsigned int)buffer[0] == 1) {
+				if((unsigned int)this->keys_buffer_[0] == 1) {
 #if DEBUGGING_ON
 					LOG(DEBUG) << "skip standard key";
 #endif
 					return KEY_SKIPPED;
 				}
 
-				this->processKeyEvent(pressed_keys, buffer, actual_length);
+				this->processKeyEvent(pressed_keys, actual_length);
 
 				return KEY_PROCESSED;
 			}
