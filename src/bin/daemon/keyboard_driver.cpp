@@ -171,6 +171,17 @@ void KeyboardDriver::attachKernelDrivers(libusb_device_handle * usb_handle) {
 	this->to_attach_.clear();
 }
 
+std::string KeyboardDriver::getBytes(unsigned int actual_length) {
+	if( actual_length == 0 )
+		return "";
+	std::ostringstream s;
+	s << std::hex << (unsigned int)this->keys_buffer_[0];
+	for(unsigned int x = 1; x < actual_length; x++) {
+		s << ", " << std::hex << (unsigned int)this->keys_buffer_[x];
+	}
+	return s.str();
+}
+
 int KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, unsigned int * pressed_keys) {
 	int actual_length = 0;
 
@@ -186,13 +197,13 @@ int KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, uns
 				LOG(DEBUG)	<< "exp. rl: " << this->interrupt_key_read_length
 							<< " act_l: " << actual_length << ", xBuf[0]: "
 							<< std::hex << (unsigned int)this->keys_buffer_[0];
-				for( unsigned int i = 0; i < (unsigned int)actual_length; i++ ) {
-					LOG(DEBUG1) << std::hex << (unsigned int)this->keys_buffer_[i];
-				}
+				//for( unsigned int i = 0; i < (unsigned int)actual_length; i++ ) {
+				//	LOG(DEBUG1) << std::hex << (unsigned int)this->keys_buffer_[i];
+				//}
 #endif
 				if((unsigned int)this->keys_buffer_[0] == 1) {
 #if DEBUGGING_ON
-					LOG(DEBUG) << "skip standard key";
+					LOG(DEBUG1) << "skip standard key : " << this->getBytes(actual_length);
 #endif
 					return KEY_SKIPPED;
 				}

@@ -44,13 +44,13 @@ void LogitechG510::processKeyEvent(unsigned int * pressed_keys, unsigned int act
 
 	switch(actual_length) {
 		case 2:
-			LOG(DEBUG) << "2 bytes !";
+			LOG(DEBUG1) << "2 bytes : " << this->getBytes(actual_length);
 			break;
 		case 5:
-			LOG(DEBUG) << "5 bytes !";
+			LOG(DEBUG1) << "5 bytes : " << this->getBytes(actual_length);
 			break;
 		default:
-			LOG(DEBUG) << "not implemented: " << actual_length << " bytes !";
+			LOG(DEBUG1) << "not implemented: " << actual_length << " bytes !";
 			break;
 	}
 

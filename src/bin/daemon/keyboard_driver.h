@@ -99,6 +99,7 @@ class KeyboardDriver
 
 		virtual void processKeyEvent(unsigned int * pressed_keys, unsigned int actual_length) = 0;
 		virtual int getPressedKeys(const InitializedDevice & current_device, unsigned int * pressed_keys);
+		std::string getBytes(unsigned int actual_length);
 
 	private:
 		static bool libusb_status_;			/* is libusb initialized ? */
