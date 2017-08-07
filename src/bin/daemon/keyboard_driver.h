@@ -97,9 +97,15 @@ class KeyboardDriver
 		DescriptorValues expected_usb_descriptors_;
 		int interrupt_key_read_length;
 
+		std::string getBytes(unsigned int actual_length);
+
 		virtual void processKeyEvent(unsigned int * pressed_keys, unsigned int actual_length) = 0;
 		virtual int getPressedKeys(const InitializedDevice & current_device, unsigned int * pressed_keys);
-		std::string getBytes(unsigned int actual_length);
+
+		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
+
+		void sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
+			unsigned char * data, uint16_t wLength);
 
 	private:
 		static bool libusb_status_;			/* is libusb initialized ? */
@@ -120,7 +126,6 @@ class KeyboardDriver
 		void attachKernelDrivers(libusb_device_handle * usb_handle);
 		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
 		void listenLoop(const InitializedDevice & current_device);
-
 };
 
 } // namespace GLogiKd

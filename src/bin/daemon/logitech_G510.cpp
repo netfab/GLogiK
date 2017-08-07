@@ -56,5 +56,30 @@ void LogitechG510::processKeyEvent(unsigned int * pressed_keys, unsigned int act
 
 }
 
+/*
+ *	Send G510/G510s control requests for device initialization
+ *	When the keyboard is first plugged-in, the firmware is setting up the device
+ *	configuration in a way where :
+ *		- G1  - G12 keys produces KEY_F1 - KEY_F12 input events
+ *		- G13 - G18 keys produces KEY_1  - KEY_6   input events
+ *	This way, those keys are default-binded and are usable even if no driver take
+ *	control of the keyboard.
+ *	The following initialization disable (at least) this behavior.
+ */
+void LogitechG510::sendDeviceInitialization(const InitializedDevice & current_device) {
+	unsigned char usb_data[] = {
+		1, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0
+	};
+	unsigned char usb_data_2[] = {
+		0x09, 0x02, 0, 0, 0, 0, 0, 0
+	};
+
+	LOG(INFO) << "sending " << current_device.device.name << " initialization requests";
+	this->sendControlRequest(current_device.usb_handle, 0x301, 1, usb_data, 19);
+	this->sendControlRequest(current_device.usb_handle, 0x309, 1, usb_data_2, 8);
+}
+
 } // namespace GLogiKd
 

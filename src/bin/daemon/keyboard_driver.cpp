@@ -247,6 +247,30 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 	}
 }
 
+void KeyboardDriver::sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
+		unsigned char * data, uint16_t wLength)
+{
+	int ret = libusb_control_transfer( usb_handle,
+		LIBUSB_ENDPOINT_OUT|LIBUSB_REQUEST_TYPE_CLASS|LIBUSB_RECIPIENT_INTERFACE,
+		LIBUSB_REQUEST_SET_CONFIGURATION, /* 0x09 */
+		wValue, wIndex, data, wLength, 10000 );
+	if( ret < 0 ) {
+		this->buffer_.str("error sending control request");
+		LOG(ERROR) << this->buffer_.str();
+		syslog(LOG_ERR, this->buffer_.str().c_str());
+		this->handleLibusbError(ret);
+	}
+	else {
+		LOG(DEBUG2) << "sent " << ret << " bytes - expected: " << wLength;
+	}
+}
+
+void KeyboardDriver::sendDeviceInitialization(const InitializedDevice & current_device) {
+	this->buffer_.str("warning : sendDeviceInitialization not implemented");
+	LOG(WARNING) << this->buffer_.str();
+	syslog(LOG_WARNING, this->buffer_.str().c_str());
+}
+
 void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num) {
 	LOG(DEBUG3) << "trying to initialize " << device.name << "("
 				<< device.vendor_id << ":" << device.product_id << "), device "
@@ -259,6 +283,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	try {
 		this->setConfiguration(current_device);
 		this->findExpectedUSBInterface(current_device);
+		this->sendDeviceInitialization(current_device);
 	}
 	catch ( const GLogiKExcept & e ) {
 		/* if we ever claimed or detached some interfaces, set them back
@@ -582,9 +607,10 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 					/* storing endpoint for later usage */
 					current_device.endpoints.push_back(*ep);
 
+					/* In: device-to-host */
 					if( (unsigned int)ep->bEndpointAddress & LIBUSB_ENDPOINT_IN ) {
 						unsigned int addr = (unsigned int)ep->bEndpointAddress;
-						LOG(DEBUG1) << "found keys endpoint, address 0x" << std::hex << addr
+						LOG(DEBUG1) << "found [Keys] endpoint, address 0x" << std::hex << addr
 									<< " MaxPacketSize " << (unsigned int)ep->wMaxPacketSize;
 						current_device.keys_endpoint = addr & 0xff;
 					}
@@ -614,10 +640,10 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 
 				if(current_device.keys_endpoint == 0) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
-					this->buffer_.str("error : keys endpoint not found ! ");
+					this->buffer_.str("error : [Keys] endpoint not found ! ");
 					LOG(ERROR) << this->buffer_.str();
 					syslog(LOG_ERR, this->buffer_.str().c_str());
-					throw GLogiKExcept("keys endpoint not found");
+					throw GLogiKExcept("[Keys] endpoint not found");
 				}
 
 				LOG(INFO) << "all done ! " << current_device.device.name << " interface " << numInt
