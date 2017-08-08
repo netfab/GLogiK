@@ -23,7 +23,6 @@
 #include <bitset>
 
 #include <utility>
-//#include <chrono>
 
 #include <config.h>
 
@@ -225,10 +224,6 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 				<< " on bus " << (unsigned int)current_device.bus;
 
 	while( DaemonControl::is_daemon_enabled() and current_device.listen_status ) {
-		//LOG(INFO) << "pause of 10 seconds starting";
-		//std::this_thread::sleep_for(std::chrono::seconds(10));
-		//LOG(INFO) << "pause of 10 seconds ended";
-
 		unsigned int pressed_keys;
 		KeyStatus ret = this->getPressedKeys(current_device, &pressed_keys);
 		switch( ret ) {
