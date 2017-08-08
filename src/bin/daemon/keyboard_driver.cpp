@@ -207,16 +207,16 @@ KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_devic
 #if DEBUGGING_ON
 			LOG(DEBUG5) << "timeout reached";
 #endif
-			return KeyStatus::G_KEY_TIMEDOUT;
+			return KeyStatus::S_KEY_TIMEDOUT;
 			break;
 		default:
 			LOG(DEBUG) << "getPressedKeys interrupt read error";
 			this->handleLibusbError(ret);
-			return KeyStatus::G_KEY_SKIPPED;
+			return KeyStatus::S_KEY_SKIPPED;
 			break;
 	}
 
-	return KeyStatus::G_KEY_TIMEDOUT;
+	return KeyStatus::S_KEY_TIMEDOUT;
 }
 
 void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
@@ -227,7 +227,7 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 		unsigned int pressed_keys;
 		KeyStatus ret = this->getPressedKeys(current_device, &pressed_keys);
 		switch( ret ) {
-			case KeyStatus::G_KEY_PROCESSED:
+			case KeyStatus::S_KEY_PROCESSED:
 				current_device.virtual_keyboard->foo();
 				break;
 			default:

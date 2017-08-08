@@ -41,10 +41,10 @@ namespace GLogiKd
 
 enum class KeyStatus
 {
-	G_KEY_PROCESSED = 0,
-	G_KEY_TIMEDOUT,
-	G_KEY_SKIPPED,
-	G_KEY_UNKNOWN
+	S_KEY_PROCESSED = 0,
+	S_KEY_TIMEDOUT,
+	S_KEY_SKIPPED,
+	S_KEY_UNKNOWN
 };
 
 struct KeyboardDevice {
