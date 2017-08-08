@@ -39,11 +39,12 @@ namespace GLogiKd
 
 #define KEYS_BUFFER_LENGTH 16
 
-enum
+enum class KeyStatus
 {
-	KEY_PROCESSED = 0,
-	KEY_TIMEDOUT,
-	KEY_SKIPPED
+	G_KEY_PROCESSED = 0,
+	G_KEY_TIMEDOUT,
+	G_KEY_SKIPPED,
+	G_KEY_UNKNOWN
 };
 
 struct KeyboardDevice {
@@ -99,8 +100,8 @@ class KeyboardDriver
 
 		std::string getBytes(unsigned int actual_length);
 
-		virtual void processKeyEvent(unsigned int * pressed_keys, unsigned int actual_length) = 0;
-		virtual int getPressedKeys(const InitializedDevice & current_device, unsigned int * pressed_keys);
+		virtual KeyStatus processKeyEvent(unsigned int * pressed_keys, unsigned int actual_length) = 0;
+		virtual KeyStatus getPressedKeys(const InitializedDevice & current_device, unsigned int * pressed_keys);
 
 		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
 

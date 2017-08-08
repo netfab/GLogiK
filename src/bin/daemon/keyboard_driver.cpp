@@ -182,7 +182,7 @@ std::string KeyboardDriver::getBytes(unsigned int actual_length) {
 	return s.str();
 }
 
-int KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, unsigned int * pressed_keys) {
+KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, unsigned int * pressed_keys) {
 	int actual_length = 0;
 
 	std::fill_n(this->keys_buffer_, KEYS_BUFFER_LENGTH, 0);
@@ -201,31 +201,23 @@ int KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, uns
 				//	LOG(DEBUG1) << std::hex << (unsigned int)this->keys_buffer_[i];
 				//}
 #endif
-				if((unsigned int)this->keys_buffer_[0] == 1) {
-#if DEBUGGING_ON
-					LOG(DEBUG1) << "skip standard key : " << this->getBytes(actual_length);
-#endif
-					return KEY_SKIPPED;
-				}
-
-				this->processKeyEvent(pressed_keys, actual_length);
-
-				return KEY_PROCESSED;
+				return this->processKeyEvent(pressed_keys, actual_length);
 			}
 			break;
 		case LIBUSB_ERROR_TIMEOUT:
 #if DEBUGGING_ON
 			LOG(DEBUG5) << "timeout reached";
 #endif
-			return KEY_TIMEDOUT;
+			return KeyStatus::G_KEY_TIMEDOUT;
 			break;
 		default:
 			LOG(DEBUG) << "getPressedKeys interrupt read error";
-			return this->handleLibusbError(ret);
+			this->handleLibusbError(ret);
+			return KeyStatus::G_KEY_SKIPPED;
 			break;
 	}
 
-	return KEY_TIMEDOUT;
+	return KeyStatus::G_KEY_TIMEDOUT;
 }
 
 void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
@@ -238,10 +230,12 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 		//LOG(INFO) << "pause of 10 seconds ended";
 
 		unsigned int pressed_keys;
-		int ret = this->getPressedKeys(current_device, &pressed_keys);
+		KeyStatus ret = this->getPressedKeys(current_device, &pressed_keys);
 		switch( ret ) {
-			case KEY_PROCESSED:
+			case KeyStatus::G_KEY_PROCESSED:
 				current_device.virtual_keyboard->foo();
+				break;
+			default:
 				break;
 		}
 	}

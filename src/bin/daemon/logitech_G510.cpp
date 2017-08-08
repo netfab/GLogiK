@@ -40,20 +40,30 @@ LogitechG510::LogitechG510() : KeyboardDriver(INTERRUPT_READ_MAX_LENGTH, { 1, 1,
 LogitechG510::~LogitechG510() {
 }
 
-void LogitechG510::processKeyEvent(unsigned int * pressed_keys, unsigned int actual_length) {
+KeyStatus LogitechG510::processKeyEvent(unsigned int * pressed_keys, unsigned int actual_length) {
 
 	switch(actual_length) {
 		case 2:
 			LOG(DEBUG1) << "2 bytes : " << this->getBytes(actual_length);
+			return KeyStatus::G_KEY_PROCESSED;
 			break;
 		case 5:
 			LOG(DEBUG1) << "5 bytes : " << this->getBytes(actual_length);
+			return KeyStatus::G_KEY_PROCESSED;
+			break;
+		case 8:
+#if DEBUGGING_ON
+			LOG(DEBUG1) << "8 bytes : skipping standard key event : " << this->getBytes(actual_length);
+#endif
+			return KeyStatus::G_KEY_SKIPPED;
 			break;
 		default:
 			LOG(DEBUG1) << "not implemented: " << actual_length << " bytes !";
+			return KeyStatus::G_KEY_SKIPPED;
 			break;
 	}
 
+	return KeyStatus::G_KEY_UNKNOWN;
 }
 
 /*
