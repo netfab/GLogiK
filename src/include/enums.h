@@ -19,36 +19,14 @@
  *
  */
 
-#ifndef __GLOGIKD_LOGITECH_G510_DRIVER_H__
-#define __GLOGIKD_LOGITECH_G510_DRIVER_H__
-
 #include <cstdint>
 
-#include "keyboard_driver.h"
-#include "globals.h"
+#ifndef __GLOGIKD_ENUMS_H__
+#define __GLOGIKD_ENUMS_H__
 
-namespace GLogiKd
+enum class Keys : int64_t
 {
-
-#define VENDOR_LOGITECH "046d"
-#define INTERRUPT_READ_MAX_LENGTH 8
-
-class LogitechG510 : public KeyboardDriver
-{
-	public:
-		LogitechG510();
-		~LogitechG510();
-
-		const char* getDriverName() const { return "Logitech G510/G510s driver"; };
-		uint16_t getDriverID() const { return GLOGIKD_DRIVER_ID_G510; };
-
-	protected:
-	private:
-		KeyStatus processKeyEvent(int64_t * pressed_keys, unsigned int actual_length);
-		void sendDeviceInitialization(const InitializedDevice & current_device);
-		void processKeyEvent5Bytes(int64_t * pressed_keys);
+	KEY_G1  = 1 << 0,
 };
-
-} // namespace GLogiKd
 
 #endif

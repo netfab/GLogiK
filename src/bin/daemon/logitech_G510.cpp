@@ -27,6 +27,8 @@
 
 #include "logitech_G510.h"
 
+#include "include/enums.h"
+
 namespace GLogiKd
 {
 
@@ -40,7 +42,15 @@ LogitechG510::LogitechG510() : KeyboardDriver(INTERRUPT_READ_MAX_LENGTH, { 1, 1,
 LogitechG510::~LogitechG510() {
 }
 
-KeyStatus LogitechG510::processKeyEvent(unsigned int * pressed_keys, unsigned int actual_length) {
+void LogitechG510::processKeyEvent5Bytes(int64_t * pressed_keys) {
+	*pressed_keys = 0;
+	if (this->keys_buffer_[0] == 0x03) {
+		if (this->keys_buffer_[1]&0x01)
+			*pressed_keys |= (int64_t)Keys::KEY_G1;
+	}
+}
+
+KeyStatus LogitechG510::processKeyEvent(int64_t * pressed_keys, unsigned int actual_length) {
 
 	switch(actual_length) {
 		case 2:
@@ -49,6 +59,7 @@ KeyStatus LogitechG510::processKeyEvent(unsigned int * pressed_keys, unsigned in
 			break;
 		case 5:
 			LOG(DEBUG1) << "5 bytes : " << this->getBytes(actual_length);
+			this->processKeyEvent5Bytes(pressed_keys);
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 8:

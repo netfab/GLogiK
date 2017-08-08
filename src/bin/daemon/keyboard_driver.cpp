@@ -34,6 +34,7 @@
 #include "daemon_control.h"
 #include "keyboard_driver.h"
 
+#include "include/enums.h"
 
 namespace GLogiKd
 {
@@ -181,7 +182,7 @@ std::string KeyboardDriver::getBytes(unsigned int actual_length) {
 	return s.str();
 }
 
-KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, unsigned int * pressed_keys) {
+KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, int64_t * pressed_keys) {
 	int actual_length = 0;
 
 	std::fill_n(this->keys_buffer_, KEYS_BUFFER_LENGTH, 0);
@@ -224,11 +225,14 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 				<< " on bus " << (unsigned int)current_device.bus;
 
 	while( DaemonControl::is_daemon_enabled() and current_device.listen_status ) {
-		unsigned int pressed_keys;
+		int64_t pressed_keys;
 		KeyStatus ret = this->getPressedKeys(current_device, &pressed_keys);
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
 				current_device.virtual_keyboard->foo();
+				if( pressed_keys & (int64_t)Keys::KEY_G1 ) {
+					LOG(DEBUG) << "G1 pressed ! :)";
+				}
 				break;
 			default:
 				break;

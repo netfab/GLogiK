@@ -100,8 +100,8 @@ class KeyboardDriver
 
 		std::string getBytes(unsigned int actual_length);
 
-		virtual KeyStatus processKeyEvent(unsigned int * pressed_keys, unsigned int actual_length) = 0;
-		virtual KeyStatus getPressedKeys(const InitializedDevice & current_device, unsigned int * pressed_keys);
+		virtual KeyStatus processKeyEvent(int64_t * pressed_keys, unsigned int actual_length) = 0;
+		virtual KeyStatus getPressedKeys(const InitializedDevice & current_device, int64_t * pressed_keys);
 
 		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
 
