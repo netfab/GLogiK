@@ -230,7 +230,7 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
 				current_device.virtual_keyboard->foo();
-				if( pressed_keys & (int64_t)Keys::KEY_G1 ) {
+				if( pressed_keys & (int64_t)Keys::GK_KEY_G1 ) {
 					LOG(DEBUG) << "G1 pressed ! :)";
 				}
 				break;

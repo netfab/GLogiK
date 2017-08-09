@@ -24,14 +24,25 @@
 
 #include <cstdint>
 
+#include <vector>
+
 #include "keyboard_driver.h"
 #include "globals.h"
+
+#include "include/enums.h"
 
 namespace GLogiKd
 {
 
 #define VENDOR_LOGITECH "046d"
 #define INTERRUPT_READ_MAX_LENGTH 8
+
+struct R_Key
+{
+	unsigned short index;
+	unsigned char mask;
+	Keys key;
+};
 
 class LogitechG510 : public KeyboardDriver
 {
@@ -47,6 +58,44 @@ class LogitechG510 : public KeyboardDriver
 		KeyStatus processKeyEvent(int64_t * pressed_keys, unsigned int actual_length);
 		void sendDeviceInitialization(const InitializedDevice & current_device);
 		void processKeyEvent5Bytes(int64_t * pressed_keys);
+
+		std::vector< R_Key > keys_map_ = {
+			{1, 0x01, Keys::GK_KEY_G1},
+			{1, 0x02, Keys::GK_KEY_G2},
+			{1, 0x04, Keys::GK_KEY_G3},
+			{1, 0x08, Keys::GK_KEY_G4},
+			{1, 0x10, Keys::GK_KEY_G5},
+			{1, 0x20, Keys::GK_KEY_G6},
+			{1, 0x40, Keys::GK_KEY_G7},
+			{1, 0x80, Keys::GK_KEY_G8},
+
+			{2, 0x01, Keys::GK_KEY_G9},
+			{2, 0x02, Keys::GK_KEY_G10},
+			{2, 0x04, Keys::GK_KEY_G11},
+			{2, 0x08, Keys::GK_KEY_G12},
+			{2, 0x10, Keys::GK_KEY_G13},
+			{2, 0x20, Keys::GK_KEY_G14},
+			{2, 0x40, Keys::GK_KEY_G15},
+			{2, 0x80, Keys::GK_KEY_G16},
+
+			{3, 0x01, Keys::GK_KEY_G17},
+			{3, 0x02, Keys::GK_KEY_G18},
+//			{3, 0x04, Keys::GK_KEY_},
+			{3, 0x08, Keys::GK_KEY_LIGHT},
+			{3, 0x10, Keys::GK_KEY_M1},
+			{3, 0x20, Keys::GK_KEY_M2},
+			{3, 0x40, Keys::GK_KEY_M3},
+			{3, 0x80, Keys::GK_KEY_MR},
+
+			{4, 0x01, Keys::GK_KEY_L1},
+			{4, 0x02, Keys::GK_KEY_L2},
+			{4, 0x04, Keys::GK_KEY_L3},
+			{4, 0x08, Keys::GK_KEY_L4},
+			{4, 0x10, Keys::GK_KEY_L5},
+//			{4, 0x20, Keys::GK_KEY_},
+//			{4, 0x40, Keys::GK_KEY_},
+//			{4, 0x80, Keys::GK_KEY_},
+		};
 };
 
 } // namespace GLogiKd
