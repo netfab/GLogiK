@@ -42,14 +42,6 @@ GLogiK=$PWD/.. CD=. {
 				virtual_keyboard.cpp
 				virtual_keyboard.h
 			}
-			foo=foo/ {
-				Makefile.am
-				main.cpp
-				core.cpp
-				core.h
-				exception.cpp
-				exception.h
-			}
 		}
 	}
 }
