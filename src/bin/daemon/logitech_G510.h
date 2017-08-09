@@ -58,8 +58,9 @@ class LogitechG510 : public KeyboardDriver
 		KeyStatus processKeyEvent(int64_t * pressed_keys, unsigned int actual_length);
 		void sendDeviceInitialization(const InitializedDevice & current_device);
 		void processKeyEvent5Bytes(int64_t * pressed_keys);
+		void processKeyEvent2Bytes(int64_t * pressed_keys);
 
-		std::vector< R_Key > keys_map_ = {
+		std::vector< R_Key > five_bytes_keys_map_ = {
 			{1, 0x01, Keys::GK_KEY_G1},
 			{1, 0x02, Keys::GK_KEY_G2},
 			{1, 0x04, Keys::GK_KEY_G3},
@@ -95,6 +96,17 @@ class LogitechG510 : public KeyboardDriver
 			{4, 0x20, Keys::GK_KEY_MUTE_HEADSET},
 			{4, 0x40, Keys::GK_KEY_MUTE_MICRO},
 //			{4, 0x80, Keys::GK_KEY_},
+		};
+
+		std::vector< R_Key > two_bytes_keys_map_ = {
+			{1, 0x01, Keys::GK_KEY_AUDIO_NEXT},				/* XF86AudioNext */
+			{1, 0x02, Keys::GK_KEY_AUDIO_PREV},				/* XF86AudioPrev */
+			{1, 0x04, Keys::GK_KEY_AUDIO_STOP},				/* XF86AudioStop */
+			{1, 0x08, Keys::GK_KEY_AUDIO_PLAY},				/* XF86AudioPlay */
+			{1, 0x10, Keys::GK_KEY_AUDIO_MUTE},				/* XF86AudioMute */
+			{1, 0x20, Keys::GK_KEY_AUDIO_RAISE_VOLUME},		/* XF86AudioRaiseVolume */
+			{1, 0x40, Keys::GK_KEY_AUDIO_LOWER_VOLUME},		/* XF86AudioLowerVolume */
+//			{1, 0x80, Keys::GK_KEY_},
 		};
 };
 

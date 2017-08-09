@@ -40,16 +40,31 @@ LogitechG510::LogitechG510() : KeyboardDriver(INTERRUPT_READ_MAX_LENGTH, { 1, 1,
 LogitechG510::~LogitechG510() {
 }
 
-void LogitechG510::processKeyEvent5Bytes(int64_t * pressed_keys) {
+void LogitechG510::processKeyEvent2Bytes(int64_t * pressed_keys) {
 	*pressed_keys = 0;
-	if (this->keys_buffer_[0] != 0x03) {
-		this->buffer_.str("warning : wrong value for first byte on 5 bytes event");
+	if (this->keys_buffer_[0] != 0x02) {
+		this->buffer_.str("warning : wrong first byte value on 2 bytes event");
 		LOG(WARNING) << this->buffer_.str();
 		syslog(LOG_WARNING, this->buffer_.str().c_str());
 		return;
 	}
 
-	for (auto k : this->keys_map_ ) {
+	for (auto k : this->two_bytes_keys_map_ ) {
+		if( this->keys_buffer_[k.index] & k.mask )
+			*pressed_keys |= (int64_t)k.key;
+	}
+}
+
+void LogitechG510::processKeyEvent5Bytes(int64_t * pressed_keys) {
+	*pressed_keys = 0;
+	if (this->keys_buffer_[0] != 0x03) {
+		this->buffer_.str("warning : wrong first byte value on 5 bytes event");
+		LOG(WARNING) << this->buffer_.str();
+		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		return;
+	}
+
+	for (auto k : this->five_bytes_keys_map_ ) {
 		if( this->keys_buffer_[k.index] & k.mask )
 			*pressed_keys |= (int64_t)k.key;
 	}
@@ -60,6 +75,7 @@ KeyStatus LogitechG510::processKeyEvent(int64_t * pressed_keys, unsigned int act
 	switch(actual_length) {
 		case 2:
 			LOG(DEBUG1) << "2 bytes : " << this->getBytes(actual_length);
+			this->processKeyEvent2Bytes(pressed_keys);
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 5:
