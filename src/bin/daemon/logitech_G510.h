@@ -92,8 +92,8 @@ class LogitechG510 : public KeyboardDriver
 			{4, 0x04, Keys::GK_KEY_L3},
 			{4, 0x08, Keys::GK_KEY_L4},
 			{4, 0x10, Keys::GK_KEY_L5},
-//			{4, 0x20, Keys::GK_KEY_},
-//			{4, 0x40, Keys::GK_KEY_},
+			{4, 0x20, Keys::GK_KEY_MUTE_HEADSET},
+			{4, 0x40, Keys::GK_KEY_MUTE_MICRO},
 //			{4, 0x80, Keys::GK_KEY_},
 		};
 };

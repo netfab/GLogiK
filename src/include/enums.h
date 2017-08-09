@@ -61,6 +61,9 @@ enum class Keys : int64_t
 	GK_KEY_L3    = 1 << 25,
 	GK_KEY_L4    = 1 << 26,
 	GK_KEY_L5    = 1 << 27,
+
+	GK_KEY_MUTE_HEADSET = 1 << 28,
+	GK_KEY_MUTE_MICRO   = 1 << 29,
 };
 
 } // namespace GLogiKd
