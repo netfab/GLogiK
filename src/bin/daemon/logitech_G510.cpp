@@ -42,11 +42,16 @@ LogitechG510::~LogitechG510() {
 
 void LogitechG510::processKeyEvent5Bytes(int64_t * pressed_keys) {
 	*pressed_keys = 0;
-	if (this->keys_buffer_[0] == 0x03) {
-		for (auto k : this->keys_map_ ) {
-			if( this->keys_buffer_[k.index] & k.mask )
-				*pressed_keys |= (int64_t)k.key;
-		}
+	if (this->keys_buffer_[0] != 0x03) {
+		this->buffer_.str("warning : wrong value for first byte on 5 bytes event");
+		LOG(WARNING) << this->buffer_.str();
+		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		return;
+	}
+
+	for (auto k : this->keys_map_ ) {
+		if( this->keys_buffer_[k.index] & k.mask )
+			*pressed_keys |= (int64_t)k.key;
 	}
 }
 
