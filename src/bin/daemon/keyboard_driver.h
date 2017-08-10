@@ -104,6 +104,7 @@ class KeyboardDriver
 		virtual KeyStatus getPressedKeys(const InitializedDevice & current_device, int64_t * pressed_keys);
 
 		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
+		virtual void setLeds(const InitializedDevice & current_device, uint8_t leds);
 
 		void sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
 			unsigned char * data, uint16_t wLength);

@@ -98,6 +98,17 @@ KeyStatus LogitechG510::processKeyEvent(int64_t * pressed_keys, unsigned int act
 	return KeyStatus::S_KEY_UNKNOWN;
 }
 
+void LogitechG510::setLeds(const InitializedDevice & current_device, uint8_t leds) {
+	unsigned char leds_mask = 0;
+	for (auto l : this->leds_mask_ ) {
+		if( leds & (uint8_t)l.led )
+			leds_mask |= l.mask;
+	}
+
+	unsigned char leds_buffer[2] = { 4, leds_mask };
+	this->sendControlRequest(current_device.usb_handle, 0x304, 1, leds_buffer, 2);
+}
+
 /*
  *	Send G510/G510s control requests for device initialization
  *	When the keyboard is first plugged-in, the firmware is setting up the device

@@ -77,6 +77,14 @@ enum class Keys : uint64_t
 
 };
 
+enum class Leds : uint8_t
+{
+	GK_LED_M1 = 1 << 0,
+	GK_LED_M2 = 1 << 1,
+	GK_LED_M3 = 1 << 2,
+	GK_LED_MR = 1 << 3,
+};
+
 } // namespace GLogiKd
 
 #endif

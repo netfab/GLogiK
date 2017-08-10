@@ -44,6 +44,12 @@ struct R_Key
 	Keys key;
 };
 
+struct M_Key_Led_Mask
+{
+	Leds led;
+	unsigned char mask;
+};
+
 class LogitechG510 : public KeyboardDriver
 {
 	public:
@@ -57,6 +63,7 @@ class LogitechG510 : public KeyboardDriver
 	private:
 		KeyStatus processKeyEvent(int64_t * pressed_keys, unsigned int actual_length);
 		void sendDeviceInitialization(const InitializedDevice & current_device);
+		void setLeds(const InitializedDevice & current_device, uint8_t leds);
 		void processKeyEvent5Bytes(int64_t * pressed_keys);
 		void processKeyEvent2Bytes(int64_t * pressed_keys);
 
@@ -107,6 +114,13 @@ class LogitechG510 : public KeyboardDriver
 			{1, 0x20, Keys::GK_KEY_AUDIO_RAISE_VOLUME},		/* XF86AudioRaiseVolume */
 			{1, 0x40, Keys::GK_KEY_AUDIO_LOWER_VOLUME},		/* XF86AudioLowerVolume */
 //			{1, 0x80, Keys::GK_KEY_},
+		};
+
+		std::vector< M_Key_Led_Mask > leds_mask_ = {
+			{Leds::GK_LED_M1, 0x80},
+			{Leds::GK_LED_M2, 0x40},
+			{Leds::GK_LED_M3, 0x20},
+			{Leds::GK_LED_MR, 0x10},
 		};
 };
 

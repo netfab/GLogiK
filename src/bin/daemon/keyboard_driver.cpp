@@ -220,9 +220,17 @@ KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_devic
 	return KeyStatus::S_KEY_TIMEDOUT;
 }
 
+void KeyboardDriver::setLeds(const InitializedDevice & current_device, uint8_t leds) {
+	this->buffer_.str("warning : setLeds not implemented");
+	LOG(WARNING) << this->buffer_.str();
+	syslog(LOG_WARNING, this->buffer_.str().c_str());
+}
+
 void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 	LOG(INFO) << "spawned listening thread for " << current_device.device.name
 				<< " on bus " << (unsigned int)current_device.bus;
+
+	//uint8_t leds = 0;
 
 	while( DaemonControl::is_daemon_enabled() and current_device.listen_status ) {
 		int64_t pressed_keys;
@@ -230,6 +238,8 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
 				current_device.virtual_keyboard->foo();
+				//leds = (uint8_t)Leds::GK_LED_M1 | (uint8_t)Leds::GK_LED_MR;
+				//this->setLeds(current_device, leds);
 				break;
 			default:
 				break;
@@ -312,6 +322,9 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		this->buffer_ << e.what();
 		throw GLogiKExcept(this->buffer_.str());
 	}
+
+	LOG(DEBUG1) << "resetting M-Keys leds status";
+	this->setLeds(current_device, 0);
 
 	this->initialized_devices_.push_back( current_device );
 }
