@@ -58,7 +58,6 @@ void LogitechG510::processKeyEvent2Bytes(int64_t * pressed_keys) {
 }
 
 void LogitechG510::processKeyEvent5Bytes(int64_t * pressed_keys) {
-	*pressed_keys = 0;
 	if (this->keys_buffer_[0] != 0x03) {
 		this->buffer_.str("warning : wrong first byte value on 5 bytes event");
 		LOG(WARNING) << this->buffer_.str();
@@ -73,6 +72,7 @@ void LogitechG510::processKeyEvent5Bytes(int64_t * pressed_keys) {
 }
 
 KeyStatus LogitechG510::processKeyEvent(int64_t * pressed_keys, unsigned int actual_length) {
+	*pressed_keys = 0;
 
 	switch(actual_length) {
 		case 2:
