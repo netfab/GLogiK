@@ -229,6 +229,9 @@ void KeyboardDriver::setLeds(const InitializedDevice & current_device) {
 }
 
 void KeyboardDriver::updateCurrentLedsMask(const uint64_t pressed_keys) {
+	/* is macro record mode enabled ? */
+	bool MR_ON = (this->current_leds_mask_ & (uint8_t)Leds::GK_LED_MR);
+
 	if( pressed_keys & (uint64_t)Keys::GK_KEY_M1 ) {
 		this->current_leds_mask_ = 0;
 		this->current_leds_mask_ |= (uint8_t)Leds::GK_LED_M1;
@@ -240,6 +243,15 @@ void KeyboardDriver::updateCurrentLedsMask(const uint64_t pressed_keys) {
 	else if( pressed_keys & (uint64_t)Keys::GK_KEY_M3 ) {
 		this->current_leds_mask_ = 0;
 		this->current_leds_mask_ |= (uint8_t)Leds::GK_LED_M3;
+	}
+
+	if( pressed_keys & (uint64_t)Keys::GK_KEY_MR ) {
+		if(! MR_ON) { /* MR off, enable it */
+			this->current_leds_mask_ |= (uint8_t)Leds::GK_LED_MR;
+		}
+		else { /* MR on, disable it */
+			this->current_leds_mask_ &= ~(uint8_t)Leds::GK_LED_MR;
+		}
 	}
 }
 
@@ -257,7 +269,7 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
 				current_device.virtual_keyboard->foo();
-				/* update M1-M3 leds status only after proper event */
+				/* update M1-MR leds status only after proper event */
 				if( this->last_transfer_length_ == this->leds_update_event_length_ ) {
 					this->updateCurrentLedsMask(pressed_keys);
 					this->setLeds(current_device);
