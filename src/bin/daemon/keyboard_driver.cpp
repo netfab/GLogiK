@@ -249,6 +249,10 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 	LOG(INFO) << "spawned listening thread for " << current_device.device.name
 				<< " on bus " << (unsigned int)current_device.bus;
 
+	LOG(DEBUG1) << "resetting M-Keys leds status";
+	this->current_leds_mask_ = 0;
+	this->setLeds(current_device);
+
 	while( DaemonControl::is_daemon_enabled() and current_device.listen_status ) {
 		int64_t pressed_keys;
 		KeyStatus ret = this->getPressedKeys(current_device, &pressed_keys);
@@ -346,10 +350,6 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		this->buffer_ << e.what();
 		throw GLogiKExcept(this->buffer_.str());
 	}
-
-	LOG(DEBUG1) << "resetting M-Keys leds status";
-	this->current_leds_mask_ = 0;
-	this->setLeds(current_device);
 
 	this->initialized_devices_.push_back( current_device );
 }
