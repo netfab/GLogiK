@@ -76,12 +76,16 @@ KeyStatus LogitechG510::processKeyEvent(int64_t * pressed_keys, unsigned int act
 
 	switch(actual_length) {
 		case 2:
+#if DEBUGGING_ON
 			LOG(DEBUG1) << "2 bytes : " << this->getBytes(actual_length);
+#endif
 			this->processKeyEvent2Bytes(pressed_keys);
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 5:
+#if DEBUGGING_ON
 			LOG(DEBUG1) << "5 bytes : " << this->getBytes(actual_length);
+#endif
 			this->processKeyEvent5Bytes(pressed_keys);
 			if( *pressed_keys == 0 ) /* skip release key events */
 				return KeyStatus::S_KEY_SKIPPED;
@@ -94,7 +98,9 @@ KeyStatus LogitechG510::processKeyEvent(int64_t * pressed_keys, unsigned int act
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
 		default:
+#if DEBUGGING_ON
 			LOG(DEBUG1) << "not implemented: " << actual_length << " bytes !";
+#endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
 	}
