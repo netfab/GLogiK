@@ -109,7 +109,7 @@ void LogitechG510::setLeds(const InitializedDevice & current_device) {
 			leds_mask |= l.mask;
 	}
 
-	LOG(INFO) << "setting " << current_device.device.name << " M-Keys leds using current mask : 0x"
+	LOG(DEBUG1) << "setting " << current_device.device.name << " M-Keys leds using current mask : 0x"
 				<< std::hex << (unsigned int)leds_mask;
 	unsigned char leds_buffer[2] = { 4, leds_mask };
 	this->sendControlRequest(current_device.usb_handle, 0x304, 1, leds_buffer, 2);
