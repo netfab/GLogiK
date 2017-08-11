@@ -183,7 +183,7 @@ std::string KeyboardDriver::getBytes(unsigned int actual_length) {
 	return s.str();
 }
 
-KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, int64_t * pressed_keys) {
+KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, uint64_t * pressed_keys) {
 	int actual_length = 0;
 
 	std::fill_n(this->keys_buffer_, KEYS_BUFFER_LENGTH, 0);
@@ -228,18 +228,16 @@ void KeyboardDriver::setLeds(const InitializedDevice & current_device) {
 	syslog(LOG_WARNING, this->buffer_.str().c_str());
 }
 
-void KeyboardDriver::updateCurrentLedsMask(const int64_t pressed_keys) {
-	uint64_t p = (uint64_t)pressed_keys;
-
-	if( p & (uint64_t)Keys::GK_KEY_M1 ) {
+void KeyboardDriver::updateCurrentLedsMask(const uint64_t pressed_keys) {
+	if( pressed_keys & (uint64_t)Keys::GK_KEY_M1 ) {
 		this->current_leds_mask_ = 0;
 		this->current_leds_mask_ |= (uint8_t)Leds::GK_LED_M1;
 	}
-	else if( p & (uint64_t)Keys::GK_KEY_M2 ) {
+	else if( pressed_keys & (uint64_t)Keys::GK_KEY_M2 ) {
 		this->current_leds_mask_ = 0;
 		this->current_leds_mask_ |= (uint8_t)Leds::GK_LED_M2;
 	}
-	else if( p & (uint64_t)Keys::GK_KEY_M3 ) {
+	else if( pressed_keys & (uint64_t)Keys::GK_KEY_M3 ) {
 		this->current_leds_mask_ = 0;
 		this->current_leds_mask_ |= (uint8_t)Leds::GK_LED_M3;
 	}
@@ -254,7 +252,7 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 	this->setLeds(current_device);
 
 	while( DaemonControl::is_daemon_enabled() and current_device.listen_status ) {
-		int64_t pressed_keys;
+		uint64_t pressed_keys;
 		KeyStatus ret = this->getPressedKeys(current_device, &pressed_keys);
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:

@@ -101,8 +101,8 @@ class KeyboardDriver
 
 		std::string getBytes(unsigned int actual_length);
 
-		virtual KeyStatus processKeyEvent(int64_t * pressed_keys, unsigned int actual_length) = 0;
-		virtual KeyStatus getPressedKeys(const InitializedDevice & current_device, int64_t * pressed_keys);
+		virtual KeyStatus processKeyEvent(uint64_t * pressed_keys, unsigned int actual_length) = 0;
+		virtual KeyStatus getPressedKeys(const InitializedDevice & current_device, uint64_t * pressed_keys);
 
 		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
 		virtual void setLeds(const InitializedDevice & current_device);
@@ -131,7 +131,7 @@ class KeyboardDriver
 		void attachKernelDrivers(libusb_device_handle * usb_handle);
 		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
 		void listenLoop(const InitializedDevice & current_device);
-		void updateCurrentLedsMask(const int64_t pressed_keys);
+		void updateCurrentLedsMask(const uint64_t pressed_keys);
 };
 
 } // namespace GLogiKd

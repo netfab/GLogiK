@@ -42,7 +42,7 @@ LogitechG510::LogitechG510() :
 LogitechG510::~LogitechG510() {
 }
 
-void LogitechG510::processKeyEvent2Bytes(int64_t * pressed_keys) {
+void LogitechG510::processKeyEvent2Bytes(uint64_t * pressed_keys) {
 	*pressed_keys = 0;
 	if (this->keys_buffer_[0] != 0x02) {
 		this->buffer_.str("warning : wrong first byte value on 2 bytes event");
@@ -53,11 +53,11 @@ void LogitechG510::processKeyEvent2Bytes(int64_t * pressed_keys) {
 
 	for (auto k : this->two_bytes_keys_map_ ) {
 		if( this->keys_buffer_[k.index] & k.mask )
-			*pressed_keys |= (int64_t)k.key;
+			*pressed_keys |= (uint64_t)k.key;
 	}
 }
 
-void LogitechG510::processKeyEvent5Bytes(int64_t * pressed_keys) {
+void LogitechG510::processKeyEvent5Bytes(uint64_t * pressed_keys) {
 	if (this->keys_buffer_[0] != 0x03) {
 		this->buffer_.str("warning : wrong first byte value on 5 bytes event");
 		LOG(WARNING) << this->buffer_.str();
@@ -67,11 +67,11 @@ void LogitechG510::processKeyEvent5Bytes(int64_t * pressed_keys) {
 
 	for (auto k : this->five_bytes_keys_map_ ) {
 		if( this->keys_buffer_[k.index] & k.mask )
-			*pressed_keys |= (int64_t)k.key;
+			*pressed_keys |= (uint64_t)k.key;
 	}
 }
 
-KeyStatus LogitechG510::processKeyEvent(int64_t * pressed_keys, unsigned int actual_length) {
+KeyStatus LogitechG510::processKeyEvent(uint64_t * pressed_keys, unsigned int actual_length) {
 	*pressed_keys = 0;
 
 	switch(actual_length) {
