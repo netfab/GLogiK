@@ -30,7 +30,9 @@
 namespace GLogiKd
 {
 
-LogitechG510::LogitechG510() : KeyboardDriver(INTERRUPT_READ_MAX_LENGTH, { 1, 1, 0, 2 }) {
+LogitechG510::LogitechG510() :
+	KeyboardDriver(INTERRUPT_READ_MAX_LENGTH, TRANSFER_LENGTH_FOR_LEDS_UPDATE, { 1, 1, 0, 2 })
+{
 	this->supported_devices_ = {
 		// name, vendor_id, product_id
 		{ "Logitech G510/G510s", VENDOR_LOGITECH, "c22d" },
@@ -81,6 +83,8 @@ KeyStatus LogitechG510::processKeyEvent(int64_t * pressed_keys, unsigned int act
 		case 5:
 			LOG(DEBUG1) << "5 bytes : " << this->getBytes(actual_length);
 			this->processKeyEvent5Bytes(pressed_keys);
+			if( *pressed_keys == 0 ) /* skip release key events */
+				return KeyStatus::S_KEY_SKIPPED;
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 8:
@@ -98,13 +102,15 @@ KeyStatus LogitechG510::processKeyEvent(int64_t * pressed_keys, unsigned int act
 	return KeyStatus::S_KEY_UNKNOWN;
 }
 
-void LogitechG510::setLeds(const InitializedDevice & current_device, uint8_t leds) {
+void LogitechG510::setLeds(const InitializedDevice & current_device) {
 	unsigned char leds_mask = 0;
 	for (auto l : this->leds_mask_ ) {
-		if( leds & (uint8_t)l.led )
+		if( this->current_leds_mask_ & (uint8_t)l.led )
 			leds_mask |= l.mask;
 	}
 
+	LOG(INFO) << "setting " << current_device.device.name << " M-Keys leds using current mask : 0x"
+				<< std::hex << (unsigned int)leds_mask;
 	unsigned char leds_buffer[2] = { 4, leds_mask };
 	this->sendControlRequest(current_device.usb_handle, 0x304, 1, leds_buffer, 2);
 }

@@ -36,6 +36,7 @@ namespace GLogiKd
 
 #define VENDOR_LOGITECH "046d"
 #define INTERRUPT_READ_MAX_LENGTH 8
+#define TRANSFER_LENGTH_FOR_LEDS_UPDATE 5
 
 struct R_Key
 {
@@ -63,7 +64,7 @@ class LogitechG510 : public KeyboardDriver
 	private:
 		KeyStatus processKeyEvent(int64_t * pressed_keys, unsigned int actual_length);
 		void sendDeviceInitialization(const InitializedDevice & current_device);
-		void setLeds(const InitializedDevice & current_device, uint8_t leds);
+		void setLeds(const InitializedDevice & current_device);
 		void processKeyEvent5Bytes(int64_t * pressed_keys);
 		void processKeyEvent2Bytes(int64_t * pressed_keys);
 

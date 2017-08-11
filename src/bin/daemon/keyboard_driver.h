@@ -76,7 +76,7 @@ struct DescriptorValues {
 class KeyboardDriver
 {
 	public:
-		KeyboardDriver(int key_read_length, DescriptorValues values);
+		KeyboardDriver(int key_read_length, uint8_t event_length, DescriptorValues values);
 		virtual ~KeyboardDriver();
 
 		virtual const char* getDriverName() const = 0;
@@ -91,6 +91,7 @@ class KeyboardDriver
 		std::ostringstream buffer_;
 		std::vector<KeyboardDevice> supported_devices_;
 		unsigned char keys_buffer_[KEYS_BUFFER_LENGTH];
+		uint8_t current_leds_mask_;
 
 		void initializeLibusb(InitializedDevice & current_device);
 		VirtualKeyboard* initializeVirtualKeyboard( const char* device_name );
@@ -104,7 +105,7 @@ class KeyboardDriver
 		virtual KeyStatus getPressedKeys(const InitializedDevice & current_device, int64_t * pressed_keys);
 
 		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
-		virtual void setLeds(const InitializedDevice & current_device, uint8_t leds);
+		virtual void setLeds(const InitializedDevice & current_device);
 
 		void sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
 			unsigned char * data, uint16_t wLength);
@@ -116,6 +117,8 @@ class KeyboardDriver
 		libusb_device **list_;
 		std::vector<int> to_attach_;
 		std::vector<int> to_release_;
+		int8_t last_transfer_length_;
+		int8_t leds_update_event_length_;
 
 		std::vector<InitializedDevice> initialized_devices_;
 		std::vector<std::thread> threads_;
@@ -128,6 +131,7 @@ class KeyboardDriver
 		void attachKernelDrivers(libusb_device_handle * usb_handle);
 		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
 		void listenLoop(const InitializedDevice & current_device);
+		void updateCurrentLedsMask(const int64_t pressed_keys);
 };
 
 } // namespace GLogiKd

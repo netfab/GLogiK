@@ -42,9 +42,10 @@ namespace GLogiKd
 bool KeyboardDriver::libusb_status_ = false;
 uint8_t KeyboardDriver::drivers_cnt_ = 0;
 
-KeyboardDriver::KeyboardDriver(int key_read_length, DescriptorValues values) :
-		buffer_("", std::ios_base::app), context_(nullptr) {
+KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, DescriptorValues values) :
+		buffer_("", std::ios_base::app), current_leds_mask_(0), context_(nullptr), last_transfer_length_(0) {
 	this->expected_usb_descriptors_ = values;
+	this->leds_update_event_length_ = event_length;
 
 	if( key_read_length > KEYS_BUFFER_LENGTH ) {
 		this->buffer_.str("warning : interrupt read length too large, set it to max buffer length");
@@ -192,6 +193,7 @@ KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_devic
 
 	switch(ret) {
 		case 0:
+			this->last_transfer_length_ = actual_length;
 			if( actual_length > 0 ) {
 #if DEBUGGING_ON
 				LOG(DEBUG)	<< "exp. rl: " << this->interrupt_key_read_length
@@ -220,17 +222,32 @@ KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_devic
 	return KeyStatus::S_KEY_TIMEDOUT;
 }
 
-void KeyboardDriver::setLeds(const InitializedDevice & current_device, uint8_t leds) {
+void KeyboardDriver::setLeds(const InitializedDevice & current_device) {
 	this->buffer_.str("warning : setLeds not implemented");
 	LOG(WARNING) << this->buffer_.str();
 	syslog(LOG_WARNING, this->buffer_.str().c_str());
 }
 
+void KeyboardDriver::updateCurrentLedsMask(const int64_t pressed_keys) {
+	uint64_t p = (uint64_t)pressed_keys;
+
+	if( p & (uint64_t)Keys::GK_KEY_M1 ) {
+		this->current_leds_mask_ = 0;
+		this->current_leds_mask_ |= (uint8_t)Leds::GK_LED_M1;
+	}
+	else if( p & (uint64_t)Keys::GK_KEY_M2 ) {
+		this->current_leds_mask_ = 0;
+		this->current_leds_mask_ |= (uint8_t)Leds::GK_LED_M2;
+	}
+	else if( p & (uint64_t)Keys::GK_KEY_M3 ) {
+		this->current_leds_mask_ = 0;
+		this->current_leds_mask_ |= (uint8_t)Leds::GK_LED_M3;
+	}
+}
+
 void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 	LOG(INFO) << "spawned listening thread for " << current_device.device.name
 				<< " on bus " << (unsigned int)current_device.bus;
-
-	//uint8_t leds = 0;
 
 	while( DaemonControl::is_daemon_enabled() and current_device.listen_status ) {
 		int64_t pressed_keys;
@@ -238,13 +255,20 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
 				current_device.virtual_keyboard->foo();
-				//leds = (uint8_t)Leds::GK_LED_M1 | (uint8_t)Leds::GK_LED_MR;
-				//this->setLeds(current_device, leds);
+				/* update M1-M3 leds status only after proper event */
+				if( this->last_transfer_length_ == this->leds_update_event_length_ ) {
+					this->updateCurrentLedsMask(pressed_keys);
+					this->setLeds(current_device);
+				}
 				break;
 			default:
 				break;
 		}
 	}
+
+	LOG(DEBUG1) << "resetting M-Keys leds status";
+	this->current_leds_mask_ = 0;
+	this->setLeds(current_device);
 }
 
 void KeyboardDriver::sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
@@ -324,7 +348,8 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	}
 
 	LOG(DEBUG1) << "resetting M-Keys leds status";
-	this->setLeds(current_device, 0);
+	this->current_leds_mask_ = 0;
+	this->setLeds(current_device);
 
 	this->initialized_devices_.push_back( current_device );
 }
