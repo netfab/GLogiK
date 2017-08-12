@@ -62,7 +62,7 @@ void LogitechG510::processKeyEvent2Bytes(uint64_t * pressed_keys) {
 
 	for (auto k : this->two_bytes_keys_map_ ) {
 		if( this->keys_buffer_[k.index] & k.mask )
-			*pressed_keys |= (uint64_t)k.key;
+			*pressed_keys |= to_type(k.key);
 	}
 }
 
@@ -76,7 +76,7 @@ void LogitechG510::processKeyEvent5Bytes(uint64_t * pressed_keys) {
 
 	for (auto k : this->five_bytes_keys_map_ ) {
 		if( this->keys_buffer_[k.index] & k.mask )
-			*pressed_keys |= (uint64_t)k.key;
+			*pressed_keys |= to_type(k.key);
 	}
 }
 
@@ -120,12 +120,12 @@ KeyStatus LogitechG510::processKeyEvent(uint64_t * pressed_keys, unsigned int ac
 void LogitechG510::setLeds(const InitializedDevice & current_device) {
 	unsigned char leds_mask = 0;
 	for (auto l : this->leds_mask_ ) {
-		if( this->current_leds_mask_ & (uint8_t)l.led )
+		if( this->current_leds_mask_ & to_type(l.led) )
 			leds_mask |= l.mask;
 	}
 
 	LOG(DEBUG1) << "setting " << current_device.device.name << " M-Keys leds using current mask : 0x"
-				<< std::hex << (unsigned int)leds_mask;
+				<< std::hex << static_cast<unsigned int>(leds_mask);
 	unsigned char leds_buffer[2] = { 4, leds_mask };
 	this->sendControlRequest(current_device.usb_handle, 0x304, 1, leds_buffer, 2);
 }
