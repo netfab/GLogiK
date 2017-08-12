@@ -1,0 +1,14 @@
+
+GLogiK, daemon to handle special features on gaming keyboards
+-------------------------------------------------------------
+
+Status : in development.
+Recognized devices : Logitech G510s Gaming Keyboard
+
+Build dependencies :
+--------------------
+	>=dev-libs/boost-1.56
+	>=dev-libs/libusb-1.0.0
+	virtual/libudev
+	dev-libs/libevdev
+
