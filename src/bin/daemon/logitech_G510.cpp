@@ -42,6 +42,15 @@ LogitechG510::LogitechG510() :
 LogitechG510::~LogitechG510() {
 }
 
+/* return true if the pressed key is a macro key (G1-G18)  */
+const bool LogitechG510::checkMacroKey(const uint64_t pressed_keys) const {
+	for (auto k : this->five_bytes_keys_map_ ) {
+		if( k.macro_key and (pressed_keys & to_type(k.key)) )
+			return true;
+	}
+	return false;
+}
+
 void LogitechG510::processKeyEvent2Bytes(uint64_t * pressed_keys) {
 	*pressed_keys = 0;
 	if (this->keys_buffer_[0] != 0x02) {

@@ -262,6 +262,33 @@ void KeyboardDriver::updateCurrentLedsMask(const uint64_t pressed_keys) {
 	}
 }
 
+void KeyboardDriver::enterMacroRecordMode(const InitializedDevice & current_device) {
+	LOG(DEBUG) << "entering macro record mode";
+
+	bool keys_found = false;
+
+	while( ! keys_found ) {
+		uint64_t pressed_keys = 0;
+		KeyStatus ret = this->getPressedKeys(current_device, &pressed_keys);
+
+		switch( ret ) {
+			case KeyStatus::S_KEY_PROCESSED:
+				/* first we need a Macro-Key */
+				if( ! this->checkMacroKey(pressed_keys) ) {
+					LOG(DEBUG1) << "wrong key. Please press a Macro-Key first";
+					continue;
+				}
+
+				LOG(DEBUG1) << "Ok : key pressed: " << std::hex << (unsigned int)pressed_keys;
+				keys_found = true;
+
+				break;
+			default:
+				break;
+		}
+	}
+}
+
 void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 	LOG(INFO) << "spawned listening thread for " << current_device.device.name
 				<< " on bus " << (unsigned int)current_device.bus;
@@ -271,7 +298,7 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 	this->setLeds(current_device);
 
 	while( DaemonControl::is_daemon_enabled() and current_device.listen_status ) {
-		uint64_t pressed_keys;
+		uint64_t pressed_keys = 0;
 		KeyStatus ret = this->getPressedKeys(current_device, &pressed_keys);
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
@@ -280,6 +307,15 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 				if( this->last_transfer_length_ == this->leds_update_event_length_ ) {
 					this->updateCurrentLedsMask(pressed_keys);
 					this->setLeds(current_device);
+
+					/* did we pressed the MR key ? */
+					if( this->current_leds_mask_ & to_type(Leds::GK_LED_MR) ) {
+						this->enterMacroRecordMode(current_device);
+
+						/* disabling macro record mode */
+						this->current_leds_mask_ &= ~(to_type(Leds::GK_LED_MR));
+						this->setLeds(current_device);
+					}
 				}
 				break;
 			default:

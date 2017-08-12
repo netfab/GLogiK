@@ -43,6 +43,10 @@ struct R_Key
 	unsigned short index;
 	unsigned char mask;
 	Keys key;
+	bool macro_key;
+
+	R_Key(unsigned short i, unsigned char m, Keys k, bool b=false)
+		: index(i), mask(m), key(k), macro_key(b) {}
 };
 
 struct M_Key_Led_Mask
@@ -67,28 +71,29 @@ class LogitechG510 : public KeyboardDriver
 		void setLeds(const InitializedDevice & current_device);
 		void processKeyEvent5Bytes(uint64_t * pressed_keys);
 		void processKeyEvent2Bytes(uint64_t * pressed_keys);
+		const bool checkMacroKey(const uint64_t pressed_keys) const;
 
 		std::vector< R_Key > five_bytes_keys_map_ = {
-			{1, 0x01, Keys::GK_KEY_G1},
-			{1, 0x02, Keys::GK_KEY_G2},
-			{1, 0x04, Keys::GK_KEY_G3},
-			{1, 0x08, Keys::GK_KEY_G4},
-			{1, 0x10, Keys::GK_KEY_G5},
-			{1, 0x20, Keys::GK_KEY_G6},
-			{1, 0x40, Keys::GK_KEY_G7},
-			{1, 0x80, Keys::GK_KEY_G8},
+			{1, 0x01, Keys::GK_KEY_G1,  true},
+			{1, 0x02, Keys::GK_KEY_G2,  true},
+			{1, 0x04, Keys::GK_KEY_G3,  true},
+			{1, 0x08, Keys::GK_KEY_G4,  true},
+			{1, 0x10, Keys::GK_KEY_G5,  true},
+			{1, 0x20, Keys::GK_KEY_G6,  true},
+			{1, 0x40, Keys::GK_KEY_G7,  true},
+			{1, 0x80, Keys::GK_KEY_G8,  true},
 
-			{2, 0x01, Keys::GK_KEY_G9},
-			{2, 0x02, Keys::GK_KEY_G10},
-			{2, 0x04, Keys::GK_KEY_G11},
-			{2, 0x08, Keys::GK_KEY_G12},
-			{2, 0x10, Keys::GK_KEY_G13},
-			{2, 0x20, Keys::GK_KEY_G14},
-			{2, 0x40, Keys::GK_KEY_G15},
-			{2, 0x80, Keys::GK_KEY_G16},
+			{2, 0x01, Keys::GK_KEY_G9,  true},
+			{2, 0x02, Keys::GK_KEY_G10, true},
+			{2, 0x04, Keys::GK_KEY_G11, true},
+			{2, 0x08, Keys::GK_KEY_G12, true},
+			{2, 0x10, Keys::GK_KEY_G13, true},
+			{2, 0x20, Keys::GK_KEY_G14, true},
+			{2, 0x40, Keys::GK_KEY_G15, true},
+			{2, 0x80, Keys::GK_KEY_G16, true},
 
-			{3, 0x01, Keys::GK_KEY_G17},
-			{3, 0x02, Keys::GK_KEY_G18},
+			{3, 0x01, Keys::GK_KEY_G17, true},
+			{3, 0x02, Keys::GK_KEY_G18, true},
 //			{3, 0x04, Keys::GK_KEY_},
 			{3, 0x08, Keys::GK_KEY_LIGHT},
 			{3, 0x10, Keys::GK_KEY_M1},

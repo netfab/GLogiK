@@ -103,6 +103,7 @@ class KeyboardDriver
 
 		virtual KeyStatus processKeyEvent(uint64_t * pressed_keys, unsigned int actual_length) = 0;
 		virtual KeyStatus getPressedKeys(const InitializedDevice & current_device, uint64_t * pressed_keys);
+		virtual const bool checkMacroKey(const uint64_t pressed_keys) const = 0;
 
 		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
 		virtual void setLeds(const InitializedDevice & current_device);
@@ -132,6 +133,7 @@ class KeyboardDriver
 		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
 		void listenLoop(const InitializedDevice & current_device);
 		void updateCurrentLedsMask(const uint64_t pressed_keys);
+		void enterMacroRecordMode(const InitializedDevice & current_device);
 };
 
 } // namespace GLogiKd
