@@ -230,19 +230,26 @@ void KeyboardDriver::setLeds(const InitializedDevice & current_device) {
 
 void KeyboardDriver::updateCurrentLedsMask(const uint64_t pressed_keys) {
 	/* is macro record mode enabled ? */
-	bool MR_ON = (this->current_leds_mask_ & to_type(Leds::GK_LED_MR));
+	bool MR_ON = this->current_leds_mask_ & to_type(Leds::GK_LED_MR);
+	bool Mx_ON = false;
 
 	if( pressed_keys & to_type(Keys::GK_KEY_M1) ) {
+		Mx_ON = this->current_leds_mask_ & to_type(Leds::GK_LED_M1);
 		this->current_leds_mask_ = 0;
-		this->current_leds_mask_ |= to_type(Leds::GK_LED_M1);
+		if( ! Mx_ON )
+			this->current_leds_mask_ |= to_type(Leds::GK_LED_M1);
 	}
 	else if( pressed_keys & to_type(Keys::GK_KEY_M2) ) {
+		Mx_ON = this->current_leds_mask_ & to_type(Leds::GK_LED_M2);
 		this->current_leds_mask_ = 0;
-		this->current_leds_mask_ |= to_type(Leds::GK_LED_M2);
+		if( ! Mx_ON )
+			this->current_leds_mask_ |= to_type(Leds::GK_LED_M2);
 	}
 	else if( pressed_keys & to_type(Keys::GK_KEY_M3) ) {
+		Mx_ON = this->current_leds_mask_ & to_type(Leds::GK_LED_M3);
 		this->current_leds_mask_ = 0;
-		this->current_leds_mask_ |= to_type(Leds::GK_LED_M3);
+		if( ! Mx_ON )
+			this->current_leds_mask_ |= to_type(Leds::GK_LED_M3);
 	}
 
 	if( pressed_keys & to_type(Keys::GK_KEY_MR) ) {
