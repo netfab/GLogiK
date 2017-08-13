@@ -94,7 +94,7 @@ void DevicesManager::initializeDevices(void) {
 
 						this->buffer_.str( det_dev.device.name );
 						this->buffer_	<< "(" << det_dev.device.vendor_id << ":" << det_dev.device.product_id
-										<< ") on bus " << (unsigned int)det_dev.device_bus << " initialized";
+										<< ") on bus " << to_uint(det_dev.device_bus) << " initialized";
 						LOG(INFO) << this->buffer_.str();
 						syslog(LOG_INFO, this->buffer_.str().c_str());
 						break;
@@ -125,7 +125,7 @@ void DevicesManager::closeInitializedDevices(void) {
 
 					this->buffer_.str( init_dev.device.name );
 					this->buffer_	<< "(" << init_dev.device.vendor_id << ":" << init_dev.device.product_id
-									<< ") on bus " << (unsigned int)init_dev.device_bus << " closed";
+									<< ") on bus " << to_uint(init_dev.device_bus) << " closed";
 					LOG(INFO) << this->buffer_.str();
 					syslog(LOG_INFO, this->buffer_.str().c_str());
 				}
@@ -337,7 +337,7 @@ void DevicesManager::searchSupportedDevices(void) {
 
 							LOG(DEBUG3) << "found device - Vid:Pid:DevNode:usec | bus:num : " << vendor_id
 										<< ":" << product_id << ":" << devnode << ":" << usec
-										<< " | " << (unsigned int)bus << ":" << (unsigned int)num;
+										<< " | " << to_uint(bus) << ":" << to_uint(num);
 						}
 				}
 			}

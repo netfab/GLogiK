@@ -35,6 +35,7 @@
 #include "keyboard_driver.h"
 
 #include "include/enums.h"
+#include "globals.h"
 
 namespace GLogiKd
 {
@@ -100,8 +101,8 @@ void KeyboardDriver::initializeLibusb(InitializedDevice & current_device) {
 		throw GLogiKExcept(this->buffer_.str());
 	}
 
-	LOG(DEBUG3) << "libusb found device " << (unsigned int)current_device.num
-				<< " on bus " << (unsigned int)current_device.bus;
+	LOG(DEBUG3) << "libusb found device " << to_uint(current_device.num)
+				<< " on bus " << to_uint(current_device.bus);
 
 	ret_value = libusb_open( current_device.usb_device, &(current_device.usb_handle) );
 	if( this->handleLibusbError(ret_value) ) {
@@ -176,9 +177,9 @@ std::string KeyboardDriver::getBytes(unsigned int actual_length) {
 	if( actual_length == 0 )
 		return "";
 	std::ostringstream s;
-	s << std::hex << (unsigned int)this->keys_buffer_[0];
+	s << std::hex << to_uint(this->keys_buffer_[0]);
 	for(unsigned int x = 1; x < actual_length; x++) {
-		s << ", " << std::hex << (unsigned int)this->keys_buffer_[x];
+		s << ", " << std::hex << to_uint(this->keys_buffer_[x]);
 	}
 	return s.str();
 }
@@ -198,9 +199,9 @@ KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_devic
 #if DEBUGGING_ON
 				LOG(DEBUG)	<< "exp. rl: " << this->interrupt_key_read_length
 							<< " act_l: " << actual_length << ", xBuf[0]: "
-							<< std::hex << (unsigned int)this->keys_buffer_[0];
-				//for( unsigned int i = 0; i < (unsigned int)actual_length; i++ ) {
-				//	LOG(DEBUG1) << std::hex << (unsigned int)this->keys_buffer_[i];
+							<< std::hex << to_uint(this->keys_buffer_[0]);
+				//for( unsigned int i = 0; i < to_uint(actual_length); i++ ) {
+				//	LOG(DEBUG1) << std::hex << to_uint(this->keys_buffer_[i]);
 				//}
 #endif
 				return this->processKeyEvent(pressed_keys, actual_length);
@@ -279,7 +280,7 @@ void KeyboardDriver::enterMacroRecordMode(const InitializedDevice & current_devi
 					continue;
 				}
 
-				LOG(DEBUG1) << "Ok : key pressed: " << std::hex << (unsigned int)pressed_keys;
+				LOG(DEBUG1) << "Ok : key pressed: " << std::hex << to_uint(pressed_keys);
 				keys_found = true;
 
 				break;
@@ -291,7 +292,7 @@ void KeyboardDriver::enterMacroRecordMode(const InitializedDevice & current_devi
 
 void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 	LOG(INFO) << "spawned listening thread for " << current_device.device.name
-				<< " on bus " << (unsigned int)current_device.bus;
+				<< " on bus " << to_uint(current_device.bus);
 
 	LOG(DEBUG1) << "resetting M-Keys leds status";
 	this->current_leds_mask_ = 0;
@@ -355,7 +356,7 @@ void KeyboardDriver::sendDeviceInitialization(const InitializedDevice & current_
 void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num) {
 	LOG(DEBUG3) << "trying to initialize " << device.name << "("
 				<< device.vendor_id << ":" << device.product_id << "), device "
-				<< (unsigned int)num << " on bus " << (unsigned int)bus;
+				<< to_uint(num) << " on bus " << to_uint(bus);
 
 	InitializedDevice current_device = { device, bus, num, 0, false, nullptr, nullptr, nullptr };
 
@@ -377,7 +378,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 
 	/* virtual keyboard */
 	this->buffer_.str("Virtual ");
-	this->buffer_ << device.name << " b" << (unsigned int)bus << "d" << (unsigned int)num;
+	this->buffer_ << device.name << " b" << to_uint(bus) << "d" << to_uint(num);
 
 	try {
 		current_device.virtual_keyboard = this->initializeVirtualKeyboard(this->buffer_.str().c_str());
@@ -472,7 +473,7 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 	if ( this->handleLibusbError(ret) )
 		throw GLogiKExcept("libusb get_device_descriptor failure");
 
-	for (i = 0; i < (unsigned int)device_descriptor.bNumConfigurations; i++) {
+	for (i = 0; i < to_uint(device_descriptor.bNumConfigurations); i++) {
 		/* configuration descriptor */
 		struct libusb_config_descriptor * config_descriptor = nullptr;
 		ret = libusb_get_config_descriptor(current_device.usb_device, i, &config_descriptor);
@@ -484,10 +485,10 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & current_device) 
 			continue;
 		}
 
-		for (j = 0; j < (unsigned int)config_descriptor->bNumInterfaces; j++) {
+		for (j = 0; j < to_uint(config_descriptor->bNumInterfaces); j++) {
 			const struct libusb_interface *iface = &(config_descriptor->interface[j]);
 
-			for (k = 0; k < (unsigned int)iface->num_altsetting; k++) {
+			for (k = 0; k < to_uint(iface->num_altsetting); k++) {
 				/* interface alt_setting descriptor */
 				const struct libusb_interface_descriptor * as_descriptor = &(iface->altsetting[k]);
 
@@ -528,32 +529,32 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 		throw GLogiKExcept("libusb get_device_descriptor failure");
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "device has " << (unsigned int)device_descriptor.bNumConfigurations
+	LOG(DEBUG2) << "device has " << to_uint(device_descriptor.bNumConfigurations)
 				<< " possible configuration(s)";
 
 	LOG(DEBUG4) << "--";
 	LOG(DEBUG4) << "device descriptor";
 	LOG(DEBUG4) << "--";
-	LOG(DEBUG4) << "bLength            : " << (unsigned int)device_descriptor.bLength;
-	LOG(DEBUG4) << "bDescriptorType    : " << (unsigned int)device_descriptor.bDescriptorType;
-	LOG(DEBUG4) << "bcdUSB             : " << std::bitset<16>( (unsigned int)device_descriptor.bcdUSB ).to_string();
-	LOG(DEBUG4) << "bDeviceClass       : " << (unsigned int)device_descriptor.bDeviceClass;
-	LOG(DEBUG4) << "bDeviceSubClass    : " << (unsigned int)device_descriptor.bDeviceSubClass;
-	LOG(DEBUG4) << "bDeviceProtocol    : " << (unsigned int)device_descriptor.bDeviceProtocol;
-	LOG(DEBUG4) << "bMaxPacketSize0    : " << (unsigned int)device_descriptor.bMaxPacketSize0;
-	LOG(DEBUG4) << "idVendor           : " << std::hex << (unsigned int)device_descriptor.idVendor;
-	LOG(DEBUG4) << "idProduct          : " << std::hex << (unsigned int)device_descriptor.idProduct;
-	LOG(DEBUG4) << "bcdDevice          : " << std::bitset<16>( (unsigned int)device_descriptor.bcdDevice ).to_string();
-	LOG(DEBUG4) << "iManufacturer      : " << (unsigned int)device_descriptor.iManufacturer;
-	LOG(DEBUG4) << "iProduct           : " << (unsigned int)device_descriptor.iProduct;
-	LOG(DEBUG4) << "iSerialNumber      : " << (unsigned int)device_descriptor.iSerialNumber;
-	LOG(DEBUG4) << "bNumConfigurations : " << (unsigned int)device_descriptor.bNumConfigurations;
+	LOG(DEBUG4) << "bLength            : " << to_uint(device_descriptor.bLength);
+	LOG(DEBUG4) << "bDescriptorType    : " << to_uint(device_descriptor.bDescriptorType);
+	LOG(DEBUG4) << "bcdUSB             : " << std::bitset<16>( to_uint(device_descriptor.bcdUSB) ).to_string();
+	LOG(DEBUG4) << "bDeviceClass       : " << to_uint(device_descriptor.bDeviceClass);
+	LOG(DEBUG4) << "bDeviceSubClass    : " << to_uint(device_descriptor.bDeviceSubClass);
+	LOG(DEBUG4) << "bDeviceProtocol    : " << to_uint(device_descriptor.bDeviceProtocol);
+	LOG(DEBUG4) << "bMaxPacketSize0    : " << to_uint(device_descriptor.bMaxPacketSize0);
+	LOG(DEBUG4) << "idVendor           : " << std::hex << to_uint(device_descriptor.idVendor);
+	LOG(DEBUG4) << "idProduct          : " << std::hex << to_uint(device_descriptor.idProduct);
+	LOG(DEBUG4) << "bcdDevice          : " << std::bitset<16>( to_uint(device_descriptor.bcdDevice) ).to_string();
+	LOG(DEBUG4) << "iManufacturer      : " << to_uint(device_descriptor.iManufacturer);
+	LOG(DEBUG4) << "iProduct           : " << to_uint(device_descriptor.iProduct);
+	LOG(DEBUG4) << "iSerialNumber      : " << to_uint(device_descriptor.iSerialNumber);
+	LOG(DEBUG4) << "bNumConfigurations : " << to_uint(device_descriptor.bNumConfigurations);
 	LOG(DEBUG4) << "--";
 	LOG(DEBUG4) << "--";
 	LOG(DEBUG4) << "--";
 #endif
 
-	for (i = 0; i < (unsigned int)device_descriptor.bNumConfigurations; i++) {
+	for (i = 0; i < to_uint(device_descriptor.bNumConfigurations); i++) {
 		struct libusb_config_descriptor * config_descriptor = nullptr;
 		ret = libusb_get_config_descriptor(current_device.usb_device, i, &config_descriptor);
 		if ( this->handleLibusbError(ret) ) {
@@ -565,20 +566,20 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 		}
 
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "configuration " << (unsigned int)config_descriptor->bConfigurationValue
-					<< " has " << (unsigned int)config_descriptor->bNumInterfaces << " interface(s)";
+		LOG(DEBUG2) << "configuration " << to_uint(config_descriptor->bConfigurationValue)
+					<< " has " << to_uint(config_descriptor->bNumInterfaces) << " interface(s)";
 
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "config descriptor";
 		LOG(DEBUG4) << "--";
-		LOG(DEBUG4) << "bLength             : " << (unsigned int)config_descriptor->bLength;
-		LOG(DEBUG4) << "bDescriptorType     : " << (unsigned int)config_descriptor->bDescriptorType;
-		LOG(DEBUG4) << "wTotalLength        : " << (unsigned int)config_descriptor->wTotalLength;
-		LOG(DEBUG4) << "bNumInterfaces      : " << (unsigned int)config_descriptor->bNumInterfaces;
-		LOG(DEBUG4) << "bConfigurationValue : " << (unsigned int)config_descriptor->bConfigurationValue;
-		LOG(DEBUG4) << "iConfiguration      : " << (unsigned int)config_descriptor->iConfiguration;
-		LOG(DEBUG4) << "bmAttributes        : " << (unsigned int)config_descriptor->bmAttributes;
-		LOG(DEBUG4) << "MaxPower            : " << (unsigned int)config_descriptor->MaxPower;
+		LOG(DEBUG4) << "bLength             : " << to_uint(config_descriptor->bLength);
+		LOG(DEBUG4) << "bDescriptorType     : " << to_uint(config_descriptor->bDescriptorType);
+		LOG(DEBUG4) << "wTotalLength        : " << to_uint(config_descriptor->wTotalLength);
+		LOG(DEBUG4) << "bNumInterfaces      : " << to_uint(config_descriptor->bNumInterfaces);
+		LOG(DEBUG4) << "bConfigurationValue : " << to_uint(config_descriptor->bConfigurationValue);
+		LOG(DEBUG4) << "iConfiguration      : " << to_uint(config_descriptor->iConfiguration);
+		LOG(DEBUG4) << "bmAttributes        : " << to_uint(config_descriptor->bmAttributes);
+		LOG(DEBUG4) << "MaxPower            : " << to_uint(config_descriptor->MaxPower);
 		/* TODO extra */
 		LOG(DEBUG4) << "extra_length        : " << (int)config_descriptor->extra_length;
 		LOG(DEBUG4) << "--";
@@ -591,29 +592,29 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 			continue; /* skip non expected configuration */
 		}
 
-		for (j = 0; j < (unsigned int)config_descriptor->bNumInterfaces; j++) {
+		for (j = 0; j < to_uint(config_descriptor->bNumInterfaces); j++) {
 			const struct libusb_interface *iface = &(config_descriptor->interface[j]);
 			LOG(DEBUG2) << "interface " << j << " has " << iface->num_altsetting << " alternate settings";
 
-			for (k = 0; k < (unsigned int)iface->num_altsetting; k++) {
+			for (k = 0; k < to_uint(iface->num_altsetting); k++) {
 				const struct libusb_interface_descriptor * as_descriptor = &(iface->altsetting[k]);
 
 #if DEBUGGING_ON
-				LOG(DEBUG3) << "interface " << j << " alternate setting " << (unsigned int)as_descriptor->bAlternateSetting
-							<< " has " << (unsigned int)as_descriptor->bNumEndpoints << " endpoints";
+				LOG(DEBUG3) << "interface " << j << " alternate setting " << to_uint(as_descriptor->bAlternateSetting)
+							<< " has " << to_uint(as_descriptor->bNumEndpoints) << " endpoints";
 
 				LOG(DEBUG4) << "--";
 				LOG(DEBUG4) << "interface descriptor";
 				LOG(DEBUG4) << "--";
-				LOG(DEBUG4) << "bLength            : " << (unsigned int)as_descriptor->bLength;
-				LOG(DEBUG4) << "bDescriptorType    : " << (unsigned int)as_descriptor->bDescriptorType;
-				LOG(DEBUG4) << "bInterfaceNumber   : " << (unsigned int)as_descriptor->bInterfaceNumber;
-				LOG(DEBUG4) << "bAlternateSetting  : " << (unsigned int)as_descriptor->bAlternateSetting;
-				LOG(DEBUG4) << "bNumEndpoints      : " << (unsigned int)as_descriptor->bNumEndpoints;
-				LOG(DEBUG4) << "bInterfaceClass    : " << (unsigned int)as_descriptor->bInterfaceClass;
-				LOG(DEBUG4) << "bInterfaceSubClass : " << (unsigned int)as_descriptor->bInterfaceSubClass;
-				LOG(DEBUG4) << "bInterfaceProtocol : " << (unsigned int)as_descriptor->bInterfaceProtocol;
-				LOG(DEBUG4) << "iInterface         : " << (unsigned int)as_descriptor->iInterface;
+				LOG(DEBUG4) << "bLength            : " << to_uint(as_descriptor->bLength);
+				LOG(DEBUG4) << "bDescriptorType    : " << to_uint(as_descriptor->bDescriptorType);
+				LOG(DEBUG4) << "bInterfaceNumber   : " << to_uint(as_descriptor->bInterfaceNumber);
+				LOG(DEBUG4) << "bAlternateSetting  : " << to_uint(as_descriptor->bAlternateSetting);
+				LOG(DEBUG4) << "bNumEndpoints      : " << to_uint(as_descriptor->bNumEndpoints);
+				LOG(DEBUG4) << "bInterfaceClass    : " << to_uint(as_descriptor->bInterfaceClass);
+				LOG(DEBUG4) << "bInterfaceSubClass : " << to_uint(as_descriptor->bInterfaceSubClass);
+				LOG(DEBUG4) << "bInterfaceProtocol : " << to_uint(as_descriptor->bInterfaceProtocol);
+				LOG(DEBUG4) << "iInterface         : " << to_uint(as_descriptor->iInterface);
 				/* TODO extra */
 				LOG(DEBUG4) << "extra_length       : " << (int)as_descriptor->extra_length;
 				LOG(DEBUG4) << "--";
@@ -635,8 +636,8 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 				}
 
 				if ( as_descriptor->bNumEndpoints != this->expected_usb_descriptors_.b_num_endpoints) {
-					LOG(WARNING) << "skipping settings. num_endpoints: " << (unsigned int)as_descriptor->bNumEndpoints
-							<< " expected: " << (unsigned int)this->expected_usb_descriptors_.b_num_endpoints;
+					LOG(WARNING) << "skipping settings. num_endpoints: " << to_uint(as_descriptor->bNumEndpoints)
+							<< " expected: " << to_uint(this->expected_usb_descriptors_.b_num_endpoints);
 					libusb_free_config_descriptor( config_descriptor ); /* free */
 					throw GLogiKExcept("num_endpoints does not match");
 				}
@@ -682,35 +683,35 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 					throw GLogiKExcept("wrong configuration value");
 				}
 
-				for (l = 0; l < (unsigned int)as_descriptor->bNumEndpoints; l++) {
+				for (l = 0; l < to_uint(as_descriptor->bNumEndpoints); l++) {
 					const struct libusb_endpoint_descriptor * ep = &(as_descriptor->endpoint[l]);
 
 					/* storing endpoint for later usage */
 					current_device.endpoints.push_back(*ep);
 
 					/* In: device-to-host */
-					if( (unsigned int)ep->bEndpointAddress & LIBUSB_ENDPOINT_IN ) {
-						unsigned int addr = (unsigned int)ep->bEndpointAddress;
+					if( to_uint(ep->bEndpointAddress) & LIBUSB_ENDPOINT_IN ) {
+						unsigned int addr = to_uint(ep->bEndpointAddress);
 						LOG(DEBUG1) << "found [Keys] endpoint, address 0x" << std::hex << addr
-									<< " MaxPacketSize " << (unsigned int)ep->wMaxPacketSize;
+									<< " MaxPacketSize " << to_uint(ep->wMaxPacketSize);
 						current_device.keys_endpoint = addr & 0xff;
 					}
 
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "int. " << j << " alt_s. " << (unsigned int)as_descriptor->bAlternateSetting
+					LOG(DEBUG3) << "int. " << j << " alt_s. " << to_uint(as_descriptor->bAlternateSetting)
 								<< " endpoint " << l;
 
 					LOG(DEBUG4) << "--";
 					LOG(DEBUG4) << "endpoint descriptor";
 					LOG(DEBUG4) << "--";
-					LOG(DEBUG4) << "bLength          : " << (unsigned int)ep->bLength;
-					LOG(DEBUG4) << "bDescriptorType  : " << (unsigned int)ep->bDescriptorType;
-					LOG(DEBUG4) << "bEndpointAddress : " << (unsigned int)ep->bEndpointAddress;
-					LOG(DEBUG4) << "bmAttributes     : " << (unsigned int)ep->bmAttributes;
-					LOG(DEBUG4) << "wMaxPacketSize   : " << (unsigned int)ep->wMaxPacketSize;
-					LOG(DEBUG4) << "bInterval        : " << (unsigned int)ep->bInterval;
-					LOG(DEBUG4) << "bRefresh         : " << (unsigned int)ep->bRefresh;
-					LOG(DEBUG4) << "bSynchAddress    : " << (unsigned int)ep->bSynchAddress;
+					LOG(DEBUG4) << "bLength          : " << to_uint(ep->bLength);
+					LOG(DEBUG4) << "bDescriptorType  : " << to_uint(ep->bDescriptorType);
+					LOG(DEBUG4) << "bEndpointAddress : " << to_uint(ep->bEndpointAddress);
+					LOG(DEBUG4) << "bmAttributes     : " << to_uint(ep->bmAttributes);
+					LOG(DEBUG4) << "wMaxPacketSize   : " << to_uint(ep->wMaxPacketSize);
+					LOG(DEBUG4) << "bInterval        : " << to_uint(ep->bInterval);
+					LOG(DEBUG4) << "bRefresh         : " << to_uint(ep->bRefresh);
+					LOG(DEBUG4) << "bSynchAddress    : " << to_uint(ep->bSynchAddress);
 					/* TODO extra */
 					LOG(DEBUG4) << "extra_length     : " << (int)ep->extra_length;
 					LOG(DEBUG4) << "--";
@@ -741,7 +742,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 void KeyboardDriver::closeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num) {
 	LOG(DEBUG3) << "trying to close " << device.name << "("
 				<< device.vendor_id << ":" << device.product_id << "), device "
-				<< (unsigned int)num << " on bus " << (unsigned int)bus;
+				<< to_uint(num) << " on bus " << to_uint(bus);
 
 	bool found = false;
 
