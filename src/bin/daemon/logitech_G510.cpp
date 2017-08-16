@@ -80,7 +80,7 @@ void LogitechG510::processKeyEvent5Bytes(uint64_t * pressed_keys) {
 	}
 }
 
-void LogitechG510::processKeyEvent8Bytes(uint64_t * pressed_keys, StandardKeyEvent& E) {
+void LogitechG510::processKeyEvent8Bytes(uint64_t * pressed_keys) {
 	if (this->keys_buffer_[0] != 0x01) {
 		this->buffer_.str("warning : wrong first byte value on 8 bytes event");
 		LOG(WARNING) << this->buffer_.str();
@@ -88,18 +88,11 @@ void LogitechG510::processKeyEvent8Bytes(uint64_t * pressed_keys, StandardKeyEve
 		return;
 	}
 
-	unsigned int i = 0;
-
-	for(i = INTERRUPT_READ_MAX_LENGTH-1; i >= 2; --i) {
-		LOG(DEBUG) << "buffer  : " << i << " : " << to_uint(this->keys_buffer_[i]);
-		LOG(DEBUG) << "previous: " << i << " : " << to_uint(this->previous_keys_buffer_[i]);
-	}
-	E.event = 1;
+	this->fillStandardKeyEvents();
 }
 
 KeyStatus LogitechG510::processKeyEvent(uint64_t * pressed_keys, unsigned int actual_length) {
 	*pressed_keys = 0;
-	StandardKeyEvent event;
 
 	switch(actual_length) {
 		case 2:
@@ -124,7 +117,7 @@ KeyStatus LogitechG510::processKeyEvent(uint64_t * pressed_keys, unsigned int ac
 #if DEBUGGING_ON
 				LOG(DEBUG1) << "8 bytes : processing standard key event : " << this->getBytes(actual_length);
 #endif
-				this->processKeyEvent8Bytes(pressed_keys, event);
+				this->processKeyEvent8Bytes(pressed_keys);
 				std::copy(
 						std::begin(this->keys_buffer_), std::end(this->keys_buffer_),
 						std::begin(this->previous_keys_buffer_));

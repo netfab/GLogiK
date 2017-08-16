@@ -43,6 +43,8 @@ namespace GLogiKd
 bool KeyboardDriver::libusb_status_ = false;
 uint8_t KeyboardDriver::drivers_cnt_ = 0;
 
+constexpr unsigned char KeyboardDriver::hid_keyboard_[256];
+
 KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, DescriptorValues values) :
 		buffer_("", std::ios_base::app), current_leds_mask_(0), context_(nullptr), last_transfer_length_(0) {
 	this->expected_usb_descriptors_ = values;
@@ -201,9 +203,6 @@ KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_devic
 				LOG(DEBUG)	<< "exp. rl: " << this->interrupt_key_read_length
 							<< " act_l: " << actual_length << ", xBuf[0]: "
 							<< std::hex << to_uint(this->keys_buffer_[0]);
-				//for( unsigned int i = 0; i < to_uint(actual_length); i++ ) {
-				//	LOG(DEBUG1) << std::hex << to_uint(this->keys_buffer_[i]);
-				//}
 #endif
 				return this->processKeyEvent(pressed_keys, actual_length);
 			}
@@ -260,6 +259,43 @@ void KeyboardDriver::updateCurrentLedsMask(const uint64_t pressed_keys) {
 		}
 		else { /* MR on, disable it */
 			this->current_leds_mask_ &= ~(to_type(Leds::GK_LED_MR));
+		}
+	}
+}
+
+void KeyboardDriver::fillStandardKeyEvents(void) {
+	unsigned int i = 0;
+	this->standard_keys_events_.clear();
+
+	StandardKeyEvent e;
+
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "	b	|	p";
+	LOG(DEBUG2) << "  ------------------------------";
+#endif
+	for(i = this->interrupt_key_read_length-1; i >= 2; --i) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "	" << to_uint(this->keys_buffer_[i])
+					<< "	|	" << to_uint(this->previous_keys_buffer_[i]);
+#endif
+		if( this->previous_keys_buffer_[i] == this->keys_buffer_[i] ) {
+			continue; /* nothing here */
+		}
+		else {
+			if( this->previous_keys_buffer_[i] == 0 ) {
+				e.event_code = KeyboardDriver::hid_keyboard_[ this->keys_buffer_[i] ];
+				e.event = 1; /* KeyPress */
+			}
+			else if( this->keys_buffer_[i] == 0 ) {
+				e.event_code = KeyboardDriver::hid_keyboard_[ this->previous_keys_buffer_[i] ];
+				e.event = 0; /* KeyRelease */
+			}
+			else {
+				this->buffer_.str("warning : two different byte values");
+				LOG(WARNING) << this->buffer_.str();
+				syslog(LOG_WARNING, this->buffer_.str().c_str());
+			}
+			this->standard_keys_events_.push_back(e);
 		}
 	}
 }

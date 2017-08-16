@@ -119,6 +119,7 @@ class KeyboardDriver
 
 		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
 		virtual void setLeds(const InitializedDevice & current_device);
+		void fillStandardKeyEvents(void);
 
 		void sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
 			unsigned char * data, uint16_t wLength);
@@ -135,6 +136,7 @@ class KeyboardDriver
 
 		std::vector<InitializedDevice> initialized_devices_;
 		std::vector<std::thread> threads_;
+		std::vector<StandardKeyEvent> standard_keys_events_;
 
 		/* USB HID Usage Tables as defined in USB specification,
 		 *        Chapter 10 "Keyboard/Keypad Page (0x07)"
