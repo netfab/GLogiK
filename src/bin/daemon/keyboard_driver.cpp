@@ -56,6 +56,7 @@ KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, Descri
 	}
 
 	this->interrupt_key_read_length = key_read_length;
+	std::fill_n(this->previous_keys_buffer_, KEYS_BUFFER_LENGTH, 0);
 	KeyboardDriver::drivers_cnt_++;
 }
 
@@ -274,9 +275,8 @@ void KeyboardDriver::enterMacroRecordMode(const InitializedDevice & current_devi
 
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
-				/* first we need a Macro-Key */
 				if( ! this->checkMacroKey(pressed_keys) ) {
-					LOG(DEBUG1) << "wrong key. Please press a Macro-Key first";
+					LOG(DEBUG) << "record: " << std::hex << to_uint(pressed_keys);
 					continue;
 				}
 
@@ -303,13 +303,12 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 		KeyStatus ret = this->getPressedKeys(current_device, &pressed_keys);
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
-				current_device.virtual_keyboard->foo();
 				/* update M1-MR leds status only after proper event */
 				if( this->last_transfer_length_ == this->leds_update_event_length_ ) {
 					this->updateCurrentLedsMask(pressed_keys);
 					this->setLeds(current_device);
 
-					/* did we pressed the MR key ? */
+					/* did we press the MR key ? */
 					if( this->current_leds_mask_ & to_type(Leds::GK_LED_MR) ) {
 						this->enterMacroRecordMode(current_device);
 

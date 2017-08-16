@@ -80,8 +80,26 @@ void LogitechG510::processKeyEvent5Bytes(uint64_t * pressed_keys) {
 	}
 }
 
+void LogitechG510::processKeyEvent8Bytes(uint64_t * pressed_keys, StandardKeyEvent& E) {
+	if (this->keys_buffer_[0] != 0x01) {
+		this->buffer_.str("warning : wrong first byte value on 8 bytes event");
+		LOG(WARNING) << this->buffer_.str();
+		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		return;
+	}
+
+	unsigned int i = 0;
+
+	for(i = INTERRUPT_READ_MAX_LENGTH-1; i >= 2; --i) {
+		LOG(DEBUG) << "buffer  : " << i << " : " << to_uint(this->keys_buffer_[i]);
+		LOG(DEBUG) << "previous: " << i << " : " << to_uint(this->previous_keys_buffer_[i]);
+	}
+	E.event = 1;
+}
+
 KeyStatus LogitechG510::processKeyEvent(uint64_t * pressed_keys, unsigned int actual_length) {
 	*pressed_keys = 0;
+	StandardKeyEvent event;
 
 	switch(actual_length) {
 		case 2:
@@ -101,6 +119,17 @@ KeyStatus LogitechG510::processKeyEvent(uint64_t * pressed_keys, unsigned int ac
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 8:
+			/* process those events only if Macro Record Mode on */
+			if( this->current_leds_mask_ & to_type(Leds::GK_LED_MR) ) {
+#if DEBUGGING_ON
+				LOG(DEBUG1) << "8 bytes : processing standard key event : " << this->getBytes(actual_length);
+#endif
+				this->processKeyEvent8Bytes(pressed_keys, event);
+				std::copy(
+						std::begin(this->keys_buffer_), std::end(this->keys_buffer_),
+						std::begin(this->previous_keys_buffer_));
+				return KeyStatus::S_KEY_PROCESSED;
+			}
 #if DEBUGGING_ON
 			LOG(DEBUG1) << "8 bytes : skipping standard key event : " << this->getBytes(actual_length);
 #endif

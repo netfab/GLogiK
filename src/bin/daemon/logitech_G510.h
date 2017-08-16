@@ -69,6 +69,7 @@ class LogitechG510 : public KeyboardDriver
 		KeyStatus processKeyEvent(uint64_t * pressed_keys, unsigned int actual_length);
 		void sendDeviceInitialization(const InitializedDevice & current_device);
 		void setLeds(const InitializedDevice & current_device);
+		void processKeyEvent8Bytes(uint64_t * pressed_keys, StandardKeyEvent& E);
 		void processKeyEvent5Bytes(uint64_t * pressed_keys);
 		void processKeyEvent2Bytes(uint64_t * pressed_keys);
 		const bool checkMacroKey(const uint64_t pressed_keys) const;
