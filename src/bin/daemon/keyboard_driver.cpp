@@ -269,7 +269,7 @@ void KeyboardDriver::enterMacroRecordMode(const InitializedDevice & current_devi
 
 	bool keys_found = false;
 
-	while( ! keys_found ) {
+	while( ! keys_found and DaemonControl::is_daemon_enabled() and current_device.listen_status ) {
 		uint64_t pressed_keys = 0;
 		KeyStatus ret = this->getPressedKeys(current_device, &pressed_keys);
 
