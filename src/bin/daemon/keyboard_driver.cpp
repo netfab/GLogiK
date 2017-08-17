@@ -286,35 +286,79 @@ void KeyboardDriver::handleModifierKeys(void) {
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_CTRL) ) {
 		e.event_code = KEY_LEFTCTRL;
 		this->standard_keys_events_.push_back(e);
+
+		diff -= to_type(ModifierKeys::GK_KEY_LEFT_CTRL);
+		if( diff == 0 )
+			return;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_SHIFT) ) {
 		e.event_code = KEY_LEFTSHIFT;
 		this->standard_keys_events_.push_back(e);
+
+		diff -= to_type(ModifierKeys::GK_KEY_LEFT_SHIFT);
+		if( diff == 0 )
+			return;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_ALT) ) {
 		e.event_code = KEY_LEFTALT;
 		this->standard_keys_events_.push_back(e);
+
+		diff -= to_type(ModifierKeys::GK_KEY_LEFT_ALT);
+		if( diff == 0 )
+			return;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_META) ) {
 		e.event_code = KEY_LEFTMETA;
 		this->standard_keys_events_.push_back(e);
+
+		diff -= to_type(ModifierKeys::GK_KEY_LEFT_META);
+		if( diff == 0 )
+			return;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_CTRL) ) {
 		e.event_code = KEY_RIGHTCTRL;
 		this->standard_keys_events_.push_back(e);
+
+		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_CTRL);
+		if( diff == 0 )
+			return;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_SHIFT) ) {
 		e.event_code = KEY_RIGHTSHIFT;
 		this->standard_keys_events_.push_back(e);
+
+		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_SHIFT);
+		if( diff == 0 )
+			return;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_ALT) ) {
 		e.event_code = KEY_RIGHTALT;
 		this->standard_keys_events_.push_back(e);
+
+		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_ALT);
+		if( diff == 0 )
+			return;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_META) ) {
 		e.event_code = KEY_RIGHTMETA;
 		this->standard_keys_events_.push_back(e);
+
+		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_META);
+		if( diff == 0 )
+			return;
 	}
+
+	/*
+	 * diff should have reached zero before here, and the function should have returned.
+	 * If you see this warning, you should play to lottery. If this ever happens, this
+	 * means that a modifier key was pressed in the exact same event in which another
+	 * modifier was released, and in this case, the buffer checks at the top of the
+	 * function could have been mixed-up. I don't know if the keyboard can produce such
+	 * events. In theory, maybe. But never seen it. And I tried.
+	 */
+	this->buffer_.str("warning : diff not equal to zero");
+	LOG(WARNING) << this->buffer_.str();
+	syslog(LOG_WARNING, this->buffer_.str().c_str());
 }
 
 void KeyboardDriver::fillStandardKeysEvents(void) {
