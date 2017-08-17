@@ -85,6 +85,18 @@ struct KeyEvent {
 		: event_code(c), event(e), pressed_keys(p) {}
 };
 
+enum class ModifierKeys : uint8_t
+{
+	GK_KEY_LEFT_CTRL	= 1 << 0,
+	GK_KEY_LEFT_SHIFT	= 1 << 1,
+	GK_KEY_LEFT_ALT		= 1 << 2,
+	GK_KEY_LEFT_META	= 1 << 3,
+	GK_KEY_RIGHT_CTRL	= 1 << 4,
+	GK_KEY_RIGHT_SHIFT	= 1 << 5,
+	GK_KEY_RIGHT_ALT	= 1 << 6,
+	GK_KEY_RIGHT_META	= 1 << 7
+};
+
 class KeyboardDriver
 {
 	public:
@@ -175,6 +187,7 @@ class KeyboardDriver
 		void listenLoop(const InitializedDevice & current_device);
 		void updateCurrentLedsMask(const uint64_t pressed_keys);
 		void enterMacroRecordMode(const InitializedDevice & current_device);
+		void handleModifierKeys(void);
 };
 
 } // namespace GLogiKd

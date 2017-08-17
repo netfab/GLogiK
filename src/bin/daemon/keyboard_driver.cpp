@@ -263,11 +263,63 @@ void KeyboardDriver::updateCurrentLedsMask(const uint64_t pressed_keys) {
 	}
 }
 
+void KeyboardDriver::handleModifierKeys(void) {
+	if( this->previous_keys_buffer_[1] == this->keys_buffer_[1] )
+		return; /* nothing changed here */
+
+	KeyEvent e;
+	uint8_t diff = 0;
+
+	/* some modifier keys were released */
+	if( this->previous_keys_buffer_[1] > this->keys_buffer_[1] ) {
+		diff = this->previous_keys_buffer_[1] - this->keys_buffer_[1];
+		e.event = 0;
+	}
+	/* some modifier keys were pressed */
+	else {
+		diff = this->keys_buffer_[1] - this->previous_keys_buffer_[1];
+		e.event = 1;
+	}
+
+	/* KEY_FOO from linux/input-event-codes.h */
+
+	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_CTRL) ) {
+		e.event_code = KEY_LEFTCTRL;
+		this->standard_keys_events_.push_back(e);
+	}
+	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_SHIFT) ) {
+		e.event_code = KEY_LEFTSHIFT;
+		this->standard_keys_events_.push_back(e);
+	}
+	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_ALT) ) {
+		e.event_code = KEY_LEFTALT;
+		this->standard_keys_events_.push_back(e);
+	}
+	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_META) ) {
+		e.event_code = KEY_LEFTMETA;
+		this->standard_keys_events_.push_back(e);
+	}
+	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_CTRL) ) {
+		e.event_code = KEY_RIGHTCTRL;
+		this->standard_keys_events_.push_back(e);
+	}
+	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_SHIFT) ) {
+		e.event_code = KEY_RIGHTSHIFT;
+		this->standard_keys_events_.push_back(e);
+	}
+	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_ALT) ) {
+		e.event_code = KEY_RIGHTALT;
+		this->standard_keys_events_.push_back(e);
+	}
+	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_META) ) {
+		e.event_code = KEY_RIGHTMETA;
+		this->standard_keys_events_.push_back(e);
+	}
+}
+
 void KeyboardDriver::fillStandardKeysEvents(void) {
 	unsigned int i = 0;
 	this->standard_keys_events_.clear();
-
-	KeyEvent e;
 
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "	b	|	p";
@@ -282,6 +334,8 @@ void KeyboardDriver::fillStandardKeysEvents(void) {
 			continue; /* nothing here */
 		}
 		else {
+			KeyEvent e;
+
 			if( this->previous_keys_buffer_[i] == 0 ) {
 				e.event_code = KeyboardDriver::hid_keyboard_[ this->keys_buffer_[i] ];
 				e.event = 1; /* KeyPress */
@@ -296,9 +350,12 @@ void KeyboardDriver::fillStandardKeysEvents(void) {
 				syslog(LOG_WARNING, this->buffer_.str().c_str());
 				continue;
 			}
+
 			this->standard_keys_events_.push_back(e);
 		}
 	}
+
+	this->handleModifierKeys();
 }
 
 void KeyboardDriver::enterMacroRecordMode(const InitializedDevice & current_device) {
