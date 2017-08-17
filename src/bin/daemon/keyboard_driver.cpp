@@ -294,6 +294,7 @@ void KeyboardDriver::fillStandardKeysEvents(void) {
 				this->buffer_.str("warning : two different byte values");
 				LOG(WARNING) << this->buffer_.str();
 				syslog(LOG_WARNING, this->buffer_.str().c_str());
+				continue;
 			}
 			this->standard_keys_events_.push_back(e);
 		}
