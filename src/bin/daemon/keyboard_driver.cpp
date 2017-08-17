@@ -263,11 +263,11 @@ void KeyboardDriver::updateCurrentLedsMask(const uint64_t pressed_keys) {
 	}
 }
 
-void KeyboardDriver::fillStandardKeyEvents(void) {
+void KeyboardDriver::fillStandardKeysEvents(void) {
 	unsigned int i = 0;
 	this->standard_keys_events_.clear();
 
-	StandardKeyEvent e;
+	KeyEvent e;
 
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "	b	|	p";

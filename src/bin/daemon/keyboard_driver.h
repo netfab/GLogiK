@@ -76,12 +76,13 @@ struct DescriptorValues {
 	uint8_t b_num_endpoints;
 };
 
-struct StandardKeyEvent {
+struct KeyEvent {
 	unsigned char event_code;
 	unsigned short event;
+	uint64_t pressed_keys;
 
-	StandardKeyEvent(unsigned char c=unk, unsigned short e=3)
-		: event_code(c), event(e) {}
+	KeyEvent(unsigned char c=unk, unsigned short e=3, uint64_t p = 0)
+		: event_code(c), event(e), pressed_keys(p) {}
 };
 
 class KeyboardDriver
@@ -119,7 +120,7 @@ class KeyboardDriver
 
 		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
 		virtual void setLeds(const InitializedDevice & current_device);
-		void fillStandardKeyEvents(void);
+		void fillStandardKeysEvents(void);
 
 		void sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
 			unsigned char * data, uint16_t wLength);
@@ -136,7 +137,7 @@ class KeyboardDriver
 
 		std::vector<InitializedDevice> initialized_devices_;
 		std::vector<std::thread> threads_;
-		std::vector<StandardKeyEvent> standard_keys_events_;
+		std::vector<KeyEvent> standard_keys_events_;
 
 		/* USB HID Usage Tables as defined in USB specification,
 		 *        Chapter 10 "Keyboard/Keypad Page (0x07)"

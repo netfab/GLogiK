@@ -88,7 +88,7 @@ void LogitechG510::processKeyEvent8Bytes(uint64_t * pressed_keys) {
 		return;
 	}
 
-	this->fillStandardKeyEvents();
+	this->fillStandardKeysEvents();
 }
 
 KeyStatus LogitechG510::processKeyEvent(uint64_t * pressed_keys, unsigned int actual_length) {
