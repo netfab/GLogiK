@@ -36,6 +36,9 @@
 
 #include "virtual_keyboard.h"
 
+#include <syslog.h>
+#include "include/log.h"
+
 namespace GLogiKd
 {
 
@@ -125,6 +128,7 @@ class KeyboardDriver
 		int interrupt_key_read_length;
 
 		std::string getBytes(unsigned int actual_length);
+		void logWarning(const char*);
 
 		virtual KeyStatus processKeyEvent(uint64_t * pressed_keys, unsigned int actual_length) = 0;
 		virtual KeyStatus getPressedKeys(const InitializedDevice & current_device, uint64_t * pressed_keys);
@@ -189,6 +193,14 @@ class KeyboardDriver
 		void enterMacroRecordMode(const InitializedDevice & current_device);
 		void handleModifierKeys(void);
 };
+
+inline void KeyboardDriver::logWarning(const char* warning)
+{
+	this->buffer_.str("warning : ");
+	this->buffer_ << warning;
+	LOG(WARNING) << this->buffer_.str();
+	syslog(LOG_WARNING, this->buffer_.str().c_str());
+}
 
 } // namespace GLogiKd
 

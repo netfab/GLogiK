@@ -26,10 +26,7 @@
 
 #include <config.h>
 
-#include <syslog.h>
-
 #include "exception.h"
-#include "include/log.h"
 
 #include "daemon_control.h"
 #include "keyboard_driver.h"
@@ -51,9 +48,7 @@ KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, Descri
 	this->leds_update_event_length_ = event_length;
 
 	if( key_read_length > KEYS_BUFFER_LENGTH ) {
-		this->buffer_.str("warning : interrupt read length too large, set it to max buffer length");
-		LOG(WARNING) << this->buffer_.str();
-		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		this->logWarning("interrupt read length too large, set it to max buffer length");
 		key_read_length = KEYS_BUFFER_LENGTH;
 	}
 
@@ -224,9 +219,7 @@ KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_devic
 }
 
 void KeyboardDriver::setLeds(const InitializedDevice & current_device) {
-	this->buffer_.str("warning : setLeds not implemented");
-	LOG(WARNING) << this->buffer_.str();
-	syslog(LOG_WARNING, this->buffer_.str().c_str());
+	this->logWarning("setLeds not implemented");
 }
 
 void KeyboardDriver::updateCurrentLedsMask(const uint64_t pressed_keys) {
@@ -356,9 +349,7 @@ void KeyboardDriver::handleModifierKeys(void) {
 	 * function could have been mixed-up. I don't know if the keyboard can produce such
 	 * events. In theory, maybe. But never seen it. And I tried.
 	 */
-	this->buffer_.str("warning : diff not equal to zero");
-	LOG(WARNING) << this->buffer_.str();
-	syslog(LOG_WARNING, this->buffer_.str().c_str());
+	this->logWarning("diff not equal to zero");
 }
 
 void KeyboardDriver::fillStandardKeysEvents(void) {
@@ -389,9 +380,7 @@ void KeyboardDriver::fillStandardKeysEvents(void) {
 				e.event = 0; /* KeyRelease */
 			}
 			else {
-				this->buffer_.str("warning : two different byte values");
-				LOG(WARNING) << this->buffer_.str();
-				syslog(LOG_WARNING, this->buffer_.str().c_str());
+				this->logWarning("two different byte values");
 				continue;
 			}
 
@@ -485,9 +474,7 @@ void KeyboardDriver::sendControlRequest(libusb_device_handle * usb_handle, uint1
 }
 
 void KeyboardDriver::sendDeviceInitialization(const InitializedDevice & current_device) {
-	this->buffer_.str("warning : sendDeviceInitialization not implemented");
-	LOG(WARNING) << this->buffer_.str();
-	syslog(LOG_WARNING, this->buffer_.str().c_str());
+	this->logWarning("sendDeviceInitialization not implemented");
 }
 
 void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num) {
