@@ -33,8 +33,6 @@ GLogiK=$PWD/.. CD=. {
 				exception.cpp
 				exception.h
 				globals.h
-				logitech_g15.cpp
-				logitech_g15.h
 				logitech_G510.cpp
 				logitech_G510.h
 				keyboard_driver.cpp

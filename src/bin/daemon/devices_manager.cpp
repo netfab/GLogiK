@@ -32,8 +32,6 @@
 
 #include "devices_manager.h"
 
-// TODO
-//#include "logitech_g15.h"
 #include "logitech_G510.h"
 
 namespace GLogiKd
@@ -384,8 +382,6 @@ void DevicesManager::startMonitoring(void) {
 
 	LOG(DEBUG2) << "loading known drivers";
 
-	// TODO
-	//this->drivers_.push_back( new LogitechG15() );
 	this->drivers_.push_back( new LogitechG510() );
 
 	this->searchSupportedDevices();

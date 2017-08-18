@@ -23,6 +23,3 @@ GLogiKd_SOURCES = \
 		exception.cpp exception.h \
 		globals.h
 
-# TODO
-# logitech_g15.cpp logitech_g15.h
-
