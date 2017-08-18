@@ -133,6 +133,7 @@ AX_PTHREAD
 AC_CONFIG_FILES([
         Makefile
         src/Makefile
+        src/include/Makefile
         src/bin/Makefile
         src/bin/daemon/Makefile
 	])

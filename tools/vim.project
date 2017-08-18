@@ -16,6 +16,7 @@ GLogiK=$PWD/.. CD=. {
 	srcfiles=src/ {
 		Makefile.am
 		include=include/ {
+			Makefile.am
 			log.h
 			enums.h
 		}
