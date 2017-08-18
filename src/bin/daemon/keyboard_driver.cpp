@@ -451,6 +451,9 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 	LOG(DEBUG1) << "resetting M-Keys leds status";
 	this->current_leds_mask_ = 0;
 	this->setLeds(current_device);
+
+	LOG(INFO) << "exiting listening thread for " << current_device.device.name
+				<< " on bus " << to_uint(current_device.bus);
 }
 
 void KeyboardDriver::sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
