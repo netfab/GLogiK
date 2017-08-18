@@ -113,10 +113,8 @@ void KeyboardDriver::initializeLibusb(InitializedDevice & current_device) {
 
 void KeyboardDriver::closeLibusb(void) {
 	LOG(DEBUG4) << "closing libusb";
-	unsigned int s = this->initialized_devices_.size();
-	if( s != 0 ) { /* sanity check */
-		LOG(WARNING) << "closing libusb while " << s << " device(s) not closed !";
-	}
+	if( this->initialized_devices_.size() != 0 ) /* sanity check */
+		this->logWarning("closing libusb with opened device(s) !");
 	libusb_exit(this->context_);
 	KeyboardDriver::libusb_status_ = false;
 }
