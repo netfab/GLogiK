@@ -32,12 +32,14 @@
 
 #include <libusb-1.0/libusb.h>
 
-#include <linux/input-event-codes.h> // KEY_UNKNOWN
+#include <linux/input-event-codes.h>
 
 #include "virtual_keyboard.h"
 
 #include <syslog.h>
 #include "include/log.h"
+
+#include "key_event.h"
 
 namespace GLogiKd
 {
@@ -77,15 +79,6 @@ struct DescriptorValues {
 	uint8_t b_interface_number;
 	uint8_t b_alternate_setting;
 	uint8_t b_num_endpoints;
-};
-
-struct KeyEvent {
-	unsigned char event_code;
-	unsigned short event;
-	uint64_t pressed_keys;
-
-	KeyEvent(unsigned char c=unk, unsigned short e=3, uint64_t p = 0)
-		: event_code(c), event(e), pressed_keys(p) {}
 };
 
 enum class ModifierKeys : uint8_t
