@@ -43,7 +43,7 @@ LogitechG510::~LogitechG510() {
 }
 
 void LogitechG510::initializeMacroKeys(void) {
-	for (auto k : this->five_bytes_keys_map_ ) {
+	for (const auto & k : this->five_bytes_keys_map_ ) {
 		if( k.macro_key )
 			this->initializeMacroKey(k.name);
 	}
@@ -51,7 +51,7 @@ void LogitechG510::initializeMacroKeys(void) {
 
 /* return true if the pressed key is a macro key (G1-G18)  */
 const bool LogitechG510::checkMacroKey(const uint64_t pressed_keys) const {
-	for (auto k : this->five_bytes_keys_map_ ) {
+	for (const auto & k : this->five_bytes_keys_map_ ) {
 		if( k.macro_key and (pressed_keys & to_type(k.key)) )
 			return true;
 	}
