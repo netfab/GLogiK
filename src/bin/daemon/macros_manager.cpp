@@ -28,7 +28,7 @@
 namespace GLogiKd
 {
 
-MacrosManager::MacrosManager() : currentActiveMacros(MemoryBank::MACROS_M0)
+MacrosManager::MacrosManager() : currentActiveProfile_(MemoryBank::MACROS_M0)
 {
 }
 
@@ -52,10 +52,10 @@ void MacrosManager::initializeMacroKey(const char* name) {
 	}
 }
 
-void MacrosManager::setCurrentActiveMacros(MemoryBank bank)
+void MacrosManager::setCurrentActiveProfile(MemoryBank bank)
 {
-	LOG(DEBUG) << "setting current active macros : " << to_uint(bank);
-	this->currentActiveMacros = bank;
+	LOG(DEBUG) << "setting current active macros profile : " << to_uint(bank);
+	this->currentActiveProfile_ = bank;
 	// TODO reload conf
 }
 

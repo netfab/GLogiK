@@ -48,12 +48,12 @@ class MacrosManager
 		~MacrosManager();
 
 		void initializeMacroKey(const char* name);
-		void setCurrentActiveMacros(MemoryBank bank);
+		void setCurrentActiveProfile(MemoryBank bank);
 		void logProfiles(void);
 
 	protected:
 	private:
-		MemoryBank currentActiveMacros;
+		MemoryBank currentActiveProfile_;
 		std::map<const MemoryBank, std::map<const std::string, std::vector<KeyEvent>>> macros_profiles_ = {
 			{ MemoryBank::MACROS_M0, {}},
 			{ MemoryBank::MACROS_M1, {}},
