@@ -22,8 +22,11 @@
 #ifndef __GLOGIKD_MACROS_MANAGER_H__
 #define __GLOGIKD_MACROS_MANAGER_H__
 
+#include <cstdint>
+
 #include <vector>
 #include <map>
+#include <string>
 
 #include "key_event.h"
 
@@ -44,12 +47,19 @@ class MacrosManager
 		MacrosManager();
 		~MacrosManager();
 
+		void initializeMacroKey(const char* name);
 		void setCurrentActiveMacros(MemoryBank bank);
+		void logProfiles(void);
 
 	protected:
 	private:
 		MemoryBank currentActiveMacros;
-		//std::map<const MemoryBank, std::map<const std::string, std::vector<KeyEvent>>> macros_profiles;
+		std::map<const MemoryBank, std::map<const std::string, std::vector<KeyEvent>>> macros_profiles_ = {
+			{ MemoryBank::MACROS_M0, {}},
+			{ MemoryBank::MACROS_M1, {}},
+			{ MemoryBank::MACROS_M2, {}},
+			{ MemoryBank::MACROS_M3, {}}
+		};
 };
 
 } // namespace GLogiKd

@@ -124,14 +124,16 @@ class KeyboardDriver
 		std::string getBytes(unsigned int actual_length);
 		void logWarning(const char*);
 
+		virtual void initializeMacroKeys(void) = 0;
 		virtual KeyStatus processKeyEvent(uint64_t * pressed_keys, unsigned int actual_length) = 0;
 		virtual KeyStatus getPressedKeys(const InitializedDevice & current_device, uint64_t * pressed_keys);
 		virtual const bool checkMacroKey(const uint64_t pressed_keys) const = 0;
 
 		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
 		virtual void setLeds(const InitializedDevice & current_device);
-		void fillStandardKeysEvents(void);
 
+		void initializeMacroKey(const char* name);
+		void fillStandardKeysEvents(void);
 		void sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
 			unsigned char * data, uint16_t wLength);
 

@@ -180,6 +180,10 @@ std::string KeyboardDriver::getBytes(unsigned int actual_length) {
 	return s.str();
 }
 
+void KeyboardDriver::initializeMacroKey(const char* name) {
+	this->macros_man_.initializeMacroKey(name);
+}
+
 KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, uint64_t * pressed_keys) {
 	int actual_length = 0;
 
@@ -432,6 +436,8 @@ void KeyboardDriver::listenLoop( const InitializedDevice & current_device ) {
 	LOG(DEBUG1) << "resetting M-Keys leds status";
 	this->current_leds_mask_ = 0;
 	this->setLeds(current_device);
+
+	this->initializeMacroKeys();
 
 	while( DaemonControl::is_daemon_enabled() and current_device.listen_status ) {
 		uint64_t pressed_keys = 0;

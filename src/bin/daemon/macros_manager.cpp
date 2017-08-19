@@ -36,6 +36,22 @@ MacrosManager::~MacrosManager()
 {
 }
 
+void MacrosManager::logProfiles(void) {
+	for(const auto & profile : this->macros_profiles_) {
+		LOG(DEBUG2) << "MemoryBank: " << to_uint(profile.first);
+		for(const auto & macro_key : profile.second) {
+			LOG(DEBUG3) << "MacroKey: " << macro_key.first << " MacroLength: " << macro_key.second.size();
+		}
+	}
+}
+
+void MacrosManager::initializeMacroKey(const char* name) {
+	for(auto & profile : this->macros_profiles_) {
+		std::vector<KeyEvent> macro;
+		profile.second.insert( std::pair<const std::string, std::vector<KeyEvent>>(name, macro));
+	}
+}
+
 void MacrosManager::setCurrentActiveMacros(MemoryBank bank)
 {
 	LOG(DEBUG) << "setting current active macros : " << to_uint(bank);
