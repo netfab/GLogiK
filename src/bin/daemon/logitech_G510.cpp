@@ -19,6 +19,8 @@
  *
  */
 
+#include <algorithm>
+
 #include <config.h>
 
 #include "exception.h"
@@ -127,7 +129,6 @@ KeyStatus LogitechG510::processKeyEvent(uint64_t * pressed_keys, unsigned int ac
 				LOG(DEBUG1) << "8 bytes : processing standard key event : " << this->getBytes(actual_length);
 #endif
 				this->processKeyEvent8Bytes(pressed_keys);
-				// FIXME
 				std::copy(
 						std::begin(this->keys_buffer_), std::end(this->keys_buffer_),
 						std::begin(this->previous_keys_buffer_));
