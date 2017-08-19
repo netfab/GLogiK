@@ -22,6 +22,9 @@
 #include "include/log.h"
 #include <syslog.h>
 
+#include <stdexcept>
+#include "exception.h"
+
 #include "globals.h"
 #include "macros_manager.h"
 
@@ -34,6 +37,16 @@ MacrosManager::MacrosManager() : currentActiveProfile_(MemoryBank::MACROS_M0)
 
 MacrosManager::~MacrosManager()
 {
+}
+
+void MacrosManager::setMacro(const std::string macro_key_name, std::vector<KeyEvent> & macro) {
+	try {
+		this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name) = macro;
+	}
+	catch (const std::out_of_range& oor) {
+		//FIXME
+		throw GLogiKExcept("macro profile wrong map key. macro not recorded.");
+	}
 }
 
 void MacrosManager::logProfiles(void) {

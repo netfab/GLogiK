@@ -50,10 +50,12 @@ void LogitechG510::initializeMacroKeys(void) {
 }
 
 /* return true if the pressed key is a macro key (G1-G18)  */
-const bool LogitechG510::checkMacroKey(const uint64_t pressed_keys) const {
+const bool LogitechG510::checkMacroKey(const uint64_t pressed_keys) {
 	for (const auto & k : this->five_bytes_keys_map_ ) {
-		if( k.macro_key and (pressed_keys & to_type(k.key)) )
+		if( k.macro_key and (pressed_keys & to_type(k.key)) ) {
+			this->chosen_macro_key_ = k.name;
 			return true;
+		}
 	}
 	return false;
 }
@@ -125,6 +127,7 @@ KeyStatus LogitechG510::processKeyEvent(uint64_t * pressed_keys, unsigned int ac
 				LOG(DEBUG1) << "8 bytes : processing standard key event : " << this->getBytes(actual_length);
 #endif
 				this->processKeyEvent8Bytes(pressed_keys);
+				// FIXME
 				std::copy(
 						std::begin(this->keys_buffer_), std::end(this->keys_buffer_),
 						std::begin(this->previous_keys_buffer_));

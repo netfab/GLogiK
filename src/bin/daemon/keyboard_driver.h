@@ -114,6 +114,7 @@ class KeyboardDriver
 		unsigned char keys_buffer_[KEYS_BUFFER_LENGTH];
 		unsigned char previous_keys_buffer_[KEYS_BUFFER_LENGTH];
 		uint8_t current_leds_mask_;
+		std::string chosen_macro_key_;
 
 		void initializeLibusb(InitializedDevice & current_device);
 		VirtualKeyboard* initializeVirtualKeyboard( const char* device_name );
@@ -127,7 +128,7 @@ class KeyboardDriver
 		virtual void initializeMacroKeys(void) = 0;
 		virtual KeyStatus processKeyEvent(uint64_t * pressed_keys, unsigned int actual_length) = 0;
 		virtual KeyStatus getPressedKeys(const InitializedDevice & current_device, uint64_t * pressed_keys);
-		virtual const bool checkMacroKey(const uint64_t pressed_keys) const = 0;
+		virtual const bool checkMacroKey(const uint64_t pressed_keys) = 0;
 
 		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
 		virtual void setLeds(const InitializedDevice & current_device);
