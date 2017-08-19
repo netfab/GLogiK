@@ -21,5 +21,6 @@ GLogiKd_SOURCES = \
 		virtual_keyboard.cpp virtual_keyboard.h \
 		logitech_G510.cpp logitech_G510.h \
 		exception.cpp exception.h \
-		globals.h key_event.h
+		globals.h key_event.h \
+		macros_manager.cpp macros_manager.h
 

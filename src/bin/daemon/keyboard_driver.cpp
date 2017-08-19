@@ -228,20 +228,29 @@ void KeyboardDriver::updateCurrentLedsMask(const uint64_t pressed_keys) {
 	if( pressed_keys & to_type(Keys::GK_KEY_M1) ) {
 		Mx_ON = this->current_leds_mask_ & to_type(Leds::GK_LED_M1);
 		this->current_leds_mask_ = 0;
-		if( ! Mx_ON )
+		this->macros_man_.setCurrentActiveMacros(MemoryBank::MACROS_M0);
+		if( ! Mx_ON ) {
 			this->current_leds_mask_ |= to_type(Leds::GK_LED_M1);
+			this->macros_man_.setCurrentActiveMacros(MemoryBank::MACROS_M1);
+		}
 	}
 	else if( pressed_keys & to_type(Keys::GK_KEY_M2) ) {
 		Mx_ON = this->current_leds_mask_ & to_type(Leds::GK_LED_M2);
 		this->current_leds_mask_ = 0;
-		if( ! Mx_ON )
+		this->macros_man_.setCurrentActiveMacros(MemoryBank::MACROS_M0);
+		if( ! Mx_ON ) {
 			this->current_leds_mask_ |= to_type(Leds::GK_LED_M2);
+			this->macros_man_.setCurrentActiveMacros(MemoryBank::MACROS_M2);
+		}
 	}
 	else if( pressed_keys & to_type(Keys::GK_KEY_M3) ) {
 		Mx_ON = this->current_leds_mask_ & to_type(Leds::GK_LED_M3);
 		this->current_leds_mask_ = 0;
-		if( ! Mx_ON )
+		this->macros_man_.setCurrentActiveMacros(MemoryBank::MACROS_M0);
+		if( ! Mx_ON ) {
 			this->current_leds_mask_ |= to_type(Leds::GK_LED_M3);
+			this->macros_man_.setCurrentActiveMacros(MemoryBank::MACROS_M3);
+		}
 	}
 
 	if( pressed_keys & to_type(Keys::GK_KEY_MR) ) {
@@ -401,6 +410,7 @@ void KeyboardDriver::enterMacroRecordMode(const InitializedDevice & current_devi
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
 				if( ! this->checkMacroKey(pressed_keys) ) {
+					LOG(DEBUG) << this->standard_keys_events_.size() << " events to record";
 					LOG(DEBUG) << "record: " << std::hex << to_uint(pressed_keys);
 					continue;
 				}

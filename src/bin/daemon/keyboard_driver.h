@@ -40,6 +40,7 @@
 #include "include/log.h"
 
 #include "key_event.h"
+#include "macros_manager.h"
 
 namespace GLogiKd
 {
@@ -147,6 +148,8 @@ class KeyboardDriver
 		std::vector<InitializedDevice> initialized_devices_;
 		std::vector<std::thread> threads_;
 		std::vector<KeyEvent> standard_keys_events_;
+
+		MacrosManager macros_man_;
 
 		/* USB HID Usage Tables as defined in USB specification,
 		 *        Chapter 10 "Keyboard/Keypad Page (0x07)"
