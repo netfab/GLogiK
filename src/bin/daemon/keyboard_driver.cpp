@@ -277,12 +277,12 @@ void KeyboardDriver::handleModifierKeys(void) {
 	/* some modifier keys were released */
 	if( this->previous_keys_buffer_[1] > this->keys_buffer_[1] ) {
 		diff = this->previous_keys_buffer_[1] - this->keys_buffer_[1];
-		e.event = 0;
+		e.event = EventValue::EVENT_KEY_RELEASE;
 	}
 	/* some modifier keys were pressed */
 	else {
 		diff = this->keys_buffer_[1] - this->previous_keys_buffer_[1];
-		e.event = 1;
+		e.event = EventValue::EVENT_KEY_PRESS;
 	}
 
 	/* KEY_FOO from linux/input-event-codes.h */
@@ -383,11 +383,11 @@ void KeyboardDriver::fillStandardKeysEvents(void) {
 
 			if( this->previous_keys_buffer_[i] == 0 ) {
 				e.event_code = KeyboardDriver::hid_keyboard_[ this->keys_buffer_[i] ];
-				e.event = 1; /* KeyPress */
+				e.event = EventValue::EVENT_KEY_PRESS; /* KeyPress */
 			}
 			else if( this->keys_buffer_[i] == 0 ) {
 				e.event_code = KeyboardDriver::hid_keyboard_[ this->previous_keys_buffer_[i] ];
-				e.event = 0; /* KeyRelease */
+				e.event = EventValue::EVENT_KEY_RELEASE; /* KeyRelease */
 			}
 			else {
 				this->logWarning("two different byte values");

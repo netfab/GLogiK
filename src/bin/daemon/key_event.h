@@ -22,15 +22,22 @@
 #ifndef __GLOGIKD_KEY_EVENT_H__
 #define __GLOGIKD_KEY_EVENT_H__
 
+#include <cstdint>
 #include <linux/input-event-codes.h>
+
+enum class EventValue : int8_t
+{
+	EVENT_KEY_RELEASE = 0,
+	EVENT_KEY_PRESS,
+	EVENT_KEY_UNKNOWN,
+};
 
 struct KeyEvent {
 	unsigned char event_code;
-	unsigned short event;
+	EventValue event;
 	uint64_t pressed_keys;
 
-	// FIXME e=3
-	KeyEvent(unsigned char c=KEY_UNKNOWN, unsigned short e=3, uint64_t p = 0)
+	KeyEvent(unsigned char c=KEY_UNKNOWN, EventValue e=EventValue::EVENT_KEY_UNKNOWN, uint64_t p = 0)
 		: event_code(c), event(e), pressed_keys(p) {}
 };
 
