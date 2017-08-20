@@ -27,6 +27,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <sstream>
 
 #include "key_event.h"
 
@@ -54,6 +55,7 @@ class MacrosManager
 
 	protected:
 	private:
+		std::ostringstream buffer_;
 		MemoryBank currentActiveProfile_;
 		std::map<const MemoryBank, std::map<const std::string, std::vector<KeyEvent>>> macros_profiles_ = {
 			{ MemoryBank::MACROS_M0, {}},

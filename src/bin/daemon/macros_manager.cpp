@@ -19,11 +19,12 @@
  *
  */
 
-#include "include/log.h"
-#include <syslog.h>
+#include <iostream>
 
 #include <stdexcept>
-#include "exception.h"
+
+#include "include/log.h"
+#include <syslog.h>
 
 #include "globals.h"
 #include "macros_manager.h"
@@ -31,7 +32,7 @@
 namespace GLogiKd
 {
 
-MacrosManager::MacrosManager() : currentActiveProfile_(MemoryBank::MACROS_M0)
+MacrosManager::MacrosManager() : buffer_("", std::ios_base::app), currentActiveProfile_(MemoryBank::MACROS_M0)
 {
 }
 
@@ -44,8 +45,9 @@ void MacrosManager::setMacro(const std::string macro_key_name, std::vector<KeyEv
 		this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name) = macro;
 	}
 	catch (const std::out_of_range& oor) {
-		//FIXME
-		throw GLogiKExcept("macro profile wrong map key. macro not recorded.");
+		this->buffer_.str("warning : macro profile wrong map key. macro not recorded.");
+		LOG(WARNING) << this->buffer_.str();
+		syslog(LOG_WARNING, this->buffer_.str().c_str());
 	}
 }
 
