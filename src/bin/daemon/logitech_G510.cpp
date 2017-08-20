@@ -65,9 +65,7 @@ const bool LogitechG510::checkMacroKey(const uint64_t pressed_keys) {
 void LogitechG510::processKeyEvent2Bytes(uint64_t * pressed_keys) {
 	*pressed_keys = 0;
 	if (this->keys_buffer_[0] != 0x02) {
-		this->buffer_.str("warning : wrong first byte value on 2 bytes event");
-		LOG(WARNING) << this->buffer_.str();
-		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		this->logWarning("warning : wrong first byte value on 2 bytes event");
 		return;
 	}
 
@@ -79,9 +77,7 @@ void LogitechG510::processKeyEvent2Bytes(uint64_t * pressed_keys) {
 
 void LogitechG510::processKeyEvent5Bytes(uint64_t * pressed_keys) {
 	if (this->keys_buffer_[0] != 0x03) {
-		this->buffer_.str("warning : wrong first byte value on 5 bytes event");
-		LOG(WARNING) << this->buffer_.str();
-		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		this->logWarning("warning : wrong first byte value on 5 bytes event");
 		return;
 	}
 
@@ -93,9 +89,7 @@ void LogitechG510::processKeyEvent5Bytes(uint64_t * pressed_keys) {
 
 void LogitechG510::processKeyEvent8Bytes(uint64_t * pressed_keys) {
 	if (this->keys_buffer_[0] != 0x01) {
-		this->buffer_.str("warning : wrong first byte value on 8 bytes event");
-		LOG(WARNING) << this->buffer_.str();
-		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		this->logWarning("warning : wrong first byte value on 8 bytes event");
 		return;
 	}
 
