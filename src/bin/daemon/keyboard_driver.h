@@ -26,6 +26,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <sstream>
 
 #include <thread>
@@ -154,7 +155,7 @@ class KeyboardDriver
 		int8_t last_transfer_length_;
 		int8_t leds_update_event_length_;
 
-		std::vector<InitializedDevice> initialized_devices_;
+		std::map<const std::string, InitializedDevice> initialized_devices_;
 		std::vector<std::thread> threads_;
 		std::vector<KeyEvent> standard_keys_events_;
 
@@ -191,11 +192,10 @@ class KeyboardDriver
 		void releaseInterfaces(libusb_device_handle * usb_handle);
 		void attachKernelDrivers(libusb_device_handle * usb_handle);
 		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
-		void listenLoop(uint8_t bus, uint8_t num);
+		void listenLoop(const std::string devID);
 		void updateCurrentLedsMask(InitializedDevice & current_device, const uint64_t pressed_keys);
 		void enterMacroRecordMode(const InitializedDevice & current_device);
 		void handleModifierKeys(void);
-		std::size_t getDeviceIndex(uint8_t bus, uint8_t num);
 };
 
 inline void KeyboardDriver::logWarning(const char* warning)

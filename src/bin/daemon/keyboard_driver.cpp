@@ -435,25 +435,8 @@ void KeyboardDriver::enterMacroRecordMode(const InitializedDevice & current_devi
 	}
 }
 
-std::size_t KeyboardDriver::getDeviceIndex(uint8_t bus, uint8_t num) {
-	std::size_t i = 0;
-	std::lock_guard<std::mutex> lck (this->mtx);
-	for (i = 0; i != this->initialized_devices_.size(); ++i) {
-		InitializedDevice &device = this->initialized_devices_[i];
-		if( (device.bus == bus) and (device.num == num) ) {
-			LOG(DEBUG) << "found";
-			return i;
-			break;
-		}
-	}
-	// FIXME throw
-	return 0;
-}
-
-void KeyboardDriver::listenLoop(uint8_t bus, uint8_t num) {
-	std::size_t i = this->getDeviceIndex(bus, num);
-
-	InitializedDevice &device = this->initialized_devices_[i];
+void KeyboardDriver::listenLoop(const std::string devID) {
+	InitializedDevice &device = this->initialized_devices_[devID];
 	device.listen_thread_id = std::this_thread::get_id();
 
 	LOG(INFO) << "spawned listening thread for " << device.device.name
@@ -547,9 +530,16 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		throw;
 	}
 
+	this->buffer_.str("b");
+	this->buffer_ << to_uint(bus);
+	this->buffer_ << "d";
+	this->buffer_ << to_uint(num);
+
+	const std::string devID = this->buffer_.str();
+
 	/* virtual keyboard */
 	this->buffer_.str("Virtual ");
-	this->buffer_ << device.name << " b" << to_uint(bus) << "d" << to_uint(num);
+	this->buffer_ << device.name << " " << devID;
 
 	try {
 		current_device.virtual_keyboard = this->initializeVirtualKeyboard(this->buffer_.str().c_str());
@@ -567,12 +557,12 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	current_device.listen_status = true;
 	{
 		std::lock_guard<std::mutex> lck (this->mtx);
-		this->initialized_devices_.push_back( current_device );
+		this->initialized_devices_[devID] = current_device;
 	}
 
 	/* spawn listening thread */
 	try {
-		std::thread listen_thread(&KeyboardDriver::listenLoop, this, current_device.bus, current_device.num );
+		std::thread listen_thread(&KeyboardDriver::listenLoop, this, devID);
 		this->threads_.push_back( std::move(listen_thread) );
 	}
 	catch (const std::system_error& e) {
@@ -914,53 +904,44 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & current_device
 
 }
 
-void KeyboardDriver::closeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num) {
-	LOG(DEBUG3) << "trying to close " << device.name << "("
-				<< device.vendor_id << ":" << device.product_id << "), device "
+void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num) {
+	LOG(DEBUG3) << "trying to close " << dev.name << "("
+				<< dev.vendor_id << ":" << dev.product_id << "), device "
 				<< to_uint(num) << " on bus " << to_uint(bus);
 
-	bool found = false;
+	this->buffer_.str("b");
+	this->buffer_ << to_uint(bus);
+	this->buffer_ << "d";
+	this->buffer_ << to_uint(num);
+
+	const std::string devID = this->buffer_.str();
 
 	std::lock_guard<std::mutex> lck (this->mtx);
-	for(auto it = this->initialized_devices_.begin(); it != this->initialized_devices_.end();) {
-		if( ((*it).bus == bus) and ((*it).num == num) ) {
 
-			for(auto it2 = this->threads_.begin(); it2 != this->threads_.end();) {
-				if( (*it).listen_thread_id == (*it2).get_id() ) {
-					LOG(INFO) << "waiting for " << device.name << " listening thread";
-					(*it2).join();
-					it2 = this->threads_.erase(it2);
-					break;
-				}
-				else {
-					it2++;
-				}
-			}
-
-			delete (*it).macros_man;
-			(*it).macros_man = nullptr;
-			delete (*it).virtual_keyboard;
-			(*it).virtual_keyboard = nullptr;
-
-			this->releaseInterfaces( (*it).usb_handle );
-			this->attachKernelDrivers( (*it).usb_handle );
-
-			libusb_close( (*it).usb_handle );
-
-			found = true;
-			it = this->initialized_devices_.erase(it);
+	// FIXME at() exception ?
+	InitializedDevice & device = this->initialized_devices_[devID];
+	for(auto it2 = this->threads_.begin(); it2 != this->threads_.end();) {
+		if( device.listen_thread_id == (*it2).get_id() ) {
+			LOG(INFO) << "waiting for " << device.device.name << " listening thread";
+			(*it2).join();
+			it2 = this->threads_.erase(it2);
 			break;
 		}
 		else {
-			++it;
+			it2++;
 		}
 	}
-	if ( ! found ) {
-		this->buffer_.str("device ");
-		this->buffer_ << num << " on bus " << bus;
-		this->buffer_ << " not found in initialized devices";
-		throw GLogiKExcept(this->buffer_.str());
-	}
+
+	delete device.macros_man;
+	device.macros_man = nullptr;
+	delete device.virtual_keyboard;
+	device.virtual_keyboard = nullptr;
+
+	this->releaseInterfaces( device.usb_handle );
+	this->attachKernelDrivers( device.usb_handle );
+
+	libusb_close( device.usb_handle );
+	this->initialized_devices_.erase(devID);
 }
 
 VirtualKeyboard* KeyboardDriver::initializeVirtualKeyboard( const char* device_name ) {
