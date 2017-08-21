@@ -31,8 +31,6 @@
 
 #include <thread>
 
-#include <mutex>
-
 #include <libusb-1.0/libusb.h>
 
 #include <linux/input-event-codes.h>
@@ -142,8 +140,6 @@ class KeyboardDriver
 		void fillStandardKeysEvents(void);
 		void sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
 			unsigned char * data, uint16_t wLength);
-
-		std::mutex mtx;
 
 	private:
 		static bool libusb_status_;			/* is libusb initialized ? */

@@ -113,7 +113,6 @@ void KeyboardDriver::initializeLibusb(InitializedDevice & current_device) {
 
 void KeyboardDriver::closeLibusb(void) {
 	LOG(DEBUG4) << "closing libusb";
-	std::lock_guard<std::mutex> lck (this->mtx);
 	if( this->initialized_devices_.size() != 0 ) /* sanity check */
 		this->logWarning("closing libusb with opened device(s) !");
 	libusb_exit(this->context_);
@@ -555,10 +554,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 	}
 
 	current_device.listen_status = true;
-	{
-		std::lock_guard<std::mutex> lck (this->mtx);
-		this->initialized_devices_[devID] = current_device;
-	}
+	this->initialized_devices_[devID] = current_device;
 
 	/* spawn listening thread */
 	try {
@@ -915,8 +911,6 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 	this->buffer_ << to_uint(num);
 
 	const std::string devID = this->buffer_.str();
-
-	std::lock_guard<std::mutex> lck (this->mtx);
 
 	// FIXME at() exception ?
 	InitializedDevice & device = this->initialized_devices_[devID];
