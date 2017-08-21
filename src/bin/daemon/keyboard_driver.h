@@ -30,6 +30,8 @@
 
 #include <thread>
 
+#include <mutex>
+
 #include <libusb-1.0/libusb.h>
 
 #include <linux/input-event-codes.h>
@@ -74,6 +76,7 @@ struct InitializedDevice {
 	MacrosManager *macros_man;
 	std::vector<libusb_endpoint_descriptor> endpoints;
 	std::thread::id listen_thread_id;
+	uint8_t current_leds_mask;
 };
 
 struct DescriptorValues {
@@ -114,7 +117,6 @@ class KeyboardDriver
 		std::vector<KeyboardDevice> supported_devices_;
 		unsigned char keys_buffer_[KEYS_BUFFER_LENGTH];
 		unsigned char previous_keys_buffer_[KEYS_BUFFER_LENGTH];
-		uint8_t current_leds_mask_;
 		std::string chosen_macro_key_;
 
 		void initializeLibusb(InitializedDevice & current_device);
@@ -127,7 +129,8 @@ class KeyboardDriver
 		void logWarning(const char*);
 
 		virtual void initializeMacroKeys(const InitializedDevice & current_device) = 0;
-		virtual KeyStatus processKeyEvent(uint64_t * pressed_keys, unsigned int actual_length) = 0;
+		virtual KeyStatus processKeyEvent(const InitializedDevice & current_device,
+			uint64_t * pressed_keys, unsigned int actual_length) = 0;
 		virtual KeyStatus getPressedKeys(const InitializedDevice & current_device, uint64_t * pressed_keys);
 		virtual const bool checkMacroKey(const uint64_t pressed_keys) = 0;
 
@@ -138,6 +141,8 @@ class KeyboardDriver
 		void fillStandardKeysEvents(void);
 		void sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
 			unsigned char * data, uint16_t wLength);
+
+		std::mutex mtx;
 
 	private:
 		static bool libusb_status_;			/* is libusb initialized ? */
@@ -186,10 +191,11 @@ class KeyboardDriver
 		void releaseInterfaces(libusb_device_handle * usb_handle);
 		void attachKernelDrivers(libusb_device_handle * usb_handle);
 		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
-		void listenLoop(const InitializedDevice & current_device);
-		void updateCurrentLedsMask(const InitializedDevice & current_device, const uint64_t pressed_keys);
+		void listenLoop(uint8_t bus, uint8_t num);
+		void updateCurrentLedsMask(InitializedDevice & current_device, const uint64_t pressed_keys);
 		void enterMacroRecordMode(const InitializedDevice & current_device);
 		void handleModifierKeys(void);
+		std::size_t getDeviceIndex(uint8_t bus, uint8_t num);
 };
 
 inline void KeyboardDriver::logWarning(const char* warning)

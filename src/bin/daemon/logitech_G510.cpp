@@ -96,7 +96,9 @@ void LogitechG510::processKeyEvent8Bytes(uint64_t * pressed_keys) {
 	this->fillStandardKeysEvents();
 }
 
-KeyStatus LogitechG510::processKeyEvent(uint64_t * pressed_keys, unsigned int actual_length) {
+KeyStatus LogitechG510::processKeyEvent(const InitializedDevice & current_device,
+	uint64_t * pressed_keys, unsigned int actual_length)
+{
 	*pressed_keys = 0;
 
 	switch(actual_length) {
@@ -118,7 +120,7 @@ KeyStatus LogitechG510::processKeyEvent(uint64_t * pressed_keys, unsigned int ac
 			break;
 		case 8:
 			/* process those events only if Macro Record Mode on */
-			if( this->current_leds_mask_ & to_type(Leds::GK_LED_MR) ) {
+			if( current_device.current_leds_mask & to_type(Leds::GK_LED_MR) ) {
 #if DEBUGGING_ON
 				LOG(DEBUG1) << "8 bytes : processing standard key event : " << this->getBytes(actual_length);
 #endif
@@ -147,7 +149,7 @@ KeyStatus LogitechG510::processKeyEvent(uint64_t * pressed_keys, unsigned int ac
 void LogitechG510::setLeds(const InitializedDevice & current_device) {
 	unsigned char leds_mask = 0;
 	for (auto l : this->leds_mask_ ) {
-		if( this->current_leds_mask_ & to_type(l.led) )
+		if( current_device.current_leds_mask & to_type(l.led) )
 			leds_mask |= l.mask;
 	}
 

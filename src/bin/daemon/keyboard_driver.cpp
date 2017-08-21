@@ -43,7 +43,7 @@ uint8_t KeyboardDriver::drivers_cnt_ = 0;
 constexpr unsigned char KeyboardDriver::hid_keyboard_[256];
 
 KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, DescriptorValues values) :
-		buffer_("", std::ios_base::app), current_leds_mask_(0), context_(nullptr), last_transfer_length_(0) {
+		buffer_("", std::ios_base::app), context_(nullptr), last_transfer_length_(0) {
 	this->expected_usb_descriptors_ = values;
 	this->leds_update_event_length_ = event_length;
 
@@ -113,6 +113,7 @@ void KeyboardDriver::initializeLibusb(InitializedDevice & current_device) {
 
 void KeyboardDriver::closeLibusb(void) {
 	LOG(DEBUG4) << "closing libusb";
+	std::lock_guard<std::mutex> lck (this->mtx);
 	if( this->initialized_devices_.size() != 0 ) /* sanity check */
 		this->logWarning("closing libusb with opened device(s) !");
 	libusb_exit(this->context_);
@@ -201,7 +202,7 @@ KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_devic
 							<< " act_l: " << actual_length << ", xBuf[0]: "
 							<< std::hex << to_uint(this->keys_buffer_[0]);
 #endif
-				return this->processKeyEvent(pressed_keys, actual_length);
+				return this->processKeyEvent(current_device, pressed_keys, actual_length);
 			}
 			break;
 		case LIBUSB_ERROR_TIMEOUT:
@@ -224,45 +225,46 @@ void KeyboardDriver::setLeds(const InitializedDevice & current_device) {
 	this->logWarning("setLeds not implemented");
 }
 
-void KeyboardDriver::updateCurrentLedsMask(const InitializedDevice & current_device, const uint64_t pressed_keys) {
+void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & current_device, const uint64_t pressed_keys) {
+	uint8_t & mask = current_device.current_leds_mask;
 	/* is macro record mode enabled ? */
-	bool MR_ON = this->current_leds_mask_ & to_type(Leds::GK_LED_MR);
+	bool MR_ON = mask & to_type(Leds::GK_LED_MR);
 	bool Mx_ON = false;
 
 	if( pressed_keys & to_type(Keys::GK_KEY_M1) ) {
-		Mx_ON = this->current_leds_mask_ & to_type(Leds::GK_LED_M1);
-		this->current_leds_mask_ = 0;
+		Mx_ON = mask & to_type(Leds::GK_LED_M1);
+		mask = 0;
 		current_device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M0);
 		if( ! Mx_ON ) {
-			this->current_leds_mask_ |= to_type(Leds::GK_LED_M1);
+			mask |= to_type(Leds::GK_LED_M1);
 			current_device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M1);
 		}
 	}
 	else if( pressed_keys & to_type(Keys::GK_KEY_M2) ) {
-		Mx_ON = this->current_leds_mask_ & to_type(Leds::GK_LED_M2);
-		this->current_leds_mask_ = 0;
+		Mx_ON = mask & to_type(Leds::GK_LED_M2);
+		mask = 0;
 		current_device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M0);
 		if( ! Mx_ON ) {
-			this->current_leds_mask_ |= to_type(Leds::GK_LED_M2);
+			mask |= to_type(Leds::GK_LED_M2);
 			current_device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M2);
 		}
 	}
 	else if( pressed_keys & to_type(Keys::GK_KEY_M3) ) {
-		Mx_ON = this->current_leds_mask_ & to_type(Leds::GK_LED_M3);
-		this->current_leds_mask_ = 0;
+		Mx_ON = mask & to_type(Leds::GK_LED_M3);
+		mask = 0;
 		current_device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M0);
 		if( ! Mx_ON ) {
-			this->current_leds_mask_ |= to_type(Leds::GK_LED_M3);
+			mask |= to_type(Leds::GK_LED_M3);
 			current_device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M3);
 		}
 	}
 
 	if( pressed_keys & to_type(Keys::GK_KEY_MR) ) {
 		if(! MR_ON) { /* MR off, enable it */
-			this->current_leds_mask_ |= to_type(Leds::GK_LED_MR);
+			mask |= to_type(Leds::GK_LED_MR);
 		}
 		else { /* MR on, disable it */
-			this->current_leds_mask_ &= ~(to_type(Leds::GK_LED_MR));
+			mask &= ~(to_type(Leds::GK_LED_MR));
 		}
 	}
 }
@@ -433,33 +435,55 @@ void KeyboardDriver::enterMacroRecordMode(const InitializedDevice & current_devi
 	}
 }
 
-void KeyboardDriver::listenLoop(const InitializedDevice & current_device) {
-	LOG(INFO) << "spawned listening thread for " << current_device.device.name
-				<< " on bus " << to_uint(current_device.bus);
+std::size_t KeyboardDriver::getDeviceIndex(uint8_t bus, uint8_t num) {
+	std::size_t i = 0;
+	std::lock_guard<std::mutex> lck (this->mtx);
+	for (i = 0; i != this->initialized_devices_.size(); ++i) {
+		InitializedDevice &device = this->initialized_devices_[i];
+		if( (device.bus == bus) and (device.num == num) ) {
+			LOG(DEBUG) << "found";
+			return i;
+			break;
+		}
+	}
+	// FIXME throw
+	return 0;
+}
+
+void KeyboardDriver::listenLoop(uint8_t bus, uint8_t num) {
+	std::size_t i = this->getDeviceIndex(bus, num);
+
+	InitializedDevice &device = this->initialized_devices_[i];
+	device.listen_thread_id = std::this_thread::get_id();
+
+	LOG(INFO) << "spawned listening thread for " << device.device.name
+				<< " on bus " << to_uint(device.bus);
+
+	uint8_t & mask = device.current_leds_mask;
 
 	LOG(DEBUG1) << "resetting M-Keys leds status";
-	this->current_leds_mask_ = 0;
-	this->setLeds(current_device);
+	device.current_leds_mask = 0;
+	this->setLeds(device);
 
-	this->initializeMacroKeys(current_device);
+	this->initializeMacroKeys(device);
 
-	while( DaemonControl::is_daemon_enabled() and current_device.listen_status ) {
+	while( DaemonControl::is_daemon_enabled() and device.listen_status ) {
 		uint64_t pressed_keys = 0;
-		KeyStatus ret = this->getPressedKeys(current_device, &pressed_keys);
+		KeyStatus ret = this->getPressedKeys(device, &pressed_keys);
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
 				/* update M1-MR leds status only after proper event */
 				if( this->last_transfer_length_ == this->leds_update_event_length_ ) {
-					this->updateCurrentLedsMask(current_device, pressed_keys);
-					this->setLeds(current_device);
+					this->updateCurrentLedsMask(device, pressed_keys);
+					this->setLeds(device);
 
 					/* did we press the MR key ? */
-					if( this->current_leds_mask_ & to_type(Leds::GK_LED_MR) ) {
-						this->enterMacroRecordMode(current_device);
+					if( mask & to_type(Leds::GK_LED_MR) ) {
+						this->enterMacroRecordMode(device);
 
 						/* disabling macro record mode */
-						this->current_leds_mask_ &= ~(to_type(Leds::GK_LED_MR));
-						this->setLeds(current_device);
+						mask &= ~(to_type(Leds::GK_LED_MR));
+						this->setLeds(device);
 					}
 				}
 				break;
@@ -468,14 +492,14 @@ void KeyboardDriver::listenLoop(const InitializedDevice & current_device) {
 		}
 	}
 
-	current_device.macros_man->logProfiles();
+	//device.macros_man->logProfiles();
 
 	LOG(DEBUG1) << "resetting M-Keys leds status";
-	this->current_leds_mask_ = 0;
-	this->setLeds(current_device);
+	mask = 0;
+	this->setLeds(device);
 
-	LOG(INFO) << "exiting listening thread for " << current_device.device.name
-				<< " on bus " << to_uint(current_device.bus);
+	LOG(INFO) << "exiting listening thread for " << device.device.name
+				<< " on bus " << to_uint(device.bus);
 }
 
 void KeyboardDriver::sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
@@ -540,11 +564,15 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		throw GLogiKExcept("virtual keyboard allocation failure");
 	}
 
-	/* spawn listening thread */
 	current_device.listen_status = true;
+	{
+		std::lock_guard<std::mutex> lck (this->mtx);
+		this->initialized_devices_.push_back( current_device );
+	}
+
+	/* spawn listening thread */
 	try {
-		std::thread listen_thread(&KeyboardDriver::listenLoop, this, current_device);
-		current_device.listen_thread_id = listen_thread.get_id();
+		std::thread listen_thread(&KeyboardDriver::listenLoop, this, current_device.bus, current_device.num );
 		this->threads_.push_back( std::move(listen_thread) );
 	}
 	catch (const std::system_error& e) {
@@ -553,7 +581,6 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		throw GLogiKExcept(this->buffer_.str());
 	}
 
-	this->initialized_devices_.push_back( current_device );
 }
 
 void KeyboardDriver::detachKernelDriver(libusb_device_handle * usb_handle, int numInt) {
@@ -894,6 +921,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &device, const uint8_t bus
 
 	bool found = false;
 
+	std::lock_guard<std::mutex> lck (this->mtx);
 	for(auto it = this->initialized_devices_.begin(); it != this->initialized_devices_.end();) {
 		if( ((*it).bus == bus) and ((*it).num == num) ) {
 
