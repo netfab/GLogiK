@@ -71,6 +71,7 @@ struct InitializedDevice {
 	libusb_device *usb_device;
 	libusb_device_handle *usb_handle;
 	VirtualKeyboard *virtual_keyboard;
+	MacrosManager *macros_man;
 	std::vector<libusb_endpoint_descriptor> endpoints;
 	std::thread::id listen_thread_id;
 };
@@ -125,7 +126,7 @@ class KeyboardDriver
 		std::string getBytes(unsigned int actual_length);
 		void logWarning(const char*);
 
-		virtual void initializeMacroKeys(void) = 0;
+		virtual void initializeMacroKeys(const InitializedDevice & current_device) = 0;
 		virtual KeyStatus processKeyEvent(uint64_t * pressed_keys, unsigned int actual_length) = 0;
 		virtual KeyStatus getPressedKeys(const InitializedDevice & current_device, uint64_t * pressed_keys);
 		virtual const bool checkMacroKey(const uint64_t pressed_keys) = 0;
@@ -133,7 +134,7 @@ class KeyboardDriver
 		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
 		virtual void setLeds(const InitializedDevice & current_device);
 
-		void initializeMacroKey(const char* name);
+		void initializeMacroKey(const InitializedDevice & current_device, const char* name);
 		void fillStandardKeysEvents(void);
 		void sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
 			unsigned char * data, uint16_t wLength);
@@ -151,8 +152,6 @@ class KeyboardDriver
 		std::vector<InitializedDevice> initialized_devices_;
 		std::vector<std::thread> threads_;
 		std::vector<KeyEvent> standard_keys_events_;
-
-		MacrosManager macros_man_;
 
 		/* USB HID Usage Tables as defined in USB specification,
 		 *        Chapter 10 "Keyboard/Keypad Page (0x07)"
@@ -188,7 +187,7 @@ class KeyboardDriver
 		void attachKernelDrivers(libusb_device_handle * usb_handle);
 		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
 		void listenLoop(const InitializedDevice & current_device);
-		void updateCurrentLedsMask(const uint64_t pressed_keys);
+		void updateCurrentLedsMask(const InitializedDevice & current_device, const uint64_t pressed_keys);
 		void enterMacroRecordMode(const InitializedDevice & current_device);
 		void handleModifierKeys(void);
 };

@@ -44,10 +44,10 @@ LogitechG510::LogitechG510() :
 LogitechG510::~LogitechG510() {
 }
 
-void LogitechG510::initializeMacroKeys(void) {
+void LogitechG510::initializeMacroKeys(const InitializedDevice & current_device) {
 	for (const auto & k : this->five_bytes_keys_map_ ) {
 		if( k.macro_key )
-			this->initializeMacroKey(k.name);
+			this->initializeMacroKey(current_device, k.name);
 	}
 }
 
