@@ -535,13 +535,12 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 
 	const std::string devID = this->buffer_.str();
 
-	/* virtual keyboard */
+	/* virtual keyboard name */
 	this->buffer_.str("Virtual ");
 	this->buffer_ << device.name << " " << devID;
 
 	try {
-		current_device.virtual_keyboard = this->initializeVirtualKeyboard(this->buffer_.str().c_str());
-		current_device.macros_man = new MacrosManager();
+		current_device.macros_man = new MacrosManager(this->buffer_.str().c_str());
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		/* if we ever claimed or detached some interfaces, set them back
@@ -927,18 +926,12 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 
 	delete device.macros_man;
 	device.macros_man = nullptr;
-	delete device.virtual_keyboard;
-	device.virtual_keyboard = nullptr;
 
 	this->releaseInterfaces( device.usb_handle );
 	this->attachKernelDrivers( device.usb_handle );
 
 	libusb_close( device.usb_handle );
 	this->initialized_devices_.erase(devID);
-}
-
-VirtualKeyboard* KeyboardDriver::initializeVirtualKeyboard( const char* device_name ) {
-	return new VirtualKeyboard(device_name);
 }
 
 } // namespace GLogiKd

@@ -32,7 +32,9 @@
 namespace GLogiKd
 {
 
-MacrosManager::MacrosManager() : buffer_("", std::ios_base::app), currentActiveProfile_(MemoryBank::MACROS_M0)
+MacrosManager::MacrosManager(const char* virtual_keyboard_name)
+	: buffer_("", std::ios_base::app), currentActiveProfile_(MemoryBank::MACROS_M0),
+	virtual_keyboard(virtual_keyboard_name)
 {
 }
 

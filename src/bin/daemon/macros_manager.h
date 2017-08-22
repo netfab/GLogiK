@@ -29,6 +29,7 @@
 #include <string>
 #include <sstream>
 
+#include "virtual_keyboard.h"
 #include "key_event.h"
 
 namespace GLogiKd
@@ -45,7 +46,7 @@ enum class MemoryBank : uint8_t
 class MacrosManager
 {
 	public:
-		MacrosManager();
+		MacrosManager(const char* virtual_keyboard_name);
 		~MacrosManager();
 
 		void initializeMacroKey(const char* name);
@@ -63,6 +64,7 @@ class MacrosManager
 			{ MemoryBank::MACROS_M2, {}},
 			{ MemoryBank::MACROS_M3, {}}
 		};
+		VirtualKeyboard virtual_keyboard;
 };
 
 } // namespace GLogiKd

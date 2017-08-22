@@ -36,8 +36,6 @@
 
 #include <linux/input-event-codes.h>
 
-#include "virtual_keyboard.h"
-
 #include <syslog.h>
 #include "include/log.h"
 
@@ -72,7 +70,6 @@ struct InitializedDevice {
 	bool listen_status;
 	libusb_device *usb_device;
 	libusb_device_handle *usb_handle;
-	VirtualKeyboard *virtual_keyboard;
 	MacrosManager *macros_man;
 	std::vector<libusb_endpoint_descriptor> endpoints;
 	std::thread::id listen_thread_id;
@@ -89,7 +86,6 @@ struct InitializedDevice {
 	{
 		this->usb_device = nullptr;
 		this->usb_handle = nullptr;
-		this->virtual_keyboard = nullptr;
 		this->macros_man = nullptr;
 		std::fill_n(this->keys_buffer, KEYS_BUFFER_LENGTH, 0);
 		std::fill_n(this->previous_keys_buffer, KEYS_BUFFER_LENGTH, 0);
@@ -135,7 +131,6 @@ class KeyboardDriver
 		std::string chosen_macro_key_;
 
 		void initializeLibusb(InitializedDevice & current_device);
-		VirtualKeyboard* initializeVirtualKeyboard( const char* device_name );
 
 		DescriptorValues expected_usb_descriptors_;
 		int interrupt_key_read_length;
