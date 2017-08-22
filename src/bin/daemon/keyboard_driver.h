@@ -28,6 +28,7 @@
 #include <vector>
 #include <map>
 #include <sstream>
+#include <algorithm>
 
 #include <thread>
 
@@ -78,7 +79,21 @@ struct InitializedDevice {
 	uint8_t current_leds_mask;
 	unsigned char keys_buffer[KEYS_BUFFER_LENGTH];
 	unsigned char previous_keys_buffer[KEYS_BUFFER_LENGTH];
-	int8_t last_transfer_length_;
+	int8_t last_transfer_length;
+
+	InitializedDevice()=default;
+
+	InitializedDevice(KeyboardDevice k, uint8_t b, uint8_t n)
+	  : device(k), bus(b), num(n), keys_endpoint(0), listen_status(false),
+		current_leds_mask(0), last_transfer_length(0)
+	{
+		this->usb_device = nullptr;
+		this->usb_handle = nullptr;
+		this->virtual_keyboard = nullptr;
+		this->macros_man = nullptr;
+		std::fill_n(this->keys_buffer, KEYS_BUFFER_LENGTH, 0);
+		std::fill_n(this->previous_keys_buffer, KEYS_BUFFER_LENGTH, 0);
+	}
 };
 
 struct DescriptorValues {

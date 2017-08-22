@@ -193,7 +193,7 @@ KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & current_device, uin
 
 	switch(ret) {
 		case 0:
-			current_device.last_transfer_length_ = actual_length;
+			current_device.last_transfer_length = actual_length;
 			if( actual_length > 0 ) {
 #if DEBUGGING_ON
 				LOG(DEBUG)	<< "exp. rl: " << this->interrupt_key_read_length
@@ -454,7 +454,7 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
 				/* update M1-MR leds status only after proper event */
-				if( device.last_transfer_length_ == this->leds_update_event_length_ ) {
+				if( device.last_transfer_length == this->leds_update_event_length_ ) {
 					this->updateCurrentLedsMask(device, pressed_keys);
 					this->setLeds(device);
 
@@ -510,7 +510,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 				<< device.vendor_id << ":" << device.product_id << "), device "
 				<< to_uint(num) << " on bus " << to_uint(bus);
 
-	InitializedDevice current_device = { device, bus, num, 0, false, nullptr, nullptr, nullptr, nullptr };
+	InitializedDevice current_device(device, bus, num);
 
 	this->initializeLibusb(current_device); /* device opened */
 
@@ -551,8 +551,6 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		libusb_close( current_device.usb_handle );
 		throw GLogiKExcept("virtual keyboard allocation failure");
 	}
-
-	std::fill_n(current_device.previous_keys_buffer, KEYS_BUFFER_LENGTH, 0);
 
 	current_device.listen_status = true;
 	this->initialized_devices_[devID] = current_device;
