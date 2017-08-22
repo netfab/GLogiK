@@ -43,7 +43,7 @@ uint8_t KeyboardDriver::drivers_cnt_ = 0;
 constexpr unsigned char KeyboardDriver::hid_keyboard_[256];
 
 KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, DescriptorValues values) :
-		buffer_("", std::ios_base::app), context_(nullptr), last_transfer_length_(0) {
+		buffer_("", std::ios_base::app), context_(nullptr) {
 	this->expected_usb_descriptors_ = values;
 	this->leds_update_event_length_ = event_length;
 
@@ -193,7 +193,7 @@ KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & current_device, uin
 
 	switch(ret) {
 		case 0:
-			this->last_transfer_length_ = actual_length;
+			current_device.last_transfer_length_ = actual_length;
 			if( actual_length > 0 ) {
 #if DEBUGGING_ON
 				LOG(DEBUG)	<< "exp. rl: " << this->interrupt_key_read_length
@@ -454,7 +454,7 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
 				/* update M1-MR leds status only after proper event */
-				if( this->last_transfer_length_ == this->leds_update_event_length_ ) {
+				if( device.last_transfer_length_ == this->leds_update_event_length_ ) {
 					this->updateCurrentLedsMask(device, pressed_keys);
 					this->setLeds(device);
 

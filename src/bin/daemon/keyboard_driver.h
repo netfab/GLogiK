@@ -78,6 +78,7 @@ struct InitializedDevice {
 	uint8_t current_leds_mask;
 	unsigned char keys_buffer[KEYS_BUFFER_LENGTH];
 	unsigned char previous_keys_buffer[KEYS_BUFFER_LENGTH];
+	int8_t last_transfer_length_;
 };
 
 struct DescriptorValues {
@@ -148,7 +149,6 @@ class KeyboardDriver
 		libusb_device **list_;
 		std::vector<int> to_attach_;
 		std::vector<int> to_release_;
-		int8_t last_transfer_length_;
 		int8_t leds_update_event_length_;
 
 		std::map<const std::string, InitializedDevice> initialized_devices_;
