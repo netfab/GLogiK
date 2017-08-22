@@ -95,7 +95,7 @@ void LogitechG510::processKeyEvent8Bytes(const InitializedDevice & device, uint6
 	this->fillStandardKeysEvents(device);
 }
 
-KeyStatus LogitechG510::processKeyEvent(const InitializedDevice & device,
+KeyStatus LogitechG510::processKeyEvent(InitializedDevice & device,
 	uint64_t * pressed_keys, unsigned int actual_length)
 {
 	*pressed_keys = 0;
@@ -126,7 +126,7 @@ KeyStatus LogitechG510::processKeyEvent(const InitializedDevice & device,
 				this->processKeyEvent8Bytes(device, pressed_keys);
 				std::copy(
 						std::begin(device.keys_buffer), std::end(device.keys_buffer),
-						std::begin(this->previous_keys_buffer_));
+						std::begin(device.previous_keys_buffer));
 				return KeyStatus::S_KEY_PROCESSED;
 			}
 #if DEBUGGING_ON

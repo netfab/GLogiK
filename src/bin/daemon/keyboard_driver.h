@@ -77,6 +77,7 @@ struct InitializedDevice {
 	std::thread::id listen_thread_id;
 	uint8_t current_leds_mask;
 	unsigned char keys_buffer[KEYS_BUFFER_LENGTH];
+	unsigned char previous_keys_buffer[KEYS_BUFFER_LENGTH];
 };
 
 struct DescriptorValues {
@@ -115,7 +116,6 @@ class KeyboardDriver
 	protected:
 		std::ostringstream buffer_;
 		std::vector<KeyboardDevice> supported_devices_;
-		unsigned char previous_keys_buffer_[KEYS_BUFFER_LENGTH];
 		std::string chosen_macro_key_;
 
 		void initializeLibusb(InitializedDevice & current_device);
@@ -128,7 +128,7 @@ class KeyboardDriver
 		void logWarning(const char*);
 
 		virtual void initializeMacroKeys(const InitializedDevice & current_device) = 0;
-		virtual KeyStatus processKeyEvent(const InitializedDevice & current_device,
+		virtual KeyStatus processKeyEvent(InitializedDevice & current_device,
 			uint64_t * pressed_keys, unsigned int actual_length) = 0;
 		virtual KeyStatus getPressedKeys(InitializedDevice & current_device, uint64_t * pressed_keys);
 		virtual const bool checkMacroKey(const uint64_t pressed_keys) = 0;

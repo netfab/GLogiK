@@ -67,7 +67,7 @@ class LogitechG510 : public KeyboardDriver
 
 	protected:
 	private:
-		KeyStatus processKeyEvent(const InitializedDevice & device,
+		KeyStatus processKeyEvent(InitializedDevice & device,
 			uint64_t * pressed_keys, unsigned int actual_length);
 		void sendDeviceInitialization(const InitializedDevice & current_device);
 		void setLeds(const InitializedDevice & current_device);

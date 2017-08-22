@@ -53,7 +53,6 @@ KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, Descri
 	}
 
 	this->interrupt_key_read_length = key_read_length;
-	std::fill_n(this->previous_keys_buffer_, KEYS_BUFFER_LENGTH, 0);
 	KeyboardDriver::drivers_cnt_++;
 }
 
@@ -269,20 +268,20 @@ void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & current_device, c
 }
 
 void KeyboardDriver::handleModifierKeys(const InitializedDevice & device) {
-	if( this->previous_keys_buffer_[1] == device.keys_buffer[1] )
+	if( device.previous_keys_buffer[1] == device.keys_buffer[1] )
 		return; /* nothing changed here */
 
 	KeyEvent e;
 	uint8_t diff = 0;
 
 	/* some modifier keys were released */
-	if( this->previous_keys_buffer_[1] > device.keys_buffer[1] ) {
-		diff = this->previous_keys_buffer_[1] - device.keys_buffer[1];
+	if( device.previous_keys_buffer[1] > device.keys_buffer[1] ) {
+		diff = device.previous_keys_buffer[1] - device.keys_buffer[1];
 		e.event = EventValue::EVENT_KEY_RELEASE;
 	}
 	/* some modifier keys were pressed */
 	else {
-		diff = device.keys_buffer[1] - this->previous_keys_buffer_[1];
+		diff = device.keys_buffer[1] - device.previous_keys_buffer[1];
 		e.event = EventValue::EVENT_KEY_PRESS;
 	}
 
@@ -374,20 +373,20 @@ void KeyboardDriver::fillStandardKeysEvents(const InitializedDevice & device) {
 	for(i = this->interrupt_key_read_length-1; i >= 2; --i) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "	" << to_uint(device.keys_buffer[i])
-					<< "	|	" << to_uint(this->previous_keys_buffer_[i]);
+					<< "	|	" << to_uint(device.previous_keys_buffer[i]);
 #endif
-		if( this->previous_keys_buffer_[i] == device.keys_buffer[i] ) {
+		if( device.previous_keys_buffer[i] == device.keys_buffer[i] ) {
 			continue; /* nothing here */
 		}
 		else {
 			KeyEvent e;
 
-			if( this->previous_keys_buffer_[i] == 0 ) {
+			if( device.previous_keys_buffer[i] == 0 ) {
 				e.event_code = KeyboardDriver::hid_keyboard_[ device.keys_buffer[i] ];
 				e.event = EventValue::EVENT_KEY_PRESS; /* KeyPress */
 			}
 			else if( device.keys_buffer[i] == 0 ) {
-				e.event_code = KeyboardDriver::hid_keyboard_[ this->previous_keys_buffer_[i] ];
+				e.event_code = KeyboardDriver::hid_keyboard_[ device.previous_keys_buffer[i] ];
 				e.event = EventValue::EVENT_KEY_RELEASE; /* KeyRelease */
 			}
 			else {
@@ -552,6 +551,8 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &device, const uint8_
 		libusb_close( current_device.usb_handle );
 		throw GLogiKExcept("virtual keyboard allocation failure");
 	}
+
+	std::fill_n(current_device.previous_keys_buffer, KEYS_BUFFER_LENGTH, 0);
 
 	current_device.listen_status = true;
 	this->initialized_devices_[devID] = current_device;
