@@ -42,7 +42,7 @@ MacrosManager::~MacrosManager()
 {
 }
 
-void MacrosManager::setMacro(const std::string macro_key_name, std::vector<KeyEvent> & macro) {
+void MacrosManager::setMacro(const std::string &macro_key_name, std::vector<KeyEvent> & macro) {
 	try {
 		this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name) = macro;
 	}
