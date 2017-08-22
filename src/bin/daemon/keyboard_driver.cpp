@@ -169,13 +169,13 @@ void KeyboardDriver::attachKernelDrivers(libusb_device_handle * usb_handle) {
 	this->to_attach_.clear();
 }
 
-std::string KeyboardDriver::getBytes(unsigned int actual_length) {
+std::string KeyboardDriver::getBytes(const InitializedDevice & device, unsigned int actual_length) {
 	if( actual_length == 0 )
 		return "";
 	std::ostringstream s;
-	s << std::hex << to_uint(this->keys_buffer_[0]);
+	s << std::hex << to_uint(device.keys_buffer[0]);
 	for(unsigned int x = 1; x < actual_length; x++) {
-		s << ", " << std::hex << to_uint(this->keys_buffer_[x]);
+		s << ", " << std::hex << to_uint(device.keys_buffer[x]);
 	}
 	return s.str();
 }
@@ -184,13 +184,13 @@ void KeyboardDriver::initializeMacroKey(const InitializedDevice & current_device
 	current_device.macros_man->initializeMacroKey(name);
 }
 
-KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_device, uint64_t * pressed_keys) {
+KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & current_device, uint64_t * pressed_keys) {
 	int actual_length = 0;
 
-	std::fill_n(this->keys_buffer_, KEYS_BUFFER_LENGTH, 0);
+	std::fill_n(current_device.keys_buffer, KEYS_BUFFER_LENGTH, 0);
 
 	int ret = libusb_interrupt_transfer(current_device.usb_handle, current_device.keys_endpoint,
-		(unsigned char*)this->keys_buffer_, this->interrupt_key_read_length, &actual_length, 10);
+		(unsigned char*)current_device.keys_buffer, this->interrupt_key_read_length, &actual_length, 10);
 
 	switch(ret) {
 		case 0:
@@ -199,7 +199,7 @@ KeyStatus KeyboardDriver::getPressedKeys(const InitializedDevice & current_devic
 #if DEBUGGING_ON
 				LOG(DEBUG)	<< "exp. rl: " << this->interrupt_key_read_length
 							<< " act_l: " << actual_length << ", xBuf[0]: "
-							<< std::hex << to_uint(this->keys_buffer_[0]);
+							<< std::hex << to_uint(current_device.keys_buffer[0]);
 #endif
 				return this->processKeyEvent(current_device, pressed_keys, actual_length);
 			}
@@ -268,21 +268,21 @@ void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & current_device, c
 	}
 }
 
-void KeyboardDriver::handleModifierKeys(void) {
-	if( this->previous_keys_buffer_[1] == this->keys_buffer_[1] )
+void KeyboardDriver::handleModifierKeys(const InitializedDevice & device) {
+	if( this->previous_keys_buffer_[1] == device.keys_buffer[1] )
 		return; /* nothing changed here */
 
 	KeyEvent e;
 	uint8_t diff = 0;
 
 	/* some modifier keys were released */
-	if( this->previous_keys_buffer_[1] > this->keys_buffer_[1] ) {
-		diff = this->previous_keys_buffer_[1] - this->keys_buffer_[1];
+	if( this->previous_keys_buffer_[1] > device.keys_buffer[1] ) {
+		diff = this->previous_keys_buffer_[1] - device.keys_buffer[1];
 		e.event = EventValue::EVENT_KEY_RELEASE;
 	}
 	/* some modifier keys were pressed */
 	else {
-		diff = this->keys_buffer_[1] - this->previous_keys_buffer_[1];
+		diff = device.keys_buffer[1] - this->previous_keys_buffer_[1];
 		e.event = EventValue::EVENT_KEY_PRESS;
 	}
 
@@ -364,7 +364,7 @@ void KeyboardDriver::handleModifierKeys(void) {
 	this->logWarning("diff not equal to zero");
 }
 
-void KeyboardDriver::fillStandardKeysEvents(void) {
+void KeyboardDriver::fillStandardKeysEvents(const InitializedDevice & device) {
 	unsigned int i = 0;
 
 #if DEBUGGING_ON
@@ -373,20 +373,20 @@ void KeyboardDriver::fillStandardKeysEvents(void) {
 #endif
 	for(i = this->interrupt_key_read_length-1; i >= 2; --i) {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "	" << to_uint(this->keys_buffer_[i])
+		LOG(DEBUG2) << "	" << to_uint(device.keys_buffer[i])
 					<< "	|	" << to_uint(this->previous_keys_buffer_[i]);
 #endif
-		if( this->previous_keys_buffer_[i] == this->keys_buffer_[i] ) {
+		if( this->previous_keys_buffer_[i] == device.keys_buffer[i] ) {
 			continue; /* nothing here */
 		}
 		else {
 			KeyEvent e;
 
 			if( this->previous_keys_buffer_[i] == 0 ) {
-				e.event_code = KeyboardDriver::hid_keyboard_[ this->keys_buffer_[i] ];
+				e.event_code = KeyboardDriver::hid_keyboard_[ device.keys_buffer[i] ];
 				e.event = EventValue::EVENT_KEY_PRESS; /* KeyPress */
 			}
-			else if( this->keys_buffer_[i] == 0 ) {
+			else if( device.keys_buffer[i] == 0 ) {
 				e.event_code = KeyboardDriver::hid_keyboard_[ this->previous_keys_buffer_[i] ];
 				e.event = EventValue::EVENT_KEY_RELEASE; /* KeyRelease */
 			}
@@ -399,10 +399,10 @@ void KeyboardDriver::fillStandardKeysEvents(void) {
 		}
 	}
 
-	this->handleModifierKeys();
+	this->handleModifierKeys(device);
 }
 
-void KeyboardDriver::enterMacroRecordMode(const InitializedDevice & current_device) {
+void KeyboardDriver::enterMacroRecordMode(InitializedDevice & current_device) {
 	LOG(DEBUG) << "entering macro record mode";
 
 	bool keys_found = false;

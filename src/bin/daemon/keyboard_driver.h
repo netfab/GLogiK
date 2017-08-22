@@ -76,6 +76,7 @@ struct InitializedDevice {
 	std::vector<libusb_endpoint_descriptor> endpoints;
 	std::thread::id listen_thread_id;
 	uint8_t current_leds_mask;
+	unsigned char keys_buffer[KEYS_BUFFER_LENGTH];
 };
 
 struct DescriptorValues {
@@ -114,7 +115,6 @@ class KeyboardDriver
 	protected:
 		std::ostringstream buffer_;
 		std::vector<KeyboardDevice> supported_devices_;
-		unsigned char keys_buffer_[KEYS_BUFFER_LENGTH];
 		unsigned char previous_keys_buffer_[KEYS_BUFFER_LENGTH];
 		std::string chosen_macro_key_;
 
@@ -124,20 +124,20 @@ class KeyboardDriver
 		DescriptorValues expected_usb_descriptors_;
 		int interrupt_key_read_length;
 
-		std::string getBytes(unsigned int actual_length);
+		std::string getBytes(const InitializedDevice & device, unsigned int actual_length);
 		void logWarning(const char*);
 
 		virtual void initializeMacroKeys(const InitializedDevice & current_device) = 0;
 		virtual KeyStatus processKeyEvent(const InitializedDevice & current_device,
 			uint64_t * pressed_keys, unsigned int actual_length) = 0;
-		virtual KeyStatus getPressedKeys(const InitializedDevice & current_device, uint64_t * pressed_keys);
+		virtual KeyStatus getPressedKeys(InitializedDevice & current_device, uint64_t * pressed_keys);
 		virtual const bool checkMacroKey(const uint64_t pressed_keys) = 0;
 
 		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
 		virtual void setLeds(const InitializedDevice & current_device);
 
 		void initializeMacroKey(const InitializedDevice & current_device, const char* name);
-		void fillStandardKeysEvents(void);
+		void fillStandardKeysEvents(const InitializedDevice & device);
 		void sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
 			unsigned char * data, uint16_t wLength);
 
@@ -190,8 +190,8 @@ class KeyboardDriver
 		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
 		void listenLoop(const std::string devID);
 		void updateCurrentLedsMask(InitializedDevice & current_device, const uint64_t pressed_keys);
-		void enterMacroRecordMode(const InitializedDevice & current_device);
-		void handleModifierKeys(void);
+		void enterMacroRecordMode(InitializedDevice & current_device);
+		void handleModifierKeys(const InitializedDevice & device);
 };
 
 inline void KeyboardDriver::logWarning(const char* warning)

@@ -62,41 +62,40 @@ const bool LogitechG510::checkMacroKey(const uint64_t pressed_keys) {
 	return false;
 }
 
-void LogitechG510::processKeyEvent2Bytes(uint64_t * pressed_keys) {
-	*pressed_keys = 0;
-	if (this->keys_buffer_[0] != 0x02) {
+void LogitechG510::processKeyEvent2Bytes(const InitializedDevice & device, uint64_t * pressed_keys) {
+	if (device.keys_buffer[0] != 0x02) {
 		this->logWarning("warning : wrong first byte value on 2 bytes event");
 		return;
 	}
 
 	for (auto k : this->two_bytes_keys_map_ ) {
-		if( this->keys_buffer_[k.index] & k.mask )
+		if( device.keys_buffer[k.index] & k.mask )
 			*pressed_keys |= to_type(k.key);
 	}
 }
 
-void LogitechG510::processKeyEvent5Bytes(uint64_t * pressed_keys) {
-	if (this->keys_buffer_[0] != 0x03) {
+void LogitechG510::processKeyEvent5Bytes(const InitializedDevice & device, uint64_t * pressed_keys) {
+	if (device.keys_buffer[0] != 0x03) {
 		this->logWarning("warning : wrong first byte value on 5 bytes event");
 		return;
 	}
 
 	for (auto k : this->five_bytes_keys_map_ ) {
-		if( this->keys_buffer_[k.index] & k.mask )
+		if( device.keys_buffer[k.index] & k.mask )
 			*pressed_keys |= to_type(k.key);
 	}
 }
 
-void LogitechG510::processKeyEvent8Bytes(uint64_t * pressed_keys) {
-	if (this->keys_buffer_[0] != 0x01) {
+void LogitechG510::processKeyEvent8Bytes(const InitializedDevice & device, uint64_t * pressed_keys) {
+	if (device.keys_buffer[0] != 0x01) {
 		this->logWarning("warning : wrong first byte value on 8 bytes event");
 		return;
 	}
 
-	this->fillStandardKeysEvents();
+	this->fillStandardKeysEvents(device);
 }
 
-KeyStatus LogitechG510::processKeyEvent(const InitializedDevice & current_device,
+KeyStatus LogitechG510::processKeyEvent(const InitializedDevice & device,
 	uint64_t * pressed_keys, unsigned int actual_length)
 {
 	*pressed_keys = 0;
@@ -104,34 +103,34 @@ KeyStatus LogitechG510::processKeyEvent(const InitializedDevice & current_device
 	switch(actual_length) {
 		case 2:
 #if DEBUGGING_ON
-			LOG(DEBUG1) << "2 bytes : " << this->getBytes(actual_length);
+			LOG(DEBUG1) << "2 bytes : " << this->getBytes(device, actual_length);
 #endif
-			this->processKeyEvent2Bytes(pressed_keys);
+			this->processKeyEvent2Bytes(device, pressed_keys);
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 5:
 #if DEBUGGING_ON
-			LOG(DEBUG1) << "5 bytes : " << this->getBytes(actual_length);
+			LOG(DEBUG1) << "5 bytes : " << this->getBytes(device, actual_length);
 #endif
-			this->processKeyEvent5Bytes(pressed_keys);
+			this->processKeyEvent5Bytes(device, pressed_keys);
 			if( *pressed_keys == 0 ) /* skip release key events */
 				return KeyStatus::S_KEY_SKIPPED;
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 8:
 			/* process those events only if Macro Record Mode on */
-			if( current_device.current_leds_mask & to_type(Leds::GK_LED_MR) ) {
+			if( device.current_leds_mask & to_type(Leds::GK_LED_MR) ) {
 #if DEBUGGING_ON
-				LOG(DEBUG1) << "8 bytes : processing standard key event : " << this->getBytes(actual_length);
+				LOG(DEBUG1) << "8 bytes : processing standard key event : " << this->getBytes(device, actual_length);
 #endif
-				this->processKeyEvent8Bytes(pressed_keys);
+				this->processKeyEvent8Bytes(device, pressed_keys);
 				std::copy(
-						std::begin(this->keys_buffer_), std::end(this->keys_buffer_),
+						std::begin(device.keys_buffer), std::end(device.keys_buffer),
 						std::begin(this->previous_keys_buffer_));
 				return KeyStatus::S_KEY_PROCESSED;
 			}
 #if DEBUGGING_ON
-			LOG(DEBUG1) << "8 bytes : skipping standard key event : " << this->getBytes(actual_length);
+			LOG(DEBUG1) << "8 bytes : skipping standard key event : " << this->getBytes(device, actual_length);
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
