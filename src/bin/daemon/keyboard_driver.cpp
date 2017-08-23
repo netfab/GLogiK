@@ -408,6 +408,17 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device) {
 
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
+				/* did we press one Mx key ? */
+				if( device.pressed_keys & to_type(Keys::GK_KEY_M1) or
+					device.pressed_keys & to_type(Keys::GK_KEY_M2) or
+					device.pressed_keys & to_type(Keys::GK_KEY_M3) or
+					device.pressed_keys & to_type(Keys::GK_KEY_MR) ) {
+					/* exiting macro record mode */
+					keys_found = true;
+					device.standard_keys_events.clear();
+					continue;
+				}
+
 				if( ! this->checkMacroKey(device) ) {
 					/* continue to store standard key events
 					 * while a macro key is not pressed */
@@ -424,6 +435,8 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device) {
 				break;
 		}
 	}
+
+	LOG(DEBUG) << "exiting macro record mode";
 }
 
 void KeyboardDriver::listenLoop(const std::string devID) {
