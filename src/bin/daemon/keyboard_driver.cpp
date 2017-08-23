@@ -466,6 +466,10 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 						mask &= ~(to_type(Leds::GK_LED_MR));
 						this->setLeds(device);
 					}
+					else { /* check to run macro */
+						if( this->checkMacroKey(pressed_keys) )
+							device.macros_man->runMacro(this->chosen_macro_key_);
+					}
 				}
 				break;
 			default:

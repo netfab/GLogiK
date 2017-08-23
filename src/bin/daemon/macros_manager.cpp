@@ -42,6 +42,13 @@ MacrosManager::~MacrosManager()
 {
 }
 
+void MacrosManager::runMacro(const std::string &macro_key_name) {
+	const std::vector<KeyEvent> & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
+	for( const auto &key : macro ) {
+		LOG(DEBUG) << "event code: " << to_uint(key.event_code);
+	}
+}
+
 void MacrosManager::setMacro(const std::string &macro_key_name, std::vector<KeyEvent> & macro) {
 	try {
 		this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name) = macro;
