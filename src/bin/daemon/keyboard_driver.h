@@ -77,6 +77,7 @@ struct InitializedDevice {
 	unsigned char keys_buffer[KEYS_BUFFER_LENGTH];
 	unsigned char previous_keys_buffer[KEYS_BUFFER_LENGTH];
 	int8_t last_transfer_length;
+	std::string chosen_macro_key;
 
 	InitializedDevice()=default;
 
@@ -128,7 +129,6 @@ class KeyboardDriver
 	protected:
 		std::ostringstream buffer_;
 		std::vector<KeyboardDevice> supported_devices_;
-		std::string chosen_macro_key_;
 
 		void initializeLibusb(InitializedDevice & current_device);
 
@@ -142,7 +142,7 @@ class KeyboardDriver
 		virtual KeyStatus processKeyEvent(InitializedDevice & current_device,
 			uint64_t * pressed_keys, unsigned int actual_length) = 0;
 		virtual KeyStatus getPressedKeys(InitializedDevice & current_device, uint64_t * pressed_keys);
-		virtual const bool checkMacroKey(const uint64_t pressed_keys) = 0;
+		virtual const bool checkMacroKey(InitializedDevice & current_device, const uint64_t pressed_keys) = 0;
 
 		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
 		virtual void setLeds(const InitializedDevice & current_device);

@@ -52,10 +52,10 @@ void LogitechG510::initializeMacroKeys(const InitializedDevice & current_device)
 }
 
 /* return true if the pressed key is a macro key (G1-G18)  */
-const bool LogitechG510::checkMacroKey(const uint64_t pressed_keys) {
+const bool LogitechG510::checkMacroKey(InitializedDevice & device, const uint64_t pressed_keys) {
 	for (const auto & k : this->five_bytes_keys_map_ ) {
 		if( k.macro_key and (pressed_keys & to_type(k.key)) ) {
-			this->chosen_macro_key_ = k.name; // FIXME
+			device.chosen_macro_key = k.name;
 			return true;
 		}
 	}

@@ -75,7 +75,7 @@ class LogitechG510 : public KeyboardDriver
 		void processKeyEvent5Bytes(const InitializedDevice & device, uint64_t * pressed_keys);
 		void processKeyEvent2Bytes(const InitializedDevice & device, uint64_t * pressed_keys);
 		void initializeMacroKeys(const InitializedDevice & current_device);
-		const bool checkMacroKey(const uint64_t pressed_keys);
+		const bool checkMacroKey(InitializedDevice & current_device, const uint64_t pressed_keys);
 
 		std::vector< R_Key > five_bytes_keys_map_ = {
 			{1, 0x01, Keys::GK_KEY_G1,  true, "G1"},

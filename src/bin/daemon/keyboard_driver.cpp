@@ -412,7 +412,7 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & current_device) {
 
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
-				if( ! this->checkMacroKey(pressed_keys) ) {
+				if( ! this->checkMacroKey(current_device, pressed_keys) ) {
 					/* continue to store standard key events
 					 * while a macro key is not pressed */
 					// TODO limit ?
@@ -420,7 +420,7 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & current_device) {
 				}
 
 				/* macro key pressed, recording macro */
-				current_device.macros_man->setMacro(this->chosen_macro_key_, this->standard_keys_events_);
+				current_device.macros_man->setMacro(current_device.chosen_macro_key, this->standard_keys_events_);
 				keys_found = true;
 				this->standard_keys_events_.clear();
 				break;
@@ -464,8 +464,8 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 						this->setLeds(device);
 					}
 					else { /* check to run macro */
-						if( this->checkMacroKey(pressed_keys) )
-							device.macros_man->runMacro(this->chosen_macro_key_);
+						if( this->checkMacroKey(device, pressed_keys) )
+							device.macros_man->runMacro(device.chosen_macro_key);
 					}
 				}
 				break;
