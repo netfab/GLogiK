@@ -409,7 +409,6 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & current_device) {
 	while( ! keys_found and DaemonControl::is_daemon_enabled() and current_device.listen_status ) {
 		uint64_t pressed_keys = 0;
 		KeyStatus ret = this->getPressedKeys(current_device, &pressed_keys);
-		KeyEvent e;
 
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
@@ -421,8 +420,6 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & current_device) {
 				}
 
 				/* macro key pressed, recording macro */
-				e.pressed_keys = pressed_keys;
-				this->standard_keys_events_.push_back(e);
 				current_device.macros_man->setMacro(this->chosen_macro_key_, this->standard_keys_events_);
 				keys_found = true;
 				this->standard_keys_events_.clear();

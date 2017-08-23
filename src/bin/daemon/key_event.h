@@ -35,10 +35,9 @@ enum class EventValue : int8_t
 struct KeyEvent {
 	unsigned char event_code;
 	EventValue event;
-	uint64_t pressed_keys;
 
 	KeyEvent(unsigned char c=KEY_UNKNOWN, EventValue e=EventValue::EVENT_KEY_UNKNOWN, uint64_t p = 0)
-		: event_code(c), event(e), pressed_keys(p) {}
+		: event_code(c), event(e) {}
 };
 
 #endif
