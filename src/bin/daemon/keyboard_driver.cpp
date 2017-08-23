@@ -184,7 +184,6 @@ void KeyboardDriver::initializeMacroKey(const InitializedDevice & device, const 
 }
 
 KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & device) {
-
 	std::fill_n(device.keys_buffer, KEYS_BUFFER_LENGTH, 0);
 
 	int ret = libusb_interrupt_transfer(device.usb_handle, device.keys_endpoint,
@@ -265,7 +264,7 @@ void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device) {
 	}
 }
 
-void KeyboardDriver::handleModifierKeys(const InitializedDevice & device) {
+void KeyboardDriver::handleModifierKeys(InitializedDevice & device) {
 	if( device.previous_keys_buffer[1] == device.keys_buffer[1] )
 		return; /* nothing changed here */
 
@@ -287,7 +286,7 @@ void KeyboardDriver::handleModifierKeys(const InitializedDevice & device) {
 
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_CTRL) ) {
 		e.event_code = KEY_LEFTCTRL;
-		this->standard_keys_events_.push_back(e);
+		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_LEFT_CTRL);
 		if( diff == 0 )
@@ -295,7 +294,7 @@ void KeyboardDriver::handleModifierKeys(const InitializedDevice & device) {
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_SHIFT) ) {
 		e.event_code = KEY_LEFTSHIFT;
-		this->standard_keys_events_.push_back(e);
+		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_LEFT_SHIFT);
 		if( diff == 0 )
@@ -303,7 +302,7 @@ void KeyboardDriver::handleModifierKeys(const InitializedDevice & device) {
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_ALT) ) {
 		e.event_code = KEY_LEFTALT;
-		this->standard_keys_events_.push_back(e);
+		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_LEFT_ALT);
 		if( diff == 0 )
@@ -311,7 +310,7 @@ void KeyboardDriver::handleModifierKeys(const InitializedDevice & device) {
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_META) ) {
 		e.event_code = KEY_LEFTMETA;
-		this->standard_keys_events_.push_back(e);
+		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_LEFT_META);
 		if( diff == 0 )
@@ -319,7 +318,7 @@ void KeyboardDriver::handleModifierKeys(const InitializedDevice & device) {
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_CTRL) ) {
 		e.event_code = KEY_RIGHTCTRL;
-		this->standard_keys_events_.push_back(e);
+		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_CTRL);
 		if( diff == 0 )
@@ -327,7 +326,7 @@ void KeyboardDriver::handleModifierKeys(const InitializedDevice & device) {
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_SHIFT) ) {
 		e.event_code = KEY_RIGHTSHIFT;
-		this->standard_keys_events_.push_back(e);
+		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_SHIFT);
 		if( diff == 0 )
@@ -335,7 +334,7 @@ void KeyboardDriver::handleModifierKeys(const InitializedDevice & device) {
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_ALT) ) {
 		e.event_code = KEY_RIGHTALT;
-		this->standard_keys_events_.push_back(e);
+		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_ALT);
 		if( diff == 0 )
@@ -343,7 +342,7 @@ void KeyboardDriver::handleModifierKeys(const InitializedDevice & device) {
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_META) ) {
 		e.event_code = KEY_RIGHTMETA;
-		this->standard_keys_events_.push_back(e);
+		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_META);
 		if( diff == 0 )
@@ -361,7 +360,7 @@ void KeyboardDriver::handleModifierKeys(const InitializedDevice & device) {
 	this->logWarning("diff not equal to zero");
 }
 
-void KeyboardDriver::fillStandardKeysEvents(const InitializedDevice & device) {
+void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 	unsigned int i = 0;
 
 #if DEBUGGING_ON
@@ -392,7 +391,7 @@ void KeyboardDriver::fillStandardKeysEvents(const InitializedDevice & device) {
 				continue;
 			}
 
-			this->standard_keys_events_.push_back(e);
+			device.standard_keys_events.push_back(e);
 		}
 	}
 
@@ -417,9 +416,9 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device) {
 				}
 
 				/* macro key pressed, recording macro */
-				device.macros_man->setMacro(device.chosen_macro_key, this->standard_keys_events_);
+				device.macros_man->setMacro(device.chosen_macro_key, device.standard_keys_events);
 				keys_found = true;
-				this->standard_keys_events_.clear();
+				device.standard_keys_events.clear();
 				break;
 			default:
 				break;

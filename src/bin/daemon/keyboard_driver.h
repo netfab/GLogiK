@@ -78,6 +78,7 @@ struct InitializedDevice {
 	int transfer_length;
 	unsigned char keys_buffer[KEYS_BUFFER_LENGTH];
 	unsigned char previous_keys_buffer[KEYS_BUFFER_LENGTH];
+	std::vector<KeyEvent> standard_keys_events;
 	std::string chosen_macro_key;
 
 	InitializedDevice()=default;
@@ -148,7 +149,7 @@ class KeyboardDriver
 		virtual void setLeds(const InitializedDevice & device);
 
 		void initializeMacroKey(const InitializedDevice & device, const char* name);
-		void fillStandardKeysEvents(const InitializedDevice & device);
+		void fillStandardKeysEvents(InitializedDevice & device);
 		void sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
 			unsigned char * data, uint16_t wLength);
 
@@ -163,7 +164,6 @@ class KeyboardDriver
 
 		std::map<const std::string, InitializedDevice> initialized_devices_;
 		std::vector<std::thread> threads_;
-		std::vector<KeyEvent> standard_keys_events_;
 
 		/* USB HID Usage Tables as defined in USB specification,
 		 *        Chapter 10 "Keyboard/Keypad Page (0x07)"
@@ -201,7 +201,7 @@ class KeyboardDriver
 		void listenLoop(const std::string devID);
 		void updateCurrentLedsMask(InitializedDevice & device);
 		void enterMacroRecordMode(InitializedDevice & device);
-		void handleModifierKeys(const InitializedDevice & device);
+		void handleModifierKeys(InitializedDevice & device);
 };
 
 inline void KeyboardDriver::logWarning(const char* warning)
