@@ -95,21 +95,21 @@ void LogitechG510::processKeyEvent8Bytes(InitializedDevice & device) {
 	this->fillStandardKeysEvents(device);
 }
 
-KeyStatus LogitechG510::processKeyEvent(InitializedDevice & device, unsigned int actual_length)
+KeyStatus LogitechG510::processKeyEvent(InitializedDevice & device)
 {
 	device.pressed_keys = 0;
 
-	switch(actual_length) {
+	switch(device.transfer_length) {
 		case 2:
 #if DEBUGGING_ON
-			LOG(DEBUG1) << "2 bytes : " << this->getBytes(device, actual_length);
+			LOG(DEBUG1) << "2 bytes : " << this->getBytes(device);
 #endif
 			this->processKeyEvent2Bytes(device);
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 5:
 #if DEBUGGING_ON
-			LOG(DEBUG1) << "5 bytes : " << this->getBytes(device, actual_length);
+			LOG(DEBUG1) << "5 bytes : " << this->getBytes(device);
 #endif
 			this->processKeyEvent5Bytes(device);
 			if( device.pressed_keys == 0 ) /* skip release key events */
@@ -120,7 +120,7 @@ KeyStatus LogitechG510::processKeyEvent(InitializedDevice & device, unsigned int
 			/* process those events only if Macro Record Mode on */
 			if( device.current_leds_mask & to_type(Leds::GK_LED_MR) ) {
 #if DEBUGGING_ON
-				LOG(DEBUG1) << "8 bytes : processing standard key event : " << this->getBytes(device, actual_length);
+				LOG(DEBUG1) << "8 bytes : processing standard key event : " << this->getBytes(device);
 #endif
 				this->processKeyEvent8Bytes(device);
 				std::copy(
@@ -129,13 +129,13 @@ KeyStatus LogitechG510::processKeyEvent(InitializedDevice & device, unsigned int
 				return KeyStatus::S_KEY_PROCESSED;
 			}
 #if DEBUGGING_ON
-			LOG(DEBUG1) << "8 bytes : skipping standard key event : " << this->getBytes(device, actual_length);
+			LOG(DEBUG1) << "8 bytes : skipping standard key event : " << this->getBytes(device);
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
 		default:
 #if DEBUGGING_ON
-			LOG(DEBUG1) << "not implemented: " << actual_length << " bytes !";
+			LOG(DEBUG1) << "not implemented: " << device.transfer_length << " bytes !";
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;

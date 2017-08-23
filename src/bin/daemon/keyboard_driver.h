@@ -75,16 +75,16 @@ struct InitializedDevice {
 	std::vector<libusb_endpoint_descriptor> endpoints;
 	std::thread::id listen_thread_id;
 	uint8_t current_leds_mask;
+	int transfer_length;
 	unsigned char keys_buffer[KEYS_BUFFER_LENGTH];
 	unsigned char previous_keys_buffer[KEYS_BUFFER_LENGTH];
-	int8_t last_transfer_length;
 	std::string chosen_macro_key;
 
 	InitializedDevice()=default;
 
 	InitializedDevice(KeyboardDevice k, uint8_t b, uint8_t n)
 	  : device(k), bus(b), num(n), keys_endpoint(0), listen_status(false),
-		pressed_keys(0), current_leds_mask(0), last_transfer_length(0)
+		pressed_keys(0), current_leds_mask(0), transfer_length(0)
 	{
 		this->usb_device = nullptr;
 		this->usb_handle = nullptr;
@@ -136,11 +136,11 @@ class KeyboardDriver
 		DescriptorValues expected_usb_descriptors_;
 		int interrupt_key_read_length;
 
-		std::string getBytes(const InitializedDevice & device, unsigned int actual_length);
+		std::string getBytes(const InitializedDevice & device);
 		void logWarning(const char*);
 
 		virtual void initializeMacroKeys(const InitializedDevice & device) = 0;
-		virtual KeyStatus processKeyEvent(InitializedDevice & device, unsigned int actual_length) = 0;
+		virtual KeyStatus processKeyEvent(InitializedDevice & device) = 0;
 		virtual KeyStatus getPressedKeys(InitializedDevice & device);
 		virtual const bool checkMacroKey(InitializedDevice & device) = 0;
 

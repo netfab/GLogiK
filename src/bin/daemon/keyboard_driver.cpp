@@ -168,12 +168,12 @@ void KeyboardDriver::attachKernelDrivers(libusb_device_handle * usb_handle) {
 	this->to_attach_.clear();
 }
 
-std::string KeyboardDriver::getBytes(const InitializedDevice & device, unsigned int actual_length) {
-	if( actual_length == 0 )
+std::string KeyboardDriver::getBytes(const InitializedDevice & device) {
+	if( device.transfer_length == 0 )
 		return "";
 	std::ostringstream s;
 	s << std::hex << to_uint(device.keys_buffer[0]);
-	for(unsigned int x = 1; x < actual_length; x++) {
+	for(unsigned int x = 1; x < to_uint(device.transfer_length); x++) {
 		s << ", " << std::hex << to_uint(device.keys_buffer[x]);
 	}
 	return s.str();
@@ -184,23 +184,21 @@ void KeyboardDriver::initializeMacroKey(const InitializedDevice & device, const 
 }
 
 KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & device) {
-	int actual_length = 0;
 
 	std::fill_n(device.keys_buffer, KEYS_BUFFER_LENGTH, 0);
 
 	int ret = libusb_interrupt_transfer(device.usb_handle, device.keys_endpoint,
-		(unsigned char*)device.keys_buffer, this->interrupt_key_read_length, &actual_length, 10);
+		(unsigned char*)device.keys_buffer, this->interrupt_key_read_length, &(device.transfer_length), 10);
 
 	switch(ret) {
 		case 0:
-			device.last_transfer_length = actual_length;
-			if( actual_length > 0 ) {
+			if( device.transfer_length > 0 ) {
 #if DEBUGGING_ON
 				LOG(DEBUG)	<< "exp. rl: " << this->interrupt_key_read_length
-							<< " act_l: " << actual_length << ", xBuf[0]: "
+							<< " act_l: " << device.transfer_length << ", xBuf[0]: "
 							<< std::hex << to_uint(device.keys_buffer[0]);
 #endif
-				return this->processKeyEvent(device, actual_length);
+				return this->processKeyEvent(device);
 			}
 			break;
 		case LIBUSB_ERROR_TIMEOUT:
@@ -449,7 +447,7 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
 				/* update M1-MR leds status only after proper event */
-				if( device.last_transfer_length == this->leds_update_event_length_ ) {
+				if( device.transfer_length == this->leds_update_event_length_ ) {
 					this->updateCurrentLedsMask(device);
 					this->setLeds(device);
 
