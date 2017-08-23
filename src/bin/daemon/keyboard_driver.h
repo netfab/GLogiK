@@ -123,14 +123,14 @@ class KeyboardDriver
 
 		std::vector<KeyboardDevice> getSupportedDevices(void) const;
 
-		virtual void initializeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num);
-		virtual void closeDevice(const KeyboardDevice &device, const uint8_t bus, const uint8_t num);
+		virtual void initializeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
+		virtual void closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
 
 	protected:
 		std::ostringstream buffer_;
 		std::vector<KeyboardDevice> supported_devices_;
 
-		void initializeLibusb(InitializedDevice & current_device);
+		void initializeLibusb(InitializedDevice & device);
 
 		DescriptorValues expected_usb_descriptors_;
 		int interrupt_key_read_length;
@@ -138,16 +138,16 @@ class KeyboardDriver
 		std::string getBytes(const InitializedDevice & device, unsigned int actual_length);
 		void logWarning(const char*);
 
-		virtual void initializeMacroKeys(const InitializedDevice & current_device) = 0;
-		virtual KeyStatus processKeyEvent(InitializedDevice & current_device,
+		virtual void initializeMacroKeys(const InitializedDevice & device) = 0;
+		virtual KeyStatus processKeyEvent(InitializedDevice & device,
 			uint64_t * pressed_keys, unsigned int actual_length) = 0;
-		virtual KeyStatus getPressedKeys(InitializedDevice & current_device, uint64_t * pressed_keys);
-		virtual const bool checkMacroKey(InitializedDevice & current_device, const uint64_t pressed_keys) = 0;
+		virtual KeyStatus getPressedKeys(InitializedDevice & device, uint64_t * pressed_keys);
+		virtual const bool checkMacroKey(InitializedDevice & device, const uint64_t pressed_keys) = 0;
 
-		virtual void sendDeviceInitialization(const InitializedDevice & current_device);
-		virtual void setLeds(const InitializedDevice & current_device);
+		virtual void sendDeviceInitialization(const InitializedDevice & device);
+		virtual void setLeds(const InitializedDevice & device);
 
-		void initializeMacroKey(const InitializedDevice & current_device, const char* name);
+		void initializeMacroKey(const InitializedDevice & device, const char* name);
 		void fillStandardKeysEvents(const InitializedDevice & device);
 		void sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
 			unsigned char * data, uint16_t wLength);
@@ -193,14 +193,14 @@ class KeyboardDriver
 
 		void closeLibusb(void);
 		int handleLibusbError(int error_code);
-		void setConfiguration(const InitializedDevice & current_device);
-		void findExpectedUSBInterface(InitializedDevice & current_device);
+		void setConfiguration(const InitializedDevice & device);
+		void findExpectedUSBInterface(InitializedDevice & device);
 		void releaseInterfaces(libusb_device_handle * usb_handle);
 		void attachKernelDrivers(libusb_device_handle * usb_handle);
 		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
 		void listenLoop(const std::string devID);
-		void updateCurrentLedsMask(InitializedDevice & current_device, const uint64_t pressed_keys);
-		void enterMacroRecordMode(InitializedDevice & current_device);
+		void updateCurrentLedsMask(InitializedDevice & device, const uint64_t pressed_keys);
+		void enterMacroRecordMode(InitializedDevice & device);
 		void handleModifierKeys(const InitializedDevice & device);
 };
 

@@ -44,10 +44,10 @@ LogitechG510::LogitechG510() :
 LogitechG510::~LogitechG510() {
 }
 
-void LogitechG510::initializeMacroKeys(const InitializedDevice & current_device) {
+void LogitechG510::initializeMacroKeys(const InitializedDevice & device) {
 	for (const auto & k : this->five_bytes_keys_map_ ) {
 		if( k.macro_key )
-			this->initializeMacroKey(current_device, k.name);
+			this->initializeMacroKey(device, k.name);
 	}
 }
 
@@ -145,17 +145,17 @@ KeyStatus LogitechG510::processKeyEvent(InitializedDevice & device,
 	return KeyStatus::S_KEY_UNKNOWN;
 }
 
-void LogitechG510::setLeds(const InitializedDevice & current_device) {
+void LogitechG510::setLeds(const InitializedDevice & device) {
 	unsigned char leds_mask = 0;
 	for (auto l : this->leds_mask_ ) {
-		if( current_device.current_leds_mask & to_type(l.led) )
+		if( device.current_leds_mask & to_type(l.led) )
 			leds_mask |= l.mask;
 	}
 
-	LOG(DEBUG1) << "setting " << current_device.device.name << " M-Keys leds using current mask : 0x"
+	LOG(DEBUG1) << "setting " << device.device.name << " M-Keys leds using current mask : 0x"
 				<< std::hex << to_uint(leds_mask);
 	unsigned char leds_buffer[2] = { 4, leds_mask };
-	this->sendControlRequest(current_device.usb_handle, 0x304, 1, leds_buffer, 2);
+	this->sendControlRequest(device.usb_handle, 0x304, 1, leds_buffer, 2);
 }
 
 /*
@@ -168,7 +168,7 @@ void LogitechG510::setLeds(const InitializedDevice & current_device) {
  *	control of the keyboard.
  *	The following initialization disable (at least) this behavior.
  */
-void LogitechG510::sendDeviceInitialization(const InitializedDevice & current_device) {
+void LogitechG510::sendDeviceInitialization(const InitializedDevice & device) {
 	unsigned char usb_data[] = {
 		1, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0,
@@ -178,9 +178,9 @@ void LogitechG510::sendDeviceInitialization(const InitializedDevice & current_de
 		0x09, 0x02, 0, 0, 0, 0, 0, 0
 	};
 
-	LOG(INFO) << "sending " << current_device.device.name << " initialization requests";
-	this->sendControlRequest(current_device.usb_handle, 0x301, 1, usb_data, 19);
-	this->sendControlRequest(current_device.usb_handle, 0x309, 1, usb_data_2, 8);
+	LOG(INFO) << "sending " << device.device.name << " initialization requests";
+	this->sendControlRequest(device.usb_handle, 0x301, 1, usb_data, 19);
+	this->sendControlRequest(device.usb_handle, 0x309, 1, usb_data_2, 8);
 }
 
 } // namespace GLogiKd
