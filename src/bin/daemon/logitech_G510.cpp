@@ -52,9 +52,9 @@ void LogitechG510::initializeMacroKeys(const InitializedDevice & device) {
 }
 
 /* return true if the pressed key is a macro key (G1-G18)  */
-const bool LogitechG510::checkMacroKey(InitializedDevice & device, const uint64_t pressed_keys) {
+const bool LogitechG510::checkMacroKey(InitializedDevice & device) {
 	for (const auto & k : this->five_bytes_keys_map_ ) {
-		if( k.macro_key and (pressed_keys & to_type(k.key)) ) {
+		if( k.macro_key and (device.pressed_keys & to_type(k.key)) ) {
 			device.chosen_macro_key = k.name;
 			return true;
 		}
@@ -62,7 +62,7 @@ const bool LogitechG510::checkMacroKey(InitializedDevice & device, const uint64_
 	return false;
 }
 
-void LogitechG510::processKeyEvent2Bytes(const InitializedDevice & device, uint64_t * pressed_keys) {
+void LogitechG510::processKeyEvent2Bytes(InitializedDevice & device) {
 	if (device.keys_buffer[0] != 0x02) {
 		this->logWarning("warning : wrong first byte value on 2 bytes event");
 		return;
@@ -70,11 +70,11 @@ void LogitechG510::processKeyEvent2Bytes(const InitializedDevice & device, uint6
 
 	for (auto k : this->two_bytes_keys_map_ ) {
 		if( device.keys_buffer[k.index] & k.mask )
-			*pressed_keys |= to_type(k.key);
+			device.pressed_keys |= to_type(k.key);
 	}
 }
 
-void LogitechG510::processKeyEvent5Bytes(const InitializedDevice & device, uint64_t * pressed_keys) {
+void LogitechG510::processKeyEvent5Bytes(InitializedDevice & device) {
 	if (device.keys_buffer[0] != 0x03) {
 		this->logWarning("warning : wrong first byte value on 5 bytes event");
 		return;
@@ -82,11 +82,11 @@ void LogitechG510::processKeyEvent5Bytes(const InitializedDevice & device, uint6
 
 	for (auto k : this->five_bytes_keys_map_ ) {
 		if( device.keys_buffer[k.index] & k.mask )
-			*pressed_keys |= to_type(k.key);
+			device.pressed_keys |= to_type(k.key);
 	}
 }
 
-void LogitechG510::processKeyEvent8Bytes(const InitializedDevice & device, uint64_t * pressed_keys) {
+void LogitechG510::processKeyEvent8Bytes(InitializedDevice & device) {
 	if (device.keys_buffer[0] != 0x01) {
 		this->logWarning("warning : wrong first byte value on 8 bytes event");
 		return;
@@ -95,25 +95,24 @@ void LogitechG510::processKeyEvent8Bytes(const InitializedDevice & device, uint6
 	this->fillStandardKeysEvents(device);
 }
 
-KeyStatus LogitechG510::processKeyEvent(InitializedDevice & device,
-	uint64_t * pressed_keys, unsigned int actual_length)
+KeyStatus LogitechG510::processKeyEvent(InitializedDevice & device, unsigned int actual_length)
 {
-	*pressed_keys = 0;
+	device.pressed_keys = 0;
 
 	switch(actual_length) {
 		case 2:
 #if DEBUGGING_ON
 			LOG(DEBUG1) << "2 bytes : " << this->getBytes(device, actual_length);
 #endif
-			this->processKeyEvent2Bytes(device, pressed_keys);
+			this->processKeyEvent2Bytes(device);
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 5:
 #if DEBUGGING_ON
 			LOG(DEBUG1) << "5 bytes : " << this->getBytes(device, actual_length);
 #endif
-			this->processKeyEvent5Bytes(device, pressed_keys);
-			if( *pressed_keys == 0 ) /* skip release key events */
+			this->processKeyEvent5Bytes(device);
+			if( device.pressed_keys == 0 ) /* skip release key events */
 				return KeyStatus::S_KEY_SKIPPED;
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
@@ -123,7 +122,7 @@ KeyStatus LogitechG510::processKeyEvent(InitializedDevice & device,
 #if DEBUGGING_ON
 				LOG(DEBUG1) << "8 bytes : processing standard key event : " << this->getBytes(device, actual_length);
 #endif
-				this->processKeyEvent8Bytes(device, pressed_keys);
+				this->processKeyEvent8Bytes(device);
 				std::copy(
 						std::begin(device.keys_buffer), std::end(device.keys_buffer),
 						std::begin(device.previous_keys_buffer));

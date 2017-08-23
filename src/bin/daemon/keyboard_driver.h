@@ -68,6 +68,7 @@ struct InitializedDevice {
 	uint8_t num;
 	uint8_t keys_endpoint;
 	bool listen_status;
+	uint64_t pressed_keys;
 	libusb_device *usb_device;
 	libusb_device_handle *usb_handle;
 	MacrosManager *macros_man;
@@ -83,7 +84,7 @@ struct InitializedDevice {
 
 	InitializedDevice(KeyboardDevice k, uint8_t b, uint8_t n)
 	  : device(k), bus(b), num(n), keys_endpoint(0), listen_status(false),
-		current_leds_mask(0), last_transfer_length(0)
+		pressed_keys(0), current_leds_mask(0), last_transfer_length(0)
 	{
 		this->usb_device = nullptr;
 		this->usb_handle = nullptr;
@@ -139,10 +140,9 @@ class KeyboardDriver
 		void logWarning(const char*);
 
 		virtual void initializeMacroKeys(const InitializedDevice & device) = 0;
-		virtual KeyStatus processKeyEvent(InitializedDevice & device,
-			uint64_t * pressed_keys, unsigned int actual_length) = 0;
-		virtual KeyStatus getPressedKeys(InitializedDevice & device, uint64_t * pressed_keys);
-		virtual const bool checkMacroKey(InitializedDevice & device, const uint64_t pressed_keys) = 0;
+		virtual KeyStatus processKeyEvent(InitializedDevice & device, unsigned int actual_length) = 0;
+		virtual KeyStatus getPressedKeys(InitializedDevice & device);
+		virtual const bool checkMacroKey(InitializedDevice & device) = 0;
 
 		virtual void sendDeviceInitialization(const InitializedDevice & device);
 		virtual void setLeds(const InitializedDevice & device);
@@ -199,7 +199,7 @@ class KeyboardDriver
 		void attachKernelDrivers(libusb_device_handle * usb_handle);
 		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
 		void listenLoop(const std::string devID);
-		void updateCurrentLedsMask(InitializedDevice & device, const uint64_t pressed_keys);
+		void updateCurrentLedsMask(InitializedDevice & device);
 		void enterMacroRecordMode(InitializedDevice & device);
 		void handleModifierKeys(const InitializedDevice & device);
 };

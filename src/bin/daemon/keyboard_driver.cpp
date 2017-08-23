@@ -183,7 +183,7 @@ void KeyboardDriver::initializeMacroKey(const InitializedDevice & device, const 
 	device.macros_man->initializeMacroKey(name);
 }
 
-KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & device, uint64_t * pressed_keys) {
+KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & device) {
 	int actual_length = 0;
 
 	std::fill_n(device.keys_buffer, KEYS_BUFFER_LENGTH, 0);
@@ -200,7 +200,7 @@ KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & device, uint64_t * 
 							<< " act_l: " << actual_length << ", xBuf[0]: "
 							<< std::hex << to_uint(device.keys_buffer[0]);
 #endif
-				return this->processKeyEvent(device, pressed_keys, actual_length);
+				return this->processKeyEvent(device, actual_length);
 			}
 			break;
 		case LIBUSB_ERROR_TIMEOUT:
@@ -223,13 +223,13 @@ void KeyboardDriver::setLeds(const InitializedDevice & device) {
 	this->logWarning("setLeds not implemented");
 }
 
-void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, const uint64_t pressed_keys) {
+void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device) {
 	uint8_t & mask = device.current_leds_mask;
 	/* is macro record mode enabled ? */
 	bool MR_ON = mask & to_type(Leds::GK_LED_MR);
 	bool Mx_ON = false;
 
-	if( pressed_keys & to_type(Keys::GK_KEY_M1) ) {
+	if( device.pressed_keys & to_type(Keys::GK_KEY_M1) ) {
 		Mx_ON = mask & to_type(Leds::GK_LED_M1);
 		mask = 0;
 		device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M0);
@@ -238,7 +238,7 @@ void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, const uin
 			device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M1);
 		}
 	}
-	else if( pressed_keys & to_type(Keys::GK_KEY_M2) ) {
+	else if( device.pressed_keys & to_type(Keys::GK_KEY_M2) ) {
 		Mx_ON = mask & to_type(Leds::GK_LED_M2);
 		mask = 0;
 		device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M0);
@@ -247,7 +247,7 @@ void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, const uin
 			device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M2);
 		}
 	}
-	else if( pressed_keys & to_type(Keys::GK_KEY_M3) ) {
+	else if( device.pressed_keys & to_type(Keys::GK_KEY_M3) ) {
 		Mx_ON = mask & to_type(Leds::GK_LED_M3);
 		mask = 0;
 		device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M0);
@@ -257,7 +257,7 @@ void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, const uin
 		}
 	}
 
-	if( pressed_keys & to_type(Keys::GK_KEY_MR) ) {
+	if( device.pressed_keys & to_type(Keys::GK_KEY_MR) ) {
 		if(! MR_ON) { /* MR off, enable it */
 			mask |= to_type(Leds::GK_LED_MR);
 		}
@@ -407,12 +407,11 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device) {
 	bool keys_found = false;
 
 	while( ! keys_found and DaemonControl::is_daemon_enabled() and device.listen_status ) {
-		uint64_t pressed_keys = 0;
-		KeyStatus ret = this->getPressedKeys(device, &pressed_keys);
+		KeyStatus ret = this->getPressedKeys(device);
 
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
-				if( ! this->checkMacroKey(device, pressed_keys) ) {
+				if( ! this->checkMacroKey(device) ) {
 					/* continue to store standard key events
 					 * while a macro key is not pressed */
 					// TODO limit ?
@@ -440,19 +439,18 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 	uint8_t & mask = device.current_leds_mask;
 
 	LOG(DEBUG1) << "resetting M-Keys leds status";
-	device.current_leds_mask = 0;
+	mask = 0;
 	this->setLeds(device);
 
 	this->initializeMacroKeys(device);
 
 	while( DaemonControl::is_daemon_enabled() and device.listen_status ) {
-		uint64_t pressed_keys = 0;
-		KeyStatus ret = this->getPressedKeys(device, &pressed_keys);
+		KeyStatus ret = this->getPressedKeys(device);
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
 				/* update M1-MR leds status only after proper event */
 				if( device.last_transfer_length == this->leds_update_event_length_ ) {
-					this->updateCurrentLedsMask(device, pressed_keys);
+					this->updateCurrentLedsMask(device);
 					this->setLeds(device);
 
 					/* did we press the MR key ? */
@@ -464,7 +462,7 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 						this->setLeds(device);
 					}
 					else { /* check to run macro */
-						if( this->checkMacroKey(device, pressed_keys) )
+						if( this->checkMacroKey(device) )
 							device.macros_man->runMacro(device.chosen_macro_key);
 					}
 				}
