@@ -199,7 +199,7 @@ class KeyboardDriver
 		void attachKernelDrivers(libusb_device_handle * usb_handle);
 		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
 		void listenLoop(const std::string devID);
-		void updateCurrentLedsMask(InitializedDevice & device);
+		void updateCurrentLedsMask(InitializedDevice & device, bool force_MR_off=false);
 		void enterMacroRecordMode(InitializedDevice & device);
 		void handleModifierKeys(InitializedDevice & device);
 };

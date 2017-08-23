@@ -220,7 +220,7 @@ void KeyboardDriver::setLeds(const InitializedDevice & device) {
 	this->logWarning("setLeds not implemented");
 }
 
-void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device) {
+void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, bool force_MR_off) {
 	uint8_t & mask = device.current_leds_mask;
 	/* is macro record mode enabled ? */
 	bool MR_ON = mask & to_type(Leds::GK_LED_MR);
@@ -262,6 +262,8 @@ void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device) {
 			mask &= ~(to_type(Leds::GK_LED_MR));
 		}
 	}
+	else if(force_MR_off)
+		mask &= ~(to_type(Leds::GK_LED_MR));
 }
 
 void KeyboardDriver::handleModifierKeys(InitializedDevice & device) {
@@ -463,12 +465,12 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 					this->updateCurrentLedsMask(device);
 					this->setLeds(device);
 
-					/* did we press the MR key ? */
+					/* is macro record mode enabled ? */
 					if( mask & to_type(Leds::GK_LED_MR) ) {
 						this->enterMacroRecordMode(device);
 
 						/* disabling macro record mode */
-						mask &= ~(to_type(Leds::GK_LED_MR));
+						this->updateCurrentLedsMask(device, true);
 						this->setLeds(device);
 					}
 					else { /* check to run macro */
