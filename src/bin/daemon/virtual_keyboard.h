@@ -44,9 +44,9 @@ class VirtualKeyboard
 
 		std::ostringstream buffer_;
 
-		void free_device_and_throw(void);
-		void enable_event_type(unsigned int type);
-		void enable_event_code(unsigned int type, unsigned int code);
+		void freeDeviceAndThrow(void);
+		void enableEventType(unsigned int type);
+		void enableEventCode(unsigned int type, unsigned int code);
 };
 
 } // namespace GLogiKd

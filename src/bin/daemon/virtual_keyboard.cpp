@@ -39,17 +39,17 @@ VirtualKeyboard::VirtualKeyboard(const char* device_name) : buffer_("", std::ios
 	this->dev = libevdev_new();
 	libevdev_set_name(this->dev, device_name);
 
-	this->enable_event_type(EV_KEY);
+	this->enableEventType(EV_KEY);
 
 	{	/* linux/input-event-codes.h */
 		unsigned int i = 0;
 
 		for (i = KEY_ESC; i <= KEY_KPDOT; i++)
-			this->enable_event_code(EV_KEY, i);
+			this->enableEventCode(EV_KEY, i);
 		for (i = KEY_ZENKAKUHANKAKU; i <= KEY_F24; i++)
-			this->enable_event_code(EV_KEY, i);
+			this->enableEventCode(EV_KEY, i);
 		for (i = KEY_PLAYCD; i <= KEY_MICMUTE; i++)
-			this->enable_event_code(EV_KEY, i);
+			this->enableEventCode(EV_KEY, i);
 	}
 
 	int err = libevdev_uinput_create_from_device(this->dev,
@@ -58,7 +58,7 @@ VirtualKeyboard::VirtualKeyboard(const char* device_name) : buffer_("", std::ios
 	if (err < 0) {
 		this->buffer_.str("virtual device creation failure : ");
 		this->buffer_ << strerror( -(err) );
-		this->free_device_and_throw();
+		this->freeDeviceAndThrow();
 	}
 }
 
@@ -69,24 +69,24 @@ VirtualKeyboard::~VirtualKeyboard() {
 	libevdev_free(this->dev);
 }
 
-void VirtualKeyboard::free_device_and_throw(void) {
+void VirtualKeyboard::freeDeviceAndThrow(void) {
 	libevdev_free(this->dev);
 	throw GLogiKExcept(this->buffer_.str());
 }
 
-void VirtualKeyboard::enable_event_type(unsigned int type) {
+void VirtualKeyboard::enableEventType(unsigned int type) {
 	if ( libevdev_enable_event_type(this->dev, type) != 0 ) {
 		this->buffer_.str("enable event type failure : ");
 		this->buffer_ << type;
-		this->free_device_and_throw();
+		this->freeDeviceAndThrow();
 	}
 }
 
-void VirtualKeyboard::enable_event_code(unsigned int type, unsigned int code) {
+void VirtualKeyboard::enableEventCode(unsigned int type, unsigned int code) {
 	if ( libevdev_enable_event_code(this->dev, type, code, nullptr) != 0 ) {
 		this->buffer_.str("enable event code failure : type ");
 		this->buffer_ << type << " code " << code;
-		this->free_device_and_throw();
+		this->freeDeviceAndThrow();
 	}
 }
 
