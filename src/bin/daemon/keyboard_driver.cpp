@@ -134,12 +134,12 @@ int KeyboardDriver::handleLibusbError(int error_code) {
 	return error_code;
 }
 
-void KeyboardDriver::releaseInterfaces(libusb_device_handle * usb_handle) {
+void KeyboardDriver::releaseInterfaces(InitializedDevice & device) {
 	int ret = 0;
-	for(auto it = this->to_release_.begin(); it != this->to_release_.end();) {
+	for(auto it = device.to_release.begin(); it != device.to_release.end();) {
 		int numInt = (*it);
 		LOG(DEBUG1) << "trying to release claimed interface " << numInt;
-		ret = libusb_release_interface(usb_handle, numInt); /* release */
+		ret = libusb_release_interface(device.usb_handle, numInt); /* release */
 		if( this->handleLibusbError(ret) ) {
 			this->buffer_.str("failed to release interface ");
 			this->buffer_ << numInt;
@@ -148,7 +148,7 @@ void KeyboardDriver::releaseInterfaces(libusb_device_handle * usb_handle) {
 		}
 		it++;
 	}
-	this->to_release_.clear();
+	device.to_release.clear();
 }
 
 void KeyboardDriver::attachKernelDrivers(libusb_device_handle * usb_handle) {
@@ -580,7 +580,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 	catch ( const GLogiKExcept & e ) {
 		/* if we ever claimed or detached some interfaces, set them back
 		 * to the same state in which we found them */
-		this->releaseInterfaces( device.usb_handle );
+		this->releaseInterfaces( device );
 		this->attachKernelDrivers( device.usb_handle );
 		libusb_close( device.usb_handle );
 		throw;
@@ -841,7 +841,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
 					throw GLogiKExcept("error claiming interface");
 				}
-				this->to_release_.push_back(numInt);	/* claimed */
+				device.to_release.push_back(numInt);	/* claimed */
 
 				/* once that the interface is claimed, check that the right configuration is set */
 				LOG(DEBUG3) << "checking current active configuration";
@@ -947,7 +947,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 	delete device.macros_man;
 	device.macros_man = nullptr;
 
-	this->releaseInterfaces( device.usb_handle );
+	this->releaseInterfaces( device );
 	this->attachKernelDrivers( device.usb_handle );
 
 	libusb_close( device.usb_handle );

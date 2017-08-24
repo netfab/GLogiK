@@ -71,6 +71,7 @@ struct InitializedDevice {
 	uint64_t pressed_keys;
 	libusb_device *usb_device;
 	libusb_device_handle *usb_handle;
+	std::vector<int> to_release;
 	MacrosManager *macros_man;
 	std::vector<libusb_endpoint_descriptor> endpoints;
 	std::thread::id listen_thread_id;
@@ -159,7 +160,6 @@ class KeyboardDriver
 		libusb_context *context_;
 		libusb_device **list_;
 		std::vector<int> to_attach_;
-		std::vector<int> to_release_;
 		int8_t leds_update_event_length_;
 
 		std::map<const std::string, InitializedDevice> initialized_devices_;
@@ -195,7 +195,7 @@ class KeyboardDriver
 		int handleLibusbError(int error_code);
 		void setConfiguration(const InitializedDevice & device);
 		void findExpectedUSBInterface(InitializedDevice & device);
-		void releaseInterfaces(libusb_device_handle * usb_handle);
+		void releaseInterfaces(InitializedDevice & device);
 		void attachKernelDrivers(libusb_device_handle * usb_handle);
 		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
 		void listenLoop(const std::string devID);
