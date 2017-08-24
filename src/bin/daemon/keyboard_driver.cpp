@@ -220,15 +220,20 @@ void KeyboardDriver::setLeds(const InitializedDevice & device) {
 	this->logWarning("setLeds not implemented");
 }
 
-void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, bool force_MR_off) {
+/*
+ * return true if leds_mask has been updated (meaning that setLeds should be called)
+ */
+const bool KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, bool force_MR_off) {
 	uint8_t & mask = device.current_leds_mask;
 	/* is macro record mode enabled ? */
 	bool MR_ON = mask & to_type(Leds::GK_LED_MR);
 	bool Mx_ON = false;
+	bool mask_updated = false;
 
 	if( device.pressed_keys & to_type(Keys::GK_KEY_M1) ) {
 		Mx_ON = mask & to_type(Leds::GK_LED_M1);
 		mask = 0;
+		mask_updated = true;
 		device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M0);
 		if( ! Mx_ON ) {
 			mask |= to_type(Leds::GK_LED_M1);
@@ -238,6 +243,7 @@ void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, bool forc
 	else if( device.pressed_keys & to_type(Keys::GK_KEY_M2) ) {
 		Mx_ON = mask & to_type(Leds::GK_LED_M2);
 		mask = 0;
+		mask_updated = true;
 		device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M0);
 		if( ! Mx_ON ) {
 			mask |= to_type(Leds::GK_LED_M2);
@@ -247,6 +253,7 @@ void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, bool forc
 	else if( device.pressed_keys & to_type(Keys::GK_KEY_M3) ) {
 		Mx_ON = mask & to_type(Leds::GK_LED_M3);
 		mask = 0;
+		mask_updated = true;
 		device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M0);
 		if( ! Mx_ON ) {
 			mask |= to_type(Leds::GK_LED_M3);
@@ -261,9 +268,14 @@ void KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, bool forc
 		else { /* MR on, disable it */
 			mask &= ~(to_type(Leds::GK_LED_MR));
 		}
+		mask_updated = true;
 	}
-	else if(force_MR_off)
+	else if(force_MR_off) {
 		mask &= ~(to_type(Leds::GK_LED_MR));
+		mask_updated = true;
+	}
+
+	return mask_updated;
 }
 
 void KeyboardDriver::handleModifierKeys(InitializedDevice & device) {
@@ -460,18 +472,21 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 		KeyStatus ret = this->getPressedKeys(device);
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
-				/* update M1-MR leds status only after proper event */
+				/*
+				 * update M1-MR leds status, launch macro record mode and
+				 * run macros only after proper event length
+				 */
 				if( device.transfer_length == this->leds_update_event_length_ ) {
-					this->updateCurrentLedsMask(device);
-					this->setLeds(device);
+					if(this->updateCurrentLedsMask(device))
+						this->setLeds(device);
 
 					/* is macro record mode enabled ? */
 					if( mask & to_type(Leds::GK_LED_MR) ) {
 						this->enterMacroRecordMode(device);
 
 						/* disabling macro record mode */
-						this->updateCurrentLedsMask(device, true);
-						this->setLeds(device);
+						if(this->updateCurrentLedsMask(device, true))
+							this->setLeds(device);
 					}
 					else { /* check to run macro */
 						if( this->checkMacroKey(device) )
