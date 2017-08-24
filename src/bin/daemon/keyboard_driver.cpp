@@ -544,6 +544,38 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 		this->setConfiguration(device);
 		this->findExpectedUSBInterface(device);
 		this->sendDeviceInitialization(device);
+
+		this->buffer_.str("b");
+		this->buffer_ << to_uint(bus);
+		this->buffer_ << "d";
+		this->buffer_ << to_uint(num);
+
+		const std::string devID = this->buffer_.str();
+
+		/* virtual keyboard name */
+		this->buffer_.str("Virtual ");
+		this->buffer_ << device.device.name << " " << devID;
+
+		try {
+			device.macros_man = new MacrosManager(this->buffer_.str().c_str());
+		}
+		catch (const std::bad_alloc& e) { /* handle new() failure */
+			throw GLogiKExcept("macros manager allocation failure");
+		}
+
+		device.listen_status = true;
+		this->initialized_devices_[devID] = device;
+
+		/* spawn listening thread */
+		try {
+			std::thread listen_thread(&KeyboardDriver::listenLoop, this, devID);
+			this->threads_.push_back( std::move(listen_thread) );
+		}
+		catch (const std::system_error& e) {
+			this->buffer_.str("error while spawning listening thread : ");
+			this->buffer_ << e.what();
+			throw GLogiKExcept(this->buffer_.str());
+		}
 	}
 	catch ( const GLogiKExcept & e ) {
 		/* if we ever claimed or detached some interfaces, set them back
@@ -553,44 +585,6 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 		libusb_close( device.usb_handle );
 		throw;
 	}
-
-	this->buffer_.str("b");
-	this->buffer_ << to_uint(bus);
-	this->buffer_ << "d";
-	this->buffer_ << to_uint(num);
-
-	const std::string devID = this->buffer_.str();
-
-	/* virtual keyboard name */
-	this->buffer_.str("Virtual ");
-	this->buffer_ << device.device.name << " " << devID;
-
-	try {
-		device.macros_man = new MacrosManager(this->buffer_.str().c_str());
-	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
-		/* if we ever claimed or detached some interfaces, set them back
-		 * to the same state in which we found them */
-		this->releaseInterfaces( device.usb_handle );
-		this->attachKernelDrivers( device.usb_handle );
-		libusb_close( device.usb_handle );
-		throw GLogiKExcept("macros manager allocation failure");
-	}
-
-	device.listen_status = true;
-	this->initialized_devices_[devID] = device;
-
-	/* spawn listening thread */
-	try {
-		std::thread listen_thread(&KeyboardDriver::listenLoop, this, devID);
-		this->threads_.push_back( std::move(listen_thread) );
-	}
-	catch (const std::system_error& e) {
-		this->buffer_.str("error while spawning listening thread : ");
-		this->buffer_ << e.what();
-		throw GLogiKExcept(this->buffer_.str());
-	}
-
 }
 
 void KeyboardDriver::detachKernelDriver(libusb_device_handle * usb_handle, int numInt) {
