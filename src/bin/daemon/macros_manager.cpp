@@ -43,9 +43,19 @@ MacrosManager::~MacrosManager()
 }
 
 void MacrosManager::runMacro(const std::string &macro_key_name) {
-	LOG(INFO) << "running macro for " << macro_key_name << " key on macros profile : "
-		<< to_uint(this->currentActiveProfile_);
 	const std::vector<KeyEvent> & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
+	if(macro.size() == 0 ) {
+#if DEBUGGING_ON
+		LOG(DEBUG) << "Macros Profile: " << to_uint(this->currentActiveProfile_)
+			<< " - Macro Key: " << macro_key_name << " - no macro recorded";
+#endif
+		return;
+	}
+
+#if DEBUGGING_ON
+	LOG(INFO) << "Macros Profile: " << to_uint(this->currentActiveProfile_)
+		<< " - Macro Key: " << macro_key_name << " - running macro";
+#endif
 	for( const auto &key : macro ) {
 		this->virtual_keyboard.sendKeyEvent(key);
 	}
@@ -53,8 +63,10 @@ void MacrosManager::runMacro(const std::string &macro_key_name) {
 
 void MacrosManager::setMacro(const std::string &macro_key_name, std::vector<KeyEvent> & macro) {
 	try {
-		LOG(INFO) << "setting macro for " << macro_key_name << " key on macros profile : "
-			<< to_uint(this->currentActiveProfile_);
+#if DEBUGGING_ON
+		LOG(INFO) << "Macros Profile: " << to_uint(this->currentActiveProfile_)
+			<< " - Macro Key: " << macro_key_name << " - setting macro";
+#endif
 		this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name) = macro;
 	}
 	catch (const std::out_of_range& oor) {
