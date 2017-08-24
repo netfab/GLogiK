@@ -43,6 +43,8 @@ MacrosManager::~MacrosManager()
 }
 
 void MacrosManager::runMacro(const std::string &macro_key_name) {
+	LOG(INFO) << "running macro for " << macro_key_name << " key on macros profile : "
+		<< to_uint(this->currentActiveProfile_);
 	const std::vector<KeyEvent> & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
 	for( const auto &key : macro ) {
 		this->virtual_keyboard.sendKeyEvent(key);
@@ -51,6 +53,8 @@ void MacrosManager::runMacro(const std::string &macro_key_name) {
 
 void MacrosManager::setMacro(const std::string &macro_key_name, std::vector<KeyEvent> & macro) {
 	try {
+		LOG(INFO) << "setting macro for " << macro_key_name << " key on macros profile : "
+			<< to_uint(this->currentActiveProfile_);
 		this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name) = macro;
 	}
 	catch (const std::out_of_range& oor) {
