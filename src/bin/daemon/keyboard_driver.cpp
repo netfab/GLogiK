@@ -929,20 +929,24 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 	this->buffer_ << to_uint(num);
 
 	const std::string devID = this->buffer_.str();
-
-	// FIXME at() exception ?
 	InitializedDevice & device = this->initialized_devices_[devID];
-	for(auto it2 = this->threads_.begin(); it2 != this->threads_.end();) {
-		if( device.listen_thread_id == (*it2).get_id() ) {
+
+	bool found = false;
+	for(auto it = this->threads_.begin(); it != this->threads_.end();) {
+		if( device.listen_thread_id == (*it).get_id() ) {
+			found = true;
 			LOG(INFO) << "waiting for " << device.device.name << " listening thread";
-			(*it2).join();
-			it2 = this->threads_.erase(it2);
+			(*it).join();
+			it = this->threads_.erase(it);
 			break;
 		}
 		else {
-			it2++;
+			it++;
 		}
 	}
+
+	if(! found)
+		this->logWarning("listening thread not found !");
 
 	delete device.macros_man;
 	device.macros_man = nullptr;
