@@ -574,7 +574,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 		this->releaseInterfaces( device.usb_handle );
 		this->attachKernelDrivers( device.usb_handle );
 		libusb_close( device.usb_handle );
-		throw GLogiKExcept("virtual keyboard allocation failure");
+		throw GLogiKExcept("macros manager allocation failure");
 	}
 
 	device.listen_status = true;
