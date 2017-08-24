@@ -72,6 +72,7 @@ struct InitializedDevice {
 	libusb_device *usb_device;
 	libusb_device_handle *usb_handle;
 	std::vector<int> to_release;
+	std::vector<int> to_attach;
 	MacrosManager *macros_man;
 	std::vector<libusb_endpoint_descriptor> endpoints;
 	std::thread::id listen_thread_id;
@@ -159,7 +160,6 @@ class KeyboardDriver
 		static uint8_t drivers_cnt_;		/* initialized drivers counter */
 		libusb_context *context_;
 		libusb_device **list_;
-		std::vector<int> to_attach_;
 		int8_t leds_update_event_length_;
 
 		std::map<const std::string, InitializedDevice> initialized_devices_;
@@ -193,11 +193,11 @@ class KeyboardDriver
 
 		void closeLibusb(void);
 		int handleLibusbError(int error_code);
-		void setConfiguration(const InitializedDevice & device);
+		void setConfiguration(InitializedDevice & device);
 		void findExpectedUSBInterface(InitializedDevice & device);
 		void releaseInterfaces(InitializedDevice & device);
-		void attachKernelDrivers(libusb_device_handle * usb_handle);
-		void detachKernelDriver(libusb_device_handle * usb_handle, int numInt);
+		void attachKernelDrivers(InitializedDevice & device);
+		void detachKernelDriver(InitializedDevice & device, int numInt);
 		void listenLoop(const std::string devID);
 		const bool updateCurrentLedsMask(InitializedDevice & device, bool force_MR_off=false);
 		void enterMacroRecordMode(InitializedDevice & device);

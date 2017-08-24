@@ -151,12 +151,12 @@ void KeyboardDriver::releaseInterfaces(InitializedDevice & device) {
 	device.to_release.clear();
 }
 
-void KeyboardDriver::attachKernelDrivers(libusb_device_handle * usb_handle) {
+void KeyboardDriver::attachKernelDrivers(InitializedDevice & device) {
 	int ret = 0;
-	for(auto it = this->to_attach_.begin(); it != this->to_attach_.end();) {
+	for(auto it = device.to_attach.begin(); it != device.to_attach.end();) {
 		int numInt = (*it);
 		LOG(DEBUG1) << "trying to attach kernel driver to interface " << numInt;
-		ret = libusb_attach_kernel_driver(usb_handle, numInt); /* attaching */
+		ret = libusb_attach_kernel_driver(device.usb_handle, numInt); /* attaching */
 		if( this->handleLibusbError(ret) ) {
 			this->buffer_.str("failed to attach kernel driver to interface ");
 			this->buffer_ << numInt;
@@ -165,7 +165,7 @@ void KeyboardDriver::attachKernelDrivers(libusb_device_handle * usb_handle) {
 		}
 		it++;
 	}
-	this->to_attach_.clear();
+	device.to_attach.clear();
 }
 
 std::string KeyboardDriver::getBytes(const InitializedDevice & device) {
@@ -580,22 +580,22 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 	catch ( const GLogiKExcept & e ) {
 		/* if we ever claimed or detached some interfaces, set them back
 		 * to the same state in which we found them */
-		this->releaseInterfaces( device );
-		this->attachKernelDrivers( device.usb_handle );
+		this->releaseInterfaces(device);
+		this->attachKernelDrivers(device);
 		libusb_close( device.usb_handle );
 		throw;
 	}
 }
 
-void KeyboardDriver::detachKernelDriver(libusb_device_handle * usb_handle, int numInt) {
-	int ret = libusb_kernel_driver_active(usb_handle, numInt);
+void KeyboardDriver::detachKernelDriver(InitializedDevice & device, int numInt) {
+	int ret = libusb_kernel_driver_active(device.usb_handle, numInt);
 	if( ret < 0 ) {
 		this->handleLibusbError(ret);
 		throw GLogiKExcept("libusb kernel_driver_active error");
 	}
 	if( ret ) {
 		LOG(DEBUG1) << "kernel driver currently attached to the interface " << numInt << ", trying to detach it";
-		ret = libusb_detach_kernel_driver(usb_handle, numInt); /* detaching */
+		ret = libusb_detach_kernel_driver(device.usb_handle, numInt); /* detaching */
 		if( this->handleLibusbError(ret) ) {
 			this->buffer_.str("detaching the kernel driver from USB interface ");
 			this->buffer_ << numInt << " failed, this is fatal";
@@ -604,7 +604,7 @@ void KeyboardDriver::detachKernelDriver(libusb_device_handle * usb_handle, int n
 			throw GLogiKExcept(this->buffer_.str());
 		}
 
-		this->to_attach_.push_back(numInt);	/* detached */
+		device.to_attach.push_back(numInt);	/* detached */
 	}
 	else {
 		LOG(DEBUG1) << "interface " << numInt << " is currently free :)";
@@ -626,7 +626,7 @@ void KeyboardDriver::detachKernelDriver(libusb_device_handle * usb_handle, int n
  *			libusb_set_configuration() may succeed.
  *
  */
-void KeyboardDriver::setConfiguration(const InitializedDevice & device) {
+void KeyboardDriver::setConfiguration(InitializedDevice & device) {
 	unsigned int i, j, k = 0;
 	int ret = 0;
 	LOG(DEBUG1) << "setting up usb device configuration";
@@ -674,7 +674,7 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & device) {
 				int numInt = (int)as_descriptor->bInterfaceNumber;
 
 				try {
-					this->detachKernelDriver(device.usb_handle, numInt);
+					this->detachKernelDriver(device, numInt);
 				}
 				catch ( const GLogiKExcept & e ) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
@@ -693,7 +693,7 @@ void KeyboardDriver::setConfiguration(const InitializedDevice & device) {
 		throw GLogiKExcept("libusb set_configuration failure");
 	}
 
-	this->attachKernelDrivers( device.usb_handle );
+	this->attachKernelDrivers(device);
 }
 
 void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
@@ -827,7 +827,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 				int numInt = (int)as_descriptor->bInterfaceNumber;
 
 				try {
-					this->detachKernelDriver(device.usb_handle, numInt);
+					this->detachKernelDriver(device, numInt);
 				}
 				catch ( const GLogiKExcept & e ) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
@@ -947,8 +947,8 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 	delete device.macros_man;
 	device.macros_man = nullptr;
 
-	this->releaseInterfaces( device );
-	this->attachKernelDrivers( device.usb_handle );
+	this->releaseInterfaces(device);
+	this->attachKernelDrivers(device);
 
 	libusb_close( device.usb_handle );
 	this->initialized_devices_.erase(devID);
