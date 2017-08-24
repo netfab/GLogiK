@@ -36,7 +36,7 @@ struct KeyEvent {
 	unsigned char event_code;
 	EventValue event;
 
-	KeyEvent(unsigned char c=KEY_UNKNOWN, EventValue e=EventValue::EVENT_KEY_UNKNOWN, uint64_t p = 0)
+	KeyEvent(unsigned char c=KEY_UNKNOWN, EventValue e=EventValue::EVENT_KEY_UNKNOWN)
 		: event_code(c), event(e) {}
 };
 
