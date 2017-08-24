@@ -27,6 +27,8 @@
 #include <libevdev/libevdev.h>
 #include <libevdev/libevdev-uinput.h>
 
+#include "key_event.h"
+
 namespace GLogiKd
 {
 
@@ -35,7 +37,8 @@ class VirtualKeyboard
 	public:
 		VirtualKeyboard(const char* device_name);
 		~VirtualKeyboard();
-		void foo(void);
+
+		void sendKeyEvent(const KeyEvent & key);
 
 	protected:
 	private:
@@ -43,6 +46,8 @@ class VirtualKeyboard
 		struct libevdev_uinput *uidev;
 
 		std::ostringstream buffer_;
+
+		void handleLibevdevError(int ret);
 
 		void freeDeviceAndThrow(void);
 		void enableEventType(unsigned int type);

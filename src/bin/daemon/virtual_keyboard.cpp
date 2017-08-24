@@ -20,13 +20,12 @@
  */
 
 #include <iostream>
-#include <thread>
-#include <chrono>
 
 #include <cstring>
 
 #include "virtual_keyboard.h"
 
+#include <syslog.h>
 #include "exception.h"
 #include "include/log.h"
 
@@ -90,14 +89,28 @@ void VirtualKeyboard::enableEventCode(unsigned int type, unsigned int code) {
 	}
 }
 
-void VirtualKeyboard::foo(void) {
-	LOG(DEBUG3) << "yeah foo !!!";
-	libevdev_uinput_write_event(uidev, EV_KEY, KEY_A, 1);
-	libevdev_uinput_write_event(uidev, EV_SYN, SYN_REPORT, 0);
-	libevdev_uinput_write_event(uidev, EV_KEY, KEY_A, 0);
-	libevdev_uinput_write_event(uidev, EV_SYN, SYN_REPORT, 0);
+void VirtualKeyboard::handleLibevdevError(int ret) {
+	switch(ret) {
+		default:
+			this->buffer_.str("warning : libevdev error (");
+			this->buffer_ << -ret << ") : " << strerror(-ret);
+			LOG(WARNING) << this->buffer_.str();
+			syslog(LOG_WARNING, this->buffer_.str().c_str());
+			break;
+	}
+}
 
-	std::this_thread::sleep_for (std::chrono::milliseconds(100));
+void VirtualKeyboard::sendKeyEvent(const KeyEvent & key) {
+	int ret = libevdev_uinput_write_event(uidev, EV_KEY, key.event_code, static_cast<int>(key.event));
+	if(ret == 0) {
+		ret = libevdev_uinput_write_event(uidev, EV_SYN, SYN_REPORT, 0);
+		if(ret != 0 ) {
+			this->handleLibevdevError(ret);
+		}
+	}
+	else {
+		this->handleLibevdevError(ret);
+	}
 }
 
 } // namespace GLogiKd
