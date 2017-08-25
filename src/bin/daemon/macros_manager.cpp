@@ -92,11 +92,11 @@ void MacrosManager::initializeMacroKey(const char* name) {
 	}
 }
 
-void MacrosManager::setCurrentActiveProfile(MemoryBank bank)
-{
+void MacrosManager::setCurrentActiveProfile(MemoryBank bank) {
+#if DEBUGGING_ON
 	LOG(DEBUG) << "setting current active macros profile : " << to_uint(bank);
+#endif
 	this->currentActiveProfile_ = bank;
-	// TODO reload conf
 }
 
 } // namespace GLogiKd
