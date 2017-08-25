@@ -144,15 +144,17 @@ KeyStatus LogitechG510::processKeyEvent(InitializedDevice & device)
 	return KeyStatus::S_KEY_UNKNOWN;
 }
 
-void LogitechG510::setLeds(const InitializedDevice & device) {
+void LogitechG510::setMxKeysLeds(const InitializedDevice & device) {
 	unsigned char leds_mask = 0;
 	for (auto l : this->leds_mask_ ) {
 		if( device.current_leds_mask & to_type(l.led) )
 			leds_mask |= l.mask;
 	}
 
-	LOG(DEBUG1) << "setting " << device.device.name << " M-Keys leds using current mask : 0x"
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "setting " << device.device.name << " MxKeys leds using current mask : 0x"
 				<< std::hex << to_uint(leds_mask);
+#endif
 	unsigned char leds_buffer[2] = { 4, leds_mask };
 	this->sendControlRequest(device.usb_handle, 0x304, 1, leds_buffer, 2);
 }

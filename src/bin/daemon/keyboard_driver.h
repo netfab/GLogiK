@@ -149,7 +149,7 @@ class KeyboardDriver
 		virtual const bool checkMacroKey(InitializedDevice & device) = 0;
 
 		virtual void sendDeviceInitialization(const InitializedDevice & device);
-		virtual void setLeds(const InitializedDevice & device);
+		virtual void setMxKeysLeds(const InitializedDevice & device);
 
 		void initializeMacroKey(const InitializedDevice & device, const char* name);
 		void fillStandardKeysEvents(InitializedDevice & device);

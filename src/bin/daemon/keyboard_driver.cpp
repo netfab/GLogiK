@@ -216,12 +216,12 @@ KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & device) {
 	return KeyStatus::S_KEY_TIMEDOUT;
 }
 
-void KeyboardDriver::setLeds(const InitializedDevice & device) {
-	this->logWarning("setLeds not implemented");
+void KeyboardDriver::setMxKeysLeds(const InitializedDevice & device) {
+	this->logWarning("setMxKeysLeds not implemented");
 }
 
 /*
- * return true if leds_mask has been updated (meaning that setLeds should be called)
+ * return true if leds_mask has been updated (meaning that setMxKeysLeds should be called)
  */
 const bool KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, bool force_MR_off) {
 	uint8_t & mask = device.current_leds_mask;
@@ -473,9 +473,9 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 
 	uint8_t & mask = device.current_leds_mask;
 
-	LOG(DEBUG1) << "resetting M-Keys leds status";
+	LOG(DEBUG1) << "resetting MxKeys leds status";
 	mask = 0;
-	this->setLeds(device);
+	this->setMxKeysLeds(device);
 
 	this->initializeMacroKeys(device);
 
@@ -489,7 +489,7 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 				 */
 				if( device.transfer_length == this->leds_update_event_length_ ) {
 					if(this->updateCurrentLedsMask(device))
-						this->setLeds(device);
+						this->setMxKeysLeds(device);
 
 					/* is macro record mode enabled ? */
 					if( mask & to_type(Leds::GK_LED_MR) ) {
@@ -497,7 +497,7 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 
 						/* disabling macro record mode */
 						if(this->updateCurrentLedsMask(device, true))
-							this->setLeds(device);
+							this->setMxKeysLeds(device);
 					}
 					else { /* check to run macro */
 						if( this->checkMacroKey(device) )
@@ -512,9 +512,9 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 
 	//device.macros_man->logProfiles();
 
-	LOG(DEBUG1) << "resetting M-Keys leds status";
+	LOG(DEBUG1) << "resetting MxKeys leds status";
 	mask = 0;
-	this->setLeds(device);
+	this->setMxKeysLeds(device);
 
 	LOG(INFO) << "exiting listening thread for " << device.device.name
 				<< " on bus " << to_uint(device.bus);
