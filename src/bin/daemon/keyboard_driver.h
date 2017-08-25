@@ -29,8 +29,8 @@
 #include <map>
 #include <sstream>
 #include <algorithm>
-
 #include <thread>
+#include <chrono>
 
 #include <libusb-1.0/libusb.h>
 
@@ -82,6 +82,7 @@ struct InitializedDevice {
 	unsigned char previous_keys_buffer[KEYS_BUFFER_LENGTH];
 	std::vector<KeyEvent> standard_keys_events;
 	std::string chosen_macro_key;
+	std::chrono::steady_clock::time_point last_call;
 
 	InitializedDevice()=default;
 
@@ -202,6 +203,7 @@ class KeyboardDriver
 		const bool updateCurrentLedsMask(InitializedDevice & device, bool force_MR_off=false);
 		void enterMacroRecordMode(InitializedDevice & device);
 		void handleModifierKeys(InitializedDevice & device);
+		uint16_t getTimeLapse(InitializedDevice & device);
 };
 
 inline void KeyboardDriver::logWarning(const char* warning)

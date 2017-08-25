@@ -283,6 +283,7 @@ void KeyboardDriver::handleModifierKeys(InitializedDevice & device) {
 		return; /* nothing changed here */
 
 	KeyEvent e;
+	e.interval = this->getTimeLapse(device);
 	uint8_t diff = 0;
 
 	/* some modifier keys were released */
@@ -374,6 +375,13 @@ void KeyboardDriver::handleModifierKeys(InitializedDevice & device) {
 	this->logWarning("diff not equal to zero");
 }
 
+uint16_t KeyboardDriver::getTimeLapse(InitializedDevice & device) {
+	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+	std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - device.last_call);
+	device.last_call = std::chrono::steady_clock::now();
+	return (ms.count() % 1000); /* max 1 second FIXME */
+}
+
 void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 	unsigned int i = 0;
 
@@ -391,6 +399,7 @@ void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 		}
 		else {
 			KeyEvent e;
+			e.interval = this->getTimeLapse(device);
 
 			if( device.previous_keys_buffer[i] == 0 ) {
 				e.event_code = KeyboardDriver::hid_keyboard_[ device.keys_buffer[i] ];
@@ -416,6 +425,8 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device) {
 	LOG(DEBUG) << "entering macro record mode";
 
 	bool keys_found = false;
+	/* initializing time_point */
+	device.last_call = std::chrono::steady_clock::now();
 
 	while( ! keys_found and DaemonControl::is_daemon_enabled() and device.listen_status ) {
 		KeyStatus ret = this->getPressedKeys(device);

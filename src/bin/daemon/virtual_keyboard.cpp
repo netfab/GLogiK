@@ -20,6 +20,8 @@
  */
 
 #include <iostream>
+#include <thread>
+#include <chrono>
 
 #include <cstring>
 
@@ -101,6 +103,12 @@ void VirtualKeyboard::handleLibevdevError(int ret) {
 }
 
 void VirtualKeyboard::sendKeyEvent(const KeyEvent & key) {
+	if( key.interval > 20 ) { // FIXME
+#if DEBUGGING_ON
+		LOG(DEBUG) << "sleeping for : " << key.interval << "ms";
+#endif
+		std::this_thread::sleep_for(std::chrono::milliseconds(key.interval));
+	}
 	int ret = libevdev_uinput_write_event(uidev, EV_KEY, key.event_code, static_cast<int>(key.event));
 	if(ret == 0) {
 		ret = libevdev_uinput_write_event(uidev, EV_SYN, SYN_REPORT, 0);
