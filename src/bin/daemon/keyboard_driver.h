@@ -83,6 +83,7 @@ struct InitializedDevice {
 	std::vector<KeyEvent> standard_keys_events;
 	std::string chosen_macro_key;
 	std::chrono::steady_clock::time_point last_call;
+	unsigned char rgb[3];
 
 	InitializedDevice()=default;
 
@@ -95,6 +96,9 @@ struct InitializedDevice {
 		this->macros_man = nullptr;
 		std::fill_n(this->keys_buffer, KEYS_BUFFER_LENGTH, 0);
 		std::fill_n(this->previous_keys_buffer, KEYS_BUFFER_LENGTH, 0);
+		this->rgb[0] = 0xFF;
+		this->rgb[1] = 0xFF;
+		this->rgb[2] = 0xFF;
 	}
 };
 
@@ -150,6 +154,7 @@ class KeyboardDriver
 
 		virtual void sendDeviceInitialization(const InitializedDevice & device);
 		virtual void setMxKeysLeds(const InitializedDevice & device);
+		virtual void setKeyboardColor(const InitializedDevice & device);
 
 		void initializeMacroKey(const InitializedDevice & device, const char* name);
 		void fillStandardKeysEvents(InitializedDevice & device);
@@ -201,6 +206,8 @@ class KeyboardDriver
 		void detachKernelDriver(InitializedDevice & device, int numInt);
 		void listenLoop(const std::string devID);
 		const bool updateCurrentLedsMask(InitializedDevice & device, bool force_MR_off=false);
+		void updateKeyboardColor(InitializedDevice & device, const uint8_t red=0xFF,
+			const uint8_t green=0xFF, const uint8_t blue=0xFF);
 		void enterMacroRecordMode(InitializedDevice & device);
 		void handleModifierKeys(InitializedDevice & device);
 		uint16_t getTimeLapse(InitializedDevice & device);

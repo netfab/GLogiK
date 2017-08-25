@@ -70,6 +70,7 @@ class LogitechG510 : public KeyboardDriver
 		KeyStatus processKeyEvent(InitializedDevice & device);
 		void sendDeviceInitialization(const InitializedDevice & device);
 		void setMxKeysLeds(const InitializedDevice & device);
+		void setKeyboardColor(const InitializedDevice & device);
 		void processKeyEvent8Bytes(InitializedDevice & device);
 		void processKeyEvent5Bytes(InitializedDevice & device);
 		void processKeyEvent2Bytes(InitializedDevice & device);

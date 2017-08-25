@@ -144,6 +144,17 @@ KeyStatus LogitechG510::processKeyEvent(InitializedDevice & device)
 	return KeyStatus::S_KEY_UNKNOWN;
 }
 
+void LogitechG510::setKeyboardColor(const InitializedDevice & device) {
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "setting " << device.device.name << " keyboard color using rgb : 0x"
+				<< std::hex << to_uint(device.rgb[0])
+				<< std::hex << to_uint(device.rgb[1])
+				<< std::hex << to_uint(device.rgb[2]);
+#endif
+	unsigned char usb_data[4] = { 5, device.rgb[0], device.rgb[1], device.rgb[2] };
+	this->sendControlRequest(device.usb_handle, 0x305, 1, usb_data, 4);
+}
+
 void LogitechG510::setMxKeysLeds(const InitializedDevice & device) {
 	unsigned char leds_mask = 0;
 	for (auto l : this->leds_mask_ ) {

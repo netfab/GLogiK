@@ -217,7 +217,19 @@ KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & device) {
 }
 
 void KeyboardDriver::setMxKeysLeds(const InitializedDevice & device) {
-	this->logWarning("setMxKeysLeds not implemented");
+	this->logWarning("not implemented");
+}
+
+void KeyboardDriver::setKeyboardColor(const InitializedDevice & device) {
+	this->logWarning("not implemented");
+}
+
+void KeyboardDriver::updateKeyboardColor(InitializedDevice & device, const uint8_t red,
+	const uint8_t green, const uint8_t blue)
+{
+	device.rgb[0] = red;
+	device.rgb[1] = green;
+	device.rgb[2] = blue;
 }
 
 /*
@@ -478,6 +490,8 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 	this->setMxKeysLeds(device);
 
 	this->initializeMacroKeys(device);
+	this->updateKeyboardColor(device, 0xFF, 0x0, 0x0);
+	this->setKeyboardColor(device);
 
 	while( DaemonControl::is_daemon_enabled() and device.listen_status ) {
 		KeyStatus ret = this->getPressedKeys(device);
@@ -515,6 +529,10 @@ void KeyboardDriver::listenLoop(const std::string devID) {
 	LOG(DEBUG1) << "resetting MxKeys leds status";
 	mask = 0;
 	this->setMxKeysLeds(device);
+
+	LOG(DEBUG1) << "resetting keyboard color";
+	this->updateKeyboardColor(device);
+	this->setKeyboardColor(device);
 
 	LOG(INFO) << "exiting listening thread for " << device.device.name
 				<< " on bus " << to_uint(device.bus);
