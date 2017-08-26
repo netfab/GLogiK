@@ -476,14 +476,14 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device) {
 	LOG(DEBUG) << "exiting macro record mode";
 }
 
-void KeyboardDriver::runMacro(const std::string devID) {
+void KeyboardDriver::runMacro(const std::string & devID) {
 	InitializedDevice &device = this->initialized_devices_[devID];
 	LOG(DEBUG2) << "spawned running macro thread for " << device.device.name;
 	device.macros_man->runMacro(device.chosen_macro_key);
 	LOG(DEBUG2) << "exiting running macro thread";
 }
 
-void KeyboardDriver::listenLoop(const std::string devID) {
+void KeyboardDriver::listenLoop(const std::string & devID) {
 	InitializedDevice &device = this->initialized_devices_[devID];
 	device.listen_thread_id = std::this_thread::get_id();
 

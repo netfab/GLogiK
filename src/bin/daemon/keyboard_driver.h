@@ -204,14 +204,14 @@ class KeyboardDriver
 		void releaseInterfaces(InitializedDevice & device);
 		void attachKernelDrivers(InitializedDevice & device);
 		void detachKernelDriver(InitializedDevice & device, int numInt);
-		void listenLoop(const std::string devID);
+		void listenLoop(const std::string & devID);
 		const bool updateCurrentLedsMask(InitializedDevice & device, bool force_MR_off=false);
 		void updateKeyboardColor(InitializedDevice & device, const uint8_t red=0xFF,
 			const uint8_t green=0xFF, const uint8_t blue=0xFF);
 		void enterMacroRecordMode(InitializedDevice & device);
 		void handleModifierKeys(InitializedDevice & device);
 		uint16_t getTimeLapse(InitializedDevice & device);
-		void runMacro(const std::string devID);
+		void runMacro(const std::string & devID);
 };
 
 inline void KeyboardDriver::logWarning(const char* warning)
