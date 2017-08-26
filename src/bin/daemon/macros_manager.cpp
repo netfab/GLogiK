@@ -42,9 +42,14 @@ MacrosManager::~MacrosManager()
 {
 }
 
+const bool MacrosManager::macroDefined(const std::string &macro_key_name) {
+	const std::vector<KeyEvent> & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
+	return (macro.size() > 0);
+}
+
 void MacrosManager::runMacro(const std::string &macro_key_name) {
 	const std::vector<KeyEvent> & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
-	if(macro.size() == 0 ) {
+	if(macro.size() == 0) {
 #if DEBUGGING_ON
 		LOG(DEBUG) << "Macros Profile: " << to_uint(this->currentActiveProfile_)
 			<< " - Macro Key: " << macro_key_name << " - no macro recorded";

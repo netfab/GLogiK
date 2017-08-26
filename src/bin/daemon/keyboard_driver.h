@@ -211,6 +211,7 @@ class KeyboardDriver
 		void enterMacroRecordMode(InitializedDevice & device);
 		void handleModifierKeys(InitializedDevice & device);
 		uint16_t getTimeLapse(InitializedDevice & device);
+		void runMacro(const std::string devID);
 };
 
 inline void KeyboardDriver::logWarning(const char* warning)

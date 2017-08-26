@@ -53,6 +53,7 @@ class MacrosManager
 		void setCurrentActiveProfile(MemoryBank bank);
 		void setMacro(const std::string &macro_key_name, std::vector<KeyEvent> & macro);
 		void logProfiles(void);
+		const bool macroDefined(const std::string &macro_key_name);
 		void runMacro(const std::string &macro_key_name);
 
 	protected:
