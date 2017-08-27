@@ -217,11 +217,15 @@ KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & device) {
 }
 
 void KeyboardDriver::setMxKeysLeds(const InitializedDevice & device) {
-	this->logWarning("not implemented");
+	LOG(WARNING) << __func__ << " not implemented";
 }
 
 void KeyboardDriver::setKeyboardColor(const InitializedDevice & device) {
-	this->logWarning("not implemented");
+	LOG(WARNING) << __func__ << " not implemented";
+}
+
+void KeyboardDriver::sendDeviceInitialization(const InitializedDevice & device) {
+	LOG(WARNING) << __func__ << " not implemented";
 }
 
 void KeyboardDriver::updateKeyboardColor(InitializedDevice & device, const uint8_t red,
@@ -571,10 +575,6 @@ void KeyboardDriver::sendControlRequest(libusb_device_handle * usb_handle, uint1
 	else {
 		LOG(DEBUG2) << "sent " << ret << " bytes - expected: " << wLength;
 	}
-}
-
-void KeyboardDriver::sendDeviceInitialization(const InitializedDevice & device) {
-	this->logWarning("sendDeviceInitialization not implemented");
 }
 
 void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num) {
