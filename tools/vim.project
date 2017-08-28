@@ -45,6 +45,14 @@ GLogiK=$PWD/.. CD=. {
 				virtual_keyboard.h
 			}
 		}
+		libraries=lib/ {
+			Makefile.am
+			GLogiKDBus=dbus/ {
+				Makefile.am
+				glogik_dbus.cpp
+				glogik_dbus.h
+			}
+		}
 	}
 }
 

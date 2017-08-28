@@ -27,8 +27,8 @@ AC_PROG_LN_S
 #AC_CHECK_HEADERS(climits)
 
 # libtool requirement and setup
-#LT_PREREQ([2.2.10])
-#LT_INIT([disable-static])
+LT_PREREQ([2.4.6])
+LT_INIT([disable-static])
 
 dnl C++ flags
 #AM_CXXFLAGS="-Wall"
