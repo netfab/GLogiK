@@ -29,7 +29,7 @@
 
 #include "key_event.h"
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 class VirtualKeyboard
@@ -54,6 +54,6 @@ class VirtualKeyboard
 		void enableEventCode(unsigned int type, unsigned int code);
 };
 
-} // namespace GLogiKd
+} // namespace GLogiK
 
 #endif

@@ -32,7 +32,7 @@
 #include "daemon_control.h"
 
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 class GLogiKDaemon : public DaemonControl
@@ -56,6 +56,6 @@ class GLogiKDaemon : public DaemonControl
 		static void handle_signal(int sig);
 };
 
-} // namespace GLogiKd
+} // namespace GLogiK
 
 #endif

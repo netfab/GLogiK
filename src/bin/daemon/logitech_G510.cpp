@@ -29,7 +29,7 @@
 
 #include "logitech_G510.h"
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 LogitechG510::LogitechG510() :
@@ -195,5 +195,5 @@ void LogitechG510::sendDeviceInitialization(const InitializedDevice & device) {
 	this->sendControlRequest(device.usb_handle, 0x309, 1, usb_data_2, 8);
 }
 
-} // namespace GLogiKd
+} // namespace GLogiK
 

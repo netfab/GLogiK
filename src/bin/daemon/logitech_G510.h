@@ -31,7 +31,7 @@
 
 #include "include/enums.h"
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 #define VENDOR_LOGITECH "046d"
@@ -134,6 +134,6 @@ class LogitechG510 : public KeyboardDriver
 		};
 };
 
-} // namespace GLogiKd
+} // namespace GLogiK
 
 #endif

@@ -34,7 +34,7 @@
 #include "include/enums.h"
 #include "globals.h"
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 bool KeyboardDriver::libusb_status_ = false;
@@ -1004,5 +1004,5 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 	this->initialized_devices_.erase(devID);
 }
 
-} // namespace GLogiKd
+} // namespace GLogiK
 

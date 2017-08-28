@@ -25,7 +25,7 @@
 #include <exception>
 #include <string>
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 class GLogiKExcept : public std::exception
@@ -64,7 +64,7 @@ class DisplayHelp : public std::exception
 
 };
 
-} // namespace GLogiKd
+} // namespace GLogiK
 
 #endif
 

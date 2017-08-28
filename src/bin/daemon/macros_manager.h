@@ -32,7 +32,7 @@
 #include "virtual_keyboard.h"
 #include "key_event.h"
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 enum class MemoryBank : uint8_t
@@ -69,6 +69,6 @@ class MacrosManager
 		VirtualKeyboard virtual_keyboard;
 };
 
-} // namespace GLogiKd
+} // namespace GLogiK
 
 #endif

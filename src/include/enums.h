@@ -25,7 +25,7 @@
 #ifndef __GLOGIKD_ENUMS_H__
 #define __GLOGIKD_ENUMS_H__
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 const uint64_t one = 1;
@@ -91,6 +91,6 @@ enum class Leds : uint8_t
 	GK_LED_MR = 1 << 3,
 };
 
-} // namespace GLogiKd
+} // namespace GLogiK
 
 #endif

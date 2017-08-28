@@ -29,7 +29,7 @@
 #include "globals.h"
 #include "macros_manager.h"
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 MacrosManager::MacrosManager(const char* virtual_keyboard_name)
@@ -104,5 +104,5 @@ void MacrosManager::setCurrentActiveProfile(MemoryBank bank) {
 	this->currentActiveProfile_ = bank;
 }
 
-} // namespace GLogiKd
+} // namespace GLogiK
 

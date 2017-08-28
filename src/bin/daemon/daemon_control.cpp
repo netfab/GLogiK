@@ -21,7 +21,7 @@
 
 #include "daemon_control.h"
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 std::atomic<bool> DaemonControl::daemonized_(false);
@@ -40,5 +40,5 @@ bool DaemonControl::is_daemon_enabled() {
 	return DaemonControl::daemonized_;
 }
 
-} // namespace GLogiKd
+} // namespace GLogiK
 

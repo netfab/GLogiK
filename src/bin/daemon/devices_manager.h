@@ -36,7 +36,7 @@
 
 #include "globals.h"
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 struct DetectedDevice {
@@ -83,6 +83,6 @@ class DevicesManager
 		void cleanUnpluggedDevices(void);
 };
 
-} // namespace GLogiKd
+} // namespace GLogiK
 
 #endif

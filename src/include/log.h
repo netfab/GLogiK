@@ -52,7 +52,7 @@
 
 #include <config.h>
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 #ifndef DEBUGGING_ON
@@ -234,6 +234,6 @@ inline std::string NowTime()
 
 #endif // ifndef DEBUGGING_ON
 
-} // namespace GLogiKd
+} // namespace GLogiK
 
 #endif //__GLOGIKD_LOG_H__

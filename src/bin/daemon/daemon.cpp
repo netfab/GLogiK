@@ -52,7 +52,7 @@
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app)
@@ -263,5 +263,5 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	}
 }
 
-} // namespace GLogiKd
+} // namespace GLogiK
 

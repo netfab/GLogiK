@@ -21,7 +21,7 @@
 
 #include "exception.h"
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 GLogiKExcept::GLogiKExcept( const std::string& msg ) : message(msg) {}
@@ -49,5 +49,5 @@ const char* DisplayHelp::what( void ) const throw()
 }
 
 
-} // namespace GLogiKd
+} // namespace GLogiK
 

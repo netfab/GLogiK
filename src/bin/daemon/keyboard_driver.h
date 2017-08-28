@@ -42,7 +42,7 @@
 #include "key_event.h"
 #include "macros_manager.h"
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 #define KEYS_BUFFER_LENGTH 16
@@ -222,6 +222,6 @@ inline void KeyboardDriver::logWarning(const char* warning)
 	syslog(LOG_WARNING, this->buffer_.str().c_str());
 }
 
-} // namespace GLogiKd
+} // namespace GLogiK
 
 #endif

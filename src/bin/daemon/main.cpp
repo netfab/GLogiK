@@ -22,7 +22,7 @@
 #include "daemon.h"
 #include "exception.h"
 
-using namespace GLogiKd;
+using namespace GLogiK;
 
 int main(int argc, char *argv[]) {
 	GLogiKDaemon daemon;

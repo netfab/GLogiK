@@ -31,7 +31,7 @@
 #include "exception.h"
 #include "include/log.h"
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 VirtualKeyboard::VirtualKeyboard(const char* device_name) : buffer_("", std::ios_base::app) {
@@ -121,5 +121,5 @@ void VirtualKeyboard::sendKeyEvent(const KeyEvent & key) {
 	}
 }
 
-} // namespace GLogiKd
+} // namespace GLogiK
 

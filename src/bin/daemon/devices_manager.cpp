@@ -34,7 +34,7 @@
 
 #include "logitech_G510.h"
 
-namespace GLogiKd
+namespace GLogiK
 {
 
 DevicesManager::DevicesManager() : buffer_("", std::ios_base::app) {
@@ -419,5 +419,5 @@ void DevicesManager::startMonitoring(void) {
 
 }
 
-} // namespace GLogiKd
+} // namespace GLogiK
 
