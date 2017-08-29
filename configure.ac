@@ -122,6 +122,7 @@ dnl -------------------------------------------------------------------------
 PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.0])
 PKG_CHECK_MODULES([LIBUDEV], [libudev])
 PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
+PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.10])
 
 AX_BOOST_BASE([1.56.0])
 AX_BOOST_PROGRAM_OPTIONS
@@ -134,6 +135,8 @@ AC_CONFIG_FILES([
         Makefile
         src/Makefile
         src/include/Makefile
+        src/lib/Makefile
+        src/lib/dbus/Makefile
         src/bin/Makefile
         src/bin/daemon/Makefile
 	])

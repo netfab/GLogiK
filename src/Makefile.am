@@ -1,3 +1,3 @@
 
-SUBDIRS = include bin lib
+SUBDIRS = include lib bin
 

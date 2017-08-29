@@ -19,7 +19,21 @@
  *
  */
 
+
+#include "glogik_dbus.h"
+#include "include/log.h"
+
 namespace GLogiK
 {
+
+DBus::DBus() {
+	LOG(INFO) << "dbus start";
+	dbus_error_init(&(this->err));
+}
+
+DBus::~DBus() {
+	LOG(INFO) << "dbus end";
+}
+
 } // namespace GLogiK
 

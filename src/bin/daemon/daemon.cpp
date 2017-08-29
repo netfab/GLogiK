@@ -55,7 +55,7 @@ namespace fs = boost::filesystem;
 namespace GLogiK
 {
 
-GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app)
+GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app), GKDBus(nullptr)
 {
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 
@@ -75,6 +75,9 @@ GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app)
 
 GLogiKDaemon::~GLogiKDaemon()
 {
+	if(this->GKDBus != nullptr)
+		delete this->GKDBus;
+
 	LOG(DEBUG2) << "exiting daemon process";
 	if( this->pid_file_.is_open() ) {
 		this->pid_file_.close();
@@ -112,6 +115,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			std::signal(SIGTERM, GLogiKDaemon::handle_signal);
 			//std::signal(SIGHUP, GLogiKDaemon::handle_signal);
 
+			this->GKDBus = new DBus();
 			d.startMonitoring();
 		}
 		else {

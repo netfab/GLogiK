@@ -50,7 +50,7 @@ configure_it: init_dir
 	cd $(build_dir) && $(top_srcdir)/configure \
 	--enable-debug DEBUG_DIR=$(PREFIX_DEV_DIR) \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
-	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
+	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR) --libdir=$(PREFIX_DIR)/lib64
 
 build_it:
 	cd $(build_dir) && make

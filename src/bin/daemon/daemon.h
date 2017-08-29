@@ -31,6 +31,7 @@
 
 #include "daemon_control.h"
 
+#include "lib/dbus/glogik_dbus.h"
 
 namespace GLogiK
 {
@@ -50,6 +51,7 @@ class GLogiKDaemon : public DaemonControl
 		std::string pid_file_name_ = "";
 		std::ofstream pid_file_;
 		std::ostringstream buffer_;
+		DBus* GKDBus;
 
 		void daemonize(void);
 		void parseCommandLine(const int& argc, char *argv[]);

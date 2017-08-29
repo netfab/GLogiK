@@ -22,4 +22,25 @@
 #ifndef __GLOGIK_DBUS_H__
 #define __GLOGIK_DBUS_H__
 
+#include <dbus/dbus.h>
+
+namespace GLogiK
+{
+
+class DBus
+{
+	public:
+		DBus();
+		~DBus();
+
+	protected:
+
+	private:
+		DBusError err;
+		DBusConnection* conn;
+
+};
+
+} // namespace GLogiK
+
 #endif
