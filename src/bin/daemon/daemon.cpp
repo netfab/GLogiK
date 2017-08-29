@@ -107,8 +107,10 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 		if( GLogiKDaemon::is_daemon_enabled() ) {
 			this->daemonize();
 
+			// TODO handle return values and errno ?
 			std::signal(SIGINT, GLogiKDaemon::handle_signal);
-			std::signal(SIGHUP, GLogiKDaemon::handle_signal);
+			std::signal(SIGTERM, GLogiKDaemon::handle_signal);
+			//std::signal(SIGHUP, GLogiKDaemon::handle_signal);
 
 			d.startMonitoring();
 		}
@@ -135,14 +137,22 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 }
 
 void GLogiKDaemon::handle_signal(int sig) {
+	std::ostringstream buff("caught signal : ", std::ios_base::app);
 	switch( sig ) {
-		case SIGINT: {
-			const char * msg = "catch SIGINT signal : bye bye";
-			syslog(LOG_INFO, msg);
-			LOG(INFO) << msg;
-			GLogiKDaemon::disable_daemon();
+		case SIGINT:
+		case SIGTERM:
+			buff << sig << " --> bye bye";
+			LOG(INFO) << buff.str();
+			syslog(LOG_INFO, buff.str().c_str());
 			std::signal(SIGINT, SIG_DFL);
-		}
+			std::signal(SIGTERM, SIG_DFL);
+			GLogiKDaemon::disable_daemon();
+			break;
+		default:
+			buff << sig << " --> unhandled";
+			LOG(WARNING) << buff.str();
+			syslog(LOG_WARNING, buff.str().c_str());
+			break;
 	}
 }
 
