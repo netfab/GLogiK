@@ -20,7 +20,6 @@ LANG=C
 
 #    config.guess \
 #    config.sub \
-#    ltmain.sh \
 
 MAINTAINERCLEANFILES = \
     aclocal.m4 \
@@ -29,9 +28,11 @@ MAINTAINERCLEANFILES = \
     install-sh \
     missing \
     configure \
+    config.h.in~ \
     config.guess \
     config.sub \
-    compile
+    compile \
+    ltmain.sh
 
 all:
 	@echo "Available targets :"
@@ -68,7 +69,7 @@ clean_it: uninstall_it
 
 fullclean_it: clean_it
 	cd $(build_dir) && make maintainer-clean
-	cd $(top_srcdir) && rm -v $(MAINTAINERCLEANFILES)
+	cd $(top_srcdir) && rm -f -v $(MAINTAINERCLEANFILES)
 	find $(top_srcdir) -name 'Makefile.in' -delete
 	cd $(build_dir) && find . -depth -type d -delete
 	cd $(build_dir) && test -f *.tar.gz && rm -v *.tar.gz || echo 'archive not found.'
