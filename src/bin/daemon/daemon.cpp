@@ -264,6 +264,7 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 		const char * msg = "displaying help";
 		syslog(LOG_INFO, msg);
 		LOG(INFO) << msg;
+		this->buffer_.str("");
 		desc.print( this->buffer_ );
 		throw DisplayHelp( this->buffer_.str() );
 	}
