@@ -116,6 +116,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			//std::signal(SIGHUP, GLogiKDaemon::handle_signal);
 
 			this->GKDBus = new DBus();
+			this->GKDBus->connectToSessionBus();
 			d.startMonitoring();
 		}
 		else {

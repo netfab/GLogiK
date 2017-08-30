@@ -33,11 +33,14 @@ class DBus
 		DBus();
 		~DBus();
 
+		void connectToSessionBus(void);
+
 	protected:
 
 	private:
-		DBusError err;
-		DBusConnection* conn;
+		DBusError error;
+		DBusConnection* sessionConnection;
+		DBusConnection* systemConnection;
 
 };
 

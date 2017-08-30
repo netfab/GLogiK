@@ -26,13 +26,36 @@
 namespace GLogiK
 {
 
-DBus::DBus() {
-	LOG(INFO) << "dbus start";
-	dbus_error_init(&(this->err));
+DBus::DBus() : sessionConnection(nullptr), systemConnection(nullptr)
+{
+	LOG(DEBUG1) << "dbus object initialization";
+	dbus_error_init(&(this->error));
 }
 
-DBus::~DBus() {
-	LOG(INFO) << "dbus end";
+DBus::~DBus()
+{
+	LOG(DEBUG1) << "dbus object destruction";
+	if(this->sessionConnection) {
+		LOG(DEBUG) << "closing DBus Session connection";
+		dbus_connection_close(this->sessionConnection);
+	}
+	if(this->systemConnection) {
+		LOG(DEBUG) << "closing DBus System connection";
+		dbus_connection_close(this->systemConnection);
+	}
+}
+
+void DBus::connectToSessionBus(void) {
+	this->sessionConnection = dbus_bus_get(DBUS_BUS_SESSION, &this->error);
+	if( dbus_error_is_set(&this->error) ) {
+		LOG(ERROR) << "DBus Session connection failure : " << this->error.message;
+		dbus_error_free(&this->error);
+	}
+	if( this->sessionConnection == nullptr ) {
+		// TODO exception
+		return;
+	}
+	LOG(INFO) << "DBus Session connection opened";
 }
 
 } // namespace GLogiK
