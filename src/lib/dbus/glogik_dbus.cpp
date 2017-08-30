@@ -23,6 +23,8 @@
 #include "glogik_dbus.h"
 #include "include/log.h"
 
+#include "lib/utils/exception.h"
+
 namespace GLogiK
 {
 
@@ -52,8 +54,7 @@ void DBus::connectToSessionBus(void) {
 		dbus_error_free(&this->error);
 	}
 	if( this->sessionConnection == nullptr ) {
-		// TODO exception
-		return;
+		throw GLogiKExcept("DBus Session connection failure");
 	}
 	LOG(INFO) << "DBus Session connection opened";
 }

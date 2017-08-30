@@ -75,9 +75,6 @@ GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app), GKDBus(nullptr)
 
 GLogiKDaemon::~GLogiKDaemon()
 {
-	if(this->GKDBus != nullptr)
-		delete this->GKDBus;
-
 	LOG(DEBUG2) << "exiting daemon process";
 	if( this->pid_file_.is_open() ) {
 		this->pid_file_.close();
@@ -117,7 +114,11 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 
 			this->GKDBus = new DBus();
 			this->GKDBus->connectToSessionBus();
+
 			d.startMonitoring();
+
+			if(this->GKDBus != nullptr)
+				delete this->GKDBus;
 		}
 		else {
 			syslog(LOG_INFO, "non-daemon mode" );
@@ -128,6 +129,9 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
+		if(this->GKDBus != nullptr)
+			delete this->GKDBus;
+
 		std::ostringstream buff(e.what(), std::ios_base::app);
 		if(errno != 0)
 			buff << " : " << strerror(errno);
