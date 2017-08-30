@@ -112,13 +112,20 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			std::signal(SIGTERM, GLogiKDaemon::handle_signal);
 			//std::signal(SIGHUP, GLogiKDaemon::handle_signal);
 
-			this->GKDBus = new DBus();
-			this->GKDBus->connectToSessionBus();
+			try {
+				this->GKDBus = new DBus();
+				this->GKDBus->connectToSessionBus();
 
-			d.startMonitoring();
+				d.startMonitoring();
 
-			if(this->GKDBus != nullptr)
-				delete this->GKDBus;
+				if(this->GKDBus != nullptr)
+					delete this->GKDBus;
+			}
+			catch ( const GLogiKExcept & e ) {
+				if(this->GKDBus != nullptr)
+					delete this->GKDBus;
+				throw;
+			}
 		}
 		else {
 			syslog(LOG_INFO, "non-daemon mode" );
@@ -129,9 +136,6 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
-		if(this->GKDBus != nullptr)
-			delete this->GKDBus;
-
 		std::ostringstream buff(e.what(), std::ios_base::app);
 		if(errno != 0)
 			buff << " : " << strerror(errno);
