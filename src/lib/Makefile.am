@@ -1,3 +1,3 @@
 
-SUBDIRS = dbus
+SUBDIRS = utils dbus
 

@@ -31,8 +31,6 @@ GLogiK=$PWD/.. CD=. {
 				daemon_control.h
 				devices_manager.cpp
 				devices_manager.h
-				exception.cpp
-				exception.h
 				globals.h
 				key_event.h
 				keyboard_driver.cpp
@@ -51,6 +49,11 @@ GLogiK=$PWD/.. CD=. {
 				Makefile.am
 				glogik_dbus.cpp
 				glogik_dbus.h
+			}
+			GLogiKUtils=utils/ {
+				Makefile.am
+				exception.cpp
+				exception.h
 			}
 		}
 	}
