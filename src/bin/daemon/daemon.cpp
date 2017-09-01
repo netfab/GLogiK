@@ -114,7 +114,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 
 			try {
 				this->GKDBus = new DBus();
-				this->GKDBus->connectToSessionBus("com.glogik.daemon");
+				this->GKDBus->connectToSessionBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
 
 				d.startMonitoring(this->GKDBus);
 

@@ -22,6 +22,8 @@
 #ifndef __GLOGIK_DBUS_H__
 #define __GLOGIK_DBUS_H__
 
+#define GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME "com.glogik.daemon"
+
 #include <sstream>
 #include <dbus/dbus.h>
 
@@ -43,10 +45,10 @@ class DBus
 
 	private:
 		std::ostringstream buffer_;
-		DBusError error;
-		DBusMessage* message;
-		DBusConnection* sessionConnection;
-		DBusConnection* systemConnection;
+		DBusError error_;
+		DBusMessage* message_;
+		DBusConnection* sessionConnection_;
+		DBusConnection* systemConnection_;
 
 		void checkDBusError(const char* error_message);
 };
