@@ -30,7 +30,8 @@
 namespace GLogiK
 {
 
-DBus::DBus() : message(nullptr), sessionConnection(nullptr), systemConnection(nullptr)
+DBus::DBus() : buffer_("", std::ios_base::app), message(nullptr),
+	sessionConnection(nullptr), systemConnection(nullptr)
 {
 	LOG(DEBUG1) << "dbus object initialization";
 	dbus_error_init(&(this->error));
@@ -49,20 +50,18 @@ DBus::~DBus()
 	}
 }
 
-const bool DBus::checkDBusError(const char* error_message) {
+void DBus::checkDBusError(const char* error_message) {
 	if( dbus_error_is_set(&this->error) ) {
-		LOG(ERROR) << error_message << " : " << this->error.message;
+		this->buffer_.str(error_message);
+		this->buffer_ << " : " << this->error.message;
 		dbus_error_free(&this->error);
-		return true;
+		throw GLogiKExcept(this->buffer_.str());
 	}
-	return false;
 }
 
 void DBus::connectToSessionBus(const char* connection_name) {
 	this->sessionConnection = dbus_bus_get(DBUS_BUS_SESSION, &this->error);
-	if( this->checkDBusError("DBus Session connection failure") ) {
-		throw GLogiKExcept("DBus Session connection failure");
-	}
+	this->checkDBusError("DBus Session connection failure");
 	LOG(DEBUG1) << "DBus Session connection opened";
 
 	// TODO check name flags
@@ -70,7 +69,7 @@ void DBus::connectToSessionBus(const char* connection_name) {
 		DBUS_NAME_FLAG_REPLACE_EXISTING, &this->error);
 	this->checkDBusError("DBus Session request name failure");
 	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
-		throw GLogiKExcept("Dbus Session request name failure");
+		throw GLogiKExcept("Dbus Session request name failure : not owner");
 	}
 
 	LOG(DEBUG1) << "DBus Session requested connection name : " << connection_name;
@@ -82,9 +81,7 @@ void DBus::addSessionSignalMatch(const char* interface) {
 	rule += "'";
 	dbus_bus_add_match(this->sessionConnection, rule.c_str(), &this->error);
 	dbus_connection_flush(this->sessionConnection);
-	if( this->checkDBusError("DBus Session match error") ) {
-		throw GLogiKExcept("Dbus Session match error");
-	}
+	this->checkDBusError("DBus Session match error");
 	LOG(DEBUG1) << "DBus Session match rule sent : " << rule;
 }
 

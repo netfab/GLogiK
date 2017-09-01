@@ -22,6 +22,7 @@
 #ifndef __GLOGIK_DBUS_H__
 #define __GLOGIK_DBUS_H__
 
+#include <sstream>
 #include <dbus/dbus.h>
 
 namespace GLogiK
@@ -41,12 +42,13 @@ class DBus
 	protected:
 
 	private:
+		std::ostringstream buffer_;
 		DBusError error;
 		DBusMessage* message;
 		DBusConnection* sessionConnection;
 		DBusConnection* systemConnection;
 
-		const bool checkDBusError(const char* error_message);
+		void checkDBusError(const char* error_message);
 };
 
 } // namespace GLogiK
