@@ -356,7 +356,7 @@ void DevicesManager::searchSupportedDevices(void) {
 	udev_enumerate_unref(enumerate);
 }
 
-void DevicesManager::startMonitoring(void) {
+void DevicesManager::startMonitoring(DBus* GKDBus) {
 	LOG(DEBUG2) << "initializing libudev";
 
 	this->udev = udev_new();
@@ -380,6 +380,8 @@ void DevicesManager::startMonitoring(void) {
 	this->fds[0].fd = this->fd_;
 	this->fds[0].events = POLLIN;
 
+	GKDBus->addSessionSignalMatch("test.signal.Type");
+
 	LOG(DEBUG2) << "loading known drivers";
 
 	this->drivers_.push_back( new LogitechG510() );
@@ -389,6 +391,11 @@ void DevicesManager::startMonitoring(void) {
 
 	while( DaemonControl::is_daemon_enabled() ) {
 		int ret = poll(this->fds, 1, 6000);
+
+		if( GKDBus->checkForNextSessionMessage() ) {
+			GKDBus->checkForSessionSignal("test.signal.Type", "Test");
+		}
+
 		// receive data ?
 		if( ret > 0 ) {
 			struct udev_device *dev = udev_monitor_receive_device(this->monitor);

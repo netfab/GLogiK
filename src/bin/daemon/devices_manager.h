@@ -33,6 +33,7 @@
 #include <config.h>
 
 #include "keyboard_driver.h"
+#include "lib/dbus/glogik_dbus.h"
 
 #include "globals.h"
 
@@ -61,7 +62,7 @@ class DevicesManager
 		DevicesManager(void);
 		~DevicesManager(void);
 
-		void startMonitoring(void);
+		void startMonitoring(DBus* GKDBus);
 		static std::string toString(const char* s) { return s == nullptr ? "" : s; };
 
 	protected:

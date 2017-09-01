@@ -114,9 +114,9 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 
 			try {
 				this->GKDBus = new DBus();
-				this->GKDBus->connectToSessionBus();
+				this->GKDBus->connectToSessionBus("com.glogik.daemon");
 
-				d.startMonitoring();
+				d.startMonitoring(this->GKDBus);
 
 				if(this->GKDBus != nullptr)
 					delete this->GKDBus;

@@ -33,15 +33,20 @@ class DBus
 		DBus();
 		~DBus();
 
-		void connectToSessionBus(void);
+		void connectToSessionBus(const char* connection_name);
+		void addSessionSignalMatch(const char* interface);
+		const bool checkForNextSessionMessage(void);
+		const bool checkForSessionSignal(const char* interface, const char* signal_name);
 
 	protected:
 
 	private:
 		DBusError error;
+		DBusMessage* message;
 		DBusConnection* sessionConnection;
 		DBusConnection* systemConnection;
 
+		const bool checkDBusError(const char* error_message);
 };
 
 } // namespace GLogiK

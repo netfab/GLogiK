@@ -20,6 +20,8 @@
  */
 
 
+#include <string>
+
 #include "glogik_dbus.h"
 #include "include/log.h"
 
@@ -28,7 +30,7 @@
 namespace GLogiK
 {
 
-DBus::DBus() : sessionConnection(nullptr), systemConnection(nullptr)
+DBus::DBus() : message(nullptr), sessionConnection(nullptr), systemConnection(nullptr)
 {
 	LOG(DEBUG1) << "dbus object initialization";
 	dbus_error_init(&(this->error));
@@ -47,16 +49,63 @@ DBus::~DBus()
 	}
 }
 
-void DBus::connectToSessionBus(void) {
-	this->sessionConnection = dbus_bus_get(DBUS_BUS_SESSION, &this->error);
+const bool DBus::checkDBusError(const char* error_message) {
 	if( dbus_error_is_set(&this->error) ) {
-		LOG(ERROR) << "DBus Session connection failure : " << this->error.message;
+		LOG(ERROR) << error_message << " : " << this->error.message;
 		dbus_error_free(&this->error);
+		return true;
 	}
-	if( this->sessionConnection == nullptr ) {
+	return false;
+}
+
+void DBus::connectToSessionBus(const char* connection_name) {
+	this->sessionConnection = dbus_bus_get(DBUS_BUS_SESSION, &this->error);
+	if( this->checkDBusError("DBus Session connection failure") ) {
 		throw GLogiKExcept("DBus Session connection failure");
 	}
-	LOG(INFO) << "DBus Session connection opened";
+	LOG(DEBUG1) << "DBus Session connection opened";
+
+	// TODO check name flags
+	int ret = dbus_bus_request_name(this->sessionConnection, connection_name,
+		DBUS_NAME_FLAG_REPLACE_EXISTING, &this->error);
+	this->checkDBusError("DBus Session request name failure");
+	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
+		throw GLogiKExcept("Dbus Session request name failure");
+	}
+
+	LOG(DEBUG1) << "DBus Session requested connection name : " << connection_name;
+}
+
+void DBus::addSessionSignalMatch(const char* interface) {
+	std::string rule = "type='signal',interface='";
+	rule += interface;
+	rule += "'";
+	dbus_bus_add_match(this->sessionConnection, rule.c_str(), &this->error);
+	dbus_connection_flush(this->sessionConnection);
+	if( this->checkDBusError("DBus Session match error") ) {
+		throw GLogiKExcept("Dbus Session match error");
+	}
+	LOG(DEBUG1) << "DBus Session match rule sent : " << rule;
+}
+
+const bool DBus::checkForNextSessionMessage(void) {
+	dbus_connection_read_write(this->sessionConnection, 0);
+	this->message = dbus_connection_pop_message(this->sessionConnection);
+	return (this->message != nullptr);
+}
+
+const bool DBus::checkForSessionSignal(const char* interface, const char* signal_name) {
+	if(this->message == nullptr)
+		return false;
+	LOG(DEBUG2) << "checking for signal";
+	if( dbus_message_is_signal(this->message, interface, signal_name) ) {
+		LOG(INFO) << "got signal";
+		dbus_message_unref(this->message);
+		return true;
+	}
+	dbus_message_unref(this->message);
+	return false;
+
 }
 
 } // namespace GLogiK
