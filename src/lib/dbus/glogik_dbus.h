@@ -39,10 +39,17 @@ class DBus
 		~DBus();
 
 		void connectToSessionBus(const char* connection_name);
-		void addSessionSignalMatch(const char* interface);
 		const bool checkForNextSessionMessage(void);
+
+		void addSessionSignalMatch(const char* interface);
 		const bool checkMessageForSignal(const char* interface, const char* signal_name);
+
 		std::string getNextStringArgument(void);
+
+		const bool checkMessageForMethodCallOnInterface(const char* interface, const char* method);
+		void initializeReplyToMethodCall(void);
+		void appendBooleanValueToReply(const bool value);
+		void sendSessionReply(void);
 
 	protected:
 
@@ -50,6 +57,8 @@ class DBus
 		std::ostringstream buffer_;
 		DBusError error_;
 		DBusMessage* message_;
+		DBusMessage* reply_;
+		DBusMessageIter rep_args_it_;
 		DBusConnection* sessionConnection_;
 		DBusConnection* systemConnection_;
 		std::vector<std::string> string_arguments_;

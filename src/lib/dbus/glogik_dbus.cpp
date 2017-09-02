@@ -30,7 +30,7 @@
 namespace GLogiK
 {
 
-DBus::DBus() : buffer_("", std::ios_base::app), message_(nullptr),
+DBus::DBus() : buffer_("", std::ios_base::app), message_(nullptr), reply_(nullptr),
 	sessionConnection_(nullptr), systemConnection_(nullptr)
 {
 	LOG(DEBUG1) << "dbus object initialization";
@@ -69,10 +69,55 @@ void DBus::connectToSessionBus(const char* connection_name) {
 		DBUS_NAME_FLAG_REPLACE_EXISTING, &this->error_);
 	this->checkDBusError("DBus Session request name failure");
 	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
-		throw GLogiKExcept("Dbus Session request name failure : not owner");
+		throw GLogiKExcept("DBus Session request name failure : not owner");
 	}
 
 	LOG(DEBUG1) << "DBus Session requested connection name : " << connection_name;
+}
+
+const bool DBus::checkMessageForMethodCallOnInterface(const char* interface, const char* method) {
+	if(this->message_ == nullptr)
+		return false;
+	return dbus_message_is_method_call(this->message_, interface, method);
+}
+
+void DBus::initializeReplyToMethodCall(void) {
+	if(this->message_ == nullptr) /* sanity check */
+		throw GLogiKExcept("DBus message is NULL");
+
+	/* initialize reply from message */
+	this->reply_ = dbus_message_new_method_return(this->message_);
+	if(this->reply_ == nullptr)
+		throw GLogiKExcept("can't allocate memory for DBus reply message");
+
+	/* initialize potential arguments iterator */
+	dbus_message_iter_init_append(this->reply_, &this->rep_args_it_);
+	LOG(DEBUG2) << "DBus reply initialized";
+}
+
+/* must be optionally called right after DBus::initializeReplyToMethodCall() */
+void DBus::appendBooleanValueToReply(const bool value) {
+	if( ! dbus_message_iter_append_basic(&this->rep_args_it_, DBUS_TYPE_BOOLEAN, &value) )
+		throw GLogiKExcept("DBus reply append boolean value failure, not enough memory");
+	LOG(DEBUG2) << "DBus reply boolean value appended";
+}
+
+void DBus::sendSessionReply(void) {
+	// TODO dbus_uint32_t serial;
+	if( ! dbus_connection_send(this->sessionConnection_, this->reply_, nullptr) ) {
+		dbus_message_unref(this->reply_);
+		throw GLogiKExcept("DBus reply sending failure");
+	}
+
+	dbus_connection_flush(this->sessionConnection_);
+	dbus_message_unref(this->reply_);
+	LOG(DEBUG2) << "DBus reply sent";
+}
+
+const bool DBus::checkForNextSessionMessage(void) {
+	dbus_connection_read_write(this->sessionConnection_, 0);
+	this->message_ = dbus_connection_pop_message(this->sessionConnection_);
+	return (this->message_ != nullptr);
 }
 
 void DBus::addSessionSignalMatch(const char* interface) {
@@ -83,12 +128,6 @@ void DBus::addSessionSignalMatch(const char* interface) {
 	dbus_connection_flush(this->sessionConnection_);
 	this->checkDBusError("DBus Session match error");
 	LOG(DEBUG1) << "DBus Session match rule sent : " << rule;
-}
-
-const bool DBus::checkForNextSessionMessage(void) {
-	dbus_connection_read_write(this->sessionConnection_, 0);
-	this->message_ = dbus_connection_pop_message(this->sessionConnection_);
-	return (this->message_ != nullptr);
 }
 
 std::string DBus::getNextStringArgument(void) {
