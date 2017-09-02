@@ -52,6 +52,13 @@ class DisplayHelp : public std::exception
 
 };
 
+class EmptyContainer : public GLogiKExcept
+{
+	public:
+		EmptyContainer( const std::string& msg = "" ) : GLogiKExcept(msg) {};
+		virtual ~EmptyContainer( void ) throw() {};
+};
+
 } // namespace GLogiK
 
 #endif

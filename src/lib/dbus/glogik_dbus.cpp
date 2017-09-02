@@ -19,7 +19,7 @@
  *
  */
 
-
+#include <algorithm>
 #include <string>
 
 #include "glogik_dbus.h"
@@ -91,12 +91,48 @@ const bool DBus::checkForNextSessionMessage(void) {
 	return (this->message_ != nullptr);
 }
 
-const bool DBus::checkForSessionSignal(const char* interface, const char* signal_name) {
+std::string DBus::getNextStringArgument(void) {
+	if( this->string_arguments_.empty() )
+		throw EmptyContainer("no string argument");
+	std::string ret = this->string_arguments_.back();
+	this->string_arguments_.pop_back();
+	return ret;
+}
+
+void DBus::fillInArguments(void) {
+	int current_type = 0;
+	LOG(DEBUG2) << "checking signal arguments";
+	this->string_arguments_.clear();
+
+	char* signal_value = nullptr;
+	DBusMessageIter arg_it;
+
+	dbus_message_iter_init(this->message_, &arg_it);
+	while ((current_type = dbus_message_iter_get_arg_type (&arg_it)) != DBUS_TYPE_INVALID) {
+		switch(current_type) {
+			case DBUS_TYPE_STRING:
+				dbus_message_iter_get_basic(&arg_it, &signal_value);
+				this->string_arguments_.push_back(signal_value);
+				LOG(DEBUG4) << "string arg value : " << signal_value;
+				break;
+			default: /* other dbus type */
+				break;
+		}
+
+		dbus_message_iter_next(&arg_it);
+	}
+
+	if( ! this->string_arguments_.empty() )
+		std::reverse(this->string_arguments_.begin(), this->string_arguments_.end());
+}
+
+const bool DBus::checkMessageForSignal(const char* interface, const char* signal_name) {
 	if(this->message_ == nullptr)
 		return false;
-	LOG(DEBUG2) << "checking for signal";
+	LOG(DEBUG) << "checking for signal";
 	if( dbus_message_is_signal(this->message_, interface, signal_name) ) {
-		LOG(INFO) << "got signal";
+		LOG(DEBUG1) << "got signal " << signal_name;
+		this->fillInArguments();
 		dbus_message_unref(this->message_);
 		return true;
 	}

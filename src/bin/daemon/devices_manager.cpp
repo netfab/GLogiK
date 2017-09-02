@@ -393,7 +393,15 @@ void DevicesManager::startMonitoring(DBus* GKDBus) {
 		int ret = poll(this->fds, 1, 6000);
 
 		if( GKDBus->checkForNextSessionMessage() ) {
-			GKDBus->checkForSessionSignal("test.signal.Type", "Test");
+			if( GKDBus->checkMessageForSignal("test.signal.Type", "Test") ) {
+				try {
+					LOG(INFO) << GKDBus->getNextStringArgument();
+					LOG(INFO) << GKDBus->getNextStringArgument();
+				}
+				catch ( const EmptyContainer & e ) {
+					LOG(DEBUG3) << e.what();
+				}
+			}
 		}
 
 		// receive data ?

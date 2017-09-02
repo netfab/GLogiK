@@ -24,6 +24,8 @@
 
 #define GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME "com.glogik.daemon"
 
+#include <string>
+#include <vector>
 #include <sstream>
 #include <dbus/dbus.h>
 
@@ -39,7 +41,8 @@ class DBus
 		void connectToSessionBus(const char* connection_name);
 		void addSessionSignalMatch(const char* interface);
 		const bool checkForNextSessionMessage(void);
-		const bool checkForSessionSignal(const char* interface, const char* signal_name);
+		const bool checkMessageForSignal(const char* interface, const char* signal_name);
+		std::string getNextStringArgument(void);
 
 	protected:
 
@@ -49,8 +52,10 @@ class DBus
 		DBusMessage* message_;
 		DBusConnection* sessionConnection_;
 		DBusConnection* systemConnection_;
+		std::vector<std::string> string_arguments_;
 
 		void checkDBusError(const char* error_message);
+		void fillInArguments(void);
 };
 
 } // namespace GLogiK
