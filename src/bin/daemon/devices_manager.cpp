@@ -395,14 +395,20 @@ void DevicesManager::startMonitoring(DBus* GKDBus) {
 		if( GKDBus->checkForNextSessionMessage() ) {
 			if( GKDBus->checkMessageForMethodCallOnInterface("com.glogik.Daemon.Device", "Stop") ) {
 				LOG(DEBUG) << "Stop called !";
+
 				try {
-					GKDBus->initializeReplyToMethodCall();
-					GKDBus->appendBooleanValueToReply(true);
-					GKDBus->sendSessionReply();
+					GKDBus->initializeMethodCallReply();
+					GKDBus->appendToMethodCallReply(true);
+				}
+				catch (const std::bad_alloc& e) { /* handle new() failure */
+					LOG(ERROR) << e.what();
 				}
 				catch ( const GLogiKExcept & e ) {
-					LOG(DEBUG3) << e.what();
+					LOG(ERROR) << e.what();
 				}
+
+				/* delete reply object if allocated */
+				GKDBus->sendMethodCallReply();
 			}
 			/*
 			if( GKDBus->checkMessageForSignal("test.signal.Type", "Test") ) {

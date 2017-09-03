@@ -49,6 +49,8 @@ GLogiK=$PWD/.. CD=. {
 				Makefile.am
 				glogik_dbus.cpp
 				glogik_dbus.h
+				GKDBusMsgReply.cpp
+				GKDBusMsgReply.h
 			}
 			GLogiKUtils=utils/ {
 				Makefile.am

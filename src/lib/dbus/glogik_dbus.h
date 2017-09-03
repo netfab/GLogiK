@@ -29,6 +29,8 @@
 #include <sstream>
 #include <dbus/dbus.h>
 
+#include "GKDBusMsgReply.h"
+
 namespace GLogiK
 {
 
@@ -47,9 +49,9 @@ class DBus
 		std::string getNextStringArgument(void);
 
 		const bool checkMessageForMethodCallOnInterface(const char* interface, const char* method);
-		void initializeReplyToMethodCall(void);
-		void appendBooleanValueToReply(const bool value);
-		void sendSessionReply(void);
+		void initializeMethodCallReply(void);
+		void appendToMethodCallReply(const bool value);
+		void sendMethodCallReply(void);
 
 	protected:
 
@@ -57,11 +59,11 @@ class DBus
 		std::ostringstream buffer_;
 		DBusError error_;
 		DBusMessage* message_;
-		DBusMessage* reply_;
-		DBusMessageIter rep_args_it_;
 		DBusConnection* sessionConnection_;
 		DBusConnection* systemConnection_;
 		std::vector<std::string> string_arguments_;
+
+		GKDBusMsgReply* reply_;
 
 		void checkDBusError(const char* error_message);
 		void fillInArguments(void);
