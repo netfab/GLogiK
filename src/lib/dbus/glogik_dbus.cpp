@@ -31,7 +31,7 @@ namespace GLogiK
 {
 
 DBus::DBus() : buffer_("", std::ios_base::app), message_(nullptr), reply_(nullptr),
-	sessionConnection_(nullptr), systemConnection_(nullptr)
+	currentConnection_(nullptr), sessionConnection_(nullptr), systemConnection_(nullptr)
 {
 	LOG(DEBUG1) << "dbus object initialization";
 	dbus_error_init(&(this->error_));
@@ -75,6 +75,24 @@ void DBus::connectToSessionBus(const char* connection_name) {
 	LOG(DEBUG1) << "DBus Session requested connection name : " << connection_name;
 }
 
+void DBus::setCurrentConnection(BusConnection current) {
+	switch(current) {
+		case BusConnection::GKDBUS_SESSION :
+			if(this->sessionConnection_ == nullptr)
+				throw GLogiKExcept("DBus Session connection not opened");
+			this->currentConnection_ = this->sessionConnection_;
+			break;
+		case BusConnection::GKDBUS_SYSTEM :
+			if(this->systemConnection_ == nullptr)
+				throw GLogiKExcept("DBus System connection not opened");
+			this->currentConnection_ = this->systemConnection_;
+			break;
+		default:
+			throw GLogiKExcept("asked connection not handled");
+			break;
+	}
+}
+
 /*
  *	DBus Method call check and reply
  */
@@ -88,7 +106,7 @@ const bool DBus::checkMessageForMethodCallOnInterface(const char* interface, con
 void DBus::initializeMethodCallReply(void) {
 	if(this->reply_) /* sanity check */
 		throw GLogiKExcept("DBus reply object already allocated");
-	this->reply_ = new GKDBusMsgReply(this->sessionConnection_, this->message_);
+	this->reply_ = new GKDBusMsgReply(this->currentConnection_, this->message_);
 }
 
 void DBus::appendToMethodCallReply(const bool value) {
@@ -101,6 +119,9 @@ void DBus::sendMethodCallReply(void) {
 	if(this->reply_) { /* sanity check */
 		delete this->reply_;
 		this->reply_ = nullptr;
+	}
+	else {
+		LOG(WARNING) << __func__ << " failure because reply object not contructed";
 	}
 }
 

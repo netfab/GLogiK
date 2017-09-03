@@ -397,14 +397,15 @@ void DevicesManager::startMonitoring(DBus* GKDBus) {
 				LOG(DEBUG) << "Stop called !";
 
 				try {
+					GKDBus->setCurrentConnection(BusConnection::GKDBUS_SESSION);
 					GKDBus->initializeMethodCallReply();
 					GKDBus->appendToMethodCallReply(true);
 				}
 				catch (const std::bad_alloc& e) { /* handle new() failure */
-					LOG(ERROR) << e.what();
+					LOG(ERROR) << "GKDBus reply allocation failure : " << e.what();
 				}
 				catch ( const GLogiKExcept & e ) {
-					LOG(ERROR) << e.what();
+					LOG(ERROR) << "GKDBus reply failure : " << e.what();
 				}
 
 				/* delete reply object if allocated */

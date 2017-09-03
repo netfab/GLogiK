@@ -29,7 +29,10 @@ namespace GLogiK
 {
 
 GKDBusMsgReply::GKDBusMsgReply(DBusConnection* conn, DBusMessage* message) : connection_(conn), reply_(nullptr) {
-	if(message == nullptr) /* sanity check */
+	/* sanity checks */
+	if(conn == nullptr)
+		throw GLogiKExcept("current connection is NULL");
+	if(message == nullptr)
 		throw GLogiKExcept("DBus message is NULL");
 
 	/* initialize reply from message */

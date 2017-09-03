@@ -34,6 +34,12 @@
 namespace GLogiK
 {
 
+enum class BusConnection : int8_t
+{
+	GKDBUS_SESSION = 0,
+	GKDBUS_SYSTEM,
+};
+
 class DBus
 {
 	public:
@@ -41,6 +47,8 @@ class DBus
 		~DBus();
 
 		void connectToSessionBus(const char* connection_name);
+		void setCurrentConnection(BusConnection current);
+
 		const bool checkForNextSessionMessage(void);
 
 		void addSessionSignalMatch(const char* interface);
@@ -59,6 +67,7 @@ class DBus
 		std::ostringstream buffer_;
 		DBusError error_;
 		DBusMessage* message_;
+		DBusConnection* currentConnection_;
 		DBusConnection* sessionConnection_;
 		DBusConnection* systemConnection_;
 		std::vector<std::string> string_arguments_;
