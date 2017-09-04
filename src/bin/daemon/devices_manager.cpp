@@ -390,7 +390,7 @@ void DevicesManager::startMonitoring(DBus* GKDBus) {
 	this->initializeDevices();
 
 	while( DaemonControl::is_daemon_enabled() ) {
-		int ret = poll(this->fds, 1, 6000);
+		int ret = poll(this->fds, 1, 1000);
 
 		if( GKDBus->checkForNextMessage(BusConnection::GKDBUS_SESSION) ) {
 			if( GKDBus->checkMessageForMethodCallOnInterface("com.glogik.Daemon.Device", "Stop") ) {
