@@ -47,7 +47,6 @@ class DBus
 		~DBus();
 
 		void connectToSessionBus(const char* connection_name);
-		void setCurrentConnection(BusConnection current);
 
 		const bool checkForNextSessionMessage(void);
 
@@ -57,7 +56,8 @@ class DBus
 		std::string getNextStringArgument(void);
 
 		const bool checkMessageForMethodCallOnInterface(const char* interface, const char* method);
-		void initializeMethodCallReply(void);
+
+		void initializeMethodCallReply(BusConnection current);
 		void appendToMethodCallReply(const bool value);
 		void sendMethodCallReply(void);
 
@@ -74,6 +74,7 @@ class DBus
 
 		GKDBusMsgReply* reply_;
 
+		void setCurrentConnection(BusConnection current);
 		void checkDBusError(const char* error_message);
 		void fillInArguments(void);
 };

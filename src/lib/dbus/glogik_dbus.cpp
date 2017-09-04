@@ -50,15 +50,6 @@ DBus::~DBus()
 	}
 }
 
-void DBus::checkDBusError(const char* error_message) {
-	if( dbus_error_is_set(&this->error_) ) {
-		this->buffer_.str(error_message);
-		this->buffer_ << " : " << this->error_.message;
-		dbus_error_free(&this->error_);
-		throw GLogiKExcept(this->buffer_.str());
-	}
-}
-
 void DBus::connectToSessionBus(const char* connection_name) {
 	this->sessionConnection_ = dbus_bus_get(DBUS_BUS_SESSION, &this->error_);
 	this->checkDBusError("DBus Session connection failure");
@@ -75,24 +66,6 @@ void DBus::connectToSessionBus(const char* connection_name) {
 	LOG(DEBUG1) << "DBus Session requested connection name : " << connection_name;
 }
 
-void DBus::setCurrentConnection(BusConnection current) {
-	switch(current) {
-		case BusConnection::GKDBUS_SESSION :
-			if(this->sessionConnection_ == nullptr)
-				throw GLogiKExcept("DBus Session connection not opened");
-			this->currentConnection_ = this->sessionConnection_;
-			break;
-		case BusConnection::GKDBUS_SYSTEM :
-			if(this->systemConnection_ == nullptr)
-				throw GLogiKExcept("DBus System connection not opened");
-			this->currentConnection_ = this->systemConnection_;
-			break;
-		default:
-			throw GLogiKExcept("asked connection not handled");
-			break;
-	}
-}
-
 /*
  *	DBus Method call check and reply
  */
@@ -103,9 +76,10 @@ const bool DBus::checkMessageForMethodCallOnInterface(const char* interface, con
 	return dbus_message_is_method_call(this->message_, interface, method);
 }
 
-void DBus::initializeMethodCallReply(void) {
+void DBus::initializeMethodCallReply(BusConnection current) {
 	if(this->reply_) /* sanity check */
 		throw GLogiKExcept("DBus reply object already allocated");
+	this->setCurrentConnection(current);
 	this->reply_ = new GKDBusMsgReply(this->currentConnection_, this->message_);
 }
 
@@ -133,6 +107,20 @@ const bool DBus::checkForNextSessionMessage(void) {
 	return (this->message_ != nullptr);
 }
 
+const bool DBus::checkMessageForSignal(const char* interface, const char* signal_name) {
+	if(this->message_ == nullptr)
+		return false;
+	LOG(DEBUG) << "checking for signal";
+	if( dbus_message_is_signal(this->message_, interface, signal_name) ) {
+		LOG(DEBUG1) << "got signal " << signal_name;
+		this->fillInArguments();
+		dbus_message_unref(this->message_);
+		return true;
+	}
+	dbus_message_unref(this->message_);
+	return false;
+}
+
 void DBus::addSessionSignalMatch(const char* interface) {
 	std::string rule = "type='signal',interface='";
 	rule += interface;
@@ -149,6 +137,19 @@ std::string DBus::getNextStringArgument(void) {
 	std::string ret = this->string_arguments_.back();
 	this->string_arguments_.pop_back();
 	return ret;
+}
+
+/*
+ * private
+ */
+
+void DBus::checkDBusError(const char* error_message) {
+	if( dbus_error_is_set(&this->error_) ) {
+		this->buffer_.str(error_message);
+		this->buffer_ << " : " << this->error_.message;
+		dbus_error_free(&this->error_);
+		throw GLogiKExcept(this->buffer_.str());
+	}
 }
 
 void DBus::fillInArguments(void) {
@@ -178,20 +179,25 @@ void DBus::fillInArguments(void) {
 		std::reverse(this->string_arguments_.begin(), this->string_arguments_.end());
 }
 
-const bool DBus::checkMessageForSignal(const char* interface, const char* signal_name) {
-	if(this->message_ == nullptr)
-		return false;
-	LOG(DEBUG) << "checking for signal";
-	if( dbus_message_is_signal(this->message_, interface, signal_name) ) {
-		LOG(DEBUG1) << "got signal " << signal_name;
-		this->fillInArguments();
-		dbus_message_unref(this->message_);
-		return true;
+void DBus::setCurrentConnection(BusConnection current) {
+	switch(current) {
+		case BusConnection::GKDBUS_SESSION :
+			if(this->sessionConnection_ == nullptr)
+				throw GLogiKExcept("DBus Session connection not opened");
+			this->currentConnection_ = this->sessionConnection_;
+			break;
+		case BusConnection::GKDBUS_SYSTEM :
+			if(this->systemConnection_ == nullptr)
+				throw GLogiKExcept("DBus System connection not opened");
+			this->currentConnection_ = this->systemConnection_;
+			break;
+		default:
+			throw GLogiKExcept("asked connection not handled");
+			break;
 	}
-	dbus_message_unref(this->message_);
-	return false;
-
 }
+
+/* -- */
 
 } // namespace GLogiK
 

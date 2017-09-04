@@ -397,8 +397,7 @@ void DevicesManager::startMonitoring(DBus* GKDBus) {
 				LOG(DEBUG) << "Stop called !";
 
 				try {
-					GKDBus->setCurrentConnection(BusConnection::GKDBUS_SESSION);
-					GKDBus->initializeMethodCallReply();
+					GKDBus->initializeMethodCallReply(BusConnection::GKDBUS_SESSION);
 					GKDBus->appendToMethodCallReply(true);
 				}
 				catch (const std::bad_alloc& e) { /* handle new() failure */
