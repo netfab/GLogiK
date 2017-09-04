@@ -33,7 +33,7 @@ class GKDBusMsgReply
 		GKDBusMsgReply(DBusConnection* conn, DBusMessage* message);
 		~GKDBusMsgReply();
 
-		void appendToReply(const bool value);
+		void appendToReply(const dbus_bool_t value);
 
 	protected:
 	private:

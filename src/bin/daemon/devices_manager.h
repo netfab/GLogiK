@@ -81,6 +81,7 @@ class DevicesManager
 		void searchSupportedDevices(void);
 		void initializeDevices(void);
 		void closeInitializedDevices(void);
+		const bool closeDevice(const std::string & devID);
 		void cleanUnpluggedDevices(void);
 };
 

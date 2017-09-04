@@ -58,7 +58,7 @@ GKDBusMsgReply::~GKDBusMsgReply() {
 	LOG(DEBUG2) << "DBus reply sent";
 }
 
-void GKDBusMsgReply::appendToReply(const bool value) {
+void GKDBusMsgReply::appendToReply(const dbus_bool_t value) {
 	if( ! dbus_message_iter_append_basic(&this->rep_args_it_, DBUS_TYPE_BOOLEAN, &value) )
 		throw GLogiKExcept("DBus reply append boolean value failure, not enough memory");
 	LOG(DEBUG2) << "DBus reply boolean value appended";

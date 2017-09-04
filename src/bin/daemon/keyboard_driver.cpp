@@ -633,6 +633,10 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 	}
 }
 
+const bool KeyboardDriver::isDeviceInitialized(const std::string & devID) const {
+	return ( this->initialized_devices_.count(devID) == 1 );
+}
+
 void KeyboardDriver::detachKernelDriver(InitializedDevice & device, int numInt) {
 	int ret = libusb_kernel_driver_active(device.usb_handle, numInt);
 	if( ret < 0 ) {
@@ -976,6 +980,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 
 	const std::string devID = this->buffer_.str();
 	InitializedDevice & device = this->initialized_devices_[devID];
+	device.listen_status = false;
 
 	bool found = false;
 	for(auto it = this->threads_.begin(); it != this->threads_.end();) {

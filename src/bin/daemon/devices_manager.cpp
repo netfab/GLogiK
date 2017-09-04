@@ -111,6 +111,40 @@ void DevicesManager::initializeDevices(void) {
 	LOG(INFO) << "device(s) initialized : " << this->initialized_devices_.size();
 }
 
+const bool DevicesManager::closeDevice(const std::string & devID) {
+	LOG(DEBUG2) << "trying to close device " << devID;
+
+	for(auto it = this->initialized_devices_.begin(); it != this->initialized_devices_.end(); ++it) {
+		for(const auto& driver : this->drivers_) {
+			try {
+				if( (*it).driver_ID == driver->getDriverID() ) {
+					if( driver->isDeviceInitialized(devID) ) {
+						driver->closeDevice( (*it).device, (*it).device_bus, (*it).device_num );
+
+						this->buffer_.str( (*it).device.name );
+						this->buffer_	<< "(" << (*it).device.vendor_id << ":" << (*it).device.product_id
+										<< ") on bus " << to_uint((*it).device_bus) << " closed";
+						LOG(INFO) << this->buffer_.str();
+						syslog(LOG_INFO, this->buffer_.str().c_str());
+
+						this->initialized_devices_.erase(it);
+						return true;
+					}
+				}
+			}
+			catch ( const GLogiKExcept & e ) {
+				syslog( LOG_ERR, e.what() );
+				LOG(ERROR) << e.what();
+				return false;
+			}
+		}
+	}
+
+	this->buffer_.str("device closing failure : device not found in initialized device");
+	LOG(ERROR) << this->buffer_.str();
+	syslog(LOG_ERR, this->buffer_.str().c_str());
+	return false;
+}
 
 void DevicesManager::closeInitializedDevices(void) {
 	LOG(DEBUG2) << "closing initialized devices";
@@ -389,15 +423,20 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 	this->searchSupportedDevices();
 	this->initializeDevices();
 
+	std::string devID = "";
+
 	while( DaemonControl::is_daemon_enabled() ) {
 		int ret = poll(this->fds, 1, 1000);
+		devID = "";
 
 		if( DBus->checkForNextMessage(BusConnection::GKDBUS_SESSION) ) {
 			if( DBus->checkMessageForMethodCallOnInterface("com.glogik.Daemon.Device", "Stop") ) {
+				bool closed = false;
 				LOG(DEBUG) << "Stop called !";
 
 				try {
-					LOG(INFO) << DBus->getNextStringArgument();
+					devID = DBus->getNextStringArgument();
+					closed = this->closeDevice(devID);
 				}
 				catch ( const EmptyContainer & e ) {
 					LOG(DEBUG3) << e.what();
@@ -405,7 +444,7 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 
 				try {
 					DBus->initializeMethodCallReply(BusConnection::GKDBUS_SESSION);
-					DBus->appendToMethodCallReply(true);
+					DBus->appendToMethodCallReply(closed);
 				}
 				catch (const std::bad_alloc& e) { /* handle new() failure */
 					LOG(ERROR) << "DBus reply allocation failure : " << e.what();
