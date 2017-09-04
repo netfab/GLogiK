@@ -397,6 +397,13 @@ void DevicesManager::startMonitoring(DBus* GKDBus) {
 				LOG(DEBUG) << "Stop called !";
 
 				try {
+					LOG(INFO) << GKDBus->getNextStringArgument();
+				}
+				catch ( const EmptyContainer & e ) {
+					LOG(DEBUG3) << e.what();
+				}
+
+				try {
 					GKDBus->initializeMethodCallReply(BusConnection::GKDBUS_SESSION);
 					GKDBus->appendToMethodCallReply(true);
 				}

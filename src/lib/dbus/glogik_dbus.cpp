@@ -100,7 +100,10 @@ const bool DBus::checkMessageForSignalOnInterface(const char* interface, const c
 const bool DBus::checkMessageForMethodCallOnInterface(const char* interface, const char* method) {
 	if(this->message_ == nullptr)
 		return false;
-	return dbus_message_is_method_call(this->message_, interface, method);
+	const bool ret = dbus_message_is_method_call(this->message_, interface, method);
+	if(ret)
+		this->fillInArguments();
+	return ret;
 }
 
 /* -- */
