@@ -22,7 +22,7 @@
 #include <algorithm>
 #include <string>
 
-#include "glogik_dbus.h"
+#include "GKDBus.h"
 #include "include/log.h"
 
 #include "lib/utils/exception.h"

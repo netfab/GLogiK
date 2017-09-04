@@ -31,7 +31,7 @@
 
 #include "daemon_control.h"
 
-#include "lib/dbus/glogik_dbus.h"
+#include "lib/dbus/GKDBus.h"
 
 namespace GLogiK
 {

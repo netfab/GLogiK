@@ -6,5 +6,5 @@ libGLogiKDBus_la_LIBADD = $(DBUS_LIBS) \
 				../utils/libGLogiKUtils.la
 
 libGLogiKDBus_la_SOURCES = \
-	glogik_dbus.cpp glogik_dbus.h \
+	GKDBus.cpp GKDBus.h \
 	GKDBusMsgReply.cpp GKDBusMsgReply.h
