@@ -66,9 +66,9 @@ class DBus
 		std::ostringstream buffer_;
 		DBusError error_;
 		DBusMessage* message_;
-		DBusConnection* currentConnection_;
-		DBusConnection* sessionConnection_;
-		DBusConnection* systemConnection_;
+		DBusConnection* current_conn_;
+		DBusConnection* session_conn_;
+		DBusConnection* system_conn_;
 		std::vector<std::string> string_arguments_;
 
 		GKDBusMsgReply* reply_;

@@ -31,7 +31,7 @@ namespace GLogiK
 {
 
 DBus::DBus() : buffer_("", std::ios_base::app), message_(nullptr), reply_(nullptr),
-	currentConnection_(nullptr), sessionConnection_(nullptr), systemConnection_(nullptr)
+	current_conn_(nullptr), session_conn_(nullptr), system_conn_(nullptr)
 {
 	LOG(DEBUG1) << "dbus object initialization";
 	dbus_error_init(&(this->error_));
@@ -40,13 +40,13 @@ DBus::DBus() : buffer_("", std::ios_base::app), message_(nullptr), reply_(nullpt
 DBus::~DBus()
 {
 	LOG(DEBUG1) << "dbus object destruction";
-	if(this->sessionConnection_) {
+	if(this->session_conn_) {
 		LOG(DEBUG) << "closing DBus Session connection";
-		dbus_connection_close(this->sessionConnection_);
+		dbus_connection_close(this->session_conn_);
 	}
-	if(this->systemConnection_) {
+	if(this->system_conn_) {
 		LOG(DEBUG) << "closing DBus System connection";
-		dbus_connection_close(this->systemConnection_);
+		dbus_connection_close(this->system_conn_);
 	}
 }
 
@@ -55,12 +55,12 @@ DBus::~DBus()
  */
 
 void DBus::connectToSessionBus(const char* connection_name) {
-	this->sessionConnection_ = dbus_bus_get(DBUS_BUS_SESSION, &this->error_);
+	this->session_conn_ = dbus_bus_get(DBUS_BUS_SESSION, &this->error_);
 	this->checkDBusError("DBus Session connection failure");
 	LOG(DEBUG1) << "DBus Session connection opened";
 
 	// TODO check name flags
-	int ret = dbus_bus_request_name(this->sessionConnection_, connection_name,
+	int ret = dbus_bus_request_name(this->session_conn_, connection_name,
 		DBUS_NAME_FLAG_REPLACE_EXISTING, &this->error_);
 	this->checkDBusError("DBus Session request name failure");
 	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
@@ -78,8 +78,8 @@ void DBus::connectToSessionBus(const char* connection_name) {
 
 const bool DBus::checkForNextMessage(BusConnection current) {
 	this->setCurrentConnection(current);
-	dbus_connection_read_write(this->currentConnection_, 0);
-	this->message_ = dbus_connection_pop_message(this->currentConnection_);
+	dbus_connection_read_write(this->current_conn_, 0);
+	this->message_ = dbus_connection_pop_message(this->current_conn_);
 	return (this->message_ != nullptr);
 }
 
@@ -117,8 +117,8 @@ void DBus::addSignalMatch(BusConnection current, const char* interface) {
 	std::string rule = "type='signal',interface='";
 	rule += interface;
 	rule += "'";
-	dbus_bus_add_match(this->currentConnection_, rule.c_str(), &this->error_);
-	dbus_connection_flush(this->currentConnection_);
+	dbus_bus_add_match(this->current_conn_, rule.c_str(), &this->error_);
+	dbus_connection_flush(this->current_conn_);
 	this->checkDBusError("DBus Session match error");
 	LOG(DEBUG1) << "DBus Session match rule sent : " << rule;
 }
@@ -133,7 +133,7 @@ void DBus::initializeMethodCallReply(BusConnection current) {
 	if(this->reply_) /* sanity check */
 		throw GLogiKExcept("DBus reply object already allocated");
 	this->setCurrentConnection(current);
-	this->reply_ = new GKDBusMsgReply(this->currentConnection_, this->message_);
+	this->reply_ = new GKDBusMsgReply(this->current_conn_, this->message_);
 }
 
 void DBus::appendToMethodCallReply(const bool value) {
@@ -205,14 +205,14 @@ void DBus::fillInArguments(void) {
 void DBus::setCurrentConnection(BusConnection current) {
 	switch(current) {
 		case BusConnection::GKDBUS_SESSION :
-			if(this->sessionConnection_ == nullptr)
+			if(this->session_conn_ == nullptr)
 				throw GLogiKExcept("DBus Session connection not opened");
-			this->currentConnection_ = this->sessionConnection_;
+			this->current_conn_ = this->session_conn_;
 			break;
 		case BusConnection::GKDBUS_SYSTEM :
-			if(this->systemConnection_ == nullptr)
+			if(this->system_conn_ == nullptr)
 				throw GLogiKExcept("DBus System connection not opened");
-			this->currentConnection_ = this->systemConnection_;
+			this->current_conn_ = this->system_conn_;
 			break;
 		default:
 			throw GLogiKExcept("asked connection not handled");
