@@ -48,18 +48,17 @@ class DBus
 
 		void connectToSessionBus(const char* connection_name);
 
-		const bool checkForNextSessionMessage(void);
-
-		void addSessionSignalMatch(const char* interface);
-		const bool checkMessageForSignal(const char* interface, const char* signal_name);
-
-		std::string getNextStringArgument(void);
-
+		const bool checkForNextMessage(BusConnection current);
+		const bool checkMessageForSignalOnInterface(const char* interface, const char* signal_name);
 		const bool checkMessageForMethodCallOnInterface(const char* interface, const char* method);
+
+		void addSignalMatch(BusConnection current, const char* interface);
 
 		void initializeMethodCallReply(BusConnection current);
 		void appendToMethodCallReply(const bool value);
 		void sendMethodCallReply(void);
+
+		std::string getNextStringArgument(void);
 
 	protected:
 

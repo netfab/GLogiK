@@ -380,7 +380,7 @@ void DevicesManager::startMonitoring(DBus* GKDBus) {
 	this->fds[0].fd = this->fd_;
 	this->fds[0].events = POLLIN;
 
-	//GKDBus->addSessionSignalMatch("test.signal.Type");
+	//GKDBus->addSignalMatch(BusConnection::GKDBUS_SESSION, "test.signal.Type");
 
 	LOG(DEBUG2) << "loading known drivers";
 
@@ -392,7 +392,7 @@ void DevicesManager::startMonitoring(DBus* GKDBus) {
 	while( DaemonControl::is_daemon_enabled() ) {
 		int ret = poll(this->fds, 1, 6000);
 
-		if( GKDBus->checkForNextSessionMessage() ) {
+		if( GKDBus->checkForNextMessage(BusConnection::GKDBUS_SESSION) ) {
 			if( GKDBus->checkMessageForMethodCallOnInterface("com.glogik.Daemon.Device", "Stop") ) {
 				LOG(DEBUG) << "Stop called !";
 
@@ -410,8 +410,8 @@ void DevicesManager::startMonitoring(DBus* GKDBus) {
 				/* delete reply object if allocated */
 				GKDBus->sendMethodCallReply();
 			}
-			/*
-			if( GKDBus->checkMessageForSignal("test.signal.Type", "Test") ) {
+/*
+			if( GKDBus->checkMessageForSignalOnInterface("test.signal.Type", "Test") ) {
 				try {
 					LOG(INFO) << GKDBus->getNextStringArgument();
 					LOG(INFO) << GKDBus->getNextStringArgument();
@@ -420,7 +420,7 @@ void DevicesManager::startMonitoring(DBus* GKDBus) {
 					LOG(DEBUG3) << e.what();
 				}
 			}
-			*/
+*/
 		}
 
 		// receive data ?

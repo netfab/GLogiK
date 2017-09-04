@@ -50,6 +50,10 @@ DBus::~DBus()
 	}
 }
 
+/*
+ * DBus connections
+ */
+
 void DBus::connectToSessionBus(const char* connection_name) {
 	this->sessionConnection_ = dbus_bus_get(DBUS_BUS_SESSION, &this->error_);
 	this->checkDBusError("DBus Session connection failure");
@@ -66,15 +70,61 @@ void DBus::connectToSessionBus(const char* connection_name) {
 	LOG(DEBUG1) << "DBus Session requested connection name : " << connection_name;
 }
 
+/* -- */
+
 /*
- *	DBus Method call check and reply
+ * check message methods
  */
+
+const bool DBus::checkForNextMessage(BusConnection current) {
+	this->setCurrentConnection(current);
+	dbus_connection_read_write(this->currentConnection_, 0);
+	this->message_ = dbus_connection_pop_message(this->currentConnection_);
+	return (this->message_ != nullptr);
+}
+
+const bool DBus::checkMessageForSignalOnInterface(const char* interface, const char* signal_name) {
+	if(this->message_ == nullptr)
+		return false;
+	LOG(DEBUG) << "checking for signal";
+	if( dbus_message_is_signal(this->message_, interface, signal_name) ) {
+		LOG(DEBUG1) << "got signal " << signal_name;
+		this->fillInArguments();
+		dbus_message_unref(this->message_);
+		return true;
+	}
+	dbus_message_unref(this->message_);
+	return false;
+}
 
 const bool DBus::checkMessageForMethodCallOnInterface(const char* interface, const char* method) {
 	if(this->message_ == nullptr)
 		return false;
 	return dbus_message_is_method_call(this->message_, interface, method);
 }
+
+/* -- */
+
+/*
+ *	Signals setup on connection
+ */
+
+void DBus::addSignalMatch(BusConnection current, const char* interface) {
+	this->setCurrentConnection(current);
+	std::string rule = "type='signal',interface='";
+	rule += interface;
+	rule += "'";
+	dbus_bus_add_match(this->currentConnection_, rule.c_str(), &this->error_);
+	dbus_connection_flush(this->currentConnection_);
+	this->checkDBusError("DBus Session match error");
+	LOG(DEBUG1) << "DBus Session match rule sent : " << rule;
+}
+
+/* -- */
+
+/*
+ *	DBus Method call reply
+ */
 
 void DBus::initializeMethodCallReply(BusConnection current) {
 	if(this->reply_) /* sanity check */
@@ -100,36 +150,6 @@ void DBus::sendMethodCallReply(void) {
 }
 
 /* -- */
-
-const bool DBus::checkForNextSessionMessage(void) {
-	dbus_connection_read_write(this->sessionConnection_, 0);
-	this->message_ = dbus_connection_pop_message(this->sessionConnection_);
-	return (this->message_ != nullptr);
-}
-
-const bool DBus::checkMessageForSignal(const char* interface, const char* signal_name) {
-	if(this->message_ == nullptr)
-		return false;
-	LOG(DEBUG) << "checking for signal";
-	if( dbus_message_is_signal(this->message_, interface, signal_name) ) {
-		LOG(DEBUG1) << "got signal " << signal_name;
-		this->fillInArguments();
-		dbus_message_unref(this->message_);
-		return true;
-	}
-	dbus_message_unref(this->message_);
-	return false;
-}
-
-void DBus::addSessionSignalMatch(const char* interface) {
-	std::string rule = "type='signal',interface='";
-	rule += interface;
-	rule += "'";
-	dbus_bus_add_match(this->sessionConnection_, rule.c_str(), &this->error_);
-	dbus_connection_flush(this->sessionConnection_);
-	this->checkDBusError("DBus Session match error");
-	LOG(DEBUG1) << "DBus Session match rule sent : " << rule;
-}
 
 std::string DBus::getNextStringArgument(void) {
 	if( this->string_arguments_.empty() )
