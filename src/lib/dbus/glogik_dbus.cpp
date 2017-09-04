@@ -30,14 +30,14 @@
 namespace GLogiK
 {
 
-DBus::DBus() : buffer_("", std::ios_base::app), message_(nullptr), reply_(nullptr),
+GKDBus::GKDBus() : buffer_("", std::ios_base::app), message_(nullptr), reply_(nullptr),
 	current_conn_(nullptr), session_conn_(nullptr), system_conn_(nullptr)
 {
 	LOG(DEBUG1) << "dbus object initialization";
 	dbus_error_init(&(this->error_));
 }
 
-DBus::~DBus()
+GKDBus::~GKDBus()
 {
 	LOG(DEBUG1) << "dbus object destruction";
 	if(this->session_conn_) {
@@ -54,7 +54,7 @@ DBus::~DBus()
  * DBus connections
  */
 
-void DBus::connectToSessionBus(const char* connection_name) {
+void GKDBus::connectToSessionBus(const char* connection_name) {
 	this->session_conn_ = dbus_bus_get(DBUS_BUS_SESSION, &this->error_);
 	this->checkDBusError("DBus Session connection failure");
 	LOG(DEBUG1) << "DBus Session connection opened";
@@ -76,14 +76,14 @@ void DBus::connectToSessionBus(const char* connection_name) {
  * check message methods
  */
 
-const bool DBus::checkForNextMessage(BusConnection current) {
+const bool GKDBus::checkForNextMessage(BusConnection current) {
 	this->setCurrentConnection(current);
 	dbus_connection_read_write(this->current_conn_, 0);
 	this->message_ = dbus_connection_pop_message(this->current_conn_);
 	return (this->message_ != nullptr);
 }
 
-const bool DBus::checkMessageForSignalOnInterface(const char* interface, const char* signal_name) {
+const bool GKDBus::checkMessageForSignalOnInterface(const char* interface, const char* signal_name) {
 	if(this->message_ == nullptr)
 		return false;
 	LOG(DEBUG) << "checking for signal";
@@ -97,7 +97,7 @@ const bool DBus::checkMessageForSignalOnInterface(const char* interface, const c
 	return false;
 }
 
-const bool DBus::checkMessageForMethodCallOnInterface(const char* interface, const char* method) {
+const bool GKDBus::checkMessageForMethodCallOnInterface(const char* interface, const char* method) {
 	if(this->message_ == nullptr)
 		return false;
 	const bool ret = dbus_message_is_method_call(this->message_, interface, method);
@@ -112,7 +112,7 @@ const bool DBus::checkMessageForMethodCallOnInterface(const char* interface, con
  *	Signals setup on connection
  */
 
-void DBus::addSignalMatch(BusConnection current, const char* interface) {
+void GKDBus::addSignalMatch(BusConnection current, const char* interface) {
 	this->setCurrentConnection(current);
 	std::string rule = "type='signal',interface='";
 	rule += interface;
@@ -129,20 +129,20 @@ void DBus::addSignalMatch(BusConnection current, const char* interface) {
  *	DBus Method call reply
  */
 
-void DBus::initializeMethodCallReply(BusConnection current) {
+void GKDBus::initializeMethodCallReply(BusConnection current) {
 	if(this->reply_) /* sanity check */
 		throw GLogiKExcept("DBus reply object already allocated");
 	this->setCurrentConnection(current);
 	this->reply_ = new GKDBusMsgReply(this->current_conn_, this->message_);
 }
 
-void DBus::appendToMethodCallReply(const bool value) {
+void GKDBus::appendToMethodCallReply(const bool value) {
 	if(this->reply_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus reply object not initialized");
 	this->reply_->appendToReply(value);
 }
 
-void DBus::sendMethodCallReply(void) {
+void GKDBus::sendMethodCallReply(void) {
 	if(this->reply_) { /* sanity check */
 		delete this->reply_;
 		this->reply_ = nullptr;
@@ -154,7 +154,7 @@ void DBus::sendMethodCallReply(void) {
 
 /* -- */
 
-std::string DBus::getNextStringArgument(void) {
+std::string GKDBus::getNextStringArgument(void) {
 	if( this->string_arguments_.empty() )
 		throw EmptyContainer("no string argument");
 	std::string ret = this->string_arguments_.back();
@@ -166,7 +166,7 @@ std::string DBus::getNextStringArgument(void) {
  * private
  */
 
-void DBus::checkDBusError(const char* error_message) {
+void GKDBus::checkDBusError(const char* error_message) {
 	if( dbus_error_is_set(&this->error_) ) {
 		this->buffer_.str(error_message);
 		this->buffer_ << " : " << this->error_.message;
@@ -175,7 +175,7 @@ void DBus::checkDBusError(const char* error_message) {
 	}
 }
 
-void DBus::fillInArguments(void) {
+void GKDBus::fillInArguments(void) {
 	int current_type = 0;
 	LOG(DEBUG2) << "checking signal arguments";
 	this->string_arguments_.clear();
@@ -202,7 +202,7 @@ void DBus::fillInArguments(void) {
 		std::reverse(this->string_arguments_.begin(), this->string_arguments_.end());
 }
 
-void DBus::setCurrentConnection(BusConnection current) {
+void GKDBus::setCurrentConnection(BusConnection current) {
 	switch(current) {
 		case BusConnection::GKDBUS_SESSION :
 			if(this->session_conn_ == nullptr)

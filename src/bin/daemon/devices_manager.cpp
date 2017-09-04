@@ -356,7 +356,7 @@ void DevicesManager::searchSupportedDevices(void) {
 	udev_enumerate_unref(enumerate);
 }
 
-void DevicesManager::startMonitoring(DBus* GKDBus) {
+void DevicesManager::startMonitoring(GKDBus* DBus) {
 	LOG(DEBUG2) << "initializing libudev";
 
 	this->udev = udev_new();
@@ -380,7 +380,7 @@ void DevicesManager::startMonitoring(DBus* GKDBus) {
 	this->fds[0].fd = this->fd_;
 	this->fds[0].events = POLLIN;
 
-	//GKDBus->addSignalMatch(BusConnection::GKDBUS_SESSION, "test.signal.Type");
+	//DBus->addSignalMatch(BusConnection::GKDBUS_SESSION, "test.signal.Type");
 
 	LOG(DEBUG2) << "loading known drivers";
 
@@ -392,36 +392,36 @@ void DevicesManager::startMonitoring(DBus* GKDBus) {
 	while( DaemonControl::is_daemon_enabled() ) {
 		int ret = poll(this->fds, 1, 1000);
 
-		if( GKDBus->checkForNextMessage(BusConnection::GKDBUS_SESSION) ) {
-			if( GKDBus->checkMessageForMethodCallOnInterface("com.glogik.Daemon.Device", "Stop") ) {
+		if( DBus->checkForNextMessage(BusConnection::GKDBUS_SESSION) ) {
+			if( DBus->checkMessageForMethodCallOnInterface("com.glogik.Daemon.Device", "Stop") ) {
 				LOG(DEBUG) << "Stop called !";
 
 				try {
-					LOG(INFO) << GKDBus->getNextStringArgument();
+					LOG(INFO) << DBus->getNextStringArgument();
 				}
 				catch ( const EmptyContainer & e ) {
 					LOG(DEBUG3) << e.what();
 				}
 
 				try {
-					GKDBus->initializeMethodCallReply(BusConnection::GKDBUS_SESSION);
-					GKDBus->appendToMethodCallReply(true);
+					DBus->initializeMethodCallReply(BusConnection::GKDBUS_SESSION);
+					DBus->appendToMethodCallReply(true);
 				}
 				catch (const std::bad_alloc& e) { /* handle new() failure */
-					LOG(ERROR) << "GKDBus reply allocation failure : " << e.what();
+					LOG(ERROR) << "DBus reply allocation failure : " << e.what();
 				}
 				catch ( const GLogiKExcept & e ) {
-					LOG(ERROR) << "GKDBus reply failure : " << e.what();
+					LOG(ERROR) << "DBus reply failure : " << e.what();
 				}
 
 				/* delete reply object if allocated */
-				GKDBus->sendMethodCallReply();
+				DBus->sendMethodCallReply();
 			}
 /*
-			if( GKDBus->checkMessageForSignalOnInterface("test.signal.Type", "Test") ) {
+			if( DBus->checkMessageForSignalOnInterface("test.signal.Type", "Test") ) {
 				try {
-					LOG(INFO) << GKDBus->getNextStringArgument();
-					LOG(INFO) << GKDBus->getNextStringArgument();
+					LOG(INFO) << DBus->getNextStringArgument();
+					LOG(INFO) << DBus->getNextStringArgument();
 				}
 				catch ( const EmptyContainer & e ) {
 					LOG(DEBUG3) << e.what();

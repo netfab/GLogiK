@@ -55,7 +55,7 @@ namespace fs = boost::filesystem;
 namespace GLogiK
 {
 
-GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app), GKDBus(nullptr)
+GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app), DBus(nullptr)
 {
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 
@@ -113,17 +113,17 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			//std::signal(SIGHUP, GLogiKDaemon::handle_signal);
 
 			try {
-				this->GKDBus = new DBus();
-				this->GKDBus->connectToSessionBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
+				this->DBus = new GKDBus();
+				this->DBus->connectToSessionBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
 
-				d.startMonitoring(this->GKDBus);
+				d.startMonitoring(this->DBus);
 
-				if(this->GKDBus != nullptr)
-					delete this->GKDBus;
+				if(this->DBus != nullptr)
+					delete this->DBus;
 			}
 			catch ( const GLogiKExcept & e ) {
-				if(this->GKDBus != nullptr)
-					delete this->GKDBus;
+				if(this->DBus != nullptr)
+					delete this->DBus;
 				throw;
 			}
 		}

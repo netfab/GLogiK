@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_DBUS_H__
-#define __GLOGIK_DBUS_H__
+#ifndef __GLOGIK_GKDBUS_H__
+#define __GLOGIK_GKDBUS_H__
 
 #define GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME "com.glogik.daemon"
 
@@ -40,11 +40,11 @@ enum class BusConnection : int8_t
 	GKDBUS_SYSTEM,
 };
 
-class DBus
+class GKDBus
 {
 	public:
-		DBus();
-		~DBus();
+		GKDBus();
+		~GKDBus();
 
 		void connectToSessionBus(const char* connection_name);
 

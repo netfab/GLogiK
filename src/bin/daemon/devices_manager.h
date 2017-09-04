@@ -62,7 +62,7 @@ class DevicesManager
 		DevicesManager(void);
 		~DevicesManager(void);
 
-		void startMonitoring(DBus* GKDBus);
+		void startMonitoring(GKDBus* DBus);
 		static std::string toString(const char* s) { return s == nullptr ? "" : s; };
 
 	protected:

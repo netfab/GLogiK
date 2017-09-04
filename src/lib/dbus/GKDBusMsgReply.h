@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_DBUS_MESSAGE_REPLY_H__
-#define __GLOGIK_DBUS_MESSAGE_REPLY_H__
+#ifndef __GLOGIK_GKDBUS_MESSAGE_REPLY_H__
+#define __GLOGIK_GKDBUS_MESSAGE_REPLY_H__
 
 #include <dbus/dbus.h>
 
