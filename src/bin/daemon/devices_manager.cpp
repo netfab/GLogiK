@@ -475,22 +475,29 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 			if( dev == nullptr )
 				throw GLogiKExcept("no device from receive_device(), something is wrong");
 
-			std::string action = this->toString( udev_device_get_action(dev) );
-			if( action == "" )
-				throw GLogiKExcept("device_get_action() failure");
-
-			std::string devnode = this->toString( udev_device_get_devnode(dev) );
-			// filtering empty events
-			if( devnode != "" ) {
-				LOG(DEBUG3) << "Action : " << action;
-				this->searchSupportedDevices();
-
-				if( action == "add" ) {
-					this->initializeDevices();
+			try {
+				std::string action = this->toString( udev_device_get_action(dev) );
+				if( action == "" ) {
+					throw GLogiKExcept("device_get_action() failure");
 				}
-				else if( action == "remove" ) {
-					this->cleanUnpluggedDevices();
+
+				std::string devnode = this->toString( udev_device_get_devnode(dev) );
+				// filtering empty events
+				if( devnode != "" ) {
+					LOG(DEBUG3) << "Action : " << action;
+					this->searchSupportedDevices();
+
+					if( action == "add" ) {
+						this->initializeDevices();
+					}
+					else if( action == "remove" ) {
+						this->cleanUnpluggedDevices();
+					}
 				}
+			}
+			catch ( const GLogiKExcept & e ) {
+				udev_device_unref(dev);
+				throw;
 			}
 
 			udev_device_unref(dev);
