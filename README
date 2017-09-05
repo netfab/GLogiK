@@ -10,7 +10,7 @@ Build dependencies :
 	>=dev-libs/boost-1.62.0
 	>=dev-libs/libusb-1.0.19
 	virtual/libudev
-	dev-libs/libevdev-1.5.7
+	>=dev-libs/libevdev-1.5.7
 	>=sys-apps/dbus-1.10.18
 
 GLogiK is untested with previous versions of each dependency, but it may work.
