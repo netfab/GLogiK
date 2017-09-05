@@ -38,12 +38,14 @@ namespace GLogiK
 {
 
 bool KeyboardDriver::libusb_status_ = false;
+libusb_context * KeyboardDriver::context_ = nullptr;
+
 uint8_t KeyboardDriver::drivers_cnt_ = 0;
 
 constexpr unsigned char KeyboardDriver::hid_keyboard_[256];
 
 KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, DescriptorValues values) :
-		buffer_("", std::ios_base::app), context_(nullptr) {
+		buffer_("", std::ios_base::app) {
 	this->expected_usb_descriptors_ = values;
 	this->leds_update_event_length_ = event_length;
 
@@ -54,6 +56,9 @@ KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, Descri
 
 	this->interrupt_key_read_length = key_read_length;
 	KeyboardDriver::drivers_cnt_++;
+
+	if( ! KeyboardDriver::libusb_status_ )
+		this->initializeLibusb();
 }
 
 KeyboardDriver::~KeyboardDriver() {
@@ -66,15 +71,7 @@ std::vector<KeyboardDevice> KeyboardDriver::getSupportedDevices(void) const {
 	return this->supported_devices_;
 }
 
-void KeyboardDriver::initializeLibusb(InitializedDevice & device) {
-	LOG(DEBUG4) << "initializing libusb";
-	int ret_value = libusb_init( &(this->context_) );
-	if ( this->handleLibusbError(ret_value) ) {
-		throw GLogiKExcept("libusb initialization failure");
-	}
-
-	KeyboardDriver::libusb_status_ = true;
-
+void KeyboardDriver::openLibUSBDevice(InitializedDevice & device) {
 	libusb_device **list;
 	int num_devices = libusb_get_device_list(this->context_, &(list));
 	if( num_devices < 0 ) {
@@ -101,13 +98,23 @@ void KeyboardDriver::initializeLibusb(InitializedDevice & device) {
 	LOG(DEBUG3) << "libusb found device " << to_uint(device.num)
 				<< " on bus " << to_uint(device.bus);
 
-	ret_value = libusb_open( device.usb_device, &(device.usb_handle) );
+	int ret_value = libusb_open( device.usb_device, &(device.usb_handle) );
 	if( this->handleLibusbError(ret_value) ) {
 		libusb_free_device_list(list, 1);
 		throw GLogiKExcept("opening device failure");
 	}
 
 	libusb_free_device_list(list, 1);
+}
+
+void KeyboardDriver::initializeLibusb(void) {
+	LOG(DEBUG4) << "initializing libusb";
+	int ret_value = libusb_init( &(this->context_) );
+	if ( this->handleLibusbError(ret_value) ) {
+		throw GLogiKExcept("libusb initialization failure");
+	}
+
+	KeyboardDriver::libusb_status_ = true;
 }
 
 void KeyboardDriver::closeLibusb(void) {
@@ -584,7 +591,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 
 	InitializedDevice device(dev, bus, num);
 
-	this->initializeLibusb(device); /* device opened */
+	this->openLibUSBDevice(device); /* device opened */
 
 	try {
 		this->setConfiguration(device);

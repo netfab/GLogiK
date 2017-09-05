@@ -141,7 +141,7 @@ class KeyboardDriver
 		std::ostringstream buffer_;
 		std::vector<KeyboardDevice> supported_devices_;
 
-		void initializeLibusb(InitializedDevice & device);
+		void openLibUSBDevice(InitializedDevice & device);
 
 		DescriptorValues expected_usb_descriptors_;
 		int interrupt_key_read_length;
@@ -166,7 +166,7 @@ class KeyboardDriver
 	private:
 		static bool libusb_status_;			/* is libusb initialized ? */
 		static uint8_t drivers_cnt_;		/* initialized drivers counter */
-		libusb_context *context_;
+		static libusb_context *context_;
 		libusb_device **list_;
 		int8_t leds_update_event_length_;
 
@@ -199,6 +199,7 @@ class KeyboardDriver
 			150,158,159,128,136,177,178,176,142,152,173,140,unk,unk,unk,unk
 		};
 
+		void initializeLibusb(void);
 		void closeLibusb(void);
 		int handleLibusbError(int error_code);
 		void setConfiguration(InitializedDevice & device);
