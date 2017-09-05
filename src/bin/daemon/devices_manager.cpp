@@ -390,6 +390,49 @@ void DevicesManager::searchSupportedDevices(void) {
 	udev_enumerate_unref(enumerate);
 }
 
+void DevicesManager::checkDBusMessages(GKDBus* DBus) {
+	if( DBus->checkForNextMessage(BusConnection::GKDBUS_SESSION) ) {
+		std::string devID;
+		if( DBus->checkMessageForMethodCallOnInterface("com.glogik.Daemon.Device", "Stop") ) {
+			bool closed = false;
+			LOG(DEBUG1) << "DBus Stop called !";
+
+			try {
+				devID = DBus->getNextStringArgument();
+				closed = this->closeDevice(devID);
+			}
+			catch ( const EmptyContainer & e ) {
+				LOG(DEBUG3) << e.what();
+			}
+
+			try {
+				DBus->initializeMethodCallReply(BusConnection::GKDBUS_SESSION);
+				DBus->appendToMethodCallReply(closed);
+			}
+			catch (const std::bad_alloc& e) { /* handle new() failure */
+				LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+			}
+			catch ( const GLogiKExcept & e ) {
+				LOG(ERROR) << "DBus reply failure : " << e.what();
+			}
+
+			/* delete reply object if allocated */
+			DBus->sendMethodCallReply();
+		}
+/*
+		if( DBus->checkMessageForSignalOnInterface("test.signal.Type", "Test") ) {
+			try {
+				LOG(INFO) << DBus->getNextStringArgument();
+				LOG(INFO) << DBus->getNextStringArgument();
+			}
+			catch ( const EmptyContainer & e ) {
+				LOG(DEBUG3) << e.what();
+			}
+		}
+*/
+	}
+}
+
 void DevicesManager::startMonitoring(GKDBus* DBus) {
 	LOG(DEBUG2) << "initializing libudev";
 
@@ -423,51 +466,8 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 	this->searchSupportedDevices();
 	this->initializeDevices();
 
-	std::string devID = "";
-
 	while( DaemonControl::is_daemon_enabled() ) {
 		int ret = poll(this->fds, 1, 1000);
-		devID = "";
-
-		if( DBus->checkForNextMessage(BusConnection::GKDBUS_SESSION) ) {
-			if( DBus->checkMessageForMethodCallOnInterface("com.glogik.Daemon.Device", "Stop") ) {
-				bool closed = false;
-				LOG(DEBUG) << "Stop called !";
-
-				try {
-					devID = DBus->getNextStringArgument();
-					closed = this->closeDevice(devID);
-				}
-				catch ( const EmptyContainer & e ) {
-					LOG(DEBUG3) << e.what();
-				}
-
-				try {
-					DBus->initializeMethodCallReply(BusConnection::GKDBUS_SESSION);
-					DBus->appendToMethodCallReply(closed);
-				}
-				catch (const std::bad_alloc& e) { /* handle new() failure */
-					LOG(ERROR) << "DBus reply allocation failure : " << e.what();
-				}
-				catch ( const GLogiKExcept & e ) {
-					LOG(ERROR) << "DBus reply failure : " << e.what();
-				}
-
-				/* delete reply object if allocated */
-				DBus->sendMethodCallReply();
-			}
-/*
-			if( DBus->checkMessageForSignalOnInterface("test.signal.Type", "Test") ) {
-				try {
-					LOG(INFO) << DBus->getNextStringArgument();
-					LOG(INFO) << DBus->getNextStringArgument();
-				}
-				catch ( const EmptyContainer & e ) {
-					LOG(DEBUG3) << e.what();
-				}
-			}
-*/
-		}
 
 		// receive data ?
 		if( ret > 0 ) {
@@ -495,6 +495,8 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 
 			udev_device_unref(dev);
 		}
+
+		this->checkDBusMessages(DBus);
 	}
 
 }

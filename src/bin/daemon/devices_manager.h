@@ -83,6 +83,7 @@ class DevicesManager
 		void closeInitializedDevices(void);
 		const bool closeDevice(const std::string & devID);
 		void cleanUnpluggedDevices(void);
+		void checkDBusMessages(GKDBus* DBus);
 };
 
 } // namespace GLogiK
