@@ -7,8 +7,12 @@ Recognized devices : Logitech G510s Gaming Keyboard
 
 Build dependencies :
 --------------------
-	>=dev-libs/boost-1.56
-	>=dev-libs/libusb-1.0.0
+	>=dev-libs/boost-1.62.0
+	>=dev-libs/libusb-1.0.19
 	virtual/libudev
-	dev-libs/libevdev
+	dev-libs/libevdev-1.5.7
+	>=sys-apps/dbus-1.10.18
+
+GLogiK is untested with previous versions of each dependency, but it may work.
+libusb-0.1 is not supported. Feel free to report any working version.
 
