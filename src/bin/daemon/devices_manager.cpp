@@ -480,17 +480,17 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 				throw GLogiKExcept("device_get_action() failure");
 
 			std::string devnode = this->toString( udev_device_get_devnode(dev) );
-			if( devnode == "" ) // filtering empty events
-				continue;
+			// filtering empty events
+			if( devnode != "" ) {
+				LOG(DEBUG3) << "Action : " << action;
+				this->searchSupportedDevices();
 
-			LOG(DEBUG3) << "Action : " << action;
-			this->searchSupportedDevices();
-
-			if( action == "add" ) {
-				this->initializeDevices();
-			}
-			else if( action == "remove" ) {
-				this->cleanUnpluggedDevices();
+				if( action == "add" ) {
+					this->initializeDevices();
+				}
+				else if( action == "remove" ) {
+					this->cleanUnpluggedDevices();
+				}
 			}
 
 			udev_device_unref(dev);
