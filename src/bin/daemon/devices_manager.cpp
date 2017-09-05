@@ -116,26 +116,19 @@ const bool DevicesManager::closeDevice(const std::string & devID) {
 
 	for(auto it = this->initialized_devices_.begin(); it != this->initialized_devices_.end(); ++it) {
 		for(const auto& driver : this->drivers_) {
-			try {
-				if( (*it).driver_ID == driver->getDriverID() ) {
-					if( driver->isDeviceInitialized(devID) ) {
-						driver->closeDevice( (*it).device, (*it).device_bus, (*it).device_num );
+			if( (*it).driver_ID == driver->getDriverID() ) {
+				if( driver->isDeviceInitialized(devID) ) {
+					driver->closeDevice( (*it).device, (*it).device_bus, (*it).device_num );
 
-						this->buffer_.str( (*it).device.name );
-						this->buffer_	<< "(" << (*it).device.vendor_id << ":" << (*it).device.product_id
-										<< ") on bus " << to_uint((*it).device_bus) << " closed";
-						LOG(INFO) << this->buffer_.str();
-						syslog(LOG_INFO, this->buffer_.str().c_str());
+					this->buffer_.str( (*it).device.name );
+					this->buffer_	<< "(" << (*it).device.vendor_id << ":" << (*it).device.product_id
+									<< ") on bus " << to_uint((*it).device_bus) << " closed";
+					LOG(INFO) << this->buffer_.str();
+					syslog(LOG_INFO, this->buffer_.str().c_str());
 
-						this->initialized_devices_.erase(it);
-						return true;
-					}
+					this->initialized_devices_.erase(it);
+					return true;
 				}
-			}
-			catch ( const GLogiKExcept & e ) {
-				syslog( LOG_ERR, e.what() );
-				LOG(ERROR) << e.what();
-				return false;
 			}
 		}
 	}
@@ -151,20 +144,14 @@ void DevicesManager::closeInitializedDevices(void) {
 
 	for(const auto& init_dev : this->initialized_devices_) {
 		for(const auto& driver : this->drivers_) {
-			try {
-				if( init_dev.driver_ID == driver->getDriverID() ) {
-					driver->closeDevice( init_dev.device, init_dev.device_bus, init_dev.device_num );
+			if( init_dev.driver_ID == driver->getDriverID() ) {
+				driver->closeDevice( init_dev.device, init_dev.device_bus, init_dev.device_num );
 
-					this->buffer_.str( init_dev.device.name );
-					this->buffer_	<< "(" << init_dev.device.vendor_id << ":" << init_dev.device.product_id
-									<< ") on bus " << to_uint(init_dev.device_bus) << " closed";
-					LOG(INFO) << this->buffer_.str();
-					syslog(LOG_INFO, this->buffer_.str().c_str());
-				}
-			}
-			catch ( const GLogiKExcept & e ) {
-				syslog( LOG_ERR, e.what() );
-				LOG(ERROR) << e.what();
+				this->buffer_.str( init_dev.device.name );
+				this->buffer_	<< "(" << init_dev.device.vendor_id << ":" << init_dev.device.product_id
+								<< ") on bus " << to_uint(init_dev.device_bus) << " closed";
+				LOG(INFO) << this->buffer_.str();
+				syslog(LOG_INFO, this->buffer_.str().c_str());
 			}
 		}
 	}
@@ -185,34 +172,27 @@ void DevicesManager::cleanUnpluggedDevices(void) {
 			}
 		}
 
-		try {
-			if(stop_it) {
+		if(stop_it) {
 #if DEBUGGING_ON
-				LOG(WARNING)	<< "erasing unplugged initialized driver : "
-								<< (*it).device.vendor_id << ":" << (*it).device.product_id
-								<< ":" << (*it).input_dev_node << ":" << (*it).usec;
-				LOG(WARNING)	<< "Did you unplug your device before properly closing it ?";
-				LOG(WARNING)	<< "You will get libusb warnings/errors if you do this.";
+			LOG(WARNING)	<< "erasing unplugged initialized driver : "
+							<< (*it).device.vendor_id << ":" << (*it).device.product_id
+							<< ":" << (*it).input_dev_node << ":" << (*it).usec;
+			LOG(WARNING)	<< "Did you unplug your device before properly closing it ?";
+			LOG(WARNING)	<< "You will get libusb warnings/errors if you do this.";
 #endif
 
-				for(const auto& driver : this->drivers_) {
-					if( (*it).driver_ID == driver->getDriverID() ) {
-						this->buffer_.str("warning : device closing attempt ");
-						this->buffer_ << (*it).device.vendor_id << ":" << (*it).device.product_id
-									<< ":" << (*it).input_dev_node << ":" << (*it).usec;
-						LOG(WARNING) << this->buffer_.str();
-						syslog(LOG_WARNING, this->buffer_.str().c_str());
-						driver->closeDevice( (*it).device, (*it).device_bus, (*it).device_num );
-						break;
-					}
-				} // for
+			for(const auto& driver : this->drivers_) {
+				if( (*it).driver_ID == driver->getDriverID() ) {
+					this->buffer_.str("warning : device closing attempt ");
+					this->buffer_ << (*it).device.vendor_id << ":" << (*it).device.product_id
+								<< ":" << (*it).input_dev_node << ":" << (*it).usec;
+					LOG(WARNING) << this->buffer_.str();
+					syslog(LOG_WARNING, this->buffer_.str().c_str());
+					driver->closeDevice( (*it).device, (*it).device_bus, (*it).device_num );
+					break;
+				}
+			} // for
 
-				it = this->initialized_devices_.erase(it);
-			}
-		}
-		catch ( const GLogiKExcept & e ) {
-			syslog( LOG_ERR, e.what() );
-			LOG(ERROR) << e.what();
 			it = this->initialized_devices_.erase(it);
 		}
 	}
