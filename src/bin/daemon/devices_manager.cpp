@@ -106,7 +106,7 @@ const bool DevicesManager::closeDevice(const std::string & devID) {
 	LOG(DEBUG2) << "trying to close device " << devID;
 
 	try {
-		auto & device = this->initialized_devices_.at(devID);
+		const auto & device = this->initialized_devices_.at(devID);
 		for(const auto& driver : this->drivers_) {
 			if( device.driver_ID == driver->getDriverID() ) {
 				if( driver->isDeviceInitialized(devID) ) {
@@ -238,7 +238,6 @@ void DevicesManager::searchSupportedDevices(void) {
 		// ---
 		// ---
 
-		//LOG(DEBUG2) << "input enumerate";
 		if( udev_enumerate_add_match_subsystem(enumerate, "usb") < 0 )
 			throw GLogiKExcept("usb enumerate filtering init failure");
 
