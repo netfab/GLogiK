@@ -136,6 +136,7 @@ class KeyboardDriver
 		virtual void closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
 
 		const bool isDeviceInitialized(const std::string & devID) const;
+		static const std::string getDeviceID(const uint8_t bus, const uint8_t num);
 
 	protected:
 		std::ostringstream buffer_;

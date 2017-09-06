@@ -71,6 +71,14 @@ std::vector<KeyboardDevice> KeyboardDriver::getSupportedDevices(void) const {
 	return this->supported_devices_;
 }
 
+const std::string KeyboardDriver::getDeviceID(const uint8_t bus, const uint8_t num) {
+	std::string devID("b");
+	devID += std::to_string(bus);
+	devID += "d";
+	devID += std::to_string(num);
+	return devID;
+}
+
 void KeyboardDriver::openLibUSBDevice(InitializedDevice & device) {
 	libusb_device **list;
 	int num_devices = libusb_get_device_list(this->context_, &(list));
@@ -598,12 +606,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 		this->findExpectedUSBInterface(device);
 		this->sendDeviceInitialization(device);
 
-		this->buffer_.str("b");
-		this->buffer_ << to_uint(bus);
-		this->buffer_ << "d";
-		this->buffer_ << to_uint(num);
-
-		const std::string devID = this->buffer_.str();
+		const std::string devID = KeyboardDriver::getDeviceID(bus, num);
 
 		/* virtual keyboard name */
 		this->buffer_.str("Virtual ");
@@ -980,12 +983,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 				<< dev.vendor_id << ":" << dev.product_id << "), device "
 				<< to_uint(num) << " on bus " << to_uint(bus);
 
-	this->buffer_.str("b");
-	this->buffer_ << to_uint(bus);
-	this->buffer_ << "d";
-	this->buffer_ << to_uint(num);
-
-	const std::string devID = this->buffer_.str();
+	const std::string devID = KeyboardDriver::getDeviceID(bus, num);
 	InitializedDevice & device = this->initialized_devices_[devID];
 	device.listen_status = false;
 
