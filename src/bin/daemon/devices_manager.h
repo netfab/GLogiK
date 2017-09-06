@@ -27,6 +27,7 @@
 #include <cstdint>
 
 #include <string>
+#include <map>
 #include <vector>
 #include <sstream>
 
@@ -75,8 +76,8 @@ class DevicesManager
 
 		std::ostringstream buffer_;
 		std::vector<KeyboardDriver*> drivers_;
-		std::vector<DetectedDevice> detected_devices_;
-		std::vector<DetectedDevice> initialized_devices_;
+		std::map<const std::string, DetectedDevice> detected_devices_;
+		std::map<const std::string, DetectedDevice> initialized_devices_;
 
 		void searchSupportedDevices(void);
 		void initializeDevices(void);

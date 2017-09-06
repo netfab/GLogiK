@@ -65,40 +65,31 @@ DevicesManager::~DevicesManager() {
 void DevicesManager::initializeDevices(void) {
 	LOG(DEBUG2) << "initializing detected devices";
 	for(const auto& det_dev : this->detected_devices_) {
+		const auto & device = det_dev.second;
 
-		bool initializing = true;
-
-		for(const auto& init_dev : this->initialized_devices_) {
-				if(	(det_dev.device.vendor_id == init_dev.device.vendor_id) and
-					(det_dev.device.product_id == init_dev.device.product_id) and
-					(det_dev.input_dev_node == init_dev.input_dev_node) and
-					(det_dev.usec == init_dev.usec) ) {
-						LOG(DEBUG3) << "device "
-									<< det_dev.device.vendor_id << ":"
-									<< det_dev.device.product_id << " - "
-									<< det_dev.input_dev_node << " already initialized";
-						initializing = false;
-						break; // jump to next detected device
-				}
-		} // for
+		if(this->initialized_devices_.count(det_dev.first) == 1) {
+			LOG(DEBUG3) << "device "
+						<< device.device.vendor_id << ":"
+						<< device.device.product_id << " - "
+						<< device.input_dev_node << " already initialized";
+			continue; // jump to next detected device
+		}
 
 		try {
-			if( initializing ) {
-				for(const auto& driver : this->drivers_) {
-					if( det_dev.driver_ID == driver->getDriverID() ) {
-						// initialization
-						driver->initializeDevice( det_dev.device, det_dev.device_bus, det_dev.device_num );
-						this->initialized_devices_.push_back( det_dev );
+			for(const auto& driver : this->drivers_) {
+				if( device.driver_ID == driver->getDriverID() ) {
+					// initialization
+					driver->initializeDevice( device.device, device.device_bus, device.device_num );
+					this->initialized_devices_[det_dev.first] = device;
 
-						this->buffer_.str( det_dev.device.name );
-						this->buffer_	<< "(" << det_dev.device.vendor_id << ":" << det_dev.device.product_id
-										<< ") on bus " << to_uint(det_dev.device_bus) << " initialized";
-						LOG(INFO) << this->buffer_.str();
-						syslog(LOG_INFO, this->buffer_.str().c_str());
-						break;
-					}
-				} // for
-			}
+					this->buffer_.str( device.device.name );
+					this->buffer_	<< "(" << device.device.vendor_id << ":" << device.device.product_id
+									<< ") on bus " << to_uint(device.device_bus) << " initialized";
+					LOG(INFO) << this->buffer_.str();
+					syslog(LOG_INFO, this->buffer_.str().c_str());
+					break;
+				}
+			} // for
 		}
 		catch ( const GLogiKExcept & e ) {
 			this->buffer_.str("device initialization failure : ");
@@ -114,26 +105,34 @@ void DevicesManager::initializeDevices(void) {
 const bool DevicesManager::closeDevice(const std::string & devID) {
 	LOG(DEBUG2) << "trying to close device " << devID;
 
-	for(auto it = this->initialized_devices_.begin(); it != this->initialized_devices_.end(); ++it) {
+	try {
+		auto & device = this->initialized_devices_.at(devID);
 		for(const auto& driver : this->drivers_) {
-			if( (*it).driver_ID == driver->getDriverID() ) {
+			if( device.driver_ID == driver->getDriverID() ) {
 				if( driver->isDeviceInitialized(devID) ) {
-					driver->closeDevice( (*it).device, (*it).device_bus, (*it).device_num );
+					driver->closeDevice( device.device, device.device_bus, device.device_num );
 
-					this->buffer_.str( (*it).device.name );
-					this->buffer_	<< "(" << (*it).device.vendor_id << ":" << (*it).device.product_id
-									<< ") on bus " << to_uint((*it).device_bus) << " closed";
+					this->buffer_.str( device.device.name );
+					this->buffer_	<< "(" << device.device.vendor_id << ":" << device.device.product_id
+									<< ") on bus " << to_uint(device.device_bus) << " closed";
 					LOG(INFO) << this->buffer_.str();
 					syslog(LOG_INFO, this->buffer_.str().c_str());
 
-					this->initialized_devices_.erase(it);
+					this->initialized_devices_.erase(devID);
 					return true;
 				}
 			}
 		}
 	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("device closing failure : device not found in initialized device : ");
+		this->buffer_ << oor.what();
+		LOG(ERROR) << this->buffer_.str();
+		syslog(LOG_ERR, this->buffer_.str().c_str());
+		return false;
+	}
 
-	this->buffer_.str("device closing failure : device not found in initialized device");
+	this->buffer_.str("device closing failure : driver not found !?");
 	LOG(ERROR) << this->buffer_.str();
 	syslog(LOG_ERR, this->buffer_.str().c_str());
 	return false;
@@ -142,62 +141,44 @@ const bool DevicesManager::closeDevice(const std::string & devID) {
 void DevicesManager::closeInitializedDevices(void) {
 	LOG(DEBUG2) << "closing initialized devices";
 
+	std::vector<std::string> to_close;
 	for(const auto& init_dev : this->initialized_devices_) {
-		for(const auto& driver : this->drivers_) {
-			if( init_dev.driver_ID == driver->getDriverID() ) {
-				driver->closeDevice( init_dev.device, init_dev.device_bus, init_dev.device_num );
-
-				this->buffer_.str( init_dev.device.name );
-				this->buffer_	<< "(" << init_dev.device.vendor_id << ":" << init_dev.device.product_id
-								<< ") on bus " << to_uint(init_dev.device_bus) << " closed";
-				LOG(INFO) << this->buffer_.str();
-				syslog(LOG_INFO, this->buffer_.str().c_str());
-			}
-		}
+		to_close.push_back(init_dev.first);
 	}
+
+	for(const auto & devID : to_close) {
+		this->closeDevice(devID);
+	}
+
+	to_close.clear();
 	this->initialized_devices_.clear();
 }
 
 void DevicesManager::cleanUnpluggedDevices(void) {
 	LOG(DEBUG2) << "checking for unplugged initialized devices";
-	for(auto it = this->initialized_devices_.begin(); it != this->initialized_devices_.end();) {
-		bool stop_it = true;
-		for(const auto& det_dev : this->detected_devices_) {
-			if( ((*it).input_dev_node == det_dev.input_dev_node) and ((*it).usec == det_dev.usec )
-				and ((*it).device.vendor_id == det_dev.device.vendor_id )
-				and ((*it).device.product_id == det_dev.device.product_id ) ) {
-				stop_it = false;
-				++it;
-				break;
-			}
-		}
 
-		if(stop_it) {
-#if DEBUGGING_ON
-			LOG(WARNING)	<< "erasing unplugged initialized driver : "
-							<< (*it).device.vendor_id << ":" << (*it).device.product_id
-							<< ":" << (*it).input_dev_node << ":" << (*it).usec;
-			LOG(WARNING)	<< "Did you unplug your device before properly closing it ?";
-			LOG(WARNING)	<< "You will get libusb warnings/errors if you do this.";
-#endif
-
-			for(const auto& driver : this->drivers_) {
-				if( (*it).driver_ID == driver->getDriverID() ) {
-					this->buffer_.str("warning : device closing attempt ");
-					this->buffer_ << (*it).device.vendor_id << ":" << (*it).device.product_id
-								<< ":" << (*it).input_dev_node << ":" << (*it).usec;
-					LOG(WARNING) << this->buffer_.str();
-					syslog(LOG_WARNING, this->buffer_.str().c_str());
-					driver->closeDevice( (*it).device, (*it).device_bus, (*it).device_num );
-					break;
-				}
-			} // for
-
-			it = this->initialized_devices_.erase(it);
+	std::vector<std::string> to_clean;
+	for(const auto & init_dev : this->initialized_devices_) {
+		if( this->detected_devices_.count(init_dev.first) == 0 ) {
+			to_clean.push_back(init_dev.first);
 		}
 	}
 
+	for(const auto & devID : to_clean) {
+#if DEBUGGING_ON
+		const auto & device = this->initialized_devices_.at(devID);
+		LOG(WARNING)	<< "erasing unplugged initialized driver : "
+						<< device.device.vendor_id << ":" << device.device.product_id
+						<< ":" << device.input_dev_node << ":" << device.usec;
+		LOG(WARNING)	<< "Did you unplug your device before properly closing it ?";
+		LOG(WARNING)	<< "You will get libusb warnings/errors if you do this.";
+#endif
+		this->closeDevice(devID);
+	}
+
+	to_clean.clear();
 	this->detected_devices_.clear();
+
 	LOG(DEBUG3) << "number of devices still initialized : " << this->initialized_devices_.size();
 	LOG(DEBUG3) << "---";
 }
@@ -345,7 +326,12 @@ void DevicesManager::searchSupportedDevices(void) {
 							found.device_bus		= bus;
 							found.device_num		= num;
 
-							this->detected_devices_.push_back(found);
+							const std::string devID = KeyboardDriver::getDeviceID(bus, num);
+							if( this->detected_devices_.count(devID) > 0 ) { /* sanity check */
+								udev_device_unref(dev);
+								throw GLogiKExcept("detected devices container error");
+							}
+							this->detected_devices_[devID] = found;
 
 							LOG(DEBUG3) << "found device - Vid:Pid:DevNode:usec | bus:num : " << vendor_id
 										<< ":" << product_id << ":" << devnode << ":" << usec
