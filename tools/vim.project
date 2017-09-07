@@ -54,6 +54,8 @@ GLogiK=$PWD/.. CD=. {
 			}
 			GLogiKUtils=utils/ {
 				Makefile.am
+				functions.cpp
+				functions.h
 				exception.cpp
 				exception.h
 			}
