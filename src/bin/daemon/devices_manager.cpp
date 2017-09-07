@@ -168,7 +168,7 @@ void DevicesManager::closeInitializedDevices(void) {
 	this->initialized_devices_.clear();
 }
 
-void DevicesManager::cleanUnpluggedDevices(void) {
+void DevicesManager::checkForUnpluggedDevices(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "checking for unplugged initialized devices";
 #endif
@@ -195,7 +195,7 @@ void DevicesManager::cleanUnpluggedDevices(void) {
 
 	to_clean.clear();
 
-	/* checking for plugged but closed devices */
+	/* checking for unplugged but closed devices */
 	for(const auto & closed_dev : this->plugged_but_closed_devices_) {
 		if(this->detected_devices_.count(closed_dev.first) == 0 ) {
 			to_clean.push_back(closed_dev.first);
@@ -490,7 +490,7 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 						this->initializeDevices();
 					}
 					else if( action == "remove" ) {
-						this->cleanUnpluggedDevices();
+						this->checkForUnpluggedDevices();
 					}
 				}
 			}
