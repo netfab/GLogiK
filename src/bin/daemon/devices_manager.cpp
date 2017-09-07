@@ -170,7 +170,7 @@ void DevicesManager::closeInitializedDevices(void) {
 
 void DevicesManager::checkForUnpluggedDevices(void) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "checking for unplugged initialized devices";
+	LOG(DEBUG2) << "checking for unplugged devices";
 #endif
 
 	/* checking for unplugged unclosed devices */
@@ -213,7 +213,6 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "number of devices still initialized : " << this->initialized_devices_.size();
-	LOG(DEBUG3) << "---";
 #endif
 }
 
