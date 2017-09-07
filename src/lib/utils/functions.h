@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_FUNCTIONS_H__
-#define __GLOGIKD_FUNCTIONS_H__
+#ifndef __GLOGIK_FUNCTIONS_H__
+#define __GLOGIK_FUNCTIONS_H__
 
 #include <string>
 #include <type_traits>

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_EXCEPTION_H__
-#define __GLOGIKD_EXCEPTION_H__
+#ifndef __GLOGIK_EXCEPTION_H__
+#define __GLOGIK_EXCEPTION_H__
 
 #include <exception>
 #include <string>
