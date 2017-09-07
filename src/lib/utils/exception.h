@@ -30,26 +30,26 @@ namespace GLogiK
 
 class GLogiKExcept : public std::exception
 {
-        public :
-                GLogiKExcept( const std::string& msg = "" );
-                virtual ~GLogiKExcept( void ) throw();
-                virtual const char* what( void ) const throw();
+	public :
+		GLogiKExcept( const std::string& msg = "" );
 
-        protected :
-            std::string message;
+		virtual ~GLogiKExcept( void ) throw();
+		virtual const char* what( void ) const throw();
 
+	protected :
+		std::string message;
 };
 
 class DisplayHelp : public std::exception
 {
-        public :
-                DisplayHelp( const std::string& msg = "" );
-                virtual ~DisplayHelp( void ) throw();
-                virtual const char* what( void ) const throw();
+	public :
+		DisplayHelp( const std::string& msg = "" );
 
-        protected :
-            std::string message;
+		virtual ~DisplayHelp( void ) throw();
+		virtual const char* what( void ) const throw();
 
+	protected :
+		std::string message;
 };
 
 class EmptyContainer : public GLogiKExcept
