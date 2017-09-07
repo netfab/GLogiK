@@ -20,7 +20,6 @@
  */
 
 #include <cstdint>
-#include <type_traits>
 
 #ifndef __GLOGIKD_ENUMS_H__
 #define __GLOGIKD_ENUMS_H__
@@ -29,11 +28,6 @@ namespace GLogiK
 {
 
 const uint64_t one = 1;
-
-template <typename T>
-constexpr typename std::underlying_type<T>::type to_type(T obj) noexcept {
-	return static_cast<typename std::underlying_type<T>::type>(obj);
-}
 
 enum class Keys : uint64_t
 {

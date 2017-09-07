@@ -29,11 +29,6 @@ namespace GLogiK
 
 #define GLOGIKD_DRIVER_ID_G510 ( 1 << 0 )
 
-template <typename T>
-constexpr unsigned int to_uint(T obj) {
-	return static_cast<unsigned int>(obj);
-}
-
 } // namespace GLogiK
 
 #endif

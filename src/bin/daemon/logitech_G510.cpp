@@ -23,6 +23,7 @@
 
 #include <config.h>
 
+#include "lib/utils/functions.h"
 #include "lib/utils/exception.h"
 #include "include/log.h"
 #include <syslog.h>

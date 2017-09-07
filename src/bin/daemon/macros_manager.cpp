@@ -23,10 +23,11 @@
 
 #include <stdexcept>
 
+#include "lib/utils/functions.h"
+
 #include "include/log.h"
 #include <syslog.h>
 
-#include "globals.h"
 #include "macros_manager.h"
 
 namespace GLogiK

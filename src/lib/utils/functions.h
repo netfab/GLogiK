@@ -23,9 +23,20 @@
 #define __GLOGIKD_FUNCTIONS_H__
 
 #include <string>
+#include <type_traits>
 
 namespace GLogiK
 {
+
+template <typename T>
+constexpr unsigned int to_uint(T obj) {
+	return static_cast<unsigned int>(obj);
+}
+
+template <typename T>
+constexpr typename std::underlying_type<T>::type to_type(T obj) noexcept {
+	return static_cast<typename std::underlying_type<T>::type>(obj);
+}
 
 std::string to_string(const char* s);
 
