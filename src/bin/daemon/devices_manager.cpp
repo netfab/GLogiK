@@ -55,6 +55,7 @@ DevicesManager::~DevicesManager() {
 	}
 
 	this->closeInitializedDevices();
+	this->plugged_but_closed_devices_.clear();
 
 	LOG(DEBUG2) << "closing drivers";
 	for(const auto& driver : this->drivers_) {
@@ -66,13 +67,24 @@ DevicesManager::~DevicesManager() {
 void DevicesManager::initializeDevices(void) {
 	LOG(DEBUG2) << "initializing detected devices";
 	for(const auto& det_dev : this->detected_devices_) {
+		const auto & devID = det_dev.first;
 		const auto & device = det_dev.second;
 
-		if(this->initialized_devices_.count(det_dev.first) == 1) {
+		if(this->initialized_devices_.count(devID) == 1) {
 			LOG(DEBUG3) << "device "
 						<< device.device.vendor_id << ":"
 						<< device.device.product_id << " - "
 						<< device.input_dev_node << " already initialized";
+			continue; // jump to next detected device
+		}
+
+		// TODO option ?
+		if(this->plugged_but_closed_devices_.count(devID) == 1) {
+			LOG(DEBUG3) << "device "
+						<< device.device.vendor_id << ":"
+						<< device.device.product_id << " - "
+						<< device.input_dev_node << " has been closed";
+			LOG(DEBUG3) << "automatic initialization is disabled for closed devices";
 			continue; // jump to next detected device
 		}
 
@@ -81,7 +93,7 @@ void DevicesManager::initializeDevices(void) {
 				if( device.driver_ID == driver->getDriverID() ) {
 					// initialization
 					driver->initializeDevice( device.device, device.device_bus, device.device_num );
-					this->initialized_devices_[det_dev.first] = device;
+					this->initialized_devices_[devID] = device;
 
 					this->buffer_.str( device.device.name );
 					this->buffer_	<< "(" << device.device.vendor_id << ":" << device.device.product_id
@@ -119,6 +131,7 @@ const bool DevicesManager::closeDevice(const std::string & devID) {
 					LOG(INFO) << this->buffer_.str();
 					syslog(LOG_INFO, this->buffer_.str().c_str());
 
+					this->plugged_but_closed_devices_[devID] = device;
 					this->initialized_devices_.erase(devID);
 					return true;
 				}
@@ -156,8 +169,11 @@ void DevicesManager::closeInitializedDevices(void) {
 }
 
 void DevicesManager::cleanUnpluggedDevices(void) {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "checking for unplugged initialized devices";
+#endif
 
+	/* checking for unplugged unclosed devices */
 	std::vector<std::string> to_clean;
 	for(const auto & init_dev : this->initialized_devices_) {
 		if( this->detected_devices_.count(init_dev.first) == 0 ) {
@@ -178,10 +194,27 @@ void DevicesManager::cleanUnpluggedDevices(void) {
 	}
 
 	to_clean.clear();
+
+	/* checking for plugged but closed devices */
+	for(const auto & closed_dev : this->plugged_but_closed_devices_) {
+		if(this->detected_devices_.count(closed_dev.first) == 0 ) {
+			to_clean.push_back(closed_dev.first);
+		}
+	}
+	for(const auto & devID : to_clean) {
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "removing " << devID << " from plugged-but-closed devices";
+#endif
+		this->plugged_but_closed_devices_.erase(devID);
+	}
+	to_clean.clear();
+
 	this->detected_devices_.clear();
 
+#if DEBUGGING_ON
 	LOG(DEBUG3) << "number of devices still initialized : " << this->initialized_devices_.size();
 	LOG(DEBUG3) << "---";
+#endif
 }
 
 #if DEBUGGING_ON

@@ -77,6 +77,7 @@ class DevicesManager
 		std::vector<KeyboardDriver*> drivers_;
 		std::map<const std::string, DetectedDevice> detected_devices_;
 		std::map<const std::string, DetectedDevice> initialized_devices_;
+		std::map<const std::string, DetectedDevice> plugged_but_closed_devices_;
 
 		void searchSupportedDevices(void);
 		void initializeDevices(void);
