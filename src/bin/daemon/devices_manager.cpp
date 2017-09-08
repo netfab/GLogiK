@@ -118,6 +118,39 @@ void DevicesManager::initializeDevices(void) {
 
 const bool DevicesManager::startDevice(const std::string & devID) {
 	LOG(DEBUG2) << "trying to start device " << devID;
+	try {
+		auto & device = this->plugged_but_closed_devices_.at(devID);
+		for(const auto& driver : this->drivers_) {
+			if( device.driver_ID == driver->getDriverID() ) {
+				if( ! driver->isDeviceInitialized(devID) ) { /* sanity check */
+					// initialization
+					driver->initializeDevice( device.device, device.device_bus, device.device_num );
+					this->initialized_devices_[devID] = device;
+
+					this->buffer_.str( device.device.name );
+					this->buffer_	<< "(" << device.device.vendor_id << ":" << device.device.product_id
+									<< ") on bus " << to_uint(device.device_bus) << " initialized";
+					LOG(INFO) << this->buffer_.str();
+					syslog(LOG_INFO, this->buffer_.str().c_str());
+
+					LOG(DEBUG3) << "removing " << devID << " from plugged-but-closed devices";
+					this->plugged_but_closed_devices_.erase(devID);
+					return true;
+				}
+			}
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("device starting failure : device not found in plugged-but-closed devices : ");
+		this->buffer_ << oor.what();
+		LOG(ERROR) << this->buffer_.str();
+		syslog(LOG_ERR, this->buffer_.str().c_str());
+		return false;
+	}
+
+	this->buffer_.str("device starting failure : driver not found !?");
+	LOG(ERROR) << this->buffer_.str();
+	syslog(LOG_ERR, this->buffer_.str().c_str());
 	return false;
 }
 
@@ -145,7 +178,7 @@ const bool DevicesManager::closeDevice(const std::string & devID) {
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("device closing failure : device not found in initialized device : ");
+		this->buffer_.str("device closing failure : device not found in initialized devices : ");
 		this->buffer_ << oor.what();
 		LOG(ERROR) << this->buffer_.str();
 		syslog(LOG_ERR, this->buffer_.str().c_str());
