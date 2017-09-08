@@ -49,6 +49,8 @@ GLogiK=$PWD/.. CD=. {
 				Makefile.am
 				GKDBus.cpp
 				GKDBus.h
+				GKDBusEvents.cpp
+				GKDBusEvents.h
 				GKDBusMsgReply.cpp
 				GKDBusMsgReply.h
 			}

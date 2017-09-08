@@ -162,6 +162,44 @@ std::string GKDBus::getNextStringArgument(void) {
 	return ret;
 }
 
+void GKDBus::checkMethodsCalls(BusConnection current) {
+	for(const auto & interface : this->events_string_to_bool_) {
+		LOG(DEBUG2) << "checking " << interface.first << " interface";
+
+		for(const auto & DBusEvent : interface.second) {
+			const char* method = DBusEvent.method.c_str();
+			LOG(DEBUG3) << "checking for " << method << " call";
+			if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
+				bool ret = false;
+				LOG(DEBUG1) << "DBus " << method << " called !";
+
+				try {
+					const std::string devID = this->getNextStringArgument();
+					ret = DBusEvent.callback(devID);
+				}
+				catch ( const EmptyContainer & e ) {
+					LOG(DEBUG3) << e.what();
+				}
+
+				try {
+					this->initializeMethodCallReply(current);
+					this->appendToMethodCallReply(ret);
+				}
+				catch (const std::bad_alloc& e) { /* handle new() failure */
+					LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+				}
+				catch ( const GLogiKExcept & e ) {
+					LOG(ERROR) << "DBus reply failure : " << e.what();
+				}
+
+				/* delete reply object if allocated */
+				this->sendMethodCallReply();
+				return; /* one reply at a time */
+			}
+		}
+	}
+}
+
 /*
  * private
  */

@@ -7,4 +7,5 @@ libGLogiKDBus_la_LIBADD = $(DBUS_LIBS) \
 
 libGLogiKDBus_la_SOURCES = \
 	GKDBus.cpp GKDBus.h \
+	GKDBusEvents.cpp GKDBusEvents.h \
 	GKDBusMsgReply.cpp GKDBusMsgReply.h

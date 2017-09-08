@@ -22,6 +22,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <functional>
 
 #include <libudev.h>
 #include <syslog.h>
@@ -113,6 +114,11 @@ void DevicesManager::initializeDevices(void) {
 	} // for
 	this->detected_devices_.clear();
 	LOG(INFO) << "device(s) initialized : " << this->initialized_devices_.size();
+}
+
+const bool DevicesManager::startDevice(const std::string & devID) {
+	LOG(DEBUG2) << "trying to start device " << devID;
+	return false;
 }
 
 const bool DevicesManager::closeDevice(const std::string & devID) {
@@ -390,33 +396,7 @@ void DevicesManager::searchSupportedDevices(void) {
 
 void DevicesManager::checkDBusMessages(GKDBus* DBus) {
 	if( DBus->checkForNextMessage(BusConnection::GKDBUS_SESSION) ) {
-		std::string devID;
-		if( DBus->checkMessageForMethodCallOnInterface("com.glogik.Daemon.Device", "Stop") ) {
-			bool closed = false;
-			LOG(DEBUG1) << "DBus Stop called !";
-
-			try {
-				devID = DBus->getNextStringArgument();
-				closed = this->closeDevice(devID);
-			}
-			catch ( const EmptyContainer & e ) {
-				LOG(DEBUG3) << e.what();
-			}
-
-			try {
-				DBus->initializeMethodCallReply(BusConnection::GKDBUS_SESSION);
-				DBus->appendToMethodCallReply(closed);
-			}
-			catch (const std::bad_alloc& e) { /* handle new() failure */
-				LOG(ERROR) << "DBus reply allocation failure : " << e.what();
-			}
-			catch ( const GLogiKExcept & e ) {
-				LOG(ERROR) << "DBus reply failure : " << e.what();
-			}
-
-			/* delete reply object if allocated */
-			DBus->sendMethodCallReply();
-		}
+		DBus->checkMethodsCalls(BusConnection::GKDBUS_SESSION);
 /*
 		if( DBus->checkMessageForSignalOnInterface("test.signal.Type", "Test") ) {
 			try {
@@ -456,6 +436,9 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 	this->fds[0].events = POLLIN;
 
 	//DBus->addSignalMatch(BusConnection::GKDBUS_SESSION, "test.signal.Type");
+	const char* device_interface = "com.glogik.Daemon.Device";
+	DBus->addEventStringToBoolCallback(device_interface, "Stop",  std::bind(&DevicesManager::closeDevice, this, std::placeholders::_1));
+	DBus->addEventStringToBoolCallback(device_interface, "Start", std::bind(&DevicesManager::startDevice, this, std::placeholders::_1));
 
 	LOG(DEBUG2) << "loading known drivers";
 

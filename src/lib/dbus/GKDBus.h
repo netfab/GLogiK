@@ -30,6 +30,7 @@
 #include <dbus/dbus.h>
 
 #include "GKDBusMsgReply.h"
+#include "GKDBusEvents.h"
 
 namespace GLogiK
 {
@@ -40,7 +41,7 @@ enum class BusConnection : int8_t
 	GKDBUS_SYSTEM,
 };
 
-class GKDBus
+class GKDBus : public GKDBusEvents
 {
 	public:
 		GKDBus();
@@ -59,6 +60,7 @@ class GKDBus
 		void sendMethodCallReply(void);
 
 		std::string getNextStringArgument(void);
+		void checkMethodsCalls(BusConnection current);
 
 	protected:
 
