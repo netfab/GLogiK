@@ -23,6 +23,8 @@
 #include <stdexcept>
 #include <string>
 #include <functional>
+#include <thread>
+#include <chrono>
 
 #include <libudev.h>
 #include <syslog.h>
@@ -186,6 +188,30 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 	}
 
 	this->buffer_.str("device stopping failure : driver not found !?");
+	LOG(ERROR) << this->buffer_.str();
+	syslog(LOG_ERR, this->buffer_.str().c_str());
+	return false;
+}
+
+const bool DevicesManager::restartDevice(const std::string & devID) {
+	LOG(DEBUG1) << "trying to restart device " << devID;
+	if(this->stopDevice(devID)) {
+#if DEBUGGING_ON
+		LOG(DEBUG) << "device restart : sleeping for 200 ms";
+#endif
+		std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+		if(this->startDevice(devID)) {
+			return true;
+		}
+
+		this->buffer_.str("device restarting failure : start failed");
+		LOG(ERROR) << this->buffer_.str();
+		syslog(LOG_ERR, this->buffer_.str().c_str());
+		return false;
+	}
+
+	this->buffer_.str("device restarting failure : stop failed");
 	LOG(ERROR) << this->buffer_.str();
 	syslog(LOG_ERR, this->buffer_.str().c_str());
 	return false;
@@ -472,6 +498,7 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 	const char* device_interface = "com.glogik.Daemon.Device";
 	DBus->addEventStringToBoolCallback(device_interface, "Stop",  std::bind(&DevicesManager::stopDevice, this, std::placeholders::_1));
 	DBus->addEventStringToBoolCallback(device_interface, "Start", std::bind(&DevicesManager::startDevice, this, std::placeholders::_1));
+	DBus->addEventStringToBoolCallback(device_interface, "Restart", std::bind(&DevicesManager::restartDevice, this, std::placeholders::_1));
 
 	LOG(DEBUG2) << "loading known drivers";
 

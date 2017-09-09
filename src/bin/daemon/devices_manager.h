@@ -85,6 +85,7 @@ class DevicesManager
 
 		const bool startDevice(const std::string & devID);
 		const bool stopDevice(const std::string & devID);
+		const bool restartDevice(const std::string & devID);
 		void checkForUnpluggedDevices(void);
 		void checkDBusMessages(GKDBus* DBus);
 };
