@@ -77,13 +77,14 @@ class DevicesManager
 		std::vector<KeyboardDriver*> drivers_;
 		std::map<const std::string, DetectedDevice> detected_devices_;
 		std::map<const std::string, DetectedDevice> initialized_devices_;
-		std::map<const std::string, DetectedDevice> plugged_but_closed_devices_;
+		std::map<const std::string, DetectedDevice> plugged_but_stopped_devices_;
 
 		void searchSupportedDevices(void);
 		void initializeDevices(void);
-		void closeInitializedDevices(void);
+		void stopInitializedDevices(void);
+
 		const bool startDevice(const std::string & devID);
-		const bool closeDevice(const std::string & devID);
+		const bool stopDevice(const std::string & devID);
 		void checkForUnpluggedDevices(void);
 		void checkDBusMessages(GKDBus* DBus);
 };

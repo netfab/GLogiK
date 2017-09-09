@@ -55,10 +55,10 @@ DevicesManager::~DevicesManager() {
 		udev_unref(this->udev);
 	}
 
-	this->closeInitializedDevices();
-	this->plugged_but_closed_devices_.clear();
+	this->stopInitializedDevices();
+	this->plugged_but_stopped_devices_.clear();
 
-	LOG(DEBUG2) << "closing drivers";
+	LOG(DEBUG2) << "stopping drivers";
 	for(const auto& driver : this->drivers_) {
 		delete driver;
 	}
@@ -80,12 +80,12 @@ void DevicesManager::initializeDevices(void) {
 		}
 
 		// TODO option ?
-		if(this->plugged_but_closed_devices_.count(devID) == 1) {
+		if(this->plugged_but_stopped_devices_.count(devID) == 1) {
 			LOG(DEBUG3) << "device "
 						<< device.device.vendor_id << ":"
 						<< device.device.product_id << " - "
-						<< device.input_dev_node << " has been closed";
-			LOG(DEBUG3) << "automatic initialization is disabled for closed devices";
+						<< device.input_dev_node << " has been stopped";
+			LOG(DEBUG3) << "automatic initialization is disabled for stopped devices";
 			continue; // jump to next detected device
 		}
 
@@ -119,7 +119,7 @@ void DevicesManager::initializeDevices(void) {
 const bool DevicesManager::startDevice(const std::string & devID) {
 	LOG(DEBUG2) << "trying to start device " << devID;
 	try {
-		auto & device = this->plugged_but_closed_devices_.at(devID);
+		auto & device = this->plugged_but_stopped_devices_.at(devID);
 		for(const auto& driver : this->drivers_) {
 			if( device.driver_ID == driver->getDriverID() ) {
 				if( ! driver->isDeviceInitialized(devID) ) { /* sanity check */
@@ -133,15 +133,15 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 					LOG(INFO) << this->buffer_.str();
 					syslog(LOG_INFO, this->buffer_.str().c_str());
 
-					LOG(DEBUG3) << "removing " << devID << " from plugged-but-closed devices";
-					this->plugged_but_closed_devices_.erase(devID);
+					LOG(DEBUG3) << "removing " << devID << " from plugged-but-stopped devices";
+					this->plugged_but_stopped_devices_.erase(devID);
 					return true;
 				}
 			}
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("device starting failure : device not found in plugged-but-closed devices : ");
+		this->buffer_.str("device starting failure : device not found in plugged-but-stopped devices : ");
 		this->buffer_ << oor.what();
 		LOG(ERROR) << this->buffer_.str();
 		syslog(LOG_ERR, this->buffer_.str().c_str());
@@ -154,8 +154,8 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 	return false;
 }
 
-const bool DevicesManager::closeDevice(const std::string & devID) {
-	LOG(DEBUG2) << "trying to close device " << devID;
+const bool DevicesManager::stopDevice(const std::string & devID) {
+	LOG(DEBUG2) << "trying to stop device " << devID;
 
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
@@ -166,11 +166,11 @@ const bool DevicesManager::closeDevice(const std::string & devID) {
 
 					this->buffer_.str( device.device.name );
 					this->buffer_	<< "(" << device.device.vendor_id << ":" << device.device.product_id
-									<< ") on bus " << to_uint(device.device_bus) << " closed";
+									<< ") on bus " << to_uint(device.device_bus) << " stopped";
 					LOG(INFO) << this->buffer_.str();
 					syslog(LOG_INFO, this->buffer_.str().c_str());
 
-					this->plugged_but_closed_devices_[devID] = device;
+					this->plugged_but_stopped_devices_[devID] = device;
 					this->initialized_devices_.erase(devID);
 					return true;
 				}
@@ -178,32 +178,32 @@ const bool DevicesManager::closeDevice(const std::string & devID) {
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("device closing failure : device not found in initialized devices : ");
+		this->buffer_.str("device stopping failure : device not found in initialized devices : ");
 		this->buffer_ << oor.what();
 		LOG(ERROR) << this->buffer_.str();
 		syslog(LOG_ERR, this->buffer_.str().c_str());
 		return false;
 	}
 
-	this->buffer_.str("device closing failure : driver not found !?");
+	this->buffer_.str("device stopping failure : driver not found !?");
 	LOG(ERROR) << this->buffer_.str();
 	syslog(LOG_ERR, this->buffer_.str().c_str());
 	return false;
 }
 
-void DevicesManager::closeInitializedDevices(void) {
-	LOG(DEBUG2) << "closing initialized devices";
+void DevicesManager::stopInitializedDevices(void) {
+	LOG(DEBUG2) << "stopping initialized devices";
 
-	std::vector<std::string> to_close;
+	std::vector<std::string> to_stop;
 	for(const auto& init_dev : this->initialized_devices_) {
-		to_close.push_back(init_dev.first);
+		to_stop.push_back(init_dev.first);
 	}
 
-	for(const auto & devID : to_close) {
-		this->closeDevice(devID);
+	for(const auto & devID : to_stop) {
+		this->stopDevice(devID);
 	}
 
-	to_close.clear();
+	to_stop.clear();
 	this->initialized_devices_.clear();
 }
 
@@ -212,7 +212,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 	LOG(DEBUG2) << "checking for unplugged devices";
 #endif
 
-	/* checking for unplugged unclosed devices */
+	/* checking for unplugged unstopped devices */
 	std::vector<std::string> to_clean;
 	for(const auto & init_dev : this->initialized_devices_) {
 		if( this->detected_devices_.count(init_dev.first) == 0 ) {
@@ -226,25 +226,25 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 		LOG(WARNING)	<< "erasing unplugged initialized driver : "
 						<< device.device.vendor_id << ":" << device.device.product_id
 						<< ":" << device.input_dev_node << ":" << device.usec;
-		LOG(WARNING)	<< "Did you unplug your device before properly closing it ?";
+		LOG(WARNING)	<< "Did you unplug your device before properly stopping it ?";
 		LOG(WARNING)	<< "You will get libusb warnings/errors if you do this.";
 #endif
-		this->closeDevice(devID);
+		this->stopDevice(devID);
 	}
 
 	to_clean.clear();
 
-	/* checking for unplugged but closed devices */
-	for(const auto & closed_dev : this->plugged_but_closed_devices_) {
-		if(this->detected_devices_.count(closed_dev.first) == 0 ) {
-			to_clean.push_back(closed_dev.first);
+	/* checking for unplugged but stopped devices */
+	for(const auto & stopped_dev : this->plugged_but_stopped_devices_) {
+		if(this->detected_devices_.count(stopped_dev.first) == 0 ) {
+			to_clean.push_back(stopped_dev.first);
 		}
 	}
 	for(const auto & devID : to_clean) {
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "removing " << devID << " from plugged-but-closed devices";
+		LOG(DEBUG3) << "removing " << devID << " from plugged-but-stopped devices";
 #endif
-		this->plugged_but_closed_devices_.erase(devID);
+		this->plugged_but_stopped_devices_.erase(devID);
 	}
 	to_clean.clear();
 
@@ -470,7 +470,7 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 
 	//DBus->addSignalMatch(BusConnection::GKDBUS_SESSION, "test.signal.Type");
 	const char* device_interface = "com.glogik.Daemon.Device";
-	DBus->addEventStringToBoolCallback(device_interface, "Stop",  std::bind(&DevicesManager::closeDevice, this, std::placeholders::_1));
+	DBus->addEventStringToBoolCallback(device_interface, "Stop",  std::bind(&DevicesManager::stopDevice, this, std::placeholders::_1));
 	DBus->addEventStringToBoolCallback(device_interface, "Start", std::bind(&DevicesManager::startDevice, this, std::placeholders::_1));
 
 	LOG(DEBUG2) << "loading known drivers";
