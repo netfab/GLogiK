@@ -27,6 +27,7 @@ namespace GLogiK
 
 GKDBusEvents::GKDBusEvents() {
 	LOG(DEBUG2) << __func__ << " construction";
+	this->addEventVoidToStringCallback("org.freedesktop.DBus.Introspectable", "Introspect", std::bind(&GKDBusEvents::introspect, this));
 }
 
 GKDBusEvents::~GKDBusEvents() {
@@ -36,6 +37,17 @@ GKDBusEvents::~GKDBusEvents() {
 void GKDBusEvents::addEventStringToBoolCallback(const char* interface, const char* method, std::function<const bool(const std::string&)> callback) {
 	GKDBusEventStringToBoolCallback e(method, callback);
 	this->events_string_to_bool_[interface].push_back(e);
+}
+
+void GKDBusEvents::addEventVoidToStringCallback(const char* interface, const char* method, std::function<const std::string(void)> callback) {
+	GKDBusEventVoidToStringCallback e(method, callback);
+	this->events_void_to_string_[interface].push_back(e);
+}
+
+const std::string GKDBusEvents::introspect(void) {
+	LOG(DEBUG3) << __func__ << " call !";
+	const std::string ok("ok");
+	return ok;
 }
 
 } // namespace GLogiK

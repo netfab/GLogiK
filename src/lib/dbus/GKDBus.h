@@ -57,6 +57,7 @@ class GKDBus : public GKDBusEvents
 
 		void initializeMethodCallReply(BusConnection current);
 		void appendToMethodCallReply(const bool value);
+		void appendToMethodCallReply(const std::string & value);
 		void sendMethodCallReply(void);
 
 		std::string getNextStringArgument(void);

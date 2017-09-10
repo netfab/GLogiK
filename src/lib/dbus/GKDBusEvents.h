@@ -37,6 +37,13 @@ struct GKDBusEventStringToBoolCallback {
 	GKDBusEventStringToBoolCallback(const char* m, std::function<const bool(const std::string&)> c) : method(m), callback(c) {}
 };
 
+struct GKDBusEventVoidToStringCallback {
+	const std::string method;
+	std::function<const std::string(void)> callback;
+
+	GKDBusEventVoidToStringCallback(const char* m, std::function<const std::string(void)> c) : method(m), callback(c) {}
+};
+
 class GKDBusEvents
 {
 	public:
@@ -44,11 +51,14 @@ class GKDBusEvents
 		~GKDBusEvents(void);
 
 		void addEventStringToBoolCallback(const char* interface, const char* method, std::function<const bool(const std::string&)> callback);
+		void addEventVoidToStringCallback(const char* interface, const char* method, std::function<const std::string(void)> callback);
 
 	protected:
 		std::map<const std::string, std::vector<GKDBusEventStringToBoolCallback>> events_string_to_bool_;
+		std::map<const std::string, std::vector<GKDBusEventVoidToStringCallback>> events_void_to_string_;
 
 	private:
+		const std::string introspect(void);
 
 };
 

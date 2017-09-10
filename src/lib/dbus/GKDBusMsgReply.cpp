@@ -64,5 +64,12 @@ void GKDBusMsgReply::appendToReply(const dbus_bool_t value) {
 	LOG(DEBUG2) << "DBus reply boolean value appended";
 }
 
+void GKDBusMsgReply::appendToReply(const std::string & value) {
+	const char* p = value.c_str();
+	if( ! dbus_message_iter_append_basic(&this->rep_args_it_, DBUS_TYPE_STRING, &p) )
+		throw GLogiKExcept("DBus reply append string value failure, not enough memory");
+	LOG(DEBUG2) << "DBus reply string value appended";
+}
+
 } // namespace GLogiK
 

@@ -142,6 +142,12 @@ void GKDBus::appendToMethodCallReply(const bool value) {
 	this->reply_->appendToReply(value);
 }
 
+void GKDBus::appendToMethodCallReply(const std::string & value) {
+	if(this->reply_ == nullptr) /* sanity check */
+		throw GLogiKExcept("DBus reply object not initialized");
+	this->reply_->appendToReply(value);
+}
+
 void GKDBus::sendMethodCallReply(void) {
 	if(this->reply_) { /* sanity check */
 		delete this->reply_;
@@ -163,6 +169,37 @@ std::string GKDBus::getNextStringArgument(void) {
 }
 
 void GKDBus::checkMethodsCalls(BusConnection current) {
+	for(const auto & interface : this->events_void_to_string_) {
+		LOG(DEBUG2) << "checking " << interface.first << " interface";
+
+		for(const auto & DBusEvent : interface.second) {
+			const char* method = DBusEvent.method.c_str();
+			LOG(DEBUG3) << "checking for " << method << " call";
+			if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
+				std::string ret;
+				LOG(DEBUG1) << "DBus " << method << " called !";
+
+				/* call void to string callback */
+				ret = DBusEvent.callback();
+
+				try {
+					this->initializeMethodCallReply(current);
+					this->appendToMethodCallReply(ret);
+				}
+				catch (const std::bad_alloc& e) { /* handle new() failure */
+					LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+				}
+				catch ( const GLogiKExcept & e ) {
+					LOG(ERROR) << "DBus reply failure : " << e.what();
+				}
+
+				/* delete reply object if allocated */
+				this->sendMethodCallReply();
+				return; /* one reply at a time */
+			}
+		}
+	}
+
 	for(const auto & interface : this->events_string_to_bool_) {
 		LOG(DEBUG2) << "checking " << interface.first << " interface";
 
@@ -174,6 +211,7 @@ void GKDBus::checkMethodsCalls(BusConnection current) {
 				LOG(DEBUG1) << "DBus " << method << " called !";
 
 				try {
+					/* call string to bool callback */
 					const std::string devID = this->getNextStringArgument();
 					ret = DBusEvent.callback(devID);
 				}

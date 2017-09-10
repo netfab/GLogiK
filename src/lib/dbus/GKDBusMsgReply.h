@@ -22,6 +22,8 @@
 #ifndef __GLOGIK_GKDBUS_MESSAGE_REPLY_H__
 #define __GLOGIK_GKDBUS_MESSAGE_REPLY_H__
 
+#include <string>
+
 #include <dbus/dbus.h>
 
 namespace GLogiK
@@ -34,6 +36,7 @@ class GKDBusMsgReply
 		~GKDBusMsgReply();
 
 		void appendToReply(const dbus_bool_t value);
+		void appendToReply(const std::string & value);
 
 	protected:
 	private:
