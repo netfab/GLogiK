@@ -1,3 +1,3 @@
 
-SUBDIRS = daemon
+SUBDIRS = daemon service
 

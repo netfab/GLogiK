@@ -42,6 +42,10 @@ GLogiK=$PWD/.. CD=. {
 				virtual_keyboard.cpp
 				virtual_keyboard.h
 			}
+			desktop_service=service/ {
+				Makefile.am
+				main.cpp
+			}
 		}
 		libraries=lib/ {
 			Makefile.am

@@ -140,6 +140,7 @@ AC_CONFIG_FILES([
         src/lib/dbus/Makefile
         src/bin/Makefile
         src/bin/daemon/Makefile
+        src/bin/service/Makefile
 	])
 
 # Generate config.status and launch it.
