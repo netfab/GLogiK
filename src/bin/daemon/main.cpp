@@ -20,7 +20,6 @@
  */
 
 #include "daemon.h"
-#include "lib/utils/exception.h"
 
 using namespace GLogiK;
 
