@@ -19,6 +19,8 @@
  *
  */
 
+#include <sstream>
+
 #include "GKDBusEvents.h"
 #include "include/log.h"
 
@@ -27,27 +29,65 @@ namespace GLogiK
 
 GKDBusEvents::GKDBusEvents() {
 	LOG(DEBUG2) << __func__ << " construction";
-	this->addEventVoidToStringCallback("org.freedesktop.DBus.Introspectable", "Introspect", std::bind(&GKDBusEvents::introspect, this));
+
+	this->addEventVoidToStringCallback(
+		"org.freedesktop.DBus.Introspectable", "Introspect",
+		{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
+		std::bind(&GKDBusEvents::introspect, this));
 }
 
 GKDBusEvents::~GKDBusEvents() {
 	LOG(DEBUG2) << __func__ << " destruction";
 }
 
-void GKDBusEvents::addEventStringToBoolCallback(const char* interface, const char* method, std::function<const bool(const std::string&)> callback) {
-	GKDBusEventStringToBoolCallback e(method, callback);
+void GKDBusEvents::addEventStringToBoolCallback(const char* interface, const char* method,
+	std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback)
+{
+	GKDBusEventStringToBoolCallback e(method, args, callback);
 	this->events_string_to_bool_[interface].push_back(e);
 }
 
-void GKDBusEvents::addEventVoidToStringCallback(const char* interface, const char* method, std::function<const std::string(void)> callback) {
-	GKDBusEventVoidToStringCallback e(method, callback);
+void GKDBusEvents::addEventVoidToStringCallback(const char* interface, const char* method,
+	std::vector<DBusMethodArgument> args, std::function<const std::string(void)> callback)
+{
+	GKDBusEventVoidToStringCallback e(method, args, callback);
 	this->events_void_to_string_[interface].push_back(e);
 }
 
 const std::string GKDBusEvents::introspect(void) {
-	LOG(DEBUG3) << __func__ << " call !";
-	const std::string ok("ok");
-	return ok;
+	std::ostringstream xml;
+	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
+	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
+	xml << "<node>\n";
+
+	for(const auto & interface : this->events_void_to_string_) {
+		xml << "  <interface name=\"" << interface.first << "\">\n";
+		for(const auto & DBusEvent : interface.second) {
+			xml << "    <method name=\"" << DBusEvent.method << "\">\n";
+			for(const auto & arg : DBusEvent.arguments) {
+				xml << "      <!-- " << arg.comment << " -->\n";
+				xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
+			}
+			xml << "    </method>\n";
+		}
+		xml << "  </interface>\n";
+	}
+
+	for(const auto & interface : this->events_string_to_bool_) {
+		xml << "  <interface name=\"" << interface.first << "\">\n";
+		for(const auto & DBusEvent : interface.second) {
+			xml << "    <method name=\"" << DBusEvent.method << "\">\n";
+			for(const auto & arg : DBusEvent.arguments) {
+				xml << "      <!-- " << arg.comment << " -->\n";
+				xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
+			}
+			xml << "    </method>\n";
+		}
+		xml << "  </interface>\n";
+	}
+
+	xml << "</node>\n";
+	return xml.str();
 }
 
 } // namespace GLogiK

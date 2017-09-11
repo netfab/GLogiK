@@ -30,18 +30,30 @@
 namespace GLogiK
 {
 
+/* structure for introspection */
+struct DBusMethodArgument {
+	const std::string type;
+	const std::string name;
+	const std::string direction;
+	const std::string comment;
+};
+
 struct GKDBusEventStringToBoolCallback {
 	const std::string method;
+	std::vector<DBusMethodArgument> arguments;
 	std::function<const bool(const std::string&)> callback;
 
-	GKDBusEventStringToBoolCallback(const char* m, std::function<const bool(const std::string&)> c) : method(m), callback(c) {}
+	GKDBusEventStringToBoolCallback(const char* m, std::vector<DBusMethodArgument> & a,
+		std::function<const bool(const std::string&)> c) : method(m), arguments(a), callback(c) {}
 };
 
 struct GKDBusEventVoidToStringCallback {
 	const std::string method;
+	std::vector<DBusMethodArgument> arguments;
 	std::function<const std::string(void)> callback;
 
-	GKDBusEventVoidToStringCallback(const char* m, std::function<const std::string(void)> c) : method(m), callback(c) {}
+	GKDBusEventVoidToStringCallback(const char* m, std::vector<DBusMethodArgument> & a,
+		std::function<const std::string(void)> c) : method(m), arguments(a), callback(c) {}
 };
 
 class GKDBusEvents
@@ -50,8 +62,10 @@ class GKDBusEvents
 		GKDBusEvents();
 		~GKDBusEvents(void);
 
-		void addEventStringToBoolCallback(const char* interface, const char* method, std::function<const bool(const std::string&)> callback);
-		void addEventVoidToStringCallback(const char* interface, const char* method, std::function<const std::string(void)> callback);
+		void addEventStringToBoolCallback(const char* interface, const char* method,
+			std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback);
+		void addEventVoidToStringCallback(const char* interface, const char* method,
+			std::vector<DBusMethodArgument> args, std::function<const std::string(void)> callback);
 
 	protected:
 		std::map<const std::string, std::vector<GKDBusEventStringToBoolCallback>> events_string_to_bool_;
