@@ -57,7 +57,7 @@ build_it:
 	cd $(build_dir) && make
 
 install_it:
-	find $(PREFIX_DEV_DIR) -type f -name 'glogikd-debug-*.log' -delete
+	find $(PREFIX_DEV_DIR) -type f -name 'glogik*-debug-*.log' -delete
 	cd $(build_dir) && make install
 
 uninstall_it:
