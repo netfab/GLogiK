@@ -19,12 +19,40 @@
  *
  */
 
-#include "service.h"
+#ifndef __GLOGIKS_DESKTOP_SERVICE_H__
+#define __GLOGIKS_DESKTOP_SERVICE_H__
 
-using namespace GLogiK;
+#include <sys/types.h>
+#include <cstdio>
 
-int main(int argc, char *argv[]) {
-	DesktopService service;
-	return service.run(argc, argv);
-}
+#include <sstream>
 
+namespace GLogiK
+{
+
+#define GLOGIKS_DESKTOP_SERVICE_NAME "GLogiKs"
+
+class DesktopService
+{
+	public:
+		DesktopService(void);
+		~DesktopService(void);
+
+		int run(const int& argc, char *argv[]);
+
+	protected:
+
+	private:
+		pid_t pid_ = 0;
+		FILE* log_fd_ = nullptr;
+		std::ostringstream buffer_;
+
+		static bool still_running_;
+		static void handle_signal(int sig);
+
+		void daemonize(void);
+};
+
+} // namespace GLogiK
+
+#endif
