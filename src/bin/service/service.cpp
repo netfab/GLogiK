@@ -77,17 +77,27 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 	syslog(LOG_INFO, this->buffer_.str().c_str() );
 	LOG(INFO) << this->buffer_.str();
 
-	this->daemonize();
+	try {
+		this->daemonize();
 
-	std::signal(SIGINT, DesktopService::handle_signal);
-	std::signal(SIGTERM, DesktopService::handle_signal);
+		std::signal(SIGINT, DesktopService::handle_signal);
+		std::signal(SIGTERM, DesktopService::handle_signal);
 
-	while( DesktopService::still_running_ ) {
-		LOG(INFO) << "ok, run";
-		std::this_thread::sleep_for(std::chrono::milliseconds(200));
+		while( DesktopService::still_running_ ) {
+			LOG(INFO) << "ok, run";
+			std::this_thread::sleep_for(std::chrono::milliseconds(200));
+		}
+
+		return EXIT_SUCCESS;
 	}
-
-	return EXIT_SUCCESS;
+	catch ( const GLogiKExcept & e ) {
+		std::ostringstream buff(e.what(), std::ios_base::app);
+		if(errno != 0)
+			buff << " : " << strerror(errno);
+		syslog( LOG_ERR, buff.str().c_str() );
+		LOG(ERROR) << buff.str();
+		return EXIT_FAILURE;
+	}
 }
 
 void DesktopService::handle_signal(int sig) {
