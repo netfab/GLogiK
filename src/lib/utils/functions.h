@@ -28,6 +28,11 @@
 namespace GLogiK
 {
 
+#define GK_OUT	(std::cerr)
+#define GK_STAT	(std::cerr)
+#define GK_WARN	(std::cerr << "warning: ")
+#define GK_ERR	(std::cerr << "error: ")
+
 template <typename T>
 constexpr unsigned int to_uint(T obj) {
 	return static_cast<unsigned int>(obj);

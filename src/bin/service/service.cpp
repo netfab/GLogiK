@@ -31,11 +31,11 @@
 #include <thread>
 #include <chrono>
 
-#include <syslog.h>
 #include "include/log.h"
 
 #include <config.h>
 
+#include "lib/utils/functions.h"
 #include "lib/utils/exception.h"
 
 #include "service.h"
@@ -46,7 +46,6 @@ namespace GLogiK
 bool DesktopService::still_running_ = true;
 
 DesktopService::DesktopService() : buffer_("", std::ios_base::app) {
-	openlog(GLOGIKS_DESKTOP_SERVICE_NAME, LOG_PID|LOG_CONS, LOG_USER);
 
 #ifdef DEBUGGING_ON
 	if( FILELog::ReportingLevel() != NONE ) {
@@ -59,22 +58,22 @@ DesktopService::DesktopService() : buffer_("", std::ios_base::app) {
 #endif
 
 	if( this->log_fd_ == nullptr )
-		syslog(LOG_INFO, "debug file not opened");
+		GK_STAT << "debug file not opened\n";
 }
 
 DesktopService::~DesktopService() {
 	LOG(DEBUG2) << "exiting desktop service process";
 
 	LOG(INFO) << "bye !";
+	GK_STAT << GLOGIKS_DESKTOP_SERVICE_NAME << ": bye !\n";
 	if( this->log_fd_ != nullptr )
 		std::fclose(this->log_fd_);
-	closelog();
 }
 
 int DesktopService::run( const int& argc, char *argv[] ) {
 	this->buffer_.str( "Starting " );
 	this->buffer_ << GLOGIKS_DESKTOP_SERVICE_NAME << " vers. " << VERSION ;
-	syslog(LOG_INFO, this->buffer_.str().c_str() );
+	GK_STAT << this->buffer_.str().c_str() << "\n";
 	LOG(INFO) << this->buffer_.str();
 
 	try {
@@ -94,8 +93,8 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 		std::ostringstream buff(e.what(), std::ios_base::app);
 		if(errno != 0)
 			buff << " : " << strerror(errno);
-		syslog( LOG_ERR, buff.str().c_str() );
 		LOG(ERROR) << buff.str();
+		GK_ERR << buff.str().c_str() << "\n";
 		return EXIT_FAILURE;
 	}
 }
@@ -107,7 +106,7 @@ void DesktopService::handle_signal(int sig) {
 		case SIGTERM:
 			buff << sig << " --> bye bye";
 			LOG(INFO) << buff.str();
-			syslog(LOG_INFO, buff.str().c_str());
+			GK_STAT << buff.str().c_str() << "\n";
 			std::signal(SIGINT, SIG_DFL);
 			std::signal(SIGTERM, SIG_DFL);
 			DesktopService::still_running_ = false;
@@ -115,7 +114,7 @@ void DesktopService::handle_signal(int sig) {
 		default:
 			buff << sig << " --> unhandled";
 			LOG(WARNING) << buff.str();
-			syslog(LOG_WARNING, buff.str().c_str());
+			GK_WARN << buff.str().c_str() << "\n";
 			break;
 	}
 }
