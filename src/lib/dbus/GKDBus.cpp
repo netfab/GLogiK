@@ -70,6 +70,22 @@ void GKDBus::connectToSessionBus(const char* connection_name) {
 	LOG(DEBUG1) << "DBus Session requested connection name : " << connection_name;
 }
 
+void GKDBus::connectToSystemBus(const char* connection_name) {
+	this->system_conn_ = dbus_bus_get(DBUS_BUS_SYSTEM, &this->error_);
+	this->checkDBusError("DBus Session connection failure");
+	LOG(DEBUG1) << "DBus Session connection opened";
+
+	// TODO check name flags
+	int ret = dbus_bus_request_name(this->system_conn_, connection_name,
+		DBUS_NAME_FLAG_REPLACE_EXISTING, &this->error_);
+	this->checkDBusError("DBus System request name failure");
+	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
+		throw GLogiKExcept("DBus System request name failure : not owner");
+	}
+
+	LOG(DEBUG1) << "DBus System requested connection name : " << connection_name;
+}
+
 /* -- */
 
 /*

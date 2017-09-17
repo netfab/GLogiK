@@ -453,8 +453,8 @@ void DevicesManager::searchSupportedDevices(void) {
 }
 
 void DevicesManager::checkDBusMessages(GKDBus* DBus) {
-	if( DBus->checkForNextMessage(BusConnection::GKDBUS_SESSION) ) {
-		DBus->checkMethodsCalls(BusConnection::GKDBUS_SESSION);
+	if( DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
+		DBus->checkMethodsCalls(BusConnection::GKDBUS_SYSTEM);
 /*
 		if( DBus->checkMessageForSignalOnInterface("test.signal.Type", "Test") ) {
 			try {

@@ -133,6 +133,8 @@ AX_PTHREAD
 
 AC_CONFIG_FILES([
         Makefile
+        data/Makefile
+        data/dbus/Makefile
         src/Makefile
         src/include/Makefile
         src/lib/Makefile

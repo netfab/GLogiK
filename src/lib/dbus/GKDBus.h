@@ -48,6 +48,7 @@ class GKDBus : public GKDBusEvents
 		~GKDBus();
 
 		void connectToSessionBus(const char* connection_name);
+		void connectToSystemBus(const char* connection_name);
 
 		const bool checkForNextMessage(BusConnection current);
 		const bool checkMessageForSignalOnInterface(const char* interface, const char* signal_name);

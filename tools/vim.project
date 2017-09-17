@@ -13,6 +13,13 @@ GLogiK=$PWD/.. CD=. {
 	}
 	macro=m4/ {
 	}
+	data=data/ {
+		Makefile.am
+		dbus=dbus/ {
+			Makefile.am
+			GLogiK.conf
+		}
+	}
 	srcfiles=src/ {
 		Makefile.am
 		include=include/ {
