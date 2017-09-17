@@ -26,8 +26,7 @@
 
 #include <config.h>
 
-#include "lib/utils/functions.h"
-#include "lib/utils/exception.h"
+#include "lib/utils/utils.h"
 
 #include "daemon_control.h"
 #include "keyboard_driver.h"

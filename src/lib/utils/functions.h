@@ -22,6 +22,11 @@
 #ifndef __GLOGIK_FUNCTIONS_H__
 #define __GLOGIK_FUNCTIONS_H__
 
+#if !defined (UTILS_INSIDE_UTILS_H) && !defined (UTILS_COMPILATION)
+#error "Only <utils/utils.h> can be included directly, this file may disappear or change contents."
+#endif
+
+#include <iostream>
 #include <string>
 #include <type_traits>
 

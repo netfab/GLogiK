@@ -28,7 +28,7 @@
 #include "virtual_keyboard.h"
 
 #include <syslog.h>
-#include "lib/utils/exception.h"
+#include "lib/utils/utils.h"
 #include "include/log.h"
 
 namespace GLogiK

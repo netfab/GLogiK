@@ -29,8 +29,7 @@
 #include <libudev.h>
 #include <syslog.h>
 
-#include "lib/utils/functions.h"
-#include "lib/utils/exception.h"
+#include "lib/utils/utils.h"
 #include "include/log.h"
 #include "daemon_control.h"
 

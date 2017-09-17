@@ -42,7 +42,7 @@
 
 #include <config.h>
 
-#include "lib/utils/exception.h"
+#include "lib/utils/utils.h"
 #include "daemon.h"
 #include "globals.h"
 #include "include/log.h"

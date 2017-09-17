@@ -23,7 +23,7 @@
 
 #include "include/log.h"
 
-#include "lib/utils/exception.h"
+#include "lib/utils/utils.h"
 
 namespace GLogiK
 {

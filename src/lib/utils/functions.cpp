@@ -19,7 +19,11 @@
  *
  */
 
+#define UTILS_COMPILATION 1
+
 #include "functions.h"
+
+#undef UTILS_COMPILATION
 
 namespace GLogiK
 {

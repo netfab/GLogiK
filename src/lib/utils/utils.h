@@ -19,31 +19,15 @@
  *
  */
 
-#define UTILS_COMPILATION 1
+#ifndef __GLOGIK_UTILS_H__
+#define __GLOGIK_UTILS_H__
+
+#define UTILS_INSIDE_UTILS_H 1
 
 #include "exception.h"
+#include "functions.h"
 
-#undef UTILS_COMPILATION
+#undef UTILS_INSIDE_UTILS_H
 
-namespace GLogiK
-{
-
-GLogiKExcept::GLogiKExcept( const std::string& msg ) : message(msg) {}
-GLogiKExcept::~GLogiKExcept( void ) throw() {}
-
-const char* GLogiKExcept::what( void ) const throw()
-{
-    return message.c_str();
-}
-
-DisplayHelp::DisplayHelp( const std::string& msg ) : message(msg) {}
-DisplayHelp::~DisplayHelp( void ) throw() {}
-
-const char* DisplayHelp::what( void ) const throw()
-{
-    return message.c_str();
-}
-
-
-} // namespace GLogiK
+#endif
 

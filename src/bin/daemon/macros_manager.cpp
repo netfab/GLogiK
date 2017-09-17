@@ -23,7 +23,7 @@
 
 #include <stdexcept>
 
-#include "lib/utils/functions.h"
+#include "lib/utils/utils.h"
 
 #include "include/log.h"
 #include <syslog.h>

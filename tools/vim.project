@@ -66,6 +66,7 @@ GLogiK=$PWD/.. CD=. {
 				functions.h
 				exception.cpp
 				exception.h
+				utils.h
 			}
 		}
 	}
