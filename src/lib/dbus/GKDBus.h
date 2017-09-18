@@ -23,6 +23,7 @@
 #define __GLOGIK_GKDBUS_H__
 
 #define GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME "com.glogik.daemon"
+#define GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME "com.glogik.desktop.service"
 
 #include <string>
 #include <vector>

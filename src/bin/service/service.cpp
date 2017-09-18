@@ -81,9 +81,22 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 		std::signal(SIGINT, DesktopService::handle_signal);
 		std::signal(SIGTERM, DesktopService::handle_signal);
 
-		while( DesktopService::still_running_ ) {
-			LOG(INFO) << "ok, run";
-			std::this_thread::sleep_for(std::chrono::milliseconds(200));
+		try {
+			this->DBus = new GKDBus();
+			this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
+
+			while( DesktopService::still_running_ ) {
+				LOG(INFO) << "ok, run";
+				std::this_thread::sleep_for(std::chrono::milliseconds(200));
+			}
+
+			if(this->DBus != nullptr)
+				delete this->DBus;
+		}
+		catch ( const GLogiKExcept & e ) {
+			if(this->DBus != nullptr)
+				delete this->DBus;
+			throw;
 		}
 
 		return EXIT_SUCCESS;

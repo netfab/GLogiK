@@ -27,6 +27,8 @@
 
 #include <sstream>
 
+#include "lib/dbus/GKDBus.h"
+
 namespace GLogiK
 {
 
@@ -46,6 +48,7 @@ class DesktopService
 		pid_t pid_ = 0;
 		FILE* log_fd_ = nullptr;
 		std::ostringstream buffer_;
+		GKDBus* DBus;
 
 		static bool still_running_;
 		static void handle_signal(int sig);
