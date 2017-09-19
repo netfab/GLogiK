@@ -47,7 +47,7 @@ bool DesktopService::still_running_ = true;
 
 DesktopService::DesktopService() : buffer_("", std::ios_base::app) {
 
-#ifdef DEBUGGING_ON
+#if DEBUGGING_ON
 	if( FILELog::ReportingLevel() != NONE ) {
 		std::stringstream log_file;
 		log_file << DEBUG_DIR << "/glogiks-debug-" << getpid() << ".log";

@@ -59,7 +59,7 @@ GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app), DBus(nullptr)
 {
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 
-#ifdef DEBUGGING_ON
+#if DEBUGGING_ON
 	if( FILELog::ReportingLevel() != NONE ) {
 		std::stringstream log_file;
 		log_file << DEBUG_DIR << "/glogikd-debug-" << getpid() << ".log";
@@ -197,14 +197,14 @@ void GLogiKDaemon::daemonize() {
 	// parent exit
 	if(this->pid_ > 0)
 		exit(EXIT_SUCCESS);
-	
+
 	LOG(DEBUG3) << "second fork ! pid:" << getpid();
 
 	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	if(chdir("/") == -1)
 		throw GLogiKExcept("change directory failure");
 
-#ifndef DEBUGGING_ON
+#if DEBUGGING_ON == 0
 	// closing opened descriptors
 	//for(fd = sysconf(_SC_OPEN_MAX); fd > 0; fd--)
 	//	close(fd);

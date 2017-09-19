@@ -55,7 +55,7 @@
 namespace GLogiK
 {
 
-#ifndef DEBUGGING_ON
+#if DEBUGGING_ON == 0
 
 static boost::iostreams::null_sink nullsink;
 static boost::iostreams::stream<boost::iostreams::null_sink> nullout( nullsink );
