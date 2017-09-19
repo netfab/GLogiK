@@ -41,7 +41,9 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(DBusConnection* conn, const char*
 	
 	/* initialize potential arguments iterator */
 	dbus_message_iter_init_append(this->message_, &this->args_it_);
+#if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "Remote Object Method Call DBus message initialized";
+#endif
 }
 
 GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
@@ -53,7 +55,9 @@ GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
 
 	dbus_connection_flush(this->connection_);
 	dbus_message_unref(this->message_);
+#if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus remote method call with pending reply sent";
+#endif
 }
 
 } // namespace GLogiK

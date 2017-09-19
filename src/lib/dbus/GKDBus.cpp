@@ -327,7 +327,7 @@ void GKDBus::checkDBusError(const char* error_message) {
 
 void GKDBus::fillInArguments(void) {
 	int current_type = 0;
-	LOG(DEBUG2) << "checking arguments";
+	//LOG(DEBUG2) << "checking arguments";
 	this->string_arguments_.clear();
 
 	char* arg_value = nullptr;
@@ -339,12 +339,12 @@ void GKDBus::fillInArguments(void) {
 			case DBUS_TYPE_STRING:
 				dbus_message_iter_get_basic(&arg_it, &arg_value);
 				this->string_arguments_.push_back(arg_value);
-				LOG(DEBUG4) << "string arg value : " << arg_value;
+				//LOG(DEBUG4) << "string arg value : " << arg_value;
 				break;
 			case DBUS_TYPE_OBJECT_PATH:
 				dbus_message_iter_get_basic(&arg_it, &arg_value);
 				this->string_arguments_.push_back(arg_value);
-				LOG(DEBUG4) << "object path arg value : " << arg_value;
+				//LOG(DEBUG4) << "object path arg value : " << arg_value;
 				break;
 			default: /* other dbus type */
 				break;

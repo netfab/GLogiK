@@ -63,6 +63,10 @@ AC_ARG_ENABLE( [debug],
 				AC_HELP_STRING( [--enable-debug], [Enable debugging, default: no]),
 				[enable_debugging=$enableval], [enable_debugging=no])
 
+AC_ARG_ENABLE( [debug-gkdbus],
+				AC_HELP_STRING( [--enable-debug-gkdbus], [Enable gkdbus debugging, default: no]),
+				[enable_gkdbus_debugging=$enableval], [enable_gkdbus_debugging=no])
+
 AC_ARG_VAR(DEBUG_DIR, [Directory where debug file will be written])
 
 
@@ -96,11 +100,21 @@ fi
 
 AC_MSG_CHECKING([whether we want debugging])
 if test "$enable_debugging" = yes; then
-    AC_MSG_RESULT([yes])
+	AC_MSG_RESULT([yes])
 	AC_DEFINE_UNQUOTED([DEBUGGING_ON], [1], [Debugging])
+
+	AC_MSG_CHECKING([whether we want gkdbus debugging])
+	if test "$enable_gkdbus_debugging" = yes; then
+		AC_MSG_RESULT([yes])
+		AC_DEFINE_UNQUOTED([DEBUG_GKDBUS_SUBOBJECTS], [1], [Also debug GKDBus sub-objects])
+	else
+		AC_MSG_RESULT([no])
+		AC_DEFINE_UNQUOTED([DEBUG_GKDBUS_SUBOBJECTS], [0], [Also debug GKDBus sub-objects])
+	fi
 else
-    AC_MSG_RESULT([no])
+	AC_MSG_RESULT([no])
 	AC_DEFINE_UNQUOTED([DEBUGGING_ON], [0], [Debugging])
+	AC_DEFINE_UNQUOTED([DEBUG_GKDBUS_SUBOBJECTS], [0], [Also debug GKDBus sub-objects])
 fi
 
 
