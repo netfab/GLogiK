@@ -30,8 +30,14 @@
 namespace GLogiK
 {
 
-GKDBus::GKDBus() : buffer_("", std::ios_base::app), message_(nullptr), reply_(nullptr),
-	current_conn_(nullptr), session_conn_(nullptr), system_conn_(nullptr)
+GKDBus::GKDBus() : buffer_("", std::ios_base::app),
+	message_(nullptr),
+	pending_(nullptr),
+	current_conn_(nullptr),
+	session_conn_(nullptr),
+	system_conn_(nullptr),
+	reply_(nullptr),
+	method_call_(nullptr)
 {
 	LOG(DEBUG1) << "dbus object initialization";
 	dbus_error_init(&(this->error_));
@@ -176,6 +182,47 @@ void GKDBus::sendMethodCallReply(void) {
 
 /* -- */
 
+/*
+ *	DBus Remote Object Method Call
+ */
+
+void GKDBus::initializeRemoteMethodCall(BusConnection current, const char* dest,
+	const char* object, const char* interface, const char* method)
+{
+	if(this->method_call_) /* sanity check */
+		throw GLogiKExcept("DBus method_call object already allocated");
+	this->setCurrentConnection(current);
+	this->method_call_ = new GKDBusRemoteMethodCall(this->current_conn_, dest, object, interface, method, &this->pending_);
+}
+
+void GKDBus::sendRemoteMethodCall(void) {
+	if(this->method_call_) { /* sanity check */
+		delete this->method_call_;
+		this->method_call_ = nullptr;
+	}
+	else {
+		LOG(WARNING) << __func__ << " failure because method_call object not contructed";
+	}
+}
+
+const bool GKDBus::waitForRemoteMethodCallReply(void) {
+	dbus_pending_call_block(this->pending_);
+
+	this->message_ = dbus_pending_call_steal_reply(this->pending_);
+	if(this->message_ == nullptr) {
+		LOG(DEBUG3) << __func__ << " message_ is NULL";
+		return false;
+	}
+
+	dbus_pending_call_unref(this->pending_);
+
+	this->fillInArguments();
+	dbus_message_unref(this->message_);
+	return true;
+}
+
+/* -- */
+
 std::string GKDBus::getNextStringArgument(void) {
 	if( this->string_arguments_.empty() )
 		throw EmptyContainer("no string argument");
@@ -269,19 +316,19 @@ void GKDBus::checkDBusError(const char* error_message) {
 
 void GKDBus::fillInArguments(void) {
 	int current_type = 0;
-	LOG(DEBUG2) << "checking signal arguments";
+	LOG(DEBUG2) << "checking arguments";
 	this->string_arguments_.clear();
 
-	char* signal_value = nullptr;
+	char* arg_value = nullptr;
 	DBusMessageIter arg_it;
 
 	dbus_message_iter_init(this->message_, &arg_it);
 	while ((current_type = dbus_message_iter_get_arg_type (&arg_it)) != DBUS_TYPE_INVALID) {
 		switch(current_type) {
 			case DBUS_TYPE_STRING:
-				dbus_message_iter_get_basic(&arg_it, &signal_value);
-				this->string_arguments_.push_back(signal_value);
-				LOG(DEBUG4) << "string arg value : " << signal_value;
+				dbus_message_iter_get_basic(&arg_it, &arg_value);
+				this->string_arguments_.push_back(arg_value);
+				LOG(DEBUG4) << "string arg value : " << arg_value;
 				break;
 			default: /* other dbus type */
 				break;

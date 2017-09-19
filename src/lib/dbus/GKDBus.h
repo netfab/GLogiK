@@ -32,6 +32,7 @@
 
 #include "GKDBusMsgReply.h"
 #include "GKDBusEvents.h"
+#include "GKDBusRemoteMethodCall.h"
 
 namespace GLogiK
 {
@@ -62,6 +63,11 @@ class GKDBus : public GKDBusEvents
 		void appendToMethodCallReply(const std::string & value);
 		void sendMethodCallReply(void);
 
+		void initializeRemoteMethodCall(BusConnection current, const char* dest,
+			const char* object, const char* interface, const char* method);
+		void sendRemoteMethodCall(void);
+		const bool waitForRemoteMethodCallReply(void);
+
 		std::string getNextStringArgument(void);
 		void checkMethodsCalls(BusConnection current);
 
@@ -71,12 +77,14 @@ class GKDBus : public GKDBusEvents
 		std::ostringstream buffer_;
 		DBusError error_;
 		DBusMessage* message_;
+		DBusPendingCall* pending_;
 		DBusConnection* current_conn_;
 		DBusConnection* session_conn_;
 		DBusConnection* system_conn_;
 		std::vector<std::string> string_arguments_;
 
 		GKDBusMsgReply* reply_;
+		GKDBusRemoteMethodCall* method_call_;
 
 		void setCurrentConnection(BusConnection current);
 		void checkDBusError(const char* error_message);

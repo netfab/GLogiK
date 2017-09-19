@@ -19,38 +19,27 @@
  *
  */
 
-#ifndef __GLOGIKS_DESKTOP_SERVICE_H__
-#define __GLOGIKS_DESKTOP_SERVICE_H__
+#ifndef __GLOGIKS_DESKTOP_SERVICE_DBUS_HANDLER_H__
+#define __GLOGIKS_DESKTOP_SERVICE_DBUS_HANDLER_H__
 
-#include <sys/types.h>
-#include <cstdio>
-
-#include <sstream>
+#include "lib/dbus/GKDBus.h"
 
 namespace GLogiK
 {
 
-#define GLOGIKS_DESKTOP_SERVICE_NAME "GLogiKs"
-
-class DesktopService
+class ServiceDBusHandler
 {
 	public:
-		DesktopService(void);
-		~DesktopService(void);
+		ServiceDBusHandler(void);
+		~ServiceDBusHandler(void);
 
-		int run(const int& argc, char *argv[]);
+		void checkDBusMessages(void);
+		void isActive(void);
 
 	protected:
 
 	private:
-		pid_t pid_ = 0;
-		FILE* log_fd_ = nullptr;
-		std::ostringstream buffer_;
-
-		static bool still_running_;
-		static void handle_signal(int sig);
-
-		void daemonize(void);
+		GKDBus* DBus;
 };
 
 } // namespace GLogiK

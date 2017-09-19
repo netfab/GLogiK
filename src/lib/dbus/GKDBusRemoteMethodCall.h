@@ -19,40 +19,31 @@
  *
  */
 
-#ifndef __GLOGIKS_DESKTOP_SERVICE_H__
-#define __GLOGIKS_DESKTOP_SERVICE_H__
+#ifndef __GLOGIK_GKDBUS_REMOTE_METHOD_CALL_H__
+#define __GLOGIK_GKDBUS_REMOTE_METHOD_CALL_H__
 
-#include <sys/types.h>
-#include <cstdio>
-
-#include <sstream>
+#include <dbus/dbus.h>
 
 namespace GLogiK
 {
 
-#define GLOGIKS_DESKTOP_SERVICE_NAME "GLogiKs"
-
-class DesktopService
+class GKDBusRemoteMethodCall
 {
 	public:
-		DesktopService(void);
-		~DesktopService(void);
-
-		int run(const int& argc, char *argv[]);
+		GKDBusRemoteMethodCall(DBusConnection* conn, const char* dest,
+			const char* object, const char* interface, const char* method, DBusPendingCall** pending);
+		~GKDBusRemoteMethodCall();
 
 	protected:
-
 	private:
-		pid_t pid_ = 0;
-		FILE* log_fd_ = nullptr;
-		std::ostringstream buffer_;
+		DBusConnection* connection_;
+		DBusMessage* message_;
+		DBusPendingCall** pending_;
+		DBusMessageIter args_it_;
 
-		static bool still_running_;
-		static void handle_signal(int sig);
-
-		void daemonize(void);
 };
 
 } // namespace GLogiK
 
 #endif
+

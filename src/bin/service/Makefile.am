@@ -12,4 +12,5 @@ GLogiKs_LDADD= \
 
 GLogiKs_SOURCES = \
 		main.cpp \
-		service.cpp service.h
+		service.cpp service.h \
+		serviceDBusHandler.cpp serviceDBusHandler.h

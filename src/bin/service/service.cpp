@@ -38,6 +38,7 @@
 #include "lib/utils/utils.h"
 
 #include "service.h"
+#include "serviceDBusHandler.h"
 
 namespace GLogiK
 {
@@ -81,22 +82,11 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 		std::signal(SIGINT, DesktopService::handle_signal);
 		std::signal(SIGTERM, DesktopService::handle_signal);
 
-		try {
-			this->DBus = new GKDBus();
-			this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
+		ServiceDBusHandler DBusHandler;
 
-			while( DesktopService::still_running_ ) {
-				LOG(INFO) << "ok, run";
-				std::this_thread::sleep_for(std::chrono::milliseconds(200));
-			}
-
-			if(this->DBus != nullptr)
-				delete this->DBus;
-		}
-		catch ( const GLogiKExcept & e ) {
-			if(this->DBus != nullptr)
-				delete this->DBus;
-			throw;
+		while( DesktopService::still_running_ ) {
+			DBusHandler.checkDBusMessages();
+			std::this_thread::sleep_for(std::chrono::milliseconds(200));
 		}
 
 		return EXIT_SUCCESS;
