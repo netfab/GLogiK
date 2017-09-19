@@ -335,6 +335,11 @@ void GKDBus::fillInArguments(void) {
 				this->string_arguments_.push_back(arg_value);
 				LOG(DEBUG4) << "string arg value : " << arg_value;
 				break;
+			case DBUS_TYPE_OBJECT_PATH:
+				dbus_message_iter_get_basic(&arg_it, &arg_value);
+				this->string_arguments_.push_back(arg_value);
+				LOG(DEBUG4) << "object path arg value : " << arg_value;
+				break;
 			default: /* other dbus type */
 				break;
 		}

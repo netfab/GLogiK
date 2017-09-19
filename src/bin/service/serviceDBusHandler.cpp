@@ -31,6 +31,22 @@ ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr) {
 	try {
 		this->DBus = new GKDBus();
 		this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
+
+		/* getting consolekit current session */
+		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
+			"/org/freedesktop/ConsoleKit/Manager", "org.freedesktop.ConsoleKit.Manager", "GetCurrentSession");
+		this->DBus->sendRemoteMethodCall();
+		this->DBus->waitForRemoteMethodCallReply();
+		try {
+			this->ck_current_session_ = this->DBus->getNextStringArgument();
+			LOG(DEBUG2) << "CK current session: " << this->ck_current_session_;
+		}
+		catch ( const EmptyContainer & e ) {
+			std::string err("can't get CK current session !");
+			LOG(ERROR) << err;
+			GK_ERR << err << "\n";
+			throw;
+		}
 	}
 	catch ( const GLogiKExcept & e ) {
 		if(this->DBus != nullptr)
@@ -44,15 +60,12 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 		delete this->DBus;
 }
 
-void ServiceDBusHandler::isActive(void) {
-}
-
 void ServiceDBusHandler::checkDBusMessages(void) {
 	LOG(INFO) << "ok, run";
 	//if( DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
 	//}
 	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
-		"/org/freedesktop/ConsoleKit/Session1", "org.freedesktop.ConsoleKit.Session", "GetSessionState");
+		this->ck_current_session_.c_str(), "org.freedesktop.ConsoleKit.Session", "GetSessionState");
 	this->DBus->sendRemoteMethodCall();
 
 	//while(! waitForRemoteMethodCallReply() ) {

@@ -22,6 +22,8 @@
 #ifndef __GLOGIKS_DESKTOP_SERVICE_DBUS_HANDLER_H__
 #define __GLOGIKS_DESKTOP_SERVICE_DBUS_HANDLER_H__
 
+#include <string>
+
 #include "lib/dbus/GKDBus.h"
 
 namespace GLogiK
@@ -34,12 +36,12 @@ class ServiceDBusHandler
 		~ServiceDBusHandler(void);
 
 		void checkDBusMessages(void);
-		void isActive(void);
 
 	protected:
 
 	private:
 		GKDBus* DBus;
+		std::string ck_current_session_; /* consolekit2 current session */
 };
 
 } // namespace GLogiK
