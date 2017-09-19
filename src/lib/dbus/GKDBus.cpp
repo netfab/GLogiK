@@ -210,20 +210,26 @@ void GKDBus::sendRemoteMethodCall(void) {
 	}
 }
 
-const bool GKDBus::waitForRemoteMethodCallReply(void) {
+void GKDBus::waitForRemoteMethodCallReply(void) {
 	dbus_pending_call_block(this->pending_);
 
-	this->message_ = dbus_pending_call_steal_reply(this->pending_);
-	if(this->message_ == nullptr) {
-		LOG(DEBUG3) << __func__ << " message_ is NULL";
-		return false;
+	uint8_t c = 0;
+
+	this->message_ = nullptr;
+	while( this->message_ == nullptr and c < 10 ) {
+		this->message_ = dbus_pending_call_steal_reply(this->pending_);
+		c++;
 	}
 
 	dbus_pending_call_unref(this->pending_);
 
+	if(this->message_ == nullptr) {
+		LOG(DEBUG3) << __func__ << " message_ is NULL, retried 10 times";
+		throw GLogiKExcept("can't get pending call reply");
+	}
+
 	this->fillInArguments();
 	dbus_message_unref(this->message_);
-	return true;
 }
 
 /* -- */

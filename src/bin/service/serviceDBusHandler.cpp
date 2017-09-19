@@ -61,16 +61,20 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 }
 
 void ServiceDBusHandler::checkDBusMessages(void) {
-	LOG(INFO) << "ok, run";
 	//if( DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
 	//}
 	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
 		this->ck_current_session_.c_str(), "org.freedesktop.ConsoleKit.Session", "GetSessionState");
 	this->DBus->sendRemoteMethodCall();
 
-	//while(! waitForRemoteMethodCallReply() ) {
-	//}
-	this->DBus->waitForRemoteMethodCallReply();
+	try {
+		this->DBus->waitForRemoteMethodCallReply();
+	}
+	catch ( const GLogiKExcept & e ) {
+		LOG(DEBUG3) << e.what();
+		return;
+	}
+
 	try {
 		LOG(INFO) << this->DBus->getNextStringArgument();
 	}
