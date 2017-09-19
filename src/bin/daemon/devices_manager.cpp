@@ -495,7 +495,7 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 	this->fds[0].events = POLLIN;
 
 	//DBus->addSignalMatch(BusConnection::GKDBUS_SESSION, "test.signal.Type");
-	const char* device_interface = "com.glogik.Daemon.Device";
+	const char* device_interface = "com.glogik.Daemon.Device1";
 
 	DBus->addEventStringToBoolCallback( device_interface, "Stop",
 		{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
