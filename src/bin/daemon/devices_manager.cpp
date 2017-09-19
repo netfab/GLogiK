@@ -466,6 +466,7 @@ void DevicesManager::checkDBusMessages(GKDBus* DBus) {
 			}
 		}
 */
+		DBus->freeMessage();
 	}
 }
 

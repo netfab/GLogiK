@@ -55,6 +55,7 @@ class GKDBus : public GKDBusEvents
 		const bool checkForNextMessage(BusConnection current);
 		const bool checkMessageForSignalOnInterface(const char* interface, const char* signal_name);
 		const bool checkMessageForMethodCallOnInterface(const char* interface, const char* method);
+		void freeMessage(void);
 
 		void addSignalMatch(BusConnection current, const char* interface);
 

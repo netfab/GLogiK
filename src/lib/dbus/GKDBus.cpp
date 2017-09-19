@@ -105,6 +105,13 @@ const bool GKDBus::checkForNextMessage(BusConnection current) {
 	return (this->message_ != nullptr);
 }
 
+void GKDBus::freeMessage(void) {
+	if( this->message_ == nullptr )
+		return;
+	LOG(DEBUG4) << "freeing message";
+	dbus_message_unref(this->message_);
+}
+
 const bool GKDBus::checkMessageForSignalOnInterface(const char* interface, const char* signal_name) {
 	if(this->message_ == nullptr)
 		return false;
@@ -112,10 +119,8 @@ const bool GKDBus::checkMessageForSignalOnInterface(const char* interface, const
 	if( dbus_message_is_signal(this->message_, interface, signal_name) ) {
 		LOG(DEBUG1) << "got signal " << signal_name;
 		this->fillInArguments();
-		dbus_message_unref(this->message_);
 		return true;
 	}
-	dbus_message_unref(this->message_);
 	return false;
 }
 
