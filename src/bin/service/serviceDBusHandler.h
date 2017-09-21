@@ -26,6 +26,8 @@
 
 #include "lib/dbus/GKDBus.h"
 
+#define MAXIMUM_WARNINGS_BEFORE_FATAL_ERROR 10
+
 namespace GLogiK
 {
 
@@ -35,13 +37,19 @@ class ServiceDBusHandler
 		ServiceDBusHandler(void);
 		~ServiceDBusHandler(void);
 
+		void updateSessionState(void);
 		void checkDBusMessages(void);
 
 	protected:
 
 	private:
+		uint8_t warn_count_;
 		GKDBus* DBus;
-		std::string ck_current_session_; /* consolekit2 current session */
+
+		std::string current_session_;	/* current session object path */
+		std::string session_state_;		/* session state */
+
+		void getCurrentSessionObjectPath(void);
 };
 
 } // namespace GLogiK

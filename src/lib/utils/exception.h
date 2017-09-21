@@ -63,6 +63,13 @@ class EmptyContainer : public GLogiKExcept
 		virtual ~EmptyContainer( void ) throw() {};
 };
 
+class GKDBusRemoteCallNoReply : public GLogiKExcept
+{
+	public:
+		GKDBusRemoteCallNoReply( const std::string& msg = "" ) : GLogiKExcept(msg) {};
+		virtual ~GKDBusRemoteCallNoReply( void ) throw() {};
+};
+
 } // namespace GLogiK
 
 #endif

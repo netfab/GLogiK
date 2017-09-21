@@ -27,26 +27,12 @@
 namespace GLogiK
 {
 
-ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr) {
+ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
 	try {
 		this->DBus = new GKDBus();
 		this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 
-		/* getting consolekit current session */
-		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
-			"/org/freedesktop/ConsoleKit/Manager", "org.freedesktop.ConsoleKit.Manager", "GetCurrentSession");
-		this->DBus->sendRemoteMethodCall();
-		this->DBus->waitForRemoteMethodCallReply();
-		try {
-			this->ck_current_session_ = this->DBus->getNextStringArgument();
-			LOG(DEBUG2) << "CK current session: " << this->ck_current_session_;
-		}
-		catch ( const EmptyContainer & e ) {
-			std::string err("can't get CK current session !");
-			LOG(ERROR) << err;
-			GK_ERR << err << "\n";
-			throw;
-		}
+		this->getCurrentSessionObjectPath();
 	}
 	catch ( const GLogiKExcept & e ) {
 		if(this->DBus != nullptr)
@@ -60,27 +46,53 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 		delete this->DBus;
 }
 
-void ServiceDBusHandler::checkDBusMessages(void) {
-	//if( DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
-	//}
+void ServiceDBusHandler::getCurrentSessionObjectPath(void) {
+	// TODO logind support
+
+	/* getting consolekit current session */
 	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
-		this->ck_current_session_.c_str(), "org.freedesktop.ConsoleKit.Session", "GetSessionState");
+		"/org/freedesktop/ConsoleKit/Manager", "org.freedesktop.ConsoleKit.Manager", "GetCurrentSession");
 	this->DBus->sendRemoteMethodCall();
 
 	try {
 		this->DBus->waitForRemoteMethodCallReply();
+		this->current_session_ = this->DBus->getNextStringArgument();
+		LOG(DEBUG2) << "current session: " << this->current_session_;
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(DEBUG3) << e.what();
-		return;
+		std::string err("unable to get current session path from session manager");
+		LOG(ERROR) << err;
+		GK_ERR << err << "\n";
+		throw;
 	}
+}
+
+void ServiceDBusHandler::updateSessionState(void) {
+	// TODO logind support
+
+	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
+		this->current_session_.c_str(), "org.freedesktop.ConsoleKit.Session", "GetSessionState");
+	this->DBus->sendRemoteMethodCall();
 
 	try {
-		LOG(INFO) << this->DBus->getNextStringArgument();
+		this->DBus->waitForRemoteMethodCallReply();
+		this->session_state_ = this->DBus->getNextStringArgument();
+		LOG(DEBUG2) << "session state: " << this->session_state_;
 	}
-	catch ( const EmptyContainer & e ) {
-		LOG(DEBUG3) << e.what();
+	catch ( const GLogiKExcept & e ) {
+		if(this->warn_count_ >= MAXIMUM_WARNINGS_BEFORE_FATAL_ERROR)
+			throw GLogiKExcept("maximum warning count reached, this is fatal");
+		std::string warn("can't get session state from session manager, assuming unchanged : ");
+		warn += e.what();
+		LOG(WARNING) << warn;
+		GK_WARN << warn << "\n";
+		this->warn_count_++;
 	}
+}
+
+void ServiceDBusHandler::checkDBusMessages(void) {
+	//if( DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
+	//}
 }
 
 } // namespace GLogiK

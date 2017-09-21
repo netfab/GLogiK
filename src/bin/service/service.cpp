@@ -85,7 +85,7 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 		ServiceDBusHandler DBusHandler;
 
 		while( DesktopService::still_running_ ) {
-			DBusHandler.checkDBusMessages();
+			DBusHandler.updateSessionState();
 			std::this_thread::sleep_for(std::chrono::milliseconds(200));
 		}
 

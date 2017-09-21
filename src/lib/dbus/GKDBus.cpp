@@ -225,7 +225,7 @@ void GKDBus::waitForRemoteMethodCallReply(void) {
 
 	if(this->message_ == nullptr) {
 		LOG(DEBUG3) << __func__ << " message_ is NULL, retried 10 times";
-		throw GLogiKExcept("can't get pending call reply");
+		throw GKDBusRemoteCallNoReply("can't get pending call reply");
 	}
 
 	this->fillInArguments();
