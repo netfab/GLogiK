@@ -78,8 +78,8 @@ void GKDBus::connectToSessionBus(const char* connection_name) {
 
 void GKDBus::connectToSystemBus(const char* connection_name) {
 	this->system_conn_ = dbus_bus_get(DBUS_BUS_SYSTEM, &this->error_);
-	this->checkDBusError("DBus Session connection failure");
-	LOG(DEBUG1) << "DBus Session connection opened";
+	this->checkDBusError("DBus System connection failure");
+	LOG(DEBUG1) << "DBus System connection opened";
 
 	// TODO check name flags
 	int ret = dbus_bus_request_name(this->system_conn_, connection_name,
