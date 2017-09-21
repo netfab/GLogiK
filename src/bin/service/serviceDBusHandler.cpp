@@ -105,28 +105,26 @@ void ServiceDBusHandler::updateSessionState(void) {
 		return;
 	}
 
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "switching session from " << this->session_state_ << " to " << new_state;
+#endif
+
 	if( this->session_state_ == "active" ) {
 		if(new_state == "online") {
-			LOG(DEBUG3) << "switching session from active to online";
 		}
 		else if(new_state == "closing") {
-			LOG(DEBUG3) << "switching session from active to closing";
 		}
 	}
 	else if( this->session_state_ == "online" ) {
 		if(new_state == "active") {
-			LOG(DEBUG3) << "switching session from online to active";
 		}
 		else if(new_state == "closing") {
-			LOG(DEBUG3) << "switching session from online to closing";
 		}
 	}
 	else if( this->session_state_ == "closing" ) {
 		if(new_state == "active") {
-			LOG(DEBUG3) << "switching session from closing to active";
 		}
 		else if(new_state == "online") {
-			LOG(DEBUG3) << "switching session from closing to online";
 		}
 	}
 	else {
