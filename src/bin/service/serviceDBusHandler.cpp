@@ -32,7 +32,8 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
 		this->DBus = new GKDBus();
 		this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 
-		this->getCurrentSessionObjectPath();
+		this->setCurrentSessionObjectPath();
+		this->session_state_ = this->getCurrentSessionState();
 	}
 	catch ( const GLogiKExcept & e ) {
 		if(this->DBus != nullptr)
@@ -46,7 +47,7 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 		delete this->DBus;
 }
 
-void ServiceDBusHandler::getCurrentSessionObjectPath(void) {
+void ServiceDBusHandler::setCurrentSessionObjectPath(void) {
 	// TODO logind support
 
 	/* getting consolekit current session */
@@ -57,7 +58,7 @@ void ServiceDBusHandler::getCurrentSessionObjectPath(void) {
 	try {
 		this->DBus->waitForRemoteMethodCallReply();
 		this->current_session_ = this->DBus->getNextStringArgument();
-		LOG(DEBUG2) << "current session: " << this->current_session_;
+		LOG(DEBUG2) << "current session : " << this->current_session_;
 	}
 	catch ( const GLogiKExcept & e ) {
 		std::string err("unable to get current session path from session manager");
@@ -67,7 +68,7 @@ void ServiceDBusHandler::getCurrentSessionObjectPath(void) {
 	}
 }
 
-void ServiceDBusHandler::updateSessionState(void) {
+const std::string ServiceDBusHandler::getCurrentSessionState(void) {
 	// TODO logind support
 
 	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
@@ -76,8 +77,11 @@ void ServiceDBusHandler::updateSessionState(void) {
 
 	try {
 		this->DBus->waitForRemoteMethodCallReply();
-		this->session_state_ = this->DBus->getNextStringArgument();
-		LOG(DEBUG2) << "session state: " << this->session_state_;
+		const std::string ret_string = this->DBus->getNextStringArgument();
+#if DEBUGGING_ON
+		LOG(DEBUG5) << "current session state : " << ret_string;
+#endif
+		return ret_string;
 	}
 	catch ( const GLogiKExcept & e ) {
 		if(this->warn_count_ >= MAXIMUM_WARNINGS_BEFORE_FATAL_ERROR)
@@ -88,6 +92,50 @@ void ServiceDBusHandler::updateSessionState(void) {
 		GK_WARN << warn << "\n";
 		this->warn_count_++;
 	}
+
+	return this->session_state_;
+}
+
+void ServiceDBusHandler::updateSessionState(void) {
+	const std::string new_state = this->getCurrentSessionState();
+	if(this->session_state_ == new_state) {
+#if DEBUGGING_ON
+		LOG(DEBUG5) << "session state did not changed";
+#endif
+		return;
+	}
+
+	if( this->session_state_ == "active" ) {
+		if(new_state == "online") {
+			LOG(DEBUG3) << "switching session from active to online";
+		}
+		else if(new_state == "closing") {
+			LOG(DEBUG3) << "switching session from active to closing";
+		}
+	}
+	else if( this->session_state_ == "online" ) {
+		if(new_state == "active") {
+			LOG(DEBUG3) << "switching session from online to active";
+		}
+		else if(new_state == "closing") {
+			LOG(DEBUG3) << "switching session from online to closing";
+		}
+	}
+	else if( this->session_state_ == "closing" ) {
+		if(new_state == "active") {
+			LOG(DEBUG3) << "switching session from closing to active";
+		}
+		else if(new_state == "online") {
+			LOG(DEBUG3) << "switching session from closing to online";
+		}
+	}
+	else {
+		std::string e = "unhandled session state : ";
+		e += this->session_state_;
+		throw GLogiKExcept(e);
+	}
+
+	this->session_state_ = new_state;
 }
 
 void ServiceDBusHandler::checkDBusMessages(void) {
