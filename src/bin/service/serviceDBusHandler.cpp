@@ -68,6 +68,9 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(void) {
 	}
 }
 
+/*
+ * is the session in active, online or closing state ?
+ */
 const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) {
 	// TODO logind support
 
@@ -119,6 +122,8 @@ void ServiceDBusHandler::reportChangedState(void) {
 }
 
 void ServiceDBusHandler::updateSessionState(void) {
+	/* if debug output is ON, force-disable it, else debug file
+	 * will be spammed by the following DBus request debug output */
 	const bool logoff = true;
 	const std::string new_state = this->getCurrentSessionState(logoff);
 	if(this->session_state_ == new_state) {

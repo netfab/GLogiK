@@ -153,7 +153,7 @@ void GKDBus::addSignalMatch(BusConnection current, const char* interface) {
 /* -- */
 
 /*
- *	DBus Method call reply
+ *	DBus Method Call Reply
  */
 
 void GKDBus::initializeMethodCallReply(BusConnection current) {
@@ -222,6 +222,7 @@ void GKDBus::waitForRemoteMethodCallReply(void) {
 	uint8_t c = 0;
 
 	this->message_ = nullptr;
+	// TODO could set a timer between retries ?
 	while( this->message_ == nullptr and c < 10 ) {
 		this->message_ = dbus_pending_call_steal_reply(this->pending_);
 		c++;
@@ -256,6 +257,12 @@ const bool GKDBus::getNextBooleanArgument(void) {
 	return ret;
 }
 
+/*
+ * check if one of the registered methods
+ *       on one of the registered interfaces was called
+ * if one method was called, run the corresponding callback function
+ * and send DBus reply after appending the return value
+ */
 void GKDBus::checkMethodsCalls(BusConnection current) {
 	for(const auto & interface : this->events_void_to_string_) {
 		LOG(DEBUG2) << "checking " << interface.first << " interface";
@@ -365,7 +372,7 @@ void GKDBus::fillInArguments(void) {
 			case DBUS_TYPE_BOOLEAN:
 				dbus_message_iter_get_basic(&arg_it, &bool_arg);
 				this->boolean_arguments_.push_back(bool_arg);
-				LOG(DEBUG4) << "bool arg value : " << bool_arg;
+				//LOG(DEBUG4) << "bool arg value : " << bool_arg;
 				break;
 			default: /* other dbus type */
 				break;
