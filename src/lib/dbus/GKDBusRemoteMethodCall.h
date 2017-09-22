@@ -31,7 +31,7 @@ class GKDBusRemoteMethodCall
 {
 	public:
 		GKDBusRemoteMethodCall(DBusConnection* conn, const char* dest,
-			const char* object, const char* interface, const char* method, DBusPendingCall** pending);
+			const char* object, const char* interface, const char* method, DBusPendingCall** pending, const bool logoff);
 		~GKDBusRemoteMethodCall();
 
 		void appendToRemoteMethodCall(const std::string & value);
@@ -42,6 +42,8 @@ class GKDBusRemoteMethodCall
 		DBusMessage* message_;
 		DBusPendingCall** pending_;
 		DBusMessageIter args_it_;
+
+		bool log_off_;
 
 };
 

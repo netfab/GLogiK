@@ -50,7 +50,7 @@ class ServiceDBusHandler
 		std::string session_state_;		/* session state */
 
 		void setCurrentSessionObjectPath(void);
-		const std::string getCurrentSessionState(void);
+		const std::string getCurrentSessionState(const bool logoff=false);
 
 		void reportChangedState(void);
 };

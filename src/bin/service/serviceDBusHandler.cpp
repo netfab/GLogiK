@@ -58,7 +58,7 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(void) {
 	try {
 		this->DBus->waitForRemoteMethodCallReply();
 		this->current_session_ = this->DBus->getNextStringArgument();
-		LOG(DEBUG2) << "current session : " << this->current_session_;
+		LOG(DEBUG1) << "current session : " << this->current_session_;
 	}
 	catch ( const GLogiKExcept & e ) {
 		std::string err("unable to get current session path from session manager");
@@ -68,11 +68,11 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(void) {
 	}
 }
 
-const std::string ServiceDBusHandler::getCurrentSessionState(void) {
+const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) {
 	// TODO logind support
 
 	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
-		this->current_session_.c_str(), "org.freedesktop.ConsoleKit.Session", "GetSessionState");
+		this->current_session_.c_str(), "org.freedesktop.ConsoleKit.Session", "GetSessionState", logoff);
 	this->DBus->sendRemoteMethodCall();
 
 	try {
@@ -105,9 +105,7 @@ void ServiceDBusHandler::reportChangedState(void) {
 	try {
 		this->DBus->waitForRemoteMethodCallReply();
 		const bool ret = this->DBus->getNextBooleanArgument();
-#if DEBUGGING_ON
 		LOG(DEBUG2) << "success : " << ret;
-#endif
 	}
 	catch ( const GLogiKExcept & e ) {
 		if(this->warn_count_ >= MAXIMUM_WARNINGS_BEFORE_FATAL_ERROR)
@@ -121,7 +119,8 @@ void ServiceDBusHandler::reportChangedState(void) {
 }
 
 void ServiceDBusHandler::updateSessionState(void) {
-	const std::string new_state = this->getCurrentSessionState();
+	const bool logoff = true;
+	const std::string new_state = this->getCurrentSessionState(logoff);
 	if(this->session_state_ == new_state) {
 #if DEBUGGING_ON
 		LOG(DEBUG5) << "session state did not changed";
@@ -130,7 +129,7 @@ void ServiceDBusHandler::updateSessionState(void) {
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "switching session state from " << this->session_state_ << " to " << new_state;
+	LOG(DEBUG1) << "switching session state from " << this->session_state_ << " to " << new_state;
 #endif
 
 	if( this->session_state_ == "active" ) {

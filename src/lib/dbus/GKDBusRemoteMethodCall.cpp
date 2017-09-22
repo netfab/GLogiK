@@ -28,8 +28,8 @@ namespace GLogiK
 {
 
 GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(DBusConnection* conn, const char* dest,
-	const char* object, const char* interface, const char* method, DBusPendingCall** pending)
-		: connection_(conn), message_(nullptr), pending_(pending)
+	const char* object, const char* interface, const char* method, DBusPendingCall** pending, const bool logoff)
+		: connection_(conn), message_(nullptr), pending_(pending), log_off_(logoff)
 {
 	/* sanity checks */
 	if(conn == nullptr)
@@ -41,8 +41,15 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(DBusConnection* conn, const char*
 	
 	/* initialize potential arguments iterator */
 	dbus_message_iter_init_append(this->message_, &this->args_it_);
+
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "Remote Object Method Call DBus message initialized";
+	if( ! this->log_off_ ) {
+		LOG(DEBUG2) << "Remote Object Method Call DBus message initialized";
+		LOG(DEBUG3) << "dest      : " << dest;
+		LOG(DEBUG3) << "object    : " << object;
+		LOG(DEBUG3) << "interface : " << interface;
+		LOG(DEBUG3) << "method    : " << method;
+	}
 #endif
 }
 
@@ -55,8 +62,10 @@ GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
 
 	dbus_connection_flush(this->connection_);
 	dbus_message_unref(this->message_);
+
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus remote method call with pending reply sent";
+	if( ! this->log_off_ )
+		LOG(DEBUG2) << "DBus remote method call with pending reply sent";
 #endif
 }
 
@@ -64,9 +73,12 @@ void GKDBusRemoteMethodCall::appendToRemoteMethodCall(const std::string & value)
 	const char* p = value.c_str();
 	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) )
 		throw GLogiKExcept("DBus remote method call append string value failure, not enough memory");
+
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus remote method call string value appended";
+	if( ! this->log_off_ )
+		LOG(DEBUG2) << "DBus remote method call string value appended";
 #endif
 }
+
 } // namespace GLogiK
 

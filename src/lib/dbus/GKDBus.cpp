@@ -192,12 +192,12 @@ void GKDBus::sendMethodCallReply(void) {
  */
 
 void GKDBus::initializeRemoteMethodCall(BusConnection current, const char* dest,
-	const char* object, const char* interface, const char* method)
+	const char* object, const char* interface, const char* method, const bool logoff)
 {
 	if(this->method_call_) /* sanity check */
 		throw GLogiKExcept("DBus method_call object already allocated");
 	this->setCurrentConnection(current);
-	this->method_call_ = new GKDBusRemoteMethodCall(this->current_conn_, dest, object, interface, method, &this->pending_);
+	this->method_call_ = new GKDBusRemoteMethodCall(this->current_conn_, dest, object, interface, method, &this->pending_, logoff);
 }
 
 void GKDBus::appendToRemoteMethodCall(const std::string & value) {
