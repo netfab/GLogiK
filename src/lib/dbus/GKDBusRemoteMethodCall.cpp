@@ -60,5 +60,13 @@ GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
 #endif
 }
 
+void GKDBusRemoteMethodCall::appendToRemoteMethodCall(const std::string & value) {
+	const char* p = value.c_str();
+	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) )
+		throw GLogiKExcept("DBus remote method call append string value failure, not enough memory");
+#if DEBUG_GKDBUS_SUBOBJECTS
+	LOG(DEBUG2) << "DBus remote method call string value appended";
+#endif
+}
 } // namespace GLogiK
 

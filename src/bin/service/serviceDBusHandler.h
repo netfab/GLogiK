@@ -51,6 +51,8 @@ class ServiceDBusHandler
 
 		void setCurrentSessionObjectPath(void);
 		const std::string getCurrentSessionState(void);
+
+		void reportChangedState(void);
 };
 
 } // namespace GLogiK

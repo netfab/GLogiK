@@ -200,6 +200,12 @@ void GKDBus::initializeRemoteMethodCall(BusConnection current, const char* dest,
 	this->method_call_ = new GKDBusRemoteMethodCall(this->current_conn_, dest, object, interface, method, &this->pending_);
 }
 
+void GKDBus::appendToRemoteMethodCall(const std::string & value) {
+	if(this->method_call_ == nullptr) /* sanity check */
+		throw GLogiKExcept("DBus remote method call object not initialized");
+	this->method_call_->appendToRemoteMethodCall(value);
+}
+
 void GKDBus::sendRemoteMethodCall(void) {
 	if(this->method_call_) { /* sanity check */
 		delete this->method_call_;
@@ -239,6 +245,14 @@ std::string GKDBus::getNextStringArgument(void) {
 		throw EmptyContainer("no string argument");
 	std::string ret = this->string_arguments_.back();
 	this->string_arguments_.pop_back();
+	return ret;
+}
+
+const bool GKDBus::getNextBooleanArgument(void) {
+	if( this->boolean_arguments_.empty() )
+		throw EmptyContainer("no boolean argument");
+	const bool ret = this->boolean_arguments_.back();
+	this->boolean_arguments_.pop_back();
 	return ret;
 }
 
@@ -329,8 +343,10 @@ void GKDBus::fillInArguments(void) {
 	int current_type = 0;
 	//LOG(DEBUG2) << "checking arguments";
 	this->string_arguments_.clear();
+	this->boolean_arguments_.clear();
 
 	char* arg_value = nullptr;
+	bool bool_arg = false;
 	DBusMessageIter arg_it;
 
 	dbus_message_iter_init(this->message_, &arg_it);
@@ -346,6 +362,11 @@ void GKDBus::fillInArguments(void) {
 				this->string_arguments_.push_back(arg_value);
 				//LOG(DEBUG4) << "object path arg value : " << arg_value;
 				break;
+			case DBUS_TYPE_BOOLEAN:
+				dbus_message_iter_get_basic(&arg_it, &bool_arg);
+				this->boolean_arguments_.push_back(bool_arg);
+				LOG(DEBUG4) << "bool arg value : " << bool_arg;
+				break;
 			default: /* other dbus type */
 				break;
 		}
@@ -355,6 +376,8 @@ void GKDBus::fillInArguments(void) {
 
 	if( ! this->string_arguments_.empty() )
 		std::reverse(this->string_arguments_.begin(), this->string_arguments_.end());
+	if( ! this->boolean_arguments_.empty() )
+		std::reverse(this->boolean_arguments_.begin(), this->boolean_arguments_.end());
 }
 
 void GKDBus::setCurrentConnection(BusConnection current) {

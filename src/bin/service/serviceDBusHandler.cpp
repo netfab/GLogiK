@@ -96,6 +96,30 @@ const std::string ServiceDBusHandler::getCurrentSessionState(void) {
 	return this->session_state_;
 }
 
+void ServiceDBusHandler::reportChangedState(void) {
+	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		"/com/glogik/Desktop/Service", "com.glogik.Daemon.Device1", "Stop");
+	this->DBus->appendToRemoteMethodCall("aaaa");
+	this->DBus->sendRemoteMethodCall();
+
+	try {
+		this->DBus->waitForRemoteMethodCallReply();
+		const bool ret = this->DBus->getNextBooleanArgument();
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "success : " << ret;
+#endif
+	}
+	catch ( const GLogiKExcept & e ) {
+		if(this->warn_count_ >= MAXIMUM_WARNINGS_BEFORE_FATAL_ERROR)
+			throw GLogiKExcept("maximum warning count reached, this is fatal");
+		std::string warn("can't get reply : ");
+		warn += e.what();
+		LOG(WARNING) << warn;
+		GK_WARN << warn << "\n";
+		this->warn_count_++;
+	}
+}
+
 void ServiceDBusHandler::updateSessionState(void) {
 	const std::string new_state = this->getCurrentSessionState();
 	if(this->session_state_ == new_state) {
@@ -106,11 +130,12 @@ void ServiceDBusHandler::updateSessionState(void) {
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "switching session from " << this->session_state_ << " to " << new_state;
+	LOG(DEBUG3) << "switching session state from " << this->session_state_ << " to " << new_state;
 #endif
 
 	if( this->session_state_ == "active" ) {
 		if(new_state == "online") {
+			this->reportChangedState();
 		}
 		else if(new_state == "closing") {
 		}

@@ -66,10 +66,12 @@ class GKDBus : public GKDBusEvents
 
 		void initializeRemoteMethodCall(BusConnection current, const char* dest,
 			const char* object, const char* interface, const char* method);
+		void appendToRemoteMethodCall(const std::string & value);
 		void sendRemoteMethodCall(void);
 		void waitForRemoteMethodCallReply(void);
 
 		std::string getNextStringArgument(void);
+		const bool getNextBooleanArgument(void);
 		void checkMethodsCalls(BusConnection current);
 
 	protected:
@@ -83,6 +85,7 @@ class GKDBus : public GKDBusEvents
 		DBusConnection* session_conn_;
 		DBusConnection* system_conn_;
 		std::vector<std::string> string_arguments_;
+		std::vector<bool> boolean_arguments_;
 
 		GKDBusMsgReply* reply_;
 		GKDBusRemoteMethodCall* method_call_;
