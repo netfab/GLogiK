@@ -56,23 +56,43 @@ struct GKDBusEventVoidToStringCallback {
 		std::function<const std::string(void)> c) : method(m), arguments(a), callback(c) {}
 };
 
+struct GKDBusEventStringToStringCallback {
+	const std::string method;
+	std::vector<DBusMethodArgument> arguments;
+	std::function<const std::string(const std::string&)> callback;
+
+	GKDBusEventStringToStringCallback(const char* m, std::vector<DBusMethodArgument> & a,
+		std::function<const std::string(const std::string&)> c) : method(m), arguments(a), callback(c) {}
+};
+
 class GKDBusEvents
 {
 	public:
 		GKDBusEvents();
 		~GKDBusEvents(void);
 
-		void addEventStringToBoolCallback(const char* interface, const char* method,
+		void addEventStringToBoolCallback(const char* object_path, const char* interface, const char* method,
 			std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback);
-		void addEventVoidToStringCallback(const char* interface, const char* method,
+		void addEventVoidToStringCallback(const char* object_path, const char* interface, const char* method,
 			std::vector<DBusMethodArgument> args, std::function<const std::string(void)> callback);
+		void addEventStringToStringCallback(const char* object_path, const char* interface, const char* method,
+			std::vector<DBusMethodArgument> args, std::function<const std::string(const std::string&)> callback);
 
 	protected:
-		std::map<const std::string, std::vector<GKDBusEventStringToBoolCallback>> events_string_to_bool_;
-		std::map<const std::string, std::vector<GKDBusEventVoidToStringCallback>> events_void_to_string_;
+		std::map< const std::string, /* object path */
+			std::map< const std::string, /* interface */
+				std::vector<GKDBusEventStringToBoolCallback> > > events_string_to_bool_;
+
+		std::map< const std::string, /* object path */
+			std::map< const std::string, /* interface */
+				std::vector<GKDBusEventVoidToStringCallback> > > events_void_to_string_;
+
+		std::map< const std::string, /* object path */
+			std::map< const std::string, /* interface */
+				std::vector<GKDBusEventStringToStringCallback> > > events_string_to_string_;
 
 	private:
-		const std::string introspect(void);
+		const std::string introspect(const std::string & object_path_asked);
 
 };
 

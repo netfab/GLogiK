@@ -264,70 +264,121 @@ const bool GKDBus::getNextBooleanArgument(void) {
  * and send DBus reply after appending the return value
  */
 void GKDBus::checkMethodsCalls(BusConnection current) {
-	for(const auto & interface : this->events_void_to_string_) {
-		LOG(DEBUG2) << "checking " << interface.first << " interface";
+	const char* obj = dbus_message_get_path(this->message_);
+	std::string obj_path("");
+	if(obj != nullptr)
+		obj_path = obj;
 
-		for(const auto & DBusEvent : interface.second) {
-			const char* method = DBusEvent.method.c_str();
-			LOG(DEBUG3) << "checking for " << method << " call";
-			if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
-				std::string ret;
-				LOG(DEBUG1) << "DBus " << method << " called !";
+	for(const auto & object_path : this->events_void_to_string_) {
+		/* object path must match */
+		if(object_path.first != obj_path)
+			continue;
+		for(const auto & interface : object_path.second) {
+			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
-				/* call void to string callback */
-				ret = DBusEvent.callback();
+			for(const auto & DBusEvent : interface.second) {
+				const char* method = DBusEvent.method.c_str();
+				LOG(DEBUG3) << "checking for " << method << " call";
+				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
+					std::string ret;
+					LOG(DEBUG1) << "DBus " << method << " called !";
 
-				try {
-					this->initializeMethodCallReply(current);
-					this->appendToMethodCallReply(ret);
+					/* call void to string callback */
+					ret = DBusEvent.callback();
+
+					try {
+						this->initializeMethodCallReply(current);
+						this->appendToMethodCallReply(ret);
+					}
+					catch (const std::bad_alloc& e) { /* handle new() failure */
+						LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+					}
+					catch ( const GLogiKExcept & e ) {
+						LOG(ERROR) << "DBus reply failure : " << e.what();
+					}
+
+					/* delete reply object if allocated */
+					this->sendMethodCallReply();
+					return; /* one reply at a time */
 				}
-				catch (const std::bad_alloc& e) { /* handle new() failure */
-					LOG(ERROR) << "DBus reply allocation failure : " << e.what();
-				}
-				catch ( const GLogiKExcept & e ) {
-					LOG(ERROR) << "DBus reply failure : " << e.what();
-				}
-
-				/* delete reply object if allocated */
-				this->sendMethodCallReply();
-				return; /* one reply at a time */
 			}
 		}
 	}
 
-	for(const auto & interface : this->events_string_to_bool_) {
-		LOG(DEBUG2) << "checking " << interface.first << " interface";
+	for(const auto & object_path : this->events_string_to_bool_) {
+		/* object path must match */
+		if(object_path.first != obj_path)
+			continue;
+		for(const auto & interface : object_path.second) {
+			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
-		for(const auto & DBusEvent : interface.second) {
-			const char* method = DBusEvent.method.c_str();
-			LOG(DEBUG3) << "checking for " << method << " call";
-			if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
-				bool ret = false;
-				LOG(DEBUG1) << "DBus " << method << " called !";
+			for(const auto & DBusEvent : interface.second) {
+				const char* method = DBusEvent.method.c_str();
+				LOG(DEBUG3) << "checking for " << method << " call";
+				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
+					bool ret = false;
+					LOG(DEBUG1) << "DBus " << method << " called !";
 
-				try {
-					/* call string to bool callback */
-					const std::string devID = this->getNextStringArgument();
-					ret = DBusEvent.callback(devID);
-				}
-				catch ( const EmptyContainer & e ) {
-					LOG(DEBUG3) << e.what();
-				}
+					try {
+						/* call string to bool callback */
+						const std::string devID = this->getNextStringArgument();
+						ret = DBusEvent.callback(devID);
+					}
+					catch ( const EmptyContainer & e ) {
+						LOG(DEBUG3) << e.what();
+					}
 
-				try {
-					this->initializeMethodCallReply(current);
-					this->appendToMethodCallReply(ret);
-				}
-				catch (const std::bad_alloc& e) { /* handle new() failure */
-					LOG(ERROR) << "DBus reply allocation failure : " << e.what();
-				}
-				catch ( const GLogiKExcept & e ) {
-					LOG(ERROR) << "DBus reply failure : " << e.what();
-				}
+					try {
+						this->initializeMethodCallReply(current);
+						this->appendToMethodCallReply(ret);
+					}
+					catch (const std::bad_alloc& e) { /* handle new() failure */
+						LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+					}
+					catch ( const GLogiKExcept & e ) {
+						LOG(ERROR) << "DBus reply failure : " << e.what();
+					}
 
-				/* delete reply object if allocated */
-				this->sendMethodCallReply();
-				return; /* one reply at a time */
+					/* delete reply object if allocated */
+					this->sendMethodCallReply();
+					return; /* one reply at a time */
+				}
+			}
+		}
+	}
+
+	for(const auto & object_path : this->events_string_to_string_) {
+		/* object path must match */
+		if(object_path.first != obj_path)
+			continue;
+		for(const auto & interface : object_path.second) {
+			LOG(DEBUG2) << "checking " << interface.first << " interface";
+
+			for(const auto & DBusEvent : interface.second) {
+				const char* method = DBusEvent.method.c_str();
+				LOG(DEBUG3) << "checking for " << method << " call";
+				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
+					std::string ret;
+					LOG(DEBUG1) << "DBus " << method << " called !";
+
+					const std::string & arg = object_path.first;
+					ret = DBusEvent.callback(arg);
+
+					try {
+						this->initializeMethodCallReply(current);
+						this->appendToMethodCallReply(ret);
+					}
+					catch (const std::bad_alloc& e) { /* handle new() failure */
+						LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+					}
+					catch ( const GLogiKExcept & e ) {
+						LOG(ERROR) << "DBus reply failure : " << e.what();
+					}
+
+					/* delete reply object if allocated */
+					this->sendMethodCallReply();
+					return; /* one reply at a time */
+				}
 			}
 		}
 	}

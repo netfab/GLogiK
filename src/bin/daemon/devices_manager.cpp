@@ -495,19 +495,20 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 	this->fds[0].events = POLLIN;
 
 	//DBus->addSignalMatch(BusConnection::GKDBUS_SESSION, "test.signal.Type");
+	const char* object_path = "/com/glogik/Daemon/DeviceManager";
 	const char* device_interface = "com.glogik.Daemon.Device1";
 
-	DBus->addEventStringToBoolCallback( device_interface, "Stop",
+	DBus->addEventStringToBoolCallback( object_path, device_interface, "Stop",
 		{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
 			{"b", "is_stop_succeeded", "out", "does the Stop method succeeded ?"} },
 		std::bind(&DevicesManager::stopDevice, this, std::placeholders::_1) );
 
-	DBus->addEventStringToBoolCallback( device_interface, "Start",
+	DBus->addEventStringToBoolCallback( object_path, device_interface, "Start",
 		{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
 			{"b", "is_start_succeeded", "out", "does the Start method succeeded ?"} },
 		std::bind(&DevicesManager::startDevice, this, std::placeholders::_1) );
 
-	DBus->addEventStringToBoolCallback( device_interface, "Restart",
+	DBus->addEventStringToBoolCallback( object_path, device_interface, "Restart",
 		{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
 			{"b", "is_restart_succeeded", "out", "does the Restart method succeeded ?"} },
 		std::bind(&DevicesManager::restartDevice, this, std::placeholders::_1) );
