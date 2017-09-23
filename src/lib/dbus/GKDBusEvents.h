@@ -68,9 +68,6 @@ struct GKDBusEvent_StringToString_Callback {
 class GKDBusEvents
 {
 	public:
-		GKDBusEvents();
-		~GKDBusEvents(void);
-
 		void addEvent_StringToBool_Callback(const char* object_path, const char* interface, const char* method,
 			std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback);
 		void addEvent_VoidToString_Callback(const char* object_path, const char* interface, const char* method,
@@ -79,6 +76,9 @@ class GKDBusEvents
 			std::vector<DBusMethodArgument> args, std::function<const std::string(const std::string&)> callback);
 
 	protected:
+		GKDBusEvents(void);
+		~GKDBusEvents(void);
+
 		std::map< const std::string, /* object path */
 			std::map< const std::string, /* interface */
 				std::vector<GKDBusEvent_StringToBool_Callback> > > events_string_to_bool_;
