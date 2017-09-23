@@ -258,9 +258,11 @@ const bool GKDBus::getNextBooleanArgument(void) {
 }
 
 /*
- * check if one of the registered methods
- *       on one of the registered interfaces was called
- * if one method was called, run the corresponding callback function
+ * check if :
+ *      one of the registered methods
+ *   on one of the registered interfaces
+ *   on one of the registered object path
+ * was called. if yes, then run the corresponding callback function
  * and send DBus reply after appending the return value
  */
 void GKDBus::checkMethodsCalls(BusConnection current) {
@@ -361,6 +363,7 @@ void GKDBus::checkMethodsCalls(BusConnection current) {
 					std::string ret;
 					LOG(DEBUG1) << "DBus " << method << " called !";
 
+					/* call string to string callback */
 					const std::string & arg = object_path.first;
 					ret = DBusEvent.callback(arg);
 

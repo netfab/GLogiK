@@ -30,17 +30,15 @@ namespace GLogiK
 {
 
 GKDBusEvents::GKDBusEvents() {
-	//LOG(DEBUG2) << __func__ << " construction";
 }
 
 GKDBusEvents::~GKDBusEvents() {
-	//LOG(DEBUG2) << __func__ << " destruction";
 }
 
-void GKDBusEvents::addEventStringToBoolCallback(const char* object_path, const char* interface, const char* method,
+void GKDBusEvents::addEvent_StringToBool_Callback(const char* object_path, const char* interface, const char* method,
 	std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback)
 {
-	GKDBusEventStringToBoolCallback e(method, args, callback);
+	GKDBusEvent_StringToBool_Callback e(method, args, callback);
 	this->events_string_to_bool_[object_path][interface].push_back(e);
 
 	try {
@@ -49,25 +47,29 @@ void GKDBusEvents::addEventStringToBoolCallback(const char* object_path, const c
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(DEBUG3) << "adding Introspectable interface : " << object_path << " " << interface;
-		this->addEventStringToStringCallback(
+		this->addEvent_StringToString_Callback(
 			object_path, "org.freedesktop.DBus.Introspectable", "Introspect",
 			{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
 			std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1));
 	}
 }
 
-void GKDBusEvents::addEventVoidToStringCallback(const char* object_path, const char* interface, const char* method,
+void GKDBusEvents::addEvent_VoidToString_Callback(const char* object_path, const char* interface, const char* method,
 	std::vector<DBusMethodArgument> args, std::function<const std::string(void)> callback)
 {
-	GKDBusEventVoidToStringCallback e(method, args, callback);
+	GKDBusEvent_VoidToString_Callback e(method, args, callback);
 	this->events_void_to_string_[object_path][interface].push_back(e);
+
+	// FIXME introspect
 }
 
-void GKDBusEvents::addEventStringToStringCallback(const char* object_path, const char* interface, const char* method,
+void GKDBusEvents::addEvent_StringToString_Callback(const char* object_path, const char* interface, const char* method,
 	std::vector<DBusMethodArgument> args, std::function<const std::string(const std::string&)> callback)
 {
-	GKDBusEventStringToStringCallback e(method, args, callback);
+	GKDBusEvent_StringToString_Callback e(method, args, callback);
 	this->events_string_to_string_[object_path][interface].push_back(e);
+
+	// FIXME introspect
 }
 
 const std::string GKDBusEvents::introspect(const std::string & object_path_asked) {
