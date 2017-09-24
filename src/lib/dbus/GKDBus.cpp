@@ -272,6 +272,37 @@ void GKDBus::checkMethodsCalls(BusConnection current) {
 	if(obj != nullptr)
 		asked_object_path = obj;
 
+	/* handle particular case */
+	if(asked_object_path == this->getRootNode()) {
+		if( this->checkMessageForMethodCallOnInterface("org.freedesktop.DBus.Introspectable", "Introspect") ) {
+			std::string ret;
+			LOG(DEBUG1) << "DBus Introspect called on root node !";
+
+			ret = this->introspectRootNode();
+
+			try {
+				this->initializeMethodCallReply(current);
+				this->appendToMethodCallReply(ret);
+			}
+			catch (const std::bad_alloc& e) { /* handle new() failure */
+				LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+			}
+			catch ( const GLogiKExcept & e ) {
+				LOG(ERROR) << "DBus reply failure : " << e.what();
+			}
+
+			/* delete reply object if allocated */
+			this->sendMethodCallReply();
+			return; /* one reply at a time */
+		}
+	}
+	/* end particular case */
+
+
+	/*
+	 * loops on containers
+	 */
+
 	std::string object_path;
 
 	for(const auto & object_it : this->events_void_to_string_) {

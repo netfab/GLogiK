@@ -58,6 +58,10 @@ void GKDBusEvents::defineRootNode(const std::string& rootnode) {
 	this->root_node_ = rootnode;
 }
 
+const std::string & GKDBusEvents::getRootNode(void) {
+	return this->root_node_;
+}
+
 const std::string GKDBusEvents::getNode(const std::string & object) {
 	std::string node(this->root_node_);
 	node += "/";
@@ -146,6 +150,23 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 			}
 			xml << "  </interface>\n";
 		}
+	}
+
+	xml << "</node>\n";
+	return xml.str();
+}
+
+const std::string GKDBusEvents::introspectRootNode(void) {
+	std::ostringstream xml;
+
+	LOG(DEBUG2) << "root node : " << this->root_node_;
+
+	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
+	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
+	xml << "<node name=\"" << this->root_node_ << "\">\n";
+
+	for(const auto & object_it : this->events_string_to_bool_) {
+		xml << "  <node name=\"" << object_it.first << "\"/>\n";
 	}
 
 	xml << "</node>\n";

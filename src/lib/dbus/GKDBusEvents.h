@@ -92,7 +92,10 @@ class GKDBusEvents
 				std::vector<GKDBusEvent_StringToString_Callback> > > events_string_to_string_;
 
 		void defineRootNode(const std::string& rootnode);
+		const std::string & getRootNode(void);
 		const std::string getNode(const std::string & object);
+
+		const std::string introspectRootNode(void);
 
 	private:
 		std::string root_node_;
