@@ -28,6 +28,8 @@
 
 #define MAXIMUM_WARNINGS_BEFORE_FATAL_ERROR 10
 
+#define GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE "/com/glogik/Desktop/Service"
+
 namespace GLogiK
 {
 

@@ -30,7 +30,7 @@
 namespace GLogiK
 {
 
-GKDBus::GKDBus() : buffer_("", std::ios_base::app),
+GKDBus::GKDBus(const std::string & rootnode) : buffer_("", std::ios_base::app),
 	message_(nullptr),
 	pending_(nullptr),
 	current_conn_(nullptr),
@@ -41,6 +41,7 @@ GKDBus::GKDBus() : buffer_("", std::ios_base::app),
 {
 	LOG(DEBUG1) << "dbus object initialization";
 	dbus_error_init(&(this->error_));
+	this->defineRootNode(rootnode);
 }
 
 GKDBus::~GKDBus()
@@ -267,15 +268,19 @@ const bool GKDBus::getNextBooleanArgument(void) {
  */
 void GKDBus::checkMethodsCalls(BusConnection current) {
 	const char* obj = dbus_message_get_path(this->message_);
-	std::string obj_path("");
+	std::string asked_object_path("");
 	if(obj != nullptr)
-		obj_path = obj;
+		asked_object_path = obj;
 
-	for(const auto & object_path : this->events_void_to_string_) {
+	std::string object_path;
+
+	for(const auto & object_it : this->events_void_to_string_) {
 		/* object path must match */
-		if(object_path.first != obj_path)
+		object_path = this->getNode(object_it.first);
+		if(object_path != asked_object_path)
 			continue;
-		for(const auto & interface : object_path.second) {
+
+		for(const auto & interface : object_it.second) {
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
 			for(const auto & DBusEvent : interface.second) {
@@ -307,11 +312,13 @@ void GKDBus::checkMethodsCalls(BusConnection current) {
 		}
 	}
 
-	for(const auto & object_path : this->events_string_to_bool_) {
+	for(const auto & object_it : this->events_string_to_bool_) {
 		/* object path must match */
-		if(object_path.first != obj_path)
+		object_path = this->getNode(object_it.first);
+		if(object_path != asked_object_path)
 			continue;
-		for(const auto & interface : object_path.second) {
+
+		for(const auto & interface : object_it.second) {
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
 			for(const auto & DBusEvent : interface.second) {
@@ -349,11 +356,13 @@ void GKDBus::checkMethodsCalls(BusConnection current) {
 		}
 	}
 
-	for(const auto & object_path : this->events_string_to_string_) {
+	for(const auto & object_it : this->events_string_to_string_) {
 		/* object path must match */
-		if(object_path.first != obj_path)
+		object_path = this->getNode(object_it.first);
+		if(object_path != asked_object_path)
 			continue;
-		for(const auto & interface : object_path.second) {
+
+		for(const auto & interface : object_it.second) {
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
 			for(const auto & DBusEvent : interface.second) {
@@ -364,7 +373,7 @@ void GKDBus::checkMethodsCalls(BusConnection current) {
 					LOG(DEBUG1) << "DBus " << method << " called !";
 
 					/* call string to string callback */
-					const std::string & arg = object_path.first;
+					const std::string & arg = object_it.first;
 					ret = DBusEvent.callback(arg);
 
 					try {

@@ -68,11 +68,11 @@ struct GKDBusEvent_StringToString_Callback {
 class GKDBusEvents
 {
 	public:
-		void addEvent_StringToBool_Callback(const char* object_path, const char* interface, const char* method,
+		void addEvent_StringToBool_Callback(const char* object, const char* interface, const char* method,
 			std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback);
-		void addEvent_VoidToString_Callback(const char* object_path, const char* interface, const char* method,
+		void addEvent_VoidToString_Callback(const char* object, const char* interface, const char* method,
 			std::vector<DBusMethodArgument> args, std::function<const std::string(void)> callback);
-		void addEvent_StringToString_Callback(const char* object_path, const char* interface, const char* method,
+		void addEvent_StringToString_Callback(const char* object, const char* interface, const char* method,
 			std::vector<DBusMethodArgument> args, std::function<const std::string(const std::string&)> callback);
 
 	protected:
@@ -91,9 +91,13 @@ class GKDBusEvents
 			std::map< const std::string, /* interface */
 				std::vector<GKDBusEvent_StringToString_Callback> > > events_string_to_string_;
 
-	private:
-		const std::string introspect(const std::string & object_path_asked);
+		void defineRootNode(const std::string& rootnode);
+		const std::string getNode(const std::string & object);
 
+	private:
+		std::string root_node_;
+
+		const std::string introspect(const std::string & object_path_asked);
 };
 
 } // namespace GLogiK

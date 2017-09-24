@@ -495,7 +495,7 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 	this->fds[0].events = POLLIN;
 
 	//DBus->addSignalMatch(BusConnection::GKDBUS_SESSION, "test.signal.Type");
-	const char* object_path = "/com/glogik/Daemon/DeviceManager";
+	const char* object_path = "DeviceManager";
 	const char* device_interface = "com.glogik.Daemon.Device1";
 
 	DBus->addEvent_StringToBool_Callback( object_path, device_interface, "Stop",

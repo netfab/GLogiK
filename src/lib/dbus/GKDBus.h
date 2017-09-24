@@ -46,7 +46,7 @@ enum class BusConnection : int8_t
 class GKDBus : public GKDBusEvents
 {
 	public:
-		GKDBus();
+		GKDBus(const std::string & rootnode);
 		~GKDBus();
 
 		void connectToSessionBus(const char* connection_name);

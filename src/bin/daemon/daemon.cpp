@@ -113,7 +113,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			//std::signal(SIGHUP, GLogiKDaemon::handle_signal);
 
 			try {
-				this->DBus = new GKDBus();
+				this->DBus = new GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
 				this->DBus->connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
 
 				d.startMonitoring(this->DBus);

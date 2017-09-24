@@ -29,7 +29,7 @@ namespace GLogiK
 
 ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
 	try {
-		this->DBus = new GKDBus();
+		this->DBus = new GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
 		this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 
 		this->setCurrentSessionObjectPath();
