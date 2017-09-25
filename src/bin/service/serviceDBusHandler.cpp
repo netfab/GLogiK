@@ -34,6 +34,26 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
 
 		this->setCurrentSessionObjectPath();
 		this->session_state_ = this->getCurrentSessionState();
+
+		/* telling the daemon we are alive */
+		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			"/com/glogik/Daemon/ClientsManager", "com.glogik.Daemon.Client1", "RegisterClient");
+		this->DBus->appendToRemoteMethodCall(this->current_session_.c_str());
+		this->DBus->sendRemoteMethodCall();
+
+		this->DBus->waitForRemoteMethodCallReply();
+		const bool ret = this->DBus->getNextBooleanArgument();
+		if( ret ) {
+			const char * success = "successfully registered with daemon";
+			LOG(DEBUG2) << success;
+			GK_STAT << success << "\n";
+		}
+		else {
+			const char * failure = "failed to register with daemon : false";
+			LOG(ERROR) << failure;
+			GK_ERR << failure << "\n";
+			throw GLogiKExcept(failure);
+		}
 	}
 	catch ( const GLogiKExcept & e ) {
 		if(this->DBus != nullptr)
@@ -43,6 +63,33 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
 }
 
 ServiceDBusHandler::~ServiceDBusHandler() {
+	try {
+		/* telling the daemon we're killing ourself */
+		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			"/com/glogik/Daemon/ClientsManager", "com.glogik.Daemon.Client1", "UnregisterClient");
+		this->DBus->appendToRemoteMethodCall(this->current_session_.c_str());
+		this->DBus->sendRemoteMethodCall();
+
+		this->DBus->waitForRemoteMethodCallReply();
+		const bool ret = this->DBus->getNextBooleanArgument();
+		if( ret ) {
+			const char * success = "successfully unregistered with daemon";
+			LOG(DEBUG2) << success;
+			GK_STAT << success << "\n";
+		}
+		else {
+			const char * failure = "failed to unregister with daemon : false";
+			LOG(ERROR) << failure;
+			GK_ERR << failure << "\n";
+		}
+	}
+	catch ( const GLogiKExcept & e ) {
+		std::string err("failure to unregister with daemon : ");
+		err += e.what();
+		LOG(ERROR) << err;
+		GK_ERR << err << "\n";
+	}
+
 	if(this->DBus != nullptr)
 		delete this->DBus;
 }

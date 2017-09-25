@@ -361,8 +361,8 @@ void GKDBus::checkMethodsCalls(BusConnection current) {
 
 					try {
 						/* call string to bool callback */
-						const std::string devID = this->getNextStringArgument();
-						ret = DBusEvent.callback(devID);
+						const std::string arg = this->getNextStringArgument();
+						ret = DBusEvent.callback(arg);
 					}
 					catch ( const EmptyContainer & e ) {
 						LOG(DEBUG3) << e.what();

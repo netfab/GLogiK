@@ -32,6 +32,8 @@ GLogiK=$PWD/.. CD=. {
 			daemon=daemon/ {
 				Makefile.am
 				main.cpp
+				clientsManager.cpp
+				clientsManager.h
 				daemon.cpp
 				daemon.h
 				daemon_control.cpp

@@ -47,6 +47,7 @@
 #include "globals.h"
 #include "include/log.h"
 
+#include "clientsManager.h"
 #include "devices_manager.h"
 
 namespace po = boost::program_options;
@@ -115,6 +116,8 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			try {
 				this->DBus = new GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
 				this->DBus->connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
+
+				ClientsManager c(this->DBus);
 
 				d.startMonitoring(this->DBus);
 
