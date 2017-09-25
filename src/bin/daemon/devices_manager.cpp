@@ -501,17 +501,17 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 
 		DBus->addEvent_StringToBool_Callback( devices_object, devices_interface, "Stop",
 			{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
-				{"b", "is_stop_succeeded", "out", "does the Stop method succeeded ?"} },
+				{"b", "did_stop_succeeded", "out", "did the Stop method succeeded ?"} },
 			std::bind(&DevicesManager::stopDevice, this, std::placeholders::_1) );
 
 		DBus->addEvent_StringToBool_Callback( devices_object, devices_interface, "Start",
 			{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
-				{"b", "is_start_succeeded", "out", "does the Start method succeeded ?"} },
+				{"b", "did_start_succeeded", "out", "did the Start method succeeded ?"} },
 			std::bind(&DevicesManager::startDevice, this, std::placeholders::_1) );
 
 		DBus->addEvent_StringToBool_Callback( devices_object, devices_interface, "Restart",
 			{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
-				{"b", "is_restart_succeeded", "out", "does the Restart method succeeded ?"} },
+				{"b", "did_restart_succeeded", "out", "did the Restart method succeeded ?"} },
 			std::bind(&DevicesManager::restartDevice, this, std::placeholders::_1) );
 	}
 
