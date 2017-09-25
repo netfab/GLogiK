@@ -58,8 +58,8 @@ void GKDBusEvents::addEvent_StringToBool_Callback(const char* object, const char
 	this->events_string_to_bool_[object][interface].push_back(e);
 
 	try {
-		auto obj = this->events_string_to_string_.at(object);
-		auto interf = obj.at("org.freedesktop.DBus.Introspectable");
+		const auto & obj = this->events_string_to_string_.at(object);
+		const auto & interf = obj.at("org.freedesktop.DBus.Introspectable");
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(DEBUG3) << "adding Introspectable interface : " << object << " " << interface;
