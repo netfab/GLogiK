@@ -41,7 +41,6 @@ GLogiK=$PWD/.. CD=. {
 				daemonControl.h
 				devicesManager.cpp
 				devicesManager.h
-				globals.h
 				keyEvent.h
 				keyboardDriver.cpp
 				keyboardDriver.h

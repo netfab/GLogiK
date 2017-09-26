@@ -22,12 +22,13 @@
 #ifndef __GLOGIKD_LOGITECH_G510_DRIVER_H__
 #define __GLOGIKD_LOGITECH_G510_DRIVER_H__
 
+#define GLOGIKD_DRIVER_ID_G510 ( 1 << 0 )
+
 #include <cstdint>
 
 #include <vector>
 
 #include "keyboardDriver.h"
-#include "globals.h"
 
 #include "include/enums.h"
 

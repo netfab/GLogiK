@@ -37,8 +37,6 @@
 #include "keyboardDriver.h"
 #include "lib/dbus/GKDBus.h"
 
-#include "globals.h"
-
 namespace GLogiK
 {
 

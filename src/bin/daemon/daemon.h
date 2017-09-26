@@ -22,6 +22,8 @@
 #ifndef __GLOGIKD_DAEMON_H__
 #define __GLOGIKD_DAEMON_H__
 
+#define GLOGIKD_DAEMON_NAME "GLogiKd"
+
 #include <cstdio>
 #include <sys/types.h>
 

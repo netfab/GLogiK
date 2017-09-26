@@ -29,7 +29,7 @@ GLogiKd_SOURCES = \
 		keyboardDriver.cpp keyboardDriver.h \
 		virtualKeyboard.cpp virtualKeyboard.h \
 		logitechG510.cpp logitechG510.h \
-		globals.h keyEvent.h \
+		keyEvent.h \
 		macrosManager.cpp macrosManager.h \
 		clientsManager.cpp clientsManager.h
 
