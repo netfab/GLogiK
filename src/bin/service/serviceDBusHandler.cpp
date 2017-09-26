@@ -147,23 +147,30 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 
 void ServiceDBusHandler::reportChangedState(void) {
 	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		"/com/glogik/Desktop/Service", "com.glogik.Daemon.Device1", "Stop");
-	this->DBus->appendToRemoteMethodCall("aaaa");
+		this->DBus_client_object_path_, this->DBus_client_interface_, "UpdateClientState");
+	this->DBus->appendToRemoteMethodCall(this->current_session_.c_str());
+	this->DBus->appendToRemoteMethodCall(this->session_state_.c_str());
 	this->DBus->sendRemoteMethodCall();
 
 	try {
 		this->DBus->waitForRemoteMethodCallReply();
 		const bool ret = this->DBus->getNextBooleanArgument();
-		LOG(DEBUG2) << "success : " << ret;
+		if( ret ) {
+			const char * success = "successfully reported changed state";
+			LOG(DEBUG2) << success;
+			GK_STAT << success << "\n";
+		}
+		else {
+			const char * failure = "failed to report changed state : false";
+			LOG(ERROR) << failure;
+			GK_ERR << failure << "\n";
+		}
 	}
 	catch ( const GLogiKExcept & e ) {
-		if(this->warn_count_ >= MAXIMUM_WARNINGS_BEFORE_FATAL_ERROR)
-			throw GLogiKExcept("maximum warning count reached, this is fatal");
 		std::string warn("can't get reply : ");
 		warn += e.what();
 		LOG(WARNING) << warn;
 		GK_WARN << warn << "\n";
-		this->warn_count_++;
 	}
 }
 
@@ -185,7 +192,6 @@ void ServiceDBusHandler::updateSessionState(void) {
 
 	if( this->session_state_ == "active" ) {
 		if(new_state == "online") {
-			this->reportChangedState();
 		}
 		else if(new_state == "closing") {
 		}
@@ -209,6 +215,8 @@ void ServiceDBusHandler::updateSessionState(void) {
 	}
 
 	this->session_state_ = new_state;
+	this->reportChangedState();
+
 }
 
 void ServiceDBusHandler::checkDBusMessages(void) {

@@ -386,6 +386,51 @@ void GKDBus::checkMethodsCalls(BusConnection current) {
 		}
 	}
 
+	for(const auto & object_it : this->events_twostrings_to_bool_) {
+		/* object path must match */
+		object_path = this->getNode(object_it.first);
+		if(object_path != asked_object_path)
+			continue;
+
+		for(const auto & interface : object_it.second) {
+			LOG(DEBUG2) << "checking " << interface.first << " interface";
+
+			for(const auto & DBusEvent : interface.second) {
+				const char* method = DBusEvent.method.c_str();
+				LOG(DEBUG3) << "checking for " << method << " call";
+				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
+					bool ret = false;
+					LOG(DEBUG1) << "DBus " << method << " called !";
+
+					try {
+						/* call string to bool callback */
+						const std::string arg1 = this->getNextStringArgument();
+						const std::string arg2 = this->getNextStringArgument();
+						ret = DBusEvent.callback(arg1, arg2);
+					}
+					catch ( const EmptyContainer & e ) {
+						LOG(DEBUG3) << e.what();
+					}
+
+					try {
+						this->initializeMethodCallReply(current);
+						this->appendToMethodCallReply(ret);
+					}
+					catch (const std::bad_alloc& e) { /* handle new() failure */
+						LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+					}
+					catch ( const GLogiKExcept & e ) {
+						LOG(ERROR) << "DBus reply failure : " << e.what();
+					}
+
+					/* delete reply object if allocated */
+					this->sendMethodCallReply();
+					return; /* one reply at a time */
+				}
+			}
+		}
+	}
+
 	for(const auto & object_it : this->events_string_to_string_) {
 		/* object path must match */
 		object_path = this->getNode(object_it.first);

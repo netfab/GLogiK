@@ -73,6 +73,26 @@ void GKDBusEvents::addEvent_StringToBool_Callback(const char* object, const char
 	}
 }
 
+void GKDBusEvents::addEvent_TwoStringsToBool_Callback(const char* object, const char* interface, const char* method,
+	std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&, const std::string&)> callback)
+{
+	GKDBusEvent_TwoStringsToBool_Callback e(method, args, callback);
+	this->DBusObjects_[object] = true;
+	this->events_twostrings_to_bool_[object][interface].push_back(e);
+
+	try {
+		const auto & obj = this->events_string_to_string_.at(object);
+		const auto & interf = obj.at("org.freedesktop.DBus.Introspectable");
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(DEBUG3) << "adding Introspectable interface : " << object << " " << interface;
+		this->addEvent_StringToString_Callback(
+			object, "org.freedesktop.DBus.Introspectable", "Introspect",
+			{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
+			std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1));
+	}
+}
+
 void GKDBusEvents::addEvent_VoidToString_Callback(const char* object, const char* interface, const char* method,
 	std::vector<DBusMethodArgument> args, std::function<const std::string(void)> callback)
 {

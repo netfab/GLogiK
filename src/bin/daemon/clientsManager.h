@@ -56,6 +56,7 @@ class ClientsManager
 		
 		const bool registerClient(const std::string & uniqueString);
 		const bool unregisterClient(const std::string & uniqueString);
+		const bool updateClientState(const std::string & uniqueString, const std::string & state);
 };
 
 } // namespace GLogiK

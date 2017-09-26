@@ -51,6 +51,15 @@ struct GKDBusEvent_StringToBool_Callback {
 		std::function<const bool(const std::string&)> c) : method(m), arguments(a), callback(c) {}
 };
 
+struct GKDBusEvent_TwoStringsToBool_Callback {
+	const std::string method;
+	std::vector<DBusMethodArgument> arguments;
+	std::function<const bool(const std::string&, const std::string&)> callback;
+
+	GKDBusEvent_TwoStringsToBool_Callback(const char* m, std::vector<DBusMethodArgument> & a,
+		std::function<const bool(const std::string&, const std::string&)> c) : method(m), arguments(a), callback(c) {}
+};
+
 struct GKDBusEvent_VoidToString_Callback {
 	const std::string method;
 	std::vector<DBusMethodArgument> arguments;
@@ -74,6 +83,8 @@ class GKDBusEvents
 	public:
 		void addEvent_StringToBool_Callback(const char* object, const char* interface, const char* method,
 			std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback);
+		void addEvent_TwoStringsToBool_Callback(const char* object, const char* interface, const char* method,
+			std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&, const std::string&)> callback);
 		void addEvent_VoidToString_Callback(const char* object, const char* interface, const char* method,
 			std::vector<DBusMethodArgument> args, std::function<const std::string(void)> callback);
 		void addEvent_StringToString_Callback(const char* object, const char* interface, const char* method,
@@ -86,6 +97,10 @@ class GKDBusEvents
 		std::map< const std::string, /* object path */
 			std::map< const std::string, /* interface */
 				std::vector<GKDBusEvent_StringToBool_Callback> > > events_string_to_bool_;
+
+		std::map< const std::string, /* object path */
+			std::map< const std::string, /* interface */
+				std::vector<GKDBusEvent_TwoStringsToBool_Callback> > > events_twostrings_to_bool_;
 
 		std::map< const std::string, /* object path */
 			std::map< const std::string, /* interface */

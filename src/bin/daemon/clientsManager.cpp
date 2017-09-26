@@ -42,6 +42,12 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : DBus(pDBus) {
 		{	{"s", "client_unique_id", "in", "client unique ID"},
 			{"b", "did_unregister_succeeded", "out", "did the UnregisterClient method succeeded ?"} },
 		std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );
+
+	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_object_, this->DBus_interface_, "UpdateClientState",
+		{	{"s", "client_unique_id", "in", "client unique ID"},
+			{"s", "client_new_state", "in", "client new state"},
+			{"b", "did_unregister_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
+		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 }
 
 ClientsManager::~ClientsManager() {
@@ -81,6 +87,11 @@ const bool ClientsManager::unregisterClient(const std::string & uniqueString) {
 		LOG(WARNING) << uniqueString << " client not registered";
 		syslog(LOG_WARNING, "client not registered");
 	}
+	return false;
+}
+
+const bool ClientsManager::updateClientState(const std::string & uniqueString, const std::string & state) {
+	LOG(DEBUG2) << "client : " << uniqueString << " - state : " << state;
 	return false;
 }
 
