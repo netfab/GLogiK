@@ -28,8 +28,8 @@
 
 #include "lib/utils/utils.h"
 
-#include "daemon_control.h"
-#include "keyboard_driver.h"
+#include "daemonControl.h"
+#include "keyboardDriver.h"
 
 #include "include/enums.h"
 

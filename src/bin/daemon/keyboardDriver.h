@@ -39,8 +39,8 @@
 #include <syslog.h>
 #include "include/log.h"
 
-#include "key_event.h"
-#include "macros_manager.h"
+#include "keyEvent.h"
+#include "macrosManager.h"
 
 namespace GLogiK
 {

@@ -27,7 +27,7 @@
 #include <libevdev/libevdev.h>
 #include <libevdev/libevdev-uinput.h>
 
-#include "key_event.h"
+#include "keyEvent.h"
 
 namespace GLogiK
 {

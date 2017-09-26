@@ -48,7 +48,7 @@
 #include "include/log.h"
 
 #include "clientsManager.h"
-#include "devices_manager.h"
+#include "devicesManager.h"
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;

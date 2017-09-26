@@ -29,8 +29,8 @@
 #include <string>
 #include <sstream>
 
-#include "virtual_keyboard.h"
-#include "key_event.h"
+#include "virtualKeyboard.h"
+#include "keyEvent.h"
 
 namespace GLogiK
 {

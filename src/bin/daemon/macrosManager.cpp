@@ -28,7 +28,7 @@
 #include "include/log.h"
 #include <syslog.h>
 
-#include "macros_manager.h"
+#include "macrosManager.h"
 
 namespace GLogiK
 {

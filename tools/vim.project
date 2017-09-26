@@ -36,20 +36,20 @@ GLogiK=$PWD/.. CD=. {
 				clientsManager.h
 				daemon.cpp
 				daemon.h
-				daemon_control.cpp
-				daemon_control.h
-				devices_manager.cpp
-				devices_manager.h
+				daemonControl.cpp
+				daemonControl.h
+				devicesManager.cpp
+				devicesManager.h
 				globals.h
-				key_event.h
-				keyboard_driver.cpp
-				keyboard_driver.h
-				logitech_G510.cpp
-				logitech_G510.h
-				macros_manager.cpp
-				macros_manager.h
-				virtual_keyboard.cpp
-				virtual_keyboard.h
+				keyEvent.h
+				keyboardDriver.cpp
+				keyboardDriver.h
+				logitechG510.cpp
+				logitechG510.h
+				macrosManager.cpp
+				macrosManager.h
+				virtualKeyboard.cpp
+				virtualKeyboard.h
 			}
 			desktop_service=service/ {
 				Makefile.am

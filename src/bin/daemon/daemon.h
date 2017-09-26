@@ -31,7 +31,7 @@
 #include <sstream>
 #include <string>
 
-#include "daemon_control.h"
+#include "daemonControl.h"
 
 #include "lib/dbus/GKDBus.h"
 

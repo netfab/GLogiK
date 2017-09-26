@@ -31,11 +31,11 @@
 
 #include "lib/utils/utils.h"
 #include "include/log.h"
-#include "daemon_control.h"
+#include "daemonControl.h"
 
-#include "devices_manager.h"
+#include "devicesManager.h"
 
-#include "logitech_G510.h"
+#include "logitechG510.h"
 
 namespace GLogiK
 {

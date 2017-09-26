@@ -25,7 +25,7 @@
 
 #include <cstring>
 
-#include "virtual_keyboard.h"
+#include "virtualKeyboard.h"
 
 #include <syslog.h>
 #include "lib/utils/utils.h"

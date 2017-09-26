@@ -33,7 +33,7 @@
 
 #include <config.h>
 
-#include "keyboard_driver.h"
+#include "keyboardDriver.h"
 #include "lib/dbus/GKDBus.h"
 
 #include "globals.h"

@@ -24,12 +24,12 @@ GLogiKd_LDADD=	@LIBUDEV_LIBS@ \
 GLogiKd_SOURCES = \
 		main.cpp \
 		daemon.cpp daemon.h \
-		daemon_control.cpp daemon_control.h \
-		devices_manager.cpp devices_manager.h \
-		keyboard_driver.cpp keyboard_driver.h \
-		virtual_keyboard.cpp virtual_keyboard.h \
-		logitech_G510.cpp logitech_G510.h \
-		globals.h key_event.h \
-		macros_manager.cpp macros_manager.h \
+		daemonControl.cpp daemonControl.h \
+		devicesManager.cpp devicesManager.h \
+		keyboardDriver.cpp keyboardDriver.h \
+		virtualKeyboard.cpp virtualKeyboard.h \
+		logitechG510.cpp logitechG510.h \
+		globals.h keyEvent.h \
+		macrosManager.cpp macrosManager.h \
 		clientsManager.cpp clientsManager.h
 

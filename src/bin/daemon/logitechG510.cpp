@@ -27,7 +27,7 @@
 #include "include/log.h"
 #include <syslog.h>
 
-#include "logitech_G510.h"
+#include "logitechG510.h"
 
 namespace GLogiK
 {
