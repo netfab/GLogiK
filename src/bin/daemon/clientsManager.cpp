@@ -30,19 +30,26 @@
 namespace GLogiK
 {
 
-ClientsManager::ClientsManager(GKDBus* DBus) {
-		DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "RegisterClient",
-			{	{"s", "client_unique_id", "in", "client unique ID"},
-				{"b", "did_register_succeeded", "out", "did the RegisterClient method succeeded ?"} },
-			std::bind(&ClientsManager::registerClient, this, std::placeholders::_1) );
+ClientsManager::ClientsManager(GKDBus* pDBus) : DBus(pDBus) {
+	LOG(DEBUG2) << "initializing clients manager";
 
-		DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "UnregisterClient",
-			{	{"s", "client_unique_id", "in", "client unique ID"},
-				{"b", "did_unregister_succeeded", "out", "did the UnregisterClient method succeeded ?"} },
-			std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );
+	this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "RegisterClient",
+		{	{"s", "client_unique_id", "in", "client unique ID"},
+			{"b", "did_register_succeeded", "out", "did the RegisterClient method succeeded ?"} },
+		std::bind(&ClientsManager::registerClient, this, std::placeholders::_1) );
+
+	this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "UnregisterClient",
+		{	{"s", "client_unique_id", "in", "client unique ID"},
+			{"b", "did_unregister_succeeded", "out", "did the UnregisterClient method succeeded ?"} },
+		std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );
 }
 
 ClientsManager::~ClientsManager() {
+	LOG(DEBUG2) << "exiting clients manager";
+}
+
+void ClientsManager::runLoop(void) {
+	this->devicesManager.startMonitoring(this->DBus);
 }
 
 const bool ClientsManager::registerClient(const std::string & uniqueString) {

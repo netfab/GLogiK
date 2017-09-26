@@ -27,6 +27,8 @@
 
 #include "lib/dbus/GKDBus.h"
 
+#include "devicesManager.h"
+
 #include "include/glogik.h"
 
 namespace GLogiK
@@ -35,14 +37,20 @@ namespace GLogiK
 class ClientsManager
 {
 	public:
-		ClientsManager(GKDBus* DBus);
+		ClientsManager(GKDBus* pDBus);
 		~ClientsManager(void);
+
+		void runLoop(void);
 
 	protected:
 
 	private:
 		const char* DBus_object_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT;
 		const char* DBus_interface_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
+
+		GKDBus* DBus;
+
+		DevicesManager devicesManager;
 
 		std::map<const std::string, bool> clients_;
 		

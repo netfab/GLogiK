@@ -46,7 +46,6 @@
 #include "lib/utils/utils.h"
 
 #include "clientsManager.h"
-#include "devicesManager.h"
 
 #include "daemon.h"
 
@@ -103,8 +102,6 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 	try {
 		this->parseCommandLine(argc, argv);
 
-		DevicesManager d;
-
 		if( GLogiKDaemon::is_daemon_enabled() ) {
 			this->daemonize();
 
@@ -118,8 +115,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 				this->DBus->connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
 
 				ClientsManager c(this->DBus);
-
-				d.startMonitoring(this->DBus);
+				c.runLoop();
 
 				if(this->DBus != nullptr)
 					delete this->DBus;

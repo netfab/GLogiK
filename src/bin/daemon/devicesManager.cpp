@@ -40,6 +40,7 @@ namespace GLogiK
 {
 
 DevicesManager::DevicesManager() : buffer_("", std::ios_base::app) {
+	LOG(DEBUG2) << "initializing devices manager";
 	this->fds[0].fd = -1;
 	this->fds[0].events = POLLIN;
 }
