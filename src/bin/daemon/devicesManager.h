@@ -32,10 +32,12 @@
 #include <sstream>
 
 #include <config.h>
-#include "include/glogik.h"
+
+#include "lib/dbus/GKDBus.h"
 
 #include "keyboardDriver.h"
-#include "lib/dbus/GKDBus.h"
+
+#include "include/glogik.h"
 
 namespace GLogiK
 {

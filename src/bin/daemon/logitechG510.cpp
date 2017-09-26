@@ -21,9 +21,9 @@
 
 #include <algorithm>
 
-#include <config.h>
-
 #include <syslog.h>
+
+#include <config.h>
 
 #include "lib/utils/utils.h"
 

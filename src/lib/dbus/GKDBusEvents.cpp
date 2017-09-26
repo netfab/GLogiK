@@ -19,8 +19,8 @@
  *
  */
 
-#include <sstream>
 #include <stdexcept>
+#include <sstream>
 #include <functional>
 
 #include "lib/utils/utils.h"

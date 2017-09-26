@@ -19,9 +19,9 @@
  *
  */
 
-#include "GKDBusMsgReply.h"
-
 #include "lib/utils/utils.h"
+
+#include "GKDBusMsgReply.h"
 
 namespace GLogiK
 {

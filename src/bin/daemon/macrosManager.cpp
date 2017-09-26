@@ -19,9 +19,8 @@
  *
  */
 
-#include <iostream>
-
 #include <stdexcept>
+#include <iostream>
 
 #include <syslog.h>
 

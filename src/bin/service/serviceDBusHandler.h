@@ -24,9 +24,9 @@
 
 #include <string>
 
-#include "include/glogik.h"
-
 #include "lib/dbus/GKDBus.h"
+
+#include "include/glogik.h"
 
 #define MAXIMUM_WARNINGS_BEFORE_FATAL_ERROR 10
 

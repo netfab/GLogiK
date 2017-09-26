@@ -35,8 +35,9 @@
 
 #include "lib/utils/utils.h"
 
-#include "service.h"
 #include "serviceDBusHandler.h"
+
+#include "service.h"
 
 namespace GLogiK
 {

@@ -30,11 +30,11 @@
 #include <syslog.h>
 
 #include "lib/utils/utils.h"
-#include "daemonControl.h"
 
+#include "daemonControl.h"
+#include "logitechG510.h"
 #include "devicesManager.h"
 
-#include "logitechG510.h"
 
 namespace GLogiK
 {

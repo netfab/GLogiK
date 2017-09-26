@@ -44,10 +44,11 @@
 #include "include/glogik.h"
 
 #include "lib/utils/utils.h"
-#include "daemon.h"
 
 #include "clientsManager.h"
 #include "devicesManager.h"
+
+#include "daemon.h"
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;

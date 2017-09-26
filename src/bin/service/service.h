@@ -23,6 +23,7 @@
 #define __GLOGIKS_DESKTOP_SERVICE_H__
 
 #include <sys/types.h>
+
 #include <cstdio>
 
 #include <sstream>

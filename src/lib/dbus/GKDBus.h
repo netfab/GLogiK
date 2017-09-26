@@ -25,10 +25,11 @@
 #include <string>
 #include <vector>
 #include <sstream>
+
 #include <dbus/dbus.h>
 
-#include "GKDBusMsgReply.h"
 #include "GKDBusEvents.h"
+#include "GKDBusMsgReply.h"
 #include "GKDBusRemoteMethodCall.h"
 
 namespace GLogiK

@@ -25,10 +25,11 @@
 
 #include <cstring>
 
-#include "virtualKeyboard.h"
-
 #include <syslog.h>
+
 #include "lib/utils/utils.h"
+
+#include "virtualKeyboard.h"
 
 namespace GLogiK
 {

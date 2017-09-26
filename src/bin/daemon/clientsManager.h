@@ -25,9 +25,9 @@
 #include <string>
 #include <map>
 
-#include "include/glogik.h"
-
 #include "lib/dbus/GKDBus.h"
+
+#include "include/glogik.h"
 
 namespace GLogiK
 {
