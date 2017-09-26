@@ -22,7 +22,8 @@
 #include <stdexcept>
 
 #include <syslog.h>
-#include "include/log.h"
+
+#include "lib/utils/utils.h"
 
 #include "clientsManager.h"
 

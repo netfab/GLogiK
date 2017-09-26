@@ -23,9 +23,9 @@
 
 #include <config.h>
 
-#include "lib/utils/utils.h"
-#include "include/log.h"
 #include <syslog.h>
+
+#include "lib/utils/utils.h"
 
 #include "logitechG510.h"
 

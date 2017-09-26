@@ -39,8 +39,12 @@
 // http://stackoverflow.com/questions/5028302/small-logger-class
 
 
-#ifndef __GLOGIKD_LOG_H__
-#define __GLOGIKD_LOG_H__
+#ifndef __GLOGIK_LOG_H__
+#define __GLOGIK_LOG_H__
+
+#if !defined (UTILS_INSIDE_UTILS_H) && !defined (UTILS_COMPILATION)
+#error "Only "utils/utils.h" can be included directly, this file may disappear or change contents."
+#endif
 
 #include <sstream>
 #include <string>

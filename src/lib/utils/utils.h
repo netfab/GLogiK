@@ -24,6 +24,7 @@
 
 #define UTILS_INSIDE_UTILS_H 1
 
+#include "log.h"
 #include "exception.h"
 #include "functions.h"
 

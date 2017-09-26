@@ -30,7 +30,6 @@
 #include <syslog.h>
 
 #include "lib/utils/utils.h"
-#include "include/log.h"
 #include "daemonControl.h"
 
 #include "devicesManager.h"

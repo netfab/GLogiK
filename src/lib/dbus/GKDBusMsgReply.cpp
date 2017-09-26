@@ -21,8 +21,6 @@
 
 #include "GKDBusMsgReply.h"
 
-#include "include/log.h"
-
 #include "lib/utils/utils.h"
 
 namespace GLogiK

@@ -45,7 +45,6 @@
 
 #include "lib/utils/utils.h"
 #include "daemon.h"
-#include "include/log.h"
 
 #include "clientsManager.h"
 #include "devicesManager.h"

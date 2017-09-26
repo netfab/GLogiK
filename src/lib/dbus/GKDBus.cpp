@@ -23,7 +23,6 @@
 #include <string>
 
 #include "GKDBus.h"
-#include "include/log.h"
 
 #include "lib/utils/utils.h"
 

@@ -31,8 +31,6 @@
 #include <thread>
 #include <chrono>
 
-#include "include/log.h"
-
 #include <config.h>
 
 #include "lib/utils/utils.h"

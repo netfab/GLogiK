@@ -23,10 +23,9 @@
 
 #include <stdexcept>
 
-#include "lib/utils/utils.h"
-
-#include "include/log.h"
 #include <syslog.h>
+
+#include "lib/utils/utils.h"
 
 #include "macrosManager.h"
 

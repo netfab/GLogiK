@@ -24,7 +24,6 @@ GLogiK=$PWD/.. CD=. {
 		Makefile.am
 		include=include/ {
 			Makefile.am
-			log.h
 			enums.h
 			glogik.h
 		}
@@ -79,6 +78,7 @@ GLogiK=$PWD/.. CD=. {
 				functions.h
 				exception.cpp
 				exception.h
+				log.h
 				utils.h
 			}
 		}

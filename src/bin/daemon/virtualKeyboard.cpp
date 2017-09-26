@@ -29,7 +29,6 @@
 
 #include <syslog.h>
 #include "lib/utils/utils.h"
-#include "include/log.h"
 
 namespace GLogiK
 {

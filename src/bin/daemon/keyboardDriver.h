@@ -37,7 +37,8 @@
 #include <linux/input-event-codes.h>
 
 #include <syslog.h>
-#include "include/log.h"
+
+#include "lib/utils/utils.h"
 
 #include "keyEvent.h"
 #include "macrosManager.h"

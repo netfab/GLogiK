@@ -23,8 +23,9 @@
 #include <stdexcept>
 #include <functional>
 
+#include "lib/utils/utils.h"
+
 #include "GKDBusEvents.h"
-#include "include/log.h"
 
 namespace GLogiK
 {

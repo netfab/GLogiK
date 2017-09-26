@@ -20,7 +20,6 @@
  */
 
 #include "lib/utils/utils.h"
-#include "include/log.h"
 
 #include "GKDBusRemoteMethodCall.h"
 
