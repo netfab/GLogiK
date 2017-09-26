@@ -28,9 +28,11 @@
 
 #include <dbus/dbus.h>
 
+#define GKDBUS_INSIDE_GKDBUS_H 1
 #include "GKDBusEvents.h"
 #include "GKDBusMsgReply.h"
 #include "GKDBusRemoteMethodCall.h"
+#undef GKDBUS_INSIDE_GKDBUS_H
 
 namespace GLogiK
 {

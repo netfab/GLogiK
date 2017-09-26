@@ -21,7 +21,9 @@
 
 #include "lib/utils/utils.h"
 
+#define GKDBUS_COMPILATION 1
 #include "GKDBusMsgReply.h"
+#undef GKDBUS_COMPILATION
 
 namespace GLogiK
 {

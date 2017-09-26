@@ -22,6 +22,10 @@
 #ifndef __GLOGIK_GKDBUS_EVENTS_H__
 #define __GLOGIK_GKDBUS_EVENTS_H__
 
+#if !defined (GKDBUS_INSIDE_GKDBUS_H) && !defined (GKDBUS_COMPILATION)
+#error "Only "dbus/GKDBus.h" can be included directly, this file may disappear or change contents."
+#endif
+
 #include <string>
 #include <vector>
 #include <map>

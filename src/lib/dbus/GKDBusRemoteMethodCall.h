@@ -22,6 +22,10 @@
 #ifndef __GLOGIK_GKDBUS_REMOTE_METHOD_CALL_H__
 #define __GLOGIK_GKDBUS_REMOTE_METHOD_CALL_H__
 
+#if !defined (GKDBUS_INSIDE_GKDBUS_H) && !defined (GKDBUS_COMPILATION)
+#error "Only "dbus/GKDBus.h" can be included directly, this file may disappear or change contents."
+#endif
+
 #include <dbus/dbus.h>
 
 namespace GLogiK
