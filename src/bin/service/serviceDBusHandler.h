@@ -24,11 +24,11 @@
 
 #include <string>
 
+#include "include/glogik.h"
+
 #include "lib/dbus/GKDBus.h"
 
 #define MAXIMUM_WARNINGS_BEFORE_FATAL_ERROR 10
-
-#define GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE "/com/glogik/Desktop/Service"
 
 namespace GLogiK
 {
@@ -47,6 +47,9 @@ class ServiceDBusHandler
 	private:
 		uint8_t warn_count_;
 		GKDBus* DBus;
+
+		const char* DBus_client_object_path_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH;
+		const char* DBus_client_interface_		= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
 
 		std::string current_session_;	/* current session object path */
 		std::string session_state_;		/* session state */

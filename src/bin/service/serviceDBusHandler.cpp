@@ -37,7 +37,7 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
 
 		/* telling the daemon we are alive */
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			"/com/glogik/Daemon/ClientsManager", "com.glogik.Daemon.Client1", "RegisterClient");
+			this->DBus_client_object_path_, this->DBus_client_interface_, "RegisterClient");
 		this->DBus->appendToRemoteMethodCall(this->current_session_.c_str());
 		this->DBus->sendRemoteMethodCall();
 
@@ -66,7 +66,7 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 	try {
 		/* telling the daemon we're killing ourself */
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			"/com/glogik/Daemon/ClientsManager", "com.glogik.Daemon.Client1", "UnregisterClient");
+			this->DBus_client_object_path_, this->DBus_client_interface_, "UnregisterClient");
 		this->DBus->appendToRemoteMethodCall(this->current_session_.c_str());
 		this->DBus->sendRemoteMethodCall();
 

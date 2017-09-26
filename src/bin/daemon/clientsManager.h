@@ -25,6 +25,8 @@
 #include <string>
 #include <map>
 
+#include "include/glogik.h"
+
 #include "lib/dbus/GKDBus.h"
 
 namespace GLogiK
@@ -39,6 +41,9 @@ class ClientsManager
 	protected:
 
 	private:
+		const char* DBus_object_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT;
+		const char* DBus_interface_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
+
 		std::map<const std::string, bool> clients_;
 		
 		const bool registerClient(const std::string & uniqueString);

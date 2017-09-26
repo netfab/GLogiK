@@ -41,6 +41,7 @@
 #include <boost/filesystem.hpp>
 
 #include <config.h>
+#include "include/glogik.h"
 
 #include "lib/utils/utils.h"
 #include "daemon.h"

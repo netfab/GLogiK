@@ -30,15 +30,12 @@ namespace GLogiK
 {
 
 ClientsManager::ClientsManager(GKDBus* DBus) {
-		const char* clients_object = "ClientsManager";
-		const char* clients_interface = "com.glogik.Daemon.Client1";
-
-		DBus->addEvent_StringToBool_Callback( clients_object, clients_interface, "RegisterClient",
+		DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "RegisterClient",
 			{	{"s", "client_unique_id", "in", "client unique ID"},
 				{"b", "did_register_succeeded", "out", "did the RegisterClient method succeeded ?"} },
 			std::bind(&ClientsManager::registerClient, this, std::placeholders::_1) );
 
-		DBus->addEvent_StringToBool_Callback( clients_object, clients_interface, "UnregisterClient",
+		DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "UnregisterClient",
 			{	{"s", "client_unique_id", "in", "client unique ID"},
 				{"b", "did_unregister_succeeded", "out", "did the UnregisterClient method succeeded ?"} },
 			std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );

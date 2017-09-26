@@ -32,6 +32,7 @@
 #include <sstream>
 
 #include <config.h>
+#include "include/glogik.h"
 
 #include "keyboardDriver.h"
 #include "lib/dbus/GKDBus.h"
@@ -72,6 +73,9 @@ class DevicesManager
 		struct udev_monitor *monitor = nullptr;
 		struct pollfd fds[1];
 		int fd_ = -1;
+
+		const char* DBus_object_	= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT;
+		const char* DBus_interface_	= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
 
 		std::ostringstream buffer_;
 		std::vector<KeyboardDriver*> drivers_;

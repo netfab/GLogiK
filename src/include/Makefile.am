@@ -1,4 +1,5 @@
 
 EXTRA_DIST = \
 	log.h \
-	enums.h
+	enums.h \
+	glogik.h

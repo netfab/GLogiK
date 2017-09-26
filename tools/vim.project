@@ -26,6 +26,7 @@ GLogiK=$PWD/.. CD=. {
 			Makefile.am
 			log.h
 			enums.h
+			glogik.h
 		}
 		binaries=bin/ {
 			Makefile.am

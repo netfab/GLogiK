@@ -22,8 +22,6 @@
 #ifndef __GLOGIKD_DAEMON_H__
 #define __GLOGIKD_DAEMON_H__
 
-#define GLOGIK_DAEMON_DBUS_ROOT_NODE "/com/glogik/Daemon"
-
 #include <cstdio>
 #include <sys/types.h>
 
