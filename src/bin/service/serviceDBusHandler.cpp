@@ -37,7 +37,7 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
 		/* telling the daemon we are alive */
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_client_object_path_, this->DBus_client_interface_, "RegisterClient");
-		this->DBus->appendToRemoteMethodCall(this->current_session_.c_str());
+		this->DBus->appendToRemoteMethodCall(this->current_session_);
 		this->DBus->sendRemoteMethodCall();
 
 		this->DBus->waitForRemoteMethodCallReply();
@@ -66,7 +66,7 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 		/* telling the daemon we're killing ourself */
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_client_object_path_, this->DBus_client_interface_, "UnregisterClient");
-		this->DBus->appendToRemoteMethodCall(this->current_session_.c_str());
+		this->DBus->appendToRemoteMethodCall(this->current_session_);
 		this->DBus->sendRemoteMethodCall();
 
 		this->DBus->waitForRemoteMethodCallReply();
@@ -148,8 +148,8 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 void ServiceDBusHandler::reportChangedState(void) {
 	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		this->DBus_client_object_path_, this->DBus_client_interface_, "UpdateClientState");
-	this->DBus->appendToRemoteMethodCall(this->current_session_.c_str());
-	this->DBus->appendToRemoteMethodCall(this->session_state_.c_str());
+	this->DBus->appendToRemoteMethodCall(this->current_session_);
+	this->DBus->appendToRemoteMethodCall(this->session_state_);
 	this->DBus->sendRemoteMethodCall();
 
 	try {
