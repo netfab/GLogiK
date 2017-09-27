@@ -55,8 +55,8 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
 		}
 	}
 	catch ( const GLogiKExcept & e ) {
-		if(this->DBus != nullptr)
-			delete this->DBus;
+		delete this->DBus;
+		this->DBus = nullptr;
 		throw;
 	}
 }
@@ -89,8 +89,8 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 		GK_ERR << err << "\n";
 	}
 
-	if(this->DBus != nullptr)
-		delete this->DBus;
+	delete this->DBus;
+	this->DBus = nullptr;
 }
 
 void ServiceDBusHandler::setCurrentSessionObjectPath(void) {

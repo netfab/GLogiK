@@ -117,12 +117,12 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 				ClientsManager c(this->DBus);
 				c.runLoop();
 
-				if(this->DBus != nullptr)
-					delete this->DBus;
+				delete this->DBus;
+				this->DBus = nullptr;
 			}
 			catch ( const GLogiKExcept & e ) {
-				if(this->DBus != nullptr)
-					delete this->DBus;
+				delete this->DBus;
+				this->DBus = nullptr;
 				throw;
 			}
 		}
