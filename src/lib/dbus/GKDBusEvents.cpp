@@ -60,17 +60,7 @@ void GKDBusEvents::addEvent_StringToBool_Callback(const char* object, const char
 	this->DBusObjects_[object] = true;
 	this->events_string_to_bool_[object][interface].push_back(e);
 
-	try {
-		const auto & obj = this->events_string_to_string_.at(object);
-		const auto & interf = obj.at("org.freedesktop.DBus.Introspectable");
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(DEBUG3) << "adding Introspectable interface : " << object << " " << interface;
-		this->addEvent_StringToString_Callback(
-			object, "org.freedesktop.DBus.Introspectable", "Introspect",
-			{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
-			std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1));
-	}
+	this->addIntrospectableEvent(object);
 }
 
 void GKDBusEvents::addEvent_TwoStringsToBool_Callback(const char* object, const char* interface, const char* method,
@@ -80,17 +70,7 @@ void GKDBusEvents::addEvent_TwoStringsToBool_Callback(const char* object, const 
 	this->DBusObjects_[object] = true;
 	this->events_twostrings_to_bool_[object][interface].push_back(e);
 
-	try {
-		const auto & obj = this->events_string_to_string_.at(object);
-		const auto & interf = obj.at("org.freedesktop.DBus.Introspectable");
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(DEBUG3) << "adding Introspectable interface : " << object << " " << interface;
-		this->addEvent_StringToString_Callback(
-			object, "org.freedesktop.DBus.Introspectable", "Introspect",
-			{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
-			std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1));
-	}
+	this->addIntrospectableEvent(object);
 }
 
 void GKDBusEvents::addEvent_VoidToString_Callback(const char* object, const char* interface, const char* method,
@@ -100,7 +80,7 @@ void GKDBusEvents::addEvent_VoidToString_Callback(const char* object, const char
 	this->DBusObjects_[object] = true;
 	this->events_void_to_string_[object][interface].push_back(e);
 
-	// FIXME introspect
+	this->addIntrospectableEvent(object);
 }
 
 void GKDBusEvents::addEvent_StringToString_Callback(const char* object, const char* interface, const char* method,
@@ -110,7 +90,42 @@ void GKDBusEvents::addEvent_StringToString_Callback(const char* object, const ch
 	this->DBusObjects_[object] = true;
 	this->events_string_to_string_[object][interface].push_back(e);
 
-	// FIXME introspect
+	this->addIntrospectableEvent(object);
+}
+
+const std::string GKDBusEvents::introspectRootNode(void) {
+	std::ostringstream xml;
+
+	LOG(DEBUG2) << "root node : " << this->root_node_;
+
+	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
+	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
+	xml << "<node name=\"" << this->root_node_ << "\">\n";
+
+	for(const auto & object_it : this->DBusObjects_) {
+		xml << "  <node name=\"" << object_it.first << "\"/>\n";
+	}
+
+	xml << "</node>\n";
+	return xml.str();
+}
+
+/*
+ * private
+ */
+
+void GKDBusEvents::addIntrospectableEvent(const char* object) {
+	try {
+		const auto & obj = this->events_string_to_string_.at(object);
+		const auto & interf = obj.at("org.freedesktop.DBus.Introspectable");
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(DEBUG3) << "adding Introspectable interface : " << object;
+		this->addEvent_StringToString_Callback(
+			object, "org.freedesktop.DBus.Introspectable", "Introspect",
+			{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
+			std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1));
+	}
 }
 
 const std::string GKDBusEvents::introspect(const std::string & object_asked) {
@@ -182,22 +197,7 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 	return xml.str();
 }
 
-const std::string GKDBusEvents::introspectRootNode(void) {
-	std::ostringstream xml;
-
-	LOG(DEBUG2) << "root node : " << this->root_node_;
-
-	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
-	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
-	xml << "<node name=\"" << this->root_node_ << "\">\n";
-
-	for(const auto & object_it : this->DBusObjects_) {
-		xml << "  <node name=\"" << object_it.first << "\"/>\n";
-	}
-
-	xml << "</node>\n";
-	return xml.str();
-}
+/* -- */
 
 } // namespace GLogiK
 

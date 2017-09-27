@@ -122,6 +122,7 @@ class GKDBusEvents
 		std::string root_node_;
 
 		const std::string introspect(const std::string & object_path_asked);
+		void addIntrospectableEvent(const char* object);
 };
 
 } // namespace GLogiK
