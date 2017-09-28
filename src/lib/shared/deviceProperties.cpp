@@ -19,23 +19,15 @@
  *
  */
 
-#include "lib/utils/utils.h"
-
-#include "client.h"
+#include "deviceProperties.h"
 
 namespace GLogiK
 {
 
-Client::Client() {
-	LOG(DEBUG2) << "initializing new client";
+DeviceProperties::DeviceProperties() {
 }
 
-Client::~Client() {
-	LOG(DEBUG2) << "destroying client";
-}
-
-void Client::updateSessionState(const std::string & new_state) {
-	this->session_state_ = new_state;
+DeviceProperties::~DeviceProperties() {
 }
 
 } // namespace GLogiK

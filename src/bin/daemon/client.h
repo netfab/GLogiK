@@ -23,6 +23,9 @@
 #define __GLOGIKD_CLIENT_H__
 
 #include <string>
+#include <map>
+
+#include "lib/shared/deviceProperties.h"
 
 namespace GLogiK
 {
@@ -33,11 +36,14 @@ class Client
 		Client(void);
 		~Client(void);
 
+		void updateSessionState(const std::string & new_state);
+
 	protected:
 
 	private:
 
-		std::string state;
+		std::string session_state_;
+		std::map<const std::string, DeviceProperties> devices_;
 };
 
 } // namespace GLogiK

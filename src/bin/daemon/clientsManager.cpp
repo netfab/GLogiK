@@ -30,7 +30,7 @@
 namespace GLogiK
 {
 
-ClientsManager::ClientsManager(GKDBus* pDBus) : DBus(pDBus) {
+ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app), DBus(pDBus) {
 	LOG(DEBUG2) << "initializing clients manager";
 
 	this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "RegisterClient",
@@ -60,15 +60,15 @@ void ClientsManager::runLoop(void) {
 
 const bool ClientsManager::registerClient(const std::string & uniqueString) {
 	try {
-		const auto & client = this->clients_.at(uniqueString);
-		if( client ) {
-			LOG(WARNING) << uniqueString << " client already registered";
-			syslog(LOG_WARNING, "client already registered");
-		}
+		this->clients_.at(uniqueString);
+		this->buffer_.str("client already registered : ");
+		this->buffer_ << uniqueString;
+		LOG(WARNING) << this->buffer_.str();
+		syslog(LOG_WARNING, this->buffer_.str().c_str());
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(DEBUG2) << "registering client : " << uniqueString;
-		this->clients_[uniqueString] = true;
+		this->clients_[uniqueString] = new Client();
 		return true;
 	}
 	return false;
@@ -76,22 +76,36 @@ const bool ClientsManager::registerClient(const std::string & uniqueString) {
 
 const bool ClientsManager::unregisterClient(const std::string & uniqueString) {
 	try {
-		const auto & client = this->clients_.at(uniqueString);
-		if( client ) {
-			this->clients_.erase(uniqueString);
-			LOG(DEBUG2) << "unregistered client : " << uniqueString;
-			return true;
-		}
+		Client* pClient = this->clients_.at(uniqueString);
+		delete pClient;
+		pClient = nullptr;
+		this->clients_.erase(uniqueString);
+		LOG(DEBUG2) << "unregistered client : " << uniqueString;
+		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << uniqueString << " client not registered";
-		syslog(LOG_WARNING, "client not registered");
+		this->buffer_.str("client not registered : ");
+		this->buffer_ << uniqueString;
+		LOG(WARNING) << this->buffer_.str();
+		syslog(LOG_WARNING, this->buffer_.str().c_str());
 	}
 	return false;
 }
 
 const bool ClientsManager::updateClientState(const std::string & uniqueString, const std::string & state) {
-	LOG(DEBUG2) << "client : " << uniqueString << " - state : " << state;
+	LOG(DEBUG2) << "updating client state : " << uniqueString << " - " << state;
+	try {
+		Client* pClient = this->clients_.at(uniqueString);
+		pClient->updateSessionState(state);
+		return true;
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("client not registered : ");
+		this->buffer_ << uniqueString;
+		LOG(WARNING) << this->buffer_.str();
+		syslog(LOG_WARNING, this->buffer_.str().c_str());
+	}
+
 	return false;
 }
 

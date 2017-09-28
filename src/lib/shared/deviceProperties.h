@@ -19,46 +19,24 @@
  *
  */
 
-#ifndef __GLOGIKD_CLIENTS_MANAGER_H__
-#define __GLOGIKD_CLIENTS_MANAGER_H__
+#ifndef __GLOGIK_DEVICE_PROPERTIES_H__
+#define __GLOGIK_DEVICE_PROPERTIES_H__
 
-#include <string>
-#include <map>
-#include <sstream>
-
-#include "lib/dbus/GKDBus.h"
-
-#include "devicesManager.h"
-#include "client.h"
-
-#include "include/glogik.h"
+#include "macrosBanks.h"
 
 namespace GLogiK
 {
 
-class ClientsManager
+class DeviceProperties : public MacrosBanks
 {
 	public:
-		ClientsManager(GKDBus* pDBus);
-		~ClientsManager(void);
-
-		void runLoop(void);
+		DeviceProperties(void);
+		~DeviceProperties(void);
 
 	protected:
 
 	private:
-		const char* DBus_object_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT;
-		const char* DBus_interface_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
 
-		std::ostringstream buffer_;
-		GKDBus* DBus;
-		DevicesManager devicesManager;
-
-		std::map<const std::string, Client*> clients_;
-		
-		const bool registerClient(const std::string & uniqueString);
-		const bool unregisterClient(const std::string & uniqueString);
-		const bool updateClientState(const std::string & uniqueString, const std::string & state);
 };
 
 } // namespace GLogiK
