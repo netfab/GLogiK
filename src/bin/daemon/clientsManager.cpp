@@ -52,6 +52,18 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 
 ClientsManager::~ClientsManager() {
 	LOG(DEBUG2) << "exiting clients manager";
+	for( auto & client_it : this->clients_ ) {
+		Client* pClient = client_it.second;
+		if( pClient != nullptr ) { /* sanity check */
+			this->buffer_.str("destroying unfreed client : ");
+			this->buffer_ << client_it.first;
+			LOG(WARNING) << this->buffer_.str();
+			syslog(LOG_WARNING, this->buffer_.str().c_str());
+			delete pClient;
+			pClient = nullptr;
+		}
+	}
+	this->clients_.clear();
 }
 
 void ClientsManager::runLoop(void) {
