@@ -25,25 +25,16 @@
 #include <cstdint>
 
 #include <vector>
-#include <map>
 #include <string>
 #include <sstream>
 
+#include "lib/shared/macrosBanks.h"
 #include "virtualKeyboard.h"
-#include "keyEvent.h"
 
 namespace GLogiK
 {
 
-enum class MemoryBank : uint8_t
-{
-	MACROS_M0 = 0,
-	MACROS_M1,
-	MACROS_M2,
-	MACROS_M3,
-};
-
-class MacrosManager
+class MacrosManager : public MacrosBanks
 {
 	public:
 		MacrosManager(const char* virtual_keyboard_name);
@@ -57,16 +48,13 @@ class MacrosManager
 		void runMacro(const std::string &macro_key_name);
 
 	protected:
+
 	private:
 		std::ostringstream buffer_;
+
 		MemoryBank currentActiveProfile_;
-		std::map<const MemoryBank, std::map<const std::string, std::vector<KeyEvent>>> macros_profiles_ = {
-			{ MemoryBank::MACROS_M0, {}},
-			{ MemoryBank::MACROS_M1, {}},
-			{ MemoryBank::MACROS_M2, {}},
-			{ MemoryBank::MACROS_M3, {}}
-		};
 		VirtualKeyboard virtual_keyboard;
+
 };
 
 } // namespace GLogiK

@@ -19,39 +19,43 @@
  *
  */
 
-#ifndef __GLOGIKD_VIRTUAL_KEYBOARD_H__
-#define __GLOGIKD_VIRTUAL_KEYBOARD_H__
+#ifndef __GLOGIK_MACROS_BANKS_H__
+#define __GLOGIK_MACROS_BANKS_H__
 
-#include <sstream>
+#include <vector>
+#include <map>
+#include <string>
 
-#include <libevdev/libevdev.h>
-#include <libevdev/libevdev-uinput.h>
-
-#include "lib/shared/keyEvent.h"
+#include "keyEvent.h"
 
 namespace GLogiK
 {
 
-class VirtualKeyboard
+enum class MemoryBank : uint8_t
+{
+	MACROS_M0 = 0,
+	MACROS_M1,
+	MACROS_M2,
+	MACROS_M3,
+};
+
+class MacrosBanks
 {
 	public:
-		VirtualKeyboard(const char* device_name);
-		~VirtualKeyboard();
-
-		void sendKeyEvent(const KeyEvent & key);
 
 	protected:
+		MacrosBanks(void);
+		~MacrosBanks(void);
+
+		std::map<const MemoryBank, std::map<const std::string, std::vector<KeyEvent>>> macros_profiles_ = {
+			{ MemoryBank::MACROS_M0, {}},
+			{ MemoryBank::MACROS_M1, {}},
+			{ MemoryBank::MACROS_M2, {}},
+			{ MemoryBank::MACROS_M3, {}}
+		};
+
 	private:
-		struct libevdev *dev;
-		struct libevdev_uinput *uidev;
 
-		std::ostringstream buffer_;
-
-		void handleLibevdevError(int ret);
-
-		void freeDeviceAndThrow(void);
-		void enableEventType(unsigned int type);
-		void enableEventCode(unsigned int type, unsigned int code);
 };
 
 } // namespace GLogiK

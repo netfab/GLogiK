@@ -19,31 +19,16 @@
  *
  */
 
-#ifndef __GLOGIKD_KEY_EVENT_H__
-#define __GLOGIKD_KEY_EVENT_H__
-
-#include <cstdint>
-#include <linux/input-event-codes.h>
+#include "macrosBanks.h"
 
 namespace GLogiK
 {
 
-enum class EventValue : int8_t
-{
-	EVENT_KEY_RELEASE = 0,
-	EVENT_KEY_PRESS,
-	EVENT_KEY_UNKNOWN,
-};
+MacrosBanks::MacrosBanks() {
+}
 
-struct KeyEvent {
-	unsigned char event_code;
-	EventValue event;
-	uint16_t interval;
-
-	KeyEvent(unsigned char c=KEY_UNKNOWN, EventValue e=EventValue::EVENT_KEY_UNKNOWN, uint16_t i=0)
-		: event_code(c), event(e), interval(i) {}
-};
+MacrosBanks::~MacrosBanks() {
+}
 
 } // namespace GLogiK
 
-#endif

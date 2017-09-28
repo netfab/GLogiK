@@ -19,7 +19,8 @@ GLogiKd_LDADD=	@LIBUDEV_LIBS@ \
 				@LIBEVDEV_LIBS@ \
 				@PTHREAD_LIBS@ \
 				../../lib/utils/libGLogiKUtils.la \
-				../../lib/dbus/libGLogiKDBus.la
+				../../lib/dbus/libGLogiKDBus.la \
+				../../lib/shared/libGLogiKShared.la
 
 GLogiKd_SOURCES = \
 		main.cpp \
@@ -29,7 +30,7 @@ GLogiKd_SOURCES = \
 		keyboardDriver.cpp keyboardDriver.h \
 		virtualKeyboard.cpp virtualKeyboard.h \
 		logitechG510.cpp logitechG510.h \
-		keyEvent.h \
 		macrosManager.cpp macrosManager.h \
-		clientsManager.cpp clientsManager.h
+		clientsManager.cpp clientsManager.h \
+		client.cpp client.h
 

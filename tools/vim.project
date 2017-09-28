@@ -32,6 +32,8 @@ GLogiK=$PWD/.. CD=. {
 			daemon=daemon/ {
 				Makefile.am
 				main.cpp
+				client.cpp
+				client.h
 				clientsManager.cpp
 				clientsManager.h
 				daemon.cpp
@@ -40,7 +42,6 @@ GLogiK=$PWD/.. CD=. {
 				daemonControl.h
 				devicesManager.cpp
 				devicesManager.h
-				keyEvent.h
 				keyboardDriver.cpp
 				keyboardDriver.h
 				logitechG510.cpp
@@ -71,6 +72,14 @@ GLogiK=$PWD/.. CD=. {
 				GKDBusMsgReply.h
 				GKDBusRemoteMethodCall.cpp
 				GKDBusRemoteMethodCall.h
+			}
+			GLogiKShared=shared/ {
+				Makefile.am
+				deviceProperties.cpp
+				deviceProperties.h
+				keyEvent.h
+				macrosBanks.cpp
+				macrosBanks.h
 			}
 			GLogiKUtils=utils/ {
 				Makefile.am

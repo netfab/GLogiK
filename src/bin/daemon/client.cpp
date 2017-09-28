@@ -19,41 +19,16 @@
  *
  */
 
-#ifndef __GLOGIKD_VIRTUAL_KEYBOARD_H__
-#define __GLOGIKD_VIRTUAL_KEYBOARD_H__
-
-#include <sstream>
-
-#include <libevdev/libevdev.h>
-#include <libevdev/libevdev-uinput.h>
-
-#include "lib/shared/keyEvent.h"
+#include "client.h"
 
 namespace GLogiK
 {
 
-class VirtualKeyboard
-{
-	public:
-		VirtualKeyboard(const char* device_name);
-		~VirtualKeyboard();
+Client::Client() {
+}
 
-		void sendKeyEvent(const KeyEvent & key);
-
-	protected:
-	private:
-		struct libevdev *dev;
-		struct libevdev_uinput *uidev;
-
-		std::ostringstream buffer_;
-
-		void handleLibevdevError(int ret);
-
-		void freeDeviceAndThrow(void);
-		void enableEventType(unsigned int type);
-		void enableEventCode(unsigned int type, unsigned int code);
-};
+Client::~Client() {
+}
 
 } // namespace GLogiK
 
-#endif

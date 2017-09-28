@@ -1,3 +1,3 @@
 
-SUBDIRS = utils dbus
+SUBDIRS = utils dbus shared
 

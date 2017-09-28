@@ -40,7 +40,7 @@
 
 #include "lib/utils/utils.h"
 
-#include "keyEvent.h"
+#include "lib/shared/keyEvent.h"
 #include "macrosManager.h"
 
 namespace GLogiK

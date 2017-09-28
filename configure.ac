@@ -155,6 +155,7 @@ AC_CONFIG_FILES([
         src/lib/Makefile
         src/lib/utils/Makefile
         src/lib/dbus/Makefile
+        src/lib/shared/Makefile
         src/bin/Makefile
         src/bin/daemon/Makefile
         src/bin/service/Makefile
