@@ -220,8 +220,10 @@ void ServiceDBusHandler::updateSessionState(void) {
 }
 
 void ServiceDBusHandler::checkDBusMessages(void) {
-	//if( DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
-	//}
+	if( this->DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
+		//DBus->checkMethodsCalls(BusConnection::GKDBUS_SYSTEM);
+		this->DBus->freeMessage();
+	}
 }
 
 } // namespace GLogiK

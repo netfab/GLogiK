@@ -313,8 +313,12 @@ void GKDBus::checkMethodsCalls(BusConnection current) {
 		for(const auto & interface : object_it.second) {
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
-			for(const auto & DBusEvent : interface.second) {
-				const char* method = DBusEvent.method.c_str();
+			for(const auto & DBusEvent : interface.second) { /* vector of struct */
+				/* wa want only methods */
+				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
+					continue;
+
+				const char* method = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << method << " call";
 				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
 					std::string ret;
@@ -351,8 +355,12 @@ void GKDBus::checkMethodsCalls(BusConnection current) {
 		for(const auto & interface : object_it.second) {
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
-			for(const auto & DBusEvent : interface.second) {
-				const char* method = DBusEvent.method.c_str();
+			for(const auto & DBusEvent : interface.second) { /* vector of struct */
+				/* wa want only methods */
+				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
+					continue;
+
+				const char* method = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << method << " call";
 				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
 					bool ret = false;
@@ -395,8 +403,12 @@ void GKDBus::checkMethodsCalls(BusConnection current) {
 		for(const auto & interface : object_it.second) {
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
-			for(const auto & DBusEvent : interface.second) {
-				const char* method = DBusEvent.method.c_str();
+			for(const auto & DBusEvent : interface.second) { /* vector of struct */
+				/* wa want only methods */
+				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
+					continue;
+
+				const char* method = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << method << " call";
 				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
 					bool ret = false;
@@ -440,8 +452,12 @@ void GKDBus::checkMethodsCalls(BusConnection current) {
 		for(const auto & interface : object_it.second) {
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
-			for(const auto & DBusEvent : interface.second) {
-				const char* method = DBusEvent.method.c_str();
+			for(const auto & DBusEvent : interface.second) { /* vector of struct */
+				/* wa want only methods */
+				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
+					continue;
+
+				const char* method = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << method << " call";
 				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
 					std::string ret;

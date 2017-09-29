@@ -53,40 +53,44 @@ const std::string GKDBusEvents::getNode(const std::string & object) {
 	return node;
 }
 
-void GKDBusEvents::addEvent_StringToBool_Callback(const char* object, const char* interface, const char* method,
-	std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback)
+void GKDBusEvents::addEvent_StringToBool_Callback(const char* object, const char* interface, const char* eventName,
+	std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback,
+	GKDBusEventType eventType)
 {
-	GKDBusEvent_StringToBool_Callback e(method, args, callback);
+	GKDBusEvent_StringToBool_Callback e(eventName, args, callback, eventType);
 	this->DBusObjects_[object] = true;
 	this->events_string_to_bool_[object][interface].push_back(e);
 
 	this->addIntrospectableEvent(object);
 }
 
-void GKDBusEvents::addEvent_TwoStringsToBool_Callback(const char* object, const char* interface, const char* method,
-	std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&, const std::string&)> callback)
+void GKDBusEvents::addEvent_TwoStringsToBool_Callback(const char* object, const char* interface, const char* eventName,
+	std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&, const std::string&)> callback,
+	GKDBusEventType eventType)
 {
-	GKDBusEvent_TwoStringsToBool_Callback e(method, args, callback);
+	GKDBusEvent_TwoStringsToBool_Callback e(eventName, args, callback, eventType);
 	this->DBusObjects_[object] = true;
 	this->events_twostrings_to_bool_[object][interface].push_back(e);
 
 	this->addIntrospectableEvent(object);
 }
 
-void GKDBusEvents::addEvent_VoidToString_Callback(const char* object, const char* interface, const char* method,
-	std::vector<DBusMethodArgument> args, std::function<const std::string(void)> callback)
+void GKDBusEvents::addEvent_VoidToString_Callback(const char* object, const char* interface, const char* eventName,
+	std::vector<DBusMethodArgument> args, std::function<const std::string(void)> callback,
+	GKDBusEventType eventType)
 {
-	GKDBusEvent_VoidToString_Callback e(method, args, callback);
+	GKDBusEvent_VoidToString_Callback e(eventName, args, callback, eventType);
 	this->DBusObjects_[object] = true;
 	this->events_void_to_string_[object][interface].push_back(e);
 
 	this->addIntrospectableEvent(object);
 }
 
-void GKDBusEvents::addEvent_StringToString_Callback(const char* object, const char* interface, const char* method,
-	std::vector<DBusMethodArgument> args, std::function<const std::string(const std::string&)> callback)
+void GKDBusEvents::addEvent_StringToString_Callback(const char* object, const char* interface, const char* eventName,
+	std::vector<DBusMethodArgument> args, std::function<const std::string(const std::string&)> callback,
+	GKDBusEventType eventType)
 {
-	GKDBusEvent_StringToString_Callback e(method, args, callback);
+	GKDBusEvent_StringToString_Callback e(eventName, args, callback, eventType);
 	this->DBusObjects_[object] = true;
 	this->events_string_to_string_[object][interface].push_back(e);
 
@@ -146,12 +150,14 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 		for(const auto & interface : object_it.second) {
 			xml << "  <interface name=\"" << interface.first << "\">\n";
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
-				xml << "    <method name=\"" << DBusEvent.method << "\">\n";
-				for(const auto & arg : DBusEvent.arguments) {
-					xml << "      <!-- " << arg.comment << " -->\n";
-					xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
+				if( DBusEvent.eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
+					xml << "    <method name=\"" << DBusEvent.eventName << "\">\n";
+					for(const auto & arg : DBusEvent.arguments) {
+						xml << "      <!-- " << arg.comment << " -->\n";
+						xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
+					}
+					xml << "    </method>\n";
 				}
-				xml << "    </method>\n";
 			}
 			xml << "  </interface>\n";
 		}
@@ -164,12 +170,14 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 		for(const auto & interface : object_it.second) {
 			xml << "  <interface name=\"" << interface.first << "\">\n";
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
-				xml << "    <method name=\"" << DBusEvent.method << "\">\n";
-				for(const auto & arg : DBusEvent.arguments) {
-					xml << "      <!-- " << arg.comment << " -->\n";
-					xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
+				if( DBusEvent.eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
+					xml << "    <method name=\"" << DBusEvent.eventName << "\">\n";
+					for(const auto & arg : DBusEvent.arguments) {
+						xml << "      <!-- " << arg.comment << " -->\n";
+						xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
+					}
+					xml << "    </method>\n";
 				}
-				xml << "    </method>\n";
 			}
 			xml << "  </interface>\n";
 		}
@@ -182,12 +190,14 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 		for(const auto & interface : object_it.second) {
 			xml << "  <interface name=\"" << interface.first << "\">\n";
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
-				xml << "    <method name=\"" << DBusEvent.method << "\">\n";
-				for(const auto & arg : DBusEvent.arguments) {
-					xml << "      <!-- " << arg.comment << " -->\n";
-					xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
+				if( DBusEvent.eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
+					xml << "    <method name=\"" << DBusEvent.eventName << "\">\n";
+					for(const auto & arg : DBusEvent.arguments) {
+						xml << "      <!-- " << arg.comment << " -->\n";
+						xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
+					}
+					xml << "    </method>\n";
 				}
-				xml << "    </method>\n";
 			}
 			xml << "  </interface>\n";
 		}
