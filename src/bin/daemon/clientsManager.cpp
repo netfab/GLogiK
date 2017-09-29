@@ -46,7 +46,7 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_object_, this->DBus_interface_, "UpdateClientState",
 		{	{"s", "client_unique_id", "in", "client unique ID"},
 			{"s", "client_new_state", "in", "client new state"},
-			{"b", "did_unregister_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
+			{"b", "did_updateclientstate_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 }
 

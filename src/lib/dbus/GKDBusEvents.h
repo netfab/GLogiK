@@ -129,6 +129,7 @@ class GKDBusEvents
 				std::vector<GKDBusEvent_StringToString_Callback> > > events_string_to_string_;
 
 		std::map<const std::string, bool> DBusObjects_;
+		std::map<const std::string, bool> DBusInterfaces_;
 
 		void defineRootNode(const std::string& rootnode);
 		const std::string & getRootNode(void);
