@@ -226,7 +226,7 @@ void ServiceDBusHandler::updateSessionState(void) {
 
 const bool ServiceDBusHandler::somethingChanged(const std::string & arg) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "it seems that something changed !";
+	LOG(DEBUG2) << "it seems that something changed ! " << arg;
 #endif
 	return false;
 }

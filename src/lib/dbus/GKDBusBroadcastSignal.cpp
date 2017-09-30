@@ -61,5 +61,14 @@ GKDBusBroadcastSignal::~GKDBusBroadcastSignal() {
 #endif
 }
 
+void GKDBusBroadcastSignal::appendToSignal(const std::string & value) {
+	const char* p = value.c_str();
+	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) )
+		throw GLogiKExcept("DBus signal append string value failure, not enough memory");
+#if DEBUG_GKDBUS_SUBOBJECTS
+	LOG(DEBUG2) << "DBus signal string value appended";
+#endif
+}
+
 } // namespace GLogiK
 

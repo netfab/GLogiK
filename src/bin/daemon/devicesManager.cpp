@@ -184,11 +184,15 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 		LOG(ERROR) << this->buffer_.str();
 		syslog(LOG_ERR, this->buffer_.str().c_str());
 
+/*
+		// test code
 		this->DBus->initializeBroadcastSignal(BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 			"SomethingChanged");
+		this->DBus->appendToSignal("test");
 		this->DBus->sendBroadcastSignal();
+*/
 
 		return false;
 	}

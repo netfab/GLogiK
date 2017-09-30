@@ -38,6 +38,8 @@ class GKDBusBroadcastSignal
 			const char* interface, const char* signal);
 		~GKDBusBroadcastSignal();
 
+		void appendToSignal(const std::string & value);
+
 	protected:
 	private:
 		DBusConnection* connection_;

@@ -60,6 +60,7 @@ class GKDBus : public GKDBusEvents
 
 		void initializeBroadcastSignal(BusConnection current, const char* object,
 			const char* interface, const char* signal);
+		void appendToSignal(const std::string & value);
 		void sendBroadcastSignal(void);
 
 		void initializeMethodCallReply(BusConnection current);
