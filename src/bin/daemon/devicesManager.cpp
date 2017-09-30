@@ -190,7 +190,7 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 			"SomethingChanged");
-		this->DBus->appendToSignal("test");
+		this->DBus->appendToBroadcastSignal("test");
 		this->DBus->sendBroadcastSignal();
 */
 

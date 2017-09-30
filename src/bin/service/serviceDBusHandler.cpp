@@ -19,6 +19,8 @@
  *
  */
 
+#include <functional>
+
 #include "lib/utils/utils.h"
 
 #include "serviceDBusHandler.h"
@@ -56,8 +58,8 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
 
 		this->DBus->addSignal_StringToBool_Callback(BusConnection::GKDBUS_SYSTEM,
 			this->DBus_SMH_object_, this->DBus_SMH_interface_, "SomethingChanged",
-			{},
-			std::bind(&ServiceDBusHandler::somethingChanged, this, "aaaa") );
+			{}, // FIXME
+			std::bind(&ServiceDBusHandler::somethingChanged, this, std::placeholders::_1) );
 	}
 	catch ( const GLogiKExcept & e ) {
 		delete this->DBus;

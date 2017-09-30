@@ -170,7 +170,7 @@ void GKDBus::initializeBroadcastSignal(BusConnection current, const char* object
 void GKDBus::appendToBroadcastSignal(const std::string & value) {
 	if(this->signal_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus signal object not initialized");
-	this->signal_->appendToSignal(value);
+	this->signal_->appendToBroadcastSignal(value);
 }
 
 void GKDBus::sendBroadcastSignal(void) {
