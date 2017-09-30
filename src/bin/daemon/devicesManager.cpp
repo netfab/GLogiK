@@ -461,7 +461,7 @@ void DevicesManager::searchSupportedDevices(void) {
 
 void DevicesManager::checkDBusMessages(void) {
 	if( this->DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
-		this->DBus->checkMethodsCalls(BusConnection::GKDBUS_SYSTEM);
+		this->DBus->checkForMethodCall(BusConnection::GKDBUS_SYSTEM);
 /*
 		if( DBus->checkMessageForSignalOnInterface("test.signal.Type", "Test") ) {
 			try {

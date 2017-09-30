@@ -234,7 +234,7 @@ const bool ServiceDBusHandler::somethingChanged(const std::string & arg) {
 void ServiceDBusHandler::checkDBusMessages(void) {
 	if( this->DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
 		//DBus->checkMethodsCalls(BusConnection::GKDBUS_SYSTEM);
-		this->DBus->checkSignalsCalls(BusConnection::GKDBUS_SYSTEM);
+		this->DBus->checkForSignalReceipt(BusConnection::GKDBUS_SYSTEM);
 		this->DBus->freeMessage();
 	}
 }

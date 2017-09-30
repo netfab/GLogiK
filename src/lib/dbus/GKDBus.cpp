@@ -113,7 +113,7 @@ void GKDBus::freeMessage(void) {
 	dbus_message_unref(this->message_);
 }
 
-const bool GKDBus::checkMessageForSignalOnInterface(const char* interface, const char* signal_name) {
+const bool GKDBus::checkMessageForSignalReceiptOnInterface(const char* interface, const char* signal_name) {
 	if(this->message_ == nullptr)
 		return false;
 	LOG(DEBUG) << "checking for signal";
@@ -284,7 +284,7 @@ const bool GKDBus::getNextBooleanArgument(void) {
 	return ret;
 }
 
-void GKDBus::checkSignalsCalls(BusConnection current) {
+void GKDBus::checkForSignalReceipt(BusConnection current) {
 	const char* obj = dbus_message_get_path(this->message_);
 	std::string asked_object_path("");
 	if(obj != nullptr)
@@ -312,7 +312,7 @@ void GKDBus::checkSignalsCalls(BusConnection current) {
 
 				const char* signal = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << signal << " receipt";
-				if( this->checkMessageForSignalOnInterface(interface.first.c_str(), signal) ) {
+				if( this->checkMessageForSignalReceiptOnInterface(interface.first.c_str(), signal) ) {
 					bool ret = false;
 					LOG(DEBUG1) << "DBus " << signal << " receipt !";
 
@@ -338,7 +338,7 @@ void GKDBus::checkSignalsCalls(BusConnection current) {
  * was called. if yes, then run the corresponding callback function
  * and send DBus reply after appending the return value
  */
-void GKDBus::checkMethodsCalls(BusConnection current) {
+void GKDBus::checkForMethodCall(BusConnection current) {
 	const char* obj = dbus_message_get_path(this->message_);
 	std::string asked_object_path("");
 	if(obj != nullptr)

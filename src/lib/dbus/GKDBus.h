@@ -54,11 +54,9 @@ class GKDBus : public GKDBusEvents
 		void connectToSystemBus(const char* connection_name);
 
 		const bool checkForNextMessage(BusConnection current);
-		const bool checkMessageForSignalOnInterface(const char* interface, const char* signal_name);
+		const bool checkMessageForSignalReceiptOnInterface(const char* interface, const char* signal_name);
 		const bool checkMessageForMethodCallOnInterface(const char* interface, const char* method);
 		void freeMessage(void);
-
-		void checkSignalsCalls(BusConnection current);
 
 		void initializeBroadcastSignal(BusConnection current, const char* object,
 			const char* interface, const char* signal);
@@ -77,7 +75,8 @@ class GKDBus : public GKDBusEvents
 
 		std::string getNextStringArgument(void);
 		const bool getNextBooleanArgument(void);
-		void checkMethodsCalls(BusConnection current);
+		void checkForMethodCall(BusConnection current);
+		void checkForSignalReceipt(BusConnection current);
 
 		void addSignal_StringToBool_Callback(BusConnection current,
 			const char* object, const char* interface, const char* eventName,
