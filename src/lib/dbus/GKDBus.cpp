@@ -146,15 +146,16 @@ void GKDBus::addSignal_StringToBool_Callback(BusConnection current,
 {
 	this->setCurrentConnection(current);
 	this->addEvent_StringToBool_Callback(object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL);
-	std::string rule = "type='signal',interface='";
-	rule += interface;
-	rule += "',member='";
-	rule += eventName;
-	rule += "'";
-	dbus_bus_add_match(this->current_conn_, rule.c_str(), &this->error_);
-	dbus_connection_flush(this->current_conn_);
-	this->checkDBusError("DBus Session match error");
-	LOG(DEBUG1) << "DBus Signal match rule sent : " << rule;
+	this->addSignalRuleMatch(interface, eventName);
+}
+
+void GKDBus::addSignal_VoidToVoid_Callback(BusConnection current,
+	const char* object, const char* interface, const char* eventName,
+	std::vector<DBusMethodArgument> args, std::function<void(void)> callback)
+{
+	this->setCurrentConnection(current);
+	this->addEvent_VoidToVoid_Callback(object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL);
+	this->addSignalRuleMatch(interface, eventName);
 }
 
 void GKDBus::initializeBroadcastSignal(BusConnection current, const char* object,
@@ -330,6 +331,32 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 					catch ( const EmptyContainer & e ) {
 						LOG(DEBUG3) << e.what();
 					}
+				}
+			}
+		}
+	}
+
+	for(const auto & object_it : this->events_void_to_void_) {
+		/* object path must match */
+		object_path = this->getNode(object_it.first);
+		if(object_path != asked_object_path)
+			continue;
+
+		for(const auto & interface : object_it.second) {
+			LOG(DEBUG2) << "checking " << interface.first << " interface";
+
+			for(const auto & DBusEvent : interface.second) { /* vector of struct */
+				/* we want only methods */
+				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL )
+					continue;
+
+				const char* signal = DBusEvent.eventName.c_str();
+				LOG(DEBUG3) << "checking for " << signal << " receipt";
+				if( this->checkMessageForSignalReceiptOnInterface(interface.first.c_str(), signal) ) {
+					LOG(DEBUG1) << "DBus " << signal << " receipt !";
+
+					/* call void to void callback */
+					DBusEvent.callback();
 				}
 			}
 		}
@@ -636,6 +663,18 @@ void GKDBus::setCurrentConnection(BusConnection current) {
 			throw GLogiKExcept("asked connection not handled");
 			break;
 	}
+}
+
+void GKDBus::addSignalRuleMatch(const char* interface, const char* eventName) {
+	std::string rule = "type='signal',interface='";
+	rule += interface;
+	rule += "',member='";
+	rule += eventName;
+	rule += "'";
+	dbus_bus_add_match(this->current_conn_, rule.c_str(), &this->error_);
+	dbus_connection_flush(this->current_conn_);
+	this->checkDBusError("DBus Session match error");
+	LOG(DEBUG1) << "DBus Signal match rule sent : " << rule;
 }
 
 /* -- */

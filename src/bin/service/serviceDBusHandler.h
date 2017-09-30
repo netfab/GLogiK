@@ -63,7 +63,7 @@ class ServiceDBusHandler
 
 		void reportChangedState(void);
 
-		const bool somethingChanged(const std::string & arg);
+		void somethingChanged(void);
 };
 
 } // namespace GLogiK

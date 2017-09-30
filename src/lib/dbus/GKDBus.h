@@ -79,9 +79,13 @@ class GKDBus : public GKDBusEvents
 		void checkForMethodCall(BusConnection current);
 		void checkForSignalReceipt(BusConnection current);
 
+		/* wrappers */
 		void addSignal_StringToBool_Callback(BusConnection current,
 			const char* object, const char* interface, const char* eventName,
 			std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback);
+		void addSignal_VoidToVoid_Callback(BusConnection current,
+			const char* object, const char* interface, const char* eventName,
+			std::vector<DBusMethodArgument> args, std::function<void(void)> callback);
 
 	protected:
 
@@ -103,6 +107,7 @@ class GKDBus : public GKDBusEvents
 		void setCurrentConnection(BusConnection current);
 		void checkDBusError(const char* error_message);
 		void fillInArguments(void);
+		void addSignalRuleMatch(const char* interface, const char* eventName);
 };
 
 } // namespace GLogiK

@@ -173,6 +173,13 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 
 					this->plugged_but_stopped_devices_[devID] = device;
 					this->initialized_devices_.erase(devID);
+
+					/* send signal to clients */
+					this->DBus->initializeBroadcastSignal(BusConnection::GKDBUS_SYSTEM,
+						this->DBus_CSMH_object_path_, this->DBus_CSMH_interface_,
+						"SomethingChanged");
+					this->DBus->sendBroadcastSignal();
+
 					return true;
 				}
 			}
@@ -183,17 +190,6 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 		this->buffer_ << oor.what();
 		LOG(ERROR) << this->buffer_.str();
 		syslog(LOG_ERR, this->buffer_.str().c_str());
-
-/*
-		// test code
-		this->DBus->initializeBroadcastSignal(BusConnection::GKDBUS_SYSTEM,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-			"SomethingChanged");
-		this->DBus->appendToBroadcastSignal("test");
-		this->DBus->sendBroadcastSignal();
-*/
-
 		return false;
 	}
 

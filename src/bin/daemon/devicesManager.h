@@ -78,6 +78,10 @@ class DevicesManager
 		const char* DBus_object_	= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT;
 		const char* DBus_interface_	= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
 
+		/* CSMH - Clients System Message Handler */
+		const char* DBus_CSMH_object_path_	= GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH;
+		const char* DBus_CSMH_interface_	= GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE;
+
 		std::ostringstream buffer_;
 		std::vector<KeyboardDriver*> drivers_;
 		std::map<const std::string, DetectedDevice> detected_devices_;

@@ -19,8 +19,6 @@
  *
  */
 
-#include <functional>
-
 #include "lib/utils/utils.h"
 
 #include "serviceDBusHandler.h"
@@ -56,10 +54,10 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
 			throw GLogiKExcept(failure);
 		}
 
-		this->DBus->addSignal_StringToBool_Callback(BusConnection::GKDBUS_SYSTEM,
+		this->DBus->addSignal_VoidToVoid_Callback(BusConnection::GKDBUS_SYSTEM,
 			this->DBus_SMH_object_, this->DBus_SMH_interface_, "SomethingChanged",
 			{}, // FIXME
-			std::bind(&ServiceDBusHandler::somethingChanged, this, std::placeholders::_1) );
+			std::bind(&ServiceDBusHandler::somethingChanged, this) );
 	}
 	catch ( const GLogiKExcept & e ) {
 		delete this->DBus;
@@ -226,11 +224,10 @@ void ServiceDBusHandler::updateSessionState(void) {
 
 }
 
-const bool ServiceDBusHandler::somethingChanged(const std::string & arg) {
+void ServiceDBusHandler::somethingChanged(void) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "it seems that something changed ! " << arg;
+	LOG(DEBUG2) << "it seems that something changed ! ";
 #endif
-	return false;
 }
 
 void ServiceDBusHandler::checkDBusMessages(void) {

@@ -70,6 +70,17 @@ struct GKDBusEvent_TwoStringsToBool_Callback {
 		: eventName(n), arguments(a), callback(c), eventType(t) {}
 };
 
+struct GKDBusEvent_VoidToVoid_Callback {
+	const std::string eventName;
+	std::vector<DBusMethodArgument> arguments;
+	std::function<void(void)> callback;
+	GKDBusEventType eventType;
+
+	GKDBusEvent_VoidToVoid_Callback(const char* n, std::vector<DBusMethodArgument> & a,
+		std::function<void(void)> c, GKDBusEventType t)
+		: eventName(n), arguments(a), callback(c), eventType(t) {}
+};
+
 struct GKDBusEvent_VoidToString_Callback {
 	const std::string eventName;
 	std::vector<DBusMethodArgument> arguments;
@@ -101,6 +112,9 @@ class GKDBusEvents
 		void addEvent_TwoStringsToBool_Callback(const char* object, const char* interface, const char* eventName,
 			std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&, const std::string&)> callback,
 			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
+		void addEvent_VoidToVoid_Callback(const char* object, const char* interface, const char* eventName,
+			std::vector<DBusMethodArgument> args, std::function<void(void)> callback,
+			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
 		void addEvent_VoidToString_Callback(const char* object, const char* interface, const char* eventName,
 			std::vector<DBusMethodArgument> args, std::function<const std::string(void)> callback,
 			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
@@ -119,6 +133,10 @@ class GKDBusEvents
 		std::map< const std::string, /* object path */
 			std::map< const std::string, /* interface */
 				std::vector<GKDBusEvent_TwoStringsToBool_Callback> > > events_twostrings_to_bool_;
+
+		std::map< const std::string, /* object path */
+			std::map< const std::string, /* interface */
+				std::vector<GKDBusEvent_VoidToVoid_Callback> > > events_void_to_void_;
 
 		std::map< const std::string, /* object path */
 			std::map< const std::string, /* interface */
