@@ -154,7 +154,7 @@ void GKDBus::addSignal_StringToBool_Callback(BusConnection current,
 	dbus_bus_add_match(this->current_conn_, rule.c_str(), &this->error_);
 	dbus_connection_flush(this->current_conn_);
 	this->checkDBusError("DBus Session match error");
-	LOG(DEBUG1) << "DBus Session match rule sent : " << rule;
+	LOG(DEBUG1) << "DBus Signal match rule sent : " << rule;
 }
 
 void GKDBus::initializeBroadcastSignal(BusConnection current, const char* object,
