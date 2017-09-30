@@ -64,7 +64,7 @@ class DevicesManager
 		DevicesManager(void);
 		~DevicesManager(void);
 
-		void startMonitoring(GKDBus* DBus);
+		void startMonitoring(GKDBus* pDBus);
 
 	protected:
 
@@ -73,6 +73,7 @@ class DevicesManager
 		struct udev_monitor *monitor = nullptr;
 		struct pollfd fds[1];
 		int fd_ = -1;
+		GKDBus* DBus = nullptr;
 
 		const char* DBus_object_	= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT;
 		const char* DBus_interface_	= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
@@ -91,7 +92,7 @@ class DevicesManager
 		const bool stopDevice(const std::string & devID);
 		const bool restartDevice(const std::string & devID);
 		void checkForUnpluggedDevices(void);
-		void checkDBusMessages(GKDBus* DBus);
+		void checkDBusMessages(void);
 };
 
 } // namespace GLogiK

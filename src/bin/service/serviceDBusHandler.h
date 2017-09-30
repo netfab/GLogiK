@@ -51,6 +51,10 @@ class ServiceDBusHandler
 		const char* DBus_client_object_path_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH;
 		const char* DBus_client_interface_		= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
 
+		/* SMH - System Message Handler */
+		const char* DBus_SMH_object_	= GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT;
+		const char* DBus_SMH_interface_	= GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE;
+
 		std::string current_session_;	/* current session object path */
 		std::string session_state_;		/* session state */
 
@@ -58,6 +62,8 @@ class ServiceDBusHandler
 		const std::string getCurrentSessionState(const bool logoff=false);
 
 		void reportChangedState(void);
+
+		const bool somethingChanged(const std::string & arg);
 };
 
 } // namespace GLogiK

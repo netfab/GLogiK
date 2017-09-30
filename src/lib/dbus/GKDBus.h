@@ -32,6 +32,7 @@
 #include "GKDBusEvents.h"
 #include "GKDBusMsgReply.h"
 #include "GKDBusRemoteMethodCall.h"
+#include "GKDBusBroadcastSignal.h"
 #undef GKDBUS_INSIDE_GKDBUS_H
 
 namespace GLogiK
@@ -57,7 +58,11 @@ class GKDBus : public GKDBusEvents
 		const bool checkMessageForMethodCallOnInterface(const char* interface, const char* method);
 		void freeMessage(void);
 
-		void addSignalMatch(BusConnection current, const char* interface);
+		void checkSignalsCalls(BusConnection current);
+
+		void initializeBroadcastSignal(BusConnection current, const char* object,
+			const char* interface, const char* signal);
+		void sendBroadcastSignal(void);
 
 		void initializeMethodCallReply(BusConnection current);
 		void appendToMethodCallReply(const bool value);
@@ -74,6 +79,10 @@ class GKDBus : public GKDBusEvents
 		const bool getNextBooleanArgument(void);
 		void checkMethodsCalls(BusConnection current);
 
+		void addSignal_StringToBool_Callback(BusConnection current,
+			const char* object, const char* interface, const char* eventName,
+			std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback);
+
 	protected:
 
 	private:
@@ -89,6 +98,7 @@ class GKDBus : public GKDBusEvents
 
 		GKDBusMsgReply* reply_;
 		GKDBusRemoteMethodCall* method_call_;
+		GKDBusBroadcastSignal* signal_;
 
 		void setCurrentConnection(BusConnection current);
 		void checkDBusError(const char* error_message);

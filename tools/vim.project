@@ -72,6 +72,8 @@ GLogiK=$PWD/.. CD=. {
 				GKDBusMsgReply.h
 				GKDBusRemoteMethodCall.cpp
 				GKDBusRemoteMethodCall.h
+				GKDBusBroadcastSignal.cpp
+				GKDBusBroadcastSignal.h
 			}
 			GLogiKShared=shared/ {
 				Makefile.am

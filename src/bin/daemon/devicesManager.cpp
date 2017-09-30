@@ -183,6 +183,13 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 		this->buffer_ << oor.what();
 		LOG(ERROR) << this->buffer_.str();
 		syslog(LOG_ERR, this->buffer_.str().c_str());
+
+		this->DBus->initializeBroadcastSignal(BusConnection::GKDBUS_SYSTEM,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+			"SomethingChanged");
+		this->DBus->sendBroadcastSignal();
+
 		return false;
 	}
 
@@ -452,9 +459,9 @@ void DevicesManager::searchSupportedDevices(void) {
 	udev_enumerate_unref(enumerate);
 }
 
-void DevicesManager::checkDBusMessages(GKDBus* DBus) {
-	if( DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
-		DBus->checkMethodsCalls(BusConnection::GKDBUS_SYSTEM);
+void DevicesManager::checkDBusMessages(void) {
+	if( this->DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
+		this->DBus->checkMethodsCalls(BusConnection::GKDBUS_SYSTEM);
 /*
 		if( DBus->checkMessageForSignalOnInterface("test.signal.Type", "Test") ) {
 			try {
@@ -466,12 +473,13 @@ void DevicesManager::checkDBusMessages(GKDBus* DBus) {
 			}
 		}
 */
-		DBus->freeMessage();
+		this->DBus->freeMessage();
 	}
 }
 
-void DevicesManager::startMonitoring(GKDBus* DBus) {
+void DevicesManager::startMonitoring(GKDBus* pDBus) {
 	LOG(DEBUG2) << "initializing libudev";
+	this->DBus = pDBus;
 
 	this->udev = udev_new();
 	if ( this->udev == nullptr )
@@ -496,17 +504,17 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 
 	//DBus->addSignalMatch(BusConnection::GKDBUS_SESSION, "test.signal.Type");
 	{
-		DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "Stop",
+		this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "Stop",
 			{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
 				{"b", "did_stop_succeeded", "out", "did the Stop method succeeded ?"} },
 			std::bind(&DevicesManager::stopDevice, this, std::placeholders::_1) );
 
-		DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "Start",
+		this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "Start",
 			{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
 				{"b", "did_start_succeeded", "out", "did the Start method succeeded ?"} },
 			std::bind(&DevicesManager::startDevice, this, std::placeholders::_1) );
 
-		DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "Restart",
+		this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "Restart",
 			{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
 				{"b", "did_restart_succeeded", "out", "did the Restart method succeeded ?"} },
 			std::bind(&DevicesManager::restartDevice, this, std::placeholders::_1) );
@@ -556,7 +564,7 @@ void DevicesManager::startMonitoring(GKDBus* DBus) {
 			udev_device_unref(dev);
 		}
 
-		this->checkDBusMessages(DBus);
+		this->checkDBusMessages();
 	}
 
 }

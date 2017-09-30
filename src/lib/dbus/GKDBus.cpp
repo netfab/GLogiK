@@ -36,7 +36,8 @@ GKDBus::GKDBus(const std::string & rootnode) : buffer_("", std::ios_base::app),
 	session_conn_(nullptr),
 	system_conn_(nullptr),
 	reply_(nullptr),
-	method_call_(nullptr)
+	method_call_(nullptr),
+	signal_(nullptr)
 {
 	LOG(DEBUG1) << "dbus object initialization";
 	dbus_error_init(&(this->error_));
@@ -136,18 +137,44 @@ const bool GKDBus::checkMessageForMethodCallOnInterface(const char* interface, c
 /* -- */
 
 /*
- *	Signals setup on connection
+ *	Signal setup
  */
 
-void GKDBus::addSignalMatch(BusConnection current, const char* interface) {
+void GKDBus::addSignal_StringToBool_Callback(BusConnection current,
+	const char* object, const char* interface, const char* eventName,
+	std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback)
+{
 	this->setCurrentConnection(current);
+	this->addEvent_StringToBool_Callback(object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL);
 	std::string rule = "type='signal',interface='";
 	rule += interface;
+	rule += "',member='";
+	rule += eventName;
 	rule += "'";
 	dbus_bus_add_match(this->current_conn_, rule.c_str(), &this->error_);
 	dbus_connection_flush(this->current_conn_);
 	this->checkDBusError("DBus Session match error");
 	LOG(DEBUG1) << "DBus Session match rule sent : " << rule;
+}
+
+void GKDBus::initializeBroadcastSignal(BusConnection current, const char* object,
+	const char* interface, const char* signal)
+{
+	if(this->signal_) /* sanity check */
+		throw GLogiKExcept("DBus signal object already allocated");
+	this->setCurrentConnection(current);
+
+	this->signal_ = new GKDBusBroadcastSignal(this->current_conn_, object, interface, signal);
+}
+
+void GKDBus::sendBroadcastSignal(void) {
+	if(this->signal_) { /* sanity check */
+		delete this->signal_;
+		this->signal_ = nullptr;
+	}
+	else {
+		LOG(WARNING) << __func__ << " failure because signal object not contructed";
+	}
 }
 
 /* -- */
@@ -255,6 +282,52 @@ const bool GKDBus::getNextBooleanArgument(void) {
 	const bool ret = this->boolean_arguments_.back();
 	this->boolean_arguments_.pop_back();
 	return ret;
+}
+
+void GKDBus::checkSignalsCalls(BusConnection current) {
+	const char* obj = dbus_message_get_path(this->message_);
+	std::string asked_object_path("");
+	if(obj != nullptr)
+		asked_object_path = obj;
+
+	/*
+	 * loops on containers
+	 */
+
+	std::string object_path;
+
+	for(const auto & object_it : this->events_string_to_bool_) {
+		/* object path must match */
+		object_path = this->getNode(object_it.first);
+		if(object_path != asked_object_path)
+			continue;
+
+		for(const auto & interface : object_it.second) {
+			LOG(DEBUG2) << "checking " << interface.first << " interface";
+
+			for(const auto & DBusEvent : interface.second) { /* vector of struct */
+				/* we want only methods */
+				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL )
+					continue;
+
+				const char* signal = DBusEvent.eventName.c_str();
+				LOG(DEBUG3) << "checking for " << signal << " receipt";
+				if( this->checkMessageForSignalOnInterface(interface.first.c_str(), signal) ) {
+					bool ret = false;
+					LOG(DEBUG1) << "DBus " << signal << " receipt !";
+
+					try {
+						/* call string to bool callback */
+						const std::string arg = this->getNextStringArgument();
+						ret = DBusEvent.callback(arg);
+					}
+					catch ( const EmptyContainer & e ) {
+						LOG(DEBUG3) << e.what();
+					}
+				}
+			}
+		}
+	}
 }
 
 /*
