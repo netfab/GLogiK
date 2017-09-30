@@ -194,7 +194,7 @@ void ServiceDBusHandler::updateSessionState(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "switching session state from " << this->session_state_ << " to " << new_state;
 #endif
-
+/*
 	if( this->session_state_ == "active" ) {
 		if(new_state == "online") {
 		}
@@ -218,7 +218,7 @@ void ServiceDBusHandler::updateSessionState(void) {
 		e += this->session_state_;
 		throw GLogiKExcept(e);
 	}
-
+*/
 	this->session_state_ = new_state;
 	this->reportChangedState();
 
@@ -233,7 +233,6 @@ const bool ServiceDBusHandler::somethingChanged(const std::string & arg) {
 
 void ServiceDBusHandler::checkDBusMessages(void) {
 	if( this->DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
-		//DBus->checkMethodsCalls(BusConnection::GKDBUS_SYSTEM);
 		this->DBus->checkForSignalReceipt(BusConnection::GKDBUS_SYSTEM);
 		this->DBus->freeMessage();
 	}
