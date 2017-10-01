@@ -30,7 +30,9 @@
 namespace GLogiK
 {
 
-ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app), DBus(pDBus) {
+ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app), DBus(pDBus),
+	devicesManager(nullptr)
+{
 	LOG(DEBUG2) << "initializing clients manager";
 
 	this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "RegisterClient",
