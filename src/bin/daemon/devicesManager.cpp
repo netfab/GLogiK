@@ -136,6 +136,13 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 
 					LOG(DEBUG3) << "removing " << devID << " from plugged-but-stopped devices";
 					this->plugged_but_stopped_devices_.erase(devID);
+
+					/* send signal to clients */
+					this->DBus->initializeBroadcastSignal(BusConnection::GKDBUS_SYSTEM,
+						this->DBus_CSMH_object_path_, this->DBus_CSMH_interface_,
+						"SomethingChanged");
+					this->DBus->sendBroadcastSignal();
+
 					return true;
 				}
 			}
@@ -462,17 +469,6 @@ void DevicesManager::searchSupportedDevices(void) {
 void DevicesManager::checkDBusMessages(void) {
 	if( this->DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
 		this->DBus->checkForMethodCall(BusConnection::GKDBUS_SYSTEM);
-/*
-		if( DBus->checkMessageForSignalOnInterface("test.signal.Type", "Test") ) {
-			try {
-				LOG(INFO) << DBus->getNextStringArgument();
-				LOG(INFO) << DBus->getNextStringArgument();
-			}
-			catch ( const EmptyContainer & e ) {
-				LOG(DEBUG3) << e.what();
-			}
-		}
-*/
 		this->DBus->freeMessage();
 	}
 }
@@ -502,7 +498,6 @@ void DevicesManager::startMonitoring(GKDBus* pDBus) {
 	this->fds[0].fd = this->fd_;
 	this->fds[0].events = POLLIN;
 
-	//DBus->addSignalMatch(BusConnection::GKDBUS_SESSION, "test.signal.Type");
 	{
 		this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "Stop",
 			{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
