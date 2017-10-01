@@ -41,7 +41,7 @@ GKDBusMsgReply::GKDBusMsgReply(DBusConnection* conn, DBusMessage* message) : con
 		throw GLogiKExcept("can't allocate memory for DBus reply message");
 
 	/* initialize potential arguments iterator */
-	dbus_message_iter_init_append(this->reply_, &this->rep_args_it_);
+	dbus_message_iter_init_append(this->reply_, &this->args_it_);
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus reply initialized";
 #endif
@@ -63,7 +63,7 @@ GKDBusMsgReply::~GKDBusMsgReply() {
 }
 
 void GKDBusMsgReply::appendToReply(const dbus_bool_t value) {
-	if( ! dbus_message_iter_append_basic(&this->rep_args_it_, DBUS_TYPE_BOOLEAN, &value) )
+	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_BOOLEAN, &value) )
 		throw GLogiKExcept("DBus reply append boolean value failure, not enough memory");
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus reply boolean value appended";
@@ -72,7 +72,7 @@ void GKDBusMsgReply::appendToReply(const dbus_bool_t value) {
 
 void GKDBusMsgReply::appendToReply(const std::string & value) {
 	const char* p = value.c_str();
-	if( ! dbus_message_iter_append_basic(&this->rep_args_it_, DBUS_TYPE_STRING, &p) )
+	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) )
 		throw GLogiKExcept("DBus reply append string value failure, not enough memory");
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus reply string value appended";

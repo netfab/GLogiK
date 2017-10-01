@@ -46,7 +46,7 @@ class GKDBusMsgReply
 	private:
 		DBusConnection* connection_;
 		DBusMessage* reply_;
-		DBusMessageIter rep_args_it_;
+		DBusMessageIter args_it_;
 
 };
 
