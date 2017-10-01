@@ -46,15 +46,7 @@ DevicesManager::DevicesManager() : buffer_("", std::ios_base::app) {
 }
 
 DevicesManager::~DevicesManager() {
-	LOG(DEBUG2) << "exiting devices manager";
-	if(this->monitor) {
-		LOG(DEBUG3) << "unref monitor object";
-		udev_monitor_unref(this->monitor);
-	}
-	if(this->udev) {
-		LOG(DEBUG3) << "unref udev context";
-		udev_unref(this->udev);
-	}
+	LOG(DEBUG2) << "destroying devices manager";
 
 	this->stopInitializedDevices();
 	this->plugged_but_stopped_devices_.clear();
@@ -64,6 +56,17 @@ DevicesManager::~DevicesManager() {
 		delete driver;
 	}
 	this->drivers_.clear();
+
+	if(this->monitor) {
+		LOG(DEBUG3) << "unref monitor object";
+		udev_monitor_unref(this->monitor);
+	}
+	if(this->udev) {
+		LOG(DEBUG3) << "unref udev context";
+		udev_unref(this->udev);
+	}
+
+	LOG(DEBUG2) << "exiting devices manager";
 }
 
 void DevicesManager::initializeDevices(void) {

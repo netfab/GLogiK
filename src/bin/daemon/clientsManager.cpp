@@ -48,10 +48,21 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"s", "client_new_state", "in", "client new state"},
 			{"b", "did_updateclientstate_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
+
+	try {
+		this->devicesManager = new DevicesManager();
+	}
+	catch (const std::bad_alloc& e) { /* handle new() failure */
+		throw GLogiKExcept("devices manager allocation failure");
+	}
 }
 
 ClientsManager::~ClientsManager() {
-	LOG(DEBUG2) << "exiting clients manager";
+	LOG(DEBUG2) << "destroying clients manager";
+
+	delete this->devicesManager;
+	this->devicesManager = nullptr;
+
 	for( auto & client_it : this->clients_ ) {
 		Client* pClient = client_it.second;
 		if( pClient != nullptr ) { /* sanity check */
@@ -64,10 +75,12 @@ ClientsManager::~ClientsManager() {
 		}
 	}
 	this->clients_.clear();
+	LOG(DEBUG2) << "exiting clients manager";
+
 }
 
 void ClientsManager::runLoop(void) {
-	this->devicesManager.startMonitoring(this->DBus);
+	this->devicesManager->startMonitoring(this->DBus);
 }
 
 const bool ClientsManager::registerClient(const std::string & uniqueString) {

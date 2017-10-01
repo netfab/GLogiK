@@ -52,7 +52,7 @@ class ClientsManager
 
 		std::ostringstream buffer_;
 		GKDBus* DBus;
-		DevicesManager devicesManager;
+		DevicesManager* devicesManager;
 
 		std::map<const std::string, Client*> clients_;
 		

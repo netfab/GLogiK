@@ -114,8 +114,10 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 				this->DBus = new GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
 				this->DBus->connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
 
-				ClientsManager c(this->DBus);
-				c.runLoop();
+				{
+					ClientsManager c(this->DBus);
+					c.runLoop();
+				}	/* destroy client manager before DBus */
 
 				delete this->DBus;
 				this->DBus = nullptr;
