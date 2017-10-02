@@ -224,6 +224,30 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 			}
 		}
 
+		for(const auto & object_it : this->events_void_to_stringsarray_) {
+			/* object must match */
+			if(object_it.first != object_asked)
+				continue;
+			for(const auto & inter_it : object_it.second) {
+				if( inter_it.first == interface ) {
+					if( ! interface_opened ) {
+						xml << "  <interface name=\"" << interface << "\">\n";
+						interface_opened = true;
+					}
+					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
+						if( DBusEvent.eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
+							xml << "    <method name=\"" << DBusEvent.eventName << "\">\n";
+							for(const auto & arg : DBusEvent.arguments) {
+								xml << "      <!-- " << arg.comment << " -->\n";
+								xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
+							}
+							xml << "    </method>\n";
+						}
+					}
+				}
+			}
+		}
+
 		for(const auto & object_it : this->events_string_to_bool_) {
 			/* object must match */
 			if(object_it.first != object_asked)

@@ -51,15 +51,16 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"b", "did_updateclientstate_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addEvent_VoidToStringsArray_Callback( this->DBus_object_, this->DBus_interface_, "GetStartedDevices",
-		{ {"as", "array_of_strings", "out", "array of started devices ID strings"} },
-		std::bind(&ClientsManager::GetStartedDevices, this) );
 	try {
 		this->devicesManager = new DevicesManager();
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		throw GLogiKExcept("devices manager allocation failure");
 	}
+
+	this->DBus->addEvent_VoidToStringsArray_Callback( this->DBus_object_, this->DBus_interface_, "GetStartedDevices",
+		{ {"as", "array_of_strings", "out", "array of started devices ID strings"} },
+		std::bind(&ClientsManager::getStartedDevices, this) );
 }
 
 ClientsManager::~ClientsManager() {
@@ -139,7 +140,7 @@ const bool ClientsManager::updateClientState(const std::string & uniqueString, c
 	return false;
 }
 
-const std::vector<std::string> ClientsManager::GetStartedDevices(void) {
+const std::vector<std::string> ClientsManager::getStartedDevices(void) {
 	return this->devicesManager->getStartedDevices();
 }
 } // namespace GLogiK
