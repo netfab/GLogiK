@@ -29,12 +29,8 @@ namespace GLogiK
 {
 
 GKDBusBroadcastSignal::GKDBusBroadcastSignal(DBusConnection* conn, const char* object,
-	const char* interface, const char* signal) : connection_(conn), message_(nullptr), hosed_message_(false)
+	const char* interface, const char* signal) : GKDBusMessage(conn)
 {
-	/* sanity checks */
-	if(conn == nullptr)
-		throw GLogiKExcept("current connection is NULL");
-
 	this->message_ = dbus_message_new_signal(object, interface, signal);
 	if(this->message_ == nullptr)
 		throw GLogiKExcept("can't allocate memory for Signal DBus message");

@@ -19,35 +19,23 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_BROADCAST_SIGNAL_H__
-#define __GLOGIK_GKDBUS_BROADCAST_SIGNAL_H__
-
-#if !defined (GKDBUS_INSIDE_GKDBUS_H) && !defined (GKDBUS_COMPILATION)
-#error "Only "dbus/GKDBus.h" can be included directly, this file may disappear or change contents."
-#endif
-
-#include <dbus/dbus.h>
+#include "lib/utils/utils.h"
 
 #include "GKDBusMessage.h"
 
 namespace GLogiK
 {
 
-class GKDBusBroadcastSignal : public GKDBusMessage
+GKDBusMessage::GKDBusMessage(DBusConnection* conn)
+	: connection_(conn), message_(nullptr), hosed_message_(false)
 {
-	public:
-		GKDBusBroadcastSignal(DBusConnection* conn, const char* object,
-			const char* interface, const char* signal);
-		~GKDBusBroadcastSignal();
+	/* sanity check */
+	if(conn == nullptr)
+		throw GLogiKExcept("current connection is NULL");
+}
 
-		void appendToBroadcastSignal(const std::string & value);
-
-	protected:
-	private:
-
-};
+GKDBusMessage::~GKDBusMessage() {
+}
 
 } // namespace GLogiK
-
-#endif
 

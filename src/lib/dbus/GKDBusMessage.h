@@ -19,30 +19,27 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_BROADCAST_SIGNAL_H__
-#define __GLOGIK_GKDBUS_BROADCAST_SIGNAL_H__
-
-#if !defined (GKDBUS_INSIDE_GKDBUS_H) && !defined (GKDBUS_COMPILATION)
-#error "Only "dbus/GKDBus.h" can be included directly, this file may disappear or change contents."
-#endif
+#ifndef __GLOGIK_GKDBUS_MESSAGE_H__
+#define __GLOGIK_GKDBUS_MESSAGE_H__
 
 #include <dbus/dbus.h>
-
-#include "GKDBusMessage.h"
 
 namespace GLogiK
 {
 
-class GKDBusBroadcastSignal : public GKDBusMessage
+class GKDBusMessage
 {
 	public:
-		GKDBusBroadcastSignal(DBusConnection* conn, const char* object,
-			const char* interface, const char* signal);
-		~GKDBusBroadcastSignal();
-
-		void appendToBroadcastSignal(const std::string & value);
 
 	protected:
+		GKDBusMessage(DBusConnection* conn);
+		virtual ~GKDBusMessage(void);
+
+		DBusConnection* connection_;
+		DBusMessage* message_;
+		DBusMessageIter args_it_;
+		bool hosed_message_;
+
 	private:
 
 };
@@ -50,4 +47,3 @@ class GKDBusBroadcastSignal : public GKDBusMessage
 } // namespace GLogiK
 
 #endif
-

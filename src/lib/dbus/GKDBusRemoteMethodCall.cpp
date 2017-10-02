@@ -30,12 +30,8 @@ namespace GLogiK
 
 GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(DBusConnection* conn, const char* dest,
 	const char* object, const char* interface, const char* method, DBusPendingCall** pending, const bool logoff)
-		: connection_(conn), message_(nullptr), pending_(pending), hosed_message_(false), log_off_(logoff)
+		: GKDBusMessage(conn), pending_(pending), log_off_(logoff)
 {
-	/* sanity checks */
-	if(conn == nullptr)
-		throw GLogiKExcept("current connection is NULL");
-
 	this->message_ = dbus_message_new_method_call(dest, object, interface, method);
 	if(this->message_ == nullptr)
 		throw GLogiKExcept("can't allocate memory for Remote Object Method Call DBus message");

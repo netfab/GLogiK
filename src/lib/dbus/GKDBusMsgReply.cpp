@@ -28,22 +28,19 @@
 namespace GLogiK
 {
 
-GKDBusMsgReply::GKDBusMsgReply(DBusConnection* conn, DBusMessage* message) : connection_(conn), reply_(nullptr),
-	hosed_message_(false)
+GKDBusMsgReply::GKDBusMsgReply(DBusConnection* conn, DBusMessage* message) : GKDBusMessage(conn)
 {
-	/* sanity checks */
-	if(conn == nullptr)
-		throw GLogiKExcept("current connection is NULL");
+	/* sanity check */
 	if(message == nullptr)
 		throw GLogiKExcept("DBus message is NULL");
 
 	/* initialize reply from message */
-	this->reply_ = dbus_message_new_method_return(message);
-	if(this->reply_ == nullptr)
+	this->message_ = dbus_message_new_method_return(message);
+	if(this->message_ == nullptr)
 		throw GLogiKExcept("can't allocate memory for DBus reply message");
 
 	/* initialize potential arguments iterator */
-	dbus_message_iter_init_append(this->reply_, &this->args_it_);
+	dbus_message_iter_init_append(this->message_, &this->args_it_);
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus reply initialized";
 #endif
@@ -54,19 +51,19 @@ GKDBusMsgReply::~GKDBusMsgReply() {
 #if DEBUG_GKDBUS_SUBOBJECTS
 		LOG(WARNING) << "DBus hosed reply, giving up";
 #endif
-		dbus_message_unref(this->reply_);
+		dbus_message_unref(this->message_);
 		return;
 	}
 
 	// TODO dbus_uint32_t serial;
-	if( ! dbus_connection_send(this->connection_, this->reply_, nullptr) ) {
-		dbus_message_unref(this->reply_);
+	if( ! dbus_connection_send(this->connection_, this->message_, nullptr) ) {
+		dbus_message_unref(this->message_);
 		LOG(ERROR) << "DBus reply sending failure";
 		return;
 	}
 
 	dbus_connection_flush(this->connection_);
-	dbus_message_unref(this->reply_);
+	dbus_message_unref(this->message_);
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus reply sent";
 #endif

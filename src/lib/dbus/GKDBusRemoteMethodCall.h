@@ -28,10 +28,12 @@
 
 #include <dbus/dbus.h>
 
+#include "GKDBusMessage.h"
+
 namespace GLogiK
 {
 
-class GKDBusRemoteMethodCall
+class GKDBusRemoteMethodCall : public GKDBusMessage
 {
 	public:
 		GKDBusRemoteMethodCall(DBusConnection* conn, const char* dest,
@@ -42,11 +44,7 @@ class GKDBusRemoteMethodCall
 
 	protected:
 	private:
-		DBusConnection* connection_;
-		DBusMessage* message_;
 		DBusPendingCall** pending_;
-		DBusMessageIter args_it_;
-		bool hosed_message_;
 		bool log_off_;
 
 };

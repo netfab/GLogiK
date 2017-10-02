@@ -30,10 +30,12 @@
 
 #include <dbus/dbus.h>
 
+#include "GKDBusMessage.h"
+
 namespace GLogiK
 {
 
-class GKDBusMsgReply
+class GKDBusMsgReply : public GKDBusMessage
 {
 	public:
 		GKDBusMsgReply(DBusConnection* conn, DBusMessage* message);
@@ -44,10 +46,6 @@ class GKDBusMsgReply
 
 	protected:
 	private:
-		DBusConnection* connection_;
-		DBusMessage* reply_;
-		DBusMessageIter args_it_;
-		bool hosed_message_;
 
 };
 
