@@ -92,6 +92,17 @@ struct GKDBusEvent_VoidToString_Callback {
 		: eventName(n), arguments(a), callback(c), eventType(t) {}
 };
 
+struct GKDBusEvent_VoidToStringsArray_Callback {
+	const std::string eventName;
+	std::vector<DBusMethodArgument> arguments;
+	std::function<const std::vector<std::string>(void)> callback;
+	GKDBusEventType eventType;
+
+	GKDBusEvent_VoidToStringsArray_Callback(const char* n, std::vector<DBusMethodArgument> & a,
+		std::function<const std::vector<std::string>(void)> c, GKDBusEventType t)
+		: eventName(n), arguments(a), callback(c), eventType(t) {}
+};
+
 struct GKDBusEvent_StringToString_Callback {
 	const std::string eventName;
 	std::vector<DBusMethodArgument> arguments;
@@ -117,6 +128,9 @@ class GKDBusEvents
 			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
 		void addEvent_VoidToString_Callback(const char* object, const char* interface, const char* eventName,
 			std::vector<DBusMethodArgument> args, std::function<const std::string(void)> callback,
+			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
+		void addEvent_VoidToStringsArray_Callback(const char* object, const char* interface, const char* eventName,
+			std::vector<DBusMethodArgument> args, std::function<const std::vector<std::string>(void)> callback,
 			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
 		void addEvent_StringToString_Callback(const char* object, const char* interface, const char* eventName,
 			std::vector<DBusMethodArgument> args, std::function<const std::string(const std::string&)> callback,
@@ -145,6 +159,10 @@ class GKDBusEvents
 		std::map< const std::string, /* object path */
 			std::map< const std::string, /* interface */
 				std::vector<GKDBusEvent_StringToString_Callback> > > events_string_to_string_;
+
+		std::map< const std::string, /* object path */
+			std::map< const std::string, /* interface */
+				std::vector<GKDBusEvent_VoidToStringsArray_Callback> > > events_void_to_stringsarray_;
 
 		std::map<const std::string, bool> DBusObjects_;
 		std::map<const std::string, bool> DBusInterfaces_;

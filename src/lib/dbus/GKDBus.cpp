@@ -209,6 +209,12 @@ void GKDBus::appendToMethodCallReply(const std::string & value) {
 	this->reply_->appendToReply(value);
 }
 
+void GKDBus::appendToMethodCallReply(const std::vector<std::string> & list) {
+	if(this->reply_ == nullptr) /* sanity check */
+		throw GLogiKExcept("DBus reply object not initialized");
+	this->reply_->appendToReply(list);
+}
+
 void GKDBus::sendMethodCallReply(void) {
 	if(this->reply_) { /* sanity check */
 		delete this->reply_;
@@ -455,6 +461,46 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 		}
 	}
 
+	for(const auto & object_it : this->events_void_to_stringsarray_) {
+		/* object path must match */
+		object_path = this->getNode(object_it.first);
+		if(object_path != asked_object_path)
+			continue;
+
+		for(const auto & interface : object_it.second) {
+			LOG(DEBUG2) << "checking " << interface.first << " interface";
+
+			for(const auto & DBusEvent : interface.second) { /* vector of struct */
+				/* we want only methods */
+				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
+					continue;
+
+				const char* method = DBusEvent.eventName.c_str();
+				LOG(DEBUG3) << "checking for " << method << " call";
+				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
+					LOG(DEBUG1) << "DBus " << method << " called !";
+
+					/* call void to string callback */
+					const std::vector<std::string> ret = DBusEvent.callback();
+
+					try {
+						this->initializeMethodCallReply(current);
+						this->appendToMethodCallReply(ret);
+					}
+					catch (const std::bad_alloc& e) { /* handle new() failure */
+						LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+					}
+					catch ( const GLogiKExcept & e ) {
+						LOG(ERROR) << "DBus reply failure : " << e.what();
+					}
+
+					/* delete reply object if allocated */
+					this->sendMethodCallReply();
+					return; /* one reply at a time */
+				}
+			}
+		}
+	}
 	for(const auto & object_it : this->events_string_to_bool_) {
 		/* object path must match */
 		object_path = this->getNode(object_it.first);

@@ -27,6 +27,7 @@
 #endif
 
 #include <string>
+#include <vector>
 
 #include <dbus/dbus.h>
 
@@ -43,9 +44,11 @@ class GKDBusMsgReply : public GKDBusMessage
 
 		void appendToReply(const dbus_bool_t value);
 		void appendToReply(const std::string & value);
+		void appendToReply(const std::vector<std::string> & list);
 
 	protected:
 	private:
+		const std::string append_failure_ = "MessageReply append failure";
 
 };
 

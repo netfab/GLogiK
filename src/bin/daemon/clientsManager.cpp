@@ -51,6 +51,9 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"b", "did_updateclientstate_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 
+	this->DBus->addEvent_VoidToStringsArray_Callback( this->DBus_object_, this->DBus_interface_, "GetStartedDevices",
+		{ {"as", "array_of_strings", "out", "array of started devices ID strings"} },
+		std::bind(&ClientsManager::GetStartedDevices, this) );
 	try {
 		this->devicesManager = new DevicesManager();
 	}
@@ -136,5 +139,8 @@ const bool ClientsManager::updateClientState(const std::string & uniqueString, c
 	return false;
 }
 
+const std::vector<std::string> ClientsManager::GetStartedDevices(void) {
+	return this->devicesManager->getStartedDevices();
+}
 } // namespace GLogiK
 

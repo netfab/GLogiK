@@ -22,6 +22,7 @@
 #ifndef __GLOGIKD_CLIENTS_MANAGER_H__
 #define __GLOGIKD_CLIENTS_MANAGER_H__
 
+#include <vector>
 #include <string>
 #include <map>
 #include <sstream>
@@ -59,6 +60,7 @@ class ClientsManager
 		const bool registerClient(const std::string & uniqueString);
 		const bool unregisterClient(const std::string & uniqueString);
 		const bool updateClientState(const std::string & uniqueString, const std::string & state);
+		const std::vector<std::string> GetStartedDevices(void);
 };
 
 } // namespace GLogiK

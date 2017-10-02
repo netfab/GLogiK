@@ -65,6 +65,7 @@ class DevicesManager
 		~DevicesManager(void);
 
 		void startMonitoring(GKDBus* pDBus);
+		const std::vector<std::string> getStartedDevices(void);
 
 	protected:
 

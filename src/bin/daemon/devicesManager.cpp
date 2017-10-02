@@ -469,6 +469,16 @@ void DevicesManager::searchSupportedDevices(void) {
 	udev_enumerate_unref(enumerate);
 }
 
+const std::vector<std::string> DevicesManager::getStartedDevices(void) {
+	std::vector<std::string> ret;
+
+	for(const auto& init_dev : this->initialized_devices_) {
+		ret.push_back(init_dev.first);
+	}
+
+	return ret;
+}
+
 void DevicesManager::checkDBusMessages(void) {
 	if( this->DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
 		this->DBus->checkForMethodCall(BusConnection::GKDBUS_SYSTEM);

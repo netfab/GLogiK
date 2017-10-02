@@ -66,6 +66,7 @@ class GKDBus : public GKDBusEvents
 		void initializeMethodCallReply(BusConnection current);
 		void appendToMethodCallReply(const bool value);
 		void appendToMethodCallReply(const std::string & value);
+		void appendToMethodCallReply(const std::vector<std::string> & list);
 		void sendMethodCallReply(void);
 
 		void initializeRemoteMethodCall(BusConnection current, const char* dest,

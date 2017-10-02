@@ -101,6 +101,18 @@ void GKDBusEvents::addEvent_VoidToString_Callback(const char* object, const char
 	this->addIntrospectableEvent(object);
 }
 
+void GKDBusEvents::addEvent_VoidToStringsArray_Callback(const char* object, const char* interface, const char* eventName,
+	std::vector<DBusMethodArgument> args, std::function<const std::vector<std::string>(void)> callback,
+	GKDBusEventType eventType)
+{
+	GKDBusEvent_VoidToStringsArray_Callback e(eventName, args, callback, eventType);
+	this->DBusObjects_[object] = true;
+	this->DBusInterfaces_[interface] = true;
+	this->events_void_to_stringsarray_[object][interface].push_back(e);
+
+	this->addIntrospectableEvent(object);
+}
+
 void GKDBusEvents::addEvent_StringToString_Callback(const char* object, const char* interface, const char* eventName,
 	std::vector<DBusMethodArgument> args, std::function<const std::string(const std::string&)> callback,
 	GKDBusEventType eventType)
