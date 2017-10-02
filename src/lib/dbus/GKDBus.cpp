@@ -423,7 +423,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
-				/* wa want only methods */
+				/* we want only methods */
 				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
 					continue;
 
@@ -465,7 +465,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
-				/* wa want only methods */
+				/* we want only methods */
 				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
 					continue;
 
@@ -513,7 +513,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
-				/* wa want only methods */
+				/* we want only methods */
 				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
 					continue;
 
@@ -562,7 +562,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
-				/* wa want only methods */
+				/* we want only methods */
 				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
 					continue;
 
