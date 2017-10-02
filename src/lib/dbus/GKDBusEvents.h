@@ -169,6 +169,8 @@ class GKDBusEvents
 	private:
 		std::string root_node_;
 
+		void openXMLInterface(std::ostringstream & xml, bool& interface_opened, const std::string & interface);
+		void eventToXMLMethod(std::ostringstream & xml, const GKDBusEvent & DBusEvent);
 		const std::string introspect(const std::string & object_path_asked);
 		void addIntrospectableEvent(const char* object);
 };

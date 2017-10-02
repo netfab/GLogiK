@@ -170,6 +170,24 @@ void GKDBusEvents::addIntrospectableEvent(const char* object) {
 	}
 }
 
+void GKDBusEvents::openXMLInterface(std::ostringstream & xml, bool& interface_opened, const std::string & interface) {
+	if( ! interface_opened ) {
+		xml << "  <interface name=\"" << interface << "\">\n";
+		interface_opened = true;
+	}
+}
+
+void GKDBusEvents::eventToXMLMethod(std::ostringstream & xml, const GKDBusEvent & DBusEvent) {
+	if( DBusEvent.eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
+		xml << "    <method name=\"" << DBusEvent.eventName << "\">\n";
+		for(const auto & arg : DBusEvent.arguments) {
+			xml << "      <!-- " << arg.comment << " -->\n";
+			xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
+		}
+		xml << "    </method>\n";
+	}
+}
+
 const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 	std::ostringstream xml;
 
@@ -192,19 +210,9 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 				continue;
 			for(const auto & inter_it : object_it.second) {
 				if( inter_it.first == interface ) {
-					if( ! interface_opened ) {
-						xml << "  <interface name=\"" << interface << "\">\n";
-						interface_opened = true;
-					}
+					this->openXMLInterface(xml, interface_opened, interface);
 					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
-						if( DBusEvent.eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
-							xml << "    <method name=\"" << DBusEvent.eventName << "\">\n";
-							for(const auto & arg : DBusEvent.arguments) {
-								xml << "      <!-- " << arg.comment << " -->\n";
-								xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
-							}
-							xml << "    </method>\n";
-						}
+						this->eventToXMLMethod(xml, DBusEvent);
 					}
 				}
 			}
@@ -216,19 +224,9 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 				continue;
 			for(const auto & inter_it : object_it.second) {
 				if( inter_it.first == interface ) {
-					if( ! interface_opened ) {
-						xml << "  <interface name=\"" << interface << "\">\n";
-						interface_opened = true;
-					}
+					this->openXMLInterface(xml, interface_opened, interface);
 					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
-						if( DBusEvent.eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
-							xml << "    <method name=\"" << DBusEvent.eventName << "\">\n";
-							for(const auto & arg : DBusEvent.arguments) {
-								xml << "      <!-- " << arg.comment << " -->\n";
-								xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
-							}
-							xml << "    </method>\n";
-						}
+						this->eventToXMLMethod(xml, DBusEvent);
 					}
 				}
 			}
@@ -240,19 +238,9 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 				continue;
 			for(const auto & inter_it : object_it.second) {
 				if( inter_it.first == interface ) {
-					if( ! interface_opened ) {
-						xml << "  <interface name=\"" << interface << "\">\n";
-						interface_opened = true;
-					}
+					this->openXMLInterface(xml, interface_opened, interface);
 					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
-						if( DBusEvent.eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
-							xml << "    <method name=\"" << DBusEvent.eventName << "\">\n";
-							for(const auto & arg : DBusEvent.arguments) {
-								xml << "      <!-- " << arg.comment << " -->\n";
-								xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
-							}
-							xml << "    </method>\n";
-						}
+						this->eventToXMLMethod(xml, DBusEvent);
 					}
 				}
 			}
@@ -264,19 +252,9 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 				continue;
 			for(const auto & inter_it : object_it.second) {
 				if( inter_it.first == interface ) {
-					if( ! interface_opened ) {
-						xml << "  <interface name=\"" << interface << "\">\n";
-						interface_opened = true;
-					}
+					this->openXMLInterface(xml, interface_opened, interface);
 					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
-						if( DBusEvent.eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
-							xml << "    <method name=\"" << DBusEvent.eventName << "\">\n";
-							for(const auto & arg : DBusEvent.arguments) {
-								xml << "      <!-- " << arg.comment << " -->\n";
-								xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
-							}
-							xml << "    </method>\n";
-						}
+						this->eventToXMLMethod(xml, DBusEvent);
 					}
 				}
 			}
@@ -288,19 +266,9 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 				continue;
 			for(const auto & inter_it : object_it.second) {
 				if( inter_it.first == interface ) {
-					if( ! interface_opened ) {
-						xml << "  <interface name=\"" << interface << "\">\n";
-						interface_opened = true;
-					}
+					this->openXMLInterface(xml, interface_opened, interface);
 					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
-						if( DBusEvent.eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
-							xml << "    <method name=\"" << DBusEvent.eventName << "\">\n";
-							for(const auto & arg : DBusEvent.arguments) {
-								xml << "      <!-- " << arg.comment << " -->\n";
-								xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
-							}
-							xml << "    </method>\n";
-						}
+						this->eventToXMLMethod(xml, DBusEvent);
 					}
 				}
 			}
