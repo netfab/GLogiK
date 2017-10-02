@@ -45,6 +45,7 @@ class GKDBusBroadcastSignal
 		DBusConnection* connection_;
 		DBusMessage* message_;
 		DBusMessageIter args_it_;
+		bool hosed_message_;
 
 };
 

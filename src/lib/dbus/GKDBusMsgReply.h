@@ -47,6 +47,7 @@ class GKDBusMsgReply
 		DBusConnection* connection_;
 		DBusMessage* reply_;
 		DBusMessageIter args_it_;
+		bool hosed_message_;
 
 };
 

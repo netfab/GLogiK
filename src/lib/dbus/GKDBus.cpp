@@ -392,6 +392,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			catch (const std::bad_alloc& e) { /* handle new() failure */
 				LOG(ERROR) << "DBus reply allocation failure : " << e.what();
 			}
+			catch (const GKDBusOOMWrongBuild & e) {
+				LOG(ERROR) << "DBus build reply failure : " << e.what();
+			}
 			catch ( const GLogiKExcept & e ) {
 				LOG(ERROR) << "DBus reply failure : " << e.what();
 			}

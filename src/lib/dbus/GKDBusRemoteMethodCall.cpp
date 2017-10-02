@@ -30,7 +30,7 @@ namespace GLogiK
 
 GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(DBusConnection* conn, const char* dest,
 	const char* object, const char* interface, const char* method, DBusPendingCall** pending, const bool logoff)
-		: connection_(conn), message_(nullptr), pending_(pending), log_off_(logoff)
+		: connection_(conn), message_(nullptr), pending_(pending), hosed_message_(false), log_off_(logoff)
 {
 	/* sanity checks */
 	if(conn == nullptr)
@@ -55,6 +55,14 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(DBusConnection* conn, const char*
 }
 
 GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
+	if(this->hosed_message_) {
+#if DEBUG_GKDBUS_SUBOBJECTS
+		LOG(WARNING) << "DBus hosed message, giving up";
+#endif
+		dbus_message_unref(this->message_);
+		return;
+	}
+
 	if( ! dbus_connection_send_with_reply(this->connection_, this->message_, this->pending_, DBUS_TIMEOUT_USE_DEFAULT)) {
 		dbus_message_unref(this->message_);
 		LOG(ERROR) << "DBus remote method call with pending reply sending failure";
@@ -72,8 +80,10 @@ GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
 
 void GKDBusRemoteMethodCall::appendToRemoteMethodCall(const std::string & value) {
 	const char* p = value.c_str();
-	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) )
-		throw GLogiKExcept("DBus remote method call append string value failure, not enough memory");
+	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) ) {
+		this->hosed_message_ = true;
+		throw GKDBusOOMWrongBuild("RemoteMethodCall string append failure, not enough memory");
+	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
 	if( ! this->log_off_ )

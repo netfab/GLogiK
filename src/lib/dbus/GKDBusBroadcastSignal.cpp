@@ -29,7 +29,7 @@ namespace GLogiK
 {
 
 GKDBusBroadcastSignal::GKDBusBroadcastSignal(DBusConnection* conn, const char* object,
-	const char* interface, const char* signal) : connection_(conn), message_(nullptr)
+	const char* interface, const char* signal) : connection_(conn), message_(nullptr), hosed_message_(false)
 {
 	/* sanity checks */
 	if(conn == nullptr)
@@ -47,6 +47,14 @@ GKDBusBroadcastSignal::GKDBusBroadcastSignal(DBusConnection* conn, const char* o
 }
 
 GKDBusBroadcastSignal::~GKDBusBroadcastSignal() {
+	if(this->hosed_message_) {
+#if DEBUG_GKDBUS_SUBOBJECTS
+		LOG(WARNING) << "DBus hosed message, giving up";
+#endif
+		dbus_message_unref(this->message_);
+		return;
+	}
+
 	// TODO dbus_uint32_t serial;
 	if( ! dbus_connection_send(this->connection_, this->message_, nullptr) ) {
 		dbus_message_unref(this->message_);
@@ -63,8 +71,10 @@ GKDBusBroadcastSignal::~GKDBusBroadcastSignal() {
 
 void GKDBusBroadcastSignal::appendToBroadcastSignal(const std::string & value) {
 	const char* p = value.c_str();
-	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) )
-		throw GLogiKExcept("DBus signal append string value failure, not enough memory");
+	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) ) {
+		this->hosed_message_ = true;
+		throw GKDBusOOMWrongBuild("BroadcastSignal string append failure, not enough memory");
+	}
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus signal string value appended";
 #endif

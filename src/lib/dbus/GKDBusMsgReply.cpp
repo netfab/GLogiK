@@ -28,7 +28,9 @@
 namespace GLogiK
 {
 
-GKDBusMsgReply::GKDBusMsgReply(DBusConnection* conn, DBusMessage* message) : connection_(conn), reply_(nullptr) {
+GKDBusMsgReply::GKDBusMsgReply(DBusConnection* conn, DBusMessage* message) : connection_(conn), reply_(nullptr),
+	hosed_message_(false)
+{
 	/* sanity checks */
 	if(conn == nullptr)
 		throw GLogiKExcept("current connection is NULL");
@@ -48,6 +50,14 @@ GKDBusMsgReply::GKDBusMsgReply(DBusConnection* conn, DBusMessage* message) : con
 }
 
 GKDBusMsgReply::~GKDBusMsgReply() {
+	if(this->hosed_message_) {
+#if DEBUG_GKDBUS_SUBOBJECTS
+		LOG(WARNING) << "DBus hosed reply, giving up";
+#endif
+		dbus_message_unref(this->reply_);
+		return;
+	}
+
 	// TODO dbus_uint32_t serial;
 	if( ! dbus_connection_send(this->connection_, this->reply_, nullptr) ) {
 		dbus_message_unref(this->reply_);
@@ -63,8 +73,10 @@ GKDBusMsgReply::~GKDBusMsgReply() {
 }
 
 void GKDBusMsgReply::appendToReply(const dbus_bool_t value) {
-	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_BOOLEAN, &value) )
-		throw GLogiKExcept("DBus reply append boolean value failure, not enough memory");
+	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_BOOLEAN, &value) ) {
+		this->hosed_message_ = true;
+		throw GKDBusOOMWrongBuild("reply boolean append failure, not enough memory");
+	}
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus reply boolean value appended";
 #endif
@@ -72,8 +84,10 @@ void GKDBusMsgReply::appendToReply(const dbus_bool_t value) {
 
 void GKDBusMsgReply::appendToReply(const std::string & value) {
 	const char* p = value.c_str();
-	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) )
-		throw GLogiKExcept("DBus reply append string value failure, not enough memory");
+	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) ) {
+		this->hosed_message_ = true;
+		throw GKDBusOOMWrongBuild("reply string append failure, not enough memory");
+	}
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus reply string value appended";
 #endif

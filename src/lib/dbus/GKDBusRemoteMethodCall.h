@@ -46,7 +46,7 @@ class GKDBusRemoteMethodCall
 		DBusMessage* message_;
 		DBusPendingCall** pending_;
 		DBusMessageIter args_it_;
-
+		bool hosed_message_;
 		bool log_off_;
 
 };

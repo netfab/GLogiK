@@ -70,6 +70,13 @@ class GKDBusRemoteCallNoReply : public GLogiKExcept
 		virtual ~GKDBusRemoteCallNoReply( void ) throw() {};
 };
 
+class GKDBusOOMWrongBuild : public GLogiKExcept
+{
+	public:
+		GKDBusOOMWrongBuild( const std::string& msg = "" ) : GLogiKExcept(msg) {};
+		virtual ~GKDBusOOMWrongBuild( void ) throw() {};
+};
+
 } // namespace GLogiK
 
 #endif
