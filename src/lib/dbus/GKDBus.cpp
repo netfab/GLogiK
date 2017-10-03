@@ -331,7 +331,7 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 
 					try {
 						/* call string to bool callback */
-						const std::string arg = this->getNextStringArgument();
+						const std::string arg( this->getNextStringArgument() );
 						ret = DBusEvent.callback(arg);
 					}
 					catch ( const EmptyContainer & e ) {
@@ -386,10 +386,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 	/* handle particular case */
 	if(asked_object_path == this->getRootNode()) {
 		if( this->checkMessageForMethodCallOnInterface("org.freedesktop.DBus.Introspectable", "Introspect") ) {
-			std::string ret;
 			LOG(DEBUG1) << "DBus Introspect called on root node !";
 
-			ret = this->introspectRootNode();
+			const std::string ret( this->introspectRootNode() );
 
 			try {
 				this->initializeMethodCallReply(current);
@@ -436,11 +435,10 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 				const char* method = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << method << " call";
 				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
-					std::string ret;
 					LOG(DEBUG1) << "DBus " << method << " called !";
 
 					/* call void to string callback */
-					ret = DBusEvent.callback();
+					const std::string ret( DBusEvent.callback() );
 
 					try {
 						this->initializeMethodCallReply(current);
@@ -483,7 +481,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
 					LOG(DEBUG1) << "DBus " << method << " called !";
 
-					/* call void to string callback */
+					/* call void to strings array callback */
 					const std::vector<std::string> ret = DBusEvent.callback();
 
 					try {
@@ -529,7 +527,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 					try {
 						/* call string to bool callback */
-						const std::string arg = this->getNextStringArgument();
+						const std::string arg( this->getNextStringArgument() );
 						ret = DBusEvent.callback(arg);
 					}
 					catch ( const EmptyContainer & e ) {
@@ -579,9 +577,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					LOG(DEBUG1) << "DBus " << method << " called !";
 
 					try {
-						/* call string to bool callback */
-						const std::string arg1 = this->getNextStringArgument();
-						const std::string arg2 = this->getNextStringArgument();
+						/* call two strings to bool callback */
+						const std::string arg1( this->getNextStringArgument() );
+						const std::string arg2( this->getNextStringArgument() );
 						ret = DBusEvent.callback(arg1, arg2);
 					}
 					catch ( const EmptyContainer & e ) {
@@ -627,12 +625,11 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 				const char* method = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << method << " call";
 				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
-					std::string ret;
 					LOG(DEBUG1) << "DBus " << method << " called !";
 
 					/* call string to string callback */
 					const std::string & arg = object_it.first;
-					ret = DBusEvent.callback(arg);
+					const std::string ret( DBusEvent.callback(arg) );
 
 					try {
 						this->initializeMethodCallReply(current);
