@@ -367,7 +367,7 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
-				/* we want only methods */
+				/* we want only signals */
 				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL )
 					continue;
 
@@ -400,7 +400,7 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
-				/* we want only methods */
+				/* we want only signals */
 				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL )
 					continue;
 
