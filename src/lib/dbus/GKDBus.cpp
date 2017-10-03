@@ -58,6 +58,7 @@ GKDBus::~GKDBus()
 	}
 }
 
+/* -- */
 /*
  * DBus connections
  */
@@ -95,7 +96,6 @@ void GKDBus::connectToSystemBus(const char* connection_name) {
 }
 
 /* -- */
-
 /*
  * check message methods
  */
@@ -136,7 +136,6 @@ const bool GKDBus::checkMessageForMethodCallOnInterface(const char* interface, c
 }
 
 /* -- */
-
 /*
  *	Signal setup
  */
@@ -186,7 +185,6 @@ void GKDBus::sendBroadcastSignal(void) {
 }
 
 /* -- */
-
 /*
  *	DBus Method Call Error Reply
  */
@@ -225,7 +223,6 @@ void GKDBus::sendMessageErrorReply(void) {
 }
 
 /* -- */
-
 /*
  *	DBus Method Call Reply
  */
@@ -266,7 +263,6 @@ void GKDBus::sendMethodCallReply(void) {
 }
 
 /* -- */
-
 /*
  *	DBus Remote Object Method Call
  */
@@ -320,6 +316,9 @@ void GKDBus::waitForRemoteMethodCallReply(void) {
 }
 
 /* -- */
+/*
+ *	Functions to get DBus message arguments in the order they were provided
+ */
 
 std::string GKDBus::getNextStringArgument(void) {
 	if( this->string_arguments_.empty() )
@@ -337,6 +336,15 @@ const bool GKDBus::getNextBooleanArgument(void) {
 	return ret;
 }
 
+/* -- */
+/*
+ * check if :
+ *      one of the registered signals
+ *   on one of the registered interfaces
+ *   on one of the registered object path
+ * was receipted. if yes, then run the corresponding callback function
+ * TODO loop on other containers
+ */
 void GKDBus::checkForSignalReceipt(BusConnection current) {
 	const char* obj = dbus_message_get_path(this->message_);
 	std::string asked_object_path("");
@@ -409,6 +417,7 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 	}
 }
 
+/* -- */
 /*
  * check if :
  *      one of the registered methods
@@ -742,6 +751,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 	}
 }
 
+/* -- */
 /*
  * private
  */
