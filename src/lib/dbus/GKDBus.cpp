@@ -37,7 +37,8 @@ GKDBus::GKDBus(const std::string & rootnode) : buffer_("", std::ios_base::app),
 	system_conn_(nullptr),
 	reply_(nullptr),
 	method_call_(nullptr),
-	signal_(nullptr)
+	signal_(nullptr),
+	error_reply_(nullptr)
 {
 	LOG(DEBUG1) << "dbus object initialization";
 	dbus_error_init(&(this->error_));
@@ -181,6 +182,45 @@ void GKDBus::sendBroadcastSignal(void) {
 	}
 	else {
 		LOG(WARNING) << __func__ << " failure because signal object not contructed";
+	}
+}
+
+/* -- */
+
+/*
+ *	DBus Method Call Error Reply
+ */
+
+void GKDBus::buildAndSendErrorReply(BusConnection current) {
+	try {
+		this->initializeMessageErrorReply(current);
+	}
+	catch (const std::bad_alloc & e) { /* handle new() failure */
+		LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+		throw GLogiKExcept("caught bad_alloc, do not like that");
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << "DBus reply failure : " << e.what();
+	}
+
+	/* delete error_reply object if allocated */
+	this->sendMessageErrorReply();
+}
+
+void GKDBus::initializeMessageErrorReply(BusConnection current) {
+	if(this->error_reply_) /* sanity check */
+		throw GLogiKExcept("DBus reply object already allocated");
+	this->setCurrentConnection(current);
+	this->error_reply_ = new GKDBusMessageErrorReply(this->current_conn_, this->message_);
+}
+
+void GKDBus::sendMessageErrorReply(void) {
+	if(this->error_reply_) { /* sanity check */
+		delete this->error_reply_;
+		this->error_reply_ = nullptr;
+	}
+	else {
+		LOG(WARNING) << __func__ << " failure because error_reply object not contructed";
 	}
 }
 
@@ -390,6 +430,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 			const std::string ret( this->introspectRootNode() );
 
+			bool try_error_reply = false;
+
 			try {
 				this->initializeMethodCallReply(current);
 				this->appendToMethodCallReply(ret);
@@ -399,6 +441,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 				throw GLogiKExcept("caught bad_alloc, do not like that");
 			}
 			catch (const GKDBusOOMWrongBuild & e) {
+				try_error_reply = true;
 				LOG(ERROR) << "DBus build reply failure : " << e.what();
 			}
 			catch (const GLogiKExcept & e) {
@@ -407,6 +450,10 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 			/* delete reply object if allocated */
 			this->sendMethodCallReply();
+
+			if(try_error_reply)
+				this->buildAndSendErrorReply(current);
+
 			return; /* one reply at a time */
 		}
 	}
@@ -441,6 +488,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					/* call void to string callback */
 					const std::string ret( DBusEvent.callback() );
 
+					bool try_error_reply = false;
+
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
@@ -450,6 +499,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 						throw GLogiKExcept("caught bad_alloc, do not like that");
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
+						try_error_reply = true;
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
 					}
 					catch ( const GLogiKExcept & e ) {
@@ -458,6 +508,10 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 					/* delete reply object if allocated */
 					this->sendMethodCallReply();
+
+					if(try_error_reply)
+						this->buildAndSendErrorReply(current);
+
 					return; /* one reply at a time */
 				}
 			}
@@ -486,6 +540,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					/* call void to strings array callback */
 					const std::vector<std::string> ret = DBusEvent.callback();
 
+					bool try_error_reply = false;
+
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
@@ -495,6 +551,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 						throw GLogiKExcept("caught bad_alloc, do not like that");
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
+						try_error_reply = true;
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
 					}
 					catch ( const GLogiKExcept & e ) {
@@ -503,6 +560,10 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 					/* delete reply object if allocated */
 					this->sendMethodCallReply();
+
+					if(try_error_reply)
+						this->buildAndSendErrorReply(current);
+
 					return; /* one reply at a time */
 				}
 			}
@@ -537,6 +598,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 						LOG(DEBUG3) << e.what();
 					}
 
+					bool try_error_reply = false;
+
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
@@ -546,6 +609,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 						throw GLogiKExcept("caught bad_alloc, do not like that");
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
+						try_error_reply = true;
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
 					}
 					catch ( const GLogiKExcept & e ) {
@@ -554,6 +618,10 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 					/* delete reply object if allocated */
 					this->sendMethodCallReply();
+
+					if(try_error_reply)
+						this->buildAndSendErrorReply(current);
+
 					return; /* one reply at a time */
 				}
 			}
@@ -590,6 +658,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 						LOG(DEBUG3) << e.what();
 					}
 
+					bool try_error_reply = false;
+
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
@@ -599,6 +669,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 						throw GLogiKExcept("caught bad_alloc, do not like that");
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
+						try_error_reply = true;
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
 					}
 					catch ( const GLogiKExcept & e ) {
@@ -607,6 +678,10 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 					/* delete reply object if allocated */
 					this->sendMethodCallReply();
+
+					if(try_error_reply)
+						this->buildAndSendErrorReply(current);
+
 					return; /* one reply at a time */
 				}
 			}
@@ -636,6 +711,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					const std::string & arg = object_it.first;
 					const std::string ret( DBusEvent.callback(arg) );
 
+					bool try_error_reply = false;
+
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
@@ -645,6 +722,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 						throw GLogiKExcept("caught bad_alloc, do not like that");
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
+						try_error_reply = true;
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
 					}
 					catch ( const GLogiKExcept & e ) {
@@ -653,6 +731,10 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 					/* delete reply object if allocated */
 					this->sendMethodCallReply();
+
+					if(try_error_reply)
+						this->buildAndSendErrorReply(current);
+
 					return; /* one reply at a time */
 				}
 			}

@@ -11,4 +11,5 @@ libGLogiKDBus_la_SOURCES = \
 	GKDBusMessage.cpp GKDBusMessage.h \
 	GKDBusMsgReply.cpp GKDBusMsgReply.h \
 	GKDBusRemoteMethodCall.cpp GKDBusRemoteMethodCall.h \
-	GKDBusBroadcastSignal.cpp GKDBusBroadcastSignal.h
+	GKDBusBroadcastSignal.cpp GKDBusBroadcastSignal.h \
+	GKDBusMessageErrorReply.cpp GKDBusMessageErrorReply.h

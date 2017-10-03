@@ -33,6 +33,7 @@
 #include "GKDBusMsgReply.h"
 #include "GKDBusRemoteMethodCall.h"
 #include "GKDBusBroadcastSignal.h"
+#include "GKDBusMessageErrorReply.h"
 #undef GKDBUS_INSIDE_GKDBUS_H
 
 namespace GLogiK
@@ -104,11 +105,16 @@ class GKDBus : public GKDBusEvents
 		GKDBusMsgReply* reply_;
 		GKDBusRemoteMethodCall* method_call_;
 		GKDBusBroadcastSignal* signal_;
+		GKDBusMessageErrorReply* error_reply_;
 
 		void setCurrentConnection(BusConnection current);
 		void checkDBusError(const char* error_message);
 		void fillInArguments(void);
 		void addSignalRuleMatch(const char* interface, const char* eventName);
+
+		void buildAndSendErrorReply(BusConnection current);
+		void initializeMessageErrorReply(BusConnection current);
+		void sendMessageErrorReply(void);
 };
 
 } // namespace GLogiK
