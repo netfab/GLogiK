@@ -120,6 +120,22 @@ void DevicesManager::initializeDevices(void) {
 	LOG(INFO) << "device(s) initialized : " << this->initialized_devices_.size();
 }
 
+void DevicesManager::sendSignalToClients(const std::string & signal) {
+	try {
+		this->DBus->initializeBroadcastSignal(BusConnection::GKDBUS_SYSTEM,
+			this->DBus_CSMH_object_path_, this->DBus_CSMH_interface_,
+			signal.c_str());
+		this->DBus->sendBroadcastSignal();
+	}
+	catch (const std::bad_alloc & e) { /* handle new() failure */
+		LOG(ERROR) << "DBus signal allocation failure : " << e.what();
+		throw GLogiKExcept("caught bad_alloc, do not like that");
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << "DBus signal failure : " << e.what();
+	}
+}
+
 const bool DevicesManager::startDevice(const std::string & devID) {
 	LOG(DEBUG2) << "trying to start device " << devID;
 	try {
@@ -140,11 +156,8 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 					LOG(DEBUG3) << "removing " << devID << " from plugged-but-stopped devices";
 					this->plugged_but_stopped_devices_.erase(devID);
 
-					/* send signal to clients */
-					this->DBus->initializeBroadcastSignal(BusConnection::GKDBUS_SYSTEM,
-						this->DBus_CSMH_object_path_, this->DBus_CSMH_interface_,
-						"SomethingChanged");
-					this->DBus->sendBroadcastSignal();
+					/* inform clients */
+					this->sendSignalToClients("SomethingChanged");
 
 					return true;
 				}
@@ -184,11 +197,8 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 					this->plugged_but_stopped_devices_[devID] = device;
 					this->initialized_devices_.erase(devID);
 
-					/* send signal to clients */
-					this->DBus->initializeBroadcastSignal(BusConnection::GKDBUS_SYSTEM,
-						this->DBus_CSMH_object_path_, this->DBus_CSMH_interface_,
-						"SomethingChanged");
-					this->DBus->sendBroadcastSignal();
+					/* inform clients */
+					this->sendSignalToClients("SomethingChanged");
 
 					return true;
 				}
