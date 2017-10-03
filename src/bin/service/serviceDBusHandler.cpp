@@ -232,8 +232,14 @@ void ServiceDBusHandler::somethingChanged(void) {
 
 void ServiceDBusHandler::checkDBusMessages(void) {
 	if( this->DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
-		this->DBus->checkForSignalReceipt(BusConnection::GKDBUS_SYSTEM);
-		this->DBus->freeMessage();
+		try {
+			this->DBus->checkForSignalReceipt(BusConnection::GKDBUS_SYSTEM);
+			this->DBus->freeMessage();
+		}
+		catch ( const GLogiKExcept & e ) {
+			this->DBus->freeMessage();
+			throw;
+		}
 	}
 }
 

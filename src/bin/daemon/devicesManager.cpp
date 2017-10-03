@@ -481,8 +481,14 @@ const std::vector<std::string> DevicesManager::getStartedDevices(void) {
 
 void DevicesManager::checkDBusMessages(void) {
 	if( this->DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
-		this->DBus->checkForMethodCall(BusConnection::GKDBUS_SYSTEM);
-		this->DBus->freeMessage();
+		try {
+			this->DBus->checkForMethodCall(BusConnection::GKDBUS_SYSTEM);
+			this->DBus->freeMessage();
+		}
+		catch ( const GLogiKExcept & e ) {
+			this->DBus->freeMessage();
+			throw;
+		}
 	}
 }
 

@@ -394,13 +394,14 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 				this->initializeMethodCallReply(current);
 				this->appendToMethodCallReply(ret);
 			}
-			catch (const std::bad_alloc& e) { /* handle new() failure */
+			catch (const std::bad_alloc & e) { /* handle new() failure */
 				LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+				throw GLogiKExcept("caught bad_alloc, do not like that");
 			}
 			catch (const GKDBusOOMWrongBuild & e) {
 				LOG(ERROR) << "DBus build reply failure : " << e.what();
 			}
-			catch ( const GLogiKExcept & e ) {
+			catch (const GLogiKExcept & e) {
 				LOG(ERROR) << "DBus reply failure : " << e.what();
 			}
 
@@ -446,6 +447,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					}
 					catch (const std::bad_alloc& e) { /* handle new() failure */
 						LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+						throw GLogiKExcept("caught bad_alloc, do not like that");
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -490,6 +492,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					}
 					catch (const std::bad_alloc& e) { /* handle new() failure */
 						LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+						throw GLogiKExcept("caught bad_alloc, do not like that");
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -540,6 +543,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					}
 					catch (const std::bad_alloc& e) { /* handle new() failure */
 						LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+						throw GLogiKExcept("caught bad_alloc, do not like that");
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -592,6 +596,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					}
 					catch (const std::bad_alloc& e) { /* handle new() failure */
 						LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+						throw GLogiKExcept("caught bad_alloc, do not like that");
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -637,6 +642,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					}
 					catch (const std::bad_alloc& e) { /* handle new() failure */
 						LOG(ERROR) << "DBus reply allocation failure : " << e.what();
+						throw GLogiKExcept("caught bad_alloc, do not like that");
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
