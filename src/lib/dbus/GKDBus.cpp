@@ -114,25 +114,26 @@ void GKDBus::freeMessage(void) {
 	dbus_message_unref(this->message_);
 }
 
-const bool GKDBus::checkMessageForSignalReceiptOnInterface(const char* interface, const char* signal_name) {
+const bool GKDBus::checkMessageForSignalReceipt(const char* interface, const char* signal) {
 	if(this->message_ == nullptr)
 		return false;
-	LOG(DEBUG) << "checking for signal";
-	if( dbus_message_is_signal(this->message_, interface, signal_name) ) {
-		LOG(DEBUG1) << "got signal " << signal_name;
+	if( dbus_message_is_signal(this->message_, interface, signal) ) {
+		LOG(DEBUG1) << "DBus " << signal << " signal receipted !";
 		this->fillInArguments();
 		return true;
 	}
 	return false;
 }
 
-const bool GKDBus::checkMessageForMethodCallOnInterface(const char* interface, const char* method) {
+const bool GKDBus::checkMessageForMethodCall(const char* interface, const char* method) {
 	if(this->message_ == nullptr)
 		return false;
-	const bool ret = dbus_message_is_method_call(this->message_, interface, method);
-	if(ret)
+	if( dbus_message_is_method_call(this->message_, interface, method) ) {
+		LOG(DEBUG1) << "DBus " << method << " method called !";
 		this->fillInArguments();
-	return ret;
+		return true;
+	}
+	return false;
 }
 
 /* -- */
@@ -396,9 +397,8 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 
 				const char* signal = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << signal << " receipt";
-				if( this->checkMessageForSignalReceiptOnInterface(interface.first.c_str(), signal) ) {
+				if( this->checkMessageForSignalReceipt(interface.first.c_str(), signal) ) {
 					bool ret = false;
-					LOG(DEBUG1) << "DBus " << signal << " receipt !";
 
 					try {
 						/* call string to bool callback */
@@ -429,9 +429,7 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 
 				const char* signal = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << signal << " receipt";
-				if( this->checkMessageForSignalReceiptOnInterface(interface.first.c_str(), signal) ) {
-					LOG(DEBUG1) << "DBus " << signal << " receipt !";
-
+				if( this->checkMessageForSignalReceipt(interface.first.c_str(), signal) ) {
 					/* call void to void callback */
 					DBusEvent.callback();
 				}
@@ -457,9 +455,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 	/* handle particular case */
 	if(asked_object_path == this->getRootNode()) {
-		if( this->checkMessageForMethodCallOnInterface("org.freedesktop.DBus.Introspectable", "Introspect") ) {
-			LOG(DEBUG1) << "DBus Introspect called on root node !";
-
+		if( this->checkMessageForMethodCall("org.freedesktop.DBus.Introspectable", "Introspect") ) {
 			const std::string ret( this->introspectRootNode() );
 
 			bool try_error_reply = false;
@@ -510,9 +506,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 				const char* method = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << method << " call";
-				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
-					LOG(DEBUG1) << "DBus " << method << " called !";
-
+				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
 					/* call void to string callback */
 					const std::string ret( DBusEvent.callback() );
 
@@ -558,9 +552,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 				const char* method = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << method << " call";
-				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
-					LOG(DEBUG1) << "DBus " << method << " called !";
-
+				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
 					/* call void to strings array callback */
 					const std::vector<std::string> ret = DBusEvent.callback();
 
@@ -605,9 +597,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 				const char* method = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << method << " call";
-				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
+				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
 					bool ret = false;
-					LOG(DEBUG1) << "DBus " << method << " called !";
 
 					try {
 						/* call string to bool callback */
@@ -660,9 +651,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 				const char* method = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << method << " call";
-				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
+				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
 					bool ret = false;
-					LOG(DEBUG1) << "DBus " << method << " called !";
 
 					try {
 						/* call two strings to bool callback */
@@ -716,9 +706,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 				const char* method = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << method << " call";
-				if( this->checkMessageForMethodCallOnInterface(interface.first.c_str(), method) ) {
-					LOG(DEBUG1) << "DBus " << method << " called !";
-
+				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
 					/* call string to string callback */
 					const std::string & arg = object_it.first;
 					const std::string ret( DBusEvent.callback(arg) );
