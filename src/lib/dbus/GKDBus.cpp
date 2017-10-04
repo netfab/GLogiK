@@ -461,25 +461,26 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 		if( this->checkMessageForMethodCall("org.freedesktop.DBus.Introspectable", "Introspect") ) {
 			const std::string ret( this->introspectRootNode() );
 
-			bool try_error_reply = false;
-
 			try {
 				this->initializeMethodCallReply(current);
 				this->appendToMethodCallReply(ret);
 			}
 			catch (const GKDBusOOMWrongBuild & e) {
-				try_error_reply = true;
 				LOG(ERROR) << "DBus build reply failure : " << e.what();
+				/* delete reply object if allocated */
+				this->sendMethodCallReply();
+				this->buildAndSendErrorReply(current);
+				return;
 			}
 			catch (const GLogiKExcept & e) {
 				LOG(ERROR) << "DBus reply failure : " << e.what();
+				/* delete reply object if allocated */
+				this->sendMethodCallReply();
+				throw;
 			}
 
 			/* delete reply object if allocated */
 			this->sendMethodCallReply();
-
-			if(try_error_reply)
-				this->buildAndSendErrorReply(current);
 
 			return; /* only one by message */
 		}
@@ -513,25 +514,26 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					/* call void to string callback */
 					const std::string ret( DBusEvent.callback() );
 
-					bool try_error_reply = false;
-
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
-						try_error_reply = true;
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						this->buildAndSendErrorReply(current);
+						return;
 					}
 					catch ( const GLogiKExcept & e ) {
 						LOG(ERROR) << "DBus reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						throw;
 					}
 
 					/* delete reply object if allocated */
 					this->sendMethodCallReply();
-
-					if(try_error_reply)
-						this->buildAndSendErrorReply(current);
 
 					return; /* only one by message */
 				}
@@ -559,25 +561,26 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					/* call void to strings array callback */
 					const std::vector<std::string> ret = DBusEvent.callback();
 
-					bool try_error_reply = false;
-
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
-						try_error_reply = true;
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						this->buildAndSendErrorReply(current);
+						return;
 					}
 					catch ( const GLogiKExcept & e ) {
 						LOG(ERROR) << "DBus reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						throw;
 					}
 
 					/* delete reply object if allocated */
 					this->sendMethodCallReply();
-
-					if(try_error_reply)
-						this->buildAndSendErrorReply(current);
 
 					return; /* only one by message */
 				}
@@ -612,25 +615,26 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 						LOG(DEBUG3) << e.what();
 					}
 
-					bool try_error_reply = false;
-
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
-						try_error_reply = true;
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						this->buildAndSendErrorReply(current);
+						return;
 					}
 					catch ( const GLogiKExcept & e ) {
 						LOG(ERROR) << "DBus reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						throw;
 					}
 
 					/* delete reply object if allocated */
 					this->sendMethodCallReply();
-
-					if(try_error_reply)
-						this->buildAndSendErrorReply(current);
 
 					return; /* only one by message */
 				}
@@ -667,25 +671,26 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 						LOG(DEBUG3) << e.what();
 					}
 
-					bool try_error_reply = false;
-
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
-						try_error_reply = true;
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						this->buildAndSendErrorReply(current);
+						return;
 					}
 					catch ( const GLogiKExcept & e ) {
 						LOG(ERROR) << "DBus reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						throw;
 					}
 
 					/* delete reply object if allocated */
 					this->sendMethodCallReply();
-
-					if(try_error_reply)
-						this->buildAndSendErrorReply(current);
 
 					return; /* only one by message */
 				}
@@ -714,25 +719,26 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					const std::string & arg = object_it.first;
 					const std::string ret( DBusEvent.callback(arg) );
 
-					bool try_error_reply = false;
-
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
-						try_error_reply = true;
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						this->buildAndSendErrorReply(current);
+						return;
 					}
 					catch ( const GLogiKExcept & e ) {
 						LOG(ERROR) << "DBus reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						throw;
 					}
 
 					/* delete reply object if allocated */
 					this->sendMethodCallReply();
-
-					if(try_error_reply)
-						this->buildAndSendErrorReply(current);
 
 					return; /* only one by message */
 				}
