@@ -408,6 +408,8 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 					catch ( const EmptyContainer & e ) {
 						LOG(DEBUG3) << e.what();
 					}
+
+					return; /* only one by message */
 				}
 			}
 		}
@@ -432,6 +434,7 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 				if( this->checkMessageForSignalReceipt(interface.first.c_str(), signal) ) {
 					/* call void to void callback */
 					DBusEvent.callback();
+					return; /* only one by message */
 				}
 			}
 		}
@@ -478,7 +481,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			if(try_error_reply)
 				this->buildAndSendErrorReply(current);
 
-			return; /* one reply at a time */
+			return; /* only one by message */
 		}
 	}
 	/* end particular case */
@@ -530,7 +533,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					if(try_error_reply)
 						this->buildAndSendErrorReply(current);
 
-					return; /* one reply at a time */
+					return; /* only one by message */
 				}
 			}
 		}
@@ -576,7 +579,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					if(try_error_reply)
 						this->buildAndSendErrorReply(current);
 
-					return; /* one reply at a time */
+					return; /* only one by message */
 				}
 			}
 		}
@@ -629,7 +632,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					if(try_error_reply)
 						this->buildAndSendErrorReply(current);
 
-					return; /* one reply at a time */
+					return; /* only one by message */
 				}
 			}
 		}
@@ -684,7 +687,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					if(try_error_reply)
 						this->buildAndSendErrorReply(current);
 
-					return; /* one reply at a time */
+					return; /* only one by message */
 				}
 			}
 		}
@@ -731,7 +734,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					if(try_error_reply)
 						this->buildAndSendErrorReply(current);
 
-					return; /* one reply at a time */
+					return; /* only one by message */
 				}
 			}
 		}
