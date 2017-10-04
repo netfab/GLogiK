@@ -127,10 +127,6 @@ void DevicesManager::sendSignalToClients(const std::string & signal) {
 			signal.c_str());
 		this->DBus->sendBroadcastSignal();
 	}
-	catch (const std::bad_alloc & e) { /* handle new() failure */
-		LOG(ERROR) << "DBus signal allocation failure : " << e.what();
-		throw GLogiKExcept("caught bad_alloc, do not like that");
-	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "DBus signal failure : " << e.what();
 	}
