@@ -26,6 +26,15 @@
 namespace GLogiK
 {
 
+/* --
+ * DBus Stuff
+ * --
+ * DCM - Daemon ClientsManager - to contact the ClientsManager
+ * SMH - System Message Handler - to declare signals we interested in from the daemon
+ * DDM - Daemon DevicesManager - to contact the DevicesManager
+ *
+ */
+
 ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
 	try {
 		this->DBus = new GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
@@ -36,7 +45,7 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
 
 		/* telling the daemon we are alive */
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			this->DBus_client_object_path_, this->DBus_client_interface_, "RegisterClient");
+			this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "RegisterClient");
 		this->DBus->appendToRemoteMethodCall(this->current_session_);
 		this->DBus->sendRemoteMethodCall();
 
@@ -54,6 +63,7 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
 			throw GLogiKExcept(failure);
 		}
 
+		/* want to be warned by the daemon about those signals */
 		this->DBus->addSignal_VoidToVoid_Callback(BusConnection::GKDBUS_SYSTEM,
 			this->DBus_SMH_object_, this->DBus_SMH_interface_, "SomethingChanged",
 			{}, // FIXME
@@ -70,7 +80,7 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 	try {
 		/* telling the daemon we're killing ourself */
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			this->DBus_client_object_path_, this->DBus_client_interface_, "UnregisterClient");
+			this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "UnregisterClient");
 		this->DBus->appendToRemoteMethodCall(this->current_session_);
 		this->DBus->sendRemoteMethodCall();
 
@@ -152,7 +162,7 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 
 void ServiceDBusHandler::reportChangedState(void) {
 	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		this->DBus_client_object_path_, this->DBus_client_interface_, "UpdateClientState");
+		this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "UpdateClientState");
 	this->DBus->appendToRemoteMethodCall(this->current_session_);
 	this->DBus->appendToRemoteMethodCall(this->session_state_);
 	this->DBus->sendRemoteMethodCall();
@@ -228,6 +238,19 @@ void ServiceDBusHandler::somethingChanged(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "it seems that something changed ! ";
 #endif
+	try {
+		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetStartedDevices");
+		this->DBus->sendRemoteMethodCall();
+
+		this->DBus->waitForRemoteMethodCallReply();
+	}
+	catch (const GLogiKExcept & e) {
+		std::string warn("can't get reply : ");
+		warn += e.what();
+		LOG(WARNING) << warn;
+		GK_WARN << warn << "\n";
+	}
 }
 
 void ServiceDBusHandler::checkDBusMessages(void) {

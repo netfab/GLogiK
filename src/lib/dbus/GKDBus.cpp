@@ -789,6 +789,16 @@ void GKDBus::fillInArguments(void) {
 				this->boolean_arguments_.push_back(bool_arg);
 				//LOG(DEBUG4) << "bool arg value : " << bool_arg;
 				break;
+			case DBUS_TYPE_ARRAY:
+				switch( dbus_message_iter_get_element_type(&arg_it) ) {
+					case DBUS_TYPE_STRING:
+						LOG(DEBUG) << "found array of strings";
+						break;
+					default:
+						LOG(WARNING) << "unhandled type for dbus array";
+						break;
+				}
+				break;
 			default: /* other dbus type */
 				break;
 		}

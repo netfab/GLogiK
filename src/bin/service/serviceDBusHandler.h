@@ -48,12 +48,17 @@ class ServiceDBusHandler
 		uint8_t warn_count_;
 		GKDBus* DBus;
 
-		const char* DBus_client_object_path_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH;
-		const char* DBus_client_interface_		= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
+		/* DCM - Daemon ClientsManager - to contact the ClientsManager */
+		const char* DBus_DCM_object_path_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH;
+		const char* DBus_DCM_interface_		= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
 
-		/* SMH - System Message Handler */
+		/* SMH - System Message Handler - to declare signals we interested in from the daemon */
 		const char* DBus_SMH_object_	= GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT;
 		const char* DBus_SMH_interface_	= GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE;
+
+		/* DDM - Daemon DevicesManager - to contact the DevicesManager */
+		const char* DBus_DDM_object_path_	= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH;
+		const char* DBus_DDM_interface_		= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
 
 		std::string current_session_;	/* current session object path */
 		std::string session_state_;		/* session state */
