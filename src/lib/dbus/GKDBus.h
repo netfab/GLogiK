@@ -30,7 +30,7 @@
 
 #define GKDBUS_INSIDE_GKDBUS_H 1
 #include "GKDBusEvents.h"
-#include "GKDBusMsgReply.h"
+#include "GKDBusMessageReply.h"
 #include "GKDBusRemoteMethodCall.h"
 #include "GKDBusBroadcastSignal.h"
 #include "GKDBusMessageErrorReply.h"
@@ -102,7 +102,7 @@ class GKDBus : public GKDBusEvents
 		std::vector<std::string> string_arguments_;
 		std::vector<bool> boolean_arguments_;
 
-		GKDBusMsgReply* reply_;
+		GKDBusMessageReply* reply_;
 		GKDBusRemoteMethodCall* method_call_;
 		GKDBusBroadcastSignal* signal_;
 		GKDBusMessageErrorReply* error_reply_;

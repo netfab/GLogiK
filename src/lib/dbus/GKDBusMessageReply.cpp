@@ -22,13 +22,13 @@
 #include "lib/utils/utils.h"
 
 #define GKDBUS_COMPILATION 1
-#include "GKDBusMsgReply.h"
+#include "GKDBusMessageReply.h"
 #undef GKDBUS_COMPILATION
 
 namespace GLogiK
 {
 
-GKDBusMsgReply::GKDBusMsgReply(DBusConnection* conn, DBusMessage* message) : GKDBusMessage(conn)
+GKDBusMessageReply::GKDBusMessageReply(DBusConnection* conn, DBusMessage* message) : GKDBusMessage(conn)
 {
 	/* sanity check */
 	if(message == nullptr)
@@ -46,7 +46,7 @@ GKDBusMsgReply::GKDBusMsgReply(DBusConnection* conn, DBusMessage* message) : GKD
 #endif
 }
 
-GKDBusMsgReply::~GKDBusMsgReply() {
+GKDBusMessageReply::~GKDBusMessageReply() {
 	if(this->hosed_message_) {
 #if DEBUG_GKDBUS_SUBOBJECTS
 		LOG(WARNING) << "DBus hosed reply, giving up";
@@ -71,7 +71,7 @@ GKDBusMsgReply::~GKDBusMsgReply() {
 #endif
 }
 
-void GKDBusMsgReply::appendToReply(const dbus_bool_t value) {
+void GKDBusMessageReply::appendToMessageReply(const dbus_bool_t value) {
 	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_BOOLEAN, &value) ) {
 		this->hosed_message_ = true;
 #if DEBUG_GKDBUS_SUBOBJECTS
@@ -84,7 +84,7 @@ void GKDBusMsgReply::appendToReply(const dbus_bool_t value) {
 #endif
 }
 
-void GKDBusMsgReply::appendToReply(const std::string & value) {
+void GKDBusMessageReply::appendToMessageReply(const std::string & value) {
 	const char* p = value.c_str();
 	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) ) {
 		this->hosed_message_ = true;
@@ -98,7 +98,7 @@ void GKDBusMsgReply::appendToReply(const std::string & value) {
 #endif
 }
 
-void GKDBusMsgReply::appendToReply(const std::vector<std::string> & list) {
+void GKDBusMessageReply::appendToMessageReply(const std::vector<std::string> & list) {
 	DBusMessageIter container_it;
 
 	if( ! dbus_message_iter_open_container(&this->args_it_, DBUS_TYPE_ARRAY, "s", &container_it) ) {

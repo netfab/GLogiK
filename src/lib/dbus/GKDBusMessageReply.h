@@ -36,15 +36,15 @@
 namespace GLogiK
 {
 
-class GKDBusMsgReply : public GKDBusMessage
+class GKDBusMessageReply : public GKDBusMessage
 {
 	public:
-		GKDBusMsgReply(DBusConnection* conn, DBusMessage* message);
-		~GKDBusMsgReply();
+		GKDBusMessageReply(DBusConnection* conn, DBusMessage* message);
+		~GKDBusMessageReply();
 
-		void appendToReply(const dbus_bool_t value);
-		void appendToReply(const std::string & value);
-		void appendToReply(const std::vector<std::string> & list);
+		void appendToMessageReply(const dbus_bool_t value);
+		void appendToMessageReply(const std::string & value);
+		void appendToMessageReply(const std::vector<std::string> & list);
 
 	protected:
 	private:

@@ -9,7 +9,7 @@ libGLogiKDBus_la_SOURCES = \
 	GKDBus.cpp GKDBus.h \
 	GKDBusEvents.cpp GKDBusEvents.h \
 	GKDBusMessage.cpp GKDBusMessage.h \
-	GKDBusMsgReply.cpp GKDBusMsgReply.h \
+	GKDBusMessageReply.cpp GKDBusMessageReply.h \
 	GKDBusRemoteMethodCall.cpp GKDBusRemoteMethodCall.h \
 	GKDBusBroadcastSignal.cpp GKDBusBroadcastSignal.h \
 	GKDBusMessageErrorReply.cpp GKDBusMessageErrorReply.h

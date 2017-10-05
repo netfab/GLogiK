@@ -243,7 +243,7 @@ void GKDBus::initializeMethodCallReply(BusConnection current) {
 	this->setCurrentConnection(current);
 
 	try {
-		this->reply_ = new GKDBusMsgReply(this->current_conn_, this->message_);
+		this->reply_ = new GKDBusMessageReply(this->current_conn_, this->message_);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus message reply object allocation failure : " << e.what();
@@ -254,19 +254,19 @@ void GKDBus::initializeMethodCallReply(BusConnection current) {
 void GKDBus::appendToMethodCallReply(const bool value) {
 	if(this->reply_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus reply object not initialized");
-	this->reply_->appendToReply(value);
+	this->reply_->appendToMessageReply(value);
 }
 
 void GKDBus::appendToMethodCallReply(const std::string & value) {
 	if(this->reply_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus reply object not initialized");
-	this->reply_->appendToReply(value);
+	this->reply_->appendToMessageReply(value);
 }
 
 void GKDBus::appendToMethodCallReply(const std::vector<std::string> & list) {
 	if(this->reply_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus reply object not initialized");
-	this->reply_->appendToReply(list);
+	this->reply_->appendToMessageReply(list);
 }
 
 void GKDBus::sendMethodCallReply(void) {
