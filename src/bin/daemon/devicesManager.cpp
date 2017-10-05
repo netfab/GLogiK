@@ -485,6 +485,16 @@ const std::vector<std::string> DevicesManager::getStartedDevices(void) {
 	return ret;
 }
 
+const std::vector<std::string> DevicesManager::getStoppedDevices(void) {
+	std::vector<std::string> ret;
+
+	for(const auto& stopped_dev : this->plugged_but_stopped_devices_) {
+		ret.push_back(stopped_dev.first);
+	}
+
+	return ret;
+}
+
 void DevicesManager::checkDBusMessages(void) {
 	if( this->DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
 		try {
@@ -525,23 +535,27 @@ void DevicesManager::startMonitoring(GKDBus* pDBus) {
 
 	{
 		this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "Stop",
-			{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
+			{	{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 				{"b", "did_stop_succeeded", "out", "did the Stop method succeeded ?"} },
 			std::bind(&DevicesManager::stopDevice, this, std::placeholders::_1) );
 
 		this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "Start",
-			{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
+			{	{"s", "device_id", "in", "device ID coming from GetStoppedDevices"},
 				{"b", "did_start_succeeded", "out", "did the Start method succeeded ?"} },
 			std::bind(&DevicesManager::startDevice, this, std::placeholders::_1) );
 
 		this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "Restart",
-			{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
+			{	{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 				{"b", "did_restart_succeeded", "out", "did the Restart method succeeded ?"} },
 			std::bind(&DevicesManager::restartDevice, this, std::placeholders::_1) );
 
 		this->DBus->addEvent_VoidToStringsArray_Callback( this->DBus_object_, this->DBus_interface_, "GetStartedDevices",
 			{ {"as", "array_of_strings", "out", "array of started devices ID strings"} },
 			std::bind(&DevicesManager::getStartedDevices, this) );
+
+		this->DBus->addEvent_VoidToStringsArray_Callback( this->DBus_object_, this->DBus_interface_, "GetStoppedDevices",
+			{ {"as", "array_of_strings", "out", "array of stopped devices ID strings"} },
+			std::bind(&DevicesManager::getStoppedDevices, this) );
 	}
 
 	LOG(DEBUG2) << "loading known drivers";
