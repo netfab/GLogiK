@@ -538,6 +538,10 @@ void DevicesManager::startMonitoring(GKDBus* pDBus) {
 			{	{"s", "device_id", "in", "device ID coming from ..."}, // FIXME
 				{"b", "did_restart_succeeded", "out", "did the Restart method succeeded ?"} },
 			std::bind(&DevicesManager::restartDevice, this, std::placeholders::_1) );
+
+		this->DBus->addEvent_VoidToStringsArray_Callback( this->DBus_object_, this->DBus_interface_, "GetStartedDevices",
+			{ {"as", "array_of_strings", "out", "array of started devices ID strings"} },
+			std::bind(&DevicesManager::getStartedDevices, this) );
 	}
 
 	LOG(DEBUG2) << "loading known drivers";

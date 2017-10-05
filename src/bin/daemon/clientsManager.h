@@ -56,11 +56,10 @@ class ClientsManager
 		DevicesManager* devicesManager;
 
 		std::map<const std::string, Client*> clients_;
-		
+
 		const bool registerClient(const std::string & uniqueString);
 		const bool unregisterClient(const std::string & uniqueString);
 		const bool updateClientState(const std::string & uniqueString, const std::string & state);
-		const std::vector<std::string> getStartedDevices(void);
 };
 
 } // namespace GLogiK
