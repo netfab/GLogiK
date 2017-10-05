@@ -110,13 +110,12 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 
 void ServiceDBusHandler::setCurrentSessionObjectPath(void) {
 	// TODO logind support
-
-	/* getting consolekit current session */
-	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
-		"/org/freedesktop/ConsoleKit/Manager", "org.freedesktop.ConsoleKit.Manager", "GetCurrentSession");
-	this->DBus->sendRemoteMethodCall();
-
 	try {
+		/* getting consolekit current session */
+		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
+			"/org/freedesktop/ConsoleKit/Manager", "org.freedesktop.ConsoleKit.Manager", "GetCurrentSession");
+		this->DBus->sendRemoteMethodCall();
+
 		this->DBus->waitForRemoteMethodCallReply();
 		this->current_session_ = this->DBus->getNextStringArgument();
 		LOG(DEBUG1) << "current session : " << this->current_session_;
@@ -129,17 +128,28 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(void) {
 	}
 }
 
+void ServiceDBusHandler::warnOrThrows(const std::string & warn) {
+	LOG(WARNING) << warn;
+	GK_WARN << warn << "\n";
+	if(this->warn_count_ >= MAXIMUM_WARNINGS_BEFORE_FATAL_ERROR) {
+		const std::string last = "maximum warning count reached, this is fatal";
+		LOG(ERROR) << last;
+		GK_ERR << last << "\n";
+		throw GLogiKExcept(last);
+	}
+	this->warn_count_++;
+}
+
 /*
  * is the session in active, online or closing state ?
  */
 const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) {
 	// TODO logind support
-
-	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
-		this->current_session_.c_str(), "org.freedesktop.ConsoleKit.Session", "GetSessionState", logoff);
-	this->DBus->sendRemoteMethodCall();
-
 	try {
+		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
+			this->current_session_.c_str(), "org.freedesktop.ConsoleKit.Session", "GetSessionState", logoff);
+		this->DBus->sendRemoteMethodCall();
+
 		this->DBus->waitForRemoteMethodCallReply();
 		const std::string ret_string = this->DBus->getNextStringArgument();
 #if DEBUGGING_ON
@@ -148,26 +158,23 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 		return ret_string;
 	}
 	catch ( const GLogiKExcept & e ) {
-		if(this->warn_count_ >= MAXIMUM_WARNINGS_BEFORE_FATAL_ERROR)
-			throw GLogiKExcept("maximum warning count reached, this is fatal");
-		std::string warn("can't get session state from session manager, assuming unchanged : ");
+		std::string warn(__func__);
+		warn += " failure : ";
 		warn += e.what();
-		LOG(WARNING) << warn;
-		GK_WARN << warn << "\n";
-		this->warn_count_++;
+		this->warnOrThrows(warn);
 	}
 
 	return this->session_state_;
 }
 
 void ServiceDBusHandler::reportChangedState(void) {
-	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "UpdateClientState");
-	this->DBus->appendToRemoteMethodCall(this->current_session_);
-	this->DBus->appendToRemoteMethodCall(this->session_state_);
-	this->DBus->sendRemoteMethodCall();
-
 	try {
+		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "UpdateClientState");
+		this->DBus->appendToRemoteMethodCall(this->current_session_);
+		this->DBus->appendToRemoteMethodCall(this->session_state_);
+		this->DBus->sendRemoteMethodCall();
+
 		this->DBus->waitForRemoteMethodCallReply();
 		const bool ret = this->DBus->getNextBooleanArgument();
 		if( ret ) {
@@ -182,10 +189,10 @@ void ServiceDBusHandler::reportChangedState(void) {
 		}
 	}
 	catch ( const GLogiKExcept & e ) {
-		std::string warn("can't get reply : ");
+		std::string warn(__func__);
+		warn += " failure : ";
 		warn += e.what();
-		LOG(WARNING) << warn;
-		GK_WARN << warn << "\n";
+		this->warnOrThrows(warn);
 	}
 }
 
@@ -204,6 +211,7 @@ void ServiceDBusHandler::updateSessionState(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "switching session state from " << this->session_state_ << " to " << new_state;
 #endif
+
 /*
 	if( this->session_state_ == "active" ) {
 		if(new_state == "online") {
@@ -229,9 +237,9 @@ void ServiceDBusHandler::updateSessionState(void) {
 		throw GLogiKExcept(e);
 	}
 */
+
 	this->session_state_ = new_state;
 	this->reportChangedState();
-
 }
 
 void ServiceDBusHandler::somethingChanged(void) {
@@ -246,10 +254,10 @@ void ServiceDBusHandler::somethingChanged(void) {
 		this->DBus->waitForRemoteMethodCallReply();
 	}
 	catch (const GLogiKExcept & e) {
-		std::string warn("can't get reply : ");
+		std::string warn(__func__);
+		warn += " failure : ";
 		warn += e.what();
-		LOG(WARNING) << warn;
-		GK_WARN << warn << "\n";
+		this->warnOrThrows(warn);
 	}
 }
 
