@@ -763,6 +763,7 @@ void GKDBus::checkDBusError(const char* error_message) {
 
 void GKDBus::fillInArguments(void) {
 	int current_type = 0;
+	int sub_type = 0;
 	//LOG(DEBUG2) << "checking arguments";
 	this->string_arguments_.clear();
 	this->boolean_arguments_.clear();
@@ -772,7 +773,7 @@ void GKDBus::fillInArguments(void) {
 	DBusMessageIter arg_it;
 
 	dbus_message_iter_init(this->message_, &arg_it);
-	while ((current_type = dbus_message_iter_get_arg_type (&arg_it)) != DBUS_TYPE_INVALID) {
+	while ((current_type = dbus_message_iter_get_arg_type(&arg_it)) != DBUS_TYPE_INVALID) {
 		switch(current_type) {
 			case DBUS_TYPE_STRING:
 				dbus_message_iter_get_basic(&arg_it, &arg_value);
@@ -790,9 +791,17 @@ void GKDBus::fillInArguments(void) {
 				//LOG(DEBUG4) << "bool arg value : " << bool_arg;
 				break;
 			case DBUS_TYPE_ARRAY:
+				DBusMessageIter sub_it;
+				dbus_message_iter_recurse(&arg_it, &sub_it);
 				switch( dbus_message_iter_get_element_type(&arg_it) ) {
 					case DBUS_TYPE_STRING:
-						LOG(DEBUG) << "found array of strings";
+						LOG(DEBUG3) << "found array of strings";
+						while ((sub_type = dbus_message_iter_get_arg_type(&sub_it)) == DBUS_TYPE_STRING) {
+							dbus_message_iter_get_basic(&sub_it, &arg_value);
+							this->string_arguments_.push_back(arg_value);
+							LOG(DEBUG4) << "object path arg value : " << arg_value;
+							dbus_message_iter_next(&sub_it);
+						}
 						break;
 					default:
 						LOG(WARNING) << "unhandled type for dbus array";

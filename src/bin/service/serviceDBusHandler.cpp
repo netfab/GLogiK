@@ -252,6 +252,15 @@ void ServiceDBusHandler::somethingChanged(void) {
 		this->DBus->sendRemoteMethodCall();
 
 		this->DBus->waitForRemoteMethodCallReply();
+
+		try {
+			while( true ) {
+				LOG(DEBUG) << "next argument : " << this->DBus->getNextStringArgument();
+			}
+		}
+		catch (const EmptyContainer & e) {
+			// nothing to do here
+		}
 	}
 	catch (const GLogiKExcept & e) {
 		std::string warn(__func__);

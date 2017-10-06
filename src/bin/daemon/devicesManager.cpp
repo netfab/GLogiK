@@ -478,6 +478,9 @@ void DevicesManager::searchSupportedDevices(void) {
 const std::vector<std::string> DevicesManager::getStartedDevices(void) {
 	std::vector<std::string> ret;
 
+	// dev code
+	//std::vector<std::string> ret = {"aaa1", "bbb2", "ccc3"};
+
 	for(const auto& init_dev : this->initialized_devices_) {
 		ret.push_back(init_dev.first);
 	}
