@@ -62,7 +62,7 @@ install_it:
 
 uninstall_it:
 	cd $(build_dir) && test -d "$(PREFIX_DIR)" && make uninstall || echo 'no need uninstall phase.'
-	cd "$(PREFIX_DEV_DIR)" && rmdir -v GLogiK/{bin,lib64} GLogiK || echo 'uninstall artefacts rmdir failure.'
+	cd "$(PREFIX_DEV_DIR)" && rmdir -pv GLogiK/{bin,sbin,lib64,share/dbus-1/system.d}
 
 clean_it: uninstall_it
 	cd $(build_dir) && make clean

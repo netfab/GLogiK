@@ -348,7 +348,7 @@ void GLogiKDaemon::dropPrivileges(void) {
 	this->buffer_.str("successfully dropped root privileges");
 	syslog(LOG_INFO, this->buffer_.str().c_str() );
 #if DEBUGGING_ON
-	LOG(INFO) << this->buffer.str();
+	LOG(INFO) << this->buffer_.str();
 #endif
 }
 
