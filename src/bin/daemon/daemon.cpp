@@ -29,6 +29,8 @@
 
 #include <sys/types.h>
 #include <unistd.h>
+#include <pwd.h>
+#include <grp.h>
 
 #include <syslog.h>
 
@@ -87,6 +89,7 @@ GLogiKDaemon::~GLogiKDaemon()
 	}
 
 	LOG(INFO) << "bye !";
+	syslog(LOG_INFO, "bye !" );
 	if( this->log_fd_ != nullptr )
 		std::fclose(this->log_fd_);
 	closelog();
@@ -97,9 +100,14 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 	this->buffer_.str( "Starting " );
 	this->buffer_ << GLOGIKD_DAEMON_NAME << " vers. " << VERSION ;
 	syslog(LOG_INFO, this->buffer_.str().c_str() );
+#if DEBUGGING_ON
 	LOG(INFO) << this->buffer_.str();
+#endif
 
 	try {
+#if DEBUGGING_ON == 0
+		this->dropPrivileges();
+#endif
 		this->parseCommandLine(argc, argv);
 
 		if( GLogiKDaemon::is_daemon_enabled() ) {
@@ -286,6 +294,62 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	if (vm.count("daemonize")) {
 		GLogiKDaemon::daemonized_ = vm["daemonize"].as<bool>();
 	}
+}
+
+void GLogiKDaemon::dropPrivileges(void) {
+	errno = 0;
+	struct passwd * pw = getpwnam(GLOGIKD_USER);
+	if(pw == nullptr)
+		throw GLogiKExcept("can't get password structure for GLOGIKD_USER");
+
+	errno = 0;
+	struct group * gr = getgrnam(GLOGIKD_GROUP);
+	if(gr == nullptr)
+		throw GLogiKExcept("can't get group structure for GLOGIKD_GROUP");
+
+	errno = 0;
+	if(initgroups(GLOGIKD_USER, gr->gr_gid) < 0)
+		throw GLogiKExcept("failure to initialize group access list");
+
+	errno = 0;
+	int ret = -1;
+
+#if defined(HAVE_SETRESGID)
+	ret = setresgid(gr->gr_gid, gr->gr_gid, gr->gr_gid);
+#elif defined(HAVE_SETEGID)
+	if( (ret = setgid(gr->gr_gid)) == 0 )
+		ret = setegid(gr->gr_gid);
+#elif defined(HAVE_SETREGID)
+	ret = setregid(gr->gr_gid, gr->gr_gid);
+#else
+#error "No API to drop group privileges"
+#endif
+
+	if( ret < 0 )
+		throw GLogiKExcept("failure to change group ID");
+
+	errno = 0;
+	ret = -1;
+
+#if defined(HAVE_SETRESUID)
+	ret = setresuid(pw->pw_uid, pw->pw_uid, pw->pw_uid);
+#elif defined(HAVE_SETEUID)
+	if( (ret = setuid(pw->pw_uid)) == 0 )
+		ret = seteuid(pw->pw_uid);
+#elif defined(HAVE_SETREUID)
+	ret = setreuid(pw->pw_uid, pw->pw_uid);
+#else
+#error "No API to drop user privileges"
+#endif
+
+	if( ret < 0 )
+		throw GLogiKExcept("failure to change user ID");
+
+	this->buffer_.str("successfully dropped root privileges");
+	syslog(LOG_INFO, this->buffer_.str().c_str() );
+#if DEBUGGING_ON
+	LOG(INFO) << this->buffer.str();
+#endif
 }
 
 } // namespace GLogiK

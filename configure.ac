@@ -38,8 +38,6 @@ dnl preprocessor arguments
 AM_CPPFLAGS="-I\$(top_srcdir)/src"
 AC_SUBST(AM_CPPFLAGS)
 
-
-
 dnl -------------------------------------------------------------------------
 dnl                     declare custom configure options
 dnl -------------------------------------------------------------------------
@@ -69,6 +67,27 @@ AC_ARG_ENABLE( [debug-gkdbus],
 
 AC_ARG_VAR(DEBUG_DIR, [Directory where debug file will be written])
 
+dnl -------------------------------------------------------------------------
+dnl             User and Group for running the glogikd daemon
+dnl -------------------------------------------------------------------------
+
+AC_ARG_WITH(glogikd_user, AS_HELP_STRING([--with-glodikd-user=<user>],[User for running the glogikd daemon (glogik)]))
+if test -z "$with_glogikd_user" ; then
+	GLOGIKD_USER=glogik
+else
+	GLOGIKD_USER=$with_glogikd_user
+fi
+AC_SUBST(GLOGIKD_USER)
+AC_DEFINE_UNQUOTED(GLOGIKD_USER,"$GLOGIKD_USER", [User for running the glogikd daemon])
+
+AC_ARG_WITH(glogikd_group, AS_HELP_STRING([--with-glodikd-group=<group>],[Group for running the glogikd daemon (glogik)]))
+if test -z "$with_glogikd_group" ; then
+	GLOGIKD_GROUP=glogik
+else
+	GLOGIKD_GROUP=$with_glogikd_group
+fi
+AC_SUBST(GLOGIKD_GROUP)
+AC_DEFINE_UNQUOTED(GLOGIKD_GROUP,"$GLOGIKD_GROUP", [Group for running the glogikd daemon])
 
 dnl -------------------------------------------------------------------------
 dnl             run tests and do things accordingly to results
@@ -122,18 +141,22 @@ AC_SUBST(AM_CXXFLAGS)
 AC_SUBST(AM_LDFLAGS)
 
 dnl -------------------------------------------------------------------------
-dnl                       defining macro variables
+dnl                       defining custom macro variables
 dnl -------------------------------------------------------------------------
 
 AS_IF([[test "x$DEBUG_DIR" = "x"]], [DEBUG_DIR="/tmp"])
 AC_DEFINE_UNQUOTED([DEBUG_DIR], ["${DEBUG_DIR}"], [Directory for debug file])
 
 dnl -------------------------------------------------------------------------
-dnl -------------------------------------------------------------------------
+dnl                       checking for functions
 dnl -------------------------------------------------------------------------
 
-#PKG_CHECK_MODULES([SDL], [sdl >= 1.2.13])
-#PKG_CHECK_MODULES([SDLMIXER], [SDL_mixer >= 1.2.11])
+AC_CHECK_FUNCS([getpwnam getgrnam initgroups setresgid setegid setregid setresuid seteuid setreuid])
+
+dnl -------------------------------------------------------------------------
+dnl                       checking for libraries
+dnl -------------------------------------------------------------------------
+
 PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.0])
 PKG_CHECK_MODULES([LIBUDEV], [libudev])
 PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
@@ -175,6 +198,7 @@ AC_MSG_NOTICE([
         exec_prefix:            ${exec_prefix}
         libdir:                 ${libdir}
         bindir:                 ${bindir}
+        sbindir:                ${sbindir}
         sysconfdir:             ${sysconfdir}
         datadir:                ${datadir}
 

@@ -1,5 +1,5 @@
 
-bin_PROGRAMS = GLogiKd
+sbin_PROGRAMS = GLogiKd
 
 GLogiKd_CXXFLAGS= @AM_CXXFLAGS@ \
 				@BOOST_CPPFLAGS@ \

@@ -56,6 +56,7 @@ class GLogiKDaemon : public DaemonControl
 		GKDBus* DBus;
 
 		void daemonize(void);
+		void dropPrivileges(void);
 		void parseCommandLine(const int& argc, char *argv[]);
 		static void handle_signal(int sig);
 };
