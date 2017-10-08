@@ -16,3 +16,8 @@ Build dependencies :
 GLogiK is untested with previous versions of each dependency, but it may work.
 libusb-0.1 is not supported. Feel free to report any working version.
 
+GLogiK daemon
+-------------
+The GLogiKd daemon should run as unprivileged user.
+See --with-glodikd-user and --with-glodikd-group configure options.
+These two options both defaults to « glogik ».
