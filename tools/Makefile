@@ -62,7 +62,7 @@ install_it:
 
 uninstall_it:
 	cd $(build_dir) && test -d "$(PREFIX_DIR)" && make uninstall || echo 'no need uninstall phase.'
-	cd "$(PREFIX_DEV_DIR)" && rmdir -pv GLogiK/{bin,sbin,lib64,share/dbus-1/system.d}
+	cd "$(PREFIX_DEV_DIR)" && rmdir -pv GLogiK/{bin,sbin,lib64,share/dbus-1/system.d} || echo 'rmdir done. Please ignore previous "Directory not empty" failures'
 
 clean_it: uninstall_it
 	cd $(build_dir) && make clean
