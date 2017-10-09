@@ -105,9 +105,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 #endif
 
 	try {
-#if DEBUGGING_ON == 0
 		this->dropPrivileges();
-#endif
 		this->parseCommandLine(argc, argv);
 
 		if( GLogiKDaemon::is_daemon_enabled() ) {
