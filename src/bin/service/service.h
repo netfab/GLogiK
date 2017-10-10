@@ -48,9 +48,6 @@ class DesktopService
 		FILE* log_fd_ = nullptr;
 		std::ostringstream buffer_;
 
-		static bool still_running_;
-		static void handle_signal(int sig);
-
 		void daemonize(void);
 };
 

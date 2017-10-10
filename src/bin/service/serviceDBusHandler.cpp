@@ -196,6 +196,12 @@ void ServiceDBusHandler::reportChangedState(void) {
 	}
 }
 
+void ServiceDBusHandler::warnUnhandledSessionState(const std::string & state) {
+	std::string warn = "unhandled session state : ";
+	warn += state;
+	this->warnOrThrows(warn);
+}
+
 void ServiceDBusHandler::updateSessionState(void) {
 	/* if debug output is ON, force-disable it, else debug file
 	 * will be spammed by the following DBus request debug output */
@@ -209,14 +215,17 @@ void ServiceDBusHandler::updateSessionState(void) {
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << "switching session state from " << this->session_state_ << " to " << new_state;
+	LOG(DEBUG1) << "current session state : " << this->session_state_;
 #endif
 
-/*
 	if( this->session_state_ == "active" ) {
 		if(new_state == "online") {
 		}
 		else if(new_state == "closing") {
+		}
+		else {
+			this->warnUnhandledSessionState(new_state);
+			return;
 		}
 	}
 	else if( this->session_state_ == "online" ) {
@@ -224,19 +233,29 @@ void ServiceDBusHandler::updateSessionState(void) {
 		}
 		else if(new_state == "closing") {
 		}
+		else {
+			this->warnUnhandledSessionState(new_state);
+			return;
+		}
 	}
 	else if( this->session_state_ == "closing" ) {
 		if(new_state == "active") {
 		}
 		else if(new_state == "online") {
 		}
+		else {
+			this->warnUnhandledSessionState(new_state);
+			return;
+		}
 	}
 	else {
-		std::string e = "unhandled session state : ";
-		e += this->session_state_;
-		throw GLogiKExcept(e);
+		this->warnUnhandledSessionState(this->session_state_);
+		return;
 	}
-*/
+
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "switching session state to : " << new_state;
+#endif
 
 	this->session_state_ = new_state;
 	this->reportChangedState();

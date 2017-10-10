@@ -86,6 +86,8 @@ GLogiK=$PWD/.. CD=. {
 				keyEvent.h
 				macrosBanks.cpp
 				macrosBanks.h
+				sessionManager.cpp
+				sessionManager.h
 			}
 			GLogiKUtils=utils/ {
 				Makefile.am

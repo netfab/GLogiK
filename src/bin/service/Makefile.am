@@ -8,7 +8,8 @@ GLogiKs_LDFLAGS= @AM_LDFLAGS@
 
 GLogiKs_LDADD= \
 				../../lib/dbus/libGLogiKDBus.la \
-				../../lib/utils/libGLogiKUtils.la
+				../../lib/utils/libGLogiKUtils.la \
+				../../lib/shared/libGLogiKShared.la
 
 GLogiKs_SOURCES = \
 		main.cpp \

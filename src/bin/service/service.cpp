@@ -34,6 +34,7 @@
 #include <config.h>
 
 #include "lib/utils/utils.h"
+#include "lib/shared/sessionManager.h"
 
 #include "serviceDBusHandler.h"
 
@@ -41,8 +42,6 @@
 
 namespace GLogiK
 {
-
-bool DesktopService::still_running_ = true;
 
 DesktopService::DesktopService() : buffer_("", std::ios_base::app) {
 
@@ -78,17 +77,22 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 	try {
 		this->daemonize();
 
-		std::signal(SIGINT, DesktopService::handle_signal);
-		std::signal(SIGTERM, DesktopService::handle_signal);
+		{
+			SessionManager session;
+			session.openConnection();
 
-		ServiceDBusHandler DBusHandler;
+			ServiceDBusHandler DBusHandler;
 
-		while( DesktopService::still_running_ ) {
-			DBusHandler.updateSessionState();
-			DBusHandler.checkDBusMessages();
-			std::this_thread::sleep_for(std::chrono::milliseconds(200));
+			while( session.isSessionAlive() ) {
+				if( session.pollMessages() )
+					continue;
+				DBusHandler.updateSessionState();
+				DBusHandler.checkDBusMessages();
+				std::this_thread::sleep_for(std::chrono::milliseconds(200));
+			}
 		}
 
+		LOG(DEBUG) << "exiting with success";
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
@@ -98,26 +102,6 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 		LOG(ERROR) << buff.str();
 		GK_ERR << buff.str().c_str() << "\n";
 		return EXIT_FAILURE;
-	}
-}
-
-void DesktopService::handle_signal(int sig) {
-	std::ostringstream buff("caught signal : ", std::ios_base::app);
-	switch( sig ) {
-		case SIGINT:
-		case SIGTERM:
-			buff << sig << " --> bye bye";
-			LOG(INFO) << buff.str();
-			GK_STAT << buff.str().c_str() << "\n";
-			std::signal(SIGINT, SIG_DFL);
-			std::signal(SIGTERM, SIG_DFL);
-			DesktopService::still_running_ = false;
-			break;
-		default:
-			buff << sig << " --> unhandled";
-			LOG(WARNING) << buff.str();
-			GK_WARN << buff.str().c_str() << "\n";
-			break;
 	}
 }
 
