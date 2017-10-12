@@ -28,8 +28,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <thread>
-#include <chrono>
 
 #include <config.h>
 
@@ -57,6 +55,9 @@ DesktopService::DesktopService() : buffer_("", std::ios_base::app) {
 
 	if( this->log_fd_ == nullptr )
 		GK_STAT << "debug file not opened\n";
+
+	this->fds[0].fd = -1;
+	this->fds[0].events = POLLIN;
 }
 
 DesktopService::~DesktopService() {
@@ -79,16 +80,19 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 
 		{
 			SessionManager session;
-			session.openConnection();
+			this->fds[0].fd = session.openConnection();
 
 			ServiceDBusHandler DBusHandler;
 
 			while( session.isSessionAlive() ) {
-				if( session.pollMessages() )
+				int ret = poll(this->fds, 1, 150);
+				// data to read ?
+				if( ret > 0 ) {
+					session.processICEMessages();
 					continue;
+				}
 				DBusHandler.updateSessionState();
 				DBusHandler.checkDBusMessages();
-				std::this_thread::sleep_for(std::chrono::milliseconds(200));
 			}
 		}
 

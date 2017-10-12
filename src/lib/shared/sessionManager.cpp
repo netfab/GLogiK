@@ -34,9 +34,6 @@ namespace GLogiK
 bool SessionManager::still_running_ = true;
 
 SessionManager::SessionManager() {
-	this->fds[0].fd = -1;
-	this->fds[0].events = POLLIN;
-
 	this->mask_ = (SmcSaveYourselfProcMask|SmcDieProcMask|SmcSaveCompleteProcMask|SmcShutdownCancelledProcMask);
 
 	this->callbacks_.save_yourself.client_data = nullptr;
@@ -70,18 +67,7 @@ SessionManager::~SessionManager() {
  *	public
  */
 
-const bool SessionManager::pollMessages(void) {
-	int ret = poll(this->fds, 1, 100);
-
-	// data to read ?
-	if( ret > 0 ) {
-		return SessionManager::processICEMessages(this->ice_conn_);
-	}
-
-	return false;
-}
-
-void SessionManager::openConnection(void) {
+const int SessionManager::openConnection(void) {
 	LOG(INFO) << "opening session manager connection";
 	std::signal(SIGINT, SessionManager::handle_signal);
 	std::signal(SIGTERM, SessionManager::handle_signal);
@@ -114,13 +100,18 @@ void SessionManager::openConnection(void) {
 
 	this->ice_conn_ = SmcGetIceConnection(this->smc_conn_);
 	this->ice_fd_ = IceConnectionNumber(this->ice_conn_);
-	this->fds[0].fd = this->ice_fd_;
 
 	LOG(INFO) << "Session manager client ID : " << this->client_id_;
+
+	return this->ice_fd_;
 }
 
 const bool SessionManager::isSessionAlive(void) {
 	return SessionManager::still_running_;
+}
+
+void SessionManager::processICEMessages(void) {
+	SessionManager::processICEMessages(this->ice_conn_);
 }
 
 /* -- */
@@ -167,26 +158,22 @@ void SessionManager::handle_signal(int sig) {
 	}
 }
 
-const bool SessionManager::processICEMessages(IceConn ice_conn) {
+void SessionManager::processICEMessages(IceConn ice_conn) {
 	int ret = IceProcessMessages(ice_conn, nullptr, nullptr);
 
 	switch(ret) {
 		case IceProcessMessagesSuccess:
 			LOG(DEBUG) << "ICE messages process success";
-			return true;
 			break;
 		case IceProcessMessagesIOError:
 			LOG(WARNING) << "IO error, closing ICE connection";
 			IceCloseConnection(ice_conn);
-			return false;
 			// FIXME throw ?
 			break;
 		case IceProcessMessagesConnectionClosed:
 			LOG(DEBUG) << "ICE connection has been closed";
-			return true;
 			break;
 	}
-	return false;
 }
 
 /*

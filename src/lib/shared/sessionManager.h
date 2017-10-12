@@ -22,8 +22,6 @@
 #ifndef __GLOGIK_SESSION_MANAGER_H__
 #define __GLOGIK_SESSION_MANAGER_H__
 
-#include <poll.h>
-
 #include <X11/SM/SMlib.h>
 
 #define SM_ERROR_STRING_LENGTH 255
@@ -37,15 +35,13 @@ class SessionManager
 		SessionManager(void);
 		virtual ~SessionManager(void);
 
-		void openConnection(void);
-		const bool pollMessages(void);
+		const int openConnection(void);
 		const bool isSessionAlive(void);
+		void processICEMessages(void);
 
 	protected:
 
 	private:
-		struct pollfd fds[1];
-
 		SmcConn smc_conn_;
 		IceConn ice_conn_;
 
@@ -63,7 +59,7 @@ class SessionManager
 		static bool still_running_;
 		static void handle_signal(int sig);
 
-		static const bool processICEMessages(IceConn ice_conn);
+		static void processICEMessages(IceConn ice_conn);
 		static void ICEConnectionWatchCallback(IceConn ice_conn, IcePointer client_data,
 			Bool opening, IcePointer *watch_data);
 

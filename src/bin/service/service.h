@@ -22,6 +22,8 @@
 #ifndef __GLOGIKS_DESKTOP_SERVICE_H__
 #define __GLOGIKS_DESKTOP_SERVICE_H__
 
+#include <poll.h>
+
 #include <sys/types.h>
 
 #include <cstdio>
@@ -47,6 +49,7 @@ class DesktopService
 		pid_t pid_ = 0;
 		FILE* log_fd_ = nullptr;
 		std::ostringstream buffer_;
+		struct pollfd fds[1];
 
 		void daemonize(void);
 };
