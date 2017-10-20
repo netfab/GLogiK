@@ -19,32 +19,28 @@
  *
  */
 
-#include "deviceProperties.h"
+#ifndef __GLOGIK_DESKTOP_SERVICE_DEVICES_HANDLER_H__
+#define __GLOGIK_DESKTOP_SERVICE_DEVICES_HANDLER_H__
+
+#include "lib/shared/deviceProperties.h"
 
 namespace GLogiK
 {
 
-DeviceProperties::DeviceProperties() : state(DeviceState::STATE_UNKNOWN) {
-}
+class DevicesHandler
+{
+	public:
+		DevicesHandler(void);
+		~DevicesHandler(void);
 
-DeviceProperties::~DeviceProperties() {
-}
+		void checkStartedDevice(const std::string & device);
 
-const bool DeviceProperties::started(void) const {
-	return (this->state == DeviceState::STATE_STARTED);
-}
+	protected:
 
-const bool DeviceProperties::stopped(void) const {
-	return (this->state == DeviceState::STATE_STOPPED);
-}
-
-void DeviceProperties::start(void) {
-	this->state = DeviceState::STATE_STARTED;
-}
-
-void DeviceProperties::stop(void) {
-	this->state = DeviceState::STATE_STOPPED;
-}
+	private:
+		std::map<const std::string, DeviceProperties> devices_;
+};
 
 } // namespace GLogiK
 
+#endif

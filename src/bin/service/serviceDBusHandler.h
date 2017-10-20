@@ -24,6 +24,8 @@
 
 #include <string>
 
+#include "devicesHandler.h"
+
 #include "lib/dbus/GKDBus.h"
 
 #include "include/glogik.h"
@@ -47,6 +49,7 @@ class ServiceDBusHandler
 	private:
 		uint8_t warn_count_;
 		GKDBus* DBus;
+		DevicesHandler devices;
 
 		/* DCM - Daemon ClientsManager - to contact the ClientsManager */
 		const char* DBus_DCM_object_path_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH;

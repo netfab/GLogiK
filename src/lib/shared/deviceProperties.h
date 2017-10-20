@@ -27,15 +27,29 @@
 namespace GLogiK
 {
 
+enum class DeviceState : uint8_t
+{
+	STATE_STARTED = 0,
+	STATE_STOPPED,
+	STATE_UNKNOWN,
+};
+
 class DeviceProperties : public MacrosBanks
 {
 	public:
 		DeviceProperties(void);
 		~DeviceProperties(void);
 
+		/* accessors to purely logical state */
+		const bool started(void) const;
+		const bool stopped(void) const;
+		void start(void);
+		void stop(void);
+
 	protected:
 
 	private:
+		DeviceState state;
 
 };
 

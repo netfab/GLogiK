@@ -54,6 +54,8 @@ GLogiK=$PWD/.. CD=. {
 			desktop_service=service/ {
 				Makefile.am
 				main.cpp
+				devicesHandler.cpp
+				devicesHandler.h
 				service.cpp
 				service.h
 				serviceDBusHandler.cpp

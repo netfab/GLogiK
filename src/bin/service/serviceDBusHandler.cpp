@@ -265,6 +265,10 @@ void ServiceDBusHandler::somethingChanged(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "it seems that something changed ! ";
 #endif
+
+	unsigned int num = 0;
+	std::string device;
+
 	try {
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetStartedDevices");
@@ -274,10 +278,13 @@ void ServiceDBusHandler::somethingChanged(void) {
 
 		try {
 			while( true ) {
-				LOG(DEBUG) << "next argument : " << this->DBus->getNextStringArgument();
+				device = this->DBus->getNextStringArgument();
+				num++;
+				this->devices.checkStartedDevice(device);
 			}
 		}
 		catch (const EmptyContainer & e) {
+			LOG(DEBUG3) << "daemon says " << num << " devices started";
 			// nothing to do here
 		}
 	}
