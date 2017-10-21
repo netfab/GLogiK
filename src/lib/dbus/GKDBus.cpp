@@ -795,11 +795,11 @@ void GKDBus::fillInArguments(void) {
 				dbus_message_iter_recurse(&arg_it, &sub_it);
 				switch( dbus_message_iter_get_element_type(&arg_it) ) {
 					case DBUS_TYPE_STRING:
-						LOG(DEBUG3) << "found array of strings";
+						//LOG(DEBUG3) << "found array of strings";
 						while ((sub_type = dbus_message_iter_get_arg_type(&sub_it)) == DBUS_TYPE_STRING) {
 							dbus_message_iter_get_basic(&sub_it, &arg_value);
 							this->string_arguments_.push_back(arg_value);
-							LOG(DEBUG4) << "object path arg value : " << arg_value;
+							//LOG(DEBUG4) << "object path arg value : " << arg_value;
 							dbus_message_iter_next(&sub_it);
 						}
 						break;
