@@ -269,6 +269,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 	unsigned int num = 0;
 	std::string device;
 
+	/* check started devices */
 	try {
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetStartedDevices");
@@ -285,6 +286,35 @@ void ServiceDBusHandler::somethingChanged(void) {
 		}
 		catch (const EmptyContainer & e) {
 			LOG(DEBUG3) << "daemon says " << num << " devices started";
+			// nothing to do here
+		}
+	}
+	catch (const GLogiKExcept & e) {
+		std::string warn(__func__);
+		warn += " failure : ";
+		warn += e.what();
+		this->warnOrThrows(warn);
+	}
+
+	num = 0;
+
+	/* check stopped devices */
+	try {
+		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetStoppedDevices");
+		this->DBus->sendRemoteMethodCall();
+
+		this->DBus->waitForRemoteMethodCallReply();
+
+		try {
+			while( true ) {
+				device = this->DBus->getNextStringArgument();
+				num++;
+				this->devices.checkStoppedDevice(device);
+			}
+		}
+		catch (const EmptyContainer & e) {
+			LOG(DEBUG3) << "daemon says " << num << " devices stopped";
 			// nothing to do here
 		}
 	}

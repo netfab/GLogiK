@@ -57,5 +57,26 @@ void DevicesHandler::checkStartedDevice(const std::string & devID) {
 	}
 }
 
+void DevicesHandler::checkStoppedDevice(const std::string & devID) {
+	try {
+		DeviceProperties & device = this->devices_.at(devID);
+		if( device.stopped() ) {
+			LOG(DEBUG1) << "found already registered stopped device " << devID;
+			return;
+		}
+		else {
+			LOG(DEBUG1) << "device " << devID << " state has just been stopped";
+			/* TODO should load device parameters */
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(DEBUG1) << "device " << devID << " not found in container, instantiate it";
+		DeviceProperties device;
+		device.stop();
+		this->devices_[devID] = device;
+		/* TODO should load device parameters */
+	}
+}
+
 } // namespace GLogiK
 

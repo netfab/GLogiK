@@ -34,6 +34,7 @@ class DevicesHandler
 		~DevicesHandler(void);
 
 		void checkStartedDevice(const std::string & device);
+		void checkStoppedDevice(const std::string & device);
 
 	protected:
 
