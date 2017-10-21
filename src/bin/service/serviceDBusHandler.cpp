@@ -68,6 +68,9 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
 			this->DBus_SMH_object_, this->DBus_SMH_interface_, "SomethingChanged",
 			{}, // FIXME
 			std::bind(&ServiceDBusHandler::somethingChanged, this) );
+
+		/* set GKDBus pointer */
+		this->devices.setDBus(this->DBus);
 	}
 	catch ( const GLogiKExcept & e ) {
 		delete this->DBus;

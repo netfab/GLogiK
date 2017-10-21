@@ -28,12 +28,20 @@
 namespace GLogiK
 {
 
-DevicesHandler::DevicesHandler() {
+DevicesHandler::DevicesHandler() : DBus(nullptr) {
+#if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler initialization";
+#endif
 }
 
 DevicesHandler::~DevicesHandler() {
+#if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler destruction";
+#endif
+}
+
+void DevicesHandler::setDBus(GKDBus* pDBus) {
+	this->DBus = pDBus;
 }
 
 void DevicesHandler::checkStartedDevice(const std::string & devID) {
