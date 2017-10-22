@@ -19,9 +19,17 @@
  *
  */
 
+#include <fstream>
+
+#include <boost/filesystem.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+
 #include "lib/utils/utils.h"
 
 #include "serviceDBusHandler.h"
+
+namespace fs = boost::filesystem;
 
 namespace GLogiK
 {
@@ -35,7 +43,8 @@ namespace GLogiK
  *
  */
 
-ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr) {
+ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr), buffer_("", std::ios_base::app) {
+	this->cfgfilename_ = "/tmp/filename";
 	try {
 		this->DBus = new GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
 		this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
@@ -107,8 +116,38 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 		GK_ERR << err << "\n";
 	}
 
+	this->saveDevicesProperties();
+
 	delete this->DBus;
 	this->DBus = nullptr;
+}
+
+void ServiceDBusHandler::saveDevicesProperties(void) {
+	fs::path path(this->cfgfilename_);
+
+	std::ofstream ofs;
+	ofs.exceptions(std::ofstream::failbit);
+	try {
+		ofs.open(this->cfgfilename_, std::ofstream::out|std::ofstream::trunc);
+		fs::permissions(path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
+	}
+	catch (const std::ofstream::failure & e) {
+		this->buffer_.str( "Fail to open configuration file : " );
+		this->buffer_ << this->cfgfilename_ << " : " << e.what();
+		LOG(ERROR) << this->buffer_.str();
+		GK_ERR << this->buffer_.str() << "\n";
+		return;
+	}
+	catch (const fs::filesystem_error & e) {
+		this->buffer_.str( "Set permissions failure on configuration file : " );
+		this->buffer_ << this->cfgfilename_ << " : " << e.what();
+		LOG(ERROR) << this->buffer_.str();
+		GK_ERR << this->buffer_.str() << "\n";
+		return;
+	}
+
+	boost::archive::text_oarchive output_archive(ofs);
+	output_archive << this->devices;
 }
 
 void ServiceDBusHandler::setCurrentSessionObjectPath(void) {

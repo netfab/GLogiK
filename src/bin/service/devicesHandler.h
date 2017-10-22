@@ -22,6 +22,9 @@
 #ifndef __GLOGIK_DESKTOP_SERVICE_DEVICES_HANDLER_H__
 #define __GLOGIK_DESKTOP_SERVICE_DEVICES_HANDLER_H__
 
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/map.hpp>
+
 #include "lib/dbus/GKDBus.h"
 #include "lib/shared/deviceProperties.h"
 
@@ -42,6 +45,14 @@ class DevicesHandler
 	protected:
 
 	private:
+		friend class boost::serialization::access;
+
+		template<class Archive>
+			void serialize(Archive & ar, const unsigned int version)
+		{
+			ar & this->devices_;
+		}
+
 		GKDBus* DBus;
 		std::map<const std::string, DeviceProperties> devices_;
 };

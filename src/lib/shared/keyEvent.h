@@ -22,6 +22,8 @@
 #ifndef __GLOGIK_KEY_EVENT_H__
 #define __GLOGIK_KEY_EVENT_H__
 
+#include <boost/serialization/access.hpp>
+
 #include <cstdint>
 #include <linux/input-event-codes.h>
 
@@ -36,12 +38,24 @@ enum class EventValue : int8_t
 };
 
 struct KeyEvent {
-	unsigned char event_code;
-	EventValue event;
-	uint16_t interval;
+	public:
+		unsigned char event_code;
+		EventValue event;
+		uint16_t interval;
 
-	KeyEvent(unsigned char c=KEY_UNKNOWN, EventValue e=EventValue::EVENT_KEY_UNKNOWN, uint16_t i=0)
-		: event_code(c), event(e), interval(i) {}
+		KeyEvent(unsigned char c=KEY_UNKNOWN, EventValue e=EventValue::EVENT_KEY_UNKNOWN, uint16_t i=0)
+			: event_code(c), event(e), interval(i) {}
+
+	private:
+		friend class boost::serialization::access;
+
+		template<class Archive>
+			void serialize(Archive & ar, const unsigned int version)
+		{
+			ar & this->event_code;
+			ar & this->event;
+			ar & this->interval;
+		}
 };
 
 } // namespace GLogiK
