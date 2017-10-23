@@ -60,7 +60,7 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr), buffer
 		fs::permissions(path, fs::owner_all);
 	}
 	catch (const fs::filesystem_error & e) {
-		this->buffer_.str( "configuration directory creation or set permissions failure : " );
+		this->buffer_.str("configuration directory creation or set permissions failure : ");
 		this->buffer_ << this->cfgfile_fullpath_ << " : " << e.what();
 		throw GLogiKExcept(this->buffer_.str());
 	}
@@ -160,19 +160,19 @@ void ServiceDBusHandler::saveDevicesProperties(void) {
 		fs::path path(this->cfgfile_fullpath_);
 		fs::permissions(path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 
-		LOG(DEBUG) << "configuration file succesfully opened for writing";
+		LOG(DEBUG) << "configuration file successfully opened for writing";
 
 		boost::archive::text_oarchive output_archive(ofs);
 		output_archive << this->devices;
 	}
 	catch (const std::ofstream::failure & e) {
-		this->buffer_.str( "fail to open configuration file : " );
+		this->buffer_.str("fail to open configuration file : ");
 		this->buffer_ << this->cfgfile_fullpath_ << " : " << e.what();
 		LOG(ERROR) << this->buffer_.str();
 		GK_ERR << this->buffer_.str() << "\n";
 	}
 	catch (const fs::filesystem_error & e) {
-		this->buffer_.str( "set permissions failure on configuration file : " );
+		this->buffer_.str("set permissions failure on configuration file : ");
 		this->buffer_ << this->cfgfile_fullpath_ << " : " << e.what();
 		LOG(ERROR) << this->buffer_.str();
 		GK_ERR << this->buffer_.str() << "\n";
@@ -183,7 +183,7 @@ void ServiceDBusHandler::saveDevicesProperties(void) {
 	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
 	 */
 	catch( const std::exception & e ) {
-		this->buffer_.str( "(buggy exception) fail to open configuration file : " );
+		this->buffer_.str("(buggy exception) fail to open configuration file : ");
 		this->buffer_ << e.what();
 		LOG(ERROR) << this->buffer_.str();
 		GK_ERR << this->buffer_.str() << "\n";
