@@ -248,12 +248,12 @@ void GLogiKDaemon::daemonize() {
 		fs::permissions(path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 	}
 	catch (const std::ofstream::failure & e) {
-		this->buffer_.str( "Fail to open PID file : " );
+		this->buffer_.str( "fail to open PID file : " );
 		this->buffer_ << this->pid_file_name_ << " : " << e.what();
 		throw GLogiKExcept( this->buffer_.str() );
 	}
 	catch (const fs::filesystem_error & e) {
-		this->buffer_.str( "Set permissions failure on PID file : " );
+		this->buffer_.str( "set permissions failure on PID file : " );
 		this->buffer_ << this->pid_file_name_ << " : " << e.what();
 		throw GLogiKExcept( this->buffer_.str() );
 	}
