@@ -19,11 +19,15 @@
  *
  */
 
+#include <stdexcept>
+
 #include <fstream>
 
 #include <boost/filesystem.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+
+#include <config.h>
 
 #include "lib/utils/utils.h"
 
@@ -44,7 +48,32 @@ namespace GLogiK
  */
 
 ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr), buffer_("", std::ios_base::app) {
-	this->cfgfilename_ = "/tmp/filename";
+	this->cfgfile_fullpath_ = XDGUserDirs::getConfigDirectory();
+	this->cfgfile_fullpath_ += "/";
+	this->cfgfile_fullpath_ += PACKAGE_NAME;
+
+	bool dir_created = false;
+
+	try {
+		fs::path path(this->cfgfile_fullpath_);
+		dir_created = create_directory(path);
+		fs::permissions(path, fs::owner_all);
+	}
+	catch (const fs::filesystem_error & e) {
+		this->buffer_.str( "configuration directory creation or set permissions failure : " );
+		this->buffer_ << this->cfgfile_fullpath_ << " : " << e.what();
+		throw GLogiKExcept(this->buffer_.str());
+	}
+
+	if( ! dir_created ) {
+		LOG(DEBUG) << "configuration directory not created because it seems already exists";
+	}
+	else {
+		LOG(DEBUG) << "configuration directory created";
+	}
+
+	this->cfgfile_fullpath_ += "/filename";
+
 	try {
 		this->DBus = new GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
 		this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
@@ -123,31 +152,42 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 }
 
 void ServiceDBusHandler::saveDevicesProperties(void) {
-	fs::path path(this->cfgfilename_);
-
-	std::ofstream ofs;
-	ofs.exceptions(std::ofstream::failbit);
 	try {
-		ofs.open(this->cfgfilename_, std::ofstream::out|std::ofstream::trunc);
+		std::ofstream ofs;
+		ofs.exceptions(std::ofstream::failbit|std::ofstream::badbit);
+		ofs.open(this->cfgfile_fullpath_, std::ofstream::out|std::ofstream::trunc);
+
+		fs::path path(this->cfgfile_fullpath_);
 		fs::permissions(path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
+
+		LOG(DEBUG) << "configuration file succesfully opened for writing";
+
+		boost::archive::text_oarchive output_archive(ofs);
+		output_archive << this->devices;
 	}
 	catch (const std::ofstream::failure & e) {
-		this->buffer_.str( "Fail to open configuration file : " );
-		this->buffer_ << this->cfgfilename_ << " : " << e.what();
+		this->buffer_.str( "fail to open configuration file : " );
+		this->buffer_ << this->cfgfile_fullpath_ << " : " << e.what();
 		LOG(ERROR) << this->buffer_.str();
 		GK_ERR << this->buffer_.str() << "\n";
-		return;
 	}
 	catch (const fs::filesystem_error & e) {
-		this->buffer_.str( "Set permissions failure on configuration file : " );
-		this->buffer_ << this->cfgfilename_ << " : " << e.what();
+		this->buffer_.str( "set permissions failure on configuration file : " );
+		this->buffer_ << this->cfgfile_fullpath_ << " : " << e.what();
 		LOG(ERROR) << this->buffer_.str();
 		GK_ERR << this->buffer_.str() << "\n";
-		return;
 	}
-
-	boost::archive::text_oarchive output_archive(ofs);
-	output_archive << this->devices;
+	/*
+	 * catch std::ios_base::failure on buggy compilers
+	 * should be fixed with gcc >= 7.0
+	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
+	 */
+	catch( const std::exception & e ) {
+		this->buffer_.str( "(buggy exception) fail to open configuration file : " );
+		this->buffer_ << e.what();
+		LOG(ERROR) << this->buffer_.str();
+		GK_ERR << this->buffer_.str() << "\n";
+	}
 }
 
 void ServiceDBusHandler::setCurrentSessionObjectPath(void) {

@@ -19,17 +19,36 @@
  *
  */
 
-#ifndef __GLOGIK_UTILS_H__
-#define __GLOGIK_UTILS_H__
+#include <cstdlib>
 
-#define UTILS_INSIDE_UTILS_H 1
+#define UTILS_COMPILATION 1
 
-#include "log.h"
 #include "exception.h"
 #include "functions.h"
 #include "XDGUserDirs.h"
 
-#undef UTILS_INSIDE_UTILS_H
+#undef UTILS_COMPILATION
 
-#endif
+namespace GLogiK
+{
+
+XDGUserDirs::XDGUserDirs() {
+}
+
+XDGUserDirs::~XDGUserDirs() {
+}
+
+const std::string XDGUserDirs::getConfigDirectory(void) {
+	const std::string home = to_string( getenv("HOME") );
+	if(home == "")
+		throw GLogiKExcept("can't get HOME environment variable");
+	std::string xdg_config_home = to_string( getenv("XDG_CONFIG_HOME") );
+	if(xdg_config_home == "") {
+		xdg_config_home = home;
+		xdg_config_home += "/.config";
+	}
+	return xdg_config_home;
+}
+
+} // namespace GLogiK
 

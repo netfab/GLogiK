@@ -52,7 +52,7 @@ class ServiceDBusHandler
 		GKDBus* DBus;
 		DevicesHandler devices;
 
-		std::string cfgfilename_;
+		std::string cfgfile_fullpath_;
 		std::ostringstream buffer_;
 
 		/* DCM - Daemon ClientsManager - to contact the ClientsManager */
