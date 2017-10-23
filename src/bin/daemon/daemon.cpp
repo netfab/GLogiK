@@ -38,6 +38,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -253,6 +254,16 @@ void GLogiKDaemon::daemonize() {
 	}
 	catch (const fs::filesystem_error & e) {
 		this->buffer_.str( "Set permissions failure on PID file : " );
+		this->buffer_ << this->pid_file_name_ << " : " << e.what();
+		throw GLogiKExcept( this->buffer_.str() );
+	}
+	/*
+	 * catch std::ios_base::failure on buggy compilers
+	 * should be fixed with gcc >= 7.0
+	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
+	 */
+	catch( const std::exception & e ) {
+		this->buffer_.str( "(buggy exception) fail to open PID file : " );
 		this->buffer_ << this->pid_file_name_ << " : " << e.what();
 		throw GLogiKExcept( this->buffer_.str() );
 	}
