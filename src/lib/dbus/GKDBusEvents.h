@@ -99,6 +99,14 @@ struct GKDBusEvent_VoidToStringsArray_Callback : public GKDBusEvent {
 		: GKDBusEvent(n, a, t), callback(c) {}
 };
 
+struct GKDBusEvent_StringToStringsArray_Callback : public GKDBusEvent {
+	std::function<const std::vector<std::string>(const std::string&)> callback;
+
+	GKDBusEvent_StringToStringsArray_Callback(const char* n, std::vector<DBusMethodArgument> & a,
+		std::function<const std::vector<std::string>(const std::string&)> c, GKDBusEventType t)
+		: GKDBusEvent(n, a, t), callback(c) {}
+};
+
 struct GKDBusEvent_StringToString_Callback : public GKDBusEvent {
 	std::function<const std::string(const std::string&)> callback;
 
@@ -124,6 +132,9 @@ class GKDBusEvents
 			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
 		void addEvent_VoidToStringsArray_Callback(const char* object, const char* interface, const char* eventName,
 			std::vector<DBusMethodArgument> args, std::function<const std::vector<std::string>(void)> callback,
+			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
+		void addEvent_StringToStringsArray_Callback(const char* object, const char* interface, const char* eventName,
+			std::vector<DBusMethodArgument> args, std::function<const std::vector<std::string>(const std::string&)> callback,
 			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
 		void addEvent_StringToString_Callback(const char* object, const char* interface, const char* eventName,
 			std::vector<DBusMethodArgument> args, std::function<const std::string(const std::string&)> callback,
@@ -156,6 +167,10 @@ class GKDBusEvents
 		std::map< const std::string, /* object path */
 			std::map< const std::string, /* interface */
 				std::vector<GKDBusEvent_VoidToStringsArray_Callback> > > events_void_to_stringsarray_;
+
+		std::map< const std::string, /* object path */
+			std::map< const std::string, /* interface */
+				std::vector<GKDBusEvent_StringToStringsArray_Callback> > > events_string_to_stringsarray_;
 
 		std::map<const std::string, bool> DBusObjects_;
 		std::map<const std::string, bool> DBusInterfaces_;

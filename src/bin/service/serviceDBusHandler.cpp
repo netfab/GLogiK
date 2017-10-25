@@ -19,6 +19,7 @@
  *
  */
 
+#include <vector>
 #include <stdexcept>
 
 #include <fstream>
@@ -72,7 +73,9 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr), buffer
 		LOG(DEBUG) << "configuration directory created";
 	}
 
-	this->cfgfile_fullpath_ += "/filename";
+	this->cfgfile_fullpath_ += "/";
+	this->cfgfile_fullpath_ += PACKAGE_NAME;
+	this->cfgfile_fullpath_ += ".cfg";
 
 	try {
 		this->DBus = new GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
@@ -108,7 +111,7 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr), buffer
 			std::bind(&ServiceDBusHandler::somethingChanged, this) );
 
 		/* set GKDBus pointer */
-		this->devices.setDBus(this->DBus);
+		this->devices_.setDBus(this->DBus);
 	}
 	catch ( const GLogiKExcept & e ) {
 		delete this->DBus;
@@ -163,7 +166,7 @@ void ServiceDBusHandler::saveDevicesProperties(void) {
 		LOG(DEBUG) << "configuration file successfully opened for writing";
 
 		boost::archive::text_oarchive output_archive(ofs);
-		output_archive << this->devices;
+		output_archive << this->devices_;
 	}
 	catch (const std::ofstream::failure & e) {
 		this->buffer_.str("fail to open configuration file : ");
@@ -348,8 +351,8 @@ void ServiceDBusHandler::somethingChanged(void) {
 	LOG(DEBUG2) << "it seems that something changed ! ";
 #endif
 
-	unsigned int num = 0;
 	std::string device;
+	std::vector<std::string> devicesID;
 
 	/* check started devices */
 	try {
@@ -359,16 +362,11 @@ void ServiceDBusHandler::somethingChanged(void) {
 
 		this->DBus->waitForRemoteMethodCallReply();
 
-		try {
-			while( true ) {
-				device = this->DBus->getNextStringArgument();
-				num++;
-				this->devices.checkStartedDevice(device);
-			}
-		}
-		catch (const EmptyContainer & e) {
-			LOG(DEBUG3) << "daemon says " << num << " devices started";
-			// nothing to do here
+		devicesID = this->DBus->getAllStringArguments();
+		LOG(DEBUG3) << "daemon says " << devicesID.size() << " devices started";
+
+		for(const auto& devID : devicesID) {
+			this->devices_.checkStartedDevice(devID);
 		}
 	}
 	catch (const GLogiKExcept & e) {
@@ -378,7 +376,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 		this->warnOrThrows(warn);
 	}
 
-	num = 0;
+	devicesID.clear();
 
 	/* check stopped devices */
 	try {
@@ -388,16 +386,11 @@ void ServiceDBusHandler::somethingChanged(void) {
 
 		this->DBus->waitForRemoteMethodCallReply();
 
-		try {
-			while( true ) {
-				device = this->DBus->getNextStringArgument();
-				num++;
-				this->devices.checkStoppedDevice(device);
-			}
-		}
-		catch (const EmptyContainer & e) {
-			LOG(DEBUG3) << "daemon says " << num << " devices stopped";
-			// nothing to do here
+		devicesID = this->DBus->getAllStringArguments();
+		LOG(DEBUG3) << "daemon says " << devicesID.size() << " devices stopped";
+
+		for(const auto& devID : devicesID) {
+			this->devices_.checkStoppedDevice(devID);
 		}
 	}
 	catch (const GLogiKExcept & e) {

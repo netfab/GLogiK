@@ -28,6 +28,8 @@
 #include "lib/dbus/GKDBus.h"
 #include "lib/shared/deviceProperties.h"
 
+#include "include/glogik.h"
+
 namespace GLogiK
 {
 
@@ -53,8 +55,14 @@ class DevicesHandler
 			ar & this->devices_;
 		}
 
+		/* DDM - Daemon DevicesManager - to contact the DevicesManager */
+		const char* DBus_DDM_object_path_	= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH;
+		const char* DBus_DDM_interface_		= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
+
 		GKDBus* DBus;
 		std::map<const std::string, DeviceProperties> devices_;
+
+		void setDeviceProperties(const std::string & devID, DeviceProperties & device);
 };
 
 } // namespace GLogiK

@@ -50,7 +50,7 @@ class ServiceDBusHandler
 	private:
 		uint8_t warn_count_;
 		GKDBus* DBus;
-		DevicesHandler devices;
+		DevicesHandler devices_;
 
 		std::string cfgfile_fullpath_;
 		std::ostringstream buffer_;

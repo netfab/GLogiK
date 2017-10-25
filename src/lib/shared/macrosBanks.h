@@ -58,6 +58,7 @@ class MacrosBanks
 		{
 			ar & this->macros_profiles_;
 		}
+
 		std::map<const MemoryBank, std::map<const std::string, std::vector<KeyEvent>>> macros_profiles_ = {
 			{ MemoryBank::MACROS_M0, {}},
 			{ MemoryBank::MACROS_M1, {}},

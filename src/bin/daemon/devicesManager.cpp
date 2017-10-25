@@ -498,6 +498,28 @@ const std::vector<std::string> DevicesManager::getStoppedDevices(void) {
 	return ret;
 }
 
+const std::vector<std::string> DevicesManager::getDeviceProperties(const std::string & devID) {
+	std::vector<std::string> ret;
+
+	try {
+		const auto & device = this->initialized_devices_.at(devID);
+		LOG(DEBUG2) << "found " << device.model << " in started devices";
+		ret.push_back(device.model);
+	}
+	catch (const std::out_of_range& oor) {
+		try {
+			const auto & device = this->plugged_but_stopped_devices_.at(devID);
+			LOG(DEBUG2) << "found " << device.model << " in stopped devices";
+			ret.push_back(device.model);
+		}
+		catch (const std::out_of_range& oor) {
+			LOG(DEBUG2) << "device ID : " << devID << " not found by daemon";
+		}
+	}
+
+	return ret;
+}
+
 void DevicesManager::checkDBusMessages(void) {
 	if( this->DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
 		try {
@@ -559,6 +581,11 @@ void DevicesManager::startMonitoring(GKDBus* pDBus) {
 		this->DBus->addEvent_VoidToStringsArray_Callback( this->DBus_object_, this->DBus_interface_, "GetStoppedDevices",
 			{ {"as", "array_of_strings", "out", "array of stopped devices ID strings"} },
 			std::bind(&DevicesManager::getStoppedDevices, this) );
+
+		this->DBus->addEvent_StringToStringsArray_Callback( this->DBus_object_, this->DBus_interface_, "GetDeviceProperties",
+			{	{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
+				{"as", "array_of_strings", "out", "string array of device properties"} },
+			std::bind(&DevicesManager::getDeviceProperties, this, std::placeholders::_1) );
 	}
 
 	LOG(DEBUG2) << "loading known drivers";

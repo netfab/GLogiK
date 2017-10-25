@@ -352,6 +352,10 @@ std::string GKDBus::getNextStringArgument(void) {
 	return ret;
 }
 
+const std::vector<std::string> GKDBus::getAllStringArguments(void) {
+	return this->string_arguments_;
+}
+
 const bool GKDBus::getNextBooleanArgument(void) {
 	if( this->boolean_arguments_.empty() )
 		throw EmptyContainer("no boolean argument");
@@ -587,6 +591,55 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			}
 		}
 	}
+
+	for(const auto & object_it : this->events_string_to_stringsarray_) {
+		/* object path must match */
+		object_path = this->getNode(object_it.first);
+		if(object_path != asked_object_path)
+			continue;
+
+		for(const auto & interface : object_it.second) {
+			LOG(DEBUG2) << "checking " << interface.first << " interface";
+
+			for(const auto & DBusEvent : interface.second) { /* vector of struct */
+				/* we want only methods */
+				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
+					continue;
+
+				const char* method = DBusEvent.eventName.c_str();
+				LOG(DEBUG3) << "checking for " << method << " call";
+				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
+					/* call string to strings array callback */
+					const std::string arg( this->getNextStringArgument() );
+					const std::vector<std::string> ret = DBusEvent.callback(arg);
+
+					try {
+						this->initializeMethodCallReply(current);
+						this->appendToMethodCallReply(ret);
+					}
+					catch (const GKDBusOOMWrongBuild & e) {
+						LOG(ERROR) << "DBus build reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						this->buildAndSendErrorReply(current);
+						return;
+					}
+					catch ( const GLogiKExcept & e ) {
+						LOG(ERROR) << "DBus reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						throw;
+					}
+
+					/* delete reply object if allocated */
+					this->sendMethodCallReply();
+
+					return; /* only one by message */
+				}
+			}
+		}
+	}
+
 	for(const auto & object_it : this->events_string_to_bool_) {
 		/* object path must match */
 		object_path = this->getNode(object_it.first);

@@ -98,6 +98,7 @@ class DevicesManager
 		const bool restartDevice(const std::string & devID);
 		const std::vector<std::string> getStartedDevices(void);
 		const std::vector<std::string> getStoppedDevices(void);
+		const std::vector<std::string> getDeviceProperties(const std::string & devID);
 		/* -- */
 
 		void checkForUnpluggedDevices(void);
