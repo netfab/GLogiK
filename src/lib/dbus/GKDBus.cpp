@@ -410,7 +410,7 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 						ret = DBusEvent.callback(arg);
 					}
 					catch ( const EmptyContainer & e ) {
-						LOG(DEBUG3) << e.what();
+						LOG(WARNING) << e.what();
 					}
 
 					return; /* only one by message */
@@ -609,9 +609,17 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 				const char* method = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << method << " call";
 				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
-					/* call string to strings array callback */
-					const std::string arg( this->getNextStringArgument() );
-					const std::vector<std::string> ret = DBusEvent.callback(arg);
+					std::vector<std::string> ret;
+
+					try {
+						/* call string to strings array callback */
+						const std::string arg( this->getNextStringArgument() );
+						ret = DBusEvent.callback(arg);
+					}
+					catch ( const EmptyContainer & e ) {
+						LOG(WARNING) << e.what();
+					}
+
 
 					try {
 						this->initializeMethodCallReply(current);
@@ -665,7 +673,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 						ret = DBusEvent.callback(arg);
 					}
 					catch ( const EmptyContainer & e ) {
-						LOG(DEBUG3) << e.what();
+						LOG(WARNING) << e.what();
 					}
 
 					try {
@@ -721,7 +729,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 						ret = DBusEvent.callback(arg1, arg2);
 					}
 					catch ( const EmptyContainer & e ) {
-						LOG(DEBUG3) << e.what();
+						LOG(WARNING) << e.what();
 					}
 
 					try {
