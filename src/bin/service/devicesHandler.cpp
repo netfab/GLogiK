@@ -58,7 +58,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		this->DBus->waitForRemoteMethodCallReply();
 
 		try {
-			while( true ) { // FIXME
+			while( true ) {
 				device.setName( this->DBus->getNextStringArgument() );
 				num++;
 			}
