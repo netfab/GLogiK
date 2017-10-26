@@ -104,6 +104,7 @@ ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr), are_we_registered_(fal
 		this->devices_.setDBus(this->DBus);
 	}
 	catch ( const GLogiKExcept & e ) {
+		this->unregisterWithDaemon();
 		delete this->DBus;
 		this->DBus = nullptr;
 		throw;
