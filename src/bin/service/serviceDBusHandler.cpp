@@ -144,6 +144,13 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 }
 
 void ServiceDBusHandler::unregisterWithDaemon(void) {
+	if( ! this->are_we_registered_ ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "can't unregister, since we are noy currently registered";
+#endif
+		return;
+	}
+
 	try {
 		/* telling the daemon we're killing ourself */
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -261,6 +268,13 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 }
 
 void ServiceDBusHandler::reportChangedState(void) {
+	if( ! this->are_we_registered_ ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "currently not registered, skipping report state";
+#endif
+		return;
+	}
+
 	try {
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "UpdateClientState");
@@ -372,6 +386,13 @@ void ServiceDBusHandler::somethingChanged(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "it seems that something changed ! ";
 #endif
+
+	if( ! this->are_we_registered_ ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << " ... but we don't care because we are not registered ! ";
+#endif
+		return;
+	}
 
 	std::string device;
 	std::vector<std::string> devicesID;
