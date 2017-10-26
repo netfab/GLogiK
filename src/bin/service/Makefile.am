@@ -19,4 +19,5 @@ GLogiKs_SOURCES = \
 		main.cpp \
 		service.cpp service.h \
 		serviceDBusHandler.cpp serviceDBusHandler.h \
-		devicesHandler.cpp devicesHandler.h
+		devicesHandler.cpp devicesHandler.h \
+		warningCheck.cpp warningCheck.h

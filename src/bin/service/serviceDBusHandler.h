@@ -25,13 +25,11 @@
 #include <sstream>
 #include <string>
 
-#include "devicesHandler.h"
-
 #include "lib/dbus/GKDBus.h"
 
-#include "include/glogik.h"
+#include "devicesHandler.h"
 
-#define MAXIMUM_WARNINGS_BEFORE_FATAL_ERROR 10
+#include "include/glogik.h"
 
 namespace GLogiK
 {
@@ -48,7 +46,6 @@ class ServiceDBusHandler
 	protected:
 
 	private:
-		uint8_t warn_count_;
 		GKDBus* DBus;
 		DevicesHandler devices_;
 		bool are_we_registered_;
@@ -79,7 +76,6 @@ class ServiceDBusHandler
 		void saveDevicesProperties(void);
 
 		void warnUnhandledSessionState(const std::string & state);
-		void warnOrThrows(const std::string & warn);
 		void reportChangedState(void);
 
 		/* signals */

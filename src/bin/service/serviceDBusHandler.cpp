@@ -32,6 +32,7 @@
 
 #include "lib/utils/utils.h"
 
+#include "warningCheck.h"
 #include "serviceDBusHandler.h"
 
 namespace fs = boost::filesystem;
@@ -48,7 +49,7 @@ namespace GLogiK
  *
  */
 
-ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr), are_we_registered_(false),
+ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr), are_we_registered_(false),
 	buffer_("", std::ios_base::app)
 {
 	this->cfgfile_fullpath_ = XDGUserDirs::getConfigDirectory();
@@ -232,18 +233,6 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(void) {
 	}
 }
 
-void ServiceDBusHandler::warnOrThrows(const std::string & warn) {
-	LOG(WARNING) << warn;
-	GK_WARN << warn << "\n";
-	if(this->warn_count_ >= MAXIMUM_WARNINGS_BEFORE_FATAL_ERROR) {
-		const std::string last = "maximum warning count reached, this is fatal";
-		LOG(ERROR) << last;
-		GK_ERR << last << "\n";
-		throw GLogiKExcept(last);
-	}
-	this->warn_count_++;
-}
-
 /*
  * is the session in active, online or closing state ?
  */
@@ -265,7 +254,7 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 		std::string warn(__func__);
 		warn += " failure : ";
 		warn += e.what();
-		this->warnOrThrows(warn);
+		WarningCheck::warnOrThrows(warn);
 	}
 
 	return this->session_state_;
@@ -296,14 +285,14 @@ void ServiceDBusHandler::reportChangedState(void) {
 		std::string warn(__func__);
 		warn += " failure : ";
 		warn += e.what();
-		this->warnOrThrows(warn);
+		WarningCheck::warnOrThrows(warn);
 	}
 }
 
 void ServiceDBusHandler::warnUnhandledSessionState(const std::string & state) {
 	std::string warn = "unhandled session state : ";
 	warn += state;
-	this->warnOrThrows(warn);
+	WarningCheck::warnOrThrows(warn);
 }
 
 void ServiceDBusHandler::updateSessionState(void) {
@@ -406,7 +395,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 		std::string warn(__func__);
 		warn += " failure : ";
 		warn += e.what();
-		this->warnOrThrows(warn);
+		WarningCheck::warnOrThrows(warn);
 	}
 
 	devicesID.clear();
@@ -430,7 +419,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 		std::string warn(__func__);
 		warn += " failure : ";
 		warn += e.what();
-		this->warnOrThrows(warn);
+		WarningCheck::warnOrThrows(warn);
 	}
 }
 

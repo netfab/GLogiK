@@ -23,6 +23,7 @@
 
 #include "lib/utils/utils.h"
 
+#include "warningCheck.h"
 #include "devicesHandler.h"
 
 namespace GLogiK
@@ -71,8 +72,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		std::string warn(__func__);
 		warn += " failure : ";
 		warn += e.what();
-		//this->warnOrThrows(warn);
-		throw GLogiKExcept(warn); // FIXME
+		WarningCheck::warnOrThrows(warn);
 	}
 }
 
