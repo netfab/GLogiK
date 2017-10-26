@@ -32,11 +32,11 @@ DaemonControl::DaemonControl() {
 DaemonControl::~DaemonControl() {
 }
 
-void DaemonControl::disable_daemon( void ) {
+void DaemonControl::exitDaemon( void ) {
 	DaemonControl::daemonized_ = false;
 }
 
-bool DaemonControl::is_daemon_enabled() {
+bool DaemonControl::isDaemonRunning() {
 	return DaemonControl::daemonized_;
 }
 

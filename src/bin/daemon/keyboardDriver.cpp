@@ -458,7 +458,7 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device) {
 	/* initializing time_point */
 	device.last_call = std::chrono::steady_clock::now();
 
-	while( ! keys_found and DaemonControl::is_daemon_enabled() and device.listen_status ) {
+	while( ! keys_found and DaemonControl::isDaemonRunning() and device.listen_status ) {
 		KeyStatus ret = this->getPressedKeys(device);
 
 		switch( ret ) {
@@ -518,7 +518,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 	this->updateKeyboardColor(device, 0xFF, 0x0, 0x0);
 	this->setKeyboardColor(device);
 
-	while( DaemonControl::is_daemon_enabled() and device.listen_status ) {
+	while( DaemonControl::isDaemonRunning() and device.listen_status ) {
 		KeyStatus ret = this->getPressedKeys(device);
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:

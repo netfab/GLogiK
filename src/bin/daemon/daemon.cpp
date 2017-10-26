@@ -109,7 +109,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 		this->dropPrivileges();
 		this->parseCommandLine(argc, argv);
 
-		if( GLogiKDaemon::is_daemon_enabled() ) {
+		if( GLogiKDaemon::isDaemonRunning() ) {
 			this->daemonize();
 
 			// TODO handle return values and errno ?
@@ -167,7 +167,7 @@ void GLogiKDaemon::handle_signal(int sig) {
 			syslog(LOG_INFO, buff.str().c_str());
 			std::signal(SIGINT, SIG_DFL);
 			std::signal(SIGTERM, SIG_DFL);
-			GLogiKDaemon::disable_daemon();
+			GLogiKDaemon::exitDaemon();
 			break;
 		default:
 			buff << sig << " --> unhandled";

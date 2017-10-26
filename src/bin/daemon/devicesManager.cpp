@@ -122,7 +122,7 @@ void DevicesManager::initializeDevices(void) {
 
 void DevicesManager::sendSignalToClients(const std::string & signal) {
 	/* don't send signal if the daemon is about to exit */
-	if( ! DaemonControl::is_daemon_enabled() )
+	if( ! DaemonControl::isDaemonRunning() )
 		return;
 
 	try {
@@ -599,7 +599,7 @@ void DevicesManager::startMonitoring(GKDBus* pDBus) {
 	this->searchSupportedDevices();
 	this->initializeDevices();
 
-	while( DaemonControl::is_daemon_enabled() ) {
+	while( DaemonControl::isDaemonRunning() ) {
 		int ret = poll(this->fds, 1, 1000);
 
 		// receive data ?
