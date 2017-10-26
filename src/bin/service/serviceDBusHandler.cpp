@@ -87,27 +87,7 @@ ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr), are_we_registered_(fal
 		this->setCurrentSessionObjectPath();
 		this->session_state_ = this->getCurrentSessionState();
 
-		/* telling the daemon we are alive */
-		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "RegisterClient");
-		this->DBus->appendToRemoteMethodCall(this->current_session_);
-		this->DBus->sendRemoteMethodCall();
-
-		this->DBus->waitForRemoteMethodCallReply();
-
-		const bool ret = this->DBus->getNextBooleanArgument();
-		if( ret ) {
-			this->are_we_registered_ = true;
-			const char * success = "successfully registered with daemon";
-			LOG(DEBUG2) << success;
-			GK_STAT << success << "\n";
-		}
-		else {
-			const char * failure = "failed to register with daemon : false";
-			LOG(ERROR) << failure;
-			GK_ERR << failure << "\n";
-			throw GLogiKExcept(failure);
-		}
+		this->registerWithDaemon();
 
 		/* want to be warned by the daemon about those signals */
 		this->DBus->addSignal_VoidToVoid_Callback(BusConnection::GKDBUS_SYSTEM,
@@ -143,10 +123,44 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 	this->DBus = nullptr;
 }
 
+/*
+ * try to tell the daemon we are alive
+ * throws on failure
+ */
+void ServiceDBusHandler::registerWithDaemon(void) {
+	if( this->are_we_registered_ ) {
+#if DEBUGGING_ON
+		LOG(WARNING) << "don't need to register, since we are already registered";
+#endif
+		return;
+	}
+
+	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "RegisterClient");
+	this->DBus->appendToRemoteMethodCall(this->current_session_);
+	this->DBus->sendRemoteMethodCall();
+
+	this->DBus->waitForRemoteMethodCallReply();
+
+	const bool ret = this->DBus->getNextBooleanArgument();
+	if( ret ) {
+		this->are_we_registered_ = true;
+		const char * success = "successfully registered with daemon";
+		LOG(DEBUG2) << success;
+		GK_STAT << success << "\n";
+	}
+	else {
+		const char * failure = "failed to register with daemon : false";
+		LOG(ERROR) << failure;
+		GK_ERR << failure << "\n";
+		throw GLogiKExcept(failure);
+	}
+}
+
 void ServiceDBusHandler::unregisterWithDaemon(void) {
 	if( ! this->are_we_registered_ ) {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "can't unregister, since we are noy currently registered";
+		LOG(DEBUG2) << "can't unregister, since we are not currently registered";
 #endif
 		return;
 	}

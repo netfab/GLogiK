@@ -71,6 +71,7 @@ class ServiceDBusHandler
 		void setCurrentSessionObjectPath(void);
 		const std::string getCurrentSessionState(const bool logoff=false);
 
+		void registerWithDaemon(void);
 		void unregisterWithDaemon(void);
 
 		void saveDevicesProperties(void);
