@@ -22,8 +22,13 @@
 #ifndef __GLOGIK_DESKTOP_SERVICE_DEVICES_HANDLER_H__
 #define __GLOGIK_DESKTOP_SERVICE_DEVICES_HANDLER_H__
 
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/map.hpp>
+
 #include "lib/dbus/GKDBus.h"
 #include "lib/shared/deviceProperties.h"
+
+#include "include/glogik.h"
 
 namespace GLogiK
 {
@@ -38,12 +43,27 @@ class DevicesHandler
 
 		void checkStartedDevice(const std::string & device);
 		void checkStoppedDevice(const std::string & device);
+		void clearLoadedDevices(void);
 
 	protected:
 
 	private:
+		friend class boost::serialization::access;
+
+		template<class Archive>
+			void serialize(Archive & ar, const unsigned int version)
+		{
+			ar & this->devices_;
+		}
+
+		/* DDM - Daemon DevicesManager - to contact the DevicesManager */
+		const char* DBus_DDM_object_path_	= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH;
+		const char* DBus_DDM_interface_		= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
+
 		GKDBus* DBus;
 		std::map<const std::string, DeviceProperties> devices_;
+
+		void setDeviceProperties(const std::string & devID, DeviceProperties & device);
 };
 
 } // namespace GLogiK

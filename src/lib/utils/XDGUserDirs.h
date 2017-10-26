@@ -19,43 +19,28 @@
  *
  */
 
-#ifndef __GLOGIK_KEY_EVENT_H__
-#define __GLOGIK_KEY_EVENT_H__
+#ifndef __GLOGIK_XDG_USER_DIRS_H__
+#define __GLOGIK_XDG_USER_DIRS_H__
 
-#include <boost/serialization/access.hpp>
+#if !defined (UTILS_INSIDE_UTILS_H) && !defined (UTILS_COMPILATION)
+#error "Only "utils/utils.h" can be included directly, this file may disappear or change contents."
+#endif
 
-#include <cstdint>
-#include <linux/input-event-codes.h>
+#include <string>
 
 namespace GLogiK
 {
 
-enum class EventValue : int8_t
+class XDGUserDirs
 {
-	EVENT_KEY_RELEASE = 0,
-	EVENT_KEY_PRESS,
-	EVENT_KEY_UNKNOWN,
-};
-
-struct KeyEvent {
 	public:
-		unsigned char event_code;
-		EventValue event;
-		uint16_t interval;
+		static const std::string getConfigDirectory(void);
 
-		KeyEvent(unsigned char c=KEY_UNKNOWN, EventValue e=EventValue::EVENT_KEY_UNKNOWN, uint16_t i=0)
-			: event_code(c), event(e), interval(i) {}
+	protected:
+		XDGUserDirs(void);
+		~XDGUserDirs(void);
 
 	private:
-		friend class boost::serialization::access;
-
-		template<class Archive>
-			void serialize(Archive & ar, const unsigned int version)
-		{
-			ar & this->event_code;
-			ar & this->event;
-			ar & this->interval;
-		}
 };
 
 } // namespace GLogiK

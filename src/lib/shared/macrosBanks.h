@@ -22,6 +22,10 @@
 #ifndef __GLOGIK_MACROS_BANKS_H__
 #define __GLOGIK_MACROS_BANKS_H__
 
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/map.hpp>
+
 #include <vector>
 #include <map>
 #include <string>
@@ -46,6 +50,14 @@ class MacrosBanks
 	protected:
 		MacrosBanks(void);
 		~MacrosBanks(void);
+
+		friend class boost::serialization::access;
+
+		template<class Archive>
+			void serialize(Archive & ar, const unsigned int version)
+		{
+			ar & this->macros_profiles_;
+		}
 
 		std::map<const MemoryBank, std::map<const std::string, std::vector<KeyEvent>>> macros_profiles_ = {
 			{ MemoryBank::MACROS_M0, {}},

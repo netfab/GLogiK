@@ -22,6 +22,8 @@
 #ifndef __GLOGIK_DEVICE_PROPERTIES_H__
 #define __GLOGIK_DEVICE_PROPERTIES_H__
 
+#include <string>
+
 #include "macrosBanks.h"
 
 namespace GLogiK
@@ -46,11 +48,21 @@ class DeviceProperties : public MacrosBanks
 		void start(void);
 		void stop(void);
 
+		void setName(const std::string & name);
+
 	protected:
 
 	private:
-		DeviceState state;
+		DeviceState state_;
+		std::string device_name_;
 
+		friend class boost::serialization::access;
+
+		template<class Archive>
+			void serialize(Archive & ar, const unsigned int version)
+		{
+			ar & this->device_name_;
+		}
 };
 
 } // namespace GLogiK

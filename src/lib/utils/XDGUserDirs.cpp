@@ -19,45 +19,36 @@
  *
  */
 
-#ifndef __GLOGIK_KEY_EVENT_H__
-#define __GLOGIK_KEY_EVENT_H__
+#include <cstdlib>
 
-#include <boost/serialization/access.hpp>
+#define UTILS_COMPILATION 1
 
-#include <cstdint>
-#include <linux/input-event-codes.h>
+#include "exception.h"
+#include "functions.h"
+#include "XDGUserDirs.h"
+
+#undef UTILS_COMPILATION
 
 namespace GLogiK
 {
 
-enum class EventValue : int8_t
-{
-	EVENT_KEY_RELEASE = 0,
-	EVENT_KEY_PRESS,
-	EVENT_KEY_UNKNOWN,
-};
+XDGUserDirs::XDGUserDirs() {
+}
 
-struct KeyEvent {
-	public:
-		unsigned char event_code;
-		EventValue event;
-		uint16_t interval;
+XDGUserDirs::~XDGUserDirs() {
+}
 
-		KeyEvent(unsigned char c=KEY_UNKNOWN, EventValue e=EventValue::EVENT_KEY_UNKNOWN, uint16_t i=0)
-			: event_code(c), event(e), interval(i) {}
-
-	private:
-		friend class boost::serialization::access;
-
-		template<class Archive>
-			void serialize(Archive & ar, const unsigned int version)
-		{
-			ar & this->event_code;
-			ar & this->event;
-			ar & this->interval;
-		}
-};
+const std::string XDGUserDirs::getConfigDirectory(void) {
+	const std::string home = to_string( getenv("HOME") );
+	if(home == "")
+		throw GLogiKExcept("can't get HOME environment variable");
+	std::string xdg_config_home = to_string( getenv("XDG_CONFIG_HOME") );
+	if(xdg_config_home == "") {
+		xdg_config_home = home;
+		xdg_config_home += "/.config";
+	}
+	return xdg_config_home;
+}
 
 } // namespace GLogiK
 
-#endif

@@ -19,6 +19,8 @@
  *
  */
 
+#include <thread>
+#include <chrono>
 #include <stdexcept>
 
 #include <syslog.h>
@@ -77,12 +79,33 @@ ClientsManager::~ClientsManager() {
 		}
 	}
 	this->clients_.clear();
+
 	LOG(DEBUG2) << "exiting clients manager";
 
 }
 
 void ClientsManager::runLoop(void) {
 	this->devicesManager->startMonitoring(this->DBus);
+
+	LOG(DEBUG2) << "sending clients DaemonIsStopping signal";
+	try {
+		this->DBus->initializeBroadcastSignal(BusConnection::GKDBUS_SYSTEM,
+			this->DBus_CSMH_object_path_, this->DBus_CSMH_interface_,
+			"DaemonIsStopping");
+		this->DBus->sendBroadcastSignal();
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << "DBus signal failure : " << e.what();
+	}
+
+	uint8_t count = 0;
+	LOG(DEBUG2) << "waiting for clients to unregister ...";
+	while( count++ < 10 and this->clients_.size() > 0 ) {
+		this->devicesManager->checkDBusMessages();
+		LOG(DEBUG3) << "sleeping for 400 ms ...";
+		std::this_thread::sleep_for(std::chrono::milliseconds(400));
+	}
+
 }
 
 const bool ClientsManager::registerClient(const std::string & uniqueString) {

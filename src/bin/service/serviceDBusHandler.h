@@ -22,6 +22,7 @@
 #ifndef __GLOGIKS_DESKTOP_SERVICE_DBUS_HANDLER_H__
 #define __GLOGIKS_DESKTOP_SERVICE_DBUS_HANDLER_H__
 
+#include <sstream>
 #include <string>
 
 #include "devicesHandler.h"
@@ -49,7 +50,11 @@ class ServiceDBusHandler
 	private:
 		uint8_t warn_count_;
 		GKDBus* DBus;
-		DevicesHandler devices;
+		DevicesHandler devices_;
+		bool are_we_registered_;
+
+		std::string cfgfile_fullpath_;
+		std::ostringstream buffer_;
 
 		/* DCM - Daemon ClientsManager - to contact the ClientsManager */
 		const char* DBus_DCM_object_path_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH;
@@ -69,10 +74,17 @@ class ServiceDBusHandler
 		void setCurrentSessionObjectPath(void);
 		const std::string getCurrentSessionState(const bool logoff=false);
 
+		void unregisterWithDaemon(void);
+
+		void saveDevicesProperties(void);
+
 		void warnUnhandledSessionState(const std::string & state);
 		void warnOrThrows(const std::string & warn);
 		void reportChangedState(void);
+
+		/* signals */
 		void somethingChanged(void);
+		void daemonIsStopping(void);
 };
 
 } // namespace GLogiK

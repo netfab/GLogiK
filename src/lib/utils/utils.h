@@ -27,6 +27,7 @@
 #include "log.h"
 #include "exception.h"
 #include "functions.h"
+#include "XDGUserDirs.h"
 
 #undef UTILS_INSIDE_UTILS_H
 

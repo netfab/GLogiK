@@ -65,6 +65,7 @@ class DevicesManager
 		~DevicesManager(void);
 
 		void startMonitoring(GKDBus* pDBus);
+		void checkDBusMessages(void);
 
 	protected:
 
@@ -98,10 +99,10 @@ class DevicesManager
 		const bool restartDevice(const std::string & devID);
 		const std::vector<std::string> getStartedDevices(void);
 		const std::vector<std::string> getStoppedDevices(void);
+		const std::vector<std::string> getDeviceProperties(const std::string & devID);
 		/* -- */
 
 		void checkForUnpluggedDevices(void);
-		void checkDBusMessages(void);
 
 		void sendSignalToClients(const std::string & signal);
 };

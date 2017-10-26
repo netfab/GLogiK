@@ -24,26 +24,30 @@
 namespace GLogiK
 {
 
-DeviceProperties::DeviceProperties() : state(DeviceState::STATE_UNKNOWN) {
+DeviceProperties::DeviceProperties() : state_(DeviceState::STATE_UNKNOWN), device_name_("unknown") {
 }
 
 DeviceProperties::~DeviceProperties() {
 }
 
 const bool DeviceProperties::started(void) const {
-	return (this->state == DeviceState::STATE_STARTED);
+	return (this->state_ == DeviceState::STATE_STARTED);
 }
 
 const bool DeviceProperties::stopped(void) const {
-	return (this->state == DeviceState::STATE_STOPPED);
+	return (this->state_ == DeviceState::STATE_STOPPED);
 }
 
 void DeviceProperties::start(void) {
-	this->state = DeviceState::STATE_STARTED;
+	this->state_ = DeviceState::STATE_STARTED;
 }
 
 void DeviceProperties::stop(void) {
-	this->state = DeviceState::STATE_STOPPED;
+	this->state_ = DeviceState::STATE_STOPPED;
+}
+
+void DeviceProperties::setName(const std::string & name) {
+	this->device_name_ = name;
 }
 
 } // namespace GLogiK
