@@ -121,6 +121,10 @@ void DevicesManager::initializeDevices(void) {
 }
 
 void DevicesManager::sendSignalToClients(const std::string & signal) {
+	/* don't send signal if the daemon is about to exit */
+	if( ! DaemonControl::is_daemon_enabled() )
+		return;
+
 	try {
 		this->DBus->initializeBroadcastSignal(BusConnection::GKDBUS_SYSTEM,
 			this->DBus_CSMH_object_path_, this->DBus_CSMH_interface_,

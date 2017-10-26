@@ -48,7 +48,9 @@ namespace GLogiK
  *
  */
 
-ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr), buffer_("", std::ios_base::app) {
+ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr), are_we_registered_(false),
+	buffer_("", std::ios_base::app)
+{
 	this->cfgfile_fullpath_ = XDGUserDirs::getConfigDirectory();
 	this->cfgfile_fullpath_ += "/";
 	this->cfgfile_fullpath_ += PACKAGE_NAME;
@@ -91,8 +93,10 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr), buffer
 		this->DBus->sendRemoteMethodCall();
 
 		this->DBus->waitForRemoteMethodCallReply();
+
 		const bool ret = this->DBus->getNextBooleanArgument();
 		if( ret ) {
+			this->are_we_registered_ = true;
 			const char * success = "successfully registered with daemon";
 			LOG(DEBUG2) << success;
 			GK_STAT << success << "\n";
@@ -110,6 +114,11 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr), buffer
 			{}, // FIXME
 			std::bind(&ServiceDBusHandler::somethingChanged, this) );
 
+		this->DBus->addSignal_VoidToVoid_Callback(BusConnection::GKDBUS_SYSTEM,
+			this->DBus_SMH_object_, this->DBus_SMH_interface_, "DaemonIsStopping",
+			{}, // FIXME
+			std::bind(&ServiceDBusHandler::daemonIsStopping, this) );
+
 		/* set GKDBus pointer */
 		this->devices_.setDBus(this->DBus);
 	}
@@ -121,6 +130,19 @@ ServiceDBusHandler::ServiceDBusHandler() : warn_count_(0), DBus(nullptr), buffer
 }
 
 ServiceDBusHandler::~ServiceDBusHandler() {
+	if( this->are_we_registered_ ) {
+		this->unregisterWithDaemon();
+		this->saveDevicesProperties();
+	}
+	else {
+		LOG(DEBUG2) << "client " << this->current_session_ << " already unregistered with deamon";
+	}
+
+	delete this->DBus;
+	this->DBus = nullptr;
+}
+
+void ServiceDBusHandler::unregisterWithDaemon(void) {
 	try {
 		/* telling the daemon we're killing ourself */
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -129,8 +151,10 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 		this->DBus->sendRemoteMethodCall();
 
 		this->DBus->waitForRemoteMethodCallReply();
+
 		const bool ret = this->DBus->getNextBooleanArgument();
 		if( ret ) {
+			this->are_we_registered_ = false;
 			const char * success = "successfully unregistered with daemon";
 			LOG(DEBUG2) << success;
 			GK_STAT << success << "\n";
@@ -147,11 +171,6 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 		LOG(ERROR) << err;
 		GK_ERR << err << "\n";
 	}
-
-	this->saveDevicesProperties();
-
-	delete this->DBus;
-	this->DBus = nullptr;
 }
 
 void ServiceDBusHandler::saveDevicesProperties(void) {
@@ -344,6 +363,20 @@ void ServiceDBusHandler::updateSessionState(void) {
 
 	this->session_state_ = new_state;
 	this->reportChangedState();
+}
+
+
+void ServiceDBusHandler::daemonIsStopping(void) {
+	if( this->are_we_registered_ ) {
+		this->unregisterWithDaemon();
+		this->saveDevicesProperties();
+	}
+	else {
+		LOG(DEBUG2) << "client " << this->current_session_ << " already unregistered with deamon";
+	}
+
+	this->devices_.clearLoadedDevices();
+	// TODO sleep and retry to register
 }
 
 void ServiceDBusHandler::somethingChanged(void) {

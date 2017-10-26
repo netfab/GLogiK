@@ -51,6 +51,7 @@ class ServiceDBusHandler
 		uint8_t warn_count_;
 		GKDBus* DBus;
 		DevicesHandler devices_;
+		bool are_we_registered_;
 
 		std::string cfgfile_fullpath_;
 		std::ostringstream buffer_;
@@ -73,12 +74,17 @@ class ServiceDBusHandler
 		void setCurrentSessionObjectPath(void);
 		const std::string getCurrentSessionState(const bool logoff=false);
 
+		void unregisterWithDaemon(void);
+
 		void saveDevicesProperties(void);
 
 		void warnUnhandledSessionState(const std::string & state);
 		void warnOrThrows(const std::string & warn);
 		void reportChangedState(void);
+
+		/* signals */
 		void somethingChanged(void);
+		void daemonIsStopping(void);
 };
 
 } // namespace GLogiK

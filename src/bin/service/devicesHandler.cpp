@@ -120,5 +120,10 @@ void DevicesHandler::checkStoppedDevice(const std::string & devID) {
 	}
 }
 
+
+void DevicesHandler::clearLoadedDevices(void) {
+	this->devices_.clear();
+}
+
 } // namespace GLogiK
 

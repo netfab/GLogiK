@@ -43,6 +43,7 @@ class DevicesHandler
 
 		void checkStartedDevice(const std::string & device);
 		void checkStoppedDevice(const std::string & device);
+		void clearLoadedDevices(void);
 
 	protected:
 
