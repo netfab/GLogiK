@@ -508,12 +508,14 @@ const std::vector<std::string> DevicesManager::getDeviceProperties(const std::st
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
 		LOG(DEBUG2) << "found " << device.model << " in started devices";
+		ret.push_back(device.vendor);
 		ret.push_back(device.model);
 	}
 	catch (const std::out_of_range& oor) {
 		try {
 			const auto & device = this->plugged_but_stopped_devices_.at(devID);
 			LOG(DEBUG2) << "found " << device.model << " in stopped devices";
+			ret.push_back(device.vendor);
 			ret.push_back(device.model);
 		}
 		catch (const std::out_of_range& oor) {

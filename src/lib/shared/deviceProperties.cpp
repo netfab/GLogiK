@@ -24,7 +24,9 @@
 namespace GLogiK
 {
 
-DeviceProperties::DeviceProperties() : state_(DeviceState::STATE_UNKNOWN), device_name_("unknown") {
+DeviceProperties::DeviceProperties() : state_(DeviceState::STATE_UNKNOWN),
+	vendor_("unknown"), model_("unknown")
+{
 }
 
 DeviceProperties::~DeviceProperties() {
@@ -44,10 +46,6 @@ void DeviceProperties::start(void) {
 
 void DeviceProperties::stop(void) {
 	this->state_ = DeviceState::STATE_STOPPED;
-}
-
-void DeviceProperties::setName(const std::string & name) {
-	this->device_name_ = name;
 }
 
 } // namespace GLogiK

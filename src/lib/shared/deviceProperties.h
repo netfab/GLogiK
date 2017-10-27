@@ -42,26 +42,26 @@ class DeviceProperties : public MacrosBanks
 		DeviceProperties(void);
 		~DeviceProperties(void);
 
+		std::string vendor_;
+		std::string model_;
+
 		/* accessors to purely logical state */
 		const bool started(void) const;
 		const bool stopped(void) const;
 		void start(void);
 		void stop(void);
 
-		void setName(const std::string & name);
-
 	protected:
 
 	private:
 		DeviceState state_;
-		std::string device_name_;
 
 		friend class boost::serialization::access;
 
 		template<class Archive>
 			void serialize(Archive & ar, const unsigned int version)
 		{
-			ar & this->device_name_;
+			ar & this->model_;
 		}
 };
 

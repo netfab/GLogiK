@@ -20,16 +20,23 @@
  */
 
 #include <stdexcept>
+#include <fstream>
+
+#include <boost/filesystem.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 
 #include "lib/utils/utils.h"
 
 #include "warningCheck.h"
 #include "devicesHandler.h"
 
+namespace fs = boost::filesystem;
+
 namespace GLogiK
 {
 
-DevicesHandler::DevicesHandler() : DBus(nullptr) {
+DevicesHandler::DevicesHandler() : DBus(nullptr), buffer_("", std::ios_base::app) {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler initialization";
 #endif
@@ -45,6 +52,112 @@ void DevicesHandler::setDBus(GKDBus* pDBus) {
 	this->DBus = pDBus;
 }
 
+/*
+void ServiceDBusHandler::loadDevicesProperties(void) {
+	try {
+		std::ifstream ifs;
+		ifs.exceptions(std::ifstream::failbit|std::ifstream::badbit);
+		ifs.open(this->cfgfile_fullpath_);
+
+		LOG(DEBUG) << "configuration file successfully opened for reading";
+
+		boost::archive::text_iarchive input_archive(ifs);
+		input_archive >> this->devices_;
+	}
+	catch (const std::ofstream::failure & e) {
+		this->buffer_.str("fail to open configuration file : ");
+		this->buffer_ << this->cfgfile_fullpath_ << " : " << e.what();
+		LOG(ERROR) << this->buffer_.str();
+		GK_ERR << this->buffer_.str() << "\n";
+	}
+	*
+	 * catch std::ios_base::failure on buggy compilers
+	 * should be fixed with gcc >= 7.0
+	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
+	 *
+	catch( const std::exception & e ) {
+		this->buffer_.str("(buggy exception) fail to open configuration file : ");
+		this->buffer_ << e.what();
+		LOG(ERROR) << this->buffer_.str();
+		GK_ERR << this->buffer_.str() << "\n";
+	}
+}
+*/
+
+void DevicesHandler::saveDevicesProperties(const std::string & config_directory) {
+	for( const auto & device : this->devices_ ) {
+		const std::string & devID = device.first;
+		const DeviceProperties & props = device.second;
+
+		std::string current_dir(config_directory);
+		current_dir += "/";
+		current_dir += props.vendor_;
+
+		bool dir_created = false;
+
+		try {
+			fs::path path(current_dir);
+			dir_created = create_directory(path);
+			fs::permissions(path, fs::owner_all);
+		}
+		catch (const fs::filesystem_error & e) {
+			this->buffer_.str("configuration directory creation or set permissions failure : ");
+			this->buffer_ << current_dir << " : " << e.what();
+			LOG(ERROR) << this->buffer_.str();
+			GK_ERR << this->buffer_.str() << "\n";
+			continue;
+		}
+
+		if( ! dir_created ) {
+			LOG(DEBUG) << "configuration directory not created because it seems already exists";
+		}
+		else {
+			LOG(DEBUG) << "configuration directory created";
+		}
+
+		current_dir += "/";
+		current_dir += devID;
+		current_dir += ".cfg";
+
+		try {
+			std::ofstream ofs;
+			ofs.exceptions(std::ofstream::failbit|std::ofstream::badbit);
+			ofs.open(current_dir, std::ofstream::out|std::ofstream::trunc);
+
+			fs::path path(current_dir);
+			fs::permissions(path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
+
+			LOG(DEBUG) << "configuration file successfully opened for writing";
+
+			boost::archive::text_oarchive output_archive(ofs);
+			output_archive << props;
+		}
+		catch (const std::ofstream::failure & e) {
+			this->buffer_.str("fail to open configuration file : ");
+			this->buffer_ << current_dir << " : " << e.what();
+			LOG(ERROR) << this->buffer_.str();
+			GK_ERR << this->buffer_.str() << "\n";
+		}
+		catch (const fs::filesystem_error & e) {
+			this->buffer_.str("set permissions failure on configuration file : ");
+			this->buffer_ << current_dir << " : " << e.what();
+			LOG(ERROR) << this->buffer_.str();
+			GK_ERR << this->buffer_.str() << "\n";
+		}
+		/*
+		 * catch std::ios_base::failure on buggy compilers
+		 * should be fixed with gcc >= 7.0
+		 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
+		 */
+		catch( const std::exception & e ) {
+			this->buffer_.str("(buggy exception) fail to open configuration file : ");
+			this->buffer_ << e.what();
+			LOG(ERROR) << this->buffer_.str();
+			GK_ERR << this->buffer_.str() << "\n";
+		}
+	}
+}
+
 void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProperties & device) {
 	unsigned int num = 0;
 
@@ -58,15 +171,16 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		this->DBus->waitForRemoteMethodCallReply();
 
 		try {
-			while( true ) {
-				device.setName( this->DBus->getNextStringArgument() );
-				num++;
-			}
+			device.vendor_ = this->DBus->getNextStringArgument();
+			num++;
+			device.model_  = this->DBus->getNextStringArgument();
+			num++;
 		}
 		catch (const EmptyContainer & e) {
-			LOG(DEBUG3) << "got " << num << " properties for device " << devID;
 			// nothing to do here
 		}
+
+		LOG(DEBUG3) << "got " << num << " properties for device " << devID;
 	}
 	catch (const GLogiKExcept & e) {
 		std::string warn(__func__);
