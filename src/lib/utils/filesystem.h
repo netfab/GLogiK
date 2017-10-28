@@ -19,18 +19,28 @@
  *
  */
 
-#ifndef __GLOGIK_UTILS_H__
-#define __GLOGIK_UTILS_H__
+#ifndef __GLOGIK_FILESYSTEM_H__
+#define __GLOGIK_FILESYSTEM_H__
 
-#define UTILS_INSIDE_UTILS_H 1
-
-#include "log.h"
-#include "exception.h"
-#include "functions.h"
-#include "XDGUserDirs.h"
-#include "filesystem.h"
-
-#undef UTILS_INSIDE_UTILS_H
-
+#if !defined (UTILS_INSIDE_UTILS_H) && !defined (UTILS_COMPILATION)
+#error "Only "utils/utils.h" can be included directly, this file may disappear or change contents."
 #endif
 
+namespace GLogiK
+{
+
+class FileSystem
+{
+	public:
+		static void createOwnerDirectory(const std::string & directory);
+
+	protected:
+		FileSystem(void);
+		~FileSystem(void);
+
+	private:
+};
+
+} // namespace GLogiK
+
+#endif

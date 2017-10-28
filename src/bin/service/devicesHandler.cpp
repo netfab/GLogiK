@@ -93,26 +93,13 @@ void DevicesHandler::saveDevicesProperties(const std::string & config_directory)
 		current_dir += "/";
 		current_dir += props.vendor_;
 
-		bool dir_created = false;
-
 		try {
-			fs::path path(current_dir);
-			dir_created = create_directory(path);
-			fs::permissions(path, fs::owner_all);
+			FileSystem::createOwnerDirectory(current_dir);
 		}
-		catch (const fs::filesystem_error & e) {
-			this->buffer_.str("configuration directory creation or set permissions failure : ");
-			this->buffer_ << current_dir << " : " << e.what();
-			LOG(ERROR) << this->buffer_.str();
-			GK_ERR << this->buffer_.str() << "\n";
+		catch ( const GLogiKExcept & e ) {
+			LOG(ERROR) << e.what();
+			GK_ERR << e.what() << "\n";
 			continue;
-		}
-
-		if( ! dir_created ) {
-			LOG(DEBUG) << "configuration directory not created because it seems already exists";
-		}
-		else {
-			LOG(DEBUG) << "configuration directory created";
 		}
 
 		current_dir += "/";

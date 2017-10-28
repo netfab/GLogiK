@@ -22,16 +22,12 @@
 #include <vector>
 #include <stdexcept>
 
-#include <boost/filesystem.hpp>
-
 #include <config.h>
 
 #include "lib/utils/utils.h"
 
 #include "warningCheck.h"
 #include "serviceDBusHandler.h"
-
-namespace fs = boost::filesystem;
 
 namespace GLogiK
 {
@@ -52,27 +48,9 @@ ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr), are_we_registered_(fal
 	this->cfgfile_fullpath_ += "/";
 	this->cfgfile_fullpath_ += PACKAGE_NAME;
 
-	bool dir_created = false;
-
 	try {
-		fs::path path(this->cfgfile_fullpath_);
-		dir_created = create_directory(path);
-		fs::permissions(path, fs::owner_all);
-	}
-	catch (const fs::filesystem_error & e) {
-		this->buffer_.str("configuration directory creation or set permissions failure : ");
-		this->buffer_ << this->cfgfile_fullpath_ << " : " << e.what();
-		throw GLogiKExcept(this->buffer_.str());
-	}
+		FileSystem::createOwnerDirectory(this->cfgfile_fullpath_);
 
-	if( ! dir_created ) {
-		LOG(DEBUG) << "configuration directory not created because it seems already exists";
-	}
-	else {
-		LOG(DEBUG) << "configuration directory created";
-	}
-
-	try {
 		this->DBus = new GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
 		this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 
