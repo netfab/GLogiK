@@ -69,8 +69,9 @@ GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
 	dbus_message_unref(this->message_);
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! this->log_off_ )
+	if( ! this->log_off_ ) {
 		LOG(DEBUG2) << "DBus remote method call with pending reply sent";
+	}
 #endif
 }
 
@@ -82,8 +83,9 @@ void GKDBusRemoteMethodCall::appendToRemoteMethodCall(const std::string & value)
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! this->log_off_ )
+	if( ! this->log_off_ ) {
 		LOG(DEBUG2) << "DBus remote method call string value appended";
+	}
 #endif
 }
 

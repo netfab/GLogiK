@@ -24,8 +24,8 @@
 namespace GLogiK
 {
 
-DeviceProperties::DeviceProperties() : state_(DeviceState::STATE_UNKNOWN),
-	vendor_("unknown"), model_("unknown")
+DeviceProperties::DeviceProperties() : vendor_("unknown"), model_("unknown"),
+	state_(DeviceState::STATE_UNKNOWN)
 {
 }
 

@@ -172,6 +172,7 @@ void GKDBusEvents::addIntrospectableEvent(const char* object) {
 	try {
 		const auto & obj = this->events_string_to_string_.at(object);
 		const auto & interf = obj.at("org.freedesktop.DBus.Introspectable");
+		LOG(DEBUG2) << "introspect interface found : " << interf.size();
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(DEBUG3) << "adding Introspectable interface : " << object;

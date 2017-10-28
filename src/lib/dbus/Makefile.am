@@ -1,8 +1,15 @@
 
 lib_LTLIBRARIES=libGLogiKDBus.la
 
-libGLogiKDBus_la_CXXFLAGS = $(DBUS_CFLAGS)
-libGLogiKDBus_la_LIBADD = $(DBUS_LIBS) \
+libGLogiKDBus_la_CXXFLAGS = \
+						@AM_CXXFLAGS@ \
+						$(DBUS_CFLAGS)
+
+libGLogiKDBus_la_LDFLAGS = \
+						@AM_LDFLAGS@
+
+libGLogiKDBus_la_LIBADD = \
+				$(DBUS_LIBS) \
 				../utils/libGLogiKUtils.la
 
 libGLogiKDBus_la_SOURCES = \

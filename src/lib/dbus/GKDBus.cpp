@@ -402,12 +402,10 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 				const char* signal = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << signal << " receipt";
 				if( this->checkMessageForSignalReceipt(interface.first.c_str(), signal) ) {
-					bool ret = false;
-
 					try {
 						/* call string to bool callback */
 						const std::string arg( this->getNextStringArgument() );
-						ret = DBusEvent.callback(arg);
+						DBusEvent.callback(arg);
 					}
 					catch ( const EmptyContainer & e ) {
 						LOG(WARNING) << e.what();
