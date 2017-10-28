@@ -72,6 +72,7 @@ ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr), are_we_registered_(fal
 
 		/* set GKDBus pointer */
 		this->devices_.setDBus(this->DBus);
+		this->somethingChanged();
 	}
 	catch ( const GLogiKExcept & e ) {
 		this->unregisterWithDaemon();
