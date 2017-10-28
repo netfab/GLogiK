@@ -50,7 +50,7 @@ class ServiceDBusHandler
 		DevicesHandler devices_;
 		bool are_we_registered_;
 
-		std::string cfgfile_fullpath_;
+		std::string config_root_directory_;
 		std::ostringstream buffer_;
 
 		/* DCM - Daemon ClientsManager - to contact the ClientsManager */

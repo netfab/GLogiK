@@ -44,12 +44,12 @@ namespace GLogiK
 ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr), are_we_registered_(false),
 	buffer_("", std::ios_base::app)
 {
-	this->cfgfile_fullpath_ = XDGUserDirs::getConfigDirectory();
-	this->cfgfile_fullpath_ += "/";
-	this->cfgfile_fullpath_ += PACKAGE_NAME;
+	this->config_root_directory_ = XDGUserDirs::getConfigDirectory();
+	this->config_root_directory_ += "/";
+	this->config_root_directory_ += PACKAGE_NAME;
 
 	try {
-		FileSystem::createOwnerDirectory(this->cfgfile_fullpath_);
+		FileSystem::createOwnerDirectory(this->config_root_directory_);
 
 		this->DBus = new GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
 		this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
@@ -84,7 +84,7 @@ ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr), are_we_registered_(fal
 ServiceDBusHandler::~ServiceDBusHandler() {
 	if( this->are_we_registered_ ) {
 		this->unregisterWithDaemon();
-		this->devices_.saveDevicesProperties(this->cfgfile_fullpath_);
+		this->devices_.saveDevicesProperties(this->config_root_directory_);
 	}
 	else {
 		LOG(DEBUG2) << "client " << this->current_session_ << " already unregistered with deamon";
@@ -318,7 +318,7 @@ void ServiceDBusHandler::updateSessionState(void) {
 void ServiceDBusHandler::daemonIsStopping(void) {
 	if( this->are_we_registered_ ) {
 		this->unregisterWithDaemon();
-		this->devices_.saveDevicesProperties(this->cfgfile_fullpath_);
+		this->devices_.saveDevicesProperties(this->config_root_directory_);
 	}
 	else {
 		LOG(DEBUG2) << "client " << this->current_session_ << " already unregistered with deamon";
