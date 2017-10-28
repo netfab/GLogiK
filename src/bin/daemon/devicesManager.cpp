@@ -71,6 +71,8 @@ DevicesManager::~DevicesManager() {
 
 void DevicesManager::initializeDevices(void) {
 	LOG(DEBUG2) << "initializing detected devices";
+	uint8_t count = 0;
+
 	for(const auto& det_dev : this->detected_devices_) {
 		const auto & devID = det_dev.first;
 		const auto & device = det_dev.second;
@@ -105,6 +107,7 @@ void DevicesManager::initializeDevices(void) {
 									<< ") on bus " << to_uint(device.device_bus) << " initialized";
 					LOG(INFO) << this->buffer_.str();
 					syslog(LOG_INFO, this->buffer_.str().c_str());
+					count++;
 					break;
 				}
 			} // for
@@ -116,6 +119,12 @@ void DevicesManager::initializeDevices(void) {
 			syslog(LOG_ERR, this->buffer_.str().c_str());
 		}
 	} // for
+
+	if( count > 0 ) {
+		/* inform clients */
+		this->sendSignalToClients("SomethingChanged");
+	}
+
 	this->detected_devices_.clear();
 	LOG(INFO) << "device(s) initialized : " << this->initialized_devices_.size();
 }
