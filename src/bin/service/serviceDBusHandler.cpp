@@ -48,9 +48,9 @@ ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr), are_we_registered_(fal
 	this->config_root_directory_ += "/";
 	this->config_root_directory_ += PACKAGE_NAME;
 
-	try {
-		FileSystem::createOwnerDirectory(this->config_root_directory_);
+	FileSystem::createOwnerDirectory(this->config_root_directory_);
 
+	try {
 		this->DBus = new GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
 		this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 
