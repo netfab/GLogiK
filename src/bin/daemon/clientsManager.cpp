@@ -117,7 +117,11 @@ const bool ClientsManager::registerClient(const std::string & uniqueString) {
 		syslog(LOG_WARNING, this->buffer_.str().c_str());
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(DEBUG2) << "registering client : " << uniqueString;
+		this->buffer_.str("registering client : ");
+		this->buffer_ << uniqueString;
+		LOG(DEBUG2) << this->buffer_.str();
+		syslog(LOG_INFO, this->buffer_.str().c_str());
+
 		this->clients_[uniqueString] = new Client();
 		return true;
 	}
@@ -127,14 +131,19 @@ const bool ClientsManager::registerClient(const std::string & uniqueString) {
 const bool ClientsManager::unregisterClient(const std::string & uniqueString) {
 	try {
 		Client* pClient = this->clients_.at(uniqueString);
+
+		this->buffer_.str("unregistering client : ");
+		this->buffer_ << uniqueString;
+		LOG(DEBUG2) << this->buffer_.str();
+		syslog(LOG_INFO, this->buffer_.str().c_str());
+
 		delete pClient;
 		pClient = nullptr;
 		this->clients_.erase(uniqueString);
-		LOG(DEBUG2) << "unregistered client : " << uniqueString;
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("client not registered : ");
+		this->buffer_.str("tried to unregister unknown client : ");
 		this->buffer_ << uniqueString;
 		LOG(WARNING) << this->buffer_.str();
 		syslog(LOG_WARNING, this->buffer_.str().c_str());
