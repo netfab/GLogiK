@@ -190,7 +190,7 @@ class FILELOG_DECLSPEC FILELog : public Log<LOG2FILE> {};
 //typedef Log<LOG2FILE> FILELog;
 
 #ifndef FILELOG_MAX_LEVEL
-#define FILELOG_MAX_LEVEL DEBUG4
+#define FILELOG_MAX_LEVEL DEBUG3
 #endif
 
 #define LOG(level) \
@@ -236,8 +236,8 @@ inline std::string NowTime()
 
 #endif //WIN32
 
-#endif // ifndef DEBUGGING_ON
+#endif // #else
 
 } // namespace GLogiK
 
-#endif //__GLOGIKD_LOG_H__
+#endif //__GLOGIK_LOG_H__

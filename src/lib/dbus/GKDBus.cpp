@@ -110,7 +110,7 @@ const bool GKDBus::checkForNextMessage(BusConnection current) {
 void GKDBus::freeMessage(void) {
 	if( this->message_ == nullptr )
 		return;
-	LOG(DEBUG4) << "freeing message";
+	LOG(DEBUG3) << "freeing message";
 	dbus_message_unref(this->message_);
 }
 

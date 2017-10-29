@@ -115,7 +115,7 @@ void KeyboardDriver::openLibUSBDevice(InitializedDevice & device) {
 }
 
 void KeyboardDriver::initializeLibusb(void) {
-	LOG(DEBUG4) << "initializing libusb";
+	LOG(DEBUG3) << "initializing libusb";
 	int ret_value = libusb_init( &(this->context_) );
 	if ( this->handleLibusbError(ret_value) ) {
 		throw GLogiKExcept("libusb initialization failure");
@@ -125,7 +125,7 @@ void KeyboardDriver::initializeLibusb(void) {
 }
 
 void KeyboardDriver::closeLibusb(void) {
-	LOG(DEBUG4) << "closing libusb";
+	LOG(DEBUG3) << "closing libusb";
 	if( this->initialized_devices_.size() != 0 ) /* sanity check */
 		this->logWarning("closing libusb with opened device(s) !");
 	libusb_exit(this->context_);
