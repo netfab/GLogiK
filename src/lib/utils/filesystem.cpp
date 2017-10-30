@@ -20,7 +20,6 @@
  */
 
 #include <sstream>
-#include <boost/filesystem.hpp>
 
 #include <config.h>
 
@@ -32,8 +31,6 @@
 
 #undef UTILS_COMPILATION
 
-namespace fs = boost::filesystem;
-
 namespace GLogiK
 {
 
@@ -43,28 +40,24 @@ FileSystem::FileSystem() {
 FileSystem::~FileSystem() {
 }
 
-void FileSystem::createOwnerDirectory(const std::string & directory) {
+void FileSystem::createOwnerDirectory(const fs::path & directory) {
 #if DEBUGGING_ON
 	bool success = false;
-#endif
-	std::ostringstream buffer;
-
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "trying to create directory : " << directory;
+	LOG(DEBUG2) << "trying to create directory : " << directory.string();
 #endif
 
 	try {
-		fs::path path(directory);
 #if DEBUGGING_ON
-		success = fs::create_directory(path);
+		success = fs::create_directory( directory );
 #else
-		fs::create_directory(path);
+		fs::create_directory( directory );
 #endif
-		fs::permissions(path, fs::owner_all);
+		fs::permissions(directory, fs::owner_all);
 	}
 	catch (const fs::filesystem_error & e) {
+		std::ostringstream buffer;
 		buffer.str("directory creation or set permissions failure : ");
-		buffer << directory << " : " << e.what();
+		buffer << e.what();
 		throw GLogiKExcept( buffer.str() );
 	}
 

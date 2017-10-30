@@ -19,34 +19,28 @@
  *
  */
 
-#include "deviceProperties.h"
+#ifndef __GLOGIK_DEVICE_CONFIGURATION_FILE_H__
+#define __GLOGIK_DEVICE_CONFIGURATION_FILE_H__
+
+#include <string>
+#include <vector>
 
 namespace GLogiK
 {
 
-DeviceProperties::DeviceProperties() : vendor_("unknown"), model_("unknown"), conf_file_("none"),
-	state_(DeviceState::STATE_UNKNOWN)
+class DeviceConfigurationFile
 {
-}
+	public:
+		static const std::string getNextAvailableNewPath(const std::vector<std::string> & paths_to_skip,
+			const std::string & directory_path, const std::string & device_model, bool must_exist=false);
 
-DeviceProperties::~DeviceProperties() {
-}
+	protected:
+		DeviceConfigurationFile(void);
+		~DeviceConfigurationFile(void);
 
-const bool DeviceProperties::started(void) const {
-	return (this->state_ == DeviceState::STATE_STARTED);
-}
-
-const bool DeviceProperties::stopped(void) const {
-	return (this->state_ == DeviceState::STATE_STOPPED);
-}
-
-void DeviceProperties::start(void) {
-	this->state_ = DeviceState::STATE_STARTED;
-}
-
-void DeviceProperties::stop(void) {
-	this->state_ = DeviceState::STATE_STOPPED;
-}
+	private:
+};
 
 } // namespace GLogiK
 
+#endif

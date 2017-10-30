@@ -86,6 +86,8 @@ GLogiK=$PWD/.. CD=. {
 			}
 			GLogiKShared=shared/ {
 				Makefile.am
+				deviceConfigurationFile.cpp
+				deviceConfigurationFile.h
 				deviceProperties.cpp
 				deviceProperties.h
 				keyEvent.h

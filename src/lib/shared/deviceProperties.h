@@ -44,6 +44,7 @@ class DeviceProperties : public MacrosBanks
 
 		std::string vendor_;
 		std::string model_;
+		std::string conf_file_;
 
 		/* accessors to purely logical state */
 		const bool started(void) const;

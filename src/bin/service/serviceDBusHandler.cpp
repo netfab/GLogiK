@@ -22,8 +22,6 @@
 #include <vector>
 #include <stdexcept>
 
-#include <config.h>
-
 #include "lib/utils/utils.h"
 
 #include "warningCheck.h"
@@ -44,12 +42,6 @@ namespace GLogiK
 ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr), are_we_registered_(false),
 	buffer_("", std::ios_base::app)
 {
-	this->config_root_directory_ = XDGUserDirs::getConfigDirectory();
-	this->config_root_directory_ += "/";
-	this->config_root_directory_ += PACKAGE_NAME;
-
-	FileSystem::createOwnerDirectory(this->config_root_directory_);
-
 	try {
 		this->DBus = new GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
 		this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
@@ -85,7 +77,7 @@ ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr), are_we_registered_(fal
 ServiceDBusHandler::~ServiceDBusHandler() {
 	if( this->are_we_registered_ ) {
 		this->unregisterWithDaemon();
-		this->devices_.saveDevicesProperties(this->config_root_directory_);
+		this->devices_.saveDevicesProperties();
 	}
 	else {
 		LOG(DEBUG2) << "client " << this->current_session_ << " already unregistered with deamon";
@@ -319,7 +311,7 @@ void ServiceDBusHandler::updateSessionState(void) {
 void ServiceDBusHandler::daemonIsStopping(void) {
 	if( this->are_we_registered_ ) {
 		this->unregisterWithDaemon();
-		this->devices_.saveDevicesProperties(this->config_root_directory_);
+		this->devices_.saveDevicesProperties();
 	}
 	else {
 		LOG(DEBUG2) << "client " << this->current_session_ << " already unregistered with deamon";

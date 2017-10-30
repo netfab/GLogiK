@@ -26,13 +26,17 @@
 #error "Only "utils/utils.h" can be included directly, this file may disappear or change contents."
 #endif
 
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
+
 namespace GLogiK
 {
 
 class FileSystem
 {
 	public:
-		static void createOwnerDirectory(const std::string & directory);
+		static void createOwnerDirectory(const fs::path & directory);
 
 	protected:
 		FileSystem(void);

@@ -22,6 +22,9 @@
 #ifndef __GLOGIK_DESKTOP_SERVICE_DEVICES_HANDLER_H__
 #define __GLOGIK_DESKTOP_SERVICE_DEVICES_HANDLER_H__
 
+#include <string>
+#include <vector>
+#include <map>
 #include <sstream>
 
 #include "lib/dbus/GKDBus.h"
@@ -40,7 +43,7 @@ class DevicesHandler
 
 		void setDBus(GKDBus* pDBus);
 
-		void saveDevicesProperties(const std::string & config_directory);
+		void saveDevicesProperties(void);
 
 		void checkStartedDevice(const std::string & device);
 		void checkStoppedDevice(const std::string & device);
@@ -55,7 +58,9 @@ class DevicesHandler
 
 		GKDBus* DBus;
 		std::ostringstream buffer_;
+		std::string config_root_directory_;
 
+		std::vector<std::string> used_conf_files_;
 		std::map<const std::string, DeviceProperties> devices_;
 
 		void setDeviceProperties(const std::string & devID, DeviceProperties & device);

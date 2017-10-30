@@ -26,6 +26,9 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
+#include <config.h>
+
+#include "lib/shared/deviceConfigurationFile.h"
 #include "lib/utils/utils.h"
 
 #include "warningCheck.h"
@@ -40,6 +43,11 @@ DevicesHandler::DevicesHandler() : DBus(nullptr), buffer_("", std::ios_base::app
 #if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler initialization";
 #endif
+	this->config_root_directory_ = XDGUserDirs::getConfigDirectory();
+	this->config_root_directory_ += "/";
+	this->config_root_directory_ += PACKAGE_NAME;
+
+	FileSystem::createOwnerDirectory(this->config_root_directory_);
 }
 
 DevicesHandler::~DevicesHandler() {
@@ -84,17 +92,16 @@ void ServiceDBusHandler::loadDevicesProperties(void) {
 }
 */
 
-void DevicesHandler::saveDevicesProperties(const std::string & config_directory) {
+void DevicesHandler::saveDevicesProperties(void) {
 	for( const auto & device : this->devices_ ) {
-		const std::string & devID = device.first;
+		//const std::string & devID = device.first;
 		const DeviceProperties & props = device.second;
 
-		std::string current_dir(config_directory);
-		current_dir += "/";
-		current_dir += props.vendor_;
+		fs::path current_path(this->config_root_directory_);
+		current_path /= props.vendor_;
 
 		try {
-			FileSystem::createOwnerDirectory(current_dir);
+			FileSystem::createOwnerDirectory(current_path);
 		}
 		catch ( const GLogiKExcept & e ) {
 			LOG(ERROR) << e.what();
@@ -102,32 +109,32 @@ void DevicesHandler::saveDevicesProperties(const std::string & config_directory)
 			continue;
 		}
 
-		current_dir += "/";
-		current_dir += devID;
-		current_dir += ".cfg";
+		current_path = props.conf_file_;
 
 		try {
+			LOG(DEBUG2) << "trying to open configuration file for writing : " << props.conf_file_;
+
 			std::ofstream ofs;
 			ofs.exceptions(std::ofstream::failbit|std::ofstream::badbit);
-			ofs.open(current_dir, std::ofstream::out|std::ofstream::trunc);
+			ofs.open(props.conf_file_, std::ofstream::out|std::ofstream::trunc);
 
-			fs::path path(current_dir);
-			fs::permissions(path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
+			fs::permissions(current_path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 
-			LOG(DEBUG) << "configuration file successfully opened for writing";
+			LOG(DEBUG3) << "opened";
 
 			boost::archive::text_oarchive output_archive(ofs);
 			output_archive << props;
+			LOG(DEBUG3) << "success, closing";
 		}
 		catch (const std::ofstream::failure & e) {
 			this->buffer_.str("fail to open configuration file : ");
-			this->buffer_ << current_dir << " : " << e.what();
+			this->buffer_ << e.what();
 			LOG(ERROR) << this->buffer_.str();
 			GK_ERR << this->buffer_.str() << "\n";
 		}
 		catch (const fs::filesystem_error & e) {
 			this->buffer_.str("set permissions failure on configuration file : ");
-			this->buffer_ << current_dir << " : " << e.what();
+			this->buffer_ << e.what();
 			LOG(ERROR) << this->buffer_.str();
 			GK_ERR << this->buffer_.str() << "\n";
 		}
@@ -174,6 +181,30 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		warn += " failure : ";
 		warn += e.what();
 		WarningCheck::warnOrThrows(warn);
+	}
+
+	LOG(DEBUG2) << "assigning a configuration file to device " << devID;
+	std::string dir = this->config_root_directory_;
+	dir += "/";
+	dir += device.vendor_;
+
+	try {
+		/* trying to find an existing configuration file */
+		device.conf_file_ = DeviceConfigurationFile::getNextAvailableNewPath(this->used_conf_files_, dir, device.model_, true);
+		this->used_conf_files_.push_back(device.conf_file_);
+		LOG(DEBUG3) << "found : " << device.conf_file_;
+	}
+	catch ( const GLogiKExcept & e ) {
+		try {
+			/* none found, assign a new configuration file to this device */
+			device.conf_file_ = DeviceConfigurationFile::getNextAvailableNewPath(this->used_conf_files_, dir, device.model_);
+			this->used_conf_files_.push_back(device.conf_file_);
+			LOG(DEBUG3) << "new one : " << device.conf_file_;
+		}
+		catch ( const GLogiKExcept & e ) {
+			LOG(ERROR) << e.what();
+			GK_ERR << e.what() << "\n";
+		}
 	}
 }
 
@@ -224,6 +255,7 @@ void DevicesHandler::checkStoppedDevice(const std::string & devID) {
 
 void DevicesHandler::clearLoadedDevices(void) {
 	this->devices_.clear();
+	this->used_conf_files_.clear();
 }
 
 } // namespace GLogiK
