@@ -7,7 +7,8 @@ libGLogiKShared_la_CXXFLAGS = \
 						$(SM_CFLAGS)
 
 libGLogiKShared_la_LDFLAGS = \
-						@AM_LDFLAGS@
+						@AM_LDFLAGS@ \
+						@BOOST_LDFLAGS@
 
 libGLogiKShared_la_LIBADD = \
 						$(SM_LIBS) \
