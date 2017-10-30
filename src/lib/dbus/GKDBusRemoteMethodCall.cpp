@@ -19,6 +19,8 @@
  *
  */
 
+#include <config.h>
+
 #include "lib/utils/utils.h"
 
 #define GKDBUS_COMPILATION 1

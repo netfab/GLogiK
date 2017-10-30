@@ -29,6 +29,8 @@
 #include <libudev.h>
 #include <syslog.h>
 
+#include <config.h>
+
 #include "lib/utils/utils.h"
 
 #include "daemonControl.h"
