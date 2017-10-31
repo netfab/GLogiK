@@ -93,12 +93,12 @@ void ServiceDBusHandler::loadDevicesProperties(void) {
 */
 
 void DevicesHandler::saveDevicesProperties(void) {
-	for( const auto & device : this->devices_ ) {
-		//const std::string & devID = device.first;
-		const DeviceProperties & props = device.second;
+	for( const auto & device_pair : this->devices_ ) {
+		//const std::string & devID = device_pair.first;
+		const DeviceProperties & device = device_pair.second;
 
 		fs::path current_path(this->config_root_directory_);
-		current_path /= props.vendor_;
+		current_path /= device.vendor_;
 
 		try {
 			FileSystem::createOwnerDirectory(current_path);
@@ -109,20 +109,20 @@ void DevicesHandler::saveDevicesProperties(void) {
 			continue;
 		}
 
-		current_path = props.conf_file_;
+		current_path = device.conf_file_;
 
 		try {
-			LOG(DEBUG2) << "trying to open configuration file for writing : " << props.conf_file_;
+			LOG(DEBUG2) << "trying to open configuration file for writing : " << device.conf_file_;
 
 			std::ofstream ofs;
 			ofs.exceptions(std::ofstream::failbit|std::ofstream::badbit);
-			ofs.open(props.conf_file_, std::ofstream::out|std::ofstream::trunc);
+			ofs.open(device.conf_file_, std::ofstream::out|std::ofstream::trunc);
 
 			fs::permissions(current_path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 
 			LOG(DEBUG3) << "opened";
 			boost::archive::text_oarchive output_archive(ofs);
-			output_archive << props;
+			output_archive << device;
 			LOG(DEBUG3) << "success, closing";
 		}
 		catch (const std::ofstream::failure & e) {
