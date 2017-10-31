@@ -25,6 +25,10 @@
 #include <string>
 #include <vector>
 
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
+
 namespace GLogiK
 {
 
@@ -32,7 +36,7 @@ class DeviceConfigurationFile
 {
 	public:
 		static const std::string getNextAvailableNewPath(const std::vector<std::string> & paths_to_skip,
-			const std::string & directory_path, const std::string & device_model, bool must_exist=false);
+			const fs::path & directory_path, const std::string & device_model, bool must_exist=false);
 
 	protected:
 		DeviceConfigurationFile(void);

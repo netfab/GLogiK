@@ -121,7 +121,6 @@ void DevicesHandler::saveDevicesProperties(void) {
 			fs::permissions(current_path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 
 			LOG(DEBUG3) << "opened";
-
 			boost::archive::text_oarchive output_archive(ofs);
 			output_archive << props;
 			LOG(DEBUG3) << "success, closing";
@@ -184,20 +183,19 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	}
 
 	LOG(DEBUG2) << "assigning a configuration file to device " << devID;
-	std::string dir = this->config_root_directory_;
-	dir += "/";
-	dir += device.vendor_;
+	fs::path directory(this->config_root_directory_);
+	directory /= device.vendor_;
 
 	try {
 		/* trying to find an existing configuration file */
-		device.conf_file_ = DeviceConfigurationFile::getNextAvailableNewPath(this->used_conf_files_, dir, device.model_, true);
+		device.conf_file_ = DeviceConfigurationFile::getNextAvailableNewPath(this->used_conf_files_, directory, device.model_, true);
 		this->used_conf_files_.push_back(device.conf_file_);
 		LOG(DEBUG3) << "found : " << device.conf_file_;
 	}
 	catch ( const GLogiKExcept & e ) {
 		try {
 			/* none found, assign a new configuration file to this device */
-			device.conf_file_ = DeviceConfigurationFile::getNextAvailableNewPath(this->used_conf_files_, dir, device.model_);
+			device.conf_file_ = DeviceConfigurationFile::getNextAvailableNewPath(this->used_conf_files_, directory, device.model_);
 			this->used_conf_files_.push_back(device.conf_file_);
 			LOG(DEBUG3) << "new one : " << device.conf_file_;
 		}

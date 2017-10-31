@@ -21,15 +21,11 @@
 
 #include <cstdint>
 
-#include <boost/filesystem.hpp>
-
 #include <config.h>
 
 #include "lib/utils/utils.h"
 
 #include "deviceConfigurationFile.h"
-
-namespace fs = boost::filesystem;
 
 namespace GLogiK
 {
@@ -41,10 +37,8 @@ DeviceConfigurationFile::~DeviceConfigurationFile() {
 }
 
 const std::string DeviceConfigurationFile::getNextAvailableNewPath(const std::vector<std::string> & paths_to_skip,
-	const std::string & directory_path, const std::string & device_model, bool must_exist)
+	const fs::path & directory_path, const std::string & device_model, bool must_exist)
 {
-	fs::path dir_path(directory_path);
-
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "building next new path";
 #endif
@@ -56,7 +50,7 @@ const std::string DeviceConfigurationFile::getNextAvailableNewPath(const std::ve
 		file += std::to_string(count);
 		file += ".cfg";
 
-		fs::path full_path = dir_path / file;
+		fs::path full_path = directory_path / file;
 
 		bool used = false;
 		const std::string path( full_path.string() );
