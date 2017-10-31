@@ -64,6 +64,7 @@ class DevicesHandler
 		std::map<const std::string, DeviceProperties> devices_;
 
 		void setDeviceProperties(const std::string & devID, DeviceProperties & device);
+		void loadDeviceConfigurationFile(DeviceProperties & device);
 };
 
 } // namespace GLogiK

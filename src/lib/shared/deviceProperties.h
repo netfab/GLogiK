@@ -24,6 +24,9 @@
 
 #include <string>
 
+#include <boost/serialization/access.hpp>
+//#include <boost/serialization/version.hpp>
+
 #include "macrosBanks.h"
 
 namespace GLogiK
@@ -62,10 +65,15 @@ class DeviceProperties : public MacrosBanks
 		template<class Archive>
 			void serialize(Archive & ar, const unsigned int version)
 		{
+			// TODO catch exception ?
+			//if(version > 0)
+			ar & this->vendor_;
 			ar & this->model_;
 		}
 };
 
 } // namespace GLogiK
+
+//BOOST_CLASS_VERSION(GLogiK::DeviceProperties, 1)
 
 #endif

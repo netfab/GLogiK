@@ -151,6 +151,37 @@ void DevicesHandler::saveDevicesProperties(void) {
 	}
 }
 
+void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
+	LOG(DEBUG2) << "loading device configuration file " << device.conf_file_;
+	try {
+		std::ifstream ifs;
+		ifs.exceptions(std::ifstream::failbit|std::ifstream::badbit);
+		ifs.open(device.conf_file_);
+
+		LOG(DEBUG) << "configuration file successfully opened for reading";
+
+		boost::archive::text_iarchive input_archive(ifs);
+		input_archive >> device;
+	}
+	catch (const std::ofstream::failure & e) {
+		this->buffer_.str("fail to open configuration file : ");
+		this->buffer_ << e.what();
+		LOG(ERROR) << this->buffer_.str();
+		GK_ERR << this->buffer_.str() << "\n";
+	}
+	/*
+	 * catch std::ios_base::failure on buggy compilers
+	 * should be fixed with gcc >= 7.0
+	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
+	 */
+	catch( const std::exception & e ) {
+		this->buffer_.str("(buggy exception) fail to open configuration file : ");
+		this->buffer_ << e.what();
+		LOG(ERROR) << this->buffer_.str();
+		GK_ERR << this->buffer_.str() << "\n";
+	}
+}
+
 void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProperties & device) {
 	unsigned int num = 0;
 
@@ -191,6 +222,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		device.conf_file_ = DeviceConfigurationFile::getNextAvailableNewPath(this->used_conf_files_, directory, device.model_, true);
 		this->used_conf_files_.push_back(device.conf_file_);
 		LOG(DEBUG3) << "found : " << device.conf_file_;
+		this->loadDeviceConfigurationFile(device);
 	}
 	catch ( const GLogiKExcept & e ) {
 		try {
