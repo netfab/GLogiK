@@ -22,10 +22,10 @@
 #ifndef __GLOGIK_KEY_EVENT_H__
 #define __GLOGIK_KEY_EVENT_H__
 
-#include <boost/serialization/access.hpp>
-
 #include <cstdint>
 #include <linux/input-event-codes.h>
+
+#include <boost/serialization/access.hpp>
 
 namespace GLogiK
 {

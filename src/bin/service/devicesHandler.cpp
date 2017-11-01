@@ -19,9 +19,12 @@
  *
  */
 
+#include <exception>
 #include <stdexcept>
 #include <fstream>
 
+#include <boost/archive/archive_exception.hpp>
+#include <boost/archive/xml_archive_exception.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -60,38 +63,6 @@ void DevicesHandler::setDBus(GKDBus* pDBus) {
 	this->DBus = pDBus;
 }
 
-/*
-void ServiceDBusHandler::loadDevicesProperties(void) {
-	try {
-		std::ifstream ifs;
-		ifs.exceptions(std::ifstream::failbit|std::ifstream::badbit);
-		ifs.open(this->cfgfile_fullpath_);
-
-		LOG(DEBUG) << "configuration file successfully opened for reading";
-
-		boost::archive::text_iarchive input_archive(ifs);
-		input_archive >> this->devices_;
-	}
-	catch (const std::ofstream::failure & e) {
-		this->buffer_.str("fail to open configuration file : ");
-		this->buffer_ << this->cfgfile_fullpath_ << " : " << e.what();
-		LOG(ERROR) << this->buffer_.str();
-		GK_ERR << this->buffer_.str() << "\n";
-	}
-	*
-	 * catch std::ios_base::failure on buggy compilers
-	 * should be fixed with gcc >= 7.0
-	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
-	 *
-	catch( const std::exception & e ) {
-		this->buffer_.str("(buggy exception) fail to open configuration file : ");
-		this->buffer_ << e.what();
-		LOG(ERROR) << this->buffer_.str();
-		GK_ERR << this->buffer_.str() << "\n";
-	}
-}
-*/
-
 void DevicesHandler::saveDevicesProperties(void) {
 	for( const auto & device_pair : this->devices_ ) {
 		//const std::string & devID = device_pair.first;
@@ -119,11 +90,15 @@ void DevicesHandler::saveDevicesProperties(void) {
 			ofs.open(device.conf_file_, std::ofstream::out|std::ofstream::trunc);
 
 			fs::permissions(current_path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
-
 			LOG(DEBUG3) << "opened";
-			boost::archive::text_oarchive output_archive(ofs);
-			output_archive << device;
+
+			{
+				boost::archive::text_oarchive output_archive(ofs);
+				output_archive << device;
+			}
+
 			LOG(DEBUG3) << "success, closing";
+			ofs.close();
 		}
 		catch (const std::ofstream::failure & e) {
 			this->buffer_.str("fail to open configuration file : ");
@@ -133,6 +108,12 @@ void DevicesHandler::saveDevicesProperties(void) {
 		}
 		catch (const fs::filesystem_error & e) {
 			this->buffer_.str("set permissions failure on configuration file : ");
+			this->buffer_ << e.what();
+			LOG(ERROR) << this->buffer_.str();
+			GK_ERR << this->buffer_.str() << "\n";
+		}
+		catch(const boost::archive::archive_exception & e) {
+			this->buffer_.str("boost::archive exception : ");
 			this->buffer_ << e.what();
 			LOG(ERROR) << this->buffer_.str();
 			GK_ERR << this->buffer_.str() << "\n";
@@ -155,19 +136,35 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 	LOG(DEBUG2) << "loading device configuration file " << device.conf_file_;
 	try {
 		std::ifstream ifs;
-		ifs.exceptions(std::ifstream::failbit|std::ifstream::badbit);
+		ifs.exceptions(std::ifstream::badbit);
 		ifs.open(device.conf_file_);
+		LOG(DEBUG2) << "configuration file successfully opened for reading";
 
-		LOG(DEBUG) << "configuration file successfully opened for reading";
+		{
+			DeviceProperties new_device;
+			boost::archive::text_iarchive input_archive(ifs);
+			input_archive >> new_device;
 
-		boost::archive::text_iarchive input_archive(ifs);
-		input_archive >> device;
+			/* do we need to replace vendor and model ? */
+			//device.vendor_ = new_device.vendor_;
+			//device.model_ = new_device.model_;
+			device.setMacros( new_device.getMacros() );
+		}
+
+		LOG(DEBUG3) << "success, closing";
+		ifs.close();
 	}
-	catch (const std::ofstream::failure & e) {
+	catch (const std::ifstream::failure & e) {
 		this->buffer_.str("fail to open configuration file : ");
 		this->buffer_ << e.what();
 		LOG(ERROR) << this->buffer_.str();
 		GK_ERR << this->buffer_.str() << "\n";
+	}
+	catch(const boost::archive::archive_exception & e) {
+		std::string err("load: ");
+		err += e.what();
+		LOG(ERROR) << err;
+		GK_ERR << err << "\n";
 	}
 	/*
 	 * catch std::ios_base::failure on buggy compilers
@@ -235,6 +232,17 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 			LOG(ERROR) << e.what();
 			GK_ERR << e.what() << "\n";
 		}
+	}
+	/*
+	 * catch std::ios_base::failure on buggy compilers
+	 * should be fixed with gcc >= 7.0
+	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
+	 */
+	catch( const std::exception & e ) {
+		this->buffer_.str("(buggy exception) fail to open configuration file : ");
+		this->buffer_ << e.what();
+		LOG(ERROR) << this->buffer_.str();
+		GK_ERR << this->buffer_.str() << "\n";
 	}
 }
 

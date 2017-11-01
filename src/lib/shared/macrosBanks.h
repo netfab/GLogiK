@@ -22,13 +22,13 @@
 #ifndef __GLOGIK_MACROS_BANKS_H__
 #define __GLOGIK_MACROS_BANKS_H__
 
-#include <boost/serialization/access.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/map.hpp>
-
 #include <vector>
 #include <map>
 #include <string>
+
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/map.hpp>
 
 #include "keyEvent.h"
 
@@ -46,6 +46,10 @@ enum class MemoryBank : uint8_t
 class MacrosBanks
 {
 	public:
+		typedef std::map<const MemoryBank, std::map<const std::string, std::vector<KeyEvent>>> macros_map_t;
+
+		const macros_map_t & getMacros(void) const { return this->macros_profiles_; };
+		void setMacros(const macros_map_t & macros) { this->macros_profiles_ = macros; };
 
 	protected:
 		MacrosBanks(void);
@@ -59,7 +63,7 @@ class MacrosBanks
 			ar & this->macros_profiles_;
 		}
 
-		std::map<const MemoryBank, std::map<const std::string, std::vector<KeyEvent>>> macros_profiles_ = {
+		macros_map_t macros_profiles_ = {
 			{ MemoryBank::MACROS_M0, {}},
 			{ MemoryBank::MACROS_M1, {}},
 			{ MemoryBank::MACROS_M2, {}},

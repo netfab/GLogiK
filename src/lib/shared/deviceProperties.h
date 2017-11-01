@@ -24,6 +24,7 @@
 
 #include <string>
 
+#include <boost/serialization/base_object.hpp>
 #include <boost/serialization/access.hpp>
 //#include <boost/serialization/version.hpp>
 
@@ -65,10 +66,12 @@ class DeviceProperties : public MacrosBanks
 		template<class Archive>
 			void serialize(Archive & ar, const unsigned int version)
 		{
-			// TODO catch exception ?
 			//if(version > 0)
 			ar & this->vendor_;
 			ar & this->model_;
+
+			// serialize base class information
+			ar & boost::serialization::base_object<MacrosBanks>(*this);
 		}
 };
 
