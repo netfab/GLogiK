@@ -16,6 +16,11 @@ case $1 in
 		--print-reply --reply-timeout=2000 /com/glogik/Daemon/DevicesManager \
 		com.glogik.Daemon.Device1.Stop string:"$2"
 	;;
+	'--send-daemon-start-device')
+		dbus-send --system --dest=com.glogik.Daemon --type=method_call \
+		--print-reply --reply-timeout=2000 /com/glogik/Daemon/DevicesManager \
+		com.glogik.Daemon.Device1.Start string:"$2"
+	;;
 	'--introspect-daemon-devicesmanager')
 		dbus-send --system --dest=com.glogik.Daemon --type=method_call \
 		--print-reply --reply-timeout=2000 /com/glogik/Daemon/DevicesManager \

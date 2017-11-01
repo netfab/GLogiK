@@ -165,6 +165,9 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 		err += e.what();
 		LOG(ERROR) << err;
 		GK_ERR << err << "\n";
+		// TODO throw GLogiKExcept to create new configuration
+		// file and avoid overwriting on close ?
+		// must add device.conf_file_ to this->used_conf_files_ then.
 	}
 	/*
 	 * catch std::ios_base::failure on buggy compilers
@@ -255,16 +258,16 @@ void DevicesHandler::checkStartedDevice(const std::string & devID) {
 		}
 		else {
 			LOG(DEBUG1) << "device " << devID << " state has just been started";
-			/* TODO should load device parameters */
+			device.start();
 		}
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(DEBUG1) << "device " << devID << " not found in container, instantiate it";
 		DeviceProperties device;
+		/* also load configuration file */
 		this->setDeviceProperties(devID, device);
 		device.start();
 		this->devices_[devID] = device;
-		/* TODO should load device parameters */
 	}
 }
 
@@ -277,16 +280,16 @@ void DevicesHandler::checkStoppedDevice(const std::string & devID) {
 		}
 		else {
 			LOG(DEBUG1) << "device " << devID << " state has just been stopped";
-			/* TODO should load device parameters */
+			device.stop();
 		}
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(DEBUG1) << "device " << devID << " not found in container, instantiate it";
 		DeviceProperties device;
+		/* also load configuration file */
 		this->setDeviceProperties(devID, device);
 		device.stop();
 		this->devices_[devID] = device;
-		/* TODO should load device parameters */
 	}
 }
 
