@@ -88,6 +88,8 @@ void GKDBus::connectToSystemBus(const char* connection_name) {
 	int ret = dbus_bus_request_name(this->system_conn_, connection_name,
 		DBUS_NAME_FLAG_REPLACE_EXISTING, &this->error_);
 	this->checkDBusError("DBus System request name failure");
+
+	// FIXME single instance application, or DBUS_NAME_FLAG_ALLOW_REPLACEMENT
 	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
 		throw GLogiKExcept("DBus System request name failure : not owner");
 	}
@@ -269,6 +271,10 @@ void GKDBus::appendToMethodCallReply(const std::vector<std::string> & list) {
 	this->reply_->appendToMessageReply(list);
 }
 
+void GKDBus::appendExtraToMethodCallReply(const std::string & value) {
+	this->extra_strings_.push_back(value);
+}
+
 void GKDBus::sendMethodCallReply(void) {
 	if(this->reply_) { /* sanity check */
 		delete this->reply_;
@@ -277,6 +283,12 @@ void GKDBus::sendMethodCallReply(void) {
 	else {
 		LOG(WARNING) << __func__ << " failure because reply object not contructed";
 	}
+
+	/*
+	 * sendMethodCallReply is always called when processing DBus messages,
+	 * even in case of exception, so we can clear extra strings container here
+	 */
+	this->extra_strings_.clear();
 }
 
 /* -- */
@@ -466,6 +478,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			try {
 				this->initializeMethodCallReply(current);
 				this->appendToMethodCallReply(ret);
+				/* no extra values */
 			}
 			catch (const GKDBusOOMWrongBuild & e) {
 				LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -519,6 +532,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
+						/* extra values to send */
+						this->appendExtraValuesToReply();
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -566,6 +581,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
+						/* extra values to send */
+						this->appendExtraValuesToReply();
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -622,6 +639,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
+						/* extra values to send */
+						this->appendExtraValuesToReply();
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -677,6 +696,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
+						/* extra values to send */
+						this->appendExtraValuesToReply();
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -733,6 +754,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
+						/* extra values to send */
+						this->appendExtraValuesToReply();
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -781,6 +804,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					try {
 						this->initializeMethodCallReply(current);
 						this->appendToMethodCallReply(ret);
+						/* extra values to send */
+						this->appendExtraValuesToReply();
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -908,6 +933,14 @@ void GKDBus::addSignalRuleMatch(const char* interface, const char* eventName) {
 	dbus_connection_flush(this->current_conn_);
 	this->checkDBusError("DBus Session match error");
 	LOG(DEBUG1) << "DBus Signal match rule sent : " << rule;
+}
+
+void GKDBus::appendExtraValuesToReply(void) {
+	if( ! this->extra_strings_.empty() ) {
+		for( const std::string & value : this->extra_strings_ ) {
+			this->appendToMethodCallReply(value);
+		}
+	}
 }
 
 /* -- */

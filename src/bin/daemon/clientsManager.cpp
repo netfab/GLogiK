@@ -19,6 +19,7 @@
  *
  */
 
+#include <sstream>
 #include <thread>
 #include <chrono>
 #include <stdexcept>
@@ -38,17 +39,18 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 	LOG(DEBUG2) << "initializing clients manager";
 
 	this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "RegisterClient",
-		{	{"s", "client_unique_id", "in", "client unique ID"},
-			{"b", "did_register_succeeded", "out", "did the RegisterClient method succeeded ?"} },
+		{	{"s", "client_session_object_path", "in", "client session object path"},
+			{"b", "did_register_succeeded", "out", "did the RegisterClient method succeeded ?"},
+			{"s", "failure_reason_or_client_id", "out", "if register success (bool==true), unique client ID, else (bool=false) failure reason"} },
 		std::bind(&ClientsManager::registerClient, this, std::placeholders::_1) );
 
 	this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "UnregisterClient",
-		{	{"s", "client_unique_id", "in", "client unique ID"},
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"b", "did_unregister_succeeded", "out", "did the UnregisterClient method succeeded ?"} },
 		std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );
 
 	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_object_, this->DBus_interface_, "UpdateClientState",
-		{	{"s", "client_unique_id", "in", "client unique ID"},
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "client_new_state", "in", "client new state"},
 			{"b", "did_updateclientstate_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
@@ -108,59 +110,79 @@ void ClientsManager::runLoop(void) {
 
 }
 
-const bool ClientsManager::registerClient(const std::string & uniqueString) {
+const std::string ClientsManager::generateRandomClientID(void) {
+	RandomGenerator rand;
+	std::ostringstream ret(std::ios_base::app);
+	ret << rand.getString(6) << "-" << rand.getString(4) << "-"
+		<< rand.getString(4) << "-" << rand.getString(6);
+	return ret.str();
+}
+
+const bool ClientsManager::registerClient(const std::string & clientSessionObjectPath) {
 	try {
-		this->clients_.at(uniqueString);
-		this->buffer_.str("client already registered : ");
-		this->buffer_ << uniqueString;
-		LOG(WARNING) << this->buffer_.str();
-		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		for(const auto & client_pair : this->clients_ ) {
+			if( client_pair.second->getSessionObjectPath() == clientSessionObjectPath ) {
+				this->buffer_.str("client already registered : ");
+				this->buffer_ << clientSessionObjectPath;
+				LOG(WARNING) << this->buffer_.str();
+				syslog(LOG_WARNING, this->buffer_.str().c_str());
+				const std::string reason("already registered");
+				/* appending failure reason to DBus reply */
+				this->DBus->appendExtraToMethodCallReply(reason);
+				return false;
+			}
+		}
+		throw std::out_of_range("not found");
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("registering client : ");
-		this->buffer_ << uniqueString;
+		const std::string clientID = this->generateRandomClientID();
+
+		this->buffer_.str("registering new client with ID : ");
+		this->buffer_ << clientID;
 		LOG(DEBUG2) << this->buffer_.str();
 		syslog(LOG_INFO, this->buffer_.str().c_str());
 
-		this->clients_[uniqueString] = new Client();
+		this->clients_[clientID] = new Client(clientSessionObjectPath);
+		/* appending client id to DBus reply */
+		this->DBus->appendExtraToMethodCallReply(clientID);
 		return true;
 	}
 	return false;
 }
 
-const bool ClientsManager::unregisterClient(const std::string & uniqueString) {
+const bool ClientsManager::unregisterClient(const std::string & clientID) {
 	try {
-		Client* pClient = this->clients_.at(uniqueString);
+		Client* pClient = this->clients_.at(clientID);
 
 		this->buffer_.str("unregistering client : ");
-		this->buffer_ << uniqueString;
+		this->buffer_ << clientID;
 		LOG(DEBUG2) << this->buffer_.str();
 		syslog(LOG_INFO, this->buffer_.str().c_str());
 
 		delete pClient;
 		pClient = nullptr;
-		this->clients_.erase(uniqueString);
+		this->clients_.erase(clientID);
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("tried to unregister unknown client : ");
-		this->buffer_ << uniqueString;
+		this->buffer_ << clientID;
 		LOG(WARNING) << this->buffer_.str();
 		syslog(LOG_WARNING, this->buffer_.str().c_str());
 	}
 	return false;
 }
 
-const bool ClientsManager::updateClientState(const std::string & uniqueString, const std::string & state) {
-	LOG(DEBUG2) << "updating client state : " << uniqueString << " - " << state;
+const bool ClientsManager::updateClientState(const std::string & clientID, const std::string & state) {
+	LOG(DEBUG2) << "updating client state : " << clientID << " - " << state;
 	try {
-		Client* pClient = this->clients_.at(uniqueString);
+		Client* pClient = this->clients_.at(clientID);
 		pClient->updateSessionState(state);
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("client not registered : ");
-		this->buffer_ << uniqueString;
+		this->buffer_ << clientID;
 		LOG(WARNING) << this->buffer_.str();
 		syslog(LOG_WARNING, this->buffer_.str().c_str());
 	}

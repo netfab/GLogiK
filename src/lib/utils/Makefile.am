@@ -14,6 +14,7 @@ libGLogiKUtils_la_LIBADD = \
 				@BOOST_FILESYSTEM_LIB@
 
 libGLogiKUtils_la_SOURCES = \
+	randomGenerator.cpp randomGenerator.h \
 	filesystem.cpp filesystem.h \
 	functions.cpp functions.h \
 	exception.cpp exception.h \

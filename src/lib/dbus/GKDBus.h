@@ -68,6 +68,7 @@ class GKDBus : public GKDBusEvents
 		void appendToMethodCallReply(const bool value);
 		void appendToMethodCallReply(const std::string & value);
 		void appendToMethodCallReply(const std::vector<std::string> & list);
+		void appendExtraToMethodCallReply(const std::string & value);
 		void sendMethodCallReply(void);
 
 		void initializeRemoteMethodCall(BusConnection current, const char* dest,
@@ -102,6 +103,7 @@ class GKDBus : public GKDBusEvents
 		DBusConnection* system_conn_;
 		std::vector<std::string> string_arguments_;
 		std::vector<bool> boolean_arguments_;
+		std::vector<std::string> extra_strings_;
 
 		GKDBusMessageReply* reply_;
 		GKDBusRemoteMethodCall* method_call_;
@@ -112,6 +114,7 @@ class GKDBus : public GKDBusEvents
 		void checkDBusError(const char* error_message);
 		void fillInArguments(void);
 		void addSignalRuleMatch(const char* interface, const char* eventName);
+		void appendExtraValuesToReply(void);
 
 		void buildAndSendErrorReply(BusConnection current);
 		void initializeMessageErrorReply(BusConnection current);

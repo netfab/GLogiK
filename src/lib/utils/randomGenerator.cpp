@@ -19,19 +19,48 @@
  *
  */
 
-#ifndef __GLOGIK_UTILS_H__
-#define __GLOGIK_UTILS_H__
+#include <config.h>
+#include <algorithm>
 
-#define UTILS_INSIDE_UTILS_H 1
+#define UTILS_COMPILATION 1
 
 #include "log.h"
 #include "exception.h"
-#include "functions.h"
-#include "XDGUserDirs.h"
-#include "filesystem.h"
 #include "randomGenerator.h"
 
-#undef UTILS_INSIDE_UTILS_H
+#undef UTILS_COMPILATION
 
+namespace GLogiK
+{
+
+RandomGenerator::RandomGenerator(const std::vector<char> & charset)
+	: rng_(std::random_device{}())
+{
+	size_t size = charset.size();
+	if( size < 1 ) {
+#if DEBUGGING_ON
+		LOG(ERROR) << "charset vector is empty";
 #endif
+		throw GLogiKExcept("RandomGenerator : charset vector is empty !");
+	}
+
+	this->charset_ = charset;
+	std::uniform_int_distribution<> dist(0, size-1);
+	this->dist_ = dist;
+}
+
+RandomGenerator::~RandomGenerator() {
+}
+
+std::string RandomGenerator::getString(size_t length) {
+	std::string ret(length,0);
+	auto & c = this->charset_;
+	auto & d = this->dist_;
+	auto & r = this->rng_;
+	auto randChar = [ c, &d, &r ](){ return c[d(r)];	};
+	std::generate_n(ret.begin(), length, randChar);
+	return ret;
+}
+
+} // namespace GLogiK
 

@@ -41,7 +41,7 @@ namespace GLogiK
  *
  */
 
-ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr), are_we_registered_(false),
+ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr), are_we_registered_(false), client_id_("undefined"),
 	buffer_("", std::ios_base::app)
 {
 	try {
@@ -110,14 +110,16 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 
 	const bool ret = this->DBus->getNextBooleanArgument();
 	if( ret ) {
+		this->client_id_ = this->DBus->getNextStringArgument();
 		this->are_we_registered_ = true;
 		const char * success = "successfully registered with daemon";
-		LOG(DEBUG2) << success;
+		LOG(DEBUG2) << success << " : ID : " << this->client_id_;
 		GK_STAT << success << "\n";
 	}
 	else {
+		const std::string reason(this->DBus->getNextStringArgument());
 		const char * failure = "failed to register with daemon : false";
-		LOG(ERROR) << failure;
+		LOG(ERROR) << failure << " - " << reason;
 		GK_ERR << failure << "\n";
 		throw GLogiKExcept(failure);
 	}
@@ -135,7 +137,7 @@ void ServiceDBusHandler::unregisterWithDaemon(void) {
 		/* telling the daemon we're killing ourself */
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "UnregisterClient");
-		this->DBus->appendToRemoteMethodCall(this->current_session_);
+		this->DBus->appendToRemoteMethodCall(this->client_id_);
 		this->DBus->sendRemoteMethodCall();
 
 		this->DBus->waitForRemoteMethodCallReply();
@@ -143,6 +145,7 @@ void ServiceDBusHandler::unregisterWithDaemon(void) {
 		const bool ret = this->DBus->getNextBooleanArgument();
 		if( ret ) {
 			this->are_we_registered_ = false;
+			this->client_id_ = "undefined";
 			const char * success = "successfully unregistered with daemon";
 			LOG(DEBUG2) << success;
 			GK_STAT << success << "\n";
@@ -219,7 +222,7 @@ void ServiceDBusHandler::reportChangedState(void) {
 	try {
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "UpdateClientState");
-		this->DBus->appendToRemoteMethodCall(this->current_session_);
+		this->DBus->appendToRemoteMethodCall(this->client_id_);
 		this->DBus->appendToRemoteMethodCall(this->session_state_);
 		this->DBus->sendRemoteMethodCall();
 

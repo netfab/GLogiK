@@ -105,6 +105,8 @@ GLogiK=$PWD/.. CD=. {
 				exception.cpp
 				exception.h
 				log.h
+				randomGenerator.cpp
+				randomGenerator.h
 				utils.h
 				XDGUserDirs.cpp
 				XDGUserDirs.h

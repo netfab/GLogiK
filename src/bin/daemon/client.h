@@ -33,9 +33,10 @@ namespace GLogiK
 class Client
 {
 	public:
-		Client(void);
+		Client(const std::string & object_path);
 		~Client(void);
 
+		const std::string & getSessionObjectPath(void) const { return this->client_session_object_path_; }
 		void updateSessionState(const std::string & new_state);
 
 	protected:
@@ -43,6 +44,7 @@ class Client
 	private:
 
 		std::string session_state_;
+		std::string client_session_object_path_;
 		std::map<const std::string, DeviceProperties> devices_;
 };
 

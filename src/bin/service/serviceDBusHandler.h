@@ -49,6 +49,7 @@ class ServiceDBusHandler
 		GKDBus* DBus;
 		DevicesHandler devices_;
 		bool are_we_registered_;
+		std::string client_id_;
 
 		std::ostringstream buffer_;
 

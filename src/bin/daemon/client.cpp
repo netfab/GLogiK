@@ -26,7 +26,7 @@
 namespace GLogiK
 {
 
-Client::Client() {
+Client::Client(const std::string & object_path) : client_session_object_path_(object_path) {
 	LOG(DEBUG2) << "initializing new client";
 }
 
