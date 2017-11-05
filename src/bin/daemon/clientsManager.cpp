@@ -69,11 +69,11 @@ ClientsManager::~ClientsManager() {
 	delete this->devicesManager;
 	this->devicesManager = nullptr;
 
-	for( auto & client_it : this->clients_ ) {
-		Client* pClient = client_it.second;
+	for( auto & client_pair : this->clients_ ) {
+		Client* pClient = client_pair.second;
 		if( pClient != nullptr ) { /* sanity check */
 			this->buffer_.str("destroying unfreed client : ");
-			this->buffer_ << client_it.first;
+			this->buffer_ << client_pair.first;
 			LOG(WARNING) << this->buffer_.str();
 			syslog(LOG_WARNING, this->buffer_.str().c_str());
 			delete pClient;
@@ -107,7 +107,6 @@ void ClientsManager::runLoop(void) {
 		LOG(DEBUG3) << "sleeping for 400 ms ...";
 		std::this_thread::sleep_for(std::chrono::milliseconds(400));
 	}
-
 }
 
 const std::string ClientsManager::generateRandomClientID(void) {
@@ -121,14 +120,44 @@ const std::string ClientsManager::generateRandomClientID(void) {
 const bool ClientsManager::registerClient(const std::string & clientSessionObjectPath) {
 	try {
 		for(const auto & client_pair : this->clients_ ) {
-			if( client_pair.second->getSessionObjectPath() == clientSessionObjectPath ) {
+			const std::string & clientID = client_pair.first;
+			Client* pClient = client_pair.second;
+
+			/* handling crashed clients */
+			if( ! pClient->isAlive() ) {
+				this->buffer_.str("unregistering lost client (maybe crashed) with ID : ");
+				this->buffer_ << clientID;
+				LOG(WARNING) << this->buffer_.str();
+				syslog(LOG_WARNING, this->buffer_.str().c_str());
+				this->unregisterClient(clientID);
+				continue;
+			}
+
+			if( pClient->getSessionObjectPath() == clientSessionObjectPath ) {
 				this->buffer_.str("client already registered : ");
 				this->buffer_ << clientSessionObjectPath;
 				LOG(WARNING) << this->buffer_.str();
 				syslog(LOG_WARNING, this->buffer_.str().c_str());
-				const std::string reason("already registered");
+				const std::string reason("already registered, please try again");
 				/* appending failure reason to DBus reply */
 				this->DBus->appendExtraToMethodCallReply(reason);
+
+				/* process to check if registered clients are still alives */
+				for(auto & new_pair : this->clients_ ) {
+					new_pair.second->uncheck();
+				}
+				LOG(DEBUG2) << "sending clients ReportYourself signal";
+				try {
+					this->DBus->initializeBroadcastSignal(BusConnection::GKDBUS_SYSTEM,
+					this->DBus_CSMH_object_path_, this->DBus_CSMH_interface_,
+					"ReportYourself");
+					this->DBus->sendBroadcastSignal();
+				}
+				catch (const GLogiKExcept & e) {
+					LOG(ERROR) << "DBus signal failure : " << e.what();
+				}
+
+				/* register failure, sender should wait and retry */
 				return false;
 			}
 		}

@@ -38,14 +38,16 @@ class Client
 
 		const std::string & getSessionObjectPath(void) const { return this->client_session_object_path_; }
 		void updateSessionState(const std::string & new_state);
+		void uncheck(void);
+		const bool isAlive(void);
 
 	protected:
 
 	private:
-
 		std::string session_state_;
 		std::string client_session_object_path_;
 		std::map<const std::string, DeviceProperties> devices_;
+		bool check_;
 };
 
 } // namespace GLogiK

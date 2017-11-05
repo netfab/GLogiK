@@ -64,6 +64,11 @@ ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr), are_we_registered_(fal
 			{}, // FIXME
 			std::bind(&ServiceDBusHandler::daemonIsStopping, this) );
 
+		this->DBus->addSignal_VoidToVoid_Callback(BusConnection::GKDBUS_SYSTEM,
+			this->DBus_SMH_object_, this->DBus_SMH_interface_, "ReportYourself",
+			{}, // FIXME
+			std::bind(&ServiceDBusHandler::reportChangedState, this) );
+
 		/* set GKDBus pointer */
 		this->devices_.setDBus(this->DBus);
 		this->somethingChanged();
@@ -121,6 +126,7 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 		const char * failure = "failed to register with daemon : false";
 		LOG(ERROR) << failure << " - " << reason;
 		GK_ERR << failure << "\n";
+		// TODO should sleep and retry before giving up
 		throw GLogiKExcept(failure);
 	}
 }

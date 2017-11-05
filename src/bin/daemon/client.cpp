@@ -26,7 +26,9 @@
 namespace GLogiK
 {
 
-Client::Client(const std::string & object_path) : client_session_object_path_(object_path) {
+Client::Client(const std::string & object_path) : session_state_("unknown"),
+	client_session_object_path_(object_path), check_("true")
+{
 	LOG(DEBUG2) << "initializing new client";
 }
 
@@ -36,6 +38,15 @@ Client::~Client() {
 
 void Client::updateSessionState(const std::string & new_state) {
 	this->session_state_ = new_state;
+	this->check_ = true;
+}
+
+void Client::uncheck(void) {
+	this->check_ = false;
+}
+
+const bool Client::isAlive(void) {
+	return this->check_;
 }
 
 } // namespace GLogiK
