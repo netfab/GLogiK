@@ -10,7 +10,8 @@ GLogiK=$PWD/.. CD=. {
 	Makefile.am
 	tools=tools/ {
 		Makefile
-		dbus-glogik.sh
+		glogik-daemon.sh
+		glogik-client.sh
 	}
 	macro=m4/ {
 	}
