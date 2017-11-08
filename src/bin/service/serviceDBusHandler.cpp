@@ -21,6 +21,8 @@
 
 #include <vector>
 #include <stdexcept>
+#include <thread>
+#include <chrono>
 
 #include <config.h>
 
@@ -41,7 +43,8 @@ namespace GLogiK
  *
  */
 
-ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr), are_we_registered_(false), client_id_("undefined"),
+ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr),
+	register_retry_(true), are_we_registered_(false), client_id_("undefined"),
 	buffer_("", std::ios_base::app)
 {
 	try {
@@ -118,16 +121,31 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 		this->client_id_ = this->DBus->getNextStringArgument();
 		this->are_we_registered_ = true;
 		const char * success = "successfully registered with daemon";
+#if DEBUGGING_ON
 		LOG(DEBUG2) << success << " : ID : " << this->client_id_;
+#endif
 		GK_STAT << success << "\n";
 	}
 	else {
-		const std::string reason(this->DBus->getNextStringArgument());
 		const char * failure = "failed to register with daemon : false";
-		LOG(ERROR) << failure << " - " << reason;
-		GK_ERR << failure << "\n";
-		// TODO should sleep and retry before giving up
-		throw GLogiKExcept(failure);
+		const std::string reason(this->DBus->getNextStringArgument());
+		if( this->register_retry_ ) {
+			/* retrying */
+			this->register_retry_ = false;
+#if DEBUGGING_ON
+			LOG(WARNING) << failure << " - " << reason << ", retrying ...";
+#endif
+			GK_WARN << failure << ", retrying ..." << "\n";
+			std::this_thread::sleep_for(std::chrono::seconds(2));
+			this->registerWithDaemon();
+		}
+		else {
+#if DEBUGGING_ON
+			LOG(ERROR) << failure << " - " << reason;
+#endif
+			GK_ERR << failure << "\n";
+			throw GLogiKExcept(failure);
+		}
 	}
 }
 

@@ -48,6 +48,7 @@ class ServiceDBusHandler
 	private:
 		GKDBus* DBus;
 		DevicesHandler devices_;
+		bool register_retry_;
 		bool are_we_registered_;
 		std::string client_id_;
 

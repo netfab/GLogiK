@@ -138,7 +138,7 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 				this->buffer_ << clientSessionObjectPath;
 				LOG(WARNING) << this->buffer_.str();
 				syslog(LOG_WARNING, this->buffer_.str().c_str());
-				const std::string reason("already registered, please try again");
+				const std::string reason("already registered");
 				/* appending failure reason to DBus reply */
 				this->DBus->appendExtraToMethodCallReply(reason);
 
