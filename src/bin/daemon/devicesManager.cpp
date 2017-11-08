@@ -319,7 +319,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 }
 
 #if DEBUGGING_ON
-void deviceProperties(struct udev_device *dev, const std::string &subsystem) {
+void udevDeviceProperties(struct udev_device *dev, const std::string &subsystem) {
 	struct udev_list_entry *devs_props = nullptr;
 	struct udev_list_entry *devs_attr = nullptr;
 	struct udev_list_entry *devs_list_entry = nullptr;
@@ -403,7 +403,7 @@ void DevicesManager::searchSupportedDevices(void) {
 				throw GLogiKExcept("get_subsystem failure");
 			}
 
-			//deviceProperties(dev, devss);
+			//udevDeviceProperties(dev, devss);
 #endif
 
 			std::string vendor_id = to_string( udev_device_get_property_value(dev, "ID_VENDOR_ID") );
@@ -426,7 +426,7 @@ void DevicesManager::searchSupportedDevices(void) {
 							}
 
 #if DEBUGGING_ON
-							deviceProperties(dev, devss);
+							udevDeviceProperties(dev, devss);
 #endif
 
 							std::string vendor = to_string( udev_device_get_property_value(dev, "ID_VENDOR") );

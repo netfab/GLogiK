@@ -55,7 +55,7 @@ struct DetectedDevice {
 };
 
 #if DEBUGGING_ON
-void deviceProperties(struct udev_device *dev, const std::string &subsystem);
+void udevDeviceProperties(struct udev_device *dev, const std::string &subsystem);
 #endif
 
 class DevicesManager
