@@ -41,20 +41,28 @@
 namespace GLogiK
 {
 
-DesktopService::DesktopService() : buffer_("", std::ios_base::app) {
-
-#if DEBUGGING_ON
-	if( FILELog::ReportingLevel() != NONE ) {
-		std::stringstream log_file;
-		log_file << DEBUG_DIR << "/glogiks-debug-" << getpid() << ".log";
-		this->log_fd_ = std::fopen( log_file.str().c_str(), "w" );
+DesktopService::DesktopService() : buffer_("", std::ios_base::app)
+{
+	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
+	if( LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() != NONE ) {
+		LOG_TO_FILE_AND_CONSOLE::ConsoleStream() = stderr;
 	}
 
-	LOG2FILE::Stream() = this->log_fd_;
+#if DEBUGGING_ON
+	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
+
+	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
+		this->buffer_.str(DEBUG_DIR);
+		this->buffer_ << "/" << PACKAGE << "s-debug-" << getpid() << ".log";
+		this->log_fd_ = std::fopen(this->buffer_.str().c_str(), "w");
+
+		LOG_TO_FILE_AND_CONSOLE::FileStream() = this->log_fd_;
+	}
 #endif
 
-	if( this->log_fd_ == nullptr )
-		GK_STAT << "debug file not opened\n";
+	if( this->log_fd_ == nullptr ) {
+		LOG(INFO) << "debug file not opened";
+	}
 
 	this->fds[0].fd = -1;
 	this->fds[0].events = POLLIN;
@@ -63,16 +71,14 @@ DesktopService::DesktopService() : buffer_("", std::ios_base::app) {
 DesktopService::~DesktopService() {
 	LOG(DEBUG2) << "exiting desktop service process";
 
-	LOG(INFO) << "bye !";
-	GK_STAT << GLOGIKS_DESKTOP_SERVICE_NAME << ": bye !\n";
+	LOG(INFO) << GLOGIKS_DESKTOP_SERVICE_NAME << " : bye !";
 	if( this->log_fd_ != nullptr )
 		std::fclose(this->log_fd_);
 }
 
 int DesktopService::run( const int& argc, char *argv[] ) {
-	this->buffer_.str( "Starting " );
+	this->buffer_.str("Starting ");
 	this->buffer_ << GLOGIKS_DESKTOP_SERVICE_NAME << " vers. " << VERSION ;
-	GK_STAT << this->buffer_.str().c_str() << "\n";
 	LOG(INFO) << this->buffer_.str();
 
 	try {
@@ -100,11 +106,10 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
-		std::ostringstream buff(e.what(), std::ios_base::app);
+		this->buffer_.str( e.what() );
 		if(errno != 0)
-			buff << " : " << strerror(errno);
-		LOG(ERROR) << buff.str();
-		GK_ERR << buff.str().c_str() << "\n";
+			this->buffer_ << " : " << strerror(errno);
+		LOG(ERROR) << this->buffer_.str();
 		return EXIT_FAILURE;
 	}
 }
@@ -145,7 +150,7 @@ void DesktopService::daemonize() {
 		throw GLogiKExcept("change directory failure");
 
 	this->pid_ = getpid();
-	LOG(INFO) << "daemonized !";
+	LOG(DEBUG) << "daemonized !";
 
 /*
 	fs::path path(this->pid_file_name_);

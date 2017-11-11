@@ -68,7 +68,7 @@ SessionManager::~SessionManager() {
  */
 
 const int SessionManager::openConnection(void) {
-	LOG(INFO) << "opening session manager connection";
+	LOG(DEBUG) << "opening session manager connection";
 	std::signal(SIGINT, SessionManager::handle_signal);
 	std::signal(SIGTERM, SessionManager::handle_signal);
 
@@ -101,7 +101,7 @@ const int SessionManager::openConnection(void) {
 	this->ice_conn_ = SmcGetIceConnection(this->smc_conn_);
 	this->ice_fd_ = IceConnectionNumber(this->ice_conn_);
 
-	LOG(INFO) << "Session manager client ID : " << this->client_id_;
+	LOG(DEBUG) << "Session manager client ID : " << this->client_id_;
 
 	return this->ice_fd_;
 }
@@ -145,7 +145,6 @@ void SessionManager::handle_signal(int sig) {
 		case SIGTERM:
 			buff << sig << " --> bye bye";
 			LOG(INFO) << buff.str();
-			GK_STAT << buff.str().c_str() << "\n";
 			std::signal(SIGINT, SIG_DFL);
 			std::signal(SIGTERM, SIG_DFL);
 			SessionManager::still_running_ = false;
@@ -153,7 +152,6 @@ void SessionManager::handle_signal(int sig) {
 		default:
 			buff << sig << " --> unhandled";
 			LOG(WARNING) << buff.str();
-			GK_WARN << buff.str().c_str() << "\n";
 			break;
 	}
 }

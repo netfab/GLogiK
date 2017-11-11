@@ -76,7 +76,6 @@ void DevicesHandler::saveDevicesProperties(void) {
 		}
 		catch ( const GLogiKExcept & e ) {
 			LOG(ERROR) << e.what();
-			GK_ERR << e.what() << "\n";
 			continue;
 		}
 
@@ -104,19 +103,16 @@ void DevicesHandler::saveDevicesProperties(void) {
 			this->buffer_.str("fail to open configuration file : ");
 			this->buffer_ << e.what();
 			LOG(ERROR) << this->buffer_.str();
-			GK_ERR << this->buffer_.str() << "\n";
 		}
 		catch (const fs::filesystem_error & e) {
 			this->buffer_.str("set permissions failure on configuration file : ");
 			this->buffer_ << e.what();
 			LOG(ERROR) << this->buffer_.str();
-			GK_ERR << this->buffer_.str() << "\n";
 		}
 		catch(const boost::archive::archive_exception & e) {
 			this->buffer_.str("boost::archive exception : ");
 			this->buffer_ << e.what();
 			LOG(ERROR) << this->buffer_.str();
-			GK_ERR << this->buffer_.str() << "\n";
 		}
 		/*
 		 * catch std::ios_base::failure on buggy compilers
@@ -127,7 +123,6 @@ void DevicesHandler::saveDevicesProperties(void) {
 			this->buffer_.str("(buggy exception) fail to open configuration file : ");
 			this->buffer_ << e.what();
 			LOG(ERROR) << this->buffer_.str();
-			GK_ERR << this->buffer_.str() << "\n";
 		}
 	}
 }
@@ -158,13 +153,11 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 		this->buffer_.str("fail to open configuration file : ");
 		this->buffer_ << e.what();
 		LOG(ERROR) << this->buffer_.str();
-		GK_ERR << this->buffer_.str() << "\n";
 	}
 	catch(const boost::archive::archive_exception & e) {
 		std::string err("load: ");
 		err += e.what();
 		LOG(ERROR) << err;
-		GK_ERR << err << "\n";
 		// TODO throw GLogiKExcept to create new configuration
 		// file and avoid overwriting on close ?
 		// must add device.conf_file_ to this->used_conf_files_ then.
@@ -178,7 +171,6 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 		this->buffer_.str("(buggy exception) fail to open configuration file : ");
 		this->buffer_ << e.what();
 		LOG(ERROR) << this->buffer_.str();
-		GK_ERR << this->buffer_.str() << "\n";
 	}
 }
 
@@ -233,7 +225,6 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		}
 		catch ( const GLogiKExcept & e ) {
 			LOG(ERROR) << e.what();
-			GK_ERR << e.what() << "\n";
 		}
 	}
 	/*
@@ -245,7 +236,6 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		this->buffer_.str("(buggy exception) fail to open configuration file : ");
 		this->buffer_ << e.what();
 		LOG(ERROR) << this->buffer_.str();
-		GK_ERR << this->buffer_.str() << "\n";
 	}
 }
 

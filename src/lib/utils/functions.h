@@ -26,17 +26,11 @@
 #error "Only "utils/utils.h" can be included directly, this file may disappear or change contents."
 #endif
 
-#include <iostream>
 #include <string>
 #include <type_traits>
 
 namespace GLogiK
 {
-
-#define GK_OUT	(std::cerr)
-#define GK_STAT	(std::cerr)
-#define GK_WARN	(std::cerr << "warning: ")
-#define GK_ERR	(std::cerr << "error: ")
 
 template <typename T>
 constexpr unsigned int to_uint(T obj) {

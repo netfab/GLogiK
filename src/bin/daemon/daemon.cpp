@@ -63,13 +63,16 @@ GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app), DBus(nullptr)
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 
 #if DEBUGGING_ON
-	if( FILELog::ReportingLevel() != NONE ) {
-		std::stringstream log_file;
-		log_file << DEBUG_DIR << "/glogikd-debug-" << getpid() << ".log";
-		this->log_fd_ = std::fopen( log_file.str().c_str(), "w" );
-	}
+	// console output disabled by default
+	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
 
-	LOG2FILE::Stream() = this->log_fd_;
+	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
+		this->buffer_.str(DEBUG_DIR);
+		this->buffer_ << "/" << PACKAGE << "d-debug-" << getpid() << ".log";
+		this->log_fd_ = std::fopen(this->buffer_.str().c_str(), "w");
+
+		LOG_TO_FILE_AND_CONSOLE::FileStream() = this->log_fd_;
+	}
 #endif
 
 	if( this->log_fd_ == nullptr )

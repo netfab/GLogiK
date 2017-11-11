@@ -36,11 +36,9 @@ WarningCheck::~WarningCheck() {
 
 void WarningCheck::warnOrThrows(const std::string & warn) {
 	LOG(WARNING) << warn;
-	GK_WARN << warn << "\n";
 	if(WarningCheck::warn_count_ >= MAXIMUM_WARNINGS_BEFORE_FATAL_ERROR) {
 		const std::string last = "maximum warning count reached, this is fatal";
 		LOG(ERROR) << last;
-		GK_ERR << last << "\n";
 		throw GLogiKExcept(last);
 	}
 	WarningCheck::warn_count_++;

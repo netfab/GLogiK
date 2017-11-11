@@ -120,11 +120,7 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 	if( ret ) {
 		this->client_id_ = this->DBus->getNextStringArgument();
 		this->are_we_registered_ = true;
-		const char * success = "successfully registered with daemon";
-#if DEBUGGING_ON
-		LOG(DEBUG2) << success << " : ID : " << this->client_id_;
-#endif
-		GK_STAT << success << "\n";
+		LOG(DEBUG2) << "successfully registered with daemon : ID : " << this->client_id_;
 	}
 	else {
 		const char * failure = "failed to register with daemon : false";
@@ -132,18 +128,12 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 		if( this->register_retry_ ) {
 			/* retrying */
 			this->register_retry_ = false;
-#if DEBUGGING_ON
 			LOG(WARNING) << failure << " - " << reason << ", retrying ...";
-#endif
-			GK_WARN << failure << ", retrying ..." << "\n";
 			std::this_thread::sleep_for(std::chrono::seconds(2));
 			this->registerWithDaemon();
 		}
 		else {
-#if DEBUGGING_ON
 			LOG(ERROR) << failure << " - " << reason;
-#endif
-			GK_ERR << failure << "\n";
 			throw GLogiKExcept(failure);
 		}
 	}
@@ -172,19 +162,16 @@ void ServiceDBusHandler::unregisterWithDaemon(void) {
 			this->client_id_ = "undefined";
 			const char * success = "successfully unregistered with daemon";
 			LOG(DEBUG2) << success;
-			GK_STAT << success << "\n";
 		}
 		else {
 			const char * failure = "failed to unregister with daemon : false";
 			LOG(ERROR) << failure;
-			GK_ERR << failure << "\n";
 		}
 	}
 	catch ( const GLogiKExcept & e ) {
 		std::string err("failure to unregister with daemon : ");
 		err += e.what();
 		LOG(ERROR) << err;
-		GK_ERR << err << "\n";
 	}
 }
 
@@ -203,7 +190,6 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(void) {
 	catch ( const GLogiKExcept & e ) {
 		std::string err("unable to get current session path from session manager");
 		LOG(ERROR) << err;
-		GK_ERR << err << "\n";
 		throw;
 	}
 }
@@ -220,9 +206,7 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 
 		this->DBus->waitForRemoteMethodCallReply();
 		const std::string ret_string = this->DBus->getNextStringArgument();
-#if DEBUGGING_ON
 		LOG(DEBUG5) << "current session state : " << ret_string;
-#endif
 		return ret_string;
 	}
 	catch ( const GLogiKExcept & e ) {
@@ -255,12 +239,10 @@ void ServiceDBusHandler::reportChangedState(void) {
 		if( ret ) {
 			const char * success = "successfully reported changed state";
 			LOG(DEBUG2) << success;
-			GK_STAT << success << "\n";
 		}
 		else {
 			const char * failure = "failed to report changed state : false";
 			LOG(ERROR) << failure;
-			GK_ERR << failure << "\n";
 		}
 	}
 	catch ( const GLogiKExcept & e ) {
@@ -283,15 +265,11 @@ void ServiceDBusHandler::updateSessionState(void) {
 	const bool logoff = true;
 	const std::string new_state = this->getCurrentSessionState(logoff);
 	if(this->session_state_ == new_state) {
-#if DEBUGGING_ON
 		LOG(DEBUG5) << "session state did not changed";
-#endif
 		return;
 	}
 
-#if DEBUGGING_ON
 	LOG(DEBUG1) << "current session state : " << this->session_state_;
-#endif
 
 	if( this->session_state_ == "active" ) {
 		if(new_state == "online") {
@@ -328,9 +306,7 @@ void ServiceDBusHandler::updateSessionState(void) {
 		return;
 	}
 
-#if DEBUGGING_ON
 	LOG(DEBUG1) << "switching session state to : " << new_state;
-#endif
 
 	this->session_state_ = new_state;
 	this->reportChangedState();
@@ -351,14 +327,10 @@ void ServiceDBusHandler::daemonIsStopping(void) {
 }
 
 void ServiceDBusHandler::somethingChanged(void) {
-#if DEBUGGING_ON
 	LOG(DEBUG2) << "it seems that something changed ! ";
-#endif
 
 	if( ! this->are_we_registered_ ) {
-#if DEBUGGING_ON
 		LOG(DEBUG2) << " ... but we don't care because we are not registered ! ";
-#endif
 		return;
 	}
 

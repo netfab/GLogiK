@@ -51,21 +51,10 @@
 #include <cstdio>
 #include <iomanip>
 
-#include <boost/iostreams/device/null.hpp>
-#include <boost/iostreams/stream.hpp>
-
 #include <config.h>
 
 namespace GLogiK
 {
-
-#if DEBUGGING_ON == 0
-
-static boost::iostreams::null_sink nullsink;
-static boost::iostreams::stream<boost::iostreams::null_sink> nullout( nullsink );
-#define LOG(level) nullout
-
-#else
 
 inline std::string NowTime();
 
@@ -76,6 +65,7 @@ class Log
 {
 public:
     Log();
+    Log(TLogLevel level);
     virtual ~Log();
     std::ostringstream& Get(TLogLevel level = INFO, const char* func = "");
 public:
@@ -84,13 +74,19 @@ public:
     static TLogLevel FromString(const std::string& level);
 protected:
     std::ostringstream os;
+	const TLogLevel current_level;
 private:
     Log(const Log&);
     Log& operator =(const Log&);
 };
 
 template <typename T>
-Log<T>::Log()
+Log<T>::Log() : current_level(NONE)
+{
+}
+
+template <typename T>
+Log<T>::Log(TLogLevel level) : current_level(level)
 {
 }
 
@@ -108,7 +104,7 @@ template <typename T>
 Log<T>::~Log()
 {
     os << std::endl;
-    T::Output(os.str());
+    T::Output(os.str(), current_level);
 }
 
 template <typename T>
@@ -152,11 +148,13 @@ TLogLevel Log<T>::FromString(const std::string& level)
     return NONE;
 }
 
+/* -- */
+
 class LOG2FILE
 {
 public:
     static FILE*& Stream();
-    static void Output(const std::string& msg);
+    static void Output(const std::string& msg, const TLogLevel level);
 };
 
 inline FILE*& LOG2FILE::Stream()
@@ -165,7 +163,7 @@ inline FILE*& LOG2FILE::Stream()
     return pStream;
 }
 
-inline void LOG2FILE::Output(const std::string& msg)
+inline void LOG2FILE::Output(const std::string& msg, const TLogLevel level)
 {   
     FILE* pStream = Stream();
     if (!pStream)
@@ -173,6 +171,65 @@ inline void LOG2FILE::Output(const std::string& msg)
     fprintf(pStream, "%s", msg.c_str());
     fflush(pStream);
 }
+
+/* -- */
+
+class LOG_TO_FILE_AND_CONSOLE
+{
+	public:
+		static FILE*& FileStream();
+		static FILE*& ConsoleStream();
+		static void Output(const std::string& msg, const TLogLevel level);
+		static TLogLevel& FileReportingLevel();
+		static TLogLevel& ConsoleReportingLevel();
+	protected:
+	private:
+};
+
+inline FILE*& LOG_TO_FILE_AND_CONSOLE::FileStream()
+{
+    static FILE* pFileStream = nullptr;
+    return pFileStream;
+}
+
+inline FILE*& LOG_TO_FILE_AND_CONSOLE::ConsoleStream()
+{
+    static FILE* pConsoleStream = nullptr;
+    return pConsoleStream;
+}
+
+inline void LOG_TO_FILE_AND_CONSOLE::Output(const std::string& msg, const TLogLevel level)
+{
+	if( level <= LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() ) {
+		FILE* pFileStream = LOG_TO_FILE_AND_CONSOLE::FileStream();
+		if (pFileStream) {
+			fprintf(pFileStream, "%s", msg.c_str());
+			fflush(pFileStream);
+		}
+	}
+
+	if( level <= LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() ) {
+		FILE* pConsoleStream = LOG_TO_FILE_AND_CONSOLE::ConsoleStream();
+		if (pConsoleStream) {
+			fprintf(pConsoleStream, "%s", msg.c_str());
+			fflush(pConsoleStream);
+		}
+	}
+}
+
+inline TLogLevel& LOG_TO_FILE_AND_CONSOLE::FileReportingLevel()
+{
+	static TLogLevel fileLogLevel = NONE;
+	return fileLogLevel;
+}
+
+inline TLogLevel& LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel()
+{
+	static TLogLevel consoleLogLevel = NONE;
+	return consoleLogLevel;
+}
+
+/* -- */
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 #   if defined (BUILDING_FILELOG_DLL)
@@ -188,15 +245,41 @@ inline void LOG2FILE::Output(const std::string& msg)
 
 class FILELOG_DECLSPEC FILELog : public Log<LOG2FILE> {};
 //typedef Log<LOG2FILE> FILELog;
+class FILELOG_DECLSPEC BOTHLog : public Log<LOG_TO_FILE_AND_CONSOLE>
+{
+	public:
+		BOTHLog(TLogLevel lvl) : Log<LOG_TO_FILE_AND_CONSOLE>(lvl) {};
+};
 
-#ifndef FILELOG_MAX_LEVEL
-#define FILELOG_MAX_LEVEL DEBUG3
+/* -- */
+
+#ifndef LOG_MAX_LEVEL
+#define LOG_MAX_LEVEL DEBUG3
 #endif
 
+/*
 #define LOG(level) \
-    if (level > FILELOG_MAX_LEVEL) ;\
+    if (level > LOG_MAX_LEVEL) ;\
     else if (level > FILELog::ReportingLevel() || !LOG2FILE::Stream()) ; \
     else FILELog().Get(level, __func__)
+*/
+
+#if DEBUGGING_ON
+
+#define LOG(level) \
+	if (level > LOG_MAX_LEVEL) ; \
+	else BOTHLog(level).Get(level, __func__)
+
+#else
+
+#define LOG(level) \
+	if (level > LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() ) ; \
+	else BOTHLog(level).Get(level, __func__)
+
+#endif
+
+
+/* -- */
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 
@@ -235,8 +318,6 @@ inline std::string NowTime()
 }
 
 #endif //WIN32
-
-#endif // #else
 
 } // namespace GLogiK
 
