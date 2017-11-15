@@ -133,8 +133,8 @@ class KeyboardDriver
 
 		std::vector<KeyboardDevice> getSupportedDevices(void) const;
 
-		virtual void initializeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
-		virtual void closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
+		void initializeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
+		void closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
 		void resetDeviceState(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
 
 		const bool isDeviceInitialized(const std::string & devID) const;
