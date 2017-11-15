@@ -131,7 +131,7 @@ class KeyboardDriver
 		virtual const char* getDriverName() const = 0;
 		virtual uint16_t getDriverID() const = 0;
 
-		std::vector<KeyboardDevice> getSupportedDevices(void) const;
+		const std::vector<KeyboardDevice> & getSupportedDevices(void) const;
 
 		void initializeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
 		void closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);

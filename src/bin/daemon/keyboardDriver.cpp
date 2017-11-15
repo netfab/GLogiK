@@ -66,7 +66,7 @@ KeyboardDriver::~KeyboardDriver() {
 		this->closeLibusb();
 }
 
-std::vector<KeyboardDevice> KeyboardDriver::getSupportedDevices(void) const {
+const std::vector<KeyboardDevice> & KeyboardDriver::getSupportedDevices(void) const {
 	return this->supported_devices_;
 }
 
