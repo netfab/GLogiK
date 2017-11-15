@@ -43,12 +43,14 @@ MacrosManager::~MacrosManager()
 {
 }
 
-const bool MacrosManager::macroDefined(const std::string &macro_key_name) {
+/* returns true if a macro is defined for this key on the current profile */
+const bool MacrosManager::macroDefined(const std::string & macro_key_name) {
 	const std::vector<KeyEvent> & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
 	return (macro.size() > 0);
 }
 
-void MacrosManager::runMacro(const std::string &macro_key_name) {
+/* run a macro on the virtual keyboard */
+void MacrosManager::runMacro(const std::string & macro_key_name) {
 	const std::vector<KeyEvent> & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
 	if(macro.size() == 0) {
 #if DEBUGGING_ON
@@ -67,7 +69,8 @@ void MacrosManager::runMacro(const std::string &macro_key_name) {
 	}
 }
 
-void MacrosManager::setMacro(const std::string &macro_key_name, std::vector<KeyEvent> & macro) {
+/* set a macro on current profile, can be used by keyboard driver after MacroRecordMode */
+void MacrosManager::setMacro(const std::string & macro_key_name, std::vector<KeyEvent> & macro) {
 	try {
 #if DEBUGGING_ON
 		LOG(INFO) << "Macros Profile: " << to_uint(this->currentActiveProfile_)
@@ -82,6 +85,7 @@ void MacrosManager::setMacro(const std::string &macro_key_name, std::vector<KeyE
 	}
 }
 
+/*
 void MacrosManager::logProfiles(void) {
 	for(const auto & profile : this->macros_profiles_) {
 		LOG(DEBUG2) << "MemoryBank: " << to_uint(profile.first);
@@ -90,7 +94,12 @@ void MacrosManager::logProfiles(void) {
 		}
 	}
 }
+*/
 
+/*
+ * declare and initialize a macro key
+ * could be used by any keyboard driver on device initialization
+ */
 void MacrosManager::initializeMacroKey(const char* name) {
 	for(auto & profile : this->macros_profiles_) {
 		std::vector<KeyEvent> macro;
@@ -98,6 +107,7 @@ void MacrosManager::initializeMacroKey(const char* name) {
 	}
 }
 
+/* set the current active macros profile */
 void MacrosManager::setCurrentActiveProfile(MemoryBank bank) {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "setting current active macros profile : " << to_uint(bank);
@@ -105,6 +115,7 @@ void MacrosManager::setCurrentActiveProfile(MemoryBank bank) {
 	this->currentActiveProfile_ = bank;
 }
 
+/* clear all macros profiles */
 void MacrosManager::clearMacroProfiles(void) {
 	this->setCurrentActiveProfile(MemoryBank::MACROS_M0);
 	for(auto & profile_pair : this->macros_profiles_) {

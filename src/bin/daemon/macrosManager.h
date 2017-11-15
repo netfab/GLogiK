@@ -42,11 +42,14 @@ class MacrosManager : public MacrosBanks
 
 		void initializeMacroKey(const char* name);
 		void setCurrentActiveProfile(MemoryBank bank);
-		void setMacro(const std::string &macro_key_name, std::vector<KeyEvent> & macro);
-		void logProfiles(void);
-		const bool macroDefined(const std::string &macro_key_name);
-		void runMacro(const std::string &macro_key_name);
+
+		void setMacro(const std::string & macro_key_name, std::vector<KeyEvent> & macro);
+		const bool macroDefined(const std::string & macro_key_name);
+		void runMacro(const std::string & macro_key_name);
+
 		void clearMacroProfiles(void);
+
+		//void logProfiles(void);
 
 	protected:
 

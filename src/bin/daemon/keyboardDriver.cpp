@@ -405,6 +405,7 @@ void KeyboardDriver::handleModifierKeys(InitializedDevice & device) {
 	this->logWarning("diff not equal to zero");
 }
 
+/* used to create macros */
 uint16_t KeyboardDriver::getTimeLapse(InitializedDevice & device) {
 	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 	std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - device.last_call);
