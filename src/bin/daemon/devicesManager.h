@@ -66,6 +66,7 @@ class DevicesManager
 
 		void startMonitoring(GKDBus* pDBus);
 		void checkDBusMessages(void);
+		void resetDevicesStates(void);
 
 	protected:
 

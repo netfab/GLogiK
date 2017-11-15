@@ -52,9 +52,10 @@ ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr),
 		this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 
 		this->setCurrentSessionObjectPath();
-		this->session_state_ = this->getCurrentSessionState();
-
 		this->registerWithDaemon();
+
+		this->session_state_ = this->getCurrentSessionState();
+		this->reportChangedState();
 
 		/* want to be warned by the daemon about those signals */
 		this->DBus->addSignal_VoidToVoid_Callback(BusConnection::GKDBUS_SYSTEM,

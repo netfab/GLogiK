@@ -258,8 +258,8 @@ void DevicesManager::stopInitializedDevices(void) {
 	LOG(DEBUG2) << "stopping initialized devices";
 
 	std::vector<std::string> to_stop;
-	for(const auto& init_dev : this->initialized_devices_) {
-		to_stop.push_back(init_dev.first);
+	for(const auto& device_pair : this->initialized_devices_) {
+		to_stop.push_back(device_pair.first);
 	}
 
 	for(const auto & devID : to_stop) {
@@ -277,9 +277,9 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 
 	/* checking for unplugged unstopped devices */
 	std::vector<std::string> to_clean;
-	for(const auto & init_dev : this->initialized_devices_) {
-		if( this->detected_devices_.count(init_dev.first) == 0 ) {
-			to_clean.push_back(init_dev.first);
+	for(const auto & device_pair : this->initialized_devices_) {
+		if( this->detected_devices_.count(device_pair.first) == 0 ) {
+			to_clean.push_back(device_pair.first);
 		}
 	}
 
@@ -496,8 +496,8 @@ const std::vector<std::string> DevicesManager::getStartedDevices(void) {
 	// dev code
 	//std::vector<std::string> ret = {"aaa1", "bbb2", "ccc3"};
 
-	for(const auto& init_dev : this->initialized_devices_) {
-		ret.push_back(init_dev.first);
+	for(const auto& device_pair : this->initialized_devices_) {
+		ret.push_back(device_pair.first);
 	}
 
 	return ret;
@@ -535,6 +535,18 @@ const std::vector<std::string> DevicesManager::getDeviceProperties(const std::st
 	}
 
 	return ret;
+}
+
+void DevicesManager::resetDevicesStates(void) {
+	LOG(DEBUG1) << "resetting initialized devices states";
+	for(const auto& device_pair : this->initialized_devices_) {
+		const auto & device = device_pair.second;
+		for(const auto& driver : this->drivers_) {
+			if( device.driver_ID == driver->getDriverID() ) {
+				driver->resetDeviceState(device.device, device.device_bus, device.device_num);
+			}
+		}
+	}
 }
 
 void DevicesManager::checkDBusMessages(void) {

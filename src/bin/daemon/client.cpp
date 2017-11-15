@@ -36,6 +36,14 @@ Client::~Client() {
 	LOG(DEBUG2) << "destroying client";
 }
 
+const std::string & Client::getSessionObjectPath(void) const {
+	return this->client_session_object_path_;
+}
+
+const std::string & Client::getSessionCurrentState(void) const {
+	return this->session_state_;
+}
+
 void Client::updateSessionState(const std::string & new_state) {
 	this->session_state_ = new_state;
 	this->check_ = true;

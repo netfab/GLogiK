@@ -36,7 +36,8 @@ class Client
 		Client(const std::string & object_path);
 		~Client(void);
 
-		const std::string & getSessionObjectPath(void) const { return this->client_session_object_path_; }
+		const std::string & getSessionObjectPath(void) const;
+		const std::string & getSessionCurrentState(void) const;
 		void updateSessionState(const std::string & new_state);
 		void uncheck(void);
 		const bool isAlive(void);

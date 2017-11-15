@@ -188,9 +188,13 @@ const bool ClientsManager::unregisterClient(const std::string & clientID) {
 		LOG(DEBUG2) << this->buffer_.str();
 		syslog(LOG_INFO, this->buffer_.str().c_str());
 
-		delete pClient;
-		pClient = nullptr;
+		/* resetting devices states first */
+		if( pClient->getSessionCurrentState() == "active" )
+			this->devicesManager->resetDevicesStates();
+
+		delete pClient; pClient = nullptr;
 		this->clients_.erase(clientID);
+
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
@@ -207,6 +211,7 @@ const bool ClientsManager::updateClientState(const std::string & clientID, const
 	try {
 		Client* pClient = this->clients_.at(clientID);
 		pClient->updateSessionState(state);
+		// if state == online
 		return true;
 	}
 	catch (const std::out_of_range& oor) {

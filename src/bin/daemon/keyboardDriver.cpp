@@ -559,16 +559,6 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 		}
 	}
 
-	//device.macros_man->logProfiles();
-
-	LOG(DEBUG1) << "resetting MxKeys leds status";
-	mask = 0;
-	this->setMxKeysLeds(device);
-
-	LOG(DEBUG1) << "resetting keyboard color";
-	this->updateKeyboardColor(device);
-	this->setKeyboardColor(device);
-
 	LOG(INFO) << "exiting listening thread for " << device.device.name
 				<< " on bus " << to_uint(device.bus);
 }
@@ -977,11 +967,36 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 
 }
 
+void KeyboardDriver::resetDeviceState(const std::string & devID) {
+	// FIXME at ?
+	InitializedDevice & device = this->initialized_devices_[devID];
+
+	device.macros_man->clearMacroProfiles();
+
+	LOG(DEBUG1) << "resetting MxKeys leds status";
+	device.current_leds_mask = 0;
+	this->setMxKeysLeds(device);
+
+	LOG(DEBUG1) << "resetting keyboard color";
+	this->updateKeyboardColor(device);
+	this->setKeyboardColor(device);
+}
+
+void KeyboardDriver::resetDeviceState(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num) {
+	LOG(DEBUG3) << "resetting state of " << dev.name << "("
+				<< dev.vendor_id << ":" << dev.product_id << "), device "
+				<< to_uint(num) << " on bus " << to_uint(bus);
+
+	const std::string devID = KeyboardDriver::getDeviceID(bus, num);
+	this->resetDeviceState(devID);
+}
+
 void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num) {
 	LOG(DEBUG3) << "trying to close " << dev.name << "("
 				<< dev.vendor_id << ":" << dev.product_id << "), device "
 				<< to_uint(num) << " on bus " << to_uint(bus);
 
+	// FIXME at ?
 	const std::string devID = KeyboardDriver::getDeviceID(bus, num);
 	InitializedDevice & device = this->initialized_devices_[devID];
 	device.listen_status = false;
@@ -1002,6 +1017,8 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 
 	if(! found)
 		this->logWarning("listening thread not found !");
+
+	this->resetDeviceState(devID);
 
 	delete device.macros_man;
 	device.macros_man = nullptr;

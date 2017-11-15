@@ -135,6 +135,7 @@ class KeyboardDriver
 
 		virtual void initializeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
 		virtual void closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
+		void resetDeviceState(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
 
 		const bool isDeviceInitialized(const std::string & devID) const;
 		static const std::string getDeviceID(const uint8_t bus, const uint8_t num);
@@ -217,6 +218,8 @@ class KeyboardDriver
 		void handleModifierKeys(InitializedDevice & device);
 		uint16_t getTimeLapse(InitializedDevice & device);
 		void runMacro(const std::string & devID);
+
+		void resetDeviceState(const std::string & devID);
 };
 
 inline void KeyboardDriver::logWarning(const char* warning)
