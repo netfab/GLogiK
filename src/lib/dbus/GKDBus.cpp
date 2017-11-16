@@ -50,11 +50,11 @@ GKDBus::~GKDBus()
 	LOG(DEBUG1) << "dbus object destruction";
 	if(this->session_conn_) {
 		LOG(DEBUG) << "closing DBus Session connection";
-		dbus_connection_close(this->session_conn_);
+		dbus_connection_unref(this->session_conn_);
 	}
 	if(this->system_conn_) {
 		LOG(DEBUG) << "closing DBus System connection";
-		dbus_connection_close(this->system_conn_);
+		dbus_connection_unref(this->system_conn_);
 	}
 }
 
