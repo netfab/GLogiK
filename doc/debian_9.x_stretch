@@ -1,0 +1,14 @@
+
+To build on Debian 9 Stretch, following packages are required :
+ * autoconf
+ * autoconf-archive
+ * automake
+ * libtool
+ * g++
+ * pkg-config
+ * libusb-1.0-0-dev
+ * libudev-dev
+ * libevdev-dev
+ * libdbus-1-dev
+ * libsm-dev
+

@@ -8,6 +8,9 @@ GLogiK=$PWD/.. CD=. {
 	VERSION
 	configure.ac
 	Makefile.am
+	doc=doc/ {
+		debian_9.x_stretch
+	}
 	tools=tools/ {
 		Makefile
 		glogik-daemon.sh
