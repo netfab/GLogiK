@@ -163,7 +163,7 @@ PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
 PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.10])
 PKG_CHECK_MODULES([SM], [sm ice])
 
-AX_BOOST_BASE([1.56.0])
+AX_BOOST_BASE([1.56.0], [], AC_MSG_ERROR([Could not find a useful version of boost libraries]))
 AX_BOOST_PROGRAM_OPTIONS
 AX_BOOST_SYSTEM
 AX_BOOST_FILESYSTEM
