@@ -14,11 +14,14 @@ To build on Debian 9 Stretch, following packages are required :
  * libdbus-1-dev
  * libsm-dev
 
-(Boost libraries)
  * libboost-dev
  * libboost-program-options-dev
  * libboost-system-dev
  * libboost-filesystem-dev
  * libboost-iostreams-dev
  * libboost-serialization-dev
+
+To run the daemon, the glogik user and group must be created :
+
+	# adduser --system --disabled-login --home /nonexistent --no-create-home --group glogik
 
