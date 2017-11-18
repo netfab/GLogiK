@@ -22,7 +22,7 @@ GLogiK=$PWD/.. CD=. {
 		Makefile.am
 		dbus=dbus/ {
 			Makefile.am
-			GLogiK.conf
+			GLogiK.conf.in
 		}
 	}
 	srcfiles=src/ {

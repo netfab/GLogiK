@@ -71,23 +71,23 @@ dnl -------------------------------------------------------------------------
 dnl             User and Group for running the glogikd daemon
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(glogikd_user, AS_HELP_STRING([--with-glodikd-user=<user>],[User for running the glogikd daemon (glogik)]))
-if test -z "$with_glogikd_user" ; then
-	GLOGIKD_USER=glogik
+AC_ARG_WITH(glogik_user, AS_HELP_STRING([--with-glodik-user=<user>],[User for running the glogik daemon (glogik)]))
+if test -z "$with_glogik_user" ; then
+	GLOGIK_USER=glogik
 else
-	GLOGIKD_USER=$with_glogikd_user
+	GLOGIK_USER=$with_glogik_user
 fi
-AC_SUBST(GLOGIKD_USER)
-AC_DEFINE_UNQUOTED(GLOGIKD_USER,"$GLOGIKD_USER", [User for running the glogikd daemon])
+AC_SUBST(GLOGIK_USER)
+AC_DEFINE_UNQUOTED(GLOGIK_USER,"$GLOGIK_USER", [User for running the glogik daemon])
 
-AC_ARG_WITH(glogikd_group, AS_HELP_STRING([--with-glodikd-group=<group>],[Group for running the glogikd daemon (glogik)]))
-if test -z "$with_glogikd_group" ; then
-	GLOGIKD_GROUP=glogik
+AC_ARG_WITH(glogik_group, AS_HELP_STRING([--with-glodik-group=<group>],[Group for running the glogik daemon (glogik)]))
+if test -z "$with_glogik_group" ; then
+	GLOGIK_GROUP=glogik
 else
-	GLOGIKD_GROUP=$with_glogikd_group
+	GLOGIK_GROUP=$with_glogik_group
 fi
-AC_SUBST(GLOGIKD_GROUP)
-AC_DEFINE_UNQUOTED(GLOGIKD_GROUP,"$GLOGIKD_GROUP", [Group for running the glogikd daemon])
+AC_SUBST(GLOGIK_GROUP)
+AC_DEFINE_UNQUOTED(GLOGIK_GROUP,"$GLOGIK_GROUP", [Group for running the glogik daemon])
 
 dnl -------------------------------------------------------------------------
 dnl             run tests and do things accordingly to results
@@ -175,6 +175,7 @@ AC_CONFIG_FILES([
         Makefile
         data/Makefile
         data/dbus/Makefile
+        data/dbus/GLogiK.conf
         src/Makefile
         src/include/Makefile
         src/lib/Makefile
@@ -196,20 +197,24 @@ AC_MSG_NOTICE([
 
  $PACKAGE_NAME $VERSION configured with :
 -------------------------------
-        prefix:                 ${prefix}
-        exec_prefix:            ${exec_prefix}
-        libdir:                 ${libdir}
-        bindir:                 ${bindir}
-        sbindir:                ${sbindir}
-        sysconfdir:             ${sysconfdir}
-        datadir:                ${datadir}
+         prefix : ${prefix}
+    exec_prefix : ${exec_prefix}
+         libdir : ${libdir}
+         bindir : ${bindir}
+        sbindir : ${sbindir}
+     sysconfdir : ${sysconfdir}
+        datadir : ${datadir}
 
-        pkglibdir:              ${libdir}/$PACKAGE
-        srcdir:                 ${srcdir}
+      pkglibdir : ${libdir}/$PACKAGE
+       srcdir   : ${srcdir}
 
-        compiler:               ${CXX}
-        CXXFLAGS:               ${CXXFLAGS}
-        LDFLAGS:                ${LDFLAGS}
+     compiler   : ${CXX}
+     CXXFLAGS   : ${CXXFLAGS}
+     LDFLAGS    : ${LDFLAGS}
+
+    $PACKAGE_NAME user : $GLOGIK_USER
+   $PACKAGE_NAME group : $GLOGIK_GROUP
+-------------------------------
 
 ])
 
