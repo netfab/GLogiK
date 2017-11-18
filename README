@@ -3,7 +3,8 @@ GLogiK, daemon to handle special features on gaming keyboards
 -------------------------------------------------------------
 
 Status : in development.
-Recognized devices : Logitech G510s Gaming Keyboard
+Recognized devices :
+	- Logitech G510s Gaming Keyboard
 
 Build Dependencies :
 --------------------
@@ -20,10 +21,16 @@ Runtime Dependencies :
 	>=sys-auth/consolekit-1.1.2
 
 GLogiK is untested with previous versions of each dependency, but it may work.
-libusb-0.1 is not supported. Feel free to report any working version.
+libusb-0.1 is not supported. Feel free to report any (non-)working version.
 
 GLogiK daemon
 -------------
-The GLogiKd daemon should run as unprivileged user.
-See --with-glodikd-user and --with-glodikd-group configure options.
-These two options both defaults to « glogik ».
+The GLogiKd daemon starts as root and drops its privileges.
+See --with-glogik-user and --with-glogik-group configure options.
+These two options both defaults to «glogik».
+
+GLogiK Desktop Service
+----------------------
+Users who wants to run the GLogiKs desktop service must be in the «glogik»
+group (or whatever is defined with the above option).
+
