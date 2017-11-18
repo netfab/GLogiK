@@ -34,6 +34,15 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(DBusConnection* conn, const char*
 	const char* object, const char* interface, const char* method, DBusPendingCall** pending, const bool logoff)
 		: GKDBusMessage(conn), pending_(pending), log_off_(logoff)
 {
+	if( ! dbus_validate_bus_name(dest, nullptr) )
+		throw GLogiKExcept("invalid destination name");
+	if( ! dbus_validate_path(object, nullptr) )
+		throw GLogiKExcept("invalid object path");
+	if( ! dbus_validate_interface(interface, nullptr) )
+		throw GLogiKExcept("invalid interface");
+	if( ! dbus_validate_member(method, nullptr) )
+		throw GLogiKExcept("invalid method name");
+
 	this->message_ = dbus_message_new_method_call(dest, object, interface, method);
 	if(this->message_ == nullptr)
 		throw GLogiKExcept("can't allocate memory for Remote Object Method Call DBus message");
