@@ -41,6 +41,7 @@ class GKDBusRemoteMethodCall : public GKDBusMessage
 		~GKDBusRemoteMethodCall();
 
 		void appendToRemoteMethodCall(const std::string & value);
+		void appendToRemoteMethodCall(const uint32_t value);
 
 	protected:
 	private:
