@@ -17,7 +17,7 @@ Build Dependencies :
 
 Runtime Dependencies :
 ----------------------
-	>=sys-auth/consolekit-1.1.2
+	>=sys-auth/consolekit-1.1.2 or systemd-logind
 
 GLogiK is untested with previous versions of each dependency, but it may work.
 libusb-0.1 is not supported. Feel free to report any working version.

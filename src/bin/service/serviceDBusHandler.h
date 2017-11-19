@@ -25,6 +25,8 @@
 #include <sstream>
 #include <string>
 
+#include <sys/types.h>
+
 #include "lib/dbus/GKDBus.h"
 
 #include "devicesHandler.h"
@@ -34,10 +36,17 @@
 namespace GLogiK
 {
 
+enum class SessionTracker
+{
+	F_UNKNOWN = 0,
+	F_CONSOLEKIT,
+	F_LOGIND,
+};
+
 class ServiceDBusHandler
 {
 	public:
-		ServiceDBusHandler(void);
+		ServiceDBusHandler(pid_t pid);
 		~ServiceDBusHandler(void);
 
 		void updateSessionState(void);
@@ -51,6 +60,7 @@ class ServiceDBusHandler
 		bool register_retry_;
 		bool are_we_registered_;
 		std::string client_id_;
+		SessionTracker session_framework_;
 
 		std::ostringstream buffer_;
 
@@ -69,7 +79,7 @@ class ServiceDBusHandler
 		std::string current_session_;	/* current session object path */
 		std::string session_state_;		/* session state */
 
-		void setCurrentSessionObjectPath(void);
+		void setCurrentSessionObjectPath(pid_t pid);
 		const std::string getCurrentSessionState(const bool logoff=false);
 
 		void registerWithDaemon(void);

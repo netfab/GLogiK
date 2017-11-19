@@ -88,7 +88,7 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 			SessionManager session;
 			this->fds[0].fd = session.openConnection();
 
-			ServiceDBusHandler DBusHandler;
+			ServiceDBusHandler DBusHandler(this->pid_);
 
 			while( session.isSessionAlive() ) {
 				int ret = poll(this->fds, 1, 150);

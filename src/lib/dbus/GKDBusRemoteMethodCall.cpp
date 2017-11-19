@@ -100,5 +100,20 @@ void GKDBusRemoteMethodCall::appendToRemoteMethodCall(const std::string & value)
 #endif
 }
 
+/* TODO switch for other int types */
+void GKDBusRemoteMethodCall::appendToRemoteMethodCall(const uint32_t value) {
+	dbus_uint32_t v = value;
+	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_UINT32, &v) ) {
+		this->hosed_message_ = true;
+		throw GKDBusOOMWrongBuild("RemoteMethodCall integer append failure, not enough memory");
+	}
+
+#if DEBUG_GKDBUS_SUBOBJECTS
+	if( ! this->log_off_ ) {
+		LOG(DEBUG2) << "DBus remote method call integer value appended";
+	}
+#endif
+}
+
 } // namespace GLogiK
 

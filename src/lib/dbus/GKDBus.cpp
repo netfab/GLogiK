@@ -318,6 +318,12 @@ void GKDBus::appendToRemoteMethodCall(const std::string & value) {
 	this->method_call_->appendToRemoteMethodCall(value);
 }
 
+void GKDBus::appendToRemoteMethodCall(const uint32_t value) {
+	if(this->method_call_ == nullptr) /* sanity check */
+		throw GLogiKExcept("DBus remote method call object not initialized");
+	this->method_call_->appendToRemoteMethodCall(value);
+}
+
 void GKDBus::sendRemoteMethodCall(void) {
 	if(this->method_call_) { /* sanity check */
 		delete this->method_call_;
@@ -849,18 +855,24 @@ void GKDBus::checkDBusError(const char* error_message) {
 }
 
 void GKDBus::fillInArguments(void) {
-	int current_type = 0;
-	int sub_type = 0;
-	//LOG(DEBUG2) << "checking arguments";
 	this->string_arguments_.clear();
 	this->boolean_arguments_.clear();
 
+	int current_type = 0;
+	int sub_type = 0;
 	char* arg_value = nullptr;
 	bool bool_arg = false;
 	DBusMessageIter arg_it;
+	char* sub_value = nullptr;
 
 	dbus_message_iter_init(this->message_, &arg_it);
 	while ((current_type = dbus_message_iter_get_arg_type(&arg_it)) != DBUS_TYPE_INVALID) {
+		DBusMessageIter sub_it;
+		bool_arg = false;
+		sub_type = 0;
+		arg_value = nullptr;
+		sub_value = nullptr;
+
 		switch(current_type) {
 			case DBUS_TYPE_STRING:
 				dbus_message_iter_get_basic(&arg_it, &arg_value);
@@ -878,7 +890,6 @@ void GKDBus::fillInArguments(void) {
 				//LOG(DEBUG4) << "bool arg value : " << bool_arg;
 				break;
 			case DBUS_TYPE_ARRAY:
-				DBusMessageIter sub_it;
 				dbus_message_iter_recurse(&arg_it, &sub_it);
 				switch( dbus_message_iter_get_element_type(&arg_it) ) {
 					case DBUS_TYPE_STRING:
@@ -892,6 +903,22 @@ void GKDBus::fillInArguments(void) {
 						break;
 					default:
 						LOG(WARNING) << "unhandled type for dbus array";
+						break;
+				}
+				break;
+			case DBUS_TYPE_VARIANT:
+				//LOG(DEBUG4) << "need to parse variant";
+				dbus_message_iter_recurse(&arg_it, &sub_it);
+				sub_type = dbus_message_iter_get_arg_type(&sub_it);
+
+				switch(sub_type) {
+					case DBUS_TYPE_STRING:
+						dbus_message_iter_get_basic(&sub_it, &sub_value);
+						this->string_arguments_.push_back(sub_value);
+						//LOG(DEBUG4) << "variant string sub value : " << sub_value;
+						break;
+					default:
+						LOG(WARNING) << "unhandled type for variant parsing";
 						break;
 				}
 				break;

@@ -43,15 +43,15 @@ namespace GLogiK
  *
  */
 
-ServiceDBusHandler::ServiceDBusHandler() : DBus(nullptr),
+ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 	register_retry_(true), are_we_registered_(false), client_id_("undefined"),
-	buffer_("", std::ios_base::app)
+	session_framework_(SessionTracker::F_UNKNOWN), buffer_("", std::ios_base::app)
 {
 	try {
 		this->DBus = new GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
 		this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 
-		this->setCurrentSessionObjectPath();
+		this->setCurrentSessionObjectPath(pid);
 		this->registerWithDaemon();
 
 		this->session_state_ = this->getCurrentSessionState();
@@ -176,8 +176,7 @@ void ServiceDBusHandler::unregisterWithDaemon(void) {
 	}
 }
 
-void ServiceDBusHandler::setCurrentSessionObjectPath(void) {
-	// TODO logind support
+void ServiceDBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 	try {
 		/* getting consolekit current session */
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
@@ -187,11 +186,28 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(void) {
 		this->DBus->waitForRemoteMethodCallReply();
 		this->current_session_ = this->DBus->getNextStringArgument();
 		LOG(DEBUG1) << "current session : " << this->current_session_;
+		this->session_framework_ = SessionTracker::F_CONSOLEKIT;
 	}
 	catch ( const GLogiKExcept & e ) {
-		std::string err("unable to get current session path from session manager");
-		LOG(ERROR) << err;
-		throw;
+		try {
+			LOG(DEBUG) << "consolekit contact failure, trying logind";
+
+			/* getting logind current session */
+			this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.login1",
+				"/org/freedesktop/login1", "org.freedesktop.login1.Manager", "GetSessionByPID");
+			this->DBus->appendToRemoteMethodCall(pid);
+			this->DBus->sendRemoteMethodCall();
+
+			this->DBus->waitForRemoteMethodCallReply();
+			this->current_session_ = this->DBus->getNextStringArgument();
+			LOG(DEBUG1) << "current session : " << this->current_session_;
+			this->session_framework_ = SessionTracker::F_LOGIND;
+		}
+		catch ( const GLogiKExcept & e ) {
+			std::string err("unable to get current session path from session manager");
+			LOG(ERROR) << err;
+			throw;
+		}
 	}
 }
 
@@ -199,22 +215,45 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(void) {
  * is the session in active, online or closing state ?
  */
 const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) {
-	// TODO logind support
-	try {
-		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
-			this->current_session_.c_str(), "org.freedesktop.ConsoleKit.Session", "GetSessionState", logoff);
-		this->DBus->sendRemoteMethodCall();
+	std::string ret;
+	switch(this->session_framework_) {
+		case SessionTracker::F_CONSOLEKIT:
+			try {
+				this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.ConsoleKit",
+					this->current_session_.c_str(), "org.freedesktop.ConsoleKit.Session", "GetSessionState", logoff);
+				this->DBus->sendRemoteMethodCall();
 
-		this->DBus->waitForRemoteMethodCallReply();
-		const std::string ret_string = this->DBus->getNextStringArgument();
-		LOG(DEBUG5) << "current session state : " << ret_string;
-		return ret_string;
-	}
-	catch ( const GLogiKExcept & e ) {
-		std::string warn(__func__);
-		warn += " failure : ";
-		warn += e.what();
-		WarningCheck::warnOrThrows(warn);
+				this->DBus->waitForRemoteMethodCallReply();
+				ret = this->DBus->getNextStringArgument();
+#if DEBUGGING_ON
+				LOG(DEBUG5) << "current session state : " << ret;
+#endif
+				return ret;
+			}
+			catch ( const GLogiKExcept & e ) {
+				std::string warn(__func__);
+				warn += " failure : ";
+				warn += e.what();
+				WarningCheck::warnOrThrows(warn);
+			}
+			break;
+		case SessionTracker::F_LOGIND:
+				this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.login1",
+					this->current_session_.c_str(), "org.freedesktop.DBus.Properties", "Get", logoff);
+				this->DBus->appendToRemoteMethodCall("org.freedesktop.login1.Session");
+				this->DBus->appendToRemoteMethodCall("State");
+				this->DBus->sendRemoteMethodCall();
+
+				this->DBus->waitForRemoteMethodCallReply();
+				ret = this->DBus->getNextStringArgument();
+#if DEBUGGING_ON
+				LOG(DEBUG5) << "current session state : " << ret;
+#endif
+				return ret;
+			break;
+		default:
+			throw GLogiKExcept("unhandled session tracker");
+			break;
 	}
 
 	return this->session_state_;

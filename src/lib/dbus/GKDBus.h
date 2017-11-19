@@ -74,6 +74,7 @@ class GKDBus : public GKDBusEvents
 		void initializeRemoteMethodCall(BusConnection current, const char* dest,
 			const char* object, const char* interface, const char* method, const bool logoff=false);
 		void appendToRemoteMethodCall(const std::string & value);
+		void appendToRemoteMethodCall(const uint32_t value);
 		void sendRemoteMethodCall(void);
 		void waitForRemoteMethodCallReply(void);
 
