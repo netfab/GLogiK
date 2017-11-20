@@ -79,7 +79,7 @@ class GKDBus : public GKDBusEvents
 		void waitForRemoteMethodCallReply(void);
 
 		std::string getNextStringArgument(void);
-		const std::vector<std::string> getAllStringArguments(void);
+		const std::vector<std::string> & getAllStringArguments(void) const;
 		const bool getNextBooleanArgument(void);
 		void checkForMethodCall(BusConnection current);
 		void checkForSignalReceipt(BusConnection current);

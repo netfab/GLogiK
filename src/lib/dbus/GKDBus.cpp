@@ -373,7 +373,7 @@ std::string GKDBus::getNextStringArgument(void) {
 	return ret;
 }
 
-const std::vector<std::string> GKDBus::getAllStringArguments(void) {
+const std::vector<std::string> & GKDBus::getAllStringArguments(void) const {
 	return this->string_arguments_;
 }
 
