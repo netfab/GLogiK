@@ -354,7 +354,7 @@ void GKDBus::waitForRemoteMethodCallReply(void) {
 	}
 
 	if( dbus_message_get_type(this->message_) == DBUS_MESSAGE_TYPE_ERROR )
-		throw GLogiKExcept("got error as reply");
+		throw GKDBusRemoteCallNoReply("got error as reply");
 
 	this->fillInArguments();
 	dbus_message_unref(this->message_);
