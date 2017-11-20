@@ -194,9 +194,9 @@ dnl -------------------------------------------------------------------------
 dnl                             show summary
 dnl -------------------------------------------------------------------------
 AC_MSG_NOTICE([
-
+--------------------------------------------------------------
  $PACKAGE_NAME $VERSION configured with :
--------------------------------
+--------------------------------------------------------------
          prefix : ${prefix}
     exec_prefix : ${exec_prefix}
          libdir : ${libdir}
@@ -206,15 +206,36 @@ AC_MSG_NOTICE([
         datadir : ${datadir}
 
       pkglibdir : ${libdir}/$PACKAGE
-       srcdir   : ${srcdir}
+         srcdir : ${srcdir}
 
-     compiler   : ${CXX}
-     CXXFLAGS   : ${CXXFLAGS}
-     LDFLAGS    : ${LDFLAGS}
+       compiler : ${CXX}
+       CXXFLAGS : ${CXXFLAGS}
+        LDFLAGS : ${LDFLAGS}
+    am CXXFLAGS : ${AM_CXXFLAGS}
+     am LDFLAGS : ${AM_LDFLAGS}
 
-    $PACKAGE_NAME user : $GLOGIK_USER
-   $PACKAGE_NAME group : $GLOGIK_GROUP
--------------------------------
+    $PACKAGE_NAME user : ${GLOGIK_USER}
+   $PACKAGE_NAME group : ${GLOGIK_GROUP}
+--------------------------------------------------------------
+                 D-Bus LIBS : ${DBUS_LIBS}
+               D-Bus CFLAGS : ${DBUS_CFLAGS}
+                    SM LIBS : ${SM_LIBS}
+                  SM CFLAGS : ${SM_CFLAGS}
+            libevdev CFLAGS : ${LIBEVDEV_CFLAGS}
+              libevdev LIBS : ${LIBEVDEV_LIBS}
+              libusb CFLAGS : ${LIBUSB_CFLAGS}
+                libusb LIBS : ${LIBUSB_LIBS}
+               libudev LIBS : ${LIBUDEV_LIBS}
+             phtread CFLAGS : ${PTHREAD_CFLAGS}
+               phtread LIBS : ${PTHREAD_LIBS}
+             Boost CPPFLAGS : ${BOOST_CPPFLAGS}
+              Boost LDFLAGS : ${BOOST_LDFLAGS}
+   Boost serialization LIBS : ${BOOST_SERIALIZATION_LIB}
+          Boost system LIBS : ${BOOST_SYSTEM_LIB}
+      Boost filesystem LIBS : ${BOOST_FILESYSTEM_LIB}
+ Boost program options LIBS : ${BOOST_PROGRAM_OPTIONS_LIB}
+       Boost iostreams LIBS : ${BOOST_IOSTREAMS_LIB}
+--------------------------------------------------------------
 
 ])
 

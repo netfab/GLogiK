@@ -1,22 +1,26 @@
 
 sbin_PROGRAMS = GLogiKd
 
-GLogiKd_CXXFLAGS= @AM_CXXFLAGS@ \
-				@BOOST_CPPFLAGS@ \
-				@LIBUSB_CFLAGS@ \
+GLogiKd_CXXFLAGS = \
 				@LIBEVDEV_CFLAGS@ \
+				@LIBUSB_CFLAGS@ \
+				@BOOST_CPPFLAGS@ \
+				@DBUS_CFLAGS@ \
 				@PTHREAD_CFLAGS@ \
-				@DBUS_CFLAGS@
+				@AM_CXXFLAGS@
 
-GLogiKd_LDFLAGS= @AM_LDFLAGS@ @BOOST_LDFLAGS@
+GLogiKd_LDFLAGS = \
+				@BOOST_LDFLAGS@ \
+				@AM_LDFLAGS@
 
-GLogiKd_LDADD=	@LIBUDEV_LIBS@ \
+GLogiKd_LDADD = \
+				@LIBEVDEV_LIBS@ \
+				@LIBUSB_LIBS@ \
 				@BOOST_PROGRAM_OPTIONS_LIB@ \
 				@BOOST_SYSTEM_LIB@ \
 				@BOOST_FILESYSTEM_LIB@ \
 				@BOOST_IOSTREAMS_LIB@ \
-				@LIBUSB_LIBS@ \
-				@LIBEVDEV_LIBS@ \
+				@LIBUDEV_LIBS@ \
 				@PTHREAD_LIBS@ \
 				../../lib/utils/libGLogiKUtils.la \
 				../../lib/dbus/libGLogiKDBus.la \
