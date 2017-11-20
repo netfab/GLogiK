@@ -98,14 +98,14 @@ class DevicesManager
 		const bool startDevice(const std::string & devID);
 		const bool stopDevice(const std::string & devID);
 		const bool restartDevice(const std::string & devID);
-		const std::vector<std::string> getStartedDevices(void);
-		const std::vector<std::string> getStoppedDevices(void);
-		const std::vector<std::string> getDeviceProperties(const std::string & devID);
+		const std::vector<std::string> getStartedDevices(void) const;
+		const std::vector<std::string> getStoppedDevices(void) const;
+		const std::vector<std::string> getDeviceProperties(const std::string & devID) const;
 		/* -- */
 
 		void checkForUnpluggedDevices(void);
 
-		void sendSignalToClients(const std::string & signal);
+		void sendSignalToClients(const std::string & signal) const;
 };
 
 } // namespace GLogiK

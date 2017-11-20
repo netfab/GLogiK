@@ -61,7 +61,7 @@ class ClientsManager
 
 		std::map<const std::string, Client*> clients_;
 
-		const std::string generateRandomClientID(void);
+		const std::string generateRandomClientID(void) const;
 		const bool registerClient(const std::string & clientSessionObjectPath);
 		const bool unregisterClient(const std::string & clientID);
 		const bool updateClientState(const std::string & clientID, const std::string & state);

@@ -109,7 +109,7 @@ void ClientsManager::runLoop(void) {
 	}
 }
 
-const std::string ClientsManager::generateRandomClientID(void) {
+const std::string ClientsManager::generateRandomClientID(void) const {
 	RandomGenerator rand;
 	std::ostringstream ret(std::ios_base::app);
 	ret << rand.getString(6) << "-" << rand.getString(4) << "-"

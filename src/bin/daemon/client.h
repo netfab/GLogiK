@@ -40,7 +40,7 @@ class Client
 		const std::string & getSessionCurrentState(void) const;
 		void updateSessionState(const std::string & new_state);
 		void uncheck(void);
-		const bool isAlive(void);
+		const bool isAlive(void) const;
 
 	protected:
 

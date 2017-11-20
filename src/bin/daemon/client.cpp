@@ -53,7 +53,7 @@ void Client::uncheck(void) {
 	this->check_ = false;
 }
 
-const bool Client::isAlive(void) {
+const bool Client::isAlive(void) const {
 	return this->check_;
 }
 

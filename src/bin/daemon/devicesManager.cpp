@@ -131,7 +131,7 @@ void DevicesManager::initializeDevices(void) {
 	LOG(INFO) << "device(s) initialized : " << this->initialized_devices_.size();
 }
 
-void DevicesManager::sendSignalToClients(const std::string & signal) {
+void DevicesManager::sendSignalToClients(const std::string & signal) const {
 	/* don't send signal if the daemon is about to exit */
 	if( ! DaemonControl::isDaemonRunning() )
 		return;
@@ -490,7 +490,7 @@ void DevicesManager::searchSupportedDevices(void) {
 	udev_enumerate_unref(enumerate);
 }
 
-const std::vector<std::string> DevicesManager::getStartedDevices(void) {
+const std::vector<std::string> DevicesManager::getStartedDevices(void) const {
 	std::vector<std::string> ret;
 
 	// dev code
@@ -503,7 +503,7 @@ const std::vector<std::string> DevicesManager::getStartedDevices(void) {
 	return ret;
 }
 
-const std::vector<std::string> DevicesManager::getStoppedDevices(void) {
+const std::vector<std::string> DevicesManager::getStoppedDevices(void) const {
 	std::vector<std::string> ret;
 
 	for(const auto& stopped_dev : this->plugged_but_stopped_devices_) {
@@ -513,7 +513,7 @@ const std::vector<std::string> DevicesManager::getStoppedDevices(void) {
 	return ret;
 }
 
-const std::vector<std::string> DevicesManager::getDeviceProperties(const std::string & devID) {
+const std::vector<std::string> DevicesManager::getDeviceProperties(const std::string & devID) const {
 	std::vector<std::string> ret;
 
 	try {
