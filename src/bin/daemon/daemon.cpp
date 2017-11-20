@@ -69,7 +69,16 @@ GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app), DBus(nullptr)
 	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
 		this->buffer_.str(DEBUG_DIR);
 		this->buffer_ << "/" << PACKAGE << "d-debug-" << getpid() << ".log";
+
+		errno = 0;
 		this->log_fd_ = std::fopen(this->buffer_.str().c_str(), "w");
+
+		if(this->log_fd_ == nullptr) {
+			LOG(ERROR) << "failed to open debug file";
+			if(errno != 0) {
+				LOG(ERROR) << strerror(errno);
+			}
+		}
 
 		LOG_TO_FILE_AND_CONSOLE::FileStream() = this->log_fd_;
 	}
