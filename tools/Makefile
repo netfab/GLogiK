@@ -15,11 +15,7 @@ LANG=C
 #		CXXFLAGS=$(CXXFLAGS) \
 #		LDFLAGS="-L$(PREFIX_DEV_DIR)/libg15/lib -Wl,-rpath -Wl,$(PREFIX_DEV_DIR)/libg15/lib" \
 
-#MACROFILES= libtool.m4 ltoptions.m4 ltsugar.m4 ltversion.m4 lt~obsolete.m4
-#	cd $(top_srcdir)/m4 && rm -v $(MACROFILES)
-
-#    config.guess \
-#    config.sub \
+LIBTOOLMACROSFILES= libtool.m4 ltoptions.m4 ltsugar.m4 ltversion.m4 lt~obsolete.m4
 
 MAINTAINERCLEANFILES = \
     aclocal.m4 \
@@ -71,6 +67,7 @@ fullclean_it: clean_it
 	cd $(build_dir) && make maintainer-clean
 	cd $(top_srcdir) && rm -f -v $(MAINTAINERCLEANFILES)
 	find $(top_srcdir) -name 'Makefile.in' -delete
+	cd $(top_srcdir)/m4 && rm -v $(LIBTOOLMACROSFILES)
 	cd $(build_dir) && find . -depth -type d -delete
 	cd $(build_dir) && test -f *.tar.gz && rm -v *.tar.gz || echo 'archive not found.'
 	rmdir -v $(build_dir)
