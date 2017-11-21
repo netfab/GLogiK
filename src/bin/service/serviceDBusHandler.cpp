@@ -190,6 +190,7 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 	}
 	catch ( const GLogiKExcept & e ) {
 		try {
+			LOG(DEBUG) << "error : " << e.what();
 			LOG(DEBUG) << "consolekit contact failure, trying logind";
 
 			/* getting logind current session */
@@ -204,8 +205,8 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 			this->session_framework_ = SessionTracker::F_LOGIND;
 		}
 		catch ( const GLogiKExcept & e ) {
-			std::string err("unable to get current session path from session manager");
-			LOG(ERROR) << err;
+			LOG(ERROR) << e.what();
+			LOG(ERROR) << "unable to get current session path from session manager";
 			throw;
 		}
 	}

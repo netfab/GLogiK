@@ -113,7 +113,7 @@ class GKDBus : public GKDBusEvents
 
 		void setCurrentConnection(BusConnection current);
 		void checkDBusError(const char* error_message);
-		void fillInArguments(void);
+		void fillInArguments(DBusMessage* message);
 		void addSignalRuleMatch(const char* interface, const char* eventName);
 		void appendExtraValuesToReply(void);
 

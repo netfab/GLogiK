@@ -123,7 +123,7 @@ const bool GKDBus::checkMessageForSignalReceipt(const char* interface, const cha
 		return false;
 	if( dbus_message_is_signal(this->message_, interface, signal) ) {
 		LOG(DEBUG1) << "DBus " << signal << " signal receipted !";
-		this->fillInArguments();
+		this->fillInArguments(this->message_);
 		return true;
 	}
 	return false;
@@ -134,7 +134,7 @@ const bool GKDBus::checkMessageForMethodCall(const char* interface, const char* 
 		return false;
 	if( dbus_message_is_method_call(this->message_, interface, method) ) {
 		LOG(DEBUG1) << "DBus " << method << " method called !";
-		this->fillInArguments();
+		this->fillInArguments(this->message_);
 		return true;
 	}
 	return false;
@@ -341,25 +341,27 @@ void GKDBus::waitForRemoteMethodCallReply(void) {
 
 	uint8_t c = 0;
 
-	this->message_ = nullptr;
+	DBusMessage* message = nullptr;
 	// TODO could set a timer between retries ?
-	while( this->message_ == nullptr and c < 10 ) {
-		this->message_ = dbus_pending_call_steal_reply(this->pending_);
+	while( message == nullptr and c < 10 ) {
+		message = dbus_pending_call_steal_reply(this->pending_);
 		c++;
 	}
 
 	dbus_pending_call_unref(this->pending_);
 
-	if(this->message_ == nullptr) {
-		LOG(DEBUG3) << __func__ << " message_ is NULL, retried 10 times";
+	if(message == nullptr) {
+		LOG(DEBUG3) << __func__ << " message is NULL, retried 10 times";
 		throw GKDBusRemoteCallNoReply("can't get pending call reply");
 	}
 
-	if( dbus_message_get_type(this->message_) == DBUS_MESSAGE_TYPE_ERROR )
+	if(dbus_message_get_type(message) == DBUS_MESSAGE_TYPE_ERROR) {
+		dbus_message_unref(message);
 		throw GKDBusRemoteCallNoReply("got error as reply");
+	}
 
-	this->fillInArguments();
-	dbus_message_unref(this->message_);
+	this->fillInArguments(message);
+	dbus_message_unref(message);
 }
 
 /* -- */
@@ -860,9 +862,14 @@ void GKDBus::checkDBusError(const char* error_message) {
 	}
 }
 
-void GKDBus::fillInArguments(void) {
+void GKDBus::fillInArguments(DBusMessage* message) {
 	this->string_arguments_.clear();
 	this->boolean_arguments_.clear();
+
+	if(message == nullptr) {
+		LOG(WARNING) << __func__ << " : message is NULL";
+		return;
+	}
 
 	int current_type = 0;
 	int sub_type = 0;
@@ -871,7 +878,7 @@ void GKDBus::fillInArguments(void) {
 	DBusMessageIter arg_it;
 	char* sub_value = nullptr;
 
-	dbus_message_iter_init(this->message_, &arg_it);
+	dbus_message_iter_init(message, &arg_it);
 	while ((current_type = dbus_message_iter_get_arg_type(&arg_it)) != DBUS_TYPE_INVALID) {
 		DBusMessageIter sub_it;
 		bool_arg = false;
