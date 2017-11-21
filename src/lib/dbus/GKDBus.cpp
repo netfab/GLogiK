@@ -70,7 +70,7 @@ void GKDBus::connectToSessionBus(const char* connection_name) {
 
 	// TODO check name flags
 	int ret = dbus_bus_request_name(this->session_conn_, connection_name,
-		DBUS_NAME_FLAG_REPLACE_EXISTING, &this->error_);
+		DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &this->error_);
 	this->checkDBusError("DBus Session request name failure");
 	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
 		throw GLogiKExcept("DBus Session request name failure : not owner");
@@ -86,7 +86,7 @@ void GKDBus::connectToSystemBus(const char* connection_name) {
 
 	// TODO check name flags
 	int ret = dbus_bus_request_name(this->system_conn_, connection_name,
-		DBUS_NAME_FLAG_REPLACE_EXISTING, &this->error_);
+		DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &this->error_);
 	this->checkDBusError("DBus System request name failure");
 
 	// FIXME single instance application, or DBUS_NAME_FLAG_ALLOW_REPLACEMENT
@@ -110,8 +110,10 @@ const bool GKDBus::checkForNextMessage(BusConnection current) {
 }
 
 void GKDBus::freeMessage(void) {
-	if( this->message_ == nullptr )
+	if( this->message_ == nullptr ) {
+		LOG(WARNING) << "trying to free null message";
 		return;
+	}
 	LOG(DEBUG3) << "freeing message";
 	dbus_message_unref(this->message_);
 }
@@ -423,6 +425,8 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 				const char* signal = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << signal << " receipt";
 				if( this->checkMessageForSignalReceipt(interface.first.c_str(), signal) ) {
+					/* free message, callback could send DBus requests */
+					this->freeMessage();
 					try {
 						/* call string to bool callback */
 						const std::string arg( this->getNextStringArgument() );
@@ -455,6 +459,8 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 				const char* signal = DBusEvent.eventName.c_str();
 				LOG(DEBUG3) << "checking for " << signal << " receipt";
 				if( this->checkMessageForSignalReceipt(interface.first.c_str(), signal) ) {
+					/* free message, callback could send DBus requests */
+					this->freeMessage();
 					/* call void to void callback */
 					DBusEvent.callback();
 					return; /* only one by message */
