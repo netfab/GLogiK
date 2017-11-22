@@ -68,7 +68,6 @@ void GKDBus::connectToSessionBus(const char* connection_name) {
 	this->checkDBusError("DBus Session connection failure");
 	LOG(DEBUG1) << "DBus Session connection opened";
 
-	// TODO check name flags
 	int ret = dbus_bus_request_name(this->session_conn_, connection_name,
 		DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &this->error_);
 	this->checkDBusError("DBus Session request name failure");
@@ -84,12 +83,10 @@ void GKDBus::connectToSystemBus(const char* connection_name) {
 	this->checkDBusError("DBus System connection failure");
 	LOG(DEBUG1) << "DBus System connection opened";
 
-	// TODO check name flags
 	int ret = dbus_bus_request_name(this->system_conn_, connection_name,
 		DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &this->error_);
 	this->checkDBusError("DBus System request name failure");
 
-	// FIXME single instance application, or DBUS_NAME_FLAG_ALLOW_REPLACEMENT
 	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
 		throw GLogiKExcept("DBus System request name failure : not owner");
 	}
@@ -179,11 +176,13 @@ void GKDBus::initializeBroadcastSignal(BusConnection current, const char* object
 	}
 }
 
+/*
 void GKDBus::appendToBroadcastSignal(const std::string & value) {
-	if(this->signal_ == nullptr) /* sanity check */
+	if(this->signal_ == nullptr) // sanity check
 		throw GLogiKExcept("DBus signal object not initialized");
 	this->signal_->appendToBroadcastSignal(value);
 }
+*/
 
 void GKDBus::sendBroadcastSignal(void) {
 	if(this->signal_) { /* sanity check */

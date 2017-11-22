@@ -74,6 +74,7 @@ GKDBusBroadcastSignal::~GKDBusBroadcastSignal() {
 #endif
 }
 
+/*
 void GKDBusBroadcastSignal::appendToBroadcastSignal(const std::string & value) {
 	const char* p = value.c_str();
 	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) ) {
@@ -84,6 +85,7 @@ void GKDBusBroadcastSignal::appendToBroadcastSignal(const std::string & value) {
 	LOG(DEBUG2) << "DBus signal string value appended";
 #endif
 }
+*/
 
 } // namespace GLogiK
 

@@ -40,7 +40,7 @@ class GKDBusBroadcastSignal : public GKDBusMessage
 			const char* interface, const char* signal);
 		~GKDBusBroadcastSignal();
 
-		void appendToBroadcastSignal(const std::string & value);
+		//void appendToBroadcastSignal(const std::string & value);
 
 	protected:
 	private:
