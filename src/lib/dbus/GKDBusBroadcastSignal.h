@@ -37,11 +37,11 @@ class GKDBusBroadcastSignal : public GKDBusMessage
 {
 	public:
 		GKDBusBroadcastSignal(
-			DBusConnection* conn,	/* connection to send the signal on */
-			const char* dest,		/* destination, if NULL, broadcast */
-			const char* object,		/* the path to the object emitting the signal */
-			const char* interface,	/* interface the signal is emitted from */
-			const char* signal		/* name of signal */
+			DBusConnection* conn,		/* connection to send the signal on */
+			const char* dest,			/* destination, if NULL, broadcast */
+			const char* object_path,	/* the path to the object emitting the signal */
+			const char* interface,		/* interface the signal is emitted from */
+			const char* signal			/* name of signal */
 		);
 		~GKDBusBroadcastSignal();
 

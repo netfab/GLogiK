@@ -32,20 +32,20 @@ namespace GLogiK
 
 GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 	DBusConnection* conn,
-	const char* dest,		/* destination, if NULL, broadcast */
-	const char* object,		/* the path to the object emitting the signal */
-	const char* interface,	/* interface the signal is emitted from */
-	const char* signal		/* name of signal */
+	const char* dest,			/* destination, if NULL, broadcast */
+	const char* object_path,	/* the path to the object emitting the signal */
+	const char* interface,		/* interface the signal is emitted from */
+	const char* signal			/* name of signal */
 	) : GKDBusMessage(conn)
 {
-	if( ! dbus_validate_path(object, nullptr) )
+	if( ! dbus_validate_path(object_path, nullptr) )
 		throw GLogiKExcept("invalid object path");
 	if( ! dbus_validate_interface(interface, nullptr) )
 		throw GLogiKExcept("invalid interface");
 	if( ! dbus_validate_member(signal, nullptr) )
 		throw GLogiKExcept("invalid signal name");
 
-	this->message_ = dbus_message_new_signal(object, interface, signal);
+	this->message_ = dbus_message_new_signal(object_path, interface, signal);
 	if(this->message_ == nullptr)
 		throw GLogiKExcept("can't allocate memory for Signal DBus message");
 

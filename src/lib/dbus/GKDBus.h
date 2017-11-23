@@ -59,12 +59,12 @@ class GKDBus : public GKDBusEvents
 		const bool checkMessageForMethodCall(const char* interface, const char* method);
 		void freeMessage(void);
 
-		void initializeBroadcastSignal(BusConnection current, const char* object,
+		void initializeBroadcastSignal(BusConnection current, const char* object_path,
 			const char* interface, const char* signal);
 		//void appendToBroadcastSignal(const std::string & value);
 		void sendBroadcastSignal(void);
 
-		void initializeTargetsSignal(BusConnection current, const char* dest, const char* object,
+		void initializeTargetsSignal(BusConnection current, const char* dest, const char* object_path,
 			const char* interface, const char* signal);
 		void sendTargetsSignal(void);
 
@@ -76,7 +76,7 @@ class GKDBus : public GKDBusEvents
 		void sendMethodCallReply(void);
 
 		void initializeRemoteMethodCall(BusConnection current, const char* dest,
-			const char* object, const char* interface, const char* method, const bool logoff=false);
+			const char* object_path, const char* interface, const char* method, const bool logoff=false);
 		void appendToRemoteMethodCall(const std::string & value);
 		void appendToRemoteMethodCall(const uint32_t value);
 		void sendRemoteMethodCall(void);

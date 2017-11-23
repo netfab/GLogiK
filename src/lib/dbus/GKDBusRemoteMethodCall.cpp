@@ -31,19 +31,19 @@ namespace GLogiK
 {
 
 GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(DBusConnection* conn, const char* dest,
-	const char* object, const char* interface, const char* method, DBusPendingCall** pending, const bool logoff)
+	const char* object_path, const char* interface, const char* method, DBusPendingCall** pending, const bool logoff)
 		: GKDBusMessage(conn), pending_(pending), log_off_(logoff)
 {
 	if( ! dbus_validate_bus_name(dest, nullptr) )
 		throw GLogiKExcept("invalid destination name");
-	if( ! dbus_validate_path(object, nullptr) )
+	if( ! dbus_validate_path(object_path, nullptr) )
 		throw GLogiKExcept("invalid object path");
 	if( ! dbus_validate_interface(interface, nullptr) )
 		throw GLogiKExcept("invalid interface");
 	if( ! dbus_validate_member(method, nullptr) )
 		throw GLogiKExcept("invalid method name");
 
-	this->message_ = dbus_message_new_method_call(dest, object, interface, method);
+	this->message_ = dbus_message_new_method_call(dest, object_path, interface, method);
 	if(this->message_ == nullptr)
 		throw GLogiKExcept("can't allocate memory for Remote Object Method Call DBus message");
 	
@@ -53,10 +53,10 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(DBusConnection* conn, const char*
 #if DEBUG_GKDBUS_SUBOBJECTS
 	if( ! this->log_off_ ) {
 		LOG(DEBUG2) << "Remote Object Method Call DBus message initialized";
-		LOG(DEBUG3) << "dest      : " << dest;
-		LOG(DEBUG3) << "object    : " << object;
-		LOG(DEBUG3) << "interface : " << interface;
-		LOG(DEBUG3) << "method    : " << method;
+		LOG(DEBUG3) << "dest        : " << dest;
+		LOG(DEBUG3) << "object_path : " << object_path;
+		LOG(DEBUG3) << "interface   : " << interface;
+		LOG(DEBUG3) << "method      : " << method;
 	}
 #endif
 }

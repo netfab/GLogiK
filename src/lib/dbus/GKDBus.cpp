@@ -160,18 +160,18 @@ void GKDBus::addSignal_VoidToVoid_Callback(BusConnection current,
 	this->addSignalRuleMatch(interface, eventName);
 }
 
-void GKDBus::initializeBroadcastSignal(BusConnection current, const char* object,
+void GKDBus::initializeBroadcastSignal(BusConnection current, const char* object_path,
 	const char* interface, const char* signal)
 {
 	if(this->signal_) /* sanity check */
-		throw GLogiKExcept("DBus signal object already allocated");
+		throw GLogiKExcept("DBus signal already allocated");
 	this->setCurrentConnection(current);
 
 	try {
-		this->signal_ = new GKDBusBroadcastSignal(this->current_conn_, nullptr, object, interface, signal);
+		this->signal_ = new GKDBusBroadcastSignal(this->current_conn_, nullptr, object_path, interface, signal);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus broadcast signal object allocation failure : " << e.what();
+		LOG(ERROR) << "GKDBus broadcast signal allocation failure : " << e.what();
 		throw GLogiKExcept("caught bad_alloc, do not like that");
 	}
 }
@@ -179,7 +179,7 @@ void GKDBus::initializeBroadcastSignal(BusConnection current, const char* object
 /*
 void GKDBus::appendToBroadcastSignal(const std::string & value) {
 	if(this->signal_ == nullptr) // sanity check
-		throw GLogiKExcept("DBus signal object not initialized");
+		throw GLogiKExcept("DBus signal not initialized");
 	this->signal_->appendToBroadcastSignal(value);
 }
 */
@@ -190,11 +190,11 @@ void GKDBus::sendBroadcastSignal(void) {
 		this->signal_ = nullptr;
 	}
 	else {
-		LOG(WARNING) << __func__ << " failure because signal object not contructed";
+		LOG(WARNING) << __func__ << " failure because signal not contructed";
 	}
 }
 
-void GKDBus::initializeTargetsSignal(BusConnection current, const char* dest, const char* object,
+void GKDBus::initializeTargetsSignal(BusConnection current, const char* dest, const char* object_path,
 	const char* interface, const char* signal)
 {
 	if(this->signals_.size() > 0) { /* sanity check */
@@ -225,11 +225,11 @@ void GKDBus::initializeTargetsSignal(BusConnection current, const char* dest, co
 
 	try {
 		for(const auto & uniqueName : uniqueNames) {
-			this->signals_.push_back( new GKDBusBroadcastSignal(this->current_conn_, uniqueName.c_str(), object, interface, signal) );
+			this->signals_.push_back( new GKDBusBroadcastSignal(this->current_conn_, uniqueName.c_str(), object_path, interface, signal) );
 		}
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus targets signal object allocation failure : " << e.what();
+		LOG(ERROR) << "GKDBus targets signal allocation failure : " << e.what();
 
 		/* sending and freeing already allocated signals */
 		for(const auto & targetSignal : this->signals_) {
@@ -250,7 +250,7 @@ void GKDBus::sendTargetsSignal(void) {
 			delete targetSignal;
 		}
 		else {
-			LOG(WARNING) << __func__ << " signal object from container is null";
+			LOG(WARNING) << __func__ << " signal from container is null";
 		}
 	}
 	this->signals_.clear();
@@ -269,20 +269,20 @@ void GKDBus::buildAndSendErrorReply(BusConnection current) {
 		LOG(ERROR) << "DBus error reply failure : " << e.what();
 	}
 
-	/* delete error_reply object if allocated */
+	/* delete error_reply if allocated */
 	this->sendMessageErrorReply();
 }
 
 void GKDBus::initializeMessageErrorReply(BusConnection current) {
 	if(this->error_reply_) /* sanity check */
-		throw GLogiKExcept("DBus reply object already allocated");
+		throw GLogiKExcept("DBus reply already allocated");
 	this->setCurrentConnection(current);
 
 	try {
 		this->error_reply_ = new GKDBusMessageErrorReply(this->current_conn_, this->message_);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus message error object allocation failure : " << e.what();
+		LOG(ERROR) << "GKDBus message error allocation failure : " << e.what();
 		throw GLogiKExcept("caught bad_alloc, do not like that");
 	}
 }
@@ -293,7 +293,7 @@ void GKDBus::sendMessageErrorReply(void) {
 		this->error_reply_ = nullptr;
 	}
 	else {
-		LOG(WARNING) << __func__ << " failure because error_reply object not contructed";
+		LOG(WARNING) << __func__ << " failure because error_reply not contructed";
 	}
 }
 
@@ -304,33 +304,33 @@ void GKDBus::sendMessageErrorReply(void) {
 
 void GKDBus::initializeMethodCallReply(BusConnection current) {
 	if(this->reply_) /* sanity check */
-		throw GLogiKExcept("DBus reply object already allocated");
+		throw GLogiKExcept("DBus reply already allocated");
 	this->setCurrentConnection(current);
 
 	try {
 		this->reply_ = new GKDBusMessageReply(this->current_conn_, this->message_);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus message reply object allocation failure : " << e.what();
+		LOG(ERROR) << "GKDBus message reply allocation failure : " << e.what();
 		throw GLogiKExcept("caught bad_alloc, do not like that");
 	}
 }
 
 void GKDBus::appendToMethodCallReply(const bool value) {
 	if(this->reply_ == nullptr) /* sanity check */
-		throw GLogiKExcept("DBus reply object not initialized");
+		throw GLogiKExcept("DBus reply not initialized");
 	this->reply_->appendToMessageReply(value);
 }
 
 void GKDBus::appendToMethodCallReply(const std::string & value) {
 	if(this->reply_ == nullptr) /* sanity check */
-		throw GLogiKExcept("DBus reply object not initialized");
+		throw GLogiKExcept("DBus reply not initialized");
 	this->reply_->appendToMessageReply(value);
 }
 
 void GKDBus::appendToMethodCallReply(const std::vector<std::string> & list) {
 	if(this->reply_ == nullptr) /* sanity check */
-		throw GLogiKExcept("DBus reply object not initialized");
+		throw GLogiKExcept("DBus reply not initialized");
 	this->reply_->appendToMessageReply(list);
 }
 
@@ -344,7 +344,7 @@ void GKDBus::sendMethodCallReply(void) {
 		this->reply_ = nullptr;
 	}
 	else {
-		LOG(WARNING) << __func__ << " failure because reply object not contructed";
+		LOG(WARNING) << __func__ << " failure because reply not contructed";
 	}
 
 	/*
@@ -360,30 +360,30 @@ void GKDBus::sendMethodCallReply(void) {
  */
 
 void GKDBus::initializeRemoteMethodCall(BusConnection current, const char* dest,
-	const char* object, const char* interface, const char* method, const bool logoff)
+	const char* object_path, const char* interface, const char* method, const bool logoff)
 {
 	if(this->method_call_) /* sanity check */
-		throw GLogiKExcept("DBus method_call object already allocated");
+		throw GLogiKExcept("DBus method_call already allocated");
 	this->setCurrentConnection(current);
 
 	try {
-		this->method_call_ = new GKDBusRemoteMethodCall(this->current_conn_, dest, object, interface, method, &this->pending_, logoff);
+		this->method_call_ = new GKDBusRemoteMethodCall(this->current_conn_, dest, object_path, interface, method, &this->pending_, logoff);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus remote method call object allocation failure : " << e.what();
+		LOG(ERROR) << "GKDBus remote method call allocation failure : " << e.what();
 		throw GLogiKExcept("caught bad_alloc, do not like that");
 	}
 }
 
 void GKDBus::appendToRemoteMethodCall(const std::string & value) {
 	if(this->method_call_ == nullptr) /* sanity check */
-		throw GLogiKExcept("DBus remote method call object not initialized");
+		throw GLogiKExcept("DBus remote method call not initialized");
 	this->method_call_->appendToRemoteMethodCall(value);
 }
 
 void GKDBus::appendToRemoteMethodCall(const uint32_t value) {
 	if(this->method_call_ == nullptr) /* sanity check */
-		throw GLogiKExcept("DBus remote method call object not initialized");
+		throw GLogiKExcept("DBus remote method call not initialized");
 	this->method_call_->appendToRemoteMethodCall(value);
 }
 
@@ -393,7 +393,7 @@ void GKDBus::sendRemoteMethodCall(void) {
 		this->method_call_ = nullptr;
 	}
 	else {
-		LOG(WARNING) << __func__ << " failure because method_call object not contructed";
+		LOG(WARNING) << __func__ << " failure because method_call not contructed";
 	}
 }
 
