@@ -89,15 +89,24 @@ ClientsManager::~ClientsManager() {
 void ClientsManager::runLoop(void) {
 	this->devicesManager->startMonitoring(this->DBus);
 
+	if( this->clients_.empty() ) {
+		LOG(DEBUG2) << "no client, empty container";
+		return;
+	}
+
 	LOG(DEBUG2) << "sending clients DaemonIsStopping signal";
 	try {
-		this->DBus->initializeBroadcastSignal(BusConnection::GKDBUS_SYSTEM,
-			this->DBus_CSMH_object_path_, this->DBus_CSMH_interface_,
-			"DaemonIsStopping");
-		this->DBus->sendBroadcastSignal();
+		this->DBus->initializeTargetsSignal(
+			BusConnection::GKDBUS_SYSTEM,
+			this->DBus_clients_name_,
+			this->DBus_CSMH_object_path_,
+			this->DBus_CSMH_interface_,
+			"DaemonIsStopping"
+		);
+		this->DBus->sendTargetsSignal();
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "DBus signal failure : " << e.what();
+		LOG(WARNING) << "DBus targets signal failure : " << e.what();
 	}
 
 	uint8_t count = 0;
@@ -148,13 +157,17 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 				}
 				LOG(DEBUG2) << "sending clients ReportYourself signal";
 				try {
-					this->DBus->initializeBroadcastSignal(BusConnection::GKDBUS_SYSTEM,
-					this->DBus_CSMH_object_path_, this->DBus_CSMH_interface_,
-					"ReportYourself");
-					this->DBus->sendBroadcastSignal();
+					this->DBus->initializeTargetsSignal(
+						BusConnection::GKDBUS_SYSTEM,
+						this->DBus_clients_name_,
+						this->DBus_CSMH_object_path_,
+						this->DBus_CSMH_interface_,
+						"ReportYourself"
+					);
+					this->DBus->sendTargetsSignal();
 				}
 				catch (const GLogiKExcept & e) {
-					LOG(ERROR) << "DBus signal failure : " << e.what();
+					LOG(WARNING) << "DBus targets signal failure : " << e.what();
 				}
 
 				/* register failure, sender should wait and retry */

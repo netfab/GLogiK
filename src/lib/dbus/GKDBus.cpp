@@ -168,10 +168,10 @@ void GKDBus::initializeBroadcastSignal(BusConnection current, const char* object
 	this->setCurrentConnection(current);
 
 	try {
-		this->signal_ = new GKDBusBroadcastSignal(this->current_conn_, object, interface, signal);
+		this->signal_ = new GKDBusBroadcastSignal(this->current_conn_, nullptr, object, interface, signal);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus signal object allocation failure : " << e.what();
+		LOG(ERROR) << "GKDBus broadcast signal object allocation failure : " << e.what();
 		throw GLogiKExcept("caught bad_alloc, do not like that");
 	}
 }
@@ -192,6 +192,68 @@ void GKDBus::sendBroadcastSignal(void) {
 	else {
 		LOG(WARNING) << __func__ << " failure because signal object not contructed";
 	}
+}
+
+void GKDBus::initializeTargetsSignal(BusConnection current, const char* dest, const char* object,
+	const char* interface, const char* signal)
+{
+	if(this->signals_.size() > 0) { /* sanity check */
+		throw GLogiKExcept("signals container not cleared");
+	}
+
+	this->setCurrentConnection(current);
+
+	std::vector<std::string> uniqueNames;
+
+	try {
+		/* asking the bus targets unique names */
+		this->initializeRemoteMethodCall(current, "org.freedesktop.DBus",
+			"/org/freedesktop/DBus", "org.freedesktop.DBus", "ListQueuedOwners");
+		this->appendToRemoteMethodCall(dest);
+		this->sendRemoteMethodCall();
+
+		this->waitForRemoteMethodCallReply();
+
+		uniqueNames = this->getAllStringArguments();
+	}
+	catch ( const GLogiKExcept & e ) {
+		LOG(WARNING) << "failure to ask the bus for signal targets : " << e.what();
+		throw;
+	}
+
+	LOG(DEBUG) << "will send " << signal << " signal to " << uniqueNames.size() << " targets";
+
+	try {
+		for(const auto & uniqueName : uniqueNames) {
+			this->signals_.push_back( new GKDBusBroadcastSignal(this->current_conn_, uniqueName.c_str(), object, interface, signal) );
+		}
+	}
+	catch (const std::bad_alloc& e) { /* handle new() failure */
+		LOG(ERROR) << "GKDBus targets signal object allocation failure : " << e.what();
+
+		/* sending and freeing already allocated signals */
+		for(const auto & targetSignal : this->signals_) {
+			delete targetSignal;
+		}
+		this->signals_.clear();
+
+		throw GLogiKExcept("caught bad_alloc, do not like that");
+	}
+
+	LOG(DEBUG1) << this->signals_.size() << " targets for " << signal << " signal initialized";
+}
+
+void GKDBus::sendTargetsSignal(void) {
+	/* sending and freeing already allocated signals */
+	for(const auto & targetSignal : this->signals_) {
+		if(targetSignal != nullptr) {
+			delete targetSignal;
+		}
+		else {
+			LOG(WARNING) << __func__ << " signal object from container is null";
+		}
+	}
+	this->signals_.clear();
 }
 
 /* -- */

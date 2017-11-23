@@ -64,6 +64,10 @@ class GKDBus : public GKDBusEvents
 		//void appendToBroadcastSignal(const std::string & value);
 		void sendBroadcastSignal(void);
 
+		void initializeTargetsSignal(BusConnection current, const char* dest, const char* object,
+			const char* interface, const char* signal);
+		void sendTargetsSignal(void);
+
 		void initializeMethodCallReply(BusConnection current);
 		void appendToMethodCallReply(const bool value);
 		void appendToMethodCallReply(const std::string & value);
@@ -110,6 +114,8 @@ class GKDBus : public GKDBusEvents
 		GKDBusRemoteMethodCall* method_call_;
 		GKDBusBroadcastSignal* signal_;
 		GKDBusMessageErrorReply* error_reply_;
+
+		std::vector<GKDBusBroadcastSignal*> signals_;
 
 		void setCurrentConnection(BusConnection current);
 		void checkDBusError(const char* error_message);

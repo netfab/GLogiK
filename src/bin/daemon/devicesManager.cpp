@@ -137,13 +137,17 @@ void DevicesManager::sendSignalToClients(const std::string & signal) const {
 		return;
 
 	try {
-		this->DBus->initializeBroadcastSignal(BusConnection::GKDBUS_SYSTEM,
-			this->DBus_CSMH_object_path_, this->DBus_CSMH_interface_,
-			signal.c_str());
-		this->DBus->sendBroadcastSignal();
+		this->DBus->initializeTargetsSignal(
+			BusConnection::GKDBUS_SYSTEM,
+			this->DBus_clients_name_,
+			this->DBus_CSMH_object_path_,
+			this->DBus_CSMH_interface_,
+			signal.c_str()
+		);
+		this->DBus->sendTargetsSignal();
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "DBus signal failure : " << e.what();
+		LOG(WARNING) << "DBus targets signal failure : " << e.what();
 	}
 }
 

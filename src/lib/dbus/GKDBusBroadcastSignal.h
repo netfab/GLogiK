@@ -36,8 +36,13 @@ namespace GLogiK
 class GKDBusBroadcastSignal : public GKDBusMessage
 {
 	public:
-		GKDBusBroadcastSignal(DBusConnection* conn, const char* object,
-			const char* interface, const char* signal);
+		GKDBusBroadcastSignal(
+			DBusConnection* conn,	/* connection to send the signal on */
+			const char* dest,		/* destination, if NULL, broadcast */
+			const char* object,		/* the path to the object emitting the signal */
+			const char* interface,	/* interface the signal is emitted from */
+			const char* signal		/* name of signal */
+		);
 		~GKDBusBroadcastSignal();
 
 		//void appendToBroadcastSignal(const std::string & value);
