@@ -30,9 +30,15 @@
 namespace GLogiK
 {
 
-GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(DBusConnection* conn, const char* dest,
-	const char* object_path, const char* interface, const char* method, DBusPendingCall** pending, const bool logoff)
-		: GKDBusMessage(conn), pending_(pending), log_off_(logoff)
+GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
+	DBusConnection* conn,
+	const char* dest,
+	const char* object_path,
+	const char* interface,
+	const char* method,
+	DBusPendingCall** pending,
+	const bool logoff
+	)	: GKDBusMessage(conn), pending_(pending), log_off_(logoff)
 {
 	if( ! dbus_validate_bus_name(dest, nullptr) )
 		throw GLogiKExcept("invalid destination name");

@@ -55,28 +55,51 @@ class GKDBus : public GKDBusEvents
 		void connectToSystemBus(const char* connection_name);
 
 		const bool checkForNextMessage(BusConnection current);
-		const bool checkMessageForSignalReceipt(const char* interface, const char* signal);
-		const bool checkMessageForMethodCall(const char* interface, const char* method);
+		const bool checkMessageForSignalReceipt(
+			const char* interface,
+			const char* signal
+		);
+		const bool checkMessageForMethodCall(
+			const char* interface,
+			const char* method
+		);
 		void freeMessage(void);
 
-		void initializeBroadcastSignal(BusConnection current, const char* object_path,
-			const char* interface, const char* signal);
+		void initializeBroadcastSignal(
+			BusConnection current,
+			const char* object_path,
+			const char* interface,
+			const char* signal
+		);
 		//void appendToBroadcastSignal(const std::string & value);
 		void sendBroadcastSignal(void);
 
-		void initializeTargetsSignal(BusConnection current, const char* dest, const char* object_path,
-			const char* interface, const char* signal);
+		void initializeTargetsSignal(
+			BusConnection current,
+			const char* dest,
+			const char* object_path,
+			const char* interface,
+			const char* signal
+		);
 		void sendTargetsSignal(void);
 
 		void initializeMethodCallReply(BusConnection current);
 		void appendToMethodCallReply(const bool value);
 		void appendToMethodCallReply(const std::string & value);
-		void appendToMethodCallReply(const std::vector<std::string> & list);
+		void appendToMethodCallReply(
+			const std::vector<std::string> & list
+		);
 		void appendExtraToMethodCallReply(const std::string & value);
 		void sendMethodCallReply(void);
 
-		void initializeRemoteMethodCall(BusConnection current, const char* dest,
-			const char* object_path, const char* interface, const char* method, const bool logoff=false);
+		void initializeRemoteMethodCall(
+			BusConnection current,
+			const char* dest,
+			const char* object_path,
+			const char* interface,
+			const char* method,
+			const bool logoff=false
+		);
 		void appendToRemoteMethodCall(const std::string & value);
 		void appendToRemoteMethodCall(const uint32_t value);
 		void sendRemoteMethodCall(void);
@@ -89,12 +112,22 @@ class GKDBus : public GKDBusEvents
 		void checkForSignalReceipt(BusConnection current);
 
 		/* wrappers */
-		void addSignal_StringToBool_Callback(BusConnection current,
-			const char* object, const char* interface, const char* eventName,
-			std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback);
-		void addSignal_VoidToVoid_Callback(BusConnection current,
-			const char* object, const char* interface, const char* eventName,
-			std::vector<DBusMethodArgument> args, std::function<void(void)> callback);
+		void addSignal_StringToBool_Callback(
+			BusConnection current,
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			std::vector<DBusMethodArgument> args,
+			std::function<const bool(const std::string&)> callback
+		);
+		void addSignal_VoidToVoid_Callback(
+			BusConnection current,
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			std::vector<DBusMethodArgument> args,
+			std::function<void(void)> callback
+		);
 
 	protected:
 
@@ -120,7 +153,10 @@ class GKDBus : public GKDBusEvents
 		void setCurrentConnection(BusConnection current);
 		void checkDBusError(const char* error_message);
 		void fillInArguments(DBusMessage* message);
-		void addSignalRuleMatch(const char* interface, const char* eventName);
+		void addSignalRuleMatch(
+			const char* interface,
+			const char* eventName
+		);
 		void appendExtraValuesToReply(void);
 
 		void buildAndSendErrorReply(BusConnection current);

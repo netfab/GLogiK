@@ -36,8 +36,15 @@ namespace GLogiK
 class GKDBusRemoteMethodCall : public GKDBusMessage
 {
 	public:
-		GKDBusRemoteMethodCall(DBusConnection* conn, const char* dest,
-			const char* object_path, const char* interface, const char* method, DBusPendingCall** pending, const bool logoff);
+		GKDBusRemoteMethodCall(
+			DBusConnection* conn,
+			const char* dest,
+			const char* object_path,
+			const char* interface,
+			const char* method,
+			DBusPendingCall** pending,
+			const bool logoff
+		);
 		~GKDBusRemoteMethodCall();
 
 		void appendToRemoteMethodCall(const std::string & value);

@@ -142,27 +142,38 @@ const bool GKDBus::checkMessageForMethodCall(const char* interface, const char* 
  *	Signal setup
  */
 
-void GKDBus::addSignal_StringToBool_Callback(BusConnection current,
-	const char* object, const char* interface, const char* eventName,
-	std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback)
-{
+void GKDBus::addSignal_StringToBool_Callback(
+	BusConnection current,
+	const char* object,
+	const char* interface,
+	const char* eventName,
+	std::vector<DBusMethodArgument> args,
+	std::function<const bool(const std::string&)> callback
+) {
 	this->setCurrentConnection(current);
 	this->addEvent_StringToBool_Callback(object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL);
 	this->addSignalRuleMatch(interface, eventName);
 }
 
-void GKDBus::addSignal_VoidToVoid_Callback(BusConnection current,
-	const char* object, const char* interface, const char* eventName,
-	std::vector<DBusMethodArgument> args, std::function<void(void)> callback)
-{
+void GKDBus::addSignal_VoidToVoid_Callback(
+	BusConnection current,
+	const char* object,
+	const char* interface,
+	const char* eventName,
+	std::vector<DBusMethodArgument> args,
+	std::function<void(void)> callback
+) {
 	this->setCurrentConnection(current);
 	this->addEvent_VoidToVoid_Callback(object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL);
 	this->addSignalRuleMatch(interface, eventName);
 }
 
-void GKDBus::initializeBroadcastSignal(BusConnection current, const char* object_path,
-	const char* interface, const char* signal)
-{
+void GKDBus::initializeBroadcastSignal(
+	BusConnection current,
+	const char* object_path,
+	const char* interface,
+	const char* signal
+) {
 	if(this->signal_) /* sanity check */
 		throw GLogiKExcept("DBus signal already allocated");
 	this->setCurrentConnection(current);
@@ -194,9 +205,13 @@ void GKDBus::sendBroadcastSignal(void) {
 	}
 }
 
-void GKDBus::initializeTargetsSignal(BusConnection current, const char* dest, const char* object_path,
-	const char* interface, const char* signal)
-{
+void GKDBus::initializeTargetsSignal(
+	BusConnection current,
+	const char* dest,
+	const char* object_path,
+	const char* interface,
+	const char* signal
+) {
 	if(this->signals_.size() > 0) { /* sanity check */
 		throw GLogiKExcept("signals container not cleared");
 	}
@@ -225,7 +240,14 @@ void GKDBus::initializeTargetsSignal(BusConnection current, const char* dest, co
 
 	try {
 		for(const auto & uniqueName : uniqueNames) {
-			this->signals_.push_back( new GKDBusBroadcastSignal(this->current_conn_, uniqueName.c_str(), object_path, interface, signal) );
+			this->signals_.push_back(
+				new GKDBusBroadcastSignal(
+					this->current_conn_,
+					uniqueName.c_str(),
+					object_path,
+					interface,
+					signal )
+			);
 		}
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
@@ -359,15 +381,26 @@ void GKDBus::sendMethodCallReply(void) {
  *	DBus Remote Object Method Call
  */
 
-void GKDBus::initializeRemoteMethodCall(BusConnection current, const char* dest,
-	const char* object_path, const char* interface, const char* method, const bool logoff)
-{
+void GKDBus::initializeRemoteMethodCall(
+	BusConnection current,
+	const char* dest,
+	const char* object_path,
+	const char* interface,
+	const char* method,
+	const bool logoff
+) {
 	if(this->method_call_) /* sanity check */
 		throw GLogiKExcept("DBus method_call already allocated");
 	this->setCurrentConnection(current);
 
 	try {
-		this->method_call_ = new GKDBusRemoteMethodCall(this->current_conn_, dest, object_path, interface, method, &this->pending_, logoff);
+		this->method_call_ = new GKDBusRemoteMethodCall(
+								this->current_conn_,
+								dest, object_path,
+								interface,
+								method,
+								&this->pending_,
+								logoff );
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus remote method call allocation failure : " << e.what();

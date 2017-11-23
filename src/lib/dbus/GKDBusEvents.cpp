@@ -32,8 +32,11 @@
 namespace GLogiK
 {
 
-GKDBusEvent::GKDBusEvent(const char* n, std::vector<DBusMethodArgument> & a, GKDBusEventType t)
-	: eventName(n), arguments(a), eventType(t)
+GKDBusEvent::GKDBusEvent(
+	const char* n,
+	std::vector<DBusMethodArgument> & a,
+	GKDBusEventType t
+	)	: eventName(n), arguments(a), eventType(t)
 {
 }
 
@@ -63,10 +66,14 @@ const std::string GKDBusEvents::getNode(const std::string & object) {
 	return node;
 }
 
-void GKDBusEvents::addEvent_StringToBool_Callback(const char* object, const char* interface, const char* eventName,
-	std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback,
-	GKDBusEventType eventType)
-{
+void GKDBusEvents::addEvent_StringToBool_Callback(
+	const char* object,
+	const char* interface,
+	const char* eventName,
+	std::vector<DBusMethodArgument> args,
+	std::function<const bool(const std::string&)> callback,
+	GKDBusEventType eventType
+) {
 	GKDBusEvent_StringToBool_Callback e(eventName, args, callback, eventType);
 	this->DBusObjects_[object] = true;
 	this->DBusInterfaces_[interface] = true;
@@ -75,10 +82,14 @@ void GKDBusEvents::addEvent_StringToBool_Callback(const char* object, const char
 	this->addIntrospectableEvent(object);
 }
 
-void GKDBusEvents::addEvent_TwoStringsToBool_Callback(const char* object, const char* interface, const char* eventName,
-	std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&, const std::string&)> callback,
-	GKDBusEventType eventType)
-{
+void GKDBusEvents::addEvent_TwoStringsToBool_Callback(
+	const char* object,
+	const char* interface,
+	const char* eventName,
+	std::vector<DBusMethodArgument> args,
+	std::function<const bool(const std::string&, const std::string&)> callback,
+	GKDBusEventType eventType
+) {
 	GKDBusEvent_TwoStringsToBool_Callback e(eventName, args, callback, eventType);
 	this->DBusObjects_[object] = true;
 	this->DBusInterfaces_[interface] = true;
@@ -87,10 +98,14 @@ void GKDBusEvents::addEvent_TwoStringsToBool_Callback(const char* object, const 
 	this->addIntrospectableEvent(object);
 }
 
-void GKDBusEvents::addEvent_VoidToVoid_Callback(const char* object, const char* interface, const char* eventName,
-	std::vector<DBusMethodArgument> args, std::function<void(void)> callback,
-	GKDBusEventType eventType)
-{
+void GKDBusEvents::addEvent_VoidToVoid_Callback(
+	const char* object,
+	const char* interface,
+	const char* eventName,
+	std::vector<DBusMethodArgument> args,
+	std::function<void(void)> callback,
+	GKDBusEventType eventType
+) {
 	GKDBusEvent_VoidToVoid_Callback e(eventName, args, callback, eventType);
 	this->DBusObjects_[object] = true;
 	this->DBusInterfaces_[interface] = true;
@@ -99,10 +114,14 @@ void GKDBusEvents::addEvent_VoidToVoid_Callback(const char* object, const char* 
 	this->addIntrospectableEvent(object);
 }
 
-void GKDBusEvents::addEvent_VoidToString_Callback(const char* object, const char* interface, const char* eventName,
-	std::vector<DBusMethodArgument> args, std::function<const std::string(void)> callback,
-	GKDBusEventType eventType)
-{
+void GKDBusEvents::addEvent_VoidToString_Callback(
+	const char* object,
+	const char* interface,
+	const char* eventName,
+	std::vector<DBusMethodArgument> args,
+	std::function<const std::string(void)> callback,
+	GKDBusEventType eventType
+) {
 	GKDBusEvent_VoidToString_Callback e(eventName, args, callback, eventType);
 	this->DBusObjects_[object] = true;
 	this->DBusInterfaces_[interface] = true;
@@ -111,10 +130,14 @@ void GKDBusEvents::addEvent_VoidToString_Callback(const char* object, const char
 	this->addIntrospectableEvent(object);
 }
 
-void GKDBusEvents::addEvent_VoidToStringsArray_Callback(const char* object, const char* interface, const char* eventName,
-	std::vector<DBusMethodArgument> args, std::function<const std::vector<std::string>(void)> callback,
-	GKDBusEventType eventType)
-{
+void GKDBusEvents::addEvent_VoidToStringsArray_Callback(
+	const char* object,
+	const char* interface,
+	const char* eventName,
+	std::vector<DBusMethodArgument> args,
+	std::function<const std::vector<std::string>(void)> callback,
+	GKDBusEventType eventType
+) {
 	GKDBusEvent_VoidToStringsArray_Callback e(eventName, args, callback, eventType);
 	this->DBusObjects_[object] = true;
 	this->DBusInterfaces_[interface] = true;
@@ -123,10 +146,14 @@ void GKDBusEvents::addEvent_VoidToStringsArray_Callback(const char* object, cons
 	this->addIntrospectableEvent(object);
 }
 
-void GKDBusEvents::addEvent_StringToStringsArray_Callback(const char* object, const char* interface, const char* eventName,
-	std::vector<DBusMethodArgument> args, std::function<const std::vector<std::string>(const std::string&)> callback,
-	GKDBusEventType eventType)
-{
+void GKDBusEvents::addEvent_StringToStringsArray_Callback(
+	const char* object,
+	const char* interface,
+	const char* eventName,
+	std::vector<DBusMethodArgument> args,
+	std::function<const std::vector<std::string>(const std::string&)> callback,
+	GKDBusEventType eventType
+) {
 	GKDBusEvent_StringToStringsArray_Callback e(eventName, args, callback, eventType);
 	this->DBusObjects_[object] = true;
 	this->DBusInterfaces_[interface] = true;
@@ -135,10 +162,14 @@ void GKDBusEvents::addEvent_StringToStringsArray_Callback(const char* object, co
 	this->addIntrospectableEvent(object);
 }
 
-void GKDBusEvents::addEvent_StringToString_Callback(const char* object, const char* interface, const char* eventName,
-	std::vector<DBusMethodArgument> args, std::function<const std::string(const std::string&)> callback,
-	GKDBusEventType eventType)
-{
+void GKDBusEvents::addEvent_StringToString_Callback(
+	const char* object,
+	const char* interface,
+	const char* eventName,
+	std::vector<DBusMethodArgument> args,
+	std::function<const std::string(const std::string&)> callback,
+	GKDBusEventType eventType
+) {
 	GKDBusEvent_StringToString_Callback e(eventName, args, callback, eventType);
 	this->DBusObjects_[object] = true;
 	this->DBusInterfaces_[interface] = true;
@@ -184,14 +215,21 @@ void GKDBusEvents::addIntrospectableEvent(const char* object) {
 	}
 }
 
-void GKDBusEvents::openXMLInterface(std::ostringstream & xml, bool& interface_opened, const std::string & interface) {
+void GKDBusEvents::openXMLInterface(
+	std::ostringstream & xml,
+	bool& interface_opened,
+	const std::string & interface
+) {
 	if( ! interface_opened ) {
 		xml << "  <interface name=\"" << interface << "\">\n";
 		interface_opened = true;
 	}
 }
 
-void GKDBusEvents::eventToXMLMethod(std::ostringstream & xml, const GKDBusEvent & DBusEvent) {
+void GKDBusEvents::eventToXMLMethod(
+	std::ostringstream & xml,
+	const GKDBusEvent & DBusEvent
+) {
 	if( DBusEvent.eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
 		xml << "    <method name=\"" << DBusEvent.eventName << "\">\n";
 		for(const auto & arg : DBusEvent.arguments) {

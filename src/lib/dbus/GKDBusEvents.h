@@ -53,7 +53,11 @@ struct GKDBusEvent {
 	std::vector<DBusMethodArgument> arguments;
 	GKDBusEventType eventType;
 
-	GKDBusEvent(const char* n, std::vector<DBusMethodArgument> & a, GKDBusEventType t);
+	GKDBusEvent(
+		const char* n,
+		std::vector<DBusMethodArgument> & a,
+		GKDBusEventType t
+	);
 	virtual ~GKDBusEvent(void);
 };
 
@@ -61,84 +65,140 @@ struct GKDBusEvent_StringToBool_Callback : public GKDBusEvent
 {
 	std::function<const bool(const std::string&)> callback;
 
-	GKDBusEvent_StringToBool_Callback(const char* n, std::vector<DBusMethodArgument> & a,
-		std::function<const bool(const std::string&)> c, GKDBusEventType t)
-		: GKDBusEvent(n, a, t), callback(c) {}
+	GKDBusEvent_StringToBool_Callback(
+		const char* n,
+		std::vector<DBusMethodArgument> & a,
+		std::function<const bool(const std::string&)> c,
+		GKDBusEventType t
+		)	: GKDBusEvent(n, a, t), callback(c) {}
 };
 
 struct GKDBusEvent_TwoStringsToBool_Callback : public GKDBusEvent
 {
 	std::function<const bool(const std::string&, const std::string&)> callback;
 
-	GKDBusEvent_TwoStringsToBool_Callback(const char* n, std::vector<DBusMethodArgument> & a,
-		std::function<const bool(const std::string&, const std::string&)> c, GKDBusEventType t)
-		: GKDBusEvent(n, a, t), callback(c) {}
+	GKDBusEvent_TwoStringsToBool_Callback(
+		const char* n,
+		std::vector<DBusMethodArgument> & a,
+		std::function<const bool(const std::string&, const std::string&)> c,
+		GKDBusEventType t
+		)	: GKDBusEvent(n, a, t), callback(c) {}
 };
 
 struct GKDBusEvent_VoidToVoid_Callback : public GKDBusEvent {
 	std::function<void(void)> callback;
 
-	GKDBusEvent_VoidToVoid_Callback(const char* n, std::vector<DBusMethodArgument> & a,
-		std::function<void(void)> c, GKDBusEventType t)
-		: GKDBusEvent(n, a, t), callback(c) {}
+	GKDBusEvent_VoidToVoid_Callback(
+		const char* n,
+		std::vector<DBusMethodArgument> & a,
+		std::function<void(void)> c,
+		GKDBusEventType t
+		)	: GKDBusEvent(n, a, t), callback(c) {}
 };
 
 struct GKDBusEvent_VoidToString_Callback : public GKDBusEvent {
 	std::function<const std::string(void)> callback;
 
-	GKDBusEvent_VoidToString_Callback(const char* n, std::vector<DBusMethodArgument> & a,
-		std::function<const std::string(void)> c, GKDBusEventType t)
-		: GKDBusEvent(n, a, t), callback(c) {}
+	GKDBusEvent_VoidToString_Callback(
+		const char* n,
+		std::vector<DBusMethodArgument> & a,
+		std::function<const std::string(void)> c,
+		GKDBusEventType t
+		)	: GKDBusEvent(n, a, t), callback(c) {}
 };
 
 struct GKDBusEvent_VoidToStringsArray_Callback : public GKDBusEvent {
 	std::function<const std::vector<std::string>(void)> callback;
 
-	GKDBusEvent_VoidToStringsArray_Callback(const char* n, std::vector<DBusMethodArgument> & a,
-		std::function<const std::vector<std::string>(void)> c, GKDBusEventType t)
-		: GKDBusEvent(n, a, t), callback(c) {}
+	GKDBusEvent_VoidToStringsArray_Callback(
+		const char* n,
+		std::vector<DBusMethodArgument> & a,
+		std::function<const std::vector<std::string>(void)> c,
+		GKDBusEventType t
+		)	: GKDBusEvent(n, a, t), callback(c) {}
 };
 
 struct GKDBusEvent_StringToStringsArray_Callback : public GKDBusEvent {
 	std::function<const std::vector<std::string>(const std::string&)> callback;
 
-	GKDBusEvent_StringToStringsArray_Callback(const char* n, std::vector<DBusMethodArgument> & a,
-		std::function<const std::vector<std::string>(const std::string&)> c, GKDBusEventType t)
-		: GKDBusEvent(n, a, t), callback(c) {}
+	GKDBusEvent_StringToStringsArray_Callback(
+		const char* n,
+		std::vector<DBusMethodArgument> & a,
+		std::function<const std::vector<std::string>(const std::string&)> c,
+		GKDBusEventType t
+		)	: GKDBusEvent(n, a, t), callback(c) {}
 };
 
 struct GKDBusEvent_StringToString_Callback : public GKDBusEvent {
 	std::function<const std::string(const std::string&)> callback;
 
-	GKDBusEvent_StringToString_Callback(const char* n, std::vector<DBusMethodArgument> & a,
-		std::function<const std::string(const std::string&)> c, GKDBusEventType t)
-		: GKDBusEvent(n, a, t), callback(c) {}
+	GKDBusEvent_StringToString_Callback(
+		const char* n,
+		std::vector<DBusMethodArgument> & a,
+		std::function<const std::string(const std::string&)> c,
+		GKDBusEventType t
+		)	: GKDBusEvent(n, a, t), callback(c) {}
 };
 
 class GKDBusEvents
 {
 	public:
-		void addEvent_StringToBool_Callback(const char* object, const char* interface, const char* eventName,
-			std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&)> callback,
-			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
-		void addEvent_TwoStringsToBool_Callback(const char* object, const char* interface, const char* eventName,
-			std::vector<DBusMethodArgument> args, std::function<const bool(const std::string&, const std::string&)> callback,
-			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
-		void addEvent_VoidToVoid_Callback(const char* object, const char* interface, const char* eventName,
-			std::vector<DBusMethodArgument> args, std::function<void(void)> callback,
-			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
-		void addEvent_VoidToString_Callback(const char* object, const char* interface, const char* eventName,
-			std::vector<DBusMethodArgument> args, std::function<const std::string(void)> callback,
-			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
-		void addEvent_VoidToStringsArray_Callback(const char* object, const char* interface, const char* eventName,
-			std::vector<DBusMethodArgument> args, std::function<const std::vector<std::string>(void)> callback,
-			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
-		void addEvent_StringToStringsArray_Callback(const char* object, const char* interface, const char* eventName,
-			std::vector<DBusMethodArgument> args, std::function<const std::vector<std::string>(const std::string&)> callback,
-			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
-		void addEvent_StringToString_Callback(const char* object, const char* interface, const char* eventName,
-			std::vector<DBusMethodArgument> args, std::function<const std::string(const std::string&)> callback,
-			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD);
+		void addEvent_StringToBool_Callback(
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			std::vector<DBusMethodArgument> args,
+			std::function<const bool(const std::string&)> callback,
+			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD
+		);
+		void addEvent_TwoStringsToBool_Callback(
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			std::vector<DBusMethodArgument> args,
+			std::function<const bool(const std::string&, const std::string&)> callback,
+			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD
+		);
+		void addEvent_VoidToVoid_Callback(
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			std::vector<DBusMethodArgument> args,
+			std::function<void(void)> callback,
+			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD
+		);
+		void addEvent_VoidToString_Callback(
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			std::vector<DBusMethodArgument> args,
+			std::function<const std::string(void)> callback,
+			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD
+		);
+		void addEvent_VoidToStringsArray_Callback(
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			std::vector<DBusMethodArgument> args,
+			std::function<const std::vector<std::string>(void)> callback,
+			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD
+		);
+		void addEvent_StringToStringsArray_Callback(
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			std::vector<DBusMethodArgument> args,
+			std::function<const std::vector<std::string>(const std::string&)> callback,
+			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD
+		);
+		void addEvent_StringToString_Callback(
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			std::vector<DBusMethodArgument> args,
+			std::function<const std::string(const std::string&)> callback,
+			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD
+		);
 
 	protected:
 		GKDBusEvents(void);
@@ -184,8 +244,15 @@ class GKDBusEvents
 	private:
 		std::string root_node_;
 
-		void openXMLInterface(std::ostringstream & xml, bool& interface_opened, const std::string & interface);
-		void eventToXMLMethod(std::ostringstream & xml, const GKDBusEvent & DBusEvent);
+		void openXMLInterface(
+			std::ostringstream & xml,
+			bool& interface_opened,
+			const std::string & interface
+		);
+		void eventToXMLMethod(
+			std::ostringstream & xml,
+			const GKDBusEvent & DBusEvent
+		);
 		const std::string introspect(const std::string & object_path_asked);
 		void addIntrospectableEvent(const char* object);
 };
