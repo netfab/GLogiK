@@ -59,7 +59,7 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 		this->devicesManager = new DevicesManager();
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		throw GLogiKExcept("devices manager allocation failure");
+		throw GLogiKBadAlloc("devices manager allocation failure");
 	}
 }
 

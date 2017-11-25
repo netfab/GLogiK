@@ -606,7 +606,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 			device.macros_man = new MacrosManager(this->buffer_.str().c_str());
 		}
 		catch (const std::bad_alloc& e) { /* handle new() failure */
-			throw GLogiKExcept("macros manager allocation failure");
+			throw GLogiKBadAlloc("macros manager allocation failure");
 		}
 
 		device.listen_status = true;

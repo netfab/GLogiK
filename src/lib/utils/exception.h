@@ -77,6 +77,13 @@ class GKDBusOOMWrongBuild : public GLogiKExcept
 		virtual ~GKDBusOOMWrongBuild( void ) throw() {};
 };
 
+class GLogiKBadAlloc : public GLogiKExcept
+{
+	public:
+		GLogiKBadAlloc(const std::string & msg = "caught bad_alloc, do not like that") : GLogiKExcept(msg) {};
+		virtual ~GLogiKBadAlloc( void ) throw() {};
+};
+
 } // namespace GLogiK
 
 #endif

@@ -183,7 +183,7 @@ void GKDBus::initializeBroadcastSignal(
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus broadcast signal allocation failure : " << e.what();
-		throw GLogiKExcept("caught bad_alloc, do not like that");
+		throw GLogiKBadAlloc();
 	}
 }
 
@@ -259,7 +259,7 @@ void GKDBus::initializeTargetsSignal(
 		}
 		this->signals_.clear();
 
-		throw GLogiKExcept("caught bad_alloc, do not like that");
+		throw GLogiKBadAlloc();
 	}
 
 	LOG(DEBUG1) << this->signals_.size() << " targets for " << signal << " signal initialized";
@@ -305,7 +305,7 @@ void GKDBus::initializeMessageErrorReply(BusConnection current) {
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus message error allocation failure : " << e.what();
-		throw GLogiKExcept("caught bad_alloc, do not like that");
+		throw GLogiKBadAlloc();
 	}
 }
 
@@ -334,7 +334,7 @@ void GKDBus::initializeMethodCallReply(BusConnection current) {
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus message reply allocation failure : " << e.what();
-		throw GLogiKExcept("caught bad_alloc, do not like that");
+		throw GLogiKBadAlloc();
 	}
 }
 
@@ -415,7 +415,7 @@ void GKDBus::initializeRemoteMethodCall(
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus remote method call allocation failure : " << e.what();
-		throw GLogiKExcept("caught bad_alloc, do not like that");
+		throw GLogiKBadAlloc();
 	}
 }
 
