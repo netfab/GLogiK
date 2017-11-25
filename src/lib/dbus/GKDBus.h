@@ -83,15 +83,21 @@ class GKDBus : public GKDBusEvents
 		);
 		void sendTargetsSignal(void);
 
+	/* Method Call Reply */
 		void initializeMethodCallReply(BusConnection current);
+
 		void appendToMethodCallReply(const bool value);
 		void appendToMethodCallReply(const std::string & value);
 		void appendToMethodCallReply(
 			const std::vector<std::string> & list
 		);
 		void appendExtraToMethodCallReply(const std::string & value);
-		void sendMethodCallReply(void);
+		void appendVariantToMethodCallReply(const std::string & value);
 
+		void sendMethodCallReply(void);
+	/* -- */
+
+	/* Remote Method Call with Pending Reply */
 		void initializeRemoteMethodCall(
 			BusConnection current,
 			const char* dest,
@@ -100,10 +106,14 @@ class GKDBus : public GKDBusEvents
 			const char* method,
 			const bool logoff=false
 		);
+
 		void appendToRemoteMethodCall(const std::string & value);
 		void appendToRemoteMethodCall(const uint32_t value);
+
 		void sendRemoteMethodCall(void);
+
 		void waitForRemoteMethodCallReply(void);
+	/* -- */
 
 		std::string getNextStringArgument(void);
 		const std::vector<std::string> & getAllStringArguments(void) const;

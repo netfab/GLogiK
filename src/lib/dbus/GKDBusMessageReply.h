@@ -46,6 +46,8 @@ class GKDBusMessageReply : public GKDBusMessage
 		void appendToMessageReply(const std::string & value);
 		void appendToMessageReply(const std::vector<std::string> & list);
 
+		void appendVariantToMessageReply(const std::string & value);
+
 	protected:
 	private:
 		const std::string append_failure_ = "MessageReply append failure";

@@ -56,7 +56,7 @@ GLogiK=$PWD/.. CD=. {
 				virtualKeyboard.cpp
 				virtualKeyboard.h
 			}
-			desktop_service=service/ {
+			service=service/ {
 				Makefile.am
 				main.cpp
 				devicesHandler.cpp

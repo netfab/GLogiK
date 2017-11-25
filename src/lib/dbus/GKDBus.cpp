@@ -356,8 +356,19 @@ void GKDBus::appendToMethodCallReply(const std::vector<std::string> & list) {
 	this->reply_->appendToMessageReply(list);
 }
 
+/*
+ * could be called by callback functions to asynchronously add
+ * extra values to method call replies.
+ * see also appendExtraValuesToReply and sendMethodCallReply below.
+ */
 void GKDBus::appendExtraToMethodCallReply(const std::string & value) {
 	this->extra_strings_.push_back(value);
+}
+
+void GKDBus::appendVariantToMethodCallReply(const std::string & value) {
+	if(this->reply_ == nullptr) /* sanity check */
+		throw GLogiKExcept("DBus reply not initialized");
+	this->reply_->appendVariantToMessageReply(value);
 }
 
 void GKDBus::sendMethodCallReply(void) {

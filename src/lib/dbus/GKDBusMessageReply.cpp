@@ -106,7 +106,7 @@ void GKDBusMessageReply::appendToMessageReply(const std::vector<std::string> & l
 	if( ! dbus_message_iter_open_container(&this->args_it_, DBUS_TYPE_ARRAY, "s", &container_it) ) {
 		this->hosed_message_ = true;
 #if DEBUG_GKDBUS_SUBOBJECTS
-		LOG(ERROR) << "open_container failure, not enough memory";
+		LOG(ERROR) << "string array open_container failure, not enough memory";
 #endif
 		throw GKDBusOOMWrongBuild(this->append_failure_);
 	}
@@ -115,18 +115,17 @@ void GKDBusMessageReply::appendToMessageReply(const std::vector<std::string> & l
 		const char* p = s.c_str();
 		if( ! dbus_message_iter_append_basic(&container_it, DBUS_TYPE_STRING, &p) ) {
 #if DEBUG_GKDBUS_SUBOBJECTS
-			LOG(ERROR) << "array string append_basic failure, not enough memory";
+			LOG(ERROR) << "string array append_basic failure, not enough memory";
 #endif
 			this->hosed_message_ = true;
 			dbus_message_iter_abandon_container(&this->args_it_, &container_it);
 			throw GKDBusOOMWrongBuild(this->append_failure_);
-			break;
 		}
 	}
 
 	if( ! dbus_message_iter_close_container(&this->args_it_, &container_it) ) {
 #if DEBUG_GKDBUS_SUBOBJECTS
-		LOG(ERROR) << "close_container failure, not enough memory";
+		LOG(ERROR) << "string array close_container failure, not enough memory";
 #endif
 		this->hosed_message_ = true;
 		dbus_message_iter_abandon_container(&this->args_it_, &container_it);
@@ -134,7 +133,43 @@ void GKDBusMessageReply::appendToMessageReply(const std::vector<std::string> & l
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus reply strings array appended";
+	LOG(DEBUG2) << "DBus reply string array appended";
+#endif
+}
+
+void GKDBusMessageReply::appendVariantToMessageReply(const std::string & value) {
+	DBusMessageIter container_it;
+
+	if( ! dbus_message_iter_open_container(&this->args_it_, DBUS_TYPE_VARIANT, "s", &container_it) ) {
+		this->hosed_message_ = true;
+#if DEBUG_GKDBUS_SUBOBJECTS
+		LOG(ERROR) << "string variant open_container failure, not enough memory";
+#endif
+		throw GKDBusOOMWrongBuild(this->append_failure_);
+	}
+
+	const char* p = value.c_str();
+
+	if( ! dbus_message_iter_append_basic(&container_it, DBUS_TYPE_STRING, &p) ) {
+#if DEBUG_GKDBUS_SUBOBJECTS
+		LOG(ERROR) << "string variant append_basic failure, not enough memory";
+#endif
+		this->hosed_message_ = true;
+		dbus_message_iter_abandon_container(&this->args_it_, &container_it);
+		throw GKDBusOOMWrongBuild(this->append_failure_);
+	}
+
+	if( ! dbus_message_iter_close_container(&this->args_it_, &container_it) ) {
+#if DEBUG_GKDBUS_SUBOBJECTS
+		LOG(ERROR) << "string variant close_container failure, not enough memory";
+#endif
+		this->hosed_message_ = true;
+		dbus_message_iter_abandon_container(&this->args_it_, &container_it);
+		throw GKDBusOOMWrongBuild(this->append_failure_);
+	}
+
+#if DEBUG_GKDBUS_SUBOBJECTS
+	LOG(DEBUG2) << "DBus reply string variant appended";
 #endif
 }
 
