@@ -212,9 +212,6 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 					this->plugged_but_stopped_devices_[devID] = device;
 					this->initialized_devices_.erase(devID);
 
-					/* inform clients */
-					this->sendSignalToClients("SomethingChanged");
-
 					return true;
 				}
 			}
@@ -592,11 +589,6 @@ void DevicesManager::startMonitoring(GKDBus* pDBus) {
 	this->fds[0].events = POLLIN;
 
 	{
-		this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "Stop",
-			{	{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
-				{"b", "did_stop_succeeded", "out", "did the Stop method succeeded ?"} },
-			std::bind(&DevicesManager::stopDevice, this, std::placeholders::_1) );
-
 		this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "Start",
 			{	{"s", "device_id", "in", "device ID coming from GetStoppedDevices"},
 				{"b", "did_start_succeeded", "out", "did the Start method succeeded ?"} },

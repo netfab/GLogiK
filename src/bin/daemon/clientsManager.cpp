@@ -38,18 +38,18 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 {
 	LOG(DEBUG2) << "initializing clients manager";
 
-	this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "RegisterClient",
+	this->DBus->addEvent_StringToBool_Callback( this->DBus_CM_object_, this->DBus_CM_interface_, "RegisterClient",
 		{	{"s", "client_session_object_path", "in", "client session object path"},
 			{"b", "did_register_succeeded", "out", "did the RegisterClient method succeeded ?"},
 			{"s", "failure_reason_or_client_id", "out", "if register success (bool==true), unique client ID, else (bool=false) failure reason"} },
 		std::bind(&ClientsManager::registerClient, this, std::placeholders::_1) );
 
-	this->DBus->addEvent_StringToBool_Callback( this->DBus_object_, this->DBus_interface_, "UnregisterClient",
+	this->DBus->addEvent_StringToBool_Callback( this->DBus_CM_object_, this->DBus_CM_interface_, "UnregisterClient",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"b", "did_unregister_succeeded", "out", "did the UnregisterClient method succeeded ?"} },
 		std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );
 
-	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_object_, this->DBus_interface_, "UpdateClientState",
+	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_CM_object_, this->DBus_CM_interface_, "UpdateClientState",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "client_new_state", "in", "client new state"},
 			{"b", "did_updateclientstate_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
@@ -61,6 +61,13 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		throw GLogiKBadAlloc("devices manager allocation failure");
 	}
+
+	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "StopDevice",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
+			{"b", "did_stop_succeeded", "out", "did the StopDevice method succeeded ?"} },
+		std::bind(&ClientsManager::stopDevice, this, std::placeholders::_1, std::placeholders::_2) );
+
 }
 
 ClientsManager::~ClientsManager() {
@@ -86,6 +93,23 @@ ClientsManager::~ClientsManager() {
 
 }
 
+void ClientsManager::sendSignalToClients(const std::string & signal) {
+	LOG(DEBUG2) << "sending clients " << signal << " signal";
+	try {
+		this->DBus->initializeTargetsSignal(
+			BusConnection::GKDBUS_SYSTEM,
+			this->DBus_clients_name_,
+			this->DBus_CSMH_object_path_,
+			this->DBus_CSMH_interface_,
+			signal.c_str()
+		);
+		this->DBus->sendTargetsSignal();
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(WARNING) << "DBus targets signal failure : " << e.what();
+	}
+}
+
 void ClientsManager::runLoop(void) {
 	this->devicesManager->startMonitoring(this->DBus);
 
@@ -94,20 +118,7 @@ void ClientsManager::runLoop(void) {
 		return;
 	}
 
-	LOG(DEBUG2) << "sending clients DaemonIsStopping signal";
-	try {
-		this->DBus->initializeTargetsSignal(
-			BusConnection::GKDBUS_SYSTEM,
-			this->DBus_clients_name_,
-			this->DBus_CSMH_object_path_,
-			this->DBus_CSMH_interface_,
-			"DaemonIsStopping"
-		);
-		this->DBus->sendTargetsSignal();
-	}
-	catch (const GLogiKExcept & e) {
-		LOG(WARNING) << "DBus targets signal failure : " << e.what();
-	}
+	this->sendSignalToClients("DaemonIsStopping");
 
 	uint8_t count = 0;
 	LOG(DEBUG2) << "waiting for clients to unregister ...";
@@ -155,20 +166,8 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 				for(auto & new_pair : this->clients_ ) {
 					new_pair.second->uncheck();
 				}
-				LOG(DEBUG2) << "sending clients ReportYourself signal";
-				try {
-					this->DBus->initializeTargetsSignal(
-						BusConnection::GKDBUS_SYSTEM,
-						this->DBus_clients_name_,
-						this->DBus_CSMH_object_path_,
-						this->DBus_CSMH_interface_,
-						"ReportYourself"
-					);
-					this->DBus->sendTargetsSignal();
-				}
-				catch (const GLogiKExcept & e) {
-					LOG(WARNING) << "DBus targets signal failure : " << e.what();
-				}
+
+				this->sendSignalToClients("ReportYourself");
 
 				/* register failure, sender should wait and retry */
 				return false;
@@ -234,6 +233,27 @@ const bool ClientsManager::updateClientState(const std::string & clientID, const
 		syslog(LOG_WARNING, this->buffer_.str().c_str());
 	}
 
+	return false;
+}
+
+const bool ClientsManager::stopDevice(const std::string & clientID, const std::string & devID) {
+	LOG(DEBUG2) << "stopDevice " << devID << " called by client " << clientID;
+	try {
+		Client* pClient = this->clients_.at(clientID);
+		if( pClient->isAlive() ) {
+			const bool ret = this->devicesManager->stopDevice(devID);
+			if( ret )
+				this->sendSignalToClients("SomethingChanged");
+			return ret;
+		}
+		LOG(DEBUG3) << "stopDevice failure because client is not alive";
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("unknown client ");
+		this->buffer_ << clientID << " tried to stop device " << devID;
+		LOG(WARNING) << this->buffer_.str();
+		syslog(LOG_WARNING, this->buffer_.str().c_str());
+	}
 	return false;
 }
 

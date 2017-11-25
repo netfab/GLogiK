@@ -29,11 +29,21 @@ function check_arg() {
 	fi
 }
 
+declare -l clientID=""
+
+function ask_user_id() {
+	printf "please type your clientID : "
+	read -n 23 clientID
+	printf "\n"
+}
+
 case "$1" in
 	'--stop-device')
 		check_arg $2
 		METHOD_CMD="${METHOD_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH}"
-		METHOD_CMD="${METHOD_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_INTERFACE}.Stop string:\""$2"\""
+		METHOD_CMD="${METHOD_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_INTERFACE}.StopDevice"
+		ask_user_id
+		METHOD_CMD="${METHOD_CMD} string:\"${clientID}\" string:\""$2"\""
 		run_cmd
 	;;
 	'--start-device')
