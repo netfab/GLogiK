@@ -560,14 +560,6 @@ void DevicesManager::startMonitoring(GKDBus* pDBus) {
 	this->fds[0].events = POLLIN;
 
 	{
-		this->DBus->addEvent_VoidToStringsArray_Callback( this->DBus_object_, this->DBus_interface_, "GetStartedDevices",
-			{ {"as", "array_of_strings", "out", "array of started devices ID strings"} },
-			std::bind(&DevicesManager::getStartedDevices, this) );
-
-		this->DBus->addEvent_VoidToStringsArray_Callback( this->DBus_object_, this->DBus_interface_, "GetStoppedDevices",
-			{ {"as", "array_of_strings", "out", "array of stopped devices ID strings"} },
-			std::bind(&DevicesManager::getStoppedDevices, this) );
-
 		this->DBus->addEvent_StringToStringsArray_Callback( this->DBus_object_, this->DBus_interface_, "GetDeviceProperties",
 			{	{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
 				{"as", "array_of_strings", "out", "string array of device properties"} },

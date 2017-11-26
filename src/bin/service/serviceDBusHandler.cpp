@@ -382,6 +382,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 	try {
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetStartedDevices");
+		this->DBus->appendToRemoteMethodCall(this->client_id_);
 		this->DBus->sendRemoteMethodCall();
 
 		this->DBus->waitForRemoteMethodCallReply();
@@ -406,6 +407,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 	try {
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetStoppedDevices");
+		this->DBus->appendToRemoteMethodCall(this->client_id_);
 		this->DBus->sendRemoteMethodCall();
 
 		this->DBus->waitForRemoteMethodCallReply();

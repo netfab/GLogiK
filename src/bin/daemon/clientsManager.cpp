@@ -82,6 +82,17 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"b", "did_restart_succeeded", "out", "did the RestartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
+
+	this->DBus->addEvent_StringToStringsArray_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "GetStartedDevices",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"as", "array_of_strings", "out", "array of started devices ID strings"} },
+		std::bind(&ClientsManager::getStartedDevices, this, std::placeholders::_1) );
+
+	this->DBus->addEvent_StringToStringsArray_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "GetStoppedDevices",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"as", "array_of_strings", "out", "array of stopped devices ID strings"} },
+		std::bind(&ClientsManager::getStoppedDevices, this, std::placeholders::_1) );
+
 }
 
 ClientsManager::~ClientsManager() {
@@ -314,6 +325,42 @@ const bool ClientsManager::restartDevice(const std::string & clientID, const std
 	LOG(ERROR) << this->buffer_.str();
 	syslog(LOG_ERR, this->buffer_.str().c_str());
 	return false;
+}
+
+const std::vector<std::string> ClientsManager::getStartedDevices(const std::string & clientID) {
+	LOG(DEBUG2) << "getStartedDevices called by client " << clientID;
+	try {
+		Client* pClient = this->clients_.at(clientID);
+		pClient->isAlive(); /* to avoid warning */
+		return this->devicesManager->getStartedDevices();
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("unknown client ");
+		this->buffer_ << clientID << " tried to get started devices array";
+		LOG(WARNING) << this->buffer_.str();
+		syslog(LOG_WARNING, this->buffer_.str().c_str());
+	}
+
+	const std::vector<std::string> ret;
+	return ret;
+}
+
+const std::vector<std::string> ClientsManager::getStoppedDevices(const std::string & clientID) {
+	LOG(DEBUG2) << "getStoppedDevices called by client " << clientID;
+	try {
+		Client* pClient = this->clients_.at(clientID);
+		pClient->isAlive(); /* to avoid warning */
+		return this->devicesManager->getStoppedDevices();
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("unknown client ");
+		this->buffer_ << clientID << " tried to get stopped devices array";
+		LOG(WARNING) << this->buffer_.str();
+		syslog(LOG_WARNING, this->buffer_.str().c_str());
+	}
+
+	const std::vector<std::string> ret;
+	return ret;
 }
 
 } // namespace GLogiK

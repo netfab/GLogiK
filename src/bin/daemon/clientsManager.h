@@ -79,6 +79,9 @@ class ClientsManager
 		const bool stopDevice(const std::string & clientID, const std::string & devID);
 		const bool startDevice(const std::string & clientID, const std::string & devID);
 		const bool restartDevice(const std::string & clientID, const std::string & devID);
+
+		const std::vector<std::string> getStartedDevices(const std::string & clientID);
+		const std::vector<std::string> getStoppedDevices(const std::string & clientID);
 		/* -- */
 };
 
