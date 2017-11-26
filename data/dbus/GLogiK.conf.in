@@ -31,13 +31,13 @@
       send_interface="com.glogik.Daemon.Device1"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
-      send_member="Start"/>
+      send_member="StartDevice"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
       send_member="StopDevice"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
-      send_member="Restart"/>
+      send_member="RestartDevice"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
       send_member="GetStartedDevices"/>

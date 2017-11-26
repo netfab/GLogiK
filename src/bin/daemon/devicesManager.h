@@ -68,14 +68,11 @@ class DevicesManager
 		void checkDBusMessages(void);
 		void resetDevicesStates(void);
 
-		/* exposed over DBus */
 		const bool startDevice(const std::string & devID);
 		const bool stopDevice(const std::string & devID);
-		const bool restartDevice(const std::string & devID);
 		const std::vector<std::string> getStartedDevices(void) const;
 		const std::vector<std::string> getStoppedDevices(void) const;
 		const std::vector<std::string> getDeviceProperties(const std::string & devID) const;
-		/* -- */
 
 	protected:
 

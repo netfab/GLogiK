@@ -49,7 +49,17 @@ case "$1" in
 	'--start-device')
 		check_arg $2
 		METHOD_CMD="${METHOD_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH}"
-		METHOD_CMD="${METHOD_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_INTERFACE}.Start string:\""$2"\""
+		METHOD_CMD="${METHOD_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_INTERFACE}.StartDevice"
+		ask_user_id
+		METHOD_CMD="${METHOD_CMD} string:\"${clientID}\" string:\""$2"\""
+		run_cmd
+	;;
+	'--restart-device')
+		check_arg $2
+		METHOD_CMD="${METHOD_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH}"
+		METHOD_CMD="${METHOD_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_INTERFACE}.RestartDevice"
+		ask_user_id
+		METHOD_CMD="${METHOD_CMD} string:\"${clientID}\" string:\""$2"\""
 		run_cmd
 	;;
 	'--introspect')

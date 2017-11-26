@@ -19,12 +19,15 @@
  *
  */
 
+#include <functional>
 #include <sstream>
 #include <thread>
 #include <chrono>
 #include <stdexcept>
 
 #include <syslog.h>
+
+#include <config.h>
 
 #include "lib/utils/utils.h"
 
@@ -68,6 +71,17 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"b", "did_stop_succeeded", "out", "did the StopDevice method succeeded ?"} },
 		std::bind(&ClientsManager::stopDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
+	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "StartDevice",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"s", "device_id", "in", "device ID coming from GetStoppedDevices"},
+			{"b", "did_start_succeeded", "out", "did the StartDevice method succeeded ?"} },
+		std::bind(&ClientsManager::startDevice, this, std::placeholders::_1, std::placeholders::_2) );
+
+	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "RestartDevice",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
+			{"b", "did_restart_succeeded", "out", "did the RestartDevice method succeeded ?"} },
+		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
 }
 
 ClientsManager::~ClientsManager() {
@@ -254,6 +268,51 @@ const bool ClientsManager::stopDevice(const std::string & clientID, const std::s
 		LOG(WARNING) << this->buffer_.str();
 		syslog(LOG_WARNING, this->buffer_.str().c_str());
 	}
+	return false;
+}
+
+const bool ClientsManager::startDevice(const std::string & clientID, const std::string & devID) {
+	LOG(DEBUG2) << "startDevice " << devID << " called by client " << clientID;
+	try {
+		Client* pClient = this->clients_.at(clientID);
+		if( pClient->isAlive() ) {
+			const bool ret = this->devicesManager->startDevice(devID);
+			if( ret )
+				this->sendSignalToClients("SomethingChanged");
+			return ret;
+		}
+		LOG(DEBUG3) << "startDevice failure because client is not alive";
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("unknown client ");
+		this->buffer_ << clientID << " tried to start device " << devID;
+		LOG(WARNING) << this->buffer_.str();
+		syslog(LOG_WARNING, this->buffer_.str().c_str());
+	}
+	return false;
+}
+
+const bool ClientsManager::restartDevice(const std::string & clientID, const std::string & devID) {
+	LOG(DEBUG2) << "restartDevice " << devID << " called by client " << clientID;
+	if( this->stopDevice(clientID, devID) ) {
+#if DEBUGGING_ON
+		LOG(DEBUG) << "sleeping for 1000 ms";
+#endif
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+		if( this->startDevice(clientID, devID) ) {
+			return true;
+		}
+
+		this->buffer_.str("device restarting failure : start failed");
+		LOG(ERROR) << this->buffer_.str();
+		syslog(LOG_ERR, this->buffer_.str().c_str());
+		return false;
+	}
+
+	this->buffer_.str("device restarting failure : stop failed");
+	LOG(ERROR) << this->buffer_.str();
+	syslog(LOG_ERR, this->buffer_.str().c_str());
 	return false;
 }
 
