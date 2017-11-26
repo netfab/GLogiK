@@ -42,6 +42,7 @@ class DevicesHandler
 		~DevicesHandler(void);
 
 		void setDBus(GKDBus* pDBus);
+		void setClientID(const std::string & id);
 
 		void saveDevicesProperties(void);
 
@@ -57,6 +58,7 @@ class DevicesHandler
 		const char* DBus_DDM_interface_		= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
 
 		GKDBus* DBus;
+		std::string client_id_;
 		std::ostringstream buffer_;
 		std::string config_root_directory_;
 

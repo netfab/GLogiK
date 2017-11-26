@@ -76,6 +76,14 @@ case "$1" in
 		METHOD_CMD="${METHOD_CMD} string:\"${clientID}\""
 		run_cmd
 	;;
+	'--get-device-properties')
+		check_arg $2
+		METHOD_CMD="${METHOD_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH}"
+		METHOD_CMD="${METHOD_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_INTERFACE}.GetDeviceProperties"
+		ask_user_id
+		METHOD_CMD="${METHOD_CMD} string:\"${clientID}\" string:\""$2"\""
+		run_cmd
+	;;
 	'--introspect')
 		case "$2" in
 			'DevicesManager')	OBJECT_PATH="${DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH}" ;;

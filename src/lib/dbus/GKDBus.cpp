@@ -757,6 +757,63 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 						LOG(WARNING) << e.what();
 					}
 
+					try {
+						this->initializeMethodCallReply(current);
+						this->appendToMethodCallReply(ret);
+						/* extra values to send */
+						this->appendExtraValuesToReply();
+					}
+					catch (const GKDBusOOMWrongBuild & e) {
+						LOG(ERROR) << "DBus build reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						this->buildAndSendErrorReply(current);
+						return;
+					}
+					catch ( const GLogiKExcept & e ) {
+						LOG(ERROR) << "DBus reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						throw;
+					}
+
+					/* delete reply object if allocated */
+					this->sendMethodCallReply();
+
+					return; /* only one by message */
+				}
+			}
+		}
+	}
+
+	for(const auto & object_it : this->events_twostrings_to_stringsarray_) {
+		/* object path must match */
+		object_path = this->getNode(object_it.first);
+		if(object_path != asked_object_path)
+			continue;
+
+		for(const auto & interface : object_it.second) {
+			LOG(DEBUG2) << "checking " << interface.first << " interface";
+
+			for(const auto & DBusEvent : interface.second) { /* vector of struct */
+				/* we want only methods */
+				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
+					continue;
+
+				const char* method = DBusEvent.eventName.c_str();
+				LOG(DEBUG3) << "checking for " << method << " call";
+				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
+					std::vector<std::string> ret;
+
+					try {
+						/* call two strings to strings array callback */
+						const std::string arg1( this->getNextStringArgument() );
+						const std::string arg2( this->getNextStringArgument() );
+						ret = DBusEvent.callback(arg1, arg2);
+					}
+					catch ( const EmptyContainer & e ) {
+						LOG(WARNING) << e.what();
+					}
 
 					try {
 						this->initializeMethodCallReply(current);

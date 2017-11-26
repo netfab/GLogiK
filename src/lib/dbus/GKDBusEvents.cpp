@@ -162,6 +162,22 @@ void GKDBusEvents::addEvent_StringToStringsArray_Callback(
 	this->addIntrospectableEvent(object);
 }
 
+void GKDBusEvents::addEvent_TwoStringsToStringsArray_Callback(
+	const char* object,
+	const char* interface,
+	const char* eventName,
+	std::vector<DBusMethodArgument> args,
+	std::function<const std::vector<std::string>(const std::string&, const std::string&)> callback,
+	GKDBusEventType eventType
+) {
+	GKDBusEvent_TwoStringsToStringsArray_Callback e(eventName, args, callback, eventType);
+	this->DBusObjects_[object] = true;
+	this->DBusInterfaces_[interface] = true;
+	this->events_twostrings_to_stringsarray_[object][interface].push_back(e);
+
+	this->addIntrospectableEvent(object);
+}
+
 void GKDBusEvents::addEvent_StringToString_Callback(
 	const char* object,
 	const char* interface,
@@ -299,6 +315,20 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 		}
 
 		for(const auto & object_it : this->events_string_to_stringsarray_) {
+			/* object must match */
+			if(object_it.first != object_asked)
+				continue;
+			for(const auto & inter_it : object_it.second) {
+				if( inter_it.first == interface ) {
+					this->openXMLInterface(xml, interface_opened, interface);
+					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
+						this->eventToXMLMethod(xml, DBusEvent);
+					}
+				}
+			}
+		}
+
+		for(const auto & object_it : this->events_twostrings_to_stringsarray_) {
 			/* object must match */
 			if(object_it.first != object_asked)
 				continue;

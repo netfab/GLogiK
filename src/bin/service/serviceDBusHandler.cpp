@@ -75,6 +75,8 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 
 		/* set GKDBus pointer */
 		this->devices_.setDBus(this->DBus);
+		this->devices_.setClientID(this->client_id_);
+
 		this->somethingChanged();
 	}
 	catch ( const GLogiKExcept & e ) {

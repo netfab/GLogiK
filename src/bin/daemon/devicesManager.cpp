@@ -22,7 +22,6 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
-#include <functional>
 
 #include <libudev.h>
 #include <syslog.h>
@@ -558,13 +557,6 @@ void DevicesManager::startMonitoring(GKDBus* pDBus) {
 
 	this->fds[0].fd = this->fd_;
 	this->fds[0].events = POLLIN;
-
-	{
-		this->DBus->addEvent_StringToStringsArray_Callback( this->DBus_object_, this->DBus_interface_, "GetDeviceProperties",
-			{	{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
-				{"as", "array_of_strings", "out", "string array of device properties"} },
-			std::bind(&DevicesManager::getDeviceProperties, this, std::placeholders::_1) );
-	}
 
 	LOG(DEBUG2) << "loading known drivers";
 

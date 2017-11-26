@@ -42,7 +42,7 @@ namespace fs = boost::filesystem;
 namespace GLogiK
 {
 
-DevicesHandler::DevicesHandler() : DBus(nullptr), buffer_("", std::ios_base::app) {
+DevicesHandler::DevicesHandler() : DBus(nullptr), client_id_("undefined"), buffer_("", std::ios_base::app) {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler initialization";
 #endif
@@ -61,6 +61,10 @@ DevicesHandler::~DevicesHandler() {
 
 void DevicesHandler::setDBus(GKDBus* pDBus) {
 	this->DBus = pDBus;
+}
+
+void DevicesHandler::setClientID(const std::string & id) {
+	this->client_id_ = id;
 }
 
 void DevicesHandler::saveDevicesProperties(void) {
@@ -180,6 +184,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	try {
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetDeviceProperties");
+		this->DBus->appendToRemoteMethodCall(this->client_id_);
 		this->DBus->appendToRemoteMethodCall(devID);
 
 		this->DBus->sendRemoteMethodCall();

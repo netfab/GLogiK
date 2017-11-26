@@ -93,6 +93,11 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"as", "array_of_strings", "out", "array of stopped devices ID strings"} },
 		std::bind(&ClientsManager::getStoppedDevices, this, std::placeholders::_1) );
 
+	this->DBus->addEvent_TwoStringsToStringsArray_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "GetDeviceProperties",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
+			{"as", "array_of_strings", "out", "string array of device properties"} },
+		std::bind(&ClientsManager::getDeviceProperties, this, std::placeholders::_1, std::placeholders::_2) );
 }
 
 ClientsManager::~ClientsManager() {
@@ -355,6 +360,26 @@ const std::vector<std::string> ClientsManager::getStoppedDevices(const std::stri
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("unknown client ");
 		this->buffer_ << clientID << " tried to get stopped devices array";
+		LOG(WARNING) << this->buffer_.str();
+		syslog(LOG_WARNING, this->buffer_.str().c_str());
+	}
+
+	const std::vector<std::string> ret;
+	return ret;
+}
+
+const std::vector<std::string> ClientsManager::getDeviceProperties(const std::string & clientID, const std::string & devID) {
+	LOG(DEBUG2) << "getDeviceProperties " << devID << " called by client " << clientID;
+	try {
+		Client* pClient = this->clients_.at(clientID);
+		if( pClient->isAlive() ) {
+			return this->devicesManager->getDeviceProperties(devID);
+		}
+		LOG(DEBUG3) << "getDeviceProperties failure because client is not alive";
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("unknown client ");
+		this->buffer_ << clientID << " tried to get devices properties array";
 		LOG(WARNING) << this->buffer_.str();
 		syslog(LOG_WARNING, this->buffer_.str().c_str());
 	}

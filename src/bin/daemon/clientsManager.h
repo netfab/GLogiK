@@ -82,6 +82,11 @@ class ClientsManager
 
 		const std::vector<std::string> getStartedDevices(const std::string & clientID);
 		const std::vector<std::string> getStoppedDevices(const std::string & clientID);
+
+		const std::vector<std::string> getDeviceProperties(
+			const std::string & clientID,
+			const std::string & devID
+		);
 		/* -- */
 };
 
