@@ -38,7 +38,7 @@
 namespace GLogiK
 {
 
-DevicesManager::DevicesManager() : buffer_("", std::ios_base::app) {
+DevicesManager::DevicesManager() : num_clients_(0), buffer_("", std::ios_base::app) {
 	LOG(DEBUG2) << "initializing devices manager";
 	this->fds[0].fd = -1;
 	this->fds[0].events = POLLIN;
@@ -66,6 +66,10 @@ DevicesManager::~DevicesManager() {
 	}
 
 	LOG(DEBUG2) << "exiting devices manager";
+}
+
+void DevicesManager::setNumClients(uint8_t num) {
+	this->num_clients_ = num;
 }
 
 void DevicesManager::initializeDevices(void) {
@@ -129,6 +133,10 @@ void DevicesManager::initializeDevices(void) {
 }
 
 void DevicesManager::sendSignalToClients(const std::string & signal) const {
+	/* don't try to send signal if we know that there is no clients */
+	if( this->num_clients_ == 0 )
+		return;
+
 	/* don't send signal if the daemon is about to exit */
 	if( ! DaemonControl::isDaemonRunning() )
 		return;

@@ -67,6 +67,7 @@ class DevicesManager
 		void startMonitoring(GKDBus* pDBus);
 		void checkDBusMessages(void);
 		void resetDevicesStates(void);
+		void setNumClients(uint8_t num);
 
 		const bool startDevice(const std::string & devID);
 		const bool stopDevice(const std::string & devID);
@@ -82,6 +83,7 @@ class DevicesManager
 		struct pollfd fds[1];
 		int fd_ = -1;
 		GKDBus* DBus = nullptr;
+		uint8_t num_clients_;
 
 		const char* DBus_object_		= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT;
 		const char* DBus_interface_		= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;

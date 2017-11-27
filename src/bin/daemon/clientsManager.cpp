@@ -41,6 +41,15 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 {
 	LOG(DEBUG2) << "initializing clients manager";
 
+	try {
+		this->devicesManager = new DevicesManager();
+	}
+	catch (const std::bad_alloc& e) { /* handle new() failure */
+		throw GLogiKBadAlloc("devices manager allocation failure");
+	}
+
+	/* ClientsManager D-Bus object */
+
 	this->DBus->addEvent_StringToBool_Callback( this->DBus_CM_object_, this->DBus_CM_interface_, "RegisterClient",
 		{	{"s", "client_session_object_path", "in", "client session object path"},
 			{"b", "did_register_succeeded", "out", "did the RegisterClient method succeeded ?"},
@@ -58,12 +67,7 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"b", "did_updateclientstate_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 
-	try {
-		this->devicesManager = new DevicesManager();
-	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
-		throw GLogiKBadAlloc("devices manager allocation failure");
-	}
+	/* DevicesManager D-Bus object */
 
 	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "StopDevice",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
@@ -124,6 +128,10 @@ ClientsManager::~ClientsManager() {
 }
 
 void ClientsManager::sendSignalToClients(const std::string & signal) {
+	/* don't try to send signal if we know that there is no clients */
+	if( this->clients_.size() == 0 )
+		return;
+
 	LOG(DEBUG2) << "sending clients " << signal << " signal";
 	try {
 		this->DBus->initializeTargetsSignal(
@@ -214,8 +222,11 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 		syslog(LOG_INFO, this->buffer_.str().c_str());
 
 		this->clients_[clientID] = new Client(clientSessionObjectPath);
+		this->devicesManager->setNumClients( this->clients_.size() );
+
 		/* appending client id to DBus reply */
 		this->DBus->appendExtraToMethodCallReply(clientID);
+
 		return true;
 	}
 	return false;
@@ -236,6 +247,7 @@ const bool ClientsManager::unregisterClient(const std::string & clientID) {
 
 		delete pClient; pClient = nullptr;
 		this->clients_.erase(clientID);
+		this->devicesManager->setNumClients( this->clients_.size() );
 
 		return true;
 	}
