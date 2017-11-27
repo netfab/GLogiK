@@ -265,7 +265,21 @@ const bool ClientsManager::updateClientState(const std::string & clientID, const
 	try {
 		Client* pClient = this->clients_.at(clientID);
 		pClient->updateSessionState(state);
-		// if state == online
+
+/*
+		if(state == "online") {
+			this->devicesManager->resetDevicesStates();
+		}
+		else if(state == "active") {
+		}
+		else {
+			this->buffer_.str("unhandled state for updating devices : ");
+			this->buffer_ << state;
+			LOG(WARNING) << this->buffer_.str();
+			syslog(LOG_WARNING, this->buffer_.str().c_str());
+		}
+*/
+
 		return true;
 	}
 	catch (const std::out_of_range& oor) {

@@ -85,9 +85,6 @@ class DevicesManager
 		GKDBus* DBus = nullptr;
 		uint8_t num_clients_;
 
-		const char* DBus_object_		= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT;
-		const char* DBus_interface_		= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
-
 		/* to send signals to clients */
 		const char* DBus_clients_name_		= GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME;
 
