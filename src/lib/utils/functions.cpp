@@ -19,17 +19,35 @@
  *
  */
 
+#include <new>
+#include <stdexcept>
+
 #define UTILS_COMPILATION 1
 
 #include "functions.h"
+#include "exception.h"
 
 #undef UTILS_COMPILATION
 
 namespace GLogiK
 {
 
-std::string to_string(const char* s) {
-	return s == nullptr ? "" : s;
+const std::string to_string(const char* s) {
+	if(s == nullptr)
+		return "";
+
+	try {
+		const std::string ret(s);
+		return ret;
+	}
+	catch (const std::bad_alloc& e) {
+		throw GLogiKBadAlloc( e.what() );
+	}
+	catch (const std::length_error& e) {
+		std::string error("string length error : ");
+		error += e.what();
+		throw GLogiKExcept(error);
+	}
 };
 
 } // namespace GLogiK

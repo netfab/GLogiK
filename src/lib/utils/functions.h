@@ -42,7 +42,7 @@ constexpr typename std::underlying_type<T>::type to_type(T obj) noexcept {
 	return static_cast<typename std::underlying_type<T>::type>(obj);
 }
 
-std::string to_string(const char* s);
+const std::string to_string(const char* s);
 
 } // namespace GLogiK
 
