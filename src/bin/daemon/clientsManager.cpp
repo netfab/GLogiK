@@ -221,7 +221,17 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 		LOG(DEBUG2) << this->buffer_.str();
 		syslog(LOG_INFO, this->buffer_.str().c_str());
 
-		this->clients_[clientID] = new Client(clientSessionObjectPath);
+		try {
+			this->clients_[clientID] = new Client(clientSessionObjectPath);
+		}
+		catch (const std::bad_alloc& e) { /* handle new() failure */
+			const std::string s = "new client allocation failure";
+			LOG(ERROR) << s;
+			syslog(LOG_ERR, s.c_str());
+			this->DBus->appendExtraToMethodCallReply(s);
+			return false;
+		}
+
 		this->devicesManager->setNumClients( this->clients_.size() );
 
 		/* appending client id to DBus reply */
