@@ -19,6 +19,7 @@
  *
  */
 
+#include <new>
 #include <iostream>
 #include <bitset>
 

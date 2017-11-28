@@ -19,6 +19,7 @@
  *
  */
 
+#include <new>
 #include <functional>
 #include <sstream>
 #include <thread>
