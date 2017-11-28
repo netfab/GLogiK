@@ -24,7 +24,6 @@
 #include <string>
 
 #include <libudev.h>
-#include <syslog.h>
 
 #include <config.h>
 
@@ -106,10 +105,9 @@ void DevicesManager::initializeDevices(void) {
 					this->initialized_devices_[devID] = device;
 
 					this->buffer_.str( device.device.name );
-					this->buffer_	<< "(" << device.device.vendor_id << ":" << device.device.product_id
-									<< ") on bus " << to_uint(device.device_bus) << " initialized";
-					LOG(INFO) << this->buffer_.str();
-					syslog(LOG_INFO, this->buffer_.str().c_str());
+					this->buffer_ << "(" << device.device.vendor_id << ":" << device.device.product_id
+								  << ") on bus " << to_uint(device.device_bus) << " initialized";
+					GKSysLog(LOG_INFO, INFO, this->buffer_.str());
 					count++;
 					break;
 				}
@@ -118,8 +116,7 @@ void DevicesManager::initializeDevices(void) {
 		catch ( const GLogiKExcept & e ) {
 			this->buffer_.str("device initialization failure : ");
 			this->buffer_ << e.what();
-			LOG(ERROR) << this->buffer_.str();
-			syslog(LOG_ERR, this->buffer_.str().c_str());
+			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
 		}
 	} // for
 
@@ -170,8 +167,7 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 					this->buffer_.str( device.device.name );
 					this->buffer_	<< "(" << device.device.vendor_id << ":" << device.device.product_id
 									<< ") on bus " << to_uint(device.device_bus) << " initialized";
-					LOG(INFO) << this->buffer_.str();
-					syslog(LOG_INFO, this->buffer_.str().c_str());
+					GKSysLog(LOG_INFO, INFO, this->buffer_.str());
 
 					LOG(DEBUG3) << "removing " << devID << " from plugged-but-stopped devices";
 					this->plugged_but_stopped_devices_.erase(devID);
@@ -184,14 +180,12 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("device starting failure : device not found in plugged-but-stopped devices : ");
 		this->buffer_ << oor.what();
-		LOG(ERROR) << this->buffer_.str();
-		syslog(LOG_ERR, this->buffer_.str().c_str());
+		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
 		return false;
 	}
 
 	this->buffer_.str("device starting failure : driver not found !?");
-	LOG(ERROR) << this->buffer_.str();
-	syslog(LOG_ERR, this->buffer_.str().c_str());
+	GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
 	return false;
 }
 
@@ -208,8 +202,7 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 					this->buffer_.str( device.device.name );
 					this->buffer_	<< "(" << device.device.vendor_id << ":" << device.device.product_id
 									<< ") on bus " << to_uint(device.device_bus) << " stopped";
-					LOG(INFO) << this->buffer_.str();
-					syslog(LOG_INFO, this->buffer_.str().c_str());
+					GKSysLog(LOG_INFO, INFO, this->buffer_.str());
 
 					this->plugged_but_stopped_devices_[devID] = device;
 					this->initialized_devices_.erase(devID);
@@ -222,14 +215,12 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("device stopping failure : device not found in initialized devices : ");
 		this->buffer_ << oor.what();
-		LOG(ERROR) << this->buffer_.str();
-		syslog(LOG_ERR, this->buffer_.str().c_str());
+		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
 		return false;
 	}
 
 	this->buffer_.str("device stopping failure : driver not found !?");
-	LOG(ERROR) << this->buffer_.str();
-	syslog(LOG_ERR, this->buffer_.str().c_str());
+	GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
 	return false;
 }
 

@@ -21,8 +21,6 @@
 
 #include <algorithm>
 
-#include <syslog.h>
-
 #include <config.h>
 
 #include "lib/utils/utils.h"
@@ -64,7 +62,7 @@ const bool LogitechG510::checkMacroKey(InitializedDevice & device) {
 
 void LogitechG510::processKeyEvent2Bytes(InitializedDevice & device) {
 	if (device.keys_buffer[0] != 0x02) {
-		this->logWarning("warning : wrong first byte value on 2 bytes event");
+		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 2 bytes event");
 		return;
 	}
 
@@ -76,7 +74,7 @@ void LogitechG510::processKeyEvent2Bytes(InitializedDevice & device) {
 
 void LogitechG510::processKeyEvent5Bytes(InitializedDevice & device) {
 	if (device.keys_buffer[0] != 0x03) {
-		this->logWarning("warning : wrong first byte value on 5 bytes event");
+		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 5 bytes event");
 		return;
 	}
 
@@ -88,7 +86,7 @@ void LogitechG510::processKeyEvent5Bytes(InitializedDevice & device) {
 
 void LogitechG510::processKeyEvent8Bytes(InitializedDevice & device) {
 	if (device.keys_buffer[0] != 0x01) {
-		this->logWarning("warning : wrong first byte value on 8 bytes event");
+		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 8 bytes event");
 		return;
 	}
 

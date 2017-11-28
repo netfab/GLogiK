@@ -25,8 +25,6 @@
 
 #include <cstring>
 
-#include <syslog.h>
-
 #include <config.h>
 
 #include "lib/utils/utils.h"
@@ -98,8 +96,7 @@ void VirtualKeyboard::handleLibevdevError(int ret) {
 		default:
 			this->buffer_.str("warning : libevdev error (");
 			this->buffer_ << -ret << ") : " << strerror(-ret);
-			LOG(WARNING) << this->buffer_.str();
-			syslog(LOG_WARNING, this->buffer_.str().c_str());
+			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 			break;
 	}
 }

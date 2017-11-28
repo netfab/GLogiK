@@ -22,8 +22,6 @@
 #include <stdexcept>
 #include <iostream>
 
-#include <syslog.h>
-
 #include <config.h>
 
 #include "lib/utils/utils.h"
@@ -79,9 +77,7 @@ void MacrosManager::setMacro(const std::string & macro_key_name, std::vector<Key
 		this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name) = macro;
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("warning : macro profile wrong map key. macro not recorded.");
-		LOG(WARNING) << this->buffer_.str();
-		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		GKSysLog(LOG_WARNING, WARNING, "macro profile wrong map key : macro not recorded");
 	}
 }
 

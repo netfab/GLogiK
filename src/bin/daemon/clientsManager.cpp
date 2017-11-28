@@ -26,8 +26,6 @@
 #include <chrono>
 #include <stdexcept>
 
-#include <syslog.h>
-
 #include <config.h>
 
 #include "lib/utils/utils.h"
@@ -116,8 +114,7 @@ ClientsManager::~ClientsManager() {
 		if( pClient != nullptr ) { /* sanity check */
 			this->buffer_.str("destroying unfreed client : ");
 			this->buffer_ << client_pair.first;
-			LOG(WARNING) << this->buffer_.str();
-			syslog(LOG_WARNING, this->buffer_.str().c_str());
+			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 			delete pClient;
 			pClient = nullptr;
 		}
@@ -186,8 +183,7 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 			if( ! pClient->isAlive() ) {
 				this->buffer_.str("unregistering lost client (maybe crashed) with ID : ");
 				this->buffer_ << clientID;
-				LOG(WARNING) << this->buffer_.str();
-				syslog(LOG_WARNING, this->buffer_.str().c_str());
+				GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 				this->unregisterClient(clientID);
 				continue;
 			}
@@ -195,8 +191,7 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 			if( pClient->getSessionObjectPath() == clientSessionObjectPath ) {
 				this->buffer_.str("client already registered : ");
 				this->buffer_ << clientSessionObjectPath;
-				LOG(WARNING) << this->buffer_.str();
-				syslog(LOG_WARNING, this->buffer_.str().c_str());
+				GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 				const std::string reason("already registered");
 				/* appending failure reason to DBus reply */
 				this->DBus->appendExtraToMethodCallReply(reason);
@@ -219,16 +214,14 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 
 		this->buffer_.str("registering new client with ID : ");
 		this->buffer_ << clientID;
-		LOG(DEBUG2) << this->buffer_.str();
-		syslog(LOG_INFO, this->buffer_.str().c_str());
+		GKSysLog(LOG_INFO, DEBUG2, this->buffer_.str());
 
 		try {
 			this->clients_[clientID] = new Client(clientSessionObjectPath);
 		}
 		catch (const std::bad_alloc& e) { /* handle new() failure */
 			const std::string s = "new client allocation failure";
-			LOG(ERROR) << s;
-			syslog(LOG_ERR, s.c_str());
+			GKSysLog(LOG_ERR, ERROR, s);
 			this->DBus->appendExtraToMethodCallReply(s);
 			return false;
 		}
@@ -249,8 +242,7 @@ const bool ClientsManager::unregisterClient(const std::string & clientID) {
 
 		this->buffer_.str("unregistering client : ");
 		this->buffer_ << clientID;
-		LOG(DEBUG2) << this->buffer_.str();
-		syslog(LOG_INFO, this->buffer_.str().c_str());
+		GKSysLog(LOG_INFO, DEBUG2, this->buffer_.str());
 
 		/* resetting devices states first */
 		if( pClient->getSessionCurrentState() == "active" )
@@ -265,8 +257,7 @@ const bool ClientsManager::unregisterClient(const std::string & clientID) {
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("tried to unregister unknown client : ");
 		this->buffer_ << clientID;
-		LOG(WARNING) << this->buffer_.str();
-		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 	return false;
 }
@@ -286,8 +277,7 @@ const bool ClientsManager::updateClientState(const std::string & clientID, const
 		else {
 			this->buffer_.str("unhandled state for updating devices : ");
 			this->buffer_ << state;
-			LOG(WARNING) << this->buffer_.str();
-			syslog(LOG_WARNING, this->buffer_.str().c_str());
+			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 		}
 */
 
@@ -296,8 +286,7 @@ const bool ClientsManager::updateClientState(const std::string & clientID, const
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("client not registered : ");
 		this->buffer_ << clientID;
-		LOG(WARNING) << this->buffer_.str();
-		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 
 	return false;
@@ -318,8 +307,7 @@ const bool ClientsManager::stopDevice(const std::string & clientID, const std::s
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("unknown client ");
 		this->buffer_ << clientID << " tried to stop device " << devID;
-		LOG(WARNING) << this->buffer_.str();
-		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 	return false;
 }
@@ -339,8 +327,7 @@ const bool ClientsManager::startDevice(const std::string & clientID, const std::
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("unknown client ");
 		this->buffer_ << clientID << " tried to start device " << devID;
-		LOG(WARNING) << this->buffer_.str();
-		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 	return false;
 }
@@ -357,15 +344,11 @@ const bool ClientsManager::restartDevice(const std::string & clientID, const std
 			return true;
 		}
 
-		this->buffer_.str("device restarting failure : start failed");
-		LOG(ERROR) << this->buffer_.str();
-		syslog(LOG_ERR, this->buffer_.str().c_str());
+		GKSysLog(LOG_ERR, ERROR, "device restarting failure : start failed");
 		return false;
 	}
 
-	this->buffer_.str("device restarting failure : stop failed");
-	LOG(ERROR) << this->buffer_.str();
-	syslog(LOG_ERR, this->buffer_.str().c_str());
+	GKSysLog(LOG_ERR, ERROR, "device restarting failure : stop failed");
 	return false;
 }
 
@@ -379,8 +362,7 @@ const std::vector<std::string> ClientsManager::getStartedDevices(const std::stri
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("unknown client ");
 		this->buffer_ << clientID << " tried to get started devices array";
-		LOG(WARNING) << this->buffer_.str();
-		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 
 	const std::vector<std::string> ret;
@@ -397,8 +379,7 @@ const std::vector<std::string> ClientsManager::getStoppedDevices(const std::stri
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("unknown client ");
 		this->buffer_ << clientID << " tried to get stopped devices array";
-		LOG(WARNING) << this->buffer_.str();
-		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 
 	const std::vector<std::string> ret;
@@ -417,8 +398,7 @@ const std::vector<std::string> ClientsManager::getDeviceProperties(const std::st
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("unknown client ");
 		this->buffer_ << clientID << " tried to get devices properties array";
-		LOG(WARNING) << this->buffer_.str();
-		syslog(LOG_WARNING, this->buffer_.str().c_str());
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 
 	const std::vector<std::string> ret;

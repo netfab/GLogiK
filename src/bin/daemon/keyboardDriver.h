@@ -36,8 +36,6 @@
 
 #include <linux/input-event-codes.h>
 
-#include <syslog.h>
-
 #include "lib/utils/utils.h"
 
 #include "lib/shared/keyEvent.h"
@@ -150,7 +148,6 @@ class KeyboardDriver
 		int interrupt_key_read_length;
 
 		std::string getBytes(const InitializedDevice & device);
-		void logWarning(const char*);
 
 		virtual void initializeMacroKeys(const InitializedDevice & device) = 0;
 		virtual KeyStatus processKeyEvent(InitializedDevice & device) = 0;
@@ -223,14 +220,6 @@ class KeyboardDriver
 
 		void resetDeviceState(const std::string & devID);
 };
-
-inline void KeyboardDriver::logWarning(const char* warning)
-{
-	this->buffer_.str("warning : ");
-	this->buffer_ << warning;
-	LOG(WARNING) << this->buffer_.str();
-	syslog(LOG_WARNING, this->buffer_.str().c_str());
-}
 
 } // namespace GLogiK
 

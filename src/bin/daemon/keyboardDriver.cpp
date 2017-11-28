@@ -50,7 +50,7 @@ KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, Descri
 	this->leds_update_event_length_ = event_length;
 
 	if( key_read_length > KEYS_BUFFER_LENGTH ) {
-		this->logWarning("interrupt read length too large, set it to max buffer length");
+		GKSysLog(LOG_WARNING, WARNING, "interrupt read length too large, set it to max buffer length");
 		key_read_length = KEYS_BUFFER_LENGTH;
 	}
 
@@ -127,8 +127,9 @@ void KeyboardDriver::initializeLibusb(void) {
 
 void KeyboardDriver::closeLibusb(void) {
 	LOG(DEBUG3) << "closing libusb";
-	if( this->initialized_devices_.size() != 0 ) /* sanity check */
-		this->logWarning("closing libusb with opened device(s) !");
+	if( this->initialized_devices_.size() != 0 ) { /* sanity check */
+		GKSysLog(LOG_WARNING, WARNING, "closing libusb with opened device(s) !");
+	}
 	libusb_exit(this->context_);
 	KeyboardDriver::libusb_status_ = false;
 }
@@ -141,8 +142,7 @@ int KeyboardDriver::handleLibusbError(int error_code) {
 			this->buffer_.str("libusb error (");
 			this->buffer_ << libusb_error_name(error_code) << ") : "
 					<< libusb_strerror((libusb_error)error_code);
-			LOG(ERROR) << this->buffer_.str();
-			syslog(LOG_ERR, this->buffer_.str().c_str());
+			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
 			break;
 	}
 
@@ -158,8 +158,7 @@ void KeyboardDriver::releaseInterfaces(InitializedDevice & device) {
 		if( this->handleLibusbError(ret) ) {
 			this->buffer_.str("failed to release interface ");
 			this->buffer_ << numInt;
-			LOG(ERROR) << this->buffer_.str();
-			syslog(LOG_ERR, this->buffer_.str().c_str());
+			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
 		}
 		it++;
 	}
@@ -175,8 +174,7 @@ void KeyboardDriver::attachKernelDrivers(InitializedDevice & device) {
 		if( this->handleLibusbError(ret) ) {
 			this->buffer_.str("failed to attach kernel driver to interface ");
 			this->buffer_ << numInt;
-			LOG(ERROR) << this->buffer_.str();
-			syslog(LOG_ERR, this->buffer_.str().c_str());
+			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
 		}
 		it++;
 	}
@@ -403,7 +401,7 @@ void KeyboardDriver::handleModifierKeys(InitializedDevice & device) {
 	 * function could have been mixed-up. I don't know if the keyboard can produce such
 	 * events. In theory, maybe. But never seen it. And I tried.
 	 */
-	this->logWarning("diff not equal to zero");
+	GKSysLog(LOG_WARNING, WARNING, "diff not equal to zero");
 }
 
 /* used to create macros */
@@ -442,7 +440,7 @@ void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 				e.event = EventValue::EVENT_KEY_RELEASE; /* KeyRelease */
 			}
 			else {
-				this->logWarning("two different byte values");
+				GKSysLog(LOG_WARNING, WARNING, "two different byte values");
 				continue;
 			}
 
@@ -550,7 +548,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 								}
 							}
 							catch (const std::system_error& e) {
-								this->logWarning("error while spawning running macro thread");
+								GKSysLog(LOG_WARNING, WARNING, "error while spawning running macro thread");
 							}
 						}
 					}
@@ -573,9 +571,7 @@ void KeyboardDriver::sendControlRequest(libusb_device_handle * usb_handle, uint1
 		LIBUSB_REQUEST_SET_CONFIGURATION, /* 0x09 */
 		wValue, wIndex, data, wLength, 10000 );
 	if( ret < 0 ) {
-		this->buffer_.str("error sending control request");
-		LOG(ERROR) << this->buffer_.str();
-		syslog(LOG_ERR, this->buffer_.str().c_str());
+		GKSysLog(LOG_ERR, ERROR, "error sending control request");
 		this->handleLibusbError(ret);
 	}
 	else {
@@ -650,8 +646,7 @@ void KeyboardDriver::detachKernelDriver(InitializedDevice & device, int numInt) 
 		if( this->handleLibusbError(ret) ) {
 			this->buffer_.str("detaching the kernel driver from USB interface ");
 			this->buffer_ << numInt << " failed, this is fatal";
-			LOG(ERROR) << this->buffer_.str();
-			syslog(LOG_ERR, this->buffer_.str().c_str());
+			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
 			throw GLogiKExcept(this->buffer_.str());
 		}
 
@@ -710,8 +705,7 @@ void KeyboardDriver::setConfiguration(InitializedDevice & device) {
 		if ( this->handleLibusbError(ret) ) {
 			this->buffer_.str("get_config_descriptor failure with index : ");
 			this->buffer_ << i;
-			LOG(ERROR) << this->buffer_.str();
-			syslog(LOG_ERR, this->buffer_.str().c_str());
+			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
 			continue;
 		}
 
@@ -790,8 +784,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 		if ( this->handleLibusbError(ret) ) {
 			this->buffer_.str("get_config_descriptor failure with index : ");
 			this->buffer_ << i;
-			LOG(ERROR) << this->buffer_.str();
-			syslog(LOG_ERR, this->buffer_.str().c_str());
+			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
 			continue;
 		}
 
@@ -906,10 +899,9 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 				LOG(DEBUG3) << "current active configuration value : " << b;
 				if ( b != (int)(this->expected_usb_descriptors_.b_configuration_value) ) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
-					this->buffer_.str("error : wrong configuration value ");
+					this->buffer_.str("wrong configuration value ");
 					this->buffer_ << b << ", what a pity :(";
-					LOG(ERROR) << this->buffer_.str();
-					syslog(LOG_ERR, this->buffer_.str().c_str());
+					GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
 					throw GLogiKExcept("wrong configuration value");
 				}
 
@@ -952,10 +944,9 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 
 				if(device.keys_endpoint == 0) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
-					this->buffer_.str("error : [Keys] endpoint not found ! ");
-					LOG(ERROR) << this->buffer_.str();
-					syslog(LOG_ERR, this->buffer_.str().c_str());
-					throw GLogiKExcept("[Keys] endpoint not found");
+					const std::string err("[Keys] endpoint not found");
+					GKSysLog(LOG_ERR, ERROR, err);
+					throw GLogiKExcept(err);
 				}
 
 				LOG(INFO) << "all done ! " << device.device.name << " interface " << numInt
@@ -1017,8 +1008,9 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 		}
 	}
 
-	if(! found)
-		this->logWarning("listening thread not found !");
+	if(! found) {
+		GKSysLog(LOG_WARNING, WARNING, "listening thread not found !");
+	}
 
 	this->resetDeviceState(devID);
 

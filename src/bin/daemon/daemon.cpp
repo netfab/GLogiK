@@ -95,14 +95,11 @@ GLogiKDaemon::~GLogiKDaemon()
 		this->pid_file_.close();
 		LOG(INFO) << "destroying PID file";
 		if( unlink(this->pid_file_name_.c_str()) != 0 ) {
-			const char * msg = "failed to unlink PID file";
-			syslog(LOG_ERR, msg);
-			LOG(ERROR) << msg;
+			GKSysLog(LOG_ERR, ERROR, "failed to unlink PID file");
 		}
 	}
 
-	LOG(INFO) << "bye !";
-	syslog(LOG_INFO, "bye !" );
+	GKSysLog(LOG_INFO, INFO, "bye !");
 	if( this->log_fd_ != nullptr )
 		std::fclose(this->log_fd_);
 	closelog();
@@ -112,10 +109,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 
 	this->buffer_.str( "Starting " );
 	this->buffer_ << GLOGIKD_DAEMON_NAME << " vers. " << VERSION ;
-	syslog(LOG_INFO, this->buffer_.str().c_str() );
-#if DEBUGGING_ON
-	LOG(INFO) << this->buffer_.str();
-#endif
+	GKSysLog(LOG_INFO, INFO, this->buffer_.str());
 
 	try {
 		this->dropPrivileges();
@@ -148,19 +142,17 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			}
 		}
 		else {
-			syslog(LOG_INFO, "non-daemon mode" );
-			LOG(INFO) << "non-daemon mode";
-			;
+			// TODO
+			GKSysLog(LOG_INFO, INFO, "non-daemon mode");
 		}
 
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
-		std::ostringstream buff(e.what(), std::ios_base::app);
+		this->buffer_.str( e.what() );
 		if(errno != 0)
-			buff << " : " << strerror(errno);
-		syslog( LOG_ERR, buff.str().c_str() );
-		LOG(ERROR) << buff.str();
+			this->buffer_ << " : " << strerror(errno);
+		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
 		return EXIT_FAILURE;
 	}
 	catch ( const DisplayHelp & e ) {
@@ -175,16 +167,14 @@ void GLogiKDaemon::handle_signal(int sig) {
 		case SIGINT:
 		case SIGTERM:
 			buff << sig << " --> bye bye";
-			LOG(INFO) << buff.str();
-			syslog(LOG_INFO, buff.str().c_str());
+			GKSysLog(LOG_INFO, INFO, buff.str());
 			std::signal(SIGINT, SIG_DFL);
 			std::signal(SIGTERM, SIG_DFL);
 			GLogiKDaemon::exitDaemon();
 			break;
 		default:
 			buff << sig << " --> unhandled";
-			LOG(WARNING) << buff.str();
-			syslog(LOG_WARNING, buff.str().c_str());
+			GKSysLog(LOG_WARNING, WARNING, buff.str());
 			break;
 	}
 }
@@ -304,9 +294,7 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	po::notify(vm);
 
 	if (vm.count("help")) {
-		const char * msg = "displaying help";
-		syslog(LOG_INFO, msg);
-		LOG(INFO) << msg;
+		GKSysLog(LOG_INFO, INFO, "displaying help");
 		this->buffer_.str("");
 		desc.print( this->buffer_ );
 		throw DisplayHelp( this->buffer_.str() );
@@ -366,11 +354,7 @@ void GLogiKDaemon::dropPrivileges(void) {
 	if( ret < 0 )
 		throw GLogiKExcept("failure to change user ID");
 
-	this->buffer_.str("successfully dropped root privileges");
-	syslog(LOG_INFO, this->buffer_.str().c_str() );
-#if DEBUGGING_ON
-	LOG(INFO) << this->buffer_.str();
-#endif
+	GKSysLog(LOG_INFO, INFO, "successfully dropped root privileges");
 }
 
 } // namespace GLogiK
