@@ -35,7 +35,9 @@ namespace GLogiK
 {
 
 VirtualKeyboard::VirtualKeyboard(const char* device_name) : buffer_("", std::ios_base::app) {
+#if DEBUGGING_ON
 	LOG(DEBUG3) << "initializing " << device_name;
+#endif
 
 	this->dev = libevdev_new();
 	libevdev_set_name(this->dev, device_name);
@@ -64,7 +66,9 @@ VirtualKeyboard::VirtualKeyboard(const char* device_name) : buffer_("", std::ios
 }
 
 VirtualKeyboard::~VirtualKeyboard() {
+#if DEBUGGING_ON
 	LOG(DEBUG3) << "destroying " << libevdev_get_name(this->dev);
+#endif
 
 	libevdev_uinput_destroy(this->uidev);
 	libevdev_free(this->dev);

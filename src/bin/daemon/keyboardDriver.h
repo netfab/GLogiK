@@ -198,6 +198,7 @@ class KeyboardDriver
 			 29, 42, 56,125, 97, 54,100,126,164,166,165,163,161,115,114,113,
 			150,158,159,128,136,177,178,176,142,152,173,140,unk,unk,unk,unk
 		};
+		void notImplemented(const char* func);
 
 		void initializeLibusb(void);
 		void closeLibusb(void);
