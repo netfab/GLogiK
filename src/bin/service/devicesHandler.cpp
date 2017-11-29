@@ -86,21 +86,27 @@ void DevicesHandler::saveDevicesProperties(void) {
 		current_path = device.conf_file_;
 
 		try {
+#if DEBUGGING_ON
 			LOG(DEBUG2) << "trying to open configuration file for writing : " << device.conf_file_;
+#endif
 
 			std::ofstream ofs;
 			ofs.exceptions(std::ofstream::failbit|std::ofstream::badbit);
 			ofs.open(device.conf_file_, std::ofstream::out|std::ofstream::trunc);
 
 			fs::permissions(current_path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
+#if DEBUGGING_ON
 			LOG(DEBUG3) << "opened";
+#endif
 
 			{
 				boost::archive::text_oarchive output_archive(ofs);
 				output_archive << device;
 			}
 
+#if DEBUGGING_ON
 			LOG(DEBUG3) << "success, closing";
+#endif
 			ofs.close();
 		}
 		catch (const std::ofstream::failure & e) {
@@ -132,12 +138,16 @@ void DevicesHandler::saveDevicesProperties(void) {
 }
 
 void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "loading device configuration file " << device.conf_file_;
+#endif
 	try {
 		std::ifstream ifs;
 		ifs.exceptions(std::ifstream::badbit);
 		ifs.open(device.conf_file_);
+#if DEBUGGING_ON
 		LOG(DEBUG2) << "configuration file successfully opened for reading";
+#endif
 
 		{
 			DeviceProperties new_device;
@@ -150,7 +160,9 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 			device.setMacros( new_device.getMacros() );
 		}
 
+#if DEBUGGING_ON
 		LOG(DEBUG3) << "success, closing";
+#endif
 		ifs.close();
 	}
 	catch (const std::ifstream::failure & e) {
@@ -201,7 +213,9 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 			// nothing to do here
 		}
 
+#if DEBUGGING_ON
 		LOG(DEBUG3) << "got " << num << " properties for device " << devID;
+#endif
 	}
 	catch (const GLogiKExcept & e) {
 		std::string warn(__func__);
@@ -210,7 +224,9 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		WarningCheck::warnOrThrows(warn);
 	}
 
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "assigning a configuration file to device " << devID;
+#endif
 	fs::path directory(this->config_root_directory_);
 	directory /= device.vendor_;
 
@@ -218,7 +234,9 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		/* trying to find an existing configuration file */
 		device.conf_file_ = DeviceConfigurationFile::getNextAvailableNewPath(this->used_conf_files_, directory, device.model_, true);
 		this->used_conf_files_.push_back(device.conf_file_);
+#if DEBUGGING_ON
 		LOG(DEBUG3) << "found : " << device.conf_file_;
+#endif
 		this->loadDeviceConfigurationFile(device);
 	}
 	catch ( const GLogiKExcept & e ) {
@@ -226,7 +244,9 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 			/* none found, assign a new configuration file to this device */
 			device.conf_file_ = DeviceConfigurationFile::getNextAvailableNewPath(this->used_conf_files_, directory, device.model_);
 			this->used_conf_files_.push_back(device.conf_file_);
+#if DEBUGGING_ON
 			LOG(DEBUG3) << "new one : " << device.conf_file_;
+#endif
 		}
 		catch ( const GLogiKExcept & e ) {
 			LOG(ERROR) << e.what();
@@ -248,16 +268,22 @@ void DevicesHandler::checkStartedDevice(const std::string & devID) {
 	try {
 		DeviceProperties & device = this->devices_.at(devID);
 		if( device.started() ) {
+#if DEBUGGING_ON
 			LOG(DEBUG1) << "found already registered started device " << devID;
+#endif
 			return;
 		}
 		else {
+#if DEBUGGING_ON
 			LOG(DEBUG1) << "device " << devID << " state has just been started";
+#endif
 			device.start();
 		}
 	}
 	catch (const std::out_of_range& oor) {
+#if DEBUGGING_ON
 		LOG(DEBUG1) << "device " << devID << " not found in container, instantiate it";
+#endif
 		DeviceProperties device;
 		/* also load configuration file */
 		this->setDeviceProperties(devID, device);
@@ -270,16 +296,22 @@ void DevicesHandler::checkStoppedDevice(const std::string & devID) {
 	try {
 		DeviceProperties & device = this->devices_.at(devID);
 		if( device.stopped() ) {
+#if DEBUGGING_ON
 			LOG(DEBUG1) << "found already registered stopped device " << devID;
+#endif
 			return;
 		}
 		else {
+#if DEBUGGING_ON
 			LOG(DEBUG1) << "device " << devID << " state has just been stopped";
+#endif
 			device.stop();
 		}
 	}
 	catch (const std::out_of_range& oor) {
+#if DEBUGGING_ON
 		LOG(DEBUG1) << "device " << devID << " not found in container, instantiate it";
+#endif
 		DeviceProperties device;
 		/* also load configuration file */
 		this->setDeviceProperties(devID, device);

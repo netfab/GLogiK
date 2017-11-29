@@ -93,7 +93,9 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 		this->devices_.saveDevicesProperties();
 	}
 	else {
+#if DEBUGGING_ON
 		LOG(DEBUG2) << "client " << this->current_session_ << " already unregistered with deamon";
+#endif
 	}
 
 	delete this->DBus;
@@ -106,9 +108,7 @@ ServiceDBusHandler::~ServiceDBusHandler() {
  */
 void ServiceDBusHandler::registerWithDaemon(void) {
 	if( this->are_we_registered_ ) {
-#if DEBUGGING_ON
 		LOG(WARNING) << "don't need to register, since we are already registered";
-#endif
 		return;
 	}
 
@@ -123,7 +123,9 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 	if( ret ) {
 		this->client_id_ = this->DBus->getNextStringArgument();
 		this->are_we_registered_ = true;
+#if DEBUGGING_ON
 		LOG(DEBUG2) << "successfully registered with daemon : ID : " << this->client_id_;
+#endif
 	}
 	else {
 		const char * failure = "failed to register with daemon : false";
@@ -163,12 +165,12 @@ void ServiceDBusHandler::unregisterWithDaemon(void) {
 		if( ret ) {
 			this->are_we_registered_ = false;
 			this->client_id_ = "undefined";
-			const char * success = "successfully unregistered with daemon";
-			LOG(DEBUG2) << success;
+#if DEBUGGING_ON
+			LOG(DEBUG2) << "successfully unregistered with daemon";
+#endif
 		}
 		else {
-			const char * failure = "failed to unregister with daemon : false";
-			LOG(ERROR) << failure;
+			LOG(ERROR) << "failed to unregister with daemon : false";
 		}
 	}
 	catch ( const GLogiKExcept & e ) {
@@ -187,13 +189,17 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 
 		this->DBus->waitForRemoteMethodCallReply();
 		this->current_session_ = this->DBus->getNextStringArgument();
+#if DEBUGGING_ON
 		LOG(DEBUG1) << "current session : " << this->current_session_;
+#endif
 		this->session_framework_ = SessionTracker::F_CONSOLEKIT;
 	}
 	catch ( const GLogiKExcept & e ) {
 		try {
+#if DEBUGGING_ON
 			LOG(DEBUG) << "error : " << e.what();
-			LOG(DEBUG) << "consolekit contact failure, trying logind";
+#endif
+			LOG(INFO) << "consolekit contact failure, trying logind";
 
 			/* getting logind current session */
 			this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.login1",
@@ -203,7 +209,9 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 
 			this->DBus->waitForRemoteMethodCallReply();
 			this->current_session_ = this->DBus->getNextStringArgument();
+#if DEBUGGING_ON
 			LOG(DEBUG1) << "current session : " << this->current_session_;
+#endif
 			this->session_framework_ = SessionTracker::F_LOGIND;
 		}
 		catch ( const GLogiKExcept & e ) {
@@ -280,12 +288,12 @@ void ServiceDBusHandler::reportChangedState(void) {
 		this->DBus->waitForRemoteMethodCallReply();
 		const bool ret = this->DBus->getNextBooleanArgument();
 		if( ret ) {
-			const char * success = "successfully reported changed state";
-			LOG(DEBUG2) << success;
+#if DEBUGGING_ON
+			LOG(DEBUG2) << "successfully reported changed state";
+#endif
 		}
 		else {
-			const char * failure = "failed to report changed state : false";
-			LOG(ERROR) << failure;
+			LOG(ERROR) << "failed to report changed state : false";
 		}
 	}
 	catch ( const GLogiKExcept & e ) {
@@ -308,11 +316,15 @@ void ServiceDBusHandler::updateSessionState(void) {
 	const bool logoff = true;
 	const std::string new_state = this->getCurrentSessionState(logoff);
 	if(this->session_state_ == new_state) {
+#if DEBUGGING_ON
 		LOG(DEBUG5) << "session state did not changed";
+#endif
 		return;
 	}
 
+#if DEBUGGING_ON
 	LOG(DEBUG1) << "current session state : " << this->session_state_;
+#endif
 
 	if( this->session_state_ == "active" ) {
 		if(new_state == "online") {
@@ -349,7 +361,9 @@ void ServiceDBusHandler::updateSessionState(void) {
 		return;
 	}
 
+#if DEBUGGING_ON
 	LOG(DEBUG1) << "switching session state to : " << new_state;
+#endif
 
 	this->session_state_ = new_state;
 	this->reportChangedState();
@@ -362,7 +376,9 @@ void ServiceDBusHandler::daemonIsStopping(void) {
 		this->devices_.saveDevicesProperties();
 	}
 	else {
+#if DEBUGGING_ON
 		LOG(DEBUG2) << "client " << this->current_session_ << " already unregistered with deamon";
+#endif
 	}
 
 	this->devices_.clearLoadedDevices();
@@ -370,10 +386,14 @@ void ServiceDBusHandler::daemonIsStopping(void) {
 }
 
 void ServiceDBusHandler::somethingChanged(void) {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "it seems that something changed ! ";
+#endif
 
 	if( ! this->are_we_registered_ ) {
+#if DEBUGGING_ON
 		LOG(DEBUG2) << " ... but we don't care because we are not registered ! ";
+#endif
 		return;
 	}
 
@@ -390,7 +410,9 @@ void ServiceDBusHandler::somethingChanged(void) {
 		this->DBus->waitForRemoteMethodCallReply();
 
 		devicesID = this->DBus->getAllStringArguments();
+#if DEBUGGING_ON
 		LOG(DEBUG3) << "daemon says " << devicesID.size() << " devices started";
+#endif
 
 		for(const auto& devID : devicesID) {
 			this->devices_.checkStartedDevice(devID);
@@ -415,7 +437,9 @@ void ServiceDBusHandler::somethingChanged(void) {
 		this->DBus->waitForRemoteMethodCallReply();
 
 		devicesID = this->DBus->getAllStringArguments();
+#if DEBUGGING_ON
 		LOG(DEBUG3) << "daemon says " << devicesID.size() << " devices stopped";
+#endif
 
 		for(const auto& devID : devicesID) {
 			this->devices_.checkStoppedDevice(devID);

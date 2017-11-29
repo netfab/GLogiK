@@ -78,7 +78,9 @@ DesktopService::DesktopService() : buffer_("", std::ios_base::app)
 }
 
 DesktopService::~DesktopService() {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "exiting desktop service process";
+#endif
 
 	LOG(INFO) << GLOGIKS_DESKTOP_SERVICE_NAME << " : bye !";
 	if( this->log_fd_ != nullptr )
@@ -86,9 +88,7 @@ DesktopService::~DesktopService() {
 }
 
 int DesktopService::run( const int& argc, char *argv[] ) {
-	this->buffer_.str("Starting ");
-	this->buffer_ << GLOGIKS_DESKTOP_SERVICE_NAME << " vers. " << VERSION ;
-	LOG(INFO) << this->buffer_.str();
+	LOG(INFO) << "Starting " << GLOGIKS_DESKTOP_SERVICE_NAME << " vers. " << VERSION;
 
 	try {
 		this->daemonize();
@@ -111,7 +111,9 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 			}
 		}
 
+#if DEBUGGING_ON
 		LOG(DEBUG) << "exiting with success";
+#endif
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
@@ -126,7 +128,9 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 void DesktopService::daemonize() {
 	//int fd = 0;
 
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "daemonizing process";
+#endif
 
 	this->pid_ = fork();
 	if(this->pid_ == -1)
@@ -136,7 +140,9 @@ void DesktopService::daemonize() {
 	if(this->pid_ > 0)
 		exit(EXIT_SUCCESS);
 
+#if DEBUGGING_ON
 	LOG(DEBUG3) << "first fork ! pid:" << getpid();
+#endif
 
 	if(setsid() == -1)
 		throw GLogiKExcept("session creation failure");
@@ -151,15 +157,19 @@ void DesktopService::daemonize() {
 	// parent exit
 	if(this->pid_ > 0)
 		exit(EXIT_SUCCESS);
-	
+
+#if DEBUGGING_ON
 	LOG(DEBUG3) << "second fork ! pid:" << getpid();
+#endif
 
 	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	if(chdir("/") == -1)
 		throw GLogiKExcept("change directory failure");
 
 	this->pid_ = getpid();
+#if DEBUGGING_ON
 	LOG(DEBUG) << "daemonized !";
+#endif
 
 /*
 	fs::path path(this->pid_file_name_);
