@@ -90,10 +90,17 @@ GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app), DBus(nullptr)
 
 GLogiKDaemon::~GLogiKDaemon()
 {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "exiting daemon process";
+#endif
+
 	if( this->pid_file_.is_open() ) {
 		this->pid_file_.close();
+
+#if DEBUGGING_ON
 		LOG(INFO) << "destroying PID file";
+#endif
+
 		if( unlink(this->pid_file_name_.c_str()) != 0 ) {
 			GKSysLog(LOG_ERR, ERROR, "failed to unlink PID file");
 		}
@@ -182,7 +189,9 @@ void GLogiKDaemon::handle_signal(int sig) {
 void GLogiKDaemon::daemonize() {
 	//int fd = 0;
 
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "daemonizing process";
+#endif
 
 	this->pid_ = fork();
 	if(this->pid_ == -1)
@@ -192,7 +201,9 @@ void GLogiKDaemon::daemonize() {
 	if(this->pid_ > 0)
 		exit(EXIT_SUCCESS);
 
+#if DEBUGGING_ON
 	LOG(DEBUG3) << "first fork ! pid:" << getpid();
+#endif
 
 	if(setsid() == -1)
 		throw GLogiKExcept("session creation failure");
@@ -208,7 +219,9 @@ void GLogiKDaemon::daemonize() {
 	if(this->pid_ > 0)
 		exit(EXIT_SUCCESS);
 
+#if DEBUGGING_ON
 	LOG(DEBUG3) << "second fork ! pid:" << getpid();
+#endif
 
 	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	if(chdir("/") == -1)
@@ -229,7 +242,10 @@ void GLogiKDaemon::daemonize() {
 #endif
 
 	this->pid_ = getpid();
+
+#if DEBUGGING_ON
 	LOG(INFO) << "daemonized !";
+#endif
 
 	fs::path path(this->pid_file_name_);
 
@@ -269,11 +285,16 @@ void GLogiKDaemon::daemonize() {
 		this->buffer_ << this->pid_file_name_ << " : " << e.what();
 		throw GLogiKExcept( this->buffer_.str() );
 	}
+
+#if DEBUGGING_ON
 	LOG(INFO) << "created PID file : " << this->pid_file_name_;
+#endif
 }
 
 void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "parsing command line arguments";
+#endif
 
 	bool d = false;
 

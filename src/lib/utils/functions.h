@@ -29,9 +29,6 @@
 #include <string>
 #include <type_traits>
 
-#include <syslog.h>
-#include "log.h"
-
 namespace GLogiK
 {
 
@@ -46,11 +43,6 @@ constexpr typename std::underlying_type<T>::type to_type(T obj) noexcept {
 }
 
 const std::string to_string(const char* s);
-
-inline void GKSysLog(const int priority, const TLogLevel level, const std::string & to_log) {
-	LOG(level) << to_log;
-	syslog(priority, to_log.c_str());
-}
 
 } // namespace GLogiK
 

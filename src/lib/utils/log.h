@@ -51,6 +51,8 @@
 #include <cstdio>
 #include <iomanip>
 
+#include <syslog.h>
+
 #include <config.h>
 
 namespace GLogiK
@@ -266,17 +268,27 @@ class FILELOG_DECLSPEC BOTHLog : public Log<LOG_TO_FILE_AND_CONSOLE>
 
 #if DEBUGGING_ON
 
-#define LOG(level) \
+#define LOG2(level, func) \
 	if (level > LOG_MAX_LEVEL) ; \
-	else BOTHLog(level).Get(level, __func__)
+	else BOTHLog(level).Get(level, func)
 
 #else
 
-#define LOG(level) \
+#define LOG2(level, func) \
 	if (level > LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() ) ; \
-	else BOTHLog(level).Get(level, __func__)
+	else BOTHLog(level).Get(level, func)
 
 #endif
+
+inline void GKSysLog(const int priority, const TLogLevel level, const std::string & to_log, const char* func) {
+#if DEBUGGING_ON
+	LOG2(level, func) << to_log;
+#endif
+	syslog(priority, to_log.c_str());
+}
+
+#define GKSysLog(p, l, t) GKSysLog(p, l, t, __func__)
+#define LOG(level) LOG2(level, __func__)
 
 
 /* -- */

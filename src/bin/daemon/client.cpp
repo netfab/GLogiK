@@ -29,11 +29,15 @@ namespace GLogiK
 Client::Client(const std::string & object_path) : session_state_("unknown"),
 	client_session_object_path_(object_path), check_("true")
 {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing new client";
+#endif
 }
 
 Client::~Client() {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "destroying client";
+#endif
 }
 
 const std::string & Client::getSessionObjectPath(void) const {

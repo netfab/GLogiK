@@ -38,7 +38,9 @@ namespace GLogiK
 ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app), DBus(pDBus),
 	devicesManager(nullptr)
 {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing clients manager";
+#endif
 
 	try {
 		this->devicesManager = new DevicesManager();
@@ -104,7 +106,9 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 }
 
 ClientsManager::~ClientsManager() {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "destroying clients manager";
+#endif
 
 	delete this->devicesManager;
 	this->devicesManager = nullptr;
@@ -121,8 +125,9 @@ ClientsManager::~ClientsManager() {
 	}
 	this->clients_.clear();
 
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "exiting clients manager";
-
+#endif
 }
 
 void ClientsManager::sendSignalToClients(const std::string & signal) {
@@ -130,7 +135,9 @@ void ClientsManager::sendSignalToClients(const std::string & signal) {
 	if( this->clients_.size() == 0 )
 		return;
 
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "sending clients " << signal << " signal";
+#endif
 	try {
 		this->DBus->initializeTargetsSignal(
 			BusConnection::GKDBUS_SYSTEM,
@@ -142,7 +149,9 @@ void ClientsManager::sendSignalToClients(const std::string & signal) {
 		this->DBus->sendTargetsSignal();
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(WARNING) << "DBus targets signal failure : " << e.what();
+		this->buffer_.str("DBus targets signal failure : ");
+		this->buffer_ << e.what();
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 }
 
@@ -150,17 +159,23 @@ void ClientsManager::runLoop(void) {
 	this->devicesManager->startMonitoring(this->DBus);
 
 	if( this->clients_.empty() ) {
+#if DEBUGGING_ON
 		LOG(DEBUG2) << "no client, empty container";
+#endif
 		return;
 	}
 
 	this->sendSignalToClients("DaemonIsStopping");
 
 	uint8_t count = 0;
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "waiting for clients to unregister ...";
+#endif
 	while( count++ < 10 and this->clients_.size() > 0 ) {
 		this->devicesManager->checkDBusMessages();
+#if DEBUGGING_ON
 		LOG(DEBUG3) << "sleeping for 400 ms ...";
+#endif
 		std::this_thread::sleep_for(std::chrono::milliseconds(400));
 	}
 }
@@ -263,7 +278,9 @@ const bool ClientsManager::unregisterClient(const std::string & clientID) {
 }
 
 const bool ClientsManager::updateClientState(const std::string & clientID, const std::string & state) {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "updating client state : " << clientID << " - " << state;
+#endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
 		pClient->updateSessionState(state);
@@ -293,7 +310,9 @@ const bool ClientsManager::updateClientState(const std::string & clientID, const
 }
 
 const bool ClientsManager::stopDevice(const std::string & clientID, const std::string & devID) {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "stopDevice " << devID << " called by client " << clientID;
+#endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
 		if( pClient->isAlive() ) {
@@ -302,7 +321,9 @@ const bool ClientsManager::stopDevice(const std::string & clientID, const std::s
 				this->sendSignalToClients("SomethingChanged");
 			return ret;
 		}
+#if DEBUGGING_ON
 		LOG(DEBUG3) << "stopDevice failure because client is not alive";
+#endif
 	}
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("unknown client ");
@@ -313,7 +334,9 @@ const bool ClientsManager::stopDevice(const std::string & clientID, const std::s
 }
 
 const bool ClientsManager::startDevice(const std::string & clientID, const std::string & devID) {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "startDevice " << devID << " called by client " << clientID;
+#endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
 		if( pClient->isAlive() ) {
@@ -322,7 +345,9 @@ const bool ClientsManager::startDevice(const std::string & clientID, const std::
 				this->sendSignalToClients("SomethingChanged");
 			return ret;
 		}
+#if DEBUGGING_ON
 		LOG(DEBUG3) << "startDevice failure because client is not alive";
+#endif
 	}
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("unknown client ");
@@ -333,8 +358,12 @@ const bool ClientsManager::startDevice(const std::string & clientID, const std::
 }
 
 const bool ClientsManager::restartDevice(const std::string & clientID, const std::string & devID) {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "restartDevice " << devID << " called by client " << clientID;
+#endif
+
 	if( this->stopDevice(clientID, devID) ) {
+
 #if DEBUGGING_ON
 		LOG(DEBUG) << "sleeping for 1000 ms";
 #endif
@@ -353,7 +382,9 @@ const bool ClientsManager::restartDevice(const std::string & clientID, const std
 }
 
 const std::vector<std::string> ClientsManager::getStartedDevices(const std::string & clientID) {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "getStartedDevices called by client " << clientID;
+#endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
 		pClient->isAlive(); /* to avoid warning */
@@ -370,7 +401,9 @@ const std::vector<std::string> ClientsManager::getStartedDevices(const std::stri
 }
 
 const std::vector<std::string> ClientsManager::getStoppedDevices(const std::string & clientID) {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "getStoppedDevices called by client " << clientID;
+#endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
 		pClient->isAlive(); /* to avoid warning */
@@ -387,13 +420,17 @@ const std::vector<std::string> ClientsManager::getStoppedDevices(const std::stri
 }
 
 const std::vector<std::string> ClientsManager::getDeviceProperties(const std::string & clientID, const std::string & devID) {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "getDeviceProperties " << devID << " called by client " << clientID;
+#endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
 		if( pClient->isAlive() ) {
 			return this->devicesManager->getDeviceProperties(devID);
 		}
+#if DEBUGGING_ON
 		LOG(DEBUG3) << "getDeviceProperties failure because client is not alive";
+#endif
 	}
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("unknown client ");

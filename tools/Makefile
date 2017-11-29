@@ -50,9 +50,9 @@ configure_it: init_dir
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR) --libdir=$(PREFIX_DIR)/lib64
 
 build_it:
-	cd $(build_dir) && make
+	cd $(build_dir) && make -j3
 
-install_it:
+install_it: uninstall_it
 	find $(PREFIX_DEV_DIR) -type f -name 'glogik*-debug-*.log' -delete
 	cd $(build_dir) && make install
 
