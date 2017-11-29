@@ -47,11 +47,15 @@ SessionManager::SessionManager() {
 
 	this->callbacks_.shutdown_cancelled.client_data = nullptr;
 	this->callbacks_.shutdown_cancelled.callback = SessionManager::ShutdownCancelledCallback;
+#if DEBUGGING_ON
 	LOG(DEBUG1) << "session manager initialized";
+#endif
 }
 
 SessionManager::~SessionManager() {
+#if DEBUGGING_ON
 	LOG(DEBUG1) << "destroying session manager";
+#endif
 	IceRemoveConnectionWatch(SessionManager::ICEConnectionWatchCallback, nullptr);
 
 	this->closeConnection();
@@ -59,7 +63,9 @@ SessionManager::~SessionManager() {
 	if(this->client_id_ != nullptr)
 		free(this->client_id_);
 
+#if DEBUGGING_ON
 	LOG(DEBUG1) << "session manager destroyed";
+#endif
 }
 
 /* -- */
@@ -68,7 +74,9 @@ SessionManager::~SessionManager() {
  */
 
 const int SessionManager::openConnection(void) {
+#if DEBUGGING_ON
 	LOG(DEBUG) << "opening session manager connection";
+#endif
 	std::signal(SIGINT, SessionManager::handle_signal);
 	std::signal(SIGTERM, SessionManager::handle_signal);
 
@@ -101,7 +109,9 @@ const int SessionManager::openConnection(void) {
 	this->ice_conn_ = SmcGetIceConnection(this->smc_conn_);
 	this->ice_fd_ = IceConnectionNumber(this->ice_conn_);
 
+#if DEBUGGING_ON
 	LOG(DEBUG) << "Session manager client ID : " << this->client_id_;
+#endif
 
 	return this->ice_fd_;
 }
@@ -126,13 +136,19 @@ void SessionManager::closeConnection(void) {
 	SmcCloseStatus status = SmcCloseConnection(this->smc_conn_, 0, nullptr);
 	switch( status ) {
 		case SmcClosedNow:
+#if DEBUGGING_ON
 			LOG(DEBUG2) << "ICE connection was closed";
+#endif
 			break;
 		case SmcClosedASAP:
+#if DEBUGGING_ON
 			LOG(DEBUG2) << "ICE connection will be freed ASAP";
+#endif
 			break;
 		case SmcConnectionInUse:
+#if DEBUGGING_ON
 			LOG(DEBUG2) << "ICE connection not closed because in used";
+#endif
 			break;
 	}
 
@@ -161,7 +177,9 @@ void SessionManager::processICEMessages(IceConn ice_conn) {
 
 	switch(ret) {
 		case IceProcessMessagesSuccess:
+#if DEBUGGING_ON
 			LOG(DEBUG3) << "ICE messages process success";
+#endif
 			break;
 		case IceProcessMessagesIOError:
 			LOG(WARNING) << "IO error, closing ICE connection";
@@ -169,7 +187,9 @@ void SessionManager::processICEMessages(IceConn ice_conn) {
 			// FIXME throw ?
 			break;
 		case IceProcessMessagesConnectionClosed:
+#if DEBUGGING_ON
 			LOG(DEBUG3) << "ICE connection has been closed";
+#endif
 			break;
 	}
 }
@@ -192,25 +212,33 @@ void SessionManager::ICEConnectionWatchCallback(IceConn ice_conn, IcePointer cli
 void SessionManager::SaveYourselfCallback(SmcConn smc_conn, SmPointer client_data, int save_type,
 	Bool shutdown, int interact_style, Bool fast)
 {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "SM save yourself call";
+#endif
 	// FIXME
 	SmcSaveYourselfDone(smc_conn, true);
 }
 
 void SessionManager::DieCallback(SmcConn smc_conn, SmPointer client_data)
 {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "SM die call, behaves like we received SIGTERM";
+#endif
 	SessionManager::handle_signal(SIGTERM);
 }
 
 void SessionManager::SaveCompleteCallback(SmcConn smc_conn, SmPointer client_data)
 {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "SM save complete call";
+#endif
 }
 
 void SessionManager::ShutdownCancelledCallback(SmcConn smc_conn, SmPointer client_data)
 {
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "SM shutdown cancelled call";
+#endif
 }
 
 } // namespace GLogiK

@@ -50,7 +50,9 @@ GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 		throw GLogiKExcept("can't allocate memory for Signal DBus message");
 
 	if( dest != nullptr ) {
+#if DEBUG_GKDBUS_SUBOBJECTS
 		LOG(DEBUG2) << "prepare sending signal to " << dest;
+#endif
 		dbus_message_set_destination(this->message_, dest);
 	}
 

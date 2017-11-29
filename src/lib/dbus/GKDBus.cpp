@@ -41,20 +41,28 @@ GKDBus::GKDBus(const std::string & rootnode) : buffer_("", std::ios_base::app),
 	signal_(nullptr),
 	error_reply_(nullptr)
 {
+#if DEBUGGING_ON
 	LOG(DEBUG1) << "dbus object initialization";
+#endif
 	dbus_error_init(&(this->error_));
 	this->defineRootNode(rootnode);
 }
 
 GKDBus::~GKDBus()
 {
+#if DEBUGGING_ON
 	LOG(DEBUG1) << "dbus object destruction";
+#endif
 	if(this->session_conn_) {
+#if DEBUGGING_ON
 		LOG(DEBUG) << "closing DBus Session connection";
+#endif
 		dbus_connection_unref(this->session_conn_);
 	}
 	if(this->system_conn_) {
+#if DEBUGGING_ON
 		LOG(DEBUG) << "closing DBus System connection";
+#endif
 		dbus_connection_unref(this->system_conn_);
 	}
 }
@@ -67,7 +75,9 @@ GKDBus::~GKDBus()
 void GKDBus::connectToSessionBus(const char* connection_name) {
 	this->session_conn_ = dbus_bus_get(DBUS_BUS_SESSION, &this->error_);
 	this->checkDBusError("DBus Session connection failure");
+#if DEBUGGING_ON
 	LOG(DEBUG1) << "DBus Session connection opened";
+#endif
 
 	int ret = dbus_bus_request_name(this->session_conn_, connection_name,
 		DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &this->error_);
@@ -76,13 +86,17 @@ void GKDBus::connectToSessionBus(const char* connection_name) {
 		throw GLogiKExcept("DBus Session request name failure : not owner");
 	}
 
+#if DEBUGGING_ON
 	LOG(DEBUG1) << "DBus Session requested connection name : " << connection_name;
+#endif
 }
 
 void GKDBus::connectToSystemBus(const char* connection_name) {
 	this->system_conn_ = dbus_bus_get(DBUS_BUS_SYSTEM, &this->error_);
 	this->checkDBusError("DBus System connection failure");
+#if DEBUGGING_ON
 	LOG(DEBUG1) << "DBus System connection opened";
+#endif
 
 	int ret = dbus_bus_request_name(this->system_conn_, connection_name,
 		DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &this->error_);
@@ -92,7 +106,9 @@ void GKDBus::connectToSystemBus(const char* connection_name) {
 		throw GLogiKExcept("DBus System request name failure : not owner");
 	}
 
+#if DEBUGGING_ON
 	LOG(DEBUG1) << "DBus System requested connection name : " << connection_name;
+#endif
 }
 
 /* -- */
@@ -112,7 +128,9 @@ void GKDBus::freeMessage(void) {
 		LOG(WARNING) << "trying to free null message";
 		return;
 	}
+#if DEBUGGING_ON
 	LOG(DEBUG3) << "freeing message";
+#endif
 	dbus_message_unref(this->message_);
 }
 
@@ -120,7 +138,9 @@ const bool GKDBus::checkMessageForSignalReceipt(const char* interface, const cha
 	if(this->message_ == nullptr)
 		return false;
 	if( dbus_message_is_signal(this->message_, interface, signal) ) {
+#if DEBUGGING_ON
 		LOG(DEBUG1) << "DBus " << signal << " signal receipted !";
+#endif
 		this->fillInArguments(this->message_);
 		return true;
 	}
@@ -131,7 +151,9 @@ const bool GKDBus::checkMessageForMethodCall(const char* interface, const char* 
 	if(this->message_ == nullptr)
 		return false;
 	if( dbus_message_is_method_call(this->message_, interface, method) ) {
+#if DEBUGGING_ON
 		LOG(DEBUG1) << "DBus " << method << " method called !";
+#endif
 		this->fillInArguments(this->message_);
 		return true;
 	}
@@ -237,7 +259,9 @@ void GKDBus::initializeTargetsSignal(
 		throw;
 	}
 
+#if DEBUGGING_ON
 	LOG(DEBUG) << "will send " << signal << " signal to " << uniqueNames.size() << " targets";
+#endif
 
 	try {
 		for(const auto & uniqueName : uniqueNames) {
@@ -263,7 +287,9 @@ void GKDBus::initializeTargetsSignal(
 		throw GLogiKBadAlloc();
 	}
 
+#if DEBUGGING_ON
 	LOG(DEBUG1) << this->signals_.size() << " targets for " << signal << " signal initialized";
+#endif
 }
 
 void GKDBus::sendTargetsSignal(void) {
@@ -457,7 +483,7 @@ void GKDBus::waitForRemoteMethodCallReply(void) {
 	dbus_pending_call_unref(this->pending_);
 
 	if(message == nullptr) {
-		LOG(DEBUG3) << __func__ << " message is NULL, retried 10 times";
+		LOG(WARNING) << __func__ << " message is NULL, retried 10 times";
 		throw GKDBusRemoteCallNoReply("can't get pending call reply");
 	}
 
@@ -523,7 +549,9 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 			continue;
 
 		for(const auto & interface : object_it.second) {
+#if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
+#endif
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
 				/* we want only signals */
@@ -531,7 +559,9 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 					continue;
 
 				const char* signal = DBusEvent.eventName.c_str();
+#if DEBUGGING_ON
 				LOG(DEBUG3) << "checking for " << signal << " receipt";
+#endif
 				if( this->checkMessageForSignalReceipt(interface.first.c_str(), signal) ) {
 					/* free message, callback could send DBus requests */
 					this->freeMessage();
@@ -557,7 +587,9 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 			continue;
 
 		for(const auto & interface : object_it.second) {
+#if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
+#endif
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
 				/* we want only signals */
@@ -565,7 +597,9 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 					continue;
 
 				const char* signal = DBusEvent.eventName.c_str();
+#if DEBUGGING_ON
 				LOG(DEBUG3) << "checking for " << signal << " receipt";
+#endif
 				if( this->checkMessageForSignalReceipt(interface.first.c_str(), signal) ) {
 					/* free message, callback could send DBus requests */
 					this->freeMessage();
@@ -639,7 +673,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			continue;
 
 		for(const auto & interface : object_it.second) {
+#if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
+#endif
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
 				/* we want only methods */
@@ -647,7 +683,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					continue;
 
 				const char* method = DBusEvent.eventName.c_str();
+#if DEBUGGING_ON
 				LOG(DEBUG3) << "checking for " << method << " call";
+#endif
 				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
 					/* call void to string callback */
 					const std::string ret( DBusEvent.callback() );
@@ -688,7 +726,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			continue;
 
 		for(const auto & interface : object_it.second) {
+#if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
+#endif
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
 				/* we want only methods */
@@ -696,7 +736,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					continue;
 
 				const char* method = DBusEvent.eventName.c_str();
+#if DEBUGGING_ON
 				LOG(DEBUG3) << "checking for " << method << " call";
+#endif
 				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
 					/* call void to strings array callback */
 					const std::vector<std::string> ret = DBusEvent.callback();
@@ -737,7 +779,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			continue;
 
 		for(const auto & interface : object_it.second) {
+#if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
+#endif
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
 				/* we want only methods */
@@ -745,7 +789,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					continue;
 
 				const char* method = DBusEvent.eventName.c_str();
+#if DEBUGGING_ON
 				LOG(DEBUG3) << "checking for " << method << " call";
+#endif
 				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
 					std::vector<std::string> ret;
 
@@ -794,7 +840,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			continue;
 
 		for(const auto & interface : object_it.second) {
+#if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
+#endif
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
 				/* we want only methods */
@@ -802,7 +850,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					continue;
 
 				const char* method = DBusEvent.eventName.c_str();
+#if DEBUGGING_ON
 				LOG(DEBUG3) << "checking for " << method << " call";
+#endif
 				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
 					std::vector<std::string> ret;
 
@@ -852,7 +902,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			continue;
 
 		for(const auto & interface : object_it.second) {
+#if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
+#endif
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
 				/* we want only methods */
@@ -860,7 +912,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					continue;
 
 				const char* method = DBusEvent.eventName.c_str();
+#if DEBUGGING_ON
 				LOG(DEBUG3) << "checking for " << method << " call";
+#endif
 				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
 					bool ret = false;
 
@@ -909,7 +963,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			continue;
 
 		for(const auto & interface : object_it.second) {
+#if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
+#endif
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
 				/* we want only methods */
@@ -917,7 +973,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					continue;
 
 				const char* method = DBusEvent.eventName.c_str();
+#if DEBUGGING_ON
 				LOG(DEBUG3) << "checking for " << method << " call";
+#endif
 				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
 					bool ret = false;
 
@@ -967,7 +1025,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			continue;
 
 		for(const auto & interface : object_it.second) {
+#if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
+#endif
 
 			for(const auto & DBusEvent : interface.second) { /* vector of struct */
 				/* we want only methods */
@@ -975,7 +1035,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					continue;
 
 				const char* method = DBusEvent.eventName.c_str();
+#if DEBUGGING_ON
 				LOG(DEBUG3) << "checking for " << method << " call";
+#endif
 				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
 					/* call string to string callback */
 					const std::string & arg = object_it.first;
@@ -1138,7 +1200,9 @@ void GKDBus::addSignalRuleMatch(const char* interface, const char* eventName) {
 	dbus_bus_add_match(this->current_conn_, rule.c_str(), &this->error_);
 	dbus_connection_flush(this->current_conn_);
 	this->checkDBusError("DBus Session match error");
+#if DEBUGGING_ON
 	LOG(DEBUG1) << "DBus Signal match rule sent : " << rule;
+#endif
 }
 
 void GKDBus::appendExtraValuesToReply(void) {

@@ -197,7 +197,9 @@ void GKDBusEvents::addEvent_StringToString_Callback(
 const std::string GKDBusEvents::introspectRootNode(void) {
 	std::ostringstream xml;
 
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "root node : " << this->root_node_;
+#endif
 
 	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
@@ -223,7 +225,9 @@ void GKDBusEvents::addIntrospectableEvent(const char* object) {
 		LOG(DEBUG5) << "introspect interface found : " << interf.size();
 	}
 	catch (const std::out_of_range& oor) {
+#if DEBUGGING_ON
 		LOG(DEBUG3) << "adding Introspectable interface : " << object;
+#endif
 		this->addEvent_StringToString_Callback(
 			object, "org.freedesktop.DBus.Introspectable", "Introspect",
 			{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
@@ -261,7 +265,9 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 
 	std::string asked_object_path = this->getNode(object_asked);
 
+#if DEBUGGING_ON
 	LOG(DEBUG2) << "object path asked : " << asked_object_path;
+#endif
 
 	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
