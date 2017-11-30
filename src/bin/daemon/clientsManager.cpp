@@ -225,19 +225,33 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 		throw std::out_of_range("not found");
 	}
 	catch (const std::out_of_range& oor) {
-		const std::string clientID = this->generateRandomClientID();
-
-		this->buffer_.str("registering new client with ID : ");
-		this->buffer_ << clientID;
-		GKSysLog(LOG_INFO, DEBUG2, this->buffer_.str());
+		std::string clientID;
 
 		try {
-			this->clients_[clientID] = new Client(clientSessionObjectPath);
+			clientID = this->generateRandomClientID();
+
+			this->buffer_.str("registering new client with ID : ");
+			this->buffer_ << clientID;
+			GKSysLog(LOG_INFO, DEBUG2, this->buffer_.str());
+
+			this->clients_[clientID] = new Client(clientSessionObjectPath, this->devicesManager);
 		}
 		catch (const std::bad_alloc& e) { /* handle new() failure */
 			const std::string s = "new client allocation failure";
 			GKSysLog(LOG_ERR, ERROR, s);
 			this->DBus->appendExtraToMethodCallReply(s);
+			return false;
+		}
+		catch (const std::out_of_range& oor) {
+			this->buffer_.str("tried to initialize unknown client : ");
+			this->buffer_ << clientID;
+			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+			this->DBus->appendExtraToMethodCallReply("internal error");
+			return false;
+		}
+		catch (const GLogiKExcept & e) {
+			GKSysLog(LOG_ERR, ERROR, e.what());
+			this->DBus->appendExtraToMethodCallReply("internal error");
 			return false;
 		}
 

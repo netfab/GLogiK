@@ -26,11 +26,25 @@
 namespace GLogiK
 {
 
-Client::Client(const std::string & object_path) : session_state_("unknown"),
+Client::Client(const std::string & object_path, DevicesManager* dev_manager) : session_state_("unknown"),
 	client_session_object_path_(object_path), check_("true")
 {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing new client";
+#endif
+
+	for( const auto & devID : dev_manager->getStartedDevices() ) {
+		const std::vector<std::string> properties = dev_manager->getDeviceProperties(devID);
+		this->setDevice(devID, properties);
+	}
+
+	for( const auto & devID : dev_manager->getStoppedDevices() ) {
+		const std::vector<std::string> properties = dev_manager->getDeviceProperties(devID);
+		this->setDevice(devID, properties);
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "initialized " << to_uint(this->getNumInitDevices()) << " client devices configurations";
 #endif
 }
 
@@ -59,6 +73,18 @@ void Client::uncheck(void) {
 
 const bool Client::isAlive(void) const {
 	return this->check_;
+}
+
+void Client::setDevice(const std::string & devID, const std::vector<std::string> & properties) {
+	DeviceProperties device;
+	device.vendor_ = properties[0]; /* FIXME */
+	device.model_ = properties[1];
+
+	this->devices_[devID] = device;
+}
+
+const uint8_t Client::getNumInitDevices(void) const {
+	return this->devices_.size();
 }
 
 } // namespace GLogiK

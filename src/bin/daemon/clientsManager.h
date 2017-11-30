@@ -75,6 +75,7 @@ class ClientsManager
 		const bool registerClient(const std::string & clientSessionObjectPath);
 		const bool unregisterClient(const std::string & clientID);
 		const bool updateClientState(const std::string & clientID, const std::string & state);
+		/* -- */
 
 		const bool stopDevice(const std::string & clientID, const std::string & devID);
 		const bool startDevice(const std::string & clientID, const std::string & devID);

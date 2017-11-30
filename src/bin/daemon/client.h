@@ -22,9 +22,13 @@
 #ifndef __GLOGIKD_CLIENT_H__
 #define __GLOGIKD_CLIENT_H__
 
+#include <cstdint>
+
 #include <string>
+#include <vector>
 #include <map>
 
+#include "devicesManager.h"
 #include "lib/shared/deviceProperties.h"
 
 namespace GLogiK
@@ -33,7 +37,7 @@ namespace GLogiK
 class Client
 {
 	public:
-		Client(const std::string & object_path);
+		Client(const std::string & object_path, DevicesManager* dev_manager);
 		~Client(void);
 
 		const std::string & getSessionObjectPath(void) const;
@@ -42,6 +46,8 @@ class Client
 		void uncheck(void);
 		const bool isAlive(void) const;
 
+		const uint8_t getNumInitDevices(void) const;
+
 	protected:
 
 	private:
@@ -49,6 +55,8 @@ class Client
 		std::string client_session_object_path_;
 		std::map<const std::string, DeviceProperties> devices_;
 		bool check_;
+
+		void setDevice(const std::string & devID, const std::vector<std::string> & properties);
 };
 
 } // namespace GLogiK
