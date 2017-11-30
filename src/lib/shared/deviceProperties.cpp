@@ -25,6 +25,7 @@ namespace GLogiK
 {
 
 DeviceProperties::DeviceProperties() : vendor_("unknown"), model_("unknown"), conf_file_("none"),
+	backlight_color_R_(0xFF), backlight_color_G_(0xFF), backlight_color_B_(0xFF),
 	state_(DeviceState::STATE_UNKNOWN)
 {
 }

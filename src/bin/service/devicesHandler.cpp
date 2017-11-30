@@ -158,6 +158,9 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 			//device.setVendor( new_device.getVendor() );
 			//device.setModel( new_device.getModel() );
 			device.setMacros( new_device.getMacros() );
+			device.setBLColor_R( new_device.getBLColor_R() );
+			device.setBLColor_G( new_device.getBLColor_G() );
+			device.setBLColor_B( new_device.getBLColor_B() );
 		}
 
 #if DEBUGGING_ON
