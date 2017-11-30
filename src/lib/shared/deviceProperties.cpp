@@ -32,6 +32,18 @@ DeviceProperties::DeviceProperties() : vendor_("unknown"), model_("unknown"), co
 DeviceProperties::~DeviceProperties() {
 }
 
+void DeviceProperties::setVendor(const std::string & vendor) {
+	this->vendor_ = vendor;
+}
+
+void DeviceProperties::setModel(const std::string & model) {
+	this->model_ = model;
+}
+
+void DeviceProperties::setConfFile(const std::string & conf_file) {
+	this->conf_file_ = conf_file;
+}
+
 const bool DeviceProperties::started(void) const {
 	return (this->state_ == DeviceState::STATE_STARTED);
 }

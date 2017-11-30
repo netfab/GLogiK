@@ -77,8 +77,8 @@ const bool Client::isAlive(void) const {
 
 void Client::setDevice(const std::string & devID, const std::vector<std::string> & properties) {
 	DeviceProperties device;
-	device.vendor_ = properties[0]; /* FIXME */
-	device.model_ = properties[1];
+	device.setVendor(properties[0]); /* FIXME */
+	device.setModel(properties[1]);
 
 	this->devices_[devID] = device;
 }

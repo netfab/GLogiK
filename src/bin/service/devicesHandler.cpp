@@ -73,7 +73,7 @@ void DevicesHandler::saveDevicesProperties(void) {
 		const DeviceProperties & device = device_pair.second;
 
 		fs::path current_path(this->config_root_directory_);
-		current_path /= device.vendor_;
+		current_path /= device.getVendor();
 
 		try {
 			FileSystem::createOwnerDirectory(current_path);
@@ -83,16 +83,16 @@ void DevicesHandler::saveDevicesProperties(void) {
 			continue;
 		}
 
-		current_path = device.conf_file_;
+		current_path = device.getConfFile();
 
 		try {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "trying to open configuration file for writing : " << device.conf_file_;
+			LOG(DEBUG2) << "trying to open configuration file for writing : " << device.getConfFile();
 #endif
 
 			std::ofstream ofs;
 			ofs.exceptions(std::ofstream::failbit|std::ofstream::badbit);
-			ofs.open(device.conf_file_, std::ofstream::out|std::ofstream::trunc);
+			ofs.open(device.getConfFile(), std::ofstream::out|std::ofstream::trunc);
 
 			fs::permissions(current_path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 #if DEBUGGING_ON
@@ -139,12 +139,12 @@ void DevicesHandler::saveDevicesProperties(void) {
 
 void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "loading device configuration file " << device.conf_file_;
+	LOG(DEBUG2) << "loading device configuration file " << device.getConfFile();
 #endif
 	try {
 		std::ifstream ifs;
 		ifs.exceptions(std::ifstream::badbit);
-		ifs.open(device.conf_file_);
+		ifs.open(device.getConfFile());
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "configuration file successfully opened for reading";
 #endif
@@ -155,8 +155,8 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 			input_archive >> new_device;
 
 			/* do we need to replace vendor and model ? */
-			//device.vendor_ = new_device.vendor_;
-			//device.model_ = new_device.model_;
+			//device.setVendor( new_device.getVendor() );
+			//device.setModel( new_device.getModel() );
 			device.setMacros( new_device.getMacros() );
 		}
 
@@ -176,7 +176,7 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 		LOG(ERROR) << err;
 		// TODO throw GLogiKExcept to create new configuration
 		// file and avoid overwriting on close ?
-		// must add device.conf_file_ to this->used_conf_files_ then.
+		// must add device.getConfFile() to this->used_conf_files_ then.
 	}
 	/*
 	 * catch std::ios_base::failure on buggy compilers
@@ -204,9 +204,9 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		this->DBus->waitForRemoteMethodCallReply();
 
 		try {
-			device.vendor_ = this->DBus->getNextStringArgument();
+			device.setVendor( this->DBus->getNextStringArgument() );
 			num++;
-			device.model_  = this->DBus->getNextStringArgument();
+			device.setModel( this->DBus->getNextStringArgument() );
 			num++;
 		}
 		catch (const EmptyContainer & e) {
@@ -228,24 +228,28 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	LOG(DEBUG2) << "assigning a configuration file to device " << devID;
 #endif
 	fs::path directory(this->config_root_directory_);
-	directory /= device.vendor_;
+	directory /= device.getVendor();
 
 	try {
 		/* trying to find an existing configuration file */
-		device.conf_file_ = DeviceConfigurationFile::getNextAvailableNewPath(this->used_conf_files_, directory, device.model_, true);
-		this->used_conf_files_.push_back(device.conf_file_);
+		device.setConfFile( DeviceConfigurationFile::getNextAvailableNewPath(
+			this->used_conf_files_, directory, device.getModel(), true)
+		);
+		this->used_conf_files_.push_back( device.getConfFile() );
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "found : " << device.conf_file_;
+		LOG(DEBUG3) << "found : " << device.getConfFile();
 #endif
 		this->loadDeviceConfigurationFile(device);
 	}
 	catch ( const GLogiKExcept & e ) {
 		try {
 			/* none found, assign a new configuration file to this device */
-			device.conf_file_ = DeviceConfigurationFile::getNextAvailableNewPath(this->used_conf_files_, directory, device.model_);
-			this->used_conf_files_.push_back(device.conf_file_);
+			device.setConfFile( DeviceConfigurationFile::getNextAvailableNewPath(
+				this->used_conf_files_, directory, device.getModel())
+			);
+			this->used_conf_files_.push_back( device.getConfFile() );
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "new one : " << device.conf_file_;
+			LOG(DEBUG3) << "new one : " << device.getConfFile();
 #endif
 		}
 		catch ( const GLogiKExcept & e ) {

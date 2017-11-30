@@ -46,9 +46,13 @@ class DeviceProperties : public MacrosBanks
 		DeviceProperties(void);
 		~DeviceProperties(void);
 
-		std::string vendor_;
-		std::string model_;
-		std::string conf_file_;
+		const std::string & getVendor(void) const { return this->vendor_; }
+		const std::string & getModel(void) const { return this->model_; }
+		const std::string & getConfFile(void) const { return this->conf_file_; }
+
+		void setVendor(const std::string & vendor);
+		void setModel(const std::string & model);
+		void setConfFile(const std::string & conf_file);
 
 		/* accessors to purely logical state */
 		const bool started(void) const;
@@ -59,6 +63,10 @@ class DeviceProperties : public MacrosBanks
 	protected:
 
 	private:
+		std::string vendor_;
+		std::string model_;
+		std::string conf_file_;
+
 		DeviceState state_;
 
 		friend class boost::serialization::access;
