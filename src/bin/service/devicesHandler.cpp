@@ -238,11 +238,12 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		device.setConfFile( DeviceConfigurationFile::getNextAvailableNewPath(
 			this->used_conf_files_, directory, device.getModel(), true)
 		);
-		this->used_conf_files_.push_back( device.getConfFile() );
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "found : " << device.getConfFile();
 #endif
 		this->loadDeviceConfigurationFile(device);
+
+		this->used_conf_files_.push_back( device.getConfFile() );
 	}
 	catch ( const GLogiKExcept & e ) {
 		try {
@@ -250,10 +251,10 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 			device.setConfFile( DeviceConfigurationFile::getNextAvailableNewPath(
 				this->used_conf_files_, directory, device.getModel())
 			);
-			this->used_conf_files_.push_back( device.getConfFile() );
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "new one : " << device.getConfFile();
 #endif
+			this->used_conf_files_.push_back( device.getConfFile() );
 		}
 		catch ( const GLogiKExcept & e ) {
 			LOG(ERROR) << e.what();
