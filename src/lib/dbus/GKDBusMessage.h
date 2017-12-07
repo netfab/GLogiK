@@ -30,15 +30,25 @@ namespace GLogiK
 class GKDBusMessage
 {
 	public:
+		void appendToMessage(const bool value);
+		void appendToMessage(const std::string & value);
+		void appendToMessage(const std::vector<std::string> & list);
+
+		void appendToMessage(const uint32_t value);
+
+		void appendVariantToMessage(const std::string & value);
 
 	protected:
-		GKDBusMessage(DBusConnection* conn);
+		GKDBusMessage(DBusConnection* conn, const bool logoff=false);
 		virtual ~GKDBusMessage(void);
 
 		DBusConnection* connection_;
 		DBusMessage* message_;
 		DBusMessageIter args_it_;
 		bool hosed_message_;
+		bool log_off_;
+
+		const std::string append_failure_ = "message append failure";
 
 	private:
 

@@ -38,7 +38,7 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 	const char* method,
 	DBusPendingCall** pending,
 	const bool logoff
-	)	: GKDBusMessage(conn), pending_(pending), log_off_(logoff)
+	)	: GKDBusMessage(conn, logoff), pending_(pending)
 {
 	if( ! dbus_validate_bus_name(dest, nullptr) )
 		throw GLogiKExcept("invalid destination name");
@@ -88,35 +88,6 @@ GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
 #if DEBUG_GKDBUS_SUBOBJECTS
 	if( ! this->log_off_ ) {
 		LOG(DEBUG2) << "DBus remote method call with pending reply sent";
-	}
-#endif
-}
-
-void GKDBusRemoteMethodCall::appendToRemoteMethodCall(const std::string & value) {
-	const char* p = value.c_str();
-	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) ) {
-		this->hosed_message_ = true;
-		throw GKDBusOOMWrongBuild("RemoteMethodCall string append failure, not enough memory");
-	}
-
-#if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! this->log_off_ ) {
-		LOG(DEBUG2) << "DBus remote method call string value appended";
-	}
-#endif
-}
-
-/* TODO switch for other int types */
-void GKDBusRemoteMethodCall::appendToRemoteMethodCall(const uint32_t value) {
-	dbus_uint32_t v = value;
-	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_UINT32, &v) ) {
-		this->hosed_message_ = true;
-		throw GKDBusOOMWrongBuild("RemoteMethodCall integer append failure, not enough memory");
-	}
-
-#if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! this->log_off_ ) {
-		LOG(DEBUG2) << "DBus remote method call integer value appended";
 	}
 #endif
 }

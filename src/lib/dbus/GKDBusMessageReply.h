@@ -42,15 +42,8 @@ class GKDBusMessageReply : public GKDBusMessage
 		GKDBusMessageReply(DBusConnection* conn, DBusMessage* message);
 		~GKDBusMessageReply();
 
-		void appendToMessageReply(const dbus_bool_t value);
-		void appendToMessageReply(const std::string & value);
-		void appendToMessageReply(const std::vector<std::string> & list);
-
-		void appendVariantToMessageReply(const std::string & value);
-
 	protected:
 	private:
-		const std::string append_failure_ = "MessageReply append failure";
 
 };
 

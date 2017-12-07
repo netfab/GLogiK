@@ -368,19 +368,19 @@ void GKDBus::initializeMethodCallReply(BusConnection current) {
 void GKDBus::appendToMethodCallReply(const bool value) {
 	if(this->reply_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus reply not initialized");
-	this->reply_->appendToMessageReply(value);
+	this->reply_->appendToMessage(value);
 }
 
 void GKDBus::appendToMethodCallReply(const std::string & value) {
 	if(this->reply_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus reply not initialized");
-	this->reply_->appendToMessageReply(value);
+	this->reply_->appendToMessage(value);
 }
 
 void GKDBus::appendToMethodCallReply(const std::vector<std::string> & list) {
 	if(this->reply_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus reply not initialized");
-	this->reply_->appendToMessageReply(list);
+	this->reply_->appendToMessage(list);
 }
 
 /*
@@ -395,7 +395,7 @@ void GKDBus::appendExtraToMethodCallReply(const std::string & value) {
 void GKDBus::appendVariantToMethodCallReply(const std::string & value) {
 	if(this->reply_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus reply not initialized");
-	this->reply_->appendVariantToMessageReply(value);
+	this->reply_->appendVariantToMessage(value);
 }
 
 void GKDBus::sendMethodCallReply(void) {
@@ -449,13 +449,13 @@ void GKDBus::initializeRemoteMethodCall(
 void GKDBus::appendToRemoteMethodCall(const std::string & value) {
 	if(this->method_call_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus remote method call not initialized");
-	this->method_call_->appendToRemoteMethodCall(value);
+	this->method_call_->appendToMessage(value);
 }
 
 void GKDBus::appendToRemoteMethodCall(const uint32_t value) {
 	if(this->method_call_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus remote method call not initialized");
-	this->method_call_->appendToRemoteMethodCall(value);
+	this->method_call_->appendToMessage(value);
 }
 
 void GKDBus::sendRemoteMethodCall(void) {

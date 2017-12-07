@@ -45,8 +45,6 @@ class GKDBusBroadcastSignal : public GKDBusMessage
 		);
 		~GKDBusBroadcastSignal();
 
-		//void appendToBroadcastSignal(const std::string & value);
-
 	protected:
 	private:
 
