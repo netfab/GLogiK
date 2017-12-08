@@ -103,6 +103,16 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"as", "array_of_strings", "out", "string array of device properties"} },
 		std::bind(&ClientsManager::getDeviceProperties, this, std::placeholders::_1, std::placeholders::_2) );
+
+	this->DBus->addEvent_TwoStringsThreeBytesToBool_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "SetDeviceBacklightColor",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
+			{"y", "red_byte", "in", "red byte for the RGB color model"},
+			{"y", "green_byte", "in", "green byte for the RGB color model"},
+			{"y", "blue_byte", "in", "blue byte for the RGB color model"},
+			{"b", "did_setcolor_succeeded", "out", "did the SetDeviceBacklightColor method succeeded ?"} },
+		std::bind(&ClientsManager::setDeviceBacklightColor, this, std::placeholders::_1, std::placeholders::_2,
+			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
 }
 
 ClientsManager::~ClientsManager() {
@@ -454,6 +464,18 @@ const std::vector<std::string> ClientsManager::getDeviceProperties(const std::st
 
 	const std::vector<std::string> ret;
 	return ret;
+}
+
+const bool ClientsManager::setDeviceBacklightColor(const std::string & clientID, const std::string & devID,
+	const uint8_t r, const uint8_t g, const uint8_t b)
+{
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "setDeviceBacklightColor " << devID << " called by client " << clientID;
+	LOG(DEBUG3) << "with following RGB bytes : " << std::hex << to_uint(r)
+				<< " " << std::hex << to_uint(g)
+				<< " " << std::hex << to_uint(b);
+#endif
+	return false;
 }
 
 } // namespace GLogiK

@@ -36,7 +36,8 @@ class GKDBusMessage
 
 		void appendToMessage(const uint32_t value);
 
-		void appendVariantToMessage(const std::string & value);
+		//void appendVariantToMessage(const std::string & value);
+		//void appendVariantToMessage(const unsigned char value);
 
 	protected:
 		GKDBusMessage(DBusConnection* conn, const bool logoff=false);

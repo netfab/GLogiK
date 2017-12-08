@@ -392,11 +392,13 @@ void GKDBus::appendExtraToMethodCallReply(const std::string & value) {
 	this->extra_strings_.push_back(value);
 }
 
+/*
 void GKDBus::appendVariantToMethodCallReply(const std::string & value) {
-	if(this->reply_ == nullptr) /* sanity check */
+	if(this->reply_ == nullptr)
 		throw GLogiKExcept("DBus reply not initialized");
 	this->reply_->appendVariantToMessage(value);
 }
+*/
 
 void GKDBus::sendMethodCallReply(void) {
 	if(this->reply_) { /* sanity check */
@@ -458,6 +460,20 @@ void GKDBus::appendToRemoteMethodCall(const uint32_t value) {
 	this->method_call_->appendToMessage(value);
 }
 
+/*
+void GKDBus::appendVariantToRemoteMethodCall(const unsigned char value) {
+	if(this->method_call_ == nullptr)
+		throw GLogiKExcept("DBus remote method call not initialized");
+	this->method_call_->appendVariantToMessage(value);
+}
+
+void GKDBus::appendVariantToRemoteMethodCall(const std::string & value) {
+	if(this->method_call_ == nullptr)
+		throw GLogiKExcept("DBus reply not initialized");
+	this->method_call_->appendVariantToMessage(value);
+}
+*/
+
 void GKDBus::sendRemoteMethodCall(void) {
 	if(this->method_call_) { /* sanity check */
 		delete this->method_call_;
@@ -518,6 +534,14 @@ const bool GKDBus::getNextBooleanArgument(void) {
 		throw EmptyContainer("no boolean argument");
 	const bool ret = this->boolean_arguments_.back();
 	this->boolean_arguments_.pop_back();
+	return ret;
+}
+
+const uint8_t GKDBus::getNextByteArgument(void) {
+	if( this->byte_arguments_.empty() )
+		throw EmptyContainer("no byte argument");
+	const uint8_t ret = this->byte_arguments_.back();
+	this->byte_arguments_.pop_back();
 	return ret;
 }
 
@@ -1071,6 +1095,72 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 			}
 		}
 	}
+
+	for(const auto & object_it : this->events_twostringsthreebytes_to_bool_) {
+		/* object path must match */
+		object_path = this->getNode(object_it.first);
+		if(object_path != asked_object_path)
+			continue;
+
+		for(const auto & interface : object_it.second) {
+#if DEBUGGING_ON
+			LOG(DEBUG2) << "checking " << interface.first << " interface";
+#endif
+
+			for(const auto & DBusEvent : interface.second) { /* vector of struct */
+				/* we want only methods */
+				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
+					continue;
+
+				const char* method = DBusEvent.eventName.c_str();
+#if DEBUGGING_ON
+				LOG(DEBUG3) << "checking for " << method << " call";
+#endif
+				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
+					bool ret = false;
+
+					try {
+						/* call two strings to bool callback */
+						const std::string arg1( this->getNextStringArgument() );
+						const std::string arg2( this->getNextStringArgument() );
+						const uint8_t arg3( this->getNextByteArgument() );
+						const uint8_t arg4( this->getNextByteArgument() );
+						const uint8_t arg5( this->getNextByteArgument() );
+						ret = DBusEvent.callback(arg1, arg2, arg3, arg4, arg5);
+					}
+					catch ( const EmptyContainer & e ) {
+						LOG(WARNING) << e.what();
+					}
+
+					try {
+						this->initializeMethodCallReply(current);
+						this->appendToMethodCallReply(ret);
+						/* extra values to send */
+						this->appendExtraValuesToReply();
+					}
+					catch (const GKDBusOOMWrongBuild & e) {
+						LOG(ERROR) << "DBus build reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						this->buildAndSendErrorReply(current);
+						return;
+					}
+					catch ( const GLogiKExcept & e ) {
+						LOG(ERROR) << "DBus reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						throw;
+					}
+
+					/* delete reply object if allocated */
+					this->sendMethodCallReply();
+
+					return; /* only one by message */
+				}
+			}
+		}
+	}
+
 }
 
 /* -- */
@@ -1090,6 +1180,7 @@ void GKDBus::checkDBusError(const char* error_message) {
 void GKDBus::fillInArguments(DBusMessage* message) {
 	this->string_arguments_.clear();
 	this->boolean_arguments_.clear();
+	this->byte_arguments_.clear();
 
 	if(message == nullptr) {
 		LOG(WARNING) << __func__ << " : message is NULL";
@@ -1102,6 +1193,7 @@ void GKDBus::fillInArguments(DBusMessage* message) {
 	bool bool_arg = false;
 	DBusMessageIter arg_it;
 	char* sub_value = nullptr;
+	uint8_t byte_arg = 0;
 
 	dbus_message_iter_init(message, &arg_it);
 	while ((current_type = dbus_message_iter_get_arg_type(&arg_it)) != DBUS_TYPE_INVALID) {
@@ -1110,6 +1202,7 @@ void GKDBus::fillInArguments(DBusMessage* message) {
 		sub_type = 0;
 		arg_value = nullptr;
 		sub_value = nullptr;
+		byte_arg = 0;
 
 		switch(current_type) {
 			case DBUS_TYPE_STRING:
@@ -1125,6 +1218,11 @@ void GKDBus::fillInArguments(DBusMessage* message) {
 			case DBUS_TYPE_BOOLEAN:
 				dbus_message_iter_get_basic(&arg_it, &bool_arg);
 				this->boolean_arguments_.push_back(bool_arg);
+				//LOG(DEBUG4) << "bool arg value : " << bool_arg;
+				break;
+			case DBUS_TYPE_BYTE:
+				dbus_message_iter_get_basic(&arg_it, &byte_arg);
+				this->byte_arguments_.push_back(byte_arg);
 				//LOG(DEBUG4) << "bool arg value : " << bool_arg;
 				break;
 			case DBUS_TYPE_ARRAY:
@@ -1171,6 +1269,8 @@ void GKDBus::fillInArguments(DBusMessage* message) {
 		std::reverse(this->string_arguments_.begin(), this->string_arguments_.end());
 	if( ! this->boolean_arguments_.empty() )
 		std::reverse(this->boolean_arguments_.begin(), this->boolean_arguments_.end());
+	if( ! this->byte_arguments_.empty() )
+		std::reverse(this->byte_arguments_.begin(), this->byte_arguments_.end());
 }
 
 void GKDBus::setCurrentConnection(BusConnection current) {

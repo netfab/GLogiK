@@ -1,8 +1,8 @@
 #!/bin/bash
 # helper script, part of GLogiK project
 
-if [ $# -lt 1 ] || [ $# -gt 2 ]; then
-	printf "this helper bash script requires at least one and at most two arguments\n";
+if [ $# -lt 1 ]; then
+	printf "this helper bash script requires at least one argument\n";
 	exit 7;
 fi
 
@@ -82,6 +82,14 @@ case "$1" in
 		METHOD_CMD="${METHOD_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_INTERFACE}.GetDeviceProperties"
 		ask_user_id
 		METHOD_CMD="${METHOD_CMD} string:\"${clientID}\" string:\""$2"\""
+		run_cmd
+	;;
+	'--set-device-backlight-color')
+		check_arg $5
+		METHOD_CMD="${METHOD_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH}"
+		METHOD_CMD="${METHOD_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_INTERFACE}.SetDeviceBacklightColor"
+		ask_user_id
+		METHOD_CMD="${METHOD_CMD} string:\"${clientID}\" string:\""$2"\" byte:\""$3"\" byte:\""$4"\" byte:\""$5"\""
 		run_cmd
 	;;
 	'--introspect')

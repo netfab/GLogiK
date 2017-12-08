@@ -72,7 +72,7 @@ void GKDBusMessage::appendToMessage(const std::string & value) {
 void GKDBusMessage::appendToMessage(const std::vector<std::string> & list) {
 	DBusMessageIter container_it;
 
-	if( ! dbus_message_iter_open_container(&this->args_it_, DBUS_TYPE_ARRAY, "s", &container_it) ) {
+	if( ! dbus_message_iter_open_container(&this->args_it_, DBUS_TYPE_ARRAY, DBUS_TYPE_STRING_AS_STRING, &container_it) ) {
 		this->hosed_message_ = true;
 #if DEBUG_GKDBUS_SUBOBJECTS
 		LOG(ERROR) << "string array open_container failure, not enough memory";
@@ -123,10 +123,11 @@ void GKDBusMessage::appendToMessage(const uint32_t value) {
 #endif
 }
 
+/*
 void GKDBusMessage::appendVariantToMessage(const std::string & value) {
 	DBusMessageIter container_it;
 
-	if( ! dbus_message_iter_open_container(&this->args_it_, DBUS_TYPE_VARIANT, "s", &container_it) ) {
+	if( ! dbus_message_iter_open_container(&this->args_it_, DBUS_TYPE_VARIANT, DBUS_TYPE_STRING_AS_STRING, &container_it) ) {
 		this->hosed_message_ = true;
 #if DEBUG_GKDBUS_SUBOBJECTS
 		LOG(ERROR) << "string variant open_container failure, not enough memory";
@@ -160,6 +161,43 @@ void GKDBusMessage::appendVariantToMessage(const std::string & value) {
 	}
 #endif
 }
+
+void GKDBusMessage::appendVariantToMessage(const unsigned char value) {
+	DBusMessageIter container_it;
+
+	if( ! dbus_message_iter_open_container(&this->args_it_, DBUS_TYPE_VARIANT, DBUS_TYPE_BYTE_AS_STRING, &container_it) ) {
+		this->hosed_message_ = true;
+#if DEBUG_GKDBUS_SUBOBJECTS
+		LOG(ERROR) << "BYTE variant open_container failure, not enough memory";
+#endif
+		throw GKDBusOOMWrongBuild(this->append_failure_);
+	}
+
+	if( ! dbus_message_iter_append_basic(&container_it, DBUS_TYPE_BYTE, &value) ) {
+#if DEBUG_GKDBUS_SUBOBJECTS
+		LOG(ERROR) << "BYTE variant append_basic failure, not enough memory";
+#endif
+		this->hosed_message_ = true;
+		dbus_message_iter_abandon_container(&this->args_it_, &container_it);
+		throw GKDBusOOMWrongBuild(this->append_failure_);
+	}
+
+	if( ! dbus_message_iter_close_container(&this->args_it_, &container_it) ) {
+#if DEBUG_GKDBUS_SUBOBJECTS
+		LOG(ERROR) << "BYTE variant close_container failure, not enough memory";
+#endif
+		this->hosed_message_ = true;
+		dbus_message_iter_abandon_container(&this->args_it_, &container_it);
+		throw GKDBusOOMWrongBuild(this->append_failure_);
+	}
+
+#if DEBUG_GKDBUS_SUBOBJECTS
+	if( ! this->log_off_ ) {
+		LOG(DEBUG2) << "DBus BYTE variant appended";
+	}
+#endif
+}
+*/
 
 } // namespace GLogiK
 

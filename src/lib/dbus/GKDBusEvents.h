@@ -26,6 +26,8 @@
 #error "Only "dbus/GKDBus.h" can be included directly, this file may disappear or change contents."
 #endif
 
+#include <cstdint>
+
 #include <string>
 #include <vector>
 #include <map>
@@ -151,6 +153,18 @@ struct GKDBusEvent_StringToString_Callback : public GKDBusEvent {
 		)	: GKDBusEvent(n, a, t), callback(c) {}
 };
 
+struct GKDBusEvent_TwoStringsThreeBytesToBool_Callback : public GKDBusEvent {
+	std::function<const bool(const std::string&, const std::string&, const uint8_t, const uint8_t, const uint8_t)> callback;
+
+	GKDBusEvent_TwoStringsThreeBytesToBool_Callback(
+		const char* n,
+		std::vector<DBusMethodArgument> & a,
+		std::function<const bool(const std::string&, const std::string&, const uint8_t, const uint8_t, const uint8_t)> c,
+		GKDBusEventType t
+		)	: GKDBusEvent(n, a, t), callback(c) {}
+};
+
+
 class GKDBusEvents
 {
 	public:
@@ -218,6 +232,14 @@ class GKDBusEvents
 			std::function<const std::string(const std::string&)> callback,
 			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD
 		);
+		void addEvent_TwoStringsThreeBytesToBool_Callback(
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			std::vector<DBusMethodArgument> args,
+			std::function<const bool(const std::string&, const std::string&, const uint8_t, const uint8_t, const uint8_t)> callback,
+			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD
+		);
 
 	protected:
 		GKDBusEvents(void);
@@ -254,6 +276,10 @@ class GKDBusEvents
 		std::map< const std::string, /* object path */
 			std::map< const std::string, /* interface */
 				std::vector<GKDBusEvent_TwoStringsToStringsArray_Callback> > > events_twostrings_to_stringsarray_;
+
+		std::map< const std::string, /* object path */
+			std::map< const std::string, /* interface */
+				std::vector<GKDBusEvent_TwoStringsThreeBytesToBool_Callback> > > events_twostringsthreebytes_to_bool_;
 
 		std::map<const std::string, bool> DBusObjects_;
 		std::map<const std::string, bool> DBusInterfaces_;

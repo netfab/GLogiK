@@ -22,6 +22,8 @@
 #ifndef __GLOGIK_GKDBUS_H__
 #define __GLOGIK_GKDBUS_H__
 
+#include <cstdint>
+
 #include <string>
 #include <vector>
 #include <sstream>
@@ -92,7 +94,7 @@ class GKDBus : public GKDBusEvents
 			const std::vector<std::string> & list
 		);
 		void appendExtraToMethodCallReply(const std::string & value);
-		void appendVariantToMethodCallReply(const std::string & value);
+		//void appendVariantToMethodCallReply(const std::string & value);
 
 		void sendMethodCallReply(void);
 	/* -- */
@@ -109,6 +111,8 @@ class GKDBus : public GKDBusEvents
 
 		void appendToRemoteMethodCall(const std::string & value);
 		void appendToRemoteMethodCall(const uint32_t value);
+		//void appendVariantToRemoteMethodCall(const unsigned char value);
+		//void appendVariantToRemoteMethodCall(const std::string & value);
 
 		void sendRemoteMethodCall(void);
 
@@ -118,6 +122,7 @@ class GKDBus : public GKDBusEvents
 		std::string getNextStringArgument(void);
 		const std::vector<std::string> & getAllStringArguments(void) const;
 		const bool getNextBooleanArgument(void);
+		const uint8_t getNextByteArgument(void);
 		void checkForMethodCall(BusConnection current);
 		void checkForSignalReceipt(BusConnection current);
 
@@ -150,6 +155,7 @@ class GKDBus : public GKDBusEvents
 		DBusConnection* session_conn_;
 		DBusConnection* system_conn_;
 		std::vector<std::string> string_arguments_;
+		std::vector<uint8_t> byte_arguments_;
 		std::vector<bool> boolean_arguments_;
 		std::vector<std::string> extra_strings_;
 
