@@ -68,6 +68,12 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"b", "did_updateclientstate_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 
+	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_CM_object_, this->DBus_CM_interface_, "DeleteDeviceConfiguration",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
+			{"b", "did_deletedeviceconfiguration_succeeded", "out", "did the DeleteDeviceConfiguration method succeeded ?"} },
+		std::bind(&ClientsManager::deleteDeviceConfiguration, this, std::placeholders::_1, std::placeholders::_2) );
+
 	/* DevicesManager D-Bus object */
 
 	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "StopDevice",
@@ -333,6 +339,23 @@ const bool ClientsManager::updateClientState(const std::string & clientID, const
 	return false;
 }
 
+const bool ClientsManager::deleteDeviceConfiguration(const std::string & clientID, const std::string & devID) {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "deleting device " << devID << " configuration for client : " << clientID;
+#endif
+	try {
+		Client* pClient = this->clients_.at(clientID);
+		return pClient->deleteDevice(devID);
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("client not registered : ");
+		this->buffer_ << clientID;
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+	}
+
+	return false;
+}
+
 const bool ClientsManager::stopDevice(const std::string & clientID, const std::string & devID) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "stopDevice " << devID << " called by client " << clientID;
@@ -450,7 +473,7 @@ const std::vector<std::string> ClientsManager::getDeviceProperties(const std::st
 	try {
 		Client* pClient = this->clients_.at(clientID);
 		if( pClient->isAlive() ) {
-			return this->devicesManager->getDeviceProperties(devID);
+			return pClient->getDeviceProperties(devID, this->devicesManager);
 		}
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "getDeviceProperties failure because client is not alive";

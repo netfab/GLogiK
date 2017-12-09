@@ -46,7 +46,8 @@ class Client
 		void uncheck(void);
 		const bool isAlive(void) const;
 
-		const uint8_t getNumInitDevices(void) const;
+		const std::vector<std::string> getDeviceProperties(const std::string & devID, DevicesManager* dev_manager);
+		const bool deleteDevice(const std::string & devID);
 
 	protected:
 
@@ -55,8 +56,6 @@ class Client
 		std::string client_session_object_path_;
 		std::map<const std::string, DeviceProperties> devices_;
 		bool check_;
-
-		void setDevice(const std::string & devID, const std::vector<std::string> & properties);
 };
 
 } // namespace GLogiK

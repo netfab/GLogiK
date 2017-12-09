@@ -400,7 +400,10 @@ void ServiceDBusHandler::somethingChanged(void) {
 	std::string device;
 	std::vector<std::string> devicesID;
 
-	/* check started devices */
+	/* uncheck them all (bool flag) to detect unplugged devices */
+	this->devices_.uncheckThemAll();
+
+	/* started devices */
 	try {
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetStartedDevices");
@@ -415,7 +418,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 #endif
 
 		for(const auto& devID : devicesID) {
-			this->devices_.checkStartedDevice(devID);
+			this->devices_.checkStartedDevice(devID); /* check bool flag */
 		}
 	}
 	catch (const GLogiKExcept & e) {
@@ -427,7 +430,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 
 	devicesID.clear();
 
-	/* check stopped devices */
+	/* stopped devices */
 	try {
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetStoppedDevices");
@@ -442,7 +445,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 #endif
 
 		for(const auto& devID : devicesID) {
-			this->devices_.checkStoppedDevice(devID);
+			this->devices_.checkStoppedDevice(devID); /* check bool flag */
 		}
 	}
 	catch (const GLogiKExcept & e) {
@@ -451,6 +454,9 @@ void ServiceDBusHandler::somethingChanged(void) {
 		warn += e.what();
 		WarningCheck::warnOrThrows(warn);
 	}
+
+	/* detect and delete unplugged devices */
+	this->devices_.deleteUncheckedDevices();
 }
 
 void ServiceDBusHandler::checkDBusMessages(void) {

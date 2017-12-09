@@ -19,6 +19,8 @@
  *
  */
 
+#include <stdexcept>
+
 #include "lib/utils/utils.h"
 
 #include "client.h"
@@ -34,17 +36,15 @@ Client::Client(const std::string & object_path, DevicesManager* dev_manager) : s
 #endif
 
 	for( const auto & devID : dev_manager->getStartedDevices() ) {
-		const std::vector<std::string> properties = dev_manager->getDeviceProperties(devID);
-		this->setDevice(devID, properties);
+		this->getDeviceProperties(devID, dev_manager);
 	}
 
 	for( const auto & devID : dev_manager->getStoppedDevices() ) {
-		const std::vector<std::string> properties = dev_manager->getDeviceProperties(devID);
-		this->setDevice(devID, properties);
+		this->getDeviceProperties(devID, dev_manager);
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "initialized " << to_uint(this->getNumInitDevices()) << " client devices configurations";
+	LOG(DEBUG3) << "initialized " << this->devices_.size() << " client devices configurations";
 #endif
 }
 
@@ -75,16 +75,46 @@ const bool Client::isAlive(void) const {
 	return this->check_;
 }
 
-void Client::setDevice(const std::string & devID, const std::vector<std::string> & properties) {
-	DeviceProperties device;
-	device.setVendor(properties[0]); /* FIXME */
-	device.setModel(properties[1]);
+const std::vector<std::string> Client::getDeviceProperties(const std::string & devID, DevicesManager* dev_manager) {
+	const std::vector<std::string> properties = dev_manager->getDeviceProperties(devID);
 
-	this->devices_[devID] = device;
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "init devices number : " << this->devices_.size();
+#endif
+
+	try {
+		this->devices_.at(devID);
+	}
+	catch (const std::out_of_range& oor) {
+		DeviceProperties device;
+		device.setVendor(properties[0]); /* FIXME */
+		device.setModel(properties[1]);
+		this->devices_[devID] = device;
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "init devices number : " << this->devices_.size();
+#endif
+
+	return properties;
 }
 
-const uint8_t Client::getNumInitDevices(void) const {
-	return this->devices_.size();
+const bool Client::deleteDevice(const std::string & devID) {
+	try {
+		this->devices_.at(devID);
+		this->devices_.erase(devID);
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "deleted device : " << devID;
+#endif
+		return true;
+	}
+	catch (const std::out_of_range& oor) {
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "tried to delete not found device : " << devID;
+#endif
+	}
+
+	return false;
 }
 
 } // namespace GLogiK

@@ -275,6 +275,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 void DevicesHandler::checkStartedDevice(const std::string & devID) {
 	try {
 		DeviceProperties & device = this->devices_.at(devID);
+		device.check();
 		if( device.started() ) {
 #if DEBUGGING_ON
 			LOG(DEBUG1) << "found already registered started device " << devID;
@@ -303,6 +304,7 @@ void DevicesHandler::checkStartedDevice(const std::string & devID) {
 void DevicesHandler::checkStoppedDevice(const std::string & devID) {
 	try {
 		DeviceProperties & device = this->devices_.at(devID);
+		device.check();
 		if( device.stopped() ) {
 #if DEBUGGING_ON
 			LOG(DEBUG1) << "found already registered stopped device " << devID;
@@ -328,6 +330,67 @@ void DevicesHandler::checkStoppedDevice(const std::string & devID) {
 	}
 }
 
+void DevicesHandler::uncheckThemAll(void) {
+	for(auto & device_pair : this->devices_) {
+		//const std::string & devID = device_pair.first;
+		DeviceProperties & device = device_pair.second;
+		device.uncheck();
+	}
+}
+
+void DevicesHandler::deleteUncheckedDevices(void) {
+	std::vector<std::string> to_clean;
+
+	for(const auto & device_pair : this->devices_) {
+		const std::string & devID = device_pair.first;
+		const DeviceProperties & device = device_pair.second;
+		if( ! device.checked() )
+			to_clean.push_back(devID);
+	}
+
+	unsigned int c = to_clean.size();
+
+	if(c == 0)
+		return;
+
+	/* saving first */
+	this->saveDevicesProperties();
+
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "found " << c << " unplugged devices to clean";
+#endif
+
+	for(const auto & devID : to_clean) {
+		this->devices_.erase(devID);
+
+		try {
+			this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "DeleteDeviceConfiguration");
+			this->DBus->appendToRemoteMethodCall(this->client_id_);
+			this->DBus->appendToRemoteMethodCall(devID);
+
+			this->DBus->sendRemoteMethodCall();
+
+			this->DBus->waitForRemoteMethodCallReply();
+			const bool ret = this->DBus->getNextBooleanArgument();
+			if( ret ) {
+#if DEBUGGING_ON
+				LOG(DEBUG3) << "successfully deleted client device configuration " << devID;
+#endif
+			}
+			else {
+				LOG(ERROR) << "failed to delete client device configuration : false";
+			}
+		}
+		catch (const GLogiKExcept & e) {
+			std::string warn("DeleteDeviceConfiguration failure : ");
+			warn += e.what();
+			WarningCheck::warnOrThrows(warn);
+		}
+	}
+
+	to_clean.clear();
+}
 
 void DevicesHandler::clearLoadedDevices(void) {
 	this->devices_.clear();

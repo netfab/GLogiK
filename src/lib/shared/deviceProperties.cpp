@@ -26,11 +26,23 @@ namespace GLogiK
 
 DeviceProperties::DeviceProperties() : vendor_("unknown"), model_("unknown"), conf_file_("none"),
 	backlight_color_R_(0xFF), backlight_color_G_(0xFF), backlight_color_B_(0xFF),
-	state_(DeviceState::STATE_UNKNOWN)
+	check_(true), state_(DeviceState::STATE_UNKNOWN)
 {
 }
 
 DeviceProperties::~DeviceProperties() {
+}
+
+void DeviceProperties::check(void) {
+	this->check_ = true;
+}
+
+void DeviceProperties::uncheck(void) {
+	this->check_ = false;
+}
+
+const bool DeviceProperties::checked(void) const {
+	return this->check_;
 }
 
 void DeviceProperties::setVendor(const std::string & vendor) {

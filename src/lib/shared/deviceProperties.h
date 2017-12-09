@@ -46,6 +46,10 @@ class DeviceProperties : public MacrosBanks
 		DeviceProperties(void);
 		~DeviceProperties(void);
 
+		void check(void);
+		void uncheck(void);
+		const bool checked(void) const;
+
 		const std::string & getVendor(void) const { return this->vendor_; }
 		const std::string & getModel(void) const { return this->model_; }
 		const std::string & getConfFile(void) const { return this->conf_file_; }
@@ -78,6 +82,7 @@ class DeviceProperties : public MacrosBanks
 		unsigned char backlight_color_G_;
 		unsigned char backlight_color_B_;
 
+		bool check_;
 		DeviceState state_;
 
 		friend class boost::serialization::access;

@@ -50,9 +50,16 @@ class DevicesHandler
 		void checkStoppedDevice(const std::string & device);
 		void clearLoadedDevices(void);
 
+		void uncheckThemAll(void);
+		void deleteUncheckedDevices(void);
+
 	protected:
 
 	private:
+		/* DCM - Daemon ClientsManager - to contact the ClientsManager */
+		const char* DBus_DCM_object_path_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH;
+		const char* DBus_DCM_interface_		= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
+
 		/* DDM - Daemon DevicesManager - to contact the DevicesManager */
 		const char* DBus_DDM_object_path_	= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH;
 		const char* DBus_DDM_interface_		= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;

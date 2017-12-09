@@ -72,10 +72,14 @@ class ClientsManager
 		const std::string generateRandomClientID(void) const;
 
 		/* exposed over DBus */
+			/* ClientsManager D-Bus object */
 		const bool registerClient(const std::string & clientSessionObjectPath);
 		const bool unregisterClient(const std::string & clientID);
 		const bool updateClientState(const std::string & clientID, const std::string & state);
+		const bool deleteDeviceConfiguration(const std::string & clientID, const std::string & devID);
+
 		/* -- */
+			/* DevicesManager D-Bus object */
 
 		const bool stopDevice(const std::string & clientID, const std::string & devID);
 		const bool startDevice(const std::string & clientID, const std::string & devID);
