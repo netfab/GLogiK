@@ -74,6 +74,8 @@ class DevicesManager
 		const std::vector<std::string> getStartedDevices(void) const;
 		const std::vector<std::string> getStoppedDevices(void) const;
 		const std::vector<std::string> getDeviceProperties(const std::string & devID);
+		void setDeviceBacklightColor(const std::string & devID,
+			const uint8_t r, const uint8_t g, const uint8_t b);
 
 	protected:
 

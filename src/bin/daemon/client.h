@@ -48,6 +48,12 @@ class Client
 
 		const std::vector<std::string> getDeviceProperties(const std::string & devID, DevicesManager* dev_manager);
 		const bool deleteDevice(const std::string & devID);
+		const bool setDeviceBacklightColor(
+			const std::string & devID,
+			const uint8_t r,
+			const uint8_t g,
+			const uint8_t b
+		);
 
 	protected:
 

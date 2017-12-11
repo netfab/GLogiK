@@ -565,6 +565,25 @@ const std::vector<std::string> DevicesManager::getDeviceProperties(const std::st
 	return ret;
 }
 
+void DevicesManager::setDeviceBacklightColor(const std::string & devID, const uint8_t r, const uint8_t g, const uint8_t b) {
+	try {
+		const auto & device = this->initialized_devices_.at(devID);
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "found " << device.model << " in started devices";
+#endif
+		for(const auto& driver : this->drivers_) {
+			if( device.driver_ID == driver->getDriverID() ) {
+				driver->setDeviceBacklightColor(devID, r, g, b);
+			}
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("tried to set backlight color on non-started device : ");
+		this->buffer_ << devID;
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+	}
+}
+
 void DevicesManager::resetDevicesStates(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "resetting initialized devices states";

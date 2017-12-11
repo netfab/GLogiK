@@ -498,6 +498,17 @@ const bool ClientsManager::setDeviceBacklightColor(const std::string & clientID,
 				<< " " << std::hex << to_uint(g)
 				<< " " << std::hex << to_uint(b);
 #endif
+	try {
+		Client* pClient = this->clients_.at(clientID);
+		const bool ret = pClient->setDeviceBacklightColor(devID, r, g, b);
+		this->devicesManager->setDeviceBacklightColor(devID, r, g, b);
+		return ret;
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("unknown client ");
+		this->buffer_ << clientID << " tried to set device backlight color";
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+	}
 	return false;
 }
 

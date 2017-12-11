@@ -19,6 +19,7 @@
  *
  */
 
+#include <stdexcept>
 #include <new>
 #include <iostream>
 #include <bitset>
@@ -1101,6 +1102,19 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 
 	libusb_close( device.usb_handle );
 	this->initialized_devices_.erase(devID);
+}
+
+void KeyboardDriver::setDeviceBacklightColor(const std::string & devID, const uint8_t r, const uint8_t g, const uint8_t b) {
+	try {
+		InitializedDevice & device = this->initialized_devices_.at(devID);
+		this->updateKeyboardColor(device, r, g, b);
+		this->setKeyboardColor(device);
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("wrong device ID : ");
+		this->buffer_ << devID;
+		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+	}
 }
 
 } // namespace GLogiK

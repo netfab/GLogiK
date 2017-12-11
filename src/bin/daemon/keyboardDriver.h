@@ -134,6 +134,7 @@ class KeyboardDriver
 		void initializeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
 		void closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
 		void resetDeviceState(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
+		void setDeviceBacklightColor(const std::string & devID, const uint8_t r, const uint8_t g, const uint8_t b);
 
 		const bool isDeviceInitialized(const std::string & devID) const;
 		static const std::string getDeviceID(const uint8_t bus, const uint8_t num);

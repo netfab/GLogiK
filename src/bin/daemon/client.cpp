@@ -78,14 +78,13 @@ const bool Client::isAlive(void) const {
 const std::vector<std::string> Client::getDeviceProperties(const std::string & devID, DevicesManager* dev_manager) {
 	const std::vector<std::string> properties = dev_manager->getDeviceProperties(devID);
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "init devices number : " << this->devices_.size();
-#endif
-
 	try {
 		this->devices_.at(devID);
 	}
 	catch (const std::out_of_range& oor) {
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "initializing device " << devID << " properties";
+#endif
 		DeviceProperties device;
 		device.setVendor(properties[0]); /* FIXME */
 		device.setModel(properties[1]);
@@ -93,7 +92,7 @@ const std::vector<std::string> Client::getDeviceProperties(const std::string & d
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "init devices number : " << this->devices_.size();
+	LOG(DEBUG3) << "number of initialized devices : " << this->devices_.size();
 #endif
 
 	return properties;
@@ -111,6 +110,25 @@ const bool Client::deleteDevice(const std::string & devID) {
 	catch (const std::out_of_range& oor) {
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "tried to delete not found device : " << devID;
+#endif
+	}
+
+	return false;
+}
+
+const bool Client::setDeviceBacklightColor(const std::string & devID,
+			const uint8_t r, const uint8_t g, const uint8_t b)
+{
+	try {
+		DeviceProperties & device = this->devices_.at(devID);
+		device.setBLColor_R(r);
+		device.setBLColor_G(g);
+		device.setBLColor_B(b);
+		return true;
+	}
+	catch (const std::out_of_range& oor) {
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "unknown device : " << devID;
 #endif
 	}
 
