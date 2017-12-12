@@ -37,7 +37,7 @@ GKDBusMessage::GKDBusMessage(DBusConnection* conn, const bool logoff)
 GKDBusMessage::~GKDBusMessage() {
 }
 
-void GKDBusMessage::appendToMessage(const bool value) {
+void GKDBusMessage::appendBoolean(const bool value) {
 	dbus_bool_t v = value;
 	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_BOOLEAN, &v) ) {
 		this->hosed_message_ = true;
@@ -53,7 +53,7 @@ void GKDBusMessage::appendToMessage(const bool value) {
 #endif
 }
 
-void GKDBusMessage::appendStringToMessage(const std::string & value) {
+void GKDBusMessage::appendString(const std::string & value) {
 	const char* p = value.c_str();
 	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) ) {
 		this->hosed_message_ = true;
@@ -69,7 +69,7 @@ void GKDBusMessage::appendStringToMessage(const std::string & value) {
 #endif
 }
 
-void GKDBusMessage::appendToMessage(const std::vector<std::string> & list) {
+void GKDBusMessage::appendStringVector(const std::vector<std::string> & list) {
 	DBusMessageIter container_it;
 
 	if( ! dbus_message_iter_open_container(&this->args_it_, DBUS_TYPE_ARRAY, DBUS_TYPE_STRING_AS_STRING, &container_it) ) {
@@ -108,7 +108,7 @@ void GKDBusMessage::appendToMessage(const std::vector<std::string> & list) {
 #endif
 }
 
-void GKDBusMessage::appendUInt8ToMessage(const uint8_t value) {
+void GKDBusMessage::appendUInt8(const uint8_t value) {
 	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_BYTE, &value) ) {
 		this->hosed_message_ = true;
 		throw GKDBusOOMWrongBuild("RemoteMethodCall integer append failure, not enough memory");
@@ -121,7 +121,7 @@ void GKDBusMessage::appendUInt8ToMessage(const uint8_t value) {
 #endif
 }
 
-void GKDBusMessage::appendUInt32ToMessage(const uint32_t value) {
+void GKDBusMessage::appendUInt32(const uint32_t value) {
 	dbus_uint32_t v = value;
 	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_UINT32, &v) ) {
 		this->hosed_message_ = true;

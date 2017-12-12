@@ -365,30 +365,30 @@ void GKDBus::initializeMethodCallReply(BusConnection current) {
 	}
 }
 
-void GKDBus::appendToMethodCallReply(const bool value) {
+void GKDBus::appendBooleanToMethodCallReply(const bool value) {
 	if(this->reply_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus reply not initialized");
-	this->reply_->appendToMessage(value);
+	this->reply_->appendBoolean(value);
 }
 
 void GKDBus::appendStringToMethodCallReply(const std::string & value) {
 	if(this->reply_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus reply not initialized");
-	this->reply_->appendStringToMessage(value);
+	this->reply_->appendString(value);
 }
 
-void GKDBus::appendToMethodCallReply(const std::vector<std::string> & list) {
+void GKDBus::appendStringVectorToMethodCallReply(const std::vector<std::string> & list) {
 	if(this->reply_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus reply not initialized");
-	this->reply_->appendToMessage(list);
+	this->reply_->appendStringVector(list);
 }
 
 /*
  * could be called by callback functions to asynchronously add
  * extra values to method call replies.
- * see also appendExtraValuesToReply and sendMethodCallReply below.
+ * see also appendExtraStringsValuesToReply and sendMethodCallReply below.
  */
-void GKDBus::appendExtraToMethodCallReply(const std::string & value) {
+void GKDBus::appendExtraStringToMethodCallReply(const std::string & value) {
 	this->extra_strings_.push_back(value);
 }
 
@@ -451,19 +451,19 @@ void GKDBus::initializeRemoteMethodCall(
 void GKDBus::appendStringToRemoteMethodCall(const std::string & value) {
 	if(this->method_call_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus remote method call not initialized");
-	this->method_call_->appendStringToMessage(value);
+	this->method_call_->appendString(value);
 }
 
 void GKDBus::appendUInt8ToRemoteMethodCall(const uint8_t value) {
 	if(this->method_call_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus remote method call not initialized");
-	this->method_call_->appendUInt8ToMessage(value);
+	this->method_call_->appendUInt8(value);
 }
 
 void GKDBus::appendUInt32ToRemoteMethodCall(const uint32_t value) {
 	if(this->method_call_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus remote method call not initialized");
-	this->method_call_->appendUInt32ToMessage(value);
+	this->method_call_->appendUInt32(value);
 }
 
 /*
@@ -724,7 +724,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 						this->initializeMethodCallReply(current);
 						this->appendStringToMethodCallReply(ret);
 						/* extra values to send */
-						this->appendExtraValuesToReply();
+						this->appendExtraStringsValuesToReply();
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -775,9 +775,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 					try {
 						this->initializeMethodCallReply(current);
-						this->appendToMethodCallReply(ret);
+						this->appendStringVectorToMethodCallReply(ret);
 						/* extra values to send */
-						this->appendExtraValuesToReply();
+						this->appendExtraStringsValuesToReply();
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -836,9 +836,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 					try {
 						this->initializeMethodCallReply(current);
-						this->appendToMethodCallReply(ret);
+						this->appendStringVectorToMethodCallReply(ret);
 						/* extra values to send */
-						this->appendExtraValuesToReply();
+						this->appendExtraStringsValuesToReply();
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -898,9 +898,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 					try {
 						this->initializeMethodCallReply(current);
-						this->appendToMethodCallReply(ret);
+						this->appendStringVectorToMethodCallReply(ret);
 						/* extra values to send */
-						this->appendExtraValuesToReply();
+						this->appendExtraStringsValuesToReply();
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -959,9 +959,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 					try {
 						this->initializeMethodCallReply(current);
-						this->appendToMethodCallReply(ret);
+						this->appendBooleanToMethodCallReply(ret);
 						/* extra values to send */
-						this->appendExtraValuesToReply();
+						this->appendExtraStringsValuesToReply();
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -1021,9 +1021,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 					try {
 						this->initializeMethodCallReply(current);
-						this->appendToMethodCallReply(ret);
+						this->appendBooleanToMethodCallReply(ret);
 						/* extra values to send */
-						this->appendExtraValuesToReply();
+						this->appendExtraStringsValuesToReply();
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -1077,7 +1077,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 						this->initializeMethodCallReply(current);
 						this->appendStringToMethodCallReply(ret);
 						/* extra values to send */
-						this->appendExtraValuesToReply();
+						this->appendExtraStringsValuesToReply();
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -1140,9 +1140,9 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 					try {
 						this->initializeMethodCallReply(current);
-						this->appendToMethodCallReply(ret);
+						this->appendBooleanToMethodCallReply(ret);
 						/* extra values to send */
-						this->appendExtraValuesToReply();
+						this->appendExtraStringsValuesToReply();
 					}
 					catch (const GKDBusOOMWrongBuild & e) {
 						LOG(ERROR) << "DBus build reply failure : " << e.what();
@@ -1311,7 +1311,7 @@ void GKDBus::addSignalRuleMatch(const char* interface, const char* eventName) {
 #endif
 }
 
-void GKDBus::appendExtraValuesToReply(void) {
+void GKDBus::appendExtraStringsValuesToReply(void) {
 	if( ! this->extra_strings_.empty() ) {
 		for( const std::string & value : this->extra_strings_ ) {
 			this->appendStringToMethodCallReply(value);

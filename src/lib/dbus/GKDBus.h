@@ -88,12 +88,12 @@ class GKDBus : public GKDBusEvents
 	/* Method Call Reply */
 		void initializeMethodCallReply(BusConnection current);
 
-		void appendToMethodCallReply(const bool value);
+		void appendBooleanToMethodCallReply(const bool value);
 		void appendStringToMethodCallReply(const std::string & value);
-		void appendToMethodCallReply(
+		void appendStringVectorToMethodCallReply(
 			const std::vector<std::string> & list
 		);
-		void appendExtraToMethodCallReply(const std::string & value);
+		void appendExtraStringToMethodCallReply(const std::string & value);
 		//void appendVariantToMethodCallReply(const std::string & value);
 
 		void sendMethodCallReply(void);
@@ -174,7 +174,7 @@ class GKDBus : public GKDBusEvents
 			const char* interface,
 			const char* eventName
 		);
-		void appendExtraValuesToReply(void);
+		void appendExtraStringsValuesToReply(void);
 
 		void buildAndSendErrorReply(BusConnection current);
 		void initializeMessageErrorReply(BusConnection current);

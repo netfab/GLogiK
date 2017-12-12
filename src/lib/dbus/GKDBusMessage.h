@@ -30,12 +30,12 @@ namespace GLogiK
 class GKDBusMessage
 {
 	public:
-		void appendToMessage(const bool value);
-		void appendStringToMessage(const std::string & value);
-		void appendToMessage(const std::vector<std::string> & list);
+		void appendBoolean(const bool value);
+		void appendString(const std::string & value);
+		void appendStringVector(const std::vector<std::string> & list);
 
-		void appendUInt8ToMessage(const uint8_t value);
-		void appendUInt32ToMessage(const uint32_t value);
+		void appendUInt8(const uint8_t value);
+		void appendUInt32(const uint32_t value);
 
 		//void appendVariantToMessage(const std::string & value);
 		//void appendVariantToMessage(const unsigned char value);
