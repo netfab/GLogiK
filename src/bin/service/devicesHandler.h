@@ -46,7 +46,7 @@ class DevicesHandler
 
 		void saveDevicesProperties(void);
 
-		void checkStartedDevice(const std::string & device);
+		void checkStartedDevice(const std::string & device, const std::string & session_state);
 		void checkStoppedDevice(const std::string & device);
 		void clearLoadedDevices(void);
 
@@ -72,8 +72,13 @@ class DevicesHandler
 		std::vector<std::string> used_conf_files_;
 		std::map<const std::string, DeviceProperties> devices_;
 
-		void setDeviceProperties(const std::string & devID, DeviceProperties & device);
+		void setDeviceProperties(
+			const std::string & devID,
+			DeviceProperties & device,
+			const std::string & session_state = "unknown"
+		);
 		void loadDeviceConfigurationFile(DeviceProperties & device);
+		void setDeviceState(const std::string & devID, const DeviceProperties & device);
 };
 
 } // namespace GLogiK

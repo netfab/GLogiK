@@ -53,7 +53,7 @@ void GKDBusMessage::appendToMessage(const bool value) {
 #endif
 }
 
-void GKDBusMessage::appendToMessage(const std::string & value) {
+void GKDBusMessage::appendStringToMessage(const std::string & value) {
 	const char* p = value.c_str();
 	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_STRING, &p) ) {
 		this->hosed_message_ = true;
@@ -108,8 +108,20 @@ void GKDBusMessage::appendToMessage(const std::vector<std::string> & list) {
 #endif
 }
 
-/* TODO switch for other int types */
-void GKDBusMessage::appendToMessage(const uint32_t value) {
+void GKDBusMessage::appendUInt8ToMessage(const uint8_t value) {
+	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_BYTE, &value) ) {
+		this->hosed_message_ = true;
+		throw GKDBusOOMWrongBuild("RemoteMethodCall integer append failure, not enough memory");
+	}
+
+#if DEBUG_GKDBUS_SUBOBJECTS
+	if( ! this->log_off_ ) {
+		LOG(DEBUG2) << "DBus int32 value appended";
+	}
+#endif
+}
+
+void GKDBusMessage::appendUInt32ToMessage(const uint32_t value) {
 	dbus_uint32_t v = value;
 	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_UINT32, &v) ) {
 		this->hosed_message_ = true;

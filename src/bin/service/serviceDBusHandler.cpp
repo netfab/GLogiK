@@ -114,7 +114,7 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 
 	this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "RegisterClient");
-	this->DBus->appendToRemoteMethodCall(this->current_session_);
+	this->DBus->appendStringToRemoteMethodCall(this->current_session_);
 	this->DBus->sendRemoteMethodCall();
 
 	this->DBus->waitForRemoteMethodCallReply();
@@ -156,7 +156,7 @@ void ServiceDBusHandler::unregisterWithDaemon(void) {
 		/* telling the daemon we're killing ourself */
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "UnregisterClient");
-		this->DBus->appendToRemoteMethodCall(this->client_id_);
+		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
 		this->DBus->sendRemoteMethodCall();
 
 		this->DBus->waitForRemoteMethodCallReply();
@@ -204,7 +204,7 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 			/* getting logind current session */
 			this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.login1",
 				"/org/freedesktop/login1", "org.freedesktop.login1.Manager", "GetSessionByPID");
-			this->DBus->appendToRemoteMethodCall(pid);
+			this->DBus->appendUInt32ToRemoteMethodCall(pid);
 			this->DBus->sendRemoteMethodCall();
 
 			this->DBus->waitForRemoteMethodCallReply();
@@ -251,8 +251,8 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 		case SessionTracker::F_LOGIND:
 				this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, "org.freedesktop.login1",
 					this->current_session_.c_str(), "org.freedesktop.DBus.Properties", "Get", logoff);
-				this->DBus->appendToRemoteMethodCall("org.freedesktop.login1.Session");
-				this->DBus->appendToRemoteMethodCall("State");
+				this->DBus->appendStringToRemoteMethodCall("org.freedesktop.login1.Session");
+				this->DBus->appendStringToRemoteMethodCall("State");
 				this->DBus->sendRemoteMethodCall();
 
 				this->DBus->waitForRemoteMethodCallReply();
@@ -281,8 +281,8 @@ void ServiceDBusHandler::reportChangedState(void) {
 	try {
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "UpdateClientState");
-		this->DBus->appendToRemoteMethodCall(this->client_id_);
-		this->DBus->appendToRemoteMethodCall(this->session_state_);
+		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
+		this->DBus->appendStringToRemoteMethodCall(this->session_state_);
 		this->DBus->sendRemoteMethodCall();
 
 		this->DBus->waitForRemoteMethodCallReply();
@@ -407,7 +407,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 	try {
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetStartedDevices");
-		this->DBus->appendToRemoteMethodCall(this->client_id_);
+		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
 		this->DBus->sendRemoteMethodCall();
 
 		this->DBus->waitForRemoteMethodCallReply();
@@ -418,7 +418,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 #endif
 
 		for(const auto& devID : devicesID) {
-			this->devices_.checkStartedDevice(devID); /* check bool flag */
+			this->devices_.checkStartedDevice(devID, this->session_state_); /* check bool flag */
 		}
 	}
 	catch (const GLogiKExcept & e) {
@@ -434,7 +434,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 	try {
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetStoppedDevices");
-		this->DBus->appendToRemoteMethodCall(this->client_id_);
+		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
 		this->DBus->sendRemoteMethodCall();
 
 		this->DBus->waitForRemoteMethodCallReply();

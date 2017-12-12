@@ -89,7 +89,7 @@ class GKDBus : public GKDBusEvents
 		void initializeMethodCallReply(BusConnection current);
 
 		void appendToMethodCallReply(const bool value);
-		void appendToMethodCallReply(const std::string & value);
+		void appendStringToMethodCallReply(const std::string & value);
 		void appendToMethodCallReply(
 			const std::vector<std::string> & list
 		);
@@ -109,8 +109,9 @@ class GKDBus : public GKDBusEvents
 			const bool logoff=false
 		);
 
-		void appendToRemoteMethodCall(const std::string & value);
-		void appendToRemoteMethodCall(const uint32_t value);
+		void appendStringToRemoteMethodCall(const std::string & value);
+		void appendUInt8ToRemoteMethodCall(const uint8_t value);
+		void appendUInt32ToRemoteMethodCall(const uint32_t value);
 		//void appendVariantToRemoteMethodCall(const unsigned char value);
 		//void appendVariantToRemoteMethodCall(const std::string & value);
 

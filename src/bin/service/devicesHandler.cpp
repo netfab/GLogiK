@@ -193,14 +193,45 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 	}
 }
 
-void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProperties & device) {
+void DevicesHandler::setDeviceState(const std::string & devID, const DeviceProperties & device) {
+	try {
+		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "SetDeviceBacklightColor");
+		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
+		this->DBus->appendStringToRemoteMethodCall(devID);
+		this->DBus->appendUInt8ToRemoteMethodCall(device.getBLColor_R());
+		this->DBus->appendUInt8ToRemoteMethodCall(device.getBLColor_G());
+		this->DBus->appendUInt8ToRemoteMethodCall(device.getBLColor_B());
+
+		this->DBus->sendRemoteMethodCall();
+
+		this->DBus->waitForRemoteMethodCallReply();
+		const bool ret = this->DBus->getNextBooleanArgument();
+		if( ret ) {
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "successfully setted device " << devID << " properties";
+#endif
+		}
+		else {
+			LOG(ERROR) << "failed to set device " << devID << " properties : false";
+		}
+	}
+	catch (const GLogiKExcept & e) {
+		std::string warn(__func__);
+		warn += " failure : ";
+		warn += e.what();
+		WarningCheck::warnOrThrows(warn);
+	}
+}
+
+void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProperties & device, const std::string & session_state) {
 	unsigned int num = 0;
 
 	try {
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetDeviceProperties");
-		this->DBus->appendToRemoteMethodCall(this->client_id_);
-		this->DBus->appendToRemoteMethodCall(devID);
+		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
+		this->DBus->appendStringToRemoteMethodCall(devID);
 
 		this->DBus->sendRemoteMethodCall();
 
@@ -241,9 +272,13 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "found : " << device.getConfFile();
 #endif
+		/* configuration file loaded */
 		this->loadDeviceConfigurationFile(device);
-
 		this->used_conf_files_.push_back( device.getConfFile() );
+
+		if(session_state == "active") {
+			this->setDeviceState(devID, device);
+		}
 	}
 	catch ( const GLogiKExcept & e ) {
 		try {
@@ -272,7 +307,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	}
 }
 
-void DevicesHandler::checkStartedDevice(const std::string & devID) {
+void DevicesHandler::checkStartedDevice(const std::string & devID, const std::string & session_state) {
 	try {
 		DeviceProperties & device = this->devices_.at(devID);
 		device.check();
@@ -295,7 +330,7 @@ void DevicesHandler::checkStartedDevice(const std::string & devID) {
 #endif
 		DeviceProperties device;
 		/* also load configuration file */
-		this->setDeviceProperties(devID, device);
+		this->setDeviceProperties(devID, device, session_state);
 		device.start();
 		this->devices_[devID] = device;
 	}
@@ -366,8 +401,8 @@ void DevicesHandler::deleteUncheckedDevices(void) {
 		try {
 			this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "DeleteDeviceConfiguration");
-			this->DBus->appendToRemoteMethodCall(this->client_id_);
-			this->DBus->appendToRemoteMethodCall(devID);
+			this->DBus->appendStringToRemoteMethodCall(this->client_id_);
+			this->DBus->appendStringToRemoteMethodCall(devID);
 
 			this->DBus->sendRemoteMethodCall();
 

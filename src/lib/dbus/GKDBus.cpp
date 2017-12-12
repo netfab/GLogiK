@@ -247,7 +247,7 @@ void GKDBus::initializeTargetsSignal(
 		/* asking the bus targets unique names */
 		this->initializeRemoteMethodCall(current, "org.freedesktop.DBus",
 			"/org/freedesktop/DBus", "org.freedesktop.DBus", "ListQueuedOwners");
-		this->appendToRemoteMethodCall(dest);
+		this->appendStringToRemoteMethodCall(dest);
 		this->sendRemoteMethodCall();
 
 		this->waitForRemoteMethodCallReply();
@@ -371,10 +371,10 @@ void GKDBus::appendToMethodCallReply(const bool value) {
 	this->reply_->appendToMessage(value);
 }
 
-void GKDBus::appendToMethodCallReply(const std::string & value) {
+void GKDBus::appendStringToMethodCallReply(const std::string & value) {
 	if(this->reply_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus reply not initialized");
-	this->reply_->appendToMessage(value);
+	this->reply_->appendStringToMessage(value);
 }
 
 void GKDBus::appendToMethodCallReply(const std::vector<std::string> & list) {
@@ -448,16 +448,22 @@ void GKDBus::initializeRemoteMethodCall(
 	}
 }
 
-void GKDBus::appendToRemoteMethodCall(const std::string & value) {
+void GKDBus::appendStringToRemoteMethodCall(const std::string & value) {
 	if(this->method_call_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus remote method call not initialized");
-	this->method_call_->appendToMessage(value);
+	this->method_call_->appendStringToMessage(value);
 }
 
-void GKDBus::appendToRemoteMethodCall(const uint32_t value) {
+void GKDBus::appendUInt8ToRemoteMethodCall(const uint8_t value) {
 	if(this->method_call_ == nullptr) /* sanity check */
 		throw GLogiKExcept("DBus remote method call not initialized");
-	this->method_call_->appendToMessage(value);
+	this->method_call_->appendUInt8ToMessage(value);
+}
+
+void GKDBus::appendUInt32ToRemoteMethodCall(const uint32_t value) {
+	if(this->method_call_ == nullptr) /* sanity check */
+		throw GLogiKExcept("DBus remote method call not initialized");
+	this->method_call_->appendUInt32ToMessage(value);
 }
 
 /*
@@ -658,7 +664,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 			try {
 				this->initializeMethodCallReply(current);
-				this->appendToMethodCallReply(ret);
+				this->appendStringToMethodCallReply(ret);
 				/* no extra values */
 			}
 			catch (const GKDBusOOMWrongBuild & e) {
@@ -716,7 +722,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 					try {
 						this->initializeMethodCallReply(current);
-						this->appendToMethodCallReply(ret);
+						this->appendStringToMethodCallReply(ret);
 						/* extra values to send */
 						this->appendExtraValuesToReply();
 					}
@@ -1069,7 +1075,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 					try {
 						this->initializeMethodCallReply(current);
-						this->appendToMethodCallReply(ret);
+						this->appendStringToMethodCallReply(ret);
 						/* extra values to send */
 						this->appendExtraValuesToReply();
 					}
@@ -1308,7 +1314,7 @@ void GKDBus::addSignalRuleMatch(const char* interface, const char* eventName) {
 void GKDBus::appendExtraValuesToReply(void) {
 	if( ! this->extra_strings_.empty() ) {
 		for( const std::string & value : this->extra_strings_ ) {
-			this->appendToMethodCallReply(value);
+			this->appendStringToMethodCallReply(value);
 		}
 	}
 }

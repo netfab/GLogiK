@@ -31,10 +31,11 @@ class GKDBusMessage
 {
 	public:
 		void appendToMessage(const bool value);
-		void appendToMessage(const std::string & value);
+		void appendStringToMessage(const std::string & value);
 		void appendToMessage(const std::vector<std::string> & list);
 
-		void appendToMessage(const uint32_t value);
+		void appendUInt8ToMessage(const uint8_t value);
+		void appendUInt32ToMessage(const uint32_t value);
 
 		//void appendVariantToMessage(const std::string & value);
 		//void appendVariantToMessage(const unsigned char value);

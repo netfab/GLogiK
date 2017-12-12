@@ -22,6 +22,8 @@
 #ifndef __GLOGIK_DEVICE_PROPERTIES_H__
 #define __GLOGIK_DEVICE_PROPERTIES_H__
 
+#include <cstdint>
+
 #include <string>
 
 #include <boost/serialization/base_object.hpp>
@@ -58,13 +60,13 @@ class DeviceProperties : public MacrosBanks
 		void setModel(const std::string & model);
 		void setConfFile(const std::string & conf_file);
 
-		void setBLColor_R(unsigned char r) { this->backlight_color_R_ = r & 0xFF; }
-		void setBLColor_G(unsigned char g) { this->backlight_color_G_ = g & 0xFF; }
-		void setBLColor_B(unsigned char b) { this->backlight_color_B_ = b & 0xFF; }
+		void setBLColor_R(uint8_t r) { this->backlight_color_R_ = r & 0xFF; }
+		void setBLColor_G(uint8_t g) { this->backlight_color_G_ = g & 0xFF; }
+		void setBLColor_B(uint8_t b) { this->backlight_color_B_ = b & 0xFF; }
 
-		const unsigned char & getBLColor_R(void) const { return this->backlight_color_R_; }
-		const unsigned char & getBLColor_G(void) const { return this->backlight_color_G_; }
-		const unsigned char & getBLColor_B(void) const { return this->backlight_color_B_; }
+		const uint8_t & getBLColor_R(void) const { return this->backlight_color_R_; }
+		const uint8_t & getBLColor_G(void) const { return this->backlight_color_G_; }
+		const uint8_t & getBLColor_B(void) const { return this->backlight_color_B_; }
 
 		/* accessors to purely logical state */
 		const bool started(void) const;
@@ -78,9 +80,9 @@ class DeviceProperties : public MacrosBanks
 		std::string vendor_;
 		std::string model_;
 		std::string conf_file_;
-		unsigned char backlight_color_R_;
-		unsigned char backlight_color_G_;
-		unsigned char backlight_color_B_;
+		uint8_t backlight_color_R_;
+		uint8_t backlight_color_G_;
+		uint8_t backlight_color_B_;
 
 		bool check_;
 		DeviceState state_;

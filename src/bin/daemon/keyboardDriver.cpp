@@ -544,8 +544,6 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 	this->setMxKeysLeds(device);
 
 	this->initializeMacroKeys(device);
-	this->updateKeyboardColor(device, 0xFF, 0x0, 0x0);
-	this->setKeyboardColor(device);
 
 	while( DaemonControl::isDaemonRunning() and device.listen_status ) {
 		KeyStatus ret = this->getPressedKeys(device);
