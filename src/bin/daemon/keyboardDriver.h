@@ -82,7 +82,7 @@ struct InitializedDevice {
 	std::vector<KeyEvent> standard_keys_events;
 	std::string chosen_macro_key;
 	std::chrono::steady_clock::time_point last_call;
-	unsigned char rgb[3];
+	uint8_t rgb[3];
 
 	InitializedDevice()=default;
 

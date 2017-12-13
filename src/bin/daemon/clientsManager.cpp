@@ -315,18 +315,17 @@ const bool ClientsManager::updateClientState(const std::string & clientID, const
 		Client* pClient = this->clients_.at(clientID);
 		pClient->updateSessionState(state);
 
-/*
 		if(state == "online") {
 			this->devicesManager->resetDevicesStates();
 		}
 		else if(state == "active") {
+			pClient->setAllDevicesBacklightColors(this->devicesManager);
 		}
 		else {
 			this->buffer_.str("unhandled state for updating devices : ");
 			this->buffer_ << state;
 			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 		}
-*/
 
 		return true;
 	}

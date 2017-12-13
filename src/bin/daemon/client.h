@@ -54,6 +54,7 @@ class Client
 			const uint8_t g,
 			const uint8_t b
 		);
+		void setAllDevicesBacklightColors(DevicesManager* dev_manager);
 
 	protected:
 

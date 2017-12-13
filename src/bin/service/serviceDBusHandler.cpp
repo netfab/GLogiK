@@ -289,7 +289,7 @@ void ServiceDBusHandler::reportChangedState(void) {
 		const bool ret = this->DBus->getNextBooleanArgument();
 		if( ret ) {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "successfully reported changed state";
+			LOG(DEBUG2) << "successfully reported changed state : " << this->session_state_;
 #endif
 		}
 		else {

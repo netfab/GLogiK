@@ -20,6 +20,7 @@
  */
 
 #include <stdexcept>
+#include <iostream>
 
 #include "lib/utils/utils.h"
 
@@ -133,6 +134,20 @@ const bool Client::setDeviceBacklightColor(const std::string & devID,
 	}
 
 	return false;
+}
+
+void Client::setAllDevicesBacklightColors(DevicesManager* dev_manager)
+{
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "setting backlight color for all devices";
+#endif
+	for( const auto & devID : dev_manager->getStartedDevices() ) {
+		const DeviceProperties & device = this->devices_.at(devID);
+		const uint8_t r = device.getBLColor_R();
+		const uint8_t g = device.getBLColor_G();
+		const uint8_t b = device.getBLColor_B();
+		dev_manager->setDeviceBacklightColor(devID, r, g, b);
+	}
 }
 
 } // namespace GLogiK
