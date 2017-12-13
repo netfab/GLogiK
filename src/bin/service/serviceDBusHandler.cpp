@@ -123,9 +123,7 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 	if( ret ) {
 		this->client_id_ = this->DBus->getNextStringArgument();
 		this->are_we_registered_ = true;
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "successfully registered with daemon : ID : " << this->client_id_;
-#endif
+		LOG(INFO) << "successfully registered with daemon - " << this->client_id_;
 	}
 	else {
 		const char * failure = "failed to register with daemon : false";
