@@ -19,6 +19,7 @@
  *
  */
 
+#include <functional>
 #include <vector>
 #include <stdexcept>
 #include <thread>
@@ -72,6 +73,11 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 			this->DBus_SMH_object_, this->DBus_SMH_interface_, "ReportYourself",
 			{}, // FIXME
 			std::bind(&ServiceDBusHandler::reportChangedState, this) );
+
+		this->DBus->addSignal_StringToBool_Callback(BusConnection::GKDBUS_SYSTEM,
+			this->DBus_SMH_object_, this->DBus_SMH_interface_, "MacroRecorded",
+			{}, // FIXME
+			std::bind(&ServiceDBusHandler::updateMacros, this, std::placeholders::_1) );
 
 		/* set GKDBus pointer */
 		this->devices_.setDBus(this->DBus);
@@ -385,12 +391,12 @@ void ServiceDBusHandler::daemonIsStopping(void) {
 
 void ServiceDBusHandler::somethingChanged(void) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "it seems that something changed ! ";
+	LOG(DEBUG2) << "it seems that something changed !";
 #endif
 
 	if( ! this->are_we_registered_ ) {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << " ... but we don't care because we are not registered ! ";
+		LOG(DEBUG2) << " ... but we don't care because we are not registered !";
 #endif
 		return;
 	}
@@ -455,6 +461,28 @@ void ServiceDBusHandler::somethingChanged(void) {
 
 	/* detect and delete unplugged devices */
 	this->devices_.deleteUncheckedDevices();
+}
+
+const bool ServiceDBusHandler::updateMacros(const std::string & devID) {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "got MacroRecorded signal for device " << devID;
+#endif
+
+	if( ! this->are_we_registered_ ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "currently not registered, skipping";
+#endif
+		return false;
+	}
+
+	if( this->session_state_ != "active" ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "currently not active, skipping";
+#endif
+		return false;
+	}
+
+	return false;
 }
 
 void ServiceDBusHandler::checkDBusMessages(void) {

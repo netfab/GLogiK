@@ -29,6 +29,7 @@
 #include <config.h>
 
 #include "lib/utils/utils.h"
+#include "lib/dbus/GKDBus.h"
 
 #include "daemonControl.h"
 #include "keyboardDriver.h"
@@ -468,10 +469,14 @@ void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 	this->handleModifierKeys(device);
 }
 
-void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device) {
+void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std::string & devID) {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "entering macro record mode";
 #endif
+
+	std::string DBus_connection_name(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
+	/* ROOT_NODE only for introspection, don't care */
+	GKDBus* pDBus = new GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
 
 	bool keys_found = false;
 	/* initializing time_point */
@@ -504,11 +509,34 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device) {
 				device.macros_man->setMacro(device.chosen_macro_key, device.standard_keys_events);
 				keys_found = true;
 				device.standard_keys_events.clear();
+
+				try {
+					/* open a new connection, GKDBus is not thread-safe */
+					pDBus->connectToSystemBus(DBus_connection_name.c_str());
+
+					pDBus->initializeTargetsSignal(
+						BusConnection::GKDBUS_SYSTEM,
+						this->DBus_clients_name_,
+						this->DBus_CSMH_object_path_,
+						this->DBus_CSMH_interface_,
+						"MacroRecorded"
+					);
+					pDBus->appendStringToTargetsSignal(devID);
+					pDBus->sendTargetsSignal();
+				}
+				catch (const GLogiKExcept & e) {
+					std::ostringstream warn("", std::ios_base::app);
+					warn << "DBus targets signal failure : " << e.what();
+					GKSysLog(LOG_WARNING, WARNING, warn.str());
+				}
 				break;
 			default:
 				break;
 		}
 	}
+
+	delete pDBus;
+	pDBus = nullptr;
 
 #if DEBUGGING_ON
 	LOG(DEBUG) << "exiting macro record mode";
@@ -559,7 +587,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 
 					/* is macro record mode enabled ? */
 					if( mask & to_type(Leds::GK_LED_MR) ) {
-						this->enterMacroRecordMode(device);
+						this->enterMacroRecordMode(device, devID);
 
 						/* disabling macro record mode */
 						if(this->updateCurrentLedsMask(device, true))

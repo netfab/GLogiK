@@ -91,6 +91,7 @@ class ServiceDBusHandler
 		/* signals */
 		void somethingChanged(void);
 		void daemonIsStopping(void);
+		const bool updateMacros(const std::string & devID);
 };
 
 } // namespace GLogiK

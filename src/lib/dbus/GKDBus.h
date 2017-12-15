@@ -83,6 +83,7 @@ class GKDBus : public GKDBusEvents
 			const char* interface,
 			const char* signal
 		);
+		void appendStringToTargetsSignal(const std::string & value);
 		void sendTargetsSignal(void);
 
 	/* Method Call Reply */

@@ -292,6 +292,16 @@ void GKDBus::initializeTargetsSignal(
 #endif
 }
 
+void GKDBus::appendStringToTargetsSignal(const std::string & value) {
+	for(auto & targetSignal : this->signals_) {
+		if(targetSignal == nullptr) { /* sanity check */
+			LOG(WARNING) << "signal object is null";
+			continue;
+		}
+		targetSignal->appendString(value);
+	}
+}
+
 void GKDBus::sendTargetsSignal(void) {
 	/* sending and freeing already allocated signals */
 	for(const auto & targetSignal : this->signals_) {

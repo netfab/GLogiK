@@ -5,6 +5,7 @@
   <!-- Only user glogik can own the GLogiK service -->
   <policy user="@GLOGIK_USER@">
     <allow own="com.glogik.Daemon"/>
+    <allow own="com.glogik.Device"/>
   </policy>
   <policy group="@GLOGIK_GROUP@">
     <allow own="com.glogik.Desktop.Service"/>
