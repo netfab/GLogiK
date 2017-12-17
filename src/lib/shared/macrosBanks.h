@@ -22,6 +22,8 @@
 #ifndef __GLOGIK_MACROS_BANKS_H__
 #define __GLOGIK_MACROS_BANKS_H__
 
+#include <cstdint>
+
 #include <vector>
 #include <map>
 #include <string>
@@ -50,6 +52,16 @@ class MacrosBanks
 
 		const macros_map_t & getMacros(void) const { return this->macros_profiles_; };
 		void setMacros(const macros_map_t & macros) { this->macros_profiles_ = macros; };
+
+		void updateMacro(
+			const uint8_t profile,
+			const std::string & keyName,
+			const std::vector<KeyEvent> & macro_array
+		);
+		const std::vector<KeyEvent> getMacro(
+			const uint8_t profile,
+			const std::string & keyName
+		);
 
 	protected:
 		MacrosBanks(void);

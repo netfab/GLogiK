@@ -22,6 +22,8 @@
 #ifndef __GLOGIK_DESKTOP_SERVICE_DEVICES_HANDLER_H__
 #define __GLOGIK_DESKTOP_SERVICE_DEVICES_HANDLER_H__
 
+#include <cstdint>
+
 #include <string>
 #include <vector>
 #include <map>
@@ -52,6 +54,12 @@ class DevicesHandler
 
 		void uncheckThemAll(void);
 		void deleteUncheckedDevices(void);
+
+		const bool updateMacro(
+			const std::string & devID,
+			const std::string & keyName,
+			const uint8_t profile
+		);
 
 	protected:
 

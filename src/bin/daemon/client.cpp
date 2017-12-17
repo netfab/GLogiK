@@ -150,5 +150,22 @@ void Client::setAllDevicesBacklightColors(DevicesManager* dev_manager)
 	}
 }
 
+const std::vector<KeyEvent> Client::getMacro(const std::string & devID,
+	const std::string & keyName, const uint8_t profile)
+{
+	try {
+		DeviceProperties & device = this->devices_.at(devID);
+		return device.getMacro(profile, keyName);
+	}
+	catch (const std::out_of_range& oor) {
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "unknown device : " << devID;
+#endif
+	}
+
+	const std::vector<KeyEvent> empty;
+	return empty;
+}
+
 } // namespace GLogiK
 

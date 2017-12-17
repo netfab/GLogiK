@@ -55,6 +55,7 @@ class Client
 			const uint8_t b
 		);
 		void setAllDevicesBacklightColors(DevicesManager* dev_manager);
+		const std::vector<KeyEvent> getMacro(const std::string & devID, const std::string & keyName, const uint8_t profile);
 
 	protected:
 

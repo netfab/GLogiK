@@ -1252,6 +1252,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 		}
 	}
 
+	// FIXME handle KeyEvent array for getMacro
+
 }
 
 /* -- */

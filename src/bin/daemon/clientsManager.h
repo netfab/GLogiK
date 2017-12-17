@@ -97,6 +97,10 @@ class ClientsManager
 			const std::string & clientID, const std::string & devID,
 			const uint8_t r, const uint8_t g, const uint8_t b
 		);
+		const std::vector<KeyEvent> getMacro(
+			const std::string & clientID, const std::string & devID,
+			const std::string & keyName, const uint8_t profile
+		);
 		/* -- */
 };
 

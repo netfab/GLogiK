@@ -525,6 +525,14 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 					pDBus->appendStringToTargetsSignal(device.chosen_macro_key);
 					pDBus->appendUInt8ToTargetsSignal(profile);
 
+					/*
+					for(const auto & keyEvent : device.standard_keys_events) {
+						// see keyEvent.h
+						pDBus->appendUInt8ToTargetsSignal( keyEvent.event_code );
+						pDBus->appendUInt8ToTargetsSignal( to_type(keyEvent.event) );
+						pDBus->appendUInt16ToTargetsSignal( keyEvent.interval );
+					}
+					*/
 					pDBus->sendTargetsSignal();
 				}
 				catch (const GLogiKExcept & e) {

@@ -77,7 +77,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 		this->DBus->addSignal_TwoStringsOneByteToBool_Callback(BusConnection::GKDBUS_SYSTEM,
 			this->DBus_SMH_object_, this->DBus_SMH_interface_, "MacroRecorded",
 			{}, // FIXME
-			std::bind(&ServiceDBusHandler::updateMacros, this, std::placeholders::_1,
+			std::bind(&ServiceDBusHandler::macroRecorded, this, std::placeholders::_1,
 				std::placeholders::_2, std::placeholders::_3) );
 
 		/* set GKDBus pointer */
@@ -464,7 +464,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 	this->devices_.deleteUncheckedDevices();
 }
 
-const bool ServiceDBusHandler::updateMacros(
+const bool ServiceDBusHandler::macroRecorded(
 	const std::string & devID,
 	const std::string & keyName,
 	const uint8_t profile)
@@ -488,7 +488,7 @@ const bool ServiceDBusHandler::updateMacros(
 		return false;
 	}
 
-	return false;
+	return this->devices_.updateMacro(devID, keyName, profile);
 }
 
 void ServiceDBusHandler::checkDBusMessages(void) {

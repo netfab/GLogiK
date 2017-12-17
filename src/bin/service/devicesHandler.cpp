@@ -427,6 +427,42 @@ void DevicesHandler::deleteUncheckedDevices(void) {
 	to_clean.clear();
 }
 
+const bool DevicesHandler::updateMacro(
+	const std::string & devID,
+	const std::string & keyName,
+	const uint8_t profile)
+{
+	try {
+		DeviceProperties & device = this->devices_.at(devID);
+
+		/* getting recorded macro from daemon */
+		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetMacro");
+
+		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
+		this->DBus->appendStringToRemoteMethodCall(devID);
+		this->DBus->appendStringToRemoteMethodCall(keyName);
+		this->DBus->appendUInt8ToRemoteMethodCall(profile);
+
+		this->DBus->sendRemoteMethodCall();
+
+		this->DBus->waitForRemoteMethodCallReply();
+
+		const std::vector<KeyEvent> macro_array; // FIXME get macro array for GKDBus
+
+		device.updateMacro(profile, keyName, macro_array);
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("device not found in container : ");
+		this->buffer_ << devID;
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+	}
+	catch (const GLogiKExcept & e) {
+		GKSysLog(LOG_WARNING, WARNING, e.what());
+	}
+	return false;
+}
+
 void DevicesHandler::clearLoadedDevices(void) {
 	this->devices_.clear();
 	this->used_conf_files_.clear();

@@ -91,7 +91,7 @@ class ServiceDBusHandler
 		/* signals */
 		void somethingChanged(void);
 		void daemonIsStopping(void);
-		const bool updateMacros(const std::string & devID, const std::string & keyName, const uint8_t profile);
+		const bool macroRecorded(const std::string & devID, const std::string & keyName, const uint8_t profile);
 };
 
 } // namespace GLogiK

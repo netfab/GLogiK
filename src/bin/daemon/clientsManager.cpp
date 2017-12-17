@@ -119,6 +119,15 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"b", "did_setcolor_succeeded", "out", "did the SetDeviceBacklightColor method succeeded ?"} },
 		std::bind(&ClientsManager::setDeviceBacklightColor, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
+
+	this->DBus->addEvent_ThreeStringsOneByteToKeyEventArray_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "GetMacro",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
+			{"s", "macro_key_name", "in", "macro key name"},
+			{"y", "macro_profile", "in", "macro profile"},
+			{"a(yyn)", "macro_array", "out", "macro array"} },
+		std::bind(&ClientsManager::getMacro, this, std::placeholders::_1, std::placeholders::_2,
+			std::placeholders::_3, std::placeholders::_4) );
 }
 
 ClientsManager::~ClientsManager() {
@@ -510,6 +519,30 @@ const bool ClientsManager::setDeviceBacklightColor(const std::string & clientID,
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 	return false;
+}
+
+const std::vector<KeyEvent> ClientsManager::getMacro(
+	const std::string & clientID, const std::string & devID,
+	const std::string & keyName, const uint8_t profile)
+{
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "getMacro called by client " << clientID;
+	LOG(DEBUG3) << " device : " << devID;
+	LOG(DEBUG3) << "    key : " << keyName;
+	LOG(DEBUG3) << "profile : " << to_uint(profile);
+#endif
+	try {
+		Client* pClient = this->clients_.at(clientID);
+		return pClient->getMacro(devID, keyName, profile);
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("unknown client ");
+		this->buffer_ << clientID << " tried to get macro";
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+	}
+
+	const std::vector<KeyEvent> empty;
+	return empty;
 }
 
 } // namespace GLogiK

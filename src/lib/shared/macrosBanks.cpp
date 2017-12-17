@@ -19,6 +19,10 @@
  *
  */
 
+#include <stdexcept>
+
+#include "lib/utils/utils.h"
+
 #include "macrosBanks.h"
 
 namespace GLogiK
@@ -28,6 +32,51 @@ MacrosBanks::MacrosBanks() {
 }
 
 MacrosBanks::~MacrosBanks() {
+}
+
+void MacrosBanks::updateMacro(
+	const uint8_t profile,
+	const std::string & keyName,
+	const std::vector<KeyEvent> & macro_array)
+{
+	if( to_uint(profile) > to_uint(MemoryBank::MACROS_M3) )
+		throw GLogiKExcept("wrong profile value");
+
+	const MemoryBank current_profile = static_cast<MemoryBank>(profile);
+
+	try {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "macros profile: " << to_uint(profile)
+			<< " - Macro Key: " << keyName << " - setting macro";
+#endif
+		this->macros_profiles_[current_profile].at(keyName) = macro_array;
+	}
+	catch (const std::out_of_range& oor) {
+		std::string warn("wrong map key : ");
+		warn += keyName;
+		GKSysLog(LOG_WARNING, WARNING, warn);
+		throw GLogiKExcept("macro not updated");
+	}
+}
+
+const std::vector<KeyEvent> MacrosBanks::getMacro(const uint8_t profile, const std::string & keyName)
+{
+	if( to_uint(profile) > to_uint(MemoryBank::MACROS_M3) )
+		throw GLogiKExcept("wrong profile value");
+
+	const MemoryBank current_profile = static_cast<MemoryBank>(profile);
+	try {
+		return this->macros_profiles_[current_profile].at(keyName);
+	}
+	catch (const std::out_of_range& oor) {
+		std::string warn("wrong map key : ");
+		warn += keyName;
+		GKSysLog(LOG_WARNING, WARNING, warn);
+		throw GLogiKExcept("can't get macro");
+	}
+
+	std::vector<KeyEvent> empty;
+	return empty;
 }
 
 } // namespace GLogiK
