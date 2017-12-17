@@ -84,6 +84,8 @@ class GKDBus : public GKDBusEvents
 			const char* signal
 		);
 		void appendStringToTargetsSignal(const std::string & value);
+		void appendUInt8ToTargetsSignal(const uint8_t value);
+		//void appendUInt16ToTargetsSignal(const uint16_t value);
 		void sendTargetsSignal(void);
 
 	/* Method Call Reply */
@@ -129,6 +131,14 @@ class GKDBus : public GKDBusEvents
 		void checkForSignalReceipt(BusConnection current);
 
 		/* wrappers */
+		void addSignal_TwoStringsOneByteToBool_Callback(
+			BusConnection current,
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			std::vector<DBusMethodArgument> args,
+			std::function<const bool(const std::string&, const std::string&, const uint8_t)> callback
+		);
 		void addSignal_StringToBool_Callback(
 			BusConnection current,
 			const char* object,

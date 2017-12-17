@@ -111,6 +111,10 @@ void MacrosManager::setCurrentActiveProfile(MemoryBank bank) {
 	this->currentActiveProfile_ = bank;
 }
 
+const MemoryBank MacrosManager::getCurrentActiveProfile(void) const {
+	return this->currentActiveProfile_;
+}
+
 /* clear all macros profiles */
 void MacrosManager::clearMacroProfiles(void) {
 	this->setCurrentActiveProfile(MemoryBank::MACROS_M0);

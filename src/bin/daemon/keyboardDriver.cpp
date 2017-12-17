@@ -481,6 +481,7 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 	bool keys_found = false;
 	/* initializing time_point */
 	device.last_call = std::chrono::steady_clock::now();
+	const uint8_t profile = to_type( device.macros_man->getCurrentActiveProfile() );
 
 	while( ! keys_found and DaemonControl::isDaemonRunning() and device.listen_status ) {
 		KeyStatus ret = this->getPressedKeys(device);
@@ -507,8 +508,6 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 
 				/* macro key pressed, recording macro */
 				device.macros_man->setMacro(device.chosen_macro_key, device.standard_keys_events);
-				keys_found = true;
-				device.standard_keys_events.clear();
 
 				try {
 					/* open a new connection, GKDBus is not thread-safe */
@@ -521,7 +520,11 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 						this->DBus_CSMH_interface_,
 						"MacroRecorded"
 					);
+
 					pDBus->appendStringToTargetsSignal(devID);
+					pDBus->appendStringToTargetsSignal(device.chosen_macro_key);
+					pDBus->appendUInt8ToTargetsSignal(profile);
+
 					pDBus->sendTargetsSignal();
 				}
 				catch (const GLogiKExcept & e) {
@@ -529,6 +532,9 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 					warn << "DBus targets signal failure : " << e.what();
 					GKSysLog(LOG_WARNING, WARNING, warn.str());
 				}
+
+				keys_found = true;
+				device.standard_keys_events.clear();
 				break;
 			default:
 				break;

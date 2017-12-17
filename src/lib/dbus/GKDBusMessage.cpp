@@ -111,12 +111,25 @@ void GKDBusMessage::appendStringVector(const std::vector<std::string> & list) {
 void GKDBusMessage::appendUInt8(const uint8_t value) {
 	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_BYTE, &value) ) {
 		this->hosed_message_ = true;
-		throw GKDBusOOMWrongBuild("RemoteMethodCall integer append failure, not enough memory");
+		throw GKDBusOOMWrongBuild("uint8_t append failure, not enough memory");
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
 	if( ! this->log_off_ ) {
-		LOG(DEBUG2) << "DBus int32 value appended";
+		LOG(DEBUG2) << "DBus uint8_t value appended";
+	}
+#endif
+}
+
+void GKDBusMessage::appendUInt16(const uint16_t value) {
+	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_UINT16, &value) ) {
+		this->hosed_message_ = true;
+		throw GKDBusOOMWrongBuild("uint16_t append failure, not enough memory");
+	}
+
+#if DEBUG_GKDBUS_SUBOBJECTS
+	if( ! this->log_off_ ) {
+		LOG(DEBUG2) << "DBus uint16_t value appended";
 	}
 #endif
 }
@@ -125,12 +138,12 @@ void GKDBusMessage::appendUInt32(const uint32_t value) {
 	dbus_uint32_t v = value;
 	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_UINT32, &v) ) {
 		this->hosed_message_ = true;
-		throw GKDBusOOMWrongBuild("RemoteMethodCall integer append failure, not enough memory");
+		throw GKDBusOOMWrongBuild("uint32_t append failure, not enough memory");
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
 	if( ! this->log_off_ ) {
-		LOG(DEBUG2) << "DBus int32 value appended";
+		LOG(DEBUG2) << "DBus uint32_t value appended";
 	}
 #endif
 }

@@ -165,6 +165,19 @@ const bool GKDBus::checkMessageForMethodCall(const char* interface, const char* 
  *	Signal setup
  */
 
+void GKDBus::addSignal_TwoStringsOneByteToBool_Callback(
+	BusConnection current,
+	const char* object,
+	const char* interface,
+	const char* eventName,
+	std::vector<DBusMethodArgument> args,
+	std::function<const bool(const std::string&, const std::string&, const uint8_t)> callback
+) {
+	this->setCurrentConnection(current);
+	this->addEvent_TwoStringsOneByteToBool_Callback(object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL);
+	this->addSignalRuleMatch(interface, eventName);
+}
+
 void GKDBus::addSignal_StringToBool_Callback(
 	BusConnection current,
 	const char* object,
@@ -301,6 +314,28 @@ void GKDBus::appendStringToTargetsSignal(const std::string & value) {
 		targetSignal->appendString(value);
 	}
 }
+
+void GKDBus::appendUInt8ToTargetsSignal(const uint8_t value) {
+	for(auto & targetSignal : this->signals_) {
+		if(targetSignal == nullptr) {
+			LOG(WARNING) << "signal object is null";
+			continue;
+		}
+		targetSignal->appendUInt8(value);
+	}
+}
+
+/*
+void GKDBus::appendUInt16ToTargetsSignal(const uint16_t value) {
+	for(auto & targetSignal : this->signals_) {
+		if(targetSignal == nullptr) {
+			LOG(WARNING) << "signal object is null";
+			continue;
+		}
+		targetSignal->appendUInt16(value);
+	}
+}
+*/
 
 void GKDBus::sendTargetsSignal(void) {
 	/* sending and freeing already allocated signals */
@@ -581,6 +616,46 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 	 */
 
 	std::string object_path;
+
+	for(const auto & object_it : this->events_twostringsonebyte_to_bool_) {
+		/* object path must match */
+		object_path = this->getNode(object_it.first);
+		if(object_path != asked_object_path)
+			continue;
+
+		for(const auto & interface : object_it.second) {
+#if DEBUGGING_ON
+			LOG(DEBUG2) << "checking " << interface.first << " interface";
+#endif
+
+			for(const auto & DBusEvent : interface.second) { /* vector of struct */
+				/* we want only signals */
+				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL )
+					continue;
+
+				const char* signal = DBusEvent.eventName.c_str();
+#if DEBUGGING_ON
+				LOG(DEBUG3) << "checking for " << signal << " receipt";
+#endif
+				if( this->checkMessageForSignalReceipt(interface.first.c_str(), signal) ) {
+					/* free message, callback could send DBus requests */
+					this->freeMessage();
+					try {
+						/* call two strings to bool callback */
+						const std::string arg1( this->getNextStringArgument() );
+						const std::string arg2( this->getNextStringArgument() );
+						const uint8_t arg3( this->getNextByteArgument() );
+						DBusEvent.callback(arg1, arg2, arg3);
+					}
+					catch ( const EmptyContainer & e ) {
+						LOG(WARNING) << e.what();
+					}
+
+					return; /* only one by message */
+				}
+			}
+		}
+	}
 
 	for(const auto & object_it : this->events_string_to_bool_) {
 		/* object path must match */

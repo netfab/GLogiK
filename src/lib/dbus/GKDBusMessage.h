@@ -35,6 +35,7 @@ class GKDBusMessage
 		void appendStringVector(const std::vector<std::string> & list);
 
 		void appendUInt8(const uint8_t value);
+		void appendUInt16(const uint16_t value);
 		void appendUInt32(const uint32_t value);
 
 		//void appendVariantToMessage(const std::string & value);

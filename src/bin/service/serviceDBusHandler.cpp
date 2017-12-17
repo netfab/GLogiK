@@ -74,10 +74,11 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 			{}, // FIXME
 			std::bind(&ServiceDBusHandler::reportChangedState, this) );
 
-		this->DBus->addSignal_StringToBool_Callback(BusConnection::GKDBUS_SYSTEM,
+		this->DBus->addSignal_TwoStringsOneByteToBool_Callback(BusConnection::GKDBUS_SYSTEM,
 			this->DBus_SMH_object_, this->DBus_SMH_interface_, "MacroRecorded",
 			{}, // FIXME
-			std::bind(&ServiceDBusHandler::updateMacros, this, std::placeholders::_1) );
+			std::bind(&ServiceDBusHandler::updateMacros, this, std::placeholders::_1,
+				std::placeholders::_2, std::placeholders::_3) );
 
 		/* set GKDBus pointer */
 		this->devices_.setDBus(this->DBus);
@@ -463,9 +464,14 @@ void ServiceDBusHandler::somethingChanged(void) {
 	this->devices_.deleteUncheckedDevices();
 }
 
-const bool ServiceDBusHandler::updateMacros(const std::string & devID) {
+const bool ServiceDBusHandler::updateMacros(
+	const std::string & devID,
+	const std::string & keyName,
+	const uint8_t profile)
+{
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "got MacroRecorded signal for device " << devID;
+	LOG(DEBUG2) << "got MacroRecorded signal for device " << devID
+				<< " profile " << to_uint(profile) << " key " << keyName;
 #endif
 
 	if( ! this->are_we_registered_ ) {
