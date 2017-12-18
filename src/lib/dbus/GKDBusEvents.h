@@ -178,12 +178,12 @@ struct GKDBusEvent_TwoStringsThreeBytesToBool_Callback : public GKDBusEvent {
 };
 
 struct GKDBusEvent_ThreeStringsOneByteToKeyEventArray_Callback : public GKDBusEvent {
-	std::function<const std::vector<KeyEvent>(const std::string&, const std::string&, const std::string&, const uint8_t)> callback;
+	std::function<const macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> callback;
 
 	GKDBusEvent_ThreeStringsOneByteToKeyEventArray_Callback(
 		const char* n,
 		std::vector<DBusMethodArgument> & a,
-		std::function<const std::vector<KeyEvent>(const std::string&, const std::string&, const std::string&, const uint8_t)> c,
+		std::function<const macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> c,
 		GKDBusEventType t
 		)	: GKDBusEvent(n, a, t), callback(c) {}
 };
@@ -277,7 +277,7 @@ class GKDBusEvents
 			const char* interface,
 			const char* eventName,
 			std::vector<DBusMethodArgument> args,
-			std::function<const std::vector<KeyEvent>(const std::string&, const std::string&, const std::string&, const uint8_t)> callback,
+			std::function<const macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> callback,
 			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD
 		);
 

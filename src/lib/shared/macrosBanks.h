@@ -45,10 +45,13 @@ enum class MemoryBank : uint8_t
 	MACROS_M3,
 };
 
+typedef std::map<const MemoryBank, std::map<const std::string, macro_t>> macros_map_t;
+
 class MacrosBanks
 {
 	public:
-		typedef std::map<const MemoryBank, std::map<const std::string, std::vector<KeyEvent>>> macros_map_t;
+
+		static const macro_t empty_macro_;
 
 		const macros_map_t & getMacros(void) const { return this->macros_profiles_; };
 		void setMacros(const macros_map_t & macros) { this->macros_profiles_ = macros; };
@@ -56,9 +59,9 @@ class MacrosBanks
 		void updateMacro(
 			const uint8_t profile,
 			const std::string & keyName,
-			const std::vector<KeyEvent> & macro_array
+			const macro_t & macro_array
 		);
-		const std::vector<KeyEvent> getMacro(
+		const macro_t & getMacro(
 			const uint8_t profile,
 			const std::string & keyName
 		);

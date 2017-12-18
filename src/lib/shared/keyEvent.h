@@ -23,6 +23,9 @@
 #define __GLOGIK_KEY_EVENT_H__
 
 #include <cstdint>
+
+#include <vector>
+
 #include <linux/input-event-codes.h>
 
 #include <boost/serialization/access.hpp>
@@ -57,6 +60,8 @@ struct KeyEvent {
 			ar & this->interval;
 		}
 };
+
+typedef std::vector<KeyEvent> macro_t;
 
 } // namespace GLogiK
 

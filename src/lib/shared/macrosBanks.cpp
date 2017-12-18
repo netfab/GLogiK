@@ -28,6 +28,8 @@
 namespace GLogiK
 {
 
+const macro_t MacrosBanks::empty_macro_ = {};
+
 MacrosBanks::MacrosBanks() {
 }
 
@@ -37,7 +39,7 @@ MacrosBanks::~MacrosBanks() {
 void MacrosBanks::updateMacro(
 	const uint8_t profile,
 	const std::string & keyName,
-	const std::vector<KeyEvent> & macro_array)
+	const macro_t & macro_array)
 {
 	if( to_uint(profile) > to_uint(MemoryBank::MACROS_M3) )
 		throw GLogiKExcept("wrong profile value");
@@ -59,7 +61,7 @@ void MacrosBanks::updateMacro(
 	}
 }
 
-const std::vector<KeyEvent> MacrosBanks::getMacro(const uint8_t profile, const std::string & keyName)
+const macro_t & MacrosBanks::getMacro(const uint8_t profile, const std::string & keyName)
 {
 	if( to_uint(profile) > to_uint(MemoryBank::MACROS_M3) )
 		throw GLogiKExcept("wrong profile value");
@@ -75,8 +77,7 @@ const std::vector<KeyEvent> MacrosBanks::getMacro(const uint8_t profile, const s
 		throw GLogiKExcept("can't get macro");
 	}
 
-	std::vector<KeyEvent> empty;
-	return empty;
+	return MacrosBanks::empty_macro_;
 }
 
 } // namespace GLogiK

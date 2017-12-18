@@ -81,7 +81,7 @@ struct InitializedDevice {
 	int transfer_length;
 	unsigned char keys_buffer[KEYS_BUFFER_LENGTH];
 	unsigned char previous_keys_buffer[KEYS_BUFFER_LENGTH];
-	std::vector<KeyEvent> standard_keys_events;
+	macro_t standard_keys_events;
 	std::string chosen_macro_key;
 	std::chrono::steady_clock::time_point last_call;
 	uint8_t rgb[3];

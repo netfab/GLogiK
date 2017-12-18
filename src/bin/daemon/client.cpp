@@ -150,7 +150,7 @@ void Client::setAllDevicesBacklightColors(DevicesManager* dev_manager)
 	}
 }
 
-const std::vector<KeyEvent> Client::getMacro(const std::string & devID,
+const macro_t & Client::getMacro(const std::string & devID,
 	const std::string & keyName, const uint8_t profile)
 {
 	try {
@@ -163,8 +163,7 @@ const std::vector<KeyEvent> Client::getMacro(const std::string & devID,
 #endif
 	}
 
-	const std::vector<KeyEvent> empty;
-	return empty;
+	return MacrosBanks::empty_macro_;
 }
 
 } // namespace GLogiK

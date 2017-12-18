@@ -44,7 +44,7 @@ class MacrosManager : public MacrosBanks
 		void setCurrentActiveProfile(MemoryBank bank);
 		const MemoryBank getCurrentActiveProfile(void) const;
 
-		void setMacro(const std::string & macro_key_name, std::vector<KeyEvent> & macro);
+		void setMacro(const std::string & macro_key_name, macro_t & macro);
 		const bool macroDefined(const std::string & macro_key_name);
 		void runMacro(const std::string & macro_key_name);
 

@@ -448,7 +448,7 @@ const bool DevicesHandler::updateMacro(
 
 		this->DBus->waitForRemoteMethodCallReply();
 
-		const std::vector<KeyEvent> macro_array; // FIXME get macro array for GKDBus
+		const macro_t macro_array; // FIXME
 
 		device.updateMacro(profile, keyName, macro_array);
 	}

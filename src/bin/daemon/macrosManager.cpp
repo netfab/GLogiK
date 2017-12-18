@@ -43,13 +43,13 @@ MacrosManager::~MacrosManager()
 
 /* returns true if a macro is defined for this key on the current profile */
 const bool MacrosManager::macroDefined(const std::string & macro_key_name) {
-	const std::vector<KeyEvent> & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
+	const macro_t & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
 	return (macro.size() > 0);
 }
 
 /* run a macro on the virtual keyboard */
 void MacrosManager::runMacro(const std::string & macro_key_name) {
-	const std::vector<KeyEvent> & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
+	const macro_t & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
 	if(macro.size() == 0) {
 #if DEBUGGING_ON
 		LOG(DEBUG) << "Macros Profile: " << to_uint(this->currentActiveProfile_)
@@ -68,7 +68,7 @@ void MacrosManager::runMacro(const std::string & macro_key_name) {
 }
 
 /* set a macro on current profile, can be used by keyboard driver after MacroRecordMode */
-void MacrosManager::setMacro(const std::string & macro_key_name, std::vector<KeyEvent> & macro) {
+void MacrosManager::setMacro(const std::string & macro_key_name, macro_t & macro) {
 	try {
 #if DEBUGGING_ON
 		LOG(INFO) << "Macros Profile: " << to_uint(this->currentActiveProfile_)
@@ -98,8 +98,8 @@ void MacrosManager::logProfiles(void) {
  */
 void MacrosManager::initializeMacroKey(const char* name) {
 	for(auto & profile : this->macros_profiles_) {
-		std::vector<KeyEvent> macro;
-		profile.second.insert( std::pair<const std::string, std::vector<KeyEvent>>(name, macro));
+		macro_t macro;
+		profile.second.insert( std::pair<const std::string, macro_t>(name, macro));
 	}
 }
 

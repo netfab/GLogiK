@@ -231,7 +231,7 @@ void GKDBusEvents::addEvent_ThreeStringsOneByteToKeyEventArray_Callback(
 	const char* interface,
 	const char* eventName,
 	std::vector<DBusMethodArgument> args,
-	std::function<const std::vector<KeyEvent>(const std::string&, const std::string&, const std::string&, const uint8_t)> callback,
+	std::function<const macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> callback,
 	GKDBusEventType eventType
 ) {
 	GKDBusEvent_ThreeStringsOneByteToKeyEventArray_Callback e(eventName, args, callback, eventType);
