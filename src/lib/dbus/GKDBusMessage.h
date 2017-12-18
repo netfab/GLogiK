@@ -24,6 +24,8 @@
 
 #include <dbus/dbus.h>
 
+#include "lib/shared/keyEvent.h"
+
 namespace GLogiK
 {
 
@@ -37,6 +39,8 @@ class GKDBusMessage
 		void appendUInt8(const uint8_t value);
 		void appendUInt16(const uint16_t value);
 		void appendUInt32(const uint32_t value);
+
+		void appendMacro(const macro_t & macro_array);
 
 		//void appendVariantToMessage(const std::string & value);
 		//void appendVariantToMessage(const unsigned char value);
@@ -54,6 +58,8 @@ class GKDBusMessage
 		const std::string append_failure_ = "message append failure";
 
 	private:
+		void appendUInt8(DBusMessageIter *iter, const uint8_t value);
+		void appendUInt16(DBusMessageIter *iter, const uint16_t value);
 
 };
 

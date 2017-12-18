@@ -437,6 +437,12 @@ void GKDBus::appendExtraStringToMethodCallReply(const std::string & value) {
 	this->extra_strings_.push_back(value);
 }
 
+void GKDBus::appendMacroToMethodCallReply(const macro_t & macro_array) {
+	if(this->reply_ == nullptr) /* sanity check */
+		throw GLogiKExcept("DBus reply not initialized");
+	this->reply_->appendMacro(macro_array);
+}
+
 /*
 void GKDBus::appendVariantToMethodCallReply(const std::string & value) {
 	if(this->reply_ == nullptr)
@@ -1211,7 +1217,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 					bool ret = false;
 
 					try {
-						/* call two strings to bool callback */
+						/* call 2 strings 3 bytes to bool callback */
 						const std::string arg1( this->getNextStringArgument() );
 						const std::string arg2( this->getNextStringArgument() );
 						const uint8_t arg3( this->getNextByteArgument() );
@@ -1252,7 +1258,69 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 		}
 	}
 
-	// FIXME handle KeyEvent array for getMacro
+	for(const auto & object_it : this->events_threestringsonebyte_to_macro_) {
+		/* object path must match */
+		object_path = this->getNode(object_it.first);
+		if(object_path != asked_object_path)
+			continue;
+
+		for(const auto & interface : object_it.second) {
+#if DEBUGGING_ON
+			LOG(DEBUG2) << "checking " << interface.first << " interface";
+#endif
+
+			for(const auto & DBusEvent : interface.second) { /* vector of struct */
+				/* we want only methods */
+				if( DBusEvent.eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
+					continue;
+
+				const char* method = DBusEvent.eventName.c_str();
+#if DEBUGGING_ON
+				LOG(DEBUG3) << "checking for " << method << " call";
+#endif
+				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
+					macro_t ret;
+
+					try {
+						/* call 3 strings 1 byte to bool callback */
+						const std::string arg1( this->getNextStringArgument() );
+						const std::string arg2( this->getNextStringArgument() );
+						const std::string arg3( this->getNextStringArgument() );
+						const uint8_t arg4( this->getNextByteArgument() );
+						ret = DBusEvent.callback(arg1, arg2, arg3, arg4);
+					}
+					catch ( const EmptyContainer & e ) {
+						LOG(WARNING) << e.what();
+					}
+
+					try {
+						this->initializeMethodCallReply(current);
+						this->appendMacroToMethodCallReply(ret);
+						/* don't add extra values */
+						//this->appendExtraStringsValuesToReply();
+					}
+					catch (const GKDBusOOMWrongBuild & e) {
+						LOG(ERROR) << "DBus build reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						this->buildAndSendErrorReply(current);
+						return;
+					}
+					catch ( const GLogiKExcept & e ) {
+						LOG(ERROR) << "DBus reply failure : " << e.what();
+						/* delete reply object if allocated */
+						this->sendMethodCallReply();
+						throw;
+					}
+
+					/* delete reply object if allocated */
+					this->sendMethodCallReply();
+
+					return; /* only one by message */
+				}
+			}
+		}
+	}
 
 }
 

@@ -125,7 +125,7 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"s", "macro_key_name", "in", "macro key name"},
 			{"y", "macro_profile", "in", "macro profile"},
-			{"a(yyn)", "macro_array", "out", "macro array"} },
+			{"a(yyq)", "macro_array", "out", "macro array"} },
 		std::bind(&ClientsManager::getMacro, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4) );
 }

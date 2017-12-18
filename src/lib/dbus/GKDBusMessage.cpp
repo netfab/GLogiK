@@ -109,6 +109,7 @@ void GKDBusMessage::appendStringVector(const std::vector<std::string> & list) {
 }
 
 void GKDBusMessage::appendUInt8(const uint8_t value) {
+	/*
 	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_BYTE, &value) ) {
 		this->hosed_message_ = true;
 		throw GKDBusOOMWrongBuild("uint8_t append failure, not enough memory");
@@ -119,9 +120,12 @@ void GKDBusMessage::appendUInt8(const uint8_t value) {
 		LOG(DEBUG2) << "DBus uint8_t value appended";
 	}
 #endif
+	*/
+	this->appendUInt8(&this->args_it_, value);
 }
 
 void GKDBusMessage::appendUInt16(const uint16_t value) {
+/*
 	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_UINT16, &value) ) {
 		this->hosed_message_ = true;
 		throw GKDBusOOMWrongBuild("uint16_t append failure, not enough memory");
@@ -132,6 +136,8 @@ void GKDBusMessage::appendUInt16(const uint16_t value) {
 		LOG(DEBUG2) << "DBus uint16_t value appended";
 	}
 #endif
+*/
+	this->appendUInt16(&this->args_it_, value);
 }
 
 void GKDBusMessage::appendUInt32(const uint32_t value) {
@@ -144,6 +150,80 @@ void GKDBusMessage::appendUInt32(const uint32_t value) {
 #if DEBUG_GKDBUS_SUBOBJECTS
 	if( ! this->log_off_ ) {
 		LOG(DEBUG2) << "DBus uint32_t value appended";
+	}
+#endif
+}
+
+void GKDBusMessage::appendMacro(const macro_t & macro_array) {
+	DBusMessageIter array_it;
+
+	const char array_sig[] = \
+							DBUS_STRUCT_BEGIN_CHAR_AS_STRING\
+							DBUS_TYPE_BYTE_AS_STRING\
+							DBUS_TYPE_BYTE_AS_STRING\
+							DBUS_TYPE_UINT16_AS_STRING\
+							DBUS_STRUCT_END_CHAR_AS_STRING;
+
+	if( ! dbus_message_iter_open_container(&this->args_it_, DBUS_TYPE_ARRAY, array_sig, &array_it) ) {
+		this->hosed_message_ = true;
+#if DEBUG_GKDBUS_SUBOBJECTS
+		LOG(ERROR) << "macro array open_container failure, not enough memory";
+#endif
+		throw GKDBusOOMWrongBuild(this->append_failure_);
+	}
+
+	const char struct_sig[] = \
+							DBUS_TYPE_BYTE_AS_STRING\
+							DBUS_TYPE_BYTE_AS_STRING\
+							DBUS_TYPE_UINT16_AS_STRING;
+
+	try {
+		for(const auto & keyEvent : macro_array) {
+			DBusMessageIter struct_it;
+
+			if( ! dbus_message_iter_open_container(&array_it, DBUS_TYPE_STRUCT, struct_sig, &struct_it) ) {
+#if DEBUG_GKDBUS_SUBOBJECTS
+				LOG(ERROR) << "DBus struct open_container failure, not enough memory";
+#endif
+				throw GKDBusOOMWrongBuild(this->append_failure_);
+			}
+
+			try {
+				this->appendUInt8(&struct_it, keyEvent.event_code);
+				this->appendUInt8(&struct_it, to_type(keyEvent.event));
+				this->appendUInt16(&struct_it, keyEvent.interval);
+			}
+			catch (const GKDBusOOMWrongBuild & e) {
+				dbus_message_iter_abandon_container(&array_it, &struct_it);
+				throw;
+			}
+
+			if( ! dbus_message_iter_close_container(&array_it, &struct_it) ) {
+#if DEBUG_GKDBUS_SUBOBJECTS
+				LOG(ERROR) << "DBus struct close_container failure, not enough memory";
+#endif
+				throw GKDBusOOMWrongBuild(this->append_failure_);
+			}
+		}
+	}
+	catch (const GKDBusOOMWrongBuild & e) {
+		this->hosed_message_ = true;
+		dbus_message_iter_abandon_container(&this->args_it_, &array_it);
+		throw;
+	}
+
+	if( ! dbus_message_iter_close_container(&this->args_it_, &array_it) ) {
+#if DEBUG_GKDBUS_SUBOBJECTS
+		LOG(ERROR) << "macro array close_container failure, not enough memory";
+#endif
+		this->hosed_message_ = true;
+		dbus_message_iter_abandon_container(&this->args_it_, &array_it);
+		throw GKDBusOOMWrongBuild(this->append_failure_);
+	}
+
+#if DEBUG_GKDBUS_SUBOBJECTS
+	if( ! this->log_off_ ) {
+		LOG(DEBUG2) << "DBus macro appended";
 	}
 #endif
 }
@@ -223,6 +303,32 @@ void GKDBusMessage::appendVariantToMessage(const unsigned char value) {
 #endif
 }
 */
+
+void GKDBusMessage::appendUInt8(DBusMessageIter *iter, const uint8_t value) {
+	if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_BYTE, &value) ) {
+		this->hosed_message_ = true;
+		throw GKDBusOOMWrongBuild("uint8_t append failure, not enough memory");
+	}
+
+#if DEBUG_GKDBUS_SUBOBJECTS
+	if( ! this->log_off_ ) {
+		LOG(DEBUG2) << "DBus uint8_t value appended";
+	}
+#endif
+}
+
+void GKDBusMessage::appendUInt16(DBusMessageIter *iter, const uint16_t value) {
+	if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_UINT16, &value) ) {
+		this->hosed_message_ = true;
+		throw GKDBusOOMWrongBuild("uint16_t append failure, not enough memory");
+	}
+
+#if DEBUG_GKDBUS_SUBOBJECTS
+	if( ! this->log_off_ ) {
+		LOG(DEBUG2) << "DBus uint16_t value appended";
+	}
+#endif
+}
 
 } // namespace GLogiK
 

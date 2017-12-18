@@ -30,6 +30,8 @@
 
 #include <dbus/dbus.h>
 
+#include "lib/shared/keyEvent.h"
+
 #define GKDBUS_INSIDE_GKDBUS_H 1
 #include "GKDBusEvents.h"
 #include "GKDBusMessageReply.h"
@@ -97,6 +99,7 @@ class GKDBus : public GKDBusEvents
 			const std::vector<std::string> & list
 		);
 		void appendExtraStringToMethodCallReply(const std::string & value);
+		void appendMacroToMethodCallReply(const macro_t & macro_array);
 		//void appendVariantToMethodCallReply(const std::string & value);
 
 		void sendMethodCallReply(void);
