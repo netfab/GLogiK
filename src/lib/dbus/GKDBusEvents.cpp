@@ -226,7 +226,7 @@ void GKDBusEvents::addEvent_TwoStringsThreeBytesToBool_Callback(
 	this->addIntrospectableEvent(object);
 }
 
-void GKDBusEvents::addEvent_ThreeStringsOneByteToKeyEventArray_Callback(
+void GKDBusEvents::addEvent_ThreeStringsOneByteToMacro_Callback(
 	const char* object,
 	const char* interface,
 	const char* eventName,
@@ -234,10 +234,10 @@ void GKDBusEvents::addEvent_ThreeStringsOneByteToKeyEventArray_Callback(
 	std::function<const macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> callback,
 	GKDBusEventType eventType
 ) {
-	GKDBusEvent_ThreeStringsOneByteToKeyEventArray_Callback e(eventName, args, callback, eventType);
+	GKDBusEvent_ThreeStringsOneByteToMacro_Callback e(eventName, args, callback, eventType);
 	this->DBusObjects_[object] = true;
 	this->DBusInterfaces_[interface] = true;
-	this->events_threestringsonebyte_to_keyeventarray_[object][interface].push_back(e);
+	this->events_threestringsonebyte_to_macro_[object][interface].push_back(e);
 
 	this->addIntrospectableEvent(object);
 }
@@ -452,7 +452,7 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 			}
 		}
 
-		for(const auto & object_it : this->events_threestringsonebyte_to_keyeventarray_) {
+		for(const auto & object_it : this->events_threestringsonebyte_to_macro_) {
 			/* object must match */
 			if(object_it.first != object_asked)
 				continue;

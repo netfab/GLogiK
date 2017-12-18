@@ -120,7 +120,7 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 		std::bind(&ClientsManager::setDeviceBacklightColor, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
 
-	this->DBus->addEvent_ThreeStringsOneByteToKeyEventArray_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "GetMacro",
+	this->DBus->addEvent_ThreeStringsOneByteToMacro_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "GetMacro",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"s", "macro_key_name", "in", "macro key name"},

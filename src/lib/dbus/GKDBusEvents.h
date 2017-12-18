@@ -177,10 +177,10 @@ struct GKDBusEvent_TwoStringsThreeBytesToBool_Callback : public GKDBusEvent {
 		)	: GKDBusEvent(n, a, t), callback(c) {}
 };
 
-struct GKDBusEvent_ThreeStringsOneByteToKeyEventArray_Callback : public GKDBusEvent {
+struct GKDBusEvent_ThreeStringsOneByteToMacro_Callback : public GKDBusEvent {
 	std::function<const macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> callback;
 
-	GKDBusEvent_ThreeStringsOneByteToKeyEventArray_Callback(
+	GKDBusEvent_ThreeStringsOneByteToMacro_Callback(
 		const char* n,
 		std::vector<DBusMethodArgument> & a,
 		std::function<const macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> c,
@@ -272,7 +272,7 @@ class GKDBusEvents
 			std::function<const bool(const std::string&, const std::string&, const uint8_t, const uint8_t, const uint8_t)> callback,
 			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD
 		);
-		void addEvent_ThreeStringsOneByteToKeyEventArray_Callback(
+		void addEvent_ThreeStringsOneByteToMacro_Callback(
 			const char* object,
 			const char* interface,
 			const char* eventName,
@@ -327,7 +327,7 @@ class GKDBusEvents
 
 		std::map< const std::string, /* object path */
 			std::map< const std::string, /* interface */
-				std::vector<GKDBusEvent_ThreeStringsOneByteToKeyEventArray_Callback> > > events_threestringsonebyte_to_keyeventarray_;
+				std::vector<GKDBusEvent_ThreeStringsOneByteToMacro_Callback> > > events_threestringsonebyte_to_macro_;
 
 		std::map<const std::string, bool> DBusObjects_;
 		std::map<const std::string, bool> DBusInterfaces_;
