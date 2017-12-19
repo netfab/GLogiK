@@ -37,7 +37,27 @@ MacrosBanks::MacrosBanks() {
 MacrosBanks::~MacrosBanks() {
 }
 
-void MacrosBanks::updateMacro(
+void MacrosBanks::setMacro(
+	const MemoryBank & profile,
+	const std::string & keyName,
+	const macro_t & macro_array)
+{
+	try {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "macros profile: " << to_uint(profile)
+			<< " - Macro Key: " << keyName << " - setting macro";
+#endif
+		this->macros_profiles_[profile].at(keyName) = macro_array;
+	}
+	catch (const std::out_of_range& oor) {
+		std::string warn("wrong map key : ");
+		warn += keyName;
+		GKSysLog(LOG_WARNING, WARNING, warn);
+		throw GLogiKExcept("macro not updated");
+	}
+}
+
+void MacrosBanks::setMacro(
 	const uint8_t profile,
 	const std::string & keyName,
 	const macro_t & macro_array)
@@ -47,19 +67,7 @@ void MacrosBanks::updateMacro(
 
 	const MemoryBank current_profile = static_cast<MemoryBank>(profile);
 
-	try {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "macros profile: " << to_uint(profile)
-			<< " - Macro Key: " << keyName << " - setting macro";
-#endif
-		this->macros_profiles_[current_profile].at(keyName) = macro_array;
-	}
-	catch (const std::out_of_range& oor) {
-		std::string warn("wrong map key : ");
-		warn += keyName;
-		GKSysLog(LOG_WARNING, WARNING, warn);
-		throw GLogiKExcept("macro not updated");
-	}
+	this->setMacro(current_profile, keyName, macro_array);
 }
 
 const macro_t & MacrosBanks::getMacro(const uint8_t profile, const std::string & keyName)

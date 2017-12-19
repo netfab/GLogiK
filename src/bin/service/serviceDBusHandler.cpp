@@ -488,7 +488,7 @@ const bool ServiceDBusHandler::macroRecorded(
 		return false;
 	}
 
-	return this->devices_.updateMacro(devID, keyName, profile);
+	return this->devices_.setMacro(devID, keyName, profile);
 }
 
 void ServiceDBusHandler::checkDBusMessages(void) {

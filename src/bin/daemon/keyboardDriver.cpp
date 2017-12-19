@@ -507,7 +507,11 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 				}
 
 				/* macro key pressed, recording macro */
-				device.macros_man->setMacro(device.chosen_macro_key, device.standard_keys_events);
+				device.macros_man->setMacro(
+					device.macros_man->getCurrentActiveProfile(),
+					device.chosen_macro_key,
+					device.standard_keys_events
+				);
 
 				try {
 					/* open a new connection, GKDBus is not thread-safe */

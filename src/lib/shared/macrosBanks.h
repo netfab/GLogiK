@@ -57,8 +57,13 @@ class MacrosBanks
 		const macros_map_t & getMacrosProfiles(void) const { return this->macros_profiles_; };
 		void setMacrosProfiles(const macros_map_t & macros) { this->macros_profiles_ = macros; };
 
-		void updateMacro(
+		void setMacro(
 			const uint8_t profile,
+			const std::string & keyName,
+			const macro_t & macro_array
+		);
+		void setMacro(
+			const MemoryBank & profile,
 			const std::string & keyName,
 			const macro_t & macro_array
 		);

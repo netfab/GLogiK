@@ -427,7 +427,7 @@ void DevicesHandler::deleteUncheckedDevices(void) {
 	to_clean.clear();
 }
 
-const bool DevicesHandler::updateMacro(
+const bool DevicesHandler::setMacro(
 	const std::string & devID,
 	const std::string & keyName,
 	const uint8_t profile)
@@ -450,7 +450,7 @@ const bool DevicesHandler::updateMacro(
 
 		const macro_t macro_array; // FIXME
 
-		device.updateMacro(profile, keyName, macro_array);
+		device.setMacro(profile, keyName, macro_array);
 	}
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("device not found in container : ");

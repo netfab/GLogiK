@@ -67,20 +67,6 @@ void MacrosManager::runMacro(const std::string & macro_key_name) {
 	}
 }
 
-/* set a macro on current profile, can be used by keyboard driver after MacroRecordMode */
-void MacrosManager::setMacro(const std::string & macro_key_name, macro_t & macro) {
-	try {
-#if DEBUGGING_ON
-		LOG(INFO) << "Macros Profile: " << to_uint(this->currentActiveProfile_)
-			<< " - Macro Key: " << macro_key_name << " - setting macro";
-#endif
-		this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name) = macro;
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLog(LOG_WARNING, WARNING, "macro profile wrong map key : macro not recorded");
-	}
-}
-
 /*
 void MacrosManager::logProfiles(void) {
 	for(const auto & profile : this->macros_profiles_) {
