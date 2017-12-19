@@ -574,14 +574,35 @@ void DevicesManager::setDeviceBacklightColor(const std::string & devID, const ui
 		for(const auto& driver : this->drivers_) {
 			if( device.driver_ID == driver->getDriverID() ) {
 				driver->setDeviceBacklightColor(devID, r, g, b);
+				return;
 			}
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("tried to set backlight color on non-started device : ");
+		this->buffer_.str("not found device : ");
 		this->buffer_ << devID;
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
+}
+
+const macros_map_t & DevicesManager::getMacrosProfiles(const std::string & devID) {
+	try {
+		const auto & device = this->initialized_devices_.at(devID);
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "found " << device.model << " in started devices";
+#endif
+		for(const auto& driver : this->drivers_) {
+			if( device.driver_ID == driver->getDriverID() ) {
+				return driver->getMacrosProfiles(devID);
+			}
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("not found device : ");
+		this->buffer_ << devID;
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+	}
+	return MacrosBanks::empty_macros_profiles_;
 }
 
 void DevicesManager::resetDevicesStates(void) {

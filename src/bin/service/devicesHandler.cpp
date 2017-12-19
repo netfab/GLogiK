@@ -157,7 +157,7 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 			/* do we need to replace vendor and model ? */
 			//device.setVendor( new_device.getVendor() );
 			//device.setModel( new_device.getModel() );
-			device.setMacros( new_device.getMacros() );
+			device.setMacrosProfiles( new_device.getMacrosProfiles() );
 			device.setBLColor_R( new_device.getBLColor_R() );
 			device.setBLColor_G( new_device.getBLColor_G() );
 			device.setBLColor_B( new_device.getBLColor_B() );

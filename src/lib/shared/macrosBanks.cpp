@@ -29,6 +29,7 @@ namespace GLogiK
 {
 
 const macro_t MacrosBanks::empty_macro_ = {};
+const macros_map_t MacrosBanks::empty_macros_profiles_ = {};
 
 MacrosBanks::MacrosBanks() {
 }

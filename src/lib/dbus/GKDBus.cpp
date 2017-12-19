@@ -562,7 +562,8 @@ void GKDBus::waitForRemoteMethodCallReply(void) {
 
 	if(dbus_message_get_type(message) == DBUS_MESSAGE_TYPE_ERROR) {
 		dbus_message_unref(message);
-		throw GKDBusRemoteCallNoReply("got error as reply");
+		// TODO parse error ?
+		throw GKDBusRemoteCallNoReply("got DBus error as reply");
 	}
 
 	this->fillInArguments(message);

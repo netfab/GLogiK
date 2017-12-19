@@ -533,6 +533,7 @@ const macro_t & ClientsManager::getMacro(
 #endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
+		pClient->syncMacrosProfiles(devID, this->devicesManager->getMacrosProfiles(devID));
 		return pClient->getMacro(devID, keyName, profile);
 	}
 	catch (const std::out_of_range& oor) {

@@ -54,6 +54,9 @@
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
       send_member="SetDeviceBacklightColor"/>
+    <allow send_destination="com.glogik.Daemon"
+      send_interface="com.glogik.Daemon.Device1"
+      send_member="GetMacro"/>
 
   </policy>
 

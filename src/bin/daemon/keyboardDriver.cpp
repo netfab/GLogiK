@@ -1149,5 +1149,19 @@ void KeyboardDriver::setDeviceBacklightColor(const std::string & devID, const ui
 	}
 }
 
+const macros_map_t & KeyboardDriver::getMacrosProfiles(const std::string & devID) {
+	try {
+		InitializedDevice & device = this->initialized_devices_.at(devID);
+		return device.macros_man->getMacrosProfiles();
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("wrong device ID : ");
+		this->buffer_ << devID;
+		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+	}
+
+	return MacrosBanks::empty_macros_profiles_;
+}
+
 } // namespace GLogiK
 
