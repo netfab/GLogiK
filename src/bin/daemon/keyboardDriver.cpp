@@ -1067,22 +1067,28 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 }
 
 void KeyboardDriver::resetDeviceState(const std::string & devID) {
-	// FIXME at ?
-	InitializedDevice & device = this->initialized_devices_[devID];
+	try {
+		InitializedDevice & device = this->initialized_devices_.at(devID);
 
-	device.macros_man->clearMacroProfiles();
-
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "resetting MxKeys leds status";
-#endif
-	device.current_leds_mask = 0;
-	this->setMxKeysLeds(device);
+		device.macros_man->clearMacroProfiles();
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << "resetting keyboard color";
+		LOG(DEBUG1) << "resetting MxKeys leds status";
 #endif
-	this->updateKeyboardColor(device);
-	this->setKeyboardColor(device);
+		device.current_leds_mask = 0;
+		this->setMxKeysLeds(device);
+
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "resetting keyboard color";
+#endif
+		this->updateKeyboardColor(device);
+		this->setKeyboardColor(device);
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("wrong device ID : ");
+		this->buffer_ << devID;
+		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+	}
 }
 
 void KeyboardDriver::resetDeviceState(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num) {
@@ -1103,41 +1109,48 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 				<< to_uint(num) << " on bus " << to_uint(bus);
 #endif
 
-	// FIXME at ?
 	const std::string devID = KeyboardDriver::getDeviceID(bus, num);
-	InitializedDevice & device = this->initialized_devices_[devID];
-	device.listen_status = false;
 
-	bool found = false;
-	for(auto it = this->threads_.begin(); it != this->threads_.end();) {
-		if( device.listen_thread_id == (*it).get_id() ) {
-			found = true;
+	try {
+		InitializedDevice & device = this->initialized_devices_[devID];
+		device.listen_status = false;
+
+		bool found = false;
+		for(auto it = this->threads_.begin(); it != this->threads_.end();) {
+			if( device.listen_thread_id == (*it).get_id() ) {
+				found = true;
 #if DEBUGGING_ON
-			LOG(INFO) << "waiting for " << device.device.name << " listening thread";
+				LOG(INFO) << "waiting for " << device.device.name << " listening thread";
 #endif
-			(*it).join();
-			it = this->threads_.erase(it);
-			break;
+				(*it).join();
+				it = this->threads_.erase(it);
+				break;
+			}
+			else {
+				it++;
+			}
 		}
-		else {
-			it++;
+
+		if(! found) {
+			GKSysLog(LOG_WARNING, WARNING, "listening thread not found !");
 		}
+
+		this->resetDeviceState(devID);
+
+		delete device.macros_man;
+		device.macros_man = nullptr;
+
+		this->releaseInterfaces(device);
+		this->attachKernelDrivers(device);
+
+		libusb_close( device.usb_handle );
+		this->initialized_devices_.erase(devID);
 	}
-
-	if(! found) {
-		GKSysLog(LOG_WARNING, WARNING, "listening thread not found !");
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("wrong device ID : ");
+		this->buffer_ << devID;
+		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
 	}
-
-	this->resetDeviceState(devID);
-
-	delete device.macros_man;
-	device.macros_man = nullptr;
-
-	this->releaseInterfaces(device);
-	this->attachKernelDrivers(device);
-
-	libusb_close( device.usb_handle );
-	this->initialized_devices_.erase(devID);
 }
 
 void KeyboardDriver::setDeviceBacklightColor(const std::string & devID, const uint8_t r, const uint8_t g, const uint8_t b) {
