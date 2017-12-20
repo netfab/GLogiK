@@ -624,13 +624,13 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 
 	std::string object_path;
 
-	for(const auto & object_it : this->events_twostringsonebyte_to_bool_) {
+	for(const auto & object_pair : this->events_twostringsonebyte_to_bool_) {
 		/* object path must match */
-		object_path = this->getNode(object_it.first);
+		object_path = this->getNode(object_pair.first);
 		if(object_path != asked_object_path)
 			continue;
 
-		for(const auto & interface : object_it.second) {
+		for(const auto & interface : object_pair.second) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 #endif
@@ -664,13 +664,13 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 		}
 	}
 
-	for(const auto & object_it : this->events_string_to_bool_) {
+	for(const auto & object_pair : this->events_string_to_bool_) {
 		/* object path must match */
-		object_path = this->getNode(object_it.first);
+		object_path = this->getNode(object_pair.first);
 		if(object_path != asked_object_path)
 			continue;
 
-		for(const auto & interface : object_it.second) {
+		for(const auto & interface : object_pair.second) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 #endif
@@ -702,13 +702,13 @@ void GKDBus::checkForSignalReceipt(BusConnection current) {
 		}
 	}
 
-	for(const auto & object_it : this->events_void_to_void_) {
+	for(const auto & object_pair : this->events_void_to_void_) {
 		/* object path must match */
-		object_path = this->getNode(object_it.first);
+		object_path = this->getNode(object_pair.first);
 		if(object_path != asked_object_path)
 			continue;
 
-		for(const auto & interface : object_it.second) {
+		for(const auto & interface : object_pair.second) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 #endif
@@ -788,13 +788,13 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 	std::string object_path;
 
-	for(const auto & object_it : this->events_void_to_string_) {
+	for(const auto & object_pair : this->events_void_to_string_) {
 		/* object path must match */
-		object_path = this->getNode(object_it.first);
+		object_path = this->getNode(object_pair.first);
 		if(object_path != asked_object_path)
 			continue;
 
-		for(const auto & interface : object_it.second) {
+		for(const auto & interface : object_pair.second) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 #endif
@@ -841,13 +841,13 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 		}
 	}
 
-	for(const auto & object_it : this->events_void_to_stringsarray_) {
+	for(const auto & object_pair : this->events_void_to_stringsarray_) {
 		/* object path must match */
-		object_path = this->getNode(object_it.first);
+		object_path = this->getNode(object_pair.first);
 		if(object_path != asked_object_path)
 			continue;
 
-		for(const auto & interface : object_it.second) {
+		for(const auto & interface : object_pair.second) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 #endif
@@ -894,13 +894,13 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 		}
 	}
 
-	for(const auto & object_it : this->events_string_to_stringsarray_) {
+	for(const auto & object_pair : this->events_string_to_stringsarray_) {
 		/* object path must match */
-		object_path = this->getNode(object_it.first);
+		object_path = this->getNode(object_pair.first);
 		if(object_path != asked_object_path)
 			continue;
 
-		for(const auto & interface : object_it.second) {
+		for(const auto & interface : object_pair.second) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 #endif
@@ -955,13 +955,13 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 		}
 	}
 
-	for(const auto & object_it : this->events_twostrings_to_stringsarray_) {
+	for(const auto & object_pair : this->events_twostrings_to_stringsarray_) {
 		/* object path must match */
-		object_path = this->getNode(object_it.first);
+		object_path = this->getNode(object_pair.first);
 		if(object_path != asked_object_path)
 			continue;
 
-		for(const auto & interface : object_it.second) {
+		for(const auto & interface : object_pair.second) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 #endif
@@ -1017,13 +1017,13 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 		}
 	}
 
-	for(const auto & object_it : this->events_string_to_bool_) {
+	for(const auto & object_pair : this->events_string_to_bool_) {
 		/* object path must match */
-		object_path = this->getNode(object_it.first);
+		object_path = this->getNode(object_pair.first);
 		if(object_path != asked_object_path)
 			continue;
 
-		for(const auto & interface : object_it.second) {
+		for(const auto & interface : object_pair.second) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 #endif
@@ -1078,13 +1078,13 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 		}
 	}
 
-	for(const auto & object_it : this->events_twostrings_to_bool_) {
+	for(const auto & object_pair : this->events_twostrings_to_bool_) {
 		/* object path must match */
-		object_path = this->getNode(object_it.first);
+		object_path = this->getNode(object_pair.first);
 		if(object_path != asked_object_path)
 			continue;
 
-		for(const auto & interface : object_it.second) {
+		for(const auto & interface : object_pair.second) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 #endif
@@ -1140,13 +1140,13 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 		}
 	}
 
-	for(const auto & object_it : this->events_string_to_string_) {
+	for(const auto & object_pair : this->events_string_to_string_) {
 		/* object path must match */
-		object_path = this->getNode(object_it.first);
+		object_path = this->getNode(object_pair.first);
 		if(object_path != asked_object_path)
 			continue;
 
-		for(const auto & interface : object_it.second) {
+		for(const auto & interface : object_pair.second) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 #endif
@@ -1162,7 +1162,7 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 #endif
 				if( this->checkMessageForMethodCall(interface.first.c_str(), method) ) {
 					/* call string to string callback */
-					const std::string & arg = object_it.first;
+					const std::string & arg = object_pair.first;
 					const std::string ret( DBusEvent.callback(arg) );
 
 					try {
@@ -1194,13 +1194,13 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 		}
 	}
 
-	for(const auto & object_it : this->events_twostringsthreebytes_to_bool_) {
+	for(const auto & object_pair : this->events_twostringsthreebytes_to_bool_) {
 		/* object path must match */
-		object_path = this->getNode(object_it.first);
+		object_path = this->getNode(object_pair.first);
 		if(object_path != asked_object_path)
 			continue;
 
-		for(const auto & interface : object_it.second) {
+		for(const auto & interface : object_pair.second) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 #endif
@@ -1259,13 +1259,13 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 		}
 	}
 
-	for(const auto & object_it : this->events_threestringsonebyte_to_macro_) {
+	for(const auto & object_pair : this->events_threestringsonebyte_to_macro_) {
 		/* object path must match */
-		object_path = this->getNode(object_it.first);
+		object_path = this->getNode(object_pair.first);
 		if(object_path != asked_object_path)
 			continue;
 
-		for(const auto & interface : object_it.second) {
+		for(const auto & interface : object_pair.second) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "checking " << interface.first << " interface";
 #endif
