@@ -183,7 +183,10 @@ class GKDBus : public GKDBusEvents
 
 		void setCurrentConnection(BusConnection current);
 		void checkDBusError(const char* error_message);
+
+		void decodeArgumentFromIterator(DBusMessageIter* iter, const char* signature, const unsigned int num);
 		void fillInArguments(DBusMessage* message);
+
 		void addSignalRuleMatch(
 			const char* interface,
 			const char* eventName

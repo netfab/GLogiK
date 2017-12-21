@@ -1339,6 +1339,74 @@ void GKDBus::checkDBusError(const char* error_message) {
 	}
 }
 
+void GKDBus::decodeArgumentFromIterator(DBusMessageIter* iter, const char* signature, const unsigned int num) {
+	int current_type = dbus_message_iter_get_arg_type(iter);
+
+	DBusSignatureIter sig_it;
+
+	// sometimes current_type could not be recognized and
+	// is setted up as INVALID (for example when decoding arrays)
+	// in this cases, we are trying to use the expected signature
+	if(current_type == DBUS_TYPE_INVALID) {
+		dbus_signature_iter_init(&sig_it, signature);
+		current_type = dbus_signature_iter_get_current_type(&sig_it);
+	}
+
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "decoding argument: " << num << " type: "
+					<< static_cast<char>(current_type) << " sig: " << signature;
+#endif
+
+	switch(current_type) {
+		case DBUS_TYPE_STRING:
+		case DBUS_TYPE_OBJECT_PATH:
+			{
+				const char* value = nullptr;
+				dbus_message_iter_get_basic(iter, &value);
+				//LOG(DEBUG4) << "string arg value : " << value;
+				this->string_arguments_.push_back(value);
+			}
+			break;
+		case DBUS_TYPE_BOOLEAN:
+			{
+				bool value = false;
+				dbus_message_iter_get_basic(iter, &value);
+				//LOG(DEBUG4) << "bool arg value : " << value;
+				this->boolean_arguments_.push_back(value);
+			}
+			break;
+		case DBUS_TYPE_ARRAY:
+			{
+				unsigned int c = 0;
+				DBusMessageIter array_it;
+				dbus_message_iter_recurse(iter, &array_it);
+				/* checking that we really have an array here, else
+				 * with recursion this could lead to bad things */
+				if(dbus_message_iter_get_arg_type(&array_it) == DBUS_TYPE_INVALID)
+					break;
+				do {
+					c++;
+					char* sig = dbus_message_iter_get_signature(&array_it);
+					this->decodeArgumentFromIterator(&array_it, sig, c);
+					dbus_free(sig);
+				}
+				while( dbus_message_iter_next(&array_it) );
+			}
+			break;
+		case DBUS_TYPE_BYTE:
+			{
+				uint8_t byte = 0;
+				dbus_message_iter_get_basic(iter, &byte);
+				this->byte_arguments_.push_back(byte);
+				//LOG(DEBUG4) << "byte arg value : " << byte;
+			}
+			break;
+		default: // other dbus type
+			LOG(ERROR) << "unhandled argument type: " << static_cast<char>(current_type) << " sig: " << signature;
+			break;
+	}
+}
+
 void GKDBus::fillInArguments(DBusMessage* message) {
 	this->string_arguments_.clear();
 	this->boolean_arguments_.clear();
@@ -1349,83 +1417,19 @@ void GKDBus::fillInArguments(DBusMessage* message) {
 		return;
 	}
 
-	int current_type = 0;
-	int sub_type = 0;
-	char* arg_value = nullptr;
-	bool bool_arg = false;
+	unsigned int c = 0;
 	DBusMessageIter arg_it;
-	char* sub_value = nullptr;
-	uint8_t byte_arg = 0;
 
-	dbus_message_iter_init(message, &arg_it);
-	while ((current_type = dbus_message_iter_get_arg_type(&arg_it)) != DBUS_TYPE_INVALID) {
-		DBusMessageIter sub_it;
-		bool_arg = false;
-		sub_type = 0;
-		arg_value = nullptr;
-		sub_value = nullptr;
-		byte_arg = 0;
+	if( ! dbus_message_iter_init(message, &arg_it) )
+		return; /* no arguments */
 
-		switch(current_type) {
-			case DBUS_TYPE_STRING:
-				dbus_message_iter_get_basic(&arg_it, &arg_value);
-				this->string_arguments_.push_back(arg_value);
-				//LOG(DEBUG4) << "string arg value : " << arg_value;
-				break;
-			case DBUS_TYPE_OBJECT_PATH:
-				dbus_message_iter_get_basic(&arg_it, &arg_value);
-				this->string_arguments_.push_back(arg_value);
-				//LOG(DEBUG4) << "object path arg value : " << arg_value;
-				break;
-			case DBUS_TYPE_BOOLEAN:
-				dbus_message_iter_get_basic(&arg_it, &bool_arg);
-				this->boolean_arguments_.push_back(bool_arg);
-				//LOG(DEBUG4) << "bool arg value : " << bool_arg;
-				break;
-			case DBUS_TYPE_BYTE:
-				dbus_message_iter_get_basic(&arg_it, &byte_arg);
-				this->byte_arguments_.push_back(byte_arg);
-				//LOG(DEBUG4) << "bool arg value : " << bool_arg;
-				break;
-			case DBUS_TYPE_ARRAY:
-				dbus_message_iter_recurse(&arg_it, &sub_it);
-				switch( dbus_message_iter_get_element_type(&arg_it) ) {
-					case DBUS_TYPE_STRING:
-						//LOG(DEBUG3) << "found array of strings";
-						while ((sub_type = dbus_message_iter_get_arg_type(&sub_it)) == DBUS_TYPE_STRING) {
-							dbus_message_iter_get_basic(&sub_it, &arg_value);
-							this->string_arguments_.push_back(arg_value);
-							//LOG(DEBUG4) << "object path arg value : " << arg_value;
-							dbus_message_iter_next(&sub_it);
-						}
-						break;
-					default:
-						LOG(WARNING) << "unhandled type for dbus array";
-						break;
-				}
-				break;
-			case DBUS_TYPE_VARIANT:
-				//LOG(DEBUG4) << "need to parse variant";
-				dbus_message_iter_recurse(&arg_it, &sub_it);
-				sub_type = dbus_message_iter_get_arg_type(&sub_it);
-
-				switch(sub_type) {
-					case DBUS_TYPE_STRING:
-						dbus_message_iter_get_basic(&sub_it, &sub_value);
-						this->string_arguments_.push_back(sub_value);
-						//LOG(DEBUG4) << "variant string sub value : " << sub_value;
-						break;
-					default:
-						LOG(WARNING) << "unhandled type for variant parsing";
-						break;
-				}
-				break;
-			default: /* other dbus type */
-				break;
-		}
-
-		dbus_message_iter_next(&arg_it);
+	do {
+		c++;
+		char* signature = dbus_message_iter_get_signature(&arg_it);
+		this->decodeArgumentFromIterator(&arg_it, signature, c);
+		dbus_free(signature);
 	}
+	while( dbus_message_iter_next(&arg_it) );
 
 	if( ! this->string_arguments_.empty() )
 		std::reverse(this->string_arguments_.begin(), this->string_arguments_.end());
