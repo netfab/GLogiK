@@ -448,7 +448,8 @@ const bool DevicesHandler::setMacro(
 
 		this->DBus->waitForRemoteMethodCallReply();
 
-		const macro_t macro_array; // FIXME
+		/* use helper function to get the macro */
+		const macro_t macro_array = this->DBus->getMacro();
 
 		device.setMacro(profile, keyName, macro_array);
 	}

@@ -124,12 +124,18 @@ class GKDBus : public GKDBusEvents
 		void sendRemoteMethodCall(void);
 
 		void waitForRemoteMethodCallReply(void);
+
+		// helper function rebuilding macro_t vector
+		// mirror of GKDBusMessage::appendMacro
+		const macro_t getMacro(void);
 	/* -- */
 
 		std::string getNextStringArgument(void);
 		const std::vector<std::string> & getAllStringArguments(void) const;
 		const bool getNextBooleanArgument(void);
 		const uint8_t getNextByteArgument(void);
+		const uint16_t getNextUInt16Argument(void);
+
 		void checkForMethodCall(BusConnection current);
 		void checkForSignalReceipt(BusConnection current);
 
@@ -172,8 +178,10 @@ class GKDBus : public GKDBusEvents
 		DBusConnection* current_conn_;
 		DBusConnection* session_conn_;
 		DBusConnection* system_conn_;
+
 		std::vector<std::string> string_arguments_;
 		std::vector<uint8_t> byte_arguments_;
+		std::vector<uint16_t> uint16_arguments_;
 		std::vector<bool> boolean_arguments_;
 		std::vector<std::string> extra_strings_;
 

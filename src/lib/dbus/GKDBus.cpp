@@ -606,6 +606,14 @@ const uint8_t GKDBus::getNextByteArgument(void) {
 	return ret;
 }
 
+const uint16_t GKDBus::getNextUInt16Argument(void) {
+	if( this->uint16_arguments_.empty() )
+		throw EmptyContainer("no uint16 argument");
+	const uint8_t ret = this->uint16_arguments_.back();
+	this->uint16_arguments_.pop_back();
+	return ret;
+}
+
 /* -- */
 /*
  * check if :
@@ -1328,6 +1336,44 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 }
 
+/* helper function */
+const macro_t GKDBus::getMacro(void) {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "rebuilding macro array for DBus values";
+#endif
+	macro_t macro_array;
+	try {
+		do {
+			KeyEvent e;
+
+			e.event_code = this->getNextByteArgument();
+
+			const uint8_t value = this->getNextByteArgument();
+			if( to_uint(value) > to_uint(EventValue::EVENT_KEY_UNKNOWN) )
+				throw GLogiKExcept("wrong event value for enum conversion");
+
+			e.event		 = static_cast<EventValue>(value);
+			e.interval	 = this->getNextUInt16Argument();
+
+			macro_array.push_back(e);
+		}
+		while( ! this->byte_arguments_.empty() );
+	}
+	catch ( const EmptyContainer & e ) {
+		LOG(WARNING) << "missing macro argument : " << e.what();
+		throw GLogiKExcept("rebuild macro failed");
+	}
+
+	if( ! this->uint16_arguments_.empty() ) { /* sanity check */
+		LOG(WARNING) << "uint16 container not empty";
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "events array size : " << macro_array.size();
+#endif
+	return macro_array;
+}
+
 /* -- */
 /*
  * private
@@ -1406,6 +1452,31 @@ void GKDBus::decodeArgumentFromIterator(DBusMessageIter* iter, const char* signa
 				//LOG(DEBUG4) << "byte arg value : " << byte;
 			}
 			break;
+		case DBUS_TYPE_UINT16:
+			{
+				uint16_t value = 0;
+				dbus_message_iter_get_basic(iter, &value);
+				this->uint16_arguments_.push_back(value);
+				//LOG(DEBUG4) << "uint16 arg value : " << value;
+			}
+			break;
+		case DBUS_TYPE_STRUCT:
+			{
+				do {
+					unsigned int c = 0;
+					DBusMessageIter struct_it;
+					dbus_message_iter_recurse(iter, &struct_it);
+					do {
+						c++;
+						char* sig = dbus_message_iter_get_signature(&struct_it);
+						this->decodeArgumentFromIterator(&struct_it, sig, c);
+						dbus_free(sig);
+					}
+					while( dbus_message_iter_next(&struct_it) );
+				}
+				while( dbus_message_iter_next(iter) );
+			}
+			break;
 		default: // other dbus type
 			LOG(ERROR) << "unhandled argument type: " << static_cast<char>(current_type) << " sig: " << signature;
 			break;
@@ -1416,6 +1487,7 @@ void GKDBus::fillInArguments(DBusMessage* message) {
 	this->string_arguments_.clear();
 	this->boolean_arguments_.clear();
 	this->byte_arguments_.clear();
+	this->uint16_arguments_.clear();
 
 	if(message == nullptr) {
 		LOG(WARNING) << __func__ << " : message is NULL";
@@ -1442,6 +1514,8 @@ void GKDBus::fillInArguments(DBusMessage* message) {
 		std::reverse(this->boolean_arguments_.begin(), this->boolean_arguments_.end());
 	if( ! this->byte_arguments_.empty() )
 		std::reverse(this->byte_arguments_.begin(), this->byte_arguments_.end());
+	if( ! this->uint16_arguments_.empty() )
+		std::reverse(this->uint16_arguments_.begin(), this->uint16_arguments_.end());
 }
 
 void GKDBus::setCurrentConnection(BusConnection current) {
