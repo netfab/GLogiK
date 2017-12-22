@@ -32,6 +32,7 @@ namespace GLogiK
 
 GKDBus::GKDBus(const std::string & rootnode) : buffer_("", std::ios_base::app),
 	message_(nullptr),
+	logoff_(false),
 	pending_(nullptr),
 	current_conn_(nullptr),
 	session_conn_(nullptr),
@@ -483,6 +484,8 @@ void GKDBus::initializeRemoteMethodCall(
 	if(this->method_call_) /* sanity check */
 		throw GLogiKExcept("DBus method_call already allocated");
 	this->setCurrentConnection(current);
+
+	this->logoff_ = logoff;
 
 	try {
 		this->method_call_ = new GKDBusRemoteMethodCall(
@@ -1353,8 +1356,10 @@ void GKDBus::decodeArgumentFromIterator(DBusMessageIter* iter, const char* signa
 	}
 
 #if DEBUGGING_ON
+	if(! this->logoff_) {
 		LOG(DEBUG3) << "decoding argument: " << num << " type: "
 					<< static_cast<char>(current_type) << " sig: " << signature;
+	}
 #endif
 
 	switch(current_type) {
