@@ -176,8 +176,11 @@ class GKDBus : public GKDBusEvents
 		DBusPendingCall* pending_;
 
 		DBusConnection* current_conn_;
+
 		DBusConnection* session_conn_;
 		DBusConnection* system_conn_;
+		std::string session_name_;
+		std::string system_name_;
 
 		std::vector<std::string> string_arguments_;
 		std::vector<uint8_t> byte_arguments_;
@@ -194,6 +197,7 @@ class GKDBus : public GKDBusEvents
 
 		void setCurrentConnection(BusConnection current);
 		void checkDBusError(const char* error_message);
+		void checkReleasedName(int ret);
 
 		void decodeArgumentFromIterator(DBusMessageIter* iter, const char* signature, const unsigned int num);
 		void fillInArguments(DBusMessage* message);

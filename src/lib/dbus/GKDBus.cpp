@@ -58,12 +58,18 @@ GKDBus::~GKDBus()
 #if DEBUGGING_ON
 		LOG(DEBUG) << "closing DBus Session connection";
 #endif
+		int ret = dbus_bus_release_name(this->session_conn_, this->session_name_.c_str(), nullptr);
+		this->checkReleasedName(ret);
 		dbus_connection_unref(this->session_conn_);
 	}
+
 	if(this->system_conn_) {
 #if DEBUGGING_ON
 		LOG(DEBUG) << "closing DBus System connection";
 #endif
+
+		int ret = dbus_bus_release_name(this->system_conn_, this->system_name_.c_str(), nullptr);
+		this->checkReleasedName(ret);
 		dbus_connection_unref(this->system_conn_);
 	}
 }
@@ -90,6 +96,7 @@ void GKDBus::connectToSessionBus(const char* connection_name) {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "DBus Session requested connection name : " << connection_name;
 #endif
+	this->session_name_ = connection_name;
 }
 
 void GKDBus::connectToSystemBus(const char* connection_name) {
@@ -110,6 +117,7 @@ void GKDBus::connectToSystemBus(const char* connection_name) {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "DBus System requested connection name : " << connection_name;
 #endif
+	this->system_name_ = connection_name;
 }
 
 /* -- */
@@ -1555,6 +1563,23 @@ void GKDBus::appendExtraStringsValuesToReply(void) {
 		for( const std::string & value : this->extra_strings_ ) {
 			this->appendStringToMethodCallReply(value);
 		}
+	}
+}
+
+void GKDBus::checkReleasedName(int ret) {
+	switch(ret) {
+		case DBUS_RELEASE_NAME_REPLY_RELEASED:
+			LOG(DEBUG1) << "name released";
+			break;
+		case DBUS_RELEASE_NAME_REPLY_NOT_OWNER:
+			LOG(DEBUG1) << "not owner, cannot release";
+			break;
+		case DBUS_RELEASE_NAME_REPLY_NON_EXISTENT:
+			LOG(DEBUG1) << "nobody owned the name";
+			break;
+		default:
+			LOG(WARNING) << "unknown return value";
+			break;
 	}
 }
 
