@@ -47,7 +47,7 @@ struct R_Key
 	bool macro_key;
 	const char* name;
 
-	R_Key(unsigned short i, unsigned char m, Keys k, bool b=false, const char* n=nullptr)
+	R_Key(unsigned short i, unsigned char m, Keys k, const char* n=nullptr, bool b=false)
 		: index(i), mask(m), key(k), macro_key(b), name(n) {}
 };
 
