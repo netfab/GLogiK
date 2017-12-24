@@ -660,7 +660,7 @@ void DevicesManager::startMonitoring(GKDBus* pDBus) {
 	this->fds[0].events = POLLIN;
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "loading known drivers";
+	LOG(DEBUG2) << "loading drivers";
 #endif
 
 	this->drivers_.push_back( new LogitechG510() );

@@ -569,15 +569,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 				<< " on bus " << to_uint(device.bus);
 #endif
 
-	uint8_t & mask = device.current_leds_mask;
-
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "resetting MxKeys leds status";
-#endif
-	mask = 0;
-	this->setMxKeysLeds(device);
-
-	this->initializeMacroKeys(device);
+	const uint8_t & mask = device.current_leds_mask;
 
 	while( DaemonControl::isDaemonRunning() and device.listen_status ) {
 		KeyStatus ret = this->getPressedKeys(device);
@@ -672,6 +664,14 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 		catch (const std::bad_alloc& e) { /* handle new() failure */
 			throw GLogiKBadAlloc("macros manager allocation failure");
 		}
+
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "resetting MxKeys leds status";
+#endif
+		device.current_leds_mask = 0;
+		this->setMxKeysLeds(device);
+
+		this->initializeMacroKeys(device);
 
 		device.listen_status = true;
 		this->initialized_devices_[devID] = device;
