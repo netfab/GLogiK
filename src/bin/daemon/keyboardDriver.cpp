@@ -200,10 +200,6 @@ std::string KeyboardDriver::getBytes(const InitializedDevice & device) {
 	return s.str();
 }
 
-void KeyboardDriver::initializeMacroKey(const InitializedDevice & device, const char* name) {
-	device.macros_man->initializeMacroKey(name);
-}
-
 KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & device) {
 	std::fill_n(device.keys_buffer, KEYS_BUFFER_LENGTH, 0);
 
@@ -659,7 +655,10 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 		this->buffer_ << device.device.name << " " << devID;
 
 		try {
-			device.macros_man = new MacrosManager(this->buffer_.str().c_str());
+			device.macros_man = new MacrosManager(
+				this->buffer_.str().c_str(),
+				this->getMacroKeysNames()
+			);
 		}
 		catch (const std::bad_alloc& e) { /* handle new() failure */
 			throw GLogiKBadAlloc("macros manager allocation failure");
@@ -670,8 +669,6 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 #endif
 		device.current_leds_mask = 0;
 		this->setMxKeysLeds(device);
-
-		this->initializeMacroKeys(device);
 
 		device.listen_status = true;
 		this->initialized_devices_[devID] = device;

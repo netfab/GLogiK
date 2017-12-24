@@ -151,7 +151,6 @@ class KeyboardDriver
 
 		std::string getBytes(const InitializedDevice & device);
 
-		virtual void initializeMacroKeys(const InitializedDevice & device) = 0;
 		virtual KeyStatus processKeyEvent(InitializedDevice & device) = 0;
 		virtual KeyStatus getPressedKeys(InitializedDevice & device);
 		virtual const bool checkMacroKey(InitializedDevice & device) = 0;
@@ -160,7 +159,6 @@ class KeyboardDriver
 		virtual void setMxKeysLeds(const InitializedDevice & device);
 		virtual void setKeyboardColor(const InitializedDevice & device);
 
-		void initializeMacroKey(const InitializedDevice & device, const char* name);
 		void fillStandardKeysEvents(InitializedDevice & device);
 		void sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
 			unsigned char * data, uint16_t wLength);
@@ -217,6 +215,9 @@ class KeyboardDriver
 		void releaseInterfaces(InitializedDevice & device);
 		void attachKernelDrivers(InitializedDevice & device);
 		void detachKernelDriver(InitializedDevice & device, int numInt);
+
+		virtual const std::vector<std::string> getMacroKeysNames(void) const = 0;
+
 		void listenLoop(const std::string & devID);
 
 		const bool updateCurrentLedsMask(InitializedDevice & device, bool force_MR_off=false);

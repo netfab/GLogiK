@@ -81,9 +81,9 @@ class LogitechG510 : public KeyboardDriver
 		void processKeyEvent8Bytes(InitializedDevice & device);
 		void processKeyEvent5Bytes(InitializedDevice & device);
 		void processKeyEvent2Bytes(InitializedDevice & device);
-		void initializeMacroKeys(const InitializedDevice & device);
 		const bool checkMacroKey(InitializedDevice & device);
 
+		const std::vector<std::string> getMacroKeysNames(void) const;
 };
 
 } // namespace GLogiK
