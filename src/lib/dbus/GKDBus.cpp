@@ -277,7 +277,7 @@ void GKDBus::initializeTargetsSignal(
 		uniqueNames = this->getAllStringArguments();
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(WARNING) << "failure to ask the bus for signal targets : " << e.what();
+		LOG(WARNING) << "failure to ask the bus for signal targets";
 		throw;
 	}
 
@@ -572,9 +572,18 @@ void GKDBus::waitForRemoteMethodCallReply(void) {
 	}
 
 	if(dbus_message_get_type(message) == DBUS_MESSAGE_TYPE_ERROR) {
+		this->fillInArguments(message);
+
+		this->buffer_.str("got DBus error as reply : ");
+		try {
+			this->buffer_ << this->getNextStringArgument();
+		}
+		catch ( const EmptyContainer & e ) {
+			this->buffer_ << "no string argument with DBus error !";
+		}
+
 		dbus_message_unref(message);
-		// TODO parse error ?
-		throw GKDBusRemoteCallNoReply("got DBus error as reply");
+		throw GKDBusRemoteCallNoReply( this->buffer_.str() );
 	}
 
 	this->fillInArguments(message);
