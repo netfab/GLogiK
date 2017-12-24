@@ -112,7 +112,7 @@ const std::vector<KeyboardDevice> & LogitechG510::getSupportedDevices(void) cons
 }
 
 void LogitechG510::initializeMacroKeys(const InitializedDevice & device) {
-	for (const auto & k : this->five_bytes_keys_map_ ) {
+	for (const auto & k : LogitechG510::five_bytes_keys_map_ ) {
 		if( k.macro_key )
 			this->initializeMacroKey(device, k.name);
 	}
@@ -120,7 +120,7 @@ void LogitechG510::initializeMacroKeys(const InitializedDevice & device) {
 
 /* return true if the pressed key is a macro key (G1-G18)  */
 const bool LogitechG510::checkMacroKey(InitializedDevice & device) {
-	for (const auto & k : this->five_bytes_keys_map_ ) {
+	for (const auto & k : LogitechG510::five_bytes_keys_map_ ) {
 		if( k.macro_key and (device.pressed_keys & to_type(k.key)) ) {
 			device.chosen_macro_key = k.name;
 			return true;
@@ -135,7 +135,7 @@ void LogitechG510::processKeyEvent2Bytes(InitializedDevice & device) {
 		return;
 	}
 
-	for (auto k : this->two_bytes_keys_map_ ) {
+	for (const auto & k : LogitechG510::two_bytes_keys_map_ ) {
 		if( device.keys_buffer[k.index] & k.mask )
 			device.pressed_keys |= to_type(k.key);
 	}
@@ -147,7 +147,7 @@ void LogitechG510::processKeyEvent5Bytes(InitializedDevice & device) {
 		return;
 	}
 
-	for (auto k : this->five_bytes_keys_map_ ) {
+	for (const auto & k : LogitechG510::five_bytes_keys_map_ ) {
 		if( device.keys_buffer[k.index] & k.mask )
 			device.pressed_keys |= to_type(k.key);
 	}
@@ -225,7 +225,7 @@ void LogitechG510::setKeyboardColor(const InitializedDevice & device) {
 
 void LogitechG510::setMxKeysLeds(const InitializedDevice & device) {
 	unsigned char leds_mask = 0;
-	for (auto l : this->leds_mask_ ) {
+	for (const auto & l : LogitechG510::leds_mask_ ) {
 		if( device.current_leds_mask & to_type(l.led) )
 			leds_mask |= l.mask;
 	}
