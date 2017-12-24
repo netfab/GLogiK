@@ -63,11 +63,17 @@ class LogitechG510 : public KeyboardDriver
 		LogitechG510();
 		~LogitechG510();
 
-		const char* getDriverName() const { return "Logitech G510/G510s driver"; };
-		uint16_t getDriverID() const { return GLOGIKD_DRIVER_ID_G510; };
+		const char* getDriverName() const;
+		const uint16_t getDriverID() const;
+		const std::vector<KeyboardDevice> & getSupportedDevices(void) const;
 
 	protected:
 	private:
+		static const std::vector< R_Key > five_bytes_keys_map_;
+		static const std::vector< R_Key > two_bytes_keys_map_;
+		static const std::vector< M_Key_Led_Mask > leds_mask_;
+		static const std::vector<KeyboardDevice> supported_devices_;
+
 		KeyStatus processKeyEvent(InitializedDevice & device);
 		void sendDeviceInitialization(const InitializedDevice & device);
 		void setMxKeysLeds(const InitializedDevice & device);
@@ -78,9 +84,6 @@ class LogitechG510 : public KeyboardDriver
 		void initializeMacroKeys(const InitializedDevice & device);
 		const bool checkMacroKey(InitializedDevice & device);
 
-		static const std::vector< R_Key > five_bytes_keys_map_;
-		static const std::vector< R_Key > two_bytes_keys_map_;
-		static const std::vector< M_Key_Led_Mask > leds_mask_;
 };
 
 } // namespace GLogiK

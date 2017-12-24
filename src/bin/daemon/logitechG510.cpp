@@ -86,16 +86,29 @@ const std::vector< M_Key_Led_Mask > LogitechG510::leds_mask_ = {
 	{Leds::GK_LED_MR, 0x10},
 };
 
+const std::vector<KeyboardDevice> LogitechG510::supported_devices_ = {
+	// name, vendor_id, product_id
+	{ "Logitech G510/G510s", VENDOR_LOGITECH, "c22d" },
+};
+
 LogitechG510::LogitechG510() :
 	KeyboardDriver(INTERRUPT_READ_MAX_LENGTH, TRANSFER_LENGTH_FOR_LEDS_UPDATE, { 1, 1, 0, 2 })
 {
-	this->supported_devices_ = {
-		// name, vendor_id, product_id
-		{ "Logitech G510/G510s", VENDOR_LOGITECH, "c22d" },
-		};
 }
 
 LogitechG510::~LogitechG510() {
+}
+
+const char* LogitechG510::getDriverName() const {
+	return "Logitech G510/G510s driver";
+}
+
+const uint16_t LogitechG510::getDriverID() const {
+	return GLOGIKD_DRIVER_ID_G510;
+}
+
+const std::vector<KeyboardDevice> & LogitechG510::getSupportedDevices(void) const {
+	return LogitechG510::supported_devices_;
 }
 
 void LogitechG510::initializeMacroKeys(const InitializedDevice & device) {

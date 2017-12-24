@@ -69,10 +69,6 @@ KeyboardDriver::~KeyboardDriver() {
 		this->closeLibusb();
 }
 
-const std::vector<KeyboardDevice> & KeyboardDriver::getSupportedDevices(void) const {
-	return this->supported_devices_;
-}
-
 const std::string KeyboardDriver::getDeviceID(const uint8_t bus, const uint8_t num) {
 	std::string devID("b");
 	devID += std::to_string(bus);

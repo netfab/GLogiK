@@ -129,9 +129,8 @@ class KeyboardDriver
 		virtual ~KeyboardDriver();
 
 		virtual const char* getDriverName() const = 0;
-		virtual uint16_t getDriverID() const = 0;
-
-		const std::vector<KeyboardDevice> & getSupportedDevices(void) const;
+		virtual const uint16_t getDriverID() const = 0;
+		virtual const std::vector<KeyboardDevice> & getSupportedDevices(void) const = 0;
 
 		void initializeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
 		void closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
@@ -144,7 +143,6 @@ class KeyboardDriver
 
 	protected:
 		std::ostringstream buffer_;
-		std::vector<KeyboardDevice> supported_devices_;
 
 		void openLibUSBDevice(InitializedDevice & device);
 
