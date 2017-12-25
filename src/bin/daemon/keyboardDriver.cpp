@@ -45,6 +45,7 @@ libusb_context * KeyboardDriver::context_ = nullptr;
 uint8_t KeyboardDriver::drivers_cnt_ = 0;
 
 constexpr unsigned char KeyboardDriver::hid_keyboard_[256];
+std::vector<std::string> KeyboardDriver::keys_names_ = {};
 
 KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, DescriptorValues values) :
 		buffer_("", std::ios_base::app) {
@@ -75,6 +76,11 @@ const std::string KeyboardDriver::getDeviceID(const uint8_t bus, const uint8_t n
 	devID += "d";
 	devID += std::to_string(num);
 	return devID;
+}
+
+const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void) {
+	KeyboardDriver::keys_names_.clear();
+	return KeyboardDriver::keys_names_;
 }
 
 void KeyboardDriver::openLibUSBDevice(InitializedDevice & device) {

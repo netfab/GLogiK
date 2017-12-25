@@ -92,6 +92,10 @@ class ClientsManager
 			const std::string & clientID,
 			const std::string & devID
 		);
+		const std::vector<std::string> & getDeviceMacroKeysNames(
+			const std::string & clientID,
+			const std::string & devID
+		);
 
 		const bool setDeviceBacklightColor(
 			const std::string & clientID, const std::string & devID,

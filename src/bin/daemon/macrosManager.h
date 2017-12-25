@@ -39,7 +39,7 @@ class MacrosManager : public MacrosBanks
 	public:
 		MacrosManager(
 			const char* virtual_keyboard_name,
-			const std::vector<std::string> & key_names
+			const std::vector<std::string> & keys_names
 		);
 		~MacrosManager();
 
@@ -60,8 +60,6 @@ class MacrosManager : public MacrosBanks
 
 		MemoryBank currentActiveProfile_;
 		VirtualKeyboard virtual_keyboard;
-
-		void initializeMacroKey(const std::string & name);
 };
 
 } // namespace GLogiK

@@ -605,6 +605,27 @@ const macros_map_t & DevicesManager::getMacrosProfiles(const std::string & devID
 	return MacrosBanks::empty_macros_profiles_;
 }
 
+const std::vector<std::string> & DevicesManager::getDeviceMacroKeysNames(const std::string & devID) {
+	try {
+		const auto & device = this->initialized_devices_.at(devID);
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "found " << device.model << " in started devices";
+#endif
+		for(const auto& driver : this->drivers_) {
+			if( device.driver_ID == driver->getDriverID() ) {
+				return driver->getMacroKeysNames();
+			}
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("not found device : ");
+		this->buffer_ << devID;
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+	}
+
+	return KeyboardDriver::getEmptyStringVector();
+}
+
 void DevicesManager::resetDevicesStates(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "resetting initialized devices states";

@@ -128,9 +128,14 @@ class KeyboardDriver
 		KeyboardDriver(int key_read_length, uint8_t event_length, DescriptorValues values);
 		virtual ~KeyboardDriver();
 
+		static std::vector<std::string> keys_names_;
+
 		virtual const char* getDriverName() const = 0;
 		virtual const uint16_t getDriverID() const = 0;
 		virtual const std::vector<KeyboardDevice> & getSupportedDevices(void) const = 0;
+		virtual const std::vector<std::string> & getMacroKeysNames(void) const = 0;
+
+		static const std::vector<std::string> & getEmptyStringVector(void);
 
 		void initializeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
 		void closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
@@ -205,6 +210,7 @@ class KeyboardDriver
 			 29, 42, 56,125, 97, 54,100,126,164,166,165,163,161,115,114,113,
 			150,158,159,128,136,177,178,176,142,152,173,140,unk,unk,unk,unk
 		};
+
 		void notImplemented(const char* func);
 
 		void initializeLibusb(void);
@@ -215,8 +221,6 @@ class KeyboardDriver
 		void releaseInterfaces(InitializedDevice & device);
 		void attachKernelDrivers(InitializedDevice & device);
 		void detachKernelDriver(InitializedDevice & device, int numInt);
-
-		virtual const std::vector<std::string> getMacroKeysNames(void) const = 0;
 
 		void listenLoop(const std::string & devID);
 

@@ -33,17 +33,16 @@ namespace GLogiK
 
 MacrosManager::MacrosManager(
 	const char* virtual_keyboard_name,
-	const std::vector<std::string> & key_names
-)
-	: buffer_("", std::ios_base::app), currentActiveProfile_(MemoryBank::MACROS_M0),
+	const std::vector<std::string> & keys_names
+) : buffer_("", std::ios_base::app),
+	currentActiveProfile_(MemoryBank::MACROS_M0),
 	virtual_keyboard(virtual_keyboard_name)
 {
 #if DEBUGGING_ON
-	LOG(DEBUG) << "initializing " << key_names.size() << " macro keys";
+	LOG(DEBUG) << "initializing " << keys_names.size() << " macro keys";
 #endif
-	for( const auto & name : key_names ) {
-		this->initializeMacroKey(name);
-	}
+
+	this->initMacrosProfiles(keys_names);
 }
 
 MacrosManager::~MacrosManager()
@@ -86,17 +85,6 @@ void MacrosManager::logProfiles(void) {
 	}
 }
 */
-
-/*
- * declare and initialize a macro key
- * could be used by any keyboard driver on device initialization
- */
-void MacrosManager::initializeMacroKey(const std::string & name) {
-	for(auto & profile : this->macros_profiles_) {
-		macro_t macro;
-		profile.second.insert( std::pair<const std::string, macro_t>(name, macro));
-	}
-}
 
 /* set the current active macros profile */
 void MacrosManager::setCurrentActiveProfile(MemoryBank bank) {

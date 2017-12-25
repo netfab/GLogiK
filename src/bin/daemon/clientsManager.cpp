@@ -128,6 +128,12 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"a(yyq)", "macro_array", "out", "macro array"} },
 		std::bind(&ClientsManager::getMacro, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4) );
+
+	this->DBus->addEvent_TwoStringsToStringsArray_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "GetDeviceMacroKeysNames",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
+			{"as", "array_of_strings", "out", "string array of device macro keys names"} },
+		std::bind(&ClientsManager::getDeviceMacroKeysNames, this, std::placeholders::_1, std::placeholders::_2) );
 }
 
 ClientsManager::~ClientsManager() {
@@ -543,6 +549,26 @@ const macro_t & ClientsManager::getMacro(
 	}
 
 	return MacrosBanks::empty_macro_;
+}
+
+const std::vector<std::string> & ClientsManager::getDeviceMacroKeysNames(
+	const std::string & clientID,
+	const std::string & devID
+) {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "device " << devID << " - client " << clientID;
+#endif
+	try {
+		this->clients_.at(clientID);
+		return this->devicesManager->getDeviceMacroKeysNames(devID);
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("unknown client ");
+		this->buffer_ << clientID;
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+	}
+
+	return KeyboardDriver::getEmptyStringVector();
 }
 
 } // namespace GLogiK

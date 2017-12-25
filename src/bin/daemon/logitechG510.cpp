@@ -111,13 +111,13 @@ const std::vector<KeyboardDevice> & LogitechG510::getSupportedDevices(void) cons
 	return LogitechG510::supported_devices_;
 }
 
-const std::vector<std::string> LogitechG510::getMacroKeysNames(void) const {
-	std::vector<std::string> keysnames;
+const std::vector<std::string> & LogitechG510::getMacroKeysNames(void) const {
+	this->keys_names_.clear();
 	for (const auto & k : LogitechG510::five_bytes_keys_map_ ) {
 		if( k.macro_key )
-			keysnames.push_back(k.name);
+			this->keys_names_.push_back(k.name);
 	}
-	return keysnames;
+	return this->keys_names_;
 }
 
 /* return true if the pressed key is a macro key (G1-G18)  */

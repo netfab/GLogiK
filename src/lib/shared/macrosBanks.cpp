@@ -20,6 +20,7 @@
  */
 
 #include <stdexcept>
+#include <utility>
 
 #include "lib/utils/utils.h"
 
@@ -35,6 +36,18 @@ MacrosBanks::MacrosBanks() {
 }
 
 MacrosBanks::~MacrosBanks() {
+}
+
+void MacrosBanks::initMacrosProfiles(const std::vector<std::string> & keys_names) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "initialize " << keys_names.size() << " macro keys";
+#endif
+	macro_t macro;
+	for( const auto & name : keys_names ) {
+		for(auto & profile : this->macros_profiles_) {
+			profile.second.insert( std::pair<const std::string, macro_t>(name, macro));
+		}
+	}
 }
 
 void MacrosBanks::setMacro(

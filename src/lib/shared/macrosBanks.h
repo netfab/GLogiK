@@ -54,6 +54,8 @@ class MacrosBanks
 		static const macro_t empty_macro_;
 		static const macros_map_t empty_macros_profiles_;
 
+		void initMacrosProfiles(const std::vector<std::string> & keys_names);
+
 		const macros_map_t & getMacrosProfiles(void) const { return this->macros_profiles_; };
 		void setMacrosProfiles(const macros_map_t & macros) { this->macros_profiles_ = macros; };
 

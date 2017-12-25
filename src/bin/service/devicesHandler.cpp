@@ -227,6 +227,8 @@ void DevicesHandler::setDeviceState(const std::string & devID, const DevicePrope
 void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProperties & device, const std::string & session_state) {
 	unsigned int num = 0;
 
+	/* initialize device properties */
+
 	try {
 		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetDeviceProperties");
@@ -257,6 +259,34 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		warn += e.what();
 		WarningCheck::warnOrThrows(warn);
 	}
+
+	/* initialize macro keys */
+
+	try {
+		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetDeviceMacroKeysNames");
+		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
+		this->DBus->appendStringToRemoteMethodCall(devID);
+
+		this->DBus->sendRemoteMethodCall();
+
+		this->DBus->waitForRemoteMethodCallReply();
+
+		const std::vector<std::string> keys_names = this->DBus->getAllStringArguments();
+		device.initMacrosProfiles(keys_names);
+
+#if DEBUGGING_ON
+		LOG(DEBUG3) << keys_names.size() << " macro keys for device " << devID;
+#endif
+	}
+	catch (const GLogiKExcept & e) {
+		std::string warn(__func__);
+		warn += " failure : ";
+		warn += e.what();
+		WarningCheck::warnOrThrows(warn);
+	}
+
+	/* search a configuration file */
 
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "assigning a configuration file to device " << devID;
