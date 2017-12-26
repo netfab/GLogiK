@@ -115,9 +115,11 @@ void MacrosManager::clearMacroProfiles(void) {
 	this->setCurrentActiveProfile(MemoryBank::MACROS_M0);
 	for(auto & profile_pair : this->macros_profiles_) {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "clearing MemoryBank: " << to_uint(profile_pair.first);
+		LOG(DEBUG2) << "clearing macros for MemoryBank: " << to_uint(profile_pair.first);
 #endif
-		profile_pair.second.clear();
+		for(auto & macro_key_pair : profile_pair.second) {
+			macro_key_pair.second.clear();
+		}
 	}
 }
 
