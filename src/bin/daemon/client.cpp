@@ -109,9 +109,8 @@ const bool Client::deleteDevice(const std::string & devID) {
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "tried to delete not found device : " << devID;
-#endif
+		std::string warn("unknown device : "); warn += devID;
+		GKSysLog(LOG_WARNING, WARNING, warn);
 	}
 
 	return false;
@@ -128,9 +127,8 @@ const bool Client::setDeviceBacklightColor(const std::string & devID,
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "unknown device : " << devID;
-#endif
+		std::string warn("unknown device : "); warn += devID;
+		GKSysLog(LOG_WARNING, WARNING, warn);
 	}
 
 	return false;
@@ -142,11 +140,17 @@ void Client::setAllDevicesBacklightColors(DevicesManager* dev_manager)
 		LOG(DEBUG3) << "setting backlight color for all devices";
 #endif
 	for( const auto & devID : dev_manager->getStartedDevices() ) {
-		const DeviceProperties & device = this->devices_.at(devID);
-		const uint8_t r = device.getBLColor_R();
-		const uint8_t g = device.getBLColor_G();
-		const uint8_t b = device.getBLColor_B();
-		dev_manager->setDeviceBacklightColor(devID, r, g, b);
+		try {
+			const DeviceProperties & device = this->devices_.at(devID);
+			const uint8_t r = device.getBLColor_R();
+			const uint8_t g = device.getBLColor_G();
+			const uint8_t b = device.getBLColor_B();
+			dev_manager->setDeviceBacklightColor(devID, r, g, b);
+		}
+		catch (const std::out_of_range& oor) {
+			std::string warn("unknown device : "); warn += devID;
+			GKSysLog(LOG_WARNING, WARNING, warn);
+		}
 	}
 }
 
@@ -159,9 +163,8 @@ void Client::syncMacrosProfiles(const std::string & devID, const macros_map_t & 
 		device.setMacrosProfiles(macros_profiles);
 	}
 	catch (const std::out_of_range& oor) {
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "unknown device : " << devID;
-#endif
+		std::string warn("unknown device : "); warn += devID;
+		GKSysLog(LOG_WARNING, WARNING, warn);
 	}
 }
 
@@ -173,9 +176,8 @@ const macro_t & Client::getMacro(const std::string & devID,
 		return device.getMacro(profile, keyName);
 	}
 	catch (const std::out_of_range& oor) {
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "unknown device : " << devID;
-#endif
+		std::string warn("unknown device : "); warn += devID;
+		GKSysLog(LOG_WARNING, WARNING, warn);
 	}
 
 	return MacrosBanks::empty_macro_;
