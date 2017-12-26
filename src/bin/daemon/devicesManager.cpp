@@ -182,7 +182,7 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 	LOG(DEBUG2) << "trying to start device " << devID;
 #endif
 	try {
-		auto & device = this->plugged_but_stopped_devices_.at(devID);
+		const auto & device = this->plugged_but_stopped_devices_.at(devID);
 		for(const auto& driver : this->drivers_) {
 			if( device.driver_ID == driver->getDriverID() ) {
 				if( ! driver->isDeviceInitialized(devID) ) { /* sanity check */
