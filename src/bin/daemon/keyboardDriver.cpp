@@ -1165,7 +1165,7 @@ void KeyboardDriver::setDeviceBacklightColor(const std::string & devID, const ui
 	}
 }
 
-const macros_map_t & KeyboardDriver::getMacrosProfiles(const std::string & devID) {
+const macros_map_t & KeyboardDriver::getDeviceMacrosProfiles(const std::string & devID) {
 	try {
 		InitializedDevice & device = this->initialized_devices_.at(devID);
 		return device.macros_man->getMacrosProfiles();

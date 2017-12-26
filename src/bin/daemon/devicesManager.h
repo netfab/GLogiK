@@ -74,7 +74,7 @@ class DevicesManager
 		const std::vector<std::string> getDeviceProperties(const std::string & devID);
 		void setDeviceBacklightColor(const std::string & devID,
 			const uint8_t r, const uint8_t g, const uint8_t b);
-		const macros_map_t & getMacrosProfiles(const std::string & devID);
+		const macros_map_t & getDeviceMacrosProfiles(const std::string & devID);
 		const std::vector<std::string> & getDeviceMacroKeysNames(const std::string & devID);
 
 	protected:

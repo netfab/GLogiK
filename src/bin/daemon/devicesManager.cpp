@@ -591,7 +591,7 @@ void DevicesManager::setDeviceBacklightColor(const std::string & devID, const ui
 	}
 }
 
-const macros_map_t & DevicesManager::getMacrosProfiles(const std::string & devID) {
+const macros_map_t & DevicesManager::getDeviceMacrosProfiles(const std::string & devID) {
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
 #if DEBUGGING_ON
@@ -599,7 +599,7 @@ const macros_map_t & DevicesManager::getMacrosProfiles(const std::string & devID
 #endif
 		for(const auto& driver : this->drivers_) {
 			if( device.driver_ID == driver->getDriverID() ) {
-				return driver->getMacrosProfiles(devID);
+				return driver->getDeviceMacrosProfiles(devID);
 			}
 		}
 	}

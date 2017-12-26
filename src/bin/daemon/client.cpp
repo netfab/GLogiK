@@ -155,7 +155,7 @@ void Client::setAllDevicesBacklightColors(DevicesManager* dev_manager)
 	}
 }
 
-void Client::syncMacrosProfiles(const std::string & devID, const macros_map_t & macros_profiles) {
+void Client::syncDeviceMacrosProfiles(const std::string & devID, const macros_map_t & macros_profiles) {
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "synchonizing macros profiles for device " << devID;
 #endif
@@ -169,7 +169,7 @@ void Client::syncMacrosProfiles(const std::string & devID, const macros_map_t & 
 	}
 }
 
-const macro_t & Client::getMacro(const std::string & devID,
+const macro_t & Client::getDeviceMacro(const std::string & devID,
 	const std::string & keyName, const uint8_t profile)
 {
 	try {
