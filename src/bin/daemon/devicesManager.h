@@ -37,8 +37,6 @@
 
 #include "keyboardDriver.h"
 
-#include "lib/shared/glogik.h"
-
 namespace GLogiK
 {
 
@@ -88,13 +86,6 @@ class DevicesManager
 		int fd_ = -1;
 		GKDBus* DBus = nullptr;
 		uint8_t num_clients_;
-
-		/* to send signals to clients */
-		const char* DBus_clients_name_		= GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME;
-
-		/* CSMH - Clients System Message Handler */
-		const char* DBus_CSMH_object_path_	= GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH;
-		const char* DBus_CSMH_interface_	= GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE;
 
 		std::ostringstream buffer_;
 		std::vector<KeyboardDriver*> drivers_;

@@ -41,8 +41,6 @@
 #include "lib/shared/keyEvent.h"
 #include "macrosManager.h"
 
-#include "lib/shared/glogik.h"
-
 namespace GLogiK
 {
 
@@ -177,13 +175,6 @@ class KeyboardDriver
 
 		std::map<const std::string, InitializedDevice> initialized_devices_;
 		std::vector<std::thread> threads_;
-
-		/* to send signals to clients */
-		const char* DBus_clients_name_		= GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME;
-
-		/* CSMH - Clients System Message Handler */
-		const char* DBus_CSMH_object_path_	= GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH;
-		const char* DBus_CSMH_interface_	= GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE;
 
 		/* USB HID Usage Tables as defined in USB specification,
 		 *        Chapter 10 "Keyboard/Keypad Page (0x07)"

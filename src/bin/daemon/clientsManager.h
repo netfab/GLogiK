@@ -32,8 +32,6 @@
 #include "devicesManager.h"
 #include "client.h"
 
-#include "lib/shared/glogik.h"
-
 namespace GLogiK
 {
 
@@ -48,20 +46,6 @@ class ClientsManager
 	protected:
 
 	private:
-		/* clients manager DBus object and interface */
-		const char* DBus_CM_object_		= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT;
-		const char* DBus_CM_interface_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
-
-		/* devices manager DBus object and interface */
-		const char* DBus_DM_object_		= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT;
-		const char* DBus_DM_interface_	= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
-
-		/* to send signals to clients */
-		const char* DBus_clients_name_		= GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME;
-		/* CSMH - Clients System Message Handler */
-		const char* DBus_CSMH_object_path_	= GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH;
-		const char* DBus_CSMH_interface_	= GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE;
-
 		std::ostringstream buffer_;
 		GKDBus* DBus;
 		DevicesManager* devicesManager;

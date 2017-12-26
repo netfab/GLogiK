@@ -33,6 +33,7 @@
 
 #include "lib/shared/deviceConfigurationFile.h"
 #include "lib/utils/utils.h"
+#include "lib/shared/glogik.h"
 
 #include "warningCheck.h"
 #include "devicesHandler.h"
@@ -195,8 +196,13 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 
 void DevicesHandler::setDeviceState(const std::string & devID, const DeviceProperties & device) {
 	try {
-		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "SetDeviceBacklightColor");
+		this->DBus->initializeRemoteMethodCall(
+			BusConnection::GKDBUS_SYSTEM,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			"SetDeviceBacklightColor"
+		);
 		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
 		this->DBus->appendStringToRemoteMethodCall(devID);
 		this->DBus->appendUInt8ToRemoteMethodCall(device.getBLColor_R());
@@ -230,8 +236,13 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	/* initialize device properties */
 
 	try {
-		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetDeviceProperties");
+		this->DBus->initializeRemoteMethodCall(
+			BusConnection::GKDBUS_SYSTEM,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			"GetDeviceProperties"
+		);
 		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
 		this->DBus->appendStringToRemoteMethodCall(devID);
 
@@ -263,8 +274,13 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	/* initialize macro keys */
 
 	try {
-		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetDeviceMacroKeysNames");
+		this->DBus->initializeRemoteMethodCall(
+			BusConnection::GKDBUS_SYSTEM,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			"GetDeviceMacroKeysNames"
+		);
 		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
 		this->DBus->appendStringToRemoteMethodCall(devID);
 
@@ -429,8 +445,13 @@ void DevicesHandler::deleteUncheckedDevices(void) {
 		this->devices_.erase(devID);
 
 		try {
-			this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-				this->DBus_DCM_object_path_, this->DBus_DCM_interface_, "DeleteDeviceConfiguration");
+			this->DBus->initializeRemoteMethodCall(
+				BusConnection::GKDBUS_SYSTEM,
+				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+				"DeleteDeviceConfiguration"
+			);
 			this->DBus->appendStringToRemoteMethodCall(this->client_id_);
 			this->DBus->appendStringToRemoteMethodCall(devID);
 
@@ -466,8 +487,13 @@ const bool DevicesHandler::setMacro(
 		DeviceProperties & device = this->devices_.at(devID);
 
 		/* getting recorded macro from daemon */
-		this->DBus->initializeRemoteMethodCall(BusConnection::GKDBUS_SYSTEM, GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			this->DBus_DDM_object_path_, this->DBus_DDM_interface_, "GetMacro");
+		this->DBus->initializeRemoteMethodCall(
+			BusConnection::GKDBUS_SYSTEM,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			"GetMacro"
+		);
 
 		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
 		this->DBus->appendStringToRemoteMethodCall(devID);

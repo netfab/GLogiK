@@ -28,6 +28,7 @@
 #include <config.h>
 
 #include "lib/utils/utils.h"
+#include "lib/shared/glogik.h"
 
 #include "daemonControl.h"
 #include "logitechG510.h"
@@ -162,9 +163,9 @@ void DevicesManager::sendSignalToClients(const std::string & signal) {
 	try {
 		this->DBus->initializeTargetsSignal(
 			BusConnection::GKDBUS_SYSTEM,
-			this->DBus_clients_name_,
-			this->DBus_CSMH_object_path_,
-			this->DBus_CSMH_interface_,
+			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 			signal.c_str()
 		);
 		this->DBus->sendTargetsSignal();

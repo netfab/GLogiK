@@ -32,8 +32,6 @@
 #include "lib/dbus/GKDBus.h"
 #include "lib/shared/deviceProperties.h"
 
-#include "lib/shared/glogik.h"
-
 namespace GLogiK
 {
 
@@ -64,14 +62,6 @@ class DevicesHandler
 	protected:
 
 	private:
-		/* DCM - Daemon ClientsManager - to contact the ClientsManager */
-		const char* DBus_DCM_object_path_	= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH;
-		const char* DBus_DCM_interface_		= GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
-
-		/* DDM - Daemon DevicesManager - to contact the DevicesManager */
-		const char* DBus_DDM_object_path_	= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH;
-		const char* DBus_DDM_interface_		= GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
-
 		GKDBus* DBus;
 		std::string client_id_;
 		std::ostringstream buffer_;

@@ -29,6 +29,7 @@
 #include <config.h>
 
 #include "lib/utils/utils.h"
+#include "lib/shared/glogik.h"
 
 #include "clientsManager.h"
 
@@ -49,26 +50,38 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 		throw GLogiKBadAlloc("devices manager allocation failure");
 	}
 
+	/* clients manager DBus object and interface */
+	const auto & CM_object = GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT;
+	const auto & CM_interf = GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
+
+	/* devices manager DBus object and interface */
+	const auto & DM_object = GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT;
+	const auto & DM_interf = GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
+
 	/* ClientsManager D-Bus object */
 
-	this->DBus->addEvent_StringToBool_Callback( this->DBus_CM_object_, this->DBus_CM_interface_, "RegisterClient",
+	this->DBus->addEvent_StringToBool_Callback(
+		CM_object, CM_interf, "RegisterClient",
 		{	{"s", "client_session_object_path", "in", "client session object path"},
 			{"b", "did_register_succeeded", "out", "did the RegisterClient method succeeded ?"},
 			{"s", "failure_reason_or_client_id", "out", "if register success (bool==true), unique client ID, else (bool=false) failure reason"} },
 		std::bind(&ClientsManager::registerClient, this, std::placeholders::_1) );
 
-	this->DBus->addEvent_StringToBool_Callback( this->DBus_CM_object_, this->DBus_CM_interface_, "UnregisterClient",
+	this->DBus->addEvent_StringToBool_Callback(
+		CM_object, CM_interf, "UnregisterClient",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"b", "did_unregister_succeeded", "out", "did the UnregisterClient method succeeded ?"} },
 		std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );
 
-	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_CM_object_, this->DBus_CM_interface_, "UpdateClientState",
+	this->DBus->addEvent_TwoStringsToBool_Callback(
+		CM_object, CM_interf, "UpdateClientState",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "client_new_state", "in", "client new state"},
 			{"b", "did_updateclientstate_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_CM_object_, this->DBus_CM_interface_, "DeleteDeviceConfiguration",
+	this->DBus->addEvent_TwoStringsToBool_Callback(
+		CM_object, CM_interf, "DeleteDeviceConfiguration",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"b", "did_deletedeviceconfiguration_succeeded", "out", "did the DeleteDeviceConfiguration method succeeded ?"} },
@@ -76,41 +89,48 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 
 	/* DevicesManager D-Bus object */
 
-	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "StopDevice",
+	this->DBus->addEvent_TwoStringsToBool_Callback(
+		DM_object, DM_interf, "StopDevice",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"b", "did_stop_succeeded", "out", "did the StopDevice method succeeded ?"} },
 		std::bind(&ClientsManager::stopDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "StartDevice",
+	this->DBus->addEvent_TwoStringsToBool_Callback(
+		DM_object, DM_interf, "StartDevice",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStoppedDevices"},
 			{"b", "did_start_succeeded", "out", "did the StartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::startDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addEvent_TwoStringsToBool_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "RestartDevice",
+	this->DBus->addEvent_TwoStringsToBool_Callback(
+		DM_object, DM_interf, "RestartDevice",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"b", "did_restart_succeeded", "out", "did the RestartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addEvent_StringToStringsArray_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "GetStartedDevices",
+	this->DBus->addEvent_StringToStringsArray_Callback(
+		DM_object, DM_interf, "GetStartedDevices",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"as", "array_of_strings", "out", "array of started devices ID strings"} },
 		std::bind(&ClientsManager::getStartedDevices, this, std::placeholders::_1) );
 
-	this->DBus->addEvent_StringToStringsArray_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "GetStoppedDevices",
+	this->DBus->addEvent_StringToStringsArray_Callback(
+		DM_object, DM_interf, "GetStoppedDevices",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"as", "array_of_strings", "out", "array of stopped devices ID strings"} },
 		std::bind(&ClientsManager::getStoppedDevices, this, std::placeholders::_1) );
 
-	this->DBus->addEvent_TwoStringsToStringsArray_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "GetDeviceProperties",
+	this->DBus->addEvent_TwoStringsToStringsArray_Callback(
+		DM_object, DM_interf, "GetDeviceProperties",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"as", "array_of_strings", "out", "string array of device properties"} },
 		std::bind(&ClientsManager::getDeviceProperties, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addEvent_TwoStringsThreeBytesToBool_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "SetDeviceBacklightColor",
+	this->DBus->addEvent_TwoStringsThreeBytesToBool_Callback(
+		DM_object, DM_interf, "SetDeviceBacklightColor",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"y", "red_byte", "in", "red byte for the RGB color model"},
@@ -120,7 +140,8 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 		std::bind(&ClientsManager::setDeviceBacklightColor, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
 
-	this->DBus->addEvent_ThreeStringsOneByteToMacro_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "GetMacro",
+	this->DBus->addEvent_ThreeStringsOneByteToMacro_Callback(
+		DM_object, DM_interf, "GetMacro",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"s", "macro_key_name", "in", "macro key name"},
@@ -129,7 +150,8 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 		std::bind(&ClientsManager::getMacro, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4) );
 
-	this->DBus->addEvent_TwoStringsToStringsArray_Callback( this->DBus_DM_object_, this->DBus_DM_interface_, "GetDeviceMacroKeysNames",
+	this->DBus->addEvent_TwoStringsToStringsArray_Callback(
+		DM_object, DM_interf, "GetDeviceMacroKeysNames",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"as", "array_of_strings", "out", "string array of device macro keys names"} },
@@ -172,9 +194,9 @@ void ClientsManager::sendSignalToClients(const std::string & signal) {
 	try {
 		this->DBus->initializeTargetsSignal(
 			BusConnection::GKDBUS_SYSTEM,
-			this->DBus_clients_name_,
-			this->DBus_CSMH_object_path_,
-			this->DBus_CSMH_interface_,
+			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 			signal.c_str()
 		);
 		this->DBus->sendTargetsSignal();

@@ -30,6 +30,7 @@
 
 #include "lib/utils/utils.h"
 #include "lib/dbus/GKDBus.h"
+#include "lib/shared/glogik.h"
 
 #include "daemonControl.h"
 #include "keyboardDriver.h"
@@ -472,7 +473,6 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 	LOG(DEBUG) << "entering macro record mode";
 #endif
 
-	std::string DBus_connection_name(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
 	/* ROOT_NODE only for introspection, don't care */
 	GKDBus* pDBus = new GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
 
@@ -513,13 +513,13 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 
 				try {
 					/* open a new connection, GKDBus is not thread-safe */
-					pDBus->connectToSystemBus(DBus_connection_name.c_str());
+					pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
 
 					pDBus->initializeTargetsSignal(
 						BusConnection::GKDBUS_SYSTEM,
-						this->DBus_clients_name_,
-						this->DBus_CSMH_object_path_,
-						this->DBus_CSMH_interface_,
+						GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+						GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
+						GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 						"MacroRecorded"
 					);
 

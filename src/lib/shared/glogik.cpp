@@ -20,10 +20,35 @@
  *
  */
 
+#include "glogik.h"
+
 namespace GLogiK
 {
 
-const char* unknown_device = "unknown device : ";
+c_str unknown_device = "unknown device : ";
+
+/* devices thread */
+c_str GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME					= "com.glogik.Device";
+
+/* daemon thread */
+c_str GLOGIK_DAEMON_DBUS_ROOT_NODE									= "/com/glogik/Daemon";
+c_str GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME						= "com.glogik.Daemon";
+	/* -- */
+c_str GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT						= "ClientsManager";
+c_str GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH				= "/com/glogik/Daemon/ClientsManager";
+c_str GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE					= "com.glogik.Daemon.Client1";
+	/* -- */
+c_str GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT						= "DevicesManager";
+c_str GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH				= "/com/glogik/Daemon/DevicesManager";
+c_str GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE					= "com.glogik.Daemon.Device1";
+
+/* desktop service */
+c_str GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE							= "/com/glogik/Desktop/Service";
+c_str GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME				= "com.glogik.Desktop.Service";
+	/* -- */
+c_str GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT			= "SystemMessageHandler";
+c_str GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH	= "/com/glogik/Desktop/Service/SystemMessageHandler";
+c_str GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE		= "com.glogik.Desktop.Service.SystemMessageHandler1";
 
 } // namespace GLogiK
 
