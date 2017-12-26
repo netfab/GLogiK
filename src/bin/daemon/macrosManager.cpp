@@ -51,27 +51,39 @@ MacrosManager::~MacrosManager()
 
 /* returns true if a macro is defined for this key on the current profile */
 const bool MacrosManager::macroDefined(const std::string & macro_key_name) {
-	const macro_t & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
-	return (macro.size() > 0);
+	try {
+		const macro_t & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
+		return (macro.size() > 0);
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog(LOG_WARNING, WARNING, "macro key container not found");
+	}
+
+	return false;
 }
 
 /* run a macro on the virtual keyboard */
 void MacrosManager::runMacro(const std::string & macro_key_name) {
-	const macro_t & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
-	if(macro.size() == 0) {
+	try {
+		const macro_t & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
+		if(macro.size() == 0) {
 #if DEBUGGING_ON
-		LOG(DEBUG) << "Macros Profile: " << to_uint(this->currentActiveProfile_)
-			<< " - Macro Key: " << macro_key_name << " - no macro recorded";
+			LOG(DEBUG) << "Macros Profile: " << to_uint(this->currentActiveProfile_)
+				<< " - Macro Key: " << macro_key_name << " - no macro recorded";
 #endif
-		return;
-	}
+			return;
+		}
 
 #if DEBUGGING_ON
-	LOG(INFO) << "Macros Profile: " << to_uint(this->currentActiveProfile_)
-		<< " - Macro Key: " << macro_key_name << " - running macro";
+		LOG(INFO) << "Macros Profile: " << to_uint(this->currentActiveProfile_)
+			<< " - Macro Key: " << macro_key_name << " - running macro";
 #endif
-	for( const auto &key : macro ) {
-		this->virtual_keyboard.sendKeyEvent(key);
+		for( const auto &key : macro ) {
+			this->virtual_keyboard.sendKeyEvent(key);
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog(LOG_WARNING, WARNING, "macro key container not found");
 	}
 }
 

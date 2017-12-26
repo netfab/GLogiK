@@ -289,10 +289,15 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 
 	for(const auto & devID : to_clean) {
 #if DEBUGGING_ON
-		const auto & device = this->initialized_devices_.at(devID);
 		this->buffer_.str("erasing unplugged initialized driver : ");
-		this->buffer_ << device.device.vendor_id << ":" << device.device.product_id
-					  << ":" << device.input_dev_node << ":" << device.usec;
+		try {
+			const auto & device = this->initialized_devices_.at(devID);
+			this->buffer_ << device.device.vendor_id << ":" << device.device.product_id
+						  << ":" << device.input_dev_node << ":" << device.usec;
+		}
+		catch (const std::out_of_range& oor) {
+			this->buffer_ << "!?! device not found !?!";
+		}
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 		this->buffer_.str("Did you unplug your device before properly stopping it ?");
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
