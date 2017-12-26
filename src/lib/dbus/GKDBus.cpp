@@ -561,7 +561,7 @@ void GKDBus::waitForRemoteMethodCallReply(void) {
 	// TODO could set a timer between retries ?
 	while( message == nullptr and c < 10 ) {
 		message = dbus_pending_call_steal_reply(this->pending_);
-		c++;
+		c++; /* bonus point */
 	}
 
 	dbus_pending_call_unref(this->pending_);
@@ -1453,7 +1453,7 @@ void GKDBus::decodeArgumentFromIterator(DBusMessageIter* iter, const char* signa
 				if(dbus_message_iter_get_arg_type(&array_it) == DBUS_TYPE_INVALID)
 					break;
 				do {
-					c++;
+					c++; /* bonus point */
 					char* sig = dbus_message_iter_get_signature(&array_it);
 					this->decodeArgumentFromIterator(&array_it, sig, c);
 					dbus_free(sig);
@@ -1484,7 +1484,7 @@ void GKDBus::decodeArgumentFromIterator(DBusMessageIter* iter, const char* signa
 					DBusMessageIter struct_it;
 					dbus_message_iter_recurse(iter, &struct_it);
 					do {
-						c++;
+						c++; /* bonus point */
 						char* sig = dbus_message_iter_get_signature(&struct_it);
 						this->decodeArgumentFromIterator(&struct_it, sig, c);
 						dbus_free(sig);
@@ -1518,7 +1518,7 @@ void GKDBus::fillInArguments(DBusMessage* message) {
 		return; /* no arguments */
 
 	do {
-		c++;
+		c++; /* bonus point */
 		char* signature = dbus_message_iter_get_signature(&arg_it);
 		this->decodeArgumentFromIterator(&arg_it, signature, c);
 		dbus_free(signature);

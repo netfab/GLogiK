@@ -89,7 +89,7 @@ void DevicesManager::initializeDevices(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing detected devices";
 #endif
-	uint8_t count = 0;
+	unsigned int c = 0;
 
 	for(const auto& det_dev : this->detected_devices_) {
 		const auto & devID = det_dev.first;
@@ -128,7 +128,7 @@ void DevicesManager::initializeDevices(void) {
 					this->buffer_ << "(" << device.device.vendor_id << ":" << device.device.product_id
 								  << ") on bus " << to_uint(device.device_bus) << " initialized";
 					GKSysLog(LOG_INFO, INFO, this->buffer_.str());
-					count++;
+					c++; /* bonus point */
 					break;
 				}
 			} // for
@@ -140,7 +140,7 @@ void DevicesManager::initializeDevices(void) {
 		}
 	} // for
 
-	if( count > 0 ) {
+	if( c > 0 ) {
 		/* inform clients */
 		this->sendSignalToClients("SomethingChanged");
 	}
@@ -277,7 +277,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 	LOG(DEBUG2) << "checking for unplugged devices";
 #endif
 
-	unsigned int count = 0;
+	unsigned int c = 0;
 
 	/* checking for unplugged unstopped devices */
 	std::vector<std::string> to_clean;
@@ -304,7 +304,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 
 		this->stopDevice(devID);
-		count++;
+		c++; /* bonus point */
 	}
 
 	to_clean.clear();
@@ -320,7 +320,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 		LOG(DEBUG3) << "removing " << devID << " from plugged-but-stopped devices";
 #endif
 		this->plugged_but_stopped_devices_.erase(devID);
-		count++;
+		c++; /* bonus point */
 	}
 	to_clean.clear();
 
@@ -328,10 +328,10 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "number of devices still initialized : " << this->initialized_devices_.size();
-	LOG(DEBUG3) << "number of unplugged devices : " << count;
+	LOG(DEBUG3) << "number of unplugged devices : " << c;
 #endif
 
-	if(count > 0) {
+	if(c > 0) {
 		/* inform clients */
 		this->sendSignalToClients("SomethingChanged");
 	}

@@ -220,11 +220,11 @@ void ClientsManager::runLoop(void) {
 
 	this->sendSignalToClients("DaemonIsStopping");
 
-	uint8_t count = 0;
+	unsigned int c = 0;
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "waiting for clients to unregister ...";
 #endif
-	while( count++ < 10 and this->clients_.size() > 0 ) {
+	while( c++ < 10 and this->clients_.size() > 0 ) { /* bonus point */
 		this->devicesManager->checkDBusMessages();
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "sleeping for 400 ms ...";

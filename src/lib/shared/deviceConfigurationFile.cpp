@@ -19,8 +19,6 @@
  *
  */
 
-#include <cstdint>
-
 #include <config.h>
 
 #include "lib/utils/utils.h"
@@ -43,11 +41,11 @@ const std::string DeviceConfigurationFile::getNextAvailableNewPath(const std::ve
 	LOG(DEBUG2) << "building next new path";
 #endif
 
-	uint8_t count = 0;
-	while( ++count < 10 ) {
+	unsigned int c = 0;
+	while( c++ < 10 ) { /* bonus point */
 		fs::path file(device_model);
 		file += "_";
-		file += std::to_string(count);
+		file += std::to_string(c);
 		file += ".cfg";
 
 		fs::path full_path = directory_path / file;
