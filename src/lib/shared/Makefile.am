@@ -22,4 +22,5 @@ libGLogiKShared_la_SOURCES = \
 	macrosBanks.cpp macrosBanks.h \
 	deviceConfigurationFile.cpp deviceConfigurationFile.h \
 	deviceProperties.cpp deviceProperties.h \
+	glogik.cpp glogik.h \
 	sessionManager.cpp sessionManager.h

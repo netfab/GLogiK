@@ -41,7 +41,7 @@
 #include "lib/shared/keyEvent.h"
 #include "macrosManager.h"
 
-#include "include/glogik.h"
+#include "lib/shared/glogik.h"
 
 namespace GLogiK
 {

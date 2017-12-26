@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include "lib/utils/utils.h"
+#include "lib/shared/glogik.h"
 
 #include "client.h"
 
@@ -109,7 +110,7 @@ const bool Client::deleteDevice(const std::string & devID) {
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn("unknown device : "); warn += devID;
+		std::string warn(unknown_device); warn += devID;
 		GKSysLog(LOG_WARNING, WARNING, warn);
 	}
 
@@ -127,7 +128,7 @@ const bool Client::setDeviceBacklightColor(const std::string & devID,
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn("unknown device : "); warn += devID;
+		std::string warn(unknown_device); warn += devID;
 		GKSysLog(LOG_WARNING, WARNING, warn);
 	}
 
@@ -148,7 +149,7 @@ void Client::setAllDevicesBacklightColors(DevicesManager* dev_manager)
 			dev_manager->setDeviceBacklightColor(devID, r, g, b);
 		}
 		catch (const std::out_of_range& oor) {
-			std::string warn("unknown device : "); warn += devID;
+			std::string warn(unknown_device); warn += devID;
 			GKSysLog(LOG_WARNING, WARNING, warn);
 		}
 	}
@@ -163,7 +164,7 @@ void Client::syncMacrosProfiles(const std::string & devID, const macros_map_t & 
 		device.setMacrosProfiles(macros_profiles);
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn("unknown device : "); warn += devID;
+		std::string warn(unknown_device); warn += devID;
 		GKSysLog(LOG_WARNING, WARNING, warn);
 	}
 }
@@ -176,7 +177,7 @@ const macro_t & Client::getMacro(const std::string & devID,
 		return device.getMacro(profile, keyName);
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn("unknown device : "); warn += devID;
+		std::string warn(unknown_device); warn += devID;
 		GKSysLog(LOG_WARNING, WARNING, warn);
 	}
 

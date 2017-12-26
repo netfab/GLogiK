@@ -22,6 +22,11 @@
 #ifndef __GLOGIK_H__
 #define __GLOGIK_H__
 
+namespace GLogiK
+{
+
+extern const char* unknown_device;
+
 /* device */
 #define GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME		"com.glogik.Device"
 
@@ -44,5 +49,7 @@
 #define GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT			"SystemMessageHandler"
 #define GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH		GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE "/" GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT
 #define GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE		"com.glogik.Desktop.Service.SystemMessageHandler1"
+
+} // namespace GLogiK
 
 #endif

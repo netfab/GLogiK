@@ -32,7 +32,7 @@
 #include "lib/dbus/GKDBus.h"
 #include "lib/shared/deviceProperties.h"
 
-#include "include/glogik.h"
+#include "lib/shared/glogik.h"
 
 namespace GLogiK
 {

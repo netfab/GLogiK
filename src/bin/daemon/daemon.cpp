@@ -44,7 +44,7 @@
 #include <boost/filesystem.hpp>
 
 #include <config.h>
-#include "include/glogik.h"
+#include "lib/shared/glogik.h"
 
 #include "lib/utils/utils.h"
 
