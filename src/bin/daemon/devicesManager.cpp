@@ -288,7 +288,6 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 	}
 
 	for(const auto & devID : to_clean) {
-#if DEBUGGING_ON
 		this->buffer_.str("erasing unplugged initialized driver : ");
 		try {
 			const auto & device = this->initialized_devices_.at(devID);
@@ -303,7 +302,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 		this->buffer_.str("You will get libusb warnings/errors if you do this.");
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
-#endif
+
 		this->stopDevice(devID);
 		count++;
 	}
