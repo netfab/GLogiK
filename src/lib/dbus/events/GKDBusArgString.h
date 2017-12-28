@@ -19,55 +19,29 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_H__
-#define __GLOGIK_GKDBUS_H__
+#ifndef __GLOGIK_GKDBUS_ARG_STRING_H__
+#define __GLOGIK_GKDBUS_ARG_STRING_H__
 
-#include <cstdint>
+#include "GKDBusArgument.h"
 
 #include <string>
 #include <vector>
-#include <sstream>
-
-#include <dbus/dbus.h>
-
-#include "lib/shared/keyEvent.h"
-
-#define GKDBUS_INSIDE_GKDBUS_H 1
-#include "GKDBusEvents.h"
-#undef GKDBUS_INSIDE_GKDBUS_H
 
 namespace GLogiK
 {
 
-enum class BusConnection : uint8_t
-{
-	GKDBUS_SESSION = 0,
-	GKDBUS_SYSTEM,
-};
-
-class GKDBus : public GKDBusEvents
+class CBStringArgument : public CBArgument
 {
 	public:
-		GKDBus(const std::string & rootnode);
-		~GKDBus();
-
-		void connectToSessionBus(const char* connection_name);
-		void connectToSystemBus(const char* connection_name);
 
 	protected:
+		CBStringArgument(void) = default;
+		~CBStringArgument(void) = default;
+
+		static const std::string & getNextStringArgument(void);
 
 	private:
-		std::ostringstream buffer_;
-		DBusError error_;
 
-		DBusConnection* current_conn_;
-		DBusConnection* session_conn_;
-		DBusConnection* system_conn_;
-
-		std::string session_name_;
-		std::string system_name_;
-
-		void checkReleasedName(int ret);
 };
 
 } // namespace GLogiK

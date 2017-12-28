@@ -19,55 +19,56 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_H__
-#define __GLOGIK_GKDBUS_H__
-
-#include <cstdint>
+#ifndef __GLOGIK_GKDBUS_REPLY_H__
+#define __GLOGIK_GKDBUS_REPLY_H__
 
 #include <string>
 #include <vector>
-#include <sstream>
 
 #include <dbus/dbus.h>
 
 #include "lib/shared/keyEvent.h"
 
-#define GKDBUS_INSIDE_GKDBUS_H 1
-#include "GKDBusEvents.h"
-#undef GKDBUS_INSIDE_GKDBUS_H
+#include "GKDBusMessage.h"
 
 namespace GLogiK
 {
 
-enum class BusConnection : uint8_t
-{
-	GKDBUS_SESSION = 0,
-	GKDBUS_SYSTEM,
-};
-
-class GKDBus : public GKDBusEvents
+class GKDBusReply : public GKDBusMessage
 {
 	public:
-		GKDBus(const std::string & rootnode);
-		~GKDBus();
-
-		void connectToSessionBus(const char* connection_name);
-		void connectToSystemBus(const char* connection_name);
+		GKDBusReply(DBusConnection* connection, DBusMessage* message);
+		~GKDBusReply();
 
 	protected:
 
 	private:
-		std::ostringstream buffer_;
-		DBusError error_;
 
-		DBusConnection* current_conn_;
-		DBusConnection* session_conn_;
-		DBusConnection* system_conn_;
+};
 
-		std::string session_name_;
-		std::string system_name_;
+class GKDBusMessageReply
+{
+	public:
 
-		void checkReleasedName(int ret);
+	protected:
+		GKDBusMessageReply();
+		~GKDBusMessageReply();
+
+		void initializeReply(DBusConnection* connection, DBusMessage* message);
+
+		void appendBooleanToReply(const bool value);
+		void appendStringToReply(const std::string & value);
+		void appendStringVectorToReply(
+			const std::vector<std::string> & list
+		);
+		//void appendExtraStringToReply(const std::string & value);
+		void appendMacroToReply(const macro_t & macro_array);
+
+		void sendReply(void);
+
+	private:
+		GKDBusReply* reply_;
+
 };
 
 } // namespace GLogiK

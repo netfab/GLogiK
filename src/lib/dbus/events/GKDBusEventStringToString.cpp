@@ -19,57 +19,29 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_H__
-#define __GLOGIK_GKDBUS_H__
 
-#include <cstdint>
-
-#include <string>
-#include <vector>
-#include <sstream>
-
-#include <dbus/dbus.h>
-
-#include "lib/shared/keyEvent.h"
-
-#define GKDBUS_INSIDE_GKDBUS_H 1
-#include "GKDBusEvents.h"
-#undef GKDBUS_INSIDE_GKDBUS_H
+#include "GKDBusEventStringToString.h"
 
 namespace GLogiK
 {
 
-enum class BusConnection : uint8_t
-{
-	GKDBUS_SESSION = 0,
-	GKDBUS_SYSTEM,
-};
+void StringToStringEvent::runCallback(DBusConnection* connection, DBusMessage* message) {
+}
 
-class GKDBus : public GKDBusEvents
-{
-	public:
-		GKDBus(const std::string & rootnode);
-		~GKDBus();
 
-		void connectToSessionBus(const char* connection_name);
-		void connectToSystemBus(const char* connection_name);
+/* -- -- -- */
 
-	protected:
-
-	private:
-		std::ostringstream buffer_;
-		DBusError error_;
-
-		DBusConnection* current_conn_;
-		DBusConnection* session_conn_;
-		DBusConnection* system_conn_;
-
-		std::string session_name_;
-		std::string system_name_;
-
-		void checkReleasedName(int ret);
-};
+void EventStringToString::addStringToStringEvent(
+	const char* object,
+	const char* interface,
+	const char* eventName,
+	const std::vector<DBusMethodArgument> & args,
+	std::function<const std::string(const std::string&)> callback,
+	GKDBusEventType eventType
+) {
+	GKDBusEvent* e = new StringToStringEvent(eventName, args, callback, eventType);
+	this->addIntrospectableEvent(object, interface, e);
+}
 
 } // namespace GLogiK
 
-#endif

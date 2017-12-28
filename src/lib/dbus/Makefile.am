@@ -14,9 +14,11 @@ libGLogiKDBus_la_LIBADD = \
 
 libGLogiKDBus_la_SOURCES = \
 	GKDBus.cpp GKDBus.h \
-	GKDBusEvents.cpp GKDBusEvents.h \
-	GKDBusMessage.cpp GKDBusMessage.h \
-	GKDBusMessageReply.cpp GKDBusMessageReply.h \
-	GKDBusRemoteMethodCall.cpp GKDBusRemoteMethodCall.h \
-	GKDBusBroadcastSignal.cpp GKDBusBroadcastSignal.h \
-	GKDBusMessageErrorReply.cpp GKDBusMessageErrorReply.h
+	events/GKDBusEvent.cpp events/GKDBusEvent.h \
+	events/GKDBusArgument.cpp events/GKDBusArgument.h \
+	events/GKDBusArgString.cpp events/GKDBusArgString.h \
+	message/GKDBusMessage.cpp message/GKDBusMessage.h \
+	message/GKDBusReply.cpp message/GKDBusReply.h \
+	events/GKDBusEventStringToBool.cpp events/GKDBusEventStringToBool.h \
+	events/GKDBusEventStringToString.cpp events/GKDBusEventStringToString.h \
+	GKDBusEvents.cpp GKDBusEvents.h

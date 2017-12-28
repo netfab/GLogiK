@@ -19,55 +19,39 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_H__
-#define __GLOGIK_GKDBUS_H__
+#ifndef __GLOGIK_GKDBUS_CALLBACK_ARGUMENT_H__
+#define __GLOGIK_GKDBUS_CALLBACK_ARGUMENT_H__
 
 #include <cstdint>
 
 #include <string>
 #include <vector>
-#include <sstream>
 
 #include <dbus/dbus.h>
-
-#include "lib/shared/keyEvent.h"
-
-#define GKDBUS_INSIDE_GKDBUS_H 1
-#include "GKDBusEvents.h"
-#undef GKDBUS_INSIDE_GKDBUS_H
 
 namespace GLogiK
 {
 
-enum class BusConnection : uint8_t
-{
-	GKDBUS_SESSION = 0,
-	GKDBUS_SYSTEM,
-};
-
-class GKDBus : public GKDBusEvents
+class CBArgument
 {
 	public:
-		GKDBus(const std::string & rootnode);
-		~GKDBus();
-
-		void connectToSessionBus(const char* connection_name);
-		void connectToSystemBus(const char* connection_name);
 
 	protected:
+		CBArgument(void) = default;
+		~CBArgument(void) = default;
+
+		static void fillInArguments(DBusMessage* message);
+
+		static std::vector<std::string> string_arguments_;
+		static std::vector<uint8_t> byte_arguments_;
+		static std::vector<uint16_t> uint16_arguments_;
+		static std::vector<bool> boolean_arguments_;
+
+		static std::string current_;
 
 	private:
-		std::ostringstream buffer_;
-		DBusError error_;
+		static void decodeArgumentFromIterator(DBusMessageIter* iter, const char* signature, const unsigned int num);
 
-		DBusConnection* current_conn_;
-		DBusConnection* session_conn_;
-		DBusConnection* system_conn_;
-
-		std::string session_name_;
-		std::string system_name_;
-
-		void checkReleasedName(int ret);
 };
 
 } // namespace GLogiK

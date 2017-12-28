@@ -19,55 +19,48 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_H__
-#define __GLOGIK_GKDBUS_H__
-
-#include <cstdint>
-
-#include <string>
-#include <vector>
-#include <sstream>
+#ifndef __GLOGIK_GKDBUS_MESSAGE_H__
+#define __GLOGIK_GKDBUS_MESSAGE_H__
 
 #include <dbus/dbus.h>
 
 #include "lib/shared/keyEvent.h"
 
-#define GKDBUS_INSIDE_GKDBUS_H 1
-#include "GKDBusEvents.h"
-#undef GKDBUS_INSIDE_GKDBUS_H
-
 namespace GLogiK
 {
 
-enum class BusConnection : uint8_t
-{
-	GKDBUS_SESSION = 0,
-	GKDBUS_SYSTEM,
-};
-
-class GKDBus : public GKDBusEvents
+class GKDBusMessage
 {
 	public:
-		GKDBus(const std::string & rootnode);
-		~GKDBus();
+		void appendBoolean(const bool value);
+		void appendString(const std::string & value);
+		void appendStringVector(const std::vector<std::string> & list);
 
-		void connectToSessionBus(const char* connection_name);
-		void connectToSystemBus(const char* connection_name);
+		void appendUInt8(const uint8_t value);
+		void appendUInt16(const uint16_t value);
+		void appendUInt32(const uint32_t value);
+
+		void appendMacro(const macro_t & macro_array);
+
+		//void appendVariantToMessage(const std::string & value);
+		//void appendVariantToMessage(const unsigned char value);
 
 	protected:
+		GKDBusMessage(DBusConnection* connection, const bool logoff=false);
+		~GKDBusMessage(void);
+
+		DBusConnection* connection_;
+		DBusMessage* message_;
+		DBusMessageIter args_it_;
+		bool hosed_message_;
+		bool log_off_;
+
+		const std::string append_failure_ = "message append failure";
 
 	private:
-		std::ostringstream buffer_;
-		DBusError error_;
+		void appendUInt8(DBusMessageIter *iter, const uint8_t value);
+		void appendUInt16(DBusMessageIter *iter, const uint16_t value);
 
-		DBusConnection* current_conn_;
-		DBusConnection* session_conn_;
-		DBusConnection* system_conn_;
-
-		std::string session_name_;
-		std::string system_name_;
-
-		void checkReleasedName(int ret);
 };
 
 } // namespace GLogiK

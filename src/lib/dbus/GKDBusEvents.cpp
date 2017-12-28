@@ -32,23 +32,17 @@
 namespace GLogiK
 {
 
-GKDBusEvent::GKDBusEvent(
-	const char* n,
-	std::vector<DBusMethodArgument> & a,
-	GKDBusEventType t
-	)	: eventName(n), arguments(a), eventType(t)
-{
-}
-
-GKDBusEvent::~GKDBusEvent() {
-}
-
-/* -- */
-
 GKDBusEvents::GKDBusEvents() {
 }
 
 GKDBusEvents::~GKDBusEvents() {
+	for(const auto & object_path_pair : this->DBusEvents_) {
+		for(const auto & interface_pair : object_path_pair.second) {
+			for(auto & DBusEvent : interface_pair.second) { /* vector of pointers */
+				delete DBusEvent;
+			}
+		}
+	}
 }
 
 void GKDBusEvents::defineRootNode(const std::string& rootnode) {
@@ -64,182 +58,6 @@ const std::string GKDBusEvents::getNode(const std::string & object) {
 	node += "/";
 	node += object;
 	return node;
-}
-
-void GKDBusEvents::addEvent_StringToBool_Callback(
-	const char* object,
-	const char* interface,
-	const char* eventName,
-	std::vector<DBusMethodArgument> args,
-	std::function<const bool(const std::string&)> callback,
-	GKDBusEventType eventType
-) {
-	GKDBusEvent_StringToBool_Callback e(eventName, args, callback, eventType);
-	this->DBusObjects_[object] = true;
-	this->DBusInterfaces_[interface] = true;
-	this->events_string_to_bool_[object][interface].push_back(e);
-
-	this->addIntrospectableEvent(object);
-}
-
-void GKDBusEvents::addEvent_TwoStringsToBool_Callback(
-	const char* object,
-	const char* interface,
-	const char* eventName,
-	std::vector<DBusMethodArgument> args,
-	std::function<const bool(const std::string&, const std::string&)> callback,
-	GKDBusEventType eventType
-) {
-	GKDBusEvent_TwoStringsToBool_Callback e(eventName, args, callback, eventType);
-	this->DBusObjects_[object] = true;
-	this->DBusInterfaces_[interface] = true;
-	this->events_twostrings_to_bool_[object][interface].push_back(e);
-
-	this->addIntrospectableEvent(object);
-}
-
-void GKDBusEvents::addEvent_VoidToVoid_Callback(
-	const char* object,
-	const char* interface,
-	const char* eventName,
-	std::vector<DBusMethodArgument> args,
-	std::function<void(void)> callback,
-	GKDBusEventType eventType
-) {
-	GKDBusEvent_VoidToVoid_Callback e(eventName, args, callback, eventType);
-	this->DBusObjects_[object] = true;
-	this->DBusInterfaces_[interface] = true;
-	this->events_void_to_void_[object][interface].push_back(e);
-
-	this->addIntrospectableEvent(object);
-}
-
-void GKDBusEvents::addEvent_VoidToString_Callback(
-	const char* object,
-	const char* interface,
-	const char* eventName,
-	std::vector<DBusMethodArgument> args,
-	std::function<const std::string(void)> callback,
-	GKDBusEventType eventType
-) {
-	GKDBusEvent_VoidToString_Callback e(eventName, args, callback, eventType);
-	this->DBusObjects_[object] = true;
-	this->DBusInterfaces_[interface] = true;
-	this->events_void_to_string_[object][interface].push_back(e);
-
-	this->addIntrospectableEvent(object);
-}
-
-void GKDBusEvents::addEvent_VoidToStringsArray_Callback(
-	const char* object,
-	const char* interface,
-	const char* eventName,
-	std::vector<DBusMethodArgument> args,
-	std::function<const std::vector<std::string>(void)> callback,
-	GKDBusEventType eventType
-) {
-	GKDBusEvent_VoidToStringsArray_Callback e(eventName, args, callback, eventType);
-	this->DBusObjects_[object] = true;
-	this->DBusInterfaces_[interface] = true;
-	this->events_void_to_stringsarray_[object][interface].push_back(e);
-
-	this->addIntrospectableEvent(object);
-}
-
-void GKDBusEvents::addEvent_StringToStringsArray_Callback(
-	const char* object,
-	const char* interface,
-	const char* eventName,
-	std::vector<DBusMethodArgument> args,
-	std::function<const std::vector<std::string>(const std::string&)> callback,
-	GKDBusEventType eventType
-) {
-	GKDBusEvent_StringToStringsArray_Callback e(eventName, args, callback, eventType);
-	this->DBusObjects_[object] = true;
-	this->DBusInterfaces_[interface] = true;
-	this->events_string_to_stringsarray_[object][interface].push_back(e);
-
-	this->addIntrospectableEvent(object);
-}
-
-void GKDBusEvents::addEvent_TwoStringsToStringsArray_Callback(
-	const char* object,
-	const char* interface,
-	const char* eventName,
-	std::vector<DBusMethodArgument> args,
-	std::function<const std::vector<std::string>(const std::string&, const std::string&)> callback,
-	GKDBusEventType eventType
-) {
-	GKDBusEvent_TwoStringsToStringsArray_Callback e(eventName, args, callback, eventType);
-	this->DBusObjects_[object] = true;
-	this->DBusInterfaces_[interface] = true;
-	this->events_twostrings_to_stringsarray_[object][interface].push_back(e);
-
-	this->addIntrospectableEvent(object);
-}
-
-void GKDBusEvents::addEvent_StringToString_Callback(
-	const char* object,
-	const char* interface,
-	const char* eventName,
-	std::vector<DBusMethodArgument> args,
-	std::function<const std::string(const std::string&)> callback,
-	GKDBusEventType eventType
-) {
-	GKDBusEvent_StringToString_Callback e(eventName, args, callback, eventType);
-	this->DBusObjects_[object] = true;
-	this->DBusInterfaces_[interface] = true;
-	this->events_string_to_string_[object][interface].push_back(e);
-
-	this->addIntrospectableEvent(object);
-}
-
-void GKDBusEvents::addEvent_TwoStringsOneByteToBool_Callback(
-	const char* object,
-	const char* interface,
-	const char* eventName,
-	std::vector<DBusMethodArgument> args,
-	std::function<const bool(const std::string&, const std::string&, const uint8_t)> callback,
-	GKDBusEventType eventType
-) {
-	GKDBusEvent_TwoStringsOneByteToBool_Callback e(eventName, args, callback, eventType);
-	this->DBusObjects_[object] = true;
-	this->DBusInterfaces_[interface] = true;
-	this->events_twostringsonebyte_to_bool_[object][interface].push_back(e);
-
-	this->addIntrospectableEvent(object);
-}
-
-void GKDBusEvents::addEvent_TwoStringsThreeBytesToBool_Callback(
-	const char* object,
-	const char* interface,
-	const char* eventName,
-	std::vector<DBusMethodArgument> args,
-	std::function<const bool(const std::string&, const std::string&, const uint8_t, const uint8_t, const uint8_t)> callback,
-	GKDBusEventType eventType
-) {
-	GKDBusEvent_TwoStringsThreeBytesToBool_Callback e(eventName, args, callback, eventType);
-	this->DBusObjects_[object] = true;
-	this->DBusInterfaces_[interface] = true;
-	this->events_twostringsthreebytes_to_bool_[object][interface].push_back(e);
-
-	this->addIntrospectableEvent(object);
-}
-
-void GKDBusEvents::addEvent_ThreeStringsOneByteToMacro_Callback(
-	const char* object,
-	const char* interface,
-	const char* eventName,
-	std::vector<DBusMethodArgument> args,
-	std::function<const macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> callback,
-	GKDBusEventType eventType
-) {
-	GKDBusEvent_ThreeStringsOneByteToMacro_Callback e(eventName, args, callback, eventType);
-	this->DBusObjects_[object] = true;
-	this->DBusInterfaces_[interface] = true;
-	this->events_threestringsonebyte_to_macro_[object][interface].push_back(e);
-
-	this->addIntrospectableEvent(object);
 }
 
 const std::string GKDBusEvents::introspectRootNode(void) {
@@ -265,9 +83,9 @@ const std::string GKDBusEvents::introspectRootNode(void) {
  * private
  */
 
-void GKDBusEvents::addIntrospectableEvent(const char* object) {
+void GKDBusEvents::addIntrospectableEvent(const char* object, const char* interface, GKDBusEvent* event) {
 	try {
-		const auto & obj = this->events_string_to_string_.at(object);
+		const auto & obj = this->DBusEvents_.at(object);
 		const auto & interf = obj.at("org.freedesktop.DBus.Introspectable");
 		// just to avoid warning
 		LOG(DEBUG5) << "introspect interface found : " << interf.size();
@@ -276,11 +94,14 @@ void GKDBusEvents::addIntrospectableEvent(const char* object) {
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "adding Introspectable interface : " << object;
 #endif
-		this->addEvent_StringToString_Callback(
+		this->addStringToStringEvent(
 			object, "org.freedesktop.DBus.Introspectable", "Introspect",
 			{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
 			std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1));
 	}
+	this->DBusObjects_[object] = true;
+	this->DBusInterfaces_[interface] = true;
+	this->DBusEvents_[object][interface].push_back(event);
 }
 
 void GKDBusEvents::openXMLInterface(
@@ -296,11 +117,11 @@ void GKDBusEvents::openXMLInterface(
 
 void GKDBusEvents::eventToXMLMethod(
 	std::ostringstream & xml,
-	const GKDBusEvent & DBusEvent
+	const GKDBusEvent* DBusEvent
 ) {
-	if( DBusEvent.eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
-		xml << "    <method name=\"" << DBusEvent.eventName << "\">\n";
-		for(const auto & arg : DBusEvent.arguments) {
+	if( DBusEvent->eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
+		xml << "    <method name=\"" << DBusEvent->eventName << "\">\n";
+		for(const auto & arg : DBusEvent->arguments) {
 			xml << "      <!-- " << arg.comment << " -->\n";
 			xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
 		}
@@ -326,145 +147,20 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 
 		bool interface_opened = false;
 
-		for(const auto & object_it : this->events_string_to_string_) {
-			/* object must match */
-			if(object_it.first != object_asked)
+		for(const auto & object_path_pair : this->DBusEvents_) {
+			/* object path must match */
+			if(object_path_pair.first != object_asked)
 				continue;
-			for(const auto & inter_it : object_it.second) {
-				if( inter_it.first == interface ) {
+			for(const auto & interface_pair : object_path_pair.second) {
+				if( interface_pair.first == interface ) {
 					this->openXMLInterface(xml, interface_opened, interface);
-					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
+					for(const auto & DBusEvent : interface_pair.second) { /* vector of struct */
 						this->eventToXMLMethod(xml, DBusEvent);
 					}
 				}
 			}
 		}
 
-		for(const auto & object_it : this->events_void_to_string_) {
-			/* object must match */
-			if(object_it.first != object_asked)
-				continue;
-			for(const auto & inter_it : object_it.second) {
-				if( inter_it.first == interface ) {
-					this->openXMLInterface(xml, interface_opened, interface);
-					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
-						this->eventToXMLMethod(xml, DBusEvent);
-					}
-				}
-			}
-		}
-
-		for(const auto & object_it : this->events_void_to_stringsarray_) {
-			/* object must match */
-			if(object_it.first != object_asked)
-				continue;
-			for(const auto & inter_it : object_it.second) {
-				if( inter_it.first == interface ) {
-					this->openXMLInterface(xml, interface_opened, interface);
-					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
-						this->eventToXMLMethod(xml, DBusEvent);
-					}
-				}
-			}
-		}
-
-		for(const auto & object_it : this->events_string_to_stringsarray_) {
-			/* object must match */
-			if(object_it.first != object_asked)
-				continue;
-			for(const auto & inter_it : object_it.second) {
-				if( inter_it.first == interface ) {
-					this->openXMLInterface(xml, interface_opened, interface);
-					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
-						this->eventToXMLMethod(xml, DBusEvent);
-					}
-				}
-			}
-		}
-
-		for(const auto & object_it : this->events_twostrings_to_stringsarray_) {
-			/* object must match */
-			if(object_it.first != object_asked)
-				continue;
-			for(const auto & inter_it : object_it.second) {
-				if( inter_it.first == interface ) {
-					this->openXMLInterface(xml, interface_opened, interface);
-					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
-						this->eventToXMLMethod(xml, DBusEvent);
-					}
-				}
-			}
-		}
-
-		for(const auto & object_it : this->events_string_to_bool_) {
-			/* object must match */
-			if(object_it.first != object_asked)
-				continue;
-			for(const auto & inter_it : object_it.second) {
-				if( inter_it.first == interface ) {
-					this->openXMLInterface(xml, interface_opened, interface);
-					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
-						this->eventToXMLMethod(xml, DBusEvent);
-					}
-				}
-			}
-		}
-
-		for(const auto & object_it : this->events_twostrings_to_bool_) {
-			/* object must match */
-			if(object_it.first != object_asked)
-				continue;
-			for(const auto & inter_it : object_it.second) {
-				if( inter_it.first == interface ) {
-					this->openXMLInterface(xml, interface_opened, interface);
-					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
-						this->eventToXMLMethod(xml, DBusEvent);
-					}
-				}
-			}
-		}
-
-		for(const auto & object_it : this->events_twostringsonebyte_to_bool_) {
-			/* object must match */
-			if(object_it.first != object_asked)
-				continue;
-			for(const auto & inter_it : object_it.second) {
-				if( inter_it.first == interface ) {
-					this->openXMLInterface(xml, interface_opened, interface);
-					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
-						this->eventToXMLMethod(xml, DBusEvent);
-					}
-				}
-			}
-		}
-
-		for(const auto & object_it : this->events_twostringsthreebytes_to_bool_) {
-			/* object must match */
-			if(object_it.first != object_asked)
-				continue;
-			for(const auto & inter_it : object_it.second) {
-				if( inter_it.first == interface ) {
-					this->openXMLInterface(xml, interface_opened, interface);
-					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
-						this->eventToXMLMethod(xml, DBusEvent);
-					}
-				}
-			}
-		}
-
-		for(const auto & object_it : this->events_threestringsonebyte_to_macro_) {
-			/* object must match */
-			if(object_it.first != object_asked)
-				continue;
-			for(const auto & inter_it : object_it.second) {
-				if( inter_it.first == interface ) {
-					this->openXMLInterface(xml, interface_opened, interface);
-					for(const auto & DBusEvent : inter_it.second) { /* vector of struct */
-						this->eventToXMLMethod(xml, DBusEvent);
-					}
-				}
-			}
-		}
 
 		if( interface_opened )
 			xml << "  </interface>\n";

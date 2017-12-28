@@ -51,6 +51,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 		this->reportChangedState();
 
 		/* want to be warned by the daemon about those signals */
+/*
 		this->DBus->addSignal_VoidToVoid_Callback(
 			BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
@@ -88,6 +89,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 						std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
 			)
 		);
+*/
 
 		/* set GKDBus pointer */
 		this->devices_.setDBus(this->DBus);

@@ -72,8 +72,28 @@ GLogiK=$PWD/.. CD=. {
 			Makefile.am
 			GLogiKDBus=dbus/ {
 				Makefile.am
+				events=events/ {
+					GKDBusArgument.cpp
+					GKDBusArgument.h
+					GKDBusArgString.cpp
+					GKDBusArgString.h
+					GKDBusEvent.cpp
+					GKDBusEvent.h
+					GKDBusEventStringToBool.cpp
+					GKDBusEventStringToBool.h
+					GKDBusEventStringToString.cpp
+					GKDBusEventStringToString.h
+				}
+				message=message/ {
+					GKDBusMessage.cpp
+					GKDBusMessage.h
+					GKDBusReply.cpp
+					GKDBusReply.h
+				}
 				GKDBus.cpp
 				GKDBus.h
+				GKDBus.cpp.old
+				GKDBus.h.old
 				GKDBusEvents.cpp
 				GKDBusEvents.h
 				GKDBusMessage.cpp
