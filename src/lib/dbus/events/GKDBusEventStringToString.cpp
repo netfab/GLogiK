@@ -30,7 +30,7 @@ void StringToStringEvent::runCallback(DBusConnection* connection, DBusMessage* m
 	CBArgument::fillInArguments(message);
 
 	/* call string to string callback */
-	const std::string arg( this->getNextStringArgument() );
+	const std::string arg( CBStringArgument::getNextStringArgument() );
 	const std::string ret( this->callback(arg) );
 
 	try {

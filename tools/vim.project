@@ -91,6 +91,8 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusReply.h
 					GKDBusErrorReply.cpp
 					GKDBusErrorReply.h
+					GKDBusRemoteMethodCall.cpp
+					GKDBusRemoteMethodCall.h
 				}
 				GKDBus.cpp
 				GKDBus.h

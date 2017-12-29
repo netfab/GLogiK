@@ -36,6 +36,8 @@
 #include "GKDBusEvents.h"
 #undef GKDBUS_INSIDE_GKDBUS_H
 
+#include "message/GKDBusRemoteMethodCall.h"
+
 namespace GLogiK
 {
 
@@ -45,7 +47,9 @@ enum class BusConnection : uint8_t
 	GKDBUS_SYSTEM,
 };
 
-class GKDBus : public GKDBusEvents
+class GKDBus
+	:	public GKDBusEvents,
+		public GKDBusMessageRemoteMethodCall
 {
 	public:
 		GKDBus(const std::string & rootnode);

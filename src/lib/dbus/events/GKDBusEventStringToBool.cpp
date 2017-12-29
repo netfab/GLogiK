@@ -33,7 +33,7 @@ void StringToBoolEvent::runCallback(DBusConnection* connection, DBusMessage* mes
 
 	try {
 		/* call string to bool callback */
-		const std::string arg( this->getNextStringArgument() );
+		const std::string arg( CBStringArgument::getNextStringArgument() );
 		ret = this->callback(arg);
 	}
 	catch ( const EmptyContainer & e ) {
