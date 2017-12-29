@@ -51,7 +51,6 @@ class GKDBus : public GKDBusEvents
 		GKDBus(const std::string & rootnode);
 		~GKDBus();
 
-		void connectToSessionBus(const char* connection_name);
 		void connectToSystemBus(const char* connection_name);
 
 	protected:
@@ -67,6 +66,7 @@ class GKDBus : public GKDBusEvents
 		std::string session_name_;
 		std::string system_name_;
 
+		void checkDBusError(const char* error_message);
 		void checkReleasedName(int ret);
 };
 

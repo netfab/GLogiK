@@ -67,6 +67,37 @@ GKDBus::~GKDBus()
 	}
 }
 
+void GKDBus::connectToSystemBus(const char* connection_name) {
+	this->system_conn_ = dbus_bus_get(DBUS_BUS_SYSTEM, &this->error_);
+	this->checkDBusError("DBus System connection failure");
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "DBus System connection opened";
+#endif
+
+	int ret = dbus_bus_request_name(this->system_conn_, connection_name,
+		DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &this->error_);
+	this->checkDBusError("DBus System request name failure");
+
+	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
+		throw GLogiKExcept("DBus System request name failure : not owner");
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "DBus System requested connection name : " << connection_name;
+#endif
+	this->system_name_ = connection_name;
+}
+
+/*
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ *
+ * === private === private === private === private === private ===
+ *
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ */
+
 void GKDBus::checkReleasedName(int ret) {
 	switch(ret) {
 		case DBUS_RELEASE_NAME_REPLY_RELEASED:
@@ -84,6 +115,14 @@ void GKDBus::checkReleasedName(int ret) {
 	}
 }
 
+void GKDBus::checkDBusError(const char* error_message) {
+	if( dbus_error_is_set(&this->error_) ) {
+		this->buffer_.str(error_message);
+		this->buffer_ << " : " << this->error_.message;
+		dbus_error_free(&this->error_);
+		throw GLogiKExcept(this->buffer_.str());
+	}
+}
 
 } // namespace GLogiK
 
