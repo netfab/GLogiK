@@ -27,6 +27,18 @@ namespace GLogiK
 {
 
 void GKDBusMessageTargetsSignal::initializeTargetsSignal(
+	BusConnection wanted_connection,
+	const char* dest,
+	const char* object_path,
+	const char* interface,
+	const char* signal
+) {
+	this->initializeTargetsSignal(
+		this->getConnection(wanted_connection),
+		dest, object_path, interface, signal);
+}
+
+void GKDBusMessageTargetsSignal::initializeTargetsSignal(
 	DBusConnection* connection,
 	const char* dest,
 	const char* object_path,

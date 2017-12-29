@@ -39,6 +39,18 @@ class GKDBusMessageTargetsSignal
 	:	public GKDBusMessageRemoteMethodCall
 {
 	public:
+		void initializeTargetsSignal(
+			BusConnection current,
+			const char* dest,
+			const char* object_path,
+			const char* interface,
+			const char* signal
+		);
+
+		void appendStringToTargetsSignal(const std::string & value);
+		void appendUInt8ToTargetsSignal(const uint8_t value);
+
+		void sendTargetsSignal(void);
 
 	protected:
 		GKDBusMessageTargetsSignal() = default;
@@ -52,13 +64,10 @@ class GKDBusMessageTargetsSignal
 			const char* signal
 		);
 
-		void appendStringToTargetsSignal(const std::string & value);
-		void appendUInt8ToTargetsSignal(const uint8_t value);
-
-		void sendTargetsSignal(void);
-
 	private:
 		std::vector<GKDBusBroadcastSignal*> signals_;
+
+		virtual DBusConnection* getConnection(BusConnection wanted_connection) = 0;
 
 };
 

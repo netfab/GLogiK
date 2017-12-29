@@ -40,12 +40,6 @@
 namespace GLogiK
 {
 
-enum class BusConnection : uint8_t
-{
-	GKDBUS_SESSION = 0,
-	GKDBUS_SYSTEM,
-};
-
 class GKDBus
 	:	public GKDBusEvents,
 		public GKDBusMessageBroadcastSignal,
@@ -63,7 +57,6 @@ class GKDBus
 		std::ostringstream buffer_;
 		DBusError error_;
 
-		DBusConnection* current_conn_;
 		DBusConnection* session_conn_;
 		DBusConnection* system_conn_;
 
@@ -72,6 +65,7 @@ class GKDBus
 
 		void checkDBusError(const char* error_message);
 		void checkReleasedName(int ret);
+		DBusConnection* getConnection(BusConnection wanted_connection);
 };
 
 } // namespace GLogiK

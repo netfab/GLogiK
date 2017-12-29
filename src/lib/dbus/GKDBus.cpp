@@ -31,7 +31,6 @@ namespace GLogiK
 {
 
 GKDBus::GKDBus(const std::string & rootnode) : buffer_("", std::ios_base::app),
-	current_conn_(nullptr),
 	session_conn_(nullptr),
 	system_conn_(nullptr)
 {
@@ -121,6 +120,24 @@ void GKDBus::checkDBusError(const char* error_message) {
 		this->buffer_ << " : " << this->error_.message;
 		dbus_error_free(&this->error_);
 		throw GLogiKExcept(this->buffer_.str());
+	}
+}
+
+DBusConnection* GKDBus::getConnection(BusConnection wanted_connection) {
+	switch(wanted_connection) {
+		case BusConnection::GKDBUS_SESSION :
+			if(this->session_conn_ == nullptr)
+				throw GLogiKExcept("DBus Session connection not opened");
+			return this->session_conn_;
+			break;
+		case BusConnection::GKDBUS_SYSTEM :
+			if(this->system_conn_ == nullptr)
+				throw GLogiKExcept("DBus System connection not opened");
+			return this->system_conn_;
+			break;
+		default:
+			throw GLogiKExcept("asked connection not handled");
+			break;
 	}
 }
 

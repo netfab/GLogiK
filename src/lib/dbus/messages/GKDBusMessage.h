@@ -29,6 +29,13 @@
 namespace GLogiK
 {
 
+/* declared here since this file will always be included */
+enum class BusConnection : uint8_t
+{
+	GKDBUS_SESSION = 0,
+	GKDBUS_SYSTEM,
+};
+
 class GKDBusMessage
 {
 	public:
