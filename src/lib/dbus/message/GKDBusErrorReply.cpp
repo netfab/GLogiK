@@ -47,9 +47,7 @@ GKDBusErrorReply::GKDBusErrorReply(DBusConnection* connection, DBusMessage* mess
 GKDBusErrorReply::~GKDBusErrorReply()
 {
 	if(this->hosed_message_) {
-#if DEBUG_GKDBUS_SUBOBJECTS
 		LOG(WARNING) << "DBus hosed reply, giving up";
-#endif
 		dbus_message_unref(this->message_);
 		return;
 	}
@@ -57,9 +55,7 @@ GKDBusErrorReply::~GKDBusErrorReply()
 	// TODO dbus_uint32_t serial;
 	if( ! dbus_connection_send(this->connection_, this->message_, nullptr) ) {
 		dbus_message_unref(this->message_);
-#if DEBUG_GKDBUS_SUBOBJECTS
 		LOG(ERROR) << "DBus error reply message sending failure";
-#endif
 		return;
 	}
 
