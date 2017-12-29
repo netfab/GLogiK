@@ -31,10 +31,18 @@
 #include "GKDBusEvent.h"
 #include "GKDBusArgString.h"
 
+#include "lib/dbus/message/GKDBusReply.h"
+#include "lib/dbus/message/GKDBusErrorReply.h"
+
 namespace GLogiK
 {
 
-class StringToStringEvent : public GKDBusEvent, public CBStringArgument
+class StringToStringEvent
+ :
+	public GKDBusEvent,
+	public CBStringArgument,
+	public GKDBusMessageReply,
+	public GKDBusMessageErrorReply
 {
 	public:
 		StringToStringEvent(

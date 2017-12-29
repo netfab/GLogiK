@@ -19,6 +19,7 @@
  *
  */
 
+#include "lib/utils/utils.h"
 
 #include "GKDBusEventStringToString.h"
 
@@ -26,6 +27,34 @@ namespace GLogiK
 {
 
 void StringToStringEvent::runCallback(DBusConnection* connection, DBusMessage* message) {
+	CBArgument::fillInArguments(message);
+
+	/* call string to string callback */
+	const std::string arg( this->getNextStringArgument() );
+	const std::string ret( this->callback(arg) );
+
+	try {
+		this->initializeReply(connection, message);
+		this->appendStringToReply(ret);
+		/* extra values to send */
+		//this->appendExtraStringsValuesToReply();
+	}
+	catch (const GKDBusOOMWrongBuild & e) {
+		LOG(ERROR) << "DBus build reply failure : " << e.what();
+		/* delete reply object if allocated */
+		this->sendReply();
+		this->buildAndSendErrorReply(connection, message);
+		return;
+	}
+	catch ( const GLogiKExcept & e ) {
+		LOG(ERROR) << "DBus reply failure : " << e.what();
+		/* delete reply object if allocated */
+		this->sendReply();
+		throw;
+	}
+
+	/* delete reply object if allocated */
+	this->sendReply();
 }
 
 
