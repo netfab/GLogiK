@@ -19,63 +19,55 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_H__
-#define __GLOGIK_GKDBUS_H__
-
-#include <cstdint>
-
-#include <string>
-#include <vector>
-#include <sstream>
+#ifndef __GLOGIK_GKDBUS_BROADCAST_SIGNAL_H__
+#define __GLOGIK_GKDBUS_BROADCAST_SIGNAL_H__
 
 #include <dbus/dbus.h>
 
-#include "lib/shared/keyEvent.h"
-
-#define GKDBUS_INSIDE_GKDBUS_H 1
-#include "GKDBusEvents.h"
-#undef GKDBUS_INSIDE_GKDBUS_H
-
-#include "messages/GKDBusRemoteMethodCall.h"
-#include "messages/GKDBusBroadcastSignal.h"
+#include "GKDBusMessage.h"
 
 namespace GLogiK
 {
 
-enum class BusConnection : uint8_t
-{
-	GKDBUS_SESSION = 0,
-	GKDBUS_SYSTEM,
-};
-
-class GKDBus
-	:	public GKDBusEvents,
-		public GKDBusMessageRemoteMethodCall,
-		public GKDBusMessageBroadcastSignal
+class GKDBusBroadcastSignal : public GKDBusMessage
 {
 	public:
-		GKDBus(const std::string & rootnode);
-		~GKDBus();
-
-		void connectToSystemBus(const char* connection_name);
+		GKDBusBroadcastSignal(
+			DBusConnection* connection,		/* connection to send the signal on */
+			const char* dest,			/* destination, if NULL, broadcast */
+			const char* object_path,	/* the path to the object emitting the signal */
+			const char* interface,		/* interface the signal is emitted from */
+			const char* signal			/* name of signal */
+		);
+		~GKDBusBroadcastSignal();
 
 	protected:
+	private:
+
+};
+
+class GKDBusMessageBroadcastSignal
+{
+	public:
+
+	protected:
+		GKDBusMessageBroadcastSignal();
+		~GKDBusMessageBroadcastSignal();
+
+		void initializeBroadcastSignal(
+			DBusConnection* connection,
+			const char* object_path,
+			const char* interface,
+			const char* signal
+		);
+		void sendBroadcastSignal(void);
 
 	private:
-		std::ostringstream buffer_;
-		DBusError error_;
+		GKDBusBroadcastSignal* signal_;
 
-		DBusConnection* current_conn_;
-		DBusConnection* session_conn_;
-		DBusConnection* system_conn_;
-
-		std::string session_name_;
-		std::string system_name_;
-
-		void checkDBusError(const char* error_message);
-		void checkReleasedName(int ret);
 };
 
 } // namespace GLogiK
 
 #endif
+
