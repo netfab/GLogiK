@@ -36,7 +36,7 @@
 #include "GKDBusEvents.h"
 #undef GKDBUS_INSIDE_GKDBUS_H
 
-#include "message/GKDBusRemoteMethodCall.h"
+#include "messages/GKDBusRemoteMethodCall.h"
 
 namespace GLogiK
 {

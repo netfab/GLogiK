@@ -84,7 +84,7 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusEventStringToString.cpp
 					GKDBusEventStringToString.h
 				}
-				message=message/ {
+				messages=messages/ {
 					GKDBusMessage.cpp
 					GKDBusMessage.h
 					GKDBusReply.cpp

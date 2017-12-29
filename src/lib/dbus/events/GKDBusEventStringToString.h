@@ -31,8 +31,8 @@
 #include "GKDBusEvent.h"
 #include "GKDBusArgString.h"
 
-#include "lib/dbus/message/GKDBusReply.h"
-#include "lib/dbus/message/GKDBusErrorReply.h"
+#include "lib/dbus/messages/GKDBusReply.h"
+#include "lib/dbus/messages/GKDBusErrorReply.h"
 
 namespace GLogiK
 {

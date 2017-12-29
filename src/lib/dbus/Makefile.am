@@ -17,10 +17,10 @@ libGLogiKDBus_la_SOURCES = \
 	events/GKDBusEvent.cpp events/GKDBusEvent.h \
 	events/GKDBusArgument.cpp events/GKDBusArgument.h \
 	events/GKDBusArgString.cpp events/GKDBusArgString.h \
-	message/GKDBusMessage.cpp message/GKDBusMessage.h \
-	message/GKDBusReply.cpp message/GKDBusReply.h \
-	message/GKDBusErrorReply.cpp message/GKDBusErrorReply.h \
-	message/GKDBusRemoteMethodCall.cpp message/GKDBusRemoteMethodCall.h \
+	messages/GKDBusMessage.cpp messages/GKDBusMessage.h \
+	messages/GKDBusReply.cpp messages/GKDBusReply.h \
+	messages/GKDBusErrorReply.cpp messages/GKDBusErrorReply.h \
+	messages/GKDBusRemoteMethodCall.cpp messages/GKDBusRemoteMethodCall.h \
 	events/GKDBusEventStringToBool.cpp events/GKDBusEventStringToBool.h \
 	events/GKDBusEventStringToString.cpp events/GKDBusEventStringToString.h \
 	GKDBusEvents.cpp GKDBusEvents.h
