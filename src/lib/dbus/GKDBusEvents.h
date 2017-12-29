@@ -22,10 +22,6 @@
 #ifndef __GLOGIK_GKDBUS_EVENTS_H__
 #define __GLOGIK_GKDBUS_EVENTS_H__
 
-#if !defined (GKDBUS_INSIDE_GKDBUS_H) && !defined (GKDBUS_COMPILATION)
-#error "Only "dbus/GKDBus.h" can be included directly, this file may disappear or change contents."
-#endif
-
 #include <cstdint>
 
 #include <string>
@@ -35,11 +31,8 @@
 
 #include "lib/shared/keyEvent.h"
 
-#define GKDBUS_EVENTS_BUILD 1
-//#include "events/GKDBusEvent.h"
 #include "events/GKDBusEventStringToBool.h"
 #include "events/GKDBusEventStringToString.h"
-#undef GKDBUS_EVENTS_BUILD
 
 namespace GLogiK
 {

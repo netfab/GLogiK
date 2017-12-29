@@ -32,9 +32,7 @@
 
 #include "lib/shared/keyEvent.h"
 
-#define GKDBUS_INSIDE_GKDBUS_H 1
 #include "GKDBusEvents.h"
-#undef GKDBUS_INSIDE_GKDBUS_H
 
 #include "messages/GKDBusBroadcastSignal.h"
 #include "messages/GKDBusTargetsSignal.h"

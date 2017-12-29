@@ -25,9 +25,7 @@
 
 #include "lib/utils/utils.h"
 
-#define GKDBUS_COMPILATION 1
 #include "GKDBusEvents.h"
-#undef GKDBUS_COMPILATION
 
 namespace GLogiK
 {
