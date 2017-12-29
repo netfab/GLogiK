@@ -32,6 +32,7 @@
 #include "GKDBusArgString.h"
 
 #include "lib/dbus/message/GKDBusReply.h"
+#include "lib/dbus/message/GKDBusErrorReply.h"
 
 namespace GLogiK
 {
@@ -39,7 +40,8 @@ namespace GLogiK
 class StringToBoolEvent
  :	public GKDBusEvent,
 	public CBStringArgument,
-	public GKDBusMessageReply
+	public GKDBusMessageReply,
+	public GKDBusMessageErrorReply
 {
 	public:
 		StringToBoolEvent(

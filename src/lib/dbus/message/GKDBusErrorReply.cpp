@@ -23,31 +23,29 @@
 
 #include "lib/utils/utils.h"
 
-#include "GKDBusReply.h"
+#include "GKDBusErrorReply.h"
 
 namespace GLogiK
 {
 
-GKDBusReply::GKDBusReply(DBusConnection* connection, DBusMessage* message)
-	: GKDBusMessage(connection)
+GKDBusErrorReply::GKDBusErrorReply(DBusConnection* connection, DBusMessage* message) : GKDBusMessage(connection)
 {
 	/* sanity check */
 	if(message == nullptr)
 		throw GLogiKExcept("DBus message is NULL");
 
 	/* initialize reply from message */
-	this->message_ = dbus_message_new_method_return(message);
+	this->message_ = dbus_message_new_error(message, DBUS_ERROR_FAILED, "something was wrong");
 	if(this->message_ == nullptr)
 		throw GLogiKExcept("can't allocate memory for DBus reply message");
 
-	/* initialize potential arguments iterator */
-	dbus_message_iter_init_append(this->message_, &this->args_it_);
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus reply initialized";
+	LOG(DEBUG2) << "DBus error reply message initialized";
 #endif
 }
 
-GKDBusReply::~GKDBusReply() {
+GKDBusErrorReply::~GKDBusErrorReply()
+{
 	if(this->hosed_message_) {
 #if DEBUG_GKDBUS_SUBOBJECTS
 		LOG(WARNING) << "DBus hosed reply, giving up";
@@ -60,7 +58,7 @@ GKDBusReply::~GKDBusReply() {
 	if( ! dbus_connection_send(this->connection_, this->message_, nullptr) ) {
 		dbus_message_unref(this->message_);
 #if DEBUG_GKDBUS_SUBOBJECTS
-		LOG(ERROR) << "DBus reply sending failure";
+		LOG(ERROR) << "DBus error reply message sending failure";
 #endif
 		return;
 	}
@@ -68,7 +66,7 @@ GKDBusReply::~GKDBusReply() {
 	dbus_connection_flush(this->connection_);
 	dbus_message_unref(this->message_);
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus reply sent";
+	LOG(DEBUG2) << "DBus error reply message sent";
 #endif
 }
 
@@ -76,20 +74,20 @@ GKDBusReply::~GKDBusReply() {
 /* --- --- --- */
 /* --- --- --- */
 
-GKDBusMessageReply::GKDBusMessageReply() : reply_(nullptr)
+GKDBusMessageErrorReply::GKDBusMessageErrorReply() : error_reply_(nullptr)
 {
 }
 
-GKDBusMessageReply::~GKDBusMessageReply()
+GKDBusMessageErrorReply::~GKDBusMessageErrorReply()
 {
 }
 
-void GKDBusMessageReply::initializeReply(DBusConnection* connection, DBusMessage* message) {
-	if(this->reply_) /* sanity check */
+void GKDBusMessageErrorReply::initializeErrorReply(DBusConnection* connection, DBusMessage* message) {
+	if(this->error_reply_) /* sanity check */
 		throw GLogiKExcept("DBus reply already allocated");
 
 	try {
-		this->reply_ = new GKDBusReply(connection, message);
+		this->error_reply_ = new GKDBusErrorReply(connection, message);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus reply allocation failure : " << e.what();
@@ -97,40 +95,26 @@ void GKDBusMessageReply::initializeReply(DBusConnection* connection, DBusMessage
 	}
 }
 
-void GKDBusMessageReply::appendBooleanToReply(const bool value) {
-	if(this->reply_ != nullptr) /* sanity check */
-		this->reply_->appendBoolean(value);
-}
-
-void GKDBusMessageReply::appendStringToReply(const std::string & value) {
-	if(this->reply_ != nullptr) /* sanity check */
-		this->reply_->appendString(value);
-}
-
-void GKDBusMessageReply::appendStringVectorToReply(const std::vector<std::string> & list) {
-	if(this->reply_ != nullptr) /* sanity check */
-		this->reply_->appendStringVector(list);
-}
-
-void GKDBusMessageReply::appendMacroToReply(const macro_t & macro_array) {
-	if(this->reply_ != nullptr) /* sanity check */
-		this->reply_->appendMacro(macro_array);
-}
-
-void GKDBusMessageReply::sendReply(void) {
-	if(this->reply_) { /* sanity check */
-		delete this->reply_;
-		this->reply_ = nullptr;
+void GKDBusMessageErrorReply::sendErrorReply(void) {
+	if(this->error_reply_) { /* sanity check */
+		delete this->error_reply_;
+		this->error_reply_ = nullptr;
 	}
 	else {
 		LOG(WARNING) << __func__ << " failure because reply not contructed";
 	}
+}
 
-	/*
-	 * sendReply is always called when processing DBus messages,
-	 * even in case of exception, so we can clear extra strings container here
-	 */
-	//this->extra_strings_.clear();
+void GKDBusMessageErrorReply::buildAndSendErrorReply(DBusConnection* connection, DBusMessage* message) {
+	try {
+		this->initializeErrorReply(connection, message);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << "DBus error reply failure : " << e.what();
+	}
+
+	/* delete error reply if allocated */
+	this->sendErrorReply();
 }
 
 } // namespace GLogiK

@@ -50,7 +50,7 @@ void StringToBoolEvent::runCallback(DBusConnection* connection, DBusMessage* mes
 		LOG(ERROR) << "DBus build reply failure : " << e.what();
 		/* delete reply object if allocated */
 		this->sendReply();
-		//this->buildAndSendErrorReply(current); FIXME
+		this->buildAndSendErrorReply(connection, message);
 		return;
 	}
 	catch ( const GLogiKExcept & e ) {
