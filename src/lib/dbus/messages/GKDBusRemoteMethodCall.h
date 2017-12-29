@@ -28,7 +28,7 @@
 
 #include <dbus/dbus.h>
 
-#include "lib/dbus/events/GKDBusArgString.h"
+#include "lib/dbus/arguments/GKDBusArgString.h"
 
 #include "GKDBusMessage.h"
 

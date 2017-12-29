@@ -72,11 +72,13 @@ GLogiK=$PWD/.. CD=. {
 			Makefile.am
 			GLogiKDBus=dbus/ {
 				Makefile.am
-				events=events/ {
+				arguments=arguments/ {
 					GKDBusArgument.cpp
 					GKDBusArgument.h
 					GKDBusArgString.cpp
 					GKDBusArgString.h
+				}
+				events=events/ {
 					GKDBusEvent.cpp
 					GKDBusEvent.h
 					GKDBusEventStringToBool.cpp

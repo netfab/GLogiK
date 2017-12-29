@@ -14,13 +14,13 @@ libGLogiKDBus_la_LIBADD = \
 
 libGLogiKDBus_la_SOURCES = \
 	GKDBus.cpp GKDBus.h \
-	events/GKDBusEvent.cpp events/GKDBusEvent.h \
-	events/GKDBusArgument.cpp events/GKDBusArgument.h \
-	events/GKDBusArgString.cpp events/GKDBusArgString.h \
+	arguments/GKDBusArgument.cpp arguments/GKDBusArgument.h \
+	arguments/GKDBusArgString.cpp arguments/GKDBusArgString.h \
 	messages/GKDBusMessage.cpp messages/GKDBusMessage.h \
 	messages/GKDBusReply.cpp messages/GKDBusReply.h \
 	messages/GKDBusErrorReply.cpp messages/GKDBusErrorReply.h \
 	messages/GKDBusRemoteMethodCall.cpp messages/GKDBusRemoteMethodCall.h \
+	events/GKDBusEvent.cpp events/GKDBusEvent.h \
 	events/GKDBusEventStringToBool.cpp events/GKDBusEventStringToBool.h \
 	events/GKDBusEventStringToString.cpp events/GKDBusEventStringToString.h \
 	GKDBusEvents.cpp GKDBusEvents.h

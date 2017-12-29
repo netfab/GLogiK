@@ -28,8 +28,10 @@
 
 #include <dbus/dbus.h>
 
+/* -- */
 #include "GKDBusEvent.h"
-#include "GKDBusArgString.h"
+
+#include "lib/dbus/arguments/GKDBusArgString.h"
 
 #include "lib/dbus/messages/GKDBusReply.h"
 #include "lib/dbus/messages/GKDBusErrorReply.h"
