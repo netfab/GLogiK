@@ -42,6 +42,8 @@ class CBStringArgument : public CBArgument
 		static const std::vector<std::string> & getAllStringArguments(void);
 
 	private:
+		static std::string current_string_;
+
 
 };
 

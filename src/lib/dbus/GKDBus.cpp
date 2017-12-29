@@ -87,6 +87,15 @@ void GKDBus::connectToSystemBus(const char* connection_name) {
 	this->system_name_ = connection_name;
 }
 
+const bool GKDBus::checkForNextMessage(BusConnection current) {
+	DBusConnection* connection = this->getConnection(current);
+	dbus_connection_read_write(connection, 0);
+	this->message_ = dbus_connection_pop_message(connection);
+	return (this->message_ != nullptr);
+}
+
+
+
 /*
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

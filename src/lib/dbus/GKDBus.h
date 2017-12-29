@@ -51,6 +51,8 @@ class GKDBus
 
 		void connectToSystemBus(const char* connection_name);
 
+		const bool checkForNextMessage(BusConnection current);
+
 	protected:
 
 	private:
@@ -62,6 +64,8 @@ class GKDBus
 
 		std::string session_name_;
 		std::string system_name_;
+
+		DBusMessage* message_;
 
 		void checkDBusError(const char* error_message);
 		void checkReleasedName(int ret);

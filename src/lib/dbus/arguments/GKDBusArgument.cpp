@@ -32,7 +32,6 @@ std::vector<std::string> CBArgument::string_arguments_ = {};
 std::vector<uint8_t> CBArgument::byte_arguments_ = {};
 std::vector<uint16_t> CBArgument::uint16_arguments_ = {};
 std::vector<bool> CBArgument::boolean_arguments_ = {};
-std::string CBArgument::current_("");
 
 void CBArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const char* signature, const unsigned int num) {
 	int current_type = dbus_message_iter_get_arg_type(iter);

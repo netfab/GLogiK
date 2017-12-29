@@ -47,8 +47,6 @@ class CBArgument
 		static std::vector<uint16_t> uint16_arguments_;
 		static std::vector<bool> boolean_arguments_;
 
-		static std::string current_;
-
 	private:
 		static void decodeArgumentFromIterator(DBusMessageIter* iter, const char* signature, const unsigned int num);
 
