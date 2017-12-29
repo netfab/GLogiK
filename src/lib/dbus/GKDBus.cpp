@@ -94,6 +94,61 @@ const bool GKDBus::checkForNextMessage(BusConnection current) {
 	return (this->message_ != nullptr);
 }
 
+/* -- */
+/*
+ * check if :
+ *      one of the registered methods
+ *   on one of the registered interfaces
+ *   on one of the registered object path
+ * was called. if yes, then run the corresponding callback function
+ * and send DBus reply after appending the return value
+ */
+
+void GKDBus::checkForMethodCall(BusConnection current) {
+	if(this->message_ == nullptr) {
+		LOG(WARNING) << "message is null";
+		throw GLogiKExcept("message is null");
+	}
+
+	const char* obj = dbus_message_get_path(this->message_);
+	std::string asked_object_path("");
+	if(obj != nullptr)
+		asked_object_path = obj;
+
+	std::string object_path;
+
+	for(const auto & object_pair : this->DBusEvents_) {
+		/* object path must match */
+		object_path = this->getNode(object_pair.first);
+		if(object_path != asked_object_path)
+			continue;
+
+		for(const auto & interface_pair : object_pair.second) {
+#if DEBUGGING_ON
+			LOG(DEBUG2) << "checking " << interface_pair.first << " interface";
+#endif
+
+			for(const auto & DBusEvent : interface_pair.second) { /* vector of pointers */
+				/* we want only methods */
+				if( DBusEvent->eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
+					continue;
+
+				const char* method = DBusEvent->eventName.c_str();
+#if DEBUGGING_ON
+				LOG(DEBUG3) << "checking for " << method << " call";
+#endif
+				if( dbus_message_is_method_call(this->message_, interface_pair.first.c_str(), method) ) {
+#if DEBUGGING_ON
+					LOG(DEBUG1) << "DBus " << method << " method called !";
+#endif
+					DBusConnection* connection = this->getConnection(current);
+					DBusEvent->runCallback(connection, this->message_);
+				}
+			}
+		}
+	}
+}
+
 
 
 /*

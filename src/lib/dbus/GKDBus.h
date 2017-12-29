@@ -52,6 +52,7 @@ class GKDBus
 		void connectToSystemBus(const char* connection_name);
 
 		const bool checkForNextMessage(BusConnection current);
+		void checkForMethodCall(BusConnection current);
 
 	protected:
 
