@@ -19,63 +19,50 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_H__
-#define __GLOGIK_GKDBUS_H__
+#ifndef __GLOGIK_GKDBUS_TARGETS_SIGNAL_H__
+#define __GLOGIK_GKDBUS_TARGETS_SIGNAL_H__
 
 #include <cstdint>
 
 #include <string>
 #include <vector>
-#include <sstream>
 
 #include <dbus/dbus.h>
 
-#include "lib/shared/keyEvent.h"
-
-#define GKDBUS_INSIDE_GKDBUS_H 1
-#include "GKDBusEvents.h"
-#undef GKDBUS_INSIDE_GKDBUS_H
-
-#include "messages/GKDBusBroadcastSignal.h"
-#include "messages/GKDBusTargetsSignal.h"
+#include "GKDBusRemoteMethodCall.h"
+#include "GKDBusBroadcastSignal.h"
 
 namespace GLogiK
 {
 
-enum class BusConnection : uint8_t
-{
-	GKDBUS_SESSION = 0,
-	GKDBUS_SYSTEM,
-};
-
-class GKDBus
-	:	public GKDBusEvents,
-		public GKDBusMessageBroadcastSignal,
-		public GKDBusMessageTargetsSignal
+class GKDBusMessageTargetsSignal
+	:	public GKDBusMessageRemoteMethodCall
 {
 	public:
-		GKDBus(const std::string & rootnode);
-		~GKDBus();
-
-		void connectToSystemBus(const char* connection_name);
 
 	protected:
+		GKDBusMessageTargetsSignal() = default;
+		~GKDBusMessageTargetsSignal() = default;
+
+		void initializeTargetsSignal(
+			DBusConnection* connection,
+			const char* dest,
+			const char* object_path,
+			const char* interface,
+			const char* signal
+		);
+
+		void appendStringToTargetsSignal(const std::string & value);
+		void appendUInt8ToTargetsSignal(const uint8_t value);
+
+		void sendTargetsSignal(void);
 
 	private:
-		std::ostringstream buffer_;
-		DBusError error_;
+		std::vector<GKDBusBroadcastSignal*> signals_;
 
-		DBusConnection* current_conn_;
-		DBusConnection* session_conn_;
-		DBusConnection* system_conn_;
-
-		std::string session_name_;
-		std::string system_name_;
-
-		void checkDBusError(const char* error_message);
-		void checkReleasedName(int ret);
 };
 
 } // namespace GLogiK
 
 #endif
+

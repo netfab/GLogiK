@@ -39,6 +39,7 @@ class CBStringArgument : public CBArgument
 		~CBStringArgument(void) = default;
 
 		static const std::string & getNextStringArgument(void);
+		static const std::vector<std::string> & getAllStringArguments(void);
 
 	private:
 

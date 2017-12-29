@@ -34,5 +34,9 @@ const std::string & CBStringArgument::getNextStringArgument(void) {
 	return CBArgument::current_;
 }
 
+const std::vector<std::string> & CBStringArgument::getAllStringArguments(void) {
+	return CBArgument::string_arguments_;
+}
+
 } // namespace GLogiK
 

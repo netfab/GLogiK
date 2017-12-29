@@ -97,6 +97,8 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusRemoteMethodCall.h
 					GKDBusBroadcastSignal.cpp
 					GKDBusBroadcastSignal.h
+					GKDBusTargetsSignal.cpp
+					GKDBusTargetsSignal.h
 				}
 				GKDBus.cpp
 				GKDBus.h
