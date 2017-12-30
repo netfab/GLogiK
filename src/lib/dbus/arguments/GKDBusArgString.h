@@ -44,7 +44,6 @@ class CBStringArgument : public CBArgument
 	private:
 		static std::string current_string_;
 
-
 };
 
 } // namespace GLogiK

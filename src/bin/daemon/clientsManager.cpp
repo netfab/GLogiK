@@ -266,7 +266,7 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 				GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 				const std::string reason("already registered");
 				/* appending failure reason to DBus reply */
-				this->DBus->appendExtraStringToMethodCallReply(reason);
+				this->DBus->appendExtraStringToMessage(reason);
 
 				/* process to check if registered clients are still alives */
 				for(auto & new_pair : this->clients_ ) {
@@ -296,26 +296,26 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 		catch (const std::bad_alloc& e) { /* handle new() failure */
 			const std::string s = "new client allocation failure";
 			GKSysLog(LOG_ERR, ERROR, s);
-			this->DBus->appendExtraStringToMethodCallReply(s);
+			this->DBus->appendExtraStringToMessage(s);
 			return false;
 		}
 		catch (const std::out_of_range& oor) {
 			this->buffer_.str("tried to initialize unknown client : ");
 			this->buffer_ << clientID;
 			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
-			this->DBus->appendExtraStringToMethodCallReply("internal error");
+			this->DBus->appendExtraStringToMessage("internal error");
 			return false;
 		}
 		catch (const GLogiKExcept & e) {
 			GKSysLog(LOG_ERR, ERROR, e.what());
-			this->DBus->appendExtraStringToMethodCallReply("internal error");
+			this->DBus->appendExtraStringToMessage("internal error");
 			return false;
 		}
 
 		this->devicesManager->setNumClients( this->clients_.size() );
 
 		/* appending client id to DBus reply */
-		this->DBus->appendExtraStringToMethodCallReply(clientID);
+		this->DBus->appendExtraStringToMessage(clientID);
 
 		return true;
 	}

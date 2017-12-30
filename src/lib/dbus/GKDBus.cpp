@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <string>
 
+#include "messages/GKDBusMessage.h"
 #include "GKDBus.h"
 
 namespace GLogiK
@@ -161,6 +162,10 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 #endif
 	dbus_message_unref(this->message_);
 	this->message_ = nullptr;
+}
+
+void GKDBus::appendExtraStringToMessage(const std::string & value) {
+	GKDBusMessage::extra_strings_.push_back(value);
 }
 
 

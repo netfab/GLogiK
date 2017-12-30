@@ -43,8 +43,6 @@ void StringToBoolEvent::runCallback(DBusConnection* connection, DBusMessage* mes
 	try {
 		this->initializeReply(connection, message);
 		this->appendBooleanToReply(ret);
-		/* extra values to send */
-		//this->appendExtraStringsValuesToReply();
 	}
 	catch (const GKDBusOOMWrongBuild & e) {
 		LOG(ERROR) << "DBus build reply failure : " << e.what();

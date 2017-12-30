@@ -26,6 +26,8 @@
 namespace GLogiK
 {
 
+thread_local std::vector<std::string> GKDBusMessage::extra_strings_ = {};
+
 GKDBusMessage::GKDBusMessage(DBusConnection* connection, const bool logoff)
 	: connection_(connection), message_(nullptr), hosed_message_(false), log_off_(logoff)
 {

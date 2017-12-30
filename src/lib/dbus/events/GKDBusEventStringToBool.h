@@ -40,10 +40,10 @@ namespace GLogiK
 {
 
 class StringToBoolEvent
- :	public GKDBusEvent,
-	public CBStringArgument,
-	public GKDBusMessageReply,
-	public GKDBusMessageErrorReply
+	 :	public GKDBusEvent,
+		public CBStringArgument,
+		public GKDBusMessageReply,
+		public GKDBusMessageErrorReply
 {
 	public:
 		StringToBoolEvent(

@@ -59,6 +59,8 @@ class GKDBus
 		const bool checkForNextMessage(BusConnection current);
 		void checkForMethodCall(BusConnection current);
 
+		void appendExtraStringToMessage(const std::string & value);
+
 	protected:
 
 	private:

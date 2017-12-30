@@ -114,19 +114,21 @@ void GKDBusMessageReply::appendMacroToReply(const macro_t & macro_array) {
 }
 
 void GKDBusMessageReply::sendReply(void) {
-	if(this->reply_) { /* sanity check */
-		delete this->reply_;
-		this->reply_ = nullptr;
-	}
-	else {
+	if(this->reply_ == nullptr) { /* sanity check */
 		LOG(WARNING) << __func__ << " failure because reply not contructed";
+		GKDBusMessage::extra_strings_.clear();
+		return;
 	}
 
-	/*
-	 * sendReply is always called when processing DBus messages,
-	 * even in case of exception, so we can clear extra strings container here
-	 */
-	//this->extra_strings_.clear();
+	if( ! GKDBusMessage::extra_strings_.empty() ) {
+		for( const std::string & value : GKDBusMessage::extra_strings_ ) {
+			this->appendStringToReply(value);
+		}
+		GKDBusMessage::extra_strings_.clear();
+	}
+
+	delete this->reply_;
+	this->reply_ = nullptr;
 }
 
 } // namespace GLogiK

@@ -61,14 +61,12 @@ class GKDBusMessageReply
 		void appendStringVectorToReply(
 			const std::vector<std::string> & list
 		);
-		//void appendExtraStringToReply(const std::string & value);
 		void appendMacroToReply(const macro_t & macro_array);
 
 		void sendReply(void);
 
 	private:
 		GKDBusReply* reply_;
-
 };
 
 } // namespace GLogiK

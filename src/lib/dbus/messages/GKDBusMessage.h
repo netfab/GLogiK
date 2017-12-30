@@ -22,6 +22,9 @@
 #ifndef __GLOGIK_GKDBUS_MESSAGE_H__
 #define __GLOGIK_GKDBUS_MESSAGE_H__
 
+#include <string>
+#include <vector>
+
 #include <dbus/dbus.h>
 
 #include "lib/shared/keyEvent.h"
@@ -51,6 +54,8 @@ class GKDBusMessage
 
 		//void appendVariantToMessage(const std::string & value);
 		//void appendVariantToMessage(const unsigned char value);
+
+		thread_local static std::vector<std::string> extra_strings_;
 
 	protected:
 		GKDBusMessage(DBusConnection* connection, const bool logoff=false);
