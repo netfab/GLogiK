@@ -26,7 +26,7 @@
 namespace GLogiK
 {
 
-std::string CBStringArgument::current_string_("");
+thread_local std::string CBStringArgument::current_string_("");
 
 const std::string & CBStringArgument::getNextStringArgument(void) {
 	if( CBArgument::string_arguments_.empty() )
