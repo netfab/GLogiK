@@ -40,7 +40,7 @@ class GKDBusMessageTargetsSignal
 {
 	public:
 		void initializeTargetsSignal(
-			BusConnection current,
+			BusConnection wanted_connection,
 			const char* dest,
 			const char* object_path,
 			const char* interface,

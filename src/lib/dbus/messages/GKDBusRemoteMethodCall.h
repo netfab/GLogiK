@@ -40,7 +40,7 @@ class GKDBusRemoteMethodCall
 {
 	public:
 		GKDBusRemoteMethodCall(
-			DBusConnection* connection,
+			DBusConnection* wanted_connection,
 			const char* dest,
 			const char* object_path,
 			const char* interface,
@@ -60,14 +60,9 @@ class GKDBusMessageRemoteMethodCall
 	:	public CBStringArgument
 {
 	public:
-
-	protected:
-		GKDBusMessageRemoteMethodCall();
-		~GKDBusMessageRemoteMethodCall();
-
 		/* Remote Method Call with Pending Reply */
 		void initializeRemoteMethodCall(
-			DBusConnection* connection,
+			BusConnection current,
 			const char* dest,
 			const char* object_path,
 			const char* interface,
@@ -83,10 +78,25 @@ class GKDBusMessageRemoteMethodCall
 
 		void waitForRemoteMethodCallReply(void);
 
+	protected:
+		GKDBusMessageRemoteMethodCall();
+		~GKDBusMessageRemoteMethodCall();
+
+		/* Remote Method Call with Pending Reply */
+		void initializeRemoteMethodCall(
+			DBusConnection* connection,
+			const char* dest,
+			const char* object_path,
+			const char* interface,
+			const char* method,
+			const bool logoff=false
+		);
+
 	private:
 		GKDBusRemoteMethodCall* remote_method_call_;
 		DBusPendingCall* pending_;
 
+		virtual DBusConnection* getConnection(BusConnection wanted_connection) = 0;
 };
 
 } // namespace GLogiK

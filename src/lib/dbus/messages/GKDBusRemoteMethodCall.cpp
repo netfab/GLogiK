@@ -105,6 +105,19 @@ GKDBusMessageRemoteMethodCall::~GKDBusMessageRemoteMethodCall()
 }
 
 void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
+	BusConnection wanted_connection,
+	const char* dest,
+	const char* object_path,
+	const char* interface,
+	const char* method,
+	const bool logoff
+) {
+	this->initializeRemoteMethodCall(
+		this->getConnection(wanted_connection),
+		dest, object_path, interface, method, logoff);
+}
+
+void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 	DBusConnection* connection,
 	const char* dest,
 	const char* object_path,
