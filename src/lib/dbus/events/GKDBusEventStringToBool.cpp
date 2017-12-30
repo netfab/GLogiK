@@ -27,13 +27,13 @@ namespace GLogiK
 {
 
 void StringToBoolEvent::runCallback(DBusConnection* connection, DBusMessage* message) {
-	CBArgument::fillInArguments(message);
+	GKDBusArgumentString::fillInArguments(message);
 
 	bool ret = false;
 
 	try {
 		/* call string to bool callback */
-		const std::string arg( CBStringArgument::getNextStringArgument() );
+		const std::string arg( GKDBusArgumentString::getNextStringArgument() );
 		ret = this->callback(arg);
 	}
 	catch ( const EmptyContainer & e ) {

@@ -30,13 +30,13 @@
 namespace GLogiK
 {
 
-class CBStringArgument : public CBArgument
+class GKDBusArgumentString : public GKDBusArgument
 {
 	public:
 
 	protected:
-		CBStringArgument(void) = default;
-		~CBStringArgument(void) = default;
+		GKDBusArgumentString(void) = default;
+		~GKDBusArgumentString(void) = default;
 
 		static const std::string & getNextStringArgument(void);
 		static const std::vector<std::string> & getAllStringArguments(void);

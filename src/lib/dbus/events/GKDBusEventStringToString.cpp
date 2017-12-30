@@ -27,10 +27,10 @@ namespace GLogiK
 {
 
 void StringToStringEvent::runCallback(DBusConnection* connection, DBusMessage* message) {
-	CBArgument::fillInArguments(message);
+	GKDBusArgumentString::fillInArguments(message);
 
 	/* call string to string callback */
-	const std::string arg( CBStringArgument::getNextStringArgument() );
+	const std::string arg( GKDBusArgumentString::getNextStringArgument() );
 	const std::string ret( this->callback(arg) );
 
 	try {

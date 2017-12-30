@@ -28,12 +28,12 @@
 namespace GLogiK
 {
 
-thread_local std::vector<std::string> CBArgument::string_arguments_ = {};
-thread_local std::vector<uint8_t> CBArgument::byte_arguments_ = {};
-thread_local std::vector<uint16_t> CBArgument::uint16_arguments_ = {};
-thread_local std::vector<bool> CBArgument::boolean_arguments_ = {};
+thread_local std::vector<std::string> GKDBusArgument::string_arguments_ = {};
+thread_local std::vector<uint8_t> GKDBusArgument::byte_arguments_ = {};
+thread_local std::vector<uint16_t> GKDBusArgument::uint16_arguments_ = {};
+thread_local std::vector<bool> GKDBusArgument::boolean_arguments_ = {};
 
-void CBArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const char* signature, const unsigned int num) {
+void GKDBusArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const char* signature, const unsigned int num) {
 	int current_type = dbus_message_iter_get_arg_type(iter);
 
 	DBusSignatureIter sig_it;
@@ -60,7 +60,7 @@ void CBArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const char* s
 				const char* value = nullptr;
 				dbus_message_iter_get_basic(iter, &value);
 				//LOG(DEBUG4) << "string arg value : " << value;
-				CBArgument::string_arguments_.push_back(value);
+				GKDBusArgument::string_arguments_.push_back(value);
 			}
 			break;
 		case DBUS_TYPE_BOOLEAN:
@@ -68,7 +68,7 @@ void CBArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const char* s
 				bool value = false;
 				dbus_message_iter_get_basic(iter, &value);
 				//LOG(DEBUG4) << "bool arg value : " << value;
-				CBArgument::boolean_arguments_.push_back(value);
+				GKDBusArgument::boolean_arguments_.push_back(value);
 			}
 			break;
 		case DBUS_TYPE_ARRAY:
@@ -83,7 +83,7 @@ void CBArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const char* s
 				do {
 					c++; /* bonus point */
 					char* sig = dbus_message_iter_get_signature(&array_it);
-					CBArgument::decodeArgumentFromIterator(&array_it, sig, c);
+					GKDBusArgument::decodeArgumentFromIterator(&array_it, sig, c);
 					dbus_free(sig);
 				}
 				while( dbus_message_iter_next(&array_it) );
@@ -93,7 +93,7 @@ void CBArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const char* s
 			{
 				uint8_t byte = 0;
 				dbus_message_iter_get_basic(iter, &byte);
-				CBArgument::byte_arguments_.push_back(byte);
+				GKDBusArgument::byte_arguments_.push_back(byte);
 				//LOG(DEBUG4) << "byte arg value : " << byte;
 			}
 			break;
@@ -101,7 +101,7 @@ void CBArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const char* s
 			{
 				uint16_t value = 0;
 				dbus_message_iter_get_basic(iter, &value);
-				CBArgument::uint16_arguments_.push_back(value);
+				GKDBusArgument::uint16_arguments_.push_back(value);
 				//LOG(DEBUG4) << "uint16 arg value : " << value;
 			}
 			break;
@@ -114,7 +114,7 @@ void CBArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const char* s
 					do {
 						c++; /* bonus point */
 						char* sig = dbus_message_iter_get_signature(&struct_it);
-						CBArgument::decodeArgumentFromIterator(&struct_it, sig, c);
+						GKDBusArgument::decodeArgumentFromIterator(&struct_it, sig, c);
 						dbus_free(sig);
 					}
 					while( dbus_message_iter_next(&struct_it) );
@@ -128,11 +128,11 @@ void CBArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const char* s
 	}
 }
 
-void CBArgument::fillInArguments(DBusMessage* message) {
-	CBArgument::string_arguments_.clear();
-	CBArgument::boolean_arguments_.clear();
-	CBArgument::byte_arguments_.clear();
-	CBArgument::uint16_arguments_.clear();
+void GKDBusArgument::fillInArguments(DBusMessage* message) {
+	GKDBusArgument::string_arguments_.clear();
+	GKDBusArgument::boolean_arguments_.clear();
+	GKDBusArgument::byte_arguments_.clear();
+	GKDBusArgument::uint16_arguments_.clear();
 
 	if(message == nullptr) {
 		LOG(WARNING) << __func__ << " : message is NULL";
@@ -148,19 +148,19 @@ void CBArgument::fillInArguments(DBusMessage* message) {
 	do {
 		c++; /* bonus point */
 		char* signature = dbus_message_iter_get_signature(&arg_it);
-		CBArgument::decodeArgumentFromIterator(&arg_it, signature, c);
+		GKDBusArgument::decodeArgumentFromIterator(&arg_it, signature, c);
 		dbus_free(signature);
 	}
 	while( dbus_message_iter_next(&arg_it) );
 
-	if( ! CBArgument::string_arguments_.empty() )
-		std::reverse(CBArgument::string_arguments_.begin(), CBArgument::string_arguments_.end());
-	if( ! CBArgument::boolean_arguments_.empty() )
-		std::reverse(CBArgument::boolean_arguments_.begin(), CBArgument::boolean_arguments_.end());
-	if( ! CBArgument::byte_arguments_.empty() )
-		std::reverse(CBArgument::byte_arguments_.begin(), CBArgument::byte_arguments_.end());
-	if( ! CBArgument::uint16_arguments_.empty() )
-		std::reverse(CBArgument::uint16_arguments_.begin(), CBArgument::uint16_arguments_.end());
+	if( ! GKDBusArgument::string_arguments_.empty() )
+		std::reverse(GKDBusArgument::string_arguments_.begin(), GKDBusArgument::string_arguments_.end());
+	if( ! GKDBusArgument::boolean_arguments_.empty() )
+		std::reverse(GKDBusArgument::boolean_arguments_.begin(), GKDBusArgument::boolean_arguments_.end());
+	if( ! GKDBusArgument::byte_arguments_.empty() )
+		std::reverse(GKDBusArgument::byte_arguments_.begin(), GKDBusArgument::byte_arguments_.end());
+	if( ! GKDBusArgument::uint16_arguments_.empty() )
+		std::reverse(GKDBusArgument::uint16_arguments_.begin(), GKDBusArgument::uint16_arguments_.end());
 }
 
 } // namespace GLogiK

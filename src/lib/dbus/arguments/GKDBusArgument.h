@@ -32,13 +32,13 @@
 namespace GLogiK
 {
 
-class CBArgument
+class GKDBusArgument
 {
 	public:
 
 	protected:
-		CBArgument(void) = default;
-		~CBArgument(void) = default;
+		GKDBusArgument(void) = default;
+		~GKDBusArgument(void) = default;
 
 		static void fillInArguments(DBusMessage* message);
 

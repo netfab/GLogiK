@@ -190,10 +190,10 @@ void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void) {
 
 	if(dbus_message_get_type(message) == DBUS_MESSAGE_TYPE_ERROR) {
 		std::ostringstream buffer("got DBus error as reply : ", std::ios_base::app);
-		CBArgument::fillInArguments(message);
+		GKDBusArgumentString::fillInArguments(message);
 
 		try {
-			buffer << CBStringArgument::getNextStringArgument();
+			buffer << GKDBusArgumentString::getNextStringArgument();
 		}
 		catch ( const EmptyContainer & e ) {
 			buffer << "no string argument with DBus error !";
@@ -203,7 +203,7 @@ void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void) {
 		throw GKDBusRemoteCallNoReply( buffer.str() );
 	}
 
-	CBArgument::fillInArguments(message);
+	GKDBusArgumentString::fillInArguments(message);
 	dbus_message_unref(message);
 }
 

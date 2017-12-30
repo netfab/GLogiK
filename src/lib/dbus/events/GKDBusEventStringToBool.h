@@ -41,7 +41,7 @@ namespace GLogiK
 
 class StringToBoolEvent
 	 :	public GKDBusEvent,
-		public CBStringArgument,
+		public GKDBusArgumentString,
 		public GKDBusMessageReply,
 		public GKDBusMessageErrorReply
 {

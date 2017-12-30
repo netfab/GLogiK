@@ -26,18 +26,18 @@
 namespace GLogiK
 {
 
-thread_local std::string CBStringArgument::current_string_("");
+thread_local std::string GKDBusArgumentString::current_string_("");
 
-const std::string & CBStringArgument::getNextStringArgument(void) {
-	if( CBArgument::string_arguments_.empty() )
+const std::string & GKDBusArgumentString::getNextStringArgument(void) {
+	if( GKDBusArgument::string_arguments_.empty() )
 		throw EmptyContainer("no string argument");
-	CBStringArgument::current_string_ = CBArgument::string_arguments_.back();
-	CBArgument::string_arguments_.pop_back();
-	return CBStringArgument::current_string_;
+	GKDBusArgumentString::current_string_ = GKDBusArgument::string_arguments_.back();
+	GKDBusArgument::string_arguments_.pop_back();
+	return GKDBusArgumentString::current_string_;
 }
 
-const std::vector<std::string> & CBStringArgument::getAllStringArguments(void) {
-	return CBArgument::string_arguments_;
+const std::vector<std::string> & GKDBusArgumentString::getAllStringArguments(void) {
+	return GKDBusArgument::string_arguments_;
 }
 
 } // namespace GLogiK
