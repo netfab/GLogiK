@@ -22,15 +22,12 @@
 #ifndef __GLOGIK_GKDBUS_H__
 #define __GLOGIK_GKDBUS_H__
 
-#include <cstdint>
-
 #include <string>
 #include <vector>
 #include <sstream>
 
 #include <dbus/dbus.h>
 
-#include "lib/shared/keyEvent.h"
 #include "lib/utils/utils.h"
 
 #include "GKDBusEvents.h"

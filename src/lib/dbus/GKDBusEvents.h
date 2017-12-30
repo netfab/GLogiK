@@ -22,12 +22,10 @@
 #ifndef __GLOGIK_GKDBUS_EVENTS_H__
 #define __GLOGIK_GKDBUS_EVENTS_H__
 
-#include <cstdint>
-
 #include <string>
 #include <vector>
 #include <map>
-#include <functional>
+#include <sstream>
 
 #include "lib/shared/keyEvent.h"
 
@@ -67,7 +65,7 @@ class GKDBusEvents
 
 		void openXMLInterface(
 			std::ostringstream & xml,
-			bool& interface_opened,
+			bool & interface_opened,
 			const std::string & interface
 		);
 		void eventToXMLMethod(

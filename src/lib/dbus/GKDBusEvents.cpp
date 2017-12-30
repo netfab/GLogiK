@@ -104,7 +104,7 @@ void GKDBusEvents::addIntrospectableEvent(const char* object, const char* interf
 
 void GKDBusEvents::openXMLInterface(
 	std::ostringstream & xml,
-	bool& interface_opened,
+	bool & interface_opened,
 	const std::string & interface
 ) {
 	if( ! interface_opened ) {
