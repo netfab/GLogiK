@@ -106,16 +106,6 @@ GLogiK=$PWD/.. CD=. {
 				GKDBus.h.old
 				GKDBusEvents.cpp
 				GKDBusEvents.h
-				GKDBusMessage.cpp
-				GKDBusMessage.h
-				GKDBusMessageReply.cpp
-				GKDBusMessageReply.h
-				GKDBusMessageErrorReply.cpp
-				GKDBusMessageErrorReply.h
-				GKDBusRemoteMethodCall.cpp
-				GKDBusRemoteMethodCall.h
-				GKDBusBroadcastSignal.cpp
-				GKDBusBroadcastSignal.h
 			}
 			GLogiKShared=shared/ {
 				Makefile.am
