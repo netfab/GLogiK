@@ -42,7 +42,7 @@ namespace GLogiK
 class StringToStringEvent
  :
 	public GKDBusEvent,
-	public GKDBusArgumentString,
+	virtual public GKDBusArgumentString,
 	public GKDBusMessageReply,
 	public GKDBusMessageErrorReply
 {

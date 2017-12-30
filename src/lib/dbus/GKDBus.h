@@ -32,8 +32,12 @@
 
 #include "GKDBusEvents.h"
 
+#include "messages/GKDBusRemoteMethodCall.h"
 #include "messages/GKDBusBroadcastSignal.h"
 #include "messages/GKDBusTargetsSignal.h"
+
+#include "arguments/GKDBusArgString.h"
+#include "arguments/GKDBusArgBoolean.h"
 
 namespace GLogiK
 {
@@ -49,7 +53,9 @@ class GKDBus
 	:	public GKDBusEvents,
 		virtual public GKDBusMessageRemoteMethodCall,
 		public GKDBusMessageBroadcastSignal,
-		public GKDBusMessageTargetsSignal
+		public GKDBusMessageTargetsSignal,
+		virtual public GKDBusArgumentString,
+		public GKDBusArgumentBoolean
 {
 	public:
 		GKDBus(const std::string & rootnode);

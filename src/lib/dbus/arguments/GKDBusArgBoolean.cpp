@@ -19,32 +19,20 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_ARG_STRING_H__
-#define __GLOGIK_GKDBUS_ARG_STRING_H__
+#include "lib/utils/utils.h"
 
-#include "GKDBusArgument.h"
-
-#include <string>
-#include <vector>
+#include "GKDBusArgBoolean.h"
 
 namespace GLogiK
 {
 
-class GKDBusArgumentString : public GKDBusArgument
-{
-	public:
-		static const std::string & getNextStringArgument(void);
-		static const std::vector<std::string> & getAllStringArguments(void);
-
-	protected:
-		GKDBusArgumentString(void) = default;
-		~GKDBusArgumentString(void) = default;
-
-	private:
-		thread_local static std::string current_string_;
-
-};
+const bool GKDBusArgumentBoolean::getNextBooleanArgument(void) {
+	if( GKDBusArgument::boolean_arguments_.empty() )
+		throw EmptyContainer("no boolean argument");
+	const bool ret = GKDBusArgument::boolean_arguments_.back();
+	GKDBusArgument::boolean_arguments_.pop_back();
+	return ret;
+}
 
 } // namespace GLogiK
 
-#endif

@@ -19,29 +19,26 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_ARG_STRING_H__
-#define __GLOGIK_GKDBUS_ARG_STRING_H__
+#ifndef __GLOGIK_GKDBUS_ARG_BOOLEAN_H__
+#define __GLOGIK_GKDBUS_ARG_BOOLEAN_H__
 
 #include "GKDBusArgument.h"
 
-#include <string>
 #include <vector>
 
 namespace GLogiK
 {
 
-class GKDBusArgumentString : public GKDBusArgument
+class GKDBusArgumentBoolean : public GKDBusArgument
 {
 	public:
-		static const std::string & getNextStringArgument(void);
-		static const std::vector<std::string> & getAllStringArguments(void);
+		static const bool getNextBooleanArgument(void);
 
 	protected:
-		GKDBusArgumentString(void) = default;
-		~GKDBusArgumentString(void) = default;
+		GKDBusArgumentBoolean(void) = default;
+		~GKDBusArgumentBoolean(void) = default;
 
 	private:
-		thread_local static std::string current_string_;
 
 };
 
