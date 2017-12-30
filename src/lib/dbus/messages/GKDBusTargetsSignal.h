@@ -36,7 +36,7 @@ namespace GLogiK
 {
 
 class GKDBusMessageTargetsSignal
-	:	public GKDBusMessageRemoteMethodCall
+	:	virtual public GKDBusMessageRemoteMethodCall
 {
 	public:
 		void initializeTargetsSignal(

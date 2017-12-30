@@ -47,6 +47,7 @@ class GKDBusMethodFound : public GLogiKExcept
 
 class GKDBus
 	:	public GKDBusEvents,
+		virtual public GKDBusMessageRemoteMethodCall,
 		public GKDBusMessageBroadcastSignal,
 		public GKDBusMessageTargetsSignal
 {
