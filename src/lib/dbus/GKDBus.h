@@ -31,6 +31,7 @@
 #include <dbus/dbus.h>
 
 #include "lib/shared/keyEvent.h"
+#include "lib/utils/utils.h"
 
 #include "GKDBusEvents.h"
 
@@ -39,6 +40,13 @@
 
 namespace GLogiK
 {
+
+class GKDBusMethodFound : public GLogiKExcept
+{
+	public:
+		GKDBusMethodFound(const std::string & msg = "method found") : GLogiKExcept(msg) {};
+		virtual ~GKDBusMethodFound( void ) throw() {};
+};
 
 class GKDBus
 	:	public GKDBusEvents,

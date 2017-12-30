@@ -647,14 +647,7 @@ void DevicesManager::resetDevicesStates(void) {
 
 void DevicesManager::checkDBusMessages(void) {
 	if( this->DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
-		try {
-			this->DBus->checkForMethodCall(BusConnection::GKDBUS_SYSTEM);
-			this->DBus->freeMessage();
-		}
-		catch ( const GLogiKExcept & e ) {
-			this->DBus->freeMessage();
-			throw;
-		}
+		this->DBus->checkForMethodCall(BusConnection::GKDBUS_SYSTEM);
 	}
 }
 

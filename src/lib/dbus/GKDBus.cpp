@@ -25,8 +25,6 @@
 
 #include "GKDBus.h"
 
-#include "lib/utils/utils.h"
-
 namespace GLogiK
 {
 
@@ -107,7 +105,7 @@ const bool GKDBus::checkForNextMessage(BusConnection current) {
 void GKDBus::checkForMethodCall(BusConnection current) {
 	if(this->message_ == nullptr) {
 		LOG(WARNING) << "message is null";
-		throw GLogiKExcept("message is null");
+		return;
 	}
 
 	const char* obj = dbus_message_get_path(this->message_);
@@ -117,36 +115,52 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 
 	std::string object_path;
 
-	for(const auto & object_pair : this->DBusEvents_) {
-		/* object path must match */
-		object_path = this->getNode(object_pair.first);
-		if(object_path != asked_object_path)
-			continue;
+	try {
+		for(const auto & object_pair : this->DBusEvents_) {
+			/* object path must match */
+			object_path = this->getNode(object_pair.first);
+			if(object_path != asked_object_path)
+				continue;
 
-		for(const auto & interface_pair : object_pair.second) {
+			for(const auto & interface_pair : object_pair.second) {
+				const char* interface = interface_pair.first.c_str();
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "checking " << interface_pair.first << " interface";
+				LOG(DEBUG2) << "checking " << interface << " interface";
 #endif
 
-			for(const auto & DBusEvent : interface_pair.second) { /* vector of pointers */
-				/* we want only methods */
-				if( DBusEvent->eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
-					continue;
+				for(const auto & DBusEvent : interface_pair.second) { /* vector of pointers */
+					/* we want only methods */
+					if( DBusEvent->eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
+						continue;
 
-				const char* method = DBusEvent->eventName.c_str();
+					const char* method = DBusEvent->eventName.c_str();
 #if DEBUGGING_ON
-				LOG(DEBUG3) << "checking for " << method << " call";
+					LOG(DEBUG3) << "checking for " << method << " call";
 #endif
-				if( dbus_message_is_method_call(this->message_, interface_pair.first.c_str(), method) ) {
+					if( dbus_message_is_method_call(this->message_, interface, method) ) {
 #if DEBUGGING_ON
-					LOG(DEBUG1) << "DBus " << method << " method called !";
+						LOG(DEBUG1) << "DBus " << method << " method called !";
 #endif
-					DBusConnection* connection = this->getConnection(current);
-					DBusEvent->runCallback(connection, this->message_);
+						DBusConnection* connection = this->getConnection(current);
+						DBusEvent->runCallback(connection, this->message_);
+						throw GKDBusMethodFound();
+					}
 				}
 			}
 		}
 	}
+	catch ( const GKDBusMethodFound & e ) {
+		LOG(DEBUG) << e.what();
+	}
+	catch ( const GLogiKExcept & e ) {
+		LOG(ERROR) << e.what();
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "freeing message";
+#endif
+	dbus_message_unref(this->message_);
+	this->message_ = nullptr;
 }
 
 
