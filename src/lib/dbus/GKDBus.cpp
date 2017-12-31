@@ -145,7 +145,6 @@ void GKDBus::checkMessageType(BusConnection current) {
 								DBusEvent->runCallback(connection, this->message_);
 								throw GKDBusEventFound();
 							}
-							throw GLogiKExcept("wrong message type or fields for method event");
 							break;
 						}
 						case GKDBusEventType::GKDBUS_EVENT_SIGNAL: {
@@ -156,7 +155,6 @@ void GKDBus::checkMessageType(BusConnection current) {
 								DBusEvent->runCallback(connection, this->message_);
 								throw GKDBusEventFound();
 							}
-							throw GLogiKExcept("wrong message type or fields for signal event");
 							break;
 						}
 						default:
