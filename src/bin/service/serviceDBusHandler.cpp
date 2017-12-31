@@ -529,7 +529,7 @@ const bool ServiceDBusHandler::macroRecorded(
 
 void ServiceDBusHandler::checkDBusMessages(void) {
 	if( this->DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM) ) {
-		this->DBus->checkForSignalReceipt(BusConnection::GKDBUS_SYSTEM);
+		this->DBus->checkMessageType(BusConnection::GKDBUS_SYSTEM);
 	}
 }
 

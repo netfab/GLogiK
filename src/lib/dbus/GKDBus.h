@@ -45,11 +45,11 @@
 namespace GLogiK
 {
 
-class GKDBusMethodFound : public GLogiKExcept
+class GKDBusEventFound : public GLogiKExcept
 {
 	public:
-		GKDBusMethodFound(const std::string & msg = "method found") : GLogiKExcept(msg) {};
-		virtual ~GKDBusMethodFound( void ) throw() {};
+		GKDBusEventFound(const std::string & msg = "event found") : GLogiKExcept(msg) {};
+		virtual ~GKDBusEventFound( void ) throw() {};
 };
 
 class GKDBus
@@ -69,7 +69,7 @@ class GKDBus
 		void connectToSystemBus(const char* connection_name);
 
 		const bool checkForNextMessage(BusConnection current);
-		void checkForMethodCall(BusConnection current);
+		void checkMessageType(BusConnection current);
 
 		void appendExtraStringToMessage(const std::string & value);
 

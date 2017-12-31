@@ -103,7 +103,7 @@ const bool GKDBus::checkForNextMessage(BusConnection current) {
  * and send DBus reply after appending the return value
  */
 
-void GKDBus::checkForMethodCall(BusConnection current) {
+void GKDBus::checkMessageType(BusConnection current) {
 	if(this->message_ == nullptr) {
 		LOG(WARNING) << "message is null";
 		return;
@@ -117,6 +117,8 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 	std::string object_path;
 
 	try {
+		DBusConnection* connection = this->getConnection(current);
+
 		for(const auto & object_pair : this->DBusEvents_) {
 			/* object path must match */
 			object_path = this->getNode(object_pair.first);
@@ -130,27 +132,42 @@ void GKDBus::checkForMethodCall(BusConnection current) {
 #endif
 
 				for(const auto & DBusEvent : interface_pair.second) { /* vector of pointers */
-					/* we want only methods */
-					if( DBusEvent->eventType != GKDBusEventType::GKDBUS_EVENT_METHOD )
-						continue;
-
-					const char* method = DBusEvent->eventName.c_str();
+					const char* eventName = DBusEvent->eventName.c_str();
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "checking for " << method << " call";
+					LOG(DEBUG3) << "checking " << eventName << " event";
 #endif
-					if( dbus_message_is_method_call(this->message_, interface, method) ) {
+					switch(DBusEvent->eventType) {
+						case GKDBusEventType::GKDBUS_EVENT_METHOD: {
+							if( dbus_message_is_method_call(this->message_, interface, eventName) ) {
 #if DEBUGGING_ON
-						LOG(DEBUG1) << "DBus " << method << " method called !";
+								LOG(DEBUG1) << "DBus " << eventName << " method called !";
 #endif
-						DBusConnection* connection = this->getConnection(current);
-						DBusEvent->runCallback(connection, this->message_);
-						throw GKDBusMethodFound();
+								DBusEvent->runCallback(connection, this->message_);
+								throw GKDBusEventFound();
+							}
+							throw GLogiKExcept("wrong message type or fields for method event");
+							break;
+						}
+						case GKDBusEventType::GKDBUS_EVENT_SIGNAL: {
+							if( dbus_message_is_signal(this->message_, interface, eventName) ) {
+#if DEBUGGING_ON
+								LOG(DEBUG1) << "DBus " << eventName << " signal receipted !";
+#endif
+								DBusEvent->runCallback(connection, this->message_);
+								throw GKDBusEventFound();
+							}
+							throw GLogiKExcept("wrong message type or fields for signal event");
+							break;
+						}
+						default:
+							throw GLogiKExcept("wrong event type");
+							break;
 					}
 				}
 			}
 		}
 	}
-	catch ( const GKDBusMethodFound & e ) {
+	catch ( const GKDBusEventFound & e ) {
 		LOG(DEBUG) << e.what();
 	}
 	catch ( const GLogiKExcept & e ) {
