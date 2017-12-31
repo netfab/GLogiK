@@ -33,6 +33,10 @@ void StringToStringEvent::runCallback(DBusConnection* connection, DBusMessage* m
 	const std::string arg( GKDBusArgumentString::getNextStringArgument() );
 	const std::string ret( this->callback(arg) );
 
+	/* signals don't send reply */
+	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+		return;
+
 	try {
 		this->initializeReply(connection, message);
 		this->appendStringToReply(ret);

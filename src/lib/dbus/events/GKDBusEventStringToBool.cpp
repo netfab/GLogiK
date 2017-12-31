@@ -40,6 +40,10 @@ void StringToBoolEvent::runCallback(DBusConnection* connection, DBusMessage* mes
 		LOG(WARNING) << e.what();
 	}
 
+	/* signals don't send reply */
+	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+		return;
+
 	try {
 		this->initializeReply(connection, message);
 		this->appendBooleanToReply(ret);
