@@ -64,7 +64,7 @@ class StringToBoolEvent
 class EventStringToBool
 {
 	public:
-		void addEvent(
+		void addStringToBoolEvent(
 			const char* object,
 			const char* interface,
 			const char* eventName,

@@ -60,14 +60,14 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 
 	/* ClientsManager D-Bus object */
 
-	this->DBus->addEvent(
+	this->DBus->addStringToBoolEvent(
 		CM_object, CM_interf, "RegisterClient",
 		{	{"s", "client_session_object_path", "in", "client session object path"},
 			{"b", "did_register_succeeded", "out", "did the RegisterClient method succeeded ?"},
 			{"s", "failure_reason_or_client_id", "out", "if register success (bool==true), unique client ID, else (bool=false) failure reason"} },
 		std::bind(&ClientsManager::registerClient, this, std::placeholders::_1) );
 
-	this->DBus->addEvent(
+	this->DBus->addStringToBoolEvent(
 		CM_object, CM_interf, "UnregisterClient",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"b", "did_unregister_succeeded", "out", "did the UnregisterClient method succeeded ?"} },

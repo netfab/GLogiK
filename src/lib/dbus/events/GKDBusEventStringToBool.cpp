@@ -69,7 +69,7 @@ void StringToBoolEvent::runCallback(DBusConnection* connection, DBusMessage* mes
 
 /* -- -- -- */
 
-void EventStringToBool::addEvent(
+void EventStringToBool::addStringToBoolEvent(
 	const char* object,
 	const char* interface,
 	const char* eventName,
