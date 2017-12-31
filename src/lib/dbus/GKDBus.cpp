@@ -168,6 +168,43 @@ void GKDBus::appendExtraStringToMessage(const std::string & value) {
 	GKDBusMessage::extra_strings_.push_back(value);
 }
 
+/* helper function */
+const macro_t GKDBus::getMacro(void) {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "rebuilding macro array for DBus values";
+#endif
+	macro_t macro_array;
+	try {
+		do {
+			KeyEvent e;
+
+			e.event_code = this->getNextByteArgument();
+
+			const uint8_t value = this->getNextByteArgument();
+			if( to_uint(value) > to_uint(EventValue::EVENT_KEY_UNKNOWN) )
+				throw GLogiKExcept("wrong event value for enum conversion");
+
+			e.event		 = static_cast<EventValue>(value);
+			e.interval	 = this->getNextUInt16Argument();
+
+			macro_array.push_back(e);
+		}
+		while( ! this->byte_arguments_.empty() );
+	}
+	catch ( const EmptyContainer & e ) {
+		LOG(WARNING) << "missing macro argument : " << e.what();
+		throw GLogiKExcept("rebuild macro failed");
+	}
+
+	if( ! this->uint16_arguments_.empty() ) { /* sanity check */
+		LOG(WARNING) << "uint16 container not empty";
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "events array size : " << macro_array.size();
+#endif
+	return macro_array;
+}
 
 
 /*

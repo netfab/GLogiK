@@ -29,6 +29,7 @@
 #include <dbus/dbus.h>
 
 #include "lib/utils/utils.h"
+#include "lib/shared/keyEvent.h"
 
 #include "GKDBusEvents.h"
 
@@ -38,6 +39,7 @@
 
 #include "arguments/GKDBusArgString.h"
 #include "arguments/GKDBusArgBoolean.h"
+#include "arguments/GKDBusArgByte.h"
 
 namespace GLogiK
 {
@@ -55,7 +57,8 @@ class GKDBus
 		public GKDBusMessageBroadcastSignal,
 		public GKDBusMessageTargetsSignal,
 		virtual public GKDBusArgumentString,
-		public GKDBusArgumentBoolean
+		public GKDBusArgumentBoolean,
+		public GKDBusArgumentByte
 {
 	public:
 		GKDBus(const std::string & rootnode);
@@ -67,6 +70,10 @@ class GKDBus
 		void checkForMethodCall(BusConnection current);
 
 		void appendExtraStringToMessage(const std::string & value);
+
+		// helper function rebuilding macro_t vector
+		// mirror of GKDBusMessage::appendMacro
+		const macro_t getMacro(void);
 
 	protected:
 

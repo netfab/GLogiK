@@ -19,22 +19,24 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_ARG_BOOLEAN_H__
-#define __GLOGIK_GKDBUS_ARG_BOOLEAN_H__
+#ifndef __GLOGIK_GKDBUS_ARG_BYTE_H__
+#define __GLOGIK_GKDBUS_ARG_BYTE_H__
+
+#include <cstdint>
 
 #include "GKDBusArgument.h"
 
 namespace GLogiK
 {
 
-class GKDBusArgumentBoolean : public GKDBusArgument
+class GKDBusArgumentByte : public GKDBusArgument
 {
 	public:
-		static const bool getNextBooleanArgument(void);
+		static const uint8_t getNextByteArgument(void);
 
 	protected:
-		GKDBusArgumentBoolean(void) = default;
-		~GKDBusArgumentBoolean(void) = default;
+		GKDBusArgumentByte(void) = default;
+		~GKDBusArgumentByte(void) = default;
 
 	private:
 

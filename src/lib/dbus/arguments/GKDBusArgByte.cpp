@@ -19,27 +19,20 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_ARG_BOOLEAN_H__
-#define __GLOGIK_GKDBUS_ARG_BOOLEAN_H__
+#include "lib/utils/utils.h"
 
-#include "GKDBusArgument.h"
+#include "GKDBusArgByte.h"
 
 namespace GLogiK
 {
 
-class GKDBusArgumentBoolean : public GKDBusArgument
-{
-	public:
-		static const bool getNextBooleanArgument(void);
-
-	protected:
-		GKDBusArgumentBoolean(void) = default;
-		~GKDBusArgumentBoolean(void) = default;
-
-	private:
-
-};
+const uint8_t GKDBusArgumentByte::getNextByteArgument(void) {
+	if( GKDBusArgument::byte_arguments_.empty() )
+		throw EmptyContainer("no byte argument");
+	const uint8_t ret = GKDBusArgument::byte_arguments_.back();
+	GKDBusArgument::byte_arguments_.pop_back();
+	return ret;
+}
 
 } // namespace GLogiK
 
-#endif
