@@ -40,6 +40,7 @@
 #include "arguments/GKDBusArgString.h"
 #include "arguments/GKDBusArgBoolean.h"
 #include "arguments/GKDBusArgByte.h"
+#include "arguments/GKDBusArgUInt16.h"
 
 namespace GLogiK
 {
@@ -58,7 +59,8 @@ class GKDBus
 		public GKDBusMessageTargetsSignal,
 		virtual public GKDBusArgumentString,
 		public GKDBusArgumentBoolean,
-		public GKDBusArgumentByte
+		public GKDBusArgumentByte,
+		public GKDBusArgumentUInt16
 {
 	public:
 		GKDBus(const std::string & rootnode);

@@ -81,6 +81,8 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusArgBoolean.h
 					GKDBusArgByte.cpp
 					GKDBusArgByte.h
+					GKDBusArgUInt16.cpp
+					GKDBusArgUInt16.h
 				}
 				events=events/ {
 					GKDBusEvent.cpp
