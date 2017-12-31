@@ -51,11 +51,13 @@ class GKDBusEvent {
 		const std::string eventName;
 		std::vector<DBusMethodArgument> arguments;
 		GKDBusEventType eventType;
+		const bool introspectable;
 
 		GKDBusEvent(
 			const char* n,
 			const std::vector<DBusMethodArgument> & a,
-			GKDBusEventType t
+			GKDBusEventType t,
+			const bool i
 		);
 		virtual ~GKDBusEvent(void);
 

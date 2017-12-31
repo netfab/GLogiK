@@ -68,9 +68,10 @@ void EventStringToString::addStringToStringEvent(
 	const char* eventName,
 	const std::vector<DBusMethodArgument> & args,
 	std::function<const std::string(const std::string&)> callback,
-	GKDBusEventType eventType
+	GKDBusEventType eventType,
+	const bool introspectable
 ) {
-	GKDBusEvent* e = new StringToStringEvent(eventName, args, callback, eventType);
+	GKDBusEvent* e = new StringToStringEvent(eventName, args, callback, eventType, introspectable);
 	this->addIntrospectableEvent(object, interface, e);
 }
 

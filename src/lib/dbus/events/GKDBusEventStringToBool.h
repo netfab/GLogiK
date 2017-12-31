@@ -50,8 +50,9 @@ class StringToBoolEvent
 			const char* n,
 			const std::vector<DBusMethodArgument> & a,
 			std::function<const bool(const std::string&)> c,
-			GKDBusEventType t
-			)	: GKDBusEvent(n, a, t), callback(c) {}
+			GKDBusEventType t,
+			const bool i
+			)	: GKDBusEvent(n, a, t, i), callback(c) {}
 		~StringToBoolEvent() {};
 
 		void runCallback(DBusConnection* connection, DBusMessage* message);
@@ -69,7 +70,8 @@ class EventStringToBool
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
 			std::function<const bool(const std::string&)> callback,
-			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD
+			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD,
+			const bool introspectable=true
 		);
 
 	protected:

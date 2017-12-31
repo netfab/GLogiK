@@ -82,20 +82,23 @@ const std::string GKDBusEvents::introspectRootNode(void) {
  */
 
 void GKDBusEvents::addIntrospectableEvent(const char* object, const char* interface, GKDBusEvent* event) {
-	try {
-		const auto & obj = this->DBusEvents_.at(object);
-		const auto & interf = obj.at("org.freedesktop.DBus.Introspectable");
-		// just to avoid warning
-		LOG(DEBUG5) << "introspect interface found : " << interf.size();
-	}
-	catch (const std::out_of_range& oor) {
+	if(event->introspectable) {
+		try {
+			const auto & obj = this->DBusEvents_.at(object);
+			const auto & interf = obj.at("org.freedesktop.DBus.Introspectable");
+			// just to avoid warning
+			LOG(DEBUG5) << "introspect interface found : " << interf.size();
+		}
+		catch (const std::out_of_range& oor) {
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "adding Introspectable interface : " << object;
+			LOG(DEBUG3) << "adding Introspectable interface : " << object;
 #endif
-		this->addStringToStringEvent(
-			object, "org.freedesktop.DBus.Introspectable", "Introspect",
-			{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
-			std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1));
+			this->addStringToStringEvent(
+				object, "org.freedesktop.DBus.Introspectable", "Introspect",
+				{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
+				std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),
+				event->eventType, false);
+		}
 	}
 	this->DBusObjects_[object] = true;
 	this->DBusInterfaces_[interface] = true;

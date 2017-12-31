@@ -28,8 +28,9 @@ namespace GLogiK
 GKDBusEvent::GKDBusEvent(
 	const char* n,
 	const std::vector<DBusMethodArgument> & a,
-	GKDBusEventType t
-	)	: eventName(n), arguments(a), eventType(t)
+	GKDBusEventType t,
+	const bool i
+	)	: eventName(n), arguments(a), eventType(t), introspectable(i)
 {
 }
 
