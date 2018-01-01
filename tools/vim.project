@@ -89,6 +89,8 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusEvent.h
 					GKDBusEventStringToBool.cpp
 					GKDBusEventStringToBool.h
+					GKDBusEventTwoStringsToBool.cpp
+					GKDBusEventTwoStringsToBool.h
 					GKDBusEventStringToString.cpp
 					GKDBusEventStringToString.h
 				}

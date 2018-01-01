@@ -55,8 +55,8 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 	const auto & CM_interf = GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
 
 	/* devices manager DBus object and interface */
-	//const auto & DM_object = GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT;
-	//const auto & DM_interf = GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
+	const auto & DM_object = GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT;
+	const auto & DM_interf = GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
 
 	/* ClientsManager D-Bus object */
 
@@ -73,46 +73,44 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"b", "did_unregister_succeeded", "out", "did the UnregisterClient method succeeded ?"} },
 		std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );
 
-/*
-	this->DBus->addEvent_TwoStringsToBool_Callback(
+	this->DBus->addTwoStringsToBoolEvent(
 		CM_object, CM_interf, "UpdateClientState",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "client_new_state", "in", "client new state"},
 			{"b", "did_updateclientstate_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addEvent_TwoStringsToBool_Callback(
+	this->DBus->addTwoStringsToBoolEvent(
 		CM_object, CM_interf, "DeleteDeviceConfiguration",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"b", "did_deletedeviceconfiguration_succeeded", "out", "did the DeleteDeviceConfiguration method succeeded ?"} },
 		std::bind(&ClientsManager::deleteDeviceConfiguration, this, std::placeholders::_1, std::placeholders::_2) );
-*/
 
 	/* DevicesManager D-Bus object */
 
-/*
-	this->DBus->addEvent_TwoStringsToBool_Callback(
+
+	this->DBus->addTwoStringsToBoolEvent(
 		DM_object, DM_interf, "StopDevice",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"b", "did_stop_succeeded", "out", "did the StopDevice method succeeded ?"} },
 		std::bind(&ClientsManager::stopDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addEvent_TwoStringsToBool_Callback(
+	this->DBus->addTwoStringsToBoolEvent(
 		DM_object, DM_interf, "StartDevice",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStoppedDevices"},
 			{"b", "did_start_succeeded", "out", "did the StartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::startDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addEvent_TwoStringsToBool_Callback(
+	this->DBus->addTwoStringsToBoolEvent(
 		DM_object, DM_interf, "RestartDevice",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"b", "did_restart_succeeded", "out", "did the RestartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
-
+/*
 	this->DBus->addEvent_StringToStringsArray_Callback(
 		DM_object, DM_interf, "GetStartedDevices",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
