@@ -123,7 +123,9 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 		this->parseCommandLine(argc, argv);
 
 		if( GLogiKDaemon::isDaemonRunning() ) {
+#if DEBUGGING_ON == 0
 			this->daemonize();
+#endif
 
 			// TODO handle return values and errno ?
 			std::signal(SIGINT, GLogiKDaemon::handle_signal);
