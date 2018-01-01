@@ -110,19 +110,20 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"b", "did_restart_succeeded", "out", "did the RestartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
-/*
-	this->DBus->addEvent_StringToStringsArray_Callback(
+
+	this->DBus->addStringToStringsArrayEvent(
 		DM_object, DM_interf, "GetStartedDevices",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"as", "array_of_strings", "out", "array of started devices ID strings"} },
 		std::bind(&ClientsManager::getStartedDevices, this, std::placeholders::_1) );
 
-	this->DBus->addEvent_StringToStringsArray_Callback(
+	this->DBus->addStringToStringsArrayEvent(
 		DM_object, DM_interf, "GetStoppedDevices",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"as", "array_of_strings", "out", "array of stopped devices ID strings"} },
 		std::bind(&ClientsManager::getStoppedDevices, this, std::placeholders::_1) );
 
+/*
 	this->DBus->addEvent_TwoStringsToStringsArray_Callback(
 		DM_object, DM_interf, "GetDeviceProperties",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},

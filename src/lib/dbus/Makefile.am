@@ -29,4 +29,5 @@ libGLogiKDBus_la_SOURCES = \
 	events/GKDBusEventStringToBool.cpp events/GKDBusEventStringToBool.h \
 	events/GKDBusEventTwoStringsToBool.cpp events/GKDBusEventTwoStringsToBool.h \
 	events/GKDBusEventStringToString.cpp events/GKDBusEventStringToString.h \
+	events/GKDBusEventStringToStringsArray.cpp events/GKDBusEventStringToStringsArray.h \
 	GKDBusEvents.cpp GKDBusEvents.h
