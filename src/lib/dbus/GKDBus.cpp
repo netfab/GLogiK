@@ -109,20 +109,14 @@ void GKDBus::checkMessageType(BusConnection current) {
 		return;
 	}
 
-	const char* obj = dbus_message_get_path(this->message_);
-	std::string asked_object_path("");
-	if(obj != nullptr)
-		asked_object_path = obj;
-
-	std::string object_path;
-
 	try {
+		const std::string asked_object_path( to_string( dbus_message_get_path(this->message_) ) );
+
 		DBusConnection* connection = this->getConnection(current);
 
 		for(const auto & object_pair : this->DBusEvents_) {
 			/* object path must match */
-			object_path = this->getNode(object_pair.first);
-			if(object_path != asked_object_path)
+			if(this->getNode(object_pair.first) != asked_object_path)
 				continue;
 
 			for(const auto & interface_pair : object_pair.second) {
@@ -166,7 +160,7 @@ void GKDBus::checkMessageType(BusConnection current) {
 		}
 	}
 	catch ( const GKDBusEventFound & e ) {
-		LOG(DEBUG) << e.what();
+		LOG(DEBUG2) << e.what();
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(ERROR) << e.what();
