@@ -33,6 +33,7 @@
 #include "events/GKDBusEventTwoStringsToBool.h"
 #include "events/GKDBusEventStringToString.h"
 #include "events/GKDBusEventStringToStringsArray.h"
+#include "events/GKDBusEventTwoStringsToStringsArray.h"
 
 namespace GLogiK
 {
@@ -42,7 +43,8 @@ class GKDBusEvents
 	:	public EventStringToBool,
 		public EventTwoStringsToBool,
 		public EventStringToString,
-		public EventStringToStringsArray
+		public EventStringToStringsArray,
+		public EventTwoStringsToStringsArray
 {
 	public:
 

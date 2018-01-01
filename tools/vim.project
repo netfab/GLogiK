@@ -95,6 +95,8 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusEventStringToString.h
 					GKDBusEventStringToStringsArray.cpp
 					GKDBusEventStringToStringsArray.h
+					GKDBusEventTwoStringsToStringsArray.cpp
+					GKDBusEventTwoStringsToStringsArray.h
 				}
 				messages=messages/ {
 					GKDBusMessage.cpp
