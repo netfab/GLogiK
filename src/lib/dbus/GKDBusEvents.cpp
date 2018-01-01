@@ -35,8 +35,17 @@ GKDBusEvents::GKDBusEvents() {
 
 GKDBusEvents::~GKDBusEvents() {
 	for(const auto & object_path_pair : this->DBusEvents_) {
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "object_path: " << object_path_pair.first;
+#endif
 		for(const auto & interface_pair : object_path_pair.second) {
+#if DEBUGGING_ON
+			LOG(DEBUG2) << "interface: " << interface_pair.first;
+#endif
 			for(auto & DBusEvent : interface_pair.second) { /* vector of pointers */
+#if DEBUGGING_ON
+				LOG(DEBUG3) << "destroying event: " << DBusEvent->eventName;
+#endif
 				delete DBusEvent;
 			}
 		}
@@ -45,10 +54,6 @@ GKDBusEvents::~GKDBusEvents() {
 
 void GKDBusEvents::defineRootNode(const std::string& rootnode) {
 	this->root_node_ = rootnode;
-}
-
-const std::string & GKDBusEvents::getRootNode(void) {
-	return this->root_node_;
 }
 
 const std::string GKDBusEvents::getNode(const std::string & object) {
@@ -130,14 +135,16 @@ void GKDBusEvents::eventToXMLMethod(
 	}
 }
 
-const std::string GKDBusEvents::introspect(const std::string & object_asked) {
-	std::ostringstream xml;
+const std::string GKDBusEvents::introspect(const std::string & asked_object_path) {
 
-	std::string asked_object_path = this->getNode(object_asked);
+	if( asked_object_path == this->root_node_ )
+		return this->introspectRootNode();
 
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "object path asked : " << asked_object_path;
 #endif
+
+	std::ostringstream xml;
 
 	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
@@ -150,24 +157,24 @@ const std::string GKDBusEvents::introspect(const std::string & object_asked) {
 
 		for(const auto & object_path_pair : this->DBusEvents_) {
 			/* object path must match */
-			if(object_path_pair.first != object_asked)
+			if( this->getNode(object_path_pair.first) != asked_object_path )
 				continue;
 			for(const auto & interface_pair : object_path_pair.second) {
 				if( interface_pair.first == interface ) {
 					this->openXMLInterface(xml, interface_opened, interface);
-					for(const auto & DBusEvent : interface_pair.second) { /* vector of struct */
+					for(const auto & DBusEvent : interface_pair.second) { /* vector of pointers */
 						this->eventToXMLMethod(xml, DBusEvent);
 					}
 				}
 			}
 		}
 
-
 		if( interface_opened )
 			xml << "  </interface>\n";
 	}
 
 	xml << "</node>\n";
+
 	return xml.str();
 }
 

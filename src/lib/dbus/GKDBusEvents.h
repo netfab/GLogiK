@@ -55,10 +55,7 @@ class GKDBusEvents
 		std::map<const std::string, bool> DBusInterfaces_;
 
 		void defineRootNode(const std::string& rootnode);
-		const std::string & getRootNode(void);
 		const std::string getNode(const std::string & object);
-
-		const std::string introspectRootNode(void);
 
 	private:
 		std::string root_node_;
@@ -72,7 +69,9 @@ class GKDBusEvents
 			std::ostringstream & xml,
 			const GKDBusEvent* DBusEvent
 		);
-		const std::string introspect(const std::string & object_path_asked);
+		const std::string introspect(const std::string & asked_object_path);
+		const std::string introspectRootNode(void);
+
 		void addIntrospectableEvent(const char* object, const char* interface, GKDBusEvent* event);
 };
 
