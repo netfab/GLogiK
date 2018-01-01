@@ -50,7 +50,7 @@ class StringToStringEvent
 		StringToStringEvent(
 			const char* n,
 			const std::vector<DBusMethodArgument> & a,
-			std::function<const std::string &(const std::string&)> c,
+			std::function<const std::string(const std::string&)> c,
 			GKDBusEventType t,
 			const bool i
 			)	: GKDBusEvent(n, a, t, i), callback(c) {}
