@@ -28,18 +28,24 @@ namespace GLogiK
 
 void StringToStringEvent::runCallback(DBusConnection* connection, DBusMessage* message) {
 	std::string arg;
+	std::string ret;
 
-	/* handle introspection special case */
-	if(this->eventName == "Introspect") {
-		arg = to_string( dbus_message_get_path(message) );
-	}
-	else {
-		GKDBusArgumentString::fillInArguments(message);
-		arg = GKDBusArgumentString::getNextStringArgument();
-	}
+	try {
+		/* handle introspection special case */
+		if(this->eventName == "Introspect") {
+			arg = to_string( dbus_message_get_path(message) );
+		}
+		else {
+			GKDBusArgumentString::fillInArguments(message);
+			arg = GKDBusArgumentString::getNextStringArgument();
+		}
 
-	/* call string to string callback */
-	const std::string ret( this->callback(arg) );
+		/* call string to string callback */
+		ret = this->callback(arg);
+	}
+	catch ( const EmptyContainer & e ) {
+		LOG(WARNING) << e.what();
+	}
 
 	/* signals don't send reply */
 	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)

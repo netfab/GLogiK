@@ -32,9 +32,10 @@ void TwoStringsToBoolEvent::runCallback(DBusConnection* connection, DBusMessage*
 	bool ret = false;
 
 	try {
-		/* call string to bool callback */
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
 		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
+
+		/* call two strings to bool callback */
 		ret = this->callback(arg1, arg2);
 	}
 	catch ( const EmptyContainer & e ) {

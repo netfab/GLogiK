@@ -29,10 +29,17 @@ namespace GLogiK
 void StringToStringsArrayEvent::runCallback(DBusConnection* connection, DBusMessage* message) {
 	GKDBusArgumentString::fillInArguments(message);
 
-	const std::string arg( GKDBusArgumentString::getNextStringArgument() );
+	std::vector<std::string> ret;
 
-	/* call string to string callback */
-	const std::vector<std::string> ret( this->callback(arg) );
+	try {
+		const std::string arg( GKDBusArgumentString::getNextStringArgument() );
+
+		/* call string to strings array callback */
+		ret = this->callback(arg);
+	}
+	catch ( const EmptyContainer & e ) {
+		LOG(WARNING) << e.what();
+	}
 
 	/* signals don't send reply */
 	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)

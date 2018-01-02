@@ -32,8 +32,9 @@ void StringToBoolEvent::runCallback(DBusConnection* connection, DBusMessage* mes
 	bool ret = false;
 
 	try {
-		/* call string to bool callback */
 		const std::string arg( GKDBusArgumentString::getNextStringArgument() );
+
+		/* call string to bool callback */
 		ret = this->callback(arg);
 	}
 	catch ( const EmptyContainer & e ) {

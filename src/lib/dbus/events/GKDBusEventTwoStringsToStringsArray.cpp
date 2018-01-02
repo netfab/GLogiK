@@ -29,11 +29,18 @@ namespace GLogiK
 void TwoStringsToStringsArrayEvent::runCallback(DBusConnection* connection, DBusMessage* message) {
 	GKDBusArgumentString::fillInArguments(message);
 
-	const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
-	const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
+	std::vector<std::string> ret;
 
-	/* call string to string callback */
-	const std::vector<std::string> ret( this->callback(arg1, arg2) );
+	try {
+		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
+
+		/* call two strings to strings array callback */
+		ret = this->callback(arg1, arg2);
+	}
+	catch ( const EmptyContainer & e ) {
+		LOG(WARNING) << e.what();
+	}
 
 	/* signals don't send reply */
 	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
