@@ -130,8 +130,8 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"as", "array_of_strings", "out", "string array of device properties"} },
 		std::bind(&ClientsManager::getDeviceProperties, this, std::placeholders::_1, std::placeholders::_2) );
-/*
-	this->DBus->addEvent_TwoStringsThreeBytesToBool_Callback(
+
+	this->DBus->addTwoStringsThreeBytesToBoolEvent(
 		DM_object, DM_interf, "SetDeviceBacklightColor",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
@@ -141,7 +141,7 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"b", "did_setcolor_succeeded", "out", "did the SetDeviceBacklightColor method succeeded ?"} },
 		std::bind(&ClientsManager::setDeviceBacklightColor, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
-
+/*
 	this->DBus->addEvent_ThreeStringsOneByteToMacro_Callback(
 		DM_object, DM_interf, "GetMacro",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
