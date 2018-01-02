@@ -32,4 +32,5 @@ libGLogiKDBus_la_SOURCES = \
 	events/GKDBusEventStringToStringsArray.cpp events/GKDBusEventStringToStringsArray.h \
 	events/GKDBusEventTwoStringsToStringsArray.cpp events/GKDBusEventTwoStringsToStringsArray.h \
 	events/GKDBusEventTwoStringsThreeBytesToBool.cpp events/GKDBusEventTwoStringsThreeBytesToBool.h \
+	events/GKDBusEventThreeStringsOneByteToMacro.cpp events/GKDBusEventThreeStringsOneByteToMacro.h \
 	GKDBusEvents.cpp GKDBusEvents.h
