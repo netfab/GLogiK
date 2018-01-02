@@ -62,8 +62,18 @@ class GKDBusEvent {
 		virtual ~GKDBusEvent(void);
 
 		virtual void runCallback(DBusConnection* connection, DBusMessage* message) = 0;
+};
 
+class EventCanBeSignal {
 	protected:
+		EventCanBeSignal() = default;
+		~EventCanBeSignal() = default;
+
+		static void addSignalRuleMatch(
+			DBusConnection* connection,
+			const char* interface,
+			const char* eventName
+		);
 };
 
 } // namespace GLogiK

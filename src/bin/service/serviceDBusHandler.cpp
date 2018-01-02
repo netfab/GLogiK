@@ -51,8 +51,8 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 		this->reportChangedState();
 
 		/* want to be warned by the daemon about those signals */
-/*
-		this->DBus->addSignal_VoidToVoid_Callback(
+
+		this->DBus->addVoidToVoidSignal(
 			BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -61,7 +61,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 			std::bind(&ServiceDBusHandler::somethingChanged, this)
 		);
 
-		this->DBus->addSignal_VoidToVoid_Callback(
+		this->DBus->addVoidToVoidSignal(
 			BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -70,7 +70,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 			std::bind(&ServiceDBusHandler::daemonIsStopping, this)
 		);
 
-		this->DBus->addSignal_VoidToVoid_Callback(
+		this->DBus->addVoidToVoidSignal(
 			BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -78,7 +78,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 			{}, // FIXME
 			std::bind(&ServiceDBusHandler::reportChangedState, this)
 		);
-
+/*
 		this->DBus->addSignal_TwoStringsOneByteToBool_Callback(
 			BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,

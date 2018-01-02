@@ -31,6 +31,7 @@
 #include "lib/utils/utils.h"
 #include "lib/shared/keyEvent.h"
 
+#include "GKDBusConnection.h"
 #include "GKDBusEvents.h"
 
 #include "messages/GKDBusRemoteMethodCall.h"

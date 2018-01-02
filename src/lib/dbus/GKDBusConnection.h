@@ -19,45 +19,18 @@
  *
  */
 
-#include <string>
-
-#include "lib/utils/utils.h"
-
-#include "GKDBusEvent.h"
+#ifndef __GLOGIK_GKDBUS_CONNECTION_H__
+#define __GLOGIK_GKDBUS_CONNECTION_H__
 
 namespace GLogiK
 {
 
-GKDBusEvent::GKDBusEvent(
-	const char* n,
-	const std::vector<DBusMethodArgument> & a,
-	GKDBusEventType t,
-	const bool i
-	)	: eventName(n), arguments(a), eventType(t), introspectable(i)
+enum class BusConnection : uint8_t
 {
-}
-
-GKDBusEvent::~GKDBusEvent() {
-}
-
-void EventCanBeSignal::addSignalRuleMatch(
-	DBusConnection* connection,
-	const char* interface,
-	const char* eventName
-) {
-	std::string rule = "type='signal',interface='";
-	rule += interface;
-	rule += "',member='";
-	rule += eventName;
-	rule += "'";
-	dbus_bus_add_match(connection, rule.c_str(), nullptr);
-	dbus_connection_flush(connection);
-	// FIXME check error
-	//this->checkDBusError("DBus Session match error");
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "DBus Signal match rule sent : " << rule;
-#endif
-}
+	GKDBUS_SESSION = 0,
+	GKDBUS_SYSTEM,
+};
 
 } // namespace GLogiK
 
+#endif

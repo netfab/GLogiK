@@ -13,6 +13,7 @@ libGLogiKDBus_la_LIBADD = \
 				../utils/libGLogiKUtils.la
 
 libGLogiKDBus_la_SOURCES = \
+	GKDBusConnection.h \
 	GKDBus.cpp GKDBus.h \
 	arguments/GKDBusArgument.cpp arguments/GKDBusArgument.h \
 	arguments/GKDBusArgString.cpp arguments/GKDBusArgString.h \
@@ -26,6 +27,7 @@ libGLogiKDBus_la_SOURCES = \
 	messages/GKDBusBroadcastSignal.cpp messages/GKDBusBroadcastSignal.h \
 	messages/GKDBusTargetsSignal.cpp messages/GKDBusTargetsSignal.h \
 	events/GKDBusEvent.cpp events/GKDBusEvent.h \
+	events/GKDBusEventVoidToVoid.cpp events/GKDBusEventVoidToVoid.h \
 	events/GKDBusEventStringToBool.cpp events/GKDBusEventStringToBool.h \
 	events/GKDBusEventTwoStringsToBool.cpp events/GKDBusEventTwoStringsToBool.h \
 	events/GKDBusEventStringToString.cpp events/GKDBusEventStringToString.h \

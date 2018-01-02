@@ -29,6 +29,7 @@
 
 #include "lib/shared/keyEvent.h"
 
+#include "events/GKDBusEventVoidToVoid.h"
 #include "events/GKDBusEventStringToBool.h"
 #include "events/GKDBusEventTwoStringsToBool.h"
 #include "events/GKDBusEventStringToString.h"
@@ -42,7 +43,8 @@ namespace GLogiK
 
 
 class GKDBusEvents
-	:	public EventStringToBool,
+	:	public EventVoidToVoid,
+		public EventStringToBool,
 		public EventTwoStringsToBool,
 		public EventStringToString,
 		public EventStringToStringsArray,

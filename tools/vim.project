@@ -87,6 +87,8 @@ GLogiK=$PWD/.. CD=. {
 				events=events/ {
 					GKDBusEvent.cpp
 					GKDBusEvent.h
+					GKDBusEventVoidToVoid.cpp
+					GKDBusEventVoidToVoid.h
 					GKDBusEventStringToBool.cpp
 					GKDBusEventStringToBool.h
 					GKDBusEventTwoStringsToBool.cpp
@@ -120,6 +122,7 @@ GLogiK=$PWD/.. CD=. {
 				GKDBus.h
 				GKDBus.cpp.old
 				GKDBus.h.old
+				GKDBusConnection.h
 				GKDBusEvents.cpp
 				GKDBusEvents.h
 			}
