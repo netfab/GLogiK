@@ -55,18 +55,12 @@ void StringToStringEvent::runCallback(DBusConnection* connection, DBusMessage* m
 		this->initializeReply(connection, message);
 		this->appendStringToReply(ret);
 	}
-	catch (const GKDBusOOMWrongBuild & e) {
-		LOG(ERROR) << "DBus build reply failure : " << e.what();
-		/* delete reply object if allocated */
-		this->sendReply();
-		this->buildAndSendErrorReply(connection, message);
-		return;
-	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(ERROR) << "DBus reply failure : " << e.what();
 		/* delete reply object if allocated */
 		this->sendReply();
-		throw;
+		this->buildAndSendErrorReply(connection, message);
+		return;
 	}
 
 	/* delete reply object if allocated */
