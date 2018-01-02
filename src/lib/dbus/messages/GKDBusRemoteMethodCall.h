@@ -96,6 +96,7 @@ class GKDBusMessageRemoteMethodCall
 	private:
 		GKDBusRemoteMethodCall* remote_method_call_;
 		DBusPendingCall* pending_;
+		bool log_off_;
 
 		virtual DBusConnection* getConnection(BusConnection wanted_connection) = 0;
 };

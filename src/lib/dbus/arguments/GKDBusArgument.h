@@ -40,7 +40,10 @@ class GKDBusArgument
 		GKDBusArgument(void) = default;
 		~GKDBusArgument(void) = default;
 
-		static void fillInArguments(DBusMessage* message);
+		static void fillInArguments(
+			DBusMessage* message,
+			bool logoff=false
+		);
 
 		thread_local static std::vector<std::string> string_arguments_;
 		thread_local static std::vector<uint8_t> byte_arguments_;
@@ -48,7 +51,12 @@ class GKDBusArgument
 		thread_local static std::vector<bool> boolean_arguments_;
 
 	private:
-		static void decodeArgumentFromIterator(DBusMessageIter* iter, const char* signature, const unsigned int num);
+		static void decodeArgumentFromIterator(
+			DBusMessageIter* iter,
+			const char* signature,
+			const unsigned int num,
+			const bool logoff
+		);
 
 };
 

@@ -138,6 +138,8 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 		LOG(ERROR) << "GKDBus remote_method_call allocation failure : " << e.what();
 		throw GLogiKBadAlloc();
 	}
+
+	this->log_off_ = logoff;
 }
 
 void GKDBusMessageRemoteMethodCall::appendStringToRemoteMethodCall(const std::string & value) {
@@ -203,7 +205,7 @@ void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void) {
 		throw GKDBusRemoteCallNoReply( buffer.str() );
 	}
 
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgumentString::fillInArguments(message, this->log_off_);
 	dbus_message_unref(message);
 }
 

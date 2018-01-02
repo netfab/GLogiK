@@ -33,7 +33,12 @@ thread_local std::vector<uint8_t> GKDBusArgument::byte_arguments_ = {};
 thread_local std::vector<uint16_t> GKDBusArgument::uint16_arguments_ = {};
 thread_local std::vector<bool> GKDBusArgument::boolean_arguments_ = {};
 
-void GKDBusArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const char* signature, const unsigned int num) {
+void GKDBusArgument::decodeArgumentFromIterator(
+	DBusMessageIter* iter,
+	const char* signature,
+	const unsigned int num,
+	const bool logoff
+) {
 	int current_type = dbus_message_iter_get_arg_type(iter);
 
 	DBusSignatureIter sig_it;
@@ -47,10 +52,10 @@ void GKDBusArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const cha
 	}
 
 #if DEBUGGING_ON
-	//if(! this->logoff_) { // FIXME
+	if( ! logoff ) {
 		LOG(DEBUG3) << "decoding argument: " << num << " type: "
 					<< static_cast<char>(current_type) << " sig: " << signature;
-	//}
+	}
 #endif
 
 	switch(current_type) {
@@ -83,7 +88,7 @@ void GKDBusArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const cha
 				do {
 					c++; /* bonus point */
 					char* sig = dbus_message_iter_get_signature(&array_it);
-					GKDBusArgument::decodeArgumentFromIterator(&array_it, sig, c);
+					GKDBusArgument::decodeArgumentFromIterator(&array_it, sig, c, logoff);
 					dbus_free(sig);
 				}
 				while( dbus_message_iter_next(&array_it) );
@@ -114,7 +119,7 @@ void GKDBusArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const cha
 					do {
 						c++; /* bonus point */
 						char* sig = dbus_message_iter_get_signature(&struct_it);
-						GKDBusArgument::decodeArgumentFromIterator(&struct_it, sig, c);
+						GKDBusArgument::decodeArgumentFromIterator(&struct_it, sig, c, logoff);
 						dbus_free(sig);
 					}
 					while( dbus_message_iter_next(&struct_it) );
@@ -128,7 +133,7 @@ void GKDBusArgument::decodeArgumentFromIterator(DBusMessageIter* iter, const cha
 	}
 }
 
-void GKDBusArgument::fillInArguments(DBusMessage* message) {
+void GKDBusArgument::fillInArguments(DBusMessage* message, bool logoff) {
 	GKDBusArgument::string_arguments_.clear();
 	GKDBusArgument::boolean_arguments_.clear();
 	GKDBusArgument::byte_arguments_.clear();
@@ -148,7 +153,7 @@ void GKDBusArgument::fillInArguments(DBusMessage* message) {
 	do {
 		c++; /* bonus point */
 		char* signature = dbus_message_iter_get_signature(&arg_it);
-		GKDBusArgument::decodeArgumentFromIterator(&arg_it, signature, c);
+		GKDBusArgument::decodeArgumentFromIterator(&arg_it, signature, c, logoff);
 		dbus_free(signature);
 	}
 	while( dbus_message_iter_next(&arg_it) );
