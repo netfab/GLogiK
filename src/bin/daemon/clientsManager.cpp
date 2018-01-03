@@ -143,7 +143,7 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
 
 	this->DBus->addThreeStringsOneByteToMacroEvent(
-		DM_object, DM_interf, "GetMacro",
+		DM_object, DM_interf, "GetDeviceMacro",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"s", "macro_key_name", "in", "macro key name"},

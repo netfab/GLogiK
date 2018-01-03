@@ -492,7 +492,7 @@ const bool DevicesHandler::setMacro(
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			"GetMacro"
+			"GetDeviceMacro"
 		);
 
 		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
