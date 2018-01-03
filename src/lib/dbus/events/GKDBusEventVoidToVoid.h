@@ -47,7 +47,7 @@ class VoidToVoidEvent
 			GKDBusEventType t,
 			const bool i
 			)	: GKDBusEvent(n, a, t, i), callback(c) {}
-		~VoidToVoidEvent() {};
+		~VoidToVoidEvent() = default;
 
 		void runCallback(DBusConnection* connection, DBusMessage* message);
 

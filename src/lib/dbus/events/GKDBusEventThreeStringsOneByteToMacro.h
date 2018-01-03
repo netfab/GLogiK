@@ -57,7 +57,7 @@ class ThreeStringsOneByteToMacroEvent
 			GKDBusEventType t,
 			const bool i
 			)	: GKDBusEvent(n, a, t, i), callback(c) {}
-		~ThreeStringsOneByteToMacroEvent() {};
+		~ThreeStringsOneByteToMacroEvent() = default;
 
 		void runCallback(DBusConnection* connection, DBusMessage* message);
 

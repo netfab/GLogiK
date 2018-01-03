@@ -69,7 +69,7 @@ class GKDBusEvent {
 class EventCanBeSignal {
 	protected:
 		EventCanBeSignal() = default;
-		~EventCanBeSignal() = default;
+		virtual ~EventCanBeSignal() = default;
 
 		static void addSignalRuleMatch(
 			DBusConnection* connection,

@@ -54,7 +54,7 @@ class TwoStringsToStringsArrayEvent
 			GKDBusEventType t,
 			const bool i
 			)	: GKDBusEvent(n, a, t, i), callback(c) {}
-		~TwoStringsToStringsArrayEvent() {};
+		~TwoStringsToStringsArrayEvent() = default;
 
 		void runCallback(DBusConnection* connection, DBusMessage* message);
 

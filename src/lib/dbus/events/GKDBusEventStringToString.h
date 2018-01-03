@@ -54,7 +54,7 @@ class StringToStringEvent
 			GKDBusEventType t,
 			const bool i
 			)	: GKDBusEvent(n, a, t, i), callback(c) {}
-		~StringToStringEvent() {};
+		~StringToStringEvent() = default;
 
 		void runCallback(DBusConnection* connection, DBusMessage* message);
 

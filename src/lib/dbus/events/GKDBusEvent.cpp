@@ -38,6 +38,9 @@ GKDBusEvent::GKDBusEvent(
 }
 
 GKDBusEvent::~GKDBusEvent() {
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "destroying event: " << eventName;
+#endif
 }
 
 void EventCanBeSignal::addSignalRuleMatch(

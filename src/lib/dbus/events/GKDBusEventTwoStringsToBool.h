@@ -53,7 +53,7 @@ class TwoStringsToBoolEvent
 			GKDBusEventType t,
 			const bool i
 			)	: GKDBusEvent(n, a, t, i), callback(c) {}
-		~TwoStringsToBoolEvent() {};
+		~TwoStringsToBoolEvent() = default;
 
 		void runCallback(DBusConnection* connection, DBusMessage* message);
 

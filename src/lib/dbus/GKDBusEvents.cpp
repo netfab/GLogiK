@@ -55,9 +55,6 @@ GKDBusEvents::~GKDBusEvents() {
 			LOG(DEBUG2) << "interface: " << interface_pair.first;
 #endif
 			for(auto & DBusEvent : interface_pair.second) { /* vector of pointers */
-#if DEBUGGING_ON
-				LOG(DEBUG3) << "destroying event: " << DBusEvent->eventName;
-#endif
 				delete DBusEvent;
 			}
 		}

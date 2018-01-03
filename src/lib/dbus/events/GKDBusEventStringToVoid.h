@@ -48,7 +48,7 @@ class StringToVoidEvent
 			GKDBusEventType t,
 			const bool i
 			)	: GKDBusEvent(n, a, t, i), callback(c) {}
-		~StringToVoidEvent() {};
+		~StringToVoidEvent() = default;
 
 		void runCallback(DBusConnection* connection, DBusMessage* message);
 
