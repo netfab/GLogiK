@@ -61,6 +61,15 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 			std::bind(&ServiceDBusHandler::somethingChanged, this)
 		);
 
+		this->DBus->addStringToVoidSignal(
+			BusConnection::GKDBUS_SYSTEM,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+			"DeviceStopped",
+			{}, // FIXME
+			std::bind(&ServiceDBusHandler::deviceStopped, this, std::placeholders::_1)
+		);
+
 		this->DBus->addVoidToVoidSignal(
 			BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
@@ -413,6 +422,12 @@ void ServiceDBusHandler::daemonIsStopping(void) {
 
 	this->devices_.clearLoadedDevices();
 	// TODO sleep and retry to register
+}
+
+void ServiceDBusHandler::deviceStopped(const std::string & devID) {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "it seems that a device has been stopped";
+#endif
 }
 
 void ServiceDBusHandler::somethingChanged(void) {

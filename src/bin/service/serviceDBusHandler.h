@@ -78,6 +78,8 @@ class ServiceDBusHandler
 		void somethingChanged(void);
 		void daemonIsStopping(void);
 		const bool macroRecorded(const std::string & devID, const std::string & keyName, const uint8_t profile);
+
+		void deviceStopped(const std::string & devID);
 };
 
 } // namespace GLogiK

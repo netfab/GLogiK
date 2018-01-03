@@ -28,6 +28,7 @@ libGLogiKDBus_la_SOURCES = \
 	messages/GKDBusTargetsSignal.cpp messages/GKDBusTargetsSignal.h \
 	events/GKDBusEvent.cpp events/GKDBusEvent.h \
 	events/GKDBusEventVoidToVoid.cpp events/GKDBusEventVoidToVoid.h \
+	events/GKDBusEventStringToVoid.cpp events/GKDBusEventStringToVoid.h \
 	events/GKDBusEventStringToBool.cpp events/GKDBusEventStringToBool.h \
 	events/GKDBusEventTwoStringsToBool.cpp events/GKDBusEventTwoStringsToBool.h \
 	events/GKDBusEventStringToString.cpp events/GKDBusEventStringToString.h \
