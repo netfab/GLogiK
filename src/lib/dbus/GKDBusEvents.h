@@ -35,6 +35,7 @@
 #include "events/GKDBusEventStringToString.h"
 #include "events/GKDBusEventStringToStringsArray.h"
 #include "events/GKDBusEventTwoStringsToStringsArray.h"
+#include "events/GKDBusEventTwoStringsOneByteToBool.h"
 #include "events/GKDBusEventTwoStringsThreeBytesToBool.h"
 #include "events/GKDBusEventThreeStringsOneByteToMacro.h"
 
@@ -49,6 +50,7 @@ class GKDBusEvents
 		public EventStringToString,
 		public EventStringToStringsArray,
 		public EventTwoStringsToStringsArray,
+		public EventTwoStringsOneByteToBool,
 		public EventTwoStringsThreeBytesToBool,
 		public EventThreeStringsOneByteToMacro
 {

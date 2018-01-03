@@ -78,8 +78,8 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 			{}, // FIXME
 			std::bind(&ServiceDBusHandler::reportChangedState, this)
 		);
-/*
-		this->DBus->addSignal_TwoStringsOneByteToBool_Callback(
+
+		this->DBus->addTwoStringsOneByteToBoolSignal(
 			BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -89,7 +89,6 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 						std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
 			)
 		);
-*/
 
 		/* set GKDBus pointer */
 		this->devices_.setDBus(this->DBus);

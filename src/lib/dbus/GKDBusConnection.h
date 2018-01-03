@@ -22,6 +22,8 @@
 #ifndef __GLOGIK_GKDBUS_CONNECTION_H__
 #define __GLOGIK_GKDBUS_CONNECTION_H__
 
+#include <cstdint>
+
 namespace GLogiK
 {
 
