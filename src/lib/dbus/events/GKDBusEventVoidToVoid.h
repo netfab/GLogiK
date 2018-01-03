@@ -28,8 +28,6 @@
 
 #include <dbus/dbus.h>
 
-#include "lib/dbus/GKDBusConnection.h"
-
 /* -- */
 
 #include "GKDBusEvent.h"
@@ -85,7 +83,6 @@ class EventVoidToVoid
 		virtual ~EventVoidToVoid() = default;
 
 		virtual void addIntrospectableEvent(const char* object, const char* interface, GKDBusEvent* event) = 0;
-		virtual DBusConnection* getConnection(BusConnection wanted_connection) = 0;
 };
 
 } // namespace GLogiK

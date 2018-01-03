@@ -27,7 +27,6 @@
 
 #include <dbus/dbus.h>
 
-#include "lib/dbus/GKDBusConnection.h"
 /* -- */
 #include "GKDBusEvent.h"
 
@@ -93,7 +92,6 @@ class EventTwoStringsOneByteToBool
 		virtual ~EventTwoStringsOneByteToBool() = default;
 
 		virtual void addIntrospectableEvent(const char* object, const char* interface, GKDBusEvent* event) = 0;
-		virtual DBusConnection* getConnection(BusConnection wanted_connection) = 0;
 
 };
 

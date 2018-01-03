@@ -29,6 +29,8 @@
 
 #include <dbus/dbus.h>
 
+#include "lib/dbus/GKDBusConnection.h"
+
 namespace GLogiK
 {
 
@@ -74,6 +76,8 @@ class EventCanBeSignal {
 			const char* interface,
 			const char* eventName
 		);
+
+		virtual DBusConnection* getConnection(BusConnection wanted_connection) = 0;
 };
 
 } // namespace GLogiK
