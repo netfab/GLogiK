@@ -29,15 +29,16 @@
 namespace GLogiK
 {
 
-GKDBus::GKDBus(const std::string & rootnode) : buffer_("", std::ios_base::app),
-	session_conn_(nullptr),
-	system_conn_(nullptr)
+GKDBus::GKDBus(const std::string & rootnode)
+	:	GKDBusEvents(rootnode),
+		buffer_("", std::ios_base::app),
+		session_conn_(nullptr),
+		system_conn_(nullptr)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "dbus object initialization";
 #endif
 	dbus_error_init(&(this->error_));
-	this->defineRootNode(rootnode);
 }
 
 GKDBus::~GKDBus()
@@ -115,9 +116,11 @@ void GKDBus::checkMessageType(BusConnection current) {
 		DBusConnection* connection = this->getConnection(current);
 
 		for(const auto & object_pair : this->DBusEvents_) {
-			/* object path must match */
-			if(this->getNode(object_pair.first) != asked_object_path)
-				continue;
+			/* handle root node introspection special case */
+			if( asked_object_path != this->getRootNode() )
+				/* object path must match */
+				if(asked_object_path != this->getNode(object_pair.first))
+					continue;
 
 			for(const auto & interface_pair : object_pair.second) {
 				const char* interface = interface_pair.first.c_str();

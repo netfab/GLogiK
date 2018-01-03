@@ -58,7 +58,7 @@ class GKDBusEvents
 
 
 	protected:
-		GKDBusEvents(void);
+		GKDBusEvents(const std::string & rootnode);
 		~GKDBusEvents(void);
 
 		std::map< const std::string, /* object path */
@@ -68,10 +68,11 @@ class GKDBusEvents
 		std::map<const std::string, bool> DBusObjects_;
 		std::map<const std::string, bool> DBusInterfaces_;
 
-		void defineRootNode(const std::string& rootnode);
-		const std::string getNode(const std::string & object);
+		const std::string getNode(const std::string & object) const;
+		const std::string & getRootNode(void) const;
 
 	private:
+		static const std::string rootNodeObject_;
 		std::string root_node_;
 
 		void openXMLInterface(

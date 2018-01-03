@@ -30,7 +30,19 @@
 namespace GLogiK
 {
 
-GKDBusEvents::GKDBusEvents() {
+const std::string GKDBusEvents::rootNodeObject_("RootNode");
+
+GKDBusEvents::GKDBusEvents(const std::string & rootnode) : root_node_(rootnode) {
+	/* adding special event for root node introspection */
+	const char* object = GKDBusEvents::rootNodeObject_.c_str();
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "adding Introspectable interface : " << object;
+#endif
+	this->addStringToStringEvent(
+		object, "org.freedesktop.DBus.Introspectable", "Introspect",
+		{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
+		std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),
+		GKDBusEventType::GKDBUS_EVENT_METHOD, false);
 }
 
 GKDBusEvents::~GKDBusEvents() {
@@ -52,30 +64,27 @@ GKDBusEvents::~GKDBusEvents() {
 	}
 }
 
-void GKDBusEvents::defineRootNode(const std::string& rootnode) {
-	this->root_node_ = rootnode;
-}
-
-const std::string GKDBusEvents::getNode(const std::string & object) {
+const std::string GKDBusEvents::getNode(const std::string & object) const {
 	std::string node(this->root_node_);
 	node += "/";
 	node += object;
 	return node;
 }
 
+const std::string & GKDBusEvents::getRootNode(void) const {
+	return this->root_node_;
+}
+
 const std::string GKDBusEvents::introspectRootNode(void) {
 	std::ostringstream xml;
-
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "root node : " << this->root_node_;
-#endif
 
 	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
 	xml << "<node name=\"" << this->root_node_ << "\">\n";
 
-	for(const auto & object_it : this->DBusObjects_) {
-		xml << "  <node name=\"" << object_it.first << "\"/>\n";
+	for(const auto & object_pair : this->DBusObjects_) {
+		if(object_pair.first != GKDBusEvents::rootNodeObject_)
+			xml << "  <node name=\"" << object_pair.first << "\"/>\n";
 	}
 
 	xml << "</node>\n";
@@ -90,9 +99,7 @@ void GKDBusEvents::addIntrospectableEvent(const char* object, const char* interf
 	if(event->introspectable) {
 		try {
 			const auto & obj = this->DBusEvents_.at(object);
-			const auto & interf = obj.at("org.freedesktop.DBus.Introspectable");
-			// just to avoid warning
-			LOG(DEBUG5) << "introspect interface found : " << interf.size();
+			obj.at("org.freedesktop.DBus.Introspectable");
 		}
 		catch (const std::out_of_range& oor) {
 #if DEBUGGING_ON
@@ -102,7 +109,7 @@ void GKDBusEvents::addIntrospectableEvent(const char* object, const char* interf
 				object, "org.freedesktop.DBus.Introspectable", "Introspect",
 				{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
 				std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),
-				event->eventType, false);
+				GKDBusEventType::GKDBUS_EVENT_METHOD, false);
 		}
 	}
 	this->DBusObjects_[object] = true;
@@ -136,13 +143,12 @@ void GKDBusEvents::eventToXMLMethod(
 }
 
 const std::string GKDBusEvents::introspect(const std::string & asked_object_path) {
-
-	if( asked_object_path == this->root_node_ )
-		return this->introspectRootNode();
-
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "object path asked : " << asked_object_path;
 #endif
+
+	if( asked_object_path == this->root_node_ )
+		return this->introspectRootNode();
 
 	std::ostringstream xml;
 
