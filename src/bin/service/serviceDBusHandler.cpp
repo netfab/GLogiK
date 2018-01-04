@@ -20,7 +20,6 @@
  */
 
 #include <functional>
-#include <vector>
 #include <stdexcept>
 #include <thread>
 #include <chrono>
@@ -61,7 +60,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 			std::bind(&ServiceDBusHandler::somethingChanged, this)
 		);
 
-		this->DBus->addStringToVoidSignal(
+		this->DBus->addStringsArrayToVoidSignal(
 			BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -424,7 +423,7 @@ void ServiceDBusHandler::daemonIsStopping(void) {
 	// TODO sleep and retry to register
 }
 
-void ServiceDBusHandler::deviceStopped(const std::string & devID) {
+void ServiceDBusHandler::deviceStopped(const std::vector<std::string> & devicesIDArray) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "it seems that a device has been stopped";
 #endif

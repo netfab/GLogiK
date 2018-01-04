@@ -12,6 +12,8 @@ libGLogiKDBus_la_LIBADD = \
 				$(DBUS_LIBS) \
 				../utils/libGLogiKUtils.la
 
+#	events/GKDBusEventStringToVoid.cpp events/GKDBusEventStringToVoid.h
+
 libGLogiKDBus_la_SOURCES = \
 	GKDBusConnection.h \
 	GKDBus.cpp GKDBus.h \
@@ -28,7 +30,6 @@ libGLogiKDBus_la_SOURCES = \
 	messages/GKDBusTargetsSignal.cpp messages/GKDBusTargetsSignal.h \
 	events/GKDBusEvent.cpp events/GKDBusEvent.h \
 	events/GKDBusEventVoidToVoid.cpp events/GKDBusEventVoidToVoid.h \
-	events/GKDBusEventStringToVoid.cpp events/GKDBusEventStringToVoid.h \
 	events/GKDBusEventStringToBool.cpp events/GKDBusEventStringToBool.h \
 	events/GKDBusEventTwoStringsToBool.cpp events/GKDBusEventTwoStringsToBool.h \
 	events/GKDBusEventStringToString.cpp events/GKDBusEventStringToString.h \
@@ -37,4 +38,5 @@ libGLogiKDBus_la_SOURCES = \
 	events/GKDBusEventTwoStringsOneByteToBool.cpp events/GKDBusEventTwoStringsOneByteToBool.h \
 	events/GKDBusEventTwoStringsThreeBytesToBool.cpp events/GKDBusEventTwoStringsThreeBytesToBool.h \
 	events/GKDBusEventThreeStringsOneByteToMacro.cpp events/GKDBusEventThreeStringsOneByteToMacro.h \
+	events/GKDBusEventStringsArrayToVoid.cpp events/GKDBusEventStringsArrayToVoid.h \
 	GKDBusEvents.cpp GKDBusEvents.h

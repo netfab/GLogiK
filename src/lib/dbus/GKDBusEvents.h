@@ -30,7 +30,7 @@
 #include "lib/shared/keyEvent.h"
 
 #include "events/GKDBusEventVoidToVoid.h"
-#include "events/GKDBusEventStringToVoid.h"
+//#include "events/GKDBusEventStringToVoid.h"
 #include "events/GKDBusEventStringToBool.h"
 #include "events/GKDBusEventTwoStringsToBool.h"
 #include "events/GKDBusEventStringToString.h"
@@ -39,6 +39,7 @@
 #include "events/GKDBusEventTwoStringsOneByteToBool.h"
 #include "events/GKDBusEventTwoStringsThreeBytesToBool.h"
 #include "events/GKDBusEventThreeStringsOneByteToMacro.h"
+#include "events/GKDBusEventStringsArrayToVoid.h"
 
 namespace GLogiK
 {
@@ -46,7 +47,6 @@ namespace GLogiK
 
 class GKDBusEvents
 	:	public EventVoidToVoid,
-		public EventStringToVoid,
 		public EventStringToBool,
 		public EventTwoStringsToBool,
 		public EventStringToString,
@@ -54,7 +54,8 @@ class GKDBusEvents
 		public EventTwoStringsToStringsArray,
 		public EventTwoStringsOneByteToBool,
 		public EventTwoStringsThreeBytesToBool,
-		public EventThreeStringsOneByteToMacro
+		public EventThreeStringsOneByteToMacro,
+		public EventStringsArrayToVoid
 {
 	public:
 

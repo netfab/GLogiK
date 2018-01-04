@@ -23,6 +23,7 @@
 #define __GLOGIKS_DESKTOP_SERVICE_DBUS_HANDLER_H__
 
 #include <sstream>
+#include <vector>
 #include <string>
 
 #include <sys/types.h>
@@ -79,7 +80,7 @@ class ServiceDBusHandler
 		void daemonIsStopping(void);
 		const bool macroRecorded(const std::string & devID, const std::string & keyName, const uint8_t profile);
 
-		void deviceStopped(const std::string & devID);
+		void deviceStopped(const std::vector<std::string> & devicesIDArray);
 };
 
 } // namespace GLogiK

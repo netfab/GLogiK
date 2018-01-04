@@ -107,6 +107,8 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusEventTwoStringsThreeBytesToBool.h
 					GKDBusEventThreeStringsOneByteToMacro.cpp
 					GKDBusEventThreeStringsOneByteToMacro.h
+					GKDBusEventStringsArrayToVoid.cpp
+					GKDBusEventStringsArrayToVoid.h
 				}
 				messages=messages/ {
 					GKDBusMessage.cpp
