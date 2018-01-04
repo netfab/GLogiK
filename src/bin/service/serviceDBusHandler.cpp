@@ -461,7 +461,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 
 		this->DBus->waitForRemoteMethodCallReply();
 
-		devicesID = this->DBus->getAllStringArguments();
+		devicesID = this->DBus->getStringsArray();
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "daemon says " << devicesID.size() << " devices started";
 #endif
@@ -493,7 +493,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 
 		this->DBus->waitForRemoteMethodCallReply();
 
-		devicesID = this->DBus->getAllStringArguments();
+		devicesID = this->DBus->getStringsArray();
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "daemon says " << devicesID.size() << " devices stopped";
 #endif

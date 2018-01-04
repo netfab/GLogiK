@@ -34,7 +34,7 @@ class GKDBusArgumentString : public GKDBusArgument
 {
 	public:
 		static const std::string & getNextStringArgument(void);
-		static const std::vector<std::string> & getAllStringArguments(void);
+		static const std::vector<std::string> & getStringsArray(void);
 
 	protected:
 		GKDBusArgumentString(void) = default;

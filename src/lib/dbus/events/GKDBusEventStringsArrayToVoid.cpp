@@ -30,7 +30,7 @@ void StringsArrayToVoidEvent::runCallback(DBusConnection* connection, DBusMessag
 	GKDBusArgumentString::fillInArguments(message);
 
 	try {
-		const std::vector<std::string> arg( GKDBusArgumentString::getAllStringArguments() );
+		const std::vector<std::string> arg( GKDBusArgumentString::getStringsArray() );
 
 		/* call string to void callback */
 		this->callback(arg);

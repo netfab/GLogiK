@@ -288,7 +288,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 		this->DBus->waitForRemoteMethodCallReply();
 
-		const std::vector<std::string> keys_names = this->DBus->getAllStringArguments();
+		const std::vector<std::string> keys_names( this->DBus->getStringsArray() );
 		device.initMacrosProfiles(keys_names);
 
 #if DEBUGGING_ON

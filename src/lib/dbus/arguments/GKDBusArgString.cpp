@@ -36,7 +36,7 @@ const std::string & GKDBusArgumentString::getNextStringArgument(void) {
 	return GKDBusArgumentString::current_string_;
 }
 
-const std::vector<std::string> & GKDBusArgumentString::getAllStringArguments(void) {
+const std::vector<std::string> & GKDBusArgumentString::getStringsArray(void) {
 	return GKDBusArgument::string_arguments_;
 }
 
