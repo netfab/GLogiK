@@ -425,7 +425,7 @@ void ServiceDBusHandler::daemonIsStopping(void) {
 
 void ServiceDBusHandler::deviceStopped(const std::vector<std::string> & devicesIDArray) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "it seems that a device has been stopped";
+	LOG(DEBUG2) << "it seems that at least one device has been stopped";
 #endif
 }
 

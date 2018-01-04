@@ -91,12 +91,16 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusEventVoidToVoid.h
 					GKDBusEventStringToVoid.cpp
 					GKDBusEventStringToVoid.h
+					GKDBusEventStringsArrayToVoid.cpp
+					GKDBusEventStringsArrayToVoid.h
 					GKDBusEventStringToBool.cpp
 					GKDBusEventStringToBool.h
 					GKDBusEventTwoStringsToBool.cpp
 					GKDBusEventTwoStringsToBool.h
 					GKDBusEventStringToString.cpp
 					GKDBusEventStringToString.h
+					GKDBusEventTwoStringsToString.cpp
+					GKDBusEventTwoStringsToString.h
 					GKDBusEventStringToStringsArray.cpp
 					GKDBusEventStringToStringsArray.h
 					GKDBusEventTwoStringsToStringsArray.cpp
@@ -107,8 +111,6 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusEventTwoStringsThreeBytesToBool.h
 					GKDBusEventThreeStringsOneByteToMacro.cpp
 					GKDBusEventThreeStringsOneByteToMacro.h
-					GKDBusEventStringsArrayToVoid.cpp
-					GKDBusEventStringsArrayToVoid.h
 				}
 				messages=messages/ {
 					GKDBusMessage.cpp

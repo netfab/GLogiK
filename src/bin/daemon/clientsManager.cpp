@@ -123,6 +123,12 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 			{"as", "array_of_strings", "out", "array of stopped devices ID strings"} },
 		std::bind(&ClientsManager::getStoppedDevices, this, std::placeholders::_1) );
 
+	this->DBus->addTwoStringsToStringEvent(
+		DM_object, DM_interf, "GetDeviceStatus",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"s", "device_id", "in", "device ID"},
+			{"s", "device status", "out", "string representing the device status"} },
+		std::bind(&ClientsManager::getDeviceStatus, this, std::placeholders::_1, std::placeholders::_2) );
 
 	this->DBus->addTwoStringsToStringsArrayEvent(
 		DM_object, DM_interf, "GetDeviceProperties",
@@ -502,6 +508,24 @@ const std::vector<std::string> ClientsManager::getStoppedDevices(const std::stri
 
 	const std::vector<std::string> ret;
 	return ret;
+}
+
+const std::string ClientsManager::getDeviceStatus(const std::string & clientID, const std::string & devID) {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "getDeviceStatus " << devID << " called by client " << clientID;
+#endif
+	try {
+		//Client* pClient = this->clients_.at(clientID);
+		this->clients_.at(clientID);
+		return "unknown";
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("unknown client ");
+		this->buffer_ << clientID;
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+	}
+
+	return "unknown";
 }
 
 const std::vector<std::string> ClientsManager::getDeviceProperties(const std::string & clientID, const std::string & devID) {
