@@ -27,8 +27,14 @@ namespace GLogiK
 
 typedef const char* const c_str;
 
-extern c_str unknown_device;
+extern c_str s_Client;
+extern c_str s_Device;
+extern c_str s_UnknownClient;
+extern c_str s_UnknownDevice;
 
+/* --- ---- --- *
+ * -- GKDBus -- *
+ * --- ---- --- */
 /* devices thread */
 extern c_str GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME;
 

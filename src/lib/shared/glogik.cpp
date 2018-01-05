@@ -25,8 +25,14 @@
 namespace GLogiK
 {
 
-c_str unknown_device = "unknown device : ";
+c_str s_Client = "client : ";
+c_str s_Device = "device : ";
+c_str s_UnknownClient = "unknown client : ";
+c_str s_UnknownDevice = "unknown device : ";
 
+/* --- ---- --- *
+ * -- GKDBus -- *
+ * --- ---- --- */
 /* devices thread */
 c_str GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME					= "com.glogik.Device";
 

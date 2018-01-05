@@ -345,8 +345,7 @@ const bool ClientsManager::unregisterClient(const std::string & clientID) {
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("tried to unregister unknown client : ");
-		this->buffer_ << clientID;
+		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 	return false;
@@ -354,7 +353,7 @@ const bool ClientsManager::unregisterClient(const std::string & clientID) {
 
 const bool ClientsManager::updateClientState(const std::string & clientID, const std::string & state) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "updating client state : " << clientID << " - " << state;
+	LOG(DEBUG2) << s_Client << clientID << " state: " << state;
 #endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
@@ -375,8 +374,7 @@ const bool ClientsManager::updateClientState(const std::string & clientID, const
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("client not registered : ");
-		this->buffer_ << clientID;
+		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 
@@ -385,15 +383,14 @@ const bool ClientsManager::updateClientState(const std::string & clientID, const
 
 const bool ClientsManager::deleteDeviceConfiguration(const std::string & clientID, const std::string & devID) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "deleting device " << devID << " configuration for client : " << clientID;
+	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
 		return pClient->deleteDevice(devID);
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("client not registered : ");
-		this->buffer_ << clientID;
+		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 
@@ -402,7 +399,7 @@ const bool ClientsManager::deleteDeviceConfiguration(const std::string & clientI
 
 const bool ClientsManager::stopDevice(const std::string & clientID, const std::string & devID) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "stopDevice " << devID << " called by client " << clientID;
+	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
@@ -417,8 +414,7 @@ const bool ClientsManager::stopDevice(const std::string & clientID, const std::s
 #endif
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("unknown client ");
-		this->buffer_ << clientID << " tried to stop device " << devID;
+		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 	return false;
@@ -426,7 +422,7 @@ const bool ClientsManager::stopDevice(const std::string & clientID, const std::s
 
 const bool ClientsManager::startDevice(const std::string & clientID, const std::string & devID) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "startDevice " << devID << " called by client " << clientID;
+	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
@@ -441,8 +437,7 @@ const bool ClientsManager::startDevice(const std::string & clientID, const std::
 #endif
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("unknown client ");
-		this->buffer_ << clientID << " tried to start device " << devID;
+		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 	return false;
@@ -450,7 +445,7 @@ const bool ClientsManager::startDevice(const std::string & clientID, const std::
 
 const bool ClientsManager::restartDevice(const std::string & clientID, const std::string & devID) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "restartDevice " << devID << " called by client " << clientID;
+	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
 
 	if( this->stopDevice(clientID, devID) ) {
@@ -474,7 +469,7 @@ const bool ClientsManager::restartDevice(const std::string & clientID, const std
 
 const std::vector<std::string> ClientsManager::getStartedDevices(const std::string & clientID) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "getStartedDevices called by client " << clientID;
+	LOG(DEBUG2) << s_Client << clientID;
 #endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
@@ -482,8 +477,7 @@ const std::vector<std::string> ClientsManager::getStartedDevices(const std::stri
 		return this->devicesManager->getStartedDevices();
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("unknown client ");
-		this->buffer_ << clientID << " tried to get started devices array";
+		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 
@@ -493,7 +487,7 @@ const std::vector<std::string> ClientsManager::getStartedDevices(const std::stri
 
 const std::vector<std::string> ClientsManager::getStoppedDevices(const std::string & clientID) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "getStoppedDevices called by client " << clientID;
+	LOG(DEBUG2) << s_Client << clientID;
 #endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
@@ -501,8 +495,7 @@ const std::vector<std::string> ClientsManager::getStoppedDevices(const std::stri
 		return this->devicesManager->getStoppedDevices();
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("unknown client ");
-		this->buffer_ << clientID << " tried to get stopped devices array";
+		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 
@@ -512,7 +505,7 @@ const std::vector<std::string> ClientsManager::getStoppedDevices(const std::stri
 
 const std::string ClientsManager::getDeviceStatus(const std::string & clientID, const std::string & devID) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "getDeviceStatus " << devID << " called by client " << clientID;
+	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
 	try {
 		//Client* pClient = this->clients_.at(clientID);
@@ -520,8 +513,7 @@ const std::string ClientsManager::getDeviceStatus(const std::string & clientID, 
 		return "unknown";
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("unknown client ");
-		this->buffer_ << clientID;
+		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 
@@ -530,7 +522,7 @@ const std::string ClientsManager::getDeviceStatus(const std::string & clientID, 
 
 const std::vector<std::string> ClientsManager::getDeviceProperties(const std::string & clientID, const std::string & devID) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "getDeviceProperties " << devID << " called by client " << clientID;
+	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
@@ -542,8 +534,7 @@ const std::vector<std::string> ClientsManager::getDeviceProperties(const std::st
 #endif
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("unknown client ");
-		this->buffer_ << clientID << " tried to get devices properties array";
+		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 
@@ -555,7 +546,7 @@ const bool ClientsManager::setDeviceBacklightColor(const std::string & clientID,
 	const uint8_t r, const uint8_t g, const uint8_t b)
 {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "setDeviceBacklightColor " << devID << " called by client " << clientID;
+	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 	LOG(DEBUG3) << "with following RGB bytes : " << std::hex << to_uint(r)
 				<< " " << std::hex << to_uint(g)
 				<< " " << std::hex << to_uint(b);
@@ -568,8 +559,7 @@ const bool ClientsManager::setDeviceBacklightColor(const std::string & clientID,
 		return ret;
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("unknown client ");
-		this->buffer_ << clientID << " tried to set device backlight color";
+		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 	return false;
@@ -580,8 +570,7 @@ const macro_t & ClientsManager::getDeviceMacro(
 	const std::string & keyName, const uint8_t profile)
 {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "getDeviceMacro called by client " << clientID;
-	LOG(DEBUG3) << " device : " << devID;
+	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 	LOG(DEBUG3) << "    key : " << keyName;
 	LOG(DEBUG3) << "profile : " << to_uint(profile);
 #endif
@@ -591,8 +580,7 @@ const macro_t & ClientsManager::getDeviceMacro(
 		return pClient->getDeviceMacro(devID, keyName, profile);
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("unknown client ");
-		this->buffer_ << clientID << " tried to get macro";
+		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 
@@ -604,15 +592,14 @@ const std::vector<std::string> & ClientsManager::getDeviceMacroKeysNames(
 	const std::string & devID
 ) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "device " << devID << " - client " << clientID;
+	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
 	try {
 		this->clients_.at(clientID);
 		return this->devicesManager->getDeviceMacroKeysNames(devID);
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("unknown client ");
-		this->buffer_ << clientID;
+		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 	}
 
