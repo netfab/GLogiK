@@ -46,12 +46,10 @@ class DevicesHandler
 
 		void saveDevicesProperties(void);
 
-		void checkStartedDevice(const std::string & device, const std::string & session_state);
-		void checkStoppedDevice(const std::string & device);
-		void clearLoadedDevices(void);
+		void startDevice(const std::string & devID);
+		void stopDevice(const std::string & devID);
 
-		void uncheckThemAll(void);
-		void deleteUncheckedDevices(void);
+		void clearLoadedDevices(void);
 
 		const bool setMacro(
 			const std::string & devID,
@@ -68,7 +66,8 @@ class DevicesHandler
 		std::string config_root_directory_;
 
 		std::vector<std::string> used_conf_files_;
-		std::map<const std::string, DeviceProperties> devices_;
+		std::map<const std::string, DeviceProperties> started_devices_;
+		std::map<const std::string, DeviceProperties> stopped_devices_;
 
 		void setDeviceProperties(
 			const std::string & devID,

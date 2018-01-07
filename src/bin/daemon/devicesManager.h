@@ -29,6 +29,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <set>
 #include <sstream>
 
 #include <config.h>
@@ -76,6 +77,7 @@ class DevicesManager
 			const uint8_t r, const uint8_t g, const uint8_t b);
 		const macros_map_t & getDeviceMacrosProfiles(const std::string & devID);
 		const std::vector<std::string> & getDeviceMacroKeysNames(const std::string & devID);
+		const std::string getDeviceStatus(const std::string & devID);
 
 	protected:
 
@@ -92,6 +94,7 @@ class DevicesManager
 		std::map<const std::string, DetectedDevice> detected_devices_;
 		std::map<const std::string, DetectedDevice> initialized_devices_;
 		std::map<const std::string, DetectedDevice> plugged_but_stopped_devices_;
+		std::set<std::string> unplugged_devices_;
 
 		void searchSupportedDevices(void);
 		void initializeDevices(void);

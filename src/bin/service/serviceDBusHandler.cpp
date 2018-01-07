@@ -64,9 +64,18 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 			BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-			"DeviceStopped",
+			"DevicesStarted",
 			{}, // FIXME
-			std::bind(&ServiceDBusHandler::deviceStopped, this, std::placeholders::_1)
+			std::bind(&ServiceDBusHandler::devicesStarted, this, std::placeholders::_1)
+		);
+
+		this->DBus->addStringsArrayToVoidSignal(
+			BusConnection::GKDBUS_SYSTEM,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+			"DevicesStopped",
+			{}, // FIXME
+			std::bind(&ServiceDBusHandler::devicesStopped, this, std::placeholders::_1)
 		);
 
 		this->DBus->addVoidToVoidSignal(
@@ -423,10 +432,78 @@ void ServiceDBusHandler::daemonIsStopping(void) {
 	// TODO sleep and retry to register
 }
 
-void ServiceDBusHandler::deviceStopped(const std::vector<std::string> & devicesIDArray) {
+void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devicesIDArray) {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "it seems that at least one device has been started";
+#endif
+	for(const auto& devID : devicesIDArray) {
+		try {
+			this->DBus->initializeRemoteMethodCall(
+				BusConnection::GKDBUS_SYSTEM,
+				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				"GetDeviceStatus"
+			);
+			this->DBus->appendStringToRemoteMethodCall(this->client_id_);
+			this->DBus->appendStringToRemoteMethodCall(devID);
+			this->DBus->sendRemoteMethodCall();
+
+			this->DBus->waitForRemoteMethodCallReply();
+
+			const std::string device_status( this->DBus->getNextStringArgument() );
+			if(device_status == "started") {
+				this->devices_.startDevice(devID);
+			}
+			else {
+				LOG(WARNING) << "received devicesStarted signal for device " << devID;
+				LOG(WARNING) << "but daemon is saying that device status is : " << device_status;
+			}
+		}
+		catch (const GLogiKExcept & e) {
+			std::string warn(__func__);
+			warn += " failure : ";
+			warn += e.what();
+			WarningCheck::warnOrThrows(warn);
+		}
+	}
+}
+
+void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devicesIDArray) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "it seems that at least one device has been stopped";
 #endif
+	for(const auto& devID : devicesIDArray) {
+		try {
+			this->DBus->initializeRemoteMethodCall(
+				BusConnection::GKDBUS_SYSTEM,
+				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				"GetDeviceStatus"
+			);
+			this->DBus->appendStringToRemoteMethodCall(this->client_id_);
+			this->DBus->appendStringToRemoteMethodCall(devID);
+			this->DBus->sendRemoteMethodCall();
+
+			this->DBus->waitForRemoteMethodCallReply();
+
+			const std::string device_status( this->DBus->getNextStringArgument() );
+			if(device_status == "stopped") {
+				this->devices_.stopDevice(devID);
+			}
+			else {
+				LOG(WARNING) << "received devicesStopped signal for device " << devID;
+				LOG(WARNING) << "but daemon is saying that device status is : " << device_status;
+			}
+		}
+		catch (const GLogiKExcept & e) {
+			std::string warn(__func__);
+			warn += " failure : ";
+			warn += e.what();
+			WarningCheck::warnOrThrows(warn);
+		}
+	}
 }
 
 void ServiceDBusHandler::somethingChanged(void) {
@@ -443,9 +520,6 @@ void ServiceDBusHandler::somethingChanged(void) {
 
 	std::string device;
 	std::vector<std::string> devicesID;
-
-	/* uncheck them all (bool flag) to detect unplugged devices */
-	this->devices_.uncheckThemAll();
 
 	/* started devices */
 	try {
@@ -465,10 +539,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "daemon says " << devicesID.size() << " devices started";
 #endif
-
-		for(const auto& devID : devicesID) {
-			this->devices_.checkStartedDevice(devID, this->session_state_); /* check bool flag */
-		}
+		this->devicesStarted(devicesID);
 	}
 	catch (const GLogiKExcept & e) {
 		std::string warn(__func__);
@@ -498,9 +569,7 @@ void ServiceDBusHandler::somethingChanged(void) {
 		LOG(DEBUG3) << "daemon says " << devicesID.size() << " devices stopped";
 #endif
 
-		for(const auto& devID : devicesID) {
-			this->devices_.checkStoppedDevice(devID); /* check bool flag */
-		}
+		this->devicesStopped(devicesID);
 	}
 	catch (const GLogiKExcept & e) {
 		std::string warn(__func__);
@@ -508,9 +577,6 @@ void ServiceDBusHandler::somethingChanged(void) {
 		warn += e.what();
 		WarningCheck::warnOrThrows(warn);
 	}
-
-	/* detect and delete unplugged devices */
-	this->devices_.deleteUncheckedDevices();
 }
 
 const bool ServiceDBusHandler::macroRecorded(

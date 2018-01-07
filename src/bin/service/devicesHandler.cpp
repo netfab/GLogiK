@@ -69,7 +69,7 @@ void DevicesHandler::setClientID(const std::string & id) {
 }
 
 void DevicesHandler::saveDevicesProperties(void) {
-	for( const auto & device_pair : this->devices_ ) {
+	for( const auto & device_pair : this->started_devices_ ) {
 		//const std::string & devID = device_pair.first;
 		const DeviceProperties & device = device_pair.second;
 
@@ -353,9 +353,10 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	}
 }
 
+#if 0
 void DevicesHandler::checkStartedDevice(const std::string & devID, const std::string & session_state) {
 	try {
-		DeviceProperties & device = this->devices_.at(devID);
+		DeviceProperties & device = this->started_devices_.at(devID);
 		device.check();
 		if( device.started() ) {
 #if DEBUGGING_ON
@@ -378,13 +379,75 @@ void DevicesHandler::checkStartedDevice(const std::string & devID, const std::st
 		/* also load configuration file */
 		this->setDeviceProperties(devID, device, session_state);
 		device.start();
-		this->devices_[devID] = device;
+		this->started_devices_[devID] = device;
+	}
+}
+#endif
+
+void DevicesHandler::startDevice(const std::string & devID) {
+	try {
+		//DeviceProperties & device = this->stopped_devices_.at(devID);
+		this->started_devices_.at(devID);
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "found already started device " << devID;
+#endif
+		return;
+	}
+	catch (const std::out_of_range& oor) {
+		try {
+			DeviceProperties & device = this->stopped_devices_.at(devID);
+#if DEBUGGING_ON
+			LOG(DEBUG1) << "device " << devID << " has just been started";
+#endif
+			this->started_devices_[devID] = device;
+			this->stopped_devices_.erase(devID);
+		}
+		catch (const std::out_of_range& oor) {
+#if DEBUGGING_ON
+			LOG(DEBUG1) << "device " << devID << " not found in container, instantiate it";
+#endif
+			DeviceProperties device;
+			/* also load configuration file */
+			this->setDeviceProperties(devID, device);
+			this->started_devices_[devID] = device;
+		}
 	}
 }
 
+void DevicesHandler::stopDevice(const std::string & devID) {
+	try {
+		//DeviceProperties & device = this->stopped_devices_.at(devID);
+		this->stopped_devices_.at(devID);
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "found already stopped device " << devID;
+#endif
+		return;
+	}
+	catch (const std::out_of_range& oor) {
+		try {
+			DeviceProperties & device = this->started_devices_.at(devID);
+#if DEBUGGING_ON
+			LOG(DEBUG1) << "device " << devID << " has just been stopped";
+#endif
+			this->stopped_devices_[devID] = device;
+			this->started_devices_.erase(devID);
+		}
+		catch (const std::out_of_range& oor) {
+#if DEBUGGING_ON
+			LOG(DEBUG1) << "device " << devID << " not found in container, instantiate it";
+#endif
+			DeviceProperties device;
+			/* also load configuration file */
+			this->setDeviceProperties(devID, device);
+			this->stopped_devices_[devID] = device;
+		}
+	}
+}
+
+#if 0
 void DevicesHandler::checkStoppedDevice(const std::string & devID) {
 	try {
-		DeviceProperties & device = this->devices_.at(devID);
+		DeviceProperties & device = this->started_devices_.at(devID);
 		device.check();
 		if( device.stopped() ) {
 #if DEBUGGING_ON
@@ -407,12 +470,12 @@ void DevicesHandler::checkStoppedDevice(const std::string & devID) {
 		/* also load configuration file */
 		this->setDeviceProperties(devID, device);
 		device.stop();
-		this->devices_[devID] = device;
+		this->started_devices_[devID] = device;
 	}
 }
 
 void DevicesHandler::uncheckThemAll(void) {
-	for(auto & device_pair : this->devices_) {
+	for(auto & device_pair : this->started_devices_) {
 		//const std::string & devID = device_pair.first;
 		DeviceProperties & device = device_pair.second;
 		device.uncheck();
@@ -422,7 +485,7 @@ void DevicesHandler::uncheckThemAll(void) {
 void DevicesHandler::deleteUncheckedDevices(void) {
 	std::vector<std::string> to_clean;
 
-	for(const auto & device_pair : this->devices_) {
+	for(const auto & device_pair : this->started_devices_) {
 		const std::string & devID = device_pair.first;
 		const DeviceProperties & device = device_pair.second;
 		if( ! device.checked() )
@@ -442,7 +505,7 @@ void DevicesHandler::deleteUncheckedDevices(void) {
 #endif
 
 	for(const auto & devID : to_clean) {
-		this->devices_.erase(devID);
+		this->started_devices_.erase(devID);
 
 		try {
 			this->DBus->initializeRemoteMethodCall(
@@ -477,6 +540,7 @@ void DevicesHandler::deleteUncheckedDevices(void) {
 
 	to_clean.clear();
 }
+#endif
 
 const bool DevicesHandler::setMacro(
 	const std::string & devID,
@@ -484,7 +548,7 @@ const bool DevicesHandler::setMacro(
 	const uint8_t profile)
 {
 	try {
-		DeviceProperties & device = this->devices_.at(devID);
+		DeviceProperties & device = this->started_devices_.at(devID);
 
 		/* getting recorded macro from daemon */
 		this->DBus->initializeRemoteMethodCall(
@@ -521,7 +585,8 @@ const bool DevicesHandler::setMacro(
 }
 
 void DevicesHandler::clearLoadedDevices(void) {
-	this->devices_.clear();
+	this->started_devices_.clear();
+	this->stopped_devices_.clear();
 	this->used_conf_files_.clear();
 }
 

@@ -508,9 +508,8 @@ const std::string ClientsManager::getDeviceStatus(const std::string & clientID, 
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
 	try {
-		//Client* pClient = this->clients_.at(clientID);
 		this->clients_.at(clientID);
-		return "unknown";
+		return this->devicesManager->getDeviceStatus(devID);
 	}
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;

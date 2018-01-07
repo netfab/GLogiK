@@ -304,6 +304,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 
 		this->stopDevice(devID);
+		this->unplugged_devices_.insert(devID);
 		c++; /* bonus point */
 	}
 
@@ -320,6 +321,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 		LOG(DEBUG3) << "removing " << devID << " from plugged-but-stopped devices";
 #endif
 		this->plugged_but_stopped_devices_.erase(devID);
+		this->unplugged_devices_.insert(devID);
 		c++; /* bonus point */
 	}
 	to_clean.clear();
@@ -567,6 +569,17 @@ const std::vector<std::string> DevicesManager::getDeviceProperties(const std::st
 		}
 	}
 
+	return ret;
+}
+
+const std::string DevicesManager::getDeviceStatus(const std::string & devID) {
+	std::string ret = "unknown";
+	if(this->initialized_devices_.count(devID) == 1)
+		ret = "started";
+	else if(this->plugged_but_stopped_devices_.count(devID) == 1)
+		ret = "stopped";
+	else if(this->unplugged_devices_.count(devID) == 1)
+		ret = "unplugged";
 	return ret;
 }
 

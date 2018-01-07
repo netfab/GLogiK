@@ -35,22 +35,20 @@
 namespace GLogiK
 {
 
+/*
 enum class DeviceState : uint8_t
 {
 	STATE_STARTED = 0,
 	STATE_STOPPED,
 	STATE_UNKNOWN,
 };
+*/
 
 class DeviceProperties : public MacrosBanks
 {
 	public:
 		DeviceProperties(void);
 		~DeviceProperties(void);
-
-		void check(void);
-		void uncheck(void);
-		const bool checked(void) const;
 
 		const std::string & getVendor(void) const { return this->vendor_; }
 		const std::string & getModel(void) const { return this->model_; }
@@ -68,12 +66,6 @@ class DeviceProperties : public MacrosBanks
 		const uint8_t & getBLColor_G(void) const { return this->backlight_color_G_; }
 		const uint8_t & getBLColor_B(void) const { return this->backlight_color_B_; }
 
-		/* accessors to purely logical state */
-		const bool started(void) const;
-		const bool stopped(void) const;
-		void start(void);
-		void stop(void);
-
 	protected:
 
 	private:
@@ -83,9 +75,6 @@ class DeviceProperties : public MacrosBanks
 		uint8_t backlight_color_R_;
 		uint8_t backlight_color_G_;
 		uint8_t backlight_color_B_;
-
-		bool check_;
-		DeviceState state_;
 
 		friend class boost::serialization::access;
 
