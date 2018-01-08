@@ -40,6 +40,8 @@ GLogiK=$PWD/.. CD=. {
 				client.h
 				clientsManager.cpp
 				clientsManager.h
+				clientsSignals.cpp
+				clientsSignals.h
 				daemon.cpp
 				daemon.h
 				daemonControl.cpp

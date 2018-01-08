@@ -50,6 +50,9 @@
       send_member="GetStoppedDevices"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
+      send_member="GetDeviceStatus"/>
+    <allow send_destination="com.glogik.Daemon"
+      send_interface="com.glogik.Daemon.Device1"
       send_member="GetDeviceProperties"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"

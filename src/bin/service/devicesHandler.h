@@ -46,7 +46,7 @@ class DevicesHandler
 
 		void saveDevicesProperties(void);
 
-		void startDevice(const std::string & devID);
+		void startDevice(const std::string & devID, const std::string & session_state);
 		void stopDevice(const std::string & devID);
 
 		void clearLoadedDevices(void);

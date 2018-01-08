@@ -30,12 +30,14 @@
 #include "lib/dbus/GKDBus.h"
 
 #include "devicesManager.h"
+#include "clientsSignals.h"
 #include "client.h"
 
 namespace GLogiK
 {
 
 class ClientsManager
+	:	public ClientsSignals
 {
 	public:
 		ClientsManager(GKDBus* pDBus);
@@ -51,8 +53,8 @@ class ClientsManager
 		DevicesManager* devicesManager;
 
 		std::map<const std::string, Client*> clients_;
+		bool enabled_signals_;
 
-		void sendSignalToClients(const std::string & signal);
 		const std::string generateRandomClientID(void) const;
 
 		/* exposed over DBus */
@@ -65,9 +67,18 @@ class ClientsManager
 		/* -- */
 			/* DevicesManager D-Bus object */
 
-		const bool stopDevice(const std::string & clientID, const std::string & devID);
-		const bool startDevice(const std::string & clientID, const std::string & devID);
-		const bool restartDevice(const std::string & clientID, const std::string & devID);
+		const bool stopDevice(
+			const std::string & clientID,
+			const std::string & devID
+		);
+		const bool startDevice(
+			const std::string & clientID,
+			const std::string & devID
+		);
+		const bool restartDevice(
+			const std::string & clientID,
+			const std::string & devID
+		);
 
 		const std::vector<std::string> getStartedDevices(const std::string & clientID);
 		const std::vector<std::string> getStoppedDevices(const std::string & clientID);

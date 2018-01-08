@@ -125,6 +125,16 @@ void GKDBusMessageTargetsSignal::appendUInt8ToTargetsSignal(const uint8_t value)
 	}
 }
 
+void GKDBusMessageTargetsSignal::appendStringVectorToTargetsSignal(const std::vector<std::string> & list) {
+	for(const auto & targetSignal : this->signals_) {
+		if(targetSignal == nullptr) {
+			LOG(WARNING) << "signal object is null";
+			continue;
+		}
+		targetSignal->appendStringVector(list);
+	}
+}
+
 void GKDBusMessageTargetsSignal::sendTargetsSignal(void) {
 	/* sending and freeing already allocated signals */
 	for(const auto & targetSignal : this->signals_) {

@@ -37,7 +37,7 @@ namespace GLogiK
 {
 
 ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app), DBus(pDBus),
-	devicesManager(nullptr)
+	devicesManager(nullptr), enabled_signals_(true)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing clients manager";
@@ -191,31 +191,6 @@ ClientsManager::~ClientsManager() {
 #endif
 }
 
-void ClientsManager::sendSignalToClients(const std::string & signal) {
-	/* don't try to send signal if we know that there is no clients */
-	if( this->clients_.size() == 0 )
-		return;
-
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "sending clients " << signal << " signal";
-#endif
-	try {
-		this->DBus->initializeTargetsSignal(
-			BusConnection::GKDBUS_SYSTEM,
-			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-			signal.c_str()
-		);
-		this->DBus->sendTargetsSignal();
-	}
-	catch (const GLogiKExcept & e) {
-		this->buffer_.str("DBus targets signal failure : ");
-		this->buffer_ << e.what();
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
-	}
-}
-
 void ClientsManager::runLoop(void) {
 	this->devicesManager->startMonitoring(this->DBus);
 
@@ -226,7 +201,7 @@ void ClientsManager::runLoop(void) {
 		return;
 	}
 
-	this->sendSignalToClients("DaemonIsStopping");
+	this->sendSignalToClients(this->clients_.size(), this->DBus, "DaemonIsStopping");
 
 	unsigned int c = 0;
 #if DEBUGGING_ON
@@ -277,7 +252,7 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 					new_pair.second->uncheck();
 				}
 
-				this->sendSignalToClients("ReportYourself");
+				this->sendSignalToClients(this->clients_.size(), this->DBus, "ReportYourself");
 
 				/* register failure, sender should wait and retry */
 				return false;
@@ -405,8 +380,10 @@ const bool ClientsManager::stopDevice(const std::string & clientID, const std::s
 		Client* pClient = this->clients_.at(clientID);
 		if( pClient->isAlive() ) {
 			const bool ret = this->devicesManager->stopDevice(devID);
-			if( ret )
-				this->sendSignalToClients("SomethingChanged");
+			if(ret and this->enabled_signals_) {
+				const std::vector<std::string> array = {devID};
+				this->sendStatusSignalArrayToClients(this->clients_.size(), this->DBus, "DevicesStopped", array);
+			}
 			return ret;
 		}
 #if DEBUGGING_ON
@@ -428,8 +405,10 @@ const bool ClientsManager::startDevice(const std::string & clientID, const std::
 		Client* pClient = this->clients_.at(clientID);
 		if( pClient->isAlive() ) {
 			const bool ret = this->devicesManager->startDevice(devID);
-			if( ret )
-				this->sendSignalToClients("SomethingChanged");
+			if(ret and this->enabled_signals_) {
+				const std::vector<std::string> array = {devID};
+				this->sendStatusSignalArrayToClients(this->clients_.size(), this->DBus, "DevicesStarted", array);
+			}
 			return ret;
 		}
 #if DEBUGGING_ON
@@ -448,6 +427,9 @@ const bool ClientsManager::restartDevice(const std::string & clientID, const std
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
 
+	this->enabled_signals_ = false;
+	const std::vector<std::string> array = {devID};
+
 	if( this->stopDevice(clientID, devID) ) {
 
 #if DEBUGGING_ON
@@ -456,13 +438,25 @@ const bool ClientsManager::restartDevice(const std::string & clientID, const std
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 		if( this->startDevice(clientID, devID) ) {
+			this->enabled_signals_ = true;
+			this->sendStatusSignalArrayToClients(this->clients_.size(), this->DBus, "DevicesStarted", array);
 			return true;
 		}
 
+		this->enabled_signals_ = true;
+		this->sendStatusSignalArrayToClients(this->clients_.size(), this->DBus, "DevicesStopped", array);
 		GKSysLog(LOG_ERR, ERROR, "device restarting failure : start failed");
 		return false;
 	}
 
+	this->enabled_signals_ = true;
+	// FIXME
+	// device could fail to stop for following reasons :
+	//  * unknown clientID
+	//  * client not allowed to stop device (not alive)
+	//  * devID not found by deviceManager in container
+	//  * device found but driver not found (unlikely)
+	// should send signal to clients to tell them to check device status
 	GKSysLog(LOG_ERR, ERROR, "device restarting failure : stop failed");
 	return false;
 }

@@ -90,6 +90,7 @@ void DevicesManager::initializeDevices(void) {
 	LOG(DEBUG2) << "initializing detected devices";
 #endif
 	unsigned int c = 0;
+	std::vector<std::string> startedDevices;
 
 	for(const auto& det_dev : this->detected_devices_) {
 		const auto & devID = det_dev.first;
@@ -129,6 +130,7 @@ void DevicesManager::initializeDevices(void) {
 								  << ") on bus " << to_uint(device.device_bus) << " initialized";
 					GKSysLog(LOG_INFO, INFO, this->buffer_.str());
 					c++; /* bonus point */
+					startedDevices.push_back(devID);
 					break;
 				}
 			} // for
@@ -142,39 +144,13 @@ void DevicesManager::initializeDevices(void) {
 
 	if( c > 0 ) {
 		/* inform clients */
-		this->sendSignalToClients("SomethingChanged");
+		this->sendStatusSignalArrayToClients(num_clients_, this->DBus, "DevicesStarted", startedDevices);
 	}
 
 	this->detected_devices_.clear();
 #if DEBUGGING_ON
 	LOG(INFO) << "device(s) initialized : " << this->initialized_devices_.size();
 #endif
-}
-
-void DevicesManager::sendSignalToClients(const std::string & signal) {
-	/* don't try to send signal if we know that there is no clients */
-	if( this->num_clients_ == 0 )
-		return;
-
-	/* don't send signal if the daemon is about to exit */
-	if( ! DaemonControl::isDaemonRunning() )
-		return;
-
-	try {
-		this->DBus->initializeTargetsSignal(
-			BusConnection::GKDBUS_SYSTEM,
-			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-			signal.c_str()
-		);
-		this->DBus->sendTargetsSignal();
-	}
-	catch (const GLogiKExcept & e) {
-		this->buffer_.str("DBus targets signal failure : ");
-		this->buffer_ << e.what();
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
-	}
 }
 
 const bool DevicesManager::startDevice(const std::string & devID) {
@@ -335,7 +311,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 
 	if(c > 0) {
 		/* inform clients */
-		this->sendSignalToClients("SomethingChanged");
+		this->sendSignalToClients(num_clients_, this->DBus, "SomethingChanged");
 	}
 }
 

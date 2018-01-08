@@ -49,6 +49,9 @@ class GKDBusMessageTargetsSignal
 
 		void appendStringToTargetsSignal(const std::string & value);
 		void appendUInt8ToTargetsSignal(const uint8_t value);
+		void appendStringVectorToTargetsSignal(
+			const std::vector<std::string> & list
+		);
 
 		void sendTargetsSignal(void);
 

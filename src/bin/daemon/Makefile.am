@@ -36,5 +36,6 @@ GLogiKd_SOURCES = \
 		logitechG510.cpp logitechG510.h \
 		macrosManager.cpp macrosManager.h \
 		clientsManager.cpp clientsManager.h \
+		clientsSignals.cpp clientsSignals.h \
 		client.cpp client.h
 

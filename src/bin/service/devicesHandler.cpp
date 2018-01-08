@@ -384,7 +384,7 @@ void DevicesHandler::checkStartedDevice(const std::string & devID, const std::st
 }
 #endif
 
-void DevicesHandler::startDevice(const std::string & devID) {
+void DevicesHandler::startDevice(const std::string & devID, const std::string & session_state) {
 	try {
 		//DeviceProperties & device = this->stopped_devices_.at(devID);
 		this->started_devices_.at(devID);
@@ -408,7 +408,7 @@ void DevicesHandler::startDevice(const std::string & devID) {
 #endif
 			DeviceProperties device;
 			/* also load configuration file */
-			this->setDeviceProperties(devID, device);
+			this->setDeviceProperties(devID, device, session_state);
 			this->started_devices_[devID] = device;
 		}
 	}

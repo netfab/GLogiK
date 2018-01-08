@@ -36,6 +36,8 @@
 
 #include "lib/dbus/GKDBus.h"
 
+#include "clientsSignals.h"
+
 #include "keyboardDriver.h"
 
 namespace GLogiK
@@ -58,6 +60,7 @@ void udevDeviceProperties(struct udev_device *dev, const std::string &subsystem)
 #endif
 
 class DevicesManager
+	:	public ClientsSignals
 {
 	public:
 		DevicesManager(void);
@@ -101,8 +104,6 @@ class DevicesManager
 		void stopInitializedDevices(void);
 
 		void checkForUnpluggedDevices(void);
-
-		void sendSignalToClients(const std::string & signal);
 };
 
 } // namespace GLogiK
