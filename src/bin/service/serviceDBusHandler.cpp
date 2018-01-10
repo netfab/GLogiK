@@ -51,15 +51,6 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 
 		/* want to be warned by the daemon about those signals */
 
-		this->DBus->addVoidToVoidSignal(
-			BusConnection::GKDBUS_SYSTEM,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-			"SomethingChanged",
-			{}, // FIXME
-			std::bind(&ServiceDBusHandler::somethingChanged, this)
-		);
-
 		this->DBus->addStringsArrayToVoidSignal(
 			BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
@@ -120,7 +111,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 		this->devices_.setDBus(this->DBus);
 		this->devices_.setClientID(this->client_id_);
 
-		this->somethingChanged();
+		this->initializeDevices();
 	}
 	catch ( const GLogiKExcept & e ) {
 		this->unregisterWithDaemon();
@@ -564,14 +555,14 @@ void ServiceDBusHandler::devicesUnplugged(const std::vector<std::string> & devic
 	}
 }
 
-void ServiceDBusHandler::somethingChanged(void) {
+void ServiceDBusHandler::initializeDevices(void) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "it seems that something changed !";
+	LOG(DEBUG2) << "initializing devices";
 #endif
 
 	if( ! this->are_we_registered_ ) {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << " ... but we don't care because we are not registered !";
+		LOG(DEBUG3) << "currently not registered, giving up";
 #endif
 		return;
 	}
