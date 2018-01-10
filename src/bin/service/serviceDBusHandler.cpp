@@ -132,8 +132,8 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 
 ServiceDBusHandler::~ServiceDBusHandler() {
 	if( this->are_we_registered_ ) {
-		this->unregisterWithDaemon();
 		this->devices_.saveDevicesProperties();
+		this->unregisterWithDaemon();
 	}
 	else {
 #if DEBUGGING_ON
@@ -428,8 +428,8 @@ void ServiceDBusHandler::updateSessionState(void) {
 
 void ServiceDBusHandler::daemonIsStopping(void) {
 	if( this->are_we_registered_ ) {
-		this->unregisterWithDaemon();
 		this->devices_.saveDevicesProperties();
+		this->unregisterWithDaemon();
 	}
 	else {
 #if DEBUGGING_ON
