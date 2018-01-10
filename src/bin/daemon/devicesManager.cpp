@@ -144,7 +144,7 @@ void DevicesManager::initializeDevices(void) {
 
 	if( c > 0 ) {
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(num_clients_, this->DBus, "DevicesStarted", startedDevices);
+		this->sendStatusSignalArrayToClients(this->num_clients_, this->DBus, "DevicesStarted", startedDevices);
 	}
 
 	this->detected_devices_.clear();
@@ -254,6 +254,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 #endif
 
 	unsigned int c = 0;
+	std::vector<std::string> unpluggedDevices;
 
 	/* checking for unplugged unstopped devices */
 	std::vector<std::string> to_clean;
@@ -281,6 +282,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 
 		this->stopDevice(devID);
 		this->unplugged_devices_.insert(devID);
+		unpluggedDevices.push_back(devID);
 		c++; /* bonus point */
 	}
 
@@ -298,6 +300,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 #endif
 		this->plugged_but_stopped_devices_.erase(devID);
 		this->unplugged_devices_.insert(devID);
+		unpluggedDevices.push_back(devID);
 		c++; /* bonus point */
 	}
 	to_clean.clear();
@@ -311,7 +314,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 
 	if(c > 0) {
 		/* inform clients */
-		this->sendSignalToClients(num_clients_, this->DBus, "SomethingChanged");
+		this->sendStatusSignalArrayToClients(this->num_clients_, this->DBus, "DevicesUnplugged", unpluggedDevices);
 	}
 }
 

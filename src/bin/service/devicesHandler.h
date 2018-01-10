@@ -25,7 +25,7 @@
 #include <cstdint>
 
 #include <string>
-#include <vector>
+#include <set>
 #include <map>
 #include <sstream>
 
@@ -48,6 +48,7 @@ class DevicesHandler
 
 		void startDevice(const std::string & devID, const std::string & session_state);
 		void stopDevice(const std::string & devID);
+		void unplugDevice(const std::string & devID);
 
 		void clearLoadedDevices(void);
 
@@ -64,8 +65,9 @@ class DevicesHandler
 		std::string client_id_;
 		std::ostringstream buffer_;
 		std::string config_root_directory_;
+		bool start_unknown_devices_;
 
-		std::vector<std::string> used_conf_files_;
+		std::set<std::string> used_conf_files_;
 		std::map<const std::string, DeviceProperties> started_devices_;
 		std::map<const std::string, DeviceProperties> stopped_devices_;
 
@@ -76,6 +78,7 @@ class DevicesHandler
 		);
 		void loadDeviceConfigurationFile(DeviceProperties & device);
 		void setDeviceState(const std::string & devID, const DeviceProperties & device);
+		void unrefDevice(const std::string & devID);
 };
 
 } // namespace GLogiK

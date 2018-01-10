@@ -34,7 +34,7 @@ DeviceConfigurationFile::DeviceConfigurationFile() {
 DeviceConfigurationFile::~DeviceConfigurationFile() {
 }
 
-const std::string DeviceConfigurationFile::getNextAvailableNewPath(const std::vector<std::string> & paths_to_skip,
+const std::string DeviceConfigurationFile::getNextAvailableNewPath(const std::set<std::string> & paths_to_skip,
 	const fs::path & directory_path, const std::string & device_model, bool must_exist)
 {
 #if DEBUGGING_ON
@@ -50,13 +50,8 @@ const std::string DeviceConfigurationFile::getNextAvailableNewPath(const std::ve
 
 		fs::path full_path = directory_path / file;
 
-		bool used = false;
 		const std::string path( full_path.string() );
-		for( const auto & p : paths_to_skip ) {
-			if( p == path )
-				used = true;
-		}
-		if( used ) {
+		if( paths_to_skip.count(path) == 1 ) {
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "already used : " << path;
 #endif

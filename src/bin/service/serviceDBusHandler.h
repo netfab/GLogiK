@@ -82,6 +82,7 @@ class ServiceDBusHandler
 
 		void devicesStarted(const std::vector<std::string> & devicesIDArray);
 		void devicesStopped(const std::vector<std::string> & devicesIDArray);
+		void devicesUnplugged(const std::vector<std::string> & devicesIDArray);
 };
 
 } // namespace GLogiK

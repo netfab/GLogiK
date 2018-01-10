@@ -78,6 +78,15 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid) : DBus(nullptr),
 			std::bind(&ServiceDBusHandler::devicesStopped, this, std::placeholders::_1)
 		);
 
+		this->DBus->addStringsArrayToVoidSignal(
+			BusConnection::GKDBUS_SYSTEM,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+			"DevicesUnplugged",
+			{}, // FIXME
+			std::bind(&ServiceDBusHandler::devicesUnplugged, this, std::placeholders::_1)
+		);
+
 		this->DBus->addVoidToVoidSignal(
 			BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
@@ -434,7 +443,7 @@ void ServiceDBusHandler::daemonIsStopping(void) {
 
 void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devicesIDArray) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "it seems that at least one device has been started";
+	LOG(DEBUG2) << "it seems that some devices were started";
 #endif
 	for(const auto& devID : devicesIDArray) {
 		try {
@@ -474,7 +483,7 @@ void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devices
 
 void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devicesIDArray) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "it seems that at least one device has been stopped";
+	LOG(DEBUG2) << "it seems that some devices were stopped";
 #endif
 	for(const auto& devID : devicesIDArray) {
 		try {
@@ -493,10 +502,56 @@ void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devices
 
 			const std::string device_status( this->DBus->getNextStringArgument() );
 			if(device_status == "stopped") {
+#if DEBUGGING_ON
+				LOG(DEBUG3) << "daemon said that device " << devID << " is really stopped, what about us ?";
+#endif
 				this->devices_.stopDevice(devID);
 			}
 			else {
 				LOG(WARNING) << "received devicesStopped signal for device " << devID;
+				LOG(WARNING) << "but daemon is saying that device status is : " << device_status;
+			}
+		}
+		catch (const GLogiKExcept & e) {
+			std::string warn(__func__);
+			warn += " failure : ";
+			warn += e.what();
+			WarningCheck::warnOrThrows(warn);
+		}
+	}
+}
+
+void ServiceDBusHandler::devicesUnplugged(const std::vector<std::string> & devicesIDArray) {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "it seems that some devices were unplugged";
+#endif
+	for(const auto& devID : devicesIDArray) {
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "device : " << devID;
+#endif
+		try {
+			this->DBus->initializeRemoteMethodCall(
+				BusConnection::GKDBUS_SYSTEM,
+				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				"GetDeviceStatus"
+			);
+			this->DBus->appendStringToRemoteMethodCall(this->client_id_);
+			this->DBus->appendStringToRemoteMethodCall(devID);
+			this->DBus->sendRemoteMethodCall();
+
+			this->DBus->waitForRemoteMethodCallReply();
+
+			const std::string device_status( this->DBus->getNextStringArgument() );
+			if(device_status == "unplugged") {
+#if DEBUGGING_ON
+				LOG(DEBUG3) << "daemon said that device " << devID << " is really unplugged, what about us ?";
+#endif
+				this->devices_.unplugDevice(devID);
+			}
+			else {
+				LOG(WARNING) << "received devicesUnplugged signal for device " << devID;
 				LOG(WARNING) << "but daemon is saying that device status is : " << device_status;
 			}
 		}

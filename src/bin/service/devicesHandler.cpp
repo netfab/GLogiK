@@ -43,7 +43,12 @@ namespace fs = boost::filesystem;
 namespace GLogiK
 {
 
-DevicesHandler::DevicesHandler() : DBus(nullptr), client_id_("undefined"), buffer_("", std::ios_base::app) {
+DevicesHandler::DevicesHandler()
+	:	DBus(nullptr),
+		client_id_("undefined"),
+		buffer_("", std::ios_base::app),
+		start_unknown_devices_(true)
+{
 #if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler initialization";
 #endif
@@ -320,7 +325,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 #endif
 		/* configuration file loaded */
 		this->loadDeviceConfigurationFile(device);
-		this->used_conf_files_.push_back( device.getConfFile() );
+		this->used_conf_files_.insert( device.getConfFile() );
 
 		if(session_state == "active") {
 			this->setDeviceState(devID, device);
@@ -335,7 +340,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "new one : " << device.getConfFile();
 #endif
-			this->used_conf_files_.push_back( device.getConfFile() );
+			this->used_conf_files_.insert( device.getConfFile() );
 		}
 		catch ( const GLogiKExcept & e ) {
 			LOG(ERROR) << e.what();
@@ -386,7 +391,6 @@ void DevicesHandler::checkStartedDevice(const std::string & devID, const std::st
 
 void DevicesHandler::startDevice(const std::string & devID, const std::string & session_state) {
 	try {
-		//DeviceProperties & device = this->stopped_devices_.at(devID);
 		this->started_devices_.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "found already started device " << devID;
@@ -416,7 +420,6 @@ void DevicesHandler::startDevice(const std::string & devID, const std::string & 
 
 void DevicesHandler::stopDevice(const std::string & devID) {
 	try {
-		//DeviceProperties & device = this->stopped_devices_.at(devID);
 		this->stopped_devices_.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "found already stopped device " << devID;
@@ -430,17 +433,105 @@ void DevicesHandler::stopDevice(const std::string & devID) {
 			LOG(DEBUG1) << "device " << devID << " has just been stopped";
 #endif
 			this->stopped_devices_[devID] = device;
+			// FIXME need to save configuration
 			this->started_devices_.erase(devID);
 		}
 		catch (const std::out_of_range& oor) {
+			if( this->start_unknown_devices_ ) {
 #if DEBUGGING_ON
-			LOG(DEBUG1) << "device " << devID << " not found in container, instantiate it";
+				LOG(DEBUG1) << "device " << devID << " not found in container, instantiate it";
 #endif
-			DeviceProperties device;
-			/* also load configuration file */
-			this->setDeviceProperties(devID, device);
-			this->stopped_devices_[devID] = device;
+				DeviceProperties device;
+				/* also load configuration file */
+				this->setDeviceProperties(devID, device);
+				this->stopped_devices_[devID] = device;
+			}
+			else {
+				/*
+				 * not found in stopped, not found in started
+				 * so, why unplugged ?
+				 */
+				throw;
+			}
 		}
+	}
+}
+
+void DevicesHandler::unplugDevice(const std::string & devID) {
+	try {
+		this->stopped_devices_.at(devID);
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "found stopped device : " << devID;
+#endif
+		/*
+		 * if device was already stopped, configuration should
+		 * have already been saved
+		 */
+		this->unrefDevice(devID);
+	}
+	catch (const std::out_of_range& oor) {
+		this->start_unknown_devices_ = false;
+		try {
+#if DEBUGGING_ON
+			LOG(DEBUG1) << "trying to stop device " << devID;
+#endif
+			this->stopDevice(devID);
+			this->unrefDevice(devID);
+		}
+		catch (const std::out_of_range& oor) {
+			LOG(WARNING) << "unplugged device not found in containers : " << devID;
+		}
+		this->start_unknown_devices_ = true;
+	}
+}
+
+void DevicesHandler::unrefDevice(const std::string & devID) {
+	try {
+		DeviceProperties & device = this->stopped_devices_.at(devID);
+		const std::string conf_file( device.getConfFile() );
+		this->stopped_devices_.erase(devID);
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "erased device : " << devID;
+#endif
+		if( this->used_conf_files_.count( conf_file ) == 1 ) {
+			this->used_conf_files_.erase( conf_file );
+#if DEBUGGING_ON
+				LOG(DEBUG3) << "conf file name freed";
+#endif
+		}
+
+		try {
+			this->DBus->initializeRemoteMethodCall(
+				BusConnection::GKDBUS_SYSTEM,
+				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+				"DeleteDeviceConfiguration"
+			);
+			this->DBus->appendStringToRemoteMethodCall(this->client_id_);
+			this->DBus->appendStringToRemoteMethodCall(devID);
+
+			this->DBus->sendRemoteMethodCall();
+
+			this->DBus->waitForRemoteMethodCallReply();
+			const bool ret = this->DBus->getNextBooleanArgument();
+			if( ret ) {
+#if DEBUGGING_ON
+				LOG(DEBUG3) << "successfully deleted client device configuration " << devID;
+#endif
+			}
+			else {
+				LOG(ERROR) << "failed to delete client device configuration : false";
+			}
+		}
+		catch (const GLogiKExcept & e) {
+			std::string warn("DeleteDeviceConfiguration failure : ");
+			warn += e.what();
+			WarningCheck::warnOrThrows(warn);
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(WARNING) << "unplugged device not found in stopped device container : " << devID;
 	}
 }
 

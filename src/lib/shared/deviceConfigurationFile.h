@@ -23,7 +23,7 @@
 #define __GLOGIK_DEVICE_CONFIGURATION_FILE_H__
 
 #include <string>
-#include <vector>
+#include <set>
 
 #include <boost/filesystem.hpp>
 
@@ -35,7 +35,7 @@ namespace GLogiK
 class DeviceConfigurationFile
 {
 	public:
-		static const std::string getNextAvailableNewPath(const std::vector<std::string> & paths_to_skip,
+		static const std::string getNextAvailableNewPath(const std::set<std::string> & paths_to_skip,
 			const fs::path & directory_path, const std::string & device_model, bool must_exist=false);
 
 	protected:
