@@ -281,6 +281,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 
 		this->stopDevice(devID);
+		this->plugged_but_stopped_devices_.erase(devID);
 		this->unplugged_devices_.insert(devID);
 		unpluggedDevices.push_back(devID);
 		c++; /* bonus point */
