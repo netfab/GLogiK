@@ -69,8 +69,7 @@ class GKDBus
 
 		void connectToSystemBus(const char* connection_name);
 
-		const bool checkForNextMessage(BusConnection bus_connection);
-		void checkMessageType(BusConnection bus_connection);
+		void checkForNextMessage(const BusConnection bus);
 
 		void appendExtraStringToMessage(const std::string & value);
 

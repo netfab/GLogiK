@@ -87,13 +87,6 @@ void GKDBus::connectToSystemBus(const char* connection_name) {
 	this->system_name_ = connection_name;
 }
 
-const bool GKDBus::checkForNextMessage(BusConnection bus_connection) {
-	DBusConnection* connection = this->getConnection(bus_connection);
-	dbus_connection_read_write(connection, 0);
-	this->message_ = dbus_connection_pop_message(connection);
-	return (this->message_ != nullptr);
-}
-
 /* -- */
 /*
  * check if :
@@ -103,19 +96,29 @@ const bool GKDBus::checkForNextMessage(BusConnection bus_connection) {
  * was called. if yes, then run the corresponding callback function
  * and send DBus reply after appending the return value
  */
+void GKDBus::checkForNextMessage(const BusConnection bus) {
+	DBusConnection* connection = nullptr;
+	this->current_bus_ = bus; /* used on introspection */
 
-void GKDBus::checkMessageType(BusConnection bus_connection) {
-	if(this->message_ == nullptr) {
-		LOG(WARNING) << "message is null";
+	try {
+		connection = this->getConnection(this->current_bus_);
+	}
+	catch ( const GLogiKExcept & e ) {
+		LOG(ERROR) << e.what();
 		return;
 	}
 
-	this->current_bus_ = bus_connection;
+	dbus_connection_read_write(connection, 0);
+	this->message_ = dbus_connection_pop_message(connection);
+
+	/* no message */
+	if(this->message_ == nullptr) {
+		return;
+	}
 
 	try {
 		const std::string asked_object_path( to_string( dbus_message_get_path(this->message_) ) );
 		const auto & current_bus = this->DBusEvents_.at(this->current_bus_);
-		DBusConnection* connection = this->getConnection(this->current_bus_);
 
 		for(const auto & object_pair : current_bus) {
 			/* handle root node introspection special case */
@@ -175,7 +178,7 @@ void GKDBus::checkMessageType(BusConnection bus_connection) {
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "freeing message";
+	LOG(DEBUG3) << "freeing DBus message";
 #endif
 	dbus_message_unref(this->message_);
 	this->message_ = nullptr;
