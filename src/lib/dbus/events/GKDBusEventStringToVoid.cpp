@@ -46,6 +46,7 @@ void StringToVoidEvent::runCallback(DBusConnection* connection, DBusMessage* mes
 /* -- -- -- */
 
 void EventStringToVoid::addStringToVoidEvent(
+	const BusConnection bus,
 	const char* object,
 	const char* interface,
 	const char* eventName,
@@ -55,19 +56,19 @@ void EventStringToVoid::addStringToVoidEvent(
 	const bool introspectable
 ) {
 	GKDBusEvent* e = new StringToVoidEvent(eventName, args, callback, eventType, introspectable);
-	this->addIntrospectableEvent(object, interface, e);
+	this->addIntrospectableEvent(bus, object, interface, e);
 }
 
 void EventStringToVoid::addStringToVoidSignal(
-	BusConnection wanted_connection,
+	const BusConnection bus,
 	const char* object,
 	const char* interface,
 	const char* eventName,
 	const std::vector<DBusMethodArgument> & args,
 	std::function<void(const std::string&)> callback
 ) {
-	this->addStringToVoidEvent(object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, true);
-	DBusConnection* connection = this->getConnection(wanted_connection);
+	this->addStringToVoidEvent(bus, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, true);
+	DBusConnection* connection = this->getConnection(bus);
 	this->addSignalRuleMatch(connection, interface, eventName);
 }
 

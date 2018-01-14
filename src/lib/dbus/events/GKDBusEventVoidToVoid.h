@@ -32,6 +32,8 @@
 
 #include "GKDBusEvent.h"
 
+#include "lib/dbus/GKDBusConnection.h"
+
 
 namespace GLogiK
 {
@@ -60,6 +62,7 @@ class EventVoidToVoid
 {
 	public:
 		void addVoidToVoidEvent(
+			const BusConnection bus,
 			const char* object,
 			const char* interface,
 			const char* eventName,
@@ -70,7 +73,7 @@ class EventVoidToVoid
 		);
 
 		void addVoidToVoidSignal(
-			BusConnection wanted_connection,
+			const BusConnection bus,
 			const char* object,
 			const char* interface,
 			const char* eventName,
@@ -82,7 +85,12 @@ class EventVoidToVoid
 		EventVoidToVoid() = default;
 		virtual ~EventVoidToVoid() = default;
 
-		virtual void addIntrospectableEvent(const char* object, const char* interface, GKDBusEvent* event) = 0;
+		virtual void addIntrospectableEvent(
+			const BusConnection bus,
+			const char* object,
+			const char* interface,
+			GKDBusEvent* event
+		) = 0;
 };
 
 } // namespace GLogiK

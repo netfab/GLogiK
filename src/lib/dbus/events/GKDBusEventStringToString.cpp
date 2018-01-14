@@ -71,6 +71,7 @@ void StringToStringEvent::runCallback(DBusConnection* connection, DBusMessage* m
 /* -- -- -- */
 
 void EventStringToString::addStringToStringEvent(
+	const BusConnection bus,
 	const char* object,
 	const char* interface,
 	const char* eventName,
@@ -80,7 +81,7 @@ void EventStringToString::addStringToStringEvent(
 	const bool introspectable
 ) {
 	GKDBusEvent* e = new StringToStringEvent(eventName, args, callback, eventType, introspectable);
-	this->addIntrospectableEvent(object, interface, e);
+	this->addIntrospectableEvent(bus, object, interface, e);
 }
 
 } // namespace GLogiK

@@ -69,8 +69,8 @@ class GKDBus
 
 		void connectToSystemBus(const char* connection_name);
 
-		const bool checkForNextMessage(BusConnection current);
-		void checkMessageType(BusConnection current);
+		const bool checkForNextMessage(BusConnection bus_connection);
+		void checkMessageType(BusConnection bus_connection);
 
 		void appendExtraStringToMessage(const std::string & value);
 
@@ -94,7 +94,7 @@ class GKDBus
 
 		void checkDBusError(const char* error_message);
 		void checkReleasedName(int ret);
-		DBusConnection* getConnection(BusConnection wanted_connection);
+		DBusConnection* getConnection(BusConnection bus_connection);
 };
 
 } // namespace GLogiK

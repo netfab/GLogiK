@@ -31,6 +31,7 @@
 /* -- */
 #include "GKDBusEvent.h"
 
+#include "lib/dbus/GKDBusConnection.h"
 #include "lib/dbus/arguments/GKDBusArgString.h"
 
 #include "lib/dbus/messages/GKDBusReply.h"
@@ -67,6 +68,7 @@ class EventStringToStringsArray
 {
 	public:
 		void addStringToStringsArrayEvent(
+			const BusConnection bus,
 			const char* object,
 			const char* interface,
 			const char* eventName,
@@ -80,7 +82,12 @@ class EventStringToStringsArray
 		EventStringToStringsArray() = default;
 		virtual ~EventStringToStringsArray() = default;
 
-		virtual void addIntrospectableEvent(const char* object, const char* interface, GKDBusEvent* event) = 0;
+		virtual void addIntrospectableEvent(
+			const BusConnection bus,
+			const char* object,
+			const char* interface,
+			GKDBusEvent* event
+		) = 0;
 
 };
 

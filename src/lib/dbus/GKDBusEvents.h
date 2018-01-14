@@ -27,6 +27,7 @@
 #include <map>
 #include <sstream>
 
+#include "lib/dbus/GKDBusConnection.h"
 #include "lib/shared/keyEvent.h"
 
 #include "events/GKDBusEventVoidToVoid.h"
@@ -66,9 +67,12 @@ class GKDBusEvents
 		GKDBusEvents(const std::string & rootnode);
 		~GKDBusEvents(void);
 
-		std::map< const std::string, /* object path */
-			std::map< const std::string, /* interface */
-				std::vector<GKDBusEvent*>>> DBusEvents_;
+		thread_local static BusConnection current_bus_;
+
+		std::map< const BusConnection,
+			std::map< const std::string, /* object path */
+				std::map< const std::string, /* interface */
+					std::vector<GKDBusEvent*> > > > DBusEvents_;
 
 		std::map<const std::string, bool> DBusObjects_;
 		std::map<const std::string, bool> DBusInterfaces_;
@@ -92,7 +96,12 @@ class GKDBusEvents
 		const std::string introspect(const std::string & asked_object_path);
 		const std::string introspectRootNode(void);
 
-		void addIntrospectableEvent(const char* object, const char* interface, GKDBusEvent* event);
+		void addIntrospectableEvent(
+			const BusConnection bus,
+			const char* object,
+			const char* interface,
+			GKDBusEvent* event
+		);
 };
 
 } // namespace GLogiK

@@ -31,31 +31,39 @@ namespace GLogiK
 {
 
 const std::string GKDBusEvents::rootNodeObject_("RootNode");
+thread_local BusConnection GKDBusEvents::current_bus_(BusConnection::GKDBUS_SYSTEM);
 
 GKDBusEvents::GKDBusEvents(const std::string & rootnode) : root_node_(rootnode) {
 	/* adding special event for root node introspection */
+	// FIXME same event for GKDBUS_SESSION
 	const char* object = GKDBusEvents::rootNodeObject_.c_str();
+	const BusConnection system_bus(BusConnection::GKDBUS_SYSTEM);
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "adding Introspectable interface : " << object;
 #endif
 	this->addStringToStringEvent(
-		object, "org.freedesktop.DBus.Introspectable", "Introspect",
+		system_bus, object, "org.freedesktop.DBus.Introspectable", "Introspect",
 		{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
 		std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),
 		GKDBusEventType::GKDBUS_EVENT_METHOD, false);
 }
 
 GKDBusEvents::~GKDBusEvents() {
-	for(const auto & object_path_pair : this->DBusEvents_) {
+	for(const auto & bus_pair : this->DBusEvents_) {
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "object_path: " << object_path_pair.first;
+		LOG(DEBUG1) << "current bus: " << to_uint( bus_pair.first );
 #endif
-		for(const auto & interface_pair : object_path_pair.second) {
+		for(const auto & object_path_pair : bus_pair.second) {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "interface: " << interface_pair.first;
+			LOG(DEBUG2) << "object_path: " << object_path_pair.first;
 #endif
-			for(auto & DBusEvent : interface_pair.second) { /* vector of pointers */
-				delete DBusEvent;
+			for(const auto & interface_pair : object_path_pair.second) {
+#if DEBUGGING_ON
+				LOG(DEBUG3) << "interface: " << interface_pair.first;
+#endif
+				for(auto & DBusEvent : interface_pair.second) { /* vector of pointers */
+					delete DBusEvent;
+				}
 			}
 		}
 	}
@@ -92,10 +100,11 @@ const std::string GKDBusEvents::introspectRootNode(void) {
  * private
  */
 
-void GKDBusEvents::addIntrospectableEvent(const char* object, const char* interface, GKDBusEvent* event) {
+void GKDBusEvents::addIntrospectableEvent(const BusConnection bus, const char* object, const char* interface, GKDBusEvent* event) {
 	if(event->introspectable) {
 		try {
-			const auto & obj = this->DBusEvents_.at(object);
+			const auto & current_bus = this->DBusEvents_.at(bus);
+			const auto & obj = current_bus.at(object);
 			obj.at("org.freedesktop.DBus.Introspectable");
 		}
 		catch (const std::out_of_range& oor) {
@@ -103,15 +112,15 @@ void GKDBusEvents::addIntrospectableEvent(const char* object, const char* interf
 			LOG(DEBUG3) << "adding Introspectable interface : " << object;
 #endif
 			this->addStringToStringEvent(
-				object, "org.freedesktop.DBus.Introspectable", "Introspect",
+				bus, object, "org.freedesktop.DBus.Introspectable", "Introspect",
 				{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
 				std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),
 				GKDBusEventType::GKDBUS_EVENT_METHOD, false);
 		}
 	}
-	this->DBusObjects_[object] = true;
+	this->DBusObjects_[object] = true; // FIXME
 	this->DBusInterfaces_[interface] = true;
-	this->DBusEvents_[object][interface].push_back(event);
+	this->DBusEvents_[bus][object][interface].push_back(event);
 }
 
 void GKDBusEvents::openXMLInterface(
@@ -153,12 +162,14 @@ const std::string GKDBusEvents::introspect(const std::string & asked_object_path
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
 	xml << "<node name=\"" << asked_object_path << "\">\n";
 
+	const auto & current_bus = this->DBusEvents_.at(this->current_bus_);
+
 	for(const auto & interface_it : this->DBusInterfaces_) {
 		const std::string & interface = interface_it.first;
 
 		bool interface_opened = false;
 
-		for(const auto & object_path_pair : this->DBusEvents_) {
+		for(const auto & object_path_pair : current_bus) {
 			/* object path must match */
 			if( this->getNode(object_path_pair.first) != asked_object_path )
 				continue;

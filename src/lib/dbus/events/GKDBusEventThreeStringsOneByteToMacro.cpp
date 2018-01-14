@@ -68,6 +68,7 @@ void ThreeStringsOneByteToMacroEvent::runCallback(DBusConnection* connection, DB
 /* -- -- -- */
 
 void EventThreeStringsOneByteToMacro::addThreeStringsOneByteToMacroEvent(
+	const BusConnection bus,
 	const char* object,
 	const char* interface,
 	const char* eventName,
@@ -77,7 +78,7 @@ void EventThreeStringsOneByteToMacro::addThreeStringsOneByteToMacroEvent(
 	const bool introspectable
 ) {
 	GKDBusEvent* e = new ThreeStringsOneByteToMacroEvent(eventName, args, callback, eventType, introspectable);
-	this->addIntrospectableEvent(object, interface, e);
+	this->addIntrospectableEvent(bus, object, interface, e);
 }
 
 } // namespace GLogiK

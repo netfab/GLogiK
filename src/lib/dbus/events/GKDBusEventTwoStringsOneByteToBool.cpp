@@ -67,6 +67,7 @@ void TwoStringsOneByteToBoolEvent::runCallback(DBusConnection* connection, DBusM
 /* -- -- -- */
 
 void EventTwoStringsOneByteToBool::addTwoStringsOneByteToBoolEvent(
+	const BusConnection bus,
 	const char* object,
 	const char* interface,
 	const char* eventName,
@@ -76,19 +77,19 @@ void EventTwoStringsOneByteToBool::addTwoStringsOneByteToBoolEvent(
 	const bool introspectable
 ) {
 	GKDBusEvent* e = new TwoStringsOneByteToBoolEvent(eventName, args, callback, eventType, introspectable);
-	this->addIntrospectableEvent(object, interface, e);
+	this->addIntrospectableEvent(bus, object, interface, e);
 }
 
 void EventTwoStringsOneByteToBool::addTwoStringsOneByteToBoolSignal(
-	BusConnection wanted_connection,
+	const BusConnection bus,
 	const char* object,
 	const char* interface,
 	const char* eventName,
 	const std::vector<DBusMethodArgument> & args,
 	std::function<const bool(const std::string&, const std::string&, const uint8_t)> callback
 ) {
-	this->addTwoStringsOneByteToBoolEvent(object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, true);
-	DBusConnection* connection = this->getConnection(wanted_connection);
+	this->addTwoStringsOneByteToBoolEvent(bus, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, true);
+	DBusConnection* connection = this->getConnection(bus);
 	this->addSignalRuleMatch(connection, interface, eventName);
 }
 

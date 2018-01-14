@@ -87,8 +87,8 @@ void GKDBus::connectToSystemBus(const char* connection_name) {
 	this->system_name_ = connection_name;
 }
 
-const bool GKDBus::checkForNextMessage(BusConnection current) {
-	DBusConnection* connection = this->getConnection(current);
+const bool GKDBus::checkForNextMessage(BusConnection bus_connection) {
+	DBusConnection* connection = this->getConnection(bus_connection);
 	dbus_connection_read_write(connection, 0);
 	this->message_ = dbus_connection_pop_message(connection);
 	return (this->message_ != nullptr);
@@ -104,18 +104,20 @@ const bool GKDBus::checkForNextMessage(BusConnection current) {
  * and send DBus reply after appending the return value
  */
 
-void GKDBus::checkMessageType(BusConnection current) {
+void GKDBus::checkMessageType(BusConnection bus_connection) {
 	if(this->message_ == nullptr) {
 		LOG(WARNING) << "message is null";
 		return;
 	}
 
+	this->current_bus_ = bus_connection;
+
 	try {
 		const std::string asked_object_path( to_string( dbus_message_get_path(this->message_) ) );
+		const auto & current_bus = this->DBusEvents_.at(this->current_bus_);
+		DBusConnection* connection = this->getConnection(this->current_bus_);
 
-		DBusConnection* connection = this->getConnection(current);
-
-		for(const auto & object_pair : this->DBusEvents_) {
+		for(const auto & object_pair : current_bus) {
 			/* handle root node introspection special case */
 			if( asked_object_path != this->getRootNode() )
 				/* object path must match */
@@ -161,6 +163,9 @@ void GKDBus::checkMessageType(BusConnection current) {
 				}
 			}
 		}
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(ERROR) << "current bus connection oor";
 	}
 	catch ( const GKDBusEventFound & e ) {
 		LOG(DEBUG2) << e.what();
@@ -255,8 +260,8 @@ void GKDBus::checkDBusError(const char* error_message) {
 	}
 }
 
-DBusConnection* GKDBus::getConnection(BusConnection wanted_connection) {
-	switch(wanted_connection) {
+DBusConnection* GKDBus::getConnection(BusConnection bus_connection) {
+	switch(bus_connection) {
 		case BusConnection::GKDBUS_SESSION :
 			if(this->session_conn_ == nullptr)
 				throw GLogiKExcept("DBus Session connection not opened");

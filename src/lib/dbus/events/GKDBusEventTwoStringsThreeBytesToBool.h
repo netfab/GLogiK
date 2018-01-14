@@ -30,6 +30,7 @@
 /* -- */
 #include "GKDBusEvent.h"
 
+#include "lib/dbus/GKDBusConnection.h"
 #include "lib/dbus/arguments/GKDBusArgString.h"
 #include "lib/dbus/arguments/GKDBusArgByte.h"
 
@@ -68,6 +69,7 @@ class EventTwoStringsThreeBytesToBool
 {
 	public:
 		void addTwoStringsThreeBytesToBoolEvent(
+			const BusConnection bus,
 			const char* object,
 			const char* interface,
 			const char* eventName,
@@ -81,7 +83,12 @@ class EventTwoStringsThreeBytesToBool
 		EventTwoStringsThreeBytesToBool() = default;
 		virtual ~EventTwoStringsThreeBytesToBool() = default;
 
-		virtual void addIntrospectableEvent(const char* object, const char* interface, GKDBusEvent* event) = 0;
+		virtual void addIntrospectableEvent(
+			const BusConnection bus,
+			const char* object,
+			const char* interface,
+			GKDBusEvent* event
+		) = 0;
 
 };
 

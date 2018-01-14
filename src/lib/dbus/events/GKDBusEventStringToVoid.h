@@ -31,6 +31,7 @@
 /* -- */
 #include "GKDBusEvent.h"
 
+#include "lib/dbus/GKDBusConnection.h"
 #include "lib/dbus/arguments/GKDBusArgString.h"
 
 namespace GLogiK
@@ -61,6 +62,7 @@ class EventStringToVoid
 {
 	public:
 		void addStringToVoidEvent(
+			const BusConnection bus,
 			const char* object,
 			const char* interface,
 			const char* eventName,
@@ -71,7 +73,7 @@ class EventStringToVoid
 		);
 
 		void addStringToVoidSignal(
-			BusConnection wanted_connection,
+			const BusConnection bus,
 			const char* object,
 			const char* interface,
 			const char* eventName,
@@ -83,7 +85,12 @@ class EventStringToVoid
 		EventStringToVoid() = default;
 		virtual ~EventStringToVoid() = default;
 
-		virtual void addIntrospectableEvent(const char* object, const char* interface, GKDBusEvent* event) = 0;
+		virtual void addIntrospectableEvent(
+			const BusConnection bus,
+			const char* object,
+			const char* interface,
+			GKDBusEvent* event
+		) = 0;
 
 };
 
