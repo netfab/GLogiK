@@ -46,7 +46,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 DevicesHandler::DevicesHandler()
-	:	DBus(nullptr),
+	:	pDBus_(nullptr),
 		system_bus_(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
 		client_id_("undefined"),
 		buffer_("", std::ios_base::app)
@@ -68,7 +68,7 @@ DevicesHandler::~DevicesHandler() {
 }
 
 void DevicesHandler::setDBus(NSGKDBus::GKDBus* pDBus) {
-	this->DBus = pDBus;
+	this->pDBus_ = pDBus;
 }
 
 void DevicesHandler::setClientID(const std::string & id) {
@@ -215,23 +215,23 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 
 void DevicesHandler::setDeviceState(const std::string & devID, const DeviceProperties & device) {
 	try {
-		this->DBus->initializeRemoteMethodCall(
+		this->pDBus_->initializeRemoteMethodCall(
 			this->system_bus_,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			"SetDeviceBacklightColor"
 		);
-		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
-		this->DBus->appendStringToRemoteMethodCall(devID);
-		this->DBus->appendUInt8ToRemoteMethodCall(device.getBLColor_R());
-		this->DBus->appendUInt8ToRemoteMethodCall(device.getBLColor_G());
-		this->DBus->appendUInt8ToRemoteMethodCall(device.getBLColor_B());
+		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->appendStringToRemoteMethodCall(devID);
+		this->pDBus_->appendUInt8ToRemoteMethodCall(device.getBLColor_R());
+		this->pDBus_->appendUInt8ToRemoteMethodCall(device.getBLColor_G());
+		this->pDBus_->appendUInt8ToRemoteMethodCall(device.getBLColor_B());
 
-		this->DBus->sendRemoteMethodCall();
+		this->pDBus_->sendRemoteMethodCall();
 
-		this->DBus->waitForRemoteMethodCallReply();
-		const bool ret = this->DBus->getNextBooleanArgument();
+		this->pDBus_->waitForRemoteMethodCallReply();
+		const bool ret = this->pDBus_->getNextBooleanArgument();
 		if( ret ) {
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "successfully setted device " << devID << " properties";
@@ -255,24 +255,24 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	/* initialize device properties */
 
 	try {
-		this->DBus->initializeRemoteMethodCall(
+		this->pDBus_->initializeRemoteMethodCall(
 			this->system_bus_,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			"GetDeviceProperties"
 		);
-		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
-		this->DBus->appendStringToRemoteMethodCall(devID);
+		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->appendStringToRemoteMethodCall(devID);
 
-		this->DBus->sendRemoteMethodCall();
+		this->pDBus_->sendRemoteMethodCall();
 
-		this->DBus->waitForRemoteMethodCallReply();
+		this->pDBus_->waitForRemoteMethodCallReply();
 
 		try {
-			device.setVendor( this->DBus->getNextStringArgument() );
+			device.setVendor( this->pDBus_->getNextStringArgument() );
 			num++;
-			device.setModel( this->DBus->getNextStringArgument() );
+			device.setModel( this->pDBus_->getNextStringArgument() );
 			num++;
 		}
 		catch (const EmptyContainer & e) {
@@ -293,21 +293,21 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	/* initialize macro keys */
 
 	try {
-		this->DBus->initializeRemoteMethodCall(
+		this->pDBus_->initializeRemoteMethodCall(
 			this->system_bus_,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			"GetDeviceMacroKeysNames"
 		);
-		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
-		this->DBus->appendStringToRemoteMethodCall(devID);
+		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->appendStringToRemoteMethodCall(devID);
 
-		this->DBus->sendRemoteMethodCall();
+		this->pDBus_->sendRemoteMethodCall();
 
-		this->DBus->waitForRemoteMethodCallReply();
+		this->pDBus_->waitForRemoteMethodCallReply();
 
-		const std::vector<std::string> keys_names( this->DBus->getStringsArray() );
+		const std::vector<std::string> keys_names( this->pDBus_->getStringsArray() );
 		device.initMacrosProfiles(keys_names);
 
 #if DEBUGGING_ON
@@ -467,20 +467,20 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 		}
 
 		try {
-			this->DBus->initializeRemoteMethodCall(
+			this->pDBus_->initializeRemoteMethodCall(
 				this->system_bus_,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 				"DeleteDeviceConfiguration"
 			);
-			this->DBus->appendStringToRemoteMethodCall(this->client_id_);
-			this->DBus->appendStringToRemoteMethodCall(devID);
+			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+			this->pDBus_->appendStringToRemoteMethodCall(devID);
 
-			this->DBus->sendRemoteMethodCall();
+			this->pDBus_->sendRemoteMethodCall();
 
-			this->DBus->waitForRemoteMethodCallReply();
-			const bool ret = this->DBus->getNextBooleanArgument();
+			this->pDBus_->waitForRemoteMethodCallReply();
+			const bool ret = this->pDBus_->getNextBooleanArgument();
 			if( ret ) {
 #if DEBUGGING_ON
 				LOG(DEBUG3) << "successfully deleted client device configuration " << devID;
@@ -510,7 +510,7 @@ const bool DevicesHandler::setMacro(
 		DeviceProperties & device = this->started_devices_.at(devID);
 
 		/* getting recorded macro from daemon */
-		this->DBus->initializeRemoteMethodCall(
+		this->pDBus_->initializeRemoteMethodCall(
 			this->system_bus_,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -518,17 +518,17 @@ const bool DevicesHandler::setMacro(
 			"GetDeviceMacro"
 		);
 
-		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
-		this->DBus->appendStringToRemoteMethodCall(devID);
-		this->DBus->appendStringToRemoteMethodCall(keyName);
-		this->DBus->appendUInt8ToRemoteMethodCall(profile);
+		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->appendStringToRemoteMethodCall(devID);
+		this->pDBus_->appendStringToRemoteMethodCall(keyName);
+		this->pDBus_->appendUInt8ToRemoteMethodCall(profile);
 
-		this->DBus->sendRemoteMethodCall();
+		this->pDBus_->sendRemoteMethodCall();
 
-		this->DBus->waitForRemoteMethodCallReply();
+		this->pDBus_->waitForRemoteMethodCallReply();
 
 		/* use helper function to get the macro */
-		const macro_t macro_array = this->DBus->getMacro();
+		const macro_t macro_array = this->pDBus_->getMacro();
 
 		device.setMacro(profile, keyName, macro_array);
 	}

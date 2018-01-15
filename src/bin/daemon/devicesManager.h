@@ -89,7 +89,7 @@ class DevicesManager
 		struct udev_monitor *monitor = nullptr;
 		struct pollfd fds[1];
 		int fd_ = -1;
-		NSGKDBus::GKDBus* DBus = nullptr;
+		NSGKDBus::GKDBus* pDBus_ = nullptr;
 		uint8_t num_clients_;
 
 		std::ostringstream buffer_;

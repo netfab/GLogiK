@@ -146,7 +146,7 @@ void DevicesManager::initializeDevices(void) {
 
 	if( c > 0 ) {
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(this->num_clients_, this->DBus, "DevicesStarted", startedDevices);
+		this->sendStatusSignalArrayToClients(this->num_clients_, this->pDBus_, "DevicesStarted", startedDevices);
 	}
 
 	this->detected_devices_.clear();
@@ -317,7 +317,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 
 	if(c > 0) {
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(this->num_clients_, this->DBus, "DevicesUnplugged", unpluggedDevices);
+		this->sendStatusSignalArrayToClients(this->num_clients_, this->pDBus_, "DevicesUnplugged", unpluggedDevices);
 	}
 }
 
@@ -641,14 +641,14 @@ void DevicesManager::resetDevicesStates(void) {
 }
 
 void DevicesManager::checkDBusMessages(void) {
-	this->DBus->checkForNextMessage(NSGKDBus::BusConnection::GKDBUS_SYSTEM);
+	this->pDBus_->checkForNextMessage(NSGKDBus::BusConnection::GKDBUS_SYSTEM);
 }
 
 void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing libudev";
 #endif
-	this->DBus = pDBus;
+	this->pDBus_ = pDBus;
 
 	this->udev = udev_new();
 	if ( this->udev == nullptr )

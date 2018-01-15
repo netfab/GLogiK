@@ -38,7 +38,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
-	:	DBus(nullptr),
+	:	pDBus_(nullptr),
 		system_bus_(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
 		register_retry_(true),
 		are_we_registered_(false),
@@ -47,8 +47,8 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 		buffer_("", std::ios_base::app)
 {
 	try {
-		this->DBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
-		this->DBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
+		this->pDBus_ = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
+		this->pDBus_->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 
 		this->setCurrentSessionObjectPath(pid);
 		this->registerWithDaemon();
@@ -58,7 +58,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 
 		/* want to be warned by the daemon about those signals */
 
-		this->DBus->addStringsArrayToVoidSignal(
+		this->pDBus_->addStringsArrayToVoidSignal(
 			this->system_bus_,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -67,7 +67,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 			std::bind(&ServiceDBusHandler::devicesStarted, this, std::placeholders::_1)
 		);
 
-		this->DBus->addStringsArrayToVoidSignal(
+		this->pDBus_->addStringsArrayToVoidSignal(
 			this->system_bus_,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -76,7 +76,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 			std::bind(&ServiceDBusHandler::devicesStopped, this, std::placeholders::_1)
 		);
 
-		this->DBus->addStringsArrayToVoidSignal(
+		this->pDBus_->addStringsArrayToVoidSignal(
 			this->system_bus_,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -85,7 +85,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 			std::bind(&ServiceDBusHandler::devicesUnplugged, this, std::placeholders::_1)
 		);
 
-		this->DBus->addVoidToVoidSignal(
+		this->pDBus_->addVoidToVoidSignal(
 			this->system_bus_,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -94,7 +94,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 			std::bind(&ServiceDBusHandler::daemonIsStopping, this)
 		);
 
-		this->DBus->addVoidToVoidSignal(
+		this->pDBus_->addVoidToVoidSignal(
 			this->system_bus_,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -103,7 +103,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 			std::bind(&ServiceDBusHandler::reportChangedState, this)
 		);
 
-		this->DBus->addTwoStringsOneByteToBoolSignal(
+		this->pDBus_->addTwoStringsOneByteToBoolSignal(
 			this->system_bus_,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -115,15 +115,15 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 		);
 
 		/* set GKDBus pointer */
-		this->devices_.setDBus(this->DBus);
+		this->devices_.setDBus(this->pDBus_);
 		this->devices_.setClientID(this->client_id_);
 
 		this->initializeDevices();
 	}
 	catch ( const GLogiKExcept & e ) {
 		this->unregisterWithDaemon();
-		delete this->DBus;
-		this->DBus = nullptr;
+		delete this->pDBus_;
+		this->pDBus_ = nullptr;
 		throw;
 	}
 }
@@ -139,8 +139,8 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 #endif
 	}
 
-	delete this->DBus;
-	this->DBus = nullptr;
+	delete this->pDBus_;
+	this->pDBus_ = nullptr;
 }
 
 /*
@@ -153,27 +153,27 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 		return;
 	}
 
-	this->DBus->initializeRemoteMethodCall(
+	this->pDBus_->initializeRemoteMethodCall(
 		this->system_bus_,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 		"RegisterClient"
 	);
-	this->DBus->appendStringToRemoteMethodCall(this->current_session_);
-	this->DBus->sendRemoteMethodCall();
+	this->pDBus_->appendStringToRemoteMethodCall(this->current_session_);
+	this->pDBus_->sendRemoteMethodCall();
 
-	this->DBus->waitForRemoteMethodCallReply();
+	this->pDBus_->waitForRemoteMethodCallReply();
 
-	const bool ret = this->DBus->getNextBooleanArgument();
+	const bool ret = this->pDBus_->getNextBooleanArgument();
 	if( ret ) {
-		this->client_id_ = this->DBus->getNextStringArgument();
+		this->client_id_ = this->pDBus_->getNextStringArgument();
 		this->are_we_registered_ = true;
 		LOG(INFO) << "successfully registered with daemon - " << this->client_id_;
 	}
 	else {
 		const char * failure = "failed to register with daemon : false";
-		const std::string reason(this->DBus->getNextStringArgument());
+		const std::string reason(this->pDBus_->getNextStringArgument());
 		if( this->register_retry_ ) {
 			/* retrying */
 			this->register_retry_ = false;
@@ -198,19 +198,19 @@ void ServiceDBusHandler::unregisterWithDaemon(void) {
 
 	try {
 		/* telling the daemon we're killing ourself */
-		this->DBus->initializeRemoteMethodCall(
+		this->pDBus_->initializeRemoteMethodCall(
 			this->system_bus_,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			"UnregisterClient"
 		);
-		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
-		this->DBus->sendRemoteMethodCall();
+		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->sendRemoteMethodCall();
 
-		this->DBus->waitForRemoteMethodCallReply();
+		this->pDBus_->waitForRemoteMethodCallReply();
 
-		const bool ret = this->DBus->getNextBooleanArgument();
+		const bool ret = this->pDBus_->getNextBooleanArgument();
 		if( ret ) {
 			this->are_we_registered_ = false;
 			this->client_id_ = "undefined";
@@ -232,17 +232,17 @@ void ServiceDBusHandler::unregisterWithDaemon(void) {
 void ServiceDBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 	try {
 		/* getting consolekit current session */
-		this->DBus->initializeRemoteMethodCall(
+		this->pDBus_->initializeRemoteMethodCall(
 			this->system_bus_,
 			"org.freedesktop.ConsoleKit",
 			"/org/freedesktop/ConsoleKit/Manager",
 			"org.freedesktop.ConsoleKit.Manager",
 			"GetCurrentSession"
 		);
-		this->DBus->sendRemoteMethodCall();
+		this->pDBus_->sendRemoteMethodCall();
 
-		this->DBus->waitForRemoteMethodCallReply();
-		this->current_session_ = this->DBus->getNextStringArgument();
+		this->pDBus_->waitForRemoteMethodCallReply();
+		this->current_session_ = this->pDBus_->getNextStringArgument();
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "current session : " << this->current_session_;
 #endif
@@ -256,18 +256,18 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 			LOG(INFO) << "consolekit contact failure, trying logind";
 
 			/* getting logind current session */
-			this->DBus->initializeRemoteMethodCall(
+			this->pDBus_->initializeRemoteMethodCall(
 				this->system_bus_,
 				"org.freedesktop.login1",
 				"/org/freedesktop/login1",
 				"org.freedesktop.login1.Manager",
 				"GetSessionByPID"
 			);
-			this->DBus->appendUInt32ToRemoteMethodCall(pid);
-			this->DBus->sendRemoteMethodCall();
+			this->pDBus_->appendUInt32ToRemoteMethodCall(pid);
+			this->pDBus_->sendRemoteMethodCall();
 
-			this->DBus->waitForRemoteMethodCallReply();
-			this->current_session_ = this->DBus->getNextStringArgument();
+			this->pDBus_->waitForRemoteMethodCallReply();
+			this->current_session_ = this->pDBus_->getNextStringArgument();
 #if DEBUGGING_ON
 			LOG(DEBUG1) << "current session : " << this->current_session_;
 #endif
@@ -289,7 +289,7 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 	switch(this->session_framework_) {
 		case SessionTracker::F_CONSOLEKIT:
 			try {
-				this->DBus->initializeRemoteMethodCall(
+				this->pDBus_->initializeRemoteMethodCall(
 					this->system_bus_,
 					"org.freedesktop.ConsoleKit",
 					this->current_session_.c_str(),
@@ -297,10 +297,10 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 					"GetSessionState",
 					logoff
 				);
-				this->DBus->sendRemoteMethodCall();
+				this->pDBus_->sendRemoteMethodCall();
 
-				this->DBus->waitForRemoteMethodCallReply();
-				ret = this->DBus->getNextStringArgument();
+				this->pDBus_->waitForRemoteMethodCallReply();
+				ret = this->pDBus_->getNextStringArgument();
 #if DEBUGGING_ON
 				LOG(DEBUG5) << "current session state : " << ret;
 #endif
@@ -314,7 +314,7 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 			}
 			break;
 		case SessionTracker::F_LOGIND:
-				this->DBus->initializeRemoteMethodCall(
+				this->pDBus_->initializeRemoteMethodCall(
 					this->system_bus_,
 					"org.freedesktop.login1",
 					this->current_session_.c_str(),
@@ -322,12 +322,12 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 					"Get",
 					logoff
 				);
-				this->DBus->appendStringToRemoteMethodCall("org.freedesktop.login1.Session");
-				this->DBus->appendStringToRemoteMethodCall("State");
-				this->DBus->sendRemoteMethodCall();
+				this->pDBus_->appendStringToRemoteMethodCall("org.freedesktop.login1.Session");
+				this->pDBus_->appendStringToRemoteMethodCall("State");
+				this->pDBus_->sendRemoteMethodCall();
 
-				this->DBus->waitForRemoteMethodCallReply();
-				ret = this->DBus->getNextStringArgument();
+				this->pDBus_->waitForRemoteMethodCallReply();
+				ret = this->pDBus_->getNextStringArgument();
 #if DEBUGGING_ON
 				LOG(DEBUG5) << "current session state : " << ret;
 #endif
@@ -350,19 +350,19 @@ void ServiceDBusHandler::reportChangedState(void) {
 	}
 
 	try {
-		this->DBus->initializeRemoteMethodCall(
+		this->pDBus_->initializeRemoteMethodCall(
 			this->system_bus_,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			"UpdateClientState"
 		);
-		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
-		this->DBus->appendStringToRemoteMethodCall(this->session_state_);
-		this->DBus->sendRemoteMethodCall();
+		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->appendStringToRemoteMethodCall(this->session_state_);
+		this->pDBus_->sendRemoteMethodCall();
 
-		this->DBus->waitForRemoteMethodCallReply();
-		const bool ret = this->DBus->getNextBooleanArgument();
+		this->pDBus_->waitForRemoteMethodCallReply();
+		const bool ret = this->pDBus_->getNextBooleanArgument();
 		if( ret ) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "successfully reported changed state : " << this->session_state_;
@@ -467,20 +467,20 @@ void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devices
 #endif
 	for(const auto& devID : devicesIDArray) {
 		try {
-			this->DBus->initializeRemoteMethodCall(
+			this->pDBus_->initializeRemoteMethodCall(
 				this->system_bus_,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				"GetDeviceStatus"
 			);
-			this->DBus->appendStringToRemoteMethodCall(this->client_id_);
-			this->DBus->appendStringToRemoteMethodCall(devID);
-			this->DBus->sendRemoteMethodCall();
+			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+			this->pDBus_->appendStringToRemoteMethodCall(devID);
+			this->pDBus_->sendRemoteMethodCall();
 
-			this->DBus->waitForRemoteMethodCallReply();
+			this->pDBus_->waitForRemoteMethodCallReply();
 
-			const std::string device_status( this->DBus->getNextStringArgument() );
+			const std::string device_status( this->pDBus_->getNextStringArgument() );
 			if(device_status == "started") {
 #if DEBUGGING_ON
 				LOG(DEBUG3) << "daemon said that device " << devID << " is really started, what about us ?";
@@ -507,20 +507,20 @@ void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devices
 #endif
 	for(const auto& devID : devicesIDArray) {
 		try {
-			this->DBus->initializeRemoteMethodCall(
+			this->pDBus_->initializeRemoteMethodCall(
 				this->system_bus_,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				"GetDeviceStatus"
 			);
-			this->DBus->appendStringToRemoteMethodCall(this->client_id_);
-			this->DBus->appendStringToRemoteMethodCall(devID);
-			this->DBus->sendRemoteMethodCall();
+			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+			this->pDBus_->appendStringToRemoteMethodCall(devID);
+			this->pDBus_->sendRemoteMethodCall();
 
-			this->DBus->waitForRemoteMethodCallReply();
+			this->pDBus_->waitForRemoteMethodCallReply();
 
-			const std::string device_status( this->DBus->getNextStringArgument() );
+			const std::string device_status( this->pDBus_->getNextStringArgument() );
 			if(device_status == "stopped") {
 #if DEBUGGING_ON
 				LOG(DEBUG3) << "daemon said that device " << devID << " is really stopped, what about us ?";
@@ -550,20 +550,20 @@ void ServiceDBusHandler::devicesUnplugged(const std::vector<std::string> & devic
 		LOG(DEBUG3) << "device : " << devID;
 #endif
 		try {
-			this->DBus->initializeRemoteMethodCall(
+			this->pDBus_->initializeRemoteMethodCall(
 				this->system_bus_,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				"GetDeviceStatus"
 			);
-			this->DBus->appendStringToRemoteMethodCall(this->client_id_);
-			this->DBus->appendStringToRemoteMethodCall(devID);
-			this->DBus->sendRemoteMethodCall();
+			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+			this->pDBus_->appendStringToRemoteMethodCall(devID);
+			this->pDBus_->sendRemoteMethodCall();
 
-			this->DBus->waitForRemoteMethodCallReply();
+			this->pDBus_->waitForRemoteMethodCallReply();
 
-			const std::string device_status( this->DBus->getNextStringArgument() );
+			const std::string device_status( this->pDBus_->getNextStringArgument() );
 			if(device_status == "unplugged") {
 #if DEBUGGING_ON
 				LOG(DEBUG3) << "daemon said that device " << devID << " is really unplugged, what about us ?";
@@ -601,19 +601,19 @@ void ServiceDBusHandler::initializeDevices(void) {
 
 	/* started devices */
 	try {
-		this->DBus->initializeRemoteMethodCall(
+		this->pDBus_->initializeRemoteMethodCall(
 			this->system_bus_,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			"GetStartedDevices"
 		);
-		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
-		this->DBus->sendRemoteMethodCall();
+		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->sendRemoteMethodCall();
 
-		this->DBus->waitForRemoteMethodCallReply();
+		this->pDBus_->waitForRemoteMethodCallReply();
 
-		devicesID = this->DBus->getStringsArray();
+		devicesID = this->pDBus_->getStringsArray();
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "daemon says " << devicesID.size() << " devices started";
 #endif
@@ -630,19 +630,19 @@ void ServiceDBusHandler::initializeDevices(void) {
 
 	/* stopped devices */
 	try {
-		this->DBus->initializeRemoteMethodCall(
+		this->pDBus_->initializeRemoteMethodCall(
 			this->system_bus_,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			"GetStoppedDevices"
 		);
-		this->DBus->appendStringToRemoteMethodCall(this->client_id_);
-		this->DBus->sendRemoteMethodCall();
+		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->sendRemoteMethodCall();
 
-		this->DBus->waitForRemoteMethodCallReply();
+		this->pDBus_->waitForRemoteMethodCallReply();
 
-		devicesID = this->DBus->getStringsArray();
+		devicesID = this->pDBus_->getStringsArray();
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "daemon says " << devicesID.size() << " devices stopped";
 #endif
@@ -685,7 +685,7 @@ const bool ServiceDBusHandler::macroRecorded(
 }
 
 void ServiceDBusHandler::checkDBusMessages(void) {
-	this->DBus->checkForNextMessage(this->system_bus_);
+	this->pDBus_->checkForNextMessage(this->system_bus_);
 }
 
 } // namespace GLogiK

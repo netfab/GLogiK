@@ -49,7 +49,7 @@ class ClientsManager
 
 	private:
 		std::ostringstream buffer_;
-		NSGKDBus::GKDBus* DBus;
+		NSGKDBus::GKDBus* pDBus_;
 		DevicesManager* devicesManager;
 
 		std::map<const std::string, Client*> clients_;

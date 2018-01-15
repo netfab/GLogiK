@@ -61,7 +61,7 @@ class DevicesHandler
 	protected:
 
 	private:
-		NSGKDBus::GKDBus* DBus;
+		NSGKDBus::GKDBus* pDBus_;
 		const NSGKDBus::BusConnection system_bus_;
 		std::string client_id_;
 		std::ostringstream buffer_;

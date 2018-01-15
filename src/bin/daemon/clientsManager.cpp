@@ -38,8 +38,11 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus) : buffer_("", std::ios_base::app), DBus(pDBus),
-	devicesManager(nullptr), enabled_signals_(true)
+ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
+	:	buffer_("", std::ios_base::app),
+		pDBus_(pDBus),
+		devicesManager(nullptr),
+		enabled_signals_(true)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing clients manager";
@@ -64,27 +67,27 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus) : buffer_("", std::ios_b
 
 	/* ClientsManager D-Bus object */
 
-	this->DBus->addStringToBoolEvent(
+	this->pDBus_->addStringToBoolEvent(
 		system_bus, CM_object, CM_interf, "RegisterClient",
 		{	{"s", "client_session_object_path", "in", "client session object path"},
 			{"b", "did_register_succeeded", "out", "did the RegisterClient method succeeded ?"},
 			{"s", "failure_reason_or_client_id", "out", "if register success (bool==true), unique client ID, else (bool=false) failure reason"} },
 		std::bind(&ClientsManager::registerClient, this, std::placeholders::_1) );
 
-	this->DBus->addStringToBoolEvent(
+	this->pDBus_->addStringToBoolEvent(
 		system_bus, CM_object, CM_interf, "UnregisterClient",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"b", "did_unregister_succeeded", "out", "did the UnregisterClient method succeeded ?"} },
 		std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );
 
-	this->DBus->addTwoStringsToBoolEvent(
+	this->pDBus_->addTwoStringsToBoolEvent(
 		system_bus, CM_object, CM_interf, "UpdateClientState",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "client_new_state", "in", "client new state"},
 			{"b", "did_updateclientstate_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addTwoStringsToBoolEvent(
+	this->pDBus_->addTwoStringsToBoolEvent(
 		system_bus, CM_object, CM_interf, "DeleteDeviceConfiguration",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
@@ -94,54 +97,54 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus) : buffer_("", std::ios_b
 	/* DevicesManager D-Bus object */
 
 
-	this->DBus->addTwoStringsToBoolEvent(
+	this->pDBus_->addTwoStringsToBoolEvent(
 		system_bus, DM_object, DM_interf, "StopDevice",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"b", "did_stop_succeeded", "out", "did the StopDevice method succeeded ?"} },
 		std::bind(&ClientsManager::stopDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addTwoStringsToBoolEvent(
+	this->pDBus_->addTwoStringsToBoolEvent(
 		system_bus, DM_object, DM_interf, "StartDevice",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStoppedDevices"},
 			{"b", "did_start_succeeded", "out", "did the StartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::startDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addTwoStringsToBoolEvent(
+	this->pDBus_->addTwoStringsToBoolEvent(
 		system_bus, DM_object, DM_interf, "RestartDevice",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"b", "did_restart_succeeded", "out", "did the RestartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addStringToStringsArrayEvent(
+	this->pDBus_->addStringToStringsArrayEvent(
 		system_bus, DM_object, DM_interf, "GetStartedDevices",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"as", "array_of_strings", "out", "array of started devices ID strings"} },
 		std::bind(&ClientsManager::getStartedDevices, this, std::placeholders::_1) );
 
-	this->DBus->addStringToStringsArrayEvent(
+	this->pDBus_->addStringToStringsArrayEvent(
 		system_bus, DM_object, DM_interf, "GetStoppedDevices",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"as", "array_of_strings", "out", "array of stopped devices ID strings"} },
 		std::bind(&ClientsManager::getStoppedDevices, this, std::placeholders::_1) );
 
-	this->DBus->addTwoStringsToStringEvent(
+	this->pDBus_->addTwoStringsToStringEvent(
 		system_bus, DM_object, DM_interf, "GetDeviceStatus",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID"},
 			{"s", "device status", "out", "string representing the device status"} },
 		std::bind(&ClientsManager::getDeviceStatus, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addTwoStringsToStringsArrayEvent(
+	this->pDBus_->addTwoStringsToStringsArrayEvent(
 		system_bus, DM_object, DM_interf, "GetDeviceProperties",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"as", "array_of_strings", "out", "string array of device properties"} },
 		std::bind(&ClientsManager::getDeviceProperties, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->DBus->addTwoStringsThreeBytesToBoolEvent(
+	this->pDBus_->addTwoStringsThreeBytesToBoolEvent(
 		system_bus, DM_object, DM_interf, "SetDeviceBacklightColor",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
@@ -152,7 +155,7 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus) : buffer_("", std::ios_b
 		std::bind(&ClientsManager::setDeviceBacklightColor, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
 
-	this->DBus->addThreeStringsOneByteToMacroEvent(
+	this->pDBus_->addThreeStringsOneByteToMacroEvent(
 		system_bus, DM_object, DM_interf, "GetDeviceMacro",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
@@ -162,7 +165,7 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus) : buffer_("", std::ios_b
 		std::bind(&ClientsManager::getDeviceMacro, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4) );
 
-	this->DBus->addTwoStringsToStringsArrayEvent(
+	this->pDBus_->addTwoStringsToStringsArrayEvent(
 		system_bus, DM_object, DM_interf, "GetDeviceMacroKeysNames",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
@@ -196,7 +199,7 @@ ClientsManager::~ClientsManager() {
 }
 
 void ClientsManager::runLoop(void) {
-	this->devicesManager->startMonitoring(this->DBus);
+	this->devicesManager->startMonitoring(this->pDBus_);
 
 	if( this->clients_.empty() ) {
 #if DEBUGGING_ON
@@ -205,7 +208,7 @@ void ClientsManager::runLoop(void) {
 		return;
 	}
 
-	this->sendSignalToClients(this->clients_.size(), this->DBus, "DaemonIsStopping");
+	this->sendSignalToClients(this->clients_.size(), this->pDBus_, "DaemonIsStopping");
 
 	unsigned int c = 0;
 #if DEBUGGING_ON
@@ -249,14 +252,14 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 				GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 				const std::string reason("already registered");
 				/* appending failure reason to DBus reply */
-				this->DBus->appendExtraStringToMessage(reason);
+				this->pDBus_->appendExtraStringToMessage(reason);
 
 				/* process to check if registered clients are still alives */
 				for(auto & new_pair : this->clients_ ) {
 					new_pair.second->uncheck();
 				}
 
-				this->sendSignalToClients(this->clients_.size(), this->DBus, "ReportYourself");
+				this->sendSignalToClients(this->clients_.size(), this->pDBus_, "ReportYourself");
 
 				/* register failure, sender should wait and retry */
 				return false;
@@ -279,26 +282,26 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 		catch (const std::bad_alloc& e) { /* handle new() failure */
 			const std::string s = "new client allocation failure";
 			GKSysLog(LOG_ERR, ERROR, s);
-			this->DBus->appendExtraStringToMessage(s);
+			this->pDBus_->appendExtraStringToMessage(s);
 			return false;
 		}
 		catch (const std::out_of_range& oor) {
 			this->buffer_.str("tried to initialize unknown client : ");
 			this->buffer_ << clientID;
 			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
-			this->DBus->appendExtraStringToMessage("internal error");
+			this->pDBus_->appendExtraStringToMessage("internal error");
 			return false;
 		}
 		catch (const GLogiKExcept & e) {
 			GKSysLog(LOG_ERR, ERROR, e.what());
-			this->DBus->appendExtraStringToMessage("internal error");
+			this->pDBus_->appendExtraStringToMessage("internal error");
 			return false;
 		}
 
 		this->devicesManager->setNumClients( this->clients_.size() );
 
 		/* appending client id to DBus reply */
-		this->DBus->appendExtraStringToMessage(clientID);
+		this->pDBus_->appendExtraStringToMessage(clientID);
 
 		return true;
 	}
@@ -386,7 +389,7 @@ const bool ClientsManager::stopDevice(const std::string & clientID, const std::s
 			const bool ret = this->devicesManager->stopDevice(devID);
 			if(ret and this->enabled_signals_) {
 				const std::vector<std::string> array = {devID};
-				this->sendStatusSignalArrayToClients(this->clients_.size(), this->DBus, "DevicesStopped", array);
+				this->sendStatusSignalArrayToClients(this->clients_.size(), this->pDBus_, "DevicesStopped", array);
 			}
 			return ret;
 		}
@@ -411,7 +414,7 @@ const bool ClientsManager::startDevice(const std::string & clientID, const std::
 			const bool ret = this->devicesManager->startDevice(devID);
 			if(ret and this->enabled_signals_) {
 				const std::vector<std::string> array = {devID};
-				this->sendStatusSignalArrayToClients(this->clients_.size(), this->DBus, "DevicesStarted", array);
+				this->sendStatusSignalArrayToClients(this->clients_.size(), this->pDBus_, "DevicesStarted", array);
 			}
 			return ret;
 		}
@@ -443,12 +446,12 @@ const bool ClientsManager::restartDevice(const std::string & clientID, const std
 
 		if( this->startDevice(clientID, devID) ) {
 			this->enabled_signals_ = true;
-			this->sendStatusSignalArrayToClients(this->clients_.size(), this->DBus, "DevicesStarted", array);
+			this->sendStatusSignalArrayToClients(this->clients_.size(), this->pDBus_, "DevicesStarted", array);
 			return true;
 		}
 
 		this->enabled_signals_ = true;
-		this->sendStatusSignalArrayToClients(this->clients_.size(), this->DBus, "DevicesStopped", array);
+		this->sendStatusSignalArrayToClients(this->clients_.size(), this->pDBus_, "DevicesStopped", array);
 		GKSysLog(LOG_ERR, ERROR, "device restarting failure : start failed");
 		return false;
 	}
