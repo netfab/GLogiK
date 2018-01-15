@@ -47,6 +47,7 @@ using namespace NSGKUtils;
 
 DevicesHandler::DevicesHandler()
 	:	DBus(nullptr),
+		system_bus_(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
 		client_id_("undefined"),
 		buffer_("", std::ios_base::app)
 {
@@ -215,7 +216,7 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 void DevicesHandler::setDeviceState(const std::string & devID, const DeviceProperties & device) {
 	try {
 		this->DBus->initializeRemoteMethodCall(
-			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+			this->system_bus_,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
@@ -255,7 +256,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 	try {
 		this->DBus->initializeRemoteMethodCall(
-			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+			this->system_bus_,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
@@ -293,7 +294,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 	try {
 		this->DBus->initializeRemoteMethodCall(
-			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+			this->system_bus_,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
@@ -467,7 +468,7 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 
 		try {
 			this->DBus->initializeRemoteMethodCall(
-				NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+				this->system_bus_,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
@@ -510,7 +511,7 @@ const bool DevicesHandler::setMacro(
 
 		/* getting recorded macro from daemon */
 		this->DBus->initializeRemoteMethodCall(
-			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+			this->system_bus_,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,

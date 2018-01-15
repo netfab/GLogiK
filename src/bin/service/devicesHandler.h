@@ -62,6 +62,7 @@ class DevicesHandler
 
 	private:
 		NSGKDBus::GKDBus* DBus;
+		const NSGKDBus::BusConnection system_bus_;
 		std::string client_id_;
 		std::ostringstream buffer_;
 		std::string config_root_directory_;
