@@ -31,6 +31,8 @@
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 bool SessionManager::still_running_ = true;
 
 SessionManager::SessionManager() {

@@ -23,8 +23,10 @@
 
 #include "GKDBusEventTwoStringsOneByteToBool.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 void TwoStringsOneByteToBoolEvent::runCallback(DBusConnection* connection, DBusMessage* message) {
 	GKDBusArgumentString::fillInArguments(message);
@@ -93,5 +95,5 @@ void EventTwoStringsOneByteToBool::addTwoStringsOneByteToBoolSignal(
 	this->addSignalRuleMatch(connection, interface, eventName);
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

@@ -30,9 +30,11 @@
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 void ClientsSignals::sendSignalToClients(
 	const uint8_t num_clients,
-	GKDBus* pDBus,
+	NSGKDBus::GKDBus* pDBus,
 	const std::string & signal)
 {
 	/* don't try to send signal if we know that there is no clients */
@@ -52,7 +54,7 @@ void ClientsSignals::sendSignalToClients(
 #endif
 	try {
 		pDBus->initializeTargetsSignal(
-			BusConnection::GKDBUS_SYSTEM,
+			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -69,7 +71,7 @@ void ClientsSignals::sendSignalToClients(
 
 void ClientsSignals::sendStatusSignalArrayToClients(
 	const uint8_t num_clients,
-	GKDBus* pDBus,
+	NSGKDBus::GKDBus* pDBus,
 	const std::string & signal,
 	const std::vector<std::string> & devIDArray
 ) {
@@ -86,7 +88,7 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 #endif
 	try {
 		pDBus->initializeTargetsSignal(
-			BusConnection::GKDBUS_SYSTEM,
+			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,

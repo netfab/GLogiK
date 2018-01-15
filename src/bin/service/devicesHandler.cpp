@@ -43,6 +43,8 @@ namespace fs = boost::filesystem;
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 DevicesHandler::DevicesHandler()
 	:	DBus(nullptr),
 		client_id_("undefined"),
@@ -64,7 +66,7 @@ DevicesHandler::~DevicesHandler() {
 #endif
 }
 
-void DevicesHandler::setDBus(GKDBus* pDBus) {
+void DevicesHandler::setDBus(NSGKDBus::GKDBus* pDBus) {
 	this->DBus = pDBus;
 }
 
@@ -213,7 +215,7 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 void DevicesHandler::setDeviceState(const std::string & devID, const DeviceProperties & device) {
 	try {
 		this->DBus->initializeRemoteMethodCall(
-			BusConnection::GKDBUS_SYSTEM,
+			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
@@ -253,7 +255,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 	try {
 		this->DBus->initializeRemoteMethodCall(
-			BusConnection::GKDBUS_SYSTEM,
+			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
@@ -291,7 +293,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 	try {
 		this->DBus->initializeRemoteMethodCall(
-			BusConnection::GKDBUS_SYSTEM,
+			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
@@ -465,7 +467,7 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 
 		try {
 			this->DBus->initializeRemoteMethodCall(
-				BusConnection::GKDBUS_SYSTEM,
+				NSGKDBus::BusConnection::GKDBUS_SYSTEM,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
@@ -508,7 +510,7 @@ const bool DevicesHandler::setMacro(
 
 		/* getting recorded macro from daemon */
 		this->DBus->initializeRemoteMethodCall(
-			BusConnection::GKDBUS_SYSTEM,
+			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,

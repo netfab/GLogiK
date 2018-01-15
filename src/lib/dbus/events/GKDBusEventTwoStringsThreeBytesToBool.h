@@ -37,7 +37,7 @@
 #include "lib/dbus/messages/GKDBusReply.h"
 #include "lib/dbus/messages/GKDBusErrorReply.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 class TwoStringsThreeBytesToBoolEvent
@@ -92,6 +92,6 @@ class EventTwoStringsThreeBytesToBool
 
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

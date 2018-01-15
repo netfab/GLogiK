@@ -35,7 +35,7 @@
 #include "lib/dbus/GKDBusConnection.h"
 
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 class VoidToVoidEvent
@@ -93,6 +93,6 @@ class EventVoidToVoid
 		) = 0;
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

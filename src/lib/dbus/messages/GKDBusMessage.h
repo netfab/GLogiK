@@ -29,7 +29,7 @@
 
 #include "lib/shared/keyEvent.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 class GKDBusMessage
@@ -43,7 +43,7 @@ class GKDBusMessage
 		void appendUInt16(const uint16_t value);
 		void appendUInt32(const uint32_t value);
 
-		void appendMacro(const macro_t & macro_array);
+		void appendMacro(const GLogiK::macro_t & macro_array);
 
 		//void appendVariantToMessage(const std::string & value);
 		//void appendVariantToMessage(const unsigned char value);
@@ -68,6 +68,6 @@ class GKDBusMessage
 
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

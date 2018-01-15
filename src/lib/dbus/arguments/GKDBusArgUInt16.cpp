@@ -23,8 +23,10 @@
 
 #include "GKDBusArgUInt16.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 const uint16_t GKDBusArgumentUInt16::getNextUInt16Argument(void) {
 	if( GKDBusArgument::uint16_arguments_.empty() )
@@ -34,5 +36,5 @@ const uint16_t GKDBusArgumentUInt16::getNextUInt16Argument(void) {
 	return ret;
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

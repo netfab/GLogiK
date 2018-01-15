@@ -25,7 +25,7 @@
 
 #undef UTILS_COMPILATION
 
-namespace GLogiK
+namespace NSGKUtils
 {
 
 GLogiKExcept::GLogiKExcept( const std::string& msg ) : message(msg) {}
@@ -45,5 +45,5 @@ const char* DisplayHelp::what( void ) const throw()
 }
 
 
-} // namespace GLogiK
+} // namespace NSGKUtils
 

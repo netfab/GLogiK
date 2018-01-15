@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 class GKDBusArgumentString : public GKDBusArgument
@@ -45,6 +45,6 @@ class GKDBusArgumentString : public GKDBusArgument
 
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

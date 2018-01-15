@@ -28,6 +28,8 @@
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 DeviceConfigurationFile::DeviceConfigurationFile() {
 }
 

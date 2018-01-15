@@ -33,7 +33,7 @@
 
 #include "GKDBusMessage.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 class GKDBusRemoteMethodCall
@@ -101,7 +101,7 @@ class GKDBusMessageRemoteMethodCall
 		virtual DBusConnection* getConnection(BusConnection wanted_connection) = 0;
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif
 

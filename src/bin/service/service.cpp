@@ -41,6 +41,8 @@
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 DesktopService::DesktopService() : buffer_("", std::ios_base::app)
 {
 	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;

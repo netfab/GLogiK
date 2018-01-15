@@ -43,7 +43,7 @@
 #include "events/GKDBusEventThreeStringsOneByteToMacro.h"
 #include "events/GKDBusEventStringsArrayToVoid.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 
@@ -104,6 +104,6 @@ class GKDBusEvents
 		);
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

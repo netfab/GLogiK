@@ -66,7 +66,7 @@ class DevicesManager
 		DevicesManager(void);
 		~DevicesManager(void);
 
-		void startMonitoring(GKDBus* pDBus);
+		void startMonitoring(NSGKDBus::GKDBus* pDBus);
 		void checkDBusMessages(void);
 		void resetDevicesStates(void);
 		void setNumClients(uint8_t num);
@@ -89,7 +89,7 @@ class DevicesManager
 		struct udev_monitor *monitor = nullptr;
 		struct pollfd fds[1];
 		int fd_ = -1;
-		GKDBus* DBus = nullptr;
+		NSGKDBus::GKDBus* DBus = nullptr;
 		uint8_t num_clients_;
 
 		std::ostringstream buffer_;

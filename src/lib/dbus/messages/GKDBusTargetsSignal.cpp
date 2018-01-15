@@ -23,8 +23,10 @@
 
 #include "GKDBusTargetsSignal.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 void GKDBusMessageTargetsSignal::initializeTargetsSignal(
 	BusConnection wanted_connection,
@@ -148,5 +150,5 @@ void GKDBusMessageTargetsSignal::sendTargetsSignal(void) {
 	this->signals_.clear();
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

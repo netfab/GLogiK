@@ -25,8 +25,10 @@
 
 #include "GKDBusErrorReply.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 GKDBusErrorReply::GKDBusErrorReply(DBusConnection* connection, DBusMessage* message) : GKDBusMessage(connection)
 {
@@ -113,5 +115,5 @@ void GKDBusMessageErrorReply::buildAndSendErrorReply(DBusConnection* connection,
 	this->sendErrorReply();
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

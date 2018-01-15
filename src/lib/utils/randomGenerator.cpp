@@ -30,7 +30,7 @@
 
 #undef UTILS_COMPILATION
 
-namespace GLogiK
+namespace NSGKUtils
 {
 
 RandomGenerator::RandomGenerator(const std::vector<char> & charset)
@@ -58,5 +58,5 @@ std::string RandomGenerator::getString(size_t length) {
 	return ret;
 }
 
-} // namespace GLogiK
+} // namespace NSGKUtils
 

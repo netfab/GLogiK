@@ -23,8 +23,10 @@
 
 #include "GKDBusArgByte.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 const uint8_t GKDBusArgumentByte::getNextByteArgument(void) {
 	if( GKDBusArgument::byte_arguments_.empty() )
@@ -34,5 +36,5 @@ const uint8_t GKDBusArgumentByte::getNextByteArgument(void) {
 	return ret;
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

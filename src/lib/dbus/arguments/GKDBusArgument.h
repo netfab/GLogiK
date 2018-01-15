@@ -29,7 +29,7 @@
 
 #include <dbus/dbus.h>
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 class GKDBusArgument
@@ -60,6 +60,6 @@ class GKDBusArgument
 
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

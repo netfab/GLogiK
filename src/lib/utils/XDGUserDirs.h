@@ -28,7 +28,7 @@
 
 #include <string>
 
-namespace GLogiK
+namespace NSGKUtils
 {
 
 class XDGUserDirs
@@ -43,6 +43,6 @@ class XDGUserDirs
 	private:
 };
 
-} // namespace GLogiK
+} // namespace NSGKUtils
 
 #endif

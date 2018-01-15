@@ -27,8 +27,10 @@
 
 #include "GKDBusEvents.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 const std::string GKDBusEvents::rootNodeObject_("RootNode");
 thread_local BusConnection GKDBusEvents::current_bus_(BusConnection::GKDBUS_SYSTEM);
@@ -194,5 +196,5 @@ const std::string GKDBusEvents::introspect(const std::string & asked_object_path
 
 /* -- */
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

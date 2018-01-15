@@ -25,8 +25,10 @@
 
 #include "GKDBusBroadcastSignal.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 	DBusConnection* connection,
@@ -125,5 +127,5 @@ void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void) {
 	}
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

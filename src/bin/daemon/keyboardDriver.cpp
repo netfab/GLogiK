@@ -40,6 +40,8 @@
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 bool KeyboardDriver::libusb_status_ = false;
 libusb_context * KeyboardDriver::context_ = nullptr;
 
@@ -474,7 +476,7 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 #endif
 
 	/* ROOT_NODE only for introspection, don't care */
-	GKDBus* pDBus = new GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
+	NSGKDBus::GKDBus* pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
 
 	bool keys_found = false;
 	/* initializing time_point */
@@ -516,7 +518,7 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 					pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
 
 					pDBus->initializeTargetsSignal(
-						BusConnection::GKDBUS_SYSTEM,
+						NSGKDBus::BusConnection::GKDBUS_SYSTEM,
 						GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 						GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
 						GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,

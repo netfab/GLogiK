@@ -37,7 +37,7 @@
 #include "lib/dbus/messages/GKDBusReply.h"
 #include "lib/dbus/messages/GKDBusErrorReply.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 class StringToBoolEvent
@@ -89,6 +89,6 @@ class EventStringToBool
 
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

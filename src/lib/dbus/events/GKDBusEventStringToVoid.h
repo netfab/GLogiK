@@ -34,7 +34,7 @@
 #include "lib/dbus/GKDBusConnection.h"
 #include "lib/dbus/arguments/GKDBusArgString.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 class StringToVoidEvent
@@ -94,6 +94,6 @@ class EventStringToVoid
 
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

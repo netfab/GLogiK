@@ -40,7 +40,7 @@ class ClientsManager
 	:	public ClientsSignals
 {
 	public:
-		ClientsManager(GKDBus* pDBus);
+		ClientsManager(NSGKDBus::GKDBus* pDBus);
 		~ClientsManager(void);
 
 		void runLoop(void);
@@ -49,7 +49,7 @@ class ClientsManager
 
 	private:
 		std::ostringstream buffer_;
-		GKDBus* DBus;
+		NSGKDBus::GKDBus* DBus;
 		DevicesManager* devicesManager;
 
 		std::map<const std::string, Client*> clients_;

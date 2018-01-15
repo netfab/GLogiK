@@ -39,7 +39,7 @@
 #include "lib/dbus/messages/GKDBusReply.h"
 #include "lib/dbus/messages/GKDBusErrorReply.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 class ThreeStringsOneByteToMacroEvent
@@ -54,7 +54,7 @@ class ThreeStringsOneByteToMacroEvent
 		ThreeStringsOneByteToMacroEvent(
 			const char* n,
 			const std::vector<DBusMethodArgument> & a,
-			std::function<const macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> c,
+			std::function<const GLogiK::macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> c,
 			GKDBusEventType t,
 			const bool i
 			)	: GKDBusEvent(n, a, t, i), callback(c) {}
@@ -63,7 +63,7 @@ class ThreeStringsOneByteToMacroEvent
 		void runCallback(DBusConnection* connection, DBusMessage* message);
 
 	private:
-		std::function<const macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> callback;
+		std::function<const GLogiK::macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> callback;
 
 };
 
@@ -76,7 +76,7 @@ class EventThreeStringsOneByteToMacro
 			const char* interface,
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
-			std::function<const macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> callback,
+			std::function<const GLogiK::macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> callback,
 			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD,
 			const bool introspectable=true
 		);
@@ -94,6 +94,6 @@ class EventThreeStringsOneByteToMacro
 
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

@@ -25,8 +25,10 @@
 
 #include "GKDBusReply.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 GKDBusReply::GKDBusReply(DBusConnection* connection, DBusMessage* message)
 	: GKDBusMessage(connection)
@@ -108,7 +110,7 @@ void GKDBusMessageReply::appendStringVectorToReply(const std::vector<std::string
 		this->reply_->appendStringVector(list);
 }
 
-void GKDBusMessageReply::appendMacroToReply(const macro_t & macro_array) {
+void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_t & macro_array) {
 	if(this->reply_ != nullptr) /* sanity check */
 		this->reply_->appendMacro(macro_array);
 }
@@ -131,5 +133,5 @@ void GKDBusMessageReply::sendReply(void) {
 	this->reply_ = nullptr;
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

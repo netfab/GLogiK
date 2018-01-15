@@ -30,6 +30,8 @@
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 Client::Client(const std::string & object_path, DevicesManager* dev_manager) : session_state_("unknown"),
 	client_session_object_path_(object_path), check_("true")
 {

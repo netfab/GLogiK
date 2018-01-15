@@ -29,7 +29,7 @@
 #include <exception>
 #include <string>
 
-namespace GLogiK
+namespace NSGKUtils
 {
 
 class GLogiKExcept : public std::exception
@@ -84,7 +84,7 @@ class GLogiKBadAlloc : public GLogiKExcept
 		virtual ~GLogiKBadAlloc( void ) throw() {};
 };
 
-} // namespace GLogiK
+} // namespace NSGKUtils
 
 #endif
 

@@ -36,7 +36,9 @@
 namespace GLogiK
 {
 
-ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app), DBus(pDBus),
+using namespace NSGKUtils;
+
+ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus) : buffer_("", std::ios_base::app), DBus(pDBus),
 	devicesManager(nullptr), enabled_signals_(true)
 {
 #if DEBUGGING_ON
@@ -58,7 +60,7 @@ ClientsManager::ClientsManager(GKDBus* pDBus) : buffer_("", std::ios_base::app),
 	const auto & DM_object = GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT;
 	const auto & DM_interf = GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
 
-	const BusConnection system_bus(BusConnection::GKDBUS_SYSTEM);
+	const NSGKDBus::BusConnection system_bus(NSGKDBus::BusConnection::GKDBUS_SYSTEM);
 
 	/* ClientsManager D-Bus object */
 

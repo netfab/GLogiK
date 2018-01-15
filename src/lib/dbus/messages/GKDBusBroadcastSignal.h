@@ -26,7 +26,7 @@
 
 #include "GKDBusMessage.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 class GKDBusBroadcastSignal : public GKDBusMessage
@@ -67,7 +67,7 @@ class GKDBusMessageBroadcastSignal
 
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif
 

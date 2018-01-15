@@ -54,7 +54,8 @@ class ServiceDBusHandler
 	protected:
 
 	private:
-		GKDBus* DBus;
+		NSGKDBus::GKDBus* DBus;
+		const NSGKDBus::BusConnection system_bus_;
 		DevicesHandler devices_;
 		bool register_retry_;
 		bool are_we_registered_;

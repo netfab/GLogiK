@@ -26,7 +26,7 @@
 
 #include "GKDBusMessage.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 class GKDBusErrorReply : public GKDBusMessage
@@ -58,6 +58,6 @@ class GKDBusMessageErrorReply
 
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

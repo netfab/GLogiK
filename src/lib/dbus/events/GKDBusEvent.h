@@ -31,7 +31,7 @@
 
 #include "lib/dbus/GKDBusConnection.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 enum class GKDBusEventType : uint8_t
@@ -80,6 +80,6 @@ class EventCanBeSignal {
 		virtual DBusConnection* getConnection(BusConnection wanted_connection) = 0;
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

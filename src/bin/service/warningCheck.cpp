@@ -26,6 +26,8 @@
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 uint8_t WarningCheck::warn_count_ = 0;
 
 WarningCheck::WarningCheck() {

@@ -24,7 +24,7 @@
 
 #include "GKDBusArgument.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 class GKDBusArgumentBoolean : public GKDBusArgument
@@ -40,6 +40,6 @@ class GKDBusArgumentBoolean : public GKDBusArgument
 
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

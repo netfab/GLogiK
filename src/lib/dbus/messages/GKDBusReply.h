@@ -31,7 +31,7 @@
 
 #include "GKDBusMessage.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 class GKDBusReply : public GKDBusMessage
@@ -61,7 +61,7 @@ class GKDBusMessageReply
 		void appendStringVectorToReply(
 			const std::vector<std::string> & list
 		);
-		void appendMacroToReply(const macro_t & macro_array);
+		void appendMacroToReply(const GLogiK::macro_t & macro_array);
 
 		void sendReply(void);
 
@@ -69,6 +69,6 @@ class GKDBusMessageReply
 		GKDBusReply* reply_;
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

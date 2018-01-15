@@ -38,6 +38,8 @@
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 DevicesManager::DevicesManager() : num_clients_(0), buffer_("", std::ios_base::app) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing devices manager";
@@ -639,10 +641,10 @@ void DevicesManager::resetDevicesStates(void) {
 }
 
 void DevicesManager::checkDBusMessages(void) {
-	this->DBus->checkForNextMessage(BusConnection::GKDBUS_SYSTEM);
+	this->DBus->checkForNextMessage(NSGKDBus::BusConnection::GKDBUS_SYSTEM);
 }
 
-void DevicesManager::startMonitoring(GKDBus* pDBus) {
+void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing libudev";
 #endif

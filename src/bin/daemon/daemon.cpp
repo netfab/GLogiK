@@ -58,6 +58,8 @@ namespace fs = boost::filesystem;
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app), DBus(nullptr)
 {
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
@@ -133,7 +135,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			//std::signal(SIGHUP, GLogiKDaemon::handle_signal);
 
 			try {
-				this->DBus = new GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
+				this->DBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
 				this->DBus->connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
 
 				{

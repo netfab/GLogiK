@@ -29,7 +29,7 @@
 
 #undef UTILS_COMPILATION
 
-namespace GLogiK
+namespace NSGKUtils
 {
 
 const std::string to_string(const char* s) {
@@ -50,5 +50,5 @@ const std::string to_string(const char* s) {
 	}
 };
 
-} // namespace GLogiK
+} // namespace NSGKUtils
 

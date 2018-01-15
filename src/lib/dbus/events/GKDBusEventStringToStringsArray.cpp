@@ -23,8 +23,10 @@
 
 #include "GKDBusEventStringToStringsArray.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 void StringToStringsArrayEvent::runCallback(DBusConnection* connection, DBusMessage* message) {
 	GKDBusArgumentString::fillInArguments(message);
@@ -78,5 +80,5 @@ void EventStringToStringsArray::addStringToStringsArrayEvent(
 	this->addIntrospectableEvent(bus, object, interface, e);
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

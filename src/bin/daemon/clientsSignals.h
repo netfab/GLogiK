@@ -42,12 +42,12 @@ class ClientsSignals
 
 		void sendSignalToClients(
 			const uint8_t num_clients,
-			GKDBus* pDBus,
+			NSGKDBus::GKDBus* pDBus,
 			const std::string & signal
 		);
 		void sendStatusSignalArrayToClients(
 			const uint8_t num_clients,
-			GKDBus* pDBus,
+			NSGKDBus::GKDBus* pDBus,
 			const std::string & signal,
 			const std::vector<std::string> & devIDArray
 		);

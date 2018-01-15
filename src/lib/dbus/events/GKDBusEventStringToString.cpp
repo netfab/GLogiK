@@ -23,8 +23,10 @@
 
 #include "GKDBusEventStringToString.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 void StringToStringEvent::runCallback(DBusConnection* connection, DBusMessage* message) {
 	std::string arg;
@@ -84,5 +86,5 @@ void EventStringToString::addStringToStringEvent(
 	this->addIntrospectableEvent(bus, object, interface, e);
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

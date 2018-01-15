@@ -24,7 +24,7 @@
 
 #include <cstdint>
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 enum class BusConnection : uint8_t
@@ -33,6 +33,6 @@ enum class BusConnection : uint8_t
 	GKDBUS_SYSTEM,
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

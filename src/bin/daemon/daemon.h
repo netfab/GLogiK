@@ -53,7 +53,7 @@ class GLogiKDaemon : public DaemonControl
 		std::string pid_file_name_ = "";
 		std::ofstream pid_file_;
 		std::ostringstream buffer_;
-		GKDBus* DBus;
+		NSGKDBus::GKDBus* DBus;
 
 		void daemonize(void);
 		void dropPrivileges(void);

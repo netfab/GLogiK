@@ -29,6 +29,8 @@
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 const macro_t MacrosBanks::empty_macro_ = {};
 const macros_map_t MacrosBanks::empty_macros_profiles_ = {};
 

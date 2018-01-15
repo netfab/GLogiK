@@ -41,7 +41,7 @@ class DevicesHandler
 		DevicesHandler(void);
 		~DevicesHandler(void);
 
-		void setDBus(GKDBus* pDBus);
+		void setDBus(NSGKDBus::GKDBus* pDBus);
 		void setClientID(const std::string & id);
 
 		void startDevice(const std::string & devID, const std::string & session_state);
@@ -61,7 +61,7 @@ class DevicesHandler
 	protected:
 
 	private:
-		GKDBus* DBus;
+		NSGKDBus::GKDBus* DBus;
 		std::string client_id_;
 		std::ostringstream buffer_;
 		std::string config_root_directory_;

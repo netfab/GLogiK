@@ -30,7 +30,7 @@
 #include <string>
 #include <random>
 
-namespace GLogiK
+namespace NSGKUtils
 {
 
 class RandomGenerator
@@ -56,6 +56,6 @@ class RandomGenerator
 
 };
 
-} // namespace GLogiK
+} // namespace NSGKUtils
 
 #endif

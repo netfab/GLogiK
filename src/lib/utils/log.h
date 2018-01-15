@@ -55,7 +55,7 @@
 
 #include <config.h>
 
-namespace GLogiK
+namespace NSGKUtils
 {
 
 inline std::string NowTime();
@@ -331,6 +331,6 @@ inline std::string NowTime()
 
 #endif //WIN32
 
-} // namespace GLogiK
+} // namespace NSGKUtils
 
 #endif //__GLOGIK_LOG_H__

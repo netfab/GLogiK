@@ -27,8 +27,10 @@
 
 #include "GKDBusRemoteMethodCall.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 	DBusConnection* connection,
@@ -209,5 +211,5 @@ void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void) {
 	dbus_message_unref(message);
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

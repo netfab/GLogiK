@@ -23,8 +23,10 @@
 
 #include "GKDBusMessage.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 thread_local std::vector<std::string> GKDBusMessage::extra_strings_ = {};
 
@@ -122,7 +124,7 @@ void GKDBusMessage::appendUInt32(const uint32_t value) {
 #endif
 }
 
-void GKDBusMessage::appendMacro(const macro_t & macro_array) {
+void GKDBusMessage::appendMacro(const GLogiK::macro_t & macro_array) {
 	DBusMessageIter array_it;
 
 	const char array_sig[] = \
@@ -278,5 +280,5 @@ void GKDBusMessage::appendUInt16(DBusMessageIter *iter, const uint16_t value) {
 #endif
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

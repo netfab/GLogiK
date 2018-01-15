@@ -23,8 +23,10 @@
 
 #include "GKDBusEventStringToVoid.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 void StringToVoidEvent::runCallback(DBusConnection* connection, DBusMessage* message) {
 	GKDBusArgumentString::fillInArguments(message);
@@ -72,5 +74,5 @@ void EventStringToVoid::addStringToVoidSignal(
 	this->addSignalRuleMatch(connection, interface, eventName);
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

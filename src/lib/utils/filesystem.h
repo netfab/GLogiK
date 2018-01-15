@@ -30,7 +30,7 @@
 
 namespace fs = boost::filesystem;
 
-namespace GLogiK
+namespace NSGKUtils
 {
 
 class FileSystem
@@ -45,6 +45,6 @@ class FileSystem
 	private:
 };
 
-} // namespace GLogiK
+} // namespace NSGKUtils
 
 #endif

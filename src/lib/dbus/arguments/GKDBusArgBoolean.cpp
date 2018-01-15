@@ -23,8 +23,10 @@
 
 #include "GKDBusArgBoolean.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 const bool GKDBusArgumentBoolean::getNextBooleanArgument(void) {
 	if( GKDBusArgument::boolean_arguments_.empty() )
@@ -34,5 +36,5 @@ const bool GKDBusArgumentBoolean::getNextBooleanArgument(void) {
 	return ret;
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

@@ -29,7 +29,7 @@
 #include <string>
 #include <type_traits>
 
-namespace GLogiK
+namespace NSGKUtils
 {
 
 template <typename T>
@@ -44,6 +44,6 @@ constexpr typename std::underlying_type<T>::type to_type(T obj) noexcept {
 
 const std::string to_string(const char* s);
 
-} // namespace GLogiK
+} // namespace NSGKUtils
 
 #endif

@@ -30,6 +30,8 @@
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 const std::vector< R_Key > LogitechG510::five_bytes_keys_map_ = {
 	{1, 0x01, Keys::GK_KEY_G1,  "G1",  true},
 	{1, 0x02, Keys::GK_KEY_G2,  "G2",  true},

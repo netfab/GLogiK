@@ -32,7 +32,7 @@
 #include "GKDBusRemoteMethodCall.h"
 #include "GKDBusBroadcastSignal.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 class GKDBusMessageTargetsSignal
@@ -74,7 +74,7 @@ class GKDBusMessageTargetsSignal
 
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif
 

@@ -23,13 +23,15 @@
 
 #include "GKDBusEventThreeStringsOneByteToMacro.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 void ThreeStringsOneByteToMacroEvent::runCallback(DBusConnection* connection, DBusMessage* message) {
 	GKDBusArgumentString::fillInArguments(message);
 
-	macro_t ret;
+	GLogiK::macro_t ret;
 
 	try {
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
@@ -73,7 +75,7 @@ void EventThreeStringsOneByteToMacro::addThreeStringsOneByteToMacroEvent(
 	const char* interface,
 	const char* eventName,
 	const std::vector<DBusMethodArgument> & args,
-	std::function<const macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> callback,
+	std::function<const GLogiK::macro_t &(const std::string&, const std::string&, const std::string&, const uint8_t)> callback,
 	GKDBusEventType eventType,
 	const bool introspectable
 ) {
@@ -81,5 +83,5 @@ void EventThreeStringsOneByteToMacro::addThreeStringsOneByteToMacroEvent(
 	this->addIntrospectableEvent(bus, object, interface, e);
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

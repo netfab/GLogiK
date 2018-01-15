@@ -31,6 +31,8 @@
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 MacrosManager::MacrosManager(
 	const char* virtual_keyboard_name,
 	const std::vector<std::string> & keys_names

@@ -25,8 +25,10 @@
 
 #include "GKDBusEvent.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 GKDBusEvent::GKDBusEvent(
 	const char* n,
@@ -62,5 +64,5 @@ void EventCanBeSignal::addSignalRuleMatch(
 #endif
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

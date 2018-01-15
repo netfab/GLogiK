@@ -31,7 +31,7 @@
 
 #undef UTILS_COMPILATION
 
-namespace GLogiK
+namespace NSGKUtils
 {
 
 FileSystem::FileSystem() {
@@ -71,5 +71,5 @@ void FileSystem::createOwnerDirectory(const fs::path & directory) {
 #endif
 }
 
-} // namespace GLogiK
+} // namespace NSGKUtils
 

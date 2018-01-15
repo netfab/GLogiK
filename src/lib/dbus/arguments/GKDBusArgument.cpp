@@ -25,8 +25,10 @@
 
 #include "GKDBusArgument.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 thread_local std::vector<std::string> GKDBusArgument::string_arguments_ = {};
 thread_local std::vector<uint8_t> GKDBusArgument::byte_arguments_ = {};
@@ -168,5 +170,5 @@ void GKDBusArgument::fillInArguments(DBusMessage* message, const bool logoff) {
 		std::reverse(GKDBusArgument::uint16_arguments_.begin(), GKDBusArgument::uint16_arguments_.end());
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

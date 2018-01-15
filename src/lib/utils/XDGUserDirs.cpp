@@ -29,7 +29,7 @@
 
 #undef UTILS_COMPILATION
 
-namespace GLogiK
+namespace NSGKUtils
 {
 
 XDGUserDirs::XDGUserDirs() {
@@ -50,5 +50,5 @@ const std::string XDGUserDirs::getConfigDirectory(void) {
 	return xdg_config_home;
 }
 
-} // namespace GLogiK
+} // namespace NSGKUtils
 

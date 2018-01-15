@@ -34,6 +34,8 @@
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 VirtualKeyboard::VirtualKeyboard(const char* device_name) : buffer_("", std::ios_base::app) {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "initializing " << device_name;

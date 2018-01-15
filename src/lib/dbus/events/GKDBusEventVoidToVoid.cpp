@@ -23,7 +23,7 @@
 
 #include "GKDBusEventVoidToVoid.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 void VoidToVoidEvent::runCallback(DBusConnection* connection, DBusMessage* message) {
@@ -65,5 +65,5 @@ void EventVoidToVoid::addVoidToVoidSignal(
 	this->addSignalRuleMatch(connection, interface, eventName);
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

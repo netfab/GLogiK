@@ -23,8 +23,10 @@
 
 #include "GKDBusArgString.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 thread_local std::string GKDBusArgumentString::current_string_("");
 
@@ -40,5 +42,5 @@ const std::vector<std::string> & GKDBusArgumentString::getStringsArray(void) {
 	return GKDBusArgument::string_arguments_;
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

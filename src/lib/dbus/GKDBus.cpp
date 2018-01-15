@@ -26,7 +26,7 @@
 #include "messages/GKDBusMessage.h"
 #include "GKDBus.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
 GKDBus::GKDBus(const std::string & rootnode)
@@ -189,22 +189,22 @@ void GKDBus::appendExtraStringToMessage(const std::string & value) {
 }
 
 /* helper function */
-const macro_t GKDBus::getMacro(void) {
+const GLogiK::macro_t GKDBus::getMacro(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "rebuilding macro array for DBus values";
 #endif
-	macro_t macro_array;
+	GLogiK::macro_t macro_array;
 	try {
 		do {
-			KeyEvent e;
+			GLogiK::KeyEvent e;
 
 			e.event_code = this->getNextByteArgument();
 
 			const uint8_t value = this->getNextByteArgument();
-			if( to_uint(value) > to_uint(EventValue::EVENT_KEY_UNKNOWN) )
+			if( to_uint(value) > to_uint(GLogiK::EventValue::EVENT_KEY_UNKNOWN) )
 				throw GLogiKExcept("wrong event value for enum conversion");
 
-			e.event		 = static_cast<EventValue>(value);
+			e.event		 = static_cast<GLogiK::EventValue>(value);
 			e.interval	 = this->getNextUInt16Argument();
 
 			macro_array.push_back(e);
@@ -281,5 +281,5 @@ DBusConnection* GKDBus::getConnection(BusConnection bus_connection) {
 	}
 }
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 

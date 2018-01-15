@@ -43,8 +43,10 @@
 #include "arguments/GKDBusArgByte.h"
 #include "arguments/GKDBusArgUInt16.h"
 
-namespace GLogiK
+namespace NSGKDBus
 {
+
+using namespace NSGKUtils;
 
 class GKDBusEventFound : public GLogiKExcept
 {
@@ -75,7 +77,7 @@ class GKDBus
 
 		// helper function rebuilding macro_t vector
 		// mirror of GKDBusMessage::appendMacro
-		const macro_t getMacro(void);
+		const GLogiK::macro_t getMacro(void);
 
 	protected:
 
@@ -96,6 +98,6 @@ class GKDBus
 		DBusConnection* getConnection(BusConnection bus_connection);
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif
