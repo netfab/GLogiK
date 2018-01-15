@@ -133,7 +133,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 	}
 }
 
-void GKDBusArgument::fillInArguments(DBusMessage* message, bool logoff) {
+void GKDBusArgument::fillInArguments(DBusMessage* message, const bool logoff) {
 	GKDBusArgument::string_arguments_.clear();
 	GKDBusArgument::boolean_arguments_.clear();
 	GKDBusArgument::byte_arguments_.clear();

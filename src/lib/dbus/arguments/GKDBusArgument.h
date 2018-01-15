@@ -42,7 +42,7 @@ class GKDBusArgument
 
 		static void fillInArguments(
 			DBusMessage* message,
-			bool logoff=false
+			const bool logoff=false
 		);
 
 		thread_local static std::vector<std::string> string_arguments_;
