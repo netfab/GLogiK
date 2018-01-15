@@ -136,6 +136,8 @@ else
 	AC_DEFINE_UNQUOTED([DEBUG_GKDBUS_SUBOBJECTS], [0], [Also debug GKDBus sub-objects])
 fi
 
+dnl abort compilation after first error
+AS_VAR_APPEND(AM_CXXFLAGS,[" -Wfatal-errors"])
 
 AC_SUBST(AM_CXXFLAGS)
 AC_SUBST(AM_LDFLAGS)
