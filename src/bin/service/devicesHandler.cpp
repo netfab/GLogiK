@@ -533,12 +533,10 @@ const bool DevicesHandler::setMacro(
 		device.setMacro(profile, keyName, macro_array);
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("device not found in container : ");
-		this->buffer_ << devID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		LOG(WARNING) << "device not found : " << devID;
 	}
 	catch (const GLogiKExcept & e) {
-		GKSysLog(LOG_WARNING, WARNING, e.what());
+		LOG(WARNING) << "getting or setting macro failed : " << e.what();
 	}
 	return false;
 }
