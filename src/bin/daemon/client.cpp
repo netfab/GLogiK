@@ -32,8 +32,12 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-Client::Client(const std::string & object_path, DevicesManager* dev_manager) : session_state_("unknown"),
-	client_session_object_path_(object_path), check_("true")
+Client::Client(
+	const std::string & object_path,
+	DevicesManager* dev_manager
+)	:	session_state_("unknown"),
+		client_session_object_path_(object_path),
+		check_("true")
 {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing new client";
@@ -92,6 +96,9 @@ const std::vector<std::string> Client::getDeviceProperties(const std::string & d
 		DeviceProperties device;
 		device.setVendor(properties[0]); /* FIXME */
 		device.setModel(properties[1]);
+
+		device.initMacrosProfiles( dev_manager->getDeviceMacroKeysNames(devID) );
+
 		this->devices_[devID] = device;
 	}
 
@@ -122,6 +129,9 @@ const bool Client::deleteDevice(const std::string & devID) {
 const bool Client::setDeviceBacklightColor(const std::string & devID,
 			const uint8_t r, const uint8_t g, const uint8_t b)
 {
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "setting backlight color for device " << devID;
+#endif
 	try {
 		DeviceProperties & device = this->devices_.at(devID);
 		device.setBLColor_R(r);
@@ -137,10 +147,9 @@ const bool Client::setDeviceBacklightColor(const std::string & devID,
 	return false;
 }
 
-void Client::setAllDevicesBacklightColors(DevicesManager* dev_manager)
-{
+void Client::setAllDevicesBacklightColors(DevicesManager* dev_manager) {
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "setting backlight color for all devices";
+	LOG(DEBUG3) << "setting backlight color for all started devices";
 #endif
 	for( const auto & devID : dev_manager->getStartedDevices() ) {
 		try {
@@ -157,9 +166,25 @@ void Client::setAllDevicesBacklightColors(DevicesManager* dev_manager)
 	}
 }
 
+void Client::setAllDevicesMacrosProfiles(DevicesManager* dev_manager) {
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "setting macros profiles for all started devices";
+#endif
+	for( const auto & devID : dev_manager->getStartedDevices() ) {
+		try {
+			const DeviceProperties & device = this->devices_.at(devID);
+			dev_manager->setDeviceMacrosProfiles( devID, device.getMacrosProfiles() );
+		}
+		catch (const std::out_of_range& oor) {
+			std::string warn(s_UnknownDevice); warn += devID;
+			GKSysLog(LOG_WARNING, WARNING, warn);
+		}
+	}
+}
+
 void Client::syncDeviceMacrosProfiles(const std::string & devID, const macros_map_t & macros_profiles) {
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "synchonizing macros profiles for device " << devID;
+	LOG(DEBUG3) << "synchonizing macros profiles for device " << devID;
 #endif
 	try {
 		DeviceProperties & device = this->devices_.at(devID);

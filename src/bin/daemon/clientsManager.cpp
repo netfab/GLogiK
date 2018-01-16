@@ -346,6 +346,7 @@ const bool ClientsManager::updateClientState(const std::string & clientID, const
 		}
 		else if(state == "active") {
 			pClient->setAllDevicesBacklightColors(this->devicesManager);
+			pClient->setAllDevicesMacrosProfiles(this->devicesManager);
 		}
 		else {
 			this->buffer_.str("unhandled state for updating devices : ");

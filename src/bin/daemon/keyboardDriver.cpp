@@ -506,12 +506,19 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 					continue;
 				}
 
-				/* macro key pressed, recording macro */
-				device.macros_man->setMacro(
-					device.macros_man->getCurrentActiveProfile(),
-					device.chosen_macro_key,
-					device.standard_keys_events
-				);
+				try {
+					/* macro key pressed, recording macro */
+					device.macros_man->setMacro(
+						device.macros_man->getCurrentActiveProfile(),
+						device.chosen_macro_key,
+						device.standard_keys_events
+					);
+				}
+				catch (const GLogiKExcept & e) {
+					std::ostringstream warn("", std::ios_base::app);
+					warn << "setting macro failed : " << e.what();
+					GKSysLog(LOG_WARNING, WARNING, warn.str());
+				}
 
 				try {
 					/* open a new connection, GKDBus is not thread-safe */
@@ -1159,6 +1166,21 @@ void KeyboardDriver::setDeviceBacklightColor(const std::string & devID, const ui
 		InitializedDevice & device = this->initialized_devices_.at(devID);
 		this->updateKeyboardColor(device, r, g, b);
 		this->setKeyboardColor(device);
+	}
+	catch (const std::out_of_range& oor) {
+		this->buffer_.str("wrong device ID : ");
+		this->buffer_ << devID;
+		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+	}
+}
+
+void KeyboardDriver::setDeviceMacrosProfiles(
+	const std::string & devID,
+	const macros_map_t & macros_profiles
+) {
+	try {
+		InitializedDevice & device = this->initialized_devices_.at(devID);
+		device.macros_man->setMacrosProfiles(macros_profiles);
 	}
 	catch (const std::out_of_range& oor) {
 		this->buffer_.str("wrong device ID : ");

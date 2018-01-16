@@ -54,7 +54,10 @@ class Client
 			const uint8_t g,
 			const uint8_t b
 		);
+
 		void setAllDevicesBacklightColors(DevicesManager* dev_manager);
+		void setAllDevicesMacrosProfiles(DevicesManager* dev_manager);
+
 		void syncDeviceMacrosProfiles(const std::string & devID, const macros_map_t & macros_profiles);
 		const macro_t & getDeviceMacro(
 			const std::string & devID,
