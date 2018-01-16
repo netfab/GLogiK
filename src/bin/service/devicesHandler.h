@@ -52,7 +52,7 @@ class DevicesHandler
 
 		void clearLoadedDevices(void);
 
-		const bool setMacro(
+		const bool setDeviceMacro(
 			const std::string & devID,
 			const std::string & keyName,
 			const uint8_t profile

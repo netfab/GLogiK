@@ -501,7 +501,7 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 	}
 }
 
-const bool DevicesHandler::setMacro(
+const bool DevicesHandler::setDeviceMacro(
 	const std::string & devID,
 	const std::string & keyName,
 	const uint8_t profile)
