@@ -85,15 +85,20 @@ const std::string & GKDBusEvents::getRootNode(void) const {
 const std::string GKDBusEvents::introspectRootNode(void) {
 	std::ostringstream xml;
 
-	const auto & current_bus = this->DBusEvents_.at(this->current_bus_);
-
 	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
 	xml << "<node name=\"" << this->root_node_ << "\">\n";
 
-	for(const auto & object_path_pair : current_bus) {
-		if(object_path_pair.first != GKDBusEvents::rootNodeObject_)
-			xml << "  <node name=\"" << object_path_pair.first << "\"/>\n";
+	try {
+		const auto & current_bus = this->DBusEvents_.at(this->current_bus_);
+
+		for(const auto & object_path_pair : current_bus) {
+			if(object_path_pair.first != GKDBusEvents::rootNodeObject_)
+				xml << "  <node name=\"" << object_path_pair.first << "\"/>\n";
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(WARNING) << "can't get current bus container";
 	}
 
 	xml << "</node>\n";
@@ -165,28 +170,33 @@ const std::string GKDBusEvents::introspect(const std::string & asked_object_path
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
 	xml << "<node name=\"" << asked_object_path << "\">\n";
 
-	const auto & current_bus = this->DBusEvents_.at(this->current_bus_);
+	try {
+		const auto & current_bus = this->DBusEvents_.at(this->current_bus_);
 
-	for(const auto & interface : this->DBusInterfaces_) {
+		for(const auto & interface : this->DBusInterfaces_) {
 
-		bool interface_opened = false;
+			bool interface_opened = false;
 
-		for(const auto & object_path_pair : current_bus) {
-			/* object path must match */
-			if( this->getNode(object_path_pair.first) != asked_object_path )
-				continue;
-			for(const auto & interface_pair : object_path_pair.second) {
-				if( interface_pair.first == interface ) {
-					this->openXMLInterface(xml, interface_opened, interface);
-					for(const auto & DBusEvent : interface_pair.second) { /* vector of pointers */
-						this->eventToXMLMethod(xml, DBusEvent);
+			for(const auto & object_path_pair : current_bus) {
+				/* object path must match */
+				if( this->getNode(object_path_pair.first) != asked_object_path )
+					continue;
+				for(const auto & interface_pair : object_path_pair.second) {
+					if( interface_pair.first == interface ) {
+						this->openXMLInterface(xml, interface_opened, interface);
+						for(const auto & DBusEvent : interface_pair.second) { /* vector of pointers */
+							this->eventToXMLMethod(xml, DBusEvent);
+						}
 					}
 				}
 			}
-		}
 
-		if( interface_opened )
-			xml << "  </interface>\n";
+			if( interface_opened )
+				xml << "  </interface>\n";
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(WARNING) << "can't get current bus container";
 	}
 
 	xml << "</node>\n";
