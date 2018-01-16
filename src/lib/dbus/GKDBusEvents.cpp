@@ -85,13 +85,15 @@ const std::string & GKDBusEvents::getRootNode(void) const {
 const std::string GKDBusEvents::introspectRootNode(void) {
 	std::ostringstream xml;
 
+	const auto & current_bus = this->DBusEvents_.at(this->current_bus_);
+
 	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
 	xml << "<node name=\"" << this->root_node_ << "\">\n";
 
-	for(const auto & object_pair : this->DBusObjects_) {
-		if(object_pair.first != GKDBusEvents::rootNodeObject_)
-			xml << "  <node name=\"" << object_pair.first << "\"/>\n";
+	for(const auto & object_path_pair : current_bus) {
+		if(object_path_pair.first != GKDBusEvents::rootNodeObject_)
+			xml << "  <node name=\"" << object_path_pair.first << "\"/>\n";
 	}
 
 	xml << "</node>\n";
@@ -120,8 +122,7 @@ void GKDBusEvents::addIntrospectableEvent(const BusConnection bus, const char* o
 				GKDBusEventType::GKDBUS_EVENT_METHOD, false);
 		}
 	}
-	this->DBusObjects_[object] = true; // FIXME
-	this->DBusInterfaces_[interface] = true;
+	this->DBusInterfaces_.insert(interface);
 	this->DBusEvents_[bus][object][interface].push_back(event);
 }
 
@@ -166,8 +167,7 @@ const std::string GKDBusEvents::introspect(const std::string & asked_object_path
 
 	const auto & current_bus = this->DBusEvents_.at(this->current_bus_);
 
-	for(const auto & interface_it : this->DBusInterfaces_) {
-		const std::string & interface = interface_it.first;
+	for(const auto & interface : this->DBusInterfaces_) {
 
 		bool interface_opened = false;
 

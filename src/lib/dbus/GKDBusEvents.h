@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <sstream>
 
 #include "lib/dbus/GKDBusConnection.h"
@@ -74,8 +75,7 @@ class GKDBusEvents
 				std::map< const std::string, /* interface */
 					std::vector<GKDBusEvent*> > > > DBusEvents_;
 
-		std::map<const std::string, bool> DBusObjects_;
-		std::map<const std::string, bool> DBusInterfaces_;
+		std::set<std::string> DBusInterfaces_;
 
 		const std::string getNode(const std::string & object) const;
 		const std::string & getRootNode(void) const;
