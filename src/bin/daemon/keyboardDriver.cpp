@@ -227,7 +227,7 @@ KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & device) {
 			}
 			break;
 		case LIBUSB_ERROR_TIMEOUT:
-#if DEBUGGING_ON
+#if 0 && DEBUGGING_ON
 			LOG(DEBUG5) << "timeout reached";
 #endif
 			return KeyStatus::S_KEY_TIMEDOUT;
@@ -326,13 +326,14 @@ const bool KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, boo
 	return mask_updated;
 }
 
-void KeyboardDriver::handleModifierKeys(InitializedDevice & device) {
+const uint8_t KeyboardDriver::handleModifierKeys(InitializedDevice & device, const uint16_t interval) {
 	if( device.previous_keys_buffer[1] == device.keys_buffer[1] )
-		return; /* nothing changed here */
+		return 0; /* nothing changed here */
 
 	KeyEvent e;
-	e.interval = this->getTimeLapse(device);
+	e.interval = interval;
 	uint8_t diff = 0;
+	uint8_t ret = 0;
 
 	/* some modifier keys were released */
 	if( device.previous_keys_buffer[1] > device.keys_buffer[1] ) {
@@ -352,64 +353,72 @@ void KeyboardDriver::handleModifierKeys(InitializedDevice & device) {
 		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_LEFT_CTRL);
+		ret++;
 		if( diff == 0 )
-			return;
+			return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_SHIFT) ) {
 		e.event_code = KEY_LEFTSHIFT;
 		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_LEFT_SHIFT);
+		ret++;
 		if( diff == 0 )
-			return;
+			return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_ALT) ) {
 		e.event_code = KEY_LEFTALT;
 		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_LEFT_ALT);
+		ret++;
 		if( diff == 0 )
-			return;
+			return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_META) ) {
 		e.event_code = KEY_LEFTMETA;
 		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_LEFT_META);
+		ret++;
 		if( diff == 0 )
-			return;
+			return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_CTRL) ) {
 		e.event_code = KEY_RIGHTCTRL;
 		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_CTRL);
+		ret++;
 		if( diff == 0 )
-			return;
+			return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_SHIFT) ) {
 		e.event_code = KEY_RIGHTSHIFT;
 		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_SHIFT);
+		ret++;
 		if( diff == 0 )
-			return;
+			return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_ALT) ) {
 		e.event_code = KEY_RIGHTALT;
 		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_ALT);
+		ret++;
 		if( diff == 0 )
-			return;
+			return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_META) ) {
 		e.event_code = KEY_RIGHTMETA;
 		device.standard_keys_events.push_back(e);
 
 		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_META);
+		ret++;
 		if( diff == 0 )
-			return;
+			return ret;
 	}
 
 	/*
@@ -421,6 +430,7 @@ void KeyboardDriver::handleModifierKeys(InitializedDevice & device) {
 	 * events. In theory, maybe. But never seen it. And I tried.
 	 */
 	GKSysLog(LOG_WARNING, WARNING, "diff not equal to zero");
+	return ret;
 }
 
 /* used to create macros */
@@ -433,6 +443,18 @@ uint16_t KeyboardDriver::getTimeLapse(InitializedDevice & device) {
 
 void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 	unsigned int i = 0;
+
+	uint16_t interval = this->getTimeLapse(device);
+
+	const uint8_t num = this->handleModifierKeys(device, interval);
+
+	if( num > 0 ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << to_uint(num) << " modifier keys event(s) added";
+#endif
+		/* only first event will have a timelapse interval */
+		interval = 1;
+	}
 
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "	b	|	p";
@@ -448,7 +470,8 @@ void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 		}
 		else {
 			KeyEvent e;
-			e.interval = this->getTimeLapse(device);
+			e.interval = interval;
+			interval = 1; /* only first event will have a timelapse interval */
 
 			if( device.previous_keys_buffer[i] == 0 ) {
 				e.event_code = KeyboardDriver::hid_keyboard_[ device.keys_buffer[i] ];
@@ -466,8 +489,6 @@ void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 			device.standard_keys_events.push_back(e);
 		}
 	}
-
-	this->handleModifierKeys(device);
 }
 
 void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std::string & devID) {

@@ -108,9 +108,16 @@ void VirtualKeyboard::handleLibevdevError(int ret) {
 }
 
 void VirtualKeyboard::sendKeyEvent(const KeyEvent & key) {
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "key event : ";
+	LOG(DEBUG2)	<< "event_code : " << to_uint(key.event_code);
+	LOG(DEBUG2)	<< "event : " << to_uint(key.event);
+	LOG(DEBUG2)	<< "interval : " << key.interval << " ms";
+#endif
+
 	if( key.interval > 20 ) { // FIXME
 #if DEBUGGING_ON
-		LOG(DEBUG) << "sleeping for : " << key.interval << "ms";
+		LOG(DEBUG3) << "sleeping for : " << key.interval << "ms";
 #endif
 		std::this_thread::sleep_for(std::chrono::milliseconds(key.interval));
 	}
