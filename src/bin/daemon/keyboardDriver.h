@@ -231,7 +231,17 @@ class KeyboardDriver
 			const uint8_t green=0xFF, const uint8_t blue=0xFF);
 
 		void enterMacroRecordMode(InitializedDevice & device, const std::string & devID);
+
+		void appendKeyEvent(
+			InitializedDevice & device,
+			KeyEvent & e,
+			uint8_t & diff,
+			uint8_t & ret,
+			uint8_t event_code,
+			ModifierKeys mod_key
+		);
 		const uint8_t handleModifierKeys(InitializedDevice & device, const uint16_t interval);
+
 		uint16_t getTimeLapse(InitializedDevice & device);
 		void runMacro(const std::string & devID);
 

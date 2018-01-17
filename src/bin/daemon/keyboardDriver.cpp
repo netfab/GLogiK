@@ -326,6 +326,43 @@ const bool KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, boo
 	return mask_updated;
 }
 
+void KeyboardDriver::appendKeyEvent(
+	InitializedDevice & device,
+	KeyEvent & e,
+	uint8_t & diff,
+	uint8_t & ret,
+	uint8_t event_code,
+	ModifierKeys mod_key
+) {
+	diff -= to_type(mod_key);
+
+	/* Macro Size Limit - see keyEvent.h */
+	if(device.standard_keys_events.size() >= MACRO_T_MAX_SIZE ) {
+		/* skip all new events */
+		GKSysLog(LOG_WARNING, WARNING, "reached macro max size, skipping modifier key event");
+		return;
+	}
+
+	/* Macro Size Limit - see keyEvent.h */
+	if(device.standard_keys_events.size() >= MACRO_T_KEYPRESS_MAX_SIZE ) {
+		/* skip events other than release */
+		if( e.event != EventValue::EVENT_KEY_RELEASE ) {
+			GKSysLog(LOG_WARNING, WARNING, "reached macro keypress max size, skipping modifier keypress event");
+			return;
+		}
+	}
+
+	/*
+	 * some modifier keys events were already appended,
+	 * only first event should have a real timelapse interval
+	 */
+	if(ret > 0)
+		e.interval = 1;
+	e.event_code = event_code;
+	device.standard_keys_events.push_back(e);
+	ret++;
+}
+
 const uint8_t KeyboardDriver::handleModifierKeys(InitializedDevice & device, const uint16_t interval) {
 	if( device.previous_keys_buffer[1] == device.keys_buffer[1] )
 		return 0; /* nothing changed here */
@@ -349,76 +386,36 @@ const uint8_t KeyboardDriver::handleModifierKeys(InitializedDevice & device, con
 	/* KEY_FOO from linux/input-event-codes.h */
 
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_CTRL) ) {
-		e.event_code = KEY_LEFTCTRL;
-		device.standard_keys_events.push_back(e);
-
-		diff -= to_type(ModifierKeys::GK_KEY_LEFT_CTRL);
-		ret++;
-		if( diff == 0 )
-			return ret;
+		this->appendKeyEvent(device, e, diff, ret, KEY_LEFTCTRL, ModifierKeys::GK_KEY_LEFT_CTRL);
+		if( diff == 0 ) return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_SHIFT) ) {
-		e.event_code = KEY_LEFTSHIFT;
-		device.standard_keys_events.push_back(e);
-
-		diff -= to_type(ModifierKeys::GK_KEY_LEFT_SHIFT);
-		ret++;
-		if( diff == 0 )
-			return ret;
+		this->appendKeyEvent(device, e, diff, ret, KEY_LEFTSHIFT, ModifierKeys::GK_KEY_LEFT_SHIFT);
+		if( diff == 0 ) return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_ALT) ) {
-		e.event_code = KEY_LEFTALT;
-		device.standard_keys_events.push_back(e);
-
-		diff -= to_type(ModifierKeys::GK_KEY_LEFT_ALT);
-		ret++;
-		if( diff == 0 )
-			return ret;
+		this->appendKeyEvent(device, e, diff, ret, KEY_LEFTALT, ModifierKeys::GK_KEY_LEFT_ALT);
+		if( diff == 0 ) return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_META) ) {
-		e.event_code = KEY_LEFTMETA;
-		device.standard_keys_events.push_back(e);
-
-		diff -= to_type(ModifierKeys::GK_KEY_LEFT_META);
-		ret++;
-		if( diff == 0 )
-			return ret;
+		this->appendKeyEvent(device, e, diff, ret, KEY_LEFTMETA, ModifierKeys::GK_KEY_LEFT_META);
+		if( diff == 0 ) return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_CTRL) ) {
-		e.event_code = KEY_RIGHTCTRL;
-		device.standard_keys_events.push_back(e);
-
-		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_CTRL);
-		ret++;
-		if( diff == 0 )
-			return ret;
+		this->appendKeyEvent(device, e, diff, ret, KEY_RIGHTCTRL, ModifierKeys::GK_KEY_RIGHT_CTRL);
+		if( diff == 0 ) return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_SHIFT) ) {
-		e.event_code = KEY_RIGHTSHIFT;
-		device.standard_keys_events.push_back(e);
-
-		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_SHIFT);
-		ret++;
-		if( diff == 0 )
-			return ret;
+		this->appendKeyEvent(device, e, diff, ret, KEY_RIGHTSHIFT, ModifierKeys::GK_KEY_RIGHT_SHIFT);
+		if( diff == 0 ) return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_ALT) ) {
-		e.event_code = KEY_RIGHTALT;
-		device.standard_keys_events.push_back(e);
-
-		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_ALT);
-		ret++;
-		if( diff == 0 )
-			return ret;
+		this->appendKeyEvent(device, e, diff, ret, KEY_RIGHTALT, ModifierKeys::GK_KEY_RIGHT_ALT);
+		if( diff == 0 ) return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_META) ) {
-		e.event_code = KEY_RIGHTMETA;
-		device.standard_keys_events.push_back(e);
-
-		diff -= to_type(ModifierKeys::GK_KEY_RIGHT_META);
-		ret++;
-		if( diff == 0 )
-			return ret;
+		this->appendKeyEvent(device, e, diff, ret, KEY_RIGHTMETA, ModifierKeys::GK_KEY_RIGHT_META);
+		if( diff == 0 ) return ret;
 	}
 
 	/*
@@ -452,7 +449,7 @@ void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << to_uint(num) << " modifier keys event(s) added";
 #endif
-		/* only first event will have a timelapse interval */
+		/* only first event should have a real timelapse interval */
 		interval = 1;
 	}
 
@@ -469,9 +466,17 @@ void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 			continue; /* nothing here */
 		}
 		else {
+			/* Macro Size Limit - see keyEvent.h */
+			if(device.standard_keys_events.size() >= MACRO_T_MAX_SIZE ) {
+				/* skip all new events */
+				GKSysLog(LOG_WARNING, WARNING, "reached macro max size, skipping event");
+				continue;
+			}
+
 			KeyEvent e;
 			e.interval = interval;
-			interval = 1; /* only first event will have a timelapse interval */
+			/* only first event should have a real timelapse interval */
+			interval = 1;
 
 			if( device.previous_keys_buffer[i] == 0 ) {
 				e.event_code = KeyboardDriver::hid_keyboard_[ device.keys_buffer[i] ];
@@ -484,6 +489,15 @@ void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 			else {
 				GKSysLog(LOG_WARNING, WARNING, "two different byte values");
 				continue;
+			}
+
+			/* Macro Size Limit - see keyEvent.h */
+			if(device.standard_keys_events.size() >= MACRO_T_KEYPRESS_MAX_SIZE ) {
+				/* skip events other than release */
+				if( e.event != EventValue::EVENT_KEY_RELEASE ) {
+					GKSysLog(LOG_WARNING, WARNING, "reached macro keypress max size, skipping keypress event");
+					continue;
+				}
 			}
 
 			device.standard_keys_events.push_back(e);
@@ -522,7 +536,6 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 				if( ! this->checkMacroKey(device) ) {
 					/* continue to store standard key events
 					 * while a macro key is not pressed */
-					// TODO limit ?
 					continue;
 				}
 

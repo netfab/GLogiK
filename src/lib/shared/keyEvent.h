@@ -30,6 +30,15 @@
 
 #include <boost/serialization/access.hpp>
 
+//
+// Macro Size Limit
+//
+/* upper size limit, above this size events
+ * that are not key release will be ignored */
+#define MACRO_T_KEYPRESS_MAX_SIZE 16
+/* above this size, events are simply ignored */
+#define MACRO_T_MAX_SIZE 24
+
 namespace GLogiK
 {
 
