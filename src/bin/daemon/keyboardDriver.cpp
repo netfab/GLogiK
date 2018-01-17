@@ -502,7 +502,6 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 	bool keys_found = false;
 	/* initializing time_point */
 	device.last_call = std::chrono::steady_clock::now();
-	const uint8_t profile = to_type( device.macros_man->getCurrentActiveProfile() );
 
 	while( ! keys_found and DaemonControl::isDaemonRunning() and device.listen_status ) {
 		KeyStatus ret = this->getPressedKeys(device);
@@ -542,6 +541,8 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 				}
 
 				try {
+					const uint8_t profile = to_type( device.macros_man->getCurrentActiveProfile() );
+
 					/* open a new connection, GKDBus is not thread-safe */
 					pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
 
