@@ -108,7 +108,7 @@ struct DescriptorValues {
 	uint8_t b_num_endpoints;
 };
 
-enum class ModifierKeys : uint8_t
+enum class GKModifierKeys : uint8_t
 {
 	GK_KEY_LEFT_CTRL	= 1 << 0,
 	GK_KEY_LEFT_SHIFT	= 1 << 1,
@@ -118,6 +118,11 @@ enum class ModifierKeys : uint8_t
 	GK_KEY_RIGHT_SHIFT	= 1 << 5,
 	GK_KEY_RIGHT_ALT	= 1 << 6,
 	GK_KEY_RIGHT_META	= 1 << 7
+};
+
+struct ModifierKey {
+	const uint8_t event_code;
+	const GKModifierKeys mod_key;
 };
 
 class KeyboardDriver
@@ -184,6 +189,8 @@ class KeyboardDriver
 		libusb_device **list_;
 		int8_t leds_update_event_length_;
 
+		static const std::vector< ModifierKey > modifier_keys_;
+
 		std::map<const std::string, InitializedDevice> initialized_devices_;
 		std::vector<std::thread> threads_;
 
@@ -232,14 +239,6 @@ class KeyboardDriver
 
 		void enterMacroRecordMode(InitializedDevice & device, const std::string & devID);
 
-		void appendModifierKeyEvent(
-			InitializedDevice & device,
-			KeyEvent & e,
-			uint8_t & diff,
-			uint8_t & ret,
-			uint8_t event_code,
-			ModifierKeys mod_key
-		);
 		const uint8_t handleModifierKeys(InitializedDevice & device, const uint16_t interval);
 
 		uint16_t getTimeLapse(InitializedDevice & device);
