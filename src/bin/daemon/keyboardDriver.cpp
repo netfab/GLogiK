@@ -463,8 +463,6 @@ void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 
 			KeyEvent e;
 			e.interval = interval;
-			/* only first event should have a real timelapse interval */
-			interval = 1;
 
 			if( device.previous_keys_buffer[i] == 0 ) {
 				e.event_code = KeyboardDriver::hid_keyboard_[ device.keys_buffer[i] ];
@@ -491,6 +489,8 @@ void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 			}
 
 			device.standard_keys_events.push_back(e);
+			/* only first event should have a real timelapse interval */
+			interval = 1;
 		}
 	}
 }
