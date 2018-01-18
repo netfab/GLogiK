@@ -347,7 +347,9 @@ void KeyboardDriver::appendModifierKeyEvent(
 	/* Macro Size Limit - see keyEvent.h */
 	if(device.standard_keys_events.size() >= MACRO_T_MAX_SIZE ) {
 		/* skip all new events */
-		GKSysLog(LOG_WARNING, WARNING, "skipping modifier key event, reached macro max size");
+#if DEBUGGING_ON
+		LOG(WARNING) << "skipping modifier key event, reached macro max size";
+#endif
 		return;
 	}
 
@@ -355,7 +357,9 @@ void KeyboardDriver::appendModifierKeyEvent(
 	if(device.standard_keys_events.size() >= MACRO_T_KEYPRESS_MAX_SIZE ) {
 		/* skip events other than release */
 		if( e.event != EventValue::EVENT_KEY_RELEASE ) {
-			GKSysLog(LOG_WARNING, WARNING, " skipping modifier keypress event, reached macro keypress max size");
+#if DEBUGGING_ON
+			LOG(WARNING) << "skipping modifier keypress event, reached macro keypress max size";
+#endif
 			return;
 		}
 	}
@@ -477,7 +481,9 @@ void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 			/* Macro Size Limit - see keyEvent.h */
 			if(device.standard_keys_events.size() >= MACRO_T_MAX_SIZE ) {
 				/* skip all new events */
-				GKSysLog(LOG_WARNING, WARNING, "reached macro max size, skipping event");
+#if DEBUGGING_ON
+				LOG(WARNING) << "skipping key event, reached macro max size";
+#endif
 				continue;
 			}
 
@@ -503,7 +509,9 @@ void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 			if(device.standard_keys_events.size() >= MACRO_T_KEYPRESS_MAX_SIZE ) {
 				/* skip events other than release */
 				if( e.event != EventValue::EVENT_KEY_RELEASE ) {
-					GKSysLog(LOG_WARNING, WARNING, "reached macro keypress max size, skipping keypress event");
+#if DEBUGGING_ON
+					LOG(WARNING) << "skipping keypress event, reached macro keypress max size";
+#endif
 					continue;
 				}
 			}
