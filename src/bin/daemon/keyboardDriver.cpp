@@ -326,7 +326,7 @@ const bool KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, boo
 	return mask_updated;
 }
 
-void KeyboardDriver::appendKeyEvent(
+void KeyboardDriver::appendModifierKeyEvent(
 	InitializedDevice & device,
 	KeyEvent & e,
 	uint8_t & diff,
@@ -334,12 +334,20 @@ void KeyboardDriver::appendKeyEvent(
 	uint8_t event_code,
 	ModifierKeys mod_key
 ) {
-	diff -= to_type(mod_key);
+	{
+		uint8_t v = to_type(mod_key);
+		if( diff >= v )
+			diff -= v;
+		else { /* sanity check */
+			GKSysLog(LOG_WARNING, WARNING, "skipping modifier key event, negative diff");
+			return;
+		}
+	}
 
 	/* Macro Size Limit - see keyEvent.h */
 	if(device.standard_keys_events.size() >= MACRO_T_MAX_SIZE ) {
 		/* skip all new events */
-		GKSysLog(LOG_WARNING, WARNING, "reached macro max size, skipping modifier key event");
+		GKSysLog(LOG_WARNING, WARNING, "skipping modifier key event, reached macro max size");
 		return;
 	}
 
@@ -347,7 +355,7 @@ void KeyboardDriver::appendKeyEvent(
 	if(device.standard_keys_events.size() >= MACRO_T_KEYPRESS_MAX_SIZE ) {
 		/* skip events other than release */
 		if( e.event != EventValue::EVENT_KEY_RELEASE ) {
-			GKSysLog(LOG_WARNING, WARNING, "reached macro keypress max size, skipping modifier keypress event");
+			GKSysLog(LOG_WARNING, WARNING, " skipping modifier keypress event, reached macro keypress max size");
 			return;
 		}
 	}
@@ -386,35 +394,35 @@ const uint8_t KeyboardDriver::handleModifierKeys(InitializedDevice & device, con
 	/* KEY_FOO from linux/input-event-codes.h */
 
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_CTRL) ) {
-		this->appendKeyEvent(device, e, diff, ret, KEY_LEFTCTRL, ModifierKeys::GK_KEY_LEFT_CTRL);
+		this->appendModifierKeyEvent(device, e, diff, ret, KEY_LEFTCTRL, ModifierKeys::GK_KEY_LEFT_CTRL);
 		if( diff == 0 ) return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_SHIFT) ) {
-		this->appendKeyEvent(device, e, diff, ret, KEY_LEFTSHIFT, ModifierKeys::GK_KEY_LEFT_SHIFT);
+		this->appendModifierKeyEvent(device, e, diff, ret, KEY_LEFTSHIFT, ModifierKeys::GK_KEY_LEFT_SHIFT);
 		if( diff == 0 ) return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_ALT) ) {
-		this->appendKeyEvent(device, e, diff, ret, KEY_LEFTALT, ModifierKeys::GK_KEY_LEFT_ALT);
+		this->appendModifierKeyEvent(device, e, diff, ret, KEY_LEFTALT, ModifierKeys::GK_KEY_LEFT_ALT);
 		if( diff == 0 ) return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_LEFT_META) ) {
-		this->appendKeyEvent(device, e, diff, ret, KEY_LEFTMETA, ModifierKeys::GK_KEY_LEFT_META);
+		this->appendModifierKeyEvent(device, e, diff, ret, KEY_LEFTMETA, ModifierKeys::GK_KEY_LEFT_META);
 		if( diff == 0 ) return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_CTRL) ) {
-		this->appendKeyEvent(device, e, diff, ret, KEY_RIGHTCTRL, ModifierKeys::GK_KEY_RIGHT_CTRL);
+		this->appendModifierKeyEvent(device, e, diff, ret, KEY_RIGHTCTRL, ModifierKeys::GK_KEY_RIGHT_CTRL);
 		if( diff == 0 ) return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_SHIFT) ) {
-		this->appendKeyEvent(device, e, diff, ret, KEY_RIGHTSHIFT, ModifierKeys::GK_KEY_RIGHT_SHIFT);
+		this->appendModifierKeyEvent(device, e, diff, ret, KEY_RIGHTSHIFT, ModifierKeys::GK_KEY_RIGHT_SHIFT);
 		if( diff == 0 ) return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_ALT) ) {
-		this->appendKeyEvent(device, e, diff, ret, KEY_RIGHTALT, ModifierKeys::GK_KEY_RIGHT_ALT);
+		this->appendModifierKeyEvent(device, e, diff, ret, KEY_RIGHTALT, ModifierKeys::GK_KEY_RIGHT_ALT);
 		if( diff == 0 ) return ret;
 	}
 	if( diff & to_type(ModifierKeys::GK_KEY_RIGHT_META) ) {
-		this->appendKeyEvent(device, e, diff, ret, KEY_RIGHTMETA, ModifierKeys::GK_KEY_RIGHT_META);
+		this->appendModifierKeyEvent(device, e, diff, ret, KEY_RIGHTMETA, ModifierKeys::GK_KEY_RIGHT_META);
 		if( diff == 0 ) return ret;
 	}
 

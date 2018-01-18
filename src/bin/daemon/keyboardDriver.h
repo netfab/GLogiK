@@ -232,7 +232,7 @@ class KeyboardDriver
 
 		void enterMacroRecordMode(InitializedDevice & device, const std::string & devID);
 
-		void appendKeyEvent(
+		void appendModifierKeyEvent(
 			InitializedDevice & device,
 			KeyEvent & e,
 			uint8_t & diff,
