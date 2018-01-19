@@ -41,11 +41,12 @@
 #include "lib/shared/keyEvent.h"
 #include "macrosManager.h"
 
-namespace GLogiK
-{
-
+#define DEVICE_LISTENING_THREAD_MAX_ERRORS 3
 #define KEYS_BUFFER_LENGTH 16
 #define unk	KEY_UNKNOWN
+
+namespace GLogiK
+{
 
 enum class KeyStatus
 {
@@ -83,12 +84,18 @@ struct InitializedDevice {
 	std::string chosen_macro_key;
 	std::chrono::steady_clock::time_point last_call;
 	uint8_t rgb[3];
+	unsigned int fatal_errors;
 
 	InitializedDevice()=default;
 
 	InitializedDevice(KeyboardDevice k, uint8_t b, uint8_t n)
-	  : device(k), bus(b), num(n), keys_endpoint(0), listen_status(false),
-		pressed_keys(0), current_leds_mask(0), transfer_length(0)
+		:	device(k), bus(b), num(n),
+			keys_endpoint(0),
+			listen_status(false),
+			pressed_keys(0),
+			current_leds_mask(0),
+			transfer_length(0),
+			fatal_errors(0)
 	{
 		this->usb_device = nullptr;
 		this->usb_handle = nullptr;
@@ -231,13 +238,13 @@ class KeyboardDriver
 		void attachKernelDrivers(InitializedDevice & device);
 		void detachKernelDriver(InitializedDevice & device, int numInt);
 
+		void checkDeviceListeningStatus(InitializedDevice & device);
+		void enterMacroRecordMode(InitializedDevice & device, const std::string & devID);
 		void listenLoop(const std::string & devID);
 
 		const bool updateCurrentLedsMask(InitializedDevice & device, bool force_MR_off=false);
 		void updateKeyboardColor(InitializedDevice & device, const uint8_t red=0xFF,
 			const uint8_t green=0xFF, const uint8_t blue=0xFF);
-
-		void enterMacroRecordMode(InitializedDevice & device, const std::string & devID);
 
 		const uint8_t handleModifierKeys(InitializedDevice & device, const uint16_t interval);
 

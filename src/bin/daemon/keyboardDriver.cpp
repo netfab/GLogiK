@@ -247,6 +247,8 @@ KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & device) {
 		default:
 			GKSysLog(LOG_ERR, ERROR, "getPressedKeys interrupt read error");
 			this->handleLibusbError(ret);
+			if(ret == LIBUSB_ERROR_NO_DEVICE)
+				device.fatal_errors++;
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
 	}
@@ -495,6 +497,17 @@ void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 	}
 }
 
+void KeyboardDriver::checkDeviceListeningStatus(InitializedDevice & device) {
+	/* check to give up */
+	if(device.fatal_errors > DEVICE_LISTENING_THREAD_MAX_ERRORS) {
+		std::ostringstream err("device ", std::ios_base::app);
+		err << device.device.name << " on bus " << to_uint(device.bus);
+		GKSysLog(LOG_ERR, ERROR, err.str());
+		GKSysLog(LOG_ERR, ERROR, "reached listening thread maximum fatal errors, giving up");
+		device.listen_status = false;
+	}
+}
+
 void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std::string & devID) {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "entering macro record mode";
@@ -508,6 +521,10 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 	device.last_call = std::chrono::steady_clock::now();
 
 	while( ! keys_found and DaemonControl::isDaemonRunning() and device.listen_status ) {
+		this->checkDeviceListeningStatus(device);
+		if( ! device.listen_status )
+			continue;
+
 		KeyStatus ret = this->getPressedKeys(device);
 
 		switch( ret ) {
@@ -608,6 +625,10 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 	const uint8_t & mask = device.current_leds_mask;
 
 	while( DaemonControl::isDaemonRunning() and device.listen_status ) {
+		this->checkDeviceListeningStatus(device);
+		if( ! device.listen_status )
+			continue;
+
 		KeyStatus ret = this->getPressedKeys(device);
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED:
