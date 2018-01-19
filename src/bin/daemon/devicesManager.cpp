@@ -267,26 +267,29 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 	}
 
 	for(const auto & devID : to_clean) {
-		this->buffer_.str("erasing unplugged initialized driver : ");
 		try {
+			this->buffer_.str("erasing unplugged initialized driver : ");
+
 			const auto & device = this->initialized_devices_.at(devID);
+
 			this->buffer_ << device.device.vendor_id << ":" << device.device.product_id
 						  << ":" << device.input_dev_node << ":" << device.usec;
+
+			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+			GKSysLog(LOG_WARNING, WARNING, "Did you unplug your device before properly stopping it ?");
+			GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
+
+			if( this->stopDevice(devID) ) {
+				this->plugged_but_stopped_devices_.erase(devID);
+				this->unplugged_devices_.insert(devID);
+				unpluggedDevices.push_back(devID);
+				c++; /* bonus point */
+			}
 		}
 		catch (const std::out_of_range& oor) {
-			this->buffer_ << "!?! device not found !?!";
+			this->buffer_ << "!?! device not found !?! " << devID;
+			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 		}
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
-		this->buffer_.str("Did you unplug your device before properly stopping it ?");
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
-		this->buffer_.str("You will get libusb warnings/errors if you do this.");
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
-
-		this->stopDevice(devID);
-		this->plugged_but_stopped_devices_.erase(devID);
-		this->unplugged_devices_.insert(devID);
-		unpluggedDevices.push_back(devID);
-		c++; /* bonus point */
 	}
 
 	to_clean.clear();
