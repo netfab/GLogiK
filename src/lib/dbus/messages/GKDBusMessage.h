@@ -65,6 +65,7 @@ class GKDBusMessage
 	private:
 		void appendUInt8(DBusMessageIter *iter, const uint8_t value);
 		void appendUInt16(DBusMessageIter *iter, const uint16_t value);
+		void appendMacro(DBusMessageIter *iter, const GLogiK::macro_t & macro_array);
 
 };
 

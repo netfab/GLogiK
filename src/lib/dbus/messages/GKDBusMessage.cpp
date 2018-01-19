@@ -125,6 +125,10 @@ void GKDBusMessage::appendUInt32(const uint32_t value) {
 }
 
 void GKDBusMessage::appendMacro(const GLogiK::macro_t & macro_array) {
+	this->appendMacro(&this->args_it_, macro_array);
+}
+
+void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_t & macro_array) {
 	DBusMessageIter array_it;
 
 	const char array_sig[] = \
@@ -134,7 +138,7 @@ void GKDBusMessage::appendMacro(const GLogiK::macro_t & macro_array) {
 							DBUS_TYPE_UINT16_AS_STRING\
 							DBUS_STRUCT_END_CHAR_AS_STRING;
 
-	if( ! dbus_message_iter_open_container(&this->args_it_, DBUS_TYPE_ARRAY, array_sig, &array_it) ) {
+	if( ! dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, array_sig, &array_it) ) {
 		this->hosed_message_ = true;
 		LOG(ERROR) << "macro array open_container failure, not enough memory";
 		throw GKDBusOOMWrongBuild(this->append_failure_);
@@ -173,14 +177,14 @@ void GKDBusMessage::appendMacro(const GLogiK::macro_t & macro_array) {
 	}
 	catch (const GKDBusOOMWrongBuild & e) {
 		this->hosed_message_ = true;
-		dbus_message_iter_abandon_container(&this->args_it_, &array_it);
+		dbus_message_iter_abandon_container(iter, &array_it);
 		throw;
 	}
 
-	if( ! dbus_message_iter_close_container(&this->args_it_, &array_it) ) {
+	if( ! dbus_message_iter_close_container(iter, &array_it) ) {
 		LOG(ERROR) << "macro array close_container failure, not enough memory";
 		this->hosed_message_ = true;
-		dbus_message_iter_abandon_container(&this->args_it_, &array_it);
+		dbus_message_iter_abandon_container(iter, &array_it);
 		throw GKDBusOOMWrongBuild(this->append_failure_);
 	}
 
