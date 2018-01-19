@@ -166,6 +166,7 @@ void GKDBusMessage::appendMacro(const GLogiK::macro_t & macro_array) {
 
 			if( ! dbus_message_iter_close_container(&array_it, &struct_it) ) {
 				LOG(ERROR) << "DBus struct close_container failure, not enough memory";
+				dbus_message_iter_abandon_container(&array_it, &struct_it);
 				throw GKDBusOOMWrongBuild(this->append_failure_);
 			}
 		}
