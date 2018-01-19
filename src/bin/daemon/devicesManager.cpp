@@ -91,7 +91,6 @@ void DevicesManager::initializeDevices(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing detected devices";
 #endif
-	unsigned int c = 0;
 	std::vector<std::string> startedDevices;
 
 	for(const auto& det_dev : this->detected_devices_) {
@@ -131,7 +130,6 @@ void DevicesManager::initializeDevices(void) {
 					this->buffer_ << "(" << device.device.vendor_id << ":" << device.device.product_id
 								  << ") on bus " << to_uint(device.device_bus) << " initialized";
 					GKSysLog(LOG_INFO, INFO, this->buffer_.str());
-					c++; /* bonus point */
 					startedDevices.push_back(devID);
 					break;
 				}
@@ -144,7 +142,7 @@ void DevicesManager::initializeDevices(void) {
 		}
 	} // for
 
-	if( c > 0 ) {
+	if( startedDevices.size() > 0 ) {
 		/* inform clients */
 		this->sendStatusSignalArrayToClients(this->num_clients_, this->pDBus_, "DevicesStarted", startedDevices);
 	}
@@ -255,7 +253,6 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 	LOG(DEBUG2) << "checking for unplugged devices";
 #endif
 
-	unsigned int c = 0;
 	std::vector<std::string> unpluggedDevices;
 
 	/* checking for unplugged unstopped devices */
@@ -283,7 +280,6 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 				this->plugged_but_stopped_devices_.erase(devID);
 				this->unplugged_devices_.insert(devID);
 				unpluggedDevices.push_back(devID);
-				c++; /* bonus point */
 			}
 		}
 		catch (const std::out_of_range& oor) {
@@ -307,7 +303,6 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 		this->plugged_but_stopped_devices_.erase(devID);
 		this->unplugged_devices_.insert(devID);
 		unpluggedDevices.push_back(devID);
-		c++; /* bonus point */
 	}
 	to_clean.clear();
 
@@ -315,10 +310,10 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "number of devices still initialized : " << this->initialized_devices_.size();
-	LOG(DEBUG3) << "number of unplugged devices : " << c;
+	LOG(DEBUG3) << "number of unplugged devices : " << unpluggedDevices.size();
 #endif
 
-	if(c > 0) {
+	if(unpluggedDevices.size() > 0) {
 		/* inform clients */
 		this->sendStatusSignalArrayToClients(this->num_clients_, this->pDBus_, "DevicesUnplugged", unpluggedDevices);
 	}
