@@ -296,30 +296,30 @@ const bool KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, boo
 		Mx_ON = mask & to_type(Leds::GK_LED_M1);
 		mask = 0;
 		mask_updated = true;
-		device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M0);
+		device.macros_man->setCurrentActiveProfile(MemoryBank::BANK_M0);
 		if( ! Mx_ON ) {
 			mask |= to_type(Leds::GK_LED_M1);
-			device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M1);
+			device.macros_man->setCurrentActiveProfile(MemoryBank::BANK_M1);
 		}
 	}
 	else if( device.pressed_keys & to_type(Keys::GK_KEY_M2) ) {
 		Mx_ON = mask & to_type(Leds::GK_LED_M2);
 		mask = 0;
 		mask_updated = true;
-		device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M0);
+		device.macros_man->setCurrentActiveProfile(MemoryBank::BANK_M0);
 		if( ! Mx_ON ) {
 			mask |= to_type(Leds::GK_LED_M2);
-			device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M2);
+			device.macros_man->setCurrentActiveProfile(MemoryBank::BANK_M2);
 		}
 	}
 	else if( device.pressed_keys & to_type(Keys::GK_KEY_M3) ) {
 		Mx_ON = mask & to_type(Leds::GK_LED_M3);
 		mask = 0;
 		mask_updated = true;
-		device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M0);
+		device.macros_man->setCurrentActiveProfile(MemoryBank::BANK_M0);
 		if( ! Mx_ON ) {
 			mask |= to_type(Leds::GK_LED_M3);
-			device.macros_man->setCurrentActiveProfile(MemoryBank::MACROS_M3);
+			device.macros_man->setCurrentActiveProfile(MemoryBank::BANK_M3);
 		}
 	}
 

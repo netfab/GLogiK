@@ -29,6 +29,7 @@
 #include <map>
 
 #include "devicesManager.h"
+#include "lib/shared/keyEvent.h"
 #include "lib/shared/deviceProperties.h"
 
 namespace GLogiK

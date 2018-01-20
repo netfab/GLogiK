@@ -37,7 +37,7 @@ MacrosManager::MacrosManager(
 	const char* virtual_keyboard_name,
 	const std::vector<std::string> & keys_names
 ) : buffer_("", std::ios_base::app),
-	currentActiveProfile_(MemoryBank::MACROS_M0),
+	currentActiveProfile_(MemoryBank::BANK_M0),
 	virtual_keyboard(virtual_keyboard_name)
 {
 #if DEBUGGING_ON
@@ -114,7 +114,7 @@ const MemoryBank MacrosManager::getCurrentActiveProfile(void) const {
 
 /* clear all macros profiles */
 void MacrosManager::clearMacroProfiles(void) {
-	this->setCurrentActiveProfile(MemoryBank::MACROS_M0);
+	this->setCurrentActiveProfile(MemoryBank::BANK_M0);
 	for(auto & profile_pair : this->macros_profiles_) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "clearing macros for MemoryBank: " << to_uint(profile_pair.first);

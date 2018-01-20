@@ -34,6 +34,7 @@
 
 #include <config.h>
 
+#include "lib/shared/keyEvent.h"
 #include "lib/dbus/GKDBus.h"
 
 #include "clientsSignals.h"

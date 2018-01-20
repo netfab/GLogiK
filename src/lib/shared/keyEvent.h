@@ -24,7 +24,9 @@
 
 #include <cstdint>
 
+#include <string>
 #include <vector>
+#include <map>
 
 #include <linux/input-event-codes.h>
 
@@ -70,7 +72,17 @@ struct KeyEvent {
 		}
 };
 
+enum class MemoryBank : uint8_t
+{
+	BANK_M0 = 0,
+	BANK_M1,
+	BANK_M2,
+	BANK_M3,
+};
+
 typedef std::vector<KeyEvent> macro_t;
+typedef std::map<const std::string, macro_t> macros_bank_t;
+typedef std::map<const MemoryBank, macros_bank_t> macros_map_t;
 
 } // namespace GLogiK
 

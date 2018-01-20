@@ -37,16 +37,6 @@
 namespace GLogiK
 {
 
-enum class MemoryBank : uint8_t
-{
-	MACROS_M0 = 0,
-	MACROS_M1,
-	MACROS_M2,
-	MACROS_M3,
-};
-
-typedef std::map<const MemoryBank, std::map<const std::string, macro_t>> macros_map_t;
-
 class MacrosBanks
 {
 	public:
@@ -87,10 +77,10 @@ class MacrosBanks
 		}
 
 		macros_map_t macros_profiles_ = {
-			{ MemoryBank::MACROS_M0, {}},
-			{ MemoryBank::MACROS_M1, {}},
-			{ MemoryBank::MACROS_M2, {}},
-			{ MemoryBank::MACROS_M3, {}}
+			{ MemoryBank::BANK_M0, {}},
+			{ MemoryBank::BANK_M1, {}},
+			{ MemoryBank::BANK_M2, {}},
+			{ MemoryBank::BANK_M3, {}}
 		};
 
 	private:

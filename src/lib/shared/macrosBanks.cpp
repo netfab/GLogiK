@@ -77,7 +77,7 @@ void MacrosBanks::setMacro(
 	const std::string & keyName,
 	const macro_t & macro_array)
 {
-	if( to_uint(profile) > to_uint(MemoryBank::MACROS_M3) )
+	if( to_uint(profile) > to_uint(MemoryBank::BANK_M3) )
 		throw GLogiKExcept("wrong profile value");
 
 	const MemoryBank current_profile = static_cast<MemoryBank>(profile);
@@ -87,7 +87,7 @@ void MacrosBanks::setMacro(
 
 const macro_t & MacrosBanks::getMacro(const uint8_t profile, const std::string & keyName)
 {
-	if( to_uint(profile) > to_uint(MemoryBank::MACROS_M3) )
+	if( to_uint(profile) > to_uint(MemoryBank::BANK_M3) )
 		throw GLogiKExcept("wrong profile value");
 
 	const MemoryBank current_profile = static_cast<MemoryBank>(profile);
