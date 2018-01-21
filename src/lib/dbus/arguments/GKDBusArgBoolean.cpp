@@ -30,7 +30,7 @@ using namespace NSGKUtils;
 
 const bool GKDBusArgumentBoolean::getNextBooleanArgument(void) {
 	if( GKDBusArgument::boolean_arguments_.empty() )
-		throw EmptyContainer("no boolean argument");
+		throw EmptyContainer("missing argument : boolean");
 	const bool ret = GKDBusArgument::boolean_arguments_.back();
 	GKDBusArgument::boolean_arguments_.pop_back();
 	return ret;

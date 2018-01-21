@@ -37,8 +37,9 @@ void StringToVoidEvent::runCallback(DBusConnection* connection, DBusMessage* mes
 		/* call string to void callback */
 		this->callback(arg);
 	}
-	catch ( const EmptyContainer & e ) {
-		LOG(WARNING) << e.what();
+	catch ( const GLogiKExcept & e ) {
+		const char* error = e.what();
+		LOG(ERROR) << error;
 	}
 
 	/* don't need to send a reply */

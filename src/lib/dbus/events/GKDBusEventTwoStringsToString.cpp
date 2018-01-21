@@ -40,8 +40,15 @@ void TwoStringsToStringEvent::runCallback(DBusConnection* connection, DBusMessag
 		/* call two strings to string callback */
 		ret = this->callback(arg1, arg2);
 	}
-	catch ( const EmptyContainer & e ) {
-		LOG(WARNING) << e.what();
+	catch ( const GLogiKExcept & e ) {
+		const char* error = e.what();
+		LOG(ERROR) << error;
+
+		if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
+			/* send error if something was wrong when running callback */
+			this->buildAndSendErrorReply(connection, message, error);
+			return;
+		}
 	}
 
 	/* signals don't send reply */
@@ -53,10 +60,11 @@ void TwoStringsToStringEvent::runCallback(DBusConnection* connection, DBusMessag
 		this->appendStringToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(ERROR) << "DBus reply failure : " << e.what();
+		const char* error = e.what();
+		LOG(ERROR) << "DBus reply failure : " << error;
 		/* delete reply object if allocated */
 		this->sendReply();
-		this->buildAndSendErrorReply(connection, message);
+		this->buildAndSendErrorReply(connection, message, error);
 		return;
 	}
 

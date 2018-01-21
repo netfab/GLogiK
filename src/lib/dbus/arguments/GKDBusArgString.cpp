@@ -32,7 +32,7 @@ thread_local std::string GKDBusArgumentString::current_string_("");
 
 const std::string & GKDBusArgumentString::getNextStringArgument(void) {
 	if( GKDBusArgument::string_arguments_.empty() )
-		throw EmptyContainer("no string argument");
+		throw EmptyContainer("missing argument : string");
 	GKDBusArgumentString::current_string_ = GKDBusArgument::string_arguments_.back();
 	GKDBusArgument::string_arguments_.pop_back();
 	return GKDBusArgumentString::current_string_;

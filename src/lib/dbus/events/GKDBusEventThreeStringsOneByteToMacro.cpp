@@ -42,8 +42,15 @@ void ThreeStringsOneByteToMacroEvent::runCallback(DBusConnection* connection, DB
 		/* call three strings one byte to macro_t callback */
 		ret = this->callback(arg1, arg2, arg3, arg4);
 	}
-	catch ( const EmptyContainer & e ) {
-		LOG(WARNING) << e.what();
+	catch ( const GLogiKExcept & e ) {
+		const char* error = e.what();
+		LOG(ERROR) << error;
+
+		if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
+			/* send error if something was wrong when running callback */
+			this->buildAndSendErrorReply(connection, message, error);
+			return;
+		}
 	}
 
 	/* signals don't send reply */
@@ -55,10 +62,11 @@ void ThreeStringsOneByteToMacroEvent::runCallback(DBusConnection* connection, DB
 		this->appendMacroToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(ERROR) << "DBus reply failure : " << e.what();
+		const char* error = e.what();
+		LOG(ERROR) << "DBus reply failure : " << error;
 		/* delete reply object if allocated */
 		this->sendReply();
-		this->buildAndSendErrorReply(connection, message);
+		this->buildAndSendErrorReply(connection, message, error);
 		return;
 	}
 

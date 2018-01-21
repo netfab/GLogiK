@@ -32,7 +32,11 @@ namespace NSGKDBus
 class GKDBusErrorReply : public GKDBusMessage
 {
 	public:
-		GKDBusErrorReply(DBusConnection* connection, DBusMessage* message);
+		GKDBusErrorReply(
+			DBusConnection* connection,
+			DBusMessage* message,
+			const char* error_message
+		);
 		~GKDBusErrorReply();
 
 	protected:
@@ -48,10 +52,18 @@ class GKDBusMessageErrorReply
 		GKDBusMessageErrorReply();
 		~GKDBusMessageErrorReply();
 
-		void initializeErrorReply(DBusConnection* connection, DBusMessage* message);
+		void initializeErrorReply(
+			DBusConnection* connection,
+			DBusMessage* message,
+			const char* error_message
+		);
 		void sendErrorReply(void);
 
-		void buildAndSendErrorReply(DBusConnection* connection, DBusMessage* message);
+		void buildAndSendErrorReply(
+			DBusConnection* connection,
+			DBusMessage* message,
+			const char* error_message
+		);
 
 	private:
 		GKDBusErrorReply* error_reply_;

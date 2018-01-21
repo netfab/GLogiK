@@ -55,15 +55,20 @@ class GKDBusEvent {
 		GKDBusEventType eventType;
 		const bool introspectable;
 
+		virtual void runCallback(DBusConnection* connection, DBusMessage* message) = 0;
+
+		virtual ~GKDBusEvent(void);
+
+	protected:
 		GKDBusEvent(
 			const char* n,
 			const std::vector<DBusMethodArgument> & a,
 			GKDBusEventType t,
 			const bool i
 		);
-		virtual ~GKDBusEvent(void);
 
-		virtual void runCallback(DBusConnection* connection, DBusMessage* message) = 0;
+	private:
+		GKDBusEvent(void) = delete;
 };
 
 class EventCanBeSignal {

@@ -26,12 +26,19 @@
 namespace NSGKDBus
 {
 
+using namespace NSGKUtils;
+
 void VoidToVoidEvent::runCallback(DBusConnection* connection, DBusMessage* message) {
 	/* don't need arguments */
 
-	/* call void to void callback */
-	this->callback();
-
+	try {
+		/* call void to void callback */
+		this->callback();
+	}
+	catch ( const GLogiKExcept & e ) {
+		const char* error = e.what();
+		LOG(ERROR) << error;
+	}
 	/* don't need to send a reply */
 }
 

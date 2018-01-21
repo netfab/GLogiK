@@ -30,14 +30,18 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-GKDBusErrorReply::GKDBusErrorReply(DBusConnection* connection, DBusMessage* message) : GKDBusMessage(connection)
+GKDBusErrorReply::GKDBusErrorReply(
+	DBusConnection* connection,
+	DBusMessage* message,
+	const char* error_message
+)	:	GKDBusMessage(connection)
 {
 	/* sanity check */
 	if(message == nullptr)
 		throw GLogiKExcept("DBus message is NULL");
 
 	/* initialize reply from message */
-	this->message_ = dbus_message_new_error(message, DBUS_ERROR_FAILED, "something was wrong");
+	this->message_ = dbus_message_new_error(message, DBUS_ERROR_FAILED, error_message);
 	if(this->message_ == nullptr)
 		throw GLogiKExcept("can't allocate memory for DBus reply message");
 
@@ -80,12 +84,16 @@ GKDBusMessageErrorReply::~GKDBusMessageErrorReply()
 {
 }
 
-void GKDBusMessageErrorReply::initializeErrorReply(DBusConnection* connection, DBusMessage* message) {
+void GKDBusMessageErrorReply::initializeErrorReply(
+	DBusConnection* connection,
+	DBusMessage* message,
+	const char* error_message
+) {
 	if(this->error_reply_) /* sanity check */
 		throw GLogiKExcept("DBus reply already allocated");
 
 	try {
-		this->error_reply_ = new GKDBusErrorReply(connection, message);
+		this->error_reply_ = new GKDBusErrorReply(connection, message, error_message);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus reply allocation failure : " << e.what();
@@ -103,9 +111,13 @@ void GKDBusMessageErrorReply::sendErrorReply(void) {
 	}
 }
 
-void GKDBusMessageErrorReply::buildAndSendErrorReply(DBusConnection* connection, DBusMessage* message) {
+void GKDBusMessageErrorReply::buildAndSendErrorReply(
+	DBusConnection* connection,
+	DBusMessage* message,
+	const char* error_message
+) {
 	try {
-		this->initializeErrorReply(connection, message);
+		this->initializeErrorReply(connection, message, error_message);
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "DBus error reply failure : " << e.what();

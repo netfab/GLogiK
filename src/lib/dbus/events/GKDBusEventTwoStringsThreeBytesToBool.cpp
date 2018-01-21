@@ -43,8 +43,15 @@ void TwoStringsThreeBytesToBoolEvent::runCallback(DBusConnection* connection, DB
 		/* call two strings three bytes to bool callback */
 		ret = this->callback(arg1, arg2, arg3, arg4, arg5);
 	}
-	catch ( const EmptyContainer & e ) {
-		LOG(WARNING) << e.what();
+	catch ( const GLogiKExcept & e ) {
+		const char* error = e.what();
+		LOG(ERROR) << error;
+
+		if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
+			/* send error if something was wrong when running callback */
+			this->buildAndSendErrorReply(connection, message, error);
+			return;
+		}
 	}
 
 	/* signals don't send reply */
@@ -56,10 +63,11 @@ void TwoStringsThreeBytesToBoolEvent::runCallback(DBusConnection* connection, DB
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(ERROR) << "DBus reply failure : " << e.what();
+		const char* error = e.what();
+		LOG(ERROR) << "DBus reply failure : " << error;
 		/* delete reply object if allocated */
 		this->sendReply();
-		this->buildAndSendErrorReply(connection, message);
+		this->buildAndSendErrorReply(connection, message, error);
 		return;
 	}
 
