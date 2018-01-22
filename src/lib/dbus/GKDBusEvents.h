@@ -29,7 +29,6 @@
 #include <sstream>
 
 #include "lib/dbus/GKDBusConnection.h"
-#include "lib/shared/keyEvent.h"
 
 #include "events/GKDBusEventVoidToVoid.h"
 //#include "events/GKDBusEventStringToVoid.h"

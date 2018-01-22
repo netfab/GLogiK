@@ -22,6 +22,7 @@ libGLogiKDBus_la_SOURCES = \
 	arguments/GKDBusArgBoolean.cpp arguments/GKDBusArgBoolean.h \
 	arguments/GKDBusArgByte.cpp arguments/GKDBusArgByte.h \
 	arguments/GKDBusArgUInt16.cpp arguments/GKDBusArgUInt16.h \
+	arguments/GKDBusArgMacro.cpp arguments/GKDBusArgMacro.h \
 	messages/GKDBusMessage.cpp messages/GKDBusMessage.h \
 	messages/GKDBusReply.cpp messages/GKDBusReply.h \
 	messages/GKDBusErrorReply.cpp messages/GKDBusErrorReply.h \

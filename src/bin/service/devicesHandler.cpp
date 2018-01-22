@@ -528,7 +528,7 @@ const bool DevicesHandler::setDeviceMacro(
 		this->pDBus_->waitForRemoteMethodCallReply();
 
 		/* use helper function to get the macro */
-		const macro_t macro_array = this->pDBus_->getMacro();
+		const macro_t macro_array = this->pDBus_->getNextMacroArgument();
 
 		device.setMacro(profile, keyName, macro_array);
 	}

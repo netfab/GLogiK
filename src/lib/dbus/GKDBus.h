@@ -29,7 +29,6 @@
 #include <dbus/dbus.h>
 
 #include "lib/utils/utils.h"
-#include "lib/shared/keyEvent.h"
 
 #include "GKDBusConnection.h"
 #include "GKDBusEvents.h"
@@ -42,6 +41,7 @@
 #include "arguments/GKDBusArgBoolean.h"
 #include "arguments/GKDBusArgByte.h"
 #include "arguments/GKDBusArgUInt16.h"
+#include "arguments/GKDBusArgMacro.h"
 
 namespace NSGKDBus
 {
@@ -62,8 +62,9 @@ class GKDBus
 		public GKDBusMessageTargetsSignal,
 		virtual public GKDBusArgumentString,
 		public GKDBusArgumentBoolean,
-		public GKDBusArgumentByte,
-		public GKDBusArgumentUInt16
+		virtual public GKDBusArgumentByte,
+		virtual public GKDBusArgumentUInt16,
+		public GKDBusArgumentMacro
 {
 	public:
 		GKDBus(const std::string & rootnode);
@@ -74,10 +75,6 @@ class GKDBus
 		void checkForNextMessage(const BusConnection bus);
 
 		void appendExtraStringToMessage(const std::string & value);
-
-		// helper function rebuilding macro_t vector
-		// mirror of GKDBusMessage::appendMacro
-		const GLogiK::macro_t getMacro(void);
 
 	protected:
 
