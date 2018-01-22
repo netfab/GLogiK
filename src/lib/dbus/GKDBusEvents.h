@@ -42,6 +42,7 @@
 #include "events/GKDBusEventTwoStringsThreeBytesToBool.h"
 #include "events/GKDBusEventThreeStringsOneByteToMacro.h"
 #include "events/GKDBusEventStringsArrayToVoid.h"
+#include "events/GKDBusEventTwoStringsOneByteOneMacrosBankToBool.h"
 
 namespace NSGKDBus
 {
@@ -58,7 +59,8 @@ class GKDBusEvents
 		public EventTwoStringsOneByteToBool,
 		public EventTwoStringsThreeBytesToBool,
 		public EventThreeStringsOneByteToMacro,
-		public EventStringsArrayToVoid
+		public EventStringsArrayToVoid,
+		public EventTwoStringsOneByteOneMacrosBankToBool
 {
 	public:
 

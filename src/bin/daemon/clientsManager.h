@@ -27,6 +27,7 @@
 #include <map>
 #include <sstream>
 
+#include "lib/shared/keyEvent.h"
 #include "lib/dbus/GKDBus.h"
 
 #include "devicesManager.h"
@@ -100,6 +101,11 @@ class ClientsManager
 		const macro_t & getDeviceMacro(
 			const std::string & clientID, const std::string & devID,
 			const std::string & keyName, const uint8_t profile
+		);
+
+		const bool setDeviceMacrosBank(
+			const std::string & clientID, const std::string & devID,
+			const uint8_t profile, const macros_bank_t & bank
 		);
 		/* -- */
 };

@@ -23,6 +23,7 @@ libGLogiKDBus_la_SOURCES = \
 	arguments/GKDBusArgByte.cpp arguments/GKDBusArgByte.h \
 	arguments/GKDBusArgUInt16.cpp arguments/GKDBusArgUInt16.h \
 	arguments/GKDBusArgMacro.cpp arguments/GKDBusArgMacro.h \
+	arguments/GKDBusArgMacrosBank.cpp arguments/GKDBusArgMacrosBank.h \
 	messages/GKDBusMessage.cpp messages/GKDBusMessage.h \
 	messages/GKDBusReply.cpp messages/GKDBusReply.h \
 	messages/GKDBusErrorReply.cpp messages/GKDBusErrorReply.h \
@@ -39,6 +40,7 @@ libGLogiKDBus_la_SOURCES = \
 	events/GKDBusEventTwoStringsToStringsArray.cpp events/GKDBusEventTwoStringsToStringsArray.h \
 	events/GKDBusEventTwoStringsOneByteToBool.cpp events/GKDBusEventTwoStringsOneByteToBool.h \
 	events/GKDBusEventTwoStringsThreeBytesToBool.cpp events/GKDBusEventTwoStringsThreeBytesToBool.h \
+	events/GKDBusEventTwoStringsOneByteOneMacrosBankToBool.cpp GKDBusEventTwoStringsOneByteOneMacrosBankToBool.h \
 	events/GKDBusEventThreeStringsOneByteToMacro.cpp events/GKDBusEventThreeStringsOneByteToMacro.h \
 	events/GKDBusEventStringsArrayToVoid.cpp events/GKDBusEventStringsArrayToVoid.h \
 	GKDBusEvents.cpp GKDBusEvents.h

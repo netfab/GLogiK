@@ -169,6 +169,16 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"as", "array_of_strings", "out", "string array of device macro keys names"} },
 		std::bind(&ClientsManager::getDeviceMacroKeysNames, this, std::placeholders::_1, std::placeholders::_2) );
+
+	this->pDBus_->addTwoStringsOneByteOneMacrosBankToBoolEvent(
+		system_bus, DM_object, DM_interf, "SetDeviceMacrosBank",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
+			{"y", "macro_profile", "in", "macro profile"},
+			{"a(sya(yyq))", "macros_bank", "in", "macros bank"},
+			{"b", "did_setbank_succeeded", "out", "did the SetDeviceMacrosBank method succeeded ?"} },
+		std::bind(&ClientsManager::setDeviceMacrosBank, this, std::placeholders::_1, std::placeholders::_2,
+			std::placeholders::_3, std::placeholders::_4) );
 }
 
 ClientsManager::~ClientsManager() {
@@ -603,6 +613,13 @@ const std::vector<std::string> & ClientsManager::getDeviceMacroKeysNames(
 	}
 
 	return KeyboardDriver::getEmptyStringVector();
+}
+
+const bool ClientsManager::setDeviceMacrosBank(
+	const std::string & clientID, const std::string & devID,
+	const uint8_t profile, const macros_bank_t & bank
+) {
+	return false;
 }
 
 } // namespace GLogiK

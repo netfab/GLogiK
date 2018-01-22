@@ -63,6 +63,9 @@
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
       send_member="GetDeviceMacroKeysNames"/>
+    <allow send_destination="com.glogik.Daemon"
+      send_interface="com.glogik.Daemon.Device1"
+      send_member="SetDeviceMacrosBank"/>
 
   </policy>
 

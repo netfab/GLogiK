@@ -87,6 +87,8 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusArgUInt16.h
 					GKDBusArgMacro.cpp
 					GKDBusArgMacro.h
+					GKDBusArgMacrosBank.cpp
+					GKDBusArgMacrosBank.h
 				}
 				events=events/ {
 					GKDBusEvent.cpp
@@ -115,6 +117,8 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusEventTwoStringsThreeBytesToBool.h
 					GKDBusEventThreeStringsOneByteToMacro.cpp
 					GKDBusEventThreeStringsOneByteToMacro.h
+					GKDBusEventTwoStringsOneByteOneMacrosBankToBool.cpp
+					GKDBusEventTwoStringsOneByteOneMacrosBankToBool.h
 				}
 				messages=messages/ {
 					GKDBusMessage.cpp
