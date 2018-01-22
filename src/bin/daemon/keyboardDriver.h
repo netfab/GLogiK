@@ -36,8 +36,6 @@
 
 #include <linux/input-event-codes.h>
 
-#include "lib/utils/utils.h"
-
 #include "lib/shared/keyEvent.h"
 #include "macrosManager.h"
 
