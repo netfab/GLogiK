@@ -43,9 +43,7 @@
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 
-#include <config.h>
 #include "lib/shared/glogik.h"
-
 #include "lib/utils/utils.h"
 
 #include "clientsManager.h"

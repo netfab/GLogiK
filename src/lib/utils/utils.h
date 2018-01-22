@@ -22,6 +22,8 @@
 #ifndef __GLOGIK_UTILS_H__
 #define __GLOGIK_UTILS_H__
 
+#include <config.h>
+
 #define UTILS_INSIDE_UTILS_H 1
 
 #include "log.h"

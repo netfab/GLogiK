@@ -21,8 +21,6 @@
 
 #include <sstream>
 
-#include <config.h>
-
 #define UTILS_COMPILATION 1
 
 #include "log.h"

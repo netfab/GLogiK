@@ -53,8 +53,6 @@
 
 #include <syslog.h>
 
-#include <config.h>
-
 namespace NSGKUtils
 {
 

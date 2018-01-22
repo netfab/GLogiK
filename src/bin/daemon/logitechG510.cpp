@@ -21,8 +21,6 @@
 
 #include <algorithm>
 
-#include <config.h>
-
 #include "lib/utils/utils.h"
 
 #include "logitechG510.h"

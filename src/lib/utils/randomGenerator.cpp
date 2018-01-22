@@ -19,7 +19,6 @@
  *
  */
 
-#include <config.h>
 #include <algorithm>
 
 #define UTILS_COMPILATION 1

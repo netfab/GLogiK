@@ -26,8 +26,6 @@
 
 #include <utility>
 
-#include <config.h>
-
 #include "lib/utils/utils.h"
 #include "lib/dbus/GKDBus.h"
 #include "lib/shared/glogik.h"

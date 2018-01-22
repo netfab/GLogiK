@@ -29,8 +29,6 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
-#include <config.h>
-
 #include "lib/shared/deviceConfigurationFile.h"
 #include "lib/utils/utils.h"
 #include "lib/shared/glogik.h"

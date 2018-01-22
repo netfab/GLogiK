@@ -22,8 +22,6 @@
 #include <stdexcept>
 #include <iostream>
 
-#include <config.h>
-
 #include "lib/utils/utils.h"
 
 #include "macrosManager.h"

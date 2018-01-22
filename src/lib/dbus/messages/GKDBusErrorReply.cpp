@@ -19,8 +19,6 @@
  *
  */
 
-#include <config.h>
-
 #include "lib/utils/utils.h"
 
 #include "GKDBusErrorReply.h"
