@@ -1,5 +1,5 @@
 
-lib_LTLIBRARIES=libGLogiKShared.la
+lib_LTLIBRARIES += libGLogiKShared.la
 
 libGLogiKShared_la_CXXFLAGS = \
 						@AM_CXXFLAGS@ \
@@ -15,12 +15,17 @@ libGLogiKShared_la_LIBADD = \
 						@BOOST_SERIALIZATION_LIB@ \
 						@BOOST_SYSTEM_LIB@ \
 						@BOOST_FILESYSTEM_LIB@ \
-						../utils/libGLogiKUtils.la
+						libGLogiKUtils.la
 
 libGLogiKShared_la_SOURCES = \
-	keyEvent.h \
-	macrosBanks.cpp macrosBanks.h \
-	deviceConfigurationFile.cpp deviceConfigurationFile.h \
-	deviceProperties.cpp deviceProperties.h \
-	glogik.cpp glogik.h \
-	sessionManager.cpp sessionManager.h
+	%D%/keyEvent.h \
+	%D%/macrosBanks.cpp \
+	%D%/macrosBanks.h \
+	%D%/deviceConfigurationFile.cpp \
+	%D%/deviceConfigurationFile.h \
+	%D%/deviceProperties.cpp \
+	%D%/deviceProperties.h \
+	%D%/glogik.cpp \
+	%D%/glogik.h \
+	%D%/sessionManager.cpp \
+	%D%/sessionManager.h

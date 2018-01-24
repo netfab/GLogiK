@@ -1,2 +1,2 @@
 
-EXTRA_DIST = enums.h
+EXTRA_DIST = %D%/enums.h

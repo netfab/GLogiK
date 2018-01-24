@@ -1,5 +1,5 @@
 
-lib_LTLIBRARIES=libGLogiKDBus.la
+lib_LTLIBRARIES += libGLogiKDBus.la
 
 libGLogiKDBus_la_CXXFLAGS = \
 						@AM_CXXFLAGS@ \
@@ -10,37 +10,64 @@ libGLogiKDBus_la_LDFLAGS = \
 
 libGLogiKDBus_la_LIBADD = \
 				$(DBUS_LIBS) \
-				../utils/libGLogiKUtils.la
+				libGLogiKUtils.la
 
 #	events/GKDBusEventStringToVoid.cpp events/GKDBusEventStringToVoid.h
 
 libGLogiKDBus_la_SOURCES = \
-	GKDBusConnection.h \
-	GKDBus.cpp GKDBus.h \
-	arguments/GKDBusArgument.cpp arguments/GKDBusArgument.h \
-	arguments/GKDBusArgString.cpp arguments/GKDBusArgString.h \
-	arguments/GKDBusArgBoolean.cpp arguments/GKDBusArgBoolean.h \
-	arguments/GKDBusArgByte.cpp arguments/GKDBusArgByte.h \
-	arguments/GKDBusArgUInt16.cpp arguments/GKDBusArgUInt16.h \
-	arguments/GKDBusArgMacro.cpp arguments/GKDBusArgMacro.h \
-	arguments/GKDBusArgMacrosBank.cpp arguments/GKDBusArgMacrosBank.h \
-	messages/GKDBusMessage.cpp messages/GKDBusMessage.h \
-	messages/GKDBusReply.cpp messages/GKDBusReply.h \
-	messages/GKDBusErrorReply.cpp messages/GKDBusErrorReply.h \
-	messages/GKDBusRemoteMethodCall.cpp messages/GKDBusRemoteMethodCall.h \
-	messages/GKDBusBroadcastSignal.cpp messages/GKDBusBroadcastSignal.h \
-	messages/GKDBusTargetsSignal.cpp messages/GKDBusTargetsSignal.h \
-	events/GKDBusEvent.cpp events/GKDBusEvent.h \
-	events/GKDBusEventVoidToVoid.cpp events/GKDBusEventVoidToVoid.h \
-	events/GKDBusEventStringToBool.cpp events/GKDBusEventStringToBool.h \
-	events/GKDBusEventTwoStringsToBool.cpp events/GKDBusEventTwoStringsToBool.h \
-	events/GKDBusEventStringToString.cpp events/GKDBusEventStringToString.h \
-	events/GKDBusEventTwoStringsToString.cpp events/GKDBusEventTwoStringsToString.h \
-	events/GKDBusEventStringToStringsArray.cpp events/GKDBusEventStringToStringsArray.h \
-	events/GKDBusEventTwoStringsToStringsArray.cpp events/GKDBusEventTwoStringsToStringsArray.h \
-	events/GKDBusEventTwoStringsOneByteToBool.cpp events/GKDBusEventTwoStringsOneByteToBool.h \
-	events/GKDBusEventTwoStringsThreeBytesToBool.cpp events/GKDBusEventTwoStringsThreeBytesToBool.h \
-	events/GKDBusEventTwoStringsOneByteOneMacrosBankToBool.cpp GKDBusEventTwoStringsOneByteOneMacrosBankToBool.h \
-	events/GKDBusEventThreeStringsOneByteToMacro.cpp events/GKDBusEventThreeStringsOneByteToMacro.h \
-	events/GKDBusEventStringsArrayToVoid.cpp events/GKDBusEventStringsArrayToVoid.h \
-	GKDBusEvents.cpp GKDBusEvents.h
+	%D%/arguments/GKDBusArgument.cpp \
+	%D%/arguments/GKDBusArgument.h \
+	%D%/arguments/GKDBusArgString.cpp \
+	%D%/arguments/GKDBusArgString.h \
+	%D%/arguments/GKDBusArgBoolean.cpp \
+	%D%/arguments/GKDBusArgBoolean.h \
+	%D%/arguments/GKDBusArgByte.cpp \
+	%D%/arguments/GKDBusArgByte.h \
+	%D%/arguments/GKDBusArgUInt16.cpp \
+	%D%/arguments/GKDBusArgUInt16.h \
+	%D%/arguments/GKDBusArgMacro.cpp \
+	%D%/arguments/GKDBusArgMacro.h \
+	%D%/arguments/GKDBusArgMacrosBank.cpp \
+	%D%/arguments/GKDBusArgMacrosBank.h \
+	%D%/messages/GKDBusMessage.cpp \
+	%D%/messages/GKDBusMessage.h \
+	%D%/messages/GKDBusReply.cpp \
+	%D%/messages/GKDBusReply.h \
+	%D%/messages/GKDBusErrorReply.cpp \
+	%D%/messages/GKDBusErrorReply.h \
+	%D%/messages/GKDBusRemoteMethodCall.cpp \
+	%D%/messages/GKDBusRemoteMethodCall.h \
+	%D%/messages/GKDBusBroadcastSignal.cpp \
+	%D%/messages/GKDBusBroadcastSignal.h \
+	%D%/messages/GKDBusTargetsSignal.cpp \
+	%D%/messages/GKDBusTargetsSignal.h \
+	%D%/events/GKDBusEvent.cpp \
+	%D%/events/GKDBusEvent.h \
+	%D%/events/GKDBusEventVoidToVoid.cpp \
+	%D%/events/GKDBusEventVoidToVoid.h \
+	%D%/events/GKDBusEventStringToBool.cpp \
+	%D%/events/GKDBusEventStringToBool.h \
+	%D%/events/GKDBusEventTwoStringsToBool.cpp \
+	%D%/events/GKDBusEventTwoStringsToBool.h \
+	%D%/events/GKDBusEventStringToString.cpp \
+	%D%/events/GKDBusEventStringToString.h \
+	%D%/events/GKDBusEventTwoStringsToString.cpp \
+	%D%/events/GKDBusEventTwoStringsToString.h \
+	%D%/events/GKDBusEventStringToStringsArray.cpp \
+	%D%/events/GKDBusEventStringToStringsArray.h \
+	%D%/events/GKDBusEventTwoStringsToStringsArray.cpp \
+	%D%/events/GKDBusEventTwoStringsToStringsArray.h \
+	%D%/events/GKDBusEventTwoStringsOneByteToBool.cpp \
+	%D%/events/GKDBusEventTwoStringsOneByteToBool.h \
+	%D%/events/GKDBusEventTwoStringsThreeBytesToBool.cpp \
+	%D%/events/GKDBusEventTwoStringsThreeBytesToBool.h \
+	%D%/events/GKDBusEventTwoStringsOneByteOneMacrosBankToBool.cpp \
+	%D%/events/GKDBusEventTwoStringsOneByteOneMacrosBankToBool.h \
+	%D%/events/GKDBusEventThreeStringsOneByteToMacro.cpp \
+	%D%/events/GKDBusEventThreeStringsOneByteToMacro.h \
+	%D%/events/GKDBusEventStringsArrayToVoid.cpp \
+	%D%/events/GKDBusEventStringsArrayToVoid.h \
+	%D%/GKDBusConnection.h \
+	%D%/GKDBus.cpp GKDBus.h \
+	%D%/GKDBusEvents.cpp \
+	%D%/GKDBusEvents.h

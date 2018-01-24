@@ -1,3 +1,0 @@
-
-SUBDIRS = utils dbus shared
-

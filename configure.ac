@@ -175,18 +175,7 @@ AX_PTHREAD
 
 AC_CONFIG_FILES([
         Makefile
-        data/Makefile
-        data/dbus/Makefile
         data/dbus/GLogiK.conf
-        src/Makefile
-        src/include/Makefile
-        src/lib/Makefile
-        src/lib/utils/Makefile
-        src/lib/dbus/Makefile
-        src/lib/shared/Makefile
-        src/bin/Makefile
-        src/bin/daemon/Makefile
-        src/bin/service/Makefile
 	])
 
 # Generate config.status and launch it.

@@ -22,20 +22,30 @@ GLogiKd_LDADD = \
 				@BOOST_IOSTREAMS_LIB@ \
 				@LIBUDEV_LIBS@ \
 				@PTHREAD_LIBS@ \
-				../../lib/utils/libGLogiKUtils.la \
-				../../lib/dbus/libGLogiKDBus.la \
-				../../lib/shared/libGLogiKShared.la
+				libGLogiKUtils.la \
+				libGLogiKDBus.la \
+				libGLogiKShared.la
 
 GLogiKd_SOURCES = \
-		main.cpp \
-		daemon.cpp daemon.h \
-		daemonControl.cpp daemonControl.h \
-		devicesManager.cpp devicesManager.h \
-		keyboardDriver.cpp keyboardDriver.h \
-		virtualKeyboard.cpp virtualKeyboard.h \
-		logitechG510.cpp logitechG510.h \
-		macrosManager.cpp macrosManager.h \
-		clientsManager.cpp clientsManager.h \
-		clientsSignals.cpp clientsSignals.h \
-		client.cpp client.h
+		%D%/main.cpp \
+		%D%/daemon.cpp \
+		%D%/daemon.h \
+		%D%/daemonControl.cpp \
+		%D%/daemonControl.h \
+		%D%/devicesManager.cpp \
+		%D%/devicesManager.h \
+		%D%/keyboardDriver.cpp \
+		%D%/keyboardDriver.h \
+		%D%/virtualKeyboard.cpp \
+		%D%/virtualKeyboard.h \
+		%D%/logitechG510.cpp \
+		%D%/logitechG510.h \
+		%D%/macrosManager.cpp \
+		%D%/macrosManager.h \
+		%D%/clientsManager.cpp \
+		%D%/clientsManager.h \
+		%D%/clientsSignals.cpp \
+		%D%/clientsSignals.h \
+		%D%/client.cpp \
+		%D%/client.h
 

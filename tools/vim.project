@@ -19,20 +19,17 @@ GLogiK=$PWD/.. CD=. {
 	macro=m4/ {
 	}
 	data=data/ {
-		Makefile.am
 		dbus=dbus/ {
 			Makefile.am
 			GLogiK.conf.in
 		}
 	}
 	srcfiles=src/ {
-		Makefile.am
 		include=include/ {
 			Makefile.am
 			enums.h
 		}
 		binaries=bin/ {
-			Makefile.am
 			daemon=daemon/ {
 				Makefile.am
 				main.cpp
@@ -71,7 +68,6 @@ GLogiK=$PWD/.. CD=. {
 			}
 		}
 		libraries=lib/ {
-			Makefile.am
 			GLogiKDBus=dbus/ {
 				Makefile.am
 				arguments=arguments/ {

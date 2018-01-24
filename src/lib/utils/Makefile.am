@@ -1,5 +1,5 @@
 
-lib_LTLIBRARIES=libGLogiKUtils.la
+lib_LTLIBRARIES = libGLogiKUtils.la
 
 libGLogiKUtils_la_CXXFLAGS = \
 				@AM_CXXFLAGS@ \
@@ -14,10 +14,15 @@ libGLogiKUtils_la_LIBADD = \
 				@BOOST_FILESYSTEM_LIB@
 
 libGLogiKUtils_la_SOURCES = \
-	randomGenerator.cpp randomGenerator.h \
-	filesystem.cpp filesystem.h \
-	functions.cpp functions.h \
-	exception.cpp exception.h \
-	XDGUserDirs.cpp XDGUserDirs.h \
-	log.h \
-	utils.h
+	%D%/randomGenerator.cpp \
+	%D%/randomGenerator.h \
+	%D%/filesystem.cpp \
+	%D%/filesystem.h \
+	%D%/functions.cpp \
+	%D%/functions.h \
+	%D%/exception.cpp \
+	%D%/exception.h \
+	%D%/XDGUserDirs.cpp \
+	%D%/XDGUserDirs.h \
+	%D%/log.h \
+	%D%/utils.h
