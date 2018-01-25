@@ -30,11 +30,11 @@ libGLogiKDBus_la_SOURCES = \
 	%D%/arguments/GKDBusArgMacrosBank.cpp \
 	%D%/arguments/GKDBusArgMacrosBank.h \
 	%D%/messages/GKDBusMessage.cpp \
-	%D%/messages/GKDBusMessage.h \
+	%D%/messages/GKDBusMessage.h \
 	%D%/messages/GKDBusReply.cpp \
-	%D%/messages/GKDBusReply.h \
+	%D%/messages/GKDBusReply.h \
 	%D%/messages/GKDBusErrorReply.cpp \
-	%D%/messages/GKDBusErrorReply.h \
+	%D%/messages/GKDBusErrorReply.h \
 	%D%/messages/GKDBusRemoteMethodCall.cpp \
 	%D%/messages/GKDBusRemoteMethodCall.h \
 	%D%/messages/GKDBusBroadcastSignal.cpp \
@@ -42,21 +42,21 @@ libGLogiKDBus_la_SOURCES = \
 	%D%/messages/GKDBusTargetsSignal.cpp \
 	%D%/messages/GKDBusTargetsSignal.h \
 	%D%/events/GKDBusEvent.cpp \
-	%D%/events/GKDBusEvent.h \
+	%D%/events/GKDBusEvent.h \
 	%D%/events/GKDBusEventVoidToVoid.cpp \
 	%D%/events/GKDBusEventVoidToVoid.h \
 	%D%/events/GKDBusEventStringToBool.cpp \
-	%D%/events/GKDBusEventStringToBool.h \
+	%D%/events/GKDBusEventStringToBool.h \
 	%D%/events/GKDBusEventTwoStringsToBool.cpp \
-	%D%/events/GKDBusEventTwoStringsToBool.h \
+	%D%/events/GKDBusEventTwoStringsToBool.h \
 	%D%/events/GKDBusEventStringToString.cpp \
-	%D%/events/GKDBusEventStringToString.h \
+	%D%/events/GKDBusEventStringToString.h \
 	%D%/events/GKDBusEventTwoStringsToString.cpp \
 	%D%/events/GKDBusEventTwoStringsToString.h \
 	%D%/events/GKDBusEventStringToStringsArray.cpp \
-	%D%/events/GKDBusEventStringToStringsArray.h \
+	%D%/events/GKDBusEventStringToStringsArray.h \
 	%D%/events/GKDBusEventTwoStringsToStringsArray.cpp \
-	%D%/events/GKDBusEventTwoStringsToStringsArray.h \
+	%D%/events/GKDBusEventTwoStringsToStringsArray.h \
 	%D%/events/GKDBusEventTwoStringsOneByteToBool.cpp \
 	%D%/events/GKDBusEventTwoStringsOneByteToBool.h \
 	%D%/events/GKDBusEventTwoStringsThreeBytesToBool.cpp \
@@ -68,6 +68,7 @@ libGLogiKDBus_la_SOURCES = \
 	%D%/events/GKDBusEventStringsArrayToVoid.cpp \
 	%D%/events/GKDBusEventStringsArrayToVoid.h \
 	%D%/GKDBusConnection.h \
-	%D%/GKDBus.cpp GKDBus.h \
+	%D%/GKDBus.cpp \
+	%D%/GKDBus.h \
 	%D%/GKDBusEvents.cpp \
 	%D%/GKDBusEvents.h
