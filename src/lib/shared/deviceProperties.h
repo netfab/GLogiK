@@ -35,15 +35,6 @@
 namespace GLogiK
 {
 
-/*
-enum class DeviceState : uint8_t
-{
-	STATE_STARTED = 0,
-	STATE_STOPPED,
-	STATE_UNKNOWN,
-};
-*/
-
 class DeviceProperties : public MacrosBanks
 {
 	public:
