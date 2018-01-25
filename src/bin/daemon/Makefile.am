@@ -22,9 +22,9 @@ GLogiKd_LDADD = \
 				@BOOST_IOSTREAMS_LIB@ \
 				@LIBUDEV_LIBS@ \
 				@PTHREAD_LIBS@ \
-				libGLogiKUtils.la \
-				libGLogiKDBus.la \
-				libGLogiKShared.la
+				libGKUtils.la \
+				libGKDBus.la \
+				libGKShared.la
 
 GLogiKd_SOURCES = \
 		%D%/main.cpp \

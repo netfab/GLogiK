@@ -1,19 +1,19 @@
 
-lib_LTLIBRARIES = libGLogiKUtils.la
+lib_LTLIBRARIES = libGKUtils.la
 
-libGLogiKUtils_la_CXXFLAGS = \
+libGKUtils_la_CXXFLAGS = \
 				@AM_CXXFLAGS@ \
 				@BOOST_CPPFLAGS@
 
-libGLogiKUtils_la_LDFLAGS = \
+libGKUtils_la_LDFLAGS = \
 				@AM_LDFLAGS@ \
 				@BOOST_LDFLAGS@
 
-libGLogiKUtils_la_LIBADD = \
+libGKUtils_la_LIBADD = \
 				@BOOST_SYSTEM_LIB@ \
 				@BOOST_FILESYSTEM_LIB@
 
-libGLogiKUtils_la_SOURCES = \
+libGKUtils_la_SOURCES = \
 	%D%/randomGenerator.cpp \
 	%D%/randomGenerator.h \
 	%D%/filesystem.cpp \

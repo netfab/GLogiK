@@ -1,20 +1,20 @@
 
-lib_LTLIBRARIES += libGLogiKDBus.la
+lib_LTLIBRARIES += libGKDBus.la
 
-libGLogiKDBus_la_CXXFLAGS = \
+libGKDBus_la_CXXFLAGS = \
 						@AM_CXXFLAGS@ \
 						$(DBUS_CFLAGS)
 
-libGLogiKDBus_la_LDFLAGS = \
+libGKDBus_la_LDFLAGS = \
 						@AM_LDFLAGS@
 
-libGLogiKDBus_la_LIBADD = \
+libGKDBus_la_LIBADD = \
 				$(DBUS_LIBS) \
-				libGLogiKUtils.la
+				libGKUtils.la
 
 #	events/GKDBusEventStringToVoid.cpp events/GKDBusEventStringToVoid.h
 
-libGLogiKDBus_la_SOURCES = \
+libGKDBus_la_SOURCES = \
 	%D%/arguments/GKDBusArgument.cpp \
 	%D%/arguments/GKDBusArgument.h \
 	%D%/arguments/GKDBusArgString.cpp \

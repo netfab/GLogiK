@@ -14,9 +14,9 @@ GLogiKs_LDADD = \
 				@BOOST_SERIALIZATION_LIB@ \
 				@BOOST_SYSTEM_LIB@ \
 				@BOOST_FILESYSTEM_LIB@ \
-				libGLogiKDBus.la \
-				libGLogiKUtils.la \
-				libGLogiKShared.la
+				libGKDBus.la \
+				libGKUtils.la \
+				libGKShared.la
 
 GLogiKs_SOURCES = \
 		%D%/main.cpp \

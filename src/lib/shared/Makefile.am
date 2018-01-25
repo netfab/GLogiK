@@ -1,23 +1,23 @@
 
-lib_LTLIBRARIES += libGLogiKShared.la
+lib_LTLIBRARIES += libGKShared.la
 
-libGLogiKShared_la_CXXFLAGS = \
+libGKShared_la_CXXFLAGS = \
 						@AM_CXXFLAGS@ \
 						@BOOST_CPPFLAGS@ \
 						$(SM_CFLAGS)
 
-libGLogiKShared_la_LDFLAGS = \
+libGKShared_la_LDFLAGS = \
 						@AM_LDFLAGS@ \
 						@BOOST_LDFLAGS@
 
-libGLogiKShared_la_LIBADD = \
+libGKShared_la_LIBADD = \
 						$(SM_LIBS) \
 						@BOOST_SERIALIZATION_LIB@ \
 						@BOOST_SYSTEM_LIB@ \
 						@BOOST_FILESYSTEM_LIB@ \
-						libGLogiKUtils.la
+						libGKUtils.la
 
-libGLogiKShared_la_SOURCES = \
+libGKShared_la_SOURCES = \
 	%D%/keyEvent.h \
 	%D%/macrosBanks.cpp \
 	%D%/macrosBanks.h \
