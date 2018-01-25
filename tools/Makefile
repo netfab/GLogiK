@@ -1,7 +1,7 @@
 SHELL = /bin/sh
-top_srcdir = ..
-build_dir= ../build
+top_srcdir = $(CURDIR)/..
 PREFIX_DEV_DIR=/var/tmp/devcxx
+build_dir=$(PREFIX_DEV_DIR)/build
 PREFIX_DIR=$(PREFIX_DEV_DIR)/GLogiK
 LANG=C
 
