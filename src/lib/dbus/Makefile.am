@@ -43,30 +43,8 @@ libGKDBus_la_SOURCES = \
 	%D%/messages/GKDBusTargetsSignal.h \
 	%D%/events/GKDBusEvent.cpp \
 	%D%/events/GKDBusEvent.h \
-	%D%/events/GKDBusEventVoidToVoid.cpp \
-	%D%/events/GKDBusEventVoidToVoid.h \
-	%D%/events/GKDBusEventStringToBool.cpp \
-	%D%/events/GKDBusEventStringToBool.h \
-	%D%/events/GKDBusEventTwoStringsToBool.cpp \
-	%D%/events/GKDBusEventTwoStringsToBool.h \
-	%D%/events/GKDBusEventStringToString.cpp \
-	%D%/events/GKDBusEventStringToString.h \
-	%D%/events/GKDBusEventTwoStringsToString.cpp \
-	%D%/events/GKDBusEventTwoStringsToString.h \
-	%D%/events/GKDBusEventStringToStringsArray.cpp \
-	%D%/events/GKDBusEventStringToStringsArray.h \
-	%D%/events/GKDBusEventTwoStringsToStringsArray.cpp \
-	%D%/events/GKDBusEventTwoStringsToStringsArray.h \
-	%D%/events/GKDBusEventTwoStringsOneByteToBool.cpp \
-	%D%/events/GKDBusEventTwoStringsOneByteToBool.h \
-	%D%/events/GKDBusEventTwoStringsThreeBytesToBool.cpp \
-	%D%/events/GKDBusEventTwoStringsThreeBytesToBool.h \
-	%D%/events/GKDBusEventTwoStringsOneByteOneMacrosBankToBool.cpp \
-	%D%/events/GKDBusEventTwoStringsOneByteOneMacrosBankToBool.h \
-	%D%/events/GKDBusEventThreeStringsOneByteToMacro.cpp \
-	%D%/events/GKDBusEventThreeStringsOneByteToMacro.h \
-	%D%/events/GKDBusEventStringsArrayToVoid.cpp \
-	%D%/events/GKDBusEventStringsArrayToVoid.h \
+	%D%/events/GKDBusEventTemplates.cpp \
+	%D%/events/GKDBusEventTemplates.h \
 	%D%/GKDBusConnection.h \
 	%D%/GKDBus.cpp \
 	%D%/GKDBus.h \

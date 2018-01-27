@@ -24,7 +24,7 @@ GLogiK=$PWD/.. CD=. {
 			GLogiK.conf.in
 		}
 	}
-	srcfiles=src/ {
+	src=src/ {
 		include=include/ {
 			Makefile.am
 			enums.h
@@ -68,7 +68,7 @@ GLogiK=$PWD/.. CD=. {
 			}
 		}
 		libraries=lib/ {
-			GLogiKDBus=dbus/ {
+			GKDBus=dbus/ {
 				Makefile.am
 				arguments=arguments/ {
 					GKDBusArgument.cpp
@@ -89,32 +89,8 @@ GLogiK=$PWD/.. CD=. {
 				events=events/ {
 					GKDBusEvent.cpp
 					GKDBusEvent.h
-					GKDBusEventVoidToVoid.cpp
-					GKDBusEventVoidToVoid.h
-					GKDBusEventStringToVoid.cpp
-					GKDBusEventStringToVoid.h
-					GKDBusEventStringsArrayToVoid.cpp
-					GKDBusEventStringsArrayToVoid.h
-					GKDBusEventStringToBool.cpp
-					GKDBusEventStringToBool.h
-					GKDBusEventTwoStringsToBool.cpp
-					GKDBusEventTwoStringsToBool.h
-					GKDBusEventStringToString.cpp
-					GKDBusEventStringToString.h
-					GKDBusEventTwoStringsToString.cpp
-					GKDBusEventTwoStringsToString.h
-					GKDBusEventStringToStringsArray.cpp
-					GKDBusEventStringToStringsArray.h
-					GKDBusEventTwoStringsToStringsArray.cpp
-					GKDBusEventTwoStringsToStringsArray.h
-					GKDBusEventTwoStringsOneByteToBool.cpp
-					GKDBusEventTwoStringsOneByteToBool.h
-					GKDBusEventTwoStringsThreeBytesToBool.cpp
-					GKDBusEventTwoStringsThreeBytesToBool.h
-					GKDBusEventThreeStringsOneByteToMacro.cpp
-					GKDBusEventThreeStringsOneByteToMacro.h
-					GKDBusEventTwoStringsOneByteOneMacrosBankToBool.cpp
-					GKDBusEventTwoStringsOneByteOneMacrosBankToBool.h
+					GKDBusEventTemplates.cpp
+					GKDBusEventTemplates.h
 				}
 				messages=messages/ {
 					GKDBusMessage.cpp
@@ -136,7 +112,7 @@ GLogiK=$PWD/.. CD=. {
 				GKDBusEvents.cpp
 				GKDBusEvents.h
 			}
-			GLogiKShared=shared/ {
+			GKShared=shared/ {
 				Makefile.am
 				deviceConfigurationFile.cpp
 				deviceConfigurationFile.h
@@ -150,7 +126,7 @@ GLogiK=$PWD/.. CD=. {
 				sessionManager.cpp
 				sessionManager.h
 			}
-			GLogiKUtils=utils/ {
+			GKUtils=utils/ {
 				Makefile.am
 				filesystem.cpp
 				filesystem.h

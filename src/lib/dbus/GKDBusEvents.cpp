@@ -43,7 +43,7 @@ GKDBusEvents::GKDBusEvents(const std::string & rootnode) : root_node_(rootnode) 
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "adding Introspectable interface : " << object;
 #endif
-	this->addStringToStringEvent(
+	this->EventGKDBusCallback<StringToString>::addEvent(
 		system_bus, object, "org.freedesktop.DBus.Introspectable", "Introspect",
 		{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
 		std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),
@@ -120,7 +120,7 @@ void GKDBusEvents::addIntrospectableEvent(const BusConnection bus, const char* o
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "adding Introspectable interface : " << object;
 #endif
-			this->addStringToStringEvent(
+			this->EventGKDBusCallback<StringToString>::addEvent(
 				bus, object, "org.freedesktop.DBus.Introspectable", "Introspect",
 				{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
 				std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),

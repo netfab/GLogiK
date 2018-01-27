@@ -30,40 +30,27 @@
 
 #include "lib/dbus/GKDBusConnection.h"
 
-#include "events/GKDBusEventVoidToVoid.h"
-//#include "events/GKDBusEventStringToVoid.h"
-#include "events/GKDBusEventStringToBool.h"
-#include "events/GKDBusEventTwoStringsToBool.h"
-#include "events/GKDBusEventStringToString.h"
-#include "events/GKDBusEventTwoStringsToString.h"
-#include "events/GKDBusEventStringToStringsArray.h"
-#include "events/GKDBusEventTwoStringsToStringsArray.h"
-#include "events/GKDBusEventTwoStringsOneByteToBool.h"
-#include "events/GKDBusEventTwoStringsThreeBytesToBool.h"
-#include "events/GKDBusEventThreeStringsOneByteToMacro.h"
-#include "events/GKDBusEventStringsArrayToVoid.h"
-#include "events/GKDBusEventTwoStringsOneByteOneMacrosBankToBool.h"
+#include "events/GKDBusEventTemplates.h"
 
 namespace NSGKDBus
 {
 
 
 class GKDBusEvents
-	:	public EventVoidToVoid,
-		public EventStringToBool,
-		public EventTwoStringsToBool,
-		public EventStringToString,
-		public EventTwoStringsToString,
-		public EventStringToStringsArray,
-		public EventTwoStringsToStringsArray,
-		public EventTwoStringsOneByteToBool,
-		public EventTwoStringsThreeBytesToBool,
-		public EventThreeStringsOneByteToMacro,
-		public EventStringsArrayToVoid,
-		public EventTwoStringsOneByteOneMacrosBankToBool
+	:	public EventGKDBusCallback<VoidToVoid>,
+		public EventGKDBusCallback<StringsArrayToVoid>,
+		public EventGKDBusCallback<StringToBool>,
+		public EventGKDBusCallback<TwoStringsToBool>,
+		public EventGKDBusCallback<TwoStringsOneByteToBool>,
+		public EventGKDBusCallback<TwoStringsThreeBytesToBool>,
+		public EventGKDBusCallback<StringToString>,
+		public EventGKDBusCallback<TwoStringsToString>,
+		public EventGKDBusCallback<StringToStringsArray>,
+		public EventGKDBusCallback<TwoStringsToStringsArray>,
+		public EventGKDBusCallback<ThreeStringsOneByteToMacro>,
+		public EventGKDBusCallback<TwoStringsOneByteOneMacrosBankToBool>
 {
 	public:
-
 
 	protected:
 		GKDBusEvents(const std::string & rootnode);
