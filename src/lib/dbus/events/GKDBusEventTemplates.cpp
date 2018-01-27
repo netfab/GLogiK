@@ -19,6 +19,7 @@
  *
  */
 
+#include "lib/utils/utils.h"
 
 #include "GKDBusEventTemplates.h"
 
@@ -26,6 +27,26 @@ namespace NSGKDBus
 {
 
 using namespace NSGKUtils;
+
+void SignalRule::addSignalRuleMatch(
+		DBusConnection* connection,
+		const char* interface,
+		const char* eventName
+	)
+{
+	std::string rule = "type='signal',interface='";
+	rule += interface;
+	rule += "',member='";
+	rule += eventName;
+	rule += "'";
+	dbus_bus_add_match(connection, rule.c_str(), nullptr);
+	dbus_connection_flush(connection);
+	// FIXME check error
+	//this->checkDBusError("DBus Session match error");
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "DBus Signal match rule sent : " << rule;
+#endif
+}
 
 template <>
 	void GKDBusCallbackEvent<VoidToVoid>::runCallback(

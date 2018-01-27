@@ -71,20 +71,6 @@ class GKDBusEvent {
 		GKDBusEvent(void) = delete;
 };
 
-class EventCanBeSignal {
-	protected:
-		EventCanBeSignal() = default;
-		virtual ~EventCanBeSignal() = default;
-
-		static void addSignalRuleMatch(
-			DBusConnection* connection,
-			const char* interface,
-			const char* eventName
-		);
-
-		virtual DBusConnection* getConnection(BusConnection wanted_connection) = 0;
-};
-
 } // namespace NSGKDBus
 
 #endif

@@ -19,8 +19,6 @@
  *
  */
 
-#include <string>
-
 #include "lib/utils/utils.h"
 
 #include "GKDBusEvent.h"
@@ -42,25 +40,6 @@ GKDBusEvent::GKDBusEvent(
 GKDBusEvent::~GKDBusEvent() {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "destroying event: " << eventName;
-#endif
-}
-
-void EventCanBeSignal::addSignalRuleMatch(
-	DBusConnection* connection,
-	const char* interface,
-	const char* eventName
-) {
-	std::string rule = "type='signal',interface='";
-	rule += interface;
-	rule += "',member='";
-	rule += eventName;
-	rule += "'";
-	dbus_bus_add_match(connection, rule.c_str(), nullptr);
-	dbus_connection_flush(connection);
-	// FIXME check error
-	//this->checkDBusError("DBus Session match error");
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "DBus Signal match rule sent : " << rule;
 #endif
 }
 

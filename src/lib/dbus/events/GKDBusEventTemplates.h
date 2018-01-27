@@ -30,7 +30,6 @@
 
 #include <dbus/dbus.h>
 
-#include "lib/utils/utils.h"
 #include "lib/shared/keyEvent.h"
 
 /* -- */
@@ -161,8 +160,27 @@ template <typename T>
 		T callback;
 };
 
+class SignalRule
+{
+	public:
+
+	protected:
+		SignalRule() = default;
+		~SignalRule() = default;
+
+		static void addSignalRuleMatch(
+			DBusConnection* connection,
+			const char* interface,
+			const char* eventName
+		);
+
+	private:
+
+};
+
 template <typename T>
 	class EventGKDBusCallback
+		:	public SignalRule
 {
 	public:
 		void addEvent(
@@ -197,12 +215,6 @@ template <typename T>
 		) = 0;
 
 	private:
-		static void addSignalRuleMatch(
-			DBusConnection* connection,
-			const char* interface,
-			const char* eventName
-		);
-
 		virtual DBusConnection* getConnection(BusConnection wanted_connection) = 0;
 };
 
@@ -239,10 +251,11 @@ template <typename T>
 		T callback,
 		GKDBusEventType eventType,
 		const bool introspectable
-	)	{
-			GKDBusEvent* e = new GKDBusCallbackEvent<T>(eventName, args, callback, eventType, introspectable);
-			this->addIntrospectableEvent(bus, object, interface, e);
-		}
+	)
+{
+	GKDBusEvent* e = new GKDBusCallbackEvent<T>(eventName, args, callback, eventType, introspectable);
+	this->addIntrospectableEvent(bus, object, interface, e);
+}
 
 template <typename T>
 	void EventGKDBusCallback<T>::addSignal(
@@ -252,31 +265,11 @@ template <typename T>
 		const char* eventName,
 		const std::vector<DBusMethodArgument> & args,
 		T callback
-	)	{
+	)
+{
 	this->addEvent(bus, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, true);
 	DBusConnection* connection = this->getConnection(bus);
 	this->addSignalRuleMatch(connection, interface, eventName);
-}
-
-template <typename T>
-void EventGKDBusCallback<T>::addSignalRuleMatch(
-	DBusConnection* connection,
-	const char* interface,
-	const char* eventName
-) {
-	std::string rule = "type='signal',interface='";
-	rule += interface;
-	rule += "',member='";
-	rule += eventName;
-	rule += "'";
-	dbus_bus_add_match(connection, rule.c_str(), nullptr);
-	dbus_connection_flush(connection);
-	// FIXME check error
-	//this->checkDBusError("DBus Session match error");
-#if DEBUGGING_ON
-	using namespace NSGKUtils;
-	LOG(DEBUG1) << "DBus Signal match rule sent : " << rule;
-#endif
 }
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
