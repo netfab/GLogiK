@@ -30,6 +30,7 @@
 
 #include <dbus/dbus.h>
 
+#include "lib/utils/utils.h"
 #include "lib/shared/keyEvent.h"
 
 /* -- */
@@ -238,7 +239,11 @@ template <typename T>
 		DBusConnection* connection,
 		DBusMessage* message)
 {
-	// FIXME
+	using namespace NSGKUtils;
+	const char* error = "runCallback not implemented";
+	LOG(ERROR) << error;
+	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+		this->buildAndSendErrorReply(connection, message, error);
 }
 
 template <typename T>

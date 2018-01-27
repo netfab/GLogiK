@@ -19,8 +19,6 @@
  *
  */
 
-#include "lib/utils/utils.h"
-
 #include "GKDBusEventTemplates.h"
 
 namespace NSGKDBus
