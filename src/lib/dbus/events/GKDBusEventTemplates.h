@@ -153,12 +153,27 @@ template <typename T>
 			);
 		~GKDBusCallbackEvent() = default;
 
-		void runCallback(DBusConnection* connection, DBusMessage* message);
+		void runCallback(
+			DBusConnection* connection,
+			DBusMessage* message
+		);
 
 	private:
 		GKDBusCallbackEvent() = delete;
 
 		T callback;
+
+		void sendError(
+			DBusConnection* connection,
+			DBusMessage* message,
+			const char* error
+		);
+
+		const bool sendCallbackError(
+			DBusConnection* connection,
+			DBusMessage* message,
+			const char* error
+		);
 };
 
 class SignalRule
@@ -244,6 +259,38 @@ template <typename T>
 	LOG(ERROR) << error;
 	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL)
 		this->buildAndSendErrorReply(connection, message, error);
+}
+
+template <typename T>
+	void GKDBusCallbackEvent<T>::sendError(
+		DBusConnection* connection,
+		DBusMessage* message,
+		const char* error
+	)
+{
+	using namespace NSGKUtils;
+	LOG(ERROR) << "DBus reply failure : " << error;
+	/* delete reply object if allocated */
+	this->sendReply();
+	this->buildAndSendErrorReply(connection, message, error);
+}
+
+template <typename T>
+	const bool GKDBusCallbackEvent<T>::sendCallbackError(
+		DBusConnection* connection,
+		DBusMessage* message,
+		const char* error
+	)
+{
+	using namespace NSGKUtils;
+	LOG(ERROR) << error;
+
+	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
+		/* send error if something was wrong when running callback */
+		this->buildAndSendErrorReply(connection, message, error);
+	}
+
+	return (this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL);
 }
 
 template <typename T>

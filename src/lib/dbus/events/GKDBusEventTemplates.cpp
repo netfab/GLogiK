@@ -82,14 +82,8 @@ template <>
 		ret = this->callback(arg);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << error;
-
-		if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
-			/* send error if something was wrong when running callback */
-			this->buildAndSendErrorReply(connection, message, error);
+		if( this->sendCallbackError(connection, message, e.what()) )
 			return;
-		}
 	}
 
 	/* signals don't send reply */
@@ -101,11 +95,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << "DBus reply failure : " << error;
-		/* delete reply object if allocated */
-		this->sendReply();
-		this->buildAndSendErrorReply(connection, message, error);
+		this->sendError(connection, message, e.what());
 		return;
 	}
 
@@ -131,14 +121,8 @@ template <>
 		ret = this->callback(arg1, arg2);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << error;
-
-		if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
-			/* send error if something was wrong when running callback */
-			this->buildAndSendErrorReply(connection, message, error);
+		if( this->sendCallbackError(connection, message, e.what()) )
 			return;
-		}
 	}
 
 	/* signals don't send reply */
@@ -150,11 +134,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << "DBus reply failure : " << error;
-		/* delete reply object if allocated */
-		this->sendReply();
-		this->buildAndSendErrorReply(connection, message, error);
+		this->sendError(connection, message, e.what());
 		return;
 	}
 
@@ -185,14 +165,8 @@ template <>
 		ret = this->callback(arg);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << error;
-
-		if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
-			/* send error if something was wrong when running callback */
-			this->buildAndSendErrorReply(connection, message, error);
+		if( this->sendCallbackError(connection, message, e.what()) )
 			return;
-		}
 	}
 
 	/* signals don't send reply */
@@ -204,11 +178,7 @@ template <>
 		this->appendStringToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << "DBus reply failure : " << error;
-		/* delete reply object if allocated */
-		this->sendReply();
-		this->buildAndSendErrorReply(connection, message, error);
+		this->sendError(connection, message, e.what());
 		return;
 	}
 
@@ -234,14 +204,8 @@ template <>
 		ret = this->callback(arg1, arg2);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << error;
-
-		if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
-			/* send error if something was wrong when running callback */
-			this->buildAndSendErrorReply(connection, message, error);
+		if( this->sendCallbackError(connection, message, e.what()) )
 			return;
-		}
 	}
 
 	/* signals don't send reply */
@@ -253,11 +217,7 @@ template <>
 		this->appendStringToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << "DBus reply failure : " << error;
-		/* delete reply object if allocated */
-		this->sendReply();
-		this->buildAndSendErrorReply(connection, message, error);
+		this->sendError(connection, message, e.what());
 		return;
 	}
 
@@ -282,14 +242,8 @@ template <>
 		ret = this->callback(arg);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << error;
-
-		if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
-			/* send error if something was wrong when running callback */
-			this->buildAndSendErrorReply(connection, message, error);
+		if( this->sendCallbackError(connection, message, e.what()) )
 			return;
-		}
 	}
 
 	/* signals don't send reply */
@@ -301,11 +255,7 @@ template <>
 		this->appendStringVectorToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << "DBus reply failure : " << error;
-		/* delete reply object if allocated */
-		this->sendReply();
-		this->buildAndSendErrorReply(connection, message, error);
+		this->sendError(connection, message, e.what());
 		return;
 	}
 
@@ -350,11 +300,7 @@ template <>
 		this->appendStringVectorToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << "DBus reply failure : " << error;
-		/* delete reply object if allocated */
-		this->sendReply();
-		this->buildAndSendErrorReply(connection, message, error);
+		this->sendError(connection, message, e.what());
 		return;
 	}
 
@@ -381,14 +327,8 @@ template <>
 		ret = this->callback(arg1, arg2, arg3);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << error;
-
-		if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
-			/* send error if something was wrong when running callback */
-			this->buildAndSendErrorReply(connection, message, error);
+		if( this->sendCallbackError(connection, message, e.what()) )
 			return;
-		}
 	}
 
 	/* signals don't send reply */
@@ -400,11 +340,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << "DBus reply failure : " << error;
-		/* delete reply object if allocated */
-		this->sendReply();
-		this->buildAndSendErrorReply(connection, message, error);
+		this->sendError(connection, message, e.what());
 		return;
 	}
 
@@ -433,14 +369,8 @@ template <>
 		ret = this->callback(arg1, arg2, arg3, arg4, arg5);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << error;
-
-		if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
-			/* send error if something was wrong when running callback */
-			this->buildAndSendErrorReply(connection, message, error);
+		if( this->sendCallbackError(connection, message, e.what()) )
 			return;
-		}
 	}
 
 	/* signals don't send reply */
@@ -452,11 +382,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << "DBus reply failure : " << error;
-		/* delete reply object if allocated */
-		this->sendReply();
-		this->buildAndSendErrorReply(connection, message, error);
+		this->sendError(connection, message, e.what());
 		return;
 	}
 
@@ -506,14 +432,8 @@ template <>
 		ret = this->callback(arg1, arg2, arg3, arg4);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << error;
-
-		if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
-			/* send error if something was wrong when running callback */
-			this->buildAndSendErrorReply(connection, message, error);
+		if( this->sendCallbackError(connection, message, e.what()) )
 			return;
-		}
 	}
 
 	/* signals don't send reply */
@@ -525,11 +445,7 @@ template <>
 		this->appendMacroToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << "DBus reply failure : " << error;
-		/* delete reply object if allocated */
-		this->sendReply();
-		this->buildAndSendErrorReply(connection, message, error);
+		this->sendError(connection, message, e.what());
 		return;
 	}
 
@@ -556,14 +472,8 @@ template <>
 		ret = this->callback(arg1, arg2, arg3, arg4);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << error;
-
-		if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
-			/* send error if something was wrong when running callback */
-			this->buildAndSendErrorReply(connection, message, error);
+		if( this->sendCallbackError(connection, message, e.what()) )
 			return;
-		}
 	}
 
 	/* signals don't send reply */
@@ -575,11 +485,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << "DBus reply failure : " << error;
-		/* delete reply object if allocated */
-		this->sendReply();
-		this->buildAndSendErrorReply(connection, message, error);
+		this->sendError(connection, message, e.what());
 		return;
 	}
 
