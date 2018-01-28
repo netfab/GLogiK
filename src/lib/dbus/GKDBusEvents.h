@@ -63,14 +63,13 @@ class GKDBusEvents
 				std::map< const std::string, /* interface */
 					std::vector<GKDBusEvent*> > > > DBusEvents_;
 
-		std::set<std::string> DBusInterfaces_;
-
 		const std::string getNode(const std::string & object) const;
 		const std::string & getRootNode(void) const;
 
 	private:
 		static const std::string rootNodeObject_;
 		std::string root_node_;
+		std::set<std::string> DBusInterfaces_;
 
 		void openXMLInterface(
 			std::ostringstream & xml,

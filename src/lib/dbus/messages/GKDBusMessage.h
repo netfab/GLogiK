@@ -52,7 +52,7 @@ class GKDBusMessage
 
 	protected:
 		GKDBusMessage(DBusConnection* connection, const bool logoff=false);
-		virtual ~GKDBusMessage(void);
+		~GKDBusMessage(void);
 
 		DBusConnection* connection_;
 		DBusMessage* message_;

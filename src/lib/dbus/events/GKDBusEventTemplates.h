@@ -206,6 +206,7 @@ template <typename T>
 		EventGKDBusCallback() = default;
 		virtual ~EventGKDBusCallback() = default;
 
+	private:
 		virtual void addIntrospectableEvent(
 			const BusConnection bus,
 			const char* object,
@@ -213,7 +214,6 @@ template <typename T>
 			GKDBusEvent* event
 		) = 0;
 
-	private:
 		virtual DBusConnection* getConnection(BusConnection wanted_connection) = 0;
 };
 
