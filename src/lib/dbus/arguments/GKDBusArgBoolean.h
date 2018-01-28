@@ -27,7 +27,8 @@
 namespace NSGKDBus
 {
 
-class GKDBusArgumentBoolean : public GKDBusArgument
+class GKDBusArgumentBoolean
+	:	protected GKDBusArgument
 {
 	public:
 		static const bool getNextBooleanArgument(void);

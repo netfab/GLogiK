@@ -58,7 +58,7 @@ class GKDBusRemoteMethodCall
 };
 
 class GKDBusMessageRemoteMethodCall
-	:	virtual public GKDBusArgumentString
+	:	virtual private GKDBusArgumentString
 {
 	public:
 		/* Remote Method Call with Pending Reply */

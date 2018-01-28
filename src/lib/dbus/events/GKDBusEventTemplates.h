@@ -41,9 +41,6 @@
 #include "lib/dbus/arguments/GKDBusArgByte.h"
 #include "lib/dbus/arguments/GKDBusArgMacrosBank.h"
 
-#include "lib/dbus/messages/GKDBusReply.h"
-#include "lib/dbus/messages/GKDBusErrorReply.h"
-
 
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
@@ -130,18 +127,16 @@ typedef std::function<
 /* -- -- -- classes templates -- -- -- */
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
 
-
 namespace NSGKDBus
 {
+
 
 template <typename T>
 	class GKDBusCallbackEvent
 		:	public GKDBusEvent,
-			virtual public GKDBusArgumentString,
-			virtual public GKDBusArgumentByte,
-			public GKDBusArgumentMacrosBank,
-			public GKDBusMessageReply,
-			public GKDBusMessageErrorReply
+			virtual private GKDBusArgumentString,
+			virtual private GKDBusArgumentByte,
+			private GKDBusArgumentMacrosBank
 {
 	public:
 		GKDBusCallbackEvent(
@@ -162,18 +157,6 @@ template <typename T>
 		GKDBusCallbackEvent() = delete;
 
 		T callback;
-
-		void sendError(
-			DBusConnection* connection,
-			DBusMessage* message,
-			const char* error
-		);
-
-		const bool sendCallbackError(
-			DBusConnection* connection,
-			DBusMessage* message,
-			const char* error
-		);
 };
 
 class SignalRule
@@ -196,7 +179,7 @@ class SignalRule
 
 template <typename T>
 	class EventGKDBusCallback
-		:	public SignalRule
+		:	private SignalRule
 {
 	public:
 		void addEvent(
@@ -259,38 +242,6 @@ template <typename T>
 	LOG(ERROR) << error;
 	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL)
 		this->buildAndSendErrorReply(connection, message, error);
-}
-
-template <typename T>
-	void GKDBusCallbackEvent<T>::sendError(
-		DBusConnection* connection,
-		DBusMessage* message,
-		const char* error
-	)
-{
-	using namespace NSGKUtils;
-	LOG(ERROR) << "DBus reply failure : " << error;
-	/* delete reply object if allocated */
-	this->sendReply();
-	this->buildAndSendErrorReply(connection, message, error);
-}
-
-template <typename T>
-	const bool GKDBusCallbackEvent<T>::sendCallbackError(
-		DBusConnection* connection,
-		DBusMessage* message,
-		const char* error
-	)
-{
-	using namespace NSGKUtils;
-	LOG(ERROR) << error;
-
-	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
-		/* send error if something was wrong when running callback */
-		this->buildAndSendErrorReply(connection, message, error);
-	}
-
-	return (this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL);
 }
 
 template <typename T>

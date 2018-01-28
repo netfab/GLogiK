@@ -32,9 +32,9 @@ namespace NSGKDBus
 {
 
 class GKDBusArgumentMacrosBank
-	:	virtual public GKDBusArgumentString,
-		virtual public GKDBusArgumentByte,
-		public GKDBusArgumentMacro
+	:	virtual private GKDBusArgumentString,
+		virtual private GKDBusArgumentByte,
+		private GKDBusArgumentMacro
 {
 	public:
 		static const GLogiK::macros_bank_t getNextMacrosBankArgument(void);

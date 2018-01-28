@@ -36,7 +36,8 @@ namespace NSGKDBus
 {
 
 class GKDBusMessageTargetsSignal
-	:	virtual public GKDBusMessageRemoteMethodCall
+	:	virtual protected GKDBusMessageRemoteMethodCall,
+		virtual private GKDBusArgumentString
 {
 	public:
 		void initializeTargetsSignal(

@@ -67,7 +67,7 @@ void GKDBusMessageTargetsSignal::initializeTargetsSignal(
 
 		this->waitForRemoteMethodCallReply();
 
-		uniqueNames = GKDBusMessageRemoteMethodCall::getStringsArray();
+		uniqueNames = GKDBusArgumentString::getStringsArray();
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(WARNING) << "failure to ask the bus for signal targets";

@@ -29,7 +29,8 @@
 namespace NSGKDBus
 {
 
-class GKDBusArgumentUInt16 : public GKDBusArgument
+class GKDBusArgumentUInt16
+	:	protected GKDBusArgument
 {
 	public:
 		static const uint16_t getNextUInt16Argument(void);

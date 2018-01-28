@@ -30,7 +30,8 @@
 namespace NSGKDBus
 {
 
-class GKDBusArgumentString : public GKDBusArgument
+class GKDBusArgumentString
+	:	protected GKDBusArgument
 {
 	public:
 		static const std::string & getNextStringArgument(void);

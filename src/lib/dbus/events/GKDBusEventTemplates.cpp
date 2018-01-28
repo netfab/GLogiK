@@ -95,7 +95,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		this->sendError(connection, message, e.what());
+		this->sendReplyError(connection, message, e.what());
 		return;
 	}
 
@@ -134,7 +134,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		this->sendError(connection, message, e.what());
+		this->sendReplyError(connection, message, e.what());
 		return;
 	}
 
@@ -178,7 +178,7 @@ template <>
 		this->appendStringToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		this->sendError(connection, message, e.what());
+		this->sendReplyError(connection, message, e.what());
 		return;
 	}
 
@@ -217,7 +217,7 @@ template <>
 		this->appendStringToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		this->sendError(connection, message, e.what());
+		this->sendReplyError(connection, message, e.what());
 		return;
 	}
 
@@ -255,7 +255,7 @@ template <>
 		this->appendStringVectorToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		this->sendError(connection, message, e.what());
+		this->sendReplyError(connection, message, e.what());
 		return;
 	}
 
@@ -300,7 +300,7 @@ template <>
 		this->appendStringVectorToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		this->sendError(connection, message, e.what());
+		this->sendReplyError(connection, message, e.what());
 		return;
 	}
 
@@ -340,7 +340,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		this->sendError(connection, message, e.what());
+		this->sendReplyError(connection, message, e.what());
 		return;
 	}
 
@@ -382,7 +382,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		this->sendError(connection, message, e.what());
+		this->sendReplyError(connection, message, e.what());
 		return;
 	}
 
@@ -445,7 +445,7 @@ template <>
 		this->appendMacroToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		this->sendError(connection, message, e.what());
+		this->sendReplyError(connection, message, e.what());
 		return;
 	}
 
@@ -485,7 +485,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
-		this->sendError(connection, message, e.what());
+		this->sendReplyError(connection, message, e.what());
 		return;
 	}
 

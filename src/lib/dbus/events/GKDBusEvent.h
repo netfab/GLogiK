@@ -31,6 +31,9 @@
 
 #include "lib/dbus/GKDBusConnection.h"
 
+#include "lib/dbus/messages/GKDBusReply.h"
+#include "lib/dbus/messages/GKDBusErrorReply.h"
+
 namespace NSGKDBus
 {
 
@@ -48,7 +51,10 @@ struct DBusMethodArgument {
 	const std::string comment;
 };
 
-class GKDBusEvent {
+class GKDBusEvent
+	:	protected GKDBusMessageReply,
+		protected GKDBusMessageErrorReply
+{
 	public:
 		const std::string eventName;
 		std::vector<DBusMethodArgument> arguments;
@@ -65,6 +71,18 @@ class GKDBusEvent {
 			const std::vector<DBusMethodArgument> & a,
 			GKDBusEventType t,
 			const bool i
+		);
+
+		void sendReplyError(
+			DBusConnection* connection,
+			DBusMessage* message,
+			const char* error
+		);
+
+		const bool sendCallbackError(
+			DBusConnection* connection,
+			DBusMessage* message,
+			const char* error
 		);
 
 	private:

@@ -29,7 +29,8 @@
 namespace NSGKDBus
 {
 
-class GKDBusArgumentByte : public GKDBusArgument
+class GKDBusArgumentByte
+	:	protected GKDBusArgument
 {
 	public:
 		static const uint8_t getNextByteArgument(void);

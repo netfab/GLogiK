@@ -31,8 +31,8 @@ namespace NSGKDBus
 {
 
 class GKDBusArgumentMacro
-	:	virtual public GKDBusArgumentByte,
-		virtual public GKDBusArgumentUInt16
+	:	virtual private GKDBusArgumentByte,
+		virtual private GKDBusArgumentUInt16
 {
 	public:
 		static const GLogiK::macro_t getNextMacroArgument(void);
