@@ -338,8 +338,7 @@ const bool ClientsManager::unregisterClient(const std::string & clientID) {
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownClient
 	}
 	return false;
 }
@@ -368,8 +367,7 @@ const bool ClientsManager::updateClientState(const std::string & clientID, const
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownClient
 	}
 
 	return false;
@@ -384,8 +382,7 @@ const bool ClientsManager::deleteDeviceConfiguration(const std::string & clientI
 		return pClient->deleteDevice(devID);
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownClient
 	}
 
 	return false;
@@ -410,8 +407,7 @@ const bool ClientsManager::stopDevice(const std::string & clientID, const std::s
 #endif
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownClient
 	}
 	return false;
 }
@@ -435,8 +431,7 @@ const bool ClientsManager::startDevice(const std::string & clientID, const std::
 #endif
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownClient
 	}
 	return false;
 }
@@ -490,8 +485,7 @@ const std::vector<std::string> ClientsManager::getStartedDevices(const std::stri
 		return this->devicesManager->getStartedDevices();
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownClient
 	}
 
 	const std::vector<std::string> ret;
@@ -508,8 +502,7 @@ const std::vector<std::string> ClientsManager::getStoppedDevices(const std::stri
 		return this->devicesManager->getStoppedDevices();
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownClient
 	}
 
 	const std::vector<std::string> ret;
@@ -525,8 +518,7 @@ const std::string ClientsManager::getDeviceStatus(const std::string & clientID, 
 		return this->devicesManager->getDeviceStatus(devID);
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownClient
 	}
 
 	return "unknown";
@@ -546,8 +538,7 @@ const std::vector<std::string> ClientsManager::getDeviceProperties(const std::st
 #endif
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownClient
 	}
 
 	const std::vector<std::string> ret;
@@ -571,8 +562,7 @@ const bool ClientsManager::setDeviceBacklightColor(const std::string & clientID,
 		return ret;
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownClient
 	}
 	return false;
 }
@@ -592,8 +582,7 @@ const macro_t & ClientsManager::getDeviceMacro(
 		return pClient->getDeviceMacro(devID, keyName, profile);
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownClient
 	}
 
 	return MacrosBanks::empty_macro_;
@@ -611,8 +600,7 @@ const std::vector<std::string> & ClientsManager::getDeviceMacroKeysNames(
 		return this->devicesManager->getDeviceMacroKeysNames(devID);
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str(s_UnknownClient); this->buffer_ << clientID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownClient
 	}
 
 	return KeyboardDriver::getEmptyStringVector();

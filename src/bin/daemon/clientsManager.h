@@ -34,6 +34,10 @@
 #include "clientsSignals.h"
 #include "client.h"
 
+#define GKSysLog_UnknownClient \
+	std::string error(s_UnknownClient); error += clientID;\
+	GKSysLog(LOG_ERR, ERROR, error);
+
 namespace GLogiK
 {
 
