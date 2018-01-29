@@ -277,8 +277,6 @@ template <typename T>
 	)
 {
 	this->exposeEvent(bus, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, true);
-	DBusConnection* connection = this->getConnection(bus);
-	this->addSignalRuleMatch(connection, interface, eventName);
 }
 
 template <typename T>
@@ -295,6 +293,10 @@ template <typename T>
 {
 	GKDBusEvent* e = new GKDBusCallbackEvent<T>(eventName, args, callback, eventType, introspectable);
 	this->addIntrospectableEvent(bus, object, interface, e);
+	if( eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL ) {
+		DBusConnection* connection = this->getConnection(bus);
+		this->addSignalRuleMatch(connection, interface, eventName);
+	}
 }
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
