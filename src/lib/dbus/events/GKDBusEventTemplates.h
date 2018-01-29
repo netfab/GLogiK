@@ -211,8 +211,8 @@ template <typename T>
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
 			T callback,
-			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD,
-			const bool introspectable=true
+			GKDBusEventType t,
+			const bool introspectable
 		);
 
 	private:
