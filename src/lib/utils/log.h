@@ -285,6 +285,10 @@ inline void GKSysLog(const int priority, const TLogLevel level, const std::strin
 	syslog(priority, to_log.c_str());
 }
 
+#define GKSysLog_UnknownDevice \
+	std::string error(s_UnknownDevice); error += devID;\
+	GKSysLog(LOG_ERR, ERROR, error);
+
 #define GKSysLog(p, l, t) GKSysLog(p, l, t, __func__)
 #define LOG(level) LOG2(level, __func__)
 

@@ -541,9 +541,7 @@ const std::vector<std::string> DevicesManager::getDeviceProperties(const std::st
 			ret.push_back(device.model);
 		}
 		catch (const std::out_of_range& oor) {
-			this->buffer_.str("device ID not found by daemon : ");
-			this->buffer_ << devID;
-			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+			GKSysLog_UnknownDevice
 		}
 	}
 
@@ -580,9 +578,7 @@ void DevicesManager::setDeviceBacklightColor(
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("not found device : ");
-		this->buffer_ << devID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownDevice
 	}
 }
 
@@ -603,9 +599,7 @@ void DevicesManager::setDeviceMacrosProfiles(
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("not found device : ");
-		this->buffer_ << devID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownDevice
 	}
 }
 
@@ -622,9 +616,7 @@ const macros_map_t & DevicesManager::getDeviceMacrosProfiles(const std::string &
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("not found device : ");
-		this->buffer_ << devID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownDevice
 	}
 	return MacrosBanks::empty_macros_profiles_;
 }
@@ -642,9 +634,7 @@ const std::vector<std::string> & DevicesManager::getDeviceMacroKeysNames(const s
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("not found device : ");
-		this->buffer_ << devID;
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		GKSysLog_UnknownDevice
 	}
 
 	return KeyboardDriver::getEmptyStringVector();

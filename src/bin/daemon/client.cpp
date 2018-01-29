@@ -119,8 +119,7 @@ const bool Client::deleteDevice(const std::string & devID) {
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn(s_UnknownDevice); warn += devID;
-		GKSysLog(LOG_WARNING, WARNING, warn);
+		GKSysLog_UnknownDevice
 	}
 
 	return false;
@@ -140,8 +139,7 @@ const bool Client::setDeviceBacklightColor(const std::string & devID,
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn(s_UnknownDevice); warn += devID;
-		GKSysLog(LOG_WARNING, WARNING, warn);
+		GKSysLog_UnknownDevice
 	}
 
 	return false;
@@ -160,8 +158,7 @@ void Client::setAllDevicesBacklightColors(DevicesManager* dev_manager) {
 			dev_manager->setDeviceBacklightColor(devID, r, g, b);
 		}
 		catch (const std::out_of_range& oor) {
-			std::string warn(s_UnknownDevice); warn += devID;
-			GKSysLog(LOG_WARNING, WARNING, warn);
+			GKSysLog_UnknownDevice
 		}
 	}
 }
@@ -176,8 +173,7 @@ void Client::setAllDevicesMacrosProfiles(DevicesManager* dev_manager) {
 			dev_manager->setDeviceMacrosProfiles( devID, device.getMacrosProfiles() );
 		}
 		catch (const std::out_of_range& oor) {
-			std::string warn(s_UnknownDevice); warn += devID;
-			GKSysLog(LOG_WARNING, WARNING, warn);
+			GKSysLog_UnknownDevice
 		}
 	}
 }
@@ -191,8 +187,7 @@ void Client::syncDeviceMacrosProfiles(const std::string & devID, const macros_ma
 		device.setMacrosProfiles(macros_profiles);
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn(s_UnknownDevice); warn += devID;
-		GKSysLog(LOG_WARNING, WARNING, warn);
+		GKSysLog_UnknownDevice
 	}
 }
 
@@ -204,8 +199,7 @@ const macro_t & Client::getDeviceMacro(const std::string & devID,
 		return device.getMacro(profile, keyName);
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn(s_UnknownDevice); warn += devID;
-		GKSysLog(LOG_WARNING, WARNING, warn);
+		GKSysLog_UnknownDevice
 	}
 
 	return MacrosBanks::empty_macro_;

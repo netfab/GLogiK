@@ -1137,9 +1137,7 @@ void KeyboardDriver::resetDeviceState(const std::string & devID) {
 		this->setKeyboardColor(device);
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("wrong device ID : ");
-		this->buffer_ << devID;
-		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+		GKSysLog_UnknownDevice
 	}
 }
 
@@ -1199,9 +1197,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 		this->initialized_devices_.erase(devID);
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("wrong device ID : ");
-		this->buffer_ << devID;
-		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+		GKSysLog_UnknownDevice
 	}
 }
 
@@ -1212,9 +1208,7 @@ void KeyboardDriver::setDeviceBacklightColor(const std::string & devID, const ui
 		this->setKeyboardColor(device);
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("wrong device ID : ");
-		this->buffer_ << devID;
-		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+		GKSysLog_UnknownDevice
 	}
 }
 
@@ -1227,9 +1221,7 @@ void KeyboardDriver::setDeviceMacrosProfiles(
 		device.macros_man->setMacrosProfiles(macros_profiles);
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("wrong device ID : ");
-		this->buffer_ << devID;
-		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+		GKSysLog_UnknownDevice
 	}
 }
 
@@ -1239,9 +1231,7 @@ const macros_map_t & KeyboardDriver::getDeviceMacrosProfiles(const std::string &
 		return device.macros_man->getMacrosProfiles();
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("wrong device ID : ");
-		this->buffer_ << devID;
-		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+		GKSysLog_UnknownDevice
 	}
 
 	return MacrosBanks::empty_macros_profiles_;
