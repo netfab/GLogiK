@@ -56,7 +56,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 
 		/* want to be warned by the daemon about those signals */
 
-		this->pDBus_->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::addSignal(
+		this->pDBus_->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
 			this->system_bus_,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -65,7 +65,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 			std::bind(&ServiceDBusHandler::devicesStarted, this, std::placeholders::_1)
 		);
 
-		this->pDBus_->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::addSignal(
+		this->pDBus_->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
 			this->system_bus_,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -74,7 +74,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 			std::bind(&ServiceDBusHandler::devicesStopped, this, std::placeholders::_1)
 		);
 
-		this->pDBus_->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::addSignal(
+		this->pDBus_->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
 			this->system_bus_,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -83,7 +83,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 			std::bind(&ServiceDBusHandler::devicesUnplugged, this, std::placeholders::_1)
 		);
 
-		this->pDBus_->NSGKDBus::EventGKDBusCallback<VoidToVoid>::addSignal(
+		this->pDBus_->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 			this->system_bus_,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -92,7 +92,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 			std::bind(&ServiceDBusHandler::daemonIsStopping, this)
 		);
 
-		this->pDBus_->NSGKDBus::EventGKDBusCallback<VoidToVoid>::addSignal(
+		this->pDBus_->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 			this->system_bus_,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
@@ -101,7 +101,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 			std::bind(&ServiceDBusHandler::reportChangedState, this)
 		);
 
-		this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::addSignal(
+		this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
 			this->system_bus_,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,

@@ -182,18 +182,16 @@ template <typename T>
 		:	private SignalRule
 {
 	public:
-		void addEvent(
+		void exposeMethod(
 			const BusConnection bus,
 			const char* object,
 			const char* interface,
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
-			T callback,
-			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD,
-			const bool introspectable=true
+			T callback
 		);
 
-		void addSignal(
+		void exposeSignal(
 			const BusConnection bus,
 			const char* object,
 			const char* interface,
@@ -205,6 +203,17 @@ template <typename T>
 	protected:
 		EventGKDBusCallback() = default;
 		virtual ~EventGKDBusCallback() = default;
+
+		void exposeEvent(
+			const BusConnection bus,
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			const std::vector<DBusMethodArgument> & args,
+			T callback,
+			GKDBusEventType t=GKDBusEventType::GKDBUS_EVENT_METHOD,
+			const bool introspectable=true
+		);
 
 	private:
 		virtual void addIntrospectableEvent(
@@ -245,7 +254,35 @@ template <typename T>
 }
 
 template <typename T>
-	void EventGKDBusCallback<T>::addEvent(
+	void EventGKDBusCallback<T>::exposeMethod(
+		const BusConnection bus,
+		const char* object,
+		const char* interface,
+		const char* eventName,
+		const std::vector<DBusMethodArgument> & args,
+		T callback
+	)
+{
+	this->exposeEvent(bus, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_METHOD, true);
+}
+
+template <typename T>
+	void EventGKDBusCallback<T>::exposeSignal(
+		const BusConnection bus,
+		const char* object,
+		const char* interface,
+		const char* eventName,
+		const std::vector<DBusMethodArgument> & args,
+		T callback
+	)
+{
+	this->exposeEvent(bus, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, true);
+	DBusConnection* connection = this->getConnection(bus);
+	this->addSignalRuleMatch(connection, interface, eventName);
+}
+
+template <typename T>
+	void EventGKDBusCallback<T>::exposeEvent(
 		const BusConnection bus,
 		const char* object,
 		const char* interface,
@@ -258,21 +295,6 @@ template <typename T>
 {
 	GKDBusEvent* e = new GKDBusCallbackEvent<T>(eventName, args, callback, eventType, introspectable);
 	this->addIntrospectableEvent(bus, object, interface, e);
-}
-
-template <typename T>
-	void EventGKDBusCallback<T>::addSignal(
-		const BusConnection bus,
-		const char* object,
-		const char* interface,
-		const char* eventName,
-		const std::vector<DBusMethodArgument> & args,
-		T callback
-	)
-{
-	this->addEvent(bus, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, true);
-	DBusConnection* connection = this->getConnection(bus);
-	this->addSignalRuleMatch(connection, interface, eventName);
 }
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */

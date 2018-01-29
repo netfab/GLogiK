@@ -67,27 +67,27 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 	/*  ClientsManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringToBool>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringToBool>::exposeMethod(
 		system_bus, CM_object, CM_interf, "RegisterClient",
 		{	{"s", "client_session_object_path", "in", "client session object path"},
 			{"b", "did_register_succeeded", "out", "did the RegisterClient method succeeded ?"},
 			{"s", "failure_reason_or_client_id", "out", "if register success (bool==true), unique client ID, else (bool=false) failure reason"} },
 		std::bind(&ClientsManager::registerClient, this, std::placeholders::_1) );
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringToBool>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringToBool>::exposeMethod(
 		system_bus, CM_object, CM_interf, "UnregisterClient",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"b", "did_unregister_succeeded", "out", "did the UnregisterClient method succeeded ?"} },
 		std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
 		system_bus, CM_object, CM_interf, "UpdateClientState",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "client_new_state", "in", "client new state"},
 			{"b", "did_updateclientstate_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
 		system_bus, CM_object, CM_interf, "DeleteDeviceConfiguration",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
@@ -98,54 +98,54 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 	/*  DevicesManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
 		system_bus, DM_object, DM_interf, "StopDevice",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"b", "did_stop_succeeded", "out", "did the StopDevice method succeeded ?"} },
 		std::bind(&ClientsManager::stopDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
 		system_bus, DM_object, DM_interf, "StartDevice",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStoppedDevices"},
 			{"b", "did_start_succeeded", "out", "did the StartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::startDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
 		system_bus, DM_object, DM_interf, "RestartDevice",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"b", "did_restart_succeeded", "out", "did the RestartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetStartedDevices",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"as", "array_of_strings", "out", "array of started devices ID strings"} },
 		std::bind(&ClientsManager::getStartedDevices, this, std::placeholders::_1) );
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetStoppedDevices",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"as", "array_of_strings", "out", "array of stopped devices ID strings"} },
 		std::bind(&ClientsManager::getStoppedDevices, this, std::placeholders::_1) );
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToString>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToString>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceStatus",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID"},
 			{"s", "device status", "out", "string representing the device status"} },
 		std::bind(&ClientsManager::getDeviceStatus, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToStringsArray>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToStringsArray>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceProperties",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"as", "array_of_strings", "out", "string array of device properties"} },
 		std::bind(&ClientsManager::getDeviceProperties, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsThreeBytesToBool>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsThreeBytesToBool>::exposeMethod(
 		system_bus, DM_object, DM_interf, "SetDeviceBacklightColor",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
@@ -156,7 +156,7 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 		std::bind(&ClientsManager::setDeviceBacklightColor, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<ThreeStringsOneByteToMacro>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<ThreeStringsOneByteToMacro>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceMacro",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
@@ -166,14 +166,14 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 		std::bind(&ClientsManager::getDeviceMacro, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4) );
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToStringsArray>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToStringsArray>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceMacroKeysNames",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"as", "array_of_strings", "out", "string array of device macro keys names"} },
 		std::bind(&ClientsManager::getDeviceMacroKeysNames, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteOneMacrosBankToBool>::addEvent(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteOneMacrosBankToBool>::exposeMethod(
 		system_bus, DM_object, DM_interf, "SetDeviceMacrosBank",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
