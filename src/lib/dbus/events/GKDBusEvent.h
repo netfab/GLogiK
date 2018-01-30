@@ -79,7 +79,7 @@ class GKDBusEvent
 			const char* error
 		);
 
-		const bool sendCallbackError(
+		void sendCallbackError(
 			DBusConnection* connection,
 			DBusMessage* message,
 			const char* error

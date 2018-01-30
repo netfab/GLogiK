@@ -47,26 +47,26 @@ void GKDBusEvent::sendReplyError(
 	DBusConnection* connection,
 	DBusMessage* message,
 	const char* error
-)	{
+	)
+{
 	LOG(ERROR) << "DBus reply failure : " << error;
 	/* delete reply object if allocated */
 	this->sendReply();
 	this->buildAndSendErrorReply(connection, message, error);
 }
 
-const bool GKDBusEvent::sendCallbackError(
+void GKDBusEvent::sendCallbackError(
 	DBusConnection* connection,
 	DBusMessage* message,
 	const char* error
-)	{
+	)
+{
 	LOG(ERROR) << error;
 
 	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
 		/* send error if something was wrong when running callback */
 		this->buildAndSendErrorReply(connection, message, error);
 	}
-
-	return (this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL);
 }
 
 } // namespace NSGKDBus

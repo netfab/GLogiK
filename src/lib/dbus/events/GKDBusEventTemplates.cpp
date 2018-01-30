@@ -82,8 +82,8 @@ template <>
 		ret = this->callback(arg);
 	}
 	catch ( const GLogiKExcept & e ) {
-		if( this->sendCallbackError(connection, message, e.what()) )
-			return;
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
 	}
 
 	/* signals don't send reply */
@@ -95,6 +95,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
 		this->sendReplyError(connection, message, e.what());
 		return;
 	}
@@ -121,8 +122,8 @@ template <>
 		ret = this->callback(arg1, arg2);
 	}
 	catch ( const GLogiKExcept & e ) {
-		if( this->sendCallbackError(connection, message, e.what()) )
-			return;
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
 	}
 
 	/* signals don't send reply */
@@ -134,6 +135,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
 		this->sendReplyError(connection, message, e.what());
 		return;
 	}
@@ -165,8 +167,8 @@ template <>
 		ret = this->callback(arg);
 	}
 	catch ( const GLogiKExcept & e ) {
-		if( this->sendCallbackError(connection, message, e.what()) )
-			return;
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
 	}
 
 	/* signals don't send reply */
@@ -178,6 +180,7 @@ template <>
 		this->appendStringToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
 		this->sendReplyError(connection, message, e.what());
 		return;
 	}
@@ -204,8 +207,8 @@ template <>
 		ret = this->callback(arg1, arg2);
 	}
 	catch ( const GLogiKExcept & e ) {
-		if( this->sendCallbackError(connection, message, e.what()) )
-			return;
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
 	}
 
 	/* signals don't send reply */
@@ -217,6 +220,7 @@ template <>
 		this->appendStringToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
 		this->sendReplyError(connection, message, e.what());
 		return;
 	}
@@ -242,8 +246,8 @@ template <>
 		ret = this->callback(arg);
 	}
 	catch ( const GLogiKExcept & e ) {
-		if( this->sendCallbackError(connection, message, e.what()) )
-			return;
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
 	}
 
 	/* signals don't send reply */
@@ -255,6 +259,7 @@ template <>
 		this->appendStringVectorToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
 		this->sendReplyError(connection, message, e.what());
 		return;
 	}
@@ -281,14 +286,8 @@ template <>
 		ret = this->callback(arg1, arg2);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << error;
-
-		if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
-			/* send error if something was wrong when running callback */
-			this->buildAndSendErrorReply(connection, message, error);
-			return;
-		}
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
 	}
 
 	/* signals don't send reply */
@@ -300,6 +299,7 @@ template <>
 		this->appendStringVectorToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
 		this->sendReplyError(connection, message, e.what());
 		return;
 	}
@@ -327,8 +327,8 @@ template <>
 		ret = this->callback(arg1, arg2, arg3);
 	}
 	catch ( const GLogiKExcept & e ) {
-		if( this->sendCallbackError(connection, message, e.what()) )
-			return;
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
 	}
 
 	/* signals don't send reply */
@@ -340,6 +340,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
 		this->sendReplyError(connection, message, e.what());
 		return;
 	}
@@ -369,8 +370,8 @@ template <>
 		ret = this->callback(arg1, arg2, arg3, arg4, arg5);
 	}
 	catch ( const GLogiKExcept & e ) {
-		if( this->sendCallbackError(connection, message, e.what()) )
-			return;
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
 	}
 
 	/* signals don't send reply */
@@ -382,6 +383,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
 		this->sendReplyError(connection, message, e.what());
 		return;
 	}
@@ -432,8 +434,8 @@ template <>
 		ret = this->callback(arg1, arg2, arg3, arg4);
 	}
 	catch ( const GLogiKExcept & e ) {
-		if( this->sendCallbackError(connection, message, e.what()) )
-			return;
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
 	}
 
 	/* signals don't send reply */
@@ -445,6 +447,7 @@ template <>
 		this->appendMacroToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
 		this->sendReplyError(connection, message, e.what());
 		return;
 	}
@@ -472,8 +475,8 @@ template <>
 		ret = this->callback(arg1, arg2, arg3, arg4);
 	}
 	catch ( const GLogiKExcept & e ) {
-		if( this->sendCallbackError(connection, message, e.what()) )
-			return;
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
 	}
 
 	/* signals don't send reply */
@@ -485,6 +488,7 @@ template <>
 		this->appendBooleanToReply(ret);
 	}
 	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
 		this->sendReplyError(connection, message, e.what());
 		return;
 	}
