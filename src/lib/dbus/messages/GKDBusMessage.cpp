@@ -134,16 +134,22 @@ void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_t & m
 		throw GKDBusOOMWrongBuild(this->append_failure_);
 	}
 
+	/*
+	 * From DBus dbus_message_iter_open_container documentation :
+	 *		For structs and dict entries, contained_signature should be NULL;
+	 */
+	/*
 	const char struct_sig[] = \
 							DBUS_TYPE_BYTE_AS_STRING\
 							DBUS_TYPE_BYTE_AS_STRING\
 							DBUS_TYPE_UINT16_AS_STRING;
+	*/
 
 	try {
 		for(const auto & keyEvent : macro_array) {
 			DBusMessageIter struct_it;
 
-			if( ! dbus_message_iter_open_container(&array_it, DBUS_TYPE_STRUCT, struct_sig, &struct_it) ) {
+			if( ! dbus_message_iter_open_container(&array_it, DBUS_TYPE_STRUCT, nullptr, &struct_it) ) {
 				LOG(ERROR) << "DBus struct open_container failure, not enough memory";
 				throw GKDBusOOMWrongBuild(this->append_failure_);
 			}
