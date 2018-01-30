@@ -160,6 +160,12 @@ void GKDBusMessageRemoteMethodCall::appendUInt32ToRemoteMethodCall(const uint32_
 	this->remote_method_call_->appendUInt32(value);
 }
 
+void GKDBusMessageRemoteMethodCall::appendMacrosBankToRemoteMethodCall(const GLogiK::macros_bank_t & macros_bank) {
+	if(this->remote_method_call_ == nullptr) /* sanity check */
+		throw GLogiKExcept("DBus remote method call not initialized");
+	this->remote_method_call_->appendMacrosBank(macros_bank);
+}
+
 void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall(void)
 {
 	if(this->remote_method_call_) { /* sanity check */

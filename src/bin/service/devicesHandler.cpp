@@ -212,6 +212,7 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 }
 
 void DevicesHandler::setDeviceState(const std::string & devID, const DeviceProperties & device) {
+	/* set backlight color */
 	try {
 		this->pDBus_->initializeRemoteMethodCall(
 			this->system_bus_,
@@ -244,6 +245,63 @@ void DevicesHandler::setDeviceState(const std::string & devID, const DevicePrope
 		warn += " failure : ";
 		warn += e.what();
 		WarningCheck::warnOrThrows(warn);
+	}
+
+	/* set macros banks */
+
+	for( const auto & macros_bank_pair : device.getMacrosProfiles() ) {
+		const uint8_t current_profile = to_type(macros_bank_pair.first);
+		const macros_bank_t & current_bank = macros_bank_pair.second;
+
+		/* test whether this MacrosBank should be sent */
+		bool send_it = false;
+		for(const auto & macro_pair : current_bank) {
+			const macro_t & current_macro = macro_pair.second;
+			if( ! current_macro.empty() ) {
+				send_it = true;
+				break;
+			}
+		}
+
+		if( ! send_it ) {
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "skipping empty MacrosBank " << to_uint(current_profile);
+#endif
+			continue;
+		}
+
+		try {
+			this->pDBus_->initializeRemoteMethodCall(
+				this->system_bus_,
+				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				"SetDeviceMacrosBank"
+			);
+			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+			this->pDBus_->appendStringToRemoteMethodCall(devID);
+			this->pDBus_->appendUInt8ToRemoteMethodCall(current_profile);
+			this->pDBus_->appendMacrosBankToRemoteMethodCall(current_bank);
+
+			this->pDBus_->sendRemoteMethodCall();
+
+			this->pDBus_->waitForRemoteMethodCallReply();
+			const bool ret = this->pDBus_->getNextBooleanArgument();
+			if( ret ) {
+#if DEBUGGING_ON
+				LOG(DEBUG3) << "successfully setted device MacrosBank " << to_uint(current_profile);
+#endif
+			}
+			else {
+				LOG(ERROR) << "failed to set device MacrosBank " << to_uint(current_profile) << " : false";
+			}
+		}
+		catch (const GLogiKExcept & e) {
+			std::string warn(__func__);
+			warn += " failure : ";
+			warn += e.what();
+			WarningCheck::warnOrThrows(warn);
+		}
 	}
 }
 

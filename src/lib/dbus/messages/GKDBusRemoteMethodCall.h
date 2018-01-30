@@ -28,6 +28,7 @@
 
 #include <dbus/dbus.h>
 
+#include "lib/shared/keyEvent.h"
 #include "lib/dbus/GKDBusConnection.h"
 #include "lib/dbus/arguments/GKDBusArgString.h"
 
@@ -74,6 +75,7 @@ class GKDBusMessageRemoteMethodCall
 		void appendStringToRemoteMethodCall(const std::string & value);
 		void appendUInt8ToRemoteMethodCall(const uint8_t value);
 		void appendUInt32ToRemoteMethodCall(const uint32_t value);
+		void appendMacrosBankToRemoteMethodCall(const GLogiK::macros_bank_t & macros_bank);
 
 		void sendRemoteMethodCall(void);
 
