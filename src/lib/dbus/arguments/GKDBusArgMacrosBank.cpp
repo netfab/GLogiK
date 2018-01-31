@@ -37,6 +37,25 @@ const GLogiK::macros_bank_t GKDBusArgumentMacrosBank::getNextMacrosBankArgument(
 #endif
 	GLogiK::macros_bank_t macros_bank;
 
+	try {
+		do {
+			const std::string macro_key = GKDBusArgumentString::getNextStringArgument();
+			const uint8_t macro_size = GKDBusArgumentByte::getNextByteArgument();
+			const GLogiK::macro_t macro_array = GKDBusArgumentMacro::getNextMacroArgument(macro_size);
+
+			macros_bank[macro_key] = macro_array;
+		}
+		while( ! GKDBusArgumentString::string_arguments_.empty() );
+	}
+	catch ( const EmptyContainer & e ) {
+		LOG(WARNING) << "missing argument : " << e.what();
+		throw GLogiKExcept("rebuilding MacrosBank failed");
+	}
+
+	if( ! GKDBusArgumentByte::byte_arguments_.empty() ) { /* sanity check */
+		LOG(WARNING) << "byte container not empty";
+	}
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "macros bank size : " << macros_bank.size();
 #endif

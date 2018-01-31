@@ -610,6 +610,18 @@ const bool ClientsManager::setDeviceMacrosBank(
 	const std::string & clientID, const std::string & devID,
 	const uint8_t profile, const macros_bank_t & bank
 ) {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
+	LOG(DEBUG3) << "profile : " << to_uint(profile);
+#endif
+	try {
+		Client* pClient = this->clients_.at(clientID);
+		return pClient->setDeviceMacrosBank(devID, profile, bank);
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownClient
+	}
+
 	return false;
 }
 

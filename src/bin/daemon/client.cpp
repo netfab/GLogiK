@@ -191,9 +191,11 @@ void Client::syncDeviceMacrosProfiles(const std::string & devID, const macros_ma
 	}
 }
 
-const macro_t & Client::getDeviceMacro(const std::string & devID,
-	const std::string & keyName, const uint8_t profile)
-{
+const macro_t & Client::getDeviceMacro(
+	const std::string & devID,
+	const std::string & keyName,
+	const uint8_t profile
+) {
 	try {
 		DeviceProperties & device = this->devices_.at(devID);
 		return device.getMacro(profile, keyName);
@@ -203,6 +205,33 @@ const macro_t & Client::getDeviceMacro(const std::string & devID,
 	}
 
 	return MacrosBanks::empty_macro_;
+}
+
+const bool Client::setDeviceMacrosBank(
+	const std::string & devID,
+	const uint8_t profile,
+	const macros_bank_t & bank
+) {
+	bool ret = true;
+
+	try {
+		DeviceProperties & device = this->devices_.at(devID);
+		for(const auto & macro_pair : bank) {
+			try {
+				device.setMacro(profile, macro_pair.first, macro_pair.second);
+			}
+			catch (const GLogiKExcept & e) {
+				ret = false;
+				GKSysLog(LOG_WARNING, WARNING, e.what());
+			}
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		ret = false;
+		GKSysLog_UnknownDevice
+	}
+
+	return ret;
 }
 
 } // namespace GLogiK

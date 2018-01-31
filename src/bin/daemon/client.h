@@ -66,6 +66,12 @@ class Client
 			const uint8_t profile
 		);
 
+		const bool setDeviceMacrosBank(
+			const std::string & devID,
+			const uint8_t profile,
+			const macros_bank_t & bank
+		);
+
 	protected:
 
 	private:

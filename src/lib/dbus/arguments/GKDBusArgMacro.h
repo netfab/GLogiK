@@ -35,7 +35,7 @@ class GKDBusArgumentMacro
 		virtual private GKDBusArgumentUInt16
 {
 	public:
-		static const GLogiK::macro_t getNextMacroArgument(void);
+		static const GLogiK::macro_t getNextMacroArgument(const unsigned int macroSize = 0);
 
 	protected:
 		GKDBusArgumentMacro(void) = default;
