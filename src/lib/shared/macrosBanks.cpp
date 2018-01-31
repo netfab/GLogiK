@@ -62,6 +62,11 @@ void MacrosBanks::setMacro(
 		LOG(DEBUG2) << "macros profile: " << to_uint(profile)
 			<< " - Macro Key: " << keyName << " - setting macro";
 #endif
+		if( macro_array.size() >= MACRO_T_MAX_SIZE ) {
+			LOG(WARNING) << "skipping macro - size >= MACRO_T_MAX_SIZE";
+			throw GLogiKExcept("skipping macro");
+		}
+
 		this->macros_profiles_[profile].at(keyName) = macro_array;
 	}
 	catch (const std::out_of_range& oor) {

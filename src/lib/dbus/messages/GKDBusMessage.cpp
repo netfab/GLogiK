@@ -161,8 +161,13 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_t & macros_bank) 
 			const GLogiK::macro_t & macro_array = macro_pair.second;
 
 			bool append_macro = false;
-			if( ! macro_array.empty() ) {
-				append_macro = true;
+			if( ( ! macro_array.empty() ) ) {
+				if( macro_array.size() < MACRO_T_MAX_SIZE ) {
+					append_macro = true;
+				}
+				else {
+					LOG(WARNING) << "skipping " << macro_key << " macro - size >= MACRO_T_MAX_SIZE";
+				}
 			}
 			/* skip empty macro slots */
 			if( ! append_macro )

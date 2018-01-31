@@ -59,7 +59,11 @@ class Client
 		void setAllDevicesBacklightColors(DevicesManager* dev_manager);
 		void setAllDevicesMacrosProfiles(DevicesManager* dev_manager);
 
-		void syncDeviceMacrosProfiles(const std::string & devID, const macros_map_t & macros_profiles);
+		void syncDeviceMacrosProfiles(
+			const std::string & devID,
+			const macros_map_t & macros_profiles
+		);
+
 		const macro_t & getDeviceMacro(
 			const std::string & devID,
 			const std::string & keyName,
