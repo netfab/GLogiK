@@ -64,10 +64,20 @@ class ClientsManager
 
 		/* exposed over DBus */
 			/* ClientsManager D-Bus object */
-		const bool registerClient(const std::string & clientSessionObjectPath);
-		const bool unregisterClient(const std::string & clientID);
-		const bool updateClientState(const std::string & clientID, const std::string & state);
-		const bool deleteDeviceConfiguration(const std::string & clientID, const std::string & devID);
+		const bool registerClient(
+			const std::string & clientSessionObjectPath
+		);
+		const bool unregisterClient(
+			const std::string & clientID
+		);
+		const bool updateClientState(
+			const std::string & clientID,
+			const std::string & state
+		);
+		const bool deleteDeviceConfiguration(
+			const std::string & clientID,
+			const std::string & devID
+		);
 
 		/* -- */
 			/* DevicesManager D-Bus object */
@@ -85,10 +95,17 @@ class ClientsManager
 			const std::string & devID
 		);
 
-		const std::vector<std::string> getStartedDevices(const std::string & clientID);
-		const std::vector<std::string> getStoppedDevices(const std::string & clientID);
+		const std::vector<std::string> getStartedDevices(
+			const std::string & clientID
+		);
+		const std::vector<std::string> getStoppedDevices(
+			const std::string & clientID
+		);
 
-		const std::string getDeviceStatus(const std::string & clientID, const std::string & devID);
+		const std::string getDeviceStatus(
+			const std::string & clientID,
+			const std::string & devID
+		);
 		const std::vector<std::string> getDeviceProperties(
 			const std::string & clientID,
 			const std::string & devID
@@ -99,17 +116,24 @@ class ClientsManager
 		);
 
 		const bool setDeviceBacklightColor(
-			const std::string & clientID, const std::string & devID,
-			const uint8_t r, const uint8_t g, const uint8_t b
+			const std::string & clientID,
+			const std::string & devID,
+			const uint8_t r,
+			const uint8_t g,
+			const uint8_t b
 		);
 		const macro_t & getDeviceMacro(
-			const std::string & clientID, const std::string & devID,
-			const std::string & keyName, const uint8_t profile
+			const std::string & clientID,
+			const std::string & devID,
+			const std::string & keyName,
+			const uint8_t profile
 		);
 
 		const bool setDeviceMacrosBank(
-			const std::string & clientID, const std::string & devID,
-			const uint8_t profile, const macros_bank_t & bank
+			const std::string & clientID,
+			const std::string & devID,
+			const uint8_t profile,
+			const macros_bank_t & bank
 		);
 		/* -- */
 };

@@ -242,7 +242,9 @@ const std::string ClientsManager::generateRandomClientID(void) const {
 	return ret.str();
 }
 
-const bool ClientsManager::registerClient(const std::string & clientSessionObjectPath) {
+const bool ClientsManager::registerClient(
+	const std::string & clientSessionObjectPath
+)	{
 	try {
 		for(const auto & client_pair : this->clients_ ) {
 			const std::string & clientID = client_pair.first;
@@ -319,7 +321,9 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 	return false;
 }
 
-const bool ClientsManager::unregisterClient(const std::string & clientID) {
+const bool ClientsManager::unregisterClient(
+	const std::string & clientID
+)	{
 	try {
 		Client* pClient = this->clients_.at(clientID);
 
@@ -343,7 +347,10 @@ const bool ClientsManager::unregisterClient(const std::string & clientID) {
 	return false;
 }
 
-const bool ClientsManager::updateClientState(const std::string & clientID, const std::string & state) {
+const bool ClientsManager::updateClientState(
+	const std::string & clientID,
+	const std::string & state
+)	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Client << clientID << " state: " << state;
 #endif
@@ -373,7 +380,10 @@ const bool ClientsManager::updateClientState(const std::string & clientID, const
 	return false;
 }
 
-const bool ClientsManager::deleteDeviceConfiguration(const std::string & clientID, const std::string & devID) {
+const bool ClientsManager::deleteDeviceConfiguration(
+	const std::string & clientID,
+	const std::string & devID
+)	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
@@ -388,7 +398,10 @@ const bool ClientsManager::deleteDeviceConfiguration(const std::string & clientI
 	return false;
 }
 
-const bool ClientsManager::stopDevice(const std::string & clientID, const std::string & devID) {
+const bool ClientsManager::stopDevice(
+	const std::string & clientID,
+	const std::string & devID
+)	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
@@ -412,7 +425,10 @@ const bool ClientsManager::stopDevice(const std::string & clientID, const std::s
 	return false;
 }
 
-const bool ClientsManager::startDevice(const std::string & clientID, const std::string & devID) {
+const bool ClientsManager::startDevice(
+	const std::string & clientID,
+	const std::string & devID
+)	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
@@ -436,7 +452,10 @@ const bool ClientsManager::startDevice(const std::string & clientID, const std::
 	return false;
 }
 
-const bool ClientsManager::restartDevice(const std::string & clientID, const std::string & devID) {
+const bool ClientsManager::restartDevice(
+	const std::string & clientID,
+	const std::string & devID
+)	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
@@ -475,7 +494,9 @@ const bool ClientsManager::restartDevice(const std::string & clientID, const std
 	return false;
 }
 
-const std::vector<std::string> ClientsManager::getStartedDevices(const std::string & clientID) {
+const std::vector<std::string> ClientsManager::getStartedDevices(
+	const std::string & clientID
+)	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Client << clientID;
 #endif
@@ -492,7 +513,9 @@ const std::vector<std::string> ClientsManager::getStartedDevices(const std::stri
 	return ret;
 }
 
-const std::vector<std::string> ClientsManager::getStoppedDevices(const std::string & clientID) {
+const std::vector<std::string> ClientsManager::getStoppedDevices(
+	const std::string & clientID
+)	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Client << clientID;
 #endif
@@ -509,7 +532,10 @@ const std::vector<std::string> ClientsManager::getStoppedDevices(const std::stri
 	return ret;
 }
 
-const std::string ClientsManager::getDeviceStatus(const std::string & clientID, const std::string & devID) {
+const std::string ClientsManager::getDeviceStatus(
+	const std::string & clientID,
+	const std::string & devID
+)	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
@@ -524,7 +550,10 @@ const std::string ClientsManager::getDeviceStatus(const std::string & clientID, 
 	return "unknown";
 }
 
-const std::vector<std::string> ClientsManager::getDeviceProperties(const std::string & clientID, const std::string & devID) {
+const std::vector<std::string> ClientsManager::getDeviceProperties(
+	const std::string & clientID,
+	const std::string & devID
+)	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
@@ -545,9 +574,13 @@ const std::vector<std::string> ClientsManager::getDeviceProperties(const std::st
 	return ret;
 }
 
-const bool ClientsManager::setDeviceBacklightColor(const std::string & clientID, const std::string & devID,
-	const uint8_t r, const uint8_t g, const uint8_t b)
-{
+const bool ClientsManager::setDeviceBacklightColor(
+	const std::string & clientID,
+	const std::string & devID,
+	const uint8_t r,
+	const uint8_t g,
+	const uint8_t b
+)	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 	LOG(DEBUG3) << "with following RGB bytes : " << std::hex << to_uint(r)
@@ -568,9 +601,11 @@ const bool ClientsManager::setDeviceBacklightColor(const std::string & clientID,
 }
 
 const macro_t & ClientsManager::getDeviceMacro(
-	const std::string & clientID, const std::string & devID,
-	const std::string & keyName, const uint8_t profile)
-{
+	const std::string & clientID,
+	const std::string & devID,
+	const std::string & keyName,
+	const uint8_t profile
+)	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 	LOG(DEBUG3) << "    key : " << keyName;
@@ -591,7 +626,7 @@ const macro_t & ClientsManager::getDeviceMacro(
 const std::vector<std::string> & ClientsManager::getDeviceMacroKeysNames(
 	const std::string & clientID,
 	const std::string & devID
-) {
+)	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 #endif
@@ -607,9 +642,11 @@ const std::vector<std::string> & ClientsManager::getDeviceMacroKeysNames(
 }
 
 const bool ClientsManager::setDeviceMacrosBank(
-	const std::string & clientID, const std::string & devID,
-	const uint8_t profile, const macros_bank_t & bank
-) {
+	const std::string & clientID,
+	const std::string & devID,
+	const uint8_t profile,
+	const macros_bank_t & bank
+)	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
 	LOG(DEBUG3) << "profile : " << to_uint(profile);
