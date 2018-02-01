@@ -437,17 +437,23 @@ const bool ClientsManager::stopDevice(
 #endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
-		if( pClient->isAlive() ) {
-			const bool ret = this->devicesManager->stopDevice(devID);
-			if(ret and this->enabled_signals_) {
-				const std::vector<std::string> array = {devID};
-				this->sendStatusSignalArrayToClients(this->clients_.size(), this->pDBus_, "DevicesStopped", array);
-			}
-			return ret;
+
+		if( ! pClient->isReady() ) {
+			GKSysLog(LOG_WARNING, WARNING, "device state change not allowed while client not ready");
+			return false;
 		}
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "stopDevice failure because client is not alive";
-#endif
+
+		if( ! pClient->isAlive() ) {
+			GKSysLog(LOG_WARNING, WARNING, "device state change not allowed because client not alive");
+			return false;
+		}
+
+		const bool ret = this->devicesManager->stopDevice(devID);
+		if(ret and this->enabled_signals_) {
+			const std::vector<std::string> array = {devID};
+			this->sendStatusSignalArrayToClients(this->clients_.size(), this->pDBus_, "DevicesStopped", array);
+		}
+		return ret;
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownClient
@@ -464,17 +470,23 @@ const bool ClientsManager::startDevice(
 #endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
-		if( pClient->isAlive() ) {
-			const bool ret = this->devicesManager->startDevice(devID);
-			if(ret and this->enabled_signals_) {
-				const std::vector<std::string> array = {devID};
-				this->sendStatusSignalArrayToClients(this->clients_.size(), this->pDBus_, "DevicesStarted", array);
-			}
-			return ret;
+
+		if( ! pClient->isReady() ) {
+			GKSysLog(LOG_WARNING, WARNING, "device state change not allowed while client not ready");
+			return false;
 		}
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "startDevice failure because client is not alive";
-#endif
+
+		if( ! pClient->isAlive() ) {
+			GKSysLog(LOG_WARNING, WARNING, "device state change not allowed because client not alive");
+			return false;
+		}
+
+		const bool ret = this->devicesManager->startDevice(devID);
+		if(ret and this->enabled_signals_) {
+			const std::vector<std::string> array = {devID};
+			this->sendStatusSignalArrayToClients(this->clients_.size(), this->pDBus_, "DevicesStarted", array);
+		}
+		return ret;
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownClient
@@ -516,6 +528,7 @@ const bool ClientsManager::restartDevice(
 	// FIXME
 	// device could fail to stop for following reasons :
 	//  * unknown clientID
+	//  * client not allowed to stop device (not ready)
 	//  * client not allowed to stop device (not alive)
 	//  * devID not found by deviceManager in container
 	//  * device found but driver not found (unlikely)
@@ -592,9 +605,7 @@ const std::vector<std::string> ClientsManager::getDeviceProperties(
 		if( pClient->isAlive() ) {
 			return pClient->getDeviceProperties(devID, this->devicesManager);
 		}
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "getDeviceProperties failure because client is not alive";
-#endif
+		GKSysLog(LOG_WARNING, WARNING, "getting device properties not allowed because client not alive");
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownClient
@@ -640,8 +651,13 @@ const macro_t & ClientsManager::getDeviceMacro(
 #endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
-		pClient->syncDeviceMacrosProfiles(devID, this->devicesManager->getDeviceMacrosProfiles(devID));
-		return pClient->getDeviceMacro(devID, keyName, profile);
+
+		if( pClient->isReady() ) {
+			pClient->syncDeviceMacrosProfiles(devID, this->devicesManager->getDeviceMacrosProfiles(devID));
+			return pClient->getDeviceMacro(devID, keyName, profile);
+		}
+
+		GKSysLog(LOG_WARNING, WARNING, "getting device macro not allowed while client not ready");
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownClient
