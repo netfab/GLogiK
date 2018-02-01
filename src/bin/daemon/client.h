@@ -46,6 +46,7 @@ class Client
 		void updateSessionState(const std::string & new_state);
 		void uncheck(void);
 		const bool isAlive(void) const;
+		const bool isReady(void) const;
 
 		const std::vector<std::string> getDeviceProperties(const std::string & devID, DevicesManager* dev_manager);
 		const bool deleteDevice(const std::string & devID);
@@ -76,6 +77,8 @@ class Client
 			const macros_bank_t & bank
 		);
 
+		void toggleClientReadyPropertie(void);
+
 	protected:
 
 	private:
@@ -83,6 +86,7 @@ class Client
 		std::string client_session_object_path_;
 		std::map<const std::string, DeviceProperties> devices_;
 		bool check_;
+		bool ready_;
 };
 
 } // namespace GLogiK

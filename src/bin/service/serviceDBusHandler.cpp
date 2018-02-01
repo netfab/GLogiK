@@ -626,6 +626,35 @@ void ServiceDBusHandler::initializeDevices(void) {
 
 	devicesID.clear();
 
+	/* saying the daemon that we are ready */
+	try {
+		this->pDBus_->initializeRemoteMethodCall(
+			this->system_bus_,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+			"ToggleClientReadyPropertie"
+		);
+		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->sendRemoteMethodCall();
+
+		this->pDBus_->waitForRemoteMethodCallReply();
+
+		const bool ret = this->pDBus_->getNextBooleanArgument();
+		if( ret ) {
+			LOG(DEBUG2) << "successfully toggled ready propertie";
+		}
+		else {
+			LOG(WARNING) << "toggling ready propertie failed : false";
+		}
+	}
+	catch (const GLogiKExcept & e) {
+		std::string warn(__func__);
+		warn += " failure : ";
+		warn += e.what();
+		WarningCheck::warnOrThrows(warn);
+	}
+
 	/* stopped devices */
 	try {
 		this->pDBus_->initializeRemoteMethodCall(

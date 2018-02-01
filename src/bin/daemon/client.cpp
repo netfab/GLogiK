@@ -37,7 +37,8 @@ Client::Client(
 	DevicesManager* dev_manager
 )	:	session_state_("unknown"),
 		client_session_object_path_(object_path),
-		check_("true")
+		check_(true),
+		ready_(false)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing new client";
@@ -81,6 +82,14 @@ void Client::uncheck(void) {
 
 const bool Client::isAlive(void) const {
 	return this->check_;
+}
+
+const bool Client::isReady(void) const {
+	return this->ready_;
+}
+
+void Client::toggleClientReadyPropertie(void) {
+	this->ready_ = ! this->ready_;
 }
 
 const std::vector<std::string> Client::getDeviceProperties(const std::string & devID, DevicesManager* dev_manager) {

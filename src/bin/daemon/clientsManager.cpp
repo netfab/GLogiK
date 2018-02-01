@@ -94,6 +94,12 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 			{"b", "did_deletedeviceconfiguration_succeeded", "out", "did the DeleteDeviceConfiguration method succeeded ?"} },
 		std::bind(&ClientsManager::deleteDeviceConfiguration, this, std::placeholders::_1, std::placeholders::_2) );
 
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringToBool>::exposeMethod(
+		system_bus, CM_object, CM_interf, "ToggleClientReadyPropertie",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"b", "did_method_succeeded", "out", "did the method succeeded ?"} },
+		std::bind(&ClientsManager::toggleClientReadyPropertie, this, std::placeholders::_1) );
+
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  DevicesManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
@@ -118,6 +124,20 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"b", "did_restart_succeeded", "out", "did the RestartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
+
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<ThreeStringsOneByteToMacro>::exposeMethod(
+		system_bus, DM_object, DM_interf, "GetDeviceMacro",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
+			{"s", "macro_key_name", "in", "macro key name"},
+			{"y", "macro_profile", "in", "macro profile"},
+			{"a(yyq)", "macro_array", "out", "macro array"} },
+		std::bind(&ClientsManager::getDeviceMacro, this, std::placeholders::_1, std::placeholders::_2,
+			std::placeholders::_3, std::placeholders::_4) );
+
+		/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
+		/* methods used to initialize devices on service-side */
+		/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 
 	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetStartedDevices",
@@ -145,6 +165,13 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 			{"as", "array_of_strings", "out", "string array of device properties"} },
 		std::bind(&ClientsManager::getDeviceProperties, this, std::placeholders::_1, std::placeholders::_2) );
 
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToStringsArray>::exposeMethod(
+		system_bus, DM_object, DM_interf, "GetDeviceMacroKeysNames",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
+			{"as", "array_of_strings", "out", "string array of device macro keys names"} },
+		std::bind(&ClientsManager::getDeviceMacroKeysNames, this, std::placeholders::_1, std::placeholders::_2) );
+
 	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsThreeBytesToBool>::exposeMethod(
 		system_bus, DM_object, DM_interf, "SetDeviceBacklightColor",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
@@ -155,23 +182,6 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 			{"b", "did_setcolor_succeeded", "out", "did the SetDeviceBacklightColor method succeeded ?"} },
 		std::bind(&ClientsManager::setDeviceBacklightColor, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
-
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<ThreeStringsOneByteToMacro>::exposeMethod(
-		system_bus, DM_object, DM_interf, "GetDeviceMacro",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
-			{"s", "macro_key_name", "in", "macro key name"},
-			{"y", "macro_profile", "in", "macro profile"},
-			{"a(yyq)", "macro_array", "out", "macro array"} },
-		std::bind(&ClientsManager::getDeviceMacro, this, std::placeholders::_1, std::placeholders::_2,
-			std::placeholders::_3, std::placeholders::_4) );
-
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToStringsArray>::exposeMethod(
-		system_bus, DM_object, DM_interf, "GetDeviceMacroKeysNames",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"as", "array_of_strings", "out", "string array of device macro keys names"} },
-		std::bind(&ClientsManager::getDeviceMacroKeysNames, this, std::placeholders::_1, std::placeholders::_2) );
 
 	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteOneMacrosBankToBool>::exposeMethod(
 		system_bus, DM_object, DM_interf, "SetDeviceMacrosBank",
@@ -377,6 +387,26 @@ const bool ClientsManager::updateClientState(
 		GKSysLog_UnknownClient
 	}
 
+	return false;
+}
+
+const bool ClientsManager::toggleClientReadyPropertie(
+	const std::string & clientID
+)	{
+	try {
+		Client* pClient = this->clients_.at(clientID);
+		pClient->toggleClientReadyPropertie();
+		if( pClient->isReady() ) {
+			if(pClient->getSessionCurrentState() == "active") {
+				pClient->setAllDevicesBacklightColors(this->devicesManager);
+				pClient->setAllDevicesMacrosProfiles(this->devicesManager);
+			}
+		}
+		return true;
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownClient
+	}
 	return false;
 }
 
@@ -589,10 +619,7 @@ const bool ClientsManager::setDeviceBacklightColor(
 #endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
-		const bool ret = pClient->setDeviceBacklightColor(devID, r, g, b);
-		if( pClient->getSessionCurrentState() == "active" )
-			this->devicesManager->setDeviceBacklightColor(devID, r, g, b);
-		return ret;
+		return pClient->setDeviceBacklightColor(devID, r, g, b);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownClient
