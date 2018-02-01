@@ -134,11 +134,14 @@ const bool Client::deleteDevice(const std::string & devID) {
 	return false;
 }
 
-const bool Client::setDeviceBacklightColor(const std::string & devID,
-			const uint8_t r, const uint8_t g, const uint8_t b)
-{
+const bool Client::setDeviceBacklightColor(
+	const std::string & devID,
+	const uint8_t r,
+	const uint8_t g,
+	const uint8_t b
+)	{
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "setting backlight color for device " << devID;
+	LOG(DEBUG3) << "setting client backlight color for device " << devID;
 #endif
 	try {
 		DeviceProperties & device = this->devices_.at(devID);
@@ -154,36 +157,48 @@ const bool Client::setDeviceBacklightColor(const std::string & devID,
 	return false;
 }
 
-void Client::setAllDevicesBacklightColors(DevicesManager* dev_manager) {
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "setting backlight color for all started devices";
-#endif
-	for( const auto & devID : dev_manager->getStartedDevices() ) {
-		try {
-			const DeviceProperties & device = this->devices_.at(devID);
-			const uint8_t r = device.getBLColor_R();
-			const uint8_t g = device.getBLColor_G();
-			const uint8_t b = device.getBLColor_B();
-			dev_manager->setDeviceBacklightColor(devID, r, g, b);
-		}
-		catch (const std::out_of_range& oor) {
-			GKSysLog_UnknownDevice
-		}
+/*
+const bool Client::setDeviceBacklightColor(
+	const std::string & devID,
+	DevicesManager* dev_manager
+)	{
+	try {
+		DeviceProperties & device = this->devices_.at(devID);
+		const uint8_t r = device.getBLColor_R();
+		const uint8_t g = device.getBLColor_G();
+		const uint8_t b = device.getBLColor_B();
+		dev_manager->setDeviceBacklightColor(devID, r, g, b);
+		return true;
 	}
-}
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownDevice
+	}
 
-void Client::setAllDevicesMacrosProfiles(DevicesManager* dev_manager) {
+	return false;
+}
+*/
+
+void Client::setDeviceActiveUser(
+	const std::string & devID,
+	DevicesManager* dev_manager
+)	{
+	try {
+		const DeviceProperties & device = this->devices_.at(devID);
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "setting macros profiles for all started devices";
+		LOG(DEBUG1) << "setting macros profiles for device " << devID;
 #endif
-	for( const auto & devID : dev_manager->getStartedDevices() ) {
-		try {
-			const DeviceProperties & device = this->devices_.at(devID);
-			dev_manager->setDeviceMacrosProfiles( devID, device.getMacrosProfiles() );
-		}
-		catch (const std::out_of_range& oor) {
-			GKSysLog_UnknownDevice
-		}
+		dev_manager->setDeviceMacrosProfiles( devID, device.getMacrosProfiles() );
+
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "setting backlight color for device " << devID;
+#endif
+		const uint8_t r = device.getBLColor_R();
+		const uint8_t g = device.getBLColor_G();
+		const uint8_t b = device.getBLColor_B();
+		dev_manager->setDeviceBacklightColor(devID, r, g, b);
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownDevice
 	}
 }
 

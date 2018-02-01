@@ -57,8 +57,17 @@ class Client
 			const uint8_t b
 		);
 
-		void setAllDevicesBacklightColors(DevicesManager* dev_manager);
-		void setAllDevicesMacrosProfiles(DevicesManager* dev_manager);
+/*
+		const bool setDeviceBacklightColor(
+			const std::string & devID,
+			DevicesManager* dev_manager
+		);
+*/
+
+		void setDeviceActiveUser(
+			const std::string & devID,
+			DevicesManager* dev_manager
+		);
 
 		void syncDeviceMacrosProfiles(
 			const std::string & devID,

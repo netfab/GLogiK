@@ -372,8 +372,12 @@ const bool ClientsManager::updateClientState(
 			this->devicesManager->resetDevicesStates();
 		}
 		else if(state == "active") {
-			pClient->setAllDevicesBacklightColors(this->devicesManager);
-			pClient->setAllDevicesMacrosProfiles(this->devicesManager);
+#if DEBUGGING_ON
+				LOG(DEBUG1) << "setting active user's parameters for all started devices";
+#endif
+				for(const auto & devID : this->devicesManager->getStartedDevices()) {
+					pClient->setDeviceActiveUser(devID, this->devicesManager);
+				}
 		}
 		else {
 			this->buffer_.str("unhandled state for updating devices : ");
@@ -398,8 +402,12 @@ const bool ClientsManager::toggleClientReadyPropertie(
 		pClient->toggleClientReadyPropertie();
 		if( pClient->isReady() ) {
 			if(pClient->getSessionCurrentState() == "active") {
-				pClient->setAllDevicesBacklightColors(this->devicesManager);
-				pClient->setAllDevicesMacrosProfiles(this->devicesManager);
+#if DEBUGGING_ON
+				LOG(DEBUG1) << "setting active user's parameters for all started devices";
+#endif
+				for(const auto & devID : this->devicesManager->getStartedDevices()) {
+					pClient->setDeviceActiveUser(devID, this->devicesManager);
+				}
 			}
 		}
 		return true;
@@ -482,9 +490,16 @@ const bool ClientsManager::startDevice(
 		}
 
 		const bool ret = this->devicesManager->startDevice(devID);
-		if(ret and this->enabled_signals_) {
-			const std::vector<std::string> array = {devID};
-			this->sendStatusSignalArrayToClients(this->clients_.size(), this->pDBus_, "DevicesStarted", array);
+		if( ret ) {
+			if(pClient->getSessionCurrentState() == "active") {
+				/* enable user configuration */
+				pClient->setDeviceActiveUser(devID, this->devicesManager);
+			}
+
+			if( this->enabled_signals_ ) {
+				const std::vector<std::string> array = {devID};
+				this->sendStatusSignalArrayToClients(this->clients_.size(), this->pDBus_, "DevicesStarted", array);
+			}
 		}
 		return ret;
 	}
