@@ -456,6 +456,11 @@ const bool ClientsManager::stopDevice(
 			return false;
 		}
 
+		if(pClient->getSessionCurrentState() != "active") {
+			GKSysLog(LOG_WARNING, WARNING, "only active user can change device state");
+			return false;
+		}
+
 		const bool ret = this->devicesManager->stopDevice(devID);
 		if(ret and this->enabled_signals_) {
 			const std::vector<std::string> array = {devID};
@@ -489,12 +494,15 @@ const bool ClientsManager::startDevice(
 			return false;
 		}
 
+		if(pClient->getSessionCurrentState() != "active") {
+			GKSysLog(LOG_WARNING, WARNING, "only active user can change device state");
+			return false;
+		}
+
 		const bool ret = this->devicesManager->startDevice(devID);
 		if( ret ) {
-			if(pClient->getSessionCurrentState() == "active") {
-				/* enable user configuration */
-				pClient->setDeviceActiveUser(devID, this->devicesManager);
-			}
+			/* enable user configuration */
+			pClient->setDeviceActiveUser(devID, this->devicesManager);
 
 			if( this->enabled_signals_ ) {
 				const std::vector<std::string> array = {devID};
@@ -545,6 +553,7 @@ const bool ClientsManager::restartDevice(
 	//  * unknown clientID
 	//  * client not allowed to stop device (not ready)
 	//  * client not allowed to stop device (not alive)
+	//  * client not allowed to stop device (not active)
 	//  * devID not found by deviceManager in container
 	//  * device found but driver not found (unlikely)
 	// should send signal to clients to tell them to check device status
