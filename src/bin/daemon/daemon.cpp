@@ -126,6 +126,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 #if DEBUGGING_ON == 0
 			this->daemonize();
 #endif
+			this->createPIDFile();
 
 			// TODO handle return values and errno ?
 			std::signal(SIGINT, GLogiKDaemon::handle_signal);
@@ -248,7 +249,9 @@ void GLogiKDaemon::daemonize() {
 #if DEBUGGING_ON
 	LOG(INFO) << "daemonized !";
 #endif
+}
 
+void GLogiKDaemon::createPIDFile(void) {
 	fs::path path(this->pid_file_name_);
 
 	if( fs::exists(path) ) {

@@ -56,6 +56,7 @@ class GLogiKDaemon : public DaemonControl
 		NSGKDBus::GKDBus* DBus;
 
 		void daemonize(void);
+		void createPIDFile(void);
 		void dropPrivileges(void);
 		void parseCommandLine(const int& argc, char *argv[]);
 		static void handle_signal(int sig);
