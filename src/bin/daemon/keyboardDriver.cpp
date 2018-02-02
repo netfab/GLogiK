@@ -547,7 +547,6 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 				try {
 					/* macro key pressed, recording macro */
 					device.macros_man->setMacro(
-						device.macros_man->getCurrentActiveProfile(),
 						device.chosen_macro_key,
 						device.standard_keys_events
 					);

@@ -49,6 +49,11 @@ class MacrosManager : public MacrosBanks
 		const bool macroDefined(const std::string & macro_key_name);
 		void runMacro(const std::string & macro_key_name);
 
+		void setMacro(
+			const std::string & keyName,
+			const macro_t & macro_array
+		);
+
 		void clearMacroProfiles(void);
 
 		//void logProfiles(void);
