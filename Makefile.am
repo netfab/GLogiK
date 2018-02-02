@@ -11,3 +11,21 @@ include %D%/src/bin/daemon/Makefile.am
 include %D%/src/bin/service/Makefile.am
 include %D%/data/dbus/Makefile.am
 
+maintainer-clean-local: maintainer-clean-libtool-files maintainer-clean-autotools-files
+
+.PHONY: maintainer-clean-libtool-files maintainer-clean-autotools-files
+
+LOCAL_LIBTOOL_FILES = $(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4
+
+LOCAL_AUTOTOOLS_FILES = $(top_srcdir)/aclocal.m4 $(top_srcdir)/config.h.in \
+	$(top_srcdir)/depcomp $(top_srcdir)/install-sh $(top_srcdir)/missing \
+	$(top_srcdir)/configure $(top_srcdir)/config.h.in~ $(top_srcdir)/config.guess \
+    $(top_srcdir)/config.sub $(top_srcdir)/compile $(top_srcdir)/ltmain.sh
+
+maintainer-clean-libtool-files:
+	-rm -f $(LOCAL_LIBTOOL_FILES)
+
+maintainer-clean-autotools-files:
+	-rm -f $(LOCAL_AUTOTOOLS_FILES)
+
