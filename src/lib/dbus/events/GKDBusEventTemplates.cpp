@@ -39,10 +39,8 @@ void SignalRule::addSignalRuleMatch(
 	rule += "'";
 	dbus_bus_add_match(connection, rule.c_str(), nullptr);
 	dbus_connection_flush(connection);
-	// FIXME check error
-	//this->checkDBusError("DBus Session match error");
 #if DEBUGGING_ON
-	LOG(DEBUG1) << "DBus Signal match rule sent : " << rule;
+	LOG(DEBUG1) << "DBus Signal match rule sent : " << eventName;
 #endif
 }
 

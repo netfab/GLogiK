@@ -276,7 +276,8 @@ template <typename T>
 		T callback
 	)
 {
-	this->exposeEvent(bus, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, true);
+	// TODO should signals be introspectable ?
+	this->exposeEvent(bus, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, false);
 }
 
 template <typename T>
