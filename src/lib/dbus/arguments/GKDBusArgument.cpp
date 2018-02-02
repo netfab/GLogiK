@@ -53,7 +53,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 		current_type = dbus_signature_iter_get_current_type(&sig_it);
 	}
 
-#if DEBUGGING_ON
+#if DEBUG_GKDBUS_SUBOBJECTS
 	if( ! logoff ) {
 		LOG(DEBUG3) << "decoding argument: " << num << " type: "
 					<< static_cast<char>(current_type) << " sig: " << signature;

@@ -134,7 +134,7 @@ void GKDBus::checkForNextMessage(const BusConnection bus) {
 
 				for(const auto & DBusEvent : interface_pair.second) { /* vector of pointers */
 					const char* eventName = DBusEvent->eventName.c_str();
-#if DEBUGGING_ON
+#if 0 && DEBUGGING_ON
 					LOG(DEBUG3) << "checking " << eventName << " event";
 #endif
 					switch(DBusEvent->eventType) {
