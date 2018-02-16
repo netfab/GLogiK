@@ -270,28 +270,30 @@ class FILELOG_DECLSPEC BOTHLog : public Log<LOG_TO_FILE_AND_CONSOLE>
 	if (level > LOG_MAX_LEVEL) ; \
 	else BOTHLog(level).Get(level, func)
 
+inline void GKSysLog(const int priority, const TLogLevel level, const std::string & to_log, const char* func) {
+	LOG2(level, func) << to_log;
+	syslog(priority, to_log.c_str());
+}
+
+#define GKSysLog(p, l, t) GKSysLog(p, l, t, __func__)
+
 #else
 
 #define LOG2(level, func) \
 	if (level > LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() ) ; \
 	else BOTHLog(level).Get(level, func)
 
-#endif
-
-inline void GKSysLog(const int priority, const TLogLevel level, const std::string & to_log, const char* func) {
-#if DEBUGGING_ON
-	LOG2(level, func) << to_log;
-#endif
+inline void GKSysLog(const int priority, const TLogLevel level, const std::string & to_log) {
 	syslog(priority, to_log.c_str());
 }
+
+#endif
+
+#define LOG(level) LOG2(level, __func__)
 
 #define GKSysLog_UnknownDevice \
 	std::string error(s_UnknownDevice); error += devID;\
 	GKSysLog(LOG_ERR, ERROR, error);
-
-#define GKSysLog(p, l, t) GKSysLog(p, l, t, __func__)
-#define LOG(level) LOG2(level, __func__)
-
 
 /* -- */
 
