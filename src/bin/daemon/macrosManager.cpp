@@ -19,6 +19,7 @@
  *
  */
 
+#include <iterator>
 #include <stdexcept>
 #include <iostream>
 
@@ -112,8 +113,25 @@ const MemoryBank MacrosManager::getCurrentActiveProfile(void) const {
 
 void MacrosManager::setMacro(
 	const std::string & keyName,
-	const macro_t & macro_array
-)	{
+	macro_t & macro_array)
+{
+	{
+		std::vector<MacroEvent> pressedEvents;
+		std::vector<MacroEvent> releasedEvents;
+
+		for(unsigned int i = 0; i != macro_array.size(); ++i) {
+			const auto & keyEvent = macro_array[i];
+			MacroEvent e(keyEvent, i);
+
+			if( keyEvent.event == EventValue::EVENT_KEY_PRESS )
+				pressedEvents.push_back(e);
+			else if( keyEvent.event == EventValue::EVENT_KEY_RELEASE )
+				releasedEvents.push_back(e);
+		}
+
+		this->fixMacroReleaseEvents(pressedEvents, releasedEvents, macro_array);
+	}
+
 	MacrosBanks::setMacro(this->currentActiveProfile_, keyName, macro_array);
 }
 
@@ -128,6 +146,52 @@ void MacrosManager::clearMacroProfiles(void) {
 			macro_key_pair.second.clear();
 		}
 	}
+}
+
+void MacrosManager::fixMacroReleaseEvents(
+	const std::vector<MacroEvent> & pressedEvents,
+	std::vector<MacroEvent> & releasedEvents,
+	macro_t & macro_array
+) {
+	/* fix missing release events */
+	for(const auto & pressed : pressedEvents) {
+		bool found = false;
+		for(auto it = releasedEvents.begin(); it != releasedEvents.end(); ++it) {
+			if(pressed.key.event_code == (*it).key.event_code) {
+				if(pressed.index < (*it).index) {
+					/* KEY_RELEASE event found for current KEY_PRESS event */
+					releasedEvents.erase(it);
+					found = true;
+					break; /* jumping to next press event */
+				}
+			}
+		}
+		if( ! found ) {
+			this->buffer_.str("missing release event for index ");
+			this->buffer_ << pressed.index;
+			this->buffer_ << " - adding event";
+			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+			KeyEvent e = pressed.key;
+			e.event = EventValue::EVENT_KEY_RELEASE;
+			e.interval = 1;
+			macro_array.push_back(e);
+		}
+	}
+
+	/* remove redundant release events */
+	if( ! releasedEvents.empty() ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "some redundant release events were found : " << releasedEvents.size();
+#endif
+		for(const auto & redundant : releasedEvents) {
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "erasing redundant release event at index : " << redundant.index;
+#endif
+			auto it = std::next(macro_array.begin(), redundant.index);
+			macro_array.erase(it);
+		}
+	}
+
 }
 
 } // namespace GLogiK

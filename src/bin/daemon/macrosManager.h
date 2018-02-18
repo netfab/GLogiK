@@ -34,6 +34,15 @@
 namespace GLogiK
 {
 
+struct MacroEvent {
+	public:
+		MacroEvent(const GLogiK::KeyEvent & k, const unsigned int i)
+			:	key(k), index(i) {}
+
+		GLogiK::KeyEvent key;
+		unsigned int index;
+};
+
 class MacrosManager : public MacrosBanks
 {
 	public:
@@ -51,7 +60,7 @@ class MacrosManager : public MacrosBanks
 
 		void setMacro(
 			const std::string & keyName,
-			const macro_t & macro_array
+			macro_t & macro_array
 		);
 
 		void clearMacroProfiles(void);
@@ -65,6 +74,12 @@ class MacrosManager : public MacrosBanks
 
 		MemoryBank currentActiveProfile_;
 		VirtualKeyboard virtual_keyboard;
+
+		void fixMacroReleaseEvents(
+			const std::vector<MacroEvent> & pressedEvents,
+			std::vector<MacroEvent> & releasedEvents,
+			macro_t & macro_array
+		);
 };
 
 } // namespace GLogiK
