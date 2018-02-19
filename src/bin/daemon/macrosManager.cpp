@@ -120,17 +120,24 @@ void MacrosManager::setMacro(
 		std::vector<MacroEvent> pressedEvents;
 		std::vector<MacroEvent> releasedEvents;
 
-		for(unsigned int i = 0; i != macro_array.size(); ++i) {
-			const auto & keyEvent = macro_array[i];
-			MacroEvent e(keyEvent, i);
-
-			if( keyEvent.event == EventValue::EVENT_KEY_PRESS )
-				pressedEvents.push_back(e);
-			else if( keyEvent.event == EventValue::EVENT_KEY_RELEASE )
-				releasedEvents.push_back(e);
-		}
-
+		this->fillInVectors(macro_array, pressedEvents, releasedEvents);
 		this->fixMacroReleaseEvents(pressedEvents, releasedEvents, macro_array);
+
+		//// debug code
+		//KeyEvent e1(KEY_UNKNOWN, EventValue::EVENT_KEY_PRESS, 1);
+		//KeyEvent e2(KEY_UNKNOWN, EventValue::EVENT_KEY_RELEASE, 1);
+		//for(unsigned int i = 0; i < 12; ++i) {
+		//	macro_array.push_back(e1);
+		//	macro_array.push_back(e2);
+		//}
+
+		if(macro_array.size() >= MACRO_T_MAX_SIZE) {
+			GKSysLog(LOG_WARNING, WARNING, "macro size greater than MACRO_T_MAX_SIZE, fixing it");
+			pressedEvents.clear();
+			releasedEvents.clear();
+			this->fillInVectors(macro_array, pressedEvents, releasedEvents);
+			this->fixMacroSize(pressedEvents, releasedEvents, macro_array);
+		}
 	}
 
 	MacrosBanks::setMacro(this->currentActiveProfile_, keyName, macro_array);
@@ -149,11 +156,27 @@ void MacrosManager::clearMacroProfiles(void) {
 	}
 }
 
+void MacrosManager::fillInVectors(
+	const macro_t & macro_array,
+	std::vector<MacroEvent> & pressedEvents,
+	std::vector<MacroEvent> & releasedEvents)
+{
+	for(unsigned int i = 0; i != macro_array.size(); ++i) {
+		const auto & keyEvent = macro_array[i];
+		MacroEvent e(keyEvent, i);
+
+		if( keyEvent.event == EventValue::EVENT_KEY_PRESS )
+			pressedEvents.push_back(e);
+		else if( keyEvent.event == EventValue::EVENT_KEY_RELEASE )
+			releasedEvents.push_back(e);
+	}
+}
+
 void MacrosManager::fixMacroReleaseEvents(
 	const std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents,
-	macro_t & macro_array
-) {
+	macro_t & macro_array)
+{
 	/* fix missing release events */
 	for(const auto & pressed : pressedEvents) {
 		bool found = false;
@@ -194,6 +217,75 @@ void MacrosManager::fixMacroReleaseEvents(
 			macro_array.erase(it);
 		}
 	}
+}
+
+void MacrosManager::fixMacroSize(
+	const std::vector<MacroEvent> & pressedEvents,
+	std::vector<MacroEvent> & releasedEvents,
+	macro_t & macro_array)
+{
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "pressed events : " << pressedEvents.size();
+	LOG(DEBUG1) << "released events : " << releasedEvents.size();
+#endif
+	/* sanity check */
+	if(pressedEvents.size() != releasedEvents.size()) {
+		GKSysLog(LOG_WARNING, WARNING, "pressed and released events disparity :");
+		this->buffer_.str("pressed: ");
+		this->buffer_ << pressedEvents.size();
+		this->buffer_.str(" - released: ");
+		this->buffer_ << releasedEvents.size();
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+	}
+
+	std::vector<unsigned int> indexes;
+
+	for(const auto & pressed : pressedEvents) {
+		for(auto it = releasedEvents.begin(); it != releasedEvents.end(); ++it) {
+			if(pressed.key.event_code == (*it).key.event_code) {
+				if(pressed.index < (*it).index) {
+					indexes.push_back( pressed.index );
+					indexes.push_back( (*it).index );
+					releasedEvents.erase(it);
+					break;
+				}
+			}
+		}
+	}
+
+	std::sort(indexes.begin(), indexes.end());
+
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "indexes size : " << indexes.size();
+#endif
+
+	while( (indexes.size() > 1) and (macro_array.size() >= MACRO_T_MAX_SIZE) ) {
+		auto & index = indexes.back();
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "erasing index : " << index;
+#endif
+		auto it = std::next(macro_array.begin(), index);
+		macro_array.erase(it);
+		indexes.pop_back();
+
+		index = indexes.back();
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "erasing index : " << index;
+#endif
+		it = std::next(macro_array.begin(), index);
+		macro_array.erase(it);
+		indexes.pop_back();
+	}
+
+	/* sanity check */
+	if( macro_array.size() >= MACRO_T_MAX_SIZE ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "macro size : " << macro_array.size();
+#endif
+		GKSysLog(LOG_WARNING, WARNING, "macro still greater than MACRO_T_MAX_SIZE, force resize it");
+		macro_array.resize(MACRO_T_MAX_SIZE - 1);
+	}
+
 }
 
 } // namespace GLogiK

@@ -40,7 +40,7 @@ struct MacroEvent {
 			:	key(k), index(i) {}
 
 		GLogiK::KeyEvent key;
-		uint8_t index;
+		unsigned int index;
 
 	private:
 		MacroEvent(void) = delete;
@@ -78,7 +78,18 @@ class MacrosManager : public MacrosBanks
 		MemoryBank currentActiveProfile_;
 		VirtualKeyboard virtual_keyboard;
 
+
+		void fillInVectors(
+			const macro_t & macro_array,
+			std::vector<MacroEvent> & pressedEvents,
+			std::vector<MacroEvent> & releasedEvents
+		);
 		void fixMacroReleaseEvents(
+			const std::vector<MacroEvent> & pressedEvents,
+			std::vector<MacroEvent> & releasedEvents,
+			macro_t & macro_array
+		);
+		void fixMacroSize(
 			const std::vector<MacroEvent> & pressedEvents,
 			std::vector<MacroEvent> & releasedEvents,
 			macro_t & macro_array
