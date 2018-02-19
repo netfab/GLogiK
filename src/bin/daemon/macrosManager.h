@@ -40,7 +40,10 @@ struct MacroEvent {
 			:	key(k), index(i) {}
 
 		GLogiK::KeyEvent key;
-		unsigned int index;
+		uint8_t index;
+
+	private:
+		MacroEvent(void) = delete;
 };
 
 class MacrosManager : public MacrosBanks

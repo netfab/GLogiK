@@ -19,6 +19,7 @@
  *
  */
 
+#include <algorithm>
 #include <iterator>
 #include <stdexcept>
 #include <iostream>
@@ -168,7 +169,7 @@ void MacrosManager::fixMacroReleaseEvents(
 		}
 		if( ! found ) {
 			this->buffer_.str("missing release event for index ");
-			this->buffer_ << pressed.index;
+			this->buffer_ << to_uint(pressed.index);
 			this->buffer_ << " - adding event";
 			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 			KeyEvent e = pressed.key;
@@ -178,20 +179,21 @@ void MacrosManager::fixMacroReleaseEvents(
 		}
 	}
 
-	/* remove redundant release events */
+	/* remove redundant release events in reverse order */
 	if( ! releasedEvents.empty() ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "some redundant release events were found : " << releasedEvents.size();
 #endif
+		std::reverse(releasedEvents.begin(), releasedEvents.end());
+
 		for(const auto & redundant : releasedEvents) {
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "erasing redundant release event at index : " << redundant.index;
+			LOG(DEBUG3) << "erasing redundant release event at index : " << to_uint(redundant.index);
 #endif
 			auto it = std::next(macro_array.begin(), redundant.index);
 			macro_array.erase(it);
 		}
 	}
-
 }
 
 } // namespace GLogiK
