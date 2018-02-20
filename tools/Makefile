@@ -7,6 +7,8 @@ PREFIX_DIR=$(PREFIX_DEV_DIR)/GLogiK
 
 LANG=C
 
+CXXFLAGS=-O2 -pipe -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2
+
 #
 # CXXFLAGS="-march=sandybridge -mtune=generic -O2 -pipe -mmmx -msse -msse2"
 # CXXFLAGS="-march=sandybridge -mtune=generic -O2 -pipe -mmmx -msse -msse2 -I$(PREFIX_DEV_DIR)/libg15/include"
@@ -80,6 +82,7 @@ ifeq ($(strip $(DEBUG_BUILD)),)
 
 configure_it: init_it autoreconf_it
 	cd $(build_dir) && $(top_srcdir)/configure \
+	CXXFLAGS="$(CXXFLAGS)" \
 	--disable-debug --disable-debug-gkdbus DEBUG_DIR=$(PREFIX_DEV_DIR) \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR) --libdir=$(PREFIX_DIR)/lib64
@@ -95,6 +98,7 @@ else
 
 configure_it: init_it autoreconf_it
 	cd $(build_dir) && $(top_srcdir)/configure \
+	CXXFLAGS="$(CXXFLAGS)" \
 	--enable-debug --disable-debug-gkdbus DEBUG_DIR=$(PREFIX_DEV_DIR) \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR) --libdir=$(PREFIX_DIR)/lib64
