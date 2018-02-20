@@ -7,7 +7,9 @@ PREFIX_DIR=$(PREFIX_DEV_DIR)/GLogiK
 
 LANG=C
 
-CXXFLAGS=-O2 -pipe -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2
+CXXFLAGS=-O2 -pipe \
+	-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 \
+	-Wformat=2
 
 #
 # CXXFLAGS="-march=sandybridge -mtune=generic -O2 -pipe -mmmx -msse -msse2"

@@ -272,7 +272,7 @@ class FILELOG_DECLSPEC BOTHLog : public Log<LOG_TO_FILE_AND_CONSOLE>
 
 inline void GKSysLog(const int priority, const TLogLevel level, const std::string & to_log, const char* func) {
 	LOG2(level, func) << to_log;
-	syslog(priority, to_log.c_str());
+	syslog(priority, "%s", to_log.c_str());
 }
 
 #define GKSysLog(p, l, t) GKSysLog(p, l, t, __func__)
@@ -284,7 +284,7 @@ inline void GKSysLog(const int priority, const TLogLevel level, const std::strin
 	else BOTHLog(level).Get(level, func)
 
 inline void GKSysLog(const int priority, const TLogLevel level, const std::string & to_log) {
-	syslog(priority, to_log.c_str());
+	syslog(priority, "%s", to_log.c_str());
 }
 
 #endif
