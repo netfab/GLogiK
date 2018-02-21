@@ -210,7 +210,7 @@ void GKDBus::checkReleasedName(int ret) {
 			LOG(DEBUG1) << "nobody owned the name";
 			break;
 		default:
-			LOG(WARNING) << "unknown return value";
+			LOG(ERROR) << "return value : " << ret;
 			break;
 	}
 }
