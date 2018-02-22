@@ -120,11 +120,19 @@ AC_DEFINE_UNQUOTED(GLOGIKS_GROUP,"$GLOGIKS_GROUP", [User for running the glogik 
 dnl ---------------------------------------------------------------------------
 dnl             Where to install udev rules
 dnl ---------------------------------------------------------------------------
+if test "$prefix" = "/usr" -o "$prefix" = "/usr/local" ; then
+	dnl AC_SUBST([udevrulesdir], [$($PKG_CONFIG --variable=udevdir udev)/rules.d])
+	udev_rules_dir_default=$($PKG_CONFIG --variable=udevdir udev)"/rules.d"
+else
+	dnl AC_SUBST([udevrulesdir], [$prefix/lib/udev/rules.d])
+	udev_rules_dir_default=$prefix/lib/udev/rules.d
+fi
+
 AC_ARG_WITH(
 	[udevrulesdir],
-	AS_HELP_STRING([--with-udevrulesdir=DIR], [Directory for udev rules]),
+	AS_HELP_STRING([--with-udevrulesdir=DIR], [Directory where udev expects its rules files]),
 	[],
-	[with_udevrulesdir=$($PKG_CONFIG --variable=udevdir udev)"/rules.d"]
+	[with_udevrulesdir=$udev_rules_dir_default]
 )
 AC_SUBST([udevrulesdir], [$with_udevrulesdir])
 
@@ -239,6 +247,8 @@ AC_MSG_NOTICE([
 
       pkglibdir : ${libdir}/$PACKAGE
          srcdir : ${srcdir}
+
+ udev rules dir : ${with_udevrulesdir}
 
        compiler : ${CXX}
        CXXFLAGS : ${CXXFLAGS}
