@@ -6,6 +6,8 @@ m4_define(GLOGIK_VERSION,regexp(m4_include(VERSION),[version \([-.0-9A-Za-z]+\)]
 # project infos
 AC_INIT(GLOGIK_NAME, GLOGIK_VERSION, [netbox253@gmail.com])
 
+PKG_PROG_PKG_CONFIG
+
 AC_CONFIG_HEADERS([config.h])
 
 AC_CONFIG_MACRO_DIR([m4])
@@ -68,26 +70,63 @@ AC_ARG_ENABLE( [debug-gkdbus],
 AC_ARG_VAR(DEBUG_DIR, [Directory where debug file will be written])
 
 dnl -------------------------------------------------------------------------
-dnl             User and Group for running the glogikd daemon
+dnl        User and Group for running the GLogiK daemon
+dnl -------------------------------------------------------------------------
+dnl user
+AC_ARG_WITH(
+	[glogikd_user],
+	AS_HELP_STRING([--with-glogikd-user=<user>], [User for running the glogik daemon (glogikd)])
+)
+if test -z "$with_glogikd_user" ; then
+	GLOGIKD_USER=glogikd
+else
+	GLOGIKD_USER=$with_glogikd_user
+fi
+AC_SUBST(GLOGIKD_USER)
+AC_DEFINE_UNQUOTED(GLOGIKD_USER,"$GLOGIKD_USER", [User for running the glogik daemon])
+
+dnl group
+AC_ARG_WITH(
+	[glogikd_group],
+	AS_HELP_STRING([--with-glogikd-group=<group>], [Group for running the glogik daemon (plugdev)])
+)
+if test -z "$with_glogikd_group" ; then
+	GLOGIKD_GROUP=plugdev
+else
+	GLOGIKD_GROUP=$with_glogikd_group
+fi
+AC_SUBST(GLOGIKD_GROUP)
+AC_DEFINE_UNQUOTED(GLOGIKD_GROUP,"$GLOGIKD_GROUP", [Group for running the glogik daemon])
+
+AC_ARG_VAR(DEVICES_MODE, [Permissions of detected devices and for virtual keyboard. Defaults to 0660])
+AS_IF([test -z "${DEVICES_MODE}"], AC_SUBST([DEVICES_MODE], [0660]))
+
+dnl -------------------------------------------------------------------------
+dnl        Group for running the GLogiK desktop service
 dnl -------------------------------------------------------------------------
 
-AC_ARG_WITH(glogik_user, AS_HELP_STRING([--with-glodik-user=<user>],[User for running the glogik daemon (glogik)]))
-if test -z "$with_glogik_user" ; then
-	GLOGIK_USER=glogik
+AC_ARG_WITH(
+	[glogiks_group],
+	AS_HELP_STRING([--with-glogiks-group=<group>], [Group for running the glogik desktop service (glogiks)])
+)
+if test -z "$with_glogiks_group" ; then
+	GLOGIKS_GROUP=glogiks
 else
-	GLOGIK_USER=$with_glogik_user
+	GLOGIKS_GROUP=$with_glogiks_group
 fi
-AC_SUBST(GLOGIK_USER)
-AC_DEFINE_UNQUOTED(GLOGIK_USER,"$GLOGIK_USER", [User for running the glogik daemon])
+AC_SUBST(GLOGIKS_GROUP)
+AC_DEFINE_UNQUOTED(GLOGIKS_GROUP,"$GLOGIKS_GROUP", [User for running the glogik desktop service])
 
-AC_ARG_WITH(glogik_group, AS_HELP_STRING([--with-glodik-group=<group>],[Group for running the glogik daemon (glogik)]))
-if test -z "$with_glogik_group" ; then
-	GLOGIK_GROUP=glogik
-else
-	GLOGIK_GROUP=$with_glogik_group
-fi
-AC_SUBST(GLOGIK_GROUP)
-AC_DEFINE_UNQUOTED(GLOGIK_GROUP,"$GLOGIK_GROUP", [Group for running the glogik daemon])
+dnl ---------------------------------------------------------------------------
+dnl             Where to install udev rules
+dnl ---------------------------------------------------------------------------
+AC_ARG_WITH(
+	[udevrulesdir],
+	AS_HELP_STRING([--with-udevrulesdir=DIR], [Directory for udev rules]),
+	[],
+	[with_udevrulesdir=$($PKG_CONFIG --variable=udevdir udev)"/rules.d"]
+)
+AC_SUBST([udevrulesdir], [$with_udevrulesdir])
 
 dnl -------------------------------------------------------------------------
 dnl             run tests and do things accordingly to results
@@ -176,6 +215,7 @@ AX_PTHREAD
 AC_CONFIG_FILES([
         Makefile
         data/dbus/GLogiK.conf
+        data/udev/99-GLogiK.rules
 	])
 
 # Generate config.status and launch it.
@@ -194,6 +234,7 @@ AC_MSG_NOTICE([
          bindir : ${bindir}
         sbindir : ${sbindir}
      sysconfdir : ${sysconfdir}
+    datarootdir : ${datarootdir}
         datadir : ${datadir}
 
       pkglibdir : ${libdir}/$PACKAGE
@@ -205,8 +246,10 @@ AC_MSG_NOTICE([
     am CXXFLAGS : ${AM_CXXFLAGS}
      am LDFLAGS : ${AM_LDFLAGS}
 
-    $PACKAGE_NAME user : ${GLOGIK_USER}
-   $PACKAGE_NAME group : ${GLOGIK_GROUP}
+           $PACKAGE_NAME daemon user : ${GLOGIKD_USER}
+          $PACKAGE_NAME daemon group : ${GLOGIKD_GROUP}
+ $PACKAGE_NAME desktop service group : ${GLOGIKS_GROUP}
+                 devices mode : ${DEVICES_MODE}
 --------------------------------------------------------------
                  D-Bus LIBS : ${DBUS_LIBS}
                D-Bus CFLAGS : ${DBUS_CFLAGS}
@@ -226,6 +269,10 @@ AC_MSG_NOTICE([
       Boost filesystem LIBS : ${BOOST_FILESYSTEM_LIB}
  Boost program options LIBS : ${BOOST_PROGRAM_OPTIONS_LIB}
        Boost iostreams LIBS : ${BOOST_IOSTREAMS_LIB}
+--------------------------------------------------------------
+ Global debugging : ${enable_debugging}
+ GKDBus debugging : ${enable_gkdbus_debugging}
+        debug dir : ${DEBUG_DIR}
 --------------------------------------------------------------
 
 ])

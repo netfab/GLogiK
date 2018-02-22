@@ -333,17 +333,17 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 
 void GLogiKDaemon::dropPrivileges(void) {
 	errno = 0;
-	struct passwd * pw = getpwnam(GLOGIK_USER);
+	struct passwd * pw = getpwnam(GLOGIKD_USER);
 	if(pw == nullptr)
-		throw GLogiKExcept("can't get password structure for GLOGIK_USER");
+		throw GLogiKExcept("can't get password structure for GLOGIKD_USER");
 
 	errno = 0;
-	struct group * gr = getgrnam(GLOGIK_GROUP);
+	struct group * gr = getgrnam(GLOGIKD_GROUP);
 	if(gr == nullptr)
-		throw GLogiKExcept("can't get group structure for GLOGIK_GROUP");
+		throw GLogiKExcept("can't get group structure for GLOGIKD_GROUP");
 
 	errno = 0;
-	if(initgroups(GLOGIK_USER, gr->gr_gid) < 0)
+	if(initgroups(GLOGIKD_USER, gr->gr_gid) < 0)
 		throw GLogiKExcept("failure to initialize group access list");
 
 	errno = 0;

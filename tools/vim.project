@@ -23,6 +23,10 @@ GLogiK=$PWD/.. CD=. {
 			Makefile.am
 			GLogiK.conf.in
 		}
+		udev=udev/ {
+			Makefile.am
+			99-GLogiK.rules.in
+		}
 	}
 	src=src/ {
 		include=include/ {

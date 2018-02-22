@@ -10,6 +10,7 @@ include %D%/src/lib/shared/Makefile.am
 include %D%/src/bin/daemon/Makefile.am
 include %D%/src/bin/service/Makefile.am
 include %D%/data/dbus/Makefile.am
+include %D%/data/udev/Makefile.am
 
 maintainer-clean-local: maintainer-clean-libtool-files maintainer-clean-autotools-files
 
