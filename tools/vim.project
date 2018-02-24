@@ -25,6 +25,7 @@ GLogiK=$PWD/.. CD=. {
 		}
 		init=init/ {
 			openrc=openrc/ {
+				Makefile.am
 				glogikd
 			}
 			systemd=systemd/ {
