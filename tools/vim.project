@@ -23,6 +23,13 @@ GLogiK=$PWD/.. CD=. {
 			Makefile.am
 			GLogiK.conf.in
 		}
+		init=init/ {
+			openrc=openrc/ {
+				glogikd
+			}
+			systemd=systemd/ {
+			}
+		}
 		udev=udev/ {
 			Makefile.am
 			99-GLogiK.rules.in

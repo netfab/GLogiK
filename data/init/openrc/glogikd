@@ -1,0 +1,27 @@
+#!/sbin/openrc-run
+# Copyright 1999-2018 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+
+command=/usr/sbin/GLogiKd
+name="GLogiK Daemon"
+description="Daemon to handle special features on gaming keyboard"
+description_start="Start the GLogiK daemon"
+description_stop="Stop the GLogiK daemon"
+
+rundir=/run/glogikd
+pidfile="${rundir}/glogikd.pid"
+command_args="-d -p ${pidfile}"
+
+runas_user=glogikd:root
+
+depend() {
+	use logger
+	after bootmisc
+}
+
+start_pre() {
+	mkdir -p "${rundir}"
+	checkpath --directory --owner "${runas_user}" \
+		--mode 0750 "${rundir}"
+}
+
