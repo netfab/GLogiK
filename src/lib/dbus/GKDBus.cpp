@@ -45,22 +45,30 @@ GKDBus::~GKDBus()
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "dbus object destruction";
 #endif
+
+/*
 	if(this->session_conn_) {
 #if DEBUGGING_ON
 		LOG(DEBUG) << "closing DBus Session connection";
 #endif
-		int ret = dbus_bus_release_name(this->session_conn_, this->session_name_.c_str(), nullptr);
-		this->checkReleasedName(ret);
+
+		if( ! this->session_name_.empty() ) {
+			int ret = dbus_bus_release_name(this->session_conn_, this->session_name_.c_str(), nullptr);
+			this->checkReleasedName(ret);
+		}
 		dbus_connection_unref(this->session_conn_);
 	}
+*/
 
 	if(this->system_conn_) {
 #if DEBUGGING_ON
 		LOG(DEBUG) << "closing DBus System connection";
 #endif
 
-		int ret = dbus_bus_release_name(this->system_conn_, this->system_name_.c_str(), nullptr);
-		this->checkReleasedName(ret);
+		if( ! this->system_name_.empty() ) {
+			int ret = dbus_bus_release_name(this->system_conn_, this->system_name_.c_str(), nullptr);
+			this->checkReleasedName(ret);
+		}
 		dbus_connection_unref(this->system_conn_);
 	}
 }
@@ -72,18 +80,18 @@ void GKDBus::connectToSystemBus(const char* connection_name) {
 	LOG(DEBUG1) << "DBus System connection opened";
 #endif
 
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "requesting system connection name : " << connection_name;
+#endif
+	this->system_name_.clear();
 	int ret = dbus_bus_request_name(this->system_conn_, connection_name,
 		DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &this->error_);
 	this->checkDBusError("DBus System request name failure");
+	this->system_name_ = connection_name;
 
 	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
 		throw GLogiKExcept("DBus System request name failure : not owner");
 	}
-
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "DBus System requested connection name : " << connection_name;
-#endif
-	this->system_name_ = connection_name;
 }
 
 /* -- */
