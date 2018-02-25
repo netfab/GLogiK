@@ -29,8 +29,11 @@
 #include <sys/types.h>
 
 #include "lib/dbus/GKDBus.h"
+#include "lib/shared/sessionManager.h"
 
 #include "devicesHandler.h"
+
+#define UNREACHABLE_DAEMON_MAX_RETRIES 12
 
 namespace GLogiK
 {
@@ -45,7 +48,7 @@ enum class SessionTracker
 class ServiceDBusHandler
 {
 	public:
-		ServiceDBusHandler(pid_t pid);
+		ServiceDBusHandler(pid_t pid, SessionManager& session);
 		~ServiceDBusHandler(void);
 
 		void updateSessionState(void);
@@ -70,7 +73,7 @@ class ServiceDBusHandler
 		void setCurrentSessionObjectPath(pid_t pid);
 		const std::string getCurrentSessionState(const bool logoff=false);
 
-		void registerWithDaemon(void);
+		void registerWithDaemon(unsigned int & retries, SessionManager& session);
 		void unregisterWithDaemon(void);
 
 		void warnUnhandledSessionState(const std::string & state);

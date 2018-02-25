@@ -35,7 +35,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
+ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
 	:	pDBus_(nullptr),
 		system_bus_(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
 		register_retry_(true),
@@ -49,7 +49,8 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid)
 		this->pDBus_->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 
 		this->setCurrentSessionObjectPath(pid);
-		this->registerWithDaemon();
+		unsigned int retries = 0;
+		this->registerWithDaemon(retries, session);
 
 		this->session_state_ = this->getCurrentSessionState();
 		this->reportChangedState();
@@ -145,43 +146,64 @@ ServiceDBusHandler::~ServiceDBusHandler() {
  * try to tell the daemon we are alive
  * throws on failure
  */
-void ServiceDBusHandler::registerWithDaemon(void) {
+void ServiceDBusHandler::registerWithDaemon(unsigned int & retries, SessionManager& session) {
 	if( this->are_we_registered_ ) {
 		LOG(WARNING) << "don't need to register, since we are already registered";
 		return;
 	}
 
-	this->pDBus_->initializeRemoteMethodCall(
-		this->system_bus_,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-		"RegisterClient"
-	);
-	this->pDBus_->appendStringToRemoteMethodCall(this->current_session_);
-	this->pDBus_->sendRemoteMethodCall();
+	try {
+		if(retries > 0) {
+			LOG(INFO) << "register retry " << retries << " ...";
+		}
+		this->pDBus_->initializeRemoteMethodCall(
+			this->system_bus_,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+			"RegisterClient"
+		);
+		this->pDBus_->appendStringToRemoteMethodCall(this->current_session_);
+		this->pDBus_->sendRemoteMethodCall();
 
-	this->pDBus_->waitForRemoteMethodCallReply();
+		this->pDBus_->waitForRemoteMethodCallReply();
 
-	const bool ret = this->pDBus_->getNextBooleanArgument();
-	if( ret ) {
-		this->client_id_ = this->pDBus_->getNextStringArgument();
-		this->are_we_registered_ = true;
-		LOG(INFO) << "successfully registered with daemon - " << this->client_id_;
-	}
-	else {
-		const char * failure = "failed to register with daemon : false";
-		const std::string reason(this->pDBus_->getNextStringArgument());
-		if( this->register_retry_ ) {
-			/* retrying */
-			this->register_retry_ = false;
-			LOG(WARNING) << failure << " - " << reason << ", retrying ...";
-			std::this_thread::sleep_for(std::chrono::seconds(2));
-			this->registerWithDaemon();
+		const bool ret = this->pDBus_->getNextBooleanArgument();
+		if( ret ) {
+			this->client_id_ = this->pDBus_->getNextStringArgument();
+			this->are_we_registered_ = true;
+			LOG(INFO) << "successfully registered with daemon - " << this->client_id_;
 		}
 		else {
-			LOG(ERROR) << failure << " - " << reason;
-			throw GLogiKExcept(failure);
+			const char * failure = "failed to register with daemon : false";
+			const std::string reason(this->pDBus_->getNextStringArgument());
+			if( this->register_retry_ ) {
+				unsigned int retry = 1;
+				/* retrying */
+				this->register_retry_ = false;
+				LOG(WARNING) << failure << " - " << reason << ", retrying ...";
+				std::this_thread::sleep_for(std::chrono::seconds(2));
+				this->registerWithDaemon(retry, session);
+			}
+			else {
+				LOG(ERROR) << failure << " - " << reason;
+				throw GLogiKExcept(failure);
+			}
+		}
+	}
+	catch( const GKDBusRemoteCallNoReply & e ) {
+#if DEBUGGING_ON
+		LOG(DEBUG) << e.what();
+#endif
+		if( ( session.isSessionAlive() ) and (retries++ < UNREACHABLE_DAEMON_MAX_RETRIES) ) {
+			unsigned int timer = 1;
+			LOG(WARNING) << "daemon unreachable, can't register, retrying in " << timer << " minute(s) ...";
+			std::this_thread::sleep_for(std::chrono::minutes(timer));
+			this->registerWithDaemon(retries, session);
+		}
+		else {
+			LOG(ERROR) << "daemon unreachable, can't register, giving up";
+			throw GLogiKExcept("daemon unreachable");
 		}
 	}
 }
