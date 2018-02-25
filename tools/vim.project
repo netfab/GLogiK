@@ -19,6 +19,10 @@ GLogiK=$PWD/.. CD=. {
 	macro=m4/ {
 	}
 	data=data/ {
+		autostart=autostart/ {
+			Makefile.am
+			glogik-desktop-service.desktop
+		}
 		dbus=dbus/ {
 			Makefile.am
 			GLogiK.conf.in
