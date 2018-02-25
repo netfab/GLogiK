@@ -1,2 +1,2 @@
 
-EXTRA_DIST=%D%/glogikd
+EXTRA_DIST += %D%/glogikd

@@ -69,7 +69,7 @@ fullclean_it: clean_it
 	rmdir -v $(build_dir)
 
 distcheck_it:
-	cd $(build_dir) && make distcheck
+	cd $(build_dir) && make -j3 distcheck
 
 # -- -- --
 # -- -- --
