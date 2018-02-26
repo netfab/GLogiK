@@ -21,6 +21,8 @@
 
 #include <new>
 #include <stdexcept>
+#include <iomanip>
+#include <sstream>
 
 #define UTILS_COMPILATION 1
 
@@ -49,6 +51,15 @@ const std::string to_string(const char* s) {
 		throw GLogiKExcept(error);
 	}
 };
+
+const std::string getHexRGB(const uint8_t red, const uint8_t green, const uint8_t blue) {
+	std::ostringstream ret("", std::ios_base::app);
+	ret << std::hex << std::setfill('0')
+		<< std::setw(2) << to_uint(red) << " "
+		<< std::setw(2) << to_uint(green) << " "
+		<< std::setw(2) << to_uint(blue);
+	return ret.str();
+}
 
 } // namespace NSGKUtils
 

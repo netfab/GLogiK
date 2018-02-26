@@ -215,11 +215,12 @@ KeyStatus LogitechG510::processKeyEvent(InitializedDevice & device)
 
 void LogitechG510::setKeyboardColor(const InitializedDevice & device) {
 #if DEBUGGING_ON
-	LOG(DEBUG1) << "setting " << device.device.name << " keyboard color using rgb : 0x"
-				<< std::hex << std::setw(2) << std::setfill('0') << to_uint(device.rgb[0])
-				<< std::hex << std::setw(2) << std::setfill('0') << to_uint(device.rgb[1])
-				<< std::hex << std::setw(2) << std::setfill('0') << to_uint(device.rgb[2])
-				<< std::dec;
+	const uint8_t & r = device.rgb[0];
+	const uint8_t & g = device.rgb[1];
+	const uint8_t & b = device.rgb[2];
+	LOG(DEBUG1) << "setting " << device.device.name << " backlight color "
+				<< "with following RGB bytes : "
+				<< getHexRGB(r, g, b);
 #endif
 	unsigned char usb_data[4] = { 5, device.rgb[0], device.rgb[1], device.rgb[2] };
 	this->sendControlRequest(device.usb_handle, 0x305, 1, usb_data, 4);

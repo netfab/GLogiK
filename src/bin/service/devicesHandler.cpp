@@ -232,12 +232,15 @@ void DevicesHandler::setDeviceState(const std::string & devID, const DevicePrope
 		this->pDBus_->waitForRemoteMethodCallReply();
 		const bool ret = this->pDBus_->getNextBooleanArgument();
 		if( ret ) {
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "successfully setted device " << devID << " properties";
-#endif
+			const uint8_t & r = device.getBLColor_R();
+			const uint8_t & g = device.getBLColor_G();
+			const uint8_t & b = device.getBLColor_B();
+			LOG(INFO) << "successfully setted device " << devID
+						<< " backlight color : "
+						<< getHexRGB(r, g, b);
 		}
 		else {
-			LOG(ERROR) << "failed to set device " << devID << " properties : false";
+			LOG(ERROR) << "failed to set device " << devID << " backlight color : false";
 		}
 	}
 	catch (const GLogiKExcept & e) {

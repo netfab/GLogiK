@@ -44,6 +44,8 @@ constexpr typename std::underlying_type<T>::type to_type(T obj) noexcept {
 
 const std::string to_string(const char* s);
 
+const std::string getHexRGB(const uint8_t red, const uint8_t green, const uint8_t blue);
+
 } // namespace NSGKUtils
 
 #endif

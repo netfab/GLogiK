@@ -648,9 +648,8 @@ const bool ClientsManager::setDeviceBacklightColor(
 )	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
-	LOG(DEBUG3) << "with following RGB bytes : " << std::hex << to_uint(r)
-				<< " " << std::hex << to_uint(g)
-				<< " " << std::hex << to_uint(b);
+	LOG(DEBUG3) << "with following RGB bytes : "
+				<< getHexRGB(r, g, b);
 #endif
 	try {
 		Client* pClient = this->clients_.at(clientID);
