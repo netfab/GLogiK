@@ -85,9 +85,9 @@ class ServiceDBusHandler
 		void daemonIsStopping(void);
 		const bool macroRecorded(const std::string & devID, const std::string & keyName, const uint8_t profile);
 
-		void devicesStarted(const std::vector<std::string> & devicesIDArray);
-		void devicesStopped(const std::vector<std::string> & devicesIDArray);
-		void devicesUnplugged(const std::vector<std::string> & devicesIDArray);
+		void devicesStarted(const std::vector<std::string> & devicesID);
+		void devicesStopped(const std::vector<std::string> & devicesID);
+		void devicesUnplugged(const std::vector<std::string> & devicesID);
 		/* -- */
 };
 

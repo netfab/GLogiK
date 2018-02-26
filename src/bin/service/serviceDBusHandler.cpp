@@ -483,11 +483,11 @@ void ServiceDBusHandler::daemonIsStopping(void) {
 	// TODO sleep and retry to register
 }
 
-void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devicesIDArray) {
+void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "it seems that some devices were started";
+	LOG(DEBUG3) << "daemon is saying that " << devicesID.size() << " devices were started";
 #endif
-	for(const auto& devID : devicesIDArray) {
+	for(const auto& devID : devicesID) {
 		try {
 			this->pDBus_->initializeRemoteMethodCall(
 				this->system_bus_,
@@ -523,11 +523,11 @@ void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devices
 	}
 }
 
-void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devicesIDArray) {
+void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "it seems that some devices were stopped";
+	LOG(DEBUG3) << "daemon is saying that " << devicesID.size() << " devices were stopped";
 #endif
-	for(const auto& devID : devicesIDArray) {
+	for(const auto& devID : devicesID) {
 		try {
 			this->pDBus_->initializeRemoteMethodCall(
 				this->system_bus_,
@@ -563,11 +563,11 @@ void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devices
 	}
 }
 
-void ServiceDBusHandler::devicesUnplugged(const std::vector<std::string> & devicesIDArray) {
+void ServiceDBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "it seems that some devices were unplugged";
+	LOG(DEBUG3) << "daemon is saying that " << devicesID.size() << " devices were unplugged";
 #endif
-	for(const auto& devID : devicesIDArray) {
+	for(const auto& devID : devicesID) {
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "device : " << devID;
 #endif
@@ -636,9 +636,6 @@ void ServiceDBusHandler::initializeDevices(void) {
 		this->pDBus_->waitForRemoteMethodCallReply();
 
 		devicesID = this->pDBus_->getStringsArray();
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "daemon says " << devicesID.size() << " devices started";
-#endif
 		this->devicesStarted(devicesID);
 	}
 	catch (const GLogiKExcept & e) {
@@ -694,10 +691,6 @@ void ServiceDBusHandler::initializeDevices(void) {
 		this->pDBus_->waitForRemoteMethodCallReply();
 
 		devicesID = this->pDBus_->getStringsArray();
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "daemon says " << devicesID.size() << " devices stopped";
-#endif
-
 		this->devicesStopped(devicesID);
 	}
 	catch (const GLogiKExcept & e) {
