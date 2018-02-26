@@ -121,6 +121,15 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
 			this->system_bus_,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+			"DaemonIsStarting",
+			{}, // FIXME
+			std::bind(&ServiceDBusHandler::daemonIsStarting, this)
+		);
+
+		this->pDBus_->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+			this->system_bus_,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 			"ReportYourself",
 			{}, // FIXME
 			std::bind(&ServiceDBusHandler::reportChangedState, this)
@@ -466,7 +475,6 @@ void ServiceDBusHandler::updateSessionState(void) {
 	this->reportChangedState();
 }
 
-
 void ServiceDBusHandler::daemonIsStopping(void) {
 	if( this->are_we_registered_ ) {
 		LOG(INFO) << "received daemonIsStopping signal - saving state and unregistering with daemon";
@@ -478,9 +486,21 @@ void ServiceDBusHandler::daemonIsStopping(void) {
 		LOG(DEBUG2) << "client " << this->current_session_ << " already unregistered with deamon";
 #endif
 	}
+}
 
-	this->devices_.clearLoadedDevices();
-	// TODO sleep and retry to register
+void ServiceDBusHandler::daemonIsStarting(void) {
+	if( this->are_we_registered_ ) {
+#if DEBUGGING_ON
+		LOG(WARNING) << "received daemonIsStarting signal, but already registered with daemon";
+#endif
+	}
+	else {
+		this->registerWithDaemon();
+		this->reportChangedState();
+		this->devices_.setClientID(this->client_id_);
+
+		this->initializeDevices();
+	}
 }
 
 void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {

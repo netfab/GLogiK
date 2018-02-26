@@ -50,8 +50,6 @@ class DevicesHandler
 
 		void saveDevicesProperties(void);
 
-		void clearLoadedDevices(void);
-
 		const bool setDeviceMacro(
 			const std::string & devID,
 			const std::string & keyName,

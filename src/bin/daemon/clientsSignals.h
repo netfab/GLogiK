@@ -43,7 +43,8 @@ class ClientsSignals
 		void sendSignalToClients(
 			const uint8_t num_clients,
 			NSGKDBus::GKDBus* pDBus,
-			const std::string & signal
+			const std::string & signal,
+			const bool force=false
 		);
 		void sendStatusSignalArrayToClients(
 			const uint8_t num_clients,

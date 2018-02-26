@@ -83,6 +83,7 @@ class ServiceDBusHandler
 
 		/* signals */
 		void daemonIsStopping(void);
+		void daemonIsStarting(void);
 		const bool macroRecorded(const std::string & devID, const std::string & keyName, const uint8_t profile);
 
 		void devicesStarted(const std::vector<std::string> & devicesID);

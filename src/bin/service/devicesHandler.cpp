@@ -84,6 +84,11 @@ void DevicesHandler::saveDevicesProperties(void) {
 		this->stopDevice(devID);
 		this->unrefDevice(devID);
 	}
+
+	/* clear all containers */
+	this->started_devices_.clear();
+	this->stopped_devices_.clear();
+	this->used_conf_files_.clear();
 }
 
 void DevicesHandler::saveDeviceProperties(const std::string & devID) {
@@ -598,12 +603,6 @@ const bool DevicesHandler::setDeviceMacro(
 		LOG(WARNING) << "getting or setting macro failed : " << e.what();
 	}
 	return false;
-}
-
-void DevicesHandler::clearLoadedDevices(void) {
-	this->started_devices_.clear();
-	this->stopped_devices_.clear();
-	this->used_conf_files_.clear();
 }
 
 } // namespace GLogiK

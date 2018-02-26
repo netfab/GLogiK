@@ -35,10 +35,11 @@ using namespace NSGKUtils;
 void ClientsSignals::sendSignalToClients(
 	const uint8_t num_clients,
 	NSGKDBus::GKDBus* pDBus,
-	const std::string & signal)
+	const std::string & signal,
+	const bool force)
 {
 	/* don't try to send signal if we know that there is no clients */
-	if( num_clients == 0 )
+	if( (num_clients == 0 ) and (! force) )
 		return;
 
 	/*
@@ -65,7 +66,13 @@ void ClientsSignals::sendSignalToClients(
 	catch (const GLogiKExcept & e) {
 		std::string warn("DBus targets signal failure : ");
 		warn += e.what();
-		GKSysLog(LOG_WARNING, WARNING, warn);
+		/* don't warn nor syslog if we force sending the signal */
+		if(! force) {
+			GKSysLog(LOG_WARNING, WARNING, warn);
+		}
+		else {
+			LOG(DEBUG) << warn;
+		}
 	}
 }
 
