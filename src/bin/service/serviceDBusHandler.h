@@ -73,7 +73,7 @@ class ServiceDBusHandler
 		void setCurrentSessionObjectPath(pid_t pid);
 		const std::string getCurrentSessionState(const bool logoff=false);
 
-		void registerWithDaemon(unsigned int & retries, SessionManager& session);
+		void registerWithDaemon(void);
 		void unregisterWithDaemon(void);
 
 		void warnUnhandledSessionState(const std::string & state);
