@@ -237,9 +237,7 @@ void ServiceDBusHandler::unregisterWithDaemon(void) {
 		if( ret ) {
 			this->are_we_registered_ = false;
 			this->client_id_ = "undefined";
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "successfully unregistered with daemon";
-#endif
+			LOG(INFO) << "successfully unregistered with daemon";
 		}
 		else {
 			LOG(ERROR) << "failed to unregister with daemon : false";
@@ -471,6 +469,7 @@ void ServiceDBusHandler::updateSessionState(void) {
 
 void ServiceDBusHandler::daemonIsStopping(void) {
 	if( this->are_we_registered_ ) {
+		LOG(INFO) << "received daemonIsStopping signal - saving state and unregistering with daemon";
 		this->devices_.saveDevicesProperties();
 		this->unregisterWithDaemon();
 	}
