@@ -58,12 +58,10 @@ void MacrosBanks::setMacro(
 	const macro_t & macro_array)
 {
 	try {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "macros profile: " << to_uint(profile)
+		LOG(INFO) << "macros profile: M" << to_uint(profile)
 			<< " - Macro Key: " << keyName
 			<< " - Macro Size: " << macro_array.size()
 			<< " - setting macro";
-#endif
 		if( macro_array.size() >= MACRO_T_MAX_SIZE ) {
 			LOG(WARNING) << "skipping macro - size >= MACRO_T_MAX_SIZE";
 			throw GLogiKExcept("skipping macro");
