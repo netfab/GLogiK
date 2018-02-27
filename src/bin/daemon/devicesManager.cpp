@@ -698,7 +698,7 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 	this->sendSignalToClients(this->num_clients_, this->pDBus_, "DaemonIsStarting", true);
 
 	while( DaemonControl::isDaemonRunning() ) {
-		int ret = poll(this->fds, 1, 1000);
+		int ret = poll(this->fds, 1, 100);
 
 		// receive data ?
 		if( ret > 0 ) {
