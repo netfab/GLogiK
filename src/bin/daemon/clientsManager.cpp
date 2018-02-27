@@ -675,12 +675,18 @@ const macro_t & ClientsManager::getDeviceMacro(
 	try {
 		Client* pClient = this->clients_.at(clientID);
 
-		if( pClient->isReady() ) {
-			pClient->syncDeviceMacrosProfiles(devID, this->devicesManager->getDeviceMacrosProfiles(devID));
-			return pClient->getDeviceMacro(devID, keyName, profile);
+		if(pClient->getSessionCurrentState() == "active") {
+			if( pClient->isReady() ) {
+				pClient->syncDeviceMacrosProfiles(devID, this->devicesManager->getDeviceMacrosProfiles(devID));
+				return pClient->getDeviceMacro(devID, keyName, profile);
+			}
+			else {
+				GKSysLog(LOG_WARNING, WARNING, "getting device macro not allowed while client not ready");
+			}
 		}
-
-		GKSysLog(LOG_WARNING, WARNING, "getting device macro not allowed while client not ready");
+		else {
+			GKSysLog(LOG_WARNING, WARNING, "only active user can get device macro");
+		}
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownClient

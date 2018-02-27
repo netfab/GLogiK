@@ -694,7 +694,6 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 	this->searchSupportedDevices();
 	this->initializeDevices();
 
-	/* force num_client to 1 here else signal will never be sent */
 	this->sendSignalToClients(this->num_clients_, this->pDBus_, "DaemonIsStarting", true);
 
 	while( DaemonControl::isDaemonRunning() ) {
