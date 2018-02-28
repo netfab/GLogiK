@@ -146,6 +146,17 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
 			)
 		);
 
+		this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
+			this->system_bus_,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
+			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+			"MacroCleared",
+			{}, // FIXME
+			std::bind(	&ServiceDBusHandler::macroCleared, this,
+						std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
+			)
+		);
+
 		/* set GKDBus pointer */
 		this->devices_.setDBus(this->pDBus_);
 		this->devices_.setClientID(this->client_id_);
@@ -746,6 +757,33 @@ const bool ServiceDBusHandler::macroRecorded(
 	}
 
 	return this->devices_.setDeviceMacro(devID, keyName, profile);
+}
+
+const bool ServiceDBusHandler::macroCleared(
+	const std::string & devID,
+	const std::string & keyName,
+	const uint8_t profile)
+{
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "got MacroCleared signal for device " << devID
+				<< " profile " << to_uint(profile) << " key " << keyName;
+#endif
+
+	if( ! this->are_we_registered_ ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "currently not registered, skipping";
+#endif
+		return false;
+	}
+
+	if( this->session_state_ != "active" ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "currently not active, skipping";
+#endif
+		return false;
+	}
+
+	return this->devices_.clearDeviceMacro(devID, keyName, profile);
 }
 
 void ServiceDBusHandler::checkDBusMessages(void) {

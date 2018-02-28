@@ -56,6 +56,12 @@ class DevicesHandler
 			const uint8_t profile
 		);
 
+		const bool clearDeviceMacro(
+			const std::string & devID,
+			const std::string & keyName,
+			const uint8_t profile
+		);
+
 	protected:
 
 	private:

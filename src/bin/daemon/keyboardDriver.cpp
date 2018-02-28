@@ -560,6 +560,11 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 				try {
 					const uint8_t profile = to_type( device.macros_man->getCurrentActiveProfile() );
 
+					std::string signal("MacroRecorded");
+					if( device.standard_keys_events.empty() ) {
+						signal = "MacroCleared";
+					}
+
 					/* open a new connection, GKDBus is not thread-safe */
 					pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
 
@@ -568,7 +573,7 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 						GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 						GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
 						GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-						"MacroRecorded"
+						signal.c_str()
 					);
 
 					pDBus->appendStringToTargetsSignal(devID);

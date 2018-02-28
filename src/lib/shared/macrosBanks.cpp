@@ -52,6 +52,37 @@ void MacrosBanks::initMacrosProfiles(const std::vector<std::string> & keys_names
 	}
 }
 
+void MacrosBanks::clearMacro(
+	const MemoryBank & profile,
+	const std::string & keyName)
+{
+	try {
+		LOG(INFO) << "macros profile: M" << to_uint(profile)
+			<< " - Macro Key: " << keyName
+			<< " - clearing macro";
+
+		this->macros_profiles_[profile].at(keyName).clear();
+	}
+	catch (const std::out_of_range& oor) {
+		std::string warn("wrong map key : ");
+		warn += keyName;
+		GKSysLog(LOG_WARNING, WARNING, warn);
+		throw GLogiKExcept("macro not cleared");
+	}
+}
+
+void MacrosBanks::clearMacro(
+	const uint8_t profile,
+	const std::string & keyName)
+{
+	if( to_uint(profile) > to_uint(MemoryBank::BANK_M3) )
+		throw GLogiKExcept("wrong profile value");
+
+	const MemoryBank current_profile = static_cast<MemoryBank>(profile);
+
+	this->clearMacro(current_profile, keyName);
+}
+
 void MacrosBanks::setMacro(
 	const MemoryBank & profile,
 	const std::string & keyName,

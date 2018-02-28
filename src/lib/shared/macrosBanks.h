@@ -49,19 +49,29 @@ class MacrosBanks
 		const macros_map_t & getMacrosProfiles(void) const { return this->macros_profiles_; };
 		void setMacrosProfiles(const macros_map_t & macros) { this->macros_profiles_ = macros; };
 
-		void setMacro(
+		void clearMacro(
 			const uint8_t profile,
-			const std::string & keyName,
-			const macro_t & macro_array
+			const std::string & keyName
 		);
 		void setMacro(
-			const MemoryBank & profile,
+			const uint8_t profile,
 			const std::string & keyName,
 			const macro_t & macro_array
 		);
 		const macro_t & getMacro(
 			const uint8_t profile,
 			const std::string & keyName
+		);
+
+		void clearMacro(
+			const MemoryBank & profile,
+			const std::string & keyName
+		);
+
+		void setMacro(
+			const MemoryBank & profile,
+			const std::string & keyName,
+			const macro_t & macro_array
 		);
 
 	protected:
@@ -84,7 +94,6 @@ class MacrosBanks
 		};
 
 	private:
-
 };
 
 } // namespace GLogiK

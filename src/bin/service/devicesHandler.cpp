@@ -605,5 +605,24 @@ const bool DevicesHandler::setDeviceMacro(
 	return false;
 }
 
+const bool DevicesHandler::clearDeviceMacro(
+	const std::string & devID,
+	const std::string & keyName,
+	const uint8_t profile)
+{
+	try {
+		DeviceProperties & device = this->started_devices_.at(devID);
+
+		device.clearMacro(profile, keyName);
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(WARNING) << "device not found : " << devID;
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(WARNING) << e.what();
+	}
+	return false;
+}
+
 } // namespace GLogiK
 
