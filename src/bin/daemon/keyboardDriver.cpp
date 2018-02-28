@@ -550,14 +550,7 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 						device.chosen_macro_key,
 						device.standard_keys_events
 					);
-				}
-				catch (const GLogiKExcept & e) {
-					std::ostringstream warn("", std::ios_base::app);
-					warn << "setting macro failed : " << e.what();
-					GKSysLog(LOG_WARNING, WARNING, warn.str());
-				}
 
-				try {
 					const uint8_t profile = to_type( device.macros_man->getCurrentActiveProfile() );
 
 					std::string signal("MacroRecorded");
@@ -583,9 +576,7 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 					pDBus->sendTargetsSignal();
 				}
 				catch (const GLogiKExcept & e) {
-					std::ostringstream warn("", std::ios_base::app);
-					warn << "DBus targets signal failure : " << e.what();
-					GKSysLog(LOG_WARNING, WARNING, warn.str());
+					GKSysLog(LOG_WARNING, WARNING, e.what());
 				}
 
 				keys_found = true;
