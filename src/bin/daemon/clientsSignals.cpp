@@ -64,6 +64,8 @@ void ClientsSignals::sendSignalToClients(
 		pDBus->sendTargetsSignal();
 	}
 	catch (const GLogiKExcept & e) {
+		pDBus->abandonTargetsSignal();
+
 		std::string warn("DBus targets signal failure : ");
 		warn += e.what();
 		/* don't warn nor syslog if we force sending the signal */

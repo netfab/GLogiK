@@ -111,7 +111,7 @@ void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus broadcast signal allocation failure : " << e.what();
-		throw GLogiKBadAlloc();
+		throw GKDBusMessageWrongBuild("allocation error");
 	}
 }
 

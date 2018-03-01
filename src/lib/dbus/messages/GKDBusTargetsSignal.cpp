@@ -139,9 +139,22 @@ void GKDBusMessageTargetsSignal::appendStringVectorToTargetsSignal(const std::ve
 }
 
 void GKDBusMessageTargetsSignal::sendTargetsSignal(void) {
-	/* sending and freeing already allocated signals */
+	/* sending and freeing allocated signals */
 	for(const auto & targetSignal : this->signals_) {
 		if(targetSignal != nullptr) {
+			delete targetSignal;
+		}
+		else {
+			LOG(WARNING) << __func__ << " signal from container is null";
+		}
+	}
+	this->signals_.clear();
+}
+
+void GKDBusMessageTargetsSignal::abandonTargetsSignal(void) {
+	for(const auto & targetSignal : this->signals_) {
+		if(targetSignal != nullptr) {
+			targetSignal->abandon();
 			delete targetSignal;
 		}
 		else {

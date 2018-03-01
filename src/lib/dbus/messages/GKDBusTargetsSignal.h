@@ -55,6 +55,7 @@ class GKDBusMessageTargetsSignal
 		);
 
 		void sendTargetsSignal(void);
+		void abandonTargetsSignal(void);
 
 	protected:
 		GKDBusMessageTargetsSignal() = default;

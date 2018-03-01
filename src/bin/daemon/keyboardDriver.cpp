@@ -553,27 +553,35 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 
 					const uint8_t profile = to_type( device.macros_man->getCurrentActiveProfile() );
 
-					std::string signal("MacroRecorded");
-					if( device.standard_keys_events.empty() ) {
-						signal = "MacroCleared";
-					}
-
 					/* open a new connection, GKDBus is not thread-safe */
 					pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
 
-					pDBus->initializeTargetsSignal(
-						NSGKDBus::BusConnection::GKDBUS_SYSTEM,
-						GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-						GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
-						GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-						signal.c_str()
-					);
+					try {
+						std::string signal("MacroRecorded");
+						if( device.standard_keys_events.empty() ) {
+							signal = "MacroCleared";
+						}
 
-					pDBus->appendStringToTargetsSignal(devID);
-					pDBus->appendStringToTargetsSignal(device.chosen_macro_key);
-					pDBus->appendUInt8ToTargetsSignal(profile);
+						pDBus->initializeTargetsSignal(
+							NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+							GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+							GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
+							GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+							signal.c_str()
+						);
 
-					pDBus->sendTargetsSignal();
+						pDBus->appendStringToTargetsSignal(devID);
+						pDBus->appendStringToTargetsSignal(device.chosen_macro_key);
+						pDBus->appendUInt8ToTargetsSignal(profile);
+
+						pDBus->sendTargetsSignal();
+					}
+					catch (const GKDBusMessageWrongBuild & e) {
+						pDBus->abandonTargetsSignal();
+						std::string warn("abandon TargetsSignal : ");
+						warn += e.what();
+						GKSysLog(LOG_WARNING, WARNING, warn);
+					}
 				}
 				catch (const GLogiKExcept & e) {
 					GKSysLog(LOG_WARNING, WARNING, e.what());
