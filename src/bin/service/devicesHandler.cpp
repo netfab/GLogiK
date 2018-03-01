@@ -619,10 +619,10 @@ const bool DevicesHandler::setDeviceMacro(
 				const macro_t macro_array = this->pDBus_->getNextMacroArgument();
 
 				device.setMacro(profile, keyName, macro_array);
-				// FIXME return
+				return true;
 			}
 			catch (const GLogiKExcept & e) {
-				LOG(ERROR) << remoteMethod.c_str() << " get reply failure: " << e.what();
+				LOG(ERROR) << "set macro failure: " << e.what();
 			}
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
@@ -646,12 +646,13 @@ const bool DevicesHandler::clearDeviceMacro(
 		DeviceProperties & device = this->started_devices_.at(devID);
 
 		device.clearMacro(profile, keyName);
+		return true;
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(WARNING) << "device not found : " << devID;
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(WARNING) << e.what();
+		LOG(ERROR) << "clear macro failure: " << e.what();
 	}
 	return false;
 }
