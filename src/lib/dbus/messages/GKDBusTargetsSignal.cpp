@@ -48,7 +48,7 @@ void GKDBusMessageTargetsSignal::initializeTargetsSignal(
 	const char* signal
 ) {
 	if(this->signals_.size() > 0) { /* sanity check */
-		throw GLogiKExcept("signals container not cleared");
+		throw GKDBusMessageWrongBuild("signals container not cleared");
 	}
 
 	std::vector<std::string> uniqueNames;
@@ -69,7 +69,8 @@ void GKDBusMessageTargetsSignal::initializeTargetsSignal(
 
 		uniqueNames = GKDBusArgumentString::getStringsArray();
 	}
-	catch ( const GLogiKExcept & e ) {
+	catch ( const GKDBusMessageWrongBuild & e ) {
+		this->abandonRemoteMethodCall();
 		LOG(WARNING) << "failure to ask the bus for signal targets";
 		throw;
 	}
@@ -99,7 +100,7 @@ void GKDBusMessageTargetsSignal::initializeTargetsSignal(
 		}
 		this->signals_.clear();
 
-		throw GLogiKBadAlloc();
+		throw GKDBusMessageWrongBuild("allocation error");
 	}
 
 #if DEBUGGING_ON

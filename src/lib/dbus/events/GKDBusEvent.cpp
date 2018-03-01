@@ -51,7 +51,7 @@ void GKDBusEvent::sendReplyError(
 {
 	LOG(ERROR) << "DBus reply failure : " << error;
 	/* delete reply object if allocated */
-	this->sendReply();
+	this->abandonReply();
 	this->buildAndSendErrorReply(connection, message, error);
 }
 

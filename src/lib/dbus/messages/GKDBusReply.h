@@ -64,6 +64,7 @@ class GKDBusMessageReply
 		void appendMacroToReply(const GLogiK::macro_t & macro_array);
 
 		void sendReply(void);
+		void abandonReply(void);
 
 	private:
 		GKDBusReply* reply_;

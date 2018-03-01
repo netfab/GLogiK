@@ -37,15 +37,15 @@ GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 	) : GKDBusMessage(connection)
 {
 	if( ! dbus_validate_path(object_path, nullptr) )
-		throw GLogiKExcept("invalid object path");
+		throw GKDBusMessageWrongBuild("invalid object path");
 	if( ! dbus_validate_interface(interface, nullptr) )
-		throw GLogiKExcept("invalid interface");
+		throw GKDBusMessageWrongBuild("invalid interface");
 	if( ! dbus_validate_member(signal, nullptr) )
-		throw GLogiKExcept("invalid signal name");
+		throw GKDBusMessageWrongBuild("invalid signal name");
 
 	this->message_ = dbus_message_new_signal(object_path, interface, signal);
 	if(this->message_ == nullptr)
-		throw GLogiKExcept("can't allocate memory for Signal DBus message");
+		throw GKDBusMessageWrongBuild("can't allocate memory for Signal DBus message");
 
 	if( dest != nullptr ) {
 #if DEBUG_GKDBUS_SUBOBJECTS
@@ -104,7 +104,7 @@ void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 	const char* signal
 ) {
 	if(this->signal_) /* sanity check */
-		throw GLogiKExcept("DBus signal already allocated");
+		throw GKDBusMessageWrongBuild("DBus signal already allocated");
 
 	try {
 		this->signal_ = new GKDBusBroadcastSignal(connection, nullptr, object_path, interface, signal);

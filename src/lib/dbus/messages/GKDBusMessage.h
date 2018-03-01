@@ -46,6 +46,8 @@ class GKDBusMessage
 		void appendMacro(const GLogiK::macro_t & macro_array);
 		void appendMacrosBank(const GLogiK::macros_bank_t & macros_bank);
 
+		void abandon(void);
+
 		thread_local static std::vector<std::string> extra_strings_;
 
 	protected:

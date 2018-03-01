@@ -78,6 +78,7 @@ class GKDBusMessageRemoteMethodCall
 		void appendMacrosBankToRemoteMethodCall(const GLogiK::macros_bank_t & macros_bank);
 
 		void sendRemoteMethodCall(void);
+		void abandonRemoteMethodCall(void);
 
 		void waitForRemoteMethodCallReply(void);
 

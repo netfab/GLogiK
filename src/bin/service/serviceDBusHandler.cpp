@@ -60,12 +60,9 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
 				try {
 					this->registerWithDaemon();
 				}
-				catch( const GKDBusRemoteCallNoReply & e ) {
-#if DEBUGGING_ON
-					LOG(DEBUG) << e.what();
-#endif
+				catch( const GLogiKExcept & e ) {
 					unsigned int timer = 5;
-					LOG(WARNING) << "daemon unreachable, can't register, retrying in " << timer << " seconds ...";
+					LOG(WARNING) << e.what() << ", retrying in " << timer << " seconds ...";
 					std::this_thread::sleep_for(std::chrono::seconds(timer));
 				}
 			}
@@ -196,38 +193,60 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 		return;
 	}
 
-	this->pDBus_->initializeRemoteMethodCall(
-		this->system_bus_,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-		"RegisterClient"
-	);
-	this->pDBus_->appendStringToRemoteMethodCall(this->current_session_);
-	this->pDBus_->sendRemoteMethodCall();
+	std::string remoteMethod("RegisterClient");
 
-	this->pDBus_->waitForRemoteMethodCallReply();
+	try {
+		this->pDBus_->initializeRemoteMethodCall(
+			this->system_bus_,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+			remoteMethod.c_str()
+		);
+		this->pDBus_->appendStringToRemoteMethodCall(this->current_session_);
+		this->pDBus_->sendRemoteMethodCall();
 
-	const bool ret = this->pDBus_->getNextBooleanArgument();
-	if( ret ) {
-		this->client_id_ = this->pDBus_->getNextStringArgument();
-		this->are_we_registered_ = true;
-		LOG(INFO) << "successfully registered with daemon - " << this->client_id_;
-	}
-	else {
-		const char * failure = "failed to register with daemon : false";
-		const std::string reason(this->pDBus_->getNextStringArgument());
-		if( this->register_retry_ ) {
-			/* retrying */
-			this->register_retry_ = false;
-			LOG(WARNING) << failure << " - " << reason << ", retrying ...";
-			std::this_thread::sleep_for(std::chrono::seconds(2));
-			this->registerWithDaemon();
+		/* -- */
+
+		this->pDBus_->waitForRemoteMethodCallReply();
+
+		const bool ret = this->pDBus_->getNextBooleanArgument();
+		if( ret ) {
+			this->client_id_ = this->pDBus_->getNextStringArgument();
+			this->are_we_registered_ = true;
+			LOG(INFO) << "successfully registered with daemon - " << this->client_id_;
 		}
 		else {
-			LOG(ERROR) << failure << " - " << reason;
-			throw GLogiKExcept(failure);
+			const char * failure = "failed to register with daemon : false";
+			const std::string reason(this->pDBus_->getNextStringArgument());
+			if( this->register_retry_ ) {
+				/* retrying */
+				this->register_retry_ = false;
+				LOG(WARNING) << failure << " - " << reason << ", retrying ...";
+				std::this_thread::sleep_for(std::chrono::seconds(2));
+				this->registerWithDaemon();
+			}
+			else {
+				LOG(ERROR) << failure << " - " << reason;
+				throw GLogiKExcept(failure);
+			}
 		}
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		this->pDBus_->abandonRemoteMethodCall();
+
+		this->buffer_.str(__func__);
+		this->buffer_ 	<< " - " << remoteMethod.c_str()
+						<< " call failure: " << e.what();
+		LOG(WARNING) << this->buffer_.str();
+		throw GLogiKExcept("RegisterClient failure");
+	}
+	catch (const GLogiKExcept & e) {
+		this->buffer_.str(__func__);
+		this->buffer_ 	<< " - " << remoteMethod.c_str()
+						<< " get reply failure: " << e.what();
+		LOG(WARNING) << this->buffer_.str();
+		throw GLogiKExcept("RegisterClient failure");
 	}
 }
 

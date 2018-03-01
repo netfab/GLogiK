@@ -36,12 +36,12 @@ GKDBusErrorReply::GKDBusErrorReply(
 {
 	/* sanity check */
 	if(message == nullptr)
-		throw GLogiKExcept("DBus message is NULL");
+		throw GKDBusMessageWrongBuild("DBus message is NULL");
 
 	/* initialize reply from message */
 	this->message_ = dbus_message_new_error(message, DBUS_ERROR_FAILED, error_message);
 	if(this->message_ == nullptr)
-		throw GLogiKExcept("can't allocate memory for DBus reply message");
+		throw GKDBusMessageWrongBuild("can't allocate memory for DBus reply message");
 
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus error reply message initialized";
@@ -88,14 +88,14 @@ void GKDBusMessageErrorReply::initializeErrorReply(
 	const char* error_message
 ) {
 	if(this->error_reply_) /* sanity check */
-		throw GLogiKExcept("DBus reply already allocated");
+		throw GKDBusMessageWrongBuild("DBus reply already allocated");
 
 	try {
 		this->error_reply_ = new GKDBusErrorReply(connection, message, error_message);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus reply allocation failure : " << e.what();
-		throw GLogiKBadAlloc();
+		throw GKDBusMessageWrongBuild("allocation error");
 	}
 }
 

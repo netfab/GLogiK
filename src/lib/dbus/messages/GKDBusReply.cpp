@@ -33,12 +33,12 @@ GKDBusReply::GKDBusReply(DBusConnection* connection, DBusMessage* message)
 {
 	/* sanity check */
 	if(message == nullptr)
-		throw GLogiKExcept("DBus message is NULL");
+		throw GKDBusMessageWrongBuild("DBus message is NULL");
 
 	/* initialize reply from message */
 	this->message_ = dbus_message_new_method_return(message);
 	if(this->message_ == nullptr)
-		throw GLogiKExcept("can't allocate memory for DBus reply message");
+		throw GKDBusMessageWrongBuild("can't allocate memory for DBus reply message");
 
 	/* initialize potential arguments iterator */
 	dbus_message_iter_init_append(this->message_, &this->args_it_);
@@ -82,14 +82,14 @@ GKDBusMessageReply::~GKDBusMessageReply()
 
 void GKDBusMessageReply::initializeReply(DBusConnection* connection, DBusMessage* message) {
 	if(this->reply_) /* sanity check */
-		throw GLogiKExcept("DBus reply already allocated");
+		throw GKDBusMessageWrongBuild("DBus reply already allocated");
 
 	try {
 		this->reply_ = new GKDBusReply(connection, message);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus reply allocation failure : " << e.what();
-		throw GLogiKBadAlloc();
+		throw GKDBusMessageWrongBuild("allocation error");
 	}
 }
 
@@ -129,6 +129,18 @@ void GKDBusMessageReply::sendReply(void) {
 
 	delete this->reply_;
 	this->reply_ = nullptr;
+}
+
+void GKDBusMessageReply::abandonReply(void) {
+	GKDBusMessage::extra_strings_.clear();
+	if(this->reply_) { /* sanity check */
+		this->reply_->abandon();
+		delete this->reply_;
+		this->reply_ = nullptr;
+	}
+	else {
+		LOG(WARNING) << __func__ << " failure because reply not contructed";
+	}
 }
 
 } // namespace NSGKDBus

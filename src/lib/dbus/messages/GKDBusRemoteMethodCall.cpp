@@ -41,17 +41,17 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 	)	: GKDBusMessage(connection, logoff), pending_(pending)
 {
 	if( ! dbus_validate_bus_name(dest, nullptr) )
-		throw GLogiKExcept("invalid destination name");
+		throw GKDBusMessageWrongBuild("invalid destination name");
 	if( ! dbus_validate_path(object_path, nullptr) )
-		throw GLogiKExcept("invalid object path");
+		throw GKDBusMessageWrongBuild("invalid object path");
 	if( ! dbus_validate_interface(interface, nullptr) )
-		throw GLogiKExcept("invalid interface");
+		throw GKDBusMessageWrongBuild("invalid interface");
 	if( ! dbus_validate_member(method, nullptr) )
-		throw GLogiKExcept("invalid method name");
+		throw GKDBusMessageWrongBuild("invalid method name");
 
 	this->message_ = dbus_message_new_method_call(dest, object_path, interface, method);
 	if(this->message_ == nullptr)
-		throw GLogiKExcept("can't allocate memory for Remote Object Method Call DBus message");
+		throw GKDBusMessageWrongBuild("can't allocate memory for Remote Object Method Call DBus message");
 	
 	/* initialize potential arguments iterator */
 	dbus_message_iter_init_append(this->message_, &this->args_it_);
@@ -126,7 +126,7 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 	const bool logoff
 ) {
 	if(this->remote_method_call_) /* sanity check */
-		throw GLogiKExcept("DBus remote_method_call already allocated");
+		throw GKDBusMessageWrongBuild("DBus remote_method_call already allocated");
 
 	try {
 		this->remote_method_call_ = new GKDBusRemoteMethodCall(
@@ -136,7 +136,7 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus remote_method_call allocation failure : " << e.what();
-		throw GLogiKBadAlloc();
+		throw GKDBusMessageWrongBuild("allocation error");
 	}
 
 	this->log_off_ = logoff;
@@ -165,6 +165,19 @@ void GKDBusMessageRemoteMethodCall::appendMacrosBankToRemoteMethodCall(const GLo
 void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall(void)
 {
 	if(this->remote_method_call_) { /* sanity check */
+		delete this->remote_method_call_;
+		this->remote_method_call_ = nullptr;
+	}
+	else {
+		LOG(WARNING) << __func__ << " failure because remote_method_call not contructed";
+		throw GKDBusMessageWrongBuild("DBus remote_method_call not contructed");
+	}
+}
+
+void GKDBusMessageRemoteMethodCall::abandonRemoteMethodCall(void)
+{
+	if(this->remote_method_call_) { /* sanity check */
+		this->remote_method_call_->abandon();
 		delete this->remote_method_call_;
 		this->remote_method_call_ = nullptr;
 	}
