@@ -143,27 +143,23 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 }
 
 void GKDBusMessageRemoteMethodCall::appendStringToRemoteMethodCall(const std::string & value) {
-	if(this->remote_method_call_ == nullptr) /* sanity check */
-		throw GLogiKExcept("DBus remote method call not initialized");
-	this->remote_method_call_->appendString(value);
+	if(this->remote_method_call_ != nullptr) /* sanity check */
+		this->remote_method_call_->appendString(value);
 }
 
 void GKDBusMessageRemoteMethodCall::appendUInt8ToRemoteMethodCall(const uint8_t value) {
-	if(this->remote_method_call_ == nullptr) /* sanity check */
-		throw GLogiKExcept("DBus remote method call not initialized");
-	this->remote_method_call_->appendUInt8(value);
+	if(this->remote_method_call_ != nullptr) /* sanity check */
+		this->remote_method_call_->appendUInt8(value);
 }
 
 void GKDBusMessageRemoteMethodCall::appendUInt32ToRemoteMethodCall(const uint32_t value) {
-	if(this->remote_method_call_ == nullptr) /* sanity check */
-		throw GLogiKExcept("DBus remote method call not initialized");
-	this->remote_method_call_->appendUInt32(value);
+	if(this->remote_method_call_ != nullptr) /* sanity check */
+		this->remote_method_call_->appendUInt32(value);
 }
 
 void GKDBusMessageRemoteMethodCall::appendMacrosBankToRemoteMethodCall(const GLogiK::macros_bank_t & macros_bank) {
-	if(this->remote_method_call_ == nullptr) /* sanity check */
-		throw GLogiKExcept("DBus remote method call not initialized");
-	this->remote_method_call_->appendMacrosBank(macros_bank);
+	if(this->remote_method_call_ != nullptr) /* sanity check */
+		this->remote_method_call_->appendMacrosBank(macros_bank);
 }
 
 void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall(void)
