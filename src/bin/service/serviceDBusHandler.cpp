@@ -199,7 +199,7 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 		return;
 	}
 
-	std::string remoteMethod("RegisterClient");
+	const std::string remoteMethod("RegisterClient");
 
 	try {
 		this->pDBus_->initializeRemoteMethodCall(
@@ -232,16 +232,13 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 			}
 		}
 		catch (const GLogiKExcept & e) {
-			LOG(WARNING)	<< remoteMethod.c_str()
-							<< " get reply failure: " << e.what();
+			LogRemoteCallGetReplyFailure
 			throw GLogiKExcept("RegisterClient failure");
 		}
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		this->pDBus_->abandonRemoteMethodCall();
-
-		LOG(WARNING)	<< remoteMethod.c_str()
-						<< " call failure: " << e.what();
+		LogRemoteCallFailure
 		throw GLogiKExcept("RegisterClient call failure");
 	}
 }
@@ -254,6 +251,8 @@ void ServiceDBusHandler::unregisterWithDaemon(void) {
 		return;
 	}
 
+	const std::string remoteMethod("UnregisterClient");
+
 	try {
 		/* telling the daemon we're killing ourself */
 		this->pDBus_->initializeRemoteMethodCall(
@@ -261,56 +260,75 @@ void ServiceDBusHandler::unregisterWithDaemon(void) {
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-			"UnregisterClient"
+			remoteMethod.c_str()
 		);
 		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
 		this->pDBus_->sendRemoteMethodCall();
 
-		this->pDBus_->waitForRemoteMethodCallReply();
+		try {
+			this->pDBus_->waitForRemoteMethodCallReply();
 
-		const bool ret = this->pDBus_->getNextBooleanArgument();
-		if( ret ) {
-			this->are_we_registered_ = false;
-			this->client_id_ = "undefined";
-			LOG(INFO) << "successfully unregistered with daemon";
+			const bool ret = this->pDBus_->getNextBooleanArgument();
+			if( ret ) {
+				this->are_we_registered_ = false;
+				this->client_id_ = "undefined";
+				LOG(INFO) << "successfully unregistered with daemon";
+			}
+			else {
+				LOG(ERROR) << "failed to unregister with daemon : false";
+			}
 		}
-		else {
-			LOG(ERROR) << "failed to unregister with daemon : false";
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
 		}
 	}
-	catch ( const GLogiKExcept & e ) {
-		std::string err("failure to unregister with daemon : ");
-		err += e.what();
-		LOG(ERROR) << err;
+	catch (const GKDBusMessageWrongBuild & e) {
+		this->pDBus_->abandonRemoteMethodCall();
+		LogRemoteCallFailure
 	}
 }
 
 void ServiceDBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 	try {
-		/* getting consolekit current session */
-		this->pDBus_->initializeRemoteMethodCall(
-			this->system_bus_,
-			"org.freedesktop.ConsoleKit",
-			"/org/freedesktop/ConsoleKit/Manager",
-			"org.freedesktop.ConsoleKit.Manager",
-			"GetCurrentSession"
-		);
-		this->pDBus_->sendRemoteMethodCall();
+		const std::string remoteMethod("GetCurrentSession");
 
-		this->pDBus_->waitForRemoteMethodCallReply();
-		this->current_session_ = this->pDBus_->getNextStringArgument();
+		try {
+			/* getting consolekit current session */
+			this->pDBus_->initializeRemoteMethodCall(
+				this->system_bus_,
+				"org.freedesktop.ConsoleKit",
+				"/org/freedesktop/ConsoleKit/Manager",
+				"org.freedesktop.ConsoleKit.Manager",
+				remoteMethod.c_str()
+			);
+			this->pDBus_->sendRemoteMethodCall();
+
+			try {
+				this->pDBus_->waitForRemoteMethodCallReply();
+				this->current_session_ = this->pDBus_->getNextStringArgument();
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "current session : " << this->current_session_;
+				LOG(DEBUG1) << "current session : " << this->current_session_;
 #endif
-		this->session_framework_ = SessionTracker::F_CONSOLEKIT;
+				this->session_framework_ = SessionTracker::F_CONSOLEKIT;
+				return;
+			}
+			catch (const GLogiKExcept & e) {
+				LogRemoteCallGetReplyFailure
+				throw GLogiKExcept("failure to get session ID from consolekit");
+			}
+		}
+		catch (const GKDBusMessageWrongBuild & e) {
+			this->pDBus_->abandonRemoteMethodCall();
+			LogRemoteCallFailure
+		}
 	}
 	catch ( const GLogiKExcept & e ) {
-		try {
-#if DEBUGGING_ON
-			LOG(DEBUG) << "error : " << e.what();
-#endif
-			LOG(INFO) << "consolekit contact failure, trying logind";
+		LOG(ERROR) << e.what();
+		LOG(INFO) << "trying to contact logind";
 
+		const std::string remoteMethod("GetSessionByPID");
+
+		try {
 			/* getting logind current session */
 			this->pDBus_->initializeRemoteMethodCall(
 				this->system_bus_,
@@ -322,19 +340,28 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 			this->pDBus_->appendUInt32ToRemoteMethodCall(pid);
 			this->pDBus_->sendRemoteMethodCall();
 
-			this->pDBus_->waitForRemoteMethodCallReply();
-			this->current_session_ = this->pDBus_->getNextStringArgument();
+			try {
+				this->pDBus_->waitForRemoteMethodCallReply();
+				this->current_session_ = this->pDBus_->getNextStringArgument();
 #if DEBUGGING_ON
-			LOG(DEBUG1) << "current session : " << this->current_session_;
+				LOG(DEBUG1) << "current session : " << this->current_session_;
 #endif
-			this->session_framework_ = SessionTracker::F_LOGIND;
+				this->session_framework_ = SessionTracker::F_LOGIND;
+				return;
+			}
+			catch (const GLogiKExcept & e) {
+				LogRemoteCallGetReplyFailure
+				throw GLogiKExcept("failure to get session ID from logind");
+			}
 		}
-		catch ( const GLogiKExcept & e ) {
-			LOG(ERROR) << e.what();
-			LOG(ERROR) << "unable to get current session path from session manager";
-			throw;
+		catch (const GKDBusMessageWrongBuild & e) {
+			this->pDBus_->abandonRemoteMethodCall();
+			LogRemoteCallFailure
 		}
 	}
+
+	/* fatal error */
+	throw GLogiKExcept("unable to contact a session manager");
 }
 
 /*

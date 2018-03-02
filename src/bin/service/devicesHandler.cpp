@@ -31,7 +31,6 @@
 
 #include "lib/shared/deviceConfigurationFile.h"
 #include "lib/utils/utils.h"
-#include "lib/shared/glogik.h"
 
 #include "warningCheck.h"
 #include "devicesHandler.h"
@@ -253,12 +252,12 @@ void DevicesHandler::setDeviceState(const std::string & devID, const DevicePrope
 			}
 		}
 		catch (const GLogiKExcept & e) {
-			LOG(ERROR) << remoteMethod.c_str() << " get reply failure: " << e.what();
+			LogRemoteCallGetReplyFailure
 		}
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		this->pDBus_->abandonRemoteMethodCall();
-		LOG(ERROR) << remoteMethod.c_str() << " call failure: " << e.what();
+		LogRemoteCallFailure
 	}
 
 
@@ -315,12 +314,12 @@ void DevicesHandler::setDeviceState(const std::string & devID, const DevicePrope
 				}
 			}
 			catch (const GLogiKExcept & e) {
-				LOG(ERROR) << remoteMethod.c_str() << " get reply failure: " << e.what();
+				LogRemoteCallGetReplyFailure
 			}
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
 			this->pDBus_->abandonRemoteMethodCall();
-			LOG(ERROR) << remoteMethod.c_str() << " call failure: " << e.what();
+			LogRemoteCallFailure
 		}
 	}
 }
@@ -357,12 +356,12 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 #endif
 		}
 		catch (const GLogiKExcept & e) {
-			LOG(ERROR) << remoteMethod.c_str() << " get reply failure: " << e.what();
+			LogRemoteCallGetReplyFailure
 		}
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		this->pDBus_->abandonRemoteMethodCall();
-		LOG(ERROR) << remoteMethod.c_str() << " call failure: " << e.what();
+		LogRemoteCallFailure
 	}
 
 	/* initialize macro keys */
@@ -391,12 +390,12 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 #endif
 		}
 		catch (const GLogiKExcept & e) {
-			LOG(ERROR) << remoteMethod.c_str() << " get reply failure: " << e.what();
+			LogRemoteCallGetReplyFailure
 		}
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		this->pDBus_->abandonRemoteMethodCall();
-		LOG(ERROR) << remoteMethod.c_str() << " call failure: " << e.what();
+		LogRemoteCallFailure
 	}
 
 	/* search a configuration file */
@@ -572,12 +571,12 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 				}
 			}
 			catch (const GLogiKExcept & e) {
-				LOG(ERROR) << remoteMethod.c_str() << " get reply failure: " << e.what();
+				LogRemoteCallGetReplyFailure
 			}
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
 			this->pDBus_->abandonRemoteMethodCall();
-			LOG(ERROR) << remoteMethod.c_str() << " call failure: " << e.what();
+			LogRemoteCallFailure
 		}
 	}
 	catch (const std::out_of_range& oor) {
@@ -622,12 +621,13 @@ const bool DevicesHandler::setDeviceMacro(
 				return true;
 			}
 			catch (const GLogiKExcept & e) {
-				LOG(ERROR) << "set macro failure: " << e.what();
+				/* setMacro can also throws */
+				LogRemoteCallGetReplyFailure
 			}
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
 			this->pDBus_->abandonRemoteMethodCall();
-			LOG(ERROR) << remoteMethod.c_str() << " call failure: " << e.what();
+			LogRemoteCallFailure
 		}
 	}
 	catch (const std::out_of_range& oor) {

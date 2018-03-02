@@ -31,6 +31,8 @@ extern c_str s_Client;
 extern c_str s_Device;
 extern c_str s_UnknownClient;
 extern c_str s_UnknownDevice;
+extern c_str s_RemoteCallFailure;
+extern c_str s_RemoteCallGetReplyFailure;
 
 /* --- ---- --- *
  * -- GKDBus -- *

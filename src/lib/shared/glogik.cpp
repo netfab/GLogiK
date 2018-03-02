@@ -29,6 +29,8 @@ c_str s_Client = "client : ";
 c_str s_Device = "device : ";
 c_str s_UnknownClient = "unknown client : ";
 c_str s_UnknownDevice = "unknown device : ";
+c_str s_RemoteCallFailure = " call failure : ";
+c_str s_RemoteCallGetReplyFailure = " get reply failure : ";
 
 /* --- ---- --- *
  * -- GKDBus -- *

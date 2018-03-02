@@ -30,7 +30,13 @@
 #include <sstream>
 
 #include "lib/dbus/GKDBus.h"
+#include "lib/shared/glogik.h"
 #include "lib/shared/deviceProperties.h"
+
+#define LogRemoteCallFailure \
+	LOG(ERROR) << remoteMethod.c_str() << s_RemoteCallFailure << e.what();
+#define LogRemoteCallGetReplyFailure \
+	LOG(ERROR) << remoteMethod.c_str() << s_RemoteCallGetReplyFailure << e.what();
 
 namespace GLogiK
 {
