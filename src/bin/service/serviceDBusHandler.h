@@ -60,7 +60,7 @@ class ServiceDBusHandler
 		NSGKDBus::GKDBus* pDBus_;
 		const NSGKDBus::BusConnection system_bus_;
 		DevicesHandler devices_;
-		bool register_retry_;
+		bool skip_retry_;
 		bool are_we_registered_;
 		std::string client_id_;
 		SessionTracker session_framework_;

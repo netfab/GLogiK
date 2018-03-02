@@ -38,7 +38,7 @@ using namespace NSGKUtils;
 ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
 	:	pDBus_(nullptr),
 		system_bus_(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
-		register_retry_(true),
+		skip_retry_(false),
 		are_we_registered_(false),
 		client_id_("undefined"),
 		session_framework_(SessionTracker::F_UNKNOWN),
@@ -52,7 +52,10 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
 
 		unsigned int retries = 0;
 		while( ! this->are_we_registered_ ) {
-			if( ( session.isSessionAlive() ) and (retries++ < UNREACHABLE_DAEMON_MAX_RETRIES) ) {
+			if( ( session.isSessionAlive() )
+					and (retries < UNREACHABLE_DAEMON_MAX_RETRIES)
+					and ( ! this->skip_retry_ ) )
+			{
 				if(retries > 0) {
 					LOG(INFO) << "register retry " << retries << " ...";
 				}
@@ -61,16 +64,19 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
 					this->registerWithDaemon();
 				}
 				catch( const GLogiKExcept & e ) {
-					unsigned int timer = 5;
-					LOG(WARNING) << e.what() << ", retrying in " << timer << " seconds ...";
-					std::this_thread::sleep_for(std::chrono::seconds(timer));
+					if( ! this->skip_retry_ ) {
+						unsigned int timer = 5;
+						LOG(WARNING) << e.what() << ", retrying in " << timer << " seconds ...";
+						std::this_thread::sleep_for(std::chrono::seconds(timer));
+					}
 				}
 			}
 			else {
-				LOG(ERROR) << "daemon unreachable, can't register, giving up";
-				throw GLogiKExcept("daemon unreachable");
+				LOG(ERROR) << "can't register, giving up";
+				throw GLogiKExcept("unable to register with daemon");
 				break;
 			}
+			retries++;
 		}
 
 		this->session_state_ = this->getCurrentSessionState();
@@ -218,19 +224,11 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 				LOG(INFO) << "successfully registered with daemon - " << this->client_id_;
 			}
 			else {
-				const char * failure = "failed to register with daemon : false - ";
+				LOG(ERROR)	<< "failed to register with daemon : false";
 				const std::string reason(this->pDBus_->getNextStringArgument());
-				if( this->register_retry_ ) {
-					/* retrying */
-					this->register_retry_ = false;
-					LOG(WARNING) << failure << reason << ", retrying ...";
-					std::this_thread::sleep_for(std::chrono::seconds(2));
-					this->registerWithDaemon();
-				}
-				else {
-					LOG(ERROR) << failure << reason;
-					throw GLogiKExcept(failure);
-				}
+				if(reason == "already registered")
+					this->skip_retry_ = true;
+				throw GLogiKExcept(reason);
 			}
 		}
 		catch (const GLogiKExcept & e) {
