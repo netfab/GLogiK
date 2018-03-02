@@ -122,6 +122,18 @@ void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void) {
 	}
 	else {
 		LOG(WARNING) << __func__ << " failure because signal not contructed";
+		throw GKDBusMessageWrongBuild("DBus signal not contructed");
+	}
+}
+
+void GKDBusMessageBroadcastSignal::abandonBroadcastSignal(void) {
+	if(this->signal_) { /* sanity check */
+		this->signal_->abandon();
+		delete this->signal_;
+		this->signal_ = nullptr;
+	}
+	else {
+		LOG(WARNING) << __func__ << " failure because signal not contructed";
 	}
 }
 

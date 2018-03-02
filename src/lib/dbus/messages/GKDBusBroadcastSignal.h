@@ -61,6 +61,7 @@ class GKDBusMessageBroadcastSignal
 			const char* signal
 		);
 		void sendBroadcastSignal(void);
+		void abandonBroadcastSignal(void);
 
 	private:
 		GKDBusBroadcastSignal* signal_;

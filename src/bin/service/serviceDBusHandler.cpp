@@ -208,45 +208,43 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 
 		/* -- */
 
-		this->pDBus_->waitForRemoteMethodCallReply();
+		try {
+			this->pDBus_->waitForRemoteMethodCallReply();
 
-		const bool ret = this->pDBus_->getNextBooleanArgument();
-		if( ret ) {
-			this->client_id_ = this->pDBus_->getNextStringArgument();
-			this->are_we_registered_ = true;
-			LOG(INFO) << "successfully registered with daemon - " << this->client_id_;
-		}
-		else {
-			const char * failure = "failed to register with daemon : false";
-			const std::string reason(this->pDBus_->getNextStringArgument());
-			if( this->register_retry_ ) {
-				/* retrying */
-				this->register_retry_ = false;
-				LOG(WARNING) << failure << " - " << reason << ", retrying ...";
-				std::this_thread::sleep_for(std::chrono::seconds(2));
-				this->registerWithDaemon();
+			const bool ret = this->pDBus_->getNextBooleanArgument();
+			if( ret ) {
+				this->client_id_ = this->pDBus_->getNextStringArgument();
+				this->are_we_registered_ = true;
+				LOG(INFO) << "successfully registered with daemon - " << this->client_id_;
 			}
 			else {
-				LOG(ERROR) << failure << " - " << reason;
-				throw GLogiKExcept(failure);
+				const char * failure = "failed to register with daemon : false - ";
+				const std::string reason(this->pDBus_->getNextStringArgument());
+				if( this->register_retry_ ) {
+					/* retrying */
+					this->register_retry_ = false;
+					LOG(WARNING) << failure << reason << ", retrying ...";
+					std::this_thread::sleep_for(std::chrono::seconds(2));
+					this->registerWithDaemon();
+				}
+				else {
+					LOG(ERROR) << failure << reason;
+					throw GLogiKExcept(failure);
+				}
 			}
+		}
+		catch (const GLogiKExcept & e) {
+			LOG(WARNING)	<< remoteMethod.c_str()
+							<< " get reply failure: " << e.what();
+			throw GLogiKExcept("RegisterClient failure");
 		}
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		this->pDBus_->abandonRemoteMethodCall();
 
-		this->buffer_.str(__func__);
-		this->buffer_ 	<< " - " << remoteMethod.c_str()
+		LOG(WARNING)	<< remoteMethod.c_str()
 						<< " call failure: " << e.what();
-		LOG(WARNING) << this->buffer_.str();
-		throw GLogiKExcept("RegisterClient failure");
-	}
-	catch (const GLogiKExcept & e) {
-		this->buffer_.str(__func__);
-		this->buffer_ 	<< " - " << remoteMethod.c_str()
-						<< " get reply failure: " << e.what();
-		LOG(WARNING) << this->buffer_.str();
-		throw GLogiKExcept("RegisterClient failure");
+		throw GLogiKExcept("RegisterClient call failure");
 	}
 }
 
