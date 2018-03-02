@@ -107,6 +107,7 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 		pDBus->sendTargetsSignal();
 	}
 	catch (const GLogiKExcept & e) {
+		pDBus->abandonTargetsSignal();
 		std::string warn("DBus targets signal failure : ");
 		warn += e.what();
 		GKSysLog(LOG_WARNING, WARNING, warn);
