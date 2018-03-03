@@ -592,6 +592,7 @@ void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devices
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "daemon is saying that " << devicesID.size() << " devices were started";
 #endif
+	const std::string remoteMethod("GetDeviceStatus");
 	for(const auto& devID : devicesID) {
 		try {
 			this->pDBus_->initializeRemoteMethodCall(
@@ -599,31 +600,34 @@ void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devices
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				"GetDeviceStatus"
+				remoteMethod.c_str()
 			);
 			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
 			this->pDBus_->appendStringToRemoteMethodCall(devID);
 			this->pDBus_->sendRemoteMethodCall();
 
-			this->pDBus_->waitForRemoteMethodCallReply();
+			try {
+				this->pDBus_->waitForRemoteMethodCallReply();
 
-			const std::string device_status( this->pDBus_->getNextStringArgument() );
-			if(device_status == "started") {
+				const std::string device_status( this->pDBus_->getNextStringArgument() );
+				if(device_status == "started") {
 #if DEBUGGING_ON
-				LOG(DEBUG3) << "daemon said that device " << devID << " is really started, what about us ?";
+					LOG(DEBUG3) << "daemon said that device " << devID << " is really started, what about us ?";
 #endif
-				this->devices_.startDevice(devID, this->session_state_);
+					this->devices_.startDevice(devID, this->session_state_);
+				}
+				else {
+					LOG(WARNING) << "received devicesStarted signal for device " << devID;
+					LOG(WARNING) << "but daemon is saying that device status is : " << device_status;
+				}
 			}
-			else {
-				LOG(WARNING) << "received devicesStarted signal for device " << devID;
-				LOG(WARNING) << "but daemon is saying that device status is : " << device_status;
+			catch (const GLogiKExcept & e) {
+				LogRemoteCallGetReplyFailure
 			}
 		}
-		catch (const GLogiKExcept & e) {
-			std::string warn(__func__);
-			warn += " failure : ";
-			warn += e.what();
-			WarningCheck::warnOrThrows(warn);
+		catch (const GKDBusMessageWrongBuild & e) {
+			this->pDBus_->abandonRemoteMethodCall();
+			LogRemoteCallFailure
 		}
 	}
 }
@@ -632,6 +636,7 @@ void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devices
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "daemon is saying that " << devicesID.size() << " devices were stopped";
 #endif
+	const std::string remoteMethod("GetDeviceStatus");
 	for(const auto& devID : devicesID) {
 		try {
 			this->pDBus_->initializeRemoteMethodCall(
@@ -639,31 +644,34 @@ void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devices
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				"GetDeviceStatus"
+				remoteMethod.c_str()
 			);
 			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
 			this->pDBus_->appendStringToRemoteMethodCall(devID);
 			this->pDBus_->sendRemoteMethodCall();
 
-			this->pDBus_->waitForRemoteMethodCallReply();
+			try {
+				this->pDBus_->waitForRemoteMethodCallReply();
 
-			const std::string device_status( this->pDBus_->getNextStringArgument() );
-			if(device_status == "stopped") {
+				const std::string device_status( this->pDBus_->getNextStringArgument() );
+				if(device_status == "stopped") {
 #if DEBUGGING_ON
-				LOG(DEBUG3) << "daemon said that device " << devID << " is really stopped, what about us ?";
+					LOG(DEBUG3) << "daemon said that device " << devID << " is really stopped, what about us ?";
 #endif
-				this->devices_.stopDevice(devID);
+					this->devices_.stopDevice(devID);
+				}
+				else {
+					LOG(WARNING) << "received devicesStopped signal for device " << devID;
+					LOG(WARNING) << "but daemon is saying that device status is : " << device_status;
+				}
 			}
-			else {
-				LOG(WARNING) << "received devicesStopped signal for device " << devID;
-				LOG(WARNING) << "but daemon is saying that device status is : " << device_status;
+			catch (const GLogiKExcept & e) {
+				LogRemoteCallGetReplyFailure
 			}
 		}
-		catch (const GLogiKExcept & e) {
-			std::string warn(__func__);
-			warn += " failure : ";
-			warn += e.what();
-			WarningCheck::warnOrThrows(warn);
+		catch (const GKDBusMessageWrongBuild & e) {
+			this->pDBus_->abandonRemoteMethodCall();
+			LogRemoteCallFailure
 		}
 	}
 }
@@ -672,41 +680,42 @@ void ServiceDBusHandler::devicesUnplugged(const std::vector<std::string> & devic
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "daemon is saying that " << devicesID.size() << " devices were unplugged";
 #endif
+	const std::string remoteMethod("GetDeviceStatus");
 	for(const auto& devID : devicesID) {
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "device : " << devID;
-#endif
 		try {
 			this->pDBus_->initializeRemoteMethodCall(
 				this->system_bus_,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				"GetDeviceStatus"
+				remoteMethod.c_str()
 			);
 			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
 			this->pDBus_->appendStringToRemoteMethodCall(devID);
 			this->pDBus_->sendRemoteMethodCall();
 
-			this->pDBus_->waitForRemoteMethodCallReply();
+			try {
+				this->pDBus_->waitForRemoteMethodCallReply();
 
-			const std::string device_status( this->pDBus_->getNextStringArgument() );
-			if(device_status == "unplugged") {
+				const std::string device_status( this->pDBus_->getNextStringArgument() );
+				if(device_status == "unplugged") {
 #if DEBUGGING_ON
-				LOG(DEBUG3) << "daemon said that device " << devID << " is really unplugged, what about us ?";
+					LOG(DEBUG3) << "daemon said that device " << devID << " is really unplugged, what about us ?";
 #endif
-				this->devices_.unplugDevice(devID);
+					this->devices_.unplugDevice(devID);
+				}
+				else {
+					LOG(WARNING) << "received devicesUnplugged signal for device " << devID;
+					LOG(WARNING) << "but daemon is saying that device status is : " << device_status;
+				}
 			}
-			else {
-				LOG(WARNING) << "received devicesUnplugged signal for device " << devID;
-				LOG(WARNING) << "but daemon is saying that device status is : " << device_status;
+			catch (const GLogiKExcept & e) {
+				LogRemoteCallGetReplyFailure
 			}
 		}
-		catch (const GLogiKExcept & e) {
-			std::string warn(__func__);
-			warn += " failure : ";
-			warn += e.what();
-			WarningCheck::warnOrThrows(warn);
+		catch (const GKDBusMessageWrongBuild & e) {
+			this->pDBus_->abandonRemoteMethodCall();
+			LogRemoteCallFailure
 		}
 	}
 }
@@ -726,6 +735,8 @@ void ServiceDBusHandler::initializeDevices(void) {
 	std::string device;
 	std::vector<std::string> devicesID;
 
+	std::string remoteMethod("GetStartedDevices");
+
 	/* started devices */
 	try {
 		this->pDBus_->initializeRemoteMethodCall(
@@ -733,24 +744,29 @@ void ServiceDBusHandler::initializeDevices(void) {
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			"GetStartedDevices"
+			remoteMethod.c_str()
 		);
 		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
 		this->pDBus_->sendRemoteMethodCall();
 
-		this->pDBus_->waitForRemoteMethodCallReply();
+		try {
+			this->pDBus_->waitForRemoteMethodCallReply();
 
-		devicesID = this->pDBus_->getStringsArray();
-		this->devicesStarted(devicesID);
+			devicesID = this->pDBus_->getStringsArray();
+			this->devicesStarted(devicesID);
+		}
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
+		}
 	}
-	catch (const GLogiKExcept & e) {
-		std::string warn(__func__);
-		warn += " failure : ";
-		warn += e.what();
-		WarningCheck::warnOrThrows(warn);
+	catch (const GKDBusMessageWrongBuild & e) {
+		this->pDBus_->abandonRemoteMethodCall();
+		LogRemoteCallFailure
 	}
 
 	devicesID.clear();
+
+	remoteMethod = "ToggleClientReadyPropertie";
 
 	/* saying the daemon that we are ready */
 	try {
@@ -759,27 +775,32 @@ void ServiceDBusHandler::initializeDevices(void) {
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-			"ToggleClientReadyPropertie"
+			remoteMethod.c_str()
 		);
 		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
 		this->pDBus_->sendRemoteMethodCall();
 
-		this->pDBus_->waitForRemoteMethodCallReply();
+		try {
+			this->pDBus_->waitForRemoteMethodCallReply();
 
-		const bool ret = this->pDBus_->getNextBooleanArgument();
-		if( ret ) {
-			LOG(DEBUG2) << "successfully toggled ready propertie";
+			const bool ret = this->pDBus_->getNextBooleanArgument();
+			if( ret ) {
+				LOG(DEBUG2) << "successfully toggled ready propertie";
+			}
+			else {
+				LOG(WARNING) << "toggling ready propertie failed : false";
+			}
 		}
-		else {
-			LOG(WARNING) << "toggling ready propertie failed : false";
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
 		}
 	}
-	catch (const GLogiKExcept & e) {
-		std::string warn(__func__);
-		warn += " failure : ";
-		warn += e.what();
-		WarningCheck::warnOrThrows(warn);
+	catch (const GKDBusMessageWrongBuild & e) {
+		this->pDBus_->abandonRemoteMethodCall();
+		LogRemoteCallFailure
 	}
+
+	remoteMethod = "GetStoppedDevices";
 
 	/* stopped devices */
 	try {
@@ -788,21 +809,24 @@ void ServiceDBusHandler::initializeDevices(void) {
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			"GetStoppedDevices"
+			remoteMethod.c_str()
 		);
 		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
 		this->pDBus_->sendRemoteMethodCall();
 
-		this->pDBus_->waitForRemoteMethodCallReply();
+		try {
+			this->pDBus_->waitForRemoteMethodCallReply();
 
-		devicesID = this->pDBus_->getStringsArray();
-		this->devicesStopped(devicesID);
+			devicesID = this->pDBus_->getStringsArray();
+			this->devicesStopped(devicesID);
+		}
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
+		}
 	}
-	catch (const GLogiKExcept & e) {
-		std::string warn(__func__);
-		warn += " failure : ";
-		warn += e.what();
-		WarningCheck::warnOrThrows(warn);
+	catch (const GKDBusMessageWrongBuild & e) {
+		this->pDBus_->abandonRemoteMethodCall();
+		LogRemoteCallFailure
 	}
 }
 
