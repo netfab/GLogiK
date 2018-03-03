@@ -72,16 +72,19 @@ void DevicesHandler::setClientID(const std::string & id) {
 	this->client_id_ = id;
 }
 
-void DevicesHandler::saveDevicesProperties(void) {
+void DevicesHandler::clearDevices(void) {
 	std::set<std::string> devicesID;
-	/* devices that are in stopped container are already saved */
+
 	for( const auto & device_pair : this->started_devices_ ) {
 		devicesID.insert(device_pair.first);
 	}
-	/* need two loops here because stopDevice is modifying containers */
+	for( const auto & device_pair : this->stopped_devices_ ) {
+		devicesID.insert(device_pair.first);
+	}
+
+	/* stop each device if not already stopped, save configuration, and unref it */
 	for(const auto & devID : devicesID) {
-		this->stopDevice(devID);
-		this->unrefDevice(devID);
+		this->unplugDevice(devID);
 	}
 
 	/* clear all containers */
@@ -461,7 +464,7 @@ void DevicesHandler::startDevice(const std::string & devID, const std::string & 
 		try {
 			DeviceProperties & device = this->stopped_devices_.at(devID);
 #if DEBUGGING_ON
-			LOG(DEBUG1) << "device " << devID << " has just been started";
+			LOG(DEBUG1) << "starting device " << devID;
 #endif
 			this->started_devices_[devID] = device;
 			this->stopped_devices_.erase(devID);
@@ -490,11 +493,11 @@ void DevicesHandler::stopDevice(const std::string & devID) {
 		try {
 			DeviceProperties & device = this->started_devices_.at(devID);
 #if DEBUGGING_ON
-			LOG(DEBUG1) << "device " << devID << " has just been stopped";
+			LOG(DEBUG1) << "stopping device " << devID;
 #endif
 			this->stopped_devices_[devID] = device;
-			this->saveDeviceProperties(devID);
 			this->started_devices_.erase(devID);
+			this->saveDeviceProperties(devID);
 		}
 		catch (const std::out_of_range& oor) {
 			LOG(WARNING) << "device " << devID << " not found in containers, giving up";
@@ -506,25 +509,13 @@ void DevicesHandler::unplugDevice(const std::string & devID) {
 	try {
 		this->stopped_devices_.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "found stopped device : " << devID;
+		LOG(DEBUG1) << "found already stopped device : " << devID;
 #endif
-		/*
-		 * if device was already stopped, configuration should
-		 * have already been saved
-		 */
 		this->unrefDevice(devID);
 	}
 	catch (const std::out_of_range& oor) {
-		try {
-#if DEBUGGING_ON
-			LOG(DEBUG1) << "trying to stop device " << devID;
-#endif
-			this->stopDevice(devID);
-			this->unrefDevice(devID);
-		}
-		catch (const std::out_of_range& oor) {
-			LOG(WARNING) << "unplugged device not found in containers : " << devID;
-		}
+		this->stopDevice(devID);
+		this->unrefDevice(devID);
 	}
 }
 
@@ -563,11 +554,11 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 				const bool ret = this->pDBus_->getNextBooleanArgument();
 				if( ret ) {
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "successfully deleted client device configuration " << devID;
+					LOG(DEBUG3) << "successfully deleted remote device configuration " << devID;
 #endif
 				}
 				else {
-					LOG(ERROR) << "failed to delete client device configuration : false";
+					LOG(ERROR) << "failed to delete remote device configuration : false";
 				}
 			}
 			catch (const GLogiKExcept & e) {
@@ -580,7 +571,7 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "unplugged device not found in stopped device container : " << devID;
+		LOG(WARNING) << "device not found in stopped device container : " << devID;
 	}
 }
 

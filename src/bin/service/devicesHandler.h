@@ -54,7 +54,7 @@ class DevicesHandler
 		void stopDevice(const std::string & devID);
 		void unplugDevice(const std::string & devID);
 
-		void saveDevicesProperties(void);
+		void clearDevices(void);
 
 		const bool setDeviceMacro(
 			const std::string & devID,

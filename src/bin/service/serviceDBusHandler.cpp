@@ -176,7 +176,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
 
 ServiceDBusHandler::~ServiceDBusHandler() {
 	if( this->are_we_registered_ ) {
-		this->devices_.saveDevicesProperties();
+		this->devices_.clearDevices();
 		this->unregisterWithDaemon();
 	}
 	else {
@@ -562,7 +562,7 @@ void ServiceDBusHandler::updateSessionState(void) {
 void ServiceDBusHandler::daemonIsStopping(void) {
 	if( this->are_we_registered_ ) {
 		LOG(INFO) << "received daemonIsStopping signal - saving state and unregistering with daemon";
-		this->devices_.saveDevicesProperties();
+		this->devices_.clearDevices();
 		this->unregisterWithDaemon();
 	}
 	else {
@@ -580,6 +580,7 @@ void ServiceDBusHandler::daemonIsStarting(void) {
 	}
 	else {
 		this->registerWithDaemon();
+		this->session_state_ = this->getCurrentSessionState();
 		this->reportChangedState();
 		this->devices_.setClientID(this->client_id_);
 
