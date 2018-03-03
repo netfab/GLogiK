@@ -365,62 +365,82 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 }
 
 /*
- * is the session in active, online or closing state ?
+ * Ask to session tracker the current session state, and returns it.
+ * If the state fails to be updated for whatever reason, returns the
+ * old state. Possible returns values are :
+ *  - active
+ *  - online
+ *  - closing
  */
 const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) {
-	std::string ret;
+	std::string remoteMethod;
 	switch(this->session_framework_) {
+		/* consolekit */
 		case SessionTracker::F_CONSOLEKIT:
+			remoteMethod = "GetSessionState";
 			try {
 				this->pDBus_->initializeRemoteMethodCall(
 					this->system_bus_,
 					"org.freedesktop.ConsoleKit",
 					this->current_session_.c_str(),
 					"org.freedesktop.ConsoleKit.Session",
-					"GetSessionState",
+					remoteMethod.c_str(),
 					logoff
 				);
 				this->pDBus_->sendRemoteMethodCall();
 
-				this->pDBus_->waitForRemoteMethodCallReply();
-				ret = this->pDBus_->getNextStringArgument();
-#if DEBUGGING_ON
-				LOG(DEBUG5) << "current session state : " << ret;
-#endif
-				return ret;
+				try {
+					this->pDBus_->waitForRemoteMethodCallReply();
+					return this->pDBus_->getNextStringArgument();
+				}
+				catch (const GLogiKExcept & e) {
+					LogRemoteCallGetReplyFailure
+				}
 			}
-			catch ( const GLogiKExcept & e ) {
-				std::string warn(__func__);
-				warn += " failure : ";
-				warn += e.what();
-				WarningCheck::warnOrThrows(warn);
+			catch (const GKDBusMessageWrongBuild & e) {
+				this->pDBus_->abandonRemoteMethodCall();
+				LogRemoteCallFailure
 			}
 			break;
 		case SessionTracker::F_LOGIND:
+			/* logind */
+			remoteMethod = "Get";
+			try {
 				this->pDBus_->initializeRemoteMethodCall(
 					this->system_bus_,
 					"org.freedesktop.login1",
 					this->current_session_.c_str(),
 					"org.freedesktop.DBus.Properties",
-					"Get",
+					remoteMethod.c_str(),
 					logoff
 				);
 				this->pDBus_->appendStringToRemoteMethodCall("org.freedesktop.login1.Session");
 				this->pDBus_->appendStringToRemoteMethodCall("State");
 				this->pDBus_->sendRemoteMethodCall();
 
-				this->pDBus_->waitForRemoteMethodCallReply();
-				ret = this->pDBus_->getNextStringArgument();
-#if DEBUGGING_ON
-				LOG(DEBUG5) << "current session state : " << ret;
-#endif
-				return ret;
+				try {
+					this->pDBus_->waitForRemoteMethodCallReply();
+					return this->pDBus_->getNextStringArgument();
+				}
+				catch (const GLogiKExcept & e) {
+					LogRemoteCallGetReplyFailure
+				}
+			}
+			catch (const GKDBusMessageWrongBuild & e) {
+				this->pDBus_->abandonRemoteMethodCall();
+				LogRemoteCallFailure
+			}
 			break;
 		default:
 			throw GLogiKExcept("unhandled session tracker");
 			break;
 	}
 
+	/* using unused string object */
+	remoteMethod = __func__;
+	remoteMethod += " - failure to get session state";
+	WarningCheck::warnOrThrows(remoteMethod);
+	/* return old state */
 	return this->session_state_;
 }
 
@@ -432,35 +452,46 @@ void ServiceDBusHandler::reportChangedState(void) {
 		return;
 	}
 
+	std::string remoteMethod("UpdateClientState");
+
 	try {
 		this->pDBus_->initializeRemoteMethodCall(
 			this->system_bus_,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-			"UpdateClientState"
+			remoteMethod.c_str()
 		);
 		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
 		this->pDBus_->appendStringToRemoteMethodCall(this->session_state_);
 		this->pDBus_->sendRemoteMethodCall();
 
-		this->pDBus_->waitForRemoteMethodCallReply();
-		const bool ret = this->pDBus_->getNextBooleanArgument();
-		if( ret ) {
+		try {
+			this->pDBus_->waitForRemoteMethodCallReply();
+			const bool ret( this->pDBus_->getNextBooleanArgument() );
+			if( ret ) {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "successfully reported changed state : " << this->session_state_;
+				LOG(DEBUG2) << "successfully reported changed state : " << this->session_state_;
 #endif
+			}
+			else {
+				LOG(ERROR) << "failed to report changed state : false";
+			}
+			return;
 		}
-		else {
-			LOG(ERROR) << "failed to report changed state : false";
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
 		}
 	}
-	catch ( const GLogiKExcept & e ) {
-		std::string warn(__func__);
-		warn += " failure : ";
-		warn += e.what();
-		WarningCheck::warnOrThrows(warn);
+	catch (const GKDBusMessageWrongBuild & e) {
+		this->pDBus_->abandonRemoteMethodCall();
+		LogRemoteCallFailure
 	}
+
+	/* using unused string object */
+	remoteMethod = __func__;
+	remoteMethod += " - failure to report changed state";
+	WarningCheck::warnOrThrows(remoteMethod);
 }
 
 void ServiceDBusHandler::warnUnhandledSessionState(const std::string & state) {
