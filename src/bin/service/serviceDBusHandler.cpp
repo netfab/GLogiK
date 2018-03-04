@@ -704,25 +704,36 @@ void ServiceDBusHandler::initializeDevices(void) {
  */
 
 void ServiceDBusHandler::daemonIsStopping(void) {
+	this->buffer_.str("received ");
+	this->buffer_ << __func__ << " signal";
 	if( this->are_we_registered_ ) {
-		LOG(INFO) << "received daemonIsStopping signal - saving state and unregistering with daemon";
+		LOG(INFO)	<< this->buffer_.str()
+					<< " - saving state and unregistering with daemon";
 		this->devices_.clearDevices();
 		this->unregisterWithDaemon();
 	}
 	else {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "client " << this->current_session_ << " already unregistered with deamon";
+		LOG(DEBUG2) << this->buffer_.str()
+					<< " - but we are NOT registered with daemon : "
+					<< this->current_session_;
 #endif
 	}
 }
 
 void ServiceDBusHandler::daemonIsStarting(void) {
+	this->buffer_.str("received ");
+	this->buffer_ << __func__ << " signal";
 	if( this->are_we_registered_ ) {
 #if DEBUGGING_ON
-		LOG(WARNING) << "received daemonIsStarting signal, but already registered with daemon";
+		LOG(WARNING) << this->buffer_.str()
+			<< " - but we are already registered with daemon"
+			<< this->current_session_;
 #endif
 	}
 	else {
+		LOG(INFO) << this->buffer_.str()
+				<< " - trying to contact the daemon";
 		this->registerWithDaemon();
 		this->session_state_ = this->getCurrentSessionState();
 		this->reportChangedState();
@@ -734,7 +745,8 @@ void ServiceDBusHandler::daemonIsStarting(void) {
 
 void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "daemon is saying that " << devicesID.size() << " devices were started";
+	LOG(DEBUG3) << "received " << __func__ << " signal"
+				<< " - with " << devicesID.size() << " devices";
 #endif
 	const std::string remoteMethod("GetDeviceStatus");
 	for(const auto& devID : devicesID) {
@@ -778,7 +790,8 @@ void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devices
 
 void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "daemon is saying that " << devicesID.size() << " devices were stopped";
+	LOG(DEBUG3) << "received " << __func__ << " signal"
+				<< " - with " << devicesID.size() << " devices";
 #endif
 	const std::string remoteMethod("GetDeviceStatus");
 	for(const auto& devID : devicesID) {
@@ -822,7 +835,8 @@ void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devices
 
 void ServiceDBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "daemon is saying that " << devicesID.size() << " devices were unplugged";
+	LOG(DEBUG3) << "received " << __func__ << " signal"
+				<< " - with " << devicesID.size() << " devices";
 #endif
 	const std::string remoteMethod("GetDeviceStatus");
 	for(const auto& devID : devicesID) {
@@ -870,8 +884,10 @@ const bool ServiceDBusHandler::macroRecorded(
 	const uint8_t profile)
 {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "got MacroRecorded signal for device " << devID
-				<< " profile " << to_uint(profile) << " key " << keyName;
+	LOG(DEBUG3) << "received " << __func__ << " signal"
+				<< " - device: " << devID
+				<< " profile: " << to_uint(profile)
+				<< " key: " << keyName;
 #endif
 
 	if( ! this->are_we_registered_ ) {
@@ -897,8 +913,10 @@ const bool ServiceDBusHandler::macroCleared(
 	const uint8_t profile)
 {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "got MacroCleared signal for device " << devID
-				<< " profile " << to_uint(profile) << " key " << keyName;
+	LOG(DEBUG3) << "received " << __func__ << " signal"
+				<< " - device: " << devID
+				<< " profile: " << to_uint(profile)
+				<< " key: " << keyName;
 #endif
 
 	if( ! this->are_we_registered_ ) {

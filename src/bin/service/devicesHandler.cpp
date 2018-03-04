@@ -463,16 +463,12 @@ void DevicesHandler::startDevice(const std::string & devID, const std::string & 
 	catch (const std::out_of_range& oor) {
 		try {
 			DeviceProperties & device = this->stopped_devices_.at(devID);
-#if DEBUGGING_ON
-			LOG(DEBUG1) << "starting device " << devID;
-#endif
+			LOG(INFO) << "starting device: " << devID;
 			this->started_devices_[devID] = device;
 			this->stopped_devices_.erase(devID);
 		}
 		catch (const std::out_of_range& oor) {
-#if DEBUGGING_ON
-			LOG(DEBUG1) << "device " << devID << " not found in container, instantiate it";
-#endif
+			LOG(INFO) << "initializing device: " << devID;
 			DeviceProperties device;
 			/* also load configuration file */
 			this->setDeviceProperties(devID, device, session_state);
@@ -492,9 +488,7 @@ void DevicesHandler::stopDevice(const std::string & devID) {
 	catch (const std::out_of_range& oor) {
 		try {
 			DeviceProperties & device = this->started_devices_.at(devID);
-#if DEBUGGING_ON
-			LOG(DEBUG1) << "stopping device " << devID;
-#endif
+			LOG(INFO) << "stopping device: " << devID;
 			this->stopped_devices_[devID] = device;
 			this->started_devices_.erase(devID);
 			this->saveDeviceProperties(devID);
