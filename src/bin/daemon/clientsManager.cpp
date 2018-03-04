@@ -372,12 +372,14 @@ const bool ClientsManager::updateClientState(
 			this->devicesManager->resetDevicesStates();
 		}
 		else if(state == "active") {
+			if( pClient->isReady() ) {
 #if DEBUGGING_ON
 				LOG(DEBUG1) << "setting active user's parameters for all started devices";
 #endif
 				for(const auto & devID : this->devicesManager->getStartedDevices()) {
 					pClient->setDeviceActiveUser(devID, this->devicesManager);
 				}
+			}
 		}
 		else {
 			this->buffer_.str("unhandled state for updating devices : ");
