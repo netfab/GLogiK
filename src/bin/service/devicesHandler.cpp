@@ -282,9 +282,7 @@ void DevicesHandler::setDeviceState(const std::string & devID, const DevicePrope
 		}
 
 		if( ! send_it ) {
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "skipping empty MacrosBank " << to_uint(current_profile);
-#endif
+			LOG(INFO) << "skipping empty MacrosBank " << to_uint(current_profile);
 			continue;
 		}
 
@@ -308,9 +306,7 @@ void DevicesHandler::setDeviceState(const std::string & devID, const DevicePrope
 
 				const bool ret = this->pDBus_->getNextBooleanArgument();
 				if( ret ) {
-#if DEBUGGING_ON
-					LOG(DEBUG3) << "successfully setted device MacrosBank " << to_uint(current_profile);
-#endif
+					LOG(INFO) << "successfully setted device MacrosBank " << to_uint(current_profile);
 				}
 				else {
 					LOG(ERROR) << "failed to set device MacrosBank " << to_uint(current_profile) << " : false";
