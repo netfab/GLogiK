@@ -190,6 +190,94 @@ ServiceDBusHandler::~ServiceDBusHandler() {
 }
 
 /*
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ *
+ * === public === public === public === public === public ===
+ *
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ */
+
+void ServiceDBusHandler::checkDBusMessages(void) {
+	this->pDBus_->checkForNextMessage(this->system_bus_);
+}
+
+void ServiceDBusHandler::updateSessionState(void) {
+	/* if debug output is ON, force-disable it, else debug file
+	 * will be spammed by the following DBus request debug output */
+	const bool logoff = true;
+	const std::string new_state = this->getCurrentSessionState(logoff);
+	if(this->session_state_ == new_state) {
+#if 0 && DEBUGGING_ON
+		LOG(DEBUG5) << "session state did not changed";
+#endif
+		return;
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "current session state : " << this->session_state_;
+#endif
+
+	if( this->session_state_ == "active" ) {
+		if(new_state == "online") {
+		}
+		else if(new_state == "closing") {
+		}
+		else {
+			this->warnUnhandledSessionState(new_state);
+			return;
+		}
+	}
+	else if( this->session_state_ == "online" ) {
+		if(new_state == "active") {
+		}
+		else if(new_state == "closing") {
+		}
+		else {
+			this->warnUnhandledSessionState(new_state);
+			return;
+		}
+	}
+	else if( this->session_state_ == "closing" ) {
+		if(new_state == "active") {
+		}
+		else if(new_state == "online") {
+		}
+		else {
+			this->warnUnhandledSessionState(new_state);
+			return;
+		}
+	}
+	else {
+		this->warnUnhandledSessionState(this->session_state_);
+		return;
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "switching session state to : " << new_state;
+#endif
+
+	this->session_state_ = new_state;
+	this->reportChangedState();
+}
+
+/*
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ *
+ * === private === private === private === private === private ===
+ *
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ */
+
+void ServiceDBusHandler::warnUnhandledSessionState(const std::string & state) {
+	std::string warn = "unhandled session state : "; warn += state;
+	WarningCheck::warnOrThrows(warn);
+}
+
+/*
  * try to tell the daemon we are alive
  * throws on failure
  */
@@ -494,70 +582,126 @@ void ServiceDBusHandler::reportChangedState(void) {
 	WarningCheck::warnOrThrows(remoteMethod);
 }
 
-void ServiceDBusHandler::warnUnhandledSessionState(const std::string & state) {
-	std::string warn = "unhandled session state : ";
-	warn += state;
-	WarningCheck::warnOrThrows(warn);
-}
-
-void ServiceDBusHandler::updateSessionState(void) {
-	/* if debug output is ON, force-disable it, else debug file
-	 * will be spammed by the following DBus request debug output */
-	const bool logoff = true;
-	const std::string new_state = this->getCurrentSessionState(logoff);
-	if(this->session_state_ == new_state) {
+void ServiceDBusHandler::initializeDevices(void) {
 #if DEBUGGING_ON
-		LOG(DEBUG5) << "session state did not changed";
+	LOG(DEBUG2) << "initializing devices";
+#endif
+
+	if( ! this->are_we_registered_ ) {
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "currently not registered, giving up";
 #endif
 		return;
 	}
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "current session state : " << this->session_state_;
-#endif
+	std::string device;
+	std::vector<std::string> devicesID;
 
-	if( this->session_state_ == "active" ) {
-		if(new_state == "online") {
+	std::string remoteMethod("GetStartedDevices");
+
+	/* started devices */
+	try {
+		this->pDBus_->initializeRemoteMethodCall(
+			this->system_bus_,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			remoteMethod.c_str()
+		);
+		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->sendRemoteMethodCall();
+
+		try {
+			this->pDBus_->waitForRemoteMethodCallReply();
+
+			devicesID = this->pDBus_->getStringsArray();
+			this->devicesStarted(devicesID);
 		}
-		else if(new_state == "closing") {
-		}
-		else {
-			this->warnUnhandledSessionState(new_state);
-			return;
-		}
-	}
-	else if( this->session_state_ == "online" ) {
-		if(new_state == "active") {
-		}
-		else if(new_state == "closing") {
-		}
-		else {
-			this->warnUnhandledSessionState(new_state);
-			return;
-		}
-	}
-	else if( this->session_state_ == "closing" ) {
-		if(new_state == "active") {
-		}
-		else if(new_state == "online") {
-		}
-		else {
-			this->warnUnhandledSessionState(new_state);
-			return;
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
 		}
 	}
-	else {
-		this->warnUnhandledSessionState(this->session_state_);
-		return;
+	catch (const GKDBusMessageWrongBuild & e) {
+		this->pDBus_->abandonRemoteMethodCall();
+		LogRemoteCallFailure
 	}
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "switching session state to : " << new_state;
-#endif
+	devicesID.clear();
 
-	this->session_state_ = new_state;
-	this->reportChangedState();
+	remoteMethod = "ToggleClientReadyPropertie";
+
+	/* saying the daemon that we are ready */
+	try {
+		this->pDBus_->initializeRemoteMethodCall(
+			this->system_bus_,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+			remoteMethod.c_str()
+		);
+		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->sendRemoteMethodCall();
+
+		try {
+			this->pDBus_->waitForRemoteMethodCallReply();
+
+			const bool ret = this->pDBus_->getNextBooleanArgument();
+			if( ret ) {
+				LOG(DEBUG2) << "successfully toggled ready propertie";
+			}
+			else {
+				LOG(WARNING) << "toggling ready propertie failed : false";
+			}
+		}
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
+		}
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		this->pDBus_->abandonRemoteMethodCall();
+		LogRemoteCallFailure
+	}
+
+	remoteMethod = "GetStoppedDevices";
+
+	/* stopped devices */
+	try {
+		this->pDBus_->initializeRemoteMethodCall(
+			this->system_bus_,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			remoteMethod.c_str()
+		);
+		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->sendRemoteMethodCall();
+
+		try {
+			this->pDBus_->waitForRemoteMethodCallReply();
+
+			devicesID = this->pDBus_->getStringsArray();
+			this->devicesStopped(devicesID);
+		}
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
+		}
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		this->pDBus_->abandonRemoteMethodCall();
+		LogRemoteCallFailure
+	}
 }
+
+/*
+ * --- --- --- --- ---
+ * --- --- --- --- ---
+ *
+ * signals - signals
+ *
+ * --- --- --- --- ---
+ * --- --- --- --- ---
+ *
+ */
 
 void ServiceDBusHandler::daemonIsStopping(void) {
 	if( this->are_we_registered_ ) {
@@ -720,116 +864,6 @@ void ServiceDBusHandler::devicesUnplugged(const std::vector<std::string> & devic
 	}
 }
 
-void ServiceDBusHandler::initializeDevices(void) {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "initializing devices";
-#endif
-
-	if( ! this->are_we_registered_ ) {
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "currently not registered, giving up";
-#endif
-		return;
-	}
-
-	std::string device;
-	std::vector<std::string> devicesID;
-
-	std::string remoteMethod("GetStartedDevices");
-
-	/* started devices */
-	try {
-		this->pDBus_->initializeRemoteMethodCall(
-			this->system_bus_,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
-		);
-		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
-		this->pDBus_->sendRemoteMethodCall();
-
-		try {
-			this->pDBus_->waitForRemoteMethodCallReply();
-
-			devicesID = this->pDBus_->getStringsArray();
-			this->devicesStarted(devicesID);
-		}
-		catch (const GLogiKExcept & e) {
-			LogRemoteCallGetReplyFailure
-		}
-	}
-	catch (const GKDBusMessageWrongBuild & e) {
-		this->pDBus_->abandonRemoteMethodCall();
-		LogRemoteCallFailure
-	}
-
-	devicesID.clear();
-
-	remoteMethod = "ToggleClientReadyPropertie";
-
-	/* saying the daemon that we are ready */
-	try {
-		this->pDBus_->initializeRemoteMethodCall(
-			this->system_bus_,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
-		);
-		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
-		this->pDBus_->sendRemoteMethodCall();
-
-		try {
-			this->pDBus_->waitForRemoteMethodCallReply();
-
-			const bool ret = this->pDBus_->getNextBooleanArgument();
-			if( ret ) {
-				LOG(DEBUG2) << "successfully toggled ready propertie";
-			}
-			else {
-				LOG(WARNING) << "toggling ready propertie failed : false";
-			}
-		}
-		catch (const GLogiKExcept & e) {
-			LogRemoteCallGetReplyFailure
-		}
-	}
-	catch (const GKDBusMessageWrongBuild & e) {
-		this->pDBus_->abandonRemoteMethodCall();
-		LogRemoteCallFailure
-	}
-
-	remoteMethod = "GetStoppedDevices";
-
-	/* stopped devices */
-	try {
-		this->pDBus_->initializeRemoteMethodCall(
-			this->system_bus_,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
-		);
-		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
-		this->pDBus_->sendRemoteMethodCall();
-
-		try {
-			this->pDBus_->waitForRemoteMethodCallReply();
-
-			devicesID = this->pDBus_->getStringsArray();
-			this->devicesStopped(devicesID);
-		}
-		catch (const GLogiKExcept & e) {
-			LogRemoteCallGetReplyFailure
-		}
-	}
-	catch (const GKDBusMessageWrongBuild & e) {
-		this->pDBus_->abandonRemoteMethodCall();
-		LogRemoteCallFailure
-	}
-}
-
 const bool ServiceDBusHandler::macroRecorded(
 	const std::string & devID,
 	const std::string & keyName,
@@ -882,10 +916,6 @@ const bool ServiceDBusHandler::macroCleared(
 	}
 
 	return this->devices_.clearDeviceMacro(devID, keyName, profile);
-}
-
-void ServiceDBusHandler::checkDBusMessages(void) {
-	this->pDBus_->checkForNextMessage(this->system_bus_);
 }
 
 } // namespace GLogiK
