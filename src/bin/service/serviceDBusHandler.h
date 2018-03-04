@@ -76,7 +76,6 @@ class ServiceDBusHandler
 		void registerWithDaemon(void);
 		void unregisterWithDaemon(void);
 
-		void warnUnhandledSessionState(const std::string & state);
 		void reportChangedState(void);
 
 		void initializeDevices(void);

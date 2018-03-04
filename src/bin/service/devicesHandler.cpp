@@ -32,7 +32,6 @@
 #include "lib/shared/deviceConfigurationFile.h"
 #include "lib/utils/utils.h"
 
-#include "warningCheck.h"
 #include "devicesHandler.h"
 
 namespace fs = boost::filesystem;

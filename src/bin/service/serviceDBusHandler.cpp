@@ -27,7 +27,6 @@
 #include "lib/utils/utils.h"
 #include "lib/shared/glogik.h"
 
-#include "warningCheck.h"
 #include "serviceDBusHandler.h"
 
 namespace GLogiK
@@ -219,13 +218,15 @@ void ServiceDBusHandler::updateSessionState(void) {
 	LOG(DEBUG1) << "current session state : " << this->session_state_;
 #endif
 
+	std::string unhandled = "unhandled session state : "; unhandled += new_state;
+
 	if( this->session_state_ == "active" ) {
 		if(new_state == "online") {
 		}
 		else if(new_state == "closing") {
 		}
 		else {
-			this->warnUnhandledSessionState(new_state);
+			FATALERROR << unhandled;
 			return;
 		}
 	}
@@ -235,7 +236,7 @@ void ServiceDBusHandler::updateSessionState(void) {
 		else if(new_state == "closing") {
 		}
 		else {
-			this->warnUnhandledSessionState(new_state);
+			FATALERROR << unhandled;
 			return;
 		}
 	}
@@ -245,12 +246,12 @@ void ServiceDBusHandler::updateSessionState(void) {
 		else if(new_state == "online") {
 		}
 		else {
-			this->warnUnhandledSessionState(new_state);
+			FATALERROR << unhandled;
 			return;
 		}
 	}
 	else {
-		this->warnUnhandledSessionState(this->session_state_);
+		FATALERROR << unhandled;
 		return;
 	}
 
@@ -271,11 +272,6 @@ void ServiceDBusHandler::updateSessionState(void) {
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
-
-void ServiceDBusHandler::warnUnhandledSessionState(const std::string & state) {
-	std::string warn = "unhandled session state : "; warn += state;
-	WarningCheck::warnOrThrows(warn);
-}
 
 /*
  * try to tell the daemon we are alive
@@ -524,10 +520,6 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 			break;
 	}
 
-	/* using unused string object */
-	remoteMethod = __func__;
-	remoteMethod += " - failure to get session state";
-	WarningCheck::warnOrThrows(remoteMethod);
 	/* return old state */
 	return this->session_state_;
 }
@@ -575,11 +567,6 @@ void ServiceDBusHandler::reportChangedState(void) {
 		this->pDBus_->abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
-
-	/* using unused string object */
-	remoteMethod = __func__;
-	remoteMethod += " - failure to report changed state";
-	WarningCheck::warnOrThrows(remoteMethod);
 }
 
 void ServiceDBusHandler::initializeDevices(void) {

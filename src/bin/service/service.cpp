@@ -123,6 +123,10 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 		LOG(ERROR) << this->buffer_.str();
 		return EXIT_FAILURE;
 	}
+	catch ( const GLogiKFatalError & e ) {
+		LOG(ERROR) << e.what();
+		return EXIT_FAILURE;
+	}
 }
 
 void DesktopService::daemonize() {

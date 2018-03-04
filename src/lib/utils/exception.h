@@ -32,6 +32,18 @@
 namespace NSGKUtils
 {
 
+class GLogiKFatalError : public std::exception
+{
+	public :
+		GLogiKFatalError( const std::string& msg = "fatal error" );
+
+		virtual ~GLogiKFatalError( void ) throw();
+		virtual const char* what( void ) const throw();
+
+	protected :
+		std::string message;
+};
+
 class GLogiKExcept : public std::exception
 {
 	public :

@@ -79,8 +79,6 @@ GLogiK=$PWD/.. CD=. {
 				service.h
 				serviceDBusHandler.cpp
 				serviceDBusHandler.h
-				warningCheck.cpp
-				warningCheck.h
 			}
 		}
 		libraries=lib/ {

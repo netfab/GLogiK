@@ -53,6 +53,8 @@
 
 #include <syslog.h>
 
+#include "exception.h"
+
 namespace NSGKUtils
 {
 
@@ -68,6 +70,7 @@ public:
     Log(TLogLevel level);
     virtual ~Log();
     std::ostringstream& Get(TLogLevel level = INFO, const char* func = "");
+    std::ostringstream& Fatal(TLogLevel level = ERROR, const char* func = "");
 public:
     static TLogLevel& ReportingLevel();
     static std::string ToString(TLogLevel level);
@@ -78,6 +81,7 @@ protected:
 private:
     Log(const Log&);
     Log& operator =(const Log&);
+	static unsigned int& FatalCnt();
 };
 
 template <typename T>
@@ -101,10 +105,27 @@ std::ostringstream& Log<T>::Get(TLogLevel level, const char* func)
 }
 
 template <typename T>
+std::ostringstream& Log<T>::Fatal(TLogLevel level, const char* func)
+{
+	(FatalCnt())++;
+	if(FatalCnt() > 10)
+		throw GLogiKFatalError("maximum warning count reached, this is fatal");
+	Get(level, func);
+	return os;
+}
+
+template <typename T>
 Log<T>::~Log()
 {
     os << std::endl;
     T::Output(os.str(), current_level);
+}
+
+template <typename T>
+unsigned int& Log<T>::FatalCnt()
+{
+    static unsigned int fatalCounter = 0;
+    return fatalCounter;
 }
 
 template <typename T>
@@ -290,6 +311,7 @@ inline void GKSysLog(const int priority, const TLogLevel level, const std::strin
 #endif
 
 #define LOG(level) LOG2(level, __func__)
+#define FATALERROR BOTHLog(ERROR).Fatal(ERROR, __func__)
 
 #define GKSysLog_UnknownDevice \
 	std::string error(s_UnknownDevice); error += devID;\

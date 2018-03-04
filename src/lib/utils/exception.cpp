@@ -28,6 +28,14 @@
 namespace NSGKUtils
 {
 
+GLogiKFatalError::GLogiKFatalError( const std::string& msg ) : message(msg) {}
+GLogiKFatalError::~GLogiKFatalError( void ) throw() {}
+
+const char* GLogiKFatalError::what( void ) const throw()
+{
+    return message.c_str();
+}
+
 GLogiKExcept::GLogiKExcept( const std::string& msg ) : message(msg) {}
 GLogiKExcept::~GLogiKExcept( void ) throw() {}
 
