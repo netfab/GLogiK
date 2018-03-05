@@ -24,6 +24,7 @@
 
 #include <cstdint>
 
+#include <new>
 #include <string>
 #include <vector>
 #include <functional>
@@ -292,8 +293,15 @@ template <typename T>
 		const bool introspectable
 	)
 {
-	GKDBusEvent* e = new GKDBusCallbackEvent<T>(eventName, args, callback, eventType, introspectable);
-	this->addIntrospectableEvent(bus, object, interface, e);
+	GKDBusEvent* event = nullptr;
+	try {
+		event = new GKDBusCallbackEvent<T>(eventName, args, callback, eventType, introspectable);
+	}
+	catch (const std::bad_alloc& e) { /* handle new() failure */
+		throw NSGKUtils::GLogiKBadAlloc("DBus event bad allocation");
+	}
+
+	this->addIntrospectableEvent(bus, object, interface, event);
 	if( eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL ) {
 		DBusConnection* connection = this->getConnection(bus);
 		this->addSignalRuleMatch(connection, interface, eventName);
