@@ -5,6 +5,7 @@ GLogiK=$PWD/.. CD=. {
 	ChangeLog
 	NEWS
 	README.md
+	TODO
 	VERSION
 	configure.ac
 	Makefile.am
