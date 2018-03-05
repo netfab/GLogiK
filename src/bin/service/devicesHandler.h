@@ -36,7 +36,7 @@
 #define LogRemoteCallFailure \
 	FATALERROR << remoteMethod.c_str() << s_RemoteCallFailure << e.what();
 #define LogRemoteCallGetReplyFailure \
-	FATALERROR << remoteMethod.c_str() << s_RemoteCallGetReplyFailure << e.what();
+	LOG(ERROR) << remoteMethod.c_str() << s_RemoteCallGetReplyFailure << e.what();
 
 namespace GLogiK
 {
