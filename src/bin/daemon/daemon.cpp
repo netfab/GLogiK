@@ -34,6 +34,7 @@
 
 #include <syslog.h>
 
+#include <new>
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -134,7 +135,13 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			//std::signal(SIGHUP, GLogiKDaemon::handle_signal);
 
 			try {
-				this->DBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
+				try {
+					this->DBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
+				}
+				catch (const std::bad_alloc& e) { /* handle new() failure */
+					throw GLogiKBadAlloc("GKDBus bad allocation");
+				}
+
 				this->DBus->connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
 
 				{

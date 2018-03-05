@@ -19,6 +19,7 @@
  *
  */
 
+#include <new>
 #include <functional>
 #include <stdexcept>
 #include <thread>
@@ -45,7 +46,13 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
 {
 	try {
 		try {
-			this->pDBus_ = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
+			try {
+				this->pDBus_ = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
+			}
+			catch (const std::bad_alloc& e) { /* handle new() failure */
+				throw GLogiKBadAlloc("GKDBus bad allocation");
+			}
+
 			this->pDBus_->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 
 			this->setCurrentSessionObjectPath(pid);

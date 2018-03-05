@@ -511,8 +511,16 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 	LOG(DEBUG) << "entering macro record mode";
 #endif
 
+	NSGKDBus::GKDBus* pDBus = nullptr;
+
 	/* ROOT_NODE only for introspection, don't care */
-	NSGKDBus::GKDBus* pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
+	try {
+		pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
+	}
+	catch (const std::bad_alloc& e) { /* handle new() failure */
+		LOG(ERROR) << "GKDBus bad allocation";
+		pDBus = nullptr;
+	}
 
 	bool keys_found = false;
 	/* initializing time_point */
@@ -551,36 +559,36 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 						device.standard_keys_events
 					);
 
-					const uint8_t profile = to_type( device.macros_man->getCurrentActiveProfile() );
+					if( pDBus ) {
+						const uint8_t profile = to_type( device.macros_man->getCurrentActiveProfile() );
 
-					/* open a new connection, GKDBus is not thread-safe */
-					pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
+						/* open a new connection, GKDBus is not thread-safe */
+						pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
 
-					try {
-						std::string signal("MacroRecorded");
-						if( device.standard_keys_events.empty() ) {
-							signal = "MacroCleared";
+						try {
+							std::string signal("MacroRecorded");
+							if( device.standard_keys_events.empty() ) {
+								signal = "MacroCleared";
+							}
+
+							pDBus->initializeTargetsSignal(
+								NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+								GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+								GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
+								GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+								signal.c_str()
+							);
+
+							pDBus->appendStringToTargetsSignal(devID);
+							pDBus->appendStringToTargetsSignal(device.chosen_macro_key);
+							pDBus->appendUInt8ToTargetsSignal(profile);
+
+							pDBus->sendTargetsSignal();
 						}
-
-						pDBus->initializeTargetsSignal(
-							NSGKDBus::BusConnection::GKDBUS_SYSTEM,
-							GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-							GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
-							GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-							signal.c_str()
-						);
-
-						pDBus->appendStringToTargetsSignal(devID);
-						pDBus->appendStringToTargetsSignal(device.chosen_macro_key);
-						pDBus->appendUInt8ToTargetsSignal(profile);
-
-						pDBus->sendTargetsSignal();
-					}
-					catch (const GKDBusMessageWrongBuild & e) {
-						pDBus->abandonTargetsSignal();
-						std::string warn("abandon TargetsSignal : ");
-						warn += e.what();
-						GKSysLog(LOG_WARNING, WARNING, warn);
+						catch (const GKDBusMessageWrongBuild & e) {
+							pDBus->abandonTargetsSignal();
+							GKSysLog(LOG_WARNING, WARNING, e.what());
+						}
 					}
 				}
 				catch (const GLogiKExcept & e) {
