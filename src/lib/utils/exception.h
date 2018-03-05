@@ -56,6 +56,7 @@ class GLogiKExcept : public std::exception
 		std::string message;
 };
 
+/*
 class DisplayHelp : public std::exception
 {
 	public :
@@ -67,6 +68,7 @@ class DisplayHelp : public std::exception
 	protected :
 		std::string message;
 };
+*/
 
 class EmptyContainer : public GLogiKExcept
 {
