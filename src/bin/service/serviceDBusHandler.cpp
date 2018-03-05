@@ -44,42 +44,43 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
 		buffer_("", std::ios_base::app)
 {
 	try {
-		this->pDBus_ = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
-		this->pDBus_->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
+		try {
+			this->pDBus_ = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
+			this->pDBus_->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 
-		this->setCurrentSessionObjectPath(pid);
+			this->setCurrentSessionObjectPath(pid);
 
-		unsigned int retries = 0;
-		while( ! this->are_we_registered_ ) {
-			if( ( session.isSessionAlive() )
-					and (retries < UNREACHABLE_DAEMON_MAX_RETRIES)
-					and ( ! this->skip_retry_ ) )
-			{
-				if(retries > 0) {
-					LOG(INFO) << "register retry " << retries << " ...";
-				}
+			unsigned int retries = 0;
+			while( ! this->are_we_registered_ ) {
+				if( ( session.isSessionAlive() )
+						and (retries < UNREACHABLE_DAEMON_MAX_RETRIES)
+						and ( ! this->skip_retry_ ) )
+				{
+					if(retries > 0) {
+						LOG(INFO) << "register retry " << retries << " ...";
+					}
 
-				try {
-					this->registerWithDaemon();
-				}
-				catch( const GLogiKExcept & e ) {
-					if( ! this->skip_retry_ ) {
-						unsigned int timer = 5;
-						LOG(WARNING) << e.what() << ", retrying in " << timer << " seconds ...";
-						std::this_thread::sleep_for(std::chrono::seconds(timer));
+					try {
+						this->registerWithDaemon();
+					}
+					catch( const GLogiKExcept & e ) {
+						if( ! this->skip_retry_ ) {
+							unsigned int timer = 5;
+							LOG(WARNING) << e.what() << ", retrying in " << timer << " seconds ...";
+							std::this_thread::sleep_for(std::chrono::seconds(timer));
+						}
 					}
 				}
+				else {
+					LOG(ERROR) << "can't register, giving up";
+					throw GLogiKExcept("unable to register with daemon");
+					break;
+				}
+				retries++;
 			}
-			else {
-				LOG(ERROR) << "can't register, giving up";
-				throw GLogiKExcept("unable to register with daemon");
-				break;
-			}
-			retries++;
-		}
 
-		this->session_state_ = this->getCurrentSessionState();
-		this->reportChangedState();
+			this->session_state_ = this->getCurrentSessionState();
+			this->reportChangedState();
 
 		/* want to be warned by the daemon about those signals */
 
@@ -159,14 +160,23 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
 			)
 		);
 
-		/* set GKDBus pointer */
-		this->devices_.setDBus(this->pDBus_);
-		this->devices_.setClientID(this->client_id_);
+			/* set GKDBus pointer */
+			this->devices_.setDBus(this->pDBus_);
+			this->devices_.setClientID(this->client_id_);
 
-		this->initializeDevices();
+			this->initializeDevices();
+
+		}
+		catch ( const GLogiKExcept & e ) {
+			this->unregisterWithDaemon();
+			delete this->pDBus_;
+			this->pDBus_ = nullptr;
+			throw;
+		}
 	}
-	catch ( const GLogiKExcept & e ) {
-		this->unregisterWithDaemon();
+	catch ( const GLogiKFatalError & e ) {
+		/* don't try to unregister in case of fatal error,
+		 * another GLogiKFatalError exception could be thrown */
 		delete this->pDBus_;
 		this->pDBus_ = nullptr;
 		throw;
@@ -175,8 +185,13 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
 
 ServiceDBusHandler::~ServiceDBusHandler() {
 	if( this->are_we_registered_ ) {
-		this->devices_.clearDevices();
-		this->unregisterWithDaemon();
+		try {
+			this->devices_.clearDevices();
+			this->unregisterWithDaemon();
+		}
+		catch ( const GLogiKFatalError & e ) {
+			// giving up
+		}
 	}
 	else {
 #if DEBUGGING_ON
