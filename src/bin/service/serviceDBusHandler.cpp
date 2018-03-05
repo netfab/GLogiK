@@ -82,83 +82,7 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
 			this->session_state_ = this->getCurrentSessionState();
 			this->reportChangedState();
 
-		/* want to be warned by the daemon about those signals */
-
-		this->pDBus_->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
-			this->system_bus_,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-			"DevicesStarted",
-			{}, // FIXME
-			std::bind(&ServiceDBusHandler::devicesStarted, this, std::placeholders::_1)
-		);
-
-		this->pDBus_->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
-			this->system_bus_,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-			"DevicesStopped",
-			{}, // FIXME
-			std::bind(&ServiceDBusHandler::devicesStopped, this, std::placeholders::_1)
-		);
-
-		this->pDBus_->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
-			this->system_bus_,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-			"DevicesUnplugged",
-			{}, // FIXME
-			std::bind(&ServiceDBusHandler::devicesUnplugged, this, std::placeholders::_1)
-		);
-
-		this->pDBus_->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
-			this->system_bus_,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-			"DaemonIsStopping",
-			{}, // FIXME
-			std::bind(&ServiceDBusHandler::daemonIsStopping, this)
-		);
-
-		this->pDBus_->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
-			this->system_bus_,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-			"DaemonIsStarting",
-			{}, // FIXME
-			std::bind(&ServiceDBusHandler::daemonIsStarting, this)
-		);
-
-		this->pDBus_->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
-			this->system_bus_,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-			"ReportYourself",
-			{}, // FIXME
-			std::bind(&ServiceDBusHandler::reportChangedState, this)
-		);
-
-		this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
-			this->system_bus_,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-			"MacroRecorded",
-			{}, // FIXME
-			std::bind(	&ServiceDBusHandler::macroRecorded, this,
-						std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
-			)
-		);
-
-		this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
-			this->system_bus_,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-			"MacroCleared",
-			{}, // FIXME
-			std::bind(	&ServiceDBusHandler::macroCleared, this,
-						std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
-			)
-		);
+			this->initializeGKDBusSignals();
 
 			/* set GKDBus pointer */
 			this->devices_.setDBus(this->pDBus_);
@@ -704,6 +628,90 @@ void ServiceDBusHandler::initializeDevices(void) {
  * --- --- --- --- ---
  *
  */
+
+void ServiceDBusHandler::initializeGKDBusSignals(void) {
+	/*
+	 * want to be warned by the daemon about those signals
+	 * each declaration can throw a GLogiKExcept exception
+	 * if something is wrong (handled in constructor)
+	 */
+
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
+		this->system_bus_,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		"DevicesStarted",
+		{}, // FIXME
+		std::bind(&ServiceDBusHandler::devicesStarted, this, std::placeholders::_1)
+	);
+
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
+		this->system_bus_,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		"DevicesStopped",
+		{}, // FIXME
+		std::bind(&ServiceDBusHandler::devicesStopped, this, std::placeholders::_1)
+	);
+
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
+		this->system_bus_,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		"DevicesUnplugged",
+		{}, // FIXME
+		std::bind(&ServiceDBusHandler::devicesUnplugged, this, std::placeholders::_1)
+	);
+
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+		this->system_bus_,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		"DaemonIsStopping",
+		{}, // FIXME
+		std::bind(&ServiceDBusHandler::daemonIsStopping, this)
+	);
+
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+		this->system_bus_,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		"DaemonIsStarting",
+		{}, // FIXME
+		std::bind(&ServiceDBusHandler::daemonIsStarting, this)
+	);
+
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+		this->system_bus_,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		"ReportYourself",
+		{}, // FIXME
+		std::bind(&ServiceDBusHandler::reportChangedState, this)
+	);
+
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
+		this->system_bus_,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		"MacroRecorded",
+		{}, // FIXME
+		std::bind(	&ServiceDBusHandler::macroRecorded, this,
+					std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
+		)
+	);
+
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
+		this->system_bus_,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		"MacroCleared",
+		{}, // FIXME
+		std::bind(	&ServiceDBusHandler::macroCleared, this,
+					std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
+		)
+	);
+}
 
 void ServiceDBusHandler::daemonIsStopping(void) {
 	this->buffer_.str("received ");

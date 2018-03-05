@@ -79,6 +79,7 @@ class ServiceDBusHandler
 		void reportChangedState(void);
 
 		void initializeDevices(void);
+		void initializeGKDBusSignals(void);
 
 		/* signals */
 		void daemonIsStopping(void);
