@@ -19,6 +19,7 @@
  *
  */
 
+#include <new>
 #include <sstream>
 
 #include "lib/utils/utils.h"
