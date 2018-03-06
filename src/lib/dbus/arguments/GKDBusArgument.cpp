@@ -137,6 +137,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 				dbus_message_iter_recurse(iter, &sub_it);
 				char* sig = dbus_message_iter_get_signature(&sub_it);
 				GKDBusArgument::decodeArgumentFromIterator(&sub_it, sig, c, logoff);
+				dbus_free(sig);
 			}
 			break;
 		default: // other dbus type
