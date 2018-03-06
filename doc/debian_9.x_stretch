@@ -21,7 +21,11 @@ To build on Debian 9 Stretch, following packages are required :
  * libboost-iostreams-dev
  * libboost-serialization-dev
 
-To run the daemon, the glogik user and group must be created :
+To run the daemon, the glogikd user must be created, and this user must be in the plugdev group.
+To run the desktop service, users must be in the glogiks group.
+Following commands can be useful :
 
-	# adduser --system --disabled-login --home /nonexistent --no-create-home --group glogik
+	# adduser --system --disabled-login --home /dev/null --no-create-home --ingroup plugdev glogikd
+	# groupadd -r glogiks
+	# usermod -a -G glogiks <user>
 
