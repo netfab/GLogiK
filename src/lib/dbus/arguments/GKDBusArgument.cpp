@@ -129,6 +129,16 @@ void GKDBusArgument::decodeArgumentFromIterator(
 				while( dbus_message_iter_next(iter) );
 			}
 			break;
+		case DBUS_TYPE_VARIANT:
+			{
+				unsigned int c = 0;
+				DBusMessageIter sub_it;
+				//LOG(DEBUG4) << "parsing variant";
+				dbus_message_iter_recurse(iter, &sub_it);
+				char* sig = dbus_message_iter_get_signature(&sub_it);
+				GKDBusArgument::decodeArgumentFromIterator(&sub_it, sig, c, logoff);
+			}
+			break;
 		default: // other dbus type
 			LOG(ERROR) << "unhandled argument type: " << static_cast<char>(current_type) << " sig: " << signature;
 			break;
