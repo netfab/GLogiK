@@ -157,27 +157,6 @@ const bool Client::setDeviceBacklightColor(
 	return false;
 }
 
-/*
-const bool Client::setDeviceBacklightColor(
-	const std::string & devID,
-	DevicesManager* dev_manager
-)	{
-	try {
-		DeviceProperties & device = this->devices_.at(devID);
-		const uint8_t r = device.getBLColor_R();
-		const uint8_t g = device.getBLColor_G();
-		const uint8_t b = device.getBLColor_B();
-		dev_manager->setDeviceBacklightColor(devID, r, g, b);
-		return true;
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
-	}
-
-	return false;
-}
-*/
-
 void Client::setDeviceActiveUser(
 	const std::string & devID,
 	DevicesManager* dev_manager

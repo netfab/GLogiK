@@ -57,13 +57,6 @@ class Client
 			const uint8_t b
 		);
 
-/*
-		const bool setDeviceBacklightColor(
-			const std::string & devID,
-			DevicesManager* dev_manager
-		);
-*/
-
 		void setDeviceActiveUser(
 			const std::string & devID,
 			DevicesManager* dev_manager
