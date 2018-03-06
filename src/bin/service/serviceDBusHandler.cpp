@@ -396,8 +396,8 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 
 /*
  * Ask to session tracker the current session state, and returns it.
- * If the state fails to be updated for whatever reason, returns the
- * old state. Possible returns values are :
+ * If the state fails to be updated for whatever reason, throws.
+ * Possible returns values are :
  *  - active
  *  - online
  *  - closing
@@ -466,8 +466,7 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 			break;
 	}
 
-	/* return old state */
-	return this->session_state_;
+	throw GLogiKExcept("unable to get session state");
 }
 
 void ServiceDBusHandler::reportChangedState(void) {
