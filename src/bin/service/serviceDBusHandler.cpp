@@ -802,6 +802,14 @@ void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devices
 			LogRemoteCallFailure
 		}
 	}
+
+	/*
+	 * force state update, to load active user's parameters
+	 * for all hotplugged devices
+	 */
+	if( this->session_state_ == "active" ) {
+		this->reportChangedState();
+	}
 }
 
 void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
