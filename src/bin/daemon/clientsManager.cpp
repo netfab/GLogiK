@@ -40,6 +40,7 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 	:	buffer_("", std::ios_base::app),
 		pDBus_(pDBus),
 		devicesManager(nullptr),
+		active_clients_(0),
 		enabled_signals_(true)
 {
 #if DEBUGGING_ON
@@ -342,8 +343,13 @@ const bool ClientsManager::unregisterClient(
 		GKSysLog(LOG_INFO, DEBUG2, this->buffer_.str());
 
 		/* resetting devices states first */
-		if( pClient->getSessionCurrentState() == "active" )
+		if( pClient->getSessionCurrentState() == "active" ) {
 			this->devicesManager->resetDevicesStates();
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "decreasing active users # : " << this->active_clients_;
+#endif
+			this->active_clients_--;
+		}
 
 		delete pClient; pClient = nullptr;
 		this->clients_.erase(clientID);
@@ -364,14 +370,32 @@ const bool ClientsManager::updateClientState(
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Client << clientID << " state: " << state;
 #endif
+
+	// FIXME never seen other state
+	if( (state != "active") and (state != "online") ) {
+		this->buffer_.str("unhandled state for updating devices : ");
+		this->buffer_ << state;
+		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		return false;
+	}
+
 	try {
 		Client* pClient = this->clients_.at(clientID);
+		const std::string oldState( pClient->getSessionCurrentState() );
 		pClient->updateSessionState(state);
 
-		if(state == "online") {
-			this->devicesManager->resetDevicesStates();
+		if( (oldState == "active") and (state != "active") ) {
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "decreasing active users # : " << this->active_clients_;
+#endif
+			this->active_clients_--;
 		}
-		else if(state == "active") {
+
+		if( (oldState != "active") and (state == "active") ) {
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "increasing active users # : " << this->active_clients_;
+#endif
+			this->active_clients_++;
 			if( pClient->isReady() ) {
 #if DEBUGGING_ON
 				LOG(DEBUG1) << "setting active user's parameters for all started devices";
@@ -381,10 +405,13 @@ const bool ClientsManager::updateClientState(
 				}
 			}
 		}
-		else {
-			this->buffer_.str("unhandled state for updating devices : ");
-			this->buffer_ << state;
-			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "active users # : " << this->active_clients_;
+#endif
+
+		if(this->active_clients_ == 0) {
+			this->devicesManager->resetDevicesStates();
 		}
 
 		return true;

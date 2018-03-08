@@ -57,6 +57,7 @@ class ClientsManager
 		NSGKDBus::GKDBus* pDBus_;
 		DevicesManager* devicesManager;
 
+		unsigned int active_clients_;
 		std::map<const std::string, Client*> clients_;
 		bool enabled_signals_;
 
