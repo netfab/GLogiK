@@ -391,11 +391,14 @@ const bool ClientsManager::updateClientState(
 			this->active_clients_--;
 		}
 
-		if( (oldState != "active") and (state == "active") ) {
+		if(state == "active") {
+			if(oldState != "active") {
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "increasing active users # : " << this->active_clients_;
+				LOG(DEBUG3) << "increasing active users # : " << this->active_clients_;
 #endif
-			this->active_clients_++;
+				this->active_clients_++;
+			}
+
 			if( pClient->isReady() ) {
 #if DEBUGGING_ON
 				LOG(DEBUG1) << "setting active user's parameters for all started devices";
