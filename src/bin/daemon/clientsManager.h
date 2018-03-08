@@ -58,6 +58,7 @@ class ClientsManager
 		DevicesManager* devicesManager;
 
 		unsigned int active_clients_;
+		const std::string active_;
 		std::map<const std::string, Client*> clients_;
 		bool enabled_signals_;
 

@@ -41,6 +41,7 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 		pDBus_(pDBus),
 		devicesManager(nullptr),
 		active_clients_(0),
+		active_("active"),
 		enabled_signals_(true)
 {
 #if DEBUGGING_ON
@@ -343,7 +344,7 @@ const bool ClientsManager::unregisterClient(
 		GKSysLog(LOG_INFO, DEBUG2, this->buffer_.str());
 
 		/* resetting devices states first */
-		if( pClient->getSessionCurrentState() == "active" ) {
+		if( pClient->getSessionCurrentState() == this->active_ ) {
 			this->devicesManager->resetDevicesStates();
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "decreasing active users # : " << this->active_clients_;
@@ -372,7 +373,7 @@ const bool ClientsManager::updateClientState(
 #endif
 
 	// FIXME never seen other state
-	if( (state != "active") and (state != "online") ) {
+	if( (state != this->active_) and (state != "online") ) {
 		this->buffer_.str("unhandled state for updating devices : ");
 		this->buffer_ << state;
 		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
@@ -384,15 +385,15 @@ const bool ClientsManager::updateClientState(
 		const std::string oldState( pClient->getSessionCurrentState() );
 		pClient->updateSessionState(state);
 
-		if( (oldState == "active") and (state != "active") ) {
+		if( (oldState == this->active_) and (state != this->active_) ) {
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "decreasing active users # : " << this->active_clients_;
 #endif
 			this->active_clients_--;
 		}
 
-		if(state == "active") {
-			if(oldState != "active") {
+		if(state == this->active_) {
+			if(oldState != this->active_) {
 #if DEBUGGING_ON
 				LOG(DEBUG3) << "increasing active users # : " << this->active_clients_;
 #endif
@@ -433,7 +434,7 @@ const bool ClientsManager::toggleClientReadyPropertie(
 		Client* pClient = this->clients_.at(clientID);
 		pClient->toggleClientReadyPropertie();
 		if( pClient->isReady() ) {
-			if(pClient->getSessionCurrentState() == "active") {
+			if(pClient->getSessionCurrentState() == this->active_) {
 #if DEBUGGING_ON
 				LOG(DEBUG1) << "setting active user's parameters for all started devices";
 #endif
@@ -488,7 +489,7 @@ const bool ClientsManager::stopDevice(
 			return false;
 		}
 
-		if(pClient->getSessionCurrentState() != "active") {
+		if(pClient->getSessionCurrentState() != this->active_) {
 			GKSysLog(LOG_WARNING, WARNING, "only active user can change device state");
 			return false;
 		}
@@ -526,7 +527,7 @@ const bool ClientsManager::startDevice(
 			return false;
 		}
 
-		if(pClient->getSessionCurrentState() != "active") {
+		if(pClient->getSessionCurrentState() != this->active_) {
 			GKSysLog(LOG_WARNING, WARNING, "only active user can change device state");
 			return false;
 		}
@@ -707,7 +708,7 @@ const macro_t & ClientsManager::getDeviceMacro(
 	try {
 		Client* pClient = this->clients_.at(clientID);
 
-		if(pClient->getSessionCurrentState() == "active") {
+		if(pClient->getSessionCurrentState() == this->active_) {
 			if( pClient->isReady() ) {
 				pClient->syncDeviceMacrosProfiles(devID, this->devicesManager->getDeviceMacrosProfiles(devID));
 				return pClient->getDeviceMacro(devID, keyName, profile);
