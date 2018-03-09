@@ -245,12 +245,12 @@ void DevicesHandler::setDeviceState(const std::string & devID, const DevicePrope
 				const uint8_t & r = device.getBLColor_R();
 				const uint8_t & g = device.getBLColor_G();
 				const uint8_t & b = device.getBLColor_B();
-				LOG(INFO) << "successfully setted device " << devID
-							<< " backlight color : "
+				LOG(INFO) << "[" << devID
+							<< "] successfully setted device backlight color : "
 							<< getHexRGB(r, g, b);
 			}
 			else {
-				LOG(ERROR) << "failed to set device " << devID << " backlight color : false";
+				LOG(ERROR) << "[" << devID << "] failed to set device backlight color : false";
 			}
 		}
 		catch (const GLogiKExcept & e) {
@@ -281,7 +281,7 @@ void DevicesHandler::setDeviceState(const std::string & devID, const DevicePrope
 		}
 
 		if( ! send_it ) {
-			LOG(INFO) << "skipping empty MacrosBank " << to_uint(current_profile);
+			LOG(INFO) << "[" << devID << "] skipping empty MacrosBank " << to_uint(current_profile);
 			continue;
 		}
 
@@ -305,10 +305,10 @@ void DevicesHandler::setDeviceState(const std::string & devID, const DevicePrope
 
 				const bool ret = this->pDBus_->getNextBooleanArgument();
 				if( ret ) {
-					LOG(INFO) << "successfully setted device MacrosBank " << to_uint(current_profile);
+					LOG(INFO) << "[" << devID << "] successfully setted device MacrosBank " << to_uint(current_profile);
 				}
 				else {
-					LOG(ERROR) << "failed to set device MacrosBank " << to_uint(current_profile) << " : false";
+					LOG(ERROR) << "[" << devID << "] failed to set device MacrosBank " << to_uint(current_profile) << " : false";
 				}
 			}
 			catch (const GLogiKExcept & e) {
@@ -350,7 +350,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 			num++;
 
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "got " << num << " properties for device " << devID;
+			LOG(DEBUG3) << "[" << devID << "] got " << num << " properties";
 #endif
 		}
 		catch (const GLogiKExcept & e) {
@@ -384,7 +384,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 			const std::vector<std::string> keys_names( this->pDBus_->getStringsArray() );
 			device.initMacrosProfiles(keys_names);
 #if DEBUGGING_ON
-			LOG(DEBUG3) << keys_names.size() << " macro keys for device " << devID;
+			LOG(DEBUG3) << "[" << devID << "] initialized " << keys_names.size() << " macro keys";
 #endif
 		}
 		catch (const GLogiKExcept & e) {
@@ -399,7 +399,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	/* search a configuration file */
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "assigning a configuration file to device " << devID;
+LOG(DEBUG2) << "[" << devID << "] assigning a configuration file";
 #endif
 	fs::path directory(this->config_root_directory_);
 	directory /= device.getVendor();
@@ -416,6 +416,9 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		this->loadDeviceConfigurationFile(device);
 		this->used_conf_files_.insert( device.getConfFile() );
 
+		LOG(INFO)	<< "found device [" << devID << "] - "
+					<< device.getVendor() << " " << device.getModel();
+		LOG(INFO)	<< "[" << devID << "] configuration file found and loaded";
 		if(session_state == "active") {
 			this->setDeviceState(devID, device);
 		}
@@ -451,19 +454,21 @@ void DevicesHandler::startDevice(const std::string & devID, const std::string & 
 	try {
 		this->started_devices_.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "found already started device " << devID;
+		LOG(DEBUG1) << "found already started device: [" << devID << "]";
 #endif
 		return;
 	}
 	catch (const std::out_of_range& oor) {
 		try {
 			DeviceProperties & device = this->stopped_devices_.at(devID);
-			LOG(INFO) << "starting device: " << devID;
+			LOG(INFO) << "starting device: [" << devID << "]";
 			this->started_devices_[devID] = device;
 			this->stopped_devices_.erase(devID);
 		}
 		catch (const std::out_of_range& oor) {
-			LOG(INFO) << "initializing device: " << devID;
+#if DEBUGGING_ON
+			LOG(DEBUG) << "initializing device: [" << devID << "]";
+#endif
 			DeviceProperties device;
 			/* also load configuration file */
 			this->setDeviceProperties(devID, device, session_state);
@@ -476,20 +481,20 @@ void DevicesHandler::stopDevice(const std::string & devID) {
 	try {
 		this->stopped_devices_.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "found already stopped device " << devID;
+		LOG(DEBUG1) << "found already stopped device: [" << devID << "]";
 #endif
 		return;
 	}
 	catch (const std::out_of_range& oor) {
 		try {
 			DeviceProperties & device = this->started_devices_.at(devID);
-			LOG(INFO) << "stopping device: " << devID;
+			LOG(INFO) << "stopping device: [" << devID << "]";
 			this->stopped_devices_[devID] = device;
 			this->started_devices_.erase(devID);
 			this->saveDeviceProperties(devID);
 		}
 		catch (const std::out_of_range& oor) {
-			LOG(WARNING) << "device " << devID << " not found in containers, giving up";
+			LOG(WARNING) << "device [" << devID << "] not found in containers, giving up";
 		}
 	}
 }
@@ -498,7 +503,7 @@ void DevicesHandler::unplugDevice(const std::string & devID) {
 	try {
 		this->stopped_devices_.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "found already stopped device : " << devID;
+		LOG(DEBUG1) << "found already stopped device: [" << devID << "]";
 #endif
 		this->unrefDevice(devID);
 	}
@@ -514,7 +519,7 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 		const std::string conf_file( device.getConfFile() );
 		this->stopped_devices_.erase(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "erased device : " << devID;
+		LOG(DEBUG2) << "[" << devID << "] erased device";
 #endif
 		if( this->used_conf_files_.count( conf_file ) == 1 ) {
 			this->used_conf_files_.erase( conf_file );
@@ -543,11 +548,11 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 				const bool ret = this->pDBus_->getNextBooleanArgument();
 				if( ret ) {
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "successfully deleted remote device configuration " << devID;
+					LOG(DEBUG3) << "[" << devID << "] successfully deleted remote device configuration ";
 #endif
 				}
 				else {
-					LOG(ERROR) << "failed to delete remote device configuration : false";
+					LOG(ERROR) << "[" << devID << "] failed to delete remote device configuration : false";
 				}
 			}
 			catch (const GLogiKExcept & e) {
@@ -560,7 +565,7 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "device not found in stopped device container : " << devID;
+		LOG(WARNING) << "device not found in stopped device container: [" << devID << "]";
 	}
 }
 

@@ -784,7 +784,7 @@ void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devices
 				const std::string device_status( this->pDBus_->getNextStringArgument() );
 				if(device_status == "started") {
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "daemon said that device " << devID << " is really started, what about us ?";
+					LOG(DEBUG3) << "device status from daemon: [" << devID << "] started";
 #endif
 					this->devices_.startDevice(devID, this->session_state_);
 				}
@@ -837,7 +837,7 @@ void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devices
 				const std::string device_status( this->pDBus_->getNextStringArgument() );
 				if(device_status == "stopped") {
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "daemon said that device " << devID << " is really stopped, what about us ?";
+					LOG(DEBUG3) << "device status from daemon: [" << devID << "] stopped";
 #endif
 					this->devices_.stopDevice(devID);
 				}
@@ -882,7 +882,7 @@ void ServiceDBusHandler::devicesUnplugged(const std::vector<std::string> & devic
 				const std::string device_status( this->pDBus_->getNextStringArgument() );
 				if(device_status == "unplugged") {
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "daemon said that device " << devID << " is really unplugged, what about us ?";
+					LOG(DEBUG3) << "device status from daemon: [" << devID << "] unplugged";
 #endif
 					this->devices_.unplugDevice(devID);
 				}
