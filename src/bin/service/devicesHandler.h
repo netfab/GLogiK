@@ -90,7 +90,10 @@ class DevicesHandler
 
 		void setDeviceState(const std::string & devID, const DeviceProperties & device);
 		void unrefDevice(const std::string & devID);
-		void saveDeviceProperties(const std::string & devID);
+		void saveDeviceProperties(
+			const std::string & devID,
+			const DeviceProperties & device
+		);
 
 };
 

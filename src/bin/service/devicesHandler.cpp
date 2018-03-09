@@ -81,7 +81,7 @@ void DevicesHandler::clearDevices(void) {
 		devicesID.insert(device_pair.first);
 	}
 
-	/* stop each device if not already stopped, save configuration, and unref it */
+	/* stop each device if not already stopped, and unref it */
 	for(const auto & devID : devicesID) {
 		this->unplugDevice(devID);
 	}
@@ -92,10 +92,11 @@ void DevicesHandler::clearDevices(void) {
 	this->used_conf_files_.clear();
 }
 
-void DevicesHandler::saveDeviceProperties(const std::string & devID) {
+void DevicesHandler::saveDeviceProperties(
+	const std::string & devID,
+	const DeviceProperties & device )
+{
 	try {
-		const DeviceProperties & device = this->stopped_devices_.at(devID);
-
 		fs::path current_path(this->config_root_directory_);
 		current_path /= device.getVendor();
 
@@ -105,7 +106,7 @@ void DevicesHandler::saveDeviceProperties(const std::string & devID) {
 
 		try {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "trying to open configuration file for writing : " << device.getConfFile();
+			LOG(DEBUG2) << "[" << devID << "] trying to open configuration file for writing : " << device.getConfFile();
 #endif
 
 			std::ofstream ofs;
@@ -122,9 +123,7 @@ void DevicesHandler::saveDeviceProperties(const std::string & devID) {
 				output_archive << device;
 			}
 
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "success, closing";
-#endif
+			LOG(INFO) << "[" << devID << "] successfully saved configuration file, closing";
 			ofs.close();
 		}
 		catch (const std::ofstream::failure & e) {
@@ -152,9 +151,6 @@ void DevicesHandler::saveDeviceProperties(const std::string & devID) {
 			this->buffer_ << e.what();
 			LOG(ERROR) << this->buffer_.str();
 		}
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "can't save device state, device : " << devID << " not found in stopped container";
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(ERROR) << e.what();
@@ -491,7 +487,6 @@ void DevicesHandler::stopDevice(const std::string & devID) {
 			LOG(INFO) << "stopping device: [" << devID << "]";
 			this->stopped_devices_[devID] = device;
 			this->started_devices_.erase(devID);
-			this->saveDeviceProperties(devID);
 		}
 		catch (const std::out_of_range& oor) {
 			LOG(WARNING) << "device [" << devID << "] not found in containers, giving up";
@@ -603,6 +598,7 @@ const bool DevicesHandler::setDeviceMacro(
 				const macro_t macro_array = this->pDBus_->getNextMacroArgument();
 
 				device.setMacro(profile, keyName, macro_array);
+				this->saveDeviceProperties(devID, device);
 				return true;
 			}
 			catch (const GLogiKExcept & e) {
@@ -631,6 +627,7 @@ const bool DevicesHandler::clearDeviceMacro(
 		DeviceProperties & device = this->started_devices_.at(devID);
 
 		device.clearMacro(profile, keyName);
+		this->saveDeviceProperties(devID, device);
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
