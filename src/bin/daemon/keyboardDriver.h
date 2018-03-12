@@ -24,6 +24,8 @@
 
 #include <cstdint>
 
+#include <iterator>
+#include <atomic>
 #include <string>
 #include <vector>
 #include <map>
@@ -65,7 +67,7 @@ struct InitializedDevice {
 	uint8_t bus;
 	uint8_t num;
 	uint8_t keys_endpoint;
-	bool listen_status;
+	std::atomic<bool> listen_status;
 	uint64_t pressed_keys;
 	libusb_device *usb_device;
 	libusb_device_handle *usb_handle;
@@ -74,10 +76,11 @@ struct InitializedDevice {
 	MacrosManager *macros_man;
 	std::vector<libusb_endpoint_descriptor> endpoints;
 	std::thread::id listen_thread_id;
-	uint8_t current_leds_mask;
+	std::atomic<std::uint8_t> current_leds_mask;
 	int transfer_length;
 	unsigned char keys_buffer[KEYS_BUFFER_LENGTH];
 	unsigned char previous_keys_buffer[KEYS_BUFFER_LENGTH];
+	std::atomic<bool> exit_macro_record_mode;
 	macro_t standard_keys_events;
 	std::string chosen_macro_key;
 	std::chrono::steady_clock::time_point last_call;
@@ -89,9 +92,7 @@ struct InitializedDevice {
 	InitializedDevice(KeyboardDevice k, uint8_t b, uint8_t n)
 		:	device(k), bus(b), num(n),
 			keys_endpoint(0),
-			listen_status(false),
 			pressed_keys(0),
-			current_leds_mask(0),
 			transfer_length(0),
 			fatal_errors(0)
 	{
@@ -103,6 +104,48 @@ struct InitializedDevice {
 		this->rgb[0] = 0xFF;
 		this->rgb[1] = 0xFF;
 		this->rgb[2] = 0xFF;
+		this->listen_status = false;
+		this->exit_macro_record_mode = false;
+		this->current_leds_mask = 0;
+	}
+
+	void operator=(const InitializedDevice& dev)
+	{
+		this->device = dev.device;
+		this->bus = dev.bus;
+		this->num = dev.num;
+		this->keys_endpoint = dev.keys_endpoint;
+		this->listen_status = static_cast<bool>(dev.listen_status);
+		this->pressed_keys = dev.pressed_keys;
+		this->usb_device = dev.usb_device;
+		this->usb_handle = dev.usb_handle;
+		this->to_release = dev.to_release;
+		this->to_attach = dev.to_attach;
+		this->macros_man = dev.macros_man;
+		this->endpoints = dev.endpoints;
+		this->listen_thread_id = dev.listen_thread_id;
+		this->current_leds_mask = static_cast<uint8_t>(dev.current_leds_mask);
+		this->transfer_length = dev.transfer_length;
+		std::copy(
+			std::begin(dev.keys_buffer),
+			std::end(dev.keys_buffer),
+			std::begin(this->keys_buffer)
+		);
+		std::copy(
+			std::begin(dev.previous_keys_buffer),
+			std::end(dev.previous_keys_buffer),
+			std::begin(this->previous_keys_buffer)
+		);
+		this->exit_macro_record_mode = static_cast<bool>(dev.exit_macro_record_mode);
+		this->standard_keys_events = dev.standard_keys_events;
+		this->chosen_macro_key = dev.chosen_macro_key;
+		this->last_call = dev.last_call;
+		std::copy(
+			std::begin(dev.rgb),
+			std::end(dev.rgb),
+			std::begin(this->rgb)
+		);
+		this->fatal_errors = dev.fatal_errors;
 	}
 };
 

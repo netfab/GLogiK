@@ -284,7 +284,7 @@ void KeyboardDriver::updateKeyboardColor(InitializedDevice & device, const uint8
  * return true if leds_mask has been updated (meaning that setMxKeysLeds should be called)
  */
 const bool KeyboardDriver::updateCurrentLedsMask(InitializedDevice & device, bool force_MR_off) {
-	uint8_t & mask = device.current_leds_mask;
+	auto & mask = device.current_leds_mask;
 	/* is macro record mode enabled ? */
 	bool MR_ON = mask & to_type(Leds::GK_LED_MR);
 	bool Mx_ON = false;
@@ -522,11 +522,12 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 		pDBus = nullptr;
 	}
 
-	bool keys_found = false;
+	auto & exit = device.exit_macro_record_mode;
+	exit = false;
 	/* initializing time_point */
 	device.last_call = std::chrono::steady_clock::now();
 
-	while( ! keys_found and DaemonControl::isDaemonRunning() and device.listen_status ) {
+	while( (! exit) and DaemonControl::isDaemonRunning() and device.listen_status ) {
 		this->checkDeviceListeningStatus(device);
 		if( ! device.listen_status )
 			continue;
@@ -541,7 +542,7 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 					device.pressed_keys & to_type(Keys::GK_KEY_M3) or
 					device.pressed_keys & to_type(Keys::GK_KEY_MR) ) {
 					/* exiting macro record mode */
-					keys_found = true;
+					exit = true;
 					device.standard_keys_events.clear();
 					continue;
 				}
@@ -595,7 +596,7 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 					GKSysLog(LOG_WARNING, WARNING, e.what());
 				}
 
-				keys_found = true;
+				exit = true;
 				device.standard_keys_events.clear();
 				break;
 			default:
@@ -631,7 +632,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 				<< " on bus " << to_uint(device.bus);
 #endif
 
-	const uint8_t & mask = device.current_leds_mask;
+	const auto & mask = device.current_leds_mask;
 
 	while( DaemonControl::isDaemonRunning() and device.listen_status ) {
 		this->checkDeviceListeningStatus(device);
@@ -1133,6 +1134,10 @@ void KeyboardDriver::resetDeviceState(const std::string & devID) {
 	try {
 		InitializedDevice & device = this->initialized_devices_.at(devID);
 
+		/* exit MacroRecordMode if necessary */
+		device.exit_macro_record_mode = true;
+		device.standard_keys_events.clear();
+
 		device.macros_man->clearMacroProfiles();
 
 #if DEBUGGING_ON
@@ -1212,6 +1217,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 	}
 }
 
+/* only called when setting active user's parameters */
 void KeyboardDriver::setDeviceBacklightColor(const std::string & devID, const uint8_t r, const uint8_t g, const uint8_t b) {
 	try {
 		InitializedDevice & device = this->initialized_devices_.at(devID);
@@ -1223,12 +1229,18 @@ void KeyboardDriver::setDeviceBacklightColor(const std::string & devID, const ui
 	}
 }
 
+/* only called when setting active user's parameters */
 void KeyboardDriver::setDeviceMacrosProfiles(
 	const std::string & devID,
 	const macros_map_t & macros_profiles
 ) {
 	try {
 		InitializedDevice & device = this->initialized_devices_.at(devID);
+
+		/* exit MacroRecordMode if necessary */
+		device.exit_macro_record_mode = true;
+		device.standard_keys_events.clear();
+
 		device.macros_man->setMacrosProfiles(macros_profiles);
 	}
 	catch (const std::out_of_range& oor) {
