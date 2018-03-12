@@ -543,7 +543,6 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 					device.pressed_keys & to_type(Keys::GK_KEY_MR) ) {
 					/* exiting macro record mode */
 					exit = true;
-					device.standard_keys_events.clear();
 					continue;
 				}
 
@@ -597,12 +596,14 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 				}
 
 				exit = true;
-				device.standard_keys_events.clear();
 				break;
+
 			default:
 				break;
 		}
 	}
+
+	device.standard_keys_events.clear();
 
 	delete pDBus;
 	pDBus = nullptr;
@@ -1136,7 +1137,6 @@ void KeyboardDriver::resetDeviceState(const std::string & devID) {
 
 		/* exit MacroRecordMode if necessary */
 		device.exit_macro_record_mode = true;
-		device.standard_keys_events.clear();
 
 		device.macros_man->clearMacroProfiles();
 
@@ -1239,7 +1239,6 @@ void KeyboardDriver::setDeviceMacrosProfiles(
 
 		/* exit MacroRecordMode if necessary */
 		device.exit_macro_record_mode = true;
-		device.standard_keys_events.clear();
 
 		device.macros_man->setMacrosProfiles(macros_profiles);
 	}
