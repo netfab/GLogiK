@@ -655,9 +655,12 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 					if( mask & to_type(Leds::GK_LED_MR) ) {
 						this->enterMacroRecordMode(device, devID);
 
-						/* disabling macro record mode */
-						if(this->updateCurrentLedsMask(device, true))
-							this->setMxKeysLeds(device);
+						/* don't need to update leds status if the mask is already 0 */
+						if(device.current_leds_mask != 0) {
+							/* disabling macro record mode */
+							if(this->updateCurrentLedsMask(device, true))
+								this->setMxKeysLeds(device);
+						}
 					}
 					else { /* check to run macro */
 						if( this->checkMacroKey(device) ) {
