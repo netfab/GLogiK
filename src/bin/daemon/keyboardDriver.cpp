@@ -648,6 +648,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 				 * run macros only after proper event length
 				 */
 				if( device.transfer_length == this->leds_update_event_length_ ) {
+					/* update mask with potential pressed keys */
 					if(this->updateCurrentLedsMask(device))
 						this->setMxKeysLeds(device);
 
