@@ -42,7 +42,7 @@ MacrosBanks::~MacrosBanks() {
 
 void MacrosBanks::initMacrosProfiles(const std::vector<std::string> & keys_names) {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "initialize " << keys_names.size() << " macro keys";
+	LOG(DEBUG2) << "initialize " << keys_names.size() << " macro keys";
 #endif
 	macro_t macro;
 	for( const auto & name : keys_names ) {
@@ -50,6 +50,19 @@ void MacrosBanks::initMacrosProfiles(const std::vector<std::string> & keys_names
 			profile.second.insert( std::pair<const std::string, macro_t>(name, macro));
 		}
 	}
+}
+
+const macros_map_t & MacrosBanks::getMacrosProfiles(void) const
+{
+	return this->macros_profiles_;
+}
+
+void MacrosBanks::setMacrosProfiles(const macros_map_t & macros)
+{
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "setting macros profiles";
+#endif
+	this->macros_profiles_ = macros;
 }
 
 void MacrosBanks::clearMacro(

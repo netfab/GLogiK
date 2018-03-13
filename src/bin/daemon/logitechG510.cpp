@@ -218,7 +218,7 @@ void LogitechG510::setKeyboardColor(const InitializedDevice & device) {
 	const uint8_t & r = device.rgb[0];
 	const uint8_t & g = device.rgb[1];
 	const uint8_t & b = device.rgb[2];
-	LOG(DEBUG1) << "setting " << device.device.name << " backlight color "
+	LOG(DEBUG3) << "setting " << device.device.name << " backlight color "
 				<< "with following RGB bytes : "
 				<< getHexRGB(r, g, b);
 #endif

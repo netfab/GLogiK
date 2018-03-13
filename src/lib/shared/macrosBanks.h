@@ -46,8 +46,8 @@ class MacrosBanks
 
 		void initMacrosProfiles(const std::vector<std::string> & keys_names);
 
-		const macros_map_t & getMacrosProfiles(void) const { return this->macros_profiles_; };
-		void setMacrosProfiles(const macros_map_t & macros) { this->macros_profiles_ = macros; };
+		const macros_map_t & getMacrosProfiles(void) const;
+		void setMacrosProfiles(const macros_map_t & macros);
 
 		void clearMacro(
 			const uint8_t profile,

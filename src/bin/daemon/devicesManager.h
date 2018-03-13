@@ -78,15 +78,12 @@ class DevicesManager
 		const std::vector<std::string> getStoppedDevices(void) const;
 		const std::vector<std::string> getDeviceProperties(const std::string & devID);
 
-		void setDeviceBacklightColor(
+		void setDeviceActiveConfiguration(
 			const std::string & devID,
+			const macros_map_t & macros_profiles,
 			const uint8_t r,
 			const uint8_t g,
 			const uint8_t b
-		);
-		void setDeviceMacrosProfiles(
-			const std::string & devID,
-			const macros_map_t & macros_profiles
 		);
 
 		const macros_map_t & getDeviceMacrosProfiles(const std::string & devID);

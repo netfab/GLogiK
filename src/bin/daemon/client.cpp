@@ -163,18 +163,15 @@ void Client::setDeviceActiveUser(
 )	{
 	try {
 		const DeviceProperties & device = this->devices_.at(devID);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "setting macros profiles for device " << devID;
-#endif
-		dev_manager->setDeviceMacrosProfiles( devID, device.getMacrosProfiles() );
 
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "setting backlight color for device " << devID;
-#endif
 		const uint8_t r = device.getBLColor_R();
 		const uint8_t g = device.getBLColor_G();
 		const uint8_t b = device.getBLColor_B();
-		dev_manager->setDeviceBacklightColor(devID, r, g, b);
+
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "setting active configuration for device " << devID;
+#endif
+		dev_manager->setDeviceActiveConfiguration(devID, device.getMacrosProfiles(), r, g, b);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice

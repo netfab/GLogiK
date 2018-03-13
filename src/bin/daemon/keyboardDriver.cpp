@@ -1221,22 +1221,13 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 	}
 }
 
-/* only called when setting active user's parameters */
-void KeyboardDriver::setDeviceBacklightColor(const std::string & devID, const uint8_t r, const uint8_t g, const uint8_t b) {
-	try {
-		InitializedDevice & device = this->initialized_devices_.at(devID);
-		this->updateKeyboardColor(device, r, g, b);
-		this->setKeyboardColor(device);
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
-	}
-}
-
-/* only called when setting active user's parameters */
-void KeyboardDriver::setDeviceMacrosProfiles(
+/* called when setting active user's configuration */
+void KeyboardDriver::setDeviceActiveConfiguration(
 	const std::string & devID,
-	const macros_map_t & macros_profiles
+	const macros_map_t & macros_profiles,
+	const uint8_t r,
+	const uint8_t g,
+	const uint8_t b
 ) {
 	try {
 		InitializedDevice & device = this->initialized_devices_.at(devID);
@@ -1244,7 +1235,12 @@ void KeyboardDriver::setDeviceMacrosProfiles(
 		/* exit MacroRecordMode if necessary */
 		device.exit_macro_record_mode = true;
 
+		/* set macros profiles */
 		device.macros_man->setMacrosProfiles(macros_profiles);
+
+		/* set backlight color */
+		this->updateKeyboardColor(device, r, g, b);
+		this->setKeyboardColor(device);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice

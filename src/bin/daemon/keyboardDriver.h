@@ -192,15 +192,12 @@ class KeyboardDriver
 		void closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
 		void resetDeviceState(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
 
-		void setDeviceBacklightColor(
+		void setDeviceActiveConfiguration(
 			const std::string & devID,
+			const macros_map_t & macros_profiles,
 			const uint8_t r,
 			const uint8_t g,
 			const uint8_t b
-		);
-		void setDeviceMacrosProfiles(
-			const std::string & devID,
-			const macros_map_t & macros_profiles
 		);
 
 		const macros_map_t & getDeviceMacrosProfiles(const std::string & devID);
