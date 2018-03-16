@@ -322,7 +322,7 @@ void DevicesHandler::setDeviceState(const std::string & devID, const DevicePrope
 	}
 }
 
-void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProperties & device, const std::string & session_state) {
+void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProperties & device) {
 	unsigned int num = 0;
 
 	/* initialize device properties */
@@ -420,9 +420,9 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		LOG(INFO)	<< "found device [" << devID << "] - "
 					<< device.getVendor() << " " << device.getModel();
 		LOG(INFO)	<< "[" << devID << "] configuration file found and loaded";
-		if(session_state == "active") {
-			this->setDeviceState(devID, device);
-		}
+
+		/* send device configuration to daemon */
+		this->setDeviceState(devID, device);
 	}
 	catch ( const GLogiKExcept & e ) {
 		try {
@@ -452,7 +452,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	}
 }
 
-void DevicesHandler::startDevice(const std::string & devID, const std::string & session_state) {
+void DevicesHandler::startDevice(const std::string & devID) {
 	try {
 		this->started_devices_.at(devID);
 #if DEBUGGING_ON
@@ -473,7 +473,7 @@ void DevicesHandler::startDevice(const std::string & devID, const std::string & 
 #endif
 			DeviceProperties device;
 			/* also load configuration file */
-			this->setDeviceProperties(devID, device, session_state);
+			this->setDeviceProperties(devID, device);
 			this->started_devices_[devID] = device;
 		}
 	}

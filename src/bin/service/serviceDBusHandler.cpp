@@ -791,7 +791,7 @@ void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devices
 #if DEBUGGING_ON
 					LOG(DEBUG3) << "device status from daemon: [" << devID << "] started";
 #endif
-					this->devices_.startDevice(devID, this->session_state_);
+					this->devices_.startDevice(devID);
 				}
 				else {
 					LOG(WARNING) << "received devicesStarted signal for device " << devID;

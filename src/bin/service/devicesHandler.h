@@ -52,7 +52,7 @@ class DevicesHandler
 		void setDBus(NSGKDBus::GKDBus* pDBus);
 		void setClientID(const std::string & id);
 
-		void startDevice(const std::string & devID, const std::string & session_state);
+		void startDevice(const std::string & devID);
 		void stopDevice(const std::string & devID);
 		void unplugDevice(const std::string & devID);
 
@@ -86,8 +86,7 @@ class DevicesHandler
 
 		void setDeviceProperties(
 			const std::string & devID,
-			DeviceProperties & device,
-			const std::string & session_state = "unknown"
+			DeviceProperties & device
 		);
 		void loadDeviceConfigurationFile(DeviceProperties & device);
 
