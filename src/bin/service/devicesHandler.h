@@ -29,6 +29,7 @@
 #include <map>
 #include <sstream>
 
+#include "lib/utils/utils.h"
 #include "lib/dbus/GKDBus.h"
 #include "lib/shared/glogik.h"
 #include "lib/shared/deviceProperties.h"
@@ -47,6 +48,7 @@ class DevicesHandler
 		DevicesHandler(void);
 		~DevicesHandler(void);
 
+		void setGKfs(NSGKUtils::FileSystem* pGKfs);
 		void setDBus(NSGKDBus::GKDBus* pDBus);
 		void setClientID(const std::string & id);
 
@@ -72,6 +74,7 @@ class DevicesHandler
 
 	private:
 		NSGKDBus::GKDBus* pDBus_;
+		NSGKUtils::FileSystem* pGKfs_;
 		const NSGKDBus::BusConnection system_bus_;
 		std::string client_id_;
 		std::ostringstream buffer_;

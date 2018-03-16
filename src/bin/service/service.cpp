@@ -19,17 +19,20 @@
  *
  */
 
+#include <errno.h>
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <cstring>
 #include <cstdlib>
 #include <csignal>
 
+#include <new>
 #include <fstream>
 #include <iostream>
 
-#include "lib/utils/utils.h"
 #include "lib/shared/sessionManager.h"
 
 #include "serviceDBusHandler.h"
@@ -41,7 +44,11 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DesktopService::DesktopService() : buffer_("", std::ios_base::app)
+DesktopService::DesktopService() :
+	pid_(0),
+	log_fd_(nullptr),
+	buffer_("", std::ios_base::app),
+	pGKfs_(nullptr)
 {
 	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
 	if( LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() != NONE ) {
@@ -94,10 +101,17 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 		this->daemonize();
 
 		{
+			try {
+				this->pGKfs_ = new FileSystem();
+			}
+			catch (const std::bad_alloc& e) { /* handle new() failure */
+				throw GLogiKBadAlloc("GKfs bad allocation");
+			}
+
 			SessionManager session;
 			this->fds[0].fd = session.openConnection();
 
-			ServiceDBusHandler DBusHandler(this->pid_, session);
+			ServiceDBusHandler DBusHandler(this->pid_, session, this->pGKfs_);
 
 			while( session.isSessionAlive() ) {
 				int ret = poll(this->fds, 1, 150);
@@ -111,12 +125,16 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 			}
 		}
 
+		delete this->pGKfs_; this->pGKfs_ = nullptr;
+
 #if DEBUGGING_ON
 		LOG(DEBUG) << "exiting with success";
 #endif
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
+		delete this->pGKfs_; this->pGKfs_ = nullptr;
+
 		this->buffer_.str( e.what() );
 		if(errno != 0)
 			this->buffer_ << " : " << strerror(errno);
@@ -124,6 +142,8 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 		return EXIT_FAILURE;
 	}
 	catch ( const GLogiKFatalError & e ) {
+		delete this->pGKfs_; this->pGKfs_ = nullptr;
+
 		LOG(ERROR) << e.what();
 		return EXIT_FAILURE;
 	}

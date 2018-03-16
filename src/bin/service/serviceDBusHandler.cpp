@@ -25,7 +25,6 @@
 #include <thread>
 #include <chrono>
 
-#include "lib/utils/utils.h"
 #include "lib/shared/glogik.h"
 
 #include "serviceDBusHandler.h"
@@ -35,7 +34,11 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
+ServiceDBusHandler::ServiceDBusHandler(
+	pid_t pid,
+	SessionManager& session,
+	NSGKUtils::FileSystem* pGKfs
+	)
 	:	pDBus_(nullptr),
 		system_bus_(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
 		skip_retry_(false),
@@ -44,6 +47,8 @@ ServiceDBusHandler::ServiceDBusHandler(pid_t pid, SessionManager& session)
 		session_framework_(SessionTracker::F_UNKNOWN),
 		buffer_("", std::ios_base::app)
 {
+	this->devices_.setGKfs(pGKfs);
+
 	try {
 		try {
 			try {

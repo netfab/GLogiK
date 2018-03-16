@@ -28,6 +28,7 @@
 
 #include <sys/types.h>
 
+#include "lib/utils/utils.h"
 #include "lib/dbus/GKDBus.h"
 #include "lib/shared/sessionManager.h"
 
@@ -48,7 +49,11 @@ enum class SessionTracker
 class ServiceDBusHandler
 {
 	public:
-		ServiceDBusHandler(pid_t pid, SessionManager& session);
+		ServiceDBusHandler(
+			pid_t pid,
+			SessionManager& session,
+			NSGKUtils::FileSystem* pGKfs
+		);
 		~ServiceDBusHandler(void);
 
 		void updateSessionState(void);

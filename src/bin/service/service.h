@@ -30,6 +30,8 @@
 
 #include <sstream>
 
+#include "lib/utils/utils.h"
+
 namespace GLogiK
 {
 
@@ -46,10 +48,11 @@ class DesktopService
 	protected:
 
 	private:
-		pid_t pid_ = 0;
-		FILE* log_fd_ = nullptr;
-		std::ostringstream buffer_;
+		pid_t pid_;
+		FILE* log_fd_;
 		struct pollfd fds[1];
+		std::ostringstream buffer_;
+		NSGKUtils::FileSystem* pGKfs_;
 
 		void daemonize(void);
 };

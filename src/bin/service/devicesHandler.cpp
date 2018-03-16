@@ -30,7 +30,6 @@
 #include <boost/archive/text_iarchive.hpp>
 
 #include "lib/shared/deviceConfigurationFile.h"
-#include "lib/utils/utils.h"
 
 #include "devicesHandler.h"
 
@@ -43,6 +42,7 @@ using namespace NSGKUtils;
 
 DevicesHandler::DevicesHandler()
 	:	pDBus_(nullptr),
+		pGKfs_(nullptr),
 		system_bus_(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
 		client_id_("undefined"),
 		buffer_("", std::ios_base::app)
@@ -61,6 +61,10 @@ DevicesHandler::~DevicesHandler() {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler destruction";
 #endif
+}
+
+void DevicesHandler::setGKfs(NSGKUtils::FileSystem* pGKfs) {
+	this->pGKfs_ = pGKfs;
 }
 
 void DevicesHandler::setDBus(NSGKDBus::GKDBus* pDBus) {
@@ -395,7 +399,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	/* search a configuration file */
 
 #if DEBUGGING_ON
-LOG(DEBUG2) << "[" << devID << "] assigning a configuration file";
+	LOG(DEBUG2) << "[" << devID << "] assigning a configuration file";
 #endif
 	fs::path directory(this->config_root_directory_);
 	directory /= device.getVendor();
@@ -410,6 +414,7 @@ LOG(DEBUG2) << "[" << devID << "] assigning a configuration file";
 #endif
 		/* configuration file loaded */
 		this->loadDeviceConfigurationFile(device);
+		device.setWatchDescriptor( this->pGKfs_->notifyWatchFile( device.getConfFile() ) );
 		this->used_conf_files_.insert( device.getConfFile() );
 
 		LOG(INFO)	<< "found device [" << devID << "] - "
@@ -428,6 +433,7 @@ LOG(DEBUG2) << "[" << devID << "] assigning a configuration file";
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "new one : " << device.getConfFile();
 #endif
+			device.setWatchDescriptor( this->pGKfs_->notifyWatchFile( device.getConfFile() ) );
 			this->used_conf_files_.insert( device.getConfFile() );
 		}
 		catch ( const GLogiKExcept & e ) {
@@ -512,6 +518,7 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 	try {
 		const DeviceProperties & device = this->stopped_devices_.at(devID);
 		const std::string conf_file( device.getConfFile() );
+		this->pGKfs_->notifyRemoveFile( device.getWatchDescriptor() );
 		this->stopped_devices_.erase(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "[" << devID << "] erased device";

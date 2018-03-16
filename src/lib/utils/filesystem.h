@@ -26,6 +26,8 @@
 #error "Only "utils/utils.h" can be included directly, this file may disappear or change contents."
 #endif
 
+#include <set>
+#include <string>
 #include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
@@ -36,13 +38,20 @@ namespace NSGKUtils
 class FileSystem
 {
 	public:
-		static void createOwnerDirectory(const fs::path & directory);
-
-	protected:
 		FileSystem(void);
 		~FileSystem(void);
 
+		static void createOwnerDirectory(const fs::path & directory);
+
+		const int notifyWatchFile(const std::string & filePath);
+		void notifyRemoveFile(const int wd);
+
+	protected:
+
 	private:
+		int inotify_queue_fd_;
+
+		std::set<int> watch_descriptors_;
 };
 
 } // namespace NSGKUtils

@@ -24,8 +24,14 @@
 namespace GLogiK
 {
 
-DeviceProperties::DeviceProperties() : vendor_("unknown"), model_("unknown"), conf_file_("none"),
-	backlight_color_R_(0xFF), backlight_color_G_(0xFF), backlight_color_B_(0xFF)
+DeviceProperties::DeviceProperties() :
+	vendor_("unknown"),
+	model_("unknown"),
+	conf_file_("none"),
+	watch_descriptor_(-1),
+	backlight_color_R_(0xFF),
+	backlight_color_G_(0xFF),
+	backlight_color_B_(0xFF)
 {
 }
 
@@ -42,6 +48,14 @@ void DeviceProperties::setModel(const std::string & model) {
 
 void DeviceProperties::setConfFile(const std::string & conf_file) {
 	this->conf_file_ = conf_file;
+}
+
+void DeviceProperties::setWatchDescriptor(int wd) {
+	this->watch_descriptor_ = wd;
+}
+
+const int DeviceProperties::getWatchDescriptor(void) const {
+	return this->watch_descriptor_;
 }
 
 } // namespace GLogiK
