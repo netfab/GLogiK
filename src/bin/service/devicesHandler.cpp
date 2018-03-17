@@ -22,6 +22,7 @@
 #include <exception>
 #include <stdexcept>
 #include <fstream>
+#include <set>
 
 #include <boost/archive/archive_exception.hpp>
 #include <boost/archive/xml_archive_exception.hpp>
@@ -93,7 +94,6 @@ void DevicesHandler::clearDevices(void) {
 	/* clear all containers */
 	this->started_devices_.clear();
 	this->stopped_devices_.clear();
-	this->used_conf_files_.clear();
 }
 
 void DevicesHandler::saveDeviceProperties(
@@ -203,7 +203,6 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 		LOG(ERROR) << err;
 		// TODO throw GLogiKExcept to create new configuration
 		// file and avoid overwriting on close ?
-		// must add device.getConfFile() to this->used_conf_files_ then.
 	}
 	/*
 	 * catch std::ios_base::failure on buggy compilers
@@ -404,10 +403,20 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	fs::path directory(this->config_root_directory_);
 	directory /= device.getVendor();
 
+	std::set<std::string> used_conf_files;
+	{
+		for(const auto & dev : this->started_devices_) {
+			used_conf_files.insert( dev.second.getConfFile() );
+		}
+		for(const auto & dev : this->stopped_devices_) {
+			used_conf_files.insert( dev.second.getConfFile() );
+		}
+	}
+
 	try {
 		/* trying to find an existing configuration file */
 		device.setConfFile( DeviceConfigurationFile::getNextAvailableNewPath(
-			this->used_conf_files_, directory, device.getModel(), true)
+			used_conf_files, directory, device.getModel(), true)
 		);
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "found : " << device.getConfFile();
@@ -415,7 +424,6 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		/* configuration file loaded */
 		this->loadDeviceConfigurationFile(device);
 		device.setWatchDescriptor( this->pGKfs_->notifyWatchFile( device.getConfFile() ) );
-		this->used_conf_files_.insert( device.getConfFile() );
 
 		LOG(INFO)	<< "found device [" << devID << "] - "
 					<< device.getVendor() << " " << device.getModel();
@@ -428,13 +436,12 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		try {
 			/* none found, assign a new configuration file to this device */
 			device.setConfFile( DeviceConfigurationFile::getNextAvailableNewPath(
-				this->used_conf_files_, directory, device.getModel())
+				used_conf_files, directory, device.getModel())
 			);
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "new one : " << device.getConfFile();
 #endif
 			device.setWatchDescriptor( this->pGKfs_->notifyWatchFile( device.getConfFile() ) );
-			this->used_conf_files_.insert( device.getConfFile() );
 		}
 		catch ( const GLogiKExcept & e ) {
 			LOG(ERROR) << e.what();
@@ -517,18 +524,13 @@ void DevicesHandler::unplugDevice(const std::string & devID) {
 void DevicesHandler::unrefDevice(const std::string & devID) {
 	try {
 		const DeviceProperties & device = this->stopped_devices_.at(devID);
-		const std::string conf_file( device.getConfFile() );
+
 		this->pGKfs_->notifyRemoveFile( device.getWatchDescriptor() );
+
 		this->stopped_devices_.erase(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "[" << devID << "] erased device";
 #endif
-		if( this->used_conf_files_.count( conf_file ) == 1 ) {
-			this->used_conf_files_.erase( conf_file );
-#if DEBUGGING_ON
-				LOG(DEBUG3) << "conf file name unreferenced";
-#endif
-		}
 
 		std::string remoteMethod("DeleteDeviceConfiguration");
 

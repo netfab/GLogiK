@@ -25,7 +25,6 @@
 #include <cstdint>
 
 #include <string>
-#include <set>
 #include <map>
 #include <sstream>
 
@@ -80,7 +79,6 @@ class DevicesHandler
 		std::ostringstream buffer_;
 		std::string config_root_directory_;
 
-		std::set<std::string> used_conf_files_;
 		std::map<const std::string, DeviceProperties> started_devices_;
 		std::map<const std::string, DeviceProperties> stopped_devices_;
 
