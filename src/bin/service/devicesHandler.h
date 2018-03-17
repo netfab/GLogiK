@@ -87,13 +87,16 @@ class DevicesHandler
 			DeviceProperties & device
 		);
 		void loadDeviceConfigurationFile(DeviceProperties & device);
-
-		void setDeviceState(const std::string & devID, const DeviceProperties & device);
-		void unrefDevice(const std::string & devID);
-		void saveDeviceProperties(
+		void saveDeviceConfigurationFile(
 			const std::string & devID,
 			const DeviceProperties & device
 		);
+
+		void setDeviceState(
+			const std::string & devID,
+			const DeviceProperties & device
+		);
+		void unrefDevice(const std::string & devID);
 
 };
 

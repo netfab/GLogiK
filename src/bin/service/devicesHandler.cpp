@@ -96,7 +96,7 @@ void DevicesHandler::clearDevices(void) {
 	this->stopped_devices_.clear();
 }
 
-void DevicesHandler::saveDeviceProperties(
+void DevicesHandler::saveDeviceConfigurationFile(
 	const std::string & devID,
 	const DeviceProperties & device )
 {
@@ -607,7 +607,7 @@ const bool DevicesHandler::setDeviceMacro(
 				const macro_t macro_array = this->pDBus_->getNextMacroArgument();
 
 				device.setMacro(profile, keyName, macro_array);
-				this->saveDeviceProperties(devID, device);
+				this->saveDeviceConfigurationFile(devID, device);
 				return true;
 			}
 			catch (const GLogiKExcept & e) {
@@ -636,7 +636,7 @@ const bool DevicesHandler::clearDeviceMacro(
 		DeviceProperties & device = this->started_devices_.at(devID);
 
 		device.clearMacro(profile, keyName);
-		this->saveDeviceProperties(devID, device);
+		this->saveDeviceConfigurationFile(devID, device);
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
