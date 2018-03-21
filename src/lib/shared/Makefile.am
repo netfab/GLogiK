@@ -21,8 +21,6 @@ libGKShared_la_SOURCES = \
 	%D%/keyEvent.h \
 	%D%/macrosBanks.cpp \
 	%D%/macrosBanks.h \
-	%D%/deviceConfigurationFile.cpp \
-	%D%/deviceConfigurationFile.h \
 	%D%/deviceProperties.cpp \
 	%D%/deviceProperties.h \
 	%D%/glogik.cpp \

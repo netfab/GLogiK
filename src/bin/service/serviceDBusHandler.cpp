@@ -214,6 +214,22 @@ void ServiceDBusHandler::updateSessionState(void) {
 	this->reportChangedState();
 }
 
+const devices_files_map_t ServiceDBusHandler::getDevicesMap(void) {
+	return this->devices_.getDevicesMap();
+}
+
+void ServiceDBusHandler::checkDeviceConfigurationFile(const std::string & devID) {
+	this->devices_.checkDeviceConfigurationFile(devID);
+
+	/*
+	 * force state update, to load active user's parameters
+	 * for all plugged devices
+	 */
+	if( this->session_state_ == "active" ) {
+		this->reportChangedState();
+	}
+}
+
 /*
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

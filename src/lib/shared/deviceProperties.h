@@ -41,14 +41,14 @@ class DeviceProperties : public MacrosBanks
 		DeviceProperties(void);
 		~DeviceProperties(void);
 
-		const std::string & getVendor(void) const { return this->vendor_; }
-		const std::string & getModel(void) const { return this->model_; }
-		const std::string & getConfFile(void) const { return this->conf_file_; }
+		const std::string & getVendor(void) const;
+		const std::string & getModel(void) const;
+		const std::string & getConfigFileName(void) const;
 		const int getWatchDescriptor(void) const;
 
 		void setVendor(const std::string & vendor);
 		void setModel(const std::string & model);
-		void setConfFile(const std::string & conf_file);
+		void setConfigFileName(const std::string & filename);
 		void setWatchDescriptor(int wd);
 
 		void setBLColor_R(uint8_t r) { this->backlight_color_R_ = r & 0xFF; }
@@ -64,7 +64,7 @@ class DeviceProperties : public MacrosBanks
 	private:
 		std::string vendor_;
 		std::string model_;
-		std::string conf_file_;
+		std::string config_file_name_;
 		int watch_descriptor_;
 
 		uint8_t backlight_color_R_;

@@ -19,6 +19,7 @@
  *
  */
 
+#include <utility>
 #include <exception>
 #include <stdexcept>
 #include <fstream>
@@ -29,8 +30,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
-
-#include "lib/shared/deviceConfigurationFile.h"
 
 #include "devicesHandler.h"
 
@@ -96,6 +95,39 @@ void DevicesHandler::clearDevices(void) {
 	this->stopped_devices_.clear();
 }
 
+const devices_files_map_t DevicesHandler::getDevicesMap(void) {
+	devices_files_map_t ret;
+	for(const auto & dev : this->started_devices_) {
+		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFileName()) );
+	}
+	for(const auto & dev : this->stopped_devices_) {
+		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFileName()) );
+	}
+	return ret;
+}
+
+void DevicesHandler::checkDeviceConfigurationFile(const std::string & devID) {
+	try {
+		DeviceProperties & device = this->started_devices_.at(devID);
+		this->loadDeviceConfigurationFile(device);
+
+		/* send device configuration to daemon */
+		this->setDeviceState(devID, device);
+	}
+	catch (const std::out_of_range& oor) {
+		try {
+			DeviceProperties & device = this->stopped_devices_.at(devID);
+			this->loadDeviceConfigurationFile(device);
+
+			/* send device configuration to daemon */
+			this->setDeviceState(devID, device);
+		}
+		catch (const std::out_of_range& oor) {
+			LOG(WARNING) << "device [" << devID << "] not found in containers, giving up";
+		}
+	}
+}
+
 void DevicesHandler::saveDeviceConfigurationFile(
 	const std::string & devID,
 	const DeviceProperties & device )
@@ -106,16 +138,16 @@ void DevicesHandler::saveDeviceConfigurationFile(
 
 		FileSystem::createOwnerDirectory(current_path);
 
-		current_path = device.getConfFile();
+		current_path /= device.getConfigFileName();
 
 		try {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "[" << devID << "] trying to open configuration file for writing : " << device.getConfFile();
+			LOG(DEBUG2) << "[" << devID << "] trying to open configuration file for writing : " << current_path.string();
 #endif
 
 			std::ofstream ofs;
 			ofs.exceptions(std::ofstream::failbit|std::ofstream::badbit);
-			ofs.open(device.getConfFile(), std::ofstream::out|std::ofstream::trunc);
+			ofs.open(current_path.string(), std::ofstream::out|std::ofstream::trunc);
 
 			fs::permissions(current_path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 #if DEBUGGING_ON
@@ -162,13 +194,17 @@ void DevicesHandler::saveDeviceConfigurationFile(
 }
 
 void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
+	fs::path current_path(this->config_root_directory_);
+	current_path /= device.getVendor();
+	current_path /= device.getConfigFileName();
+
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "loading device configuration file " << device.getConfFile();
+	LOG(DEBUG2) << "loading device configuration file " << device.getConfigFileName();
 #endif
 	try {
 		std::ifstream ifs;
 		ifs.exceptions(std::ifstream::badbit);
-		ifs.open(device.getConfFile());
+		ifs.open(current_path.string());
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "configuration file successfully opened for reading";
 #endif
@@ -403,59 +439,71 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	fs::path directory(this->config_root_directory_);
 	directory /= device.getVendor();
 
-	std::set<std::string> used_conf_files;
+	std::set<std::string> already_used;
 	{
 		for(const auto & dev : this->started_devices_) {
-			used_conf_files.insert( dev.second.getConfFile() );
+			already_used.insert( dev.second.getConfigFileName() );
 		}
 		for(const auto & dev : this->stopped_devices_) {
-			used_conf_files.insert( dev.second.getConfFile() );
+			already_used.insert( dev.second.getConfigFileName() );
 		}
 	}
 
 	try {
-		/* trying to find an existing configuration file */
-		device.setConfFile( DeviceConfigurationFile::getNextAvailableNewPath(
-			used_conf_files, directory, device.getModel(), true)
-		);
+		try {
+			/* trying to find an existing configuration file */
+			device.setConfigFileName(
+				this->pGKfs_->getNextAvailableFileName(already_used, directory, device.getModel(), "cfg", true)
+			);
+		}
+		catch ( const GLogiKExcept & e ) {
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "found : " << device.getConfFile();
+			LOG(DEBUG1) << e.what();
 #endif
-		/* configuration file loaded */
-		this->loadDeviceConfigurationFile(device);
-		device.setWatchDescriptor( this->pGKfs_->notifyWatchFile( device.getConfFile() ) );
+			throw GLogiKExcept("configuration file not found");
+		}
 
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "found : " << device.getConfigFileName();
+#endif
+		/* loading configuration file */
+		this->loadDeviceConfigurationFile(device);
 		LOG(INFO)	<< "found device [" << devID << "] - "
 					<< device.getVendor() << " " << device.getModel();
 		LOG(INFO)	<< "[" << devID << "] configuration file found and loaded";
 
+		/* assuming that directory is readable since we just load
+		 * the configuration file */
+		this->watchDirectory(device, false);
+
 		/* send device configuration to daemon */
 		this->setDeviceState(devID, device);
 	}
-	catch ( const GLogiKExcept & e ) {
+	catch ( const GLogiKExcept & e ) { /* should happen only when configuration file not found */
+#if DEBUGGING_ON
+		LOG(DEBUG1) << e.what();
+#endif
+		LOG(WARNING) << "trying to create new configuration file";
+
 		try {
 			/* none found, assign a new configuration file to this device */
-			device.setConfFile( DeviceConfigurationFile::getNextAvailableNewPath(
-				used_conf_files, directory, device.getModel())
+			device.setConfigFileName(
+				this->pGKfs_->getNextAvailableFileName(already_used, directory, device.getModel(), "cfg")
 			);
+
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "new one : " << device.getConfFile();
+			LOG(DEBUG3) << "new one : " << device.getConfigFileName();
 #endif
-			device.setWatchDescriptor( this->pGKfs_->notifyWatchFile( device.getConfFile() ) );
+			/* we need to create the directory before watching it */
+			this->saveDeviceConfigurationFile(devID, device);
+
+			/* assuming that directory is readable since we just save
+			 * the configuration file and set permissions on directory */
+			this->watchDirectory(device, false);
 		}
 		catch ( const GLogiKExcept & e ) {
 			LOG(ERROR) << e.what();
 		}
-	}
-	/*
-	 * catch std::ios_base::failure on buggy compilers
-	 * should be fixed with gcc >= 7.0
-	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
-	 */
-	catch( const std::exception & e ) {
-		this->buffer_.str("(buggy exception) fail to open configuration file : ");
-		this->buffer_ << e.what();
-		LOG(ERROR) << this->buffer_.str();
 	}
 }
 
@@ -525,7 +573,7 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 	try {
 		const DeviceProperties & device = this->stopped_devices_.at(devID);
 
-		this->pGKfs_->notifyRemoveFile( device.getWatchDescriptor() );
+		this->pGKfs_->removeNotifyWatch( device.getWatchDescriptor() );
 
 		this->stopped_devices_.erase(devID);
 #if DEBUGGING_ON
@@ -608,6 +656,7 @@ const bool DevicesHandler::setDeviceMacro(
 
 				device.setMacro(profile, keyName, macro_array);
 				this->saveDeviceConfigurationFile(devID, device);
+				this->watchDirectory(device);
 				return true;
 			}
 			catch (const GLogiKExcept & e) {
@@ -637,6 +686,7 @@ const bool DevicesHandler::clearDeviceMacro(
 
 		device.clearMacro(profile, keyName);
 		this->saveDeviceConfigurationFile(devID, device);
+		this->watchDirectory(device);
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
@@ -646,6 +696,19 @@ const bool DevicesHandler::clearDeviceMacro(
 		LOG(ERROR) << "clear macro failure: " << e.what();
 	}
 	return false;
+}
+
+void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check) {
+	fs::path directory(this->config_root_directory_);
+	directory /= device.getVendor();
+
+	try {
+		device.setWatchDescriptor( this->pGKfs_->addNotifyDirectoryWatch( directory.string(), check ) );
+	}
+	catch ( const GLogiKExcept & e ) {
+		LOG(WARNING) << e.what();
+		LOG(WARNING) << "configuration file monitoring will be disabled";
+	}
 }
 
 } // namespace GLogiK

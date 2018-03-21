@@ -16,6 +16,8 @@ libGKUtils_la_LIBADD = \
 libGKUtils_la_SOURCES = \
 	%D%/randomGenerator.cpp \
 	%D%/randomGenerator.h \
+	%D%/FSNotify.cpp \
+	%D%/FSNotify.h \
 	%D%/filesystem.cpp \
 	%D%/filesystem.h \
 	%D%/functions.cpp \

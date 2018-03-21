@@ -59,6 +59,9 @@ class ServiceDBusHandler
 		void updateSessionState(void);
 		void checkDBusMessages(void);
 
+		const devices_files_map_t getDevicesMap(void);
+		void checkDeviceConfigurationFile(const std::string & devID);
+
 	protected:
 
 	private:

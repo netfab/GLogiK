@@ -129,8 +129,6 @@ GLogiK=$PWD/.. CD=. {
 			}
 			GKShared=shared/ {
 				Makefile.am
-				deviceConfigurationFile.cpp
-				deviceConfigurationFile.h
 				deviceProperties.cpp
 				deviceProperties.h
 				glogik.cpp
@@ -145,6 +143,8 @@ GLogiK=$PWD/.. CD=. {
 				Makefile.am
 				filesystem.cpp
 				filesystem.h
+				FSNotify.cpp
+				FSNotify.h
 				functions.cpp
 				functions.h
 				exception.cpp

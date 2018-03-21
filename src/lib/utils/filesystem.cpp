@@ -19,14 +19,7 @@
  *
  */
 
-#include <errno.h>
-
-#include <cstring>
-#include <cstdint>
-
 #include <sstream>
-
-#include <sys/inotify.h>
 
 #include <config.h>
 
@@ -41,63 +34,54 @@
 namespace NSGKUtils
 {
 
-FileSystem::FileSystem() :
-	inotify_queue_fd_(0)
+FileSystem::FileSystem()
 {
-	this->inotify_queue_fd_ = inotify_init();
-	if( this->inotify_queue_fd_ == -1 ) {
-		std::ostringstream buffer("inotify init failure : ", std::ios_base::app);
-		buffer << strerror(errno);
-		throw GLogiKExcept( buffer.str() );
-	}
 }
 
 FileSystem::~FileSystem() {
-	/* sanity check */
-	if( ! this->watch_descriptors_.empty() ) {
-		LOG(WARNING) << "some watch descriptors were not removed";
-		for(const int &wd : this->watch_descriptors_) {
-			this->notifyRemoveFile(wd);
-		}
-		this->watch_descriptors_.clear();
-	}
-
-	/* closing queue */
-	if(this->inotify_queue_fd_ > -1) {
-		if( close(this->inotify_queue_fd_) == -1 ) {
-			LOG(ERROR) << "inotify queue closing failure : " << strerror(errno);
-		}
-	}
 }
 
-const int FileSystem::notifyWatchFile(const std::string & filePath) {
-	uint32_t mask = IN_DELETE_SELF | IN_MODIFY;
-	int ret = inotify_add_watch(this->inotify_queue_fd_, filePath.c_str(), mask);
-	if(ret < 0) {
-		std::ostringstream buffer("inotify watch file failure : ", std::ios_base::app);
-		buffer << strerror(errno);
-		throw GLogiKExcept( buffer.str() );
-	}
-	this->watch_descriptors_.insert(ret);
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "added file notify - " << filePath;
-#endif
-	return ret;
-}
+const std::string FileSystem::getNextAvailableFileName(
+	const std::set<std::string> & to_skip,
+	const fs::path & directory,
+	const std::string & basename,
+	const std::string & extension,
+	bool must_exist)
+{
+	unsigned int c = 0;
+	while( c++ < 10 ) { /* bonus point */
+		fs::path file(basename);
+		file += "_";
+		file += std::to_string(c);
+		file += ".";
+		file += extension;
 
-void FileSystem::notifyRemoveFile(const int wd) {
-	if(wd > -1) {
-		if( inotify_rm_watch(this->inotify_queue_fd_, wd) == 0 ) {
-			this->watch_descriptors_.erase(wd);
+		const std::string filename( file.string() );
+
+		if( to_skip.count(filename) == 1 ) {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "removed file notify";
+			LOG(DEBUG3) << "already used : " << filename;
 #endif
-			return;
+			continue;
 		}
-		LOG(ERROR) << "removed file notify failure : " << strerror(errno);
-		return;
+
+		if( must_exist ) {
+			fs::path full_path = directory / file;
+			if( ! fs::is_regular_file(full_path) ) {
+#if DEBUGGING_ON
+				LOG(DEBUG3) << "does not exist : " << full_path.string();
+#endif
+				continue;
+			}
+		}
+
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "returning new filename : " << filename;
+#endif
+		return filename;
 	}
-	LOG(ERROR) << "negative watch descriptor";
+
+	throw GLogiKExcept("can't get new filename, counter reached max");
 }
 
 void FileSystem::createOwnerDirectory(const fs::path & directory) {

@@ -27,8 +27,11 @@
 #endif
 
 #include <set>
+#include <map>
 #include <string>
 #include <boost/filesystem.hpp>
+
+#include "FSNotify.h"
 
 namespace fs = boost::filesystem;
 
@@ -36,22 +39,24 @@ namespace NSGKUtils
 {
 
 class FileSystem
+	:	public FSNotify
 {
 	public:
 		FileSystem(void);
 		~FileSystem(void);
 
 		static void createOwnerDirectory(const fs::path & directory);
-
-		const int notifyWatchFile(const std::string & filePath);
-		void notifyRemoveFile(const int wd);
+		const std::string getNextAvailableFileName(
+			const std::set<std::string> & to_skip,
+			const fs::path & directory,
+			const std::string & basename,
+			const std::string & extension,
+			bool must_exist=false
+		);
 
 	protected:
 
 	private:
-		int inotify_queue_fd_;
-
-		std::set<int> watch_descriptors_;
 };
 
 } // namespace NSGKUtils

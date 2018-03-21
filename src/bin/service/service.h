@@ -50,7 +50,7 @@ class DesktopService
 	private:
 		pid_t pid_;
 		FILE* log_fd_;
-		struct pollfd fds[1];
+
 		std::ostringstream buffer_;
 		NSGKUtils::FileSystem* pGKfs_;
 

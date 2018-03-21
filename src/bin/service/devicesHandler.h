@@ -38,6 +38,8 @@
 #define LogRemoteCallGetReplyFailure \
 	LOG(ERROR) << remoteMethod.c_str() << s_RemoteCallGetReplyFailure << e.what();
 
+typedef std::map<const std::string, const std::string> devices_files_map_t;
+
 namespace GLogiK
 {
 
@@ -69,6 +71,9 @@ class DevicesHandler
 			const uint8_t profile
 		);
 
+		const devices_files_map_t getDevicesMap(void);
+		void checkDeviceConfigurationFile(const std::string & devID);
+
 	protected:
 
 	private:
@@ -91,6 +96,7 @@ class DevicesHandler
 			const std::string & devID,
 			const DeviceProperties & device
 		);
+		void watchDirectory(DeviceProperties & device, const bool check=true);
 
 		void setDeviceState(
 			const std::string & devID,

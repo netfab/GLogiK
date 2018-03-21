@@ -79,9 +79,6 @@ DesktopService::DesktopService() :
 	if( this->log_fd_ == nullptr ) {
 		LOG(INFO) << "debug file not opened";
 	}
-
-	this->fds[0].fd = -1;
-	this->fds[0].events = POLLIN;
 }
 
 DesktopService::~DesktopService() {
@@ -109,17 +106,40 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 			}
 
 			SessionManager session;
-			this->fds[0].fd = session.openConnection();
+
+			struct pollfd fds[2];
+			nfds_t nfds = 2;
+
+			fds[0].fd = session.openConnection();
+			fds[0].events = POLLIN;
+
+			fds[1].fd = this->pGKfs_->getNotifyQueueDescriptor();
+			fds[1].events = POLLIN;
 
 			ServiceDBusHandler DBusHandler(this->pid_, session, this->pGKfs_);
 
 			while( session.isSessionAlive() ) {
-				int ret = poll(this->fds, 1, 150);
+				int num = poll(fds, nfds, 150);
+
 				// data to read ?
-				if( ret > 0 ) {
-					session.processICEMessages();
-					continue;
+				if( num > 0 ) {
+					if( fds[0].revents & POLLIN ) {
+						session.processICEMessages();
+						continue;
+					}
+
+					if( fds[1].revents & POLLIN) {
+						devices_files_map_t dev_map = DBusHandler.getDevicesMap();
+						this->pGKfs_->readNotifyEvents( dev_map );
+						for( const auto & d : dev_map ) {
+#if DEBUGGING_ON
+							LOG(DEBUG) << "[" << d.first << "]" << " checking configuration file: " << d.second;
+#endif
+							DBusHandler.checkDeviceConfigurationFile(d.first);
+						}
+					}
 				}
+
 				DBusHandler.updateSessionState();
 				DBusHandler.checkDBusMessages();
 			}
