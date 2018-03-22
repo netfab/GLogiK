@@ -483,7 +483,9 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 #if DEBUGGING_ON
 		LOG(DEBUG1) << e.what();
 #endif
-		LOG(WARNING) << "trying to create new configuration file";
+		LOG(INFO) << "[" << devID << "] started device : " << device.getVendor()
+				<< " " << device.getModel();
+		LOG(INFO) << "[" << devID << "] creating default configuration file";
 
 		try {
 			/* none found, assign a new configuration file to this device */
