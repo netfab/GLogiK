@@ -1,21 +1,33 @@
-## GLogiK, daemon to handle special features on gaming keyboards
+### GLogiK, daemon to handle special features on gaming keyboards
 
 Status : in development.
 
 Recognized devices :
  - Logitech G510s Gaming Keyboard (046d:c22d)
 
+### Links
+ - [homepage](https://glogik.tuxfamily.org/)
+
+### Features
+ - Create and/or clear macros and assign them to G-Keys
+ - Set keyboard backlight color
+ - Monitoring text based devices configuration files
+ - Ability to set keyboard configuration on the fly in multi-users environment
+ - Ability to handle multiple keyboard devices simultaneously
+ - Hotplugged devices monitoring
+ - Device status control via DBus
+
 ### Build Dependencies :
- - >=dev-libs/boost-1.62.0
- - >=dev-libs/libusb-1.0.19
+ - dev-libs/boost 1.62.0 or later
+ - dev-libs/libusb 1.0.19 or later
  - virtual/libudev
- - >=dev-libs/libevdev-1.5.7
- - >=sys-apps/dbus-1.10.18
- - >=x11-libs/libICE-1.0.9
- - >=x11-libs/libSM-1.2.2
+ - dev-libs/libevdev 1.5.7 or later
+ - sys-apps/dbus 1.10.18 or later
+ - x11-libs/libICE 1.0.9 or later
+ - x11-libs/libSM 1.2.2 or later
 
 ### Runtime Dependencies :
- - >=sys-auth/consolekit-1.1.2 **or** systemd-logind
+ - sys-auth/consolekit 1.1.2 or later, or systemd-logind
 
 GLogiK is untested with previous versions of each dependency, but it may work.  
 libusb-0.1 is not supported. Feel free to report any (non-)working version.
