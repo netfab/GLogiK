@@ -418,7 +418,7 @@ void DevicesManager::searchSupportedDevices(void) {
 
 			for(const auto& driver : this->drivers_) {
 				for(const auto& device : driver->getSupportedDevices()) {
-					if( device.vendor_id == vendor_id )
+					if( device.vendor_id == vendor_id ) {
 						if( device.product_id == product_id ) {
 
 							// path to the event device node in /dev
@@ -452,30 +452,35 @@ void DevicesManager::searchSupportedDevices(void) {
 								throw GLogiKExcept("stoi out of range");
 							}
 
-							DetectedDevice found;
-							found.device			= device;
-							found.input_dev_node	= devnode;
-							found.vendor			= vendor;
-							found.model				= model;
-							found.serial			= serial;
-							found.usec				= usec;
-							found.driver_ID			= driver->getDriverID();
-							found.device_bus		= bus;
-							found.device_num		= num;
+							const std::string devID( KeyboardDriver::getDeviceID(bus, num) );
 
-							const std::string devID = KeyboardDriver::getDeviceID(bus, num);
-							if( this->detected_devices_.count(devID) > 0 ) { /* sanity check */
-								udev_device_unref(dev);
-								throw GLogiKExcept("detected devices container error");
+							try {
+								const DetectedDevice & d = this->detected_devices_.at(devID);
+								LOG(WARNING) << "found already detected device : " << devID << " " << d.input_dev_node;
 							}
-							this->detected_devices_[devID] = found;
+							catch (const std::out_of_range& oor) {
+
+								DetectedDevice found;
+								found.device			= device;
+								found.input_dev_node	= devnode;
+								found.vendor			= vendor;
+								found.model				= model;
+								found.serial			= serial;
+								found.usec				= usec;
+								found.driver_ID			= driver->getDriverID();
+								found.device_bus		= bus;
+								found.device_num		= num;
+
+								this->detected_devices_[devID] = found;
 
 #if DEBUGGING_ON
-							LOG(DEBUG3) << "found device - Vid:Pid:DevNode:usec | bus:num : " << vendor_id
-										<< ":" << product_id << ":" << devnode << ":" << usec
-										<< " | " << to_uint(bus) << ":" << to_uint(num);
+								LOG(DEBUG3) << "found device - Vid:Pid:DevNode:usec | bus:num : " << vendor_id
+											<< ":" << product_id << ":" << devnode << ":" << usec
+											<< " | " << to_uint(bus) << ":" << to_uint(num);
 #endif
+							}
 						}
+					}
 				}
 			}
 
@@ -704,6 +709,10 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 					}
 					else if( action == "remove" ) {
 						this->checkForUnpluggedDevices();
+					}
+					else {
+						/* clear detected devices container */
+						this->detected_devices_.clear();
 					}
 				}
 			}
