@@ -8,7 +8,7 @@ Recognized devices :
 ### Links
  - [homepage](https://glogik.tuxfamily.org/)
 
-### Features
+### Features
  - Create and/or clear macros and assign them to G-Keys
  - Set keyboard backlight color
  - Monitoring text based devices configuration files
