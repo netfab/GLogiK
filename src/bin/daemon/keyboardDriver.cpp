@@ -1154,42 +1154,41 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 
 }
 
-void KeyboardDriver::resetDeviceState(const std::string & devID) {
-	try {
-		InitializedDevice & device = this->initialized_devices_.at(devID);
+void KeyboardDriver::resetDeviceState(InitializedDevice & device) {
+	/* exit MacroRecordMode if necessary */
+	device.exit_macro_record_mode = true;
 
-		/* exit MacroRecordMode if necessary */
-		device.exit_macro_record_mode = true;
-
-		device.macros_man->clearMacroProfiles();
+	device.macros_man->clearMacroProfiles();
 
 #if DEBUGGING_ON
-		LOG(DEBUG1) << device.strID << " resetting MxKeys leds status";
+	LOG(DEBUG1) << device.strID << " resetting MxKeys leds status";
 #endif
-		device.current_leds_mask = 0;
-		this->setMxKeysLeds(device);
+	device.current_leds_mask = 0;
+	this->setMxKeysLeds(device);
 
 #if DEBUGGING_ON
-		LOG(DEBUG1) << device.strID << " resetting keyboard backlight color";
+	LOG(DEBUG1) << device.strID << " resetting keyboard backlight color";
 #endif
-		this->updateKeyboardColor(device);
-		this->setKeyboardColor(device);
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
-	}
+	this->updateKeyboardColor(device);
+	this->setKeyboardColor(device);
 }
 
 void KeyboardDriver::resetDeviceState(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num) {
 	const std::string devID = KeyboardDriver::getDeviceID(bus, num);
 
+	try {
+		InitializedDevice & device = this->initialized_devices_.at(devID);
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "[" << devID << "] resetting state of " << dev.name << "("
-				<< dev.vendor_id << ":" << dev.product_id << "), device "
-				<< to_uint(num) << " on bus " << to_uint(bus);
+		LOG(DEBUG3) << "[" << devID << "] resetting state of " << dev.name << "("
+					<< dev.vendor_id << ":" << dev.product_id << "), device "
+					<< to_uint(num) << " on bus " << to_uint(bus);
 #endif
 
-	this->resetDeviceState(devID);
+		this->resetDeviceState(device);
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownDevice
+	}
 }
 
 void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num) {
@@ -1225,7 +1224,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 			GKSysLog(LOG_WARNING, WARNING, "listening thread not found !");
 		}
 
-		this->resetDeviceState(devID);
+		this->resetDeviceState(device);
 
 		delete device.macros_man;
 		device.macros_man = nullptr;

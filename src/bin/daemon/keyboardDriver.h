@@ -291,7 +291,7 @@ class KeyboardDriver
 		uint16_t getTimeLapse(InitializedDevice & device);
 		void runMacro(const std::string & devID);
 
-		void resetDeviceState(const std::string & devID);
+		void resetDeviceState(InitializedDevice & device);
 };
 
 } // namespace GLogiK
