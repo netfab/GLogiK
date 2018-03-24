@@ -195,7 +195,7 @@ void KeyboardDriver::attachKernelDrivers(InitializedDevice & device) {
 	for(auto it = device.to_attach.begin(); it != device.to_attach.end();) {
 		int numInt = (*it);
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "trying to attach kernel driver to interface " << numInt;
+		LOG(DEBUG1) << device.strID << " trying to attach kernel driver to interface " << numInt;
 #endif
 		ret = libusb_attach_kernel_driver(device.usb_handle, numInt); /* attaching */
 		if( this->handleLibusbError(ret) ) {
@@ -229,7 +229,8 @@ KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & device) {
 		case 0:
 			if( device.transfer_length > 0 ) {
 #if DEBUGGING_ON
-				LOG(DEBUG)	<< "exp. rl: " << this->interrupt_key_read_length
+				LOG(DEBUG)	<< device.strID
+							<< " exp. rl: " << this->interrupt_key_read_length
 							<< " act_l: " << device.transfer_length << ", xBuf[0]: "
 							<< std::hex << to_uint(device.keys_buffer[0]);
 #endif
@@ -243,7 +244,9 @@ KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & device) {
 			return KeyStatus::S_KEY_TIMEDOUT;
 			break;
 		default:
-			GKSysLog(LOG_ERR, ERROR, "getPressedKeys interrupt read error");
+			std::ostringstream err(device.strID, std::ios_base::app);
+			err << " getPressedKeys interrupt read error";
+			GKSysLog(LOG_ERR, ERROR, err.str());
 			this->handleLibusbError(ret);
 			if(ret == LIBUSB_ERROR_NO_DEVICE)
 				device.fatal_errors++;
@@ -498,8 +501,8 @@ void KeyboardDriver::fillStandardKeysEvents(InitializedDevice & device) {
 void KeyboardDriver::checkDeviceListeningStatus(InitializedDevice & device) {
 	/* check to give up */
 	if(device.fatal_errors > DEVICE_LISTENING_THREAD_MAX_ERRORS) {
-		std::ostringstream err("device ", std::ios_base::app);
-		err << device.device.name << " on bus " << to_uint(device.bus);
+		std::ostringstream err(device.strID, std::ios_base::app);
+		err << "device " << device.device.name << " on bus " << to_uint(device.bus);
 		GKSysLog(LOG_ERR, ERROR, err.str());
 		GKSysLog(LOG_ERR, ERROR, "reached listening thread maximum fatal errors, giving up");
 		device.listen_status = false;
@@ -614,23 +617,22 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 }
 
 void KeyboardDriver::runMacro(const std::string & devID) {
-	InitializedDevice &device = this->initialized_devices_[devID];
+	InitializedDevice & device = this->initialized_devices_[devID];
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "spawned running macro thread for " << device.device.name;
+	LOG(DEBUG2) << device.strID << " spawned running macro thread for " << device.device.name;
 #endif
 	device.macros_man->runMacro(device.chosen_macro_key);
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "exiting running macro thread";
+	LOG(DEBUG2) << device.strID << " exiting running macro thread";
 #endif
 }
 
 void KeyboardDriver::listenLoop(const std::string & devID) {
-	InitializedDevice &device = this->initialized_devices_[devID];
+	InitializedDevice & device = this->initialized_devices_[devID];
 	device.listen_thread_id = std::this_thread::get_id();
 
 #if DEBUGGING_ON
-	LOG(INFO) << "spawned listening thread for " << device.device.name
-				<< " on bus " << to_uint(device.bus);
+	LOG(INFO) << device.strID << " spawned listening thread for " << device.device.name;
 #endif
 
 	const auto & mask = device.current_leds_mask;
@@ -685,8 +687,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 	}
 
 #if DEBUGGING_ON
-	LOG(INFO) << "exiting listening thread for " << device.device.name
-				<< " on bus " << to_uint(device.bus);
+	LOG(INFO) << device.strID << " exiting listening thread for " << device.device.name;
 #endif
 }
 
@@ -709,13 +710,18 @@ void KeyboardDriver::sendControlRequest(libusb_device_handle * usb_handle, uint1
 }
 
 void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num) {
+	const std::string devID = KeyboardDriver::getDeviceID(bus, num);
+	this->buffer_.str("[");
+	this->buffer_ << devID << "]";
+	const std::string strID(this->buffer_.str());
+
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "trying to initialize " << dev.name << "("
+	LOG(DEBUG3) << strID << " trying to initialize " << dev.name << "("
 				<< dev.vendor_id << ":" << dev.product_id << "), device "
 				<< to_uint(num) << " on bus " << to_uint(bus);
 #endif
 
-	InitializedDevice device(dev, bus, num);
+	InitializedDevice device(dev, bus, num, strID);
 
 	this->openLibUSBDevice(device); /* device opened */
 
@@ -724,11 +730,9 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 		this->findExpectedUSBInterface(device);
 		this->sendDeviceInitialization(device);
 
-		const std::string devID = KeyboardDriver::getDeviceID(bus, num);
-
 		/* virtual keyboard name */
 		this->buffer_.str("Virtual ");
-		this->buffer_ << device.device.name << " " << devID;
+		this->buffer_ << device.device.name << " "<< device.strID;
 
 		try {
 			device.macros_man = new MacrosManager(
@@ -741,7 +745,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 		}
 
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "resetting MxKeys leds status";
+		LOG(DEBUG1) << device.strID << " resetting MxKeys leds status";
 #endif
 		device.current_leds_mask = 0;
 		this->setMxKeysLeds(device);
@@ -782,7 +786,7 @@ void KeyboardDriver::detachKernelDriver(InitializedDevice & device, int numInt) 
 	}
 	if( ret ) {
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "kernel driver currently attached to the interface " << numInt << ", trying to detach it";
+		LOG(DEBUG1) << device.strID << " kernel driver currently attached to the interface " << numInt << ", trying to detach it";
 #endif
 		ret = libusb_detach_kernel_driver(device.usb_handle, numInt); /* detaching */
 		if( this->handleLibusbError(ret) ) {
@@ -796,7 +800,7 @@ void KeyboardDriver::detachKernelDriver(InitializedDevice & device, int numInt) 
 	}
 	else {
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "interface " << numInt << " is currently free :)";
+		LOG(DEBUG1) << device.strID << " interface " << numInt << " is currently free :)";
 #endif
 	}
 }
@@ -820,7 +824,7 @@ void KeyboardDriver::setConfiguration(InitializedDevice & device) {
 	unsigned int i, j, k = 0;
 	int ret = 0;
 #if DEBUGGING_ON
-	LOG(DEBUG1) << "setting up usb device configuration";
+	LOG(DEBUG1) << device.strID << " setting up usb device configuration";
 #endif
 
 	int b = -1;
@@ -829,19 +833,19 @@ void KeyboardDriver::setConfiguration(InitializedDevice & device) {
 		throw GLogiKExcept("libusb get_configuration error");
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "current active configuration value : " << b;
+	LOG(DEBUG3) << device.strID << " current active configuration value : " << b;
 #endif
 
 	if ( b == (int)(this->expected_usb_descriptors_.b_configuration_value) ) {
 #if DEBUGGING_ON
-		LOG(INFO) << "current active configuration value matches the wanted value, skipping configuration";
+		LOG(INFO) << device.strID << " current active configuration value matches the wanted value, skipping configuration";
 #endif
 		return;
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "wanted configuration : " << (int)(this->expected_usb_descriptors_.b_configuration_value);
-	LOG(DEBUG2) << "will try to set the active configuration to the wanted value";
+	LOG(DEBUG2) << device.strID << " wanted configuration : " << (int)(this->expected_usb_descriptors_.b_configuration_value);
+	LOG(DEBUG2) << device.strID << " will try to set the active configuration to the wanted value";
 #endif
 
 	/* have to detach all interfaces first */
@@ -886,7 +890,7 @@ void KeyboardDriver::setConfiguration(InitializedDevice & device) {
 
 	/* trying to set configuration */
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "checking current active configuration";
+	LOG(DEBUG2) << device.strID << " checking current active configuration";
 #endif
 	ret = libusb_set_configuration(device.usb_handle, (int)this->expected_usb_descriptors_.b_configuration_value);
 	if ( this->handleLibusbError(ret) ) {
@@ -901,7 +905,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 	int ret = 0;
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << "trying to find expected interface";
+	LOG(DEBUG1) << device.strID << " trying to find expected interface";
 #endif
 
 	struct libusb_device_descriptor device_descriptor;
@@ -975,14 +979,14 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 		for (j = 0; j < to_uint(config_descriptor->bNumInterfaces); j++) {
 			const struct libusb_interface *iface = &(config_descriptor->interface[j]);
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "interface " << j << " has " << iface->num_altsetting << " alternate settings";
+			LOG(DEBUG2) << device.strID << " interface " << j << " has " << iface->num_altsetting << " alternate settings";
 #endif
 
 			for (k = 0; k < to_uint(iface->num_altsetting); k++) {
 				const struct libusb_interface_descriptor * as_descriptor = &(iface->altsetting[k]);
 
 #if DEBUGGING_ON
-				LOG(DEBUG3) << "interface " << j << " alternate setting " << to_uint(as_descriptor->bAlternateSetting)
+				LOG(DEBUG3) << device.strID << " interface " << j << " alternate setting " << to_uint(as_descriptor->bAlternateSetting)
 							<< " has " << to_uint(as_descriptor->bNumEndpoints) << " endpoints";
 
 				LOG(DEBUG4) << "--";
@@ -1030,7 +1034,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 
 				/* specs found */
 #if DEBUGGING_ON
-				LOG(DEBUG1) << "found the expected interface, keep going on this road";
+				LOG(DEBUG1) << device.strID << " found the expected interface, keep going on this road";
 #endif
 
 				int numInt = (int)as_descriptor->bInterfaceNumber;
@@ -1045,7 +1049,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 
 				/* claiming interface */
 #if DEBUGGING_ON
-				LOG(DEBUG1) << "trying to claim interface " << numInt;
+				LOG(DEBUG1) << device.strID << " trying to claim interface " << numInt;
 #endif
 				ret = libusb_claim_interface(device.usb_handle, numInt);	/* claiming */
 				if( this->handleLibusbError(ret) ) {
@@ -1056,7 +1060,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 
 				/* once that the interface is claimed, check that the right configuration is set */
 #if DEBUGGING_ON
-				LOG(DEBUG3) << "checking current active configuration";
+				LOG(DEBUG1) << device.strID << " checking current active configuration";
 #endif
 				int b = -1;
 				ret = libusb_get_configuration(device.usb_handle, &b);
@@ -1066,7 +1070,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 				}
 
 #if DEBUGGING_ON
-				LOG(DEBUG3) << "current active configuration value : " << b;
+				LOG(DEBUG2) << device.strID << " current active configuration value : " << b;
 #endif
 				if ( b != (int)(this->expected_usb_descriptors_.b_configuration_value) ) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
@@ -1086,7 +1090,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 					if( to_uint(ep->bEndpointAddress) & LIBUSB_ENDPOINT_IN ) {
 						unsigned int addr = to_uint(ep->bEndpointAddress);
 #if DEBUGGING_ON
-						LOG(DEBUG1) << "found [Keys] endpoint, address 0x" << std::hex << addr
+						LOG(DEBUG3) << "found [Keys] endpoint, address 0x" << std::hex << addr
 									<< " MaxPacketSize " << to_uint(ep->wMaxPacketSize);
 #endif
 						device.keys_endpoint = addr & 0xff;
@@ -1123,7 +1127,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 				}
 
 #if DEBUGGING_ON
-				LOG(INFO) << "all done ! " << device.device.name << " interface " << numInt
+				LOG(INFO) << device.strID << " all done ! " << device.device.name << " interface " << numInt
 							<< " opened and ready for I/O transfers";
 #endif
 
@@ -1145,13 +1149,13 @@ void KeyboardDriver::resetDeviceState(const std::string & devID) {
 		device.macros_man->clearMacroProfiles();
 
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "resetting MxKeys leds status";
+		LOG(DEBUG1) << device.strID << " resetting MxKeys leds status";
 #endif
 		device.current_leds_mask = 0;
 		this->setMxKeysLeds(device);
 
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "resetting keyboard color";
+		LOG(DEBUG1) << device.strID << " resetting keyboard backlight color";
 #endif
 		this->updateKeyboardColor(device);
 		this->setKeyboardColor(device);
@@ -1162,24 +1166,25 @@ void KeyboardDriver::resetDeviceState(const std::string & devID) {
 }
 
 void KeyboardDriver::resetDeviceState(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num) {
+	const std::string devID = KeyboardDriver::getDeviceID(bus, num);
+
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "resetting state of " << dev.name << "("
+	LOG(DEBUG3) << "[" << devID << "] resetting state of " << dev.name << "("
 				<< dev.vendor_id << ":" << dev.product_id << "), device "
 				<< to_uint(num) << " on bus " << to_uint(bus);
 #endif
 
-	const std::string devID = KeyboardDriver::getDeviceID(bus, num);
 	this->resetDeviceState(devID);
 }
 
 void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num) {
+	const std::string devID = KeyboardDriver::getDeviceID(bus, num);
+
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "trying to close " << dev.name << "("
+	LOG(DEBUG3) << "[" << devID << "] trying to close " << dev.name << "("
 				<< dev.vendor_id << ":" << dev.product_id << "), device "
 				<< to_uint(num) << " on bus " << to_uint(bus);
 #endif
-
-	const std::string devID = KeyboardDriver::getDeviceID(bus, num);
 
 	try {
 		InitializedDevice & device = this->initialized_devices_[devID];
@@ -1190,7 +1195,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 			if( device.listen_thread_id == (*it).get_id() ) {
 				found = true;
 #if DEBUGGING_ON
-				LOG(INFO) << "waiting for " << device.device.name << " listening thread";
+				LOG(INFO) << device.strID << " waiting for listening thread";
 #endif
 				(*it).join();
 				it = this->threads_.erase(it);

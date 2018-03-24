@@ -66,6 +66,7 @@ struct InitializedDevice {
 	KeyboardDevice device;
 	uint8_t bus;
 	uint8_t num;
+	std::string strID;	/* [devID] */
 	uint8_t keys_endpoint;
 	std::atomic<bool> listen_status;
 	uint64_t pressed_keys;
@@ -89,8 +90,8 @@ struct InitializedDevice {
 
 	InitializedDevice()=default;
 
-	InitializedDevice(KeyboardDevice k, uint8_t b, uint8_t n)
-		:	device(k), bus(b), num(n),
+	InitializedDevice(KeyboardDevice k, uint8_t b, uint8_t n, const std::string & id)
+		:	device(k), bus(b), num(n), strID(id),
 			keys_endpoint(0),
 			pressed_keys(0),
 			transfer_length(0),
@@ -114,6 +115,7 @@ struct InitializedDevice {
 		this->device = dev.device;
 		this->bus = dev.bus;
 		this->num = dev.num;
+		this->strID = dev.strID;
 		this->keys_endpoint = dev.keys_endpoint;
 		this->listen_status = static_cast<bool>(dev.listen_status);
 		this->pressed_keys = dev.pressed_keys;

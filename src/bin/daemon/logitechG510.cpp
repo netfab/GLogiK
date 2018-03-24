@@ -262,7 +262,7 @@ void LogitechG510::sendDeviceInitialization(const InitializedDevice & device) {
 	};
 
 #if DEBUGGING_ON
-	LOG(INFO) << "sending " << device.device.name << " initialization requests";
+	LOG(INFO) << device.strID << " sending " << device.device.name << " initialization requests";
 #endif
 	this->sendControlRequest(device.usb_handle, 0x301, 1, usb_data, 19);
 	this->sendControlRequest(device.usb_handle, 0x309, 1, usb_data_2, 8);
