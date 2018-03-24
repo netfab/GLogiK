@@ -699,6 +699,11 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice
 	}
+	catch( const std::exception & e ) {
+		std::ostringstream err("uncaught std::exception : ", std::ios_base::app);
+		err << e.what();
+		GKSysLog(LOG_ERR, ERROR, err.str());
+	}
 }
 
 void KeyboardDriver::sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
