@@ -617,78 +617,88 @@ void KeyboardDriver::enterMacroRecordMode(InitializedDevice & device, const std:
 }
 
 void KeyboardDriver::runMacro(const std::string & devID) {
-	InitializedDevice & device = this->initialized_devices_[devID];
+	try {
+		InitializedDevice & device = this->initialized_devices_.at(devID);
 #if DEBUGGING_ON
-	LOG(DEBUG2) << device.strID << " spawned running macro thread for " << device.device.name;
+		LOG(DEBUG2) << device.strID << " spawned running macro thread for " << device.device.name;
 #endif
-	device.macros_man->runMacro(device.chosen_macro_key);
+		device.macros_man->runMacro(device.chosen_macro_key);
 #if DEBUGGING_ON
-	LOG(DEBUG2) << device.strID << " exiting running macro thread";
+		LOG(DEBUG2) << device.strID << " exiting running macro thread";
 #endif
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownDevice
+	}
 }
 
 void KeyboardDriver::listenLoop(const std::string & devID) {
-	InitializedDevice & device = this->initialized_devices_[devID];
-	device.listen_thread_id = std::this_thread::get_id();
+	try {
+		InitializedDevice & device = this->initialized_devices_.at(devID);
+		device.listen_thread_id = std::this_thread::get_id();
 
 #if DEBUGGING_ON
-	LOG(INFO) << device.strID << " spawned listening thread for " << device.device.name;
+		LOG(INFO) << device.strID << " spawned listening thread for " << device.device.name;
 #endif
 
-	const auto & mask = device.current_leds_mask;
+		const auto & mask = device.current_leds_mask;
 
-	while( DaemonControl::isDaemonRunning() and device.listen_status ) {
-		this->checkDeviceListeningStatus(device);
-		if( ! device.listen_status )
-			continue;
+		while( DaemonControl::isDaemonRunning() and device.listen_status ) {
+			this->checkDeviceListeningStatus(device);
+			if( ! device.listen_status )
+				continue;
 
-		KeyStatus ret = this->getPressedKeys(device);
-		switch( ret ) {
-			case KeyStatus::S_KEY_PROCESSED:
-				/*
-				 * update M1-MR leds status, launch macro record mode and
-				 * run macros only after proper event length
-				 */
-				if( device.transfer_length == this->leds_update_event_length_ ) {
-					/* update mask with potential pressed keys */
-					if(this->updateCurrentLedsMask(device))
-						this->setMxKeysLeds(device);
+			KeyStatus ret = this->getPressedKeys(device);
+			switch( ret ) {
+				case KeyStatus::S_KEY_PROCESSED:
+					/*
+					 * update M1-MR leds status, launch macro record mode and
+					 * run macros only after proper event length
+					 */
+					if( device.transfer_length == this->leds_update_event_length_ ) {
+						/* update mask with potential pressed keys */
+						if(this->updateCurrentLedsMask(device))
+							this->setMxKeysLeds(device);
 
-					/* is macro record mode enabled ? */
-					if( mask & to_type(Leds::GK_LED_MR) ) {
-						this->enterMacroRecordMode(device, devID);
+						/* is macro record mode enabled ? */
+						if( mask & to_type(Leds::GK_LED_MR) ) {
+							this->enterMacroRecordMode(device, devID);
 
-						/* don't need to update leds status if the mask is already 0 */
-						if(device.current_leds_mask != 0) {
-							/* disabling macro record mode */
-							if(this->updateCurrentLedsMask(device, true))
-								this->setMxKeysLeds(device);
+							/* don't need to update leds status if the mask is already 0 */
+							if(device.current_leds_mask != 0) {
+								/* disabling macro record mode */
+								if(this->updateCurrentLedsMask(device, true))
+									this->setMxKeysLeds(device);
+							}
 						}
-					}
-					else { /* check to run macro */
-						if( this->checkMacroKey(device) ) {
-							try {
-								/* spawn thread only if macro defined */
-								if(device.macros_man->macroDefined(device.chosen_macro_key)) {
-									std::thread macro_thread(&KeyboardDriver::runMacro, this, devID);
-									macro_thread.detach();
+						else { /* check to run macro */
+							if( this->checkMacroKey(device) ) {
+								try {
+									/* spawn thread only if macro defined */
+									if(device.macros_man->macroDefined(device.chosen_macro_key)) {
+										std::thread macro_thread(&KeyboardDriver::runMacro, this, devID);
+										macro_thread.detach();
+									}
+								}
+								catch (const std::system_error& e) {
+									GKSysLog(LOG_WARNING, WARNING, "error while spawning running macro thread");
 								}
 							}
-							catch (const std::system_error& e) {
-								GKSysLog(LOG_WARNING, WARNING, "error while spawning running macro thread");
-							}
 						}
 					}
-				}
-				break;
-			default:
-				break;
+					break;
+				default:
+					break;
+			}
 		}
-	}
 
 #if DEBUGGING_ON
-	LOG(INFO) << device.strID << " exiting listening thread for " << device.device.name;
+		LOG(INFO) << device.strID << " exiting listening thread for " << device.device.name;
 #endif
+	} /* try */
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownDevice
+	}
 }
 
 void KeyboardDriver::sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
@@ -1187,7 +1197,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 #endif
 
 	try {
-		InitializedDevice & device = this->initialized_devices_[devID];
+		InitializedDevice & device = this->initialized_devices_.at(devID);
 		device.listen_status = false;
 
 		bool found = false;
