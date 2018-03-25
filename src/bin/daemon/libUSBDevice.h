@@ -53,12 +53,9 @@ class LibUSBDevice
 
 		void openUSBDevice(InitializedDevice & device);
 
-		void attachKernelDrivers(InitializedDevice & device);
-		void detachKernelDriver(InitializedDevice & device, int numInt);
-
 		void setUSBDeviceActiveConfiguration(InitializedDevice & device);
 		void findUSBDeviceInterface(InitializedDevice & device);
-		void releaseInterfaces(InitializedDevice & device);
+		void releaseUSBDeviceInterfaces(InitializedDevice & device);
 
 	private:
 		static bool libusb_status_;		/* is libusb initialized ? */
@@ -66,6 +63,9 @@ class LibUSBDevice
 		static libusb_context *context_;
 
 		const DescriptorValues expected_usb_descriptors_;
+
+		void detachKernelDriverFromUSBDeviceInterface(InitializedDevice & device, int numInt);
+		void attachUSBDeviceInterfacesToKernelDrivers(InitializedDevice & device);
 
 };
 

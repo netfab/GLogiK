@@ -660,8 +660,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 	catch ( const GLogiKExcept & e ) {
 		/* if we ever claimed or detached some interfaces, set them back
 		 * to the same state in which we found them */
-		this->releaseInterfaces(device);
-		this->attachKernelDrivers(device);
+		this->releaseUSBDeviceInterfaces(device);
 		libusb_close( device.usb_handle );
 		throw;
 	}
@@ -746,8 +745,7 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 		delete device.macros_man;
 		device.macros_man = nullptr;
 
-		this->releaseInterfaces(device);
-		this->attachKernelDrivers(device);
+		this->releaseUSBDeviceInterfaces(device);
 
 		libusb_close( device.usb_handle );
 		this->initialized_devices_.erase(devID);

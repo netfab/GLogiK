@@ -121,52 +121,6 @@ void LibUSBDevice::openUSBDevice(InitializedDevice & device) {
 	libusb_free_device_list(list, 1);
 }
 
-
-void LibUSBDevice::attachKernelDrivers(InitializedDevice & device) {
-	int ret = 0;
-	for(auto it = device.to_attach.begin(); it != device.to_attach.end();) {
-		int numInt = (*it);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << device.strID << " trying to attach kernel driver to interface " << numInt;
-#endif
-		ret = libusb_attach_kernel_driver(device.usb_handle, numInt); /* attaching */
-		if( this->USBError(ret) ) {
-			this->buffer_.str("failed to attach kernel driver to interface ");
-			this->buffer_ << numInt;
-			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
-		}
-		it++;
-	}
-	device.to_attach.clear();
-}
-
-void LibUSBDevice::detachKernelDriver(InitializedDevice & device, int numInt) {
-	int ret = libusb_kernel_driver_active(device.usb_handle, numInt);
-	if( ret < 0 ) {
-		this->USBError(ret);
-		throw GLogiKExcept("libusb kernel_driver_active error");
-	}
-	if( ret ) {
-#if DEBUGGING_ON
-		LOG(DEBUG1) << device.strID << " kernel driver currently attached to the interface " << numInt << ", trying to detach it";
-#endif
-		ret = libusb_detach_kernel_driver(device.usb_handle, numInt); /* detaching */
-		if( this->USBError(ret) ) {
-			this->buffer_.str("detaching the kernel driver from USB interface ");
-			this->buffer_ << numInt << " failed, this is fatal";
-			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
-			throw GLogiKExcept(this->buffer_.str());
-		}
-
-		device.to_attach.push_back(numInt);	/* detached */
-	}
-	else {
-#if DEBUGGING_ON
-		LOG(DEBUG1) << device.strID << " interface " << numInt << " is currently free :)";
-#endif
-	}
-}
-
 /*
  * This function is trying to (in this order) :
  *	- check the current active configuration value
@@ -238,7 +192,7 @@ void LibUSBDevice::setUSBDeviceActiveConfiguration(InitializedDevice & device) {
 				int numInt = (int)as_descriptor->bInterfaceNumber;
 
 				try {
-					this->detachKernelDriver(device, numInt);
+					this->detachKernelDriverFromUSBDeviceInterface(device, numInt);
 				}
 				catch ( const GLogiKExcept & e ) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
@@ -259,7 +213,7 @@ void LibUSBDevice::setUSBDeviceActiveConfiguration(InitializedDevice & device) {
 		throw GLogiKExcept("libusb set_configuration failure");
 	}
 
-	this->attachKernelDrivers(device);
+	this->attachUSBDeviceInterfacesToKernelDrivers(device);
 }
 
 void LibUSBDevice::findUSBDeviceInterface(InitializedDevice & device) {
@@ -402,7 +356,7 @@ void LibUSBDevice::findUSBDeviceInterface(InitializedDevice & device) {
 				int numInt = (int)as_descriptor->bInterfaceNumber;
 
 				try {
-					this->detachKernelDriver(device, numInt);
+					this->detachKernelDriverFromUSBDeviceInterface(device, numInt);
 				}
 				catch ( const GLogiKExcept & e ) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
@@ -501,7 +455,7 @@ void LibUSBDevice::findUSBDeviceInterface(InitializedDevice & device) {
 
 }
 
-void LibUSBDevice::releaseInterfaces(InitializedDevice & device) {
+void LibUSBDevice::releaseUSBDeviceInterfaces(InitializedDevice & device) {
 	int ret = 0;
 	for(auto it = device.to_release.begin(); it != device.to_release.end();) {
 		int numInt = (*it);
@@ -517,6 +471,64 @@ void LibUSBDevice::releaseInterfaces(InitializedDevice & device) {
 		it++;
 	}
 	device.to_release.clear();
+
+	this->attachUSBDeviceInterfacesToKernelDrivers(device);
+}
+
+
+/*
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ *
+ * === private === private === private === private === private ===
+ *
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ */
+
+void LibUSBDevice::attachUSBDeviceInterfacesToKernelDrivers(InitializedDevice & device) {
+	int ret = 0;
+	for(auto it = device.to_attach.begin(); it != device.to_attach.end();) {
+		int numInt = (*it);
+#if DEBUGGING_ON
+		LOG(DEBUG1) << device.strID << " trying to attach kernel driver to interface " << numInt;
+#endif
+		ret = libusb_attach_kernel_driver(device.usb_handle, numInt); /* attaching */
+		if( this->USBError(ret) ) {
+			this->buffer_.str("failed to attach kernel driver to interface ");
+			this->buffer_ << numInt;
+			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+		}
+		it++;
+	}
+	device.to_attach.clear();
+}
+
+void LibUSBDevice::detachKernelDriverFromUSBDeviceInterface(InitializedDevice & device, int numInt) {
+	int ret = libusb_kernel_driver_active(device.usb_handle, numInt);
+	if( ret < 0 ) {
+		this->USBError(ret);
+		throw GLogiKExcept("libusb kernel_driver_active error");
+	}
+	if( ret ) {
+#if DEBUGGING_ON
+		LOG(DEBUG1) << device.strID << " kernel driver currently attached to the interface " << numInt << ", trying to detach it";
+#endif
+		ret = libusb_detach_kernel_driver(device.usb_handle, numInt); /* detaching */
+		if( this->USBError(ret) ) {
+			this->buffer_.str("detaching the kernel driver from USB interface ");
+			this->buffer_ << numInt << " failed, this is fatal";
+			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+			throw GLogiKExcept(this->buffer_.str());
+		}
+
+		device.to_attach.push_back(numInt);	/* detached */
+	}
+	else {
+#if DEBUGGING_ON
+		LOG(DEBUG1) << device.strID << " interface " << numInt << " is currently free :)";
+#endif
+	}
 }
 
 } // namespace GLogiK
