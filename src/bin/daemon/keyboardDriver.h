@@ -24,25 +24,18 @@
 
 #include <cstdint>
 
-#include <iterator>
-#include <atomic>
 #include <string>
 #include <vector>
 #include <map>
-#include <sstream>
-#include <algorithm>
 #include <thread>
-#include <chrono>
 
 #include <libusb-1.0/libusb.h>
 
 #include <linux/input-event-codes.h>
 
-#include "lib/shared/keyEvent.h"
-#include "macrosManager.h"
+#include "libUSBDevice.h"
 
 #define DEVICE_LISTENING_THREAD_MAX_ERRORS 3
-#define KEYS_BUFFER_LENGTH 16
 #define unk	KEY_UNKNOWN
 
 namespace GLogiK
@@ -54,108 +47,6 @@ enum class KeyStatus
 	S_KEY_TIMEDOUT,
 	S_KEY_SKIPPED,
 	S_KEY_UNKNOWN
-};
-
-struct KeyboardDevice {
-	const char* name;
-	const char* vendor_id;
-	const char* product_id;
-};
-
-struct InitializedDevice {
-	KeyboardDevice device;
-	uint8_t bus;
-	uint8_t num;
-	std::string strID;	/* [devID] */
-	uint8_t keys_endpoint;
-	std::atomic<bool> listen_status;
-	uint64_t pressed_keys;
-	libusb_device *usb_device;
-	libusb_device_handle *usb_handle;
-	std::vector<int> to_release;
-	std::vector<int> to_attach;
-	MacrosManager *macros_man;
-	std::vector<libusb_endpoint_descriptor> endpoints;
-	std::thread::id listen_thread_id;
-	std::atomic<std::uint8_t> current_leds_mask;
-	int transfer_length;
-	unsigned char keys_buffer[KEYS_BUFFER_LENGTH];
-	unsigned char previous_keys_buffer[KEYS_BUFFER_LENGTH];
-	std::atomic<bool> exit_macro_record_mode;
-	macro_t standard_keys_events;
-	std::string chosen_macro_key;
-	std::chrono::steady_clock::time_point last_call;
-	uint8_t rgb[3];
-	unsigned int fatal_errors;
-
-	InitializedDevice()=default;
-
-	InitializedDevice(KeyboardDevice k, uint8_t b, uint8_t n, const std::string & id)
-		:	device(k), bus(b), num(n), strID(id),
-			keys_endpoint(0),
-			pressed_keys(0),
-			transfer_length(0),
-			fatal_errors(0)
-	{
-		this->usb_device = nullptr;
-		this->usb_handle = nullptr;
-		this->macros_man = nullptr;
-		std::fill_n(this->keys_buffer, KEYS_BUFFER_LENGTH, 0);
-		std::fill_n(this->previous_keys_buffer, KEYS_BUFFER_LENGTH, 0);
-		this->rgb[0] = 0xFF;
-		this->rgb[1] = 0xFF;
-		this->rgb[2] = 0xFF;
-		this->listen_status = false;
-		this->exit_macro_record_mode = false;
-		this->current_leds_mask = 0;
-	}
-
-	void operator=(const InitializedDevice& dev)
-	{
-		this->device = dev.device;
-		this->bus = dev.bus;
-		this->num = dev.num;
-		this->strID = dev.strID;
-		this->keys_endpoint = dev.keys_endpoint;
-		this->listen_status = static_cast<bool>(dev.listen_status);
-		this->pressed_keys = dev.pressed_keys;
-		this->usb_device = dev.usb_device;
-		this->usb_handle = dev.usb_handle;
-		this->to_release = dev.to_release;
-		this->to_attach = dev.to_attach;
-		this->macros_man = dev.macros_man;
-		this->endpoints = dev.endpoints;
-		this->listen_thread_id = dev.listen_thread_id;
-		this->current_leds_mask = static_cast<uint8_t>(dev.current_leds_mask);
-		this->transfer_length = dev.transfer_length;
-		std::copy(
-			std::begin(dev.keys_buffer),
-			std::end(dev.keys_buffer),
-			std::begin(this->keys_buffer)
-		);
-		std::copy(
-			std::begin(dev.previous_keys_buffer),
-			std::end(dev.previous_keys_buffer),
-			std::begin(this->previous_keys_buffer)
-		);
-		this->exit_macro_record_mode = static_cast<bool>(dev.exit_macro_record_mode);
-		this->standard_keys_events = dev.standard_keys_events;
-		this->chosen_macro_key = dev.chosen_macro_key;
-		this->last_call = dev.last_call;
-		std::copy(
-			std::begin(dev.rgb),
-			std::end(dev.rgb),
-			std::begin(this->rgb)
-		);
-		this->fatal_errors = dev.fatal_errors;
-	}
-};
-
-struct DescriptorValues {
-	uint8_t b_configuration_value;
-	uint8_t b_interface_number;
-	uint8_t b_alternate_setting;
-	uint8_t b_num_endpoints;
 };
 
 enum class GKModifierKeys : uint8_t
@@ -176,9 +67,10 @@ struct ModifierKey {
 };
 
 class KeyboardDriver
+	:	public LibUSBDevice
 {
 	public:
-		KeyboardDriver(int key_read_length, uint8_t event_length, DescriptorValues values);
+		KeyboardDriver(int key_read_length, uint8_t event_length, const DescriptorValues & values);
 		virtual ~KeyboardDriver();
 
 		static std::vector<std::string> keys_names_;
@@ -208,10 +100,7 @@ class KeyboardDriver
 		static const std::string getDeviceID(const uint8_t bus, const uint8_t num);
 
 	protected:
-		std::ostringstream buffer_;
-
 		int interrupt_key_read_length;
-		DescriptorValues expected_usb_descriptors_;
 
 		std::string getBytes(const InitializedDevice & device);
 
@@ -228,10 +117,6 @@ class KeyboardDriver
 			unsigned char * data, uint16_t wLength);
 
 	private:
-		static bool libusb_status_;			/* is libusb initialized ? */
-		static uint8_t drivers_cnt_;		/* initialized drivers counter */
-		static libusb_context *context_;
-		libusb_device **list_;
 		int8_t leds_update_event_length_;
 
 		static const std::vector< ModifierKey > modifier_keys_;
@@ -266,15 +151,6 @@ class KeyboardDriver
 		};
 
 		void notImplemented(const char* func);
-
-		int USBError(int error_code);
-
-		void openUSBDevice(InitializedDevice & device);
-		void setUSBDeviceActiveConfiguration(InitializedDevice & device);
-		void findUSBDeviceInterface(InitializedDevice & device);
-		void releaseInterfaces(InitializedDevice & device);
-		void attachKernelDrivers(InitializedDevice & device);
-		void detachKernelDriver(InitializedDevice & device, int numInt);
 
 		void checkDeviceListeningStatus(InitializedDevice & device);
 		void enterMacroRecordMode(InitializedDevice & device, const std::string & devID);
