@@ -210,10 +210,8 @@ class KeyboardDriver
 	protected:
 		std::ostringstream buffer_;
 
-		void openLibUSBDevice(InitializedDevice & device);
-
-		DescriptorValues expected_usb_descriptors_;
 		int interrupt_key_read_length;
+		DescriptorValues expected_usb_descriptors_;
 
 		std::string getBytes(const InitializedDevice & device);
 
@@ -269,10 +267,10 @@ class KeyboardDriver
 
 		void notImplemented(const char* func);
 
-		void initializeLibusb(void);
-		void closeLibusb(void);
 		int handleLibusbError(int error_code);
-		void setConfiguration(InitializedDevice & device);
+
+		void openUSBDevice(InitializedDevice & device);
+		void setUSBDeviceActiveConfiguration(InitializedDevice & device);
 		void findExpectedUSBInterface(InitializedDevice & device);
 		void releaseInterfaces(InitializedDevice & device);
 		void attachKernelDrivers(InitializedDevice & device);

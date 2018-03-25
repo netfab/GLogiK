@@ -73,14 +73,31 @@ KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, Descri
 	this->interrupt_key_read_length = key_read_length;
 	KeyboardDriver::drivers_cnt_++;
 
-	if( ! KeyboardDriver::libusb_status_ )
-		this->initializeLibusb();
+	if( ! KeyboardDriver::libusb_status_ ) {
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "initializing libusb";
+#endif
+		int ret_value = libusb_init( &(this->context_) );
+		if ( this->handleLibusbError(ret_value) ) {
+			throw GLogiKExcept("libusb initialization failure");
+		}
+
+		KeyboardDriver::libusb_status_ = true;
+	}
 }
 
 KeyboardDriver::~KeyboardDriver() {
 	KeyboardDriver::drivers_cnt_--;
-	if (KeyboardDriver::libusb_status_ and KeyboardDriver::drivers_cnt_ == 0)
-		this->closeLibusb();
+	if (KeyboardDriver::libusb_status_ and KeyboardDriver::drivers_cnt_ == 0) {
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "closing libusb";
+#endif
+		if( this->initialized_devices_.size() != 0 ) { /* sanity check */
+			GKSysLog(LOG_WARNING, WARNING, "closing libusb with opened device(s) !");
+		}
+		libusb_exit(this->context_);
+		KeyboardDriver::libusb_status_ = false;
+	}
 }
 
 const std::string KeyboardDriver::getDeviceID(const uint8_t bus, const uint8_t num) {
@@ -96,7 +113,7 @@ const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void) {
 	return KeyboardDriver::keys_names_;
 }
 
-void KeyboardDriver::openLibUSBDevice(InitializedDevice & device) {
+void KeyboardDriver::openUSBDevice(InitializedDevice & device) {
 	libusb_device **list;
 	int num_devices = libusb_get_device_list(this->context_, &(list));
 	if( num_devices < 0 ) {
@@ -132,29 +149,6 @@ void KeyboardDriver::openLibUSBDevice(InitializedDevice & device) {
 	}
 
 	libusb_free_device_list(list, 1);
-}
-
-void KeyboardDriver::initializeLibusb(void) {
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "initializing libusb";
-#endif
-	int ret_value = libusb_init( &(this->context_) );
-	if ( this->handleLibusbError(ret_value) ) {
-		throw GLogiKExcept("libusb initialization failure");
-	}
-
-	KeyboardDriver::libusb_status_ = true;
-}
-
-void KeyboardDriver::closeLibusb(void) {
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "closing libusb";
-#endif
-	if( this->initialized_devices_.size() != 0 ) { /* sanity check */
-		GKSysLog(LOG_WARNING, WARNING, "closing libusb with opened device(s) !");
-	}
-	libusb_exit(this->context_);
-	KeyboardDriver::libusb_status_ = false;
 }
 
 int KeyboardDriver::handleLibusbError(int error_code) {
@@ -738,10 +732,11 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 
 	InitializedDevice device(dev, bus, num, strID);
 
-	this->openLibUSBDevice(device); /* device opened */
+	this->openUSBDevice(device); /* throws on any failure */
+	/* libusb device opened */
 
 	try {
-		this->setConfiguration(device);
+		this->setUSBDeviceActiveConfiguration(device);
 		this->findExpectedUSBInterface(device);
 		this->sendDeviceInitialization(device);
 
@@ -835,7 +830,7 @@ void KeyboardDriver::detachKernelDriver(InitializedDevice & device, int numInt) 
  *			libusb_set_configuration() may succeed.
  *
  */
-void KeyboardDriver::setConfiguration(InitializedDevice & device) {
+void KeyboardDriver::setUSBDeviceActiveConfiguration(InitializedDevice & device) {
 	unsigned int i, j, k = 0;
 	int ret = 0;
 #if DEBUGGING_ON
