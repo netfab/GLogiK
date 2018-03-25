@@ -219,7 +219,7 @@ class KeyboardDriver
 		virtual KeyStatus getPressedKeys(InitializedDevice & device);
 		virtual const bool checkMacroKey(InitializedDevice & device) = 0;
 
-		virtual void sendDeviceInitialization(const InitializedDevice & device);
+		virtual void sendUSBDeviceInitialization(const InitializedDevice & device);
 		virtual void setMxKeysLeds(const InitializedDevice & device);
 		virtual void setKeyboardColor(const InitializedDevice & device);
 
@@ -267,11 +267,11 @@ class KeyboardDriver
 
 		void notImplemented(const char* func);
 
-		int handleLibusbError(int error_code);
+		int USBError(int error_code);
 
 		void openUSBDevice(InitializedDevice & device);
 		void setUSBDeviceActiveConfiguration(InitializedDevice & device);
-		void findExpectedUSBInterface(InitializedDevice & device);
+		void findUSBDeviceInterface(InitializedDevice & device);
 		void releaseInterfaces(InitializedDevice & device);
 		void attachKernelDrivers(InitializedDevice & device);
 		void detachKernelDriver(InitializedDevice & device, int numInt);

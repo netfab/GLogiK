@@ -76,7 +76,7 @@ class LogitechG510 : public KeyboardDriver
 		static const std::vector<KeyboardDevice> supported_devices_;
 
 		KeyStatus processKeyEvent(InitializedDevice & device);
-		void sendDeviceInitialization(const InitializedDevice & device);
+		void sendUSBDeviceInitialization(const InitializedDevice & device);
 		void setMxKeysLeds(const InitializedDevice & device);
 		void setKeyboardColor(const InitializedDevice & device);
 		void processKeyEvent8Bytes(InitializedDevice & device);

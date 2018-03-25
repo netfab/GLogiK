@@ -251,7 +251,7 @@ void LogitechG510::setMxKeysLeds(const InitializedDevice & device) {
  *	control of the keyboard.
  *	The following initialization disable (at least) this behavior.
  */
-void LogitechG510::sendDeviceInitialization(const InitializedDevice & device) {
+void LogitechG510::sendUSBDeviceInitialization(const InitializedDevice & device) {
 	unsigned char usb_data[] = {
 		1, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0,

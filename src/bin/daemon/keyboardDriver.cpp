@@ -78,7 +78,7 @@ KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, Descri
 		LOG(DEBUG3) << "initializing libusb";
 #endif
 		int ret_value = libusb_init( &(this->context_) );
-		if ( this->handleLibusbError(ret_value) ) {
+		if ( this->USBError(ret_value) ) {
 			throw GLogiKExcept("libusb initialization failure");
 		}
 
@@ -117,7 +117,7 @@ void KeyboardDriver::openUSBDevice(InitializedDevice & device) {
 	libusb_device **list;
 	int num_devices = libusb_get_device_list(this->context_, &(list));
 	if( num_devices < 0 ) {
-		this->handleLibusbError(num_devices);
+		this->USBError(num_devices);
 		throw GLogiKExcept("error getting USB devices list");
 	}
 
@@ -143,7 +143,7 @@ void KeyboardDriver::openUSBDevice(InitializedDevice & device) {
 #endif
 
 	int ret_value = libusb_open( device.usb_device, &(device.usb_handle) );
-	if( this->handleLibusbError(ret_value) ) {
+	if( this->USBError(ret_value) ) {
 		libusb_free_device_list(list, 1);
 		throw GLogiKExcept("opening device failure");
 	}
@@ -151,7 +151,7 @@ void KeyboardDriver::openUSBDevice(InitializedDevice & device) {
 	libusb_free_device_list(list, 1);
 }
 
-int KeyboardDriver::handleLibusbError(int error_code) {
+int KeyboardDriver::USBError(int error_code) {
 	switch(error_code) {
 		case LIBUSB_SUCCESS:
 			break;
@@ -174,7 +174,7 @@ void KeyboardDriver::releaseInterfaces(InitializedDevice & device) {
 		LOG(DEBUG1) << "trying to release claimed interface " << numInt;
 #endif
 		ret = libusb_release_interface(device.usb_handle, numInt); /* release */
-		if( this->handleLibusbError(ret) ) {
+		if( this->USBError(ret) ) {
 			this->buffer_.str("failed to release interface ");
 			this->buffer_ << numInt;
 			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
@@ -192,7 +192,7 @@ void KeyboardDriver::attachKernelDrivers(InitializedDevice & device) {
 		LOG(DEBUG1) << device.strID << " trying to attach kernel driver to interface " << numInt;
 #endif
 		ret = libusb_attach_kernel_driver(device.usb_handle, numInt); /* attaching */
-		if( this->handleLibusbError(ret) ) {
+		if( this->USBError(ret) ) {
 			this->buffer_.str("failed to attach kernel driver to interface ");
 			this->buffer_ << numInt;
 			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
@@ -241,7 +241,7 @@ KeyStatus KeyboardDriver::getPressedKeys(InitializedDevice & device) {
 			std::ostringstream err(device.strID, std::ios_base::app);
 			err << " getPressedKeys interrupt read error";
 			GKSysLog(LOG_ERR, ERROR, err.str());
-			this->handleLibusbError(ret);
+			this->USBError(ret);
 			if(ret == LIBUSB_ERROR_NO_DEVICE)
 				device.fatal_errors++;
 			return KeyStatus::S_KEY_SKIPPED;
@@ -265,7 +265,7 @@ void KeyboardDriver::setKeyboardColor(const InitializedDevice & device) {
 	this->notImplemented(__func__);
 }
 
-void KeyboardDriver::sendDeviceInitialization(const InitializedDevice & device) {
+void KeyboardDriver::sendUSBDeviceInitialization(const InitializedDevice & device) {
 	this->notImplemented(__func__);
 }
 
@@ -709,7 +709,7 @@ void KeyboardDriver::sendControlRequest(libusb_device_handle * usb_handle, uint1
 		wValue, wIndex, data, wLength, 10000 );
 	if( ret < 0 ) {
 		GKSysLog(LOG_ERR, ERROR, "error sending control request");
-		this->handleLibusbError(ret);
+		this->USBError(ret);
 	}
 	else {
 #if DEBUGGING_ON
@@ -737,8 +737,8 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 
 	try {
 		this->setUSBDeviceActiveConfiguration(device);
-		this->findExpectedUSBInterface(device);
-		this->sendDeviceInitialization(device);
+		this->findUSBDeviceInterface(device);
+		this->sendUSBDeviceInitialization(device);
 
 		/* virtual keyboard name */
 		this->buffer_.str("Virtual ");
@@ -791,7 +791,7 @@ const bool KeyboardDriver::isDeviceInitialized(const std::string & devID) const 
 void KeyboardDriver::detachKernelDriver(InitializedDevice & device, int numInt) {
 	int ret = libusb_kernel_driver_active(device.usb_handle, numInt);
 	if( ret < 0 ) {
-		this->handleLibusbError(ret);
+		this->USBError(ret);
 		throw GLogiKExcept("libusb kernel_driver_active error");
 	}
 	if( ret ) {
@@ -799,7 +799,7 @@ void KeyboardDriver::detachKernelDriver(InitializedDevice & device, int numInt) 
 		LOG(DEBUG1) << device.strID << " kernel driver currently attached to the interface " << numInt << ", trying to detach it";
 #endif
 		ret = libusb_detach_kernel_driver(device.usb_handle, numInt); /* detaching */
-		if( this->handleLibusbError(ret) ) {
+		if( this->USBError(ret) ) {
 			this->buffer_.str("detaching the kernel driver from USB interface ");
 			this->buffer_ << numInt << " failed, this is fatal";
 			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
@@ -839,7 +839,7 @@ void KeyboardDriver::setUSBDeviceActiveConfiguration(InitializedDevice & device)
 
 	int b = -1;
 	ret = libusb_get_configuration(device.usb_handle, &b);
-	if ( this->handleLibusbError(ret) )
+	if ( this->USBError(ret) )
 		throw GLogiKExcept("libusb get_configuration error");
 
 #if DEBUGGING_ON
@@ -862,14 +862,14 @@ void KeyboardDriver::setUSBDeviceActiveConfiguration(InitializedDevice & device)
 
 	struct libusb_device_descriptor device_descriptor;
 	ret = libusb_get_device_descriptor(device.usb_device, &device_descriptor);
-	if ( this->handleLibusbError(ret) )
+	if ( this->USBError(ret) )
 		throw GLogiKExcept("libusb get_device_descriptor failure");
 
 	for (i = 0; i < to_uint(device_descriptor.bNumConfigurations); i++) {
 		/* configuration descriptor */
 		struct libusb_config_descriptor * config_descriptor = nullptr;
 		ret = libusb_get_config_descriptor(device.usb_device, i, &config_descriptor);
-		if ( this->handleLibusbError(ret) ) {
+		if ( this->USBError(ret) ) {
 			this->buffer_.str("get_config_descriptor failure with index : ");
 			this->buffer_ << i;
 			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
@@ -903,14 +903,14 @@ void KeyboardDriver::setUSBDeviceActiveConfiguration(InitializedDevice & device)
 	LOG(DEBUG2) << device.strID << " checking current active configuration";
 #endif
 	ret = libusb_set_configuration(device.usb_handle, (int)this->expected_usb_descriptors_.b_configuration_value);
-	if ( this->handleLibusbError(ret) ) {
+	if ( this->USBError(ret) ) {
 		throw GLogiKExcept("libusb set_configuration failure");
 	}
 
 	this->attachKernelDrivers(device);
 }
 
-void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
+void KeyboardDriver::findUSBDeviceInterface(InitializedDevice & device) {
 	unsigned int i, j, k, l = 0;
 	int ret = 0;
 
@@ -920,7 +920,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 
 	struct libusb_device_descriptor device_descriptor;
 	ret = libusb_get_device_descriptor(device.usb_device, &device_descriptor);
-	if ( this->handleLibusbError(ret) )
+	if ( this->USBError(ret) )
 		throw GLogiKExcept("libusb get_device_descriptor failure");
 
 #if DEBUGGING_ON
@@ -952,7 +952,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 	for (i = 0; i < to_uint(device_descriptor.bNumConfigurations); i++) {
 		struct libusb_config_descriptor * config_descriptor = nullptr;
 		ret = libusb_get_config_descriptor(device.usb_device, i, &config_descriptor);
-		if ( this->handleLibusbError(ret) ) {
+		if ( this->USBError(ret) ) {
 			this->buffer_.str("get_config_descriptor failure with index : ");
 			this->buffer_ << i;
 			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
@@ -1062,7 +1062,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 				LOG(DEBUG1) << device.strID << " trying to claim interface " << numInt;
 #endif
 				ret = libusb_claim_interface(device.usb_handle, numInt);	/* claiming */
-				if( this->handleLibusbError(ret) ) {
+				if( this->USBError(ret) ) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
 					throw GLogiKExcept("error claiming interface");
 				}
@@ -1074,7 +1074,7 @@ void KeyboardDriver::findExpectedUSBInterface(InitializedDevice & device) {
 #endif
 				int b = -1;
 				ret = libusb_get_configuration(device.usb_handle, &b);
-				if ( this->handleLibusbError(ret) ) {
+				if ( this->USBError(ret) ) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
 					throw GLogiKExcept("libusb get_configuration error");
 				}
