@@ -68,7 +68,6 @@ class KeyboardDriver
 	:	public LibUSB
 {
 	public:
-		KeyboardDriver(int key_read_length, uint8_t event_length, const DescriptorValues & values);
 		virtual ~KeyboardDriver();
 
 		static std::vector<std::string> keys_names_;
@@ -98,6 +97,9 @@ class KeyboardDriver
 		static const std::string getDeviceID(const uint8_t bus, const uint8_t num);
 
 	protected:
+		KeyboardDriver(void) = delete;
+		KeyboardDriver(int key_read_length, uint8_t event_length, const DescriptorValues & values);
+
 		int interrupt_key_read_length;
 
 		std::string getBytes(const USBDevice & device);
