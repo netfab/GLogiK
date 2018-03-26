@@ -24,10 +24,10 @@
 namespace GLogiK
 {
 
-InitializedDevice::InitializedDevice() {
+USBDevice::USBDevice() {
 }
 
-InitializedDevice::~InitializedDevice() {
+USBDevice::~USBDevice() {
 }
 
 } // namespace GLogiK

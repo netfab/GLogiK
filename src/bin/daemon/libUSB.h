@@ -51,15 +51,15 @@ class LibUSB
 
 		int USBError(int error_code);
 
-		void openUSBDevice(InitializedDevice & device);
-		void closeUSBDevice(InitializedDevice & device);
+		void openUSBDevice(USBDevice & device);
+		void closeUSBDevice(USBDevice & device);
 
-		void setUSBDeviceActiveConfiguration(InitializedDevice & device);
-		void findUSBDeviceInterface(InitializedDevice & device);
-		void releaseUSBDeviceInterfaces(InitializedDevice & device);
+		void setUSBDeviceActiveConfiguration(USBDevice & device);
+		void findUSBDeviceInterface(USBDevice & device);
+		void releaseUSBDeviceInterfaces(USBDevice & device);
 
 		void sendControlRequest(
-			const InitializedDevice & device,
+			const USBDevice & device,
 			uint16_t wValue,
 			uint16_t wIndex,
 			unsigned char * data,
@@ -73,8 +73,8 @@ class LibUSB
 
 		const DescriptorValues expected_usb_descriptors_;
 
-		void detachKernelDriverFromUSBDeviceInterface(InitializedDevice & device, int numInt);
-		void attachUSBDeviceInterfacesToKernelDrivers(InitializedDevice & device);
+		void detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int numInt);
+		void attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device);
 
 };
 

@@ -121,7 +121,7 @@ const std::vector<std::string> & LogitechG510::getMacroKeysNames(void) const {
 }
 
 /* return true if the pressed key is a macro key (G1-G18)  */
-const bool LogitechG510::checkMacroKey(InitializedDevice & device) {
+const bool LogitechG510::checkMacroKey(USBDevice & device) {
 	for (const auto & k : LogitechG510::five_bytes_keys_map_ ) {
 		if( k.macro_key and (device.pressed_keys & to_type(k.key)) ) {
 			device.chosen_macro_key = k.name;
@@ -131,7 +131,7 @@ const bool LogitechG510::checkMacroKey(InitializedDevice & device) {
 	return false;
 }
 
-void LogitechG510::processKeyEvent2Bytes(InitializedDevice & device) {
+void LogitechG510::processKeyEvent2Bytes(USBDevice & device) {
 	if (device.keys_buffer[0] != 0x02) {
 		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 2 bytes event");
 		return;
@@ -143,7 +143,7 @@ void LogitechG510::processKeyEvent2Bytes(InitializedDevice & device) {
 	}
 }
 
-void LogitechG510::processKeyEvent5Bytes(InitializedDevice & device) {
+void LogitechG510::processKeyEvent5Bytes(USBDevice & device) {
 	if (device.keys_buffer[0] != 0x03) {
 		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 5 bytes event");
 		return;
@@ -155,7 +155,7 @@ void LogitechG510::processKeyEvent5Bytes(InitializedDevice & device) {
 	}
 }
 
-void LogitechG510::processKeyEvent8Bytes(InitializedDevice & device) {
+void LogitechG510::processKeyEvent8Bytes(USBDevice & device) {
 	if (device.keys_buffer[0] != 0x01) {
 		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 8 bytes event");
 		return;
@@ -164,7 +164,7 @@ void LogitechG510::processKeyEvent8Bytes(InitializedDevice & device) {
 	this->fillStandardKeysEvents(device);
 }
 
-KeyStatus LogitechG510::processKeyEvent(InitializedDevice & device)
+KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 {
 	device.pressed_keys = 0;
 
@@ -213,7 +213,7 @@ KeyStatus LogitechG510::processKeyEvent(InitializedDevice & device)
 	return KeyStatus::S_KEY_UNKNOWN;
 }
 
-void LogitechG510::setKeyboardColor(const InitializedDevice & device) {
+void LogitechG510::setKeyboardColor(const USBDevice & device) {
 #if DEBUGGING_ON
 	const uint8_t & r = device.rgb[0];
 	const uint8_t & g = device.rgb[1];
@@ -226,7 +226,7 @@ void LogitechG510::setKeyboardColor(const InitializedDevice & device) {
 	this->sendControlRequest(device, 0x305, 1, usb_data, 4);
 }
 
-void LogitechG510::setMxKeysLeds(const InitializedDevice & device) {
+void LogitechG510::setMxKeysLeds(const USBDevice & device) {
 	unsigned char leds_mask = 0;
 	for (const auto & l : LogitechG510::leds_mask_ ) {
 		if( device.current_leds_mask & to_type(l.led) )
@@ -251,7 +251,7 @@ void LogitechG510::setMxKeysLeds(const InitializedDevice & device) {
  *	control of the keyboard.
  *	The following initialization disable (at least) this behavior.
  */
-void LogitechG510::sendUSBDeviceInitialization(const InitializedDevice & device) {
+void LogitechG510::sendUSBDeviceInitialization(const USBDevice & device) {
 	unsigned char usb_data[] = {
 		1, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0,

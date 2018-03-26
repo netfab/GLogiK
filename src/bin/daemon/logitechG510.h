@@ -75,14 +75,14 @@ class LogitechG510 : public KeyboardDriver
 		static const std::vector< M_Key_Led_Mask > leds_mask_;
 		static const std::vector<KeyboardDevice> supported_devices_;
 
-		KeyStatus processKeyEvent(InitializedDevice & device);
-		void sendUSBDeviceInitialization(const InitializedDevice & device);
-		void setMxKeysLeds(const InitializedDevice & device);
-		void setKeyboardColor(const InitializedDevice & device);
-		void processKeyEvent8Bytes(InitializedDevice & device);
-		void processKeyEvent5Bytes(InitializedDevice & device);
-		void processKeyEvent2Bytes(InitializedDevice & device);
-		const bool checkMacroKey(InitializedDevice & device);
+		KeyStatus processKeyEvent(USBDevice & device);
+		void sendUSBDeviceInitialization(const USBDevice & device);
+		void setMxKeysLeds(const USBDevice & device);
+		void setKeyboardColor(const USBDevice & device);
+		void processKeyEvent8Bytes(USBDevice & device);
+		void processKeyEvent5Bytes(USBDevice & device);
+		void processKeyEvent2Bytes(USBDevice & device);
+		const bool checkMacroKey(USBDevice & device);
 };
 
 } // namespace GLogiK

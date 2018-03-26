@@ -100,24 +100,24 @@ class KeyboardDriver
 	protected:
 		int interrupt_key_read_length;
 
-		std::string getBytes(const InitializedDevice & device);
+		std::string getBytes(const USBDevice & device);
 
-		virtual KeyStatus processKeyEvent(InitializedDevice & device) = 0;
-		virtual KeyStatus getPressedKeys(InitializedDevice & device);
-		virtual const bool checkMacroKey(InitializedDevice & device) = 0;
+		virtual KeyStatus processKeyEvent(USBDevice & device) = 0;
+		virtual KeyStatus getPressedKeys(USBDevice & device);
+		virtual const bool checkMacroKey(USBDevice & device) = 0;
 
-		virtual void sendUSBDeviceInitialization(const InitializedDevice & device);
-		virtual void setMxKeysLeds(const InitializedDevice & device);
-		virtual void setKeyboardColor(const InitializedDevice & device);
+		virtual void sendUSBDeviceInitialization(const USBDevice & device);
+		virtual void setMxKeysLeds(const USBDevice & device);
+		virtual void setKeyboardColor(const USBDevice & device);
 
-		void fillStandardKeysEvents(InitializedDevice & device);
+		void fillStandardKeysEvents(USBDevice & device);
 
 	private:
 		int8_t leds_update_event_length_;
 
 		static const std::vector< ModifierKey > modifier_keys_;
 
-		std::map<const std::string, InitializedDevice> initialized_devices_;
+		std::map<const std::string, USBDevice> initialized_devices_;
 		std::vector<std::thread> threads_;
 
 		/* USB HID Usage Tables as defined in USB specification,
@@ -148,20 +148,20 @@ class KeyboardDriver
 
 		void notImplemented(const char* func);
 
-		void checkDeviceListeningStatus(InitializedDevice & device);
-		void enterMacroRecordMode(InitializedDevice & device, const std::string & devID);
+		void checkDeviceListeningStatus(USBDevice & device);
+		void enterMacroRecordMode(USBDevice & device, const std::string & devID);
 		void listenLoop(const std::string & devID);
 
-		const bool updateCurrentLedsMask(InitializedDevice & device, bool force_MR_off=false);
-		void updateKeyboardColor(InitializedDevice & device, const uint8_t red=0xFF,
+		const bool updateCurrentLedsMask(USBDevice & device, bool force_MR_off=false);
+		void updateKeyboardColor(USBDevice & device, const uint8_t red=0xFF,
 			const uint8_t green=0xFF, const uint8_t blue=0xFF);
 
-		const uint8_t handleModifierKeys(InitializedDevice & device, const uint16_t interval);
+		const uint8_t handleModifierKeys(USBDevice & device, const uint16_t interval);
 
-		uint16_t getTimeLapse(InitializedDevice & device);
+		uint16_t getTimeLapse(USBDevice & device);
 		void runMacro(const std::string & devID);
 
-		void resetDeviceState(InitializedDevice & device);
+		void resetDeviceState(USBDevice & device);
 };
 
 } // namespace GLogiK

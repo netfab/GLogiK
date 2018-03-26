@@ -83,7 +83,7 @@ int LibUSB::USBError(int error_code) {
 	return error_code;
 }
 
-void LibUSB::openUSBDevice(InitializedDevice & device) {
+void LibUSB::openUSBDevice(USBDevice & device) {
 	libusb_device **list;
 	int num_devices = libusb_get_device_list(this->context_, &(list));
 	if( num_devices < 0 ) {
@@ -120,7 +120,7 @@ void LibUSB::openUSBDevice(InitializedDevice & device) {
 	libusb_free_device_list(list, 1);
 }
 
-void LibUSB::closeUSBDevice(InitializedDevice & device) {
+void LibUSB::closeUSBDevice(USBDevice & device) {
 	libusb_close(device.usb_handle);
 	device.usb_handle = nullptr;
 #if DEBUGGING_ON
@@ -143,7 +143,7 @@ void LibUSB::closeUSBDevice(InitializedDevice & device) {
  *			libusb_set_configuration() may succeed.
  *
  */
-void LibUSB::setUSBDeviceActiveConfiguration(InitializedDevice & device) {
+void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 	unsigned int i, j, k = 0;
 	int ret = 0;
 #if DEBUGGING_ON
@@ -223,7 +223,7 @@ void LibUSB::setUSBDeviceActiveConfiguration(InitializedDevice & device) {
 	this->attachUSBDeviceInterfacesToKernelDrivers(device);
 }
 
-void LibUSB::findUSBDeviceInterface(InitializedDevice & device) {
+void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 	unsigned int i, j, k, l = 0;
 	int ret = 0;
 
@@ -462,7 +462,7 @@ void LibUSB::findUSBDeviceInterface(InitializedDevice & device) {
 
 }
 
-void LibUSB::releaseUSBDeviceInterfaces(InitializedDevice & device) {
+void LibUSB::releaseUSBDeviceInterfaces(USBDevice & device) {
 	int ret = 0;
 	for(auto it = device.to_release.begin(); it != device.to_release.end();) {
 		int numInt = (*it);
@@ -483,7 +483,7 @@ void LibUSB::releaseUSBDeviceInterfaces(InitializedDevice & device) {
 }
 
 void LibUSB::sendControlRequest(
-	const InitializedDevice & device,
+	const USBDevice & device,
 	uint16_t wValue,
 	uint16_t wIndex,
 	unsigned char * data,
@@ -514,7 +514,7 @@ void LibUSB::sendControlRequest(
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void LibUSB::attachUSBDeviceInterfacesToKernelDrivers(InitializedDevice & device) {
+void LibUSB::attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) {
 	int ret = 0;
 	for(auto it = device.to_attach.begin(); it != device.to_attach.end();) {
 		int numInt = (*it);
@@ -532,7 +532,7 @@ void LibUSB::attachUSBDeviceInterfacesToKernelDrivers(InitializedDevice & device
 	device.to_attach.clear();
 }
 
-void LibUSB::detachKernelDriverFromUSBDeviceInterface(InitializedDevice & device, int numInt) {
+void LibUSB::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int numInt) {
 	int ret = libusb_kernel_driver_active(device.usb_handle, numInt);
 	if( ret < 0 ) {
 		this->USBError(ret);

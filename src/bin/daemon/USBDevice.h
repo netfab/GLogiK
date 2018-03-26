@@ -48,15 +48,15 @@ struct KeyboardDevice {
 	const char* product_id;
 };
 
-class InitializedDevice
+class USBDevice
 {
 	public:
-		InitializedDevice(void);
-		~InitializedDevice(void);
+		USBDevice(void);
+		~USBDevice(void);
 
-		//InitializedDevice()=default;
+		//USBDevice()=default;
 
-		InitializedDevice(KeyboardDevice k, uint8_t b, uint8_t n, const std::string & id)
+		USBDevice(KeyboardDevice k, uint8_t b, uint8_t n, const std::string & id)
 			:	device(k), bus(b), num(n), strID(id),
 				keys_endpoint(0),
 				pressed_keys(0),
@@ -76,7 +76,7 @@ class InitializedDevice
 			this->current_leds_mask = 0;
 		}
 
-		void operator=(const InitializedDevice& dev)
+		void operator=(const USBDevice& dev)
 		{
 			this->device = dev.device;
 			this->bus = dev.bus;
