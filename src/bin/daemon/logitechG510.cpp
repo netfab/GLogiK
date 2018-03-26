@@ -223,7 +223,7 @@ void LogitechG510::setKeyboardColor(const InitializedDevice & device) {
 				<< getHexRGB(r, g, b);
 #endif
 	unsigned char usb_data[4] = { 5, device.rgb[0], device.rgb[1], device.rgb[2] };
-	this->sendControlRequest(device.usb_handle, 0x305, 1, usb_data, 4);
+	this->sendControlRequest(device, 0x305, 1, usb_data, 4);
 }
 
 void LogitechG510::setMxKeysLeds(const InitializedDevice & device) {
@@ -238,7 +238,7 @@ void LogitechG510::setMxKeysLeds(const InitializedDevice & device) {
 				<< std::hex << to_uint(leds_mask);
 #endif
 	unsigned char leds_buffer[2] = { 4, leds_mask };
-	this->sendControlRequest(device.usb_handle, 0x304, 1, leds_buffer, 2);
+	this->sendControlRequest(device, 0x304, 1, leds_buffer, 2);
 }
 
 /*
@@ -264,8 +264,8 @@ void LogitechG510::sendUSBDeviceInitialization(const InitializedDevice & device)
 #if DEBUGGING_ON
 	LOG(INFO) << device.strID << " sending " << device.device.name << " initialization requests";
 #endif
-	this->sendControlRequest(device.usb_handle, 0x301, 1, usb_data, 19);
-	this->sendControlRequest(device.usb_handle, 0x309, 1, usb_data_2, 8);
+	this->sendControlRequest(device, 0x301, 1, usb_data, 19);
+	this->sendControlRequest(device, 0x309, 1, usb_data_2, 8);
 }
 
 } // namespace GLogiK

@@ -29,6 +29,8 @@
 #include "lib/dbus/GKDBus.h"
 #include "lib/shared/glogik.h"
 
+#include <libusb-1.0/libusb.h>
+
 #include "daemonControl.h"
 #include "keyboardDriver.h"
 
@@ -580,24 +582,6 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 		std::ostringstream err("uncaught std::exception : ", std::ios_base::app);
 		err << e.what();
 		GKSysLog(LOG_ERR, ERROR, err.str());
-	}
-}
-
-void KeyboardDriver::sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
-		unsigned char * data, uint16_t wLength)
-{
-	int ret = libusb_control_transfer( usb_handle,
-		LIBUSB_ENDPOINT_OUT|LIBUSB_REQUEST_TYPE_CLASS|LIBUSB_RECIPIENT_INTERFACE,
-		LIBUSB_REQUEST_SET_CONFIGURATION, /* 0x09 */
-		wValue, wIndex, data, wLength, 10000 );
-	if( ret < 0 ) {
-		GKSysLog(LOG_ERR, ERROR, "error sending control request");
-		this->USBError(ret);
-	}
-	else {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "sent " << ret << " bytes - expected: " << wLength;
-#endif
 	}
 }
 

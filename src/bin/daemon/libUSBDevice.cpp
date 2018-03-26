@@ -475,6 +475,27 @@ void LibUSBDevice::releaseUSBDeviceInterfaces(InitializedDevice & device) {
 	this->attachUSBDeviceInterfacesToKernelDrivers(device);
 }
 
+void LibUSBDevice::sendControlRequest(
+	const InitializedDevice & device,
+	uint16_t wValue,
+	uint16_t wIndex,
+	unsigned char * data,
+	uint16_t wLength)
+{
+	int ret = libusb_control_transfer( device.usb_handle,
+		LIBUSB_ENDPOINT_OUT|LIBUSB_REQUEST_TYPE_CLASS|LIBUSB_RECIPIENT_INTERFACE,
+		LIBUSB_REQUEST_SET_CONFIGURATION, /* 0x09 */
+		wValue, wIndex, data, wLength, 10000 );
+	if( ret < 0 ) {
+		GKSysLog(LOG_ERR, ERROR, "error sending control request");
+		this->USBError(ret);
+	}
+	else {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "sent " << ret << " bytes - expected: " << wLength;
+#endif
+	}
+}
 
 /*
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

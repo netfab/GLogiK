@@ -29,8 +29,6 @@
 #include <map>
 #include <thread>
 
-#include <libusb-1.0/libusb.h>
-
 #include <linux/input-event-codes.h>
 
 #include "libUSBDevice.h"
@@ -113,8 +111,6 @@ class KeyboardDriver
 		virtual void setKeyboardColor(const InitializedDevice & device);
 
 		void fillStandardKeysEvents(InitializedDevice & device);
-		void sendControlRequest(libusb_device_handle * usb_handle, uint16_t wValue, uint16_t wIndex,
-			unsigned char * data, uint16_t wLength);
 
 	private:
 		int8_t leds_update_event_length_;

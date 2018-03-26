@@ -57,6 +57,14 @@ class LibUSBDevice
 		void findUSBDeviceInterface(InitializedDevice & device);
 		void releaseUSBDeviceInterfaces(InitializedDevice & device);
 
+		void sendControlRequest(
+			const InitializedDevice & device,
+			uint16_t wValue,
+			uint16_t wIndex,
+			unsigned char * data,
+			uint16_t wLength
+		);
+
 	private:
 		static bool libusb_status_;		/* is libusb initialized ? */
 		static uint8_t drivers_cnt_;	/* initialized drivers counter */
