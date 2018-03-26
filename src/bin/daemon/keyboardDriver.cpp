@@ -645,7 +645,7 @@ void KeyboardDriver::initializeDevice(const KeyboardDevice &dev, const uint8_t b
 		/* if we ever claimed or detached some interfaces, set them back
 		 * to the same state in which we found them */
 		this->releaseUSBDeviceInterfaces(device);
-		libusb_close( device.usb_handle );
+		this->closeUSBDevice(device);
 		throw;
 	}
 }
@@ -730,8 +730,8 @@ void KeyboardDriver::closeDevice(const KeyboardDevice &dev, const uint8_t bus, c
 		device.macros_man = nullptr;
 
 		this->releaseUSBDeviceInterfaces(device);
+		this->closeUSBDevice(device);
 
-		libusb_close( device.usb_handle );
 		this->initialized_devices_.erase(devID);
 	}
 	catch (const std::out_of_range& oor) {

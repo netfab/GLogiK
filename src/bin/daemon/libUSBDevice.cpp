@@ -107,18 +107,25 @@ void LibUSBDevice::openUSBDevice(InitializedDevice & device) {
 		throw GLogiKExcept(this->buffer_.str());
 	}
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "libusb found device " << to_uint(device.num)
-				<< " on bus " << to_uint(device.bus);
-#endif
-
 	int ret_value = libusb_open( device.usb_device, &(device.usb_handle) );
 	if( this->USBError(ret_value) ) {
 		libusb_free_device_list(list, 1);
 		throw GLogiKExcept("opening device failure");
 	}
 
+#if DEBUGGING_ON
+	LOG(DEBUG3) << device.strID << " opened USB device";
+#endif
+
 	libusb_free_device_list(list, 1);
+}
+
+void LibUSBDevice::closeUSBDevice(InitializedDevice & device) {
+	libusb_close(device.usb_handle);
+	device.usb_handle = nullptr;
+#if DEBUGGING_ON
+	LOG(DEBUG3) << device.strID << " closed USB device";
+#endif
 }
 
 /*

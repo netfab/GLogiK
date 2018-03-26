@@ -52,6 +52,7 @@ class LibUSBDevice
 		int USBError(int error_code);
 
 		void openUSBDevice(InitializedDevice & device);
+		void closeUSBDevice(InitializedDevice & device);
 
 		void setUSBDeviceActiveConfiguration(InitializedDevice & device);
 		void findUSBDeviceInterface(InitializedDevice & device);
