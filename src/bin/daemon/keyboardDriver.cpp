@@ -29,8 +29,6 @@
 #include "lib/dbus/GKDBus.h"
 #include "lib/shared/glogik.h"
 
-#include <libusb-1.0/libusb.h>
-
 #include "daemonControl.h"
 #include "keyboardDriver.h"
 
@@ -59,16 +57,9 @@ const std::vector< ModifierKey > KeyboardDriver::modifier_keys_ = {
 /* -- -- -- */
 
 KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, const DescriptorValues & values)
-	:	LibUSB(values)
+	:	LibUSB(key_read_length, values)
 {
 	this->leds_update_event_length_ = event_length;
-
-	if( key_read_length > KEYS_BUFFER_LENGTH ) {
-		GKSysLog(LOG_WARNING, WARNING, "interrupt read length too large, set it to max buffer length");
-		key_read_length = KEYS_BUFFER_LENGTH;
-	}
-
-	this->interrupt_key_read_length = key_read_length;
 }
 
 KeyboardDriver::~KeyboardDriver() {
@@ -101,15 +92,14 @@ std::string KeyboardDriver::getBytes(const USBDevice & device) {
 KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 	std::fill_n(device.keys_buffer, KEYS_BUFFER_LENGTH, 0);
 
-	int ret = libusb_interrupt_transfer(device.usb_handle, device.keys_endpoint,
-		(unsigned char*)device.keys_buffer, this->interrupt_key_read_length, &(device.transfer_length), 10);
+	int ret = this->performInterruptTransfer(device, 10);
 
 	switch(ret) {
 		case 0:
 			if( device.transfer_length > 0 ) {
 #if DEBUGGING_ON
 				LOG(DEBUG)	<< device.strID
-							<< " exp. rl: " << this->interrupt_key_read_length
+							<< " exp. rl: " << this->interrupt_buffer_max_length_
 							<< " act_l: " << device.transfer_length << ", xBuf[0]: "
 							<< std::hex << to_uint(device.keys_buffer[0]);
 #endif
@@ -325,7 +315,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device) {
 	LOG(DEBUG2) << "	b	|	p";
 	LOG(DEBUG2) << "  ------------------------------";
 #endif
-	for(i = this->interrupt_key_read_length-1; i >= 2; --i) {
+	for(i = this->interrupt_buffer_max_length_-1; i >= 2; --i) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "	" << to_uint(device.keys_buffer[i])
 					<< "	|	" << to_uint(device.previous_keys_buffer[i]);

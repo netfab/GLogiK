@@ -44,10 +44,11 @@ class LibUSB
 	public:
 
 	protected:
-		LibUSB(const DescriptorValues & values);
+		LibUSB(const int key_read_length, const DescriptorValues & values);
 		~LibUSB(void);
 
 		std::ostringstream buffer_;
+		int interrupt_buffer_max_length_;
 
 		int USBError(int error_code);
 
@@ -64,6 +65,11 @@ class LibUSB
 			uint16_t wIndex,
 			unsigned char * data,
 			uint16_t wLength
+		);
+
+		int performInterruptTransfer(
+			USBDevice & device,
+			unsigned int timeout
 		);
 
 	private:

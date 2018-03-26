@@ -34,7 +34,7 @@ bool LibUSB::libusb_status_ = false;
 uint8_t LibUSB::drivers_cnt_ = 0;
 libusb_context * LibUSB::context_ = nullptr;
 
-LibUSB::LibUSB(const DescriptorValues & values)
+LibUSB::LibUSB(const int key_read_length, const DescriptorValues & values)
 	:	buffer_("", std::ios_base::app), expected_usb_descriptors_(values)
 {
 	LibUSB::drivers_cnt_++;
@@ -50,6 +50,14 @@ LibUSB::LibUSB(const DescriptorValues & values)
 
 		LibUSB::libusb_status_ = true;
 	}
+
+	this->interrupt_buffer_max_length_ = key_read_length;
+
+	if( key_read_length > KEYS_BUFFER_LENGTH ) {
+		GKSysLog(LOG_WARNING, WARNING, "interrupt read length too large, set it to max buffer length");
+		this->interrupt_buffer_max_length_ = KEYS_BUFFER_LENGTH;
+	}
+
 }
 
 LibUSB::~LibUSB() {
@@ -502,6 +510,22 @@ void LibUSB::sendControlRequest(
 		LOG(DEBUG2) << "sent " << ret << " bytes - expected: " << wLength;
 #endif
 	}
+}
+
+int LibUSB::performInterruptTransfer(
+	USBDevice & device,
+	unsigned int timeout
+) {
+	int ret = libusb_interrupt_transfer(
+		device.usb_handle,
+		device.keys_endpoint,
+		(unsigned char*)device.keys_buffer,
+		this->interrupt_buffer_max_length_,
+		&(device.transfer_length),
+		timeout
+	);
+
+	return ret;
 }
 
 /*

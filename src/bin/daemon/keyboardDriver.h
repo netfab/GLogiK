@@ -100,8 +100,6 @@ class KeyboardDriver
 		KeyboardDriver(void) = delete;
 		KeyboardDriver(int key_read_length, uint8_t event_length, const DescriptorValues & values);
 
-		int interrupt_key_read_length;
-
 		std::string getBytes(const USBDevice & device);
 
 		virtual KeyStatus processKeyEvent(USBDevice & device) = 0;
