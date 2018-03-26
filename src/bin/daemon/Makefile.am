@@ -36,8 +36,8 @@ GLogiKd_SOURCES = \
 		%D%/devicesManager.h \
 		%D%/keyboardDriver.cpp \
 		%D%/keyboardDriver.h \
-		%D%/libUSBDevice.cpp \
-		%D%/libUSBDevice.h \
+		%D%/libUSB.cpp \
+		%D%/libUSB.h \
 		%D%/USBDevice.cpp \
 		%D%/USBDevice.h \
 		%D%/virtualKeyboard.cpp \

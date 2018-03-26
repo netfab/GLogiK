@@ -59,7 +59,7 @@ const std::vector< ModifierKey > KeyboardDriver::modifier_keys_ = {
 /* -- -- -- */
 
 KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, const DescriptorValues & values)
-	:	LibUSBDevice(values)
+	:	LibUSB(values)
 {
 	this->leds_update_event_length_ = event_length;
 

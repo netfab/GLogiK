@@ -64,8 +64,8 @@ GLogiK=$PWD/.. CD=. {
 				devicesManager.h
 				keyboardDriver.cpp
 				keyboardDriver.h
-				libUSBDevice.cpp
-				libUSBDevice.h
+				libUSB.cpp
+				libUSB.h
 				logitechG510.cpp
 				logitechG510.h
 				macrosManager.cpp

@@ -31,7 +31,7 @@
 
 #include <linux/input-event-codes.h>
 
-#include "libUSBDevice.h"
+#include "libUSB.h"
 
 #define DEVICE_LISTENING_THREAD_MAX_ERRORS 3
 #define unk	KEY_UNKNOWN
@@ -65,7 +65,7 @@ struct ModifierKey {
 };
 
 class KeyboardDriver
-	:	public LibUSBDevice
+	:	public LibUSB
 {
 	public:
 		KeyboardDriver(int key_read_length, uint8_t event_length, const DescriptorValues & values);

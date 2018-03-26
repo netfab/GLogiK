@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_LIBUSB_DEVICE_H__
-#define __GLOGIKD_LIBUSB_DEVICE_H__
+#ifndef __GLOGIKD_LIBUSB_H__
+#define __GLOGIKD_LIBUSB_H__
 
 #include <cstdint>
 #include <sstream>
@@ -39,13 +39,13 @@ struct DescriptorValues {
 	uint8_t b_num_endpoints;
 };
 
-class LibUSBDevice
+class LibUSB
 {
 	public:
 
 	protected:
-		LibUSBDevice(const DescriptorValues & values);
-		~LibUSBDevice(void);
+		LibUSB(const DescriptorValues & values);
+		~LibUSB(void);
 
 		std::ostringstream buffer_;
 
