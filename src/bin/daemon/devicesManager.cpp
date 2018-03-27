@@ -98,9 +98,9 @@ void DevicesManager::initializeDevices(void) {
 		if(this->initialized_devices_.count(devID) == 1) {
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "device "
-						<< device.device.vendor_id << ":"
-						<< device.device.product_id << " - "
-						<< device.input_dev_node << " already initialized";
+						<< device.getVendorID() << ":"
+						<< device.getProductID() << " - "
+						<< device.getInputDevNode() << " already initialized";
 #endif
 			continue; // jump to next detected device
 		}
@@ -109,9 +109,9 @@ void DevicesManager::initializeDevices(void) {
 		if(this->plugged_but_stopped_devices_.count(devID) == 1) {
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "device "
-						<< device.device.vendor_id << ":"
-						<< device.device.product_id << " - "
-						<< device.input_dev_node << " has been stopped";
+						<< device.getVendorID() << ":"
+						<< device.getProductID() << " - "
+						<< device.getInputDevNode() << " has been stopped";
 			LOG(DEBUG3) << "automatic initialization is disabled for stopped devices";
 #endif
 			continue; // jump to next detected device
@@ -119,14 +119,20 @@ void DevicesManager::initializeDevices(void) {
 
 		try {
 			for(const auto& driver : this->drivers_) {
-				if( device.driver_ID == driver->getDriverID() ) {
+				if( device.getDriverID() == driver->getDriverID() ) {
 					// initialization
-					driver->initializeDevice( device.device, device.device_bus, device.device_num );
+					driver->initializeDevice(
+						device.getName(),
+						device.getVendorID(),
+						device.getProductID(),
+						device.getBus(),
+						device.getNum()
+					);
 					this->initialized_devices_[devID] = device;
 
-					this->buffer_.str( device.device.name );
-					this->buffer_ << "(" << device.device.vendor_id << ":" << device.device.product_id
-								  << ") on bus " << to_uint(device.device_bus) << " initialized";
+					this->buffer_.str( device.getName() );
+					this->buffer_ << "(" << device.getVendorID() << ":" << device.getProductID()
+								  << ") on bus " << to_uint(device.getBus()) << " initialized";
 					GKSysLog(LOG_INFO, INFO, this->buffer_.str());
 					startedDevices.push_back(devID);
 					break;
@@ -158,15 +164,21 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 	try {
 		const auto & device = this->plugged_but_stopped_devices_.at(devID);
 		for(const auto& driver : this->drivers_) {
-			if( device.driver_ID == driver->getDriverID() ) {
+			if( device.getDriverID() == driver->getDriverID() ) {
 				if( ! driver->isDeviceInitialized(devID) ) { /* sanity check */
 					// initialization
-					driver->initializeDevice( device.device, device.device_bus, device.device_num );
+					driver->initializeDevice(
+						device.getName(),
+						device.getVendorID(),
+						device.getProductID(),
+						device.getBus(),
+						device.getNum()
+					);
 					this->initialized_devices_[devID] = device;
 
-					this->buffer_.str( device.device.name );
-					this->buffer_	<< "(" << device.device.vendor_id << ":" << device.device.product_id
-									<< ") on bus " << to_uint(device.device_bus) << " initialized";
+					this->buffer_.str( device.getName() );
+					this->buffer_	<< "(" << device.getVendorID() << ":" << device.getProductID()
+									<< ") on bus " << to_uint(device.getBus()) << " initialized";
 					GKSysLog(LOG_INFO, INFO, this->buffer_.str());
 
 #if DEBUGGING_ON
@@ -199,13 +211,19 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
 		for(const auto& driver : this->drivers_) {
-			if( device.driver_ID == driver->getDriverID() ) {
+			if( device.getDriverID() == driver->getDriverID() ) {
 				if( driver->isDeviceInitialized(devID) ) {
-					driver->closeDevice( device.device, device.device_bus, device.device_num );
+					driver->closeDevice(
+						device.getName(),
+						device.getVendorID(),
+						device.getProductID(),
+						device.getBus(),
+						device.getNum()
+					);
 
-					this->buffer_.str( device.device.name );
-					this->buffer_	<< "(" << device.device.vendor_id << ":" << device.device.product_id
-									<< ") on bus " << to_uint(device.device_bus) << " stopped";
+					this->buffer_.str( device.getName() );
+					this->buffer_	<< "(" << device.getVendorID() << ":" << device.getProductID()
+									<< ") on bus " << to_uint(device.getBus()) << " stopped";
 					GKSysLog(LOG_INFO, INFO, this->buffer_.str());
 
 					this->plugged_but_stopped_devices_[devID] = device;
@@ -267,8 +285,8 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 
 			const auto & device = this->initialized_devices_.at(devID);
 
-			this->buffer_ << device.device.vendor_id << ":" << device.device.product_id
-						  << ":" << device.input_dev_node << ":" << device.usec;
+			this->buffer_ << device.getVendorID() << ":" << device.getProductID()
+						  << ":" << device.getInputDevNode() << ":" << device.getUSec();
 
 			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 			GKSysLog(LOG_WARNING, WARNING, "Did you unplug your device before properly stopping it ?");
@@ -418,8 +436,8 @@ void DevicesManager::searchSupportedDevices(void) {
 
 			for(const auto& driver : this->drivers_) {
 				for(const auto& device : driver->getSupportedDevices()) {
-					if( device.vendor_id == vendor_id ) {
-						if( device.product_id == product_id ) {
+					if( device.getVendorID() == vendor_id ) {
+						if( device.getProductID() == product_id ) {
 
 							// path to the event device node in /dev
 							std::string devnode = to_string( udev_device_get_devnode(dev) );
@@ -456,20 +474,18 @@ void DevicesManager::searchSupportedDevices(void) {
 
 							try {
 								const DetectedDevice & d = this->detected_devices_.at(devID);
-								LOG(WARNING) << "found already detected device : " << devID << " " << d.input_dev_node;
+								LOG(WARNING) << "found already detected device : " << devID << " " << d.getInputDevNode();
 							}
 							catch (const std::out_of_range& oor) {
 
-								DetectedDevice found;
-								found.device			= device;
-								found.input_dev_node	= devnode;
-								found.vendor			= vendor;
-								found.model				= model;
-								found.serial			= serial;
-								found.usec				= usec;
-								found.driver_ID			= driver->getDriverID();
-								found.device_bus		= bus;
-								found.device_num		= num;
+								DetectedDevice found(
+									device.getName(),
+									device.getVendorID(),
+									device.getProductID(),
+									bus, num,
+									devnode, vendor, model,
+									serial, usec, driver->getDriverID()
+								);
 
 								this->detected_devices_[devID] = found;
 
@@ -531,19 +547,19 @@ const std::vector<std::string> DevicesManager::getDeviceProperties(const std::st
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "found " << device.model << " in started devices";
+		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
 #endif
-		ret.push_back(device.vendor);
-		ret.push_back(device.model);
+		ret.push_back(device.getVendor());
+		ret.push_back(device.getModel());
 	}
 	catch (const std::out_of_range& oor) {
 		try {
 			const auto & device = this->plugged_but_stopped_devices_.at(devID);
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "found " << device.model << " in stopped devices";
+			LOG(DEBUG2) << "found " << device.getModel() << " in stopped devices";
 #endif
-			ret.push_back(device.vendor);
-			ret.push_back(device.model);
+			ret.push_back(device.getVendor());
+			ret.push_back(device.getModel());
 		}
 		catch (const std::out_of_range& oor) {
 			GKSysLog_UnknownDevice
@@ -574,10 +590,10 @@ void DevicesManager::setDeviceActiveConfiguration(
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "found " << device.model << " in started devices";
+		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
 #endif
 		for(const auto& driver : this->drivers_) {
-			if( device.driver_ID == driver->getDriverID() ) {
+			if( device.getDriverID() == driver->getDriverID() ) {
 				driver->setDeviceActiveConfiguration(devID, macros_profiles, r, g, b);
 				return;
 			}
@@ -592,10 +608,10 @@ const macros_map_t & DevicesManager::getDeviceMacrosProfiles(const std::string &
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "found " << device.model << " in started devices";
+		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
 #endif
 		for(const auto& driver : this->drivers_) {
-			if( device.driver_ID == driver->getDriverID() ) {
+			if( device.getDriverID() == driver->getDriverID() ) {
 				return driver->getDeviceMacrosProfiles(devID);
 			}
 		}
@@ -610,10 +626,10 @@ const std::vector<std::string> & DevicesManager::getDeviceMacroKeysNames(const s
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "found " << device.model << " in started devices";
+		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
 #endif
 		for(const auto& driver : this->drivers_) {
-			if( device.driver_ID == driver->getDriverID() ) {
+			if( device.getDriverID() == driver->getDriverID() ) {
 				return driver->getMacroKeysNames();
 			}
 		}
@@ -632,8 +648,14 @@ void DevicesManager::resetDevicesStates(void) {
 	for(const auto& device_pair : this->initialized_devices_) {
 		const auto & device = device_pair.second;
 		for(const auto& driver : this->drivers_) {
-			if( device.driver_ID == driver->getDriverID() ) {
-				driver->resetDeviceState(device.device, device.device_bus, device.device_num);
+			if( device.getDriverID() == driver->getDriverID() ) {
+				driver->resetDeviceState(
+					device.getName(),
+					device.getVendorID(),
+					device.getProductID(),
+					device.getBus(),
+					device.getNum()
+				);
 			}
 		}
 	}

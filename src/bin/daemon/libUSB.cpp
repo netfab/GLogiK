@@ -101,8 +101,8 @@ void LibUSB::openUSBDevice(USBDevice & device) {
 
 	for (int idx = 0; idx < num_devices; ++idx) {
 		device.usb_device = list[idx];
-		if( (int)libusb_get_bus_number(device.usb_device) == device.bus and
-			(int)libusb_get_device_address(device.usb_device) == device.num ) {
+		if( (int)libusb_get_bus_number(device.usb_device) == device.getBus() and
+			(int)libusb_get_device_address(device.usb_device) == device.getNum() ) {
 			break;
 		}
 		device.usb_device = nullptr;
@@ -110,7 +110,7 @@ void LibUSB::openUSBDevice(USBDevice & device) {
 
 	if( device.usb_device == nullptr ) {
 		this->buffer_.str("libusb cannot find device ");
-		this->buffer_ << device.num << " on bus " << device.bus;
+		this->buffer_ << device.getNum() << " on bus " << device.getBus();
 		libusb_free_device_list(list, 1);
 		throw GLogiKExcept(this->buffer_.str());
 	}
@@ -458,7 +458,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 				}
 
 #if DEBUGGING_ON
-				LOG(INFO) << device.strID << " all done ! " << device.device.name << " interface " << numInt
+				LOG(INFO) << device.strID << " all done ! " << device.getName() << " interface " << numInt
 							<< " opened and ready for I/O transfers";
 #endif
 

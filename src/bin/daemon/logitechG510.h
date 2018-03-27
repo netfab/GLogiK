@@ -65,7 +65,7 @@ class LogitechG510 : public KeyboardDriver
 
 		const char* getDriverName() const;
 		const uint16_t getDriverID() const;
-		const std::vector<KeyboardDevice> & getSupportedDevices(void) const;
+		const std::vector<DeviceID> & getSupportedDevices(void) const;
 		const std::vector<std::string> & getMacroKeysNames(void) const;
 
 	protected:
@@ -73,7 +73,7 @@ class LogitechG510 : public KeyboardDriver
 		static const std::vector< R_Key > five_bytes_keys_map_;
 		static const std::vector< R_Key > two_bytes_keys_map_;
 		static const std::vector< M_Key_Led_Mask > leds_mask_;
-		static const std::vector<KeyboardDevice> supported_devices_;
+		static const std::vector<DeviceID> supported_devices_;
 
 		KeyStatus processKeyEvent(USBDevice & device);
 		void sendUSBDeviceInitialization(const USBDevice & device);

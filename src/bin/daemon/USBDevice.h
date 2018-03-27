@@ -42,13 +42,57 @@
 namespace GLogiK
 {
 
-struct KeyboardDevice {
-	const char* name;
-	const char* vendor_id;
-	const char* product_id;
+class DeviceID {
+	public:
+		DeviceID(
+			const std::string & n,
+			const std::string & v,
+			const std::string & p
+		)	:	name(n), vendor_id(v), product_id(p) {};
+		~DeviceID(void) = default;
+
+		const std::string & getName(void) const { return this->name; }
+		const std::string & getVendorID(void) const { return this->vendor_id; }
+		const std::string & getProductID(void) const { return this->product_id; }
+
+	protected:
+		DeviceID(void) = default;
+
+	private:
+		friend class USBDevice;
+
+		std::string name;
+		std::string vendor_id;
+		std::string product_id;
+};
+
+class BusNumDeviceID
+	:	public DeviceID
+{
+	public:
+		const uint8_t getBus(void) const { return this->bus; }
+		const uint8_t getNum(void) const { return this->num; }
+
+	protected:
+		BusNumDeviceID(void) = default;
+		BusNumDeviceID(
+			const std::string & n,
+			const std::string & v,
+			const std::string & p,
+			const uint8_t b,
+			const uint8_t nu
+		)	:	DeviceID(n,v,p), bus(b), num(nu) {};
+		~BusNumDeviceID(void) = default;
+
+	private:
+		friend class USBDevice;
+
+		uint8_t bus;
+		uint8_t num;
 };
 
 class USBDevice
+	:	public BusNumDeviceID
 {
 	public:
 		USBDevice(void);
@@ -56,8 +100,15 @@ class USBDevice
 
 		//USBDevice()=default;
 
-		USBDevice(KeyboardDevice k, uint8_t b, uint8_t n, const std::string & id)
-			:	device(k), bus(b), num(n), strID(id),
+		USBDevice(
+			const std::string & n,
+			const std::string & v,
+			const std::string & p,
+			uint8_t b,
+			uint8_t nu,
+			const std::string & id)
+			:	BusNumDeviceID(n, v, p, b, nu),
+				strID(id),
 				keys_endpoint(0),
 				pressed_keys(0),
 				transfer_length(0),
@@ -78,9 +129,12 @@ class USBDevice
 
 		void operator=(const USBDevice& dev)
 		{
-			this->device = dev.device;
+			this->name = dev.name;
+			this->vendor_id = dev.vendor_id;
+			this->product_id = dev.product_id;
 			this->bus = dev.bus;
 			this->num = dev.num;
+
 			this->strID = dev.strID;
 			this->keys_endpoint = dev.keys_endpoint;
 			this->listen_status = static_cast<bool>(dev.listen_status);
@@ -119,9 +173,6 @@ class USBDevice
 	//protected:
 
 	//private:
-		KeyboardDevice device;
-		uint8_t bus;
-		uint8_t num;
 		std::string strID;	/* [devID] */
 		uint8_t keys_endpoint;
 		std::atomic<bool> listen_status;

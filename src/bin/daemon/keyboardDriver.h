@@ -74,14 +74,32 @@ class KeyboardDriver
 
 		virtual const char* getDriverName() const = 0;
 		virtual const uint16_t getDriverID() const = 0;
-		virtual const std::vector<KeyboardDevice> & getSupportedDevices(void) const = 0;
+		virtual const std::vector<DeviceID> & getSupportedDevices(void) const = 0;
 		virtual const std::vector<std::string> & getMacroKeysNames(void) const = 0;
 
 		static const std::vector<std::string> & getEmptyStringVector(void);
 
-		void initializeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
-		void closeDevice(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
-		void resetDeviceState(const KeyboardDevice &dev, const uint8_t bus, const uint8_t num);
+		void initializeDevice(
+			const std::string & name,
+			const std::string & vendor_id,
+			const std::string & product_id,
+			const uint8_t bus,
+			const uint8_t num
+		);
+		void closeDevice(
+			const std::string & name,
+			const std::string & vendor_id,
+			const std::string & product_id,
+			const uint8_t bus,
+			const uint8_t num
+		);
+		void resetDeviceState(
+			const std::string & name,
+			const std::string & vendor_id,
+			const std::string & product_id,
+			const uint8_t bus,
+			const uint8_t num
+		);
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,

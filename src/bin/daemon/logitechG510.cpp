@@ -86,7 +86,7 @@ const std::vector< M_Key_Led_Mask > LogitechG510::leds_mask_ = {
 	{Leds::GK_LED_MR, 0x10},
 };
 
-const std::vector<KeyboardDevice> LogitechG510::supported_devices_ = {
+const std::vector<DeviceID> LogitechG510::supported_devices_ = {
 	// name, vendor_id, product_id
 	{ "Logitech G510/G510s", VENDOR_LOGITECH, "c22d" },
 };
@@ -107,7 +107,7 @@ const uint16_t LogitechG510::getDriverID() const {
 	return GLOGIKD_DRIVER_ID_G510;
 }
 
-const std::vector<KeyboardDevice> & LogitechG510::getSupportedDevices(void) const {
+const std::vector<DeviceID> & LogitechG510::getSupportedDevices(void) const {
 	return LogitechG510::supported_devices_;
 }
 
@@ -218,7 +218,7 @@ void LogitechG510::setKeyboardColor(const USBDevice & device) {
 	const uint8_t & r = device.rgb[0];
 	const uint8_t & g = device.rgb[1];
 	const uint8_t & b = device.rgb[2];
-	LOG(DEBUG3) << "setting " << device.device.name << " backlight color "
+	LOG(DEBUG3) << "setting " << device.getName() << " backlight color "
 				<< "with following RGB bytes : "
 				<< getHexRGB(r, g, b);
 #endif
@@ -234,7 +234,7 @@ void LogitechG510::setMxKeysLeds(const USBDevice & device) {
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << "setting " << device.device.name << " MxKeys leds using current mask : 0x"
+	LOG(DEBUG1) << "setting " << device.getName() << " MxKeys leds using current mask : 0x"
 				<< std::hex << to_uint(leds_mask);
 #endif
 	unsigned char leds_buffer[2] = { 4, leds_mask };
@@ -262,7 +262,7 @@ void LogitechG510::sendUSBDeviceInitialization(const USBDevice & device) {
 	};
 
 #if DEBUGGING_ON
-	LOG(INFO) << device.strID << " sending " << device.device.name << " initialization requests";
+	LOG(INFO) << device.strID << " sending " << device.getName() << " initialization requests";
 #endif
 	this->sendControlRequest(device, 0x301, 1, usb_data, 19);
 	this->sendControlRequest(device, 0x309, 1, usb_data_2, 8);

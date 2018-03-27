@@ -44,16 +44,44 @@
 namespace GLogiK
 {
 
-struct DetectedDevice {
-	KeyboardDevice device;
-	std::string input_dev_node;
-	std::string vendor;
-	std::string model;
-	std::string serial;
-	std::string usec;
-	uint16_t driver_ID;
-	uint8_t device_bus;
-	uint8_t device_num;
+class DetectedDevice
+	:	public BusNumDeviceID
+{
+	public:
+		DetectedDevice(void) = default;
+		DetectedDevice(
+			const std::string & n,
+			const std::string & v,
+			const std::string & p,
+			const uint8_t b,
+			const uint8_t nu,
+			const std::string & node,
+			const std::string & ven,
+			const std::string & mod,
+			const std::string & ser,
+			const std::string & us,
+			const uint16_t d_ID
+		)	:	BusNumDeviceID(n,v,p,b,nu),
+				input_dev_node(node),
+				vendor(ven),
+				model(mod),
+				serial(ser),
+				usec(us),
+				driver_ID(d_ID) {};
+
+		const std::string & getInputDevNode(void) const { return this->input_dev_node; }
+		const std::string & getVendor(void) const { return this->vendor; }
+		const std::string & getModel(void) const { return this->model; }
+		const std::string & getUSec(void) const { return this->usec; }
+		const uint16_t getDriverID(void) const { return this->driver_ID; }
+
+	private:
+		std::string input_dev_node;
+		std::string vendor;
+		std::string model;
+		std::string serial;
+		std::string usec;
+		uint16_t driver_ID;
 };
 
 #if DEBUGGING_ON
