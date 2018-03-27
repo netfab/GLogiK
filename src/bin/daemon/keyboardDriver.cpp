@@ -575,29 +575,24 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 	}
 }
 
-void KeyboardDriver::initializeDevice(
-	const std::string & name,
-	const std::string & vendor_id,
-	const std::string & product_id,
-	const uint8_t bus,
-	const uint8_t num )
+void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 {
-	const std::string devID = KeyboardDriver::getDeviceID(bus, num);
+	const std::string devID = KeyboardDriver::getDeviceID(det.getBus(), det.getNum());
 	this->buffer_.str("[");
 	this->buffer_ << devID << "]";
 	const std::string strID(this->buffer_.str());
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << strID << " trying to initialize " << name << "("
-				<< vendor_id << ":" << product_id << "), device "
-				<< to_uint(num) << " on bus " << to_uint(bus);
+	LOG(DEBUG3) << strID << " trying to initialize " << det.getName() << "("
+				<< det.getVendorID() << ":" << det.getProductID() << "), device "
+				<< to_uint(det.getNum()) << " on bus " << to_uint(det.getBus());
 #endif
 
 	USBDevice device(
-		name,
-		vendor_id,
-		product_id,
-		bus, num, strID);
+		det.getName(),
+		det.getVendorID(),
+		det.getProductID(),
+		det.getBus(), det.getNum(), strID);
 
 	this->openUSBDevice(device); /* throws on any failure */
 	/* libusb device opened */
@@ -673,21 +668,16 @@ void KeyboardDriver::resetDeviceState(USBDevice & device) {
 	this->setKeyboardColor(device);
 }
 
-void KeyboardDriver::resetDeviceState(
-	const std::string & name,
-	const std::string & vendor_id,
-	const std::string & product_id,
-	const uint8_t bus,
-	const uint8_t num )
+void KeyboardDriver::resetDeviceState(const BusNumDeviceID & det)
 {
-	const std::string devID = KeyboardDriver::getDeviceID(bus, num);
+	const std::string devID = KeyboardDriver::getDeviceID(det.getBus(), det.getNum());
 
 	try {
 		USBDevice & device = this->initialized_devices_.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "[" << devID << "] resetting state of " << name << "("
-					<< vendor_id << ":" << product_id << "), device "
-					<< to_uint(num) << " on bus " << to_uint(bus);
+		LOG(DEBUG3) << device.strID << " resetting state of " << device.getName() << "("
+					<< device.getVendorID() << ":" << device.getProductID() << "), device "
+					<< to_uint(device.getNum()) << " on bus " << to_uint(device.getBus());
 #endif
 
 		this->resetDeviceState(device);
@@ -697,23 +687,18 @@ void KeyboardDriver::resetDeviceState(
 	}
 }
 
-void KeyboardDriver::closeDevice(
-	const std::string & name,
-	const std::string & vendor_id,
-	const std::string & product_id,
-	const uint8_t bus,
-	const uint8_t num )
+void KeyboardDriver::closeDevice(const BusNumDeviceID & det)
 {
-	const std::string devID = KeyboardDriver::getDeviceID(bus, num);
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "[" << devID << "] trying to close " << name << "("
-				<< vendor_id << ":" << product_id << "), device "
-				<< to_uint(num) << " on bus " << to_uint(bus);
-#endif
+	const std::string devID = KeyboardDriver::getDeviceID(det.getBus(), det.getNum());
 
 	try {
 		USBDevice & device = this->initialized_devices_.at(devID);
+#if DEBUGGING_ON
+		LOG(DEBUG3) << device.strID << " closing " << device.getName() << "("
+					<< device.getVendorID() << ":" << device.getProductID() << "), device "
+					<< to_uint(device.getNum()) << " on bus " << to_uint(device.getBus());
+#endif
+
 		device.listen_status = false;
 
 		bool found = false;

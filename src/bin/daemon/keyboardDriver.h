@@ -79,27 +79,9 @@ class KeyboardDriver
 
 		static const std::vector<std::string> & getEmptyStringVector(void);
 
-		void initializeDevice(
-			const std::string & name,
-			const std::string & vendor_id,
-			const std::string & product_id,
-			const uint8_t bus,
-			const uint8_t num
-		);
-		void closeDevice(
-			const std::string & name,
-			const std::string & vendor_id,
-			const std::string & product_id,
-			const uint8_t bus,
-			const uint8_t num
-		);
-		void resetDeviceState(
-			const std::string & name,
-			const std::string & vendor_id,
-			const std::string & product_id,
-			const uint8_t bus,
-			const uint8_t num
-		);
+		void initializeDevice(const BusNumDeviceID & det);
+		void closeDevice(const BusNumDeviceID & det);
+		void resetDeviceState(const BusNumDeviceID & det);
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,

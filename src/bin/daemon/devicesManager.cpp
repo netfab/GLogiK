@@ -121,13 +121,7 @@ void DevicesManager::initializeDevices(void) {
 			for(const auto& driver : this->drivers_) {
 				if( device.getDriverID() == driver->getDriverID() ) {
 					// initialization
-					driver->initializeDevice(
-						device.getName(),
-						device.getVendorID(),
-						device.getProductID(),
-						device.getBus(),
-						device.getNum()
-					);
+					driver->initializeDevice( device );
 					this->initialized_devices_[devID] = device;
 
 					this->buffer_.str( device.getName() );
@@ -167,13 +161,7 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 			if( device.getDriverID() == driver->getDriverID() ) {
 				if( ! driver->isDeviceInitialized(devID) ) { /* sanity check */
 					// initialization
-					driver->initializeDevice(
-						device.getName(),
-						device.getVendorID(),
-						device.getProductID(),
-						device.getBus(),
-						device.getNum()
-					);
+					driver->initializeDevice( device );
 					this->initialized_devices_[devID] = device;
 
 					this->buffer_.str( device.getName() );
@@ -213,13 +201,7 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 		for(const auto& driver : this->drivers_) {
 			if( device.getDriverID() == driver->getDriverID() ) {
 				if( driver->isDeviceInitialized(devID) ) {
-					driver->closeDevice(
-						device.getName(),
-						device.getVendorID(),
-						device.getProductID(),
-						device.getBus(),
-						device.getNum()
-					);
+					driver->closeDevice( device );
 
 					this->buffer_.str( device.getName() );
 					this->buffer_	<< "(" << device.getVendorID() << ":" << device.getProductID()
@@ -649,13 +631,7 @@ void DevicesManager::resetDevicesStates(void) {
 		const auto & device = device_pair.second;
 		for(const auto& driver : this->drivers_) {
 			if( device.getDriverID() == driver->getDriverID() ) {
-				driver->resetDeviceState(
-					device.getName(),
-					device.getVendorID(),
-					device.getProductID(),
-					device.getBus(),
-					device.getNum()
-				);
+				driver->resetDeviceState( device );
 			}
 		}
 	}
