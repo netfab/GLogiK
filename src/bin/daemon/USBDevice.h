@@ -24,13 +24,11 @@
 
 #include <cstdint>
 
-#include <iterator>
 #include <atomic>
 #include <vector>
 #include <string>
 #include <thread>
 #include <chrono>
-#include <algorithm>
 
 #include <libusb-1.0/libusb.h>
 
@@ -95,10 +93,8 @@ class USBDevice
 	:	public BusNumDeviceID
 {
 	public:
-		USBDevice(void);
-		~USBDevice(void);
-
-		//USBDevice()=default;
+		USBDevice(void) = default;
+		~USBDevice(void) = default;
 
 		USBDevice(
 			const std::string & n,
@@ -106,70 +102,9 @@ class USBDevice
 			const std::string & p,
 			uint8_t b,
 			uint8_t nu,
-			const std::string & id)
-			:	BusNumDeviceID(n, v, p, b, nu),
-				fatal_errors(0),
-				pressed_keys(0),
-				strID(id),
-				transfer_length(0),
-				keys_endpoint(0),
-				listen_status(true)
-		{
-			this->usb_device = nullptr;
-			this->usb_handle = nullptr;
-			this->macros_man = nullptr;
-			std::fill_n(this->keys_buffer, KEYS_BUFFER_LENGTH, 0);
-			std::fill_n(this->previous_keys_buffer, KEYS_BUFFER_LENGTH, 0);
-			this->rgb[0] = 0xFF;
-			this->rgb[1] = 0xFF;
-			this->rgb[2] = 0xFF;
-			this->listen_status = false;
-			this->exit_macro_record_mode = false;
-			this->current_leds_mask = 0;
-		}
+			const std::string & id);
 
-		void operator=(const USBDevice& dev)
-		{
-			this->name = dev.name;
-			this->vendor_id = dev.vendor_id;
-			this->product_id = dev.product_id;
-			this->bus = dev.bus;
-			this->num = dev.num;
-
-			this->strID = dev.strID;
-			this->keys_endpoint = dev.keys_endpoint;
-			this->listen_status = static_cast<bool>(dev.listen_status);
-			this->pressed_keys = dev.pressed_keys;
-			this->usb_device = dev.usb_device;
-			this->usb_handle = dev.usb_handle;
-			this->to_release = dev.to_release;
-			this->to_attach = dev.to_attach;
-			this->macros_man = dev.macros_man;
-			this->endpoints = dev.endpoints;
-			this->listen_thread_id = dev.listen_thread_id;
-			this->current_leds_mask = static_cast<uint8_t>(dev.current_leds_mask);
-			this->transfer_length = dev.transfer_length;
-			std::copy(
-				std::begin(dev.keys_buffer),
-				std::end(dev.keys_buffer),
-				std::begin(this->keys_buffer)
-			);
-			std::copy(
-				std::begin(dev.previous_keys_buffer),
-				std::end(dev.previous_keys_buffer),
-				std::begin(this->previous_keys_buffer)
-			);
-			this->exit_macro_record_mode = static_cast<bool>(dev.exit_macro_record_mode);
-			this->standard_keys_events = dev.standard_keys_events;
-			this->chosen_macro_key = dev.chosen_macro_key;
-			this->last_call = dev.last_call;
-			std::copy(
-				std::begin(dev.rgb),
-				std::end(dev.rgb),
-				std::begin(this->rgb)
-			);
-			this->fatal_errors = dev.fatal_errors;
-		}
+		void operator=(const USBDevice& dev);
 
 		unsigned int fatal_errors;
 		std::thread::id listen_thread_id;

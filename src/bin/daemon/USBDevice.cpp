@@ -19,17 +19,88 @@
  *
  */
 
+#include <iterator>
+#include <algorithm>
+
 #include "USBDevice.h"
 
 namespace GLogiK
 {
 
-USBDevice::USBDevice() {
+USBDevice::USBDevice(
+	const std::string & n,
+	const std::string & v,
+	const std::string & p,
+	uint8_t b,
+	uint8_t nu,
+	const std::string & id)
+		:	BusNumDeviceID(n, v, p, b, nu),
+			fatal_errors(0),
+			macros_man(nullptr),
+			pressed_keys(0),
+			current_leds_mask(0),
+			exit_macro_record_mode(false),
+			strID(id),
+			transfer_length(0),
+			keys_endpoint(0),
+			usb_device(nullptr),
+			usb_handle(nullptr),
+			listen_status(true)
+{
+	std::fill_n(this->keys_buffer, KEYS_BUFFER_LENGTH, 0);
+	std::fill_n(this->previous_keys_buffer, KEYS_BUFFER_LENGTH, 0);
+	this->rgb[0] = 0xFF;
+	this->rgb[1] = 0xFF;
+	this->rgb[2] = 0xFF;
 }
 
-USBDevice::~USBDevice() {
-}
+void USBDevice::operator=(const USBDevice& dev)
+{
+	this->name = dev.name;
+	this->vendor_id = dev.vendor_id;
+	this->product_id = dev.product_id;
+	this->bus = dev.bus;
+	this->num = dev.num;
+	/* end friendship members */
 
+	/* public */
+	this->fatal_errors				= dev.fatal_errors;
+	this->listen_thread_id			= dev.listen_thread_id;
+	this->macros_man				= dev.macros_man;
+	this->pressed_keys				= dev.pressed_keys;
+	this->current_leds_mask			= static_cast<uint8_t>(dev.current_leds_mask);
+	this->exit_macro_record_mode	= static_cast<bool>(dev.exit_macro_record_mode);
+	std::copy(
+		std::begin(dev.keys_buffer),
+		std::end(dev.keys_buffer),
+		std::begin(this->keys_buffer)
+	);
+	std::copy(
+		std::begin(dev.previous_keys_buffer),
+		std::end(dev.previous_keys_buffer),
+		std::begin(this->previous_keys_buffer)
+	);
+	this->chosen_macro_key = dev.chosen_macro_key;
+	this->standard_keys_events = dev.standard_keys_events;
+	this->last_call = dev.last_call;
+
+	/* private */
+	this->strID = dev.strID;
+	std::copy(
+		std::begin(dev.rgb),
+		std::end(dev.rgb),
+		std::begin(this->rgb)
+	);
+	this->transfer_length = dev.transfer_length;
+	this->keys_endpoint = dev.keys_endpoint;
+	this->usb_device = dev.usb_device;
+	this->usb_handle = dev.usb_handle;
+	this->endpoints = dev.endpoints;
+	this->to_release = dev.to_release;
+	this->to_attach = dev.to_attach;
+
+	this->listen_status = static_cast<bool>(dev.listen_status);
+}
 
 void USBDevice::setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b)
 {
