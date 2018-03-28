@@ -108,11 +108,12 @@ class USBDevice
 			uint8_t nu,
 			const std::string & id)
 			:	BusNumDeviceID(n, v, p, b, nu),
-				strID(id),
-				keys_endpoint(0),
+				fatal_errors(0),
 				pressed_keys(0),
+				strID(id),
 				transfer_length(0),
-				fatal_errors(0)
+				keys_endpoint(0),
+				listen_status(true)
 		{
 			this->usb_device = nullptr;
 			this->usb_handle = nullptr;
@@ -170,31 +171,40 @@ class USBDevice
 			this->fatal_errors = dev.fatal_errors;
 		}
 
-	//protected:
-
-	//private:
-		std::string strID;	/* [devID] */
-		uint8_t keys_endpoint;
-		std::atomic<bool> listen_status;
-		uint64_t pressed_keys;
-		libusb_device *usb_device;
-		libusb_device_handle *usb_handle;
-		std::vector<int> to_release;
-		std::vector<int> to_attach;
-		MacrosManager *macros_man;
-		std::vector<libusb_endpoint_descriptor> endpoints;
+		unsigned int fatal_errors;
 		std::thread::id listen_thread_id;
+		MacrosManager *macros_man;
+		uint64_t pressed_keys;
 		std::atomic<uint8_t> current_leds_mask;
-		int transfer_length;
+		std::atomic<bool> exit_macro_record_mode;
 		unsigned char keys_buffer[KEYS_BUFFER_LENGTH];
 		unsigned char previous_keys_buffer[KEYS_BUFFER_LENGTH];
-		std::atomic<bool> exit_macro_record_mode;
-		macro_t standard_keys_events;
 		std::string chosen_macro_key;
+		macro_t standard_keys_events;
 		std::chrono::steady_clock::time_point last_call;
-		uint8_t rgb[3];
-		unsigned int fatal_errors;
 
+		const std::string & getStrID(void) const { return this->strID; }
+		const bool getListeningThreadStatus(void) const { return this->listen_status; }
+		void disableListeningThread(void) { this->listen_status = false; }
+		const int getInterruptTransferLength(void) const { return transfer_length; }
+		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
+		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
+
+	private:
+		friend class LibUSB;
+
+		std::string strID;	/* [devID] */
+		uint8_t rgb[3];
+
+		int transfer_length;
+		uint8_t keys_endpoint;
+		libusb_device *usb_device;
+		libusb_device_handle *usb_handle;
+		std::vector<libusb_endpoint_descriptor> endpoints;
+		std::vector<int> to_release;
+		std::vector<int> to_attach;
+
+		std::atomic<bool> listen_status;
 };
 
 } // namespace GLogiK

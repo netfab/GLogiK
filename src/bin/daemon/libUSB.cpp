@@ -122,7 +122,7 @@ void LibUSB::openUSBDevice(USBDevice & device) {
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << device.strID << " opened USB device";
+	LOG(DEBUG3) << device.getStrID() << " opened USB device";
 #endif
 
 	libusb_free_device_list(list, 1);
@@ -132,7 +132,7 @@ void LibUSB::closeUSBDevice(USBDevice & device) {
 	libusb_close(device.usb_handle);
 	device.usb_handle = nullptr;
 #if DEBUGGING_ON
-	LOG(DEBUG3) << device.strID << " closed USB device";
+	LOG(DEBUG3) << device.getStrID() << " closed USB device";
 #endif
 }
 
@@ -155,7 +155,7 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 	unsigned int i, j, k = 0;
 	int ret = 0;
 #if DEBUGGING_ON
-	LOG(DEBUG1) << device.strID << " setting up usb device configuration";
+	LOG(DEBUG1) << device.getStrID() << " setting up usb device configuration";
 #endif
 
 	int b = -1;
@@ -164,19 +164,19 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 		throw GLogiKExcept("libusb get_configuration error");
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << device.strID << " current active configuration value : " << b;
+	LOG(DEBUG3) << device.getStrID() << " current active configuration value : " << b;
 #endif
 
 	if ( b == (int)(this->expected_usb_descriptors_.b_configuration_value) ) {
 #if DEBUGGING_ON
-		LOG(INFO) << device.strID << " current active configuration value matches the wanted value, skipping configuration";
+		LOG(INFO) << device.getStrID() << " current active configuration value matches the wanted value, skipping configuration";
 #endif
 		return;
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << device.strID << " wanted configuration : " << (int)(this->expected_usb_descriptors_.b_configuration_value);
-	LOG(DEBUG2) << device.strID << " will try to set the active configuration to the wanted value";
+	LOG(DEBUG2) << device.getStrID() << " wanted configuration : " << (int)(this->expected_usb_descriptors_.b_configuration_value);
+	LOG(DEBUG2) << device.getStrID() << " will try to set the active configuration to the wanted value";
 #endif
 
 	/* have to detach all interfaces first */
@@ -221,7 +221,7 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 
 	/* trying to set configuration */
 #if DEBUGGING_ON
-	LOG(DEBUG2) << device.strID << " checking current active configuration";
+	LOG(DEBUG2) << device.getStrID() << " checking current active configuration";
 #endif
 	ret = libusb_set_configuration(device.usb_handle, (int)this->expected_usb_descriptors_.b_configuration_value);
 	if ( this->USBError(ret) ) {
@@ -236,7 +236,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 	int ret = 0;
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << device.strID << " trying to find expected interface";
+	LOG(DEBUG1) << device.getStrID() << " trying to find expected interface";
 #endif
 
 	struct libusb_device_descriptor device_descriptor;
@@ -310,14 +310,14 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 		for (j = 0; j < to_uint(config_descriptor->bNumInterfaces); j++) {
 			const struct libusb_interface *iface = &(config_descriptor->interface[j]);
 #if DEBUGGING_ON
-			LOG(DEBUG2) << device.strID << " interface " << j << " has " << iface->num_altsetting << " alternate settings";
+			LOG(DEBUG2) << device.getStrID() << " interface " << j << " has " << iface->num_altsetting << " alternate settings";
 #endif
 
 			for (k = 0; k < to_uint(iface->num_altsetting); k++) {
 				const struct libusb_interface_descriptor * as_descriptor = &(iface->altsetting[k]);
 
 #if DEBUGGING_ON
-				LOG(DEBUG3) << device.strID << " interface " << j << " alternate setting " << to_uint(as_descriptor->bAlternateSetting)
+				LOG(DEBUG3) << device.getStrID() << " interface " << j << " alternate setting " << to_uint(as_descriptor->bAlternateSetting)
 							<< " has " << to_uint(as_descriptor->bNumEndpoints) << " endpoints";
 
 				LOG(DEBUG4) << "--";
@@ -365,7 +365,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 
 				/* specs found */
 #if DEBUGGING_ON
-				LOG(DEBUG1) << device.strID << " found the expected interface, keep going on this road";
+				LOG(DEBUG1) << device.getStrID() << " found the expected interface, keep going on this road";
 #endif
 
 				int numInt = (int)as_descriptor->bInterfaceNumber;
@@ -380,7 +380,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 
 				/* claiming interface */
 #if DEBUGGING_ON
-				LOG(DEBUG1) << device.strID << " trying to claim interface " << numInt;
+				LOG(DEBUG1) << device.getStrID() << " trying to claim interface " << numInt;
 #endif
 				ret = libusb_claim_interface(device.usb_handle, numInt);	/* claiming */
 				if( this->USBError(ret) ) {
@@ -391,7 +391,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 
 				/* once that the interface is claimed, check that the right configuration is set */
 #if DEBUGGING_ON
-				LOG(DEBUG1) << device.strID << " checking current active configuration";
+				LOG(DEBUG1) << device.getStrID() << " checking current active configuration";
 #endif
 				int b = -1;
 				ret = libusb_get_configuration(device.usb_handle, &b);
@@ -401,7 +401,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 				}
 
 #if DEBUGGING_ON
-				LOG(DEBUG2) << device.strID << " current active configuration value : " << b;
+				LOG(DEBUG2) << device.getStrID() << " current active configuration value : " << b;
 #endif
 				if ( b != (int)(this->expected_usb_descriptors_.b_configuration_value) ) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
@@ -458,7 +458,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 				}
 
 #if DEBUGGING_ON
-				LOG(INFO) << device.strID << " all done ! " << device.getName() << " interface " << numInt
+				LOG(INFO) << device.getStrID() << " all done ! " << device.getName() << " interface " << numInt
 							<< " opened and ready for I/O transfers";
 #endif
 
@@ -543,7 +543,7 @@ void LibUSB::attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) {
 	for(auto it = device.to_attach.begin(); it != device.to_attach.end();) {
 		int numInt = (*it);
 #if DEBUGGING_ON
-		LOG(DEBUG1) << device.strID << " trying to attach kernel driver to interface " << numInt;
+		LOG(DEBUG1) << device.getStrID() << " trying to attach kernel driver to interface " << numInt;
 #endif
 		ret = libusb_attach_kernel_driver(device.usb_handle, numInt); /* attaching */
 		if( this->USBError(ret) ) {
@@ -564,7 +564,7 @@ void LibUSB::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int nu
 	}
 	if( ret ) {
 #if DEBUGGING_ON
-		LOG(DEBUG1) << device.strID << " kernel driver currently attached to the interface " << numInt << ", trying to detach it";
+		LOG(DEBUG1) << device.getStrID() << " kernel driver currently attached to the interface " << numInt << ", trying to detach it";
 #endif
 		ret = libusb_detach_kernel_driver(device.usb_handle, numInt); /* detaching */
 		if( this->USBError(ret) ) {
@@ -578,7 +578,7 @@ void LibUSB::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int nu
 	}
 	else {
 #if DEBUGGING_ON
-		LOG(DEBUG1) << device.strID << " interface " << numInt << " is currently free :)";
+		LOG(DEBUG1) << device.getStrID() << " interface " << numInt << " is currently free :)";
 #endif
 	}
 }

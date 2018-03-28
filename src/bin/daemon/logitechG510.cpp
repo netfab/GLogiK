@@ -168,10 +168,10 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 {
 	device.pressed_keys = 0;
 
-	switch(device.transfer_length) {
+	switch(device.getInterruptTransferLength()) {
 		case 2:
 #if DEBUGGING_ON
-			LOG(DEBUG1) << "2 bytes : " << this->getBytes(device);
+			LOG(DEBUG1) << device.getStrID() << " 2 bytes : " << this->getBytes(device);
 #endif
 			this->processKeyEvent2Bytes(device);
 			return KeyStatus::S_KEY_PROCESSED;
@@ -189,7 +189,8 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 			/* process those events only if Macro Record Mode on */
 			if( device.current_leds_mask & to_type(Leds::GK_LED_MR) ) {
 #if DEBUGGING_ON
-				LOG(DEBUG1) << "8 bytes : processing standard key event : " << this->getBytes(device);
+				LOG(DEBUG1) << device.getStrID() << " 8 bytes : processing standard key event : "
+							<< this->getBytes(device);
 #endif
 				this->processKeyEvent8Bytes(device);
 				std::copy(
@@ -198,13 +199,14 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 				return KeyStatus::S_KEY_PROCESSED;
 			}
 #if DEBUGGING_ON
-			LOG(DEBUG1) << "8 bytes : skipping standard key event : " << this->getBytes(device);
+			LOG(DEBUG1) << device.getStrID() << " 8 bytes : skipping standard key event : "
+						<< this->getBytes(device);
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
 		default:
 #if DEBUGGING_ON
-			LOG(DEBUG1) << "not implemented: " << device.transfer_length << " bytes !";
+			LOG(DEBUG1) << device.getStrID() << " not implemented: " << device.getInterruptTransferLength() << " bytes !";
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
@@ -214,15 +216,13 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 }
 
 void LogitechG510::setKeyboardColor(const USBDevice & device) {
+	uint8_t r, g, b = 0;
+	device.getRGBBytes( r, g, b );
 #if DEBUGGING_ON
-	const uint8_t & r = device.rgb[0];
-	const uint8_t & g = device.rgb[1];
-	const uint8_t & b = device.rgb[2];
-	LOG(DEBUG3) << "setting " << device.getName() << " backlight color "
-				<< "with following RGB bytes : "
-				<< getHexRGB(r, g, b);
+	LOG(DEBUG3) << device.getStrID() << " setting " << device.getName()
+				<< " backlight color with following RGB bytes : " << getHexRGB(r, g, b);
 #endif
-	unsigned char usb_data[4] = { 5, device.rgb[0], device.rgb[1], device.rgb[2] };
+	unsigned char usb_data[4] = { 5, r, g, b };
 	this->sendControlRequest(device, 0x305, 1, usb_data, 4);
 }
 
@@ -234,8 +234,8 @@ void LogitechG510::setMxKeysLeds(const USBDevice & device) {
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << "setting " << device.getName() << " MxKeys leds using current mask : 0x"
-				<< std::hex << to_uint(leds_mask);
+	LOG(DEBUG1) << device.getStrID() << " setting " << device.getName()
+				<< " MxKeys leds using current mask : 0x" << std::hex << to_uint(leds_mask);
 #endif
 	unsigned char leds_buffer[2] = { 4, leds_mask };
 	this->sendControlRequest(device, 0x304, 1, leds_buffer, 2);
@@ -262,7 +262,7 @@ void LogitechG510::sendUSBDeviceInitialization(const USBDevice & device) {
 	};
 
 #if DEBUGGING_ON
-	LOG(INFO) << device.strID << " sending " << device.getName() << " initialization requests";
+	LOG(INFO) << device.getStrID() << " sending " << device.getName() << " initialization requests";
 #endif
 	this->sendControlRequest(device, 0x301, 1, usb_data, 19);
 	this->sendControlRequest(device, 0x309, 1, usb_data_2, 8);

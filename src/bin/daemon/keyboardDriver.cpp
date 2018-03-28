@@ -79,11 +79,11 @@ const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void) {
 }
 
 std::string KeyboardDriver::getBytes(const USBDevice & device) {
-	if( device.transfer_length == 0 )
+	if( device.getInterruptTransferLength() == 0 )
 		return "";
 	std::ostringstream s;
 	s << std::hex << to_uint(device.keys_buffer[0]);
-	for(unsigned int x = 1; x < to_uint(device.transfer_length); x++) {
+	for(unsigned int x = 1; x < to_uint(device.getInterruptTransferLength()); x++) {
 		s << ", " << std::hex << to_uint(device.keys_buffer[x]);
 	}
 	return s.str();
@@ -96,11 +96,11 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 
 	switch(ret) {
 		case 0:
-			if( device.transfer_length > 0 ) {
+			if( device.getInterruptTransferLength() > 0 ) {
 #if DEBUGGING_ON
-				LOG(DEBUG)	<< device.strID
+				LOG(DEBUG)	<< device.getStrID()
 							<< " exp. rl: " << this->interrupt_buffer_max_length_
-							<< " act_l: " << device.transfer_length << ", xBuf[0]: "
+							<< " act_l: " << device.getInterruptTransferLength() << ", xBuf[0]: "
 							<< std::hex << to_uint(device.keys_buffer[0]);
 #endif
 				return this->processKeyEvent(device);
@@ -113,7 +113,7 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 			return KeyStatus::S_KEY_TIMEDOUT;
 			break;
 		default:
-			std::ostringstream err(device.strID, std::ios_base::app);
+			std::ostringstream err(device.getStrID(), std::ios_base::app);
 			err << " getPressedKeys interrupt read error";
 			GKSysLog(LOG_ERR, ERROR, err.str());
 			this->USBError(ret);
@@ -144,12 +144,13 @@ void KeyboardDriver::sendUSBDeviceInitialization(const USBDevice & device) {
 	this->notImplemented(__func__);
 }
 
-void KeyboardDriver::updateKeyboardColor(USBDevice & device, const uint8_t red,
-	const uint8_t green, const uint8_t blue)
+void KeyboardDriver::updateKeyboardColor(
+	USBDevice & device,
+	const uint8_t red,
+	const uint8_t green,
+	const uint8_t blue)
 {
-	device.rgb[0] = red;
-	device.rgb[1] = green;
-	device.rgb[2] = blue;
+	device.setRGBBytes(red, green, blue);
 }
 
 /*
@@ -370,11 +371,11 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device) {
 void KeyboardDriver::checkDeviceListeningStatus(USBDevice & device) {
 	/* check to give up */
 	if(device.fatal_errors > DEVICE_LISTENING_THREAD_MAX_ERRORS) {
-		std::ostringstream err(device.strID, std::ios_base::app);
+		std::ostringstream err(device.getStrID(), std::ios_base::app);
 		err << "device " << device.getName() << " on bus " << to_uint(device.getBus());
 		GKSysLog(LOG_ERR, ERROR, err.str());
 		GKSysLog(LOG_ERR, ERROR, "reached listening thread maximum fatal errors, giving up");
-		device.listen_status = false;
+		device.disableListeningThread();
 	}
 }
 
@@ -399,9 +400,9 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 	/* initializing time_point */
 	device.last_call = std::chrono::steady_clock::now();
 
-	while( (! exit) and DaemonControl::isDaemonRunning() and device.listen_status ) {
+	while( (! exit) and DaemonControl::isDaemonRunning() and device.getListeningThreadStatus() ) {
 		this->checkDeviceListeningStatus(device);
-		if( ! device.listen_status )
+		if( ! device.getListeningThreadStatus() )
 			continue;
 
 		KeyStatus ret = this->getPressedKeys(device);
@@ -489,11 +490,11 @@ void KeyboardDriver::runMacro(const std::string & devID) {
 	try {
 		USBDevice & device = this->initialized_devices_.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG2) << device.strID << " spawned running macro thread for " << device.getName();
+		LOG(DEBUG2) << device.getStrID() << " spawned running macro thread for " << device.getName();
 #endif
 		device.macros_man->runMacro(device.chosen_macro_key);
 #if DEBUGGING_ON
-		LOG(DEBUG2) << device.strID << " exiting running macro thread";
+		LOG(DEBUG2) << device.getStrID() << " exiting running macro thread";
 #endif
 	}
 	catch (const std::out_of_range& oor) {
@@ -507,14 +508,12 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 		device.listen_thread_id = std::this_thread::get_id();
 
 #if DEBUGGING_ON
-		LOG(INFO) << device.strID << " spawned listening thread for " << device.getName();
+		LOG(INFO) << device.getStrID() << " spawned listening thread for " << device.getName();
 #endif
 
-		const auto & mask = device.current_leds_mask;
-
-		while( DaemonControl::isDaemonRunning() and device.listen_status ) {
+		while( DaemonControl::isDaemonRunning() and device.getListeningThreadStatus() ) {
 			this->checkDeviceListeningStatus(device);
-			if( ! device.listen_status )
+			if( ! device.getListeningThreadStatus() )
 				continue;
 
 			KeyStatus ret = this->getPressedKeys(device);
@@ -524,13 +523,13 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 					 * update M1-MR leds status, launch macro record mode and
 					 * run macros only after proper event length
 					 */
-					if( device.transfer_length == this->leds_update_event_length_ ) {
+					if( device.getInterruptTransferLength() == this->leds_update_event_length_ ) {
 						/* update mask with potential pressed keys */
 						if(this->updateCurrentLedsMask(device))
 							this->setMxKeysLeds(device);
 
 						/* is macro record mode enabled ? */
-						if( mask & to_type(Leds::GK_LED_MR) ) {
+						if( device.current_leds_mask & to_type(Leds::GK_LED_MR) ) {
 							this->enterMacroRecordMode(device, devID);
 
 							/* don't need to update leds status if the mask is already 0 */
@@ -562,7 +561,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 		}
 
 #if DEBUGGING_ON
-		LOG(INFO) << device.strID << " exiting listening thread for " << device.getName();
+		LOG(INFO) << device.getStrID() << " exiting listening thread for " << device.getName();
 #endif
 	} /* try */
 	catch (const std::out_of_range& oor) {
@@ -604,7 +603,7 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 
 		/* virtual keyboard name */
 		this->buffer_.str("Virtual ");
-		this->buffer_ << device.getName() << " "<< device.strID;
+		this->buffer_ << device.getName() << " "<< device.getStrID();
 
 		try {
 			device.macros_man = new MacrosManager(
@@ -617,12 +616,12 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 		}
 
 #if DEBUGGING_ON
-		LOG(DEBUG1) << device.strID << " resetting MxKeys leds status";
+		LOG(DEBUG1) << device.getStrID() << " resetting MxKeys leds status";
 #endif
 		device.current_leds_mask = 0;
 		this->setMxKeysLeds(device);
 
-		device.listen_status = true;
+		//device.listen_status = true;
 		this->initialized_devices_[devID] = device;
 
 		/* spawn listening thread */
@@ -656,13 +655,13 @@ void KeyboardDriver::resetDeviceState(USBDevice & device) {
 	device.macros_man->clearMacroProfiles();
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << device.strID << " resetting MxKeys leds status";
+	LOG(DEBUG1) << device.getStrID() << " resetting MxKeys leds status";
 #endif
 	device.current_leds_mask = 0;
 	this->setMxKeysLeds(device);
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << device.strID << " resetting keyboard backlight color";
+	LOG(DEBUG1) << device.getStrID() << " resetting keyboard backlight color";
 #endif
 	this->updateKeyboardColor(device);
 	this->setKeyboardColor(device);
@@ -675,7 +674,7 @@ void KeyboardDriver::resetDeviceState(const BusNumDeviceID & det)
 	try {
 		USBDevice & device = this->initialized_devices_.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG3) << device.strID << " resetting state of " << device.getName() << "("
+		LOG(DEBUG3) << device.getStrID() << " resetting state of " << device.getName() << "("
 					<< device.getVendorID() << ":" << device.getProductID() << "), device "
 					<< to_uint(device.getNum()) << " on bus " << to_uint(device.getBus());
 #endif
@@ -694,19 +693,19 @@ void KeyboardDriver::closeDevice(const BusNumDeviceID & det)
 	try {
 		USBDevice & device = this->initialized_devices_.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG3) << device.strID << " closing " << device.getName() << "("
+		LOG(DEBUG3) << device.getStrID() << " closing " << device.getName() << "("
 					<< device.getVendorID() << ":" << device.getProductID() << "), device "
 					<< to_uint(device.getNum()) << " on bus " << to_uint(device.getBus());
 #endif
 
-		device.listen_status = false;
+		device.disableListeningThread();
 
 		bool found = false;
 		for(auto it = this->threads_.begin(); it != this->threads_.end();) {
 			if( device.listen_thread_id == (*it).get_id() ) {
 				found = true;
 #if DEBUGGING_ON
-				LOG(INFO) << device.strID << " waiting for listening thread";
+				LOG(INFO) << device.getStrID() << " waiting for listening thread";
 #endif
 				(*it).join();
 				it = this->threads_.erase(it);

@@ -30,5 +30,20 @@ USBDevice::USBDevice() {
 USBDevice::~USBDevice() {
 }
 
+
+void USBDevice::setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b)
+{
+	this->rgb[0] = r;
+	this->rgb[1] = g;
+	this->rgb[2] = b;
+}
+
+void USBDevice::getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const
+{
+	r = this->rgb[0];
+	g = this->rgb[1];
+	b = this->rgb[2];
+}
+
 } // namespace GLogiK
 
