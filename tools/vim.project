@@ -72,6 +72,7 @@ GLogiK=$PWD/.. CD=. {
 				macrosManager.h
 				USBDevice.cpp
 				USBDevice.h
+				DeviceID.h
 				virtualKeyboard.cpp
 				virtualKeyboard.h
 			}

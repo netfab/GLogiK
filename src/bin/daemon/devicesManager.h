@@ -37,6 +37,7 @@
 #include "lib/shared/keyEvent.h"
 #include "lib/dbus/GKDBus.h"
 
+#include "DeviceID.h"
 #include "clientsSignals.h"
 
 #include "keyboardDriver.h"

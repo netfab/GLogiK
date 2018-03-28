@@ -31,6 +31,7 @@
 
 #include <linux/input-event-codes.h>
 
+#include "DeviceID.h"
 #include "libUSB.h"
 
 #define DEVICE_LISTENING_THREAD_MAX_ERRORS 3

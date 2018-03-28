@@ -28,6 +28,7 @@
 
 #include <vector>
 
+#include "DeviceID.h"
 #include "keyboardDriver.h"
 
 #include "include/enums.h"

@@ -30,6 +30,8 @@
 #include <thread>
 #include <chrono>
 
+#include "DeviceID.h"
+
 #include <libusb-1.0/libusb.h>
 
 #include "lib/shared/keyEvent.h"
@@ -39,55 +41,6 @@
 
 namespace GLogiK
 {
-
-class DeviceID {
-	public:
-		DeviceID(
-			const std::string & n,
-			const std::string & v,
-			const std::string & p
-		)	:	name(n), vendor_id(v), product_id(p) {};
-		~DeviceID(void) = default;
-
-		const std::string & getName(void) const { return this->name; }
-		const std::string & getVendorID(void) const { return this->vendor_id; }
-		const std::string & getProductID(void) const { return this->product_id; }
-
-	protected:
-		DeviceID(void) = default;
-
-	private:
-		friend class USBDevice;
-
-		std::string name;
-		std::string vendor_id;
-		std::string product_id;
-};
-
-class BusNumDeviceID
-	:	public DeviceID
-{
-	public:
-		const uint8_t getBus(void) const { return this->bus; }
-		const uint8_t getNum(void) const { return this->num; }
-
-	protected:
-		BusNumDeviceID(void) = default;
-		BusNumDeviceID(
-			const std::string & n,
-			const std::string & v,
-			const std::string & p,
-			const uint8_t b,
-			const uint8_t nu
-		)	:	DeviceID(n,v,p), bus(b), num(nu) {};
-		~BusNumDeviceID(void) = default;
-
-	private:
-		friend class USBDevice;
-
-		uint8_t bus;
-		uint8_t num;
-};
 
 class USBDevice
 	:	public BusNumDeviceID
@@ -121,7 +74,7 @@ class USBDevice
 		const std::string & getStrID(void) const { return this->strID; }
 		const bool getListeningThreadStatus(void) const { return this->listen_status; }
 		void disableListeningThread(void) { this->listen_status = false; }
-		const int getInterruptTransferLength(void) const { return transfer_length; }
+		const int getInterruptTransferLength(void) const { return this->transfer_length; }
 		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
 		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
 
