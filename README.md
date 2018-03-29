@@ -1,12 +1,12 @@
 ### GLogiK, daemon to handle special features on gaming keyboards
 
-Status : in development.
-
-Recognized devices :
- - Logitech G510s Gaming Keyboard (046d:c22d)
+Last release : version 0.6.0
 
 ### Links
- - [homepage](https://glogik.tuxfamily.org/)
+ - [homepage / download](https://glogik.tuxfamily.org/)
+
+### Recognized devices
+ - Logitech G510s Gaming Keyboard (046d:c22d)
 
 ### Features
  - Create and/or clear macros and assign them to G-Keys
