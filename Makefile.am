@@ -44,9 +44,15 @@ maintainer-clean-libtool-files:
 maintainer-clean-autotools-files:
 	-rm -f $(LOCAL_AUTOTOOLS_FILES)
 
+
+NEWS.md:
+
 README.md:
+
+NEWS: NEWS.md
+	-cp $< $@
 
 README: README.md
 	-cp $< $@
 
-CLEANFILES = README
+CLEANFILES = NEWS README

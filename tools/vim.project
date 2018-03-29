@@ -3,7 +3,7 @@ GLogiK=$PWD/.. CD=. {
 	AUTHORS
 	COPYING
 	ChangeLog
-	NEWS
+	NEWS.md
 	README.md
 	TODO
 	VERSION
