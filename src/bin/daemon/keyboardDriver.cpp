@@ -139,21 +139,17 @@ void KeyboardDriver::setMxKeysLeds(const USBDevice & device) {
 	this->notImplemented(__func__);
 }
 
-void KeyboardDriver::setKeyboardColor(const USBDevice & device) {
+void KeyboardDriver::setDeviceBacklightColor(
+	USBDevice & device,
+	const uint8_t r,
+	const uint8_t g,
+	const uint8_t b)
+{
 	this->notImplemented(__func__);
 }
 
 void KeyboardDriver::sendUSBDeviceInitialization(const USBDevice & device) {
 	this->notImplemented(__func__);
-}
-
-void KeyboardDriver::updateKeyboardColor(
-	USBDevice & device,
-	const uint8_t red,
-	const uint8_t green,
-	const uint8_t blue)
-{
-	device.setRGBBytes(red, green, blue);
 }
 
 /*
@@ -659,17 +655,16 @@ void KeyboardDriver::resetDeviceState(USBDevice & device) {
 	device.macros_man->clearMacroProfiles();
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << device.getStrID() << " resetting MxKeys leds status";
+	LOG(DEBUG1) << device.getStrID() << " resetting device MxKeys leds status";
 #endif
 	device.current_leds_mask = 0;
 	this->setMxKeysLeds(device);
 
 	if(device.getCapabilities() & to_type(Caps::GK_BACKLIGHT_COLOR)) {
 #if DEBUGGING_ON
-		LOG(DEBUG1) << device.getStrID() << " resetting keyboard backlight color";
+		LOG(DEBUG1) << device.getStrID() << " resetting device backlight color";
 #endif
-		this->updateKeyboardColor(device);
-		this->setKeyboardColor(device);
+		this->setDeviceBacklightColor(device);
 	}
 }
 
@@ -760,8 +755,7 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 
 		if(device.getCapabilities() & to_type(Caps::GK_BACKLIGHT_COLOR)) {
 			/* set backlight color */
-			this->updateKeyboardColor(device, r, g, b);
-			this->setKeyboardColor(device);
+			this->setDeviceBacklightColor(device, r, g, b);
 		}
 	}
 	catch (const std::out_of_range& oor) {

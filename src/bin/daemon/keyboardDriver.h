@@ -109,7 +109,12 @@ class KeyboardDriver
 
 		virtual void sendUSBDeviceInitialization(const USBDevice & device);
 		virtual void setMxKeysLeds(const USBDevice & device);
-		virtual void setKeyboardColor(const USBDevice & device);
+		virtual void setDeviceBacklightColor(
+			USBDevice & device,
+			const uint8_t r=0xFF,
+			const uint8_t g=0xFF,
+			const uint8_t b=0xFF
+		);
 
 		void fillStandardKeysEvents(USBDevice & device);
 
@@ -154,8 +159,6 @@ class KeyboardDriver
 		void listenLoop(const std::string & devID);
 
 		const bool updateCurrentLedsMask(USBDevice & device, bool force_MR_off=false);
-		void updateKeyboardColor(USBDevice & device, const uint8_t red=0xFF,
-			const uint8_t green=0xFF, const uint8_t blue=0xFF);
 
 		const uint8_t handleModifierKeys(USBDevice & device, const uint16_t interval);
 

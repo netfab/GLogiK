@@ -215,9 +215,13 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 	return KeyStatus::S_KEY_UNKNOWN;
 }
 
-void LogitechG510::setKeyboardColor(const USBDevice & device) {
-	uint8_t r, g, b = 0;
-	device.getRGBBytes( r, g, b );
+void LogitechG510::setDeviceBacklightColor(
+	USBDevice & device,
+	const uint8_t r,
+	const uint8_t g,
+	const uint8_t b)
+{
+	device.setRGBBytes( r, g, b );
 #if DEBUGGING_ON
 	LOG(DEBUG3) << device.getStrID() << " setting " << device.getName()
 				<< " backlight color with following RGB bytes : " << getHexRGB(r, g, b);
