@@ -31,10 +31,11 @@ USBDevice::USBDevice(
 	const std::string & n,
 	const std::string & v,
 	const std::string & p,
+	const uint64_t c,
 	uint8_t b,
 	uint8_t nu,
 	const std::string & id)
-		:	BusNumDeviceID(n, v, p, b, nu),
+		:	BusNumDeviceID(n, v, p, c, b, nu),
 			fatal_errors(0),
 			macros_man(nullptr),
 			pressed_keys(0),
@@ -59,6 +60,7 @@ void USBDevice::operator=(const USBDevice& dev)
 	this->name = dev.name;
 	this->vendor_id = dev.vendor_id;
 	this->product_id = dev.product_id;
+	this->capabilities = dev.capabilities;
 	this->bus = dev.bus;
 	this->num = dev.num;
 	/* end friendship members */

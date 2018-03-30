@@ -56,10 +56,13 @@ const std::vector< ModifierKey > KeyboardDriver::modifier_keys_ = {
 
 /* -- -- -- */
 
-KeyboardDriver::KeyboardDriver(int key_read_length, uint8_t event_length, const DescriptorValues & values)
-	:	LibUSB(key_read_length, values)
+KeyboardDriver::KeyboardDriver(
+	int key_read_length,
+	uint8_t event_length,
+	const DescriptorValues & values)
+	:	LibUSB(key_read_length, values),
+		leds_update_event_length_(event_length)
 {
-	this->leds_update_event_length_ = event_length;
 }
 
 KeyboardDriver::~KeyboardDriver() {
@@ -591,6 +594,7 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 		det.getName(),
 		det.getVendorID(),
 		det.getProductID(),
+		det.getCapabilities(),
 		det.getBus(), det.getNum(), strID);
 
 	this->openUSBDevice(device); /* throws on any failure */
@@ -660,11 +664,13 @@ void KeyboardDriver::resetDeviceState(USBDevice & device) {
 	device.current_leds_mask = 0;
 	this->setMxKeysLeds(device);
 
+	if(device.getCapabilities() & to_type(Caps::GK_BACKLIGHT_COLOR)) {
 #if DEBUGGING_ON
-	LOG(DEBUG1) << device.getStrID() << " resetting keyboard backlight color";
+		LOG(DEBUG1) << device.getStrID() << " resetting keyboard backlight color";
 #endif
-	this->updateKeyboardColor(device);
-	this->setKeyboardColor(device);
+		this->updateKeyboardColor(device);
+		this->setKeyboardColor(device);
+	}
 }
 
 void KeyboardDriver::resetDeviceState(const BusNumDeviceID & det)
@@ -752,9 +758,11 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 		/* set macros profiles */
 		device.macros_man->setMacrosProfiles(macros_profiles);
 
-		/* set backlight color */
-		this->updateKeyboardColor(device, r, g, b);
-		this->setKeyboardColor(device);
+		if(device.getCapabilities() & to_type(Caps::GK_BACKLIGHT_COLOR)) {
+			/* set backlight color */
+			this->updateKeyboardColor(device, r, g, b);
+			this->setKeyboardColor(device);
+		}
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice

@@ -53,6 +53,7 @@ class USBDevice
 			const std::string & n,
 			const std::string & v,
 			const std::string & p,
+			const uint64_t c,
 			uint8_t b,
 			uint8_t nu,
 			const std::string & id);

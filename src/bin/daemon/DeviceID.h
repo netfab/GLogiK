@@ -33,13 +33,15 @@ class DeviceID {
 		DeviceID(
 			const std::string & n,
 			const std::string & v,
-			const std::string & p
-		)	:	name(n), vendor_id(v), product_id(p) {};
+			const std::string & p,
+			const uint64_t c
+		)	:	name(n), vendor_id(v), product_id(p), capabilities(c) {};
 		~DeviceID(void) = default;
 
 		const std::string & getName(void) const { return this->name; }
 		const std::string & getVendorID(void) const { return this->vendor_id; }
 		const std::string & getProductID(void) const { return this->product_id; }
+		const uint64_t & getCapabilities(void) const { return this->capabilities; }
 
 	protected:
 		DeviceID(void) = default;
@@ -50,6 +52,7 @@ class DeviceID {
 		std::string name;
 		std::string vendor_id;
 		std::string product_id;
+		uint64_t capabilities;
 };
 
 class BusNumDeviceID
@@ -65,9 +68,10 @@ class BusNumDeviceID
 			const std::string & n,
 			const std::string & v,
 			const std::string & p,
+			const uint64_t c,
 			const uint8_t b,
 			const uint8_t nu
-		)	:	DeviceID(n,v,p), bus(b), num(nu) {};
+		)	:	DeviceID(n,v,p,c), bus(b), num(nu) {};
 		~BusNumDeviceID(void) = default;
 
 	private:

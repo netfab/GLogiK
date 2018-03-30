@@ -85,6 +85,18 @@ enum class Leds : uint8_t
 	GK_LED_MR = 1 << 3,
 };
 
+enum class Caps : uint64_t
+{
+	GK_BACKLIGHT_COLOR	= one << 0,
+//	GK_MACROS_KEYS		= one << 1,
+};
+
+inline Caps operator | (Caps lhs, Caps rhs)
+{
+	using T = std::underlying_type_t<Caps>;
+	return (Caps)(static_cast<T>(lhs) | static_cast<T>(rhs));
+}
+
 } // namespace GLogiK
 
 #endif

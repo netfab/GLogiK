@@ -54,6 +54,7 @@ class DetectedDevice
 			const std::string & n,
 			const std::string & v,
 			const std::string & p,
+			const uint64_t c,
 			const uint8_t b,
 			const uint8_t nu,
 			const std::string & node,
@@ -62,7 +63,7 @@ class DetectedDevice
 			const std::string & ser,
 			const std::string & us,
 			const uint16_t d_ID
-		)	:	BusNumDeviceID(n,v,p,b,nu),
+		)	:	BusNumDeviceID(n,v,p,c,b,nu),
 				input_dev_node(node),
 				vendor(ven),
 				model(mod),

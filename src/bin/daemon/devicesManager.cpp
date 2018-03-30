@@ -464,6 +464,7 @@ void DevicesManager::searchSupportedDevices(void) {
 									device.getName(),
 									device.getVendorID(),
 									device.getProductID(),
+									device.getCapabilities(),
 									bus, num,
 									devnode, vendor, model,
 									serial, usec, driver->getDriverID()
