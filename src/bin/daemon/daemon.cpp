@@ -59,7 +59,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app), DBus(nullptr)
+GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app), pDBus_(nullptr)
 {
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 
@@ -136,25 +136,25 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 
 			try {
 				try {
-					this->DBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
+					this->pDBus_ = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
 				}
 				catch (const std::bad_alloc& e) { /* handle new() failure */
 					throw GLogiKBadAlloc("GKDBus bad allocation");
 				}
 
-				this->DBus->connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
+				this->pDBus_->connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
 
 				{
-					ClientsManager c(this->DBus);
+					ClientsManager c(this->pDBus_);
 					c.runLoop();
-				}	/* destroy client manager before DBus */
+				}	/* destroy client manager before DBus pointer */
 
-				delete this->DBus;
-				this->DBus = nullptr;
+				delete this->pDBus_;
+				this->pDBus_ = nullptr;
 			}
 			catch ( const GLogiKExcept & e ) {
-				delete this->DBus;
-				this->DBus = nullptr;
+				delete this->pDBus_;
+				this->pDBus_ = nullptr;
 				throw;
 			}
 		}
