@@ -32,8 +32,6 @@
 #include "daemonControl.h"
 #include "keyboardDriver.h"
 
-#include "include/enums.h"
-
 namespace GLogiK
 {
 
@@ -66,6 +64,10 @@ KeyboardDriver::KeyboardDriver(
 }
 
 KeyboardDriver::~KeyboardDriver() {
+}
+
+const bool KeyboardDriver::checkDeviceCapability(const DeviceID & device, Caps to_check) {
+	return (device.getCapabilities() & to_type(to_check));
 }
 
 const std::string KeyboardDriver::getDeviceID(const uint8_t bus, const uint8_t num) {
@@ -518,37 +520,40 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 			KeyStatus ret = this->getPressedKeys(device);
 			switch( ret ) {
 				case KeyStatus::S_KEY_PROCESSED:
-					/*
-					 * update M1-MR leds status, launch macro record mode and
-					 * run macros only after proper event length
-					 */
-					if( device.getInterruptTransferLength() == this->leds_update_event_length_ ) {
-						/* update mask with potential pressed keys */
-						if(this->updateCurrentLedsMask(device))
-							this->setMxKeysLeds(device);
 
-						/* is macro record mode enabled ? */
-						if( device.current_leds_mask & to_type(Leds::GK_LED_MR) ) {
-							this->enterMacroRecordMode(device, devID);
+					if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+						/*
+						 * update M1-MR leds status, launch macro record mode and
+						 * run macros only after proper event length
+						 */
+						if( device.getInterruptTransferLength() == this->leds_update_event_length_ ) {
+							/* update mask with potential pressed keys */
+							if(this->updateCurrentLedsMask(device))
+								this->setMxKeysLeds(device);
 
-							/* don't need to update leds status if the mask is already 0 */
-							if(device.current_leds_mask != 0) {
-								/* disabling macro record mode */
-								if(this->updateCurrentLedsMask(device, true))
-									this->setMxKeysLeds(device);
-							}
-						}
-						else { /* check to run macro */
-							if( this->checkMacroKey(device) ) {
-								try {
-									/* spawn thread only if macro defined */
-									if(device.macros_man->macroDefined(device.chosen_macro_key)) {
-										std::thread macro_thread(&KeyboardDriver::runMacro, this, devID);
-										macro_thread.detach();
-									}
+							/* is macro record mode enabled ? */
+							if( device.current_leds_mask & to_type(Leds::GK_LED_MR) ) {
+								this->enterMacroRecordMode(device, devID);
+
+								/* don't need to update leds status if the mask is already 0 */
+								if(device.current_leds_mask != 0) {
+									/* disabling macro record mode */
+									if(this->updateCurrentLedsMask(device, true))
+										this->setMxKeysLeds(device);
 								}
-								catch (const std::system_error& e) {
-									GKSysLog(LOG_WARNING, WARNING, "error while spawning running macro thread");
+							}
+							else { /* check to run macro */
+								if( this->checkMacroKey(device) ) {
+									try {
+										/* spawn thread only if macro defined */
+										if(device.macros_man->macroDefined(device.chosen_macro_key)) {
+											std::thread macro_thread(&KeyboardDriver::runMacro, this, devID);
+											macro_thread.detach();
+										}
+									}
+									catch (const std::system_error& e) {
+										GKSysLog(LOG_WARNING, WARNING, "error while spawning running macro thread");
+									}
 								}
 							}
 						}
@@ -601,27 +606,30 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 		this->findUSBDeviceInterface(device);
 		this->sendUSBDeviceInitialization(device);
 
-		/* virtual keyboard name */
-		this->buffer_.str("Virtual ");
-		this->buffer_ << device.getName() << " "<< device.getStrID();
+		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+			/* virtual keyboard name */
+			this->buffer_.str("Virtual ");
+			this->buffer_ << device.getName() << " "<< device.getStrID();
 
-		try {
-			device.macros_man = new MacrosManager(
-				this->buffer_.str().c_str(),
-				this->getMacroKeysNames()
-			);
-		}
-		catch (const std::bad_alloc& e) { /* handle new() failure */
-			throw GLogiKBadAlloc("macros manager allocation failure");
+			try {
+				device.macros_man = new MacrosManager(
+					this->buffer_.str().c_str(),
+					this->getMacroKeysNames()
+				);
+			}
+			catch (const std::bad_alloc& e) { /* handle new() failure */
+				throw GLogiKBadAlloc("macros manager allocation failure");
+			}
 		}
 
+		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 #if DEBUGGING_ON
-		LOG(DEBUG1) << device.getStrID() << " resetting MxKeys leds status";
+			LOG(DEBUG1) << device.getStrID() << " resetting MxKeys leds status";
 #endif
-		device.current_leds_mask = 0;
-		this->setMxKeysLeds(device);
+			device.current_leds_mask = 0;
+			this->setMxKeysLeds(device);
+		}
 
-		//device.listen_status = true;
 		this->initialized_devices_[devID] = device;
 
 		/* spawn listening thread */
@@ -649,18 +657,20 @@ const bool KeyboardDriver::isDeviceInitialized(const std::string & devID) const 
 }
 
 void KeyboardDriver::resetDeviceState(USBDevice & device) {
-	/* exit MacroRecordMode if necessary */
-	device.exit_macro_record_mode = true;
+	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+		/* exit MacroRecordMode if necessary */
+		device.exit_macro_record_mode = true;
 
-	device.macros_man->clearMacroProfiles();
+		device.macros_man->clearMacroProfiles();
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << device.getStrID() << " resetting device MxKeys leds status";
+		LOG(DEBUG1) << device.getStrID() << " resetting device MxKeys leds status";
 #endif
-	device.current_leds_mask = 0;
-	this->setMxKeysLeds(device);
+		device.current_leds_mask = 0;
+		this->setMxKeysLeds(device);
+	}
 
-	if(device.getCapabilities() & to_type(Caps::GK_BACKLIGHT_COLOR)) {
+	if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
 #if DEBUGGING_ON
 		LOG(DEBUG1) << device.getStrID() << " resetting device backlight color";
 #endif
@@ -723,8 +733,9 @@ void KeyboardDriver::closeDevice(const BusNumDeviceID & det)
 
 		this->resetDeviceState(device);
 
-		delete device.macros_man;
-		device.macros_man = nullptr;
+		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+			delete device.macros_man; device.macros_man = nullptr;
+		}
 
 		this->releaseUSBDeviceInterfaces(device);
 		this->closeUSBDevice(device);
@@ -747,13 +758,15 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 	try {
 		USBDevice & device = this->initialized_devices_.at(devID);
 
-		/* exit MacroRecordMode if necessary */
-		device.exit_macro_record_mode = true;
+		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+			/* exit MacroRecordMode if necessary */
+			device.exit_macro_record_mode = true;
 
-		/* set macros profiles */
-		device.macros_man->setMacrosProfiles(macros_profiles);
+			/* set macros profiles */
+			device.macros_man->setMacrosProfiles(macros_profiles);
+		}
 
-		if(device.getCapabilities() & to_type(Caps::GK_BACKLIGHT_COLOR)) {
+		if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
 			/* set backlight color */
 			this->setDeviceBacklightColor(device, r, g, b);
 		}
@@ -766,7 +779,9 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 const macros_map_t & KeyboardDriver::getDeviceMacrosProfiles(const std::string & devID) {
 	try {
 		USBDevice & device = this->initialized_devices_.at(devID);
-		return device.macros_man->getMacrosProfiles();
+		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+			return device.macros_man->getMacrosProfiles();
+		}
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice

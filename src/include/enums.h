@@ -88,7 +88,8 @@ enum class Leds : uint8_t
 enum class Caps : uint64_t
 {
 	GK_BACKLIGHT_COLOR	= one << 0,
-//	GK_MACROS_KEYS		= one << 1,
+	GK_MACROS_KEYS		= one << 1,
+	GK_MULTIMEDIA_KEYS	= one << 2,
 };
 
 inline Caps operator | (Caps lhs, Caps rhs)

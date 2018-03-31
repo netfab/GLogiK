@@ -88,7 +88,7 @@ const std::vector< M_Key_Led_Mask > LogitechG510::leds_mask_ = {
 
 const std::vector<DeviceID> LogitechG510::supported_devices_ = {
 	// name, vendor_id, product_id, capabilities
-	{ "Logitech G510/G510s Gaming Keyboard", VENDOR_LOGITECH, "c22d", to_type(Caps::GK_BACKLIGHT_COLOR) },
+	{ "Logitech G510/G510s Gaming Keyboard", VENDOR_LOGITECH, "c22d", to_type(Caps::GK_BACKLIGHT_COLOR|Caps::GK_MACROS_KEYS) },
 };
 
 LogitechG510::LogitechG510() :

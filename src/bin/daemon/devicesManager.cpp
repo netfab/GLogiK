@@ -28,6 +28,8 @@
 #include "lib/utils/utils.h"
 #include "lib/shared/glogik.h"
 
+#include "include/enums.h"
+
 #include "daemonControl.h"
 #include "logitechG510.h"
 #include "devicesManager.h"
@@ -593,9 +595,11 @@ const macros_map_t & DevicesManager::getDeviceMacrosProfiles(const std::string &
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
 #endif
-		for(const auto& driver : this->drivers_) {
-			if( device.getDriverID() == driver->getDriverID() ) {
-				return driver->getDeviceMacrosProfiles(devID);
+		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+			for(const auto& driver : this->drivers_) {
+				if( device.getDriverID() == driver->getDriverID() ) {
+					return driver->getDeviceMacrosProfiles(devID);
+				}
 			}
 		}
 	}
@@ -611,9 +615,11 @@ const std::vector<std::string> & DevicesManager::getDeviceMacroKeysNames(const s
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
 #endif
-		for(const auto& driver : this->drivers_) {
-			if( device.getDriverID() == driver->getDriverID() ) {
-				return driver->getMacroKeysNames();
+		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+			for(const auto& driver : this->drivers_) {
+				if( device.getDriverID() == driver->getDriverID() ) {
+					return driver->getMacroKeysNames();
+				}
 			}
 		}
 	}
