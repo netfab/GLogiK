@@ -84,11 +84,12 @@ const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void) {
 }
 
 std::string KeyboardDriver::getBytes(const USBDevice & device) {
-	if( device.getLastInterruptTransferLength() == 0 )
+	const unsigned int last_length = to_uint(device.getLastInterruptTransferLength());
+	if( last_length == 0 )
 		return "";
 	std::ostringstream s;
 	s << std::hex << to_uint(device.keys_buffer[0]);
-	for(unsigned int x = 1; x < to_uint(device.getLastInterruptTransferLength()); x++) {
+	for(unsigned int x = 1; x < last_length; x++) {
 		s << ", " << std::hex << to_uint(device.keys_buffer[x]);
 	}
 	return s.str();
