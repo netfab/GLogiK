@@ -168,7 +168,7 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 {
 	device.pressed_keys = 0;
 
-	switch(device.getInterruptTransferLength()) {
+	switch(device.getLastInterruptTransferLength()) {
 		case 2:
 #if DEBUGGING_ON
 			LOG(DEBUG1) << device.getStrID() << " 2 bytes : " << this->getBytes(device);
@@ -206,7 +206,7 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 			break;
 		default:
 #if DEBUGGING_ON
-			LOG(DEBUG1) << device.getStrID() << " not implemented: " << device.getInterruptTransferLength() << " bytes !";
+			LOG(DEBUG1) << device.getStrID() << " not implemented: " << device.getLastInterruptTransferLength() << " bytes !";
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;

@@ -84,11 +84,11 @@ const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void) {
 }
 
 std::string KeyboardDriver::getBytes(const USBDevice & device) {
-	if( device.getInterruptTransferLength() == 0 )
+	if( device.getLastInterruptTransferLength() == 0 )
 		return "";
 	std::ostringstream s;
 	s << std::hex << to_uint(device.keys_buffer[0]);
-	for(unsigned int x = 1; x < to_uint(device.getInterruptTransferLength()); x++) {
+	for(unsigned int x = 1; x < to_uint(device.getLastInterruptTransferLength()); x++) {
 		s << ", " << std::hex << to_uint(device.keys_buffer[x]);
 	}
 	return s.str();
@@ -101,11 +101,11 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 
 	switch(ret) {
 		case 0:
-			if( device.getInterruptTransferLength() > 0 ) {
+			if( device.getLastInterruptTransferLength() > 0 ) {
 #if DEBUGGING_ON
 				LOG(DEBUG)	<< device.getStrID()
 							<< " exp. rl: " << this->interrupt_buffer_max_length_
-							<< " act_l: " << device.getInterruptTransferLength() << ", xBuf[0]: "
+							<< " act_l: " << device.getLastInterruptTransferLength() << ", xBuf[0]: "
 							<< std::hex << to_uint(device.keys_buffer[0]);
 #endif
 				return this->processKeyEvent(device);
@@ -526,7 +526,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 						 * update M1-MR leds status, launch macro record mode and
 						 * run macros only after proper event length
 						 */
-						if( device.getInterruptTransferLength() == this->leds_update_event_length_ ) {
+						if( device.getLastInterruptTransferLength() == this->leds_update_event_length_ ) {
 							/* update mask with potential pressed keys */
 							if(this->updateCurrentLedsMask(device))
 								this->setMxKeysLeds(device);

@@ -75,7 +75,7 @@ class USBDevice
 		const std::string & getStrID(void) const { return this->strID; }
 		const bool getListeningThreadStatus(void) const { return this->listen_status; }
 		void disableListeningThread(void) { this->listen_status = false; }
-		const int getInterruptTransferLength(void) const { return this->transfer_length; }
+		const int getLastInterruptTransferLength(void) const { return this->last_interrupt_transfer_length; }
 		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
 		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
 
@@ -85,7 +85,7 @@ class USBDevice
 		std::string strID;	/* [devID] */
 		uint8_t rgb[3];
 
-		int transfer_length;
+		int last_interrupt_transfer_length;
 		uint8_t keys_endpoint;
 		libusb_device *usb_device;
 		libusb_device_handle *usb_handle;

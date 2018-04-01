@@ -521,7 +521,7 @@ int LibUSB::performInterruptTransfer(
 		device.keys_endpoint,
 		(unsigned char*)device.keys_buffer,
 		this->interrupt_buffer_max_length_,
-		&(device.transfer_length),
+		&(device.last_interrupt_transfer_length),
 		timeout
 	);
 
