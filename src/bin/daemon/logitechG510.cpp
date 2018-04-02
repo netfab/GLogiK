@@ -91,8 +91,14 @@ const std::vector<DeviceID> LogitechG510::supported_devices_ = {
 	{ "Logitech G510/G510s Gaming Keyboard", VENDOR_LOGITECH, "c22d", to_type(Caps::GK_BACKLIGHT_COLOR|Caps::GK_MACROS_KEYS) },
 };
 
-LogitechG510::LogitechG510() :
-	KeyboardDriver(INTERRUPT_READ_MAX_LENGTH, TRANSFER_LENGTH_FOR_LEDS_UPDATE, { 1, 1, 0, 2 })
+LogitechG510::LogitechG510()
+	:	KeyboardDriver(
+			INTERRUPT_READ_MAX_LENGTH,
+			{	5,		/* MacrosKeys */
+				2		/* MultimediaKeys */
+			},
+			{ 1, 1, 0, 2 }
+		)
 {
 }
 

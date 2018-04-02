@@ -35,10 +35,10 @@ using namespace NSGKUtils;
 
 MacrosManager::MacrosManager(
 	const char* virtual_keyboard_name,
-	const std::vector<std::string> & keys_names
-) : buffer_("", std::ios_base::app),
-	currentActiveProfile_(MemoryBank::BANK_M0),
-	virtual_keyboard(virtual_keyboard_name)
+	const std::vector<std::string> & keys_names)
+		:	buffer_("", std::ios_base::app),
+			currentActiveProfile_(MemoryBank::BANK_M0),
+			virtual_keyboard(virtual_keyboard_name)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "initializing " << keys_names.size() << " macro keys";

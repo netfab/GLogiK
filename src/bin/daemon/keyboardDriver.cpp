@@ -56,10 +56,10 @@ const std::vector< ModifierKey > KeyboardDriver::modifier_keys_ = {
 
 KeyboardDriver::KeyboardDriver(
 	int key_read_length,
-	uint8_t event_length,
+	const EventsLength & events_length,
 	const DescriptorValues & values)
 	:	LibUSB(key_read_length, values),
-		leds_update_event_length_(event_length)
+		events_length_(events_length)
 {
 }
 
@@ -527,7 +527,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 						 * update M1-MR leds status, launch macro record mode and
 						 * run macros only after proper event length
 						 */
-						if( device.getLastInterruptTransferLength() == this->leds_update_event_length_ ) {
+						if( device.getLastInterruptTransferLength() == this->events_length_.MacrosKeys ) {
 							/* update mask with potential pressed keys */
 							if(this->updateCurrentLedsMask(device))
 								this->setMxKeysLeds(device);
@@ -557,6 +557,9 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 									}
 								}
 							}
+						}
+						if( device.getLastInterruptTransferLength() == this->events_length_.MultimediaKeys ) {
+							/* TODO */
 						}
 					}
 					break;
@@ -610,25 +613,14 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			/* virtual keyboard name */
 			this->buffer_.str("Virtual ");
-			this->buffer_ << device.getName() << " "<< device.getStrID();
+			this->buffer_ << device.getName() << " " << device.getStrID();
 
-			try {
-				device.macros_man = new MacrosManager(
-					this->buffer_.str().c_str(),
-					this->getMacroKeysNames()
-				);
-			}
-			catch (const std::bad_alloc& e) { /* handle new() failure */
-				throw GLogiKBadAlloc("macros manager allocation failure");
-			}
-		}
+			device.initializeMacrosManager(
+				this->buffer_.str().c_str(),
+				this->getMacroKeysNames()
+			);
 
-		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-#if DEBUGGING_ON
-			LOG(DEBUG1) << device.getStrID() << " resetting MxKeys leds status";
-#endif
-			device.current_leds_mask = 0;
-			this->setMxKeysLeds(device);
+			this->resetDeviceState(device);
 		}
 
 		this->initialized_devices_[devID] = device;
@@ -645,6 +637,8 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 		}
 	}
 	catch ( const GLogiKExcept & e ) {
+		device.destroyMacrosManager();
+
 		/* if we ever claimed or detached some interfaces, set them back
 		 * to the same state in which we found them */
 		this->releaseUSBDeviceInterfaces(device);
@@ -734,9 +728,8 @@ void KeyboardDriver::closeDevice(const BusNumDeviceID & det)
 
 		this->resetDeviceState(device);
 
-		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			delete device.macros_man; device.macros_man = nullptr;
-		}
+		/* reset device state needs pointer */
+		device.destroyMacrosManager();
 
 		this->releaseUSBDeviceInterfaces(device);
 		this->closeUSBDevice(device);

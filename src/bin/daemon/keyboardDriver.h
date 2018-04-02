@@ -67,6 +67,17 @@ struct ModifierKey {
 	const GKModifierKeys mod_key;
 };
 
+struct EventsLength {
+	EventsLength(
+		const int8_t a = -1,
+		const int8_t b = -1
+	)	:	MacrosKeys(a),
+			MultimediaKeys(b) {}
+
+	const int8_t MacrosKeys;
+	const int8_t MultimediaKeys;
+};
+
 class KeyboardDriver
 	:	public LibUSB
 {
@@ -103,7 +114,7 @@ class KeyboardDriver
 
 	protected:
 		KeyboardDriver(void) = delete;
-		KeyboardDriver(int key_read_length, uint8_t event_length, const DescriptorValues & values);
+		KeyboardDriver(int key_read_length, const EventsLength & events_length, const DescriptorValues & values);
 
 		std::string getBytes(const USBDevice & device);
 
@@ -123,7 +134,7 @@ class KeyboardDriver
 		void fillStandardKeysEvents(USBDevice & device);
 
 	private:
-		int8_t leds_update_event_length_;
+		const EventsLength events_length_;
 
 		static const std::vector< ModifierKey > modifier_keys_;
 

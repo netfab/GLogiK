@@ -21,11 +21,16 @@
 
 #include <iterator>
 #include <algorithm>
+#include <new>
+
+#include "lib/utils/utils.h"
 
 #include "USBDevice.h"
 
 namespace GLogiK
 {
+
+using namespace NSGKUtils;
 
 USBDevice::USBDevice(
 	const std::string & n,
@@ -102,6 +107,25 @@ void USBDevice::operator=(const USBDevice& dev)
 	this->to_attach = dev.to_attach;
 
 	this->listen_status = static_cast<bool>(dev.listen_status);
+}
+
+void USBDevice::initializeMacrosManager(
+	const char* vk_name,
+	const std::vector<std::string> & keys_names)
+{
+	try {
+		this->macros_man = new MacrosManager( vk_name, keys_names );
+	}
+	catch (const std::bad_alloc& e) { /* handle new() failure */
+		throw GLogiKBadAlloc("macros manager allocation failure");
+	}
+}
+
+void USBDevice::destroyMacrosManager(void) {
+	if( this->macros_man ) {
+		delete this->macros_man;
+		this->macros_man = nullptr;
+	}
 }
 
 void USBDevice::setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b)

@@ -35,6 +35,7 @@
 #include <libusb-1.0/libusb.h>
 
 #include "lib/shared/keyEvent.h"
+#include "virtualKeyboard.h"
 #include "macrosManager.h"
 
 #define KEYS_BUFFER_LENGTH 16
@@ -62,7 +63,7 @@ class USBDevice
 
 		unsigned int fatal_errors;
 		std::thread::id listen_thread_id;
-		MacrosManager *macros_man;
+		MacrosManager* macros_man;
 		uint64_t pressed_keys;
 		std::atomic<uint8_t> current_leds_mask;
 		std::atomic<bool> exit_macro_record_mode;
@@ -71,6 +72,12 @@ class USBDevice
 		std::string chosen_macro_key;
 		macro_t standard_keys_events;
 		std::chrono::steady_clock::time_point last_call;
+
+		void initializeMacrosManager(
+			const char* vk_name,
+			const std::vector<std::string> & keys_names
+		);
+		void destroyMacrosManager(void);
 
 		const std::string & getStrID(void) const { return this->strID; }
 		const bool getListeningThreadStatus(void) const { return this->listen_status; }

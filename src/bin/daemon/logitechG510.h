@@ -38,7 +38,6 @@ namespace GLogiK
 
 #define VENDOR_LOGITECH "046d"
 #define INTERRUPT_READ_MAX_LENGTH 8
-#define TRANSFER_LENGTH_FOR_LEDS_UPDATE 5
 
 struct R_Key
 {
