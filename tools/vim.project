@@ -102,6 +102,8 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusArgByte.h
 					GKDBusArgUInt16.cpp
 					GKDBusArgUInt16.h
+					GKDBusArgUInt64.cpp
+					GKDBusArgUInt64.h
 					GKDBusArgMacro.cpp
 					GKDBusArgMacro.h
 					GKDBusArgMacrosBank.cpp
@@ -126,6 +128,8 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusBroadcastSignal.h
 					GKDBusTargetsSignal.cpp
 					GKDBusTargetsSignal.h
+					GKDBusAsyncContainer.cpp
+					GKDBusAsyncContainer.h
 				}
 				GKDBus.cpp
 				GKDBus.h

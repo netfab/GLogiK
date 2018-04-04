@@ -91,6 +91,8 @@ template <>
 	try {
 		this->initializeReply(connection, message);
 		this->appendBooleanToReply(ret);
+
+		this->appendAsyncArgsToReply();
 	}
 	catch ( const GLogiKExcept & e ) {
 		/* delete reply object if allocated and send error reply */
@@ -131,6 +133,8 @@ template <>
 	try {
 		this->initializeReply(connection, message);
 		this->appendBooleanToReply(ret);
+
+		this->appendAsyncArgsToReply();
 	}
 	catch ( const GLogiKExcept & e ) {
 		/* delete reply object if allocated and send error reply */
@@ -176,6 +180,8 @@ template <>
 	try {
 		this->initializeReply(connection, message);
 		this->appendStringToReply(ret);
+
+		this->appendAsyncArgsToReply();
 	}
 	catch ( const GLogiKExcept & e ) {
 		/* delete reply object if allocated and send error reply */
@@ -216,6 +222,8 @@ template <>
 	try {
 		this->initializeReply(connection, message);
 		this->appendStringToReply(ret);
+
+		this->appendAsyncArgsToReply();
 	}
 	catch ( const GLogiKExcept & e ) {
 		/* delete reply object if allocated and send error reply */
@@ -255,6 +263,8 @@ template <>
 	try {
 		this->initializeReply(connection, message);
 		this->appendStringVectorToReply(ret);
+
+		this->appendAsyncArgsToReply();
 	}
 	catch ( const GLogiKExcept & e ) {
 		/* delete reply object if allocated and send error reply */
@@ -295,6 +305,8 @@ template <>
 	try {
 		this->initializeReply(connection, message);
 		this->appendStringVectorToReply(ret);
+
+		this->appendAsyncArgsToReply();
 	}
 	catch ( const GLogiKExcept & e ) {
 		/* delete reply object if allocated and send error reply */
@@ -336,6 +348,8 @@ template <>
 	try {
 		this->initializeReply(connection, message);
 		this->appendBooleanToReply(ret);
+
+		this->appendAsyncArgsToReply();
 	}
 	catch ( const GLogiKExcept & e ) {
 		/* delete reply object if allocated and send error reply */
@@ -379,6 +393,8 @@ template <>
 	try {
 		this->initializeReply(connection, message);
 		this->appendBooleanToReply(ret);
+
+		this->appendAsyncArgsToReply();
 	}
 	catch ( const GLogiKExcept & e ) {
 		/* delete reply object if allocated and send error reply */
@@ -443,6 +459,8 @@ template <>
 	try {
 		this->initializeReply(connection, message);
 		this->appendMacroToReply(ret);
+
+		this->appendAsyncArgsToReply();
 	}
 	catch ( const GLogiKExcept & e ) {
 		/* delete reply object if allocated and send error reply */
@@ -484,6 +502,8 @@ template <>
 	try {
 		this->initializeReply(connection, message);
 		this->appendBooleanToReply(ret);
+
+		this->appendAsyncArgsToReply();
 	}
 	catch ( const GLogiKExcept & e ) {
 		/* delete reply object if allocated and send error reply */

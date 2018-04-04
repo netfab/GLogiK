@@ -33,6 +33,7 @@ using namespace NSGKUtils;
 thread_local std::vector<std::string> GKDBusArgument::string_arguments_ = {};
 thread_local std::vector<uint8_t> GKDBusArgument::byte_arguments_ = {};
 thread_local std::vector<uint16_t> GKDBusArgument::uint16_arguments_ = {};
+thread_local std::vector<uint64_t> GKDBusArgument::uint64_arguments_ = {};
 thread_local std::vector<bool> GKDBusArgument::boolean_arguments_ = {};
 
 void GKDBusArgument::decodeArgumentFromIterator(
@@ -112,6 +113,14 @@ void GKDBusArgument::decodeArgumentFromIterator(
 				//LOG(DEBUG4) << "uint16 arg value : " << value;
 			}
 			break;
+		case DBUS_TYPE_UINT64:
+			{
+				uint64_t value = 0;
+				dbus_message_iter_get_basic(iter, &value);
+				GKDBusArgument::uint64_arguments_.push_back(value);
+				//LOG(DEBUG4) << "uint64 arg value : " << value;
+			}
+			break;
 		case DBUS_TYPE_STRUCT:
 			{
 				do {
@@ -151,6 +160,7 @@ void GKDBusArgument::fillInArguments(DBusMessage* message, const bool logoff) {
 	GKDBusArgument::boolean_arguments_.clear();
 	GKDBusArgument::byte_arguments_.clear();
 	GKDBusArgument::uint16_arguments_.clear();
+	GKDBusArgument::uint64_arguments_.clear();
 
 	if(message == nullptr) {
 		LOG(WARNING) << __func__ << " : message is NULL";
@@ -179,6 +189,27 @@ void GKDBusArgument::fillInArguments(DBusMessage* message, const bool logoff) {
 		std::reverse(GKDBusArgument::byte_arguments_.begin(), GKDBusArgument::byte_arguments_.end());
 	if( ! GKDBusArgument::uint16_arguments_.empty() )
 		std::reverse(GKDBusArgument::uint16_arguments_.begin(), GKDBusArgument::uint16_arguments_.end());
+	if( ! GKDBusArgument::uint64_arguments_.empty() )
+		std::reverse(GKDBusArgument::uint64_arguments_.begin(), GKDBusArgument::uint64_arguments_.end());
+}
+
+const int GKDBusArgument::decodeNextArgument(DBusMessageIter* arg_it) {
+	GKDBusArgument::string_arguments_.clear();
+	GKDBusArgument::boolean_arguments_.clear();
+	GKDBusArgument::byte_arguments_.clear();
+	GKDBusArgument::uint16_arguments_.clear();
+	GKDBusArgument::uint64_arguments_.clear();
+
+	int current_type = dbus_message_iter_get_arg_type(arg_it);
+	if(current_type == DBUS_TYPE_INVALID) /* no more arguments, or struct or array */
+		return current_type;
+
+	unsigned int c = 0;
+	char* signature = dbus_message_iter_get_signature(arg_it);
+	GKDBusArgument::decodeArgumentFromIterator(arg_it, signature, c, true);
+	dbus_free(signature);
+
+	return current_type;
 }
 
 } // namespace NSGKDBus

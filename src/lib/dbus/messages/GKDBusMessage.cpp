@@ -28,13 +28,17 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-thread_local std::vector<std::string> GKDBusMessage::extra_strings_ = {};
-
-GKDBusMessage::GKDBusMessage(DBusConnection* connection, const bool logoff)
-	: connection_(connection), message_(nullptr), hosed_message_(false), log_off_(logoff)
+GKDBusMessage::GKDBusMessage(
+	DBusConnection* connection,
+	const bool logoff,
+	const bool check)
+	:	connection_(connection),
+		message_(nullptr),
+		hosed_message_(false),
+		log_off_(logoff)
 {
 	/* sanity check */
-	if(connection == nullptr)
+	if( (connection == nullptr) and (! check) )
 		throw GKDBusMessageWrongBuild("current connection is NULL");
 }
 
@@ -115,6 +119,20 @@ void GKDBusMessage::appendUInt32(const uint32_t value) {
 #if DEBUG_GKDBUS_SUBOBJECTS
 	if( ! this->log_off_ ) {
 		LOG(DEBUG2) << "DBus uint32_t value appended";
+	}
+#endif
+}
+
+void GKDBusMessage::appendUInt64(const uint64_t value) {
+	dbus_uint64_t v = value;
+	if( ! dbus_message_iter_append_basic(&this->args_it_, DBUS_TYPE_UINT64, &v) ) {
+		this->hosed_message_ = true;
+		throw GKDBusMessageWrongBuild("uint64_t append failure, not enough memory");
+	}
+
+#if DEBUG_GKDBUS_SUBOBJECTS
+	if( ! this->log_off_ ) {
+		LOG(DEBUG2) << "DBus uint64_t value appended";
 	}
 #endif
 }

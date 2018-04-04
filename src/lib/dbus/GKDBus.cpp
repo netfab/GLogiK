@@ -191,10 +191,6 @@ void GKDBus::checkForNextMessage(const BusConnection bus) {
 	this->message_ = nullptr;
 }
 
-void GKDBus::appendExtraStringToMessage(const std::string & value) {
-	GKDBusMessage::extra_strings_.push_back(value);
-}
-
 
 /*
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

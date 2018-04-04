@@ -43,6 +43,9 @@ GKDBusEvent::~GKDBusEvent() {
 #endif
 }
 
+/*
+ * exception was thrown while building reply
+ */
 void GKDBusEvent::sendReplyError(
 	DBusConnection* connection,
 	DBusMessage* message,
@@ -50,11 +53,13 @@ void GKDBusEvent::sendReplyError(
 	)
 {
 	LOG(ERROR) << "DBus reply failure : " << error;
-	/* delete reply object if allocated */
-	this->abandonReply();
+	this->abandonReply();	/* delete reply object if allocated */
 	this->buildAndSendErrorReply(connection, message, error);
 }
 
+/*
+ * exception was thrown before or while running callback
+ */
 void GKDBusEvent::sendCallbackError(
 	DBusConnection* connection,
 	DBusMessage* message,

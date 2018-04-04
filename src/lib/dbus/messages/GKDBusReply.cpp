@@ -31,7 +31,7 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 GKDBusReply::GKDBusReply(DBusConnection* connection, DBusMessage* message)
-	: GKDBusMessage(connection)
+	:	GKDBusMessage(connection)
 {
 	/* sanity check */
 	if(message == nullptr)
@@ -115,18 +115,54 @@ void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_t & macro_array)
 		this->reply_->appendMacro(macro_array);
 }
 
-void GKDBusMessageReply::sendReply(void) {
-	if(this->reply_ == nullptr) { /* sanity check */
-		LOG(WARNING) << __func__ << " failure because reply not contructed";
-		GKDBusMessage::extra_strings_.clear();
+void GKDBusMessageReply::appendAsyncArgsToReply(void)
+{
+	if( this->isAsyncContainerEmpty() )
 		return;
+
+	DBusMessage* asyncContainer = this->getAsyncContainerPointer();
+	DBusMessageIter arg_it;
+
+#if DEBUG_GKDBUS_SUBOBJECTS
+	LOG(DEBUG2) << "init Async parsing";
+#endif
+
+	if( ! dbus_message_iter_init(asyncContainer, &arg_it) ) {
+		return; /* no arguments */
 	}
 
-	if( ! GKDBusMessage::extra_strings_.empty() ) {
-		for( const std::string & value : GKDBusMessage::extra_strings_ ) {
-			this->appendStringToReply(value);
+	try {
+		do {
+			const int arg_type = GKDBusArgument::decodeNextArgument(&arg_it);
+			switch(arg_type) {
+				case DBUS_TYPE_STRING:
+				//case DBUS_TYPE_OBJECT_PATH:
+					this->appendStringToReply( GKDBusArgumentString::getNextStringArgument() );
+					break;
+				case DBUS_TYPE_INVALID:
+					{
+						LOG(ERROR) << "invalid argument iterator";
+					}
+					break;
+				default: // other dbus type
+					LOG(ERROR) << "unhandled argument type: " << static_cast<char>(arg_type);
+					break;
+			}
 		}
-		GKDBusMessage::extra_strings_.clear();
+		while( dbus_message_iter_next(&arg_it) );
+	}
+	catch ( const GLogiKExcept & e ) { /* WrongBuild or EmptyContainer */
+		LOG(ERROR) << e.what();
+		throw GKDBusMessageWrongBuild("Async args append failure");
+	}
+}
+
+void GKDBusMessageReply::sendReply(void) {
+	this->destroyAsyncContainer();
+
+	if(this->reply_ == nullptr) { /* sanity check */
+		LOG(WARNING) << __func__ << " failure because reply not contructed";
+		return;
 	}
 
 	delete this->reply_;
@@ -134,7 +170,8 @@ void GKDBusMessageReply::sendReply(void) {
 }
 
 void GKDBusMessageReply::abandonReply(void) {
-	GKDBusMessage::extra_strings_.clear();
+	this->destroyAsyncContainer();
+
 	if(this->reply_) { /* sanity check */
 		this->reply_->abandon();
 		delete this->reply_;

@@ -19,46 +19,27 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_CALLBACK_ARGUMENT_H__
-#define __GLOGIK_GKDBUS_CALLBACK_ARGUMENT_H__
+#ifndef __GLOGIK_GKDBUS_ARG_UINT64_H__
+#define __GLOGIK_GKDBUS_ARG_UINT64_H__
 
 #include <cstdint>
 
-#include <string>
-#include <vector>
-
-#include <dbus/dbus.h>
+#include "GKDBusArgument.h"
 
 namespace NSGKDBus
 {
 
-class GKDBusArgument
+class GKDBusArgumentUInt64
+	:	protected GKDBusArgument
 {
 	public:
+		static const uint64_t getNextUInt64Argument(void);
 
 	protected:
-		GKDBusArgument(void) = default;
-		~GKDBusArgument(void) = default;
-
-		static void fillInArguments(
-			DBusMessage* message,
-			const bool logoff=false
-		);
-		static const int decodeNextArgument(DBusMessageIter* arg_it);
-
-		thread_local static std::vector<std::string> string_arguments_;
-		thread_local static std::vector<uint8_t> byte_arguments_;
-		thread_local static std::vector<uint16_t> uint16_arguments_;
-		thread_local static std::vector<uint64_t> uint64_arguments_;
-		thread_local static std::vector<bool> boolean_arguments_;
+		GKDBusArgumentUInt64(void) = default;
+		~GKDBusArgumentUInt64(void) = default;
 
 	private:
-		static void decodeArgumentFromIterator(
-			DBusMessageIter* iter,
-			const char* signature,
-			const unsigned int num,
-			const bool logoff
-		);
 
 };
 

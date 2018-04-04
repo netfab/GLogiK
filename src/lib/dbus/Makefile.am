@@ -25,6 +25,8 @@ libGKDBus_la_SOURCES = \
 	%D%/arguments/GKDBusArgByte.h \
 	%D%/arguments/GKDBusArgUInt16.cpp \
 	%D%/arguments/GKDBusArgUInt16.h \
+	%D%/arguments/GKDBusArgUInt64.cpp \
+	%D%/arguments/GKDBusArgUInt64.h \
 	%D%/arguments/GKDBusArgMacro.cpp \
 	%D%/arguments/GKDBusArgMacro.h \
 	%D%/arguments/GKDBusArgMacrosBank.cpp \
@@ -41,6 +43,8 @@ libGKDBus_la_SOURCES = \
 	%D%/messages/GKDBusBroadcastSignal.h \
 	%D%/messages/GKDBusTargetsSignal.cpp \
 	%D%/messages/GKDBusTargetsSignal.h \
+	%D%/messages/GKDBusAsyncContainer.cpp \
+	%D%/messages/GKDBusAsyncContainer.h \
 	%D%/events/GKDBusEvent.cpp \
 	%D%/events/GKDBusEvent.h \
 	%D%/events/GKDBusEventTemplates.cpp \

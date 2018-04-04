@@ -277,7 +277,7 @@ const bool ClientsManager::registerClient(
 				GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 				const std::string reason("already registered");
 				/* appending failure reason to DBus reply */
-				this->pDBus_->appendExtraStringToMessage(reason);
+				this->pDBus_->appendAsyncString(reason);
 
 				/* process to check if registered clients are still alives */
 				for(auto & new_pair : this->clients_ ) {
@@ -307,26 +307,26 @@ const bool ClientsManager::registerClient(
 		catch (const std::bad_alloc& e) { /* handle new() failure */
 			const std::string s = "new client allocation failure";
 			GKSysLog(LOG_ERR, ERROR, s);
-			this->pDBus_->appendExtraStringToMessage(s);
+			this->pDBus_->appendAsyncString(s);
 			return false;
 		}
 		catch (const std::out_of_range& oor) {
 			this->buffer_.str("tried to initialize unknown client : ");
 			this->buffer_ << clientID;
 			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
-			this->pDBus_->appendExtraStringToMessage("internal error");
+			this->pDBus_->appendAsyncString("internal error");
 			return false;
 		}
 		catch (const GLogiKExcept & e) {
 			GKSysLog(LOG_ERR, ERROR, e.what());
-			this->pDBus_->appendExtraStringToMessage("internal error");
+			this->pDBus_->appendAsyncString("internal error");
 			return false;
 		}
 
 		this->devicesManager->setNumClients( this->clients_.size() );
 
 		/* appending client id to DBus reply */
-		this->pDBus_->appendExtraStringToMessage(clientID);
+		this->pDBus_->appendAsyncString(clientID);
 
 		return true;
 	}

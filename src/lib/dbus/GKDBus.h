@@ -36,11 +36,13 @@
 #include "messages/GKDBusRemoteMethodCall.h"
 #include "messages/GKDBusBroadcastSignal.h"
 #include "messages/GKDBusTargetsSignal.h"
+#include "messages/GKDBusAsyncContainer.h"
 
 #include "arguments/GKDBusArgString.h"
 #include "arguments/GKDBusArgBoolean.h"
 #include "arguments/GKDBusArgByte.h"
 #include "arguments/GKDBusArgUInt16.h"
+#include "arguments/GKDBusArgUInt64.h"
 #include "arguments/GKDBusArgMacro.h"
 
 namespace NSGKDBus
@@ -60,10 +62,12 @@ class GKDBus
 		virtual public GKDBusMessageRemoteMethodCall,
 		public GKDBusMessageBroadcastSignal,
 		public GKDBusMessageTargetsSignal,
+		public GKDBusMessageAsyncContainer,
 		virtual public GKDBusArgumentString,
 		public GKDBusArgumentBoolean,
 		virtual public GKDBusArgumentByte,
 		virtual public GKDBusArgumentUInt16,
+		public GKDBusArgumentUInt64,
 		public GKDBusArgumentMacro
 {
 	public:
@@ -73,8 +77,6 @@ class GKDBus
 		void connectToSystemBus(const char* connection_name);
 
 		void checkForNextMessage(const BusConnection bus);
-
-		void appendExtraStringToMessage(const std::string & value);
 
 	protected:
 

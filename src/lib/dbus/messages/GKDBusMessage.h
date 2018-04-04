@@ -42,16 +42,15 @@ class GKDBusMessage
 		void appendUInt8(const uint8_t value);
 		void appendUInt16(const uint16_t value);
 		void appendUInt32(const uint32_t value);
+		void appendUInt64(const uint64_t value);
 
 		void appendMacro(const GLogiK::macro_t & macro_array);
 		void appendMacrosBank(const GLogiK::macros_bank_t & macros_bank);
 
 		void abandon(void);
 
-		thread_local static std::vector<std::string> extra_strings_;
-
 	protected:
-		GKDBusMessage(DBusConnection* connection, const bool logoff=false);
+		GKDBusMessage(DBusConnection* connection, const bool logoff=false, const bool check=false);
 		~GKDBusMessage(void);
 
 		DBusConnection* connection_;

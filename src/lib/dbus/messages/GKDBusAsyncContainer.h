@@ -19,47 +19,53 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_CALLBACK_ARGUMENT_H__
-#define __GLOGIK_GKDBUS_CALLBACK_ARGUMENT_H__
-
-#include <cstdint>
+#ifndef __GLOGIK_GKDBUS_ASYNC_CONTAINER_H__
+#define __GLOGIK_GKDBUS_ASYNC_CONTAINER_H__
 
 #include <string>
-#include <vector>
 
 #include <dbus/dbus.h>
+
+#include "GKDBusMessage.h"
 
 namespace NSGKDBus
 {
 
-class GKDBusArgument
+class GKDBusAsyncContainer
+	:	public GKDBusMessage
 {
 	public:
+		GKDBusAsyncContainer(void);
+		~GKDBusAsyncContainer(void);
+
+		DBusMessage* getAsyncContainerPointer(void) const;
+		void incArgs(void);
+		const bool isAsyncContainerEmpty(void) const;
 
 	protected:
-		GKDBusArgument(void) = default;
-		~GKDBusArgument(void) = default;
+	private:
+		unsigned int num;
 
-		static void fillInArguments(
-			DBusMessage* message,
-			const bool logoff=false
-		);
-		static const int decodeNextArgument(DBusMessageIter* arg_it);
+};
 
-		thread_local static std::vector<std::string> string_arguments_;
-		thread_local static std::vector<uint8_t> byte_arguments_;
-		thread_local static std::vector<uint16_t> uint16_arguments_;
-		thread_local static std::vector<uint64_t> uint64_arguments_;
-		thread_local static std::vector<bool> boolean_arguments_;
+class GKDBusMessageAsyncContainer
+{
+	public:
+		void appendAsyncString(const std::string & value);
+
+	protected:
+		GKDBusMessageAsyncContainer();
+		~GKDBusMessageAsyncContainer();
+
+		void destroyAsyncContainer(void);
+
+		const bool isAsyncContainerEmpty(void) const;
+		DBusMessage* getAsyncContainerPointer(void) const;
 
 	private:
-		static void decodeArgumentFromIterator(
-			DBusMessageIter* iter,
-			const char* signature,
-			const unsigned int num,
-			const bool logoff
-		);
+		static GKDBusAsyncContainer* container_;
 
+		void initializeAsyncContainer(void);
 };
 
 } // namespace NSGKDBus

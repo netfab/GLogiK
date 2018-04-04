@@ -31,10 +31,15 @@
 
 #include "GKDBusMessage.h"
 
+#include "lib/dbus/arguments/GKDBusArgString.h"
+
+#include "lib/dbus/messages/GKDBusAsyncContainer.h"
+
 namespace NSGKDBus
 {
 
-class GKDBusReply : public GKDBusMessage
+class GKDBusReply
+	:	public GKDBusMessage
 {
 	public:
 		GKDBusReply(DBusConnection* connection, DBusMessage* message);
@@ -47,6 +52,8 @@ class GKDBusReply : public GKDBusMessage
 };
 
 class GKDBusMessageReply
+	:	virtual private GKDBusArgumentString,
+		private GKDBusMessageAsyncContainer
 {
 	public:
 
@@ -62,6 +69,8 @@ class GKDBusMessageReply
 			const std::vector<std::string> & list
 		);
 		void appendMacroToReply(const GLogiK::macro_t & macro_array);
+
+		void appendAsyncArgsToReply(void);
 
 		void sendReply(void);
 		void abandonReply(void);
