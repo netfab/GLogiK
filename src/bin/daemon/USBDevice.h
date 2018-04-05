@@ -34,7 +34,7 @@
 
 #include <libusb-1.0/libusb.h>
 
-#include "lib/shared/keyEvent.h"
+#include "include/keyEvent.h"
 #include "virtualKeyboard.h"
 #include "macrosManager.h"
 

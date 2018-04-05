@@ -18,7 +18,6 @@ libGKShared_la_LIBADD = \
 						libGKUtils.la
 
 libGKShared_la_SOURCES = \
-	%D%/keyEvent.h \
 	%D%/macrosBanks.cpp \
 	%D%/macrosBanks.h \
 	%D%/deviceProperties.cpp \

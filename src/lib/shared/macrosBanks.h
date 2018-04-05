@@ -32,7 +32,7 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/map.hpp>
 
-#include "keyEvent.h"
+#include "include/keyEvent.h"
 
 namespace GLogiK
 {

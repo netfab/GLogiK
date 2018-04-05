@@ -46,6 +46,7 @@ GLogiK=$PWD/.. CD=. {
 		include=include/ {
 			Makefile.am
 			enums.h
+			keyEvent.h
 		}
 		binaries=bin/ {
 			daemon=daemon/ {
@@ -143,7 +144,6 @@ GLogiK=$PWD/.. CD=. {
 				deviceProperties.h
 				glogik.cpp
 				glogik.h
-				keyEvent.h
 				macrosBanks.cpp
 				macrosBanks.h
 				sessionManager.cpp

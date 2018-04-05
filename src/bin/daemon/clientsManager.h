@@ -27,7 +27,7 @@
 #include <map>
 #include <sstream>
 
-#include "lib/shared/keyEvent.h"
+#include "include/keyEvent.h"
 #include "lib/dbus/GKDBus.h"
 
 #include "devicesManager.h"

@@ -34,7 +34,7 @@
 
 #include <config.h>
 
-#include "lib/shared/keyEvent.h"
+#include "include/keyEvent.h"
 #include "lib/dbus/GKDBus.h"
 
 #include "DeviceID.h"

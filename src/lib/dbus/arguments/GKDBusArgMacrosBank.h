@@ -22,7 +22,7 @@
 #ifndef __GLOGIK_GKDBUS_ARG_MACROSBANK_H__
 #define __GLOGIK_GKDBUS_ARG_MACROSBANK_H__
 
-#include "lib/shared/keyEvent.h"
+#include "include/keyEvent.h"
 
 #include "GKDBusArgString.h"
 #include "GKDBusArgByte.h"

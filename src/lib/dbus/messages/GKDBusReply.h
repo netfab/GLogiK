@@ -27,7 +27,7 @@
 
 #include <dbus/dbus.h>
 
-#include "lib/shared/keyEvent.h"
+#include "include/keyEvent.h"
 
 #include "GKDBusMessage.h"
 

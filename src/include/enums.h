@@ -21,8 +21,8 @@
 
 #include <cstdint>
 
-#ifndef __GLOGIKD_ENUMS_H__
-#define __GLOGIKD_ENUMS_H__
+#ifndef __GLOGIK_ENUMS_H__
+#define __GLOGIK_ENUMS_H__
 
 namespace GLogiK
 {
