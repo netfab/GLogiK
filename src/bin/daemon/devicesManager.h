@@ -106,7 +106,10 @@ class DevicesManager
 		const bool stopDevice(const std::string & devID);
 		const std::vector<std::string> getStartedDevices(void) const;
 		const std::vector<std::string> getStoppedDevices(void) const;
-		const std::vector<std::string> getDeviceProperties(const std::string & devID);
+
+		const std::string getDeviceVendor(const std::string & devID);
+		const std::string getDeviceModel(const std::string & devID);
+		const uint64_t getDeviceCapabilities(const std::string & devID);
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,

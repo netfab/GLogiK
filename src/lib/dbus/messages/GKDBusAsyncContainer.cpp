@@ -113,6 +113,16 @@ void GKDBusMessageAsyncContainer::appendAsyncString(const std::string & value)
 	this->container_->incArgs();
 }
 
+void GKDBusMessageAsyncContainer::appendAsyncUInt64(const uint64_t value)
+{
+	if(this->container_ == nullptr) { /* sanity check */
+		this->initializeAsyncContainer();
+	}
+
+	this->container_->appendUInt64(value);
+	this->container_->incArgs();
+}
+
 const bool GKDBusMessageAsyncContainer::isAsyncContainerEmpty(void) const
 {
 	if(this->container_ == nullptr)

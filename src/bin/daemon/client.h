@@ -48,7 +48,6 @@ class Client
 		const bool isAlive(void) const;
 		const bool isReady(void) const;
 
-		const std::vector<std::string> getDeviceProperties(const std::string & devID, DevicesManager* dev_manager);
 		const bool deleteDevice(const std::string & devID);
 		const bool setDeviceBacklightColor(
 			const std::string & devID,
@@ -89,6 +88,8 @@ class Client
 		std::map<const std::string, DeviceProperties> devices_;
 		bool check_;
 		bool ready_;
+
+		void initializeDevices(DevicesManager* dev_manager);
 };
 
 } // namespace GLogiK

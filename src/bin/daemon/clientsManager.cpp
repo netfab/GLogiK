@@ -160,11 +160,11 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 			{"s", "device status", "out", "string representing the device status"} },
 		std::bind(&ClientsManager::getDeviceStatus, this, std::placeholders::_1, std::placeholders::_2) );
 
-	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToStringsArray>::exposeMethod(
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToVoid>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceProperties",
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"as", "array_of_strings", "out", "string array of device properties"} },
+			{"sst", "get_device_properties", "out", "device properties"} },
 		std::bind(&ClientsManager::getDeviceProperties, this, std::placeholders::_1, std::placeholders::_2) );
 
 	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToStringsArray>::exposeMethod(
@@ -650,7 +650,7 @@ const std::string ClientsManager::getDeviceStatus(
 	return "unknown";
 }
 
-const std::vector<std::string> ClientsManager::getDeviceProperties(
+void ClientsManager::getDeviceProperties(
 	const std::string & clientID,
 	const std::string & devID
 )	{
@@ -660,16 +660,16 @@ const std::vector<std::string> ClientsManager::getDeviceProperties(
 	try {
 		Client* pClient = this->clients_.at(clientID);
 		if( pClient->isAlive() ) {
-			return pClient->getDeviceProperties(devID, this->devicesManager);
+			this->pDBus_->appendAsyncString( this->devicesManager->getDeviceVendor(devID) );
+			this->pDBus_->appendAsyncString( this->devicesManager->getDeviceModel(devID) );
+			this->pDBus_->appendAsyncUInt64( this->devicesManager->getDeviceCapabilities(devID) );
+			return;
 		}
 		GKSysLog(LOG_WARNING, WARNING, "getting device properties not allowed because client not alive");
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownClient
 	}
-
-	const std::vector<std::string> ret;
-	return ret;
 }
 
 const bool ClientsManager::setDeviceBacklightColor(

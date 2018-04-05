@@ -40,6 +40,7 @@ class GKDBusEvents
 	:	public EventGKDBusCallback<VoidToVoid>,
 		public EventGKDBusCallback<StringsArrayToVoid>,
 		public EventGKDBusCallback<StringToBool>,
+		public EventGKDBusCallback<TwoStringsToVoid>,
 		public EventGKDBusCallback<TwoStringsToBool>,
 		public EventGKDBusCallback<TwoStringsOneByteToBool>,
 		public EventGKDBusCallback<TwoStringsThreeBytesToBool>,

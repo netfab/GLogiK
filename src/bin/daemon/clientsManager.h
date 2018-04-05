@@ -112,7 +112,7 @@ class ClientsManager
 			const std::string & clientID,
 			const std::string & devID
 		);
-		const std::vector<std::string> getDeviceProperties(
+		void getDeviceProperties(
 			const std::string & clientID,
 			const std::string & devID
 		);

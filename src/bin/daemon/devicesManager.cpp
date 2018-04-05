@@ -526,32 +526,61 @@ const std::vector<std::string> DevicesManager::getStoppedDevices(void) const {
 	return ret;
 }
 
-const std::vector<std::string> DevicesManager::getDeviceProperties(const std::string & devID) {
-	std::vector<std::string> ret;
-
+const std::string DevicesManager::getDeviceVendor(const std::string & devID)
+{
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
-#endif
-		ret.push_back(device.getVendor());
-		ret.push_back(device.getModel());
+		return device.getVendor();
 	}
 	catch (const std::out_of_range& oor) {
 		try {
 			const auto & device = this->plugged_but_stopped_devices_.at(devID);
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "found " << device.getModel() << " in stopped devices";
-#endif
-			ret.push_back(device.getVendor());
-			ret.push_back(device.getModel());
+			return device.getVendor();
 		}
 		catch (const std::out_of_range& oor) {
 			GKSysLog_UnknownDevice
 		}
 	}
 
-	return ret;
+	return "unknown";
+}
+
+const uint64_t DevicesManager::getDeviceCapabilities(const std::string & devID)
+{
+	try {
+		const auto & device = this->initialized_devices_.at(devID);
+		return device.getCapabilities();
+	}
+	catch (const std::out_of_range& oor) {
+		try {
+			const auto & device = this->plugged_but_stopped_devices_.at(devID);
+			return device.getCapabilities();
+		}
+		catch (const std::out_of_range& oor) {
+			GKSysLog_UnknownDevice
+		}
+	}
+
+	return 0;
+}
+
+const std::string DevicesManager::getDeviceModel(const std::string & devID)
+{
+	try {
+		const auto & device = this->initialized_devices_.at(devID);
+		return device.getModel();
+	}
+	catch (const std::out_of_range& oor) {
+		try {
+			const auto & device = this->plugged_but_stopped_devices_.at(devID);
+			return device.getModel();
+		}
+		catch (const std::out_of_range& oor) {
+			GKSysLog_UnknownDevice
+		}
+	}
+
+	return "unknown";
 }
 
 const std::string DevicesManager::getDeviceStatus(const std::string & devID) {

@@ -32,6 +32,7 @@
 #include "GKDBusMessage.h"
 
 #include "lib/dbus/arguments/GKDBusArgString.h"
+#include "lib/dbus/arguments/GKDBusArgUInt64.h"
 
 #include "lib/dbus/messages/GKDBusAsyncContainer.h"
 
@@ -53,6 +54,7 @@ class GKDBusReply
 
 class GKDBusMessageReply
 	:	virtual private GKDBusArgumentString,
+		private GKDBusArgumentUInt64,
 		private GKDBusMessageAsyncContainer
 {
 	public:
@@ -69,6 +71,8 @@ class GKDBusMessageReply
 			const std::vector<std::string> & list
 		);
 		void appendMacroToReply(const GLogiK::macro_t & macro_array);
+
+		void appendUInt64ToReply(const uint64_t value);
 
 		void appendAsyncArgsToReply(void);
 

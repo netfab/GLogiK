@@ -64,6 +64,45 @@ template <>
 }
 
 template <>
+	void GKDBusCallbackEvent<TwoStringsToVoid>::runCallback(
+		DBusConnection* connection,
+		DBusMessage* message
+	)
+{
+	GKDBusArgumentString::fillInArguments(message);
+
+	try {
+		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
+
+		/* call two strings to void callback */
+		this->callback(arg1, arg2);
+	}
+	catch ( const GLogiKExcept & e ) {
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
+	}
+
+	/* signals don't send reply */
+	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+		return;
+
+	try {
+		this->initializeReply(connection, message);
+
+		this->appendAsyncArgsToReply();
+	}
+	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
+		this->sendReplyError(connection, message, e.what());
+		return;
+	}
+
+	/* delete reply object if allocated */
+	this->sendReply();
+}
+
+template <>
 	void GKDBusCallbackEvent<StringToBool>::runCallback(
 		DBusConnection* connection,
 		DBusMessage* message

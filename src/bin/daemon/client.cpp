@@ -44,13 +44,7 @@ Client::Client(
 	LOG(DEBUG2) << "initializing new client";
 #endif
 
-	for( const auto & devID : dev_manager->getStartedDevices() ) {
-		this->getDeviceProperties(devID, dev_manager);
-	}
-
-	for( const auto & devID : dev_manager->getStoppedDevices() ) {
-		this->getDeviceProperties(devID, dev_manager);
-	}
+	this->initializeDevices(dev_manager);
 
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "initialized " << this->devices_.size() << " client devices configurations";
@@ -90,32 +84,6 @@ const bool Client::isReady(void) const {
 
 void Client::toggleClientReadyPropertie(void) {
 	this->ready_ = ! this->ready_;
-}
-
-const std::vector<std::string> Client::getDeviceProperties(const std::string & devID, DevicesManager* dev_manager) {
-	const std::vector<std::string> properties = dev_manager->getDeviceProperties(devID);
-
-	try {
-		this->devices_.at(devID);
-	}
-	catch (const std::out_of_range& oor) {
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "initializing device " << devID << " properties";
-#endif
-		DeviceProperties device;
-		device.setVendor(properties[0]); /* FIXME */
-		device.setModel(properties[1]);
-
-		device.initMacrosProfiles( dev_manager->getDeviceMacroKeysNames(devID) );
-
-		this->devices_[devID] = device;
-	}
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "number of initialized devices : " << this->devices_.size();
-#endif
-
-	return properties;
 }
 
 const bool Client::deleteDevice(const std::string & devID) {
@@ -232,6 +200,43 @@ const bool Client::setDeviceMacrosBank(
 	}
 
 	return ret;
+}
+
+void Client::initializeDevices(DevicesManager* dev_manager)
+{
+	for( const auto & devID : dev_manager->getStartedDevices() ) {
+		try {
+			this->devices_.at(devID);
+		}
+		catch (const std::out_of_range& oor) {
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "initializing device " << devID << " properties";
+#endif
+			DeviceProperties device;
+			device.setVendor( dev_manager->getDeviceVendor(devID) );
+			device.setModel(   dev_manager->getDeviceModel(devID) );
+			device.initMacrosProfiles( dev_manager->getDeviceMacroKeysNames(devID) );
+
+			this->devices_[devID] = device;
+		}
+	}
+
+	for( const auto & devID : dev_manager->getStoppedDevices() ) {
+		try {
+			this->devices_.at(devID);
+		}
+		catch (const std::out_of_range& oor) {
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "initializing device " << devID << " properties";
+#endif
+			DeviceProperties device;
+			device.setVendor( dev_manager->getDeviceVendor(devID) );
+			device.setModel(   dev_manager->getDeviceModel(devID) );
+			device.initMacrosProfiles( dev_manager->getDeviceMacroKeysNames(devID) );
+
+			this->devices_[devID] = device;
+		}
+	}
 }
 
 } // namespace GLogiK

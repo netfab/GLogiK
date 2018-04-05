@@ -115,6 +115,11 @@ void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_t & macro_array)
 		this->reply_->appendMacro(macro_array);
 }
 
+void GKDBusMessageReply::appendUInt64ToReply(const uint64_t value) {
+	if(this->reply_ != nullptr) /* sanity check */
+		this->reply_->appendUInt64(value);
+}
+
 void GKDBusMessageReply::appendAsyncArgsToReply(void)
 {
 	if( this->isAsyncContainerEmpty() )
@@ -138,6 +143,9 @@ void GKDBusMessageReply::appendAsyncArgsToReply(void)
 				case DBUS_TYPE_STRING:
 				//case DBUS_TYPE_OBJECT_PATH:
 					this->appendStringToReply( GKDBusArgumentString::getNextStringArgument() );
+					break;
+				case DBUS_TYPE_UINT64:
+					this->appendUInt64ToReply( GKDBusArgumentUInt64::getNextUInt64Argument() );
 					break;
 				case DBUS_TYPE_INVALID:
 					{
