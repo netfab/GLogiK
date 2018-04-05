@@ -12,8 +12,6 @@ libGKDBus_la_LIBADD = \
 				$(DBUS_LIBS) \
 				libGKUtils.la
 
-#	events/GKDBusEventStringToVoid.cpp events/GKDBusEventStringToVoid.h
-
 libGKDBus_la_SOURCES = \
 	%D%/arguments/GKDBusArgument.cpp \
 	%D%/arguments/GKDBusArgument.h \
