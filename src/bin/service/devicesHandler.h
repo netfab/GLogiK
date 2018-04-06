@@ -33,6 +33,9 @@
 #include "lib/shared/glogik.h"
 #include "lib/shared/deviceProperties.h"
 
+#include "include/enums.h"
+
+
 #define LogRemoteCallFailure \
 	FATALERROR << remoteMethod.c_str() << s_RemoteCallFailure << e.what();
 #define LogRemoteCallGetReplyFailure \
@@ -73,6 +76,8 @@ class DevicesHandler
 
 		const devices_files_map_t getDevicesMap(void);
 		void checkDeviceConfigurationFile(const std::string & devID);
+
+		const bool checkDeviceCapability(const DeviceProperties & device, Caps to_check);
 
 	protected:
 

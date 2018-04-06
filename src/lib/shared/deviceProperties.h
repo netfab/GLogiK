@@ -43,11 +43,13 @@ class DeviceProperties : public MacrosBanks
 
 		const std::string & getVendor(void) const;
 		const std::string & getModel(void) const;
+		const uint64_t getCapabilities(void) const;
 		const std::string & getConfigFileName(void) const;
 		const int getWatchDescriptor(void) const;
 
 		void setVendor(const std::string & vendor);
 		void setModel(const std::string & model);
+		void setCapabilities(const uint64_t caps);
 		void setConfigFileName(const std::string & filename);
 		void setWatchDescriptor(int wd);
 
@@ -64,6 +66,7 @@ class DeviceProperties : public MacrosBanks
 	private:
 		std::string vendor_;
 		std::string model_;
+		uint64_t caps_;
 		std::string config_file_name_;
 		int watch_descriptor_;
 

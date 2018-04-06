@@ -106,6 +106,10 @@ const devices_files_map_t DevicesHandler::getDevicesMap(void) {
 	return ret;
 }
 
+const bool DevicesHandler::checkDeviceCapability(const DeviceProperties & device, Caps to_check) {
+	return (device.getCapabilities() & to_type(to_check));
+}
+
 void DevicesHandler::checkDeviceConfigurationFile(const std::string & devID) {
 	try {
 		DeviceProperties & device = this->started_devices_.at(devID);
@@ -253,72 +257,9 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 }
 
 void DevicesHandler::setDeviceState(const std::string & devID, const DeviceProperties & device) {
-	/* set backlight color */
-	std::string remoteMethod("SetDeviceBacklightColor");
-
-	try {
-		this->pDBus_->initializeRemoteMethodCall(
-			this->system_bus_,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
-		);
-		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
-		this->pDBus_->appendStringToRemoteMethodCall(devID);
-		this->pDBus_->appendUInt8ToRemoteMethodCall(device.getBLColor_R());
-		this->pDBus_->appendUInt8ToRemoteMethodCall(device.getBLColor_G());
-		this->pDBus_->appendUInt8ToRemoteMethodCall(device.getBLColor_B());
-
-		this->pDBus_->sendRemoteMethodCall();
-
-		try {
-			this->pDBus_->waitForRemoteMethodCallReply();
-
-			const bool ret = this->pDBus_->getNextBooleanArgument();
-			if( ret ) {
-				const uint8_t & r = device.getBLColor_R();
-				const uint8_t & g = device.getBLColor_G();
-				const uint8_t & b = device.getBLColor_B();
-				LOG(INFO) << "[" << devID
-							<< "] successfully setted device backlight color : "
-							<< getHexRGB(r, g, b);
-			}
-			else {
-				LOG(ERROR) << "[" << devID << "] failed to set device backlight color : false";
-			}
-		}
-		catch (const GLogiKExcept & e) {
-			LogRemoteCallGetReplyFailure
-		}
-	}
-	catch (const GKDBusMessageWrongBuild & e) {
-		this->pDBus_->abandonRemoteMethodCall();
-		LogRemoteCallFailure
-	}
-
-
-	/* set macros banks */
-	remoteMethod = "SetDeviceMacrosBank";
-
-	for( const auto & macros_bank_pair : device.getMacrosProfiles() ) {
-		const uint8_t current_profile = to_type(macros_bank_pair.first);
-		const macros_bank_t & current_bank = macros_bank_pair.second;
-
-		/* test whether this MacrosBank should be sent */
-		bool send_it = false;
-		for(const auto & macro_pair : current_bank) {
-			const macro_t & current_macro = macro_pair.second;
-			if( ! current_macro.empty() ) {
-				send_it = true;
-				break;
-			}
-		}
-
-		if( ! send_it ) {
-			LOG(INFO) << "[" << devID << "] skipping empty MacrosBank " << to_uint(current_profile);
-			continue;
-		}
+	if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
+		/* set backlight color */
+		const std::string remoteMethod("SetDeviceBacklightColor");
 
 		try {
 			this->pDBus_->initializeRemoteMethodCall(
@@ -330,8 +271,9 @@ void DevicesHandler::setDeviceState(const std::string & devID, const DevicePrope
 			);
 			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
 			this->pDBus_->appendStringToRemoteMethodCall(devID);
-			this->pDBus_->appendUInt8ToRemoteMethodCall(current_profile);
-			this->pDBus_->appendMacrosBankToRemoteMethodCall(current_bank);
+			this->pDBus_->appendUInt8ToRemoteMethodCall(device.getBLColor_R());
+			this->pDBus_->appendUInt8ToRemoteMethodCall(device.getBLColor_G());
+			this->pDBus_->appendUInt8ToRemoteMethodCall(device.getBLColor_B());
 
 			this->pDBus_->sendRemoteMethodCall();
 
@@ -340,10 +282,14 @@ void DevicesHandler::setDeviceState(const std::string & devID, const DevicePrope
 
 				const bool ret = this->pDBus_->getNextBooleanArgument();
 				if( ret ) {
-					LOG(INFO) << "[" << devID << "] successfully setted device MacrosBank " << to_uint(current_profile);
+					const uint8_t & r = device.getBLColor_R();
+					const uint8_t & g = device.getBLColor_G();
+					const uint8_t & b = device.getBLColor_B();
+					LOG(INFO) << "[" << devID << "] successfully setted device backlight color : "
+								<< getHexRGB(r, g, b);
 				}
 				else {
-					LOG(ERROR) << "[" << devID << "] failed to set device MacrosBank " << to_uint(current_profile) << " : false";
+					LOG(ERROR) << "[" << devID << "] failed to set device backlight color : false";
 				}
 			}
 			catch (const GLogiKExcept & e) {
@@ -355,11 +301,69 @@ void DevicesHandler::setDeviceState(const std::string & devID, const DevicePrope
 			LogRemoteCallFailure
 		}
 	}
+
+	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+		/* set macros banks */
+		const std::string remoteMethod = "SetDeviceMacrosBank";
+
+		for( const auto & macros_bank_pair : device.getMacrosProfiles() ) {
+			const uint8_t current_profile = to_type(macros_bank_pair.first);
+			const macros_bank_t & current_bank = macros_bank_pair.second;
+
+			/* test whether this MacrosBank should be sent */
+			bool send_it = false;
+			for(const auto & macro_pair : current_bank) {
+				const macro_t & current_macro = macro_pair.second;
+				if( ! current_macro.empty() ) {
+					send_it = true;
+					break;
+				}
+			}
+
+			if( ! send_it ) {
+				LOG(INFO) << "[" << devID << "] skipping empty MacrosBank " << to_uint(current_profile);
+				continue;
+			}
+
+			try {
+				this->pDBus_->initializeRemoteMethodCall(
+					this->system_bus_,
+					GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+					remoteMethod.c_str()
+				);
+				this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+				this->pDBus_->appendStringToRemoteMethodCall(devID);
+				this->pDBus_->appendUInt8ToRemoteMethodCall(current_profile);
+				this->pDBus_->appendMacrosBankToRemoteMethodCall(current_bank);
+
+				this->pDBus_->sendRemoteMethodCall();
+
+				try {
+					this->pDBus_->waitForRemoteMethodCallReply();
+
+					const bool ret = this->pDBus_->getNextBooleanArgument();
+					if( ret ) {
+						LOG(INFO) << "[" << devID << "] successfully setted device MacrosBank " << to_uint(current_profile);
+					}
+					else {
+						LOG(ERROR) << "[" << devID << "] failed to set device MacrosBank " << to_uint(current_profile) << " : false";
+					}
+				}
+				catch (const GLogiKExcept & e) {
+					LogRemoteCallGetReplyFailure
+				}
+			}
+			catch (const GKDBusMessageWrongBuild & e) {
+				this->pDBus_->abandonRemoteMethodCall();
+				LogRemoteCallFailure
+			}
+		}
+	}
 }
 
 void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProperties & device) {
-	unsigned int num = 0;
-
 	/* initialize device properties */
 	std::string remoteMethod("GetDeviceProperties");
 
@@ -380,12 +384,11 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 			this->pDBus_->waitForRemoteMethodCallReply();
 
 			device.setVendor( this->pDBus_->getNextStringArgument() );
-			num++;
 			device.setModel( this->pDBus_->getNextStringArgument() );
-			num++;
+			device.setCapabilities( this->pDBus_->getNextUInt64Argument() );
 
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "[" << devID << "] got " << num << " properties";
+			LOG(DEBUG3) << "[" << devID << "] got 3 properties";
 #endif
 		}
 		catch (const GLogiKExcept & e) {
@@ -397,38 +400,40 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		LogRemoteCallFailure
 	}
 
-	/* initialize macro keys */
-	remoteMethod = "GetDeviceMacroKeysNames";
-
-	try {
-		this->pDBus_->initializeRemoteMethodCall(
-			this->system_bus_,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
-		);
-		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
-		this->pDBus_->appendStringToRemoteMethodCall(devID);
-
-		this->pDBus_->sendRemoteMethodCall();
+	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+		/* initialize macro keys */
+		remoteMethod = "GetDeviceMacroKeysNames";
 
 		try {
-			this->pDBus_->waitForRemoteMethodCallReply();
+			this->pDBus_->initializeRemoteMethodCall(
+				this->system_bus_,
+				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				remoteMethod.c_str()
+			);
+			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+			this->pDBus_->appendStringToRemoteMethodCall(devID);
 
-			const std::vector<std::string> keys_names( this->pDBus_->getStringsArray() );
-			device.initMacrosProfiles(keys_names);
+			this->pDBus_->sendRemoteMethodCall();
+
+			try {
+				this->pDBus_->waitForRemoteMethodCallReply();
+
+				const std::vector<std::string> keys_names( this->pDBus_->getStringsArray() );
+				device.initMacrosProfiles(keys_names);
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "[" << devID << "] initialized " << keys_names.size() << " macro keys";
+				LOG(DEBUG3) << "[" << devID << "] initialized " << keys_names.size() << " macro keys";
 #endif
+			}
+			catch (const GLogiKExcept & e) {
+				LogRemoteCallGetReplyFailure
+			}
 		}
-		catch (const GLogiKExcept & e) {
-			LogRemoteCallGetReplyFailure
+		catch (const GKDBusMessageWrongBuild & e) {
+			this->pDBus_->abandonRemoteMethodCall();
+			LogRemoteCallFailure
 		}
-	}
-	catch (const GKDBusMessageWrongBuild & e) {
-		this->pDBus_->abandonRemoteMethodCall();
-		LogRemoteCallFailure
 	}
 
 	/* search a configuration file */
@@ -631,44 +636,46 @@ const bool DevicesHandler::setDeviceMacro(
 	try {
 		DeviceProperties & device = this->started_devices_.at(devID);
 
-		std::string remoteMethod("GetDeviceMacro");
-
-		try {
-			/* getting recorded macro from daemon */
-			this->pDBus_->initializeRemoteMethodCall(
-				this->system_bus_,
-				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				remoteMethod.c_str()
-			);
-
-			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
-			this->pDBus_->appendStringToRemoteMethodCall(devID);
-			this->pDBus_->appendStringToRemoteMethodCall(keyName);
-			this->pDBus_->appendUInt8ToRemoteMethodCall(profile);
-
-			this->pDBus_->sendRemoteMethodCall();
+		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+			std::string remoteMethod("GetDeviceMacro");
 
 			try {
-				this->pDBus_->waitForRemoteMethodCallReply();
+				/* getting recorded macro from daemon */
+				this->pDBus_->initializeRemoteMethodCall(
+					this->system_bus_,
+					GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+					remoteMethod.c_str()
+				);
 
-				/* use helper function to get the macro */
-				const macro_t macro_array = this->pDBus_->getNextMacroArgument();
+				this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+				this->pDBus_->appendStringToRemoteMethodCall(devID);
+				this->pDBus_->appendStringToRemoteMethodCall(keyName);
+				this->pDBus_->appendUInt8ToRemoteMethodCall(profile);
 
-				device.setMacro(profile, keyName, macro_array);
-				this->saveDeviceConfigurationFile(devID, device);
-				this->watchDirectory(device);
-				return true;
+				this->pDBus_->sendRemoteMethodCall();
+
+				try {
+					this->pDBus_->waitForRemoteMethodCallReply();
+
+					/* use helper function to get the macro */
+					const macro_t macro_array = this->pDBus_->getNextMacroArgument();
+
+					device.setMacro(profile, keyName, macro_array);
+					this->saveDeviceConfigurationFile(devID, device);
+					this->watchDirectory(device);
+					return true;
+				}
+				catch (const GLogiKExcept & e) {
+					/* setMacro can also throws */
+					LogRemoteCallGetReplyFailure
+				}
 			}
-			catch (const GLogiKExcept & e) {
-				/* setMacro can also throws */
-				LogRemoteCallGetReplyFailure
+			catch (const GKDBusMessageWrongBuild & e) {
+				this->pDBus_->abandonRemoteMethodCall();
+				LogRemoteCallFailure
 			}
-		}
-		catch (const GKDBusMessageWrongBuild & e) {
-			this->pDBus_->abandonRemoteMethodCall();
-			LogRemoteCallFailure
 		}
 	}
 	catch (const std::out_of_range& oor) {
@@ -686,10 +693,12 @@ const bool DevicesHandler::clearDeviceMacro(
 	try {
 		DeviceProperties & device = this->started_devices_.at(devID);
 
-		device.clearMacro(profile, keyName);
-		this->saveDeviceConfigurationFile(devID, device);
-		this->watchDirectory(device);
-		return true;
+		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+			device.clearMacro(profile, keyName);
+			this->saveDeviceConfigurationFile(devID, device);
+			this->watchDirectory(device);
+			return true;
+		}
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(WARNING) << "device not found : " << devID;
