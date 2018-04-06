@@ -93,11 +93,15 @@ const std::vector<DeviceID> LogitechG510::supported_devices_ = {
 
 LogitechG510::LogitechG510()
 	:	KeyboardDriver(
-			INTERRUPT_READ_MAX_LENGTH,
+			8,	/* expected libusb interrupt read max length */
+			/* libusb device initialization */
+			{	1,		/* bConfigurationValue */
+				1,		/* bInterfaceNumber */
+				0,		/* bAlternateSetting */
+				2	},	/* bNumEndpoints */
+			/* EventsLength */
 			{	5,		/* MacrosKeys */
-				2		/* MultimediaKeys */
-			},
-			{ 1, 1, 0, 2 }
+				2	}	/* MultimediaKeys */
 		)
 {
 }

@@ -114,7 +114,11 @@ class KeyboardDriver
 
 	protected:
 		KeyboardDriver(void) = delete;
-		KeyboardDriver(int key_read_length, const EventsLength & events_length, const DescriptorValues & values);
+		KeyboardDriver(
+			int key_read_length,
+			const DescriptorValues & values,
+			const EventsLength & events_length
+		);
 
 		std::string getBytes(const USBDevice & device);
 

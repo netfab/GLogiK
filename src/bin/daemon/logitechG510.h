@@ -37,7 +37,6 @@ namespace GLogiK
 {
 
 #define VENDOR_LOGITECH "046d"
-#define INTERRUPT_READ_MAX_LENGTH 8
 
 struct R_Key
 {

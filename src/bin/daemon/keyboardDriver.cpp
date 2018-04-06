@@ -56,10 +56,10 @@ const std::vector< ModifierKey > KeyboardDriver::modifier_keys_ = {
 
 KeyboardDriver::KeyboardDriver(
 	int key_read_length,
-	const EventsLength & events_length,
-	const DescriptorValues & values)
-	:	LibUSB(key_read_length, values),
-		events_length_(events_length)
+	const DescriptorValues & values,
+	const EventsLength & events_length)
+		:	LibUSB(key_read_length, values),
+			events_length_(events_length)
 {
 }
 
