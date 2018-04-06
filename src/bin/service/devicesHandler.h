@@ -77,8 +77,6 @@ class DevicesHandler
 		const devices_files_map_t getDevicesMap(void);
 		void checkDeviceConfigurationFile(const std::string & devID);
 
-		const bool checkDeviceCapability(const DeviceProperties & device, Caps to_check);
-
 	protected:
 
 	private:
@@ -96,18 +94,25 @@ class DevicesHandler
 			const std::string & devID,
 			DeviceProperties & device
 		);
-		void loadDeviceConfigurationFile(DeviceProperties & device);
+		void loadDeviceConfigurationFile(
+			DeviceProperties & device
+		);
 		void saveDeviceConfigurationFile(
 			const std::string & devID,
 			const DeviceProperties & device
 		);
-		void watchDirectory(DeviceProperties & device, const bool check=true);
+		void watchDirectory(
+			DeviceProperties & device,
+			const bool check=true
+		);
 
-		void setDeviceState(
+		void sendDeviceConfigurationToDaemon(
 			const std::string & devID,
 			const DeviceProperties & device
 		);
 		void unrefDevice(const std::string & devID);
+
+		const bool checkDeviceCapability(const DeviceProperties & device, Caps to_check);
 
 };
 

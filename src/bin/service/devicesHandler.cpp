@@ -115,16 +115,14 @@ void DevicesHandler::checkDeviceConfigurationFile(const std::string & devID) {
 		DeviceProperties & device = this->started_devices_.at(devID);
 		this->loadDeviceConfigurationFile(device);
 
-		/* send device configuration to daemon */
-		this->setDeviceState(devID, device);
+		this->sendDeviceConfigurationToDaemon(devID, device);
 	}
 	catch (const std::out_of_range& oor) {
 		try {
 			DeviceProperties & device = this->stopped_devices_.at(devID);
 			this->loadDeviceConfigurationFile(device);
 
-			/* send device configuration to daemon */
-			this->setDeviceState(devID, device);
+			this->sendDeviceConfigurationToDaemon(devID, device);
 		}
 		catch (const std::out_of_range& oor) {
 			LOG(WARNING) << "device [" << devID << "] not found in containers, giving up";
@@ -256,7 +254,7 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 	}
 }
 
-void DevicesHandler::setDeviceState(const std::string & devID, const DeviceProperties & device) {
+void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, const DeviceProperties & device) {
 	if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
 		/* set backlight color */
 		const std::string remoteMethod("SetDeviceBacklightColor");
@@ -481,8 +479,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		 * the configuration file */
 		this->watchDirectory(device, false);
 
-		/* send device configuration to daemon */
-		this->setDeviceState(devID, device);
+		this->sendDeviceConfigurationToDaemon(devID, device);
 	}
 	catch ( const GLogiKExcept & e ) { /* should happen only when configuration file not found */
 #if DEBUGGING_ON
