@@ -738,6 +738,17 @@ void ServiceDBusHandler::initializeGKDBusSignals(void) {
 					std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
 		)
 	);
+
+	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsToVoid>::exposeSignal(
+		this->system_bus_,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		"MultimediaEvent",
+		{}, // FIXME
+		std::bind(	&ServiceDBusHandler::multimediaEvent, this,
+					std::placeholders::_1, std::placeholders::_2
+		)
+	);
 }
 
 void ServiceDBusHandler::daemonIsStopping(void) {
@@ -979,6 +990,31 @@ const bool ServiceDBusHandler::macroCleared(
 	}
 
 	return this->devices_.clearDeviceMacro(devID, keyName, profile);
+}
+
+void ServiceDBusHandler::multimediaEvent(
+	const std::string & devID,
+	const std::string & key_event)
+{
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "received " << __func__ << " signal"
+				<< " - device: " << devID
+				<< " event: " << key_event;
+#endif
+
+	if( ! this->are_we_registered_ ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "currently not registered, skipping";
+#endif
+		return;
+	}
+
+	if( this->session_state_ != "active" ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "currently not active, skipping";
+#endif
+		return;
+	}
 }
 
 } // namespace GLogiK

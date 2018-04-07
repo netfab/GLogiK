@@ -69,13 +69,13 @@ const std::vector< R_Key > LogitechG510::five_bytes_keys_map_ = {
 };
 
 const std::vector< R_Key > LogitechG510::two_bytes_keys_map_ = {
-	{1, 0x01, Keys::GK_KEY_AUDIO_NEXT},				/* XF86AudioNext */
-	{1, 0x02, Keys::GK_KEY_AUDIO_PREV},				/* XF86AudioPrev */
-	{1, 0x04, Keys::GK_KEY_AUDIO_STOP},				/* XF86AudioStop */
-	{1, 0x08, Keys::GK_KEY_AUDIO_PLAY},				/* XF86AudioPlay */
-	{1, 0x10, Keys::GK_KEY_AUDIO_MUTE},				/* XF86AudioMute */
-	{1, 0x20, Keys::GK_KEY_AUDIO_RAISE_VOLUME},		/* XF86AudioRaiseVolume */
-	{1, 0x40, Keys::GK_KEY_AUDIO_LOWER_VOLUME},		/* XF86AudioLowerVolume */
+	{1, 0x01, Keys::GK_KEY_AUDIO_NEXT,			"XF86AudioNext"},			/* XF86AudioNext */
+	{1, 0x02, Keys::GK_KEY_AUDIO_PREV,			"XF86AudioPrev"},			/* XF86AudioPrev */
+	{1, 0x04, Keys::GK_KEY_AUDIO_STOP,			"XF86AudioStop"},			/* XF86AudioStop */
+	{1, 0x08, Keys::GK_KEY_AUDIO_PLAY,			"XF86AudioPlay"},			/* XF86AudioPlay */
+	{1, 0x10, Keys::GK_KEY_AUDIO_MUTE,			"XF86AudioMute"},			/* XF86AudioMute */
+	{1, 0x20, Keys::GK_KEY_AUDIO_RAISE_VOLUME,	"XF86AudioRaiseVolume"},	/* XF86AudioRaiseVolume */
+	{1, 0x40, Keys::GK_KEY_AUDIO_LOWER_VOLUME,	"XF86AudioLowerVolume"},	/* XF86AudioLowerVolume */
 //	{1, 0x80, Keys::GK_KEY_},
 };
 
@@ -88,7 +88,8 @@ const std::vector< M_Key_Led_Mask > LogitechG510::leds_mask_ = {
 
 const std::vector<DeviceID> LogitechG510::supported_devices_ = {
 	// name, vendor_id, product_id, capabilities
-	{ "Logitech G510/G510s Gaming Keyboard", VENDOR_LOGITECH, "c22d", to_type(Caps::GK_BACKLIGHT_COLOR|Caps::GK_MACROS_KEYS) },
+	{ "Logitech G510/G510s Gaming Keyboard", VENDOR_LOGITECH, "c22d",
+		to_type(Caps::GK_BACKLIGHT_COLOR|Caps::GK_MACROS_KEYS|Caps::GK_MULTIMEDIA_KEYS) },
 };
 
 LogitechG510::LogitechG510()
@@ -141,15 +142,40 @@ const bool LogitechG510::checkMacroKey(USBDevice & device) {
 	return false;
 }
 
-void LogitechG510::processKeyEvent2Bytes(USBDevice & device) {
-	if (device.keys_buffer[0] != 0x02) {
-		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 2 bytes event");
-		return;
-	}
-
+const bool LogitechG510::checkMultimediaKey(USBDevice & device) {
 	for (const auto & k : LogitechG510::two_bytes_keys_map_ ) {
-		if( device.keys_buffer[k.index] & k.mask )
-			device.pressed_keys |= to_type(k.key);
+		if( device.pressed_keys & to_type(k.key) ) {
+			device.multimedia_key = k.name;
+			return true;
+		}
+	}
+	return false;
+}
+
+/*
+ * When pressing backlight key, 2 events are produced :
+ *  - one double 5 bytes event : Keys::GK_KEY_LIGHT
+ *  - one 2 bytes event with first byte equal to 0x04
+ */
+void LogitechG510::processKeyEvent2Bytes(USBDevice & device) {
+	if (device.keys_buffer[0] == 0x02) {
+		for (const auto & k : LogitechG510::two_bytes_keys_map_ ) {
+			if( device.keys_buffer[k.index] & k.mask )
+				device.pressed_keys |= to_type(k.key);
+		}
+	}
+	else if (device.keys_buffer[0] == 0x04) {
+#if DEBUGGING_ON
+		if( device.keys_buffer[1] == 0x04 ) {
+			LOG(DEBUG3) << "backlight off";
+		}
+		else { /* 0x0 */
+			LOG(DEBUG3) << "backlight on";
+		}
+	}
+#endif
+	else {
+		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 2 bytes event");
 	}
 }
 

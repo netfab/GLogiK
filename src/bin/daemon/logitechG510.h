@@ -88,6 +88,7 @@ class LogitechG510 : public KeyboardDriver
 		void processKeyEvent5Bytes(USBDevice & device);
 		void processKeyEvent2Bytes(USBDevice & device);
 		const bool checkMacroKey(USBDevice & device);
+		const bool checkMultimediaKey(USBDevice & device);
 };
 
 } // namespace GLogiK

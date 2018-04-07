@@ -558,8 +558,46 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 								}
 							}
 						}
+					}
+
+					if( this->checkDeviceCapability(device, Caps::GK_MULTIMEDIA_KEYS) ) {
 						if( device.getLastInterruptTransferLength() == this->events_length_.MultimediaKeys ) {
-							/* TODO */
+							if( this->checkMultimediaKey(device) ) {
+								NSGKDBus::GKDBus* pDBus = nullptr;
+
+								/* ROOT_NODE only for introspection, don't care */
+								try {
+									pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
+								}
+								catch (const std::bad_alloc& e) { /* handle new() failure */
+									LOG(ERROR) << "GKDBus bad allocation";
+									pDBus = nullptr;
+								}
+
+								if( pDBus ) {
+									pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
+
+									try {
+										pDBus->initializeTargetsSignal(
+											NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+											GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+											GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
+											GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+											"MultimediaEvent"
+										);
+										pDBus->appendStringToTargetsSignal(devID);
+										pDBus->appendStringToTargetsSignal(device.multimedia_key);
+
+										pDBus->sendTargetsSignal();
+									}
+									catch (const GKDBusMessageWrongBuild & e) {
+										pDBus->abandonTargetsSignal();
+										GKSysLog(LOG_WARNING, WARNING, e.what());
+									}
+								}
+
+								delete pDBus; pDBus = nullptr;
+							}
 						}
 					}
 					break;

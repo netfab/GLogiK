@@ -88,6 +88,7 @@ void USBDevice::operator=(const USBDevice& dev)
 		std::begin(this->previous_keys_buffer)
 	);
 	this->chosen_macro_key = dev.chosen_macro_key;
+	this->multimedia_key = dev.multimedia_key;
 	this->standard_keys_events = dev.standard_keys_events;
 	this->last_call = dev.last_call;
 

@@ -125,6 +125,7 @@ class KeyboardDriver
 		virtual KeyStatus processKeyEvent(USBDevice & device) = 0;
 		virtual KeyStatus getPressedKeys(USBDevice & device);
 		virtual const bool checkMacroKey(USBDevice & device) = 0;
+		virtual const bool checkMultimediaKey(USBDevice & device) = 0;
 
 		virtual void sendUSBDeviceInitialization(const USBDevice & device);
 		virtual void setMxKeysLeds(const USBDevice & device);

@@ -70,6 +70,7 @@ class USBDevice
 		unsigned char keys_buffer[KEYS_BUFFER_LENGTH];
 		unsigned char previous_keys_buffer[KEYS_BUFFER_LENGTH];
 		std::string chosen_macro_key;
+		std::string multimedia_key;
 		macro_t standard_keys_events;
 		std::chrono::steady_clock::time_point last_call;
 
