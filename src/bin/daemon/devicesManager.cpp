@@ -587,7 +587,8 @@ const std::string & DevicesManager::getDeviceModel(const std::string & devID) co
 	return this->unknown_;
 }
 
-const std::string DevicesManager::getDeviceStatus(const std::string & devID) {
+const std::string DevicesManager::getDeviceStatus(const std::string & devID) const
+{
 	std::string ret(this->unknown_);
 	if(this->initialized_devices_.count(devID) == 1)
 		ret = "started";
@@ -622,7 +623,8 @@ void DevicesManager::setDeviceActiveConfiguration(
 	}
 }
 
-const macros_map_t & DevicesManager::getDeviceMacrosProfiles(const std::string & devID) {
+const macros_map_t & DevicesManager::getDeviceMacrosProfiles(const std::string & devID) const
+{
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
 #if DEBUGGING_ON
@@ -642,7 +644,8 @@ const macros_map_t & DevicesManager::getDeviceMacrosProfiles(const std::string &
 	return MacrosBanks::empty_macros_profiles_;
 }
 
-const std::vector<std::string> & DevicesManager::getDeviceMacroKeysNames(const std::string & devID) {
+const std::vector<std::string> & DevicesManager::getDeviceMacroKeysNames(const std::string & devID) const
+{
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
 #if DEBUGGING_ON

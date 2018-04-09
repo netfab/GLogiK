@@ -119,9 +119,9 @@ class DevicesManager
 			const uint8_t b
 		);
 
-		const macros_map_t & getDeviceMacrosProfiles(const std::string & devID);
-		const std::vector<std::string> & getDeviceMacroKeysNames(const std::string & devID);
-		const std::string getDeviceStatus(const std::string & devID);
+		const macros_map_t & getDeviceMacrosProfiles(const std::string & devID) const;
+		const std::vector<std::string> & getDeviceMacroKeysNames(const std::string & devID) const;
+		const std::string getDeviceStatus(const std::string & devID) const;
 
 	protected:
 
