@@ -40,7 +40,11 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DevicesManager::DevicesManager() : num_clients_(0), buffer_("", std::ios_base::app) {
+DevicesManager::DevicesManager()
+	:	num_clients_(0),
+		buffer_("", std::ios_base::app),
+		unknown_("unknown")
+{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing devices manager";
 #endif
@@ -526,7 +530,7 @@ const std::vector<std::string> DevicesManager::getStoppedDevices(void) const {
 	return ret;
 }
 
-const std::string DevicesManager::getDeviceVendor(const std::string & devID)
+const std::string & DevicesManager::getDeviceVendor(const std::string & devID) const
 {
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
@@ -542,10 +546,10 @@ const std::string DevicesManager::getDeviceVendor(const std::string & devID)
 		}
 	}
 
-	return "unknown";
+	return this->unknown_;
 }
 
-const uint64_t DevicesManager::getDeviceCapabilities(const std::string & devID)
+const uint64_t DevicesManager::getDeviceCapabilities(const std::string & devID) const
 {
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
@@ -564,7 +568,7 @@ const uint64_t DevicesManager::getDeviceCapabilities(const std::string & devID)
 	return 0;
 }
 
-const std::string DevicesManager::getDeviceModel(const std::string & devID)
+const std::string & DevicesManager::getDeviceModel(const std::string & devID) const
 {
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
@@ -580,11 +584,11 @@ const std::string DevicesManager::getDeviceModel(const std::string & devID)
 		}
 	}
 
-	return "unknown";
+	return this->unknown_;
 }
 
 const std::string DevicesManager::getDeviceStatus(const std::string & devID) {
-	std::string ret = "unknown";
+	std::string ret(this->unknown_);
 	if(this->initialized_devices_.count(devID) == 1)
 		ret = "started";
 	else if(this->plugged_but_stopped_devices_.count(devID) == 1)

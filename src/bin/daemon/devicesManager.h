@@ -107,9 +107,9 @@ class DevicesManager
 		const std::vector<std::string> getStartedDevices(void) const;
 		const std::vector<std::string> getStoppedDevices(void) const;
 
-		const std::string getDeviceVendor(const std::string & devID);
-		const std::string getDeviceModel(const std::string & devID);
-		const uint64_t getDeviceCapabilities(const std::string & devID);
+		const std::string & getDeviceVendor(const std::string & devID) const;
+		const std::string & getDeviceModel(const std::string & devID) const;
+		const uint64_t getDeviceCapabilities(const std::string & devID) const;
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,
@@ -134,6 +134,7 @@ class DevicesManager
 		uint8_t num_clients_;
 
 		std::ostringstream buffer_;
+		const std::string unknown_;
 		std::vector<KeyboardDriver*> drivers_;
 		std::map<const std::string, DetectedDevice> detected_devices_;
 		std::map<const std::string, DetectedDevice> initialized_devices_;
