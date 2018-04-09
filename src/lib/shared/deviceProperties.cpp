@@ -59,6 +59,10 @@ void DeviceProperties::setWatchDescriptor(int wd) {
 	this->watch_descriptor_ = wd;
 }
 
+void DeviceProperties::setMultimediaCommands(const std::map<const std::string, std::string> & cmds) {
+	this->multimedia_commands_ = cmds;
+};
+
 const std::string & DeviceProperties::getVendor(void) const {
 	return this->vendor_;
 }
@@ -78,6 +82,10 @@ const std::string & DeviceProperties::getConfigFileName(void) const {
 const int DeviceProperties::getWatchDescriptor(void) const {
 	return this->watch_descriptor_;
 }
+
+const std::map<const std::string, std::string> & DeviceProperties::getMultimediaCommands(void) const {
+	return this->multimedia_commands_;
+};
 
 } // namespace GLogiK
 

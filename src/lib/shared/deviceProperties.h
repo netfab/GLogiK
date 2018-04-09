@@ -25,11 +25,16 @@
 #include <cstdint>
 
 #include <string>
+#include <map>
+#include <utility>
+#include <initializer_list>
 
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/access.hpp>
+#include <boost/serialization/map.hpp>
 //#include <boost/serialization/version.hpp>
 
+#include "glogik.h"
 #include "macrosBanks.h"
 
 namespace GLogiK
@@ -46,12 +51,14 @@ class DeviceProperties : public MacrosBanks
 		const uint64_t getCapabilities(void) const;
 		const std::string & getConfigFileName(void) const;
 		const int getWatchDescriptor(void) const;
+		const std::map<const std::string, std::string> & getMultimediaCommands(void) const;
 
 		void setVendor(const std::string & vendor);
 		void setModel(const std::string & model);
 		void setCapabilities(const uint64_t caps);
 		void setConfigFileName(const std::string & filename);
 		void setWatchDescriptor(int wd);
+		void setMultimediaCommands(const std::map<const std::string, std::string> & cmds);
 
 		void setBLColor_R(uint8_t r) { this->backlight_color_R_ = r & 0xFF; }
 		void setBLColor_G(uint8_t g) { this->backlight_color_G_ = g & 0xFF; }
@@ -74,6 +81,17 @@ class DeviceProperties : public MacrosBanks
 		uint8_t backlight_color_G_;
 		uint8_t backlight_color_B_;
 
+		std::initializer_list<std::pair<const std::string, std::string>> il = {
+			{XF86_AUDIO_NEXT, ""},
+			{XF86_AUDIO_PREV, ""},
+			{XF86_AUDIO_STOP, ""},
+			{XF86_AUDIO_PLAY, ""},
+			{XF86_AUDIO_MUTE, ""},
+			{XF86_AUDIO_RAISE_VOLUME, ""},
+			{XF86_AUDIO_LOWER_VOLUME, ""}
+		};
+		std::map<const std::string, std::string> multimedia_commands_{il};
+
 		friend class boost::serialization::access;
 
 		template<class Archive>
@@ -85,6 +103,7 @@ class DeviceProperties : public MacrosBanks
 			ar & this->backlight_color_R_;
 			ar & this->backlight_color_G_;
 			ar & this->backlight_color_B_;
+			ar & this->multimedia_commands_;
 
 			// serialize base class information
 			ar & boost::serialization::base_object<MacrosBanks>(*this);

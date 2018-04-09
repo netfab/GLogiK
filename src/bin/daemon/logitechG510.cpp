@@ -21,6 +21,7 @@
 
 #include <algorithm>
 
+#include "lib/shared/glogik.h"
 #include "lib/utils/utils.h"
 
 #include "logitechG510.h"
@@ -69,13 +70,13 @@ const std::vector< R_Key > LogitechG510::five_bytes_keys_map_ = {
 };
 
 const std::vector< R_Key > LogitechG510::two_bytes_keys_map_ = {
-	{1, 0x01, Keys::GK_KEY_AUDIO_NEXT,			"XF86AudioNext"},			/* XF86AudioNext */
-	{1, 0x02, Keys::GK_KEY_AUDIO_PREV,			"XF86AudioPrev"},			/* XF86AudioPrev */
-	{1, 0x04, Keys::GK_KEY_AUDIO_STOP,			"XF86AudioStop"},			/* XF86AudioStop */
-	{1, 0x08, Keys::GK_KEY_AUDIO_PLAY,			"XF86AudioPlay"},			/* XF86AudioPlay */
-	{1, 0x10, Keys::GK_KEY_AUDIO_MUTE,			"XF86AudioMute"},			/* XF86AudioMute */
-	{1, 0x20, Keys::GK_KEY_AUDIO_RAISE_VOLUME,	"XF86AudioRaiseVolume"},	/* XF86AudioRaiseVolume */
-	{1, 0x40, Keys::GK_KEY_AUDIO_LOWER_VOLUME,	"XF86AudioLowerVolume"},	/* XF86AudioLowerVolume */
+	{1, 0x01, Keys::GK_KEY_AUDIO_NEXT,			XF86_AUDIO_NEXT},			/* XF86AudioNext */
+	{1, 0x02, Keys::GK_KEY_AUDIO_PREV,			XF86_AUDIO_PREV},			/* XF86AudioPrev */
+	{1, 0x04, Keys::GK_KEY_AUDIO_STOP,			XF86_AUDIO_STOP},			/* XF86AudioStop */
+	{1, 0x08, Keys::GK_KEY_AUDIO_PLAY,			XF86_AUDIO_PLAY},			/* XF86AudioPlay */
+	{1, 0x10, Keys::GK_KEY_AUDIO_MUTE,			XF86_AUDIO_MUTE},			/* XF86AudioMute */
+	{1, 0x20, Keys::GK_KEY_AUDIO_RAISE_VOLUME,	XF86_AUDIO_RAISE_VOLUME},	/* XF86AudioRaiseVolume */
+	{1, 0x40, Keys::GK_KEY_AUDIO_LOWER_VOLUME,	XF86_AUDIO_LOWER_VOLUME},	/* XF86AudioLowerVolume */
 //	{1, 0x80, Keys::GK_KEY_},
 };
 

@@ -223,6 +223,7 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 			device.setBLColor_R( new_device.getBLColor_R() );
 			device.setBLColor_G( new_device.getBLColor_G() );
 			device.setBLColor_B( new_device.getBLColor_B() );
+			device.setMultimediaCommands( new_device.getMultimediaCommands() );
 		}
 
 #if DEBUGGING_ON

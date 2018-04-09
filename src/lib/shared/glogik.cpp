@@ -58,5 +58,13 @@ c_str GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT			= "SystemMessa
 c_str GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH	= "/com/glogik/Desktop/Service/SystemMessageHandler";
 c_str GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE		= "com.glogik.Desktop.Service.SystemMessageHandler1";
 
+c_str XF86_AUDIO_NEXT			= "XF86AudioNext";
+c_str XF86_AUDIO_PREV			= "XF86AudioPrev";
+c_str XF86_AUDIO_STOP			= "XF86AudioStop";
+c_str XF86_AUDIO_PLAY			= "XF86AudioPlay";
+c_str XF86_AUDIO_MUTE			= "XF86AudioMute";
+c_str XF86_AUDIO_RAISE_VOLUME	= "XF86AudioRaiseVolume";
+c_str XF86_AUDIO_LOWER_VOLUME	= "XF86AudioLowerVolume";
+
 } // namespace GLogiK
 
