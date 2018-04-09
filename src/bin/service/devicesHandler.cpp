@@ -216,14 +216,7 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 			boost::archive::text_iarchive input_archive(ifs);
 			input_archive >> new_device;
 
-			/* do we need to replace vendor and model ? */
-			//device.setVendor( new_device.getVendor() );
-			//device.setModel( new_device.getModel() );
-			device.setMacrosProfiles( new_device.getMacrosProfiles() );
-			device.setBLColor_R( new_device.getBLColor_R() );
-			device.setBLColor_G( new_device.getBLColor_G() );
-			device.setBLColor_B( new_device.getBLColor_B() );
-			device.setMultimediaCommands( new_device.getMultimediaCommands() );
+			device.setProperties( new_device );
 		}
 
 #if DEBUGGING_ON
@@ -270,9 +263,10 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 			);
 			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
 			this->pDBus_->appendStringToRemoteMethodCall(devID);
-			this->pDBus_->appendUInt8ToRemoteMethodCall(device.getBLColor_R());
-			this->pDBus_->appendUInt8ToRemoteMethodCall(device.getBLColor_G());
-			this->pDBus_->appendUInt8ToRemoteMethodCall(device.getBLColor_B());
+			uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
+			this->pDBus_->appendUInt8ToRemoteMethodCall(r);
+			this->pDBus_->appendUInt8ToRemoteMethodCall(g);
+			this->pDBus_->appendUInt8ToRemoteMethodCall(b);
 
 			this->pDBus_->sendRemoteMethodCall();
 
@@ -281,10 +275,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 				const bool ret = this->pDBus_->getNextBooleanArgument();
 				if( ret ) {
-					const uint8_t & r = device.getBLColor_R();
-					const uint8_t & g = device.getBLColor_G();
-					const uint8_t & b = device.getBLColor_B();
-					LOG(INFO) << "[" << devID << "] successfully setted device backlight color : "
+					LOG(INFO)	<< "[" << devID << "] successfully setted device backlight color : "
 								<< getHexRGB(r, g, b);
 				}
 				else {
@@ -382,9 +373,10 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		try {
 			this->pDBus_->waitForRemoteMethodCallReply();
 
-			device.setVendor( this->pDBus_->getNextStringArgument() );
-			device.setModel( this->pDBus_->getNextStringArgument() );
-			device.setCapabilities( this->pDBus_->getNextUInt64Argument() );
+			const std::string vendor( this->pDBus_->getNextStringArgument() );
+			const std::string model( this->pDBus_->getNextStringArgument() );
+			const uint64_t caps( this->pDBus_->getNextUInt64Argument() );
+			device.setProperties( vendor, model, caps );
 
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "[" << devID << "] got 3 properties";

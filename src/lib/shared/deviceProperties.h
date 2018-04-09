@@ -49,24 +49,23 @@ class DeviceProperties : public MacrosBanks
 		const std::string & getVendor(void) const;
 		const std::string & getModel(void) const;
 		const uint64_t getCapabilities(void) const;
-		const std::string & getConfigFileName(void) const;
-		const int getWatchDescriptor(void) const;
 		const std::map<const std::string, std::string> & getMultimediaCommands(void) const;
 
-		void setVendor(const std::string & vendor);
-		void setModel(const std::string & model);
-		void setCapabilities(const uint64_t caps);
+		const std::string & getConfigFileName(void) const;
 		void setConfigFileName(const std::string & filename);
+
+		const int getWatchDescriptor(void) const;
 		void setWatchDescriptor(int wd);
-		void setMultimediaCommands(const std::map<const std::string, std::string> & cmds);
 
-		void setBLColor_R(uint8_t r) { this->backlight_color_R_ = r & 0xFF; }
-		void setBLColor_G(uint8_t g) { this->backlight_color_G_ = g & 0xFF; }
-		void setBLColor_B(uint8_t b) { this->backlight_color_B_ = b & 0xFF; }
+		void setProperties(
+			const std::string & vendor,
+			const std::string & model,
+			const uint64_t capabilities
+		);
+		void setProperties(const DeviceProperties & dev);
 
-		const uint8_t & getBLColor_R(void) const { return this->backlight_color_R_; }
-		const uint8_t & getBLColor_G(void) const { return this->backlight_color_G_; }
-		const uint8_t & getBLColor_B(void) const { return this->backlight_color_B_; }
+		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
+		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
 
 	protected:
 

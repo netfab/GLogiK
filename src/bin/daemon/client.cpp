@@ -113,9 +113,7 @@ const bool Client::setDeviceBacklightColor(
 #endif
 	try {
 		DeviceProperties & device = this->devices_.at(devID);
-		device.setBLColor_R(r);
-		device.setBLColor_G(g);
-		device.setBLColor_B(b);
+		device.setRGBBytes(r, g, b);
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
@@ -132,9 +130,7 @@ void Client::setDeviceActiveUser(
 	try {
 		const DeviceProperties & device = this->devices_.at(devID);
 
-		const uint8_t r = device.getBLColor_R();
-		const uint8_t g = device.getBLColor_G();
-		const uint8_t b = device.getBLColor_B();
+		uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "setting active configuration for device " << devID;
@@ -213,8 +209,11 @@ void Client::initializeDevices(DevicesManager* dev_manager)
 			LOG(DEBUG3) << "initializing device " << devID << " properties";
 #endif
 			DeviceProperties device;
-			device.setVendor( dev_manager->getDeviceVendor(devID) );
-			device.setModel(   dev_manager->getDeviceModel(devID) );
+			device.setProperties(
+				dev_manager->getDeviceVendor(devID),		/* vendor */
+				dev_manager->getDeviceModel(devID),			/* model */
+				dev_manager->getDeviceCapabilities(devID)	/* capabilities */
+			);
 			device.initMacrosProfiles( dev_manager->getDeviceMacroKeysNames(devID) );
 
 			this->devices_[devID] = device;
@@ -230,8 +229,11 @@ void Client::initializeDevices(DevicesManager* dev_manager)
 			LOG(DEBUG3) << "initializing device " << devID << " properties";
 #endif
 			DeviceProperties device;
-			device.setVendor( dev_manager->getDeviceVendor(devID) );
-			device.setModel(   dev_manager->getDeviceModel(devID) );
+			device.setProperties(
+				dev_manager->getDeviceVendor(devID),		/* vendor */
+				dev_manager->getDeviceModel(devID),			/* model */
+				dev_manager->getDeviceCapabilities(devID)	/* capabilities */
+			);
 			device.initMacrosProfiles( dev_manager->getDeviceMacroKeysNames(devID) );
 
 			this->devices_[devID] = device;
