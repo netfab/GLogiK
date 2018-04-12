@@ -25,6 +25,9 @@ GLogiK=$PWD/.. CD=. {
 			Makefile.am
 			glogik-desktop-service.desktop
 		}
+		bash=bash/ {
+			mediakey.sh
+		}
 		dbus=dbus/ {
 			Makefile.am
 			GLogiK.conf.in
