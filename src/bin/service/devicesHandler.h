@@ -74,6 +74,11 @@ class DevicesHandler
 			const uint8_t profile
 		);
 
+		void runDeviceMediaEvent(
+			const std::string & devID,
+			const std::string & key_event
+		);
+
 		const devices_files_map_t getDevicesMap(void);
 		void checkDeviceConfigurationFile(const std::string & devID);
 
@@ -113,6 +118,8 @@ class DevicesHandler
 		void unrefDevice(const std::string & devID);
 
 		const bool checkDeviceCapability(const DeviceProperties & device, Caps to_check);
+
+		void runCommand(const std::string & command);
 
 };
 

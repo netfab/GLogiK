@@ -560,9 +560,9 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 						}
 					}
 
-					if( this->checkDeviceCapability(device, Caps::GK_MULTIMEDIA_KEYS) ) {
-						if( device.getLastInterruptTransferLength() == this->events_length_.MultimediaKeys ) {
-							if( this->checkMultimediaKey(device) ) {
+					if( this->checkDeviceCapability(device, Caps::GK_MEDIA_KEYS) ) {
+						if( device.getLastInterruptTransferLength() == this->events_length_.MediaKeys ) {
+							if( this->checkMediaKey(device) ) {
 								NSGKDBus::GKDBus* pDBus = nullptr;
 
 								/* ROOT_NODE only for introspection, don't care */
@@ -583,10 +583,10 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 											GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 											GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
 											GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-											"MultimediaEvent"
+											"deviceMediaEvent"
 										);
 										pDBus->appendStringToTargetsSignal(devID);
-										pDBus->appendStringToTargetsSignal(device.multimedia_key);
+										pDBus->appendStringToTargetsSignal(device.media_key);
 
 										pDBus->sendTargetsSignal();
 									}

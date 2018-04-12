@@ -90,7 +90,7 @@ const std::vector< M_Key_Led_Mask > LogitechG510::leds_mask_ = {
 const std::vector<DeviceID> LogitechG510::supported_devices_ = {
 	// name, vendor_id, product_id, capabilities
 	{ "Logitech G510/G510s Gaming Keyboard", VENDOR_LOGITECH, "c22d",
-		to_type(Caps::GK_BACKLIGHT_COLOR|Caps::GK_MACROS_KEYS|Caps::GK_MULTIMEDIA_KEYS) },
+		to_type(Caps::GK_BACKLIGHT_COLOR|Caps::GK_MACROS_KEYS|Caps::GK_MEDIA_KEYS) },
 };
 
 LogitechG510::LogitechG510()
@@ -103,7 +103,7 @@ LogitechG510::LogitechG510()
 				2	},	/* bNumEndpoints */
 			/* EventsLength */
 			{	5,		/* MacrosKeys */
-				2	}	/* MultimediaKeys */
+				2	}	/* MediaKeys */
 		)
 {
 }
@@ -143,10 +143,10 @@ const bool LogitechG510::checkMacroKey(USBDevice & device) {
 	return false;
 }
 
-const bool LogitechG510::checkMultimediaKey(USBDevice & device) {
+const bool LogitechG510::checkMediaKey(USBDevice & device) {
 	for (const auto & k : LogitechG510::two_bytes_keys_map_ ) {
 		if( device.pressed_keys & to_type(k.key) ) {
-			device.multimedia_key = k.name;
+			device.media_key = k.name;
 			return true;
 		}
 	}

@@ -19,10 +19,16 @@
  *
  */
 
+#include <stdexcept>
+
+#include "lib/utils/utils.h"
+
 #include "deviceProperties.h"
 
 namespace GLogiK
 {
+
+using namespace NSGKUtils;
 
 DeviceProperties::DeviceProperties() :
 	vendor_("unknown"),
@@ -68,8 +74,8 @@ void DeviceProperties::setProperties(const DeviceProperties & dev)
 		this->backlight_color_B_
 	);
 
-	this->macros_profiles_		= dev.getMacrosProfiles();
-	this->multimedia_commands_	= dev.getMultimediaCommands();
+	this->macros_profiles_	= dev.getMacrosProfiles();
+	this->media_commands_	= dev.getMediaCommands();
 }
 
 void DeviceProperties::setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b) {
@@ -100,8 +106,20 @@ const int DeviceProperties::getWatchDescriptor(void) const {
 	return this->watch_descriptor_;
 }
 
-const std::map<const std::string, std::string> & DeviceProperties::getMultimediaCommands(void) const {
-	return this->multimedia_commands_;
+const std::string DeviceProperties::getMediaCommand(const std::string & mediaEvent) const
+{
+	std::string ret("");
+	try {
+		ret = this->media_commands_.at(mediaEvent);
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(WARNING) << "unknown media event : " << mediaEvent;
+	}
+	return ret;
+}
+
+const std::map<const std::string, std::string> & DeviceProperties::getMediaCommands(void) const {
+	return this->media_commands_;
 };
 
 void DeviceProperties::getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const

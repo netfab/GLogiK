@@ -49,7 +49,8 @@ class DeviceProperties : public MacrosBanks
 		const std::string & getVendor(void) const;
 		const std::string & getModel(void) const;
 		const uint64_t getCapabilities(void) const;
-		const std::map<const std::string, std::string> & getMultimediaCommands(void) const;
+		const std::string getMediaCommand(const std::string & mediaEvent) const;
+		const std::map<const std::string, std::string> & getMediaCommands(void) const;
 
 		const std::string & getConfigFileName(void) const;
 		void setConfigFileName(const std::string & filename);
@@ -89,7 +90,7 @@ class DeviceProperties : public MacrosBanks
 			{XF86_AUDIO_RAISE_VOLUME, ""},
 			{XF86_AUDIO_LOWER_VOLUME, ""}
 		};
-		std::map<const std::string, std::string> multimedia_commands_{il};
+		std::map<const std::string, std::string> media_commands_{il};
 
 		friend class boost::serialization::access;
 
@@ -102,7 +103,7 @@ class DeviceProperties : public MacrosBanks
 			ar & this->backlight_color_R_;
 			ar & this->backlight_color_G_;
 			ar & this->backlight_color_B_;
-			ar & this->multimedia_commands_;
+			ar & this->media_commands_;
 
 			// serialize base class information
 			ar & boost::serialization::base_object<MacrosBanks>(*this);

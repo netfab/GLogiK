@@ -72,10 +72,10 @@ struct EventsLength {
 		const int8_t a = -1,
 		const int8_t b = -1
 	)	:	MacrosKeys(a),
-			MultimediaKeys(b) {}
+			MediaKeys(b) {}
 
 	const int8_t MacrosKeys;
-	const int8_t MultimediaKeys;
+	const int8_t MediaKeys;
 };
 
 class KeyboardDriver
@@ -125,7 +125,7 @@ class KeyboardDriver
 		virtual KeyStatus processKeyEvent(USBDevice & device) = 0;
 		virtual KeyStatus getPressedKeys(USBDevice & device);
 		virtual const bool checkMacroKey(USBDevice & device) = 0;
-		virtual const bool checkMultimediaKey(USBDevice & device) = 0;
+		virtual const bool checkMediaKey(USBDevice & device) = 0;
 
 		virtual void sendUSBDeviceInitialization(const USBDevice & device);
 		virtual void setMxKeysLeds(const USBDevice & device);

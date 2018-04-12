@@ -4,6 +4,7 @@ bin_PROGRAMS = GLogiKs
 GLogiKs_CXXFLAGS = \
 				@BOOST_CPPFLAGS@ \
 				@DBUS_CFLAGS@ \
+				@PTHREAD_CFLAGS@ \
 				@AM_CXXFLAGS@
 
 GLogiKs_LDFLAGS = \
@@ -14,6 +15,7 @@ GLogiKs_LDADD = \
 				@BOOST_SERIALIZATION_LIB@ \
 				@BOOST_SYSTEM_LIB@ \
 				@BOOST_FILESYSTEM_LIB@ \
+				@PTHREAD_LIBS@ \
 				libGKDBus.la \
 				libGKUtils.la \
 				libGKShared.la

@@ -743,9 +743,9 @@ void ServiceDBusHandler::initializeGKDBusSignals(void) {
 		this->system_bus_,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-		"MultimediaEvent",
+		"deviceMediaEvent",
 		{}, // FIXME
-		std::bind(	&ServiceDBusHandler::multimediaEvent, this,
+		std::bind(	&ServiceDBusHandler::deviceMediaEvent, this,
 					std::placeholders::_1, std::placeholders::_2
 		)
 	);
@@ -992,7 +992,7 @@ const bool ServiceDBusHandler::macroCleared(
 	return this->devices_.clearDeviceMacro(devID, keyName, profile);
 }
 
-void ServiceDBusHandler::multimediaEvent(
+void ServiceDBusHandler::deviceMediaEvent(
 	const std::string & devID,
 	const std::string & key_event)
 {
@@ -1015,6 +1015,8 @@ void ServiceDBusHandler::multimediaEvent(
 #endif
 		return;
 	}
+
+	this->devices_.runDeviceMediaEvent(devID, key_event);
 }
 
 } // namespace GLogiK

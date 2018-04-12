@@ -24,16 +24,19 @@
 #include <stdexcept>
 #include <fstream>
 #include <set>
+#include <thread>
 
 #include <boost/archive/archive_exception.hpp>
 #include <boost/archive/xml_archive_exception.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+#include <boost/process.hpp>
 
 #include "devicesHandler.h"
 
 namespace fs = boost::filesystem;
+namespace bp = boost::process;
 
 namespace GLogiK
 {
@@ -711,6 +714,52 @@ void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check)
 		LOG(WARNING) << "configuration file monitoring will be disabled";
 	}
 }
+
+void DevicesHandler::runDeviceMediaEvent(
+	const std::string & devID,
+	const std::string & key_event)
+{
+	try {
+		DeviceProperties & device = this->started_devices_.at(devID);
+		const std::string cmd( device.getMediaCommand(key_event) );
+		if( ! cmd.empty() ) {
+			std::thread media_event_thread(&DevicesHandler::runCommand, this, cmd);
+			media_event_thread.detach();
+		}
+		else {
+#if DEBUGGING_ON
+			LOG(DEBUG2) << "empty command media event " << key_event;
+#endif
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(WARNING) << "device not found : " << devID;
+	}
+}
+
+void DevicesHandler::runCommand(const std::string & command)
+{
+	LOG(INFO) << "running command : " << command;
+
+	std::string line;
+	bp::ipstream pipe_stream;
+	bp::child c(command, bp::std_out > pipe_stream);
+
+	while (pipe_stream && std::getline(pipe_stream, line) && !line.empty()) {
+		LOG(DEBUG) << line;
+	}
+
+	if( c.running() ) {
+		try {
+			c.wait();
+		}
+		catch (const bp::process_error & e) {
+			LOG(DEBUG1) << e.what();
+		}
+	}
+
+	LOG(INFO) << "command exited with code : " << c.exit_code();
+};
 
 } // namespace GLogiK
 

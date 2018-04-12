@@ -108,7 +108,7 @@ class ServiceDBusHandler
 		void devicesStopped(const std::vector<std::string> & devicesID);
 		void devicesUnplugged(const std::vector<std::string> & devicesID);
 
-		void multimediaEvent(const std::string & devID, const std::string & media_event);
+		void deviceMediaEvent(const std::string & devID, const std::string & media_event);
 		/* -- */
 };
 
