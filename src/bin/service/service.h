@@ -50,11 +50,14 @@ class DesktopService
 	private:
 		pid_t pid_;
 		FILE* log_fd_;
+		bool verbose_;
 
 		std::ostringstream buffer_;
 		NSGKUtils::FileSystem* pGKfs_;
 
 		void daemonize(void);
+
+		void parseCommandLine(const int& argc, char *argv[]);
 };
 
 } // namespace GLogiK

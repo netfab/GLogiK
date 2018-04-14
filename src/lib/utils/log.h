@@ -60,7 +60,7 @@ namespace NSGKUtils
 
 inline std::string NowTime();
 
-enum TLogLevel {NONE, ERROR, WARNING, INFO, DEBUG, DEBUG1, DEBUG2, DEBUG3, DEBUG4, DEBUG5};
+enum TLogLevel {NONE, ERROR, WARNING, INFO, VERB, DEBUG, DEBUG1, DEBUG2, DEBUG3, DEBUG4, DEBUG5};
 
 template <typename T>
 class Log
@@ -138,7 +138,7 @@ TLogLevel& Log<T>::ReportingLevel()
 template <typename T>
 std::string Log<T>::ToString(TLogLevel level)
 {
-	static const char* const buffer[] = {"NONE", "ERROR", "WARNING", "INFO", "DEBUG", "DEBUG1", "DEBUG2", "DEBUG3", "DEBUG4", "DEBUG5"};
+	static const char* const buffer[] = {"NONE", "ERROR", "WARNING", "INFO", "VERB", "DEBUG", "DEBUG1", "DEBUG2", "DEBUG3", "DEBUG4", "DEBUG5"};
     return buffer[level];
 }
 
@@ -157,6 +157,8 @@ TLogLevel Log<T>::FromString(const std::string& level)
         return DEBUG1;
     if (level == "DEBUG")
         return DEBUG;
+    if (level == "VERB")
+        return VERB;
     if (level == "INFO")
         return INFO;
     if (level == "WARNING")

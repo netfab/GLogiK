@@ -739,14 +739,12 @@ void DevicesHandler::runDeviceMediaEvent(
 
 void DevicesHandler::runCommand(const std::string & command)
 {
-	LOG(INFO) << "running command : " << command;
-
 	std::string line;
 	bp::ipstream pipe_stream;
 	bp::child c(command, bp::std_out > pipe_stream);
 
 	while (pipe_stream && std::getline(pipe_stream, line) && !line.empty()) {
-		LOG(DEBUG) << line;
+		LOG(VERB) << line;
 	}
 
 	if( c.running() ) {
@@ -758,7 +756,7 @@ void DevicesHandler::runCommand(const std::string & command)
 		}
 	}
 
-	LOG(INFO) << "command exited with code : " << c.exit_code();
+	LOG(INFO) << "command run : " << command << " - exit code : " << c.exit_code();
 };
 
 } // namespace GLogiK

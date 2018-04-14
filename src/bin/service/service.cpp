@@ -33,11 +33,15 @@
 #include <fstream>
 #include <iostream>
 
+#include <boost/program_options.hpp>
+
 #include "lib/shared/sessionManager.h"
 
 #include "serviceDBusHandler.h"
 
 #include "service.h"
+
+namespace po = boost::program_options;
 
 namespace GLogiK
 {
@@ -47,6 +51,7 @@ using namespace NSGKUtils;
 DesktopService::DesktopService() :
 	pid_(0),
 	log_fd_(nullptr),
+	verbose_(false),
 	buffer_("", std::ios_base::app),
 	pGKfs_(nullptr)
 {
@@ -95,6 +100,8 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 	LOG(INFO) << "Starting " << GLOGIKS_DESKTOP_SERVICE_NAME << " vers. " << VERSION;
 
 	try {
+		this->parseCommandLine(argc, argv);
+
 		this->daemonize();
 
 		{
@@ -170,8 +177,6 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 }
 
 void DesktopService::daemonize() {
-	//int fd = 0;
-
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "daemonizing process";
 #endif
@@ -214,38 +219,31 @@ void DesktopService::daemonize() {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "daemonized !";
 #endif
+}
 
-/*
-	fs::path path(this->pid_file_name_);
+void DesktopService::parseCommandLine(const int& argc, char *argv[]) {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "parsing command line arguments";
+#endif
 
-	if( fs::exists(path) ) {
-		this->buffer_.str( "PID file " );
-		this->buffer_ << this->pid_file_name_ << " already exist";
-		throw GLogiKExcept( this->buffer_.str() );
-	}
-	// if path not found reset errno
-	errno = 0;
+	po::options_description desc("Allowed options");
+	desc.add_options()
+		("verbose,v", po::bool_switch(&this->verbose_)->default_value(false), "verbose mode")
+	;
 
-	this->pid_file_.exceptions( std::ofstream::failbit );
+	po::variables_map vm;
 	try {
-		this->pid_file_.open(this->pid_file_name_.c_str(), std::ofstream::trunc);
-		this->pid_file_ << (long)this->pid_;
-		this->pid_file_.flush();
+		po::store(po::parse_command_line(argc, argv, desc), vm);
+	}
+	catch( std::exception & e ) {
+		throw GLogiKExcept( e.what() );
+	}
+	po::notify(vm);
 
-		fs::permissions(path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
+	if( this->verbose_ ) {
+		LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = VERB;
+		LOG(VERB) << "verbose mode on";
 	}
-	catch (const std::ofstream::failure & e) {
-		this->buffer_.str( "Fail to open PID file : " );
-		this->buffer_ << this->pid_file_name_ << " : " << e.what();
-		throw GLogiKExcept( this->buffer_.str() );
-	}
-	catch (const fs::filesystem_error & e) {
-		this->buffer_.str( "Set permissions failure on PID file : " );
-		this->buffer_ << this->pid_file_name_ << " : " << e.what();
-		throw GLogiKExcept( this->buffer_.str() );
-	}
-	LOG(INFO) << "created PID file : " << this->pid_file_name_;
-*/
 }
 
 } // namespace GLogiK
