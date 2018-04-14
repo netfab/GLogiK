@@ -278,7 +278,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 				const bool ret = this->pDBus_->getNextBooleanArgument();
 				if( ret ) {
-					LOG(INFO)	<< "[" << devID << "] successfully setted device backlight color : "
+					LOG(VERB)	<< "[" << devID << "] successfully setted device backlight color : "
 								<< getHexRGB(r, g, b);
 				}
 				else {
@@ -314,7 +314,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 			}
 
 			if( ! send_it ) {
-				LOG(INFO) << "[" << devID << "] skipping empty MacrosBank " << to_uint(current_profile);
+				LOG(VERB) << "[" << devID << "] skipping empty MacrosBank " << to_uint(current_profile);
 				continue;
 			}
 
@@ -338,7 +338,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 					const bool ret = this->pDBus_->getNextBooleanArgument();
 					if( ret ) {
-						LOG(INFO) << "[" << devID << "] successfully setted device MacrosBank " << to_uint(current_profile);
+						LOG(VERB) << "[" << devID << "] successfully setted device MacrosBank " << to_uint(current_profile);
 					}
 					else {
 						LOG(ERROR) << "[" << devID << "] failed to set device MacrosBank " << to_uint(current_profile) << " : false";
@@ -354,6 +354,8 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 			}
 		}
 	}
+
+	LOG(INFO) << "[" << devID << "] sent device configuration to daemon";
 }
 
 void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProperties & device) {
