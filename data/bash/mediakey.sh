@@ -1,9 +1,13 @@
 #!/bin/bash
-
+#
+#	This file is part of GLogiK project.
+#	GLogiK, daemon to handle special features on gaming keyboards
+#	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+#
 # Small bash script written as media keys support example
 # Usage:
 # ------
-#		mediakey CMD
+#		mediakey.sh <command>
 #
 # list of known commands:
 # -----------------------
@@ -19,7 +23,7 @@
 
 function check_binary() {
 	type ${1} >/dev/null 2>&1 || \
-		{ echo >&2 "I require ${1} but not in PATH. Aborting."; exit 1; }
+		{ echo >&2 "I require ${1}, but not found in PATH. Aborting."; exit 1; }
 }
 
 function find_process_pid() {
@@ -42,9 +46,15 @@ function set_process_status() {
 
 # -- -- -- -- -- -- -- -- #
 
-CMD=${1}
+declare -r CMD="${1}"
 
 declare -r COMMANDS='pauseplay|stop|next|prev|togglemute|raisevolume|lowervolume'
+
+if [[ -z "${CMD}" ]]; then
+	printf "I require one command as parameter ; aborting\n"
+	printf "Known commands : ${COMMANDS}\n"
+	exit 8
+fi
 
 declare -r OLDIFS="${IFS}"
 IFS='|'
@@ -53,13 +63,16 @@ for x in ${COMMANDS}; do
 	unset ${x}
 	if [[ "${CMD}" == "${x}" ]]; then
 		found=0
+		break
 	fi
 done
 IFS="${OLDIFS}"
 if [[ ${found} -ne 0 ]]; then
-	printf "unknown command : ${CMD}\n"
+	printf "I require one command as parameter ; aborting\n"
+	printf "Known commands : ${COMMANDS}\n"
 	exit 7
 fi
+unset found
 
 # -- -- -- -- -- -- -- -- #
 
