@@ -173,8 +173,8 @@ void LogitechG510::processKeyEvent2Bytes(USBDevice & device) {
 		else { /* 0x0 */
 			LOG(DEBUG3) << "backlight on";
 		}
-	}
 #endif
+	}
 	else {
 		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 2 bytes event");
 	}
