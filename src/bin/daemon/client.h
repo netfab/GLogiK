@@ -48,6 +48,10 @@ class Client
 		const bool isAlive(void) const;
 		const bool isReady(void) const;
 
+		void initializeDevice(
+			DevicesManager* dev_manager,
+			const std::string & devID
+		);
 		const bool deleteDevice(const std::string & devID);
 		const bool setDeviceBacklightColor(
 			const std::string & devID,

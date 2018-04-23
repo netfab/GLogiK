@@ -86,6 +86,29 @@ void Client::toggleClientReadyPropertie(void) {
 	this->ready_ = ! this->ready_;
 }
 
+void Client::initializeDevice(
+	DevicesManager* dev_manager,
+	const std::string & devID)
+{
+	try {
+		this->devices_.at(devID);
+	}
+	catch (const std::out_of_range& oor) {
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "initializing device " << devID << " properties";
+#endif
+		DeviceProperties device;
+		device.setProperties(
+			dev_manager->getDeviceVendor(devID),		/* vendor */
+			dev_manager->getDeviceModel(devID),			/* model */
+			dev_manager->getDeviceCapabilities(devID)	/* capabilities */
+		);
+		device.initMacrosProfiles( dev_manager->getDeviceMacroKeysNames(devID) );
+
+		this->devices_[devID] = device;
+	}
+}
+
 const bool Client::deleteDevice(const std::string & devID) {
 	try {
 		this->devices_.at(devID);
@@ -201,43 +224,11 @@ const bool Client::setDeviceMacrosBank(
 void Client::initializeDevices(DevicesManager* dev_manager)
 {
 	for( const auto & devID : dev_manager->getStartedDevices() ) {
-		try {
-			this->devices_.at(devID);
-		}
-		catch (const std::out_of_range& oor) {
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "initializing device " << devID << " properties";
-#endif
-			DeviceProperties device;
-			device.setProperties(
-				dev_manager->getDeviceVendor(devID),		/* vendor */
-				dev_manager->getDeviceModel(devID),			/* model */
-				dev_manager->getDeviceCapabilities(devID)	/* capabilities */
-			);
-			device.initMacrosProfiles( dev_manager->getDeviceMacroKeysNames(devID) );
-
-			this->devices_[devID] = device;
-		}
+		this->initializeDevice(dev_manager, devID);
 	}
 
 	for( const auto & devID : dev_manager->getStoppedDevices() ) {
-		try {
-			this->devices_.at(devID);
-		}
-		catch (const std::out_of_range& oor) {
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "initializing device " << devID << " properties";
-#endif
-			DeviceProperties device;
-			device.setProperties(
-				dev_manager->getDeviceVendor(devID),		/* vendor */
-				dev_manager->getDeviceModel(devID),			/* model */
-				dev_manager->getDeviceCapabilities(devID)	/* capabilities */
-			);
-			device.initMacrosProfiles( dev_manager->getDeviceMacroKeysNames(devID) );
-
-			this->devices_[devID] = device;
-		}
+		this->initializeDevice(dev_manager, devID);
 	}
 }
 

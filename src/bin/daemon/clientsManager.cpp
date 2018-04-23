@@ -660,6 +660,9 @@ void ClientsManager::getDeviceProperties(
 	try {
 		Client* pClient = this->clients_.at(clientID);
 		if( pClient->isAlive() ) {
+			/* initialize client device object which will be used to
+			 * store properties in upcoming setDevice{Foo,Bar} calls */
+			pClient->initializeDevice(this->devicesManager, devID);
 			this->pDBus_->appendAsyncString( this->devicesManager->getDeviceVendor(devID) );
 			this->pDBus_->appendAsyncString( this->devicesManager->getDeviceModel(devID) );
 			this->pDBus_->appendAsyncUInt64( this->devicesManager->getDeviceCapabilities(devID) );
