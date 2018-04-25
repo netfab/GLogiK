@@ -48,9 +48,6 @@ using namespace NSGKUtils;
 DevicesHandler::DevicesHandler()
 	:	pDBus_(nullptr),
 		pGKfs_(nullptr),
-#if DESKTOP_NOTIFICATIONS
-		notification_success_(false),
-#endif
 		system_bus_(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
 		client_id_("undefined"),
 		buffer_("", std::ios_base::app)
@@ -750,7 +747,6 @@ void DevicesHandler::runCommand(
 	)
 {
 #if DESKTOP_NOTIFICATIONS
-	this->notification_success_ = false;
 	this->notification_.init(GLOGIKS_DESKTOP_SERVICE_NAME, 5000);
 #endif
 
@@ -789,8 +785,7 @@ void DevicesHandler::runCommand(
 
 			last += " %";
 			this->notification_.updateProperties("Volume level", last);
-			this->notification_success_ = this->notification_.show();
-			if( ! this->notification_success_ ) {
+			if( ! this->notification_.show() ) {
 				LOG(ERROR) << "notification showing failure";
 			}
 		}

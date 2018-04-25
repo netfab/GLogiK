@@ -86,7 +86,6 @@ class DevicesHandler
 		NSGKDBus::GKDBus* pDBus_;
 		NSGKUtils::FileSystem* pGKfs_;
 #if DESKTOP_NOTIFICATIONS
-		bool notification_success_;
 		VolumeNotification notification_;
 #endif
 		const NSGKDBus::BusConnection system_bus_;
