@@ -18,7 +18,7 @@ Last release : version 0.6.0
  - Device status control via DBus
 
 ### Build Dependencies :
- - dev-libs/boost 1.62.0 or later
+ - dev-libs/boost 1.64.0 or later
  - dev-libs/libusb 1.0.19 or later
  - virtual/libudev
  - dev-libs/libevdev 1.5.7 or later
