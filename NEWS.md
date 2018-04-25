@@ -1,6 +1,15 @@
 
 ---
 
+## [Unreleased]
+ * now requires boost >= 1.64.0 for boost process
+ * optionally depends on libnotify >= 0.7.7
+
+#### Added features :
+ * multimedia keys support
+
+---
+
 ## version 0.6.0 - 2018-03-29 - (first release)
 #### Added devices :
  * Logitech G510s Gaming Keyboard (046d:c22d)
