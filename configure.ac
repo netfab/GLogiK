@@ -171,20 +171,20 @@ fi
 AC_MSG_CHECKING([whether we want debugging])
 if test "$enable_debugging" = yes; then
 	AC_MSG_RESULT([yes])
-	AC_DEFINE_UNQUOTED([DEBUGGING_ON], [1], [Debugging])
+	AC_DEFINE([DEBUGGING_ON], [1], [Debugging])
 
 	AC_MSG_CHECKING([whether we want gkdbus debugging])
 	if test "$enable_gkdbus_debugging" = yes; then
 		AC_MSG_RESULT([yes])
-		AC_DEFINE_UNQUOTED([DEBUG_GKDBUS_SUBOBJECTS], [1], [Also debug GKDBus sub-objects])
+		AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [1], [Also debug GKDBus sub-objects])
 	else
 		AC_MSG_RESULT([no])
-		AC_DEFINE_UNQUOTED([DEBUG_GKDBUS_SUBOBJECTS], [0], [Also debug GKDBus sub-objects])
+		AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [Also debug GKDBus sub-objects])
 	fi
 else
 	AC_MSG_RESULT([no])
-	AC_DEFINE_UNQUOTED([DEBUGGING_ON], [0], [Debugging])
-	AC_DEFINE_UNQUOTED([DEBUG_GKDBUS_SUBOBJECTS], [0], [Also debug GKDBus sub-objects])
+	AC_DEFINE([DEBUGGING_ON], [0], [Debugging])
+	AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [Also debug GKDBus sub-objects])
 fi
 
 AM_CONDITIONAL([WITH_LIBNOTIFY], [test "x$enable_desktop_notifications" = xyes])
