@@ -35,11 +35,9 @@
 
 #include "include/enums.h"
 
-
-#define LogRemoteCallFailure \
-	FATALERROR << remoteMethod.c_str() << s_RemoteCallFailure << e.what();
-#define LogRemoteCallGetReplyFailure \
-	LOG(ERROR) << remoteMethod.c_str() << s_RemoteCallGetReplyFailure << e.what();
+#if DESKTOP_NOTIFICATIONS
+#include "volumeNotification.h"
+#endif
 
 typedef std::map<const std::string, const std::string> devices_files_map_t;
 
@@ -87,6 +85,10 @@ class DevicesHandler
 	private:
 		NSGKDBus::GKDBus* pDBus_;
 		NSGKUtils::FileSystem* pGKfs_;
+#if DESKTOP_NOTIFICATIONS
+		bool notification_success_;
+		VolumeNotification notification_;
+#endif
 		const NSGKDBus::BusConnection system_bus_;
 		std::string client_id_;
 		std::ostringstream buffer_;
@@ -119,7 +121,10 @@ class DevicesHandler
 
 		const bool checkDeviceCapability(const DeviceProperties & device, Caps to_check);
 
-		void runCommand(const std::string & command);
+		void runCommand(
+			const std::string & key_event,
+			const std::string & command
+		);
 
 };
 

@@ -19,45 +19,15 @@
  *
  */
 
-#ifndef __GLOGIKS_DESKTOP_SERVICE_H__
-#define __GLOGIKS_DESKTOP_SERVICE_H__
+#ifndef __GLOGIK_DESKTOP_SERVICE_GLOBAL_H__
+#define __GLOGIK_DESKTOP_SERVICE_GLOBAL_H__
 
-#include <poll.h>
+#define GLOGIKS_DESKTOP_SERVICE_NAME "GLogiKs"
 
-#include <sys/types.h>
-
-#include <cstdio>
-
-#include <sstream>
-
-#include "lib/utils/utils.h"
-
-namespace GLogiK
-{
-
-class DesktopService
-{
-	public:
-		DesktopService(void);
-		~DesktopService(void);
-
-		int run(const int& argc, char *argv[]);
-
-	protected:
-
-	private:
-		pid_t pid_;
-		FILE* log_fd_;
-		bool verbose_;
-
-		std::ostringstream buffer_;
-		NSGKUtils::FileSystem* pGKfs_;
-
-		void daemonize(void);
-
-		void parseCommandLine(const int& argc, char *argv[]);
-};
-
-} // namespace GLogiK
+#define LogRemoteCallFailure \
+	FATALERROR << remoteMethod.c_str() << s_RemoteCallFailure << e.what();
+#define LogRemoteCallGetReplyFailure \
+	LOG(ERROR) << remoteMethod.c_str() << s_RemoteCallGetReplyFailure << e.what();
 
 #endif
+

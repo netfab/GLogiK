@@ -37,6 +37,7 @@
 
 #include "lib/shared/sessionManager.h"
 
+#include "global.h"
 #include "serviceDBusHandler.h"
 
 #include "service.h"

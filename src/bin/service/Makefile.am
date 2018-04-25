@@ -23,9 +23,20 @@ GLogiKs_LDADD = \
 
 GLogiKs_SOURCES = \
 		%D%/main.cpp \
+		%D%/global.h \
 		%D%/service.cpp \
 		%D%/service.h \
 		%D%/serviceDBusHandler.cpp \
 		%D%/serviceDBusHandler.h \
 		%D%/devicesHandler.cpp \
 		%D%/devicesHandler.h
+
+if WITH_LIBNOTIFY
+
+GLogiKs_CXXFLAGS += @LIBNOTIFY_CFLAGS@
+GLogiKs_LDADD += @LIBNOTIFY_LIBS@
+GLogiKs_SOURCES += \
+	%D%/volumeNotification.cpp \
+	%D%/volumeNotification.h
+
+endif

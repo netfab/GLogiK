@@ -33,6 +33,8 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/process.hpp>
 
+#include "global.h"
+
 #include "devicesHandler.h"
 
 namespace fs = boost::filesystem;
@@ -46,6 +48,9 @@ using namespace NSGKUtils;
 DevicesHandler::DevicesHandler()
 	:	pDBus_(nullptr),
 		pGKfs_(nullptr),
+#if DESKTOP_NOTIFICATIONS
+		notification_success_(false),
+#endif
 		system_bus_(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
 		client_id_("undefined"),
 		buffer_("", std::ios_base::app)
@@ -725,7 +730,7 @@ void DevicesHandler::runDeviceMediaEvent(
 		DeviceProperties & device = this->started_devices_.at(devID);
 		const std::string cmd( device.getMediaCommand(key_event) );
 		if( ! cmd.empty() ) {
-			std::thread media_event_thread(&DevicesHandler::runCommand, this, cmd);
+			std::thread media_event_thread(&DevicesHandler::runCommand, this, key_event, cmd);
 			media_event_thread.detach();
 		}
 		else {
@@ -739,13 +744,23 @@ void DevicesHandler::runDeviceMediaEvent(
 	}
 }
 
-void DevicesHandler::runCommand(const std::string & command)
+void DevicesHandler::runCommand(
+	const std::string & key_event,
+	const std::string & command
+	)
 {
+#if DESKTOP_NOTIFICATIONS
+	this->notification_success_ = false;
+	this->notification_.init(GLOGIKS_DESKTOP_SERVICE_NAME, 5000);
+#endif
+
 	std::string line;
+	std::string last;
 	bp::ipstream pipe_stream;
 	bp::child c(command, bp::std_out > pipe_stream);
 
 	while (pipe_stream && std::getline(pipe_stream, line) && !line.empty()) {
+		last = line;
 		LOG(VERB) << line;
 	}
 
@@ -757,6 +772,33 @@ void DevicesHandler::runCommand(const std::string & command)
 			LOG(DEBUG1) << e.what();
 		}
 	}
+
+#if DESKTOP_NOTIFICATIONS
+	if( (key_event == std::string(XF86_AUDIO_RAISE_VOLUME)) or
+		(key_event == std::string(XF86_AUDIO_LOWER_VOLUME)) ) {
+		try {
+			try {
+				std::stoi(last);
+			}
+			catch (const std::invalid_argument& ia) {
+				throw GLogiKExcept("stoi invalid argument");
+			}
+			catch (const std::out_of_range& oor) {
+				throw GLogiKExcept("stoi out of range");
+			}
+
+			last += " %";
+			this->notification_.updateProperties("Volume level", last);
+			this->notification_success_ = this->notification_.show();
+			if( ! this->notification_success_ ) {
+				LOG(ERROR) << "notification showing failure";
+			}
+		}
+		catch (const GLogiKExcept & e) {
+			LOG(ERROR) << "volume conversion failure, notification error";
+		}
+	}
+#endif
 
 	LOG(INFO) << "command run : " << command << " - exit code : " << c.exit_code();
 };

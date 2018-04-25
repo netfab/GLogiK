@@ -19,45 +19,48 @@
  *
  */
 
-#ifndef __GLOGIKS_DESKTOP_SERVICE_H__
-#define __GLOGIKS_DESKTOP_SERVICE_H__
+#ifndef __GLOGIK_VOLUME_NOTIFICATION_H__
+#define __GLOGIK_VOLUME_NOTIFICATION_H__
 
-#include <poll.h>
+#include <atomic>
+#include <string>
 
-#include <sys/types.h>
-
-#include <cstdio>
-
-#include <sstream>
-
-#include "lib/utils/utils.h"
+#include <libnotify/notify.h>
 
 namespace GLogiK
 {
 
-class DesktopService
+class VolumeNotification
 {
 	public:
-		DesktopService(void);
-		~DesktopService(void);
+		VolumeNotification(void);
+		~VolumeNotification(void);
 
-		int run(const int& argc, char *argv[]);
+		void init(
+			const std::string & app_name,
+			int timeout
+		);
+		void updateProperties(
+			const std::string & summary,
+			const std::string & body = "",
+			const std::string & icon = "");
+		const bool show(void);
+		const bool close(void);
 
 	protected:
 
 	private:
-		pid_t pid_;
-		FILE* log_fd_;
-		bool verbose_;
+		NotifyNotification* pNotification_;
+		bool is_initted_;
+		int timeout_;
 
-		std::ostringstream buffer_;
-		NSGKUtils::FileSystem* pGKfs_;
+		static std::atomic<unsigned int> cnt_;
 
-		void daemonize(void);
-
-		void parseCommandLine(const int& argc, char *argv[]);
+		void setTimeout(int timeout);
+		void maybeClose(void);
 };
 
 } // namespace GLogiK
 
 #endif
+

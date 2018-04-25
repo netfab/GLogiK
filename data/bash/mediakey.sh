@@ -44,6 +44,17 @@ function set_process_status() {
 	fi
 }
 
+function get_volume() {
+	if [[ "${1}" = "mpc" ]] ; then
+		shift
+		local volume="$@"
+		volume="${volume##*volume:}"
+		volume="${volume%%\%*}"
+		volume="${volume//[[:space:]]/}"
+		printf "%s\n" "${volume}"
+	fi
+}
+
 # -- -- -- -- -- -- -- -- #
 
 declare -r CMD="${1}"
@@ -121,17 +132,27 @@ function togglemute() {
 	pactl set-sink-mute 1 toggle
 }
 
+# make sure that the last line printed is the volume level
+# used by devicesHandler for desktop notification
 function raisevolume() {
 	if [[ "${1}" = "mpc" ]] ; then
 		check_binary mpc
-		mpc volume +5
+		local out=$(mpc volume +5)
+		local volume=$(get_volume mpc "${out}")
+		printf "%s\n" "${out}"
+		printf "%s\n" "${volume}"
 	fi
 }
 
+# make sure that the last line printed is the volume level
+# used by devicesHandler for desktop notification
 function lowervolume() {
 	if [[ "${1}" = "mpc" ]] ; then
 		check_binary mpc
-		mpc volume -5
+		local out=$(mpc volume -5)
+		local volume=$(get_volume mpc "${out}")
+		printf "%s\n" "${out}"
+		printf "%s\n" "${volume}"
 	fi
 }
 

@@ -27,6 +27,7 @@
 
 #include "lib/shared/glogik.h"
 
+#include "global.h"
 #include "serviceDBusHandler.h"
 
 namespace GLogiK

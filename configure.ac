@@ -44,7 +44,7 @@ dnl -------------------------------------------------------------------------
 dnl                     declare custom configure options
 dnl -------------------------------------------------------------------------
 
-dnl enable -Wl,--as-needed by default to prevent overlinking
+dnl check for overlinking option
 AC_ARG_ENABLE( [as-needed],
                AC_HELP_STRING( [--enable-as-needed], [Enable overlinking protection]),
                [enable_as_needed=$enableval], [enable_as_needed=no])
@@ -66,6 +66,10 @@ AC_ARG_ENABLE( [debug],
 AC_ARG_ENABLE( [debug-gkdbus],
 				AC_HELP_STRING( [--enable-debug-gkdbus], [Enable gkdbus debugging, default: no]),
 				[enable_gkdbus_debugging=$enableval], [enable_gkdbus_debugging=no])
+
+AC_ARG_ENABLE( [desktop-notifications],
+				AC_HELP_STRING( [--enable-desktop-notifications], [Enable desktop notifications, default: no]),
+				[enable_desktop_notifications=$enableval], [enable_desktop_notifications=no])
 
 AC_ARG_VAR(DEBUG_DIR, [Directory where debug file will be written])
 
@@ -183,6 +187,20 @@ else
 	AC_DEFINE_UNQUOTED([DEBUG_GKDBUS_SUBOBJECTS], [0], [Also debug GKDBus sub-objects])
 fi
 
+AM_CONDITIONAL([WITH_LIBNOTIFY], [test "x$enable_desktop_notifications" = xyes])
+AC_MSG_CHECKING([whether we want desktop notifications])
+AS_IF([test "x$enable_desktop_notifications" = xyes],
+	[
+	AC_MSG_RESULT([yes])
+	PKG_CHECK_MODULES([LIBNOTIFY], [libnotify >= 0.7.7])
+	AC_SUBST(LIBNOTIFY_CFLAGS)
+	AC_SUBST(LIBNOTIFY_LIBS)
+	AC_DEFINE([DESKTOP_NOTIFICATIONS], [1], [Desktop notifications])
+	], [
+	AC_MSG_RESULT([no])
+	AC_DEFINE([DESKTOP_NOTIFICATIONS], [0], [Desktop notifications])
+	])
+
 dnl abort compilation after first error
 AS_VAR_APPEND(AM_CXXFLAGS,[" -Wfatal-errors"])
 AS_VAR_APPEND(AM_CXXFLAGS,[" -std=c++14"])
@@ -280,6 +298,8 @@ AC_MSG_NOTICE([
       Boost filesystem LIBS : ${BOOST_FILESYSTEM_LIB}
  Boost program options LIBS : ${BOOST_PROGRAM_OPTIONS_LIB}
        Boost iostreams LIBS : ${BOOST_IOSTREAMS_LIB}
+--------------------------------------------------------------
+ with desktop notifications : ${enable_desktop_notifications}
 --------------------------------------------------------------
  Global debugging : ${enable_debugging}
  GKDBus debugging : ${enable_gkdbus_debugging}

@@ -26,6 +26,9 @@ Last release : version 0.6.0
  - x11-libs/libICE 1.0.9 or later
  - x11-libs/libSM 1.2.2 or later
 
+### Optional Build Dependencies
+ - x11-libs/libnotify 0.7.7 or later
+
 ### Runtime Dependencies :
  - sys-auth/consolekit 1.1.2 or later, or systemd-logind
 

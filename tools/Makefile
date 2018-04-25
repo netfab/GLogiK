@@ -104,6 +104,7 @@ configure_it: init_it autoreconf_it
 	CXXFLAGS="$(CXXFLAGS)" \
 	--enable-debug --disable-debug-gkdbus DEBUG_DIR=$(PREFIX_DEV_DIR) \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
+	--enable-desktop-notifications \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
 
 install_it: uninstall_it
