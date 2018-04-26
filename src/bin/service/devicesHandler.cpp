@@ -773,8 +773,9 @@ void DevicesHandler::runCommand(
 	if( (key_event == std::string(XF86_AUDIO_RAISE_VOLUME)) or
 		(key_event == std::string(XF86_AUDIO_LOWER_VOLUME)) ) {
 		try {
+			int volume = -1;
 			try {
-				std::stoi(last);
+				volume = std::stoi(last);
 			}
 			catch (const std::invalid_argument& ia) {
 				throw GLogiKExcept("stoi invalid argument");
@@ -783,10 +784,24 @@ void DevicesHandler::runCommand(
 				throw GLogiKExcept("stoi out of range");
 			}
 
+			std::string icon("");
+			if( volume <= 0 )
+				icon = "audio-volume-muted-symbolic";
+			else if ( volume <= 30 )
+				icon = "audio-volume-low-symbolic";
+			else if ( volume <= 70 )
+				icon = "audio-volume-medium-symbolic";
+			else
+				icon = "audio-volume-high-symbolic";
+
 			last += " %";
-			this->notification_.updateProperties("Volume level", last);
-			if( ! this->notification_.show() ) {
-				LOG(ERROR) << "notification showing failure";
+			if( this->notification_.updateProperties("Volume", last, icon) ) {
+				if( ! this->notification_.show() ) {
+					LOG(ERROR) << "notification showing failure";
+				}
+			}
+			else {
+				LOG(ERROR) << "notification update properties failure";
 			}
 		}
 		catch (const GLogiKExcept & e) {

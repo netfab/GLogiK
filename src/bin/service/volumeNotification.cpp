@@ -53,7 +53,7 @@ void VolumeNotification::init(
 	}
 }
 
-void VolumeNotification::updateProperties(
+const bool VolumeNotification::updateProperties(
 	const std::string & summary,
 	const std::string & body,
 	const std::string & icon)
@@ -67,8 +67,7 @@ void VolumeNotification::updateProperties(
 	if( ! icon.empty() )
 		i = icon.c_str();
 
-	notify_notification_update(this->pNotification_,
-		summary.c_str(), b, i);
+	return notify_notification_update(this->pNotification_, summary.c_str(), b, i);
 }
 
 const bool VolumeNotification::show() {
@@ -94,9 +93,8 @@ void VolumeNotification::maybeClose(void) {
 
 void VolumeNotification::setTimeout(int timeout)
 {
-	/* timeout in milliseconds
-	 * currently ignored
-	 */
+	/* timeout in milliseconds, may be ignored by some
+	 * notifications daemons implementations */
 	notify_notification_set_timeout(this->pNotification_, timeout);
 }
 

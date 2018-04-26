@@ -40,12 +40,11 @@ class VolumeNotification
 			const std::string & app_name,
 			int timeout
 		);
-		void updateProperties(
+		const bool updateProperties(
 			const std::string & summary,
 			const std::string & body = "",
 			const std::string & icon = "");
 		const bool show(void);
-		const bool close(void);
 
 	protected:
 
@@ -58,6 +57,7 @@ class VolumeNotification
 
 		void setTimeout(int timeout);
 		void maybeClose(void);
+		const bool close(void);
 };
 
 } // namespace GLogiK
