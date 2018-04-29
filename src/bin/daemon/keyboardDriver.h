@@ -28,6 +28,7 @@
 #include <vector>
 #include <map>
 #include <thread>
+#include <mutex>
 
 #include <linux/input-event-codes.h>
 
@@ -145,6 +146,7 @@ class KeyboardDriver
 
 		std::map<const std::string, USBDevice> initialized_devices_;
 		std::vector<std::thread> threads_;
+		std::mutex threads_mtx_;
 
 		/* USB HID Usage Tables as defined in USB specification,
 		 *        Chapter 10 "Keyboard/Keypad Page (0x07)"
@@ -176,6 +178,8 @@ class KeyboardDriver
 
 		void checkDeviceListeningStatus(USBDevice & device);
 		void enterMacroRecordMode(USBDevice & device, const std::string & devID);
+
+		void LCDScreenLoop(const std::string & devID);
 		void listenLoop(const std::string & devID);
 
 		const bool updateCurrentLedsMask(USBDevice & device, bool force_MR_off=false);

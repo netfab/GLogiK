@@ -63,6 +63,7 @@ class USBDevice
 
 		unsigned int fatal_errors;
 		std::thread::id listen_thread_id;
+		std::thread::id lcd_thread_id;
 		MacrosManager* macros_man;
 		uint64_t pressed_keys;
 		std::atomic<uint8_t> current_leds_mask;

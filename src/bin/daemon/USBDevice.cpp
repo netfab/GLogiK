@@ -73,6 +73,7 @@ void USBDevice::operator=(const USBDevice& dev)
 	/* public */
 	this->fatal_errors				= dev.fatal_errors;
 	this->listen_thread_id			= dev.listen_thread_id;
+	this->lcd_thread_id				= dev.lcd_thread_id;
 	this->macros_man				= dev.macros_man;
 	this->pressed_keys				= dev.pressed_keys;
 	this->current_leds_mask			= static_cast<uint8_t>(dev.current_leds_mask);

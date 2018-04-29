@@ -22,8 +22,8 @@
 #include <stdexcept>
 #include <new>
 #include <iostream>
-
 #include <utility>
+#include <chrono>
 
 #include "lib/utils/utils.h"
 #include "lib/dbus/GKDBus.h"
@@ -504,6 +504,33 @@ void KeyboardDriver::runMacro(const std::string & devID) {
 	}
 }
 
+void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
+	try {
+		USBDevice & device = this->initialized_devices_.at(devID);
+		device.lcd_thread_id = std::this_thread::get_id();
+
+#if DEBUGGING_ON
+		LOG(INFO) << device.getStrID() << " spawned LCD screen thread for " << device.getName();
+#endif
+
+		while( DaemonControl::isDaemonRunning() and device.getListeningThreadStatus() ) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(200));
+		}
+
+#if DEBUGGING_ON
+		LOG(INFO) << device.getStrID() << " exiting LCD screen thread for " << device.getName();
+#endif
+	} /* try */
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownDevice
+	}
+	catch( const std::exception & e ) {
+		std::ostringstream err("uncaught std::exception : ", std::ios_base::app);
+		err << e.what();
+		GKSysLog(LOG_ERR, ERROR, err.str());
+	}
+}
+
 void KeyboardDriver::listenLoop(const std::string & devID) {
 	try {
 		USBDevice & device = this->initialized_devices_.at(devID);
@@ -512,6 +539,12 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 #if DEBUGGING_ON
 		LOG(INFO) << device.getStrID() << " spawned listening thread for " << device.getName();
 #endif
+
+		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+			std::thread lcd_thread(&KeyboardDriver::LCDScreenLoop, this, devID);
+			std::lock_guard<std::mutex> lock(this->threads_mtx_);
+			this->threads_.push_back( std::move(lcd_thread) );
+		}
 
 		while( DaemonControl::isDaemonRunning() and device.getListeningThreadStatus() ) {
 			this->checkDeviceListeningStatus(device);
@@ -666,6 +699,7 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 		/* spawn listening thread */
 		try {
 			std::thread listen_thread(&KeyboardDriver::listenLoop, this, devID);
+			std::lock_guard<std::mutex> lock(this->threads_mtx_);
 			this->threads_.push_back( std::move(listen_thread) );
 		}
 		catch (const std::system_error& e) {
@@ -745,23 +779,52 @@ void KeyboardDriver::closeDevice(const BusNumDeviceID & det)
 		device.disableListeningThread();
 
 		bool found = false;
-		for(auto it = this->threads_.begin(); it != this->threads_.end();) {
-			if( device.listen_thread_id == (*it).get_id() ) {
-				found = true;
-#if DEBUGGING_ON
-				LOG(INFO) << device.getStrID() << " waiting for listening thread";
-#endif
-				(*it).join();
-				it = this->threads_.erase(it);
-				break;
-			}
-			else {
-				it++;
-			}
-		}
 
-		if(! found) {
-			GKSysLog(LOG_WARNING, WARNING, "listening thread not found !");
+		{
+			std::lock_guard<std::mutex> lock(this->threads_mtx_);
+			for(auto it = this->threads_.begin(); it != this->threads_.end();) {
+				if( device.listen_thread_id == (*it).get_id() ) {
+					found = true;
+#if DEBUGGING_ON
+					LOG(INFO) << device.getStrID() << " waiting for listening thread";
+#endif
+					(*it).join();
+					it = this->threads_.erase(it);
+					break;
+				}
+				else {
+					it++;
+				}
+			}
+
+			if(! found) {
+				GKSysLog(LOG_WARNING, WARNING, "listening thread not found !");
+			}
+
+			/* Caps::GK_LCD_SCREEN */
+			if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+				found = false;
+
+				for(auto it = this->threads_.begin(); it != this->threads_.end();) {
+					if( device.lcd_thread_id == (*it).get_id() ) {
+						found = true;
+#if DEBUGGING_ON
+						LOG(INFO) << device.getStrID() << " waiting for LCD screen thread";
+#endif
+						(*it).join();
+						it = this->threads_.erase(it);
+						break;
+					}
+					else {
+						it++;
+					}
+				}
+
+				if(! found) {
+					GKSysLog(LOG_WARNING, WARNING, "listening thread not found !");
+				}
+			}
+
 		}
 
 		this->resetDeviceState(device);
