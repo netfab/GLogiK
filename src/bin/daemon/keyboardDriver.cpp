@@ -371,14 +371,14 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device) {
 	}
 }
 
-void KeyboardDriver::checkDeviceListeningStatus(USBDevice & device) {
+void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device) {
 	/* check to give up */
 	if(device.fatal_errors > DEVICE_LISTENING_THREAD_MAX_ERRORS) {
 		std::ostringstream err(device.getStrID(), std::ios_base::app);
 		err << "device " << device.getName() << " on bus " << to_uint(device.getBus());
 		GKSysLog(LOG_ERR, ERROR, err.str());
 		GKSysLog(LOG_ERR, ERROR, "reached listening thread maximum fatal errors, giving up");
-		device.disableListeningThread();
+		device.deactivateThreads();
 	}
 }
 
@@ -403,9 +403,9 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 	/* initializing time_point */
 	device.last_call = std::chrono::steady_clock::now();
 
-	while( (! exit) and DaemonControl::isDaemonRunning() and device.getListeningThreadStatus() ) {
-		this->checkDeviceListeningStatus(device);
-		if( ! device.getListeningThreadStatus() )
+	while( (! exit) and DaemonControl::isDaemonRunning() and device.getThreadsStatus() ) {
+		this->checkDeviceFatalErrors(device);
+		if( ! device.getThreadsStatus() )
 			continue;
 
 		KeyStatus ret = this->getPressedKeys(device);
@@ -515,12 +515,17 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 #endif
 
 		unsigned int c = 0;
-		while( DaemonControl::isDaemonRunning() and device.getListeningThreadStatus() ) {
+		while( DaemonControl::isDaemonRunning() and device.getThreadsStatus() ) {
+			this->checkDeviceFatalErrors(device);
+			if( ! device.getThreadsStatus() )
+				continue;
+
 			std::this_thread::sleep_for(std::chrono::milliseconds(400));
-			if( c == 25 ) {
+			if( c == 25 ) { /* 10 seconds with a 400 ms granularity */
 				LOG(INFO) << "refresh LCD screen for " << device.getName();
 				c = 0;
 			}
+
 			c++; /* bonus point */
 		}
 
@@ -553,9 +558,9 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 			this->threads_.push_back( std::move(lcd_thread) );
 		}
 
-		while( DaemonControl::isDaemonRunning() and device.getListeningThreadStatus() ) {
-			this->checkDeviceListeningStatus(device);
-			if( ! device.getListeningThreadStatus() )
+		while( DaemonControl::isDaemonRunning() and device.getThreadsStatus() ) {
+			this->checkDeviceFatalErrors(device);
+			if( ! device.getThreadsStatus() )
 				continue;
 
 			KeyStatus ret = this->getPressedKeys(device);
@@ -837,7 +842,7 @@ void KeyboardDriver::closeDevice(const BusNumDeviceID & det)
 					<< to_uint(device.getNum()) << " on bus " << to_uint(device.getBus());
 #endif
 
-		device.disableListeningThread();
+		device.deactivateThreads();
 		this->joinDeviceThreads(device);
 		this->resetDeviceState(device);
 		device.destroyMacrosManager(); /* reset device state needs this pointer */

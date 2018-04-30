@@ -82,8 +82,8 @@ class USBDevice
 		void destroyMacrosManager(void);
 
 		const std::string & getStrID(void) const { return this->strID; }
-		const bool getListeningThreadStatus(void) const { return this->listen_status; }
-		void disableListeningThread(void) { this->listen_status = false; }
+		const bool getThreadsStatus(void) const { return this->threads_status; }
+		void deactivateThreads(void) { this->threads_status = false; }
 		const int getLastInterruptTransferLength(void) const { return this->last_interrupt_transfer_length; }
 		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
 		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
@@ -102,7 +102,7 @@ class USBDevice
 		std::vector<int> to_release;
 		std::vector<int> to_attach;
 
-		std::atomic<bool> listen_status;
+		std::atomic<bool> threads_status;
 };
 
 } // namespace GLogiK

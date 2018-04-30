@@ -51,7 +51,7 @@ USBDevice::USBDevice(
 			keys_endpoint(0),
 			usb_device(nullptr),
 			usb_handle(nullptr),
-			listen_status(true)
+			threads_status(true)
 {
 	std::fill_n(this->keys_buffer, KEYS_BUFFER_LENGTH, 0);
 	std::fill_n(this->previous_keys_buffer, KEYS_BUFFER_LENGTH, 0);
@@ -108,7 +108,7 @@ void USBDevice::operator=(const USBDevice& dev)
 	this->to_release = dev.to_release;
 	this->to_attach = dev.to_attach;
 
-	this->listen_status = static_cast<bool>(dev.listen_status);
+	this->threads_status = static_cast<bool>(dev.threads_status);
 }
 
 void USBDevice::initializeMacrosManager(

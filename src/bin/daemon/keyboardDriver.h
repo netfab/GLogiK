@@ -176,7 +176,7 @@ class KeyboardDriver
 
 		void notImplemented(const char* func);
 
-		void checkDeviceListeningStatus(USBDevice & device);
+		void checkDeviceFatalErrors(USBDevice & device);
 		void enterMacroRecordMode(USBDevice & device, const std::string & devID);
 
 		void LCDScreenLoop(const std::string & devID);
