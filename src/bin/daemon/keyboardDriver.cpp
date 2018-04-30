@@ -514,8 +514,14 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 		LOG(INFO) << device.getStrID() << " spawned LCD screen thread for " << device.getName();
 #endif
 
+		unsigned int c = 0;
 		while( DaemonControl::isDaemonRunning() and device.getListeningThreadStatus() ) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(200));
+			std::this_thread::sleep_for(std::chrono::milliseconds(400));
+			if( c == 25 ) {
+				LOG(INFO) << "refresh LCD screen for " << device.getName();
+				c = 0;
+			}
+			c++; /* bonus point */
 		}
 
 #if DEBUGGING_ON
@@ -765,6 +771,60 @@ void KeyboardDriver::resetDeviceState(const BusNumDeviceID & det)
 	}
 }
 
+void KeyboardDriver::joinDeviceThreads(const USBDevice & device)
+{
+	bool found = false;
+	std::thread::id thread_id;
+
+	auto find_thread = [&thread_id, &found] (auto & item) -> const bool {
+		if( thread_id == item.get_id() ) {
+			found = true;
+#if DEBUGGING_ON
+			LOG(DEBUG1) << "thread found !";
+#endif
+			item.join();
+			return true;
+		}
+		return false;
+	};
+
+	found = false; thread_id = device.listen_thread_id;
+#if DEBUGGING_ON
+	LOG(DEBUG) << device.getStrID() << " waiting for listening thread";
+#endif
+	{
+		std::lock_guard<std::mutex> lock(this->threads_mtx_);
+		this->threads_.erase(
+			std::remove_if(this->threads_.begin(), this->threads_.end(), find_thread),
+			this->threads_.end()
+		);
+	}
+
+	if(! found) {
+		GKSysLog(LOG_WARNING, WARNING, "listening thread not found !");
+	}
+
+	/* Caps::GK_LCD_SCREEN */
+	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+		found = false; thread_id = device.lcd_thread_id;
+
+#if DEBUGGING_ON
+		LOG(DEBUG) << device.getStrID() << " waiting for LCD screen thread";
+#endif
+		{
+			std::lock_guard<std::mutex> lock(this->threads_mtx_);
+			this->threads_.erase(
+				std::remove_if(this->threads_.begin(), this->threads_.end(), find_thread),
+				this->threads_.end()
+			);
+		}
+
+		if(! found) {
+			GKSysLog(LOG_WARNING, WARNING, "LCD screen thread not found !");
+		}
+	}
+}
+
 void KeyboardDriver::closeDevice(const BusNumDeviceID & det)
 {
 	const std::string devID = KeyboardDriver::getDeviceID(det.getBus(), det.getNum());
@@ -778,60 +838,11 @@ void KeyboardDriver::closeDevice(const BusNumDeviceID & det)
 #endif
 
 		device.disableListeningThread();
-
-		bool found = false;
-		std::thread::id thread_id = device.listen_thread_id;
-
-		auto find_thread = [&thread_id, &found] (auto & item) -> const bool {
-			if( thread_id == item.get_id() ) {
-				found = true;
-#if DEBUGGING_ON
-				LOG(DEBUG1) << "thread found !";
-#endif
-				item.join();
-				return true;
-			}
-			return false;
-		};
-
-#if DEBUGGING_ON
-		LOG(DEBUG) << device.getStrID() << " waiting for listening thread";
-#endif
-		{
-			std::lock_guard<std::mutex> lock(this->threads_mtx_);
-			this->threads_.erase( std::remove_if(this->threads_.begin(), this->threads_.end(), find_thread), this->threads_.end() );
-		}
-
-		if(! found) {
-			GKSysLog(LOG_WARNING, WARNING, "listening thread not found !");
-		}
-
-		/* Caps::GK_LCD_SCREEN */
-		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-			found = false;
-			thread_id = device.lcd_thread_id;
-
-#if DEBUGGING_ON
-			LOG(DEBUG) << device.getStrID() << " waiting for LCD screen thread";
-#endif
-			{
-				std::lock_guard<std::mutex> lock(this->threads_mtx_);
-				this->threads_.erase( std::remove_if(this->threads_.begin(), this->threads_.end(), find_thread), this->threads_.end() );
-			}
-
-			if(! found) {
-				GKSysLog(LOG_WARNING, WARNING, "LCD screen thread not found !");
-			}
-		}
-
+		this->joinDeviceThreads(device);
 		this->resetDeviceState(device);
-
-		/* reset device state needs pointer */
-		device.destroyMacrosManager();
-
+		device.destroyMacrosManager(); /* reset device state needs this pointer */
 		this->releaseUSBDeviceInterfaces(device);
 		this->closeUSBDevice(device);
-
 		this->initialized_devices_.erase(devID);
 	}
 	catch (const std::out_of_range& oor) {

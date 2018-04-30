@@ -190,6 +190,7 @@ class KeyboardDriver
 		void runMacro(const std::string & devID);
 
 		void resetDeviceState(USBDevice & device);
+		void joinDeviceThreads(const USBDevice & device);
 };
 
 } // namespace GLogiK
