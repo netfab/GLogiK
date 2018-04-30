@@ -24,6 +24,7 @@
 #include <iostream>
 #include <utility>
 #include <chrono>
+#include <algorithm>
 
 #include "lib/utils/utils.h"
 #include "lib/dbus/GKDBus.h"
@@ -779,52 +780,48 @@ void KeyboardDriver::closeDevice(const BusNumDeviceID & det)
 		device.disableListeningThread();
 
 		bool found = false;
+		std::thread::id thread_id = device.listen_thread_id;
 
+		auto find_thread = [&thread_id, &found] (auto & item) -> const bool {
+			if( thread_id == item.get_id() ) {
+				found = true;
+#if DEBUGGING_ON
+				LOG(DEBUG1) << "thread found !";
+#endif
+				item.join();
+				return true;
+			}
+			return false;
+		};
+
+#if DEBUGGING_ON
+		LOG(DEBUG) << device.getStrID() << " waiting for listening thread";
+#endif
 		{
 			std::lock_guard<std::mutex> lock(this->threads_mtx_);
-			for(auto it = this->threads_.begin(); it != this->threads_.end();) {
-				if( device.listen_thread_id == (*it).get_id() ) {
-					found = true;
+			this->threads_.erase( std::remove_if(this->threads_.begin(), this->threads_.end(), find_thread), this->threads_.end() );
+		}
+
+		if(! found) {
+			GKSysLog(LOG_WARNING, WARNING, "listening thread not found !");
+		}
+
+		/* Caps::GK_LCD_SCREEN */
+		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+			found = false;
+			thread_id = device.lcd_thread_id;
+
 #if DEBUGGING_ON
-					LOG(INFO) << device.getStrID() << " waiting for listening thread";
+			LOG(DEBUG) << device.getStrID() << " waiting for LCD screen thread";
 #endif
-					(*it).join();
-					it = this->threads_.erase(it);
-					break;
-				}
-				else {
-					it++;
-				}
+			{
+				std::lock_guard<std::mutex> lock(this->threads_mtx_);
+				this->threads_.erase( std::remove_if(this->threads_.begin(), this->threads_.end(), find_thread), this->threads_.end() );
 			}
 
 			if(! found) {
-				GKSysLog(LOG_WARNING, WARNING, "listening thread not found !");
+				GKSysLog(LOG_WARNING, WARNING, "LCD screen thread not found !");
 			}
-
-			/* Caps::GK_LCD_SCREEN */
-			if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-				found = false;
-
-				for(auto it = this->threads_.begin(); it != this->threads_.end();) {
-					if( device.lcd_thread_id == (*it).get_id() ) {
-						found = true;
-#if DEBUGGING_ON
-						LOG(INFO) << device.getStrID() << " waiting for LCD screen thread";
-#endif
-						(*it).join();
-						it = this->threads_.erase(it);
-						break;
-					}
-					else {
-						it++;
-					}
-				}
-
-				if(! found) {
-					GKSysLog(LOG_WARNING, WARNING, "listening thread not found !");
-				}
-			}
-
 		}
 
 		this->resetDeviceState(device);
