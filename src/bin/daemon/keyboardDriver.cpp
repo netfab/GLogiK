@@ -30,6 +30,7 @@
 #include "lib/dbus/GKDBus.h"
 #include "lib/shared/glogik.h"
 
+#include "LCDScreenPluginsManager.h"
 #include "daemonControl.h"
 #include "keyboardDriver.h"
 
@@ -513,6 +514,8 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 #if DEBUGGING_ON
 		LOG(INFO) << device.getStrID() << " spawned LCD screen thread for " << device.getName();
 #endif
+
+		LCDScreenPluginsManager LCDPlugins;
 
 		unsigned int c = 0;
 		while( DaemonControl::isDaemonRunning() and device.getThreadsStatus() ) {

@@ -54,6 +54,12 @@ GLogiK=$PWD/.. CD=. {
 		binaries=bin/ {
 			daemon=daemon/ {
 				Makefile.am
+				LCDPlugins=LCDPlugins/ {
+					foo.cpp
+					foo.h
+					LCDPlugin.cpp
+					LCDPlugin.h
+				}
 				main.cpp
 				client.cpp
 				client.h
@@ -69,6 +75,8 @@ GLogiK=$PWD/.. CD=. {
 				devicesManager.h
 				keyboardDriver.cpp
 				keyboardDriver.h
+				LCDScreenPluginsManager.cpp
+				LCDScreenPluginsManager.h
 				libUSB.cpp
 				libUSB.h
 				logitechG510.cpp

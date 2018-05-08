@@ -99,6 +99,11 @@ inline Caps operator | (Caps lhs, Caps rhs)
 	return (Caps)(static_cast<T>(lhs) | static_cast<T>(rhs));
 }
 
+enum class LCDScreenPlugin : uint64_t
+{
+	GK_LCD_PLUGIN_FOO = one << 0,
+};
+
 } // namespace GLogiK
 
 #endif
