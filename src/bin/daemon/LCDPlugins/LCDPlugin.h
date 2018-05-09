@@ -24,6 +24,7 @@
 
 #include <vector>
 
+#include "PBM.h"
 #include "PBMFile.h"
 
 namespace GLogiK
@@ -38,10 +39,7 @@ class LCDPlugin
 	protected:
 		LCDPlugin(void);
 
-		const unsigned char* getXMPData(void) const;
-
 	private:
-		std::vector<unsigned char> XMPData;
 
 };
 

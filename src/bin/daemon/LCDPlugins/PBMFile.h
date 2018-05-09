@@ -35,10 +35,18 @@ class PBMFile
 	public:
 		~PBMFile(void);
 
+		void readPBM(
+			const std::string & path,
+			const unsigned int expected_width,
+			const unsigned int expected_height);
+
+		const PBMDataArray & getPBMData(void);
+
 	protected:
 		PBMFile(void);
 
 	private:
+		PBMDataArray pbm_data_;
 
 		void parsePBMHeader(
 			std::ifstream & pbm,
@@ -48,12 +56,6 @@ class PBMFile
 
 		void extractPBMData(
 			std::ifstream & pbm,
-			PBMDataArray & pbm_data);
-
-		void readPBM(
-			const std::string & path,
-			const unsigned int expected_width,
-			const unsigned int expected_height,
 			PBMDataArray & pbm_data);
 
 };

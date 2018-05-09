@@ -34,6 +34,57 @@ PBMFile::PBMFile() {
 PBMFile::~PBMFile() {
 }
 
+void PBMFile::readPBM(
+	const std::string & path,
+	const unsigned int expected_width,
+	const unsigned int expected_height)
+{
+	std::ifstream pbm;
+	pbm.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "opening : " << path;
+#endif
+
+	try {
+		pbm.open(path, std::ifstream::in|std::ifstream::binary);
+
+		std::string magic;
+		unsigned int width, height = 0;
+
+		parsePBMHeader(pbm, magic, width, height);
+
+		if( magic != "P4" or width != expected_width or height != expected_height )
+			throw GLogiKExcept("wrong PBM header");
+
+		extractPBMData(pbm, this->pbm_data_);
+
+		pbm.close();
+	}
+	catch (const std::ios_base::failure & e) {
+		LOG(ERROR) << "error opening/reading/closing PBM file : " << e.what();
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << e.what();
+	}
+	/*
+	 * catch std::ios_base::failure on buggy compilers
+	 * should be fixed with gcc >= 7.0
+	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
+	 */
+	catch( const std::exception & e ) {
+		LOG(ERROR) << "(buggy exception) error opening/reading/closing PBM file : " << e.what();
+	}
+
+	if( pbm.is_open() )
+		pbm.close();
+}
+
+const PBMDataArray & PBMFile::getPBMData(void)
+{
+	return this->pbm_data_;
+}
+
 void PBMFile::parsePBMHeader(
 	std::ifstream & pbm,
 	std::string & magic,
@@ -50,9 +101,11 @@ void PBMFile::parsePBMHeader(
 	std::getline(pbm, ex, c);
 	height = to_uint(ex);
 
+#if DEBUGGING_ON
 	LOG(DEBUG2)	<< "magic: " << magic
 				<< " - width: " << width
 				<< " - height: " << height << "\n";
+#endif
 }
 
 void PBMFile::extractPBMData(
@@ -61,8 +114,10 @@ void PBMFile::extractPBMData(
 {
 	pbm.read(reinterpret_cast<char*>(&pbm_data.front()), pbm_data.size());
 
+#if DEBUGGING_ON
 	LOG(DEBUG2)	<< "extracted bytes: " << pbm.gcount()
 				<< " - expected: " << pbm_data.size() << std::endl;
+#endif
 
 	if( pbm_data.size() != pbm.gcount() )
 		throw GLogiKExcept("unexpected numbers of bytes read");
@@ -71,41 +126,6 @@ void PBMFile::extractPBMData(
 	pbm.ignore();
 	if( ! pbm.eof() )
 		throw GLogiKExcept("EoF NOT reached, that is unexpected");
-}
-
-void PBMFile::readPBM(
-	const std::string & path,
-	const unsigned int expected_width,
-	const unsigned int expected_height,
-	PBMDataArray & pbm_data)
-{
-	std::ifstream pbm;
-	pbm.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-	try {
-		pbm.open(path, std::ifstream::in|std::ifstream::binary);
-
-		std::string magic;
-		unsigned int width, height = 0;
-
-		parsePBMHeader(pbm, magic, width, height);
-
-		if( magic != "P4" or width != expected_width or height != expected_height )
-			throw GLogiKExcept("wrong PBM header");
-
-		extractPBMData(pbm, pbm_data);
-
-		pbm.close();
-	}
-	catch (const std::ifstream::failure & e) {
-		LOG(ERROR) << "error opening/reading/closing PBM file : " << e.what();
-	}
-	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << e.what();
-	}
-
-	if( pbm.is_open() )
-		pbm.close();
 }
 
 } // namespace GLogiK

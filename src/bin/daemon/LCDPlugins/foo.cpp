@@ -21,13 +21,21 @@
 
 #include "foo.h"
 
+#include "PBM.h"
+
 namespace GLogiK
 {
 
 foo::foo() {
+	this->init();
 }
 
 foo::~foo() {
+}
+
+void foo::init(void)
+{
+	this->readPBM("/tmp/outbin.pbm", PBM_WIDTH, PBM_HEIGHT);
 }
 
 } // namespace GLogiK

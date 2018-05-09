@@ -34,6 +34,8 @@ class foo
 		foo(void);
 		~foo(void);
 
+		void init(void);
+
 	protected:
 
 	private:

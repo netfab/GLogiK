@@ -30,9 +30,5 @@ LCDPlugin::LCDPlugin() {
 LCDPlugin::~LCDPlugin() {
 }
 
-const unsigned char* LCDPlugin::getXMPData() const {
-	return XMPData.data();
-}
-
 } // namespace GLogiK
 
