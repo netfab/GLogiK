@@ -24,10 +24,13 @@
 namespace GLogiK
 {
 
-LCDPlugin::LCDPlugin() {
+LCDPlugin::LCDPlugin()
+	:	initialized_(false)
+{
 }
 
-LCDPlugin::~LCDPlugin() {
+LCDPlugin::~LCDPlugin()
+{
 }
 
 } // namespace GLogiK

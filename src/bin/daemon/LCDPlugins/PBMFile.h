@@ -37,8 +37,8 @@ class PBMFile
 
 		void readPBM(
 			const std::string & path,
-			const unsigned int expected_width,
-			const unsigned int expected_height);
+			const unsigned int expected_width = PBM_WIDTH,
+			const unsigned int expected_height = PBM_HEIGHT);
 
 		const PBMDataArray & getPBMData(void);
 
@@ -57,6 +57,8 @@ class PBMFile
 		void extractPBMData(
 			std::ifstream & pbm,
 			PBMDataArray & pbm_data);
+
+		void closePBM(std::ifstream & pbm);
 
 };
 

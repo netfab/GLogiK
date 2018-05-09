@@ -34,10 +34,15 @@ class LCDPlugin
 	:	public PBMFile
 {
 	public:
-		~LCDPlugin(void);
+		virtual ~LCDPlugin(void);
+
+		virtual void init(void) = 0;
 
 	protected:
 		LCDPlugin(void);
+
+		bool initialized_;
+
 
 	private:
 

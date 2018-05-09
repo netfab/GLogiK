@@ -40,6 +40,16 @@ LCDScreenPluginsManager::LCDScreenPluginsManager() {
 		this->stopLCDPlugins();
 		throw GLogiKBadAlloc("LCD screen plugin bad allocation");
 	}
+
+	/* initialize each plugin */
+	for(const auto & plugin : this->plugins_) {
+		try {
+			plugin->init();
+		}
+		catch (const GLogiKExcept & e) {
+			LOG(ERROR) << e.what();
+		}
+	}
 }
 
 LCDScreenPluginsManager::~LCDScreenPluginsManager() {

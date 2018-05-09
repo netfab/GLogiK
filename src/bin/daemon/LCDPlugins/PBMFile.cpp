@@ -63,9 +63,8 @@ void PBMFile::readPBM(
 	}
 	catch (const std::ios_base::failure & e) {
 		LOG(ERROR) << "error opening/reading/closing PBM file : " << e.what();
-	}
-	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << e.what();
+		this->closePBM(pbm);
+		throw GLogiKExcept("PBM ifstream error");
 	}
 	/*
 	 * catch std::ios_base::failure on buggy compilers
@@ -74,15 +73,24 @@ void PBMFile::readPBM(
 	 */
 	catch( const std::exception & e ) {
 		LOG(ERROR) << "(buggy exception) error opening/reading/closing PBM file : " << e.what();
+		this->closePBM(pbm);
+		throw GLogiKExcept("PBM ifstream error");
 	}
 
 	if( pbm.is_open() )
-		pbm.close();
+		this->closePBM(pbm);
 }
 
 const PBMDataArray & PBMFile::getPBMData(void)
 {
 	return this->pbm_data_;
+}
+
+void PBMFile::closePBM(std::ifstream & pbm)
+{
+	/* disable exceptions */
+	pbm.exceptions(std::ifstream::goodbit);
+	pbm.close();
 }
 
 void PBMFile::parsePBMHeader(

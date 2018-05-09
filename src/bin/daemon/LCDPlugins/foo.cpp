@@ -27,7 +27,6 @@ namespace GLogiK
 {
 
 foo::foo() {
-	this->init();
 }
 
 foo::~foo() {
@@ -35,7 +34,8 @@ foo::~foo() {
 
 void foo::init(void)
 {
-	this->readPBM("/tmp/outbin.pbm", PBM_WIDTH, PBM_HEIGHT);
+	this->readPBM("/tmp/outbin.pbm"); /* throws on failure */
+	this->initialized_ = true;
 }
 
 } // namespace GLogiK
