@@ -22,17 +22,10 @@
 #ifndef __GLOGIKD_LCD_SCREEN_PLUGINS_MANAGER_H__
 #define __GLOGIKD_LCD_SCREEN_PLUGINS_MANAGER_H__
 
-#include <array>
 #include <vector>
 
+#include "LCDPlugins/PBM.h"
 #include "LCDPlugins/LCDPlugin.h"
-
-#define PBM_HEIGHT 48
-#define PBM_WIDTH 160
-#define PBM_HEIGHT_IN_BYTES ((PBM_HEIGHT + ((8 - (PBM_HEIGHT % 8)) % 8)) / 8)
-#define PBM_WIDTH_IN_BYTES (PBM_WIDTH / 8)
-#define PBM_DATA_IN_BYTES ( PBM_WIDTH_IN_BYTES * PBM_HEIGHT )
-typedef std::array<unsigned char, PBM_DATA_IN_BYTES> PBMDataArray;
 
 namespace GLogiK
 {

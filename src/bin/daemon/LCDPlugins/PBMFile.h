@@ -19,29 +19,42 @@
  *
  */
 
-#ifndef __GLOGIKD_LCD_SCREEN_PLUGIN_H__
-#define __GLOGIKD_LCD_SCREEN_PLUGIN_H__
+#ifndef __GLOGIKD_PBM_FILE_H__
+#define __GLOGIKD_PBM_FILE_H__
 
-#include <vector>
+#include <string>
+#include <fstream>
 
-#include "PBMFile.h"
+#include "PBM.h"
 
 namespace GLogiK
 {
 
-class LCDPlugin
-	:	public PBMFile
+class PBMFile
 {
 	public:
-		~LCDPlugin(void);
+		~PBMFile(void);
 
 	protected:
-		LCDPlugin(void);
-
-		const unsigned char* getXMPData(void) const;
+		PBMFile(void);
 
 	private:
-		std::vector<unsigned char> XMPData;
+
+		void parsePBMHeader(
+			std::ifstream & pbm,
+			std::string & magic,
+			unsigned int & width,
+			unsigned int & height);
+
+		void extractPBMData(
+			std::ifstream & pbm,
+			PBMDataArray & pbm_data);
+
+		void readPBM(
+			const std::string & path,
+			const unsigned int expected_width,
+			const unsigned int expected_height,
+			PBMDataArray & pbm_data);
 
 };
 

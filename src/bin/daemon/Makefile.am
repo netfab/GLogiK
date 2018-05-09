@@ -53,10 +53,15 @@ GLogiKd_SOURCES = \
 		%D%/clientsSignals.h \
 		%D%/client.cpp \
 		%D%/client.h \
+		%D%/LCDScreenPluginsManager.cpp \
+		%D%/LCDScreenPluginsManager.h
+
+GLogiKd_SOURCES += \
+		%D%/LCDPlugins/PBM.h \
+		%D%/LCDPlugins/PBMFile.cpp \
+		%D%/LCDPlugins/PBMFile.h \
 		%D%/LCDPlugins/LCDPlugin.cpp \
 		%D%/LCDPlugins/LCDPlugin.h \
 		%D%/LCDPlugins/foo.cpp \
-		%D%/LCDPlugins/foo.h \
-		%D%/LCDScreenPluginsManager.cpp \
-		%D%/LCDScreenPluginsManager.h
+		%D%/LCDPlugins/foo.h
 

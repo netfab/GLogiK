@@ -59,6 +59,9 @@ GLogiK=$PWD/.. CD=. {
 					foo.h
 					LCDPlugin.cpp
 					LCDPlugin.h
+					PBMFile.cpp
+					PBMFile.h
+					PBM.h
 				}
 				main.cpp
 				client.cpp

@@ -34,7 +34,8 @@
 namespace NSGKUtils
 {
 
-const std::string to_string(const char* s) {
+const std::string to_string(const char* s)
+{
 	if(s == nullptr)
 		return "";
 
@@ -50,9 +51,29 @@ const std::string to_string(const char* s) {
 		error += e.what();
 		throw GLogiKExcept(error);
 	}
-};
+}
 
-const std::string getHexRGB(const uint8_t red, const uint8_t green, const uint8_t blue) {
+const unsigned int to_uint(const std::string & s)
+{
+	unsigned int ret = 0;
+	try {
+		ret = std::stoi(s);
+	}
+	catch (const std::invalid_argument& ia) {
+		throw GLogiKExcept("stoi invalid argument");
+	}
+	catch (const std::out_of_range& oor) {
+		throw GLogiKExcept("stoi out of range");
+	}
+
+	return ret;
+}
+
+const std::string getHexRGB(
+	const uint8_t red,
+	const uint8_t green,
+	const uint8_t blue)
+{
 	std::ostringstream ret("", std::ios_base::app);
 	ret << std::hex << std::setfill('0')
 		<< std::setw(2) << to_uint(red) << " "

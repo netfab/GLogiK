@@ -19,31 +19,25 @@
  *
  */
 
-#ifndef __GLOGIKD_LCD_SCREEN_PLUGIN_H__
-#define __GLOGIKD_LCD_SCREEN_PLUGIN_H__
+#ifndef __GLOGIKD_PBM_H__
+#define __GLOGIKD_PBM_H__
 
-#include <vector>
+#include <array>
 
-#include "PBMFile.h"
+#define PBM_HEIGHT 48
+#define PBM_WIDTH 160
+#define PBM_HEIGHT_IN_BYTES (PBM_HEIGHT / 8)
+#define PBM_WIDTH_IN_BYTES (PBM_WIDTH / 8)
+#define PBM_DATA_IN_BYTES ( PBM_WIDTH_IN_BYTES * PBM_HEIGHT )
+
+// formula when PBM_HEIGHT not multiple of 8
+// TODO do we need it ?
+//#define PBM_HEIGHT_IN_BYTES ((PBM_HEIGHT + ((8 - (PBM_HEIGHT % 8)) % 8)) / 8)
 
 namespace GLogiK
 {
 
-class LCDPlugin
-	:	public PBMFile
-{
-	public:
-		~LCDPlugin(void);
-
-	protected:
-		LCDPlugin(void);
-
-		const unsigned char* getXMPData(void) const;
-
-	private:
-		std::vector<unsigned char> XMPData;
-
-};
+typedef std::array<unsigned char, PBM_DATA_IN_BYTES> PBMDataArray;
 
 } // namespace GLogiK
 
