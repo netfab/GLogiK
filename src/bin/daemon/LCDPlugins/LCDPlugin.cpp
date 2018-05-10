@@ -19,18 +19,30 @@
  *
  */
 
+#include "lib/utils/utils.h"
+
 #include "LCDPlugin.h"
 
 namespace GLogiK
 {
 
+using namespace NSGKUtils;
+
 LCDPlugin::LCDPlugin()
-	:	initialized_(false)
+	:	initialized_(false), name_("unknown")
 {
 }
 
 LCDPlugin::~LCDPlugin()
 {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "deleting " << this->name_ << " LCD plugin";
+#endif
+}
+
+const bool LCDPlugin::isInitialized(void) const
+{
+	return this->initialized_;
 }
 
 } // namespace GLogiK

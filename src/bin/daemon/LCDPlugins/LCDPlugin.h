@@ -23,6 +23,7 @@
 #define __GLOGIKD_LCD_SCREEN_PLUGIN_H__
 
 #include <vector>
+#include <string>
 
 #include "PBM.h"
 #include "PBMFile.h"
@@ -38,11 +39,13 @@ class LCDPlugin
 
 		virtual void init(void) = 0;
 
+		const bool isInitialized(void) const;
+
 	protected:
 		LCDPlugin(void);
 
 		bool initialized_;
-
+		std::string name_;
 
 	private:
 

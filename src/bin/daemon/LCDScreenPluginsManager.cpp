@@ -50,6 +50,19 @@ LCDScreenPluginsManager::LCDScreenPluginsManager() {
 			LOG(ERROR) << e.what();
 		}
 	}
+
+	/* delete all uninitialized plugins */
+	for(auto & plugin : this->plugins_) {
+		if( ! plugin->isInitialized() ) {
+			delete plugin; plugin = nullptr;
+		}
+	}
+
+	auto is_null = [] (auto & item) -> const bool { return (item == nullptr); };
+	this->plugins_.erase(
+		std::remove_if(this->plugins_.begin(), this->plugins_.end(), is_null),
+		this->plugins_.end()
+	);
 }
 
 LCDScreenPluginsManager::~LCDScreenPluginsManager() {

@@ -27,6 +27,7 @@ namespace GLogiK
 {
 
 foo::foo() {
+	this->name_ = "foo";
 }
 
 foo::~foo() {
