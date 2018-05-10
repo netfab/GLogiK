@@ -60,7 +60,7 @@ class LibUSB
 		void releaseUSBDeviceInterfaces(USBDevice & device);
 
 		void sendControlRequest(
-			const USBDevice & device,
+			USBDevice & device,
 			uint16_t wValue,
 			uint16_t wIndex,
 			unsigned char * data,
@@ -69,6 +69,13 @@ class LibUSB
 
 		int performInterruptTransfer(
 			USBDevice & device,
+			unsigned int timeout
+		);
+
+		int performLCDScreenInterruptTransfer(
+			USBDevice & device,
+			unsigned char* buffer,
+			int buffer_length,
 			unsigned int timeout
 		);
 

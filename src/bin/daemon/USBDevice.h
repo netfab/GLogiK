@@ -29,6 +29,7 @@
 #include <string>
 #include <thread>
 #include <chrono>
+#include <mutex>
 
 #include "DeviceID.h"
 
@@ -85,6 +86,7 @@ class USBDevice
 		const bool getThreadsStatus(void) const { return this->threads_status; }
 		void deactivateThreads(void) { this->threads_status = false; }
 		const int getLastInterruptTransferLength(void) const { return this->last_interrupt_transfer_length; }
+		const int getLastInterruptWriteTransferLength(void) const { return this->last_interrupt_write_transfer_length; }
 		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
 		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
 
@@ -95,7 +97,9 @@ class USBDevice
 		uint8_t rgb[3];
 
 		int last_interrupt_transfer_length;
-		uint8_t keys_endpoint;
+		int last_interrupt_write_transfer_length;
+		unsigned char keys_endpoint;
+		unsigned char lcd_endpoint;
 		libusb_device *usb_device;
 		libusb_device_handle *usb_handle;
 		std::vector<libusb_endpoint_descriptor> endpoints;
@@ -103,6 +107,7 @@ class USBDevice
 		std::vector<int> to_attach;
 
 		std::atomic<bool> threads_status;
+		std::mutex libusb_mtx;
 };
 
 } // namespace GLogiK

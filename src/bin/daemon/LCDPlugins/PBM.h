@@ -30,6 +30,9 @@
 #define PBM_WIDTH_IN_BYTES (PBM_WIDTH / 8)
 #define PBM_DATA_IN_BYTES ( PBM_WIDTH_IN_BYTES * PBM_HEIGHT )
 
+/* LCD header length */
+#define LCD_BUFFER_OFFSET 32
+
 // formula when PBM_HEIGHT not multiple of 8
 // TODO do we need it ?
 //#define PBM_HEIGHT_IN_BYTES ((PBM_HEIGHT + ((8 - (PBM_HEIGHT % 8)) % 8)) / 8)
@@ -38,6 +41,7 @@ namespace GLogiK
 {
 
 typedef std::array<unsigned char, PBM_DATA_IN_BYTES> PBMDataArray;
+typedef std::array<unsigned char, PBM_DATA_IN_BYTES+LCD_BUFFER_OFFSET> LCDDataArray;
 
 } // namespace GLogiK
 

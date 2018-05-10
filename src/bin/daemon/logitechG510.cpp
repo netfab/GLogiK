@@ -267,7 +267,7 @@ void LogitechG510::setDeviceBacklightColor(
 	this->sendControlRequest(device, 0x305, 1, usb_data, 4);
 }
 
-void LogitechG510::setMxKeysLeds(const USBDevice & device) {
+void LogitechG510::setMxKeysLeds(USBDevice & device) {
 	unsigned char leds_mask = 0;
 	for (const auto & l : LogitechG510::leds_mask_ ) {
 		if( device.current_leds_mask & to_type(l.led) )
@@ -292,7 +292,7 @@ void LogitechG510::setMxKeysLeds(const USBDevice & device) {
  *	control of the keyboard.
  *	The following initialization disable (at least) this behavior.
  */
-void LogitechG510::sendUSBDeviceInitialization(const USBDevice & device) {
+void LogitechG510::sendUSBDeviceInitialization(USBDevice & device) {
 	unsigned char usb_data[] = {
 		1, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0,

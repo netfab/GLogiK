@@ -20,6 +20,7 @@
  */
 
 #include <bitset>
+#include <mutex>
 
 #include "lib/utils/utils.h"
 
@@ -417,14 +418,20 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 					/* storing endpoint for later usage */
 					device.endpoints.push_back(*ep);
 
-					/* In: device-to-host */
-					if( to_uint(ep->bEndpointAddress) & LIBUSB_ENDPOINT_IN ) {
-						unsigned int addr = to_uint(ep->bEndpointAddress);
+					unsigned int addr = to_uint(ep->bEndpointAddress);
+					if( addr & LIBUSB_ENDPOINT_IN ) { /* In: device-to-host */
 #if DEBUGGING_ON
 						LOG(DEBUG3) << "found [Keys] endpoint, address 0x" << std::hex << addr
 									<< " MaxPacketSize " << to_uint(ep->wMaxPacketSize);
 #endif
 						device.keys_endpoint = addr & 0xff;
+					}
+					else { /* Out: host-to-device */
+#if DEBUGGING_ON
+						LOG(DEBUG3) << "found [LCD] endpoint, address 0x" << std::hex << addr
+									<< " MaxPacketSize " << to_uint(ep->wMaxPacketSize);
+#endif
+						device.lcd_endpoint = addr & 0xff;
 					}
 
 #if DEBUGGING_ON
@@ -491,16 +498,20 @@ void LibUSB::releaseUSBDeviceInterfaces(USBDevice & device) {
 }
 
 void LibUSB::sendControlRequest(
-	const USBDevice & device,
+	USBDevice & device,
 	uint16_t wValue,
 	uint16_t wIndex,
 	unsigned char * data,
 	uint16_t wLength)
 {
-	int ret = libusb_control_transfer( device.usb_handle,
-		LIBUSB_ENDPOINT_OUT|LIBUSB_REQUEST_TYPE_CLASS|LIBUSB_RECIPIENT_INTERFACE,
-		LIBUSB_REQUEST_SET_CONFIGURATION, /* 0x09 */
-		wValue, wIndex, data, wLength, 10000 );
+	int ret = 0;
+	{
+		std::lock_guard<std::mutex> lock(device.libusb_mtx);
+		ret = libusb_control_transfer( device.usb_handle,
+			LIBUSB_ENDPOINT_OUT|LIBUSB_REQUEST_TYPE_CLASS|LIBUSB_RECIPIENT_INTERFACE,
+			LIBUSB_REQUEST_SET_CONFIGURATION, /* 0x09 */
+			wValue, wIndex, data, wLength, 10000 );
+	}
 	if( ret < 0 ) {
 		GKSysLog(LOG_ERR, ERROR, "error sending control request");
 		this->USBError(ret);
@@ -514,16 +525,50 @@ void LibUSB::sendControlRequest(
 
 int LibUSB::performInterruptTransfer(
 	USBDevice & device,
-	unsigned int timeout
-) {
-	int ret = libusb_interrupt_transfer(
-		device.usb_handle,
-		device.keys_endpoint,
-		(unsigned char*)device.keys_buffer,
-		this->interrupt_buffer_max_length_,
-		&(device.last_interrupt_transfer_length),
-		timeout
-	);
+	unsigned int timeout)
+{
+	int ret = 0;
+
+	{
+		std::lock_guard<std::mutex> lock(device.libusb_mtx);
+		ret = libusb_interrupt_transfer(
+			device.usb_handle,
+			device.keys_endpoint,
+			(unsigned char*)device.keys_buffer,
+			this->interrupt_buffer_max_length_,
+			&(device.last_interrupt_transfer_length),
+			timeout
+		);
+	}
+
+	return ret;
+}
+
+int LibUSB::performLCDScreenInterruptTransfer(
+	USBDevice & device,
+	unsigned char* buffer,
+	int buffer_length,
+	unsigned int timeout)
+{
+	int ret = 0;
+	{
+		std::lock_guard<std::mutex> lock(device.libusb_mtx);
+		ret = libusb_interrupt_transfer(
+			device.usb_handle,
+			device.lcd_endpoint,
+			buffer,
+			buffer_length,
+			&(device.last_interrupt_write_transfer_length),
+			timeout
+		);
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "sent " << device.last_interrupt_write_transfer_length << " bytes - expected: " << buffer_length;
+#endif
+	if( ret < 0 ) {
+		this->USBError(ret);
+	}
 
 	return ret;
 }

@@ -128,8 +128,8 @@ class KeyboardDriver
 		virtual const bool checkMacroKey(USBDevice & device) = 0;
 		virtual const bool checkMediaKey(USBDevice & device) = 0;
 
-		virtual void sendUSBDeviceInitialization(const USBDevice & device);
-		virtual void setMxKeysLeds(const USBDevice & device);
+		virtual void sendUSBDeviceInitialization(USBDevice & device);
+		virtual void setMxKeysLeds(USBDevice & device);
 		virtual void setDeviceBacklightColor(
 			USBDevice & device,
 			const uint8_t r=0xFF,

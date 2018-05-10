@@ -48,6 +48,7 @@ USBDevice::USBDevice(
 			exit_macro_record_mode(false),
 			strID(id),
 			last_interrupt_transfer_length(0),
+			last_interrupt_write_transfer_length(0),
 			keys_endpoint(0),
 			usb_device(nullptr),
 			usb_handle(nullptr),
@@ -101,7 +102,9 @@ void USBDevice::operator=(const USBDevice& dev)
 		std::begin(this->rgb)
 	);
 	this->last_interrupt_transfer_length = dev.last_interrupt_transfer_length;
+	this->last_interrupt_write_transfer_length = dev.last_interrupt_write_transfer_length;
 	this->keys_endpoint = dev.keys_endpoint;
+	this->lcd_endpoint = dev.lcd_endpoint;
 	this->usb_device = dev.usb_device;
 	this->usb_handle = dev.usb_handle;
 	this->endpoints = dev.endpoints;

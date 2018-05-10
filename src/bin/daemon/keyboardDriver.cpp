@@ -140,7 +140,7 @@ void KeyboardDriver::notImplemented(const char* func) {
 	GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
 }
 
-void KeyboardDriver::setMxKeysLeds(const USBDevice & device) {
+void KeyboardDriver::setMxKeysLeds(USBDevice & device) {
 	this->notImplemented(__func__);
 }
 
@@ -153,7 +153,7 @@ void KeyboardDriver::setDeviceBacklightColor(
 	this->notImplemented(__func__);
 }
 
-void KeyboardDriver::sendUSBDeviceInitialization(const USBDevice & device) {
+void KeyboardDriver::sendUSBDeviceInitialization(USBDevice & device) {
 	this->notImplemented(__func__);
 }
 
@@ -525,7 +525,14 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(400));
 			if( c == 25 ) { /* 10 seconds with a 400 ms granularity */
-				LOG(INFO) << "refresh LCD screen for " << device.getName();
+				int ret = this->performLCDScreenInterruptTransfer(
+					device,
+					LCDPlugins.getNextLCDScreenBuffer().data(),
+					LCDPlugins.getNextLCDScreenBuffer().size(),
+					1000);
+				LOG(INFO) << "refresh LCD screen for " << device.getName()
+							<< " ret: " << ret
+							<< " length: " << device.getLastInterruptWriteTransferLength();
 				c = 0;
 			}
 

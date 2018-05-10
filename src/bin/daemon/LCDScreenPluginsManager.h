@@ -36,13 +36,18 @@ class LCDScreenPluginsManager
 		LCDScreenPluginsManager(void);
 		~LCDScreenPluginsManager(void);
 
+		LCDDataArray & getNextLCDScreenBuffer(void);
+
 	protected:
 
 	private:
 		std::vector<LCDPlugin*> plugins_;
+		std::vector<LCDPlugin*>::iterator current_plugin_;
+
+		LCDDataArray lcd_buffer_;
 
 		void stopLCDPlugins(void);
-		void dumpPBMDataIntoLCDBuffer(PBMDataArray & lcd_buffer, const PBMDataArray & pbm_data);
+		void dumpPBMDataIntoLCDBuffer(LCDDataArray & lcd_buffer, const PBMDataArray & pbm_data);
 };
 
 } // namespace GLogiK

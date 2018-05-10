@@ -63,10 +63,35 @@ LCDScreenPluginsManager::LCDScreenPluginsManager() {
 		std::remove_if(this->plugins_.begin(), this->plugins_.end(), is_null),
 		this->plugins_.end()
 	);
+
+	this->current_plugin_ = this->plugins_.begin();
 }
 
 LCDScreenPluginsManager::~LCDScreenPluginsManager() {
 	this->stopLCDPlugins();
+}
+
+LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
+{
+	/* we must check this in case there is no plugin in the container */
+	if(this->current_plugin_ != this->plugins_.end() )
+		this->current_plugin_++;
+
+	if(this->current_plugin_ == this->plugins_.end() )
+		this->current_plugin_ = this->plugins_.begin();
+
+	// FIXME return buffer when no plugin
+
+	if(this->current_plugin_ != this->plugins_.end() )
+		this->dumpPBMDataIntoLCDBuffer(this->lcd_buffer_, (*this->current_plugin_)->getPBMData());
+	else
+		this->lcd_buffer_.fill(0x0);
+
+	std::fill_n(this->lcd_buffer_.begin(), LCD_BUFFER_OFFSET, 0);
+	/* the keyboard needs this magic byte */
+	this->lcd_buffer_[0] = 0x03;
+
+	return this->lcd_buffer_;
 }
 
 void LCDScreenPluginsManager::stopLCDPlugins(void) {
@@ -133,7 +158,7 @@ void LCDScreenPluginsManager::stopLCDPlugins(void) {
  *	A2		pixels of the 43-pixel high display.)
  *
  */
-void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(PBMDataArray & lcd_buffer, const PBMDataArray & pbm_data)
+void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(LCDDataArray & lcd_buffer, const PBMDataArray & pbm_data)
 {
 	for(unsigned int row = 0; row < PBM_HEIGHT_IN_BYTES; ++row) {
 		unsigned int lcd_col = 0;
@@ -152,7 +177,7 @@ void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(PBMDataArray & lcd_buffer
 							<< " bit: " << bit << "\n";
 #endif
 
-				lcd_buffer[lcd_col + index_offset] =
+				lcd_buffer[LCD_BUFFER_OFFSET + lcd_col + index_offset] =
 					(((pbm_data[pbm_byte + (PBM_WIDTH_IN_BYTES * 0) + index_offset] >> bit) & 1) << 0 ) |
 					(((pbm_data[pbm_byte + (PBM_WIDTH_IN_BYTES * 1) + index_offset] >> bit) & 1) << 1 ) |
 					(((pbm_data[pbm_byte + (PBM_WIDTH_IN_BYTES * 2) + index_offset] >> bit) & 1) << 2 ) |
