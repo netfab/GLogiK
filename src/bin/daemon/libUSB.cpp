@@ -504,6 +504,8 @@ void LibUSB::sendControlRequest(
 	unsigned char * data,
 	uint16_t wLength)
 {
+	yield_for(std::chrono::microseconds(100));
+
 	int ret = 0;
 	{
 		std::lock_guard<std::mutex> lock(device.libusb_mtx);
@@ -527,8 +529,9 @@ int LibUSB::performInterruptTransfer(
 	USBDevice & device,
 	unsigned int timeout)
 {
-	int ret = 0;
+	yield_for(std::chrono::microseconds(100));
 
+	int ret = 0;
 	{
 		std::lock_guard<std::mutex> lock(device.libusb_mtx);
 		ret = libusb_interrupt_transfer(
@@ -539,6 +542,10 @@ int LibUSB::performInterruptTransfer(
 			&(device.last_interrupt_transfer_length),
 			timeout
 		);
+	}
+
+	if(ret != LIBUSB_ERROR_TIMEOUT and ret < 0 ) {
+		this->USBError(ret);
 	}
 
 	return ret;

@@ -517,7 +517,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 
 		LCDScreenPluginsManager LCDPlugins;
 
-		unsigned int c = 0;
+		unsigned int c = 21;
 		while( DaemonControl::isDaemonRunning() and device.getThreadsStatus() ) {
 			this->checkDeviceFatalErrors(device);
 			if( ! device.getThreadsStatus() )
@@ -530,9 +530,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 					LCDPlugins.getNextLCDScreenBuffer().data(),
 					LCDPlugins.getNextLCDScreenBuffer().size(),
 					1000);
-				LOG(INFO) << "refresh LCD screen for " << device.getName()
-							<< " ret: " << ret
-							<< " length: " << device.getLastInterruptWriteTransferLength();
+				LOG(INFO) << "refresh LCD screen for " << device.getName() << " - ret: " << ret;
 				c = 0;
 			}
 

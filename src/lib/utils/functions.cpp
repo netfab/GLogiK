@@ -23,6 +23,7 @@
 #include <stdexcept>
 #include <iomanip>
 #include <sstream>
+#include <thread>
 
 #define UTILS_COMPILATION 1
 
@@ -80,6 +81,15 @@ const std::string getHexRGB(
 		<< std::setw(2) << to_uint(green) << " "
 		<< std::setw(2) << to_uint(blue);
 	return ret.str();
+}
+
+void yield_for(std::chrono::microseconds us)
+{
+	auto start = std::chrono::high_resolution_clock::now();
+	auto end = start + us;
+	do {
+		std::this_thread::yield();
+	} while (std::chrono::high_resolution_clock::now() < end);
 }
 
 } // namespace NSGKUtils

@@ -28,6 +28,7 @@
 
 #include <string>
 #include <type_traits>
+#include <chrono>
 
 namespace NSGKUtils
 {
@@ -49,6 +50,8 @@ const std::string getHexRGB(
 	const uint8_t red,
 	const uint8_t green,
 	const uint8_t blue);
+
+void yield_for(std::chrono::microseconds us);
 
 } // namespace NSGKUtils
 
