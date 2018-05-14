@@ -22,6 +22,7 @@
 #ifndef __GLOGIKD_PBM_FILE_H__
 #define __GLOGIKD_PBM_FILE_H__
 
+#include <vector>
 #include <string>
 #include <fstream>
 
@@ -30,6 +31,15 @@
 namespace GLogiK
 {
 
+struct PBMFrame
+{
+	PBMFrame(const unsigned short i)
+		:	max_index(i) {}
+
+	unsigned short max_index;
+	PBMDataArray pbm_data;
+};
+
 class PBMFile
 {
 	public:
@@ -37,6 +47,7 @@ class PBMFile
 
 		void readPBM(
 			const std::string & path,
+			const unsigned short max_index = 0,
 			const unsigned int expected_width = PBM_WIDTH,
 			const unsigned int expected_height = PBM_HEIGHT);
 
@@ -46,7 +57,9 @@ class PBMFile
 		PBMFile(void);
 
 	private:
-		PBMDataArray pbm_data_;
+		unsigned short current_index_;
+		std::vector<PBMFrame> frames_;
+		std::vector<PBMFrame>::iterator current_frame_;
 
 		void parsePBMHeader(
 			std::ifstream & pbm,

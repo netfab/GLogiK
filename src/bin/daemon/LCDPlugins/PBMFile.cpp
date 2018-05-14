@@ -28,7 +28,9 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-PBMFile::PBMFile() {
+PBMFile::PBMFile()
+	:	current_index_(0)
+{
 }
 
 PBMFile::~PBMFile() {
@@ -36,6 +38,7 @@ PBMFile::~PBMFile() {
 
 void PBMFile::readPBM(
 	const std::string & path,
+	const unsigned short max_index,
 	const unsigned int expected_width,
 	const unsigned int expected_height)
 {
@@ -57,7 +60,8 @@ void PBMFile::readPBM(
 		if( magic != "P4" or width != expected_width or height != expected_height )
 			throw GLogiKExcept("wrong PBM header");
 
-		extractPBMData(pbm, this->pbm_data_);
+		this->frames_.emplace_back(max_index);
+		extractPBMData(pbm, this->frames_.back().pbm_data);
 
 		pbm.close();
 	}
@@ -79,11 +83,29 @@ void PBMFile::readPBM(
 
 	if( pbm.is_open() )
 		this->closePBM(pbm);
+
+	this->current_frame_ = this->frames_.begin();
 }
 
 const PBMDataArray & PBMFile::getPBMData(void)
 {
-	return this->pbm_data_;
+	/* update internal index and iterator to allow the plugin
+	 * to have multiples PBM loaded and simulate animation */
+
+	this->current_index_++;
+	if(this->current_index_ > (*this->current_frame_).max_index)
+		this->current_frame_++;
+
+	if(this->current_frame_ == this->frames_.end()) {
+		this->current_frame_ = this->frames_.begin();
+		this->current_index_ = 0;
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "frame # " << this->current_index_;
+#endif
+
+	return (*this->current_frame_).pbm_data;
 }
 
 void PBMFile::closePBM(std::ifstream & pbm)

@@ -525,10 +525,11 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(400));
 			if( c == 25 ) { /* 10 seconds with a 400 ms granularity */
+				LCDDataArray & LCDBuffer = LCDPlugins.getNextLCDScreenBuffer();
 				int ret = this->performLCDScreenInterruptTransfer(
 					device,
-					LCDPlugins.getNextLCDScreenBuffer().data(),
-					LCDPlugins.getNextLCDScreenBuffer().size(),
+					LCDBuffer.data(),
+					LCDBuffer.size(),
 					1000);
 				LOG(INFO) << "refresh LCD screen for " << device.getName() << " - ret: " << ret;
 				c = 0;
