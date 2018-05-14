@@ -63,5 +63,7 @@ GLogiKd_SOURCES += \
 		%D%/LCDPlugins/LCDPlugin.cpp \
 		%D%/LCDPlugins/LCDPlugin.h \
 		%D%/LCDPlugins/foo.cpp \
-		%D%/LCDPlugins/foo.h
+		%D%/LCDPlugins/foo.h \
+		%D%/LCDPlugins/bar.cpp \
+		%D%/LCDPlugins/bar.h
 

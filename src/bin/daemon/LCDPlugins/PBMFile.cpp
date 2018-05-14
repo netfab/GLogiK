@@ -87,7 +87,13 @@ void PBMFile::readPBM(
 	this->current_frame_ = this->frames_.begin();
 }
 
-const PBMDataArray & PBMFile::getPBMData(void)
+void PBMFile::resetFrameIndex(void)
+{
+	this->current_frame_ = this->frames_.begin();
+	this->current_index_ = 0;
+}
+
+const PBMDataArray & PBMFile::getNextPBMData(void)
 {
 	/* update internal index and iterator to allow the plugin
 	 * to have multiples PBM loaded and simulate animation */

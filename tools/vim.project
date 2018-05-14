@@ -55,6 +55,8 @@ GLogiK=$PWD/.. CD=. {
 			daemon=daemon/ {
 				Makefile.am
 				LCDPlugins=LCDPlugins/ {
+					bar.cpp
+					bar.h
 					foo.cpp
 					foo.h
 					LCDPlugin.cpp

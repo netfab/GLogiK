@@ -19,36 +19,27 @@
  *
  */
 
-#ifndef __GLOGIKD_LCD_SCREEN_PLUGINS_MANAGER_H__
-#define __GLOGIKD_LCD_SCREEN_PLUGINS_MANAGER_H__
+#ifndef __GLOGIKD_LCD_PLUGIN_BAR_H__
+#define __GLOGIKD_LCD_PLUGIN_BAR_H__
 
-#include <vector>
-
-#include "LCDPlugins/PBM.h"
-#include "LCDPlugins/LCDPlugin.h"
+#include "LCDPlugin.h"
 
 namespace GLogiK
 {
 
-class LCDScreenPluginsManager
+class bar
+	:	public LCDPlugin
 {
 	public:
-		LCDScreenPluginsManager(void);
-		~LCDScreenPluginsManager(void);
+		bar(void);
+		~bar(void);
 
-		LCDDataArray & getNextLCDScreenBuffer(void);
+		void init(void);
 
 	protected:
 
 	private:
-		unsigned short plugin_index_;
-		std::vector<LCDPlugin*> plugins_;
-		std::vector<LCDPlugin*>::iterator current_plugin_;
 
-		LCDDataArray lcd_buffer_;
-
-		void stopLCDPlugins(void);
-		void dumpPBMDataIntoLCDBuffer(LCDDataArray & lcd_buffer, const PBMDataArray & pbm_data);
 };
 
 } // namespace GLogiK

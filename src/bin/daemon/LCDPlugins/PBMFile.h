@@ -51,7 +51,8 @@ class PBMFile
 			const unsigned int expected_width = PBM_WIDTH,
 			const unsigned int expected_height = PBM_HEIGHT);
 
-		const PBMDataArray & getPBMData(void);
+		void resetFrameIndex(void);
+		const PBMDataArray & getNextPBMData(void);
 
 	protected:
 		PBMFile(void);

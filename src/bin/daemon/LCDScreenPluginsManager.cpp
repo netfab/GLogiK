@@ -26,15 +26,19 @@
 #include "LCDScreenPluginsManager.h"
 
 #include "LCDPlugins/foo.h"
+#include "LCDPlugins/bar.h"
 
 namespace GLogiK
 {
 
 using namespace NSGKUtils;
 
-LCDScreenPluginsManager::LCDScreenPluginsManager() {
+LCDScreenPluginsManager::LCDScreenPluginsManager()
+	:	plugin_index_(0)
+{
 	try {
 		this->plugins_.push_back( new foo() );
+		this->plugins_.push_back( new bar() );
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		this->stopLCDPlugins();
@@ -73,17 +77,22 @@ LCDScreenPluginsManager::~LCDScreenPluginsManager() {
 
 LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
 {
-	/* we must check this in case there is no plugin in the container */
-	if(this->current_plugin_ != this->plugins_.end() )
+	//if(this->current_plugin_ == this->plugins_.end() )
+		// FIXME return buffer when no plugin
+
+	this->plugin_index_++;
+
+	if( this->plugin_index_ > 5 ) {
 		this->current_plugin_++;
+		if(this->current_plugin_ == this->plugins_.end() )
+			this->current_plugin_ = this->plugins_.begin();
 
-	if(this->current_plugin_ == this->plugins_.end() )
-		this->current_plugin_ = this->plugins_.begin();
-
-	// FIXME return buffer when no plugin
+		(*this->current_plugin_)->resetFrameIndex();
+		this->plugin_index_ = 0;
+	}
 
 	if(this->current_plugin_ != this->plugins_.end() )
-		this->dumpPBMDataIntoLCDBuffer(this->lcd_buffer_, (*this->current_plugin_)->getPBMData());
+		this->dumpPBMDataIntoLCDBuffer(this->lcd_buffer_, (*this->current_plugin_)->getNextPBMData());
 	else
 		this->lcd_buffer_.fill(0x0);
 
