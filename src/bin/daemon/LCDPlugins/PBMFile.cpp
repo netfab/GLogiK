@@ -99,14 +99,31 @@ void PBMFile::parsePBMHeader(
 	unsigned int & width,
 	unsigned int & height)
 {
-	const char c = 0x0a;
+	const char white = 0x0a;
 	const char space = 0x20;
+	const char comment = 0x23;
 
-	std::getline(pbm, magic, c);
+	std::getline(pbm, magic, white);
+
+	char c = comment;
+
 	std::string ex;
+
+	/* searching and skipping comments */
+	while( c == comment ) {
+		pbm.get(c);
+		if( c == comment) {
+			std::getline(pbm, ex, white);
+#if DEBUGGING_ON
+			LOG(DEBUG3)	<< "skipped PBM comment";
+#endif
+		}
+		else pbm.unget();
+	}
+
 	std::getline(pbm, ex, space);
 	width = to_uint(ex);
-	std::getline(pbm, ex, c);
+	std::getline(pbm, ex, white);
 	height = to_uint(ex);
 
 #if DEBUGGING_ON
