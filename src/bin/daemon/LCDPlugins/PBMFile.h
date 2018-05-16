@@ -34,9 +34,9 @@ namespace GLogiK
 struct PBMFrame
 {
 	PBMFrame(const unsigned short i)
-		:	max_index(i) {}
+		:	frame_count(i) {}
 
-	unsigned short max_index;
+	unsigned short frame_count;
 	PBMDataArray pbm_data;
 };
 
@@ -47,7 +47,7 @@ class PBMFile
 
 		void readPBM(
 			const std::string & path,
-			const unsigned short max_index = 0,
+			const unsigned short frame_count = 1,
 			const unsigned int expected_width = PBM_WIDTH,
 			const unsigned int expected_height = PBM_HEIGHT);
 
@@ -59,7 +59,7 @@ class PBMFile
 		std::string name_;
 
 	private:
-		unsigned short current_index_;
+		unsigned short frame_count_;
 		std::vector<PBMFrame> frames_;
 		std::vector<PBMFrame>::iterator current_frame_;
 

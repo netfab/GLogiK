@@ -30,7 +30,7 @@ using namespace NSGKUtils;
 
 PBMFile::PBMFile()
 	:	name_("unknown"),
-		current_index_(0)
+		frame_count_(0)
 {
 }
 
@@ -39,7 +39,7 @@ PBMFile::~PBMFile() {
 
 void PBMFile::readPBM(
 	const std::string & path,
-	const unsigned short max_index,
+	const unsigned short frame_count,
 	const unsigned int expected_width,
 	const unsigned int expected_height)
 {
@@ -61,7 +61,7 @@ void PBMFile::readPBM(
 		if( magic != "P4" or width != expected_width or height != expected_height )
 			throw GLogiKExcept("wrong PBM header");
 
-		this->frames_.emplace_back(max_index);
+		this->frames_.emplace_back(frame_count);
 		extractPBMData(pbm, this->frames_.back().pbm_data);
 
 		pbm.close();
@@ -100,7 +100,7 @@ void PBMFile::checkFrameIndex(const bool reset)
 		if( this->current_frame_ == this->frames_.end() )
 			throw GLogiKExcept("plugin frame iterator exception");
 
-		this->current_index_ = 0;
+		this->frame_count_ = 0;
 	}
 }
 
@@ -109,11 +109,14 @@ const PBMDataArray & PBMFile::getNextPBMData(void)
 	/* update internal index and iterator to allow the plugin
 	 * to have multiples PBM loaded and simulate animation */
 
-	if(this->current_index_ > (*this->current_frame_).max_index)
+	if(this->frame_count_ >= (*this->current_frame_).frame_count) {
 		this->current_frame_++;
+		this->frame_count_ = 0;
+	}
 
 	this->checkFrameIndex();
-	this->current_index_++;
+
+	this->frame_count_++; /* for next call */
 
 #if DEBUGGING_ON
 	LOG(DEBUG3) << this->name_ << " frame # " << (this->current_frame_ - this->frames_.begin()) ;
