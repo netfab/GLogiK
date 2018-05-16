@@ -517,26 +517,34 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 
 		LCDScreenPluginsManager LCDPlugins;
 
-		unsigned int c = 2;
 		while( DaemonControl::isDaemonRunning() and device.getThreadsStatus() ) {
 			this->checkDeviceFatalErrors(device);
 			if( ! device.getThreadsStatus() )
 				continue;
 
-			if( c == 2 ) { /* 1 second with a 500 ms granularity */
-				LCDDataArray & LCDBuffer = LCDPlugins.getNextLCDScreenBuffer();
-				int ret = this->performLCDScreenInterruptTransfer(
-					device,
-					LCDBuffer.data(),
-					LCDBuffer.size(),
-					1000);
-				LOG(INFO) << "refresh LCD screen for " << device.getName() << " - ret: " << ret;
-				c = 0;
+			auto t1 = std::chrono::high_resolution_clock::now();
+
+			LCDDataArray & LCDBuffer = LCDPlugins.getNextLCDScreenBuffer();
+			int ret = this->performLCDScreenInterruptTransfer(
+				device,
+				LCDBuffer.data(),
+				LCDBuffer.size(),
+				1000);
+
+			auto interval = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t1);
+
+#if DEBUGGING_ON
+			LOG(DEBUG1) << "refreshed LCD screen for " << device.getName()
+				<< " - ret: " << ret
+				<< " - interval: " << interval.count();
+#endif
+
+			auto one = std::chrono::milliseconds(1000);
+
+			if( interval < one ) {
+				one -= interval;
+				std::this_thread::sleep_for(one);
 			}
-
-			c++; /* bonus point */
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 
 #if DEBUGGING_ON

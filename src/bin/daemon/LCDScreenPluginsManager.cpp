@@ -55,7 +55,10 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 		}
 	}
 
-	/* delete all uninitialized plugins */
+	/* delete all uninitialized plugins
+	 * (the ones that failed to read PBM for whatever
+	 * reason during initialization)
+	 */
 	for(auto & plugin : this->plugins_) {
 		if( ! plugin->isInitialized() ) {
 			delete plugin; plugin = nullptr;
@@ -69,6 +72,10 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 	);
 
 	this->current_plugin_ = this->plugins_.begin();
+	if( this->plugins_.empty() ) {
+		GKSysLog(LOG_WARNING, WARNING, "no LCD screen plugin initialized");
+	}
+	this->lcd_buffer_.fill(0x0);
 }
 
 LCDScreenPluginsManager::~LCDScreenPluginsManager() {
@@ -77,23 +84,23 @@ LCDScreenPluginsManager::~LCDScreenPluginsManager() {
 
 LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
 {
-	//if(this->current_plugin_ == this->plugins_.end() )
-		// FIXME return buffer when no plugin
+	/* make sure there at least one plugin */
+	if(this->current_plugin_ != this->plugins_.end() ) {
+		this->plugin_index_++;
 
-	this->plugin_index_++;
+		if( this->plugin_index_ > 6 ) {
+			this->current_plugin_++;
+			if(this->current_plugin_ == this->plugins_.end() )
+				this->current_plugin_ = this->plugins_.begin();
 
-	if( this->plugin_index_ > 5 ) {
-		this->current_plugin_++;
-		if(this->current_plugin_ == this->plugins_.end() )
-			this->current_plugin_ = this->plugins_.begin();
-
-		(*this->current_plugin_)->resetFrameIndex();
-		this->plugin_index_ = 0;
+			(*this->current_plugin_)->resetFrameIndex();
+			this->plugin_index_ = 0;
+		}
 	}
 
 	if(this->current_plugin_ != this->plugins_.end() )
 		this->dumpPBMDataIntoLCDBuffer(this->lcd_buffer_, (*this->current_plugin_)->getNextPBMData());
-	else
+	else /* else blank screen */
 		this->lcd_buffer_.fill(0x0);
 
 	std::fill_n(this->lcd_buffer_.begin(), LCD_BUFFER_OFFSET, 0);
