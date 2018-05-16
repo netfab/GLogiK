@@ -51,11 +51,12 @@ class PBMFile
 			const unsigned int expected_width = PBM_WIDTH,
 			const unsigned int expected_height = PBM_HEIGHT);
 
-		void resetFrameIndex(void);
+		void checkFrameIndex(const bool reset=false);
 		const PBMDataArray & getNextPBMData(void);
 
 	protected:
 		PBMFile(void);
+		std::string name_;
 
 	private:
 		unsigned short current_index_;

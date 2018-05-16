@@ -29,7 +29,8 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 PBMFile::PBMFile()
-	:	current_index_(0)
+	:	name_("unknown"),
+		current_index_(0)
 {
 }
 
@@ -85,12 +86,22 @@ void PBMFile::readPBM(
 		this->closePBM(pbm);
 
 	this->current_frame_ = this->frames_.begin();
+	this->checkFrameIndex();
 }
 
-void PBMFile::resetFrameIndex(void)
+void PBMFile::checkFrameIndex(const bool reset)
 {
-	this->current_frame_ = this->frames_.begin();
-	this->current_index_ = 0;
+	if(reset)
+		this->current_frame_ = this->frames_.end();
+
+	if( this->current_frame_ == this->frames_.end() ) {
+		this->current_frame_ = this->frames_.begin();
+
+		if( this->current_frame_ == this->frames_.end() )
+			throw GLogiKExcept("plugin frame iterator exception");
+
+		this->current_index_ = 0;
+	}
 }
 
 const PBMDataArray & PBMFile::getNextPBMData(void)
@@ -98,19 +109,15 @@ const PBMDataArray & PBMFile::getNextPBMData(void)
 	/* update internal index and iterator to allow the plugin
 	 * to have multiples PBM loaded and simulate animation */
 
-	this->current_index_++;
 	if(this->current_index_ > (*this->current_frame_).max_index)
 		this->current_frame_++;
 
-	if(this->current_frame_ == this->frames_.end()) {
-		this->current_frame_ = this->frames_.begin();
-		this->current_index_ = 0;
-	}
+	this->checkFrameIndex();
+	this->current_index_++;
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "frame # " << this->current_index_;
+	LOG(DEBUG3) << this->name_ << " frame # " << (this->current_frame_ - this->frames_.begin()) ;
 #endif
-
 	return (*this->current_frame_).pbm_data;
 }
 

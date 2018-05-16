@@ -84,24 +84,31 @@ LCDScreenPluginsManager::~LCDScreenPluginsManager() {
 
 LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
 {
-	/* make sure there at least one plugin */
-	if(this->current_plugin_ != this->plugins_.end() ) {
-		this->plugin_index_++;
+	try {
+		/* make sure there at least one plugin */
+		if(this->current_plugin_ != this->plugins_.end() ) {
+			this->plugin_index_++;
 
-		if( this->plugin_index_ > 6 ) {
-			this->current_plugin_++;
-			if(this->current_plugin_ == this->plugins_.end() )
-				this->current_plugin_ = this->plugins_.begin();
+			if( this->plugin_index_ > 6 ) {
+				this->current_plugin_++;
+				if(this->current_plugin_ == this->plugins_.end() )
+					this->current_plugin_ = this->plugins_.begin();
 
-			(*this->current_plugin_)->resetFrameIndex();
-			this->plugin_index_ = 0;
+				/* reset frames to beginning */
+				(*this->current_plugin_)->checkFrameIndex(true);
+				this->plugin_index_ = 0;
+			}
 		}
-	}
 
-	if(this->current_plugin_ != this->plugins_.end() )
-		this->dumpPBMDataIntoLCDBuffer(this->lcd_buffer_, (*this->current_plugin_)->getNextPBMData());
-	else /* else blank screen */
+		if(this->current_plugin_ != this->plugins_.end() )
+			this->dumpPBMDataIntoLCDBuffer(this->lcd_buffer_, (*this->current_plugin_)->getNextPBMData());
+		else /* else blank screen */
+			this->lcd_buffer_.fill(0x0);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << e.what();
 		this->lcd_buffer_.fill(0x0);
+	}
 
 	std::fill_n(this->lcd_buffer_.begin(), LCD_BUFFER_OFFSET, 0);
 	/* the keyboard needs this magic byte */

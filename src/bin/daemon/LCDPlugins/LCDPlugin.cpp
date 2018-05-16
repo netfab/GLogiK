@@ -29,7 +29,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 LCDPlugin::LCDPlugin()
-	:	initialized_(false), name_("unknown")
+	:	initialized_(false)
 {
 }
 

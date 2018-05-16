@@ -45,7 +45,6 @@ class LCDPlugin
 		LCDPlugin(void);
 
 		bool initialized_;
-		std::string name_;
 
 	private:
 
