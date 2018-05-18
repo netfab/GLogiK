@@ -540,6 +540,9 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 				<< " - interval: " << interval.count()
 				<< " - next sleep: " << one.count();
 #endif
+			if(ret != 0) { // TODO stop thread ?
+				GKSysLog(LOG_ERR, ERROR, "LCD refresh failure");
+			}
 
 			if( interval < one ) {
 				one -= interval;
