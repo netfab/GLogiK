@@ -22,7 +22,6 @@
 #ifndef __GLOGIKD_PBM_FILE_H__
 #define __GLOGIKD_PBM_FILE_H__
 
-#include <vector>
 #include <string>
 #include <fstream>
 
@@ -31,38 +30,21 @@
 namespace GLogiK
 {
 
-struct PBMFrame
-{
-	PBMFrame(const unsigned short i)
-		:	frame_count(i) {}
-
-	unsigned short frame_count;
-	PBMDataArray pbm_data;
-};
-
 class PBMFile
 {
 	public:
+
+	protected:
+		PBMFile(void);
 		~PBMFile(void);
 
 		void readPBM(
 			const std::string & path,
-			const unsigned short frame_count = 1,
+			PBMDataArray & pbm_data,
 			const unsigned int expected_width = PBM_WIDTH,
 			const unsigned int expected_height = PBM_HEIGHT);
 
-		void checkFrameIndex(const bool reset=false);
-		const PBMDataArray & getNextPBMData(void);
-
-	protected:
-		PBMFile(void);
-		std::string name_;
-
 	private:
-		unsigned short frame_count_;
-		std::vector<PBMFrame> frames_;
-		std::vector<PBMFrame>::iterator current_frame_;
-
 		void parsePBMHeader(
 			std::ifstream & pbm,
 			std::string & magic,

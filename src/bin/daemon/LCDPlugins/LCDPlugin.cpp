@@ -29,7 +29,9 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 LCDPlugin::LCDPlugin()
-	:	initialized_(false)
+	:	name_("unknown"),
+		initialized_(false),
+		frame_count_(0)
 {
 }
 
@@ -43,6 +45,63 @@ LCDPlugin::~LCDPlugin()
 const bool LCDPlugin::isInitialized(void) const
 {
 	return this->initialized_;
+}
+
+void LCDPlugin::addPBMFrame(
+	const std::string & path,
+	const unsigned short num)
+{
+	this->frames_.emplace_back(num);
+	try {
+		this->readPBM(path, this->frames_.back().pbm_data);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << "exception while reading PBM file: " << path;
+		throw;
+	}
+}
+
+void LCDPlugin::checkPBMFrameIndex(const bool reset)
+{
+	if(reset)
+		this->current_frame_ = this->frames_.end();
+
+	if( this->current_frame_ == this->frames_.end() ) {
+		this->current_frame_ = this->frames_.begin();
+
+		if( this->current_frame_ == this->frames_.end() )
+			throw GLogiKExcept("plugin frame iterator exception");
+
+		this->frame_count_ = 0;
+	}
+}
+
+const PBMDataArray & LCDPlugin::getNextPBMFrame(void)
+{
+	/* update internal index and iterator to allow the plugin
+	 * to have multiples PBM loaded and simulate animation */
+
+	if(this->frame_count_ >= (*this->current_frame_).frame_count) {
+		this->current_frame_++;
+		this->frame_count_ = 0;
+	}
+
+	this->checkPBMFrameIndex();
+
+	this->frame_count_++; /* for next call */
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << this->name_ << " frame # " << (this->current_frame_ - this->frames_.begin()) ;
+#endif
+	return (*this->current_frame_).pbm_data;
+}
+
+void LCDPlugin::init(void)
+{
+	this->current_frame_ = this->frames_.begin();
+	this->checkPBMFrameIndex(); /* may throw */
+
+	this->initialized_ = true;
 }
 
 } // namespace GLogiK

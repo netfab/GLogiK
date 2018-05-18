@@ -35,9 +35,10 @@ bar::~bar() {
 
 void bar::init(void)
 {
-	this->readPBM("/tmp/outbin3.pbm", 2); /* throws on failure */
-	this->readPBM("/tmp/outbin4.pbm", 5); /* throws on failure */
-	this->initialized_ = true;
+	this->addPBMFrame("/tmp/outbin3.pbm", 2); /* throws on failure */
+	this->addPBMFrame("/tmp/test.pbm", 5); /* throws on failure */
+
+	LCDPlugin::init();
 }
 
 } // namespace GLogiK

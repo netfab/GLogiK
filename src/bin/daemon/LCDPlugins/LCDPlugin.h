@@ -31,6 +31,22 @@
 namespace GLogiK
 {
 
+class LCDPBMFrame
+{
+	public:
+		LCDPBMFrame(const unsigned short i)
+			:	frame_count(i) {}
+		~LCDPBMFrame() = default;
+
+		const unsigned short frame_count;
+		PBMDataArray pbm_data;
+
+	protected:
+
+	private:
+
+};
+
 class LCDPlugin
 	:	public PBMFile
 {
@@ -38,15 +54,25 @@ class LCDPlugin
 		virtual ~LCDPlugin(void);
 
 		virtual void init(void) = 0;
-
 		const bool isInitialized(void) const;
+
+		void addPBMFrame(
+			const std::string & path,
+			const unsigned short num = 1
+		);
+		void checkPBMFrameIndex(const bool reset=false);
+		const PBMDataArray & getNextPBMFrame(void);
 
 	protected:
 		LCDPlugin(void);
 
-		bool initialized_;
+		std::string name_;
 
 	private:
+		bool initialized_;
+		unsigned short frame_count_;
+		std::vector<LCDPBMFrame> frames_;
+		std::vector<LCDPBMFrame>::iterator current_frame_;
 
 };
 

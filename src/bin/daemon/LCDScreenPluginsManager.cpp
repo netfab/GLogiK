@@ -95,13 +95,13 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
 					this->current_plugin_ = this->plugins_.begin();
 
 				/* reset frames to beginning */
-				(*this->current_plugin_)->checkFrameIndex(true);
+				(*this->current_plugin_)->checkPBMFrameIndex(true);
 				this->plugin_index_ = 0;
 			}
 		}
 
 		if(this->current_plugin_ != this->plugins_.end() )
-			this->dumpPBMDataIntoLCDBuffer(this->lcd_buffer_, (*this->current_plugin_)->getNextPBMData());
+			this->dumpPBMDataIntoLCDBuffer(this->lcd_buffer_, (*this->current_plugin_)->getNextPBMFrame());
 		else /* else blank screen */
 			this->lcd_buffer_.fill(0x0);
 	}

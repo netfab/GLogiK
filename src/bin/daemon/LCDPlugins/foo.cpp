@@ -35,9 +35,10 @@ foo::~foo() {
 
 void foo::init(void)
 {
-	this->readPBM("/tmp/outbin.pbm", 3); /* throws on failure */
-	this->readPBM("/tmp/outbin2.pbm", 7); /* throws on failure */
-	this->initialized_ = true;
+	this->addPBMFrame("/tmp/GLogiK.pbm"); /* throws on failure */
+	this->addPBMFrame("/tmp/outbin7.pbm", 7); /* throws on failure */
+
+	LCDPlugin::init();
 }
 
 } // namespace GLogiK
