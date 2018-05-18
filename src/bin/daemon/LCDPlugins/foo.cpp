@@ -21,8 +21,6 @@
 
 #include "foo.h"
 
-#include "PBM.h"
-
 namespace GLogiK
 {
 
@@ -36,7 +34,7 @@ foo::~foo() {
 void foo::init(void)
 {
 	this->addPBMFrame("/tmp/GLogiK.pbm"); /* throws on failure */
-	this->addPBMFrame("/tmp/outbin7.pbm", 7); /* throws on failure */
+	//this->addPBMFrame("/tmp/outbin2.pbm", 7); /* throws on failure */
 
 	LCDPlugin::init();
 }

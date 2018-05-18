@@ -21,8 +21,6 @@
 
 #include "bar.h"
 
-#include "PBM.h"
-
 namespace GLogiK
 {
 
