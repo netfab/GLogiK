@@ -30,6 +30,7 @@ using namespace NSGKUtils;
 
 LCDPlugin::LCDPlugin()
 	:	name_("unknown"),
+		tempo_(1),
 		initialized_(false),
 		frame_count_(0)
 {
@@ -47,18 +48,9 @@ const bool LCDPlugin::isInitialized(void) const
 	return this->initialized_;
 }
 
-void LCDPlugin::addPBMFrame(
-	const std::string & path,
-	const unsigned short num)
+const unsigned short LCDPlugin::getPluginTempo(void)
 {
-	this->frames_.emplace_back(num);
-	try {
-		this->readPBM(path, this->frames_.back().pbm_data);
-	}
-	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "exception while reading PBM file: " << path;
-		throw;
-	}
+	return this->tempo_;
 }
 
 void LCDPlugin::checkPBMFrameIndex(const bool reset)
@@ -102,6 +94,20 @@ void LCDPlugin::init(void)
 	this->checkPBMFrameIndex(); /* may throw */
 
 	this->initialized_ = true;
+}
+
+void LCDPlugin::addPBMFrame(
+	const std::string & path,
+	const unsigned short num)
+{
+	this->frames_.emplace_back(num);
+	try {
+		this->readPBM(path, this->frames_.back().pbm_data);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << "exception while reading PBM file: " << path;
+		throw;
+	}
 }
 
 } // namespace GLogiK

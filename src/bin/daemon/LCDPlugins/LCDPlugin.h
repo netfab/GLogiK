@@ -56,10 +56,7 @@ class LCDPlugin
 		virtual void init(void) = 0;
 		const bool isInitialized(void) const;
 
-		void addPBMFrame(
-			const std::string & path,
-			const unsigned short num = 1
-		);
+		const unsigned short getPluginTempo(void);
 		void checkPBMFrameIndex(const bool reset=false);
 		const PBMDataArray & getNextPBMFrame(void);
 
@@ -67,6 +64,12 @@ class LCDPlugin
 		LCDPlugin(void);
 
 		std::string name_;
+		unsigned short tempo_;
+
+		void addPBMFrame(
+			const std::string & path,
+			const unsigned short num = 1
+		);
 
 	private:
 		bool initialized_;

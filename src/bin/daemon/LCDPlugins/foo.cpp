@@ -26,6 +26,7 @@ namespace GLogiK
 
 foo::foo() {
 	this->name_ = "foo";
+	this->tempo_ = 2;
 }
 
 foo::~foo() {
@@ -33,8 +34,10 @@ foo::~foo() {
 
 void foo::init(void)
 {
-	this->addPBMFrame("/tmp/GLogiK.pbm"); /* throws on failure */
-	//this->addPBMFrame("/tmp/outbin2.pbm", 7); /* throws on failure */
+	this->addPBMFrame("/tmp/GLogiK01.pbm");
+	this->addPBMFrame("/tmp/GLogiK02.pbm");
+	this->addPBMFrame("/tmp/GLogiK03.pbm");
+	this->addPBMFrame("/tmp/GLogiK04.pbm", 3);
 
 	LCDPlugin::init();
 }

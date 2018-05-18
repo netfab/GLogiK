@@ -82,6 +82,14 @@ LCDScreenPluginsManager::~LCDScreenPluginsManager() {
 	this->stopLCDPlugins();
 }
 
+const unsigned short LCDScreenPluginsManager::getCurrentTempo(void)
+{
+	if(this->current_plugin_ != this->plugins_.end() )
+		return (*this->current_plugin_)->getPluginTempo();
+
+	return 1;
+}
+
 LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
 {
 	try {
@@ -89,7 +97,7 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
 		if(this->current_plugin_ != this->plugins_.end() ) {
 			this->plugin_index_++;
 
-			if( this->plugin_index_ > 6 ) {
+			if( this->plugin_index_ > (6 * (*this->current_plugin_)->getPluginTempo()) ) {
 				this->current_plugin_++;
 				if(this->current_plugin_ == this->plugins_.end() )
 					this->current_plugin_ = this->plugins_.begin();

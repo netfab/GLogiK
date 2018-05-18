@@ -532,14 +532,14 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 				1000);
 
 			auto interval = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t1);
+			auto one = std::chrono::milliseconds(1000/LCDPlugins.getCurrentTempo());
 
 #if DEBUGGING_ON
 			LOG(DEBUG1) << "refreshed LCD screen for " << device.getName()
 				<< " - ret: " << ret
-				<< " - interval: " << interval.count();
+				<< " - interval: " << interval.count()
+				<< " - next sleep: " << one.count();
 #endif
-
-			auto one = std::chrono::milliseconds(1000);
 
 			if( interval < one ) {
 				one -= interval;
