@@ -103,7 +103,7 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
 					this->current_plugin_ = this->plugins_.begin();
 
 				/* reset frames to beginning */
-				(*this->current_plugin_)->checkPBMFrameIndex(true);
+				(*this->current_plugin_)->resetPBMFrameIndex();
 				this->plugin_index_ = 0;
 			}
 		}

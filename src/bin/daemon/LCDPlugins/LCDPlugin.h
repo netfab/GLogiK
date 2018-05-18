@@ -57,7 +57,7 @@ class LCDPlugin
 		const bool isInitialized(void) const;
 
 		const unsigned short getPluginTempo(void);
-		void checkPBMFrameIndex(const bool reset=false);
+		void resetPBMFrameIndex(void);
 		const PBMDataArray & getNextPBMFrame(void);
 
 	protected:
@@ -77,6 +77,7 @@ class LCDPlugin
 		std::vector<LCDPBMFrame> frames_;
 		std::vector<LCDPBMFrame>::iterator current_frame_;
 
+		void checkPBMFrameIndex(void);
 };
 
 } // namespace GLogiK

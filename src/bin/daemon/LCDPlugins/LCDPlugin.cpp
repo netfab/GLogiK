@@ -48,24 +48,15 @@ const bool LCDPlugin::isInitialized(void) const
 	return this->initialized_;
 }
 
+void LCDPlugin::resetPBMFrameIndex(void)
+{
+	this->current_frame_ = this->frames_.end();
+	this->checkPBMFrameIndex(); /* may throw */
+}
+
 const unsigned short LCDPlugin::getPluginTempo(void)
 {
 	return this->tempo_;
-}
-
-void LCDPlugin::checkPBMFrameIndex(const bool reset)
-{
-	if(reset)
-		this->current_frame_ = this->frames_.end();
-
-	if( this->current_frame_ == this->frames_.end() ) {
-		this->current_frame_ = this->frames_.begin();
-
-		if( this->current_frame_ == this->frames_.end() )
-			throw GLogiKExcept("plugin frame iterator exception");
-
-		this->frame_count_ = 0;
-	}
 }
 
 const PBMDataArray & LCDPlugin::getNextPBMFrame(void)
@@ -94,6 +85,18 @@ void LCDPlugin::init(void)
 	this->checkPBMFrameIndex(); /* may throw */
 
 	this->initialized_ = true;
+}
+
+void LCDPlugin::checkPBMFrameIndex(void)
+{
+	if( this->current_frame_ == this->frames_.end() ) {
+		this->current_frame_ = this->frames_.begin();
+
+		if( this->current_frame_ == this->frames_.end() )
+			throw GLogiKExcept("plugin frame iterator exception");
+
+		this->frame_count_ = 0;
+	}
 }
 
 void LCDPlugin::addPBMFrame(
