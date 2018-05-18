@@ -72,6 +72,7 @@ AC_ARG_ENABLE( [desktop-notifications],
 				[enable_desktop_notifications=$enableval], [enable_desktop_notifications=no])
 
 AC_ARG_VAR(DEBUG_DIR, [Directory where debug file will be written])
+AC_ARG_VAR(PBM_DATA_DIR, [Directory where pbm data files will be installed])
 
 dnl -------------------------------------------------------------------------
 dnl        User and Group for running the GLogiK daemon
@@ -214,6 +215,8 @@ dnl -------------------------------------------------------------------------
 
 AS_IF([[test "x$DEBUG_DIR" = "x"]], [DEBUG_DIR="/tmp"])
 AC_DEFINE_UNQUOTED([DEBUG_DIR], ["${DEBUG_DIR}"], [Directory for debug file])
+
+AC_DEFINE_UNQUOTED([PBM_DATA_DIR], ["${prefix}/share/${PACKAGE_NAME}/pbm"], [Directory for pbm file installation])
 
 dnl -------------------------------------------------------------------------
 dnl                       checking for functions

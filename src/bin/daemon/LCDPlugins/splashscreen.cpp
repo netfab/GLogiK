@@ -19,29 +19,37 @@
  *
  */
 
-#ifndef __GLOGIKD_LCD_PLUGIN_FOO_H__
-#define __GLOGIKD_LCD_PLUGIN_FOO_H__
+#include <config.h>
 
-#include "LCDPlugin.h"
+#include <string>
+
+#include "splashscreen.h"
 
 namespace GLogiK
 {
 
-class foo
-	:	public LCDPlugin
+Splashscreen::Splashscreen() {
+	this->name_ = "splashscreen";
+	this->tempo_ = 2;
+}
+
+Splashscreen::~Splashscreen() {
+}
+
+void Splashscreen::init(void)
 {
-	public:
-		foo(void);
-		~foo(void);
+	std::string dir(PBM_DATA_DIR);
+	dir += "/";			// TODO boost::fs:path
+	dir += this->name_;
 
-		void init(void);
+	this->addPBMClearedFrame();
+	this->addPBMFrame(dir, "GLogiK01.pbm");
+	this->addPBMFrame(dir, "GLogiK02.pbm");
+	this->addPBMFrame(dir, "GLogiK03.pbm");
+	this->addPBMFrame(dir, "GLogiK04.pbm", 2);
 
-	protected:
-
-	private:
-
-};
+	LCDPlugin::init();
+}
 
 } // namespace GLogiK
 
-#endif

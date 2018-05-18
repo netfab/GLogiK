@@ -101,16 +101,27 @@ void LCDPlugin::checkPBMFrameIndex(void)
 
 void LCDPlugin::addPBMFrame(
 	const std::string & path,
+	const std::string & file,
+	const unsigned short num)
+{
+	std::string filepath(path);
+	filepath += "/";		// TODO boost:fs:path
+	filepath += file;
+	this->frames_.emplace_back(num);
+	try {
+		this->readPBM(filepath, this->frames_.back().pbm_data);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << "exception while reading PBM file: " << filepath;
+		throw;
+	}
+}
+
+void LCDPlugin::addPBMClearedFrame(
 	const unsigned short num)
 {
 	this->frames_.emplace_back(num);
-	try {
-		this->readPBM(path, this->frames_.back().pbm_data);
-	}
-	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "exception while reading PBM file: " << path;
-		throw;
-	}
+	this->frames_.back().pbm_data.fill(0x0);
 }
 
 } // namespace GLogiK

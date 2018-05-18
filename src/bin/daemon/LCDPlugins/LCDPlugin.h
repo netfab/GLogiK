@@ -68,6 +68,11 @@ class LCDPlugin
 
 		void addPBMFrame(
 			const std::string & path,
+			const std::string & file,
+			const unsigned short num = 1
+		);
+
+		void addPBMClearedFrame(
 			const unsigned short num = 1
 		);
 

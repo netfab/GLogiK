@@ -19,28 +19,29 @@
  *
  */
 
-#include "foo.h"
+#ifndef __GLOGIKD_LCD_PLUGIN_SPLASHSCREEN_H__
+#define __GLOGIKD_LCD_PLUGIN_SPLASHSCREEN_H__
+
+#include "LCDPlugin.h"
 
 namespace GLogiK
 {
 
-foo::foo() {
-	this->name_ = "foo";
-	this->tempo_ = 2;
-}
-
-foo::~foo() {
-}
-
-void foo::init(void)
+class Splashscreen
+	:	public LCDPlugin
 {
-	this->addPBMFrame("/tmp/GLogiK01.pbm");
-	this->addPBMFrame("/tmp/GLogiK02.pbm");
-	this->addPBMFrame("/tmp/GLogiK03.pbm");
-	this->addPBMFrame("/tmp/GLogiK04.pbm", 3);
+	public:
+		Splashscreen(void);
+		~Splashscreen(void);
 
-	LCDPlugin::init();
-}
+		void init(void);
+
+	protected:
+
+	private:
+
+};
 
 } // namespace GLogiK
 
+#endif

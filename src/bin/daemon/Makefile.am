@@ -62,8 +62,8 @@ GLogiKd_SOURCES += \
 		%D%/LCDPlugins/PBMFile.h \
 		%D%/LCDPlugins/LCDPlugin.cpp \
 		%D%/LCDPlugins/LCDPlugin.h \
-		%D%/LCDPlugins/foo.cpp \
-		%D%/LCDPlugins/foo.h \
+		%D%/LCDPlugins/splashscreen.cpp \
+		%D%/LCDPlugins/splashscreen.h \
 		%D%/LCDPlugins/bar.cpp \
 		%D%/LCDPlugins/bar.h
 

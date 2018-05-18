@@ -19,6 +19,10 @@
  *
  */
 
+#include <config.h>
+
+#include <string>
+
 #include "bar.h"
 
 namespace GLogiK
@@ -33,8 +37,12 @@ bar::~bar() {
 
 void bar::init(void)
 {
-	this->addPBMFrame("/tmp/outbin3.pbm", 2); /* throws on failure */
-	this->addPBMFrame("/tmp/test.pbm", 5); /* throws on failure */
+	std::string dir(PBM_DATA_DIR);
+	dir += "/";			// TODO boost::fs:path
+	dir += this->name_;
+
+	this->addPBMFrame(dir, "outbin3.pbm", 2);
+	this->addPBMFrame(dir, "test.pbm", 5);
 
 	LCDPlugin::init();
 }

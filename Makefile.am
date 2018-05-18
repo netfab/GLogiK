@@ -14,6 +14,7 @@ include %D%/data/autostart/Makefile.am
 include %D%/data/dbus/Makefile.am
 include %D%/data/init/openrc/Makefile.am
 include %D%/data/udev/Makefile.am
+include %D%/data/pbm/Makefile.am
 
 maintainer-clean-local: maintainer-clean-libtool-files maintainer-clean-autotools-files
 

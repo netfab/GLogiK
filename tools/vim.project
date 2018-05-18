@@ -40,6 +40,15 @@ GLogiK=$PWD/.. CD=. {
 			systemd=systemd/ {
 			}
 		}
+		pbm=pbm/ {
+			Makefile.am
+			splashscreen=splashscreen/ {
+				GLogiK01.pbm
+				GLogiK02.pbm
+				GLogiK03.pbm
+				GLogiK04.pbm
+			}
+		}
 		udev=udev/ {
 			Makefile.am
 			99-GLogiK.rules.in
@@ -57,8 +66,8 @@ GLogiK=$PWD/.. CD=. {
 				LCDPlugins=LCDPlugins/ {
 					bar.cpp
 					bar.h
-					foo.cpp
-					foo.h
+					splashscreen.cpp
+					splashscreen.h
 					LCDPlugin.cpp
 					LCDPlugin.h
 					PBMFile.cpp
