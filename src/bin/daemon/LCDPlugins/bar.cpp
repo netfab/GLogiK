@@ -37,7 +37,7 @@ bar::~bar() {
 
 void bar::init(void)
 {
-	std::string dir(PBM_DATA_DIR);
+	std::string dir("/tmp");
 	dir += "/";			// TODO boost::fs:path
 	dir += this->name_;
 

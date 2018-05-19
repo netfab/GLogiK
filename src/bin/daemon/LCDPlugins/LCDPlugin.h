@@ -22,6 +22,9 @@
 #ifndef __GLOGIKD_LCD_SCREEN_PLUGIN_H__
 #define __GLOGIKD_LCD_SCREEN_PLUGIN_H__
 
+#include <cstdint>
+
+#include <tuple>
 #include <vector>
 #include <string>
 
@@ -30,6 +33,12 @@
 
 namespace GLogiK
 {
+
+enum class LCDPluginTempo : uint8_t
+{
+	TEMPO_DEFAULT	= 1 << 0,
+	TEMPO_750_8,
+};
 
 class LCDPBMFrame
 {
@@ -56,7 +65,8 @@ class LCDPlugin
 		virtual void init(void) = 0;
 		const bool isInitialized(void) const;
 
-		const unsigned short getPluginTempo(void);
+		const unsigned short getPluginTiming(void);
+		const unsigned short getPluginMaxFrames(void);
 		void resetPBMFrameIndex(void);
 		const PBMDataArray & getNextPBMFrame(void);
 
@@ -64,7 +74,7 @@ class LCDPlugin
 		LCDPlugin(void);
 
 		std::string name_;
-		unsigned short tempo_;
+		LCDPluginTempo tempo_;
 
 		void addPBMFrame(
 			const std::string & path,
@@ -83,6 +93,7 @@ class LCDPlugin
 		std::vector<LCDPBMFrame>::iterator current_frame_;
 
 		void checkPBMFrameIndex(void);
+		static std::tuple<unsigned short, unsigned short> getTempo(const LCDPluginTempo tempo);
 };
 
 } // namespace GLogiK

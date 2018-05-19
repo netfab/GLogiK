@@ -37,7 +37,7 @@ class LCDScreenPluginsManager
 		~LCDScreenPluginsManager(void);
 
 		LCDDataArray & getNextLCDScreenBuffer(void);
-		const unsigned short getCurrentTempo(void);
+		const unsigned short getPluginTiming(void);
 
 	protected:
 

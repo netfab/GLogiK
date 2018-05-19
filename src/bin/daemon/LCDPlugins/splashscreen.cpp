@@ -30,7 +30,7 @@ namespace GLogiK
 
 Splashscreen::Splashscreen() {
 	this->name_ = "splashscreen";
-	this->tempo_ = 2;
+	this->tempo_ = LCDPluginTempo::TEMPO_750_8;
 }
 
 Splashscreen::~Splashscreen() {
@@ -46,7 +46,7 @@ void Splashscreen::init(void)
 	this->addPBMFrame(dir, "GLogiK01.pbm");
 	this->addPBMFrame(dir, "GLogiK02.pbm");
 	this->addPBMFrame(dir, "GLogiK03.pbm");
-	this->addPBMFrame(dir, "GLogiK04.pbm", 2);
+	this->addPBMFrame(dir, "GLogiK04.pbm", 3);
 
 	LCDPlugin::init();
 }

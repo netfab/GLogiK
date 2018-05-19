@@ -30,7 +30,7 @@ using namespace NSGKUtils;
 
 LCDPlugin::LCDPlugin()
 	:	name_("unknown"),
-		tempo_(1),
+		tempo_(LCDPluginTempo::TEMPO_DEFAULT),
 		initialized_(false),
 		frame_count_(0)
 {
@@ -54,9 +54,20 @@ void LCDPlugin::resetPBMFrameIndex(void)
 	this->checkPBMFrameIndex(); /* may throw */
 }
 
-const unsigned short LCDPlugin::getPluginTempo(void)
+const unsigned short LCDPlugin::getPluginTiming(void)
 {
-	return this->tempo_;
+	unsigned short timing = 0;
+	unsigned short max_frames;
+	std::tie(timing, max_frames) = this->getTempo(this->tempo_);
+	return timing;
+}
+
+const unsigned short LCDPlugin::getPluginMaxFrames(void)
+{
+	unsigned short timing = 0;
+	unsigned short max_frames;
+	std::tie(timing, max_frames) = this->getTempo(this->tempo_);
+	return max_frames;
 }
 
 const PBMDataArray & LCDPlugin::getNextPBMFrame(void)
@@ -122,6 +133,14 @@ void LCDPlugin::addPBMClearedFrame(
 {
 	this->frames_.emplace_back(num);
 	this->frames_.back().pbm_data.fill(0x0);
+}
+
+std::tuple<unsigned short, unsigned short> LCDPlugin::getTempo(const LCDPluginTempo tempo)
+{
+	if(tempo == LCDPluginTempo::TEMPO_750_8)
+		return std::make_tuple(750, 8);
+	/* TEMPO_DEFAULT */
+	return std::make_tuple(1000, 6);
 }
 
 } // namespace GLogiK
