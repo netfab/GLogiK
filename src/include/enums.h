@@ -101,7 +101,8 @@ inline Caps operator | (Caps lhs, Caps rhs)
 
 enum class LCDScreenPlugin : uint64_t
 {
-	GK_LCD_PLUGIN_FOO = one << 0,
+	GK_LCD_SPLASHSCREEN	= one << 0,
+	GK_LCD_BAR			= one << 1,
 };
 
 } // namespace GLogiK
