@@ -34,7 +34,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 LCDScreenPluginsManager::LCDScreenPluginsManager()
-	:	plugin_index_(0)
+	:	plugin_frame_(0)
 {
 	try {
 		this->plugins_.push_back( new Splashscreen() );
@@ -95,16 +95,16 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
 	try {
 		/* make sure there at least one plugin */
 		if(this->current_plugin_ != this->plugins_.end() ) {
-			this->plugin_index_++;
+			this->plugin_frame_++;
 
-			if( this->plugin_index_ >= (*this->current_plugin_)->getPluginMaxFrames() ) {
+			if( this->plugin_frame_ >= (*this->current_plugin_)->getPluginMaxFrames() ) {
 				this->current_plugin_++;
 				if(this->current_plugin_ == this->plugins_.end() )
 					this->current_plugin_ = this->plugins_.begin();
 
 				/* reset frames to beginning */
 				(*this->current_plugin_)->resetPBMFrameIndex();
-				this->plugin_index_ = 0;
+				this->plugin_frame_ = 0;
 			}
 		}
 

@@ -42,7 +42,7 @@ class LCDScreenPluginsManager
 	protected:
 
 	private:
-		unsigned short plugin_index_;
+		unsigned short plugin_frame_;
 		std::vector<LCDPlugin*> plugins_;
 		std::vector<LCDPlugin*>::iterator current_plugin_;
 
