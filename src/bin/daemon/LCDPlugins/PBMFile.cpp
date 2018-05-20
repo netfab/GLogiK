@@ -54,18 +54,18 @@ void PBMFile::readPBM(
 		std::string magic;
 		unsigned int width, height = 0;
 
-		parsePBMHeader(pbm, magic, width, height);
+		PBMFile::parsePBMHeader(pbm, magic, width, height);
 
 		if( magic != "P4" or width != expected_width or height != expected_height )
 			throw GLogiKExcept("wrong PBM header");
 
-		extractPBMData(pbm, pbm_data);
+		PBMFile::extractPBMData(pbm, pbm_data);
 
 		pbm.close();
 	}
 	catch (const std::ios_base::failure & e) {
 		LOG(ERROR) << "error opening/reading/closing PBM file : " << e.what();
-		this->closePBM(pbm);
+		PBMFile::closePBM(pbm);
 		throw GLogiKExcept("PBM ifstream error");
 	}
 	/*
@@ -75,12 +75,12 @@ void PBMFile::readPBM(
 	 */
 	catch( const std::exception & e ) {
 		LOG(ERROR) << "(buggy exception) error opening/reading/closing PBM file : " << e.what();
-		this->closePBM(pbm);
+		PBMFile::closePBM(pbm);
 		throw GLogiKExcept("PBM ifstream error");
 	}
 
 	if( pbm.is_open() )
-		this->closePBM(pbm);
+		PBMFile::closePBM(pbm);
 }
 
 void PBMFile::closePBM(std::ifstream & pbm)

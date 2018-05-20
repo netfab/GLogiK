@@ -38,24 +38,24 @@ class PBMFile
 		PBMFile(void);
 		~PBMFile(void);
 
-		void readPBM(
+		static void readPBM(
 			const std::string & path,
 			PBMDataArray & pbm_data,
 			const unsigned int expected_width = PBM_WIDTH,
 			const unsigned int expected_height = PBM_HEIGHT);
 
 	private:
-		void parsePBMHeader(
+		static void parsePBMHeader(
 			std::ifstream & pbm,
 			std::string & magic,
 			unsigned int & width,
 			unsigned int & height);
 
-		void extractPBMData(
+		static void extractPBMData(
 			std::ifstream & pbm,
 			PBMDataArray & pbm_data);
 
-		void closePBM(std::ifstream & pbm);
+		static void closePBM(std::ifstream & pbm);
 
 };
 
