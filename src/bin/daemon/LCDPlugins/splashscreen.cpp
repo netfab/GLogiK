@@ -49,7 +49,7 @@ void Splashscreen::init(void)
 	this->addPBMClearedFrame();
 	this->addPBMFrame(pbm_dir, "GLogiK01.pbm");
 	this->addPBMFrame(pbm_dir, "GLogiK02.pbm");
-	this->addPBMFrame(pbm_dir, "GLogiK03.pbm");
+	this->addPBMFrame(pbm_dir, "GLogiK03.pbm", 2);
 	this->addPBMFrame(pbm_dir, "GLogiK04.pbm", 3);
 
 	LCDPlugin::init();
