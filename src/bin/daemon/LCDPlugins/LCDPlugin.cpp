@@ -111,19 +111,19 @@ void LCDPlugin::checkPBMFrameIndex(void)
 }
 
 void LCDPlugin::addPBMFrame(
-	const std::string & path,
+	const fs::path & pbm_dir,
 	const std::string & file,
 	const unsigned short num)
 {
-	std::string filepath(path);
-	filepath += "/";		// TODO boost:fs:path
-	filepath += file;
+	fs::path file_path(pbm_dir);
+	file_path /= file;
+
 	this->frames_.emplace_back(num);
 	try {
-		this->readPBM(filepath, this->frames_.back().pbm_data);
+		this->readPBM(file_path.string(), this->frames_.back().pbm_data);
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "exception while reading PBM file: " << filepath;
+		LOG(ERROR) << "exception while reading PBM file: " << file_path.string();
 		throw;
 	}
 }

@@ -19,11 +19,16 @@
  *
  */
 
-#include <config.h>
 
 #include <string>
 
+#include <boost/filesystem.hpp>
+
+#include <config.h>
+
 #include "splashscreen.h"
+
+namespace fs = boost::filesystem;
 
 namespace GLogiK
 {
@@ -38,15 +43,14 @@ Splashscreen::~Splashscreen() {
 
 void Splashscreen::init(void)
 {
-	std::string dir(PBM_DATA_DIR);
-	dir += "/";			// TODO boost::fs:path
-	dir += this->name_;
+	fs::path pbm_dir(PBM_DATA_DIR);
+	pbm_dir /= this->name_;
 
 	this->addPBMClearedFrame();
-	this->addPBMFrame(dir, "GLogiK01.pbm");
-	this->addPBMFrame(dir, "GLogiK02.pbm");
-	this->addPBMFrame(dir, "GLogiK03.pbm");
-	this->addPBMFrame(dir, "GLogiK04.pbm", 3);
+	this->addPBMFrame(pbm_dir, "GLogiK01.pbm");
+	this->addPBMFrame(pbm_dir, "GLogiK02.pbm");
+	this->addPBMFrame(pbm_dir, "GLogiK03.pbm");
+	this->addPBMFrame(pbm_dir, "GLogiK04.pbm", 3);
 
 	LCDPlugin::init();
 }

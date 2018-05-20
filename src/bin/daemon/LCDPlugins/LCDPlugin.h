@@ -28,8 +28,12 @@
 #include <vector>
 #include <string>
 
+#include <boost/filesystem.hpp>
+
 #include "PBM.h"
 #include "PBMFile.h"
+
+namespace fs = boost::filesystem;
 
 namespace GLogiK
 {
@@ -77,7 +81,7 @@ class LCDPlugin
 		LCDPluginTempo tempo_;
 
 		void addPBMFrame(
-			const std::string & path,
+			const fs::path & pbm_dir,
 			const std::string & file,
 			const unsigned short num = 1
 		);
