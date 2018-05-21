@@ -32,7 +32,8 @@ PBMFile::PBMFile()
 {
 }
 
-PBMFile::~PBMFile() {
+PBMFile::~PBMFile()
+{
 }
 
 void PBMFile::readPBM(

@@ -60,6 +60,10 @@ GLogiKd_SOURCES += \
 		%D%/LCDPlugins/PBM.h \
 		%D%/LCDPlugins/PBMFile.cpp \
 		%D%/LCDPlugins/PBMFile.h \
+		%D%/LCDPlugins/PBMFont.cpp \
+		%D%/LCDPlugins/PBMFont.h \
+		%D%/LCDPlugins/fontMonospace8.cpp \
+		%D%/LCDPlugins/fontMonospace8.h \
 		%D%/LCDPlugins/LCDPlugin.cpp \
 		%D%/LCDPlugins/LCDPlugin.h \
 		%D%/LCDPlugins/splashscreen.cpp \

@@ -108,8 +108,10 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
 			}
 		}
 
-		if(this->current_plugin_ != this->plugins_.end() )
+		if(this->current_plugin_ != this->plugins_.end() ) {
+			(*this->current_plugin_)->prepareNextPBMFrame();
 			this->dumpPBMDataIntoLCDBuffer(this->lcd_buffer_, (*this->current_plugin_)->getNextPBMFrame());
+		}
 		else /* else blank screen */
 			this->lcd_buffer_.fill(0x0);
 	}

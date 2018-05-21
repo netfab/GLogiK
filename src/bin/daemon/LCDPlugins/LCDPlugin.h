@@ -30,6 +30,8 @@
 
 #include <boost/filesystem.hpp>
 
+#include "fontMonospace8.h"
+
 #include "PBM.h"
 #include "PBMFile.h"
 
@@ -61,7 +63,8 @@ class LCDPBMFrame
 };
 
 class LCDPlugin
-	:	private PBMFile
+	:	virtual private PBMFile,
+		private FontMonospace8
 {
 	public:
 		virtual ~LCDPlugin(void);
@@ -69,10 +72,12 @@ class LCDPlugin
 		virtual void init(void) = 0;
 		const bool isInitialized(void) const;
 
-		const unsigned short getPluginTiming(void);
-		const unsigned short getPluginMaxFrames(void);
+		const unsigned short getPluginTiming(void) const;
+		const unsigned short getPluginMaxFrames(void) const;
 		void resetPBMFrameIndex(void);
-		const PBMDataArray & getNextPBMFrame(void);
+		void prepareNextPBMFrame(void);
+
+		virtual const PBMDataArray & getNextPBMFrame(void);
 
 	protected:
 		LCDPlugin(void);
@@ -90,9 +95,13 @@ class LCDPlugin
 			const unsigned short num = 1
 		);
 
+		const unsigned short getNextPBMFrameID(void) const;
+		PBMDataArray & getCurrentPBMFrame(void);
+
 	private:
 		bool initialized_;
 		unsigned short frame_count_;
+		unsigned short frame_ID_;
 		std::vector<LCDPBMFrame> frames_;
 		std::vector<LCDPBMFrame>::iterator current_frame_;
 

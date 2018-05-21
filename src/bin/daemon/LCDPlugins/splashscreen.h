@@ -36,6 +36,8 @@ class Splashscreen
 
 		void init(void);
 
+		const PBMDataArray & getNextPBMFrame(void);
+
 	protected:
 
 	private:

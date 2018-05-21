@@ -48,6 +48,7 @@ GLogiK=$PWD/.. CD=. {
 				GLogiK03.pbm
 				GLogiK04.pbm
 			}
+			monospace8.pbm
 		}
 		udev=udev/ {
 			Makefile.am
@@ -70,11 +71,13 @@ GLogiK=$PWD/.. CD=. {
 					splashscreen.h
 					LCDPlugin.cpp
 					LCDPlugin.h
+					fontMonospace8.cpp
+					fontMonospace8.h
 					PBMFile.cpp
 					PBMFile.h
-					PBM.h
 					PBMFont.cpp
 					PBMFont.h
+					PBM.h
 				}
 				main.cpp
 				client.cpp

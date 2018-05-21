@@ -32,7 +32,8 @@ LCDPlugin::LCDPlugin()
 	:	name_("unknown"),
 		tempo_(LCDPluginTempo::TEMPO_DEFAULT),
 		initialized_(false),
-		frame_count_(0)
+		frame_count_(0),
+		frame_ID_(0)
 {
 }
 
@@ -42,6 +43,16 @@ LCDPlugin::~LCDPlugin()
 	LOG(DEBUG2) << "deleting " << this->name_ << " LCD plugin";
 #endif
 }
+
+/*
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ *
+ * === public === public === public === public === public ===
+ *
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ */
 
 const bool LCDPlugin::isInitialized(void) const
 {
@@ -54,7 +65,7 @@ void LCDPlugin::resetPBMFrameIndex(void)
 	this->checkPBMFrameIndex(); /* may throw */
 }
 
-const unsigned short LCDPlugin::getPluginTiming(void)
+const unsigned short LCDPlugin::getPluginTiming(void) const
 {
 	unsigned short timing = 0;
 	unsigned short max_frames;
@@ -62,7 +73,7 @@ const unsigned short LCDPlugin::getPluginTiming(void)
 	return timing;
 }
 
-const unsigned short LCDPlugin::getPluginMaxFrames(void)
+const unsigned short LCDPlugin::getPluginMaxFrames(void) const
 {
 	unsigned short timing = 0;
 	unsigned short max_frames;
@@ -70,24 +81,19 @@ const unsigned short LCDPlugin::getPluginMaxFrames(void)
 	return max_frames;
 }
 
-const PBMDataArray & LCDPlugin::getNextPBMFrame(void)
+void LCDPlugin::prepareNextPBMFrame(void)
 {
-	/* update internal index and iterator to allow the plugin
+	/* update internal frame counter and iterator to allow the plugin
 	 * to have multiples PBM loaded and simulate animation */
 
 	if(this->frame_count_ >= (*this->current_frame_).frame_count) {
 		this->current_frame_++;
+		this->checkPBMFrameIndex(); /* may throw */
+		this->frame_ID_ = (this->current_frame_ - this->frames_.begin());
 		this->frame_count_ = 0;
 	}
 
-	this->checkPBMFrameIndex();
-
 	this->frame_count_++; /* for next call */
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << this->name_ << " frame # " << (this->current_frame_ - this->frames_.begin()) ;
-#endif
-	return (*this->current_frame_).pbm_data;
 }
 
 void LCDPlugin::init(void)
@@ -98,17 +104,20 @@ void LCDPlugin::init(void)
 	this->initialized_ = true;
 }
 
-void LCDPlugin::checkPBMFrameIndex(void)
+const PBMDataArray & LCDPlugin::getNextPBMFrame(void)
 {
-	if( this->current_frame_ == this->frames_.end() ) {
-		this->current_frame_ = this->frames_.begin();
-
-		if( this->current_frame_ == this->frames_.end() )
-			throw GLogiKExcept("plugin frame iterator exception");
-
-		this->frame_count_ = 0;
-	}
+	return this->getCurrentPBMFrame();
 }
+
+/*
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ *
+ * === protected === protected === protected === protected ===
+ *
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ */
 
 void LCDPlugin::addPBMFrame(
 	const fs::path & pbm_dir,
@@ -133,6 +142,43 @@ void LCDPlugin::addPBMClearedFrame(
 {
 	this->frames_.emplace_back(num);
 	this->frames_.back().pbm_data.fill(0x0);
+}
+
+const unsigned short LCDPlugin::getNextPBMFrameID(void) const
+{
+	//if( this->frame_count_ + 1 >= (*this->current_frame_).frame_count )
+	return this->frame_ID_;
+}
+
+PBMDataArray & LCDPlugin::getCurrentPBMFrame(void)
+{
+#if DEBUGGING_ON
+	LOG(DEBUG3) << this->name_ << " PBM # " << this->frame_ID_;
+#endif
+	return (*this->current_frame_).pbm_data;
+}
+
+/*
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ *
+ * === private === private === private === private === private ===
+ *
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ */
+
+void LCDPlugin::checkPBMFrameIndex(void)
+{
+	if( this->current_frame_ == this->frames_.end() ) {
+		this->current_frame_ = this->frames_.begin();
+
+		if( this->current_frame_ == this->frames_.end() )
+			throw GLogiKExcept("plugin frame iterator exception");
+
+		this->frame_count_ = 0;
+		this->frame_ID_ = 0;
+	}
 }
 
 std::tuple<unsigned short, unsigned short> LCDPlugin::getTempo(const LCDPluginTempo tempo)

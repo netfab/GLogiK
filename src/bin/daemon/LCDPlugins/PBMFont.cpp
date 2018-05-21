@@ -19,53 +19,32 @@
  *
  */
 
-
-#include <string>
-
 #include <boost/filesystem.hpp>
-
-#include <config.h>
 
 #include "lib/utils/utils.h"
 
-#include "splashscreen.h"
-
-namespace fs = boost::filesystem;
+#include "PBMFont.h"
 
 namespace GLogiK
 {
 
+namespace fs = boost::filesystem;
 using namespace NSGKUtils;
 
-Splashscreen::Splashscreen() {
-	this->name_ = "splashscreen";
-	this->tempo_ = LCDPluginTempo::TEMPO_750_8;
+PBMFont::PBMFont(const std::string & pbm_font_file) {
+	fs::path fullpath(PBM_DATA_DIR);
+	fullpath /= pbm_font_file;
+
+	try {
+		this->readPBM(fullpath.string(), this->pbm_data_);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << "exception while reading PBM file: " << fullpath.string();
+		throw;
+	}
 }
 
-Splashscreen::~Splashscreen() {
-}
-
-void Splashscreen::init(void)
-{
-	fs::path pbm_dir(PBM_DATA_DIR);
-	pbm_dir /= this->name_;
-
-	this->addPBMClearedFrame();
-	this->addPBMFrame(pbm_dir, "GLogiK01.pbm");
-	this->addPBMFrame(pbm_dir, "GLogiK02.pbm");
-	this->addPBMFrame(pbm_dir, "GLogiK03.pbm", 2);
-	this->addPBMFrame(pbm_dir, "GLogiK04.pbm", 3);
-
-	LCDPlugin::init();
-}
-
-const PBMDataArray & Splashscreen::getNextPBMFrame(void)
-{
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "next PBM #" << this->getNextPBMFrameID();
-#endif
-
-	return LCDPlugin::getNextPBMFrame();
+PBMFont::~PBMFont() {
 }
 
 } // namespace GLogiK
