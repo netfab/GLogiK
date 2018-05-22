@@ -76,6 +76,9 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 		GKSysLog(LOG_WARNING, WARNING, "no LCD screen plugin initialized");
 	}
 	this->lcd_buffer_.fill(0x0);
+
+	// TODO move this
+	//this->fonts_manager_.initializeFont("monospace8");
 }
 
 LCDScreenPluginsManager::~LCDScreenPluginsManager() {
@@ -109,8 +112,9 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
 		}
 
 		if(this->current_plugin_ != this->plugins_.end() ) {
+			FontsManager* fonts = &(this->fonts_manager_);
 			(*this->current_plugin_)->prepareNextPBMFrame();
-			this->dumpPBMDataIntoLCDBuffer(this->lcd_buffer_, (*this->current_plugin_)->getNextPBMFrame());
+			this->dumpPBMDataIntoLCDBuffer(this->lcd_buffer_, (*this->current_plugin_)->getNextPBMFrame(fonts));
 		}
 		else /* else blank screen */
 			this->lcd_buffer_.fill(0x0);

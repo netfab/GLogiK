@@ -22,6 +22,8 @@
 #ifndef __GLOGIKD_LCD_PLUGIN_SPLASHSCREEN_H__
 #define __GLOGIKD_LCD_PLUGIN_SPLASHSCREEN_H__
 
+#include "fontsManager.h"
+
 #include "LCDPlugin.h"
 
 namespace GLogiK
@@ -36,7 +38,7 @@ class Splashscreen
 
 		void init(void);
 
-		const PBMDataArray & getNextPBMFrame(void);
+		const PBMDataArray & getNextPBMFrame(FontsManager* fonts);
 
 	protected:
 

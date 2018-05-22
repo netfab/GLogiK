@@ -19,28 +19,41 @@
  *
  */
 
-#ifndef __GLOGIKD_PBM_FONT_MONOSPACE_8_H__
-#define __GLOGIKD_PBM_FONT_MONOSPACE_8_H__
+#include <new>
 
-#include "PBMFont.h"
+#include "lib/utils/utils.h"
+
+#include "fontsManager.h"
 
 namespace GLogiK
 {
 
-class FontMonospace8
-	:	private PBMFont
+using namespace NSGKUtils;
+
+FontsManager::FontsManager()
 {
-	public:
+}
 
-	protected:
-		FontMonospace8(void);
-		~FontMonospace8(void);
+FontsManager::~FontsManager()
+{
+	for(const auto & font_pair : this->fonts_) {
+		delete font_pair.second;
+	}
+	this->fonts_.clear();
+}
 
-	private:
+void FontsManager::initializeFont(const std::string & fontName)
+{
+	PBMFont* font = nullptr;
+	try {
+		font = new PBMFont(fontName);
+	}
+	catch (const std::bad_alloc& e) { /* handle new() failure */
+		throw GLogiKBadAlloc("font bad allocation");
+	}
 
-};
+	this->fonts_[fontName] = font;
+}
 
 } // namespace GLogiK
-
-#endif
 

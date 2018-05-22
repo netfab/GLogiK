@@ -104,7 +104,7 @@ void LCDPlugin::init(void)
 	this->initialized_ = true;
 }
 
-const PBMDataArray & LCDPlugin::getNextPBMFrame(void)
+const PBMDataArray & LCDPlugin::getNextPBMFrame(FontsManager* fonts)
 {
 	return this->getCurrentPBMFrame();
 }
@@ -156,6 +156,14 @@ PBMDataArray & LCDPlugin::getCurrentPBMFrame(void)
 	LOG(DEBUG3) << this->name_ << " PBM # " << this->frame_ID_;
 #endif
 	return (*this->current_frame_).pbm_data;
+}
+
+void LCDPlugin::writeStringOnFrame(
+	const std::string & string,
+	const std::string & fontName,
+	const unsigned int PBMXPos,
+	const unsigned int PBMYPos)
+{
 }
 
 /*

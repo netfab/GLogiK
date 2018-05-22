@@ -34,13 +34,14 @@ class PBMFont
 	:	virtual private PBMFile
 {
 	public:
+		PBMFont(const std::string & pbmName);
+		~PBMFont(void);
 
 	protected:
-		PBMFont(const std::string & pbm_font_file);
-		~PBMFont();
 
 	private:
 		PBMDataArray pbm_data_;
+		std::string font_name_;
 
 };
 

@@ -31,9 +31,13 @@ namespace GLogiK
 namespace fs = boost::filesystem;
 using namespace NSGKUtils;
 
-PBMFont::PBMFont(const std::string & pbm_font_file) {
+PBMFont::PBMFont(const std::string & pbmName)
+{
+	this->font_name_ = pbmName;
+
 	fs::path fullpath(PBM_DATA_DIR);
-	fullpath /= pbm_font_file;
+	fullpath /= pbmName;
+	fullpath += ".pbm";
 
 	try {
 		this->readPBM(fullpath.string(), this->pbm_data_);
@@ -44,7 +48,11 @@ PBMFont::PBMFont(const std::string & pbm_font_file) {
 	}
 }
 
-PBMFont::~PBMFont() {
+PBMFont::~PBMFont()
+{
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "deleting font " << this->font_name_;
+#endif
 }
 
 } // namespace GLogiK

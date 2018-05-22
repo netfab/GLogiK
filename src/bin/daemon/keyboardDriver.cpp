@@ -557,6 +557,9 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice
 	}
+	catch (const GLogiKExcept & e) {
+		GKSysLog(LOG_ERR, ERROR, e.what());
+	}
 	catch( const std::exception & e ) {
 		std::ostringstream err("uncaught std::exception : ", std::ios_base::app);
 		err << e.what();

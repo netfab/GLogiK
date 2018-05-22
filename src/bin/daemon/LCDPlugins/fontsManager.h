@@ -19,19 +19,33 @@
  *
  */
 
-#include "fontMonospace8.h"
+#ifndef __GLOGIKD_FONTS_MANAGER_H__
+#define __GLOGIKD_FONTS_MANAGER_H__
+
+#include <string>
+#include <map>
+
+#include "PBMFont.h"
 
 namespace GLogiK
 {
 
-FontMonospace8::FontMonospace8()
-	:	PBMFont("monospace8.pbm")
+class FontsManager
 {
-}
+	public:
+		FontsManager(void);
+		~FontsManager(void);
 
-FontMonospace8::~FontMonospace8()
-{
-}
+		void initializeFont(const std::string & fontName);
+
+	protected:
+
+	private:
+		std::map<const std::string, PBMFont*> fonts_;
+
+};
 
 } // namespace GLogiK
+
+#endif
 

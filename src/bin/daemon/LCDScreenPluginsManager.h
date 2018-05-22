@@ -26,6 +26,7 @@
 
 #include "LCDPlugins/PBM.h"
 #include "LCDPlugins/LCDPlugin.h"
+#include "LCDPlugins/fontsManager.h"
 
 namespace GLogiK
 {
@@ -47,6 +48,7 @@ class LCDScreenPluginsManager
 		std::vector<LCDPlugin*>::iterator current_plugin_;
 
 		LCDDataArray lcd_buffer_;
+		FontsManager fonts_manager_;
 
 		void stopLCDPlugins(void);
 		void dumpPBMDataIntoLCDBuffer(LCDDataArray & lcd_buffer, const PBMDataArray & pbm_data);
