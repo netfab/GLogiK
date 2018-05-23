@@ -44,15 +44,20 @@ FontsManager::~FontsManager()
 
 void FontsManager::initializeFont(const std::string & fontName)
 {
-	PBMFont* font = nullptr;
 	try {
-		font = new PBMFont(fontName);
+		this->fonts_.at(fontName);
 	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
-		throw GLogiKBadAlloc("font bad allocation");
-	}
+	catch (const std::out_of_range& oor) {
+		PBMFont* font = nullptr;
+		try {
+			font = new PBMFont(fontName);
+		}
+		catch (const std::bad_alloc& e) { /* handle new() failure */
+			throw GLogiKBadAlloc("font bad allocation");
+		}
 
-	this->fonts_[fontName] = font;
+		this->fonts_[fontName] = font;
+	}
 }
 
 } // namespace GLogiK
