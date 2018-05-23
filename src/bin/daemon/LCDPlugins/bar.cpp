@@ -35,7 +35,7 @@ bar::bar() {
 bar::~bar() {
 }
 
-void bar::init(void)
+void bar::init(FontsManager* const pFonts)
 {
 	std::string dir("/tmp");
 	dir += "/";			// TODO boost::fs:path
@@ -44,7 +44,7 @@ void bar::init(void)
 	this->addPBMFrame(dir, "outbin3.pbm", 2);
 	this->addPBMFrame(dir, "test.pbm", 5);
 
-	LCDPlugin::init();
+	LCDPlugin::init(pFonts);
 }
 
 } // namespace GLogiK

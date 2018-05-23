@@ -34,7 +34,8 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 LCDScreenPluginsManager::LCDScreenPluginsManager()
-	:	plugin_frame_(0)
+	:	plugin_frame_(0),
+		pFonts_(&fonts_manager_)
 {
 	try {
 		this->plugins_.push_back( new Splashscreen() );
@@ -48,7 +49,7 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 	/* initialize each plugin */
 	for(const auto & plugin : this->plugins_) {
 		try {
-			plugin->init();
+			plugin->init(this->pFonts_);
 		}
 		catch (const GLogiKExcept & e) {
 			LOG(ERROR) << e.what();
@@ -76,9 +77,6 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 		GKSysLog(LOG_WARNING, WARNING, "no LCD screen plugin initialized");
 	}
 	this->lcd_buffer_.fill(0x0);
-
-	// TODO move this
-	//this->fonts_manager_.initializeFont("monospace8");
 }
 
 LCDScreenPluginsManager::~LCDScreenPluginsManager() {
@@ -112,9 +110,11 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
 		}
 
 		if(this->current_plugin_ != this->plugins_.end() ) {
-			FontsManager* fonts = &(this->fonts_manager_);
 			(*this->current_plugin_)->prepareNextPBMFrame();
-			this->dumpPBMDataIntoLCDBuffer(this->lcd_buffer_, (*this->current_plugin_)->getNextPBMFrame(fonts));
+			this->dumpPBMDataIntoLCDBuffer(
+				this->lcd_buffer_,
+				(*this->current_plugin_)->getNextPBMFrame(this->pFonts_)
+			);
 		}
 		else /* else blank screen */
 			this->lcd_buffer_.fill(0x0);

@@ -36,9 +36,9 @@ class Splashscreen
 		Splashscreen(void);
 		~Splashscreen(void);
 
-		void init(void);
+		void init(FontsManager* const pFonts);
 
-		const PBMDataArray & getNextPBMFrame(FontsManager* fonts);
+		const PBMDataArray & getNextPBMFrame(FontsManager* const pFonts);
 
 	protected:
 

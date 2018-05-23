@@ -49,6 +49,7 @@ class LCDScreenPluginsManager
 
 		LCDDataArray lcd_buffer_;
 		FontsManager fonts_manager_;
+		FontsManager* const pFonts_;
 
 		void stopLCDPlugins(void);
 		void dumpPBMDataIntoLCDBuffer(LCDDataArray & lcd_buffer, const PBMDataArray & pbm_data);

@@ -67,7 +67,7 @@ class LCDPlugin
 	public:
 		virtual ~LCDPlugin(void);
 
-		virtual void init(void) = 0;
+		virtual void init(FontsManager* const pFonts) = 0;
 		const bool isInitialized(void) const;
 
 		const unsigned short getPluginTiming(void) const;
@@ -75,7 +75,7 @@ class LCDPlugin
 		void resetPBMFrameIndex(void);
 		void prepareNextPBMFrame(void);
 
-		virtual const PBMDataArray & getNextPBMFrame(FontsManager* fonts);
+		virtual const PBMDataArray & getNextPBMFrame(FontsManager* const pFonts);
 
 	protected:
 		LCDPlugin(void);

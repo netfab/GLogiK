@@ -96,7 +96,7 @@ void LCDPlugin::prepareNextPBMFrame(void)
 	this->frame_count_++; /* for next call */
 }
 
-void LCDPlugin::init(void)
+void LCDPlugin::init(FontsManager* const pFonts)
 {
 	this->current_frame_ = this->frames_.begin();
 	this->checkPBMFrameIndex(); /* may throw */
@@ -104,7 +104,7 @@ void LCDPlugin::init(void)
 	this->initialized_ = true;
 }
 
-const PBMDataArray & LCDPlugin::getNextPBMFrame(FontsManager* fonts)
+const PBMDataArray & LCDPlugin::getNextPBMFrame(FontsManager* const pFonts)
 {
 	return this->getCurrentPBMFrame();
 }

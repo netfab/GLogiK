@@ -34,7 +34,7 @@ class bar
 		bar(void);
 		~bar(void);
 
-		void init(void);
+		void init(FontsManager* const pFonts);
 
 	protected:
 

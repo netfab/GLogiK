@@ -45,7 +45,7 @@ Splashscreen::Splashscreen() {
 Splashscreen::~Splashscreen() {
 }
 
-void Splashscreen::init(void)
+void Splashscreen::init(FontsManager* const pFonts)
 {
 	fs::path pbm_dir(PBM_DATA_DIR);
 	pbm_dir /= this->name_;
@@ -56,10 +56,12 @@ void Splashscreen::init(void)
 	this->addPBMFrame(pbm_dir, "GLogiK03.pbm", 2);	/*       #3 */
 	this->addPBMFrame(pbm_dir, "GLogiK04.pbm", 3);	/*       #4 */
 
-	LCDPlugin::init();
+	LCDPlugin::init(pFonts);
+
+	pFonts->initializeFont("monospace8");
 }
 
-const PBMDataArray & Splashscreen::getNextPBMFrame(FontsManager* fonts)
+const PBMDataArray & Splashscreen::getNextPBMFrame(FontsManager* const pFonts)
 {
 	if( this->getNextPBMFrameID() == 4 ) {
 		//this->writeStringOnFrame("a", "monospace8", 112, 32);
