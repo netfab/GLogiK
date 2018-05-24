@@ -31,10 +31,14 @@ namespace GLogiK
 namespace fs = boost::filesystem;
 using namespace NSGKUtils;
 
-PBMFont::PBMFont(const std::string & pbmName)
+PBMFont::PBMFont(
+	const std::string & pbmName,
+	const unsigned short width,
+	const unsigned short height)
+	:	font_name_(pbmName),
+		char_width_(width),
+		char_height_(height)
 {
-	this->font_name_ = pbmName;
-
 	fs::path fullpath(PBM_DATA_DIR);
 	fullpath /= pbmName;
 	fullpath += ".pbm";

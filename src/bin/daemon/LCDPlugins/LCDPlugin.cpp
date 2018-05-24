@@ -159,11 +159,20 @@ PBMDataArray & LCDPlugin::getCurrentPBMFrame(void)
 }
 
 void LCDPlugin::writeStringOnFrame(
-	const std::string & string,
+	FontsManager* const pFonts,
 	const std::string & fontName,
+	const std::string & string,
 	const unsigned int PBMXPos,
 	const unsigned int PBMYPos)
 {
+	const unsigned short xByte = PBMXPos / 8;
+	const unsigned short xModulo = PBMXPos % 8;
+
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "xPos: " << PBMXPos
+				<< " - xByte: " << xByte
+				<< " - xByte modulo: " << xModulo;
+#endif
 }
 
 /*

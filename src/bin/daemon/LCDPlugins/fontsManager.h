@@ -22,7 +22,8 @@
 #ifndef __GLOGIKD_FONTS_MANAGER_H__
 #define __GLOGIKD_FONTS_MANAGER_H__
 
-#include <string>
+#include <cstdint>
+
 #include <map>
 
 #include "PBMFont.h"
@@ -30,18 +31,23 @@
 namespace GLogiK
 {
 
+enum class FontID : uint8_t
+{
+	MONOSPACE8 = 1 << 0,
+};
+
 class FontsManager
 {
 	public:
 		FontsManager(void);
 		~FontsManager(void);
 
-		void initializeFont(const std::string & fontName);
+		void initializeFont(const FontID fontID);
 
 	protected:
 
 	private:
-		std::map<const std::string, PBMFont*> fonts_;
+		std::map<const FontID, PBMFont*> fonts_;
 
 };
 

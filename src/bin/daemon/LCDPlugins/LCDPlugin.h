@@ -97,8 +97,9 @@ class LCDPlugin
 		PBMDataArray & getCurrentPBMFrame(void);
 
 		void writeStringOnFrame(
-			const std::string & string,
+			FontsManager* const pFonts,
 			const std::string & fontName,
+			const std::string & string,
 			const unsigned int PBMXPos,
 			const unsigned int PBMYPos
 		);

@@ -19,11 +19,8 @@
  *
  */
 
-#include <new>
-
 #include "lib/utils/utils.h"
 
-#include "fontsManager.h"
 #include "fontMonospace8.h"
 
 namespace GLogiK
@@ -31,40 +28,13 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-FontsManager::FontsManager()
+fontMonospace8::fontMonospace8(void)
+	:	PBMFont("monospace8", 6, 10)
 {
 }
 
-FontsManager::~FontsManager()
+fontMonospace8::~fontMonospace8()
 {
-	for(const auto & font_pair : this->fonts_) {
-		delete font_pair.second;
-	}
-	this->fonts_.clear();
-}
-
-void FontsManager::initializeFont(const FontID fontID)
-{
-	try {
-		this->fonts_.at(fontID);
-	}
-	catch (const std::out_of_range& oor) {
-		PBMFont* font = nullptr;
-		try {
-			switch(fontID) {
-				case FontID::MONOSPACE8:
-					font = new fontMonospace8();
-					break;
-				default:
-					throw GLogiKExcept("unknown font ID");
-			}
-		}
-		catch (const std::bad_alloc& e) { /* handle new() failure */
-			throw GLogiKBadAlloc("font bad allocation");
-		}
-
-		this->fonts_[fontID] = font;
-	}
 }
 
 } // namespace GLogiK

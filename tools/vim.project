@@ -73,6 +73,8 @@ GLogiK=$PWD/.. CD=. {
 					LCDPlugin.h
 					fontsManager.cpp
 					fontsManager.h
+					fontMonospace8.cpp
+					fontMonospace8.h
 					PBMFile.cpp
 					PBMFile.h
 					PBMFont.cpp
