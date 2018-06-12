@@ -22,7 +22,10 @@
 #ifndef __GLOGIKD_PBM_FONT_H__
 #define __GLOGIKD_PBM_FONT_H__
 
+#include <utility>
 #include <string>
+#include <map>
+#include <initializer_list>
 
 #include "PBM.h"
 #include "PBMFile.h"
@@ -30,17 +33,23 @@
 namespace GLogiK
 {
 
+
+typedef std::initializer_list<std::pair<const std::string, std::pair<unsigned short, unsigned short>>> characters_map_t;
+
 class PBMFont
 	:	virtual private PBMFile
 {
 	public:
-		~PBMFont(void);
+		virtual ~PBMFont(void);
+
+		void setCurrentPosition(const std::string & c);
 
 	protected:
 		PBMFont(
 			const std::string & pbmName,
-			const unsigned short width,
-			const unsigned short height
+			const unsigned short width = 6,
+			const unsigned short height = 10,
+			const characters_map_t charsMap = PBMFont::defaultCharsMap
 		);
 
 	private:
@@ -48,7 +57,12 @@ class PBMFont
 		const std::string font_name_;
 		const unsigned short char_width_;
 		const unsigned short char_height_;
+		unsigned short cur_x_;
+		unsigned short cur_y_;
 
+		std::map<const std::string, std::pair<unsigned short, unsigned short>> chars_map_;
+
+		static const characters_map_t defaultCharsMap;
 };
 
 } // namespace GLogiK

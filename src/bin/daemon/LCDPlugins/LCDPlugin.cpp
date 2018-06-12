@@ -146,7 +146,6 @@ void LCDPlugin::addPBMClearedFrame(
 
 const unsigned short LCDPlugin::getNextPBMFrameID(void) const
 {
-	//if( this->frame_count_ + 1 >= (*this->current_frame_).frame_count )
 	return this->frame_ID_;
 }
 
@@ -160,7 +159,7 @@ PBMDataArray & LCDPlugin::getCurrentPBMFrame(void)
 
 void LCDPlugin::writeStringOnFrame(
 	FontsManager* const pFonts,
-	const std::string & fontName,
+	const FontID fontID,
 	const std::string & string,
 	const unsigned int PBMXPos,
 	const unsigned int PBMYPos)
@@ -173,6 +172,18 @@ void LCDPlugin::writeStringOnFrame(
 				<< " - xByte: " << xByte
 				<< " - xByte modulo: " << xModulo;
 #endif
+
+	try {
+		for(const char & c : string) {
+			const std::string cur_char(1, c);
+			pFonts->setFontPosition(fontID, cur_char);
+		}
+	}
+	catch (const GLogiKExcept & e) {
+		std::string warn("write string on frame failure : ");
+		warn += e.what();
+		GKSysLog(LOG_WARNING, WARNING, warn);
+	}
 }
 
 /*

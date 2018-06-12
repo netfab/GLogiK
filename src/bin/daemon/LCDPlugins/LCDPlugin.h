@@ -98,7 +98,7 @@ class LCDPlugin
 
 		void writeStringOnFrame(
 			FontsManager* const pFonts,
-			const std::string & fontName,
+			const FontID fontID,
 			const std::string & string,
 			const unsigned int PBMXPos,
 			const unsigned int PBMYPos

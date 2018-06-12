@@ -67,5 +67,20 @@ void FontsManager::initializeFont(const FontID fontID)
 	}
 }
 
+void FontsManager::setFontPosition(
+	const FontID fontID,
+	const std::string & c)
+{
+	try {
+		this->fonts_.at(fontID)->setCurrentPosition(c);
+	}
+	catch (const std::out_of_range& oor) {
+		std::string warn("uninitialized font : ");
+		warn += to_type(fontID);
+		GKSysLog(LOG_WARNING, WARNING, warn);
+		throw GLogiKExcept("unknown font ID");
+	}
+}
+
 } // namespace GLogiK
 

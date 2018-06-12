@@ -29,7 +29,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 fontMonospace8::fontMonospace8(void)
-	:	PBMFont("monospace8", 6, 10)
+	:	PBMFont("monospace8")
 {
 }
 

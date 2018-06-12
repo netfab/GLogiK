@@ -24,6 +24,7 @@
 
 #include <cstdint>
 
+#include <string>
 #include <map>
 
 #include "PBMFont.h"
@@ -43,6 +44,10 @@ class FontsManager
 		~FontsManager(void);
 
 		void initializeFont(const FontID fontID);
+		void setFontPosition(
+			const FontID fontID,
+			const std::string & c
+		);
 
 	protected:
 
