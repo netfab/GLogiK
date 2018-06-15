@@ -43,6 +43,9 @@ class PBMFont
 		virtual ~PBMFont(void);
 
 		void setCurrentPosition(const std::string & c);
+		const unsigned short getCharacterWidth(void) const;
+		const unsigned short getCharacterHeight(void) const;
+		const unsigned char getCurrentCharacterLine(const unsigned short line) const;
 
 	protected:
 		PBMFont(

@@ -64,7 +64,7 @@ void Splashscreen::init(FontsManager* const pFonts)
 const PBMDataArray & Splashscreen::getNextPBMFrame(FontsManager* const pFonts)
 {
 	if( this->getNextPBMFrameID() == 4 ) {
-		this->writeStringOnFrame(pFonts, FontID::MONOSPACE8, "hello world", 107, 32);
+		this->writeStringOnFrame(pFonts, FontID::MONOSPACE8, "Hello World !", 107, 32);
 	}
 	return LCDPlugin::getCurrentPBMFrame();
 }

@@ -67,19 +67,55 @@ void FontsManager::initializeFont(const FontID fontID)
 	}
 }
 
-void FontsManager::setFontPosition(
+void FontsManager::setFontCurrentCharacter(
 	const FontID fontID,
 	const std::string & c)
 {
 	try {
 		this->fonts_.at(fontID)->setCurrentPosition(c);
+		this->current_font_ID_ = fontID;
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn("uninitialized font : ");
+		std::string warn("unknown font : ");
 		warn += to_type(fontID);
 		GKSysLog(LOG_WARNING, WARNING, warn);
 		throw GLogiKExcept("unknown font ID");
 	}
+}
+
+const unsigned short FontsManager::getFontCharacterWidth(const FontID fontID) const
+{
+	try {
+		return this->fonts_.at(fontID)->getCharacterWidth();
+	}
+	catch (const std::out_of_range& oor) {
+		std::string warn("unknown font : ");
+		warn += to_type(fontID);
+		GKSysLog(LOG_WARNING, WARNING, warn);
+		throw GLogiKExcept("unknown font ID");
+	}
+
+	return 0;
+}
+
+const unsigned short FontsManager::getFontCharacterHeight(const FontID fontID) const
+{
+	try {
+		return this->fonts_.at(fontID)->getCharacterHeight();
+	}
+	catch (const std::out_of_range& oor) {
+		std::string warn("unknown font : ");
+		warn += to_type(fontID);
+		GKSysLog(LOG_WARNING, WARNING, warn);
+		throw GLogiKExcept("unknown font ID");
+	}
+
+	return 0;
+}
+
+const unsigned char FontsManager::getFontCurrentCharacterLine(const unsigned short line)
+{
+	return this->fonts_[this->current_font_ID_]->getCurrentCharacterLine(line);
 }
 
 } // namespace GLogiK

@@ -49,6 +49,10 @@ const characters_map_t PBMFont::defaultCharsMap =
 		{"U", {20,1} }, {"V", {21,1} }, {"W", {22,1} }, {"X", {23,1} }, {"Y", {24,1} },
 		{"Z", {25,1} },
 		/* -- */
+		{"1", {0,2} },  {"2", {1,2} },  {"3", {2,2} },  {"4", {3,2} },  {"5", {4,2} },
+		{"6", {5,2} },  {"7", {6,2} },  {"8", {7,2} },  {"9", {8,2} },  {"0", {9,2} },
+		{" ", {10,2} }, {".", {11,2} }, {":", {12,2} }, {"?", {13,2} }, {"!", {14,2} },
+		{";", {15,2} }, {"/", {16,2} },
 	};
 
 PBMFont::PBMFont(
@@ -90,8 +94,65 @@ void PBMFont::setCurrentPosition(const std::string & c)
 		this->cur_y_ = this->chars_map_[c].second;
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog(LOG_WARNING, WARNING, "unknown character");
+		std::string warn("unknown character : ");
+		warn += c;
+		GKSysLog(LOG_WARNING, WARNING, warn);
+		throw GLogiKExcept("font unknown character");
 	}
+}
+
+const unsigned short PBMFont::getCharacterWidth(void) const
+{
+	return this->char_width_;
+}
+
+const unsigned short PBMFont::getCharacterHeight(void) const
+{
+	return this->char_height_;
+}
+
+const unsigned char PBMFont::getCurrentCharacterLine(const unsigned short line) const
+{
+	unsigned char c = 0;
+	const unsigned short i = (this->cur_y_ * this->char_height_ * PBM_WIDTH_IN_BYTES)
+			+ ((this->cur_x_ * this->char_width_) / 8 ) + (PBM_WIDTH_IN_BYTES * line);
+	unsigned short index = i;
+
+// FIXME
+#if 0 & DEBUGGING_ON
+	LOG(DEBUG2) << "cur_x: " << this->cur_x_
+				<< " cur_y: " << this->cur_y_
+				<< " index: " << index;
+#endif
+
+	try {
+		switch( (this->cur_x_ % 4) ) {
+			case 0 :
+				c = (this->pbm_data_.at(index) >> 2);
+				break;
+			case 1 :
+				index += 1;
+				c = (this->pbm_data_.at(index) >> 4);
+				c |= ((this->pbm_data_[i] & 0b00000011) << 4);
+				break;
+			case 2 :
+				c = ((this->pbm_data_.at(index) & 0b00001111) << 2);
+				index += 1;
+				c |= (this->pbm_data_.at(index) >> 6);
+				break;
+			case 3 :
+				c = (this->pbm_data_.at(index) & 0b00111111);
+				break;
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		std::string error("wrong index : ");
+		error += oor.what();
+		error += " : ";
+		error += std::to_string(index);
+		GKSysLog(LOG_ERR, ERROR, error);
+	}
+	return c;
 }
 
 } // namespace GLogiK

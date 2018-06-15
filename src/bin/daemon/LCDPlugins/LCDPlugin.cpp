@@ -19,6 +19,8 @@
  *
  */
 
+//#include <bitset>
+
 #include "lib/utils/utils.h"
 
 #include "LCDPlugin.h"
@@ -174,9 +176,21 @@ void LCDPlugin::writeStringOnFrame(
 #endif
 
 	try {
+		//unsigned short w = pFonts->getFontCharacterWidth(fontID);
+		unsigned short h = pFonts->getFontCharacterHeight(fontID);
 		for(const char & c : string) {
 			const std::string cur_char(1, c);
-			pFonts->setFontPosition(fontID, cur_char);
+			pFonts->setFontCurrentCharacter(fontID, cur_char);
+
+			for(unsigned short i = 0; i < h; i++) {
+				pFonts->getFontCurrentCharacterLine(i);
+				//unsigned char c = pFonts->getFontCurrentCharacterLine(i);
+				//std::bitset<8> bits(c);
+				//LOG(DEBUG) << bits.to_string();
+
+				//unsigned int posOffset = i * PBM_WIDTH_IN_BYTES;
+				//(*this->current_frame_).pbm_data[]
+			}
 		}
 	}
 	catch (const GLogiKExcept & e) {
