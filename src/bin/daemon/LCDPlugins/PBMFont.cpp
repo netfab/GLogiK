@@ -117,7 +117,16 @@ void PBMFont::printCharacterOnFrame(
 
 	unsigned short index = 0;
 
-	/* FIXME check PBMXPos and PBMYPos before entering the loop */
+	if(PBMXPos >= (PBM_WIDTH - this->char_width_)) {
+		std::ostringstream warn(this->font_name_, std::ios_base::app);
+		warn << " font : pre-breaking write string loop : x : " << std::to_string(PBMXPos);
+		throw GLogiKExcept( warn.str() );
+	}
+	if(PBMYPos >= (PBM_HEIGHT - this->char_height_)) {
+		std::ostringstream warn(this->font_name_, std::ios_base::app);
+		warn << " font : pre-breaking write string loop : y : " << std::to_string(PBMYPos);
+		throw GLogiKExcept( warn.str() );
+	}
 
 	try {
 		for(unsigned short i = 0; i < this->char_height_; i++) {
@@ -182,9 +191,9 @@ void PBMFont::printCharacterOnFrame(
 
 	PBMXPos += this->char_width_;
 
-	if(PBMXPos > (PBM_WIDTH - this->char_width_)) {
+	if(PBMXPos >= (PBM_WIDTH - this->char_width_)) {
 		std::ostringstream warn(this->font_name_, std::ios_base::app);
-		warn << " font : breaking write string loop : " << std::to_string(PBMXPos);
+		warn << " font : breaking write string loop : x : " << std::to_string(PBMXPos);
 		throw GLogiKExcept( warn.str() );
 	}
 }
