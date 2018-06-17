@@ -42,10 +42,12 @@ class PBMFont
 	public:
 		virtual ~PBMFont(void);
 
-		void setCurrentPosition(const std::string & c);
-		const unsigned short getCharacterWidth(void) const;
-		const unsigned short getCharacterHeight(void) const;
-		const unsigned char getCurrentCharacterLine(const unsigned short line) const;
+		void printCharacterOnFrame(
+			PBMDataArray & frame,
+			const std::string & c,
+			unsigned int & PBMXPos,
+			const unsigned int PBMYPos
+		);
 
 	protected:
 		PBMFont(
@@ -58,14 +60,16 @@ class PBMFont
 	private:
 		PBMDataArray pbm_data_;
 		const std::string font_name_;
-		const unsigned short char_width_;
-		const unsigned short char_height_;
+		const unsigned int char_width_;
+		const unsigned int char_height_;
 		unsigned short cur_x_;
 		unsigned short cur_y_;
 
 		std::map<const std::string, std::pair<unsigned short, unsigned short>> chars_map_;
 
 		static const characters_map_t defaultCharsMap;
+
+		const unsigned char getCharacterLine(const unsigned short line) const;
 };
 
 } // namespace GLogiK

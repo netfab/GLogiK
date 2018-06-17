@@ -19,6 +19,9 @@
  *
  */
 
+#include <sstream>
+#include <stdexcept>
+
 #include <boost/filesystem.hpp>
 
 #include "lib/utils/utils.h"
@@ -87,31 +90,106 @@ PBMFont::~PBMFont()
 #endif
 }
 
-void PBMFont::setCurrentPosition(const std::string & c)
+void PBMFont::printCharacterOnFrame(
+	PBMDataArray & frame,
+	const std::string & c,
+	unsigned int & PBMXPos,
+	const unsigned int PBMYPos)
 {
+	const unsigned short xByte = PBMXPos / 8;
+	const unsigned short xModulo = PBMXPos % 8;
+
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "xPos: " << PBMXPos
+				<< " - xByte: " << xByte
+				<< " - xByte modulo: " << xModulo;
+#endif
+
 	try {
 		this->cur_x_ = this->chars_map_.at(c).first;
 		this->cur_y_ = this->chars_map_[c].second;
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn("unknown character : ");
-		warn += c;
-		GKSysLog(LOG_WARNING, WARNING, warn);
-		throw GLogiKExcept("font unknown character");
+		std::ostringstream warn(this->font_name_, std::ios_base::app);
+		warn << " font : unknown character : " << c;
+		throw GLogiKExcept( warn.str() );
+	}
+
+	unsigned short index = 0;
+
+	/* FIXME check PBMXPos and PBMYPos before entering the loop */
+
+	try {
+		for(unsigned short i = 0; i < this->char_height_; i++) {
+			/* FIXME
+			 *	hardcoded values in this loop depends on the fact that
+			 *	character font width == 6
+			 */
+			unsigned char c = this->getCharacterLine(i);
+			index = (PBM_WIDTH_IN_BYTES * (PBMYPos+i)) + xByte;
+
+			// just for debugging
+			//#include <bitset>
+			//std::bitset<8> bits(c);
+			//LOG(DEBUG) << bits.to_string();
+
+			frame.at(index) &= (0b11111111 << (8 - xModulo));
+			switch(xModulo) {
+				case 0:
+					frame[index] = c << 2;
+					break;
+				case 6:
+					frame.at(index+1) = c << 4;
+					//frame[index] &= 0b11111100;
+					frame[index] |= c >> 4;
+					break;
+				case 4:
+					frame.at(index+1) = c << 6;
+					//frame[index] &= 0b11110000;
+					frame[index] |= c >> 2;
+					break;
+				case 2:
+					//frame.at(index) &= 0b11000000;
+					frame[index] |= c;
+					break;
+				case 1:
+					//frame.at(index) &= 0b10000000;
+					frame[index] |= c << 1;
+					break;
+				case 7:
+					frame.at(index+1) = c << 3;
+					//frame[index] &= 0b11111110;
+					frame[index] |= c >> 5;
+					break;
+				case 5:
+					frame.at(index+1) = c << 5;
+					//frame[index] &= 0b11111000;
+					frame[index] |= c >> 3;
+					break;
+				case 3:
+					frame.at(index+1) = c << 7;
+					//frame[index] &= 0b11100000;
+					frame[index] |= c >> 1;
+					break;
+			}
+		} // for each line in character
+	}
+	catch (const std::out_of_range& oor) {
+		std::ostringstream warn(this->font_name_, std::ios_base::app);
+		warn << " font : wrong frame index : " << std::to_string(index);
+		throw GLogiKExcept( warn.str() );
+	}
+
+	PBMXPos += this->char_width_;
+
+	if(PBMXPos > (PBM_WIDTH - this->char_width_)) {
+		std::ostringstream warn(this->font_name_, std::ios_base::app);
+		warn << " font : breaking write string loop : " << std::to_string(PBMXPos);
+		throw GLogiKExcept( warn.str() );
 	}
 }
 
-const unsigned short PBMFont::getCharacterWidth(void) const
-{
-	return this->char_width_;
-}
-
-const unsigned short PBMFont::getCharacterHeight(void) const
-{
-	return this->char_height_;
-}
-
-const unsigned char PBMFont::getCurrentCharacterLine(const unsigned short line) const
+const unsigned char PBMFont::getCharacterLine(const unsigned short line) const
 {
 	unsigned char c = 0;
 	const unsigned short i = (this->cur_y_ * this->char_height_ * PBM_WIDTH_IN_BYTES)

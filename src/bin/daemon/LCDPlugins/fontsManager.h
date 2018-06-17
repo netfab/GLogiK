@@ -44,19 +44,19 @@ class FontsManager
 		~FontsManager(void);
 
 		void initializeFont(const FontID fontID);
-		void setFontCurrentCharacter(
+
+		void printCharacterOnFrame(
 			const FontID fontID,
-			const std::string & c
+			PBMDataArray & frame,
+			const std::string & c,
+			unsigned int & PBMXPos,
+			const unsigned int PBMYPos
 		);
-		const unsigned short getFontCharacterWidth(const FontID fontID) const;
-		const unsigned short getFontCharacterHeight(const FontID fontID) const;
-		const unsigned char getFontCurrentCharacterLine(const unsigned short line);
 
 	protected:
 
 	private:
 		std::map<const FontID, PBMFont*> fonts_;
-		FontID current_font_ID_;
 
 };
 

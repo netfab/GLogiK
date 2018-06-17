@@ -100,7 +100,7 @@ class LCDPlugin
 			FontsManager* const pFonts,
 			const FontID fontID,
 			const std::string & string,
-			const unsigned int PBMXPos,
+			unsigned int PBMXPos,
 			const unsigned int PBMYPos
 		);
 

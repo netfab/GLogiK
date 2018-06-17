@@ -19,8 +19,6 @@
  *
  */
 
-//#include <bitset>
-
 #include "lib/utils/utils.h"
 
 #include "LCDPlugin.h"
@@ -163,40 +161,17 @@ void LCDPlugin::writeStringOnFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
 	const std::string & string,
-	const unsigned int PBMXPos,
+	unsigned int PBMXPos,
 	const unsigned int PBMYPos)
 {
-	const unsigned short xByte = PBMXPos / 8;
-	const unsigned short xModulo = PBMXPos % 8;
-
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "xPos: " << PBMXPos
-				<< " - xByte: " << xByte
-				<< " - xByte modulo: " << xModulo;
-#endif
-
 	try {
-		//unsigned short w = pFonts->getFontCharacterWidth(fontID);
-		unsigned short h = pFonts->getFontCharacterHeight(fontID);
 		for(const char & c : string) {
 			const std::string cur_char(1, c);
-			pFonts->setFontCurrentCharacter(fontID, cur_char);
-
-			for(unsigned short i = 0; i < h; i++) {
-				pFonts->getFontCurrentCharacterLine(i);
-				//unsigned char c = pFonts->getFontCurrentCharacterLine(i);
-				//std::bitset<8> bits(c);
-				//LOG(DEBUG) << bits.to_string();
-
-				//unsigned int posOffset = i * PBM_WIDTH_IN_BYTES;
-				//(*this->current_frame_).pbm_data[]
-			}
-		}
+			pFonts->printCharacterOnFrame( fontID, (*this->current_frame_).pbm_data, cur_char, PBMXPos, PBMYPos );
+		} /* for each character in the string */
 	}
 	catch (const GLogiKExcept & e) {
-		std::string warn("write string on frame failure : ");
-		warn += e.what();
-		GKSysLog(LOG_WARNING, WARNING, warn);
+		GKSysLog(LOG_WARNING, WARNING, e.what());
 	}
 }
 
