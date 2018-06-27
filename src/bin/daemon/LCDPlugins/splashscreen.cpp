@@ -50,11 +50,8 @@ void Splashscreen::init(FontsManager* const pFonts)
 	fs::path pbm_dir(PBM_DATA_DIR);
 	pbm_dir /= this->name_;
 
-	this->addPBMClearedFrame();						/* frame #0 */
-	this->addPBMFrame(pbm_dir, "GLogiK01.pbm");		/*       #1 */
-	this->addPBMFrame(pbm_dir, "GLogiK02.pbm");		/*       #2 */
-	this->addPBMFrame(pbm_dir, "GLogiK03.pbm", 2);	/*       #3 */
-	this->addPBMFrame(pbm_dir, "GLogiK04.pbm", 3);	/*       #4 */
+	this->addPBMFrame(pbm_dir, "GLogiK02.pbm", 2);		/* frame #0 */
+	this->addPBMFrame(pbm_dir, "GLogiK02.pbm", 4);		/*       #1 */
 
 	pFonts->initializeFont(FontID::MONOSPACE8);
 
@@ -63,11 +60,10 @@ void Splashscreen::init(FontsManager* const pFonts)
 
 const PBMDataArray & Splashscreen::getNextPBMFrame(FontsManager* const pFonts)
 {
-	if( this->getNextPBMFrameID() == 4 ) {
-		this->writeStringOnFrame(pFonts, FontID::MONOSPACE8, "Hello !", 153, 0);
-		this->writeStringOnFrame(pFonts, FontID::MONOSPACE8, "Hello World !", 0, 0);
-		this->writeStringOnFrame(pFonts, FontID::MONOSPACE8, "Okay ?!", 141, 15);
-		this->writeStringOnFrame(pFonts, FontID::MONOSPACE8, "Test break loop", 21, 37);
+	if( this->getNextPBMFrameID() == 1 ) {
+		std::string version(" version ");
+		version += PACKAGE_VERSION;
+		this->writeStringOnFrame(pFonts, FontID::MONOSPACE8, version, 32, 32);
 	}
 	return LCDPlugin::getCurrentPBMFrame();
 }

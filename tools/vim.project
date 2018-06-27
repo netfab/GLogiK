@@ -43,10 +43,7 @@ GLogiK=$PWD/.. CD=. {
 		pbm=pbm/ {
 			Makefile.am
 			splashscreen=splashscreen/ {
-				GLogiK01.pbm
 				GLogiK02.pbm
-				GLogiK03.pbm
-				GLogiK04.pbm
 			}
 			monospace8.pbm
 		}
