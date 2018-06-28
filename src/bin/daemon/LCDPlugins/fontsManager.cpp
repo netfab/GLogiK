@@ -25,6 +25,7 @@
 
 #include "fontsManager.h"
 #include "fontMonospace8.h"
+#include "fontMonospace8_5.h"
 
 namespace GLogiK
 {
@@ -54,6 +55,9 @@ void FontsManager::initializeFont(const FontID fontID)
 			switch(fontID) {
 				case FontID::MONOSPACE8:
 					font = new fontMonospace8();
+					break;
+				case FontID::MONOSPACE8_5:
+					font = new fontMonospace8_5();
 					break;
 				default:
 					throw GLogiKExcept("unknown font ID");

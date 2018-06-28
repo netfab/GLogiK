@@ -19,49 +19,23 @@
  *
  */
 
-#ifndef __GLOGIKD_FONTS_MANAGER_H__
-#define __GLOGIKD_FONTS_MANAGER_H__
+#include "lib/utils/utils.h"
 
-#include <cstdint>
-
-#include <string>
-#include <map>
-
-#include "PBMFont.h"
+#include "fontMonospace8_5.h"
 
 namespace GLogiK
 {
 
-enum class FontID : uint8_t
+using namespace NSGKUtils;
+
+fontMonospace8_5::fontMonospace8_5(void)
+	:	PBMFont("monospace8_5", 5)
 {
-	MONOSPACE8 = 1 << 0,
-	MONOSPACE8_5 = 1 << 1,
-};
+}
 
-class FontsManager
+fontMonospace8_5::~fontMonospace8_5()
 {
-	public:
-		FontsManager(void);
-		~FontsManager(void);
-
-		void initializeFont(const FontID fontID);
-
-		void printCharacterOnFrame(
-			const FontID fontID,
-			PBMDataArray & frame,
-			const std::string & c,
-			unsigned int & PBMXPos,
-			const unsigned int PBMYPos
-		);
-
-	protected:
-
-	private:
-		std::map<const FontID, PBMFont*> fonts_;
-
-};
+}
 
 } // namespace GLogiK
-
-#endif
 

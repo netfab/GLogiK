@@ -130,10 +130,6 @@ void PBMFont::printCharacterOnFrame(
 
 	try {
 		for(unsigned short i = 0; i < this->char_height_; i++) {
-			/* FIXME
-			 *	hardcoded values in this loop depends on the fact that
-			 *	character font width == 6
-			 */
 			unsigned char c = this->getCharacterLine(i);
 			index = (PBM_WIDTH_IN_BYTES * (PBMYPos+i)) + xByte;
 
@@ -142,44 +138,19 @@ void PBMFont::printCharacterOnFrame(
 			//std::bitset<8> bits(c);
 			//LOG(DEBUG) << bits.to_string();
 
-			frame.at(index) &= (0b11111111 << (8 - xModulo));
-			switch(xModulo) {
-				case 0:
-					frame[index] = c << 2;
-					break;
-				case 6:
-					frame.at(index+1) = c << 4;
-					//frame[index] &= 0b11111100;
-					frame[index] |= c >> 4;
-					break;
-				case 4:
-					frame.at(index+1) = c << 6;
-					//frame[index] &= 0b11110000;
-					frame[index] |= c >> 2;
-					break;
-				case 2:
-					//frame.at(index) &= 0b11000000;
-					frame[index] |= c;
-					break;
-				case 1:
-					//frame.at(index) &= 0b10000000;
-					frame[index] |= c << 1;
-					break;
-				case 7:
-					frame.at(index+1) = c << 3;
-					//frame[index] &= 0b11111110;
-					frame[index] |= c >> 5;
-					break;
-				case 5:
-					frame.at(index+1) = c << 5;
-					//frame[index] &= 0b11111000;
-					frame[index] |= c >> 3;
-					break;
-				case 3:
-					frame.at(index+1) = c << 7;
-					//frame[index] &= 0b11100000;
-					frame[index] |= c >> 1;
-					break;
+			/* FIXME
+			 * char_width_ should be <= 8 here
+			 */
+			const unsigned short xModuloComp8 = (8 - xModulo);
+			short rightShift = (this->char_width_ - xModuloComp8);
+
+			frame.at(index) &= (0b11111111 << xModuloComp8);
+			if(rightShift <= 0) {
+				frame[index] |= (c << (-rightShift));
+			}
+			else {
+				frame.at(index+1) = (c << (8 - rightShift));
+				frame[index] |= (c >> rightShift);
 			}
 		} // for each line in character
 	}
@@ -203,41 +174,73 @@ const unsigned char PBMFont::getCharacterLine(const unsigned short line) const
 	unsigned char c = 0;
 	const unsigned short i = (this->cur_y_ * this->char_height_ * PBM_WIDTH_IN_BYTES)
 			+ ((this->cur_x_ * this->char_width_) / 8 ) + (PBM_WIDTH_IN_BYTES * line);
-	unsigned short index = i;
 
 // FIXME
 #if 0 & DEBUGGING_ON
 	LOG(DEBUG2) << "cur_x: " << this->cur_x_
-				<< " cur_y: " << this->cur_y_
-				<< " index: " << index;
+				<< " cur_y: " << this->cur_y_;
+				<< " index: " << i+1;
 #endif
 
 	try {
-		switch( (this->cur_x_ % 4) ) {
-			case 0 :
-				c = (this->pbm_data_.at(index) >> 2);
-				break;
-			case 1 :
-				index += 1;
-				c = (this->pbm_data_.at(index) >> 4);
-				c |= ((this->pbm_data_[i] & 0b00000011) << 4);
-				break;
-			case 2 :
-				c = ((this->pbm_data_.at(index) & 0b00001111) << 2);
-				index += 1;
-				c |= (this->pbm_data_.at(index) >> 6);
-				break;
-			case 3 :
-				c = (this->pbm_data_.at(index) & 0b00111111);
-				break;
+		if(this->char_width_ == 6) {
+			switch( (this->cur_x_ % 4) ) {
+				case 0 :
+					c = (this->pbm_data_.at(i) >> 2);
+					break;
+				case 1 :
+					c = (this->pbm_data_.at(i+1) >> 4);
+					c |= ((this->pbm_data_[i] & 0b00000011) << 4);
+					break;
+				case 2 :
+					c = (this->pbm_data_.at(i+1) >> 6);
+					c |= ((this->pbm_data_[i] & 0b00001111) << 2);
+					break;
+				case 3 :
+					c = (this->pbm_data_.at(i) & 0b00111111);
+					break;
+			}
+		}
+		else if(this->char_width_ == 5) {
+			switch( (this->cur_x_ % 8) ) {
+				case 0:
+					c = (this->pbm_data_.at(i) >> 3);
+					break;
+				case 1:
+					c = (this->pbm_data_.at(i+1) >> 6);
+					c |= ((this->pbm_data_[i] & 0b00000111) << 2);
+					break;
+				case 2:
+					c = ((this->pbm_data_.at(i) & 0b00111110) >> 1);
+					break;
+				case 3:
+					c = (this->pbm_data_.at(i+1) >> 4);
+					c |= ((this->pbm_data_[i] & 0b00000001) << 4);
+					break;
+				case 4:
+					c = (this->pbm_data_.at(i+1) >> 7);
+					c |= ((this->pbm_data_[i] & 0b00001111) << 1);
+					break;
+				case 5:
+					c = ((this->pbm_data_.at(i) & 0b01111100) >> 2);
+					break;
+				case 6:
+					c = (this->pbm_data_.at(i+1) >> 5);
+					c |= ((this->pbm_data_[i] & 0b00000011) << 3);
+					break;
+				case 7:
+					c = (this->pbm_data_.at(i) & 0b00011111);
+					break;
+			}
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		std::string error("wrong index : ");
-		error += oor.what();
-		error += " : ";
-		error += std::to_string(index);
-		GKSysLog(LOG_ERR, ERROR, error);
+		std::ostringstream error(this->font_name_, std::ios_base::app);
+		error << " - wrong index : ";
+		error << oor.what();
+		error << " - char_width: " << std::to_string(this->char_width_);
+		error << " - current_x: " << std::to_string(this->cur_x_);
+		GKSysLog(LOG_ERR, ERROR, error.str());
 	}
 	return c;
 }

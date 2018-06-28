@@ -46,6 +46,7 @@ GLogiK=$PWD/.. CD=. {
 				GLogiK02.pbm
 			}
 			monospace8.pbm
+			monospace8_5.pbm
 		}
 		udev=udev/ {
 			Makefile.am
@@ -72,6 +73,8 @@ GLogiK=$PWD/.. CD=. {
 					fontsManager.h
 					fontMonospace8.cpp
 					fontMonospace8.h
+					fontMonospace8_5.cpp
+					fontMonospace8_5.h
 					PBMFile.cpp
 					PBMFile.h
 					PBMFont.cpp
