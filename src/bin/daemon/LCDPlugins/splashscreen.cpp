@@ -50,23 +50,26 @@ void Splashscreen::init(FontsManager* const pFonts)
 	fs::path pbm_dir(PBM_DATA_DIR);
 	pbm_dir /= this->name_;
 
-	this->addPBMFrame(pbm_dir, "GLogiK02.pbm", 2);		/* frame #0 */
-	this->addPBMFrame(pbm_dir, "GLogiK02.pbm", 4);		/*       #1 */
-
-	pFonts->initializeFont(FontID::MONOSPACE8);
+	//pFonts->initializeFont(FontID::MONOSPACE8);
 	pFonts->initializeFont(FontID::MONOSPACE8_5);
+
+	this->addPBMFrame(pbm_dir, "GLogiK01.pbm", 2);		/* frame #0 */
+	this->addPBMFrame(pbm_dir, "GLogiK02.pbm", 2);		/*       #1 */
+	this->addPBMFrame(pbm_dir, "GLogiK02.pbm", 4);		/*       #2 */
+
+	std::string version(" version "); version += PACKAGE_VERSION;
+	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE8_5, version, 48, 32);
 
 	LCDPlugin::init(pFonts);
 }
 
 const PBMDataArray & Splashscreen::getNextPBMFrame(FontsManager* const pFonts)
 {
-	if( this->getNextPBMFrameID() == 1 ) {
-		std::string version(" version ");
-		version += PACKAGE_VERSION;
-		this->writeStringOnFrame(pFonts, FontID::MONOSPACE8, version, 32, 32);
-		this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, version, 32, 16);
-	}
+	//if( this->getNextPBMFrameID() == 2 ) {
+	//	std::string version(" version ");
+	//	version += PACKAGE_VERSION;
+	//	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, version, 48, 32);
+	//}
 	return LCDPlugin::getCurrentPBMFrame();
 }
 

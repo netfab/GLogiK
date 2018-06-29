@@ -146,7 +146,7 @@ void PBMFont::printCharacterOnFrame(
 
 			frame.at(index) &= (0b11111111 << xModuloComp8);
 			if(rightShift <= 0) {
-				frame[index] |= (c << (-rightShift));
+				frame.at(index) |= (c << (-rightShift));
 			}
 			else {
 				frame.at(index+1) = (c << (8 - rightShift));
@@ -172,8 +172,13 @@ void PBMFont::printCharacterOnFrame(
 const unsigned char PBMFont::getCharacterLine(const unsigned short line) const
 {
 	unsigned char c = 0;
-	const unsigned short i = (this->cur_y_ * this->char_height_ * PBM_WIDTH_IN_BYTES)
-			+ ((this->cur_x_ * this->char_width_) / 8 ) + (PBM_WIDTH_IN_BYTES * line);
+	const unsigned short i =
+		/* PBM_Y_line which contains the character (in bytes) */
+		(this->cur_y_ * this->char_height_ * PBM_WIDTH_IN_BYTES) +
+		/* character's PBM_X position on the PBM_Y_line (in bytes) */
+		( (this->cur_x_ * this->char_width_) / 8 ) +
+		/* line in the selected character (in bytes) */
+		line * PBM_WIDTH_IN_BYTES;
 
 // FIXME
 #if 0 & DEBUGGING_ON

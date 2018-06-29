@@ -165,10 +165,33 @@ void LCDPlugin::writeStringOnFrame(
 	const unsigned int PBMYPos)
 {
 	try {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << this->name_ << " PBM # " << this->frame_ID_ << " - writing string : " << string;
+#endif
 		for(const char & c : string) {
 			const std::string cur_char(1, c);
 			pFonts->printCharacterOnFrame( fontID, (*this->current_frame_).pbm_data, cur_char, PBMXPos, PBMYPos );
 		} /* for each character in the string */
+	}
+	catch (const GLogiKExcept & e) {
+		GKSysLog(LOG_WARNING, WARNING, e.what());
+	}
+}
+
+void LCDPlugin::writeStringOnLastFrame(
+	FontsManager* const pFonts,
+	const FontID fontID,
+	const std::string & string,
+	unsigned int PBMXPos,
+	const unsigned int PBMYPos)
+{
+	try {
+		if( this->frames_.empty() )
+			throw GLogiKExcept("trying to access last element on empty container");
+		this->current_frame_ = --(this->frames_.end());
+		this->frame_ID_ = (this->current_frame_ - this->frames_.begin());
+
+		this->writeStringOnFrame(pFonts, fontID, string, PBMXPos, PBMYPos);
 	}
 	catch (const GLogiKExcept & e) {
 		GKSysLog(LOG_WARNING, WARNING, e.what());

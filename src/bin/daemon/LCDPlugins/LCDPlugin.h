@@ -104,6 +104,14 @@ class LCDPlugin
 			const unsigned int PBMYPos
 		);
 
+		void writeStringOnLastFrame(
+			FontsManager* const pFonts,
+			const FontID fontID,
+			const std::string & string,
+			unsigned int PBMXPos,
+			const unsigned int PBMYPos
+		);
+
 	private:
 		bool initialized_;
 		unsigned short frame_count_;
