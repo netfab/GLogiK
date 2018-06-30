@@ -21,19 +21,19 @@
 
 #include "lib/utils/utils.h"
 
-#include "fontMonospace8.h"
+#include "fontMonospace8_6.h"
 
 namespace GLogiK
 {
 
 using namespace NSGKUtils;
 
-fontMonospace8::fontMonospace8(void)
-	:	PBMFont("monospace8")
+fontMonospace8_6::fontMonospace8_6(void)
+	:	PBMFont("monospace8_6")
 {
 }
 
-fontMonospace8::~fontMonospace8()
+fontMonospace8_6::~fontMonospace8_6()
 {
 }
 

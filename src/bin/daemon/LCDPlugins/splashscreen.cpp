@@ -50,8 +50,8 @@ void Splashscreen::init(FontsManager* const pFonts)
 	fs::path pbm_dir(PBM_DATA_DIR);
 	pbm_dir /= this->name_;
 
-	//pFonts->initializeFont(FontID::MONOSPACE8);
 	pFonts->initializeFont(FontID::MONOSPACE8_5);
+	//pFonts->initializeFont(FontID::MONOSPACE8_6);
 
 	this->addPBMFrame(pbm_dir, "GLogiK01.pbm", 2);		/* frame #0 */
 	this->addPBMFrame(pbm_dir, "GLogiK02.pbm", 2);		/*       #1 */
@@ -68,8 +68,9 @@ const PBMDataArray & Splashscreen::getNextPBMFrame(FontsManager* const pFonts)
 	//if( this->getNextPBMFrameID() == 2 ) {
 	//	std::string version(" version ");
 	//	version += PACKAGE_VERSION;
-	//	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, version, 48, 32);
+	//	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_6, version, 48, 32);
 	//}
+
 	return LCDPlugin::getCurrentPBMFrame();
 }
 

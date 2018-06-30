@@ -7,5 +7,5 @@ dist_splashscreen__DATA = \
 	%D%/splashscreen/GLogiK02.pbm
 
 dist_pbm_plugin__DATA = \
-	%D%/monospace8.pbm \
-	%D%/monospace8_5.pbm
+	%D%/monospace8_5.pbm \
+	%D%/monospace8_6.pbm

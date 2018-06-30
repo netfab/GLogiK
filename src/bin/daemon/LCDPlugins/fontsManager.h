@@ -34,8 +34,8 @@ namespace GLogiK
 
 enum class FontID : uint8_t
 {
-	MONOSPACE8 = 1 << 0,
-	MONOSPACE8_5 = 1 << 1,
+	MONOSPACE8_5 = 1 << 0,
+	MONOSPACE8_6 = 1 << 1,
 };
 
 class FontsManager

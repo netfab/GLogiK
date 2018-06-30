@@ -19,20 +19,20 @@
  *
  */
 
-#ifndef __GLOGIKD_FONT_MONOSPACE8_H__
-#define __GLOGIKD_FONT_MONOSPACE8_H__
+#ifndef __GLOGIKD_FONT_MONOSPACE8_6_H__
+#define __GLOGIKD_FONT_MONOSPACE8_6_H__
 
 #include "PBMFont.h"
 
 namespace GLogiK
 {
 
-class fontMonospace8
+class fontMonospace8_6
 	:	public PBMFont
 {
 	public:
-		fontMonospace8(void);
-		~fontMonospace8(void);
+		fontMonospace8_6(void);
+		~fontMonospace8_6(void);
 
 	protected:
 
