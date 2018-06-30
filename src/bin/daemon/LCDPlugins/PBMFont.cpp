@@ -161,12 +161,6 @@ void PBMFont::printCharacterOnFrame(
 	}
 
 	PBMXPos += this->char_width_;
-
-	if(PBMXPos >= (PBM_WIDTH - this->char_width_)) {
-		std::ostringstream warn(this->font_name_, std::ios_base::app);
-		warn << " font : breaking write string loop : x : " << std::to_string(PBMXPos);
-		throw GLogiKExcept( warn.str() );
-	}
 }
 
 const unsigned char PBMFont::getCharacterLine(const unsigned short line) const
