@@ -98,9 +98,7 @@ void LCDPlugin::prepareNextPBMFrame(void)
 
 void LCDPlugin::init(FontsManager* const pFonts)
 {
-	this->current_frame_ = this->frames_.begin();
-	this->checkPBMFrameIndex(); /* may throw */
-
+	this->resetPBMFrameIndex();
 	this->initialized_ = true;
 }
 
