@@ -1,2 +1,3 @@
- * LCD screen support
+ * LCD screen support improvements (write plugins)
  * Graphical user interface
+ * Virtual LCD screen (and virtual keyboard?) using GUI interface
