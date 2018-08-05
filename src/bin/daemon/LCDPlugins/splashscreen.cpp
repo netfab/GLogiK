@@ -39,7 +39,7 @@ using namespace NSGKUtils;
 
 Splashscreen::Splashscreen() {
 	this->name_ = "splashscreen";
-	this->tempo_ = LCDPluginTempo::TEMPO_750_8;
+	this->tempo_ = LCDPluginTempo::TEMPO_500_20;
 }
 
 Splashscreen::~Splashscreen() {
@@ -53,9 +53,9 @@ void Splashscreen::init(FontsManager* const pFonts)
 	pFonts->initializeFont(FontID::MONOSPACE8_5);
 	//pFonts->initializeFont(FontID::MONOSPACE8_6);
 
-	this->addPBMFrame(pbm_dir, "GLogiK01.pbm", 2);		/* frame #0 */
+	this->addPBMFrame(pbm_dir, "GLogiK01.pbm", 1);		/* frame #0 */
 	this->addPBMFrame(pbm_dir, "GLogiK02.pbm", 2);		/*       #1 */
-	this->addPBMFrame(pbm_dir, "GLogiK02.pbm", 4);		/*       #2 */
+	this->addPBMFrame(pbm_dir, "GLogiK02.pbm", 7);		/*       #2 */
 
 	std::string version(" version "); version += PACKAGE_VERSION;
 	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE8_5, version, 48, 32);

@@ -221,10 +221,10 @@ void LCDPlugin::checkPBMFrameIndex(void)
 
 std::tuple<unsigned short, unsigned short> LCDPlugin::getTempo(const LCDPluginTempo tempo)
 {
-	if(tempo == LCDPluginTempo::TEMPO_750_8)
-		return std::make_tuple(750, 8);
+	if(tempo == LCDPluginTempo::TEMPO_500_20)
+		return std::make_tuple(500, 20);
 	/* TEMPO_DEFAULT */
-	return std::make_tuple(1000, 6);
+	return std::make_tuple(1000, 10);
 }
 
 } // namespace GLogiK

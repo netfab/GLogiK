@@ -42,7 +42,7 @@ namespace GLogiK
 enum class LCDPluginTempo : uint8_t
 {
 	TEMPO_DEFAULT	= 1 << 0,
-	TEMPO_750_8,
+	TEMPO_500_20,
 };
 
 class LCDPBMFrame
