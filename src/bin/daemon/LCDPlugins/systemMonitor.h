@@ -19,33 +19,29 @@
  *
  */
 
-#include <config.h>
+#ifndef __GLOGIKD_LCD_PLUGIN_SYSTEM_MONITOR_H__
+#define __GLOGIKD_LCD_PLUGIN_SYSTEM_MONITOR_H__
 
-#include <string>
-
-#include "bar.h"
+#include "LCDPlugin.h"
 
 namespace GLogiK
 {
 
-bar::bar() {
-	this->name_ = "bar";
-}
-
-bar::~bar() {
-}
-
-void bar::init(FontsManager* const pFonts)
+class SystemMonitor
+	:	public LCDPlugin
 {
-	std::string dir("/tmp");
-	dir += "/";			// TODO boost::fs:path
-	dir += this->name_;
+	public:
+		SystemMonitor(void);
+		~SystemMonitor(void);
 
-	this->addPBMFrame(dir, "outbin3.pbm", 2);
-	this->addPBMFrame(dir, "test.pbm", 5);
+		void init(FontsManager* const pFonts);
 
-	LCDPlugin::init(pFonts);
-}
+	protected:
+
+	private:
+
+};
 
 } // namespace GLogiK
 
+#endif

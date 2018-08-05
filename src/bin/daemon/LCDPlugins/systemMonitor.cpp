@@ -19,29 +19,47 @@
  *
  */
 
-#ifndef __GLOGIKD_LCD_PLUGIN_BAR_H__
-#define __GLOGIKD_LCD_PLUGIN_BAR_H__
+#include <unistd.h>
+#include <limits.h>
 
-#include "LCDPlugin.h"
+#include <config.h>
+
+#include <string>
+
+#include "systemMonitor.h"
 
 namespace GLogiK
 {
 
-class bar
-	:	public LCDPlugin
+SystemMonitor::SystemMonitor() {
+	this->name_ = "systemMonitor";
+	//this->tempo_ = LCDPluginTempo::TEMPO_500_20;
+}
+
+SystemMonitor::~SystemMonitor() {
+}
+
+void SystemMonitor::init(FontsManager* const pFonts)
 {
-	public:
-		bar(void);
-		~bar(void);
+	fs::path pbm_dir(PBM_DATA_DIR);
+	pbm_dir /= this->name_;
 
-		void init(FontsManager* const pFonts);
+	pFonts->initializeFont(FontID::MONOSPACE8_5);
 
-	protected:
+	this->addPBMFrame(pbm_dir, "skeleton.pbm");
 
-	private:
+	std::string host;
+	{
+		char hostname[HOST_NAME_MAX];
+		gethostname(hostname, HOST_NAME_MAX);
+		/* make sure we have a null character */
+		hostname[HOST_NAME_MAX-1] = '\0';
+		host.assign(hostname);
+	}
+	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE8_5, host, 6, 1);
 
-};
+	LCDPlugin::init(pFonts);
+}
 
 } // namespace GLogiK
 
-#endif

@@ -26,7 +26,7 @@
 #include "LCDScreenPluginsManager.h"
 
 #include "LCDPlugins/splashscreen.h"
-#include "LCDPlugins/bar.h"
+#include "LCDPlugins/systemMonitor.h"
 
 namespace GLogiK
 {
@@ -39,7 +39,7 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 {
 	try {
 		this->plugins_.push_back( new Splashscreen() );
-		this->plugins_.push_back( new bar() );
+		this->plugins_.push_back( new SystemMonitor() );
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		this->stopLCDPlugins();

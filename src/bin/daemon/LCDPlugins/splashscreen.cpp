@@ -26,16 +26,12 @@
 
 #include <config.h>
 
-#include "lib/utils/utils.h"
-
 #include "splashscreen.h"
 
 namespace fs = boost::filesystem;
 
 namespace GLogiK
 {
-
-using namespace NSGKUtils;
 
 Splashscreen::Splashscreen() {
 	this->name_ = "splashscreen";
