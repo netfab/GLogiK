@@ -22,6 +22,8 @@
 #ifndef __GLOGIKD_LCD_PLUGIN_SYSTEM_MONITOR_H__
 #define __GLOGIKD_LCD_PLUGIN_SYSTEM_MONITOR_H__
 
+#include "sys/sysinfo.h"
+
 #include "LCDPlugin.h"
 
 namespace GLogiK
@@ -36,9 +38,12 @@ class SystemMonitor
 
 		void init(FontsManager* const pFonts);
 
+		const PBMDataArray & getNextPBMFrame(FontsManager* const pFonts);
+
 	protected:
 
 	private:
+		struct sysinfo memInfo_;
 
 };
 

@@ -19,12 +19,13 @@
  *
  */
 
+#include <cstdint>
 #include <unistd.h>
 #include <limits.h>
 
-#include <config.h>
-
 #include <string>
+
+#include <config.h>
 
 #include "systemMonitor.h"
 
@@ -33,7 +34,7 @@ namespace GLogiK
 
 SystemMonitor::SystemMonitor() {
 	this->name_ = "systemMonitor";
-	//this->tempo_ = LCDPluginTempo::TEMPO_500_20;
+	this->tempo_ = LCDPluginTempo::TEMPO_500_20;
 }
 
 SystemMonitor::~SystemMonitor() {
@@ -59,6 +60,29 @@ void SystemMonitor::init(FontsManager* const pFonts)
 	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE8_5, host, 6, 1);
 
 	LCDPlugin::init(pFonts);
+}
+
+const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
+{
+	sysinfo(&(this->memInfo_));
+
+	uint64_t usedPMem, totalPMem = 0;
+	usedPMem  = this->memInfo_.freeram;
+	usedPMem *= this->memInfo_.mem_unit;
+	usedPMem *= 100;
+
+	totalPMem  = this->memInfo_.totalram;
+	totalPMem *= this->memInfo_.mem_unit;
+
+	usedPMem /= totalPMem;
+	usedPMem = 100 - usedPMem;
+	std::string usedPhysicalMemory( std::to_string(usedPMem) );
+	usedPhysicalMemory += " %";
+
+
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, usedPhysicalMemory, 132, 32);
+
+	return LCDPlugin::getCurrentPBMFrame();
 }
 
 } // namespace GLogiK
