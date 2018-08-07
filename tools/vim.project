@@ -43,8 +43,8 @@ GLogiK=$PWD/.. CD=. {
 		pbm=pbm/ {
 			Makefile.am
 			splashscreen=splashscreen/ {
-				GLogiK01.pbm
-				GLogiK02.pbm
+				splashscreen01.pbm
+				splashscreen02.pbm
 			}
 			systemMonitor=systemMonitor/ {
 				skeleton.pbm
