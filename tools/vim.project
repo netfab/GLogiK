@@ -67,6 +67,14 @@ GLogiK=$PWD/.. CD=. {
 			daemon=daemon/ {
 				Makefile.am
 				LCDPlugins=LCDPlugins/ {
+					CPUStats=cpu-stats/ {
+						CPUData.cpp
+						CPUData.h
+						CPUSnapshot.cpp
+						CPUSnapshot.h
+						LICENSE
+						README.md
+					}
 					splashscreen.cpp
 					splashscreen.h
 					systemMonitor.cpp

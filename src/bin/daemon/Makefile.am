@@ -72,6 +72,10 @@ GLogiKd_SOURCES += \
 		%D%/LCDPlugins/LCDPlugin.h \
 		%D%/LCDPlugins/splashscreen.cpp \
 		%D%/LCDPlugins/splashscreen.h \
+		%D%/LCDPlugins/cpu-stats/CPUData.cpp \
+		%D%/LCDPlugins/cpu-stats/CPUData.h \
+		%D%/LCDPlugins/cpu-stats/CPUSnapshot.cpp \
+		%D%/LCDPlugins/cpu-stats/CPUSnapshot.h \
 		%D%/LCDPlugins/systemMonitor.cpp \
 		%D%/LCDPlugins/systemMonitor.h
 

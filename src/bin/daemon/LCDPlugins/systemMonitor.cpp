@@ -19,10 +19,15 @@
  *
  */
 
+#include <cmath>
+#include <cfenv>
+
 #include <cstdint>
 #include <unistd.h>
 #include <limits.h>
 
+#include <iomanip>
+#include <sstream>
 #include <string>
 
 #include <config.h>
@@ -66,21 +71,52 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
 {
 	sysinfo(&(this->memInfo_));
 
-	uint64_t usedPMem, totalPMem = 0;
-	usedPMem  = this->memInfo_.freeram;
-	usedPMem *= this->memInfo_.mem_unit;
-	usedPMem *= 100;
+	std::string usedPhysicalMemory("");
+	std::string usedCPUActiveTotal("");
 
-	totalPMem  = this->memInfo_.totalram;
-	totalPMem *= this->memInfo_.mem_unit;
+	auto getPaddedPercentString = [] (unsigned int i) -> const std::string {
+		std::ostringstream out("", std::ios_base::app);
+		out << std::setw(3) << std::to_string(i) << " %";
+		return out.str();
+	};
 
-	usedPMem /= totalPMem;
-	usedPMem = 100 - usedPMem;
-	std::string usedPhysicalMemory( std::to_string(usedPMem) );
-	usedPhysicalMemory += " %";
+	{
+		uint64_t usedPMem, totalPMem = 0;
+		usedPMem  = this->memInfo_.freeram;
+		usedPMem *= this->memInfo_.mem_unit;
+		usedPMem *= 100;
 
+		totalPMem  = this->memInfo_.totalram;
+		totalPMem *= this->memInfo_.mem_unit;
 
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, usedPhysicalMemory, 132, 32);
+		usedPMem /= totalPMem;
+		usedPMem = 100 - usedPMem;
+
+		usedPhysicalMemory = getPaddedPercentString(usedPMem);
+	}
+
+	{
+		CPUSnapshot s2;
+
+		/* see cpu-stat - CPUStatsPrinter::GetPercActiveTotal() */
+		const float ACTIVE_TIME		= s2.GetActiveTimeTotal() - this->s1_.GetActiveTimeTotal();
+		const float IDLE_TIME		= s2.GetIdleTimeTotal() - this->s1_.GetIdleTimeTotal();
+		const float TOTAL_TIME		= ACTIVE_TIME + IDLE_TIME;
+
+		float cpuPercentTotal = 100.f * ACTIVE_TIME / TOTAL_TIME;
+
+		std::fesetround(FE_TONEAREST);
+		cpuPercentTotal = std::nearbyint(cpuPercentTotal);
+
+		usedCPUActiveTotal = getPaddedPercentString(cpuPercentTotal);
+
+		this->s1_ = s2;
+	}
+
+	const unsigned int PERC_LCD_POS_X = 133;
+
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, usedPhysicalMemory, PERC_LCD_POS_X, 32);
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, usedCPUActiveTotal, PERC_LCD_POS_X, 14);
 
 	return LCDPlugin::getCurrentPBMFrame();
 }

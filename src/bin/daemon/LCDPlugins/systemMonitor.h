@@ -24,6 +24,8 @@
 
 #include "sys/sysinfo.h"
 
+#include "cpu-stats/CPUSnapshot.h"
+
 #include "LCDPlugin.h"
 
 namespace GLogiK
@@ -44,6 +46,7 @@ class SystemMonitor
 
 	private:
 		struct sysinfo memInfo_;
+		CPUSnapshot s1_;
 
 };
 
