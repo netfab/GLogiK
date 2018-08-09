@@ -1,12 +1,15 @@
 
 ---
 
-## [Unreleased]
- * now requires boost >= 1.64.0 for boost process
- * optionally depends on libnotify >= 0.7.7
-
+## version 0.8.0 - 2018-08-09
 #### Added features :
  * multimedia keys support
+ * beginning of LCD screen support
+ * now optionally depends on libnotify >= 0.7.7
+
+#### Changed
+ * now depends on dev-libs/boost >= 1.64.0 boost process requirement
+	https://github.com/klemens-morgenstern/boost-process
 
 ---
 
