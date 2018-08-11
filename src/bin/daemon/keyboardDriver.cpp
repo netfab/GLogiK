@@ -402,10 +402,10 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 	/* initializing time_point */
 	device.last_call = std::chrono::steady_clock::now();
 
-	while( (! exit) and DaemonControl::isDaemonRunning() and device.getThreadsStatus() ) {
+	while( (! exit) and DaemonControl::isDaemonRunning() ) {
 		this->checkDeviceFatalErrors(device);
 		if( ! device.getThreadsStatus() )
-			continue;
+			break;
 
 		KeyStatus ret = this->getPressedKeys(device);
 
@@ -515,10 +515,10 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 
 		LCDScreenPluginsManager LCDPlugins;
 
-		while( DaemonControl::isDaemonRunning() and device.getThreadsStatus() ) {
+		while( DaemonControl::isDaemonRunning() ) {
 			this->checkDeviceFatalErrors(device);
 			if( ! device.getThreadsStatus() )
-				continue;
+				break;
 
 			auto t1 = std::chrono::high_resolution_clock::now();
 
@@ -580,10 +580,10 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 			this->threads_.push_back( std::move(lcd_thread) );
 		}
 
-		while( DaemonControl::isDaemonRunning() and device.getThreadsStatus() ) {
+		while( DaemonControl::isDaemonRunning() ) {
 			this->checkDeviceFatalErrors(device);
 			if( ! device.getThreadsStatus() )
-				continue;
+				break;
 
 			KeyStatus ret = this->getPressedKeys(device);
 			switch( ret ) {
