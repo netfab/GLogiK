@@ -374,7 +374,7 @@ void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device) {
 	/* check to give up */
 	if(device.fatal_errors > DEVICE_LISTENING_THREAD_MAX_ERRORS) {
 		std::ostringstream err(device.getStrID(), std::ios_base::app);
-		err << "device " << device.getName() << " on bus " << to_uint(device.getBus());
+		err << " device " << device.getName() << " on bus " << to_uint(device.getBus());
 		GKSysLog(LOG_ERR, ERROR, err.str());
 		GKSysLog(LOG_ERR, ERROR, "reached listening thread maximum fatal errors, giving up");
 		device.deactivateThreads();
