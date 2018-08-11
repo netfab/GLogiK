@@ -124,9 +124,7 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 			std::ostringstream err(device.getStrID(), std::ios_base::app);
 			err << " getPressedKeys interrupt read error";
 			GKSysLog(LOG_ERR, ERROR, err.str());
-			this->USBError(ret);
-			if(ret == LIBUSB_ERROR_NO_DEVICE)
-				device.fatal_errors++;
+			device.fatal_errors++;
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
 	}
