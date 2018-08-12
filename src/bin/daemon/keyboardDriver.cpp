@@ -370,11 +370,11 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device) {
 	}
 }
 
-void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device) {
+void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device, const std::string & place) {
 	/* check to give up */
 	if(device.fatal_errors > DEVICE_LISTENING_THREAD_MAX_ERRORS) {
 		std::ostringstream err(device.getStrID(), std::ios_base::app);
-		err << " device " << device.getName() << " on bus " << to_uint(device.getBus());
+		err << "[" << place << "]" << " device " << device.getName() << " on bus " << to_uint(device.getBus());
 		GKSysLog(LOG_ERR, ERROR, err.str());
 		GKSysLog(LOG_ERR, ERROR, "reached listening thread maximum fatal errors, giving up");
 		device.deactivateThreads();
@@ -403,7 +403,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 	device.last_call = std::chrono::steady_clock::now();
 
 	while( (! exit) and DaemonControl::isDaemonRunning() ) {
-		this->checkDeviceFatalErrors(device);
+		this->checkDeviceFatalErrors(device, "macro record loop");
 		if( ! device.getThreadsStatus() )
 			break;
 
@@ -516,7 +516,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 		LCDScreenPluginsManager LCDPlugins;
 
 		while( DaemonControl::isDaemonRunning() ) {
-			this->checkDeviceFatalErrors(device);
+			this->checkDeviceFatalErrors(device, "LCD screen loop");
 			if( ! device.getThreadsStatus() )
 				break;
 
@@ -581,7 +581,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 		}
 
 		while( DaemonControl::isDaemonRunning() ) {
-			this->checkDeviceFatalErrors(device);
+			this->checkDeviceFatalErrors(device, "listen loop");
 			if( ! device.getThreadsStatus() )
 				break;
 
@@ -755,6 +755,18 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 
 const bool KeyboardDriver::isDeviceInitialized(const std::string & devID) const {
 	return ( this->initialized_devices_.count(devID) == 1 );
+}
+
+const bool KeyboardDriver::getDeviceThreadsStatus(const std::string & devID) const
+{
+	try {
+		return this->initialized_devices_.at(devID).getThreadsStatus();
+	} /* try */
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownDevice
+	}
+
+	return false;
 }
 
 void KeyboardDriver::resetDeviceState(USBDevice & device) {

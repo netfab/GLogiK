@@ -252,6 +252,38 @@ void DevicesManager::stopInitializedDevices(void) {
 	this->initialized_devices_.clear();
 }
 
+void DevicesManager::checkInitializedDevicesThreadsStatus(void) {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "checking initialized devices threads status";
+#endif
+
+	std::vector<std::string> stoppedDevices;
+
+	std::vector<std::string> to_check;
+	for(const auto& device_pair : this->initialized_devices_) {
+		to_check.push_back(device_pair.first);
+	}
+
+	for(const auto & devID : to_check) {
+		for(const auto& driver : this->drivers_) {
+			if( this->initialized_devices_[devID].getDriverID() == driver->getDriverID() ) {
+				if( ! driver->getDeviceThreadsStatus(devID) ) {
+					GKSysLog(LOG_WARNING, WARNING, "USB port software reset detected, not cool :(");
+					GKSysLog(LOG_WARNING, WARNING, "We are forced to hard stop a device.");
+					GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
+					this->stopDevice(devID);
+					stoppedDevices.push_back(devID);
+				}
+			}
+		}
+	}
+
+	if( stoppedDevices.size() > 0 ) {
+		/* inform clients */
+		this->sendStatusSignalArrayToClients(this->num_clients_, this->pDBus_, "DevicesStopped", stoppedDevices);
+	}
+}
+
 void DevicesManager::checkForUnpluggedDevices(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "checking for unplugged devices";
@@ -722,6 +754,8 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 
 	this->sendSignalToClients(this->num_clients_, this->pDBus_, "DaemonIsStarting", true);
 
+	unsigned short c = 0;
+
 	while( DaemonControl::isDaemonRunning() ) {
 		int ret = poll(this->fds, 1, 100);
 
@@ -766,6 +800,10 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 		}
 
 		this->checkDBusMessages();
+		if(c++ >= 10) { /* bonus point */
+			this->checkInitializedDevicesThreadsStatus();
+			c = 0;
+		}
 	}
 
 }

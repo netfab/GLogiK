@@ -144,6 +144,7 @@ class DevicesManager
 		void searchSupportedDevices(void);
 		void initializeDevices(void);
 		void stopInitializedDevices(void);
+		void checkInitializedDevicesThreadsStatus(void);
 
 		void checkForUnpluggedDevices(void);
 };

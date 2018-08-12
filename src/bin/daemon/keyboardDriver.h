@@ -109,6 +109,7 @@ class KeyboardDriver
 		const macros_map_t & getDeviceMacrosProfiles(const std::string & devID);
 
 		const bool isDeviceInitialized(const std::string & devID) const;
+		const bool getDeviceThreadsStatus(const std::string & devID) const;
 		static const std::string getDeviceID(const uint8_t bus, const uint8_t num);
 
 		static const bool checkDeviceCapability(const DeviceID & device, Caps to_check);
@@ -176,7 +177,7 @@ class KeyboardDriver
 
 		void notImplemented(const char* func);
 
-		void checkDeviceFatalErrors(USBDevice & device);
+		void checkDeviceFatalErrors(USBDevice & device, const std::string & place);
 		void enterMacroRecordMode(USBDevice & device, const std::string & devID);
 
 		void LCDScreenLoop(const std::string & devID);
