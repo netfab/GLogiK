@@ -99,7 +99,7 @@ void PBMFont::printCharacterOnFrame(
 	const unsigned short xByte = PBMXPos / 8;
 	const unsigned short xModulo = PBMXPos % 8;
 
-#if DEBUGGING_ON
+#if DEBUG_PBMFONT
 	LOG(DEBUG2) << "xPos: " << PBMXPos
 				<< " - xByte: " << xByte
 				<< " - xByte modulo: " << xModulo;

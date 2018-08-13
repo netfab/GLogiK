@@ -67,6 +67,10 @@ AC_ARG_ENABLE( [debug-gkdbus],
 				AC_HELP_STRING( [--enable-debug-gkdbus], [Enable gkdbus debugging, default: no]),
 				[enable_gkdbus_debugging=$enableval], [enable_gkdbus_debugging=no])
 
+AC_ARG_ENABLE( [debug-pbmfont],
+				AC_HELP_STRING( [--enable-debug-pbmfont], [Enable pbmfont debugging, default: no]),
+				[enable_pbmfont_debugging=$enableval], [enable_pbmfont_debugging=no])
+
 AC_ARG_ENABLE( [desktop-notifications],
 				AC_HELP_STRING( [--enable-desktop-notifications], [Enable desktop notifications, default: no]),
 				[enable_desktop_notifications=$enableval], [enable_desktop_notifications=no])
@@ -182,10 +186,20 @@ if test "$enable_debugging" = yes; then
 		AC_MSG_RESULT([no])
 		AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [Also debug GKDBus sub-objects])
 	fi
+
+	AC_MSG_CHECKING([whether we want pbmfont debugging])
+	if test "$enable_pbmfont_debugging" = yes; then
+		AC_MSG_RESULT([yes])
+		AC_DEFINE([DEBUG_PBMFONT], [1], [PBM fonts debugging])
+	else
+		AC_MSG_RESULT([no])
+		AC_DEFINE([DEBUG_PBMFONT], [0], [PBM fonts debugging])
+	fi
 else
 	AC_MSG_RESULT([no])
 	AC_DEFINE([DEBUGGING_ON], [0], [Debugging])
 	AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [Also debug GKDBus sub-objects])
+	AC_DEFINE([DEBUG_PBMFONT], [0], [PBM fonts debugging])
 fi
 
 AM_CONDITIONAL([WITH_LIBNOTIFY], [test "x$enable_desktop_notifications" = xyes])
@@ -304,9 +318,10 @@ AC_MSG_NOTICE([
 --------------------------------------------------------------
  with desktop notifications : ${enable_desktop_notifications}
 --------------------------------------------------------------
- Global debugging : ${enable_debugging}
- GKDBus debugging : ${enable_gkdbus_debugging}
-        debug dir : ${DEBUG_DIR}
+  Global debugging : ${enable_debugging}
+  GKDBus debugging : ${enable_gkdbus_debugging}
+ PBMFont debugging : ${enable_pbmfont_debugging}
+         debug dir : ${DEBUG_DIR}
 --------------------------------------------------------------
 
 ])

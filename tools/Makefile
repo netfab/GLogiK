@@ -86,7 +86,8 @@ ifeq ($(strip $(DEBUG_BUILD)),)
 configure_it: init_it autoreconf_it
 	cd $(build_dir) && $(top_srcdir)/configure \
 	CXXFLAGS="$(CXXFLAGS)" \
-	--disable-debug --disable-debug-gkdbus DEBUG_DIR=$(PREFIX_DEV_DIR) \
+	--disable-debug --disable-debug-gkdbus --disable-debug-pbmfont \
+	DEBUG_DIR=$(PREFIX_DEV_DIR) \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
 
@@ -102,7 +103,8 @@ else
 configure_it: init_it autoreconf_it
 	cd $(build_dir) && $(top_srcdir)/configure \
 	CXXFLAGS="$(CXXFLAGS)" \
-	--enable-debug --disable-debug-gkdbus DEBUG_DIR=$(PREFIX_DEV_DIR) \
+	--enable-debug --disable-debug-gkdbus --disable-debug-pbmfont \
+	DEBUG_DIR=$(PREFIX_DEV_DIR) \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--enable-desktop-notifications \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
