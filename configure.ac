@@ -181,10 +181,10 @@ if test "$enable_debugging" = yes; then
 	AC_MSG_CHECKING([whether we want gkdbus debugging])
 	if test "$enable_gkdbus_debugging" = yes; then
 		AC_MSG_RESULT([yes])
-		AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [1], [Also debug GKDBus sub-objects])
+		AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [1], [GKDBus sub-objects debugging])
 	else
 		AC_MSG_RESULT([no])
-		AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [Also debug GKDBus sub-objects])
+		AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [GKDBus sub-objects debugging])
 	fi
 
 	AC_MSG_CHECKING([whether we want pbmfont debugging])
@@ -198,7 +198,7 @@ if test "$enable_debugging" = yes; then
 else
 	AC_MSG_RESULT([no])
 	AC_DEFINE([DEBUGGING_ON], [0], [Debugging])
-	AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [Also debug GKDBus sub-objects])
+	AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [GKDBus sub-objects debugging])
 	AC_DEFINE([DEBUG_PBMFONT], [0], [PBM fonts debugging])
 fi
 
