@@ -50,6 +50,7 @@ class USBDevice
 	public:
 		USBDevice(void) = default;
 		~USBDevice(void) = default;
+		USBDevice(const USBDevice & dev) = delete;
 
 		USBDevice(
 			const std::string & n,
