@@ -401,7 +401,7 @@ void DevicesManager::searchSupportedDevices(void) {
 #endif
 
 	struct udev_enumerate *enumerate;
-	struct udev_list_entry *devices, *dev_list_entry;
+	struct udev_list_entry *devices, *dev_list_entry = nullptr;
 
 	enumerate = udev_enumerate_new(this->udev);
 	if ( enumerate == nullptr )
