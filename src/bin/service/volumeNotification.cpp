@@ -31,7 +31,8 @@ std::atomic<unsigned int> VolumeNotification::cnt_(0);
 
 VolumeNotification::VolumeNotification(void)
 	:	pNotification_(nullptr),
-		is_initted_(false)
+		is_initted_(false),
+		timeout_(5000)
 {
 }
 
