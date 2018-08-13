@@ -97,7 +97,8 @@ GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
 
 GKDBusMessageRemoteMethodCall::GKDBusMessageRemoteMethodCall()
 	:	remote_method_call_(nullptr),
-		pending_(nullptr)
+		pending_(nullptr),
+		log_off_(false)
 {
 }
 
