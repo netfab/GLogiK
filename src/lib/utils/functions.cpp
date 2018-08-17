@@ -70,6 +70,22 @@ const unsigned int to_uint(const std::string & s)
 	return ret;
 }
 
+const unsigned long long to_ull(const std::string & s)
+{
+	unsigned long long ret = 0;
+	try {
+		ret = std::stoull(s);
+	}
+	catch (const std::invalid_argument& ia) {
+		throw GLogiKExcept("stoull invalid argument");
+	}
+	catch (const std::out_of_range& oor) {
+		throw GLogiKExcept("stoull out of range");
+	}
+
+	return ret;
+}
+
 const std::string getHexRGB(
 	const uint8_t red,
 	const uint8_t green,

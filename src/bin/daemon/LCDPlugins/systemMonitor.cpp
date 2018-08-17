@@ -32,10 +32,15 @@
 
 #include <config.h>
 
+#include "lib/utils/utils.h"
+
+#include "netsnap/netSnapshots.h"
 #include "systemMonitor.h"
 
 namespace GLogiK
 {
+
+using namespace NSGKUtils;
 
 SystemMonitor::SystemMonitor() {
 	this->name_ = "systemMonitor";
@@ -73,6 +78,7 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
 
 	std::string usedPhysicalMemory("");
 	std::string usedCPUActiveTotal("");
+	std::string rxRateString("");
 
 	auto getPaddedPercentString = [] (unsigned int i) -> const std::string {
 		std::ostringstream out("", std::ios_base::app);
@@ -113,10 +119,21 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
 		this->s1_ = s2;
 	}
 
+	try {
+		NetSnapshots n;
+		rxRateString = n.getRxRateString();
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << "network calculations error : " << e.what();
+	}
+
 	const unsigned int PERC_LCD_POS_X = 133;
 
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, usedPhysicalMemory, PERC_LCD_POS_X, 32);
+	/* percent - max 5 chars */
+	/* net rate - max 10 chars */
 	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, usedCPUActiveTotal, PERC_LCD_POS_X, 14);
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, rxRateString, 109, 23);
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, usedPhysicalMemory, PERC_LCD_POS_X, 32);
 
 	return LCDPlugin::getCurrentPBMFrame();
 }

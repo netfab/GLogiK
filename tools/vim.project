@@ -75,6 +75,10 @@ GLogiK=$PWD/.. CD=. {
 						LICENSE
 						README.md
 					}
+					NetSnap=netsnap/ {
+						netSnapshots.cpp
+						netSnapshots.h
+					}
 					splashscreen.cpp
 					splashscreen.h
 					systemMonitor.cpp

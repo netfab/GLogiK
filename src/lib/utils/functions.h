@@ -45,6 +45,7 @@ constexpr typename std::underlying_type<T>::type to_type(T obj) noexcept {
 
 const std::string to_string(const char* s);
 const unsigned int to_uint(const std::string & s);
+const unsigned long long to_ull(const std::string & s);
 
 const std::string getHexRGB(
 	const uint8_t red,
