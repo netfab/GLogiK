@@ -24,6 +24,7 @@
 #include <iomanip>
 #include <sstream>
 #include <thread>
+#include <limits>
 
 #define UTILS_COMPILATION 1
 
@@ -56,18 +57,21 @@ const std::string to_string(const char* s)
 
 const unsigned int to_uint(const std::string & s)
 {
-	unsigned int ret = 0;
+	unsigned long ret = 0;
 	try {
-		ret = std::stoi(s);
+		ret = std::stoul(s);
 	}
 	catch (const std::invalid_argument& ia) {
-		throw GLogiKExcept("stoi invalid argument");
+		throw GLogiKExcept("stoul invalid argument");
 	}
 	catch (const std::out_of_range& oor) {
-		throw GLogiKExcept("stoi out of range");
+		throw GLogiKExcept("stoul out of range");
 	}
 
-	return ret;
+	if(ret > std::numeric_limits<unsigned int>::max() )
+		throw GLogiKExcept("UINT_MAX out of range");
+
+	return static_cast<unsigned int>(ret);
 }
 
 const unsigned long long to_ull(const std::string & s)
