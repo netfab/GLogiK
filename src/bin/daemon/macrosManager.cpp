@@ -70,14 +70,14 @@ void MacrosManager::runMacro(const std::string & macro_key_name) {
 		const macro_t & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
 		if(macro.size() == 0) {
 #if DEBUGGING_ON
-			LOG(DEBUG) << "Macros Profile: " << to_uint(this->currentActiveProfile_)
+			LOG(DEBUG) << "Macros Profile: " << this->currentActiveProfile_
 				<< " - Macro Key: " << macro_key_name << " - no macro recorded";
 #endif
 			return;
 		}
 
 #if DEBUGGING_ON
-		LOG(INFO) << "Macros Profile: " << to_uint(this->currentActiveProfile_)
+		LOG(INFO) << "Macros Profile: " << this->currentActiveProfile_
 			<< " - Macro Key: " << macro_key_name << " - running macro";
 #endif
 		for( const auto &key : macro ) {
@@ -92,7 +92,7 @@ void MacrosManager::runMacro(const std::string & macro_key_name) {
 /*
 void MacrosManager::logProfiles(void) {
 	for(const auto & profile : this->macros_profiles_) {
-		LOG(DEBUG2) << "MemoryBank: " << to_uint(profile.first);
+		LOG(DEBUG2) << "MemoryBank: " << profile.first;
 		for(const auto & macro_key : profile.second) {
 			LOG(DEBUG3) << "MacroKey: " << macro_key.first << " MacroLength: " << macro_key.second.size();
 		}
@@ -103,7 +103,7 @@ void MacrosManager::logProfiles(void) {
 /* set the current active macros profile */
 void MacrosManager::setCurrentActiveProfile(MemoryBank bank) {
 #if DEBUGGING_ON
-	LOG(DEBUG) << "setting current active macros profile : " << to_uint(bank);
+	LOG(DEBUG) << "setting current active macros profile : " << bank;
 #endif
 	this->currentActiveProfile_ = bank;
 }
@@ -148,7 +148,7 @@ void MacrosManager::clearMacroProfiles(void) {
 	this->setCurrentActiveProfile(MemoryBank::BANK_M0);
 	for(auto & profile_pair : this->macros_profiles_) {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "clearing macros for MemoryBank: " << to_uint(profile_pair.first);
+		LOG(DEBUG2) << "clearing macros for MemoryBank: " << profile_pair.first;
 #endif
 		for(auto & macro_key_pair : profile_pair.second) {
 			macro_key_pair.second.clear();

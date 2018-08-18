@@ -109,7 +109,7 @@ void VirtualKeyboard::sendKeyEvent(const KeyEvent & key) {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "key event : ";
 	LOG(DEBUG2)	<< "event_code : " << to_uint(key.event_code);
-	LOG(DEBUG2)	<< "event : " << to_uint(key.event);
+	LOG(DEBUG2)	<< "event : " << key.event;
 	LOG(DEBUG2)	<< "interval : " << key.interval << " ms";
 #endif
 

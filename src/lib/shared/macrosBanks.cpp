@@ -70,7 +70,7 @@ void MacrosBanks::clearMacro(
 	const std::string & keyName)
 {
 	try {
-		LOG(INFO) << "macros profile: M" << to_uint(profile)
+		LOG(INFO) << "macros profile: M" << profile
 			<< " - Macro Key: " << keyName
 			<< " - clearing macro";
 
@@ -88,7 +88,7 @@ void MacrosBanks::clearMacro(
 	const uint8_t profile,
 	const std::string & keyName)
 {
-	if( to_uint(profile) > to_uint(MemoryBank::BANK_M3) )
+	if(profile > MemoryBank::BANK_M3)
 		throw GLogiKExcept("wrong profile value");
 
 	const MemoryBank current_profile = static_cast<MemoryBank>(profile);
@@ -102,7 +102,7 @@ void MacrosBanks::setMacro(
 	const macro_t & macro_array)
 {
 	try {
-		LOG(INFO) << "macros profile: M" << to_uint(profile)
+		LOG(INFO) << "macros profile: M" << profile
 			<< " - Macro Key: " << keyName
 			<< " - Macro Size: " << macro_array.size()
 			<< " - setting macro";
@@ -126,7 +126,7 @@ void MacrosBanks::setMacro(
 	const std::string & keyName,
 	const macro_t & macro_array)
 {
-	if( to_uint(profile) > to_uint(MemoryBank::BANK_M3) )
+	if(profile > MemoryBank::BANK_M3)
 		throw GLogiKExcept("wrong profile value");
 
 	const MemoryBank current_profile = static_cast<MemoryBank>(profile);
@@ -136,7 +136,7 @@ void MacrosBanks::setMacro(
 
 const macro_t & MacrosBanks::getMacro(const uint8_t profile, const std::string & keyName)
 {
-	if( to_uint(profile) > to_uint(MemoryBank::BANK_M3) )
+	if(profile > MemoryBank::BANK_M3)
 		throw GLogiKExcept("wrong profile value");
 
 	const MemoryBank current_profile = static_cast<MemoryBank>(profile);

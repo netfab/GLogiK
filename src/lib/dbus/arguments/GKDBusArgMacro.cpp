@@ -47,7 +47,7 @@ const GLogiK::macro_t GKDBusArgumentMacro::getNextMacroArgument(const unsigned i
 			e.event_code = GKDBusArgumentByte::getNextByteArgument();
 
 			const uint8_t value = GKDBusArgumentByte::getNextByteArgument();
-			if( to_uint(value) > to_uint(GLogiK::EventValue::EVENT_KEY_UNKNOWN) )
+			if(value > GLogiK::EventValue::EVENT_KEY_UNKNOWN)
 				throw GLogiKExcept("wrong event value for enum conversion");
 
 			e.event		 = static_cast<GLogiK::EventValue>(value);

@@ -24,6 +24,7 @@
 
 #include <cstdint>
 
+#include <sstream>
 #include <string>
 #include <vector>
 #include <map>
@@ -50,6 +51,17 @@ enum class EventValue : uint8_t
 	EVENT_KEY_PRESS,
 	EVENT_KEY_UNKNOWN,
 };
+
+inline std::ostream & operator << (std::ostream & stream, const EventValue & event)
+{
+	stream << static_cast<unsigned int>(event);
+	return stream;
+}
+
+inline const bool operator > (const uint8_t value, const EventValue & event)
+{
+	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(event)));
+}
 
 struct KeyEvent {
 	public:
@@ -79,6 +91,17 @@ enum class MemoryBank : uint8_t
 	BANK_M2,
 	BANK_M3,
 };
+
+inline std::ostream & operator << (std::ostream & stream, const MemoryBank & bank)
+{
+	stream << static_cast<unsigned int>(bank);
+	return stream;
+}
+
+inline const bool operator > (const uint8_t value, const MemoryBank & bank)
+{
+	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(bank)));
+}
 
 typedef std::vector<KeyEvent> macro_t;
 typedef std::map<const std::string, macro_t> macros_bank_t;

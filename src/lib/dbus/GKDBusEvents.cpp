@@ -53,7 +53,7 @@ GKDBusEvents::GKDBusEvents(const std::string & rootnode) : root_node_(rootnode) 
 GKDBusEvents::~GKDBusEvents() {
 	for(const auto & bus_pair : this->DBusEvents_) {
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "current bus: " << to_uint( bus_pair.first );
+		LOG(DEBUG1) << "current bus: " << to_uint(to_type(bus_pair.first));
 #endif
 		for(const auto & object_path_pair : bus_pair.second) {
 #if DEBUGGING_ON

@@ -26,6 +26,7 @@
 #error "Only "utils/utils.h" can be included directly, this file may disappear or change contents."
 #endif
 
+#include <cstdint>
 #include <string>
 #include <type_traits>
 #include <chrono>
@@ -34,16 +35,17 @@ namespace NSGKUtils
 {
 
 template <typename T>
-constexpr unsigned int to_uint(T obj) {
-	return static_cast<unsigned int>(obj);
-}
-
-template <typename T>
 constexpr typename std::underlying_type<T>::type to_type(T obj) noexcept {
 	return static_cast<typename std::underlying_type<T>::type>(obj);
 }
 
 const std::string to_string(const char* s);
+
+constexpr unsigned int to_uint(const uint8_t c)
+{
+	return static_cast<unsigned int>(c);
+}
+
 const unsigned int to_uint(const std::string & s);
 const unsigned long long to_ull(const std::string & s);
 
