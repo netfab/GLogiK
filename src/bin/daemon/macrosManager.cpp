@@ -37,8 +37,8 @@ MacrosManager::MacrosManager(
 	const char* virtual_keyboard_name,
 	const std::vector<std::string> & keys_names)
 		:	buffer_("", std::ios_base::app),
-			currentActiveProfile_(MemoryBank::BANK_M0),
-			virtual_keyboard(virtual_keyboard_name)
+			_currentMemoryBank(MemoryBank::BANK_M0),
+			_virtualKeyboard(virtual_keyboard_name)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "initializing " << keys_names.size() << " macro keys";
@@ -54,7 +54,7 @@ MacrosManager::~MacrosManager()
 /* returns true if a macro is defined for this key on the current profile */
 const bool MacrosManager::macroDefined(const std::string & macro_key_name) {
 	try {
-		const macro_t & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
+		const macro_t & macro = this->macros_profiles_[_currentMemoryBank].at(macro_key_name);
 		return (macro.size() > 0);
 	}
 	catch (const std::out_of_range& oor) {
@@ -67,21 +67,21 @@ const bool MacrosManager::macroDefined(const std::string & macro_key_name) {
 /* run a macro on the virtual keyboard */
 void MacrosManager::runMacro(const std::string & macro_key_name) {
 	try {
-		const macro_t & macro = this->macros_profiles_[this->currentActiveProfile_].at(macro_key_name);
+		const macro_t & macro = this->macros_profiles_[_currentMemoryBank].at(macro_key_name);
 		if(macro.size() == 0) {
 #if DEBUGGING_ON
-			LOG(DEBUG) << "Macros Profile: " << this->currentActiveProfile_
+			LOG(DEBUG) << "Macros Profile: " << _currentMemoryBank
 				<< " - Macro Key: " << macro_key_name << " - no macro recorded";
 #endif
 			return;
 		}
 
 #if DEBUGGING_ON
-		LOG(INFO) << "Macros Profile: " << this->currentActiveProfile_
+		LOG(INFO) << "Macros Profile: " << _currentMemoryBank
 			<< " - Macro Key: " << macro_key_name << " - running macro";
 #endif
 		for( const auto &key : macro ) {
-			this->virtual_keyboard.sendKeyEvent(key);
+			_virtualKeyboard.sendKeyEvent(key);
 		}
 	}
 	catch (const std::out_of_range& oor) {
@@ -105,42 +105,42 @@ void MacrosManager::setCurrentActiveProfile(MemoryBank bank) {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "setting current active macros profile : " << bank;
 #endif
-	this->currentActiveProfile_ = bank;
+	_currentMemoryBank = bank;
 }
 
 const MemoryBank MacrosManager::getCurrentActiveProfile(void) const {
-	return this->currentActiveProfile_;
+	return _currentMemoryBank;
 }
 
 void MacrosManager::setMacro(
 	const std::string & keyName,
-	macro_t & macro_array)
+	macro_t & macroArray)
 {
 	{
 		std::vector<MacroEvent> pressedEvents;
 		std::vector<MacroEvent> releasedEvents;
 
-		this->fillInVectors(macro_array, pressedEvents, releasedEvents);
-		this->fixMacroReleaseEvents(pressedEvents, releasedEvents, macro_array);
+		this->fillInVectors(macroArray, pressedEvents, releasedEvents);
+		this->fixMacroReleaseEvents(pressedEvents, releasedEvents, macroArray);
 
 		//// debug code
 		//KeyEvent e1(KEY_UNKNOWN, EventValue::EVENT_KEY_PRESS, 1);
 		//KeyEvent e2(KEY_UNKNOWN, EventValue::EVENT_KEY_RELEASE, 1);
 		//for(unsigned int i = 0; i < 12; ++i) {
-		//	macro_array.push_back(e1);
-		//	macro_array.push_back(e2);
+		//	macroArray.push_back(e1);
+		//	macroArray.push_back(e2);
 		//}
 
-		if(macro_array.size() >= MACRO_T_MAX_SIZE) {
+		if(macroArray.size() >= MACRO_T_MAX_SIZE) {
 			GKSysLog(LOG_WARNING, WARNING, "macro size greater than MACRO_T_MAX_SIZE, fixing it");
 			pressedEvents.clear();
 			releasedEvents.clear();
-			this->fillInVectors(macro_array, pressedEvents, releasedEvents);
-			this->fixMacroSize(pressedEvents, releasedEvents, macro_array);
+			this->fillInVectors(macroArray, pressedEvents, releasedEvents);
+			this->fixMacroSize(pressedEvents, releasedEvents, macroArray);
 		}
 	}
 
-	MacrosBanks::setMacro(this->currentActiveProfile_, keyName, macro_array);
+	MacrosBanks::setMacro(_currentMemoryBank, keyName, macroArray);
 }
 
 /* clear all macros profiles */
@@ -157,12 +157,12 @@ void MacrosManager::clearMacroProfiles(void) {
 }
 
 void MacrosManager::fillInVectors(
-	const macro_t & macro_array,
+	const macro_t & macroArray,
 	std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents)
 {
-	for(unsigned int i = 0; i != macro_array.size(); ++i) {
-		const auto & keyEvent = macro_array[i];
+	for(unsigned int i = 0; i != macroArray.size(); ++i) {
+		const auto & keyEvent = macroArray[i];
 		MacroEvent e(keyEvent, i);
 
 		if( keyEvent.event == EventValue::EVENT_KEY_PRESS )
@@ -175,7 +175,7 @@ void MacrosManager::fillInVectors(
 void MacrosManager::fixMacroReleaseEvents(
 	const std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents,
-	macro_t & macro_array)
+	macro_t & macroArray)
 {
 	/* fix missing release events */
 	for(const auto & pressed : pressedEvents) {
@@ -198,7 +198,7 @@ void MacrosManager::fixMacroReleaseEvents(
 			KeyEvent e = pressed.key;
 			e.event = EventValue::EVENT_KEY_RELEASE;
 			e.interval = 1;
-			macro_array.push_back(e);
+			macroArray.push_back(e);
 		}
 	}
 
@@ -213,8 +213,8 @@ void MacrosManager::fixMacroReleaseEvents(
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "erasing redundant release event at index : " << to_uint(redundant.index);
 #endif
-			auto it = std::next(macro_array.begin(), redundant.index);
-			macro_array.erase(it);
+			auto it = std::next(macroArray.begin(), redundant.index);
+			macroArray.erase(it);
 		}
 	}
 }
@@ -222,7 +222,7 @@ void MacrosManager::fixMacroReleaseEvents(
 void MacrosManager::fixMacroSize(
 	const std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents,
-	macro_t & macro_array)
+	macro_t & macroArray)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "pressed events : " << pressedEvents.size();
@@ -259,31 +259,31 @@ void MacrosManager::fixMacroSize(
 	LOG(DEBUG2) << "indexes size : " << indexes.size();
 #endif
 
-	while( (indexes.size() > 1) and (macro_array.size() >= MACRO_T_MAX_SIZE) ) {
+	while( (indexes.size() > 1) and (macroArray.size() >= MACRO_T_MAX_SIZE) ) {
 		auto & index = indexes.back();
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "erasing index : " << index;
 #endif
-		auto it = std::next(macro_array.begin(), index);
-		macro_array.erase(it);
+		auto it = std::next(macroArray.begin(), index);
+		macroArray.erase(it);
 		indexes.pop_back();
 
 		index = indexes.back();
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "erasing index : " << index;
 #endif
-		it = std::next(macro_array.begin(), index);
-		macro_array.erase(it);
+		it = std::next(macroArray.begin(), index);
+		macroArray.erase(it);
 		indexes.pop_back();
 	}
 
 	/* sanity check */
-	if( macro_array.size() >= MACRO_T_MAX_SIZE ) {
+	if( macroArray.size() >= MACRO_T_MAX_SIZE ) {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "macro size : " << macro_array.size();
+		LOG(DEBUG2) << "macro size : " << macroArray.size();
 #endif
 		GKSysLog(LOG_WARNING, WARNING, "macro still greater than MACRO_T_MAX_SIZE, force resize it");
-		macro_array.resize(MACRO_T_MAX_SIZE - 1);
+		macroArray.resize(MACRO_T_MAX_SIZE - 1);
 	}
 
 }

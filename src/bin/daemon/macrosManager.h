@@ -63,7 +63,7 @@ class MacrosManager : public MacrosBanks
 
 		void setMacro(
 			const std::string & keyName,
-			macro_t & macro_array
+			macro_t & macroArray
 		);
 
 		void clearMacroProfiles(void);
@@ -75,24 +75,24 @@ class MacrosManager : public MacrosBanks
 	private:
 		std::ostringstream buffer_;
 
-		MemoryBank currentActiveProfile_;
-		VirtualKeyboard virtual_keyboard;
+		MemoryBank _currentMemoryBank;
+		VirtualKeyboard _virtualKeyboard;
 
 
 		void fillInVectors(
-			const macro_t & macro_array,
+			const macro_t & macroArray,
 			std::vector<MacroEvent> & pressedEvents,
 			std::vector<MacroEvent> & releasedEvents
 		);
 		void fixMacroReleaseEvents(
 			const std::vector<MacroEvent> & pressedEvents,
 			std::vector<MacroEvent> & releasedEvents,
-			macro_t & macro_array
+			macro_t & macroArray
 		);
 		void fixMacroSize(
 			const std::vector<MacroEvent> & pressedEvents,
 			std::vector<MacroEvent> & releasedEvents,
-			macro_t & macro_array
+			macro_t & macroArray
 		);
 };
 
