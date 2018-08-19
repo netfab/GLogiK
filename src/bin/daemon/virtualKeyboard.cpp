@@ -34,13 +34,13 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-VirtualKeyboard::VirtualKeyboard(const char* device_name) : buffer_("", std::ios_base::app) {
+VirtualKeyboard::VirtualKeyboard(const char* deviceName) : buffer_("", std::ios_base::app) {
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "initializing " << device_name;
+	LOG(DEBUG3) << "initializing " << deviceName;
 #endif
 
-	this->dev = libevdev_new();
-	libevdev_set_name(this->dev, device_name);
+	_pDevice = libevdev_new();
+	libevdev_set_name(_pDevice, deviceName);
 
 	this->enableEventType(EV_KEY);
 
@@ -55,8 +55,8 @@ VirtualKeyboard::VirtualKeyboard(const char* device_name) : buffer_("", std::ios
 			this->enableEventCode(EV_KEY, i);
 	}
 
-	int err = libevdev_uinput_create_from_device(this->dev,
-				LIBEVDEV_UINPUT_OPEN_MANAGED, &this->uidev);
+	int err = libevdev_uinput_create_from_device(
+		_pDevice, LIBEVDEV_UINPUT_OPEN_MANAGED, &_pUInputDevice);
 
 	if (err < 0) {
 		this->buffer_.str("virtual device creation failure : ");
@@ -67,20 +67,20 @@ VirtualKeyboard::VirtualKeyboard(const char* device_name) : buffer_("", std::ios
 
 VirtualKeyboard::~VirtualKeyboard() {
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "destroying " << libevdev_get_name(this->dev);
+	LOG(DEBUG3) << "destroying " << libevdev_get_name(_pDevice);
 #endif
 
-	libevdev_uinput_destroy(this->uidev);
-	libevdev_free(this->dev);
+	libevdev_uinput_destroy(_pUInputDevice);
+	libevdev_free(_pDevice);
 }
 
 void VirtualKeyboard::freeDeviceAndThrow(void) {
-	libevdev_free(this->dev);
+	libevdev_free(_pDevice);
 	throw GLogiKExcept(this->buffer_.str());
 }
 
 void VirtualKeyboard::enableEventType(unsigned int type) {
-	if ( libevdev_enable_event_type(this->dev, type) != 0 ) {
+	if ( libevdev_enable_event_type(_pDevice, type) != 0 ) {
 		this->buffer_.str("enable event type failure : ");
 		this->buffer_ << type;
 		this->freeDeviceAndThrow();
@@ -88,7 +88,7 @@ void VirtualKeyboard::enableEventType(unsigned int type) {
 }
 
 void VirtualKeyboard::enableEventCode(unsigned int type, unsigned int code) {
-	if ( libevdev_enable_event_code(this->dev, type, code, nullptr) != 0 ) {
+	if ( libevdev_enable_event_code(_pDevice, type, code, nullptr) != 0 ) {
 		this->buffer_.str("enable event code failure : type ");
 		this->buffer_ << type << " code " << code;
 		this->freeDeviceAndThrow();
@@ -119,9 +119,9 @@ void VirtualKeyboard::sendKeyEvent(const KeyEvent & key) {
 #endif
 		std::this_thread::sleep_for(std::chrono::milliseconds(key.interval));
 	}
-	int ret = libevdev_uinput_write_event(uidev, EV_KEY, key.event_code, static_cast<int>(key.event));
+	int ret = libevdev_uinput_write_event(_pUInputDevice, EV_KEY, key.event_code, static_cast<int>(key.event));
 	if(ret == 0) {
-		ret = libevdev_uinput_write_event(uidev, EV_SYN, SYN_REPORT, 0);
+		ret = libevdev_uinput_write_event(_pUInputDevice, EV_SYN, SYN_REPORT, 0);
 		if(ret != 0 ) {
 			this->handleLibevdevError(ret);
 		}

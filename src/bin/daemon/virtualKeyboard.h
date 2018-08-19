@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_VIRTUAL_KEYBOARD_H__
-#define __GLOGIKD_VIRTUAL_KEYBOARD_H__
+#ifndef SRC_BIN_DAEMON_VIRTUAL_KEYBOARD_HPP_
+#define SRC_BIN_DAEMON_VIRTUAL_KEYBOARD_HPP_
 
 #include <sstream>
 
@@ -35,15 +35,15 @@ namespace GLogiK
 class VirtualKeyboard
 {
 	public:
-		VirtualKeyboard(const char* device_name);
+		VirtualKeyboard(const char* deviceName);
 		~VirtualKeyboard();
 
 		void sendKeyEvent(const KeyEvent & key);
 
 	protected:
 	private:
-		struct libevdev *dev;
-		struct libevdev_uinput *uidev;
+		libevdev *_pDevice;
+		libevdev_uinput *_pUInputDevice;
 
 		std::ostringstream buffer_;
 
