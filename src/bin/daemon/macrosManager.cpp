@@ -89,17 +89,6 @@ void MacrosManager::runMacro(const std::string & keyName) {
 	}
 }
 
-/*
-void MacrosManager::logProfiles(void) {
-	for(const auto & profile : this->macros_profiles_) {
-		LOG(DEBUG2) << "MemoryBank: " << profile.first;
-		for(const auto & macro_key : profile.second) {
-			LOG(DEBUG3) << "MacroKey: " << macro_key.first << " MacroLength: " << macro_key.second.size();
-		}
-	}
-}
-*/
-
 void MacrosManager::setCurrentMemoryBank(MemoryBank bank) {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "setting current memory bank : " << bank;

@@ -68,8 +68,6 @@ class MacrosManager : public MacrosBanks
 
 		void resetMemoryBanks(void);
 
-		//void logProfiles(void);
-
 	protected:
 
 	private:
