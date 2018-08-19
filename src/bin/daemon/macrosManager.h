@@ -55,8 +55,8 @@ class MacrosManager : public MacrosBanks
 		);
 		~MacrosManager();
 
-		void setCurrentActiveProfile(MemoryBank bank);
-		const MemoryBank getCurrentActiveProfile(void) const;
+		void setCurrentMemoryBank(MemoryBank bank);
+		const MemoryBank getCurrentMemoryBank(void) const;
 
 		const bool macroDefined(const std::string & macro_key_name);
 		void runMacro(const std::string & macro_key_name);
@@ -66,7 +66,7 @@ class MacrosManager : public MacrosBanks
 			macro_t & macroArray
 		);
 
-		void clearMacroProfiles(void);
+		void resetMemoryBanks(void);
 
 		//void logProfiles(void);
 

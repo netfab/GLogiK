@@ -100,15 +100,14 @@ void MacrosManager::logProfiles(void) {
 }
 */
 
-/* set the current active macros profile */
-void MacrosManager::setCurrentActiveProfile(MemoryBank bank) {
+void MacrosManager::setCurrentMemoryBank(MemoryBank bank) {
 #if DEBUGGING_ON
-	LOG(DEBUG) << "setting current active macros profile : " << bank;
+	LOG(DEBUG) << "setting current memory bank : " << bank;
 #endif
 	_currentMemoryBank = bank;
 }
 
-const MemoryBank MacrosManager::getCurrentActiveProfile(void) const {
+const MemoryBank MacrosManager::getCurrentMemoryBank(void) const {
 	return _currentMemoryBank;
 }
 
@@ -143,9 +142,8 @@ void MacrosManager::setMacro(
 	MacrosBanks::setMacro(_currentMemoryBank, keyName, macroArray);
 }
 
-/* clear all macros profiles */
-void MacrosManager::clearMacroProfiles(void) {
-	this->setCurrentActiveProfile(MemoryBank::BANK_M0);
+void MacrosManager::resetMemoryBanks(void) {
+	this->setCurrentMemoryBank(MemoryBank::BANK_M0);
 	for(auto & profile_pair : this->macros_profiles_) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "clearing macros for MemoryBank: " << profile_pair.first;
