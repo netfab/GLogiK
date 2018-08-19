@@ -26,7 +26,6 @@
 
 #include <vector>
 #include <string>
-#include <sstream>
 
 #include "lib/shared/macrosBanks.h"
 #include "virtualKeyboard.h"
@@ -71,8 +70,6 @@ class MacrosManager : public MacrosBanks
 	protected:
 
 	private:
-		std::ostringstream buffer_;
-
 		MemoryBank _currentMemoryBank;
 		VirtualKeyboard _virtualKeyboard;
 

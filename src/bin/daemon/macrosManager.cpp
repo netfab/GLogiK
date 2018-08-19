@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
+#include <sstream>
 #include <iostream>
 
 #include "lib/utils/utils.h"
@@ -36,8 +37,7 @@ using namespace NSGKUtils;
 MacrosManager::MacrosManager(
 	const char* virtualKeyboardName,
 	const std::vector<std::string> & keysNames)
-		:	buffer_("", std::ios_base::app),
-			_currentMemoryBank(MemoryBank::BANK_M0),
+		:	_currentMemoryBank(MemoryBank::BANK_M0),
 			_virtualKeyboard(virtualKeyboardName)
 {
 #if DEBUGGING_ON
@@ -178,10 +178,9 @@ void MacrosManager::fixMacroReleaseEvents(
 			}
 		}
 		if( ! found ) {
-			this->buffer_.str("missing release event for index ");
-			this->buffer_ << to_uint(pressed.index);
-			this->buffer_ << " - adding event";
-			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+			std::ostringstream buffer(std::ios_base::ate);
+			buffer << "missing release event for index " << to_uint(pressed.index) << " - adding event";
+			GKSysLog(LOG_WARNING, WARNING, buffer.str());
 			KeyEvent e = pressed.key;
 			e.event = EventValue::EVENT_KEY_RELEASE;
 			e.interval = 1;
@@ -218,11 +217,9 @@ void MacrosManager::fixMacroSize(
 	/* sanity check */
 	if(pressedEvents.size() != releasedEvents.size()) {
 		GKSysLog(LOG_WARNING, WARNING, "pressed and released events disparity :");
-		this->buffer_.str("pressed: ");
-		this->buffer_ << pressedEvents.size();
-		this->buffer_.str(" - released: ");
-		this->buffer_ << releasedEvents.size();
-		GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		std::ostringstream buffer(std::ios_base::ate);
+		buffer << "pressed: " << pressedEvents.size() << " - released: " << releasedEvents.size();
+		GKSysLog(LOG_WARNING, WARNING, buffer.str());
 	}
 
 	std::vector<unsigned int> indexes;
