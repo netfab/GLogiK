@@ -43,17 +43,20 @@ VirtualKeyboard::VirtualKeyboard(const char* deviceName) {
 	_pDevice = libevdev_new();
 	libevdev_set_name(_pDevice, deviceName);
 
-	this->enableEventType(EV_KEY);
+	try {
+		this->enableEventType(EV_KEY);
 
-	{	/* linux/input-event-codes.h */
-		unsigned int i = 0;
-
-		for (i = KEY_ESC; i <= KEY_KPDOT; i++)
+		/* linux/input-event-codes.h */
+		for (unsigned int i = KEY_ESC; i <= KEY_KPDOT; i++)
 			this->enableEventCode(EV_KEY, i);
-		for (i = KEY_ZENKAKUHANKAKU; i <= KEY_F24; i++)
+		for (unsigned int i = KEY_ZENKAKUHANKAKU; i <= KEY_F24; i++)
 			this->enableEventCode(EV_KEY, i);
-		for (i = KEY_PLAYCD; i <= KEY_MICMUTE; i++)
+		for (unsigned int i = KEY_PLAYCD; i <= KEY_MICMUTE; i++)
 			this->enableEventCode(EV_KEY, i);
+	}
+	catch ( const GLogiKExcept & e ) {
+		libevdev_free(_pDevice);
+		throw;
 	}
 
 	int err = libevdev_uinput_create_from_device(
@@ -79,8 +82,6 @@ VirtualKeyboard::~VirtualKeyboard() {
 
 void VirtualKeyboard::enableEventType(unsigned int type) {
 	if ( libevdev_enable_event_type(_pDevice, type) != 0 ) {
-		libevdev_free(_pDevice);
-
 		std::ostringstream buffer(std::ios_base::ate);
 		buffer << "enable event type failure : " << type;
 		throw GLogiKExcept(buffer.str());
@@ -89,8 +90,6 @@ void VirtualKeyboard::enableEventType(unsigned int type) {
 
 void VirtualKeyboard::enableEventCode(unsigned int type, unsigned int code) {
 	if ( libevdev_enable_event_code(_pDevice, type, code, nullptr) != 0 ) {
-		libevdev_free(_pDevice);
-
 		std::ostringstream buffer(std::ios_base::ate);
 		buffer << "enable event code failure : type " << type << " code " << code;
 		throw GLogiKExcept(buffer.str());
