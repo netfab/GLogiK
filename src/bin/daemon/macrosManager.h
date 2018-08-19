@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_MACROS_MANAGER_H__
-#define __GLOGIKD_MACROS_MANAGER_H__
+#ifndef SRC_BIN_DAEMON_MACROS_MANAGER_HPP_
+#define SRC_BIN_DAEMON_MACROS_MANAGER_HPP_
 
 #include <cstdint>
 
@@ -50,16 +50,16 @@ class MacrosManager : public MacrosBanks
 {
 	public:
 		MacrosManager(
-			const char* virtual_keyboard_name,
-			const std::vector<std::string> & keys_names
+			const char* virtualKeyboardName,
+			const std::vector<std::string> & keysNames
 		);
 		~MacrosManager();
 
 		void setCurrentMemoryBank(MemoryBank bank);
 		const MemoryBank getCurrentMemoryBank(void) const;
 
-		const bool macroDefined(const std::string & macro_key_name);
-		void runMacro(const std::string & macro_key_name);
+		const bool macroDefined(const std::string & keyName);
+		void runMacro(const std::string & keyName);
 
 		void setMacro(
 			const std::string & keyName,

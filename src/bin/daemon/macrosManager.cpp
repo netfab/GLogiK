@@ -34,27 +34,27 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 MacrosManager::MacrosManager(
-	const char* virtual_keyboard_name,
-	const std::vector<std::string> & keys_names)
+	const char* virtualKeyboardName,
+	const std::vector<std::string> & keysNames)
 		:	buffer_("", std::ios_base::app),
 			_currentMemoryBank(MemoryBank::BANK_M0),
-			_virtualKeyboard(virtual_keyboard_name)
+			_virtualKeyboard(virtualKeyboardName)
 {
 #if DEBUGGING_ON
-	LOG(DEBUG) << "initializing " << keys_names.size() << " macro keys";
+	LOG(DEBUG) << "initializing " << keysNames.size() << " macro keys";
 #endif
 
-	this->initMacrosProfiles(keys_names);
+	this->initMacrosProfiles(keysNames);
 }
 
 MacrosManager::~MacrosManager()
 {
 }
 
-/* returns true if a macro is defined for this key on the current profile */
-const bool MacrosManager::macroDefined(const std::string & macro_key_name) {
+/* returns true if a macro is defined for this key on the current memory bank */
+const bool MacrosManager::macroDefined(const std::string & keyName) {
 	try {
-		const macro_t & macro = this->macros_profiles_[_currentMemoryBank].at(macro_key_name);
+		const macro_t & macro = this->macros_profiles_[_currentMemoryBank].at(keyName);
 		return (macro.size() > 0);
 	}
 	catch (const std::out_of_range& oor) {
@@ -65,20 +65,20 @@ const bool MacrosManager::macroDefined(const std::string & macro_key_name) {
 }
 
 /* run a macro on the virtual keyboard */
-void MacrosManager::runMacro(const std::string & macro_key_name) {
+void MacrosManager::runMacro(const std::string & keyName) {
 	try {
-		const macro_t & macro = this->macros_profiles_[_currentMemoryBank].at(macro_key_name);
+		const macro_t & macro = this->macros_profiles_[_currentMemoryBank].at(keyName);
 		if(macro.size() == 0) {
 #if DEBUGGING_ON
-			LOG(DEBUG) << "Macros Profile: " << _currentMemoryBank
-				<< " - Macro Key: " << macro_key_name << " - no macro recorded";
+			LOG(DEBUG) << "Memory Bank: " << _currentMemoryBank
+				<< " - Macro Key: " << keyName << " - no macro recorded";
 #endif
 			return;
 		}
 
 #if DEBUGGING_ON
-		LOG(INFO) << "Macros Profile: " << _currentMemoryBank
-			<< " - Macro Key: " << macro_key_name << " - running macro";
+		LOG(INFO) << "Memory Bank: " << _currentMemoryBank
+			<< " - Macro Key: " << keyName << " - running macro";
 #endif
 		for( const auto &key : macro ) {
 			_virtualKeyboard.sendKeyEvent(key);
@@ -144,12 +144,12 @@ void MacrosManager::setMacro(
 
 void MacrosManager::resetMemoryBanks(void) {
 	this->setCurrentMemoryBank(MemoryBank::BANK_M0);
-	for(auto & profile_pair : this->macros_profiles_) {
+	for(auto & profilePair : this->macros_profiles_) {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "clearing macros for MemoryBank: " << profile_pair.first;
+		LOG(DEBUG2) << "clearing all macros for Memory Bank: " << profilePair.first;
 #endif
-		for(auto & macro_key_pair : profile_pair.second) {
-			macro_key_pair.second.clear();
+		for(auto & keyMacroPair : profilePair.second) {
+			keyMacroPair.second.clear();
 		}
 	}
 }
