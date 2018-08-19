@@ -22,8 +22,6 @@
 #ifndef SRC_BIN_DAEMON_VIRTUAL_KEYBOARD_HPP_
 #define SRC_BIN_DAEMON_VIRTUAL_KEYBOARD_HPP_
 
-#include <sstream>
-
 #include <libevdev/libevdev.h>
 #include <libevdev/libevdev-uinput.h>
 
@@ -45,11 +43,8 @@ class VirtualKeyboard
 		libevdev *_pDevice;
 		libevdev_uinput *_pUInputDevice;
 
-		std::ostringstream buffer_;
-
 		void handleLibevdevError(int ret);
 
-		void freeDeviceAndThrow(void);
 		void enableEventType(unsigned int type);
 		void enableEventCode(unsigned int type, unsigned int code);
 };

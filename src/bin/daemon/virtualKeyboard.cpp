@@ -19,6 +19,7 @@
  *
  */
 
+#include <sstream>
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -34,7 +35,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-VirtualKeyboard::VirtualKeyboard(const char* deviceName) : buffer_("", std::ios_base::app) {
+VirtualKeyboard::VirtualKeyboard(const char* deviceName) {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "initializing " << deviceName;
 #endif
@@ -59,9 +60,11 @@ VirtualKeyboard::VirtualKeyboard(const char* deviceName) : buffer_("", std::ios_
 		_pDevice, LIBEVDEV_UINPUT_OPEN_MANAGED, &_pUInputDevice);
 
 	if (err < 0) {
-		this->buffer_.str("virtual device creation failure : ");
-		this->buffer_ << strerror( -(err) );
-		this->freeDeviceAndThrow();
+		libevdev_free(_pDevice);
+
+		std::ostringstream buffer(std::ios_base::ate);
+		buffer << "virtual device creation failure : " << strerror( -(err) );
+		throw GLogiKExcept(buffer.str());
 	}
 }
 
@@ -74,34 +77,34 @@ VirtualKeyboard::~VirtualKeyboard() {
 	libevdev_free(_pDevice);
 }
 
-void VirtualKeyboard::freeDeviceAndThrow(void) {
-	libevdev_free(_pDevice);
-	throw GLogiKExcept(this->buffer_.str());
-}
-
 void VirtualKeyboard::enableEventType(unsigned int type) {
 	if ( libevdev_enable_event_type(_pDevice, type) != 0 ) {
-		this->buffer_.str("enable event type failure : ");
-		this->buffer_ << type;
-		this->freeDeviceAndThrow();
+		libevdev_free(_pDevice);
+
+		std::ostringstream buffer(std::ios_base::ate);
+		buffer << "enable event type failure : " << type;
+		throw GLogiKExcept(buffer.str());
 	}
 }
 
 void VirtualKeyboard::enableEventCode(unsigned int type, unsigned int code) {
 	if ( libevdev_enable_event_code(_pDevice, type, code, nullptr) != 0 ) {
-		this->buffer_.str("enable event code failure : type ");
-		this->buffer_ << type << " code " << code;
-		this->freeDeviceAndThrow();
+		libevdev_free(_pDevice);
+
+		std::ostringstream buffer(std::ios_base::ate);
+		buffer << "enable event code failure : type " << type << " code " << code;
+		throw GLogiKExcept(buffer.str());
 	}
 }
 
 void VirtualKeyboard::handleLibevdevError(int ret) {
 	switch(ret) {
-		default:
-			this->buffer_.str("warning : libevdev error (");
-			this->buffer_ << -ret << ") : " << strerror(-ret);
-			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+		default: {
+			std::ostringstream buffer(std::ios_base::ate);
+			buffer << "warning : libevdev error (" << -ret << ") : " << strerror(-ret);
+			GKSysLog(LOG_WARNING, WARNING, buffer.str());
 			break;
+		}
 	}
 }
 
