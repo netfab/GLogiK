@@ -103,9 +103,9 @@ inline const bool operator > (const uint8_t value, const MemoryBank & bank)
 	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(bank)));
 }
 
-typedef std::vector<KeyEvent> macro_t;
-typedef std::map<const std::string, macro_t> macros_bank_t;
-typedef std::map<const MemoryBank, macros_bank_t> macros_map_t;
+typedef std::vector<KeyEvent> macro_type;
+typedef std::map<const std::string, macro_type> macros_bank_type;
+typedef std::map<const MemoryBank, macros_bank_type> macros_map_type;
 
 } // namespace GLogiK
 

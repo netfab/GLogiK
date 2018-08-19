@@ -74,7 +74,7 @@ class USBDevice
 		unsigned char previous_keys_buffer[KEYS_BUFFER_LENGTH];
 		std::string chosen_macro_key;
 		std::string media_key;
-		macro_t standard_keys_events;
+		macro_type standard_keys_events;
 		std::chrono::steady_clock::time_point last_call;
 
 		void initializeMacrosManager(

@@ -697,7 +697,7 @@ const bool ClientsManager::setDeviceBacklightColor(
 	return false;
 }
 
-const macro_t & ClientsManager::getDeviceMacro(
+const macro_type & ClientsManager::getDeviceMacro(
 	const std::string & clientID,
 	const std::string & devID,
 	const std::string & keyName,
@@ -753,7 +753,7 @@ const bool ClientsManager::setDeviceMacrosBank(
 	const std::string & clientID,
 	const std::string & devID,
 	const uint8_t profile,
-	const macros_bank_t & bank
+	const macros_bank_type & bank
 )	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;

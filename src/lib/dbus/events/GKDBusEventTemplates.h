@@ -114,7 +114,7 @@ typedef std::function<
 			) > StringsArrayToVoid;
 
 typedef std::function<
-			const GLogiK::macro_t &(
+			const GLogiK::macro_type &(
 				const std::string&,
 				const std::string&,
 				const std::string&,
@@ -126,7 +126,7 @@ typedef std::function<
 				const std::string&,
 				const std::string&,
 				const uint8_t,
-				const GLogiK::macros_bank_t &
+				const GLogiK::macros_bank_type &
 			) > TwoStringsOneByteOneMacrosBankToBool;
 
 

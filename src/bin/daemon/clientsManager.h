@@ -128,7 +128,7 @@ class ClientsManager
 			const uint8_t g,
 			const uint8_t b
 		);
-		const macro_t & getDeviceMacro(
+		const macro_type & getDeviceMacro(
 			const std::string & clientID,
 			const std::string & devID,
 			const std::string & keyName,
@@ -139,7 +139,7 @@ class ClientsManager
 			const std::string & clientID,
 			const std::string & devID,
 			const uint8_t profile,
-			const macros_bank_t & bank
+			const macros_bank_type & bank
 		);
 		/* -- */
 };

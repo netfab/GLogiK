@@ -137,11 +137,11 @@ void GKDBusMessage::appendUInt64(const uint64_t value) {
 #endif
 }
 
-void GKDBusMessage::appendMacro(const GLogiK::macro_t & macro_array) {
+void GKDBusMessage::appendMacro(const GLogiK::macro_type & macro_array) {
 	this->appendMacro(&this->args_it_, macro_array);
 }
 
-void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_t & macros_bank) {
+void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_type & macros_bank) {
 	DBusMessageIter array_it;
 
 	const char array_sig[] = \
@@ -181,7 +181,7 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_t & macros_bank) 
 	try {
 		for(const auto & macro_pair : macros_bank) {
 			const std::string & macro_key = macro_pair.first;
-			const GLogiK::macro_t & macro_array = macro_pair.second;
+			const GLogiK::macro_type & macro_array = macro_pair.second;
 
 			bool append_macro = false;
 			if( ( ! macro_array.empty() ) ) {
@@ -253,7 +253,7 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_t & macros_bank) 
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_t & macro_array) {
+void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro_array) {
 	DBusMessageIter array_it;
 
 	const char array_sig[] = \

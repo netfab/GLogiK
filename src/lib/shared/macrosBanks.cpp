@@ -31,8 +31,8 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-const macro_t MacrosBanks::empty_macro_ = {};
-const macros_map_t MacrosBanks::empty_macros_profiles_ = {};
+const macro_type MacrosBanks::empty_macro_ = {};
+const macros_map_type MacrosBanks::empty_macros_profiles_ = {};
 
 MacrosBanks::MacrosBanks() {
 }
@@ -44,20 +44,20 @@ void MacrosBanks::initMacrosProfiles(const std::vector<std::string> & keys_names
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initialize " << keys_names.size() << " macro keys";
 #endif
-	macro_t macro;
+	macro_type macro;
 	for( const auto & name : keys_names ) {
 		for(auto & profile : this->macros_profiles_) {
-			profile.second.insert( std::pair<const std::string, macro_t>(name, macro));
+			profile.second.insert( std::pair<const std::string, macro_type>(name, macro));
 		}
 	}
 }
 
-const macros_map_t & MacrosBanks::getMacrosProfiles(void) const
+const macros_map_type & MacrosBanks::getMacrosProfiles(void) const
 {
 	return this->macros_profiles_;
 }
 
-void MacrosBanks::setMacrosProfiles(const macros_map_t & macros)
+void MacrosBanks::setMacrosProfiles(const macros_map_type & macros)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "setting macros profiles";
@@ -99,7 +99,7 @@ void MacrosBanks::clearMacro(
 void MacrosBanks::setMacro(
 	const MemoryBank & profile,
 	const std::string & keyName,
-	const macro_t & macro_array)
+	const macro_type & macro_array)
 {
 	try {
 		LOG(INFO) << "macros profile: M" << profile
@@ -124,7 +124,7 @@ void MacrosBanks::setMacro(
 void MacrosBanks::setMacro(
 	const uint8_t profile,
 	const std::string & keyName,
-	const macro_t & macro_array)
+	const macro_type & macro_array)
 {
 	if(profile > MemoryBank::BANK_M3)
 		throw GLogiKExcept("wrong profile value");
@@ -134,7 +134,7 @@ void MacrosBanks::setMacro(
 	this->setMacro(current_profile, keyName, macro_array);
 }
 
-const macro_t & MacrosBanks::getMacro(const uint8_t profile, const std::string & keyName)
+const macro_type & MacrosBanks::getMacro(const uint8_t profile, const std::string & keyName)
 {
 	if(profile > MemoryBank::BANK_M3)
 		throw GLogiKExcept("wrong profile value");

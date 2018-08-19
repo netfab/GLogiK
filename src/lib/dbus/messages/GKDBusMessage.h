@@ -44,8 +44,8 @@ class GKDBusMessage
 		void appendUInt32(const uint32_t value);
 		void appendUInt64(const uint64_t value);
 
-		void appendMacro(const GLogiK::macro_t & macro_array);
-		void appendMacrosBank(const GLogiK::macros_bank_t & macros_bank);
+		void appendMacro(const GLogiK::macro_type & macro_array);
+		void appendMacrosBank(const GLogiK::macros_bank_type & macros_bank);
 
 		void abandon(void);
 
@@ -65,7 +65,7 @@ class GKDBusMessage
 		void appendString(DBusMessageIter *iter, const std::string & value);
 		void appendUInt8(DBusMessageIter *iter, const uint8_t value);
 		void appendUInt16(DBusMessageIter *iter, const uint16_t value);
-		void appendMacro(DBusMessageIter *iter, const GLogiK::macro_t & macro_array);
+		void appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro_array);
 
 };
 

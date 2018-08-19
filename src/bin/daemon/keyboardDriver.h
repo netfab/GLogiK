@@ -100,13 +100,13 @@ class KeyboardDriver
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,
-			const macros_map_t & macros_profiles,
+			const macros_map_type & macros_profiles,
 			const uint8_t r,
 			const uint8_t g,
 			const uint8_t b
 		);
 
-		const macros_map_t & getDeviceMacrosProfiles(const std::string & devID);
+		const macros_map_type & getDeviceMacrosProfiles(const std::string & devID);
 
 		const bool isDeviceInitialized(const std::string & devID) const;
 		const bool getDeviceThreadsStatus(const std::string & devID) const;

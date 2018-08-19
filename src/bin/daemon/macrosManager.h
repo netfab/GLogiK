@@ -62,7 +62,7 @@ class MacrosManager : public MacrosBanks
 
 		void setMacro(
 			const std::string & keyName,
-			macro_t & macroArray
+			macro_type & macroArray
 		);
 
 		void resetMemoryBanks(void);
@@ -75,19 +75,19 @@ class MacrosManager : public MacrosBanks
 
 
 		void fillInVectors(
-			const macro_t & macroArray,
+			const macro_type & macroArray,
 			std::vector<MacroEvent> & pressedEvents,
 			std::vector<MacroEvent> & releasedEvents
 		);
 		void fixMacroReleaseEvents(
 			const std::vector<MacroEvent> & pressedEvents,
 			std::vector<MacroEvent> & releasedEvents,
-			macro_t & macroArray
+			macro_type & macroArray
 		);
 		void fixMacroSize(
 			const std::vector<MacroEvent> & pressedEvents,
 			std::vector<MacroEvent> & releasedEvents,
-			macro_t & macroArray
+			macro_type & macroArray
 		);
 };
 

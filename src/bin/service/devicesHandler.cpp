@@ -303,12 +303,12 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 		for( const auto & macros_bank_pair : device.getMacrosProfiles() ) {
 			const uint8_t current_profile = to_type(macros_bank_pair.first);
-			const macros_bank_t & current_bank = macros_bank_pair.second;
+			const macros_bank_type & current_bank = macros_bank_pair.second;
 
 			/* test whether this MacrosBank should be sent */
 			bool send_it = false;
 			for(const auto & macro_pair : current_bank) {
-				const macro_t & current_macro = macro_pair.second;
+				const macro_type & current_macro = macro_pair.second;
 				if( ! current_macro.empty() ) {
 					send_it = true;
 					break;
@@ -657,7 +657,7 @@ const bool DevicesHandler::setDeviceMacro(
 					this->pDBus_->waitForRemoteMethodCallReply();
 
 					/* use helper function to get the macro */
-					const macro_t macro_array = this->pDBus_->getNextMacroArgument();
+					const macro_type macro_array = this->pDBus_->getNextMacroArgument();
 
 					device.setMacro(profile, keyName, macro_array);
 					this->saveDeviceConfigurationFile(devID, device);

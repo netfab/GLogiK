@@ -31,14 +31,14 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 /*
- * helper function rebuilding macro_t vector
+ * helper function rebuilding macro_type vector
  * mirror of GKDBusMessage::appendMacro
  */
-const GLogiK::macro_t GKDBusArgumentMacro::getNextMacroArgument(const unsigned int macro_size) {
+const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigned int macro_size) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "rebuilding macro from GKDBus values";
 #endif
-	GLogiK::macro_t macro_array;
+	GLogiK::macro_type macro_array;
 	try {
 		bool nextrun = true;
 		do {

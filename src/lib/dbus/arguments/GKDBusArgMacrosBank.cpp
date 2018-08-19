@@ -29,19 +29,19 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 /*
- * helper function rebuilding macros_bank_t map
+ * helper function rebuilding macros_bank_type map
  */
-const GLogiK::macros_bank_t GKDBusArgumentMacrosBank::getNextMacrosBankArgument(void) {
+const GLogiK::macros_bank_type GKDBusArgumentMacrosBank::getNextMacrosBankArgument(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "rebuilding macros_bank from GKDBus values";
 #endif
-	GLogiK::macros_bank_t macros_bank;
+	GLogiK::macros_bank_type macros_bank;
 
 	try {
 		do {
 			const std::string macro_key = GKDBusArgumentString::getNextStringArgument();
 			const uint8_t macro_size = GKDBusArgumentByte::getNextByteArgument();
-			const GLogiK::macro_t macro_array = GKDBusArgumentMacro::getNextMacroArgument(macro_size);
+			const GLogiK::macro_type macro_array = GKDBusArgumentMacro::getNextMacroArgument(macro_size);
 
 			macros_bank[macro_key] = macro_array;
 		}

@@ -41,13 +41,13 @@ class MacrosBanks
 {
 	public:
 
-		static const macro_t empty_macro_;
-		static const macros_map_t empty_macros_profiles_;
+		static const macro_type empty_macro_;
+		static const macros_map_type empty_macros_profiles_;
 
 		void initMacrosProfiles(const std::vector<std::string> & keys_names);
 
-		const macros_map_t & getMacrosProfiles(void) const;
-		void setMacrosProfiles(const macros_map_t & macros);
+		const macros_map_type & getMacrosProfiles(void) const;
+		void setMacrosProfiles(const macros_map_type & macros);
 
 		void clearMacro(
 			const uint8_t profile,
@@ -56,9 +56,9 @@ class MacrosBanks
 		void setMacro(
 			const uint8_t profile,
 			const std::string & keyName,
-			const macro_t & macro_array
+			const macro_type & macro_array
 		);
-		const macro_t & getMacro(
+		const macro_type & getMacro(
 			const uint8_t profile,
 			const std::string & keyName
 		);
@@ -71,7 +71,7 @@ class MacrosBanks
 		void setMacro(
 			const MemoryBank & profile,
 			const std::string & keyName,
-			const macro_t & macro_array
+			const macro_type & macro_array
 		);
 
 	protected:
@@ -86,7 +86,7 @@ class MacrosBanks
 			ar & this->macros_profiles_;
 		}
 
-		macros_map_t macros_profiles_ = {
+		macros_map_type macros_profiles_ = {
 			{ MemoryBank::BANK_M0, {}},
 			{ MemoryBank::BANK_M1, {}},
 			{ MemoryBank::BANK_M2, {}},

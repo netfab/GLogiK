@@ -54,7 +54,7 @@ MacrosManager::~MacrosManager()
 /* returns true if a macro is defined for this key on the current memory bank */
 const bool MacrosManager::macroDefined(const std::string & keyName) {
 	try {
-		const macro_t & macro = this->macros_profiles_[_currentMemoryBank].at(keyName);
+		const macro_type & macro = this->macros_profiles_[_currentMemoryBank].at(keyName);
 		return (macro.size() > 0);
 	}
 	catch (const std::out_of_range& oor) {
@@ -67,7 +67,7 @@ const bool MacrosManager::macroDefined(const std::string & keyName) {
 /* run a macro on the virtual keyboard */
 void MacrosManager::runMacro(const std::string & keyName) {
 	try {
-		const macro_t & macro = this->macros_profiles_[_currentMemoryBank].at(keyName);
+		const macro_type & macro = this->macros_profiles_[_currentMemoryBank].at(keyName);
 		if(macro.size() == 0) {
 #if DEBUGGING_ON
 			LOG(DEBUG) << "Memory Bank: " << _currentMemoryBank
@@ -102,7 +102,7 @@ const MemoryBank MacrosManager::getCurrentMemoryBank(void) const {
 
 void MacrosManager::setMacro(
 	const std::string & keyName,
-	macro_t & macroArray)
+	macro_type & macroArray)
 {
 	{
 		std::vector<MacroEvent> pressedEvents;
@@ -144,7 +144,7 @@ void MacrosManager::resetMemoryBanks(void) {
 }
 
 void MacrosManager::fillInVectors(
-	const macro_t & macroArray,
+	const macro_type & macroArray,
 	std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents)
 {
@@ -162,7 +162,7 @@ void MacrosManager::fillInVectors(
 void MacrosManager::fixMacroReleaseEvents(
 	const std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents,
-	macro_t & macroArray)
+	macro_type & macroArray)
 {
 	/* fix missing release events */
 	for(const auto & pressed : pressedEvents) {
@@ -208,7 +208,7 @@ void MacrosManager::fixMacroReleaseEvents(
 void MacrosManager::fixMacroSize(
 	const std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents,
-	macro_t & macroArray)
+	macro_type & macroArray)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "pressed events : " << pressedEvents.size();

@@ -70,7 +70,7 @@ class GKDBusMessageReply
 		void appendStringVectorToReply(
 			const std::vector<std::string> & list
 		);
-		void appendMacroToReply(const GLogiK::macro_t & macro_array);
+		void appendMacroToReply(const GLogiK::macro_type & macro_array);
 
 		void appendUInt64ToReply(const uint64_t value);
 

@@ -110,7 +110,7 @@ void GKDBusMessageReply::appendStringVectorToReply(const std::vector<std::string
 		this->reply_->appendStringVector(list);
 }
 
-void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_t & macro_array) {
+void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_type & macro_array) {
 	if(this->reply_ != nullptr) /* sanity check */
 		this->reply_->appendMacro(macro_array);
 }

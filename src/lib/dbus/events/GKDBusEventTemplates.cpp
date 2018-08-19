@@ -475,7 +475,7 @@ template <>
 {
 	GKDBusArgumentString::fillInArguments(message);
 
-	GLogiK::macro_t ret;
+	GLogiK::macro_type ret;
 
 	try {
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
@@ -483,7 +483,7 @@ template <>
 		const std::string arg3( GKDBusArgumentString::getNextStringArgument() );
 		const uint8_t arg4 = this->getNextByteArgument();
 
-		/* call three strings one byte to macro_t callback */
+		/* call three strings one byte to macro_type callback */
 		ret = this->callback(arg1, arg2, arg3, arg4);
 	}
 	catch ( const GLogiKExcept & e ) {
@@ -524,9 +524,9 @@ template <>
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
 		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
 		const uint8_t arg3 = this->getNextByteArgument();
-		const GLogiK::macros_bank_t arg4 = this->getNextMacrosBankArgument();
+		const GLogiK::macros_bank_type arg4 = this->getNextMacrosBankArgument();
 
-		/* call two strings one byte one MacrosBank(macros_bank_t) to bool callback */
+		/* call two strings one byte one MacrosBank(macros_bank_type) to bool callback */
 		ret = this->callback(arg1, arg2, arg3, arg4);
 	}
 	catch ( const GLogiKExcept & e ) {
