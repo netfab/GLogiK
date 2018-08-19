@@ -97,17 +97,6 @@ void VirtualKeyboard::enableEventCode(unsigned int type, unsigned int code) {
 	}
 }
 
-void VirtualKeyboard::handleLibevdevError(int ret) {
-	switch(ret) {
-		default: {
-			std::ostringstream buffer(std::ios_base::ate);
-			buffer << "warning : libevdev error (" << -ret << ") : " << strerror(-ret);
-			GKSysLog(LOG_WARNING, WARNING, buffer.str());
-			break;
-		}
-	}
-}
-
 void VirtualKeyboard::sendKeyEvent(const KeyEvent & key) {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "key event : ";
@@ -126,11 +115,15 @@ void VirtualKeyboard::sendKeyEvent(const KeyEvent & key) {
 	if(ret == 0) {
 		ret = libevdev_uinput_write_event(_pUInputDevice, EV_SYN, SYN_REPORT, 0);
 		if(ret != 0 ) {
-			this->handleLibevdevError(ret);
+			std::ostringstream buffer(std::ios_base::ate);
+			buffer << "EV_SYN/SYN_REPORT/0 write_event : " << -ret << " : " << strerror(-ret);
+			GKSysLog(LOG_WARNING, WARNING, buffer.str());
 		}
 	}
 	else {
-		this->handleLibevdevError(ret);
+		std::ostringstream buffer(std::ios_base::ate);
+		buffer << "EV_KEY write_event : " << -ret << " : " << strerror(-ret);
+		GKSysLog(LOG_WARNING, WARNING, buffer.str());
 	}
 }
 

@@ -43,8 +43,6 @@ class VirtualKeyboard
 		libevdev *_pDevice;
 		libevdev_uinput *_pUInputDevice;
 
-		void handleLibevdevError(int ret);
-
 		void enableEventType(unsigned int type);
 		void enableEventCode(unsigned int type, unsigned int code);
 };
