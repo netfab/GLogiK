@@ -728,7 +728,7 @@ const macro_type & ClientsManager::getDeviceMacro(
 		GKSysLog_UnknownClient
 	}
 
-	return MacrosBanks::empty_macro_;
+	return MacrosBanks::emptyMacro;
 }
 
 const std::vector<std::string> & ClientsManager::getDeviceMacroKeysNames(

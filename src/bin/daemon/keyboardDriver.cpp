@@ -929,7 +929,7 @@ const macros_map_type & KeyboardDriver::getDeviceMacrosProfiles(const std::strin
 		GKSysLog_UnknownDevice
 	}
 
-	return MacrosBanks::empty_macros_profiles_;
+	return MacrosBanks::emptyMacrosBanks;
 }
 
 } // namespace GLogiK

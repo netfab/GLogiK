@@ -191,7 +191,7 @@ const macro_type & Client::getDeviceMacro(
 		GKSysLog_UnknownDevice
 	}
 
-	return MacrosBanks::empty_macro_;
+	return MacrosBanks::emptyMacro;
 }
 
 const bool Client::setDeviceMacrosBank(

@@ -31,8 +31,8 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-const macro_type MacrosBanks::empty_macro_ = {};
-const macros_map_type MacrosBanks::empty_macros_profiles_ = {};
+const macro_type MacrosBanks::emptyMacro = {};
+const macros_map_type MacrosBanks::emptyMacrosBanks = {};
 
 MacrosBanks::MacrosBanks() {
 }
@@ -40,13 +40,13 @@ MacrosBanks::MacrosBanks() {
 MacrosBanks::~MacrosBanks() {
 }
 
-void MacrosBanks::initMacrosProfiles(const std::vector<std::string> & keys_names) {
+void MacrosBanks::initMacrosProfiles(const std::vector<std::string> & keysNames) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "initialize " << keys_names.size() << " macro keys";
+	LOG(DEBUG2) << "initialize " << keysNames.size() << " macro keys";
 #endif
 	macro_type macro;
-	for( const auto & name : keys_names ) {
-		for(auto & profile : this->macros_profiles_) {
+	for( const auto & name : keysNames ) {
+		for(auto & profile : _macrosBanks) {
 			profile.second.insert( std::pair<const std::string, macro_type>(name, macro));
 		}
 	}
@@ -54,15 +54,15 @@ void MacrosBanks::initMacrosProfiles(const std::vector<std::string> & keys_names
 
 const macros_map_type & MacrosBanks::getMacrosProfiles(void) const
 {
-	return this->macros_profiles_;
+	return _macrosBanks;
 }
 
-void MacrosBanks::setMacrosProfiles(const macros_map_type & macros)
+void MacrosBanks::setMacrosProfiles(const macros_map_type & macrosBanks)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "setting macros profiles";
 #endif
-	this->macros_profiles_ = macros;
+	_macrosBanks = macrosBanks;
 }
 
 void MacrosBanks::clearMacro(
@@ -74,7 +74,7 @@ void MacrosBanks::clearMacro(
 			<< " - Macro Key: " << keyName
 			<< " - clearing macro";
 
-		this->macros_profiles_[profile].at(keyName).clear();
+		_macrosBanks[profile].at(keyName).clear();
 	}
 	catch (const std::out_of_range& oor) {
 		std::string warn("wrong map key : ");
@@ -99,19 +99,19 @@ void MacrosBanks::clearMacro(
 void MacrosBanks::setMacro(
 	const MemoryBank & profile,
 	const std::string & keyName,
-	const macro_type & macro_array)
+	const macro_type & macroArray)
 {
 	try {
 		LOG(INFO) << "macros profile: M" << profile
 			<< " - Macro Key: " << keyName
-			<< " - Macro Size: " << macro_array.size()
+			<< " - Macro Size: " << macroArray.size()
 			<< " - setting macro";
-		if( macro_array.size() >= MACRO_T_MAX_SIZE ) {
+		if( macroArray.size() >= MACRO_T_MAX_SIZE ) {
 			LOG(WARNING) << "skipping macro - size >= MACRO_T_MAX_SIZE";
 			throw GLogiKExcept("skipping macro");
 		}
 
-		this->macros_profiles_[profile].at(keyName) = macro_array;
+		_macrosBanks[profile].at(keyName) = macroArray;
 	}
 	catch (const std::out_of_range& oor) {
 		std::string warn("wrong map key : ");
@@ -124,14 +124,14 @@ void MacrosBanks::setMacro(
 void MacrosBanks::setMacro(
 	const uint8_t profile,
 	const std::string & keyName,
-	const macro_type & macro_array)
+	const macro_type & macroArray)
 {
 	if(profile > MemoryBank::BANK_M3)
 		throw GLogiKExcept("wrong profile value");
 
 	const MemoryBank current_profile = static_cast<MemoryBank>(profile);
 
-	this->setMacro(current_profile, keyName, macro_array);
+	this->setMacro(current_profile, keyName, macroArray);
 }
 
 const macro_type & MacrosBanks::getMacro(const uint8_t profile, const std::string & keyName)
@@ -141,7 +141,7 @@ const macro_type & MacrosBanks::getMacro(const uint8_t profile, const std::strin
 
 	const MemoryBank current_profile = static_cast<MemoryBank>(profile);
 	try {
-		return this->macros_profiles_[current_profile].at(keyName);
+		return _macrosBanks[current_profile].at(keyName);
 	}
 	catch (const std::out_of_range& oor) {
 		std::string warn("wrong map key : ");
@@ -150,7 +150,7 @@ const macro_type & MacrosBanks::getMacro(const uint8_t profile, const std::strin
 		throw GLogiKExcept("can't get macro");
 	}
 
-	return MacrosBanks::empty_macro_;
+	return MacrosBanks::emptyMacro;
 }
 
 } // namespace GLogiK

@@ -74,7 +74,7 @@ void DeviceProperties::setProperties(const DeviceProperties & dev)
 		this->backlight_color_B_
 	);
 
-	this->macros_profiles_	= dev.getMacrosProfiles();
+	_macrosBanks	= dev.getMacrosProfiles();
 	this->media_commands_	= dev.getMediaCommands();
 }
 

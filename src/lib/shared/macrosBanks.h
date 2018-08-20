@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_MACROS_BANKS_H__
-#define __GLOGIK_MACROS_BANKS_H__
+#ifndef SRC_LIB_SHARED_MACROS_BANKS_HPP_
+#define SRC_LIB_SHARED_MACROS_BANKS_HPP_
 
 #include <cstdint>
 
@@ -41,13 +41,13 @@ class MacrosBanks
 {
 	public:
 
-		static const macro_type empty_macro_;
-		static const macros_map_type empty_macros_profiles_;
+		static const macro_type emptyMacro;
+		static const macros_map_type emptyMacrosBanks;
 
-		void initMacrosProfiles(const std::vector<std::string> & keys_names);
+		void initMacrosProfiles(const std::vector<std::string> & keysNames);
 
 		const macros_map_type & getMacrosProfiles(void) const;
-		void setMacrosProfiles(const macros_map_type & macros);
+		void setMacrosProfiles(const macros_map_type & macrosBanks);
 
 		void clearMacro(
 			const uint8_t profile,
@@ -56,7 +56,7 @@ class MacrosBanks
 		void setMacro(
 			const uint8_t profile,
 			const std::string & keyName,
-			const macro_type & macro_array
+			const macro_type & macroArray
 		);
 		const macro_type & getMacro(
 			const uint8_t profile,
@@ -71,7 +71,7 @@ class MacrosBanks
 		void setMacro(
 			const MemoryBank & profile,
 			const std::string & keyName,
-			const macro_type & macro_array
+			const macro_type & macroArray
 		);
 
 	protected:
@@ -83,10 +83,10 @@ class MacrosBanks
 		template<class Archive>
 			void serialize(Archive & ar, const unsigned int version)
 		{
-			ar & this->macros_profiles_;
+			ar & _macrosBanks;
 		}
 
-		macros_map_type macros_profiles_ = {
+		macros_map_type _macrosBanks = {
 			{ MemoryBank::BANK_M0, {}},
 			{ MemoryBank::BANK_M1, {}},
 			{ MemoryBank::BANK_M2, {}},

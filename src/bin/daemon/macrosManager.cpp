@@ -54,7 +54,7 @@ MacrosManager::~MacrosManager()
 /* returns true if a macro is defined for this key on the current memory bank */
 const bool MacrosManager::macroDefined(const std::string & keyName) {
 	try {
-		const macro_type & macro = this->macros_profiles_[_currentMemoryBank].at(keyName);
+		const macro_type & macro = _macrosBanks[_currentMemoryBank].at(keyName);
 		return (macro.size() > 0);
 	}
 	catch (const std::out_of_range& oor) {
@@ -67,7 +67,7 @@ const bool MacrosManager::macroDefined(const std::string & keyName) {
 /* run a macro on the virtual keyboard */
 void MacrosManager::runMacro(const std::string & keyName) {
 	try {
-		const macro_type & macro = this->macros_profiles_[_currentMemoryBank].at(keyName);
+		const macro_type & macro = _macrosBanks[_currentMemoryBank].at(keyName);
 		if(macro.size() == 0) {
 #if DEBUGGING_ON
 			LOG(DEBUG) << "Memory Bank: " << _currentMemoryBank
@@ -133,11 +133,11 @@ void MacrosManager::setMacro(
 
 void MacrosManager::resetMemoryBanks(void) {
 	this->setCurrentMemoryBank(MemoryBank::BANK_M0);
-	for(auto & profilePair : this->macros_profiles_) {
+	for(auto & bankKeyPair : _macrosBanks) {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "clearing all macros for Memory Bank: " << profilePair.first;
+		LOG(DEBUG2) << "clearing all macros for Memory Bank: " << bankKeyPair.first;
 #endif
-		for(auto & keyMacroPair : profilePair.second) {
+		for(auto & keyMacroPair : bankKeyPair.second) {
 			keyMacroPair.second.clear();
 		}
 	}

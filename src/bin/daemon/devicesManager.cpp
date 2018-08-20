@@ -673,7 +673,7 @@ const macros_map_type & DevicesManager::getDeviceMacrosProfiles(const std::strin
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice
 	}
-	return MacrosBanks::empty_macros_profiles_;
+	return MacrosBanks::emptyMacrosBanks;
 }
 
 const std::vector<std::string> & DevicesManager::getDeviceMacroKeysNames(const std::string & devID) const
