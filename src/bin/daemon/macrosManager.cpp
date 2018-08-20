@@ -44,7 +44,7 @@ MacrosManager::MacrosManager(
 	LOG(DEBUG) << "initializing " << keysNames.size() << " macro keys";
 #endif
 
-	this->initMacrosProfiles(keysNames);
+	this->initMacrosBanks(keysNames);
 }
 
 MacrosManager::~MacrosManager()

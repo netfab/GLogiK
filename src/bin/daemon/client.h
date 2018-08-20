@@ -65,7 +65,7 @@ class Client
 			DevicesManager* dev_manager
 		);
 
-		void syncDeviceMacrosProfiles(
+		void syncDeviceMacrosBanks(
 			const std::string & devID,
 			const macros_map_type & macros_profiles
 		);

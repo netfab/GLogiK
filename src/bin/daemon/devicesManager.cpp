@@ -655,7 +655,7 @@ void DevicesManager::setDeviceActiveConfiguration(
 	}
 }
 
-const macros_map_type & DevicesManager::getDeviceMacrosProfiles(const std::string & devID) const
+const macros_map_type & DevicesManager::getDeviceMacrosBanks(const std::string & devID) const
 {
 	try {
 		const auto & device = this->initialized_devices_.at(devID);
@@ -665,7 +665,7 @@ const macros_map_type & DevicesManager::getDeviceMacrosProfiles(const std::strin
 		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			for(const auto& driver : this->drivers_) {
 				if( device.getDriverID() == driver->getDriverID() ) {
-					return driver->getDeviceMacrosProfiles(devID);
+					return driver->getDeviceMacrosBanks(devID);
 				}
 			}
 		}

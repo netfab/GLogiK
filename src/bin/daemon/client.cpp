@@ -103,7 +103,7 @@ void Client::initializeDevice(
 			dev_manager->getDeviceModel(devID),			/* model */
 			dev_manager->getDeviceCapabilities(devID)	/* capabilities */
 		);
-		device.initMacrosProfiles( dev_manager->getDeviceMacroKeysNames(devID) );
+		device.initMacrosBanks( dev_manager->getDeviceMacroKeysNames(devID) );
 
 		this->devices_[devID] = device;
 	}
@@ -158,20 +158,20 @@ void Client::setDeviceActiveUser(
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "setting active configuration for device " << devID;
 #endif
-		dev_manager->setDeviceActiveConfiguration(devID, device.getMacrosProfiles(), r, g, b);
+		dev_manager->setDeviceActiveConfiguration(devID, device.getMacrosBanks(), r, g, b);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice
 	}
 }
 
-void Client::syncDeviceMacrosProfiles(const std::string & devID, const macros_map_type & macros_profiles) {
+void Client::syncDeviceMacrosBanks(const std::string & devID, const macros_map_type & macros_profiles) {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "synchonizing macros profiles for device " << devID;
 #endif
 	try {
 		DeviceProperties & device = this->devices_.at(devID);
-		device.setMacrosProfiles(macros_profiles);
+		device.setMacrosBanks(macros_profiles);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice

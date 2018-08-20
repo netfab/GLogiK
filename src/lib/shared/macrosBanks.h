@@ -44,10 +44,10 @@ class MacrosBanks
 		static const macro_type emptyMacro;
 		static const macros_map_type emptyMacrosBanks;
 
-		void initMacrosProfiles(const std::vector<std::string> & keysNames);
+		void initMacrosBanks(const std::vector<std::string> & keysNames);
 
-		const macros_map_type & getMacrosProfiles(void) const;
-		void setMacrosProfiles(const macros_map_type & macrosBanks);
+		const macros_map_type & getMacrosBanks(void) const;
+		void setMacrosBanks(const macros_map_type & macrosBanks);
 
 		void clearMacro(
 			const uint8_t bank,

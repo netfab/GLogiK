@@ -40,7 +40,7 @@ MacrosBanks::MacrosBanks() {
 MacrosBanks::~MacrosBanks() {
 }
 
-void MacrosBanks::initMacrosProfiles(const std::vector<std::string> & keysNames) {
+void MacrosBanks::initMacrosBanks(const std::vector<std::string> & keysNames) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initialize " << keysNames.size() << " macro keys";
 #endif
@@ -52,12 +52,12 @@ void MacrosBanks::initMacrosProfiles(const std::vector<std::string> & keysNames)
 	}
 }
 
-const macros_map_type & MacrosBanks::getMacrosProfiles(void) const
+const macros_map_type & MacrosBanks::getMacrosBanks(void) const
 {
 	return _macrosBanks;
 }
 
-void MacrosBanks::setMacrosProfiles(const macros_map_type & macrosBanks)
+void MacrosBanks::setMacrosBanks(const macros_map_type & macrosBanks)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "setting macros banks";

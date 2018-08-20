@@ -905,7 +905,7 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 			device.exit_macro_record_mode = true;
 
 			/* set macros profiles */
-			device.macros_man->setMacrosProfiles(macros_profiles);
+			device.macros_man->setMacrosBanks(macros_profiles);
 		}
 
 		if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
@@ -918,11 +918,11 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 	}
 }
 
-const macros_map_type & KeyboardDriver::getDeviceMacrosProfiles(const std::string & devID) {
+const macros_map_type & KeyboardDriver::getDeviceMacrosBanks(const std::string & devID) {
 	try {
 		USBDevice & device = this->initialized_devices_.at(devID);
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			return device.macros_man->getMacrosProfiles();
+			return device.macros_man->getMacrosBanks();
 		}
 	}
 	catch (const std::out_of_range& oor) {

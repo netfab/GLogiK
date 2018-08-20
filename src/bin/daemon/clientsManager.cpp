@@ -713,7 +713,7 @@ const macro_type & ClientsManager::getDeviceMacro(
 
 		if(pClient->getSessionCurrentState() == this->active_) {
 			if( pClient->isReady() ) {
-				pClient->syncDeviceMacrosProfiles(devID, this->devicesManager->getDeviceMacrosProfiles(devID));
+				pClient->syncDeviceMacrosBanks(devID, this->devicesManager->getDeviceMacrosBanks(devID));
 				return pClient->getDeviceMacro(devID, keyName, profile);
 			}
 			else {

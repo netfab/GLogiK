@@ -106,7 +106,7 @@ class KeyboardDriver
 			const uint8_t b
 		);
 
-		const macros_map_type & getDeviceMacrosProfiles(const std::string & devID);
+		const macros_map_type & getDeviceMacrosBanks(const std::string & devID);
 
 		const bool isDeviceInitialized(const std::string & devID) const;
 		const bool getDeviceThreadsStatus(const std::string & devID) const;

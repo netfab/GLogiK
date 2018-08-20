@@ -301,7 +301,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 		/* set macros banks */
 		const std::string remoteMethod = "SetDeviceMacrosBank";
 
-		for( const auto & macros_bank_pair : device.getMacrosProfiles() ) {
+		for( const auto & macros_bank_pair : device.getMacrosBanks() ) {
 			const uint8_t current_profile = to_type(macros_bank_pair.first);
 			const macros_bank_type & current_bank = macros_bank_pair.second;
 
@@ -419,7 +419,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 				this->pDBus_->waitForRemoteMethodCallReply();
 
 				const std::vector<std::string> keys_names( this->pDBus_->getStringsArray() );
-				device.initMacrosProfiles(keys_names);
+				device.initMacrosBanks(keys_names);
 #if DEBUGGING_ON
 				LOG(DEBUG3) << "[" << devID << "] initialized " << keys_names.size() << " macro keys";
 #endif
