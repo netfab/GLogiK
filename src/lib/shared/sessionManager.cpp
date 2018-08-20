@@ -33,22 +33,22 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-bool SessionManager::still_running_ = true;
+bool SessionManager::stillRunning = true;
 
 SessionManager::SessionManager() {
-	this->mask_ = (SmcSaveYourselfProcMask|SmcDieProcMask|SmcSaveCompleteProcMask|SmcShutdownCancelledProcMask);
+	_mask = (SmcSaveYourselfProcMask|SmcDieProcMask|SmcSaveCompleteProcMask|SmcShutdownCancelledProcMask);
 
-	this->callbacks_.save_yourself.client_data = nullptr;
-	this->callbacks_.save_yourself.callback = SessionManager::SaveYourselfCallback;
+	_callbacks.save_yourself.client_data = nullptr;
+	_callbacks.save_yourself.callback = SessionManager::SaveYourselfCallback;
 
-	this->callbacks_.die.client_data = nullptr;
-	this->callbacks_.die.callback = SessionManager::DieCallback;
+	_callbacks.die.client_data = nullptr;
+	_callbacks.die.callback = SessionManager::DieCallback;
 
-	this->callbacks_.save_complete.client_data = nullptr;
-	this->callbacks_.save_complete.callback = SessionManager::SaveCompleteCallback;
+	_callbacks.save_complete.client_data = nullptr;
+	_callbacks.save_complete.callback = SessionManager::SaveCompleteCallback;
 
-	this->callbacks_.shutdown_cancelled.client_data = nullptr;
-	this->callbacks_.shutdown_cancelled.callback = SessionManager::ShutdownCancelledCallback;
+	_callbacks.shutdown_cancelled.client_data = nullptr;
+	_callbacks.shutdown_cancelled.callback = SessionManager::ShutdownCancelledCallback;
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "session manager initialized";
 #endif
@@ -62,8 +62,8 @@ SessionManager::~SessionManager() {
 
 	this->closeConnection();
 
-	if(this->client_id_ != nullptr)
-		free(this->client_id_);
+	if(_pClientID != nullptr)
+		free(_pClientID);
 
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "session manager destroyed";
@@ -79,24 +79,24 @@ const int SessionManager::openConnection(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "opening session manager connection";
 #endif
-	std::signal(SIGINT, SessionManager::handle_signal);
-	std::signal(SIGTERM, SessionManager::handle_signal);
+	std::signal(SIGINT, SessionManager::handleSignal);
+	std::signal(SIGTERM, SessionManager::handleSignal);
 
-	this->smc_conn_ = SmcOpenConnection(
-							NULL,					/* network_ids_list */
-							NULL,					/* context */
+	_pSMCConnexion = SmcOpenConnection(
+							nullptr,				/* network_ids_list */
+							nullptr,				/* context */
 							1,						/* xsmp_major_rev */
 							0,						/* xsmp_minor_rev */
-							this->mask_,			/* mask */
-							&this->callbacks_,		/* callbacks */
-							this->previous_id_,		/* previous_id */
-							&this->client_id_,		/* client_id_ret */
+							_mask,					/* mask */
+							&_callbacks,			/* callbacks */
+							_pPreviousID,			/* previous_id */
+							&_pClientID,			/* client_id_ret */
 							SM_ERROR_STRING_LENGTH, /* error_string_ret max length */
-							this->error_string_		/* error_string_ret */
+							_errorString			/* error_string_ret */
 						);
 
-	if(this->smc_conn_ == nullptr) {
-		char * s = this->error_string_;
+	if(_pSMCConnexion == nullptr) {
+		char * s = _errorString;
 		std::string failure("Unable to open connection to session manager : ");
 		failure += s;
 		throw GLogiKExcept(failure);
@@ -108,22 +108,22 @@ const int SessionManager::openConnection(void) {
 		throw GLogiKExcept("IceAddConnectionWatch failure");
 	}
 
-	this->ice_conn_ = SmcGetIceConnection(this->smc_conn_);
-	this->ice_fd_ = IceConnectionNumber(this->ice_conn_);
+	_pICEConnexion = SmcGetIceConnection(_pSMCConnexion);
+	_ICEfd = IceConnectionNumber(_pICEConnexion);
 
 #if DEBUGGING_ON
-	LOG(DEBUG) << "Session manager client ID : " << this->client_id_;
+	LOG(DEBUG) << "Session manager client ID : " << _pClientID;
 #endif
 
-	return this->ice_fd_;
+	return _ICEfd;
 }
 
 const bool SessionManager::isSessionAlive(void) {
-	return SessionManager::still_running_;
+	return SessionManager::stillRunning;
 }
 
 void SessionManager::processICEMessages(void) {
-	SessionManager::processICEMessages(this->ice_conn_);
+	SessionManager::processICEMessages(_pICEConnexion);
 }
 
 /* -- */
@@ -132,10 +132,10 @@ void SessionManager::processICEMessages(void) {
  */
 
 void SessionManager::closeConnection(void) {
-	if(this->smc_conn_ == nullptr)
+	if(_pSMCConnexion == nullptr)
 		return;
 
-	SmcCloseStatus status = SmcCloseConnection(this->smc_conn_, 0, nullptr);
+	SmcCloseStatus status = SmcCloseConnection(_pSMCConnexion, 0, nullptr);
 	switch( status ) {
 		case SmcClosedNow:
 #if DEBUGGING_ON
@@ -156,7 +156,7 @@ void SessionManager::closeConnection(void) {
 
 }
 
-void SessionManager::handle_signal(int sig) {
+void SessionManager::handleSignal(int sig) {
 	std::ostringstream buff("caught signal : ", std::ios_base::app);
 	switch( sig ) {
 		case SIGINT:
@@ -165,7 +165,7 @@ void SessionManager::handle_signal(int sig) {
 			LOG(INFO) << buff.str();
 			std::signal(SIGINT, SIG_DFL);
 			std::signal(SIGTERM, SIG_DFL);
-			SessionManager::still_running_ = false;
+			SessionManager::stillRunning = false;
 			break;
 		default:
 			buff << sig << " --> unhandled";
@@ -211,8 +211,13 @@ void SessionManager::ICEConnectionWatchCallback(IceConn ice_conn, IcePointer cli
 	SessionManager::processICEMessages(ice_conn);
 }
 
-void SessionManager::SaveYourselfCallback(SmcConn smc_conn, SmPointer client_data, int save_type,
-	Bool shutdown, int interact_style, Bool fast)
+void SessionManager::SaveYourselfCallback(
+	SmcConn smc_conn,
+	SmPointer client_data,
+	int save_type,
+	Bool shutdown,
+	int interact_style,
+	Bool fast)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "SM save yourself call";
@@ -226,7 +231,7 @@ void SessionManager::DieCallback(SmcConn smc_conn, SmPointer client_data)
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "SM die call, behaves like we received SIGTERM";
 #endif
-	SessionManager::handle_signal(SIGTERM);
+	SessionManager::handleSignal(SIGTERM);
 }
 
 void SessionManager::SaveCompleteCallback(SmcConn smc_conn, SmPointer client_data)

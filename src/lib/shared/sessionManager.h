@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_SESSION_MANAGER_H__
-#define __GLOGIK_SESSION_MANAGER_H__
+#ifndef SRC_LIB_SHARED_SESSION_MANAGER_HPP_
+#define SRC_LIB_SHARED_SESSION_MANAGER_HPP_
 
 #include <X11/SM/SMlib.h>
 
@@ -42,32 +42,53 @@ class SessionManager
 	protected:
 
 	private:
-		SmcConn smc_conn_;
-		IceConn ice_conn_;
+		SmcConn _pSMCConnexion;
+		IceConn _pICEConnexion;
 
-		int ice_fd_ = -1;
+		int _ICEfd = -1;
 
-		unsigned long mask_;
-		SmcCallbacks callbacks_;
+		unsigned long _mask;
+		SmcCallbacks _callbacks;
 
-		char* previous_id_ = nullptr;
-		char* client_id_ = nullptr;
-		char error_string_[SM_ERROR_STRING_LENGTH+1] = { 0 };
+		char* _pPreviousID = nullptr;
+		char* _pClientID = nullptr;
+		char  _errorString[SM_ERROR_STRING_LENGTH+1] = { 0 };
 
 		void closeConnection(void);
 
-		static bool still_running_;
-		static void handle_signal(int sig);
+		static bool stillRunning;
+		static void handleSignal(int sig);
 
-		static void processICEMessages(IceConn ice_conn);
-		static void ICEConnectionWatchCallback(IceConn ice_conn, IcePointer client_data,
-			Bool opening, IcePointer *watch_data);
+		static void processICEMessages(
+			IceConn ice_conn
+		);
+		static void ICEConnectionWatchCallback(
+			IceConn ice_conn,
+			IcePointer client_data,
+			Bool opening,
+			IcePointer *watch_data
+		);
 
-		static void SaveYourselfCallback(SmcConn smc_conn, SmPointer client_data, int save_type,
-			Bool shutdown, int interact_style, Bool fast);
-		static void DieCallback(SmcConn smc_conn, SmPointer client_data);
-		static void SaveCompleteCallback(SmcConn smc_conn, SmPointer client_data);
-		static void ShutdownCancelledCallback(SmcConn smc_conn, SmPointer client_data);
+		static void SaveYourselfCallback(
+			SmcConn smc_conn,
+			SmPointer client_data,
+			int save_type,
+			Bool shutdown,
+			int interact_style,
+			Bool fast
+		);
+		static void DieCallback(
+			SmcConn smc_conn,
+			SmPointer client_data
+		);
+		static void SaveCompleteCallback(
+			SmcConn smc_conn,
+			SmPointer client_data
+		);
+		static void ShutdownCancelledCallback(
+			SmcConn smc_conn,
+			SmPointer client_data
+		);
 };
 
 } // namespace GLogiK
