@@ -31,14 +31,14 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 DeviceProperties::DeviceProperties() :
-	vendor_("unknown"),
-	model_("unknown"),
-	caps_(0),
-	config_file_name_("none"),
-	watch_descriptor_(-1),
-	backlight_color_R_(0xFF),
-	backlight_color_G_(0xFF),
-	backlight_color_B_(0xFF)
+	_vendor("unknown"),
+	_model("unknown"),
+	_capabilities(0),
+	_configFileName("none"),
+	_watchedDescriptor(-1),
+	_backlightRed(0xFF),
+	_backlightGreen(0xFF),
+	_backlightBlue(0xFF)
 {
 }
 
@@ -47,12 +47,12 @@ DeviceProperties::~DeviceProperties() {
 
 /* -- -- -- */
 
-void DeviceProperties::setConfigFileName(const std::string & filename) {
-	this->config_file_name_ = filename;
+void DeviceProperties::setConfigFileName(const std::string & fileName) {
+	_configFileName = fileName;
 }
 
 void DeviceProperties::setWatchDescriptor(int wd) {
-	this->watch_descriptor_ = wd;
+	_watchedDescriptor = wd;
 }
 
 void DeviceProperties::setProperties(
@@ -61,56 +61,52 @@ void DeviceProperties::setProperties(
 	const uint64_t capabilites
 )
 {
-	this->vendor_	= vendor;
-	this->model_	= model;
-	this->caps_		= capabilites;
+	_vendor	= vendor;
+	_model	= model;
+	_capabilities = capabilites;
 }
 
 void DeviceProperties::setProperties(const DeviceProperties & dev)
 {
-	dev.getRGBBytes(
-		this->backlight_color_R_,
-		this->backlight_color_G_,
-		this->backlight_color_B_
-	);
+	dev.getRGBBytes(_backlightRed, _backlightGreen, _backlightBlue);
 
 	_macrosBanks	= dev.getMacrosBanks();
-	this->media_commands_	= dev.getMediaCommands();
+	_mediaCommands	= dev.getMediaCommands();
 }
 
 void DeviceProperties::setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b) {
-	this->backlight_color_R_ = r & 0xFF;
-	this->backlight_color_G_ = g & 0xFF;
-	this->backlight_color_B_ = b & 0xFF;
+	_backlightRed	= r & 0xFF;
+	_backlightGreen	= g & 0xFF;
+	_backlightBlue	= b & 0xFF;
 }
 
 /* -- -- -- */
 
 const std::string & DeviceProperties::getVendor(void) const {
-	return this->vendor_;
+	return _vendor;
 }
 
 const std::string & DeviceProperties::getModel(void) const {
-	return this->model_;
+	return _model;
 }
 
 const uint64_t DeviceProperties::getCapabilities(void) const {
-	return this->caps_;
+	return _capabilities;
 }
 
 const std::string & DeviceProperties::getConfigFileName(void) const {
-	return this->config_file_name_;
+	return _configFileName;
 }
 
 const int DeviceProperties::getWatchDescriptor(void) const {
-	return this->watch_descriptor_;
+	return _watchedDescriptor;
 }
 
 const std::string DeviceProperties::getMediaCommand(const std::string & mediaEvent) const
 {
 	std::string ret("");
 	try {
-		ret = this->media_commands_.at(mediaEvent);
+		ret = _mediaCommands.at(mediaEvent);
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(WARNING) << "unknown media event : " << mediaEvent;
@@ -119,14 +115,14 @@ const std::string DeviceProperties::getMediaCommand(const std::string & mediaEve
 }
 
 const std::map<const std::string, std::string> & DeviceProperties::getMediaCommands(void) const {
-	return this->media_commands_;
+	return _mediaCommands;
 };
 
 void DeviceProperties::getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const
 {
-	r = this->backlight_color_R_;
-	g = this->backlight_color_G_;
-	b = this->backlight_color_B_;
+	r = _backlightRed;
+	g = _backlightGreen;
+	b = _backlightBlue;
 }
 
 } // namespace GLogiK

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_H__
-#define __GLOGIK_H__
+#ifndef SRC_LIB_SHARED_GLOGIK_HPP_
+#define SRC_LIB_SHARED_GLOGIK_HPP_
 
 namespace GLogiK
 {

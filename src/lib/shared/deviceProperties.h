@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_DEVICE_PROPERTIES_H__
-#define __GLOGIK_DEVICE_PROPERTIES_H__
+#ifndef SRC_LIB_SHARED_DEVICE_PROPERTIES_HPP_
+#define SRC_LIB_SHARED_DEVICE_PROPERTIES_HPP_
 
 #include <cstdint>
 
@@ -53,7 +53,7 @@ class DeviceProperties : public MacrosBanks
 		const std::map<const std::string, std::string> & getMediaCommands(void) const;
 
 		const std::string & getConfigFileName(void) const;
-		void setConfigFileName(const std::string & filename);
+		void setConfigFileName(const std::string & fileName);
 
 		const int getWatchDescriptor(void) const;
 		void setWatchDescriptor(int wd);
@@ -71,17 +71,17 @@ class DeviceProperties : public MacrosBanks
 	protected:
 
 	private:
-		std::string vendor_;
-		std::string model_;
-		uint64_t caps_;
-		std::string config_file_name_;
-		int watch_descriptor_;
+		std::string _vendor;
+		std::string _model;
+		uint64_t _capabilities;
+		std::string _configFileName;
+		int _watchedDescriptor;
 
-		uint8_t backlight_color_R_;
-		uint8_t backlight_color_G_;
-		uint8_t backlight_color_B_;
+		uint8_t _backlightRed;
+		uint8_t _backlightGreen;
+		uint8_t _backlightBlue;
 
-		std::initializer_list<std::pair<const std::string, std::string>> il = {
+		std::initializer_list<std::pair<const std::string, std::string>> _il = {
 			{XF86_AUDIO_NEXT, ""},
 			{XF86_AUDIO_PREV, ""},
 			{XF86_AUDIO_STOP, ""},
@@ -90,7 +90,7 @@ class DeviceProperties : public MacrosBanks
 			{XF86_AUDIO_RAISE_VOLUME, ""},
 			{XF86_AUDIO_LOWER_VOLUME, ""}
 		};
-		std::map<const std::string, std::string> media_commands_{il};
+		std::map<const std::string, std::string> _mediaCommands{_il};
 
 		friend class boost::serialization::access;
 
@@ -98,12 +98,12 @@ class DeviceProperties : public MacrosBanks
 			void serialize(Archive & ar, const unsigned int version)
 		{
 			//if(version > 0)
-			ar & this->vendor_;
-			ar & this->model_;
-			ar & this->backlight_color_R_;
-			ar & this->backlight_color_G_;
-			ar & this->backlight_color_B_;
-			ar & this->media_commands_;
+			ar & _vendor;
+			ar & _model;
+			ar & _backlightRed;
+			ar & _backlightGreen;
+			ar & _backlightBlue;
+			ar & _mediaCommands;
 
 			// serialize base class information
 			ar & boost::serialization::base_object<MacrosBanks>(*this);
