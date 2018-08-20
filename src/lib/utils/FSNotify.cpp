@@ -47,10 +47,10 @@ namespace NSGKUtils
 {
 
 FSNotify::FSNotify()
-	:	inotify_queue_fd_(0)
+	:	_inotifyQueueFD(0)
 {
-	this->inotify_queue_fd_ = inotify_init1(IN_NONBLOCK);
-	if( this->inotify_queue_fd_ == -1 ) {
+	_inotifyQueueFD = inotify_init1(IN_NONBLOCK);
+	if( _inotifyQueueFD == -1 ) {
 		std::ostringstream buffer("inotify init failure : ", std::ios_base::app);
 		buffer << strerror(errno);
 		throw GLogiKExcept( buffer.str() );
@@ -59,29 +59,29 @@ FSNotify::FSNotify()
 
 FSNotify::~FSNotify() {
 	/* sanity check */
-	if( ! this->watch_descriptors_.empty() ) {
+	if( ! _watchedDescriptorsMap.empty() ) {
 		LOG(WARNING) << "some watch descriptors were not removed";
-		for(const auto & watched_pair : this->watch_descriptors_) {
-			this->removeNotifyWatch(watched_pair.second.wd);
+		for(const auto & watchedPair : _watchedDescriptorsMap) {
+			this->removeNotifyWatch(watchedPair.second.wd);
 		}
-		this->watch_descriptors_.clear();
+		_watchedDescriptorsMap.clear();
 	}
 
 	/* closing queue */
-	if(this->inotify_queue_fd_ > -1) {
-		if( close(this->inotify_queue_fd_) == -1 ) {
+	if(_inotifyQueueFD > -1) {
+		if( close(_inotifyQueueFD) == -1 ) {
 			LOG(ERROR) << "inotify queue closing failure : " << strerror(errno);
 		}
 	}
 }
 
 /* make sure path is readable before calling this one */
-const int FSNotify::addNotifyDirectoryWatch(const std::string & path, const bool check_if_already_watched) {
+const int FSNotify::addNotifyDirectoryWatch(const std::string & path, const bool checkIfAlreadyWatched) {
 	/* check first if this path is already watched */
 	/* returns its descriptor in this case */
-	if( check_if_already_watched ) {
-		auto it = this->watch_descriptors_.find(path);
-		if ( it != this->watch_descriptors_.end() ) {
+	if( checkIfAlreadyWatched ) {
+		auto it = _watchedDescriptorsMap.find(path);
+		if ( it != _watchedDescriptorsMap.end() ) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "path already watched - " << path;
 #endif
@@ -99,9 +99,9 @@ void FSNotify::removeNotifyWatch(const int wd) {
 		return;
 	}
 
-	const int & fd = this->inotify_queue_fd_;
-	auto find_descriptor = [&fd, &wd] (auto & item) -> const bool {
-		watchedObject & watched = item.second;
+	const int & fd = _inotifyQueueFD;
+	auto findDescriptor = [&fd, &wd] (auto & item) -> const bool {
+		WatchedObject & watched = item.second;
 		if(watched.wd != wd)
 			return false;
 		--watched.count;
@@ -122,24 +122,24 @@ void FSNotify::removeNotifyWatch(const int wd) {
 		return false;
 	};
 
-	erase_if(this->watch_descriptors_, find_descriptor);
+	erase_if(_watchedDescriptorsMap, findDescriptor);
 }
 
 const int FSNotify::getNotifyQueueDescriptor(void) const {
-	return this->inotify_queue_fd_;
+	return _inotifyQueueFD;
 }
 
-void FSNotify::readNotifyEvents(files_map_t & files_map) {
+void FSNotify::readNotifyEvents(files_map_type & filesMap) {
 	char *ptr;
 	ssize_t len;
 	char buf[4096] __attribute__ ((aligned(__alignof__(struct inotify_event))));
 	const struct inotify_event *event;
 
-	std::set<std::string> to_remove;
+	std::set<std::string> toRemove;
 
 	for (;;) {
 		/* Read some events. */
-		len = read(this->inotify_queue_fd_, buf, sizeof buf);
+		len = read(_inotifyQueueFD, buf, sizeof buf);
 		if (len == -1 && errno != EAGAIN) {
 			throw GLogiKExcept("read error");
 		}
@@ -161,15 +161,15 @@ void FSNotify::readNotifyEvents(files_map_t & files_map) {
 				LOG(DEBUG2) << wd << " - name: " << name;
 #endif
 				/* map size will be 0 or 1 after that */
-				erase_if(files_map, [&name]( auto & item ) -> const bool { return item.second != name; } );
+				erase_if(filesMap, [&name]( auto & item ) -> const bool { return item.second != name; } );
 			}
 			else { /* watched object event */
-				files_map.clear();
+				filesMap.clear();
 
 				std::string path;
-				for(const auto & item_pair : this->watch_descriptors_) {
-					if(item_pair.second.wd == event->wd) {
-						path = item_pair.first;
+				for(const auto & itemPair : _watchedDescriptorsMap) {
+					if(itemPair.second.wd == event->wd) {
+						path = itemPair.first;
 						break;
 					}
 				}
@@ -195,7 +195,7 @@ void FSNotify::readNotifyEvents(files_map_t & files_map) {
 #if DEBUGGING_ON
 					LOG(DEBUG2) << wd << "[IN_MOVE_SELF] watched object renamed or moved : " << path;
 #endif
-					to_remove.insert(path);
+					toRemove.insert(path);
 				}
 				if( event->mask & IN_DELETE_SELF ) {
 #if DEBUGGING_ON
@@ -206,19 +206,19 @@ void FSNotify::readNotifyEvents(files_map_t & files_map) {
 #if DEBUGGING_ON
 					LOG(DEBUG2) << wd << "[IN_IGNORED] watch was removed : " << path;
 #endif
-					this->watch_descriptors_.erase(path);
+					_watchedDescriptorsMap.erase(path);
 				}
 			}
 		}
 
-		for(const auto & path : to_remove) {
-			auto it = this->watch_descriptors_.find(path);
-			if(it != this->watch_descriptors_.end()) {
+		for(const auto & path : toRemove) {
+			auto it = _watchedDescriptorsMap.find(path);
+			if(it != _watchedDescriptorsMap.end()) {
 				(*it).second.count = 1; /* force removing watch */
 				this->removeNotifyWatch((*it).second.wd);
 			}
 		}
-		to_remove.clear();
+		toRemove.clear();
 	}
 }
 
@@ -233,18 +233,18 @@ void FSNotify::readNotifyEvents(files_map_t & files_map) {
  */
 
 const int FSNotify::addNotifyWatch(const std::string & path, const uint32_t & mask) {
-	auto it = this->watch_descriptors_.find(path);
+	auto it = _watchedDescriptorsMap.find(path);
 
-	if(it == this->watch_descriptors_.end()) {
-		const int ret = inotify_add_watch(this->inotify_queue_fd_, path.c_str(), mask);
+	if(it == _watchedDescriptorsMap.end()) {
+		const int ret = inotify_add_watch(_inotifyQueueFD, path.c_str(), mask);
 		if(ret < 0) {
 			std::ostringstream buffer("inotify path watch failure : ", std::ios_base::app);
 			buffer << path << " - " << strerror(errno);
 			throw GLogiKExcept( buffer.str() );
 		}
 
-		this->watch_descriptors_.insert( std::pair<const std::string, watchedObject>(path, watchedObject(ret)) );
-		it = this->watch_descriptors_.find(path);
+		_watchedDescriptorsMap.insert( std::pair<const std::string, WatchedObject>(path, WatchedObject(ret)) );
+		it = _watchedDescriptorsMap.find(path);
 
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "[" << (*it).second.wd << "] - added path notify - " << path;

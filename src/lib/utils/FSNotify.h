@@ -19,13 +19,13 @@
  *
  */
 
-#ifndef __GLOGIK_FS_NOTIFY_H__
-#define __GLOGIK_FS_NOTIFY_H__
+#ifndef SRC_LIB_UTILS_FS_NOTIFY_HPP_
+#define SRC_LIB_UTILS_FS_NOTIFY_HPP_
 
 #include <map>
 #include <string>
 
-typedef std::map<const std::string, const std::string> files_map_t;
+typedef std::map<const std::string, const std::string> files_map_type;
 
 namespace NSGKUtils
 {
@@ -39,14 +39,14 @@ void erase_if( ContainerT& items, const PredicateT& predicate ) {
 	}
 }
 
-struct watchedObject {
+struct WatchedObject {
 	public:
 		const int wd;
 		unsigned int count;
 
-		watchedObject(void) = delete;
-		watchedObject(const int num) : wd(num), count(1) {}
-		~watchedObject() = default;
+		WatchedObject(void) = delete;
+		WatchedObject(const int num) : wd(num), count(1) {}
+		~WatchedObject() = default;
 
 	protected:
 
@@ -59,13 +59,13 @@ class FSNotify
 	public:
 		const int addNotifyDirectoryWatch(
 			const std::string & path,
-			const bool check_if_already_watched=false
+			const bool checkIfAlreadyWatched=false
 		);
 		void removeNotifyWatch(const int wd);
 
 		const int getNotifyQueueDescriptor(void) const;
 
-		void readNotifyEvents(files_map_t & files_map);
+		void readNotifyEvents(files_map_type & filesMap);
 
 
 	protected:
@@ -73,9 +73,9 @@ class FSNotify
 		~FSNotify(void);
 
 	private:
-		int inotify_queue_fd_;
+		int _inotifyQueueFD;
 
-		std::map<const std::string, watchedObject> watch_descriptors_;
+		std::map<const std::string, WatchedObject> _watchedDescriptorsMap;
 
 		const int addNotifyWatch(
 			const std::string & path,

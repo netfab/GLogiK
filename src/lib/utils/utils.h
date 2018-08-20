@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_UTILS_H__
-#define __GLOGIK_UTILS_H__
+#ifndef SRC_LIB_UTILS_UTILS_HPP_
+#define SRC_LIB_UTILS_UTILS_HPP_
 
 #include <config.h>
 

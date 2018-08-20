@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_EXCEPTION_H__
-#define __GLOGIK_EXCEPTION_H__
+#ifndef SRC_LIB_UTILS_GLOGIK_EXCEPTION_HPP_
+#define SRC_LIB_UTILS_GLOGIK_EXCEPTION_HPP_
 
 #if !defined (UTILS_INSIDE_UTILS_H) && !defined (UTILS_COMPILATION)
 #error "Only "utils/utils.h" can be included directly, this file may disappear or change contents."

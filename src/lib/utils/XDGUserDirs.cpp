@@ -42,12 +42,12 @@ const std::string XDGUserDirs::getConfigDirectory(void) {
 	const std::string home = to_string( getenv("HOME") );
 	if(home == "")
 		throw GLogiKExcept("can't get HOME environment variable");
-	std::string xdg_config_home = to_string( getenv("XDG_CONFIG_HOME") );
-	if(xdg_config_home == "") {
-		xdg_config_home = home;
-		xdg_config_home += "/.config";
+	std::string XDGConfigHome = to_string( getenv("XDG_CONFIG_HOME") );
+	if(XDGConfigHome == "") {
+		XDGConfigHome = home;
+		XDGConfigHome += "/.config";
 	}
-	return xdg_config_home;
+	return XDGConfigHome;
 }
 
 } // namespace NSGKUtils

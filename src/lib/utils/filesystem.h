@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_FILESYSTEM_H__
-#define __GLOGIK_FILESYSTEM_H__
+#ifndef SRC_LIB_UTILS_FILESYSTEM_HPP_
+#define SRC_LIB_UTILS_FILESYSTEM_HPP_
 
 #if !defined (UTILS_INSIDE_UTILS_H) && !defined (UTILS_COMPILATION)
 #error "Only "utils/utils.h" can be included directly, this file may disappear or change contents."
@@ -47,11 +47,11 @@ class FileSystem
 
 		static void createOwnerDirectory(const fs::path & directory);
 		const std::string getNextAvailableFileName(
-			const std::set<std::string> & to_skip,
+			const std::set<std::string> & toSkip,
 			const fs::path & directory,
-			const std::string & basename,
+			const std::string & baseName,
 			const std::string & extension,
-			bool must_exist=false
+			bool mustExist=false
 		);
 
 	protected:

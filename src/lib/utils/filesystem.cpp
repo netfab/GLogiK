@@ -42,43 +42,43 @@ FileSystem::~FileSystem() {
 }
 
 const std::string FileSystem::getNextAvailableFileName(
-	const std::set<std::string> & to_skip,
+	const std::set<std::string> & toSkip,
 	const fs::path & directory,
-	const std::string & basename,
+	const std::string & baseName,
 	const std::string & extension,
-	bool must_exist)
+	bool mustExist)
 {
 	unsigned int c = 0;
 	while( c++ < 10 ) { /* bonus point */
-		fs::path file(basename);
+		fs::path file(baseName);
 		file += "_";
 		file += std::to_string(c);
 		file += ".";
 		file += extension;
 
-		const std::string filename( file.string() );
+		const std::string fileName( file.string() );
 
-		if( to_skip.count(filename) == 1 ) {
+		if( toSkip.count(fileName) == 1 ) {
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "already used : " << filename;
+			LOG(DEBUG3) << "already used : " << fileName;
 #endif
 			continue;
 		}
 
-		if( must_exist ) {
-			fs::path full_path = directory / file;
-			if( ! fs::is_regular_file(full_path) ) {
+		if( mustExist ) {
+			fs::path fullPath = directory / file;
+			if( ! fs::is_regular_file(fullPath) ) {
 #if DEBUGGING_ON
-				LOG(DEBUG3) << "does not exist : " << full_path.string();
+				LOG(DEBUG3) << "does not exist : " << fullPath.string();
 #endif
 				continue;
 			}
 		}
 
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "returning new filename : " << filename;
+		LOG(DEBUG2) << "returning new filename : " << fileName;
 #endif
-		return filename;
+		return fileName;
 	}
 
 	throw GLogiKExcept("can't get new filename, counter reached max");

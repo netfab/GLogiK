@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_RANDOM_GENERATOR_H__
-#define __GLOGIK_RANDOM_GENERATOR_H__
+#ifndef SRC_LIB_UTILS_RANDOM_GENERATOR_HPP_
+#define SRC_LIB_UTILS_RANDOM_GENERATOR_HPP_
 
 #if !defined (UTILS_INSIDE_UTILS_H) && !defined (UTILS_COMPILATION)
 #error "Only "utils/utils.h" can be included directly, this file may disappear or change contents."
@@ -45,14 +45,14 @@ class RandomGenerator
 		);
 		~RandomGenerator(void);
 
-		std::string getString(size_t length);
+		std::string getString(std::size_t length);
 
 	protected:
 
 	private:
-		std::vector<char> charset_;
-		std::default_random_engine rng_;
-		std::uniform_int_distribution<> dist_;
+		std::vector<char> _charset;
+		std::default_random_engine _rng;
+		std::uniform_int_distribution<> _dist;
 
 };
 
