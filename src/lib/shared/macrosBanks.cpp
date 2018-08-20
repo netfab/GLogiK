@@ -46,8 +46,8 @@ void MacrosBanks::initMacrosProfiles(const std::vector<std::string> & keysNames)
 #endif
 	macro_type macro;
 	for( const auto & name : keysNames ) {
-		for(auto & profile : _macrosBanks) {
-			profile.second.insert( std::pair<const std::string, macro_type>(name, macro));
+		for(auto & bank : _macrosBanks) {
+			bank.second.insert( std::pair<const std::string, macro_type>(name, macro));
 		}
 	}
 }
@@ -60,21 +60,21 @@ const macros_map_type & MacrosBanks::getMacrosProfiles(void) const
 void MacrosBanks::setMacrosProfiles(const macros_map_type & macrosBanks)
 {
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "setting macros profiles";
+	LOG(DEBUG3) << "setting macros banks";
 #endif
 	_macrosBanks = macrosBanks;
 }
 
 void MacrosBanks::clearMacro(
-	const MemoryBank & profile,
+	const MacrosBank & bank,
 	const std::string & keyName)
 {
 	try {
-		LOG(INFO) << "macros profile: M" << profile
+		LOG(INFO) << "macros bank: M" << bank
 			<< " - Macro Key: " << keyName
 			<< " - clearing macro";
 
-		_macrosBanks[profile].at(keyName).clear();
+		_macrosBanks[bank].at(keyName).clear();
 	}
 	catch (const std::out_of_range& oor) {
 		std::string warn("wrong map key : ");
@@ -85,24 +85,24 @@ void MacrosBanks::clearMacro(
 }
 
 void MacrosBanks::clearMacro(
-	const uint8_t profile,
+	const uint8_t bank,
 	const std::string & keyName)
 {
-	if(profile > MemoryBank::BANK_M3)
-		throw GLogiKExcept("wrong profile value");
+	if(bank > MacrosBank::BANK_M3)
+		throw GLogiKExcept("wrong bank value");
 
-	const MemoryBank current_profile = static_cast<MemoryBank>(profile);
+	const MacrosBank current_bank = static_cast<MacrosBank>(bank);
 
-	this->clearMacro(current_profile, keyName);
+	this->clearMacro(current_bank, keyName);
 }
 
 void MacrosBanks::setMacro(
-	const MemoryBank & profile,
+	const MacrosBank & bank,
 	const std::string & keyName,
 	const macro_type & macroArray)
 {
 	try {
-		LOG(INFO) << "macros profile: M" << profile
+		LOG(INFO) << "macros bank: M" << bank
 			<< " - Macro Key: " << keyName
 			<< " - Macro Size: " << macroArray.size()
 			<< " - setting macro";
@@ -111,7 +111,7 @@ void MacrosBanks::setMacro(
 			throw GLogiKExcept("skipping macro");
 		}
 
-		_macrosBanks[profile].at(keyName) = macroArray;
+		_macrosBanks[bank].at(keyName) = macroArray;
 	}
 	catch (const std::out_of_range& oor) {
 		std::string warn("wrong map key : ");
@@ -122,26 +122,26 @@ void MacrosBanks::setMacro(
 }
 
 void MacrosBanks::setMacro(
-	const uint8_t profile,
+	const uint8_t bank,
 	const std::string & keyName,
 	const macro_type & macroArray)
 {
-	if(profile > MemoryBank::BANK_M3)
-		throw GLogiKExcept("wrong profile value");
+	if(bank > MacrosBank::BANK_M3)
+		throw GLogiKExcept("wrong bank value");
 
-	const MemoryBank current_profile = static_cast<MemoryBank>(profile);
+	const MacrosBank current_bank = static_cast<MacrosBank>(bank);
 
-	this->setMacro(current_profile, keyName, macroArray);
+	this->setMacro(current_bank, keyName, macroArray);
 }
 
-const macro_type & MacrosBanks::getMacro(const uint8_t profile, const std::string & keyName)
+const macro_type & MacrosBanks::getMacro(const uint8_t bank, const std::string & keyName)
 {
-	if(profile > MemoryBank::BANK_M3)
-		throw GLogiKExcept("wrong profile value");
+	if(bank > MacrosBank::BANK_M3)
+		throw GLogiKExcept("wrong bank value");
 
-	const MemoryBank current_profile = static_cast<MemoryBank>(profile);
+	const MacrosBank current_bank = static_cast<MacrosBank>(bank);
 	try {
-		return _macrosBanks[current_profile].at(keyName);
+		return _macrosBanks[current_bank].at(keyName);
 	}
 	catch (const std::out_of_range& oor) {
 		std::string warn("wrong map key : ");

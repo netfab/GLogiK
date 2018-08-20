@@ -54,8 +54,8 @@ class MacrosManager : public MacrosBanks
 		);
 		~MacrosManager();
 
-		void setCurrentMemoryBank(MemoryBank bank);
-		const MemoryBank getCurrentMemoryBank(void) const;
+		void setCurrentMacrosBank(MacrosBank bank);
+		const MacrosBank getCurrentMacrosBank(void) const;
 
 		const bool macroDefined(const std::string & keyName);
 		void runMacro(const std::string & keyName);
@@ -65,12 +65,12 @@ class MacrosManager : public MacrosBanks
 			macro_type & macroArray
 		);
 
-		void resetMemoryBanks(void);
+		void resetMacrosBanks(void);
 
 	protected:
 
 	private:
-		MemoryBank _currentMemoryBank;
+		MacrosBank _currentMacrosBank;
 		VirtualKeyboard _virtualKeyboard;
 
 

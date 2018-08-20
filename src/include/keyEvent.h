@@ -84,7 +84,7 @@ struct KeyEvent {
 		}
 };
 
-enum class MemoryBank : uint8_t
+enum class MacrosBank : uint8_t
 {
 	BANK_M0 = 0,
 	BANK_M1,
@@ -92,20 +92,20 @@ enum class MemoryBank : uint8_t
 	BANK_M3,
 };
 
-inline std::ostream & operator << (std::ostream & stream, const MemoryBank & bank)
+inline std::ostream & operator << (std::ostream & stream, const MacrosBank & bank)
 {
 	stream << static_cast<unsigned int>(bank);
 	return stream;
 }
 
-inline const bool operator > (const uint8_t value, const MemoryBank & bank)
+inline const bool operator > (const uint8_t value, const MacrosBank & bank)
 {
 	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(bank)));
 }
 
 typedef std::vector<KeyEvent> macro_type;
 typedef std::map<const std::string, macro_type> macros_bank_type;
-typedef std::map<const MemoryBank, macros_bank_type> macros_map_type;
+typedef std::map<const MacrosBank, macros_bank_type> macros_map_type;
 
 } // namespace GLogiK
 
