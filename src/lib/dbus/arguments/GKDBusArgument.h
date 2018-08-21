@@ -42,7 +42,7 @@ class GKDBusArgument
 
 		static void fillInArguments(
 			DBusMessage* message,
-			const bool logoff=false
+			const bool disabledDebugOutput=false
 		);
 		static const int decodeNextArgument(DBusMessageIter* arg_it);
 
@@ -57,7 +57,7 @@ class GKDBusArgument
 			DBusMessageIter* iter,
 			const char* signature,
 			const unsigned int num,
-			const bool logoff
+			const bool disabledDebugOutput
 		);
 
 };

@@ -50,14 +50,18 @@ class GKDBusMessage
 		void abandon(void);
 
 	protected:
-		GKDBusMessage(DBusConnection* connection, const bool logoff=false, const bool check=false);
+		GKDBusMessage(
+			DBusConnection* connection,
+			const bool disabledDebugOutput=false,
+			const bool check=false
+		);
 		~GKDBusMessage(void);
 
-		DBusConnection* connection_;
-		DBusMessage* message_;
-		DBusMessageIter args_it_;
-		bool hosed_message_;
-		bool log_off_;
+		DBusConnection* _connection;
+		DBusMessage* _message;
+		DBusMessageIter _args_it;
+		bool _hosedMessage;
+		bool _disabledDebugOutput;
 
 		const std::string append_failure_ = "message append failure";
 

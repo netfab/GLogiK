@@ -34,12 +34,12 @@ GKDBusAsyncContainer::GKDBusAsyncContainer(void)
 	:	GKDBusMessage(nullptr, false, true), num(0)
 {
 	/* initialize fake message */
-	this->message_ = dbus_message_new(DBUS_MESSAGE_TYPE_INVALID);
-	if(this->message_ == nullptr)
+	_message = dbus_message_new(DBUS_MESSAGE_TYPE_INVALID);
+	if(_message == nullptr)
 		throw GKDBusMessageWrongBuild("can't allocate memory for DBus Async Container message");
 
 	/* initialize potential arguments iterator */
-	dbus_message_iter_init_append(this->message_, &this->args_it_);
+	dbus_message_iter_init_append(_message, &_args_it);
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus Async Container initialized";
 #endif
@@ -47,7 +47,7 @@ GKDBusAsyncContainer::GKDBusAsyncContainer(void)
 
 GKDBusAsyncContainer::~GKDBusAsyncContainer()
 {
-	dbus_message_unref(this->message_);
+	dbus_message_unref(_message);
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus Async Container destroyed";
 #endif
@@ -55,7 +55,7 @@ GKDBusAsyncContainer::~GKDBusAsyncContainer()
 
 DBusMessage* GKDBusAsyncContainer::getAsyncContainerPointer(void) const
 {
-	return this->message_;
+	return _message;
 }
 
 void GKDBusAsyncContainer::incArgs(void) {

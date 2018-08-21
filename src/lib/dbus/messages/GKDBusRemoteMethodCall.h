@@ -42,19 +42,19 @@ class GKDBusRemoteMethodCall
 {
 	public:
 		GKDBusRemoteMethodCall(
-			DBusConnection* wanted_connection,
-			const char* dest,
-			const char* object_path,
+			DBusConnection* wantedConnection,
+			const char* busName,
+			const char* objectPath,
 			const char* interface,
 			const char* method,
 			DBusPendingCall** pending,
-			const bool logoff
+			const bool disabledDebugOutput
 		);
 		~GKDBusRemoteMethodCall();
 
 	protected:
 	private:
-		DBusPendingCall** pending_;
+		DBusPendingCall** _pendingCall;
 
 };
 
@@ -65,17 +65,17 @@ class GKDBusMessageRemoteMethodCall
 		/* Remote Method Call with Pending Reply */
 		void initializeRemoteMethodCall(
 			BusConnection current,
-			const char* dest,
-			const char* object_path,
+			const char* busName,
+			const char* objectPath,
 			const char* interface,
 			const char* method,
-			const bool logoff=false
+			const bool disabledDebugOutput=false
 		);
 
 		void appendStringToRemoteMethodCall(const std::string & value);
 		void appendUInt8ToRemoteMethodCall(const uint8_t value);
 		void appendUInt32ToRemoteMethodCall(const uint32_t value);
-		void appendMacrosBankToRemoteMethodCall(const GLogiK::macros_bank_type & macros_bank);
+		void appendMacrosBankToRemoteMethodCall(const GLogiK::macros_bank_type & bank);
 
 		void sendRemoteMethodCall(void);
 		void abandonRemoteMethodCall(void);
@@ -89,19 +89,19 @@ class GKDBusMessageRemoteMethodCall
 		/* Remote Method Call with Pending Reply */
 		void initializeRemoteMethodCall(
 			DBusConnection* connection,
-			const char* dest,
-			const char* object_path,
+			const char* busName,
+			const char* objectPath,
 			const char* interface,
 			const char* method,
-			const bool logoff=false
+			const bool disabledDebugOutput=false
 		);
 
 	private:
-		GKDBusRemoteMethodCall* remote_method_call_;
-		DBusPendingCall* pending_;
-		bool log_off_;
+		GKDBusRemoteMethodCall* _remoteMethodCall;
+		DBusPendingCall* _pendingCall;
+		bool _disabledDebugOutput;
 
-		virtual DBusConnection* getConnection(BusConnection wanted_connection) = 0;
+		virtual DBusConnection* getConnection(BusConnection wantedConnection) = 0;
 };
 
 } // namespace NSGKDBus

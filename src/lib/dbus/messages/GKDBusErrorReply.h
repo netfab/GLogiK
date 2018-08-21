@@ -35,7 +35,7 @@ class GKDBusErrorReply : public GKDBusMessage
 		GKDBusErrorReply(
 			DBusConnection* connection,
 			DBusMessage* message,
-			const char* error_message
+			const char* errorMessage
 		);
 		~GKDBusErrorReply();
 
@@ -55,18 +55,18 @@ class GKDBusMessageErrorReply
 		void initializeErrorReply(
 			DBusConnection* connection,
 			DBusMessage* message,
-			const char* error_message
+			const char* errorMessage
 		);
 		void sendErrorReply(void);
 
 		void buildAndSendErrorReply(
 			DBusConnection* connection,
 			DBusMessage* message,
-			const char* error_message
+			const char* errorMessage
 		);
 
 	private:
-		GKDBusErrorReply* error_reply_;
+		GKDBusErrorReply* _errorReply;
 
 };
 

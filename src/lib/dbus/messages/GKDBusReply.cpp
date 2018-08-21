@@ -38,33 +38,33 @@ GKDBusReply::GKDBusReply(DBusConnection* connection, DBusMessage* message)
 		throw GKDBusMessageWrongBuild("DBus message is NULL");
 
 	/* initialize reply from message */
-	this->message_ = dbus_message_new_method_return(message);
-	if(this->message_ == nullptr)
+	_message = dbus_message_new_method_return(message);
+	if(_message == nullptr)
 		throw GKDBusMessageWrongBuild("can't allocate memory for DBus reply message");
 
 	/* initialize potential arguments iterator */
-	dbus_message_iter_init_append(this->message_, &this->args_it_);
+	dbus_message_iter_init_append(_message, &_args_it);
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus reply initialized";
 #endif
 }
 
 GKDBusReply::~GKDBusReply() {
-	if(this->hosed_message_) {
+	if(_hosedMessage) {
 		LOG(WARNING) << "DBus hosed reply, giving up";
-		dbus_message_unref(this->message_);
+		dbus_message_unref(_message);
 		return;
 	}
 
 	// TODO dbus_uint32_t serial;
-	if( ! dbus_connection_send(this->connection_, this->message_, nullptr) ) {
-		dbus_message_unref(this->message_);
+	if( ! dbus_connection_send(_connection, _message, nullptr) ) {
+		dbus_message_unref(_message);
 		LOG(ERROR) << "DBus reply sending failure";
 		return;
 	}
 
-	dbus_connection_flush(this->connection_);
-	dbus_message_unref(this->message_);
+	dbus_connection_flush(_connection);
+	dbus_message_unref(_message);
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus reply sent";
 #endif
@@ -74,7 +74,7 @@ GKDBusReply::~GKDBusReply() {
 /* --- --- --- */
 /* --- --- --- */
 
-GKDBusMessageReply::GKDBusMessageReply() : reply_(nullptr)
+GKDBusMessageReply::GKDBusMessageReply() : _reply(nullptr)
 {
 }
 
@@ -83,11 +83,11 @@ GKDBusMessageReply::~GKDBusMessageReply()
 }
 
 void GKDBusMessageReply::initializeReply(DBusConnection* connection, DBusMessage* message) {
-	if(this->reply_) /* sanity check */
+	if(_reply) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus reply already allocated");
 
 	try {
-		this->reply_ = new GKDBusReply(connection, message);
+		_reply = new GKDBusReply(connection, message);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus reply allocation failure : " << e.what();
@@ -96,28 +96,28 @@ void GKDBusMessageReply::initializeReply(DBusConnection* connection, DBusMessage
 }
 
 void GKDBusMessageReply::appendBooleanToReply(const bool value) {
-	if(this->reply_ != nullptr) /* sanity check */
-		this->reply_->appendBoolean(value);
+	if(_reply != nullptr) /* sanity check */
+		_reply->appendBoolean(value);
 }
 
 void GKDBusMessageReply::appendStringToReply(const std::string & value) {
-	if(this->reply_ != nullptr) /* sanity check */
-		this->reply_->appendString(value);
+	if(_reply != nullptr) /* sanity check */
+		_reply->appendString(value);
 }
 
 void GKDBusMessageReply::appendStringVectorToReply(const std::vector<std::string> & list) {
-	if(this->reply_ != nullptr) /* sanity check */
-		this->reply_->appendStringVector(list);
+	if(_reply != nullptr) /* sanity check */
+		_reply->appendStringVector(list);
 }
 
 void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_type & macro) {
-	if(this->reply_ != nullptr) /* sanity check */
-		this->reply_->appendMacro(macro);
+	if(_reply != nullptr) /* sanity check */
+		_reply->appendMacro(macro);
 }
 
 void GKDBusMessageReply::appendUInt64ToReply(const uint64_t value) {
-	if(this->reply_ != nullptr) /* sanity check */
-		this->reply_->appendUInt64(value);
+	if(_reply != nullptr) /* sanity check */
+		_reply->appendUInt64(value);
 }
 
 void GKDBusMessageReply::appendAsyncArgsToReply(void)
@@ -168,22 +168,22 @@ void GKDBusMessageReply::appendAsyncArgsToReply(void)
 void GKDBusMessageReply::sendReply(void) {
 	this->destroyAsyncContainer();
 
-	if(this->reply_ == nullptr) { /* sanity check */
+	if(_reply == nullptr) { /* sanity check */
 		LOG(WARNING) << __func__ << " failure because reply not contructed";
 		return;
 	}
 
-	delete this->reply_;
-	this->reply_ = nullptr;
+	delete _reply;
+	_reply = nullptr;
 }
 
 void GKDBusMessageReply::abandonReply(void) {
 	this->destroyAsyncContainer();
 
-	if(this->reply_) { /* sanity check */
-		this->reply_->abandon();
-		delete this->reply_;
-		this->reply_ = nullptr;
+	if(_reply) { /* sanity check */
+		_reply->abandon();
+		delete _reply;
+		_reply = nullptr;
 	}
 	else {
 		LOG(WARNING) << __func__ << " failure because reply not contructed";

@@ -33,35 +33,35 @@ using namespace NSGKUtils;
 
 GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 	DBusConnection* connection,
-	const char* dest,
-	const char* object_path,
+	const char* busName,
+	const char* objectPath,
 	const char* interface,
 	const char* method,
 	DBusPendingCall** pending,
-	const bool logoff
-	)	: GKDBusMessage(connection, logoff), pending_(pending)
+	const bool disabledDebugOutput
+	)	: GKDBusMessage(connection, disabledDebugOutput), _pendingCall(pending)
 {
-	if( ! dbus_validate_bus_name(dest, nullptr) )
-		throw GKDBusMessageWrongBuild("invalid destination name");
-	if( ! dbus_validate_path(object_path, nullptr) )
+	if( ! dbus_validate_bus_name(busName, nullptr) )
+		throw GKDBusMessageWrongBuild("invalid bus name");
+	if( ! dbus_validate_path(objectPath, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid object path");
 	if( ! dbus_validate_interface(interface, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid interface");
 	if( ! dbus_validate_member(method, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid method name");
 
-	this->message_ = dbus_message_new_method_call(dest, object_path, interface, method);
-	if(this->message_ == nullptr)
+	_message = dbus_message_new_method_call(busName, objectPath, interface, method);
+	if(_message == nullptr)
 		throw GKDBusMessageWrongBuild("can't allocate memory for Remote Object Method Call DBus message");
 	
 	/* initialize potential arguments iterator */
-	dbus_message_iter_init_append(this->message_, &this->args_it_);
+	dbus_message_iter_init_append(_message, &_args_it);
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! this->log_off_ ) {
+	if( ! _disabledDebugOutput ) {
 		LOG(DEBUG2) << "Remote Object Method Call DBus message initialized";
-		LOG(DEBUG3) << "dest        : " << dest;
-		LOG(DEBUG3) << "object_path : " << object_path;
+		LOG(DEBUG3) << "bus name    : " << busName;
+		LOG(DEBUG3) << "object path : " << objectPath;
 		LOG(DEBUG3) << "interface   : " << interface;
 		LOG(DEBUG3) << "method      : " << method;
 	}
@@ -69,23 +69,23 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 }
 
 GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
-	if(this->hosed_message_) {
+	if(_hosedMessage) {
 		LOG(WARNING) << "DBus hosed message, giving up";
-		dbus_message_unref(this->message_);
+		dbus_message_unref(_message);
 		return;
 	}
 
-	if( ! dbus_connection_send_with_reply(this->connection_, this->message_, this->pending_, DBUS_TIMEOUT_USE_DEFAULT)) {
-		dbus_message_unref(this->message_);
+	if( ! dbus_connection_send_with_reply(_connection, _message, _pendingCall, DBUS_TIMEOUT_USE_DEFAULT)) {
+		dbus_message_unref(_message);
 		LOG(ERROR) << "DBus remote method call with pending reply sending failure";
 		return;
 	}
 
-	dbus_connection_flush(this->connection_);
-	dbus_message_unref(this->message_);
+	dbus_connection_flush(_connection);
+	dbus_message_unref(_message);
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! this->log_off_ ) {
+	if( ! _disabledDebugOutput ) {
 		LOG(DEBUG2) << "DBus remote method call with pending reply sent";
 	}
 #endif
@@ -96,9 +96,9 @@ GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
 /* --- --- --- */
 
 GKDBusMessageRemoteMethodCall::GKDBusMessageRemoteMethodCall()
-	:	remote_method_call_(nullptr),
-		pending_(nullptr),
-		log_off_(false)
+	:	_remoteMethodCall(nullptr),
+		_pendingCall(nullptr),
+		_disabledDebugOutput(false)
 {
 }
 
@@ -107,33 +107,33 @@ GKDBusMessageRemoteMethodCall::~GKDBusMessageRemoteMethodCall()
 }
 
 void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
-	BusConnection wanted_connection,
-	const char* dest,
-	const char* object_path,
+	BusConnection wantedConnection,
+	const char* busName,
+	const char* objectPath,
 	const char* interface,
 	const char* method,
-	const bool logoff
+	const bool disabledDebugOutput
 ) {
 	this->initializeRemoteMethodCall(
-		this->getConnection(wanted_connection),
-		dest, object_path, interface, method, logoff);
+		this->getConnection(wantedConnection),
+		busName, objectPath, interface, method, disabledDebugOutput);
 }
 
 void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 	DBusConnection* connection,
-	const char* dest,
-	const char* object_path,
+	const char* busName,
+	const char* objectPath,
 	const char* interface,
 	const char* method,
-	const bool logoff
+	const bool disabledDebugOutput
 ) {
-	if(this->remote_method_call_) /* sanity check */
+	if(_remoteMethodCall) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus remote_method_call already allocated");
 
 	try {
-		this->remote_method_call_ = new GKDBusRemoteMethodCall(
-			connection, dest, object_path, interface, method,
-			&this->pending_, logoff
+		_remoteMethodCall = new GKDBusRemoteMethodCall(
+			connection, busName, objectPath, interface, method,
+			&_pendingCall, disabledDebugOutput
 		);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
@@ -141,34 +141,34 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
 
-	this->log_off_ = logoff;
+	_disabledDebugOutput = disabledDebugOutput;
 }
 
 void GKDBusMessageRemoteMethodCall::appendStringToRemoteMethodCall(const std::string & value) {
-	if(this->remote_method_call_ != nullptr) /* sanity check */
-		this->remote_method_call_->appendString(value);
+	if(_remoteMethodCall != nullptr) /* sanity check */
+		_remoteMethodCall->appendString(value);
 }
 
 void GKDBusMessageRemoteMethodCall::appendUInt8ToRemoteMethodCall(const uint8_t value) {
-	if(this->remote_method_call_ != nullptr) /* sanity check */
-		this->remote_method_call_->appendUInt8(value);
+	if(_remoteMethodCall != nullptr) /* sanity check */
+		_remoteMethodCall->appendUInt8(value);
 }
 
 void GKDBusMessageRemoteMethodCall::appendUInt32ToRemoteMethodCall(const uint32_t value) {
-	if(this->remote_method_call_ != nullptr) /* sanity check */
-		this->remote_method_call_->appendUInt32(value);
+	if(_remoteMethodCall != nullptr) /* sanity check */
+		_remoteMethodCall->appendUInt32(value);
 }
 
-void GKDBusMessageRemoteMethodCall::appendMacrosBankToRemoteMethodCall(const GLogiK::macros_bank_type & macros_bank) {
-	if(this->remote_method_call_ != nullptr) /* sanity check */
-		this->remote_method_call_->appendMacrosBank(macros_bank);
+void GKDBusMessageRemoteMethodCall::appendMacrosBankToRemoteMethodCall(const GLogiK::macros_bank_type & bank) {
+	if(_remoteMethodCall != nullptr) /* sanity check */
+		_remoteMethodCall->appendMacrosBank(bank);
 }
 
 void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall(void)
 {
-	if(this->remote_method_call_) { /* sanity check */
-		delete this->remote_method_call_;
-		this->remote_method_call_ = nullptr;
+	if(_remoteMethodCall) { /* sanity check */
+		delete _remoteMethodCall;
+		_remoteMethodCall = nullptr;
 	}
 	else {
 		LOG(WARNING) << __func__ << " failure because remote_method_call not contructed";
@@ -178,10 +178,10 @@ void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall(void)
 
 void GKDBusMessageRemoteMethodCall::abandonRemoteMethodCall(void)
 {
-	if(this->remote_method_call_) { /* sanity check */
-		this->remote_method_call_->abandon();
-		delete this->remote_method_call_;
-		this->remote_method_call_ = nullptr;
+	if(_remoteMethodCall) { /* sanity check */
+		_remoteMethodCall->abandon();
+		delete _remoteMethodCall;
+		_remoteMethodCall = nullptr;
 	}
 	else {
 		LOG(WARNING) << __func__ << " failure because remote_method_call not contructed";
@@ -189,18 +189,18 @@ void GKDBusMessageRemoteMethodCall::abandonRemoteMethodCall(void)
 }
 
 void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void) {
-	dbus_pending_call_block(this->pending_);
+	dbus_pending_call_block(_pendingCall);
 
 	unsigned int c = 0;
 
 	DBusMessage* message = nullptr;
 	// TODO could set a timer between retries ?
 	while( message == nullptr and c < 10 ) {
-		message = dbus_pending_call_steal_reply(this->pending_);
+		message = dbus_pending_call_steal_reply(_pendingCall);
 		c++; /* bonus point */
 	}
 
-	dbus_pending_call_unref(this->pending_);
+	dbus_pending_call_unref(_pendingCall);
 
 	if(message == nullptr) {
 		LOG(WARNING) << __func__ << " message is NULL, retried 10 times";
@@ -222,7 +222,7 @@ void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void) {
 		throw GKDBusRemoteCallNoReply( buffer.str() );
 	}
 
-	GKDBusArgumentString::fillInArguments(message, this->log_off_);
+	GKDBusArgumentString::fillInArguments(message, _disabledDebugOutput);
 	dbus_message_unref(message);
 }
 

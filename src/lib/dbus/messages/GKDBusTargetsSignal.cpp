@@ -31,14 +31,14 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 void GKDBusMessageTargetsSignal::initializeTargetsSignal(
-	BusConnection wanted_connection,
+	BusConnection wantedConnection,
 	const char* dest,
 	const char* object_path,
 	const char* interface,
 	const char* signal
 ) {
 	this->initializeTargetsSignal(
-		this->getConnection(wanted_connection),
+		this->getConnection(wantedConnection),
 		dest, object_path, interface, signal);
 }
 

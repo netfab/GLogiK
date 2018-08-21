@@ -41,7 +41,7 @@ class GKDBusMessageTargetsSignal
 {
 	public:
 		void initializeTargetsSignal(
-			BusConnection wanted_connection,
+			BusConnection wantedConnection,
 			const char* dest,
 			const char* object_path,
 			const char* interface,
@@ -72,7 +72,7 @@ class GKDBusMessageTargetsSignal
 	private:
 		std::vector<GKDBusBroadcastSignal*> signals_;
 
-		virtual DBusConnection* getConnection(BusConnection wanted_connection) = 0;
+		virtual DBusConnection* getConnection(BusConnection wantedConnection) = 0;
 
 };
 

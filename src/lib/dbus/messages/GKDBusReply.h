@@ -80,7 +80,7 @@ class GKDBusMessageReply
 		void abandonReply(void);
 
 	private:
-		GKDBusReply* reply_;
+		GKDBusReply* _reply;
 };
 
 } // namespace NSGKDBus

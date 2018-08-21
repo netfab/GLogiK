@@ -33,52 +33,52 @@ using namespace NSGKUtils;
 GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 	DBusConnection* connection,
 	const char* dest,			/* destination, if NULL, broadcast */
-	const char* object_path,	/* the path to the object emitting the signal */
+	const char* objectPath,		/* the path to the object emitting the signal */
 	const char* interface,		/* interface the signal is emitted from */
 	const char* signal			/* name of signal */
 	) : GKDBusMessage(connection)
 {
-	if( ! dbus_validate_path(object_path, nullptr) )
+	if( ! dbus_validate_path(objectPath, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid object path");
 	if( ! dbus_validate_interface(interface, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid interface");
 	if( ! dbus_validate_member(signal, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid signal name");
 
-	this->message_ = dbus_message_new_signal(object_path, interface, signal);
-	if(this->message_ == nullptr)
+	_message = dbus_message_new_signal(objectPath, interface, signal);
+	if(_message == nullptr)
 		throw GKDBusMessageWrongBuild("can't allocate memory for Signal DBus message");
 
 	if( dest != nullptr ) {
 #if DEBUG_GKDBUS_SUBOBJECTS
 		LOG(DEBUG2) << "prepare sending signal to " << dest;
 #endif
-		dbus_message_set_destination(this->message_, dest);
+		dbus_message_set_destination(_message, dest);
 	}
 
 	/* initialize potential arguments iterator */
-	dbus_message_iter_init_append(this->message_, &this->args_it_);
+	dbus_message_iter_init_append(_message, &_args_it);
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus signal initialized";
 #endif
 }
 
 GKDBusBroadcastSignal::~GKDBusBroadcastSignal() {
-	if(this->hosed_message_) {
+	if(_hosedMessage) {
 		LOG(WARNING) << "DBus hosed message, giving up";
-		dbus_message_unref(this->message_);
+		dbus_message_unref(_message);
 		return;
 	}
 
 	// TODO dbus_uint32_t serial;
-	if( ! dbus_connection_send(this->connection_, this->message_, nullptr) ) {
-		dbus_message_unref(this->message_);
+	if( ! dbus_connection_send(_connection, _message, nullptr) ) {
+		dbus_message_unref(_message);
 		LOG(ERROR) << "DBus signal sending failure";
 		return;
 	}
 
-	dbus_connection_flush(this->connection_);
-	dbus_message_unref(this->message_);
+	dbus_connection_flush(_connection);
+	dbus_message_unref(_message);
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus signal sent";
 #endif
@@ -91,7 +91,7 @@ GKDBusBroadcastSignal::~GKDBusBroadcastSignal() {
 
 
 GKDBusMessageBroadcastSignal::GKDBusMessageBroadcastSignal()
-	:	signal_(nullptr)
+	:	_signal(nullptr)
 {
 }
 
@@ -101,15 +101,15 @@ GKDBusMessageBroadcastSignal::~GKDBusMessageBroadcastSignal()
 
 void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 	DBusConnection* connection,
-	const char* object_path,
+	const char* objectPath,
 	const char* interface,
 	const char* signal
 ) {
-	if(this->signal_) /* sanity check */
+	if(_signal) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus signal already allocated");
 
 	try {
-		this->signal_ = new GKDBusBroadcastSignal(connection, nullptr, object_path, interface, signal);
+		_signal = new GKDBusBroadcastSignal(connection, nullptr, objectPath, interface, signal);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus broadcast signal allocation failure : " << e.what();
@@ -118,9 +118,9 @@ void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 }
 
 void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void) {
-	if(this->signal_) { /* sanity check */
-		delete this->signal_;
-		this->signal_ = nullptr;
+	if(_signal) { /* sanity check */
+		delete _signal;
+		_signal = nullptr;
 	}
 	else {
 		LOG(WARNING) << __func__ << " failure because signal not contructed";
@@ -129,10 +129,10 @@ void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void) {
 }
 
 void GKDBusMessageBroadcastSignal::abandonBroadcastSignal(void) {
-	if(this->signal_) { /* sanity check */
-		this->signal_->abandon();
-		delete this->signal_;
-		this->signal_ = nullptr;
+	if(_signal) { /* sanity check */
+		_signal->abandon();
+		delete _signal;
+		_signal = nullptr;
 	}
 	else {
 		LOG(WARNING) << __func__ << " failure because signal not contructed";

@@ -35,7 +35,7 @@ class GKDBusBroadcastSignal : public GKDBusMessage
 		GKDBusBroadcastSignal(
 			DBusConnection* connection,		/* connection to send the signal on */
 			const char* dest,			/* destination, if NULL, broadcast */
-			const char* object_path,	/* the path to the object emitting the signal */
+			const char* objectPath,		/* the path to the object emitting the signal */
 			const char* interface,		/* interface the signal is emitted from */
 			const char* signal			/* name of signal */
 		);
@@ -56,7 +56,7 @@ class GKDBusMessageBroadcastSignal
 
 		void initializeBroadcastSignal(
 			DBusConnection* connection,
-			const char* object_path,
+			const char* objectPath,
 			const char* interface,
 			const char* signal
 		);
@@ -64,7 +64,7 @@ class GKDBusMessageBroadcastSignal
 		void abandonBroadcastSignal(void);
 
 	private:
-		GKDBusBroadcastSignal* signal_;
+		GKDBusBroadcastSignal* _signal;
 
 };
 
