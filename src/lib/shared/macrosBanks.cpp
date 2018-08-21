@@ -99,19 +99,19 @@ void MacrosBanks::clearMacro(
 void MacrosBanks::setMacro(
 	const MacrosBank & bank,
 	const std::string & keyName,
-	const macro_type & macroArray)
+	const macro_type & macro)
 {
 	try {
 		LOG(INFO) << "macros bank: M" << bank
 			<< " - Macro Key: " << keyName
-			<< " - Macro Size: " << macroArray.size()
+			<< " - Macro Size: " << macro.size()
 			<< " - setting macro";
-		if( macroArray.size() >= MACRO_T_MAX_SIZE ) {
+		if( macro.size() >= MACRO_T_MAX_SIZE ) {
 			LOG(WARNING) << "skipping macro - size >= MACRO_T_MAX_SIZE";
 			throw GLogiKExcept("skipping macro");
 		}
 
-		_macrosBanks[bank].at(keyName) = macroArray;
+		_macrosBanks[bank].at(keyName) = macro;
 	}
 	catch (const std::out_of_range& oor) {
 		std::string warn("wrong map key : ");
@@ -124,14 +124,14 @@ void MacrosBanks::setMacro(
 void MacrosBanks::setMacro(
 	const uint8_t bank,
 	const std::string & keyName,
-	const macro_type & macroArray)
+	const macro_type & macro)
 {
 	if(bank > MacrosBank::BANK_M3)
 		throw GLogiKExcept("wrong bank value");
 
 	const MacrosBank current_bank = static_cast<MacrosBank>(bank);
 
-	this->setMacro(current_bank, keyName, macroArray);
+	this->setMacro(current_bank, keyName, macro);
 }
 
 const macro_type & MacrosBanks::getMacro(const uint8_t bank, const std::string & keyName)

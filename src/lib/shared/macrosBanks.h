@@ -56,7 +56,7 @@ class MacrosBanks
 		void setMacro(
 			const uint8_t bank,
 			const std::string & keyName,
-			const macro_type & macroArray
+			const macro_type & macro
 		);
 		const macro_type & getMacro(
 			const uint8_t bank,
@@ -71,7 +71,7 @@ class MacrosBanks
 		void setMacro(
 			const MacrosBank & bank,
 			const std::string & keyName,
-			const macro_type & macroArray
+			const macro_type & macro
 		);
 
 	protected:

@@ -657,9 +657,9 @@ const bool DevicesHandler::setDeviceMacro(
 					this->pDBus_->waitForRemoteMethodCallReply();
 
 					/* use helper function to get the macro */
-					const macro_type macro_array = this->pDBus_->getNextMacroArgument();
+					const macro_type macro = this->pDBus_->getNextMacroArgument();
 
-					device.setMacro(profile, keyName, macro_array);
+					device.setMacro(profile, keyName, macro);
 					this->saveDeviceConfigurationFile(devID, device);
 					this->watchDirectory(device);
 					return true;

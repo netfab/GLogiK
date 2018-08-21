@@ -137,8 +137,8 @@ void GKDBusMessage::appendUInt64(const uint64_t value) {
 #endif
 }
 
-void GKDBusMessage::appendMacro(const GLogiK::macro_type & macroArray) {
-	this->appendMacro(&this->args_it_, macroArray);
+void GKDBusMessage::appendMacro(const GLogiK::macro_type & macro) {
+	this->appendMacro(&this->args_it_, macro);
 }
 
 void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_type & bank) {
@@ -181,11 +181,11 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_type & bank) {
 	try {
 		for(const auto & keyMacroPair : bank) {
 			const std::string & key = keyMacroPair.first;
-			const GLogiK::macro_type & macroArray = keyMacroPair.second;
+			const GLogiK::macro_type & macro = keyMacroPair.second;
 
 			bool append_macro = false;
-			if( ( ! macroArray.empty() ) ) {
-				if( macroArray.size() < MACRO_T_MAX_SIZE ) {
+			if( ( ! macro.empty() ) ) {
+				if( macro.size() < MACRO_T_MAX_SIZE ) {
 					append_macro = true;
 				}
 				else {
@@ -204,11 +204,11 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_type & bank) {
 			}
 
 			try {
-				const uint8_t size = macroArray.size();
+				const uint8_t size = macro.size();
 
 				this->appendString(&struct_it, key);
 				this->appendUInt8(&struct_it, size);
-				this->appendMacro(&struct_it, macroArray);
+				this->appendMacro(&struct_it, macro);
 			}
 			catch (const GKDBusMessageWrongBuild & e) {
 				dbus_message_iter_abandon_container(&array_it, &struct_it);
@@ -253,7 +253,7 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_type & bank) {
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macroArray) {
+void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro) {
 	DBusMessageIter array_it;
 
 	const char array_sig[] = \
@@ -281,7 +281,7 @@ void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type 
 	*/
 
 	try {
-		for(const auto & keyEvent : macroArray) {
+		for(const auto & keyEvent : macro) {
 			DBusMessageIter struct_it;
 
 			if( ! dbus_message_iter_open_container(&array_it, DBUS_TYPE_STRUCT, nullptr, &struct_it) ) {

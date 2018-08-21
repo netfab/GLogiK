@@ -41,9 +41,9 @@ const GLogiK::macros_bank_type GKDBusArgumentMacrosBank::getNextMacrosBankArgume
 		do {
 			const std::string key = GKDBusArgumentString::getNextStringArgument();
 			const uint8_t size = GKDBusArgumentByte::getNextByteArgument();
-			const GLogiK::macro_type macroArray = GKDBusArgumentMacro::getNextMacroArgument(size);
+			const GLogiK::macro_type macro = GKDBusArgumentMacro::getNextMacroArgument(size);
 
-			bank[key] = macroArray;
+			bank[key] = macro;
 		}
 		while( ! GKDBusArgumentString::stringArguments.empty() );
 	}

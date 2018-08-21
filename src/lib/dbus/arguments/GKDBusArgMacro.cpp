@@ -38,7 +38,7 @@ const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigne
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "rebuilding macro from GKDBus values";
 #endif
-	GLogiK::macro_type macroArray;
+	GLogiK::macro_type macro;
 	try {
 		bool nextRun = true;
 		do {
@@ -53,10 +53,10 @@ const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigne
 			e.event		 = static_cast<GLogiK::EventValue>(value);
 			e.interval	 = GKDBusArgumentUInt16::getNextUInt16Argument();
 
-			macroArray.push_back(e);
+			macro.push_back(e);
 
 			if( macroSize > 0 ) {
-				if( macroArray.size() == macroSize )
+				if( macro.size() == macroSize )
 					nextRun = false;
 			}
 			else {
@@ -76,9 +76,9 @@ const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigne
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "events array size : " << macroArray.size() << " - expected : " << macroSize;
+	LOG(DEBUG3) << "events array size : " << macro.size() << " - expected : " << macroSize;
 #endif
-	return macroArray;
+	return macro;
 }
 
 } // namespace NSGKDBus
