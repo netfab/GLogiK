@@ -137,11 +137,11 @@ void GKDBusMessage::appendUInt64(const uint64_t value) {
 #endif
 }
 
-void GKDBusMessage::appendMacro(const GLogiK::macro_type & macro_array) {
-	this->appendMacro(&this->args_it_, macro_array);
+void GKDBusMessage::appendMacro(const GLogiK::macro_type & macroArray) {
+	this->appendMacro(&this->args_it_, macroArray);
 }
 
-void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_type & macros_bank) {
+void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_type & bank) {
 	DBusMessageIter array_it;
 
 	const char array_sig[] = \
@@ -179,17 +179,17 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_type & macros_ban
 	*/
 
 	try {
-		for(const auto & macro_pair : macros_bank) {
-			const std::string & macro_key = macro_pair.first;
-			const GLogiK::macro_type & macro_array = macro_pair.second;
+		for(const auto & keyMacroPair : bank) {
+			const std::string & key = keyMacroPair.first;
+			const GLogiK::macro_type & macroArray = keyMacroPair.second;
 
 			bool append_macro = false;
-			if( ( ! macro_array.empty() ) ) {
-				if( macro_array.size() < MACRO_T_MAX_SIZE ) {
+			if( ( ! macroArray.empty() ) ) {
+				if( macroArray.size() < MACRO_T_MAX_SIZE ) {
 					append_macro = true;
 				}
 				else {
-					LOG(WARNING) << "skipping " << macro_key << " macro - size >= MACRO_T_MAX_SIZE";
+					LOG(WARNING) << "skipping " << key << " macro - size >= MACRO_T_MAX_SIZE";
 				}
 			}
 			/* skip empty macro slots */
@@ -204,11 +204,11 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_type & macros_ban
 			}
 
 			try {
-				const uint8_t macro_size = macro_array.size();
+				const uint8_t size = macroArray.size();
 
-				this->appendString(&struct_it, macro_key);
-				this->appendUInt8(&struct_it, macro_size);
-				this->appendMacro(&struct_it, macro_array);
+				this->appendString(&struct_it, key);
+				this->appendUInt8(&struct_it, size);
+				this->appendMacro(&struct_it, macroArray);
 			}
 			catch (const GKDBusMessageWrongBuild & e) {
 				dbus_message_iter_abandon_container(&array_it, &struct_it);
@@ -253,7 +253,7 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_type & macros_ban
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro_array) {
+void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macroArray) {
 	DBusMessageIter array_it;
 
 	const char array_sig[] = \
@@ -281,7 +281,7 @@ void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type 
 	*/
 
 	try {
-		for(const auto & keyEvent : macro_array) {
+		for(const auto & keyEvent : macroArray) {
 			DBusMessageIter struct_it;
 
 			if( ! dbus_message_iter_open_container(&array_it, DBUS_TYPE_STRUCT, nullptr, &struct_it) ) {

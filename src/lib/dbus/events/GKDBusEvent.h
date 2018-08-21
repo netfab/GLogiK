@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_EVENT_H__
-#define __GLOGIK_GKDBUS_EVENT_H__
+#ifndef SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_HPP_
+#define SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_HPP_
 
 #include <cstdint>
 

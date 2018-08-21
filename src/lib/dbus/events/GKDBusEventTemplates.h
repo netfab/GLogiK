@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_EVENT_TEMPLATES_H__
-#define __GLOGIK_GKDBUS_EVENT_TEMPLATES_H__
+#ifndef SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TEMPLATES_HPP_
+#define SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TEMPLATES_HPP_
 
 #include <cstdint>
 
@@ -230,7 +230,7 @@ template <typename T>
 			GKDBusEvent* event
 		) = 0;
 
-		virtual DBusConnection* getConnection(BusConnection wanted_connection) = 0;
+		virtual DBusConnection* getConnection(BusConnection wantedConnection) = 0;
 };
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
