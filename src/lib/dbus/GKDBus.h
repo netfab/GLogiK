@@ -24,7 +24,6 @@
 
 #include <string>
 #include <vector>
-#include <sstream>
 
 #include <dbus/dbus.h>
 
@@ -71,30 +70,29 @@ class GKDBus
 		public GKDBusArgumentMacro
 {
 	public:
-		GKDBus(const std::string & rootnode);
+		GKDBus(const std::string & rootNode);
 		~GKDBus();
 
-		void connectToSystemBus(const char* connection_name);
+		void connectToSystemBus(const char* connectionName);
 
 		void checkForNextMessage(const BusConnection bus);
 
 	protected:
 
 	private:
-		std::ostringstream buffer_;
-		DBusError error_;
+		DBusError _error;
 
-		DBusConnection* session_conn_;
-		DBusConnection* system_conn_;
+		//DBusConnection* _sessionConnection;
+		DBusConnection* _systemConnection;
 
-		std::string session_name_;
-		std::string system_name_;
+		//std::string _sessionName;
+		std::string _systemName;
 
-		DBusMessage* message_;
+		DBusMessage* _message;
 
-		void checkDBusError(const char* error_message);
+		void checkDBusError(const char* error);
 		void checkReleasedName(int ret);
-		DBusConnection* getConnection(BusConnection bus_connection);
+		DBusConnection* getConnection(BusConnection bus);
 };
 
 } // namespace NSGKDBus

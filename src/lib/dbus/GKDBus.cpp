@@ -21,6 +21,7 @@
 
 #include <new>
 #include <algorithm>
+#include <sstream>
 
 #include "messages/GKDBusMessage.h"
 #include "GKDBus.h"
@@ -28,16 +29,15 @@
 namespace NSGKDBus
 {
 
-GKDBus::GKDBus(const std::string & rootnode)
-	:	GKDBusEvents(rootnode),
-		buffer_("", std::ios_base::app),
-		session_conn_(nullptr),
-		system_conn_(nullptr)
+GKDBus::GKDBus(const std::string & rootNode)
+	:	GKDBusEvents(rootNode),
+		//_sessionConnection(nullptr),
+		_systemConnection(nullptr)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "dbus object initialization";
 #endif
-	dbus_error_init(&(this->error_));
+	dbus_error_init(&_error);
 }
 
 GKDBus::~GKDBus()
@@ -47,47 +47,47 @@ GKDBus::~GKDBus()
 #endif
 
 /*
-	if(this->session_conn_) {
+	if(_sessionConnection) {
 #if DEBUGGING_ON
 		LOG(DEBUG) << "closing DBus Session connection";
 #endif
 
-		if( ! this->session_name_.empty() ) {
-			int ret = dbus_bus_release_name(this->session_conn_, this->session_name_.c_str(), nullptr);
+		if( ! _sessionName.empty() ) {
+			int ret = dbus_bus_release_name(_sessionConnection, _sessionName.c_str(), nullptr);
 			this->checkReleasedName(ret);
 		}
-		dbus_connection_unref(this->session_conn_);
+		dbus_connection_unref(_sessionConnection);
 	}
 */
 
-	if(this->system_conn_) {
+	if(_systemConnection) {
 #if DEBUGGING_ON
 		LOG(DEBUG) << "closing DBus System connection";
 #endif
 
-		if( ! this->system_name_.empty() ) {
-			int ret = dbus_bus_release_name(this->system_conn_, this->system_name_.c_str(), nullptr);
+		if( ! _systemName.empty() ) {
+			int ret = dbus_bus_release_name(_systemConnection, _systemName.c_str(), nullptr);
 			this->checkReleasedName(ret);
 		}
-		dbus_connection_unref(this->system_conn_);
+		dbus_connection_unref(_systemConnection);
 	}
 }
 
-void GKDBus::connectToSystemBus(const char* connection_name) {
-	this->system_conn_ = dbus_bus_get(DBUS_BUS_SYSTEM, &this->error_);
+void GKDBus::connectToSystemBus(const char* connectionName) {
+	_systemConnection = dbus_bus_get(DBUS_BUS_SYSTEM, &_error);
 	this->checkDBusError("DBus System connection failure");
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "DBus System connection opened";
 #endif
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "requesting system connection name : " << connection_name;
+	LOG(DEBUG2) << "requesting system connection name : " << connectionName;
 #endif
-	this->system_name_.clear();
-	int ret = dbus_bus_request_name(this->system_conn_, connection_name,
-		DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &this->error_);
+	_systemName.clear();
+	int ret = dbus_bus_request_name(_systemConnection, connectionName,
+		DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &_error);
 	this->checkDBusError("DBus System request name failure");
-	this->system_name_ = connection_name;
+	_systemName = connectionName;
 
 	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
 		throw GLogiKExcept("DBus System request name failure : not owner");
@@ -116,52 +116,52 @@ void GKDBus::checkForNextMessage(const BusConnection bus) {
 	}
 
 	dbus_connection_read_write(connection, 0);
-	this->message_ = dbus_connection_pop_message(connection);
+	_message = dbus_connection_pop_message(connection);
 
 	/* no message */
-	if(this->message_ == nullptr) {
+	if(_message == nullptr) {
 		return;
 	}
 
 	try {
-		const std::string asked_object_path( to_string( dbus_message_get_path(this->message_) ) );
+		const std::string askedObjectPath( to_string( dbus_message_get_path(_message) ) );
 		const auto & bus = _DBusEvents.at(GKDBusEvents::currentBus);
 
-		for(const auto & object_pair : bus) {
+		for(const auto & objectPair : bus) {
 			/* handle root node introspection special case */
-			if( asked_object_path != this->getRootNode() )
+			if( askedObjectPath != this->getRootNode() )
 				/* object path must match */
-				if(asked_object_path != this->getNode(object_pair.first))
+				if(askedObjectPath != this->getNode(objectPair.first))
 					continue;
 
-			for(const auto & interface_pair : object_pair.second) {
-				const char* interface = interface_pair.first.c_str();
+			for(const auto & interfacePair : objectPair.second) {
+				const char* interface = interfacePair.first.c_str();
 #if DEBUGGING_ON
 				LOG(DEBUG2) << "checking " << interface << " interface";
 #endif
 
-				for(const auto & DBusEvent : interface_pair.second) { /* vector of pointers */
+				for(const auto & DBusEvent : interfacePair.second) { /* vector of pointers */
 					const char* eventName = DBusEvent->eventName.c_str();
 #if 0 && DEBUGGING_ON
 					LOG(DEBUG3) << "checking " << eventName << " event";
 #endif
 					switch(DBusEvent->eventType) {
 						case GKDBusEventType::GKDBUS_EVENT_METHOD: {
-							if( dbus_message_is_method_call(this->message_, interface, eventName) ) {
+							if( dbus_message_is_method_call(_message, interface, eventName) ) {
 #if DEBUGGING_ON
 								LOG(DEBUG1) << "DBus " << eventName << " method called !";
 #endif
-								DBusEvent->runCallback(connection, this->message_);
+								DBusEvent->runCallback(connection, _message);
 								throw GKDBusEventFound();
 							}
 							break;
 						}
 						case GKDBusEventType::GKDBUS_EVENT_SIGNAL: {
-							if( dbus_message_is_signal(this->message_, interface, eventName) ) {
+							if( dbus_message_is_signal(_message, interface, eventName) ) {
 #if DEBUGGING_ON
 								LOG(DEBUG1) << "DBus " << eventName << " signal receipted !";
 #endif
-								DBusEvent->runCallback(connection, this->message_);
+								DBusEvent->runCallback(connection, _message);
 								throw GKDBusEventFound();
 							}
 							break;
@@ -187,8 +187,8 @@ void GKDBus::checkForNextMessage(const BusConnection bus) {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "freeing DBus message";
 #endif
-	dbus_message_unref(this->message_);
-	this->message_ = nullptr;
+	dbus_message_unref(_message);
+	_message = nullptr;
 }
 
 
@@ -219,26 +219,28 @@ void GKDBus::checkReleasedName(int ret) {
 	}
 }
 
-void GKDBus::checkDBusError(const char* error_message) {
-	if( dbus_error_is_set(&this->error_) ) {
-		this->buffer_.str(error_message);
-		this->buffer_ << " : " << this->error_.message;
-		dbus_error_free(&this->error_);
-		throw GLogiKExcept(this->buffer_.str());
+void GKDBus::checkDBusError(const char* error) {
+	if( dbus_error_is_set(&_error) ) {
+		std::ostringstream buffer;
+		buffer << error << " : " << _error.message;
+		dbus_error_free(&_error);
+		throw GLogiKExcept(buffer.str());
 	}
 }
 
-DBusConnection* GKDBus::getConnection(BusConnection bus_connection) {
-	switch(bus_connection) {
+DBusConnection* GKDBus::getConnection(BusConnection bus) {
+	switch(bus) {
+/*
 		case BusConnection::GKDBUS_SESSION :
-			if(this->session_conn_ == nullptr)
+			if(_sessionConnection == nullptr)
 				throw GLogiKExcept("DBus Session connection not opened");
-			return this->session_conn_;
+			return _sessionConnection;
 			break;
+*/
 		case BusConnection::GKDBUS_SYSTEM :
-			if(this->system_conn_ == nullptr)
+			if(_systemConnection == nullptr)
 				throw GLogiKExcept("DBus System connection not opened");
-			return this->system_conn_;
+			return _systemConnection;
 			break;
 		default:
 			throw GLogiKExcept("asked connection not handled");
