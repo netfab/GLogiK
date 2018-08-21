@@ -28,18 +28,18 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-thread_local std::string GKDBusArgumentString::current_string_("");
+thread_local std::string GKDBusArgumentString::currentString("");
 
 const std::string & GKDBusArgumentString::getNextStringArgument(void) {
-	if( GKDBusArgument::string_arguments_.empty() )
+	if( GKDBusArgument::stringArguments.empty() )
 		throw EmptyContainer("missing argument : string");
-	GKDBusArgumentString::current_string_ = GKDBusArgument::string_arguments_.back();
-	GKDBusArgument::string_arguments_.pop_back();
-	return GKDBusArgumentString::current_string_;
+	GKDBusArgumentString::currentString = GKDBusArgument::stringArguments.back();
+	GKDBusArgument::stringArguments.pop_back();
+	return GKDBusArgumentString::currentString;
 }
 
 const std::vector<std::string> & GKDBusArgumentString::getStringsArray(void) {
-	return GKDBusArgument::string_arguments_;
+	return GKDBusArgument::stringArguments;
 }
 
 } // namespace NSGKDBus

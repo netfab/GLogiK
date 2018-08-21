@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_H__
-#define __GLOGIK_GKDBUS_H__
+#ifndef SRC_LIB_DBUS_GKDBUS_HPP_
+#define SRC_LIB_DBUS_GKDBUS_HPP_
 
 #include <string>
 #include <vector>

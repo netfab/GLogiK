@@ -33,33 +33,33 @@ using namespace NSGKUtils;
  */
 const GLogiK::macros_bank_type GKDBusArgumentMacrosBank::getNextMacrosBankArgument(void) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "rebuilding macros_bank from GKDBus values";
+	LOG(DEBUG2) << "rebuilding macros bank from GKDBus values";
 #endif
-	GLogiK::macros_bank_type macros_bank;
+	GLogiK::macros_bank_type bank;
 
 	try {
 		do {
-			const std::string macro_key = GKDBusArgumentString::getNextStringArgument();
-			const uint8_t macro_size = GKDBusArgumentByte::getNextByteArgument();
-			const GLogiK::macro_type macro_array = GKDBusArgumentMacro::getNextMacroArgument(macro_size);
+			const std::string key = GKDBusArgumentString::getNextStringArgument();
+			const uint8_t size = GKDBusArgumentByte::getNextByteArgument();
+			const GLogiK::macro_type macroArray = GKDBusArgumentMacro::getNextMacroArgument(size);
 
-			macros_bank[macro_key] = macro_array;
+			bank[key] = macroArray;
 		}
-		while( ! GKDBusArgumentString::string_arguments_.empty() );
+		while( ! GKDBusArgumentString::stringArguments.empty() );
 	}
 	catch ( const EmptyContainer & e ) {
 		LOG(WARNING) << "missing argument : " << e.what();
 		throw GLogiKExcept("rebuilding MacrosBank failed");
 	}
 
-	if( ! GKDBusArgumentByte::byte_arguments_.empty() ) { /* sanity check */
+	if( ! GKDBusArgumentByte::byteArguments.empty() ) { /* sanity check */
 		LOG(WARNING) << "byte container not empty";
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "macros bank size : " << macros_bank.size();
+	LOG(DEBUG3) << "macros bank size : " << bank.size();
 #endif
-	return macros_bank;
+	return bank;
 }
 
 } // namespace NSGKDBus

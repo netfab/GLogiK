@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_CONNECTION_H__
-#define __GLOGIK_GKDBUS_CONNECTION_H__
+#ifndef SRC_LIB_DBUS_GKDBUS_CONNECTION_HPP_
+#define SRC_LIB_DBUS_GKDBUS_CONNECTION_HPP_
 
 #include <cstdint>
 

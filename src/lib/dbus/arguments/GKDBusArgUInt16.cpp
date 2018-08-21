@@ -29,10 +29,10 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 const uint16_t GKDBusArgumentUInt16::getNextUInt16Argument(void) {
-	if( GKDBusArgument::uint16_arguments_.empty() )
+	if( GKDBusArgument::uint16Arguments.empty() )
 		throw EmptyContainer("missing argument : uint16");
-	const uint16_t ret = GKDBusArgument::uint16_arguments_.back();
-	GKDBusArgument::uint16_arguments_.pop_back();
+	const uint16_t ret = GKDBusArgument::uint16Arguments.back();
+	GKDBusArgument::uint16Arguments.pop_back();
 	return ret;
 }
 

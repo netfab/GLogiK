@@ -29,10 +29,10 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 const uint64_t GKDBusArgumentUInt64::getNextUInt64Argument(void) {
-	if( GKDBusArgument::uint64_arguments_.empty() )
+	if( GKDBusArgument::uint64Arguments.empty() )
 		throw EmptyContainer("missing argument : uint64");
-	const uint64_t ret = GKDBusArgument::uint64_arguments_.back();
-	GKDBusArgument::uint64_arguments_.pop_back();
+	const uint64_t ret = GKDBusArgument::uint64Arguments.back();
+	GKDBusArgument::uint64Arguments.pop_back();
 	return ret;
 }
 

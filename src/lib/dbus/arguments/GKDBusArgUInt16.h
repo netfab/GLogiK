@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_ARG_UINT16_H__
-#define __GLOGIK_GKDBUS_ARG_UINT16_H__
+#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_UINT16_HPP_
+#define SRC_LIB_DBUS_ARG_GKDBUS_ARG_UINT16_HPP_
 
 #include <cstdint>
 

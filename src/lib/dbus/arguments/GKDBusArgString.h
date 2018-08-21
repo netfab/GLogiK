@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_ARG_STRING_H__
-#define __GLOGIK_GKDBUS_ARG_STRING_H__
+#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_STRING_HPP_
+#define SRC_LIB_DBUS_ARG_GKDBUS_ARG_STRING_HPP_
 
 #include "GKDBusArgument.h"
 
@@ -42,7 +42,7 @@ class GKDBusArgumentString
 		~GKDBusArgumentString(void) = default;
 
 	private:
-		thread_local static std::string current_string_;
+		thread_local static std::string currentString;
 
 };
 

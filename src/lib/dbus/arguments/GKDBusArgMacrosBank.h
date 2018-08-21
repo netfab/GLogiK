@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_ARG_MACROSBANK_H__
-#define __GLOGIK_GKDBUS_ARG_MACROSBANK_H__
+#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_MACROS_BANK_HPP_
+#define SRC_LIB_DBUS_ARG_GKDBUS_ARG_MACROS_BANK_HPP_
 
 #include "include/keyEvent.h"
 

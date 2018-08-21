@@ -29,10 +29,10 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 const uint8_t GKDBusArgumentByte::getNextByteArgument(void) {
-	if( GKDBusArgument::byte_arguments_.empty() )
+	if( GKDBusArgument::byteArguments.empty() )
 		throw EmptyContainer("missing argument : byte");
-	const uint8_t ret = GKDBusArgument::byte_arguments_.back();
-	GKDBusArgument::byte_arguments_.pop_back();
+	const uint8_t ret = GKDBusArgument::byteArguments.back();
+	GKDBusArgument::byteArguments.pop_back();
 	return ret;
 }
 

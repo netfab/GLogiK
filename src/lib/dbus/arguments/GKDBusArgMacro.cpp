@@ -34,13 +34,13 @@ using namespace NSGKUtils;
  * helper function rebuilding macro_type vector
  * mirror of GKDBusMessage::appendMacro
  */
-const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigned int macro_size) {
+const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigned int macroSize) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "rebuilding macro from GKDBus values";
 #endif
-	GLogiK::macro_type macro_array;
+	GLogiK::macro_type macroArray;
 	try {
-		bool nextrun = true;
+		bool nextRun = true;
 		do {
 			GLogiK::KeyEvent e;
 
@@ -53,32 +53,32 @@ const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigne
 			e.event		 = static_cast<GLogiK::EventValue>(value);
 			e.interval	 = GKDBusArgumentUInt16::getNextUInt16Argument();
 
-			macro_array.push_back(e);
+			macroArray.push_back(e);
 
-			if( macro_size > 0 ) {
-				if( macro_array.size() == macro_size )
-					nextrun = false;
+			if( macroSize > 0 ) {
+				if( macroArray.size() == macroSize )
+					nextRun = false;
 			}
 			else {
-				if( GKDBusArgumentByte::byte_arguments_.empty() )
-					nextrun = false;
+				if( GKDBusArgumentByte::byteArguments.empty() )
+					nextRun = false;
 			}
 		}
-		while( nextrun );
+		while( nextRun );
 	}
 	catch ( const EmptyContainer & e ) {
 		LOG(WARNING) << "missing macro argument : " << e.what();
 		throw GLogiKExcept("rebuilding macro failed");
 	}
 
-	if( ( macro_size == 0 ) and ( ! GKDBusArgumentUInt16::uint16_arguments_.empty() ) ) { /* sanity check */
+	if( ( macroSize == 0 ) and ( ! GKDBusArgumentUInt16::uint16Arguments.empty() ) ) { /* sanity check */
 		LOG(WARNING) << "uint16 container not empty";
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "events array size : " << macro_array.size() << " - expected : " << macro_size;
+	LOG(DEBUG3) << "events array size : " << macroArray.size() << " - expected : " << macroSize;
 #endif
-	return macro_array;
+	return macroArray;
 }
 
 } // namespace NSGKDBus

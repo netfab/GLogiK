@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_CALLBACK_ARGUMENT_H__
-#define __GLOGIK_GKDBUS_CALLBACK_ARGUMENT_H__
+#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARGUMENT_HPP_
+#define SRC_LIB_DBUS_ARG_GKDBUS_ARGUMENT_HPP_
 
 #include <cstdint>
 
@@ -46,11 +46,11 @@ class GKDBusArgument
 		);
 		static const int decodeNextArgument(DBusMessageIter* arg_it);
 
-		thread_local static std::vector<std::string> string_arguments_;
-		thread_local static std::vector<uint8_t> byte_arguments_;
-		thread_local static std::vector<uint16_t> uint16_arguments_;
-		thread_local static std::vector<uint64_t> uint64_arguments_;
-		thread_local static std::vector<bool> boolean_arguments_;
+		thread_local static std::vector<std::string> stringArguments;
+		thread_local static std::vector<uint8_t> byteArguments;
+		thread_local static std::vector<uint16_t> uint16Arguments;
+		thread_local static std::vector<uint64_t> uint64Arguments;
+		thread_local static std::vector<bool> booleanArguments;
 
 	private:
 		static void decodeArgumentFromIterator(
