@@ -361,4 +361,4 @@ inline std::string NowTime()
 
 } // namespace NSGKUtils
 
-#endif //__GLOGIK_LOG_H__
+#endif

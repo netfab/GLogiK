@@ -105,10 +105,10 @@ void GKDBus::connectToSystemBus(const char* connection_name) {
  */
 void GKDBus::checkForNextMessage(const BusConnection bus) {
 	DBusConnection* connection = nullptr;
-	this->current_bus_ = bus; /* used on introspection */
+	GKDBusEvents::currentBus = bus; /* used on introspection */
 
 	try {
-		connection = this->getConnection(this->current_bus_);
+		connection = this->getConnection(GKDBusEvents::currentBus);
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(ERROR) << e.what();
@@ -125,9 +125,9 @@ void GKDBus::checkForNextMessage(const BusConnection bus) {
 
 	try {
 		const std::string asked_object_path( to_string( dbus_message_get_path(this->message_) ) );
-		const auto & current_bus = this->DBusEvents_.at(this->current_bus_);
+		const auto & bus = _DBusEvents.at(GKDBusEvents::currentBus);
 
-		for(const auto & object_pair : current_bus) {
+		for(const auto & object_pair : bus) {
 			/* handle root node introspection special case */
 			if( asked_object_path != this->getRootNode() )
 				/* object path must match */

@@ -32,38 +32,38 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-const std::string GKDBusEvents::rootNodeObject_("RootNode");
-thread_local BusConnection GKDBusEvents::current_bus_(BusConnection::GKDBUS_SYSTEM);
+const std::string GKDBusEvents::_rootNodeObject("RootNode");
+thread_local BusConnection GKDBusEvents::currentBus(BusConnection::GKDBUS_SYSTEM);
 
-GKDBusEvents::GKDBusEvents(const std::string & rootnode) : root_node_(rootnode) {
+GKDBusEvents::GKDBusEvents(const std::string & rootNode) : _rootNode(rootNode) {
 	/* adding special event for root node introspection */
 	// FIXME same event for GKDBUS_SESSION
-	const char* object = GKDBusEvents::rootNodeObject_.c_str();
-	const BusConnection system_bus(BusConnection::GKDBUS_SYSTEM);
+	const char* object = GKDBusEvents::_rootNodeObject.c_str();
+	const BusConnection systemBus(BusConnection::GKDBUS_SYSTEM);
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "adding Introspectable interface : " << object;
 #endif
 	this->EventGKDBusCallback<StringToString>::exposeEvent(
-		system_bus, object, "org.freedesktop.DBus.Introspectable", "Introspect",
+		systemBus, object, "org.freedesktop.DBus.Introspectable", "Introspect",
 		{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
 		std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),
 		GKDBusEventType::GKDBUS_EVENT_METHOD, false);
 }
 
 GKDBusEvents::~GKDBusEvents() {
-	for(const auto & bus_pair : this->DBusEvents_) {
+	for(const auto & busPair : _DBusEvents) {
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "current bus: " << to_uint(to_type(bus_pair.first));
+		LOG(DEBUG1) << "current bus: " << to_uint(to_type(busPair.first));
 #endif
-		for(const auto & object_path_pair : bus_pair.second) {
+		for(const auto & objectPathPair : busPair.second) {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "object_path: " << object_path_pair.first;
+			LOG(DEBUG2) << "object_path: " << objectPathPair.first;
 #endif
-			for(const auto & interface_pair : object_path_pair.second) {
+			for(const auto & interfacePair : objectPathPair.second) {
 #if DEBUGGING_ON
-				LOG(DEBUG3) << "interface: " << interface_pair.first;
+				LOG(DEBUG3) << "interface: " << interfacePair.first;
 #endif
-				for(auto & DBusEvent : interface_pair.second) { /* vector of pointers */
+				for(auto & DBusEvent : interfacePair.second) { /* vector of pointers */
 					delete DBusEvent;
 				}
 			}
@@ -72,14 +72,14 @@ GKDBusEvents::~GKDBusEvents() {
 }
 
 const std::string GKDBusEvents::getNode(const std::string & object) const {
-	std::string node(this->root_node_);
+	std::string node(_rootNode);
 	node += "/";
 	node += object;
 	return node;
 }
 
 const std::string & GKDBusEvents::getRootNode(void) const {
-	return this->root_node_;
+	return _rootNode;
 }
 
 const std::string GKDBusEvents::introspectRootNode(void) {
@@ -87,14 +87,14 @@ const std::string GKDBusEvents::introspectRootNode(void) {
 
 	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
-	xml << "<node name=\"" << this->root_node_ << "\">\n";
+	xml << "<node name=\"" << _rootNode << "\">\n";
 
 	try {
-		const auto & current_bus = this->DBusEvents_.at(this->current_bus_);
+		const auto & bus = _DBusEvents.at(GKDBusEvents::currentBus);
 
-		for(const auto & object_path_pair : current_bus) {
-			if(object_path_pair.first != GKDBusEvents::rootNodeObject_)
-				xml << "  <node name=\"" << object_path_pair.first << "\"/>\n";
+		for(const auto & objectPathPair : bus) {
+			if(objectPathPair.first != GKDBusEvents::_rootNodeObject)
+				xml << "  <node name=\"" << objectPathPair.first << "\"/>\n";
 		}
 	}
 	catch (const std::out_of_range& oor) {
@@ -109,36 +109,41 @@ const std::string GKDBusEvents::introspectRootNode(void) {
  * private
  */
 
-void GKDBusEvents::addIntrospectableEvent(const BusConnection bus, const char* object, const char* interface, GKDBusEvent* event) {
+void GKDBusEvents::addIntrospectableEvent(
+	const BusConnection eventBus,
+	const char* eventObject,
+	const char* eventInterface,
+	GKDBusEvent* event)
+{
 	if(event->introspectable) {
 		try {
-			const auto & current_bus = this->DBusEvents_.at(bus);
-			const auto & obj = current_bus.at(object);
+			const auto & bus = _DBusEvents.at(eventBus);
+			const auto & obj = bus.at(eventObject);
 			obj.at("org.freedesktop.DBus.Introspectable");
 		}
 		catch (const std::out_of_range& oor) {
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "adding Introspectable interface : " << object;
+			LOG(DEBUG3) << "adding Introspectable interface : " << eventObject;
 #endif
 			this->EventGKDBusCallback<StringToString>::exposeEvent(
-				bus, object, "org.freedesktop.DBus.Introspectable", "Introspect",
+				eventBus, eventObject, "org.freedesktop.DBus.Introspectable", "Introspect",
 				{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
 				std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),
 				GKDBusEventType::GKDBUS_EVENT_METHOD, false);
 		}
 	}
-	this->DBusInterfaces_.insert(interface);
-	this->DBusEvents_[bus][object][interface].push_back(event);
+	_DBusInterfaces.insert(eventInterface);
+	_DBusEvents[eventBus][eventObject][eventInterface].push_back(event);
 }
 
 void GKDBusEvents::openXMLInterface(
 	std::ostringstream & xml,
-	bool & interface_opened,
+	bool & interfaceOpened,
 	const std::string & interface
 ) {
-	if( ! interface_opened ) {
+	if( ! interfaceOpened ) {
 		xml << "  <interface name=\"" << interface << "\">\n";
-		interface_opened = true;
+		interfaceOpened = true;
 	}
 }
 
@@ -156,42 +161,42 @@ void GKDBusEvents::eventToXMLMethod(
 	}
 }
 
-const std::string GKDBusEvents::introspect(const std::string & asked_object_path) {
+const std::string GKDBusEvents::introspect(const std::string & askedObjectPath) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "object path asked : " << asked_object_path;
+	LOG(DEBUG2) << "object path asked : " << askedObjectPath;
 #endif
 
-	if( asked_object_path == this->root_node_ )
+	if( askedObjectPath == _rootNode )
 		return this->introspectRootNode();
 
 	std::ostringstream xml;
 
 	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
-	xml << "<node name=\"" << asked_object_path << "\">\n";
+	xml << "<node name=\"" << askedObjectPath << "\">\n";
 
 	try {
-		const auto & current_bus = this->DBusEvents_.at(this->current_bus_);
+		const auto & bus = _DBusEvents.at(GKDBusEvents::currentBus);
 
-		for(const auto & interface : this->DBusInterfaces_) {
+		for(const auto & interface : _DBusInterfaces) {
 
-			bool interface_opened = false;
+			bool interfaceOpened = false;
 
-			for(const auto & object_path_pair : current_bus) {
+			for(const auto & objectPathPair : bus) {
 				/* object path must match */
-				if( this->getNode(object_path_pair.first) != asked_object_path )
+				if( this->getNode(objectPathPair.first) != askedObjectPath )
 					continue;
-				for(const auto & interface_pair : object_path_pair.second) {
-					if( interface_pair.first == interface ) {
-						this->openXMLInterface(xml, interface_opened, interface);
-						for(const auto & DBusEvent : interface_pair.second) { /* vector of pointers */
+				for(const auto & interfacePair : objectPathPair.second) {
+					if( interfacePair.first == interface ) {
+						this->openXMLInterface(xml, interfaceOpened, interface);
+						for(const auto & DBusEvent : interfacePair.second) { /* vector of pointers */
 							this->eventToXMLMethod(xml, DBusEvent);
 						}
 					}
 				}
 			}
 
-			if( interface_opened )
+			if( interfaceOpened )
 				xml << "  </interface>\n";
 		}
 	}

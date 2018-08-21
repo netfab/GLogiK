@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_GKDBUS_EVENTS_H__
-#define __GLOGIK_GKDBUS_EVENTS_H__
+#ifndef SRC_LIB_DBUS_GKDBUS_EVENTS_HPP_
+#define SRC_LIB_DBUS_GKDBUS_EVENTS_HPP_
 
 #include <string>
 #include <vector>
@@ -54,40 +54,40 @@ class GKDBusEvents
 	public:
 
 	protected:
-		GKDBusEvents(const std::string & rootnode);
+		GKDBusEvents(const std::string & rootNode);
 		~GKDBusEvents(void);
 
-		thread_local static BusConnection current_bus_;
+		thread_local static BusConnection currentBus;
 
 		std::map< const BusConnection,
 			std::map< const std::string, /* object path */
 				std::map< const std::string, /* interface */
-					std::vector<GKDBusEvent*> > > > DBusEvents_;
+					std::vector<GKDBusEvent*> > > > _DBusEvents;
 
 		const std::string getNode(const std::string & object) const;
 		const std::string & getRootNode(void) const;
 
 	private:
-		static const std::string rootNodeObject_;
-		std::string root_node_;
-		std::set<std::string> DBusInterfaces_;
+		static const std::string _rootNodeObject;
+		std::string _rootNode;
+		std::set<std::string> _DBusInterfaces;
 
 		void openXMLInterface(
 			std::ostringstream & xml,
-			bool & interface_opened,
+			bool & interfaceOpened,
 			const std::string & interface
 		);
 		void eventToXMLMethod(
 			std::ostringstream & xml,
 			const GKDBusEvent* DBusEvent
 		);
-		const std::string introspect(const std::string & asked_object_path);
+		const std::string introspect(const std::string & askedObjectPath);
 		const std::string introspectRootNode(void);
 
 		void addIntrospectableEvent(
-			const BusConnection bus,
-			const char* object,
-			const char* interface,
+			const BusConnection eventBus,
+			const char* eventObject,
+			const char* eventInterface,
 			GKDBusEvent* event
 		);
 };
