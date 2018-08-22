@@ -892,7 +892,7 @@ void KeyboardDriver::closeDevice(const BusNumDeviceID & det)
 /* called when setting active user's configuration */
 void KeyboardDriver::setDeviceActiveConfiguration(
 	const std::string & devID,
-	const macros_map_type & macros_profiles,
+	const banksMap_type & macros_profiles,
 	const uint8_t r,
 	const uint8_t g,
 	const uint8_t b
@@ -918,7 +918,7 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 	}
 }
 
-const macros_map_type & KeyboardDriver::getDeviceMacrosBanks(const std::string & devID) {
+const banksMap_type & KeyboardDriver::getDeviceMacrosBanks(const std::string & devID) {
 	try {
 		USBDevice & device = this->initialized_devices_.at(devID);
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {

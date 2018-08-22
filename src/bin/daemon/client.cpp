@@ -165,7 +165,7 @@ void Client::setDeviceActiveUser(
 	}
 }
 
-void Client::syncDeviceMacrosBanks(const std::string & devID, const macros_map_type & macros_profiles) {
+void Client::syncDeviceMacrosBanks(const std::string & devID, const banksMap_type & macros_profiles) {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "synchonizing macros profiles for device " << devID;
 #endif
@@ -197,7 +197,7 @@ const macro_type & Client::getDeviceMacro(
 const bool Client::setDeviceMacrosBank(
 	const std::string & devID,
 	const uint8_t profile,
-	const macros_bank_type & bank
+	const mBank_type & bank
 ) {
 	bool ret = true;
 

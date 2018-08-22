@@ -37,7 +37,7 @@ class GKDBusArgumentMacrosBank
 		private GKDBusArgumentMacro
 {
 	public:
-		static const GLogiK::macros_bank_type getNextMacrosBankArgument(void);
+		static const GLogiK::mBank_type getNextMacrosBankArgument(void);
 
 	protected:
 		GKDBusArgumentMacrosBank(void) = default;

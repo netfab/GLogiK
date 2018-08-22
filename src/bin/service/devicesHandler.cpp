@@ -303,7 +303,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 		for( const auto & macros_bank_pair : device.getMacrosBanks() ) {
 			const uint8_t current_profile = to_type(macros_bank_pair.first);
-			const macros_bank_type & current_bank = macros_bank_pair.second;
+			const mBank_type & current_bank = macros_bank_pair.second;
 
 			/* test whether this MacrosBank should be sent */
 			bool send_it = false;

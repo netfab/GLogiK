@@ -45,7 +45,7 @@ class GKDBusMessage
 		void appendUInt64(const uint64_t value);
 
 		void appendMacro(const GLogiK::macro_type & macro);
-		void appendMacrosBank(const GLogiK::macros_bank_type & bank);
+		void appendMacrosBank(const GLogiK::mBank_type & bank);
 
 		void abandon(void);
 

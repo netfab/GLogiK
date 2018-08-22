@@ -75,7 +75,7 @@ class GKDBusMessageRemoteMethodCall
 		void appendStringToRemoteMethodCall(const std::string & value);
 		void appendUInt8ToRemoteMethodCall(const uint8_t value);
 		void appendUInt32ToRemoteMethodCall(const uint32_t value);
-		void appendMacrosBankToRemoteMethodCall(const GLogiK::macros_bank_type & bank);
+		void appendMacrosBankToRemoteMethodCall(const GLogiK::mBank_type & bank);
 
 		void sendRemoteMethodCall(void);
 		void abandonRemoteMethodCall(void);

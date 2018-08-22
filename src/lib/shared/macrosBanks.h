@@ -42,12 +42,12 @@ class MacrosBanks
 	public:
 
 		static const macro_type emptyMacro;
-		static const macros_map_type emptyMacrosBanks;
+		static const banksMap_type emptyMacrosBanks;
 
 		void initMacrosBanks(const std::vector<std::string> & keysNames);
 
-		const macros_map_type & getMacrosBanks(void) const;
-		void setMacrosBanks(const macros_map_type & macrosBanks);
+		const banksMap_type & getMacrosBanks(void) const;
+		void setMacrosBanks(const banksMap_type & macrosBanks);
 
 		void clearMacro(
 			const uint8_t bank,
@@ -86,7 +86,7 @@ class MacrosBanks
 			ar & _macrosBanks;
 		}
 
-		macros_map_type _macrosBanks = {
+		banksMap_type _macrosBanks = {
 			{ MacrosBank::BANK_M0, {}},
 			{ MacrosBank::BANK_M1, {}},
 			{ MacrosBank::BANK_M2, {}},

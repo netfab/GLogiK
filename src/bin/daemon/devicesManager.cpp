@@ -633,7 +633,7 @@ const std::string DevicesManager::getDeviceStatus(const std::string & devID) con
 
 void DevicesManager::setDeviceActiveConfiguration(
 	const std::string & devID,
-	const macros_map_type & macros_profiles,
+	const banksMap_type & macros_profiles,
 	const uint8_t r,
 	const uint8_t g,
 	const uint8_t b)
@@ -655,7 +655,7 @@ void DevicesManager::setDeviceActiveConfiguration(
 	}
 }
 
-const macros_map_type & DevicesManager::getDeviceMacrosBanks(const std::string & devID) const
+const banksMap_type & DevicesManager::getDeviceMacrosBanks(const std::string & devID) const
 {
 	try {
 		const auto & device = this->initialized_devices_.at(devID);

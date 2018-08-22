@@ -753,7 +753,7 @@ const bool ClientsManager::setDeviceMacrosBank(
 	const std::string & clientID,
 	const std::string & devID,
 	const uint8_t profile,
-	const macros_bank_type & bank
+	const mBank_type & bank
 )	{
 #if DEBUGGING_ON
 	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;

@@ -126,7 +126,7 @@ typedef std::function<
 				const std::string&,
 				const std::string&,
 				const uint8_t,
-				const GLogiK::macros_bank_type &
+				const GLogiK::mBank_type &
 			) > TwoStringsOneByteOneMacrosBankToBool;
 
 

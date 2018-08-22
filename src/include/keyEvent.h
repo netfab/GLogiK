@@ -104,8 +104,8 @@ inline const bool operator > (const uint8_t value, const MacrosBank & bank)
 }
 
 typedef std::vector<KeyEvent> macro_type;
-typedef std::map<const std::string, macro_type> macros_bank_type;
-typedef std::map<const MacrosBank, macros_bank_type> macros_map_type;
+typedef std::map<const std::string, macro_type> mBank_type;		/* macros bank */
+typedef std::map<const MacrosBank, mBank_type> banksMap_type;	/* banks map container */
 
 } // namespace GLogiK
 

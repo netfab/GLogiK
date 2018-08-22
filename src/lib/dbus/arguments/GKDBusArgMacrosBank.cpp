@@ -29,13 +29,13 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 /*
- * helper function rebuilding macros_bank_type map
+ * helper function rebuilding mBank_type map
  */
-const GLogiK::macros_bank_type GKDBusArgumentMacrosBank::getNextMacrosBankArgument(void) {
+const GLogiK::mBank_type GKDBusArgumentMacrosBank::getNextMacrosBankArgument(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "rebuilding macros bank from GKDBus values";
 #endif
-	GLogiK::macros_bank_type bank;
+	GLogiK::mBank_type bank;
 
 	try {
 		do {

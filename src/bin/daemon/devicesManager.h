@@ -113,13 +113,13 @@ class DevicesManager
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,
-			const macros_map_type & macros_profiles,
+			const banksMap_type & macros_profiles,
 			const uint8_t r,
 			const uint8_t g,
 			const uint8_t b
 		);
 
-		const macros_map_type & getDeviceMacrosBanks(const std::string & devID) const;
+		const banksMap_type & getDeviceMacrosBanks(const std::string & devID) const;
 		const std::vector<std::string> & getDeviceMacroKeysNames(const std::string & devID) const;
 		const std::string getDeviceStatus(const std::string & devID) const;
 

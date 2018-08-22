@@ -524,9 +524,9 @@ template <>
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
 		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
 		const uint8_t arg3 = this->getNextByteArgument();
-		const GLogiK::macros_bank_type arg4 = this->getNextMacrosBankArgument();
+		const GLogiK::mBank_type arg4 = this->getNextMacrosBankArgument();
 
-		/* call two strings one byte one MacrosBank(macros_bank_type) to bool callback */
+		/* call two strings one byte one MacrosBank(mBank_type) to bool callback */
 		ret = this->callback(arg1, arg2, arg3, arg4);
 	}
 	catch ( const GLogiKExcept & e ) {

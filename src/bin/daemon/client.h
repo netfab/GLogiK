@@ -67,7 +67,7 @@ class Client
 
 		void syncDeviceMacrosBanks(
 			const std::string & devID,
-			const macros_map_type & macros_profiles
+			const banksMap_type & macros_profiles
 		);
 
 		const macro_type & getDeviceMacro(
@@ -79,7 +79,7 @@ class Client
 		const bool setDeviceMacrosBank(
 			const std::string & devID,
 			const uint8_t profile,
-			const macros_bank_type & bank
+			const mBank_type & bank
 		);
 
 		void toggleClientReadyPropertie(void);

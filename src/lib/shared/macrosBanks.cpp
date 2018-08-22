@@ -32,7 +32,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 const macro_type MacrosBanks::emptyMacro = {};
-const macros_map_type MacrosBanks::emptyMacrosBanks = {};
+const banksMap_type MacrosBanks::emptyMacrosBanks = {};
 
 MacrosBanks::MacrosBanks() {
 }
@@ -52,12 +52,12 @@ void MacrosBanks::initMacrosBanks(const std::vector<std::string> & keysNames) {
 	}
 }
 
-const macros_map_type & MacrosBanks::getMacrosBanks(void) const
+const banksMap_type & MacrosBanks::getMacrosBanks(void) const
 {
 	return _macrosBanks;
 }
 
-void MacrosBanks::setMacrosBanks(const macros_map_type & macrosBanks)
+void MacrosBanks::setMacrosBanks(const banksMap_type & macrosBanks)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "setting macros banks";

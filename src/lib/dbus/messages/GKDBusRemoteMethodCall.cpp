@@ -159,7 +159,7 @@ void GKDBusMessageRemoteMethodCall::appendUInt32ToRemoteMethodCall(const uint32_
 		_remoteMethodCall->appendUInt32(value);
 }
 
-void GKDBusMessageRemoteMethodCall::appendMacrosBankToRemoteMethodCall(const GLogiK::macros_bank_type & bank) {
+void GKDBusMessageRemoteMethodCall::appendMacrosBankToRemoteMethodCall(const GLogiK::mBank_type & bank) {
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendMacrosBank(bank);
 }

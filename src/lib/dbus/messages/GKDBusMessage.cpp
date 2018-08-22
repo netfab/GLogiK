@@ -141,7 +141,7 @@ void GKDBusMessage::appendMacro(const GLogiK::macro_type & macro) {
 	this->appendMacro(&_args_it, macro);
 }
 
-void GKDBusMessage::appendMacrosBank(const GLogiK::macros_bank_type & bank) {
+void GKDBusMessage::appendMacrosBank(const GLogiK::mBank_type & bank) {
 	DBusMessageIter array_it;
 
 	const char array_sig[] = \
