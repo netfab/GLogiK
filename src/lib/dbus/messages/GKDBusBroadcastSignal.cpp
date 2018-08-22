@@ -32,7 +32,7 @@ using namespace NSGKUtils;
 
 GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 	DBusConnection* connection,
-	const char* dest,			/* destination, if NULL, broadcast */
+	const char* destination,	/* destination, if NULL, broadcast */
 	const char* objectPath,		/* the path to the object emitting the signal */
 	const char* interface,		/* interface the signal is emitted from */
 	const char* signal			/* name of signal */
@@ -49,11 +49,11 @@ GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 	if(_message == nullptr)
 		throw GKDBusMessageWrongBuild("can't allocate memory for Signal DBus message");
 
-	if( dest != nullptr ) {
+	if( destination != nullptr ) {
 #if DEBUG_GKDBUS_SUBOBJECTS
-		LOG(DEBUG2) << "prepare sending signal to " << dest;
+		LOG(DEBUG2) << "prepare sending signal to " << destination;
 #endif
-		dbus_message_set_destination(_message, dest);
+		dbus_message_set_destination(_message, destination);
 	}
 
 	/* initialize potential arguments iterator */

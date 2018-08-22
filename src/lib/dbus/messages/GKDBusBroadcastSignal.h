@@ -33,8 +33,8 @@ class GKDBusBroadcastSignal : public GKDBusMessage
 {
 	public:
 		GKDBusBroadcastSignal(
-			DBusConnection* connection,		/* connection to send the signal on */
-			const char* dest,			/* destination, if NULL, broadcast */
+			DBusConnection* connection,	/* connection to send the signal on */
+			const char* destination,	/* destination, if NULL, broadcast */
 			const char* objectPath,		/* the path to the object emitting the signal */
 			const char* interface,		/* interface the signal is emitted from */
 			const char* signal			/* name of signal */

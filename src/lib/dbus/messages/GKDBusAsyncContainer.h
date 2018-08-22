@@ -44,7 +44,7 @@ class GKDBusAsyncContainer
 
 	protected:
 	private:
-		unsigned int num;
+		unsigned int _numArgs;
 
 };
 
@@ -64,7 +64,7 @@ class GKDBusMessageAsyncContainer
 		DBusMessage* getAsyncContainerPointer(void) const;
 
 	private:
-		static GKDBusAsyncContainer* container_;
+		static GKDBusAsyncContainer* _asyncContainer;
 
 		void initializeAsyncContainer(void);
 };

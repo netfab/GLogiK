@@ -31,7 +31,7 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 GKDBusAsyncContainer::GKDBusAsyncContainer(void)
-	:	GKDBusMessage(nullptr, false, true), num(0)
+	:	GKDBusMessage(nullptr, false, true), _numArgs(0)
 {
 	/* initialize fake message */
 	_message = dbus_message_new(DBUS_MESSAGE_TYPE_INVALID);
@@ -59,19 +59,19 @@ DBusMessage* GKDBusAsyncContainer::getAsyncContainerPointer(void) const
 }
 
 void GKDBusAsyncContainer::incArgs(void) {
-	this->num++;
+	_numArgs++;
 }
 
 const bool GKDBusAsyncContainer::isAsyncContainerEmpty(void) const
 {
-	return (this->num == 0);
+	return (_numArgs == 0);
 }
 
 /* --- --- --- */
 /* --- --- --- */
 /* --- --- --- */
 
-GKDBusAsyncContainer* GKDBusMessageAsyncContainer::container_(nullptr);
+GKDBusAsyncContainer* GKDBusMessageAsyncContainer::_asyncContainer(nullptr);
 
 GKDBusMessageAsyncContainer::GKDBusMessageAsyncContainer()
 {
@@ -83,11 +83,11 @@ GKDBusMessageAsyncContainer::~GKDBusMessageAsyncContainer()
 
 void GKDBusMessageAsyncContainer::initializeAsyncContainer(void)
 {
-	if(this->container_) /* sanity check */
+	if(_asyncContainer) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus AsyncContainer already allocated");
 
 	try {
-		this->container_ = new GKDBusAsyncContainer();
+		_asyncContainer = new GKDBusAsyncContainer();
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus AsyncContainer allocation failure : " << e.what();
@@ -97,44 +97,44 @@ void GKDBusMessageAsyncContainer::initializeAsyncContainer(void)
 
 void GKDBusMessageAsyncContainer::destroyAsyncContainer(void)
 {
-	if(this->container_) {
-		delete this->container_;
-		this->container_ = nullptr;
+	if(_asyncContainer) {
+		delete _asyncContainer;
+		_asyncContainer = nullptr;
 	}
 }
 
 void GKDBusMessageAsyncContainer::appendAsyncString(const std::string & value)
 {
-	if(this->container_ == nullptr) { /* sanity check */
+	if(_asyncContainer == nullptr) { /* sanity check */
 		this->initializeAsyncContainer();
 	}
 
-	this->container_->appendString(value);
-	this->container_->incArgs();
+	_asyncContainer->appendString(value);
+	_asyncContainer->incArgs();
 }
 
 void GKDBusMessageAsyncContainer::appendAsyncUInt64(const uint64_t value)
 {
-	if(this->container_ == nullptr) { /* sanity check */
+	if(_asyncContainer == nullptr) { /* sanity check */
 		this->initializeAsyncContainer();
 	}
 
-	this->container_->appendUInt64(value);
-	this->container_->incArgs();
+	_asyncContainer->appendUInt64(value);
+	_asyncContainer->incArgs();
 }
 
 const bool GKDBusMessageAsyncContainer::isAsyncContainerEmpty(void) const
 {
-	if(this->container_ == nullptr)
+	if(_asyncContainer == nullptr)
 		return true;
-	return this->container_->isAsyncContainerEmpty();
+	return _asyncContainer->isAsyncContainerEmpty();
 }
 
 DBusMessage* GKDBusMessageAsyncContainer::getAsyncContainerPointer(void) const
 {
-	if(this->container_ == nullptr)
+	if(_asyncContainer == nullptr)
 		return nullptr;
-	return this->container_->getAsyncContainerPointer();
+	return _asyncContainer->getAsyncContainerPointer();
 }
 
 } // namespace NSGKDBus

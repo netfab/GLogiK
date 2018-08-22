@@ -32,24 +32,24 @@ using namespace NSGKUtils;
 
 void GKDBusMessageTargetsSignal::initializeTargetsSignal(
 	BusConnection wantedConnection,
-	const char* dest,
-	const char* object_path,
+	const char* destination,
+	const char* objectPath,
 	const char* interface,
 	const char* signal
 ) {
 	this->initializeTargetsSignal(
 		this->getConnection(wantedConnection),
-		dest, object_path, interface, signal);
+		destination, objectPath, interface, signal);
 }
 
 void GKDBusMessageTargetsSignal::initializeTargetsSignal(
 	DBusConnection* connection,
-	const char* dest,
-	const char* object_path,
+	const char* destination,
+	const char* objectPath,
 	const char* interface,
 	const char* signal
 ) {
-	if(this->signals_.size() > 0) { /* sanity check */
+	if(_signals.size() > 0) { /* sanity check */
 		throw GKDBusMessageWrongBuild("signals container not cleared");
 	}
 
@@ -64,7 +64,7 @@ void GKDBusMessageTargetsSignal::initializeTargetsSignal(
 			"org.freedesktop.DBus",
 			"ListQueuedOwners"
 		);
-		this->appendStringToRemoteMethodCall(dest);
+		this->appendStringToRemoteMethodCall(destination);
 		this->sendRemoteMethodCall();
 
 		this->waitForRemoteMethodCallReply();
@@ -83,11 +83,11 @@ void GKDBusMessageTargetsSignal::initializeTargetsSignal(
 
 	try {
 		for(const auto & uniqueName : uniqueNames) {
-			this->signals_.push_back(
+			_signals.push_back(
 				new GKDBusBroadcastSignal(
 					connection,
 					uniqueName.c_str(),
-					object_path,
+					objectPath,
 					interface,
 					signal )
 			);
@@ -97,21 +97,21 @@ void GKDBusMessageTargetsSignal::initializeTargetsSignal(
 		LOG(ERROR) << "GKDBus targets signal allocation failure : " << e.what();
 
 		/* sending and freeing already allocated signals */
-		for(const auto & targetSignal : this->signals_) {
+		for(const auto & targetSignal : _signals) {
 			delete targetSignal;
 		}
-		this->signals_.clear();
+		_signals.clear();
 
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << this->signals_.size() << " targets for " << signal << " signal initialized";
+	LOG(DEBUG1) << _signals.size() << " targets for " << signal << " signal initialized";
 #endif
 }
 
 void GKDBusMessageTargetsSignal::appendStringToTargetsSignal(const std::string & value) {
-	for(const auto & targetSignal : this->signals_) {
+	for(const auto & targetSignal : _signals) {
 		if(targetSignal == nullptr) { /* sanity check */
 			LOG(WARNING) << "signal object is null";
 			continue;
@@ -121,7 +121,7 @@ void GKDBusMessageTargetsSignal::appendStringToTargetsSignal(const std::string &
 }
 
 void GKDBusMessageTargetsSignal::appendUInt8ToTargetsSignal(const uint8_t value) {
-	for(const auto & targetSignal : this->signals_) {
+	for(const auto & targetSignal : _signals) {
 		if(targetSignal == nullptr) {
 			LOG(WARNING) << "signal object is null";
 			continue;
@@ -131,7 +131,7 @@ void GKDBusMessageTargetsSignal::appendUInt8ToTargetsSignal(const uint8_t value)
 }
 
 void GKDBusMessageTargetsSignal::appendStringVectorToTargetsSignal(const std::vector<std::string> & list) {
-	for(const auto & targetSignal : this->signals_) {
+	for(const auto & targetSignal : _signals) {
 		if(targetSignal == nullptr) {
 			LOG(WARNING) << "signal object is null";
 			continue;
@@ -142,7 +142,7 @@ void GKDBusMessageTargetsSignal::appendStringVectorToTargetsSignal(const std::ve
 
 void GKDBusMessageTargetsSignal::sendTargetsSignal(void) {
 	/* sending and freeing allocated signals */
-	for(const auto & targetSignal : this->signals_) {
+	for(const auto & targetSignal : _signals) {
 		if(targetSignal != nullptr) {
 			delete targetSignal;
 		}
@@ -150,11 +150,11 @@ void GKDBusMessageTargetsSignal::sendTargetsSignal(void) {
 			LOG(WARNING) << __func__ << " signal from container is null";
 		}
 	}
-	this->signals_.clear();
+	_signals.clear();
 }
 
 void GKDBusMessageTargetsSignal::abandonTargetsSignal(void) {
-	for(const auto & targetSignal : this->signals_) {
+	for(const auto & targetSignal : _signals) {
 		if(targetSignal != nullptr) {
 			targetSignal->abandon();
 			delete targetSignal;
@@ -163,7 +163,7 @@ void GKDBusMessageTargetsSignal::abandonTargetsSignal(void) {
 			LOG(WARNING) << __func__ << " signal from container is null";
 		}
 	}
-	this->signals_.clear();
+	_signals.clear();
 }
 
 } // namespace NSGKDBus
