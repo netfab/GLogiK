@@ -71,7 +71,7 @@ const bool GKDBusAsyncContainer::isAsyncContainerEmpty(void) const
 /* --- --- --- */
 /* --- --- --- */
 
-GKDBusAsyncContainer* GKDBusMessageAsyncContainer::_asyncContainer(nullptr);
+thread_local GKDBusAsyncContainer* GKDBusMessageAsyncContainer::_asyncContainer(nullptr);
 
 GKDBusMessageAsyncContainer::GKDBusMessageAsyncContainer()
 {

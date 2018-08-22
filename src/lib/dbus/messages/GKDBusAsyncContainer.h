@@ -64,7 +64,7 @@ class GKDBusMessageAsyncContainer
 		DBusMessage* getAsyncContainerPointer(void) const;
 
 	private:
-		static GKDBusAsyncContainer* _asyncContainer;
+		thread_local static GKDBusAsyncContainer* _asyncContainer;
 
 		void initializeAsyncContainer(void);
 };
