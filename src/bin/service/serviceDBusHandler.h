@@ -96,12 +96,12 @@ class ServiceDBusHandler
 		const bool macroRecorded(
 			const std::string & devID,
 			const std::string & keyName,
-			const uint8_t profile
+			const uint8_t bankID
 		);
 		const bool macroCleared(
 			const std::string & devID,
 			const std::string & keyName,
-			const uint8_t profile
+			const uint8_t bankID
 		);
 
 		void devicesStarted(const std::vector<std::string> & devicesID);

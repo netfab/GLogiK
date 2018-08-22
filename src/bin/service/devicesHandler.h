@@ -63,13 +63,13 @@ class DevicesHandler
 		const bool setDeviceMacro(
 			const std::string & devID,
 			const std::string & keyName,
-			const uint8_t profile
+			const uint8_t bankID
 		);
 
 		const bool clearDeviceMacro(
 			const std::string & devID,
 			const std::string & keyName,
-			const uint8_t profile
+			const uint8_t bankID
 		);
 
 		void runDeviceMediaEvent(

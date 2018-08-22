@@ -37,7 +37,7 @@ using namespace NSGKUtils;
 MacrosManager::MacrosManager(
 	const char* virtualKeyboardName,
 	const std::vector<std::string> & keysNames)
-		:	_currentMacrosBank(MacrosBank::BANK_M0),
+		:	_currentBankID(BankID::BANK_M0),
 			_virtualKeyboard(virtualKeyboardName)
 {
 #if DEBUGGING_ON
@@ -54,7 +54,7 @@ MacrosManager::~MacrosManager()
 /* returns true if a macro is defined for this key on the current memory bank */
 const bool MacrosManager::macroDefined(const std::string & keyName) {
 	try {
-		const macro_type & macro = _macrosBanks[_currentMacrosBank].at(keyName);
+		const macro_type & macro = _macrosBanks[_currentBankID].at(keyName);
 		return (macro.size() > 0);
 	}
 	catch (const std::out_of_range& oor) {
@@ -67,17 +67,17 @@ const bool MacrosManager::macroDefined(const std::string & keyName) {
 /* run a macro on the virtual keyboard */
 void MacrosManager::runMacro(const std::string & keyName) {
 	try {
-		const macro_type & macro = _macrosBanks[_currentMacrosBank].at(keyName);
+		const macro_type & macro = _macrosBanks[_currentBankID].at(keyName);
 		if(macro.size() == 0) {
 #if DEBUGGING_ON
-			LOG(DEBUG) << "Memory Bank: " << _currentMacrosBank
+			LOG(DEBUG) << "Memory Bank: " << _currentBankID
 				<< " - Macro Key: " << keyName << " - no macro recorded";
 #endif
 			return;
 		}
 
 #if DEBUGGING_ON
-		LOG(INFO) << "Memory Bank: " << _currentMacrosBank
+		LOG(INFO) << "Memory Bank: " << _currentBankID
 			<< " - Macro Key: " << keyName << " - running macro";
 #endif
 		for( const auto &key : macro ) {
@@ -89,15 +89,15 @@ void MacrosManager::runMacro(const std::string & keyName) {
 	}
 }
 
-void MacrosManager::setCurrentMacrosBank(MacrosBank bank) {
+void MacrosManager::setCurrentMacrosBankID(BankID bankID) {
 #if DEBUGGING_ON
-	LOG(DEBUG) << "setting current memory bank : " << bank;
+	LOG(DEBUG) << "setting current bank ID : " << bankID;
 #endif
-	_currentMacrosBank = bank;
+	_currentBankID = bankID;
 }
 
-const MacrosBank MacrosManager::getCurrentMacrosBank(void) const {
-	return _currentMacrosBank;
+const BankID MacrosManager::getCurrentMacrosBankID(void) const {
+	return _currentBankID;
 }
 
 void MacrosManager::setMacro(
@@ -128,11 +128,11 @@ void MacrosManager::setMacro(
 		}
 	}
 
-	MacrosBanks::setMacro(_currentMacrosBank, keyName, macro);
+	MacrosBanks::setMacro(_currentBankID, keyName, macro);
 }
 
 void MacrosManager::resetMacrosBanks(void) {
-	this->setCurrentMacrosBank(MacrosBank::BANK_M0);
+	this->setCurrentMacrosBankID(BankID::BANK_M0);
 	for(auto & bankKeyPair : _macrosBanks) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "clearing all macros for Memory Bank: " << bankKeyPair.first;

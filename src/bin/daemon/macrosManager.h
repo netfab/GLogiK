@@ -54,8 +54,8 @@ class MacrosManager : public MacrosBanks
 		);
 		~MacrosManager();
 
-		void setCurrentMacrosBank(MacrosBank bank);
-		const MacrosBank getCurrentMacrosBank(void) const;
+		void setCurrentMacrosBankID(BankID bankID);
+		const BankID getCurrentMacrosBankID(void) const;
 
 		const bool macroDefined(const std::string & keyName);
 		void runMacro(const std::string & keyName);
@@ -70,7 +70,7 @@ class MacrosManager : public MacrosBanks
 	protected:
 
 	private:
-		MacrosBank _currentMacrosBank;
+		BankID _currentBankID;
 		VirtualKeyboard _virtualKeyboard;
 
 

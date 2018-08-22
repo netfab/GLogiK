@@ -169,30 +169,30 @@ const bool KeyboardDriver::updateCurrentLedsMask(USBDevice & device, bool force_
 		Mx_ON = mask & to_type(Leds::GK_LED_M1);
 		mask = 0;
 		mask_updated = true;
-		device.macros_man->setCurrentMacrosBank(MacrosBank::BANK_M0);
+		device.macros_man->setCurrentMacrosBankID(BankID::BANK_M0);
 		if( ! Mx_ON ) {
 			mask |= to_type(Leds::GK_LED_M1);
-			device.macros_man->setCurrentMacrosBank(MacrosBank::BANK_M1);
+			device.macros_man->setCurrentMacrosBankID(BankID::BANK_M1);
 		}
 	}
 	else if( device.pressed_keys & to_type(Keys::GK_KEY_M2) ) {
 		Mx_ON = mask & to_type(Leds::GK_LED_M2);
 		mask = 0;
 		mask_updated = true;
-		device.macros_man->setCurrentMacrosBank(MacrosBank::BANK_M0);
+		device.macros_man->setCurrentMacrosBankID(BankID::BANK_M0);
 		if( ! Mx_ON ) {
 			mask |= to_type(Leds::GK_LED_M2);
-			device.macros_man->setCurrentMacrosBank(MacrosBank::BANK_M2);
+			device.macros_man->setCurrentMacrosBankID(BankID::BANK_M2);
 		}
 	}
 	else if( device.pressed_keys & to_type(Keys::GK_KEY_M3) ) {
 		Mx_ON = mask & to_type(Leds::GK_LED_M3);
 		mask = 0;
 		mask_updated = true;
-		device.macros_man->setCurrentMacrosBank(MacrosBank::BANK_M0);
+		device.macros_man->setCurrentMacrosBankID(BankID::BANK_M0);
 		if( ! Mx_ON ) {
 			mask |= to_type(Leds::GK_LED_M3);
-			device.macros_man->setCurrentMacrosBank(MacrosBank::BANK_M3);
+			device.macros_man->setCurrentMacrosBankID(BankID::BANK_M3);
 		}
 	}
 
@@ -435,7 +435,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 					);
 
 					if( pDBus ) {
-						const uint8_t profile = to_type( device.macros_man->getCurrentMacrosBank() );
+						const uint8_t profile = to_type( device.macros_man->getCurrentMacrosBankID() );
 
 						/* open a new connection, GKDBus is not thread-safe */
 						pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);

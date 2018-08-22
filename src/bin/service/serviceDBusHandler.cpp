@@ -938,12 +938,12 @@ void ServiceDBusHandler::devicesUnplugged(const std::vector<std::string> & devic
 const bool ServiceDBusHandler::macroRecorded(
 	const std::string & devID,
 	const std::string & keyName,
-	const uint8_t profile)
+	const uint8_t bankID)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - device: " << devID
-				<< " profile: " << to_uint(profile)
+				<< " bankID: " << to_uint(bankID)
 				<< " key: " << keyName;
 #endif
 
@@ -961,18 +961,18 @@ const bool ServiceDBusHandler::macroRecorded(
 		return false;
 	}
 
-	return this->devices_.setDeviceMacro(devID, keyName, profile);
+	return this->devices_.setDeviceMacro(devID, keyName, bankID);
 }
 
 const bool ServiceDBusHandler::macroCleared(
 	const std::string & devID,
 	const std::string & keyName,
-	const uint8_t profile)
+	const uint8_t bankID)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - device: " << devID
-				<< " profile: " << to_uint(profile)
+				<< " bankID: " << to_uint(bankID)
 				<< " key: " << keyName;
 #endif
 
@@ -990,7 +990,7 @@ const bool ServiceDBusHandler::macroCleared(
 		return false;
 	}
 
-	return this->devices_.clearDeviceMacro(devID, keyName, profile);
+	return this->devices_.clearDeviceMacro(devID, keyName, bankID);
 }
 
 void ServiceDBusHandler::deviceMediaEvent(

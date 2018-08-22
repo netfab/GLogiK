@@ -83,11 +83,11 @@ void DevicesHandler::setClientID(const std::string & id) {
 void DevicesHandler::clearDevices(void) {
 	std::set<std::string> devicesID;
 
-	for( const auto & device_pair : this->started_devices_ ) {
-		devicesID.insert(device_pair.first);
+	for( const auto & devicePair : this->started_devices_ ) {
+		devicesID.insert(devicePair.first);
 	}
-	for( const auto & device_pair : this->stopped_devices_ ) {
-		devicesID.insert(device_pair.first);
+	for( const auto & devicePair : this->stopped_devices_ ) {
+		devicesID.insert(devicePair.first);
 	}
 
 	/* stop each device if not already stopped, and unref it */
@@ -301,22 +301,22 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 		/* set macros banks */
 		const std::string remoteMethod = "SetDeviceMacrosBank";
 
-		for( const auto & macros_bank_pair : device.getMacrosBanks() ) {
-			const uint8_t current_profile = to_type(macros_bank_pair.first);
-			const mBank_type & current_bank = macros_bank_pair.second;
+		for( const auto & idBankPair : device.getMacrosBanks() ) {
+			const uint8_t bankID = to_type(idBankPair.first);
+			const mBank_type & bank = idBankPair.second;
 
 			/* test whether this MacrosBank should be sent */
 			bool send_it = false;
-			for(const auto & macro_pair : current_bank) {
-				const macro_type & current_macro = macro_pair.second;
-				if( ! current_macro.empty() ) {
+			for(const auto & keyMacroPair : bank) {
+				const macro_type & macro = keyMacroPair.second;
+				if( ! macro.empty() ) {
 					send_it = true;
 					break;
 				}
 			}
 
 			if( ! send_it ) {
-				LOG(VERB) << "[" << devID << "] skipping empty MacrosBank " << to_uint(current_profile);
+				LOG(VERB) << "[" << devID << "] skipping empty MacrosBank " << to_uint(bankID);
 				continue;
 			}
 
@@ -330,8 +330,8 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 				);
 				this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
 				this->pDBus_->appendStringToRemoteMethodCall(devID);
-				this->pDBus_->appendUInt8ToRemoteMethodCall(current_profile);
-				this->pDBus_->appendMacrosBankToRemoteMethodCall(current_bank);
+				this->pDBus_->appendUInt8ToRemoteMethodCall(bankID);
+				this->pDBus_->appendMacrosBankToRemoteMethodCall(bank);
 
 				this->pDBus_->sendRemoteMethodCall();
 
@@ -340,10 +340,10 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 					const bool ret = this->pDBus_->getNextBooleanArgument();
 					if( ret ) {
-						LOG(VERB) << "[" << devID << "] successfully setted device MacrosBank " << to_uint(current_profile);
+						LOG(VERB) << "[" << devID << "] successfully setted device MacrosBank " << to_uint(bankID);
 					}
 					else {
-						LOG(ERROR) << "[" << devID << "] failed to set device MacrosBank " << to_uint(current_profile) << " : false";
+						LOG(ERROR) << "[" << devID << "] failed to set device MacrosBank " << to_uint(bankID) << " : false";
 					}
 				}
 				catch (const GLogiKExcept & e) {
@@ -628,7 +628,7 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 const bool DevicesHandler::setDeviceMacro(
 	const std::string & devID,
 	const std::string & keyName,
-	const uint8_t profile)
+	const uint8_t bankID)
 {
 	try {
 		DeviceProperties & device = this->started_devices_.at(devID);
@@ -649,7 +649,7 @@ const bool DevicesHandler::setDeviceMacro(
 				this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
 				this->pDBus_->appendStringToRemoteMethodCall(devID);
 				this->pDBus_->appendStringToRemoteMethodCall(keyName);
-				this->pDBus_->appendUInt8ToRemoteMethodCall(profile);
+				this->pDBus_->appendUInt8ToRemoteMethodCall(bankID);
 
 				this->pDBus_->sendRemoteMethodCall();
 
@@ -659,7 +659,7 @@ const bool DevicesHandler::setDeviceMacro(
 					/* use helper function to get the macro */
 					const macro_type macro = this->pDBus_->getNextMacroArgument();
 
-					device.setMacro(profile, keyName, macro);
+					device.setMacro(bankID, keyName, macro);
 					this->saveDeviceConfigurationFile(devID, device);
 					this->watchDirectory(device);
 					return true;
@@ -685,13 +685,13 @@ const bool DevicesHandler::setDeviceMacro(
 const bool DevicesHandler::clearDeviceMacro(
 	const std::string & devID,
 	const std::string & keyName,
-	const uint8_t profile)
+	const uint8_t bankID)
 {
 	try {
 		DeviceProperties & device = this->started_devices_.at(devID);
 
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			device.clearMacro(profile, keyName);
+			device.clearMacro(bankID, keyName);
 			this->saveDeviceConfigurationFile(devID, device);
 			this->watchDirectory(device);
 			return true;

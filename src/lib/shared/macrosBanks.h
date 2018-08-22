@@ -50,26 +50,26 @@ class MacrosBanks
 		void setMacrosBanks(const banksMap_type & macrosBanks);
 
 		void clearMacro(
-			const uint8_t bank,
+			const uint8_t bankID,
 			const std::string & keyName
 		);
 		void setMacro(
-			const uint8_t bank,
+			const uint8_t bankID,
 			const std::string & keyName,
 			const macro_type & macro
 		);
 		const macro_type & getMacro(
-			const uint8_t bank,
+			const uint8_t bankID,
 			const std::string & keyName
 		);
 
 		void clearMacro(
-			const MacrosBank & bank,
+			const BankID & bankID,
 			const std::string & keyName
 		);
 
 		void setMacro(
-			const MacrosBank & bank,
+			const BankID & bankID,
 			const std::string & keyName,
 			const macro_type & macro
 		);
@@ -87,10 +87,10 @@ class MacrosBanks
 		}
 
 		banksMap_type _macrosBanks = {
-			{ MacrosBank::BANK_M0, {}},
-			{ MacrosBank::BANK_M1, {}},
-			{ MacrosBank::BANK_M2, {}},
-			{ MacrosBank::BANK_M3, {}}
+			{ BankID::BANK_M0, {}},
+			{ BankID::BANK_M1, {}},
+			{ BankID::BANK_M2, {}},
+			{ BankID::BANK_M3, {}}
 		};
 
 	private:
