@@ -28,14 +28,14 @@
 #include "lib/shared/glogik.h"
 
 #include "global.h"
-#include "serviceDBusHandler.h"
+#include "DBusHandler.h"
 
 namespace GLogiK
 {
 
 using namespace NSGKUtils;
 
-ServiceDBusHandler::ServiceDBusHandler(
+DBusHandler::DBusHandler(
 	pid_t pid,
 	SessionManager& session,
 	NSGKUtils::FileSystem* pGKfs
@@ -120,7 +120,7 @@ ServiceDBusHandler::ServiceDBusHandler(
 	}
 }
 
-ServiceDBusHandler::~ServiceDBusHandler() {
+DBusHandler::~DBusHandler() {
 	if( this->are_we_registered_ ) {
 		try {
 			this->devices_.clearDevices();
@@ -150,11 +150,11 @@ ServiceDBusHandler::~ServiceDBusHandler() {
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void ServiceDBusHandler::checkDBusMessages(void) {
+void DBusHandler::checkDBusMessages(void) {
 	this->pDBus_->checkForNextMessage(this->system_bus_);
 }
 
-void ServiceDBusHandler::updateSessionState(void) {
+void DBusHandler::updateSessionState(void) {
 	/* if debug output is ON, force-disable it, else debug file
 	 * will be spammed by the following DBus request debug output */
 	const bool logoff = true;
@@ -215,11 +215,11 @@ void ServiceDBusHandler::updateSessionState(void) {
 	this->reportChangedState();
 }
 
-const devices_files_map_t ServiceDBusHandler::getDevicesMap(void) {
+const devices_files_map_t DBusHandler::getDevicesMap(void) {
 	return this->devices_.getDevicesMap();
 }
 
-void ServiceDBusHandler::checkDeviceConfigurationFile(const std::string & devID) {
+void DBusHandler::checkDeviceConfigurationFile(const std::string & devID) {
 	this->devices_.checkDeviceConfigurationFile(devID);
 
 	/*
@@ -245,7 +245,7 @@ void ServiceDBusHandler::checkDeviceConfigurationFile(const std::string & devID)
  * try to tell the daemon we are alive
  * throws on failure
  */
-void ServiceDBusHandler::registerWithDaemon(void) {
+void DBusHandler::registerWithDaemon(void) {
 	if( this->are_we_registered_ ) {
 		LOG(WARNING) << "don't need to register, since we are already registered";
 		return;
@@ -295,7 +295,7 @@ void ServiceDBusHandler::registerWithDaemon(void) {
 	}
 }
 
-void ServiceDBusHandler::unregisterWithDaemon(void) {
+void DBusHandler::unregisterWithDaemon(void) {
 	if( ! this->are_we_registered_ ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "can't unregister, since we are not currently registered";
@@ -340,7 +340,7 @@ void ServiceDBusHandler::unregisterWithDaemon(void) {
 	}
 }
 
-void ServiceDBusHandler::setCurrentSessionObjectPath(pid_t pid) {
+void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 	try {
 		const std::string remoteMethod("GetCurrentSession");
 
@@ -424,7 +424,7 @@ void ServiceDBusHandler::setCurrentSessionObjectPath(pid_t pid) {
  *  - online
  *  - closing
  */
-const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) {
+const std::string DBusHandler::getCurrentSessionState(const bool logoff) {
 	std::string remoteMethod;
 	switch(this->session_framework_) {
 		/* consolekit */
@@ -491,7 +491,7 @@ const std::string ServiceDBusHandler::getCurrentSessionState(const bool logoff) 
 	throw GLogiKExcept("unable to get session state");
 }
 
-void ServiceDBusHandler::reportChangedState(void) {
+void DBusHandler::reportChangedState(void) {
 	if( ! this->are_we_registered_ ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "currently not registered, skipping report state";
@@ -536,7 +536,7 @@ void ServiceDBusHandler::reportChangedState(void) {
 	}
 }
 
-void ServiceDBusHandler::initializeDevices(void) {
+void DBusHandler::initializeDevices(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing devices";
 #endif
@@ -657,7 +657,7 @@ void ServiceDBusHandler::initializeDevices(void) {
  *
  */
 
-void ServiceDBusHandler::initializeGKDBusSignals(void) {
+void DBusHandler::initializeGKDBusSignals(void) {
 	/*
 	 * want to be warned by the daemon about those signals
 	 * each declaration can throw a GLogiKExcept exception
@@ -670,7 +670,7 @@ void ServiceDBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"DevicesStarted",
 		{}, // FIXME
-		std::bind(&ServiceDBusHandler::devicesStarted, this, std::placeholders::_1)
+		std::bind(&DBusHandler::devicesStarted, this, std::placeholders::_1)
 	);
 
 	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
@@ -679,7 +679,7 @@ void ServiceDBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"DevicesStopped",
 		{}, // FIXME
-		std::bind(&ServiceDBusHandler::devicesStopped, this, std::placeholders::_1)
+		std::bind(&DBusHandler::devicesStopped, this, std::placeholders::_1)
 	);
 
 	this->pDBus_->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
@@ -688,7 +688,7 @@ void ServiceDBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"DevicesUnplugged",
 		{}, // FIXME
-		std::bind(&ServiceDBusHandler::devicesUnplugged, this, std::placeholders::_1)
+		std::bind(&DBusHandler::devicesUnplugged, this, std::placeholders::_1)
 	);
 
 	this->pDBus_->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
@@ -697,7 +697,7 @@ void ServiceDBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"DaemonIsStopping",
 		{}, // FIXME
-		std::bind(&ServiceDBusHandler::daemonIsStopping, this)
+		std::bind(&DBusHandler::daemonIsStopping, this)
 	);
 
 	this->pDBus_->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
@@ -706,7 +706,7 @@ void ServiceDBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"DaemonIsStarting",
 		{}, // FIXME
-		std::bind(&ServiceDBusHandler::daemonIsStarting, this)
+		std::bind(&DBusHandler::daemonIsStarting, this)
 	);
 
 	this->pDBus_->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
@@ -715,7 +715,7 @@ void ServiceDBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"ReportYourself",
 		{}, // FIXME
-		std::bind(&ServiceDBusHandler::reportChangedState, this)
+		std::bind(&DBusHandler::reportChangedState, this)
 	);
 
 	this->pDBus_->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
@@ -724,7 +724,7 @@ void ServiceDBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"MacroRecorded",
 		{}, // FIXME
-		std::bind(	&ServiceDBusHandler::macroRecorded, this,
+		std::bind(	&DBusHandler::macroRecorded, this,
 					std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
 		)
 	);
@@ -735,7 +735,7 @@ void ServiceDBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"MacroCleared",
 		{}, // FIXME
-		std::bind(	&ServiceDBusHandler::macroCleared, this,
+		std::bind(	&DBusHandler::macroCleared, this,
 					std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
 		)
 	);
@@ -746,13 +746,13 @@ void ServiceDBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"deviceMediaEvent",
 		{}, // FIXME
-		std::bind(	&ServiceDBusHandler::deviceMediaEvent, this,
+		std::bind(	&DBusHandler::deviceMediaEvent, this,
 					std::placeholders::_1, std::placeholders::_2
 		)
 	);
 }
 
-void ServiceDBusHandler::daemonIsStopping(void) {
+void DBusHandler::daemonIsStopping(void) {
 	this->buffer_.str("received ");
 	this->buffer_ << __func__ << " signal";
 	if( this->are_we_registered_ ) {
@@ -770,7 +770,7 @@ void ServiceDBusHandler::daemonIsStopping(void) {
 	}
 }
 
-void ServiceDBusHandler::daemonIsStarting(void) {
+void DBusHandler::daemonIsStarting(void) {
 	this->buffer_.str("received ");
 	this->buffer_ << __func__ << " signal";
 	if( this->are_we_registered_ ) {
@@ -792,7 +792,7 @@ void ServiceDBusHandler::daemonIsStarting(void) {
 	}
 }
 
-void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
+void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - with " << devicesID.size() << " devices";
@@ -845,7 +845,7 @@ void ServiceDBusHandler::devicesStarted(const std::vector<std::string> & devices
 	}
 }
 
-void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
+void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - with " << devicesID.size() << " devices";
@@ -890,7 +890,7 @@ void ServiceDBusHandler::devicesStopped(const std::vector<std::string> & devices
 	}
 }
 
-void ServiceDBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
+void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - with " << devicesID.size() << " devices";
@@ -935,7 +935,7 @@ void ServiceDBusHandler::devicesUnplugged(const std::vector<std::string> & devic
 	}
 }
 
-const bool ServiceDBusHandler::macroRecorded(
+const bool DBusHandler::macroRecorded(
 	const std::string & devID,
 	const std::string & keyName,
 	const uint8_t bankID)
@@ -964,7 +964,7 @@ const bool ServiceDBusHandler::macroRecorded(
 	return this->devices_.setDeviceMacro(devID, keyName, bankID);
 }
 
-const bool ServiceDBusHandler::macroCleared(
+const bool DBusHandler::macroCleared(
 	const std::string & devID,
 	const std::string & keyName,
 	const uint8_t bankID)
@@ -993,7 +993,7 @@ const bool ServiceDBusHandler::macroCleared(
 	return this->devices_.clearDeviceMacro(devID, keyName, bankID);
 }
 
-void ServiceDBusHandler::deviceMediaEvent(
+void DBusHandler::deviceMediaEvent(
 	const std::string & devID,
 	const std::string & key_event)
 {

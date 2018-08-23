@@ -24,12 +24,12 @@ GLogiKs_LDADD = \
 GLogiKs_SOURCES = \
 		%D%/main.cpp \
 		%D%/global.h \
-		%D%/service.cpp \
-		%D%/service.h \
-		%D%/serviceDBusHandler.cpp \
-		%D%/serviceDBusHandler.h \
 		%D%/devicesHandler.cpp \
-		%D%/devicesHandler.h
+		%D%/devicesHandler.h \
+		%D%/DBusHandler.cpp \
+		%D%/DBusHandler.h \
+		%D%/service.cpp \
+		%D%/service.h
 
 if WITH_LIBNOTIFY
 

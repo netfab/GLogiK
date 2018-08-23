@@ -132,12 +132,12 @@ GLogiK=$PWD/.. CD=. {
 				global.h
 				devicesHandler.cpp
 				devicesHandler.h
+				DBusHandler.cpp
+				DBusHandler.h
 				volumeNotification.cpp
 				volumeNotification.h
 				service.cpp
 				service.h
-				serviceDBusHandler.cpp
-				serviceDBusHandler.h
 			}
 		}
 		libraries=lib/ {

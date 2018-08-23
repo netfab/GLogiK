@@ -38,7 +38,7 @@
 #include "lib/shared/sessionManager.h"
 
 #include "global.h"
-#include "serviceDBusHandler.h"
+#include "DBusHandler.h"
 
 #include "service.h"
 
@@ -124,7 +124,7 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 			fds[1].fd = this->pGKfs_->getNotifyQueueDescriptor();
 			fds[1].events = POLLIN;
 
-			ServiceDBusHandler DBusHandler(this->pid_, session, this->pGKfs_);
+			DBusHandler DBus(this->pid_, session, this->pGKfs_);
 
 			while( session.isSessionAlive() ) {
 				int num = poll(fds, nfds, 150);
@@ -137,19 +137,19 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 					}
 
 					if( fds[1].revents & POLLIN) {
-						devices_files_map_t dev_map = DBusHandler.getDevicesMap();
+						devices_files_map_t dev_map = DBus.getDevicesMap();
 						this->pGKfs_->readNotifyEvents( dev_map );
 						for( const auto & d : dev_map ) {
 #if DEBUGGING_ON
 							LOG(DEBUG) << "[" << d.first << "]" << " checking configuration file: " << d.second;
 #endif
-							DBusHandler.checkDeviceConfigurationFile(d.first);
+							DBus.checkDeviceConfigurationFile(d.first);
 						}
 					}
 				}
 
-				DBusHandler.updateSessionState();
-				DBusHandler.checkDBusMessages();
+				DBus.updateSessionState();
+				DBus.checkDBusMessages();
 			}
 		}
 

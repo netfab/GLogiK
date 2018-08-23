@@ -46,15 +46,15 @@ enum class SessionTracker
 	F_LOGIND,
 };
 
-class ServiceDBusHandler
+class DBusHandler
 {
 	public:
-		ServiceDBusHandler(
+		DBusHandler(
 			pid_t pid,
 			SessionManager& session,
 			NSGKUtils::FileSystem* pGKfs
 		);
-		~ServiceDBusHandler(void);
+		~DBusHandler(void);
 
 		void updateSessionState(void);
 		void checkDBusMessages(void);
