@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKS_DESKTOP_SERVICE_H__
-#define __GLOGIKS_DESKTOP_SERVICE_H__
+#ifndef SRC_BIN_SERVICE_SERVICE_HPP_
+#define SRC_BIN_SERVICE_SERVICE_HPP_
 
 #include <sys/types.h>
 

@@ -27,29 +27,29 @@
 namespace GLogiK
 {
 
-std::atomic<unsigned int> VolumeNotification::cnt_(0);
+std::atomic<unsigned int> VolumeNotification::counter(0);
 
 VolumeNotification::VolumeNotification(void)
-	:	pNotification_(nullptr),
-		is_initted_(false),
-		timeout_(5000)
+	:	_pNotification(nullptr),
+		_isInitted(false),
+		_timeout(5000)
 {
 }
 
 VolumeNotification::~VolumeNotification(void)
 {
-	if( this->is_initted_ )
+	if( _isInitted )
 		notify_uninit();
 }
 
 void VolumeNotification::init(
-	const std::string & app_name,
+	const std::string & appName,
 	int timeout)
 {
-	if( ! this->is_initted_ ) {
-		this->is_initted_ = notify_init( app_name.c_str() );
-		this->pNotification_ = notify_notification_new("hello", nullptr, nullptr);
-		this->timeout_ = timeout;
+	if( ! _isInitted ) {
+		_isInitted = notify_init( appName.c_str() );
+		_pNotification = notify_notification_new("hello", nullptr, nullptr);
+		_timeout = timeout;
 		this->setTimeout(timeout);
 	}
 }
@@ -68,13 +68,13 @@ const bool VolumeNotification::updateProperties(
 	if( ! icon.empty() )
 		i = icon.c_str();
 
-	return notify_notification_update(this->pNotification_, summary.c_str(), b, i);
+	return notify_notification_update(_pNotification, summary.c_str(), b, i);
 }
 
 const bool VolumeNotification::show() {
-	const bool ret = notify_notification_show(this->pNotification_, 0);
+	const bool ret = notify_notification_show(_pNotification, 0);
 	if(ret) {
-		VolumeNotification::cnt_++;
+		VolumeNotification::counter++;
 		std::thread closing_thread(&VolumeNotification::maybeClose, this);
 		closing_thread.detach();
 	}
@@ -82,13 +82,13 @@ const bool VolumeNotification::show() {
 }
 
 const bool VolumeNotification::close() {
-	return notify_notification_close(this->pNotification_, 0);
+	return notify_notification_close(_pNotification, 0);
 }
 
 void VolumeNotification::maybeClose(void) {
-	std::this_thread::sleep_for(std::chrono::milliseconds(this->timeout_ + 200));
-	VolumeNotification::cnt_--;
-	if( VolumeNotification::cnt_ == 0 )
+	std::this_thread::sleep_for(std::chrono::milliseconds(_timeout + 200));
+	VolumeNotification::counter--;
+	if( VolumeNotification::counter == 0 )
 		this->close();
 }
 
@@ -96,7 +96,7 @@ void VolumeNotification::setTimeout(int timeout)
 {
 	/* timeout in milliseconds, may be ignored by some
 	 * notifications daemons implementations */
-	notify_notification_set_timeout(this->pNotification_, timeout);
+	notify_notification_set_timeout(_pNotification, timeout);
 }
 
 

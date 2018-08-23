@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_VOLUME_NOTIFICATION_H__
-#define __GLOGIK_VOLUME_NOTIFICATION_H__
+#ifndef SRC_BIN_SERVICE_VOLUME_NOTIFICATION_HPP_
+#define SRC_BIN_SERVICE_VOLUME_NOTIFICATION_HPP_
 
 #include <atomic>
 #include <string>
@@ -37,7 +37,7 @@ class VolumeNotification
 		~VolumeNotification(void);
 
 		void init(
-			const std::string & app_name,
+			const std::string & appName,
 			int timeout
 		);
 		const bool updateProperties(
@@ -49,11 +49,11 @@ class VolumeNotification
 	protected:
 
 	private:
-		NotifyNotification* pNotification_;
-		bool is_initted_;
-		int timeout_;
+		NotifyNotification* _pNotification;
+		bool _isInitted;
+		int _timeout;
 
-		static std::atomic<unsigned int> cnt_;
+		static std::atomic<unsigned int> counter;
 
 		void setTimeout(int timeout);
 		void maybeClose(void);
