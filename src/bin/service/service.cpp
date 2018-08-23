@@ -20,7 +20,7 @@
  */
 
 #include <errno.h>
-
+#include <poll.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -32,6 +32,7 @@
 #include <new>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include <boost/program_options.hpp>
 
@@ -50,11 +51,10 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 DesktopService::DesktopService() :
-	pid_(0),
-	log_fd_(nullptr),
-	verbose_(false),
-	buffer_("", std::ios_base::app),
-	pGKfs_(nullptr)
+	_pid(0),
+	_LOGfd(nullptr),
+	_verbose(false),
+	_pGKfs(nullptr)
 {
 	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
 	if( LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() != NONE ) {
@@ -65,24 +65,24 @@ DesktopService::DesktopService() :
 	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
 
 	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
-		this->buffer_.str(DEBUG_DIR);
-		this->buffer_ << "/" << PACKAGE << "s-debug-" << getpid() << ".log";
+		std::ostringstream buffer(DEBUG_DIR, std::ios_base::app);
+		buffer << "/" << PACKAGE << "s-debug-" << getpid() << ".log";
 
 		errno = 0;
-		this->log_fd_ = std::fopen(this->buffer_.str().c_str(), "w");
+		_LOGfd = std::fopen(buffer.str().c_str(), "w");
 
-		if(this->log_fd_ == nullptr) {
+		if(_LOGfd == nullptr) {
 			LOG(ERROR) << "failed to open debug file";
 			if(errno != 0) {
 				LOG(ERROR) << strerror(errno);
 			}
 		}
 
-		LOG_TO_FILE_AND_CONSOLE::FileStream() = this->log_fd_;
+		LOG_TO_FILE_AND_CONSOLE::FileStream() = _LOGfd;
 	}
 #endif
 
-	if( this->log_fd_ == nullptr ) {
+	if( _LOGfd == nullptr ) {
 		LOG(INFO) << "debug file not opened";
 	}
 }
@@ -93,8 +93,8 @@ DesktopService::~DesktopService() {
 #endif
 
 	LOG(INFO) << GLOGIKS_DESKTOP_SERVICE_NAME << " : bye !";
-	if( this->log_fd_ != nullptr )
-		std::fclose(this->log_fd_);
+	if( _LOGfd != nullptr )
+		std::fclose(_LOGfd);
 }
 
 int DesktopService::run( const int& argc, char *argv[] ) {
@@ -107,7 +107,7 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 
 		{
 			try {
-				this->pGKfs_ = new FileSystem();
+				_pGKfs = new FileSystem();
 			}
 			catch (const std::bad_alloc& e) { /* handle new() failure */
 				throw GLogiKBadAlloc("GKfs bad allocation");
@@ -121,10 +121,10 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 			fds[0].fd = session.openConnection();
 			fds[0].events = POLLIN;
 
-			fds[1].fd = this->pGKfs_->getNotifyQueueDescriptor();
+			fds[1].fd = _pGKfs->getNotifyQueueDescriptor();
 			fds[1].events = POLLIN;
 
-			DBusHandler DBus(this->pid_, session, this->pGKfs_);
+			DBusHandler DBus(_pid, session, _pGKfs);
 
 			while( session.isSessionAlive() ) {
 				int num = poll(fds, nfds, 150);
@@ -138,7 +138,7 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 
 					if( fds[1].revents & POLLIN) {
 						devices_files_map_t dev_map = DBus.getDevicesMap();
-						this->pGKfs_->readNotifyEvents( dev_map );
+						_pGKfs->readNotifyEvents( dev_map );
 						for( const auto & d : dev_map ) {
 #if DEBUGGING_ON
 							LOG(DEBUG) << "[" << d.first << "]" << " checking configuration file: " << d.second;
@@ -153,7 +153,7 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 			}
 		}
 
-		delete this->pGKfs_; this->pGKfs_ = nullptr;
+		delete _pGKfs; _pGKfs = nullptr;
 
 #if DEBUGGING_ON
 		LOG(DEBUG) << "exiting with success";
@@ -161,16 +161,16 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
-		delete this->pGKfs_; this->pGKfs_ = nullptr;
+		delete _pGKfs; _pGKfs = nullptr;
 
-		this->buffer_.str( e.what() );
+		std::ostringstream buffer(e.what(), std::ios_base::app);
 		if(errno != 0)
-			this->buffer_ << " : " << strerror(errno);
-		LOG(ERROR) << this->buffer_.str();
+			buffer << " : " << strerror(errno);
+		LOG(ERROR) << buffer.str();
 		return EXIT_FAILURE;
 	}
 	catch ( const GLogiKFatalError & e ) {
-		delete this->pGKfs_; this->pGKfs_ = nullptr;
+		delete _pGKfs; _pGKfs = nullptr;
 
 		LOG(ERROR) << e.what();
 		return EXIT_FAILURE;
@@ -182,12 +182,12 @@ void DesktopService::daemonize() {
 	LOG(DEBUG2) << "daemonizing process";
 #endif
 
-	this->pid_ = fork();
-	if(this->pid_ == -1)
+	_pid = fork();
+	if(_pid == -1)
 		throw GLogiKExcept("first fork failure");
 
 	// parent exit
-	if(this->pid_ > 0)
+	if(_pid > 0)
 		exit(EXIT_SUCCESS);
 
 #if DEBUGGING_ON
@@ -200,12 +200,12 @@ void DesktopService::daemonize() {
 	// Ignore signal sent from child to parent process
 	std::signal(SIGCHLD, SIG_IGN);
 
-	this->pid_ = fork();
-	if(this->pid_ == -1)
+	_pid = fork();
+	if(_pid == -1)
 		throw GLogiKExcept("second fork failure");
 
 	// parent exit
-	if(this->pid_ > 0)
+	if(_pid > 0)
 		exit(EXIT_SUCCESS);
 
 #if DEBUGGING_ON
@@ -216,7 +216,7 @@ void DesktopService::daemonize() {
 	if(chdir("/") == -1)
 		throw GLogiKExcept("change directory failure");
 
-	this->pid_ = getpid();
+	_pid = getpid();
 #if DEBUGGING_ON
 	LOG(DEBUG) << "daemonized !";
 #endif
@@ -229,7 +229,7 @@ void DesktopService::parseCommandLine(const int& argc, char *argv[]) {
 
 	po::options_description desc("Allowed options");
 	desc.add_options()
-		("verbose,v", po::bool_switch(&this->verbose_)->default_value(false), "verbose mode")
+		("verbose,v", po::bool_switch(&_verbose)->default_value(false), "verbose mode")
 	;
 
 	po::variables_map vm;
@@ -241,7 +241,7 @@ void DesktopService::parseCommandLine(const int& argc, char *argv[]) {
 	}
 	po::notify(vm);
 
-	if( this->verbose_ ) {
+	if( _verbose ) {
 		LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = VERB;
 		LOG(VERB) << "verbose mode on";
 	}

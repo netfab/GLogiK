@@ -22,13 +22,9 @@
 #ifndef __GLOGIKS_DESKTOP_SERVICE_H__
 #define __GLOGIKS_DESKTOP_SERVICE_H__
 
-#include <poll.h>
-
 #include <sys/types.h>
 
 #include <cstdio>
-
-#include <sstream>
 
 #include "lib/utils/utils.h"
 
@@ -46,12 +42,11 @@ class DesktopService
 	protected:
 
 	private:
-		pid_t pid_;
-		FILE* log_fd_;
-		bool verbose_;
+		pid_t _pid;
+		FILE* _LOGfd;	/* log file descriptor */
+		bool _verbose;
 
-		std::ostringstream buffer_;
-		NSGKUtils::FileSystem* pGKfs_;
+		NSGKUtils::FileSystem* _pGKfs;
 
 		void daemonize(void);
 
