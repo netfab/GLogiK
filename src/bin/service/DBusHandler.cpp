@@ -42,10 +42,10 @@ DBusHandler::DBusHandler(
 	)
 	:	pDBus_(nullptr),
 		system_bus_(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
-		skip_retry_(false),
-		are_we_registered_(false),
-		client_id_("undefined"),
-		session_framework_(SessionTracker::F_UNKNOWN),
+		_skipRetry(false),
+		_registerStatus(false),
+		_clientID("undefined"),
+		_sessionFramework(SessionFramework::FW_UNKNOWN),
 		buffer_("", std::ios_base::app)
 {
 	this->devices_.setGKfs(pGKfs);
@@ -64,10 +64,10 @@ DBusHandler::DBusHandler(
 			this->setCurrentSessionObjectPath(pid);
 
 			unsigned int retries = 0;
-			while( ! this->are_we_registered_ ) {
+			while( ! _registerStatus ) {
 				if( ( session.isSessionAlive() )
 						and (retries < UNREACHABLE_DAEMON_MAX_RETRIES)
-						and ( ! this->skip_retry_ ) )
+						and ( ! _skipRetry ) )
 				{
 					if(retries > 0) {
 						LOG(INFO) << "register retry " << retries << " ...";
@@ -77,7 +77,7 @@ DBusHandler::DBusHandler(
 						this->registerWithDaemon();
 					}
 					catch( const GLogiKExcept & e ) {
-						if( ! this->skip_retry_ ) {
+						if( ! _skipRetry ) {
 							unsigned int timer = 5;
 							LOG(WARNING) << e.what() << ", retrying in " << timer << " seconds ...";
 							std::this_thread::sleep_for(std::chrono::seconds(timer));
@@ -92,14 +92,14 @@ DBusHandler::DBusHandler(
 				retries++;
 			}
 
-			this->session_state_ = this->getCurrentSessionState();
+			_sessionState = this->getCurrentSessionState();
 			this->reportChangedState();
 
 			this->initializeGKDBusSignals();
 
 			/* set GKDBus pointer */
 			this->devices_.setDBus(this->pDBus_);
-			this->devices_.setClientID(this->client_id_);
+			this->devices_.setClientID(_clientID);
 
 			this->initializeDevices();
 
@@ -121,7 +121,7 @@ DBusHandler::DBusHandler(
 }
 
 DBusHandler::~DBusHandler() {
-	if( this->are_we_registered_ ) {
+	if( _registerStatus ) {
 		try {
 			this->devices_.clearDevices();
 			this->unregisterWithDaemon();
@@ -132,7 +132,7 @@ DBusHandler::~DBusHandler() {
 	}
 	else {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "client " << this->current_session_ << " already unregistered with deamon";
+		LOG(DEBUG2) << "client " << _currentSession << " already unregistered with deamon";
 #endif
 	}
 
@@ -157,9 +157,9 @@ void DBusHandler::checkDBusMessages(void) {
 void DBusHandler::updateSessionState(void) {
 	/* if debug output is ON, force-disable it, else debug file
 	 * will be spammed by the following DBus request debug output */
-	const bool logoff = true;
-	const std::string new_state = this->getCurrentSessionState(logoff);
-	if(this->session_state_ == new_state) {
+	const bool disabledDebugOutput = true;
+	const std::string new_state = this->getCurrentSessionState(disabledDebugOutput);
+	if(_sessionState == new_state) {
 #if 0 && DEBUGGING_ON
 		LOG(DEBUG5) << "session state did not changed";
 #endif
@@ -167,12 +167,12 @@ void DBusHandler::updateSessionState(void) {
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << "current session state : " << this->session_state_;
+	LOG(DEBUG1) << "current session state : " << _sessionState;
 #endif
 
 	std::string unhandled = "unhandled session state : "; unhandled += new_state;
 
-	if( this->session_state_ == "active" ) {
+	if( _sessionState == "active" ) {
 		if(new_state == "online") {
 		}
 		else if(new_state == "closing") {
@@ -182,7 +182,7 @@ void DBusHandler::updateSessionState(void) {
 			return;
 		}
 	}
-	else if( this->session_state_ == "online" ) {
+	else if( _sessionState == "online" ) {
 		if(new_state == "active") {
 		}
 		else if(new_state == "closing") {
@@ -192,7 +192,7 @@ void DBusHandler::updateSessionState(void) {
 			return;
 		}
 	}
-	else if( this->session_state_ == "closing" ) {
+	else if( _sessionState == "closing" ) {
 		if(new_state == "active") {
 		}
 		else if(new_state == "online") {
@@ -211,7 +211,7 @@ void DBusHandler::updateSessionState(void) {
 	LOG(DEBUG1) << "switching session state to : " << new_state;
 #endif
 
-	this->session_state_ = new_state;
+	_sessionState = new_state;
 	this->reportChangedState();
 }
 
@@ -226,7 +226,7 @@ void DBusHandler::checkDeviceConfigurationFile(const std::string & devID) {
 	 * force state update, to load active user's parameters
 	 * for all plugged devices
 	 */
-	if( this->session_state_ == "active" ) {
+	if( _sessionState == "active" ) {
 		this->reportChangedState();
 	}
 }
@@ -246,7 +246,7 @@ void DBusHandler::checkDeviceConfigurationFile(const std::string & devID) {
  * throws on failure
  */
 void DBusHandler::registerWithDaemon(void) {
-	if( this->are_we_registered_ ) {
+	if( _registerStatus ) {
 		LOG(WARNING) << "don't need to register, since we are already registered";
 		return;
 	}
@@ -261,7 +261,7 @@ void DBusHandler::registerWithDaemon(void) {
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
-		this->pDBus_->appendStringToRemoteMethodCall(this->current_session_);
+		this->pDBus_->appendStringToRemoteMethodCall(_currentSession);
 		this->pDBus_->sendRemoteMethodCall();
 
 		/* -- */
@@ -271,15 +271,15 @@ void DBusHandler::registerWithDaemon(void) {
 
 			const bool ret = this->pDBus_->getNextBooleanArgument();
 			if( ret ) {
-				this->client_id_ = this->pDBus_->getNextStringArgument();
-				this->are_we_registered_ = true;
-				LOG(INFO) << "successfully registered with daemon - " << this->client_id_;
+				_clientID = this->pDBus_->getNextStringArgument();
+				_registerStatus = true;
+				LOG(INFO) << "successfully registered with daemon - " << _clientID;
 			}
 			else {
 				LOG(ERROR)	<< "failed to register with daemon : false";
 				const std::string reason(this->pDBus_->getNextStringArgument());
 				if(reason == "already registered")
-					this->skip_retry_ = true;
+					_skipRetry = true;
 				throw GLogiKExcept(reason);
 			}
 		}
@@ -296,7 +296,7 @@ void DBusHandler::registerWithDaemon(void) {
 }
 
 void DBusHandler::unregisterWithDaemon(void) {
-	if( ! this->are_we_registered_ ) {
+	if( ! _registerStatus ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "can't unregister, since we are not currently registered";
 #endif
@@ -314,7 +314,7 @@ void DBusHandler::unregisterWithDaemon(void) {
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
-		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->appendStringToRemoteMethodCall(_clientID);
 		this->pDBus_->sendRemoteMethodCall();
 
 		try {
@@ -322,8 +322,8 @@ void DBusHandler::unregisterWithDaemon(void) {
 
 			const bool ret = this->pDBus_->getNextBooleanArgument();
 			if( ret ) {
-				this->are_we_registered_ = false;
-				this->client_id_ = "undefined";
+				_registerStatus = false;
+				_clientID = "undefined";
 				LOG(INFO) << "successfully unregistered with daemon";
 			}
 			else {
@@ -357,11 +357,11 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 
 			try {
 				this->pDBus_->waitForRemoteMethodCallReply();
-				this->current_session_ = this->pDBus_->getNextStringArgument();
+				_currentSession = this->pDBus_->getNextStringArgument();
 #if DEBUGGING_ON
-				LOG(DEBUG1) << "current session : " << this->current_session_;
+				LOG(DEBUG1) << "current session : " << _currentSession;
 #endif
-				this->session_framework_ = SessionTracker::F_CONSOLEKIT;
+				_sessionFramework = SessionFramework::FW_CONSOLEKIT;
 				return;
 			}
 			catch (const GLogiKExcept & e) {
@@ -394,11 +394,11 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 
 			try {
 				this->pDBus_->waitForRemoteMethodCallReply();
-				this->current_session_ = this->pDBus_->getNextStringArgument();
+				_currentSession = this->pDBus_->getNextStringArgument();
 #if DEBUGGING_ON
-				LOG(DEBUG1) << "current session : " << this->current_session_;
+				LOG(DEBUG1) << "current session : " << _currentSession;
 #endif
-				this->session_framework_ = SessionTracker::F_LOGIND;
+				_sessionFramework = SessionFramework::FW_LOGIND;
 				return;
 			}
 			catch (const GLogiKExcept & e) {
@@ -424,20 +424,20 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
  *  - online
  *  - closing
  */
-const std::string DBusHandler::getCurrentSessionState(const bool logoff) {
+const std::string DBusHandler::getCurrentSessionState(const bool disabledDebugOutput) {
 	std::string remoteMethod;
-	switch(this->session_framework_) {
+	switch(_sessionFramework) {
 		/* consolekit */
-		case SessionTracker::F_CONSOLEKIT:
+		case SessionFramework::FW_CONSOLEKIT:
 			remoteMethod = "GetSessionState";
 			try {
 				this->pDBus_->initializeRemoteMethodCall(
 					this->system_bus_,
 					"org.freedesktop.ConsoleKit",
-					this->current_session_.c_str(),
+					_currentSession.c_str(),
 					"org.freedesktop.ConsoleKit.Session",
 					remoteMethod.c_str(),
-					logoff
+					disabledDebugOutput
 				);
 				this->pDBus_->sendRemoteMethodCall();
 
@@ -454,17 +454,17 @@ const std::string DBusHandler::getCurrentSessionState(const bool logoff) {
 				LogRemoteCallFailure
 			}
 			break;
-		case SessionTracker::F_LOGIND:
+		case SessionFramework::FW_LOGIND:
 			/* logind */
 			remoteMethod = "Get";
 			try {
 				this->pDBus_->initializeRemoteMethodCall(
 					this->system_bus_,
 					"org.freedesktop.login1",
-					this->current_session_.c_str(),
+					_currentSession.c_str(),
 					"org.freedesktop.DBus.Properties",
 					remoteMethod.c_str(),
-					logoff
+					disabledDebugOutput
 				);
 				this->pDBus_->appendStringToRemoteMethodCall("org.freedesktop.login1.Session");
 				this->pDBus_->appendStringToRemoteMethodCall("State");
@@ -492,7 +492,7 @@ const std::string DBusHandler::getCurrentSessionState(const bool logoff) {
 }
 
 void DBusHandler::reportChangedState(void) {
-	if( ! this->are_we_registered_ ) {
+	if( ! _registerStatus ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "currently not registered, skipping report state";
 #endif
@@ -509,8 +509,8 @@ void DBusHandler::reportChangedState(void) {
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
-		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
-		this->pDBus_->appendStringToRemoteMethodCall(this->session_state_);
+		this->pDBus_->appendStringToRemoteMethodCall(_clientID);
+		this->pDBus_->appendStringToRemoteMethodCall(_sessionState);
 		this->pDBus_->sendRemoteMethodCall();
 
 		try {
@@ -518,7 +518,7 @@ void DBusHandler::reportChangedState(void) {
 			const bool ret( this->pDBus_->getNextBooleanArgument() );
 			if( ret ) {
 #if DEBUGGING_ON
-				LOG(DEBUG2) << "successfully reported changed state : " << this->session_state_;
+				LOG(DEBUG2) << "successfully reported changed state : " << _sessionState;
 #endif
 			}
 			else {
@@ -541,7 +541,7 @@ void DBusHandler::initializeDevices(void) {
 	LOG(DEBUG2) << "initializing devices";
 #endif
 
-	if( ! this->are_we_registered_ ) {
+	if( ! _registerStatus ) {
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "currently not registered, giving up";
 #endif
@@ -562,7 +562,7 @@ void DBusHandler::initializeDevices(void) {
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
-		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->appendStringToRemoteMethodCall(_clientID);
 		this->pDBus_->sendRemoteMethodCall();
 
 		try {
@@ -593,7 +593,7 @@ void DBusHandler::initializeDevices(void) {
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
-		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->appendStringToRemoteMethodCall(_clientID);
 		this->pDBus_->sendRemoteMethodCall();
 
 		try {
@@ -627,7 +627,7 @@ void DBusHandler::initializeDevices(void) {
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
-		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+		this->pDBus_->appendStringToRemoteMethodCall(_clientID);
 		this->pDBus_->sendRemoteMethodCall();
 
 		try {
@@ -755,7 +755,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 void DBusHandler::daemonIsStopping(void) {
 	this->buffer_.str("received ");
 	this->buffer_ << __func__ << " signal";
-	if( this->are_we_registered_ ) {
+	if( _registerStatus ) {
 		LOG(INFO)	<< this->buffer_.str()
 					<< " - saving state and unregistering with daemon";
 		this->devices_.clearDevices();
@@ -765,7 +765,7 @@ void DBusHandler::daemonIsStopping(void) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << this->buffer_.str()
 					<< " - but we are NOT registered with daemon : "
-					<< this->current_session_;
+					<< _currentSession;
 #endif
 	}
 }
@@ -773,20 +773,20 @@ void DBusHandler::daemonIsStopping(void) {
 void DBusHandler::daemonIsStarting(void) {
 	this->buffer_.str("received ");
 	this->buffer_ << __func__ << " signal";
-	if( this->are_we_registered_ ) {
+	if( _registerStatus ) {
 #if DEBUGGING_ON
 		LOG(WARNING) << this->buffer_.str()
 			<< " - but we are already registered with daemon"
-			<< this->current_session_;
+			<< _currentSession;
 #endif
 	}
 	else {
 		LOG(INFO) << this->buffer_.str()
 				<< " - trying to contact the daemon";
 		this->registerWithDaemon();
-		this->session_state_ = this->getCurrentSessionState();
+		_sessionState = this->getCurrentSessionState();
 		this->reportChangedState();
-		this->devices_.setClientID(this->client_id_);
+		this->devices_.setClientID(_clientID);
 
 		this->initializeDevices();
 	}
@@ -807,7 +807,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
-			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+			this->pDBus_->appendStringToRemoteMethodCall(_clientID);
 			this->pDBus_->appendStringToRemoteMethodCall(devID);
 			this->pDBus_->sendRemoteMethodCall();
 
@@ -840,7 +840,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 	 * force state update, to load active user's parameters
 	 * for all hotplugged devices
 	 */
-	if( this->session_state_ == "active" ) {
+	if( _sessionState == "active" ) {
 		this->reportChangedState();
 	}
 }
@@ -860,7 +860,7 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
-			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+			this->pDBus_->appendStringToRemoteMethodCall(_clientID);
 			this->pDBus_->appendStringToRemoteMethodCall(devID);
 			this->pDBus_->sendRemoteMethodCall();
 
@@ -905,7 +905,7 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
-			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
+			this->pDBus_->appendStringToRemoteMethodCall(_clientID);
 			this->pDBus_->appendStringToRemoteMethodCall(devID);
 			this->pDBus_->sendRemoteMethodCall();
 
@@ -947,14 +947,14 @@ const bool DBusHandler::macroRecorded(
 				<< " key: " << keyName;
 #endif
 
-	if( ! this->are_we_registered_ ) {
+	if( ! _registerStatus ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "currently not registered, skipping";
 #endif
 		return false;
 	}
 
-	if( this->session_state_ != "active" ) {
+	if( _sessionState != "active" ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "currently not active, skipping";
 #endif
@@ -976,14 +976,14 @@ const bool DBusHandler::macroCleared(
 				<< " key: " << keyName;
 #endif
 
-	if( ! this->are_we_registered_ ) {
+	if( ! _registerStatus ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "currently not registered, skipping";
 #endif
 		return false;
 	}
 
-	if( this->session_state_ != "active" ) {
+	if( _sessionState != "active" ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "currently not active, skipping";
 #endif
@@ -995,29 +995,29 @@ const bool DBusHandler::macroCleared(
 
 void DBusHandler::deviceMediaEvent(
 	const std::string & devID,
-	const std::string & key_event)
+	const std::string & mediaKeyEvent)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - device: " << devID
-				<< " event: " << key_event;
+				<< " event: " << mediaKeyEvent;
 #endif
 
-	if( ! this->are_we_registered_ ) {
+	if( ! _registerStatus ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "currently not registered, skipping";
 #endif
 		return;
 	}
 
-	if( this->session_state_ != "active" ) {
+	if( _sessionState != "active" ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "currently not active, skipping";
 #endif
 		return;
 	}
 
-	this->devices_.runDeviceMediaEvent(devID, key_event);
+	this->devices_.runDeviceMediaEvent(devID, mediaKeyEvent);
 }
 
 } // namespace GLogiK

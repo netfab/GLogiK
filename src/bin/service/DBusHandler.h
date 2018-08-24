@@ -26,6 +26,8 @@
 #include <vector>
 #include <string>
 
+#include <cstdint>
+
 #include <sys/types.h>
 
 #include "lib/utils/utils.h"
@@ -39,11 +41,11 @@
 namespace GLogiK
 {
 
-enum class SessionTracker
+enum class SessionFramework : uint8_t
 {
-	F_UNKNOWN = 0,
-	F_CONSOLEKIT,
-	F_LOGIND,
+	FW_UNKNOWN = 0,
+	FW_CONSOLEKIT,
+	FW_LOGIND,
 };
 
 class DBusHandler
@@ -68,18 +70,18 @@ class DBusHandler
 		NSGKDBus::GKDBus* pDBus_;
 		const NSGKDBus::BusConnection system_bus_;
 		DevicesHandler devices_;
-		bool skip_retry_;
-		bool are_we_registered_;
-		std::string client_id_;
-		SessionTracker session_framework_;
+		bool _skipRetry;			/* true == don't retry if register fails */
+		bool _registerStatus;		/* true == registered with daemon */
+		std::string _clientID;
+		SessionFramework _sessionFramework;
 
 		std::ostringstream buffer_;
 
-		std::string current_session_;	/* current session object path */
-		std::string session_state_;		/* session state */
+		std::string _currentSession;	/* current session object path */
+		std::string _sessionState;		/* session state */
 
 		void setCurrentSessionObjectPath(pid_t pid);
-		const std::string getCurrentSessionState(const bool logoff=false);
+		const std::string getCurrentSessionState(const bool disabledDebugOutput=false);
 
 		void registerWithDaemon(void);
 		void unregisterWithDaemon(void);
@@ -108,7 +110,7 @@ class DBusHandler
 		void devicesStopped(const std::vector<std::string> & devicesID);
 		void devicesUnplugged(const std::vector<std::string> & devicesID);
 
-		void deviceMediaEvent(const std::string & devID, const std::string & media_event);
+		void deviceMediaEvent(const std::string & devID, const std::string & mediaKeyEvent);
 		/* -- */
 };
 
