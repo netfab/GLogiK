@@ -22,6 +22,7 @@
 #include <utility>
 #include <exception>
 #include <stdexcept>
+#include <sstream>
 #include <fstream>
 #include <set>
 #include <thread>
@@ -46,20 +47,19 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 DevicesHandler::DevicesHandler()
-	:	pDBus_(nullptr),
-		pGKfs_(nullptr),
-		system_bus_(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
-		client_id_("undefined"),
-		buffer_("", std::ios_base::app)
+	:	_pDBus(nullptr),
+		_pGKfs(nullptr),
+		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
+		_clientID("undefined")
 {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler initialization";
 #endif
-	this->config_root_directory_ = XDGUserDirs::getConfigDirectory();
-	this->config_root_directory_ += "/";
-	this->config_root_directory_ += PACKAGE_NAME;
+	_configurationRootDirectory = XDGUserDirs::getConfigDirectory();
+	_configurationRootDirectory += "/";
+	_configurationRootDirectory += PACKAGE_NAME;
 
-	FileSystem::createOwnerDirectory(this->config_root_directory_);
+	FileSystem::createOwnerDirectory(_configurationRootDirectory);
 }
 
 DevicesHandler::~DevicesHandler() {
@@ -69,24 +69,24 @@ DevicesHandler::~DevicesHandler() {
 }
 
 void DevicesHandler::setGKfs(NSGKUtils::FileSystem* pGKfs) {
-	this->pGKfs_ = pGKfs;
+	_pGKfs = pGKfs;
 }
 
 void DevicesHandler::setDBus(NSGKDBus::GKDBus* pDBus) {
-	this->pDBus_ = pDBus;
+	_pDBus = pDBus;
 }
 
 void DevicesHandler::setClientID(const std::string & id) {
-	this->client_id_ = id;
+	_clientID = id;
 }
 
 void DevicesHandler::clearDevices(void) {
 	std::set<std::string> devicesID;
 
-	for( const auto & devicePair : this->started_devices_ ) {
+	for( const auto & devicePair : _startedDevices ) {
 		devicesID.insert(devicePair.first);
 	}
-	for( const auto & devicePair : this->stopped_devices_ ) {
+	for( const auto & devicePair : _stoppedDevices ) {
 		devicesID.insert(devicePair.first);
 	}
 
@@ -96,35 +96,35 @@ void DevicesHandler::clearDevices(void) {
 	}
 
 	/* clear all containers */
-	this->started_devices_.clear();
-	this->stopped_devices_.clear();
+	_startedDevices.clear();
+	_stoppedDevices.clear();
 }
 
 const devices_files_map_t DevicesHandler::getDevicesMap(void) {
 	devices_files_map_t ret;
-	for(const auto & dev : this->started_devices_) {
+	for(const auto & dev : _startedDevices) {
 		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFileName()) );
 	}
-	for(const auto & dev : this->stopped_devices_) {
+	for(const auto & dev : _stoppedDevices) {
 		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFileName()) );
 	}
 	return ret;
 }
 
-const bool DevicesHandler::checkDeviceCapability(const DeviceProperties & device, Caps to_check) {
-	return (device.getCapabilities() & to_type(to_check));
+const bool DevicesHandler::checkDeviceCapability(const DeviceProperties & device, Caps toCheck) {
+	return (device.getCapabilities() & to_type(toCheck));
 }
 
 void DevicesHandler::checkDeviceConfigurationFile(const std::string & devID) {
 	try {
-		DeviceProperties & device = this->started_devices_.at(devID);
+		DeviceProperties & device = _startedDevices.at(devID);
 		this->loadDeviceConfigurationFile(device);
 
 		this->sendDeviceConfigurationToDaemon(devID, device);
 	}
 	catch (const std::out_of_range& oor) {
 		try {
-			DeviceProperties & device = this->stopped_devices_.at(devID);
+			DeviceProperties & device = _stoppedDevices.at(devID);
 			this->loadDeviceConfigurationFile(device);
 
 			this->sendDeviceConfigurationToDaemon(devID, device);
@@ -140,7 +140,7 @@ void DevicesHandler::saveDeviceConfigurationFile(
 	const DeviceProperties & device )
 {
 	try {
-		fs::path current_path(this->config_root_directory_);
+		fs::path current_path(_configurationRootDirectory);
 		current_path /= device.getVendor();
 
 		FileSystem::createOwnerDirectory(current_path);
@@ -170,19 +170,19 @@ void DevicesHandler::saveDeviceConfigurationFile(
 			ofs.close();
 		}
 		catch (const std::ofstream::failure & e) {
-			this->buffer_.str("fail to open configuration file : ");
-			this->buffer_ << e.what();
-			LOG(ERROR) << this->buffer_.str();
+			std::ostringstream buffer("fail to open configuration file : ", std::ios_base::app);
+			buffer << e.what();
+			LOG(ERROR) << buffer.str();
 		}
 		catch (const fs::filesystem_error & e) {
-			this->buffer_.str("set permissions failure on configuration file : ");
-			this->buffer_ << e.what();
-			LOG(ERROR) << this->buffer_.str();
+			std::ostringstream buffer("set permissions failure on configuration file : ", std::ios_base::app);
+			buffer << e.what();
+			LOG(ERROR) << buffer.str();
 		}
 		catch(const boost::archive::archive_exception & e) {
-			this->buffer_.str("boost::archive exception : ");
-			this->buffer_ << e.what();
-			LOG(ERROR) << this->buffer_.str();
+			std::ostringstream buffer("boost::archive exception : ", std::ios_base::app);
+			buffer << e.what();
+			LOG(ERROR) << buffer.str();
 		}
 		/*
 		 * catch std::ios_base::failure on buggy compilers
@@ -190,9 +190,9 @@ void DevicesHandler::saveDeviceConfigurationFile(
 		 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
 		 */
 		catch( const std::exception & e ) {
-			this->buffer_.str("(buggy exception) fail to open configuration file : ");
-			this->buffer_ << e.what();
-			LOG(ERROR) << this->buffer_.str();
+			std::ostringstream buffer("(buggy exception) fail to open configuration file : ", std::ios_base::app);
+			buffer << e.what();
+			LOG(ERROR) << buffer.str();
 		}
 	}
 	catch ( const GLogiKExcept & e ) {
@@ -201,7 +201,7 @@ void DevicesHandler::saveDeviceConfigurationFile(
 }
 
 void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
-	fs::path current_path(this->config_root_directory_);
+	fs::path current_path(_configurationRootDirectory);
 	current_path /= device.getVendor();
 	current_path /= device.getConfigFileName();
 
@@ -230,14 +230,14 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 		ifs.close();
 	}
 	catch (const std::ifstream::failure & e) {
-		this->buffer_.str("fail to open configuration file : ");
-		this->buffer_ << e.what();
-		LOG(ERROR) << this->buffer_.str();
+		std::ostringstream buffer("fail to open configuration file : ", std::ios_base::app);
+		buffer << e.what();
+		LOG(ERROR) << buffer.str();
 	}
 	catch(const boost::archive::archive_exception & e) {
-		std::string err("load: ");
-		err += e.what();
-		LOG(ERROR) << err;
+		std::ostringstream buffer("boost::archive exception : ", std::ios_base::app);
+		buffer << e.what();
+		LOG(ERROR) << buffer.str();
 		// TODO throw GLogiKExcept to create new configuration
 		// file and avoid overwriting on close ?
 	}
@@ -247,9 +247,9 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
 	 */
 	catch( const std::exception & e ) {
-		this->buffer_.str("(buggy exception) fail to open configuration file : ");
-		this->buffer_ << e.what();
-		LOG(ERROR) << this->buffer_.str();
+		std::ostringstream buffer("(buggy exception) fail to open configuration file : ", std::ios_base::app);
+		buffer << e.what();
+		LOG(ERROR) << buffer.str();
 	}
 }
 
@@ -259,26 +259,26 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 		const std::string remoteMethod("SetDeviceBacklightColor");
 
 		try {
-			this->pDBus_->initializeRemoteMethodCall(
-				this->system_bus_,
+			_pDBus->initializeRemoteMethodCall(
+				_systemBus,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
-			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
-			this->pDBus_->appendStringToRemoteMethodCall(devID);
+			_pDBus->appendStringToRemoteMethodCall(_clientID);
+			_pDBus->appendStringToRemoteMethodCall(devID);
 			uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
-			this->pDBus_->appendUInt8ToRemoteMethodCall(r);
-			this->pDBus_->appendUInt8ToRemoteMethodCall(g);
-			this->pDBus_->appendUInt8ToRemoteMethodCall(b);
+			_pDBus->appendUInt8ToRemoteMethodCall(r);
+			_pDBus->appendUInt8ToRemoteMethodCall(g);
+			_pDBus->appendUInt8ToRemoteMethodCall(b);
 
-			this->pDBus_->sendRemoteMethodCall();
+			_pDBus->sendRemoteMethodCall();
 
 			try {
-				this->pDBus_->waitForRemoteMethodCallReply();
+				_pDBus->waitForRemoteMethodCallReply();
 
-				const bool ret = this->pDBus_->getNextBooleanArgument();
+				const bool ret = _pDBus->getNextBooleanArgument();
 				if( ret ) {
 					LOG(VERB)	<< "[" << devID << "] successfully setted device backlight color : "
 								<< getHexRGB(r, g, b);
@@ -292,7 +292,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 			}
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
-			this->pDBus_->abandonRemoteMethodCall();
+			_pDBus->abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	}
@@ -321,24 +321,24 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 			}
 
 			try {
-				this->pDBus_->initializeRemoteMethodCall(
-					this->system_bus_,
+				_pDBus->initializeRemoteMethodCall(
+					_systemBus,
 					GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 					remoteMethod.c_str()
 				);
-				this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
-				this->pDBus_->appendStringToRemoteMethodCall(devID);
-				this->pDBus_->appendUInt8ToRemoteMethodCall(bankID);
-				this->pDBus_->appendMacrosBankToRemoteMethodCall(bank);
+				_pDBus->appendStringToRemoteMethodCall(_clientID);
+				_pDBus->appendStringToRemoteMethodCall(devID);
+				_pDBus->appendUInt8ToRemoteMethodCall(bankID);
+				_pDBus->appendMacrosBankToRemoteMethodCall(bank);
 
-				this->pDBus_->sendRemoteMethodCall();
+				_pDBus->sendRemoteMethodCall();
 
 				try {
-					this->pDBus_->waitForRemoteMethodCallReply();
+					_pDBus->waitForRemoteMethodCallReply();
 
-					const bool ret = this->pDBus_->getNextBooleanArgument();
+					const bool ret = _pDBus->getNextBooleanArgument();
 					if( ret ) {
 						LOG(VERB) << "[" << devID << "] successfully setted device MacrosBank " << to_uint(bankID);
 					}
@@ -351,7 +351,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 				}
 			}
 			catch (const GKDBusMessageWrongBuild & e) {
-				this->pDBus_->abandonRemoteMethodCall();
+				_pDBus->abandonRemoteMethodCall();
 				LogRemoteCallFailure
 			}
 		}
@@ -365,24 +365,24 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	std::string remoteMethod("GetDeviceProperties");
 
 	try {
-		this->pDBus_->initializeRemoteMethodCall(
-			this->system_bus_,
+		_pDBus->initializeRemoteMethodCall(
+			_systemBus,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
-		this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
-		this->pDBus_->appendStringToRemoteMethodCall(devID);
+		_pDBus->appendStringToRemoteMethodCall(_clientID);
+		_pDBus->appendStringToRemoteMethodCall(devID);
 
-		this->pDBus_->sendRemoteMethodCall();
+		_pDBus->sendRemoteMethodCall();
 
 		try {
-			this->pDBus_->waitForRemoteMethodCallReply();
+			_pDBus->waitForRemoteMethodCallReply();
 
-			const std::string vendor( this->pDBus_->getNextStringArgument() );
-			const std::string model( this->pDBus_->getNextStringArgument() );
-			const uint64_t caps( this->pDBus_->getNextUInt64Argument() );
+			const std::string vendor( _pDBus->getNextStringArgument() );
+			const std::string model( _pDBus->getNextStringArgument() );
+			const uint64_t caps( _pDBus->getNextUInt64Argument() );
 			device.setProperties( vendor, model, caps );
 
 #if DEBUGGING_ON
@@ -394,7 +394,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		}
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
-		this->pDBus_->abandonRemoteMethodCall();
+		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
 
@@ -403,22 +403,22 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		remoteMethod = "GetDeviceMacroKeysNames";
 
 		try {
-			this->pDBus_->initializeRemoteMethodCall(
-				this->system_bus_,
+			_pDBus->initializeRemoteMethodCall(
+				_systemBus,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
-			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
-			this->pDBus_->appendStringToRemoteMethodCall(devID);
+			_pDBus->appendStringToRemoteMethodCall(_clientID);
+			_pDBus->appendStringToRemoteMethodCall(devID);
 
-			this->pDBus_->sendRemoteMethodCall();
+			_pDBus->sendRemoteMethodCall();
 
 			try {
-				this->pDBus_->waitForRemoteMethodCallReply();
+				_pDBus->waitForRemoteMethodCallReply();
 
-				const std::vector<std::string> keys_names( this->pDBus_->getStringsArray() );
+				const std::vector<std::string> keys_names( _pDBus->getStringsArray() );
 				device.initMacrosBanks(keys_names);
 #if DEBUGGING_ON
 				LOG(DEBUG3) << "[" << devID << "] initialized " << keys_names.size() << " macro keys";
@@ -429,7 +429,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 			}
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
-			this->pDBus_->abandonRemoteMethodCall();
+			_pDBus->abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	}
@@ -439,15 +439,15 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "[" << devID << "] assigning a configuration file";
 #endif
-	fs::path directory(this->config_root_directory_);
+	fs::path directory(_configurationRootDirectory);
 	directory /= device.getVendor();
 
 	std::set<std::string> already_used;
 	{
-		for(const auto & dev : this->started_devices_) {
+		for(const auto & dev : _startedDevices) {
 			already_used.insert( dev.second.getConfigFileName() );
 		}
-		for(const auto & dev : this->stopped_devices_) {
+		for(const auto & dev : _stoppedDevices) {
 			already_used.insert( dev.second.getConfigFileName() );
 		}
 	}
@@ -456,7 +456,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		try {
 			/* trying to find an existing configuration file */
 			device.setConfigFileName(
-				this->pGKfs_->getNextAvailableFileName(already_used, directory, device.getModel(), "cfg", true)
+				_pGKfs->getNextAvailableFileName(already_used, directory, device.getModel(), "cfg", true)
 			);
 		}
 		catch ( const GLogiKExcept & e ) {
@@ -492,7 +492,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		try {
 			/* none found, assign a new configuration file to this device */
 			device.setConfigFileName(
-				this->pGKfs_->getNextAvailableFileName(already_used, directory, device.getModel(), "cfg")
+				_pGKfs->getNextAvailableFileName(already_used, directory, device.getModel(), "cfg")
 			);
 
 #if DEBUGGING_ON
@@ -513,7 +513,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 void DevicesHandler::startDevice(const std::string & devID) {
 	try {
-		this->started_devices_.at(devID);
+		_startedDevices.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "found already started device: [" << devID << "]";
 #endif
@@ -521,10 +521,10 @@ void DevicesHandler::startDevice(const std::string & devID) {
 	}
 	catch (const std::out_of_range& oor) {
 		try {
-			DeviceProperties & device = this->stopped_devices_.at(devID);
+			DeviceProperties & device = _stoppedDevices.at(devID);
 			LOG(INFO) << "starting device: [" << devID << "]";
-			this->started_devices_[devID] = device;
-			this->stopped_devices_.erase(devID);
+			_startedDevices[devID] = device;
+			_stoppedDevices.erase(devID);
 		}
 		catch (const std::out_of_range& oor) {
 #if DEBUGGING_ON
@@ -533,14 +533,14 @@ void DevicesHandler::startDevice(const std::string & devID) {
 			DeviceProperties device;
 			/* also load configuration file */
 			this->setDeviceProperties(devID, device);
-			this->started_devices_[devID] = device;
+			_startedDevices[devID] = device;
 		}
 	}
 }
 
 void DevicesHandler::stopDevice(const std::string & devID) {
 	try {
-		this->stopped_devices_.at(devID);
+		_stoppedDevices.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "found already stopped device: [" << devID << "]";
 #endif
@@ -548,10 +548,10 @@ void DevicesHandler::stopDevice(const std::string & devID) {
 	}
 	catch (const std::out_of_range& oor) {
 		try {
-			DeviceProperties & device = this->started_devices_.at(devID);
+			DeviceProperties & device = _startedDevices.at(devID);
 			LOG(INFO) << "stopping device: [" << devID << "]";
-			this->stopped_devices_[devID] = device;
-			this->started_devices_.erase(devID);
+			_stoppedDevices[devID] = device;
+			_startedDevices.erase(devID);
 		}
 		catch (const std::out_of_range& oor) {
 			LOG(WARNING) << "device [" << devID << "] not found in containers, giving up";
@@ -561,7 +561,7 @@ void DevicesHandler::stopDevice(const std::string & devID) {
 
 void DevicesHandler::unplugDevice(const std::string & devID) {
 	try {
-		this->stopped_devices_.at(devID);
+		_stoppedDevices.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "found already stopped device: [" << devID << "]";
 #endif
@@ -575,11 +575,11 @@ void DevicesHandler::unplugDevice(const std::string & devID) {
 
 void DevicesHandler::unrefDevice(const std::string & devID) {
 	try {
-		const DeviceProperties & device = this->stopped_devices_.at(devID);
+		const DeviceProperties & device = _stoppedDevices.at(devID);
 
-		this->pGKfs_->removeNotifyWatch( device.getWatchDescriptor() );
+		_pGKfs->removeNotifyWatch( device.getWatchDescriptor() );
 
-		this->stopped_devices_.erase(devID);
+		_stoppedDevices.erase(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "[" << devID << "] erased device";
 #endif
@@ -587,21 +587,21 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 		std::string remoteMethod("DeleteDeviceConfiguration");
 
 		try {
-			this->pDBus_->initializeRemoteMethodCall(
-				this->system_bus_,
+			_pDBus->initializeRemoteMethodCall(
+				_systemBus,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
-			this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
-			this->pDBus_->appendStringToRemoteMethodCall(devID);
+			_pDBus->appendStringToRemoteMethodCall(_clientID);
+			_pDBus->appendStringToRemoteMethodCall(devID);
 
-			this->pDBus_->sendRemoteMethodCall();
+			_pDBus->sendRemoteMethodCall();
 
 			try {
-				this->pDBus_->waitForRemoteMethodCallReply();
-				const bool ret = this->pDBus_->getNextBooleanArgument();
+				_pDBus->waitForRemoteMethodCallReply();
+				const bool ret = _pDBus->getNextBooleanArgument();
 				if( ret ) {
 #if DEBUGGING_ON
 					LOG(DEBUG3) << "[" << devID << "] successfully deleted remote device configuration ";
@@ -616,7 +616,7 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 			}
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
-			this->pDBus_->abandonRemoteMethodCall();
+			_pDBus->abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	}
@@ -631,33 +631,33 @@ const bool DevicesHandler::setDeviceMacro(
 	const uint8_t bankID)
 {
 	try {
-		DeviceProperties & device = this->started_devices_.at(devID);
+		DeviceProperties & device = _startedDevices.at(devID);
 
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			std::string remoteMethod("GetDeviceMacro");
 
 			try {
 				/* getting recorded macro from daemon */
-				this->pDBus_->initializeRemoteMethodCall(
-					this->system_bus_,
+				_pDBus->initializeRemoteMethodCall(
+					_systemBus,
 					GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 					remoteMethod.c_str()
 				);
 
-				this->pDBus_->appendStringToRemoteMethodCall(this->client_id_);
-				this->pDBus_->appendStringToRemoteMethodCall(devID);
-				this->pDBus_->appendStringToRemoteMethodCall(keyName);
-				this->pDBus_->appendUInt8ToRemoteMethodCall(bankID);
+				_pDBus->appendStringToRemoteMethodCall(_clientID);
+				_pDBus->appendStringToRemoteMethodCall(devID);
+				_pDBus->appendStringToRemoteMethodCall(keyName);
+				_pDBus->appendUInt8ToRemoteMethodCall(bankID);
 
-				this->pDBus_->sendRemoteMethodCall();
+				_pDBus->sendRemoteMethodCall();
 
 				try {
-					this->pDBus_->waitForRemoteMethodCallReply();
+					_pDBus->waitForRemoteMethodCallReply();
 
 					/* use helper function to get the macro */
-					const macro_type macro = this->pDBus_->getNextMacroArgument();
+					const macro_type macro = _pDBus->getNextMacroArgument();
 
 					device.setMacro(bankID, keyName, macro);
 					this->saveDeviceConfigurationFile(devID, device);
@@ -670,7 +670,7 @@ const bool DevicesHandler::setDeviceMacro(
 				}
 			}
 			catch (const GKDBusMessageWrongBuild & e) {
-				this->pDBus_->abandonRemoteMethodCall();
+				_pDBus->abandonRemoteMethodCall();
 				LogRemoteCallFailure
 			}
 		}
@@ -688,7 +688,7 @@ const bool DevicesHandler::clearDeviceMacro(
 	const uint8_t bankID)
 {
 	try {
-		DeviceProperties & device = this->started_devices_.at(devID);
+		DeviceProperties & device = _startedDevices.at(devID);
 
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			device.clearMacro(bankID, keyName);
@@ -707,11 +707,11 @@ const bool DevicesHandler::clearDeviceMacro(
 }
 
 void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check) {
-	fs::path directory(this->config_root_directory_);
+	fs::path directory(_configurationRootDirectory);
 	directory /= device.getVendor();
 
 	try {
-		device.setWatchDescriptor( this->pGKfs_->addNotifyDirectoryWatch( directory.string(), check ) );
+		device.setWatchDescriptor( _pGKfs->addNotifyDirectoryWatch( directory.string(), check ) );
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(WARNING) << e.what();
@@ -721,18 +721,18 @@ void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check)
 
 void DevicesHandler::runDeviceMediaEvent(
 	const std::string & devID,
-	const std::string & key_event)
+	const std::string & mediaKeyEvent)
 {
 	try {
-		DeviceProperties & device = this->started_devices_.at(devID);
-		const std::string cmd( device.getMediaCommand(key_event) );
+		DeviceProperties & device = _startedDevices.at(devID);
+		const std::string cmd( device.getMediaCommand(mediaKeyEvent) );
 		if( ! cmd.empty() ) {
-			std::thread media_event_thread(&DevicesHandler::runCommand, this, key_event, cmd);
+			std::thread media_event_thread(&DevicesHandler::runCommand, this, mediaKeyEvent, cmd);
 			media_event_thread.detach();
 		}
 		else {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "empty command media event " << key_event;
+			LOG(DEBUG2) << "empty command media event " << mediaKeyEvent;
 #endif
 		}
 	}
@@ -742,12 +742,12 @@ void DevicesHandler::runDeviceMediaEvent(
 }
 
 void DevicesHandler::runCommand(
-	const std::string & key_event,
+	const std::string & mediaKeyEvent,
 	const std::string & command
 	)
 {
 #if DESKTOP_NOTIFICATIONS
-	this->notification_.init(GLOGIKS_DESKTOP_SERVICE_NAME, 5000);
+	_notification.init(GLOGIKS_DESKTOP_SERVICE_NAME, 5000);
 #endif
 
 	std::string line;
@@ -770,8 +770,8 @@ void DevicesHandler::runCommand(
 	}
 
 #if DESKTOP_NOTIFICATIONS
-	if( (key_event == std::string(XF86_AUDIO_RAISE_VOLUME)) or
-		(key_event == std::string(XF86_AUDIO_LOWER_VOLUME)) ) {
+	if( (mediaKeyEvent == std::string(XF86_AUDIO_RAISE_VOLUME)) or
+		(mediaKeyEvent == std::string(XF86_AUDIO_LOWER_VOLUME)) ) {
 		try {
 			int volume = -1;
 			try {
@@ -795,8 +795,8 @@ void DevicesHandler::runCommand(
 				icon = "audio-volume-high-symbolic";
 
 			last += " %";
-			if( this->notification_.updateProperties("Volume", last, icon) ) {
-				if( ! this->notification_.show() ) {
+			if( _notification.updateProperties("Volume", last, icon) ) {
+				if( ! _notification.show() ) {
 					LOG(ERROR) << "notification showing failure";
 				}
 			}

@@ -19,14 +19,13 @@
  *
  */
 
-#ifndef __GLOGIK_DESKTOP_SERVICE_DEVICES_HANDLER_H__
-#define __GLOGIK_DESKTOP_SERVICE_DEVICES_HANDLER_H__
+#ifndef SRC_BIN_SERVICE_DEVICES_HANDLER_HPP_
+#define SRC_BIN_SERVICE_DEVICES_HANDLER_HPP_
 
 #include <cstdint>
 
 #include <string>
 #include <map>
-#include <sstream>
 
 #include "lib/utils/utils.h"
 #include "lib/dbus/GKDBus.h"
@@ -74,7 +73,7 @@ class DevicesHandler
 
 		void runDeviceMediaEvent(
 			const std::string & devID,
-			const std::string & key_event
+			const std::string & mediaKeyEvent
 		);
 
 		const devices_files_map_t getDevicesMap(void);
@@ -83,18 +82,17 @@ class DevicesHandler
 	protected:
 
 	private:
-		NSGKDBus::GKDBus* pDBus_;
-		NSGKUtils::FileSystem* pGKfs_;
+		NSGKDBus::GKDBus* _pDBus;
+		NSGKUtils::FileSystem* _pGKfs;
 #if DESKTOP_NOTIFICATIONS
-		VolumeNotification notification_;
+		VolumeNotification _notification;
 #endif
-		const NSGKDBus::BusConnection system_bus_;
-		std::string client_id_;
-		std::ostringstream buffer_;
-		std::string config_root_directory_;
+		const NSGKDBus::BusConnection _systemBus;
+		std::string _clientID;
+		std::string _configurationRootDirectory;
 
-		std::map<const std::string, DeviceProperties> started_devices_;
-		std::map<const std::string, DeviceProperties> stopped_devices_;
+		std::map<const std::string, DeviceProperties> _startedDevices;
+		std::map<const std::string, DeviceProperties> _stoppedDevices;
 
 		void setDeviceProperties(
 			const std::string & devID,
@@ -118,10 +116,10 @@ class DevicesHandler
 		);
 		void unrefDevice(const std::string & devID);
 
-		const bool checkDeviceCapability(const DeviceProperties & device, Caps to_check);
+		const bool checkDeviceCapability(const DeviceProperties & device, Caps toCheck);
 
 		void runCommand(
-			const std::string & key_event,
+			const std::string & mediaKeyEvent,
 			const std::string & command
 		);
 
