@@ -154,8 +154,8 @@ void DBusHandler::updateSessionState(void) {
 	/* if debug output is ON, force-disable it, else debug file
 	 * will be spammed by the following DBus request debug output */
 	const bool disabledDebugOutput = true;
-	const std::string new_state = this->getCurrentSessionState(disabledDebugOutput);
-	if(_sessionState == new_state) {
+	const std::string newState = this->getCurrentSessionState(disabledDebugOutput);
+	if(_sessionState == newState) {
 #if 0 && DEBUGGING_ON
 		LOG(DEBUG5) << "session state did not changed";
 #endif
@@ -166,12 +166,12 @@ void DBusHandler::updateSessionState(void) {
 	LOG(DEBUG1) << "current session state : " << _sessionState;
 #endif
 
-	std::string unhandled = "unhandled session state : "; unhandled += new_state;
+	std::string unhandled = "unhandled session state : "; unhandled += newState;
 
 	if( _sessionState == "active" ) {
-		if(new_state == "online") {
+		if(newState == "online") {
 		}
-		else if(new_state == "closing") {
+		else if(newState == "closing") {
 		}
 		else {
 			FATALERROR << unhandled;
@@ -179,9 +179,9 @@ void DBusHandler::updateSessionState(void) {
 		}
 	}
 	else if( _sessionState == "online" ) {
-		if(new_state == "active") {
+		if(newState == "active") {
 		}
-		else if(new_state == "closing") {
+		else if(newState == "closing") {
 		}
 		else {
 			FATALERROR << unhandled;
@@ -189,9 +189,9 @@ void DBusHandler::updateSessionState(void) {
 		}
 	}
 	else if( _sessionState == "closing" ) {
-		if(new_state == "active") {
+		if(newState == "active") {
 		}
-		else if(new_state == "online") {
+		else if(newState == "online") {
 		}
 		else {
 			FATALERROR << unhandled;
@@ -204,10 +204,10 @@ void DBusHandler::updateSessionState(void) {
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << "switching session state to : " << new_state;
+	LOG(DEBUG1) << "switching session state to : " << newState;
 #endif
 
-	_sessionState = new_state;
+	_sessionState = newState;
 	this->reportChangedState();
 }
 
@@ -810,8 +810,8 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 			try {
 				_pDBus->waitForRemoteMethodCallReply();
 
-				const std::string device_status( _pDBus->getNextStringArgument() );
-				if(device_status == "started") {
+				const std::string deviceStatus( _pDBus->getNextStringArgument() );
+				if(deviceStatus == "started") {
 #if DEBUGGING_ON
 					LOG(DEBUG3) << "device status from daemon: [" << devID << "] started";
 #endif
@@ -819,7 +819,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 				}
 				else {
 					LOG(WARNING) << "received devicesStarted signal for device " << devID;
-					LOG(WARNING) << "but daemon is saying that device status is : " << device_status;
+					LOG(WARNING) << "but daemon is saying that device status is : " << deviceStatus;
 				}
 			}
 			catch (const GLogiKExcept & e) {
@@ -863,8 +863,8 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 			try {
 				_pDBus->waitForRemoteMethodCallReply();
 
-				const std::string device_status( _pDBus->getNextStringArgument() );
-				if(device_status == "stopped") {
+				const std::string deviceStatus( _pDBus->getNextStringArgument() );
+				if(deviceStatus == "stopped") {
 #if DEBUGGING_ON
 					LOG(DEBUG3) << "device status from daemon: [" << devID << "] stopped";
 #endif
@@ -872,7 +872,7 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 				}
 				else {
 					LOG(WARNING) << "received devicesStopped signal for device " << devID;
-					LOG(WARNING) << "but daemon is saying that device status is : " << device_status;
+					LOG(WARNING) << "but daemon is saying that device status is : " << deviceStatus;
 				}
 			}
 			catch (const GLogiKExcept & e) {
@@ -908,8 +908,8 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
 			try {
 				_pDBus->waitForRemoteMethodCallReply();
 
-				const std::string device_status( _pDBus->getNextStringArgument() );
-				if(device_status == "unplugged") {
+				const std::string deviceStatus( _pDBus->getNextStringArgument() );
+				if(deviceStatus == "unplugged") {
 #if DEBUGGING_ON
 					LOG(DEBUG3) << "device status from daemon: [" << devID << "] unplugged";
 #endif
@@ -917,7 +917,7 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
 				}
 				else {
 					LOG(WARNING) << "received devicesUnplugged signal for device " << devID;
-					LOG(WARNING) << "but daemon is saying that device status is : " << device_status;
+					LOG(WARNING) << "but daemon is saying that device status is : " << deviceStatus;
 				}
 			}
 			catch (const GLogiKExcept & e) {

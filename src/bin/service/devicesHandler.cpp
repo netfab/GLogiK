@@ -140,30 +140,30 @@ void DevicesHandler::saveDeviceConfigurationFile(
 	const DeviceProperties & device )
 {
 	try {
-		fs::path current_path(_configurationRootDirectory);
-		current_path /= device.getVendor();
+		fs::path filePath(_configurationRootDirectory);
+		filePath /= device.getVendor();
 
-		FileSystem::createOwnerDirectory(current_path);
+		FileSystem::createOwnerDirectory(filePath);
 
-		current_path /= device.getConfigFileName();
+		filePath /= device.getConfigFileName();
 
 		try {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "[" << devID << "] trying to open configuration file for writing : " << current_path.string();
+			LOG(DEBUG2) << "[" << devID << "] trying to open configuration file for writing : " << filePath.string();
 #endif
 
 			std::ofstream ofs;
 			ofs.exceptions(std::ofstream::failbit|std::ofstream::badbit);
-			ofs.open(current_path.string(), std::ofstream::out|std::ofstream::trunc);
+			ofs.open(filePath.string(), std::ofstream::out|std::ofstream::trunc);
 
-			fs::permissions(current_path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
+			fs::permissions(filePath, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "opened";
 #endif
 
 			{
-				boost::archive::text_oarchive output_archive(ofs);
-				output_archive << device;
+				boost::archive::text_oarchive outputArchive(ofs);
+				outputArchive << device;
 			}
 
 			LOG(INFO) << "[" << devID << "] successfully saved configuration file, closing";
@@ -201,9 +201,9 @@ void DevicesHandler::saveDeviceConfigurationFile(
 }
 
 void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
-	fs::path current_path(_configurationRootDirectory);
-	current_path /= device.getVendor();
-	current_path /= device.getConfigFileName();
+	fs::path filePath(_configurationRootDirectory);
+	filePath /= device.getVendor();
+	filePath /= device.getConfigFileName();
 
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "loading device configuration file " << device.getConfigFileName();
@@ -211,17 +211,17 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 	try {
 		std::ifstream ifs;
 		ifs.exceptions(std::ifstream::badbit);
-		ifs.open(current_path.string());
+		ifs.open(filePath.string());
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "configuration file successfully opened for reading";
 #endif
 
 		{
-			DeviceProperties new_device;
-			boost::archive::text_iarchive input_archive(ifs);
-			input_archive >> new_device;
+			DeviceProperties newDevice;
+			boost::archive::text_iarchive inputArchive(ifs);
+			inputArchive >> newDevice;
 
-			device.setProperties( new_device );
+			device.setProperties( newDevice );
 		}
 
 #if DEBUGGING_ON
@@ -306,16 +306,16 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 			const mBank_type & bank = idBankPair.second;
 
 			/* test whether this MacrosBank should be sent */
-			bool send_it = false;
+			bool sendIt = false;
 			for(const auto & keyMacroPair : bank) {
 				const macro_type & macro = keyMacroPair.second;
 				if( ! macro.empty() ) {
-					send_it = true;
+					sendIt = true;
 					break;
 				}
 			}
 
-			if( ! send_it ) {
+			if( ! sendIt ) {
 				LOG(VERB) << "[" << devID << "] skipping empty MacrosBank " << to_uint(bankID);
 				continue;
 			}
@@ -418,10 +418,10 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 			try {
 				_pDBus->waitForRemoteMethodCallReply();
 
-				const std::vector<std::string> keys_names( _pDBus->getStringsArray() );
-				device.initMacrosBanks(keys_names);
+				const std::vector<std::string> keysNames( _pDBus->getStringsArray() );
+				device.initMacrosBanks(keysNames);
 #if DEBUGGING_ON
-				LOG(DEBUG3) << "[" << devID << "] initialized " << keys_names.size() << " macro keys";
+				LOG(DEBUG3) << "[" << devID << "] initialized " << keysNames.size() << " macro keys";
 #endif
 			}
 			catch (const GLogiKExcept & e) {
@@ -442,13 +442,13 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	fs::path directory(_configurationRootDirectory);
 	directory /= device.getVendor();
 
-	std::set<std::string> already_used;
+	std::set<std::string> alreadyUsed;
 	{
 		for(const auto & dev : _startedDevices) {
-			already_used.insert( dev.second.getConfigFileName() );
+			alreadyUsed.insert( dev.second.getConfigFileName() );
 		}
 		for(const auto & dev : _stoppedDevices) {
-			already_used.insert( dev.second.getConfigFileName() );
+			alreadyUsed.insert( dev.second.getConfigFileName() );
 		}
 	}
 
@@ -456,7 +456,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		try {
 			/* trying to find an existing configuration file */
 			device.setConfigFileName(
-				_pGKfs->getNextAvailableFileName(already_used, directory, device.getModel(), "cfg", true)
+				_pGKfs->getNextAvailableFileName(alreadyUsed, directory, device.getModel(), "cfg", true)
 			);
 		}
 		catch ( const GLogiKExcept & e ) {
@@ -492,7 +492,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		try {
 			/* none found, assign a new configuration file to this device */
 			device.setConfigFileName(
-				_pGKfs->getNextAvailableFileName(already_used, directory, device.getModel(), "cfg")
+				_pGKfs->getNextAvailableFileName(alreadyUsed, directory, device.getModel(), "cfg")
 			);
 
 #if DEBUGGING_ON
@@ -727,8 +727,8 @@ void DevicesHandler::runDeviceMediaEvent(
 		DeviceProperties & device = _startedDevices.at(devID);
 		const std::string cmd( device.getMediaCommand(mediaKeyEvent) );
 		if( ! cmd.empty() ) {
-			std::thread media_event_thread(&DevicesHandler::runCommand, this, mediaKeyEvent, cmd);
-			media_event_thread.detach();
+			std::thread mediaEventThread(&DevicesHandler::runCommand, this, mediaKeyEvent, cmd);
+			mediaEventThread.detach();
 		}
 		else {
 #if DEBUGGING_ON
@@ -752,10 +752,10 @@ void DevicesHandler::runCommand(
 
 	std::string line;
 	std::string last;
-	bp::ipstream pipe_stream;
-	bp::child c(command, bp::std_out > pipe_stream);
+	bp::ipstream pipeStream;
+	bp::child c(command, bp::std_out > pipeStream);
 
-	while (pipe_stream && std::getline(pipe_stream, line) && !line.empty()) {
+	while (pipeStream && std::getline(pipeStream, line) && !line.empty()) {
 		last = line;
 		LOG(VERB) << line;
 	}
