@@ -19,10 +19,9 @@
  *
  */
 
-#ifndef __GLOGIKS_DESKTOP_SERVICE_DBUS_HANDLER_H__
-#define __GLOGIKS_DESKTOP_SERVICE_DBUS_HANDLER_H__
+#ifndef SRC_BIN_SERVICE_DBUS_HANDLER_HPP_
+#define SRC_BIN_SERVICE_DBUS_HANDLER_HPP_
 
-#include <sstream>
 #include <vector>
 #include <string>
 
@@ -67,15 +66,13 @@ class DBusHandler
 	protected:
 
 	private:
-		NSGKDBus::GKDBus* pDBus_;
-		const NSGKDBus::BusConnection system_bus_;
-		DevicesHandler devices_;
+		NSGKDBus::GKDBus* _pDBus;
+		const NSGKDBus::BusConnection _systemBus;
+		DevicesHandler _devices;
 		bool _skipRetry;			/* true == don't retry if register fails */
 		bool _registerStatus;		/* true == registered with daemon */
 		std::string _clientID;
 		SessionFramework _sessionFramework;
-
-		std::ostringstream buffer_;
 
 		std::string _currentSession;	/* current session object path */
 		std::string _sessionState;		/* session state */
