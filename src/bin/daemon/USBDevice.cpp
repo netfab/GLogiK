@@ -46,7 +46,7 @@ USBDevice::USBDevice(
 			pressed_keys(0),
 			current_leds_mask(0),
 			exit_macro_record_mode(false),
-			strID(id),
+			_stringID(id),
 			_lastKeysInterruptTransferLength(0),
 			_lastLCDInterruptTransferLength(0),
 			_keysEndpoint(0),
@@ -93,10 +93,8 @@ void USBDevice::operator=(const USBDevice& dev)
 	this->last_call = dev.last_call;
 
 	/* private */
-	this->strID = dev.getStrID();
-
+	_stringID = dev.getStringID();
 	this->setRGBBytes(dev._RGB[0], dev._RGB[1], dev._RGB[2]);
-
 	_lastKeysInterruptTransferLength	= dev.getLastKeysInterruptTransferLength();
 	_lastLCDInterruptTransferLength		= dev.getLastLCDInterruptTransferLength();
 	_keysEndpoint		= dev._keysEndpoint;

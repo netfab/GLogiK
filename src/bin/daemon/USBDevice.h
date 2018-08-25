@@ -83,11 +83,21 @@ class USBDevice
 		);
 		void destroyMacrosManager(void);
 
-		const std::string & getStrID(void) const { return this->strID; }
-		const bool getThreadsStatus(void) const { return _threadsStatus; }
-		void deactivateThreads(void) { _threadsStatus = false; }
-		const int getLastKeysInterruptTransferLength(void) const { return _lastKeysInterruptTransferLength; }
-		const int getLastLCDInterruptTransferLength(void) const { return _lastLCDInterruptTransferLength; }
+		const std::string & getStringID(void) const {
+			return _stringID;
+		}
+		const bool getThreadsStatus(void) const {
+			return _threadsStatus;
+		}
+		void deactivateThreads(void) {
+			_threadsStatus = false;
+		}
+		const int getLastKeysInterruptTransferLength(void) const {
+			return _lastKeysInterruptTransferLength;
+		}
+		const int getLastLCDInterruptTransferLength(void) const {
+			return _lastLCDInterruptTransferLength;
+		}
 		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
 		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
 
@@ -95,7 +105,7 @@ class USBDevice
 		friend class LibUSB;
 
 		// TODO
-		std::string strID;	/* [devID] */
+		std::string _stringID;	/* [devID] */
 
 		uint8_t _RGB[3];
 

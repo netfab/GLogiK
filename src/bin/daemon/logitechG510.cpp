@@ -208,7 +208,7 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 	switch(device.getLastKeysInterruptTransferLength()) {
 		case 2:
 #if DEBUGGING_ON
-			LOG(DEBUG1) << device.getStrID() << " 2 bytes : " << this->getBytes(device);
+			LOG(DEBUG1) << device.getStringID() << " 2 bytes : " << this->getBytes(device);
 #endif
 			this->processKeyEvent2Bytes(device);
 			return KeyStatus::S_KEY_PROCESSED;
@@ -226,7 +226,7 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 			/* process those events only if Macro Record Mode on */
 			if( device.current_leds_mask & to_type(Leds::GK_LED_MR) ) {
 #if DEBUGGING_ON
-				LOG(DEBUG1) << device.getStrID() << " 8 bytes : processing standard key event : "
+				LOG(DEBUG1) << device.getStringID() << " 8 bytes : processing standard key event : "
 							<< this->getBytes(device);
 #endif
 				this->processKeyEvent8Bytes(device);
@@ -236,14 +236,14 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 				return KeyStatus::S_KEY_PROCESSED;
 			}
 #if DEBUGGING_ON
-			LOG(DEBUG1) << device.getStrID() << " 8 bytes : skipping standard key event : "
+			LOG(DEBUG1) << device.getStringID() << " 8 bytes : skipping standard key event : "
 						<< this->getBytes(device);
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
 		default:
 #if DEBUGGING_ON
-			LOG(DEBUG1) << device.getStrID() << " not implemented: " << device.getLastKeysInterruptTransferLength() << " bytes !";
+			LOG(DEBUG1) << device.getStringID() << " not implemented: " << device.getLastKeysInterruptTransferLength() << " bytes !";
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
@@ -260,7 +260,7 @@ void LogitechG510::setDeviceBacklightColor(
 {
 	device.setRGBBytes( r, g, b );
 #if DEBUGGING_ON
-	LOG(DEBUG3) << device.getStrID() << " setting " << device.getName()
+	LOG(DEBUG3) << device.getStringID() << " setting " << device.getName()
 				<< " backlight color with following RGB bytes : " << getHexRGB(r, g, b);
 #endif
 	unsigned char usb_data[4] = { 5, r, g, b };
@@ -275,7 +275,7 @@ void LogitechG510::setMxKeysLeds(USBDevice & device) {
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << device.getStrID() << " setting " << device.getName()
+	LOG(DEBUG1) << device.getStringID() << " setting " << device.getName()
 				<< " MxKeys leds using current mask : 0x" << std::hex << to_uint(leds_mask);
 #endif
 	unsigned char leds_buffer[2] = { 4, leds_mask };
@@ -303,7 +303,7 @@ void LogitechG510::sendUSBDeviceInitialization(USBDevice & device) {
 	};
 
 #if DEBUGGING_ON
-	LOG(INFO) << device.getStrID() << " sending " << device.getName() << " initialization requests";
+	LOG(INFO) << device.getStringID() << " sending " << device.getName() << " initialization requests";
 #endif
 	this->sendControlRequest(device, 0x301, 1, usb_data, 19);
 	this->sendControlRequest(device, 0x309, 1, usb_data_2, 8);
