@@ -94,8 +94,10 @@ class USBDevice
 	private:
 		friend class LibUSB;
 
+		// TODO
 		std::string strID;	/* [devID] */
-		uint8_t rgb[3];
+
+		uint8_t _RGB[3];
 
 		int _lastKeysInterruptTransferLength;
 		int _lastLCDInterruptTransferLength;

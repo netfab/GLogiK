@@ -56,9 +56,7 @@ USBDevice::USBDevice(
 {
 	std::fill_n(this->keys_buffer, KEYS_BUFFER_LENGTH, 0);
 	std::fill_n(this->previous_keys_buffer, KEYS_BUFFER_LENGTH, 0);
-	this->rgb[0] = 0xFF;
-	this->rgb[1] = 0xFF;
-	this->rgb[2] = 0xFF;
+	this->setRGBBytes(0xFF, 0xFF, 0xFF);
 }
 
 void USBDevice::operator=(const USBDevice& dev)
@@ -95,12 +93,9 @@ void USBDevice::operator=(const USBDevice& dev)
 	this->last_call = dev.last_call;
 
 	/* private */
-	this->strID = dev.strID;
-	std::copy(
-		std::begin(dev.rgb),
-		std::end(dev.rgb),
-		std::begin(this->rgb)
-	);
+	this->strID = dev.getStrID();
+
+	this->setRGBBytes(dev._RGB[0], dev._RGB[1], dev._RGB[2]);
 
 	_lastKeysInterruptTransferLength	= dev.getLastKeysInterruptTransferLength();
 	_lastLCDInterruptTransferLength		= dev.getLastLCDInterruptTransferLength();
@@ -136,16 +131,16 @@ void USBDevice::destroyMacrosManager(void) {
 
 void USBDevice::setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b)
 {
-	this->rgb[0] = r;
-	this->rgb[1] = g;
-	this->rgb[2] = b;
+	_RGB[0] = r;
+	_RGB[1] = g;
+	_RGB[2] = b;
 }
 
 void USBDevice::getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const
 {
-	r = this->rgb[0];
-	g = this->rgb[1];
-	b = this->rgb[2];
+	r = _RGB[0];
+	g = _RGB[1];
+	b = _RGB[2];
 }
 
 } // namespace GLogiK
