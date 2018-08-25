@@ -538,7 +538,7 @@ int LibUSB::performKeysInterruptTransfer(
 		ret = libusb_interrupt_transfer(
 			device._pUSBDeviceHandle,
 			device._keysEndpoint,
-			(unsigned char*)device.keys_buffer,
+			static_cast<unsigned char*>(device._pressedKeys),
 			this->interrupt_buffer_max_length_,
 			&(device._lastKeysInterruptTransferLength),
 			timeout

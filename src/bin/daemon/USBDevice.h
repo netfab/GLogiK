@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_USB_DEVICE_H__
-#define __GLOGIKD_USB_DEVICE_H__
+#ifndef SRC_BIN_DAEMON_USB_DEVICE_HPP_
+#define SRC_BIN_DAEMON_USB_DEVICE_HPP_
 
 #include <cstdint>
 
@@ -53,33 +53,34 @@ class USBDevice
 		USBDevice(const USBDevice & dev) = delete;
 
 		USBDevice(
-			const std::string & n,
-			const std::string & v,
-			const std::string & p,
-			const uint64_t c,
-			uint8_t b,
+			const std::string & name,
+			const std::string & vendorID,
+			const std::string & productID,
+			const uint64_t capabilities,
+			uint8_t bus,
 			uint8_t num,
-			const std::string & id);
+			const std::string & stringID);
 
 		void operator=(const USBDevice& dev);
 
-		unsigned int fatal_errors;
-		std::thread::id listen_thread_id;
-		std::thread::id lcd_thread_id;
-		MacrosManager* macros_man;
-		uint64_t pressed_keys;
-		std::atomic<uint8_t> current_leds_mask;
-		std::atomic<bool> exit_macro_record_mode;
-		unsigned char keys_buffer[KEYS_BUFFER_LENGTH];
-		unsigned char previous_keys_buffer[KEYS_BUFFER_LENGTH];
-		std::string chosen_macro_key;
-		std::string media_key;
-		macro_type standard_keys_events;
-		std::chrono::steady_clock::time_point last_call;
+		unsigned int			_fatalErrors;
+		std::thread::id			_keysThreadID;
+		std::thread::id			_LCDThreadID;
+		MacrosManager*			_pMacrosManager;
+		uint64_t				_pressedRKeysMask;
+		std::atomic<uint8_t>	_banksLedsMask;
+		std::atomic<bool>		_exitMacroRecordMode;
+		unsigned char			_pressedKeys[KEYS_BUFFER_LENGTH];
+		unsigned char			_previousPressedKeys[KEYS_BUFFER_LENGTH];
+		std::string				_macroKey;
+		std::string				_mediaKey;
+		macro_type				_newMacro;
+
+		std::chrono::steady_clock::time_point _lastTimePoint;
 
 		void initializeMacrosManager(
-			const char* vk_name,
-			const std::vector<std::string> & keys_names
+			const char* virtualKeyboardName,
+			const std::vector<std::string> & keysNames
 		);
 		void destroyMacrosManager(void);
 
@@ -109,18 +110,18 @@ class USBDevice
 
 		uint8_t _RGB[3];
 
-		int _lastKeysInterruptTransferLength;
-		int _lastLCDInterruptTransferLength;
-		unsigned char _keysEndpoint;
-		unsigned char _LCDEndpoint;
-		libusb_device * _pUSBDevice;
-		libusb_device_handle * _pUSBDeviceHandle;
+		int 					_lastKeysInterruptTransferLength;
+		int 					_lastLCDInterruptTransferLength;
+		unsigned char			_keysEndpoint;
+		unsigned char			_LCDEndpoint;
+		libusb_device *			_pUSBDevice;
+		libusb_device_handle *	_pUSBDeviceHandle;
 		std::vector<libusb_endpoint_descriptor> _USBEndpoints;
-		std::vector<int> _toRelease;
-		std::vector<int> _toAttach;
+		std::vector<int>		_toRelease;
+		std::vector<int>		_toAttach;
 
-		std::atomic<bool> _threadsStatus;
-		std::mutex _libUSBMutex;
+		std::atomic<bool>	_threadsStatus;
+		std::mutex			_libUSBMutex;
 };
 
 } // namespace GLogiK

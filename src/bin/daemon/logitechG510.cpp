@@ -135,8 +135,8 @@ const std::vector<std::string> & LogitechG510::getMacroKeysNames(void) const {
 /* return true if the pressed key is a macro key (G1-G18)  */
 const bool LogitechG510::checkMacroKey(USBDevice & device) {
 	for (const auto & k : LogitechG510::five_bytes_keys_map_ ) {
-		if( k.macro_key and (device.pressed_keys & to_type(k.key)) ) {
-			device.chosen_macro_key = k.name;
+		if( k.macro_key and (device._pressedRKeysMask & to_type(k.key)) ) {
+			device._macroKey = k.name;
 			return true;
 		}
 	}
@@ -145,8 +145,8 @@ const bool LogitechG510::checkMacroKey(USBDevice & device) {
 
 const bool LogitechG510::checkMediaKey(USBDevice & device) {
 	for (const auto & k : LogitechG510::two_bytes_keys_map_ ) {
-		if( device.pressed_keys & to_type(k.key) ) {
-			device.media_key = k.name;
+		if( device._pressedRKeysMask & to_type(k.key) ) {
+			device._mediaKey = k.name;
 			return true;
 		}
 	}
@@ -159,15 +159,15 @@ const bool LogitechG510::checkMediaKey(USBDevice & device) {
  *  - one 2 bytes event with first byte equal to 0x04
  */
 void LogitechG510::processKeyEvent2Bytes(USBDevice & device) {
-	if (device.keys_buffer[0] == 0x02) {
+	if (device._pressedKeys[0] == 0x02) {
 		for (const auto & k : LogitechG510::two_bytes_keys_map_ ) {
-			if( device.keys_buffer[k.index] & k.mask )
-				device.pressed_keys |= to_type(k.key);
+			if( device._pressedKeys[k.index] & k.mask )
+				device._pressedRKeysMask |= to_type(k.key);
 		}
 	}
-	else if (device.keys_buffer[0] == 0x04) {
+	else if (device._pressedKeys[0] == 0x04) {
 #if DEBUGGING_ON
-		if( device.keys_buffer[1] == 0x04 ) {
+		if( device._pressedKeys[1] == 0x04 ) {
 			LOG(DEBUG3) << "backlight off";
 		}
 		else { /* 0x0 */
@@ -181,19 +181,19 @@ void LogitechG510::processKeyEvent2Bytes(USBDevice & device) {
 }
 
 void LogitechG510::processKeyEvent5Bytes(USBDevice & device) {
-	if (device.keys_buffer[0] != 0x03) {
+	if (device._pressedKeys[0] != 0x03) {
 		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 5 bytes event");
 		return;
 	}
 
 	for (const auto & k : LogitechG510::five_bytes_keys_map_ ) {
-		if( device.keys_buffer[k.index] & k.mask )
-			device.pressed_keys |= to_type(k.key);
+		if( device._pressedKeys[k.index] & k.mask )
+			device._pressedRKeysMask |= to_type(k.key);
 	}
 }
 
 void LogitechG510::processKeyEvent8Bytes(USBDevice & device) {
-	if (device.keys_buffer[0] != 0x01) {
+	if (device._pressedKeys[0] != 0x01) {
 		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 8 bytes event");
 		return;
 	}
@@ -203,7 +203,7 @@ void LogitechG510::processKeyEvent8Bytes(USBDevice & device) {
 
 KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 {
-	device.pressed_keys = 0;
+	device._pressedRKeysMask = 0;
 
 	switch(device.getLastKeysInterruptTransferLength()) {
 		case 2:
@@ -218,21 +218,21 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 			LOG(DEBUG1) << "5 bytes : " << this->getBytes(device);
 #endif
 			this->processKeyEvent5Bytes(device);
-			if( device.pressed_keys == 0 ) /* skip release key events */
+			if( device._pressedRKeysMask == 0 ) /* skip release key events */
 				return KeyStatus::S_KEY_SKIPPED;
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 8:
 			/* process those events only if Macro Record Mode on */
-			if( device.current_leds_mask & to_type(Leds::GK_LED_MR) ) {
+			if( device._banksLedsMask & to_type(Leds::GK_LED_MR) ) {
 #if DEBUGGING_ON
 				LOG(DEBUG1) << device.getStringID() << " 8 bytes : processing standard key event : "
 							<< this->getBytes(device);
 #endif
 				this->processKeyEvent8Bytes(device);
 				std::copy(
-						std::begin(device.keys_buffer), std::end(device.keys_buffer),
-						std::begin(device.previous_keys_buffer));
+						std::begin(device._pressedKeys), std::end(device._pressedKeys),
+						std::begin(device._previousPressedKeys));
 				return KeyStatus::S_KEY_PROCESSED;
 			}
 #if DEBUGGING_ON
@@ -270,7 +270,7 @@ void LogitechG510::setDeviceBacklightColor(
 void LogitechG510::setMxKeysLeds(USBDevice & device) {
 	unsigned char leds_mask = 0;
 	for (const auto & l : LogitechG510::leds_mask_ ) {
-		if( device.current_leds_mask & to_type(l.led) )
+		if( device._banksLedsMask & to_type(l.led) )
 			leds_mask |= l.mask;
 	}
 

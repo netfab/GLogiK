@@ -38,6 +38,7 @@ namespace GLogiK
 
 #define VENDOR_LOGITECH "046d"
 
+/* RKey - Recognized Keys */
 struct R_Key
 {
 	unsigned short index;

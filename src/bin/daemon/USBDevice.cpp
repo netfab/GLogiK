@@ -33,20 +33,20 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 USBDevice::USBDevice(
-	const std::string & n,
-	const std::string & v,
-	const std::string & p,
-	const uint64_t c,
-	uint8_t b,
+	const std::string & name,
+	const std::string & vendorID,
+	const std::string & productID,
+	const uint64_t capabilities,
+	uint8_t bus,
 	uint8_t num,
-	const std::string & id)
-		:	BusNumDeviceID(n, v, p, c, b, num),
-			fatal_errors(0),
-			macros_man(nullptr),
-			pressed_keys(0),
-			current_leds_mask(0),
-			exit_macro_record_mode(false),
-			_stringID(id),
+	const std::string & stringID)
+		:	BusNumDeviceID(name, vendorID, productID, capabilities, bus, num),
+			_fatalErrors(0),
+			_pMacrosManager(nullptr),
+			_pressedRKeysMask(0),
+			_banksLedsMask(0),
+			_exitMacroRecordMode(false),
+			_stringID(stringID),
 			_lastKeysInterruptTransferLength(0),
 			_lastLCDInterruptTransferLength(0),
 			_keysEndpoint(0),
@@ -54,8 +54,8 @@ USBDevice::USBDevice(
 			_pUSBDeviceHandle(nullptr),
 			_threadsStatus(true)
 {
-	std::fill_n(this->keys_buffer, KEYS_BUFFER_LENGTH, 0);
-	std::fill_n(this->previous_keys_buffer, KEYS_BUFFER_LENGTH, 0);
+	std::fill_n(_pressedKeys, KEYS_BUFFER_LENGTH, 0);
+	std::fill_n(_previousPressedKeys, KEYS_BUFFER_LENGTH, 0);
 	this->setRGBBytes(0xFF, 0xFF, 0xFF);
 }
 
@@ -70,30 +70,30 @@ void USBDevice::operator=(const USBDevice& dev)
 	/* end friendship members */
 
 	/* public */
-	this->fatal_errors				= dev.fatal_errors;
-	this->listen_thread_id			= dev.listen_thread_id;
-	this->lcd_thread_id				= dev.lcd_thread_id;
-	this->macros_man				= dev.macros_man;
-	this->pressed_keys				= dev.pressed_keys;
-	this->current_leds_mask			= static_cast<uint8_t>(dev.current_leds_mask);
-	this->exit_macro_record_mode	= static_cast<bool>(dev.exit_macro_record_mode);
+	_fatalErrors					= dev._fatalErrors;
+	_keysThreadID					= dev._keysThreadID;
+	_LCDThreadID					= dev._LCDThreadID;
+	_pMacrosManager					= dev._pMacrosManager;
+	_pressedRKeysMask				= dev._pressedRKeysMask;
+	_banksLedsMask					= static_cast<uint8_t>(dev._banksLedsMask);
+	_exitMacroRecordMode			= static_cast<bool>(dev._exitMacroRecordMode);
 	std::copy(
-		std::begin(dev.keys_buffer),
-		std::end(dev.keys_buffer),
-		std::begin(this->keys_buffer)
+		std::begin(dev._pressedKeys),
+		std::end(dev._pressedKeys),
+		std::begin(_pressedKeys)
 	);
 	std::copy(
-		std::begin(dev.previous_keys_buffer),
-		std::end(dev.previous_keys_buffer),
-		std::begin(this->previous_keys_buffer)
+		std::begin(dev._previousPressedKeys),
+		std::end(dev._previousPressedKeys),
+		std::begin(_previousPressedKeys)
 	);
-	this->chosen_macro_key = dev.chosen_macro_key;
-	this->media_key = dev.media_key;
-	this->standard_keys_events = dev.standard_keys_events;
-	this->last_call = dev.last_call;
+	_macroKey			= dev._macroKey;
+	_mediaKey			= dev._mediaKey;
+	_newMacro			= dev._newMacro;
+	_lastTimePoint		= dev._lastTimePoint;
 
 	/* private */
-	_stringID = dev.getStringID();
+	_stringID			= dev.getStringID();
 	this->setRGBBytes(dev._RGB[0], dev._RGB[1], dev._RGB[2]);
 	_lastKeysInterruptTransferLength	= dev.getLastKeysInterruptTransferLength();
 	_lastLCDInterruptTransferLength		= dev.getLastLCDInterruptTransferLength();
@@ -109,11 +109,11 @@ void USBDevice::operator=(const USBDevice& dev)
 }
 
 void USBDevice::initializeMacrosManager(
-	const char* vk_name,
-	const std::vector<std::string> & keys_names)
+	const char* virtualKeyboardName,
+	const std::vector<std::string> & keysNames)
 {
 	try {
-		this->macros_man = new MacrosManager( vk_name, keys_names );
+		_pMacrosManager = new MacrosManager(virtualKeyboardName, keysNames);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		throw GLogiKBadAlloc("macros manager allocation failure");
@@ -121,9 +121,9 @@ void USBDevice::initializeMacrosManager(
 }
 
 void USBDevice::destroyMacrosManager(void) {
-	if( this->macros_man ) {
-		delete this->macros_man;
-		this->macros_man = nullptr;
+	if( _pMacrosManager ) {
+		delete _pMacrosManager;
+		_pMacrosManager = nullptr;
 	}
 }
 
