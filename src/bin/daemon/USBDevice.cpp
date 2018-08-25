@@ -38,21 +38,21 @@ USBDevice::USBDevice(
 	const std::string & p,
 	const uint64_t c,
 	uint8_t b,
-	uint8_t nu,
+	uint8_t num,
 	const std::string & id)
-		:	BusNumDeviceID(n, v, p, c, b, nu),
+		:	BusNumDeviceID(n, v, p, c, b, num),
 			fatal_errors(0),
 			macros_man(nullptr),
 			pressed_keys(0),
 			current_leds_mask(0),
 			exit_macro_record_mode(false),
 			strID(id),
-			last_interrupt_transfer_length(0),
-			last_interrupt_write_transfer_length(0),
-			keys_endpoint(0),
-			usb_device(nullptr),
-			usb_handle(nullptr),
-			threads_status(true)
+			_lastKeysInterruptTransferLength(0),
+			_lastLCDInterruptTransferLength(0),
+			_keysEndpoint(0),
+			_pUSBDevice(nullptr),
+			_pUSBDeviceHandle(nullptr),
+			_threadsStatus(true)
 {
 	std::fill_n(this->keys_buffer, KEYS_BUFFER_LENGTH, 0);
 	std::fill_n(this->previous_keys_buffer, KEYS_BUFFER_LENGTH, 0);
@@ -63,12 +63,12 @@ USBDevice::USBDevice(
 
 void USBDevice::operator=(const USBDevice& dev)
 {
-	this->name = dev.name;
-	this->vendor_id = dev.vendor_id;
-	this->product_id = dev.product_id;
-	this->capabilities = dev.capabilities;
-	this->bus = dev.bus;
-	this->num = dev.num;
+	_name			= dev.getName();
+	_vendorID		= dev.getVendorID();
+	_productID		= dev.getProductID();
+	_capabilities	= dev.getCapabilities();
+	_bus			= dev.getBus();
+	_num			= dev.getNum();
 	/* end friendship members */
 
 	/* public */
@@ -101,17 +101,18 @@ void USBDevice::operator=(const USBDevice& dev)
 		std::end(dev.rgb),
 		std::begin(this->rgb)
 	);
-	this->last_interrupt_transfer_length = dev.last_interrupt_transfer_length;
-	this->last_interrupt_write_transfer_length = dev.last_interrupt_write_transfer_length;
-	this->keys_endpoint = dev.keys_endpoint;
-	this->lcd_endpoint = dev.lcd_endpoint;
-	this->usb_device = dev.usb_device;
-	this->usb_handle = dev.usb_handle;
-	this->endpoints = dev.endpoints;
-	this->to_release = dev.to_release;
-	this->to_attach = dev.to_attach;
 
-	this->threads_status = static_cast<bool>(dev.threads_status);
+	_lastKeysInterruptTransferLength	= dev.getLastKeysInterruptTransferLength();
+	_lastLCDInterruptTransferLength		= dev.getLastLCDInterruptTransferLength();
+	_keysEndpoint		= dev._keysEndpoint;
+	_LCDEndpoint		= dev._LCDEndpoint;
+	_pUSBDevice			= dev._pUSBDevice;
+	_pUSBDeviceHandle	= dev._pUSBDeviceHandle;
+	_USBEndpoints		= dev._USBEndpoints;
+	_toRelease			= dev._toRelease;
+	_toAttach			= dev._toAttach;
+
+	_threadsStatus		= static_cast<bool>(dev._threadsStatus);
 }
 
 void USBDevice::initializeMacrosManager(

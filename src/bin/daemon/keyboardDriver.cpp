@@ -86,7 +86,7 @@ const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void) {
 }
 
 std::string KeyboardDriver::getBytes(const USBDevice & device) {
-	const unsigned int last_length = to_uint(device.getLastInterruptTransferLength());
+	const unsigned int last_length = to_uint(device.getLastKeysInterruptTransferLength());
 	if( last_length == 0 )
 		return "";
 	std::ostringstream s;
@@ -100,15 +100,15 @@ std::string KeyboardDriver::getBytes(const USBDevice & device) {
 KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 	std::fill_n(device.keys_buffer, KEYS_BUFFER_LENGTH, 0);
 
-	int ret = this->performInterruptTransfer(device, 10);
+	int ret = this->performKeysInterruptTransfer(device, 10);
 
 	switch(ret) {
 		case 0:
-			if( device.getLastInterruptTransferLength() > 0 ) {
+			if( device.getLastKeysInterruptTransferLength() > 0 ) {
 #if DEBUGGING_ON
 				LOG(DEBUG)	<< device.getStrID()
 							<< " exp. rl: " << this->interrupt_buffer_max_length_
-							<< " act_l: " << device.getLastInterruptTransferLength() << ", xBuf[0]: "
+							<< " act_l: " << device.getLastKeysInterruptTransferLength() << ", xBuf[0]: "
 							<< std::hex << to_uint(device.keys_buffer[0]);
 #endif
 				return this->processKeyEvent(device);
@@ -594,7 +594,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 						 * update M1-MR leds status, launch macro record mode and
 						 * run macros only after proper event length
 						 */
-						if( device.getLastInterruptTransferLength() == this->events_length_.MacrosKeys ) {
+						if( device.getLastKeysInterruptTransferLength() == this->events_length_.MacrosKeys ) {
 							/* update mask with potential pressed keys */
 							if(this->updateCurrentLedsMask(device))
 								this->setMxKeysLeds(device);
@@ -628,7 +628,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 					}
 
 					if( this->checkDeviceCapability(device, Caps::GK_MEDIA_KEYS) ) {
-						if( device.getLastInterruptTransferLength() == this->events_length_.MediaKeys ) {
+						if( device.getLastKeysInterruptTransferLength() == this->events_length_.MediaKeys ) {
 							if( this->checkMediaKey(device) ) {
 								NSGKDBus::GKDBus* pDBus = nullptr;
 

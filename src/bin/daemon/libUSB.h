@@ -67,7 +67,7 @@ class LibUSB
 			uint16_t wLength
 		);
 
-		int performInterruptTransfer(
+		int performKeysInterruptTransfer(
 			USBDevice & device,
 			unsigned int timeout
 		);

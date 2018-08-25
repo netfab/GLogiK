@@ -101,22 +101,22 @@ void LibUSB::openUSBDevice(USBDevice & device) {
 	}
 
 	for (int idx = 0; idx < num_devices; ++idx) {
-		device.usb_device = list[idx];
-		if( (int)libusb_get_bus_number(device.usb_device) == device.getBus() and
-			(int)libusb_get_device_address(device.usb_device) == device.getNum() ) {
+		device._pUSBDevice = list[idx];
+		if( (int)libusb_get_bus_number(device._pUSBDevice) == device.getBus() and
+			(int)libusb_get_device_address(device._pUSBDevice) == device.getNum() ) {
 			break;
 		}
-		device.usb_device = nullptr;
+		device._pUSBDevice = nullptr;
 	}
 
-	if( device.usb_device == nullptr ) {
+	if( device._pUSBDevice == nullptr ) {
 		this->buffer_.str("libusb cannot find device ");
 		this->buffer_ << device.getNum() << " on bus " << device.getBus();
 		libusb_free_device_list(list, 1);
 		throw GLogiKExcept(this->buffer_.str());
 	}
 
-	int ret_value = libusb_open( device.usb_device, &(device.usb_handle) );
+	int ret_value = libusb_open( device._pUSBDevice, &(device._pUSBDeviceHandle) );
 	if( this->USBError(ret_value) ) {
 		libusb_free_device_list(list, 1);
 		throw GLogiKExcept("opening device failure");
@@ -130,8 +130,8 @@ void LibUSB::openUSBDevice(USBDevice & device) {
 }
 
 void LibUSB::closeUSBDevice(USBDevice & device) {
-	libusb_close(device.usb_handle);
-	device.usb_handle = nullptr;
+	libusb_close(device._pUSBDeviceHandle);
+	device._pUSBDeviceHandle = nullptr;
 #if DEBUGGING_ON
 	LOG(DEBUG3) << device.getStrID() << " closed USB device";
 #endif
@@ -160,7 +160,7 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 #endif
 
 	int b = -1;
-	ret = libusb_get_configuration(device.usb_handle, &b);
+	ret = libusb_get_configuration(device._pUSBDeviceHandle, &b);
 	if ( this->USBError(ret) )
 		throw GLogiKExcept("libusb get_configuration error");
 
@@ -183,14 +183,14 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 	/* have to detach all interfaces first */
 
 	struct libusb_device_descriptor device_descriptor;
-	ret = libusb_get_device_descriptor(device.usb_device, &device_descriptor);
+	ret = libusb_get_device_descriptor(device._pUSBDevice, &device_descriptor);
 	if ( this->USBError(ret) )
 		throw GLogiKExcept("libusb get_device_descriptor failure");
 
 	for (i = 0; i < to_uint(device_descriptor.bNumConfigurations); i++) {
 		/* configuration descriptor */
 		struct libusb_config_descriptor * config_descriptor = nullptr;
-		ret = libusb_get_config_descriptor(device.usb_device, i, &config_descriptor);
+		ret = libusb_get_config_descriptor(device._pUSBDevice, i, &config_descriptor);
 		if ( this->USBError(ret) ) {
 			this->buffer_.str("get_config_descriptor failure with index : ");
 			this->buffer_ << i;
@@ -224,7 +224,7 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << device.getStrID() << " checking current active configuration";
 #endif
-	ret = libusb_set_configuration(device.usb_handle, (int)this->expected_usb_descriptors_.b_configuration_value);
+	ret = libusb_set_configuration(device._pUSBDeviceHandle, (int)this->expected_usb_descriptors_.b_configuration_value);
 	if ( this->USBError(ret) ) {
 		throw GLogiKExcept("libusb set_configuration failure");
 	}
@@ -241,7 +241,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 #endif
 
 	struct libusb_device_descriptor device_descriptor;
-	ret = libusb_get_device_descriptor(device.usb_device, &device_descriptor);
+	ret = libusb_get_device_descriptor(device._pUSBDevice, &device_descriptor);
 	if ( this->USBError(ret) )
 		throw GLogiKExcept("libusb get_device_descriptor failure");
 
@@ -273,7 +273,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 
 	for (i = 0; i < to_uint(device_descriptor.bNumConfigurations); i++) {
 		struct libusb_config_descriptor * config_descriptor = nullptr;
-		ret = libusb_get_config_descriptor(device.usb_device, i, &config_descriptor);
+		ret = libusb_get_config_descriptor(device._pUSBDevice, i, &config_descriptor);
 		if ( this->USBError(ret) ) {
 			this->buffer_.str("get_config_descriptor failure with index : ");
 			this->buffer_ << i;
@@ -383,19 +383,19 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 #if DEBUGGING_ON
 				LOG(DEBUG1) << device.getStrID() << " trying to claim interface " << numInt;
 #endif
-				ret = libusb_claim_interface(device.usb_handle, numInt);	/* claiming */
+				ret = libusb_claim_interface(device._pUSBDeviceHandle, numInt);	/* claiming */
 				if( this->USBError(ret) ) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
 					throw GLogiKExcept("error claiming interface");
 				}
-				device.to_release.push_back(numInt);	/* claimed */
+				device._toRelease.push_back(numInt);	/* claimed */
 
 				/* once that the interface is claimed, check that the right configuration is set */
 #if DEBUGGING_ON
 				LOG(DEBUG1) << device.getStrID() << " checking current active configuration";
 #endif
 				int b = -1;
-				ret = libusb_get_configuration(device.usb_handle, &b);
+				ret = libusb_get_configuration(device._pUSBDeviceHandle, &b);
 				if ( this->USBError(ret) ) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
 					throw GLogiKExcept("libusb get_configuration error");
@@ -416,7 +416,8 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 					const struct libusb_endpoint_descriptor * ep = &(as_descriptor->endpoint[l]);
 
 					/* storing endpoint for later usage */
-					device.endpoints.push_back(*ep);
+					// FIXME no usage ?
+					device._USBEndpoints.push_back(*ep);
 
 					unsigned int addr = to_uint(ep->bEndpointAddress);
 					if( addr & LIBUSB_ENDPOINT_IN ) { /* In: device-to-host */
@@ -424,14 +425,14 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 						LOG(DEBUG3) << "found [Keys] endpoint, address 0x" << std::hex << addr
 									<< " MaxPacketSize " << to_uint(ep->wMaxPacketSize);
 #endif
-						device.keys_endpoint = addr & 0xff;
+						device._keysEndpoint = addr & 0xff;
 					}
 					else { /* Out: host-to-device */
 #if DEBUGGING_ON
 						LOG(DEBUG3) << "found [LCD] endpoint, address 0x" << std::hex << addr
 									<< " MaxPacketSize " << to_uint(ep->wMaxPacketSize);
 #endif
-						device.lcd_endpoint = addr & 0xff;
+						device._LCDEndpoint = addr & 0xff;
 					}
 
 #if DEBUGGING_ON
@@ -457,7 +458,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 #endif
 				}
 
-				if(device.keys_endpoint == 0) {
+				if(device._keysEndpoint == 0) {
 					libusb_free_config_descriptor( config_descriptor ); /* free */
 					const std::string err("[Keys] endpoint not found");
 					GKSysLog(LOG_ERR, ERROR, err);
@@ -479,12 +480,12 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 
 void LibUSB::releaseUSBDeviceInterfaces(USBDevice & device) {
 	int ret = 0;
-	for(auto it = device.to_release.begin(); it != device.to_release.end();) {
+	for(auto it = device._toRelease.begin(); it != device._toRelease.end();) {
 		int numInt = (*it);
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "trying to release claimed interface " << numInt;
 #endif
-		ret = libusb_release_interface(device.usb_handle, numInt); /* release */
+		ret = libusb_release_interface(device._pUSBDeviceHandle, numInt); /* release */
 		if( this->USBError(ret) ) {
 			this->buffer_.str("failed to release interface ");
 			this->buffer_ << numInt;
@@ -492,7 +493,7 @@ void LibUSB::releaseUSBDeviceInterfaces(USBDevice & device) {
 		}
 		it++;
 	}
-	device.to_release.clear();
+	device._toRelease.clear();
 
 	this->attachUSBDeviceInterfacesToKernelDrivers(device);
 }
@@ -508,8 +509,8 @@ void LibUSB::sendControlRequest(
 
 	int ret = 0;
 	{
-		std::lock_guard<std::mutex> lock(device.libusb_mtx);
-		ret = libusb_control_transfer( device.usb_handle,
+		std::lock_guard<std::mutex> lock(device._libUSBMutex);
+		ret = libusb_control_transfer( device._pUSBDeviceHandle,
 			LIBUSB_ENDPOINT_OUT|LIBUSB_REQUEST_TYPE_CLASS|LIBUSB_RECIPIENT_INTERFACE,
 			LIBUSB_REQUEST_SET_CONFIGURATION, /* 0x09 */
 			wValue, wIndex, data, wLength, 10000 );
@@ -525,7 +526,7 @@ void LibUSB::sendControlRequest(
 	}
 }
 
-int LibUSB::performInterruptTransfer(
+int LibUSB::performKeysInterruptTransfer(
 	USBDevice & device,
 	unsigned int timeout)
 {
@@ -533,13 +534,13 @@ int LibUSB::performInterruptTransfer(
 
 	int ret = 0;
 	{
-		std::lock_guard<std::mutex> lock(device.libusb_mtx);
+		std::lock_guard<std::mutex> lock(device._libUSBMutex);
 		ret = libusb_interrupt_transfer(
-			device.usb_handle,
-			device.keys_endpoint,
+			device._pUSBDeviceHandle,
+			device._keysEndpoint,
 			(unsigned char*)device.keys_buffer,
 			this->interrupt_buffer_max_length_,
-			&(device.last_interrupt_transfer_length),
+			&(device._lastKeysInterruptTransferLength),
 			timeout
 		);
 	}
@@ -559,19 +560,19 @@ int LibUSB::performLCDScreenInterruptTransfer(
 {
 	int ret = 0;
 	{
-		std::lock_guard<std::mutex> lock(device.libusb_mtx);
+		std::lock_guard<std::mutex> lock(device._libUSBMutex);
 		ret = libusb_interrupt_transfer(
-			device.usb_handle,
-			device.lcd_endpoint,
+			device._pUSBDeviceHandle,
+			device._LCDEndpoint,
 			buffer,
 			buffer_length,
-			&(device.last_interrupt_write_transfer_length),
+			&(device._lastLCDInterruptTransferLength),
 			timeout
 		);
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "sent " << device.last_interrupt_write_transfer_length << " bytes - expected: " << buffer_length;
+	LOG(DEBUG2) << "sent " << device.getLastLCDInterruptTransferLength() << " bytes - expected: " << buffer_length;
 #endif
 	if( ret < 0 ) {
 		this->USBError(ret);
@@ -592,12 +593,12 @@ int LibUSB::performLCDScreenInterruptTransfer(
 
 void LibUSB::attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) {
 	int ret = 0;
-	for(auto it = device.to_attach.begin(); it != device.to_attach.end();) {
+	for(auto it = device._toAttach.begin(); it != device._toAttach.end();) {
 		int numInt = (*it);
 #if DEBUGGING_ON
 		LOG(DEBUG1) << device.getStrID() << " trying to attach kernel driver to interface " << numInt;
 #endif
-		ret = libusb_attach_kernel_driver(device.usb_handle, numInt); /* attaching */
+		ret = libusb_attach_kernel_driver(device._pUSBDeviceHandle, numInt); /* attaching */
 		if( this->USBError(ret) ) {
 			this->buffer_.str("failed to attach kernel driver to interface ");
 			this->buffer_ << numInt;
@@ -605,11 +606,11 @@ void LibUSB::attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) {
 		}
 		it++;
 	}
-	device.to_attach.clear();
+	device._toAttach.clear();
 }
 
 void LibUSB::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int numInt) {
-	int ret = libusb_kernel_driver_active(device.usb_handle, numInt);
+	int ret = libusb_kernel_driver_active(device._pUSBDeviceHandle, numInt);
 	if( ret < 0 ) {
 		this->USBError(ret);
 		throw GLogiKExcept("libusb kernel_driver_active error");
@@ -618,7 +619,7 @@ void LibUSB::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int nu
 #if DEBUGGING_ON
 		LOG(DEBUG1) << device.getStrID() << " kernel driver currently attached to the interface " << numInt << ", trying to detach it";
 #endif
-		ret = libusb_detach_kernel_driver(device.usb_handle, numInt); /* detaching */
+		ret = libusb_detach_kernel_driver(device._pUSBDeviceHandle, numInt); /* detaching */
 		if( this->USBError(ret) ) {
 			this->buffer_.str("detaching the kernel driver from USB interface ");
 			this->buffer_ << numInt << " failed, this is fatal";
@@ -626,7 +627,7 @@ void LibUSB::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int nu
 			throw GLogiKExcept(this->buffer_.str());
 		}
 
-		device.to_attach.push_back(numInt);	/* detached */
+		device._toAttach.push_back(numInt);	/* detached */
 	}
 	else {
 #if DEBUGGING_ON

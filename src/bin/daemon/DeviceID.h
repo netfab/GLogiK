@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_DEVICE_ID_H__
-#define __GLOGIKD_DEVICE_ID_H__
+#ifndef SRC_BIN_DAEMON_DEVICE_ID_HPP_
+#define SRC_BIN_DAEMON_DEVICE_ID_HPP_
 
 #include <cstdint>
 #include <string>
@@ -35,13 +35,13 @@ class DeviceID {
 			const std::string & v,
 			const std::string & p,
 			const uint64_t c
-		)	:	name(n), vendor_id(v), product_id(p), capabilities(c) {};
+		)	:	_name(n), _vendorID(v), _productID(p), _capabilities(c) {};
 		~DeviceID(void) = default;
 
-		const std::string & getName(void) const { return this->name; }
-		const std::string & getVendorID(void) const { return this->vendor_id; }
-		const std::string & getProductID(void) const { return this->product_id; }
-		const uint64_t & getCapabilities(void) const { return this->capabilities; }
+		const std::string & getName(void) const { return _name; }
+		const std::string & getVendorID(void) const { return _vendorID; }
+		const std::string & getProductID(void) const { return _productID; }
+		const uint64_t & getCapabilities(void) const { return _capabilities; }
 
 	protected:
 		DeviceID(void) = default;
@@ -49,18 +49,18 @@ class DeviceID {
 	private:
 		friend class USBDevice;
 
-		std::string name;
-		std::string vendor_id;
-		std::string product_id;
-		uint64_t capabilities;
+		std::string _name;
+		std::string _vendorID;
+		std::string _productID;
+		uint64_t _capabilities;
 };
 
 class BusNumDeviceID
 	:	public DeviceID
 {
 	public:
-		const uint8_t getBus(void) const { return this->bus; }
-		const uint8_t getNum(void) const { return this->num; }
+		const uint8_t getBus(void) const { return _bus; }
+		const uint8_t getNum(void) const { return _num; }
 
 	protected:
 		BusNumDeviceID(void) = default;
@@ -70,15 +70,15 @@ class BusNumDeviceID
 			const std::string & p,
 			const uint64_t c,
 			const uint8_t b,
-			const uint8_t nu
-		)	:	DeviceID(n,v,p,c), bus(b), num(nu) {};
+			const uint8_t num
+		)	:	DeviceID(n,v,p,c), _bus(b), _num(num) {};
 		~BusNumDeviceID(void) = default;
 
 	private:
 		friend class USBDevice;
 
-		uint8_t bus;
-		uint8_t num;
+		uint8_t _bus;
+		uint8_t _num;
 };
 
 } // namespace GLogiK

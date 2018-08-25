@@ -58,7 +58,7 @@ class USBDevice
 			const std::string & p,
 			const uint64_t c,
 			uint8_t b,
-			uint8_t nu,
+			uint8_t num,
 			const std::string & id);
 
 		void operator=(const USBDevice& dev);
@@ -84,10 +84,10 @@ class USBDevice
 		void destroyMacrosManager(void);
 
 		const std::string & getStrID(void) const { return this->strID; }
-		const bool getThreadsStatus(void) const { return this->threads_status; }
-		void deactivateThreads(void) { this->threads_status = false; }
-		const int getLastInterruptTransferLength(void) const { return this->last_interrupt_transfer_length; }
-		const int getLastInterruptWriteTransferLength(void) const { return this->last_interrupt_write_transfer_length; }
+		const bool getThreadsStatus(void) const { return _threadsStatus; }
+		void deactivateThreads(void) { _threadsStatus = false; }
+		const int getLastKeysInterruptTransferLength(void) const { return _lastKeysInterruptTransferLength; }
+		const int getLastLCDInterruptTransferLength(void) const { return _lastLCDInterruptTransferLength; }
 		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
 		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
 
@@ -97,18 +97,18 @@ class USBDevice
 		std::string strID;	/* [devID] */
 		uint8_t rgb[3];
 
-		int last_interrupt_transfer_length;
-		int last_interrupt_write_transfer_length;
-		unsigned char keys_endpoint;
-		unsigned char lcd_endpoint;
-		libusb_device *usb_device;
-		libusb_device_handle *usb_handle;
-		std::vector<libusb_endpoint_descriptor> endpoints;
-		std::vector<int> to_release;
-		std::vector<int> to_attach;
+		int _lastKeysInterruptTransferLength;
+		int _lastLCDInterruptTransferLength;
+		unsigned char _keysEndpoint;
+		unsigned char _LCDEndpoint;
+		libusb_device * _pUSBDevice;
+		libusb_device_handle * _pUSBDeviceHandle;
+		std::vector<libusb_endpoint_descriptor> _USBEndpoints;
+		std::vector<int> _toRelease;
+		std::vector<int> _toAttach;
 
-		std::atomic<bool> threads_status;
-		std::mutex libusb_mtx;
+		std::atomic<bool> _threadsStatus;
+		std::mutex _libUSBMutex;
 };
 
 } // namespace GLogiK
