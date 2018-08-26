@@ -103,8 +103,8 @@ void LibUSB::openUSBDevice(USBDevice & device) {
 
 	for (int i = 0; i < numDevices; ++i) {
 		device._pUSBDevice = list[i];
-		if( (int)libusb_get_bus_number(device._pUSBDevice) == device.getBus() and
-			(int)libusb_get_device_address(device._pUSBDevice) == device.getNum() ) {
+		if( libusb_get_bus_number(device._pUSBDevice) == device.getBus() and
+			libusb_get_device_address(device._pUSBDevice) == device.getNum() ) {
 			break;
 		}
 		device._pUSBDevice = nullptr;
