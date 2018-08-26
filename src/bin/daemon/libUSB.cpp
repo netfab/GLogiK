@@ -184,15 +184,15 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 
 	/* have to detach all interfaces first */
 
-	struct libusb_device_descriptor device_descriptor;
-	ret = libusb_get_device_descriptor(device._pUSBDevice, &device_descriptor);
+	libusb_device_descriptor deviceDescriptor;
+	ret = libusb_get_device_descriptor(device._pUSBDevice, &deviceDescriptor);
 	if ( this->USBError(ret) )
 		throw GLogiKExcept("libusb get_device_descriptor failure");
 
-	for (i = 0; i < to_uint(device_descriptor.bNumConfigurations); i++) {
+	for (i = 0; i < to_uint(deviceDescriptor.bNumConfigurations); i++) {
 		/* configuration descriptor */
-		struct libusb_config_descriptor * config_descriptor = nullptr;
-		ret = libusb_get_config_descriptor(device._pUSBDevice, i, &config_descriptor);
+		libusb_config_descriptor * configDescriptor = nullptr;
+		ret = libusb_get_config_descriptor(device._pUSBDevice, i, &configDescriptor);
 		if ( this->USBError(ret) ) {
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "get_config_descriptor failure with index : " << i;
@@ -200,26 +200,26 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 			continue;
 		}
 
-		for (j = 0; j < to_uint(config_descriptor->bNumInterfaces); j++) {
-			const struct libusb_interface *iface = &(config_descriptor->interface[j]);
+		for (j = 0; j < to_uint(configDescriptor->bNumInterfaces); j++) {
+			const libusb_interface *iface = &(configDescriptor->interface[j]);
 
 			for (k = 0; k < to_uint(iface->num_altsetting); k++) {
 				/* interface alt_setting descriptor */
-				const struct libusb_interface_descriptor * as_descriptor = &(iface->altsetting[k]);
+				const libusb_interface_descriptor * asDescriptor = &(iface->altsetting[k]);
 
-				int numInt = (int)as_descriptor->bInterfaceNumber;
+				int numInt = (int)asDescriptor->bInterfaceNumber;
 
 				try {
 					this->detachKernelDriverFromUSBDeviceInterface(device, numInt);
 				}
 				catch ( const GLogiKExcept & e ) {
-					libusb_free_config_descriptor( config_descriptor ); /* free */
+					libusb_free_config_descriptor( configDescriptor ); /* free */
 					throw;
 				}
 			} /* for ->num_altsetting */
 		} /* for ->bNumInterfaces */
 
-		libusb_free_config_descriptor( config_descriptor ); /* free */
+		libusb_free_config_descriptor( configDescriptor ); /* free */
 	} /* for .bNumConfigurations */
 
 	/* trying to set configuration */
@@ -242,40 +242,40 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 	LOG(DEBUG1) << device.getStringID() << " trying to find expected interface";
 #endif
 
-	struct libusb_device_descriptor device_descriptor;
-	ret = libusb_get_device_descriptor(device._pUSBDevice, &device_descriptor);
+	libusb_device_descriptor deviceDescriptor;
+	ret = libusb_get_device_descriptor(device._pUSBDevice, &deviceDescriptor);
 	if ( this->USBError(ret) )
 		throw GLogiKExcept("libusb get_device_descriptor failure");
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "device has " << to_uint(device_descriptor.bNumConfigurations)
+	LOG(DEBUG2) << "device has " << to_uint(deviceDescriptor.bNumConfigurations)
 				<< " possible configuration(s)";
 
 	LOG(DEBUG4) << "--";
 	LOG(DEBUG4) << "device descriptor";
 	LOG(DEBUG4) << "--";
-	LOG(DEBUG4) << "bLength            : " << to_uint(device_descriptor.bLength);
-	LOG(DEBUG4) << "bDescriptorType    : " << to_uint(device_descriptor.bDescriptorType);
-	LOG(DEBUG4) << "bcdUSB             : " << std::bitset<16>( to_uint(device_descriptor.bcdUSB) ).to_string();
-	LOG(DEBUG4) << "bDeviceClass       : " << to_uint(device_descriptor.bDeviceClass);
-	LOG(DEBUG4) << "bDeviceSubClass    : " << to_uint(device_descriptor.bDeviceSubClass);
-	LOG(DEBUG4) << "bDeviceProtocol    : " << to_uint(device_descriptor.bDeviceProtocol);
-	LOG(DEBUG4) << "bMaxPacketSize0    : " << to_uint(device_descriptor.bMaxPacketSize0);
-	LOG(DEBUG4) << "idVendor           : " << std::hex << to_uint(device_descriptor.idVendor);
-	LOG(DEBUG4) << "idProduct          : " << std::hex << to_uint(device_descriptor.idProduct);
-	LOG(DEBUG4) << "bcdDevice          : " << std::bitset<16>( to_uint(device_descriptor.bcdDevice) ).to_string();
-	LOG(DEBUG4) << "iManufacturer      : " << to_uint(device_descriptor.iManufacturer);
-	LOG(DEBUG4) << "iProduct           : " << to_uint(device_descriptor.iProduct);
-	LOG(DEBUG4) << "iSerialNumber      : " << to_uint(device_descriptor.iSerialNumber);
-	LOG(DEBUG4) << "bNumConfigurations : " << to_uint(device_descriptor.bNumConfigurations);
+	LOG(DEBUG4) << "bLength            : " << to_uint(deviceDescriptor.bLength);
+	LOG(DEBUG4) << "bDescriptorType    : " << to_uint(deviceDescriptor.bDescriptorType);
+	LOG(DEBUG4) << "bcdUSB             : " << std::bitset<16>( to_uint(deviceDescriptor.bcdUSB) ).to_string();
+	LOG(DEBUG4) << "bDeviceClass       : " << to_uint(deviceDescriptor.bDeviceClass);
+	LOG(DEBUG4) << "bDeviceSubClass    : " << to_uint(deviceDescriptor.bDeviceSubClass);
+	LOG(DEBUG4) << "bDeviceProtocol    : " << to_uint(deviceDescriptor.bDeviceProtocol);
+	LOG(DEBUG4) << "bMaxPacketSize0    : " << to_uint(deviceDescriptor.bMaxPacketSize0);
+	LOG(DEBUG4) << "idVendor           : " << std::hex << to_uint(deviceDescriptor.idVendor);
+	LOG(DEBUG4) << "idProduct          : " << std::hex << to_uint(deviceDescriptor.idProduct);
+	LOG(DEBUG4) << "bcdDevice          : " << std::bitset<16>( to_uint(deviceDescriptor.bcdDevice) ).to_string();
+	LOG(DEBUG4) << "iManufacturer      : " << to_uint(deviceDescriptor.iManufacturer);
+	LOG(DEBUG4) << "iProduct           : " << to_uint(deviceDescriptor.iProduct);
+	LOG(DEBUG4) << "iSerialNumber      : " << to_uint(deviceDescriptor.iSerialNumber);
+	LOG(DEBUG4) << "bNumConfigurations : " << to_uint(deviceDescriptor.bNumConfigurations);
 	LOG(DEBUG4) << "--";
 	LOG(DEBUG4) << "--";
 	LOG(DEBUG4) << "--";
 #endif
 
-	for (i = 0; i < to_uint(device_descriptor.bNumConfigurations); i++) {
-		struct libusb_config_descriptor * config_descriptor = nullptr;
-		ret = libusb_get_config_descriptor(device._pUSBDevice, i, &config_descriptor);
+	for (i = 0; i < to_uint(deviceDescriptor.bNumConfigurations); i++) {
+		libusb_config_descriptor * configDescriptor = nullptr;
+		ret = libusb_get_config_descriptor(device._pUSBDevice, i, &configDescriptor);
 		if ( this->USBError(ret) ) {
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "get_config_descriptor failure with index : " << i;
@@ -284,85 +284,86 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 		}
 
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "configuration " << to_uint(config_descriptor->bConfigurationValue)
-					<< " has " << to_uint(config_descriptor->bNumInterfaces) << " interface(s)";
+		LOG(DEBUG2) << "configuration " << to_uint(configDescriptor->bConfigurationValue)
+					<< " has " << to_uint(configDescriptor->bNumInterfaces) << " interface(s)";
 
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "config descriptor";
 		LOG(DEBUG4) << "--";
-		LOG(DEBUG4) << "bLength             : " << to_uint(config_descriptor->bLength);
-		LOG(DEBUG4) << "bDescriptorType     : " << to_uint(config_descriptor->bDescriptorType);
-		LOG(DEBUG4) << "wTotalLength        : " << to_uint(config_descriptor->wTotalLength);
-		LOG(DEBUG4) << "bNumInterfaces      : " << to_uint(config_descriptor->bNumInterfaces);
-		LOG(DEBUG4) << "bConfigurationValue : " << to_uint(config_descriptor->bConfigurationValue);
-		LOG(DEBUG4) << "iConfiguration      : " << to_uint(config_descriptor->iConfiguration);
-		LOG(DEBUG4) << "bmAttributes        : " << to_uint(config_descriptor->bmAttributes);
-		LOG(DEBUG4) << "MaxPower            : " << to_uint(config_descriptor->MaxPower);
+		LOG(DEBUG4) << "bLength             : " << to_uint(configDescriptor->bLength);
+		LOG(DEBUG4) << "bDescriptorType     : " << to_uint(configDescriptor->bDescriptorType);
+		LOG(DEBUG4) << "wTotalLength        : " << to_uint(configDescriptor->wTotalLength);
+		LOG(DEBUG4) << "bNumInterfaces      : " << to_uint(configDescriptor->bNumInterfaces);
+		LOG(DEBUG4) << "bConfigurationValue : " << to_uint(configDescriptor->bConfigurationValue);
+		LOG(DEBUG4) << "iConfiguration      : " << to_uint(configDescriptor->iConfiguration);
+		LOG(DEBUG4) << "bmAttributes        : " << to_uint(configDescriptor->bmAttributes);
+		LOG(DEBUG4) << "MaxPower            : " << to_uint(configDescriptor->MaxPower);
 		/* TODO extra */
-		LOG(DEBUG4) << "extra_length        : " << (int)config_descriptor->extra_length;
+		LOG(DEBUG4) << "extra_length        : " << static_cast<int>(configDescriptor->extra_length);
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "--";
 #endif
 
-		if ( config_descriptor->bConfigurationValue != _expectedDescriptorsValues.bConfigurationValue ) {
-			libusb_free_config_descriptor( config_descriptor ); /* free */
+		if ( configDescriptor->bConfigurationValue != _expectedDescriptorsValues.bConfigurationValue ) {
+			libusb_free_config_descriptor( configDescriptor ); /* free */
 			continue; /* skip non expected configuration */
 		}
 
-		for (j = 0; j < to_uint(config_descriptor->bNumInterfaces); j++) {
-			const struct libusb_interface *iface = &(config_descriptor->interface[j]);
+		for (j = 0; j < to_uint(configDescriptor->bNumInterfaces); j++) {
+			const libusb_interface *iface = &(configDescriptor->interface[j]);
 #if DEBUGGING_ON
 			LOG(DEBUG2) << device.getStringID() << " interface " << j << " has " << iface->num_altsetting << " alternate settings";
 #endif
 
 			for (k = 0; k < to_uint(iface->num_altsetting); k++) {
-				const struct libusb_interface_descriptor * as_descriptor = &(iface->altsetting[k]);
+				const libusb_interface_descriptor * asDescriptor = &(iface->altsetting[k]);
 
 #if DEBUGGING_ON
-				LOG(DEBUG3) << device.getStringID() << " interface " << j << " alternate setting " << to_uint(as_descriptor->bAlternateSetting)
-							<< " has " << to_uint(as_descriptor->bNumEndpoints) << " endpoints";
+				LOG(DEBUG3)	<< device.getStringID() << " interface " << j
+							<< " alternate setting " << to_uint(asDescriptor->bAlternateSetting)
+							<< " has " << to_uint(asDescriptor->bNumEndpoints) << " endpoints";
 
 				LOG(DEBUG4) << "--";
 				LOG(DEBUG4) << "interface descriptor";
 				LOG(DEBUG4) << "--";
-				LOG(DEBUG4) << "bLength            : " << to_uint(as_descriptor->bLength);
-				LOG(DEBUG4) << "bDescriptorType    : " << to_uint(as_descriptor->bDescriptorType);
-				LOG(DEBUG4) << "bInterfaceNumber   : " << to_uint(as_descriptor->bInterfaceNumber);
-				LOG(DEBUG4) << "bAlternateSetting  : " << to_uint(as_descriptor->bAlternateSetting);
-				LOG(DEBUG4) << "bNumEndpoints      : " << to_uint(as_descriptor->bNumEndpoints);
-				LOG(DEBUG4) << "bInterfaceClass    : " << to_uint(as_descriptor->bInterfaceClass);
-				LOG(DEBUG4) << "bInterfaceSubClass : " << to_uint(as_descriptor->bInterfaceSubClass);
-				LOG(DEBUG4) << "bInterfaceProtocol : " << to_uint(as_descriptor->bInterfaceProtocol);
-				LOG(DEBUG4) << "iInterface         : " << to_uint(as_descriptor->iInterface);
+				LOG(DEBUG4) << "bLength            : " << to_uint(asDescriptor->bLength);
+				LOG(DEBUG4) << "bDescriptorType    : " << to_uint(asDescriptor->bDescriptorType);
+				LOG(DEBUG4) << "bInterfaceNumber   : " << to_uint(asDescriptor->bInterfaceNumber);
+				LOG(DEBUG4) << "bAlternateSetting  : " << to_uint(asDescriptor->bAlternateSetting);
+				LOG(DEBUG4) << "bNumEndpoints      : " << to_uint(asDescriptor->bNumEndpoints);
+				LOG(DEBUG4) << "bInterfaceClass    : " << to_uint(asDescriptor->bInterfaceClass);
+				LOG(DEBUG4) << "bInterfaceSubClass : " << to_uint(asDescriptor->bInterfaceSubClass);
+				LOG(DEBUG4) << "bInterfaceProtocol : " << to_uint(asDescriptor->bInterfaceProtocol);
+				LOG(DEBUG4) << "iInterface         : " << to_uint(asDescriptor->iInterface);
 				/* TODO extra */
-				LOG(DEBUG4) << "extra_length       : " << (int)as_descriptor->extra_length;
+				LOG(DEBUG4) << "extra_length       : " << static_cast<int>(asDescriptor->extra_length);
 				LOG(DEBUG4) << "--";
 				LOG(DEBUG4) << "--";
 				LOG(DEBUG4) << "--";
 #endif
 
-				if ( as_descriptor->bInterfaceNumber != _expectedDescriptorsValues.bInterfaceNumber) {
+				if ( asDescriptor->bInterfaceNumber != _expectedDescriptorsValues.bInterfaceNumber) {
 					continue; /* skip non expected interface */
 				}
 
-				if ( as_descriptor->bAlternateSetting != _expectedDescriptorsValues.bAlternateSetting) {
+				if ( asDescriptor->bAlternateSetting != _expectedDescriptorsValues.bAlternateSetting) {
 					continue; /* skip non expected alternate setting */
 				}
 
-				if( as_descriptor->bInterfaceClass != LIBUSB_CLASS_HID ) {
+				if( asDescriptor->bInterfaceClass != LIBUSB_CLASS_HID ) {
 #if DEBUGGING_ON
 					LOG(WARNING) << "interface " << j << " alternate settings " << k << " is not for HID device, skipping it";
 #endif
 					continue; /* sanity check */
 				}
 
-				if ( as_descriptor->bNumEndpoints != _expectedDescriptorsValues.bNumEndpoints) {
+				if ( asDescriptor->bNumEndpoints != _expectedDescriptorsValues.bNumEndpoints) {
 #if DEBUGGING_ON
-					LOG(WARNING) << "skipping settings. num_endpoints: " << to_uint(as_descriptor->bNumEndpoints)
+					LOG(WARNING) << "skipping settings. numEndpoints: " << to_uint(asDescriptor->bNumEndpoints)
 							<< " expected: " << to_uint(_expectedDescriptorsValues.bNumEndpoints);
 #endif
-					libusb_free_config_descriptor( config_descriptor ); /* free */
+					libusb_free_config_descriptor( configDescriptor ); /* free */
 					throw GLogiKExcept("num_endpoints does not match");
 				}
 
@@ -371,13 +372,13 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 				LOG(DEBUG1) << device.getStringID() << " found the expected interface, keep going on this road";
 #endif
 
-				int numInt = (int)as_descriptor->bInterfaceNumber;
+				int numInt = (int)asDescriptor->bInterfaceNumber;
 
 				try {
 					this->detachKernelDriverFromUSBDeviceInterface(device, numInt);
 				}
 				catch ( const GLogiKExcept & e ) {
-					libusb_free_config_descriptor( config_descriptor ); /* free */
+					libusb_free_config_descriptor( configDescriptor ); /* free */
 					throw;
 				}
 
@@ -387,7 +388,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 #endif
 				ret = libusb_claim_interface(device._pUSBDeviceHandle, numInt);	/* claiming */
 				if( this->USBError(ret) ) {
-					libusb_free_config_descriptor( config_descriptor ); /* free */
+					libusb_free_config_descriptor( configDescriptor ); /* free */
 					throw GLogiKExcept("error claiming interface");
 				}
 				device._toRelease.push_back(numInt);	/* claimed */
@@ -399,7 +400,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 				int b = -1;
 				ret = libusb_get_configuration(device._pUSBDeviceHandle, &b);
 				if ( this->USBError(ret) ) {
-					libusb_free_config_descriptor( config_descriptor ); /* free */
+					libusb_free_config_descriptor( configDescriptor ); /* free */
 					throw GLogiKExcept("libusb get_configuration error");
 				}
 
@@ -407,15 +408,15 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 				LOG(DEBUG2) << device.getStringID() << " current active configuration value : " << b;
 #endif
 				if ( b != (int)(_expectedDescriptorsValues.bConfigurationValue) ) {
-					libusb_free_config_descriptor( config_descriptor ); /* free */
+					libusb_free_config_descriptor( configDescriptor ); /* free */
 					std::ostringstream buffer(std::ios_base::app);
 					buffer << "wrong configuration value : " << b;
 					GKSysLog(LOG_ERR, ERROR, buffer.str());
 					throw GLogiKExcept(buffer.str());
 				}
 
-				for (l = 0; l < to_uint(as_descriptor->bNumEndpoints); l++) {
-					const struct libusb_endpoint_descriptor * ep = &(as_descriptor->endpoint[l]);
+				for (l = 0; l < to_uint(asDescriptor->bNumEndpoints); l++) {
+					const libusb_endpoint_descriptor * ep = &(asDescriptor->endpoint[l]);
 
 					/* storing endpoint for later usage */
 					// FIXME no usage ?
@@ -438,7 +439,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 					}
 
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "int. " << j << " alt_s. " << to_uint(as_descriptor->bAlternateSetting)
+					LOG(DEBUG3) << "int. " << j << " alt_s. " << to_uint(asDescriptor->bAlternateSetting)
 								<< " endpoint " << l;
 
 					LOG(DEBUG4) << "--";
@@ -453,7 +454,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 					LOG(DEBUG4) << "bRefresh         : " << to_uint(ep->bRefresh);
 					LOG(DEBUG4) << "bSynchAddress    : " << to_uint(ep->bSynchAddress);
 					/* TODO extra */
-					LOG(DEBUG4) << "extra_length     : " << (int)ep->extra_length;
+					LOG(DEBUG4) << "extra_length     : " << static_cast<int>(ep->extra_length);
 					LOG(DEBUG4) << "--";
 					LOG(DEBUG4) << "--";
 					LOG(DEBUG4) << "--";
@@ -461,7 +462,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 				}
 
 				if(device._keysEndpoint == 0) {
-					libusb_free_config_descriptor( config_descriptor ); /* free */
+					libusb_free_config_descriptor( configDescriptor ); /* free */
 					const std::string err("[Keys] endpoint not found");
 					GKSysLog(LOG_ERR, ERROR, err);
 					throw GLogiKExcept(err);
@@ -475,7 +476,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 			} /* for ->num_altsetting */
 		} /* for ->bNumInterfaces */
 
-		libusb_free_config_descriptor( config_descriptor ); /* free */
+		libusb_free_config_descriptor( configDescriptor ); /* free */
 	} /* for .bNumConfigurations */
 
 }
