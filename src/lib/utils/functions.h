@@ -41,6 +41,11 @@ constexpr typename std::underlying_type<T>::type to_type(T obj) noexcept {
 
 const std::string to_string(const char* s);
 
+constexpr int to_int(const uint8_t c)
+{
+	return static_cast<int>(c);
+}
+
 constexpr unsigned int to_uint(const uint8_t c)
 {
 	return static_cast<unsigned int>(c);

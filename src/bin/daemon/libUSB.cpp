@@ -170,7 +170,8 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 	LOG(DEBUG3) << device.getStringID() << " current active configuration value : " << b;
 #endif
 
-	if ( b == (int)(_expectedDescriptorsValues.bConfigurationValue) ) {
+	if( b == to_int(_expectedDescriptorsValues.bConfigurationValue) )
+	{
 #if DEBUGGING_ON
 		LOG(INFO) << device.getStringID() << " current active configuration value matches the wanted value, skipping configuration";
 #endif
@@ -178,7 +179,8 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << device.getStringID() << " wanted configuration : " << (int)(_expectedDescriptorsValues.bConfigurationValue);
+	LOG(DEBUG2)	<< device.getStringID()
+				<< " wanted configuration : " << to_int(_expectedDescriptorsValues.bConfigurationValue);
 	LOG(DEBUG2) << device.getStringID() << " will try to set the active configuration to the wanted value";
 #endif
 
@@ -207,9 +209,8 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 				/* interface alt_setting descriptor */
 				const libusb_interface_descriptor * asDescriptor = &(iface->altsetting[k]);
 
-				int numInt = (int)asDescriptor->bInterfaceNumber;
-
 				try {
+					int numInt = to_int(asDescriptor->bInterfaceNumber);
 					this->detachKernelDriverFromUSBDeviceInterface(device, numInt);
 				}
 				catch ( const GLogiKExcept & e ) {
@@ -226,7 +227,7 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << device.getStringID() << " checking current active configuration";
 #endif
-	ret = libusb_set_configuration(device._pUSBDeviceHandle, (int)_expectedDescriptorsValues.bConfigurationValue);
+	ret = libusb_set_configuration(device._pUSBDeviceHandle, to_int(_expectedDescriptorsValues.bConfigurationValue));
 	if ( this->USBError(ret) ) {
 		throw GLogiKExcept("libusb set_configuration failure");
 	}
@@ -372,8 +373,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 				LOG(DEBUG1) << device.getStringID() << " found the expected interface, keep going on this road";
 #endif
 
-				int numInt = (int)asDescriptor->bInterfaceNumber;
-
+				int numInt = to_int(asDescriptor->bInterfaceNumber);
 				try {
 					this->detachKernelDriverFromUSBDeviceInterface(device, numInt);
 				}
@@ -407,7 +407,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 #if DEBUGGING_ON
 				LOG(DEBUG2) << device.getStringID() << " current active configuration value : " << b;
 #endif
-				if ( b != (int)(_expectedDescriptorsValues.bConfigurationValue) ) {
+				if ( b != to_int(_expectedDescriptorsValues.bConfigurationValue) ) {
 					libusb_free_config_descriptor( configDescriptor ); /* free */
 					std::ostringstream buffer(std::ios_base::app);
 					buffer << "wrong configuration value : " << b;
