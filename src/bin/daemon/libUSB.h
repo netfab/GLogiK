@@ -19,11 +19,10 @@
  *
  */
 
-#ifndef __GLOGIKD_LIBUSB_H__
-#define __GLOGIKD_LIBUSB_H__
+#ifndef SRC_BIN_DAEMON_LIBUSB_HPP_
+#define SRC_BIN_DAEMON_LIBUSB_HPP_
 
 #include <cstdint>
-#include <sstream>
 
 #include <libusb-1.0/libusb.h>
 
@@ -32,11 +31,11 @@
 namespace GLogiK
 {
 
-struct DescriptorValues {
-	uint8_t b_configuration_value;
-	uint8_t b_interface_number;
-	uint8_t b_alternate_setting;
-	uint8_t b_num_endpoints;
+struct ExpectedDescriptorsValues {
+	uint8_t bConfigurationValue;
+	uint8_t bInterfaceNumber;
+	uint8_t bAlternateSetting;
+	uint8_t bNumEndpoints;
 };
 
 class LibUSB
@@ -44,13 +43,15 @@ class LibUSB
 	public:
 
 	protected:
-		LibUSB(const int key_read_length, const DescriptorValues & values);
+		LibUSB(const int maxLength, const ExpectedDescriptorsValues & values);
 		~LibUSB(void);
 
-		std::ostringstream buffer_;
-		int interrupt_buffer_max_length_;
+		const int getKeysInterruptBufferMaxLength(void) const
+		{
+			return _keysInterruptBufferMaxLength;
+		};
 
-		int USBError(int error_code);
+		int USBError(int errorCode);
 
 		void openUSBDevice(USBDevice & device);
 		void closeUSBDevice(USBDevice & device);
@@ -75,16 +76,17 @@ class LibUSB
 		int performLCDScreenInterruptTransfer(
 			USBDevice & device,
 			unsigned char* buffer,
-			int buffer_length,
+			int bufferLength,
 			unsigned int timeout
 		);
 
 	private:
-		static bool libusb_status_;		/* is libusb initialized ? */
-		static uint8_t drivers_cnt_;	/* initialized drivers counter */
-		static libusb_context *context_;
+		static bool status;				/* is libusb initialized ? */
+		static uint8_t counter;			/* initialized drivers counter */
+		static libusb_context * pContext;
 
-		const DescriptorValues expected_usb_descriptors_;
+		const ExpectedDescriptorsValues _expectedDescriptorsValues;
+		int _keysInterruptBufferMaxLength;
 
 		void detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int numInt);
 		void attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device);

@@ -118,7 +118,7 @@ class KeyboardDriver
 		KeyboardDriver(void) = delete;
 		KeyboardDriver(
 			int key_read_length,
-			const DescriptorValues & values,
+			const ExpectedDescriptorsValues & values,
 			const EventsLength & events_length
 		);
 

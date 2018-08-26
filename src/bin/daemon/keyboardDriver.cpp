@@ -25,6 +25,7 @@
 #include <utility>
 #include <chrono>
 #include <algorithm>
+#include <sstream>
 
 #include "lib/utils/utils.h"
 #include "lib/dbus/GKDBus.h"
@@ -58,7 +59,7 @@ const std::vector< ModifierKey > KeyboardDriver::modifier_keys_ = {
 
 KeyboardDriver::KeyboardDriver(
 	int key_read_length,
-	const DescriptorValues & values,
+	const ExpectedDescriptorsValues & values,
 	const EventsLength & events_length)
 		:	LibUSB(key_read_length, values),
 			events_length_(events_length)
@@ -107,7 +108,7 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 			if( device.getLastKeysInterruptTransferLength() > 0 ) {
 #if DEBUGGING_ON
 				LOG(DEBUG)	<< device.getStringID()
-							<< " exp. rl: " << this->interrupt_buffer_max_length_
+							<< " exp. rl: " << this->getKeysInterruptBufferMaxLength()
 							<< " act_l: " << device.getLastKeysInterruptTransferLength() << ", xBuf[0]: "
 							<< std::hex << to_uint(device._pressedKeys[0]);
 #endif
@@ -133,9 +134,9 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 }
 
 void KeyboardDriver::notImplemented(const char* func) {
-	this->buffer_.str("not implemented : ");
-	this->buffer_ << func;
-	GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+	std::ostringstream buffer(std::ios_base::app);
+	buffer << "not implemented : " << func;
+	GKSysLog(LOG_WARNING, WARNING, buffer.str());
 }
 
 void KeyboardDriver::setMxKeysLeds(USBDevice & device) {
@@ -318,7 +319,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device) {
 	LOG(DEBUG2) << "	b	|	p";
 	LOG(DEBUG2) << "  ------------------------------";
 #endif
-	for(i = this->interrupt_buffer_max_length_-1; i >= 2; --i) {
+	for(i = this->getKeysInterruptBufferMaxLength()-1; i >= 2; --i) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "	" << to_uint(device._pressedKeys[i])
 					<< "	|	" << to_uint(device._previousPressedKeys[i]);
@@ -687,9 +688,10 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 {
 	const std::string devID = KeyboardDriver::getDeviceID(det.getBus(), det.getNum());
-	this->buffer_.str("[");
-	this->buffer_ << devID << "]";
-	const std::string strID(this->buffer_.str());
+
+	// FIXME : kill strID
+	std::string strID("[");	strID += devID; strID += "]";
+
 
 #if DEBUGGING_ON
 	LOG(DEBUG3) << strID << " trying to initialize " << det.getName() << "("
@@ -714,11 +716,12 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			/* virtual keyboard name */
-			this->buffer_.str("Virtual ");
-			this->buffer_ << device.getName() << " " << device.getStringID();
+			std::ostringstream buffer(std::ios_base::app);
+			buffer	<< "Virtual " << device.getName()
+					<< " " << device.getStringID();
 
 			device.initializeMacrosManager(
-				this->buffer_.str().c_str(),
+				buffer.str().c_str(),
 				this->getMacroKeysNames()
 			);
 
@@ -734,9 +737,9 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 			this->threads_.push_back( std::move(listen_thread) );
 		}
 		catch (const std::system_error& e) {
-			this->buffer_.str("error while spawning listening thread : ");
-			this->buffer_ << e.what();
-			throw GLogiKExcept(this->buffer_.str());
+			std::ostringstream buffer(std::ios_base::app);
+			buffer << "error while spawning listening thread : " << e.what();
+			throw GLogiKExcept(buffer.str());
 		}
 	}
 	catch ( const GLogiKExcept & e ) {
