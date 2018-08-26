@@ -40,11 +40,11 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-constexpr unsigned char KeyboardDriver::hid_keyboard_[256];
-std::vector<std::string> KeyboardDriver::keys_names_ = {};
+constexpr unsigned char KeyboardDriver::hidKeyboard[256];
+std::vector<std::string> KeyboardDriver::macrosKeysNames = {};
 
 /* KEY_FOO from linux/input-event-codes.h */
-const std::vector< ModifierKey > KeyboardDriver::modifier_keys_ = {
+const std::vector< ModifierKey > KeyboardDriver::modifierKeys = {
 	{   KEY_LEFTCTRL,	GKModifierKeys::GK_KEY_LEFT_CTRL	},
 	{  KEY_LEFTSHIFT,	GKModifierKeys::GK_KEY_LEFT_SHIFT	},
 	{    KEY_LEFTALT,	GKModifierKeys::GK_KEY_LEFT_ALT		},
@@ -58,19 +58,19 @@ const std::vector< ModifierKey > KeyboardDriver::modifier_keys_ = {
 /* -- -- -- */
 
 KeyboardDriver::KeyboardDriver(
-	int key_read_length,
-	const ExpectedDescriptorsValues & values,
-	const EventsLength & events_length)
-		:	LibUSB(key_read_length, values),
-			events_length_(events_length)
+	int keysInterruptBufferMaxLength,
+	const ExpectedDescriptorsValues & eValues,
+	const KeysEventsLength & eLength)
+		:	LibUSB(keysInterruptBufferMaxLength, eValues),
+			_keysEventsLength(eLength)
 {
 }
 
 KeyboardDriver::~KeyboardDriver() {
 }
 
-const bool KeyboardDriver::checkDeviceCapability(const DeviceID & device, Caps to_check) {
-	return (device.getCapabilities() & to_type(to_check));
+const bool KeyboardDriver::checkDeviceCapability(const DeviceID & device, Caps toCheck) {
+	return (device.getCapabilities() & to_type(toCheck));
 }
 
 const std::string KeyboardDriver::getDeviceID(const uint8_t bus, const uint8_t num) {
@@ -82,8 +82,8 @@ const std::string KeyboardDriver::getDeviceID(const uint8_t bus, const uint8_t n
 }
 
 const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void) {
-	KeyboardDriver::keys_names_.clear();
-	return KeyboardDriver::keys_names_;
+	KeyboardDriver::macrosKeysNames.clear();
+	return KeyboardDriver::macrosKeysNames;
 }
 
 std::string KeyboardDriver::getBytes(const USBDevice & device) {
@@ -159,7 +159,7 @@ void KeyboardDriver::sendUSBDeviceInitialization(USBDevice & device) {
 /*
  * return true if leds_mask has been updated (meaning that setMxKeysLeds should be called)
  */
-const bool KeyboardDriver::updateCurrentLedsMask(USBDevice & device, bool force_MR_off) {
+const bool KeyboardDriver::updateCurrentLedsMask(USBDevice & device, bool disableMR) {
 	auto & mask = device._banksLedsMask;
 	/* is macro record mode enabled ? */
 	bool MR_ON = mask & to_type(Leds::GK_LED_MR);
@@ -206,7 +206,7 @@ const bool KeyboardDriver::updateCurrentLedsMask(USBDevice & device, bool force_
 		}
 		mask_updated = true;
 	}
-	else if(force_MR_off) {
+	else if(disableMR) {
 		mask &= ~(to_type(Leds::GK_LED_MR));
 		mask_updated = true;
 	}
@@ -234,12 +234,12 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 		e.event = EventValue::EVENT_KEY_PRESS;
 	}
 
-	for(const auto & key : KeyboardDriver::modifier_keys_) {
-		const uint8_t v_mod_key = to_type(key.mod_key);
-		if( diff & v_mod_key ) { /* modifier key was pressed or released */
-			diff -= v_mod_key;
+	for(const auto & mKey : KeyboardDriver::modifierKeys) {
+		const uint8_t modKey = to_type(mKey.key);
+		if( diff & modKey ) { /* modifier key was pressed or released */
+			diff -= modKey;
 
-			bool skip_event = false;
+			bool skipEvent = false;
 			const uint8_t size = device._newMacro.size();
 
 			/* Macro Size Limit - see keyEvent.h */
@@ -248,28 +248,28 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 #if DEBUGGING_ON
 				LOG(WARNING) << "skipping modifier key event, reached macro max size";
 #endif
-				skip_event = true;
+				skipEvent = true;
 			}
 
 			/* Macro Size Limit - see keyEvent.h */
-			if( ! skip_event and (size >= MACRO_T_KEYPRESS_MAX_SIZE) ) {
+			if( ! skipEvent and (size >= MACRO_T_KEYPRESS_MAX_SIZE) ) {
 				/* skip events other than release */
 				if( e.event != EventValue::EVENT_KEY_RELEASE ) {
 #if DEBUGGING_ON
 					LOG(WARNING) << "skipping modifier keypress event, reached macro keypress max size";
 #endif
-					skip_event = true;
+					skipEvent = true;
 				}
 			}
 
-			if( ! skip_event ) {
+			if( ! skipEvent ) {
 				/*
 				 * some modifier keys events were already appended,
 				 * only first event should have a real timelapse interval
 				 */
 				if(ret > 0)
 					e.interval = 1;
-				e.event_code = key.event_code;
+				e.event_code = mKey.code;
 				device._newMacro.push_back(e);
 				ret++;
 			}
@@ -341,11 +341,11 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device) {
 			e.interval = interval;
 
 			if( device._previousPressedKeys[i] == 0 ) {
-				e.event_code = KeyboardDriver::hid_keyboard_[ device._pressedKeys[i] ];
+				e.event_code = KeyboardDriver::hidKeyboard[ device._pressedKeys[i] ];
 				e.event = EventValue::EVENT_KEY_PRESS; /* KeyPress */
 			}
 			else if( device._pressedKeys[i] == 0 ) {
-				e.event_code = KeyboardDriver::hid_keyboard_[ device._previousPressedKeys[i] ];
+				e.event_code = KeyboardDriver::hidKeyboard[ device._previousPressedKeys[i] ];
 				e.event = EventValue::EVENT_KEY_RELEASE; /* KeyRelease */
 			}
 			else {
@@ -488,7 +488,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 
 void KeyboardDriver::runMacro(const std::string & devID) {
 	try {
-		USBDevice & device = this->initialized_devices_.at(devID);
+		USBDevice & device = _initializedDevices.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG2) << device.getStringID() << " spawned running macro thread for " << device.getName();
 #endif
@@ -504,7 +504,7 @@ void KeyboardDriver::runMacro(const std::string & devID) {
 
 void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 	try {
-		USBDevice & device = this->initialized_devices_.at(devID);
+		USBDevice & device = _initializedDevices.at(devID);
 		device._LCDThreadID = std::this_thread::get_id();
 
 #if DEBUGGING_ON
@@ -565,7 +565,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 
 void KeyboardDriver::listenLoop(const std::string & devID) {
 	try {
-		USBDevice & device = this->initialized_devices_.at(devID);
+		USBDevice & device = _initializedDevices.at(devID);
 		device._keysThreadID = std::this_thread::get_id();
 
 #if DEBUGGING_ON
@@ -574,8 +574,8 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 
 		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
 			std::thread lcd_thread(&KeyboardDriver::LCDScreenLoop, this, devID);
-			std::lock_guard<std::mutex> lock(this->threads_mtx_);
-			this->threads_.push_back( std::move(lcd_thread) );
+			std::lock_guard<std::mutex> lock(_threadsMutex);
+			_threads.push_back( std::move(lcd_thread) );
 		}
 
 		while( DaemonControl::isDaemonRunning() ) {
@@ -592,7 +592,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 						 * update M1-MR leds status, launch macro record mode and
 						 * run macros only after proper event length
 						 */
-						if( device.getLastKeysInterruptTransferLength() == this->events_length_.MacrosKeys ) {
+						if( device.getLastKeysInterruptTransferLength() == _keysEventsLength.MacrosKeys ) {
 							/* update mask with potential pressed keys */
 							if(this->updateCurrentLedsMask(device))
 								this->setMxKeysLeds(device);
@@ -626,7 +626,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 					}
 
 					if( this->checkDeviceCapability(device, Caps::GK_MEDIA_KEYS) ) {
-						if( device.getLastKeysInterruptTransferLength() == this->events_length_.MediaKeys ) {
+						if( device.getLastKeysInterruptTransferLength() == _keysEventsLength.MediaKeys ) {
 							if( this->checkMediaKey(device) ) {
 								NSGKDBus::GKDBus* pDBus = nullptr;
 
@@ -728,13 +728,13 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 			this->resetDeviceState(device);
 		}
 
-		this->initialized_devices_[devID] = device;
+		_initializedDevices[devID] = device;
 
 		/* spawn listening thread */
 		try {
 			std::thread listen_thread(&KeyboardDriver::listenLoop, this, devID);
-			std::lock_guard<std::mutex> lock(this->threads_mtx_);
-			this->threads_.push_back( std::move(listen_thread) );
+			std::lock_guard<std::mutex> lock(_threadsMutex);
+			_threads.push_back( std::move(listen_thread) );
 		}
 		catch (const std::system_error& e) {
 			std::ostringstream buffer(std::ios_base::app);
@@ -754,13 +754,13 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 }
 
 const bool KeyboardDriver::isDeviceInitialized(const std::string & devID) const {
-	return ( this->initialized_devices_.count(devID) == 1 );
+	return ( _initializedDevices.count(devID) == 1 );
 }
 
 const bool KeyboardDriver::getDeviceThreadsStatus(const std::string & devID) const
 {
 	try {
-		return this->initialized_devices_.at(devID).getThreadsStatus();
+		return _initializedDevices.at(devID).getThreadsStatus();
 	} /* try */
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice
@@ -796,7 +796,7 @@ void KeyboardDriver::resetDeviceState(const BusNumDeviceID & det)
 	const std::string devID = KeyboardDriver::getDeviceID(det.getBus(), det.getNum());
 
 	try {
-		USBDevice & device = this->initialized_devices_.at(devID);
+		USBDevice & device = _initializedDevices.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG3) << device.getStringID() << " resetting state of " << device.getName() << "("
 					<< device.getVendorID() << ":" << device.getProductID() << "), device "
@@ -832,10 +832,10 @@ void KeyboardDriver::joinDeviceThreads(const USBDevice & device)
 	LOG(DEBUG) << device.getStringID() << " waiting for listening thread";
 #endif
 	{
-		std::lock_guard<std::mutex> lock(this->threads_mtx_);
-		this->threads_.erase(
-			std::remove_if(this->threads_.begin(), this->threads_.end(), find_thread),
-			this->threads_.end()
+		std::lock_guard<std::mutex> lock(_threadsMutex);
+		_threads.erase(
+			std::remove_if(_threads.begin(), _threads.end(), find_thread),
+			_threads.end()
 		);
 	}
 
@@ -851,10 +851,10 @@ void KeyboardDriver::joinDeviceThreads(const USBDevice & device)
 		LOG(DEBUG) << device.getStringID() << " waiting for LCD screen thread";
 #endif
 		{
-			std::lock_guard<std::mutex> lock(this->threads_mtx_);
-			this->threads_.erase(
-				std::remove_if(this->threads_.begin(), this->threads_.end(), find_thread),
-				this->threads_.end()
+			std::lock_guard<std::mutex> lock(_threadsMutex);
+			_threads.erase(
+				std::remove_if(_threads.begin(), _threads.end(), find_thread),
+				_threads.end()
 			);
 		}
 
@@ -869,7 +869,7 @@ void KeyboardDriver::closeDevice(const BusNumDeviceID & det)
 	const std::string devID = KeyboardDriver::getDeviceID(det.getBus(), det.getNum());
 
 	try {
-		USBDevice & device = this->initialized_devices_.at(devID);
+		USBDevice & device = _initializedDevices.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG3) << device.getStringID() << " closing " << device.getName() << "("
 					<< device.getVendorID() << ":" << device.getProductID() << "), device "
@@ -882,7 +882,7 @@ void KeyboardDriver::closeDevice(const BusNumDeviceID & det)
 		device.destroyMacrosManager(); /* reset device state needs this pointer */
 		this->releaseUSBDeviceInterfaces(device);
 		this->closeUSBDevice(device);
-		this->initialized_devices_.erase(devID);
+		_initializedDevices.erase(devID);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice
@@ -892,20 +892,20 @@ void KeyboardDriver::closeDevice(const BusNumDeviceID & det)
 /* called when setting active user's configuration */
 void KeyboardDriver::setDeviceActiveConfiguration(
 	const std::string & devID,
-	const banksMap_type & macros_profiles,
+	const banksMap_type & macrosBanks,
 	const uint8_t r,
 	const uint8_t g,
 	const uint8_t b
 ) {
 	try {
-		USBDevice & device = this->initialized_devices_.at(devID);
+		USBDevice & device = _initializedDevices.at(devID);
 
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			/* exit MacroRecordMode if necessary */
 			device._exitMacroRecordMode = true;
 
 			/* set macros profiles */
-			device._pMacrosManager->setMacrosBanks(macros_profiles);
+			device._pMacrosManager->setMacrosBanks(macrosBanks);
 		}
 
 		if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
@@ -920,7 +920,7 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 
 const banksMap_type & KeyboardDriver::getDeviceMacrosBanks(const std::string & devID) {
 	try {
-		USBDevice & device = this->initialized_devices_.at(devID);
+		USBDevice & device = _initializedDevices.at(devID);
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			return device._pMacrosManager->getMacrosBanks();
 		}

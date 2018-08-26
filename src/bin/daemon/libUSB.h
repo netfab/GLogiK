@@ -43,7 +43,7 @@ class LibUSB
 	public:
 
 	protected:
-		LibUSB(const int maxLength, const ExpectedDescriptorsValues & values);
+		LibUSB(const int maxLength, const ExpectedDescriptorsValues & eValues);
 		~LibUSB(void);
 
 		const int getKeysInterruptBufferMaxLength(void) const

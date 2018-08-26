@@ -36,8 +36,8 @@ bool LibUSB::status = false;
 uint8_t LibUSB::counter = 0;
 libusb_context * LibUSB::pContext = nullptr;
 
-LibUSB::LibUSB(const int maxLength, const ExpectedDescriptorsValues & values)
-	:	_expectedDescriptorsValues(values)
+LibUSB::LibUSB(const int maxLength, const ExpectedDescriptorsValues & eValues)
+	:	_expectedDescriptorsValues(eValues)
 {
 	LibUSB::counter++;
 

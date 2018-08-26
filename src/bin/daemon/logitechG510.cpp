@@ -95,13 +95,13 @@ const std::vector<DeviceID> LogitechG510::supported_devices_ = {
 
 LogitechG510::LogitechG510()
 	:	KeyboardDriver(
-			8,	/* expected libusb interrupt read max length */
+			8,	/* expected libusb keys interrupt read max length */
 			/* libusb device initialization */
 			{	1,		/* bConfigurationValue */
 				1,		/* bInterfaceNumber */
 				0,		/* bAlternateSetting */
 				2	},	/* bNumEndpoints */
-			/* EventsLength */
+			/* KeysEventsLength */
 			{	5,		/* MacrosKeys */
 				2	}	/* MediaKeys */
 		)
@@ -124,12 +124,12 @@ const std::vector<DeviceID> & LogitechG510::getSupportedDevices(void) const {
 }
 
 const std::vector<std::string> & LogitechG510::getMacroKeysNames(void) const {
-	this->keys_names_.clear();
+	KeyboardDriver::macrosKeysNames.clear();
 	for (const auto & k : LogitechG510::five_bytes_keys_map_ ) {
 		if( k.macro_key )
-			this->keys_names_.push_back(k.name);
+			KeyboardDriver::macrosKeysNames.push_back(k.name);
 	}
-	return this->keys_names_;
+	return KeyboardDriver::macrosKeysNames;
 }
 
 /* return true if the pressed key is a macro key (G1-G18)  */

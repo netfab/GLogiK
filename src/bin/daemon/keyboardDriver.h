@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_KEYBOARD_DRIVER_H__
-#define __GLOGIKD_KEYBOARD_DRIVER_H__
+#ifndef SRC_BIN_DAEMON_KEYBOARD_DRIVER_HPP_
+#define SRC_BIN_DAEMON_KEYBOARD_DRIVER_HPP_
 
 #include <cstdint>
 
@@ -43,7 +43,7 @@
 namespace GLogiK
 {
 
-enum class KeyStatus
+enum class KeyStatus : uint8_t
 {
 	S_KEY_PROCESSED = 0,
 	S_KEY_TIMEDOUT,
@@ -64,12 +64,12 @@ enum class GKModifierKeys : uint8_t
 };
 
 struct ModifierKey {
-	const uint8_t event_code;
-	const GKModifierKeys mod_key;
+	const uint8_t code;			/* event code */
+	const GKModifierKeys key;	/* modifier key */
 };
 
-struct EventsLength {
-	EventsLength(
+struct KeysEventsLength {
+	KeysEventsLength(
 		const int8_t a = -1,
 		const int8_t b = -1
 	)	:	MacrosKeys(a),
@@ -85,7 +85,7 @@ class KeyboardDriver
 	public:
 		virtual ~KeyboardDriver();
 
-		static std::vector<std::string> keys_names_;
+		static std::vector<std::string> macrosKeysNames;
 
 		virtual const char* getDriverName() const = 0;
 		virtual const uint16_t getDriverID() const = 0;
@@ -100,7 +100,7 @@ class KeyboardDriver
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,
-			const banksMap_type & macros_profiles,
+			const banksMap_type & macrosBanks,
 			const uint8_t r,
 			const uint8_t g,
 			const uint8_t b
@@ -112,14 +112,14 @@ class KeyboardDriver
 		const bool getDeviceThreadsStatus(const std::string & devID) const;
 		static const std::string getDeviceID(const uint8_t bus, const uint8_t num);
 
-		static const bool checkDeviceCapability(const DeviceID & device, Caps to_check);
+		static const bool checkDeviceCapability(const DeviceID & device, Caps toCheck);
 
 	protected:
 		KeyboardDriver(void) = delete;
 		KeyboardDriver(
-			int key_read_length,
-			const ExpectedDescriptorsValues & values,
-			const EventsLength & events_length
+			int keysInterruptBufferMaxLength,
+			const ExpectedDescriptorsValues & eValues,
+			const KeysEventsLength & eLength
 		);
 
 		std::string getBytes(const USBDevice & device);
@@ -141,13 +141,13 @@ class KeyboardDriver
 		void fillStandardKeysEvents(USBDevice & device);
 
 	private:
-		const EventsLength events_length_;
+		const KeysEventsLength _keysEventsLength;
 
-		static const std::vector< ModifierKey > modifier_keys_;
+		static const std::vector< ModifierKey > modifierKeys;
 
-		std::map<const std::string, USBDevice> initialized_devices_;
-		std::vector<std::thread> threads_;
-		std::mutex threads_mtx_;
+		std::map<const std::string, USBDevice> _initializedDevices;
+		std::vector<std::thread> _threads;
+		std::mutex _threadsMutex;
 
 		/* USB HID Usage Tables as defined in USB specification,
 		 *        Chapter 10 "Keyboard/Keypad Page (0x07)"
@@ -156,7 +156,7 @@ class KeyboardDriver
 		 * See linux/drivers/hid/hid-input.c
 		 * and linux/input-event-codes.h
 		 */
-		static constexpr unsigned char hid_keyboard_[256] = {
+		static constexpr unsigned char hidKeyboard[256] = {
 			  0,  0,  0,  0, 30, 48, 46, 32, 18, 33, 34, 35, 23, 36, 37, 38,
 			 50, 49, 24, 25, 16, 19, 31, 20, 22, 47, 17, 45, 21, 44,  2,  3,
 			  4,  5,  6,  7,  8,  9, 10, 11, 28,  1, 14, 15, 57, 12, 13, 26,
@@ -183,7 +183,7 @@ class KeyboardDriver
 		void LCDScreenLoop(const std::string & devID);
 		void listenLoop(const std::string & devID);
 
-		const bool updateCurrentLedsMask(USBDevice & device, bool force_MR_off=false);
+		const bool updateCurrentLedsMask(USBDevice & device, bool disableMR=false);
 
 		const uint8_t handleModifierKeys(USBDevice & device, const uint16_t interval);
 
