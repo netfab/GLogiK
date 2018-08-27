@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_DEVICES_MANAGER_H__
-#define __GLOGIKD_DEVICES_MANAGER_H__
+#ifndef SRC_BIN_DAEMON_DEVICES_MANAGER_HPP_
+#define SRC_BIN_DAEMON_DEVICES_MANAGER_HPP_
 
 #include <poll.h>
 
@@ -87,7 +87,7 @@ class DetectedDevice
 };
 
 #if DEBUGGING_ON
-void udevDeviceProperties(struct udev_device *dev, const std::string &subsystem);
+void udevDeviceProperties(struct udev_device * pDevice, const std::string & subSystem);
 #endif
 
 class DevicesManager
@@ -113,7 +113,7 @@ class DevicesManager
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,
-			const banksMap_type & macros_profiles,
+			const banksMap_type & macrosBanks,
 			const uint8_t r,
 			const uint8_t g,
 			const uint8_t b
@@ -130,16 +130,16 @@ class DevicesManager
 		struct udev_monitor *monitor = nullptr;
 		struct pollfd fds[1];
 		int fd_ = -1;
-		NSGKDBus::GKDBus* pDBus_ = nullptr;
-		uint8_t num_clients_;
+		NSGKDBus::GKDBus* _pDBus;
+		uint8_t _numClients;
 
 		std::ostringstream buffer_;
-		const std::string unknown_;
-		std::vector<KeyboardDriver*> drivers_;
-		std::map<const std::string, DetectedDevice> detected_devices_;
-		std::map<const std::string, DetectedDevice> initialized_devices_;
-		std::map<const std::string, DetectedDevice> plugged_but_stopped_devices_;
-		std::set<std::string> unplugged_devices_;
+		const std::string _unknown;
+		std::vector<KeyboardDriver*> _drivers;
+		std::map<const std::string, DetectedDevice> _detectedDevices;
+		std::map<const std::string, DetectedDevice> _startedDevices;
+		std::map<const std::string, DetectedDevice> _stoppedDevices;
+		std::set<std::string> _unpluggedDevices;
 
 		void searchSupportedDevices(void);
 		void initializeDevices(void);

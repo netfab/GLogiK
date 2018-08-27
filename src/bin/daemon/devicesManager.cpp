@@ -41,9 +41,10 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 DevicesManager::DevicesManager()
-	:	num_clients_(0),
+	:	_pDBus(nullptr),
+		_numClients(0),
 		buffer_("", std::ios_base::app),
-		unknown_("unknown")
+		_unknown("unknown")
 {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing devices manager";
@@ -59,15 +60,15 @@ DevicesManager::~DevicesManager() {
 #endif
 
 	this->stopInitializedDevices();
-	this->plugged_but_stopped_devices_.clear();
+	_stoppedDevices.clear();
 
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "stopping drivers";
 #endif
-	for(const auto& driver : this->drivers_) {
+	for(const auto & driver : _drivers) {
 		delete driver;
 	}
-	this->drivers_.clear();
+	_drivers.clear();
 
 	if(this->monitor) {
 #if DEBUGGING_ON
@@ -88,7 +89,7 @@ DevicesManager::~DevicesManager() {
 }
 
 void DevicesManager::setNumClients(uint8_t num) {
-	this->num_clients_ = num;
+	_numClients = num;
 }
 
 void DevicesManager::initializeDevices(void) {
@@ -97,11 +98,11 @@ void DevicesManager::initializeDevices(void) {
 #endif
 	std::vector<std::string> startedDevices;
 
-	for(const auto& det_dev : this->detected_devices_) {
-		const auto & devID = det_dev.first;
-		const auto & device = det_dev.second;
+	for(const auto & devicePair : _detectedDevices) {
+		const auto & devID = devicePair.first;
+		const auto & device = devicePair.second;
 
-		if(this->initialized_devices_.count(devID) == 1) {
+		if(_startedDevices.count(devID) == 1) {
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "device "
 						<< device.getVendorID() << ":"
@@ -112,7 +113,7 @@ void DevicesManager::initializeDevices(void) {
 		}
 
 		// TODO option ?
-		if(this->plugged_but_stopped_devices_.count(devID) == 1) {
+		if(_stoppedDevices.count(devID) == 1) {
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "device "
 						<< device.getVendorID() << ":"
@@ -124,11 +125,11 @@ void DevicesManager::initializeDevices(void) {
 		}
 
 		try {
-			for(const auto& driver : this->drivers_) {
+			for(const auto & driver : _drivers) {
 				if( device.getDriverID() == driver->getDriverID() ) {
 					// initialization
 					driver->initializeDevice( device );
-					this->initialized_devices_[devID] = device;
+					_startedDevices[devID] = device;
 
 					this->buffer_.str( device.getName() );
 					this->buffer_ << "(" << device.getVendorID() << ":" << device.getProductID()
@@ -148,12 +149,12 @@ void DevicesManager::initializeDevices(void) {
 
 	if( startedDevices.size() > 0 ) {
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(this->num_clients_, this->pDBus_, "DevicesStarted", startedDevices);
+		this->sendStatusSignalArrayToClients(_numClients, _pDBus, "DevicesStarted", startedDevices);
 	}
 
-	this->detected_devices_.clear();
+	_detectedDevices.clear();
 #if DEBUGGING_ON
-	LOG(INFO) << "device(s) initialized : " << this->initialized_devices_.size();
+	LOG(INFO) << "device(s) initialized : " << _startedDevices.size();
 #endif
 }
 
@@ -162,13 +163,13 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 	LOG(DEBUG2) << "trying to start device " << devID;
 #endif
 	try {
-		const auto & device = this->plugged_but_stopped_devices_.at(devID);
-		for(const auto& driver : this->drivers_) {
+		const auto & device = _stoppedDevices.at(devID);
+		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
 				if( ! driver->isDeviceInitialized(devID) ) { /* sanity check */
 					// initialization
 					driver->initializeDevice( device );
-					this->initialized_devices_[devID] = device;
+					_startedDevices[devID] = device;
 
 					this->buffer_.str( device.getName() );
 					this->buffer_	<< "(" << device.getVendorID() << ":" << device.getProductID()
@@ -178,7 +179,7 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 #if DEBUGGING_ON
 					LOG(DEBUG3) << "removing " << devID << " from plugged-but-stopped devices";
 #endif
-					this->plugged_but_stopped_devices_.erase(devID);
+					_stoppedDevices.erase(devID);
 
 					return true;
 				}
@@ -203,8 +204,8 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 #endif
 
 	try {
-		const auto & device = this->initialized_devices_.at(devID);
-		for(const auto& driver : this->drivers_) {
+		const auto & device = _startedDevices.at(devID);
+		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
 				if( driver->isDeviceInitialized(devID) ) {
 					driver->closeDevice( device );
@@ -214,8 +215,8 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 									<< ") on bus " << to_uint(device.getBus()) << " stopped";
 					GKSysLog(LOG_INFO, INFO, this->buffer_.str());
 
-					this->plugged_but_stopped_devices_[devID] = device;
-					this->initialized_devices_.erase(devID);
+					_stoppedDevices[devID] = device;
+					_startedDevices.erase(devID);
 
 					return true;
 				}
@@ -240,8 +241,8 @@ void DevicesManager::stopInitializedDevices(void) {
 #endif
 
 	std::vector<std::string> to_stop;
-	for(const auto& device_pair : this->initialized_devices_) {
-		to_stop.push_back(device_pair.first);
+	for(const auto & devicePair : _startedDevices) {
+		to_stop.push_back(devicePair.first);
 	}
 
 	for(const auto & devID : to_stop) {
@@ -249,7 +250,7 @@ void DevicesManager::stopInitializedDevices(void) {
 	}
 
 	to_stop.clear();
-	this->initialized_devices_.clear();
+	_startedDevices.clear();
 }
 
 void DevicesManager::checkInitializedDevicesThreadsStatus(void) {
@@ -260,13 +261,13 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) {
 	std::vector<std::string> stoppedDevices;
 
 	std::vector<std::string> to_check;
-	for(const auto& device_pair : this->initialized_devices_) {
-		to_check.push_back(device_pair.first);
+	for(const auto& devicePair : _startedDevices) {
+		to_check.push_back(devicePair.first);
 	}
 
 	for(const auto & devID : to_check) {
-		for(const auto& driver : this->drivers_) {
-			if( this->initialized_devices_[devID].getDriverID() == driver->getDriverID() ) {
+		for(const auto & driver : _drivers) {
+			if( _startedDevices[devID].getDriverID() == driver->getDriverID() ) {
 				if( ! driver->getDeviceThreadsStatus(devID) ) {
 					GKSysLog(LOG_WARNING, WARNING, "USB port software reset detected, not cool :(");
 					GKSysLog(LOG_WARNING, WARNING, "We are forced to hard stop a device.");
@@ -280,7 +281,7 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) {
 
 	if( stoppedDevices.size() > 0 ) {
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(this->num_clients_, this->pDBus_, "DevicesStopped", stoppedDevices);
+		this->sendStatusSignalArrayToClients(_numClients, _pDBus, "DevicesStopped", stoppedDevices);
 	}
 }
 
@@ -289,13 +290,13 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 	LOG(DEBUG2) << "checking for unplugged devices";
 #endif
 
-	std::vector<std::string> unpluggedDevices;
+	std::vector<std::string> toSend;
 
 	/* checking for unplugged unstopped devices */
 	std::vector<std::string> to_clean;
-	for(const auto & device_pair : this->initialized_devices_) {
-		if( this->detected_devices_.count(device_pair.first) == 0 ) {
-			to_clean.push_back(device_pair.first);
+	for(const auto & devicePair : _startedDevices) {
+		if( _detectedDevices.count(devicePair.first) == 0 ) {
+			to_clean.push_back(devicePair.first);
 		}
 	}
 
@@ -303,7 +304,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 		try {
 			this->buffer_.str("erasing unplugged initialized driver : ");
 
-			const auto & device = this->initialized_devices_.at(devID);
+			const auto & device = _startedDevices.at(devID);
 
 			this->buffer_ << device.getVendorID() << ":" << device.getProductID()
 						  << ":" << device.getInputDevNode() << ":" << device.getUSec();
@@ -313,9 +314,9 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 			GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
 
 			if( this->stopDevice(devID) ) {
-				this->plugged_but_stopped_devices_.erase(devID);
-				this->unplugged_devices_.insert(devID);
-				unpluggedDevices.push_back(devID);
+				_stoppedDevices.erase(devID);
+				_unpluggedDevices.insert(devID);
+				toSend.push_back(devID);
 			}
 		}
 		catch (const std::out_of_range& oor) {
@@ -327,42 +328,42 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 	to_clean.clear();
 
 	/* checking for unplugged but stopped devices */
-	for(const auto & stopped_dev : this->plugged_but_stopped_devices_) {
-		if(this->detected_devices_.count(stopped_dev.first) == 0 ) {
-			to_clean.push_back(stopped_dev.first);
+	for(const auto & devicePair : _stoppedDevices) {
+		if(_detectedDevices.count(devicePair.first) == 0 ) {
+			to_clean.push_back(devicePair.first);
 		}
 	}
 	for(const auto & devID : to_clean) {
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "removing " << devID << " from plugged-but-stopped devices";
+		LOG(DEBUG3) << "removing " << devID << " from stopped devices container";
 #endif
-		this->plugged_but_stopped_devices_.erase(devID);
-		this->unplugged_devices_.insert(devID);
-		unpluggedDevices.push_back(devID);
+		_stoppedDevices.erase(devID);
+		_unpluggedDevices.insert(devID);
+		toSend.push_back(devID);
 	}
 	to_clean.clear();
 
-	this->detected_devices_.clear();
+	_detectedDevices.clear();
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "number of devices still initialized : " << this->initialized_devices_.size();
-	LOG(DEBUG3) << "number of unplugged devices : " << unpluggedDevices.size();
+	LOG(DEBUG3) << "number of devices still initialized : " << _startedDevices.size();
+	LOG(DEBUG3) << "number of unplugged devices : " << toSend.size();
 #endif
 
-	if(unpluggedDevices.size() > 0) {
+	if(toSend.size() > 0) {
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(this->num_clients_, this->pDBus_, "DevicesUnplugged", unpluggedDevices);
+		this->sendStatusSignalArrayToClients(_numClients, _pDBus, "DevicesUnplugged", toSend);
 	}
 }
 
 #if DEBUGGING_ON
-void udevDeviceProperties(struct udev_device *dev, const std::string &subsystem) {
+void udevDeviceProperties(struct udev_device * pDevice, const std::string & subSystem) {
 	struct udev_list_entry *devs_props = nullptr;
 	struct udev_list_entry *devs_attr = nullptr;
 	struct udev_list_entry *devs_list_entry = nullptr;
 
-	devs_props = udev_device_get_properties_list_entry( dev );
-	devs_attr = udev_device_get_sysattr_list_entry( dev );
+	devs_props = udev_device_get_properties_list_entry( pDevice );
+	devs_attr = udev_device_get_sysattr_list_entry( pDevice );
 
 	LOG(DEBUG4) << "--";
 	LOG(DEBUG4)	<< "Device properties";
@@ -375,7 +376,7 @@ void udevDeviceProperties(struct udev_device *dev, const std::string &subsystem)
 		if( attr == "" )
 			continue;
 
-		value = to_string( udev_device_get_property_value(dev, attr.c_str()) );
+		value = to_string( udev_device_get_property_value(pDevice, attr.c_str()) );
 		LOG(DEBUG4) << attr << " : " << value;
 	}
 	LOG(DEBUG4) << "--";
@@ -386,7 +387,7 @@ void udevDeviceProperties(struct udev_device *dev, const std::string &subsystem)
 		if( attr == "" )
 			continue;
 
-		value = to_string( udev_device_get_sysattr_value(dev, attr.c_str()) );
+		value = to_string( udev_device_get_sysattr_value(pDevice, attr.c_str()) );
 		LOG(DEBUG4) << attr << " : " << value;
 	}
 	LOG(DEBUG4) << "--";
@@ -454,7 +455,7 @@ void DevicesManager::searchSupportedDevices(void) {
 				continue;
 			}
 
-			for(const auto& driver : this->drivers_) {
+			for(const auto & driver : _drivers) {
 				for(const auto& device : driver->getSupportedDevices()) {
 					if( device.getVendorID() == vendor_id ) {
 						if( device.getProductID() == product_id ) {
@@ -493,7 +494,7 @@ void DevicesManager::searchSupportedDevices(void) {
 							const std::string devID( KeyboardDriver::getDeviceID(bus, num) );
 
 							try {
-								const DetectedDevice & d = this->detected_devices_.at(devID);
+								const DetectedDevice & d = _detectedDevices.at(devID);
 								LOG(WARNING) << "found already detected device : " << devID << " " << d.getInputDevNode();
 							}
 							catch (const std::out_of_range& oor) {
@@ -508,7 +509,7 @@ void DevicesManager::searchSupportedDevices(void) {
 									serial, usec, driver->getDriverID()
 								);
 
-								this->detected_devices_[devID] = found;
+								_detectedDevices[devID] = found;
 
 #if DEBUGGING_ON
 								LOG(DEBUG3) << "found device - Vid:Pid:DevNode:usec | bus:num : " << vendor_id
@@ -532,7 +533,7 @@ void DevicesManager::searchSupportedDevices(void) {
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "found " << this->detected_devices_.size() << " device(s)";
+	LOG(DEBUG2) << "found " << _detectedDevices.size() << " device(s)";
 #endif
 
 	// Free the enumerator object
@@ -545,8 +546,8 @@ const std::vector<std::string> DevicesManager::getStartedDevices(void) const {
 	// dev code
 	//std::vector<std::string> ret = {"aaa1", "bbb2", "ccc3"};
 
-	for(const auto& device_pair : this->initialized_devices_) {
-		ret.push_back(device_pair.first);
+	for(const auto& devicePair : _startedDevices) {
+		ret.push_back(devicePair.first);
 	}
 
 	return ret;
@@ -555,8 +556,8 @@ const std::vector<std::string> DevicesManager::getStartedDevices(void) const {
 const std::vector<std::string> DevicesManager::getStoppedDevices(void) const {
 	std::vector<std::string> ret;
 
-	for(const auto& stopped_dev : this->plugged_but_stopped_devices_) {
-		ret.push_back(stopped_dev.first);
+	for(const auto & devicePair : _stoppedDevices) {
+		ret.push_back(devicePair.first);
 	}
 
 	return ret;
@@ -565,12 +566,12 @@ const std::vector<std::string> DevicesManager::getStoppedDevices(void) const {
 const std::string & DevicesManager::getDeviceVendor(const std::string & devID) const
 {
 	try {
-		const auto & device = this->initialized_devices_.at(devID);
+		const auto & device = _startedDevices.at(devID);
 		return device.getVendor();
 	}
 	catch (const std::out_of_range& oor) {
 		try {
-			const auto & device = this->plugged_but_stopped_devices_.at(devID);
+			const auto & device = _stoppedDevices.at(devID);
 			return device.getVendor();
 		}
 		catch (const std::out_of_range& oor) {
@@ -578,18 +579,18 @@ const std::string & DevicesManager::getDeviceVendor(const std::string & devID) c
 		}
 	}
 
-	return this->unknown_;
+	return _unknown;
 }
 
 const uint64_t DevicesManager::getDeviceCapabilities(const std::string & devID) const
 {
 	try {
-		const auto & device = this->initialized_devices_.at(devID);
+		const auto & device = _startedDevices.at(devID);
 		return device.getCapabilities();
 	}
 	catch (const std::out_of_range& oor) {
 		try {
-			const auto & device = this->plugged_but_stopped_devices_.at(devID);
+			const auto & device = _stoppedDevices.at(devID);
 			return device.getCapabilities();
 		}
 		catch (const std::out_of_range& oor) {
@@ -603,12 +604,12 @@ const uint64_t DevicesManager::getDeviceCapabilities(const std::string & devID) 
 const std::string & DevicesManager::getDeviceModel(const std::string & devID) const
 {
 	try {
-		const auto & device = this->initialized_devices_.at(devID);
+		const auto & device = _startedDevices.at(devID);
 		return device.getModel();
 	}
 	catch (const std::out_of_range& oor) {
 		try {
-			const auto & device = this->plugged_but_stopped_devices_.at(devID);
+			const auto & device = _stoppedDevices.at(devID);
 			return device.getModel();
 		}
 		catch (const std::out_of_range& oor) {
@@ -616,36 +617,36 @@ const std::string & DevicesManager::getDeviceModel(const std::string & devID) co
 		}
 	}
 
-	return this->unknown_;
+	return _unknown;
 }
 
 const std::string DevicesManager::getDeviceStatus(const std::string & devID) const
 {
-	std::string ret(this->unknown_);
-	if(this->initialized_devices_.count(devID) == 1)
+	std::string ret(_unknown);
+	if(_startedDevices.count(devID) == 1)
 		ret = "started";
-	else if(this->plugged_but_stopped_devices_.count(devID) == 1)
+	else if(_stoppedDevices.count(devID) == 1)
 		ret = "stopped";
-	else if(this->unplugged_devices_.count(devID) == 1)
+	else if(_unpluggedDevices.count(devID) == 1)
 		ret = "unplugged";
 	return ret;
 }
 
 void DevicesManager::setDeviceActiveConfiguration(
 	const std::string & devID,
-	const banksMap_type & macros_profiles,
+	const banksMap_type & macrosBanks,
 	const uint8_t r,
 	const uint8_t g,
 	const uint8_t b)
 {
 	try {
-		const auto & device = this->initialized_devices_.at(devID);
+		const auto & device = _startedDevices.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
 #endif
-		for(const auto& driver : this->drivers_) {
+		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
-				driver->setDeviceActiveConfiguration(devID, macros_profiles, r, g, b);
+				driver->setDeviceActiveConfiguration(devID, macrosBanks, r, g, b);
 				return;
 			}
 		}
@@ -658,12 +659,12 @@ void DevicesManager::setDeviceActiveConfiguration(
 const banksMap_type & DevicesManager::getDeviceMacrosBanks(const std::string & devID) const
 {
 	try {
-		const auto & device = this->initialized_devices_.at(devID);
+		const auto & device = _startedDevices.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
 #endif
 		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			for(const auto& driver : this->drivers_) {
+			for(const auto & driver : _drivers) {
 				if( device.getDriverID() == driver->getDriverID() ) {
 					return driver->getDeviceMacrosBanks(devID);
 				}
@@ -679,12 +680,12 @@ const banksMap_type & DevicesManager::getDeviceMacrosBanks(const std::string & d
 const std::vector<std::string> & DevicesManager::getDeviceMacroKeysNames(const std::string & devID) const
 {
 	try {
-		const auto & device = this->initialized_devices_.at(devID);
+		const auto & device = _startedDevices.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
 #endif
 		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			for(const auto& driver : this->drivers_) {
+			for(const auto & driver : _drivers) {
 				if( device.getDriverID() == driver->getDriverID() ) {
 					return driver->getMacroKeysNames();
 				}
@@ -702,9 +703,9 @@ void DevicesManager::resetDevicesStates(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "resetting initialized devices states";
 #endif
-	for(const auto& device_pair : this->initialized_devices_) {
-		const auto & device = device_pair.second;
-		for(const auto& driver : this->drivers_) {
+	for(const auto& devicePair : _startedDevices) {
+		const auto & device = devicePair.second;
+		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
 				driver->resetDeviceState( device );
 			}
@@ -713,14 +714,14 @@ void DevicesManager::resetDevicesStates(void) {
 }
 
 void DevicesManager::checkDBusMessages(void) {
-	this->pDBus_->checkForNextMessage(NSGKDBus::BusConnection::GKDBUS_SYSTEM);
+	_pDBus->checkForNextMessage(NSGKDBus::BusConnection::GKDBUS_SYSTEM);
 }
 
 void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing libudev";
 #endif
-	this->pDBus_ = pDBus;
+	_pDBus = pDBus;
 
 	this->udev = udev_new();
 	if ( this->udev == nullptr )
@@ -747,12 +748,12 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 	LOG(DEBUG2) << "loading drivers";
 #endif
 
-	this->drivers_.push_back( new LogitechG510() );
+	_drivers.push_back( new LogitechG510() );
 
 	this->searchSupportedDevices();
 	this->initializeDevices();
 
-	this->sendSignalToClients(this->num_clients_, this->pDBus_, "DaemonIsStarting", true);
+	this->sendSignalToClients(_numClients, _pDBus, "DaemonIsStarting", true);
 
 	unsigned short c = 0;
 
@@ -787,7 +788,7 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 					}
 					else {
 						/* clear detected devices container */
-						this->detected_devices_.clear();
+						_detectedDevices.clear();
 					}
 				}
 			}
