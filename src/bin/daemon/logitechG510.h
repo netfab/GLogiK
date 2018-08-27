@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_LOGITECH_G510_DRIVER_H__
-#define __GLOGIKD_LOGITECH_G510_DRIVER_H__
+#ifndef SRC_BIN_DAEMON_LOGITECH_G510_DRIVER_HPP_
+#define SRC_BIN_DAEMON_LOGITECH_G510_DRIVER_HPP_
 
 #define GLOGIKD_DRIVER_ID_G510 ( 1 << 0 )
 
@@ -39,25 +39,34 @@ namespace GLogiK
 #define VENDOR_LOGITECH "046d"
 
 /* RKey - Recognized Keys */
-struct R_Key
+struct RKey
 {
 	unsigned short index;
 	unsigned char mask;
 	Keys key;
-	bool macro_key;
+	bool isMacroKey;
 	const char* name;
 
-	R_Key(unsigned short i, unsigned char m, Keys k, const char* n=nullptr, bool b=false)
-		: index(i), mask(m), key(k), macro_key(b), name(n) {}
+	RKey(	unsigned short i,
+			unsigned char m,
+			Keys k,
+			const char* n=nullptr,
+			bool b=false )
+		:	index(i),
+			mask(m),
+			key(k),
+			isMacroKey(b),
+			name(n) {}
 };
 
-struct M_Key_Led_Mask
+struct MKeyLed
 {
 	Leds led;
 	unsigned char mask;
 };
 
-class LogitechG510 : public KeyboardDriver
+class LogitechG510
+	:	public KeyboardDriver
 {
 	public:
 		LogitechG510();
@@ -70,10 +79,10 @@ class LogitechG510 : public KeyboardDriver
 
 	protected:
 	private:
-		static const std::vector< R_Key > five_bytes_keys_map_;
-		static const std::vector< R_Key > two_bytes_keys_map_;
-		static const std::vector< M_Key_Led_Mask > leds_mask_;
-		static const std::vector<DeviceID> supported_devices_;
+		static const std::vector<RKey> fiveBytesKeysMap;
+		static const std::vector<RKey> twoBytesKeysMap;
+		static const std::vector<MKeyLed> ledsMask;
+		static const std::vector<DeviceID> knownDevices;
 
 		KeyStatus processKeyEvent(USBDevice & device);
 		void sendUSBDeviceInitialization(USBDevice & device);
