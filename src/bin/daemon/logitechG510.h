@@ -27,6 +27,7 @@
 #include <cstdint>
 
 #include <vector>
+#include <string>
 
 #include "DeviceID.h"
 #include "keyboardDriver.h"
@@ -41,17 +42,17 @@ namespace GLogiK
 /* RKey - Recognized Keys */
 struct RKey
 {
-	unsigned short index;
-	unsigned char mask;
-	Keys key;
-	bool isMacroKey;
-	const char* name;
+	const unsigned short index;
+	const unsigned char mask;
+	const Keys key;
+	const bool isMacroKey;
+	const char* const name;
 
-	RKey(	unsigned short i,
-			unsigned char m,
-			Keys k,
-			const char* n=nullptr,
-			bool b=false )
+	RKey(	const unsigned short i,
+			const unsigned char m,
+			const Keys k,
+			const char* const n=nullptr,
+			const bool b=false )
 		:	index(i),
 			mask(m),
 			key(k),
