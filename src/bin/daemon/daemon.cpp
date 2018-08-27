@@ -59,7 +59,8 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app), pDBus_(nullptr)
+GLogiKDaemon::GLogiKDaemon()
+	:	_pDBus(nullptr)
 {
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 
@@ -68,24 +69,25 @@ GLogiKDaemon::GLogiKDaemon() : buffer_("", std::ios_base::app), pDBus_(nullptr)
 	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
 
 	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
-		this->buffer_.str(DEBUG_DIR);
-		this->buffer_ << "/" << PACKAGE << "d-debug-" << getpid() << ".log";
+		std::ostringstream buffer(std::ios_base::app);
+		buffer	<< DEBUG_DIR << "/" << PACKAGE << "d-debug-"
+				<< getpid() << ".log";
 
 		errno = 0;
-		this->log_fd_ = std::fopen(this->buffer_.str().c_str(), "w");
+		_LOGfd = std::fopen(buffer.str().c_str(), "w");
 
-		if(this->log_fd_ == nullptr) {
+		if(_LOGfd == nullptr) {
 			LOG(ERROR) << "failed to open debug file";
 			if(errno != 0) {
 				LOG(ERROR) << strerror(errno);
 			}
 		}
 
-		LOG_TO_FILE_AND_CONSOLE::FileStream() = this->log_fd_;
+		LOG_TO_FILE_AND_CONSOLE::FileStream() = _LOGfd;
 	}
 #endif
 
-	if( this->log_fd_ == nullptr )
+	if(_LOGfd == nullptr)
 		syslog(LOG_INFO, "debug file not opened");
 }
 
@@ -95,29 +97,28 @@ GLogiKDaemon::~GLogiKDaemon()
 	LOG(DEBUG2) << "exiting daemon process";
 #endif
 
-	if( this->pid_file_.is_open() ) {
-		this->pid_file_.close();
+	if( _pidFile.is_open() ) {
+		_pidFile.close();
 
 #if DEBUGGING_ON
 		LOG(INFO) << "destroying PID file";
 #endif
 
-		if( unlink(this->pid_file_name_.c_str()) != 0 ) {
+		if( unlink(_pidFileName.c_str()) != 0 ) {
 			GKSysLog(LOG_ERR, ERROR, "failed to unlink PID file");
 		}
 	}
 
 	GKSysLog(LOG_INFO, INFO, "bye !");
-	if( this->log_fd_ != nullptr )
-		std::fclose(this->log_fd_);
+	if(_LOGfd != nullptr)
+		std::fclose(_LOGfd);
 	closelog();
 }
 
 int GLogiKDaemon::run( const int& argc, char *argv[] ) {
-
-	this->buffer_.str( "Starting " );
-	this->buffer_ << GLOGIKD_DAEMON_NAME << " vers. " << VERSION ;
-	GKSysLog(LOG_INFO, INFO, this->buffer_.str());
+	std::ostringstream buffer(std::ios_base::app);
+	buffer << "Starting " << GLOGIKD_DAEMON_NAME << " vers. " << VERSION;
+	GKSysLog(LOG_INFO, INFO, buffer.str());
 
 	try {
 		this->dropPrivileges();
@@ -130,31 +131,29 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			this->createPIDFile();
 
 			// TODO handle return values and errno ?
-			std::signal(SIGINT, GLogiKDaemon::handle_signal);
-			std::signal(SIGTERM, GLogiKDaemon::handle_signal);
-			//std::signal(SIGHUP, GLogiKDaemon::handle_signal);
+			std::signal(SIGINT, GLogiKDaemon::handleSignal);
+			std::signal(SIGTERM, GLogiKDaemon::handleSignal);
+			//std::signal(SIGHUP, GLogiKDaemon::handleSignal);
 
 			try {
 				try {
-					this->pDBus_ = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
+					_pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
 				}
 				catch (const std::bad_alloc& e) { /* handle new() failure */
 					throw GLogiKBadAlloc("GKDBus bad allocation");
 				}
 
-				this->pDBus_->connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
+				_pDBus->connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
 
 				{
-					ClientsManager c(this->pDBus_);
+					ClientsManager c(_pDBus);
 					c.runLoop();
 				}	/* destroy client manager before DBus pointer */
 
-				delete this->pDBus_;
-				this->pDBus_ = nullptr;
+				delete _pDBus; _pDBus = nullptr;
 			}
 			catch ( const GLogiKExcept & e ) {
-				delete this->pDBus_;
-				this->pDBus_ = nullptr;
+				delete _pDBus; _pDBus = nullptr;
 				throw;
 			}
 		}
@@ -166,10 +165,11 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
-		this->buffer_.str( e.what() );
+		std::ostringstream buffer(std::ios_base::app);
+		buffer << e.what();
 		if(errno != 0)
-			this->buffer_ << " : " << strerror(errno);
-		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+			buffer << " : " << strerror(errno);
+		GKSysLog(LOG_ERR, ERROR, buffer.str());
 		return EXIT_FAILURE;
 	}
 /*
@@ -180,7 +180,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 */
 }
 
-void GLogiKDaemon::handle_signal(int sig) {
+void GLogiKDaemon::handleSignal(int sig) {
 	std::ostringstream buff("caught signal : ", std::ios_base::app);
 	switch( sig ) {
 		case SIGINT:
@@ -205,12 +205,12 @@ void GLogiKDaemon::daemonize() {
 	LOG(DEBUG2) << "daemonizing process";
 #endif
 
-	this->pid_ = fork();
-	if(this->pid_ == -1)
+	_pid = fork();
+	if(_pid == -1)
 		throw GLogiKExcept("first fork failure");
 
 	// parent exit
-	if(this->pid_ > 0)
+	if(_pid > 0)
 		exit(EXIT_SUCCESS);
 
 #if DEBUGGING_ON
@@ -223,12 +223,12 @@ void GLogiKDaemon::daemonize() {
 	// Ignore signal sent from child to parent process
 	std::signal(SIGCHLD, SIG_IGN);
 
-	this->pid_ = fork();
-	if(this->pid_ == -1)
+	_pid = fork();
+	if(_pid == -1)
 		throw GLogiKExcept("second fork failure");
 
 	// parent exit
-	if(this->pid_ > 0)
+	if(_pid > 0)
 		exit(EXIT_SUCCESS);
 
 #if DEBUGGING_ON
@@ -253,7 +253,7 @@ void GLogiKDaemon::daemonize() {
 	stderr = std::fopen("/dev/null", "w+");
 #endif
 
-	this->pid_ = getpid();
+	_pid = getpid();
 
 #if DEBUGGING_ON
 	LOG(INFO) << "daemonized !";
@@ -261,33 +261,33 @@ void GLogiKDaemon::daemonize() {
 }
 
 void GLogiKDaemon::createPIDFile(void) {
-	fs::path path(this->pid_file_name_);
+	fs::path path(_pidFileName);
 
 	if( fs::exists(path) ) {
-		this->buffer_.str( "PID file " );
-		this->buffer_ << this->pid_file_name_ << " already exist";
-		throw GLogiKExcept( this->buffer_.str() );
+		std::ostringstream buffer(std::ios_base::app);
+		buffer	<< "PID file " << _pidFileName << " already exist";
+		throw GLogiKExcept( buffer.str() );
 	}
 	// if path not found reset errno
 	errno = 0;
 
-	this->pid_file_.exceptions( std::ofstream::failbit );
+	_pidFile.exceptions( std::ofstream::failbit );
 	try {
-		this->pid_file_.open(this->pid_file_name_.c_str(), std::ofstream::trunc);
-		this->pid_file_ << (long)this->pid_;
-		this->pid_file_.flush();
+		_pidFile.open(_pidFileName, std::ofstream::trunc);
+		_pidFile << static_cast<long>(_pid);
+		_pidFile.flush();
 
 		fs::permissions(path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 	}
 	catch (const std::ofstream::failure & e) {
-		this->buffer_.str( "fail to open PID file : " );
-		this->buffer_ << this->pid_file_name_ << " : " << e.what();
-		throw GLogiKExcept( this->buffer_.str() );
+		std::ostringstream buffer(std::ios_base::app);
+		buffer	<< "fail to open PID file : " << _pidFileName << " : " << e.what();
+		throw GLogiKExcept( buffer.str() );
 	}
 	catch (const fs::filesystem_error & e) {
-		this->buffer_.str( "set permissions failure on PID file : " );
-		this->buffer_ << this->pid_file_name_ << " : " << e.what();
-		throw GLogiKExcept( this->buffer_.str() );
+		std::ostringstream buffer(std::ios_base::app);
+		buffer	<< "set permissions failure on PID file : " << _pidFileName << " : " << e.what();
+		throw GLogiKExcept( buffer.str() );
 	}
 	/*
 	 * catch std::ios_base::failure on buggy compilers
@@ -295,13 +295,13 @@ void GLogiKDaemon::createPIDFile(void) {
 	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
 	 */
 	catch( const std::exception & e ) {
-		this->buffer_.str( "(buggy exception) fail to open PID file : " );
-		this->buffer_ << this->pid_file_name_ << " : " << e.what();
-		throw GLogiKExcept( this->buffer_.str() );
+		std::ostringstream buffer(std::ios_base::app);
+		buffer << "(buggy exception) fail to open PID file : " << _pidFileName << " : " << e.what();
+		throw GLogiKExcept( buffer.str() );
 	}
 
 #if DEBUGGING_ON
-	LOG(INFO) << "created PID file : " << this->pid_file_name_;
+	LOG(INFO) << "created PID file : " << _pidFileName;
 #endif
 }
 
@@ -316,7 +316,7 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	desc.add_options()
 //		("help,h", "produce help message")
 		("daemonize,d", po::bool_switch(&d)->default_value(false), "run in daemon mode")
-		("pid-file,p", po::value(&this->pid_file_name_), "define the PID file")
+		("pid-file,p", po::value(&_pidFileName), "define the PID file")
 	;
 
 	po::variables_map vm;
@@ -331,14 +331,14 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 /*
 	if (vm.count("help")) {
 		GKSysLog(LOG_INFO, INFO, "displaying help");
-		this->buffer_.str("");
-		desc.print( this->buffer_ );
-		throw DisplayHelp( this->buffer_.str() );
+		std::ostringstream buffer(std::ios_base::app);
+		desc.print( buffer );
+		throw DisplayHelp( buffer.str() );
 	}
 */
 
 	if (vm.count("daemonize")) {
-		GLogiKDaemon::daemonized_ = vm["daemonize"].as<bool>();
+		GLogiKDaemon::daemonized = vm["daemonize"].as<bool>();
 	}
 }
 

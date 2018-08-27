@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_DAEMON_H__
-#define __GLOGIKD_DAEMON_H__
+#ifndef SRC_BIN_DAEMON_GLOGIKD_DAEMON_HPP_
+#define SRC_BIN_DAEMON_GLOGIKD_DAEMON_HPP_
 
 #define GLOGIKD_DAEMON_NAME "GLogiKd"
 
@@ -28,7 +28,6 @@
 #include <sys/types.h>
 
 #include <fstream>
-#include <sstream>
 #include <string>
 
 #include "daemonControl.h"
@@ -38,7 +37,8 @@
 namespace GLogiK
 {
 
-class GLogiKDaemon : public DaemonControl
+class GLogiKDaemon
+	:	public DaemonControl
 {
 	public:
 		GLogiKDaemon(void);
@@ -48,18 +48,17 @@ class GLogiKDaemon : public DaemonControl
 
 	protected:
 	private:
-		pid_t pid_ = 0;
-		FILE* log_fd_ = nullptr;
-		std::string pid_file_name_ = "";
-		std::ofstream pid_file_;
-		std::ostringstream buffer_;
-		NSGKDBus::GKDBus* pDBus_;
+		pid_t _pid = 0;
+		FILE* _LOGfd = nullptr;
+		std::string _pidFileName;
+		std::ofstream _pidFile;
+		NSGKDBus::GKDBus* _pDBus;
 
 		void daemonize(void);
 		void createPIDFile(void);
 		void dropPrivileges(void);
 		void parseCommandLine(const int& argc, char *argv[]);
-		static void handle_signal(int sig);
+		static void handleSignal(int sig);
 };
 
 } // namespace GLogiK

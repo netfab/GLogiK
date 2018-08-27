@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_DAEMON_CONTROL_H__
-#define __GLOGIKD_DAEMON_CONTROL_H__
+#ifndef SRC_BIN_DAEMON_DAEMON_CONTROL_HPP_
+#define SRC_BIN_DAEMON_DAEMON_CONTROL_HPP_
 
 #include <atomic>
 
@@ -38,7 +38,7 @@ class DaemonControl
 
 		static void exitDaemon(void);
 
-		static std::atomic<bool> daemonized_;
+		static std::atomic<bool> daemonized;
 	private:
 };
 

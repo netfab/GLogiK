@@ -24,7 +24,7 @@
 namespace GLogiK
 {
 
-std::atomic<bool> DaemonControl::daemonized_(false);
+std::atomic<bool> DaemonControl::daemonized(false);
 
 DaemonControl::DaemonControl() {
 }
@@ -33,11 +33,11 @@ DaemonControl::~DaemonControl() {
 }
 
 void DaemonControl::exitDaemon( void ) {
-	DaemonControl::daemonized_ = false;
+	DaemonControl::daemonized = false;
 }
 
 bool DaemonControl::isDaemonRunning() {
-	return DaemonControl::daemonized_;
+	return DaemonControl::daemonized;
 }
 
 } // namespace GLogiK
