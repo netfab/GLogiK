@@ -435,8 +435,8 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 			//udevDeviceProperties(dev, devss);
 #endif
 
-			std::string vendorID = to_string( udev_device_get_property_value(dev, "ID_VENDOR_ID") );
-			std::string productID = to_string( udev_device_get_property_value(dev, "ID_MODEL_ID") );
+			const std::string vendorID( to_string( udev_device_get_property_value(dev, "ID_VENDOR_ID") ) );
+			const std::string productID( to_string( udev_device_get_property_value(dev, "ID_MODEL_ID") ) );
 			if( (vendorID == "") or (productID == "") ) {
 				udev_device_unref(dev);
 				continue;
@@ -458,10 +458,10 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 							udevDeviceProperties(dev, devss);
 #endif
 
-							std::string vendor = to_string( udev_device_get_property_value(dev, "ID_VENDOR") );
-							std::string model = to_string( udev_device_get_property_value(dev, "ID_MODEL") );
-							std::string serial = to_string( udev_device_get_property_value(dev, "ID_SERIAL") );
-							std::string usec = to_string( udev_device_get_property_value(dev, "USEC_INITIALIZED") );
+							const std::string vendor( to_string( udev_device_get_property_value(dev, "ID_VENDOR") ) );
+							const std::string model( to_string( udev_device_get_property_value(dev, "ID_MODEL") ) );
+							const std::string serial( to_string( udev_device_get_property_value(dev, "ID_SERIAL") ) );
+							const std::string usec( to_string( udev_device_get_property_value(dev, "USEC_INITIALIZED") ) );
 
 							uint8_t bus, num = 0;
 
