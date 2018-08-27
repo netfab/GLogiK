@@ -124,7 +124,6 @@ class DevicesManager
 	protected:
 
 	private:
-		struct udev *udev = nullptr;
 		NSGKDBus::GKDBus* _pDBus;
 		uint8_t _numClients;
 
@@ -136,7 +135,7 @@ class DevicesManager
 		std::map<const std::string, DetectedDevice> _stoppedDevices;
 		std::set<std::string> _unpluggedDevices;
 
-		void searchSupportedDevices(void);
+		void searchSupportedDevices(struct udev * pUdev);
 		void initializeDevices(void);
 		void stopInitializedDevices(void);
 		void checkInitializedDevicesThreadsStatus(void);
