@@ -226,16 +226,16 @@ void DevicesManager::stopInitializedDevices(void) {
 	LOG(DEBUG2) << "stopping initialized devices";
 #endif
 
-	std::vector<std::string> to_stop;
+	std::vector<std::string> toStop;
 	for(const auto & devicePair : _startedDevices) {
-		to_stop.push_back(devicePair.first);
+		toStop.push_back(devicePair.first);
 	}
 
-	for(const auto & devID : to_stop) {
+	for(const auto & devID : toStop) {
 		this->stopDevice(devID);
 	}
 
-	to_stop.clear();
+	toStop.clear();
 	_startedDevices.clear();
 }
 
@@ -244,14 +244,14 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) {
 	LOG(DEBUG2) << "checking initialized devices threads status";
 #endif
 
-	std::vector<std::string> stoppedDevices;
+	std::vector<std::string> toSend;
 
-	std::vector<std::string> to_check;
+	std::vector<std::string> toCheck;
 	for(const auto& devicePair : _startedDevices) {
-		to_check.push_back(devicePair.first);
+		toCheck.push_back(devicePair.first);
 	}
 
-	for(const auto & devID : to_check) {
+	for(const auto & devID : toCheck) {
 		for(const auto & driver : _drivers) {
 			if( _startedDevices[devID].getDriverID() == driver->getDriverID() ) {
 				if( ! driver->getDeviceThreadsStatus(devID) ) {
@@ -259,15 +259,15 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) {
 					GKSysLog(LOG_WARNING, WARNING, "We are forced to hard stop a device.");
 					GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
 					this->stopDevice(devID);
-					stoppedDevices.push_back(devID);
+					toSend.push_back(devID);
 				}
 			}
 		}
 	}
 
-	if( stoppedDevices.size() > 0 ) {
+	if( toSend.size() > 0 ) {
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(_numClients, _pDBus, "DevicesStopped", stoppedDevices);
+		this->sendStatusSignalArrayToClients(_numClients, _pDBus, "DevicesStopped", toSend);
 	}
 }
 
@@ -279,14 +279,14 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 	std::vector<std::string> toSend;
 
 	/* checking for unplugged unstopped devices */
-	std::vector<std::string> to_clean;
+	std::vector<std::string> toClean;
 	for(const auto & devicePair : _startedDevices) {
 		if( _detectedDevices.count(devicePair.first) == 0 ) {
-			to_clean.push_back(devicePair.first);
+			toClean.push_back(devicePair.first);
 		}
 	}
 
-	for(const auto & devID : to_clean) {
+	for(const auto & devID : toClean) {
 		try {
 
 			const auto & device = _startedDevices.at(devID);
@@ -312,15 +312,15 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 		}
 	}
 
-	to_clean.clear();
+	toClean.clear();
 
 	/* checking for unplugged but stopped devices */
 	for(const auto & devicePair : _stoppedDevices) {
 		if(_detectedDevices.count(devicePair.first) == 0 ) {
-			to_clean.push_back(devicePair.first);
+			toClean.push_back(devicePair.first);
 		}
 	}
-	for(const auto & devID : to_clean) {
+	for(const auto & devID : toClean) {
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "removing " << devID << " from stopped devices container";
 #endif
@@ -328,7 +328,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 		_unpluggedDevices.insert(devID);
 		toSend.push_back(devID);
 	}
-	to_clean.clear();
+	toClean.clear();
 
 	_detectedDevices.clear();
 
@@ -435,17 +435,17 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 			//udevDeviceProperties(dev, devss);
 #endif
 
-			std::string vendor_id = to_string( udev_device_get_property_value(dev, "ID_VENDOR_ID") );
-			std::string product_id = to_string( udev_device_get_property_value(dev, "ID_MODEL_ID") );
-			if( (vendor_id == "") or (product_id == "") ) {
+			std::string vendorID = to_string( udev_device_get_property_value(dev, "ID_VENDOR_ID") );
+			std::string productID = to_string( udev_device_get_property_value(dev, "ID_MODEL_ID") );
+			if( (vendorID == "") or (productID == "") ) {
 				udev_device_unref(dev);
 				continue;
 			}
 
 			for(const auto & driver : _drivers) {
 				for(const auto& device : driver->getSupportedDevices()) {
-					if( device.getVendorID() == vendor_id ) {
-						if( device.getProductID() == product_id ) {
+					if( device.getVendorID() == vendorID ) {
+						if( device.getProductID() == productID ) {
 
 							// path to the event device node in /dev
 							std::string devnode = to_string( udev_device_get_devnode(dev) );
@@ -499,8 +499,8 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 								_detectedDevices[devID] = found;
 
 #if DEBUGGING_ON
-								LOG(DEBUG3) << "found device - Vid:Pid:DevNode:usec | bus:num : " << vendor_id
-											<< ":" << product_id << ":" << devnode << ":" << usec
+								LOG(DEBUG3) << "found device - Vid:Pid:DevNode:usec | bus:num : " << vendorID
+											<< ":" << productID << ":" << devnode << ":" << usec
 											<< " | " << to_uint(bus) << ":" << to_uint(num);
 #endif
 							}
