@@ -68,12 +68,6 @@ DevicesManager::~DevicesManager() {
 	}
 	_drivers.clear();
 
-	if(this->monitor) {
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "unref monitor object";
-#endif
-		udev_monitor_unref(this->monitor);
-	}
 	if(this->udev) {
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "unref udev context";
@@ -725,89 +719,97 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 	if ( this->udev == nullptr )
 		throw GLogiKExcept("udev context init failure");
 
-	this->monitor = udev_monitor_new_from_netlink(this->udev, "udev");
-	if( this->monitor == nullptr )
+	struct udev_monitor * monitor = udev_monitor_new_from_netlink(this->udev, "udev");
+	if( monitor == nullptr )
 		throw GLogiKExcept("allocating udev monitor failure");
 
-	if( udev_monitor_filter_add_match_subsystem_devtype(this->monitor, "usb", nullptr) < 0 )
-		throw GLogiKExcept("usb monitor filtering init failure");
+	try { /* monitor unref on catch */
+		if( udev_monitor_filter_add_match_subsystem_devtype(monitor, "usb", nullptr) < 0 )
+			throw GLogiKExcept("usb monitor filtering init failure");
 
-	if( udev_monitor_enable_receiving(this->monitor) < 0 )
-		throw GLogiKExcept("monitor enabling failure");
+		if( udev_monitor_enable_receiving(monitor) < 0 )
+			throw GLogiKExcept("monitor enabling failure");
 
-	pollfd fds[1];
-	{
-		int fd = udev_monitor_get_fd(this->monitor);
-		if( fd < 0 )
-			throw GLogiKExcept("can't get the monitor file descriptor");
+		pollfd fds[1];
+		{
+			int fd = udev_monitor_get_fd(monitor);
+			if( fd < 0 )
+				throw GLogiKExcept("can't get the monitor file descriptor");
 
-		fds[0].fd = fd;
-		fds[0].events = POLLIN;
-	}
+			fds[0].fd = fd;
+			fds[0].events = POLLIN;
+		}
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "loading drivers";
+		LOG(DEBUG2) << "loading drivers";
 #endif
 
-	_drivers.push_back( new LogitechG510() );
+		// FIXME catch bad_alloc
+		_drivers.push_back( new LogitechG510() );
 
-	this->searchSupportedDevices();
-	this->initializeDevices();
+		this->searchSupportedDevices();
+		this->initializeDevices();
 
-	this->sendSignalToClients(_numClients, _pDBus, "DaemonIsStarting", true);
+		this->sendSignalToClients(_numClients, _pDBus, "DaemonIsStarting", true);
 
-	unsigned short c = 0;
+		unsigned short c = 0;
 
-	while( DaemonControl::isDaemonRunning() ) {
-		int ret = poll(fds, 1, 100);
+		while( DaemonControl::isDaemonRunning() ) {
+			int ret = poll(fds, 1, 100);
 
-		// receive data ?
-		if( ret > 0 ) {
-			struct udev_device *dev = udev_monitor_receive_device(this->monitor);
-			if( dev == nullptr )
-				throw GLogiKExcept("no device from receive_device(), something is wrong");
+			// receive data ?
+			if( ret > 0 ) {
+				struct udev_device *dev = udev_monitor_receive_device(monitor);
+				if( dev == nullptr )
+					throw GLogiKExcept("no device from receive_device(), something is wrong");
 
-			try {
-				std::string action = to_string( udev_device_get_action(dev) );
-				if( action == "" ) {
-					throw GLogiKExcept("device_get_action() failure");
-				}
+				try { /* dev unref on catch */
+					std::string action = to_string( udev_device_get_action(dev) );
+					if( action == "" ) {
+						throw GLogiKExcept("device_get_action() failure");
+					}
 
-				std::string devnode = to_string( udev_device_get_devnode(dev) );
-				// filtering empty events
-				if( devnode != "" ) {
+					std::string devnode = to_string( udev_device_get_devnode(dev) );
+					// filtering empty events
+					if( devnode != "" ) {
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "Action : " << action;
+						LOG(DEBUG3) << "Action : " << action;
 #endif
-					this->searchSupportedDevices();
+						this->searchSupportedDevices();
 
-					if( action == "add" ) {
-						this->initializeDevices();
-					}
-					else if( action == "remove" ) {
-						this->checkForUnpluggedDevices();
-					}
-					else {
-						/* clear detected devices container */
-						_detectedDevices.clear();
+						if( action == "add" ) {
+							this->initializeDevices();
+						}
+						else if( action == "remove" ) {
+							this->checkForUnpluggedDevices();
+						}
+						else {
+							/* clear detected devices container */
+							_detectedDevices.clear();
+						}
 					}
 				}
-			}
-			catch ( const GLogiKExcept & e ) {
+				catch ( const GLogiKExcept & e ) {
+					udev_device_unref(dev);
+					throw;
+				}
+
 				udev_device_unref(dev);
-				throw;
 			}
 
-			udev_device_unref(dev);
-		}
-
-		this->checkDBusMessages();
-		if(c++ >= 10) { /* bonus point */
-			this->checkInitializedDevicesThreadsStatus();
-			c = 0;
+			this->checkDBusMessages();
+			if(c++ >= 10) { /* bonus point */
+				this->checkInitializedDevicesThreadsStatus();
+				c = 0;
+			}
 		}
 	}
+	catch ( const GLogiKExcept & e ) {
+		udev_monitor_unref(monitor);
+		throw;
+	}
 
+	udev_monitor_unref(monitor);
 }
 
 } // namespace GLogiK

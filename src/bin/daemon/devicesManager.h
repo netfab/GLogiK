@@ -125,7 +125,6 @@ class DevicesManager
 
 	private:
 		struct udev *udev = nullptr;
-		struct udev_monitor *monitor = nullptr;
 		NSGKDBus::GKDBus* _pDBus;
 		uint8_t _numClients;
 
