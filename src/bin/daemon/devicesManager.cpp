@@ -23,6 +23,7 @@
 #include <stdexcept>
 #include <string>
 
+#include <poll.h>
 #include <libudev.h>
 
 #include "lib/utils/utils.h"
@@ -49,9 +50,6 @@ DevicesManager::DevicesManager()
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing devices manager";
 #endif
-
-	this->fds[0].fd = -1;
-	this->fds[0].events = POLLIN;
 }
 
 DevicesManager::~DevicesManager() {
@@ -737,12 +735,15 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 	if( udev_monitor_enable_receiving(this->monitor) < 0 )
 		throw GLogiKExcept("monitor enabling failure");
 
-	this->fd_ = udev_monitor_get_fd(this->monitor);
-	if( this->fd_ < 0 )
-		throw GLogiKExcept("can't get the monitor file descriptor");
+	pollfd fds[1];
+	{
+		int fd = udev_monitor_get_fd(this->monitor);
+		if( fd < 0 )
+			throw GLogiKExcept("can't get the monitor file descriptor");
 
-	this->fds[0].fd = this->fd_;
-	this->fds[0].events = POLLIN;
+		fds[0].fd = fd;
+		fds[0].events = POLLIN;
+	}
 
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "loading drivers";
@@ -758,7 +759,7 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 	unsigned short c = 0;
 
 	while( DaemonControl::isDaemonRunning() ) {
-		int ret = poll(this->fds, 1, 100);
+		int ret = poll(fds, 1, 100);
 
 		// receive data ?
 		if( ret > 0 ) {

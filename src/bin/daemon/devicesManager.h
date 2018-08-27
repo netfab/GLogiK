@@ -22,8 +22,6 @@
 #ifndef SRC_BIN_DAEMON_DEVICES_MANAGER_HPP_
 #define SRC_BIN_DAEMON_DEVICES_MANAGER_HPP_
 
-#include <poll.h>
-
 #include <cstdint>
 
 #include <string>
@@ -128,8 +126,6 @@ class DevicesManager
 	private:
 		struct udev *udev = nullptr;
 		struct udev_monitor *monitor = nullptr;
-		struct pollfd fds[1];
-		int fd_ = -1;
 		NSGKDBus::GKDBus* _pDBus;
 		uint8_t _numClients;
 
