@@ -92,7 +92,7 @@ void DevicesManager::initializeDevices(void) {
 			LOG(DEBUG3) << "device "
 						<< device.getVendorID() << ":"
 						<< device.getProductID() << " - "
-						<< device.getInputDevNode() << " already initialized";
+						<< device.getDevNode() << " already initialized";
 #endif
 			continue; // jump to next detected device
 		}
@@ -103,7 +103,7 @@ void DevicesManager::initializeDevices(void) {
 			LOG(DEBUG3) << "device "
 						<< device.getVendorID() << ":"
 						<< device.getProductID() << " - "
-						<< device.getInputDevNode() << " has been stopped";
+						<< device.getDevNode() << " has been stopped";
 			LOG(DEBUG3) << "automatic initialization is disabled for stopped devices";
 #endif
 			continue; // jump to next detected device
@@ -293,7 +293,7 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 			std::ostringstream buffer(std::ios_base::app);
 			buffer	<< "erasing unplugged initialized driver : "
 					<< device.getVendorID() << ":" << device.getProductID()
-					<< ":" << device.getInputDevNode() << ":" << device.getUSec();
+					<< ":" << device.getDevNode() << ":" << device.getUSec();
 
 			GKSysLog(LOG_WARNING, WARNING, buffer.str());
 			GKSysLog(LOG_WARNING, WARNING, "Did you unplug your device before properly stopping it ?");
@@ -482,7 +482,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 
 							try {
 								const DetectedDevice & d = _detectedDevices.at(devID);
-								LOG(WARNING) << "found already detected device : " << devID << " " << d.getInputDevNode();
+								LOG(WARNING) << "found already detected device : " << devID << " " << d.getDevNode();
 							}
 							catch (const std::out_of_range& oor) {
 

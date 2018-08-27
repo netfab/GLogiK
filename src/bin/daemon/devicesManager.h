@@ -48,39 +48,45 @@ class DetectedDevice
 	public:
 		DetectedDevice(void) = default;
 		DetectedDevice(
-			const std::string & n,
-			const std::string & v,
-			const std::string & p,
-			const uint64_t c,
-			const uint8_t b,
-			const uint8_t nu,
+			const std::string & name,
+			const std::string & vendorID,
+			const std::string & productID,
+			const uint64_t caps,
+			const uint8_t bus,
+			const uint8_t num,
 			const std::string & node,
-			const std::string & ven,
-			const std::string & mod,
-			const std::string & ser,
+			const std::string & vendor,
+			const std::string & model,
+			const std::string & serial,
 			const std::string & us,
-			const uint16_t d_ID
-		)	:	BusNumDeviceID(n,v,p,c,b,nu),
-				input_dev_node(node),
-				vendor(ven),
-				model(mod),
-				serial(ser),
-				usec(us),
-				driver_ID(d_ID) {};
+			const uint16_t id
+		)	:	BusNumDeviceID(
+					name,
+					vendorID,
+					productID,
+					caps,
+					bus,
+					num),
+				_devNode(node),
+				_vendor(vendor),
+				_model(model),
+				_serial(serial),
+				_usec(us),
+				_driverID(id) {};
 
-		const std::string & getInputDevNode(void) const { return this->input_dev_node; }
-		const std::string & getVendor(void) const { return this->vendor; }
-		const std::string & getModel(void) const { return this->model; }
-		const std::string & getUSec(void) const { return this->usec; }
-		const uint16_t getDriverID(void) const { return this->driver_ID; }
+		const std::string & getDevNode(void) const { return _devNode; }
+		const std::string & getVendor(void) const { return _vendor; }
+		const std::string & getModel(void) const { return _model; }
+		const std::string & getUSec(void) const { return _usec; }
+		const uint16_t getDriverID(void) const { return _driverID; }
 
 	private:
-		std::string input_dev_node;
-		std::string vendor;
-		std::string model;
-		std::string serial;
-		std::string usec;
-		uint16_t driver_ID;
+		std::string _devNode;
+		std::string _vendor;
+		std::string _model;
+		std::string _serial;
+		std::string _usec;
+		uint16_t _driverID;
 };
 
 #if DEBUGGING_ON
