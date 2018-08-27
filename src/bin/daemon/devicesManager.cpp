@@ -19,6 +19,7 @@
  *
  */
 
+#include <sstream>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -44,7 +45,6 @@ using namespace NSGKUtils;
 DevicesManager::DevicesManager()
 	:	_pDBus(nullptr),
 		_numClients(0),
-		buffer_("", std::ios_base::app),
 		_unknown("unknown")
 {
 #if DEBUGGING_ON
@@ -115,20 +115,21 @@ void DevicesManager::initializeDevices(void) {
 					// initialization
 					driver->initializeDevice( device );
 					_startedDevices[devID] = device;
-
-					this->buffer_.str( device.getName() );
-					this->buffer_ << "(" << device.getVendorID() << ":" << device.getProductID()
-								  << ") on bus " << to_uint(device.getBus()) << " initialized";
-					GKSysLog(LOG_INFO, INFO, this->buffer_.str());
 					startedDevices.push_back(devID);
+
+					std::ostringstream buffer(std::ios_base::app);
+					buffer	<< device.getName() << " " << device.getVendorID()
+							<< ":" << device.getProductID()
+							<< " on bus " << to_uint(device.getBus()) << " initialized";
+					GKSysLog(LOG_INFO, INFO, buffer.str());
 					break;
 				}
 			} // for
 		}
 		catch ( const GLogiKExcept & e ) {
-			this->buffer_.str("device initialization failure : ");
-			this->buffer_ << e.what();
-			GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+			std::ostringstream buffer(std::ios_base::app);
+			buffer << "device initialization failure : " << e.what();
+			GKSysLog(LOG_ERR, ERROR, buffer.str());
 		}
 	} // for
 
@@ -156,13 +157,14 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 					driver->initializeDevice( device );
 					_startedDevices[devID] = device;
 
-					this->buffer_.str( device.getName() );
-					this->buffer_	<< "(" << device.getVendorID() << ":" << device.getProductID()
-									<< ") on bus " << to_uint(device.getBus()) << " initialized";
-					GKSysLog(LOG_INFO, INFO, this->buffer_.str());
+					std::ostringstream buffer(std::ios_base::app);
+					buffer	<< device.getName() << " " << device.getVendorID()
+							<< ":" << device.getProductID()
+							<< " on bus " << to_uint(device.getBus()) << " initialized";
+					GKSysLog(LOG_INFO, INFO, buffer.str());
 
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "removing " << devID << " from plugged-but-stopped devices";
+					LOG(DEBUG3) << "removing " << devID << " from stopped devices container";
 #endif
 					_stoppedDevices.erase(devID);
 
@@ -172,14 +174,13 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("device starting failure : device not found in plugged-but-stopped devices : ");
-		this->buffer_ << oor.what();
-		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+		std::ostringstream buffer(std::ios_base::app);
+		buffer << "device starting failure : device not found in stopped devices container : " << oor.what();
+		GKSysLog(LOG_ERR, ERROR, buffer.str());
 		return false;
 	}
 
-	this->buffer_.str("device starting failure : driver not found !?");
-	GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+	GKSysLog(LOG_ERR, ERROR, "device starting failure : driver not found !?");
 	return false;
 }
 
@@ -195,10 +196,11 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 				if( driver->isDeviceInitialized(devID) ) {
 					driver->closeDevice( device );
 
-					this->buffer_.str( device.getName() );
-					this->buffer_	<< "(" << device.getVendorID() << ":" << device.getProductID()
-									<< ") on bus " << to_uint(device.getBus()) << " stopped";
-					GKSysLog(LOG_INFO, INFO, this->buffer_.str());
+					std::ostringstream buffer(std::ios_base::app);
+					buffer	<< device.getName() << " " << device.getVendorID()
+							<< ":" << device.getProductID()
+							<< " on bus " << to_uint(device.getBus()) << " stopped";
+					GKSysLog(LOG_INFO, INFO, buffer.str());
 
 					_stoppedDevices[devID] = device;
 					_startedDevices.erase(devID);
@@ -209,14 +211,13 @@ const bool DevicesManager::stopDevice(const std::string & devID) {
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->buffer_.str("device stopping failure : device not found in initialized devices : ");
-		this->buffer_ << oor.what();
-		GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+		std::ostringstream buffer(std::ios_base::app);
+		buffer << "device stopping failure : device not found in staretd devices container : " << oor.what();
+		GKSysLog(LOG_ERR, ERROR, buffer.str());
 		return false;
 	}
 
-	this->buffer_.str("device stopping failure : driver not found !?");
-	GKSysLog(LOG_ERR, ERROR, this->buffer_.str());
+	GKSysLog(LOG_ERR, ERROR, "device stopping failure : driver not found !?");
 	return false;
 }
 
@@ -287,14 +288,14 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 
 	for(const auto & devID : to_clean) {
 		try {
-			this->buffer_.str("erasing unplugged initialized driver : ");
 
 			const auto & device = _startedDevices.at(devID);
+			std::ostringstream buffer(std::ios_base::app);
+			buffer	<< "erasing unplugged initialized driver : "
+					<< device.getVendorID() << ":" << device.getProductID()
+					<< ":" << device.getInputDevNode() << ":" << device.getUSec();
 
-			this->buffer_ << device.getVendorID() << ":" << device.getProductID()
-						  << ":" << device.getInputDevNode() << ":" << device.getUSec();
-
-			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+			GKSysLog(LOG_WARNING, WARNING, buffer.str());
 			GKSysLog(LOG_WARNING, WARNING, "Did you unplug your device before properly stopping it ?");
 			GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
 
@@ -305,8 +306,9 @@ void DevicesManager::checkForUnpluggedDevices(void) {
 			}
 		}
 		catch (const std::out_of_range& oor) {
-			this->buffer_ << "!?! device not found !?! " << devID;
-			GKSysLog(LOG_WARNING, WARNING, this->buffer_.str());
+			std::ostringstream buffer(std::ios_base::app);
+			buffer << "!?! device not found !?! " << devID;
+			GKSysLog(LOG_WARNING, WARNING, buffer.str());
 		}
 	}
 

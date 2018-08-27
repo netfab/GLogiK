@@ -28,7 +28,6 @@
 #include <map>
 #include <vector>
 #include <set>
-#include <sstream>
 
 #include <config.h>
 
@@ -127,7 +126,6 @@ class DevicesManager
 		NSGKDBus::GKDBus* _pDBus;
 		uint8_t _numClients;
 
-		std::ostringstream buffer_;
 		const std::string _unknown;
 		std::vector<KeyboardDriver*> _drivers;
 		std::map<const std::string, DetectedDevice> _detectedDevices;
