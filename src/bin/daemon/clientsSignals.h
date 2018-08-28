@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_CLIENTS_SIGNALS_H__
-#define __GLOGIKD_CLIENTS_SIGNALS_H__
+#ifndef SRC_BIN_DAEMON_CLIENTS_SIGNALS_HPP_
+#define SRC_BIN_DAEMON_CLIENTS_SIGNALS_HPP_
 
 #include <cstdint>
 

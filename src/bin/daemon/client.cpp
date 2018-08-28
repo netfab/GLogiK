@@ -33,21 +33,21 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 Client::Client(
-	const std::string & object_path,
-	DevicesManager* dev_manager
-)	:	session_state_("unknown"),
-		client_session_object_path_(object_path),
-		check_(true),
-		ready_(false)
+	const std::string & objectPath,
+	DevicesManager* pDevicesManager
+)	:	_sessionState("unknown"),
+		_sessionObjectPath(objectPath),
+		_check(true),
+		_ready(false)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing new client";
 #endif
 
-	this->initializeDevices(dev_manager);
+	this->initializeDevices(pDevicesManager);
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "initialized " << this->devices_.size() << " client devices configurations";
+	LOG(DEBUG3) << "initialized " << _devices.size() << " client devices configurations";
 #endif
 }
 
@@ -58,40 +58,40 @@ Client::~Client() {
 }
 
 const std::string & Client::getSessionObjectPath(void) const {
-	return this->client_session_object_path_;
+	return _sessionObjectPath;
 }
 
 const std::string & Client::getSessionCurrentState(void) const {
-	return this->session_state_;
+	return _sessionState;
 }
 
-void Client::updateSessionState(const std::string & new_state) {
-	this->session_state_ = new_state;
-	this->check_ = true;
+void Client::updateSessionState(const std::string & newState) {
+	_sessionState = newState;
+	_check = true;
 }
 
 void Client::uncheck(void) {
-	this->check_ = false;
+	_check = false;
 }
 
 const bool Client::isAlive(void) const {
-	return this->check_;
+	return _check;
 }
 
 const bool Client::isReady(void) const {
-	return this->ready_;
+	return _ready;
 }
 
 void Client::toggleClientReadyPropertie(void) {
-	this->ready_ = ! this->ready_;
+	_ready = ! _ready;
 }
 
 void Client::initializeDevice(
-	DevicesManager* dev_manager,
+	DevicesManager* pDevicesManager,
 	const std::string & devID)
 {
 	try {
-		this->devices_.at(devID);
+		_devices.at(devID);
 	}
 	catch (const std::out_of_range& oor) {
 #if DEBUGGING_ON
@@ -99,20 +99,20 @@ void Client::initializeDevice(
 #endif
 		DeviceProperties device;
 		device.setProperties(
-			dev_manager->getDeviceVendor(devID),		/* vendor */
-			dev_manager->getDeviceModel(devID),			/* model */
-			dev_manager->getDeviceCapabilities(devID)	/* capabilities */
+			pDevicesManager->getDeviceVendor(devID),		/* vendor */
+			pDevicesManager->getDeviceModel(devID),			/* model */
+			pDevicesManager->getDeviceCapabilities(devID)	/* capabilities */
 		);
-		device.initMacrosBanks( dev_manager->getDeviceMacroKeysNames(devID) );
+		device.initMacrosBanks( pDevicesManager->getDeviceMacroKeysNames(devID) );
 
-		this->devices_[devID] = device;
+		_devices[devID] = device;
 	}
 }
 
 const bool Client::deleteDevice(const std::string & devID) {
 	try {
-		this->devices_.at(devID);
-		this->devices_.erase(devID);
+		_devices.at(devID);
+		_devices.erase(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "deleted device : " << devID;
 #endif
@@ -135,7 +135,7 @@ const bool Client::setDeviceBacklightColor(
 	LOG(DEBUG3) << "setting client backlight color for device " << devID;
 #endif
 	try {
-		DeviceProperties & device = this->devices_.at(devID);
+		DeviceProperties & device = _devices.at(devID);
 		device.setRGBBytes(r, g, b);
 		return true;
 	}
@@ -148,30 +148,30 @@ const bool Client::setDeviceBacklightColor(
 
 void Client::setDeviceActiveUser(
 	const std::string & devID,
-	DevicesManager* dev_manager
+	DevicesManager* pDevicesManager
 )	{
 	try {
-		const DeviceProperties & device = this->devices_.at(devID);
+		const DeviceProperties & device = _devices.at(devID);
 
 		uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "setting active configuration for device " << devID;
 #endif
-		dev_manager->setDeviceActiveConfiguration(devID, device.getMacrosBanks(), r, g, b);
+		pDevicesManager->setDeviceActiveConfiguration(devID, device.getMacrosBanks(), r, g, b);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice
 	}
 }
 
-void Client::syncDeviceMacrosBanks(const std::string & devID, const banksMap_type & macros_profiles) {
+void Client::syncDeviceMacrosBanks(const std::string & devID, const banksMap_type & macrosBanks) {
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "synchonizing macros profiles for device " << devID;
 #endif
 	try {
-		DeviceProperties & device = this->devices_.at(devID);
-		device.setMacrosBanks(macros_profiles);
+		DeviceProperties & device = _devices.at(devID);
+		device.setMacrosBanks(macrosBanks);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice
@@ -181,11 +181,11 @@ void Client::syncDeviceMacrosBanks(const std::string & devID, const banksMap_typ
 const macro_type & Client::getDeviceMacro(
 	const std::string & devID,
 	const std::string & keyName,
-	const uint8_t profile
+	const uint8_t bankID
 ) {
 	try {
-		DeviceProperties & device = this->devices_.at(devID);
-		return device.getMacro(profile, keyName);
+		DeviceProperties & device = _devices.at(devID);
+		return device.getMacro(bankID, keyName);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice
@@ -196,16 +196,16 @@ const macro_type & Client::getDeviceMacro(
 
 const bool Client::setDeviceMacrosBank(
 	const std::string & devID,
-	const uint8_t profile,
+	const uint8_t bankID,
 	const mBank_type & bank
 ) {
 	bool ret = true;
 
 	try {
-		DeviceProperties & device = this->devices_.at(devID);
-		for(const auto & macro_pair : bank) {
+		DeviceProperties & device = _devices.at(devID);
+		for(const auto & macroPair : bank) {
 			try {
-				device.setMacro(profile, macro_pair.first, macro_pair.second);
+				device.setMacro(bankID, macroPair.first, macroPair.second);
 			}
 			catch (const GLogiKExcept & e) {
 				ret = false;
@@ -221,14 +221,14 @@ const bool Client::setDeviceMacrosBank(
 	return ret;
 }
 
-void Client::initializeDevices(DevicesManager* dev_manager)
+void Client::initializeDevices(DevicesManager* pDevicesManager)
 {
-	for( const auto & devID : dev_manager->getStartedDevices() ) {
-		this->initializeDevice(dev_manager, devID);
+	for( const auto & devID : pDevicesManager->getStartedDevices() ) {
+		this->initializeDevice(pDevicesManager, devID);
 	}
 
-	for( const auto & devID : dev_manager->getStoppedDevices() ) {
-		this->initializeDevice(dev_manager, devID);
+	for( const auto & devID : pDevicesManager->getStoppedDevices() ) {
+		this->initializeDevice(pDevicesManager, devID);
 	}
 }
 

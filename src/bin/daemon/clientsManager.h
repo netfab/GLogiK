@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_CLIENTS_MANAGER_H__
-#define __GLOGIKD_CLIENTS_MANAGER_H__
+#ifndef SRC_BIN_DAEMON_CLIENTS_MANAGER_HPP_
+#define SRC_BIN_DAEMON_CLIENTS_MANAGER_HPP_
 
 #include <vector>
 #include <string>

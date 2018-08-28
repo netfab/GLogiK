@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_CLIENT_H__
-#define __GLOGIKD_CLIENT_H__
+#ifndef SRC_BIN_DAEMON_CLIENT_HPP_
+#define SRC_BIN_DAEMON_CLIENT_HPP_
 
 #include <cstdint>
 
@@ -38,18 +38,18 @@ namespace GLogiK
 class Client
 {
 	public:
-		Client(const std::string & object_path, DevicesManager* dev_manager);
+		Client(const std::string & objectPath, DevicesManager* pDevicesManager);
 		~Client(void);
 
 		const std::string & getSessionObjectPath(void) const;
 		const std::string & getSessionCurrentState(void) const;
-		void updateSessionState(const std::string & new_state);
+		void updateSessionState(const std::string & newState);
 		void uncheck(void);
 		const bool isAlive(void) const;
 		const bool isReady(void) const;
 
 		void initializeDevice(
-			DevicesManager* dev_manager,
+			DevicesManager* pDevicesManager,
 			const std::string & devID
 		);
 		const bool deleteDevice(const std::string & devID);
@@ -62,23 +62,23 @@ class Client
 
 		void setDeviceActiveUser(
 			const std::string & devID,
-			DevicesManager* dev_manager
+			DevicesManager* pDevicesManager
 		);
 
 		void syncDeviceMacrosBanks(
 			const std::string & devID,
-			const banksMap_type & macros_profiles
+			const banksMap_type & macrosBanks
 		);
 
 		const macro_type & getDeviceMacro(
 			const std::string & devID,
 			const std::string & keyName,
-			const uint8_t profile
+			const uint8_t bankID
 		);
 
 		const bool setDeviceMacrosBank(
 			const std::string & devID,
-			const uint8_t profile,
+			const uint8_t bankID,
 			const mBank_type & bank
 		);
 
@@ -87,13 +87,13 @@ class Client
 	protected:
 
 	private:
-		std::string session_state_;
-		std::string client_session_object_path_;
-		std::map<const std::string, DeviceProperties> devices_;
-		bool check_;
-		bool ready_;
+		std::string _sessionState;
+		const std::string _sessionObjectPath;
+		std::map<const std::string, DeviceProperties> _devices;
+		bool _check;
+		bool _ready;
 
-		void initializeDevices(DevicesManager* dev_manager);
+		void initializeDevices(DevicesManager* pDevicesManager);
 };
 
 } // namespace GLogiK
