@@ -181,19 +181,19 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 }
 
 void GLogiKDaemon::handleSignal(int sig) {
-	std::ostringstream buff("caught signal : ", std::ios_base::app);
+	std::ostringstream buffer("caught signal : ", std::ios_base::app);
 	switch( sig ) {
 		case SIGINT:
 		case SIGTERM:
-			buff << sig << " --> bye bye";
-			GKSysLog(LOG_INFO, INFO, buff.str());
+			buffer << sig << " --> bye bye";
+			GKSysLog(LOG_INFO, INFO, buffer.str());
 			std::signal(SIGINT, SIG_DFL);
 			std::signal(SIGTERM, SIG_DFL);
 			GLogiKDaemon::exitDaemon();
 			break;
 		default:
-			buff << sig << " --> unhandled";
-			GKSysLog(LOG_WARNING, WARNING, buff.str());
+			buffer << sig << " --> unhandled";
+			GKSysLog(LOG_WARNING, WARNING, buffer.str());
 			break;
 	}
 }

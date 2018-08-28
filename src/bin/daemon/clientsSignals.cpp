@@ -33,13 +33,13 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 void ClientsSignals::sendSignalToClients(
-	const uint8_t num_clients,
+	const uint8_t numClients,
 	NSGKDBus::GKDBus* pDBus,
 	const std::string & signal,
-	const bool force)
+	const bool forceSend)
 {
 	/* don't try to send signal if we know that there is no clients */
-	if( (num_clients == 0 ) and (! force) )
+	if( (numClients == 0 ) and (! forceSend) )
 		return;
 
 	/*
@@ -69,7 +69,7 @@ void ClientsSignals::sendSignalToClients(
 		std::string warn("DBus targets signal failure : ");
 		warn += e.what();
 		/* don't warn nor syslog if we force sending the signal */
-		if(! force) {
+		if(! forceSend) {
 			GKSysLog(LOG_WARNING, WARNING, warn);
 		}
 		else {
@@ -79,13 +79,13 @@ void ClientsSignals::sendSignalToClients(
 }
 
 void ClientsSignals::sendStatusSignalArrayToClients(
-	const uint8_t num_clients,
+	const uint8_t numClients,
 	NSGKDBus::GKDBus* pDBus,
 	const std::string & signal,
 	const std::vector<std::string> & devIDArray
 ) {
 	/* don't try to send signal if we know that there is no clients */
-	if( num_clients == 0 )
+	if( numClients == 0 )
 		return;
 
 	/* don't send signal if the daemon is about to exit */

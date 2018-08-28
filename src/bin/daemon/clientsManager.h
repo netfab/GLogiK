@@ -25,7 +25,6 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <sstream>
 
 #include "include/keyEvent.h"
 #include "lib/dbus/GKDBus.h"
@@ -53,14 +52,21 @@ class ClientsManager
 	protected:
 
 	private:
-		std::ostringstream buffer_;
-		NSGKDBus::GKDBus* pDBus_;
-		DevicesManager* devicesManager;
+		NSGKDBus::GKDBus* _pDBus;
+		DevicesManager* _pDevicesManager;
 
-		unsigned int active_clients_;
-		const std::string active_;
-		std::map<const std::string, Client*> clients_;
-		bool enabled_signals_;
+		const std::string _active;
+		std::map<const std::string, Client*> _connectedClients;
+
+		/* internal counter of active clients used
+		 * in ::updateClientState()
+		 */
+		unsigned int _numActive;
+
+		/* boolean flag used internally to temporarly disable
+		 * signals sending when ::restartDevice() is called
+		 */
+		bool _enabledSignals; 
 
 		const std::string generateRandomClientID(void) const;
 
@@ -132,13 +138,13 @@ class ClientsManager
 			const std::string & clientID,
 			const std::string & devID,
 			const std::string & keyName,
-			const uint8_t profile
+			const uint8_t bankID
 		);
 
 		const bool setDeviceMacrosBank(
 			const std::string & clientID,
 			const std::string & devID,
-			const uint8_t profile,
+			const uint8_t bankID,
 			const mBank_type & bank
 		);
 		/* -- */

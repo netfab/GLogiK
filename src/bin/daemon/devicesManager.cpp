@@ -746,6 +746,7 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 			this->searchSupportedDevices(pUdev);
 			this->initializeDevices();
 
+			/* send signal, even if no client registered, clients could have started before daemon */
 			this->sendSignalToClients(_numClients, _pDBus, "DaemonIsStarting", true);
 
 			unsigned short c = 0;
