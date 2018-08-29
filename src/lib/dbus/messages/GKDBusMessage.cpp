@@ -52,7 +52,7 @@ void GKDBusMessage::abandon(void) {
 
 void GKDBusMessage::appendBoolean(const bool value) {
 	dbus_bool_t v = value;
-	if( ! dbus_message_iter_append_basic(&_args_it, DBUS_TYPE_BOOLEAN, &v) ) {
+	if( ! dbus_message_iter_append_basic(&_itMessage, DBUS_TYPE_BOOLEAN, &v) ) {
 		_hosedMessage = true;
 		LOG(ERROR) << "boolean append_basic failure, not enough memory";
 		throw GKDBusMessageWrongBuild(this->append_failure_);
@@ -65,13 +65,13 @@ void GKDBusMessage::appendBoolean(const bool value) {
 }
 
 void GKDBusMessage::appendString(const std::string & value) {
-	this->appendString(&_args_it, value);
+	this->appendString(&_itMessage, value);
 }
 
 void GKDBusMessage::appendStringVector(const std::vector<std::string> & list) {
-	DBusMessageIter container_it;
+	DBusMessageIter itContainer;
 
-	if( ! dbus_message_iter_open_container(&_args_it, DBUS_TYPE_ARRAY, DBUS_TYPE_STRING_AS_STRING, &container_it) ) {
+	if( ! dbus_message_iter_open_container(&_itMessage, DBUS_TYPE_ARRAY, DBUS_TYPE_STRING_AS_STRING, &itContainer) ) {
 		_hosedMessage = true;
 		LOG(ERROR) << "string array open_container failure, not enough memory";
 		throw GKDBusMessageWrongBuild(this->append_failure_);
@@ -79,18 +79,18 @@ void GKDBusMessage::appendStringVector(const std::vector<std::string> & list) {
 
 	for (const std::string & s : list) {
 		const char* p = s.c_str();
-		if( ! dbus_message_iter_append_basic(&container_it, DBUS_TYPE_STRING, &p) ) {
+		if( ! dbus_message_iter_append_basic(&itContainer, DBUS_TYPE_STRING, &p) ) {
 			LOG(ERROR) << "string array append_basic failure, not enough memory";
 			_hosedMessage = true;
-			dbus_message_iter_abandon_container(&_args_it, &container_it);
+			dbus_message_iter_abandon_container(&_itMessage, &itContainer);
 			throw GKDBusMessageWrongBuild(this->append_failure_);
 		}
 	}
 
-	if( ! dbus_message_iter_close_container(&_args_it, &container_it) ) {
+	if( ! dbus_message_iter_close_container(&_itMessage, &itContainer) ) {
 		LOG(ERROR) << "string array close_container failure, not enough memory";
 		_hosedMessage = true;
-		dbus_message_iter_abandon_container(&_args_it, &container_it);
+		dbus_message_iter_abandon_container(&_itMessage, &itContainer);
 		throw GKDBusMessageWrongBuild(this->append_failure_);
 	}
 
@@ -102,16 +102,16 @@ void GKDBusMessage::appendStringVector(const std::vector<std::string> & list) {
 }
 
 void GKDBusMessage::appendUInt8(const uint8_t value) {
-	this->appendUInt8(&_args_it, value);
+	this->appendUInt8(&_itMessage, value);
 }
 
 void GKDBusMessage::appendUInt16(const uint16_t value) {
-	this->appendUInt16(&_args_it, value);
+	this->appendUInt16(&_itMessage, value);
 }
 
 void GKDBusMessage::appendUInt32(const uint32_t value) {
 	dbus_uint32_t v = value;
-	if( ! dbus_message_iter_append_basic(&_args_it, DBUS_TYPE_UINT32, &v) ) {
+	if( ! dbus_message_iter_append_basic(&_itMessage, DBUS_TYPE_UINT32, &v) ) {
 		_hosedMessage = true;
 		throw GKDBusMessageWrongBuild("uint32_t append failure, not enough memory");
 	}
@@ -125,7 +125,7 @@ void GKDBusMessage::appendUInt32(const uint32_t value) {
 
 void GKDBusMessage::appendUInt64(const uint64_t value) {
 	dbus_uint64_t v = value;
-	if( ! dbus_message_iter_append_basic(&_args_it, DBUS_TYPE_UINT64, &v) ) {
+	if( ! dbus_message_iter_append_basic(&_itMessage, DBUS_TYPE_UINT64, &v) ) {
 		_hosedMessage = true;
 		throw GKDBusMessageWrongBuild("uint64_t append failure, not enough memory");
 	}
@@ -138,11 +138,11 @@ void GKDBusMessage::appendUInt64(const uint64_t value) {
 }
 
 void GKDBusMessage::appendMacro(const GLogiK::macro_type & macro) {
-	this->appendMacro(&_args_it, macro);
+	this->appendMacro(&_itMessage, macro);
 }
 
 void GKDBusMessage::appendMacrosBank(const GLogiK::mBank_type & bank) {
-	DBusMessageIter array_it;
+	DBusMessageIter itArray;
 
 	const char array_sig[] = \
 		DBUS_STRUCT_BEGIN_CHAR_AS_STRING\
@@ -156,7 +156,7 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::mBank_type & bank) {
 		DBUS_STRUCT_END_CHAR_AS_STRING\
 		DBUS_STRUCT_END_CHAR_AS_STRING;
 
-	if( ! dbus_message_iter_open_container(&_args_it, DBUS_TYPE_ARRAY, array_sig, &array_it) ) {
+	if( ! dbus_message_iter_open_container(&_itMessage, DBUS_TYPE_ARRAY, array_sig, &itArray) ) {
 		_hosedMessage = true;
 		LOG(ERROR) << "MacrosBank open_container failure, not enough memory";
 		throw GKDBusMessageWrongBuild(this->append_failure_);
@@ -196,9 +196,9 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::mBank_type & bank) {
 			if( ! append_macro )
 				continue;
 
-			DBusMessageIter struct_it;
+			DBusMessageIter itStruct;
 
-			if( ! dbus_message_iter_open_container(&array_it, DBUS_TYPE_STRUCT, nullptr, &struct_it) ) {
+			if( ! dbus_message_iter_open_container(&itArray, DBUS_TYPE_STRUCT, nullptr, &itStruct) ) {
 				LOG(ERROR) << "DBus struct open_container failure, not enough memory";
 				throw GKDBusMessageWrongBuild(this->append_failure_);
 			}
@@ -206,32 +206,32 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::mBank_type & bank) {
 			try {
 				const uint8_t size = macro.size();
 
-				this->appendString(&struct_it, key);
-				this->appendUInt8(&struct_it, size);
-				this->appendMacro(&struct_it, macro);
+				this->appendString(&itStruct, key);
+				this->appendUInt8(&itStruct, size);
+				this->appendMacro(&itStruct, macro);
 			}
 			catch (const GKDBusMessageWrongBuild & e) {
-				dbus_message_iter_abandon_container(&array_it, &struct_it);
+				dbus_message_iter_abandon_container(&itArray, &itStruct);
 				throw;
 			}
 
-			if( ! dbus_message_iter_close_container(&array_it, &struct_it) ) {
+			if( ! dbus_message_iter_close_container(&itArray, &itStruct) ) {
 				LOG(ERROR) << "DBus struct close_container failure, not enough memory";
-				dbus_message_iter_abandon_container(&array_it, &struct_it);
+				dbus_message_iter_abandon_container(&itArray, &itStruct);
 				throw GKDBusMessageWrongBuild(this->append_failure_);
 			}
 		}
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		_hosedMessage = true;
-		dbus_message_iter_abandon_container(&_args_it, &array_it);
+		dbus_message_iter_abandon_container(&_itMessage, &itArray);
 		throw;
 	}
 
-	if( ! dbus_message_iter_close_container(&_args_it, &array_it) ) {
+	if( ! dbus_message_iter_close_container(&_itMessage, &itArray) ) {
 		LOG(ERROR) << "MacrosBank close_container failure, not enough memory";
 		_hosedMessage = true;
-		dbus_message_iter_abandon_container(&_args_it, &array_it);
+		dbus_message_iter_abandon_container(&_itMessage, &itArray);
 		throw GKDBusMessageWrongBuild(this->append_failure_);
 	}
 
@@ -254,7 +254,7 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::mBank_type & bank) {
  */
 
 void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro) {
-	DBusMessageIter array_it;
+	DBusMessageIter itArray;
 
 	const char array_sig[] = \
 							DBUS_STRUCT_BEGIN_CHAR_AS_STRING\
@@ -263,7 +263,7 @@ void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type 
 							DBUS_TYPE_UINT16_AS_STRING\
 							DBUS_STRUCT_END_CHAR_AS_STRING;
 
-	if( ! dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, array_sig, &array_it) ) {
+	if( ! dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, array_sig, &itArray) ) {
 		_hosedMessage = true;
 		LOG(ERROR) << "macro array open_container failure, not enough memory";
 		throw GKDBusMessageWrongBuild(this->append_failure_);
@@ -282,40 +282,40 @@ void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type 
 
 	try {
 		for(const auto & keyEvent : macro) {
-			DBusMessageIter struct_it;
+			DBusMessageIter itStruct;
 
-			if( ! dbus_message_iter_open_container(&array_it, DBUS_TYPE_STRUCT, nullptr, &struct_it) ) {
+			if( ! dbus_message_iter_open_container(&itArray, DBUS_TYPE_STRUCT, nullptr, &itStruct) ) {
 				LOG(ERROR) << "DBus struct open_container failure, not enough memory";
 				throw GKDBusMessageWrongBuild(this->append_failure_);
 			}
 
 			try {
-				this->appendUInt8(&struct_it, keyEvent.code);
-				this->appendUInt8(&struct_it, to_type(keyEvent.event));
-				this->appendUInt16(&struct_it, keyEvent.interval);
+				this->appendUInt8(&itStruct, keyEvent.code);
+				this->appendUInt8(&itStruct, to_type(keyEvent.event));
+				this->appendUInt16(&itStruct, keyEvent.interval);
 			}
 			catch (const GKDBusMessageWrongBuild & e) {
-				dbus_message_iter_abandon_container(&array_it, &struct_it);
+				dbus_message_iter_abandon_container(&itArray, &itStruct);
 				throw;
 			}
 
-			if( ! dbus_message_iter_close_container(&array_it, &struct_it) ) {
+			if( ! dbus_message_iter_close_container(&itArray, &itStruct) ) {
 				LOG(ERROR) << "DBus struct close_container failure, not enough memory";
-				dbus_message_iter_abandon_container(&array_it, &struct_it);
+				dbus_message_iter_abandon_container(&itArray, &itStruct);
 				throw GKDBusMessageWrongBuild(this->append_failure_);
 			}
 		}
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		_hosedMessage = true;
-		dbus_message_iter_abandon_container(iter, &array_it);
+		dbus_message_iter_abandon_container(iter, &itArray);
 		throw;
 	}
 
-	if( ! dbus_message_iter_close_container(iter, &array_it) ) {
+	if( ! dbus_message_iter_close_container(iter, &itArray) ) {
 		LOG(ERROR) << "macro array close_container failure, not enough memory";
 		_hosedMessage = true;
-		dbus_message_iter_abandon_container(iter, &array_it);
+		dbus_message_iter_abandon_container(iter, &itArray);
 		throw GKDBusMessageWrongBuild(this->append_failure_);
 	}
 

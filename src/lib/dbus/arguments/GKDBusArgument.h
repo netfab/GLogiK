@@ -44,7 +44,7 @@ class GKDBusArgument
 			DBusMessage* message,
 			const bool disabledDebugOutput=false
 		);
-		static const int decodeNextArgument(DBusMessageIter* arg_it);
+		static const int decodeNextArgument(DBusMessageIter* itArgument);
 
 		thread_local static std::vector<std::string> stringArguments;
 		thread_local static std::vector<uint8_t> byteArguments;

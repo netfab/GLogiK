@@ -39,7 +39,7 @@ GKDBusAsyncContainer::GKDBusAsyncContainer(void)
 		throw GKDBusMessageWrongBuild("can't allocate memory for DBus Async Container message");
 
 	/* initialize potential arguments iterator */
-	dbus_message_iter_init_append(_message, &_args_it);
+	dbus_message_iter_init_append(_message, &_itMessage);
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus Async Container initialized";
 #endif

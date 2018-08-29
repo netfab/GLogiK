@@ -55,7 +55,7 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 		throw GKDBusMessageWrongBuild("can't allocate memory for Remote Object Method Call DBus message");
 	
 	/* initialize potential arguments iterator */
-	dbus_message_iter_init_append(_message, &_args_it);
+	dbus_message_iter_init_append(_message, &_itMessage);
 
 #if DEBUG_GKDBUS_SUBOBJECTS
 	if( ! _disabledDebugOutput ) {

@@ -59,7 +59,7 @@ class GKDBusMessage
 
 		DBusConnection* _connection;
 		DBusMessage* _message;
-		DBusMessageIter _args_it;
+		DBusMessageIter _itMessage;
 		bool _hosedMessage;
 		bool _disabledDebugOutput;
 

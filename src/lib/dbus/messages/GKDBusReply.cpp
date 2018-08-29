@@ -43,7 +43,7 @@ GKDBusReply::GKDBusReply(DBusConnection* connection, DBusMessage* message)
 		throw GKDBusMessageWrongBuild("can't allocate memory for DBus reply message");
 
 	/* initialize potential arguments iterator */
-	dbus_message_iter_init_append(_message, &_args_it);
+	dbus_message_iter_init_append(_message, &_itMessage);
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus reply initialized";
 #endif
@@ -126,19 +126,19 @@ void GKDBusMessageReply::appendAsyncArgsToReply(void)
 		return;
 
 	DBusMessage* asyncContainer = this->getAsyncContainerPointer();
-	DBusMessageIter arg_it;
+	DBusMessageIter itArgument;
 
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "init Async parsing";
 #endif
 
-	if( ! dbus_message_iter_init(asyncContainer, &arg_it) ) {
+	if( ! dbus_message_iter_init(asyncContainer, &itArgument) ) {
 		return; /* no arguments */
 	}
 
 	try {
 		do {
-			const int arg_type = GKDBusArgument::decodeNextArgument(&arg_it);
+			const int arg_type = GKDBusArgument::decodeNextArgument(&itArgument);
 			switch(arg_type) {
 				case DBUS_TYPE_STRING:
 				//case DBUS_TYPE_OBJECT_PATH:
@@ -157,7 +157,7 @@ void GKDBusMessageReply::appendAsyncArgsToReply(void)
 					break;
 			}
 		}
-		while( dbus_message_iter_next(&arg_it) );
+		while( dbus_message_iter_next(&itArgument) );
 	}
 	catch ( const GLogiKExcept & e ) { /* WrongBuild or EmptyContainer */
 		LOG(ERROR) << e.what();

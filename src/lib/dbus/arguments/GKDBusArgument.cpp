@@ -44,14 +44,14 @@ void GKDBusArgument::decodeArgumentFromIterator(
 ) {
 	int currentType = dbus_message_iter_get_arg_type(iter);
 
-	DBusSignatureIter sig_it;
+	DBusSignatureIter itSignature;
 
 	// sometimes currentType could not be recognized and
 	// is setted up as INVALID (for example when decoding arrays)
 	// in this cases, we are trying to use the expected signature
 	if(currentType == DBUS_TYPE_INVALID) {
-		dbus_signature_iter_init(&sig_it, signature);
-		currentType = dbus_signature_iter_get_current_type(&sig_it);
+		dbus_signature_iter_init(&itSignature, signature);
+		currentType = dbus_signature_iter_get_current_type(&itSignature);
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
@@ -82,19 +82,19 @@ void GKDBusArgument::decodeArgumentFromIterator(
 		case DBUS_TYPE_ARRAY:
 			{
 				unsigned int c = 0;
-				DBusMessageIter array_it;
-				dbus_message_iter_recurse(iter, &array_it);
+				DBusMessageIter itArray;
+				dbus_message_iter_recurse(iter, &itArray);
 				/* checking that we really have an array here, else
 				 * with recursion this could lead to bad things */
-				if(dbus_message_iter_get_arg_type(&array_it) == DBUS_TYPE_INVALID)
+				if(dbus_message_iter_get_arg_type(&itArray) == DBUS_TYPE_INVALID)
 					break;
 				do {
 					c++; /* bonus point */
-					char* sig = dbus_message_iter_get_signature(&array_it);
-					GKDBusArgument::decodeArgumentFromIterator(&array_it, sig, c, disabledDebugOutput);
+					char* sig = dbus_message_iter_get_signature(&itArray);
+					GKDBusArgument::decodeArgumentFromIterator(&itArray, sig, c, disabledDebugOutput);
 					dbus_free(sig);
 				}
-				while( dbus_message_iter_next(&array_it) );
+				while( dbus_message_iter_next(&itArray) );
 			}
 			break;
 		case DBUS_TYPE_BYTE:
@@ -125,15 +125,15 @@ void GKDBusArgument::decodeArgumentFromIterator(
 			{
 				do {
 					unsigned int c = 0;
-					DBusMessageIter struct_it;
-					dbus_message_iter_recurse(iter, &struct_it);
+					DBusMessageIter itStruct;
+					dbus_message_iter_recurse(iter, &itStruct);
 					do {
 						c++; /* bonus point */
-						char* sig = dbus_message_iter_get_signature(&struct_it);
-						GKDBusArgument::decodeArgumentFromIterator(&struct_it, sig, c, disabledDebugOutput);
+						char* sig = dbus_message_iter_get_signature(&itStruct);
+						GKDBusArgument::decodeArgumentFromIterator(&itStruct, sig, c, disabledDebugOutput);
 						dbus_free(sig);
 					}
-					while( dbus_message_iter_next(&struct_it) );
+					while( dbus_message_iter_next(&itStruct) );
 				}
 				while( dbus_message_iter_next(iter) );
 			}
@@ -141,11 +141,11 @@ void GKDBusArgument::decodeArgumentFromIterator(
 		case DBUS_TYPE_VARIANT:
 			{
 				unsigned int c = 0;
-				DBusMessageIter sub_it;
+				DBusMessageIter itSub;
 				//LOG(DEBUG4) << "parsing variant";
-				dbus_message_iter_recurse(iter, &sub_it);
-				char* sig = dbus_message_iter_get_signature(&sub_it);
-				GKDBusArgument::decodeArgumentFromIterator(&sub_it, sig, c, disabledDebugOutput);
+				dbus_message_iter_recurse(iter, &itSub);
+				char* sig = dbus_message_iter_get_signature(&itSub);
+				GKDBusArgument::decodeArgumentFromIterator(&itSub, sig, c, disabledDebugOutput);
 				dbus_free(sig);
 			}
 			break;
@@ -168,18 +168,18 @@ void GKDBusArgument::fillInArguments(DBusMessage* message, const bool disabledDe
 	}
 
 	unsigned int c = 0;
-	DBusMessageIter arg_it;
+	DBusMessageIter itArgument;
 
-	if( ! dbus_message_iter_init(message, &arg_it) )
+	if( ! dbus_message_iter_init(message, &itArgument) )
 		return; /* no arguments */
 
 	do {
 		c++; /* bonus point */
-		char* signature = dbus_message_iter_get_signature(&arg_it);
-		GKDBusArgument::decodeArgumentFromIterator(&arg_it, signature, c, disabledDebugOutput);
+		char* signature = dbus_message_iter_get_signature(&itArgument);
+		GKDBusArgument::decodeArgumentFromIterator(&itArgument, signature, c, disabledDebugOutput);
 		dbus_free(signature);
 	}
-	while( dbus_message_iter_next(&arg_it) );
+	while( dbus_message_iter_next(&itArgument) );
 
 	if( ! GKDBusArgument::stringArguments.empty() )
 		std::reverse(GKDBusArgument::stringArguments.begin(), GKDBusArgument::stringArguments.end());
@@ -193,20 +193,20 @@ void GKDBusArgument::fillInArguments(DBusMessage* message, const bool disabledDe
 		std::reverse(GKDBusArgument::uint64Arguments.begin(), GKDBusArgument::uint64Arguments.end());
 }
 
-const int GKDBusArgument::decodeNextArgument(DBusMessageIter* arg_it) {
+const int GKDBusArgument::decodeNextArgument(DBusMessageIter* itArgument) {
 	GKDBusArgument::stringArguments.clear();
 	GKDBusArgument::booleanArguments.clear();
 	GKDBusArgument::byteArguments.clear();
 	GKDBusArgument::uint16Arguments.clear();
 	GKDBusArgument::uint64Arguments.clear();
 
-	int currentType = dbus_message_iter_get_arg_type(arg_it);
+	int currentType = dbus_message_iter_get_arg_type(itArgument);
 	if(currentType == DBUS_TYPE_INVALID) /* no more arguments, or struct or array */
 		return currentType;
 
 	unsigned int c = 0;
-	char* signature = dbus_message_iter_get_signature(arg_it);
-	GKDBusArgument::decodeArgumentFromIterator(arg_it, signature, c, true);
+	char* signature = dbus_message_iter_get_signature(itArgument);
+	GKDBusArgument::decodeArgumentFromIterator(itArgument, signature, c, true);
 	dbus_free(signature);
 
 	return currentType;
