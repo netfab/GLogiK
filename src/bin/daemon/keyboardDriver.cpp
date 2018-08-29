@@ -433,7 +433,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 					device._pMacrosManager->setMacro(device._macroKey, device._newMacro);
 
 					if( pDBus ) {
-						const uint8_t profile = to_type( device._pMacrosManager->getCurrentMacrosBankID() );
+						const uint8_t bankID = to_type( device._pMacrosManager->getCurrentMacrosBankID() );
 
 						/* open a new connection, GKDBus is not thread-safe */
 						pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
@@ -454,7 +454,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 
 							pDBus->appendStringToTargetsSignal(devID);
 							pDBus->appendStringToTargetsSignal(device._macroKey);
-							pDBus->appendUInt8ToTargetsSignal(profile);
+							pDBus->appendUInt8ToTargetsSignal(bankID);
 
 							pDBus->sendTargetsSignal();
 						}
@@ -904,7 +904,7 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 			/* exit MacroRecordMode if necessary */
 			device._exitMacroRecordMode = true;
 
-			/* set macros profiles */
+			/* set macros banks */
 			device._pMacrosManager->setMacrosBanks(macrosBanks);
 		}
 

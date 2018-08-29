@@ -167,7 +167,7 @@ void Client::setDeviceActiveUser(
 
 void Client::syncDeviceMacrosBanks(const std::string & devID, const banksMap_type & macrosBanks) {
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "synchonizing macros profiles for device " << devID;
+	LOG(DEBUG3) << "synchonizing macros banks for device " << devID;
 #endif
 	try {
 		DeviceProperties & device = _devices.at(devID);
