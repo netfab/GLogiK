@@ -269,7 +269,7 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 				 */
 				if(ret > 0)
 					e.interval = 1;
-				e.event_code = mKey.code;
+				e.code = mKey.code;
 				device._newMacro.push_back(e);
 				ret++;
 			}
@@ -341,11 +341,11 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device) {
 			e.interval = interval;
 
 			if( device._previousPressedKeys[i] == 0 ) {
-				e.event_code = KeyboardDriver::hidKeyboard[ device._pressedKeys[i] ];
+				e.code = KeyboardDriver::hidKeyboard[ device._pressedKeys[i] ];
 				e.event = EventValue::EVENT_KEY_PRESS; /* KeyPress */
 			}
 			else if( device._pressedKeys[i] == 0 ) {
-				e.event_code = KeyboardDriver::hidKeyboard[ device._previousPressedKeys[i] ];
+				e.code = KeyboardDriver::hidKeyboard[ device._previousPressedKeys[i] ];
 				e.event = EventValue::EVENT_KEY_RELEASE; /* KeyRelease */
 			}
 			else {

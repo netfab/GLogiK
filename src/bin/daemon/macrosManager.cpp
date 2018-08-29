@@ -168,7 +168,7 @@ void MacrosManager::fixMacroReleaseEvents(
 	for(const auto & pressed : pressedEvents) {
 		bool found = false;
 		for(auto it = releasedEvents.begin(); it != releasedEvents.end(); ++it) {
-			if(pressed.key.event_code == (*it).key.event_code) {
+			if(pressed.key.code == (*it).key.code) {
 				if(pressed.index < (*it).index) {
 					/* KEY_RELEASE event found for current KEY_PRESS event */
 					releasedEvents.erase(it);
@@ -226,7 +226,7 @@ void MacrosManager::fixMacroSize(
 
 	for(const auto & pressed : pressedEvents) {
 		for(auto it = releasedEvents.begin(); it != releasedEvents.end(); ++it) {
-			if(pressed.key.event_code == (*it).key.event_code) {
+			if(pressed.key.code == (*it).key.code) {
 				if(pressed.index < (*it).index) {
 					indexes.push_back( pressed.index );
 					indexes.push_back( (*it).index );

@@ -99,7 +99,7 @@ void VirtualKeyboard::enableEventCode(unsigned int type, unsigned int code) {
 void VirtualKeyboard::sendKeyEvent(const KeyEvent & key) {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "key event : ";
-	LOG(DEBUG2)	<< "event_code : " << to_uint(key.event_code);
+	LOG(DEBUG2)	<< "code : " << to_uint(key.code);
 	LOG(DEBUG2)	<< "event : " << key.event;
 	LOG(DEBUG2)	<< "interval : " << key.interval << " ms";
 #endif
@@ -110,7 +110,7 @@ void VirtualKeyboard::sendKeyEvent(const KeyEvent & key) {
 #endif
 		std::this_thread::sleep_for(std::chrono::milliseconds(key.interval));
 	}
-	int ret = libevdev_uinput_write_event(_pUInputDevice, EV_KEY, key.event_code, static_cast<int>(key.event));
+	int ret = libevdev_uinput_write_event(_pUInputDevice, EV_KEY, key.code, static_cast<int>(key.event));
 	if(ret == 0) {
 		ret = libevdev_uinput_write_event(_pUInputDevice, EV_SYN, SYN_REPORT, 0);
 		if(ret != 0 ) {

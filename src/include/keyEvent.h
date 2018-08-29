@@ -65,12 +65,12 @@ inline const bool operator > (const uint8_t value, const EventValue & event)
 
 struct KeyEvent {
 	public:
-		uint8_t event_code;
+		uint8_t code;
 		EventValue event;
 		uint16_t interval;
 
 		KeyEvent(uint8_t c=KEY_UNKNOWN, EventValue e=EventValue::EVENT_KEY_UNKNOWN, uint16_t i=0)
-			: event_code(c), event(e), interval(i) {}
+			: code(c), event(e), interval(i) {}
 
 	private:
 		friend class boost::serialization::access;
@@ -78,9 +78,9 @@ struct KeyEvent {
 		template<class Archive>
 			void serialize(Archive & ar, const unsigned int version)
 		{
-			ar & this->event_code;
-			ar & this->event;
-			ar & this->interval;
+			ar & code;
+			ar & event;
+			ar & interval;
 		}
 };
 

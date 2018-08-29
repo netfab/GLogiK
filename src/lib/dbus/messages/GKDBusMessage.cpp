@@ -290,7 +290,7 @@ void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type 
 			}
 
 			try {
-				this->appendUInt8(&struct_it, keyEvent.event_code);
+				this->appendUInt8(&struct_it, keyEvent.code);
 				this->appendUInt8(&struct_it, to_type(keyEvent.event));
 				this->appendUInt16(&struct_it, keyEvent.interval);
 			}

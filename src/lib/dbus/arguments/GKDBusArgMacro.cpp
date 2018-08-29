@@ -44,7 +44,7 @@ const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigne
 		do {
 			GLogiK::KeyEvent e;
 
-			e.event_code = GKDBusArgumentByte::getNextByteArgument();
+			e.code = GKDBusArgumentByte::getNextByteArgument();
 
 			const uint8_t value = GKDBusArgumentByte::getNextByteArgument();
 			if(value > GLogiK::EventValue::EVENT_KEY_UNKNOWN)
