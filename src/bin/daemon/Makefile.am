@@ -73,9 +73,9 @@ GLogiKd_SOURCES += \
 		%D%/LCDPlugins/splashscreen.cpp \
 		%D%/LCDPlugins/splashscreen.hpp \
 		%D%/LCDPlugins/cpu-stats/CPUData.cpp \
-		%D%/LCDPlugins/cpu-stats/CPUData.hpp \
+		%D%/LCDPlugins/cpu-stats/CPUData.h \
 		%D%/LCDPlugins/cpu-stats/CPUSnapshot.cpp \
-		%D%/LCDPlugins/cpu-stats/CPUSnapshot.hpp \
+		%D%/LCDPlugins/cpu-stats/CPUSnapshot.h \
 		%D%/LCDPlugins/netsnap/netSnapshots.cpp \
 		%D%/LCDPlugins/netsnap/netSnapshots.hpp \
 		%D%/LCDPlugins/systemMonitor.cpp \
