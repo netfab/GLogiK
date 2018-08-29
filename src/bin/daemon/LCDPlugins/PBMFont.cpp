@@ -35,7 +35,7 @@ namespace fs = boost::filesystem;
 using namespace NSGKUtils;
 
 
-const characters_map_t PBMFont::defaultCharsMap =
+const charactersMap_type PBMFont::defaultCharsMap =
 	{
 		/* -- */
 		{"a", {0,0} },  {"b", {1,0} },  {"c", {2,0} },  {"d", {3,0} },  {"e", {4,0} },
@@ -62,20 +62,20 @@ PBMFont::PBMFont(
 	const std::string & pbmName,
 	const unsigned short width,
 	const unsigned short height,
-	const characters_map_t charsMap)
-	:	font_name_(pbmName),
-		char_width_(width),
-		char_height_(height),
-		cur_x_(0),
-		cur_y_(0),
-		chars_map_(charsMap)
+	const charactersMap_type charsMap)
+	:	_fontName(pbmName),
+		_charWidth(width),
+		_charHeight(height),
+		_charX(0),
+		_charY(0),
+		_charsMap(charsMap)
 {
 	fs::path fullpath(PBM_DATA_DIR);
 	fullpath /= pbmName;
 	fullpath += ".pbm";
 
 	try {
-		this->readPBM(fullpath.string(), this->pbm_data_);
+		this->readPBM(fullpath.string(), _PBMData);
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "exception while reading PBM file: " << fullpath.string();
@@ -86,7 +86,7 @@ PBMFont::PBMFont(
 PBMFont::~PBMFont()
 {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "deleting font " << this->font_name_;
+	LOG(DEBUG2) << "deleting font " << _fontName;
 #endif
 }
 
@@ -106,30 +106,30 @@ void PBMFont::printCharacterOnFrame(
 #endif
 
 	try {
-		this->cur_x_ = this->chars_map_.at(c).first;
-		this->cur_y_ = this->chars_map_[c].second;
+		_charX = _charsMap.at(c).first;
+		_charY = _charsMap[c].second;
 	}
 	catch (const std::out_of_range& oor) {
-		std::ostringstream warn(this->font_name_, std::ios_base::app);
+		std::ostringstream warn(_fontName, std::ios_base::app);
 		warn << " font : unknown character : " << c;
 		throw GLogiKExcept( warn.str() );
 	}
 
 	unsigned short index = 0;
 
-	if(PBMXPos >= (PBM_WIDTH - this->char_width_)) {
-		std::ostringstream warn(this->font_name_, std::ios_base::app);
+	if(PBMXPos >= (PBM_WIDTH - _charWidth)) {
+		std::ostringstream warn(_fontName, std::ios_base::app);
 		warn << " font : pre-breaking write string loop : x : " << std::to_string(PBMXPos);
 		throw GLogiKExcept( warn.str() );
 	}
-	if(PBMYPos >= (PBM_HEIGHT - this->char_height_)) {
-		std::ostringstream warn(this->font_name_, std::ios_base::app);
+	if(PBMYPos >= (PBM_HEIGHT - _charHeight)) {
+		std::ostringstream warn(_fontName, std::ios_base::app);
 		warn << " font : pre-breaking write string loop : y : " << std::to_string(PBMYPos);
 		throw GLogiKExcept( warn.str() );
 	}
 
 	try {
-		for(unsigned short i = 0; i < this->char_height_; i++) {
+		for(unsigned short i = 0; i < _charHeight; i++) {
 			unsigned char c = this->getCharacterLine(i);
 			index = (PBM_WIDTH_IN_BYTES * (PBMYPos+i)) + xByte;
 
@@ -139,10 +139,10 @@ void PBMFont::printCharacterOnFrame(
 			//LOG(DEBUG) << bits.to_string();
 
 			/* FIXME
-			 * char_width_ should be <= 8 here
+			 * _charWidth should be <= 8 here
 			 */
 			const unsigned short xModuloComp8 = (8 - xModulo);
-			short rightShift = (this->char_width_ - xModuloComp8);
+			short rightShift = (_charWidth - xModuloComp8);
 
 			frame.at(index) &= (0b11111111 << xModuloComp8);
 			if(rightShift <= 0) {
@@ -155,12 +155,12 @@ void PBMFont::printCharacterOnFrame(
 		} // for each line in character
 	}
 	catch (const std::out_of_range& oor) {
-		std::ostringstream warn(this->font_name_, std::ios_base::app);
+		std::ostringstream warn(_fontName, std::ios_base::app);
 		warn << " font : wrong frame index : " << std::to_string(index);
 		throw GLogiKExcept( warn.str() );
 	}
 
-	PBMXPos += this->char_width_;
+	PBMXPos += _charWidth;
 }
 
 const unsigned char PBMFont::getCharacterLine(const unsigned short line) const
@@ -168,77 +168,77 @@ const unsigned char PBMFont::getCharacterLine(const unsigned short line) const
 	unsigned char c = 0;
 	const unsigned short i =
 		/* PBM_Y_line which contains the character (in bytes) */
-		(this->cur_y_ * this->char_height_ * PBM_WIDTH_IN_BYTES) +
+		(_charY * _charHeight * PBM_WIDTH_IN_BYTES) +
 		/* character's PBM_X position on the PBM_Y_line (in bytes) */
-		( (this->cur_x_ * this->char_width_) / 8 ) +
+		( (_charX * _charWidth) / 8 ) +
 		/* line in the selected character (in bytes) */
 		line * PBM_WIDTH_IN_BYTES;
 
 // FIXME
 #if 0 & DEBUGGING_ON
-	LOG(DEBUG2) << "cur_x: " << this->cur_x_
-				<< " cur_y: " << this->cur_y_;
+	LOG(DEBUG2) << "charX: " << _charX
+				<< " charY: " << _charY;
 				<< " index: " << i+1;
 #endif
 
 	try {
-		if(this->char_width_ == 6) {
-			switch( (this->cur_x_ % 4) ) {
+		if(_charWidth == 6) {
+			switch( (_charX % 4) ) {
 				case 0 :
-					c = (this->pbm_data_.at(i) >> 2);
+					c = (_PBMData.at(i) >> 2);
 					break;
 				case 1 :
-					c = (this->pbm_data_.at(i+1) >> 4);
-					c |= ((this->pbm_data_[i] & 0b00000011) << 4);
+					c = (_PBMData.at(i+1) >> 4);
+					c |= ((_PBMData[i] & 0b00000011) << 4);
 					break;
 				case 2 :
-					c = (this->pbm_data_.at(i+1) >> 6);
-					c |= ((this->pbm_data_[i] & 0b00001111) << 2);
+					c = (_PBMData.at(i+1) >> 6);
+					c |= ((_PBMData[i] & 0b00001111) << 2);
 					break;
 				case 3 :
-					c = (this->pbm_data_.at(i) & 0b00111111);
+					c = (_PBMData.at(i) & 0b00111111);
 					break;
 			}
 		}
-		else if(this->char_width_ == 5) {
-			switch( (this->cur_x_ % 8) ) {
+		else if(_charWidth == 5) {
+			switch( (_charX % 8) ) {
 				case 0:
-					c = (this->pbm_data_.at(i) >> 3);
+					c = (_PBMData.at(i) >> 3);
 					break;
 				case 1:
-					c = (this->pbm_data_.at(i+1) >> 6);
-					c |= ((this->pbm_data_[i] & 0b00000111) << 2);
+					c = (_PBMData.at(i+1) >> 6);
+					c |= ((_PBMData[i] & 0b00000111) << 2);
 					break;
 				case 2:
-					c = ((this->pbm_data_.at(i) & 0b00111110) >> 1);
+					c = ((_PBMData.at(i) & 0b00111110) >> 1);
 					break;
 				case 3:
-					c = (this->pbm_data_.at(i+1) >> 4);
-					c |= ((this->pbm_data_[i] & 0b00000001) << 4);
+					c = (_PBMData.at(i+1) >> 4);
+					c |= ((_PBMData[i] & 0b00000001) << 4);
 					break;
 				case 4:
-					c = (this->pbm_data_.at(i+1) >> 7);
-					c |= ((this->pbm_data_[i] & 0b00001111) << 1);
+					c = (_PBMData.at(i+1) >> 7);
+					c |= ((_PBMData[i] & 0b00001111) << 1);
 					break;
 				case 5:
-					c = ((this->pbm_data_.at(i) & 0b01111100) >> 2);
+					c = ((_PBMData.at(i) & 0b01111100) >> 2);
 					break;
 				case 6:
-					c = (this->pbm_data_.at(i+1) >> 5);
-					c |= ((this->pbm_data_[i] & 0b00000011) << 3);
+					c = (_PBMData.at(i+1) >> 5);
+					c |= ((_PBMData[i] & 0b00000011) << 3);
 					break;
 				case 7:
-					c = (this->pbm_data_.at(i) & 0b00011111);
+					c = (_PBMData.at(i) & 0b00011111);
 					break;
 			}
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		std::ostringstream error(this->font_name_, std::ios_base::app);
+		std::ostringstream error(_fontName, std::ios_base::app);
 		error << " - wrong index : ";
 		error << oor.what();
-		error << " - char_width: " << std::to_string(this->char_width_);
-		error << " - current_x: " << std::to_string(this->cur_x_);
+		error << " - char_width: " << std::to_string(_charWidth);
+		error << " - charX: " << std::to_string(_charX);
 		GKSysLog(LOG_ERR, ERROR, error.str());
 	}
 	return c;

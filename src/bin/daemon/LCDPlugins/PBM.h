@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_PBM_H__
-#define __GLOGIKD_PBM_H__
+#ifndef SRC_BIN_DAEMON_LCDPLUGINS_PBM_HPP_
+#define SRC_BIN_DAEMON_LCDPLUGINS_PBM_HPP_
 
 #include <array>
 

@@ -29,18 +29,18 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 LCDPlugin::LCDPlugin()
-	:	name_("unknown"),
-		tempo_(LCDPluginTempo::TEMPO_DEFAULT),
-		initialized_(false),
-		frame_count_(0),
-		frame_ID_(0)
+	:	_pluginName("unknown"),
+		_pluginTempo(LCDPluginTempo::TEMPO_DEFAULT),
+		_initialized(false),
+		_frameCounter(0),
+		_frameIndex(0)
 {
 }
 
 LCDPlugin::~LCDPlugin()
 {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "deleting " << this->name_ << " LCD plugin";
+	LOG(DEBUG2) << "deleting " << _pluginName << " LCD plugin";
 #endif
 }
 
@@ -56,20 +56,20 @@ LCDPlugin::~LCDPlugin()
 
 const bool LCDPlugin::isInitialized(void) const
 {
-	return this->initialized_;
+	return _initialized;
 }
 
 void LCDPlugin::resetPBMFrameIndex(void)
 {
-	this->current_frame_ = this->frames_.end();
+	_itCurrentFrame = _PBMFrames.end();
 	this->checkPBMFrameIndex(); /* may throw */
 }
 
 const unsigned short LCDPlugin::getPluginTiming(void) const
 {
 	unsigned short timing = 0;
-	unsigned short max_frames;
-	std::tie(timing, max_frames) = this->getTempo(this->tempo_);
+	unsigned short maxFrames;
+	std::tie(timing, maxFrames) = this->getTempo(_pluginTempo);
 	return timing;
 }
 
@@ -77,7 +77,7 @@ const unsigned short LCDPlugin::getPluginMaxFrames(void) const
 {
 	unsigned short timing = 0;
 	unsigned short max_frames;
-	std::tie(timing, max_frames) = this->getTempo(this->tempo_);
+	std::tie(timing, max_frames) = this->getTempo(_pluginTempo);
 	return max_frames;
 }
 
@@ -86,20 +86,20 @@ void LCDPlugin::prepareNextPBMFrame(void)
 	/* update internal frame counter and iterator to allow the plugin
 	 * to have multiples PBM loaded and simulate animation */
 
-	if(this->frame_count_ >= (*this->current_frame_).frame_count) {
-		this->current_frame_++;
+	if(_frameCounter >= (*_itCurrentFrame).frame_count) {
+		_itCurrentFrame++;
 		this->checkPBMFrameIndex(); /* may throw */
-		this->frame_ID_ = (this->current_frame_ - this->frames_.begin());
-		this->frame_count_ = 0;
+		_frameIndex = (_itCurrentFrame - _PBMFrames.begin());
+		_frameCounter = 0;
 	}
 
-	this->frame_count_++; /* for next call */
+	_frameCounter++; /* for next call */
 }
 
 void LCDPlugin::init(FontsManager* const pFonts)
 {
 	this->resetPBMFrameIndex();
-	this->initialized_ = true;
+	_initialized = true;
 }
 
 const PBMDataArray & LCDPlugin::getNextPBMFrame(FontsManager* const pFonts)
@@ -118,19 +118,19 @@ const PBMDataArray & LCDPlugin::getNextPBMFrame(FontsManager* const pFonts)
  */
 
 void LCDPlugin::addPBMFrame(
-	const fs::path & pbm_dir,
+	const fs::path & PBMDirectory,
 	const std::string & file,
 	const unsigned short num)
 {
-	fs::path file_path(pbm_dir);
-	file_path /= file;
+	fs::path filePath(PBMDirectory);
+	filePath /= file;
 
-	this->frames_.emplace_back(num);
+	_PBMFrames.emplace_back(num);
 	try {
-		this->readPBM(file_path.string(), this->frames_.back().pbm_data);
+		this->readPBM(filePath.string(), _PBMFrames.back().pbm_data);
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "exception while reading PBM file: " << file_path.string();
+		LOG(ERROR) << "exception while reading PBM file: " << filePath.string();
 		throw;
 	}
 }
@@ -138,21 +138,21 @@ void LCDPlugin::addPBMFrame(
 void LCDPlugin::addPBMClearedFrame(
 	const unsigned short num)
 {
-	this->frames_.emplace_back(num);
-	this->frames_.back().pbm_data.fill(0x0);
+	_PBMFrames.emplace_back(num);
+	_PBMFrames.back().pbm_data.fill(0x0);
 }
 
 const unsigned short LCDPlugin::getNextPBMFrameID(void) const
 {
-	return this->frame_ID_;
+	return _frameIndex;
 }
 
 PBMDataArray & LCDPlugin::getCurrentPBMFrame(void)
 {
 #if DEBUGGING_ON
-	LOG(DEBUG3) << this->name_ << " PBM # " << this->frame_ID_;
+	LOG(DEBUG3) << _pluginName << " PBM # " << _frameIndex;
 #endif
-	return (*this->current_frame_).pbm_data;
+	return (*_itCurrentFrame).pbm_data;
 }
 
 void LCDPlugin::writeStringOnFrame(
@@ -164,11 +164,11 @@ void LCDPlugin::writeStringOnFrame(
 {
 	try {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << this->name_ << " PBM # " << this->frame_ID_ << " - writing string : " << string;
+		LOG(DEBUG2) << _pluginName << " PBM # " << _frameIndex << " - writing string : " << string;
 #endif
 		for(const char & c : string) {
-			const std::string cur_char(1, c);
-			pFonts->printCharacterOnFrame( fontID, (*this->current_frame_).pbm_data, cur_char, PBMXPos, PBMYPos );
+			const std::string character(1, c);
+			pFonts->printCharacterOnFrame( fontID, (*_itCurrentFrame).pbm_data, character, PBMXPos, PBMYPos );
 		} /* for each character in the string */
 	}
 	catch (const GLogiKExcept & e) {
@@ -184,10 +184,10 @@ void LCDPlugin::writeStringOnLastFrame(
 	const unsigned int PBMYPos)
 {
 	try {
-		if( this->frames_.empty() )
+		if( _PBMFrames.empty() )
 			throw GLogiKExcept("trying to access last element on empty container");
-		this->current_frame_ = --(this->frames_.end());
-		this->frame_ID_ = (this->current_frame_ - this->frames_.begin());
+		_itCurrentFrame = --(_PBMFrames.end());
+		_frameIndex = (_itCurrentFrame - _PBMFrames.begin());
 
 		this->writeStringOnFrame(pFonts, fontID, string, PBMXPos, PBMYPos);
 	}
@@ -208,14 +208,14 @@ void LCDPlugin::writeStringOnLastFrame(
 
 void LCDPlugin::checkPBMFrameIndex(void)
 {
-	if( this->current_frame_ == this->frames_.end() ) {
-		this->current_frame_ = this->frames_.begin();
+	if( _itCurrentFrame == _PBMFrames.end() ) {
+		_itCurrentFrame = _PBMFrames.begin();
 
-		if( this->current_frame_ == this->frames_.end() )
+		if( _itCurrentFrame == _PBMFrames.end() )
 			throw GLogiKExcept("plugin frame iterator exception");
 
-		this->frame_count_ = 0;
-		this->frame_ID_ = 0;
+		_frameCounter = 0;
+		_frameIndex = 0;
 	}
 }
 

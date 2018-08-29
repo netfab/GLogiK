@@ -43,8 +43,8 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 SystemMonitor::SystemMonitor() {
-	this->name_ = "systemMonitor";
-	this->tempo_ = LCDPluginTempo::TEMPO_500_20;
+	_pluginName = "systemMonitor";
+	_pluginTempo = LCDPluginTempo::TEMPO_500_20;
 }
 
 SystemMonitor::~SystemMonitor() {
@@ -53,7 +53,7 @@ SystemMonitor::~SystemMonitor() {
 void SystemMonitor::init(FontsManager* const pFonts)
 {
 	fs::path pbm_dir(PBM_DATA_DIR);
-	pbm_dir /= this->name_;
+	pbm_dir /= _pluginName;
 
 	pFonts->initializeFont(FontID::MONOSPACE8_5);
 
@@ -74,7 +74,8 @@ void SystemMonitor::init(FontsManager* const pFonts)
 
 const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
 {
-	sysinfo(&(this->memInfo_));
+	struct sysinfo memInfo;
+	sysinfo(&(memInfo));
 
 	std::string usedPhysicalMemory("");
 	std::string usedCPUActiveTotal("");
@@ -88,12 +89,12 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
 
 	{
 		uint64_t usedPMem, totalPMem = 0;
-		usedPMem  = this->memInfo_.freeram;
-		usedPMem *= this->memInfo_.mem_unit;
+		usedPMem  = memInfo.freeram;
+		usedPMem *= memInfo.mem_unit;
 		usedPMem *= 100;
 
-		totalPMem  = this->memInfo_.totalram;
-		totalPMem *= this->memInfo_.mem_unit;
+		totalPMem  = memInfo.totalram;
+		totalPMem *= memInfo.mem_unit;
 
 		usedPMem /= totalPMem;
 		usedPMem = 100 - usedPMem;
@@ -105,8 +106,8 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
 		CPUSnapshot s2;
 
 		/* see cpu-stat - CPUStatsPrinter::GetPercActiveTotal() */
-		const float ACTIVE_TIME		= s2.GetActiveTimeTotal() - this->s1_.GetActiveTimeTotal();
-		const float IDLE_TIME		= s2.GetIdleTimeTotal() - this->s1_.GetIdleTimeTotal();
+		const float ACTIVE_TIME		= s2.GetActiveTimeTotal() - _snapshot1.GetActiveTimeTotal();
+		const float IDLE_TIME		= s2.GetIdleTimeTotal() - _snapshot1.GetIdleTimeTotal();
 		const float TOTAL_TIME		= ACTIVE_TIME + IDLE_TIME;
 
 		float cpuPercentTotal = 100.f * ACTIVE_TIME / TOTAL_TIME;
@@ -116,7 +117,7 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
 
 		usedCPUActiveTotal = getPaddedPercentString(cpuPercentTotal);
 
-		this->s1_ = s2;
+		_snapshot1 = s2;
 	}
 
 	try {

@@ -34,8 +34,8 @@ namespace GLogiK
 {
 
 Splashscreen::Splashscreen() {
-	this->name_ = "splashscreen";
-	this->tempo_ = LCDPluginTempo::TEMPO_500_20;
+	_pluginName = "splashscreen";
+	_pluginTempo = LCDPluginTempo::TEMPO_500_20;
 }
 
 Splashscreen::~Splashscreen() {
@@ -43,15 +43,15 @@ Splashscreen::~Splashscreen() {
 
 void Splashscreen::init(FontsManager* const pFonts)
 {
-	fs::path pbm_dir(PBM_DATA_DIR);
-	pbm_dir /= this->name_;
+	fs::path PBMDirectory(PBM_DATA_DIR);
+	PBMDirectory /= _pluginName;
 
 	pFonts->initializeFont(FontID::MONOSPACE8_5);
 	//pFonts->initializeFont(FontID::MONOSPACE8_6);
 
-	this->addPBMFrame(pbm_dir, "splashscreen01.pbm", 1);		/* frame #0 */
-	this->addPBMFrame(pbm_dir, "splashscreen02.pbm", 2);		/*       #1 */
-	this->addPBMFrame(pbm_dir, "splashscreen02.pbm", 7);		/*       #2 */
+	this->addPBMFrame(PBMDirectory, "splashscreen01.pbm", 1);		/* frame #0 */
+	this->addPBMFrame(PBMDirectory, "splashscreen02.pbm", 2);		/*       #1 */
+	this->addPBMFrame(PBMDirectory, "splashscreen02.pbm", 7);		/*       #2 */
 
 	std::string version(" version "); version += PACKAGE_VERSION;
 	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE8_5, version, 48, 32);

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_PBM_FONT_H__
-#define __GLOGIKD_PBM_FONT_H__
+#ifndef SRC_BIN_DAEMON_LCDPLUGINS_PBM_FONT_HPP_
+#define SRC_BIN_DAEMON_LCDPLUGINS_PBM_FONT_HPP_
 
 #include <utility>
 #include <string>
@@ -34,7 +34,7 @@ namespace GLogiK
 {
 
 
-typedef std::initializer_list<std::pair<const std::string, std::pair<unsigned short, unsigned short>>> characters_map_t;
+typedef std::initializer_list<std::pair<const std::string, std::pair<unsigned short, unsigned short>>> charactersMap_type;
 
 class PBMFont
 	:	virtual private PBMFile
@@ -54,20 +54,20 @@ class PBMFont
 			const std::string & pbmName,
 			const unsigned short width = 6,
 			const unsigned short height = 10,
-			const characters_map_t charsMap = PBMFont::defaultCharsMap
+			const charactersMap_type charsMap = PBMFont::defaultCharsMap
 		);
 
 	private:
-		PBMDataArray pbm_data_;
-		const std::string font_name_;
-		const unsigned int char_width_;
-		const unsigned int char_height_;
-		unsigned short cur_x_;
-		unsigned short cur_y_;
+		PBMDataArray _PBMData;
+		const std::string _fontName;
+		const unsigned int _charWidth;
+		const unsigned int _charHeight;
+		unsigned short _charX;
+		unsigned short _charY;
 
-		std::map<const std::string, std::pair<unsigned short, unsigned short>> chars_map_;
+		std::map<const std::string, std::pair<unsigned short, unsigned short>> _charsMap;
 
-		static const characters_map_t defaultCharsMap;
+		static const charactersMap_type defaultCharsMap;
 
 		const unsigned char getCharacterLine(const unsigned short line) const;
 };

@@ -38,16 +38,16 @@ FontsManager::FontsManager()
 
 FontsManager::~FontsManager()
 {
-	for(const auto & font_pair : this->fonts_) {
+	for(const auto & font_pair : _fonts) {
 		delete font_pair.second;
 	}
-	this->fonts_.clear();
+	_fonts.clear();
 }
 
 void FontsManager::initializeFont(const FontID fontID)
 {
 	try {
-		this->fonts_.at(fontID);
+		_fonts.at(fontID);
 	}
 	catch (const std::out_of_range& oor) {
 		PBMFont* font = nullptr;
@@ -67,7 +67,7 @@ void FontsManager::initializeFont(const FontID fontID)
 			throw GLogiKBadAlloc("font bad allocation");
 		}
 
-		this->fonts_[fontID] = font;
+		_fonts[fontID] = font;
 	}
 }
 
@@ -79,7 +79,7 @@ void FontsManager::printCharacterOnFrame(
 	const unsigned int PBMYPos)
 {
 	try {
-		this->fonts_.at(fontID)->printCharacterOnFrame(frame, c, PBMXPos, PBMYPos);
+		_fonts.at(fontID)->printCharacterOnFrame(frame, c, PBMXPos, PBMYPos);
 	}
 	catch (const std::out_of_range& oor) {
 		std::string warn("unknown font : ");

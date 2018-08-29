@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_LCD_SCREEN_PLUGIN_H__
-#define __GLOGIKD_LCD_SCREEN_PLUGIN_H__
+#ifndef SRC_BIN_DAEMON_LCDPLUGINS_LCD_SCREEN_PLUGIN_HPP_
+#define SRC_BIN_DAEMON_LCDPLUGINS_LCD_SCREEN_PLUGIN_HPP_
 
 #include <cstdint>
 
@@ -80,11 +80,11 @@ class LCDPlugin
 	protected:
 		LCDPlugin(void);
 
-		std::string name_;
-		LCDPluginTempo tempo_;
+		std::string _pluginName;
+		LCDPluginTempo _pluginTempo;
 
 		void addPBMFrame(
-			const fs::path & pbm_dir,
+			const fs::path & PBMDirectory,
 			const std::string & file,
 			const unsigned short num = 1
 		);
@@ -113,11 +113,11 @@ class LCDPlugin
 		);
 
 	private:
-		bool initialized_;
-		unsigned short frame_count_;
-		unsigned short frame_ID_;
-		std::vector<LCDPBMFrame> frames_;
-		std::vector<LCDPBMFrame>::iterator current_frame_;
+		bool _initialized;
+		unsigned short _frameCounter;		/* frame counter */
+		unsigned short _frameIndex;			/* frame index in the container */
+		std::vector<LCDPBMFrame> _PBMFrames;
+		std::vector<LCDPBMFrame>::iterator _itCurrentFrame;
 
 		void checkPBMFrameIndex(void);
 		static std::tuple<unsigned short, unsigned short> getTempo(const LCDPluginTempo tempo);

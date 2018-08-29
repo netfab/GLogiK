@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_FONTS_MANAGER_H__
-#define __GLOGIKD_FONTS_MANAGER_H__
+#ifndef SRC_BIN_DAEMON_LCDPLUGINS_FONTS_MANAGER_HPP_
+#define SRC_BIN_DAEMON_LCDPLUGINS_FONTS_MANAGER_HPP_
 
 #include <cstdint>
 
@@ -57,7 +57,7 @@ class FontsManager
 	protected:
 
 	private:
-		std::map<const FontID, PBMFont*> fonts_;
+		std::map<const FontID, PBMFont*> _fonts;
 
 };
 

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_LCD_PLUGIN_SYSTEM_MONITOR_H__
-#define __GLOGIKD_LCD_PLUGIN_SYSTEM_MONITOR_H__
+#ifndef SRC_BIN_DAEMON_LCDPLUGINS_SYSTEM_MONITOR_HPP_
+#define SRC_BIN_DAEMON_LCDPLUGINS_SYSTEM_MONITOR_HPP_
 
 #include "sys/sysinfo.h"
 
@@ -45,8 +45,7 @@ class SystemMonitor
 	protected:
 
 	private:
-		struct sysinfo memInfo_;
-		CPUSnapshot s1_;
+		CPUSnapshot _snapshot1;
 
 };
 

@@ -38,9 +38,9 @@ PBMFile::~PBMFile()
 
 void PBMFile::readPBM(
 	const std::string & path,
-	PBMDataArray & pbm_data,
-	const unsigned int expected_width,
-	const unsigned int expected_height)
+	PBMDataArray & PBMData,
+	const unsigned int expectedWidth,
+	const unsigned int expectedHeight)
 {
 	std::ifstream pbm;
 	pbm.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -57,10 +57,10 @@ void PBMFile::readPBM(
 
 		PBMFile::parsePBMHeader(pbm, magic, width, height);
 
-		if( magic != "P4" or width != expected_width or height != expected_height )
+		if( magic != "P4" or width != expectedWidth or height != expectedHeight )
 			throw GLogiKExcept("wrong PBM header");
 
-		PBMFile::extractPBMData(pbm, pbm_data);
+		PBMFile::extractPBMData(pbm, PBMData);
 
 		pbm.close();
 	}
@@ -133,16 +133,16 @@ void PBMFile::parsePBMHeader(
 
 void PBMFile::extractPBMData(
 	std::ifstream & pbm,
-	PBMDataArray & pbm_data)
+	PBMDataArray & PBMData)
 {
-	pbm.read(reinterpret_cast<char*>(&pbm_data.front()), pbm_data.size());
+	pbm.read(reinterpret_cast<char*>(&PBMData.front()), PBMData.size());
 
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< "extracted bytes: " << pbm.gcount()
-				<< " - expected: " << pbm_data.size() << std::endl;
+				<< " - expected: " << PBMData.size() << std::endl;
 #endif
 
-	if( pbm_data.size() != pbm.gcount() )
+	if( PBMData.size() != pbm.gcount() )
 		throw GLogiKExcept("unexpected numbers of bytes read");
 
 	// checking that we really reached the EoF
