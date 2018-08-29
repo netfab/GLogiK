@@ -19,9 +19,9 @@
  *
  */
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "GKDBusArgBoolean.h"
+#include "GKDBusArgBoolean.hpp"
 
 namespace NSGKDBus
 {

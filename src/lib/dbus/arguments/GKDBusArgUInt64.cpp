@@ -19,9 +19,9 @@
  *
  */
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "GKDBusArgUInt64.h"
+#include "GKDBusArgUInt64.hpp"
 
 namespace NSGKDBus
 {

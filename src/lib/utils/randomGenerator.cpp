@@ -23,9 +23,9 @@
 
 #define UTILS_COMPILATION 1
 
-#include "log.h"
-#include "exception.h"
-#include "randomGenerator.h"
+#include "log.hpp"
+#include "exception.hpp"
+#include "randomGenerator.hpp"
 
 #undef UTILS_COMPILATION
 

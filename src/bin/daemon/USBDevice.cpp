@@ -23,9 +23,9 @@
 #include <algorithm>
 #include <new>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "USBDevice.h"
+#include "USBDevice.hpp"
 
 namespace GLogiK
 {

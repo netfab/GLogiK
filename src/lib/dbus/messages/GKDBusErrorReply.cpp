@@ -21,9 +21,9 @@
 
 #include <new>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "GKDBusErrorReply.h"
+#include "GKDBusErrorReply.hpp"
 
 namespace NSGKDBus
 {

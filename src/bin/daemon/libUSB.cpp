@@ -23,9 +23,9 @@
 #include <mutex>
 #include <sstream>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "libUSB.h"
+#include "libUSB.hpp"
 
 namespace GLogiK
 {

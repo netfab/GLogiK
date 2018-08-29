@@ -21,11 +21,11 @@
 
 #include <new>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "fontsManager.h"
-#include "fontMonospace8_5.h"
-#include "fontMonospace8_6.h"
+#include "fontsManager.hpp"
+#include "fontMonospace8_5.hpp"
+#include "fontMonospace8_6.hpp"
 
 namespace GLogiK
 {

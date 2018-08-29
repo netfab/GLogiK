@@ -35,12 +35,12 @@
 
 #define UTILS_COMPILATION 1
 
-#include "log.h"
-#include "exception.h"
+#include "log.hpp"
+#include "exception.hpp"
 
 #undef UTILS_COMPILATION
 
-#include "FSNotify.h"
+#include "FSNotify.hpp"
 
 
 namespace NSGKUtils

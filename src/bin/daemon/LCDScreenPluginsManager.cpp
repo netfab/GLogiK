@@ -21,12 +21,12 @@
 
 #include <new>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "LCDScreenPluginsManager.h"
+#include "LCDScreenPluginsManager.hpp"
 
-#include "LCDPlugins/splashscreen.h"
-#include "LCDPlugins/systemMonitor.h"
+#include "LCDPlugins/splashscreen.hpp"
+#include "LCDPlugins/systemMonitor.hpp"
 
 namespace GLogiK
 {

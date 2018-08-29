@@ -21,9 +21,9 @@
 
 #include <algorithm>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "GKDBusArgument.h"
+#include "GKDBusArgument.hpp"
 
 namespace NSGKDBus
 {

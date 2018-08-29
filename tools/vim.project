@@ -60,8 +60,8 @@ GLogiK=$PWD/.. CD=. {
 	src=src/ {
 		include=include/ {
 			Makefile.am
-			enums.h
-			keyEvent.h
+			enums.hpp
+			keyEvent.hpp
 		}
 		binaries=bin/ {
 			daemon=daemon/ {
@@ -77,67 +77,67 @@ GLogiK=$PWD/.. CD=. {
 					}
 					NetSnap=netsnap/ {
 						netSnapshots.cpp
-						netSnapshots.h
+						netSnapshots.hpp
 					}
 					splashscreen.cpp
-					splashscreen.h
+					splashscreen.hpp
 					systemMonitor.cpp
-					systemMonitor.h
+					systemMonitor.hpp
 					LCDPlugin.cpp
-					LCDPlugin.h
+					LCDPlugin.hpp
 					fontsManager.cpp
-					fontsManager.h
+					fontsManager.hpp
 					fontMonospace8_5.cpp
-					fontMonospace8_5.h
+					fontMonospace8_5.hpp
 					fontMonospace8_6.cpp
-					fontMonospace8_6.h
+					fontMonospace8_6.hpp
 					PBMFile.cpp
-					PBMFile.h
+					PBMFile.hpp
 					PBMFont.cpp
-					PBMFont.h
-					PBM.h
+					PBMFont.hpp
+					PBM.hpp
 				}
 				main.cpp
 				client.cpp
-				client.h
+				client.hpp
 				clientsManager.cpp
-				clientsManager.h
+				clientsManager.hpp
 				clientsSignals.cpp
-				clientsSignals.h
+				clientsSignals.hpp
 				daemon.cpp
-				daemon.h
+				daemon.hpp
 				daemonControl.cpp
-				daemonControl.h
+				daemonControl.hpp
 				devicesManager.cpp
-				devicesManager.h
+				devicesManager.hpp
 				keyboardDriver.cpp
-				keyboardDriver.h
+				keyboardDriver.hpp
 				LCDScreenPluginsManager.cpp
-				LCDScreenPluginsManager.h
+				LCDScreenPluginsManager.hpp
 				libUSB.cpp
-				libUSB.h
+				libUSB.hpp
 				logitechG510.cpp
-				logitechG510.h
+				logitechG510.hpp
 				macrosManager.cpp
-				macrosManager.h
+				macrosManager.hpp
 				USBDevice.cpp
-				USBDevice.h
-				DeviceID.h
+				USBDevice.hpp
+				DeviceID.hpp
 				virtualKeyboard.cpp
-				virtualKeyboard.h
+				virtualKeyboard.hpp
 			}
 			service=service/ {
 				Makefile.am
 				main.cpp
-				global.h
+				global.hpp
 				devicesHandler.cpp
-				devicesHandler.h
+				devicesHandler.hpp
 				DBusHandler.cpp
-				DBusHandler.h
+				DBusHandler.hpp
 				volumeNotification.cpp
-				volumeNotification.h
+				volumeNotification.hpp
 				service.cpp
-				service.h
+				service.hpp
 			}
 		}
 		libraries=lib/ {
@@ -145,77 +145,77 @@ GLogiK=$PWD/.. CD=. {
 				Makefile.am
 				arguments=arguments/ {
 					GKDBusArgument.cpp
-					GKDBusArgument.h
+					GKDBusArgument.hpp
 					GKDBusArgString.cpp
-					GKDBusArgString.h
+					GKDBusArgString.hpp
 					GKDBusArgBoolean.cpp
-					GKDBusArgBoolean.h
+					GKDBusArgBoolean.hpp
 					GKDBusArgByte.cpp
-					GKDBusArgByte.h
+					GKDBusArgByte.hpp
 					GKDBusArgUInt16.cpp
-					GKDBusArgUInt16.h
+					GKDBusArgUInt16.hpp
 					GKDBusArgUInt64.cpp
-					GKDBusArgUInt64.h
+					GKDBusArgUInt64.hpp
 					GKDBusArgMacro.cpp
-					GKDBusArgMacro.h
+					GKDBusArgMacro.hpp
 					GKDBusArgMacrosBank.cpp
-					GKDBusArgMacrosBank.h
+					GKDBusArgMacrosBank.hpp
 				}
 				events=events/ {
 					GKDBusEvent.cpp
-					GKDBusEvent.h
+					GKDBusEvent.hpp
 					GKDBusEventTemplates.cpp
-					GKDBusEventTemplates.h
+					GKDBusEventTemplates.hpp
 				}
 				messages=messages/ {
 					GKDBusMessage.cpp
-					GKDBusMessage.h
+					GKDBusMessage.hpp
 					GKDBusReply.cpp
-					GKDBusReply.h
+					GKDBusReply.hpp
 					GKDBusErrorReply.cpp
-					GKDBusErrorReply.h
+					GKDBusErrorReply.hpp
 					GKDBusRemoteMethodCall.cpp
-					GKDBusRemoteMethodCall.h
+					GKDBusRemoteMethodCall.hpp
 					GKDBusBroadcastSignal.cpp
-					GKDBusBroadcastSignal.h
+					GKDBusBroadcastSignal.hpp
 					GKDBusTargetsSignal.cpp
-					GKDBusTargetsSignal.h
+					GKDBusTargetsSignal.hpp
 					GKDBusAsyncContainer.cpp
-					GKDBusAsyncContainer.h
+					GKDBusAsyncContainer.hpp
 				}
 				GKDBus.cpp
-				GKDBus.h
-				GKDBusConnection.h
+				GKDBus.hpp
+				GKDBusConnection.hpp
 				GKDBusEvents.cpp
-				GKDBusEvents.h
+				GKDBusEvents.hpp
 			}
 			GKShared=shared/ {
 				Makefile.am
 				deviceProperties.cpp
-				deviceProperties.h
+				deviceProperties.hpp
 				glogik.cpp
-				glogik.h
+				glogik.hpp
 				macrosBanks.cpp
-				macrosBanks.h
+				macrosBanks.hpp
 				sessionManager.cpp
-				sessionManager.h
+				sessionManager.hpp
 			}
 			GKUtils=utils/ {
 				Makefile.am
 				filesystem.cpp
-				filesystem.h
+				filesystem.hpp
 				FSNotify.cpp
-				FSNotify.h
+				FSNotify.hpp
 				functions.cpp
-				functions.h
+				functions.hpp
 				exception.cpp
-				exception.h
-				log.h
+				exception.hpp
+				log.hpp
 				randomGenerator.cpp
-				randomGenerator.h
-				utils.h
+				randomGenerator.hpp
+				utils.hpp
 				XDGUserDirs.cpp
-				XDGUserDirs.h
+				XDGUserDirs.hpp
 			}
 		}
 	}

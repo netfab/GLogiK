@@ -19,9 +19,9 @@
  *
  */
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "GKDBusEvent.h"
+#include "GKDBusEvent.hpp"
 
 namespace NSGKDBus
 {

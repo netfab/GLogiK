@@ -19,9 +19,9 @@
  *
  */
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "fontMonospace8_6.h"
+#include "fontMonospace8_6.hpp"
 
 namespace GLogiK
 {

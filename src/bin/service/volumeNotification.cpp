@@ -22,7 +22,7 @@
 #include <thread>
 #include <chrono>
 
-#include "volumeNotification.h"
+#include "volumeNotification.hpp"
 
 namespace GLogiK
 {

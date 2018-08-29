@@ -20,12 +20,12 @@
  */
 
 
-#include "lib/utils/utils.h"
-#include "lib/shared/glogik.h"
+#include "lib/utils/utils.hpp"
+#include "lib/shared/glogik.hpp"
 
-#include "daemonControl.h"
+#include "daemonControl.hpp"
 
-#include "clientsSignals.h"
+#include "clientsSignals.hpp"
 
 namespace GLogiK
 {

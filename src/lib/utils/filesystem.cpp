@@ -25,9 +25,9 @@
 
 #define UTILS_COMPILATION 1
 
-#include "log.h"
-#include "exception.h"
-#include "filesystem.h"
+#include "log.hpp"
+#include "exception.hpp"
+#include "filesystem.hpp"
 
 #undef UTILS_COMPILATION
 

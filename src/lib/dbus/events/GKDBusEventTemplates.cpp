@@ -19,7 +19,7 @@
  *
  */
 
-#include "GKDBusEventTemplates.h"
+#include "GKDBusEventTemplates.hpp"
 
 namespace NSGKDBus
 {

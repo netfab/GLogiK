@@ -21,9 +21,9 @@
 
 #include <new>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "GKDBusBroadcastSignal.h"
+#include "GKDBusBroadcastSignal.hpp"
 
 namespace NSGKDBus
 {

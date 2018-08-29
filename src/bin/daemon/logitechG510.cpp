@@ -21,10 +21,10 @@
 
 #include <algorithm>
 
-#include "lib/shared/glogik.h"
-#include "lib/utils/utils.h"
+#include "lib/shared/glogik.hpp"
+#include "lib/utils/utils.hpp"
 
-#include "logitechG510.h"
+#include "logitechG510.hpp"
 
 namespace GLogiK
 {

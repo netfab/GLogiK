@@ -24,9 +24,9 @@
 
 #include <boost/filesystem.hpp>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "PBMFont.h"
+#include "PBMFont.hpp"
 
 namespace GLogiK
 {

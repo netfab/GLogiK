@@ -36,12 +36,12 @@
 
 #include <boost/program_options.hpp>
 
-#include "lib/shared/sessionManager.h"
+#include "lib/shared/sessionManager.hpp"
 
-#include "global.h"
-#include "DBusHandler.h"
+#include "global.hpp"
+#include "DBusHandler.hpp"
 
-#include "service.h"
+#include "service.hpp"
 
 namespace po = boost::program_options;
 

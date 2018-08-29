@@ -27,13 +27,13 @@
 #include <algorithm>
 #include <sstream>
 
-#include "lib/utils/utils.h"
-#include "lib/dbus/GKDBus.h"
-#include "lib/shared/glogik.h"
+#include "lib/utils/utils.hpp"
+#include "lib/dbus/GKDBus.hpp"
+#include "lib/shared/glogik.hpp"
 
-#include "LCDScreenPluginsManager.h"
-#include "daemonControl.h"
-#include "keyboardDriver.h"
+#include "LCDScreenPluginsManager.hpp"
+#include "daemonControl.hpp"
+#include "keyboardDriver.hpp"
 
 namespace GLogiK
 {

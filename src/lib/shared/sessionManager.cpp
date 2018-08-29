@@ -24,9 +24,9 @@
 #include <string>
 #include <iostream>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "sessionManager.h"
+#include "sessionManager.hpp"
 
 namespace GLogiK
 {

@@ -23,9 +23,9 @@
 #include <sstream>
 #include <functional>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "GKDBusEvents.h"
+#include "GKDBusEvents.hpp"
 
 namespace NSGKDBus
 {

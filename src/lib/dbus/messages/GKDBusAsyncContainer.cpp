@@ -21,9 +21,9 @@
 
 #include <new>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "GKDBusAsyncContainer.h"
+#include "GKDBusAsyncContainer.hpp"
 
 namespace NSGKDBus
 {

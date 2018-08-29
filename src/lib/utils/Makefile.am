@@ -15,16 +15,16 @@ libGKUtils_la_LIBADD = \
 
 libGKUtils_la_SOURCES = \
 	%D%/randomGenerator.cpp \
-	%D%/randomGenerator.h \
+	%D%/randomGenerator.hpp \
 	%D%/FSNotify.cpp \
-	%D%/FSNotify.h \
+	%D%/FSNotify.hpp \
 	%D%/filesystem.cpp \
-	%D%/filesystem.h \
+	%D%/filesystem.hpp \
 	%D%/functions.cpp \
-	%D%/functions.h \
+	%D%/functions.hpp \
 	%D%/exception.cpp \
-	%D%/exception.h \
+	%D%/exception.hpp \
 	%D%/XDGUserDirs.cpp \
-	%D%/XDGUserDirs.h \
-	%D%/log.h \
-	%D%/utils.h
+	%D%/XDGUserDirs.hpp \
+	%D%/log.hpp \
+	%D%/utils.hpp

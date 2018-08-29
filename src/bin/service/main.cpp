@@ -19,7 +19,7 @@
  *
  */
 
-#include "service.h"
+#include "service.hpp"
 
 using namespace GLogiK;
 

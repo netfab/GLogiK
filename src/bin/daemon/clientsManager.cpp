@@ -26,10 +26,10 @@
 #include <chrono>
 #include <stdexcept>
 
-#include "lib/utils/utils.h"
-#include "lib/shared/glogik.h"
+#include "lib/utils/utils.hpp"
+#include "lib/shared/glogik.hpp"
 
-#include "clientsManager.h"
+#include "clientsManager.hpp"
 
 namespace GLogiK
 {

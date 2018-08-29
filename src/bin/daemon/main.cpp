@@ -19,7 +19,7 @@
  *
  */
 
-#include "daemon.h"
+#include "daemon.hpp"
 
 using namespace GLogiK;
 

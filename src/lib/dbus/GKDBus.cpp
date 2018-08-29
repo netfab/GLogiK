@@ -23,8 +23,8 @@
 #include <algorithm>
 #include <sstream>
 
-#include "messages/GKDBusMessage.h"
-#include "GKDBus.h"
+#include "messages/GKDBusMessage.hpp"
+#include "GKDBus.hpp"
 
 namespace NSGKDBus
 {

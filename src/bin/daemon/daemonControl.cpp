@@ -19,7 +19,7 @@
  *
  */
 
-#include "daemonControl.h"
+#include "daemonControl.hpp"
 
 namespace GLogiK
 {

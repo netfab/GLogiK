@@ -14,41 +14,41 @@ libGKDBus_la_LIBADD = \
 
 libGKDBus_la_SOURCES = \
 	%D%/arguments/GKDBusArgument.cpp \
-	%D%/arguments/GKDBusArgument.h \
+	%D%/arguments/GKDBusArgument.hpp \
 	%D%/arguments/GKDBusArgString.cpp \
-	%D%/arguments/GKDBusArgString.h \
+	%D%/arguments/GKDBusArgString.hpp \
 	%D%/arguments/GKDBusArgBoolean.cpp \
-	%D%/arguments/GKDBusArgBoolean.h \
+	%D%/arguments/GKDBusArgBoolean.hpp \
 	%D%/arguments/GKDBusArgByte.cpp \
-	%D%/arguments/GKDBusArgByte.h \
+	%D%/arguments/GKDBusArgByte.hpp \
 	%D%/arguments/GKDBusArgUInt16.cpp \
-	%D%/arguments/GKDBusArgUInt16.h \
+	%D%/arguments/GKDBusArgUInt16.hpp \
 	%D%/arguments/GKDBusArgUInt64.cpp \
-	%D%/arguments/GKDBusArgUInt64.h \
+	%D%/arguments/GKDBusArgUInt64.hpp \
 	%D%/arguments/GKDBusArgMacro.cpp \
-	%D%/arguments/GKDBusArgMacro.h \
+	%D%/arguments/GKDBusArgMacro.hpp \
 	%D%/arguments/GKDBusArgMacrosBank.cpp \
-	%D%/arguments/GKDBusArgMacrosBank.h \
+	%D%/arguments/GKDBusArgMacrosBank.hpp \
 	%D%/messages/GKDBusMessage.cpp \
-	%D%/messages/GKDBusMessage.h \
+	%D%/messages/GKDBusMessage.hpp \
 	%D%/messages/GKDBusReply.cpp \
-	%D%/messages/GKDBusReply.h \
+	%D%/messages/GKDBusReply.hpp \
 	%D%/messages/GKDBusErrorReply.cpp \
-	%D%/messages/GKDBusErrorReply.h \
+	%D%/messages/GKDBusErrorReply.hpp \
 	%D%/messages/GKDBusRemoteMethodCall.cpp \
-	%D%/messages/GKDBusRemoteMethodCall.h \
+	%D%/messages/GKDBusRemoteMethodCall.hpp \
 	%D%/messages/GKDBusBroadcastSignal.cpp \
-	%D%/messages/GKDBusBroadcastSignal.h \
+	%D%/messages/GKDBusBroadcastSignal.hpp \
 	%D%/messages/GKDBusTargetsSignal.cpp \
-	%D%/messages/GKDBusTargetsSignal.h \
+	%D%/messages/GKDBusTargetsSignal.hpp \
 	%D%/messages/GKDBusAsyncContainer.cpp \
-	%D%/messages/GKDBusAsyncContainer.h \
+	%D%/messages/GKDBusAsyncContainer.hpp \
 	%D%/events/GKDBusEvent.cpp \
-	%D%/events/GKDBusEvent.h \
+	%D%/events/GKDBusEvent.hpp \
 	%D%/events/GKDBusEventTemplates.cpp \
-	%D%/events/GKDBusEventTemplates.h \
-	%D%/GKDBusConnection.h \
+	%D%/events/GKDBusEventTemplates.hpp \
+	%D%/GKDBusConnection.hpp \
 	%D%/GKDBus.cpp \
-	%D%/GKDBus.h \
+	%D%/GKDBus.hpp \
 	%D%/GKDBusEvents.cpp \
-	%D%/GKDBusEvents.h
+	%D%/GKDBusEvents.hpp

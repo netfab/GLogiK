@@ -26,9 +26,9 @@
 
 #include <cstring>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "virtualKeyboard.h"
+#include "virtualKeyboard.hpp"
 
 namespace GLogiK
 {

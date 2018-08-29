@@ -19,9 +19,9 @@
  *
  */
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "GKDBusArgMacrosBank.h"
+#include "GKDBusArgMacrosBank.hpp"
 
 namespace NSGKDBus
 {

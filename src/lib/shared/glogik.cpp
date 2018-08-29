@@ -20,7 +20,7 @@
  *
  */
 
-#include "glogik.h"
+#include "glogik.hpp"
 
 namespace GLogiK
 {

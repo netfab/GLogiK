@@ -21,7 +21,7 @@
 
 #define UTILS_COMPILATION 1
 
-#include "exception.h"
+#include "exception.hpp"
 
 #undef UTILS_COMPILATION
 

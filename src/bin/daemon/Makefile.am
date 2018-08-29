@@ -29,55 +29,55 @@ GLogiKd_LDADD = \
 GLogiKd_SOURCES = \
 		%D%/main.cpp \
 		%D%/daemon.cpp \
-		%D%/daemon.h \
+		%D%/daemon.hpp \
 		%D%/daemonControl.cpp \
-		%D%/daemonControl.h \
+		%D%/daemonControl.hpp \
 		%D%/devicesManager.cpp \
-		%D%/devicesManager.h \
+		%D%/devicesManager.hpp \
 		%D%/keyboardDriver.cpp \
-		%D%/keyboardDriver.h \
+		%D%/keyboardDriver.hpp \
 		%D%/libUSB.cpp \
-		%D%/libUSB.h \
+		%D%/libUSB.hpp \
 		%D%/USBDevice.cpp \
-		%D%/USBDevice.h \
-		%D%/DeviceID.h \
+		%D%/USBDevice.hpp \
+		%D%/DeviceID.hpp \
 		%D%/virtualKeyboard.cpp \
-		%D%/virtualKeyboard.h \
+		%D%/virtualKeyboard.hpp \
 		%D%/logitechG510.cpp \
-		%D%/logitechG510.h \
+		%D%/logitechG510.hpp \
 		%D%/macrosManager.cpp \
-		%D%/macrosManager.h \
+		%D%/macrosManager.hpp \
 		%D%/clientsManager.cpp \
-		%D%/clientsManager.h \
+		%D%/clientsManager.hpp \
 		%D%/clientsSignals.cpp \
-		%D%/clientsSignals.h \
+		%D%/clientsSignals.hpp \
 		%D%/client.cpp \
-		%D%/client.h \
+		%D%/client.hpp \
 		%D%/LCDScreenPluginsManager.cpp \
-		%D%/LCDScreenPluginsManager.h
+		%D%/LCDScreenPluginsManager.hpp
 
 GLogiKd_SOURCES += \
-		%D%/LCDPlugins/PBM.h \
+		%D%/LCDPlugins/PBM.hpp \
 		%D%/LCDPlugins/PBMFile.cpp \
-		%D%/LCDPlugins/PBMFile.h \
+		%D%/LCDPlugins/PBMFile.hpp \
 		%D%/LCDPlugins/PBMFont.cpp \
-		%D%/LCDPlugins/PBMFont.h \
+		%D%/LCDPlugins/PBMFont.hpp \
 		%D%/LCDPlugins/fontMonospace8_5.cpp \
-		%D%/LCDPlugins/fontMonospace8_5.h \
+		%D%/LCDPlugins/fontMonospace8_5.hpp \
 		%D%/LCDPlugins/fontMonospace8_6.cpp \
-		%D%/LCDPlugins/fontMonospace8_6.h \
+		%D%/LCDPlugins/fontMonospace8_6.hpp \
 		%D%/LCDPlugins/fontsManager.cpp \
-		%D%/LCDPlugins/fontsManager.h \
+		%D%/LCDPlugins/fontsManager.hpp \
 		%D%/LCDPlugins/LCDPlugin.cpp \
-		%D%/LCDPlugins/LCDPlugin.h \
+		%D%/LCDPlugins/LCDPlugin.hpp \
 		%D%/LCDPlugins/splashscreen.cpp \
-		%D%/LCDPlugins/splashscreen.h \
+		%D%/LCDPlugins/splashscreen.hpp \
 		%D%/LCDPlugins/cpu-stats/CPUData.cpp \
-		%D%/LCDPlugins/cpu-stats/CPUData.h \
+		%D%/LCDPlugins/cpu-stats/CPUData.hpp \
 		%D%/LCDPlugins/cpu-stats/CPUSnapshot.cpp \
-		%D%/LCDPlugins/cpu-stats/CPUSnapshot.h \
+		%D%/LCDPlugins/cpu-stats/CPUSnapshot.hpp \
 		%D%/LCDPlugins/netsnap/netSnapshots.cpp \
-		%D%/LCDPlugins/netsnap/netSnapshots.h \
+		%D%/LCDPlugins/netsnap/netSnapshots.hpp \
 		%D%/LCDPlugins/systemMonitor.cpp \
-		%D%/LCDPlugins/systemMonitor.h
+		%D%/LCDPlugins/systemMonitor.hpp
 

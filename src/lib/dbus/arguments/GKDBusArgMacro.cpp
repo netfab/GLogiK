@@ -21,9 +21,9 @@
 
 #include <cstdint>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "GKDBusArgMacro.h"
+#include "GKDBusArgMacro.hpp"
 
 namespace NSGKDBus
 {

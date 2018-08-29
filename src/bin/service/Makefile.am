@@ -23,13 +23,13 @@ GLogiKs_LDADD = \
 
 GLogiKs_SOURCES = \
 		%D%/main.cpp \
-		%D%/global.h \
+		%D%/global.hpp \
 		%D%/devicesHandler.cpp \
-		%D%/devicesHandler.h \
+		%D%/devicesHandler.hpp \
 		%D%/DBusHandler.cpp \
-		%D%/DBusHandler.h \
+		%D%/DBusHandler.hpp \
 		%D%/service.cpp \
-		%D%/service.h
+		%D%/service.hpp
 
 if WITH_LIBNOTIFY
 
@@ -37,6 +37,6 @@ GLogiKs_CXXFLAGS += @LIBNOTIFY_CFLAGS@
 GLogiKs_LDADD += @LIBNOTIFY_LIBS@
 GLogiKs_SOURCES += \
 	%D%/volumeNotification.cpp \
-	%D%/volumeNotification.h
+	%D%/volumeNotification.hpp
 
 endif

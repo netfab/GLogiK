@@ -23,9 +23,9 @@
 
 #define UTILS_COMPILATION 1
 
-#include "exception.h"
-#include "functions.h"
-#include "XDGUserDirs.h"
+#include "exception.hpp"
+#include "functions.hpp"
+#include "XDGUserDirs.hpp"
 
 #undef UTILS_COMPILATION
 

@@ -22,9 +22,9 @@
 #include <new>
 #include <sstream>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "GKDBusRemoteMethodCall.h"
+#include "GKDBusRemoteMethodCall.hpp"
 
 namespace NSGKDBus
 {

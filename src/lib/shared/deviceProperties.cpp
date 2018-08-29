@@ -21,9 +21,9 @@
 
 #include <stdexcept>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "deviceProperties.h"
+#include "deviceProperties.hpp"
 
 namespace GLogiK
 {

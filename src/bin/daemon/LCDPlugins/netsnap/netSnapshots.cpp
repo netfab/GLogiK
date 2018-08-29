@@ -30,9 +30,9 @@
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "netSnapshots.h"
+#include "netSnapshots.hpp"
 
 namespace GLogiK
 {

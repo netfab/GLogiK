@@ -27,14 +27,14 @@
 #include <poll.h>
 #include <libudev.h>
 
-#include "lib/utils/utils.h"
-#include "lib/shared/glogik.h"
+#include "lib/utils/utils.hpp"
+#include "lib/shared/glogik.hpp"
 
-#include "include/enums.h"
+#include "include/enums.hpp"
 
-#include "daemonControl.h"
-#include "logitechG510.h"
-#include "devicesManager.h"
+#include "daemonControl.hpp"
+#include "logitechG510.hpp"
+#include "devicesManager.hpp"
 
 
 namespace GLogiK

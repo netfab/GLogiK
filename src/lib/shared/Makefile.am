@@ -19,10 +19,10 @@ libGKShared_la_LIBADD = \
 
 libGKShared_la_SOURCES = \
 	%D%/macrosBanks.cpp \
-	%D%/macrosBanks.h \
+	%D%/macrosBanks.hpp \
 	%D%/deviceProperties.cpp \
-	%D%/deviceProperties.h \
+	%D%/deviceProperties.hpp \
 	%D%/glogik.cpp \
-	%D%/glogik.h \
+	%D%/glogik.hpp \
 	%D%/sessionManager.cpp \
-	%D%/sessionManager.h
+	%D%/sessionManager.hpp

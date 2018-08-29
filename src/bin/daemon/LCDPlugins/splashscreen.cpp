@@ -26,7 +26,7 @@
 
 #include <config.h>
 
-#include "splashscreen.h"
+#include "splashscreen.hpp"
 
 namespace fs = boost::filesystem;
 

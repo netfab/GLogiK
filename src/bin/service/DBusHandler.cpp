@@ -26,10 +26,10 @@
 #include <thread>
 #include <chrono>
 
-#include "lib/shared/glogik.h"
+#include "lib/shared/glogik.hpp"
 
-#include "global.h"
-#include "DBusHandler.h"
+#include "global.hpp"
+#include "DBusHandler.hpp"
 
 namespace GLogiK
 {

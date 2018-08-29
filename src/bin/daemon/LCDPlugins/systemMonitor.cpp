@@ -32,10 +32,10 @@
 
 #include <config.h>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "netsnap/netSnapshots.h"
-#include "systemMonitor.h"
+#include "netsnap/netSnapshots.hpp"
+#include "systemMonitor.hpp"
 
 namespace GLogiK
 {

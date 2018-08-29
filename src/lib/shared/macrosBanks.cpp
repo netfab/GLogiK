@@ -22,9 +22,9 @@
 #include <stdexcept>
 #include <utility>
 
-#include "lib/utils/utils.h"
+#include "lib/utils/utils.hpp"
 
-#include "macrosBanks.h"
+#include "macrosBanks.hpp"
 
 namespace GLogiK
 {

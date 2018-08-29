@@ -28,8 +28,8 @@
 
 #define UTILS_COMPILATION 1
 
-#include "functions.h"
-#include "exception.h"
+#include "functions.hpp"
+#include "exception.hpp"
 
 #undef UTILS_COMPILATION
 
