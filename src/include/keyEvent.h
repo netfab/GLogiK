@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIK_KEY_EVENT_H__
-#define __GLOGIK_KEY_EVENT_H__
+#ifndef SRC_INCLUDE_KEY_EVENT_HPP_
+#define SRC_INCLUDE_KEY_EVENT_HPP_
 
 #include <cstdint>
 

@@ -40,10 +40,10 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 NetSnapshots::NetSnapshots()
-	:	rxDiff_(0),
-		txDiff_(0),
-		defaultRouteNetIntName_(""),
-		currentNetIntName_("")
+	:	_rxDiff(0),
+		_txDiff(0),
+		_defaultNetworkInterfaceName(""),
+		_networkInterfaceName("")
 {
 	try {
 		this->findDefaultRouteNetworkInterfaceName();
@@ -52,14 +52,14 @@ NetSnapshots::NetSnapshots()
 		LOG(ERROR) << e.what();
 	}
 
-	if( this->defaultRouteNetIntName_.empty() ) {
+	if( _defaultNetworkInterfaceName.empty() ) {
 		throw GLogiKExcept("unable to find default route interface name");
 	}
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "found default route interface name: " << this->defaultRouteNetIntName_;
+	LOG(DEBUG2) << "found default route interface name: " << _defaultNetworkInterfaceName;
 #endif
 
-	this->currentNetIntName_ = this->defaultRouteNetIntName_;
+	_networkInterfaceName = _defaultNetworkInterfaceName;
 
 	try {
 		unsigned long long s1, s2 = 0;
@@ -68,7 +68,7 @@ NetSnapshots::NetSnapshots()
 		this->setBytesSnapshotValue(NetDirection::NET_RX, s2);
 		if( (s1 == 0) or (s2 == 0) )
 			throw GLogiKExcept("wrong bytes snapshot");
-		this->rxDiff_ = (10 * (s2 - s1)); /* extrapolation */
+		_rxDiff = (10 * (s2 - s1)); /* extrapolation */
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << e.what();
@@ -81,7 +81,7 @@ NetSnapshots::~NetSnapshots()
 
 const std::string NetSnapshots::getRxRateString(void)
 {
-	return this->getPaddedRateString(this->rxDiff_);
+	return this->getPaddedRateString(_rxDiff);
 }
 
 const std::string NetSnapshots::getPaddedRateString(unsigned long long value)
@@ -116,7 +116,7 @@ void NetSnapshots::findDefaultRouteNetworkInterfaceName(void)
 			boost::split(results, line, [](char c){return c == '\t';});
 
 			if(results.at(1) == "00000000") { /* default route */
-				this->defaultRouteNetIntName_ = results[0];
+				_defaultNetworkInterfaceName = results[0];
 				return;
 			}
 		}
@@ -144,7 +144,7 @@ void NetSnapshots::setBytesSnapshotValue(const NetDirection d, unsigned long lon
 {
 	try {
 		fs::path file("/sys/class/net");
-		file /= this->currentNetIntName_;
+		file /= _networkInterfaceName;
 		file /= "statistics";
 		if(d == NetDirection::NET_RX)
 			file /= "rx_bytes";

@@ -68,7 +68,7 @@ void LCDPlugin::resetPBMFrameIndex(void)
 const unsigned short LCDPlugin::getPluginTiming(void) const
 {
 	unsigned short timing = 0;
-	unsigned short maxFrames;
+	unsigned short maxFrames = 0;
 	std::tie(timing, maxFrames) = this->getTempo(_pluginTempo);
 	return timing;
 }
@@ -76,9 +76,9 @@ const unsigned short LCDPlugin::getPluginTiming(void) const
 const unsigned short LCDPlugin::getPluginMaxFrames(void) const
 {
 	unsigned short timing = 0;
-	unsigned short max_frames;
-	std::tie(timing, max_frames) = this->getTempo(_pluginTempo);
-	return max_frames;
+	unsigned short maxFrames = 0;
+	std::tie(timing, maxFrames) = this->getTempo(_pluginTempo);
+	return maxFrames;
 }
 
 void LCDPlugin::prepareNextPBMFrame(void)

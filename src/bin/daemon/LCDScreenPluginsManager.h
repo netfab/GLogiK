@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_LCD_SCREEN_PLUGINS_MANAGER_H__
-#define __GLOGIKD_LCD_SCREEN_PLUGINS_MANAGER_H__
+#ifndef SRC_BIN_DAEMON_LCD_SCREEN_PLUGINS_MANAGER_HPP_
+#define SRC_BIN_DAEMON_LCD_SCREEN_PLUGINS_MANAGER_HPP_
 
 #include <vector>
 
@@ -43,16 +43,16 @@ class LCDScreenPluginsManager
 	protected:
 
 	private:
-		unsigned short plugin_frame_;
-		std::vector<LCDPlugin*> plugins_;
-		std::vector<LCDPlugin*>::iterator current_plugin_;
+		unsigned short _frameCounter;
+		std::vector<LCDPlugin*> _plugins;
+		std::vector<LCDPlugin*>::iterator _itCurrentPlugin;
 
-		LCDDataArray lcd_buffer_;
-		FontsManager fonts_manager_;
-		FontsManager* const pFonts_;
+		LCDDataArray _LCDBuffer;
+		FontsManager _fontsManager;
+		FontsManager* const _pFonts;
 
 		void stopLCDPlugins(void);
-		void dumpPBMDataIntoLCDBuffer(LCDDataArray & lcd_buffer, const PBMDataArray & pbm_data);
+		void dumpPBMDataIntoLCDBuffer(LCDDataArray & LCDBuffer, const PBMDataArray & PBMData);
 };
 
 } // namespace GLogiK

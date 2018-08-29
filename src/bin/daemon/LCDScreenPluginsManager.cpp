@@ -34,12 +34,12 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 LCDScreenPluginsManager::LCDScreenPluginsManager()
-	:	plugin_frame_(0),
-		pFonts_(&fonts_manager_)
+	:	_frameCounter(0),
+		_pFonts(&_fontsManager)
 {
 	try {
-		this->plugins_.push_back( new Splashscreen() );
-		this->plugins_.push_back( new SystemMonitor() );
+		_plugins.push_back( new Splashscreen() );
+		_plugins.push_back( new SystemMonitor() );
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		this->stopLCDPlugins();
@@ -47,9 +47,9 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 	}
 
 	/* initialize each plugin */
-	for(const auto & plugin : this->plugins_) {
+	for(const auto & plugin : _plugins) {
 		try {
-			plugin->init(this->pFonts_);
+			plugin->init(_pFonts);
 		}
 		catch (const GLogiKExcept & e) {
 			LOG(ERROR) << e.what();
@@ -60,23 +60,23 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 	 * (the ones that failed to read PBM for whatever
 	 * reason during initialization)
 	 */
-	for(auto & plugin : this->plugins_) {
+	for(auto & plugin : _plugins) {
 		if( ! plugin->isInitialized() ) {
 			delete plugin; plugin = nullptr;
 		}
 	}
 
 	auto is_null = [] (auto & item) -> const bool { return (item == nullptr); };
-	this->plugins_.erase(
-		std::remove_if(this->plugins_.begin(), this->plugins_.end(), is_null),
-		this->plugins_.end()
+	_plugins.erase(
+		std::remove_if(_plugins.begin(), _plugins.end(), is_null),
+		_plugins.end()
 	);
 
-	this->current_plugin_ = this->plugins_.begin();
-	if( this->plugins_.empty() ) {
+	_itCurrentPlugin = _plugins.begin();
+	if( _plugins.empty() ) {
 		GKSysLog(LOG_WARNING, WARNING, "no LCD screen plugin initialized");
 	}
-	this->lcd_buffer_.fill(0x0);
+	_LCDBuffer.fill(0x0);
 }
 
 LCDScreenPluginsManager::~LCDScreenPluginsManager() {
@@ -85,8 +85,8 @@ LCDScreenPluginsManager::~LCDScreenPluginsManager() {
 
 const unsigned short LCDScreenPluginsManager::getPluginTiming(void)
 {
-	if(this->current_plugin_ != this->plugins_.end() )
-		return (*this->current_plugin_)->getPluginTiming();
+	if(_itCurrentPlugin != _plugins.end() )
+		return (*_itCurrentPlugin)->getPluginTiming();
 
 	return 1000;
 }
@@ -95,50 +95,50 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
 {
 	try {
 		/* make sure there at least one plugin */
-		if(this->current_plugin_ != this->plugins_.end() ) {
-			this->plugin_frame_++;
+		if(_itCurrentPlugin != _plugins.end() ) {
+			_frameCounter++;
 
-			if( this->plugin_frame_ >= (*this->current_plugin_)->getPluginMaxFrames() ) {
-				this->current_plugin_++;
-				if(this->current_plugin_ == this->plugins_.end() )
-					this->current_plugin_ = this->plugins_.begin();
+			if( _frameCounter >= (*_itCurrentPlugin)->getPluginMaxFrames() ) {
+				_itCurrentPlugin++;
+				if(_itCurrentPlugin == _plugins.end() )
+					_itCurrentPlugin = _plugins.begin();
 
 				/* reset frames to beginning */
-				(*this->current_plugin_)->resetPBMFrameIndex();
-				this->plugin_frame_ = 0;
+				(*_itCurrentPlugin)->resetPBMFrameIndex();
+				_frameCounter = 0;
 			}
 		}
 
-		if(this->current_plugin_ != this->plugins_.end() ) {
-			(*this->current_plugin_)->prepareNextPBMFrame();
+		if(_itCurrentPlugin != _plugins.end() ) {
+			(*_itCurrentPlugin)->prepareNextPBMFrame();
 			this->dumpPBMDataIntoLCDBuffer(
-				this->lcd_buffer_,
-				(*this->current_plugin_)->getNextPBMFrame(this->pFonts_)
+				_LCDBuffer,
+				(*_itCurrentPlugin)->getNextPBMFrame(_pFonts)
 			);
 		}
 		else /* else blank screen */
-			this->lcd_buffer_.fill(0x0);
+			_LCDBuffer.fill(0x0);
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << e.what();
-		this->lcd_buffer_.fill(0x0);
+		_LCDBuffer.fill(0x0);
 	}
 
-	std::fill_n(this->lcd_buffer_.begin(), LCD_BUFFER_OFFSET, 0);
+	std::fill_n(_LCDBuffer.begin(), LCD_BUFFER_OFFSET, 0);
 	/* the keyboard needs this magic byte */
-	this->lcd_buffer_[0] = 0x03;
+	_LCDBuffer[0] = 0x03;
 
-	return this->lcd_buffer_;
+	return _LCDBuffer;
 }
 
 void LCDScreenPluginsManager::stopLCDPlugins(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "stopping LCD screen plugins";
 #endif
-	for(const auto & plugin : this->plugins_) {
+	for(const auto & plugin : _plugins) {
 		delete plugin;
 	}
-	this->plugins_.clear();
+	_plugins.clear();
 }
 
 /*
@@ -195,36 +195,36 @@ void LCDScreenPluginsManager::stopLCDPlugins(void) {
  *	A2		pixels of the 43-pixel high display.)
  *
  */
-void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(LCDDataArray & lcd_buffer, const PBMDataArray & pbm_data)
+void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(LCDDataArray & LCDBuffer, const PBMDataArray & PBMData)
 {
 	for(unsigned int row = 0; row < PBM_HEIGHT_IN_BYTES; ++row) {
-		unsigned int lcd_col = 0;
-		unsigned int index_offset = (PBM_WIDTH * row);
-		for(unsigned int pbm_byte = 0; pbm_byte < PBM_WIDTH_IN_BYTES; ++pbm_byte) {
+		unsigned int LCDCol = 0;
+		unsigned int indexOffset = (PBM_WIDTH * row);
+		for(unsigned int PBMByte = 0; PBMByte < PBM_WIDTH_IN_BYTES; ++PBMByte) {
 
 			for(int bit = 7; bit > -1; --bit) {
 
 // FIXME
 #if 0 && DEBUGGING_ON
 				LOG(DEBUG2)	<< "row: " << row
-							<< " pbm_byte: " << pbm_byte
-							<< " lcd_col: " << lcd_col
-							<< " index_offset: " << index_offset
-							<< " lcd_index: " << lcd_col + index_offset
+							<< " PBMByte: " << PBMByte
+							<< " LCDCol: " << LCDCol
+							<< " indexOffset: " << indexOffset
+							<< " lcd_index: " << LCDCol + indexOffset
 							<< " bit: " << bit << "\n";
 #endif
 
-				lcd_buffer[LCD_BUFFER_OFFSET + lcd_col + index_offset] =
-					(((pbm_data[pbm_byte + (PBM_WIDTH_IN_BYTES * 0) + index_offset] >> bit) & 1) << 0 ) |
-					(((pbm_data[pbm_byte + (PBM_WIDTH_IN_BYTES * 1) + index_offset] >> bit) & 1) << 1 ) |
-					(((pbm_data[pbm_byte + (PBM_WIDTH_IN_BYTES * 2) + index_offset] >> bit) & 1) << 2 ) |
-					(((pbm_data[pbm_byte + (PBM_WIDTH_IN_BYTES * 3) + index_offset] >> bit) & 1) << 3 ) |
-					(((pbm_data[pbm_byte + (PBM_WIDTH_IN_BYTES * 4) + index_offset] >> bit) & 1) << 4 ) |
-					(((pbm_data[pbm_byte + (PBM_WIDTH_IN_BYTES * 5) + index_offset] >> bit) & 1) << 5 ) |
-					(((pbm_data[pbm_byte + (PBM_WIDTH_IN_BYTES * 6) + index_offset] >> bit) & 1) << 6 ) |
-					(((pbm_data[pbm_byte + (PBM_WIDTH_IN_BYTES * 7) + index_offset] >> bit) & 1) << 7 ) ;
+				LCDBuffer[LCD_BUFFER_OFFSET + LCDCol + indexOffset] =
+					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 0) + indexOffset] >> bit) & 1) << 0 ) |
+					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 1) + indexOffset] >> bit) & 1) << 1 ) |
+					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 2) + indexOffset] >> bit) & 1) << 2 ) |
+					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 3) + indexOffset] >> bit) & 1) << 3 ) |
+					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 4) + indexOffset] >> bit) & 1) << 4 ) |
+					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 5) + indexOffset] >> bit) & 1) << 5 ) |
+					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 6) + indexOffset] >> bit) & 1) << 6 ) |
+					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 7) + indexOffset] >> bit) & 1) << 7 ) ;
 
-				lcd_col++;
+				LCDCol++;
 			}
 		}
 	}

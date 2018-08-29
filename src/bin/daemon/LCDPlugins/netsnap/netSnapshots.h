@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __GLOGIKD_NET_SNAPSHOTS_H__
-#define __GLOGIKD_NET_SNAPSHOTS_H__
+#ifndef SRC_BIN_DAEMON_LCDPLUGINS_NETSNAP_NET_SNAPSHOTS_HPP_
+#define SRC_BIN_DAEMON_LCDPLUGINS_NETSNAP_NET_SNAPSHOTS_HPP_
 
 #include <string>
 
@@ -44,10 +44,10 @@ class NetSnapshots
 	protected:
 
 	private:
-		unsigned long long rxDiff_;
-		unsigned long long txDiff_;
-		std::string defaultRouteNetIntName_;
-		std::string currentNetIntName_;
+		unsigned long long _rxDiff;
+		unsigned long long _txDiff;
+		std::string _defaultNetworkInterfaceName;
+		std::string _networkInterfaceName;
 		void findDefaultRouteNetworkInterfaceName(void);
 		void setBytesSnapshotValue(const NetDirection d, unsigned long long & value);
 		const std::string getPaddedRateString(unsigned long long value);
