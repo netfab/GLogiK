@@ -36,7 +36,7 @@ void ClientsSignals::sendSignalToClients(
 	const uint8_t numClients,
 	NSGKDBus::GKDBus* pDBus,
 	const std::string & signal,
-	const bool forceSend)
+	const bool forceSend) noexcept
 {
 	/* don't try to send signal if we know that there is no clients */
 	if( (numClients == 0 ) and (! forceSend) )
@@ -82,8 +82,8 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 	const uint8_t numClients,
 	NSGKDBus::GKDBus* pDBus,
 	const std::string & signal,
-	const std::vector<std::string> & devIDArray
-) {
+	const std::vector<std::string> & devIDArray) noexcept
+{
 	/* don't try to send signal if we know that there is no clients */
 	if( numClients == 0 )
 		return;

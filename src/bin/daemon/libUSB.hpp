@@ -51,14 +51,14 @@ class LibUSB
 			return _keysInterruptBufferMaxLength;
 		};
 
-		int USBError(int errorCode);
+		int USBError(int errorCode) noexcept;
 
 		void openUSBDevice(USBDevice & device);
-		void closeUSBDevice(USBDevice & device);
+		void closeUSBDevice(USBDevice & device) noexcept;
 
 		void setUSBDeviceActiveConfiguration(USBDevice & device);
 		void findUSBDeviceInterface(USBDevice & device);
-		void releaseUSBDeviceInterfaces(USBDevice & device);
+		void releaseUSBDeviceInterfaces(USBDevice & device) noexcept;
 
 		void sendControlRequest(
 			USBDevice & device,
@@ -89,7 +89,7 @@ class LibUSB
 		int _keysInterruptBufferMaxLength;
 
 		void detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int numInt);
-		void attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device);
+		void attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexcept;
 
 };
 

@@ -95,7 +95,7 @@ class KeyboardDriver
 		static const std::vector<std::string> & getEmptyStringVector(void);
 
 		void initializeDevice(const BusNumDeviceID & det);
-		void closeDevice(const BusNumDeviceID & det);
+		void closeDevice(const BusNumDeviceID & det) noexcept;
 		void resetDeviceState(const BusNumDeviceID & det);
 
 		void setDeviceActiveConfiguration(

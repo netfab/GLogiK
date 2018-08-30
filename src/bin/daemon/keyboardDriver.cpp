@@ -685,6 +685,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 	}
 }
 
+/* throws GLogiKExcept on any failure */
 void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 {
 	const std::string devID = KeyboardDriver::getDeviceID(det.getBus(), det.getNum());
@@ -864,7 +865,7 @@ void KeyboardDriver::joinDeviceThreads(const USBDevice & device)
 	}
 }
 
-void KeyboardDriver::closeDevice(const BusNumDeviceID & det)
+void KeyboardDriver::closeDevice(const BusNumDeviceID & det) noexcept
 {
 	const std::string devID = KeyboardDriver::getDeviceID(det.getBus(), det.getNum());
 

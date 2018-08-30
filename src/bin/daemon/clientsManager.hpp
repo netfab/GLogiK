@@ -91,6 +91,8 @@ class ClientsManager
 			const std::string & devID
 		);
 
+		void waitForClientsDisconnections(void) noexcept;
+
 		/* -- */
 			/* DevicesManager D-Bus object */
 

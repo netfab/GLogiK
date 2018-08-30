@@ -120,7 +120,7 @@ void USBDevice::initializeMacrosManager(
 	}
 }
 
-void USBDevice::destroyMacrosManager(void) {
+void USBDevice::destroyMacrosManager(void) noexcept {
 	if( _pMacrosManager ) {
 		delete _pMacrosManager;
 		_pMacrosManager = nullptr;

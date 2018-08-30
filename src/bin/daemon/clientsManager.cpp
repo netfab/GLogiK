@@ -219,9 +219,7 @@ ClientsManager::~ClientsManager() {
 #endif
 }
 
-void ClientsManager::runLoop(void) {
-	_pDevicesManager->startMonitoring(_pDBus);
-
+void ClientsManager::waitForClientsDisconnections(void) noexcept {
 	if( _connectedClients.empty() ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "no client, empty container";
@@ -241,6 +239,21 @@ void ClientsManager::runLoop(void) {
 		LOG(DEBUG3) << "sleeping for 400 ms ...";
 #endif
 		std::this_thread::sleep_for(std::chrono::milliseconds(400));
+	}
+}
+
+void ClientsManager::runLoop(void) {
+	try {
+		_pDevicesManager->startMonitoring(_pDBus);
+		this->waitForClientsDisconnections();
+	}
+	catch (const GLogiKExcept & e) {	/* catch any udev failure */
+		std::ostringstream buffer(std::ios_base::app);
+		buffer << "catched exception from device monitoring : " << e.what();
+		GKSysLog(LOG_WARNING, WARNING, buffer.str());
+
+		this->waitForClientsDisconnections();
+		throw;
 	}
 }
 

@@ -101,12 +101,12 @@ class DevicesManager
 		~DevicesManager(void);
 
 		void startMonitoring(NSGKDBus::GKDBus* pDBus);
-		void checkDBusMessages(void);
+		void checkDBusMessages(void) noexcept;
 		void resetDevicesStates(void);
 		void setNumClients(uint8_t num);
 
 		const bool startDevice(const std::string & devID);
-		const bool stopDevice(const std::string & devID);
+		const bool stopDevice(const std::string & devID) noexcept;
 		const std::vector<std::string> getStartedDevices(void) const;
 		const std::vector<std::string> getStoppedDevices(void) const;
 
@@ -140,11 +140,11 @@ class DevicesManager
 		std::set<std::string> _unpluggedDevices;
 
 		void searchSupportedDevices(struct udev * pUdev);
-		void initializeDevices(void);
+		void initializeDevices(void) noexcept;
 		void stopInitializedDevices(void);
-		void checkInitializedDevicesThreadsStatus(void);
+		void checkInitializedDevicesThreadsStatus(void) noexcept;
 
-		void checkForUnpluggedDevices(void);
+		void checkForUnpluggedDevices(void) noexcept;
 };
 
 } // namespace GLogiK

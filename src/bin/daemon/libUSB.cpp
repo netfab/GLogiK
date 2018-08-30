@@ -78,7 +78,7 @@ LibUSB::~LibUSB() {
 	}
 }
 
-int LibUSB::USBError(int errorCode) {
+int LibUSB::USBError(int errorCode) noexcept {
 	switch(errorCode) {
 		case LIBUSB_SUCCESS:
 			break;
@@ -131,7 +131,7 @@ void LibUSB::openUSBDevice(USBDevice & device) {
 	libusb_free_device_list(list, 1);
 }
 
-void LibUSB::closeUSBDevice(USBDevice & device) {
+void LibUSB::closeUSBDevice(USBDevice & device) noexcept {
 	libusb_close(device._pUSBDeviceHandle);
 	device._pUSBDeviceHandle = nullptr;
 #if DEBUGGING_ON
@@ -481,7 +481,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 
 }
 
-void LibUSB::releaseUSBDeviceInterfaces(USBDevice & device) {
+void LibUSB::releaseUSBDeviceInterfaces(USBDevice & device) noexcept {
 	int ret = 0;
 	for(auto it = device._toRelease.begin(); it != device._toRelease.end();) {
 		int numInt = (*it);
@@ -594,7 +594,7 @@ int LibUSB::performLCDScreenInterruptTransfer(
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void LibUSB::attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) {
+void LibUSB::attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexcept {
 	int ret = 0;
 	for(auto it = device._toAttach.begin(); it != device._toAttach.end();) {
 		int numInt = (*it);

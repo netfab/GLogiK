@@ -103,7 +103,7 @@ void GKDBus::connectToSystemBus(const char* connectionName) {
  * was called. if yes, then run the corresponding callback function
  * and send DBus reply after appending the return value
  */
-void GKDBus::checkForNextMessage(const BusConnection bus) {
+void GKDBus::checkForNextMessage(const BusConnection bus) noexcept {
 	DBusConnection* connection = nullptr;
 	GKDBusEvents::currentBus = bus; /* used on introspection */
 

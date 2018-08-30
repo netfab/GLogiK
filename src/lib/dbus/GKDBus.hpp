@@ -75,7 +75,7 @@ class GKDBus
 
 		void connectToSystemBus(const char* connectionName);
 
-		void checkForNextMessage(const BusConnection bus);
+		void checkForNextMessage(const BusConnection bus) noexcept;
 
 	protected:
 

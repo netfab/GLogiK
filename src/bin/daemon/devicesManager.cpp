@@ -77,7 +77,8 @@ void DevicesManager::setNumClients(uint8_t num) {
 	_numClients = num;
 }
 
-void DevicesManager::initializeDevices(void) {
+/* exceptions are catched within the function body */
+void DevicesManager::initializeDevices(void) noexcept {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing detected devices";
 #endif
@@ -184,7 +185,7 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 	return false;
 }
 
-const bool DevicesManager::stopDevice(const std::string & devID) {
+const bool DevicesManager::stopDevice(const std::string & devID) noexcept {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "trying to stop device " << devID;
 #endif
@@ -239,7 +240,7 @@ void DevicesManager::stopInitializedDevices(void) {
 	_startedDevices.clear();
 }
 
-void DevicesManager::checkInitializedDevicesThreadsStatus(void) {
+void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "checking initialized devices threads status";
 #endif
@@ -271,7 +272,7 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) {
 	}
 }
 
-void DevicesManager::checkForUnpluggedDevices(void) {
+void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "checking for unplugged devices";
 #endif
@@ -700,10 +701,14 @@ void DevicesManager::resetDevicesStates(void) {
 	}
 }
 
-void DevicesManager::checkDBusMessages(void) {
+void DevicesManager::checkDBusMessages(void) noexcept {
 	_pDBus->checkForNextMessage(NSGKDBus::BusConnection::GKDBUS_SYSTEM);
 }
 
+/*
+ *	Throws GLogiKExcept in many ways on udev related functions failures.
+ *	LibUSB failures on devices start/stop are catched internally.
+ */
 void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing libudev";
@@ -743,7 +748,7 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 			// FIXME catch bad_alloc
 			_drivers.push_back( new LogitechG510() );
 
-			this->searchSupportedDevices(pUdev);
+			this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
 			this->initializeDevices();
 
 			/* send signal, even if no client registered, clients could have started before daemon */
@@ -772,7 +777,7 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 #if DEBUGGING_ON
 							LOG(DEBUG3) << "Action : " << action;
 #endif
-							this->searchSupportedDevices(pUdev);
+							this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
 
 							if( action == "add" ) {
 								this->initializeDevices();

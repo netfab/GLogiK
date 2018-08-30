@@ -82,7 +82,7 @@ class USBDevice
 			const char* virtualKeyboardName,
 			const std::vector<std::string> & keysNames
 		);
-		void destroyMacrosManager(void);
+		void destroyMacrosManager(void) noexcept;
 
 		const std::string & getStringID(void) const {
 			return _stringID;
@@ -90,7 +90,7 @@ class USBDevice
 		const bool getThreadsStatus(void) const {
 			return _threadsStatus;
 		}
-		void deactivateThreads(void) {
+		void deactivateThreads(void) noexcept {
 			_threadsStatus = false;
 		}
 		const int getLastKeysInterruptTransferLength(void) const {
