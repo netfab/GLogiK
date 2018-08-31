@@ -81,26 +81,41 @@ NetSnapshots::~NetSnapshots()
 
 const std::string NetSnapshots::getRxRateString(void)
 {
-	return this->getPaddedRateString(_rxDiff);
+	return this->getRateString(_rxDiff);
 }
 
-const std::string NetSnapshots::getPaddedRateString(unsigned long long value)
+const std::string NetSnapshots::getRateString(unsigned long long value)
 {
-	std::ostringstream out("", std::ios_base::app);
+	std::ostringstream buffer("", std::ios_base::app);
+	std::string unit;
 	if(value < 1024) {
-		out << std::setw(6) << std::to_string(value) << " B/s";
+		buffer << std::setw(4) << std::to_string(value);
+		unit = " B/s";
 	}
 	else {
 		float kB = value / 1024.f;
 		if(kB < 1024) {
-			out << std::setw(5) << std::setprecision(2) << std::fixed << kB << " kB/s";
+			buffer << std::setw(7) << std::fixed << kB;
+			unit = " kB/s";
 		}
 		else {
 			float mB = kB / 1024.f;
-			out << std::setw(5) << std::setprecision(2) << std::fixed << mB << " mB/s";
+			buffer << std::setw(7) << std::fixed << mB;
+			unit = " mB/s";
 		}
 	}
-	return out.str();
+
+	std::string out(buffer.str());
+
+	std::size_t pos = out.find_first_of('.');
+	if(pos == std::string::npos) {
+		out += unit;
+		return out;
+	}
+
+	out = out.substr(0, pos+3);
+	out += unit;
+	return out;
 }
 
 void NetSnapshots::findDefaultRouteNetworkInterfaceName(void)

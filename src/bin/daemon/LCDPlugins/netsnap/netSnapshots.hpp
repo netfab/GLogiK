@@ -50,7 +50,7 @@ class NetSnapshots
 		std::string _networkInterfaceName;
 		void findDefaultRouteNetworkInterfaceName(void);
 		void setBytesSnapshotValue(const NetDirection d, unsigned long long & value);
-		const std::string getPaddedRateString(unsigned long long value);
+		const std::string getRateString(unsigned long long value);
 };
 
 } // namespace GLogiK

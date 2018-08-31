@@ -46,6 +46,7 @@ class SystemMonitor
 
 	private:
 		CPUSnapshot _snapshot1;
+		std::size_t _lastRxStringSize;	/* used for net RX string padding */
 
 };
 

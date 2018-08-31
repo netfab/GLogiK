@@ -42,7 +42,9 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-SystemMonitor::SystemMonitor() {
+SystemMonitor::SystemMonitor()
+	:	_lastRxStringSize(0)
+{
 	_pluginName = "systemMonitor";
 	_pluginTempo = LCDPluginTempo::TEMPO_500_20;
 }
@@ -74,12 +76,8 @@ void SystemMonitor::init(FontsManager* const pFonts)
 
 const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
 {
-	struct sysinfo memInfo;
-	sysinfo(&(memInfo));
-
+	/* -- -- -- */
 	std::string usedPhysicalMemory("");
-	std::string usedCPUActiveTotal("");
-	std::string rxRateString("");
 
 	auto getPaddedPercentString = [] (unsigned int i) -> const std::string {
 		std::ostringstream out("", std::ios_base::app);
@@ -88,6 +86,9 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
 	};
 
 	{
+		struct sysinfo memInfo;
+		sysinfo(&(memInfo));
+
 		uint64_t usedPMem, totalPMem = 0;
 		usedPMem  = memInfo.freeram;
 		usedPMem *= memInfo.mem_unit;
@@ -101,6 +102,9 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
 
 		usedPhysicalMemory = getPaddedPercentString(usedPMem);
 	}
+
+	/* -- -- -- */
+	std::string usedCPUActiveTotal("");
 
 	{
 		CPUSnapshot s2;
@@ -120,21 +124,46 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
 		_snapshot1 = s2;
 	}
 
+	/* -- -- -- */
+	auto getPaddedNetRateString = [] (
+		const std::string & netRate,
+		std::size_t & lastSize ) -> const std::string
+	{
+		std::string paddedNetRateString(netRate);
+
+		std::size_t currentSize = netRate.size();
+		if(lastSize > currentSize) {
+			paddedNetRateString.assign( (lastSize - currentSize), ' ');
+			paddedNetRateString += netRate;
+		}
+
+		lastSize = currentSize;
+		return paddedNetRateString;
+	};
+
+	std::string paddedRXRateString("error");
 	try {
 		NetSnapshots n;
-		rxRateString = n.getRxRateString();
+		const std::string rxRateString(n.getRxRateString());
+		paddedRXRateString = getPaddedNetRateString(rxRateString, _lastRxStringSize);
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "network calculations error : " << e.what();
 	}
 
-	const unsigned int PERC_LCD_POS_X = 133;
+	/* -- -- -- */
+	/* FontID::MONOSPACE8_5 char width is 5 pixels */
+	const unsigned short FONT_CHAR_WIDTH = 5;
+
+	/* padded percentage string size is always 5 chars */
+	const unsigned int PERC_POS_X = (PBM_WIDTH - 1) - (5 * FONT_CHAR_WIDTH);
+	const unsigned int NET_POS_X = (PBM_WIDTH - 1) - (paddedRXRateString.size() * FONT_CHAR_WIDTH);
 
 	/* percent - max 5 chars */
-	/* net rate - max 10 chars */
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, usedCPUActiveTotal, PERC_LCD_POS_X, 14);
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, rxRateString, 109, 23);
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, usedPhysicalMemory, PERC_LCD_POS_X, 32);
+	/* net rate - max 12 chars */
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, usedCPUActiveTotal, PERC_POS_X, 14);
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, paddedRXRateString, NET_POS_X, 23);
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, usedPhysicalMemory, PERC_POS_X, 32);
 
 	return LCDPlugin::getCurrentPBMFrame();
 }
