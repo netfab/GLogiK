@@ -155,27 +155,29 @@ void LibUSB::closeUSBDevice(USBDevice & device) noexcept {
  *
  */
 void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
-	unsigned int i, j, k = 0;
 	int ret = 0;
+
 #if DEBUGGING_ON
 	LOG(DEBUG1) << device.getStringID() << " setting up usb device configuration";
 #endif
 
-	int b = -1;
-	ret = libusb_get_configuration(device._pUSBDeviceHandle, &b);
-	if ( this->USBError(ret) )
-		throw GLogiKExcept("libusb get_configuration error");
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << device.getStringID() << " current active configuration value : " << b;
-#endif
-
-	if( b == to_int(_expectedDescriptorsValues.bConfigurationValue) )
 	{
+		int bConfigurationValue = -1;
+		ret = libusb_get_configuration(device._pUSBDeviceHandle, &bConfigurationValue);
+		if ( this->USBError(ret) )
+			throw GLogiKExcept("libusb get_configuration error");
+
 #if DEBUGGING_ON
-		LOG(INFO) << device.getStringID() << " current active configuration value matches the wanted value, skipping configuration";
+		LOG(DEBUG3) << device.getStringID() << " current active configuration value : " << bConfigurationValue;
 #endif
-		return;
+
+		if( bConfigurationValue == to_int(_expectedDescriptorsValues.bConfigurationValue) )
+		{
+#if DEBUGGING_ON
+			LOG(INFO) << device.getStringID() << " current active configuration value matches the wanted value, skipping configuration";
+#endif
+			return;
+		}
 	}
 
 #if DEBUGGING_ON
@@ -191,7 +193,7 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 	if ( this->USBError(ret) )
 		throw GLogiKExcept("libusb get_device_descriptor failure");
 
-	for (i = 0; i < to_uint(deviceDescriptor.bNumConfigurations); i++) {
+	for(unsigned int i = 0; i < to_uint(deviceDescriptor.bNumConfigurations); i++) {
 		/* configuration descriptor */
 		libusb_config_descriptor * configDescriptor = nullptr;
 		ret = libusb_get_config_descriptor(device._pUSBDevice, i, &configDescriptor);
@@ -202,10 +204,10 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 			continue;
 		}
 
-		for (j = 0; j < to_uint(configDescriptor->bNumInterfaces); j++) {
+		for(unsigned int j = 0; j < to_uint(configDescriptor->bNumInterfaces); j++) {
 			const libusb_interface *iface = &(configDescriptor->interface[j]);
 
-			for (k = 0; k < to_uint(iface->num_altsetting); k++) {
+			for (unsigned int k = 0; k < to_uint(iface->num_altsetting); k++) {
 				/* interface alt_setting descriptor */
 				const libusb_interface_descriptor * asDescriptor = &(iface->altsetting[k]);
 
@@ -236,7 +238,6 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 }
 
 void LibUSB::findUSBDeviceInterface(USBDevice & device) {
-	unsigned int i, j, k, l = 0;
 	int ret = 0;
 
 #if DEBUGGING_ON
@@ -274,7 +275,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 	LOG(DEBUG4) << "--";
 #endif
 
-	for (i = 0; i < to_uint(deviceDescriptor.bNumConfigurations); i++) {
+	for (unsigned int i = 0; i < to_uint(deviceDescriptor.bNumConfigurations); i++) {
 		libusb_config_descriptor * configDescriptor = nullptr;
 		ret = libusb_get_config_descriptor(device._pUSBDevice, i, &configDescriptor);
 		if ( this->USBError(ret) ) {
@@ -311,13 +312,13 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 			continue; /* skip non expected configuration */
 		}
 
-		for (j = 0; j < to_uint(configDescriptor->bNumInterfaces); j++) {
+		for (unsigned int j = 0; j < to_uint(configDescriptor->bNumInterfaces); j++) {
 			const libusb_interface *iface = &(configDescriptor->interface[j]);
 #if DEBUGGING_ON
 			LOG(DEBUG2) << device.getStringID() << " interface " << j << " has " << iface->num_altsetting << " alternate settings";
 #endif
 
-			for (k = 0; k < to_uint(iface->num_altsetting); k++) {
+			for (unsigned int k = 0; k < to_uint(iface->num_altsetting); k++) {
 				const libusb_interface_descriptor * asDescriptor = &(iface->altsetting[k]);
 
 #if DEBUGGING_ON
@@ -393,29 +394,31 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 				}
 				device._toRelease.push_back(numInt);	/* claimed */
 
-				/* once that the interface is claimed, check that the right configuration is set */
+				{
+					/* once that the interface is claimed, check that the right configuration is set */
 #if DEBUGGING_ON
-				LOG(DEBUG1) << device.getStringID() << " checking current active configuration";
+					LOG(DEBUG1) << device.getStringID() << " checking current active configuration";
 #endif
-				int b = -1;
-				ret = libusb_get_configuration(device._pUSBDeviceHandle, &b);
-				if ( this->USBError(ret) ) {
-					libusb_free_config_descriptor( configDescriptor ); /* free */
-					throw GLogiKExcept("libusb get_configuration error");
-				}
+					int bConfigurationValue = -1;
+					ret = libusb_get_configuration(device._pUSBDeviceHandle, &bConfigurationValue);
+					if ( this->USBError(ret) ) {
+						libusb_free_config_descriptor( configDescriptor ); /* free */
+						throw GLogiKExcept("libusb get_configuration error");
+					}
 
 #if DEBUGGING_ON
-				LOG(DEBUG2) << device.getStringID() << " current active configuration value : " << b;
+					LOG(DEBUG2) << device.getStringID() << " current active configuration value : " << bConfigurationValue;
 #endif
-				if ( b != to_int(_expectedDescriptorsValues.bConfigurationValue) ) {
-					libusb_free_config_descriptor( configDescriptor ); /* free */
-					std::ostringstream buffer(std::ios_base::app);
-					buffer << "wrong configuration value : " << b;
-					GKSysLog(LOG_ERR, ERROR, buffer.str());
-					throw GLogiKExcept(buffer.str());
+					if ( bConfigurationValue != to_int(_expectedDescriptorsValues.bConfigurationValue) ) {
+						libusb_free_config_descriptor( configDescriptor ); /* free */
+						std::ostringstream buffer(std::ios_base::app);
+						buffer << "wrong configuration value : " << bConfigurationValue;
+						GKSysLog(LOG_ERR, ERROR, buffer.str());
+						throw GLogiKExcept(buffer.str());
+					}
 				}
 
-				for (l = 0; l < to_uint(asDescriptor->bNumEndpoints); l++) {
+				for (unsigned int l = 0; l < to_uint(asDescriptor->bNumEndpoints); l++) {
 					const libusb_endpoint_descriptor * ep = &(asDescriptor->endpoint[l]);
 
 					/* storing endpoint for later usage */
