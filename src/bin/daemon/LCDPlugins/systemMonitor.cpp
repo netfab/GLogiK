@@ -54,12 +54,12 @@ SystemMonitor::~SystemMonitor() {
 
 void SystemMonitor::init(FontsManager* const pFonts)
 {
-	fs::path pbm_dir(PBM_DATA_DIR);
-	pbm_dir /= _pluginName;
+	fs::path PBMDirectory(PBM_DATA_DIR);
+	PBMDirectory /= _pluginName;
 
 	pFonts->initializeFont(FontID::MONOSPACE8_5);
 
-	this->addPBMFrame(pbm_dir, "skeleton.pbm");
+	this->addPBMFrame(PBMDirectory, "skeleton.pbm");
 
 	std::string host;
 	{
