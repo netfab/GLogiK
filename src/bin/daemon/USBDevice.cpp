@@ -38,15 +38,13 @@ USBDevice::USBDevice(
 	const std::string & productID,
 	const uint64_t capabilities,
 	uint8_t bus,
-	uint8_t num,
-	const std::string & stringID)
+	uint8_t num)
 		:	BusNumDeviceID(name, vendorID, productID, capabilities, bus, num),
 			_fatalErrors(0),
 			_pMacrosManager(nullptr),
 			_pressedRKeysMask(0),
 			_banksLedsMask(0),
 			_exitMacroRecordMode(false),
-			_stringID(stringID),
 			_lastKeysInterruptTransferLength(0),
 			_lastLCDInterruptTransferLength(0),
 			_keysEndpoint(0),
@@ -93,7 +91,6 @@ void USBDevice::operator=(const USBDevice& dev)
 	_lastTimePoint		= dev._lastTimePoint;
 
 	/* private */
-	_stringID			= dev.getStringID();
 	this->setRGBBytes(dev._RGB[0], dev._RGB[1], dev._RGB[2]);
 	_lastKeysInterruptTransferLength	= dev.getLastKeysInterruptTransferLength();
 	_lastLCDInterruptTransferLength		= dev.getLastLCDInterruptTransferLength();

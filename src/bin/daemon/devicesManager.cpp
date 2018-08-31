@@ -479,7 +479,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 								throw GLogiKExcept("stoi out of range");
 							}
 
-							const std::string devID( KeyboardDriver::getDeviceID(bus, num) );
+							const std::string devID( BusNumDeviceID::getDeviceID(bus, num) );
 
 							try {
 								const DetectedDevice & d = _detectedDevices.at(devID);

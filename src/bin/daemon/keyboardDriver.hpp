@@ -110,7 +110,6 @@ class KeyboardDriver
 
 		const bool isDeviceInitialized(const std::string & devID) const;
 		const bool getDeviceThreadsStatus(const std::string & devID) const;
-		static const std::string getDeviceID(const uint8_t bus, const uint8_t num);
 
 		static const bool checkDeviceCapability(const DeviceID & device, Caps toCheck);
 

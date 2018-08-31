@@ -58,8 +58,7 @@ class USBDevice
 			const std::string & productID,
 			const uint64_t capabilities,
 			uint8_t bus,
-			uint8_t num,
-			const std::string & stringID);
+			uint8_t num);
 
 		void operator=(const USBDevice& dev);
 
@@ -84,9 +83,6 @@ class USBDevice
 		);
 		void destroyMacrosManager(void) noexcept;
 
-		const std::string & getStringID(void) const {
-			return _stringID;
-		}
 		const bool getThreadsStatus(void) const {
 			return _threadsStatus;
 		}
@@ -104,9 +100,6 @@ class USBDevice
 
 	private:
 		friend class LibUSB;
-
-		// TODO
-		std::string _stringID;	/* [devID] */
 
 		uint8_t _RGB[3];
 

@@ -62,6 +62,21 @@ class BusNumDeviceID
 		const uint8_t getBus(void) const { return _bus; }
 		const uint8_t getNum(void) const { return _num; }
 
+		static const std::string getDeviceID(const uint8_t bus, const uint8_t num)
+		{
+			std::string devID("[b");
+			devID += std::to_string(bus);
+			devID += 'd';
+			devID += std::to_string(num);
+			devID += ']';
+			return devID;
+		};
+
+		const std::string & getID(void) const
+		{
+			return _devID;
+		}
+
 	protected:
 		BusNumDeviceID(void) = default;
 		BusNumDeviceID(
@@ -71,7 +86,10 @@ class BusNumDeviceID
 			const uint64_t c,
 			const uint8_t b,
 			const uint8_t num
-		)	:	DeviceID(n,v,p,c), _bus(b), _num(num) {};
+		)	:	DeviceID(n,v,p,c),
+				_bus(b),
+				_num(num),
+				_devID(BusNumDeviceID::getDeviceID(b, num)) {};
 		~BusNumDeviceID(void) = default;
 
 	private:
@@ -79,6 +97,7 @@ class BusNumDeviceID
 
 		uint8_t _bus;
 		uint8_t _num;
+		std::string _devID; /* [b1d3] */
 };
 
 } // namespace GLogiK

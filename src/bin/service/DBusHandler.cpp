@@ -813,7 +813,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 				const std::string deviceStatus( _pDBus->getNextStringArgument() );
 				if(deviceStatus == "started") {
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "device status from daemon: [" << devID << "] started";
+					LOG(DEBUG3) << "device status from daemon: " << devID << " started";
 #endif
 					_devices.startDevice(devID);
 				}
@@ -866,7 +866,7 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 				const std::string deviceStatus( _pDBus->getNextStringArgument() );
 				if(deviceStatus == "stopped") {
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "device status from daemon: [" << devID << "] stopped";
+					LOG(DEBUG3) << "device status from daemon: " << devID << " stopped";
 #endif
 					_devices.stopDevice(devID);
 				}
@@ -911,7 +911,7 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
 				const std::string deviceStatus( _pDBus->getNextStringArgument() );
 				if(deviceStatus == "unplugged") {
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "device status from daemon: [" << devID << "] unplugged";
+					LOG(DEBUG3) << "device status from daemon: " << devID << " unplugged";
 #endif
 					_devices.unplugDevice(devID);
 				}

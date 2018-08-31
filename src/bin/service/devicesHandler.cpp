@@ -130,7 +130,7 @@ void DevicesHandler::checkDeviceConfigurationFile(const std::string & devID) {
 			this->sendDeviceConfigurationToDaemon(devID, device);
 		}
 		catch (const std::out_of_range& oor) {
-			LOG(WARNING) << "device [" << devID << "] not found in containers, giving up";
+			LOG(WARNING) << "device " << devID << " not found in containers, giving up";
 		}
 	}
 }
@@ -149,7 +149,7 @@ void DevicesHandler::saveDeviceConfigurationFile(
 
 		try {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "[" << devID << "] trying to open configuration file for writing : " << filePath.string();
+			LOG(DEBUG2) << devID << " trying to open configuration file for writing : " << filePath.string();
 #endif
 
 			std::ofstream ofs;
@@ -166,7 +166,7 @@ void DevicesHandler::saveDeviceConfigurationFile(
 				outputArchive << device;
 			}
 
-			LOG(INFO) << "[" << devID << "] successfully saved configuration file, closing";
+			LOG(INFO) << devID << " successfully saved configuration file, closing";
 			ofs.close();
 		}
 		catch (const std::ofstream::failure & e) {
@@ -280,11 +280,11 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 				const bool ret = _pDBus->getNextBooleanArgument();
 				if( ret ) {
-					LOG(VERB)	<< "[" << devID << "] successfully setted device backlight color : "
+					LOG(VERB)	<< devID << " successfully setted device backlight color : "
 								<< getHexRGB(r, g, b);
 				}
 				else {
-					LOG(ERROR) << "[" << devID << "] failed to set device backlight color : false";
+					LOG(ERROR) << devID << " failed to set device backlight color : false";
 				}
 			}
 			catch (const GLogiKExcept & e) {
@@ -316,7 +316,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 			}
 
 			if( ! sendIt ) {
-				LOG(VERB) << "[" << devID << "] skipping empty MacrosBank " << to_uint(bankID);
+				LOG(VERB) << devID << " skipping empty MacrosBank " << to_uint(bankID);
 				continue;
 			}
 
@@ -340,10 +340,10 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 					const bool ret = _pDBus->getNextBooleanArgument();
 					if( ret ) {
-						LOG(VERB) << "[" << devID << "] successfully setted device MacrosBank " << to_uint(bankID);
+						LOG(VERB) << devID << " successfully setted device MacrosBank " << to_uint(bankID);
 					}
 					else {
-						LOG(ERROR) << "[" << devID << "] failed to set device MacrosBank " << to_uint(bankID) << " : false";
+						LOG(ERROR) << devID << " failed to set device MacrosBank " << to_uint(bankID) << " : false";
 					}
 				}
 				catch (const GLogiKExcept & e) {
@@ -357,7 +357,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 		}
 	}
 
-	LOG(INFO) << "[" << devID << "] sent device configuration to daemon";
+	LOG(INFO) << devID << " sent device configuration to daemon";
 }
 
 void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProperties & device) {
@@ -386,7 +386,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 			device.setProperties( vendor, model, caps );
 
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "[" << devID << "] got 3 properties";
+			LOG(DEBUG3) << devID << " got 3 properties";
 #endif
 		}
 		catch (const GLogiKExcept & e) {
@@ -421,7 +421,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 				const std::vector<std::string> keysNames( _pDBus->getStringsArray() );
 				device.initMacrosBanks(keysNames);
 #if DEBUGGING_ON
-				LOG(DEBUG3) << "[" << devID << "] initialized " << keysNames.size() << " macro keys";
+				LOG(DEBUG3) << devID << " initialized " << keysNames.size() << " macro keys";
 #endif
 			}
 			catch (const GLogiKExcept & e) {
@@ -437,7 +437,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	/* search a configuration file */
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "[" << devID << "] assigning a configuration file";
+	LOG(DEBUG2) << devID << " assigning a configuration file";
 #endif
 	fs::path directory(_configurationRootDirectory);
 	directory /= device.getVendor();
@@ -471,9 +471,9 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 #endif
 		/* loading configuration file */
 		this->loadDeviceConfigurationFile(device);
-		LOG(INFO)	<< "found device [" << devID << "] - "
+		LOG(INFO)	<< "found device " << devID << " - "
 					<< device.getVendor() << " " << device.getModel();
-		LOG(INFO)	<< "[" << devID << "] configuration file found and loaded";
+		LOG(INFO)	<< devID << " configuration file found and loaded";
 
 		/* assuming that directory is readable since we just load
 		 * the configuration file */
@@ -485,9 +485,9 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 #if DEBUGGING_ON
 		LOG(DEBUG1) << e.what();
 #endif
-		LOG(INFO) << "[" << devID << "] started device : " << device.getVendor()
+		LOG(INFO) << devID << " started device : " << device.getVendor()
 				<< " " << device.getModel();
-		LOG(INFO) << "[" << devID << "] creating default configuration file";
+		LOG(INFO) << devID << " creating default configuration file";
 
 		try {
 			/* none found, assign a new configuration file to this device */
@@ -515,20 +515,20 @@ void DevicesHandler::startDevice(const std::string & devID) {
 	try {
 		_startedDevices.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "found already started device: [" << devID << "]";
+		LOG(DEBUG1) << "found already started device: " << devID;
 #endif
 		return;
 	}
 	catch (const std::out_of_range& oor) {
 		try {
 			DeviceProperties & device = _stoppedDevices.at(devID);
-			LOG(INFO) << "starting device: [" << devID << "]";
+			LOG(INFO) << "starting device: " << devID;
 			_startedDevices[devID] = device;
 			_stoppedDevices.erase(devID);
 		}
 		catch (const std::out_of_range& oor) {
 #if DEBUGGING_ON
-			LOG(DEBUG) << "initializing device: [" << devID << "]";
+			LOG(DEBUG) << "initializing device: " << devID;
 #endif
 			DeviceProperties device;
 			/* also load configuration file */
@@ -542,19 +542,19 @@ void DevicesHandler::stopDevice(const std::string & devID) {
 	try {
 		_stoppedDevices.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "found already stopped device: [" << devID << "]";
+		LOG(DEBUG1) << "found already stopped device: " << devID;
 #endif
 		return;
 	}
 	catch (const std::out_of_range& oor) {
 		try {
 			DeviceProperties & device = _startedDevices.at(devID);
-			LOG(INFO) << "stopping device: [" << devID << "]";
+			LOG(INFO) << "stopping device: " << devID;
 			_stoppedDevices[devID] = device;
 			_startedDevices.erase(devID);
 		}
 		catch (const std::out_of_range& oor) {
-			LOG(WARNING) << "device [" << devID << "] not found in containers, giving up";
+			LOG(WARNING) << "device " << devID << " not found in containers, giving up";
 		}
 	}
 }
@@ -563,7 +563,7 @@ void DevicesHandler::unplugDevice(const std::string & devID) {
 	try {
 		_stoppedDevices.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "found already stopped device: [" << devID << "]";
+		LOG(DEBUG1) << "found already stopped device: " << devID;
 #endif
 		this->unrefDevice(devID);
 	}
@@ -581,7 +581,7 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 
 		_stoppedDevices.erase(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "[" << devID << "] erased device";
+		LOG(DEBUG2) << devID << " erased device";
 #endif
 
 		std::string remoteMethod("DeleteDeviceConfiguration");
@@ -604,11 +604,11 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 				const bool ret = _pDBus->getNextBooleanArgument();
 				if( ret ) {
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "[" << devID << "] successfully deleted remote device configuration ";
+					LOG(DEBUG3) << devID << " successfully deleted remote device configuration ";
 #endif
 				}
 				else {
-					LOG(ERROR) << "[" << devID << "] failed to delete remote device configuration : false";
+					LOG(ERROR) << devID << " failed to delete remote device configuration : false";
 				}
 			}
 			catch (const GLogiKExcept & e) {
@@ -621,7 +621,7 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "device not found in stopped device container: [" << devID << "]";
+		LOG(WARNING) << "device not found in stopped device container: " << devID;
 	}
 }
 
