@@ -116,7 +116,6 @@ class USBDevice
 		unsigned char			_LCDEndpoint;
 		libusb_device *			_pUSBDevice;
 		libusb_device_handle *	_pUSBDeviceHandle;
-		std::vector<libusb_endpoint_descriptor> _USBEndpoints;
 		std::vector<int>		_toRelease;
 		std::vector<int>		_toAttach;
 

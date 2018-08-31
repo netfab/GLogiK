@@ -421,10 +421,6 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 				for (unsigned int l = 0; l < to_uint(asDescriptor->bNumEndpoints); l++) {
 					const libusb_endpoint_descriptor * ep = &(asDescriptor->endpoint[l]);
 
-					/* storing endpoint for later usage */
-					// FIXME no usage ?
-					device._USBEndpoints.push_back(*ep);
-
 					unsigned int addr = to_uint(ep->bEndpointAddress);
 					if( addr & LIBUSB_ENDPOINT_IN ) { /* In: device-to-host */
 #if DEBUGGING_ON

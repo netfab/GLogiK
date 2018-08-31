@@ -101,7 +101,6 @@ void USBDevice::operator=(const USBDevice& dev)
 	_LCDEndpoint		= dev._LCDEndpoint;
 	_pUSBDevice			= dev._pUSBDevice;
 	_pUSBDeviceHandle	= dev._pUSBDeviceHandle;
-	_USBEndpoints		= dev._USBEndpoints;
 	_toRelease			= dev._toRelease;
 	_toAttach			= dev._toAttach;
 
