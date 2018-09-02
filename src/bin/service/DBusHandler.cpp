@@ -665,7 +665,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"DevicesStarted",
-		{}, // FIXME array
+		{	{"as", "", "in", "array of started devices ID strings"} },
 		std::bind(&DBusHandler::devicesStarted, this, std::placeholders::_1)
 	);
 
@@ -674,7 +674,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"DevicesStopped",
-		{}, // FIXME array
+		{	{"as", "", "in", "array of stopped devices ID strings"} },
 		std::bind(&DBusHandler::devicesStopped, this, std::placeholders::_1)
 	);
 
@@ -683,7 +683,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"DevicesUnplugged",
-		{}, // FIXME array
+		{	{"as", "", "in", "array of unplugged devices ID strings"} },
 		std::bind(&DBusHandler::devicesUnplugged, this, std::placeholders::_1)
 	);
 
@@ -719,7 +719,9 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"MacroRecorded",
-		{}, // FIXME : devID, keyName, bankID
+		{	{"s", "device_id", "in", "device ID"},
+			{"s", "macro_key_name", "in", "macro key name"},
+			{"y", "macro_bankID", "in", "macro bankID"} },
 		std::bind(	&DBusHandler::macroRecorded, this,
 					std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
 		)
@@ -730,7 +732,9 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"MacroCleared",
-		{}, // FIXME : devID, keyName, bankID
+		{	{"s", "device_id", "in", "device ID"},
+			{"s", "macro_key_name", "in", "macro key name"},
+			{"y", "macro_bankID", "in", "macro bankID"} },
 		std::bind(	&DBusHandler::macroCleared, this,
 					std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
 		)
@@ -741,7 +745,9 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"deviceMediaEvent",
-		{}, // FIXME : devID, mediaKeyEvent
+		{	{"s", "device_id", "in", "device ID"},
+			{"s", "media_key_event", "in", "media key event"}
+		},
 		std::bind(	&DBusHandler::deviceMediaEvent, this,
 					std::placeholders::_1, std::placeholders::_2
 		)

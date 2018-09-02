@@ -154,7 +154,10 @@ void GKDBusEvents::eventToXMLMethod(
 		xml << "    <method name=\"" << DBusEvent->eventName << "\">\n";
 		for(const auto & arg : DBusEvent->arguments) {
 			xml << "      <!-- " << arg.comment << " -->\n";
-			xml << "      <arg type=\"" << arg.type << "\" name=\"" << arg.name << "\" direction=\"" << arg.direction << "\" />\n";
+			xml << "      <arg type=\"" << arg.type << "\" ";
+			if( ! arg.name.empty() ) /* name attribute on arguments is optional */
+				xml << "name=\"" << arg.name << "\" ";
+			xml << "direction=\"" << arg.direction << "\" />\n";
 		}
 		xml << "    </method>\n";
 	}
