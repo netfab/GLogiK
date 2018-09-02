@@ -186,7 +186,7 @@ void SessionManager::processICEMessages(IceConn ice_conn) {
 		case IceProcessMessagesIOError:
 			LOG(WARNING) << "IO error, closing ICE connection";
 			IceCloseConnection(ice_conn);
-			// FIXME throw ?
+			// TODO throw ?
 			break;
 		case IceProcessMessagesConnectionClosed:
 #if DEBUGGING_ON
@@ -207,7 +207,6 @@ void SessionManager::ICEConnectionWatchCallback(IceConn ice_conn, IcePointer cli
 		return;
 	}
 */
-	// FIXME
 	SessionManager::processICEMessages(ice_conn);
 }
 
@@ -222,7 +221,6 @@ void SessionManager::SaveYourselfCallback(
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "SM save yourself call";
 #endif
-	// FIXME
 	SmcSaveYourselfDone(smc_conn, true);
 }
 

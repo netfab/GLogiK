@@ -37,7 +37,6 @@ thread_local BusConnection GKDBusEvents::currentBus(BusConnection::GKDBUS_SYSTEM
 
 GKDBusEvents::GKDBusEvents(const std::string & rootNode) : _rootNode(rootNode) {
 	/* adding special event for root node introspection */
-	// FIXME same event for GKDBUS_SESSION
 	const char* object = GKDBusEvents::_rootNodeObject.c_str();
 	const BusConnection systemBus(BusConnection::GKDBUS_SYSTEM);
 #if DEBUGGING_ON

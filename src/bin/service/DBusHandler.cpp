@@ -665,7 +665,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"DevicesStarted",
-		{}, // FIXME
+		{}, // FIXME array
 		std::bind(&DBusHandler::devicesStarted, this, std::placeholders::_1)
 	);
 
@@ -674,7 +674,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"DevicesStopped",
-		{}, // FIXME
+		{}, // FIXME array
 		std::bind(&DBusHandler::devicesStopped, this, std::placeholders::_1)
 	);
 
@@ -683,7 +683,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"DevicesUnplugged",
-		{}, // FIXME
+		{}, // FIXME array
 		std::bind(&DBusHandler::devicesUnplugged, this, std::placeholders::_1)
 	);
 
@@ -692,7 +692,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"DaemonIsStopping",
-		{}, // FIXME
+		{},
 		std::bind(&DBusHandler::daemonIsStopping, this)
 	);
 
@@ -701,7 +701,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"DaemonIsStarting",
-		{}, // FIXME
+		{},
 		std::bind(&DBusHandler::daemonIsStarting, this)
 	);
 
@@ -710,7 +710,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"ReportYourself",
-		{}, // FIXME
+		{},
 		std::bind(&DBusHandler::reportChangedState, this)
 	);
 
@@ -719,7 +719,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"MacroRecorded",
-		{}, // FIXME
+		{}, // FIXME : devID, keyName, bankID
 		std::bind(	&DBusHandler::macroRecorded, this,
 					std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
 		)
@@ -730,7 +730,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"MacroCleared",
-		{}, // FIXME
+		{}, // FIXME : devID, keyName, bankID
 		std::bind(	&DBusHandler::macroCleared, this,
 					std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
 		)
@@ -741,7 +741,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
 		"deviceMediaEvent",
-		{}, // FIXME
+		{}, // FIXME : devID, mediaKeyEvent
 		std::bind(	&DBusHandler::deviceMediaEvent, this,
 					std::placeholders::_1, std::placeholders::_2
 		)

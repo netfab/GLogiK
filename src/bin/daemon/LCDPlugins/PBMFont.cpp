@@ -138,9 +138,7 @@ void PBMFont::printCharacterOnFrame(
 			//std::bitset<8> bits(c);
 			//LOG(DEBUG) << bits.to_string();
 
-			/* FIXME
-			 * _charWidth should be <= 8 here
-			 */
+			// FIXME _charWidth should be <= 8 here
 			const unsigned short xModuloComp8 = (8 - xModulo);
 			short rightShift = (_charWidth - xModuloComp8);
 
@@ -174,7 +172,6 @@ const unsigned char PBMFont::getCharacterLine(const unsigned short line) const
 		/* line in the selected character (in bytes) */
 		line * PBM_WIDTH_IN_BYTES;
 
-// FIXME
 #if 0 & DEBUGGING_ON
 	LOG(DEBUG2) << "charX: " << _charX
 				<< " charY: " << _charY;

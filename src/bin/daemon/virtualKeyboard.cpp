@@ -104,7 +104,7 @@ void VirtualKeyboard::sendKeyEvent(const KeyEvent & key) {
 	LOG(DEBUG2)	<< "interval : " << key.interval << " ms";
 #endif
 
-	if( key.interval > 20 ) { // FIXME
+	if( key.interval > 20 ) {
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "sleeping for : " << key.interval << "ms";
 #endif

@@ -19,6 +19,11 @@
  *
  */
 
+/*
+ *	TODO Implement potential extra descriptors parsing
+ *		(search for «extra parsing» string in this file)
+ */
+
 #include <bitset>
 #include <mutex>
 #include <sstream>
@@ -69,10 +74,6 @@ LibUSB::~LibUSB() {
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "closing libusb";
 #endif
-		// FIXME
-		//if( this->initialized_devices_.size() != 0 ) { // sanity check
-		//	GKSysLog(LOG_WARNING, WARNING, "closing libusb with opened device(s) !");
-		//}
 		libusb_exit(LibUSB::pContext);
 		LibUSB::status = false;
 	}
@@ -300,7 +301,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 		LOG(DEBUG4) << "iConfiguration      : " << to_uint(configDescriptor->iConfiguration);
 		LOG(DEBUG4) << "bmAttributes        : " << to_uint(configDescriptor->bmAttributes);
 		LOG(DEBUG4) << "MaxPower            : " << to_uint(configDescriptor->MaxPower);
-		/* TODO extra */
+		/* extra parsing */
 		LOG(DEBUG4) << "extra_length        : " << static_cast<int>(configDescriptor->extra_length);
 		LOG(DEBUG4) << "--";
 		LOG(DEBUG4) << "--";
@@ -338,7 +339,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 				LOG(DEBUG4) << "bInterfaceSubClass : " << to_uint(asDescriptor->bInterfaceSubClass);
 				LOG(DEBUG4) << "bInterfaceProtocol : " << to_uint(asDescriptor->bInterfaceProtocol);
 				LOG(DEBUG4) << "iInterface         : " << to_uint(asDescriptor->iInterface);
-				/* TODO extra */
+				/* extra parsing */
 				LOG(DEBUG4) << "extra_length       : " << static_cast<int>(asDescriptor->extra_length);
 				LOG(DEBUG4) << "--";
 				LOG(DEBUG4) << "--";
@@ -452,7 +453,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 					LOG(DEBUG4) << "bInterval        : " << to_uint(ep->bInterval);
 					LOG(DEBUG4) << "bRefresh         : " << to_uint(ep->bRefresh);
 					LOG(DEBUG4) << "bSynchAddress    : " << to_uint(ep->bSynchAddress);
-					/* TODO extra */
+					/* extra parsing */
 					LOG(DEBUG4) << "extra_length     : " << static_cast<int>(ep->extra_length);
 					LOG(DEBUG4) << "--";
 					LOG(DEBUG4) << "--";

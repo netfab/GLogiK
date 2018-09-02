@@ -384,7 +384,6 @@ const bool ClientsManager::updateClientState(
 	LOG(DEBUG2) << s_Client << clientID << " state: " << state;
 #endif
 
-	// FIXME never seen other state
 	if( (state != _active) and (state != "online") ) {
 		std::ostringstream buffer(std::ios_base::app);
 		buffer << "unhandled state for updating devices : " << state;
@@ -593,8 +592,7 @@ const bool ClientsManager::restartDevice(
 	}
 
 	_enabledSignals = true;
-	// FIXME
-	// device could fail to stop for following reasons :
+	// TODO device could fail to stop for following reasons :
 	//  * unknown clientID
 	//  * client not allowed to stop device (not ready)
 	//  * client not allowed to stop device (not alive)

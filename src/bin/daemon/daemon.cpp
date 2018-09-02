@@ -158,7 +158,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			}
 		}
 		else {
-			// TODO
+			// TODO non-daemon mode
 			GKSysLog(LOG_INFO, INFO, "non-daemon mode");
 		}
 

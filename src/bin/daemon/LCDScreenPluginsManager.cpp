@@ -204,7 +204,6 @@ void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(LCDDataArray & LCDBuffer,
 
 			for(int bit = 7; bit > -1; --bit) {
 
-// FIXME
 #if 0 && DEBUGGING_ON
 				LOG(DEBUG2)	<< "row: " << row
 							<< " PBMByte: " << PBMByte
