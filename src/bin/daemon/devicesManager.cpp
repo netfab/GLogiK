@@ -19,6 +19,7 @@
  *
  */
 
+#include <new>
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
@@ -744,9 +745,12 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 #if DEBUGGING_ON
 			LOG(DEBUG2) << "loading drivers";
 #endif
-
-			// FIXME catch bad_alloc
-			_drivers.push_back( new LogitechG510() );
+			try {
+				_drivers.push_back( new LogitechG510() );
+			}
+			catch (const std::bad_alloc& e) { /* handle new() failure */
+				throw GLogiKBadAlloc("catch driver wrong allocation");
+			}
 
 			this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
 			this->initializeDevices();
