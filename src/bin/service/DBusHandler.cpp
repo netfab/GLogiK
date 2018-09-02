@@ -771,8 +771,8 @@ void DBusHandler::daemonIsStarting(void) {
 	buffer << __func__;
 	if( _registerStatus ) {
 #if DEBUGGING_ON
-		LOG(WARNING) << buffer.str()
-			<< " - but we are already registered with daemon"
+		LOG(DEBUG2) << buffer.str()
+			<< " - but we are already registered with daemon : "
 			<< _currentSession;
 #endif
 	}

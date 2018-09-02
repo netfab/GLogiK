@@ -35,7 +35,7 @@
 
 #include "devicesHandler.hpp"
 
-#define UNREACHABLE_DAEMON_MAX_RETRIES 12
+#define UNREACHABLE_DAEMON_MAX_RETRIES 3
 
 namespace GLogiK
 {
