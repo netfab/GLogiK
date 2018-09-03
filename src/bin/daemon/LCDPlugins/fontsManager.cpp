@@ -24,8 +24,6 @@
 #include "lib/utils/utils.hpp"
 
 #include "fontsManager.hpp"
-#include "fontMonospace8_5.hpp"
-#include "fontMonospace8_6.hpp"
 
 namespace GLogiK
 {
@@ -53,11 +51,11 @@ void FontsManager::initializeFont(const FontID fontID)
 		PBMFont* font = nullptr;
 		try {
 			switch(fontID) {
-				case FontID::MONOSPACE8_5:
-					font = new fontMonospace8_5();
+				case FontID::MONOSPACE85:
+					font = new FontMonospace85();
 					break;
-				case FontID::MONOSPACE8_6:
-					font = new fontMonospace8_6();
+				case FontID::MONOSPACE86:
+					font = new FontMonospace86();
 					break;
 				default:
 					throw GLogiKExcept("unknown font ID");

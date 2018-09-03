@@ -46,15 +46,15 @@ void Splashscreen::init(FontsManager* const pFonts)
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _pluginName;
 
-	pFonts->initializeFont(FontID::MONOSPACE8_5);
-	//pFonts->initializeFont(FontID::MONOSPACE8_6);
+	pFonts->initializeFont(FontID::MONOSPACE85);
+	//pFonts->initializeFont(FontID::MONOSPACE86);
 
 	this->addPBMFrame(PBMDirectory, "splashscreen01.pbm", 1);		/* frame #0 */
 	this->addPBMFrame(PBMDirectory, "splashscreen02.pbm", 2);		/*       #1 */
 	this->addPBMFrame(PBMDirectory, "splashscreen02.pbm", 7);		/*       #2 */
 
 	std::string version(" version "); version += PACKAGE_VERSION;
-	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE8_5, version, 48, 32);
+	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, version, 48, 32);
 
 	LCDPlugin::init(pFonts);
 }
@@ -64,7 +64,7 @@ const PBMDataArray & Splashscreen::getNextPBMFrame(FontsManager* const pFonts)
 	//if( this->getNextPBMFrameID() == 2 ) {
 	//	std::string version(" version ");
 	//	version += PACKAGE_VERSION;
-	//	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_6, version, 48, 32);
+	//	this->writeStringOnFrame(pFonts, FontID::MONOSPACE86, version, 48, 32);
 	//}
 
 	return LCDPlugin::getCurrentPBMFrame();

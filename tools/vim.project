@@ -42,6 +42,10 @@ GLogiK=$PWD/.. CD=. {
 		}
 		pbm=pbm/ {
 			Makefile.am
+			fonts=fonts/ {
+				monospace85.pbm
+				monospace86.pbm
+			}
 			splashscreen=splashscreen/ {
 				splashscreen01.pbm
 				splashscreen02.pbm
@@ -49,8 +53,6 @@ GLogiK=$PWD/.. CD=. {
 			systemMonitor=systemMonitor/ {
 				skeleton.pbm
 			}
-			monospace8_5.pbm
-			monospace8_6.pbm
 		}
 		udev=udev/ {
 			Makefile.am
@@ -85,6 +87,7 @@ GLogiK=$PWD/.. CD=. {
 					systemMonitor.hpp
 					LCDPlugin.cpp
 					LCDPlugin.hpp
+					fonts.hpp
 					fontsManager.cpp
 					fontsManager.hpp
 					fontMonospace8_5.cpp

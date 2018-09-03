@@ -57,7 +57,7 @@ void SystemMonitor::init(FontsManager* const pFonts)
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _pluginName;
 
-	pFonts->initializeFont(FontID::MONOSPACE8_5);
+	pFonts->initializeFont(FontID::MONOSPACE85);
 
 	this->addPBMFrame(PBMDirectory, "skeleton.pbm");
 
@@ -69,7 +69,7 @@ void SystemMonitor::init(FontsManager* const pFonts)
 		hostname[HOST_NAME_MAX-1] = '\0';
 		host.assign(hostname);
 	}
-	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE8_5, host, 6, 1);
+	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, host, 6, 1);
 
 	LCDPlugin::init(pFonts);
 }
@@ -152,7 +152,7 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
 	}
 
 	/* -- -- -- */
-	/* FontID::MONOSPACE8_5 char width is 5 pixels */
+	/* FontID::MONOSPACE85 char width is 5 pixels */
 	const unsigned short FONT_CHAR_WIDTH = 5;
 
 	/* padded percentage string size is always 5 chars */
@@ -161,9 +161,9 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
 
 	/* percent - max 5 chars */
 	/* net rate - max 12 chars */
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, usedCPUActiveTotal, PERC_POS_X, 14);
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, paddedRXRateString, NET_POS_X, 23);
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE8_5, usedPhysicalMemory, PERC_POS_X, 32);
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, usedCPUActiveTotal, PERC_POS_X, 14);
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, paddedRXRateString, NET_POS_X, 23);
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, usedPhysicalMemory, PERC_POS_X, 32);
 
 	return LCDPlugin::getCurrentPBMFrame();
 }

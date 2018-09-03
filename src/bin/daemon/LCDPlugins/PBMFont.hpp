@@ -52,7 +52,7 @@ class PBMFont
 	protected:
 		PBMFont(
 			const std::string & pbmName,
-			const unsigned short width = 6,
+			const unsigned short width,
 			const unsigned short height = 10,
 			const charactersMap_type charsMap = PBMFont::defaultCharsMap
 		);

@@ -19,20 +19,46 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_FONT_MONOSPACE8_6_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_FONT_MONOSPACE8_6_HPP_
+#ifndef SRC_BIN_DAEMON_LCDPLUGINS_FONTS_HPP_
+#define SRC_BIN_DAEMON_LCDPLUGINS_FONTS_HPP_
+
+#include <cstdint>
 
 #include "PBMFont.hpp"
 
 namespace GLogiK
 {
 
-class fontMonospace8_6
+enum class FontID : uint8_t
+{
+	MONOSPACE85 = 1 << 0,
+	MONOSPACE86 = 1 << 1,
+};
+
+/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
+/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
+
+class FontMonospace85
 	:	public PBMFont
 {
 	public:
-		fontMonospace8_6(void);
-		~fontMonospace8_6(void);
+		FontMonospace85(void)
+			:	PBMFont("monospace85", 5) {};
+		~FontMonospace85() = default;
+
+	protected:
+
+	private:
+
+};
+
+class FontMonospace86
+	:	public PBMFont
+{
+	public:
+		FontMonospace86(void)
+			:	PBMFont("monospace86", 6) {};
+		~FontMonospace86() = default;
 
 	protected:
 

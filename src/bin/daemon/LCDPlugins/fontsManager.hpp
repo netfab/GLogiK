@@ -28,15 +28,10 @@
 #include <map>
 
 #include "PBMFont.hpp"
+#include "fonts.hpp"
 
 namespace GLogiK
 {
-
-enum class FontID : uint8_t
-{
-	MONOSPACE8_5 = 1 << 0,
-	MONOSPACE8_6 = 1 << 1,
-};
 
 class FontsManager
 {

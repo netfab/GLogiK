@@ -62,10 +62,7 @@ GLogiKd_SOURCES += \
 		%D%/LCDPlugins/PBMFile.hpp \
 		%D%/LCDPlugins/PBMFont.cpp \
 		%D%/LCDPlugins/PBMFont.hpp \
-		%D%/LCDPlugins/fontMonospace8_5.cpp \
-		%D%/LCDPlugins/fontMonospace8_5.hpp \
-		%D%/LCDPlugins/fontMonospace8_6.cpp \
-		%D%/LCDPlugins/fontMonospace8_6.hpp \
+		%D%/LCDPlugins/fonts.hpp \
 		%D%/LCDPlugins/fontsManager.cpp \
 		%D%/LCDPlugins/fontsManager.hpp \
 		%D%/LCDPlugins/LCDPlugin.cpp \

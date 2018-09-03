@@ -71,6 +71,7 @@ PBMFont::PBMFont(
 		_charsMap(charsMap)
 {
 	fs::path fullpath(PBM_DATA_DIR);
+	fullpath /= "fonts";
 	fullpath /= pbmName;
 	fullpath += ".pbm";
 
