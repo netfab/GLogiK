@@ -151,7 +151,7 @@ const unsigned short LCDPlugin::getNextPBMFrameID(void) const
 
 PBMDataArray & LCDPlugin::getCurrentPBMFrame(void)
 {
-#if DEBUGGING_ON
+#if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 	LOG(DEBUG3) << _pluginName << " PBM # " << _frameIndex;
 #endif
 	return (*_itCurrentFrame).pbm_data;
@@ -165,7 +165,7 @@ void LCDPlugin::writeStringOnFrame(
 	const unsigned int PBMYPos)
 {
 	try {
-#if DEBUGGING_ON
+#if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 		LOG(DEBUG2) << _pluginName << " PBM # " << _frameIndex << " - writing string : " << string;
 #endif
 		for(const char & c : string) {

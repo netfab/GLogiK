@@ -55,7 +55,7 @@ NetSnapshots::NetSnapshots()
 	if( _defaultNetworkInterfaceName.empty() ) {
 		throw GLogiKExcept("unable to find default route interface name");
 	}
-#if DEBUGGING_ON
+#if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 	LOG(DEBUG2) << "found default route interface name: " << _defaultNetworkInterfaceName;
 #endif
 
