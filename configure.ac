@@ -67,6 +67,10 @@ AC_ARG_ENABLE( [debug-gkdbus],
 				AC_HELP_STRING( [--enable-debug-gkdbus], [Enable gkdbus debugging, default: no]),
 				[enable_gkdbus_debugging=$enableval], [enable_gkdbus_debugging=no])
 
+AC_ARG_ENABLE( [debug-libusb],
+				AC_HELP_STRING( [--enable-debug-libusb], [Enable LibUSB extra debugging, default: no]),
+				[enable_libusb_extra_debugging=$enableval], [enable_libusb_extra_debugging=no])
+
 AC_ARG_ENABLE( [debug-pbmfont],
 				AC_HELP_STRING( [--enable-debug-pbmfont], [Enable pbmfont debugging, default: no]),
 				[enable_pbmfont_debugging=$enableval], [enable_pbmfont_debugging=no])
@@ -191,6 +195,15 @@ if test "$enable_debugging" = yes; then
 		AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [GKDBus sub-objects debugging])
 	fi
 
+	AC_MSG_CHECKING([whether we want LibUSB extra debugging])
+	if test "$enable_libusb_extra_debugging" = yes; then
+		AC_MSG_RESULT([yes])
+		AC_DEFINE([DEBUG_LIBUSB_EXTRA], [1], [LibUSB extra debugging])
+	else
+		AC_MSG_RESULT([no])
+		AC_DEFINE([DEBUG_LIBUSB_EXTRA], [0], [LibUSB extra debugging])
+	fi
+
 	AC_MSG_CHECKING([whether we want pbmfont debugging])
 	if test "$enable_pbmfont_debugging" = yes; then
 		AC_MSG_RESULT([yes])
@@ -214,6 +227,7 @@ else
 	AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [GKDBus sub-objects debugging])
 	AC_DEFINE([DEBUG_PBMFONT], [0], [PBM fonts debugging])
 	AC_DEFINE([DEBUG_LCD_PLUGINS], [0], [LCD plugins debugging])
+	AC_DEFINE([DEBUG_LIBUSB_EXTRA], [0], [LibUSB extra debugging])
 fi
 
 AM_CONDITIONAL([WITH_LIBNOTIFY], [test "x$enable_desktop_notifications" = xyes])
@@ -334,6 +348,7 @@ AC_MSG_NOTICE([
 --------------------------------------------------------------
   Global debugging : ${enable_debugging}
             GKDBus : ${enable_gkdbus_debugging}
+            LibUSB : ${enable_libusb_extra_debugging}
            PBMFont : ${enable_pbmfont_debugging}
        LCD plugins : ${enable_lcd_plugins_debugging}
          debug dir : ${DEBUG_DIR}

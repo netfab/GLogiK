@@ -253,27 +253,28 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "device has " << to_uint(deviceDescriptor.bNumConfigurations)
 				<< " possible configuration(s)";
-
-	LOG(DEBUG4) << "--";
-	LOG(DEBUG4) << "device descriptor";
-	LOG(DEBUG4) << "--";
-	LOG(DEBUG4) << "bLength            : " << to_uint(deviceDescriptor.bLength);
-	LOG(DEBUG4) << "bDescriptorType    : " << to_uint(deviceDescriptor.bDescriptorType);
-	LOG(DEBUG4) << "bcdUSB             : " << std::bitset<16>( to_uint(deviceDescriptor.bcdUSB) ).to_string();
-	LOG(DEBUG4) << "bDeviceClass       : " << to_uint(deviceDescriptor.bDeviceClass);
-	LOG(DEBUG4) << "bDeviceSubClass    : " << to_uint(deviceDescriptor.bDeviceSubClass);
-	LOG(DEBUG4) << "bDeviceProtocol    : " << to_uint(deviceDescriptor.bDeviceProtocol);
-	LOG(DEBUG4) << "bMaxPacketSize0    : " << to_uint(deviceDescriptor.bMaxPacketSize0);
-	LOG(DEBUG4) << "idVendor           : " << std::hex << to_uint(deviceDescriptor.idVendor);
-	LOG(DEBUG4) << "idProduct          : " << std::hex << to_uint(deviceDescriptor.idProduct);
-	LOG(DEBUG4) << "bcdDevice          : " << std::bitset<16>( to_uint(deviceDescriptor.bcdDevice) ).to_string();
-	LOG(DEBUG4) << "iManufacturer      : " << to_uint(deviceDescriptor.iManufacturer);
-	LOG(DEBUG4) << "iProduct           : " << to_uint(deviceDescriptor.iProduct);
-	LOG(DEBUG4) << "iSerialNumber      : " << to_uint(deviceDescriptor.iSerialNumber);
-	LOG(DEBUG4) << "bNumConfigurations : " << to_uint(deviceDescriptor.bNumConfigurations);
-	LOG(DEBUG4) << "--";
-	LOG(DEBUG4) << "--";
-	LOG(DEBUG4) << "--";
+#if DEBUG_LIBUSB_EXTRA
+	LOG(DEBUG3) << "--";
+	LOG(DEBUG3) << "device descriptor";
+	LOG(DEBUG3) << "--";
+	LOG(DEBUG3) << "bLength            : " << to_uint(deviceDescriptor.bLength);
+	LOG(DEBUG3) << "bDescriptorType    : " << to_uint(deviceDescriptor.bDescriptorType);
+	LOG(DEBUG3) << "bcdUSB             : " << std::bitset<16>( to_uint(deviceDescriptor.bcdUSB) ).to_string();
+	LOG(DEBUG3) << "bDeviceClass       : " << to_uint(deviceDescriptor.bDeviceClass);
+	LOG(DEBUG3) << "bDeviceSubClass    : " << to_uint(deviceDescriptor.bDeviceSubClass);
+	LOG(DEBUG3) << "bDeviceProtocol    : " << to_uint(deviceDescriptor.bDeviceProtocol);
+	LOG(DEBUG3) << "bMaxPacketSize0    : " << to_uint(deviceDescriptor.bMaxPacketSize0);
+	LOG(DEBUG3) << "idVendor           : " << std::hex << to_uint(deviceDescriptor.idVendor);
+	LOG(DEBUG3) << "idProduct          : " << std::hex << to_uint(deviceDescriptor.idProduct);
+	LOG(DEBUG3) << "bcdDevice          : " << std::bitset<16>( to_uint(deviceDescriptor.bcdDevice) ).to_string();
+	LOG(DEBUG3) << "iManufacturer      : " << to_uint(deviceDescriptor.iManufacturer);
+	LOG(DEBUG3) << "iProduct           : " << to_uint(deviceDescriptor.iProduct);
+	LOG(DEBUG3) << "iSerialNumber      : " << to_uint(deviceDescriptor.iSerialNumber);
+	LOG(DEBUG3) << "bNumConfigurations : " << to_uint(deviceDescriptor.bNumConfigurations);
+	LOG(DEBUG3) << "--";
+	LOG(DEBUG3) << "--";
+	LOG(DEBUG3) << "--";
+#endif
 #endif
 
 	for (unsigned int i = 0; i < to_uint(deviceDescriptor.bNumConfigurations); i++) {
@@ -290,22 +291,24 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 		LOG(DEBUG2) << "configuration " << to_uint(configDescriptor->bConfigurationValue)
 					<< " has " << to_uint(configDescriptor->bNumInterfaces) << " interface(s)";
 
-		LOG(DEBUG4) << "--";
-		LOG(DEBUG4) << "config descriptor";
-		LOG(DEBUG4) << "--";
-		LOG(DEBUG4) << "bLength             : " << to_uint(configDescriptor->bLength);
-		LOG(DEBUG4) << "bDescriptorType     : " << to_uint(configDescriptor->bDescriptorType);
-		LOG(DEBUG4) << "wTotalLength        : " << to_uint(configDescriptor->wTotalLength);
-		LOG(DEBUG4) << "bNumInterfaces      : " << to_uint(configDescriptor->bNumInterfaces);
-		LOG(DEBUG4) << "bConfigurationValue : " << to_uint(configDescriptor->bConfigurationValue);
-		LOG(DEBUG4) << "iConfiguration      : " << to_uint(configDescriptor->iConfiguration);
-		LOG(DEBUG4) << "bmAttributes        : " << to_uint(configDescriptor->bmAttributes);
-		LOG(DEBUG4) << "MaxPower            : " << to_uint(configDescriptor->MaxPower);
+#if DEBUG_LIBUSB_EXTRA
+		LOG(DEBUG3) << "--";
+		LOG(DEBUG3) << "config descriptor";
+		LOG(DEBUG3) << "--";
+		LOG(DEBUG3) << "bLength             : " << to_uint(configDescriptor->bLength);
+		LOG(DEBUG3) << "bDescriptorType     : " << to_uint(configDescriptor->bDescriptorType);
+		LOG(DEBUG3) << "wTotalLength        : " << to_uint(configDescriptor->wTotalLength);
+		LOG(DEBUG3) << "bNumInterfaces      : " << to_uint(configDescriptor->bNumInterfaces);
+		LOG(DEBUG3) << "bConfigurationValue : " << to_uint(configDescriptor->bConfigurationValue);
+		LOG(DEBUG3) << "iConfiguration      : " << to_uint(configDescriptor->iConfiguration);
+		LOG(DEBUG3) << "bmAttributes        : " << to_uint(configDescriptor->bmAttributes);
+		LOG(DEBUG3) << "MaxPower            : " << to_uint(configDescriptor->MaxPower);
 		/* extra parsing */
-		LOG(DEBUG4) << "extra_length        : " << static_cast<int>(configDescriptor->extra_length);
-		LOG(DEBUG4) << "--";
-		LOG(DEBUG4) << "--";
-		LOG(DEBUG4) << "--";
+		LOG(DEBUG3) << "extra_length        : " << static_cast<int>(configDescriptor->extra_length);
+		LOG(DEBUG3) << "--";
+		LOG(DEBUG3) << "--";
+		LOG(DEBUG3) << "--";
+#endif
 #endif
 
 		if ( configDescriptor->bConfigurationValue != _expectedDescriptorsValues.bConfigurationValue ) {
@@ -327,23 +330,25 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 							<< " alternate setting " << to_uint(asDescriptor->bAlternateSetting)
 							<< " has " << to_uint(asDescriptor->bNumEndpoints) << " endpoints";
 
-				LOG(DEBUG4) << "--";
-				LOG(DEBUG4) << "interface descriptor";
-				LOG(DEBUG4) << "--";
-				LOG(DEBUG4) << "bLength            : " << to_uint(asDescriptor->bLength);
-				LOG(DEBUG4) << "bDescriptorType    : " << to_uint(asDescriptor->bDescriptorType);
-				LOG(DEBUG4) << "bInterfaceNumber   : " << to_uint(asDescriptor->bInterfaceNumber);
-				LOG(DEBUG4) << "bAlternateSetting  : " << to_uint(asDescriptor->bAlternateSetting);
-				LOG(DEBUG4) << "bNumEndpoints      : " << to_uint(asDescriptor->bNumEndpoints);
-				LOG(DEBUG4) << "bInterfaceClass    : " << to_uint(asDescriptor->bInterfaceClass);
-				LOG(DEBUG4) << "bInterfaceSubClass : " << to_uint(asDescriptor->bInterfaceSubClass);
-				LOG(DEBUG4) << "bInterfaceProtocol : " << to_uint(asDescriptor->bInterfaceProtocol);
-				LOG(DEBUG4) << "iInterface         : " << to_uint(asDescriptor->iInterface);
+#if DEBUG_LIBUSB_EXTRA
+				LOG(DEBUG3) << "--";
+				LOG(DEBUG3) << "interface descriptor";
+				LOG(DEBUG3) << "--";
+				LOG(DEBUG3) << "bLength            : " << to_uint(asDescriptor->bLength);
+				LOG(DEBUG3) << "bDescriptorType    : " << to_uint(asDescriptor->bDescriptorType);
+				LOG(DEBUG3) << "bInterfaceNumber   : " << to_uint(asDescriptor->bInterfaceNumber);
+				LOG(DEBUG3) << "bAlternateSetting  : " << to_uint(asDescriptor->bAlternateSetting);
+				LOG(DEBUG3) << "bNumEndpoints      : " << to_uint(asDescriptor->bNumEndpoints);
+				LOG(DEBUG3) << "bInterfaceClass    : " << to_uint(asDescriptor->bInterfaceClass);
+				LOG(DEBUG3) << "bInterfaceSubClass : " << to_uint(asDescriptor->bInterfaceSubClass);
+				LOG(DEBUG3) << "bInterfaceProtocol : " << to_uint(asDescriptor->bInterfaceProtocol);
+				LOG(DEBUG3) << "iInterface         : " << to_uint(asDescriptor->iInterface);
 				/* extra parsing */
-				LOG(DEBUG4) << "extra_length       : " << static_cast<int>(asDescriptor->extra_length);
-				LOG(DEBUG4) << "--";
-				LOG(DEBUG4) << "--";
-				LOG(DEBUG4) << "--";
+				LOG(DEBUG3) << "extra_length       : " << static_cast<int>(asDescriptor->extra_length);
+				LOG(DEBUG3) << "--";
+				LOG(DEBUG3) << "--";
+				LOG(DEBUG3) << "--";
+#endif
 #endif
 
 				if ( asDescriptor->bInterfaceNumber != _expectedDescriptorsValues.bInterfaceNumber) {
@@ -442,22 +447,24 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 					LOG(DEBUG3) << "int. " << j << " alt_s. " << to_uint(asDescriptor->bAlternateSetting)
 								<< " endpoint " << l;
 
-					LOG(DEBUG4) << "--";
-					LOG(DEBUG4) << "endpoint descriptor";
-					LOG(DEBUG4) << "--";
-					LOG(DEBUG4) << "bLength          : " << to_uint(ep->bLength);
-					LOG(DEBUG4) << "bDescriptorType  : " << to_uint(ep->bDescriptorType);
-					LOG(DEBUG4) << "bEndpointAddress : " << to_uint(ep->bEndpointAddress);
-					LOG(DEBUG4) << "bmAttributes     : " << to_uint(ep->bmAttributes);
-					LOG(DEBUG4) << "wMaxPacketSize   : " << to_uint(ep->wMaxPacketSize);
-					LOG(DEBUG4) << "bInterval        : " << to_uint(ep->bInterval);
-					LOG(DEBUG4) << "bRefresh         : " << to_uint(ep->bRefresh);
-					LOG(DEBUG4) << "bSynchAddress    : " << to_uint(ep->bSynchAddress);
+#if DEBUG_LIBUSB_EXTRA
+					LOG(DEBUG3) << "--";
+					LOG(DEBUG3) << "endpoint descriptor";
+					LOG(DEBUG3) << "--";
+					LOG(DEBUG3) << "bLength          : " << to_uint(ep->bLength);
+					LOG(DEBUG3) << "bDescriptorType  : " << to_uint(ep->bDescriptorType);
+					LOG(DEBUG3) << "bEndpointAddress : " << to_uint(ep->bEndpointAddress);
+					LOG(DEBUG3) << "bmAttributes     : " << to_uint(ep->bmAttributes);
+					LOG(DEBUG3) << "wMaxPacketSize   : " << to_uint(ep->wMaxPacketSize);
+					LOG(DEBUG3) << "bInterval        : " << to_uint(ep->bInterval);
+					LOG(DEBUG3) << "bRefresh         : " << to_uint(ep->bRefresh);
+					LOG(DEBUG3) << "bSynchAddress    : " << to_uint(ep->bSynchAddress);
 					/* extra parsing */
-					LOG(DEBUG4) << "extra_length     : " << static_cast<int>(ep->extra_length);
-					LOG(DEBUG4) << "--";
-					LOG(DEBUG4) << "--";
-					LOG(DEBUG4) << "--";
+					LOG(DEBUG3) << "extra_length     : " << static_cast<int>(ep->extra_length);
+					LOG(DEBUG3) << "--";
+					LOG(DEBUG3) << "--";
+					LOG(DEBUG3) << "--";
+#endif
 #endif
 				}
 
@@ -523,7 +530,7 @@ void LibUSB::sendControlRequest(
 		this->USBError(ret);
 	}
 	else {
-#if DEBUGGING_ON
+#if DEBUGGING_ON && DEBUG_LIBUSB_EXTRA
 		LOG(DEBUG2) << "sent " << ret << " bytes - expected: " << wLength;
 #endif
 	}
@@ -574,7 +581,7 @@ int LibUSB::performLCDScreenInterruptTransfer(
 		);
 	}
 
-#if DEBUGGING_ON
+#if DEBUGGING_ON && DEBUG_LIBUSB_EXTRA
 	LOG(DEBUG2) << "sent " << device.getLastLCDInterruptTransferLength() << " bytes - expected: " << bufferLength;
 #endif
 	if( ret < 0 ) {
