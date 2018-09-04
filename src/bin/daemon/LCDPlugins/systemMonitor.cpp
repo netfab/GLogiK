@@ -34,7 +34,6 @@
 
 #include "lib/utils/utils.hpp"
 
-#include "netsnap/netSnapshots.hpp"
 #include "systemMonitor.hpp"
 
 namespace GLogiK
@@ -43,7 +42,8 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 SystemMonitor::SystemMonitor()
-	:	_lastRxStringSize(0)
+	:	_lastRateStringSize(0),
+		_currentRate(NetDirection::NET_RX)
 {
 	_pluginName = "systemMonitor";
 	_pluginTempo = LCDPluginTempo::TEMPO_500_20;
@@ -127,7 +127,7 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 	}
 
 	/* -- -- -- */
-	auto getPaddedNetRateString = [] (
+	auto getPaddedRateString = [] (
 		const std::string & netRate,
 		std::size_t & lastSize ) -> const std::string
 	{
@@ -143,11 +143,27 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 		return paddedNetRateString;
 	};
 
-	std::string paddedRXRateString("error");
+	std::string paddedRateString("error");
 	try {
 		NetSnapshots n;
-		const std::string rxRateString(n.getRxRateString());
-		paddedRXRateString = getPaddedNetRateString(rxRateString, _lastRxStringSize);
+
+		if(LCDKey == "L5") {
+			if(_currentRate == NetDirection::NET_RX) {
+				_currentRate = NetDirection::NET_TX;
+#if DEBUGGING_ON && DEBUG_LCD_PLUGINS
+				LOG(DEBUG3) << _pluginName << " switched network rate to upload";
+#endif
+			}
+			else {
+				_currentRate = NetDirection::NET_RX;
+#if DEBUGGING_ON && DEBUG_LCD_PLUGINS
+				LOG(DEBUG3) << _pluginName << " switched network rate to download";
+#endif
+			}
+		}
+
+		const std::string rateString(n.getRateString(_currentRate));
+		paddedRateString = getPaddedRateString(rateString, _lastRateStringSize);
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "network calculations error : " << e.what();
@@ -159,12 +175,12 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 
 	/* padded percentage string size is always 5 chars */
 	const unsigned int PERC_POS_X = (PBM_WIDTH - 1) - (5 * FONT_CHAR_WIDTH);
-	const unsigned int NET_POS_X = (PBM_WIDTH - 1) - (paddedRXRateString.size() * FONT_CHAR_WIDTH);
+	const unsigned int NET_POS_X = (PBM_WIDTH - 1) - (paddedRateString.size() * FONT_CHAR_WIDTH);
 
 	/* percent - max 5 chars */
 	/* net rate - max 12 chars */
 	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, usedCPUActiveTotal, PERC_POS_X, 14);
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, paddedRXRateString, NET_POS_X, 23);
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, paddedRateString, NET_POS_X, 23);
 	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, usedPhysicalMemory, PERC_POS_X, 32);
 
 	return LCDPlugin::getCurrentPBMFrame();

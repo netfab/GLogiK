@@ -670,7 +670,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 					if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
 						if( device.getLastKeysInterruptTransferLength() == _keysEventsLength.LCDKeys ) {
 							if( this->checkLCDKey(device) ) {
-#if DEBUGGING_ON
+#if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 								std::lock_guard<std::mutex> lock(device._LCDKeyMutex);
 								LOG(DEBUG2) << device.getID() << " LCD key pressed : " << device._LCDKey;
 #endif

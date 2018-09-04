@@ -63,12 +63,18 @@ NetSnapshots::NetSnapshots()
 
 	try {
 		unsigned long long s1, s2 = 0;
+		unsigned long long s3, s4 = 0;
 		this->setBytesSnapshotValue(NetDirection::NET_RX, s1);
+		this->setBytesSnapshotValue(NetDirection::NET_TX, s3);
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		this->setBytesSnapshotValue(NetDirection::NET_RX, s2);
+		this->setBytesSnapshotValue(NetDirection::NET_TX, s4);
 		if( (s1 == 0) or (s2 == 0) )
-			throw GLogiKExcept("wrong bytes snapshot");
+			throw GLogiKExcept("wrong RX bytes snapshot");
+		if( (s3 == 0) or (s4 == 0) )
+			throw GLogiKExcept("wrong TX bytes snapshot");
 		_rxDiff = (10 * (s2 - s1)); /* extrapolation */
+		_txDiff = (10 * (s4 - s3)); /* extrapolation */
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << e.what();
@@ -79,12 +85,17 @@ NetSnapshots::~NetSnapshots()
 {
 }
 
-const std::string NetSnapshots::getRxRateString(void)
+const std::string NetSnapshots::getRateString(NetDirection direction)
 {
-	return this->getRateString(_rxDiff);
+	if(direction == NetDirection::NET_RX)
+		return this->getRateString(_rxDiff, " - download");
+	else
+		return this->getRateString(_txDiff, " - upload  ");
 }
 
-const std::string NetSnapshots::getRateString(unsigned long long value)
+const std::string NetSnapshots::getRateString(
+	unsigned long long value,
+	const std::string & direction)
 {
 	std::ostringstream buffer("", std::ios_base::app);
 	std::string unit;
@@ -105,16 +116,19 @@ const std::string NetSnapshots::getRateString(unsigned long long value)
 		}
 	}
 
-	std::string out(buffer.str());
+	const std::string rate(buffer.str());
+	const std::size_t pos = rate.find_first_of('.');
 
-	std::size_t pos = out.find_first_of('.');
+	std::string out;
 	if(pos == std::string::npos) {
-		out += unit;
-		return out;
+		out += rate;
+	}
+	else {
+		out += rate.substr(0, pos+3);
 	}
 
-	out = out.substr(0, pos+3);
 	out += unit;
+	out += direction;
 	return out;
 }
 

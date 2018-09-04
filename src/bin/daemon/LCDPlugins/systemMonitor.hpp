@@ -28,6 +28,8 @@
 
 #include "LCDPlugin.hpp"
 
+#include "netsnap/netSnapshots.hpp"
+
 namespace GLogiK
 {
 
@@ -49,7 +51,8 @@ class SystemMonitor
 
 	private:
 		CPUSnapshot _snapshot1;
-		std::size_t _lastRxStringSize;	/* used for net RX string padding */
+		std::size_t _lastRateStringSize;
+		NetDirection _currentRate;
 
 };
 

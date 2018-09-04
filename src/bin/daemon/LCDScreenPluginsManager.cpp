@@ -38,7 +38,7 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 		_pFonts(&_fontsManager)
 {
 	try {
-		_plugins.push_back( new Splashscreen() );
+		//_plugins.push_back( new Splashscreen() );
 		_plugins.push_back( new SystemMonitor() );
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
