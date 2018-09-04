@@ -242,7 +242,7 @@ void DevicesManager::stopInitializedDevices(void) {
 }
 
 void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept {
-#if DEBUGGING_ON
+#if 0 && DEBUGGING_ON
 	LOG(DEBUG2) << "checking initialized devices threads status";
 #endif
 

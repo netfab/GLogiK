@@ -173,7 +173,7 @@ const unsigned char PBMFont::getCharacterLine(const unsigned short line) const
 		/* line in the selected character (in bytes) */
 		line * PBM_WIDTH_IN_BYTES;
 
-#if 0 & DEBUGGING_ON
+#if 0 && DEBUGGING_ON
 	LOG(DEBUG2) << "charX: " << _charX
 				<< " charY: " << _charY;
 				<< " index: " << i+1;
