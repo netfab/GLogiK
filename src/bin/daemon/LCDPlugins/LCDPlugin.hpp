@@ -75,7 +75,10 @@ class LCDPlugin
 		void resetPBMFrameIndex(void);
 		void prepareNextPBMFrame(void);
 
-		virtual const PBMDataArray & getNextPBMFrame(FontsManager* const pFonts);
+		virtual const PBMDataArray & getNextPBMFrame(
+			FontsManager* const pFonts,
+			const std::string & LCDKey
+		);
 
 	protected:
 		LCDPlugin(void);

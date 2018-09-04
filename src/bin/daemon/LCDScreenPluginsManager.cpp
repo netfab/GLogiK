@@ -91,7 +91,7 @@ const unsigned short LCDScreenPluginsManager::getPluginTiming(void)
 	return 1000;
 }
 
-LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
+LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(const std::string & LCDKey)
 {
 	try {
 		/* make sure there at least one plugin */
@@ -113,7 +113,7 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(void)
 			(*_itCurrentPlugin)->prepareNextPBMFrame();
 			this->dumpPBMDataIntoLCDBuffer(
 				_LCDBuffer,
-				(*_itCurrentPlugin)->getNextPBMFrame(_pFonts)
+				(*_itCurrentPlugin)->getNextPBMFrame(_pFonts, LCDKey)
 			);
 		}
 		else /* else blank screen */

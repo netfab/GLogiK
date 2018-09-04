@@ -74,7 +74,9 @@ void SystemMonitor::init(FontsManager* const pFonts)
 	LCDPlugin::init(pFonts);
 }
 
-const PBMDataArray & SystemMonitor::getNextPBMFrame(FontsManager* const pFonts)
+const PBMDataArray & SystemMonitor::getNextPBMFrame(
+	FontsManager* const pFonts,
+	const std::string & LCDKey)
 {
 	/* -- -- -- */
 	std::string usedPhysicalMemory("");

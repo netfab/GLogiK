@@ -45,19 +45,22 @@ struct RKey
 	const unsigned short index;
 	const unsigned char mask;
 	const Keys key;
-	const bool isMacroKey;
 	const char* const name;
+	const bool isMacroKey;
+	const bool isLCDKey;
 
 	RKey(	const unsigned short i,
 			const unsigned char m,
 			const Keys k,
 			const char* const n=nullptr,
-			const bool b=false )
+			const bool bMacro=false,
+			const bool bLCD=false )
 		:	index(i),
 			mask(m),
 			key(k),
-			isMacroKey(b),
-			name(n) {}
+			name(n),
+			isMacroKey(bMacro),
+			isLCDKey(bLCD)	{}
 };
 
 struct MKeyLed
@@ -100,6 +103,7 @@ class LogitechG510
 		void processKeyEvent2Bytes(USBDevice & device);
 		const bool checkMacroKey(USBDevice & device);
 		const bool checkMediaKey(USBDevice & device);
+		const bool checkLCDKey(USBDevice & device);
 };
 
 } // namespace GLogiK

@@ -20,6 +20,7 @@
  */
 
 #include <algorithm>
+#include <mutex>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
@@ -59,11 +60,11 @@ const std::vector<RKey> LogitechG510::fiveBytesKeysMap = {
 	{3, 0x40, Keys::GK_KEY_M3},
 	{3, 0x80, Keys::GK_KEY_MR},
 
-	{4, 0x01, Keys::GK_KEY_L1},
-	{4, 0x02, Keys::GK_KEY_L2},
-	{4, 0x04, Keys::GK_KEY_L3},
-	{4, 0x08, Keys::GK_KEY_L4},
-	{4, 0x10, Keys::GK_KEY_L5},
+	{4, 0x01, Keys::GK_KEY_L1, "L1", false, true},
+	{4, 0x02, Keys::GK_KEY_L2, "L2", false, true},
+	{4, 0x04, Keys::GK_KEY_L3, "L3", false, true},
+	{4, 0x08, Keys::GK_KEY_L4, "L4", false, true},
+	{4, 0x10, Keys::GK_KEY_L5, "L5", false, true},
 	{4, 0x20, Keys::GK_KEY_MUTE_HEADSET},
 	{4, 0x40, Keys::GK_KEY_MUTE_MICRO},
 //	{4, 0x80, Keys::GK_KEY_},
@@ -108,7 +109,8 @@ LogitechG510::LogitechG510()
 				2	},	/* bNumEndpoints */
 			/* KeysEventsLength */
 			{	5,		/* MacrosKeys */
-				2	}	/* MediaKeys */
+				2,		/* MediaKeys */
+				5	}	/* LCDKeys */
 		)
 {
 }
@@ -153,6 +155,18 @@ const bool LogitechG510::checkMediaKey(USBDevice & device) {
 	for (const auto & key : LogitechG510::twoBytesKeysMap ) {
 		if( device._pressedRKeysMask & to_type(key.key) ) {
 			device._mediaKey = key.name;
+			return true;
+		}
+	}
+	return false;
+}
+
+/* return true if any LCD key is pressed */
+const bool LogitechG510::checkLCDKey(USBDevice & device) {
+	for (const auto & key : LogitechG510::fiveBytesKeysMap ) {
+		if( key.isLCDKey and device._pressedRKeysMask & to_type(key.key) ) {
+			std::lock_guard<std::mutex> lock(device._LCDKeyMutex);
+			device._LCDKey = key.name;
 			return true;
 		}
 	}

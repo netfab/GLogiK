@@ -22,6 +22,7 @@
 #ifndef SRC_BIN_DAEMON_LCD_SCREEN_PLUGINS_MANAGER_HPP_
 #define SRC_BIN_DAEMON_LCD_SCREEN_PLUGINS_MANAGER_HPP_
 
+#include <string>
 #include <vector>
 
 #include "LCDPlugins/PBM.hpp"
@@ -37,7 +38,7 @@ class LCDScreenPluginsManager
 		LCDScreenPluginsManager(void);
 		~LCDScreenPluginsManager(void);
 
-		LCDDataArray & getNextLCDScreenBuffer(void);
+		LCDDataArray & getNextLCDScreenBuffer(const std::string & LCDKey);
 		const unsigned short getPluginTiming(void);
 
 	protected:

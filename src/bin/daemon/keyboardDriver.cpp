@@ -512,7 +512,16 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 
 			auto t1 = std::chrono::high_resolution_clock::now();
 
-			LCDDataArray & LCDBuffer = LCDPlugins.getNextLCDScreenBuffer();
+			std::string LCDKey;
+			{
+				yield_for(std::chrono::microseconds(100));
+				std::lock_guard<std::mutex> lock(device._LCDKeyMutex);
+				if( ! device._LCDKey.empty() ) {
+					LCDKey = device._LCDKey;
+					device._LCDKey.clear();
+				}
+			}
+			LCDDataArray & LCDBuffer = LCDPlugins.getNextLCDScreenBuffer(LCDKey);
 			int ret = this->performLCDScreenInterruptTransfer(
 				device,
 				LCDBuffer.data(),
@@ -654,6 +663,17 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 								}
 
 								delete pDBus; pDBus = nullptr;
+							}
+						}
+					}
+
+					if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+						if( device.getLastKeysInterruptTransferLength() == _keysEventsLength.LCDKeys ) {
+							if( this->checkLCDKey(device) ) {
+#if DEBUGGING_ON
+								std::lock_guard<std::mutex> lock(device._LCDKeyMutex);
+								LOG(DEBUG2) << device.getID() << " LCD key pressed : " << device._LCDKey;
+#endif
 							}
 						}
 					}

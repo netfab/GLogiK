@@ -59,7 +59,9 @@ void Splashscreen::init(FontsManager* const pFonts)
 	LCDPlugin::init(pFonts);
 }
 
-const PBMDataArray & Splashscreen::getNextPBMFrame(FontsManager* const pFonts)
+const PBMDataArray & Splashscreen::getNextPBMFrame(
+	FontsManager* const pFonts,
+	const std::string & LCDKey)
 {
 	//if( this->getNextPBMFrameID() == 2 ) {
 	//	std::string version(" version ");

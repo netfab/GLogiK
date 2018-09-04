@@ -38,7 +38,10 @@ class Splashscreen
 
 		void init(FontsManager* const pFonts);
 
-		const PBMDataArray & getNextPBMFrame(FontsManager* const pFonts);
+		const PBMDataArray & getNextPBMFrame(
+			FontsManager* const pFonts,
+			const std::string & LCDKey
+		);
 
 	protected:
 

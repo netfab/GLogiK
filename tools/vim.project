@@ -90,10 +90,6 @@ GLogiK=$PWD/.. CD=. {
 					fonts.hpp
 					fontsManager.cpp
 					fontsManager.hpp
-					fontMonospace8_5.cpp
-					fontMonospace8_5.hpp
-					fontMonospace8_6.cpp
-					fontMonospace8_6.hpp
 					PBMFile.cpp
 					PBMFile.hpp
 					PBMFont.cpp

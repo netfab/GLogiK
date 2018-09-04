@@ -73,7 +73,10 @@ class USBDevice
 		unsigned char			_previousPressedKeys[KEYS_BUFFER_LENGTH];
 		std::string				_macroKey;
 		std::string				_mediaKey;
+		std::string				_LCDKey;
 		macro_type				_newMacro;
+
+		std::mutex				_LCDKeyMutex;
 
 		std::chrono::steady_clock::time_point _lastTimePoint;
 

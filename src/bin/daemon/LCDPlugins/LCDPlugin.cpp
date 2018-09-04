@@ -102,7 +102,9 @@ void LCDPlugin::init(FontsManager* const pFonts)
 	_initialized = true;
 }
 
-const PBMDataArray & LCDPlugin::getNextPBMFrame(FontsManager* const pFonts)
+const PBMDataArray & LCDPlugin::getNextPBMFrame(
+	FontsManager* const pFonts,
+	const std::string & LCDKey)
 {
 	return this->getCurrentPBMFrame();
 }

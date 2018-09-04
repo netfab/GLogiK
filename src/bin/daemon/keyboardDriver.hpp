@@ -71,12 +71,15 @@ struct ModifierKey {
 struct KeysEventsLength {
 	KeysEventsLength(
 		const int8_t a = -1,
-		const int8_t b = -1
+		const int8_t b = -1,
+		const int8_t c = -1
 	)	:	MacrosKeys(a),
-			MediaKeys(b) {}
+			MediaKeys(b),
+			LCDKeys(c) {}
 
 	const int8_t MacrosKeys;
 	const int8_t MediaKeys;
+	const int8_t LCDKeys;
 };
 
 class KeyboardDriver
@@ -127,6 +130,7 @@ class KeyboardDriver
 		virtual KeyStatus getPressedKeys(USBDevice & device);
 		virtual const bool checkMacroKey(USBDevice & device) = 0;
 		virtual const bool checkMediaKey(USBDevice & device) = 0;
+		virtual const bool checkLCDKey(USBDevice & device) = 0;
 
 		virtual void sendUSBDeviceInitialization(USBDevice & device);
 		virtual void setMxKeysLeds(USBDevice & device);
