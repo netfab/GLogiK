@@ -225,6 +225,8 @@ std::tuple<unsigned short, unsigned short> LCDPlugin::getTempo(const LCDPluginTe
 {
 	if(tempo == LCDPluginTempo::TEMPO_500_20)
 		return std::make_tuple(500, 20);
+	if(tempo == LCDPluginTempo::TEMPO_400_15)
+		return std::make_tuple(400, 15);
 	/* TEMPO_DEFAULT */
 	return std::make_tuple(1000, 10);
 }

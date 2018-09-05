@@ -45,6 +45,7 @@ class LCDScreenPluginsManager
 
 	private:
 		unsigned short _frameCounter;
+		bool _noPlugins;
 		std::vector<LCDPlugin*> _plugins;
 		std::vector<LCDPlugin*>::iterator _itCurrentPlugin;
 

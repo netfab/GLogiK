@@ -35,10 +35,11 @@ using namespace NSGKUtils;
 
 LCDScreenPluginsManager::LCDScreenPluginsManager()
 	:	_frameCounter(0),
+		_noPlugins(false),
 		_pFonts(&_fontsManager)
 {
 	try {
-		//_plugins.push_back( new Splashscreen() );
+		_plugins.push_back( new Splashscreen() );
 		_plugins.push_back( new SystemMonitor() );
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
@@ -75,6 +76,7 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 	_itCurrentPlugin = _plugins.begin();
 	if( _plugins.empty() ) {
 		GKSysLog(LOG_WARNING, WARNING, "no LCD screen plugin initialized");
+		_noPlugins = true;
 	}
 	_LCDBuffer.fill(0x0);
 }
@@ -93,38 +95,41 @@ const unsigned short LCDScreenPluginsManager::getPluginTiming(void)
 
 LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(const std::string & LCDKey)
 {
-	try {
-		/* make sure there at least one plugin */
-		if(_itCurrentPlugin != _plugins.end() ) {
-			_frameCounter++;
+	if( ! _noPlugins ) {
+		try {
+			/* make sure there at least one plugin */
+			if(_itCurrentPlugin != _plugins.end() ) {
+				_frameCounter++;
 
-			if( _frameCounter >= (*_itCurrentPlugin)->getPluginMaxFrames() ) {
-				_itCurrentPlugin++;
-				if(_itCurrentPlugin == _plugins.end() )
-					_itCurrentPlugin = _plugins.begin();
+				if( _frameCounter >= (*_itCurrentPlugin)->getPluginMaxFrames() ) {
+					_itCurrentPlugin++;
+					if(_itCurrentPlugin == _plugins.end() )
+						_itCurrentPlugin = _plugins.begin();
 
-				/* reset frames to beginning */
-				(*_itCurrentPlugin)->resetPBMFrameIndex();
-				_frameCounter = 0;
+					/* reset frames to beginning */
+					(*_itCurrentPlugin)->resetPBMFrameIndex();
+					_frameCounter = 0;
+				}
 			}
-		}
 
-		if(_itCurrentPlugin != _plugins.end() ) {
-			(*_itCurrentPlugin)->prepareNextPBMFrame();
-			this->dumpPBMDataIntoLCDBuffer(
-				_LCDBuffer,
-				(*_itCurrentPlugin)->getNextPBMFrame(_pFonts, LCDKey)
-			);
+			if(_itCurrentPlugin != _plugins.end() ) {
+				(*_itCurrentPlugin)->prepareNextPBMFrame();
+				this->dumpPBMDataIntoLCDBuffer(
+					_LCDBuffer,
+					(*_itCurrentPlugin)->getNextPBMFrame(_pFonts, LCDKey)
+				);
+			}
+			else /* else blank screen */
+				_LCDBuffer.fill(0x0);
 		}
-		else /* else blank screen */
+		catch (const GLogiKExcept & e) {
+			LOG(ERROR) << e.what();
 			_LCDBuffer.fill(0x0);
-	}
-	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << e.what();
-		_LCDBuffer.fill(0x0);
+		}
+
+		std::fill_n(_LCDBuffer.begin(), LCD_BUFFER_OFFSET, 0);
 	}
 
-	std::fill_n(_LCDBuffer.begin(), LCD_BUFFER_OFFSET, 0);
 	/* the keyboard needs this magic byte */
 	_LCDBuffer[0] = 0x03;
 

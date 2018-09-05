@@ -43,6 +43,7 @@ enum class LCDPluginTempo : uint8_t
 {
 	TEMPO_DEFAULT	= 1 << 0,
 	TEMPO_500_20,
+	TEMPO_400_15,
 };
 
 class LCDPBMFrame

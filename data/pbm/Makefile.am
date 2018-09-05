@@ -5,8 +5,7 @@ systemMonitor_dir = $(pbm_dir)/systemMonitor
 pbmFonts_dir = $(pbm_dir)/fonts
 
 dist_splashscreen__DATA = \
-	%D%/splashscreen/splashscreen01.pbm \
-	%D%/splashscreen/splashscreen02.pbm
+	%D%/splashscreen/splashscreen01.pbm
 
 dist_systemMonitor__DATA = \
 	%D%/systemMonitor/skeleton.pbm
