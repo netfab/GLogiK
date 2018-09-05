@@ -141,7 +141,7 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 						_pGKfs->readNotifyEvents( dev_map );
 						for( const auto & d : dev_map ) {
 #if DEBUGGING_ON
-							LOG(DEBUG) << "[" << d.first << "]" << " checking configuration file: " << d.second;
+							LOG(DEBUG) << d.first << " checking configuration file: " << d.second;
 #endif
 							DBus.checkDeviceConfigurationFile(d.first);
 						}
