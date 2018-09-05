@@ -78,7 +78,7 @@ const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void) {
 	return KeyboardDriver::macrosKeysNames;
 }
 
-std::string KeyboardDriver::getBytes(const USBDevice & device) {
+std::string KeyboardDriver::getBytes(const USBDevice & device) const {
 	const unsigned int last_length = to_uint(device.getLastKeysInterruptTransferLength());
 	if( last_length == 0 )
 		return "";
@@ -125,7 +125,7 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 	return KeyStatus::S_KEY_TIMEDOUT;
 }
 
-void KeyboardDriver::notImplemented(const char* func) {
+void KeyboardDriver::notImplemented(const char* func) const {
 	std::ostringstream buffer(std::ios_base::app);
 	buffer << "not implemented : " << func;
 	GKSysLog(LOG_WARNING, WARNING, buffer.str());
@@ -363,7 +363,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device) {
 	}
 }
 
-void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device, const std::string & place) {
+void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device, const std::string & place) const {
 	/* check to give up */
 	if(device._fatalErrors > DEVICE_LISTENING_THREAD_MAX_ERRORS) {
 		std::ostringstream err(device.getID(), std::ios_base::app);
@@ -478,9 +478,9 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 #endif
 }
 
-void KeyboardDriver::runMacro(const std::string & devID) {
+void KeyboardDriver::runMacro(const std::string & devID) const {
 	try {
-		USBDevice & device = _initializedDevices.at(devID);
+		const USBDevice & device = _initializedDevices.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG2) << device.getID() << " spawned running macro thread for " << device.getName();
 #endif
@@ -927,9 +927,9 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 	}
 }
 
-const banksMap_type & KeyboardDriver::getDeviceMacrosBanks(const std::string & devID) {
+const banksMap_type & KeyboardDriver::getDeviceMacrosBanks(const std::string & devID) const {
 	try {
-		USBDevice & device = _initializedDevices.at(devID);
+		const USBDevice & device = _initializedDevices.at(devID);
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			return device._pMacrosManager->getMacrosBanks();
 		}

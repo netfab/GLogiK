@@ -109,7 +109,7 @@ class KeyboardDriver
 			const uint8_t b
 		);
 
-		const banksMap_type & getDeviceMacrosBanks(const std::string & devID);
+		const banksMap_type & getDeviceMacrosBanks(const std::string & devID) const;
 
 		const bool isDeviceInitialized(const std::string & devID) const;
 		const bool getDeviceThreadsStatus(const std::string & devID) const;
@@ -124,7 +124,7 @@ class KeyboardDriver
 			const KeysEventsLength & eLength
 		);
 
-		std::string getBytes(const USBDevice & device);
+		std::string getBytes(const USBDevice & device) const;
 
 		virtual KeyStatus processKeyEvent(USBDevice & device) = 0;
 		virtual KeyStatus getPressedKeys(USBDevice & device);
@@ -178,9 +178,9 @@ class KeyboardDriver
 			150,158,159,128,136,177,178,176,142,152,173,140,unk,unk,unk,unk
 		};
 
-		void notImplemented(const char* func);
+		void notImplemented(const char* func) const;
 
-		void checkDeviceFatalErrors(USBDevice & device, const std::string & place);
+		void checkDeviceFatalErrors(USBDevice & device, const std::string & place) const;
 		void enterMacroRecordMode(USBDevice & device, const std::string & devID);
 
 		void LCDScreenLoop(const std::string & devID);
@@ -191,7 +191,7 @@ class KeyboardDriver
 		const uint8_t handleModifierKeys(USBDevice & device, const uint16_t interval);
 
 		uint16_t getTimeLapse(USBDevice & device);
-		void runMacro(const std::string & devID);
+		void runMacro(const std::string & devID) const;
 
 		void resetDeviceState(USBDevice & device);
 		void joinDeviceThreads(const USBDevice & device);
