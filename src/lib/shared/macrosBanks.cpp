@@ -66,7 +66,7 @@ void MacrosBanks::setMacrosBanks(const banksMap_type & macrosBanks)
 }
 
 void MacrosBanks::clearMacro(
-	const BankID & bankID,
+	const BankID bankID,
 	const std::string & keyName)
 {
 	try {
@@ -97,7 +97,7 @@ void MacrosBanks::clearMacro(
 }
 
 void MacrosBanks::setMacro(
-	const BankID & bankID,
+	const BankID bankID,
 	const std::string & keyName,
 	const macro_type & macro)
 {

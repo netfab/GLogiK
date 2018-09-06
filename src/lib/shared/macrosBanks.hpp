@@ -64,12 +64,12 @@ class MacrosBanks
 		);
 
 		void clearMacro(
-			const BankID & bankID,
+			const BankID bankID,
 			const std::string & keyName
 		);
 
 		void setMacro(
-			const BankID & bankID,
+			const BankID bankID,
 			const std::string & keyName,
 			const macro_type & macro
 		);

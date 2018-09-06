@@ -92,13 +92,13 @@ enum class BankID : uint8_t
 	BANK_M3,
 };
 
-inline std::ostream & operator << (std::ostream & stream, const BankID & bankID)
+inline std::ostream & operator << (std::ostream & stream, const BankID bankID)
 {
 	stream << static_cast<unsigned int>(bankID);
 	return stream;
 }
 
-inline const bool operator > (const uint8_t value, const BankID & bankID)
+inline const bool operator > (const uint8_t value, const BankID bankID)
 {
 	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(bankID)));
 }
