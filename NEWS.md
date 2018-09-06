@@ -1,4 +1,13 @@
 
+## [Unreleased]
+#### Added features :
+ * add LCD keys L1-L2-L3-L4-L5 support into LCD plugins
+#### Changed
+ * updated Splashscreen LCD plugin
+ * updated SystemMonitor LCD plugin
+#### Fixs
+ * Fix wrong macro clearing behavior
+
 ---
 
 ## version 0.8.0 - 2018-08-09
