@@ -1,10 +1,14 @@
 
+---
+
 ## [Unreleased]
 #### Added features :
- * add LCD keys L1-L2-L3-L4-L5 support into LCD plugins
+ * added LCD keys L1-L2-L3-L4-L5 support into LCD plugins
+
 #### Changed
  * updated Splashscreen LCD plugin
  * updated SystemMonitor LCD plugin
+
 #### Fixs
  * Fix wrong macro clearing behavior
 
@@ -17,8 +21,8 @@
  * now optionally depends on libnotify >= 0.7.7
 
 #### Changed
- * now depends on dev-libs/boost >= 1.64.0 boost process requirement
-	https://github.com/klemens-morgenstern/boost-process
+ * now depends on dev-libs/boost >= 1.64.0 (boost process requirement)\
+   https://github.com/klemens-morgenstern/boost-process
 
 ---
 
