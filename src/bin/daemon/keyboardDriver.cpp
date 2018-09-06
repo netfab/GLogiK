@@ -403,7 +403,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 		KeyStatus ret = this->getPressedKeys(device);
 
 		switch( ret ) {
-			case KeyStatus::S_KEY_PROCESSED:
+			case KeyStatus::S_KEY_PROCESSED: {
 				/* did we press one Mx key ? */
 				if( device._pressedRKeysMask & to_type(Keys::GK_KEY_M1) or
 					device._pressedRKeysMask & to_type(Keys::GK_KEY_M2) or
@@ -420,48 +420,64 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 					continue;
 				}
 
-				try {
-					/* macro key pressed, recording macro */
-					device._pMacrosManager->setMacro(device._macroKey, device._newMacro);
+				bool setMacro = true;
+				/* don't set macro and don't send signal if
+				 * no new macro defined and current macro for the pressed key
+				 * is already empty
+				 */
+				if( ! device._pMacrosManager->macroDefined(device._macroKey) and
+					  device._newMacro.empty() ) {
+					setMacro = false;
+#if DEBUGGING_ON
+					LOG(DEBUG2) << "no change for key: " << device._macroKey;
+#endif
+				}
 
-					if( pDBus ) {
-						const uint8_t bankID = to_type( device._pMacrosManager->getCurrentMacrosBankID() );
+				if(setMacro) {
+					try {
+						/* macro key pressed, recording macro */
+						device._pMacrosManager->setMacro(device._macroKey, device._newMacro);
 
-						/* open a new connection, GKDBus is not thread-safe */
-						pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
+						if( pDBus ) {
+							const uint8_t bankID = to_type( device._pMacrosManager->getCurrentMacrosBankID() );
 
-						try {
-							std::string signal("MacroRecorded");
-							if( device._newMacro.empty() ) {
-								signal = "MacroCleared";
+							/* open a new connection, GKDBus is not thread-safe */
+							pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
+
+							try {
+								std::string signal("MacroRecorded");
+								if( device._newMacro.empty() ) {
+									signal = "MacroCleared";
+								}
+
+								pDBus->initializeTargetsSignal(
+									NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+									GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+									GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
+									GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+									signal.c_str()
+								);
+
+								pDBus->appendStringToTargetsSignal(devID);
+								pDBus->appendStringToTargetsSignal(device._macroKey);
+								pDBus->appendUInt8ToTargetsSignal(bankID);
+
+								pDBus->sendTargetsSignal();
 							}
-
-							pDBus->initializeTargetsSignal(
-								NSGKDBus::BusConnection::GKDBUS_SYSTEM,
-								GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-								GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
-								GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-								signal.c_str()
-							);
-
-							pDBus->appendStringToTargetsSignal(devID);
-							pDBus->appendStringToTargetsSignal(device._macroKey);
-							pDBus->appendUInt8ToTargetsSignal(bankID);
-
-							pDBus->sendTargetsSignal();
-						}
-						catch (const GKDBusMessageWrongBuild & e) {
-							pDBus->abandonTargetsSignal();
-							GKSysLog(LOG_WARNING, WARNING, e.what());
+							catch (const GKDBusMessageWrongBuild & e) {
+								pDBus->abandonTargetsSignal();
+								GKSysLog(LOG_WARNING, WARNING, e.what());
+							}
 						}
 					}
-				}
-				catch (const GLogiKExcept & e) {
-					GKSysLog(LOG_WARNING, WARNING, e.what());
+					catch (const GLogiKExcept & e) {
+						GKSysLog(LOG_WARNING, WARNING, e.what());
+					}
 				}
 
 				exit = true;
 				break;
+			}
 
 			default:
 				break;
