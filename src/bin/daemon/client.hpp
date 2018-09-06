@@ -82,6 +82,11 @@ class Client
 			const mBank_type & bank
 		);
 
+		const bool resetDeviceMacrosBank(
+			const std::string & devID,
+			const uint8_t bankID
+		);
+
 		void toggleClientReadyPropertie(void);
 
 	protected:

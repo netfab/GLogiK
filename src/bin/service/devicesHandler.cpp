@@ -299,26 +299,64 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 		/* set macros banks */
-		const std::string remoteMethod = "SetDeviceMacrosBank";
-
 		for( const auto & idBankPair : device.getMacrosBanks() ) {
 			const uint8_t bankID = to_type(idBankPair.first);
 			const mBank_type & bank = idBankPair.second;
 
-			/* test whether this MacrosBank should be sent */
-			bool sendIt = false;
+			/* test whether this MacrosBank is empty */
+			bool empty = true;
 			for(const auto & keyMacroPair : bank) {
 				const macro_type & macro = keyMacroPair.second;
 				if( ! macro.empty() ) {
-					sendIt = true;
+					empty = false;
 					break;
 				}
 			}
 
-			if( ! sendIt ) {
-				LOG(VERB) << devID << " skipping empty MacrosBank " << to_uint(bankID);
-				continue;
+			if( empty ) {
+				/* resetting empty MacrosBank */
+				const std::string remoteMethod = "ResetDeviceMacrosBank";
+
+				LOG(VERB) << devID << " resetting empty MacrosBank " << to_uint(bankID);
+
+				try {
+					_pDBus->initializeRemoteMethodCall(
+						_systemBus,
+						GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+						GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+						GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+						remoteMethod.c_str()
+					);
+					_pDBus->appendStringToRemoteMethodCall(_clientID);
+					_pDBus->appendStringToRemoteMethodCall(devID);
+					_pDBus->appendUInt8ToRemoteMethodCall(bankID);
+
+					_pDBus->sendRemoteMethodCall();
+
+					try {
+						_pDBus->waitForRemoteMethodCallReply();
+
+						const bool ret = _pDBus->getNextBooleanArgument();
+						if( ret ) {
+							LOG(VERB) << devID << " successfully resetted device MacrosBank " << to_uint(bankID);
+						}
+						else {
+							LOG(ERROR) << devID << " failed to reset device MacrosBank " << to_uint(bankID) << " : false";
+						}
+					}
+					catch (const GLogiKExcept & e) {
+						LogRemoteCallGetReplyFailure
+					}
+				}
+				catch (const GKDBusMessageWrongBuild & e) {
+					_pDBus->abandonRemoteMethodCall();
+					LogRemoteCallFailure
+				}
+
+				continue; /* jump to next bank */
 			}
+
+			const std::string remoteMethod = "SetDeviceMacrosBank";
 
 			try {
 				_pDBus->initializeRemoteMethodCall(

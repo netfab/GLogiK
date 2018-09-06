@@ -193,6 +193,15 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 			{"b", "did_setbank_succeeded", "out", "did the SetDeviceMacrosBank method succeeded ?"} },
 		std::bind(&ClientsManager::setDeviceMacrosBank, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4) );
+
+	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeMethod(
+		system_bus, DM_object, DM_interf, "ResetDeviceMacrosBank",
+		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
+			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
+			{"y", "macro_bankID", "in", "macro bankID"},
+			{"b", "did_resetbank_succeeded", "out", "did the ReSetDeviceMacrosBank method succeeded ?"} },
+		std::bind(&ClientsManager::resetDeviceMacrosBank, this,
+			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3) );
 }
 
 ClientsManager::~ClientsManager() {
@@ -772,6 +781,26 @@ const bool ClientsManager::setDeviceMacrosBank(
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		return pClient->setDeviceMacrosBank(devID, bankID, bank);
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownClient
+	}
+
+	return false;
+}
+
+const bool ClientsManager::resetDeviceMacrosBank(
+	const std::string & clientID,
+	const std::string & devID,
+	const uint8_t bankID)
+{
+#if DEBUGGING_ON
+	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
+	LOG(DEBUG3) << "bankID : " << to_uint(bankID);
+#endif
+	try {
+		Client* pClient = _connectedClients.at(clientID);
+		return pClient->resetDeviceMacrosBank(devID, bankID);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownClient

@@ -46,8 +46,8 @@ void MacrosBanks::initMacrosBanks(const std::vector<std::string> & keysNames) {
 #endif
 	macro_type macro;
 	for( const auto & name : keysNames ) {
-		for(auto & idBank : _macrosBanks) {
-			idBank.second.insert( std::pair<const std::string, macro_type>(name, macro));
+		for(auto & idBankPair : _macrosBanks) {
+			idBankPair.second.insert( std::pair<const std::string, macro_type>(name, macro));
 		}
 	}
 }
@@ -151,6 +151,23 @@ const macro_type & MacrosBanks::getMacro(const uint8_t bankID, const std::string
 	}
 
 	return MacrosBanks::emptyMacro;
+}
+
+void MacrosBanks::resetMacrosBank(const uint8_t bankID)
+{
+	if(bankID > BankID::BANK_M3)
+		throw GLogiKExcept("wrong bankID value");
+
+	const BankID id = static_cast<BankID>(bankID);
+
+	this->resetMacrosBank(id);
+}
+
+void MacrosBanks::resetMacrosBank(const BankID bankID)
+{
+	for(auto & keyMacroPair : _macrosBanks[bankID]) {
+		keyMacroPair.second.clear();
+	}
 }
 
 } // namespace GLogiK

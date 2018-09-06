@@ -74,6 +74,9 @@ class MacrosBanks
 			const macro_type & macro
 		);
 
+		void resetMacrosBank(const uint8_t bankID);
+		void resetMacrosBank(const BankID bankID);
+
 	protected:
 		MacrosBanks(void);
 		~MacrosBanks(void);

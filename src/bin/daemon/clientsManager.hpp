@@ -149,6 +149,12 @@ class ClientsManager
 			const uint8_t bankID,
 			const mBank_type & bank
 		);
+
+		const bool resetDeviceMacrosBank(
+			const std::string & clientID,
+			const std::string & devID,
+			const uint8_t bankID
+		);
 		/* -- */
 };
 

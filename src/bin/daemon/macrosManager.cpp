@@ -133,13 +133,11 @@ void MacrosManager::setMacro(
 
 void MacrosManager::resetMacrosBanks(void) {
 	this->setCurrentMacrosBankID(BankID::BANK_M0);
-	for(auto & bankKeyPair : _macrosBanks) {
+	for(auto & idBankPair : _macrosBanks) {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "clearing all macros for Memory Bank: " << bankKeyPair.first;
+		LOG(DEBUG2) << "clearing all macros for Memory Bank: " << idBankPair.first;
 #endif
-		for(auto & keyMacroPair : bankKeyPair.second) {
-			keyMacroPair.second.clear();
-		}
+		this->resetMacrosBank(idBankPair.first);
 	}
 }
 

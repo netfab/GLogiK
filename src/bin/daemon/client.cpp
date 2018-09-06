@@ -203,9 +203,10 @@ const bool Client::setDeviceMacrosBank(
 
 	try {
 		DeviceProperties & device = _devices.at(devID);
-		for(const auto & macroPair : bank) {
+		device.resetMacrosBank(bankID);
+		for(const auto & keyMacroPair : bank) {
 			try {
-				device.setMacro(bankID, macroPair.first, macroPair.second);
+				device.setMacro(bankID, keyMacroPair.first, keyMacroPair.second);
 			}
 			catch (const GLogiKExcept & e) {
 				ret = false;
@@ -216,6 +217,31 @@ const bool Client::setDeviceMacrosBank(
 	catch (const std::out_of_range& oor) {
 		ret = false;
 		GKSysLog_UnknownDevice
+	}
+	catch (const GLogiKExcept & e) {
+		ret = false;
+		GKSysLog(LOG_WARNING, WARNING, e.what());
+	}
+
+	return ret;
+}
+
+const bool Client::resetDeviceMacrosBank(
+	const std::string & devID,
+	const uint8_t bankID)
+{
+	bool ret = false;
+
+	try {
+		DeviceProperties & device = _devices.at(devID);
+		device.resetMacrosBank(bankID);
+		ret = true;
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownDevice
+	}
+	catch (const GLogiKExcept & e) {
+		GKSysLog(LOG_WARNING, WARNING, e.what());
 	}
 
 	return ret;
