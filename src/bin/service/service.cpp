@@ -137,14 +137,10 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 					}
 
 					if( fds[1].revents & POLLIN) {
-						devices_files_map_t dev_map = DBus.getDevicesMap();
-						_pGKfs->readNotifyEvents( dev_map );
-						for( const auto & d : dev_map ) {
-#if DEBUGGING_ON
-							LOG(DEBUG) << d.first << " checking configuration file: " << d.second;
-#endif
-							DBus.checkDeviceConfigurationFile(d.first);
-						}
+						/* checking if any received filesystem notification matches
+						 * any device configuration file. If yes, reload the file,
+						 * and send configuration to daemon */
+						DBus.checkNotifyEvents(_pGKfs);
 					}
 				}
 

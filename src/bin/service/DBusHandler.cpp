@@ -211,19 +211,25 @@ void DBusHandler::updateSessionState(void) {
 	this->reportChangedState();
 }
 
-const devices_files_map_t DBusHandler::getDevicesMap(void) {
-	return _devices.getDevicesMap();
-}
+void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
+{
+	devices_files_map_t devicesMap = _devices.getDevicesMap();
 
-void DBusHandler::checkDeviceConfigurationFile(const std::string & devID) {
-	_devices.checkDeviceConfigurationFile(devID);
+	pGKfs->readNotifyEvents( devicesMap );
 
-	/*
-	 * force state update, to load active user's parameters
-	 * for all plugged devices
-	 */
-	if( _sessionState == "active" ) {
-		this->reportChangedState();
+	for( const auto & device : devicesMap ) {
+#if DEBUGGING_ON
+		LOG(DEBUG) << device.first << " checking configuration file: " << device.second;
+#endif
+		_devices.checkDeviceConfigurationFile(device.first);
+
+		/*
+		 * force state update, to load active user's parameters
+		 * for all plugged devices
+		 */
+		if( _sessionState == "active" ) {
+			this->reportChangedState();
+		}
 	}
 }
 
