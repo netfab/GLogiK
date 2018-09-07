@@ -115,7 +115,7 @@ const bool DevicesHandler::checkDeviceCapability(const DeviceProperties & device
 	return (device.getCapabilities() & to_type(toCheck));
 }
 
-void DevicesHandler::checkDeviceConfigurationFile(const std::string & devID) {
+void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
 	try {
 		DeviceProperties & device = _startedDevices.at(devID);
 		this->loadDeviceConfigurationFile(device);

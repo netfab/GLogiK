@@ -219,9 +219,9 @@ void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 
 	for( const auto & device : devicesMap ) {
 #if DEBUGGING_ON
-		LOG(DEBUG) << device.first << " checking configuration file: " << device.second;
+		LOG(DEBUG) << device.first << " reload configuration file: " << device.second;
 #endif
-		_devices.checkDeviceConfigurationFile(device.first);
+		_devices.reloadDeviceConfigurationFile(device.first);
 
 		/*
 		 * force state update, to load active user's parameters
