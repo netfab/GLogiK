@@ -390,7 +390,7 @@ const bool ClientsManager::updateClientState(
 	const std::string & state
 )	{
 #if DEBUGGING_ON
-	LOG(DEBUG2) << s_Client << clientID << " state: " << state;
+	LOG(DEBUG2) << CONST_STRING_CLIENT << clientID << " state: " << state;
 #endif
 
 	if( (state != _active) and (state != "online") ) {
@@ -476,7 +476,8 @@ const bool ClientsManager::deleteDeviceConfiguration(
 	const std::string & devID
 )	{
 #if DEBUGGING_ON
-	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
+	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
+				<< CONST_STRING_CLIENT << clientID;
 #endif
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -494,7 +495,8 @@ const bool ClientsManager::stopDevice(
 	const std::string & devID
 )	{
 #if DEBUGGING_ON
-	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
+	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
+				<< CONST_STRING_CLIENT << clientID;
 #endif
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -532,7 +534,8 @@ const bool ClientsManager::startDevice(
 	const std::string & devID
 )	{
 #if DEBUGGING_ON
-	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
+	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
+				<< CONST_STRING_CLIENT << clientID;
 #endif
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -575,7 +578,8 @@ const bool ClientsManager::restartDevice(
 	const std::string & devID
 )	{
 #if DEBUGGING_ON
-	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
+	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
+				<< CONST_STRING_CLIENT << clientID;
 #endif
 
 	_enabledSignals = false;
@@ -617,7 +621,7 @@ const std::vector<std::string> ClientsManager::getStartedDevices(
 	const std::string & clientID
 )	{
 #if DEBUGGING_ON
-	LOG(DEBUG2) << s_Client << clientID;
+	LOG(DEBUG2) << CONST_STRING_CLIENT << clientID;
 #endif
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -636,7 +640,7 @@ const std::vector<std::string> ClientsManager::getStoppedDevices(
 	const std::string & clientID
 )	{
 #if DEBUGGING_ON
-	LOG(DEBUG2) << s_Client << clientID;
+	LOG(DEBUG2) << CONST_STRING_CLIENT << clientID;
 #endif
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -656,7 +660,8 @@ const std::string ClientsManager::getDeviceStatus(
 	const std::string & devID
 )	{
 #if DEBUGGING_ON
-	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
+	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
+				<< CONST_STRING_CLIENT << clientID;
 #endif
 	try {
 		_connectedClients.at(clientID);
@@ -674,7 +679,8 @@ void ClientsManager::getDeviceProperties(
 	const std::string & devID
 )	{
 #if DEBUGGING_ON
-	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
+	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
+				<< CONST_STRING_CLIENT << clientID;
 #endif
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -702,7 +708,8 @@ const bool ClientsManager::setDeviceBacklightColor(
 	const uint8_t b
 )	{
 #if DEBUGGING_ON
-	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
+	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
+				<< CONST_STRING_CLIENT << clientID;
 	LOG(DEBUG3) << "with following RGB bytes : "
 				<< getHexRGB(r, g, b);
 #endif
@@ -723,7 +730,8 @@ const macro_type & ClientsManager::getDeviceMacro(
 	const uint8_t bankID
 )	{
 #if DEBUGGING_ON
-	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
+	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
+				<< CONST_STRING_CLIENT << clientID;
 	LOG(DEBUG3) << "   key : " << keyName;
 	LOG(DEBUG3) << "bankID : " << to_uint(bankID);
 #endif
@@ -755,7 +763,8 @@ const std::vector<std::string> & ClientsManager::getDeviceMacroKeysNames(
 	const std::string & devID
 )	{
 #if DEBUGGING_ON
-	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
+	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
+				<< CONST_STRING_CLIENT << clientID;
 #endif
 	try {
 		_connectedClients.at(clientID);
@@ -775,7 +784,8 @@ const bool ClientsManager::setDeviceMacrosBank(
 	const mBank_type & bank
 )	{
 #if DEBUGGING_ON
-	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
+	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
+				<< CONST_STRING_CLIENT << clientID;
 	LOG(DEBUG3) << "bankID : " << to_uint(bankID);
 #endif
 	try {
@@ -795,7 +805,8 @@ const bool ClientsManager::resetDeviceMacrosBank(
 	const uint8_t bankID)
 {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << s_Device << devID << " " << s_Client << clientID;
+	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
+				<< CONST_STRING_CLIENT << clientID;
 	LOG(DEBUG3) << "bankID : " << to_uint(bankID);
 #endif
 	try {

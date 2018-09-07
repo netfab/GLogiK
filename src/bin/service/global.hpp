@@ -25,9 +25,9 @@
 #define GLOGIKS_DESKTOP_SERVICE_NAME "GLogiKs"
 
 #define LogRemoteCallFailure \
-	FATALERROR << remoteMethod.c_str() << s_RemoteCallFailure << e.what();
+	FATALERROR << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
 #define LogRemoteCallGetReplyFailure \
-	LOG(ERROR) << remoteMethod.c_str() << s_RemoteCallGetReplyFailure << e.what();
+	LOG(ERROR) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
 
 #endif
 

@@ -316,7 +316,7 @@ inline void GKSysLog(const int priority, const TLogLevel level, const std::strin
 #define FATALERROR BOTHLog(ERROR).Fatal(ERROR, __func__)
 
 #define GKSysLog_UnknownDevice \
-	std::string error(s_UnknownDevice); error += devID;\
+	std::string error(CONST_STRING_UNKNOWN_DEVICE); error += devID;\
 	GKSysLog(LOG_ERR, ERROR, error);
 
 /* -- */

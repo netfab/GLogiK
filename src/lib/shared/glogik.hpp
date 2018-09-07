@@ -27,12 +27,12 @@ namespace GLogiK
 
 typedef const char* const c_str;
 
-extern c_str s_Client;
-extern c_str s_Device;
-extern c_str s_UnknownClient;
-extern c_str s_UnknownDevice;
-extern c_str s_RemoteCallFailure;
-extern c_str s_RemoteCallGetReplyFailure;
+extern c_str CONST_STRING_CLIENT;
+extern c_str CONST_STRING_DEVICE;
+extern c_str CONST_STRING_UNKNOWN_CLIENT;
+extern c_str CONST_STRING_UNKNOWN_DEVICE;
+extern c_str CONST_STRING_METHOD_CALL_FAILURE;
+extern c_str CONST_STRING_METHOD_REPLY_FAILURE;
 
 /* --- ---- --- *
  * -- GKDBus -- *
