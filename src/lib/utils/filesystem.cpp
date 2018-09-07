@@ -87,7 +87,7 @@ const std::string FileSystem::getNextAvailableFileName(
 void FileSystem::createOwnerDirectory(const fs::path & directory) {
 #if DEBUGGING_ON
 	bool success = false;
-	LOG(DEBUG2) << "trying to create directory : " << directory.string();
+	LOG(DEBUG2) << "creating directory : " << directory.string();
 #endif
 
 	try {

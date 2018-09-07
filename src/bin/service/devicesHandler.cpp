@@ -149,7 +149,7 @@ void DevicesHandler::saveDeviceConfigurationFile(
 
 		try {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << devID << " trying to open configuration file for writing : " << filePath.string();
+			LOG(DEBUG2) << devID << " opening configuration file for writing : " << filePath.string();
 #endif
 
 			std::ofstream ofs;
@@ -492,7 +492,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 	try {
 		try {
-			/* trying to find an existing configuration file */
+			/* searching for an existing configuration file */
 			device.setConfigFileName(
 				_pGKfs->getNextAvailableFileName(alreadyUsed, directory, device.getModel(), "cfg", true)
 			);

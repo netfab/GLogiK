@@ -717,7 +717,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 {
 #if DEBUGGING_ON
-	LOG(DEBUG3) << det.getID() << " trying to initialize " << det.getName() << "("
+	LOG(DEBUG3) << det.getID() << " initializing " << det.getName() << "("
 				<< det.getVendorID() << ":" << det.getProductID() << "), device "
 				<< to_uint(det.getNum()) << " on bus " << to_uint(det.getBus());
 #endif

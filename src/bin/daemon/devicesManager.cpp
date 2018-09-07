@@ -148,7 +148,7 @@ void DevicesManager::initializeDevices(void) noexcept {
 
 const bool DevicesManager::startDevice(const std::string & devID) {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "trying to start device " << devID;
+	LOG(DEBUG2) << "starting device " << devID;
 #endif
 	try {
 		const auto & device = _stoppedDevices.at(devID);
@@ -188,7 +188,7 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 
 const bool DevicesManager::stopDevice(const std::string & devID) noexcept {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "trying to stop device " << devID;
+	LOG(DEBUG2) << "stopping device " << devID;
 #endif
 
 	try {

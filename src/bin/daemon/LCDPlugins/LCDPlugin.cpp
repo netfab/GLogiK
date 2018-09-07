@@ -187,7 +187,7 @@ void LCDPlugin::writeStringOnLastFrame(
 {
 	try {
 		if( _PBMFrames.empty() )
-			throw GLogiKExcept("trying to access last element on empty container");
+			throw GLogiKExcept("accessing last element on empty container");
 		_itCurrentFrame = --(_PBMFrames.end());
 		_frameIndex = (_itCurrentFrame - _PBMFrames.begin());
 

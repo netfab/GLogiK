@@ -242,7 +242,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 	int ret = 0;
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << device.getID() << " trying to find expected interface";
+	LOG(DEBUG1) << device.getID() << " searching for the expected USB device interface";
 #endif
 
 	libusb_device_descriptor deviceDescriptor;
@@ -391,12 +391,12 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 
 				/* claiming interface */
 #if DEBUGGING_ON
-				LOG(DEBUG1) << device.getID() << " trying to claim interface " << numInt;
+				LOG(DEBUG1) << device.getID() << " claiming interface " << numInt;
 #endif
 				ret = libusb_claim_interface(device._pUSBDeviceHandle, numInt);	/* claiming */
 				if( this->USBError(ret) ) {
 					libusb_free_config_descriptor( configDescriptor ); /* free */
-					throw GLogiKExcept("error claiming interface");
+					throw GLogiKExcept("claiming interface failure");
 				}
 				device._toRelease.push_back(numInt);	/* claimed */
 
@@ -493,7 +493,7 @@ void LibUSB::releaseUSBDeviceInterfaces(USBDevice & device) noexcept {
 	for(auto it = device._toRelease.begin(); it != device._toRelease.end();) {
 		int numInt = (*it);
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "trying to release claimed interface " << numInt;
+		LOG(DEBUG1) << "releasing claimed interface " << numInt;
 #endif
 		ret = libusb_release_interface(device._pUSBDeviceHandle, numInt); /* release */
 		if( this->USBError(ret) ) {
@@ -606,7 +606,7 @@ void LibUSB::attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexce
 	for(auto it = device._toAttach.begin(); it != device._toAttach.end();) {
 		int numInt = (*it);
 #if DEBUGGING_ON
-		LOG(DEBUG1) << device.getID() << " trying to attach kernel driver to interface " << numInt;
+		LOG(DEBUG1) << device.getID() << " attaching kernel driver to interface " << numInt;
 #endif
 		ret = libusb_attach_kernel_driver(device._pUSBDeviceHandle, numInt); /* attaching */
 		if( this->USBError(ret) ) {
@@ -627,7 +627,7 @@ void LibUSB::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int nu
 	}
 	if( ret ) {
 #if DEBUGGING_ON
-		LOG(DEBUG1) << device.getID() << " kernel driver currently attached to the interface " << numInt << ", trying to detach it";
+		LOG(DEBUG1) << device.getID() << " detaching kernel driver from interface " << numInt;
 #endif
 		ret = libusb_detach_kernel_driver(device._pUSBDeviceHandle, numInt); /* detaching */
 		if( this->USBError(ret) ) {

@@ -372,7 +372,7 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(ERROR) << e.what();
-		LOG(INFO) << "trying to contact logind";
+		LOG(INFO) << "contacting logind";
 
 		const std::string remoteMethod("GetSessionByPID");
 
@@ -784,7 +784,7 @@ void DBusHandler::daemonIsStarting(void) {
 	}
 	else {
 		LOG(INFO)	<< buffer.str()
-					<< " - trying to contact the daemon";
+					<< " - contacting the daemon";
 		this->registerWithDaemon();
 		_sessionState = this->getCurrentSessionState();
 		this->reportChangedState();
