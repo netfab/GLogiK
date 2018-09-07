@@ -32,6 +32,7 @@
 
 #include <config.h>
 
+#include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
 #include "systemMonitor.hpp"
@@ -147,7 +148,8 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 	try {
 		NetSnapshots n;
 
-		if(LCDKey == "L5") {
+		/* pressed L5, switching network direction */
+		if(LCDKey == LCD_KEY_L5) {
 			if(_currentRate == NetDirection::NET_RX) {
 				_currentRate = NetDirection::NET_TX;
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS

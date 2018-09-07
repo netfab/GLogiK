@@ -34,6 +34,12 @@ extern c_str CONST_STRING_UNKNOWN_DEVICE;
 extern c_str CONST_STRING_METHOD_CALL_FAILURE;
 extern c_str CONST_STRING_METHOD_REPLY_FAILURE;
 
+extern c_str LCD_KEY_L1;
+extern c_str LCD_KEY_L2;
+extern c_str LCD_KEY_L3;
+extern c_str LCD_KEY_L4;
+extern c_str LCD_KEY_L5;
+
 /* --- ---- --- *
  * -- GKDBus -- *
  * --- ---- --- */
