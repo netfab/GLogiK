@@ -376,7 +376,7 @@ void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device, const std::strin
 
 void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string & devID) {
 #if DEBUGGING_ON
-	LOG(DEBUG) << "entering macro record mode";
+	LOG(DEBUG) << device.getID() << " entering macro record mode";
 #endif
 
 	NSGKDBus::GKDBus* pDBus = nullptr;
@@ -429,7 +429,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 					  device._newMacro.empty() ) {
 					setMacro = false;
 #if DEBUGGING_ON
-					LOG(DEBUG2) << "no change for key: " << device._macroKey;
+					LOG(DEBUG2) << device.getID() << " no change for key: " << device._macroKey;
 #endif
 				}
 
@@ -490,7 +490,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 	pDBus = nullptr;
 
 #if DEBUGGING_ON
-	LOG(DEBUG) << "exiting macro record mode";
+	LOG(DEBUG) << device.getID() << " exiting macro record mode";
 #endif
 }
 

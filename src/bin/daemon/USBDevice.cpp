@@ -65,6 +65,7 @@ void USBDevice::operator=(const USBDevice& dev)
 	_capabilities	= dev.getCapabilities();
 	_bus			= dev.getBus();
 	_num			= dev.getNum();
+	_devID			= dev.getID();
 	/* end friendship members */
 
 	/* public */
