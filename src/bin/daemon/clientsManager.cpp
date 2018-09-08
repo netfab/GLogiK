@@ -199,7 +199,7 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
 			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
 			{"y", "macro_bankID", "in", "macro bankID"},
-			{"b", "did_resetbank_succeeded", "out", "did the ReSetDeviceMacrosBank method succeeded ?"} },
+			{"b", "did_resetbank_succeeded", "out", "did the ResetDeviceMacrosBank method succeeded ?"} },
 		std::bind(&ClientsManager::resetDeviceMacrosBank, this,
 			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3) );
 }
