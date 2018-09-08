@@ -317,8 +317,6 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 				/* resetting empty MacrosBank */
 				const std::string remoteMethod = "ResetDeviceMacrosBank";
 
-				LOG(VERB) << devID << " resetting empty MacrosBank " << to_uint(bankID);
-
 				try {
 					_pDBus->initializeRemoteMethodCall(
 						_systemBus,
