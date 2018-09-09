@@ -122,6 +122,8 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 		std::fesetround(FE_TONEAREST);
 		cpuPercentTotal = std::nearbyint(cpuPercentTotal);
 
+		this->drawProgressBarOnFrame(cpuPercentTotal, 24, 14);
+
 		usedCPUActiveTotal = getPaddedPercentString(cpuPercentTotal);
 
 		_snapshot1 = s2;

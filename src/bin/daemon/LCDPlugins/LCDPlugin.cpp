@@ -19,6 +19,8 @@
  *
  */
 
+#include <sstream>
+
 #include "lib/utils/utils.hpp"
 
 #include "LCDPlugin.hpp"
@@ -195,6 +197,121 @@ void LCDPlugin::writeStringOnLastFrame(
 	}
 	catch (const GLogiKExcept & e) {
 		GKSysLog(LOG_WARNING, WARNING, e.what());
+	}
+}
+
+void LCDPlugin::drawProgressBarOnFrame(
+	const unsigned short percent,
+	const unsigned int PBMXPos,
+	const unsigned int PBMYPos)
+{
+	const unsigned int PROGRESS_BAR_WIDTH = 102;
+	const unsigned int PROGRESS_BAR_HEIGHT = 6;
+
+	if(PBMXPos + PROGRESS_BAR_WIDTH > (PBM_WIDTH - 1)) {
+		std::ostringstream buffer(std::ios_base::app);
+		buffer << "wrong progress bar X position : " << PBMXPos;
+		GKSysLog(LOG_WARNING, WARNING, buffer.str());
+		return;
+	}
+
+	try {
+		PBMDataArray & frame = (*_itCurrentFrame).pbm_data;
+
+		auto drawHorizontalLine = [&frame] (const unsigned short index) -> void
+		{
+			frame.at(index+12) |= 0b11111100;
+			for(unsigned short i = 0; i < 12; ++i) {
+				frame[index+i] = 0b11111111;
+			}
+		};
+
+		auto drawProgressBarLine = [&frame, &percent]
+			(const unsigned short index, const unsigned short line) -> void
+		{
+			/* checking for out of range */
+			frame.at(index+12);
+
+			const unsigned short percentByte = percent / 8;
+			const unsigned short percentModulo = percent % 8;
+			/* -1 to consider the bar left border */
+			const unsigned short leftShift = ((8-1) - percentModulo);
+
+#if DEBUGGING_ON && DEBUG_LCD_PLUGINS
+			LOG(DEBUG3)	<< "index: " << index
+						<< " line: " << line
+						<< " pByte: " << percentByte
+						<< " pModulo: " << percentModulo
+						<< " leftShift: " << leftShift;
+#endif
+
+			for(unsigned short i = 0; i < 12; ++i) {
+				if(i == 0) {
+						if(line % 2 == 1) {
+							if(percent < 8)
+								frame[index+i] = 0b10101010 << leftShift;
+							else
+								frame[index+i] = 0b10101010;
+						}
+						else {
+							if(percent < 8)
+								frame[index+i] = 0b01010101 << leftShift;
+							else
+								frame[index+i] = 0b01010101;
+						}
+				}
+				else if(i < percentByte) {
+					if(i < 8) {
+						if(line % 2 == 1)
+							frame[index+i] = 0b10101010;
+						else
+							frame[index+i] = 0b01010101;
+					}
+					else {
+						frame[index+i] = 0b11111111;
+					}
+				}
+				else if(i == percentByte) {
+					if(i < 8) {
+						if(line % 2 == 1)
+							frame[index+i] = 0b01010101 << leftShift;
+						else
+							frame[index+i] = 0b10101010 << leftShift;
+					}
+					else {
+						frame[index+i] = 0b11111111 << leftShift;
+					}
+				}
+				else {
+					frame[index+i] = 0;
+				}
+			}
+
+			if(percentByte == 12) {
+				frame[index+12] = 0b11111111 << leftShift;
+			}
+			else
+				frame[index+12] = 0;
+
+			frame[index]    |= 0b10000000;	/* left border */
+			frame[index+12] |= 0b00000100;	/* right border */
+		};
+
+		const unsigned short xByte = PBMXPos / 8;
+		const unsigned short index = (PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
+
+		drawHorizontalLine(index);
+
+		for(unsigned short i = 1; i < PROGRESS_BAR_HEIGHT; ++i) {
+			drawProgressBarLine(index + (PBM_WIDTH_IN_BYTES * i), i);
+		}
+
+		drawHorizontalLine(index + (PBM_WIDTH_IN_BYTES * PROGRESS_BAR_HEIGHT));
+	}
+	catch (const std::out_of_range& oor) {
+		std::ostringstream buffer(std::ios_base::app);
+		buffer << "wrong frame index";
+		GKSysLog(LOG_WARNING, WARNING, buffer.str());
 	}
 }
 

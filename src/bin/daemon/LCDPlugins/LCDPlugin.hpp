@@ -116,6 +116,12 @@ class LCDPlugin
 			const unsigned int PBMYPos
 		);
 
+		void drawProgressBarOnFrame(
+			const unsigned short percent,
+			const unsigned int PBMXPos,
+			const unsigned int PBMYPos
+		);
+
 	private:
 		bool _initialized;
 		unsigned short _frameCounter;		/* frame counter */
