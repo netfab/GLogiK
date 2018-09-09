@@ -220,7 +220,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 
 		auto drawHorizontalLine = [&frame] (const unsigned short index) -> void
 		{
-			frame.at(index+12) |= 0b11111100;
+			frame[index+12] |= 0b11111100;
 			for(unsigned short i = 0; i < 12; ++i) {
 				frame[index+i] = 0b11111111;
 			}
@@ -229,9 +229,6 @@ void LCDPlugin::drawProgressBarOnFrame(
 		auto drawProgressBarLine = [&frame, &percent]
 			(const unsigned short index, const unsigned short line) -> void
 		{
-			/* checking for out of range */
-			frame.at(index+12);
-
 			const unsigned short percentByte = percent / 8;
 			const unsigned short percentModulo = percent % 8;
 			/* -1 to consider the bar left border */
@@ -299,6 +296,9 @@ void LCDPlugin::drawProgressBarOnFrame(
 
 		const unsigned short xByte = PBMXPos / 8;
 		const unsigned short index = (PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
+
+		/* checking for out of range */
+		frame.at(index+12);
 
 		drawHorizontalLine(index);
 
