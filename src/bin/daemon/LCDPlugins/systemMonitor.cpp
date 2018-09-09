@@ -92,18 +92,18 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 		struct sysinfo memInfo;
 		sysinfo(&(memInfo));
 
-		uint64_t usedPMem, totalPMem = 0;
-		usedPMem  = memInfo.freeram;
-		usedPMem *= memInfo.mem_unit;
-		usedPMem *= 100;
+		uint64_t freePMem = memInfo.freeram;
+		freePMem *= memInfo.mem_unit;
+		freePMem *= 100;
 
-		totalPMem  = memInfo.totalram;
+		uint64_t totalPMem = memInfo.totalram;
 		totalPMem *= memInfo.mem_unit;
 
-		usedPMem /= totalPMem;
-		usedPMem = 100 - usedPMem;
+		unsigned short memPercent = static_cast<unsigned short>(freePMem / totalPMem);
+		memPercent = 100 - memPercent;
 
-		usedPhysicalMemory = getPaddedPercentString(usedPMem);
+		this->drawProgressBarOnFrame(memPercent, 24, 33);
+		usedPhysicalMemory = getPaddedPercentString(memPercent);
 	}
 
 	/* -- -- -- */
@@ -122,7 +122,7 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 		std::fesetround(FE_TONEAREST);
 		cpuPercentTotal = std::nearbyint(cpuPercentTotal);
 
-		this->drawProgressBarOnFrame(cpuPercentTotal, 24, 14);
+		this->drawProgressBarOnFrame(cpuPercentTotal, 24, 15);
 
 		usedCPUActiveTotal = getPaddedPercentString(cpuPercentTotal);
 

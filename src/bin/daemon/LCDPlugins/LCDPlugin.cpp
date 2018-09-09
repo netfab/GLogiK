@@ -262,10 +262,18 @@ void LCDPlugin::drawProgressBarOnFrame(
 				}
 				else if(i == percentByte) {
 					if(i < 8) {
-						if(line % 2 == 1)
-							frame[index+i] = 0b01010101 << leftShift;
-						else
-							frame[index+i] = 0b10101010 << leftShift;
+						if(line % 2 == 1) {
+							if(leftShift % 2 == 1)
+								frame[index+i] = 0b01010101 << leftShift;
+							else
+								frame[index+i] = 0b10101010 << leftShift;
+						}
+						else {
+							if(leftShift % 2 == 1)
+								frame[index+i] = 0b10101010 << leftShift;
+							else
+								frame[index+i] = 0b01010101 << leftShift;
+						}
 					}
 					else {
 						frame[index+i] = 0b11111111 << leftShift;
