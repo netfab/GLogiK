@@ -50,15 +50,18 @@ class LCDPBMFrame
 {
 	public:
 		LCDPBMFrame(const unsigned short i)
-			:	frame_count(i) {}
+			:	_frameCounter(i) {}
+		LCDPBMFrame(void) = delete;
 		~LCDPBMFrame() = default;
 
-		const unsigned short frame_count;
-		PBMDataArray pbm_data;
+		PBMDataArray _PBMData;
+
+		const bool switchToNextFrame(const unsigned short currentFrameCounter);
 
 	protected:
 
 	private:
+		const unsigned short _frameCounter;
 
 };
 

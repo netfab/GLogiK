@@ -30,6 +30,15 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
+/* -- -- -- */
+
+const bool LCDPBMFrame::switchToNextFrame(const unsigned short currentFrameCounter)
+{
+	return (currentFrameCounter >= _frameCounter);
+}
+
+/* -- -- -- */
+
 LCDPlugin::LCDPlugin()
 	:	_pluginName("unknown"),
 		_pluginTempo(LCDPluginTempo::TEMPO_DEFAULT),
@@ -87,8 +96,7 @@ void LCDPlugin::prepareNextPBMFrame(void)
 {
 	/* update internal frame counter and iterator to allow the plugin
 	 * to have multiples PBM loaded and simulate animation */
-
-	if(_frameCounter >= (*_itCurrentFrame).frame_count) {
+	if( (*_itCurrentFrame).switchToNextFrame(_frameCounter) ) {
 		_itCurrentFrame++;
 		this->checkPBMFrameIndex(); /* may throw */
 		_frameIndex = (_itCurrentFrame - _PBMFrames.begin());
@@ -131,7 +139,7 @@ void LCDPlugin::addPBMFrame(
 
 	_PBMFrames.emplace_back(num);
 	try {
-		this->readPBM(filePath.string(), _PBMFrames.back().pbm_data);
+		this->readPBM(filePath.string(), _PBMFrames.back()._PBMData);
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "exception while reading PBM file: " << filePath.string();
@@ -143,7 +151,7 @@ void LCDPlugin::addPBMClearedFrame(
 	const unsigned short num)
 {
 	_PBMFrames.emplace_back(num);
-	_PBMFrames.back().pbm_data.fill(0x0);
+	_PBMFrames.back()._PBMData.fill(0x0);
 }
 
 const unsigned short LCDPlugin::getNextPBMFrameID(void) const
@@ -156,7 +164,7 @@ PBMDataArray & LCDPlugin::getCurrentPBMFrame(void)
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 	LOG(DEBUG3) << _pluginName << " PBM # " << _frameIndex;
 #endif
-	return (*_itCurrentFrame).pbm_data;
+	return (*_itCurrentFrame)._PBMData;
 }
 
 void LCDPlugin::writeStringOnFrame(
@@ -172,7 +180,7 @@ void LCDPlugin::writeStringOnFrame(
 #endif
 		for(const char & c : string) {
 			const std::string character(1, c);
-			pFonts->printCharacterOnFrame( fontID, (*_itCurrentFrame).pbm_data, character, PBMXPos, PBMYPos );
+			pFonts->printCharacterOnFrame( fontID, (*_itCurrentFrame)._PBMData, character, PBMXPos, PBMYPos );
 		} /* for each character in the string */
 	}
 	catch (const GLogiKExcept & e) {
@@ -216,7 +224,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 	}
 
 	try {
-		PBMDataArray & frame = (*_itCurrentFrame).pbm_data;
+		PBMDataArray & frame = (*_itCurrentFrame)._PBMData;
 
 		auto drawHorizontalLine = [&frame] (const unsigned short index) -> void
 		{
