@@ -1,7 +1,7 @@
 
 ---
 
-## [Unreleased]
+## version 0.8.2 - 2018-09-10
 #### Added features :
  * added LCD keys L1-L2-L3-L4-L5 support into LCD plugins
 
