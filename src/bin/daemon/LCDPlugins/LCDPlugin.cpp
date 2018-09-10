@@ -206,7 +206,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 	const unsigned int PBMYPos)
 {
 	const unsigned int PROGRESS_BAR_WIDTH = 102;
-	const unsigned int PROGRESS_BAR_HEIGHT = 6;
+	const unsigned int PROGRESS_BAR_HEIGHT = 7;
 
 	if(PBMXPos + PROGRESS_BAR_WIDTH > (PBM_WIDTH - 1)) {
 		std::ostringstream buffer(std::ios_base::app);
@@ -300,13 +300,20 @@ void LCDPlugin::drawProgressBarOnFrame(
 		/* checking for out of range */
 		frame.at(index+12);
 
+		/*
+		 *	------------- one horizontal line
+		 *	| * *
+		 *	|* *
+		 *	| * *	five progress bar lines
+		 *	|* *
+		 *	| * *
+		 *	------------- one horizontal line
+		 */
 		drawHorizontalLine(index);
-
-		for(unsigned short i = 1; i < PROGRESS_BAR_HEIGHT; ++i) {
+		for(unsigned short i = 1; i < (PROGRESS_BAR_HEIGHT-1); ++i) {
 			drawProgressBarLine(index + (PBM_WIDTH_IN_BYTES * i), i);
 		}
-
-		drawHorizontalLine(index + (PBM_WIDTH_IN_BYTES * PROGRESS_BAR_HEIGHT));
+		drawHorizontalLine(index + (PBM_WIDTH_IN_BYTES * (PROGRESS_BAR_HEIGHT-1)));
 	}
 	catch (const std::out_of_range& oor) {
 		std::ostringstream buffer(std::ios_base::app);
