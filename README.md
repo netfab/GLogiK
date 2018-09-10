@@ -1,6 +1,6 @@
 ### GLogiK, daemon to handle special features on gaming keyboards
 
-Last release : version 0.8.0
+Last release : version 0.8.2
 
 ### Links
  - [homepage / download](https://glogik.tuxfamily.org/)
@@ -9,13 +9,15 @@ Last release : version 0.8.0
  - Logitech G510s Gaming Keyboard (046d:c22d)
 
 ### Features
- - Create and/or clear macros and assign them to G-Keys
- - Set keyboard backlight color
+ - Macros keys (G-Keys) support (create, run or delete macros)
+ - Keyboard backlight color support
  - Monitoring text based devices configuration files
  - Ability to set keyboard configuration on the fly in multi-users environment
  - Ability to handle multiple keyboard devices simultaneously
  - Hotplugged devices monitoring
  - Device status control via DBus
+ - LCD screen support, including LCD keys
+ - Multimedia keys support
 
 ### Build Dependencies :
  - dev-libs/boost 1.64.0 or later
