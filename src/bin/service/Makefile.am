@@ -1,5 +1,5 @@
 
-bin_PROGRAMS = GLogiKs
+bin_PROGRAMS += GLogiKs
 
 GLogiKs_CXXFLAGS = \
 				@BOOST_CPPFLAGS@ \

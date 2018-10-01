@@ -125,6 +125,12 @@ GLogiK=$PWD/.. CD=. {
 				virtualKeyboard.cpp
 				virtualKeyboard.hpp
 			}
+			launcher=launcher/ {
+				Makefile.am
+				main.cpp
+				launcher.cpp
+				launcher.hpp
+			}
 			service=service/ {
 				Makefile.am
 				main.cpp
