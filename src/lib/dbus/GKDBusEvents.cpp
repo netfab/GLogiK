@@ -35,13 +35,18 @@ using namespace NSGKUtils;
 const std::string GKDBusEvents::_rootNodeObject("RootNode");
 thread_local BusConnection GKDBusEvents::currentBus(BusConnection::GKDBUS_SYSTEM);
 
-GKDBusEvents::GKDBusEvents(const std::string & rootNode) : _rootNode(rootNode) {
+GKDBusEvents::GKDBusEvents(
+	const std::string & rootNode)
+		:	_rootNode(rootNode)
+{
 	/* adding special event for root node introspection */
 	const char* object = GKDBusEvents::_rootNodeObject.c_str();
 	const BusConnection systemBus(BusConnection::GKDBUS_SYSTEM);
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "adding Introspectable interface : " << object;
 #endif
+
 	this->EventGKDBusCallback<StringToString>::exposeEvent(
 		systemBus, object, "org.freedesktop.DBus.Introspectable", "Introspect",
 		{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},

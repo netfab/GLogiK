@@ -31,7 +31,7 @@
 #include <cstdlib>
 #include <csignal>
 
-//#include <new>
+#include <new>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -41,6 +41,7 @@
 #include "lib/utils/utils.hpp"
 #include "lib/shared/sessionManager.hpp"
 
+#include "DBusHandler.hpp"
 #include "launcher.hpp"
 
 namespace GLogiK
@@ -157,6 +158,7 @@ int DesktopServiceLauncher::run( const int& argc, char *argv[] ) {
 			fds[0].fd = session.openConnection();
 			fds[0].events = POLLIN;
 
+			LauncherDBusHandler DBus;
 			while( session.isSessionAlive() ) {
 				int num = poll(fds, nfds, 150);
 
@@ -167,6 +169,8 @@ int DesktopServiceLauncher::run( const int& argc, char *argv[] ) {
 						continue;
 					}
 				}
+
+				DBus.checkDBusMessages();
 			}
 		}
 

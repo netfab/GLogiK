@@ -70,10 +70,13 @@ class GKDBus
 		public GKDBusArgumentMacro
 {
 	public:
-		GKDBus(const std::string & rootNode);
+		GKDBus(
+			const std::string & rootNode
+		);
 		~GKDBus();
 
 		void connectToSystemBus(const char* connectionName);
+		void connectToSessionBus(const char* connectionName);
 
 		void checkForNextMessage(const BusConnection bus) noexcept;
 
@@ -82,10 +85,10 @@ class GKDBus
 	private:
 		DBusError _error;
 
-		//DBusConnection* _sessionConnection;
+		DBusConnection* _sessionConnection;
 		DBusConnection* _systemConnection;
 
-		//std::string _sessionName;
+		std::string _sessionName;
 		std::string _systemName;
 
 		DBusMessage* _message;

@@ -54,7 +54,9 @@ class GKDBusEvents
 	public:
 
 	protected:
-		GKDBusEvents(const std::string & rootNode);
+		GKDBusEvents(
+			const std::string & rootNode
+		);
 		~GKDBusEvents(void);
 
 		thread_local static BusConnection currentBus;
