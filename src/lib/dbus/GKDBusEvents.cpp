@@ -39,19 +39,6 @@ GKDBusEvents::GKDBusEvents(
 	const std::string & rootNode)
 		:	_rootNode(rootNode)
 {
-	/* adding special event for root node introspection */
-	const char* object = GKDBusEvents::_rootNodeObject.c_str();
-	const BusConnection systemBus(BusConnection::GKDBUS_SYSTEM);
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "adding Introspectable interface : " << object;
-#endif
-
-	this->EventGKDBusCallback<StringToString>::exposeEvent(
-		systemBus, object, "org.freedesktop.DBus.Introspectable", "Introspect",
-		{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
-		std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),
-		GKDBusEventType::GKDBUS_EVENT_METHOD, false);
 }
 
 GKDBusEvents::~GKDBusEvents() {
