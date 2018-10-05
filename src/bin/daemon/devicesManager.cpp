@@ -214,7 +214,7 @@ const bool DevicesManager::stopDevice(const std::string & devID) noexcept {
 	}
 	catch (const std::out_of_range& oor) {
 		std::ostringstream buffer(std::ios_base::app);
-		buffer << "device stopping failure : device not found in staretd devices container : " << oor.what();
+		buffer << "device stopping failure : device not found in started devices container : " << oor.what();
 		GKSysLog(LOG_ERR, ERROR, buffer.str());
 		return false;
 	}
