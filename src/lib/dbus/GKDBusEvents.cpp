@@ -36,8 +36,10 @@ const std::string GKDBusEvents::_rootNodeObject("RootNode");
 thread_local BusConnection GKDBusEvents::currentBus(BusConnection::GKDBUS_SYSTEM);
 
 GKDBusEvents::GKDBusEvents(
-	const std::string & rootNode)
-		:	_rootNode(rootNode)
+	const std::string & rootNode,
+	const std::string & rootNodePath)
+		:	_rootNode(rootNode),
+			_rootNodePath(rootNodePath)
 {
 }
 
@@ -46,11 +48,11 @@ GKDBusEvents::~GKDBusEvents() {
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "current bus: " << to_uint(to_type(busPair.first));
 #endif
-		for(const auto & objectPathPair : busPair.second) {
+		for(const auto & objectPair : busPair.second) {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "object_path: " << objectPathPair.first;
+			LOG(DEBUG2) << "object: " << objectPair.first;
 #endif
-			for(const auto & interfacePair : objectPathPair.second) {
+			for(const auto & interfacePair : objectPair.second) {
 #if DEBUGGING_ON
 				LOG(DEBUG3) << "interface: " << interfacePair.first;
 #endif
@@ -62,13 +64,6 @@ GKDBusEvents::~GKDBusEvents() {
 	}
 }
 
-const std::string GKDBusEvents::getNode(const std::string & object) const {
-	std::string node(_rootNode);
-	node += "/";
-	node += object;
-	return node;
-}
-
 const std::string & GKDBusEvents::getRootNode(void) const {
 	return _rootNode;
 }
@@ -78,14 +73,14 @@ const std::string GKDBusEvents::introspectRootNode(void) {
 
 	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
-	xml << "<node name=\"" << _rootNode << "\">\n";
+	xml << "<node name=\"" << _rootNodePath << "\">\n";
 
 	try {
 		const auto & bus = _DBusEvents.at(GKDBusEvents::currentBus);
 
-		for(const auto & objectPathPair : bus) {
-			if(objectPathPair.first != GKDBusEvents::_rootNodeObject)
-				xml << "  <node name=\"" << objectPathPair.first << "\"/>\n";
+		for(const auto & objectPair : bus) {
+			if(objectPair.first != GKDBusEvents::_rootNodeObject)
+				xml << "  <node name=\"" << objectPair.first << "\"/>\n";
 		}
 	}
 	catch (const std::out_of_range& oor) {
@@ -160,7 +155,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath) 
 	LOG(DEBUG2) << "object path asked : " << askedObjectPath;
 #endif
 
-	if( askedObjectPath == _rootNode )
+	if( askedObjectPath == _rootNodePath )
 		return this->introspectRootNode();
 
 	std::ostringstream xml;
@@ -176,11 +171,13 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath) 
 
 			bool interfaceOpened = false;
 
-			for(const auto & objectPathPair : bus) {
+			for(const auto & objectPair : bus) {
+				std::string objectPath(_rootNodePath);
+				objectPath += "/"; objectPath += objectPair.first;
 				/* object path must match */
-				if( this->getNode(objectPathPair.first) != askedObjectPath )
+				if( objectPath != askedObjectPath )
 					continue;
-				for(const auto & interfacePair : objectPathPair.second) {
+				for(const auto & interfacePair : objectPair.second) {
 					if( interfacePair.first == interface ) {
 						this->openXMLInterface(xml, interfaceOpened, interface);
 						for(const auto & DBusEvent : interfacePair.second) { /* vector of pointers */

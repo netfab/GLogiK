@@ -185,8 +185,6 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusRemoteMethodCall.hpp
 					GKDBusBroadcastSignal.cpp
 					GKDBusBroadcastSignal.hpp
-					GKDBusTargetsSignal.cpp
-					GKDBusTargetsSignal.hpp
 					GKDBusAsyncContainer.cpp
 					GKDBusAsyncContainer.hpp
 				}

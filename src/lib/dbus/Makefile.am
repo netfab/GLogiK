@@ -39,8 +39,6 @@ libGKDBus_la_SOURCES = \
 	%D%/messages/GKDBusRemoteMethodCall.hpp \
 	%D%/messages/GKDBusBroadcastSignal.cpp \
 	%D%/messages/GKDBusBroadcastSignal.hpp \
-	%D%/messages/GKDBusTargetsSignal.cpp \
-	%D%/messages/GKDBusTargetsSignal.hpp \
 	%D%/messages/GKDBusAsyncContainer.cpp \
 	%D%/messages/GKDBusAsyncContainer.hpp \
 	%D%/events/GKDBusEvent.cpp \

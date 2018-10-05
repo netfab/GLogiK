@@ -34,7 +34,6 @@
 
 #include "messages/GKDBusRemoteMethodCall.hpp"
 #include "messages/GKDBusBroadcastSignal.hpp"
-#include "messages/GKDBusTargetsSignal.hpp"
 #include "messages/GKDBusAsyncContainer.hpp"
 
 #include "arguments/GKDBusArgString.hpp"
@@ -60,7 +59,6 @@ class GKDBus
 	:	public GKDBusEvents,
 		virtual public GKDBusMessageRemoteMethodCall,
 		public GKDBusMessageBroadcastSignal,
-		public GKDBusMessageTargetsSignal,
 		public GKDBusMessageAsyncContainer,
 		virtual public GKDBusArgumentString,
 		public GKDBusArgumentBoolean,
@@ -71,7 +69,8 @@ class GKDBus
 {
 	public:
 		GKDBus(
-			const std::string & rootNode
+			const std::string & rootNode,
+			const std::string & rootNodePath
 		);
 		~GKDBus();
 

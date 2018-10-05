@@ -64,7 +64,7 @@ class GKDBusMessageRemoteMethodCall
 	public:
 		/* Remote Method Call with Pending Reply */
 		void initializeRemoteMethodCall(
-			BusConnection current,
+			BusConnection wantedConnection,
 			const char* busName,
 			const char* objectPath,
 			const char* interface,

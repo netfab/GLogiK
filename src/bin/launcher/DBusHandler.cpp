@@ -39,7 +39,7 @@ LauncherDBusHandler::LauncherDBusHandler(void)
 {
 	try {
 		try {
-			_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE);
+			_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE, GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE_PATH);
 		}
 		catch (const std::bad_alloc& e) { /* handle new() failure */
 			throw GLogiKBadAlloc("GKDBus bad allocation");

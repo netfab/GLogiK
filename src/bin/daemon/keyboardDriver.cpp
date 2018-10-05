@@ -383,7 +383,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 
 	/* ROOT_NODE only for introspection, don't care */
 	try {
-		pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
+		pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus bad allocation";
@@ -450,22 +450,21 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 									signal = "MacroCleared";
 								}
 
-								pDBus->initializeTargetsSignal(
+								pDBus->initializeBroadcastSignal(
 									NSGKDBus::BusConnection::GKDBUS_SYSTEM,
-									GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-									GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
-									GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+									GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+									GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 									signal.c_str()
 								);
 
-								pDBus->appendStringToTargetsSignal(devID);
-								pDBus->appendStringToTargetsSignal(device._macroKey);
-								pDBus->appendUInt8ToTargetsSignal(bankID);
+								pDBus->appendStringToBroadcastSignal(devID);
+								pDBus->appendStringToBroadcastSignal(device._macroKey);
+								pDBus->appendUInt8ToBroadcastSignal(bankID);
 
-								pDBus->sendTargetsSignal();
+								pDBus->sendBroadcastSignal();
 							}
 							catch (const GKDBusMessageWrongBuild & e) {
-								pDBus->abandonTargetsSignal();
+								pDBus->abandonBroadcastSignal();
 								GKSysLog(LOG_WARNING, WARNING, e.what());
 							}
 						}
@@ -649,7 +648,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 
 								/* ROOT_NODE only for introspection, don't care */
 								try {
-									pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE);
+									pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
 								}
 								catch (const std::bad_alloc& e) { /* handle new() failure */
 									LOG(ERROR) << "GKDBus bad allocation";
@@ -660,20 +659,20 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 									pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
 
 									try {
-										pDBus->initializeTargetsSignal(
+										pDBus->initializeBroadcastSignal(
 											NSGKDBus::BusConnection::GKDBUS_SYSTEM,
-											GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-											GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
-											GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 											"deviceMediaEvent"
 										);
-										pDBus->appendStringToTargetsSignal(devID);
-										pDBus->appendStringToTargetsSignal(device._mediaKey);
 
-										pDBus->sendTargetsSignal();
+										pDBus->appendStringToBroadcastSignal(devID);
+										pDBus->appendStringToBroadcastSignal(device._mediaKey);
+
+										pDBus->sendBroadcastSignal();
 									}
 									catch (const GKDBusMessageWrongBuild & e) {
-										pDBus->abandonTargetsSignal();
+										pDBus->abandonBroadcastSignal();
 										GKSysLog(LOG_WARNING, WARNING, e.what());
 									}
 								}

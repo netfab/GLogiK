@@ -45,7 +45,8 @@ c_str LCD_KEY_L5 = "L5";
 c_str GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME					= "com.glogik.Device";
 
 /* daemon thread */
-c_str GLOGIK_DAEMON_DBUS_ROOT_NODE									= "/com/glogik/Daemon";
+c_str GLOGIK_DAEMON_DBUS_ROOT_NODE									= "Daemon";
+c_str GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH								= "/com/glogik/Daemon";
 c_str GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME						= "com.glogik.Daemon";
 	/* -- */
 c_str GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT						= "ClientsManager";
@@ -58,7 +59,8 @@ c_str GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE					= "com.glogik.Daemon.Devi
 
 
 /* desktop service launcher */
-c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE				= "/com/glogik/Desktop/Service/Launcher";
+c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE				= "Desktop/Service/Launcher";
+c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE_PATH			= "/com/glogik/Desktop/Service/Launcher";
 c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME		= "com.glogik.Desktop.Service.Launcher";
 	/* -- */
 c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_SESSION_MESSAGE_HANDLER_DBUS_OBJECT		= "SessionMessageHandler";
@@ -67,7 +69,8 @@ c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_SESSION_MESSAGE_HANDLER_DBUS_INTERFACE	= "
 
 
 /* desktop service */
-c_str GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE							= "/com/glogik/Desktop/Service";
+c_str GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE							= "Desktop/Service";
+c_str GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE_PATH					= "/com/glogik/Desktop/Service";
 c_str GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME				= "com.glogik.Desktop.Service";
 	/* -- */
 c_str GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT			= "SystemMessageHandler";

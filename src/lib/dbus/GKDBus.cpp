@@ -29,10 +29,12 @@
 namespace NSGKDBus
 {
 
-GKDBus::GKDBus(const std::string & rootNode)
-	:	GKDBusEvents(rootNode),
-		_sessionConnection(nullptr),
-		_systemConnection(nullptr)
+GKDBus::GKDBus(
+	const std::string & rootNode,
+	const std::string & rootNodePath)
+		:	GKDBusEvents(rootNode, rootNodePath),
+			_sessionConnection(nullptr),
+			_systemConnection(nullptr)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "dbus object initialization";
@@ -143,15 +145,29 @@ void GKDBus::checkForNextMessage(const BusConnection bus) noexcept {
 	}
 
 	try {
-		const std::string askedObjectPath( to_string( dbus_message_get_path(_message) ) );
+		std::string object;
+		{
+			std::istringstream objectPath( to_string(dbus_message_get_path(_message)) );
+			/* get last part of object path */
+			while(std::getline(objectPath, object, '/')) {}
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "asked object path: " << objectPath.str();
+			LOG(DEBUG3) << "     asked object: " << object;
+#endif
+		}
+
 		const auto & bus = _DBusEvents.at(GKDBusEvents::currentBus);
 
 		for(const auto & objectPair : bus) {
 			/* handle root node introspection special case */
-			if( askedObjectPath != this->getRootNode() )
-				/* object path must match */
-				if(askedObjectPath != this->getNode(objectPair.first))
+			if( object != this->getRootNode() )
+				/* object must match */
+				if(object != objectPair.first) {
+#if DEBUGGING_ON
+					LOG(DEBUG3) << "skipping " << object << " - not " << objectPair.first;
+#endif
 					continue;
+				}
 
 			for(const auto & interfacePair : objectPair.second) {
 				const char* interface = interfacePair.first.c_str();
