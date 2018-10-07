@@ -48,8 +48,6 @@ class DesktopService
 
 		NSGKUtils::FileSystem* _pGKfs;
 
-		void daemonize(void);
-
 		void parseCommandLine(const int& argc, char *argv[]);
 };
 

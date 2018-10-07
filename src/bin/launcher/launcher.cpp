@@ -25,11 +25,9 @@
 
 #include <sys/types.h>
 #include <unistd.h>
-#include <sys/stat.h>
 
 #include <cstring>
 #include <cstdlib>
-#include <csignal>
 
 #include <new>
 #include <fstream>
@@ -95,51 +93,6 @@ DesktopServiceLauncher::~DesktopServiceLauncher() {
 		std::fclose(_LOGfd);
 }
 
-void DesktopServiceLauncher::daemonize() {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "daemonizing process";
-#endif
-
-	_pid = fork();
-	if(_pid == -1)
-		throw GLogiKExcept("first fork failure");
-
-	// parent exit
-	if(_pid > 0)
-		exit(EXIT_SUCCESS);
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "first fork ! pid:" << getpid();
-#endif
-
-	if(setsid() == -1)
-		throw GLogiKExcept("session creation failure");
-
-	// Ignore signal sent from child to parent process
-	std::signal(SIGCHLD, SIG_IGN);
-
-	_pid = fork();
-	if(_pid == -1)
-		throw GLogiKExcept("second fork failure");
-
-	// parent exit
-	if(_pid > 0)
-		exit(EXIT_SUCCESS);
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "second fork ! pid:" << getpid();
-#endif
-
-	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
-	if(chdir("/") == -1)
-		throw GLogiKExcept("change directory failure");
-
-	_pid = getpid();
-#if DEBUGGING_ON
-	LOG(DEBUG) << "daemonized !";
-#endif
-}
-
 int DesktopServiceLauncher::run( const int& argc, char *argv[] ) {
 	LOG(INFO) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
 
@@ -147,7 +100,10 @@ int DesktopServiceLauncher::run( const int& argc, char *argv[] ) {
 		/* no expected arguments */
 		//this->parseCommandLine(argc, argv);
 
-		this->daemonize();
+		_pid = daemonizeProcess();
+#if DEBUGGING_ON
+		LOG(DEBUG) << "process detached - pid: " << _pid;
+#endif
 
 		{
 			SessionManager session;

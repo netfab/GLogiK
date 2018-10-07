@@ -23,7 +23,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <csignal>
-#include <sys/stat.h>
 
 #include <errno.h>
 
@@ -126,7 +125,11 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 
 		if( GLogiKDaemon::isDaemonRunning() ) {
 #if DEBUGGING_ON == 0
-			this->daemonize();
+			_pid = daemonizeProcess(true);
+			syslog(LOG_INFO, "process successfully daemonized");
+#else
+			_pid = getpid();
+			LOG(DEBUG) << "process not daemonized - debug ON - pid: " << _pid;
 #endif
 			this->createPIDFile();
 
@@ -196,68 +199,6 @@ void GLogiKDaemon::handleSignal(int sig) {
 			GKSysLog(LOG_WARNING, WARNING, buffer.str());
 			break;
 	}
-}
-
-void GLogiKDaemon::daemonize() {
-	//int fd = 0;
-
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "daemonizing process";
-#endif
-
-	_pid = fork();
-	if(_pid == -1)
-		throw GLogiKExcept("first fork failure");
-
-	// parent exit
-	if(_pid > 0)
-		exit(EXIT_SUCCESS);
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "first fork ! pid:" << getpid();
-#endif
-
-	if(setsid() == -1)
-		throw GLogiKExcept("session creation failure");
-
-	// Ignore signal sent from child to parent process
-	std::signal(SIGCHLD, SIG_IGN);
-
-	_pid = fork();
-	if(_pid == -1)
-		throw GLogiKExcept("second fork failure");
-
-	// parent exit
-	if(_pid > 0)
-		exit(EXIT_SUCCESS);
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "second fork ! pid:" << getpid();
-#endif
-
-	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
-	if(chdir("/") == -1)
-		throw GLogiKExcept("change directory failure");
-
-#if DEBUGGING_ON == 0
-	// closing opened descriptors
-	//for(fd = sysconf(_SC_OPEN_MAX); fd > 0; fd--)
-	//	close(fd);
-	std::fclose(stdin);
-	std::fclose(stdout);
-	std::fclose(stderr);
-	
-	// reopening standard outputs
-	stdin = std::fopen("/dev/null", "r");
-	stdout = std::fopen("/dev/null", "w+");
-	stderr = std::fopen("/dev/null", "w+");
-#endif
-
-	_pid = getpid();
-
-#if DEBUGGING_ON
-	LOG(INFO) << "daemonized !";
-#endif
 }
 
 void GLogiKDaemon::createPIDFile(void) {

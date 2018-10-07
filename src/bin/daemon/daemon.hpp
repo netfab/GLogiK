@@ -54,7 +54,6 @@ class GLogiKDaemon
 		std::ofstream _pidFile;
 		NSGKDBus::GKDBus* _pDBus;
 
-		void daemonize(void);
 		void createPIDFile(void);
 		void dropPrivileges(void);
 		void parseCommandLine(const int& argc, char *argv[]);

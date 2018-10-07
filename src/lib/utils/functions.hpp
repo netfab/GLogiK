@@ -26,6 +26,7 @@
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
+#include <sys/types.h>
 #include <cstdint>
 #include <string>
 #include <type_traits>
@@ -60,6 +61,8 @@ const std::string getHexRGB(
 	const uint8_t blue);
 
 void yield_for(std::chrono::microseconds us);
+
+pid_t daemonizeProcess(const bool closeDescriptors=false);
 
 } // namespace NSGKUtils
 
