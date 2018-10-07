@@ -70,7 +70,7 @@ KeyboardDriver::~KeyboardDriver() {
 }
 
 const bool KeyboardDriver::checkDeviceCapability(const DeviceID & device, Caps toCheck) {
-	return (device.getCapabilities() & to_type(toCheck));
+	return (device.getCapabilities() & toEnumType(toCheck));
 }
 
 const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void) {
@@ -79,13 +79,13 @@ const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void) {
 }
 
 std::string KeyboardDriver::getBytes(const USBDevice & device) const {
-	const unsigned int last_length = to_uint(device.getLastKeysInterruptTransferLength());
+	const unsigned int last_length = toUInt(device.getLastKeysInterruptTransferLength());
 	if( last_length == 0 )
 		return "";
 	std::ostringstream s;
-	s << std::hex << to_uint(device._pressedKeys[0]);
+	s << std::hex << toUInt(device._pressedKeys[0]);
 	for(unsigned int x = 1; x < last_length; x++) {
-		s << ", " << std::hex << to_uint(device._pressedKeys[x]);
+		s << ", " << std::hex << toUInt(device._pressedKeys[x]);
 	}
 	return s.str();
 }
@@ -102,7 +102,7 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 				LOG(DEBUG)	<< device.getID()
 							<< " exp. rl: " << this->getKeysInterruptBufferMaxLength()
 							<< " act_l: " << device.getLastKeysInterruptTransferLength() << ", xBuf[0]: "
-							<< std::hex << to_uint(device._pressedKeys[0]);
+							<< std::hex << toUInt(device._pressedKeys[0]);
 #endif
 				return this->processKeyEvent(device);
 			}
@@ -154,52 +154,52 @@ void KeyboardDriver::sendUSBDeviceInitialization(USBDevice & device) {
 const bool KeyboardDriver::updateCurrentLedsMask(USBDevice & device, bool disableMR) {
 	auto & mask = device._banksLedsMask;
 	/* is macro record mode enabled ? */
-	bool MR_ON = mask & to_type(Leds::GK_LED_MR);
+	bool MR_ON = mask & toEnumType(Leds::GK_LED_MR);
 	bool Mx_ON = false;
 	bool mask_updated = false;
 
-	if( device._pressedRKeysMask & to_type(Keys::GK_KEY_M1) ) {
-		Mx_ON = mask & to_type(Leds::GK_LED_M1);
+	if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M1) ) {
+		Mx_ON = mask & toEnumType(Leds::GK_LED_M1);
 		mask = 0;
 		mask_updated = true;
 		device._pMacrosManager->setCurrentMacrosBankID(BankID::BANK_M0);
 		if( ! Mx_ON ) {
-			mask |= to_type(Leds::GK_LED_M1);
+			mask |= toEnumType(Leds::GK_LED_M1);
 			device._pMacrosManager->setCurrentMacrosBankID(BankID::BANK_M1);
 		}
 	}
-	else if( device._pressedRKeysMask & to_type(Keys::GK_KEY_M2) ) {
-		Mx_ON = mask & to_type(Leds::GK_LED_M2);
+	else if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M2) ) {
+		Mx_ON = mask & toEnumType(Leds::GK_LED_M2);
 		mask = 0;
 		mask_updated = true;
 		device._pMacrosManager->setCurrentMacrosBankID(BankID::BANK_M0);
 		if( ! Mx_ON ) {
-			mask |= to_type(Leds::GK_LED_M2);
+			mask |= toEnumType(Leds::GK_LED_M2);
 			device._pMacrosManager->setCurrentMacrosBankID(BankID::BANK_M2);
 		}
 	}
-	else if( device._pressedRKeysMask & to_type(Keys::GK_KEY_M3) ) {
-		Mx_ON = mask & to_type(Leds::GK_LED_M3);
+	else if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M3) ) {
+		Mx_ON = mask & toEnumType(Leds::GK_LED_M3);
 		mask = 0;
 		mask_updated = true;
 		device._pMacrosManager->setCurrentMacrosBankID(BankID::BANK_M0);
 		if( ! Mx_ON ) {
-			mask |= to_type(Leds::GK_LED_M3);
+			mask |= toEnumType(Leds::GK_LED_M3);
 			device._pMacrosManager->setCurrentMacrosBankID(BankID::BANK_M3);
 		}
 	}
 
-	if( device._pressedRKeysMask & to_type(Keys::GK_KEY_MR) ) {
+	if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_MR) ) {
 		if(! MR_ON) { /* MR off, enable it */
-			mask |= to_type(Leds::GK_LED_MR);
+			mask |= toEnumType(Leds::GK_LED_MR);
 		}
 		else { /* MR on, disable it */
-			mask &= ~(to_type(Leds::GK_LED_MR));
+			mask &= ~(toEnumType(Leds::GK_LED_MR));
 		}
 		mask_updated = true;
 	}
 	else if(disableMR) {
-		mask &= ~(to_type(Leds::GK_LED_MR));
+		mask &= ~(toEnumType(Leds::GK_LED_MR));
 		mask_updated = true;
 	}
 
@@ -227,7 +227,7 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 	}
 
 	for(const auto & mKey : KeyboardDriver::modifierKeys) {
-		const uint8_t modKey = to_type(mKey.key);
+		const uint8_t modKey = toEnumType(mKey.key);
 		if( diff & modKey ) { /* modifier key was pressed or released */
 			diff -= modKey;
 
@@ -301,7 +301,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device) {
 
 	if( num > 0 ) {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << to_uint(num) << " modifier keys event(s) added";
+		LOG(DEBUG2) << toUInt(num) << " modifier keys event(s) added";
 #endif
 		/* only first event should have a real timelapse interval */
 		interval = 1;
@@ -313,8 +313,8 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device) {
 #endif
 	for(i = this->getKeysInterruptBufferMaxLength()-1; i >= 2; --i) {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "	" << to_uint(device._pressedKeys[i])
-					<< "	|	" << to_uint(device._previousPressedKeys[i]);
+		LOG(DEBUG2) << "	" << toUInt(device._pressedKeys[i])
+					<< "	|	" << toUInt(device._previousPressedKeys[i]);
 #endif
 		if( device._previousPressedKeys[i] == device._pressedKeys[i] ) {
 			continue; /* nothing here */
@@ -367,7 +367,7 @@ void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device, const std::strin
 	/* check to give up */
 	if(device._fatalErrors > DEVICE_LISTENING_THREAD_MAX_ERRORS) {
 		std::ostringstream err(device.getID(), std::ios_base::app);
-		err << "[" << place << "]" << " device " << device.getName() << " on bus " << to_uint(device.getBus());
+		err << "[" << place << "]" << " device " << device.getName() << " on bus " << toUInt(device.getBus());
 		GKSysLog(LOG_ERR, ERROR, err.str());
 		GKSysLog(LOG_ERR, ERROR, "reached listening thread maximum fatal errors, giving up");
 		device.deactivateThreads();
@@ -405,10 +405,10 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 		switch( ret ) {
 			case KeyStatus::S_KEY_PROCESSED: {
 				/* did we press one Mx key ? */
-				if( device._pressedRKeysMask & to_type(Keys::GK_KEY_M1) or
-					device._pressedRKeysMask & to_type(Keys::GK_KEY_M2) or
-					device._pressedRKeysMask & to_type(Keys::GK_KEY_M3) or
-					device._pressedRKeysMask & to_type(Keys::GK_KEY_MR) ) {
+				if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M1) or
+					device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M2) or
+					device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M3) or
+					device._pressedRKeysMask & toEnumType(Keys::GK_KEY_MR) ) {
 					/* exiting macro record mode */
 					exit = true;
 					continue;
@@ -439,7 +439,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 						device._pMacrosManager->setMacro(device._macroKey, device._newMacro);
 
 						if( pDBus ) {
-							const uint8_t bankID = to_type( device._pMacrosManager->getCurrentMacrosBankID() );
+							const uint8_t bankID = toEnumType( device._pMacrosManager->getCurrentMacrosBankID() );
 
 							/* open a new connection, GKDBus is not thread-safe */
 							pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
@@ -614,7 +614,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 								this->setMxKeysLeds(device);
 
 							/* is macro record mode enabled ? */
-							if( device._banksLedsMask & to_type(Leds::GK_LED_MR) ) {
+							if( device._banksLedsMask & toEnumType(Leds::GK_LED_MR) ) {
 								this->enterMacroRecordMode(device, devID);
 
 								/* don't need to update leds status if the mask is already 0 */
@@ -718,7 +718,7 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 #if DEBUGGING_ON
 	LOG(DEBUG3) << det.getID() << " initializing " << det.getName() << "("
 				<< det.getVendorID() << ":" << det.getProductID() << "), device "
-				<< to_uint(det.getNum()) << " on bus " << to_uint(det.getBus());
+				<< toUInt(det.getNum()) << " on bus " << toUInt(det.getBus());
 #endif
 
 	USBDevice device(
@@ -824,7 +824,7 @@ void KeyboardDriver::resetDeviceState(const BusNumDeviceID & det)
 #if DEBUGGING_ON
 		LOG(DEBUG3) << devID << " resetting state of " << device.getName() << "("
 					<< device.getVendorID() << ":" << device.getProductID() << "), device "
-					<< to_uint(device.getNum()) << " on bus " << to_uint(device.getBus());
+					<< toUInt(device.getNum()) << " on bus " << toUInt(device.getBus());
 #endif
 
 		this->resetDeviceState(device);
@@ -897,7 +897,7 @@ void KeyboardDriver::closeDevice(const BusNumDeviceID & det) noexcept
 #if DEBUGGING_ON
 		LOG(DEBUG3) << device.getID() << " closing " << device.getName() << "("
 					<< device.getVendorID() << ":" << device.getProductID() << "), device "
-					<< to_uint(device.getNum()) << " on bus " << to_uint(device.getBus());
+					<< toUInt(device.getNum()) << " on bus " << toUInt(device.getBus());
 #endif
 
 		device.deactivateThreads();

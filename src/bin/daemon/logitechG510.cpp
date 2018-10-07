@@ -92,7 +92,7 @@ const std::vector<DeviceID> LogitechG510::knownDevices = {
 	// name, vendor_id, product_id, capabilities
 	{	"Logitech G510/G510s Gaming Keyboard",
 		VENDOR_LOGITECH, "c22d",
-		to_type(	Caps::GK_BACKLIGHT_COLOR |
+		toEnumType(	Caps::GK_BACKLIGHT_COLOR |
 					Caps::GK_MACROS_KEYS |
 					Caps::GK_MEDIA_KEYS |
 					Caps::GK_LCD_SCREEN )
@@ -142,7 +142,7 @@ const std::vector<std::string> & LogitechG510::getMacroKeysNames(void) const {
 /* return true if any macro key (G1-G18) is pressed  */
 const bool LogitechG510::checkMacroKey(USBDevice & device) {
 	for (const auto & key : LogitechG510::fiveBytesKeysMap ) {
-		if( key.isMacroKey and (device._pressedRKeysMask & to_type(key.key)) ) {
+		if( key.isMacroKey and (device._pressedRKeysMask & toEnumType(key.key)) ) {
 			device._macroKey = key.name;
 			return true;
 		}
@@ -153,7 +153,7 @@ const bool LogitechG510::checkMacroKey(USBDevice & device) {
 /* return true if any media key is pressed */
 const bool LogitechG510::checkMediaKey(USBDevice & device) {
 	for (const auto & key : LogitechG510::twoBytesKeysMap ) {
-		if( device._pressedRKeysMask & to_type(key.key) ) {
+		if( device._pressedRKeysMask & toEnumType(key.key) ) {
 			device._mediaKey = key.name;
 			return true;
 		}
@@ -164,7 +164,7 @@ const bool LogitechG510::checkMediaKey(USBDevice & device) {
 /* return true if any LCD key is pressed */
 const bool LogitechG510::checkLCDKey(USBDevice & device) {
 	for (const auto & key : LogitechG510::fiveBytesKeysMap ) {
-		if( key.isLCDKey and device._pressedRKeysMask & to_type(key.key) ) {
+		if( key.isLCDKey and device._pressedRKeysMask & toEnumType(key.key) ) {
 			std::lock_guard<std::mutex> lock(device._LCDKeyMutex);
 			device._LCDKey = key.name;
 			return true;
@@ -182,7 +182,7 @@ void LogitechG510::processKeyEvent2Bytes(USBDevice & device) {
 	if (device._pressedKeys[0] == 0x02) {
 		for (const auto & key : LogitechG510::twoBytesKeysMap ) {
 			if( device._pressedKeys[key.index] & key.mask )
-				device._pressedRKeysMask |= to_type(key.key);
+				device._pressedRKeysMask |= toEnumType(key.key);
 		}
 	}
 	else if (device._pressedKeys[0] == 0x04) {
@@ -208,7 +208,7 @@ void LogitechG510::processKeyEvent5Bytes(USBDevice & device) {
 
 	for (const auto & key : LogitechG510::fiveBytesKeysMap ) {
 		if( device._pressedKeys[key.index] & key.mask )
-			device._pressedRKeysMask |= to_type(key.key);
+			device._pressedRKeysMask |= toEnumType(key.key);
 	}
 }
 
@@ -244,7 +244,7 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 			break;
 		case 8:
 			/* process those events only if Macro Record Mode on */
-			if( device._banksLedsMask & to_type(Leds::GK_LED_MR) ) {
+			if( device._banksLedsMask & toEnumType(Leds::GK_LED_MR) ) {
 #if DEBUGGING_ON
 				LOG(DEBUG1) << device.getID() << " 8 bytes : processing standard key event : "
 							<< this->getBytes(device);
@@ -290,13 +290,13 @@ void LogitechG510::setDeviceBacklightColor(
 void LogitechG510::setMxKeysLeds(USBDevice & device) {
 	unsigned char mask = 0;
 	for (const auto & led : LogitechG510::ledsMask ) {
-		if( device._banksLedsMask & to_type(led.led) )
+		if( device._banksLedsMask & toEnumType(led.led) )
 			mask |= led.mask;
 	}
 
 #if DEBUGGING_ON
 	LOG(DEBUG1) << device.getID() << " setting " << device.getName()
-				<< " MxKeys leds using current mask : 0x" << std::hex << to_uint(mask);
+				<< " MxKeys leds using current mask : 0x" << std::hex << toUInt(mask);
 #endif
 	unsigned char data[2] = { 4, mask };
 	this->sendControlRequest(device, 0x304, 1, data, 2);

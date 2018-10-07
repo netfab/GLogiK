@@ -122,7 +122,7 @@ void DevicesManager::initializeDevices(void) noexcept {
 					std::ostringstream buffer(std::ios_base::app);
 					buffer	<< device.getName() << " " << device.getVendorID()
 							<< ":" << device.getProductID()
-							<< " on bus " << to_uint(device.getBus()) << " initialized";
+							<< " on bus " << toUInt(device.getBus()) << " initialized";
 					GKSysLog(LOG_INFO, INFO, buffer.str());
 					break;
 				}
@@ -162,7 +162,7 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 					std::ostringstream buffer(std::ios_base::app);
 					buffer	<< device.getName() << " " << device.getVendorID()
 							<< ":" << device.getProductID()
-							<< " on bus " << to_uint(device.getBus()) << " initialized";
+							<< " on bus " << toUInt(device.getBus()) << " initialized";
 					GKSysLog(LOG_INFO, INFO, buffer.str());
 
 #if DEBUGGING_ON
@@ -201,7 +201,7 @@ const bool DevicesManager::stopDevice(const std::string & devID) noexcept {
 					std::ostringstream buffer(std::ios_base::app);
 					buffer	<< device.getName() << " " << device.getVendorID()
 							<< ":" << device.getProductID()
-							<< " on bus " << to_uint(device.getBus()) << " stopped";
+							<< " on bus " << toUInt(device.getBus()) << " stopped";
 					GKSysLog(LOG_INFO, INFO, buffer.str());
 
 					_stoppedDevices[devID] = device;
@@ -361,22 +361,22 @@ void udevDeviceProperties(struct udev_device * pDevice, const std::string & subS
 	std::string value;
 	std::string attr;
 	udev_list_entry_foreach( devs_list_entry, devs_props ) {
-		attr = to_string( udev_list_entry_get_name( devs_list_entry ) );
+		attr = toString( udev_list_entry_get_name( devs_list_entry ) );
 		if( attr == "" )
 			continue;
 
-		value = to_string( udev_device_get_property_value(pDevice, attr.c_str()) );
+		value = toString( udev_device_get_property_value(pDevice, attr.c_str()) );
 		LOG(DEBUG4) << attr << " : " << value;
 	}
 	LOG(DEBUG4) << "--";
 	LOG(DEBUG4) << "/sys attributes";
 	LOG(DEBUG4) << "--";
 	udev_list_entry_foreach( devs_list_entry, devs_attr ) {
-		attr = to_string( udev_list_entry_get_name( devs_list_entry ) );
+		attr = toString( udev_list_entry_get_name( devs_list_entry ) );
 		if( attr == "" )
 			continue;
 
-		value = to_string( udev_device_get_sysattr_value(pDevice, attr.c_str()) );
+		value = toString( udev_device_get_sysattr_value(pDevice, attr.c_str()) );
 		LOG(DEBUG4) << attr << " : " << value;
 	}
 	LOG(DEBUG4) << "--";
@@ -415,7 +415,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 		udev_list_entry_foreach(dev_list_entry, devices) {
 			// Get the filename of the /sys entry for the device
 			// and create a udev_device object (dev) representing it
-			std::string path = to_string( udev_list_entry_get_name(dev_list_entry) );
+			std::string path = toString( udev_list_entry_get_name(dev_list_entry) );
 			if( path == "" )
 				throw GLogiKExcept("entry_get_name failure");
 
@@ -428,7 +428,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 			}
 
 #if DEBUGGING_ON
-			std::string devss = to_string( udev_device_get_subsystem(dev) );
+			std::string devss = toString( udev_device_get_subsystem(dev) );
 			if( devss == "" ) {
 				udev_device_unref(dev);
 				throw GLogiKExcept("get_subsystem failure");
@@ -437,8 +437,8 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 			//udevDeviceProperties(dev, devss);
 #endif
 
-			const std::string vendorID( to_string( udev_device_get_property_value(dev, "ID_VENDOR_ID") ) );
-			const std::string productID( to_string( udev_device_get_property_value(dev, "ID_MODEL_ID") ) );
+			const std::string vendorID( toString( udev_device_get_property_value(dev, "ID_VENDOR_ID") ) );
+			const std::string productID( toString( udev_device_get_property_value(dev, "ID_MODEL_ID") ) );
 			if( (vendorID == "") or (productID == "") ) {
 				udev_device_unref(dev);
 				continue;
@@ -450,7 +450,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 						if( device.getProductID() == productID ) {
 
 							// path to the event device node in /dev
-							std::string devnode = to_string( udev_device_get_devnode(dev) );
+							std::string devnode = toString( udev_device_get_devnode(dev) );
 							if( devnode == "" ) {
 								udev_device_unref(dev);
 								continue;
@@ -460,16 +460,16 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 							udevDeviceProperties(dev, devss);
 #endif
 
-							const std::string vendor( to_string( udev_device_get_property_value(dev, "ID_VENDOR") ) );
-							const std::string model( to_string( udev_device_get_property_value(dev, "ID_MODEL") ) );
-							const std::string serial( to_string( udev_device_get_property_value(dev, "ID_SERIAL") ) );
-							const std::string usec( to_string( udev_device_get_property_value(dev, "USEC_INITIALIZED") ) );
+							const std::string vendor( toString( udev_device_get_property_value(dev, "ID_VENDOR") ) );
+							const std::string model( toString( udev_device_get_property_value(dev, "ID_MODEL") ) );
+							const std::string serial( toString( udev_device_get_property_value(dev, "ID_SERIAL") ) );
+							const std::string usec( toString( udev_device_get_property_value(dev, "USEC_INITIALIZED") ) );
 
 							uint8_t bus, num = 0;
 
 							try {
-								bus = std::stoi(to_string( udev_device_get_sysattr_value(dev, "busnum")));
-								num = std::stoi(to_string( udev_device_get_sysattr_value(dev, "devnum")));
+								bus = std::stoi( toString( udev_device_get_sysattr_value(dev, "busnum")) );
+								num = std::stoi( toString( udev_device_get_sysattr_value(dev, "devnum")) );
 							}
 							catch (const std::invalid_argument& ia) {
 								udev_device_unref(dev);
@@ -503,7 +503,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 #if DEBUGGING_ON
 								LOG(DEBUG3) << "found device - Vid:Pid:DevNode:usec | bus:num : " << vendorID
 											<< ":" << productID << ":" << devnode << ":" << usec
-											<< " | " << to_uint(bus) << ":" << to_uint(num);
+											<< " | " << toUInt(bus) << ":" << toUInt(num);
 #endif
 							}
 						}
@@ -770,12 +770,12 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 						throw GLogiKExcept("no device from receive_device(), something is wrong");
 
 					try { /* dev unref on catch */
-						std::string action = to_string( udev_device_get_action(dev) );
+						std::string action = toString( udev_device_get_action(dev) );
 						if( action == "" ) {
 							throw GLogiKExcept("device_get_action() failure");
 						}
 
-						std::string devnode = to_string( udev_device_get_devnode(dev) );
+						std::string devnode = toString( udev_device_get_devnode(dev) );
 						// filtering empty events
 						if( devnode != "" ) {
 #if DEBUGGING_ON

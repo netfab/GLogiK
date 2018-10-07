@@ -46,7 +46,7 @@ GKDBusEvents::GKDBusEvents(
 GKDBusEvents::~GKDBusEvents() {
 	for(const auto & busPair : _DBusEvents) {
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "current bus: " << to_uint(to_type(busPair.first));
+		LOG(DEBUG1) << "current bus: " << toUInt(toEnumType(busPair.first));
 #endif
 		for(const auto & objectPair : busPair.second) {
 #if DEBUGGING_ON

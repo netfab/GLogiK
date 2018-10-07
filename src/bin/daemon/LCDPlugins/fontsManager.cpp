@@ -81,7 +81,7 @@ void FontsManager::printCharacterOnFrame(
 	}
 	catch (const std::out_of_range& oor) {
 		std::string warn("unknown font : ");
-		warn += std::to_string(to_type(fontID));
+		warn += std::to_string(toEnumType(fontID));
 		GKSysLog(LOG_WARNING, WARNING, warn);
 		throw GLogiKExcept("unknown font ID");
 	}

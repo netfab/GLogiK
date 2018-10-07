@@ -733,7 +733,7 @@ const macro_type & ClientsManager::getDeviceMacro(
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
 	LOG(DEBUG3) << "   key : " << keyName;
-	LOG(DEBUG3) << "bankID : " << to_uint(bankID);
+	LOG(DEBUG3) << "bankID : " << toUInt(bankID);
 #endif
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -786,7 +786,7 @@ const bool ClientsManager::setDeviceMacrosBank(
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
-	LOG(DEBUG3) << "bankID : " << to_uint(bankID);
+	LOG(DEBUG3) << "bankID : " << toUInt(bankID);
 #endif
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -807,7 +807,7 @@ const bool ClientsManager::resetDeviceMacrosBank(
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
-	LOG(DEBUG3) << "bankID : " << to_uint(bankID);
+	LOG(DEBUG3) << "bankID : " << toUInt(bankID);
 #endif
 	try {
 		Client* pClient = _connectedClients.at(clientID);

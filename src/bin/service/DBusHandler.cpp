@@ -957,7 +957,7 @@ const bool DBusHandler::macroRecorded(
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - device: " << devID
-				<< " bankID: " << to_uint(bankID)
+				<< " bankID: " << toUInt(bankID)
 				<< " key: " << keyName;
 #endif
 
@@ -986,7 +986,7 @@ const bool DBusHandler::macroCleared(
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - device: " << devID
-				<< " bankID: " << to_uint(bankID)
+				<< " bankID: " << toUInt(bankID)
 				<< " key: " << keyName;
 #endif
 

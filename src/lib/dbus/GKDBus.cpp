@@ -147,7 +147,7 @@ void GKDBus::checkForNextMessage(const BusConnection bus) noexcept {
 	try {
 		std::string object;
 		{
-			std::istringstream objectPath( to_string(dbus_message_get_path(_message)) );
+			std::istringstream objectPath( toString(dbus_message_get_path(_message)) );
 			/* get last part of object path */
 			while(std::getline(objectPath, object, '/')) {}
 #if DEBUGGING_ON

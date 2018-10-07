@@ -36,24 +36,24 @@ namespace NSGKUtils
 {
 
 template <typename T>
-constexpr typename std::underlying_type<T>::type to_type(T obj) noexcept {
+constexpr typename std::underlying_type<T>::type toEnumType(T obj) noexcept {
 	return static_cast<typename std::underlying_type<T>::type>(obj);
 }
 
-const std::string to_string(const char* s);
+const std::string toString(const char* s);
 
-constexpr int to_int(const uint8_t c)
+constexpr int toInt(const uint8_t c)
 {
 	return static_cast<int>(c);
 }
 
-constexpr unsigned int to_uint(const uint8_t c)
+constexpr unsigned int toUInt(const uint8_t c)
 {
 	return static_cast<unsigned int>(c);
 }
 
-const unsigned int to_uint(const std::string & s);
-const unsigned long long to_ull(const std::string & s);
+const unsigned int toUInt(const std::string & s);
+const unsigned long long toULL(const std::string & s);
 
 const std::string getHexRGB(
 	const uint8_t red,

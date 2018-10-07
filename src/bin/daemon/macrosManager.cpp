@@ -177,7 +177,7 @@ void MacrosManager::fixMacroReleaseEvents(
 		}
 		if( ! found ) {
 			std::ostringstream buffer(std::ios_base::ate);
-			buffer << "missing release event for index " << to_uint(pressed.index) << " - adding event";
+			buffer << "missing release event for index " << toUInt(pressed.index) << " - adding event";
 			GKSysLog(LOG_WARNING, WARNING, buffer.str());
 			KeyEvent e = pressed.key;
 			e.event = EventValue::EVENT_KEY_RELEASE;
@@ -195,7 +195,7 @@ void MacrosManager::fixMacroReleaseEvents(
 
 		for(const auto & redundant : releasedEvents) {
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "erasing redundant release event at index : " << to_uint(redundant.index);
+			LOG(DEBUG3) << "erasing redundant release event at index : " << toUInt(redundant.index);
 #endif
 			auto it = std::next(macro.begin(), redundant.index);
 			macro.erase(it);

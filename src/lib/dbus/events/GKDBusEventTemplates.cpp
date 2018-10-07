@@ -197,7 +197,7 @@ template <>
 	try {
 		/* handle introspection special case */
 		if(this->eventName == "Introspect") {
-			arg = to_string( dbus_message_get_path(message) );
+			arg = toString( dbus_message_get_path(message) );
 		}
 		else {
 			GKDBusArgumentString::fillInArguments(message);

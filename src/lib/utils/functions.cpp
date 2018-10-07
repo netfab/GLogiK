@@ -44,7 +44,7 @@
 namespace NSGKUtils
 {
 
-const std::string to_string(const char* s)
+const std::string toString(const char* s)
 {
 	if(s == nullptr)
 		return "";
@@ -63,7 +63,7 @@ const std::string to_string(const char* s)
 	}
 }
 
-const unsigned int to_uint(const std::string & s)
+const unsigned int toUInt(const std::string & s)
 {
 	unsigned long ret = 0;
 	try {
@@ -82,7 +82,7 @@ const unsigned int to_uint(const std::string & s)
 	return static_cast<unsigned int>(ret);
 }
 
-const unsigned long long to_ull(const std::string & s)
+const unsigned long long toULL(const std::string & s)
 {
 	unsigned long long ret = 0;
 	try {
@@ -105,9 +105,9 @@ const std::string getHexRGB(
 {
 	std::ostringstream ret("", std::ios_base::app);
 	ret << std::hex << std::setfill('0')
-		<< std::setw(2) << to_uint(red) << " "
-		<< std::setw(2) << to_uint(green) << " "
-		<< std::setw(2) << to_uint(blue);
+		<< std::setw(2) << toUInt(red) << " "
+		<< std::setw(2) << toUInt(green) << " "
+		<< std::setw(2) << toUInt(blue);
 	return ret.str();
 }
 

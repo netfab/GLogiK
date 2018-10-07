@@ -112,7 +112,7 @@ const devices_files_map_t DevicesHandler::getDevicesMap(void) {
 }
 
 const bool DevicesHandler::checkDeviceCapability(const DeviceProperties & device, Caps toCheck) {
-	return (device.getCapabilities() & to_type(toCheck));
+	return (device.getCapabilities() & toEnumType(toCheck));
 }
 
 void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
@@ -300,7 +300,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 		/* set macros banks */
 		for( const auto & idBankPair : device.getMacrosBanks() ) {
-			const uint8_t bankID = to_type(idBankPair.first);
+			const uint8_t bankID = toEnumType(idBankPair.first);
 			const mBank_type & bank = idBankPair.second;
 
 			/* test whether this MacrosBank is empty */
@@ -336,10 +336,10 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 						const bool ret = _pDBus->getNextBooleanArgument();
 						if( ret ) {
-							LOG(VERB) << devID << " successfully resetted device MacrosBank " << to_uint(bankID);
+							LOG(VERB) << devID << " successfully resetted device MacrosBank " << toUInt(bankID);
 						}
 						else {
-							LOG(ERROR) << devID << " failed to reset device MacrosBank " << to_uint(bankID) << " : false";
+							LOG(ERROR) << devID << " failed to reset device MacrosBank " << toUInt(bankID) << " : false";
 						}
 					}
 					catch (const GLogiKExcept & e) {
@@ -376,10 +376,10 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 					const bool ret = _pDBus->getNextBooleanArgument();
 					if( ret ) {
-						LOG(VERB) << devID << " successfully setted device MacrosBank " << to_uint(bankID);
+						LOG(VERB) << devID << " successfully setted device MacrosBank " << toUInt(bankID);
 					}
 					else {
-						LOG(ERROR) << devID << " failed to set device MacrosBank " << to_uint(bankID) << " : false";
+						LOG(ERROR) << devID << " failed to set device MacrosBank " << toUInt(bankID) << " : false";
 					}
 				}
 				catch (const GLogiKExcept & e) {
