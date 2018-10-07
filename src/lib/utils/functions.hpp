@@ -36,18 +36,19 @@ namespace NSGKUtils
 {
 
 template <typename T>
-constexpr typename std::underlying_type<T>::type toEnumType(T obj) noexcept {
+constexpr typename std::underlying_type<T>::type toEnumType(T obj) noexcept
+{
 	return static_cast<typename std::underlying_type<T>::type>(obj);
 }
 
 const std::string toString(const char* s);
 
-constexpr int toInt(const uint8_t c)
+constexpr int toInt(const uint8_t c) noexcept
 {
 	return static_cast<int>(c);
 }
 
-constexpr unsigned int toUInt(const uint8_t c)
+constexpr unsigned int toUInt(const uint8_t c) noexcept
 {
 	return static_cast<unsigned int>(c);
 }
