@@ -156,9 +156,7 @@ void GKDBus::checkForNextMessage(const BusConnection bus) noexcept {
 #endif
 		}
 
-		const auto & bus = _DBusEvents.at(GKDBusEvents::currentBus);
-
-		for(const auto & objectPair : bus) {
+		for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
 			/* handle root node introspection special case */
 			if( object != this->getRootNode() )
 				/* object must match */

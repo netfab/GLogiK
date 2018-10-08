@@ -109,7 +109,7 @@ void GKDBusEvents::addIntrospectableEvent(
 		}
 		catch (const std::out_of_range& oor) {
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "adding Introspectable interface : " << eventObject;
+			LOG(DEBUG3) << "adding Introspectable object : " << eventObject;
 #endif
 			this->EventGKDBusCallback<StringToString>::exposeEvent(
 				eventBus, eventObject, "org.freedesktop.DBus.Introspectable", "Introspect",
