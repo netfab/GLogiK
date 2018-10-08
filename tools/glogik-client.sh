@@ -1,21 +1,28 @@
 #!/bin/bash
 # helper script, part of GLogiK project
 
-if [ $# -ne 2 ]; then
-	printf "this helper bash script requires exactly two arguments\n";
+if [ $# -lt 1 ]; then
+	printf "this helper bash script requires at least one argument\n";
 	exit 7;
 fi
 
-DESKTOP_SERVICE_DBUS_ROOT_NODE="/com/glogik/Desktop/Service"
+DAEMON_DBUS_ROOT_NODE_PATH="/com/glogik/Daemon"
 # --
-DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT="SystemMessageHandler"
-DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH="${DESKTOP_SERVICE_DBUS_ROOT_NODE}/${DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT}"
-DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE="com.glogik.Desktop.Service.SystemMessageHandler1"
+DAEMON_DEVICES_MANAGER_DBUS_OBJECT="DevicesManager"
+DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH="${DAEMON_DBUS_ROOT_NODE_PATH}/${DAEMON_DEVICES_MANAGER_DBUS_OBJECT}"
+DAEMON_DEVICES_MANAGER_DBUS_INTERFACE="com.glogik.Daemon.Device1"
+
+# --
+DAEMON_CLIENTS_MANAGER_DBUS_OBJECT="ClientsManager"
+DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH="${DAEMON_DBUS_ROOT_NODE_PATH}/${DAEMON_CLIENTS_MANAGER_DBUS_OBJECT}"
+DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE="com.glogik.Daemon.Client1"
+
+DESKTOP_SERVICE_BUS_CONNECTION_NAME="com.glogik.Client"
 # --
 
-SYSTEM_SIGNAL_CMD="dbus-send --system --dest=com.glogik.Desktop.Service --type=signal"
+SYSTEM_SIGNAL_CMD="dbus-send --system --dest=${DESKTOP_SERVICE_BUS_CONNECTION_NAME} --type=signal"
 
-METHOD_CMD="dbus-send --system --dest=com.glogik.Desktop.Service --type=method_call"
+METHOD_CMD="dbus-send --system --dest=${DESKTOP_SERVICE_BUS_CONNECTION_NAME} --type=method_call"
 METHOD_CMD="${METHOD_CMD} --print-reply --reply-timeout=2000"
 
 function run_signal_cmd() {
@@ -31,29 +38,21 @@ function run_method_cmd() {
 case "$1" in
 	'--signal')
 		case "$2" in
-			'ReportYourself')
+			'ReportYourself' | 'DaemonIsStopping' | 'DaemonIsStarting')
+				SYSTEM_SIGNAL_CMD="${SYSTEM_SIGNAL_CMD} ${DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH}"
+				SYSTEM_SIGNAL_CMD="${SYSTEM_SIGNAL_CMD} ${DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE}.$2"
+			;;
+			# those signals are requiring parameters
+			'DevicesStarted' | 'DevicesStopped' | 'DevicesUnplugged')
+				SYSTEM_SIGNAL_CMD="${SYSTEM_SIGNAL_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH}"
+				SYSTEM_SIGNAL_CMD="${SYSTEM_SIGNAL_CMD} ${DAEMON_DEVICES_MANAGER_DBUS_INTERFACE}.$2"
 			;;
 			*)
 				printf "sorry, missing or wrong argument $2\n"
 				exit 8
 			;;
 		esac
-		SYSTEM_SIGNAL_CMD="${SYSTEM_SIGNAL_CMD} ${DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH}"
-		SYSTEM_SIGNAL_CMD="${SYSTEM_SIGNAL_CMD} ${DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE}.$2"
 		run_signal_cmd
-	;;
-	'--introspect')
-		# FIXME signals are currently not introspectable
-		case "$2" in
-			'SystemMessageHandler')	OBJECT_PATH="${DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH}" ;;
-			*)
-				printf "sorry, missing or wrong argument $2\n"
-				exit 8
-			;;
-		esac
-		METHOD_CMD="${METHOD_CMD} ${OBJECT_PATH}"
-		METHOD_CMD="${METHOD_CMD} org.freedesktop.DBus.Introspectable.Introspect"
-		run_method_cmd
 	;;
 	*)
 		printf "wrong argument\n"

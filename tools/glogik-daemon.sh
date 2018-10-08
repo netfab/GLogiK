@@ -97,8 +97,9 @@ case "$1" in
 			'DevicesManager')	OBJECT_PATH="${DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH}" ;;
 			'ClientsManager')	OBJECT_PATH="${DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH}" ;;
 			*)
-				printf "sorry, missing or wrong argument $2\n"
-				exit 8
+				printf "missing or wrong argument $2\n"
+				printf "intropecting root node ...\n"
+				OBJECT_PATH="${DAEMON_DEVICES_DBUS_ROOT_NODE}"
 			;;
 		esac
 		METHOD_CMD="${METHOD_CMD} ${OBJECT_PATH}"

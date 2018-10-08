@@ -2,13 +2,13 @@
  "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
 <busconfig>
 
-  <!-- Only user glogik can own the GLogiK service -->
+  <!-- Only the glogik user can own those connections names -->
   <policy user="@GLOGIKD_USER@">
     <allow own="com.glogik.Daemon"/>
     <allow own="com.glogik.Device"/>
   </policy>
   <policy group="@GLOGIKS_GROUP@">
-    <allow own="com.glogik.Desktop.Service"/>
+    <allow own="com.glogik.Client"/>
   </policy>
 
   <!-- Deny all and then allow some methods on interfaces -->
