@@ -78,10 +78,10 @@ void LauncherDBusHandler::checkDBusMessages(void) {
 void LauncherDBusHandler::initializeGKDBusSignals(void) {
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_LAUNCHER_SESSION_MESSAGE_HANDLER_DBUS_OBJECT,
-		GLOGIK_DESKTOP_SERVICE_LAUNCHER_SESSION_MESSAGE_HANDLER_DBUS_INTERFACE,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"RestartRequest",
-		{ },
+		{},
 		std::bind(&LauncherDBusHandler::restartRequest, this)
 	);
 }
