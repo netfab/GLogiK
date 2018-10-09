@@ -283,7 +283,7 @@ template <typename T>
 		T callback
 	)
 {
-	/* TODO signals introspectability is currently disabled */
+	/* signals declared as events with callback functions are not introspectable */
 	this->exposeEvent(bus, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, false);
 }
 

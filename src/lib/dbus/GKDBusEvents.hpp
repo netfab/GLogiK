@@ -52,6 +52,13 @@ class GKDBusEvents
 		public EventGKDBusCallback<TwoStringsOneByteOneMacrosBankToBool>
 {
 	public:
+		void declareIntrospectableSignal(
+			const BusConnection bus,
+			const char* object,
+			const char* interface,
+			const char* name,
+			const std::vector<DBusMethodArgument> & args
+		);
 
 	protected:
 		GKDBusEvents(
@@ -74,6 +81,12 @@ class GKDBusEvents
 		std::string _rootNode;
 		std::string _rootNodePath;
 		std::set<std::string> _DBusInterfaces;
+
+		std::map< const BusConnection,
+			std::map< const std::string, /* object */
+				std::map< const std::string, /* interface */
+					std::vector<GKDBusIntrospectableSignal> > > > _DBusIntrospectableSignals;
+
 
 		void openXMLInterface(
 			std::ostringstream & xml,

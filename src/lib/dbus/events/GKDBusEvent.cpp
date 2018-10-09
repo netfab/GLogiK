@@ -74,5 +74,13 @@ void GKDBusEvent::sendCallbackError(
 	}
 }
 
+GKDBusIntrospectableSignal::GKDBusIntrospectableSignal(
+	const char* signalName,
+	const std::vector<DBusMethodArgument> & args)
+		:	name(signalName), arguments(args)
+{
+}
+
+
 } // namespace NSGKDBus
 

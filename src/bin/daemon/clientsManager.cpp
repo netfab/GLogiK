@@ -64,41 +64,44 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 
 	const NSGKDBus::BusConnection system_bus(NSGKDBus::BusConnection::GKDBUS_SYSTEM);
 
+	const std::string dIN("in");	/* direction in */
+	const std::string dOUT("out");	/* direction out */
+
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  ClientsManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringToBool>::exposeMethod(
 		system_bus, CM_object, CM_interf, "RegisterClient",
-		{	{"s", "client_session_object_path", "in", "client session object path"},
-			{"b", "did_register_succeeded", "out", "did the RegisterClient method succeeded ?"},
-			{"s", "failure_reason_or_client_id", "out", "if register success (bool==true), unique client ID, else (bool=false) failure reason"} },
+		{	{"s", "client_session_object_path", dIN, "client session object path"},
+			{"b", "did_register_succeeded", dOUT, "did the RegisterClient method succeeded ?"},
+			{"s", "failure_reason_or_client_id", dOUT, "if register success (bool==true), unique client ID, else (bool=false) failure reason"} },
 		std::bind(&ClientsManager::registerClient, this, std::placeholders::_1) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringToBool>::exposeMethod(
 		system_bus, CM_object, CM_interf, "UnregisterClient",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"b", "did_unregister_succeeded", "out", "did the UnregisterClient method succeeded ?"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"b", "did_unregister_succeeded", dOUT, "did the UnregisterClient method succeeded ?"} },
 		std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
 		system_bus, CM_object, CM_interf, "UpdateClientState",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"s", "client_new_state", "in", "client new state"},
-			{"b", "did_updateclientstate_succeeded", "out", "did the UpdateClientState method succeeded ?"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "client_new_state", dIN, "client new state"},
+			{"b", "did_updateclientstate_succeeded", dOUT, "did the UpdateClientState method succeeded ?"} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
 		system_bus, CM_object, CM_interf, "DeleteDeviceConfiguration",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"b", "did_deletedeviceconfiguration_succeeded", "out", "did the DeleteDeviceConfiguration method succeeded ?"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
+			{"b", "did_deletedeviceconfiguration_succeeded", dOUT, "did the DeleteDeviceConfiguration method succeeded ?"} },
 		std::bind(&ClientsManager::deleteDeviceConfiguration, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringToBool>::exposeMethod(
 		system_bus, CM_object, CM_interf, "ToggleClientReadyPropertie",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"b", "did_method_succeeded", "out", "did the method succeeded ?"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"b", "did_method_succeeded", dOUT, "did the method succeeded ?"} },
 		std::bind(&ClientsManager::toggleClientReadyPropertie, this, std::placeholders::_1) );
 
 	/* -- -- -- -- -- -- -- -- -- -- */
@@ -107,32 +110,32 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
 		system_bus, DM_object, DM_interf, "StopDevice",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
-			{"b", "did_stop_succeeded", "out", "did the StopDevice method succeeded ?"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
+			{"b", "did_stop_succeeded", dOUT, "did the StopDevice method succeeded ?"} },
 		std::bind(&ClientsManager::stopDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
 		system_bus, DM_object, DM_interf, "StartDevice",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"s", "device_id", "in", "device ID coming from GetStoppedDevices"},
-			{"b", "did_start_succeeded", "out", "did the StartDevice method succeeded ?"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "device_id", dIN, "device ID coming from GetStoppedDevices"},
+			{"b", "did_start_succeeded", dOUT, "did the StartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::startDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
 		system_bus, DM_object, DM_interf, "RestartDevice",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
-			{"b", "did_restart_succeeded", "out", "did the RestartDevice method succeeded ?"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
+			{"b", "did_restart_succeeded", dOUT, "did the RestartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<ThreeStringsOneByteToMacro>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceMacro",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
-			{"s", "macro_key_name", "in", "macro key name"},
-			{"y", "macro_bankID", "in", "macro bankID"},
-			{"a(yyq)", "macro_array", "out", "macro array"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
+			{"s", "macro_key_name", dIN, "macro key name"},
+			{"y", "macro_bankID", dIN, "macro bankID"},
+			{"a(yyq)", "macro_array", dOUT, "macro array"} },
 		std::bind(&ClientsManager::getDeviceMacro, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4) );
 
@@ -142,66 +145,114 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetStartedDevices",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"as", "array_of_strings", "out", "array of started devices ID strings"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"as", "array_of_strings", dOUT, "array of started devices ID strings"} },
 		std::bind(&ClientsManager::getStartedDevices, this, std::placeholders::_1) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetStoppedDevices",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"as", "array_of_strings", "out", "array of stopped devices ID strings"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"as", "array_of_strings", dOUT, "array of stopped devices ID strings"} },
 		std::bind(&ClientsManager::getStoppedDevices, this, std::placeholders::_1) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToString>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceStatus",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"s", "device_id", "in", "device ID"},
-			{"s", "device status", "out", "string representing the device status"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "device_id", dIN, "device ID"},
+			{"s", "device status", dOUT, "string representing the device status"} },
 		std::bind(&ClientsManager::getDeviceStatus, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToVoid>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceProperties",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"sst", "get_device_properties", "out", "device properties"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
+			{"sst", "get_device_properties", dOUT, "device properties"} },
 		std::bind(&ClientsManager::getDeviceProperties, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToStringsArray>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceMacroKeysNames",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"s", "device_id", "in", "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"as", "array_of_strings", "out", "string array of device macro keys names"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
+			{"as", "array_of_strings", dOUT, "string array of device macro keys names"} },
 		std::bind(&ClientsManager::getDeviceMacroKeysNames, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsThreeBytesToBool>::exposeMethod(
 		system_bus, DM_object, DM_interf, "SetDeviceBacklightColor",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
-			{"y", "red_byte", "in", "red byte for the RGB color model"},
-			{"y", "green_byte", "in", "green byte for the RGB color model"},
-			{"y", "blue_byte", "in", "blue byte for the RGB color model"},
-			{"b", "did_setcolor_succeeded", "out", "did the SetDeviceBacklightColor method succeeded ?"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
+			{"y", "red_byte", dIN, "red byte for the RGB color model"},
+			{"y", "green_byte", dIN, "green byte for the RGB color model"},
+			{"y", "blue_byte", dIN, "blue byte for the RGB color model"},
+			{"b", "did_setcolor_succeeded", dOUT, "did the SetDeviceBacklightColor method succeeded ?"} },
 		std::bind(&ClientsManager::setDeviceBacklightColor, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteOneMacrosBankToBool>::exposeMethod(
 		system_bus, DM_object, DM_interf, "SetDeviceMacrosBank",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
-			{"y", "macro_bankID", "in", "macro bankID"},
-			{"a(sya(yyq))", "macros_bank", "in", "macros bank"},
-			{"b", "did_setbank_succeeded", "out", "did the SetDeviceMacrosBank method succeeded ?"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
+			{"y", "macro_bankID", dIN, "macro bankID"},
+			{"a(sya(yyq))", "macros_bank", dIN, "macros bank"},
+			{"b", "did_setbank_succeeded", dOUT, "did the SetDeviceMacrosBank method succeeded ?"} },
 		std::bind(&ClientsManager::setDeviceMacrosBank, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeMethod(
 		system_bus, DM_object, DM_interf, "ResetDeviceMacrosBank",
-		{	{"s", "client_unique_id", "in", "must be a valid client ID"},
-			{"s", "device_id", "in", "device ID coming from GetStartedDevices"},
-			{"y", "macro_bankID", "in", "macro bankID"},
-			{"b", "did_resetbank_succeeded", "out", "did the ResetDeviceMacrosBank method succeeded ?"} },
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
+			{"y", "macro_bankID", dIN, "macro bankID"},
+			{"b", "did_resetbank_succeeded", dOUT, "did the ResetDeviceMacrosBank method succeeded ?"} },
 		std::bind(&ClientsManager::resetDeviceMacrosBank, this,
 			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3) );
+
+	/* -- -- -- -- -- -- -- -- -- -- -- -- -- */
+	/*  declaration of introspectable signals */
+	/*       potentially sent by daemon       */
+	/* -- -- -- -- -- -- -- -- -- -- -- -- -- */
+
+	/*  ClientsManager D-Bus object  */
+
+	_pDBus->declareIntrospectableSignal(system_bus, CM_object, CM_interf, "DaemonIsStopping", {});
+	_pDBus->declareIntrospectableSignal(system_bus, CM_object, CM_interf, "DaemonIsStarting", {});
+	_pDBus->declareIntrospectableSignal(system_bus, CM_object, CM_interf, "ReportYourself",   {});
+
+	/*  DevicesManager D-Bus object  */
+
+	_pDBus->declareIntrospectableSignal(
+		system_bus, DM_object, DM_interf, "DevicesStarted",
+		{	{"as", "", dOUT, "array of started devices ID strings"} }
+	);
+
+	_pDBus->declareIntrospectableSignal(
+		system_bus, DM_object, DM_interf, "DevicesStopped",
+		{	{"as", "", dOUT, "array of stopped devices ID strings"} }
+	);
+
+	_pDBus->declareIntrospectableSignal(
+		system_bus, DM_object, DM_interf, "DevicesUnplugged",
+		{	{"as", "", dOUT, "array of unplugged devices ID strings"} }
+	);
+
+	_pDBus->declareIntrospectableSignal(
+		system_bus, DM_object, DM_interf, "MacroRecorded",
+		{	{"s", "device_id", dOUT, "device ID"},
+			{"s", "macro_key_name", dOUT, "macro key name"},
+			{"y", "macro_bankID", dOUT, "macro bankID"} }
+	);
+
+	_pDBus->declareIntrospectableSignal(
+		system_bus, DM_object, DM_interf, "MacroCleared",
+		{	{"s", "device_id", dOUT, "device ID"},
+			{"s", "macro_key_name", dOUT, "macro key name"},
+			{"y", "macro_bankID", dOUT, "macro bankID"} }
+	);
+
+	_pDBus->declareIntrospectableSignal(
+		system_bus, DM_object, DM_interf, "deviceMediaEvent",
+		{	{"s", "device_id", "in", "device ID"},
+			{"s", "media_key_event", "in", "media key event"} }
+	);
 }
 
 ClientsManager::~ClientsManager() {

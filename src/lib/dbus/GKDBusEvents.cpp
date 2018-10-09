@@ -68,6 +68,21 @@ const std::string & GKDBusEvents::getRootNode(void) const {
 	return _rootNode;
 }
 
+void GKDBusEvents::declareIntrospectableSignal(
+	const BusConnection bus,
+	const char* object,
+	const char* interface,
+	const char* name,
+	const std::vector<DBusMethodArgument> & args)
+{
+	GKDBusIntrospectableSignal signal(name, args);
+	_DBusIntrospectableSignals[bus][object][interface].push_back(signal);
+}
+
+/*
+ * private
+ */
+
 const std::string GKDBusEvents::introspectRootNode(void) {
 	std::ostringstream xml;
 
@@ -90,10 +105,6 @@ const std::string GKDBusEvents::introspectRootNode(void) {
 	xml << "</node>\n";
 	return xml.str();
 }
-
-/*
- * private
- */
 
 void GKDBusEvents::addIntrospectableEvent(
 	const BusConnection eventBus,
@@ -165,13 +176,11 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath) 
 	xml << "<node name=\"" << askedObjectPath << "\">\n";
 
 	try {
-		const auto & bus = _DBusEvents.at(GKDBusEvents::currentBus);
-
 		for(const auto & interface : _DBusInterfaces) {
 
 			bool interfaceOpened = false;
 
-			for(const auto & objectPair : bus) {
+			for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
 				std::string objectPath(_rootNodePath);
 				objectPath += "/"; objectPath += objectPair.first;
 				/* object path must match */
@@ -182,6 +191,31 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath) 
 						this->openXMLInterface(xml, interfaceOpened, interface);
 						for(const auto & DBusEvent : interfacePair.second) { /* vector of pointers */
 							this->eventToXMLMethod(xml, DBusEvent);
+						}
+					}
+				}
+			}
+
+			for(const auto & objectPair : _DBusIntrospectableSignals.at(GKDBusEvents::currentBus)) {
+				std::string objectPath(_rootNodePath);
+				objectPath += "/"; objectPath += objectPair.first;
+				/* object path must match */
+				if( objectPath != askedObjectPath )
+					continue;
+				for(const auto & interfacePair : objectPair.second) {
+					if( interfacePair.first == interface ) {
+						this->openXMLInterface(xml, interfaceOpened, interface);
+						for(const auto & signal : interfacePair.second) { /* vector of  objects */
+							xml << "    <signal name=\"" << signal.name << "\">\n";
+							for(const auto & arg : signal.arguments) {
+								xml << "      <!-- " << arg.comment << " -->\n";
+								xml << "      <arg type=\"" << arg.type << "\" ";
+								if( ! arg.name.empty() ) /* name attribute on arguments is optional */
+									xml << "name=\"" << arg.name << "\" ";
+								//xml << "direction=\"out\" />\n";
+								xml << "/>\n";
+							}
+							xml << "    </signal>\n";
 						}
 					}
 				}
