@@ -162,7 +162,7 @@ void GKDBus::checkForNextMessage(const BusConnection bus) noexcept {
 				/* object must match */
 				if(object != objectPair.first) {
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "skipping " << object << " - not " << objectPair.first;
+					LOG(DEBUG3) << "skipping " << objectPair.first << " object - not " << object;
 #endif
 					continue;
 				}
