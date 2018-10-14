@@ -786,22 +786,17 @@ void DevicesHandler::runCommand(
 	_notification.init(GLOGIKS_DESKTOP_SERVICE_NAME, 5000);
 #endif
 
-	std::string line;
-	std::string last;
-	bp::ipstream pipeStream;
-	bp::child c(command, bp::std_out > pipeStream);
+	int result = -1;
+	std::string lastLine;
 
-	while (pipeStream && std::getline(pipeStream, line) && !line.empty()) {
-		last = line;
-		LOG(VERB) << line;
-	}
+	{
+		std::string line;
+		bp::ipstream is;
+		result = bp::system(command, bp::std_out > is, bp::std_err > stderr);
 
-	if( c.running() ) {
-		try {
-			c.wait();
-		}
-		catch (const bp::process_error & e) {
-			LOG(DEBUG1) << e.what();
+		while(is && std::getline(is, line) && !line.empty()) {
+			lastLine = line;
+			LOG(VERB) << line;
 		}
 	}
 
@@ -811,7 +806,7 @@ void DevicesHandler::runCommand(
 		try {
 			int volume = -1;
 			try {
-				volume = std::stoi(last);
+				volume = std::stoi(lastLine);
 			}
 			catch (const std::invalid_argument& ia) {
 				throw GLogiKExcept("stoi invalid argument");
@@ -830,8 +825,8 @@ void DevicesHandler::runCommand(
 			else
 				icon = "audio-volume-high-symbolic";
 
-			last += " %";
-			if( _notification.updateProperties("Volume", last, icon) ) {
+			lastLine += " %";
+			if( _notification.updateProperties("Volume", lastLine, icon) ) {
 				if( ! _notification.show() ) {
 					LOG(ERROR) << "notification showing failure";
 				}
@@ -846,7 +841,7 @@ void DevicesHandler::runCommand(
 	}
 #endif
 
-	LOG(INFO) << "command run : " << command << " - exit code : " << c.exit_code();
+	LOG(INFO) << "command run : " << command << " - exit code : " << result;
 };
 
 } // namespace GLogiK
