@@ -23,6 +23,8 @@
 #include <sstream>
 #include <new>
 #include <functional>
+#include <thread>
+#include <chrono>
 
 #include "lib/shared/glogik.hpp"
 
@@ -88,11 +90,13 @@ void LauncherDBusHandler::initializeGKDBusSignals(void) {
 
 void LauncherDBusHandler::restartRequest(void)
 {
+#if DEBUGGING_ON
 	std::ostringstream buffer("received signal: ", std::ios_base::app);
 	buffer << __func__;
-#if DEBUGGING_ON
 	LOG(DEBUG2) << buffer.str();
 #endif
+
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 } // namespace GLogiK

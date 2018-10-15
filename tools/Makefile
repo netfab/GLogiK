@@ -112,7 +112,7 @@ configure_it: init_it autoreconf_it
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
 
 install_it: uninstall_it
-	find $(PREFIX_DEV_DIR) -type f -name 'GLogiK*-debug-*.log' -delete
+	find $(PREFIX_DEV_DIR) -type f -name 'G*-debug-*.log' -delete
 	cd $(build_dir) && make install
 
 endif

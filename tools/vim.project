@@ -17,6 +17,8 @@ GLogiK=$PWD/.. CD=. {
 		do-release.sh
 		glogik-daemon.sh
 		glogik-client.sh
+		GKsLauncher.sh
+		GKDBus.sh
 	}
 	macro=m4/ {
 	}
