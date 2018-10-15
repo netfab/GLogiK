@@ -28,7 +28,6 @@
 
 #include "lib/shared/glogik.hpp"
 
-#include "global.hpp"
 #include "DBusHandler.hpp"
 
 namespace GLogiK

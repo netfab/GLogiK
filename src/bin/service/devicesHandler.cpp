@@ -34,8 +34,6 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/process.hpp>
 
-#include "global.hpp"
-
 #include "devicesHandler.hpp"
 
 namespace fs = boost::filesystem;

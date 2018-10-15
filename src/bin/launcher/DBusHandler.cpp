@@ -26,9 +26,13 @@
 #include <thread>
 #include <chrono>
 
+#include <boost/process.hpp>
+
 #include "lib/shared/glogik.hpp"
 
 #include "DBusHandler.hpp"
+
+namespace bp = boost::process;
 
 namespace GLogiK
 {
@@ -55,6 +59,9 @@ LauncherDBusHandler::LauncherDBusHandler(void)
 		delete _pDBus; _pDBus = nullptr;
 		throw;
 	}
+
+	/* spawn desktop service on start */
+	this->restartRequest();
 }
 
 LauncherDBusHandler::~LauncherDBusHandler(void)
@@ -90,13 +97,18 @@ void LauncherDBusHandler::initializeGKDBusSignals(void) {
 
 void LauncherDBusHandler::restartRequest(void)
 {
-#if DEBUGGING_ON
 	std::ostringstream buffer("received signal: ", std::ios_base::app);
 	buffer << __func__;
-	LOG(DEBUG2) << buffer.str();
-#endif
+	LOG(INFO) << buffer.str();
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
+	try {
+		bp::spawn(GLOGIKS_DESKTOP_SERVICE_NAME);
+	}
+	catch (const bp::process_error & e) {
+		LOG(ERROR) << "exception catched while trying to spawn process: " << GLOGIKS_DESKTOP_SERVICE_NAME;
+		LOG(ERROR) << e.what();
+	}
 }
 
 } // namespace GLogiK

@@ -22,6 +22,8 @@
 #ifndef SRC_LIB_SHARED_GLOGIK_HPP_
 #define SRC_LIB_SHARED_GLOGIK_HPP_
 
+#define GLOGIKS_DESKTOP_SERVICE_NAME "GLogiKs"
+
 namespace GLogiK
 {
 

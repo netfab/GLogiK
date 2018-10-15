@@ -35,8 +35,8 @@
 #include <boost/program_options.hpp>
 
 #include "lib/shared/sessionManager.hpp"
+#include "lib/shared/glogik.hpp"
 
-#include "global.hpp"
 #include "DBusHandler.hpp"
 
 #include "service.hpp"

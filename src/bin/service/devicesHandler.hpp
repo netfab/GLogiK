@@ -38,6 +38,11 @@
 #include "volumeNotification.hpp"
 #endif
 
+#define LogRemoteCallFailure \
+	FATALERROR << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
+#define LogRemoteCallGetReplyFailure \
+	LOG(ERROR) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
+
 typedef std::map<const std::string, const std::string> devices_files_map_t;
 
 namespace GLogiK

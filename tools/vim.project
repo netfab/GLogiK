@@ -138,7 +138,6 @@ GLogiK=$PWD/.. CD=. {
 			service=service/ {
 				Makefile.am
 				main.cpp
-				global.hpp
 				devicesHandler.cpp
 				devicesHandler.hpp
 				DBusHandler.cpp
