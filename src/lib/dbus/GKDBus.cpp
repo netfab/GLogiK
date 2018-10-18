@@ -29,6 +29,8 @@
 namespace NSGKDBus
 {
 
+using namespace NSGKUtils;
+
 GKDBus::GKDBus(
 	const std::string & rootNode,
 	const std::string & rootNodePath)

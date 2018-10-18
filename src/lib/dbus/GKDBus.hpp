@@ -46,9 +46,8 @@
 namespace NSGKDBus
 {
 
-using namespace NSGKUtils;
-
-class GKDBusEventFound : public GLogiKExcept
+class GKDBusEventFound
+	:	public NSGKUtils::GLogiKExcept
 {
 	public:
 		GKDBusEventFound(const std::string & msg = "event found") : GLogiKExcept(msg) {};
