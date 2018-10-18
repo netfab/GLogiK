@@ -22,6 +22,8 @@
 #ifndef SRC_BIN_SERVICE_LAUNCHER_DBUS_HANDLER_HPP_
 #define SRC_BIN_SERVICE_LAUNCHER_DBUS_HANDLER_HPP_
 
+#include <chrono>
+
 #include "lib/dbus/GKDBus.hpp"
 
 namespace GLogiK
@@ -40,6 +42,8 @@ class LauncherDBusHandler
 	private:
 		NSGKDBus::GKDBus* _pDBus;
 		const NSGKDBus::BusConnection _sessionBus;
+		const std::chrono::steady_clock::duration tenSeconds;
+		std::chrono::steady_clock::time_point _lastCall;
 
 		void initializeGKDBusSignals(void);
 		void restartRequest(void);
