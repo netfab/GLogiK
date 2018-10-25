@@ -25,7 +25,7 @@ GLogiK=$PWD/.. CD=. {
 	data=data/ {
 		autostart=autostart/ {
 			Makefile.am
-			glogik-desktop-service.desktop
+			GKsLauncher.desktop
 		}
 		bash=bash/ {
 			mediakey.sh

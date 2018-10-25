@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=GLogiK Desktop Service
-Name[fr]=Service de bureau GLogiK
-Exec=GLogiKs
-TryExec=GLogiKs
-Terminal=false
-Type=Application
-Categories=Utility

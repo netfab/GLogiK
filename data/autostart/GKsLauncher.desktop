@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=GLogiK Desktop Service Launcher
+Name[fr]=Lanceur de Service de Bureau GLogiK
+Exec=GKsLauncher
+TryExec=GKsLauncher
+Terminal=false
+Type=Application
+Categories=Utility
