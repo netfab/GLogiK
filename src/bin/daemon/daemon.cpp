@@ -146,7 +146,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 					throw GLogiKBadAlloc("GKDBus bad allocation");
 				}
 
-				_pDBus->connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
+				_pDBus->connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
 
 				{
 					ClientsManager c(_pDBus);

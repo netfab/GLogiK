@@ -75,7 +75,10 @@ GKDBus::~GKDBus()
 	}
 }
 
-void GKDBus::connectToSystemBus(const char* connectionName) {
+void GKDBus::connectToSystemBus(
+	const char* connectionName,
+	const ConnectionFlag flag)
+{
 	_systemConnection = dbus_bus_get(DBUS_BUS_SYSTEM, &_error);
 	this->checkDBusError("DBus System connection failure");
 #if DEBUGGING_ON
@@ -86,8 +89,7 @@ void GKDBus::connectToSystemBus(const char* connectionName) {
 	LOG(DEBUG2) << "requesting system connection name : " << connectionName;
 #endif
 	_systemName.clear();
-	int ret = dbus_bus_request_name(_systemConnection, connectionName,
-		DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &_error);
+	int ret = dbus_bus_request_name(_systemConnection, connectionName, getDBUsFlags(flag), &_error);
 	this->checkDBusError("DBus System request name failure");
 	_systemName = connectionName;
 
@@ -96,7 +98,10 @@ void GKDBus::connectToSystemBus(const char* connectionName) {
 	}
 }
 
-void GKDBus::connectToSessionBus(const char* connectionName) {
+void GKDBus::connectToSessionBus(
+	const char* connectionName,
+	const ConnectionFlag flag)
+{
 	_sessionConnection = dbus_bus_get(DBUS_BUS_SESSION, &_error);
 	this->checkDBusError("DBus Session connection failure");
 #if DEBUGGING_ON
@@ -107,8 +112,7 @@ void GKDBus::connectToSessionBus(const char* connectionName) {
 	LOG(DEBUG2) << "requesting session connection name : " << connectionName;
 #endif
 	_sessionName.clear();
-	int ret = dbus_bus_request_name(_sessionConnection, connectionName,
-		DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &_error);
+	int ret = dbus_bus_request_name(_sessionConnection, connectionName, getDBUsFlags(flag), &_error);
 	this->checkDBusError("DBus Session request name failure");
 	_sessionName = connectionName;
 
@@ -279,6 +283,20 @@ DBusConnection* GKDBus::getConnection(BusConnection bus) {
 			throw GLogiKExcept("asked connection not handled");
 			break;
 	}
+}
+
+unsigned int GKDBus::getDBUsFlags(const ConnectionFlag flag)
+{
+	unsigned int ret = 0;
+	switch(flag) {
+		case ConnectionFlag::GKDBUS_MULTIPLE :
+			ret = DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT;
+			break;
+		case ConnectionFlag::GKDBUS_SINGLE :
+			ret = DBUS_NAME_FLAG_DO_NOT_QUEUE;
+			break;
+	}
+	return ret;
 }
 
 } // namespace NSGKDBus

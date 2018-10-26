@@ -54,6 +54,12 @@ class GKDBusEventFound
 		virtual ~GKDBusEventFound( void ) throw() {};
 };
 
+enum class ConnectionFlag : uint8_t
+{
+	GKDBUS_SINGLE = 0,
+	GKDBUS_MULTIPLE,
+};
+
 class GKDBus
 	:	public GKDBusEvents,
 		virtual public GKDBusMessageRemoteMethodCall,
@@ -73,8 +79,14 @@ class GKDBus
 		);
 		~GKDBus();
 
-		void connectToSystemBus(const char* connectionName);
-		void connectToSessionBus(const char* connectionName);
+		void connectToSystemBus(
+			const char* connectionName,
+			const ConnectionFlag flag = ConnectionFlag::GKDBUS_MULTIPLE
+		);
+		void connectToSessionBus(
+			const char* connectionName,
+			const ConnectionFlag flag = ConnectionFlag::GKDBUS_MULTIPLE
+		);
 
 		void checkForNextMessage(const BusConnection bus) noexcept;
 
@@ -94,6 +106,7 @@ class GKDBus
 		void checkDBusError(const char* error);
 		void checkReleasedName(int ret);
 		DBusConnection* getConnection(BusConnection bus);
+		unsigned int getDBUsFlags(const ConnectionFlag flag);
 };
 
 } // namespace NSGKDBus

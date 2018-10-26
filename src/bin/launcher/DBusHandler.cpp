@@ -50,7 +50,7 @@ LauncherDBusHandler::LauncherDBusHandler(void)
 			throw GLogiKBadAlloc("GKDBus bad allocation");
 		}
 
-		_pDBus->connectToSessionBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME);
+		_pDBus->connectToSessionBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
 
 		this->initializeGKDBusSignals();
 	}
