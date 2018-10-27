@@ -19,35 +19,42 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_STRING_HPP_
-#define SRC_LIB_DBUS_ARG_GKDBUS_ARG_STRING_HPP_
+#ifndef SRC_BIN_GUI_QT_DEVICE_CONTROL_TAB_HPP_
+#define SRC_BIN_GUI_QT_DEVICE_CONTROL_TAB_HPP_
 
-#include "GKDBusArgument.hpp"
+#include <QFrame>
+#include <QString>
+#include <QWidget>
+#include <QPushButton>
+#include <QLabel>
 
-#include <string>
-#include <vector>
-
-namespace NSGKDBus
+namespace GLogiK
 {
 
-class GKDBusArgumentString
-	:	protected GKDBusArgument
+class DeviceControlTab
+	:	public QWidget
 {
 	public:
-		static const std::string & getNextStringArgument(void);
-		static const std::vector<std::string> & getStringsArray(void);
+		DeviceControlTab(const QString & name);
+		~DeviceControlTab();
 
-		static const bool isContainerEmpty(void);
-
-	protected:
-		GKDBusArgumentString(void) = default;
-		~GKDBusArgumentString(void) = default;
+		void disableButtons(void);
+		void updateButtonsStates(const bool status);
+		void disableAndHide(void);
 
 	private:
-		thread_local static std::string currentString;
+		DeviceControlTab() = delete;
 
+		QLabel* _deviceStatus;
+		QPushButton* _pStart;
+		QPushButton* _pStop;
+		QPushButton* _pRestart;
+		QFrame* _line2;
+		QFrame* _line3;
+
+		void setVisibility(const bool visibility);
 };
 
-} // namespace NSGKDBus
+} // namespace GLogiK
 
 #endif

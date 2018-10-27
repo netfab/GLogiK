@@ -19,35 +19,52 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_STRING_HPP_
-#define SRC_LIB_DBUS_ARG_GKDBUS_ARG_STRING_HPP_
-
-#include "GKDBusArgument.hpp"
+#ifndef SRC_LIB_SHARED_DEVICE_FILE_HPP_
+#define SRC_LIB_SHARED_DEVICE_FILE_HPP_
 
 #include <string>
-#include <vector>
 
-namespace NSGKDBus
+#include <boost/serialization/base_object.hpp>
+#include <boost/serialization/access.hpp>
+
+namespace GLogiK
 {
 
-class GKDBusArgumentString
-	:	protected GKDBusArgument
+class DeviceFile
 {
 	public:
-		static const std::string & getNextStringArgument(void);
-		static const std::vector<std::string> & getStringsArray(void);
+		DeviceFile();
+		~DeviceFile();
 
-		static const bool isContainerEmpty(void);
+		const std::string & getStatus(void) const;
+		const std::string & getVendor(void) const;
+		const std::string & getModel(void) const;
+		const std::string & getConfigFilePath(void) const;
+
+		void setStatus(const std::string & status);
+		void setVendor(const std::string & vendor);
+		void setModel(const std::string & model);
+		void setConfigFilePath(const std::string & path);
 
 	protected:
-		GKDBusArgumentString(void) = default;
-		~GKDBusArgumentString(void) = default;
 
 	private:
-		thread_local static std::string currentString;
+		std::string _status;
+		std::string _vendor;
+		std::string _model;
+		std::string _filePath;
 
+		friend class boost::serialization::access;
+
+		template<class Archive>
+			void serialize(Archive & ar, const unsigned int version)
+		{
+			ar & _vendor;
+			ar & _model;
+		}
 };
 
-} // namespace NSGKDBus
+} // namespace GLogiK
 
 #endif
+

@@ -48,6 +48,7 @@ DBusHandler::DBusHandler(
 	SessionManager& session,
 	NSGKUtils::FileSystem* pGKfs)
 	:	_pDBus(nullptr),
+		_sessionBus(NSGKDBus::BusConnection::GKDBUS_SESSION),
 		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
 		_registerStatus(false),
 		_wantToExit(false),
@@ -103,6 +104,7 @@ DBusHandler::DBusHandler(
 			this->reportChangedState();
 
 			this->initializeGKDBusSignals();
+			this->initializeGKDBusMethods();
 
 			/* set GKDBus pointer */
 			_devices.setDBus(_pDBus);
@@ -155,6 +157,7 @@ DBusHandler::~DBusHandler() {
 
 void DBusHandler::checkDBusMessages(void) {
 	_pDBus->checkForNextMessage(_systemBus);
+	_pDBus->checkForNextMessage(_sessionBus);
 }
 
 void DBusHandler::updateSessionState(void) {
@@ -686,7 +689,7 @@ void DBusHandler::sendRestartRequest(void)
 	try {
 		/* asking the launcher for a restart */
 		_pDBus->initializeBroadcastSignal(
-			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 			"RestartRequest"
@@ -703,6 +706,32 @@ void DBusHandler::sendRestartRequest(void)
 	}
 
 	throw GLogiKExcept(status);
+}
+
+void DBusHandler::sendDevicesUpdatedSignal(void)
+{
+	std::string status("devices updated signal");
+	try {
+		/* asking the launcher for a restart */
+		_pDBus->initializeBroadcastSignal(
+			_sessionBus,
+			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+			"DevicesUpdated"
+		);
+		_pDBus->sendBroadcastSignal();
+
+		status += " sent";
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonBroadcastSignal();
+		status += " failure";
+		LOG(ERROR) << status << " - " << e.what();
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << status << " on session bus";
+#endif
 }
 
 /*
@@ -823,6 +852,18 @@ void DBusHandler::initializeGKDBusSignals(void) {
 	);
 }
 
+void DBusHandler::initializeGKDBusMethods(void)
+{
+	_pDBus->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
+		_sessionBus,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		"GetDevicesList",
+		{	{"s", "reserved", "in", "reserved"},
+			{"as", "array_of_strings", "out", "array of devices ID and configuration files"} },
+		std::bind(&DBusHandler::getDevicesList, this, "reserved") );
+}
+
 void DBusHandler::daemonIsStopping(void) {
 	std::ostringstream buffer("received signal: ", std::ios_base::app);
 	buffer << __func__;
@@ -906,6 +947,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 					LOG(DEBUG3) << "device status from daemon: " << devID << " started";
 #endif
 					_devices.startDevice(devID);
+					this->sendDevicesUpdatedSignal();
 				}
 				else {
 					LOG(WARNING) << "received devicesStarted signal for device " << devID;
@@ -959,6 +1001,7 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 					LOG(DEBUG3) << "device status from daemon: " << devID << " stopped";
 #endif
 					_devices.stopDevice(devID);
+					this->sendDevicesUpdatedSignal();
 				}
 				else {
 					LOG(WARNING) << "received devicesStopped signal for device " << devID;
@@ -1004,6 +1047,7 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
 					LOG(DEBUG3) << "device status from daemon: " << devID << " unplugged";
 #endif
 					_devices.unplugDevice(devID);
+					this->sendDevicesUpdatedSignal();
 				}
 				else {
 					LOG(WARNING) << "received devicesUnplugged signal for device " << devID;
@@ -1104,6 +1148,10 @@ void DBusHandler::deviceMediaEvent(
 	}
 
 	_devices.runDeviceMediaEvent(devID, mediaKeyEvent);
+}
+
+const std::vector<std::string> DBusHandler::getDevicesList(const std::string & reserved) {
+	return _devices.getDevicesList();
 }
 
 } // namespace GLogiK

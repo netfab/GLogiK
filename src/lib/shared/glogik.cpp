@@ -81,6 +81,11 @@ c_str GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT					= "SessionMessageHandler";
 c_str GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH				= "/com/glogik/Client/SessionMessageHandler";
 c_str GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE					= "com.glogik.Client.SessionMessageHandler1";
 
+/* Qt5 gui */
+c_str GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE								= "qt5gui";
+c_str GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE_PATH						= "/com/glogik/qt5gui";
+c_str GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME					= "com.glogik.qt5gui";
+
 c_str XF86_AUDIO_NEXT			= "XF86AudioNext";
 c_str XF86_AUDIO_PREV			= "XF86AudioPrev";
 c_str XF86_AUDIO_STOP			= "XF86AudioStop";

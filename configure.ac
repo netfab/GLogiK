@@ -87,6 +87,11 @@ AC_ARG_ENABLE( [desktop-notifications],
 				AC_HELP_STRING( [--enable-desktop-notifications], [Enable desktop notifications, default: no]),
 				[enable_desktop_notifications=$enableval], [enable_desktop_notifications=no])
 
+dnl check for Qt5 client GUI
+AC_ARG_ENABLE( [qt5],
+               AC_HELP_STRING( [--enable-qt5], [Enable Qt5 client GUI]),
+               [enable_qt5=$enableval], [enable_qt5=no])
+
 AC_ARG_VAR(DEBUG_DIR, [Directory where debug file will be written])
 AC_ARG_VAR(PBM_DATA_DIR, [Directory where pbm data files will be installed])
 
@@ -258,6 +263,17 @@ AS_IF([test "x$enable_desktop_notifications" = xyes],
 	AC_DEFINE([DESKTOP_NOTIFICATIONS], [0], [Desktop notifications])
 	])
 
+AM_CONDITIONAL([WITH_QT5], [test "x$enable_qt5" = xyes])
+AC_MSG_CHECKING([whether we want Qt5 client GUI])
+if test "x$enable_qt5" = xyes; then
+	AC_MSG_RESULT([yes])
+	AX_HAVE_QT
+	AC_DEFINE([QT5_GUI], [1], [Qt5 client GUI])
+else
+	AC_MSG_RESULT([no])
+	AC_DEFINE([QT5_GUI], [0], [Qt5 client GUI])
+fi
+
 dnl abort compilation after first error
 AS_VAR_APPEND(AM_CXXFLAGS,[" -Wfatal-errors"])
 AS_VAR_APPEND(AM_CXXFLAGS,[" -std=c++14"])
@@ -359,6 +375,7 @@ AC_MSG_NOTICE([
        Boost iostreams LIBS : ${BOOST_IOSTREAMS_LIB}
 --------------------------------------------------------------
  with desktop notifications : ${enable_desktop_notifications}
+        with Qt5 client GUI : ${enable_qt5}
 --------------------------------------------------------------
   Global debugging : ${enable_debugging}
               keys : ${enable_keys_debugging}

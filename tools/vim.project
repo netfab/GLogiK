@@ -137,6 +137,18 @@ GLogiK=$PWD/.. CD=. {
 				launcher.cpp
 				launcher.hpp
 			}
+			gui=gui/ {
+				qt=Qt/ {
+					Makefile.am
+					DeviceControlTab.cpp
+					DeviceControlTab.hpp
+					BacklightColorTab.cpp
+					BacklightColorTab.hpp
+					mainWindow.cpp
+					mainWindow.hpp
+					main.cpp
+				}
+			}
 			service=service/ {
 				Makefile.am
 				main.cpp
@@ -199,6 +211,8 @@ GLogiK=$PWD/.. CD=. {
 			}
 			GKShared=shared/ {
 				Makefile.am
+				deviceFile.cpp
+				deviceFile.hpp
 				deviceProperties.cpp
 				deviceProperties.hpp
 				glogik.cpp

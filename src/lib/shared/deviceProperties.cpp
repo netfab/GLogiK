@@ -32,16 +32,13 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DeviceProperties::DeviceProperties() :
-	_vendor("unknown"),
-	_model("unknown"),
-	_capabilities(0),
-	_configFileName("none"),
-	_watchedDescriptor(-1),
-	_backlightRed(0xFF),
-	_backlightGreen(0xFF),
-	_backlightBlue(0xFF),
-	_LCDPluginsMask1(0)
+DeviceProperties::DeviceProperties()
+	:	_capabilities(0),
+		_watchedDescriptor(-1),
+		_backlightRed(0xFF),
+		_backlightGreen(0xFF),
+		_backlightBlue(0xFF),
+		_LCDPluginsMask1(0)
 {
 }
 
@@ -50,10 +47,6 @@ DeviceProperties::~DeviceProperties() {
 
 /* -- -- -- */
 
-void DeviceProperties::setConfigFileName(const std::string & fileName) {
-	_configFileName = fileName;
-}
-
 void DeviceProperties::setWatchDescriptor(int wd) {
 	_watchedDescriptor = wd;
 }
@@ -61,11 +54,10 @@ void DeviceProperties::setWatchDescriptor(int wd) {
 void DeviceProperties::setProperties(
 	const std::string & vendor,
 	const std::string & model,
-	const uint64_t capabilities
-)
+	const uint64_t capabilities)
 {
-	_vendor	= vendor;
-	_model	= model;
+	this->setVendor(vendor);
+	this->setModel(model);
 	_capabilities = capabilities;
 }
 
@@ -103,20 +95,8 @@ void DeviceProperties::setLCDPluginsMask(
 
 /* -- -- -- */
 
-const std::string & DeviceProperties::getVendor(void) const {
-	return _vendor;
-}
-
-const std::string & DeviceProperties::getModel(void) const {
-	return _model;
-}
-
 const uint64_t DeviceProperties::getCapabilities(void) const {
 	return _capabilities;
-}
-
-const std::string & DeviceProperties::getConfigFileName(void) const {
-	return _configFileName;
 }
 
 const int DeviceProperties::getWatchDescriptor(void) const {

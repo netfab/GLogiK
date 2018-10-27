@@ -36,18 +36,19 @@
 
 #include "glogik.hpp"
 #include "macrosBanks.hpp"
+#include "deviceFile.hpp"
 
 namespace GLogiK
 {
 
-class DeviceProperties : public MacrosBanks
+class DeviceProperties
+	:	public MacrosBanks,
+		public DeviceFile
 {
 	public:
 		DeviceProperties(void);
 		~DeviceProperties(void);
 
-		const std::string & getVendor(void) const;
-		const std::string & getModel(void) const;
 		const uint64_t getCapabilities(void) const;
 		const std::string getMediaCommand(const std::string & mediaEvent) const;
 		const std::map<const std::string, std::string> & getMediaCommands(void) const;
@@ -57,9 +58,6 @@ class DeviceProperties : public MacrosBanks
 			const uint8_t maskID,
 			const uint64_t mask
 		);
-
-		const std::string & getConfigFileName(void) const;
-		void setConfigFileName(const std::string & fileName);
 
 		const int getWatchDescriptor(void) const;
 		void setWatchDescriptor(int wd);
@@ -77,10 +75,7 @@ class DeviceProperties : public MacrosBanks
 	protected:
 
 	private:
-		std::string _vendor;
-		std::string _model;
 		uint64_t _capabilities;
-		std::string _configFileName;
 		int _watchedDescriptor;
 
 		uint8_t _backlightRed;
@@ -106,8 +101,8 @@ class DeviceProperties : public MacrosBanks
 			void serialize(Archive & ar, const unsigned int version)
 		{
 			//if(version > 0)
-			ar & _vendor;
-			ar & _model;
+			ar & boost::serialization::base_object<DeviceFile>(*this);
+
 			ar & _backlightRed;
 			ar & _backlightGreen;
 			ar & _backlightBlue;

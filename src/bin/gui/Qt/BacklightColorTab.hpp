@@ -19,35 +19,26 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_STRING_HPP_
-#define SRC_LIB_DBUS_ARG_GKDBUS_ARG_STRING_HPP_
+#ifndef SRC_BIN_GUI_QT_BACKLIGHT_COLOR_TAB_HPP_
+#define SRC_BIN_GUI_QT_BACKLIGHT_COLOR_TAB_HPP_
 
-#include "GKDBusArgument.hpp"
+#include <QString>
+#include <QWidget>
 
-#include <string>
-#include <vector>
-
-namespace NSGKDBus
+namespace GLogiK
 {
 
-class GKDBusArgumentString
-	:	protected GKDBusArgument
+class BacklightColorTab
+	:	public QWidget
 {
 	public:
-		static const std::string & getNextStringArgument(void);
-		static const std::vector<std::string> & getStringsArray(void);
-
-		static const bool isContainerEmpty(void);
-
-	protected:
-		GKDBusArgumentString(void) = default;
-		~GKDBusArgumentString(void) = default;
+		BacklightColorTab(const QString & name);
+		~BacklightColorTab();
 
 	private:
-		thread_local static std::string currentString;
-
+		BacklightColorTab() = delete;
 };
 
-} // namespace NSGKDBus
+} // namespace GLogiK
 
 #endif

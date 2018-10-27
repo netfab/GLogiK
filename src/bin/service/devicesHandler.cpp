@@ -98,10 +98,29 @@ void DevicesHandler::clearDevices(void) {
 const devices_files_map_t DevicesHandler::getDevicesMap(void) {
 	devices_files_map_t ret;
 	for(const auto & dev : _startedDevices) {
-		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFileName()) );
+		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
 	}
 	for(const auto & dev : _stoppedDevices) {
-		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFileName()) );
+		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
+	}
+	return ret;
+}
+
+const std::vector<std::string> DevicesHandler::getDevicesList(void) {
+	std::vector<std::string> ret;
+	for(const auto & dev : _startedDevices) {
+		ret.push_back(dev.first);
+		ret.push_back("started");
+		ret.push_back(dev.second.getVendor());
+		ret.push_back(dev.second.getModel());
+		ret.push_back(dev.second.getConfigFilePath());
+	}
+	for(const auto & dev : _stoppedDevices) {
+		ret.push_back(dev.first);
+		ret.push_back("stopped");
+		ret.push_back(dev.second.getVendor());
+		ret.push_back(dev.second.getModel());
+		ret.push_back(dev.second.getConfigFilePath());
 	}
 	return ret;
 }
@@ -140,7 +159,7 @@ void DevicesHandler::saveDeviceConfigurationFile(
 
 		FileSystem::createOwnerDirectory(filePath);
 
-		filePath /= device.getConfigFileName();
+		filePath /= device.getConfigFilePath();
 
 		try {
 #if DEBUGGING_ON
@@ -198,10 +217,10 @@ void DevicesHandler::saveDeviceConfigurationFile(
 void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 	fs::path filePath(_configurationRootDirectory);
 	filePath /= device.getVendor();
-	filePath /= device.getConfigFileName();
+	filePath /= device.getConfigFilePath();
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "loading device configuration file " << device.getConfigFileName();
+	LOG(DEBUG2) << "loading device configuration file " << device.getConfigFilePath();
 #endif
 	try {
 		std::ifstream ifs;
@@ -518,17 +537,17 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	std::set<std::string> alreadyUsed;
 	{
 		for(const auto & dev : _startedDevices) {
-			alreadyUsed.insert( dev.second.getConfigFileName() );
+			alreadyUsed.insert( dev.second.getConfigFilePath() );
 		}
 		for(const auto & dev : _stoppedDevices) {
-			alreadyUsed.insert( dev.second.getConfigFileName() );
+			alreadyUsed.insert( dev.second.getConfigFilePath() );
 		}
 	}
 
 	try {
 		try {
 			/* searching for an existing configuration file */
-			device.setConfigFileName(
+			device.setConfigFilePath(
 				_pGKfs->getNextAvailableFileName(alreadyUsed, directory, device.getModel(), "cfg", true)
 			);
 		}
@@ -540,7 +559,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		}
 
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "found : " << device.getConfigFileName();
+		LOG(DEBUG3) << "found : " << device.getConfigFilePath();
 #endif
 		/* loading configuration file */
 		this->loadDeviceConfigurationFile(device);
@@ -564,12 +583,12 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 		try {
 			/* none found, assign a new configuration file to this device */
-			device.setConfigFileName(
+			device.setConfigFilePath(
 				_pGKfs->getNextAvailableFileName(alreadyUsed, directory, device.getModel(), "cfg")
 			);
 
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "new one : " << device.getConfigFileName();
+			LOG(DEBUG3) << "new one : " << device.getConfigFilePath();
 #endif
 			/* we need to create the directory before watching it */
 			this->saveDeviceConfigurationFile(devID, device);

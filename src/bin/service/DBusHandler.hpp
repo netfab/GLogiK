@@ -81,6 +81,7 @@ class DBusHandler
 
 	private:
 		NSGKDBus::GKDBus* _pDBus;
+		const NSGKDBus::BusConnection _sessionBus;
 		const NSGKDBus::BusConnection _systemBus;
 		DevicesHandler _devices;
 		bool _registerStatus;		/* true == registered with daemon */
@@ -101,8 +102,10 @@ class DBusHandler
 
 		void initializeDevices(void);
 		void initializeGKDBusSignals(void);
+		void initializeGKDBusMethods(void);
 
 		void sendRestartRequest(void);
+		void sendDevicesUpdatedSignal(void);
 
 		/* signals */
 		void daemonIsStopping(void);
@@ -125,6 +128,8 @@ class DBusHandler
 
 		void deviceMediaEvent(const std::string & devID, const std::string & mediaKeyEvent);
 		/* -- */
+
+		const std::vector<std::string> getDevicesList(const std::string & reserved);
 };
 
 } // namespace GLogiK

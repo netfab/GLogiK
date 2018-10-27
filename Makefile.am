@@ -17,6 +17,10 @@ include %D%/data/init/openrc/Makefile.am
 include %D%/data/udev/Makefile.am
 include %D%/data/pbm/Makefile.am
 
+if WITH_QT5
+include %D%/src/bin/gui/Qt/Makefile.am
+endif
+
 maintainer-clean-local: maintainer-clean-libtool-files maintainer-clean-autotools-files
 
 .PHONY: maintainer-clean-libtool-files maintainer-clean-autotools-files
