@@ -1,6 +1,18 @@
 
 ---
 
+## version 0.8.3 - 2019-xx-xx
+#### Added features :
+ * added desktop launcher binary
+ * added GKDBus signals introspectability
+
+#### Changes / Fixs
+ * run media commands synchronously
+ * fix GKDBus signals implementation and usage
+ * run launcher binary via desktop file (instead of GLogiKs)
+
+---
+
 ## version 0.8.2 - 2018-09-10
 #### Added features :
  * added LCD keys L1-L2-L3-L4-L5 support into LCD plugins
