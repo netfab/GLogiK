@@ -87,6 +87,12 @@ class Client
 			const uint8_t bankID
 		);
 
+		const bool setDeviceLCDPluginsMask(
+			const std::string & devID,
+			const uint8_t maskID,
+			const uint64_t mask
+		);
+
 		void toggleClientReadyPropertie(void);
 
 	protected:

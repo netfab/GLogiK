@@ -54,7 +54,7 @@ class GKDBusReply
 
 class GKDBusMessageReply
 	:	virtual private GKDBusArgumentString,
-		private GKDBusArgumentUInt64,
+		virtual private GKDBusArgumentUInt64,
 		private GKDBusMessageAsyncContainer
 {
 	public:

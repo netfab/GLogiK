@@ -165,7 +165,7 @@ const bool LogitechG510::checkMediaKey(USBDevice & device) {
 const bool LogitechG510::checkLCDKey(USBDevice & device) {
 	for (const auto & key : LogitechG510::fiveBytesKeysMap ) {
 		if( key.isLCDKey and device._pressedRKeysMask & toEnumType(key.key) ) {
-			std::lock_guard<std::mutex> lock(device._LCDKeyMutex);
+			std::lock_guard<std::mutex> lock(device._LCDMutex);
 			device._LCDKey = key.name;
 			return true;
 		}

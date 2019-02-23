@@ -391,6 +391,48 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 		}
 	}
 
+	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+		const std::string remoteMethod = "SetDeviceLCDPluginsMask";
+
+		try {
+			const uint8_t maskID = toEnumType(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1);
+			const uint64_t mask = device.getLCDPluginsMask1();
+
+			_pDBus->initializeRemoteMethodCall(
+				_systemBus,
+				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				remoteMethod.c_str()
+			);
+			_pDBus->appendStringToRemoteMethodCall(_clientID);
+			_pDBus->appendStringToRemoteMethodCall(devID);
+			_pDBus->appendUInt8ToRemoteMethodCall(maskID);
+			_pDBus->appendUInt64ToRemoteMethodCall(mask);
+
+			_pDBus->sendRemoteMethodCall();
+
+			try {
+				_pDBus->waitForRemoteMethodCallReply();
+
+				const bool ret = _pDBus->getNextBooleanArgument();
+				if( ret ) {
+					LOG(VERB) << devID << " successfully setted device LCD Plugins Mask " << maskID;
+				}
+				else {
+					LOG(ERROR) << devID << " failed to set device LCD Plugins Mask " << maskID << " : false";
+				}
+			}
+			catch (const GLogiKExcept & e) {
+				LogRemoteCallGetReplyFailure
+			}
+		}
+		catch (const GKDBusMessageWrongBuild & e) {
+			_pDBus->abandonRemoteMethodCall();
+			LogRemoteCallFailure
+		}
+	}
+
 	LOG(INFO) << devID << " sent device configuration to daemon";
 }
 

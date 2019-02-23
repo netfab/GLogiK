@@ -40,6 +40,7 @@
 #include "lib/dbus/GKDBusConnection.hpp"
 #include "lib/dbus/arguments/GKDBusArgString.hpp"
 #include "lib/dbus/arguments/GKDBusArgByte.hpp"
+#include "lib/dbus/arguments/GKDBusArgUInt64.hpp"
 #include "lib/dbus/arguments/GKDBusArgMacrosBank.hpp"
 
 
@@ -129,6 +130,14 @@ typedef std::function<
 				const GLogiK::mBank_type &
 			) > TwoStringsOneByteOneMacrosBankToBool;
 
+typedef std::function<
+			const bool(
+				const std::string&,
+				const std::string&,
+				const uint8_t,
+				const uint64_t
+			) > TwoStringsOneByteOneUInt64ToBool;
+
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
 /* -- -- -- classes templates -- -- -- */
@@ -143,6 +152,7 @@ template <typename T>
 		:	public GKDBusEvent,
 			virtual private GKDBusArgumentString,
 			virtual private GKDBusArgumentByte,
+			virtual private GKDBusArgumentUInt64,
 			private GKDBusArgumentMacrosBank
 {
 	public:
@@ -393,6 +403,12 @@ template <>
 
 template <>
 	void GKDBusCallbackEvent<TwoStringsOneByteOneMacrosBankToBool>::runCallback(
+		DBusConnection* connection,
+		DBusMessage* message
+	);
+
+template <>
+	void GKDBusCallbackEvent<TwoStringsOneByteOneUInt64ToBool>::runCallback(
 		DBusConnection* connection,
 		DBusMessage* message
 	);

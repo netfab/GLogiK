@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 
 #include "lib/utils/utils.hpp"
 
-#include "splashscreen.hpp"
+#include "endscreen.hpp"
 
 namespace fs = boost::filesystem;
 
@@ -39,44 +39,30 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-Splashscreen::Splashscreen()
+Endscreen::Endscreen()
 {
-	_pluginID = toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN);
-	_pluginName = "splashscreen";
-	_pluginTempo = LCDPluginTempo::TEMPO_400_15;
+	_pluginID = toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN);
+	_pluginName = "endscreen";
+	//_pluginTempo = LCDPluginTempo::TEMPO_DEFAULT;
 }
 
-Splashscreen::~Splashscreen() {
+Endscreen::~Endscreen() {
 }
 
-void Splashscreen::init(FontsManager* const pFonts)
+void Endscreen::init(FontsManager* const pFonts)
 {
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _pluginName;
 
-	pFonts->initializeFont(FontID::MONOSPACE85);
+	//pFonts->initializeFont(FontID::MONOSPACE85);
 
-	this->addPBMClearedFrame();	/* frame #0 */
-	this->addPBMFrame(PBMDirectory, "splashscreen01.pbm", 1); /* #1 */
-	this->addPBMFrame(PBMDirectory, "splashscreen01.pbm", 3); /* #2 #3 #4 */
+	//this->addPBMClearedFrame();	/* frame #0 */
+	this->addPBMFrame(PBMDirectory, "endscreen.pbm", 1); /* frame #0 */
 
-	std::string version(" version "); version += PACKAGE_VERSION;
-	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, version, 48, 32);
+	//std::string version(" version "); version += PACKAGE_VERSION;
+	//this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, version, 48, 32);
 
 	LCDPlugin::init(pFonts);
-}
-
-const PBMDataArray & Splashscreen::getNextPBMFrame(
-	FontsManager* const pFonts,
-	const std::string & LCDKey)
-{
-	//if( this->getNextPBMFrameID() == 2 ) {
-	//	std::string version(" version ");
-	//	version += PACKAGE_VERSION;
-	//	this->writeStringOnFrame(pFonts, FontID::MONOSPACE86, version, 48, 32);
-	//}
-
-	return LCDPlugin::getCurrentPBMFrame();
 }
 
 } // namespace GLogiK

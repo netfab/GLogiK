@@ -49,7 +49,8 @@ class GKDBusEvents
 		public EventGKDBusCallback<StringToStringsArray>,
 		public EventGKDBusCallback<TwoStringsToStringsArray>,
 		public EventGKDBusCallback<ThreeStringsOneByteToMacro>,
-		public EventGKDBusCallback<TwoStringsOneByteOneMacrosBankToBool>
+		public EventGKDBusCallback<TwoStringsOneByteOneMacrosBankToBool>,
+		public EventGKDBusCallback<TwoStringsOneByteOneUInt64ToBool>
 {
 	public:
 		void declareIntrospectableSignal(

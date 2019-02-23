@@ -83,6 +83,8 @@ GLogiK=$PWD/.. CD=. {
 						netSnapshots.cpp
 						netSnapshots.hpp
 					}
+					endscreen.cpp
+					endscreen.hpp
 					splashscreen.cpp
 					splashscreen.hpp
 					systemMonitor.cpp

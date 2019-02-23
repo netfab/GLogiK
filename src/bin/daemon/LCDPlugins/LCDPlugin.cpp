@@ -76,6 +76,11 @@ void LCDPlugin::resetPBMFrameIndex(void)
 	this->checkPBMFrameIndex(); /* may throw */
 }
 
+const uint64_t LCDPlugin::getPluginID(void) const
+{
+	return _pluginID;
+}
+
 const unsigned short LCDPlugin::getPluginTiming(void) const
 {
 	unsigned short timing = 0;

@@ -74,6 +74,7 @@ class LCDPlugin
 		virtual void init(FontsManager* const pFonts) = 0;
 		const bool isInitialized(void) const;
 
+		const uint64_t getPluginID(void) const;
 		const unsigned short getPluginTiming(void) const;
 		const unsigned short getPluginMaxFrames(void) const;
 		void resetPBMFrameIndex(void);
@@ -87,6 +88,7 @@ class LCDPlugin
 	protected:
 		LCDPlugin(void);
 
+		uint64_t _pluginID;
 		std::string _pluginName;
 		LCDPluginTempo _pluginTempo;
 

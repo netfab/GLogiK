@@ -206,6 +206,16 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 		std::bind(&ClientsManager::resetDeviceMacrosBank, this,
 			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3) );
 
+	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteOneUInt64ToBool>::exposeMethod(
+		system_bus, DM_object, DM_interf, "SetDeviceLCDPluginsMask",
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
+			{"y", "LCD_Plugins_Mask_ID", dIN, "LCD plugins mask ID"},
+			{"t", "LCD_Plugins_Mask", dIN, "LCD plugins mask"},
+			{"b", "did_setmask_succeeded", dOUT, "did the SetDeviceLCDPluginsMask method succeeded ?"} },
+		std::bind(&ClientsManager::setDeviceLCDPluginsMask, this,
+			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4) );
+
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- */
 	/*  declaration of introspectable signals */
 	/*       potentially sent by daemon       */
@@ -868,6 +878,28 @@ const bool ClientsManager::resetDeviceMacrosBank(
 		GKSysLog_UnknownClient
 	}
 
+	return false;
+}
+
+const bool ClientsManager::setDeviceLCDPluginsMask(
+	const std::string & clientID,
+	const std::string & devID,
+	const uint8_t maskID,
+	const uint64_t mask)
+{
+#if DEBUGGING_ON
+	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
+				<< CONST_STRING_CLIENT << clientID;
+	LOG(DEBUG3) << "maskID : " << toUInt(maskID);
+#endif
+
+	try {
+		Client* pClient = _connectedClients.at(clientID);
+		return pClient->setDeviceLCDPluginsMask(devID, maskID, mask);
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownClient
+	}
 	return false;
 }
 

@@ -626,8 +626,9 @@ void DevicesManager::setDeviceActiveConfiguration(
 	const banksMap_type & macrosBanks,
 	const uint8_t r,
 	const uint8_t g,
-	const uint8_t b)
-{
+	const uint8_t b,
+	const uint64_t LCDPluginsMask1
+) {
 	try {
 		const auto & device = _startedDevices.at(devID);
 #if DEBUGGING_ON
@@ -635,7 +636,7 @@ void DevicesManager::setDeviceActiveConfiguration(
 #endif
 		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
-				driver->setDeviceActiveConfiguration(devID, macrosBanks, r, g, b);
+				driver->setDeviceActiveConfiguration(devID, macrosBanks, r, g, b, LCDPluginsMask1);
 				return;
 			}
 		}

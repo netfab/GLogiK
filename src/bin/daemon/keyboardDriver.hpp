@@ -106,7 +106,8 @@ class KeyboardDriver
 			const banksMap_type & macrosBanks,
 			const uint8_t r,
 			const uint8_t g,
-			const uint8_t b
+			const uint8_t b,
+			const uint64_t LCDPluginsMask1
 		);
 
 		const banksMap_type & getDeviceMacrosBanks(const std::string & devID) const;

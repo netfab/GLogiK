@@ -21,6 +21,8 @@
 
 #include <stdexcept>
 
+#include "include/enums.hpp"
+
 #include "lib/utils/utils.hpp"
 
 #include "deviceProperties.hpp"
@@ -38,7 +40,8 @@ DeviceProperties::DeviceProperties() :
 	_watchedDescriptor(-1),
 	_backlightRed(0xFF),
 	_backlightGreen(0xFF),
-	_backlightBlue(0xFF)
+	_backlightBlue(0xFF),
+	_LCDPluginsMask1(0)
 {
 }
 
@@ -70,14 +73,32 @@ void DeviceProperties::setProperties(const DeviceProperties & dev)
 {
 	dev.getRGBBytes(_backlightRed, _backlightGreen, _backlightBlue);
 
-	_macrosBanks	= dev.getMacrosBanks();
-	_mediaCommands	= dev.getMediaCommands();
+	_macrosBanks		= dev.getMacrosBanks();
+	_mediaCommands		= dev.getMediaCommands();
+	_LCDPluginsMask1	= dev.getLCDPluginsMask1();
+
+	if( _LCDPluginsMask1 == 0 ) {
+		/* default enabled plugins */
+		_LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN);
+		_LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);
+	}
 }
 
 void DeviceProperties::setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b) {
 	_backlightRed	= r & 0xFF;
 	_backlightGreen	= g & 0xFF;
 	_backlightBlue	= b & 0xFF;
+}
+
+void DeviceProperties::setLCDPluginsMask(
+	const uint8_t maskID,
+	const uint64_t mask)
+{
+	if(maskID > static_cast<unsigned int>(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1))
+		throw GLogiKExcept("wrong maskID value");
+
+	//const LCDPluginsMask id = static_cast<LCDPluginsMask>(maskID);
+	_LCDPluginsMask1 = mask;
 }
 
 /* -- -- -- */
@@ -117,6 +138,11 @@ const std::string DeviceProperties::getMediaCommand(const std::string & mediaEve
 const std::map<const std::string, std::string> & DeviceProperties::getMediaCommands(void) const {
 	return _mediaCommands;
 };
+
+const uint64_t DeviceProperties::getLCDPluginsMask1(void) const
+{
+	return _LCDPluginsMask1;
+}
 
 void DeviceProperties::getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const
 {

@@ -528,15 +528,19 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 			auto t1 = std::chrono::high_resolution_clock::now();
 
 			std::string LCDKey;
+			uint64_t LCDPluginsMask1 = 0;
+
 			{
 				yield_for(std::chrono::microseconds(100));
-				std::lock_guard<std::mutex> lock(device._LCDKeyMutex);
+				std::lock_guard<std::mutex> lock(device._LCDMutex);
 				if( ! device._LCDKey.empty() ) {
 					LCDKey = device._LCDKey;
 					device._LCDKey.clear();
 				}
+				LCDPluginsMask1 = device._LCDPluginsMask1;
 			}
-			LCDDataArray & LCDBuffer = LCDPlugins.getNextLCDScreenBuffer(LCDKey);
+
+			LCDDataArray & LCDBuffer = LCDPlugins.getNextLCDScreenBuffer(LCDKey, LCDPluginsMask1);
 			int ret = this->performLCDScreenInterruptTransfer(
 				device,
 				LCDBuffer.data(),
@@ -560,6 +564,13 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 				one -= interval;
 				std::this_thread::sleep_for(one);
 			}
+		}
+
+		LCDPlugins.forceNextPlugin();
+		LCDDataArray & LCDBuffer = LCDPlugins.getNextLCDScreenBuffer("", toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN));
+		int ret = this->performLCDScreenInterruptTransfer( device, LCDBuffer.data(), LCDBuffer.size(), 1000);
+		if(ret != 0) {
+			GKSysLog(LOG_ERR, ERROR, "endscreen LCD refresh failure");
 		}
 
 #if DEBUGGING_ON
@@ -686,7 +697,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 						if( device.getLastKeysInterruptTransferLength() == _keysEventsLength.LCDKeys ) {
 							if( this->checkLCDKey(device) ) {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-								std::lock_guard<std::mutex> lock(device._LCDKeyMutex);
+								std::lock_guard<std::mutex> lock(device._LCDMutex);
 								LOG(DEBUG2) << device.getID() << " LCD key pressed : " << device._LCDKey;
 #endif
 							}
@@ -813,6 +824,15 @@ void KeyboardDriver::resetDeviceState(USBDevice & device) {
 #endif
 		this->setDeviceBacklightColor(device);
 	}
+
+	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+		yield_for(std::chrono::microseconds(100));
+		std::lock_guard<std::mutex> lock(device._LCDMutex);
+#if DEBUGGING_ON
+		LOG(DEBUG1) << device.getID() << " resetting device LCD plugins mask";
+#endif
+		device._LCDPluginsMask1 = 0;
+	}
 }
 
 void KeyboardDriver::resetDeviceState(const BusNumDeviceID & det)
@@ -919,7 +939,8 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 	const banksMap_type & macrosBanks,
 	const uint8_t r,
 	const uint8_t g,
-	const uint8_t b
+	const uint8_t b,
+	const uint64_t LCDPluginsMask1
 ) {
 	try {
 		USBDevice & device = _initializedDevices.at(devID);
@@ -935,6 +956,12 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 		if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
 			/* set backlight color */
 			this->setDeviceBacklightColor(device, r, g, b);
+		}
+
+		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+			yield_for(std::chrono::microseconds(100));
+			std::lock_guard<std::mutex> lock(device._LCDMutex);
+			device._LCDPluginsMask1 = LCDPluginsMask1;
 		}
 	}
 	catch (const std::out_of_range& oor) {

@@ -158,7 +158,10 @@ void Client::setDeviceActiveUser(
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "setting active configuration for device " << devID;
 #endif
-		pDevicesManager->setDeviceActiveConfiguration(devID, device.getMacrosBanks(), r, g, b);
+		pDevicesManager->setDeviceActiveConfiguration(
+			devID, device.getMacrosBanks(),
+			r, g, b, device.getLCDPluginsMask1()
+		);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice
@@ -235,6 +238,28 @@ const bool Client::resetDeviceMacrosBank(
 	try {
 		DeviceProperties & device = _devices.at(devID);
 		device.resetMacrosBank(bankID);
+		ret = true;
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownDevice
+	}
+	catch (const GLogiKExcept & e) {
+		GKSysLog(LOG_WARNING, WARNING, e.what());
+	}
+
+	return ret;
+}
+
+const bool Client::setDeviceLCDPluginsMask(
+	const std::string & devID,
+	const uint8_t maskID,
+	const uint64_t mask)
+{
+	bool ret = false;
+
+	try {
+		DeviceProperties & device = _devices.at(devID);
+		device.setLCDPluginsMask(maskID, mask);
 		ret = true;
 	}
 	catch (const std::out_of_range& oor) {

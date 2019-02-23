@@ -155,6 +155,14 @@ class ClientsManager
 			const std::string & devID,
 			const uint8_t bankID
 		);
+
+		const bool setDeviceLCDPluginsMask(
+			const std::string & clientID,
+			const std::string & devID,
+			const uint8_t LCDPluginsMask,
+			const uint64_t mask
+		);
+
 		/* -- */
 };
 

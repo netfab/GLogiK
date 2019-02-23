@@ -32,6 +32,8 @@
 
 #include <config.h>
 
+#include "include/enums.hpp"
+
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
@@ -46,6 +48,7 @@ SystemMonitor::SystemMonitor()
 	:	_lastRateStringSize(0),
 		_currentRate(NetDirection::NET_RX)
 {
+	_pluginID = toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);
 	_pluginName = "systemMonitor";
 	_pluginTempo = LCDPluginTempo::TEMPO_500_20;
 }
