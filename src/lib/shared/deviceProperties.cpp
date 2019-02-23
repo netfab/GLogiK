@@ -58,12 +58,12 @@ void DeviceProperties::setWatchDescriptor(int wd) {
 void DeviceProperties::setProperties(
 	const std::string & vendor,
 	const std::string & model,
-	const uint64_t capabilites
+	const uint64_t capabilities
 )
 {
 	_vendor	= vendor;
 	_model	= model;
-	_capabilities = capabilites;
+	_capabilities = capabilities;
 }
 
 void DeviceProperties::setProperties(const DeviceProperties & dev)
