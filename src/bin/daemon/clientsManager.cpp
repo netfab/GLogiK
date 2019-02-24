@@ -409,6 +409,7 @@ const bool ClientsManager::registerClient(
 
 		/* appending client id to DBus reply */
 		_pDBus->appendAsyncString(clientID);
+		_pDBus->appendAsyncString(VERSION);
 
 		return true;
 	}

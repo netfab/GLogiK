@@ -6,6 +6,7 @@
  * added desktop launcher binary
  * added GKDBus signals introspectability
  * ability to enable/disable LCD screen plugins from userland
+ * check for version mismatch between daemon and clients
 
 #### Changes / Fixs
  * run media commands synchronously

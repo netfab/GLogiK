@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@ DBusHandler::DBusHandler(
 			}
 
 			_pDBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
+			_pDBus->connectToSessionBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 
 			this->setCurrentSessionObjectPath(pid);
 
@@ -80,6 +81,11 @@ DBusHandler::DBusHandler(
 							LOG(WARNING) << e.what() << ", retrying in " << timer << " seconds ...";
 							std::this_thread::sleep_for(std::chrono::seconds(timer));
 						}
+					}
+
+					/* daemon version mismatch */
+					if( _registerStatus and _skipRetry ) {
+						throw GLogiKExcept("restart request sent");
 					}
 				}
 				else {
@@ -274,7 +280,27 @@ void DBusHandler::registerWithDaemon(void) {
 			if( ret ) {
 				_clientID = _pDBus->getNextStringArgument();
 				_registerStatus = true;
-				LOG(INFO) << "successfully registered with daemon - " << _clientID;
+
+				const std::string daemonVersion = _pDBus->getNextStringArgument();
+				if( daemonVersion == VERSION ) {
+					LOG(INFO) << "successfully registered with daemon - " << _clientID;
+				}
+				else {
+					LOG(WARNING) << "daemon version mismatch : " << daemonVersion;
+
+					/* asking the launcher for a restart */
+					_pDBus->initializeBroadcastSignal(
+						NSGKDBus::BusConnection::GKDBUS_SESSION,
+						GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+						GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+						"RestartRequest"
+					);
+
+					_pDBus->sendBroadcastSignal();
+
+					_skipRetry = true;
+					LOG(WARNING) << "restart request sent";
+				}
 			}
 			else {
 				LOG(ERROR)	<< "failed to register with daemon : false";
