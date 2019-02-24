@@ -1,15 +1,16 @@
 
 ---
 
-## version 0.8.3 - 2019-xx-xx
+## version 0.8.x - 2019-xx-xx (not released)
 #### Added features :
  * added desktop launcher binary
  * added GKDBus signals introspectability
+ * ability to enable/disable LCD screen plugins from userland
 
 #### Changes / Fixs
  * run media commands synchronously
  * fix GKDBus signals implementation and usage
- * run launcher binary via desktop file (instead of GLogiKs)
+ * the desktop file now run the launcher binary (instead of GLogiKs)
 
 ---
 
