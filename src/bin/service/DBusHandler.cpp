@@ -35,13 +35,20 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
+restartRequested::restartRequested( const std::string& msg ) : message(msg) {}
+restartRequested::~restartRequested( void ) throw() {}
+
+const char* restartRequested::what( void ) const throw()
+{
+    return message.c_str();
+}
+
 DBusHandler::DBusHandler(
 	pid_t pid,
 	SessionManager& session,
 	NSGKUtils::FileSystem* pGKfs)
 	:	_pDBus(nullptr),
 		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
-		_skipRetry(false),
 		_registerStatus(false),
 		_clientID("undefined"),
 		_sessionFramework(SessionFramework::FW_UNKNOWN)
@@ -62,38 +69,33 @@ DBusHandler::DBusHandler(
 
 			this->setCurrentSessionObjectPath(pid);
 
-			unsigned int retries = 0;
-			while( ! _registerStatus ) {
-				if( ( session.isSessionAlive() )
-						and (retries < UNREACHABLE_DAEMON_MAX_RETRIES)
-						and ( ! _skipRetry ) )
-				{
-					if(retries > 0) {
-						LOG(INFO) << "register retry " << retries << " ...";
-					}
+			try {
+				unsigned int retries = 0;
+				while( ! _registerStatus ) {
+					if( ( session.isSessionAlive() )
+							and (retries < UNREACHABLE_DAEMON_MAX_RETRIES) )
+					{
+						if(retries > 0) {
+							LOG(INFO) << "register retry " << retries << " ...";
+						}
 
-					try {
 						this->registerWithDaemon();
-					}
-					catch( const GLogiKExcept & e ) {
-						if( ! _skipRetry ) {
+
+						if( ! _registerStatus ) {
 							unsigned int timer = 5;
-							LOG(WARNING) << e.what() << ", retrying in " << timer << " seconds ...";
+							LOG(WARNING) << "retrying in " << timer << " seconds ...";
 							std::this_thread::sleep_for(std::chrono::seconds(timer));
 						}
 					}
-
-					/* daemon version mismatch */
-					if( _registerStatus and _skipRetry ) {
-						throw GLogiKExcept("restart request sent");
+					else {
+						LOG(ERROR) << "can't register, giving up";
+						throw GLogiKExcept("unable to register with daemon");
 					}
+					retries++;
 				}
-				else {
-					LOG(ERROR) << "can't register, giving up";
-					throw GLogiKExcept("unable to register with daemon");
-					break;
-				}
-				retries++;
+			}
+			catch ( const restartRequested & e ) {
+				throw GLogiKExcept(e.what());
 			}
 
 			_sessionState = this->getCurrentSessionState();
@@ -106,7 +108,6 @@ DBusHandler::DBusHandler(
 			_devices.setClientID(_clientID);
 
 			this->initializeDevices();
-
 		}
 		catch ( const GLogiKExcept & e ) {
 			this->unregisterWithDaemon();
@@ -278,47 +279,60 @@ void DBusHandler::registerWithDaemon(void) {
 
 			const bool ret = _pDBus->getNextBooleanArgument();
 			if( ret ) {
-				_clientID = _pDBus->getNextStringArgument();
 				_registerStatus = true;
+				try {
+					_clientID = _pDBus->getNextStringArgument();
+					const std::string daemonVersion(_pDBus->getNextStringArgument());
 
-				const std::string daemonVersion = _pDBus->getNextStringArgument();
-				if( daemonVersion == VERSION ) {
+					if( daemonVersion != VERSION ) {
+						std::string mismatch("daemon version mismatch : ");
+						mismatch += daemonVersion;
+						throw GLogiKExcept(mismatch);
+					}
+
 					LOG(INFO) << "successfully registered with daemon - " << _clientID;
 				}
-				else {
-					LOG(WARNING) << "daemon version mismatch : " << daemonVersion;
+				catch (const GLogiKExcept & e) {
+					try {
+						/* asking the launcher for a restart */
+						_pDBus->initializeBroadcastSignal(
+							NSGKDBus::BusConnection::GKDBUS_SESSION,
+							GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+							GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+							"RestartRequest"
+						);
+						_pDBus->sendBroadcastSignal();
 
-					/* asking the launcher for a restart */
-					_pDBus->initializeBroadcastSignal(
-						NSGKDBus::BusConnection::GKDBUS_SESSION,
-						GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-						GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-						"RestartRequest"
-					);
-
-					_pDBus->sendBroadcastSignal();
-
-					_skipRetry = true;
-					LOG(WARNING) << "restart request sent";
+						const std::string restartString("restart request sent");
+						LOG(WARNING) << e.what();
+						LOG(WARNING) << restartString;
+						throw restartRequested(restartString);
+					}
+					catch (const GKDBusMessageWrongBuild & e) {
+						_pDBus->abandonBroadcastSignal();
+						LOG(ERROR) << "restart request failure - " << e.what();
+						throw restartRequested("restart request failure");
+					}
 				}
 			}
 			else {
-				LOG(ERROR)	<< "failed to register with daemon : false";
-				const std::string reason(_pDBus->getNextStringArgument());
-				if(reason == "already registered")
-					_skipRetry = true;
-				throw GLogiKExcept(reason);
+				std::string reason("unknown");
+				try {
+					reason = _pDBus->getNextStringArgument();
+				}
+				catch (const GLogiKExcept & e) {
+					LOG(ERROR) << e.what();
+				}
+				LOG(ERROR) << "failed to register with daemon : false - " << reason;
 			}
 		}
 		catch (const GLogiKExcept & e) {
 			LogRemoteCallGetReplyFailure
-			throw GLogiKExcept("RegisterClient failure");
 		}
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
-		throw GLogiKExcept("RegisterClient call failure");
 	}
 }
 
@@ -822,12 +836,20 @@ void DBusHandler::daemonIsStarting(void) {
 	else {
 		LOG(INFO)	<< buffer.str()
 					<< " - contacting the daemon";
-		this->registerWithDaemon();
-		_sessionState = this->getCurrentSessionState();
-		this->reportChangedState();
-		_devices.setClientID(_clientID);
+		try {
+			this->registerWithDaemon();
+		}
+		catch ( const restartRequested & e ) {
+			LOG(WARNING) << e.what() << " - ignoring" ;
+		}
 
-		this->initializeDevices();
+		if( _registerStatus ) {
+			_sessionState = this->getCurrentSessionState();
+			this->reportChangedState();
+			_devices.setClientID(_clientID);
+
+			this->initializeDevices();
+		}
 	}
 }
 
