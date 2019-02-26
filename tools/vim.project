@@ -17,13 +17,15 @@ GLogiK=$PWD/.. CD=. {
 		do-release.sh
 		glogik-daemon.sh
 		glogik-client.sh
+		GKsLauncher.sh
+		GKDBus.sh
 	}
 	macro=m4/ {
 	}
 	data=data/ {
 		autostart=autostart/ {
 			Makefile.am
-			glogik-desktop-service.desktop
+			GKsLauncher.desktop
 		}
 		bash=bash/ {
 			mediakey.sh
@@ -81,6 +83,8 @@ GLogiK=$PWD/.. CD=. {
 						netSnapshots.cpp
 						netSnapshots.hpp
 					}
+					endscreen.cpp
+					endscreen.hpp
 					splashscreen.cpp
 					splashscreen.hpp
 					systemMonitor.cpp
@@ -125,10 +129,17 @@ GLogiK=$PWD/.. CD=. {
 				virtualKeyboard.cpp
 				virtualKeyboard.hpp
 			}
+			launcher=launcher/ {
+				Makefile.am
+				main.cpp
+				DBusHandler.cpp
+				DBusHandler.hpp
+				launcher.cpp
+				launcher.hpp
+			}
 			service=service/ {
 				Makefile.am
 				main.cpp
-				global.hpp
 				devicesHandler.cpp
 				devicesHandler.hpp
 				DBusHandler.cpp
@@ -177,8 +188,6 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusRemoteMethodCall.hpp
 					GKDBusBroadcastSignal.cpp
 					GKDBusBroadcastSignal.hpp
-					GKDBusTargetsSignal.cpp
-					GKDBusTargetsSignal.hpp
 					GKDBusAsyncContainer.cpp
 					GKDBusAsyncContainer.hpp
 				}

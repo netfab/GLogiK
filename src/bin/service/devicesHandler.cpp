@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -33,8 +33,6 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/process.hpp>
-
-#include "global.hpp"
 
 #include "devicesHandler.hpp"
 
@@ -112,7 +110,7 @@ const devices_files_map_t DevicesHandler::getDevicesMap(void) {
 }
 
 const bool DevicesHandler::checkDeviceCapability(const DeviceProperties & device, Caps toCheck) {
-	return (device.getCapabilities() & to_type(toCheck));
+	return (device.getCapabilities() & toEnumType(toCheck));
 }
 
 void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
@@ -300,7 +298,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 		/* set macros banks */
 		for( const auto & idBankPair : device.getMacrosBanks() ) {
-			const uint8_t bankID = to_type(idBankPair.first);
+			const uint8_t bankID = toEnumType(idBankPair.first);
 			const mBank_type & bank = idBankPair.second;
 
 			/* test whether this MacrosBank is empty */
@@ -336,10 +334,10 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 						const bool ret = _pDBus->getNextBooleanArgument();
 						if( ret ) {
-							LOG(VERB) << devID << " successfully resetted device MacrosBank " << to_uint(bankID);
+							LOG(VERB) << devID << " successfully resetted device MacrosBank " << toUInt(bankID);
 						}
 						else {
-							LOG(ERROR) << devID << " failed to reset device MacrosBank " << to_uint(bankID) << " : false";
+							LOG(ERROR) << devID << " failed to reset device MacrosBank " << toUInt(bankID) << " : false";
 						}
 					}
 					catch (const GLogiKExcept & e) {
@@ -376,10 +374,10 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 					const bool ret = _pDBus->getNextBooleanArgument();
 					if( ret ) {
-						LOG(VERB) << devID << " successfully setted device MacrosBank " << to_uint(bankID);
+						LOG(VERB) << devID << " successfully setted device MacrosBank " << toUInt(bankID);
 					}
 					else {
-						LOG(ERROR) << devID << " failed to set device MacrosBank " << to_uint(bankID) << " : false";
+						LOG(ERROR) << devID << " failed to set device MacrosBank " << toUInt(bankID) << " : false";
 					}
 				}
 				catch (const GLogiKExcept & e) {
@@ -390,6 +388,48 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 				_pDBus->abandonRemoteMethodCall();
 				LogRemoteCallFailure
 			}
+		}
+	}
+
+	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+		const std::string remoteMethod = "SetDeviceLCDPluginsMask";
+
+		try {
+			const uint8_t maskID = toEnumType(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1);
+			const uint64_t mask = device.getLCDPluginsMask1();
+
+			_pDBus->initializeRemoteMethodCall(
+				_systemBus,
+				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				remoteMethod.c_str()
+			);
+			_pDBus->appendStringToRemoteMethodCall(_clientID);
+			_pDBus->appendStringToRemoteMethodCall(devID);
+			_pDBus->appendUInt8ToRemoteMethodCall(maskID);
+			_pDBus->appendUInt64ToRemoteMethodCall(mask);
+
+			_pDBus->sendRemoteMethodCall();
+
+			try {
+				_pDBus->waitForRemoteMethodCallReply();
+
+				const bool ret = _pDBus->getNextBooleanArgument();
+				if( ret ) {
+					LOG(VERB) << devID << " successfully setted device LCD Plugins Mask " << toUInt(maskID);
+				}
+				else {
+					LOG(ERROR) << devID << " failed to set device LCD Plugins Mask " << toUInt(maskID) << " : false";
+				}
+			}
+			catch (const GLogiKExcept & e) {
+				LogRemoteCallGetReplyFailure
+			}
+		}
+		catch (const GKDBusMessageWrongBuild & e) {
+			_pDBus->abandonRemoteMethodCall();
+			LogRemoteCallFailure
 		}
 	}
 
@@ -786,22 +826,17 @@ void DevicesHandler::runCommand(
 	_notification.init(GLOGIKS_DESKTOP_SERVICE_NAME, 5000);
 #endif
 
-	std::string line;
-	std::string last;
-	bp::ipstream pipeStream;
-	bp::child c(command, bp::std_out > pipeStream);
+	int result = -1;
+	std::string lastLine;
 
-	while (pipeStream && std::getline(pipeStream, line) && !line.empty()) {
-		last = line;
-		LOG(VERB) << line;
-	}
+	{
+		std::string line;
+		bp::ipstream is;
+		result = bp::system(command, bp::std_out > is, bp::std_err > stderr);
 
-	if( c.running() ) {
-		try {
-			c.wait();
-		}
-		catch (const bp::process_error & e) {
-			LOG(DEBUG1) << e.what();
+		while(is && std::getline(is, line) && !line.empty()) {
+			lastLine = line;
+			LOG(VERB) << line;
 		}
 	}
 
@@ -811,7 +846,7 @@ void DevicesHandler::runCommand(
 		try {
 			int volume = -1;
 			try {
-				volume = std::stoi(last);
+				volume = std::stoi(lastLine);
 			}
 			catch (const std::invalid_argument& ia) {
 				throw GLogiKExcept("stoi invalid argument");
@@ -830,8 +865,8 @@ void DevicesHandler::runCommand(
 			else
 				icon = "audio-volume-high-symbolic";
 
-			last += " %";
-			if( _notification.updateProperties("Volume", last, icon) ) {
+			lastLine += " %";
+			if( _notification.updateProperties("Volume", lastLine, icon) ) {
 				if( ! _notification.show() ) {
 					LOG(ERROR) << "notification showing failure";
 				}
@@ -846,7 +881,7 @@ void DevicesHandler::runCommand(
 	}
 #endif
 
-	LOG(INFO) << "command run : " << command << " - exit code : " << c.exit_code();
+	LOG(INFO) << "command run : " << command << " - exit code : " << result;
 };
 
 } // namespace GLogiK

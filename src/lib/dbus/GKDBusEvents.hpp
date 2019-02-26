@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -49,28 +49,45 @@ class GKDBusEvents
 		public EventGKDBusCallback<StringToStringsArray>,
 		public EventGKDBusCallback<TwoStringsToStringsArray>,
 		public EventGKDBusCallback<ThreeStringsOneByteToMacro>,
-		public EventGKDBusCallback<TwoStringsOneByteOneMacrosBankToBool>
+		public EventGKDBusCallback<TwoStringsOneByteOneMacrosBankToBool>,
+		public EventGKDBusCallback<TwoStringsOneByteOneUInt64ToBool>
 {
 	public:
+		void declareIntrospectableSignal(
+			const BusConnection bus,
+			const char* object,
+			const char* interface,
+			const char* name,
+			const std::vector<DBusMethodArgument> & args
+		);
 
 	protected:
-		GKDBusEvents(const std::string & rootNode);
+		GKDBusEvents(
+			const std::string & rootNode,
+			const std::string & rootNodePath
+		);
 		~GKDBusEvents(void);
 
 		thread_local static BusConnection currentBus;
 
 		std::map< const BusConnection,
-			std::map< const std::string, /* object path */
+			std::map< const std::string, /* object */
 				std::map< const std::string, /* interface */
 					std::vector<GKDBusEvent*> > > > _DBusEvents;
 
-		const std::string getNode(const std::string & object) const;
 		const std::string & getRootNode(void) const;
 
 	private:
 		static const std::string _rootNodeObject;
 		std::string _rootNode;
+		std::string _rootNodePath;
 		std::set<std::string> _DBusInterfaces;
+
+		std::map< const BusConnection,
+			std::map< const std::string, /* object */
+				std::map< const std::string, /* interface */
+					std::vector<GKDBusIntrospectableSignal> > > > _DBusIntrospectableSignals;
+
 
 		void openXMLInterface(
 			std::ostringstream & xml,

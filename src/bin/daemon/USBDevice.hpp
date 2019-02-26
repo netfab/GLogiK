@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -69,6 +69,7 @@ class USBDevice
 		uint64_t				_pressedRKeysMask;
 		std::atomic<uint8_t>	_banksLedsMask;
 		std::atomic<bool>		_exitMacroRecordMode;
+		uint64_t				_LCDPluginsMask1;
 		unsigned char			_pressedKeys[KEYS_BUFFER_LENGTH];
 		unsigned char			_previousPressedKeys[KEYS_BUFFER_LENGTH];
 		std::string				_macroKey;
@@ -76,7 +77,7 @@ class USBDevice
 		std::string				_LCDKey;
 		macro_type				_newMacro;
 
-		std::mutex				_LCDKeyMutex;
+		std::mutex				_LCDMutex;
 
 		std::chrono::steady_clock::time_point _lastTimePoint;
 

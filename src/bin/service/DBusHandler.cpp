@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@
 
 #include "lib/shared/glogik.hpp"
 
-#include "global.hpp"
 #include "DBusHandler.hpp"
 
 namespace GLogiK
@@ -36,13 +35,20 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
+restartRequested::restartRequested( const std::string& msg ) : message(msg) {}
+restartRequested::~restartRequested( void ) throw() {}
+
+const char* restartRequested::what( void ) const throw()
+{
+    return message.c_str();
+}
+
 DBusHandler::DBusHandler(
 	pid_t pid,
 	SessionManager& session,
 	NSGKUtils::FileSystem* pGKfs)
 	:	_pDBus(nullptr),
 		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
-		_skipRetry(false),
 		_registerStatus(false),
 		_clientID("undefined"),
 		_sessionFramework(SessionFramework::FW_UNKNOWN)
@@ -52,43 +58,44 @@ DBusHandler::DBusHandler(
 	try {
 		try {
 			try {
-				_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE);
+				_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE, GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE_PATH);
 			}
 			catch (const std::bad_alloc& e) { /* handle new() failure */
 				throw GLogiKBadAlloc("GKDBus bad allocation");
 			}
 
 			_pDBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
+			_pDBus->connectToSessionBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 
 			this->setCurrentSessionObjectPath(pid);
 
-			unsigned int retries = 0;
-			while( ! _registerStatus ) {
-				if( ( session.isSessionAlive() )
-						and (retries < UNREACHABLE_DAEMON_MAX_RETRIES)
-						and ( ! _skipRetry ) )
-				{
-					if(retries > 0) {
-						LOG(INFO) << "register retry " << retries << " ...";
-					}
+			try {
+				unsigned int retries = 0;
+				while( ! _registerStatus ) {
+					if( ( session.isSessionAlive() )
+							and (retries < UNREACHABLE_DAEMON_MAX_RETRIES) )
+					{
+						if(retries > 0) {
+							LOG(INFO) << "register retry " << retries << " ...";
+						}
 
-					try {
 						this->registerWithDaemon();
-					}
-					catch( const GLogiKExcept & e ) {
-						if( ! _skipRetry ) {
+
+						if( ! _registerStatus ) {
 							unsigned int timer = 5;
-							LOG(WARNING) << e.what() << ", retrying in " << timer << " seconds ...";
+							LOG(WARNING) << "retrying in " << timer << " seconds ...";
 							std::this_thread::sleep_for(std::chrono::seconds(timer));
 						}
 					}
+					else {
+						LOG(ERROR) << "can't register, giving up";
+						throw GLogiKExcept("unable to register with daemon");
+					}
+					retries++;
 				}
-				else {
-					LOG(ERROR) << "can't register, giving up";
-					throw GLogiKExcept("unable to register with daemon");
-					break;
-				}
-				retries++;
+			}
+			catch ( const restartRequested & e ) {
+				throw GLogiKExcept(e.what());
 			}
 
 			_sessionState = this->getCurrentSessionState();
@@ -101,7 +108,6 @@ DBusHandler::DBusHandler(
 			_devices.setClientID(_clientID);
 
 			this->initializeDevices();
-
 		}
 		catch ( const GLogiKExcept & e ) {
 			this->unregisterWithDaemon();
@@ -273,27 +279,60 @@ void DBusHandler::registerWithDaemon(void) {
 
 			const bool ret = _pDBus->getNextBooleanArgument();
 			if( ret ) {
-				_clientID = _pDBus->getNextStringArgument();
 				_registerStatus = true;
-				LOG(INFO) << "successfully registered with daemon - " << _clientID;
+				try {
+					_clientID = _pDBus->getNextStringArgument();
+					const std::string daemonVersion(_pDBus->getNextStringArgument());
+
+					if( daemonVersion != VERSION ) {
+						std::string mismatch("daemon version mismatch : ");
+						mismatch += daemonVersion;
+						throw GLogiKExcept(mismatch);
+					}
+
+					LOG(INFO) << "successfully registered with daemon - " << _clientID;
+				}
+				catch (const GLogiKExcept & e) {
+					try {
+						/* asking the launcher for a restart */
+						_pDBus->initializeBroadcastSignal(
+							NSGKDBus::BusConnection::GKDBUS_SESSION,
+							GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+							GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+							"RestartRequest"
+						);
+						_pDBus->sendBroadcastSignal();
+
+						const std::string restartString("restart request sent");
+						LOG(WARNING) << e.what();
+						LOG(WARNING) << restartString;
+						throw restartRequested(restartString);
+					}
+					catch (const GKDBusMessageWrongBuild & e) {
+						_pDBus->abandonBroadcastSignal();
+						LOG(ERROR) << "restart request failure - " << e.what();
+						throw restartRequested("restart request failure");
+					}
+				}
 			}
 			else {
-				LOG(ERROR)	<< "failed to register with daemon : false";
-				const std::string reason(_pDBus->getNextStringArgument());
-				if(reason == "already registered")
-					_skipRetry = true;
-				throw GLogiKExcept(reason);
+				std::string reason("unknown");
+				try {
+					reason = _pDBus->getNextStringArgument();
+				}
+				catch (const GLogiKExcept & e) {
+					LOG(ERROR) << e.what();
+				}
+				LOG(ERROR) << "failed to register with daemon : false - " << reason;
 			}
 		}
 		catch (const GLogiKExcept & e) {
 			LogRemoteCallGetReplyFailure
-			throw GLogiKExcept("RegisterClient failure");
 		}
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
-		throw GLogiKExcept("RegisterClient call failure");
 	}
 }
 
@@ -666,10 +705,13 @@ void DBusHandler::initializeGKDBusSignals(void) {
 	 * if something is wrong (handled in constructor)
 	 */
 
+	/* -- -- -- -- -- -- -- -- -- -- */
+	/*  DevicesManager D-Bus object  */
+	/* -- -- -- -- -- -- -- -- -- -- */
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
 		_systemBus,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"DevicesStarted",
 		{	{"as", "", "in", "array of started devices ID strings"} },
 		std::bind(&DBusHandler::devicesStarted, this, std::placeholders::_1)
@@ -677,8 +719,8 @@ void DBusHandler::initializeGKDBusSignals(void) {
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
 		_systemBus,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"DevicesStopped",
 		{	{"as", "", "in", "array of stopped devices ID strings"} },
 		std::bind(&DBusHandler::devicesStopped, this, std::placeholders::_1)
@@ -686,17 +728,59 @@ void DBusHandler::initializeGKDBusSignals(void) {
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
 		_systemBus,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"DevicesUnplugged",
 		{	{"as", "", "in", "array of unplugged devices ID strings"} },
 		std::bind(&DBusHandler::devicesUnplugged, this, std::placeholders::_1)
 	);
 
+	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
+		_systemBus,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		"MacroRecorded",
+		{	{"s", "device_id", "in", "device ID"},
+			{"s", "macro_key_name", "in", "macro key name"},
+			{"y", "macro_bankID", "in", "macro bankID"} },
+		std::bind(&DBusHandler::macroRecorded, this,
+			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
+		)
+	);
+
+	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
+		_systemBus,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		"MacroCleared",
+		{	{"s", "device_id", "in", "device ID"},
+			{"s", "macro_key_name", "in", "macro key name"},
+			{"y", "macro_bankID", "in", "macro bankID"} },
+		std::bind(&DBusHandler::macroCleared, this,
+			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
+		)
+	);
+
+	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToVoid>::exposeSignal(
+		_systemBus,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		"deviceMediaEvent",
+		{	{"s", "device_id", "in", "device ID"},
+			{"s", "media_key_event", "in", "media key event"}
+		},
+		std::bind(&DBusHandler::deviceMediaEvent, this,
+			std::placeholders::_1, std::placeholders::_2
+		)
+	);
+
+	/* -- -- -- -- -- -- -- -- -- -- */
+	/*  ClientsManager D-Bus object  */
+	/* -- -- -- -- -- -- -- -- -- -- */
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		_systemBus,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 		"DaemonIsStopping",
 		{},
 		std::bind(&DBusHandler::daemonIsStopping, this)
@@ -704,8 +788,8 @@ void DBusHandler::initializeGKDBusSignals(void) {
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		_systemBus,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 		"DaemonIsStarting",
 		{},
 		std::bind(&DBusHandler::daemonIsStarting, this)
@@ -713,50 +797,11 @@ void DBusHandler::initializeGKDBusSignals(void) {
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		_systemBus,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 		"ReportYourself",
 		{},
 		std::bind(&DBusHandler::reportChangedState, this)
-	);
-
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
-		_systemBus,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-		"MacroRecorded",
-		{	{"s", "device_id", "in", "device ID"},
-			{"s", "macro_key_name", "in", "macro key name"},
-			{"y", "macro_bankID", "in", "macro bankID"} },
-		std::bind(	&DBusHandler::macroRecorded, this,
-					std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
-		)
-	);
-
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
-		_systemBus,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-		"MacroCleared",
-		{	{"s", "device_id", "in", "device ID"},
-			{"s", "macro_key_name", "in", "macro key name"},
-			{"y", "macro_bankID", "in", "macro bankID"} },
-		std::bind(	&DBusHandler::macroCleared, this,
-					std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
-		)
-	);
-
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToVoid>::exposeSignal(
-		_systemBus,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT,
-		GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
-		"deviceMediaEvent",
-		{	{"s", "device_id", "in", "device ID"},
-			{"s", "media_key_event", "in", "media key event"}
-		},
-		std::bind(	&DBusHandler::deviceMediaEvent, this,
-					std::placeholders::_1, std::placeholders::_2
-		)
 	);
 }
 
@@ -791,12 +836,20 @@ void DBusHandler::daemonIsStarting(void) {
 	else {
 		LOG(INFO)	<< buffer.str()
 					<< " - contacting the daemon";
-		this->registerWithDaemon();
-		_sessionState = this->getCurrentSessionState();
-		this->reportChangedState();
-		_devices.setClientID(_clientID);
+		try {
+			this->registerWithDaemon();
+		}
+		catch ( const restartRequested & e ) {
+			LOG(WARNING) << e.what() << " - ignoring" ;
+		}
 
-		this->initializeDevices();
+		if( _registerStatus ) {
+			_sessionState = this->getCurrentSessionState();
+			this->reportChangedState();
+			_devices.setClientID(_clientID);
+
+			this->initializeDevices();
+		}
 	}
 }
 
@@ -951,7 +1004,7 @@ const bool DBusHandler::macroRecorded(
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - device: " << devID
-				<< " bankID: " << to_uint(bankID)
+				<< " bankID: " << toUInt(bankID)
 				<< " key: " << keyName;
 #endif
 
@@ -980,7 +1033,7 @@ const bool DBusHandler::macroCleared(
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - device: " << devID
-				<< " bankID: " << to_uint(bankID)
+				<< " bankID: " << toUInt(bankID)
 				<< " key: " << keyName;
 #endif
 

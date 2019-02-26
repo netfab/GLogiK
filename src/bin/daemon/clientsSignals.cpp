@@ -54,17 +54,16 @@ void ClientsSignals::sendSignalToClients(
 	LOG(DEBUG2) << "sending clients " << signal << " signal";
 #endif
 	try {
-		pDBus->initializeTargetsSignal(
+		pDBus->initializeBroadcastSignal(
 			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
-			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			signal.c_str()
 		);
-		pDBus->sendTargetsSignal();
+		pDBus->sendBroadcastSignal();
 	}
 	catch (const GLogiKExcept & e) {
-		pDBus->abandonTargetsSignal();
+		pDBus->abandonBroadcastSignal();
 
 		std::string warn("DBus targets signal failure : ");
 		warn += e.what();
@@ -96,18 +95,17 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 	LOG(DEBUG2) << "sending clients " << signal << " signal";
 #endif
 	try {
-		pDBus->initializeTargetsSignal(
+		pDBus->initializeBroadcastSignal(
 			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
-			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_SERVICE_SYSTEM_MESSAGE_HANDLER_DBUS_INTERFACE,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			signal.c_str()
 		);
-		pDBus->appendStringVectorToTargetsSignal(devIDArray);
-		pDBus->sendTargetsSignal();
+		pDBus->appendStringVectorToBroadcastSignal(devIDArray);
+		pDBus->sendBroadcastSignal();
 	}
 	catch (const GLogiKExcept & e) {
-		pDBus->abandonTargetsSignal();
+		pDBus->abandonBroadcastSignal();
 		std::string warn("DBus targets signal failure : ");
 		warn += e.what();
 		GKSysLog(LOG_WARNING, WARNING, warn);

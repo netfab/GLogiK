@@ -120,9 +120,9 @@ void PBMFile::parsePBMHeader(
 	}
 
 	std::getline(pbm, ex, space);
-	width = to_uint(ex);
+	width = toUInt(ex);
 	std::getline(pbm, ex, white);
-	height = to_uint(ex);
+	height = toUInt(ex);
 
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< "magic: " << magic

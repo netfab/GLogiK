@@ -100,11 +100,22 @@ GKDBusMessageBroadcastSignal::~GKDBusMessageBroadcastSignal()
 }
 
 void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
+	BusConnection wantedConnection,
+	const char* objectPath,
+	const char* interface,
+	const char* signal)
+{
+	this->initializeBroadcastSignal(
+		this->getConnection(wantedConnection),
+		objectPath, interface, signal);
+}
+
+void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 	DBusConnection* connection,
 	const char* objectPath,
 	const char* interface,
-	const char* signal
-) {
+	const char* signal)
+{
 	if(_signal) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus signal already allocated");
 
@@ -115,6 +126,24 @@ void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 		LOG(ERROR) << "GKDBus broadcast signal allocation failure : " << e.what();
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
+}
+
+void GKDBusMessageBroadcastSignal::appendStringToBroadcastSignal(const std::string & value)
+{
+	if(_signal != nullptr) /* sanity check */
+		_signal->appendString(value);
+}
+
+void GKDBusMessageBroadcastSignal::appendUInt8ToBroadcastSignal(const uint8_t value)
+{
+	if(_signal != nullptr) /* sanity check */
+		_signal->appendUInt8(value);
+}
+
+void GKDBusMessageBroadcastSignal::appendStringVectorToBroadcastSignal(const std::vector<std::string> & list)
+{
+	if(_signal != nullptr) /* sanity check */
+		_signal->appendStringVector(list);
 }
 
 void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void) {

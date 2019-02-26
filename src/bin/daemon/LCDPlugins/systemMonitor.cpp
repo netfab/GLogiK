@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -32,6 +32,8 @@
 
 #include <config.h>
 
+#include "include/enums.hpp"
+
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
@@ -46,6 +48,7 @@ SystemMonitor::SystemMonitor()
 	:	_lastRateStringSize(0),
 		_currentRate(NetDirection::NET_RX)
 {
+	_pluginID = toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);
 	_pluginName = "systemMonitor";
 	_pluginTempo = LCDPluginTempo::TEMPO_500_20;
 }

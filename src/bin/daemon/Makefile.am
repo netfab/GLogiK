@@ -76,5 +76,7 @@ GLogiKd_SOURCES += \
 		%D%/LCDPlugins/netsnap/netSnapshots.cpp \
 		%D%/LCDPlugins/netsnap/netSnapshots.hpp \
 		%D%/LCDPlugins/systemMonitor.cpp \
-		%D%/LCDPlugins/systemMonitor.hpp
+		%D%/LCDPlugins/systemMonitor.hpp \
+		%D%/LCDPlugins/endscreen.cpp \
+		%D%/LCDPlugins/endscreen.hpp
 

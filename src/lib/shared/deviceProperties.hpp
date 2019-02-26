@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -52,6 +52,12 @@ class DeviceProperties : public MacrosBanks
 		const std::string getMediaCommand(const std::string & mediaEvent) const;
 		const std::map<const std::string, std::string> & getMediaCommands(void) const;
 
+		const uint64_t getLCDPluginsMask1(void) const;
+		void setLCDPluginsMask(
+			const uint8_t maskID,
+			const uint64_t mask
+		);
+
 		const std::string & getConfigFileName(void) const;
 		void setConfigFileName(const std::string & fileName);
 
@@ -81,6 +87,8 @@ class DeviceProperties : public MacrosBanks
 		uint8_t _backlightGreen;
 		uint8_t _backlightBlue;
 
+		uint64_t _LCDPluginsMask1;
+
 		std::initializer_list<std::pair<const std::string, std::string>> _il = {
 			{XF86_AUDIO_NEXT, ""},
 			{XF86_AUDIO_PREV, ""},
@@ -104,6 +112,7 @@ class DeviceProperties : public MacrosBanks
 			ar & _backlightGreen;
 			ar & _backlightBlue;
 			ar & _mediaCommands;
+			ar & _LCDPluginsMask1;
 
 			// serialize base class information
 			ar & boost::serialization::base_object<MacrosBanks>(*this);

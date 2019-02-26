@@ -34,7 +34,6 @@
 
 #include "messages/GKDBusRemoteMethodCall.hpp"
 #include "messages/GKDBusBroadcastSignal.hpp"
-#include "messages/GKDBusTargetsSignal.hpp"
 #include "messages/GKDBusAsyncContainer.hpp"
 
 #include "arguments/GKDBusArgString.hpp"
@@ -47,20 +46,24 @@
 namespace NSGKDBus
 {
 
-using namespace NSGKUtils;
-
-class GKDBusEventFound : public GLogiKExcept
+class GKDBusEventFound
+	:	public NSGKUtils::GLogiKExcept
 {
 	public:
 		GKDBusEventFound(const std::string & msg = "event found") : GLogiKExcept(msg) {};
 		virtual ~GKDBusEventFound( void ) throw() {};
 };
 
+enum class ConnectionFlag : uint8_t
+{
+	GKDBUS_SINGLE = 0,
+	GKDBUS_MULTIPLE,
+};
+
 class GKDBus
 	:	public GKDBusEvents,
 		virtual public GKDBusMessageRemoteMethodCall,
 		public GKDBusMessageBroadcastSignal,
-		public GKDBusMessageTargetsSignal,
 		public GKDBusMessageAsyncContainer,
 		virtual public GKDBusArgumentString,
 		public GKDBusArgumentBoolean,
@@ -70,10 +73,20 @@ class GKDBus
 		public GKDBusArgumentMacro
 {
 	public:
-		GKDBus(const std::string & rootNode);
+		GKDBus(
+			const std::string & rootNode,
+			const std::string & rootNodePath
+		);
 		~GKDBus();
 
-		void connectToSystemBus(const char* connectionName);
+		void connectToSystemBus(
+			const char* connectionName,
+			const ConnectionFlag flag = ConnectionFlag::GKDBUS_MULTIPLE
+		);
+		void connectToSessionBus(
+			const char* connectionName,
+			const ConnectionFlag flag = ConnectionFlag::GKDBUS_MULTIPLE
+		);
 
 		void checkForNextMessage(const BusConnection bus) noexcept;
 
@@ -82,10 +95,10 @@ class GKDBus
 	private:
 		DBusError _error;
 
-		//DBusConnection* _sessionConnection;
+		DBusConnection* _sessionConnection;
 		DBusConnection* _systemConnection;
 
-		//std::string _sessionName;
+		std::string _sessionName;
 		std::string _systemName;
 
 		DBusMessage* _message;
@@ -93,6 +106,7 @@ class GKDBus
 		void checkDBusError(const char* error);
 		void checkReleasedName(int ret);
 		DBusConnection* getConnection(BusConnection bus);
+		unsigned int getDBUsFlags(const ConnectionFlag flag);
 };
 
 } // namespace NSGKDBus

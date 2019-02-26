@@ -183,7 +183,7 @@ void NetSnapshots::setBytesSnapshotValue(const NetDirection d, unsigned long lon
 		std::ifstream snapshotFile( file.string() );
 		std::string line;
 		std::getline(snapshotFile, line);
-		value = to_ull(line);
+		value = toULL(line);
 	}
 	catch (const std::ifstream::failure & e) {
 		LOG(ERROR) << "error opening/reading/closing kernel route file : " << e.what();

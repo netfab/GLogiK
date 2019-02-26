@@ -19,6 +19,14 @@
  *
  */
 
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
+#include <cstdio>
+#include <cstdlib>
+#include <csignal>
+
 #include <new>
 #include <stdexcept>
 #include <iomanip>
@@ -28,15 +36,15 @@
 
 #define UTILS_COMPILATION 1
 
-#include "functions.hpp"
 #include "exception.hpp"
+#include "functions.hpp"
 
 #undef UTILS_COMPILATION
 
 namespace NSGKUtils
 {
 
-const std::string to_string(const char* s)
+const std::string toString(const char* s)
 {
 	if(s == nullptr)
 		return "";
@@ -55,7 +63,7 @@ const std::string to_string(const char* s)
 	}
 }
 
-const unsigned int to_uint(const std::string & s)
+const unsigned int toUInt(const std::string & s)
 {
 	unsigned long ret = 0;
 	try {
@@ -74,7 +82,7 @@ const unsigned int to_uint(const std::string & s)
 	return static_cast<unsigned int>(ret);
 }
 
-const unsigned long long to_ull(const std::string & s)
+const unsigned long long toULL(const std::string & s)
 {
 	unsigned long long ret = 0;
 	try {
@@ -97,9 +105,9 @@ const std::string getHexRGB(
 {
 	std::ostringstream ret("", std::ios_base::app);
 	ret << std::hex << std::setfill('0')
-		<< std::setw(2) << to_uint(red) << " "
-		<< std::setw(2) << to_uint(green) << " "
-		<< std::setw(2) << to_uint(blue);
+		<< std::setw(2) << toUInt(red) << " "
+		<< std::setw(2) << toUInt(green) << " "
+		<< std::setw(2) << toUInt(blue);
 	return ret.str();
 }
 
@@ -110,6 +118,55 @@ void yield_for(std::chrono::microseconds us)
 	do {
 		std::this_thread::yield();
 	} while (std::chrono::high_resolution_clock::now() < end);
+}
+
+pid_t daemonizeProcess(const bool closeDescriptors)
+{
+	pid_t pid;
+
+	pid = fork();
+	if(pid == -1)
+		throw GLogiKExcept("first fork failure");
+
+	// parent exit
+	if(pid > 0)
+		exit(EXIT_SUCCESS);
+
+	if(setsid() == -1)
+		throw GLogiKExcept("session creation failure");
+
+	// Ignore signal sent from child to parent process
+	std::signal(SIGCHLD, SIG_IGN);
+
+	pid = fork();
+	if(pid == -1)
+		throw GLogiKExcept("second fork failure");
+
+	// parent exit
+	if(pid > 0)
+		exit(EXIT_SUCCESS);
+
+	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
+	if(chdir("/") == -1)
+		throw GLogiKExcept("change directory failure");
+
+	if( closeDescriptors ) {
+		// closing opened descriptors
+		//for(fd = sysconf(_SC_OPEN_MAX); fd > 0; fd--)
+		//	close(fd);
+		std::fclose(stdin);
+		std::fclose(stdout);
+		std::fclose(stderr);
+
+		// reopening standard outputs
+		stdin = std::fopen("/dev/null", "r");
+		stdout = std::fopen("/dev/null", "w+");
+		stderr = std::fopen("/dev/null", "w+");
+	}
+
+	pid = getpid();
+
+	return pid;
 }
 
 } // namespace NSGKUtils

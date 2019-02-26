@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -26,6 +26,10 @@
 
 #include <config.h>
 
+#include "include/enums.hpp"
+
+#include "lib/utils/utils.hpp"
+
 #include "splashscreen.hpp"
 
 namespace fs = boost::filesystem;
@@ -33,7 +37,11 @@ namespace fs = boost::filesystem;
 namespace GLogiK
 {
 
-Splashscreen::Splashscreen() {
+using namespace NSGKUtils;
+
+Splashscreen::Splashscreen()
+{
+	_pluginID = toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN);
 	_pluginName = "splashscreen";
 	_pluginTempo = LCDPluginTempo::TEMPO_400_15;
 }
@@ -56,19 +64,6 @@ void Splashscreen::init(FontsManager* const pFonts)
 	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, version, 48, 32);
 
 	LCDPlugin::init(pFonts);
-}
-
-const PBMDataArray & Splashscreen::getNextPBMFrame(
-	FontsManager* const pFonts,
-	const std::string & LCDKey)
-{
-	//if( this->getNextPBMFrameID() == 2 ) {
-	//	std::string version(" version ");
-	//	version += PACKAGE_VERSION;
-	//	this->writeStringOnFrame(pFonts, FontID::MONOSPACE86, version, 48, 32);
-	//}
-
-	return LCDPlugin::getCurrentPBMFrame();
 }
 
 } // namespace GLogiK

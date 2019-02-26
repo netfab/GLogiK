@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -106,7 +106,8 @@ class KeyboardDriver
 			const banksMap_type & macrosBanks,
 			const uint8_t r,
 			const uint8_t g,
-			const uint8_t b
+			const uint8_t b,
+			const uint64_t LCDPluginsMask1
 		);
 
 		const banksMap_type & getDeviceMacrosBanks(const std::string & devID) const;

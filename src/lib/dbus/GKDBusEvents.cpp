@@ -35,30 +35,24 @@ using namespace NSGKUtils;
 const std::string GKDBusEvents::_rootNodeObject("RootNode");
 thread_local BusConnection GKDBusEvents::currentBus(BusConnection::GKDBUS_SYSTEM);
 
-GKDBusEvents::GKDBusEvents(const std::string & rootNode) : _rootNode(rootNode) {
-	/* adding special event for root node introspection */
-	const char* object = GKDBusEvents::_rootNodeObject.c_str();
-	const BusConnection systemBus(BusConnection::GKDBUS_SYSTEM);
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "adding Introspectable interface : " << object;
-#endif
-	this->EventGKDBusCallback<StringToString>::exposeEvent(
-		systemBus, object, "org.freedesktop.DBus.Introspectable", "Introspect",
-		{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
-		std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),
-		GKDBusEventType::GKDBUS_EVENT_METHOD, false);
+GKDBusEvents::GKDBusEvents(
+	const std::string & rootNode,
+	const std::string & rootNodePath)
+		:	_rootNode(rootNode),
+			_rootNodePath(rootNodePath)
+{
 }
 
 GKDBusEvents::~GKDBusEvents() {
 	for(const auto & busPair : _DBusEvents) {
 #if DEBUGGING_ON
-		LOG(DEBUG1) << "current bus: " << to_uint(to_type(busPair.first));
+		LOG(DEBUG1) << "current bus: " << toUInt(toEnumType(busPair.first));
 #endif
-		for(const auto & objectPathPair : busPair.second) {
+		for(const auto & objectPair : busPair.second) {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "object_path: " << objectPathPair.first;
+			LOG(DEBUG2) << "object: " << objectPair.first;
 #endif
-			for(const auto & interfacePair : objectPathPair.second) {
+			for(const auto & interfacePair : objectPair.second) {
 #if DEBUGGING_ON
 				LOG(DEBUG3) << "interface: " << interfacePair.first;
 #endif
@@ -70,30 +64,38 @@ GKDBusEvents::~GKDBusEvents() {
 	}
 }
 
-const std::string GKDBusEvents::getNode(const std::string & object) const {
-	std::string node(_rootNode);
-	node += "/";
-	node += object;
-	return node;
-}
-
 const std::string & GKDBusEvents::getRootNode(void) const {
 	return _rootNode;
 }
+
+void GKDBusEvents::declareIntrospectableSignal(
+	const BusConnection bus,
+	const char* object,
+	const char* interface,
+	const char* name,
+	const std::vector<DBusMethodArgument> & args)
+{
+	GKDBusIntrospectableSignal signal(name, args);
+	_DBusIntrospectableSignals[bus][object][interface].push_back(signal);
+}
+
+/*
+ * private
+ */
 
 const std::string GKDBusEvents::introspectRootNode(void) {
 	std::ostringstream xml;
 
 	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
-	xml << "<node name=\"" << _rootNode << "\">\n";
+	xml << "<node name=\"" << _rootNodePath << "\">\n";
 
 	try {
 		const auto & bus = _DBusEvents.at(GKDBusEvents::currentBus);
 
-		for(const auto & objectPathPair : bus) {
-			if(objectPathPair.first != GKDBusEvents::_rootNodeObject)
-				xml << "  <node name=\"" << objectPathPair.first << "\"/>\n";
+		for(const auto & objectPair : bus) {
+			if(objectPair.first != GKDBusEvents::_rootNodeObject)
+				xml << "  <node name=\"" << objectPair.first << "\"/>\n";
 		}
 	}
 	catch (const std::out_of_range& oor) {
@@ -103,10 +105,6 @@ const std::string GKDBusEvents::introspectRootNode(void) {
 	xml << "</node>\n";
 	return xml.str();
 }
-
-/*
- * private
- */
 
 void GKDBusEvents::addIntrospectableEvent(
 	const BusConnection eventBus,
@@ -122,7 +120,7 @@ void GKDBusEvents::addIntrospectableEvent(
 		}
 		catch (const std::out_of_range& oor) {
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "adding Introspectable interface : " << eventObject;
+			LOG(DEBUG3) << "adding Introspectable object : " << eventObject;
 #endif
 			this->EventGKDBusCallback<StringToString>::exposeEvent(
 				eventBus, eventObject, "org.freedesktop.DBus.Introspectable", "Introspect",
@@ -168,7 +166,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath) 
 	LOG(DEBUG2) << "object path asked : " << askedObjectPath;
 #endif
 
-	if( askedObjectPath == _rootNode )
+	if( askedObjectPath == _rootNodePath )
 		return this->introspectRootNode();
 
 	std::ostringstream xml;
@@ -178,21 +176,46 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath) 
 	xml << "<node name=\"" << askedObjectPath << "\">\n";
 
 	try {
-		const auto & bus = _DBusEvents.at(GKDBusEvents::currentBus);
-
 		for(const auto & interface : _DBusInterfaces) {
 
 			bool interfaceOpened = false;
 
-			for(const auto & objectPathPair : bus) {
+			for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
+				std::string objectPath(_rootNodePath);
+				objectPath += "/"; objectPath += objectPair.first;
 				/* object path must match */
-				if( this->getNode(objectPathPair.first) != askedObjectPath )
+				if( objectPath != askedObjectPath )
 					continue;
-				for(const auto & interfacePair : objectPathPair.second) {
+				for(const auto & interfacePair : objectPair.second) {
 					if( interfacePair.first == interface ) {
 						this->openXMLInterface(xml, interfaceOpened, interface);
 						for(const auto & DBusEvent : interfacePair.second) { /* vector of pointers */
 							this->eventToXMLMethod(xml, DBusEvent);
+						}
+					}
+				}
+			}
+
+			for(const auto & objectPair : _DBusIntrospectableSignals.at(GKDBusEvents::currentBus)) {
+				std::string objectPath(_rootNodePath);
+				objectPath += "/"; objectPath += objectPair.first;
+				/* object path must match */
+				if( objectPath != askedObjectPath )
+					continue;
+				for(const auto & interfacePair : objectPair.second) {
+					if( interfacePair.first == interface ) {
+						this->openXMLInterface(xml, interfaceOpened, interface);
+						for(const auto & signal : interfacePair.second) { /* vector of  objects */
+							xml << "    <signal name=\"" << signal.name << "\">\n";
+							for(const auto & arg : signal.arguments) {
+								xml << "      <!-- " << arg.comment << " -->\n";
+								xml << "      <arg type=\"" << arg.type << "\" ";
+								if( ! arg.name.empty() ) /* name attribute on arguments is optional */
+									xml << "name=\"" << arg.name << "\" ";
+								//xml << "direction=\"out\" />\n";
+								xml << "/>\n";
+							}
+							xml << "    </signal>\n";
 						}
 					}
 				}

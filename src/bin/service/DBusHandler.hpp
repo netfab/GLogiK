@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 
 #include <vector>
 #include <string>
+#include <exception>
 
 #include <cstdint>
 
@@ -47,6 +48,18 @@ enum class SessionFramework : uint8_t
 	FW_LOGIND,
 };
 
+class restartRequested : public std::exception
+{
+	public :
+		restartRequested( const std::string& msg = "" );
+
+		virtual ~restartRequested( void ) throw();
+		virtual const char* what( void ) const throw();
+
+	protected :
+		std::string message;
+};
+
 class DBusHandler
 {
 	public:
@@ -68,7 +81,6 @@ class DBusHandler
 		NSGKDBus::GKDBus* _pDBus;
 		const NSGKDBus::BusConnection _systemBus;
 		DevicesHandler _devices;
-		bool _skipRetry;			/* true == don't retry if register fails */
 		bool _registerStatus;		/* true == registered with daemon */
 		std::string _clientID;
 		SessionFramework _sessionFramework;

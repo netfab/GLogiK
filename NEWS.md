@@ -1,6 +1,20 @@
 
 ---
 
+## version 0.8.4 - 2019-02-26
+#### Added features :
+ * added desktop launcher binary
+ * added GKDBus signals introspectability
+ * ability to enable/disable LCD screen plugins from userland
+ * check for version mismatch between daemon and clients
+
+#### Changes / Fixs
+ * run media commands synchronously
+ * fix GKDBus signals implementation and usage
+ * the desktop file now run the launcher binary (instead of GLogiKs)
+
+---
+
 ## version 0.8.2 - 2018-09-10
 #### Added features :
  * added LCD keys L1-L2-L3-L4-L5 support into LCD plugins
