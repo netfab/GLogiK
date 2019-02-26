@@ -1,5 +1,4 @@
- * various LCD screen support improvements, including :
-	- write plugins
-	- picking plugins from userland
+Some ideas :
+ * Improve and/or write LCD screen plugins
  * Graphical user interface
  * Virtual LCD screen (and virtual keyboard?) using GUI interface

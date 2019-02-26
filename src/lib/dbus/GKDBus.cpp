@@ -29,10 +29,14 @@
 namespace NSGKDBus
 {
 
-GKDBus::GKDBus(const std::string & rootNode)
-	:	GKDBusEvents(rootNode),
-		//_sessionConnection(nullptr),
-		_systemConnection(nullptr)
+using namespace NSGKUtils;
+
+GKDBus::GKDBus(
+	const std::string & rootNode,
+	const std::string & rootNodePath)
+		:	GKDBusEvents(rootNode, rootNodePath),
+			_sessionConnection(nullptr),
+			_systemConnection(nullptr)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "dbus object initialization";
@@ -46,7 +50,6 @@ GKDBus::~GKDBus()
 	LOG(DEBUG1) << "dbus object destruction";
 #endif
 
-/*
 	if(_sessionConnection) {
 #if DEBUGGING_ON
 		LOG(DEBUG) << "closing DBus Session connection";
@@ -58,7 +61,6 @@ GKDBus::~GKDBus()
 		}
 		dbus_connection_unref(_sessionConnection);
 	}
-*/
 
 	if(_systemConnection) {
 #if DEBUGGING_ON
@@ -73,7 +75,10 @@ GKDBus::~GKDBus()
 	}
 }
 
-void GKDBus::connectToSystemBus(const char* connectionName) {
+void GKDBus::connectToSystemBus(
+	const char* connectionName,
+	const ConnectionFlag flag)
+{
 	_systemConnection = dbus_bus_get(DBUS_BUS_SYSTEM, &_error);
 	this->checkDBusError("DBus System connection failure");
 #if DEBUGGING_ON
@@ -84,13 +89,35 @@ void GKDBus::connectToSystemBus(const char* connectionName) {
 	LOG(DEBUG2) << "requesting system connection name : " << connectionName;
 #endif
 	_systemName.clear();
-	int ret = dbus_bus_request_name(_systemConnection, connectionName,
-		DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &_error);
+	int ret = dbus_bus_request_name(_systemConnection, connectionName, getDBUsFlags(flag), &_error);
 	this->checkDBusError("DBus System request name failure");
 	_systemName = connectionName;
 
 	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
 		throw GLogiKExcept("DBus System request name failure : not owner");
+	}
+}
+
+void GKDBus::connectToSessionBus(
+	const char* connectionName,
+	const ConnectionFlag flag)
+{
+	_sessionConnection = dbus_bus_get(DBUS_BUS_SESSION, &_error);
+	this->checkDBusError("DBus Session connection failure");
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "DBus Session connection opened";
+#endif
+
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "requesting session connection name : " << connectionName;
+#endif
+	_sessionName.clear();
+	int ret = dbus_bus_request_name(_sessionConnection, connectionName, getDBUsFlags(flag), &_error);
+	this->checkDBusError("DBus Session request name failure");
+	_sessionName = connectionName;
+
+	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
+		throw GLogiKExcept("DBus Session request name failure : not owner");
 	}
 }
 
@@ -124,15 +151,27 @@ void GKDBus::checkForNextMessage(const BusConnection bus) noexcept {
 	}
 
 	try {
-		const std::string askedObjectPath( to_string( dbus_message_get_path(_message) ) );
-		const auto & bus = _DBusEvents.at(GKDBusEvents::currentBus);
+		std::string object;
+		{
+			std::istringstream objectPath( toString(dbus_message_get_path(_message)) );
+			/* get last part of object path */
+			while(std::getline(objectPath, object, '/')) {}
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "asked object path: " << objectPath.str();
+			LOG(DEBUG3) << "     asked object: " << object;
+#endif
+		}
 
-		for(const auto & objectPair : bus) {
+		for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
 			/* handle root node introspection special case */
-			if( askedObjectPath != this->getRootNode() )
-				/* object path must match */
-				if(askedObjectPath != this->getNode(objectPair.first))
+			if( object != this->getRootNode() )
+				/* object must match */
+				if(object != objectPair.first) {
+#if DEBUGGING_ON
+					LOG(DEBUG3) << "skipping " << objectPair.first << " object - not " << object;
+#endif
 					continue;
+				}
 
 			for(const auto & interfacePair : objectPair.second) {
 				const char* interface = interfacePair.first.c_str();
@@ -230,13 +269,11 @@ void GKDBus::checkDBusError(const char* error) {
 
 DBusConnection* GKDBus::getConnection(BusConnection bus) {
 	switch(bus) {
-/*
 		case BusConnection::GKDBUS_SESSION :
 			if(_sessionConnection == nullptr)
 				throw GLogiKExcept("DBus Session connection not opened");
 			return _sessionConnection;
 			break;
-*/
 		case BusConnection::GKDBUS_SYSTEM :
 			if(_systemConnection == nullptr)
 				throw GLogiKExcept("DBus System connection not opened");
@@ -246,6 +283,20 @@ DBusConnection* GKDBus::getConnection(BusConnection bus) {
 			throw GLogiKExcept("asked connection not handled");
 			break;
 	}
+}
+
+unsigned int GKDBus::getDBUsFlags(const ConnectionFlag flag)
+{
+	unsigned int ret = 0;
+	switch(flag) {
+		case ConnectionFlag::GKDBUS_MULTIPLE :
+			ret = DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT;
+			break;
+		case ConnectionFlag::GKDBUS_SINGLE :
+			ret = DBUS_NAME_FLAG_DO_NOT_QUEUE;
+			break;
+	}
+	return ret;
 }
 
 } // namespace NSGKDBus

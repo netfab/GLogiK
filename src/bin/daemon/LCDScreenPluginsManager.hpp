@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -38,8 +38,12 @@ class LCDScreenPluginsManager
 		LCDScreenPluginsManager(void);
 		~LCDScreenPluginsManager(void);
 
-		LCDDataArray & getNextLCDScreenBuffer(const std::string & LCDKey);
+		LCDDataArray & getNextLCDScreenBuffer(
+			const std::string & LCDKey,
+			const uint64_t defaultLCDPluginsMask1
+		);
 		const unsigned short getPluginTiming(void);
+		void forceNextPlugin(void);
 
 	protected:
 

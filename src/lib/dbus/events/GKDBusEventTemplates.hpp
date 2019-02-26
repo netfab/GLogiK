@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 #include "lib/dbus/GKDBusConnection.hpp"
 #include "lib/dbus/arguments/GKDBusArgString.hpp"
 #include "lib/dbus/arguments/GKDBusArgByte.hpp"
+#include "lib/dbus/arguments/GKDBusArgUInt64.hpp"
 #include "lib/dbus/arguments/GKDBusArgMacrosBank.hpp"
 
 
@@ -129,6 +130,14 @@ typedef std::function<
 				const GLogiK::mBank_type &
 			) > TwoStringsOneByteOneMacrosBankToBool;
 
+typedef std::function<
+			const bool(
+				const std::string&,
+				const std::string&,
+				const uint8_t,
+				const uint64_t
+			) > TwoStringsOneByteOneUInt64ToBool;
+
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
 /* -- -- -- classes templates -- -- -- */
@@ -143,6 +152,7 @@ template <typename T>
 		:	public GKDBusEvent,
 			virtual private GKDBusArgumentString,
 			virtual private GKDBusArgumentByte,
+			virtual private GKDBusArgumentUInt64,
 			private GKDBusArgumentMacrosBank
 {
 	public:
@@ -283,7 +293,7 @@ template <typename T>
 		T callback
 	)
 {
-	/* TODO signals introspectability is currently disabled */
+	/* signals declared as events with callback functions are not introspectable */
 	this->exposeEvent(bus, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, false);
 }
 
@@ -393,6 +403,12 @@ template <>
 
 template <>
 	void GKDBusCallbackEvent<TwoStringsOneByteOneMacrosBankToBool>::runCallback(
+		DBusConnection* connection,
+		DBusMessage* message
+	);
+
+template <>
+	void GKDBusCallbackEvent<TwoStringsOneByteOneUInt64ToBool>::runCallback(
 		DBusConnection* connection,
 		DBusMessage* message
 	);

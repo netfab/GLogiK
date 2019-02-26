@@ -19,15 +19,12 @@
  *
  */
 
-#ifndef SRC_BIN_SERVICE_GLOBAL_HPP_
-#define SRC_BIN_SERVICE_GLOBAL_HPP_
+#include "launcher.hpp"
 
-#define GLOGIKS_DESKTOP_SERVICE_NAME "GLogiKs"
+using namespace GLogiK;
 
-#define LogRemoteCallFailure \
-	FATALERROR << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
-#define LogRemoteCallGetReplyFailure \
-	LOG(ERROR) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
-
-#endif
+int main(int argc, char *argv[]) {
+	DesktopServiceLauncher launcher;
+	return launcher.run(argc, argv);
+}
 

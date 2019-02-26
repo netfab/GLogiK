@@ -89,6 +89,23 @@ class GKDBusEvent
 		GKDBusEvent(void) = delete;
 };
 
+class GKDBusIntrospectableSignal
+{
+	public:
+		GKDBusIntrospectableSignal(
+			const char* name,
+			const std::vector<DBusMethodArgument> & args
+		);
+		~GKDBusIntrospectableSignal() = default;
+
+		const std::string name;
+		const std::vector<DBusMethodArgument> arguments;
+
+	protected:
+	private:
+		GKDBusIntrospectableSignal(void) = delete;
+};
+
 } // namespace NSGKDBus
 
 #endif

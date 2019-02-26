@@ -24,6 +24,8 @@
 
 #include <dbus/dbus.h>
 
+#include "lib/dbus/GKDBusConnection.hpp"
+
 #include "GKDBusMessage.hpp"
 
 namespace NSGKDBus
@@ -49,6 +51,21 @@ class GKDBusBroadcastSignal : public GKDBusMessage
 class GKDBusMessageBroadcastSignal
 {
 	public:
+		void initializeBroadcastSignal(
+			BusConnection wantedConnection,
+			const char* objectPath,
+			const char* interface,
+			const char* signal
+		);
+
+		void appendStringToBroadcastSignal(const std::string & value);
+		void appendUInt8ToBroadcastSignal(const uint8_t value);
+		void appendStringVectorToBroadcastSignal(
+			const std::vector<std::string> & list
+		);
+
+		void sendBroadcastSignal(void);
+		void abandonBroadcastSignal(void);
 
 	protected:
 		GKDBusMessageBroadcastSignal();
@@ -60,12 +77,11 @@ class GKDBusMessageBroadcastSignal
 			const char* interface,
 			const char* signal
 		);
-		void sendBroadcastSignal(void);
-		void abandonBroadcastSignal(void);
 
 	private:
 		GKDBusBroadcastSignal* _signal;
 
+		virtual DBusConnection* getConnection(BusConnection wantedConnection) = 0;
 };
 
 } // namespace NSGKDBus

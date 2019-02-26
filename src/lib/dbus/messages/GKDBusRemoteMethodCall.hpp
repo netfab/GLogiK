@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ class GKDBusMessageRemoteMethodCall
 	public:
 		/* Remote Method Call with Pending Reply */
 		void initializeRemoteMethodCall(
-			BusConnection current,
+			BusConnection wantedConnection,
 			const char* busName,
 			const char* objectPath,
 			const char* interface,
@@ -75,6 +75,7 @@ class GKDBusMessageRemoteMethodCall
 		void appendStringToRemoteMethodCall(const std::string & value);
 		void appendUInt8ToRemoteMethodCall(const uint8_t value);
 		void appendUInt32ToRemoteMethodCall(const uint32_t value);
+		void appendUInt64ToRemoteMethodCall(const uint64_t value);
 		void appendMacrosBankToRemoteMethodCall(const GLogiK::mBank_type & bank);
 
 		void sendRemoteMethodCall(void);

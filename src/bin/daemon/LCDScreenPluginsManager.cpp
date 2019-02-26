@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -25,6 +25,9 @@
 
 #include "LCDScreenPluginsManager.hpp"
 
+#include "include/enums.hpp"
+
+#include "LCDPlugins/endscreen.hpp"
 #include "LCDPlugins/splashscreen.hpp"
 #include "LCDPlugins/systemMonitor.hpp"
 
@@ -41,6 +44,7 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 	try {
 		_plugins.push_back( new Splashscreen() );
 		_plugins.push_back( new SystemMonitor() );
+		_plugins.push_back( new Endscreen() );
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		this->stopLCDPlugins();
@@ -93,8 +97,19 @@ const unsigned short LCDScreenPluginsManager::getPluginTiming(void)
 	return 1000;
 }
 
-LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(const std::string & LCDKey)
+void LCDScreenPluginsManager::forceNextPlugin(void)
 {
+	if( ! _noPlugins ) {
+		if(_itCurrentPlugin != _plugins.end() ) {
+			_frameCounter = (*_itCurrentPlugin)->getPluginMaxFrames();
+		}
+	}
+}
+
+LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
+	const std::string & LCDKey,
+	const uint64_t defaultLCDPluginsMask1
+) {
 	if( ! _noPlugins ) {
 		try {
 			/* make sure there at least one plugin */
@@ -102,9 +117,24 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(const std::string
 				_frameCounter++;
 
 				if( _frameCounter >= (*_itCurrentPlugin)->getPluginMaxFrames() ) {
-					_itCurrentPlugin++;
-					if(_itCurrentPlugin == _plugins.end() )
-						_itCurrentPlugin = _plugins.begin();
+					uint64_t LCDPluginsMask1 = defaultLCDPluginsMask1;
+
+					if( LCDPluginsMask1 == 0 ) {
+						/* default enabled plugins */
+						LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN);
+						LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);
+					}
+
+					bool found = false;
+					while( ! found ) {
+						_itCurrentPlugin++; /* jumping to next plugin */
+						if(_itCurrentPlugin == _plugins.end() )
+							_itCurrentPlugin = _plugins.begin();
+
+						/* check that current plugin is enabled */
+						if( LCDPluginsMask1 & (*_itCurrentPlugin)->getPluginID() )
+							found = true;
+					}
 
 					/* reset frames to beginning */
 					(*_itCurrentPlugin)->resetPBMFrameIndex();

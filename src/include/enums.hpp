@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -101,8 +101,18 @@ inline Caps operator | (Caps lhs, Caps rhs)
 
 enum class LCDScreenPlugin : uint64_t
 {
-	GK_LCD_SPLASHSCREEN	= one << 0,
-	GK_LCD_BAR			= one << 1,
+	GK_LCD_SPLASHSCREEN		= one << 0,
+	GK_LCD_SYSTEM_MONITOR	= one << 1,
+	GK_LCD_ENDSCREEN		= one << 2,
+	GK_LCD_R4				= one << 60,	/* reserved 4 */
+	GK_LCD_R3				= one << 61,	/* reserved 3 */
+	GK_LCD_R2				= one << 62,	/* reserved 2 */
+	GK_LCD_R1				= one << 63,	/* reserved 1 */
+};
+
+enum class LCDPluginsMask : uint8_t
+{
+	GK_LCD_PLUGINS_MASK_1 = 1,
 };
 
 } // namespace GLogiK

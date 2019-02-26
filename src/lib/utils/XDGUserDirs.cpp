@@ -39,10 +39,10 @@ XDGUserDirs::~XDGUserDirs() {
 }
 
 const std::string XDGUserDirs::getConfigDirectory(void) {
-	const std::string home = to_string( getenv("HOME") );
+	const std::string home = toString( getenv("HOME") );
 	if(home == "")
 		throw GLogiKExcept("can't get HOME environment variable");
-	std::string XDGConfigHome = to_string( getenv("XDG_CONFIG_HOME") );
+	std::string XDGConfigHome = toString( getenv("XDG_CONFIG_HOME") );
 	if(XDGConfigHome == "") {
 		XDGConfigHome = home;
 		XDGConfigHome += "/.config";
