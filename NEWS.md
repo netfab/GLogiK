@@ -1,7 +1,7 @@
 
 ---
 
-## version 0.8.x - 2019-xx-xx (not released)
+## version 0.8.4 - 2019-02-26
 #### Added features :
  * added desktop launcher binary
  * added GKDBus signals introspectability
