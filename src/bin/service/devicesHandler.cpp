@@ -417,10 +417,10 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 				const bool ret = _pDBus->getNextBooleanArgument();
 				if( ret ) {
-					LOG(VERB) << devID << " successfully setted device LCD Plugins Mask " << maskID;
+					LOG(VERB) << devID << " successfully setted device LCD Plugins Mask " << toUInt(maskID);
 				}
 				else {
-					LOG(ERROR) << devID << " failed to set device LCD Plugins Mask " << maskID << " : false";
+					LOG(ERROR) << devID << " failed to set device LCD Plugins Mask " << toUInt(maskID) << " : false";
 				}
 			}
 			catch (const GLogiKExcept & e) {
