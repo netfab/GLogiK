@@ -840,7 +840,6 @@ void DBusHandler::daemonIsStarting(void) {
 			this->registerWithDaemon();
 		}
 		catch ( const restartRequested & e ) {
-			LOG(WARNING) << e.what() << " - ignoring" ;
 		}
 
 		if( _registerStatus ) {
