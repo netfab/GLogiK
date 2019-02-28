@@ -106,6 +106,7 @@ void LauncherDBusHandler::restartRequest(void)
 	using steady = chr::steady_clock;
 
 	LOG(INFO) << "received signal: " << __func__;
+	LOG(INFO) << "sleeping 1 second before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
 	std::this_thread::sleep_for(chr::seconds(1));
 
 	const steady::time_point now = steady::now();
