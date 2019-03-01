@@ -257,8 +257,9 @@ const bool DBusHandler::getExitStatus(void) const
  */
 
 /*
- * try to tell the daemon we are alive
- * throws on failure
+ * register against the daemon
+ * throws restartRequest exception if register was sucessful but something
+ * goes wrong after (like daemon version mismatch)
  */
 void DBusHandler::registerWithDaemon(void) {
 	if( _registerStatus ) {
