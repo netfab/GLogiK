@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -127,7 +127,9 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 
 			DBusHandler DBus(_pid, session, _pGKfs);
 
-			while( session.isSessionAlive() ) {
+			while( session.isSessionAlive() and
+					DBus.getExitStatus() )
+			{
 				int num = poll(fds, nfds, 150);
 
 				// data to read ?

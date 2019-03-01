@@ -48,12 +48,12 @@ enum class SessionFramework : uint8_t
 	FW_LOGIND,
 };
 
-class restartRequested : public std::exception
+class restartRequest : public std::exception
 {
 	public :
-		restartRequested( const std::string& msg = "" );
+		restartRequest( const std::string& msg = "" );
 
-		virtual ~restartRequested( void ) throw();
+		virtual ~restartRequest( void ) throw();
 		virtual const char* what( void ) const throw();
 
 	protected :
@@ -73,6 +73,8 @@ class DBusHandler
 		void updateSessionState(void);
 		void checkDBusMessages(void);
 
+		const bool getExitStatus(void) const;
+
 		void checkNotifyEvents(NSGKUtils::FileSystem* pGKfs);
 
 	protected:
@@ -82,6 +84,7 @@ class DBusHandler
 		const NSGKDBus::BusConnection _systemBus;
 		DevicesHandler _devices;
 		bool _registerStatus;		/* true == registered with daemon */
+		bool _wantToExit;			/* true if we want to exit after a restart request */
 		std::string _clientID;
 		SessionFramework _sessionFramework;
 
@@ -98,6 +101,8 @@ class DBusHandler
 
 		void initializeDevices(void);
 		void initializeGKDBusSignals(void);
+
+		void sendRestartRequest(void);
 
 		/* signals */
 		void daemonIsStopping(void);

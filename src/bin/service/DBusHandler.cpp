@@ -35,10 +35,10 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-restartRequested::restartRequested( const std::string& msg ) : message(msg) {}
-restartRequested::~restartRequested( void ) throw() {}
+restartRequest::restartRequest( const std::string& msg ) : message(msg) {}
+restartRequest::~restartRequest( void ) throw() {}
 
-const char* restartRequested::what( void ) const throw()
+const char* restartRequest::what( void ) const throw()
 {
     return message.c_str();
 }
@@ -50,6 +50,7 @@ DBusHandler::DBusHandler(
 	:	_pDBus(nullptr),
 		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
 		_registerStatus(false),
+		_wantToExit(false),
 		_clientID("undefined"),
 		_sessionFramework(SessionFramework::FW_UNKNOWN)
 {
@@ -94,8 +95,8 @@ DBusHandler::DBusHandler(
 					retries++;
 				}
 			}
-			catch ( const restartRequested & e ) {
-				throw GLogiKExcept(e.what());
+			catch ( const restartRequest & e ) {
+				this->sendRestartRequest(); /* throws */
 			}
 
 			_sessionState = this->getCurrentSessionState();
@@ -239,6 +240,12 @@ void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 	}
 }
 
+/* return false if we want to exit on next main loop run */
+const bool DBusHandler::getExitStatus(void) const
+{
+	return ( ! _wantToExit );
+}
+
 /*
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -293,26 +300,9 @@ void DBusHandler::registerWithDaemon(void) {
 					LOG(INFO) << "successfully registered with daemon - " << _clientID;
 				}
 				catch (const GLogiKExcept & e) {
-					try {
-						/* asking the launcher for a restart */
-						_pDBus->initializeBroadcastSignal(
-							NSGKDBus::BusConnection::GKDBUS_SESSION,
-							GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-							GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-							"RestartRequest"
-						);
-						_pDBus->sendBroadcastSignal();
-
-						const std::string restartString("restart request sent");
-						LOG(WARNING) << e.what();
-						LOG(WARNING) << restartString;
-						throw restartRequested(restartString);
-					}
-					catch (const GKDBusMessageWrongBuild & e) {
-						_pDBus->abandonBroadcastSignal();
-						LOG(ERROR) << "restart request failure - " << e.what();
-						throw restartRequested("restart request failure");
-					}
+					LOG(WARNING) << e.what() << " - will unregister";
+					this->unregisterWithDaemon();
+					throw restartRequest();
 				}
 			}
 			else {
@@ -687,6 +677,31 @@ void DBusHandler::initializeDevices(void) {
 	}
 }
 
+void DBusHandler::sendRestartRequest(void)
+{
+	std::string status("restart request");
+	try {
+		/* asking the launcher for a restart */
+		_pDBus->initializeBroadcastSignal(
+			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+			"RestartRequest"
+		);
+		_pDBus->sendBroadcastSignal();
+
+		status += " sent";
+		LOG(WARNING) << status;
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonBroadcastSignal();
+		status += " failure";
+		LOG(ERROR) << status << " - " << e.what();
+	}
+
+	throw GLogiKExcept(status);
+}
+
 /*
  * --- --- --- --- ---
  * --- --- --- --- ---
@@ -836,10 +851,18 @@ void DBusHandler::daemonIsStarting(void) {
 	else {
 		LOG(INFO)	<< buffer.str()
 					<< " - contacting the daemon";
+
 		try {
-			this->registerWithDaemon();
+			try {
+				this->registerWithDaemon();
+			}
+			catch ( const restartRequest & e ) {
+				_wantToExit = true;
+				this->sendRestartRequest(); /* throws */
+			}
 		}
-		catch ( const restartRequested & e ) {
+		catch (const GLogiKExcept & e) {
+			LOG(WARNING) << e.what();
 		}
 
 		if( _registerStatus ) {
