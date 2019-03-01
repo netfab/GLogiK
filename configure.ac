@@ -63,6 +63,10 @@ AC_ARG_ENABLE( [debug],
 				AC_HELP_STRING( [--enable-debug], [Enable debugging, default: no]),
 				[enable_debugging=$enableval], [enable_debugging=no])
 
+AC_ARG_ENABLE( [debug-keys],
+				AC_HELP_STRING( [--enable-debug-keys], [Enable keys debugging, default: no]),
+				[enable_keys_debugging=$enableval], [enable_keys_debugging=no])
+
 AC_ARG_ENABLE( [debug-gkdbus],
 				AC_HELP_STRING( [--enable-debug-gkdbus], [Enable gkdbus debugging, default: no]),
 				[enable_gkdbus_debugging=$enableval], [enable_gkdbus_debugging=no])
@@ -186,6 +190,15 @@ if test "$enable_debugging" = yes; then
 	AC_MSG_RESULT([yes])
 	AC_DEFINE([DEBUGGING_ON], [1], [Debugging])
 
+	AC_MSG_CHECKING([whether we want keys debugging])
+	if test "$enable_keys_debugging" = yes; then
+		AC_MSG_RESULT([yes])
+		AC_DEFINE([DEBUG_KEYS], [1], [keys debugging])
+	else
+		AC_MSG_RESULT([no])
+		AC_DEFINE([DEBUG_KEYS], [0], [keys debugging])
+	fi
+
 	AC_MSG_CHECKING([whether we want gkdbus debugging])
 	if test "$enable_gkdbus_debugging" = yes; then
 		AC_MSG_RESULT([yes])
@@ -224,6 +237,7 @@ if test "$enable_debugging" = yes; then
 else
 	AC_MSG_RESULT([no])
 	AC_DEFINE([DEBUGGING_ON], [0], [Debugging])
+	AC_DEFINE([DEBUG_KEYS], [0], [keys debugging])
 	AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [GKDBus sub-objects debugging])
 	AC_DEFINE([DEBUG_PBMFONT], [0], [PBM fonts debugging])
 	AC_DEFINE([DEBUG_LCD_PLUGINS], [0], [LCD plugins debugging])
@@ -347,6 +361,7 @@ AC_MSG_NOTICE([
  with desktop notifications : ${enable_desktop_notifications}
 --------------------------------------------------------------
   Global debugging : ${enable_debugging}
+              keys : ${enable_keys_debugging}
             GKDBus : ${enable_gkdbus_debugging}
             LibUSB : ${enable_libusb_extra_debugging}
            PBMFont : ${enable_pbmfont_debugging}

@@ -98,7 +98,7 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 	switch(ret) {
 		case 0:
 			if( device.getLastKeysInterruptTransferLength() > 0 ) {
-#if DEBUGGING_ON
+#if DEBUGGING_ON && DEBUG_KEYS
 				LOG(DEBUG)	<< device.getID()
 							<< " exp. rl: " << this->getKeysInterruptBufferMaxLength()
 							<< " act_l: " << device.getLastKeysInterruptTransferLength() << ", xBuf[0]: "

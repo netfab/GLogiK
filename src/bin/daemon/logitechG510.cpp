@@ -227,14 +227,14 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 
 	switch(device.getLastKeysInterruptTransferLength()) {
 		case 2:
-#if DEBUGGING_ON
+#if DEBUGGING_ON && DEBUG_KEYS
 			LOG(DEBUG1) << device.getID() << " 2 bytes : " << this->getBytes(device);
 #endif
 			this->processKeyEvent2Bytes(device);
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 5:
-#if DEBUGGING_ON
+#if DEBUGGING_ON && DEBUG_KEYS
 			LOG(DEBUG1) << "5 bytes : " << this->getBytes(device);
 #endif
 			this->processKeyEvent5Bytes(device);
@@ -245,7 +245,7 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 		case 8:
 			/* process those events only if Macro Record Mode on */
 			if( device._banksLedsMask & toEnumType(Leds::GK_LED_MR) ) {
-#if DEBUGGING_ON
+#if DEBUGGING_ON && DEBUG_KEYS
 				LOG(DEBUG1) << device.getID() << " 8 bytes : processing standard key event : "
 							<< this->getBytes(device);
 #endif
@@ -255,14 +255,14 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 						std::begin(device._previousPressedKeys));
 				return KeyStatus::S_KEY_PROCESSED;
 			}
-#if DEBUGGING_ON
+#if DEBUGGING_ON && DEBUG_KEYS
 			LOG(DEBUG1) << device.getID() << " 8 bytes : skipping standard key event : "
 						<< this->getBytes(device);
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
 		default:
-#if DEBUGGING_ON
+#if DEBUGGING_ON && DEBUG_KEYS
 			LOG(DEBUG1) << device.getID() << " not implemented: " << device.getLastKeysInterruptTransferLength() << " bytes !";
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
