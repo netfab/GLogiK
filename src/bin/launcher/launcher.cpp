@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 #include <iostream>
 #include <sstream>
 
+#include <boost/filesystem.hpp>
 //#include <boost/program_options.hpp>
 
 #include "lib/utils/utils.hpp"
@@ -41,6 +42,8 @@
 
 #include "DBusHandler.hpp"
 #include "launcher.hpp"
+
+namespace fs = boost::filesystem;
 
 namespace GLogiK
 {
@@ -60,12 +63,16 @@ DesktopServiceLauncher::DesktopServiceLauncher() :
 	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
 
 	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
-		// FIXME boost path
-		std::ostringstream buffer(DEBUG_DIR, std::ios_base::app);
-		buffer << "/" << DESKTOP_SERVICE_LAUNCHER_NAME << "-debug-" << getpid() << ".log";
+		const std::string pid( std::to_string( getpid() ) );
+
+		fs::path debugFile(DEBUG_DIR);
+		debugFile /= DESKTOP_SERVICE_LAUNCHER_NAME;
+		debugFile += "-debug-";
+		debugFile += pid;
+		debugFile += ".log";
 
 		errno = 0;
-		_LOGfd = std::fopen(buffer.str().c_str(), "w");
+		_LOGfd = std::fopen(debugFile.string().c_str(), "w");
 
 		if(_LOGfd == nullptr) {
 			LOG(ERROR) << "failed to open debug file";
@@ -73,6 +80,7 @@ DesktopServiceLauncher::DesktopServiceLauncher() :
 				LOG(ERROR) << strerror(errno);
 			}
 		}
+		else fs::permissions(debugFile, fs::owner_read|fs::owner_write|fs::group_read);
 
 		LOG_TO_FILE_AND_CONSOLE::FileStream() = _LOGfd;
 	}

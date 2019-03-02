@@ -32,6 +32,7 @@
 #include <iostream>
 #include <sstream>
 
+#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include "lib/shared/sessionManager.hpp"
@@ -41,6 +42,7 @@
 
 #include "service.hpp"
 
+namespace fs = boost::filesystem;
 namespace po = boost::program_options;
 
 namespace GLogiK
@@ -63,11 +65,16 @@ DesktopService::DesktopService() :
 	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
 
 	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
-		std::ostringstream buffer(DEBUG_DIR, std::ios_base::app);
-		buffer << "/" << PACKAGE << "s-debug-" << getpid() << ".log";
+		const std::string pid( std::to_string( getpid() ) );
+
+		fs::path debugFile(DEBUG_DIR);
+		debugFile /= PACKAGE;
+		debugFile += "s-debug-";
+		debugFile += pid;
+		debugFile += ".log";
 
 		errno = 0;
-		_LOGfd = std::fopen(buffer.str().c_str(), "w");
+		_LOGfd = std::fopen(debugFile.string().c_str(), "w");
 
 		if(_LOGfd == nullptr) {
 			LOG(ERROR) << "failed to open debug file";
@@ -75,6 +82,7 @@ DesktopService::DesktopService() :
 				LOG(ERROR) << strerror(errno);
 			}
 		}
+		else fs::permissions(debugFile, fs::owner_read|fs::owner_write|fs::group_read);
 
 		LOG_TO_FILE_AND_CONSOLE::FileStream() = _LOGfd;
 	}

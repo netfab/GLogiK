@@ -40,8 +40,8 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/program_options.hpp>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
@@ -68,12 +68,16 @@ GLogiKDaemon::GLogiKDaemon()
 	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
 
 	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
-		std::ostringstream buffer(std::ios_base::app);
-		buffer	<< DEBUG_DIR << "/" << PACKAGE << "d-debug-"
-				<< getpid() << ".log";
+		const std::string pid( std::to_string( getpid() ) );
+
+		fs::path debugFile(DEBUG_DIR);
+		debugFile /= PACKAGE;
+		debugFile += "d-debug-";
+		debugFile += pid;
+		debugFile += ".log";
 
 		errno = 0;
-		_LOGfd = std::fopen(buffer.str().c_str(), "w");
+		_LOGfd = std::fopen(debugFile.string().c_str(), "w");
 
 		if(_LOGfd == nullptr) {
 			LOG(ERROR) << "failed to open debug file";
@@ -81,6 +85,7 @@ GLogiKDaemon::GLogiKDaemon()
 				LOG(ERROR) << strerror(errno);
 			}
 		}
+		else fs::permissions(debugFile, fs::owner_read|fs::owner_write|fs::group_read);
 
 		LOG_TO_FILE_AND_CONSOLE::FileStream() = _LOGfd;
 	}
