@@ -1,6 +1,12 @@
 
 ---
 
+## version 0.x.x - 2019-xx-xx (unreleased)
+#### Added devices :
+ * Logitech G510s Gaming Keyboard with onboard audio enabled (046d:c22e)
+
+---
+
 ## version 0.8.4 - 2019-02-26
 #### Added features :
  * added desktop launcher binary

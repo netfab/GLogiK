@@ -97,6 +97,13 @@ const std::vector<DeviceID> LogitechG510::knownDevices = {
 					Caps::GK_MEDIA_KEYS |
 					Caps::GK_LCD_SCREEN )
 	},
+	{	"Logitech G510/G510s Gaming Keyboard",
+		VENDOR_LOGITECH, "c22e",				/* with onboard audio enabled */
+		toEnumType(	Caps::GK_BACKLIGHT_COLOR |
+					Caps::GK_MACROS_KEYS |
+					Caps::GK_MEDIA_KEYS |
+					Caps::GK_LCD_SCREEN )
+	},
 };
 
 LogitechG510::LogitechG510()

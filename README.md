@@ -7,6 +7,7 @@ Last release : version 0.8.4
 
 ### Recognized devices
  - Logitech G510s Gaming Keyboard (046d:c22d)
+ - Logitech G510s Gaming Keyboard (046d:c22e) (onboard audio enabled)
 
 ### Features
  - Macros keys (G-Keys) support (create, run or delete macros)
