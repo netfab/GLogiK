@@ -194,11 +194,29 @@ void LogitechG510::processKeyEvent2Bytes(USBDevice & device) {
 	}
 	else if (device._pressedKeys[0] == 0x04) {
 #if DEBUGGING_ON
-		if( device._pressedKeys[1] == 0x04 ) {
+		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_BACKLIGHT_OFF)) {
 			LOG(DEBUG3) << "backlight off";
 		}
-		else { /* 0x0 */
+		else {
 			LOG(DEBUG3) << "backlight on";
+		}
+
+		/* audio onboard disabled */
+		if( ! (device._pressedKeys[1] & toEnumType(SpecialKeys::GK_ONBOARD_AUDIO_ON) ) )
+			return;
+
+		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_HEADSET_OFF)) {
+			LOG(DEBUG3) << "headset off";
+		}
+		else {
+			LOG(DEBUG3) << "headset on";
+		}
+
+		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_MICRO_OFF)) {
+			LOG(DEBUG3) << "micro off";
+		}
+		else {
+			LOG(DEBUG3) << "micro on";
 		}
 #endif
 	}
