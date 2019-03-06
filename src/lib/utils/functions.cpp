@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -34,8 +34,11 @@
 #include <thread>
 #include <limits>
 
+#include <config.h>
+
 #define UTILS_COMPILATION 1
 
+#include "log.hpp"
 #include "exception.hpp"
 #include "functions.hpp"
 
@@ -132,8 +135,17 @@ pid_t daemonizeProcess(const bool closeDescriptors)
 	if(pid > 0)
 		exit(EXIT_SUCCESS);
 
+#if DEBUGGING_ON
+	LOG(DEBUG) << "first fork done";
+#endif
+
+	// new session for child process
 	if(setsid() == -1)
 		throw GLogiKExcept("session creation failure");
+
+#if DEBUGGING_ON
+	LOG(DEBUG) << "new session done";
+#endif
 
 	// Ignore signal sent from child to parent process
 	std::signal(SIGCHLD, SIG_IGN);
@@ -145,6 +157,10 @@ pid_t daemonizeProcess(const bool closeDescriptors)
 	// parent exit
 	if(pid > 0)
 		exit(EXIT_SUCCESS);
+
+#if DEBUGGING_ON
+	LOG(DEBUG) << "second fork done";
+#endif
 
 	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	if(chdir("/") == -1)
@@ -162,9 +178,17 @@ pid_t daemonizeProcess(const bool closeDescriptors)
 		stdin = std::fopen("/dev/null", "r");
 		stdout = std::fopen("/dev/null", "w+");
 		stderr = std::fopen("/dev/null", "w+");
+
+#if DEBUGGING_ON
+		LOG(DEBUG) << "descriptors closed";
+#endif
 	}
 
 	pid = getpid();
+
+#if DEBUGGING_ON
+	LOG(DEBUG) << "returning pid: " << pid;
+#endif
 
 	return pid;
 }
