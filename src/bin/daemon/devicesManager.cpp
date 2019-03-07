@@ -683,7 +683,22 @@ const std::vector<std::string> & DevicesManager::getDeviceMacroKeysNames(const s
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		try {
+			const auto & device = _stoppedDevices.at(devID);
+#if DEBUGGING_ON
+			LOG(DEBUG2) << "found " << device.getModel() << " in stopped devices";
+#endif
+			if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+				for(const auto & driver : _drivers) {
+					if( device.getDriverID() == driver->getDriverID() ) {
+						return driver->getMacroKeysNames();
+					}
+				}
+			}
+		}
+		catch (const std::out_of_range& oor) {
+			GKSysLog_UnknownDevice
+		}
 	}
 
 	return KeyboardDriver::getEmptyStringVector();
