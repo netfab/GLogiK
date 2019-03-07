@@ -630,7 +630,15 @@ void DevicesHandler::stopDevice(const std::string & devID) {
 			_startedDevices.erase(devID);
 		}
 		catch (const std::out_of_range& oor) {
-			LOG(WARNING) << "device " << devID << " not found in containers, giving up";
+			/* this can happen when GLogiKs start and this device is already stopped
+			 * so we must start the device to stop it */
+#if DEBUGGING_ON
+			LOG(DEBUG) << "device " << devID << " not found in containers, initializing and stopping it";
+#endif
+			this->startDevice(devID);
+			LOG(INFO) << "stopping device: " << devID;
+			_stoppedDevices[devID] = _startedDevices.at(devID);
+			_startedDevices.erase(devID);
 		}
 	}
 }
