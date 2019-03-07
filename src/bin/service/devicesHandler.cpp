@@ -593,7 +593,6 @@ void DevicesHandler::startDevice(const std::string & devID) {
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "found already started device: " << devID;
 #endif
-		return;
 	}
 	catch (const std::out_of_range& oor) {
 		try {
@@ -620,7 +619,6 @@ void DevicesHandler::stopDevice(const std::string & devID) {
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "found already stopped device: " << devID;
 #endif
-		return;
 	}
 	catch (const std::out_of_range& oor) {
 		try {
@@ -637,8 +635,13 @@ void DevicesHandler::stopDevice(const std::string & devID) {
 #endif
 			this->startDevice(devID);
 			LOG(INFO) << "stopping device: " << devID;
-			_stoppedDevices[devID] = _startedDevices.at(devID);
-			_startedDevices.erase(devID);
+			try {
+				_stoppedDevices[devID] = _startedDevices.at(devID);
+				_startedDevices.erase(devID);
+			}
+			catch (const std::out_of_range& oor) {
+				LOG(ERROR) << "started device not found, something is really wrong";
+			}
 		}
 	}
 }
