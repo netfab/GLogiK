@@ -854,17 +854,17 @@ void DBusHandler::initializeGKDBusSignals(void) {
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*   GUI requests D-Bus object   */
 	/* -- -- -- -- -- -- -- -- -- -- */
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<StringToVoid>::exposeSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 		"DeviceStartRequest",
-		{	{"as", "", "in", "array of started devices ID strings"} },
+		{	{"s", "", "in", "device ID"} },
 		std::bind(&DBusHandler::deviceStartRequest, this, std::placeholders::_1)
 	);
 
 /*
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<StringToVoid>::exposeSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
@@ -1177,23 +1177,10 @@ const std::vector<std::string> DBusHandler::getDevicesList(const std::string & r
 	return _devices.getDevicesList();
 }
 
-void DBusHandler::deviceStartRequest(const std::vector<std::string> & devicesID)
+void DBusHandler::deviceStartRequest(const std::string & devID)
 {
-	// TODO : would need to implement StringToVoid GKDBus template to avoid vector
-	const int s = devicesID.size();
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "received " << __func__ << " signal"
-				<< " - with " << s << " devices";
-#endif
-
-	if(s == 0) {
-		LOG(WARNING) << "empty vector";
-		return;
-	}
-
-	const std::string & devID = devicesID[0];
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "GUI StartRequest for device " << devID;
+	LOG(DEBUG3) << "received " << __func__ << " signal for device " << devID;
 #endif
 }
 

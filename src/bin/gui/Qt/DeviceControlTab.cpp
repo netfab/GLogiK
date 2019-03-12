@@ -19,8 +19,6 @@
  *
  */
 
-#include <vector>
-
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
@@ -207,9 +205,6 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 {
 	LOG(INFO) << "sending " << signal << " signal for device " << _devID;
 
-	// TODO : would need to implement StringToVoid GKDBus template to avoid vector
-	const std::vector<std::string> devIDArray = {_devID};
-
 	try {
 		_pDBus->initializeBroadcastSignal(
 			NSGKDBus::BusConnection::GKDBUS_SESSION,
@@ -217,7 +212,7 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 			signal.c_str()
 		);
-		_pDBus->appendStringVectorToBroadcastSignal(devIDArray);
+		_pDBus->appendStringToBroadcastSignal(_devID);
 		_pDBus->sendBroadcastSignal();
 	}
 	catch (const GKDBusMessageWrongBuild & e) {

@@ -131,7 +131,7 @@ class DBusHandler
 
 		const std::vector<std::string> getDevicesList(const std::string & reserved);
 
-		void deviceStartRequest(const std::vector<std::string> & devicesID);
+		void deviceStartRequest(const std::string & devID);
 		//void deviceStopRequest(const std::vector<std::string> & devicesID);
 		//void deviceRestartRequest(const std::vector<std::string> & devicesID);
 };
