@@ -22,11 +22,15 @@
 #ifndef SRC_BIN_GUI_QT_DEVICE_CONTROL_TAB_HPP_
 #define SRC_BIN_GUI_QT_DEVICE_CONTROL_TAB_HPP_
 
+#include <string>
+
 #include <QFrame>
 #include <QString>
 #include <QWidget>
 #include <QPushButton>
 #include <QLabel>
+
+#include "lib/dbus/GKDBus.hpp"
 
 namespace GLogiK
 {
@@ -35,16 +39,25 @@ class DeviceControlTab
 	:	public QWidget
 {
 	public:
-		DeviceControlTab(const QString & name);
+		DeviceControlTab(
+			NSGKDBus::GKDBus* pDBus,
+			const QString & name
+		);
 		~DeviceControlTab();
 
 		void disableButtons(void);
-		void updateButtonsStates(const bool status);
+		void updateTab(
+			const std::string & devID,
+			const bool status
+		);
 		void disableAndHide(void);
 
 	private:
 		DeviceControlTab() = delete;
 
+		std::string _devID;
+
+		NSGKDBus::GKDBus* _pDBus;
 		QLabel* _deviceStatus;
 		QPushButton* _pStart;
 		QPushButton* _pStop;
@@ -53,6 +66,11 @@ class DeviceControlTab
 		QFrame* _line3;
 
 		void setVisibility(const bool visibility);
+
+		void startSignal(void);
+		void stopSignal(void);
+		void restartSignal(void);
+		void sendStatusSignal(const std::string & signal);
 };
 
 } // namespace GLogiK

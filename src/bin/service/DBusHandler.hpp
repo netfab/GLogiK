@@ -130,6 +130,10 @@ class DBusHandler
 		/* -- */
 
 		const std::vector<std::string> getDevicesList(const std::string & reserved);
+
+		void deviceStartRequest(const std::vector<std::string> & devicesID);
+		//void deviceStopRequest(const std::vector<std::string> & devicesID);
+		//void deviceRestartRequest(const std::vector<std::string> & devicesID);
 };
 
 } // namespace GLogiK

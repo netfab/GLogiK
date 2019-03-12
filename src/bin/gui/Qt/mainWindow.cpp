@@ -103,6 +103,7 @@ MainWindow::~MainWindow() {
 	LOG(DEBUG2) << "exiting MainWindow process";
 #endif
 
+	LOG(INFO) << "GKcQt5 : bye !";
 	if( _LOGfd != nullptr )
 		std::fclose(_LOGfd);
 }
@@ -119,6 +120,8 @@ MainWindow::~MainWindow() {
 
 void MainWindow::init(void)
 {
+	LOG(INFO) << "Starting GKcQt5 vers. " << VERSION;
+
 	try {
 		_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE, GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE_PATH);
 	}
@@ -196,7 +199,7 @@ void MainWindow::build(void)
 		tabWidget->setObjectName("Tabs");
 		vBox->addWidget(tabWidget);
 
-		tabWidget->addTab(new DeviceControlTab("DeviceControl"), tr("Device Control"));
+		tabWidget->addTab(new DeviceControlTab(_pDBus, "DeviceControl"), tr("Device Control"));
 		tabWidget->addTab(new BacklightColorTab("BacklightColor"), tr("Backlight Color"));
 		//tabWidget->addTab(new QWidget(), tr("Multimedia Keys"));
 		//tabWidget->addTab(new QWidget(), tr("LCD Screen Plugins"));
@@ -269,7 +272,7 @@ void MainWindow::updateInterface(int index)
 				const DeviceFile & device = _devices.at(devID);
 				const bool status = (device.getStatus() == "started");
 
-				deviceControlTab->updateButtonsStates(status);
+				deviceControlTab->updateTab(devID, status);
 				this->setTabEnabled("BacklightColor", status);
 			}
 			catch (const std::out_of_range& oor) {

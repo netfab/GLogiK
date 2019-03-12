@@ -850,6 +850,29 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		{},
 		std::bind(&DBusHandler::reportChangedState, this)
 	);
+
+	/* -- -- -- -- -- -- -- -- -- -- */
+	/*   GUI requests D-Bus object   */
+	/* -- -- -- -- -- -- -- -- -- -- */
+	_pDBus->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
+		_sessionBus,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+		"DeviceStartRequest",
+		{	{"as", "", "in", "array of started devices ID strings"} },
+		std::bind(&DBusHandler::deviceStartRequest, this, std::placeholders::_1)
+	);
+
+/*
+	_pDBus->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
+		_sessionBus,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+		"DeviceStopRequest",
+		{	{"as", "", "in", "array of started devices ID strings"} },
+		std::bind(&DBusHandler::deviceStopRequest, this)
+	);
+*/
 }
 
 void DBusHandler::initializeGKDBusMethods(void)
@@ -1152,6 +1175,26 @@ void DBusHandler::deviceMediaEvent(
 
 const std::vector<std::string> DBusHandler::getDevicesList(const std::string & reserved) {
 	return _devices.getDevicesList();
+}
+
+void DBusHandler::deviceStartRequest(const std::vector<std::string> & devicesID)
+{
+	// TODO : would need to implement StringToVoid GKDBus template to avoid vector
+	const int s = devicesID.size();
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "received " << __func__ << " signal"
+				<< " - with " << s << " devices";
+#endif
+
+	if(s == 0) {
+		LOG(WARNING) << "empty vector";
+		return;
+	}
+
+	const std::string & devID = devicesID[0];
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "GUI StartRequest for device " << devID;
+#endif
 }
 
 } // namespace GLogiK

@@ -19,12 +19,14 @@
  *
  */
 
+#include <vector>
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
 #include "DeviceControlTab.hpp"
 
+#include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
 namespace GLogiK
@@ -32,8 +34,11 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DeviceControlTab::DeviceControlTab(const QString & name)
-	:	_deviceStatus(nullptr),
+DeviceControlTab::DeviceControlTab(
+	NSGKDBus::GKDBus* pDBus,
+	const QString & name
+)	:	_pDBus(pDBus),
+		_deviceStatus(nullptr),
 		_pStart(nullptr),
 		_pStop(nullptr),
 		_pRestart(nullptr),
@@ -133,9 +138,9 @@ DeviceControlTab::DeviceControlTab(const QString & name)
 		throw;
 	}
 
-	connect(_pStart   , &QPushButton::clicked, this, &DeviceControlTab::disableButtons);
-	connect(_pStop    , &QPushButton::clicked, this, &DeviceControlTab::disableButtons);
-	connect(_pRestart , &QPushButton::clicked, this, &DeviceControlTab::disableButtons);
+	connect(_pStart   , &QPushButton::clicked, this, &DeviceControlTab::startSignal);
+	connect(_pStop    , &QPushButton::clicked, this, &DeviceControlTab::stopSignal);
+	connect(_pRestart , &QPushButton::clicked, this, &DeviceControlTab::restartSignal);
 
 	this->disableAndHide();
 }
@@ -169,8 +174,15 @@ void DeviceControlTab::setVisibility(const bool visibility)
 	_line3->setVisible(visibility);
 }
 
-void DeviceControlTab::updateButtonsStates(const bool status)
+void DeviceControlTab::updateTab(
+	const std::string & devID,
+	const bool status)
 {
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "updating tab for device " << devID;
+#endif
+	_devID = devID;
+
 	if(status) { /* device status == "started" */
 		_pStart->setEnabled(false);
 		_pStop->setEnabled(true);
@@ -189,6 +201,46 @@ void DeviceControlTab::updateButtonsStates(const bool status)
 
 		_deviceStatus->setText("Device status : stopped");
 	}
+}
+
+void DeviceControlTab::sendStatusSignal(const std::string & signal)
+{
+	LOG(INFO) << "sending " << signal << " signal for device " << _devID;
+
+	// TODO : would need to implement StringToVoid GKDBus template to avoid vector
+	const std::vector<std::string> devIDArray = {_devID};
+
+	try {
+		_pDBus->initializeBroadcastSignal(
+			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+			signal.c_str()
+		);
+		_pDBus->appendStringVectorToBroadcastSignal(devIDArray);
+		_pDBus->sendBroadcastSignal();
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonBroadcastSignal();
+		LOG(ERROR) << e.what();
+	}
+
+	this->disableButtons();
+}
+
+void DeviceControlTab::startSignal(void)
+{
+	this->sendStatusSignal("DeviceStartRequest");
+}
+
+void DeviceControlTab::stopSignal(void)
+{
+	this->sendStatusSignal("DeviceStopRequest");
+}
+
+void DeviceControlTab::restartSignal(void)
+{
+	this->sendStatusSignal("DeviceRestartRequest");
 }
 
 } // namespace GLogiK
