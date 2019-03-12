@@ -30,6 +30,7 @@
 #include <map>
 
 #include <QComboBox>
+#include <QMainWindow>
 #include <QWidget>
 #include <QTabWidget>
 
@@ -45,7 +46,7 @@ namespace GLogiK
 {
 
 class MainWindow
-	:	public QWidget
+	:	public QMainWindow
 {
 	public:
 		MainWindow(QWidget *parent = 0);
@@ -59,14 +60,14 @@ class MainWindow
 		pid_t _pid;
 		FILE* _LOGfd;	/* log file descriptor */
 
+		QComboBox* _devicesComboBox;
+
 		void setTabWidgetPointers(
 			const std::string & name,
 			QTabWidget*& tabWidget,
 			QWidget*& tab
 		);
 		void setTabEnabled(const std::string & name, const bool status);
-
-		QComboBox* getComboBoxPointer(void);
 
 		void initializeQtSignalsSlots(void);
 

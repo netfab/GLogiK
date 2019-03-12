@@ -54,10 +54,11 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 MainWindow::MainWindow(QWidget *parent)
-	:	QWidget(parent),
+	:	QMainWindow(parent),
 		_pDBus(nullptr),
 		_pid(0),
-		_LOGfd(nullptr)
+		_LOGfd(nullptr),
+		_devicesComboBox(nullptr)
 {
 	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
 	if( LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() != NONE ) {
@@ -147,6 +148,8 @@ void MainWindow::init(void)
 
 	timer->setObjectName("CheckTimer");
 	connect(timer, &QTimer::timeout, this, &MainWindow::checkDBusMessages);
+
+	this->statusBar();
 }
 
 void MainWindow::build(void)
@@ -154,25 +157,24 @@ void MainWindow::build(void)
 	QVBoxLayout* vBox = nullptr;
 
 	try {
-		vBox = new QVBoxLayout(this);
+		QFrame *frame = new QFrame(this);
+		this->setCentralWidget(frame);
+
+		vBox = new QVBoxLayout(frame);
 
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "allocated QVBoxLayout";
 #endif
 
-		/* QVBoxLayout is not a widget. We must set layout here to be able
-		 * to get child pointers since findChild() works only on widgets */
-		this->setLayout(vBox);
-
 		/* -- -- -- */
 
-		QComboBox* combo = new QComboBox();
+		_devicesComboBox = new QComboBox();
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "allocated QComboBox";
 #endif
-		combo->setObjectName("devicesList");
+		_devicesComboBox->setObjectName("devicesList");
 
-		vBox->addWidget(combo);
+		vBox->addWidget(_devicesComboBox);
 
 		/* -- -- -- */
 
@@ -208,10 +210,6 @@ void MainWindow::build(void)
 
 		/* -- -- -- */
 
-		/* -- -- -- */
-
-		//vBox->addSpacing(75);
-
 		/* launching timer */
 		QTimer *timer = this->findChild<QTimer *>("CheckTimer", Qt::FindDirectChildrenOnly);
 		timer->start(200);
@@ -234,22 +232,9 @@ void MainWindow::build(void)
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-QComboBox* MainWindow::getComboBoxPointer(void)
-{
-	QComboBox* combo = this->findChild<QComboBox *>("devicesList", Qt::FindDirectChildrenOnly);
-	if(combo == 0) {
-		LOG(ERROR) << "comboBox not found";
-		throw GLogiKExcept("comboBox not found");
-	}
-	return combo;
-}
-
 void MainWindow::initializeQtSignalsSlots(void)
 {
-	{
-		QComboBox* combo = this->getComboBoxPointer();
-		connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
-	}
+	connect(_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
 };
 
 void MainWindow::updateInterface(int index)
@@ -272,10 +257,10 @@ void MainWindow::updateInterface(int index)
 		if(index == 0) {
 			deviceControlTab->disableAndHide();
 			this->setTabEnabled("BacklightColor", false);
+			this->statusBar()->showMessage("Selected device : none", 2000);
 		}
 		else {
-			QComboBox* combo = this->getComboBoxPointer();
-			const std::string devID( combo->currentText().split(" ").at(0).toStdString() );
+			const std::string devID( _devicesComboBox->currentText().split(" ").at(0).toStdString() );
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "devID: " << devID;
 #endif
@@ -292,6 +277,10 @@ void MainWindow::updateInterface(int index)
 				error += devID;
 				throw GLogiKExcept(error);
 			}
+
+			QString msg("Selected device : ");
+			msg += _devicesComboBox->currentText();
+			this->statusBar()->showMessage(msg, 2000);
 		}
 	}
 	catch (const GLogiKExcept & e) {
@@ -347,10 +336,12 @@ const bool MainWindow::updateDevicesList(void)
 				return false;
 			}
 
-#if DEBUGGING_ON
-			LOG(DEBUG3) << " got " << _devices.size() << " devices";
-#endif
+			QString msg("Detected ");
+			msg += QString::number(_devices.size());
+			msg += " device(s)";
 
+			LOG(INFO) << msg.toStdString();
+			this->statusBar()->showMessage(msg, 2000);
 			return true;
 		}
 		catch (const GLogiKExcept & e) {
@@ -373,10 +364,9 @@ void MainWindow::resetInterface(void)
 
 	try {
 		if( this->updateDevicesList() ) {
-			QComboBox* combo = this->getComboBoxPointer();
 
 			/* clear() set current index to -1 */
-			combo->clear();
+			_devicesComboBox->clear();
 			{
 				QStringList items = {""}; // index 0
 				for(const auto & devicePair : _devices) {
@@ -389,7 +379,7 @@ void MainWindow::resetInterface(void)
 					items << item.c_str();
 				}
 				/* additems() set current index to 0 */
-				combo->addItems(items);
+				_devicesComboBox->addItems(items);
 			}
 
 			QTabWidget* tabWidget = nullptr;
@@ -410,7 +400,7 @@ void MainWindow::setTabWidgetPointers(
 	QTabWidget*& tabWidget,
 	QWidget*& tab)
 {
-	tabWidget = this->findChild<QTabWidget*>("Tabs", Qt::FindDirectChildrenOnly);
+	tabWidget = this->findChild<QTabWidget*>("Tabs");
 	if(tabWidget == 0) {
 		LOG(ERROR) << "tabWidget not found : " << name;
 		throw GLogiKExcept("tabWidget not found");
@@ -441,6 +431,7 @@ void MainWindow::setTabEnabled(const std::string & name, const bool status)
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "error setting TabEnabled property : " << e.what();
+		throw;
 	}
 }
 
