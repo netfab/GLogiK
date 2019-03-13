@@ -210,9 +210,10 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 			NSGKDBus::BusConnection::GKDBUS_SESSION,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-			signal.c_str()
+			"DeviceStatusChangeRequest"
 		);
 		_pDBus->appendStringToBroadcastSignal(_devID);
+		_pDBus->appendStringToBroadcastSignal(signal);
 		_pDBus->sendBroadcastSignal();
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
@@ -225,17 +226,17 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 
 void DeviceControlTab::startSignal(void)
 {
-	this->sendStatusSignal("DeviceStartRequest");
+	this->sendStatusSignal("StartDevice");
 }
 
 void DeviceControlTab::stopSignal(void)
 {
-	this->sendStatusSignal("DeviceStopRequest");
+	this->sendStatusSignal("StopDevice");
 }
 
 void DeviceControlTab::restartSignal(void)
 {
-	this->sendStatusSignal("DeviceRestartRequest");
+	this->sendStatusSignal("RestartDevice");
 }
 
 } // namespace GLogiK

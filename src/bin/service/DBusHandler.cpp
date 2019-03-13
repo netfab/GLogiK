@@ -854,25 +854,16 @@ void DBusHandler::initializeGKDBusSignals(void) {
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*   GUI requests D-Bus object   */
 	/* -- -- -- -- -- -- -- -- -- -- */
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToVoid>::exposeSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-		"DeviceStartRequest",
-		{	{"s", "", "in", "device ID"} },
-		std::bind(&DBusHandler::deviceStartRequest, this, std::placeholders::_1)
+		"DeviceStatusChangeRequest",
+		{	{"s", "device_id", "in", "device ID"},
+			{"s", "wanted_status", "in", "wanted status"}	},
+		std::bind(&DBusHandler::deviceStatusChangeRequest, this,
+		std::placeholders::_1, std::placeholders::_2)
 	);
-
-/*
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringToVoid>::exposeSignal(
-		_sessionBus,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-		"DeviceStopRequest",
-		{	{"as", "", "in", "array of started devices ID strings"} },
-		std::bind(&DBusHandler::deviceStopRequest, this)
-	);
-*/
 }
 
 void DBusHandler::initializeGKDBusMethods(void)
@@ -1177,11 +1168,54 @@ const std::vector<std::string> DBusHandler::getDevicesList(const std::string & r
 	return _devices.getDevicesList();
 }
 
-void DBusHandler::deviceStartRequest(const std::string & devID)
+void DBusHandler::deviceStatusChangeRequest(
+	const std::string & devID,
+	const std::string & remoteMethod)
 {
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "received " << __func__ << " signal for device " << devID;
+	LOG(DEBUG3) << "received " << remoteMethod << " signal for device " << devID;
 #endif
+
+	if(	(remoteMethod !=  "StopDevice") and
+		(remoteMethod !=  "StartDevice") and
+		(remoteMethod !=  "RestartDevice") ) {
+		LOG(WARNING) << "ignoring wrong remoteMethod : " << remoteMethod;
+		return;
+	}
+
+	try {
+		_pDBus->initializeRemoteMethodCall(
+			_systemBus,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			remoteMethod.c_str()
+		);
+		_pDBus->appendStringToRemoteMethodCall(_clientID);
+		_pDBus->appendStringToRemoteMethodCall(devID);
+		_pDBus->sendRemoteMethodCall();
+
+		try {
+			_pDBus->waitForRemoteMethodCallReply();
+
+			const bool ret = _pDBus->getNextBooleanArgument();
+			if( ret ) {
+#if DEBUGGING_ON
+				LOG(DEBUG2) << remoteMethod << " successful for device " << devID;
+#endif
+			}
+			else {
+				LOG(INFO) << remoteMethod << " failure for device " << devID << " : false";
+			}
+		}
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
+		}
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonRemoteMethodCall();
+		LogRemoteCallFailure
+	}
 }
 
 } // namespace GLogiK
