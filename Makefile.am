@@ -11,16 +11,16 @@ include %D%/src/lib/shared/Makefile.am
 include %D%/src/bin/daemon/Makefile.am
 include %D%/src/bin/launcher/Makefile.am
 include %D%/src/bin/service/Makefile.am
-include %D%/data/applications/Makefile.am
 include %D%/data/autostart/Makefile.am
 include %D%/data/dbus/Makefile.am
-include %D%/data/icons/Makefile.am
 include %D%/data/init/openrc/Makefile.am
 include %D%/data/udev/Makefile.am
 include %D%/data/pbm/Makefile.am
 
 if WITH_QT5
 include %D%/src/bin/gui/Qt/Makefile.am
+include %D%/data/applications/Makefile.am
+include %D%/data/icons/Makefile.am
 endif
 
 maintainer-clean-local: maintainer-clean-libtool-files maintainer-clean-autotools-files
