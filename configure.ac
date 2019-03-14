@@ -93,6 +93,7 @@ AC_ARG_ENABLE( [qt5],
                [enable_qt5=$enableval], [enable_qt5=no])
 
 AC_ARG_VAR(DEBUG_DIR, [Directory where debug file will be written])
+AC_ARG_VAR(DATA_DIR, [Directory where data files will be installed])
 AC_ARG_VAR(PBM_DATA_DIR, [Directory where pbm data files will be installed])
 
 dnl -------------------------------------------------------------------------
@@ -288,6 +289,7 @@ dnl -------------------------------------------------------------------------
 AS_IF([[test "x$DEBUG_DIR" = "x"]], [DEBUG_DIR="/tmp"])
 AC_DEFINE_UNQUOTED([DEBUG_DIR], ["${DEBUG_DIR}"], [Directory for debug file])
 
+AC_DEFINE_UNQUOTED([DATA_DIR], ["${prefix}/share"], [Root directory for data files installation])
 AC_DEFINE_UNQUOTED([PBM_DATA_DIR], ["${prefix}/share/${PACKAGE_NAME}/pbm"], [Directory for pbm file installation])
 
 dnl -------------------------------------------------------------------------

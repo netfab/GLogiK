@@ -21,7 +21,9 @@
 
 #include <cstdlib>
 
+#include <QString>
 #include <QApplication>
+#include <QIcon>
 
 #include "mainWindow.hpp"
 
@@ -41,9 +43,17 @@ int main(int argc, char *argv[])
 		window.init();
 		window.build();
 
-		//window.resize(250, 150);
 		window.setFixedSize(800, 400);
-		window.setWindowTitle("Simple example");
+
+		{
+			QString title("GKcQt5 "); title += VERSION;
+			window.setWindowTitle(title);
+
+			QString icon(DATA_DIR);
+			icon += "/icons/hicolor/48x48/apps/GLogiK.png";
+			window.setWindowIcon(QIcon(icon));
+		}
+
 		window.show();
 	}
 	catch ( const NSGKUtils::GLogiKExcept & e ) {

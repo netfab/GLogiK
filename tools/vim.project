@@ -23,6 +23,10 @@ GLogiK=$PWD/.. CD=. {
 	macro=m4/ {
 	}
 	data=data/ {
+		applications=applications/ {
+			Makefile.am
+			GLogiK.desktop
+		}
 		autostart=autostart/ {
 			Makefile.am
 			GKsLauncher.desktop
@@ -33,6 +37,9 @@ GLogiK=$PWD/.. CD=. {
 		dbus=dbus/ {
 			Makefile.am
 			GLogiK.conf.in
+		}
+		icons=icons/ {
+			Makefile.am
 		}
 		init=init/ {
 			openrc=openrc/ {

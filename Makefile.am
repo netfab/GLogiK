@@ -11,8 +11,10 @@ include %D%/src/lib/shared/Makefile.am
 include %D%/src/bin/daemon/Makefile.am
 include %D%/src/bin/launcher/Makefile.am
 include %D%/src/bin/service/Makefile.am
+include %D%/data/applications/Makefile.am
 include %D%/data/autostart/Makefile.am
 include %D%/data/dbus/Makefile.am
+include %D%/data/icons/Makefile.am
 include %D%/data/init/openrc/Makefile.am
 include %D%/data/udev/Makefile.am
 include %D%/data/pbm/Makefile.am
