@@ -58,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent)
 		_pDBus(nullptr),
 		_pid(0),
 		_LOGfd(nullptr),
+		_GUIResetThrow(true),
 		_devicesComboBox(nullptr)
 {
 	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
@@ -222,6 +223,7 @@ void MainWindow::build(void)
 	}
 
 	this->resetInterface();
+	_GUIResetThrow = false; /* after here, don't throw if reset interface fails */
 	this->initializeQtSignalsSlots();
 }
 
@@ -291,7 +293,7 @@ void MainWindow::updateInterface(int index)
 	}
 }
 
-const bool MainWindow::updateDevicesList(void)
+void MainWindow::updateDevicesList(void)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "updating devices list";
@@ -335,8 +337,7 @@ const bool MainWindow::updateDevicesList(void)
 			}
 			catch ( const EmptyContainer & e ) {
 				LOG(WARNING) << "missing argument : " << e.what();
-				LOG(ERROR) << "rebuilding device map failed";
-				return false;
+				throw GLogiKExcept("rebuilding device map failed");
 			}
 
 			QString msg("Detected ");
@@ -345,18 +346,17 @@ const bool MainWindow::updateDevicesList(void)
 
 			LOG(INFO) << msg.toStdString();
 			this->statusBar()->showMessage(msg, 2000);
-			return true;
 		}
 		catch (const GLogiKExcept & e) {
 			LogRemoteCallGetReplyFailure
+			throw GLogiKExcept("failure to get request reply");
 		}
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
+		throw GLogiKExcept("failure to build request");
 	}
-
-	return false;
 }
 
 void MainWindow::resetInterface(void)
@@ -366,35 +366,37 @@ void MainWindow::resetInterface(void)
 #endif
 
 	try {
-		if( this->updateDevicesList() ) {
+		this->updateDevicesList();
 
-			/* clear() set current index to -1 */
-			_devicesComboBox->clear();
-			{
-				QStringList items = {""}; // index 0
-				for(const auto & devicePair : _devices) {
-					std::string item( devicePair.first );
-					item += " ";
-					item += devicePair.second.getVendor();
-					item += " ";
-					item += devicePair.second.getModel();
-					std::replace( item.begin(), item.end(), '_', ' ');
-					items << item.c_str();
-				}
-				/* additems() set current index to 0 */
-				_devicesComboBox->addItems(items);
+		/* clear() set current index to -1 */
+		_devicesComboBox->clear();
+		{
+			QStringList items = {""}; // index 0
+			for(const auto & devicePair : _devices) {
+				std::string item( devicePair.first );
+				item += " ";
+				item += devicePair.second.getVendor();
+				item += " ";
+				item += devicePair.second.getModel();
+				std::replace( item.begin(), item.end(), '_', ' ');
+				items << item.c_str();
 			}
-
-			QTabWidget* tabWidget = nullptr;
-			QWidget* tab = nullptr;
-			this->setTabWidgetPointers("DeviceControl", tabWidget, tab);
-
-			DeviceControlTab * dTab = dynamic_cast<DeviceControlTab*>(tab);
-			dTab->disableButtons();
+			/* additems() set current index to 0 */
+			_devicesComboBox->addItems(items);
 		}
+
+		QTabWidget* tabWidget = nullptr;
+		QWidget* tab = nullptr;
+		this->setTabWidgetPointers("DeviceControl", tabWidget, tab);
+
+		DeviceControlTab * dTab = dynamic_cast<DeviceControlTab*>(tab);
+		dTab->disableButtons();
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "error resetting interface : " << e.what();
+		if(_GUIResetThrow) {
+			throw GLogiKExcept("interface reset failure");
+		}
 	}
 }
 

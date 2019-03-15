@@ -59,6 +59,7 @@ class MainWindow
 		NSGKDBus::GKDBus* _pDBus;
 		pid_t _pid;
 		FILE* _LOGfd;	/* log file descriptor */
+		bool _GUIResetThrow;
 
 		QComboBox* _devicesComboBox;
 
@@ -71,7 +72,7 @@ class MainWindow
 
 		void initializeQtSignalsSlots(void);
 
-		const bool updateDevicesList(void);
+		void updateDevicesList(void);
 		void resetInterface(void);
 		void updateInterface(int index);
 		void checkDBusMessages(void);
