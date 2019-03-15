@@ -25,9 +25,9 @@
 #include <QApplication>
 #include <QIcon>
 
-#include "mainWindow.hpp"
-
 #include "lib/utils/utils.hpp"
+
+#include "mainWindow.hpp"
 
 using namespace GLogiK;
 using namespace NSGKUtils;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 
 		window.show();
 	}
-	catch ( const NSGKUtils::GLogiKExcept & e ) {
+	catch ( const GLogiKExcept & e ) {
 		LOG(ERROR) << e.what();
 		return EXIT_FAILURE;
 	}

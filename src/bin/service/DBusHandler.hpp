@@ -107,7 +107,7 @@ class DBusHandler
 		void sendRestartRequest(void);
 		void sendDevicesUpdatedSignal(void);
 
-		/* signals */
+		/* signals from daemon */
 		void daemonIsStopping(void);
 		void daemonIsStarting(void);
 
@@ -129,14 +129,13 @@ class DBusHandler
 		void deviceMediaEvent(const std::string & devID, const std::string & mediaKeyEvent);
 		/* -- */
 
-		const std::vector<std::string> getDevicesList(const std::string & reserved);
-
+		/* signal and request from GUI  */
 		void deviceStatusChangeRequest(
 			const std::string & devID,
 			const std::string & remoteMethod
 		);
-		//void deviceStopRequest(const std::vector<std::string> & devicesID);
-		//void deviceRestartRequest(const std::vector<std::string> & devicesID);
+
+		const std::vector<std::string> getDevicesList(const std::string & reserved);
 };
 
 } // namespace GLogiK

@@ -22,10 +22,10 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
-#include "DeviceControlTab.hpp"
-
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
+
+#include "DeviceControlTab.hpp"
 
 namespace GLogiK
 {
