@@ -88,6 +88,7 @@ class DBusHandler
 		bool _wantToExit;			/* true if we want to exit after a restart request */
 		std::string _clientID;
 		SessionFramework _sessionFramework;
+		std::string _daemonVersion;
 
 		std::string _currentSession;	/* current session object path */
 		std::string _sessionState;		/* session state */
@@ -136,6 +137,7 @@ class DBusHandler
 		);
 
 		const std::vector<std::string> getDevicesList(const std::string & reserved);
+		const std::vector<std::string> getVersions(const std::string & reserved);
 };
 
 } // namespace GLogiK

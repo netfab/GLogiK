@@ -53,7 +53,8 @@ DBusHandler::DBusHandler(
 		_registerStatus(false),
 		_wantToExit(false),
 		_clientID("undefined"),
-		_sessionFramework(SessionFramework::FW_UNKNOWN)
+		_sessionFramework(SessionFramework::FW_UNKNOWN),
+		_daemonVersion("unknown")
 {
 	_devices.setGKfs(pGKfs);
 
@@ -293,11 +294,11 @@ void DBusHandler::registerWithDaemon(void) {
 				_registerStatus = true;
 				try {
 					_clientID = _pDBus->getNextStringArgument();
-					const std::string daemonVersion(_pDBus->getNextStringArgument());
+					_daemonVersion = _pDBus->getNextStringArgument();
 
-					if( daemonVersion != VERSION ) {
+					if( _daemonVersion != VERSION ) {
 						std::string mismatch("daemon version mismatch : ");
-						mismatch += daemonVersion;
+						mismatch += _daemonVersion;
 						throw GLogiKExcept(mismatch);
 					}
 
@@ -876,6 +877,15 @@ void DBusHandler::initializeGKDBusMethods(void)
 		{	{"s", "reserved", "in", "reserved"},
 			{"as", "array_of_strings", "out", "array of devices ID and configuration files"} },
 		std::bind(&DBusHandler::getDevicesList, this, "reserved") );
+
+	_pDBus->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
+		_sessionBus,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		"GetVersions",
+		{	{"s", "reserved", "in", "reserved"},
+			{"as", "array_of_strings", "out", "array of versions strings"} },
+		std::bind(&DBusHandler::getVersions, this, "reserved") );
 }
 
 void DBusHandler::daemonIsStopping(void) {
@@ -1166,6 +1176,14 @@ void DBusHandler::deviceMediaEvent(
 
 const std::vector<std::string> DBusHandler::getDevicesList(const std::string & reserved) {
 	return _devices.getDevicesList();
+}
+
+const std::vector<std::string> DBusHandler::getVersions(const std::string & reserved)
+{
+	std::vector<std::string> ret;
+	ret.push_back(_daemonVersion);
+	ret.push_back(VERSION);
+	return ret;
 }
 
 void DBusHandler::deviceStatusChangeRequest(

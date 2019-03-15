@@ -35,7 +35,7 @@ using namespace NSGKUtils;
 DeviceControlTab::DeviceControlTab(
 	NSGKDBus::GKDBus* pDBus,
 	const QString & name
-)	:	_pDBus(pDBus),
+)	:	Tab(pDBus),
 		_deviceStatus(nullptr),
 		_pStart(nullptr),
 		_pStop(nullptr),

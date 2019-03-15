@@ -19,60 +19,36 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_DEVICE_CONTROL_TAB_HPP_
-#define SRC_BIN_GUI_QT_DEVICE_CONTROL_TAB_HPP_
+#ifndef SRC_BIN_GUI_QT_DAEMON_AND_SERVICE_TAB_HPP_
+#define SRC_BIN_GUI_QT_DAEMON_AND_SERVICE_TAB_HPP_
 
-#include <string>
-
-#include <QFrame>
+#include <QLabel>
 #include <QString>
 #include <QWidget>
-#include <QPushButton>
-#include <QLabel>
-
-#include "lib/dbus/GKDBus.hpp"
 
 #include "Tab.hpp"
 
 namespace GLogiK
 {
 
-class DeviceControlTab
+class DaemonAndServiceTab
 	:	public Tab,
 		public QWidget
 {
 	public:
-		DeviceControlTab(
+		DaemonAndServiceTab(
 			NSGKDBus::GKDBus* pDBus,
 			const QString & name
 		);
-		~DeviceControlTab();
+		~DaemonAndServiceTab();
 
-		void disableButtons(void);
-		void updateTab(
-			const std::string & devID,
-			const bool status
-		);
-		void disableAndHide(void);
+		void updateTab(void);
 
 	private:
-		DeviceControlTab() = delete;
+		DaemonAndServiceTab() = delete;
 
-		std::string _devID;
-
-		QLabel* _deviceStatus;
-		QPushButton* _pStart;
-		QPushButton* _pStop;
-		QPushButton* _pRestart;
-		QFrame* _line2;
-		QFrame* _line3;
-
-		void setVisibility(const bool visibility);
-
-		void startSignal(void);
-		void stopSignal(void);
-		void restartSignal(void);
-		void sendStatusSignal(const std::string & signal);
+		QLabel* _daemonVersion;
+		QLabel* _serviceVersion;
 };
 
 } // namespace GLogiK

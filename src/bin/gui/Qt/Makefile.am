@@ -20,6 +20,9 @@ GKcQt5_LDADD = \
 		libGKShared.la
 
 GKcQt5_SOURCES = \
+		%D%/Tab.hpp \
+		%D%/DaemonAndServiceTab.cpp \
+		%D%/DaemonAndServiceTab.hpp \
 		%D%/DeviceControlTab.cpp \
 		%D%/DeviceControlTab.hpp \
 		%D%/BacklightColorTab.cpp \

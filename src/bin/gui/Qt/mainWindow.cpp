@@ -44,6 +44,8 @@
 
 #include "lib/dbus/arguments/GKDBusArgString.hpp"
 
+#include "Tab.hpp"
+#include "DaemonAndServiceTab.hpp"
 #include "BacklightColorTab.hpp"
 #include "DeviceControlTab.hpp"
 #include "mainWindow.hpp"
@@ -200,6 +202,7 @@ void MainWindow::build(void)
 		tabWidget->setObjectName("Tabs");
 		vBox->addWidget(tabWidget);
 
+		tabWidget->addTab(new DaemonAndServiceTab(_pDBus, "DaemonAndService"), tr("Daemon and Service"));
 		tabWidget->addTab(new DeviceControlTab(_pDBus, "DeviceControl"), tr("Device Control"));
 		tabWidget->addTab(new BacklightColorTab("BacklightColor"), tr("Backlight Color"));
 		//tabWidget->addTab(new QWidget(), tr("Multimedia Keys"));
@@ -209,6 +212,7 @@ void MainWindow::build(void)
 		LOG(DEBUG3) << "allocated 5 tabs";
 #endif
 
+		this->setTabEnabled("DaemonAndService", true);
 		this->setTabEnabled("DeviceControl", true);
 		this->setTabEnabled("BacklightColor", false);
 
@@ -387,10 +391,14 @@ void MainWindow::resetInterface(void)
 
 		QTabWidget* tabWidget = nullptr;
 		QWidget* tab = nullptr;
-		this->setTabWidgetPointers("DeviceControl", tabWidget, tab);
 
-		DeviceControlTab * dTab = dynamic_cast<DeviceControlTab*>(tab);
-		dTab->disableButtons();
+		this->setTabWidgetPointers("DaemonAndService", tabWidget, tab);
+		DaemonAndServiceTab* daemonAndServiceTab = dynamic_cast<DaemonAndServiceTab*>(tab);
+		daemonAndServiceTab->updateTab();
+
+		this->setTabWidgetPointers("DeviceControl", tabWidget, tab);
+		DeviceControlTab * deviceControlTab = dynamic_cast<DeviceControlTab*>(tab);
+		deviceControlTab->disableButtons();
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "error resetting interface : " << e.what();

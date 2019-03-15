@@ -19,63 +19,34 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_MAIN_WINDOW_HPP_
-#define SRC_BIN_GUI_QT_MAIN_WINDOW_HPP_
-
-#include <sys/types.h>
-
-#include <cstdio>
-
-#include <string>
-#include <map>
-
-#include <QComboBox>
-#include <QMainWindow>
-#include <QWidget>
-#include <QTabWidget>
+#ifndef SRC_BIN_GUI_QT_TAB_HPP_
+#define SRC_BIN_GUI_QT_TAB_HPP_
 
 #include "lib/dbus/GKDBus.hpp"
-#include "lib/shared/deviceFile.hpp"
+
+#define LogRemoteCallFailure \
+	FATALERROR << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
+#define LogRemoteCallGetReplyFailure \
+	LOG(ERROR) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
 
 namespace GLogiK
 {
 
-class MainWindow
-	:	public QMainWindow
+class Tab
 {
 	public:
-		MainWindow(QWidget *parent = 0);
-		~MainWindow();
+		Tab(NSGKDBus::GKDBus* pDBus)
+			:	_pDBus(pDBus) {};
+		virtual ~Tab() = default;
 
-		void init(void);
-		void build(void);
+		virtual void updateTab(void) {};
+
+	protected:
+		NSGKDBus::GKDBus* _pDBus;
 
 	private:
-		NSGKDBus::GKDBus* _pDBus;
-		pid_t _pid;
-		FILE* _LOGfd;	/* log file descriptor */
-		bool _GUIResetThrow;
-
-		QComboBox* _devicesComboBox;
-
-		void setTabWidgetPointers(
-			const std::string & name,
-			QTabWidget*& tabWidget,
-			QWidget*& tab
-		);
-		void setTabEnabled(const std::string & name, const bool status);
-
-		void initializeQtSignalsSlots(void);
-
-		void updateDevicesList(void);
-		void resetInterface(void);
-		void updateInterface(int index);
-		void checkDBusMessages(void);
-
-		std::map<const std::string, DeviceFile> _devices;
 };
 
 } // namespace GLogiK
 
 #endif
-
