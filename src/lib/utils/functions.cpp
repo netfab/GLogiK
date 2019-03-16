@@ -123,8 +123,11 @@ void yield_for(std::chrono::microseconds us)
 	} while (std::chrono::high_resolution_clock::now() < end);
 }
 
-pid_t daemonizeProcess(const bool closeDescriptors)
+pid_t detachProcess(const bool closeDescriptors)
 {
+#if DEBUGGING_ON
+	LOG(DEBUG) << "detaching process";
+#endif
 	pid_t pid;
 
 	pid = fork();
@@ -132,12 +135,17 @@ pid_t daemonizeProcess(const bool closeDescriptors)
 		throw GLogiKExcept("first fork failure");
 
 	// parent exit
-	if(pid > 0)
-		exit(EXIT_SUCCESS);
-
+	if(pid > 0) {
 #if DEBUGGING_ON
-	LOG(DEBUG) << "first fork done";
+		LOG(DEBUG1) << "first fork done. pid: " << pid;
 #endif
+		exit(EXIT_SUCCESS);
+	}
+	else {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "parent process exited, continue child execution";
+#endif
+	}
 
 	// new session for child process
 	if(setsid() == -1)
@@ -155,12 +163,17 @@ pid_t daemonizeProcess(const bool closeDescriptors)
 		throw GLogiKExcept("second fork failure");
 
 	// parent exit
-	if(pid > 0)
-		exit(EXIT_SUCCESS);
-
+	if(pid > 0) {
 #if DEBUGGING_ON
-	LOG(DEBUG) << "second fork done";
+		LOG(DEBUG1) << "second fork done. pid: " << pid;
 #endif
+		exit(EXIT_SUCCESS);
+	}
+	else {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "parent process exited, continue child execution";
+#endif
+	}
 
 	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	if(chdir("/") == -1)
@@ -180,7 +193,7 @@ pid_t daemonizeProcess(const bool closeDescriptors)
 		stderr = std::fopen("/dev/null", "w+");
 
 #if DEBUGGING_ON
-		LOG(DEBUG) << "descriptors closed";
+		LOG(DEBUG) << "descriptors closed, process daemonized";
 #endif
 	}
 

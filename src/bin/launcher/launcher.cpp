@@ -108,7 +108,7 @@ int DesktopServiceLauncher::run( const int& argc, char *argv[] ) {
 		/* no expected arguments */
 		//this->parseCommandLine(argc, argv);
 
-		_pid = daemonizeProcess();
+		_pid = detachProcess();
 #if DEBUGGING_ON
 		LOG(DEBUG) << "process detached - pid: " << _pid;
 #endif

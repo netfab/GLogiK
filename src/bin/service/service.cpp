@@ -109,7 +109,7 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 	try {
 		this->parseCommandLine(argc, argv);
 
-		_pid = daemonizeProcess();
+		_pid = detachProcess();
 #if DEBUGGING_ON
 		LOG(DEBUG) << "process detached - pid: " << _pid;
 #endif
@@ -207,6 +207,10 @@ void DesktopService::parseCommandLine(const int& argc, char *argv[]) {
 		LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = VERB;
 		LOG(VERB) << "verbose mode on";
 	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "parsing arguments done";
+#endif
 }
 
 } // namespace GLogiK

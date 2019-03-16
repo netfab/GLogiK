@@ -130,7 +130,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 
 		if( GLogiKDaemon::isDaemonRunning() ) {
 
-			_pid = daemonizeProcess(true);
+			_pid = detachProcess(true);
 			syslog(LOG_INFO, "process successfully daemonized");
 
 			this->createPIDFile();
@@ -283,6 +283,10 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	if (vm.count("daemonize")) {
 		GLogiKDaemon::daemonized = vm["daemonize"].as<bool>();
 	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "parsing arguments done";
+#endif
 }
 
 void GLogiKDaemon::dropPrivileges(void) {
