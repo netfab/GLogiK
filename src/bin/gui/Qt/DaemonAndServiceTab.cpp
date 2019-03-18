@@ -40,7 +40,8 @@ using namespace NSGKUtils;
 DaemonAndServiceTab::DaemonAndServiceTab(
 	NSGKDBus::GKDBus* pDBus,
 	const QString & name
-)	:	Tab(pDBus)
+)	:	Tab(pDBus),
+		_serviceStatus(false)
 {
 	this->setObjectName(name);
 
@@ -68,8 +69,8 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 			QHBoxLayout* layout = new QHBoxLayout();
 			daemonBox->setLayout(layout);
 
-			_daemonVersion = new QLabel("Version");
-			layout->addWidget(_daemonVersion);
+			_daemonVersionLabel = new QLabel("Version");
+			layout->addWidget(_daemonVersionLabel);
 		}
 
 		/* -- -- -- */
@@ -83,8 +84,11 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 			QHBoxLayout* layout = new QHBoxLayout();
 			serviceBox->setLayout(layout);
 
-			_serviceVersion = new QLabel("Version");
-			layout->addWidget(_serviceVersion);
+			_serviceVersionLabel = new QLabel("Version");
+			layout->addWidget(_serviceVersionLabel);
+
+			_serviceStatusLabel = new QLabel("Status");
+			layout->addWidget(_serviceStatusLabel);
 		}
 
 		/* -- -- -- */
@@ -99,15 +103,22 @@ DaemonAndServiceTab::~DaemonAndServiceTab()
 {
 }
 
+const bool DaemonAndServiceTab::isServiceRegistered(void)
+{
+	return _serviceStatus;
+}
+
 void DaemonAndServiceTab::updateTab(void)
 {
 	{
 		const QString vers("Version : unknown");
-		_daemonVersion->setText(vers);
-		_serviceVersion->setText(vers);
+		_daemonVersionLabel->setText(vers);
+		_serviceVersionLabel->setText(vers);
+		_serviceStatusLabel->setText("Status : unknown");
+		_serviceStatus = false;
 	}
 
-	const std::string remoteMethod("GetVersions");
+	const std::string remoteMethod("GetInformations");
 	try {
 		_pDBus->initializeRemoteMethodCall(
 			NSGKDBus::BusConnection::GKDBUS_SESSION,
@@ -123,14 +134,21 @@ void DaemonAndServiceTab::updateTab(void)
 		try {
 			_pDBus->waitForRemoteMethodCallReply();
 
-			QString daemonVersion("Version : ");
-			daemonVersion += _pDBus->getNextStringArgument().c_str();
+			QString labelText("Version : ");
+			labelText += _pDBus->getNextStringArgument().c_str();
+			_daemonVersionLabel->setText(labelText);
 
-			QString serviceVersion("Version : ");
-			serviceVersion += _pDBus->getNextStringArgument().c_str();
+			labelText = "Version : ";
+			labelText += _pDBus->getNextStringArgument().c_str();
+			_serviceVersionLabel->setText(labelText);
 
-			_daemonVersion->setText(daemonVersion);
-			_serviceVersion->setText(serviceVersion);
+			labelText = "Status : ";
+			QString status(_pDBus->getNextStringArgument().c_str());
+			labelText += status;
+			_serviceStatusLabel->setText(labelText);
+
+			_serviceStatus = (status == "registered");
+
 		}
 		catch (const GLogiKExcept & e) {
 			LogRemoteCallGetReplyFailure

@@ -370,10 +370,23 @@ void MainWindow::resetInterface(void)
 #endif
 
 	try {
-		this->updateDevicesList();
+		QTabWidget* tabWidget = nullptr;
+		QWidget* tab = nullptr;
+
+		this->setTabWidgetPointers("DaemonAndService", tabWidget, tab);
+		DaemonAndServiceTab* daemonAndServiceTab = dynamic_cast<DaemonAndServiceTab*>(tab);
+		daemonAndServiceTab->updateTab();
 
 		/* clear() set current index to -1 */
 		_devicesComboBox->clear();
+
+		/* don't try to update devices list if the service
+		 * is not registered against the daemon */
+		if( ! daemonAndServiceTab->isServiceRegistered() )
+			return;
+
+		this->updateDevicesList();
+
 		{
 			QStringList items = {""}; // index 0
 			for(const auto & devicePair : _devices) {
@@ -388,13 +401,6 @@ void MainWindow::resetInterface(void)
 			/* additems() set current index to 0 */
 			_devicesComboBox->addItems(items);
 		}
-
-		QTabWidget* tabWidget = nullptr;
-		QWidget* tab = nullptr;
-
-		this->setTabWidgetPointers("DaemonAndService", tabWidget, tab);
-		DaemonAndServiceTab* daemonAndServiceTab = dynamic_cast<DaemonAndServiceTab*>(tab);
-		daemonAndServiceTab->updateTab();
 
 		this->setTabWidgetPointers("DeviceControl", tabWidget, tab);
 		DeviceControlTab * deviceControlTab = dynamic_cast<DeviceControlTab*>(tab);

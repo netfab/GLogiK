@@ -137,7 +137,7 @@ class DBusHandler
 		);
 
 		const std::vector<std::string> getDevicesList(const std::string & reserved);
-		const std::vector<std::string> getVersions(const std::string & reserved);
+		const std::vector<std::string> getInformations(const std::string & reserved);
 };
 
 } // namespace GLogiK

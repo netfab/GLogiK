@@ -43,12 +43,15 @@ class DaemonAndServiceTab
 		~DaemonAndServiceTab();
 
 		void updateTab(void);
+		const bool isServiceRegistered(void);
 
 	private:
 		DaemonAndServiceTab() = delete;
 
-		QLabel* _daemonVersion;
-		QLabel* _serviceVersion;
+		QLabel* _daemonVersionLabel;
+		QLabel* _serviceVersionLabel;
+		QLabel* _serviceStatusLabel;
+		bool _serviceStatus;
 };
 
 } // namespace GLogiK

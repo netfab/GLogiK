@@ -883,10 +883,10 @@ void DBusHandler::initializeGKDBusMethods(void)
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		"GetVersions",
+		"GetInformations",
 		{	{"s", "reserved", "in", "reserved"},
-			{"as", "array_of_strings", "out", "array of versions strings"} },
-		std::bind(&DBusHandler::getVersions, this, "reserved") );
+			{"as", "array_of_strings", "out", "array of informations strings"} },
+		std::bind(&DBusHandler::getInformations, this, "reserved") );
 }
 
 void DBusHandler::daemonIsStopping(void) {
@@ -1179,11 +1179,15 @@ const std::vector<std::string> DBusHandler::getDevicesList(const std::string & r
 	return _devices.getDevicesList();
 }
 
-const std::vector<std::string> DBusHandler::getVersions(const std::string & reserved)
+const std::vector<std::string> DBusHandler::getInformations(const std::string & reserved)
 {
 	std::vector<std::string> ret;
 	ret.push_back(_daemonVersion);
 	ret.push_back(VERSION);
+	if(_registerStatus)
+		ret.push_back("registered");
+	else
+		ret.push_back("unregistered");
 	return ret;
 }
 
