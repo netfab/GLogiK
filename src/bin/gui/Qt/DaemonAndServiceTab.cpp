@@ -23,7 +23,8 @@
 
 #include <QString>
 #include <QVBoxLayout>
-//#include <QHBoxLayout>
+#include <QGroupBox>
+#include <QHBoxLayout>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
@@ -43,7 +44,7 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 {
 	this->setObjectName(name);
 
-	QVBoxLayout *vBox = nullptr;
+	QVBoxLayout* vBox = nullptr;
 	//QHBoxLayout* hBox = nullptr;
 
 	try {
@@ -54,28 +55,39 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 		this->setLayout(vBox);
 
 		/* -- -- -- */
+		vBox->addWidget( this->getHLine() );
+
+
+		/* -- -- -- */
 		{
-			QFrame* line = new QFrame();
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "allocated QFrame";
-#endif
-			line->setFrameShape(QFrame::HLine);
-			line->setFrameShadow(QFrame::Sunken);
-			vBox->addWidget(line);
+			QGroupBox* daemonBox = new QGroupBox();
+			vBox->addWidget(daemonBox);
+
+			daemonBox->setTitle("Daemon");
+
+			QHBoxLayout* layout = new QHBoxLayout();
+			daemonBox->setLayout(layout);
+
+			_daemonVersion = new QLabel("Version");
+			layout->addWidget(_daemonVersion);
 		}
 
 		/* -- -- -- */
 
-		_daemonVersion = new QLabel("Daemon version");
-		vBox->addWidget(_daemonVersion);
+		{
+			QGroupBox* serviceBox = new QGroupBox();
+			vBox->addWidget(serviceBox);
+
+			serviceBox->setTitle("Service");
+
+			QHBoxLayout* layout = new QHBoxLayout();
+			serviceBox->setLayout(layout);
+
+			_serviceVersion = new QLabel("Version");
+			layout->addWidget(_serviceVersion);
+		}
 
 		/* -- -- -- */
-		_serviceVersion = new QLabel("Service version");
-		vBox->addWidget(_serviceVersion);
-
-		/* -- -- -- */
-
-		vBox->addSpacing(300);
 	}
 	catch (const std::bad_alloc& e) {
 		LOG(ERROR) << e.what();
@@ -89,6 +101,12 @@ DaemonAndServiceTab::~DaemonAndServiceTab()
 
 void DaemonAndServiceTab::updateTab(void)
 {
+	{
+		const QString vers("Version : unknown");
+		_daemonVersion->setText(vers);
+		_serviceVersion->setText(vers);
+	}
+
 	const std::string remoteMethod("GetVersions");
 	try {
 		_pDBus->initializeRemoteMethodCall(
@@ -105,10 +123,10 @@ void DaemonAndServiceTab::updateTab(void)
 		try {
 			_pDBus->waitForRemoteMethodCallReply();
 
-			QString daemonVersion("Daemon version : ");
+			QString daemonVersion("Version : ");
 			daemonVersion += _pDBus->getNextStringArgument().c_str();
 
-			QString serviceVersion("Service version : ");
+			QString serviceVersion("Version : ");
 			serviceVersion += _pDBus->getNextStringArgument().c_str();
 
 			_daemonVersion->setText(daemonVersion);

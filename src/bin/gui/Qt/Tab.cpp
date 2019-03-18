@@ -19,38 +19,25 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_TAB_HPP_
-#define SRC_BIN_GUI_QT_TAB_HPP_
+#include "lib/utils/utils.hpp"
 
-#include <QFrame>
-
-#include "lib/dbus/GKDBus.hpp"
-
-#define LogRemoteCallFailure \
-	FATALERROR << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
-#define LogRemoteCallGetReplyFailure \
-	LOG(ERROR) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
+#include "Tab.hpp"
 
 namespace GLogiK
 {
 
-class Tab
+using namespace NSGKUtils;
+
+QFrame* Tab::getHLine(void)
 {
-	public:
-		Tab(NSGKDBus::GKDBus* pDBus)
-			:	_pDBus(pDBus) {};
-		virtual ~Tab() = default;
-
-		virtual void updateTab(void) {};
-
-		QFrame* getHLine(void);
-
-	protected:
-		NSGKDBus::GKDBus* _pDBus;
-
-	private:
-};
+	QFrame* line = new QFrame();
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "allocated QFrame";
+#endif
+	line->setFrameShape(QFrame::HLine);
+	line->setFrameShadow(QFrame::Sunken);
+	return line;
+}
 
 } // namespace GLogiK
 
-#endif

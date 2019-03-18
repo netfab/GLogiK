@@ -45,7 +45,7 @@ DeviceControlTab::DeviceControlTab(
 {
 	this->setObjectName(name);
 
-	QVBoxLayout *vBox = nullptr;
+	QVBoxLayout* vBox = nullptr;
 	QHBoxLayout* hBox = nullptr;
 
 	try {
@@ -57,15 +57,7 @@ DeviceControlTab::DeviceControlTab(
 
 		/* -- -- -- */
 
-		{
-			QFrame* line = new QFrame();
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "allocated QFrame";
-#endif
-			line->setFrameShape(QFrame::HLine);
-			line->setFrameShadow(QFrame::Sunken);
-			vBox->addWidget(line);
-		}
+		vBox->addWidget( this->getHLine() );
 
 		/* -- -- -- */
 
@@ -79,30 +71,17 @@ DeviceControlTab::DeviceControlTab(
 
 		/* -- -- -- */
 
-		{
-			_line2 = new QFrame();
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "allocated QFrame";
-#endif
-			_line2->setFrameShape(QFrame::HLine);
-			_line2->setFrameShadow(QFrame::Sunken);
-			vBox->addWidget(_line2);
-		}
+		_line2 = this->getHLine();
+		vBox->addWidget( _line2 );
+
 		/* -- -- -- */
 
 		vBox->addLayout(hBox);
 
 		/* -- -- -- */
 
-		{
-			_line3 = new QFrame();
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "allocated QFrame";
-#endif
-			_line3->setFrameShape(QFrame::HLine);
-			_line3->setFrameShadow(QFrame::Sunken);
-			vBox->addWidget(_line3);
-		}
+		_line3 = this->getHLine();
+		vBox->addWidget( _line3 );
 
 		/* -- -- -- */
 

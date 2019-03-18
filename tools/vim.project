@@ -147,6 +147,7 @@ GLogiK=$PWD/.. CD=. {
 			gui=gui/ {
 				qt=Qt/ {
 					Makefile.am
+					Tab.cpp
 					Tab.hpp
 					DaemonAndServiceTab.cpp
 					DaemonAndServiceTab.hpp

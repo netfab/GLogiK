@@ -360,6 +360,7 @@ void DBusHandler::unregisterWithDaemon(void) {
 			if( ret ) {
 				_registerStatus = false;
 				_clientID = "undefined";
+				_daemonVersion = "unknown";
 				LOG(INFO) << "successfully unregistered with daemon";
 			}
 			else {

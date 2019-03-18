@@ -20,6 +20,7 @@ GKcQt5_LDADD = \
 		libGKShared.la
 
 GKcQt5_SOURCES = \
+		%D%/Tab.cpp \
 		%D%/Tab.hpp \
 		%D%/DaemonAndServiceTab.cpp \
 		%D%/DaemonAndServiceTab.hpp \
