@@ -25,7 +25,8 @@
 
 #include <new>
 #include <stdexcept>
-#include <vector>
+#include <thread>
+#include <chrono>
 
 #include <QString>
 #include <QStringList>
@@ -61,6 +62,7 @@ MainWindow::MainWindow(QWidget *parent)
 		_pid(0),
 		_LOGfd(nullptr),
 		_GUIResetThrow(true),
+		_serviceStartRequest(false),
 		_devicesComboBox(nullptr)
 {
 	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
@@ -226,7 +228,39 @@ void MainWindow::build(void)
 		throw GLogiKBadAlloc("Qt bad alloc :(");
 	}
 
-	this->resetInterface();
+	try {
+		this->resetInterface(); /* try 1 */
+	}
+	catch (const GLogiKExcept & e) {
+		if(_serviceStartRequest) {
+			std::string status("desktop service seems not started, request");
+			try {
+				/* asking the launcher for the desktop service restart */
+				_pDBus->initializeBroadcastSignal(
+					NSGKDBus::BusConnection::GKDBUS_SESSION,
+					GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+					GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+					"RestartRequest"
+				);
+				_pDBus->sendBroadcastSignal();
+
+				status += " sent to launcher";
+				LOG(WARNING) << status;
+			}
+			catch (const GKDBusMessageWrongBuild & e) {
+				_pDBus->abandonBroadcastSignal();
+				status += " to launcher failed";
+				LOG(ERROR) << status << " - " << e.what();
+				throw GLogiKExcept("Service RestartRequest failed");
+			}
+
+			/* sleeping for 2 seconds before retrying */
+			std::this_thread::sleep_for(std::chrono::seconds(2));
+
+			this->resetInterface(); /* try 2 */
+		}
+	}
+
 	_GUIResetThrow = false; /* after here, don't throw if reset interface fails */
 	this->initializeQtSignalsSlots();
 }
@@ -370,15 +404,25 @@ void MainWindow::resetInterface(void)
 #endif
 
 	try {
+		/* clear() set current index to -1 */
+		_devicesComboBox->clear();
+
 		QTabWidget* tabWidget = nullptr;
 		QWidget* tab = nullptr;
 
 		this->setTabWidgetPointers("DaemonAndService", tabWidget, tab);
 		DaemonAndServiceTab* daemonAndServiceTab = dynamic_cast<DaemonAndServiceTab*>(tab);
-		daemonAndServiceTab->updateTab();
+		try {
+			daemonAndServiceTab->updateTab();
+		}
+		catch (const GLogiKExcept & e) {
+			_serviceStartRequest = (daemonAndServiceTab->isServiceStarted() == false);
 
-		/* clear() set current index to -1 */
-		_devicesComboBox->clear();
+			/* additems() set current index to 0
+			 * ::updateInterface() will be called with index 0 */
+			_devicesComboBox->addItems({""});
+			throw;
+		}
 
 		/* don't try to update devices list if the service
 		 * is not registered against the daemon */

@@ -41,7 +41,8 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 	NSGKDBus::GKDBus* pDBus,
 	const QString & name
 )	:	Tab(pDBus),
-		_serviceStatus(false)
+		_serviceStarted(false),
+		_serviceRegistered(false)
 {
 	this->setObjectName(name);
 
@@ -103,9 +104,14 @@ DaemonAndServiceTab::~DaemonAndServiceTab()
 {
 }
 
-const bool DaemonAndServiceTab::isServiceRegistered(void)
+const bool DaemonAndServiceTab::isServiceStarted(void) const
 {
-	return _serviceStatus;
+	return _serviceStarted;
+}
+
+const bool DaemonAndServiceTab::isServiceRegistered(void) const
+{
+	return _serviceRegistered;
 }
 
 void DaemonAndServiceTab::updateTab(void)
@@ -115,7 +121,8 @@ void DaemonAndServiceTab::updateTab(void)
 		_daemonVersionLabel->setText(vers);
 		_serviceVersionLabel->setText(vers);
 		_serviceStatusLabel->setText("Status : unknown");
-		_serviceStatus = false;
+		_serviceRegistered = false;
+		_serviceStarted = false; /*  consider service as not started */
 	}
 
 	const std::string remoteMethod("GetInformations");
@@ -147,10 +154,16 @@ void DaemonAndServiceTab::updateTab(void)
 			labelText += status;
 			_serviceStatusLabel->setText(labelText);
 
-			_serviceStatus = (status == "registered");
-
+			_serviceRegistered = (status == "registered");
+			_serviceStarted = true;
 		}
 		catch (const GLogiKExcept & e) {
+			//std::string reason(e.what());
+			/* got DBus error as reply : The name com.glogik.Client
+			 * was not provided by any .service files */
+			//if(reason.find("not provided") != std::string::npos)
+			//	_serviceStarted = false;
+
 			LogRemoteCallGetReplyFailure
 			throw GLogiKExcept("failure to get request reply");
 		}

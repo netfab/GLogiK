@@ -55,6 +55,7 @@ class MainWindow
 		pid_t _pid;
 		FILE* _LOGfd;	/* log file descriptor */
 		bool _GUIResetThrow;
+		bool _serviceStartRequest;
 
 		QComboBox* _devicesComboBox;
 

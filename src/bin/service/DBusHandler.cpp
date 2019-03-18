@@ -132,6 +132,8 @@ DBusHandler::~DBusHandler() {
 		try {
 			_devices.clearDevices();
 			this->unregisterWithDaemon();
+			/* send signal to GUI */
+			this->sendDevicesUpdatedSignal();
 		}
 		catch ( const GLogiKFatalError & e ) {
 			// giving up
@@ -897,6 +899,8 @@ void DBusHandler::daemonIsStopping(void) {
 					<< " - saving state and unregistering with daemon";
 		_devices.clearDevices();
 		this->unregisterWithDaemon();
+		/* send signal to GUI */
+		this->sendDevicesUpdatedSignal();
 	}
 	else {
 #if DEBUGGING_ON
@@ -972,6 +976,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 					LOG(DEBUG3) << "device status from daemon: " << devID << " started";
 #endif
 					_devices.startDevice(devID);
+					/* send signal to GUI */
 					this->sendDevicesUpdatedSignal();
 				}
 				else {
@@ -1026,6 +1031,7 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 					LOG(DEBUG3) << "device status from daemon: " << devID << " stopped";
 #endif
 					_devices.stopDevice(devID);
+					/* send signal to GUI */
 					this->sendDevicesUpdatedSignal();
 				}
 				else {
@@ -1072,6 +1078,7 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
 					LOG(DEBUG3) << "device status from daemon: " << devID << " unplugged";
 #endif
 					_devices.unplugDevice(devID);
+					/* send signal to GUI */
 					this->sendDevicesUpdatedSignal();
 				}
 				else {
