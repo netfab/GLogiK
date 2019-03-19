@@ -22,6 +22,7 @@
 #ifndef SRC_BIN_GUI_QT_DAEMON_AND_SERVICE_TAB_HPP_
 #define SRC_BIN_GUI_QT_DAEMON_AND_SERVICE_TAB_HPP_
 
+#include <QPushButton>
 #include <QLabel>
 #include <QString>
 #include <QWidget>
@@ -54,6 +55,10 @@ class DaemonAndServiceTab
 		QLabel* _serviceStatusLabel;
 		bool _serviceStarted;
 		bool _serviceRegistered;
+
+		QPushButton* _pStart;
+
+		void startSignal(void);
 };
 
 } // namespace GLogiK

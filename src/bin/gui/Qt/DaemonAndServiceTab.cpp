@@ -21,6 +21,7 @@
 
 #include <string>
 
+#include <QSizePolicy>
 #include <QString>
 #include <QVBoxLayout>
 #include <QGroupBox>
@@ -90,6 +91,22 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 
 			_serviceStatusLabel = new QLabel("Status");
 			layout->addWidget(_serviceStatusLabel);
+
+			_pStart = new QPushButton("Start service");
+#if DEBUGGING_ON
+			LOG(DEBUG1) << "allocated Start button";
+#endif
+			_pStart->setObjectName("StartServiceButton");
+			layout->addWidget(_pStart);
+
+			/* keeping space used when hiding button */
+			QSizePolicy retain = _pStart->sizePolicy();
+			retain.setRetainSizeWhenHidden(true);
+			_pStart->setSizePolicy(retain);
+
+			_pStart->setEnabled(false);
+
+			connect(_pStart, &QPushButton::clicked, this, &DaemonAndServiceTab::startSignal);
 		}
 
 		/* -- -- -- */
@@ -120,9 +137,13 @@ void DaemonAndServiceTab::updateTab(void)
 		const QString vers("Version : unknown");
 		_daemonVersionLabel->setText(vers);
 		_serviceVersionLabel->setText(vers);
-		_serviceStatusLabel->setText("Status : unknown");
+
+		/* assuming service stopped */
+		_serviceStatusLabel->setText("Status : stopped");
 		_serviceRegistered = false;
-		_serviceStarted = false; /*  consider service as not started */
+		_serviceStarted = false;
+		_pStart->setVisible(false);
+		_pStart->setEnabled(false);
 	}
 
 	const std::string remoteMethod("GetInformations");
@@ -149,20 +170,27 @@ void DaemonAndServiceTab::updateTab(void)
 			labelText += _pDBus->getNextStringArgument().c_str();
 			_serviceVersionLabel->setText(labelText);
 
-			labelText = "Status : ";
+			labelText = "Status : started and ";
 			QString status(_pDBus->getNextStringArgument().c_str());
 			labelText += status;
 			_serviceStatusLabel->setText(labelText);
 
 			_serviceRegistered = (status == "registered");
 			_serviceStarted = true;
+
+			_pStart->setVisible(false);
+			_pStart->setEnabled(false);
 		}
 		catch (const GLogiKExcept & e) {
-			//std::string reason(e.what());
+			/*  make service start button visible and usable only when
+			 *  service is not started */
+			std::string reason(e.what());
 			/* got DBus error as reply : The name com.glogik.Client
 			 * was not provided by any .service files */
-			//if(reason.find("not provided") != std::string::npos)
-			//	_serviceStarted = false;
+			if(reason.find("not provided") != std::string::npos) {
+				_pStart->setVisible(true);
+				_pStart->setEnabled(true);
+			}
 
 			LogRemoteCallGetReplyFailure
 			throw GLogiKExcept("failure to get request reply");
@@ -172,6 +200,32 @@ void DaemonAndServiceTab::updateTab(void)
 		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
 		throw GLogiKExcept("failure to build request");
+	}
+}
+
+void DaemonAndServiceTab::startSignal(void)
+{
+	_pStart->setEnabled(false);
+
+	std::string status("desktop service request");
+	try {
+		/* asking the launcher for the desktop service start */
+		_pDBus->initializeBroadcastSignal(
+			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+			"RestartRequest"
+		);
+		_pDBus->sendBroadcastSignal();
+
+		status += " sent to launcher";
+		LOG(INFO) << status;
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonBroadcastSignal();
+		status += " to launcher failed";
+		LOG(ERROR) << status << " - " << e.what();
+		throw GLogiKExcept("service RestartRequest failed");
 	}
 }
 

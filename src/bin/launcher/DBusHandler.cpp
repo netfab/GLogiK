@@ -99,6 +99,15 @@ void LauncherDBusHandler::initializeGKDBusSignals(void) {
 		{},
 		std::bind(&LauncherDBusHandler::restartRequest, this)
 	);
+
+	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+		_sessionBus,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+		"RestartRequest",
+		{},
+		std::bind(&LauncherDBusHandler::restartRequest, this)
+	);
 }
 
 void LauncherDBusHandler::restartRequest(void)
