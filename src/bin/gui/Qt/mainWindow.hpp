@@ -34,8 +34,13 @@
 #include <QWidget>
 #include <QTabWidget>
 
+#include <boost/filesystem.hpp>
+
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/deviceFile.hpp"
+#include "lib/shared/deviceProperties.hpp"
+
+namespace fs = boost::filesystem;
 
 namespace GLogiK
 {
@@ -59,6 +64,10 @@ class MainWindow
 
 		QComboBox* _devicesComboBox;
 
+		fs::path _configurationRootDirectory;
+		fs::path _configurationFilePath;
+		DeviceProperties _openedConfigurationFile;
+
 		void setTabWidgetPointers(
 			const std::string & name,
 			QTabWidget*& tabWidget,
@@ -72,6 +81,7 @@ class MainWindow
 		void resetInterface(void);
 		void updateInterface(int index);
 		void checkDBusMessages(void);
+		void saveFile(void);
 
 		std::map<const std::string, DeviceFile> _devices;
 };

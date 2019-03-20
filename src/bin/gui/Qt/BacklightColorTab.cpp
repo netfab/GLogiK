@@ -20,19 +20,165 @@
  */
 
 
+#include <QPainter>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QColorDialog>
+
+#include "lib/shared/glogik.hpp"
+#include "lib/utils/utils.hpp"
+
 #include "BacklightColorTab.hpp"
 
 
 namespace GLogiK
 {
 
-BacklightColorTab::BacklightColorTab(const QString & name)
+using namespace NSGKUtils;
+
+BacklightColorTab::BacklightColorTab(
+	NSGKDBus::GKDBus* pDBus,
+	const QString & name
+)	:	Tab(pDBus),
+		_pCurrentColorLabel(nullptr),
+		_pNewColorLabel(nullptr),
+		_pApplyButton(nullptr)
 {
 	this->setObjectName(name);
+
+	QVBoxLayout* vBox = nullptr;
+	QHBoxLayout* hBox = nullptr;
+
+	try {
+		vBox = new QVBoxLayout(this);
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "allocated QVBoxLayout";
+#endif
+		this->setLayout(vBox);
+
+		/* -- -- -- */
+		vBox->addWidget( this->getHLine() );
+		/* -- -- -- */
+
+		QColorDialog* colorDialog = new QColorDialog(this);
+		vBox->addWidget(colorDialog);
+
+		colorDialog->setWindowFlags(Qt::Widget);
+		colorDialog->setOptions(
+			QColorDialog::DontUseNativeDialog
+			| QColorDialog::NoButtons
+		);
+
+		/* -- -- -- */
+
+		vBox->addStretch();
+
+		/* -- -- -- */
+		vBox->addWidget( this->getHLine() );
+		/* -- -- -- */
+
+		hBox = new QHBoxLayout();
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "allocated QHBoxLayout";
+#endif
+
+		vBox->addLayout(hBox);
+
+		hBox->addWidget(new QLabel("Current backlight color : "));
+
+		_pCurrentColorLabel = new QLabel();
+		hBox->addWidget(_pCurrentColorLabel);
+		_pCurrentColorLabel->setFixedSize(26, 26);
+
+		QColor initialColor(255, 255, 255);
+		this->setCurrentColorLabel(initialColor);
+
+		hBox->addStretch();
+
+		hBox->addWidget(new QLabel("New color : "));
+
+		_pNewColorLabel = new QLabel();
+		hBox->addWidget(_pNewColorLabel);
+		_pNewColorLabel->setFixedSize(26, 26);
+
+		hBox->addSpacing(10);
+
+		_pApplyButton = new QPushButton("Apply color");
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "allocated Apply button";
+#endif
+		hBox->addWidget(_pApplyButton);
+
+		hBox->addSpacing(10);
+
+		/* -- -- -- */
+		vBox->addWidget( this->getHLine() );
+		/* -- -- -- */
+
+		this->setNewColorLabel(initialColor);
+
+		connect(colorDialog, &QColorDialog::currentColorChanged, this, &BacklightColorTab::setNewColorLabel);
+	}
+	catch (const std::bad_alloc& e) {
+		LOG(ERROR) << e.what();
+		throw;
+	}
 }
 
 BacklightColorTab::~BacklightColorTab()
 {
+}
+
+const QPushButton* BacklightColorTab::getApplyButton(void) const
+{
+	return _pApplyButton;
+}
+
+const QColor & BacklightColorTab::getAndSetNewColor(void)
+{
+	this->setCurrentColorLabel(_newColor);
+	_pApplyButton->setEnabled( ! (_newColor == _currentColor) );
+	return _newColor;
+}
+
+void BacklightColorTab::disableApplyButton(void)
+{
+	_pApplyButton->setEnabled(false);
+}
+
+void BacklightColorTab::updateTab(
+	const DeviceProperties & device
+) {
+	uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
+	QColor color(r, g, b);
+
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "updating BacklightColorTab";
+	LOG(DEBUG2) << "color : " << color.name().toStdString();
+#endif
+	this->setCurrentColorLabel(color);
+	this->setNewColorLabel(color);
+}
+
+const QString BacklightColorTab::getBlackBorderedStyleSheetColor(const QColor & color) const
+{
+	QString style("border:1px solid black;");
+	style += " background-color:" + color.name() + ";";
+	return style;
+}
+
+void BacklightColorTab::setCurrentColorLabel(const QColor & color)
+{
+	_pCurrentColorLabel->setStyleSheet(this->getBlackBorderedStyleSheetColor(color));
+	_currentColor = color;
+}
+
+void BacklightColorTab::setNewColorLabel(const QColor & color)
+{
+	_pNewColorLabel->setStyleSheet(this->getBlackBorderedStyleSheetColor(color));
+	_newColor = color;
+	_pApplyButton->setEnabled( ! (_newColor == _currentColor) );
 }
 
 } // namespace GLogiK

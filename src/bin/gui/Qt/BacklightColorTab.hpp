@@ -22,21 +22,52 @@
 #ifndef SRC_BIN_GUI_QT_BACKLIGHT_COLOR_TAB_HPP_
 #define SRC_BIN_GUI_QT_BACKLIGHT_COLOR_TAB_HPP_
 
+#include <QColor>
+#include <QLabel>
 #include <QString>
 #include <QWidget>
+#include <QPushButton>
+
+#include "lib/shared/deviceProperties.hpp"
+
+#include "Tab.hpp"
+
 
 namespace GLogiK
 {
 
 class BacklightColorTab
-	:	public QWidget
+	:	public Tab,
+		public QWidget
 {
 	public:
-		BacklightColorTab(const QString & name);
+		BacklightColorTab(
+			NSGKDBus::GKDBus* pDBus,
+			const QString & name
+		);
 		~BacklightColorTab();
+
+		void updateTab(
+			const DeviceProperties & device
+		);
+
+		const QPushButton* getApplyButton(void) const;
+		const QColor & getAndSetNewColor(void);
+		void disableApplyButton(void);
 
 	private:
 		BacklightColorTab() = delete;
+
+		QLabel* _pCurrentColorLabel;
+		QLabel* _pNewColorLabel;
+
+		QColor _currentColor;
+		QColor _newColor;
+		QPushButton* _pApplyButton;
+
+		const QString getBlackBorderedStyleSheetColor(const QColor & color) const;
+		void setCurrentColorLabel(const QColor & color);
+		void setNewColorLabel(const QColor & color);
 };
 
 } // namespace GLogiK

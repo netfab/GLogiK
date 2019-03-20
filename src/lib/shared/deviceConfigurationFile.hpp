@@ -19,48 +19,36 @@
  *
  */
 
-#include <cstdlib>
+#ifndef SRC_LIB_SHARED_DEVICE_CONFIGURATION_FILE_HPP_
+#define SRC_LIB_SHARED_DEVICE_CONFIGURATION_FILE_HPP_
 
-#include <QString>
-#include <QApplication>
-#include <QIcon>
+#include <string>
 
-#include "lib/utils/utils.hpp"
+#include "deviceProperties.hpp"
 
-#include "mainWindow.hpp"
-
-using namespace GLogiK;
-using namespace NSGKUtils;
-
-int main(int argc, char *argv[])
+namespace GLogiK
 {
-	QApplication app(argc, argv);
 
-	MainWindow window;
+class DeviceConfigurationFile
+{
+	public:
+		static void load(
+			const std::string & filePath,
+			DeviceProperties & device) noexcept;
 
-	try {
+		static void save(
+			const std::string & filePath,
+			const DeviceProperties & device) noexcept;
 
-		window.init();
-		window.build();
+	protected:
+		DeviceConfigurationFile();
+		~DeviceConfigurationFile();
 
-		window.setFixedSize(800, 580);
+	private:
 
-		{
-			QString title("GKcQt5 "); title += VERSION;
-			window.setWindowTitle(title);
+};
 
-			QString icon(DATA_DIR);
-			icon += "/icons/hicolor/48x48/apps/GLogiK.png";
-			window.setWindowIcon(QIcon(icon));
-		}
+} // namespace GLogiK
 
-		window.show();
-	}
-	catch ( const GLogiKExcept & e ) {
-		LOG(ERROR) << e.what();
-		return EXIT_FAILURE;
-	}
-
-	return app.exec();
-}
+#endif
 

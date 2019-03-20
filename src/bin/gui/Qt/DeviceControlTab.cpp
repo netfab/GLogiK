@@ -156,7 +156,8 @@ void DeviceControlTab::updateTab(
 	const bool status)
 {
 #if DEBUGGING_ON
-	LOG(DEBUG1) << "updating tab for device " << devID;
+	LOG(DEBUG1) << "updating DeviceControlTab";
+	LOG(DEBUG2) << "device " << devID;
 #endif
 	_devID = devID;
 

@@ -37,12 +37,10 @@
 #include <QComboBox>
 #include <QTabWidget>
 
-#include <boost/filesystem.hpp>
-
 #include "lib/shared/glogik.hpp"
 #include "lib/shared/deviceFile.hpp"
+#include "lib/shared/deviceConfigurationFile.hpp"
 #include "lib/utils/utils.hpp"
-
 #include "lib/dbus/arguments/GKDBusArgString.hpp"
 
 #include "Tab.hpp"
@@ -158,6 +156,9 @@ void MainWindow::init(void)
 	connect(timer, &QTimer::timeout, this, &MainWindow::checkDBusMessages);
 
 	this->statusBar();
+
+	_configurationRootDirectory = XDGUserDirs::getConfigurationRootDirectory();
+	_configurationRootDirectory /= PACKAGE_NAME;
 }
 
 void MainWindow::build(void)
@@ -206,7 +207,7 @@ void MainWindow::build(void)
 
 		tabWidget->addTab(new DaemonAndServiceTab(_pDBus, "DaemonAndService"), tr("Daemon and Service"));
 		tabWidget->addTab(new DeviceControlTab(_pDBus, "DeviceControl"), tr("Device Control"));
-		tabWidget->addTab(new BacklightColorTab("BacklightColor"), tr("Backlight Color"));
+		tabWidget->addTab(new BacklightColorTab(_pDBus, "BacklightColor"), tr("Backlight Color"));
 		//tabWidget->addTab(new QWidget(), tr("Multimedia Keys"));
 		//tabWidget->addTab(new QWidget(), tr("LCD Screen Plugins"));
 		//tabWidget->addTab(new QWidget(), tr("Macros"));
@@ -278,7 +279,33 @@ void MainWindow::build(void)
 void MainWindow::initializeQtSignalsSlots(void)
 {
 	connect(_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
+
+	QTabWidget* tabWidget = nullptr;
+	QWidget* tab = nullptr;
+
+	this->setTabWidgetPointers("BacklightColor", tabWidget, tab);
+	BacklightColorTab* backlightColorTab = dynamic_cast<BacklightColorTab*>(tab);
+	connect(backlightColorTab->getApplyButton(), &QPushButton::clicked, this, &MainWindow::saveFile);
 };
+
+void MainWindow::saveFile(void)
+{
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "saving file";
+#endif
+	QTabWidget* tabWidget = nullptr;
+	QWidget* tab = nullptr;
+
+	this->setTabWidgetPointers("BacklightColor", tabWidget, tab);
+	BacklightColorTab* backlightColorTab = dynamic_cast<BacklightColorTab*>(tab);
+
+	int r, g, b = 255;
+	backlightColorTab->getAndSetNewColor().getRgb(&r, &g, &b);
+	/*  setting color */
+	_openedConfigurationFile.setRGBBytes(r, g, b);
+
+	DeviceConfigurationFile::save(_configurationFilePath.string(), _openedConfigurationFile);
+}
 
 void MainWindow::updateInterface(int index)
 {
@@ -297,6 +324,9 @@ void MainWindow::updateInterface(int index)
 		this->setTabWidgetPointers("DeviceControl", tabWidget, tab);
 		DeviceControlTab* deviceControlTab = dynamic_cast<DeviceControlTab*>(tab);
 
+		this->setTabWidgetPointers("BacklightColor", tabWidget, tab);
+		BacklightColorTab* backlightColorTab = dynamic_cast<BacklightColorTab*>(tab);
+
 		if(index == 0) {
 			deviceControlTab->disableAndHide();
 			this->setTabEnabled("BacklightColor", false);
@@ -305,7 +335,7 @@ void MainWindow::updateInterface(int index)
 		else {
 			const std::string devID( _devicesComboBox->currentText().split(" ").at(0).toStdString() );
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "devID: " << devID;
+			LOG(DEBUG) << "updating tabs";
 #endif
 
 			try {
@@ -313,6 +343,19 @@ void MainWindow::updateInterface(int index)
 				const bool status = (device.getStatus() == "started");
 
 				deviceControlTab->updateTab(devID, status);
+
+				if(status) {
+					_configurationFilePath = _configurationRootDirectory;
+					_configurationFilePath /= device.getVendor();
+					_configurationFilePath /= device.getConfigFilePath();
+
+					_openedConfigurationFile.setVendor(device.getVendor());
+					_openedConfigurationFile.setModel(device.getModel());
+					_openedConfigurationFile.setConfigFilePath(device.getConfigFilePath());
+					DeviceConfigurationFile::load(_configurationFilePath.string(), _openedConfigurationFile);
+
+					backlightColorTab->updateTab(_openedConfigurationFile);
+				}
 				this->setTabEnabled("BacklightColor", status);
 			}
 			catch (const std::out_of_range& oor) {

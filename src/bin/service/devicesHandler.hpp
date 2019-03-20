@@ -115,7 +115,6 @@ class DevicesHandler
 			DeviceProperties & device
 		);
 		void saveDeviceConfigurationFile(
-			const std::string & devID,
 			const DeviceProperties & device
 		);
 		void watchDirectory(

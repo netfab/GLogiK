@@ -143,6 +143,10 @@ const bool DaemonAndServiceTab::isServiceRegistered(void) const
 
 void DaemonAndServiceTab::updateTab(void)
 {
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "updating DaemonAndServiceTab";
+#endif
+
 	{
 		const QString vers("Version : unknown");
 		_daemonVersionLabel->setText(vers);

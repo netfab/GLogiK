@@ -33,6 +33,8 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/process.hpp>
 
+#include "lib/shared/deviceConfigurationFile.hpp"
+
 #include "devicesHandler.hpp"
 
 namespace bp = boost::process;
@@ -149,9 +151,7 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
 	}
 }
 
-void DevicesHandler::saveDeviceConfigurationFile(
-	const std::string & devID,
-	const DeviceProperties & device )
+void DevicesHandler::saveDeviceConfigurationFile(const DeviceProperties & device)
 {
 	try {
 		fs::path filePath(_configurationRootDirectory);
@@ -161,50 +161,13 @@ void DevicesHandler::saveDeviceConfigurationFile(
 
 		filePath /= device.getConfigFilePath();
 
+		DeviceConfigurationFile::save(filePath.string(), device);
+
 		try {
-#if DEBUGGING_ON
-			LOG(DEBUG2) << devID << " opening configuration file for writing : " << filePath.string();
-#endif
-
-			std::ofstream ofs;
-			ofs.exceptions(std::ofstream::failbit|std::ofstream::badbit);
-			ofs.open(filePath.string(), std::ofstream::out|std::ofstream::trunc);
-
 			fs::permissions(filePath, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "opened";
-#endif
-
-			{
-				boost::archive::text_oarchive outputArchive(ofs);
-				outputArchive << device;
-			}
-
-			LOG(INFO) << devID << " successfully saved configuration file, closing";
-			ofs.close();
-		}
-		catch (const std::ofstream::failure & e) {
-			std::ostringstream buffer("fail to open configuration file : ", std::ios_base::app);
-			buffer << e.what();
-			LOG(ERROR) << buffer.str();
 		}
 		catch (const fs::filesystem_error & e) {
 			std::ostringstream buffer("set permissions failure on configuration file : ", std::ios_base::app);
-			buffer << e.what();
-			LOG(ERROR) << buffer.str();
-		}
-		catch(const boost::archive::archive_exception & e) {
-			std::ostringstream buffer("boost::archive exception : ", std::ios_base::app);
-			buffer << e.what();
-			LOG(ERROR) << buffer.str();
-		}
-		/*
-		 * catch std::ios_base::failure on buggy compilers
-		 * should be fixed with gcc >= 7.0
-		 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
-		 */
-		catch( const std::exception & e ) {
-			std::ostringstream buffer("(buggy exception) fail to open configuration file : ", std::ios_base::app);
 			buffer << e.what();
 			LOG(ERROR) << buffer.str();
 		}
@@ -219,52 +182,7 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 	filePath /= device.getVendor();
 	filePath /= device.getConfigFilePath();
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "loading device configuration file " << device.getConfigFilePath();
-#endif
-	try {
-		std::ifstream ifs;
-		ifs.exceptions(std::ifstream::badbit);
-		ifs.open(filePath.string());
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "configuration file successfully opened for reading";
-#endif
-
-		{
-			DeviceProperties newDevice;
-			boost::archive::text_iarchive inputArchive(ifs);
-			inputArchive >> newDevice;
-
-			device.setProperties( newDevice );
-		}
-
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "success, closing";
-#endif
-		ifs.close();
-	}
-	catch (const std::ifstream::failure & e) {
-		std::ostringstream buffer("fail to open configuration file : ", std::ios_base::app);
-		buffer << e.what();
-		LOG(ERROR) << buffer.str();
-	}
-	catch(const boost::archive::archive_exception & e) {
-		std::ostringstream buffer("boost::archive exception : ", std::ios_base::app);
-		buffer << e.what();
-		LOG(ERROR) << buffer.str();
-		// TODO throw GLogiKExcept to create new configuration
-		// file and avoid overwriting on close ?
-	}
-	/*
-	 * catch std::ios_base::failure on buggy compilers
-	 * should be fixed with gcc >= 7.0
-	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
-	 */
-	catch( const std::exception & e ) {
-		std::ostringstream buffer("(buggy exception) fail to open configuration file : ", std::ios_base::app);
-		buffer << e.what();
-		LOG(ERROR) << buffer.str();
-	}
+	DeviceConfigurationFile::load(filePath.string(), device);
 }
 
 void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, const DeviceProperties & device) {
@@ -589,9 +507,10 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "new one : " << device.getConfigFilePath();
+			LOG(DEBUG1) << devID << " saving device configuration file";
 #endif
 			/* we need to create the directory before watching it */
-			this->saveDeviceConfigurationFile(devID, device);
+			this->saveDeviceConfigurationFile(device);
 
 			/* assuming that directory is readable since we just save
 			 * the configuration file and set permissions on directory */
@@ -763,7 +682,10 @@ const bool DevicesHandler::setDeviceMacro(
 					const macro_type macro = _pDBus->getNextMacroArgument();
 
 					device.setMacro(bankID, keyName, macro);
-					this->saveDeviceConfigurationFile(devID, device);
+#if DEBUGGING_ON
+					LOG(DEBUG1) << devID << " saving device configuration file";
+#endif
+					this->saveDeviceConfigurationFile(device);
 					this->watchDirectory(device);
 					return true;
 				}
@@ -795,7 +717,10 @@ const bool DevicesHandler::clearDeviceMacro(
 
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			device.clearMacro(bankID, keyName);
-			this->saveDeviceConfigurationFile(devID, device);
+#if DEBUGGING_ON
+			LOG(DEBUG1) << devID << " saving device configuration file";
+#endif
+			this->saveDeviceConfigurationFile(device);
 			this->watchDirectory(device);
 			return true;
 		}

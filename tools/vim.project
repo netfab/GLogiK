@@ -226,6 +226,8 @@ GLogiK=$PWD/.. CD=. {
 				deviceFile.hpp
 				deviceProperties.cpp
 				deviceProperties.hpp
+				deviceConfigurationFile.cpp
+				deviceConfigurationFile.hpp
 				glogik.cpp
 				glogik.hpp
 				macrosBanks.cpp
