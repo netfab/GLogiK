@@ -21,6 +21,7 @@
 
 #include <string>
 
+#include <QPixmap>
 #include <QSizePolicy>
 #include <QString>
 #include <QVBoxLayout>
@@ -73,6 +74,15 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 
 			_daemonVersionLabel = new QLabel("Version");
 			layout->addWidget(_daemonVersionLabel);
+
+			QLabel* logoLabel = new QLabel();
+			layout->addWidget(logoLabel);
+
+			QString logo(DATA_DIR);
+			logo += "/icons/hicolor/96x96/apps/GLogiK.png";
+
+			QPixmap image(logo);
+			logoLabel->setPixmap(image);
 		}
 
 		/* -- -- -- */
