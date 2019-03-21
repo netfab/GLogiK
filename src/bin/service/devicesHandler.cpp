@@ -29,14 +29,12 @@
 
 #include <boost/archive/archive_exception.hpp>
 #include <boost/archive/xml_archive_exception.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/process.hpp>
 
 #include "devicesHandler.hpp"
 
-namespace fs = boost::filesystem;
 namespace bp = boost::process;
 
 namespace GLogiK
@@ -53,9 +51,8 @@ DevicesHandler::DevicesHandler()
 #if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler initialization";
 #endif
-	_configurationRootDirectory = XDGUserDirs::getConfigDirectory();
-	_configurationRootDirectory += "/";
-	_configurationRootDirectory += PACKAGE_NAME;
+	_configurationRootDirectory = XDGUserDirs::getConfigurationRootDirectory();
+	_configurationRootDirectory /= PACKAGE_NAME;
 
 	FileSystem::createOwnerDirectory(_configurationRootDirectory);
 }

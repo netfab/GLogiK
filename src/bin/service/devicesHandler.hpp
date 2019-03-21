@@ -27,6 +27,8 @@
 #include <string>
 #include <map>
 
+#include <boost/filesystem.hpp>
+
 #include "lib/utils/utils.hpp"
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/glogik.hpp"
@@ -44,6 +46,8 @@
 	LOG(ERROR) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
 
 typedef std::map<const std::string, const std::string> devices_files_map_t;
+
+namespace fs = boost::filesystem;
 
 namespace GLogiK
 {
@@ -94,7 +98,8 @@ class DevicesHandler
 #endif
 		const NSGKDBus::BusConnection _systemBus;
 		std::string _clientID;
-		std::string _configurationRootDirectory;
+
+		fs::path _configurationRootDirectory;
 
 		std::map<const std::string, DeviceProperties> _startedDevices;
 		std::map<const std::string, DeviceProperties> _stoppedDevices;
