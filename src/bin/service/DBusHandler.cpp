@@ -633,7 +633,9 @@ void DBusHandler::initializeDevices(void) {
 
 			const bool ret = _pDBus->getNextBooleanArgument();
 			if( ret ) {
+#if DEBUGGING_ON
 				LOG(DEBUG2) << "successfully toggled ready propertie";
+#endif
 			}
 			else {
 				LOG(WARNING) << "toggling ready propertie failed : false";
