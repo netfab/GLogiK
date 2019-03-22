@@ -61,6 +61,7 @@ MainWindow::MainWindow(QWidget *parent)
 		_LOGfd(nullptr),
 		_GUIResetThrow(true),
 		_serviceStartRequest(false),
+		_statusBarTimeout(3000),
 		_devicesComboBox(nullptr)
 {
 	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
@@ -305,6 +306,9 @@ void MainWindow::saveFile(void)
 	_openedConfigurationFile.setRGBBytes(r, g, b);
 
 	DeviceConfigurationFile::save(_configurationFilePath.string(), _openedConfigurationFile);
+
+	QString msg("Configuration file saved");
+	this->statusBar()->showMessage(msg, _statusBarTimeout);
 }
 
 void MainWindow::updateInterface(int index)
@@ -330,7 +334,7 @@ void MainWindow::updateInterface(int index)
 		if(index == 0) {
 			deviceControlTab->disableAndHide();
 			this->setTabEnabled("BacklightColor", false);
-			this->statusBar()->showMessage("Selected device : none", 2000);
+			this->statusBar()->showMessage("Selected device : none", _statusBarTimeout);
 		}
 		else {
 			const std::string devID( _devicesComboBox->currentText().split(" ").at(0).toStdString() );
@@ -366,7 +370,7 @@ void MainWindow::updateInterface(int index)
 
 			QString msg("Selected device : ");
 			msg += _devicesComboBox->currentText();
-			this->statusBar()->showMessage(msg, 2000);
+			this->statusBar()->showMessage(msg, _statusBarTimeout);
 		}
 	}
 	catch (const GLogiKExcept & e) {
@@ -426,7 +430,7 @@ void MainWindow::updateDevicesList(void)
 			msg += " device(s)";
 
 			LOG(INFO) << msg.toStdString();
-			this->statusBar()->showMessage(msg, 2000);
+			this->statusBar()->showMessage(msg, _statusBarTimeout);
 		}
 		catch (const GLogiKExcept & e) {
 			LogRemoteCallGetReplyFailure

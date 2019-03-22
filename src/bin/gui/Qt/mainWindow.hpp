@@ -61,6 +61,7 @@ class MainWindow
 		FILE* _LOGfd;	/* log file descriptor */
 		bool _GUIResetThrow;
 		bool _serviceStartRequest;
+		int _statusBarTimeout;
 
 		QComboBox* _devicesComboBox;
 
