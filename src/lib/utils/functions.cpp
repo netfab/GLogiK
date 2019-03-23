@@ -31,6 +31,7 @@
 #include <stdexcept>
 #include <iomanip>
 #include <sstream>
+#include <chrono>
 #include <thread>
 #include <limits>
 
@@ -139,11 +140,15 @@ pid_t detachProcess(const bool closeDescriptors)
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "first fork done. pid: " << pid;
 #endif
+		std::this_thread::sleep_for(std::chrono::milliseconds(20));
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "exiting parent";
+#endif
 		exit(EXIT_SUCCESS);
 	}
 	else {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "parent process exited, continue child execution";
+		LOG(DEBUG2) << "continue child execution";
 #endif
 	}
 
@@ -155,8 +160,9 @@ pid_t detachProcess(const bool closeDescriptors)
 	LOG(DEBUG) << "new session done";
 #endif
 
-	// Ignore signal sent from child to parent process
+	// Ignore signals
 	std::signal(SIGCHLD, SIG_IGN);
+	std::signal(SIGHUP, SIG_IGN);
 
 	pid = fork();
 	if(pid == -1)
@@ -167,11 +173,15 @@ pid_t detachProcess(const bool closeDescriptors)
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "second fork done. pid: " << pid;
 #endif
+		std::this_thread::sleep_for(std::chrono::milliseconds(20));
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "exiting parent";
+#endif
 		exit(EXIT_SUCCESS);
 	}
 	else {
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "parent process exited, continue child execution";
+		LOG(DEBUG2) << "continue child execution";
 #endif
 	}
 
