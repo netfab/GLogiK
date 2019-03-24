@@ -199,19 +199,19 @@ void MainWindow::build(void)
 		vBox->addWidget(line);
 		/* -- -- -- */
 
-		QTabWidget* tabWidget = new QTabWidget();
+		_tabbedWidgets = new QTabWidget();
+		vBox->addWidget(_tabbedWidgets);
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "allocated QTabWidget";
 #endif
-		tabWidget->setObjectName("Tabs");
-		vBox->addWidget(tabWidget);
+		_tabbedWidgets->setObjectName("Tabs");
 
-		tabWidget->addTab(new DaemonAndServiceTab(_pDBus, "DaemonAndService"), tr("Daemon and Service"));
-		tabWidget->addTab(new DeviceControlTab(_pDBus, "DeviceControl"), tr("Device Control"));
-		tabWidget->addTab(new BacklightColorTab(_pDBus, "BacklightColor"), tr("Backlight Color"));
-		//tabWidget->addTab(new QWidget(), tr("Multimedia Keys"));
-		//tabWidget->addTab(new QWidget(), tr("LCD Screen Plugins"));
-		//tabWidget->addTab(new QWidget(), tr("Macros"));
+		_tabbedWidgets->addTab(new DaemonAndServiceTab(_pDBus, "DaemonAndService"), tr("Daemon and Service"));
+		_tabbedWidgets->addTab(new DeviceControlTab(_pDBus, "DeviceControl"), tr("Device Control"));
+		_tabbedWidgets->addTab(new BacklightColorTab(_pDBus, "BacklightColor"), tr("Backlight Color"));
+		//_tabbedWidgets->addTab(new QWidget(), tr("Multimedia Keys"));
+		//_tabbedWidgets->addTab(new QWidget(), tr("LCD Screen Plugins"));
+		//_tabbedWidgets->addTab(new QWidget(), tr("Macros"));
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "allocated 5 tabs";
 #endif
@@ -281,11 +281,10 @@ void MainWindow::initializeQtSignalsSlots(void)
 {
 	connect(_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
 
-	QTabWidget* tabWidget = nullptr;
-	QWidget* tab = nullptr;
+	QWidget* pTab = nullptr;
 
-	this->setTabWidgetPointers("BacklightColor", tabWidget, tab);
-	BacklightColorTab* backlightColorTab = dynamic_cast<BacklightColorTab*>(tab);
+	pTab = this->getTabbedWidget("BacklightColor");
+	BacklightColorTab* backlightColorTab = dynamic_cast<BacklightColorTab*>(pTab);
 	connect(backlightColorTab->getApplyButton(), &QPushButton::clicked, this, &MainWindow::saveFile);
 };
 
@@ -294,15 +293,14 @@ void MainWindow::saveFile(void)
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "saving file";
 #endif
-	QTabWidget* tabWidget = nullptr;
-	QWidget* tab = nullptr;
+	QWidget* pTab = nullptr;
 
-	this->setTabWidgetPointers("BacklightColor", tabWidget, tab);
-	BacklightColorTab* backlightColorTab = dynamic_cast<BacklightColorTab*>(tab);
+	pTab = this->getTabbedWidget("BacklightColor");
+	BacklightColorTab* backlightColorTab = dynamic_cast<BacklightColorTab*>(pTab);
 
 	int r, g, b = 255;
 	backlightColorTab->getAndSetNewColor().getRgb(&r, &g, &b);
-	/*  setting color */
+	/* setting color */
 	_openedConfigurationFile.setRGBBytes(r, g, b);
 
 	DeviceConfigurationFile::save(_configurationFilePath.string(), _openedConfigurationFile);
@@ -313,7 +311,7 @@ void MainWindow::saveFile(void)
 
 void MainWindow::updateInterface(int index)
 {
-	/*  don't update interface on combo clear() */
+	/* don't update interface on combo clear() */
 	if(index == -1) {
 		return;
 	}
@@ -322,14 +320,13 @@ void MainWindow::updateInterface(int index)
 #endif
 
 	try {
-		QTabWidget* tabWidget = nullptr;
-		QWidget* tab = nullptr;
+		QWidget* pTab = nullptr;
 
-		this->setTabWidgetPointers("DeviceControl", tabWidget, tab);
-		DeviceControlTab* deviceControlTab = dynamic_cast<DeviceControlTab*>(tab);
+		pTab = this->getTabbedWidget("DeviceControl");
+		DeviceControlTab* deviceControlTab = dynamic_cast<DeviceControlTab*>(pTab);
 
-		this->setTabWidgetPointers("BacklightColor", tabWidget, tab);
-		BacklightColorTab* backlightColorTab = dynamic_cast<BacklightColorTab*>(tab);
+		pTab = this->getTabbedWidget("BacklightColor");
+		BacklightColorTab* backlightColorTab = dynamic_cast<BacklightColorTab*>(pTab);
 
 		if(index == 0) {
 			deviceControlTab->disableAndHide();
@@ -454,11 +451,10 @@ void MainWindow::resetInterface(void)
 		/* clear() set current index to -1 */
 		_devicesComboBox->clear();
 
-		QTabWidget* tabWidget = nullptr;
-		QWidget* tab = nullptr;
+		QWidget* pTab = nullptr;
 
-		this->setTabWidgetPointers("DaemonAndService", tabWidget, tab);
-		DaemonAndServiceTab* daemonAndServiceTab = dynamic_cast<DaemonAndServiceTab*>(tab);
+		pTab = this->getTabbedWidget("DaemonAndService");
+		DaemonAndServiceTab* daemonAndServiceTab = dynamic_cast<DaemonAndServiceTab*>(pTab);
 		try {
 			daemonAndServiceTab->updateTab();
 		}
@@ -493,8 +489,8 @@ void MainWindow::resetInterface(void)
 			_devicesComboBox->addItems(items);
 		}
 
-		this->setTabWidgetPointers("DeviceControl", tabWidget, tab);
-		DeviceControlTab * deviceControlTab = dynamic_cast<DeviceControlTab*>(tab);
+		pTab = this->getTabbedWidget("DeviceControl");
+		DeviceControlTab * deviceControlTab = dynamic_cast<DeviceControlTab*>(pTab);
 		deviceControlTab->disableButtons();
 	}
 	catch (const GLogiKExcept & e) {
@@ -505,39 +501,28 @@ void MainWindow::resetInterface(void)
 	}
 }
 
-void MainWindow::setTabWidgetPointers(
-	const std::string & name,
-	QTabWidget*& tabWidget,
-	QWidget*& tab)
+QWidget* MainWindow::getTabbedWidget(const std::string & name)
 {
-	tabWidget = this->findChild<QTabWidget*>("Tabs");
-	if(tabWidget == 0) {
-		LOG(ERROR) << "tabWidget not found : " << name;
-		throw GLogiKExcept("tabWidget not found");
-	}
-
 	QString n(name.c_str());
-	tab = tabWidget->findChild<QWidget *>(n);
-	if(tab == 0) {
+	QWidget* pTab = _tabbedWidgets->findChild<QWidget *>(n);
+	if(pTab == 0) {
 		LOG(ERROR) << "tab not found : " << name;
 		throw GLogiKExcept("tab not found in tabWidget");
 	}
+	return pTab;
 }
 
 void MainWindow::setTabEnabled(const std::string & name, const bool status)
 {
 	try {
-		QTabWidget* tabWidget = nullptr;
-		QWidget* tab = nullptr;
-		this->setTabWidgetPointers(name, tabWidget, tab);
-
-		int index = tabWidget->indexOf(tab);
+		QWidget* pTab = this->getTabbedWidget(name);
+		int index = _tabbedWidgets->indexOf(pTab);
 		if(index == -1) {
 			LOG(ERROR) << "index not found : " << name;
 			throw GLogiKExcept("tab index not found");
 		}
 
-		tabWidget->setTabEnabled(index, status);
+		_tabbedWidgets->setTabEnabled(index, status);
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "error setting TabEnabled property : " << e.what();

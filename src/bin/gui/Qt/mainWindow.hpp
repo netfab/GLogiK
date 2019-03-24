@@ -64,16 +64,14 @@ class MainWindow
 		int _statusBarTimeout;
 
 		QComboBox* _devicesComboBox;
+		QTabWidget* _tabbedWidgets;
 
 		fs::path _configurationRootDirectory;
 		fs::path _configurationFilePath;
 		DeviceProperties _openedConfigurationFile;
 
-		void setTabWidgetPointers(
-			const std::string & name,
-			QTabWidget*& tabWidget,
-			QWidget*& tab
-		);
+		QWidget* getTabbedWidget(const std::string & name);
+
 		void setTabEnabled(const std::string & name, const bool status);
 
 		void initializeQtSignalsSlots(void);
