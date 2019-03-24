@@ -104,11 +104,16 @@ BacklightColorTab::BacklightColorTab(
 
 		hBox->addSpacing(10);
 
-		_pApplyButton = new QPushButton("Apply color");
+		_pApplyButton = new QPushButton("Appl&y Color");
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "allocated Apply button";
 #endif
 		hBox->addWidget(_pApplyButton);
+
+		/* Default visual properties for widgets are defined by QStyle
+		 * styleSheet() returns empty QString */
+		QString newStyle("padding:3px 12px 3px 12px;");
+		_pApplyButton->setStyleSheet(newStyle);
 
 		hBox->addSpacing(10);
 
