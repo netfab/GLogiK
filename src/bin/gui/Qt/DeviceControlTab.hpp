@@ -60,12 +60,12 @@ class DeviceControlTab
 
 		std::string _devID;
 
-		QLabel* _deviceStatus;
-		QPushButton* _pStart;
-		QPushButton* _pStop;
-		QPushButton* _pRestart;
-		QFrame* _line2;
-		QFrame* _line3;
+		QLabel* _deviceStatusLabel;
+		QPushButton* _pStartButton;
+		QPushButton* _pStopButton;
+		QPushButton* _pRestartButton;
+		QFrame* _HLineFrame2;
+		QFrame* _HLineFrame3;
 
 		void setVisibility(const bool visibility);
 

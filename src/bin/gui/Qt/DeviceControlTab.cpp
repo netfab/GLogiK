@@ -36,12 +36,12 @@ DeviceControlTab::DeviceControlTab(
 	NSGKDBus::GKDBus* pDBus,
 	const QString & name
 )	:	Tab(pDBus),
-		_deviceStatus(nullptr),
-		_pStart(nullptr),
-		_pStop(nullptr),
-		_pRestart(nullptr),
-		_line2(nullptr),
-		_line3(nullptr)
+		_deviceStatusLabel(nullptr),
+		_pStartButton(nullptr),
+		_pStopButton(nullptr),
+		_pRestartButton(nullptr),
+		_HLineFrame2(nullptr),
+		_HLineFrame3(nullptr)
 {
 	this->setObjectName(name);
 
@@ -61,8 +61,8 @@ DeviceControlTab::DeviceControlTab(
 
 		/* -- -- -- */
 
-		_deviceStatus = new QLabel("aaaa");
-		vBox->addWidget(_deviceStatus);
+		_deviceStatusLabel = new QLabel("aaaa");
+		vBox->addWidget(_deviceStatusLabel);
 
 		hBox = new QHBoxLayout();
 #if DEBUGGING_ON
@@ -71,8 +71,8 @@ DeviceControlTab::DeviceControlTab(
 
 		/* -- -- -- */
 
-		_line2 = this->getHLine();
-		vBox->addWidget( _line2 );
+		_HLineFrame2 = this->getHLine();
+		vBox->addWidget( _HLineFrame2 );
 
 		/* -- -- -- */
 
@@ -80,8 +80,8 @@ DeviceControlTab::DeviceControlTab(
 
 		/* -- -- -- */
 
-		_line3 = this->getHLine();
-		vBox->addWidget( _line3 );
+		_HLineFrame3 = this->getHLine();
+		vBox->addWidget( _HLineFrame3 );
 
 		/* -- -- -- */
 
@@ -89,35 +89,32 @@ DeviceControlTab::DeviceControlTab(
 
 		/* -- -- -- */
 
-		_pStart = new QPushButton("Start");
+		_pStartButton = new QPushButton("Start");
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "allocated Start button";
 #endif
-		_pStart->setObjectName("StartButton");
-		hBox->addWidget(_pStart);
+		hBox->addWidget(_pStartButton);
 
-		_pStop = new QPushButton("Stop");
+		_pStopButton = new QPushButton("Stop");
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "allocated Stop button";
 #endif
-		_pStop->setObjectName("StopButton");
-		hBox->addWidget(_pStop);
+		hBox->addWidget(_pStopButton);
 
-		_pRestart = new QPushButton("Restart");
+		_pRestartButton = new QPushButton("Restart");
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "allocated Restart button";
 #endif
-		_pRestart->setObjectName("RestartButton");
-		hBox->addWidget(_pRestart);
+		hBox->addWidget(_pRestartButton);
 	}
 	catch (const std::bad_alloc& e) {
 		LOG(ERROR) << e.what();
 		throw;
 	}
 
-	connect(_pStart   , &QPushButton::clicked, this, &DeviceControlTab::startSignal);
-	connect(_pStop    , &QPushButton::clicked, this, &DeviceControlTab::stopSignal);
-	connect(_pRestart , &QPushButton::clicked, this, &DeviceControlTab::restartSignal);
+	connect(_pStartButton   , &QPushButton::clicked, this, &DeviceControlTab::startSignal);
+	connect(_pStopButton    , &QPushButton::clicked, this, &DeviceControlTab::stopSignal);
+	connect(_pRestartButton , &QPushButton::clicked, this, &DeviceControlTab::restartSignal);
 
 	this->disableAndHide();
 }
@@ -128,9 +125,9 @@ DeviceControlTab::~DeviceControlTab()
 
 void DeviceControlTab::disableButtons(void)
 {
-	_pStart->setEnabled(false);
-	_pStop->setEnabled(false);
-	_pRestart->setEnabled(false);
+	_pStartButton->setEnabled(false);
+	_pStopButton->setEnabled(false);
+	_pRestartButton->setEnabled(false);
 }
 
 void DeviceControlTab::disableAndHide(void)
@@ -139,16 +136,16 @@ void DeviceControlTab::disableAndHide(void)
 
 	this->setVisibility(false);
 
-	_deviceStatus->setText("Please select a device into the combo box above.");
+	_deviceStatusLabel->setText("Please select a device into the combo box above.");
 }
 
 void DeviceControlTab::setVisibility(const bool visibility)
 {
-	_pStart->setVisible(visibility);
-	_pStop->setVisible(visibility);
-	_pRestart->setVisible(visibility);
-	_line2->setVisible(visibility);
-	_line3->setVisible(visibility);
+	_pStartButton->setVisible(visibility);
+	_pStopButton->setVisible(visibility);
+	_pRestartButton->setVisible(visibility);
+	_HLineFrame2->setVisible(visibility);
+	_HLineFrame3->setVisible(visibility);
 }
 
 void DeviceControlTab::updateTab(
@@ -162,22 +159,22 @@ void DeviceControlTab::updateTab(
 	_devID = devID;
 
 	if(status) { /* device status == "started" */
-		_pStart->setEnabled(false);
-		_pStop->setEnabled(true);
-		_pRestart->setEnabled(true);
+		_pStartButton->setEnabled(false);
+		_pStopButton->setEnabled(true);
+		_pRestartButton->setEnabled(true);
 
 		this->setVisibility(true);
 
-		_deviceStatus->setText("Device status : started");
+		_deviceStatusLabel->setText("Device status : started");
 	}
 	else {
-		_pStart->setEnabled(true);
-		_pStop->setEnabled(false);
-		_pRestart->setEnabled(false);
+		_pStartButton->setEnabled(true);
+		_pStopButton->setEnabled(false);
+		_pRestartButton->setEnabled(false);
 
 		this->setVisibility(true);
 
-		_deviceStatus->setText("Device status : stopped");
+		_deviceStatusLabel->setText("Device status : stopped");
 	}
 }
 

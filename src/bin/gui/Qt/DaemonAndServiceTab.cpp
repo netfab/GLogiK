@@ -49,7 +49,6 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 	this->setObjectName(name);
 
 	QVBoxLayout* vBox = nullptr;
-	//QHBoxLayout* hBox = nullptr;
 
 	try {
 		vBox = new QVBoxLayout(this);
@@ -102,21 +101,20 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 			_serviceStatusLabel = new QLabel("Status");
 			layout->addWidget(_serviceStatusLabel);
 
-			_pStart = new QPushButton("Start service");
+			_pStartButton = new QPushButton("Start service");
 #if DEBUGGING_ON
 			LOG(DEBUG1) << "allocated Start button";
 #endif
-			_pStart->setObjectName("StartServiceButton");
-			layout->addWidget(_pStart);
+			layout->addWidget(_pStartButton);
 
 			/* keeping space used when hiding button */
-			QSizePolicy retain = _pStart->sizePolicy();
+			QSizePolicy retain = _pStartButton->sizePolicy();
 			retain.setRetainSizeWhenHidden(true);
-			_pStart->setSizePolicy(retain);
+			_pStartButton->setSizePolicy(retain);
 
-			_pStart->setEnabled(false);
+			_pStartButton->setEnabled(false);
 
-			connect(_pStart, &QPushButton::clicked, this, &DaemonAndServiceTab::startSignal);
+			connect(_pStartButton, &QPushButton::clicked, this, &DaemonAndServiceTab::startSignal);
 		}
 
 		/* -- -- -- */
@@ -156,8 +154,8 @@ void DaemonAndServiceTab::updateTab(void)
 		_serviceStatusLabel->setText("Status : stopped");
 		_serviceRegistered = false;
 		_serviceStarted = false;
-		_pStart->setVisible(false);
-		_pStart->setEnabled(false);
+		_pStartButton->setVisible(false);
+		_pStartButton->setEnabled(false);
 	}
 
 	const std::string remoteMethod("GetInformations");
@@ -192,8 +190,8 @@ void DaemonAndServiceTab::updateTab(void)
 			_serviceRegistered = (status == "registered");
 			_serviceStarted = true;
 
-			_pStart->setVisible(false);
-			_pStart->setEnabled(false);
+			_pStartButton->setVisible(false);
+			_pStartButton->setEnabled(false);
 		}
 		catch (const GLogiKExcept & e) {
 			/*  make service start button visible and usable only when
@@ -202,8 +200,8 @@ void DaemonAndServiceTab::updateTab(void)
 			/* got DBus error as reply : The name com.glogik.Client
 			 * was not provided by any .service files */
 			if(reason.find("not provided") != std::string::npos) {
-				_pStart->setVisible(true);
-				_pStart->setEnabled(true);
+				_pStartButton->setVisible(true);
+				_pStartButton->setEnabled(true);
 			}
 
 			LogRemoteCallGetReplyFailure
@@ -219,7 +217,7 @@ void DaemonAndServiceTab::updateTab(void)
 
 void DaemonAndServiceTab::startSignal(void)
 {
-	_pStart->setEnabled(false);
+	_pStartButton->setEnabled(false);
 
 	std::string status("desktop service request");
 	try {

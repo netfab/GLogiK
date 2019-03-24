@@ -207,7 +207,7 @@ void MainWindow::build(void)
 		_tabbedWidgets->setObjectName("Tabs");
 
 		_tabbedWidgets->addTab(new DaemonAndServiceTab(_pDBus, "DaemonAndService"), tr("Daemon and Service"));
-		_tabbedWidgets->addTab(new DeviceControlTab(_pDBus, "DeviceControl"), tr("Device Control"));
+		_tabbedWidgets->addTab(new DeviceControlTab(_pDBus, "DeviceControl"), tr("Device"));
 		_tabbedWidgets->addTab(new BacklightColorTab(_pDBus, "BacklightColor"), tr("Backlight Color"));
 		//_tabbedWidgets->addTab(new QWidget(), tr("Multimedia Keys"));
 		//_tabbedWidgets->addTab(new QWidget(), tr("LCD Screen Plugins"));

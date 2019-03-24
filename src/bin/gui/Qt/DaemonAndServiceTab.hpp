@@ -56,7 +56,7 @@ class DaemonAndServiceTab
 		bool _serviceStarted;
 		bool _serviceRegistered;
 
-		QPushButton* _pStart;
+		QPushButton* _pStartButton;
 
 		void startSignal(void);
 };
