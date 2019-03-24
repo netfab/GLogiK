@@ -27,6 +27,7 @@
 #include <QString>
 #include <QWidget>
 #include <QPushButton>
+#include <QColorDialog>
 
 #include "lib/shared/deviceProperties.hpp"
 
@@ -61,6 +62,7 @@ class BacklightColorTab
 		QLabel* _pCurrentColorLabel;
 		QLabel* _pNewColorLabel;
 
+		QColorDialog* _colorDialog;
 		QColor _currentColor;
 		QColor _newColor;
 		QPushButton* _pApplyButton;

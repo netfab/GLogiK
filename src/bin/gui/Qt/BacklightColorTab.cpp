@@ -20,11 +20,8 @@
  */
 
 
-#include <QPainter>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QPushButton>
-#include <QColorDialog>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
@@ -61,11 +58,11 @@ BacklightColorTab::BacklightColorTab(
 		vBox->addWidget( this->getHLine() );
 		/* -- -- -- */
 
-		QColorDialog* colorDialog = new QColorDialog(this);
-		vBox->addWidget(colorDialog);
+		_colorDialog = new QColorDialog();
+		vBox->addWidget(_colorDialog);
 
-		colorDialog->setWindowFlags(Qt::Widget);
-		colorDialog->setOptions(
+		_colorDialog->setWindowFlags(Qt::Widget);
+		_colorDialog->setOptions(
 			QColorDialog::DontUseNativeDialog
 			| QColorDialog::NoButtons
 		);
@@ -123,7 +120,7 @@ BacklightColorTab::BacklightColorTab(
 
 		this->setNewColorLabel(initialColor);
 
-		connect(colorDialog, &QColorDialog::currentColorChanged, this, &BacklightColorTab::setNewColorLabel);
+		connect(_colorDialog, &QColorDialog::currentColorChanged, this, &BacklightColorTab::setNewColorLabel);
 	}
 	catch (const std::bad_alloc& e) {
 		LOG(ERROR) << e.what();
@@ -163,7 +160,7 @@ void BacklightColorTab::updateTab(
 	LOG(DEBUG2) << "color : " << color.name().toStdString();
 #endif
 	this->setCurrentColorLabel(color);
-	this->setNewColorLabel(color);
+	_colorDialog->setCurrentColor(color);
 }
 
 const QString BacklightColorTab::getBlackBorderedStyleSheetColor(const QColor & color) const
