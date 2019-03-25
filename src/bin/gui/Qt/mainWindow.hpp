@@ -70,6 +70,8 @@ class MainWindow
 		fs::path _configurationFilePath;
 		DeviceProperties _openedConfigurationFile;
 
+		static void handleSignal(int sig);
+
 		QWidget* getTabbedWidget(const std::string & name);
 
 		void setTabEnabled(const std::string & name, const bool status);

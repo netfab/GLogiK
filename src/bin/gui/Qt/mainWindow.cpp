@@ -23,6 +23,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <csignal>
+
 #include <new>
 #include <stdexcept>
 #include <thread>
@@ -37,6 +39,7 @@
 #include <QComboBox>
 #include <QTabWidget>
 #include <QMenu>
+#include <QMetaObject>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/shared/deviceFile.hpp"
@@ -100,6 +103,10 @@ MainWindow::MainWindow(QWidget *parent)
 	if( _LOGfd == nullptr ) {
 		LOG(INFO) << "debug file not opened";
 	}
+
+	std::signal(SIGINT, MainWindow::handleSignal);
+	std::signal(SIGTERM, MainWindow::handleSignal);
+	std::signal(SIGHUP, MainWindow::handleSignal);
 }
 
 MainWindow::~MainWindow() {
@@ -123,6 +130,12 @@ MainWindow::~MainWindow() {
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
+
+void MainWindow::handleSignal(int sig)
+{
+	LOG(INFO) << "catched signal : " << sig;
+	QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
+}
 
 void MainWindow::init(void)
 {
