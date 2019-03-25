@@ -36,6 +36,7 @@
 #include <QVBoxLayout>
 #include <QComboBox>
 #include <QTabWidget>
+#include <QMenu>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/shared/deviceFile.hpp"
@@ -43,6 +44,7 @@
 #include "lib/utils/utils.hpp"
 #include "lib/dbus/arguments/GKDBusArgString.hpp"
 
+#include "AboutDialog.hpp"
 #include "Tab.hpp"
 #include "DaemonAndServiceTab.hpp"
 #include "BacklightColorTab.hpp"
@@ -160,6 +162,21 @@ void MainWindow::init(void)
 
 	_configurationRootDirectory = XDGUserDirs::getConfigurationRootDirectory();
 	_configurationRootDirectory /= PACKAGE_NAME;
+
+	/* -- -- -- */
+
+	QAction* quit = new QAction("&Quit", this);
+	QAction* about = new QAction("&About", this);
+
+	QMenu* fileMenu;
+	fileMenu = menuBar()->addMenu("&File");
+	fileMenu->addAction(quit);
+
+	QMenu* helpMenu = menuBar()->addMenu("&Help");
+	helpMenu->addAction(about);
+
+	connect(quit, &QAction::triggered, qApp, QApplication::quit);
+	connect(about, &QAction::triggered, this, &MainWindow::aboutDialog);
 }
 
 void MainWindow::build(void)
@@ -276,6 +293,15 @@ void MainWindow::build(void)
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
+
+void MainWindow::aboutDialog(void)
+{
+	AboutDialog* about = new AboutDialog(this);
+	about->setModal(true);
+	about->setAttribute(Qt::WA_DeleteOnClose);
+	about->setFixedSize(400, 300);
+	about->open();
+}
 
 void MainWindow::initializeQtSignalsSlots(void)
 {

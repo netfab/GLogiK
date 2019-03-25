@@ -75,6 +75,7 @@ class MainWindow
 		void setTabEnabled(const std::string & name, const bool status);
 
 		void initializeQtSignalsSlots(void);
+		void aboutDialog(void);
 
 		void updateDevicesList(void);
 		void resetInterface(void);
