@@ -315,11 +315,16 @@ void MainWindow::build(void)
 
 void MainWindow::aboutDialog(void)
 {
-	AboutDialog* about = new AboutDialog(this);
-	about->setModal(true);
-	about->setAttribute(Qt::WA_DeleteOnClose);
-	about->setFixedSize(400, 300);
-	about->open();
+	try {
+		AboutDialog* about = new AboutDialog(this);
+		about->setModal(true);
+		about->setAttribute(Qt::WA_DeleteOnClose);
+		about->setFixedSize(400, 300);
+		about->open();
+	}
+	catch (const std::bad_alloc& e) {
+		LOG(ERROR) << "catched bad_alloc : " << e.what();
+	}
 }
 
 void MainWindow::initializeQtSignalsSlots(void)

@@ -38,6 +38,7 @@ class AboutDialog
 	protected:
 
 	private:
+		void closeDialog(void);
 
 };
 
