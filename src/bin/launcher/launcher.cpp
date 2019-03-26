@@ -80,7 +80,13 @@ DesktopServiceLauncher::DesktopServiceLauncher() :
 				LOG(ERROR) << strerror(errno);
 			}
 		}
-		else fs::permissions(debugFile, fs::owner_read|fs::owner_write|fs::group_read);
+		else {
+			boost::system::error_code ec;
+			fs::permissions(debugFile, fs::owner_read|fs::owner_write|fs::group_read, ec);
+			if( ec.value() != 0 ) {
+				LOG(ERROR) << "failure to set debug file permissions : " << ec.value();
+			}
+		}
 
 		LOG_TO_FILE_AND_CONSOLE::FileStream() = _LOGfd;
 	}
