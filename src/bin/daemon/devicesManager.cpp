@@ -154,24 +154,22 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 		const auto & device = _stoppedDevices.at(devID);
 		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
-				if( ! driver->isDeviceInitialized(devID) ) { /* sanity check */
-					// initialization
-					driver->initializeDevice( device );
-					_startedDevices[devID] = device;
+				// initialization
+				driver->initializeDevice( device );
+				_startedDevices[devID] = device;
 
-					std::ostringstream buffer(std::ios_base::app);
-					buffer	<< device.getName() << " " << device.getVendorID()
-							<< ":" << device.getProductID()
-							<< " on bus " << toUInt(device.getBus()) << " initialized";
-					GKSysLog(LOG_INFO, INFO, buffer.str());
+				std::ostringstream buffer(std::ios_base::app);
+				buffer	<< device.getName() << " " << device.getVendorID()
+						<< ":" << device.getProductID()
+						<< " on bus " << toUInt(device.getBus()) << " initialized";
+				GKSysLog(LOG_INFO, INFO, buffer.str());
 
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "removing " << devID << " from stopped devices container";
+				LOG(DEBUG3) << "removing " << devID << " from stopped devices container";
 #endif
-					_stoppedDevices.erase(devID);
+				_stoppedDevices.erase(devID);
 
-					return true;
-				}
+				return true;
 			}
 		}
 	}
@@ -195,20 +193,18 @@ const bool DevicesManager::stopDevice(const std::string & devID) noexcept {
 		const auto & device = _startedDevices.at(devID);
 		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
-				if( driver->isDeviceInitialized(devID) ) {
-					driver->closeDevice( device );
+				driver->closeDevice( device );
 
-					std::ostringstream buffer(std::ios_base::app);
-					buffer	<< device.getName() << " " << device.getVendorID()
-							<< ":" << device.getProductID()
-							<< " on bus " << toUInt(device.getBus()) << " stopped";
-					GKSysLog(LOG_INFO, INFO, buffer.str());
+				std::ostringstream buffer(std::ios_base::app);
+				buffer	<< device.getName() << " " << device.getVendorID()
+						<< ":" << device.getProductID()
+						<< " on bus " << toUInt(device.getBus()) << " stopped";
+				GKSysLog(LOG_INFO, INFO, buffer.str());
 
-					_stoppedDevices[devID] = device;
-					_startedDevices.erase(devID);
+				_stoppedDevices[devID] = device;
+				_startedDevices.erase(devID);
 
-					return true;
-				}
+				return true;
 			}
 		}
 	}

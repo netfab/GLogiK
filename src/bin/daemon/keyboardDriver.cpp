@@ -726,6 +726,13 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 /* throws GLogiKExcept on any failure */
 void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 {
+	/* sanity check */
+	if(_initializedDevices.count(det.getID()) > 0) {
+		std::ostringstream err("device ID already used in started container : ", std::ios_base::app);
+		err << det.getID();
+		throw GLogiKExcept(err.str());
+	}
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << det.getID() << " initializing " << det.getName() << "("
 				<< det.getVendorID() << ":" << det.getProductID() << "), device "
@@ -786,10 +793,6 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 		this->closeUSBDevice(device);
 		throw;
 	}
-}
-
-const bool KeyboardDriver::isDeviceInitialized(const std::string & devID) const {
-	return ( _initializedDevices.count(devID) == 1 );
 }
 
 const bool KeyboardDriver::getDeviceThreadsStatus(const std::string & devID) const

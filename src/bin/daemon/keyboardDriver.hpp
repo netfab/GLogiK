@@ -112,7 +112,6 @@ class KeyboardDriver
 
 		const banksMap_type & getDeviceMacrosBanks(const std::string & devID) const;
 
-		const bool isDeviceInitialized(const std::string & devID) const;
 		const bool getDeviceThreadsStatus(const std::string & devID) const;
 
 		static const bool checkDeviceCapability(const DeviceID & device, Caps toCheck);
