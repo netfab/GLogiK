@@ -954,6 +954,9 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 				<< " - with " << devicesID.size() << " devices";
 #endif
 	const std::string remoteMethod("GetDeviceStatus");
+
+	bool devicesUpdated(false);
+
 	for(const auto& devID : devicesID) {
 		try {
 			_pDBus->initializeRemoteMethodCall(
@@ -976,8 +979,8 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 					LOG(DEBUG3) << "device status from daemon: " << devID << " started";
 #endif
 					_devices.startDevice(devID);
-					/* send signal to GUI */
-					this->sendDevicesUpdatedSignal();
+
+					devicesUpdated = true;
 				}
 				else {
 					LOG(WARNING) << "received devicesStarted signal for device " << devID;
@@ -992,6 +995,11 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 			_pDBus->abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
+	}
+
+	if(devicesUpdated) {
+		/* send signal to GUI */
+		this->sendDevicesUpdatedSignal();
 	}
 
 	/*
@@ -1009,6 +1017,9 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 				<< " - with " << devicesID.size() << " devices";
 #endif
 	const std::string remoteMethod("GetDeviceStatus");
+
+	bool devicesUpdated(false);
+
 	for(const auto& devID : devicesID) {
 		try {
 			_pDBus->initializeRemoteMethodCall(
@@ -1031,8 +1042,8 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 					LOG(DEBUG3) << "device status from daemon: " << devID << " stopped";
 #endif
 					_devices.stopDevice(devID);
-					/* send signal to GUI */
-					this->sendDevicesUpdatedSignal();
+
+					devicesUpdated = true;
 				}
 				else {
 					LOG(WARNING) << "received devicesStopped signal for device " << devID;
@@ -1048,6 +1059,11 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 			LogRemoteCallFailure
 		}
 	}
+
+	if(devicesUpdated) {
+		/* send signal to GUI */
+		this->sendDevicesUpdatedSignal();
+	}
 }
 
 void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
@@ -1056,6 +1072,9 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
 				<< " - with " << devicesID.size() << " devices";
 #endif
 	const std::string remoteMethod("GetDeviceStatus");
+
+	bool devicesUpdated(false);
+
 	for(const auto& devID : devicesID) {
 		try {
 			_pDBus->initializeRemoteMethodCall(
@@ -1078,8 +1097,8 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
 					LOG(DEBUG3) << "device status from daemon: " << devID << " unplugged";
 #endif
 					_devices.unplugDevice(devID);
-					/* send signal to GUI */
-					this->sendDevicesUpdatedSignal();
+
+					devicesUpdated = true;
 				}
 				else {
 					LOG(WARNING) << "received devicesUnplugged signal for device " << devID;
@@ -1094,6 +1113,11 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
 			_pDBus->abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
+	}
+
+	if(devicesUpdated) {
+		/* send signal to GUI */
+		this->sendDevicesUpdatedSignal();
 	}
 }
 
