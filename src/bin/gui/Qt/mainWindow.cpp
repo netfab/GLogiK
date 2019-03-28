@@ -159,24 +159,6 @@ void MainWindow::init(void)
 
 	_pDBus->connectToSessionBus(GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
-		NSGKDBus::BusConnection::GKDBUS_SESSION,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		"DevicesUpdated",
-		{},
-		std::bind(&MainWindow::resetInterface, this)
-	);
-
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringToVoid>::exposeSignal(
-		NSGKDBus::BusConnection::GKDBUS_SESSION,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		"DeviceConfigurationSaved",
-		{ {"s", "device_id", "in", "device ID"}, },
-		std::bind(&MainWindow::configurationFileUpdated, this, std::placeholders::_1)
-	);
-
 	/* initializing timer */
 	QTimer* timer = nullptr;
 	try {
@@ -313,6 +295,24 @@ void MainWindow::build(void)
 
 	_GUIResetThrow = false; /* after here, don't throw if reset interface fails */
 	this->initializeQtSignalsSlots();
+
+	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		"DevicesUpdated",
+		{},
+		std::bind(&MainWindow::resetInterface, this)
+	);
+
+	_pDBus->NSGKDBus::EventGKDBusCallback<StringToVoid>::exposeSignal(
+		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		"DeviceConfigurationSaved",
+		{ {"s", "device_id", "in", "device ID"}, },
+		std::bind(&MainWindow::configurationFileUpdated, this, std::placeholders::_1)
+	);
 }
 
 /*
