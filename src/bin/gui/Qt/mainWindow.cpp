@@ -154,7 +154,7 @@ void MainWindow::init(void)
 		throw GLogiKBadAlloc("GKDBus bad allocation");
 	}
 
-	_pDBus->connectToSessionBus(GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME);
+	_pDBus->connectToSessionBus(GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		NSGKDBus::BusConnection::GKDBUS_SESSION,
