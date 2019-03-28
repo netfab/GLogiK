@@ -62,6 +62,7 @@ class MainWindow
 		bool _GUIResetThrow;
 		bool _serviceStartRequest;
 		int _statusBarTimeout;
+		std::string _devID;
 
 		QComboBox* _devicesComboBox;
 		QTabWidget* _tabbedWidgets;
@@ -84,6 +85,8 @@ class MainWindow
 		void updateInterface(int index);
 		void checkDBusMessages(void);
 		void saveFile(void);
+
+		void configurationFileUpdated(const std::string & devID);
 
 		std::map<const std::string, DeviceFile> _devices;
 };

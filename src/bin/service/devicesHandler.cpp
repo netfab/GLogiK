@@ -151,8 +151,14 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
 	}
 }
 
-void DevicesHandler::saveDeviceConfigurationFile(const DeviceProperties & device)
+void DevicesHandler::saveDeviceConfigurationFile(
+	const std::string & devID,
+	const DeviceProperties & device)
 {
+#if DEBUGGING_ON
+	LOG(DEBUG1) << devID << " saving device configuration file";
+#endif
+
 	try {
 		fs::path filePath(_configurationRootDirectory);
 		filePath /= device.getVendor();
@@ -171,6 +177,31 @@ void DevicesHandler::saveDeviceConfigurationFile(const DeviceProperties & device
 			buffer << e.what();
 			LOG(ERROR) << buffer.str();
 		}
+
+		/* send */
+		std::string status("DeviceConfigurationSaved signal");
+		try {
+			/* send DeviceConfigurationSaved signal to GUI applications */
+			_pDBus->initializeBroadcastSignal(
+				NSGKDBus::BusConnection::GKDBUS_SESSION,
+				GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+				GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+				"DeviceConfigurationSaved"
+			);
+			_pDBus->appendStringToBroadcastSignal(devID);
+			_pDBus->sendBroadcastSignal();
+
+			status += " sent";
+		}
+		catch (const GKDBusMessageWrongBuild & e) {
+			_pDBus->abandonBroadcastSignal();
+			status += " failure";
+			LOG(ERROR) << status << " - " << e.what();
+		}
+
+#if DEBUGGING_ON
+		LOG(DEBUG3) << status << " on session bus";
+#endif
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(ERROR) << e.what();
@@ -507,10 +538,9 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 #if DEBUGGING_ON
 			LOG(DEBUG3) << "new one : " << device.getConfigFilePath();
-			LOG(DEBUG1) << devID << " saving device configuration file";
 #endif
 			/* we need to create the directory before watching it */
-			this->saveDeviceConfigurationFile(device);
+			this->saveDeviceConfigurationFile(devID, device);
 
 			/* assuming that directory is readable since we just save
 			 * the configuration file and set permissions on directory */
@@ -682,10 +712,8 @@ const bool DevicesHandler::setDeviceMacro(
 					const macro_type macro = _pDBus->getNextMacroArgument();
 
 					device.setMacro(bankID, keyName, macro);
-#if DEBUGGING_ON
-					LOG(DEBUG1) << devID << " saving device configuration file";
-#endif
-					this->saveDeviceConfigurationFile(device);
+
+					this->saveDeviceConfigurationFile(devID, device);
 					this->watchDirectory(device);
 					return true;
 				}
@@ -717,10 +745,8 @@ const bool DevicesHandler::clearDeviceMacro(
 
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			device.clearMacro(bankID, keyName);
-#if DEBUGGING_ON
-			LOG(DEBUG1) << devID << " saving device configuration file";
-#endif
-			this->saveDeviceConfigurationFile(device);
+
+			this->saveDeviceConfigurationFile(devID, device);
 			this->watchDirectory(device);
 			return true;
 		}

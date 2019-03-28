@@ -29,6 +29,7 @@
 #include <stdexcept>
 #include <thread>
 #include <chrono>
+#include <functional>
 
 #include <QString>
 #include <QStringList>
@@ -40,6 +41,8 @@
 #include <QTabWidget>
 #include <QMenu>
 #include <QMetaObject>
+#include <QIcon>
+#include <QMessageBox>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/shared/deviceFile.hpp"
@@ -163,6 +166,15 @@ void MainWindow::init(void)
 		"DevicesUpdated",
 		{},
 		std::bind(&MainWindow::resetInterface, this)
+	);
+
+	_pDBus->NSGKDBus::EventGKDBusCallback<StringToVoid>::exposeSignal(
+		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		"DeviceConfigurationSaved",
+		{ {"s", "device_id", "in", "device ID"}, },
+		std::bind(&MainWindow::configurationFileUpdated, this, std::placeholders::_1)
 	);
 
 	/* initializing timer */
@@ -313,6 +325,44 @@ void MainWindow::build(void)
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
+void MainWindow::configurationFileUpdated(const std::string & devID)
+{
+	if( _devID != devID)
+		return;
+
+	{
+		LOG(WARNING) << "configuration file updated since last read for device : " << devID;
+	}
+
+	QMessageBox msgBox;
+
+	QString icon(DATA_DIR);
+	icon += "/icons/hicolor/48x48/apps/GLogiK.png";
+	msgBox.setWindowIcon(QIcon(icon));
+
+	msgBox.setWindowTitle("Configuration file modified since last read.");
+	msgBox.setIcon(QMessageBox::Warning);
+	msgBox.setText("<b>Configuration file modified since last read.</b>");
+
+	QString msg("The configuration file for device ");
+	msg += devID.c_str();
+	msg += " has been modified since it was last read. It must be reloaded. Unsaved changes are lost.";
+
+	msgBox.setInformativeText(msg);
+
+	msgBox.setStandardButtons(QMessageBox::Ok);
+	msgBox.setDefaultButton(QMessageBox::Ok);
+
+	int ret = msgBox.exec();
+
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "got ret value from messageBox : " << ret;
+#endif
+	if(ret == QMessageBox::Ok) {
+		this->updateInterface( _devicesComboBox->currentIndex() );
+	}
+}
+
 void MainWindow::aboutDialog(void)
 {
 	try {
@@ -379,21 +429,22 @@ void MainWindow::updateInterface(int index)
 		BacklightColorTab* backlightColorTab = dynamic_cast<BacklightColorTab*>(pTab);
 
 		if(index == 0) {
+			_devID = "";
 			deviceControlTab->disableAndHide();
 			this->setTabEnabled("BacklightColor", false);
 			this->statusBar()->showMessage("Selected device : none", _statusBarTimeout);
 		}
 		else {
-			const std::string devID( _devicesComboBox->currentText().split(" ").at(0).toStdString() );
+			_devID = _devicesComboBox->currentText().split(" ").at(0).toStdString();
 #if DEBUGGING_ON
 			LOG(DEBUG) << "updating tabs";
 #endif
 
 			try {
-				const DeviceFile & device = _devices.at(devID);
+				const DeviceFile & device = _devices.at(_devID);
 				const bool status = (device.getStatus() == "started");
 
-				deviceControlTab->updateTab(devID, status);
+				deviceControlTab->updateTab(_devID, status);
 
 				if(status) {
 					_configurationFilePath = _configurationRootDirectory;
@@ -411,7 +462,7 @@ void MainWindow::updateInterface(int index)
 			}
 			catch (const std::out_of_range& oor) {
 				std::string error("device not found in container : ");
-				error += devID;
+				error += _devID;
 				throw GLogiKExcept(error);
 			}
 
