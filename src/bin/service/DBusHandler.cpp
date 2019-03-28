@@ -716,7 +716,7 @@ void DBusHandler::sendDevicesUpdatedSignal(void)
 {
 	std::string status("devices updated signal");
 	try {
-		/* asking the launcher for a restart */
+		/* send DevicesUpdated signal to GUI applications */
 		_pDBus->initializeBroadcastSignal(
 			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
