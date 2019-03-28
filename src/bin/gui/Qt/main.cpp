@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 		window.init();
 		window.build();
 
-		window.setFixedSize(800, 580);
+		window.setFixedSize(800, 600);
 
 		{
 			QString title("GKcQt5 "); title += VERSION;
