@@ -159,18 +159,6 @@ void MainWindow::init(void)
 
 	_pDBus->connectToSessionBus(GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
 
-	/* initializing timer */
-	QTimer* timer = nullptr;
-	try {
-		timer = new QTimer(this);
-	}
-	catch (const std::bad_alloc& e) {
-		throw GLogiKBadAlloc("QTimer bad alloc :(");
-	}
-
-	timer->setObjectName("CheckTimer");
-	connect(timer, &QTimer::timeout, this, &MainWindow::checkDBusMessages);
-
 	this->statusBar();
 
 	_configurationRootDirectory = XDGUserDirs::getConfigurationRootDirectory();
@@ -260,14 +248,21 @@ void MainWindow::build(void)
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "built Qt menu";
 #endif
+
+		/* -- -- -- */
+		/* initializing timer */
+		QTimer* timer = new QTimer(this);
+
+		connect(timer, &QTimer::timeout, this, &MainWindow::checkDBusMessages);
+		timer->start(200);
+
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "Qt timer started";
+#endif
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		throw GLogiKBadAlloc("Qt bad alloc :(");
 	}
-
-	/* launching timer */
-	QTimer *timer = this->findChild<QTimer *>("CheckTimer", Qt::FindDirectChildrenOnly);
-	timer->start(200);
 
 	try {
 		this->resetInterface(); /* try 1 */
