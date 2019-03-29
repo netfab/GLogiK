@@ -270,38 +270,43 @@ void MainWindow::build(void)
 		this->resetInterface(); /* try 1 */
 	}
 	catch (const GLogiKExcept & e) {
-		if(_serviceStartRequest) {
-			std::string status("desktop service seems not started, request");
-			try {
-				/* asking the launcher for the desktop service restart */
-				_pDBus->initializeBroadcastSignal(
-					NSGKDBus::BusConnection::GKDBUS_SESSION,
-					GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-					GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-					"RestartRequest"
-				);
-				_pDBus->sendBroadcastSignal();
-
-				status += " sent to launcher";
-				LOG(WARNING) << status;
-			}
-			catch (const GKDBusMessageWrongBuild & e) {
-				_pDBus->abandonBroadcastSignal();
-				status += " to launcher failed";
-				LOG(ERROR) << status << " - " << e.what();
-				throw GLogiKExcept("Service RestartRequest failed");
-			}
-
-			/* sleeping for 2 seconds before retrying */
-			std::this_thread::sleep_for(std::chrono::seconds(2));
-
-			this->resetInterface(); /* try 2 */
+		if(! _serviceStartRequest) {
+			/* should not happen since the desktop service is assumed stopped
+			 * until sucessful daemonAndServiceTab::updateTab() call */
+			throw;
 		}
+
+		std::string status("desktop service seems not started, request");
+		try {
+			/* asking the launcher for the desktop service restart */
+			_pDBus->initializeBroadcastSignal(
+				NSGKDBus::BusConnection::GKDBUS_SESSION,
+				GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+				GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+				"RestartRequest"
+			);
+			_pDBus->sendBroadcastSignal();
+
+			status += " sent to launcher";
+			LOG(WARNING) << status;
+		}
+		catch (const GKDBusMessageWrongBuild & e) {
+			_pDBus->abandonBroadcastSignal();
+			status += " to launcher failed";
+			LOG(ERROR) << status << " - " << e.what();
+			throw GLogiKExcept("Service RestartRequest failed");
+		}
+
+		/* sleeping for 2 seconds before retrying */
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+
+		this->resetInterface(); /* try 2 */
 	}
 
 	/* -- -- -- */
 
-	_GUIResetThrow = false; /* after here, don't throw if reset interface fails */
+	/* after here, don't throw if ::resetInterface() fails */
+	_GUIResetThrow = false;
 
 	/* -- -- -- */
 
@@ -547,6 +552,7 @@ void MainWindow::resetInterface(void)
 			_daemonAndServiceTab->updateTab();
 		}
 		catch (const GLogiKExcept & e) {
+			/* used only over initialization */
 			_serviceStartRequest = (_daemonAndServiceTab->isServiceStarted() == false);
 
 			/* additems() set current index to 0
