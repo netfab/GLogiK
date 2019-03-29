@@ -51,10 +51,6 @@
 #include "lib/dbus/arguments/GKDBusArgString.hpp"
 
 #include "AboutDialog.hpp"
-#include "Tab.hpp"
-#include "DaemonAndServiceTab.hpp"
-#include "BacklightColorTab.hpp"
-#include "DeviceControlTab.hpp"
 #include "mainWindow.hpp"
 
 namespace GLogiK
@@ -70,7 +66,11 @@ MainWindow::MainWindow(QWidget *parent)
 		_GUIResetThrow(true),
 		_serviceStartRequest(false),
 		_statusBarTimeout(3000),
-		_devicesComboBox(nullptr)
+		_devicesComboBox(nullptr),
+		_tabbedWidgets(nullptr),
+		_daemonAndServiceTab(nullptr),
+		_deviceControlTab(nullptr),
+		_backlightColorTab(nullptr)
 {
 	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
 	if( LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() != NONE ) {
@@ -236,14 +236,20 @@ void MainWindow::build(void)
 #endif
 		_tabbedWidgets->setObjectName("Tabs");
 
-		_tabbedWidgets->addTab(new DaemonAndServiceTab(_pDBus, "DaemonAndService"), tr("Daemon and Service"));
-		_tabbedWidgets->addTab(new DeviceControlTab(_pDBus, "DeviceControl"), tr("Device"));
-		_tabbedWidgets->addTab(new BacklightColorTab(_pDBus, "BacklightColor"), tr("Backlight Color"));
+		_daemonAndServiceTab = new DaemonAndServiceTab(_pDBus, "DaemonAndService");
+		_tabbedWidgets->addTab(_daemonAndServiceTab, tr("Daemon and Service"));
+
+		_deviceControlTab = new DeviceControlTab(_pDBus, "DeviceControl");
+		_tabbedWidgets->addTab(_deviceControlTab, tr("Device"));
+
+		_backlightColorTab = new BacklightColorTab(_pDBus, "BacklightColor");
+		_tabbedWidgets->addTab(_backlightColorTab, tr("Backlight Color"));
+
 		//_tabbedWidgets->addTab(new QWidget(), tr("Multimedia Keys"));
 		//_tabbedWidgets->addTab(new QWidget(), tr("LCD Screen Plugins"));
 		//_tabbedWidgets->addTab(new QWidget(), tr("Macros"));
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "allocated 5 tabs";
+		LOG(DEBUG3) << "allocated 3 tabs";
 #endif
 
 		this->setTabEnabled("DaemonAndService", true);
@@ -380,12 +386,7 @@ void MainWindow::aboutDialog(void)
 void MainWindow::initializeQtSignalsSlots(void)
 {
 	connect(_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
-
-	QWidget* pTab = nullptr;
-
-	pTab = this->getTabbedWidget("BacklightColor");
-	BacklightColorTab* backlightColorTab = dynamic_cast<BacklightColorTab*>(pTab);
-	connect(backlightColorTab->getApplyButton(), &QPushButton::clicked, this, &MainWindow::saveFile);
+	connect(_backlightColorTab->getApplyButton(), &QPushButton::clicked, this, &MainWindow::saveFile);
 };
 
 void MainWindow::saveFile(void)
@@ -393,13 +394,9 @@ void MainWindow::saveFile(void)
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "saving file";
 #endif
-	QWidget* pTab = nullptr;
-
-	pTab = this->getTabbedWidget("BacklightColor");
-	BacklightColorTab* backlightColorTab = dynamic_cast<BacklightColorTab*>(pTab);
 
 	int r, g, b = 255;
-	backlightColorTab->getAndSetNewColor().getRgb(&r, &g, &b);
+	_backlightColorTab->getAndSetNewColor().getRgb(&r, &g, &b);
 	/* setting color */
 	_openedConfigurationFile.setRGBBytes(r, g, b);
 
@@ -420,17 +417,9 @@ void MainWindow::updateInterface(int index)
 #endif
 
 	try {
-		QWidget* pTab = nullptr;
-
-		pTab = this->getTabbedWidget("DeviceControl");
-		DeviceControlTab* deviceControlTab = dynamic_cast<DeviceControlTab*>(pTab);
-
-		pTab = this->getTabbedWidget("BacklightColor");
-		BacklightColorTab* backlightColorTab = dynamic_cast<BacklightColorTab*>(pTab);
-
 		if(index == 0) {
-			_devID = "";
-			deviceControlTab->disableAndHide();
+			_devID.clear();
+			_deviceControlTab->disableAndHide();
 			this->setTabEnabled("BacklightColor", false);
 			this->statusBar()->showMessage("Selected device : none", _statusBarTimeout);
 		}
@@ -444,7 +433,7 @@ void MainWindow::updateInterface(int index)
 				const DeviceFile & device = _devices.at(_devID);
 				const bool status = (device.getStatus() == "started");
 
-				deviceControlTab->updateTab(_devID, status);
+				_deviceControlTab->updateTab(_devID, status);
 
 				if(status) {
 					_configurationFilePath = _configurationRootDirectory;
@@ -456,7 +445,7 @@ void MainWindow::updateInterface(int index)
 					_openedConfigurationFile.setConfigFilePath(device.getConfigFilePath());
 					DeviceConfigurationFile::load(_configurationFilePath.string(), _openedConfigurationFile);
 
-					backlightColorTab->updateTab(_openedConfigurationFile);
+					_backlightColorTab->updateTab(_openedConfigurationFile);
 				}
 				this->setTabEnabled("BacklightColor", status);
 			}
@@ -552,15 +541,11 @@ void MainWindow::resetInterface(void)
 		/* clear() set current index to -1 */
 		_devicesComboBox->clear();
 
-		QWidget* pTab = nullptr;
-
-		pTab = this->getTabbedWidget("DaemonAndService");
-		DaemonAndServiceTab* daemonAndServiceTab = dynamic_cast<DaemonAndServiceTab*>(pTab);
 		try {
-			daemonAndServiceTab->updateTab();
+			_daemonAndServiceTab->updateTab();
 		}
 		catch (const GLogiKExcept & e) {
-			_serviceStartRequest = (daemonAndServiceTab->isServiceStarted() == false);
+			_serviceStartRequest = (_daemonAndServiceTab->isServiceStarted() == false);
 
 			/* additems() set current index to 0
 			 * ::updateInterface() will be called with index 0 */
@@ -570,7 +555,7 @@ void MainWindow::resetInterface(void)
 
 		/* don't try to update devices list if the service
 		 * is not registered against the daemon */
-		if( ! daemonAndServiceTab->isServiceRegistered() )
+		if( ! _daemonAndServiceTab->isServiceRegistered() )
 			return;
 
 		this->updateDevicesList();
@@ -590,9 +575,7 @@ void MainWindow::resetInterface(void)
 			_devicesComboBox->addItems(items);
 		}
 
-		pTab = this->getTabbedWidget("DeviceControl");
-		DeviceControlTab * deviceControlTab = dynamic_cast<DeviceControlTab*>(pTab);
-		deviceControlTab->disableButtons();
+		_deviceControlTab->disableButtons();
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "error resetting interface : " << e.what();

@@ -40,6 +40,11 @@
 #include "lib/shared/deviceFile.hpp"
 #include "lib/shared/deviceProperties.hpp"
 
+//#include "Tab.hpp"
+#include "DaemonAndServiceTab.hpp"
+#include "DeviceControlTab.hpp"
+#include "BacklightColorTab.hpp"
+
 namespace fs = boost::filesystem;
 
 namespace GLogiK
@@ -66,6 +71,10 @@ class MainWindow
 
 		QComboBox* _devicesComboBox;
 		QTabWidget* _tabbedWidgets;
+
+		DaemonAndServiceTab* _daemonAndServiceTab;
+		DeviceControlTab* _deviceControlTab;
+		BacklightColorTab* _backlightColorTab;
 
 		fs::path _configurationRootDirectory;
 		fs::path _configurationFilePath;
