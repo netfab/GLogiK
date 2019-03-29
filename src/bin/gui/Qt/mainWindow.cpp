@@ -178,18 +178,6 @@ void MainWindow::init(void)
 
 	/* -- -- -- */
 
-	QAction* quit = new QAction("&Quit", this);
-	QAction* about = new QAction("&About", this);
-
-	QMenu* fileMenu;
-	fileMenu = menuBar()->addMenu("&File");
-	fileMenu->addAction(quit);
-
-	QMenu* helpMenu = menuBar()->addMenu("&Help");
-	helpMenu->addAction(about);
-
-	connect(quit, &QAction::triggered, qApp, QApplication::quit);
-	connect(about, &QAction::triggered, this, &MainWindow::aboutDialog);
 }
 
 void MainWindow::build(void)
@@ -258,13 +246,28 @@ void MainWindow::build(void)
 
 		/* -- -- -- */
 
-		/* launching timer */
-		QTimer *timer = this->findChild<QTimer *>("CheckTimer", Qt::FindDirectChildrenOnly);
-		timer->start(200);
+		QMenu* fileMenu = this->menuBar()->addMenu("&File");
+		QAction* quit = new QAction("&Quit", this);
+		fileMenu->addAction(quit);
+
+		QMenu* helpMenu = this->menuBar()->addMenu("&Help");
+		QAction* about = new QAction("&About", this);
+		helpMenu->addAction(about);
+
+		connect(quit, &QAction::triggered, qApp, QApplication::quit);
+		connect(about, &QAction::triggered, this, &MainWindow::aboutDialog);
+
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "built Qt menu";
+#endif
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		throw GLogiKBadAlloc("Qt bad alloc :(");
 	}
+
+	/* launching timer */
+	QTimer *timer = this->findChild<QTimer *>("CheckTimer", Qt::FindDirectChildrenOnly);
+	timer->start(200);
 
 	try {
 		this->resetInterface(); /* try 1 */
