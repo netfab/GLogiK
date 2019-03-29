@@ -375,6 +375,8 @@ AC_MSG_NOTICE([
       Boost filesystem LIBS : ${BOOST_FILESYSTEM_LIB}
  Boost program options LIBS : ${BOOST_PROGRAM_OPTIONS_LIB}
        Boost iostreams LIBS : ${BOOST_IOSTREAMS_LIB}
+                    Qt LIBS : ${QT_LIBS}
+                Qt CXXFLAGS : ${QT_CXXFLAGS}
 --------------------------------------------------------------
  with desktop notifications : ${enable_desktop_notifications}
         with Qt5 client GUI : ${enable_qt5}
