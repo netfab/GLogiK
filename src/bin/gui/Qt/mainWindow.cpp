@@ -264,6 +264,8 @@ void MainWindow::build(void)
 		throw GLogiKBadAlloc("Qt bad alloc :(");
 	}
 
+	/* -- -- -- */
+
 	try {
 		this->resetInterface(); /* try 1 */
 	}
@@ -297,9 +299,17 @@ void MainWindow::build(void)
 		}
 	}
 
-	_GUIResetThrow = false; /* after here, don't throw if reset interface fails */
-	this->initializeQtSignalsSlots();
+	/* -- -- -- */
 
+	_GUIResetThrow = false; /* after here, don't throw if reset interface fails */
+
+	/* -- -- -- */
+
+	/* initializing Qt signals */
+	connect(_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
+	connect(_backlightColorTab->getApplyButton(), &QPushButton::clicked, this, &MainWindow::saveFile);
+
+	/* initializing GKDBus signals */
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		NSGKDBus::BusConnection::GKDBUS_SESSION,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
@@ -380,12 +390,6 @@ void MainWindow::aboutDialog(void)
 		LOG(ERROR) << "catched bad_alloc : " << e.what();
 	}
 }
-
-void MainWindow::initializeQtSignalsSlots(void)
-{
-	connect(_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
-	connect(_backlightColorTab->getApplyButton(), &QPushButton::clicked, this, &MainWindow::saveFile);
-};
 
 void MainWindow::saveFile(void)
 {
