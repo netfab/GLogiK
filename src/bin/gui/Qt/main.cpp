@@ -44,11 +44,9 @@ int main(int argc, char *argv[])
 		window.build();
 
 		window.setFixedSize(800, 600);
+		window.setWindowTitle("GKcQt5");
 
 		{
-			QString title("GKcQt5 "); title += VERSION;
-			window.setWindowTitle(title);
-
 			QString icon(DATA_DIR);
 			icon += "/icons/hicolor/48x48/apps/GLogiK.png";
 			window.setWindowIcon(QIcon(icon));
