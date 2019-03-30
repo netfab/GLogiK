@@ -389,6 +389,7 @@ void MainWindow::aboutDialog(void)
 		about->setModal(true);
 		about->setAttribute(Qt::WA_DeleteOnClose);
 		about->setFixedSize(400, 300);
+		about->setWindowTitle("About GKcQt5");
 		about->open();
 	}
 	catch (const std::bad_alloc& e) {
