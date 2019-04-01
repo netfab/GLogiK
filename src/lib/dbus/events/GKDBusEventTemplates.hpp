@@ -56,6 +56,11 @@ typedef std::function<
 
 typedef std::function<
 			void(
+				const std::string&
+			) > StringToVoid;
+
+typedef std::function<
+			void(
 				const std::string&,
 				const std::string&
 			) > TwoStringsToVoid;
@@ -331,6 +336,12 @@ template <typename T>
 
 template <>
 	void GKDBusCallbackEvent<VoidToVoid>::runCallback(
+		DBusConnection* connection,
+		DBusMessage* message
+	);
+
+template <>
+	void GKDBusCallbackEvent<StringToVoid>::runCallback(
 		DBusConnection* connection,
 		DBusMessage* message
 	);

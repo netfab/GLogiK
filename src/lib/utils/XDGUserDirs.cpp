@@ -20,6 +20,7 @@
  */
 
 #include <cstdlib>
+#include <string>
 
 #define UTILS_COMPILATION 1
 
@@ -38,14 +39,14 @@ XDGUserDirs::XDGUserDirs() {
 XDGUserDirs::~XDGUserDirs() {
 }
 
-const std::string XDGUserDirs::getConfigDirectory(void) {
+const fs::path XDGUserDirs::getConfigurationRootDirectory(void) {
 	const std::string home = toString( getenv("HOME") );
 	if(home == "")
 		throw GLogiKExcept("can't get HOME environment variable");
-	std::string XDGConfigHome = toString( getenv("XDG_CONFIG_HOME") );
+	fs::path XDGConfigHome = toString( getenv("XDG_CONFIG_HOME") );
 	if(XDGConfigHome == "") {
 		XDGConfigHome = home;
-		XDGConfigHome += "/.config";
+		XDGConfigHome /= ".config";
 	}
 	return XDGConfigHome;
 }

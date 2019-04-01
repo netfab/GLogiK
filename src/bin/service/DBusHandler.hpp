@@ -48,12 +48,12 @@ enum class SessionFramework : uint8_t
 	FW_LOGIND,
 };
 
-class restartRequested : public std::exception
+class restartRequest : public std::exception
 {
 	public :
-		restartRequested( const std::string& msg = "" );
+		restartRequest( const std::string& msg = "" );
 
-		virtual ~restartRequested( void ) throw();
+		virtual ~restartRequest( void ) throw();
 		virtual const char* what( void ) const throw();
 
 	protected :
@@ -73,17 +73,22 @@ class DBusHandler
 		void updateSessionState(void);
 		void checkDBusMessages(void);
 
+		const bool getExitStatus(void) const;
+
 		void checkNotifyEvents(NSGKUtils::FileSystem* pGKfs);
 
 	protected:
 
 	private:
 		NSGKDBus::GKDBus* _pDBus;
+		const NSGKDBus::BusConnection _sessionBus;
 		const NSGKDBus::BusConnection _systemBus;
 		DevicesHandler _devices;
 		bool _registerStatus;		/* true == registered with daemon */
+		bool _wantToExit;			/* true if we want to exit after a restart request */
 		std::string _clientID;
 		SessionFramework _sessionFramework;
+		std::string _daemonVersion;
 
 		std::string _currentSession;	/* current session object path */
 		std::string _sessionState;		/* session state */
@@ -98,8 +103,12 @@ class DBusHandler
 
 		void initializeDevices(void);
 		void initializeGKDBusSignals(void);
+		void initializeGKDBusMethods(void);
 
-		/* signals */
+		void sendRestartRequest(void);
+		void sendDevicesUpdatedSignal(void);
+
+		/* signals from daemon */
 		void daemonIsStopping(void);
 		void daemonIsStarting(void);
 
@@ -120,6 +129,15 @@ class DBusHandler
 
 		void deviceMediaEvent(const std::string & devID, const std::string & mediaKeyEvent);
 		/* -- */
+
+		/* signal and request from GUI  */
+		void deviceStatusChangeRequest(
+			const std::string & devID,
+			const std::string & remoteMethod
+		);
+
+		const std::vector<std::string> getDevicesList(const std::string & reserved);
+		const std::vector<std::string> getInformations(const std::string & reserved);
 };
 
 } // namespace GLogiK

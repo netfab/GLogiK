@@ -10,5 +10,6 @@ KERNEL=="uinput", GROUP="@GLOGIKD_GROUP@", MODE="@DEVICES_MODE@"
 ACTION!="add", GOTO="glogik_rules_end"
 
 SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c22d", GROUP="@GLOGIKD_GROUP@", MODE="@DEVICES_MODE@"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c22e", GROUP="@GLOGIKD_GROUP@", MODE="@DEVICES_MODE@"
 
 LABEL="glogik_rules_end"

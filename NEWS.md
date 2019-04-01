@@ -1,6 +1,22 @@
 
 ---
 
+## version 0.8.6 - 2019-04-01
+#### Added devices :
+ * Logitech G510s Gaming Keyboard with onboard audio enabled (046d:c22e)
+
+#### Changes / Fixs
+ * several fixs regarding GLogiKs desktop service start
+ * miscellaneous fixs
+
+#### Added features :
+ * added Qt5 Graphical User Interface :
+	- ability to start desktop service if necessary
+	- ability to control device state (start/stop/restart)
+	- ability to modify device backlight color
+
+---
+
 ## version 0.8.4 - 2019-02-26
 #### Added features :
  * added desktop launcher binary

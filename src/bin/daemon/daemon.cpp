@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -40,8 +40,8 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/program_options.hpp>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
@@ -68,17 +68,28 @@ GLogiKDaemon::GLogiKDaemon()
 	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
 
 	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
-		std::ostringstream buffer(std::ios_base::app);
-		buffer	<< DEBUG_DIR << "/" << PACKAGE << "d-debug-"
-				<< getpid() << ".log";
+		const std::string pid( std::to_string( getpid() ) );
+
+		fs::path debugFile(DEBUG_DIR);
+		debugFile /= PACKAGE;
+		debugFile += "d-debug-";
+		debugFile += pid;
+		debugFile += ".log";
 
 		errno = 0;
-		_LOGfd = std::fopen(buffer.str().c_str(), "w");
+		_LOGfd = std::fopen(debugFile.string().c_str(), "w");
 
 		if(_LOGfd == nullptr) {
 			LOG(ERROR) << "failed to open debug file";
 			if(errno != 0) {
 				LOG(ERROR) << strerror(errno);
+			}
+		}
+		else {
+			boost::system::error_code ec;
+			fs::permissions(debugFile, fs::owner_read|fs::owner_write|fs::group_read, ec);
+			if( ec.value() != 0 ) {
+				LOG(ERROR) << "failure to set debug file permissions : " << ec.value();
 			}
 		}
 
@@ -124,13 +135,10 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 		this->parseCommandLine(argc, argv);
 
 		if( GLogiKDaemon::isDaemonRunning() ) {
-#if DEBUGGING_ON == 0
-			_pid = daemonizeProcess(true);
+
+			_pid = detachProcess(true);
 			syslog(LOG_INFO, "process successfully daemonized");
-#else
-			_pid = getpid();
-			LOG(DEBUG) << "process not daemonized - debug ON - pid: " << _pid;
-#endif
+
 			this->createPIDFile();
 
 			// TODO handle return values and errno ?
@@ -230,16 +238,6 @@ void GLogiKDaemon::createPIDFile(void) {
 		buffer	<< "set permissions failure on PID file : " << _pidFileName << " : " << e.what();
 		throw GLogiKExcept( buffer.str() );
 	}
-	/*
-	 * catch std::ios_base::failure on buggy compilers
-	 * should be fixed with gcc >= 7.0
-	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
-	 */
-	catch( const std::exception & e ) {
-		std::ostringstream buffer(std::ios_base::app);
-		buffer << "(buggy exception) fail to open PID file : " << _pidFileName << " : " << e.what();
-		throw GLogiKExcept( buffer.str() );
-	}
 
 #if DEBUGGING_ON
 	LOG(INFO) << "created PID file : " << _pidFileName;
@@ -281,6 +279,10 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	if (vm.count("daemonize")) {
 		GLogiKDaemon::daemonized = vm["daemonize"].as<bool>();
 	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "parsing arguments done";
+#endif
 }
 
 void GLogiKDaemon::dropPrivileges(void) {

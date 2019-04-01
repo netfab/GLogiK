@@ -23,6 +23,10 @@ GLogiK=$PWD/.. CD=. {
 	macro=m4/ {
 	}
 	data=data/ {
+		applications=applications/ {
+			Makefile.am
+			GLogiK.desktop
+		}
 		autostart=autostart/ {
 			Makefile.am
 			GKsLauncher.desktop
@@ -33,6 +37,9 @@ GLogiK=$PWD/.. CD=. {
 		dbus=dbus/ {
 			Makefile.am
 			GLogiK.conf.in
+		}
+		icons=icons/ {
+			Makefile.am
 		}
 		init=init/ {
 			openrc=openrc/ {
@@ -137,6 +144,24 @@ GLogiK=$PWD/.. CD=. {
 				launcher.cpp
 				launcher.hpp
 			}
+			gui=gui/ {
+				qt=Qt/ {
+					Makefile.am
+					AboutDialog.cpp
+					AboutDialog.hpp
+					Tab.cpp
+					Tab.hpp
+					DaemonAndServiceTab.cpp
+					DaemonAndServiceTab.hpp
+					DeviceControlTab.cpp
+					DeviceControlTab.hpp
+					BacklightColorTab.cpp
+					BacklightColorTab.hpp
+					mainWindow.cpp
+					mainWindow.hpp
+					main.cpp
+				}
+			}
 			service=service/ {
 				Makefile.am
 				main.cpp
@@ -199,8 +224,12 @@ GLogiK=$PWD/.. CD=. {
 			}
 			GKShared=shared/ {
 				Makefile.am
+				deviceFile.cpp
+				deviceFile.hpp
 				deviceProperties.cpp
 				deviceProperties.hpp
+				deviceConfigurationFile.cpp
+				deviceConfigurationFile.hpp
 				glogik.cpp
 				glogik.hpp
 				macrosBanks.cpp

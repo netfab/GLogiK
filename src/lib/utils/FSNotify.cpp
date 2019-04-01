@@ -89,7 +89,7 @@ const int FSNotify::addNotifyDirectoryWatch(const std::string & path, const bool
 		}
 	}
 
-	uint32_t mask = IN_MODIFY | IN_DELETE_SELF | IN_MOVE_SELF | IN_ONLYDIR;
+	uint32_t mask = IN_CLOSE_WRITE | IN_DELETE_SELF | IN_MOVE_SELF | IN_ONLYDIR;
 	return this->addNotifyWatch(path, mask);
 }
 

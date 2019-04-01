@@ -26,7 +26,9 @@
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
-#include <string>
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
 
 namespace NSGKUtils
 {
@@ -34,7 +36,7 @@ namespace NSGKUtils
 class XDGUserDirs
 {
 	public:
-		static const std::string getConfigDirectory(void);
+		static const fs::path getConfigurationRootDirectory(void);
 
 	protected:
 		XDGUserDirs(void);

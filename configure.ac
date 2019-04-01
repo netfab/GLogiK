@@ -63,6 +63,10 @@ AC_ARG_ENABLE( [debug],
 				AC_HELP_STRING( [--enable-debug], [Enable debugging, default: no]),
 				[enable_debugging=$enableval], [enable_debugging=no])
 
+AC_ARG_ENABLE( [debug-keys],
+				AC_HELP_STRING( [--enable-debug-keys], [Enable keys debugging, default: no]),
+				[enable_keys_debugging=$enableval], [enable_keys_debugging=no])
+
 AC_ARG_ENABLE( [debug-gkdbus],
 				AC_HELP_STRING( [--enable-debug-gkdbus], [Enable gkdbus debugging, default: no]),
 				[enable_gkdbus_debugging=$enableval], [enable_gkdbus_debugging=no])
@@ -83,7 +87,13 @@ AC_ARG_ENABLE( [desktop-notifications],
 				AC_HELP_STRING( [--enable-desktop-notifications], [Enable desktop notifications, default: no]),
 				[enable_desktop_notifications=$enableval], [enable_desktop_notifications=no])
 
+dnl check for Qt5 client GUI
+AC_ARG_ENABLE( [qt5],
+               AC_HELP_STRING( [--enable-qt5], [Enable Qt5 client GUI]),
+               [enable_qt5=$enableval], [enable_qt5=no])
+
 AC_ARG_VAR(DEBUG_DIR, [Directory where debug file will be written])
+AC_ARG_VAR(DATA_DIR, [Directory where data files will be installed])
 AC_ARG_VAR(PBM_DATA_DIR, [Directory where pbm data files will be installed])
 
 dnl -------------------------------------------------------------------------
@@ -186,6 +196,15 @@ if test "$enable_debugging" = yes; then
 	AC_MSG_RESULT([yes])
 	AC_DEFINE([DEBUGGING_ON], [1], [Debugging])
 
+	AC_MSG_CHECKING([whether we want keys debugging])
+	if test "$enable_keys_debugging" = yes; then
+		AC_MSG_RESULT([yes])
+		AC_DEFINE([DEBUG_KEYS], [1], [keys debugging])
+	else
+		AC_MSG_RESULT([no])
+		AC_DEFINE([DEBUG_KEYS], [0], [keys debugging])
+	fi
+
 	AC_MSG_CHECKING([whether we want gkdbus debugging])
 	if test "$enable_gkdbus_debugging" = yes; then
 		AC_MSG_RESULT([yes])
@@ -224,6 +243,7 @@ if test "$enable_debugging" = yes; then
 else
 	AC_MSG_RESULT([no])
 	AC_DEFINE([DEBUGGING_ON], [0], [Debugging])
+	AC_DEFINE([DEBUG_KEYS], [0], [keys debugging])
 	AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [GKDBus sub-objects debugging])
 	AC_DEFINE([DEBUG_PBMFONT], [0], [PBM fonts debugging])
 	AC_DEFINE([DEBUG_LCD_PLUGINS], [0], [LCD plugins debugging])
@@ -244,6 +264,17 @@ AS_IF([test "x$enable_desktop_notifications" = xyes],
 	AC_DEFINE([DESKTOP_NOTIFICATIONS], [0], [Desktop notifications])
 	])
 
+AM_CONDITIONAL([WITH_QT5], [test "x$enable_qt5" = xyes])
+AC_MSG_CHECKING([whether we want Qt5 client GUI])
+if test "x$enable_qt5" = xyes; then
+	AC_MSG_RESULT([yes])
+	AX_HAVE_QT
+	AC_DEFINE([QT5_GUI], [1], [Qt5 client GUI])
+else
+	AC_MSG_RESULT([no])
+	AC_DEFINE([QT5_GUI], [0], [Qt5 client GUI])
+fi
+
 dnl abort compilation after first error
 AS_VAR_APPEND(AM_CXXFLAGS,[" -Wfatal-errors"])
 AS_VAR_APPEND(AM_CXXFLAGS,[" -std=c++14"])
@@ -258,6 +289,7 @@ dnl -------------------------------------------------------------------------
 AS_IF([[test "x$DEBUG_DIR" = "x"]], [DEBUG_DIR="/tmp"])
 AC_DEFINE_UNQUOTED([DEBUG_DIR], ["${DEBUG_DIR}"], [Directory for debug file])
 
+AC_DEFINE_UNQUOTED([DATA_DIR], ["${prefix}/share"], [Root directory for data files installation])
 AC_DEFINE_UNQUOTED([PBM_DATA_DIR], ["${prefix}/share/${PACKAGE_NAME}/pbm"], [Directory for pbm file installation])
 
 dnl -------------------------------------------------------------------------
@@ -343,10 +375,14 @@ AC_MSG_NOTICE([
       Boost filesystem LIBS : ${BOOST_FILESYSTEM_LIB}
  Boost program options LIBS : ${BOOST_PROGRAM_OPTIONS_LIB}
        Boost iostreams LIBS : ${BOOST_IOSTREAMS_LIB}
+                    Qt LIBS : ${QT_LIBS}
+                Qt CXXFLAGS : ${QT_CXXFLAGS}
 --------------------------------------------------------------
  with desktop notifications : ${enable_desktop_notifications}
+        with Qt5 client GUI : ${enable_qt5}
 --------------------------------------------------------------
   Global debugging : ${enable_debugging}
+              keys : ${enable_keys_debugging}
             GKDBus : ${enable_gkdbus_debugging}
             LibUSB : ${enable_libusb_extra_debugging}
            PBMFont : ${enable_pbmfont_debugging}

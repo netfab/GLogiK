@@ -1,12 +1,13 @@
-### GLogiK, daemon to handle special features on gaming keyboards
+### GLogiK, daemon to handle special features on some gaming keyboards
 
-Last release : version 0.8.4
+Last release : version 0.8.6
 
 ### Links
  - [homepage / download](https://glogik.tuxfamily.org/)
 
 ### Recognized devices
  - Logitech G510s Gaming Keyboard (046d:c22d)
+ - Logitech G510s Gaming Keyboard (046d:c22e) (onboard audio enabled)
 
 ### Features
  - Macros keys (G-Keys) support (create, run or delete macros)
@@ -30,6 +31,11 @@ Last release : version 0.8.4
 
 ### Optional Build Dependencies
  - x11-libs/libnotify 0.7.7 or later
+ - Qt5 packages, including :
+    * dev-qt/qtcore
+    * dev-qt/qtgui
+    * dev-qt/qtwidgets
+
 
 ### Runtime Dependencies :
  - sys-auth/consolekit 1.1.2 or later, or systemd-logind
