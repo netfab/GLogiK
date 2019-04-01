@@ -1,4 +1,4 @@
 
-desktopdir = $(datadir)/applications
-dist_desktop_DATA = %D%/GLogiK.desktop
+desktop_dir = $(datadir)/applications
+dist_desktop__DATA = %D%/GLogiK.desktop
 
