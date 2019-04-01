@@ -1,6 +1,6 @@
-### GLogiK, daemon to handle special features on gaming keyboards
+### GLogiK, daemon to handle special features on some gaming keyboards
 
-Last release : version 0.8.4
+Last release : version 0.8.6
 
 ### Links
  - [homepage / download](https://glogik.tuxfamily.org/)

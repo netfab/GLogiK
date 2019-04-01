@@ -1,7 +1,7 @@
 
 ---
 
-## version 0.x.x - 2019-xx-xx (unreleased)
+## version 0.8.6 - 2019-04-01
 #### Added devices :
  * Logitech G510s Gaming Keyboard with onboard audio enabled (046d:c22e)
 
