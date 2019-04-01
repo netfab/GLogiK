@@ -69,16 +69,6 @@ void PBMFile::readPBM(
 		PBMFile::closePBM(pbm);
 		throw GLogiKExcept("PBM ifstream error");
 	}
-	/*
-	 * catch std::ios_base::failure on buggy compilers
-	 * should be fixed with gcc >= 7.0
-	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
-	 */
-	catch( const std::exception & e ) {
-		LOG(ERROR) << "(buggy exception) error opening/reading/closing PBM file : " << e.what();
-		PBMFile::closePBM(pbm);
-		throw GLogiKExcept("PBM ifstream error");
-	}
 
 	if( pbm.is_open() )
 		PBMFile::closePBM(pbm);

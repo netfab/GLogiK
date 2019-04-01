@@ -85,16 +85,6 @@ void DeviceConfigurationFile::load(
 		// TODO throw GLogiKExcept to create new configuration
 		// file and avoid overwriting on close ?
 	}
-	/*
-	 * catch std::ios_base::failure on buggy compilers
-	 * should be fixed with gcc >= 7.0
-	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
-	 */
-	catch( const std::exception & e ) {
-		std::ostringstream buffer("(buggy exception) fail to open configuration file : ", std::ios_base::app);
-		buffer << e.what();
-		LOG(ERROR) << buffer.str();
-	}
 }
 
 void DeviceConfigurationFile::save(
@@ -127,16 +117,6 @@ void DeviceConfigurationFile::save(
 	}
 	catch(const boost::archive::archive_exception & e) {
 		std::ostringstream buffer("boost::archive exception : ", std::ios_base::app);
-		buffer << e.what();
-		LOG(ERROR) << buffer.str();
-	}
-	/*
-	 * catch std::ios_base::failure on buggy compilers
-	 * should be fixed with gcc >= 7.0
-	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
-	 */
-	catch( const std::exception & e ) {
-		std::ostringstream buffer("(buggy exception) fail to open configuration file : ", std::ios_base::app);
 		buffer << e.what();
 		LOG(ERROR) << buffer.str();
 	}

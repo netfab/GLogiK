@@ -238,16 +238,6 @@ void GLogiKDaemon::createPIDFile(void) {
 		buffer	<< "set permissions failure on PID file : " << _pidFileName << " : " << e.what();
 		throw GLogiKExcept( buffer.str() );
 	}
-	/*
-	 * catch std::ios_base::failure on buggy compilers
-	 * should be fixed with gcc >= 7.0
-	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
-	 */
-	catch( const std::exception & e ) {
-		std::ostringstream buffer(std::ios_base::app);
-		buffer << "(buggy exception) fail to open PID file : " << _pidFileName << " : " << e.what();
-		throw GLogiKExcept( buffer.str() );
-	}
 
 #if DEBUGGING_ON
 	LOG(INFO) << "created PID file : " << _pidFileName;
