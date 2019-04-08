@@ -167,88 +167,17 @@ dnl -------------------------------------------------------------------------
 dnl             run tests and do things accordingly to results
 dnl -------------------------------------------------------------------------
 
-AC_MSG_CHECKING([whether we want overlinking protection])
-if test "$enable_as_needed" = yes; then
-    AC_MSG_RESULT([yes])
-    AX_APPEND_LINK_FLAGS([-Wl,--as-needed], [AM_LDFLAGS])
-else
-    AC_MSG_RESULT([no])
-fi
+GDT_CONDITIONAL_ADD_LDFLAGS([$enable_as_needed], [-Wl,--as-needed])
 
-AC_MSG_CHECKING([whether we want gcc -Wall])
-if test "$enable_gcc_wall" = yes; then
-    AC_MSG_RESULT([yes])
-    AS_VAR_APPEND(AM_CXXFLAGS,["-Wall"])
-else
-    AC_MSG_RESULT([no])
-fi
+GDT_CONDITIONAL_ADD_CXXFLAG([$enable_gcc_wall], [-Wall])
+GDT_CONDITIONAL_ADD_CXXFLAG([$enable_gcc_werror], [-Werror])
 
-AC_MSG_CHECKING([whether we want gcc -Werror])
-if test "$enable_gcc_werror" = yes; then
-    AC_MSG_RESULT([yes])
-    AS_VAR_APPEND(AM_CXXFLAGS,[" -Werror"])
-else
-    AC_MSG_RESULT([no])
-fi
-
-AC_MSG_CHECKING([whether we want debugging])
-if test "$enable_debugging" = yes; then
-	AC_MSG_RESULT([yes])
-	AC_DEFINE([DEBUGGING_ON], [1], [Debugging])
-
-	AC_MSG_CHECKING([whether we want keys debugging])
-	if test "$enable_keys_debugging" = yes; then
-		AC_MSG_RESULT([yes])
-		AC_DEFINE([DEBUG_KEYS], [1], [keys debugging])
-	else
-		AC_MSG_RESULT([no])
-		AC_DEFINE([DEBUG_KEYS], [0], [keys debugging])
-	fi
-
-	AC_MSG_CHECKING([whether we want gkdbus debugging])
-	if test "$enable_gkdbus_debugging" = yes; then
-		AC_MSG_RESULT([yes])
-		AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [1], [GKDBus sub-objects debugging])
-	else
-		AC_MSG_RESULT([no])
-		AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [GKDBus sub-objects debugging])
-	fi
-
-	AC_MSG_CHECKING([whether we want LibUSB extra debugging])
-	if test "$enable_libusb_extra_debugging" = yes; then
-		AC_MSG_RESULT([yes])
-		AC_DEFINE([DEBUG_LIBUSB_EXTRA], [1], [LibUSB extra debugging])
-	else
-		AC_MSG_RESULT([no])
-		AC_DEFINE([DEBUG_LIBUSB_EXTRA], [0], [LibUSB extra debugging])
-	fi
-
-	AC_MSG_CHECKING([whether we want pbmfont debugging])
-	if test "$enable_pbmfont_debugging" = yes; then
-		AC_MSG_RESULT([yes])
-		AC_DEFINE([DEBUG_PBMFONT], [1], [PBM fonts debugging])
-	else
-		AC_MSG_RESULT([no])
-		AC_DEFINE([DEBUG_PBMFONT], [0], [PBM fonts debugging])
-	fi
-
-	AC_MSG_CHECKING([whether we want LCD plugins debugging])
-	if test "$enable_lcd_plugins_debugging" = yes; then
-		AC_MSG_RESULT([yes])
-		AC_DEFINE([DEBUG_LCD_PLUGINS], [1], [LCD plugins debugging])
-	else
-		AC_MSG_RESULT([no])
-		AC_DEFINE([DEBUG_LCD_PLUGINS], [0], [LCD plugins debugging])
-	fi
-else
-	AC_MSG_RESULT([no])
-	AC_DEFINE([DEBUGGING_ON], [0], [Debugging])
-	AC_DEFINE([DEBUG_KEYS], [0], [keys debugging])
-	AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [GKDBus sub-objects debugging])
-	AC_DEFINE([DEBUG_PBMFONT], [0], [PBM fonts debugging])
-	AC_DEFINE([DEBUG_LCD_PLUGINS], [0], [LCD plugins debugging])
-	AC_DEFINE([DEBUG_LIBUSB_EXTRA], [0], [LibUSB extra debugging])
-fi
+GDT_DEBUG_FLAG([$enable_debugging], [DEBUGGING_ON], [global])
+GDT_DEBUG_FLAG([$enable_keys_debugging], [DEBUG_KEYS], [keys])
+GDT_DEBUG_FLAG([$enable_gkdbus_debugging], [DEBUG_GKDBUS_SUBOBJECTS], [GKDBus sub-objects])
+GDT_DEBUG_FLAG([$enable_libusb_extra_debugging], [DEBUG_LIBUSB_EXTRA], [LibUSB extra])
+GDT_DEBUG_FLAG([$enable_pbmfont_debugging], [DEBUG_PBMFONT], [pbmfont])
+GDT_DEBUG_FLAG([$enable_lcd_plugins_debugging], [DEBUG_LCD_PLUGINS], [LCD plugins])
 
 AM_CONDITIONAL([WITH_LIBNOTIFY], [test "x$enable_desktop_notifications" = xyes])
 AC_MSG_CHECKING([whether we want desktop notifications])
@@ -276,8 +205,8 @@ else
 fi
 
 dnl abort compilation after first error
-AS_VAR_APPEND(AM_CXXFLAGS,[" -Wfatal-errors"])
-AS_VAR_APPEND(AM_CXXFLAGS,[" -std=c++14"])
+GDT_ADD_CXXFLAG([-Wfatal-errors])
+GDT_ADD_CXXFLAG([-std=c++14])
 
 AC_SUBST(AM_CXXFLAGS)
 AC_SUBST(AM_LDFLAGS)

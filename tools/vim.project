@@ -21,6 +21,7 @@ GLogiK=$PWD/.. CD=. {
 		GKDBus.sh
 	}
 	macro=m4/ {
+		gdt-flags.m4
 	}
 	data=data/ {
 		applications=applications/ {
