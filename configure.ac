@@ -295,8 +295,8 @@ AC_MSG_NOTICE([
               libusb CFLAGS : ${LIBUSB_CFLAGS}
                 libusb LIBS : ${LIBUSB_LIBS}
                libudev LIBS : ${LIBUDEV_LIBS}
-             phtread CFLAGS : ${PTHREAD_CFLAGS}
-               phtread LIBS : ${PTHREAD_LIBS}
+             pthread CFLAGS : ${PTHREAD_CFLAGS}
+               pthread LIBS : ${PTHREAD_LIBS}
              Boost CPPFLAGS : ${BOOST_CPPFLAGS}
               Boost LDFLAGS : ${BOOST_LDFLAGS}
    Boost serialization LIBS : ${BOOST_SERIALIZATION_LIB}
