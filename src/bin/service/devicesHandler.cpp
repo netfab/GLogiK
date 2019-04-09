@@ -22,7 +22,6 @@
 #include <utility>
 #include <exception>
 #include <stdexcept>
-#include <fstream>
 #include <set>
 
 #include <boost/archive/archive_exception.hpp>
