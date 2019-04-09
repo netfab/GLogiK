@@ -236,6 +236,9 @@ PKG_CHECK_MODULES([LIBUDEV], [libudev])
 PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
 PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.10])
 PKG_CHECK_MODULES([SM], [sm ice])
+PKG_CHECK_MODULES([LIBX11], [x11])
+PKG_CHECK_MODULES([LIBXTST], [xtst])
+
 
 AX_BOOST_BASE([1.64.0], [], AC_MSG_ERROR([Could not find a useful version of boost libraries]))
 AX_BOOST_PROGRAM_OPTIONS
@@ -304,6 +307,10 @@ AC_MSG_NOTICE([
       Boost filesystem LIBS : ${BOOST_FILESYSTEM_LIB}
  Boost program options LIBS : ${BOOST_PROGRAM_OPTIONS_LIB}
        Boost iostreams LIBS : ${BOOST_IOSTREAMS_LIB}
+                   X11 LIBS : ${LIBX11_LIBS}
+                 X11 CFLAGS : ${LIBX11_CFLAGS}
+                  XTST LIBS : ${LIBXTST_LIBS}
+                XTST CFLAGS : ${LIBXTST_CFLAGS}
                     Qt LIBS : ${QT_LIBS}
                 Qt CXXFLAGS : ${QT_CXXFLAGS}
 --------------------------------------------------------------

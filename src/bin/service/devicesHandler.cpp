@@ -33,6 +33,9 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/process.hpp>
 
+#include <X11/Xlib.h>
+#include <X11/extensions/XTest.h>
+
 #include "lib/shared/deviceConfigurationFile.hpp"
 
 #include "devicesHandler.hpp"
@@ -770,6 +773,50 @@ void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check)
 	catch ( const GLogiKExcept & e ) {
 		LOG(WARNING) << e.what();
 		LOG(WARNING) << "configuration file monitoring will be disabled";
+	}
+}
+
+void DevicesHandler::doDeviceFakeKeyEvent(
+	const std::string & devID,
+	const std::string & mediaKeyEvent)
+{
+	try {
+		_startedDevices.at(devID);
+
+		Display* dpy = XOpenDisplay(NULL);
+		if(dpy == nullptr)
+			throw GLogiKExcept("XOpenDisplay failure");
+
+		KeySym sym = XStringToKeysym( mediaKeyEvent.c_str() );
+		if(sym == NoSymbol) {
+			std::string error("invalid KeySym : ");
+			error += mediaKeyEvent;
+			XCloseDisplay(dpy);
+			throw GLogiKExcept(error);
+		}
+
+		KeyCode code = XKeysymToKeycode(dpy, sym);
+		if(code == 0) {
+			std::string error("not found KeySym : ");
+			error += mediaKeyEvent;
+			XCloseDisplay(dpy);
+			throw GLogiKExcept(error);
+		}
+
+		XTestFakeKeyEvent(dpy, code, True, 0);
+		XTestFakeKeyEvent(dpy, code, False, 0);
+		XFlush(dpy);
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "done fake media event : " << mediaKeyEvent;
+#endif
+
+		XCloseDisplay(dpy);
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(WARNING) << "device not found : " << devID;
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << "error simulating media key event : " << e.what();
 	}
 }
 

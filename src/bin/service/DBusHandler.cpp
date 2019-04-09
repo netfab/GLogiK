@@ -1203,7 +1203,8 @@ void DBusHandler::deviceMediaEvent(
 		return;
 	}
 
-	_devices.runDeviceMediaEvent(devID, mediaKeyEvent);
+	//_devices.runDeviceMediaEvent(devID, mediaKeyEvent);
+	_devices.doDeviceFakeKeyEvent(devID, mediaKeyEvent);
 }
 
 const std::vector<std::string> DBusHandler::getDevicesList(const std::string & reserved) {

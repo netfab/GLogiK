@@ -5,7 +5,9 @@ GLogiKs_CXXFLAGS = \
 				@BOOST_CPPFLAGS@ \
 				@DBUS_CFLAGS@ \
 				@PTHREAD_CFLAGS@ \
-				@AM_CXXFLAGS@
+				@AM_CXXFLAGS@ \
+				@LIBX11_CFLAGS@ \
+				@LIBXTST_CFLAGS@
 
 GLogiKs_LDFLAGS = \
 				@BOOST_LDFLAGS@ \
@@ -17,6 +19,8 @@ GLogiKs_LDADD = \
 				@BOOST_FILESYSTEM_LIB@ \
 				@BOOST_PROGRAM_OPTIONS_LIB@ \
 				@PTHREAD_LIBS@ \
+				@LIBX11_LIBS@ \
+				@LIBXTST_LIBS@ \
 				libGKDBus.la \
 				libGKUtils.la \
 				libGKShared.la

@@ -28,6 +28,8 @@ Last release : version 0.8.6
  - sys-apps/dbus 1.10.18 or later
  - x11-libs/libICE 1.0.9 or later
  - x11-libs/libSM 1.2.2 or later
+ - x11-libs/libX11
+ - x11-libs/libXtst
 
 ### Optional Build Dependencies
  - x11-libs/libnotify 0.7.7 or later

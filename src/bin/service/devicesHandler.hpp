@@ -86,6 +86,11 @@ class DevicesHandler
 			const std::string & mediaKeyEvent
 		);
 
+		void doDeviceFakeKeyEvent(
+			const std::string & devID,
+			const std::string & mediaKeyEvent
+		);
+
 		const devices_files_map_t getDevicesMap(void);
 		const std::vector<std::string> getDevicesList(void);
 
