@@ -22,7 +22,6 @@
 #include <utility>
 #include <exception>
 #include <stdexcept>
-#include <sstream>
 #include <fstream>
 #include <set>
 
@@ -172,9 +171,7 @@ void DevicesHandler::saveDeviceConfigurationFile(
 			fs::permissions(filePath, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 		}
 		catch (const fs::filesystem_error & e) {
-			std::ostringstream buffer("set permissions failure on configuration file : ", std::ios_base::app);
-			buffer << e.what();
-			LOG(ERROR) << buffer.str();
+			LOG(ERROR) << "set permissions failure on configuration file : " << e.what();
 		}
 
 		/* send */
