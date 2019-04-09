@@ -25,13 +25,9 @@
 #include <cstdint>
 
 #include <string>
-#include <map>
-#include <utility>
-#include <initializer_list>
 
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/access.hpp>
-#include <boost/serialization/map.hpp>
 //#include <boost/serialization/version.hpp>
 
 #include "glogik.hpp"
@@ -50,8 +46,6 @@ class DeviceProperties
 		~DeviceProperties(void);
 
 		const uint64_t getCapabilities(void) const;
-		const std::string getMediaCommand(const std::string & mediaEvent) const;
-		const std::map<const std::string, std::string> & getMediaCommands(void) const;
 
 		const uint64_t getLCDPluginsMask1(void) const;
 		void setLCDPluginsMask(
@@ -84,17 +78,6 @@ class DeviceProperties
 
 		uint64_t _LCDPluginsMask1;
 
-		std::initializer_list<std::pair<const std::string, std::string>> _il = {
-			{XF86_AUDIO_NEXT, ""},
-			{XF86_AUDIO_PREV, ""},
-			{XF86_AUDIO_STOP, ""},
-			{XF86_AUDIO_PLAY, ""},
-			{XF86_AUDIO_MUTE, ""},
-			{XF86_AUDIO_RAISE_VOLUME, ""},
-			{XF86_AUDIO_LOWER_VOLUME, ""}
-		};
-		std::map<const std::string, std::string> _mediaCommands{_il};
-
 		friend class boost::serialization::access;
 
 		template<class Archive>
@@ -106,7 +89,6 @@ class DeviceProperties
 			ar & _backlightRed;
 			ar & _backlightGreen;
 			ar & _backlightBlue;
-			ar & _mediaCommands;
 			ar & _LCDPluginsMask1;
 
 			// serialize base class information

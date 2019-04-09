@@ -32,9 +32,6 @@ GLogiK=$PWD/.. CD=. {
 			Makefile.am
 			GKsLauncher.desktop
 		}
-		bash=bash/ {
-			mediakey.sh
-		}
 		dbus=dbus/ {
 			Makefile.am
 			GLogiK.conf.in
@@ -170,8 +167,6 @@ GLogiK=$PWD/.. CD=. {
 				devicesHandler.hpp
 				DBusHandler.cpp
 				DBusHandler.hpp
-				volumeNotification.cpp
-				volumeNotification.hpp
 				service.cpp
 				service.hpp
 			}

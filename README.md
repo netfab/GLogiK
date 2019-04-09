@@ -32,7 +32,6 @@ Last release : version 0.8.6
  - x11-libs/libXtst
 
 ### Optional Build Dependencies
- - x11-libs/libnotify 0.7.7 or later
  - Qt5 packages, including :
     * dev-qt/qtcore
     * dev-qt/qtgui

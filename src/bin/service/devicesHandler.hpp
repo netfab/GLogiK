@@ -37,10 +37,6 @@
 
 #include "include/enums.hpp"
 
-#if DESKTOP_NOTIFICATIONS
-#include "volumeNotification.hpp"
-#endif
-
 #define LogRemoteCallFailure \
 	FATALERROR << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
 #define LogRemoteCallGetReplyFailure \
@@ -81,11 +77,6 @@ class DevicesHandler
 			const uint8_t bankID
 		);
 
-		void runDeviceMediaEvent(
-			const std::string & devID,
-			const std::string & mediaKeyEvent
-		);
-
 		void doDeviceFakeKeyEvent(
 			const std::string & devID,
 			const std::string & mediaKeyEvent
@@ -101,9 +92,6 @@ class DevicesHandler
 	private:
 		NSGKDBus::GKDBus* _pDBus;
 		NSGKUtils::FileSystem* _pGKfs;
-#if DESKTOP_NOTIFICATIONS
-		VolumeNotification _notification;
-#endif
 		const NSGKDBus::BusConnection _systemBus;
 		std::string _clientID;
 
@@ -135,12 +123,6 @@ class DevicesHandler
 		void unrefDevice(const std::string & devID);
 
 		const bool checkDeviceCapability(const DeviceProperties & device, Caps toCheck);
-
-		void runCommand(
-			const std::string & mediaKeyEvent,
-			const std::string & command
-		);
-
 };
 
 } // namespace GLogiK

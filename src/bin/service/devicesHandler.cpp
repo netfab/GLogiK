@@ -25,13 +25,11 @@
 #include <sstream>
 #include <fstream>
 #include <set>
-#include <thread>
 
 #include <boost/archive/archive_exception.hpp>
 #include <boost/archive/xml_archive_exception.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
-#include <boost/process.hpp>
 
 #include <X11/Xlib.h>
 #include <X11/extensions/XTest.h>
@@ -39,8 +37,6 @@
 #include "lib/shared/deviceConfigurationFile.hpp"
 
 #include "devicesHandler.hpp"
-
-namespace bp = boost::process;
 
 namespace GLogiK
 {
@@ -819,95 +815,6 @@ void DevicesHandler::doDeviceFakeKeyEvent(
 		LOG(ERROR) << "error simulating media key event : " << e.what();
 	}
 }
-
-void DevicesHandler::runDeviceMediaEvent(
-	const std::string & devID,
-	const std::string & mediaKeyEvent)
-{
-	try {
-		DeviceProperties & device = _startedDevices.at(devID);
-		const std::string cmd( device.getMediaCommand(mediaKeyEvent) );
-		if( ! cmd.empty() ) {
-			std::thread mediaEventThread(&DevicesHandler::runCommand, this, mediaKeyEvent, cmd);
-			mediaEventThread.detach();
-		}
-		else {
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "empty command media event " << mediaKeyEvent;
-#endif
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "device not found : " << devID;
-	}
-}
-
-void DevicesHandler::runCommand(
-	const std::string & mediaKeyEvent,
-	const std::string & command
-	)
-{
-#if DESKTOP_NOTIFICATIONS
-	_notification.init(GLOGIKS_DESKTOP_SERVICE_NAME, 5000);
-#endif
-
-	int result = -1;
-	std::string lastLine;
-
-	{
-		std::string line;
-		bp::ipstream is;
-		result = bp::system(command, bp::std_out > is, bp::std_err > stderr);
-
-		while(is && std::getline(is, line) && !line.empty()) {
-			lastLine = line;
-			LOG(VERB) << line;
-		}
-	}
-
-#if DESKTOP_NOTIFICATIONS
-	if( (mediaKeyEvent == std::string(XF86_AUDIO_RAISE_VOLUME)) or
-		(mediaKeyEvent == std::string(XF86_AUDIO_LOWER_VOLUME)) ) {
-		try {
-			int volume = -1;
-			try {
-				volume = std::stoi(lastLine);
-			}
-			catch (const std::invalid_argument& ia) {
-				throw GLogiKExcept("stoi invalid argument");
-			}
-			catch (const std::out_of_range& oor) {
-				throw GLogiKExcept("stoi out of range");
-			}
-
-			std::string icon("");
-			if( volume <= 0 )
-				icon = "audio-volume-muted-symbolic";
-			else if ( volume <= 30 )
-				icon = "audio-volume-low-symbolic";
-			else if ( volume <= 70 )
-				icon = "audio-volume-medium-symbolic";
-			else
-				icon = "audio-volume-high-symbolic";
-
-			lastLine += " %";
-			if( _notification.updateProperties("Volume", lastLine, icon) ) {
-				if( ! _notification.show() ) {
-					LOG(ERROR) << "notification showing failure";
-				}
-			}
-			else {
-				LOG(ERROR) << "notification update properties failure";
-			}
-		}
-		catch (const GLogiKExcept & e) {
-			LOG(ERROR) << "volume conversion failure, notification error";
-		}
-	}
-#endif
-
-	LOG(INFO) << "command run : " << command << " - exit code : " << result;
-};
 
 } // namespace GLogiK
 

@@ -1203,7 +1203,6 @@ void DBusHandler::deviceMediaEvent(
 		return;
 	}
 
-	//_devices.runDeviceMediaEvent(devID, mediaKeyEvent);
 	_devices.doDeviceFakeKeyEvent(devID, mediaKeyEvent);
 }
 

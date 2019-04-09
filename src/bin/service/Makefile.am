@@ -34,12 +34,3 @@ GLogiKs_SOURCES = \
 		%D%/service.cpp \
 		%D%/service.hpp
 
-if WITH_LIBNOTIFY
-
-GLogiKs_CXXFLAGS += @LIBNOTIFY_CFLAGS@
-GLogiKs_LDADD += @LIBNOTIFY_LIBS@
-GLogiKs_SOURCES += \
-	%D%/volumeNotification.cpp \
-	%D%/volumeNotification.hpp
-
-endif

@@ -19,8 +19,6 @@
  *
  */
 
-#include <stdexcept>
-
 #include "include/enums.hpp"
 
 #include "lib/utils/utils.hpp"
@@ -66,7 +64,6 @@ void DeviceProperties::setProperties(const DeviceProperties & dev)
 	dev.getRGBBytes(_backlightRed, _backlightGreen, _backlightBlue);
 
 	_macrosBanks		= dev.getMacrosBanks();
-	_mediaCommands		= dev.getMediaCommands();
 	_LCDPluginsMask1	= dev.getLCDPluginsMask1();
 
 	if( _LCDPluginsMask1 == 0 ) {
@@ -102,22 +99,6 @@ const uint64_t DeviceProperties::getCapabilities(void) const {
 const int DeviceProperties::getWatchDescriptor(void) const {
 	return _watchedDescriptor;
 }
-
-const std::string DeviceProperties::getMediaCommand(const std::string & mediaEvent) const
-{
-	std::string ret("");
-	try {
-		ret = _mediaCommands.at(mediaEvent);
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "unknown media event : " << mediaEvent;
-	}
-	return ret;
-}
-
-const std::map<const std::string, std::string> & DeviceProperties::getMediaCommands(void) const {
-	return _mediaCommands;
-};
 
 const uint64_t DeviceProperties::getLCDPluginsMask1(void) const
 {
