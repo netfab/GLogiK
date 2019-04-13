@@ -19,7 +19,6 @@
  *
  */
 
-
 #include <QStyle>
 #include <QPushButton>
 #include <QString>

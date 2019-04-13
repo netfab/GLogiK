@@ -33,7 +33,6 @@
 
 #include "DaemonAndServiceTab.hpp"
 
-
 namespace GLogiK
 {
 

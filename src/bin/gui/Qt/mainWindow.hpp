@@ -40,7 +40,6 @@
 #include "lib/shared/deviceFile.hpp"
 #include "lib/shared/deviceProperties.hpp"
 
-//#include "Tab.hpp"
 #include "DaemonAndServiceTab.hpp"
 #include "DeviceControlTab.hpp"
 #include "BacklightColorTab.hpp"

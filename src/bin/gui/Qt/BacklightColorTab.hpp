@@ -32,7 +32,6 @@
 
 #include "Tab.hpp"
 
-
 namespace GLogiK
 {
 

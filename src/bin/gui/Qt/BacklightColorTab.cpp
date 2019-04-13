@@ -19,15 +19,12 @@
  *
  */
 
-
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
-#include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
 #include "BacklightColorTab.hpp"
-
 
 namespace GLogiK
 {
