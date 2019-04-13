@@ -25,7 +25,6 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QString>
-#include <QWidget>
 
 #include "Tab.hpp"
 
@@ -33,8 +32,7 @@ namespace GLogiK
 {
 
 class DaemonAndServiceTab
-	:	public Tab,
-		public QWidget
+	:	public Tab
 {
 	public:
 		DaemonAndServiceTab(

@@ -221,7 +221,6 @@ void MainWindow::build(void)
 		_backlightColorTab = new BacklightColorTab(_pDBus, "BacklightColor");
 		_tabbedWidgets->addTab(_backlightColorTab, tr("Backlight Color"));
 
-		//_tabbedWidgets->addTab(new QWidget(), tr("Multimedia Keys"));
 		//_tabbedWidgets->addTab(new QWidget(), tr("LCD Screen Plugins"));
 		//_tabbedWidgets->addTab(new QWidget(), tr("Macros"));
 #if DEBUGGING_ON

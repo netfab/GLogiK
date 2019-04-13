@@ -22,6 +22,7 @@
 #ifndef SRC_BIN_GUI_QT_TAB_HPP_
 #define SRC_BIN_GUI_QT_TAB_HPP_
 
+#include <QWidget>
 #include <QFrame>
 
 #include "lib/dbus/GKDBus.hpp"
@@ -35,11 +36,13 @@ namespace GLogiK
 {
 
 class Tab
+	:	public QWidget
 {
 	public:
 		Tab(NSGKDBus::GKDBus* pDBus)
 			:	_pDBus(pDBus) {};
 		virtual ~Tab() = default;
+		Tab() = delete;
 
 		virtual void updateTab(void) {};
 

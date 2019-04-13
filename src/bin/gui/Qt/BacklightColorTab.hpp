@@ -25,7 +25,6 @@
 #include <QColor>
 #include <QLabel>
 #include <QString>
-#include <QWidget>
 #include <QPushButton>
 #include <QColorDialog>
 
@@ -38,8 +37,7 @@ namespace GLogiK
 {
 
 class BacklightColorTab
-	:	public Tab,
-		public QWidget
+	:	public Tab
 {
 	public:
 		BacklightColorTab(
