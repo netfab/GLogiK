@@ -45,6 +45,7 @@ class BacklightColorTab
 		);
 		~BacklightColorTab();
 
+		void build(void);
 		void updateTab(
 			const DeviceProperties & device
 		);

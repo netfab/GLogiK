@@ -44,7 +44,10 @@ DeviceControlTab::DeviceControlTab(
 		_HLineFrame3(nullptr)
 {
 	this->setObjectName(name);
+}
 
+void DeviceControlTab::build(void)
+{
 	QVBoxLayout* vBox = nullptr;
 	QHBoxLayout* hBox = nullptr;
 

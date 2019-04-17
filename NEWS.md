@@ -1,6 +1,16 @@
 
 ---
 
+## version 0.8.x - 2019-xx-xx (unreleased)
+#### Changes / Fixs
+ * fix potential memory leaks when building Qt5 interface
+ * remove media key events old implementation. Now simulate XF86 media
+   events by linking desktop service to following X11 libraries :
+	- x11-libs/libX11
+	- x11-libs/libXtst
+
+---
+
 ## version 0.8.6 - 2019-04-01
 #### Added devices :
  * Logitech G510s Gaming Keyboard with onboard audio enabled (046d:c22e)

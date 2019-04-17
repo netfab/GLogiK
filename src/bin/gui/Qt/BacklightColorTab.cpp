@@ -40,7 +40,10 @@ BacklightColorTab::BacklightColorTab(
 		_pApplyButton(nullptr)
 {
 	this->setObjectName(name);
+}
 
+void BacklightColorTab::build(void)
+{
 	QVBoxLayout* vBox = nullptr;
 	QHBoxLayout* hBox = nullptr;
 

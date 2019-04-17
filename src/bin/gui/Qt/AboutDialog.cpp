@@ -39,6 +39,10 @@ using namespace NSGKUtils;
 AboutDialog::AboutDialog(QWidget* parent)
 	:	QDialog(parent)
 {
+}
+
+void AboutDialog::build(void)
+{
 	QVBoxLayout* vBox = nullptr;
 
 	try {

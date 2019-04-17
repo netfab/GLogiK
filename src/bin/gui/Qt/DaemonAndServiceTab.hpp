@@ -41,6 +41,7 @@ class DaemonAndServiceTab
 		);
 		~DaemonAndServiceTab();
 
+		void build(void);
 		void updateTab(void);
 		const bool isServiceStarted(void) const;
 		const bool isServiceRegistered(void) const;

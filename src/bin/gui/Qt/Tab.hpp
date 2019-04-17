@@ -44,6 +44,7 @@ class Tab
 		virtual ~Tab() = default;
 		Tab() = delete;
 
+		virtual void build(void) = 0;
 		virtual void updateTab(void) {};
 
 		QFrame* getHLine(void);

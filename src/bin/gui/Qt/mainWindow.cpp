@@ -214,12 +214,15 @@ void MainWindow::build(void)
 
 		_daemonAndServiceTab = new DaemonAndServiceTab(_pDBus, "DaemonAndService");
 		_tabbedWidgets->addTab(_daemonAndServiceTab, tr("Daemon and Service"));
+		_daemonAndServiceTab->build();
 
 		_deviceControlTab = new DeviceControlTab(_pDBus, "DeviceControl");
 		_tabbedWidgets->addTab(_deviceControlTab, tr("Device"));
+		_deviceControlTab->build();
 
 		_backlightColorTab = new BacklightColorTab(_pDBus, "BacklightColor");
 		_tabbedWidgets->addTab(_backlightColorTab, tr("Backlight Color"));
+		_backlightColorTab->build();
 
 		//_tabbedWidgets->addTab(new QWidget(), tr("LCD Screen Plugins"));
 		//_tabbedWidgets->addTab(new QWidget(), tr("Macros"));
@@ -385,6 +388,7 @@ void MainWindow::aboutDialog(void)
 {
 	try {
 		AboutDialog* about = new AboutDialog(this);
+		about->build();
 		about->setModal(true);
 		about->setAttribute(Qt::WA_DeleteOnClose);
 		about->setFixedSize(400, 300);

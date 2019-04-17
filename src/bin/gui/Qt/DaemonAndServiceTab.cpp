@@ -46,7 +46,10 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 		_serviceRegistered(false)
 {
 	this->setObjectName(name);
+}
 
+void DaemonAndServiceTab::build(void)
+{
 	QVBoxLayout* vBox = nullptr;
 
 	try {
