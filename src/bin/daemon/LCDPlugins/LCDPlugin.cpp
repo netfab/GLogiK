@@ -40,8 +40,7 @@ const bool LCDPBMFrame::switchToNextFrame(const unsigned short currentFrameCount
 /* -- -- -- */
 
 LCDPlugin::LCDPlugin()
-	:	_pluginName("unknown"),
-		_pluginTempo(LCDPluginTempo::TEMPO_DEFAULT),
+	:	_pluginTempo(LCDPluginTempo::TEMPO_DEFAULT),
 		_initialized(false),
 		_frameCounter(0),
 		_frameIndex(0)
@@ -51,7 +50,7 @@ LCDPlugin::LCDPlugin()
 LCDPlugin::~LCDPlugin()
 {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "deleting " << _pluginName << " LCD plugin";
+	LOG(DEBUG2) << "deleting " << _plugin.getName() << " LCD plugin";
 #endif
 }
 
@@ -78,7 +77,7 @@ void LCDPlugin::resetPBMFrameIndex(void)
 
 const uint64_t LCDPlugin::getPluginID(void) const
 {
-	return _pluginID;
+	return _plugin.getID();
 }
 
 const unsigned short LCDPlugin::getPluginTiming(void) const
@@ -134,6 +133,11 @@ const PBMDataArray & LCDPlugin::getNextPBMFrame(
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
+const LCDPluginProperties LCDPlugin::getPluginProperties(void) const
+{
+	return _plugin;
+}
+
 void LCDPlugin::addPBMFrame(
 	const fs::path & PBMDirectory,
 	const std::string & file,
@@ -167,7 +171,7 @@ const unsigned short LCDPlugin::getNextPBMFrameID(void) const
 PBMDataArray & LCDPlugin::getCurrentPBMFrame(void)
 {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-	LOG(DEBUG3) << _pluginName << " PBM # " << _frameIndex;
+	LOG(DEBUG3) << _plugin.getName() << " PBM # " << _frameIndex;
 #endif
 	return (*_itCurrentFrame)._PBMData;
 }
@@ -181,7 +185,7 @@ void LCDPlugin::writeStringOnFrame(
 {
 	try {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-		LOG(DEBUG2) << _pluginName << " PBM # " << _frameIndex << " - writing string : " << string;
+		LOG(DEBUG2) << _plugin.getName() << " PBM # " << _frameIndex << " - writing string : " << string;
 #endif
 		for(const char & c : string) {
 			const std::string character(1, c);

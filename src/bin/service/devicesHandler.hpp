@@ -36,6 +36,7 @@
 #include "lib/shared/deviceProperties.hpp"
 
 #include "include/enums.hpp"
+#include "include/LCDPluginProperties.hpp"
 
 #define LogRemoteCallFailure \
 	FATALERROR << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
@@ -84,6 +85,9 @@ class DevicesHandler
 
 		const devices_files_map_t getDevicesMap(void);
 		const std::vector<std::string> getDevicesList(void);
+		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+			const std::string & devID
+		);
 
 		void reloadDeviceConfigurationFile(const std::string & devID);
 

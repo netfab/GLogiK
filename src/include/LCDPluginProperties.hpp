@@ -19,51 +19,43 @@
  *
  */
 
+#ifndef SRC_INCLUDE_LCD_PLUGIN_PROPERTIES_HPP_
+#define SRC_INCLUDE_LCD_PLUGIN_PROPERTIES_HPP_
 
+#include <cstdint>
+#include <vector>
 #include <string>
-
-#include <boost/filesystem.hpp>
-
-#include <config.h>
-
-#include "include/enums.hpp"
-
-#include "lib/utils/utils.hpp"
-
-#include "endscreen.hpp"
-
-namespace fs = boost::filesystem;
 
 namespace GLogiK
 {
 
-using namespace NSGKUtils;
-
-Endscreen::Endscreen()
+class LCDPluginProperties
 {
-	_plugin.setID( toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN) );
-	_plugin.setName( "endscreen" );
-	//_pluginTempo = LCDPluginTempo::TEMPO_DEFAULT;
-}
+	public:
+		LCDPluginProperties()
+			:	_ID(0),
+				_name("unknown"),
+				_desc("unknown") {};
+		LCDPluginProperties(const uint64_t i, const std::string & n, const std::string & d)
+			{ _ID = i; _name = n; _desc = d; }
+		~LCDPluginProperties() = default;
 
-Endscreen::~Endscreen() {
-}
+		const uint64_t getID(void) const { return _ID; }
+		const std::string getName(void) const { return _name; }
+		const std::string getDesc(void) const { return _desc; }
 
-void Endscreen::init(FontsManager* const pFonts)
-{
-	fs::path PBMDirectory(PBM_DATA_DIR);
-	PBMDirectory /= _plugin.getName();
+		void setID(const uint64_t id) { _ID = id; }
+		void setName(const std::string & name) { _name = name; }
+		void setDesc(const std::string & desc) { _desc = desc; }
 
-	//pFonts->initializeFont(FontID::MONOSPACE85);
+	private:
+		uint64_t _ID;
+		std::string _name;
+		std::string _desc;
+};
 
-	//this->addPBMClearedFrame();	/* frame #0 */
-	this->addPBMFrame(PBMDirectory, "endscreen.pbm", 1); /* frame #0 */
-
-	//std::string version(" version "); version += PACKAGE_VERSION;
-	//this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, version, 48, 32);
-
-	LCDPlugin::init(pFonts);
-}
+typedef std::vector<LCDPluginProperties> LCDPluginsPropertiesArray_type;
 
 } // namespace GLogiK
 
+#endif

@@ -872,23 +872,35 @@ void DBusHandler::initializeGKDBusSignals(void) {
 
 void DBusHandler::initializeGKDBusMethods(void)
 {
+	const std::string r_ed("reserved");
+
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"GetDevicesList",
-		{	{"s", "reserved", "in", "reserved"},
+		{	{"s", r_ed, "in", r_ed},
 			{"as", "array_of_strings", "out", "array of devices ID and configuration files"} },
-		std::bind(&DBusHandler::getDevicesList, this, "reserved") );
+		std::bind(&DBusHandler::getDevicesList, this, r_ed) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"GetInformations",
-		{	{"s", "reserved", "in", "reserved"},
+		{	{"s", r_ed, "in", r_ed},
 			{"as", "array_of_strings", "out", "array of informations strings"} },
-		std::bind(&DBusHandler::getInformations, this, "reserved") );
+		std::bind(&DBusHandler::getInformations, this, r_ed) );
+
+	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToLCDPluginsPropertiesArray>::exposeMethod(
+		_sessionBus,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		"GetDeviceLCDPluginsProperties",
+		{	{"s", "device_id", "in", "device ID"},
+			{"s", r_ed, "in", r_ed},
+			{"a(tss)", "get_lcd_plugins_properties_array", "out", "LCDPluginsProperties array"} },
+		std::bind(&DBusHandler::getDeviceLCDPluginsProperties, this, std::placeholders::_1, r_ed) );
 }
 
 void DBusHandler::daemonIsStopping(void) {
@@ -1220,6 +1232,13 @@ const std::vector<std::string> DBusHandler::getInformations(const std::string & 
 	else
 		ret.push_back("unregistered");
 	return ret;
+}
+
+const LCDPluginsPropertiesArray_type & DBusHandler::getDeviceLCDPluginsProperties(
+	const std::string & devID,
+	const std::string & reserved)
+{
+	return _devices.getDeviceLCDPluginsProperties(devID);
 }
 
 void DBusHandler::deviceStatusChangeRequest(

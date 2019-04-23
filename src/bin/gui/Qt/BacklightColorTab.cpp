@@ -42,7 +42,11 @@ BacklightColorTab::BacklightColorTab(
 	this->setObjectName(name);
 }
 
-void BacklightColorTab::build(void)
+BacklightColorTab::~BacklightColorTab()
+{
+}
+
+void BacklightColorTab::buildTab(void)
 {
 	QVBoxLayout* vBox = nullptr;
 	QHBoxLayout* hBox = nullptr;
@@ -126,10 +130,6 @@ void BacklightColorTab::build(void)
 		LOG(ERROR) << e.what();
 		throw;
 	}
-}
-
-BacklightColorTab::~BacklightColorTab()
-{
 }
 
 const QPushButton* BacklightColorTab::getApplyButton(void) const

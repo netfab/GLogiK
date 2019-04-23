@@ -32,6 +32,8 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/XTest.h>
 
+#include "include/LCDPluginProperties.hpp"
+
 #include "lib/shared/deviceConfigurationFile.hpp"
 
 #include "devicesHandler.hpp"
@@ -434,6 +436,42 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		LogRemoteCallFailure
 	}
 
+	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+		/* get LCD plugins properties */
+		remoteMethod = "GetDeviceLCDPluginsProperties";
+
+		try {
+			_pDBus->initializeRemoteMethodCall(
+				_systemBus,
+				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				remoteMethod.c_str()
+			);
+			_pDBus->appendStringToRemoteMethodCall(_clientID);
+			_pDBus->appendStringToRemoteMethodCall(devID);
+
+			_pDBus->sendRemoteMethodCall();
+
+			try {
+				_pDBus->waitForRemoteMethodCallReply();
+
+				const LCDPluginsPropertiesArray_type array = _pDBus->getNextLCDPluginsArrayArgument();
+				device.setLCDPluginsProperties(array);
+#if DEBUGGING_ON
+				LOG(DEBUG3) << devID << " got " << array.size() << " LCDPluginsProperties objects";
+#endif
+			}
+			catch (const GLogiKExcept & e) {
+				LogRemoteCallGetReplyFailure
+			}
+		}
+		catch (const GKDBusMessageWrongBuild & e) {
+			_pDBus->abandonRemoteMethodCall();
+			LogRemoteCallFailure
+		}
+	}
+
 	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 		/* initialize macro keys */
 		remoteMethod = "GetDeviceMacroKeysNames";
@@ -810,6 +848,32 @@ void DevicesHandler::doDeviceFakeKeyEvent(
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "error simulating media key event : " << e.what();
 	}
+}
+
+const LCDPluginsPropertiesArray_type & DevicesHandler::getDeviceLCDPluginsProperties(
+	const std::string & devID)
+{
+	try {
+		try {
+			DeviceProperties & device = _startedDevices.at(devID);
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "found started device: " << devID;
+#endif
+			return device.getLCDPluginsProperties();
+		}
+		catch (const std::out_of_range& oor) {
+			DeviceProperties & device = _stoppedDevices.at(devID);
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "found stopped device: " << devID;
+#endif
+			return device.getLCDPluginsProperties();
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(WARNING) << "device not found : " << devID;
+	}
+
+	return DeviceProperties::_LCDPluginsPropertiesEmptyArray;
 }
 
 } // namespace GLogiK

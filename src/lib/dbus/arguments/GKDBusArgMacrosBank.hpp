@@ -22,11 +22,11 @@
 #ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_MACROS_BANK_HPP_
 #define SRC_LIB_DBUS_ARG_GKDBUS_ARG_MACROS_BANK_HPP_
 
-#include "include/keyEvent.hpp"
-
 #include "GKDBusArgString.hpp"
 #include "GKDBusArgByte.hpp"
 #include "GKDBusArgMacro.hpp"
+
+#include "include/keyEvent.hpp"
 
 namespace NSGKDBus
 {

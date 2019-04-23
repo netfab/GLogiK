@@ -30,6 +30,8 @@
 #include <boost/serialization/access.hpp>
 //#include <boost/serialization/version.hpp>
 
+#include "include/LCDPluginProperties.hpp"
+
 #include "glogik.hpp"
 #include "macrosBanks.hpp"
 #include "deviceFile.hpp"
@@ -44,6 +46,8 @@ class DeviceProperties
 	public:
 		DeviceProperties(void);
 		~DeviceProperties(void);
+
+		static const LCDPluginsPropertiesArray_type _LCDPluginsPropertiesEmptyArray;
 
 		const uint64_t getCapabilities(void) const;
 
@@ -63,6 +67,9 @@ class DeviceProperties
 		);
 		void setProperties(const DeviceProperties & dev);
 
+		const LCDPluginsPropertiesArray_type & getLCDPluginsProperties(void) const;
+		void setLCDPluginsProperties(const LCDPluginsPropertiesArray_type & array);
+
 		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
 		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
 
@@ -77,6 +84,7 @@ class DeviceProperties
 		uint8_t _backlightBlue;
 
 		uint64_t _LCDPluginsMask1;
+		LCDPluginsPropertiesArray_type _LCDPluginsProperties;
 
 		friend class boost::serialization::access;
 

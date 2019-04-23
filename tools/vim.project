@@ -71,6 +71,7 @@ GLogiK=$PWD/.. CD=. {
 			Makefile.am
 			enums.hpp
 			keyEvent.hpp
+			LCDPluginProperties.hpp
 		}
 		binaries=bin/ {
 			daemon=daemon/ {
@@ -155,6 +156,8 @@ GLogiK=$PWD/.. CD=. {
 					DeviceControlTab.hpp
 					BacklightColorTab.cpp
 					BacklightColorTab.hpp
+					LCDPluginsTab.cpp
+					LCDPluginsTab.hpp
 					mainWindow.cpp
 					mainWindow.hpp
 					main.cpp
@@ -191,6 +194,8 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusArgMacro.hpp
 					GKDBusArgMacrosBank.cpp
 					GKDBusArgMacrosBank.hpp
+					GKDBusArgLCDPluginsArray.cpp
+					GKDBusArgLCDPluginsArray.hpp
 				}
 				events=events/ {
 					GKDBusEvent.cpp

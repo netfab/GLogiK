@@ -43,6 +43,8 @@ DeviceProperties::DeviceProperties()
 DeviceProperties::~DeviceProperties() {
 }
 
+const LCDPluginsPropertiesArray_type DeviceProperties::_LCDPluginsPropertiesEmptyArray = {};
+
 /* -- -- -- */
 
 void DeviceProperties::setWatchDescriptor(int wd) {
@@ -71,6 +73,16 @@ void DeviceProperties::setProperties(const DeviceProperties & dev)
 		_LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN);
 		_LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);
 	}
+}
+
+const LCDPluginsPropertiesArray_type & DeviceProperties::getLCDPluginsProperties(void) const
+{
+	return _LCDPluginsProperties;
+}
+
+void DeviceProperties::setLCDPluginsProperties(const LCDPluginsPropertiesArray_type & array)
+{
+	_LCDPluginsProperties = array;
 }
 
 void DeviceProperties::setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b) {

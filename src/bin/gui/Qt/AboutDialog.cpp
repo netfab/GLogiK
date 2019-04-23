@@ -41,7 +41,14 @@ AboutDialog::AboutDialog(QWidget* parent)
 {
 }
 
-void AboutDialog::build(void)
+AboutDialog::~AboutDialog()
+{
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "deleting AboutDialog";
+#endif
+}
+
+void AboutDialog::buildDialog(void)
 {
 	QVBoxLayout* vBox = nullptr;
 
@@ -187,10 +194,6 @@ void AboutDialog::build(void)
 		LOG(ERROR) << e.what();
 		throw;
 	}
-}
-
-AboutDialog::~AboutDialog()
-{
 }
 
 void AboutDialog::closeDialog(void)

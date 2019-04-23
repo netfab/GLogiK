@@ -19,51 +19,39 @@
  *
  */
 
+#ifndef SRC_BIN_GUI_QT_LCD_PLUGINS_TAB_HPP_
+#define SRC_BIN_GUI_QT_LCD_PLUGINS_TAB_HPP_
 
 #include <string>
 
-#include <boost/filesystem.hpp>
-
-#include <config.h>
-
-#include "include/enums.hpp"
+#include <QVBoxLayout>
 
 #include "lib/utils/utils.hpp"
 
-#include "endscreen.hpp"
-
-namespace fs = boost::filesystem;
+#include "Tab.hpp"
 
 namespace GLogiK
 {
 
-using namespace NSGKUtils;
-
-Endscreen::Endscreen()
+class LCDPluginsTab
+	:	public Tab
 {
-	_plugin.setID( toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN) );
-	_plugin.setName( "endscreen" );
-	//_pluginTempo = LCDPluginTempo::TEMPO_DEFAULT;
-}
+	public:
+		LCDPluginsTab(
+			NSGKDBus::GKDBus* pDBus,
+			const QString & name
+		);
+		~LCDPluginsTab();
 
-Endscreen::~Endscreen() {
-}
+		void buildTab(void);
+		void updateTab(const std::string & devID);
 
-void Endscreen::init(FontsManager* const pFonts)
-{
-	fs::path PBMDirectory(PBM_DATA_DIR);
-	PBMDirectory /= _plugin.getName();
+	protected:
+	private:
+		QVBoxLayout* _checkboxesLayout;
 
-	//pFonts->initializeFont(FontID::MONOSPACE85);
-
-	//this->addPBMClearedFrame();	/* frame #0 */
-	this->addPBMFrame(PBMDirectory, "endscreen.pbm", 1); /* frame #0 */
-
-	//std::string version(" version "); version += PACKAGE_VERSION;
-	//this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, version, 48, 32);
-
-	LCDPlugin::init(pFonts);
-}
+};
 
 } // namespace GLogiK
 
+#endif

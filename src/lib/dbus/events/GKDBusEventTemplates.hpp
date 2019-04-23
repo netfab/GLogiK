@@ -32,7 +32,9 @@
 #include <dbus/dbus.h>
 
 #include "lib/utils/utils.hpp"
+
 #include "include/keyEvent.hpp"
+#include "include/LCDPluginProperties.hpp"
 
 /* -- */
 #include "GKDBusEvent.hpp"
@@ -126,6 +128,12 @@ typedef std::function<
 				const std::string&,
 				const uint8_t
 			) > ThreeStringsOneByteToMacro;
+
+typedef std::function<
+			const GLogiK::LCDPluginsPropertiesArray_type &(
+				const std::string&,
+				const std::string&
+			) > TwoStringsToLCDPluginsPropertiesArray;
 
 typedef std::function<
 			const bool(
@@ -408,6 +416,12 @@ template <>
 
 template <>
 	void GKDBusCallbackEvent<ThreeStringsOneByteToMacro>::runCallback(
+		DBusConnection* connection,
+		DBusMessage* message
+	);
+
+template <>
+	void GKDBusCallbackEvent<TwoStringsToLCDPluginsPropertiesArray>::runCallback(
 		DBusConnection* connection,
 		DBusMessage* message
 	);

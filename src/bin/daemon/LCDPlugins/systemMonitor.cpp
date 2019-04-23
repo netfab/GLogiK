@@ -48,8 +48,8 @@ SystemMonitor::SystemMonitor()
 	:	_lastRateStringSize(0),
 		_currentRate(NetDirection::NET_RX)
 {
-	_pluginID = toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);
-	_pluginName = "systemMonitor";
+	_plugin.setID( toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR) );
+	_plugin.setName( "systemMonitor" );
 	_pluginTempo = LCDPluginTempo::TEMPO_500_20;
 }
 
@@ -59,7 +59,7 @@ SystemMonitor::~SystemMonitor() {
 void SystemMonitor::init(FontsManager* const pFonts)
 {
 	fs::path PBMDirectory(PBM_DATA_DIR);
-	PBMDirectory /= _pluginName;
+	PBMDirectory /= _plugin.getName();
 
 	pFonts->initializeFont(FontID::MONOSPACE85);
 

@@ -33,6 +33,7 @@
 #include <linux/input-event-codes.h>
 
 #include "include/enums.hpp"
+#include "include/LCDPluginProperties.hpp"
 
 #include "DeviceID.hpp"
 #include "libUSB.hpp"
@@ -111,6 +112,9 @@ class KeyboardDriver
 		);
 
 		const banksMap_type & getDeviceMacrosBanks(const std::string & devID) const;
+		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+			const std::string & devID
+		) const;
 
 		const bool getDeviceThreadsStatus(const std::string & devID) const;
 

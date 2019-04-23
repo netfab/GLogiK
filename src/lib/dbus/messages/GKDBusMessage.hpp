@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #include <dbus/dbus.h>
 
 #include "include/keyEvent.hpp"
+#include "include/LCDPluginProperties.hpp"
 
 namespace NSGKDBus
 {
@@ -46,6 +47,9 @@ class GKDBusMessage
 
 		void appendMacro(const GLogiK::macro_type & macro);
 		void appendMacrosBank(const GLogiK::mBank_type & bank);
+		void appendLCDPluginsPropertiesArray(
+			const GLogiK::LCDPluginsPropertiesArray_type & pluginsArray
+		);
 
 		void abandon(void);
 
@@ -69,7 +73,12 @@ class GKDBusMessage
 		void appendString(DBusMessageIter *iter, const std::string & value);
 		void appendUInt8(DBusMessageIter *iter, const uint8_t value);
 		void appendUInt16(DBusMessageIter *iter, const uint16_t value);
+		void appendUInt64(DBusMessageIter *iter, const uint64_t value);
 		void appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro);
+		void appendLCDPluginsPropertiesArray(
+			DBusMessageIter *iter,
+			const GLogiK::LCDPluginsPropertiesArray_type & pluginsArray
+		);
 
 };
 

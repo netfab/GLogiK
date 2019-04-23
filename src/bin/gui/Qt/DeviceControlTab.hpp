@@ -48,7 +48,7 @@ class DeviceControlTab
 
 		void disableButtons(void);
 
-		void build(void);
+		void buildTab(void);
 		void updateTab(
 			const std::string & devID,
 			const bool status

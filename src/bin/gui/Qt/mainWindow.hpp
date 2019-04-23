@@ -43,6 +43,7 @@
 #include "DaemonAndServiceTab.hpp"
 #include "DeviceControlTab.hpp"
 #include "BacklightColorTab.hpp"
+#include "LCDPluginsTab.hpp"
 
 namespace fs = boost::filesystem;
 
@@ -74,6 +75,7 @@ class MainWindow
 		DaemonAndServiceTab* _daemonAndServiceTab;
 		DeviceControlTab* _deviceControlTab;
 		BacklightColorTab* _backlightColorTab;
+		LCDPluginsTab* _LCDPluginsTab;
 
 		fs::path _configurationRootDirectory;
 		fs::path _configurationFilePath;

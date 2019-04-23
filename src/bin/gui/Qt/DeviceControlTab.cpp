@@ -46,7 +46,11 @@ DeviceControlTab::DeviceControlTab(
 	this->setObjectName(name);
 }
 
-void DeviceControlTab::build(void)
+DeviceControlTab::~DeviceControlTab()
+{
+}
+
+void DeviceControlTab::buildTab(void)
 {
 	QVBoxLayout* vBox = nullptr;
 	QHBoxLayout* hBox = nullptr;
@@ -120,10 +124,6 @@ void DeviceControlTab::build(void)
 	connect(_pRestartButton , &QPushButton::clicked, this, &DeviceControlTab::restartSignal);
 
 	this->disableAndHide();
-}
-
-DeviceControlTab::~DeviceControlTab()
-{
 }
 
 void DeviceControlTab::disableButtons(void)

@@ -605,6 +605,41 @@ const std::string & DevicesManager::getDeviceModel(const std::string & devID) co
 	return _unknown;
 }
 
+const LCDPluginsPropertiesArray_type & DevicesManager::getDeviceLCDPluginsProperties(
+	const std::string & devID
+) const
+{
+	try {
+		const auto & device = _startedDevices.at(devID);
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
+#endif
+		for(const auto & driver : _drivers) {
+			if( device.getDriverID() == driver->getDriverID() ) {
+				return driver->getDeviceLCDPluginsProperties(devID);
+			}
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		try {
+			const auto & device = _stoppedDevices.at(devID);
+#if DEBUGGING_ON
+			LOG(DEBUG2) << "found " << device.getModel() << " in stopped devices";
+#endif
+			for(const auto & driver : _drivers) {
+				if( device.getDriverID() == driver->getDriverID() ) {
+					return driver->getDeviceLCDPluginsProperties(devID);
+				}
+			}
+		}
+		catch (const std::out_of_range& oor) {
+			GKSysLog_UnknownDevice
+		}
+	}
+
+	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
+}
+
 const std::string DevicesManager::getDeviceStatus(const std::string & devID) const
 {
 	std::string ret(_unknown);

@@ -41,8 +41,8 @@ using namespace NSGKUtils;
 
 Splashscreen::Splashscreen()
 {
-	_pluginID = toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN);
-	_pluginName = "splashscreen";
+	_plugin.setID( toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN) );
+	_plugin.setName("splashscreen");
 	_pluginTempo = LCDPluginTempo::TEMPO_400_15;
 }
 
@@ -52,7 +52,7 @@ Splashscreen::~Splashscreen() {
 void Splashscreen::init(FontsManager* const pFonts)
 {
 	fs::path PBMDirectory(PBM_DATA_DIR);
-	PBMDirectory /= _pluginName;
+	PBMDirectory /= _plugin.getName();
 
 	pFonts->initializeFont(FontID::MONOSPACE85);
 

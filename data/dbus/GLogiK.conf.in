@@ -59,6 +59,9 @@
       send_member="GetDeviceProperties"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
+      send_member="GetDeviceLCDPluginsProperties"/>
+    <allow send_destination="com.glogik.Daemon"
+      send_interface="com.glogik.Daemon.Device1"
       send_member="SetDeviceBacklightColor"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"

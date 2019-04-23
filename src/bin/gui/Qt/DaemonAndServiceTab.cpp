@@ -48,7 +48,11 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 	this->setObjectName(name);
 }
 
-void DaemonAndServiceTab::build(void)
+DaemonAndServiceTab::~DaemonAndServiceTab()
+{
+}
+
+void DaemonAndServiceTab::buildTab(void)
 {
 	QVBoxLayout* vBox = nullptr;
 
@@ -125,10 +129,6 @@ void DaemonAndServiceTab::build(void)
 		LOG(ERROR) << e.what();
 		throw;
 	}
-}
-
-DaemonAndServiceTab::~DaemonAndServiceTab()
-{
 }
 
 const bool DaemonAndServiceTab::isServiceStarted(void) const

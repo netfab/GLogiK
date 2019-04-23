@@ -30,6 +30,8 @@
 
 #include <boost/filesystem.hpp>
 
+#include "include/LCDPluginProperties.hpp"
+
 #include "fontsManager.hpp"
 #include "PBM.hpp"
 #include "PBMFile.hpp"
@@ -74,6 +76,7 @@ class LCDPlugin
 		virtual void init(FontsManager* const pFonts) = 0;
 		const bool isInitialized(void) const;
 
+		const LCDPluginProperties getPluginProperties(void) const;
 		const uint64_t getPluginID(void) const;
 		const unsigned short getPluginTiming(void) const;
 		const unsigned short getPluginMaxFrames(void) const;
@@ -88,8 +91,7 @@ class LCDPlugin
 	protected:
 		LCDPlugin(void);
 
-		uint64_t _pluginID;
-		std::string _pluginName;
+		LCDPluginProperties _plugin;
 		LCDPluginTempo _pluginTempo;
 
 		void addPBMFrame(

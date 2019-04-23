@@ -70,7 +70,8 @@ MainWindow::MainWindow(QWidget *parent)
 		_tabbedWidgets(nullptr),
 		_daemonAndServiceTab(nullptr),
 		_deviceControlTab(nullptr),
-		_backlightColorTab(nullptr)
+		_backlightColorTab(nullptr),
+		_LCDPluginsTab(nullptr)
 {
 	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
 	if( LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() != NONE ) {
@@ -214,25 +215,29 @@ void MainWindow::build(void)
 
 		_daemonAndServiceTab = new DaemonAndServiceTab(_pDBus, "DaemonAndService");
 		_tabbedWidgets->addTab(_daemonAndServiceTab, tr("Daemon and Service"));
-		_daemonAndServiceTab->build();
+		_daemonAndServiceTab->buildTab();
 
 		_deviceControlTab = new DeviceControlTab(_pDBus, "DeviceControl");
 		_tabbedWidgets->addTab(_deviceControlTab, tr("Device"));
-		_deviceControlTab->build();
+		_deviceControlTab->buildTab();
 
 		_backlightColorTab = new BacklightColorTab(_pDBus, "BacklightColor");
 		_tabbedWidgets->addTab(_backlightColorTab, tr("Backlight Color"));
-		_backlightColorTab->build();
+		_backlightColorTab->buildTab();
 
-		//_tabbedWidgets->addTab(new QWidget(), tr("LCD Screen Plugins"));
+		_LCDPluginsTab = new LCDPluginsTab(_pDBus, "LCDPlugins");
+		_tabbedWidgets->addTab(_LCDPluginsTab, tr("LCD Screen Plugins"));
+		_LCDPluginsTab->buildTab();
+
 		//_tabbedWidgets->addTab(new QWidget(), tr("Macros"));
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "allocated 3 tabs";
+		LOG(DEBUG3) << "allocated 4 tabs";
 #endif
 
 		this->setTabEnabled("DaemonAndService", true);
 		this->setTabEnabled("DeviceControl", true);
 		this->setTabEnabled("BacklightColor", false);
+		this->setTabEnabled("LCDPlugins", false);
 
 		/* -- -- -- */
 
@@ -256,7 +261,7 @@ void MainWindow::build(void)
 		QTimer* timer = new QTimer(this);
 
 		connect(timer, &QTimer::timeout, this, &MainWindow::checkDBusMessages);
-		timer->start(200);
+		timer->start(100);
 
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "Qt timer started";
@@ -388,7 +393,7 @@ void MainWindow::aboutDialog(void)
 {
 	try {
 		AboutDialog* about = new AboutDialog(this);
-		about->build();
+		about->buildDialog();
 		about->setModal(true);
 		about->setAttribute(Qt::WA_DeleteOnClose);
 		about->setFixedSize(400, 300);
@@ -432,6 +437,7 @@ void MainWindow::updateInterface(int index)
 			_devID.clear();
 			_deviceControlTab->disableAndHide();
 			this->setTabEnabled("BacklightColor", false);
+			this->setTabEnabled("LCDPlugins", false);
 			this->statusBar()->showMessage("Selected device : none", _statusBarTimeout);
 		}
 		else {
@@ -457,8 +463,11 @@ void MainWindow::updateInterface(int index)
 					DeviceConfigurationFile::load(_configurationFilePath.string(), _openedConfigurationFile);
 
 					_backlightColorTab->updateTab(_openedConfigurationFile);
+
+					_LCDPluginsTab->updateTab(_devID);
 				}
 				this->setTabEnabled("BacklightColor", status);
+				this->setTabEnabled("LCDPlugins", status);
 			}
 			catch (const std::out_of_range& oor) {
 				std::string error("device not found in container : ");
