@@ -28,6 +28,11 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
+const QPushButton* Tab::getApplyButton(void) const
+{
+	return _pApplyButton;
+}
+
 QFrame* Tab::getHLine(void)
 {
 	QFrame* line = new QFrame();
@@ -37,6 +42,18 @@ QFrame* Tab::getHLine(void)
 	line->setFrameShape(QFrame::HLine);
 	line->setFrameShadow(QFrame::Sunken);
 	return line;
+}
+
+void Tab::prepareApplyButton(void)
+{
+	_pApplyButton = new QPushButton("Appl&y Changes");
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "allocated Apply button";
+#endif
+
+	/* Default visual properties for widgets are defined by QStyle
+	 * styleSheet() returns empty QString */
+	_pApplyButton->setStyleSheet("padding:3px 12px 3px 12px;");
 }
 
 } // namespace GLogiK

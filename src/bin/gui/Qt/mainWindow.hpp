@@ -50,6 +50,12 @@ namespace fs = boost::filesystem;
 namespace GLogiK
 {
 
+enum class TabApplyButton : uint8_t
+{
+	TAB_BACKLIGHT = 1,
+	TAB_LCD_PLUGINS
+};
+
 class MainWindow
 	:	public QMainWindow
 {
@@ -93,7 +99,7 @@ class MainWindow
 		void resetInterface(void);
 		void updateInterface(int index);
 		void checkDBusMessages(void);
-		void saveFile(void);
+		void saveFile(const TabApplyButton tab);
 
 		void configurationFileUpdated(const std::string & devID);
 

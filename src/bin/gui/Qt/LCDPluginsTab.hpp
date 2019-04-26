@@ -22,11 +22,14 @@
 #ifndef SRC_BIN_GUI_QT_LCD_PLUGINS_TAB_HPP_
 #define SRC_BIN_GUI_QT_LCD_PLUGINS_TAB_HPP_
 
+#include <cstdint>
+
 #include <string>
 
-#include <QVBoxLayout>
+#include <QTableWidget>
 
 #include "lib/utils/utils.hpp"
+#include "lib/shared/deviceProperties.hpp"
 
 #include "Tab.hpp"
 
@@ -44,11 +47,23 @@ class LCDPluginsTab
 		~LCDPluginsTab();
 
 		void buildTab(void);
-		void updateTab(const std::string & devID);
+		void updateTab(
+			const std::string & devID,
+			const DeviceProperties & device
+		);
+
+		const uint64_t getAndSetNewLCDPluginsMask(void);
 
 	protected:
 	private:
-		QVBoxLayout* _checkboxesLayout;
+		const std::string _idProperty = "pluginID";
+		uint64_t _LCDPluginsMask;
+		uint64_t _newLCDPluginsMask;
+
+		QTableWidget* _pPluginsTable;
+
+		void toggleCheckbox(int row, int column);
+		void updateNewLCDPluginsMask(int checkboxState);
 
 };
 

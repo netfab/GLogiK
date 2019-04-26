@@ -19,8 +19,13 @@
  *
  */
 
+#include <QStringList>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QFrame>
 #include <QScrollArea>
+#include <QHeaderView>
+#include <QTableWidgetItem>
 #include <QCheckBox>
 
 #include "lib/shared/glogik.hpp"
@@ -38,7 +43,10 @@ using namespace NSGKUtils;
 LCDPluginsTab::LCDPluginsTab(
 	NSGKDBus::GKDBus* pDBus,
 	const QString & name)
-	:	Tab(pDBus)
+	:	Tab(pDBus),
+		_LCDPluginsMask(0),
+		_newLCDPluginsMask(0),
+		_pPluginsTable(nullptr)
 {
 	this->setObjectName(name);
 }
@@ -61,9 +69,7 @@ void LCDPluginsTab::buildTab(void)
 		/* -- -- -- */
 		vBox->addWidget( this->getHLine() );
 
-
 		/* -- -- -- */
-
 		QFrame* mainFrame = new QFrame();
 		vBox->addWidget(mainFrame);
 
@@ -77,17 +83,36 @@ void LCDPluginsTab::buildTab(void)
 		scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 		scrollLayout->setContentsMargins(0, 0, 0, 0);
 
-		_checkboxesLayout = new QVBoxLayout();
-		try {
-			QFrame* checkboxesFrame = new QFrame();
-			checkboxesFrame->setLayout(_checkboxesLayout);
+		_pPluginsTable = new QTableWidget(0, 3);
+		scrollArea->setWidget(_pPluginsTable);
 
-			scrollArea->setWidget(checkboxesFrame);
-		}
-		catch (const std::bad_alloc& e) {
-			delete _checkboxesLayout;
-			throw;
-		}
+		const QStringList header = { "enabled", "name", "description" };
+		_pPluginsTable->setHorizontalHeaderLabels(header);
+		_pPluginsTable->horizontalHeader()->setStretchLastSection(true);
+		_pPluginsTable->verticalHeader()->setVisible(false);
+		_pPluginsTable->setShowGrid(false);
+
+		/* -- -- -- */
+		vBox->addWidget( this->getHLine() );
+
+		/* -- -- -- */
+		QHBoxLayout* hBox = new QHBoxLayout();
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "allocated QHBoxLayout";
+#endif
+		vBox->addLayout(hBox);
+
+		hBox->addSpacing(10);
+		hBox->addStretch();
+
+		this->prepareApplyButton();
+		hBox->addWidget(_pApplyButton);
+		_pApplyButton->setEnabled(false);
+
+		hBox->addSpacing(10);
+
+		/* -- -- -- */
+		vBox->addWidget( this->getHLine() );
 	}
 	catch (const std::bad_alloc& e) {
 		LOG(ERROR) << e.what();
@@ -95,14 +120,14 @@ void LCDPluginsTab::buildTab(void)
 	}
 }
 
-void LCDPluginsTab::updateTab(const std::string & devID)
+void LCDPluginsTab::updateTab(
+	const std::string & devID,
+	const DeviceProperties & device)
 {
-	/*  removing layout items */
-	QLayoutItem* child;
-	while ((child = _checkboxesLayout->takeAt(0)) != 0) {
-		delete child->widget();
-		delete child;
-	}
+	disconnect(_pPluginsTable, &QTableWidget::cellClicked, this, &LCDPluginsTab::toggleCheckbox);
+
+	/* removing table items */
+	_pPluginsTable->clearContents();
 
 	const std::string remoteMethod("GetDeviceLCDPluginsProperties");
 	try {
@@ -121,11 +146,49 @@ void LCDPluginsTab::updateTab(const std::string & devID)
 		try {
 			_pDBus->waitForRemoteMethodCallReply();
 			const LCDPluginsPropertiesArray_type array = _pDBus->getNextLCDPluginsArrayArgument();
+
+			_pPluginsTable->setRowCount( array.size() );
+
+			std::size_t c = 0;
+			_LCDPluginsMask = device.getLCDPluginsMask1();
+			_newLCDPluginsMask = _LCDPluginsMask;
+
 			for(const auto & plugin : array) {
-				_checkboxesLayout->addWidget(new QCheckBox( plugin.getName().c_str() ));
+				QCheckBox* checkbox =  new QCheckBox();
+				_pPluginsTable->setCellWidget(c, 0, checkbox);
+
+				/* centering checkbox */
+				checkbox->setStyleSheet("margin:auto;");
+				checkbox->setChecked( (_LCDPluginsMask & plugin.getID()) );
+
+				{
+					const qulonglong id = plugin.getID();
+					const QVariant value(id);
+					checkbox->setProperty(_idProperty.c_str(), value);
+				}
+
+				/* connecting checkbox */
+				connect(checkbox, &QCheckBox::stateChanged, this, &LCDPluginsTab::updateNewLCDPluginsMask);
+
+				QTableWidgetItem* item = nullptr;
+
+				item = new QTableWidgetItem( plugin.getName().c_str() );
+				_pPluginsTable->setItem(c, 1, item);
+				item->setTextAlignment(Qt::AlignCenter);
+				item->setFlags( Qt::NoItemFlags | Qt::ItemIsEnabled );
+
+				item = new QTableWidgetItem( plugin.getDesc().c_str() );
+				_pPluginsTable->setItem(c, 2, item);
+				item->setTextAlignment(Qt::AlignVCenter);
+				item->setFlags( Qt::NoItemFlags | Qt::ItemIsEnabled );
+
+				++c;
 			}
 
-			_checkboxesLayout->addStretch();
+			_pPluginsTable->resizeColumnsToContents();
+
+			/* connect cellClicked events to checkbox toggle */
+			connect(_pPluginsTable, &QTableWidget::cellClicked, this, &LCDPluginsTab::toggleCheckbox);
 		}
 		catch (const GLogiKExcept & e) {
 			LogRemoteCallGetReplyFailure
@@ -136,6 +199,58 @@ void LCDPluginsTab::updateTab(const std::string & devID)
 		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
 		throw GLogiKExcept("failure to build request");
+	}
+}
+
+const uint64_t LCDPluginsTab::getAndSetNewLCDPluginsMask(void)
+{
+	 _LCDPluginsMask = _newLCDPluginsMask;
+	_pApplyButton->setEnabled( !(_LCDPluginsMask == _newLCDPluginsMask) );
+	return _newLCDPluginsMask;
+}
+
+void LCDPluginsTab::toggleCheckbox(int row, int column)
+{
+	if(column != 0)
+		return;
+
+	QCheckBox* check = dynamic_cast<QCheckBox*>( _pPluginsTable->cellWidget(row, column) );
+	if( check )
+		check->toggle();
+	else {
+		LOG(WARNING) << "wrong dynamic cast";
+	}
+}
+
+void LCDPluginsTab::updateNewLCDPluginsMask(int checkboxState)
+{
+	QObject* cb = sender();
+	const QVariant value = cb->property(_idProperty.c_str());
+	/* checking that property was found */
+	if( value.isValid() ) {
+		bool converted = false;
+		const qulonglong id = value.toULongLong(&converted);
+		if( converted and id > 0 ) {
+			const uint64_t pluginID(id);
+			if( checkboxState == Qt::Checked )  {
+				_newLCDPluginsMask |= pluginID;
+			}
+			else if( checkboxState == Qt::Unchecked ) {
+				_newLCDPluginsMask &= ~(pluginID);
+			}
+			else {
+				LOG(WARNING) << "unhandled checkbox state : " << checkboxState;
+			}
+
+			_pApplyButton->setEnabled( !(_LCDPluginsMask == _newLCDPluginsMask) );
+			LOG(INFO) << "id: " << id << " - mask: " << _newLCDPluginsMask;
+		}
+		else {
+			LOG(WARNING) << "conversion failure";
+		}
+	}
+	else {
+		LOG(WARNING) << "invalid QVariant";
 	}
 }
 

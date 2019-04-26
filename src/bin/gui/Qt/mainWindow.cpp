@@ -50,6 +50,8 @@
 #include "lib/utils/utils.hpp"
 #include "lib/dbus/arguments/GKDBusArgString.hpp"
 
+#include "include/enums.hpp"
+
 #include "AboutDialog.hpp"
 #include "mainWindow.hpp"
 
@@ -319,7 +321,10 @@ void MainWindow::build(void)
 
 	/* initializing Qt signals */
 	connect(_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
-	connect(_backlightColorTab->getApplyButton(), &QPushButton::clicked, this, &MainWindow::saveFile);
+	connect( _backlightColorTab->getApplyButton(), &QPushButton::clicked,
+			 std::bind(&MainWindow::saveFile, this, TabApplyButton::TAB_BACKLIGHT) );
+	connect(     _LCDPluginsTab->getApplyButton(), &QPushButton::clicked,
+			 std::bind(&MainWindow::saveFile, this, TabApplyButton::TAB_LCD_PLUGINS) );
 
 	/* initializing GKDBus signals */
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
@@ -405,21 +410,45 @@ void MainWindow::aboutDialog(void)
 	}
 }
 
-void MainWindow::saveFile(void)
+void MainWindow::saveFile(const TabApplyButton tab)
 {
+	bool dosave = false;
+
+	if( tab == TabApplyButton::TAB_BACKLIGHT ) {
+		int r, g, b = 255;
+		_backlightColorTab->getAndSetNewColor().getRgb(&r, &g, &b);
+		/* setting color */
+		_openedConfigurationFile.setRGBBytes(r, g, b);
+		dosave = true;
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "saving file";
+		LOG(DEBUG3) << "backlight color updated";
+#endif
+	}
+	else if( tab == TabApplyButton::TAB_LCD_PLUGINS ) {
+		auto maskID = toEnumType(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1);
+		/* setting new LCD Plugins mask */
+		_openedConfigurationFile.setLCDPluginsMask(maskID, _LCDPluginsTab->getAndSetNewLCDPluginsMask());
+		dosave = true;
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "LCD plugins mask updated";
+#endif
+	}
+
+	if(dosave) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "saving file";
 #endif
 
-	int r, g, b = 255;
-	_backlightColorTab->getAndSetNewColor().getRgb(&r, &g, &b);
-	/* setting color */
-	_openedConfigurationFile.setRGBBytes(r, g, b);
+		DeviceConfigurationFile::save(_configurationFilePath.string(), _openedConfigurationFile);
 
-	DeviceConfigurationFile::save(_configurationFilePath.string(), _openedConfigurationFile);
-
-	QString msg("Configuration file saved");
-	this->statusBar()->showMessage(msg, _statusBarTimeout);
+		QString msg("Configuration file saved");
+		this->statusBar()->showMessage(msg, _statusBarTimeout);
+	}
+	else  {
+		QString msg("Error updating configuration file, nothing changed");
+		this->statusBar()->showMessage(msg, _statusBarTimeout);
+		LOG(WARNING) << msg.toStdString();
+	}
 }
 
 void MainWindow::updateInterface(int index)
@@ -464,7 +493,7 @@ void MainWindow::updateInterface(int index)
 
 					_backlightColorTab->updateTab(_openedConfigurationFile);
 
-					_LCDPluginsTab->updateTab(_devID);
+					_LCDPluginsTab->updateTab(_devID, _openedConfigurationFile);
 				}
 				this->setTabEnabled("BacklightColor", status);
 				this->setTabEnabled("LCDPlugins", status);

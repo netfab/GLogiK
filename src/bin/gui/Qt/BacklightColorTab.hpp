@@ -50,7 +50,6 @@ class BacklightColorTab
 			const DeviceProperties & device
 		);
 
-		const QPushButton* getApplyButton(void) const;
 		const QColor & getAndSetNewColor(void);
 		void disableApplyButton(void);
 
@@ -63,7 +62,6 @@ class BacklightColorTab
 		QColorDialog* _colorDialog;
 		QColor _currentColor;
 		QColor _newColor;
-		QPushButton* _pApplyButton;
 
 		const QString getBlackBorderedStyleSheetColor(const QColor & color) const;
 		void setCurrentColorLabel(const QColor & color);
