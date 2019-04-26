@@ -243,7 +243,9 @@ void LCDPluginsTab::updateNewLCDPluginsMask(int checkboxState)
 			}
 
 			_pApplyButton->setEnabled( !(_LCDPluginsMask == _newLCDPluginsMask) );
-			LOG(INFO) << "id: " << id << " - mask: " << _newLCDPluginsMask;
+#if DEBUGGING_ON
+			LOG(DEBUG2) << "id: " << id << " - mask: " << _newLCDPluginsMask;
+#endif
 		}
 		else {
 			LOG(WARNING) << "conversion failure";
