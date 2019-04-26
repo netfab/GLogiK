@@ -713,6 +713,9 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice
 	}
+	catch (const std::system_error& e) {
+		GKSysLog(LOG_ERR, ERROR, "error while spawning LCDScreen loop thread");
+	}
 	catch( const std::exception & e ) {
 		std::ostringstream err("uncaught std::exception : ", std::ios_base::app);
 		err << e.what();
