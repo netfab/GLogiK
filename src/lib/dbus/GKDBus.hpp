@@ -42,6 +42,7 @@
 #include "arguments/GKDBusArgUInt16.hpp"
 #include "arguments/GKDBusArgUInt64.hpp"
 #include "arguments/GKDBusArgMacro.hpp"
+#include "arguments/GKDBusArgDevicesMap.hpp"
 #include "arguments/GKDBusArgLCDPluginsArray.hpp"
 
 namespace NSGKDBus
@@ -72,6 +73,7 @@ class GKDBus
 		virtual public GKDBusArgumentUInt16,
 		virtual public GKDBusArgumentUInt64,
 		public GKDBusArgumentMacro,
+		public GKDBusArgumentDevicesMap,
 		public GKDBusArgumentLCDPluginsArray
 {
 	public:

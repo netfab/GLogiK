@@ -45,10 +45,8 @@
 #include <QMessageBox>
 
 #include "lib/shared/glogik.hpp"
-#include "lib/shared/deviceFile.hpp"
 #include "lib/shared/deviceConfigurationFile.hpp"
 #include "lib/utils/utils.hpp"
-#include "lib/dbus/arguments/GKDBusArgString.hpp"
 
 #include "include/enums.hpp"
 
@@ -476,7 +474,7 @@ void MainWindow::updateInterface(int index)
 #endif
 
 			try {
-				const DeviceFile & device = _devices.at(_devID);
+				const Device & device = _devices.at(_devID);
 				const bool status = (device.getStatus() == "started");
 
 				_deviceControlTab->updateTab(_devID, status);
@@ -538,28 +536,7 @@ void MainWindow::updateDevicesList(void)
 		try {
 			_pDBus->waitForRemoteMethodCallReply();
 
-			/* this block could be part of GKDBus, but we want to avoid to link
-			 * the GKDBus library to GKShared (to get DeviceFile object) */
-			try {
-				using namespace NSGKDBus;
-				do {
-					DeviceFile device;
-
-					const std::string devID( GKDBusArgumentString::getNextStringArgument() );
-
-					device.setStatus( GKDBusArgumentString::getNextStringArgument() );
-					device.setVendor( GKDBusArgumentString::getNextStringArgument() );
-					device.setModel( GKDBusArgumentString::getNextStringArgument() );
-					device.setConfigFilePath( GKDBusArgumentString::getNextStringArgument() );
-
-					_devices[devID] = device;
-				}
-				while( ! GKDBusArgumentString::isContainerEmpty() );
-			}
-			catch ( const EmptyContainer & e ) {
-				LOG(WARNING) << "missing argument : " << e.what();
-				throw GLogiKExcept("rebuilding device map failed");
-			}
+			_devices = _pDBus->getNextDevicesMapArgument();
 
 			QString msg("Detected ");
 			msg += QString::number(_devices.size());

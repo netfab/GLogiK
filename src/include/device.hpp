@@ -19,10 +19,11 @@
  *
  */
 
-#ifndef SRC_LIB_SHARED_DEVICE_FILE_HPP_
-#define SRC_LIB_SHARED_DEVICE_FILE_HPP_
+#ifndef SRC_INCLUDE_DEVICE_HPP_
+#define SRC_INCLUDE_DEVICE_HPP_
 
 #include <string>
+#include <map>
 
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/access.hpp>
@@ -30,28 +31,33 @@
 namespace GLogiK
 {
 
-class DeviceFile
+class Device
 {
 	public:
-		DeviceFile();
-		~DeviceFile();
+		Device()
+			:	_vendor("unknown"),
+				_model("unknown"),
+				_status("unknown"),
+				_filePath("none")
+			{}
+		~Device() = default;
 
-		const std::string & getStatus(void) const;
-		const std::string & getVendor(void) const;
-		const std::string & getModel(void) const;
-		const std::string & getConfigFilePath(void) const;
+		const std::string & getVendor(void) const { return _vendor; };
+		const std::string & getModel(void) const { return _model; };
+		const std::string & getStatus(void) const { return _status; };
+		const std::string & getConfigFilePath(void) const { return _filePath; };
 
-		void setStatus(const std::string & status);
-		void setVendor(const std::string & vendor);
-		void setModel(const std::string & model);
-		void setConfigFilePath(const std::string & path);
+		void setVendor(const std::string & vendor) { _vendor = vendor; };
+		void setModel(const std::string & model) { _model = model; };
+		void setStatus(const std::string & status) { _status = status; };
+		void setConfigFilePath(const std::string & path) { _filePath = path; };
 
 	protected:
 
 	private:
-		std::string _status;
 		std::string _vendor;
 		std::string _model;
+		std::string _status;
 		std::string _filePath;
 
 		friend class boost::serialization::access;
@@ -63,6 +69,8 @@ class DeviceFile
 			ar & _model;
 		}
 };
+
+typedef std::map<const std::string, Device> devices_map_type;
 
 } // namespace GLogiK
 

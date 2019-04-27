@@ -19,28 +19,29 @@
  *
  */
 
-#include "lib/utils/utils.hpp"
+#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_DEVICES_MAP_HPP_
+#define SRC_LIB_DBUS_ARG_GKDBUS_ARG_DEVICES_MAP_HPP_
 
 #include "GKDBusArgString.hpp"
+
+#include "include/device.hpp"
 
 namespace NSGKDBus
 {
 
-using namespace NSGKUtils;
+class GKDBusArgumentDevicesMap
+	:	virtual private GKDBusArgumentString
+{
+	public:
+		static const GLogiK::devices_map_type getNextDevicesMapArgument(void);
 
-thread_local std::string GKDBusArgumentString::currentString("");
+	protected:
+		GKDBusArgumentDevicesMap(void) = default;
+		~GKDBusArgumentDevicesMap(void) = default;
 
-const std::string & GKDBusArgumentString::getNextStringArgument(void) {
-	if( GKDBusArgument::stringArguments.empty() )
-		throw EmptyContainer("missing argument : string");
-	GKDBusArgumentString::currentString = GKDBusArgument::stringArguments.back();
-	GKDBusArgument::stringArguments.pop_back();
-	return GKDBusArgumentString::currentString;
-}
-
-const std::vector<std::string> & GKDBusArgumentString::getStringsArray(void) {
-	return GKDBusArgument::stringArguments;
-}
+	private:
+};
 
 } // namespace NSGKDBus
 
+#endif

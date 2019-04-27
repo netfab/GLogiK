@@ -37,8 +37,9 @@
 #include <boost/filesystem.hpp>
 
 #include "lib/dbus/GKDBus.hpp"
-#include "lib/shared/deviceFile.hpp"
 #include "lib/shared/deviceProperties.hpp"
+
+#include "include/device.hpp"
 
 #include "DaemonAndServiceTab.hpp"
 #include "DeviceControlTab.hpp"
@@ -103,7 +104,7 @@ class MainWindow
 
 		void configurationFileUpdated(const std::string & devID);
 
-		std::map<const std::string, DeviceFile> _devices;
+		devices_map_type _devices;
 };
 
 } // namespace GLogiK

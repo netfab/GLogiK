@@ -69,6 +69,7 @@ GLogiK=$PWD/.. CD=. {
 	src=src/ {
 		include=include/ {
 			Makefile.am
+			device.hpp
 			enums.hpp
 			keyEvent.hpp
 			LCDPluginProperties.hpp
@@ -194,6 +195,8 @@ GLogiK=$PWD/.. CD=. {
 					GKDBusArgMacro.hpp
 					GKDBusArgMacrosBank.cpp
 					GKDBusArgMacrosBank.hpp
+					GKDBusArgDevicesMap.cpp
+					GKDBusArgDevicesMap.hpp
 					GKDBusArgLCDPluginsArray.cpp
 					GKDBusArgLCDPluginsArray.hpp
 				}
@@ -225,8 +228,6 @@ GLogiK=$PWD/.. CD=. {
 			}
 			GKShared=shared/ {
 				Makefile.am
-				deviceFile.cpp
-				deviceFile.hpp
 				deviceProperties.cpp
 				deviceProperties.hpp
 				deviceConfigurationFile.cpp

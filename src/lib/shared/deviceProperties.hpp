@@ -31,17 +31,17 @@
 //#include <boost/serialization/version.hpp>
 
 #include "include/LCDPluginProperties.hpp"
+#include "include/device.hpp"
 
 #include "glogik.hpp"
 #include "macrosBanks.hpp"
-#include "deviceFile.hpp"
 
 namespace GLogiK
 {
 
 class DeviceProperties
 	:	public MacrosBanks,
-		public DeviceFile
+		public Device
 {
 	public:
 		DeviceProperties(void);
@@ -92,7 +92,7 @@ class DeviceProperties
 			void serialize(Archive & ar, const unsigned int version)
 		{
 			//if(version > 0)
-			ar & boost::serialization::base_object<DeviceFile>(*this);
+			ar & boost::serialization::base_object<Device>(*this);
 
 			ar & _backlightRed;
 			ar & _backlightGreen;
