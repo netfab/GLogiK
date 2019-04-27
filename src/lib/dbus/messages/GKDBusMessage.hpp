@@ -67,7 +67,7 @@ class GKDBusMessage
 		bool _hosedMessage;
 		bool _disabledDebugOutput;
 
-		const std::string append_failure_ = "message append failure";
+		const std::string _appendFailure = "message append failure";
 
 	private:
 		void appendString(DBusMessageIter *iter, const std::string & value);
