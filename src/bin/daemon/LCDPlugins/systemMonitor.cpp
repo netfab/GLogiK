@@ -49,7 +49,8 @@ SystemMonitor::SystemMonitor()
 		_currentRate(NetDirection::NET_RX)
 {
 	_plugin.setID( toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR) );
-	_plugin.setName( "systemMonitor" );
+	_plugin.setName("systemMonitor");
+	_plugin.setDesc("CPU, network and memory monitoring plugin");
 	_pluginTempo = LCDPluginTempo::TEMPO_500_20;
 }
 

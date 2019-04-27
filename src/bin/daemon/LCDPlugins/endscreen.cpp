@@ -42,7 +42,8 @@ using namespace NSGKUtils;
 Endscreen::Endscreen()
 {
 	_plugin.setID( toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN) );
-	_plugin.setName( "endscreen" );
+	_plugin.setName("endscreen");
+	_plugin.setDesc("Endscreen plugin, used when releasing a device");
 	//_pluginTempo = LCDPluginTempo::TEMPO_DEFAULT;
 }
 
