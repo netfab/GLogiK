@@ -89,8 +89,12 @@ void LCDPluginsTab::buildTab(void)
 		const QStringList header = { "enabled", "name", "description" };
 		_pPluginsTable->setHorizontalHeaderLabels(header);
 		_pPluginsTable->horizontalHeader()->setStretchLastSection(true);
+		_pPluginsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+		_pPluginsTable->horizontalHeader()->setSectionsClickable(false);
 		_pPluginsTable->verticalHeader()->setVisible(false);
 		_pPluginsTable->setShowGrid(false);
+		_pPluginsTable->setSelectionMode(QAbstractItemView::NoSelection);
+		_pPluginsTable->setFocusPolicy(Qt::NoFocus);
 
 		/* -- -- -- */
 		vBox->addWidget( this->getHLine() );
