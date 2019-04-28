@@ -94,7 +94,7 @@ configure_it: init_it autoreconf_it
 	--disable-debug-lcd-plugins \
 	DEBUG_DIR=$(PREFIX_DEV_DIR) \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
-	--enable-desktop-notifications --enable-qt5 \
+	--enable-qt5 \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
 
 install_it: uninstall_it
@@ -117,7 +117,7 @@ configure_it: init_it autoreconf_it
 	--disable-debug-lcd-plugins \
 	DEBUG_DIR=$(PREFIX_DEV_DIR) \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
-	--enable-desktop-notifications --enable-qt5 \
+	--enable-qt5 \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
 
 install_it: uninstall_it
