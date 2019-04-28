@@ -31,7 +31,7 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 GKDBusAsyncContainer::GKDBusAsyncContainer(void)
-	:	GKDBusMessage(nullptr, false, true), _numArgs(0)
+	:	GKDBusMessage(nullptr, true), _numArgs(0)
 {
 	/* initialize fake message */
 	_message = dbus_message_new(DBUS_MESSAGE_TYPE_INVALID);

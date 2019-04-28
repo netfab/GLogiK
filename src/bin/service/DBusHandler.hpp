@@ -96,7 +96,7 @@ class DBusHandler
 		std::string _sessionState;		/* session state */
 
 		void setCurrentSessionObjectPath(pid_t pid);
-		const std::string getCurrentSessionState(const bool disabledDebugOutput=false);
+		const std::string getCurrentSessionState(void);
 
 		void registerWithDaemon(void);
 		void unregisterWithDaemon(void);

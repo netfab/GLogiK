@@ -37,9 +37,8 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 	const char* objectPath,
 	const char* interface,
 	const char* method,
-	DBusPendingCall** pending,
-	const bool disabledDebugOutput
-	)	: GKDBusMessage(connection, disabledDebugOutput), _pendingCall(pending)
+	DBusPendingCall** pending)
+		:	GKDBusMessage(connection), _pendingCall(pending)
 {
 	if( ! dbus_validate_bus_name(busName, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid bus name");
@@ -58,13 +57,11 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 	dbus_message_iter_init_append(_message, &_itMessage);
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! _disabledDebugOutput ) {
-		LOG(DEBUG2) << "Remote Object Method Call DBus message initialized";
-		LOG(DEBUG3) << "bus name    : " << busName;
-		LOG(DEBUG3) << "object path : " << objectPath;
-		LOG(DEBUG3) << "interface   : " << interface;
-		LOG(DEBUG3) << "method      : " << method;
-	}
+	LOG(DEBUG2) << "Remote Object Method Call DBus message initialized";
+	LOG(DEBUG3) << "bus name    : " << busName;
+	LOG(DEBUG3) << "object path : " << objectPath;
+	LOG(DEBUG3) << "interface   : " << interface;
+	LOG(DEBUG3) << "method      : " << method;
 #endif
 }
 
@@ -85,9 +82,7 @@ GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
 	dbus_message_unref(_message);
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! _disabledDebugOutput ) {
-		LOG(DEBUG2) << "DBus remote method call with pending reply sent";
-	}
+	LOG(DEBUG2) << "DBus remote method call with pending reply sent";
 #endif
 }
 
@@ -97,8 +92,7 @@ GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
 
 GKDBusMessageRemoteMethodCall::GKDBusMessageRemoteMethodCall()
 	:	_remoteMethodCall(nullptr),
-		_pendingCall(nullptr),
-		_disabledDebugOutput(false)
+		_pendingCall(nullptr)
 {
 }
 
@@ -111,12 +105,11 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 	const char* busName,
 	const char* objectPath,
 	const char* interface,
-	const char* method,
-	const bool disabledDebugOutput
-) {
+	const char* method)
+{
 	this->initializeRemoteMethodCall(
 		this->getConnection(wantedConnection),
-		busName, objectPath, interface, method, disabledDebugOutput);
+		busName, objectPath, interface, method);
 }
 
 void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
@@ -124,24 +117,20 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 	const char* busName,
 	const char* objectPath,
 	const char* interface,
-	const char* method,
-	const bool disabledDebugOutput
-) {
+	const char* method)
+{
 	if(_remoteMethodCall) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus remote_method_call already allocated");
 
 	try {
 		_remoteMethodCall = new GKDBusRemoteMethodCall(
 			connection, busName, objectPath, interface, method,
-			&_pendingCall, disabledDebugOutput
-		);
+			&_pendingCall);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		LOG(ERROR) << "GKDBus remote_method_call allocation failure : " << e.what();
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
-
-	_disabledDebugOutput = disabledDebugOutput;
 }
 
 void GKDBusMessageRemoteMethodCall::appendStringToRemoteMethodCall(const std::string & value) {
@@ -227,7 +216,7 @@ void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void) {
 		throw GKDBusRemoteCallNoReply( buffer.str() );
 	}
 
-	GKDBusArgumentString::fillInArguments(message, _disabledDebugOutput);
+	GKDBusArgumentString::fillInArguments(message);
 	dbus_message_unref(message);
 }
 

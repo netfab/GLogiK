@@ -30,12 +30,10 @@ using namespace NSGKUtils;
 
 GKDBusMessage::GKDBusMessage(
 	DBusConnection* connection,
-	const bool disabledDebugOutput,
 	const bool check)
-	:	_connection(connection),
-		_message(nullptr),
-		_hosedMessage(false),
-		_disabledDebugOutput(disabledDebugOutput)
+		:	_connection(connection),
+			_message(nullptr),
+			_hosedMessage(false)
 {
 	/* sanity check */
 	if( (connection == nullptr) and (! check) )
@@ -58,9 +56,7 @@ void GKDBusMessage::appendBoolean(const bool value) {
 		throw GKDBusMessageWrongBuild(_appendFailure);
 	}
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! _disabledDebugOutput ) {
-		LOG(DEBUG2) << "DBus boolean value appended";
-	}
+	LOG(DEBUG2) << "DBus boolean value appended";
 #endif
 }
 
@@ -95,9 +91,7 @@ void GKDBusMessage::appendStringVector(const std::vector<std::string> & list) {
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! _disabledDebugOutput ) {
-		LOG(DEBUG2) << "DBus string array appended";
-	}
+	LOG(DEBUG2) << "DBus string array appended";
 #endif
 }
 
@@ -117,9 +111,7 @@ void GKDBusMessage::appendUInt32(const uint32_t value) {
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! _disabledDebugOutput ) {
-		LOG(DEBUG2) << "DBus uint32_t value appended";
-	}
+	LOG(DEBUG2) << "DBus uint32_t value appended";
 #endif
 }
 
@@ -226,9 +218,7 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::mBank_type & bank) {
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! _disabledDebugOutput ) {
-		LOG(DEBUG2) << "DBus MacrosBank appended";
-	}
+	LOG(DEBUG2) << "DBus MacrosBank appended";
 #endif
 }
 
@@ -312,9 +302,7 @@ void GKDBusMessage::appendLCDPluginsPropertiesArray(
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! _disabledDebugOutput ) {
-		LOG(DEBUG2) << "DBus LCDPluginsProperties array appended";
-	}
+	LOG(DEBUG2) << "DBus LCDPluginsProperties array appended";
 #endif
 }
 
@@ -385,9 +373,7 @@ void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type 
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! _disabledDebugOutput ) {
-		LOG(DEBUG2) << "DBus macro appended";
-	}
+	LOG(DEBUG2) << "DBus macro appended";
 #endif
 }
 
@@ -399,9 +385,7 @@ void GKDBusMessage::appendString(DBusMessageIter *iter, const std::string & valu
 		throw GKDBusMessageWrongBuild(_appendFailure);
 	}
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! _disabledDebugOutput ) {
-		LOG(DEBUG2) << "DBus string value appended";
-	}
+	LOG(DEBUG2) << "DBus string value appended";
 #endif
 }
 
@@ -412,9 +396,7 @@ void GKDBusMessage::appendUInt8(DBusMessageIter *iter, const uint8_t value) {
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! _disabledDebugOutput ) {
-		LOG(DEBUG2) << "DBus uint8_t value appended";
-	}
+	LOG(DEBUG2) << "DBus uint8_t value appended";
 #endif
 }
 
@@ -425,9 +407,7 @@ void GKDBusMessage::appendUInt16(DBusMessageIter *iter, const uint16_t value) {
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! _disabledDebugOutput ) {
-		LOG(DEBUG2) << "DBus uint16_t value appended";
-	}
+	LOG(DEBUG2) << "DBus uint16_t value appended";
 #endif
 }
 
@@ -438,9 +418,7 @@ void GKDBusMessage::appendUInt64(DBusMessageIter *iter, const uint64_t value) {
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! _disabledDebugOutput ) {
-		LOG(DEBUG2) << "DBus uint64_t value appended";
-	}
+	LOG(DEBUG2) << "DBus uint64_t value appended";
 #endif
 }
 

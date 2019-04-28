@@ -56,7 +56,6 @@ class GKDBusMessage
 	protected:
 		GKDBusMessage(
 			DBusConnection* connection,
-			const bool disabledDebugOutput=false,
 			const bool check=false
 		);
 		~GKDBusMessage(void);
@@ -65,7 +64,6 @@ class GKDBusMessage
 		DBusMessage* _message;
 		DBusMessageIter _itMessage;
 		bool _hosedMessage;
-		bool _disabledDebugOutput;
 
 		const std::string _appendFailure = "message append failure";
 

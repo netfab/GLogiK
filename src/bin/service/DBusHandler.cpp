@@ -424,7 +424,7 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
  *  - online
  *  - closing
  */
-const std::string DBusHandler::getCurrentSessionState(const bool disabledDebugOutput) {
+const std::string DBusHandler::getCurrentSessionState(void) {
 	std::string remoteMethod;
 	switch(_sessionFramework) {
 		/* consolekit */
@@ -436,8 +436,7 @@ const std::string DBusHandler::getCurrentSessionState(const bool disabledDebugOu
 					"org.freedesktop.ConsoleKit",
 					_currentSession.c_str(),
 					"org.freedesktop.ConsoleKit.Session",
-					remoteMethod.c_str(),
-					disabledDebugOutput
+					remoteMethod.c_str()
 				);
 				_pDBus->sendRemoteMethodCall();
 
@@ -463,8 +462,7 @@ const std::string DBusHandler::getCurrentSessionState(const bool disabledDebugOu
 					"org.freedesktop.login1",
 					_currentSession.c_str(),
 					"org.freedesktop.DBus.Properties",
-					remoteMethod.c_str(),
-					disabledDebugOutput
+					remoteMethod.c_str()
 				);
 				_pDBus->appendStringToRemoteMethodCall("org.freedesktop.login1.Session");
 				_pDBus->appendStringToRemoteMethodCall("State");
