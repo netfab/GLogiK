@@ -92,6 +92,7 @@ class GKDBus
 			const ConnectionFlag flag = ConnectionFlag::GKDBUS_MULTIPLE
 		);
 
+		const std::string getObjectFromObjectPath(const std::string & objectPath);
 		void checkForNextMessage(const BusConnection bus) noexcept;
 
 	protected:

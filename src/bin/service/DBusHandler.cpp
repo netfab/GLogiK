@@ -101,8 +101,7 @@ DBusHandler::DBusHandler(
 				this->sendRestartRequest(); /* throws */
 			}
 
-			_sessionState = this->getCurrentSessionState();
-			this->reportChangedState();
+			this->updateSessionState();
 
 			this->initializeGKDBusSignals();
 			this->initializeGKDBusMethods();
@@ -163,64 +162,12 @@ void DBusHandler::checkDBusMessages(void) {
 	_pDBus->checkForNextMessage(_sessionBus);
 }
 
-void DBusHandler::updateSessionState(void) {
-	/* if debug output is ON, force-disable it, else debug file
-	 * will be spammed by the following DBus request debug output */
-	const bool disabledDebugOutput = true;
-	const std::string newState = this->getCurrentSessionState(disabledDebugOutput);
-	if(_sessionState == newState) {
-#if 0 && DEBUGGING_ON
-		LOG(DEBUG5) << "session state did not changed";
-#endif
-		return;
-	}
-
+void DBusHandler::updateSessionState(void)
+{
+	_sessionState = this->getCurrentSessionState();
 #if DEBUGGING_ON
-	LOG(DEBUG1) << "current session state : " << _sessionState;
+	LOG(DEBUG1) << "switching session state to : " << _sessionState;
 #endif
-
-	std::string unhandled = "unhandled session state : "; unhandled += newState;
-
-	if( _sessionState == "active" ) {
-		if(newState == "online") {
-		}
-		else if(newState == "closing") {
-		}
-		else {
-			FATALERROR << unhandled;
-			return;
-		}
-	}
-	else if( _sessionState == "online" ) {
-		if(newState == "active") {
-		}
-		else if(newState == "closing") {
-		}
-		else {
-			FATALERROR << unhandled;
-			return;
-		}
-	}
-	else if( _sessionState == "closing" ) {
-		if(newState == "active") {
-		}
-		else if(newState == "online") {
-		}
-		else {
-			FATALERROR << unhandled;
-			return;
-		}
-	}
-	else {
-		FATALERROR << unhandled;
-		return;
-	}
-
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "switching session state to : " << newState;
-#endif
-
-	_sessionState = newState;
 	this->reportChangedState();
 }
 
@@ -401,6 +348,20 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 				LOG(DEBUG1) << "current session : " << _currentSession;
 #endif
 				_sessionFramework = SessionFramework::FW_CONSOLEKIT;
+
+
+				/* update session state when ActiveChanged signal receipted */
+				const std::string object = _pDBus->getObjectFromObjectPath(_currentSession);
+
+				_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+					_systemBus,
+					object.c_str(),
+					"org.freedesktop.ConsoleKit.Session",
+					"ActiveChanged",
+					{},
+					std::bind(&DBusHandler::updateSessionState, this)
+				);
+
 				return;
 			}
 			catch (const GLogiKExcept & e) {
@@ -951,8 +912,7 @@ void DBusHandler::daemonIsStarting(void) {
 		}
 
 		if( _registerStatus ) {
-			_sessionState = this->getCurrentSessionState();
-			this->reportChangedState();
+			this->updateSessionState();
 			_devices.setClientID(_clientID);
 
 			this->initializeDevices();

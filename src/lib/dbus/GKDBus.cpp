@@ -121,6 +121,19 @@ void GKDBus::connectToSessionBus(
 	}
 }
 
+const std::string GKDBus::getObjectFromObjectPath(const std::string & objectPath)
+{
+	std::string object;
+	std::istringstream path(objectPath);
+	/* get last part of object path */
+	while(std::getline(path, object, '/')) {}
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "object path: " << objectPath;
+	LOG(DEBUG3) << "     object: " << object;
+#endif
+	return object;
+}
+
 /* -- */
 /*
  * check if :
@@ -151,16 +164,7 @@ void GKDBus::checkForNextMessage(const BusConnection bus) noexcept {
 	}
 
 	try {
-		std::string object;
-		{
-			std::istringstream objectPath( toString(dbus_message_get_path(_message)) );
-			/* get last part of object path */
-			while(std::getline(objectPath, object, '/')) {}
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "asked object path: " << objectPath.str();
-			LOG(DEBUG3) << "     asked object: " << object;
-#endif
-		}
+		const std::string object = this->getObjectFromObjectPath(toString(dbus_message_get_path(_message)));
 
 		for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
 			/* handle root node introspection special case */
