@@ -34,7 +34,7 @@ GKDBusAsyncContainer::GKDBusAsyncContainer(void)
 	:	GKDBusMessage(nullptr, true), _numArgs(0)
 {
 	/* initialize fake message */
-	_message = dbus_message_new(DBUS_MESSAGE_TYPE_INVALID);
+	_message = dbus_message_new(DBUS_MESSAGE_TYPE_ERROR);
 	if(_message == nullptr)
 		throw GKDBusMessageWrongBuild("can't allocate memory for DBus Async Container message");
 
