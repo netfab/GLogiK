@@ -349,7 +349,6 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 #endif
 				_sessionFramework = SessionFramework::FW_CONSOLEKIT;
 
-
 				/* update session state when ActiveChanged signal receipted */
 				const std::string object = _pDBus->getObjectFromObjectPath(_currentSession);
 
@@ -399,6 +398,19 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 				LOG(DEBUG1) << "current session : " << _currentSession;
 #endif
 				_sessionFramework = SessionFramework::FW_LOGIND;
+
+				/* update session state when PropertyChanged signal receipted */
+				const std::string object = _pDBus->getObjectFromObjectPath(_currentSession);
+
+				_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+					_systemBus,
+					object.c_str(),
+					"org.freedesktop.DBus.Properties",
+					"PropertiesChanged",
+					{},
+					std::bind(&DBusHandler::updateSessionState, this)
+				);
+
 				return;
 			}
 			catch (const GLogiKExcept & e) {
