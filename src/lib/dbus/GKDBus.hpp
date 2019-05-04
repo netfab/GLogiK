@@ -93,7 +93,7 @@ class GKDBus
 		);
 
 		const std::string getObjectFromObjectPath(const std::string & objectPath);
-		void checkForNextMessage(const BusConnection bus) noexcept;
+		void checkForMessages(void) noexcept;
 
 	protected:
 
@@ -112,6 +112,8 @@ class GKDBus
 		void checkReleasedName(int ret);
 		DBusConnection* getConnection(BusConnection bus);
 		unsigned int getDBUsFlags(const ConnectionFlag flag);
+
+		void checkForBusMessages(const BusConnection bus, DBusConnection* connection) noexcept;
 };
 
 } // namespace NSGKDBus

@@ -134,6 +134,14 @@ const std::string GKDBus::getObjectFromObjectPath(const std::string & objectPath
 	return object;
 }
 
+void GKDBus::checkForMessages(void) noexcept
+{
+	if(_systemConnection != nullptr)
+		this->checkForBusMessages(BusConnection::GKDBUS_SYSTEM, _systemConnection);
+	if(_sessionConnection != nullptr)
+		this->checkForBusMessages(BusConnection::GKDBUS_SESSION, _sessionConnection);
+}
+
 /* -- */
 /*
  * check if :
@@ -143,95 +151,96 @@ const std::string GKDBus::getObjectFromObjectPath(const std::string & objectPath
  * was called. if yes, then run the corresponding callback function
  * and send DBus reply after appending the return value
  */
-void GKDBus::checkForNextMessage(const BusConnection bus) noexcept {
-	DBusConnection* connection = nullptr;
+void GKDBus::checkForBusMessages(const BusConnection bus, DBusConnection* connection) noexcept {
 	GKDBusEvents::currentBus = bus; /* used on introspection */
 
-	try {
-		connection = this->getConnection(GKDBusEvents::currentBus);
-	}
-	catch ( const GLogiKExcept & e ) {
-		LOG(ERROR) << e.what();
-		return;
-	}
+	unsigned int c = 0;
+	while( true ) {
+		dbus_connection_read_write(connection, 0);
+		_message = dbus_connection_pop_message(connection);
 
-	dbus_connection_read_write(connection, 0);
-	_message = dbus_connection_pop_message(connection);
-
-	/* no message */
-	if(_message == nullptr) {
-		return;
-	}
-
-	try {
-		const std::string object = this->getObjectFromObjectPath(toString(dbus_message_get_path(_message)));
-
-		for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
-			/* handle root node introspection special case */
-			if( object != this->getRootNode() )
-				/* object must match */
-				if(object != objectPair.first) {
+		/* no message */
+		if(_message == nullptr) {
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "skipping " << objectPair.first << " object - not " << object;
+			if(c > 0) {
+				LOG(DEBUG) << "processed " << c << " DBus messages";
+			}
 #endif
-					continue;
-				}
+			return;
+		}
 
-			for(const auto & interfacePair : objectPair.second) {
-				const char* interface = interfacePair.first.c_str();
+		try {
+			const std::string object = this->getObjectFromObjectPath(toString(dbus_message_get_path(_message)));
+
+			for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
+				/* handle root node introspection special case */
+				if( object != this->getRootNode() )
+					/* object must match */
+					if(object != objectPair.first) {
 #if DEBUGGING_ON
-				LOG(DEBUG2) << "checking " << interface << " interface";
+						LOG(DEBUG3) << "skipping " << objectPair.first << " object - not " << object;
+#endif
+						continue;
+					}
+
+				for(const auto & interfacePair : objectPair.second) {
+					const char* interface = interfacePair.first.c_str();
+#if DEBUGGING_ON
+					LOG(DEBUG2) << "checking " << interface << " interface";
 #endif
 
-				for(const auto & DBusEvent : interfacePair.second) { /* vector of pointers */
-					const char* eventName = DBusEvent->eventName.c_str();
+					for(const auto & DBusEvent : interfacePair.second) { /* vector of pointers */
+						const char* eventName = DBusEvent->eventName.c_str();
 #if 0 && DEBUGGING_ON
-					LOG(DEBUG3) << "checking " << eventName << " event";
+						LOG(DEBUG3) << "checking " << eventName << " event";
 #endif
-					switch(DBusEvent->eventType) {
-						case GKDBusEventType::GKDBUS_EVENT_METHOD: {
-							if( dbus_message_is_method_call(_message, interface, eventName) ) {
+						switch(DBusEvent->eventType) {
+							case GKDBusEventType::GKDBUS_EVENT_METHOD: {
+								if( dbus_message_is_method_call(_message, interface, eventName) ) {
 #if DEBUGGING_ON
-								LOG(DEBUG1) << "DBus " << eventName << " method called !";
+									LOG(DEBUG1) << "DBus " << eventName << " method called !";
 #endif
-								DBusEvent->runCallback(connection, _message);
-								throw GKDBusEventFound();
+									DBusEvent->runCallback(connection, _message);
+									throw GKDBusEventFound();
+								}
+								break;
 							}
-							break;
-						}
-						case GKDBusEventType::GKDBUS_EVENT_SIGNAL: {
-							if( dbus_message_is_signal(_message, interface, eventName) ) {
+							case GKDBusEventType::GKDBUS_EVENT_SIGNAL: {
+								if( dbus_message_is_signal(_message, interface, eventName) ) {
 #if DEBUGGING_ON
-								LOG(DEBUG1) << "DBus " << eventName << " signal receipted !";
+									LOG(DEBUG1) << "DBus " << eventName << " signal receipted !";
 #endif
-								DBusEvent->runCallback(connection, _message);
-								throw GKDBusEventFound();
+									DBusEvent->runCallback(connection, _message);
+									throw GKDBusEventFound();
+								}
+								break;
 							}
-							break;
+							default:
+								throw GLogiKExcept("wrong event type");
+								break;
 						}
-						default:
-							throw GLogiKExcept("wrong event type");
-							break;
 					}
 				}
 			}
 		}
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(ERROR) << "current bus connection oor";
-	}
-	catch ( const GKDBusEventFound & e ) {
-		LOG(DEBUG2) << e.what();
-	}
-	catch ( const GLogiKExcept & e ) {
-		LOG(ERROR) << e.what();
-	}
+		catch (const std::out_of_range& oor) {
+			LOG(ERROR) << "current bus connection oor";
+		}
+		catch ( const GKDBusEventFound & e ) {
+			LOG(DEBUG2) << e.what();
+		}
+		catch ( const GLogiKExcept & e ) {
+			LOG(ERROR) << e.what();
+		}
 
 #if DEBUGGING_ON
-	LOG(DEBUG3) << "freeing DBus message";
+		LOG(DEBUG3) << "freeing DBus message";
 #endif
-	dbus_message_unref(_message);
-	_message = nullptr;
+		dbus_message_unref(_message);
+		_message = nullptr;
+
+		c++;
+	}
 }
 
 

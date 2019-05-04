@@ -76,7 +76,7 @@ LauncherDBusHandler::~LauncherDBusHandler(void)
 }
 
 void LauncherDBusHandler::checkDBusMessages(void) {
-	_pDBus->checkForNextMessage(_sessionBus);
+	_pDBus->checkForMessages();
 }
 
 /*

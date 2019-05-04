@@ -643,7 +643,7 @@ void MainWindow::setTabEnabled(const std::string & name, const bool status)
 
 void MainWindow::checkDBusMessages(void)
 {
-	_pDBus->checkForNextMessage(NSGKDBus::BusConnection::GKDBUS_SESSION);
+	_pDBus->checkForMessages();
 }
 
 } // namespace GLogiK

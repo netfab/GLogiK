@@ -158,8 +158,7 @@ DBusHandler::~DBusHandler() {
  */
 
 void DBusHandler::checkDBusMessages(void) {
-	_pDBus->checkForNextMessage(_systemBus);
-	_pDBus->checkForNextMessage(_sessionBus);
+	_pDBus->checkForMessages();
 }
 
 void DBusHandler::updateSessionState(void)

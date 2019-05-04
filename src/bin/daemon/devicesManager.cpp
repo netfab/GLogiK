@@ -750,7 +750,7 @@ void DevicesManager::resetDevicesStates(void) {
 }
 
 void DevicesManager::checkDBusMessages(void) noexcept {
-	_pDBus->checkForNextMessage(NSGKDBus::BusConnection::GKDBUS_SYSTEM);
+	_pDBus->checkForMessages();
 }
 
 /*
