@@ -111,7 +111,7 @@ class GKDBus
 		void checkDBusError(const char* error);
 		void checkReleasedName(int ret);
 		DBusConnection* getConnection(BusConnection bus);
-		unsigned int getDBUsFlags(const ConnectionFlag flag);
+		const unsigned int getDBusRequestFlags(const ConnectionFlag flag);
 
 		void checkForBusMessages(const BusConnection bus, DBusConnection* connection) noexcept;
 };

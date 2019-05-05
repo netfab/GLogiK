@@ -89,7 +89,7 @@ void GKDBus::connectToSystemBus(
 	LOG(DEBUG2) << "requesting system connection name : " << connectionName;
 #endif
 	_systemName.clear();
-	int ret = dbus_bus_request_name(_systemConnection, connectionName, getDBUsFlags(flag), &_error);
+	int ret = dbus_bus_request_name(_systemConnection, connectionName, getDBusRequestFlags(flag), &_error);
 	this->checkDBusError("DBus System request name failure");
 	_systemName = connectionName;
 
@@ -112,7 +112,7 @@ void GKDBus::connectToSessionBus(
 	LOG(DEBUG2) << "requesting session connection name : " << connectionName;
 #endif
 	_sessionName.clear();
-	int ret = dbus_bus_request_name(_sessionConnection, connectionName, getDBUsFlags(flag), &_error);
+	int ret = dbus_bus_request_name(_sessionConnection, connectionName, getDBusRequestFlags(flag), &_error);
 	this->checkDBusError("DBus Session request name failure");
 	_sessionName = connectionName;
 
@@ -298,7 +298,7 @@ DBusConnection* GKDBus::getConnection(BusConnection bus) {
 	}
 }
 
-unsigned int GKDBus::getDBUsFlags(const ConnectionFlag flag)
+const unsigned int GKDBus::getDBusRequestFlags(const ConnectionFlag flag)
 {
 	unsigned int ret = 0;
 	switch(flag) {
