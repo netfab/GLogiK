@@ -1,4 +1,5 @@
 Some ideas :
- * Improve and/or write LCD screen plugins
+ * Improve and write LCD screen plugins
  * Virtual LCD screen (and virtual keyboard?) using GUI interface
  * Desktop service tray icon
+
