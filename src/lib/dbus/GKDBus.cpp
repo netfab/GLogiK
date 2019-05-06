@@ -127,7 +127,7 @@ const std::string GKDBus::getObjectFromObjectPath(const std::string & objectPath
 	std::istringstream path(objectPath);
 	/* get last part of object path */
 	while(std::getline(path, object, '/')) {}
-#if DEBUGGING_ON
+#if 0 && DEBUGGING_ON
 	LOG(DEBUG3) << "object path: " << objectPath;
 	LOG(DEBUG3) << "     object: " << object;
 #endif
@@ -177,7 +177,7 @@ void GKDBus::checkForBusMessages(const BusConnection bus, DBusConnection* connec
 				if( object != this->getRootNode() )
 					/* object must match */
 					if(object != objectPair.first) {
-#if DEBUGGING_ON
+#if 0 && DEBUGGING_ON
 						LOG(DEBUG3) << "skipping " << objectPair.first << " object - not " << object;
 #endif
 						continue;
@@ -185,7 +185,7 @@ void GKDBus::checkForBusMessages(const BusConnection bus, DBusConnection* connec
 
 				for(const auto & interfacePair : objectPair.second) {
 					const char* interface = interfacePair.first.c_str();
-#if DEBUGGING_ON
+#if 0 && DEBUGGING_ON
 					LOG(DEBUG2) << "checking " << interface << " interface";
 #endif
 
@@ -233,7 +233,7 @@ void GKDBus::checkForBusMessages(const BusConnection bus, DBusConnection* connec
 			LOG(ERROR) << e.what();
 		}
 
-#if DEBUGGING_ON
+#if 0 && DEBUGGING_ON
 		LOG(DEBUG3) << "freeing DBus message";
 #endif
 		dbus_message_unref(_message);
