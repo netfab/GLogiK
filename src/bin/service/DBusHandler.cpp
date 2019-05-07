@@ -353,6 +353,7 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 
 				_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 					_systemBus,
+					"org.freedesktop.ConsoleKit",
 					object.c_str(),
 					"org.freedesktop.ConsoleKit.Session",
 					"ActiveChanged",
@@ -403,6 +404,7 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 
 				_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 					_systemBus,
+					"org.freedesktop.login1",
 					object.c_str(),
 					"org.freedesktop.DBus.Properties",
 					"PropertiesChanged",
@@ -731,6 +733,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 	/* -- -- -- -- -- -- -- -- -- -- */
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
 		_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"DevicesStarted",
@@ -740,6 +743,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
 		_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"DevicesStopped",
@@ -749,6 +753,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
 		_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"DevicesUnplugged",
@@ -758,6 +763,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
 		_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"MacroRecorded",
@@ -771,6 +777,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
 		_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"MacroCleared",
@@ -784,6 +791,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToVoid>::exposeSignal(
 		_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"deviceMediaEvent",
@@ -800,6 +808,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 	/* -- -- -- -- -- -- -- -- -- -- */
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 		"DaemonIsStopping",
@@ -809,6 +818,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 		"DaemonIsStarting",
@@ -818,6 +828,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 		"ReportYourself",
@@ -830,6 +841,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 	/* -- -- -- -- -- -- -- -- -- -- */
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToVoid>::exposeSignal(
 		_sessionBus,
+		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 		"DeviceStatusChangeRequest",

@@ -327,6 +327,7 @@ void MainWindow::build(void)
 	/* initializing GKDBus signals */
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"DevicesUpdated",
@@ -336,6 +337,7 @@ void MainWindow::build(void)
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringToVoid>::exposeSignal(
 		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"DeviceConfigurationSaved",

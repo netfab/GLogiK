@@ -28,11 +28,17 @@ using namespace NSGKUtils;
 
 void SignalRule::addSignalRuleMatch(
 		DBusConnection* connection,
+		const char* sender,
 		const char* interface,
 		const char* eventName
 	)
 {
-	std::string rule = "type='signal',interface='";
+	std::string rule = "type='signal'";
+	if(sender != nullptr) {
+		rule += ",sender='";
+		rule += sender;
+	}
+	rule += "',interface='";
 	rule += interface;
 	rule += "',member='";
 	rule += eventName;
