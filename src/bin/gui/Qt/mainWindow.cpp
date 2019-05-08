@@ -235,9 +235,11 @@ void MainWindow::build(void)
 #endif
 
 		this->setTabEnabled("DaemonAndService", true);
-		this->setTabEnabled("DeviceControl", true);
+		this->setTabEnabled("DeviceControl", false);
 		this->setTabEnabled("BacklightColor", false);
 		this->setTabEnabled("LCDPlugins", false);
+
+		this->setCurrentTab("DaemonAndService");
 
 		/* -- -- -- */
 
@@ -571,9 +573,13 @@ void MainWindow::resetInterface(void)
 #endif
 
 	try {
+		this->setCurrentTab("DaemonAndService");
+
 		_devicesComboBox->setEnabled(false);
 		/* clear() set current index to -1 */
 		_devicesComboBox->clear();
+
+		this->setTabEnabled("DeviceControl", false);
 
 		try {
 			_daemonAndServiceTab->updateTab();
@@ -611,6 +617,7 @@ void MainWindow::resetInterface(void)
 		}
 
 		_deviceControlTab->disableButtons();
+		this->setTabEnabled("DeviceControl", true);
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "error resetting interface : " << e.what();
@@ -645,6 +652,24 @@ void MainWindow::setTabEnabled(const std::string & name, const bool status)
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "error setting TabEnabled property : " << e.what();
+		throw;
+	}
+}
+
+void MainWindow::setCurrentTab(const std::string & name)
+{
+	try {
+		QWidget* pTab = this->getTabbedWidget(name);
+		int index = _tabbedWidgets->indexOf(pTab);
+		if(index == -1) {
+			LOG(ERROR) << "index not found : " << name;
+			throw GLogiKExcept("tab index not found");
+		}
+
+		_tabbedWidgets->setCurrentIndex(index);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << "error setting currentIndex : " << e.what();
 		throw;
 	}
 }

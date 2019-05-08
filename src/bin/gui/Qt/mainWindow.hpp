@@ -93,6 +93,7 @@ class MainWindow
 		QWidget* getTabbedWidget(const std::string & name);
 
 		void setTabEnabled(const std::string & name, const bool status);
+		void setCurrentTab(const std::string & name);
 
 		void aboutDialog(void);
 
