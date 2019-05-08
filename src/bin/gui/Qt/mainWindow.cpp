@@ -324,6 +324,10 @@ void MainWindow::build(void)
 	connect(     _LCDPluginsTab->getApplyButton(), &QPushButton::clicked,
 			 std::bind(&MainWindow::saveFile, this, TabApplyButton::TAB_LCD_PLUGINS) );
 
+#if DEBUGGING_ON
+	LOG(DEBUG) << "Qt signals connected to slots";
+#endif
+
 	/* initializing GKDBus signals */
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		NSGKDBus::BusConnection::GKDBUS_SESSION,
@@ -567,6 +571,7 @@ void MainWindow::resetInterface(void)
 #endif
 
 	try {
+		_devicesComboBox->setEnabled(false);
 		/* clear() set current index to -1 */
 		_devicesComboBox->clear();
 
@@ -579,10 +584,6 @@ void MainWindow::resetInterface(void)
 
 			/* used only over initialization */
 			_serviceStartRequest = (_daemonAndServiceTab->isServiceStarted() == false);
-
-			/* additems() set current index to 0
-			 * ::updateInterface() will be called with index 0 */
-			_devicesComboBox->addItems({""});
 			throw;
 		}
 
@@ -606,6 +607,7 @@ void MainWindow::resetInterface(void)
 			}
 			/* additems() set current index to 0 */
 			_devicesComboBox->addItems(items);
+			_devicesComboBox->setEnabled(true);
 		}
 
 		_deviceControlTab->disableButtons();
