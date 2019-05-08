@@ -453,9 +453,10 @@ void MainWindow::saveFile(const TabApplyButton tab)
 
 void MainWindow::updateInterface(int index)
 {
-	/* don't update interface on combo clear() */
+	/* update interface with index 0 on combobox clear()
+	 * this happens at the very beginning of ::resetInterface() */
 	if(index == -1) {
-		return;
+		index = 0;
 	}
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "updating interface with index : " << index;
@@ -573,6 +574,9 @@ void MainWindow::resetInterface(void)
 			_daemonAndServiceTab->updateTab();
 		}
 		catch (const GLogiKExcept & e) {
+			/* throws only if something was wrong when getting service infos
+			 * (pDBus internal error, or service not started) */
+
 			/* used only over initialization */
 			_serviceStartRequest = (_daemonAndServiceTab->isServiceStarted() == false);
 
