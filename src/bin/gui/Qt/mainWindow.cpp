@@ -288,8 +288,8 @@ void MainWindow::build(void)
 			/* asking the launcher for the desktop service restart */
 			_pDBus->initializeBroadcastSignal(
 				NSGKDBus::BusConnection::GKDBUS_SESSION,
-				GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-				GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+				GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
+				GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 				"RestartRequest"
 			);
 			_pDBus->sendBroadcastSignal();

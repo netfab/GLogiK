@@ -12,6 +12,8 @@
 	- x11-libs/libX11
 	- x11-libs/libXtst
  * fixed potential memory leaks when building Qt5 interface
+ * fixed start request sent to launcher when Qt5 GUI is starting and
+   desktop service is not running
  * miscellaneous fixs (launcher linking error, crash in GKDBus)
 
 ---
