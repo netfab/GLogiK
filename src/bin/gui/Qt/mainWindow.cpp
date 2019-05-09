@@ -65,6 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
 		_LOGfd(nullptr),
 		_GUIResetThrow(true),
 		_serviceStartRequest(false),
+		_ignoreNextSignal(false),
 		_statusBarTimeout(3000),
 		_devicesComboBox(nullptr),
 		_tabbedWidgets(nullptr),
@@ -364,6 +365,15 @@ void MainWindow::build(void)
 
 void MainWindow::configurationFileUpdated(const std::string & devID)
 {
+	bool ignore = _ignoreNextSignal;
+	_ignoreNextSignal = false;
+	if( ignore ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << __func__ << " signal ignored";
+#endif
+		return;
+	}
+
 	if( _devID != devID)
 		return;
 
@@ -445,6 +455,9 @@ void MainWindow::saveFile(const TabApplyButton tab)
 		LOG(DEBUG2) << "saving file";
 #endif
 
+		/* desktop service will detect that configuration file was modified,
+		 * and will send us a signal. Ignore it. */
+		_ignoreNextSignal = true;
 		DeviceConfigurationFile::save(_configurationFilePath.string(), _openedConfigurationFile);
 
 		QString msg("Configuration file saved");

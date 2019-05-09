@@ -136,6 +136,9 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
 		this->loadDeviceConfigurationFile(device);
 
 		this->sendDeviceConfigurationToDaemon(devID, device);
+
+		/* inform GUI that configuration file was reloaded */
+		this->sendDeviceConfigurationSavedSignal(devID);
 	}
 	catch (const std::out_of_range& oor) {
 		try {
@@ -143,6 +146,9 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
 			this->loadDeviceConfigurationFile(device);
 
 			this->sendDeviceConfigurationToDaemon(devID, device);
+
+			/* inform GUI that configuration file was reloaded */
+			this->sendDeviceConfigurationSavedSignal(devID);
 		}
 		catch (const std::out_of_range& oor) {
 			LOG(WARNING) << "device " << devID << " not found in containers, giving up";
@@ -175,34 +181,38 @@ void DevicesHandler::saveDeviceConfigurationFile(
 			LOG(ERROR) << "set permissions failure on configuration file : " << e.what();
 		}
 
-		/* send */
-		std::string status("DeviceConfigurationSaved signal");
-		try {
-			/* send DeviceConfigurationSaved signal to GUI applications */
-			_pDBus->initializeBroadcastSignal(
-				NSGKDBus::BusConnection::GKDBUS_SESSION,
-				GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-				GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-				"DeviceConfigurationSaved"
-			);
-			_pDBus->appendStringToBroadcastSignal(devID);
-			_pDBus->sendBroadcastSignal();
-
-			status += " sent";
-		}
-		catch (const GKDBusMessageWrongBuild & e) {
-			_pDBus->abandonBroadcastSignal();
-			status += " failure";
-			LOG(ERROR) << status << " - " << e.what();
-		}
-
-#if DEBUGGING_ON
-		LOG(DEBUG3) << status << " on session bus";
-#endif
+		this->sendDeviceConfigurationSavedSignal(devID);
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(ERROR) << e.what();
 	}
+}
+
+void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devID)
+{
+	std::string status("DeviceConfigurationSaved signal");
+	try {
+		/* send DeviceConfigurationSaved signal to GUI applications */
+		_pDBus->initializeBroadcastSignal(
+			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+			"DeviceConfigurationSaved"
+		);
+		_pDBus->appendStringToBroadcastSignal(devID);
+		_pDBus->sendBroadcastSignal();
+
+		status += " sent";
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonBroadcastSignal();
+		status += " failure";
+		LOG(ERROR) << status << " - " << e.what();
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << status << " on session bus";
+#endif
 }
 
 void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {

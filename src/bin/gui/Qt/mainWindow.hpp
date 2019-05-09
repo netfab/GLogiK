@@ -73,6 +73,7 @@ class MainWindow
 		FILE* _LOGfd;	/* log file descriptor */
 		bool _GUIResetThrow;
 		bool _serviceStartRequest;
+		bool _ignoreNextSignal;
 		int _statusBarTimeout;
 		std::string _devID;
 

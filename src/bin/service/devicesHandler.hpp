@@ -124,6 +124,8 @@ class DevicesHandler
 			const std::string & devID,
 			const DeviceProperties & device
 		);
+		void sendDeviceConfigurationSavedSignal(const std::string & devID);
+
 		void unrefDevice(const std::string & devID);
 
 		const bool checkDeviceCapability(const DeviceProperties & device, Caps toCheck);
