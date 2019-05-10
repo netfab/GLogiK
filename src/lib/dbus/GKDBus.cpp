@@ -227,7 +227,9 @@ void GKDBus::checkForBusMessages(const BusConnection bus, DBusConnection* connec
 			LOG(ERROR) << "current bus connection oor";
 		}
 		catch ( const GKDBusEventFound & e ) {
+#if 0 && DEBUGGING_ON
 			LOG(DEBUG2) << e.what();
+#endif
 		}
 		catch ( const GLogiKExcept & e ) {
 			LOG(ERROR) << e.what();
