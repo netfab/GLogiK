@@ -126,7 +126,11 @@ void AboutDialog::buildDialog(void)
 		}
 
 		{
-			QString descText("<a href=\"https://glogik.tuxfamily.org/\">https://glogik.tuxfamily.org/</a>");
+			QString descText("<a href=\"");
+			descText += PACKAGE_URL;
+			descText += "\">";
+			descText += PACKAGE_URL;
+			descText += "</a>";
 
 			QLabel* descLabel = new QLabel(descText);
 			vBox->addWidget(descLabel);
