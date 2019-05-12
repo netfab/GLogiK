@@ -1,7 +1,7 @@
 
 ---
 
-## version 0.8.x - 2019-xx-xx (unreleased)
+## version 0.8.8 - 2019-05-12
 #### Added features
  * added LCD screen plugins tab in Qt5 GUI. Implemented all related
    glue code into service and daemon
