@@ -169,6 +169,13 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 			{"sst", "get_device_properties", dOUT, "device properties"} },
 		std::bind(&ClientsManager::getDeviceProperties, this, std::placeholders::_1, std::placeholders::_2) );
 
+	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToLCDPluginsPropertiesArray>::exposeMethod(
+		system_bus, DM_object, DM_interf, "GetDeviceLCDPluginsProperties",
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
+			{"a(tss)", "get_lcd_plugins_properties_array", dOUT, "LCDPluginsProperties array"} },
+		std::bind(&ClientsManager::getDeviceLCDPluginsProperties, this, std::placeholders::_1, std::placeholders::_2) );
+
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToStringsArray>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceMacroKeysNames",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
@@ -760,6 +767,28 @@ void ClientsManager::getDeviceProperties(
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownClient
 	}
+}
+
+const LCDPluginsPropertiesArray_type & ClientsManager::getDeviceLCDPluginsProperties(
+	const std::string & clientID,
+	const std::string & devID)
+{
+#if DEBUGGING_ON
+	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
+				<< CONST_STRING_CLIENT << clientID;
+#endif
+	try {
+		Client* pClient = _connectedClients.at(clientID);
+		if( pClient->isAlive() ) {
+			return _pDevicesManager->getDeviceLCDPluginsProperties(devID);
+		}
+		GKSysLog(LOG_WARNING, WARNING, "getting device LCDPluginsProperties not allowed because client not alive");
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownClient
+	}
+
+	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
 const bool ClientsManager::setDeviceBacklightColor(

@@ -22,22 +22,21 @@
 #include <utility>
 #include <exception>
 #include <stdexcept>
-#include <sstream>
-#include <fstream>
 #include <set>
-#include <thread>
 
 #include <boost/archive/archive_exception.hpp>
 #include <boost/archive/xml_archive_exception.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
-#include <boost/process.hpp>
+
+#include <X11/Xlib.h>
+#include <X11/extensions/XTest.h>
+
+#include "include/LCDPluginProperties.hpp"
 
 #include "lib/shared/deviceConfigurationFile.hpp"
 
 #include "devicesHandler.hpp"
-
-namespace bp = boost::process;
 
 namespace GLogiK
 {
@@ -137,6 +136,9 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
 		this->loadDeviceConfigurationFile(device);
 
 		this->sendDeviceConfigurationToDaemon(devID, device);
+
+		/* inform GUI that configuration file was reloaded */
+		this->sendDeviceConfigurationSavedSignal(devID);
 	}
 	catch (const std::out_of_range& oor) {
 		try {
@@ -144,6 +146,9 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
 			this->loadDeviceConfigurationFile(device);
 
 			this->sendDeviceConfigurationToDaemon(devID, device);
+
+			/* inform GUI that configuration file was reloaded */
+			this->sendDeviceConfigurationSavedSignal(devID);
 		}
 		catch (const std::out_of_range& oor) {
 			LOG(WARNING) << "device " << devID << " not found in containers, giving up";
@@ -173,39 +178,41 @@ void DevicesHandler::saveDeviceConfigurationFile(
 			fs::permissions(filePath, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 		}
 		catch (const fs::filesystem_error & e) {
-			std::ostringstream buffer("set permissions failure on configuration file : ", std::ios_base::app);
-			buffer << e.what();
-			LOG(ERROR) << buffer.str();
+			LOG(ERROR) << "set permissions failure on configuration file : " << e.what();
 		}
 
-		/* send */
-		std::string status("DeviceConfigurationSaved signal");
-		try {
-			/* send DeviceConfigurationSaved signal to GUI applications */
-			_pDBus->initializeBroadcastSignal(
-				NSGKDBus::BusConnection::GKDBUS_SESSION,
-				GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-				GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-				"DeviceConfigurationSaved"
-			);
-			_pDBus->appendStringToBroadcastSignal(devID);
-			_pDBus->sendBroadcastSignal();
-
-			status += " sent";
-		}
-		catch (const GKDBusMessageWrongBuild & e) {
-			_pDBus->abandonBroadcastSignal();
-			status += " failure";
-			LOG(ERROR) << status << " - " << e.what();
-		}
-
-#if DEBUGGING_ON
-		LOG(DEBUG3) << status << " on session bus";
-#endif
+		this->sendDeviceConfigurationSavedSignal(devID);
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(ERROR) << e.what();
 	}
+}
+
+void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devID)
+{
+	std::string status("DeviceConfigurationSaved signal");
+	try {
+		/* send DeviceConfigurationSaved signal to GUI applications */
+		_pDBus->initializeBroadcastSignal(
+			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+			"DeviceConfigurationSaved"
+		);
+		_pDBus->appendStringToBroadcastSignal(devID);
+		_pDBus->sendBroadcastSignal();
+
+		status += " sent";
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonBroadcastSignal();
+		status += " failure";
+		LOG(ERROR) << status << " - " << e.what();
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << status << " on session bus";
+#endif
 }
 
 void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
@@ -437,6 +444,42 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	catch (const GKDBusMessageWrongBuild & e) {
 		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
+	}
+
+	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+		/* get LCD plugins properties */
+		remoteMethod = "GetDeviceLCDPluginsProperties";
+
+		try {
+			_pDBus->initializeRemoteMethodCall(
+				_systemBus,
+				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				remoteMethod.c_str()
+			);
+			_pDBus->appendStringToRemoteMethodCall(_clientID);
+			_pDBus->appendStringToRemoteMethodCall(devID);
+
+			_pDBus->sendRemoteMethodCall();
+
+			try {
+				_pDBus->waitForRemoteMethodCallReply();
+
+				const LCDPluginsPropertiesArray_type array = _pDBus->getNextLCDPluginsArrayArgument();
+				device.setLCDPluginsProperties(array);
+#if DEBUGGING_ON
+				LOG(DEBUG3) << devID << " got " << array.size() << " LCDPluginsProperties objects";
+#endif
+			}
+			catch (const GLogiKExcept & e) {
+				LogRemoteCallGetReplyFailure
+			}
+		}
+		catch (const GKDBusMessageWrongBuild & e) {
+			_pDBus->abandonRemoteMethodCall();
+			LogRemoteCallFailure
+		}
 	}
 
 	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
@@ -773,94 +816,75 @@ void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check)
 	}
 }
 
-void DevicesHandler::runDeviceMediaEvent(
+void DevicesHandler::doDeviceFakeKeyEvent(
 	const std::string & devID,
 	const std::string & mediaKeyEvent)
 {
 	try {
-		DeviceProperties & device = _startedDevices.at(devID);
-		const std::string cmd( device.getMediaCommand(mediaKeyEvent) );
-		if( ! cmd.empty() ) {
-			std::thread mediaEventThread(&DevicesHandler::runCommand, this, mediaKeyEvent, cmd);
-			mediaEventThread.detach();
+		_startedDevices.at(devID);
+
+		Display* dpy = XOpenDisplay(NULL);
+		if(dpy == nullptr)
+			throw GLogiKExcept("XOpenDisplay failure");
+
+		KeySym sym = XStringToKeysym( mediaKeyEvent.c_str() );
+		if(sym == NoSymbol) {
+			std::string error("invalid KeySym : ");
+			error += mediaKeyEvent;
+			XCloseDisplay(dpy);
+			throw GLogiKExcept(error);
 		}
-		else {
+
+		KeyCode code = XKeysymToKeycode(dpy, sym);
+		if(code == 0) {
+			std::string error("not found KeySym : ");
+			error += mediaKeyEvent;
+			XCloseDisplay(dpy);
+			throw GLogiKExcept(error);
+		}
+
+		XTestFakeKeyEvent(dpy, code, True, 0);
+		XTestFakeKeyEvent(dpy, code, False, 0);
+		XFlush(dpy);
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "empty command media event " << mediaKeyEvent;
+		LOG(DEBUG1) << "done fake media event : " << mediaKeyEvent;
 #endif
+
+		XCloseDisplay(dpy);
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(WARNING) << "device not found : " << devID;
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << "error simulating media key event : " << e.what();
+	}
+}
+
+const LCDPluginsPropertiesArray_type & DevicesHandler::getDeviceLCDPluginsProperties(
+	const std::string & devID)
+{
+	try {
+		try {
+			DeviceProperties & device = _startedDevices.at(devID);
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "found started device: " << devID;
+#endif
+			return device.getLCDPluginsProperties();
+		}
+		catch (const std::out_of_range& oor) {
+			DeviceProperties & device = _stoppedDevices.at(devID);
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "found stopped device: " << devID;
+#endif
+			return device.getLCDPluginsProperties();
 		}
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(WARNING) << "device not found : " << devID;
 	}
+
+	return DeviceProperties::_LCDPluginsPropertiesEmptyArray;
 }
-
-void DevicesHandler::runCommand(
-	const std::string & mediaKeyEvent,
-	const std::string & command
-	)
-{
-#if DESKTOP_NOTIFICATIONS
-	_notification.init(GLOGIKS_DESKTOP_SERVICE_NAME, 5000);
-#endif
-
-	int result = -1;
-	std::string lastLine;
-
-	{
-		std::string line;
-		bp::ipstream is;
-		result = bp::system(command, bp::std_out > is, bp::std_err > stderr);
-
-		while(is && std::getline(is, line) && !line.empty()) {
-			lastLine = line;
-			LOG(VERB) << line;
-		}
-	}
-
-#if DESKTOP_NOTIFICATIONS
-	if( (mediaKeyEvent == std::string(XF86_AUDIO_RAISE_VOLUME)) or
-		(mediaKeyEvent == std::string(XF86_AUDIO_LOWER_VOLUME)) ) {
-		try {
-			int volume = -1;
-			try {
-				volume = std::stoi(lastLine);
-			}
-			catch (const std::invalid_argument& ia) {
-				throw GLogiKExcept("stoi invalid argument");
-			}
-			catch (const std::out_of_range& oor) {
-				throw GLogiKExcept("stoi out of range");
-			}
-
-			std::string icon("");
-			if( volume <= 0 )
-				icon = "audio-volume-muted-symbolic";
-			else if ( volume <= 30 )
-				icon = "audio-volume-low-symbolic";
-			else if ( volume <= 70 )
-				icon = "audio-volume-medium-symbolic";
-			else
-				icon = "audio-volume-high-symbolic";
-
-			lastLine += " %";
-			if( _notification.updateProperties("Volume", lastLine, icon) ) {
-				if( ! _notification.show() ) {
-					LOG(ERROR) << "notification showing failure";
-				}
-			}
-			else {
-				LOG(ERROR) << "notification update properties failure";
-			}
-		}
-		catch (const GLogiKExcept & e) {
-			LOG(ERROR) << "volume conversion failure, notification error";
-		}
-	}
-#endif
-
-	LOG(INFO) << "command run : " << command << " - exit code : " << result;
-};
 
 } // namespace GLogiK
 

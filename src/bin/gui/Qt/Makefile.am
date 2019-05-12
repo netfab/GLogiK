@@ -30,6 +30,8 @@ GKcQt5_SOURCES = \
 		%D%/DeviceControlTab.hpp \
 		%D%/BacklightColorTab.cpp \
 		%D%/BacklightColorTab.hpp \
+		%D%/LCDPluginsTab.cpp \
+		%D%/LCDPluginsTab.hpp \
 		%D%/mainWindow.cpp \
 		%D%/mainWindow.hpp \
 		%D%/main.cpp

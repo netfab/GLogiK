@@ -34,6 +34,8 @@
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/sessionManager.hpp"
 
+#include "include/LCDPluginProperties.hpp"
+
 #include "devicesHandler.hpp"
 
 #define UNREACHABLE_DAEMON_MAX_RETRIES 3
@@ -94,7 +96,7 @@ class DBusHandler
 		std::string _sessionState;		/* session state */
 
 		void setCurrentSessionObjectPath(pid_t pid);
-		const std::string getCurrentSessionState(const bool disabledDebugOutput=false);
+		const std::string getCurrentSessionState(void);
 
 		void registerWithDaemon(void);
 		void unregisterWithDaemon(void);
@@ -138,6 +140,10 @@ class DBusHandler
 
 		const std::vector<std::string> getDevicesList(const std::string & reserved);
 		const std::vector<std::string> getInformations(const std::string & reserved);
+		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+			const std::string & devID,
+			const std::string & reserved
+		);
 };
 
 } // namespace GLogiK

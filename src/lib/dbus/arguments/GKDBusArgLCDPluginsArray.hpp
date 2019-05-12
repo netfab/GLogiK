@@ -19,47 +19,31 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_DAEMON_AND_SERVICE_TAB_HPP_
-#define SRC_BIN_GUI_QT_DAEMON_AND_SERVICE_TAB_HPP_
+#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_LCD_PLUGINS_ARRAY_HPP_
+#define SRC_LIB_DBUS_ARG_GKDBUS_ARG_LCD_PLUGINS_ARRAY_HPP_
 
-#include <QPushButton>
-#include <QLabel>
-#include <QString>
+#include "GKDBusArgString.hpp"
+#include "GKDBusArgUInt64.hpp"
 
-#include "Tab.hpp"
+#include "include/LCDPluginProperties.hpp"
 
-namespace GLogiK
+namespace NSGKDBus
 {
 
-class DaemonAndServiceTab
-	:	public Tab
+class GKDBusArgumentLCDPluginsArray
+	:	virtual private GKDBusArgumentString,
+		virtual private GKDBusArgumentUInt64
 {
 	public:
-		DaemonAndServiceTab(
-			NSGKDBus::GKDBus* pDBus,
-			const QString & name
-		);
-		~DaemonAndServiceTab();
+		static const GLogiK::LCDPluginsPropertiesArray_type getNextLCDPluginsArrayArgument(void);
 
-		void buildTab(void);
-		void updateTab(void);
-		const bool isServiceStarted(void) const;
-		const bool isServiceRegistered(void) const;
+	protected:
+		GKDBusArgumentLCDPluginsArray(void) = default;
+		~GKDBusArgumentLCDPluginsArray(void) = default;
 
 	private:
-		DaemonAndServiceTab() = delete;
-
-		QLabel* _daemonVersionLabel;
-		QLabel* _serviceVersionLabel;
-		QLabel* _serviceStatusLabel;
-		bool _serviceStarted;
-		bool _serviceRegistered;
-
-		QPushButton* _pStartButton;
-
-		void startSignal(void);
 };
 
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

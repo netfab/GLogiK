@@ -115,6 +115,12 @@ void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_type & macro) {
 		_reply->appendMacro(macro);
 }
 
+void GKDBusMessageReply::appendLCDPluginsPropertiesArrayToReply(const GLogiK::LCDPluginsPropertiesArray_type & array)
+{
+	if(_reply != nullptr) /* sanity check */
+		_reply->appendLCDPluginsPropertiesArray(array);
+}
+
 void GKDBusMessageReply::appendUInt64ToReply(const uint64_t value) {
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendUInt64(value);

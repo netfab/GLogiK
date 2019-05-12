@@ -47,8 +47,7 @@ class GKDBusRemoteMethodCall
 			const char* objectPath,
 			const char* interface,
 			const char* method,
-			DBusPendingCall** pending,
-			const bool disabledDebugOutput
+			DBusPendingCall** pending
 		);
 		~GKDBusRemoteMethodCall();
 
@@ -68,8 +67,7 @@ class GKDBusMessageRemoteMethodCall
 			const char* busName,
 			const char* objectPath,
 			const char* interface,
-			const char* method,
-			const bool disabledDebugOutput=false
+			const char* method
 		);
 
 		void appendStringToRemoteMethodCall(const std::string & value);
@@ -93,14 +91,12 @@ class GKDBusMessageRemoteMethodCall
 			const char* busName,
 			const char* objectPath,
 			const char* interface,
-			const char* method,
-			const bool disabledDebugOutput=false
+			const char* method
 		);
 
 	private:
 		GKDBusRemoteMethodCall* _remoteMethodCall;
 		DBusPendingCall* _pendingCall;
-		bool _disabledDebugOutput;
 
 		virtual DBusConnection* getConnection(BusConnection wantedConnection) = 0;
 };

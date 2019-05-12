@@ -36,10 +36,7 @@
 #include "lib/shared/deviceProperties.hpp"
 
 #include "include/enums.hpp"
-
-#if DESKTOP_NOTIFICATIONS
-#include "volumeNotification.hpp"
-#endif
+#include "include/LCDPluginProperties.hpp"
 
 #define LogRemoteCallFailure \
 	FATALERROR << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
@@ -81,13 +78,16 @@ class DevicesHandler
 			const uint8_t bankID
 		);
 
-		void runDeviceMediaEvent(
+		void doDeviceFakeKeyEvent(
 			const std::string & devID,
 			const std::string & mediaKeyEvent
 		);
 
 		const devices_files_map_t getDevicesMap(void);
 		const std::vector<std::string> getDevicesList(void);
+		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+			const std::string & devID
+		);
 
 		void reloadDeviceConfigurationFile(const std::string & devID);
 
@@ -96,9 +96,6 @@ class DevicesHandler
 	private:
 		NSGKDBus::GKDBus* _pDBus;
 		NSGKUtils::FileSystem* _pGKfs;
-#if DESKTOP_NOTIFICATIONS
-		VolumeNotification _notification;
-#endif
 		const NSGKDBus::BusConnection _systemBus;
 		std::string _clientID;
 
@@ -127,15 +124,11 @@ class DevicesHandler
 			const std::string & devID,
 			const DeviceProperties & device
 		);
+		void sendDeviceConfigurationSavedSignal(const std::string & devID);
+
 		void unrefDevice(const std::string & devID);
 
 		const bool checkDeviceCapability(const DeviceProperties & device, Caps toCheck);
-
-		void runCommand(
-			const std::string & mediaKeyEvent,
-			const std::string & command
-		);
-
 };
 
 } // namespace GLogiK

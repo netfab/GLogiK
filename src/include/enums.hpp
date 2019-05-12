@@ -21,6 +21,8 @@
 
 #include <cstdint>
 
+#include <type_traits>
+
 #ifndef SRC_INCLUDE_ENUMS_HPP_
 #define SRC_INCLUDE_ENUMS_HPP_
 

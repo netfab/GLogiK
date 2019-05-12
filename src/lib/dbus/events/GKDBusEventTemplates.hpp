@@ -32,7 +32,9 @@
 #include <dbus/dbus.h>
 
 #include "lib/utils/utils.hpp"
+
 #include "include/keyEvent.hpp"
+#include "include/LCDPluginProperties.hpp"
 
 /* -- */
 #include "GKDBusEvent.hpp"
@@ -128,6 +130,12 @@ typedef std::function<
 			) > ThreeStringsOneByteToMacro;
 
 typedef std::function<
+			const GLogiK::LCDPluginsPropertiesArray_type &(
+				const std::string&,
+				const std::string&
+			) > TwoStringsToLCDPluginsPropertiesArray;
+
+typedef std::function<
 			const bool(
 				const std::string&,
 				const std::string&,
@@ -191,6 +199,7 @@ class SignalRule
 
 		static void addSignalRuleMatch(
 			DBusConnection* connection,
+			const char* sender,
 			const char* interface,
 			const char* eventName
 		);
@@ -215,6 +224,7 @@ template <typename T>
 
 		void exposeSignal(
 			const BusConnection bus,
+			const char* sender,
 			const char* object,
 			const char* interface,
 			const char* eventName,
@@ -228,6 +238,7 @@ template <typename T>
 
 		void exposeEvent(
 			const BusConnection bus,
+			const char* sender,
 			const char* object,
 			const char* interface,
 			const char* eventName,
@@ -285,12 +296,13 @@ template <typename T>
 		T callback
 	)
 {
-	this->exposeEvent(bus, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_METHOD, true);
+	this->exposeEvent(bus, nullptr, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_METHOD, true);
 }
 
 template <typename T>
 	void EventGKDBusCallback<T>::exposeSignal(
 		const BusConnection bus,
+		const char* sender,
 		const char* object,
 		const char* interface,
 		const char* eventName,
@@ -299,12 +311,13 @@ template <typename T>
 	)
 {
 	/* signals declared as events with callback functions are not introspectable */
-	this->exposeEvent(bus, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, false);
+	this->exposeEvent(bus, sender, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, false);
 }
 
 template <typename T>
 	void EventGKDBusCallback<T>::exposeEvent(
 		const BusConnection bus,
+		const char* sender,
 		const char* object,
 		const char* interface,
 		const char* eventName,
@@ -325,7 +338,7 @@ template <typename T>
 	this->addIntrospectableEvent(bus, object, interface, event);
 	if( eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL ) {
 		DBusConnection* connection = this->getConnection(bus);
-		this->addSignalRuleMatch(connection, interface, eventName);
+		this->addSignalRuleMatch(connection, sender, interface, eventName);
 	}
 }
 
@@ -408,6 +421,12 @@ template <>
 
 template <>
 	void GKDBusCallbackEvent<ThreeStringsOneByteToMacro>::runCallback(
+		DBusConnection* connection,
+		DBusMessage* message
+	);
+
+template <>
+	void GKDBusCallbackEvent<TwoStringsToLCDPluginsPropertiesArray>::runCallback(
 		DBusConnection* connection,
 		DBusMessage* message
 	);

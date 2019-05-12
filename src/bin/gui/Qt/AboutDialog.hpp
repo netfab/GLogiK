@@ -35,6 +35,8 @@ class AboutDialog
 		AboutDialog(QWidget* parent = 0);
 		~AboutDialog();
 
+		void buildDialog(void);
+
 	protected:
 
 	private:

@@ -27,6 +27,8 @@
 #include <map>
 
 #include "include/keyEvent.hpp"
+#include "include/LCDPluginProperties.hpp"
+
 #include "lib/dbus/GKDBus.hpp"
 
 #include "devicesManager.hpp"
@@ -121,6 +123,10 @@ class ClientsManager
 			const std::string & devID
 		);
 		void getDeviceProperties(
+			const std::string & clientID,
+			const std::string & devID
+		);
+		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
 			const std::string & clientID,
 			const std::string & devID
 		);

@@ -19,45 +19,52 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_DAEMON_AND_SERVICE_TAB_HPP_
-#define SRC_BIN_GUI_QT_DAEMON_AND_SERVICE_TAB_HPP_
+#ifndef SRC_BIN_GUI_QT_LCD_PLUGINS_TAB_HPP_
+#define SRC_BIN_GUI_QT_LCD_PLUGINS_TAB_HPP_
 
-#include <QPushButton>
-#include <QLabel>
-#include <QString>
+#include <cstdint>
+
+#include <string>
+
+#include <QTableWidget>
+
+#include "lib/utils/utils.hpp"
+#include "lib/shared/deviceProperties.hpp"
 
 #include "Tab.hpp"
 
 namespace GLogiK
 {
 
-class DaemonAndServiceTab
+class LCDPluginsTab
 	:	public Tab
 {
 	public:
-		DaemonAndServiceTab(
+		LCDPluginsTab(
 			NSGKDBus::GKDBus* pDBus,
 			const QString & name
 		);
-		~DaemonAndServiceTab();
+		~LCDPluginsTab();
 
 		void buildTab(void);
-		void updateTab(void);
-		const bool isServiceStarted(void) const;
-		const bool isServiceRegistered(void) const;
+		void updateTab(
+			const std::string & devID,
+			const DeviceProperties & device
+		);
 
+		const uint64_t getAndSetNewLCDPluginsMask(void);
+
+	protected:
 	private:
-		DaemonAndServiceTab() = delete;
+		const std::string _idProperty = "pluginID";
+		uint64_t _LCDPluginsMask;
+		uint64_t _newLCDPluginsMask;
 
-		QLabel* _daemonVersionLabel;
-		QLabel* _serviceVersionLabel;
-		QLabel* _serviceStatusLabel;
-		bool _serviceStarted;
-		bool _serviceRegistered;
+		QTableWidget* _pPluginsTable;
 
-		QPushButton* _pStartButton;
+		void toggleCheckbox(int row, int column);
+		void updateNewLCDPluginsMask(int checkboxState);
 
-		void startSignal(void);
 };
 
 } // namespace GLogiK

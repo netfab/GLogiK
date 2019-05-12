@@ -2,7 +2,7 @@
 ACLOCAL_AMFLAGS = -I m4
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-gcc-wall --enable-gcc-werror --enable-as-needed \
-	--enable-desktop-notifications --enable-qt5
+	--enable-qt5
 
 include %D%/src/include/Makefile.am
 include %D%/src/lib/utils/Makefile.am

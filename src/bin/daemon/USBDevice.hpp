@@ -36,8 +36,10 @@
 #include <libusb-1.0/libusb.h>
 
 #include "include/keyEvent.hpp"
+
 #include "virtualKeyboard.hpp"
 #include "macrosManager.hpp"
+#include "LCDScreenPluginsManager.hpp"
 
 #define KEYS_BUFFER_LENGTH 16
 
@@ -62,22 +64,23 @@ class USBDevice
 
 		void operator=(const USBDevice& dev);
 
-		unsigned int			_fatalErrors;
-		std::thread::id			_keysThreadID;
-		std::thread::id			_LCDThreadID;
-		MacrosManager*			_pMacrosManager;
-		uint64_t				_pressedRKeysMask;
-		std::atomic<uint8_t>	_banksLedsMask;
-		std::atomic<bool>		_exitMacroRecordMode;
-		uint64_t				_LCDPluginsMask1;
-		unsigned char			_pressedKeys[KEYS_BUFFER_LENGTH];
-		unsigned char			_previousPressedKeys[KEYS_BUFFER_LENGTH];
-		std::string				_macroKey;
-		std::string				_mediaKey;
-		std::string				_LCDKey;
-		macro_type				_newMacro;
+		unsigned int				_fatalErrors;
+		std::thread::id				_keysThreadID;
+		std::thread::id				_LCDThreadID;
+		MacrosManager*				_pMacrosManager;
+		LCDScreenPluginsManager*	_pLCDPluginsManager;
+		uint64_t					_pressedRKeysMask;
+		std::atomic<uint8_t>		_banksLedsMask;
+		std::atomic<bool>			_exitMacroRecordMode;
+		uint64_t					_LCDPluginsMask1;
+		unsigned char				_pressedKeys[KEYS_BUFFER_LENGTH];
+		unsigned char				_previousPressedKeys[KEYS_BUFFER_LENGTH];
+		std::string					_macroKey;
+		std::string					_mediaKey;
+		std::string					_LCDKey;
+		macro_type					_newMacro;
 
-		std::mutex				_LCDMutex;
+		std::mutex					_LCDMutex;
 
 		std::chrono::steady_clock::time_point _lastTimePoint;
 
@@ -86,6 +89,9 @@ class USBDevice
 			const std::vector<std::string> & keysNames
 		);
 		void destroyMacrosManager(void) noexcept;
+
+		void initializeLCDPluginsManager(void);
+		void destroyLCDPluginsManager(void);
 
 		const bool getThreadsStatus(void) const {
 			return _threadsStatus;

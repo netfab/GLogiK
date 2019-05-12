@@ -22,7 +22,9 @@
 #ifndef SRC_BIN_GUI_QT_TAB_HPP_
 #define SRC_BIN_GUI_QT_TAB_HPP_
 
+#include <QWidget>
 #include <QFrame>
+#include <QPushButton>
 
 #include "lib/dbus/GKDBus.hpp"
 
@@ -35,18 +37,28 @@ namespace GLogiK
 {
 
 class Tab
+	:	public QWidget
 {
 	public:
 		Tab(NSGKDBus::GKDBus* pDBus)
-			:	_pDBus(pDBus) {};
+			:	_pDBus(pDBus),
+				_pApplyButton(nullptr)
+			{};
 		virtual ~Tab() = default;
+		Tab() = delete;
 
+		virtual void buildTab(void) = 0;
 		virtual void updateTab(void) {};
 
+		const QPushButton* getApplyButton(void) const;
 		QFrame* getHLine(void);
 
 	protected:
 		NSGKDBus::GKDBus* _pDBus;
+
+		QPushButton* _pApplyButton;
+
+		void prepareApplyButton(void);
 
 	private:
 };

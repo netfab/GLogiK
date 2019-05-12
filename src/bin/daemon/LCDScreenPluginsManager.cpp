@@ -36,6 +36,8 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
+const LCDPluginsPropertiesArray_type LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray = {};
+
 LCDScreenPluginsManager::LCDScreenPluginsManager()
 	:	_frameCounter(0),
 		_noPlugins(false),
@@ -55,6 +57,7 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 	for(const auto & plugin : _plugins) {
 		try {
 			plugin->init(_pFonts);
+			_pluginsPropertiesArray.push_back( plugin->getPluginProperties() );
 		}
 		catch (const GLogiKExcept & e) {
 			LOG(ERROR) << e.what();
@@ -87,6 +90,11 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 
 LCDScreenPluginsManager::~LCDScreenPluginsManager() {
 	this->stopLCDPlugins();
+}
+
+const LCDPluginsPropertiesArray_type & LCDScreenPluginsManager::getLCDPluginsProperties(void) const
+{
+	return _pluginsPropertiesArray;
 }
 
 const unsigned short LCDScreenPluginsManager::getPluginTiming(void)

@@ -37,8 +37,6 @@ class GKDBusArgumentString
 		static const std::string & getNextStringArgument(void);
 		static const std::vector<std::string> & getStringsArray(void);
 
-		static const bool isContainerEmpty(void);
-
 	protected:
 		GKDBusArgumentString(void) = default;
 		~GKDBusArgumentString(void) = default;

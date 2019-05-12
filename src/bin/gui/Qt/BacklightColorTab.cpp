@@ -19,15 +19,12 @@
  *
  */
 
-
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
-#include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
 #include "BacklightColorTab.hpp"
-
 
 namespace GLogiK
 {
@@ -39,11 +36,17 @@ BacklightColorTab::BacklightColorTab(
 	const QString & name
 )	:	Tab(pDBus),
 		_pCurrentColorLabel(nullptr),
-		_pNewColorLabel(nullptr),
-		_pApplyButton(nullptr)
+		_pNewColorLabel(nullptr)
 {
 	this->setObjectName(name);
+}
 
+BacklightColorTab::~BacklightColorTab()
+{
+}
+
+void BacklightColorTab::buildTab(void)
+{
 	QVBoxLayout* vBox = nullptr;
 	QHBoxLayout* hBox = nullptr;
 
@@ -101,16 +104,8 @@ BacklightColorTab::BacklightColorTab(
 
 		hBox->addSpacing(10);
 
-		_pApplyButton = new QPushButton("Appl&y Color");
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated Apply button";
-#endif
+		this->prepareApplyButton();
 		hBox->addWidget(_pApplyButton);
-
-		/* Default visual properties for widgets are defined by QStyle
-		 * styleSheet() returns empty QString */
-		QString newStyle("padding:3px 12px 3px 12px;");
-		_pApplyButton->setStyleSheet(newStyle);
 
 		hBox->addSpacing(10);
 
@@ -126,15 +121,6 @@ BacklightColorTab::BacklightColorTab(
 		LOG(ERROR) << e.what();
 		throw;
 	}
-}
-
-BacklightColorTab::~BacklightColorTab()
-{
-}
-
-const QPushButton* BacklightColorTab::getApplyButton(void) const
-{
-	return _pApplyButton;
 }
 
 const QColor & BacklightColorTab::getAndSetNewColor(void)

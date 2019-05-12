@@ -33,7 +33,6 @@
 
 #include "DaemonAndServiceTab.hpp"
 
-
 namespace GLogiK
 {
 
@@ -47,7 +46,14 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 		_serviceRegistered(false)
 {
 	this->setObjectName(name);
+}
 
+DaemonAndServiceTab::~DaemonAndServiceTab()
+{
+}
+
+void DaemonAndServiceTab::buildTab(void)
+{
 	QVBoxLayout* vBox = nullptr;
 
 	try {
@@ -123,10 +129,6 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 		LOG(ERROR) << e.what();
 		throw;
 	}
-}
-
-DaemonAndServiceTab::~DaemonAndServiceTab()
-{
 }
 
 const bool DaemonAndServiceTab::isServiceStarted(void) const

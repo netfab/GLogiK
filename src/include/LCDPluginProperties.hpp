@@ -19,52 +19,43 @@
  *
  */
 
-#ifndef SRC_LIB_SHARED_DEVICE_FILE_HPP_
-#define SRC_LIB_SHARED_DEVICE_FILE_HPP_
+#ifndef SRC_INCLUDE_LCD_PLUGIN_PROPERTIES_HPP_
+#define SRC_INCLUDE_LCD_PLUGIN_PROPERTIES_HPP_
 
+#include <cstdint>
+#include <vector>
 #include <string>
-
-#include <boost/serialization/base_object.hpp>
-#include <boost/serialization/access.hpp>
 
 namespace GLogiK
 {
 
-class DeviceFile
+class LCDPluginProperties
 {
 	public:
-		DeviceFile();
-		~DeviceFile();
+		LCDPluginProperties()
+			:	_ID(0),
+				_name("unknown"),
+				_desc("unknown") {};
+		LCDPluginProperties(const uint64_t i, const std::string & n, const std::string & d)
+			{ _ID = i; _name = n; _desc = d; }
+		~LCDPluginProperties() = default;
 
-		const std::string & getStatus(void) const;
-		const std::string & getVendor(void) const;
-		const std::string & getModel(void) const;
-		const std::string & getConfigFilePath(void) const;
+		const uint64_t getID(void) const { return _ID; }
+		const std::string getName(void) const { return _name; }
+		const std::string getDesc(void) const { return _desc; }
 
-		void setStatus(const std::string & status);
-		void setVendor(const std::string & vendor);
-		void setModel(const std::string & model);
-		void setConfigFilePath(const std::string & path);
-
-	protected:
+		void setID(const uint64_t id) { _ID = id; }
+		void setName(const std::string & name) { _name = name; }
+		void setDesc(const std::string & desc) { _desc = desc; }
 
 	private:
-		std::string _status;
-		std::string _vendor;
-		std::string _model;
-		std::string _filePath;
-
-		friend class boost::serialization::access;
-
-		template<class Archive>
-			void serialize(Archive & ar, const unsigned int version)
-		{
-			ar & _vendor;
-			ar & _model;
-		}
+		uint64_t _ID;
+		std::string _name;
+		std::string _desc;
 };
+
+typedef std::vector<LCDPluginProperties> LCDPluginsPropertiesArray_type;
 
 } // namespace GLogiK
 
 #endif
-

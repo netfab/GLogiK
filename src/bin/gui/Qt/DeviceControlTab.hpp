@@ -26,7 +26,6 @@
 
 #include <QFrame>
 #include <QString>
-#include <QWidget>
 #include <QPushButton>
 #include <QLabel>
 
@@ -38,8 +37,7 @@ namespace GLogiK
 {
 
 class DeviceControlTab
-	:	public Tab,
-		public QWidget
+	:	public Tab
 {
 	public:
 		DeviceControlTab(
@@ -49,6 +47,8 @@ class DeviceControlTab
 		~DeviceControlTab();
 
 		void disableButtons(void);
+
+		void buildTab(void);
 		void updateTab(
 			const std::string & devID,
 			const bool status

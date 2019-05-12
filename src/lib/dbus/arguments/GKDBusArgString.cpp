@@ -42,10 +42,5 @@ const std::vector<std::string> & GKDBusArgumentString::getStringsArray(void) {
 	return GKDBusArgument::stringArguments;
 }
 
-const bool GKDBusArgumentString::isContainerEmpty(void)
-{
-	return GKDBusArgumentString::stringArguments.empty();
-}
-
 } // namespace NSGKDBus
 

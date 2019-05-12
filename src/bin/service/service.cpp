@@ -161,7 +161,6 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 					}
 				}
 
-				DBus.updateSessionState();
 				DBus.checkDBusMessages();
 			}
 		}

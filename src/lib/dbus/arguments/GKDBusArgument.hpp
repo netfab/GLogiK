@@ -40,10 +40,7 @@ class GKDBusArgument
 		GKDBusArgument(void) = default;
 		~GKDBusArgument(void) = default;
 
-		static void fillInArguments(
-			DBusMessage* message,
-			const bool disabledDebugOutput=false
-		);
+		static void fillInArguments(DBusMessage* message);
 		static const int decodeNextArgument(DBusMessageIter* itArgument);
 
 		thread_local static std::vector<std::string> stringArguments;
@@ -56,8 +53,7 @@ class GKDBusArgument
 		static void decodeArgumentFromIterator(
 			DBusMessageIter* iter,
 			const char* signature,
-			const unsigned int num,
-			const bool disabledDebugOutput
+			const unsigned int num
 		);
 
 };

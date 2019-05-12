@@ -18,8 +18,6 @@ libGKShared_la_LIBADD = \
 libGKShared_la_SOURCES = \
 	%D%/macrosBanks.cpp \
 	%D%/macrosBanks.hpp \
-	%D%/deviceFile.cpp \
-	%D%/deviceFile.hpp \
 	%D%/deviceProperties.cpp \
 	%D%/deviceProperties.hpp \
 	%D%/deviceConfigurationFile.cpp \

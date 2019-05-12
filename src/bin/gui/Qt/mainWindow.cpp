@@ -45,10 +45,10 @@
 #include <QMessageBox>
 
 #include "lib/shared/glogik.hpp"
-#include "lib/shared/deviceFile.hpp"
 #include "lib/shared/deviceConfigurationFile.hpp"
 #include "lib/utils/utils.hpp"
-#include "lib/dbus/arguments/GKDBusArgString.hpp"
+
+#include "include/enums.hpp"
 
 #include "AboutDialog.hpp"
 #include "mainWindow.hpp"
@@ -65,12 +65,14 @@ MainWindow::MainWindow(QWidget *parent)
 		_LOGfd(nullptr),
 		_GUIResetThrow(true),
 		_serviceStartRequest(false),
+		_ignoreNextSignal(false),
 		_statusBarTimeout(3000),
 		_devicesComboBox(nullptr),
 		_tabbedWidgets(nullptr),
 		_daemonAndServiceTab(nullptr),
 		_deviceControlTab(nullptr),
-		_backlightColorTab(nullptr)
+		_backlightColorTab(nullptr),
+		_LCDPluginsTab(nullptr)
 {
 	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
 	if( LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() != NONE ) {
@@ -214,23 +216,31 @@ void MainWindow::build(void)
 
 		_daemonAndServiceTab = new DaemonAndServiceTab(_pDBus, "DaemonAndService");
 		_tabbedWidgets->addTab(_daemonAndServiceTab, tr("Daemon and Service"));
+		_daemonAndServiceTab->buildTab();
 
 		_deviceControlTab = new DeviceControlTab(_pDBus, "DeviceControl");
 		_tabbedWidgets->addTab(_deviceControlTab, tr("Device"));
+		_deviceControlTab->buildTab();
 
 		_backlightColorTab = new BacklightColorTab(_pDBus, "BacklightColor");
 		_tabbedWidgets->addTab(_backlightColorTab, tr("Backlight Color"));
+		_backlightColorTab->buildTab();
 
-		//_tabbedWidgets->addTab(new QWidget(), tr("Multimedia Keys"));
-		//_tabbedWidgets->addTab(new QWidget(), tr("LCD Screen Plugins"));
+		_LCDPluginsTab = new LCDPluginsTab(_pDBus, "LCDPlugins");
+		_tabbedWidgets->addTab(_LCDPluginsTab, tr("LCD Screen Plugins"));
+		_LCDPluginsTab->buildTab();
+
 		//_tabbedWidgets->addTab(new QWidget(), tr("Macros"));
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "allocated 3 tabs";
+		LOG(DEBUG3) << "allocated 4 tabs";
 #endif
 
 		this->setTabEnabled("DaemonAndService", true);
-		this->setTabEnabled("DeviceControl", true);
+		this->setTabEnabled("DeviceControl", false);
 		this->setTabEnabled("BacklightColor", false);
+		this->setTabEnabled("LCDPlugins", false);
+
+		this->setCurrentTab("DaemonAndService");
 
 		/* -- -- -- */
 
@@ -254,7 +264,7 @@ void MainWindow::build(void)
 		QTimer* timer = new QTimer(this);
 
 		connect(timer, &QTimer::timeout, this, &MainWindow::checkDBusMessages);
-		timer->start(200);
+		timer->start(100);
 
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "Qt timer started";
@@ -281,8 +291,8 @@ void MainWindow::build(void)
 			/* asking the launcher for the desktop service restart */
 			_pDBus->initializeBroadcastSignal(
 				NSGKDBus::BusConnection::GKDBUS_SESSION,
-				GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-				GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+				GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
+				GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 				"RestartRequest"
 			);
 			_pDBus->sendBroadcastSignal();
@@ -312,11 +322,19 @@ void MainWindow::build(void)
 
 	/* initializing Qt signals */
 	connect(_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
-	connect(_backlightColorTab->getApplyButton(), &QPushButton::clicked, this, &MainWindow::saveFile);
+	connect( _backlightColorTab->getApplyButton(), &QPushButton::clicked,
+			 std::bind(&MainWindow::saveFile, this, TabApplyButton::TAB_BACKLIGHT) );
+	connect(     _LCDPluginsTab->getApplyButton(), &QPushButton::clicked,
+			 std::bind(&MainWindow::saveFile, this, TabApplyButton::TAB_LCD_PLUGINS) );
+
+#if DEBUGGING_ON
+	LOG(DEBUG) << "Qt signals connected to slots";
+#endif
 
 	/* initializing GKDBus signals */
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"DevicesUpdated",
@@ -326,6 +344,7 @@ void MainWindow::build(void)
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<StringToVoid>::exposeSignal(
 		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"DeviceConfigurationSaved",
@@ -346,6 +365,15 @@ void MainWindow::build(void)
 
 void MainWindow::configurationFileUpdated(const std::string & devID)
 {
+	bool ignore = _ignoreNextSignal;
+	_ignoreNextSignal = false;
+	if( ignore ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << __func__ << " signal ignored";
+#endif
+		return;
+	}
+
 	if( _devID != devID)
 		return;
 
@@ -386,6 +414,7 @@ void MainWindow::aboutDialog(void)
 {
 	try {
 		AboutDialog* about = new AboutDialog(this);
+		about->buildDialog();
 		about->setModal(true);
 		about->setAttribute(Qt::WA_DeleteOnClose);
 		about->setFixedSize(400, 300);
@@ -397,28 +426,56 @@ void MainWindow::aboutDialog(void)
 	}
 }
 
-void MainWindow::saveFile(void)
+void MainWindow::saveFile(const TabApplyButton tab)
 {
+	bool dosave = false;
+
+	if( tab == TabApplyButton::TAB_BACKLIGHT ) {
+		int r, g, b = 255;
+		_backlightColorTab->getAndSetNewColor().getRgb(&r, &g, &b);
+		/* setting color */
+		_openedConfigurationFile.setRGBBytes(r, g, b);
+		dosave = true;
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "saving file";
+		LOG(DEBUG3) << "backlight color updated";
+#endif
+	}
+	else if( tab == TabApplyButton::TAB_LCD_PLUGINS ) {
+		auto maskID = toEnumType(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1);
+		/* setting new LCD Plugins mask */
+		_openedConfigurationFile.setLCDPluginsMask(maskID, _LCDPluginsTab->getAndSetNewLCDPluginsMask());
+		dosave = true;
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "LCD plugins mask updated";
+#endif
+	}
+
+	if(dosave) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "saving file";
 #endif
 
-	int r, g, b = 255;
-	_backlightColorTab->getAndSetNewColor().getRgb(&r, &g, &b);
-	/* setting color */
-	_openedConfigurationFile.setRGBBytes(r, g, b);
+		/* desktop service will detect that configuration file was modified,
+		 * and will send us a signal. Ignore it. */
+		_ignoreNextSignal = true;
+		DeviceConfigurationFile::save(_configurationFilePath.string(), _openedConfigurationFile);
 
-	DeviceConfigurationFile::save(_configurationFilePath.string(), _openedConfigurationFile);
-
-	QString msg("Configuration file saved");
-	this->statusBar()->showMessage(msg, _statusBarTimeout);
+		QString msg("Configuration file saved");
+		this->statusBar()->showMessage(msg, _statusBarTimeout);
+	}
+	else  {
+		QString msg("Error updating configuration file, nothing changed");
+		this->statusBar()->showMessage(msg, _statusBarTimeout);
+		LOG(WARNING) << msg.toStdString();
+	}
 }
 
 void MainWindow::updateInterface(int index)
 {
-	/* don't update interface on combo clear() */
+	/* update interface with index 0 on combobox clear()
+	 * this happens at the very beginning of ::resetInterface() */
 	if(index == -1) {
-		return;
+		index = 0;
 	}
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "updating interface with index : " << index;
@@ -429,6 +486,7 @@ void MainWindow::updateInterface(int index)
 			_devID.clear();
 			_deviceControlTab->disableAndHide();
 			this->setTabEnabled("BacklightColor", false);
+			this->setTabEnabled("LCDPlugins", false);
 			this->statusBar()->showMessage("Selected device : none", _statusBarTimeout);
 		}
 		else {
@@ -438,7 +496,7 @@ void MainWindow::updateInterface(int index)
 #endif
 
 			try {
-				const DeviceFile & device = _devices.at(_devID);
+				const Device & device = _devices.at(_devID);
 				const bool status = (device.getStatus() == "started");
 
 				_deviceControlTab->updateTab(_devID, status);
@@ -454,8 +512,11 @@ void MainWindow::updateInterface(int index)
 					DeviceConfigurationFile::load(_configurationFilePath.string(), _openedConfigurationFile);
 
 					_backlightColorTab->updateTab(_openedConfigurationFile);
+
+					_LCDPluginsTab->updateTab(_devID, _openedConfigurationFile);
 				}
 				this->setTabEnabled("BacklightColor", status);
+				this->setTabEnabled("LCDPlugins", status);
 			}
 			catch (const std::out_of_range& oor) {
 				std::string error("device not found in container : ");
@@ -497,28 +558,7 @@ void MainWindow::updateDevicesList(void)
 		try {
 			_pDBus->waitForRemoteMethodCallReply();
 
-			/* this block could be part of GKDBus, but we want to avoid to link
-			 * the GKDBus library to GKShared (to get DeviceFile object) */
-			try {
-				using namespace NSGKDBus;
-				do {
-					DeviceFile device;
-
-					const std::string devID( GKDBusArgumentString::getNextStringArgument() );
-
-					device.setStatus( GKDBusArgumentString::getNextStringArgument() );
-					device.setVendor( GKDBusArgumentString::getNextStringArgument() );
-					device.setModel( GKDBusArgumentString::getNextStringArgument() );
-					device.setConfigFilePath( GKDBusArgumentString::getNextStringArgument() );
-
-					_devices[devID] = device;
-				}
-				while( ! GKDBusArgumentString::isContainerEmpty() );
-			}
-			catch ( const EmptyContainer & e ) {
-				LOG(WARNING) << "missing argument : " << e.what();
-				throw GLogiKExcept("rebuilding device map failed");
-			}
+			_devices = _pDBus->getNextDevicesMapArgument();
 
 			QString msg("Detected ");
 			msg += QString::number(_devices.size());
@@ -546,19 +586,23 @@ void MainWindow::resetInterface(void)
 #endif
 
 	try {
+		this->setCurrentTab("DaemonAndService");
+
+		_devicesComboBox->setEnabled(false);
 		/* clear() set current index to -1 */
 		_devicesComboBox->clear();
+
+		this->setTabEnabled("DeviceControl", false);
 
 		try {
 			_daemonAndServiceTab->updateTab();
 		}
 		catch (const GLogiKExcept & e) {
+			/* throws only if something was wrong when getting service infos
+			 * (pDBus internal error, or service not started) */
+
 			/* used only over initialization */
 			_serviceStartRequest = (_daemonAndServiceTab->isServiceStarted() == false);
-
-			/* additems() set current index to 0
-			 * ::updateInterface() will be called with index 0 */
-			_devicesComboBox->addItems({""});
 			throw;
 		}
 
@@ -582,9 +626,11 @@ void MainWindow::resetInterface(void)
 			}
 			/* additems() set current index to 0 */
 			_devicesComboBox->addItems(items);
+			_devicesComboBox->setEnabled(true);
 		}
 
 		_deviceControlTab->disableButtons();
+		this->setTabEnabled("DeviceControl", true);
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "error resetting interface : " << e.what();
@@ -623,9 +669,27 @@ void MainWindow::setTabEnabled(const std::string & name, const bool status)
 	}
 }
 
+void MainWindow::setCurrentTab(const std::string & name)
+{
+	try {
+		QWidget* pTab = this->getTabbedWidget(name);
+		int index = _tabbedWidgets->indexOf(pTab);
+		if(index == -1) {
+			LOG(ERROR) << "index not found : " << name;
+			throw GLogiKExcept("tab index not found");
+		}
+
+		_tabbedWidgets->setCurrentIndex(index);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << "error setting currentIndex : " << e.what();
+		throw;
+	}
+}
+
 void MainWindow::checkDBusMessages(void)
 {
-	_pDBus->checkForNextMessage(NSGKDBus::BusConnection::GKDBUS_SESSION);
+	_pDBus->checkForMessages();
 }
 
 } // namespace GLogiK

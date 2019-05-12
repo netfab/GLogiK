@@ -76,7 +76,7 @@ LauncherDBusHandler::~LauncherDBusHandler(void)
 }
 
 void LauncherDBusHandler::checkDBusMessages(void) {
-	_pDBus->checkForNextMessage(_sessionBus);
+	_pDBus->checkForMessages();
 }
 
 /*
@@ -93,6 +93,7 @@ void LauncherDBusHandler::checkDBusMessages(void) {
 void LauncherDBusHandler::initializeGKDBusSignals(void) {
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		_sessionBus,
+		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"RestartRequest",
@@ -102,6 +103,7 @@ void LauncherDBusHandler::initializeGKDBusSignals(void) {
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		_sessionBus,
+		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 		"RestartRequest",

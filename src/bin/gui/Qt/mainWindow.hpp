@@ -37,18 +37,25 @@
 #include <boost/filesystem.hpp>
 
 #include "lib/dbus/GKDBus.hpp"
-#include "lib/shared/deviceFile.hpp"
 #include "lib/shared/deviceProperties.hpp"
 
-//#include "Tab.hpp"
+#include "include/device.hpp"
+
 #include "DaemonAndServiceTab.hpp"
 #include "DeviceControlTab.hpp"
 #include "BacklightColorTab.hpp"
+#include "LCDPluginsTab.hpp"
 
 namespace fs = boost::filesystem;
 
 namespace GLogiK
 {
+
+enum class TabApplyButton : uint8_t
+{
+	TAB_BACKLIGHT = 1,
+	TAB_LCD_PLUGINS
+};
 
 class MainWindow
 	:	public QMainWindow
@@ -66,6 +73,7 @@ class MainWindow
 		FILE* _LOGfd;	/* log file descriptor */
 		bool _GUIResetThrow;
 		bool _serviceStartRequest;
+		bool _ignoreNextSignal;
 		int _statusBarTimeout;
 		std::string _devID;
 
@@ -75,6 +83,7 @@ class MainWindow
 		DaemonAndServiceTab* _daemonAndServiceTab;
 		DeviceControlTab* _deviceControlTab;
 		BacklightColorTab* _backlightColorTab;
+		LCDPluginsTab* _LCDPluginsTab;
 
 		fs::path _configurationRootDirectory;
 		fs::path _configurationFilePath;
@@ -85,6 +94,7 @@ class MainWindow
 		QWidget* getTabbedWidget(const std::string & name);
 
 		void setTabEnabled(const std::string & name, const bool status);
+		void setCurrentTab(const std::string & name);
 
 		void aboutDialog(void);
 
@@ -92,11 +102,11 @@ class MainWindow
 		void resetInterface(void);
 		void updateInterface(int index);
 		void checkDBusMessages(void);
-		void saveFile(void);
+		void saveFile(const TabApplyButton tab);
 
 		void configurationFileUpdated(const std::string & devID);
 
-		std::map<const std::string, DeviceFile> _devices;
+		devices_map_type _devices;
 };
 
 } // namespace GLogiK

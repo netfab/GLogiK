@@ -19,8 +19,6 @@
  *
  */
 
-#include <stdexcept>
-
 #include "include/enums.hpp"
 
 #include "lib/utils/utils.hpp"
@@ -45,6 +43,8 @@ DeviceProperties::DeviceProperties()
 DeviceProperties::~DeviceProperties() {
 }
 
+const LCDPluginsPropertiesArray_type DeviceProperties::_LCDPluginsPropertiesEmptyArray = {};
+
 /* -- -- -- */
 
 void DeviceProperties::setWatchDescriptor(int wd) {
@@ -66,7 +66,6 @@ void DeviceProperties::setProperties(const DeviceProperties & dev)
 	dev.getRGBBytes(_backlightRed, _backlightGreen, _backlightBlue);
 
 	_macrosBanks		= dev.getMacrosBanks();
-	_mediaCommands		= dev.getMediaCommands();
 	_LCDPluginsMask1	= dev.getLCDPluginsMask1();
 
 	if( _LCDPluginsMask1 == 0 ) {
@@ -74,6 +73,16 @@ void DeviceProperties::setProperties(const DeviceProperties & dev)
 		_LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN);
 		_LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);
 	}
+}
+
+const LCDPluginsPropertiesArray_type & DeviceProperties::getLCDPluginsProperties(void) const
+{
+	return _LCDPluginsProperties;
+}
+
+void DeviceProperties::setLCDPluginsProperties(const LCDPluginsPropertiesArray_type & array)
+{
+	_LCDPluginsProperties = array;
 }
 
 void DeviceProperties::setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b) {
@@ -102,22 +111,6 @@ const uint64_t DeviceProperties::getCapabilities(void) const {
 const int DeviceProperties::getWatchDescriptor(void) const {
 	return _watchedDescriptor;
 }
-
-const std::string DeviceProperties::getMediaCommand(const std::string & mediaEvent) const
-{
-	std::string ret("");
-	try {
-		ret = _mediaCommands.at(mediaEvent);
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "unknown media event : " << mediaEvent;
-	}
-	return ret;
-}
-
-const std::map<const std::string, std::string> & DeviceProperties::getMediaCommands(void) const {
-	return _mediaCommands;
-};
 
 const uint64_t DeviceProperties::getLCDPluginsMask1(void) const
 {

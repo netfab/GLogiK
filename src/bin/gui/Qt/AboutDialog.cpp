@@ -19,7 +19,6 @@
  *
  */
 
-
 #include <QStyle>
 #include <QPushButton>
 #include <QString>
@@ -39,6 +38,17 @@ using namespace NSGKUtils;
 
 AboutDialog::AboutDialog(QWidget* parent)
 	:	QDialog(parent)
+{
+}
+
+AboutDialog::~AboutDialog()
+{
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "deleting AboutDialog";
+#endif
+}
+
+void AboutDialog::buildDialog(void)
 {
 	QVBoxLayout* vBox = nullptr;
 
@@ -116,7 +126,11 @@ AboutDialog::AboutDialog(QWidget* parent)
 		}
 
 		{
-			QString descText("<a href=\"https://glogik.tuxfamily.org/\">https://glogik.tuxfamily.org/</a>");
+			QString descText("<a href=\"");
+			descText += PACKAGE_URL;
+			descText += "\">";
+			descText += PACKAGE_URL;
+			descText += "</a>";
 
 			QLabel* descLabel = new QLabel(descText);
 			vBox->addWidget(descLabel);
@@ -184,10 +198,6 @@ AboutDialog::AboutDialog(QWidget* parent)
 		LOG(ERROR) << e.what();
 		throw;
 	}
-}
-
-AboutDialog::~AboutDialog()
-{
 }
 
 void AboutDialog::closeDialog(void)

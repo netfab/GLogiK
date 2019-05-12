@@ -32,6 +32,8 @@
 #include <config.h>
 
 #include "include/keyEvent.hpp"
+#include "include/LCDPluginProperties.hpp"
+
 #include "lib/dbus/GKDBus.hpp"
 
 #include "DeviceID.hpp"
@@ -113,6 +115,9 @@ class DevicesManager
 		const std::string & getDeviceVendor(const std::string & devID) const;
 		const std::string & getDeviceModel(const std::string & devID) const;
 		const uint64_t getDeviceCapabilities(const std::string & devID) const;
+		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+			const std::string & devID
+		) const;
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,

@@ -25,6 +25,8 @@
 #include <string>
 #include <vector>
 
+#include "include/LCDPluginProperties.hpp"
+
 #include "LCDPlugins/PBM.hpp"
 #include "LCDPlugins/LCDPlugin.hpp"
 #include "LCDPlugins/fontsManager.hpp"
@@ -37,6 +39,10 @@ class LCDScreenPluginsManager
 	public:
 		LCDScreenPluginsManager(void);
 		~LCDScreenPluginsManager(void);
+
+		static const LCDPluginsPropertiesArray_type _LCDPluginsPropertiesEmptyArray;
+
+		const LCDPluginsPropertiesArray_type & getLCDPluginsProperties(void) const;
 
 		LCDDataArray & getNextLCDScreenBuffer(
 			const std::string & LCDKey,
@@ -52,6 +58,8 @@ class LCDScreenPluginsManager
 		bool _noPlugins;
 		std::vector<LCDPlugin*> _plugins;
 		std::vector<LCDPlugin*>::iterator _itCurrentPlugin;
+
+		LCDPluginsPropertiesArray_type _pluginsPropertiesArray;
 
 		LCDDataArray _LCDBuffer;
 		FontsManager _fontsManager;

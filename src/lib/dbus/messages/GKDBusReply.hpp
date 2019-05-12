@@ -28,6 +28,7 @@
 #include <dbus/dbus.h>
 
 #include "include/keyEvent.hpp"
+#include "include/LCDPluginProperties.hpp"
 
 #include "GKDBusMessage.hpp"
 
@@ -71,6 +72,7 @@ class GKDBusMessageReply
 			const std::vector<std::string> & list
 		);
 		void appendMacroToReply(const GLogiK::macro_type & macro);
+		void appendLCDPluginsPropertiesArrayToReply(const GLogiK::LCDPluginsPropertiesArray_type & array);
 
 		void appendUInt64ToReply(const uint64_t value);
 
