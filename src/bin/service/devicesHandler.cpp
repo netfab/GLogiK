@@ -55,7 +55,7 @@ DevicesHandler::DevicesHandler()
 	_configurationRootDirectory = XDGUserDirs::getConfigurationRootDirectory();
 	_configurationRootDirectory /= PACKAGE_NAME;
 
-	FileSystem::createOwnerDirectory(_configurationRootDirectory);
+	FileSystem::createDirectory(_configurationRootDirectory, fs::owner_all);
 }
 
 DevicesHandler::~DevicesHandler() {
@@ -168,7 +168,7 @@ void DevicesHandler::saveDeviceConfigurationFile(
 		fs::path filePath(_configurationRootDirectory);
 		filePath /= device.getVendor();
 
-		FileSystem::createOwnerDirectory(filePath);
+		FileSystem::createDirectory(filePath, fs::owner_all);
 
 		filePath /= device.getConfigFilePath();
 

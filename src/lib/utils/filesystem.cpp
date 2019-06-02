@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -84,7 +84,10 @@ const std::string FileSystem::getNextAvailableFileName(
 	throw GLogiKExcept("can't get new filename, counter reached max");
 }
 
-void FileSystem::createOwnerDirectory(const fs::path & directory) {
+void FileSystem::createDirectory(
+	const fs::path & directory,
+	const fs::perms prms)
+{
 #if DEBUGGING_ON
 	bool success = false;
 	LOG(DEBUG2) << "creating directory : " << directory.string();
@@ -96,7 +99,10 @@ void FileSystem::createOwnerDirectory(const fs::path & directory) {
 #else
 		fs::create_directory( directory );
 #endif
-		fs::permissions(directory, fs::owner_all);
+
+		if( prms != fs::no_perms ) {
+			fs::permissions(directory, prms);
+		}
 	}
 	catch (const fs::filesystem_error & e) {
 		std::ostringstream buffer;
