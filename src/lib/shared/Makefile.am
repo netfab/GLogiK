@@ -13,8 +13,6 @@ libGKShared_la_LDFLAGS = \
 libGKShared_la_LIBADD = \
 						$(SM_LIBS) \
 						@BOOST_SERIALIZATION_LIB@ \
-						@BOOST_SYSTEM_LIB@ \
-						@BOOST_FILESYSTEM_LIB@ \
 						libGKUtils.la
 
 libGKShared_la_SOURCES = \
@@ -22,6 +20,8 @@ libGKShared_la_SOURCES = \
 	%D%/macrosBanks.hpp \
 	%D%/deviceProperties.cpp \
 	%D%/deviceProperties.hpp \
+	%D%/deviceConfigurationFile.cpp \
+	%D%/deviceConfigurationFile.hpp \
 	%D%/glogik.cpp \
 	%D%/glogik.hpp \
 	%D%/sessionManager.cpp \

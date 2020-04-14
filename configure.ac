@@ -4,7 +4,7 @@ m4_define([GLOGIK_NAME], [GLogiK])
 m4_define(GLOGIK_VERSION,regexp(m4_include(VERSION),[version \([-.0-9A-Za-z]+\)],[\1]))
 
 # project infos
-AC_INIT(GLOGIK_NAME, GLOGIK_VERSION, [https://framagit.org/netfab/GLogiK/issues], GLOGIK_NAME)
+AC_INIT(GLOGIK_NAME, GLOGIK_VERSION, [https://framagit.org/netfab/GLogiK/issues], GLOGIK_NAME, [https://glogik.tuxfamily.org/])
 
 PKG_PROG_PKG_CONFIG
 
@@ -63,6 +63,10 @@ AC_ARG_ENABLE( [debug],
 				AC_HELP_STRING( [--enable-debug], [Enable debugging, default: no]),
 				[enable_debugging=$enableval], [enable_debugging=no])
 
+AC_ARG_ENABLE( [debug-keys],
+				AC_HELP_STRING( [--enable-debug-keys], [Enable keys debugging, default: no]),
+				[enable_keys_debugging=$enableval], [enable_keys_debugging=no])
+
 AC_ARG_ENABLE( [debug-gkdbus],
 				AC_HELP_STRING( [--enable-debug-gkdbus], [Enable gkdbus debugging, default: no]),
 				[enable_gkdbus_debugging=$enableval], [enable_gkdbus_debugging=no])
@@ -79,11 +83,13 @@ AC_ARG_ENABLE( [debug-lcd-plugins],
 				AC_HELP_STRING( [--enable-debug-lcd-plugins], [Enable LCD plugins debugging, default: no]),
 				[enable_lcd_plugins_debugging=$enableval], [enable_lcd_plugins_debugging=no])
 
-AC_ARG_ENABLE( [desktop-notifications],
-				AC_HELP_STRING( [--enable-desktop-notifications], [Enable desktop notifications, default: no]),
-				[enable_desktop_notifications=$enableval], [enable_desktop_notifications=no])
+dnl check for Qt5 client GUI
+AC_ARG_ENABLE( [qt5],
+               AC_HELP_STRING( [--enable-qt5], [Enable Qt5 client GUI]),
+               [enable_qt5=$enableval], [enable_qt5=no])
 
 AC_ARG_VAR(DEBUG_DIR, [Directory where debug file will be written])
+AC_ARG_VAR(DATA_DIR, [Directory where data files will be installed])
 AC_ARG_VAR(PBM_DATA_DIR, [Directory where pbm data files will be installed])
 
 dnl -------------------------------------------------------------------------
@@ -157,96 +163,32 @@ dnl -------------------------------------------------------------------------
 dnl             run tests and do things accordingly to results
 dnl -------------------------------------------------------------------------
 
-AC_MSG_CHECKING([whether we want overlinking protection])
-if test "$enable_as_needed" = yes; then
-    AC_MSG_RESULT([yes])
-    AX_APPEND_LINK_FLAGS([-Wl,--as-needed], [AM_LDFLAGS])
-else
-    AC_MSG_RESULT([no])
-fi
+GDT_CONDITIONAL_ADD_LDFLAGS([$enable_as_needed], [-Wl,--as-needed])
 
-AC_MSG_CHECKING([whether we want gcc -Wall])
-if test "$enable_gcc_wall" = yes; then
-    AC_MSG_RESULT([yes])
-    AS_VAR_APPEND(AM_CXXFLAGS,["-Wall"])
-else
-    AC_MSG_RESULT([no])
-fi
+GDT_CONDITIONAL_ADD_CXXFLAG([$enable_gcc_wall], [-Wall])
+GDT_CONDITIONAL_ADD_CXXFLAG([$enable_gcc_werror], [-Werror])
 
-AC_MSG_CHECKING([whether we want gcc -Werror])
-if test "$enable_gcc_werror" = yes; then
-    AC_MSG_RESULT([yes])
-    AS_VAR_APPEND(AM_CXXFLAGS,[" -Werror"])
-else
-    AC_MSG_RESULT([no])
-fi
+GDT_DEBUG_FLAG([$enable_debugging], [DEBUGGING_ON], [global])
+GDT_DEBUG_FLAG([$enable_keys_debugging], [DEBUG_KEYS], [keys])
+GDT_DEBUG_FLAG([$enable_gkdbus_debugging], [DEBUG_GKDBUS_SUBOBJECTS], [GKDBus sub-objects])
+GDT_DEBUG_FLAG([$enable_libusb_extra_debugging], [DEBUG_LIBUSB_EXTRA], [LibUSB extra])
+GDT_DEBUG_FLAG([$enable_pbmfont_debugging], [DEBUG_PBMFONT], [pbmfont])
+GDT_DEBUG_FLAG([$enable_lcd_plugins_debugging], [DEBUG_LCD_PLUGINS], [LCD plugins])
 
-AC_MSG_CHECKING([whether we want debugging])
-if test "$enable_debugging" = yes; then
+AM_CONDITIONAL([WITH_QT5], [test "x$enable_qt5" = xyes])
+AC_MSG_CHECKING([whether we want Qt5 client GUI])
+if test "x$enable_qt5" = xyes; then
 	AC_MSG_RESULT([yes])
-	AC_DEFINE([DEBUGGING_ON], [1], [Debugging])
-
-	AC_MSG_CHECKING([whether we want gkdbus debugging])
-	if test "$enable_gkdbus_debugging" = yes; then
-		AC_MSG_RESULT([yes])
-		AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [1], [GKDBus sub-objects debugging])
-	else
-		AC_MSG_RESULT([no])
-		AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [GKDBus sub-objects debugging])
-	fi
-
-	AC_MSG_CHECKING([whether we want LibUSB extra debugging])
-	if test "$enable_libusb_extra_debugging" = yes; then
-		AC_MSG_RESULT([yes])
-		AC_DEFINE([DEBUG_LIBUSB_EXTRA], [1], [LibUSB extra debugging])
-	else
-		AC_MSG_RESULT([no])
-		AC_DEFINE([DEBUG_LIBUSB_EXTRA], [0], [LibUSB extra debugging])
-	fi
-
-	AC_MSG_CHECKING([whether we want pbmfont debugging])
-	if test "$enable_pbmfont_debugging" = yes; then
-		AC_MSG_RESULT([yes])
-		AC_DEFINE([DEBUG_PBMFONT], [1], [PBM fonts debugging])
-	else
-		AC_MSG_RESULT([no])
-		AC_DEFINE([DEBUG_PBMFONT], [0], [PBM fonts debugging])
-	fi
-
-	AC_MSG_CHECKING([whether we want LCD plugins debugging])
-	if test "$enable_lcd_plugins_debugging" = yes; then
-		AC_MSG_RESULT([yes])
-		AC_DEFINE([DEBUG_LCD_PLUGINS], [1], [LCD plugins debugging])
-	else
-		AC_MSG_RESULT([no])
-		AC_DEFINE([DEBUG_LCD_PLUGINS], [0], [LCD plugins debugging])
-	fi
+	AX_HAVE_QT
+	AC_DEFINE([QT5_GUI], [1], [Qt5 client GUI])
 else
 	AC_MSG_RESULT([no])
-	AC_DEFINE([DEBUGGING_ON], [0], [Debugging])
-	AC_DEFINE([DEBUG_GKDBUS_SUBOBJECTS], [0], [GKDBus sub-objects debugging])
-	AC_DEFINE([DEBUG_PBMFONT], [0], [PBM fonts debugging])
-	AC_DEFINE([DEBUG_LCD_PLUGINS], [0], [LCD plugins debugging])
-	AC_DEFINE([DEBUG_LIBUSB_EXTRA], [0], [LibUSB extra debugging])
+	AC_DEFINE([QT5_GUI], [0], [Qt5 client GUI])
 fi
-
-AM_CONDITIONAL([WITH_LIBNOTIFY], [test "x$enable_desktop_notifications" = xyes])
-AC_MSG_CHECKING([whether we want desktop notifications])
-AS_IF([test "x$enable_desktop_notifications" = xyes],
-	[
-	AC_MSG_RESULT([yes])
-	PKG_CHECK_MODULES([LIBNOTIFY], [libnotify >= 0.7.7])
-	AC_SUBST(LIBNOTIFY_CFLAGS)
-	AC_SUBST(LIBNOTIFY_LIBS)
-	AC_DEFINE([DESKTOP_NOTIFICATIONS], [1], [Desktop notifications])
-	], [
-	AC_MSG_RESULT([no])
-	AC_DEFINE([DESKTOP_NOTIFICATIONS], [0], [Desktop notifications])
-	])
 
 dnl abort compilation after first error
-AS_VAR_APPEND(AM_CXXFLAGS,[" -Wfatal-errors"])
-AS_VAR_APPEND(AM_CXXFLAGS,[" -std=c++14"])
+GDT_ADD_CXXFLAG([-Wfatal-errors])
+GDT_ADD_CXXFLAG([-std=c++14])
 
 AC_SUBST(AM_CXXFLAGS)
 AC_SUBST(AM_LDFLAGS)
@@ -258,6 +200,7 @@ dnl -------------------------------------------------------------------------
 AS_IF([[test "x$DEBUG_DIR" = "x"]], [DEBUG_DIR="/tmp"])
 AC_DEFINE_UNQUOTED([DEBUG_DIR], ["${DEBUG_DIR}"], [Directory for debug file])
 
+AC_DEFINE_UNQUOTED([DATA_DIR], ["${prefix}/share"], [Root directory for data files installation])
 AC_DEFINE_UNQUOTED([PBM_DATA_DIR], ["${prefix}/share/${PACKAGE_NAME}/pbm"], [Directory for pbm file installation])
 
 dnl -------------------------------------------------------------------------
@@ -275,6 +218,9 @@ PKG_CHECK_MODULES([LIBUDEV], [libudev])
 PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
 PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.10])
 PKG_CHECK_MODULES([SM], [sm ice])
+PKG_CHECK_MODULES([LIBX11], [x11])
+PKG_CHECK_MODULES([LIBXTST], [xtst])
+
 
 AX_BOOST_BASE([1.64.0], [], AC_MSG_ERROR([Could not find a useful version of boost libraries]))
 AX_BOOST_PROGRAM_OPTIONS
@@ -334,8 +280,8 @@ AC_MSG_NOTICE([
               libusb CFLAGS : ${LIBUSB_CFLAGS}
                 libusb LIBS : ${LIBUSB_LIBS}
                libudev LIBS : ${LIBUDEV_LIBS}
-             phtread CFLAGS : ${PTHREAD_CFLAGS}
-               phtread LIBS : ${PTHREAD_LIBS}
+             pthread CFLAGS : ${PTHREAD_CFLAGS}
+               pthread LIBS : ${PTHREAD_LIBS}
              Boost CPPFLAGS : ${BOOST_CPPFLAGS}
               Boost LDFLAGS : ${BOOST_LDFLAGS}
    Boost serialization LIBS : ${BOOST_SERIALIZATION_LIB}
@@ -343,10 +289,17 @@ AC_MSG_NOTICE([
       Boost filesystem LIBS : ${BOOST_FILESYSTEM_LIB}
  Boost program options LIBS : ${BOOST_PROGRAM_OPTIONS_LIB}
        Boost iostreams LIBS : ${BOOST_IOSTREAMS_LIB}
+                   X11 LIBS : ${LIBX11_LIBS}
+                 X11 CFLAGS : ${LIBX11_CFLAGS}
+                  XTST LIBS : ${LIBXTST_LIBS}
+                XTST CFLAGS : ${LIBXTST_CFLAGS}
+                    Qt LIBS : ${QT_LIBS}
+                Qt CXXFLAGS : ${QT_CXXFLAGS}
 --------------------------------------------------------------
- with desktop notifications : ${enable_desktop_notifications}
+        with Qt5 client GUI : ${enable_qt5}
 --------------------------------------------------------------
   Global debugging : ${enable_debugging}
+              keys : ${enable_keys_debugging}
             GKDBus : ${enable_gkdbus_debugging}
             LibUSB : ${enable_libusb_extra_debugging}
            PBMFont : ${enable_pbmfont_debugging}

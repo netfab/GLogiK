@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -31,11 +31,15 @@
 #include <stdexcept>
 #include <iomanip>
 #include <sstream>
+#include <chrono>
 #include <thread>
 #include <limits>
 
+#include <config.h>
+
 #define UTILS_COMPILATION 1
 
+#include "log.hpp"
 #include "exception.hpp"
 #include "functions.hpp"
 
@@ -120,8 +124,11 @@ void yield_for(std::chrono::microseconds us)
 	} while (std::chrono::high_resolution_clock::now() < end);
 }
 
-pid_t daemonizeProcess(const bool closeDescriptors)
+pid_t detachProcess(const bool closeDescriptors)
 {
+#if DEBUGGING_ON
+	LOG(DEBUG) << "detaching process";
+#endif
 	pid_t pid;
 
 	pid = fork();
@@ -129,22 +136,54 @@ pid_t daemonizeProcess(const bool closeDescriptors)
 		throw GLogiKExcept("first fork failure");
 
 	// parent exit
-	if(pid > 0)
+	if(pid > 0) {
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "first fork done. pid: " << pid;
+#endif
+		std::this_thread::sleep_for(std::chrono::milliseconds(20));
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "exiting parent";
+#endif
 		exit(EXIT_SUCCESS);
+	}
+	else {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "continue child execution";
+#endif
+	}
 
+	// new session for child process
 	if(setsid() == -1)
 		throw GLogiKExcept("session creation failure");
 
-	// Ignore signal sent from child to parent process
+#if DEBUGGING_ON
+	LOG(DEBUG) << "new session done";
+#endif
+
+	// Ignore signals
 	std::signal(SIGCHLD, SIG_IGN);
+	std::signal(SIGHUP, SIG_IGN);
 
 	pid = fork();
 	if(pid == -1)
 		throw GLogiKExcept("second fork failure");
 
 	// parent exit
-	if(pid > 0)
+	if(pid > 0) {
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "second fork done. pid: " << pid;
+#endif
+		std::this_thread::sleep_for(std::chrono::milliseconds(20));
+#if DEBUGGING_ON
+		LOG(DEBUG1) << "exiting parent";
+#endif
 		exit(EXIT_SUCCESS);
+	}
+	else {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "continue child execution";
+#endif
+	}
 
 	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	if(chdir("/") == -1)
@@ -162,9 +201,17 @@ pid_t daemonizeProcess(const bool closeDescriptors)
 		stdin = std::fopen("/dev/null", "r");
 		stdout = std::fopen("/dev/null", "w+");
 		stderr = std::fopen("/dev/null", "w+");
+
+#if DEBUGGING_ON
+		LOG(DEBUG) << "descriptors closed, process daemonized";
+#endif
 	}
 
 	pid = getpid();
+
+#if DEBUGGING_ON
+	LOG(DEBUG) << "returning pid: " << pid;
+#endif
 
 	return pid;
 }

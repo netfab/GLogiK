@@ -29,6 +29,10 @@ libGKDBus_la_SOURCES = \
 	%D%/arguments/GKDBusArgMacro.hpp \
 	%D%/arguments/GKDBusArgMacrosBank.cpp \
 	%D%/arguments/GKDBusArgMacrosBank.hpp \
+	%D%/arguments/GKDBusArgDevicesMap.cpp \
+	%D%/arguments/GKDBusArgDevicesMap.hpp \
+	%D%/arguments/GKDBusArgLCDPluginsArray.cpp \
+	%D%/arguments/GKDBusArgLCDPluginsArray.hpp \
 	%D%/messages/GKDBusMessage.cpp \
 	%D%/messages/GKDBusMessage.hpp \
 	%D%/messages/GKDBusReply.cpp \

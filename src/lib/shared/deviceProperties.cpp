@@ -19,8 +19,6 @@
  *
  */
 
-#include <stdexcept>
-
 #include "include/enums.hpp"
 
 #include "lib/utils/utils.hpp"
@@ -32,27 +30,22 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DeviceProperties::DeviceProperties() :
-	_vendor("unknown"),
-	_model("unknown"),
-	_capabilities(0),
-	_configFileName("none"),
-	_watchedDescriptor(-1),
-	_backlightRed(0xFF),
-	_backlightGreen(0xFF),
-	_backlightBlue(0xFF),
-	_LCDPluginsMask1(0)
+DeviceProperties::DeviceProperties()
+	:	_capabilities(0),
+		_watchedDescriptor(-1),
+		_backlightRed(0xFF),
+		_backlightGreen(0xFF),
+		_backlightBlue(0xFF),
+		_LCDPluginsMask1(0)
 {
 }
 
 DeviceProperties::~DeviceProperties() {
 }
 
-/* -- -- -- */
+const LCDPluginsPropertiesArray_type DeviceProperties::_LCDPluginsPropertiesEmptyArray = {};
 
-void DeviceProperties::setConfigFileName(const std::string & fileName) {
-	_configFileName = fileName;
-}
+/* -- -- -- */
 
 void DeviceProperties::setWatchDescriptor(int wd) {
 	_watchedDescriptor = wd;
@@ -61,11 +54,10 @@ void DeviceProperties::setWatchDescriptor(int wd) {
 void DeviceProperties::setProperties(
 	const std::string & vendor,
 	const std::string & model,
-	const uint64_t capabilities
-)
+	const uint64_t capabilities)
 {
-	_vendor	= vendor;
-	_model	= model;
+	this->setVendor(vendor);
+	this->setModel(model);
 	_capabilities = capabilities;
 }
 
@@ -74,7 +66,6 @@ void DeviceProperties::setProperties(const DeviceProperties & dev)
 	dev.getRGBBytes(_backlightRed, _backlightGreen, _backlightBlue);
 
 	_macrosBanks		= dev.getMacrosBanks();
-	_mediaCommands		= dev.getMediaCommands();
 	_LCDPluginsMask1	= dev.getLCDPluginsMask1();
 
 	if( _LCDPluginsMask1 == 0 ) {
@@ -82,6 +73,16 @@ void DeviceProperties::setProperties(const DeviceProperties & dev)
 		_LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN);
 		_LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);
 	}
+}
+
+const LCDPluginsPropertiesArray_type & DeviceProperties::getLCDPluginsProperties(void) const
+{
+	return _LCDPluginsProperties;
+}
+
+void DeviceProperties::setLCDPluginsProperties(const LCDPluginsPropertiesArray_type & array)
+{
+	_LCDPluginsProperties = array;
 }
 
 void DeviceProperties::setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b) {
@@ -103,41 +104,13 @@ void DeviceProperties::setLCDPluginsMask(
 
 /* -- -- -- */
 
-const std::string & DeviceProperties::getVendor(void) const {
-	return _vendor;
-}
-
-const std::string & DeviceProperties::getModel(void) const {
-	return _model;
-}
-
 const uint64_t DeviceProperties::getCapabilities(void) const {
 	return _capabilities;
-}
-
-const std::string & DeviceProperties::getConfigFileName(void) const {
-	return _configFileName;
 }
 
 const int DeviceProperties::getWatchDescriptor(void) const {
 	return _watchedDescriptor;
 }
-
-const std::string DeviceProperties::getMediaCommand(const std::string & mediaEvent) const
-{
-	std::string ret("");
-	try {
-		ret = _mediaCommands.at(mediaEvent);
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "unknown media event : " << mediaEvent;
-	}
-	return ret;
-}
-
-const std::map<const std::string, std::string> & DeviceProperties::getMediaCommands(void) const {
-	return _mediaCommands;
-};
 
 const uint64_t DeviceProperties::getLCDPluginsMask1(void) const
 {

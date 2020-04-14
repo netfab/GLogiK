@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,48 +19,47 @@
  *
  */
 
-#ifndef SRC_BIN_SERVICE_VOLUME_NOTIFICATION_HPP_
-#define SRC_BIN_SERVICE_VOLUME_NOTIFICATION_HPP_
+#ifndef SRC_BIN_GUI_QT_DAEMON_AND_SERVICE_TAB_HPP_
+#define SRC_BIN_GUI_QT_DAEMON_AND_SERVICE_TAB_HPP_
 
-#include <atomic>
-#include <string>
+#include <QPushButton>
+#include <QLabel>
+#include <QString>
 
-#include <libnotify/notify.h>
+#include "Tab.hpp"
 
 namespace GLogiK
 {
 
-class VolumeNotification
+class DaemonAndServiceTab
+	:	public Tab
 {
 	public:
-		VolumeNotification(void);
-		~VolumeNotification(void);
-
-		void init(
-			const std::string & appName,
-			int timeout
+		DaemonAndServiceTab(
+			NSGKDBus::GKDBus* pDBus,
+			const QString & name
 		);
-		const bool updateProperties(
-			const std::string & summary,
-			const std::string & body = "",
-			const std::string & icon = "");
-		const bool show(void);
+		~DaemonAndServiceTab();
 
-	protected:
+		void buildTab(void);
+		void updateTab(void);
+		const bool isServiceStarted(void) const;
+		const bool isServiceRegistered(void) const;
 
 	private:
-		NotifyNotification* _pNotification;
-		bool _isInitted;
-		int _timeout;
+		DaemonAndServiceTab() = delete;
 
-		static std::atomic<unsigned int> counter;
+		QLabel* _daemonVersionLabel;
+		QLabel* _serviceVersionLabel;
+		QLabel* _serviceStatusLabel;
+		bool _serviceStarted;
+		bool _serviceRegistered;
 
-		void setTimeout(int timeout);
-		void maybeClose(void);
-		const bool close(void);
+		QPushButton* _pStartButton;
+
+		void startSignal(void);
 };
 
 } // namespace GLogiK
 
 #endif
-

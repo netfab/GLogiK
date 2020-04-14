@@ -158,15 +158,6 @@ void NetSnapshots::findDefaultRouteNetworkInterfaceName(void)
 		LOG(ERROR) << "error opening/reading/closing kernel route file : " << e.what();
 		throw GLogiKExcept("ifstream error");
 	}
-	/*
-	 * catch std::ios_base::failure on buggy compilers
-	 * should be fixed with gcc >= 7.0
-	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
-	 */
-	catch( const std::exception & e ) {
-		LOG(ERROR) << "(buggy exception) error opening/reading/closing route file : " << e.what();
-		throw GLogiKExcept("ifstream error");
-	}
 }
 
 void NetSnapshots::setBytesSnapshotValue(const NetDirection d, unsigned long long & value)
@@ -187,15 +178,6 @@ void NetSnapshots::setBytesSnapshotValue(const NetDirection d, unsigned long lon
 	}
 	catch (const std::ifstream::failure & e) {
 		LOG(ERROR) << "error opening/reading/closing kernel route file : " << e.what();
-		throw GLogiKExcept("ifstream error");
-	}
-	/*
-	 * catch std::ios_base::failure on buggy compilers
-	 * should be fixed with gcc >= 7.0
-	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
-	 */
-	catch( const std::exception & e ) {
-		LOG(ERROR) << "(buggy exception) error opening/reading/closing route file : " << e.what();
 		throw GLogiKExcept("ifstream error");
 	}
 }

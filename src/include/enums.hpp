@@ -21,6 +21,8 @@
 
 #include <cstdint>
 
+#include <type_traits>
+
 #ifndef SRC_INCLUDE_ENUMS_HPP_
 #define SRC_INCLUDE_ENUMS_HPP_
 
@@ -75,6 +77,14 @@ enum class Keys : uint64_t
 	GK_KEY_AUDIO_RAISE_VOLUME	= one << 35,
 	GK_KEY_AUDIO_LOWER_VOLUME	= one << 36,
 
+};
+
+enum class SpecialKeys : uint8_t
+{
+	GK_KEY_BACKLIGHT_OFF	= 1 << 2,
+	GK_KEY_HEADSET_OFF		= 1 << 3,
+	GK_KEY_MICRO_OFF		= 1 << 4,
+	GK_ONBOARD_AUDIO_ON		= 1 << 5,	/* this bit is on with onboard audio */
 };
 
 enum class Leds : uint8_t

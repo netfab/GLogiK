@@ -40,6 +40,7 @@ class GKDBusEvents
 	:	public EventGKDBusCallback<VoidToVoid>,
 		public EventGKDBusCallback<StringsArrayToVoid>,
 		public EventGKDBusCallback<StringToBool>,
+		public EventGKDBusCallback<StringToVoid>,
 		public EventGKDBusCallback<TwoStringsToVoid>,
 		public EventGKDBusCallback<TwoStringsToBool>,
 		public EventGKDBusCallback<TwoStringsOneByteToBool>,
@@ -49,6 +50,7 @@ class GKDBusEvents
 		public EventGKDBusCallback<StringToStringsArray>,
 		public EventGKDBusCallback<TwoStringsToStringsArray>,
 		public EventGKDBusCallback<ThreeStringsOneByteToMacro>,
+		public EventGKDBusCallback<TwoStringsToLCDPluginsPropertiesArray>,
 		public EventGKDBusCallback<TwoStringsOneByteOneMacrosBankToBool>,
 		public EventGKDBusCallback<TwoStringsOneByteOneUInt64ToBool>
 {

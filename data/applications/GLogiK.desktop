@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=GLogiK Configuration Utility
+Comment=GLogiK Desktop Service Configuration Utility
+TryExec=GKcQt5
+Exec=GKcQt5
+Icon=GLogiK
+Type=Application
+Terminal=false
+Categories=Settings;

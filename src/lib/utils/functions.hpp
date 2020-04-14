@@ -63,7 +63,7 @@ const std::string getHexRGB(
 
 void yield_for(std::chrono::microseconds us);
 
-pid_t daemonizeProcess(const bool closeDescriptors=false);
+pid_t detachProcess(const bool closeDescriptors=false);
 
 } // namespace NSGKUtils
 

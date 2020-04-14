@@ -22,22 +22,21 @@
 #include <utility>
 #include <exception>
 #include <stdexcept>
-#include <sstream>
-#include <fstream>
 #include <set>
-#include <thread>
 
 #include <boost/archive/archive_exception.hpp>
 #include <boost/archive/xml_archive_exception.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
-#include <boost/process.hpp>
+
+#include <X11/Xlib.h>
+#include <X11/extensions/XTest.h>
+
+#include "include/LCDPluginProperties.hpp"
+
+#include "lib/shared/deviceConfigurationFile.hpp"
 
 #include "devicesHandler.hpp"
-
-namespace fs = boost::filesystem;
-namespace bp = boost::process;
 
 namespace GLogiK
 {
@@ -53,9 +52,8 @@ DevicesHandler::DevicesHandler()
 #if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler initialization";
 #endif
-	_configurationRootDirectory = XDGUserDirs::getConfigDirectory();
-	_configurationRootDirectory += "/";
-	_configurationRootDirectory += PACKAGE_NAME;
+	_configurationRootDirectory = XDGUserDirs::getConfigurationRootDirectory();
+	_configurationRootDirectory /= PACKAGE_NAME;
 
 	FileSystem::createOwnerDirectory(_configurationRootDirectory);
 }
@@ -101,10 +99,29 @@ void DevicesHandler::clearDevices(void) {
 const devices_files_map_t DevicesHandler::getDevicesMap(void) {
 	devices_files_map_t ret;
 	for(const auto & dev : _startedDevices) {
-		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFileName()) );
+		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
 	}
 	for(const auto & dev : _stoppedDevices) {
-		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFileName()) );
+		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
+	}
+	return ret;
+}
+
+const std::vector<std::string> DevicesHandler::getDevicesList(void) {
+	std::vector<std::string> ret;
+	for(const auto & dev : _startedDevices) {
+		ret.push_back(dev.first);
+		ret.push_back("started");
+		ret.push_back(dev.second.getVendor());
+		ret.push_back(dev.second.getModel());
+		ret.push_back(dev.second.getConfigFilePath());
+	}
+	for(const auto & dev : _stoppedDevices) {
+		ret.push_back(dev.first);
+		ret.push_back("stopped");
+		ret.push_back(dev.second.getVendor());
+		ret.push_back(dev.second.getModel());
+		ret.push_back(dev.second.getConfigFilePath());
 	}
 	return ret;
 }
@@ -119,6 +136,9 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
 		this->loadDeviceConfigurationFile(device);
 
 		this->sendDeviceConfigurationToDaemon(devID, device);
+
+		/* inform GUI that configuration file was reloaded */
+		this->sendDeviceConfigurationSavedSignal(devID);
 	}
 	catch (const std::out_of_range& oor) {
 		try {
@@ -126,6 +146,9 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
 			this->loadDeviceConfigurationFile(device);
 
 			this->sendDeviceConfigurationToDaemon(devID, device);
+
+			/* inform GUI that configuration file was reloaded */
+			this->sendDeviceConfigurationSavedSignal(devID);
 		}
 		catch (const std::out_of_range& oor) {
 			LOG(WARNING) << "device " << devID << " not found in containers, giving up";
@@ -135,120 +158,69 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
 
 void DevicesHandler::saveDeviceConfigurationFile(
 	const std::string & devID,
-	const DeviceProperties & device )
+	const DeviceProperties & device)
 {
+#if DEBUGGING_ON
+	LOG(DEBUG1) << devID << " saving device configuration file";
+#endif
+
 	try {
 		fs::path filePath(_configurationRootDirectory);
 		filePath /= device.getVendor();
 
 		FileSystem::createOwnerDirectory(filePath);
 
-		filePath /= device.getConfigFileName();
+		filePath /= device.getConfigFilePath();
+
+		DeviceConfigurationFile::save(filePath.string(), device);
 
 		try {
-#if DEBUGGING_ON
-			LOG(DEBUG2) << devID << " opening configuration file for writing : " << filePath.string();
-#endif
-
-			std::ofstream ofs;
-			ofs.exceptions(std::ofstream::failbit|std::ofstream::badbit);
-			ofs.open(filePath.string(), std::ofstream::out|std::ofstream::trunc);
-
 			fs::permissions(filePath, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "opened";
-#endif
-
-			{
-				boost::archive::text_oarchive outputArchive(ofs);
-				outputArchive << device;
-			}
-
-			LOG(INFO) << devID << " successfully saved configuration file, closing";
-			ofs.close();
-		}
-		catch (const std::ofstream::failure & e) {
-			std::ostringstream buffer("fail to open configuration file : ", std::ios_base::app);
-			buffer << e.what();
-			LOG(ERROR) << buffer.str();
 		}
 		catch (const fs::filesystem_error & e) {
-			std::ostringstream buffer("set permissions failure on configuration file : ", std::ios_base::app);
-			buffer << e.what();
-			LOG(ERROR) << buffer.str();
+			LOG(ERROR) << "set permissions failure on configuration file : " << e.what();
 		}
-		catch(const boost::archive::archive_exception & e) {
-			std::ostringstream buffer("boost::archive exception : ", std::ios_base::app);
-			buffer << e.what();
-			LOG(ERROR) << buffer.str();
-		}
-		/*
-		 * catch std::ios_base::failure on buggy compilers
-		 * should be fixed with gcc >= 7.0
-		 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
-		 */
-		catch( const std::exception & e ) {
-			std::ostringstream buffer("(buggy exception) fail to open configuration file : ", std::ios_base::app);
-			buffer << e.what();
-			LOG(ERROR) << buffer.str();
-		}
+
+		this->sendDeviceConfigurationSavedSignal(devID);
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(ERROR) << e.what();
 	}
 }
 
+void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devID)
+{
+	std::string status("DeviceConfigurationSaved signal");
+	try {
+		/* send DeviceConfigurationSaved signal to GUI applications */
+		_pDBus->initializeBroadcastSignal(
+			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+			"DeviceConfigurationSaved"
+		);
+		_pDBus->appendStringToBroadcastSignal(devID);
+		_pDBus->sendBroadcastSignal();
+
+		status += " sent";
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonBroadcastSignal();
+		status += " failure";
+		LOG(ERROR) << status << " - " << e.what();
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << status << " on session bus";
+#endif
+}
+
 void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 	fs::path filePath(_configurationRootDirectory);
 	filePath /= device.getVendor();
-	filePath /= device.getConfigFileName();
+	filePath /= device.getConfigFilePath();
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "loading device configuration file " << device.getConfigFileName();
-#endif
-	try {
-		std::ifstream ifs;
-		ifs.exceptions(std::ifstream::badbit);
-		ifs.open(filePath.string());
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "configuration file successfully opened for reading";
-#endif
-
-		{
-			DeviceProperties newDevice;
-			boost::archive::text_iarchive inputArchive(ifs);
-			inputArchive >> newDevice;
-
-			device.setProperties( newDevice );
-		}
-
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "success, closing";
-#endif
-		ifs.close();
-	}
-	catch (const std::ifstream::failure & e) {
-		std::ostringstream buffer("fail to open configuration file : ", std::ios_base::app);
-		buffer << e.what();
-		LOG(ERROR) << buffer.str();
-	}
-	catch(const boost::archive::archive_exception & e) {
-		std::ostringstream buffer("boost::archive exception : ", std::ios_base::app);
-		buffer << e.what();
-		LOG(ERROR) << buffer.str();
-		// TODO throw GLogiKExcept to create new configuration
-		// file and avoid overwriting on close ?
-	}
-	/*
-	 * catch std::ios_base::failure on buggy compilers
-	 * should be fixed with gcc >= 7.0
-	 * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
-	 */
-	catch( const std::exception & e ) {
-		std::ostringstream buffer("(buggy exception) fail to open configuration file : ", std::ios_base::app);
-		buffer << e.what();
-		LOG(ERROR) << buffer.str();
-	}
+	DeviceConfigurationFile::load(filePath.string(), device);
 }
 
 void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, const DeviceProperties & device) {
@@ -474,6 +446,42 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		LogRemoteCallFailure
 	}
 
+	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+		/* get LCD plugins properties */
+		remoteMethod = "GetDeviceLCDPluginsProperties";
+
+		try {
+			_pDBus->initializeRemoteMethodCall(
+				_systemBus,
+				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				remoteMethod.c_str()
+			);
+			_pDBus->appendStringToRemoteMethodCall(_clientID);
+			_pDBus->appendStringToRemoteMethodCall(devID);
+
+			_pDBus->sendRemoteMethodCall();
+
+			try {
+				_pDBus->waitForRemoteMethodCallReply();
+
+				const LCDPluginsPropertiesArray_type array = _pDBus->getNextLCDPluginsArrayArgument();
+				device.setLCDPluginsProperties(array);
+#if DEBUGGING_ON
+				LOG(DEBUG3) << devID << " got " << array.size() << " LCDPluginsProperties objects";
+#endif
+			}
+			catch (const GLogiKExcept & e) {
+				LogRemoteCallGetReplyFailure
+			}
+		}
+		catch (const GKDBusMessageWrongBuild & e) {
+			_pDBus->abandonRemoteMethodCall();
+			LogRemoteCallFailure
+		}
+	}
+
 	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 		/* initialize macro keys */
 		remoteMethod = "GetDeviceMacroKeysNames";
@@ -521,17 +529,17 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	std::set<std::string> alreadyUsed;
 	{
 		for(const auto & dev : _startedDevices) {
-			alreadyUsed.insert( dev.second.getConfigFileName() );
+			alreadyUsed.insert( dev.second.getConfigFilePath() );
 		}
 		for(const auto & dev : _stoppedDevices) {
-			alreadyUsed.insert( dev.second.getConfigFileName() );
+			alreadyUsed.insert( dev.second.getConfigFilePath() );
 		}
 	}
 
 	try {
 		try {
 			/* searching for an existing configuration file */
-			device.setConfigFileName(
+			device.setConfigFilePath(
 				_pGKfs->getNextAvailableFileName(alreadyUsed, directory, device.getModel(), "cfg", true)
 			);
 		}
@@ -543,7 +551,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		}
 
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "found : " << device.getConfigFileName();
+		LOG(DEBUG3) << "found : " << device.getConfigFilePath();
 #endif
 		/* loading configuration file */
 		this->loadDeviceConfigurationFile(device);
@@ -567,12 +575,12 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 		try {
 			/* none found, assign a new configuration file to this device */
-			device.setConfigFileName(
+			device.setConfigFilePath(
 				_pGKfs->getNextAvailableFileName(alreadyUsed, directory, device.getModel(), "cfg")
 			);
 
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "new one : " << device.getConfigFileName();
+			LOG(DEBUG3) << "new one : " << device.getConfigFilePath();
 #endif
 			/* we need to create the directory before watching it */
 			this->saveDeviceConfigurationFile(devID, device);
@@ -593,7 +601,6 @@ void DevicesHandler::startDevice(const std::string & devID) {
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "found already started device: " << devID;
 #endif
-		return;
 	}
 	catch (const std::out_of_range& oor) {
 		try {
@@ -620,7 +627,6 @@ void DevicesHandler::stopDevice(const std::string & devID) {
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "found already stopped device: " << devID;
 #endif
-		return;
 	}
 	catch (const std::out_of_range& oor) {
 		try {
@@ -630,7 +636,20 @@ void DevicesHandler::stopDevice(const std::string & devID) {
 			_startedDevices.erase(devID);
 		}
 		catch (const std::out_of_range& oor) {
-			LOG(WARNING) << "device " << devID << " not found in containers, giving up";
+			/* this can happen when GLogiKs start and this device is already stopped
+			 * so we must start the device to stop it */
+#if DEBUGGING_ON
+			LOG(DEBUG) << "device " << devID << " not found in containers, initializing and stopping it";
+#endif
+			this->startDevice(devID);
+			LOG(INFO) << "stopping device: " << devID;
+			try {
+				_stoppedDevices[devID] = _startedDevices.at(devID);
+				_startedDevices.erase(devID);
+			}
+			catch (const std::out_of_range& oor) {
+				LOG(ERROR) << "started device not found, something is really wrong";
+			}
 		}
 	}
 }
@@ -736,6 +755,7 @@ const bool DevicesHandler::setDeviceMacro(
 					const macro_type macro = _pDBus->getNextMacroArgument();
 
 					device.setMacro(bankID, keyName, macro);
+
 					this->saveDeviceConfigurationFile(devID, device);
 					this->watchDirectory(device);
 					return true;
@@ -768,6 +788,7 @@ const bool DevicesHandler::clearDeviceMacro(
 
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			device.clearMacro(bankID, keyName);
+
 			this->saveDeviceConfigurationFile(devID, device);
 			this->watchDirectory(device);
 			return true;
@@ -795,94 +816,75 @@ void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check)
 	}
 }
 
-void DevicesHandler::runDeviceMediaEvent(
+void DevicesHandler::doDeviceFakeKeyEvent(
 	const std::string & devID,
 	const std::string & mediaKeyEvent)
 {
 	try {
-		DeviceProperties & device = _startedDevices.at(devID);
-		const std::string cmd( device.getMediaCommand(mediaKeyEvent) );
-		if( ! cmd.empty() ) {
-			std::thread mediaEventThread(&DevicesHandler::runCommand, this, mediaKeyEvent, cmd);
-			mediaEventThread.detach();
+		_startedDevices.at(devID);
+
+		Display* dpy = XOpenDisplay(NULL);
+		if(dpy == nullptr)
+			throw GLogiKExcept("XOpenDisplay failure");
+
+		KeySym sym = XStringToKeysym( mediaKeyEvent.c_str() );
+		if(sym == NoSymbol) {
+			std::string error("invalid KeySym : ");
+			error += mediaKeyEvent;
+			XCloseDisplay(dpy);
+			throw GLogiKExcept(error);
 		}
-		else {
+
+		KeyCode code = XKeysymToKeycode(dpy, sym);
+		if(code == 0) {
+			std::string error("not found KeySym : ");
+			error += mediaKeyEvent;
+			XCloseDisplay(dpy);
+			throw GLogiKExcept(error);
+		}
+
+		XTestFakeKeyEvent(dpy, code, True, 0);
+		XTestFakeKeyEvent(dpy, code, False, 0);
+		XFlush(dpy);
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "empty command media event " << mediaKeyEvent;
+		LOG(DEBUG1) << "done fake media event : " << mediaKeyEvent;
 #endif
+
+		XCloseDisplay(dpy);
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(WARNING) << "device not found : " << devID;
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(ERROR) << "error simulating media key event : " << e.what();
+	}
+}
+
+const LCDPluginsPropertiesArray_type & DevicesHandler::getDeviceLCDPluginsProperties(
+	const std::string & devID)
+{
+	try {
+		try {
+			DeviceProperties & device = _startedDevices.at(devID);
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "found started device: " << devID;
+#endif
+			return device.getLCDPluginsProperties();
+		}
+		catch (const std::out_of_range& oor) {
+			DeviceProperties & device = _stoppedDevices.at(devID);
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "found stopped device: " << devID;
+#endif
+			return device.getLCDPluginsProperties();
 		}
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(WARNING) << "device not found : " << devID;
 	}
+
+	return DeviceProperties::_LCDPluginsPropertiesEmptyArray;
 }
-
-void DevicesHandler::runCommand(
-	const std::string & mediaKeyEvent,
-	const std::string & command
-	)
-{
-#if DESKTOP_NOTIFICATIONS
-	_notification.init(GLOGIKS_DESKTOP_SERVICE_NAME, 5000);
-#endif
-
-	int result = -1;
-	std::string lastLine;
-
-	{
-		std::string line;
-		bp::ipstream is;
-		result = bp::system(command, bp::std_out > is, bp::std_err > stderr);
-
-		while(is && std::getline(is, line) && !line.empty()) {
-			lastLine = line;
-			LOG(VERB) << line;
-		}
-	}
-
-#if DESKTOP_NOTIFICATIONS
-	if( (mediaKeyEvent == std::string(XF86_AUDIO_RAISE_VOLUME)) or
-		(mediaKeyEvent == std::string(XF86_AUDIO_LOWER_VOLUME)) ) {
-		try {
-			int volume = -1;
-			try {
-				volume = std::stoi(lastLine);
-			}
-			catch (const std::invalid_argument& ia) {
-				throw GLogiKExcept("stoi invalid argument");
-			}
-			catch (const std::out_of_range& oor) {
-				throw GLogiKExcept("stoi out of range");
-			}
-
-			std::string icon("");
-			if( volume <= 0 )
-				icon = "audio-volume-muted-symbolic";
-			else if ( volume <= 30 )
-				icon = "audio-volume-low-symbolic";
-			else if ( volume <= 70 )
-				icon = "audio-volume-medium-symbolic";
-			else
-				icon = "audio-volume-high-symbolic";
-
-			lastLine += " %";
-			if( _notification.updateProperties("Volume", lastLine, icon) ) {
-				if( ! _notification.show() ) {
-					LOG(ERROR) << "notification showing failure";
-				}
-			}
-			else {
-				LOG(ERROR) << "notification update properties failure";
-			}
-		}
-		catch (const GLogiKExcept & e) {
-			LOG(ERROR) << "volume conversion failure, notification error";
-		}
-	}
-#endif
-
-	LOG(INFO) << "command run : " << command << " - exit code : " << result;
-};
 
 } // namespace GLogiK
 

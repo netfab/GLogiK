@@ -123,7 +123,7 @@ void GKDBusEvents::addIntrospectableEvent(
 			LOG(DEBUG3) << "adding Introspectable object : " << eventObject;
 #endif
 			this->EventGKDBusCallback<StringToString>::exposeEvent(
-				eventBus, eventObject, "org.freedesktop.DBus.Introspectable", "Introspect",
+				eventBus, nullptr, eventObject, "org.freedesktop.DBus.Introspectable", "Introspect",
 				{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
 				std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),
 				GKDBusEventType::GKDBUS_EVENT_METHOD, false);

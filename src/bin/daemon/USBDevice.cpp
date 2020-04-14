@@ -42,6 +42,7 @@ USBDevice::USBDevice(
 		:	BusNumDeviceID(name, vendorID, productID, capabilities, bus, num),
 			_fatalErrors(0),
 			_pMacrosManager(nullptr),
+			_pLCDPluginsManager(nullptr),
 			_pressedRKeysMask(0),
 			_banksLedsMask(0),
 			_exitMacroRecordMode(false),
@@ -74,6 +75,7 @@ void USBDevice::operator=(const USBDevice& dev)
 	_keysThreadID					= dev._keysThreadID;
 	_LCDThreadID					= dev._LCDThreadID;
 	_pMacrosManager					= dev._pMacrosManager;
+	_pLCDPluginsManager				= dev._pLCDPluginsManager;
 	_pressedRKeysMask				= dev._pressedRKeysMask;
 	_banksLedsMask					= static_cast<uint8_t>(dev._banksLedsMask);
 	_exitMacroRecordMode			= static_cast<bool>(dev._exitMacroRecordMode);
@@ -123,6 +125,24 @@ void USBDevice::destroyMacrosManager(void) noexcept {
 	if( _pMacrosManager ) {
 		delete _pMacrosManager;
 		_pMacrosManager = nullptr;
+	}
+}
+
+void USBDevice::initializeLCDPluginsManager(void)
+{
+	try {
+		_pLCDPluginsManager = new LCDScreenPluginsManager();
+	}
+	catch (const std::bad_alloc& e) { /* handle new() failure */
+		throw GLogiKBadAlloc("LCD Plugins manager allocation failure");
+	}
+}
+
+void USBDevice::destroyLCDPluginsManager(void)
+{
+	if( _pLCDPluginsManager ) {
+		delete _pLCDPluginsManager;
+		_pLCDPluginsManager = nullptr;
 	}
 }
 

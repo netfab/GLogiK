@@ -42,6 +42,8 @@
 #include "arguments/GKDBusArgUInt16.hpp"
 #include "arguments/GKDBusArgUInt64.hpp"
 #include "arguments/GKDBusArgMacro.hpp"
+#include "arguments/GKDBusArgDevicesMap.hpp"
+#include "arguments/GKDBusArgLCDPluginsArray.hpp"
 
 namespace NSGKDBus
 {
@@ -69,8 +71,10 @@ class GKDBus
 		public GKDBusArgumentBoolean,
 		virtual public GKDBusArgumentByte,
 		virtual public GKDBusArgumentUInt16,
-		public GKDBusArgumentUInt64,
-		public GKDBusArgumentMacro
+		virtual public GKDBusArgumentUInt64,
+		public GKDBusArgumentMacro,
+		public GKDBusArgumentDevicesMap,
+		public GKDBusArgumentLCDPluginsArray
 {
 	public:
 		GKDBus(
@@ -88,7 +92,8 @@ class GKDBus
 			const ConnectionFlag flag = ConnectionFlag::GKDBUS_MULTIPLE
 		);
 
-		void checkForNextMessage(const BusConnection bus) noexcept;
+		const std::string getObjectFromObjectPath(const std::string & objectPath);
+		void checkForMessages(void) noexcept;
 
 	protected:
 
@@ -106,7 +111,9 @@ class GKDBus
 		void checkDBusError(const char* error);
 		void checkReleasedName(int ret);
 		DBusConnection* getConnection(BusConnection bus);
-		unsigned int getDBUsFlags(const ConnectionFlag flag);
+		const unsigned int getDBusRequestFlags(const ConnectionFlag flag);
+
+		void checkForBusMessages(const BusConnection bus, DBusConnection* connection) noexcept;
 };
 
 } // namespace NSGKDBus

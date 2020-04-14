@@ -31,7 +31,6 @@
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/glogik.hpp"
 
-#include "LCDScreenPluginsManager.hpp"
 #include "daemonControl.hpp"
 #include "keyboardDriver.hpp"
 
@@ -98,7 +97,7 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 	switch(ret) {
 		case 0:
 			if( device.getLastKeysInterruptTransferLength() > 0 ) {
-#if DEBUGGING_ON
+#if DEBUGGING_ON && DEBUG_KEYS
 				LOG(DEBUG)	<< device.getID()
 							<< " exp. rl: " << this->getKeysInterruptBufferMaxLength()
 							<< " act_l: " << device.getLastKeysInterruptTransferLength() << ", xBuf[0]: "
@@ -518,8 +517,6 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 		LOG(INFO) << device.getID() << " spawned LCD screen thread for " << device.getName();
 #endif
 
-		LCDScreenPluginsManager LCDPlugins;
-
 		while( DaemonControl::isDaemonRunning() ) {
 			this->checkDeviceFatalErrors(device, "LCD screen loop");
 			if( ! device.getThreadsStatus() )
@@ -540,7 +537,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 				LCDPluginsMask1 = device._LCDPluginsMask1;
 			}
 
-			LCDDataArray & LCDBuffer = LCDPlugins.getNextLCDScreenBuffer(LCDKey, LCDPluginsMask1);
+			LCDDataArray & LCDBuffer = device._pLCDPluginsManager->getNextLCDScreenBuffer(LCDKey, LCDPluginsMask1);
 			int ret = this->performLCDScreenInterruptTransfer(
 				device,
 				LCDBuffer.data(),
@@ -548,7 +545,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 				1000);
 
 			auto interval = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t1);
-			auto one = std::chrono::milliseconds( LCDPlugins.getPluginTiming() );
+			auto one = std::chrono::milliseconds( device._pLCDPluginsManager->getPluginTiming() );
 
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 			LOG(DEBUG1) << "refreshed LCD screen for " << device.getName()
@@ -566,8 +563,8 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 			}
 		}
 
-		LCDPlugins.forceNextPlugin();
-		LCDDataArray & LCDBuffer = LCDPlugins.getNextLCDScreenBuffer("", toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN));
+		device._pLCDPluginsManager->forceNextPlugin();
+		LCDDataArray & LCDBuffer = device._pLCDPluginsManager->getNextLCDScreenBuffer("", toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN));
 		int ret = this->performLCDScreenInterruptTransfer( device, LCDBuffer.data(), LCDBuffer.size(), 1000);
 		if(ret != 0) {
 			GKSysLog(LOG_ERR, ERROR, "endscreen LCD refresh failure");
@@ -716,6 +713,9 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 	catch (const std::out_of_range& oor) {
 		GKSysLog_UnknownDevice
 	}
+	catch (const std::system_error& e) {
+		GKSysLog(LOG_ERR, ERROR, "error while spawning LCDScreen loop thread");
+	}
 	catch( const std::exception & e ) {
 		std::ostringstream err("uncaught std::exception : ", std::ios_base::app);
 		err << e.what();
@@ -726,6 +726,13 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 /* throws GLogiKExcept on any failure */
 void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 {
+	/* sanity check */
+	if(_initializedDevices.count(det.getID()) > 0) {
+		std::ostringstream err("device ID already used in started container : ", std::ios_base::app);
+		err << det.getID();
+		throw GLogiKExcept(err.str());
+	}
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << det.getID() << " initializing " << det.getName() << "("
 				<< det.getVendorID() << ":" << det.getProductID() << "), device "
@@ -759,9 +766,13 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 				buffer.str().c_str(),
 				this->getMacroKeysNames()
 			);
-
-			this->resetDeviceState(device);
 		}
+
+		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+			device.initializeLCDPluginsManager();
+		}
+
+		this->resetDeviceState(device);
 
 		_initializedDevices[ device.getID() ] = device;
 
@@ -779,6 +790,7 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 	}
 	catch ( const GLogiKExcept & e ) {
 		device.destroyMacrosManager();
+		device.destroyLCDPluginsManager();
 
 		/* if we ever claimed or detached some interfaces, set them back
 		 * to the same state in which we found them */
@@ -786,10 +798,6 @@ void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
 		this->closeUSBDevice(device);
 		throw;
 	}
-}
-
-const bool KeyboardDriver::isDeviceInitialized(const std::string & devID) const {
-	return ( _initializedDevices.count(devID) == 1 );
 }
 
 const bool KeyboardDriver::getDeviceThreadsStatus(const std::string & devID) const
@@ -924,6 +932,7 @@ void KeyboardDriver::closeDevice(const BusNumDeviceID & det) noexcept
 		this->joinDeviceThreads(device);
 		this->resetDeviceState(device);
 		device.destroyMacrosManager(); /* reset device state needs this pointer */
+		device.destroyLCDPluginsManager();
 		this->releaseUSBDeviceInterfaces(device);
 		this->closeUSBDevice(device);
 		_initializedDevices.erase(devID);
@@ -981,6 +990,21 @@ const banksMap_type & KeyboardDriver::getDeviceMacrosBanks(const std::string & d
 	}
 
 	return MacrosBanks::emptyMacrosBanks;
+}
+
+const LCDPluginsPropertiesArray_type & KeyboardDriver::getDeviceLCDPluginsProperties(
+	const std::string & devID
+) const
+{
+	try {
+		const USBDevice & device = _initializedDevices.at(devID);
+		return device._pLCDPluginsManager->getLCDPluginsProperties();
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownDevice
+	}
+
+	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
 } // namespace GLogiK

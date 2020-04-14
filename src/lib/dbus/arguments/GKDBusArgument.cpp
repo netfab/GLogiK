@@ -39,9 +39,8 @@ thread_local std::vector<bool> GKDBusArgument::booleanArguments = {};
 void GKDBusArgument::decodeArgumentFromIterator(
 	DBusMessageIter* iter,
 	const char* signature,
-	const unsigned int num,
-	const bool disabledDebugOutput
-) {
+	const unsigned int num)
+{
 	int currentType = dbus_message_iter_get_arg_type(iter);
 
 	DBusSignatureIter itSignature;
@@ -55,10 +54,8 @@ void GKDBusArgument::decodeArgumentFromIterator(
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if( ! disabledDebugOutput ) {
-		LOG(DEBUG3) << "decoding argument: " << num << " type: "
-					<< static_cast<char>(currentType) << " sig: " << signature;
-	}
+	LOG(DEBUG3) << "decoding argument: " << num << " type: "
+				<< static_cast<char>(currentType) << " sig: " << signature;
 #endif
 
 	switch(currentType) {
@@ -91,7 +88,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 				do {
 					c++; /* bonus point */
 					char* sig = dbus_message_iter_get_signature(&itArray);
-					GKDBusArgument::decodeArgumentFromIterator(&itArray, sig, c, disabledDebugOutput);
+					GKDBusArgument::decodeArgumentFromIterator(&itArray, sig, c);
 					dbus_free(sig);
 				}
 				while( dbus_message_iter_next(&itArray) );
@@ -130,7 +127,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 					do {
 						c++; /* bonus point */
 						char* sig = dbus_message_iter_get_signature(&itStruct);
-						GKDBusArgument::decodeArgumentFromIterator(&itStruct, sig, c, disabledDebugOutput);
+						GKDBusArgument::decodeArgumentFromIterator(&itStruct, sig, c);
 						dbus_free(sig);
 					}
 					while( dbus_message_iter_next(&itStruct) );
@@ -145,7 +142,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 				//LOG(DEBUG4) << "parsing variant";
 				dbus_message_iter_recurse(iter, &itSub);
 				char* sig = dbus_message_iter_get_signature(&itSub);
-				GKDBusArgument::decodeArgumentFromIterator(&itSub, sig, c, disabledDebugOutput);
+				GKDBusArgument::decodeArgumentFromIterator(&itSub, sig, c);
 				dbus_free(sig);
 			}
 			break;
@@ -155,7 +152,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 	}
 }
 
-void GKDBusArgument::fillInArguments(DBusMessage* message, const bool disabledDebugOutput) {
+void GKDBusArgument::fillInArguments(DBusMessage* message) {
 	GKDBusArgument::stringArguments.clear();
 	GKDBusArgument::booleanArguments.clear();
 	GKDBusArgument::byteArguments.clear();
@@ -176,7 +173,7 @@ void GKDBusArgument::fillInArguments(DBusMessage* message, const bool disabledDe
 	do {
 		c++; /* bonus point */
 		char* signature = dbus_message_iter_get_signature(&itArgument);
-		GKDBusArgument::decodeArgumentFromIterator(&itArgument, signature, c, disabledDebugOutput);
+		GKDBusArgument::decodeArgumentFromIterator(&itArgument, signature, c);
 		dbus_free(signature);
 	}
 	while( dbus_message_iter_next(&itArgument) );
@@ -206,7 +203,7 @@ const int GKDBusArgument::decodeNextArgument(DBusMessageIter* itArgument) {
 
 	unsigned int c = 0;
 	char* signature = dbus_message_iter_get_signature(itArgument);
-	GKDBusArgument::decodeArgumentFromIterator(itArgument, signature, c, true);
+	GKDBusArgument::decodeArgumentFromIterator(itArgument, signature, c);
 	dbus_free(signature);
 
 	return currentType;

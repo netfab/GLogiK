@@ -41,8 +41,9 @@ using namespace NSGKUtils;
 
 Endscreen::Endscreen()
 {
-	_pluginID = toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN);
-	_pluginName = "endscreen";
+	_plugin.setID( toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN) );
+	_plugin.setName("endscreen");
+	_plugin.setDesc("Endscreen plugin, used when releasing a device");
 	//_pluginTempo = LCDPluginTempo::TEMPO_DEFAULT;
 }
 
@@ -52,7 +53,7 @@ Endscreen::~Endscreen() {
 void Endscreen::init(FontsManager* const pFonts)
 {
 	fs::path PBMDirectory(PBM_DATA_DIR);
-	PBMDirectory /= _pluginName;
+	PBMDirectory /= _plugin.getName();
 
 	//pFonts->initializeFont(FontID::MONOSPACE85);
 

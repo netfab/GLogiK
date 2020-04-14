@@ -28,11 +28,17 @@ using namespace NSGKUtils;
 
 void SignalRule::addSignalRuleMatch(
 		DBusConnection* connection,
+		const char* sender,
 		const char* interface,
 		const char* eventName
 	)
 {
-	std::string rule = "type='signal',interface='";
+	std::string rule = "type='signal'";
+	if(sender != nullptr) {
+		rule += ",sender='";
+		rule += sender;
+	}
+	rule += "',interface='";
 	rule += interface;
 	rule += "',member='";
 	rule += eventName;
@@ -61,6 +67,44 @@ template <>
 		LOG(ERROR) << error;
 	}
 	/* don't need to send a reply */
+}
+
+template <>
+	void GKDBusCallbackEvent<StringToVoid>::runCallback(
+		DBusConnection* connection,
+		DBusMessage* message
+	)
+{
+	GKDBusArgumentString::fillInArguments(message);
+
+	try {
+		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
+
+		/* call string to void callback */
+		this->callback(arg1);
+	}
+	catch ( const GLogiKExcept & e ) {
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
+	}
+
+	/* signals don't send reply */
+	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+		return;
+
+	try {
+		this->initializeReply(connection, message);
+
+		this->appendAsyncArgsToReply();
+	}
+	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
+		this->sendReplyError(connection, message, e.what());
+		return;
+	}
+
+	/* delete reply object if allocated */
+	this->sendReply();
 }
 
 template <>
@@ -498,6 +542,48 @@ template <>
 	try {
 		this->initializeReply(connection, message);
 		this->appendMacroToReply(ret);
+
+		this->appendAsyncArgsToReply();
+	}
+	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
+		this->sendReplyError(connection, message, e.what());
+		return;
+	}
+
+	/* delete reply object if allocated */
+	this->sendReply();
+}
+
+template <>
+	void GKDBusCallbackEvent<TwoStringsToLCDPluginsPropertiesArray>::runCallback(
+		DBusConnection* connection,
+		DBusMessage* message
+	)
+{
+	GKDBusArgumentString::fillInArguments(message);
+
+	GLogiK::LCDPluginsPropertiesArray_type ret;
+
+	try {
+		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
+
+		/* call two strings to LCDPluginsProperties array callback */
+		ret = this->callback(arg1, arg2);
+	}
+	catch ( const GLogiKExcept & e ) {
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
+	}
+
+	/* signals don't send reply */
+	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+		return;
+
+	try {
+		this->initializeReply(connection, message);
+		this->appendLCDPluginsPropertiesArrayToReply(ret);
 
 		this->appendAsyncArgsToReply();
 	}

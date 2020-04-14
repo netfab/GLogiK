@@ -76,7 +76,7 @@ LauncherDBusHandler::~LauncherDBusHandler(void)
 }
 
 void LauncherDBusHandler::checkDBusMessages(void) {
-	_pDBus->checkForNextMessage(_sessionBus);
+	_pDBus->checkForMessages();
 }
 
 /*
@@ -93,8 +93,19 @@ void LauncherDBusHandler::checkDBusMessages(void) {
 void LauncherDBusHandler::initializeGKDBusSignals(void) {
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		_sessionBus,
+		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		"RestartRequest",
+		{},
+		std::bind(&LauncherDBusHandler::restartRequest, this)
+	);
+
+	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+		_sessionBus,
+		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 		"RestartRequest",
 		{},
 		std::bind(&LauncherDBusHandler::restartRequest, this)
@@ -106,6 +117,7 @@ void LauncherDBusHandler::restartRequest(void)
 	using steady = chr::steady_clock;
 
 	LOG(INFO) << "received signal: " << __func__;
+	LOG(INFO) << "sleeping 1 second before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
 	std::this_thread::sleep_for(chr::seconds(1));
 
 	const steady::time_point now = steady::now();

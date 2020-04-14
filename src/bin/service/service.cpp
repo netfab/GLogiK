@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <iostream>
 #include <sstream>
 
+#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include "lib/shared/sessionManager.hpp"
@@ -41,6 +42,7 @@
 
 #include "service.hpp"
 
+namespace fs = boost::filesystem;
 namespace po = boost::program_options;
 
 namespace GLogiK
@@ -63,16 +65,28 @@ DesktopService::DesktopService() :
 	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
 
 	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
-		std::ostringstream buffer(DEBUG_DIR, std::ios_base::app);
-		buffer << "/" << PACKAGE << "s-debug-" << getpid() << ".log";
+		const std::string pid( std::to_string( getpid() ) );
+
+		fs::path debugFile(DEBUG_DIR);
+		debugFile /= PACKAGE;
+		debugFile += "s-debug-";
+		debugFile += pid;
+		debugFile += ".log";
 
 		errno = 0;
-		_LOGfd = std::fopen(buffer.str().c_str(), "w");
+		_LOGfd = std::fopen(debugFile.string().c_str(), "w");
 
 		if(_LOGfd == nullptr) {
 			LOG(ERROR) << "failed to open debug file";
 			if(errno != 0) {
 				LOG(ERROR) << strerror(errno);
+			}
+		}
+		else {
+			boost::system::error_code ec;
+			fs::permissions(debugFile, fs::owner_read|fs::owner_write|fs::group_read, ec);
+			if( ec.value() != 0 ) {
+				LOG(ERROR) << "failure to set debug file permissions : " << ec.value();
 			}
 		}
 
@@ -101,7 +115,7 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 	try {
 		this->parseCommandLine(argc, argv);
 
-		_pid = daemonizeProcess();
+		_pid = detachProcess();
 #if DEBUGGING_ON
 		LOG(DEBUG) << "process detached - pid: " << _pid;
 #endif
@@ -127,7 +141,9 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 
 			DBusHandler DBus(_pid, session, _pGKfs);
 
-			while( session.isSessionAlive() ) {
+			while( session.isSessionAlive() and
+					DBus.getExitStatus() )
+			{
 				int num = poll(fds, nfds, 150);
 
 				// data to read ?
@@ -145,7 +161,6 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 					}
 				}
 
-				DBus.updateSessionState();
 				DBus.checkDBusMessages();
 			}
 		}
@@ -197,6 +212,10 @@ void DesktopService::parseCommandLine(const int& argc, char *argv[]) {
 		LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = VERB;
 		LOG(VERB) << "verbose mode on";
 	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << "parsing arguments done";
+#endif
 }
 
 } // namespace GLogiK
