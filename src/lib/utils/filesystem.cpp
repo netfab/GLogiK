@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+#include <errno.h>
+
+#include <syslog.h>
 
 #include <sstream>
 
@@ -119,6 +123,38 @@ void FileSystem::createDirectory(
 		LOG(DEBUG3) << "directory successfully created";
 	}
 #endif
+}
+
+void FileSystem::openFile(
+	const fs::path & filePath,
+	FILE* & pFile,
+	const fs::perms prms)
+{
+	errno = 0;
+	const std::string file = filePath.string();
+	pFile = std::fopen(file.c_str(), "w");
+
+	if(pFile == nullptr) {
+		std::ostringstream buffer(std::ios_base::app);
+		buffer << "failed to open file : " << file;
+		if(errno != 0) {
+			buffer << " : " << strerror(errno);
+		}
+
+		syslog(LOG_ERR, "%s", buffer.str().c_str());
+	}
+	else {
+		if( prms != fs::no_perms ) {
+			boost::system::error_code ec;
+			fs::permissions(filePath, prms, ec);
+			if( ec.value() != 0 ) {
+				std::ostringstream buffer(std::ios_base::app);
+				buffer << "failed to set file permissions : " << file
+						<< " : " << ec.message();
+				GKSysLog(LOG_ERR, ERROR, buffer.str());
+			}
+		}
+	}
 }
 
 } // namespace NSGKUtils

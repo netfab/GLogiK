@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@
 #if !defined (UTILS_INSIDE_UTILS_H) && !defined (UTILS_COMPILATION)
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
+
+#include <cstdio>
 
 #include <set>
 #include <map>
@@ -55,6 +57,12 @@ class FileSystem
 			const std::string & baseName,
 			const std::string & extension,
 			bool mustExist=false
+		);
+
+		static void openFile(
+			const fs::path & filePath,
+			FILE* & pFile,
+			const fs::perms prms = fs::no_perms
 		);
 
 	protected:
