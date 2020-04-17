@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -327,56 +327,6 @@ void DBusHandler::unregisterWithDaemon(void) {
 
 void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 	try {
-		const std::string remoteMethod("GetCurrentSession");
-
-		try {
-			/* getting consolekit current session */
-			_pDBus->initializeRemoteMethodCall(
-				_systemBus,
-				"org.freedesktop.ConsoleKit",
-				"/org/freedesktop/ConsoleKit/Manager",
-				"org.freedesktop.ConsoleKit.Manager",
-				remoteMethod.c_str()
-			);
-			_pDBus->sendRemoteMethodCall();
-
-			try {
-				_pDBus->waitForRemoteMethodCallReply();
-				_currentSession = _pDBus->getNextStringArgument();
-#if DEBUGGING_ON
-				LOG(DEBUG1) << "current session : " << _currentSession;
-#endif
-				_sessionFramework = SessionFramework::FW_CONSOLEKIT;
-
-				/* update session state when ActiveChanged signal receipted */
-				const std::string object = _pDBus->getObjectFromObjectPath(_currentSession);
-
-				_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
-					_systemBus,
-					"org.freedesktop.ConsoleKit",
-					object.c_str(),
-					"org.freedesktop.ConsoleKit.Session",
-					"ActiveChanged",
-					{},
-					std::bind(&DBusHandler::updateSessionState, this)
-				);
-
-				return;
-			}
-			catch (const GLogiKExcept & e) {
-				LogRemoteCallGetReplyFailure
-				throw GLogiKExcept("failure to get session ID from consolekit");
-			}
-		}
-		catch (const GKDBusMessageWrongBuild & e) {
-			_pDBus->abandonRemoteMethodCall();
-			LogRemoteCallFailure
-		}
-	}
-	catch ( const GLogiKExcept & e ) {
-		LOG(ERROR) << e.what();
-		LOG(INFO) << "contacting logind";
-
 		const std::string remoteMethod("GetSessionByPID");
 
 		try {
@@ -412,11 +362,63 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 					std::bind(&DBusHandler::updateSessionState, this)
 				);
 
-				return;
+				LOG(INFO) << "successfully contacted logind";
+				return; /* everything ok */
 			}
 			catch (const GLogiKExcept & e) {
 				LogRemoteCallGetReplyFailure
 				throw GLogiKExcept("failure to get session ID from logind");
+			}
+		}
+		catch (const GKDBusMessageWrongBuild & e) {
+			_pDBus->abandonRemoteMethodCall();
+			LogRemoteCallFailure
+		}
+	}
+	catch ( const GLogiKExcept & e ) {
+		LOG(ERROR) << e.what();
+		LOG(INFO) << "contacting consolekit";
+
+		const std::string remoteMethod("GetCurrentSession");
+
+		try {
+			/* getting consolekit current session */
+			_pDBus->initializeRemoteMethodCall(
+				_systemBus,
+				"org.freedesktop.ConsoleKit",
+				"/org/freedesktop/ConsoleKit/Manager",
+				"org.freedesktop.ConsoleKit.Manager",
+				remoteMethod.c_str()
+			);
+			_pDBus->sendRemoteMethodCall();
+
+			try {
+				_pDBus->waitForRemoteMethodCallReply();
+				_currentSession = _pDBus->getNextStringArgument();
+#if DEBUGGING_ON
+				LOG(DEBUG1) << "current session : " << _currentSession;
+#endif
+				_sessionFramework = SessionFramework::FW_CONSOLEKIT;
+
+				/* update session state when ActiveChanged signal receipted */
+				const std::string object = _pDBus->getObjectFromObjectPath(_currentSession);
+
+				_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+					_systemBus,
+					"org.freedesktop.ConsoleKit",
+					object.c_str(),
+					"org.freedesktop.ConsoleKit.Session",
+					"ActiveChanged",
+					{},
+					std::bind(&DBusHandler::updateSessionState, this)
+				);
+
+				LOG(INFO) << "successfully contacted consolekit";
+				return; /* everything ok */
+			}
+			catch (const GLogiKExcept & e) {
+				LogRemoteCallGetReplyFailure
+				throw GLogiKExcept("failure to get session ID from consolekit");
 			}
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
