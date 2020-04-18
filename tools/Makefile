@@ -83,6 +83,7 @@ ifeq ($(strip $(DEBUG_BUILD)),)
 # -- -- --
 # -- -- -- DEBUG OFF, STRIPPED BUILD
 # -- -- --
+# DEBUG_DIR=$(DEBUG_LOGS_DIR) \
 
 configure_it: init_it autoreconf_it
 	cd $(build_dir) && $(top_srcdir)/configure \
@@ -93,7 +94,6 @@ configure_it: init_it autoreconf_it
 	--disable-debug-libusb \
 	--disable-debug-pbmfont \
 	--disable-debug-lcd-plugins \
-	DEBUG_DIR=$(DEBUG_LOGS_DIR) \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--enable-qt5 \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
@@ -106,6 +106,7 @@ else
 # -- -- --
 # -- -- -- DEBUG ON, UNSTRIPPED
 # -- -- --
+# DEBUG_DIR=$(DEBUG_LOGS_DIR) \
 
 configure_it: init_it autoreconf_it
 	cd $(build_dir) && $(top_srcdir)/configure \
@@ -116,7 +117,6 @@ configure_it: init_it autoreconf_it
 	--disable-debug-libusb \
 	--disable-debug-pbmfont \
 	--disable-debug-lcd-plugins \
-	DEBUG_DIR=$(DEBUG_LOGS_DIR) \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--enable-qt5 \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
