@@ -20,8 +20,6 @@
  */
 
 #include <errno.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 #include <csignal>
 
@@ -124,7 +122,9 @@ void MainWindow::handleSignal(int sig)
 
 void MainWindow::init(void)
 {
-	this->openDebugLogFile();
+#if DEBUGGING_ON
+	FileSystem::openDebugFile("GKcQt5", _LOGfd, fs::owner_read|fs::owner_write|fs::group_read);
+#endif
 
 	LOG(INFO) << "Starting GKcQt5 vers. " << VERSION;
 
@@ -338,31 +338,6 @@ void MainWindow::build(void)
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
-
-void MainWindow::openDebugLogFile(void)
-{
-#if DEBUGGING_ON
-	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
-		const std::string pid( std::to_string( getpid() ) );
-
-		fs::path debugFile(DEBUG_DIR);
-
-		FileSystem::createDirectory(debugFile);
-
-		debugFile /= "GKcQt5-debug-";
-		debugFile += pid;
-		debugFile += ".log";
-
-		FileSystem::openFile(debugFile, _LOGfd, fs::owner_read|fs::owner_write|fs::group_read);
-
-		LOG_TO_FILE_AND_CONSOLE::FileStream() = _LOGfd;
-	}
-#endif
-
-	if( _LOGfd == nullptr ) {
-		LOG(INFO) << "debug file not opened";
-	}
-}
 
 void MainWindow::configurationFileUpdated(const std::string & devID)
 {

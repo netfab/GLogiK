@@ -59,11 +59,14 @@ class FileSystem
 			bool mustExist=false
 		);
 
-		static void openFile(
-			const fs::path & filePath,
+#if DEBUGGING_ON
+		static void openDebugFile(
+			const std::string & baseName,
 			FILE* & pFile,
-			const fs::perms prms = fs::no_perms
+			const fs::perms prms = fs::no_perms,
+			const bool createDir = false
 		);
+#endif
 
 	protected:
 

@@ -26,8 +26,6 @@
 
 #include <errno.h>
 
-#include <sys/types.h>
-#include <unistd.h>
 #include <pwd.h>
 #include <grp.h>
 
@@ -94,31 +92,6 @@ GLogiKDaemon::~GLogiKDaemon()
 	closelog();
 }
 
-void GLogiKDaemon::openDebugLogFile(void)
-{
-#if DEBUGGING_ON
-	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
-		const std::string pid( std::to_string( getpid() ) );
-
-		fs::path debugFile(DEBUG_DIR);
-
-		FileSystem::createDirectory(debugFile, fs::owner_all | fs::group_all);
-
-		debugFile /= PACKAGE;
-		debugFile += "d-debug-";
-		debugFile += pid;
-		debugFile += ".log";
-
-		FileSystem::openFile(debugFile, _LOGfd, fs::owner_read|fs::owner_write|fs::group_read);
-
-		LOG_TO_FILE_AND_CONSOLE::FileStream() = _LOGfd;
-	}
-#endif
-
-	if(_LOGfd == nullptr)
-		syslog(LOG_INFO, "debug file not opened");
-}
-
 int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 	try {
 		// drop privileges before opening debug file
@@ -130,7 +103,9 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			return EXIT_FAILURE;
 		}
 
-		this->openDebugLogFile();
+#if DEBUGGING_ON
+		FileSystem::openDebugFile("GLogiKd", _LOGfd, fs::owner_read|fs::owner_write|fs::group_read, true);
+#endif
 
 		GKSysLog(LOG_INFO, INFO, "successfully dropped root privileges");
 

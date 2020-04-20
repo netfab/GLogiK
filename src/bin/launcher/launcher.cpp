@@ -21,9 +21,6 @@
 
 #include <poll.h>
 
-#include <sys/types.h>
-#include <unistd.h>
-
 #include <cstring>
 #include <cstdlib>
 
@@ -78,35 +75,12 @@ DesktopServiceLauncher::~DesktopServiceLauncher() {
 	closelog();
 }
 
-void DesktopServiceLauncher::openDebugLogFile(void)
-{
-#if DEBUGGING_ON
-	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
-		const std::string pid( std::to_string( getpid() ) );
-
-		fs::path debugFile(DEBUG_DIR);
-
-		FileSystem::createDirectory(debugFile);
-
-		debugFile /= DESKTOP_SERVICE_LAUNCHER_NAME;
-		debugFile += "-debug-";
-		debugFile += pid;
-		debugFile += ".log";
-
-		FileSystem::openFile(debugFile, _LOGfd, fs::owner_read|fs::owner_write|fs::group_read);
-
-		LOG_TO_FILE_AND_CONSOLE::FileStream() = _LOGfd;
-	}
-#endif
-
-	if( _LOGfd == nullptr ) {
-		LOG(INFO) << "debug file not opened";
-	}
-}
-
 int DesktopServiceLauncher::run( const int& argc, char *argv[] ) {
 	try {
-		this->openDebugLogFile();
+
+#if DEBUGGING_ON
+		FileSystem::openDebugFile(DESKTOP_SERVICE_LAUNCHER_NAME, _LOGfd, fs::owner_read|fs::owner_write|fs::group_read);
+#endif
 
 		LOG(INFO) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
 

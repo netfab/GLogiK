@@ -106,8 +106,6 @@ class MainWindow
 
 		void configurationFileUpdated(const std::string & devID);
 
-		void openDebugLogFile(void);
-
 		devices_map_type _devices;
 };
 

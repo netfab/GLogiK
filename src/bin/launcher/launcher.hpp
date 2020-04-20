@@ -44,8 +44,6 @@ class DesktopServiceLauncher
 	private:
 		pid_t _pid;
 		FILE* _LOGfd;	/* log file descriptor */
-
-		void openDebugLogFile(void);
 };
 
 } // namespace GLogiK

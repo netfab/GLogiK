@@ -48,7 +48,6 @@ class DesktopService
 
 		NSGKUtils::FileSystem* _pGKfs;
 
-		void openDebugLogFile(void);
 		void parseCommandLine(const int& argc, char *argv[]);
 };
 
