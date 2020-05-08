@@ -42,7 +42,8 @@ class SystemMonitor
 
 		const PBMDataArray & getNextPBMFrame(
 			FontsManager* const pFonts,
-			const std::string & LCDKey
+			const std::string & LCDKey,
+			const bool lockedPlugin
 		);
 
 	protected:

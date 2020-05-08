@@ -77,15 +77,19 @@ void SystemMonitor::init(FontsManager* const pFonts)
 		hostname[HOST_NAME_MAX-1] = '\0';
 		host.assign(hostname);
 	}
-	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, host, 6, 1);
+	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, host, 16, 1);
 
 	LCDPlugin::init(pFonts);
 }
 
 const PBMDataArray & SystemMonitor::getNextPBMFrame(
 	FontsManager* const pFonts,
-	const std::string & LCDKey)
+	const std::string & LCDKey,
+	const bool lockedPlugin
+	)
 {
+	this->drawPadlockOnFrame(lockedPlugin);
+
 	/* -- -- -- */
 	std::string usedPhysicalMemory("");
 

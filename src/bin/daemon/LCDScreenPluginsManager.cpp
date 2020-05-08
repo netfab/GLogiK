@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include <new>
 
 #include "lib/utils/utils.hpp"
+#include "lib/shared/glogik.hpp"
 
 #include "LCDScreenPluginsManager.hpp"
 
@@ -41,6 +42,7 @@ const LCDPluginsPropertiesArray_type LCDScreenPluginsManager::_LCDPluginsPropert
 LCDScreenPluginsManager::LCDScreenPluginsManager()
 	:	_frameCounter(0),
 		_noPlugins(false),
+		_currentPluginLocked(false),
 		_pFonts(&_fontsManager)
 {
 	try {
@@ -124,6 +126,19 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 			if(_itCurrentPlugin != _plugins.end() ) {
 				_frameCounter++;
 
+				/* pressed L1, locked plugin ? */
+				if(LCDKey == LCD_KEY_L2) {
+					_currentPluginLocked = ! (_currentPluginLocked);
+#if DEBUGGING_ON
+					if( _currentPluginLocked ) {
+						LOG(DEBUG3) << "LCD plugin   locked : " << (*_itCurrentPlugin)->getPluginName();
+					}
+					else {
+						LOG(DEBUG3) << "LCD plugin unlocked : " << (*_itCurrentPlugin)->getPluginName();
+					}
+#endif
+				}
+
 				if( _frameCounter >= (*_itCurrentPlugin)->getPluginMaxFrames() ) {
 					uint64_t LCDPluginsMask1 = defaultLCDPluginsMask1;
 
@@ -135,9 +150,15 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 
 					bool found = false;
 					while( ! found ) {
-						_itCurrentPlugin++; /* jumping to next plugin */
-						if(_itCurrentPlugin == _plugins.end() )
-							_itCurrentPlugin = _plugins.begin();
+						/* locked plugin ? */
+						if( ! _currentPluginLocked ) {
+							_itCurrentPlugin++; /* jumping to next plugin */
+							if(_itCurrentPlugin == _plugins.end() )
+								_itCurrentPlugin = _plugins.begin();
+
+							/* reset everLocked boolean */
+							(*_itCurrentPlugin)->resetEverLocked();
+						}
 
 						/* check that current plugin is enabled */
 						if( LCDPluginsMask1 & (*_itCurrentPlugin)->getPluginID() )
@@ -154,7 +175,7 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 				(*_itCurrentPlugin)->prepareNextPBMFrame();
 				this->dumpPBMDataIntoLCDBuffer(
 					_LCDBuffer,
-					(*_itCurrentPlugin)->getNextPBMFrame(_pFonts, LCDKey)
+					(*_itCurrentPlugin)->getNextPBMFrame(_pFonts, LCDKey, _currentPluginLocked)
 				);
 			}
 			else /* else blank screen */
