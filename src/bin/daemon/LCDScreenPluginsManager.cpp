@@ -111,6 +111,15 @@ void LCDScreenPluginsManager::forceNextPlugin(void)
 {
 	if( ! _noPlugins ) {
 		if(_itCurrentPlugin != _plugins.end() ) {
+#if DEBUGGING_ON
+			LOG(DEBUG2) << "force jump to next LCD plugin";
+			if(_currentPluginLocked) {
+				LOG(DEBUG3) << "LCD plugin unlocked : " << (*_itCurrentPlugin)->getPluginName();
+			}
+#endif
+			/* force plugin unlocking. Locking mechanism can make
+			 * LCD thread hang when stopping daemon */
+			_currentPluginLocked = false;
 			_frameCounter = (*_itCurrentPlugin)->getPluginMaxFrames();
 		}
 	}

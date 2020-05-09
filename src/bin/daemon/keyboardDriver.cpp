@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -563,6 +563,8 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 			}
 		}
 
+		/* force next plugin. Current active plugin may
+		 * be in a forced state */
 		device._pLCDPluginsManager->forceNextPlugin();
 		LCDDataArray & LCDBuffer = device._pLCDPluginsManager->getNextLCDScreenBuffer("", toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN));
 		int ret = this->performLCDScreenInterruptTransfer( device, LCDBuffer.data(), LCDBuffer.size(), 1000);
@@ -840,6 +842,10 @@ void KeyboardDriver::resetDeviceState(USBDevice & device) {
 		LOG(DEBUG1) << device.getID() << " resetting device LCD plugins mask";
 #endif
 		device._LCDPluginsMask1 = 0;
+		/* force next plugin. Current active plugin may not
+		 * be included into new LCDPluginsMask1 and may be in a
+		 * forced state */
+		device._pLCDPluginsManager->forceNextPlugin();
 	}
 }
 
@@ -971,6 +977,10 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 			yield_for(std::chrono::microseconds(100));
 			std::lock_guard<std::mutex> lock(device._LCDMutex);
 			device._LCDPluginsMask1 = LCDPluginsMask1;
+			/* force next plugin. Current active plugin may not
+			 * be included into new LCDPluginsMask1 and may be in a
+			 * forced state */
+			device._pLCDPluginsManager->forceNextPlugin();
 		}
 	}
 	catch (const std::out_of_range& oor) {
