@@ -46,10 +46,13 @@ class LCDScreenPluginsManager
 
 		LCDDataArray & getNextLCDScreenBuffer(
 			const std::string & LCDKey,
-			const uint64_t defaultLCDPluginsMask1
+			const uint64_t LCDPluginsMask1
 		);
 		const unsigned short getPluginTiming(void);
-		void forceNextPlugin(void);
+
+		void unlockPlugin(void);
+		const uint64_t getCurrentPluginID(void);
+		void jumpToNextPlugin(void);
 
 	protected:
 

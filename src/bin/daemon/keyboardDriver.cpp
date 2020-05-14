@@ -563,9 +563,9 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 			}
 		}
 
-		/* force next plugin. Current active plugin may
-		 * be in a forced state */
-		device._pLCDPluginsManager->forceNextPlugin();
+		device._pLCDPluginsManager->unlockPlugin();
+		device._pLCDPluginsManager->jumpToNextPlugin();
+
 		LCDDataArray & LCDBuffer = device._pLCDPluginsManager->getNextLCDScreenBuffer("", toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN));
 		int ret = this->performLCDScreenInterruptTransfer( device, LCDBuffer.data(), LCDBuffer.size(), 1000);
 		if(ret != 0) {
@@ -836,16 +836,37 @@ void KeyboardDriver::resetDeviceState(USBDevice & device) {
 	}
 
 	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-		yield_for(std::chrono::microseconds(100));
-		std::lock_guard<std::mutex> lock(device._LCDMutex);
 #if DEBUGGING_ON
 		LOG(DEBUG1) << device.getID() << " resetting device LCD plugins mask";
 #endif
-		device._LCDPluginsMask1 = 0;
-		/* force next plugin. Current active plugin may not
-		 * be included into new LCDPluginsMask1 and may be in a
-		 * forced state */
-		device._pLCDPluginsManager->forceNextPlugin();
+		this->setDeviceLCDPluginsMask(device);
+	}
+}
+
+void KeyboardDriver::setDeviceLCDPluginsMask(USBDevice & device, uint64_t mask)
+{
+	if( mask == 0 ) {
+		/* default enabled plugins */
+		mask |= toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN);
+		mask |= toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << device.getID() << " setting device LCD plugins mask to : " << mask;
+#endif
+
+	{
+		yield_for(std::chrono::microseconds(100));
+		std::lock_guard<std::mutex> lock(device._LCDMutex);
+		device._LCDPluginsMask1 = mask;
+	}
+
+	/* Current active plugin may be locked */
+	device._pLCDPluginsManager->unlockPlugin();
+
+	/* jump if current active plugin is not in the new mask */
+	if( ! (device._pLCDPluginsManager->getCurrentPluginID() & mask) ) {
+		device._pLCDPluginsManager->jumpToNextPlugin();
 	}
 }
 
@@ -974,13 +995,7 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 		}
 
 		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-			yield_for(std::chrono::microseconds(100));
-			std::lock_guard<std::mutex> lock(device._LCDMutex);
-			device._LCDPluginsMask1 = LCDPluginsMask1;
-			/* force next plugin. Current active plugin may not
-			 * be included into new LCDPluginsMask1 and may be in a
-			 * forced state */
-			device._pLCDPluginsManager->forceNextPlugin();
+			this->setDeviceLCDPluginsMask(device, LCDPluginsMask1);
 		}
 	}
 	catch (const std::out_of_range& oor) {

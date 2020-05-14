@@ -199,6 +199,7 @@ class KeyboardDriver
 		uint16_t getTimeLapse(USBDevice & device);
 		void runMacro(const std::string & devID) const;
 
+		void setDeviceLCDPluginsMask(USBDevice & device, uint64_t mask = 0);
 		void resetDeviceState(USBDevice & device);
 		void joinDeviceThreads(const USBDevice & device);
 };

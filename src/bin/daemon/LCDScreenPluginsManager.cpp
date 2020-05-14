@@ -107,18 +107,39 @@ const unsigned short LCDScreenPluginsManager::getPluginTiming(void)
 	return 1000;
 }
 
-void LCDScreenPluginsManager::forceNextPlugin(void)
+void LCDScreenPluginsManager::unlockPlugin(void)
+{
+	if(_currentPluginLocked) {
+#if DEBUGGING_ON
+		if( ! _noPlugins ) {
+			if(_itCurrentPlugin != _plugins.end() ) {
+				LOG(DEBUG2) << "LCD plugin unlocked : " << (*_itCurrentPlugin)->getPluginName();
+			}
+		}
+#endif
+		_currentPluginLocked = false;
+	}
+}
+
+const uint64_t LCDScreenPluginsManager::getCurrentPluginID(void)
+{
+	if( ! _noPlugins ) {
+		if(_itCurrentPlugin != _plugins.end() ) {
+			return (*_itCurrentPlugin)->getPluginID();
+		}
+	}
+
+	return 0;
+}
+
+void LCDScreenPluginsManager::jumpToNextPlugin(void)
 {
 	if( ! _noPlugins ) {
 		if(_itCurrentPlugin != _plugins.end() ) {
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "force jump to next LCD plugin";
-			if(_currentPluginLocked) {
-				LOG(DEBUG3) << "LCD plugin unlocked : " << (*_itCurrentPlugin)->getPluginName();
-			}
+			LOG(DEBUG2) << "jumping to next LCD plugin";
 #endif
-			/* force plugin unlocking. Locking mechanism can make
-			 * LCD thread hang when stopping daemon */
+			/* make sure it is unlocked */
 			_currentPluginLocked = false;
 			_frameCounter = (*_itCurrentPlugin)->getPluginMaxFrames();
 		}
@@ -127,7 +148,7 @@ void LCDScreenPluginsManager::forceNextPlugin(void)
 
 LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 	const std::string & LCDKey,
-	const uint64_t defaultLCDPluginsMask1
+	const uint64_t LCDPluginsMask1
 ) {
 	if( ! _noPlugins ) {
 		try {
@@ -149,14 +170,6 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 				}
 
 				if( _frameCounter >= (*_itCurrentPlugin)->getPluginMaxFrames() ) {
-					uint64_t LCDPluginsMask1 = defaultLCDPluginsMask1;
-
-					if( LCDPluginsMask1 == 0 ) {
-						/* default enabled plugins */
-						LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN);
-						LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);
-					}
-
 					bool found = false;
 					while( ! found ) {
 						/* locked plugin ? */
