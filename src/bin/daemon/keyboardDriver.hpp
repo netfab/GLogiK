@@ -137,7 +137,7 @@ class KeyboardDriver
 		virtual const bool checkLCDKey(USBDevice & device) = 0;
 
 		virtual void sendUSBDeviceInitialization(USBDevice & device);
-		virtual void setMxKeysLeds(USBDevice & device);
+		virtual void setDeviceMxKeysLeds(USBDevice & device);
 		virtual void setDeviceBacklightColor(
 			USBDevice & device,
 			const uint8_t r=0xFF,
@@ -192,7 +192,7 @@ class KeyboardDriver
 		void LCDScreenLoop(const std::string & devID);
 		void listenLoop(const std::string & devID);
 
-		const bool updateCurrentLedsMask(USBDevice & device, bool disableMR=false);
+		const bool updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR=false);
 
 		const uint8_t handleModifierKeys(USBDevice & device, const uint16_t interval);
 

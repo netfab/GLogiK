@@ -130,7 +130,7 @@ void KeyboardDriver::notImplemented(const char* func) const {
 	GKSysLog(LOG_WARNING, WARNING, buffer.str());
 }
 
-void KeyboardDriver::setMxKeysLeds(USBDevice & device) {
+void KeyboardDriver::setDeviceMxKeysLeds(USBDevice & device) {
 	this->notImplemented(__func__);
 }
 
@@ -148,10 +148,10 @@ void KeyboardDriver::sendUSBDeviceInitialization(USBDevice & device) {
 }
 
 /*
- * return true if leds_mask has been updated (meaning that setMxKeysLeds should be called)
+ * return true if leds_mask has been updated (meaning that setDeviceMxKeysLeds should be called)
  */
-const bool KeyboardDriver::updateCurrentLedsMask(USBDevice & device, bool disableMR) {
-	auto & mask = device._banksLedsMask;
+const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR) {
+	auto & mask = device._MxKeysLedsMask;
 	/* is macro record mode enabled ? */
 	bool MR_ON = mask & toEnumType(Leds::GK_LED_MR);
 	bool Mx_ON = false;
@@ -620,18 +620,18 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 						 */
 						if( device.getLastKeysInterruptTransferLength() == _keysEventsLength.MacrosKeys ) {
 							/* update mask with potential pressed keys */
-							if(this->updateCurrentLedsMask(device))
-								this->setMxKeysLeds(device);
+							if(this->updateDeviceMxKeysLedsMask(device))
+								this->setDeviceMxKeysLeds(device);
 
 							/* is macro record mode enabled ? */
-							if( device._banksLedsMask & toEnumType(Leds::GK_LED_MR) ) {
+							if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) ) {
 								this->enterMacroRecordMode(device, devID);
 
 								/* don't need to update leds status if the mask is already 0 */
-								if(device._banksLedsMask != 0) {
+								if(device._MxKeysLedsMask != 0) {
 									/* disabling macro record mode */
-									if(this->updateCurrentLedsMask(device, true))
-										this->setMxKeysLeds(device);
+									if(this->updateDeviceMxKeysLedsMask(device, true))
+										this->setDeviceMxKeysLeds(device);
 								}
 							}
 							else { /* check to run macro */
@@ -824,8 +824,8 @@ void KeyboardDriver::resetDeviceState(USBDevice & device) {
 #if DEBUGGING_ON
 		LOG(DEBUG1) << device.getID() << " resetting device MxKeys leds status";
 #endif
-		device._banksLedsMask = 0;
-		this->setMxKeysLeds(device);
+		device._MxKeysLedsMask = 0;
+		this->setDeviceMxKeysLeds(device);
 	}
 
 	if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
