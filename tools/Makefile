@@ -123,7 +123,7 @@ configure_it: init_it autoreconf_it
 
 install_it: uninstall_it
 	test -d "$(DEBUG_LOGS_DIR)" && \
-		find $(DEBUG_LOGS_DIR) -type f -name 'G*.log' -delete || echo 'no debug directory'
+		find $(DEBUG_LOGS_DIR) -maxdepth 1 -type f -name 'G*.log' -mmin +180 -delete || echo 'no debug directory'
 	cd $(build_dir) && make install
 
 endif
