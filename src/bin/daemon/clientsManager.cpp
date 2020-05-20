@@ -310,12 +310,12 @@ void ClientsManager::waitForClientsDisconnections(void) noexcept {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "waiting for clients to unregister ...";
 #endif
-	while( c++ < 10 and _connectedClients.size() > 0 ) { /* bonus point */
+	while( c++ < 40 and _connectedClients.size() > 0 ) { /* bonus point */
 		_pDevicesManager->checkDBusMessages();
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "sleeping for 400 ms ...";
+		LOG(DEBUG3) << "sleeping for 40 ms ...";
 #endif
-		std::this_thread::sleep_for(std::chrono::milliseconds(400));
+		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
 }
 
