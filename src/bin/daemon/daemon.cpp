@@ -191,11 +191,19 @@ void GLogiKDaemon::handleSignal(int sig) {
 void GLogiKDaemon::createPIDFile(void) {
 	fs::path path(_pidFileName);
 
-	if( fs::exists(path) ) {
+	try {
+		if( fs::exists(path) ) {
+			std::ostringstream buffer(std::ios_base::app);
+			buffer	<< "PID file " << _pidFileName << " already exist";
+			throw GLogiKExcept( buffer.str() );
+		}
+	}
+	catch (const fs::filesystem_error & e) {
 		std::ostringstream buffer(std::ios_base::app);
-		buffer	<< "PID file " << _pidFileName << " already exist";
+		buffer << "boost::filesystem error : " << e.what();
 		throw GLogiKExcept( buffer.str() );
 	}
+
 	// if path not found reset errno
 	errno = 0;
 

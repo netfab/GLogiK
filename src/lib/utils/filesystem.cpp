@@ -77,10 +77,16 @@ const std::string FileSystem::getNextAvailableFileName(
 
 		if( mustExist ) {
 			fs::path fullPath = directory / file;
-			if( ! fs::is_regular_file(fullPath) ) {
+			try {
+				if( ! fs::is_regular_file(fullPath) ) {
 #if DEBUGGING_ON
-				LOG(DEBUG3) << "does not exist : " << fullPath.string();
+					LOG(DEBUG3) << "does not exist : " << fullPath.string();
 #endif
+					continue;
+				}
+			}
+			catch (const fs::filesystem_error & e) {
+				LOG(WARNING) << "boost::filesystem::is_regular_file() error : " << e.what();
 				continue;
 			}
 		}
