@@ -27,7 +27,6 @@
 #include <cstdio>
 #include <sys/types.h>
 
-#include <fstream>
 #include <string>
 
 #include "daemonControl.hpp"
@@ -51,8 +50,8 @@ class GLogiKDaemon
 		pid_t _pid = 0;
 		FILE* _LOGfd = nullptr;
 		std::string _pidFileName;
-		std::ofstream _pidFile;
 		NSGKDBus::GKDBus* _pDBus;
+		bool _PIDFileCreated;
 
 		void createPIDFile(void);
 		void dropPrivileges(void);

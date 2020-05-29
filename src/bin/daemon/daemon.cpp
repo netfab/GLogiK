@@ -57,7 +57,8 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 GLogiKDaemon::GLogiKDaemon()
-	:	_pDBus(nullptr)
+	:	_pDBus(nullptr),
+		_PIDFileCreated(false)
 {
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 
@@ -73,16 +74,23 @@ GLogiKDaemon::~GLogiKDaemon()
 	LOG(DEBUG2) << "exiting daemon process";
 #endif
 
-	if( _pidFile.is_open() ) {
-		_pidFile.close();
-
+	try {
+		if( _PIDFileCreated && fs::is_regular_file(_pidFileName) ) {
 #if DEBUGGING_ON
-		LOG(INFO) << "destroying PID file";
+			LOG(INFO) << "destroying PID file";
 #endif
-
-		if( unlink(_pidFileName.c_str()) != 0 ) {
-			GKSysLog(LOG_ERR, ERROR, "failed to unlink PID file");
+			if( unlink(_pidFileName.c_str()) != 0 ) {
+				GKSysLog(LOG_ERR, ERROR, "failed to unlink PID file");
+			}
+			else
+				_PIDFileCreated = false;
 		}
+	}
+	catch (const fs::filesystem_error & e) {
+		LOG(WARNING) << "boost::filesystem::is_regular_file() error : " << e.what();
+	}
+	catch( const std::exception & e ) {
+		LOG(WARNING) << "error destroying PID file : " << e.what();
 	}
 
 	GKSysLog(LOG_INFO, INFO, "bye !");
@@ -189,43 +197,46 @@ void GLogiKDaemon::handleSignal(int sig) {
 }
 
 void GLogiKDaemon::createPIDFile(void) {
-	fs::path path(_pidFileName);
+	const fs::path PIDFile(_pidFileName);
+
+	auto throwError = [&PIDFile] (const std::string & error, const char* what = nullptr) -> void {
+		std::ostringstream buffer(std::ios_base::app);
+		buffer << "failed to create PID file" << " : " << PIDFile.c_str() << " : " << error;
+		if( what != nullptr ) {
+			buffer << " : " << what;
+		}
+		throw GLogiKExcept( buffer.str() );
+	};
 
 	try {
-		if( fs::exists(path) ) {
-			std::ostringstream buffer(std::ios_base::app);
-			buffer	<< "PID file " << _pidFileName << " already exist";
-			throw GLogiKExcept( buffer.str() );
+		if( fs::exists(PIDFile) ) {
+			throwError("already exist");
 		}
 	}
 	catch (const fs::filesystem_error & e) {
-		std::ostringstream buffer(std::ios_base::app);
-		buffer << "boost::filesystem error : " << e.what();
-		throw GLogiKExcept( buffer.str() );
+		throwError("boost::filesystem error", e.what());
 	}
 
 	// if path not found reset errno
 	errno = 0;
 
-	_pidFile.exceptions( std::ofstream::failbit );
+	std::ofstream PIDStream;
+	PIDStream.exceptions( std::ofstream::failbit );
 	try {
-		_pidFile.open(_pidFileName, std::ofstream::trunc);
-		_pidFile << static_cast<long>(_pid);
-		_pidFile.flush();
+		PIDStream.open(_pidFileName, std::ofstream::trunc);
+		PIDStream << static_cast<long>(_pid);
+		PIDStream.close();
 
-		fs::permissions(path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
+		fs::permissions(PIDFile, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 	}
 	catch (const std::ofstream::failure & e) {
-		std::ostringstream buffer(std::ios_base::app);
-		buffer	<< "failed to open PID file : " << _pidFileName << " : " << e.what();
-		throw GLogiKExcept( buffer.str() );
+		throwError("open failure", e.what());
 	}
 	catch (const fs::filesystem_error & e) {
-		std::ostringstream buffer(std::ios_base::app);
-		buffer	<< "failed to set permissions on PID file : " << _pidFileName << " : " << e.what();
-		throw GLogiKExcept( buffer.str() );
+		throwError("set permissions failure", e.what());
 	}
 
+	_PIDFileCreated = true;
 #if DEBUGGING_ON
 	LOG(INFO) << "created PID file : " << _pidFileName;
 #endif
