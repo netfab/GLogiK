@@ -260,7 +260,7 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	try {
 		po::store(po::parse_command_line(argc, argv, desc), vm);
 	}
-	catch( std::exception & e ) {
+	catch( const std::exception & e ) {
 		throw GLogiKExcept( e.what() );
 	}
 	po::notify(vm);
