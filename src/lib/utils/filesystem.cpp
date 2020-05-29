@@ -89,6 +89,10 @@ const std::string FileSystem::getNextAvailableFileName(
 				LOG(WARNING) << "boost::filesystem::is_regular_file() error : " << e.what();
 				continue;
 			}
+			catch (const std::exception & e) {
+				LOG(WARNING) << "boost::filesystem::is_regular_file() (allocation) error : " << e.what();
+				continue;
+			}
 		}
 
 #if DEBUGGING_ON
@@ -109,6 +113,15 @@ void FileSystem::createDirectory(
 	LOG(DEBUG2) << "creating directory : " << directory.string();
 #endif
 
+	auto throwError = [] (
+		const std::string & error,
+		const char* what
+			) -> void {
+		std::ostringstream buffer(error, std::ios_base::app);
+		buffer << " : " << what;
+		throw GLogiKExcept( buffer.str() );
+	};
+
 	try {
 #if DEBUGGING_ON
 		success = fs::create_directory( directory );
@@ -121,10 +134,10 @@ void FileSystem::createDirectory(
 		}
 	}
 	catch (const fs::filesystem_error & e) {
-		std::ostringstream buffer;
-		buffer.str("directory creation or set permissions failure : ");
-		buffer << e.what();
-		throw GLogiKExcept( buffer.str() );
+		throwError("directory creation or set permissions failure", e.what());
+	}
+	catch (const std::exception & e) {
+		throwError("directory creation or set permissions (allocation) failure", e.what());
 	}
 
 #if DEBUGGING_ON

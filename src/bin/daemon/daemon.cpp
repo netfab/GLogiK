@@ -89,7 +89,7 @@ GLogiKDaemon::~GLogiKDaemon()
 	catch (const fs::filesystem_error & e) {
 		LOG(WARNING) << "boost::filesystem::is_regular_file() error : " << e.what();
 	}
-	catch( const std::exception & e ) {
+	catch (const std::exception & e) {
 		LOG(WARNING) << "error destroying PID file : " << e.what();
 	}
 
@@ -216,6 +216,9 @@ void GLogiKDaemon::createPIDFile(void) {
 	catch (const fs::filesystem_error & e) {
 		throwError("boost::filesystem error", e.what());
 	}
+	catch (const std::exception & e) {
+		throwError("boost::filesystem (allocation) error", e.what());
+	}
 
 	// if path not found reset errno
 	errno = 0;
@@ -234,6 +237,9 @@ void GLogiKDaemon::createPIDFile(void) {
 	}
 	catch (const fs::filesystem_error & e) {
 		throwError("set permissions failure", e.what());
+	}
+	catch (const std::exception & e) {
+		throwError("set permissions (allocation) failure", e.what());
 	}
 
 	_PIDFileCreated = true;
@@ -260,7 +266,7 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	try {
 		po::store(po::parse_command_line(argc, argv, desc), vm);
 	}
-	catch( const std::exception & e ) {
+	catch (const std::exception & e) {
 		throw GLogiKExcept( e.what() );
 	}
 	po::notify(vm);
