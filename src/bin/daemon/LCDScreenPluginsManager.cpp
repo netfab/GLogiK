@@ -156,7 +156,7 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 			if(_itCurrentPlugin != _plugins.end() ) {
 				_frameCounter++;
 
-				/* pressed L1, locked plugin ? */
+				/* pressed locking key ? */
 				if(LCDKey == LCD_KEY_L2) {
 					_currentPluginLocked = ! (_currentPluginLocked);
 #if DEBUGGING_ON
