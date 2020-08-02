@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -77,15 +77,18 @@ class LCDPlugin
 		const bool isInitialized(void) const;
 
 		const LCDPluginProperties getPluginProperties(void) const;
+		const std::string & getPluginName(void) const;
 		const uint64_t getPluginID(void) const;
 		const unsigned short getPluginTiming(void) const;
 		const unsigned short getPluginMaxFrames(void) const;
 		void resetPBMFrameIndex(void);
 		void prepareNextPBMFrame(void);
+		void resetEverLocked(void);
 
 		virtual const PBMDataArray & getNextPBMFrame(
 			FontsManager* const pFonts,
-			const std::string & LCDKey
+			const std::string & LCDKey,
+			const bool lockedPlugin
 		);
 
 	protected:
@@ -129,8 +132,15 @@ class LCDPlugin
 			const unsigned int PBMYPos
 		);
 
+		void drawPadlockOnFrame(
+			const bool lockedPlugin,
+			const unsigned int PBMXPos = 1,
+			const unsigned int PBMYPos = 1
+		);
+
 	private:
 		bool _initialized;
+		bool _everLocked;
 		unsigned short _frameCounter;		/* frame counter */
 		unsigned short _frameIndex;			/* frame index in the container */
 		std::vector<LCDPBMFrame> _PBMFrames;

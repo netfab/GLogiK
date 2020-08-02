@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -20,10 +20,10 @@
  */
 
 #include <errno.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 #include <csignal>
+
+#include <syslog.h>
 
 #include <new>
 #include <stdexcept>
@@ -74,6 +74,8 @@ MainWindow::MainWindow(QWidget *parent)
 		_backlightColorTab(nullptr),
 		_LCDPluginsTab(nullptr)
 {
+	openlog("GKcQt5", LOG_PID|LOG_CONS, LOG_USER);
+
 	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
 	if( LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() != NONE ) {
 		LOG_TO_FILE_AND_CONSOLE::ConsoleStream() = stderr;
@@ -81,39 +83,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 #if DEBUGGING_ON
 	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
-
-	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
-		const std::string pid( std::to_string( getpid() ) );
-
-		fs::path debugFile(DEBUG_DIR);
-		debugFile /= "GKcQt5-debug-";
-		debugFile += pid;
-		debugFile += ".log";
-
-		errno = 0;
-		_LOGfd = std::fopen(debugFile.string().c_str(), "w");
-
-		if(_LOGfd == nullptr) {
-			LOG(ERROR) << "failed to open debug file";
-			if(errno != 0) {
-				LOG(ERROR) << strerror(errno);
-			}
-		}
-		else {
-			boost::system::error_code ec;
-			fs::permissions(debugFile, fs::owner_read|fs::owner_write|fs::group_read, ec);
-			if( ec.value() != 0 ) {
-				LOG(ERROR) << "failure to set debug file permissions : " << ec.value();
-			}
-		}
-
-		LOG_TO_FILE_AND_CONSOLE::FileStream() = _LOGfd;
-	}
 #endif
-
-	if( _LOGfd == nullptr ) {
-		LOG(INFO) << "debug file not opened";
-	}
 
 	std::signal(SIGINT, MainWindow::handleSignal);
 	std::signal(SIGTERM, MainWindow::handleSignal);
@@ -130,6 +100,8 @@ MainWindow::~MainWindow() {
 	LOG(INFO) << "GKcQt5 : bye !";
 	if( _LOGfd != nullptr )
 		std::fclose(_LOGfd);
+
+	closelog();
 }
 
 /*
@@ -150,6 +122,10 @@ void MainWindow::handleSignal(int sig)
 
 void MainWindow::init(void)
 {
+#if DEBUGGING_ON
+	FileSystem::openDebugFile("GKcQt5", _LOGfd, fs::owner_read|fs::owner_write|fs::group_read);
+#endif
+
 	LOG(INFO) << "Starting GKcQt5 vers. " << VERSION;
 
 	try {

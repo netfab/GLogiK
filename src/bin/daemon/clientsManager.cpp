@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -310,12 +310,12 @@ void ClientsManager::waitForClientsDisconnections(void) noexcept {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "waiting for clients to unregister ...";
 #endif
-	while( c++ < 10 and _connectedClients.size() > 0 ) { /* bonus point */
+	while( c++ < 40 and _connectedClients.size() > 0 ) { /* bonus point */
 		_pDevicesManager->checkDBusMessages();
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "sleeping for 400 ms ...";
+		LOG(DEBUG3) << "sleeping for 40 ms ...";
 #endif
-		std::this_thread::sleep_for(std::chrono::milliseconds(400));
+		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
 }
 
@@ -346,19 +346,19 @@ const bool ClientsManager::registerClient(
 	const std::string & clientSessionObjectPath
 )	{
 	try {
+		std::vector<std::string> toUnregister;
+
 		for(const auto & clientPair : _connectedClients ) {
 			const std::string & clientID = clientPair.first;
 			Client* pClient = clientPair.second;
 
-			/* handling crashed clients */
+			/* unresponsive client */
 			if( ! pClient->isAlive() ) {
-				std::ostringstream buffer(std::ios_base::app);
-				buffer << "unregistering lost client (maybe crashed) with ID : " << clientID;
-				GKSysLog(LOG_WARNING, WARNING, buffer.str());
-				this->unregisterClient(clientID);
+				toUnregister.push_back(clientID);
 				continue;
 			}
 
+			/* this client is already registered, sending signal to check all clients */
 			if( pClient->getSessionObjectPath() == clientSessionObjectPath ) {
 				std::ostringstream buffer(std::ios_base::app);
 				buffer << "client already registered : " << clientSessionObjectPath;
@@ -367,17 +367,28 @@ const bool ClientsManager::registerClient(
 				/* appending failure reason to DBus reply */
 				_pDBus->appendAsyncString("already registered");
 
-				/* process to check if registered clients are still alives */
+				/* process to check if registered clients are still alives, registered
+				 * clients will have 5 seconds to update their session state, else they
+				 * will be considered as crashed on next registerClient call */
 				for(auto & newPair : _connectedClients ) {
 					newPair.second->uncheck();
 				}
-
 				this->sendSignalToClients(_connectedClients.size(), _pDBus, "ReportYourself");
 
 				/* register failure, sender should wait and retry */
 				return false;
 			}
 		}
+
+		/* unregister crashed clients */
+		for(const auto & clientID : toUnregister ) {
+			std::ostringstream buffer(std::ios_base::app);
+			buffer << "unregistering lost client (maybe crashed) with ID : " << clientID;
+			GKSysLog(LOG_WARNING, WARNING, buffer.str());
+			this->unregisterClient(clientID);
+		}
+		toUnregister.clear();
+
 		throw std::out_of_range("not found");
 	}
 	catch (const std::out_of_range& oor) {

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ GKDBus::~GKDBus()
 #endif
 
 		if( ! _sessionName.empty() ) {
-			int ret = dbus_bus_release_name(_sessionConnection, _sessionName.c_str(), nullptr);
+			int ret = dbus_bus_release_name(_sessionConnection, _sessionName.c_str(), &_error);
 			this->checkReleasedName(ret);
 		}
 		dbus_connection_unref(_sessionConnection);
@@ -68,7 +68,7 @@ GKDBus::~GKDBus()
 #endif
 
 		if( ! _systemName.empty() ) {
-			int ret = dbus_bus_release_name(_systemConnection, _systemName.c_str(), nullptr);
+			int ret = dbus_bus_release_name(_systemConnection, _systemName.c_str(), &_error);
 			this->checkReleasedName(ret);
 		}
 		dbus_connection_unref(_systemConnection);
@@ -266,6 +266,15 @@ void GKDBus::checkReleasedName(int ret) {
 			break;
 		case DBUS_RELEASE_NAME_REPLY_NON_EXISTENT:
 			LOG(DEBUG1) << "nobody owned the name";
+			break;
+		case -1:
+			if( dbus_error_is_set(&_error) ) {
+				LOG(ERROR) << "release_name returns -1, error is : " << _error.message;
+				dbus_error_free(&_error);
+			}
+			else {
+				LOG(ERROR) << "release_name returns -1, but unknown error :-(";
+			}
 			break;
 		default:
 			LOG(ERROR) << "return value : " << ret;

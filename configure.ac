@@ -197,7 +197,7 @@ dnl -------------------------------------------------------------------------
 dnl                       defining custom macro variables
 dnl -------------------------------------------------------------------------
 
-AS_IF([[test "x$DEBUG_DIR" = "x"]], [DEBUG_DIR="/tmp"])
+AS_IF([[test "x$DEBUG_DIR" = "x"]], [DEBUG_DIR="/var/tmp/GKDebug"])
 AC_DEFINE_UNQUOTED([DEBUG_DIR], ["${DEBUG_DIR}"], [Directory for debug file])
 
 AC_DEFINE_UNQUOTED([DATA_DIR], ["${prefix}/share"], [Root directory for data files installation])

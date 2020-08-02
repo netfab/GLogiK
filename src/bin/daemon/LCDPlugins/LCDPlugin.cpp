@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ const bool LCDPBMFrame::switchToNextFrame(const unsigned short currentFrameCount
 LCDPlugin::LCDPlugin()
 	:	_pluginTempo(LCDPluginTempo::TEMPO_DEFAULT),
 		_initialized(false),
+		_everLocked(false),
 		_frameCounter(0),
 		_frameIndex(0)
 {
@@ -50,7 +51,7 @@ LCDPlugin::LCDPlugin()
 LCDPlugin::~LCDPlugin()
 {
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "deleting " << _plugin.getName() << " LCD plugin";
+	LOG(DEBUG2) << "deleting " << this->getPluginName() << " LCD plugin";
 #endif
 }
 
@@ -78,6 +79,11 @@ void LCDPlugin::resetPBMFrameIndex(void)
 const uint64_t LCDPlugin::getPluginID(void) const
 {
 	return _plugin.getID();
+}
+
+const std::string & LCDPlugin::getPluginName(void) const
+{
+	return _plugin.getName();
 }
 
 const unsigned short LCDPlugin::getPluginTiming(void) const
@@ -118,8 +124,10 @@ void LCDPlugin::init(FontsManager* const pFonts)
 
 const PBMDataArray & LCDPlugin::getNextPBMFrame(
 	FontsManager* const pFonts,
-	const std::string & LCDKey)
+	const std::string & LCDKey,
+	const bool lockedPlugin)
 {
+	this->drawPadlockOnFrame(lockedPlugin);
 	return this->getCurrentPBMFrame();
 }
 
@@ -171,7 +179,7 @@ const unsigned short LCDPlugin::getNextPBMFrameID(void) const
 PBMDataArray & LCDPlugin::getCurrentPBMFrame(void)
 {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-	LOG(DEBUG3) << _plugin.getName() << " PBM # " << _frameIndex;
+	LOG(DEBUG3) << this->getPluginName() << " PBM # " << _frameIndex;
 #endif
 	return (*_itCurrentFrame)._PBMData;
 }
@@ -185,7 +193,7 @@ void LCDPlugin::writeStringOnFrame(
 {
 	try {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-		LOG(DEBUG2) << _plugin.getName() << " PBM # " << _frameIndex << " - writing string : " << string;
+		LOG(DEBUG2) << this->getPluginName() << " PBM # " << _frameIndex << " - writing string : " << string;
 #endif
 		for(const char & c : string) {
 			const std::string character(1, c);
@@ -337,6 +345,50 @@ void LCDPlugin::drawProgressBarOnFrame(
 		buffer << "wrong frame index";
 		GKSysLog(LOG_WARNING, WARNING, buffer.str());
 	}
+}
+
+void LCDPlugin::drawPadlockOnFrame(
+	const bool lockedPlugin,
+	const unsigned int PBMXPos,
+	const unsigned int PBMYPos)
+{
+	const unsigned short xByte = PBMXPos / 8;
+	const unsigned short index = (PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
+
+	PBMDataArray & frame = (*_itCurrentFrame)._PBMData;
+
+	if( lockedPlugin ) {
+		_everLocked = true;
+		frame[index+(PBM_WIDTH_IN_BYTES * 0)] = 0b00000000;
+		frame[index+(PBM_WIDTH_IN_BYTES * 1)] = 0b00110000;
+		frame[index+(PBM_WIDTH_IN_BYTES * 2)] = 0b01001000;
+		frame[index+(PBM_WIDTH_IN_BYTES * 3)] = 0b01111000;
+		frame[index+(PBM_WIDTH_IN_BYTES * 4)] = 0b01111000;
+		frame[index+(PBM_WIDTH_IN_BYTES * 5)] = 0b01111000;
+	}
+	else {
+		if( _everLocked ) {
+			frame[index+(PBM_WIDTH_IN_BYTES * 0)] = 0b00000110;
+			frame[index+(PBM_WIDTH_IN_BYTES * 1)] = 0b00001001;
+			frame[index+(PBM_WIDTH_IN_BYTES * 2)] = 0b00001000;
+			frame[index+(PBM_WIDTH_IN_BYTES * 3)] = 0b01111000;
+			frame[index+(PBM_WIDTH_IN_BYTES * 4)] = 0b01111000;
+			frame[index+(PBM_WIDTH_IN_BYTES * 5)] = 0b01111000;
+		}
+		else {
+			frame[index+(PBM_WIDTH_IN_BYTES * 0)] = 0;
+			frame[index+(PBM_WIDTH_IN_BYTES * 1)] = 0;
+			frame[index+(PBM_WIDTH_IN_BYTES * 2)] = 0;
+			frame[index+(PBM_WIDTH_IN_BYTES * 3)] = 0;
+			frame[index+(PBM_WIDTH_IN_BYTES * 4)] = 0;
+			frame[index+(PBM_WIDTH_IN_BYTES * 5)] = 0;
+		}
+	}
+}
+
+void LCDPlugin::resetEverLocked(void)
+{
+	_everLocked = false;
 }
 
 /*

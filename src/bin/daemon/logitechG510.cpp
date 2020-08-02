@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -269,7 +269,7 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 			break;
 		case 8:
 			/* process those events only if Macro Record Mode on */
-			if( device._banksLedsMask & toEnumType(Leds::GK_LED_MR) ) {
+			if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) ) {
 #if DEBUGGING_ON && DEBUG_KEYS
 				LOG(DEBUG1) << device.getID() << " 8 bytes : processing standard key event : "
 							<< this->getBytes(device);
@@ -312,10 +312,10 @@ void LogitechG510::setDeviceBacklightColor(
 	this->sendControlRequest(device, 0x305, 1, data, 4);
 }
 
-void LogitechG510::setMxKeysLeds(USBDevice & device) {
+void LogitechG510::setDeviceMxKeysLeds(USBDevice & device) {
 	unsigned char mask = 0;
 	for (const auto & led : LogitechG510::ledsMask ) {
-		if( device._banksLedsMask & toEnumType(led.led) )
+		if( device._MxKeysLedsMask & toEnumType(led.led) )
 			mask |= led.mask;
 	}
 

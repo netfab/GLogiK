@@ -1,5 +1,5 @@
 #!/sbin/openrc-run
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 command=/usr/sbin/GLogiKd
@@ -17,6 +17,7 @@ runas_user=glogikd:root
 depend() {
 	use logger
 	after bootmisc
+	need localmount dbus
 }
 
 start_pre() {

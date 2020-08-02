@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,15 +19,12 @@
  *
  */
 
-#include <errno.h>
-
 #include <poll.h>
-
-#include <sys/types.h>
-#include <unistd.h>
 
 #include <cstring>
 #include <cstdlib>
+
+#include <syslog.h>
 
 #include <new>
 #include <fstream>
@@ -54,6 +51,8 @@ DesktopServiceLauncher::DesktopServiceLauncher() :
 	_pid(0),
 	_LOGfd(nullptr)
 {
+	openlog(DESKTOP_SERVICE_LAUNCHER_NAME, LOG_PID|LOG_CONS, LOG_USER);
+
 	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
 	if( LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() != NONE ) {
 		LOG_TO_FILE_AND_CONSOLE::ConsoleStream() = stderr;
@@ -61,40 +60,7 @@ DesktopServiceLauncher::DesktopServiceLauncher() :
 
 #if DEBUGGING_ON
 	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
-
-	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
-		const std::string pid( std::to_string( getpid() ) );
-
-		fs::path debugFile(DEBUG_DIR);
-		debugFile /= DESKTOP_SERVICE_LAUNCHER_NAME;
-		debugFile += "-debug-";
-		debugFile += pid;
-		debugFile += ".log";
-
-		errno = 0;
-		_LOGfd = std::fopen(debugFile.string().c_str(), "w");
-
-		if(_LOGfd == nullptr) {
-			LOG(ERROR) << "failed to open debug file";
-			if(errno != 0) {
-				LOG(ERROR) << strerror(errno);
-			}
-		}
-		else {
-			boost::system::error_code ec;
-			fs::permissions(debugFile, fs::owner_read|fs::owner_write|fs::group_read, ec);
-			if( ec.value() != 0 ) {
-				LOG(ERROR) << "failure to set debug file permissions : " << ec.value();
-			}
-		}
-
-		LOG_TO_FILE_AND_CONSOLE::FileStream() = _LOGfd;
-	}
 #endif
-
-	if( _LOGfd == nullptr ) {
-		LOG(INFO) << "debug file not opened";
-	}
 }
 
 DesktopServiceLauncher::~DesktopServiceLauncher() {
@@ -105,12 +71,19 @@ DesktopServiceLauncher::~DesktopServiceLauncher() {
 	LOG(INFO) << DESKTOP_SERVICE_LAUNCHER_NAME << " : bye !";
 	if( _LOGfd != nullptr )
 		std::fclose(_LOGfd);
+
+	closelog();
 }
 
 int DesktopServiceLauncher::run( const int& argc, char *argv[] ) {
-	LOG(INFO) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
-
 	try {
+
+#if DEBUGGING_ON
+		FileSystem::openDebugFile(DESKTOP_SERVICE_LAUNCHER_NAME, _LOGfd, fs::owner_read|fs::owner_write|fs::group_read);
+#endif
+
+		LOG(INFO) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
+
 		/* no expected arguments */
 		//this->parseCommandLine(argc, argv);
 
@@ -150,10 +123,7 @@ int DesktopServiceLauncher::run( const int& argc, char *argv[] ) {
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
-		std::ostringstream buffer(e.what(), std::ios_base::app);
-		if(errno != 0)
-			buffer << " : " << strerror(errno);
-		LOG(ERROR) << buffer.str();
+		LOG(ERROR) << e.what();
 		return EXIT_FAILURE;
 	}
 

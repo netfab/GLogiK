@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,7 +28,10 @@
 
 #include <iomanip>
 #include <sstream>
+#include <fstream>
 #include <string>
+#include <vector>
+#include <map>
 
 #include <config.h>
 
@@ -74,15 +77,19 @@ void SystemMonitor::init(FontsManager* const pFonts)
 		hostname[HOST_NAME_MAX-1] = '\0';
 		host.assign(hostname);
 	}
-	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, host, 6, 1);
+	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, host, 16, 1);
 
 	LCDPlugin::init(pFonts);
 }
 
 const PBMDataArray & SystemMonitor::getNextPBMFrame(
 	FontsManager* const pFonts,
-	const std::string & LCDKey)
+	const std::string & LCDKey,
+	const bool lockedPlugin
+	)
 {
+	this->drawPadlockOnFrame(lockedPlugin);
+
 	/* -- -- -- */
 	std::string usedPhysicalMemory("");
 
@@ -93,21 +100,78 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 	};
 
 	{
-		struct sysinfo memInfo;
-		sysinfo(&(memInfo));
+		std::map<const std::string, std::vector<std::string>> memShot;
 
-		uint64_t freePMem = memInfo.freeram;
-		freePMem *= memInfo.mem_unit;
-		freePMem *= 100;
+		uint64_t freePMem = 0;
+		uint64_t totalPMem = 1;
 
-		uint64_t totalPMem = memInfo.totalram;
-		totalPMem *= memInfo.mem_unit;
+		try {
+			std::ifstream meminfo("/proc/meminfo");
+			std::string line;
+			while( std::getline(meminfo, line) )
+			{
+				const char delim = ' ';
+				std::vector<std::string> words;
+				const std::vector<std::string> memItems = {"MemTotal", "MemFree", "MemAvailable", "Buffers", "Cached"};
 
-		unsigned short memPercent = static_cast<unsigned short>(freePMem / totalPMem);
-		memPercent = 100 - memPercent;
+				std::stringstream ss(line);
+				std::string word;
+				while( std::getline(ss, word, delim) ) {
+					if( ! word.empty() )
+						words.push_back(word);
+			    }
 
-		this->drawProgressBarOnFrame(memPercent, 24, 33);
-		usedPhysicalMemory = getPaddedPercentString(memPercent);
+				if( ! words.empty() ) {
+					for(const auto & item : memItems) {
+						const std::string & s = words[0];
+						if( s.substr(0, s.size()-1) == item ) {
+							memShot.insert( std::pair<const std::string, std::vector<std::string>>(item, words));
+						}
+					}
+				}
+
+				if( memShot.size() == memItems.size() ) {
+					//LOG(DEBUG3) << "found each item :-)";
+					break;
+				}
+			}
+		}
+		catch (const std::ifstream::failure & e) {
+			LOG(ERROR) << "error opening/reading/closing /proc/meminfo : " << e.what();
+			throw GLogiKExcept("ifstream error");
+		}
+
+		try {
+			totalPMem = toULL( memShot.at("MemTotal").at(1) );
+
+			// Linux Kernel 3.14+
+			if( memShot.count("MemAvailable") == 1 ) {
+				freePMem  = toULL( memShot["MemAvailable"].at(1) );
+			}
+			else {
+				freePMem  = toULL( memShot.at("MemFree").at(1) );
+				freePMem += toULL( memShot.at("Buffers").at(1) );
+				freePMem += toULL( memShot.at("Cached").at(1) );
+			}
+		}
+		catch (const std::out_of_range& oor) {
+			LOG(WARNING) << "meminfo parsing problem : " << oor.what();
+			freePMem = 0;
+		}
+		catch (const GLogiKExcept & e) {
+			LOG(WARNING) << "meminfo conversion failure : " << e.what();
+			freePMem = 0;
+		}
+
+		float freeMem = 100 * freePMem / totalPMem;
+		std::fesetround(FE_TONEAREST);
+		freeMem = std::nearbyint(freeMem);
+
+		unsigned short usedMem = static_cast<unsigned short>(freeMem);
+		usedMem = 100 - usedMem;
+
+		this->drawProgressBarOnFrame(usedMem, 24, 33);
+		usedPhysicalMemory = getPaddedPercentString(usedMem);
 	}
 
 	/* -- -- -- */
@@ -127,7 +191,6 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 		cpuPercentTotal = std::nearbyint(cpuPercentTotal);
 
 		this->drawProgressBarOnFrame(cpuPercentTotal, 24, 15);
-
 		usedCPUActiveTotal = getPaddedPercentString(cpuPercentTotal);
 
 		_snapshot1 = s2;

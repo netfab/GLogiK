@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -130,7 +130,7 @@ void KeyboardDriver::notImplemented(const char* func) const {
 	GKSysLog(LOG_WARNING, WARNING, buffer.str());
 }
 
-void KeyboardDriver::setMxKeysLeds(USBDevice & device) {
+void KeyboardDriver::setDeviceMxKeysLeds(USBDevice & device) {
 	this->notImplemented(__func__);
 }
 
@@ -148,10 +148,10 @@ void KeyboardDriver::sendUSBDeviceInitialization(USBDevice & device) {
 }
 
 /*
- * return true if leds_mask has been updated (meaning that setMxKeysLeds should be called)
+ * return true if leds_mask has been updated (meaning that setDeviceMxKeysLeds should be called)
  */
-const bool KeyboardDriver::updateCurrentLedsMask(USBDevice & device, bool disableMR) {
-	auto & mask = device._banksLedsMask;
+const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR) {
+	auto & mask = device._MxKeysLedsMask;
 	/* is macro record mode enabled ? */
 	bool MR_ON = mask & toEnumType(Leds::GK_LED_MR);
 	bool Mx_ON = false;
@@ -563,7 +563,9 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 			}
 		}
 
-		device._pLCDPluginsManager->forceNextPlugin();
+		device._pLCDPluginsManager->unlockPlugin();
+		device._pLCDPluginsManager->jumpToNextPlugin();
+
 		LCDDataArray & LCDBuffer = device._pLCDPluginsManager->getNextLCDScreenBuffer("", toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN));
 		int ret = this->performLCDScreenInterruptTransfer( device, LCDBuffer.data(), LCDBuffer.size(), 1000);
 		if(ret != 0) {
@@ -618,18 +620,18 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 						 */
 						if( device.getLastKeysInterruptTransferLength() == _keysEventsLength.MacrosKeys ) {
 							/* update mask with potential pressed keys */
-							if(this->updateCurrentLedsMask(device))
-								this->setMxKeysLeds(device);
+							if(this->updateDeviceMxKeysLedsMask(device))
+								this->setDeviceMxKeysLeds(device);
 
 							/* is macro record mode enabled ? */
-							if( device._banksLedsMask & toEnumType(Leds::GK_LED_MR) ) {
+							if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) ) {
 								this->enterMacroRecordMode(device, devID);
 
 								/* don't need to update leds status if the mask is already 0 */
-								if(device._banksLedsMask != 0) {
+								if(device._MxKeysLedsMask != 0) {
 									/* disabling macro record mode */
-									if(this->updateCurrentLedsMask(device, true))
-										this->setMxKeysLeds(device);
+									if(this->updateDeviceMxKeysLedsMask(device, true))
+										this->setDeviceMxKeysLeds(device);
 								}
 							}
 							else { /* check to run macro */
@@ -822,8 +824,8 @@ void KeyboardDriver::resetDeviceState(USBDevice & device) {
 #if DEBUGGING_ON
 		LOG(DEBUG1) << device.getID() << " resetting device MxKeys leds status";
 #endif
-		device._banksLedsMask = 0;
-		this->setMxKeysLeds(device);
+		device._MxKeysLedsMask = 0;
+		this->setDeviceMxKeysLeds(device);
 	}
 
 	if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
@@ -834,12 +836,37 @@ void KeyboardDriver::resetDeviceState(USBDevice & device) {
 	}
 
 	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-		yield_for(std::chrono::microseconds(100));
-		std::lock_guard<std::mutex> lock(device._LCDMutex);
 #if DEBUGGING_ON
 		LOG(DEBUG1) << device.getID() << " resetting device LCD plugins mask";
 #endif
-		device._LCDPluginsMask1 = 0;
+		this->setDeviceLCDPluginsMask(device);
+	}
+}
+
+void KeyboardDriver::setDeviceLCDPluginsMask(USBDevice & device, uint64_t mask)
+{
+	if( mask == 0 ) {
+		/* default enabled plugins */
+		mask |= toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN);
+		mask |= toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << device.getID() << " setting device LCD plugins mask to : " << mask;
+#endif
+
+	{
+		yield_for(std::chrono::microseconds(100));
+		std::lock_guard<std::mutex> lock(device._LCDMutex);
+		device._LCDPluginsMask1 = mask;
+	}
+
+	/* Current active plugin may be locked */
+	device._pLCDPluginsManager->unlockPlugin();
+
+	/* jump if current active plugin is not in the new mask */
+	if( ! (device._pLCDPluginsManager->getCurrentPluginID() & mask) ) {
+		device._pLCDPluginsManager->jumpToNextPlugin();
 	}
 }
 
@@ -968,9 +995,7 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 		}
 
 		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-			yield_for(std::chrono::microseconds(100));
-			std::lock_guard<std::mutex> lock(device._LCDMutex);
-			device._LCDPluginsMask1 = LCDPluginsMask1;
+			this->setDeviceLCDPluginsMask(device, LCDPluginsMask1);
 		}
 	}
 	catch (const std::out_of_range& oor) {
