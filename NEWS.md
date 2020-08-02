@@ -1,7 +1,7 @@
 
 ---
 
-## version 0.8.10 - 2020-08-xx (unreleased)
+## version 0.8.10 - 2020-08-02
 #### Added features
  * implemented LCD plugin locking mechanism. Press L2 LCD key to
    lock/unlock current LCD plugin
