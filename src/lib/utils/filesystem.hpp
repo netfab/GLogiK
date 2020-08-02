@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
+#include <cstdio>
+
 #include <set>
 #include <map>
 #include <string>
@@ -45,7 +47,10 @@ class FileSystem
 		FileSystem(void);
 		~FileSystem(void);
 
-		static void createOwnerDirectory(const fs::path & directory);
+		static void createDirectory(
+			const fs::path & directory,
+			const fs::perms prms = fs::no_perms
+		);
 		const std::string getNextAvailableFileName(
 			const std::set<std::string> & toSkip,
 			const fs::path & directory,
@@ -53,6 +58,15 @@ class FileSystem
 			const std::string & extension,
 			bool mustExist=false
 		);
+
+#if DEBUGGING_ON
+		static void openDebugFile(
+			const std::string & baseName,
+			FILE* & pFile,
+			const fs::perms prms = fs::no_perms,
+			const bool createDir = false
+		);
+#endif
 
 	protected:
 

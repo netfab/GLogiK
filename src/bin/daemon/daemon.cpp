@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -26,8 +26,6 @@
 
 #include <errno.h>
 
-#include <sys/types.h>
-#include <unistd.h>
 #include <pwd.h>
 #include <grp.h>
 
@@ -59,46 +57,15 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 GLogiKDaemon::GLogiKDaemon()
-	:	_pDBus(nullptr)
+	:	_pDBus(nullptr),
+		_PIDFileCreated(false)
 {
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 
 #if DEBUGGING_ON
 	// console output disabled by default
 	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
-
-	if( LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() != NONE ) {
-		const std::string pid( std::to_string( getpid() ) );
-
-		fs::path debugFile(DEBUG_DIR);
-		debugFile /= PACKAGE;
-		debugFile += "d-debug-";
-		debugFile += pid;
-		debugFile += ".log";
-
-		errno = 0;
-		_LOGfd = std::fopen(debugFile.string().c_str(), "w");
-
-		if(_LOGfd == nullptr) {
-			LOG(ERROR) << "failed to open debug file";
-			if(errno != 0) {
-				LOG(ERROR) << strerror(errno);
-			}
-		}
-		else {
-			boost::system::error_code ec;
-			fs::permissions(debugFile, fs::owner_read|fs::owner_write|fs::group_read, ec);
-			if( ec.value() != 0 ) {
-				LOG(ERROR) << "failure to set debug file permissions : " << ec.value();
-			}
-		}
-
-		LOG_TO_FILE_AND_CONSOLE::FileStream() = _LOGfd;
-	}
 #endif
-
-	if(_LOGfd == nullptr)
-		syslog(LOG_INFO, "debug file not opened");
 }
 
 GLogiKDaemon::~GLogiKDaemon()
@@ -107,31 +74,55 @@ GLogiKDaemon::~GLogiKDaemon()
 	LOG(DEBUG2) << "exiting daemon process";
 #endif
 
-	if( _pidFile.is_open() ) {
-		_pidFile.close();
-
+	try {
+		if( _PIDFileCreated && fs::is_regular_file(_pidFileName) ) {
 #if DEBUGGING_ON
-		LOG(INFO) << "destroying PID file";
+			LOG(INFO) << "destroying PID file";
 #endif
-
-		if( unlink(_pidFileName.c_str()) != 0 ) {
-			GKSysLog(LOG_ERR, ERROR, "failed to unlink PID file");
+			if( unlink(_pidFileName.c_str()) != 0 ) {
+				GKSysLog(LOG_ERR, ERROR, "failed to unlink PID file");
+			}
+			else
+				_PIDFileCreated = false;
 		}
+	}
+	catch (const fs::filesystem_error & e) {
+		LOG(WARNING) << "boost::filesystem::is_regular_file() error : " << e.what();
+	}
+	catch (const std::exception & e) {
+		LOG(WARNING) << "error destroying PID file : " << e.what();
 	}
 
 	GKSysLog(LOG_INFO, INFO, "bye !");
 	if(_LOGfd != nullptr)
 		std::fclose(_LOGfd);
+
 	closelog();
 }
 
 int GLogiKDaemon::run( const int& argc, char *argv[] ) {
-	std::ostringstream buffer(std::ios_base::app);
-	buffer << "Starting " << GLOGIKD_DAEMON_NAME << " vers. " << VERSION;
-	GKSysLog(LOG_INFO, INFO, buffer.str());
-
 	try {
-		this->dropPrivileges();
+		// drop privileges before opening debug file
+		try {
+			this->dropPrivileges();
+		}
+		catch ( const GLogiKExcept & e ) {
+			syslog(LOG_ERR, "%s", e.what());
+			return EXIT_FAILURE;
+		}
+
+#if DEBUGGING_ON
+		FileSystem::openDebugFile("GLogiKd", _LOGfd, fs::owner_read|fs::owner_write|fs::group_read, true);
+#endif
+
+		GKSysLog(LOG_INFO, INFO, "successfully dropped root privileges");
+
+		{
+			std::ostringstream buffer(std::ios_base::app);
+			buffer << "Starting " << GLOGIKD_DAEMON_NAME << " vers. " << VERSION;
+			GKSysLog(LOG_INFO, INFO, buffer.str());
+		}
+
 		this->parseCommandLine(argc, argv);
 
 		if( GLogiKDaemon::isDaemonRunning() ) {
@@ -176,11 +167,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
-		std::ostringstream buffer(std::ios_base::app);
-		buffer << e.what();
-		if(errno != 0)
-			buffer << " : " << strerror(errno);
-		GKSysLog(LOG_ERR, ERROR, buffer.str());
+		GKSysLog(LOG_ERR, ERROR, e.what());
 		return EXIT_FAILURE;
 	}
 /*
@@ -210,35 +197,52 @@ void GLogiKDaemon::handleSignal(int sig) {
 }
 
 void GLogiKDaemon::createPIDFile(void) {
-	fs::path path(_pidFileName);
+	const fs::path PIDFile(_pidFileName);
 
-	if( fs::exists(path) ) {
+	auto throwError = [&PIDFile] (const std::string & error, const char* what = nullptr) -> void {
 		std::ostringstream buffer(std::ios_base::app);
-		buffer	<< "PID file " << _pidFileName << " already exist";
+		buffer << "failed to create PID file" << " : " << PIDFile.c_str() << " : " << error;
+		if( what != nullptr ) {
+			buffer << " : " << what;
+		}
 		throw GLogiKExcept( buffer.str() );
+	};
+
+	try {
+		if( fs::exists(PIDFile) ) {
+			throwError("already exist");
+		}
 	}
+	catch (const fs::filesystem_error & e) {
+		throwError("boost::filesystem error", e.what());
+	}
+	catch (const std::exception & e) {
+		throwError("boost::filesystem (allocation) error", e.what());
+	}
+
 	// if path not found reset errno
 	errno = 0;
 
-	_pidFile.exceptions( std::ofstream::failbit );
+	std::ofstream PIDStream;
+	PIDStream.exceptions( std::ofstream::failbit );
 	try {
-		_pidFile.open(_pidFileName, std::ofstream::trunc);
-		_pidFile << static_cast<long>(_pid);
-		_pidFile.flush();
+		PIDStream.open(_pidFileName, std::ofstream::trunc);
+		PIDStream << static_cast<long>(_pid);
+		PIDStream.close();
 
-		fs::permissions(path, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
+		fs::permissions(PIDFile, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 	}
 	catch (const std::ofstream::failure & e) {
-		std::ostringstream buffer(std::ios_base::app);
-		buffer	<< "fail to open PID file : " << _pidFileName << " : " << e.what();
-		throw GLogiKExcept( buffer.str() );
+		throwError("open failure", e.what());
 	}
 	catch (const fs::filesystem_error & e) {
-		std::ostringstream buffer(std::ios_base::app);
-		buffer	<< "set permissions failure on PID file : " << _pidFileName << " : " << e.what();
-		throw GLogiKExcept( buffer.str() );
+		throwError("set permissions failure", e.what());
+	}
+	catch (const std::exception & e) {
+		throwError("set permissions (allocation) failure", e.what());
 	}
 
+	_PIDFileCreated = true;
 #if DEBUGGING_ON
 	LOG(INFO) << "created PID file : " << _pidFileName;
 #endif
@@ -262,7 +266,7 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	try {
 		po::store(po::parse_command_line(argc, argv, desc), vm);
 	}
-	catch( std::exception & e ) {
+	catch (const std::exception & e) {
 		throw GLogiKExcept( e.what() );
 	}
 	po::notify(vm);
@@ -286,19 +290,29 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 }
 
 void GLogiKDaemon::dropPrivileges(void) {
+	auto throwError = [] (const std::string & error) -> void {
+		if(errno != 0) {
+			std::ostringstream buffer(std::ios_base::app);
+			buffer << error;
+			buffer << " : " << strerror(errno);
+			throw GLogiKExcept(buffer.str());
+		}
+		throw GLogiKExcept(error);
+	};
+
 	errno = 0;
 	struct passwd * pw = getpwnam(GLOGIKD_USER);
 	if(pw == nullptr)
-		throw GLogiKExcept("can't get password structure for GLOGIKD_USER");
+		throwError("can't get password structure for GLOGIKD_USER");
 
 	errno = 0;
 	struct group * gr = getgrnam(GLOGIKD_GROUP);
 	if(gr == nullptr)
-		throw GLogiKExcept("can't get group structure for GLOGIKD_GROUP");
+		throwError("can't get group structure for GLOGIKD_GROUP");
 
 	errno = 0;
 	if(initgroups(GLOGIKD_USER, gr->gr_gid) < 0)
-		throw GLogiKExcept("failure to initialize group access list");
+		throwError("failed to initialize group access list");
 
 	errno = 0;
 	int ret = -1;
@@ -315,7 +329,7 @@ void GLogiKDaemon::dropPrivileges(void) {
 #endif
 
 	if( ret < 0 )
-		throw GLogiKExcept("failure to change group ID");
+		throwError("failed to change group ID");
 
 	errno = 0;
 	ret = -1;
@@ -332,9 +346,7 @@ void GLogiKDaemon::dropPrivileges(void) {
 #endif
 
 	if( ret < 0 )
-		throw GLogiKExcept("failure to change user ID");
-
-	GKSysLog(LOG_INFO, INFO, "successfully dropped root privileges");
+		throwError("failed to change user ID");
 }
 
 } // namespace GLogiK

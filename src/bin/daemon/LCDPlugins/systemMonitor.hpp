@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -21,8 +21,6 @@
 
 #ifndef SRC_BIN_DAEMON_LCDPLUGINS_SYSTEM_MONITOR_HPP_
 #define SRC_BIN_DAEMON_LCDPLUGINS_SYSTEM_MONITOR_HPP_
-
-#include "sys/sysinfo.h"
 
 #include "cpu-stats/CPUSnapshot.h"
 
@@ -44,7 +42,8 @@ class SystemMonitor
 
 		const PBMDataArray & getNextPBMFrame(
 			FontsManager* const pFonts,
-			const std::string & LCDKey
+			const std::string & LCDKey,
+			const bool lockedPlugin
 		);
 
 	protected:

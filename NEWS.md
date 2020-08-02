@@ -1,6 +1,23 @@
 
 ---
 
+## version 0.8.10 - 2020-08-02
+#### Added features
+ * implemented LCD plugin locking mechanism. Press L2 LCD key to
+   lock/unlock current LCD plugin
+
+#### Changes / Fixs
+ * fixed potential daemon crash when handling unresponsive clients
+ * setted logind as default session tracker (instead of consolekit)
+ * use /proc/meminfo pseudo file to get more precise value
+   of current memory usage for systemMonitor LCD plugin
+ * updated splashscreen LCD plugin
+ * updated default DEBUG_DIR. Debug files are now created in a more
+   secured way
+ * miscellaneous fixs
+
+---
+
 ## version 0.8.8 - 2019-05-12
 #### Added features
  * added LCD screen plugins tab in Qt5 GUI. Implemented all related

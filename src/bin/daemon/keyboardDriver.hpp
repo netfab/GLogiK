@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -137,7 +137,7 @@ class KeyboardDriver
 		virtual const bool checkLCDKey(USBDevice & device) = 0;
 
 		virtual void sendUSBDeviceInitialization(USBDevice & device);
-		virtual void setMxKeysLeds(USBDevice & device);
+		virtual void setDeviceMxKeysLeds(USBDevice & device);
 		virtual void setDeviceBacklightColor(
 			USBDevice & device,
 			const uint8_t r=0xFF,
@@ -158,7 +158,9 @@ class KeyboardDriver
 
 		/* USB HID Usage Tables as defined in USB specification,
 		 *        Chapter 10 "Keyboard/Keypad Page (0x07)"
-		 * http://www.usb.org/developers/hidpage/Hut1_12v2.pdf
+		 *
+		 * https://www.usb.org/document-library/hid-usage-tables-112
+		 *      -> https://www.usb.org/sites/default/files/documents/hut1_12v2.pdf
 		 *
 		 * See linux/drivers/hid/hid-input.c
 		 * and linux/input-event-codes.h
@@ -190,13 +192,14 @@ class KeyboardDriver
 		void LCDScreenLoop(const std::string & devID);
 		void listenLoop(const std::string & devID);
 
-		const bool updateCurrentLedsMask(USBDevice & device, bool disableMR=false);
+		const bool updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR=false);
 
 		const uint8_t handleModifierKeys(USBDevice & device, const uint16_t interval);
 
 		uint16_t getTimeLapse(USBDevice & device);
 		void runMacro(const std::string & devID) const;
 
+		void setDeviceLCDPluginsMask(USBDevice & device, uint64_t mask = 0);
 		void resetDeviceState(USBDevice & device);
 		void joinDeviceThreads(const USBDevice & device);
 };

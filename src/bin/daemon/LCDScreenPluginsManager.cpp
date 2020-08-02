@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include <new>
 
 #include "lib/utils/utils.hpp"
+#include "lib/shared/glogik.hpp"
 
 #include "LCDScreenPluginsManager.hpp"
 
@@ -41,6 +42,7 @@ const LCDPluginsPropertiesArray_type LCDScreenPluginsManager::_LCDPluginsPropert
 LCDScreenPluginsManager::LCDScreenPluginsManager()
 	:	_frameCounter(0),
 		_noPlugins(false),
+		_currentPluginLocked(false),
 		_pFonts(&_fontsManager)
 {
 	try {
@@ -105,10 +107,40 @@ const unsigned short LCDScreenPluginsManager::getPluginTiming(void)
 	return 1000;
 }
 
-void LCDScreenPluginsManager::forceNextPlugin(void)
+void LCDScreenPluginsManager::unlockPlugin(void)
+{
+	if(_currentPluginLocked) {
+#if DEBUGGING_ON
+		if( ! _noPlugins ) {
+			if(_itCurrentPlugin != _plugins.end() ) {
+				LOG(DEBUG2) << "LCD plugin unlocked : " << (*_itCurrentPlugin)->getPluginName();
+			}
+		}
+#endif
+		_currentPluginLocked = false;
+	}
+}
+
+const uint64_t LCDScreenPluginsManager::getCurrentPluginID(void)
 {
 	if( ! _noPlugins ) {
 		if(_itCurrentPlugin != _plugins.end() ) {
+			return (*_itCurrentPlugin)->getPluginID();
+		}
+	}
+
+	return 0;
+}
+
+void LCDScreenPluginsManager::jumpToNextPlugin(void)
+{
+	if( ! _noPlugins ) {
+		if(_itCurrentPlugin != _plugins.end() ) {
+#if DEBUGGING_ON
+			LOG(DEBUG2) << "jumping to next LCD plugin";
+#endif
+			/* make sure it is unlocked */
+			_currentPluginLocked = false;
 			_frameCounter = (*_itCurrentPlugin)->getPluginMaxFrames();
 		}
 	}
@@ -116,7 +148,7 @@ void LCDScreenPluginsManager::forceNextPlugin(void)
 
 LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 	const std::string & LCDKey,
-	const uint64_t defaultLCDPluginsMask1
+	const uint64_t LCDPluginsMask1
 ) {
 	if( ! _noPlugins ) {
 		try {
@@ -124,20 +156,31 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 			if(_itCurrentPlugin != _plugins.end() ) {
 				_frameCounter++;
 
-				if( _frameCounter >= (*_itCurrentPlugin)->getPluginMaxFrames() ) {
-					uint64_t LCDPluginsMask1 = defaultLCDPluginsMask1;
-
-					if( LCDPluginsMask1 == 0 ) {
-						/* default enabled plugins */
-						LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN);
-						LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);
+				/* pressed locking key ? */
+				if(LCDKey == LCD_KEY_L2) {
+					_currentPluginLocked = ! (_currentPluginLocked);
+#if DEBUGGING_ON
+					if( _currentPluginLocked ) {
+						LOG(DEBUG3) << "LCD plugin   locked : " << (*_itCurrentPlugin)->getPluginName();
 					}
+					else {
+						LOG(DEBUG3) << "LCD plugin unlocked : " << (*_itCurrentPlugin)->getPluginName();
+					}
+#endif
+				}
 
+				if( _frameCounter >= (*_itCurrentPlugin)->getPluginMaxFrames() ) {
 					bool found = false;
 					while( ! found ) {
-						_itCurrentPlugin++; /* jumping to next plugin */
-						if(_itCurrentPlugin == _plugins.end() )
-							_itCurrentPlugin = _plugins.begin();
+						/* locked plugin ? */
+						if( ! _currentPluginLocked ) {
+							_itCurrentPlugin++; /* jumping to next plugin */
+							if(_itCurrentPlugin == _plugins.end() )
+								_itCurrentPlugin = _plugins.begin();
+
+							/* reset everLocked boolean */
+							(*_itCurrentPlugin)->resetEverLocked();
+						}
 
 						/* check that current plugin is enabled */
 						if( LCDPluginsMask1 & (*_itCurrentPlugin)->getPluginID() )
@@ -154,7 +197,7 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 				(*_itCurrentPlugin)->prepareNextPBMFrame();
 				this->dumpPBMDataIntoLCDBuffer(
 					_LCDBuffer,
-					(*_itCurrentPlugin)->getNextPBMFrame(_pFonts, LCDKey)
+					(*_itCurrentPlugin)->getNextPBMFrame(_pFonts, LCDKey, _currentPluginLocked)
 				);
 			}
 			else /* else blank screen */
