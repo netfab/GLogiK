@@ -222,13 +222,13 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 			if(_currentRate == NetDirection::NET_RX) {
 				_currentRate = NetDirection::NET_TX;
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-				LOG(DEBUG3) << _pluginName << " switched network rate to upload";
+				LOG(DEBUG3) << _plugin.getName() << " switched network rate to upload";
 #endif
 			}
 			else {
 				_currentRate = NetDirection::NET_RX;
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-				LOG(DEBUG3) << _pluginName << " switched network rate to download";
+				LOG(DEBUG3) << _plugin.getName() << " switched network rate to download";
 #endif
 			}
 		}
