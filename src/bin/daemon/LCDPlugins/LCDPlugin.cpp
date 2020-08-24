@@ -259,6 +259,18 @@ void LCDPlugin::drawProgressBarOnFrame(
 			/* -1 to consider the bar left border */
 			const unsigned short leftShift = ((8-1) - percentModulo);
 
+			auto getShiftedByte = [&leftShift]
+				(const unsigned char & b) -> unsigned char
+			{
+				return static_cast<unsigned char>( b << leftShift );
+			};
+
+			const unsigned char B10 = 0b10101010;
+			const unsigned char B01 = 0b01010101;
+			const unsigned char B11 = 0b11111111;
+			const unsigned char & Byte1 = (line % 2 == 1) ? B10 : B01;
+			const unsigned char & Byte2 = (line % 2 == 1) ? B01 : B10;
+
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 			LOG(DEBUG3)	<< "index: " << index
 						<< " line: " << line
@@ -269,39 +281,21 @@ void LCDPlugin::drawProgressBarOnFrame(
 
 			for(unsigned short i = 0; i < 12; ++i) {
 				if((i == 0) and (percent < 8)) {
-						if(line % 2 == 1)
-							frame[index+i] = 0b10101010 << leftShift;
-						else
-							frame[index+i] = 0b01010101 << leftShift;
+						frame[index+i] = (leftShift % 2 == 1) ?
+							getShiftedByte(Byte2)
+							: getShiftedByte(Byte1);
 				}
 				else if(i < percentByte) {
-					if(i < 8) {
-						if(line % 2 == 1)
-							frame[index+i] = 0b10101010;
-						else
-							frame[index+i] = 0b01010101;
-					}
-					else {
-						frame[index+i] = 0b11111111;
-					}
+					frame[index+i] = (i < 8) ? Byte1 : B11;
 				}
 				else if(i == percentByte) {
 					if(i < 8) {
-						if(line % 2 == 1) {
-							if(leftShift % 2 == 1)
-								frame[index+i] = 0b01010101 << leftShift;
-							else
-								frame[index+i] = 0b10101010 << leftShift;
-						}
-						else {
-							if(leftShift % 2 == 1)
-								frame[index+i] = 0b10101010 << leftShift;
-							else
-								frame[index+i] = 0b01010101 << leftShift;
-						}
+						frame[index+i] = (leftShift % 2 == 1) ?
+							getShiftedByte(Byte2)
+							: getShiftedByte(Byte1);
 					}
 					else {
-						frame[index+i] = 0b11111111 << leftShift;
+						frame[index+i] = getShiftedByte(B11);
 					}
 				}
 				else {
@@ -310,7 +304,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 			}
 
 			if(percentByte == 12) {
-				frame[index+12] = 0b11111111 << leftShift;
+				frame[index+12] = getShiftedByte(B11);
 			}
 			else
 				frame[index+12] = 0;
