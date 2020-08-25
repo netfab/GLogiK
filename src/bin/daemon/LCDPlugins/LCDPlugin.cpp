@@ -254,22 +254,24 @@ void LCDPlugin::drawProgressBarOnFrame(
 		auto drawProgressBarLine = [&frame, &percent]
 			(const unsigned short index, const unsigned short line) -> void
 		{
+			const unsigned char B10 = 0b10101010;
+			const unsigned char B01 = 0b01010101;
+			const unsigned char B11 = 0b11111111;
+
 			const unsigned short percentByte = percent / 8;
 			const unsigned short percentModulo = percent % 8;
 			/* -1 to consider the bar left border */
 			const unsigned short leftShift = ((8-1) - percentModulo);
+
+			const unsigned char & Byte1 = (line % 2 == 1) ? B10 : B01;
+			const unsigned char & Byte2 = (line % 2 == 1) ? B01 : B10;
+			const unsigned char & cByte = (leftShift % 2 == 1) ? Byte2 : Byte1;
 
 			auto getShiftedByte = [&leftShift]
 				(const unsigned char & b) -> unsigned char
 			{
 				return static_cast<unsigned char>( b << leftShift );
 			};
-
-			const unsigned char B10 = 0b10101010;
-			const unsigned char B01 = 0b01010101;
-			const unsigned char B11 = 0b11111111;
-			const unsigned char & Byte1 = (line % 2 == 1) ? B10 : B01;
-			const unsigned char & Byte2 = (line % 2 == 1) ? B01 : B10;
 
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 			LOG(DEBUG3)	<< "index: " << index
@@ -281,33 +283,20 @@ void LCDPlugin::drawProgressBarOnFrame(
 
 			for(unsigned short i = 0; i < 12; ++i) {
 				if((i == 0) and (percent < 8)) {
-						frame[index+i] = (leftShift % 2 == 1) ?
-							getShiftedByte(Byte2)
-							: getShiftedByte(Byte1);
+					frame[index+i] = getShiftedByte(cByte);
 				}
 				else if(i < percentByte) {
 					frame[index+i] = (i < 8) ? Byte1 : B11;
 				}
 				else if(i == percentByte) {
-					if(i < 8) {
-						frame[index+i] = (leftShift % 2 == 1) ?
-							getShiftedByte(Byte2)
-							: getShiftedByte(Byte1);
-					}
-					else {
-						frame[index+i] = getShiftedByte(B11);
-					}
+					frame[index+i] = (i < 8) ? getShiftedByte(cByte) : getShiftedByte(B11);
 				}
 				else {
 					frame[index+i] = 0;
 				}
 			}
 
-			if(percentByte == 12) {
-				frame[index+12] = getShiftedByte(B11);
-			}
-			else
-				frame[index+12] = 0;
+			frame[index+12] = (percentByte == 12) ? getShiftedByte(B11) : 0;
 
 			frame[index]    |= 0b10000000;	/* left border */
 			frame[index+12] |= 0b00000100;	/* right border */
