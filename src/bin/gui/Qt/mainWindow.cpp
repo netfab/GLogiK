@@ -258,7 +258,7 @@ void MainWindow::build(void)
 	catch (const GLogiKExcept & e) {
 		if(! _serviceStartRequest) {
 			/* should not happen since the desktop service is assumed stopped
-			 * until sucessful daemonAndServiceTab::updateTab() call */
+			 * until successful daemonAndServiceTab::updateTab() call */
 			throw;
 		}
 
@@ -341,16 +341,15 @@ void MainWindow::build(void)
 
 void MainWindow::configurationFileUpdated(const std::string & devID)
 {
-	bool ignore = _ignoreNextSignal;
-	_ignoreNextSignal = false;
-	if( ignore ) {
+	if( _ignoreNextSignal ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << __func__ << " signal ignored";
 #endif
+		_ignoreNextSignal = false;
 		return;
 	}
 
-	if( _devID != devID)
+	if(_devID != devID)
 		return;
 
 	{
