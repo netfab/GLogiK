@@ -83,6 +83,11 @@ AC_ARG_ENABLE( [debug-lcd-plugins],
 				AC_HELP_STRING( [--enable-debug-lcd-plugins], [Enable LCD plugins extra debugging, default: no]),
 				[enable_lcd_plugins_debugging=$enableval], [enable_lcd_plugins_debugging=no])
 
+dnl check for DBus support
+AC_ARG_ENABLE( [dbus],
+               AC_HELP_STRING( [--enable-dbus], [Enable D-Bus support]),
+               [enable_dbus=$enableval], [enable_dbus=yes])
+
 dnl check for Qt5 client GUI
 AC_ARG_ENABLE( [qt5],
                AC_HELP_STRING( [--enable-qt5], [Enable Qt5 client GUI]),
@@ -183,6 +188,19 @@ GDT_DEBUG_FLAG(	[$enable_lcd_plugins_debugging],
 				[LCD plugins extra debugging])
 
 
+AC_MSG_CHECKING([whether we want D-Bus support])
+AS_IF([test "x$enable_dbus" = "xyes"], [
+	AC_MSG_RESULT([yes])
+	AC_SUBST([INIT_NEED_DBUS], [dbus])
+	AC_DEFINE([GKDBUS], [1], [GKDBus enabled])
+], [
+	AC_MSG_RESULT([no])
+	AC_SUBST([INIT_NEED_DBUS], [])
+	AC_DEFINE([GKDBUS], [0], [GKDBus disabled])
+])
+AM_CONDITIONAL([WITH_DBUS], [test "x$enable_dbus" = xyes])
+
+dnl ---
 dnl checking for Qt5 GUI
 AM_CONDITIONAL([WITH_QT5], [test "x$enable_qt5" = "xyes"])
 
@@ -190,6 +208,11 @@ AC_MSG_CHECKING([whether we want Qt5 client GUI])
 AS_IF([test "x$enable_qt5" = "xyes"],
 	[
 		AC_MSG_RESULT([yes])
+		AS_IF(
+			[test "x$enable_dbus" = xyes],
+			[],
+			[AC_MSG_ERROR(Qt5 client GUI requires D-Bus support enabled)]
+		)
 		AC_DEFINE([QT5_GUI], [1], [Qt5 client GUI])
 	], [
 		AC_MSG_RESULT([no])
@@ -198,6 +221,7 @@ AS_IF([test "x$enable_qt5" = "xyes"],
 
 dnl AX_HAVE_QT have its own test to avoid mixed configure output
 AS_IF([test "x$enable_qt5" = "xyes"], [AX_HAVE_QT], [])
+dnl ---
 
 dnl abort compilation after first error
 GDT_ADD_CXXFLAG([-Wfatal-errors])
@@ -210,7 +234,7 @@ dnl -------------------------------------------------------------------------
 dnl                       defining custom macro variables
 dnl -------------------------------------------------------------------------
 
-AS_IF([[test "x$DEBUG_DIR" = "x"]], [DEBUG_DIR="/var/tmp/GKDebug"])
+AS_IF([test "x$DEBUG_DIR" = "x"], [DEBUG_DIR="/var/tmp/GKDebug"], [])
 AC_DEFINE_UNQUOTED([DEBUG_DIR], ["${DEBUG_DIR}"], [Directory for debug file])
 
 AC_DEFINE_UNQUOTED([DATA_DIR], ["${prefix}/share"], [Root directory for data files installation])
@@ -229,10 +253,15 @@ dnl -------------------------------------------------------------------------
 PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.0])
 PKG_CHECK_MODULES([LIBUDEV], [libudev])
 PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
-PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.10])
-PKG_CHECK_MODULES([SM], [sm ice])
-PKG_CHECK_MODULES([LIBX11], [x11])
-PKG_CHECK_MODULES([LIBXTST], [xtst])
+AS_IF([test "x$enable_dbus" = "xyes"],
+	[
+		PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.10])
+		dnl SMlib used only by desktop binaries
+		PKG_CHECK_MODULES([SM], [sm ice])
+		dnl X libraries used only by user service
+		PKG_CHECK_MODULES([LIBX11], [x11])
+		PKG_CHECK_MODULES([LIBXTST], [xtst])
+	], [])
 
 
 AX_BOOST_BASE([1.64.0], [], AC_MSG_ERROR([Could not find a useful version of boost libraries]))
@@ -244,10 +273,14 @@ AX_BOOST_SERIALIZATION
 AX_PTHREAD
 
 AC_CONFIG_FILES([
-        Makefile
-        data/dbus/GLogiK.conf
-        data/udev/99-GLogiK.rules
+	Makefile
+	data/init/openrc/glogikd
+	data/udev/99-GLogiK.rules
 	])
+
+AS_IF([test "x$enable_dbus" = "xyes"],
+	[AC_CONFIG_FILES([data/dbus/GLogiK.conf])],
+	[])
 
 # Generate config.status and launch it.
 AC_OUTPUT

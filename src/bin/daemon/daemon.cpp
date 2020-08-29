@@ -44,10 +44,13 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
+#include "devicesManager.hpp"
+
+#if GKDBUS
 #include "lib/dbus/GKDBus.hpp"
 
 #include "clientsManager.hpp"
-#include "devicesManager.hpp"
+#endif
 
 #include "daemon.hpp"
 
@@ -139,33 +142,43 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			std::signal(SIGTERM, GLogiKDaemon::handleSignal);
 			//std::signal(SIGHUP, GLogiKDaemon::handleSignal);
 
+#if GKDBUS
 			NSGKDBus::GKDBus DBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
 			DBus.connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
+#endif
 
 			DevicesManager devicesManager;
+
+#if GKDBUS
 			devicesManager.setDBus(&DBus);
 
 			ClientsManager clientsManager(&devicesManager);
 			clientsManager.initializeDBusRequests(&DBus);
+#endif
 
 			try {
 				/* potential D-Bus requests received from services will be
 				 * handled after devices initialization into startMonitoring() */
 				devicesManager.startMonitoring();
+#if GKDBUS
 				clientsManager.waitForClientsDisconnections();
 				clientsManager.cleanDBusRequests();
 				DBus.disconnectFromSystemBus();
+#endif
 			}
 			catch (const GLogiKExcept & e) {	// catch any monitoring failure
 				std::ostringstream buffer(std::ios_base::app);
 				buffer << "catched exception from device monitoring : " << e.what();
 				GKSysLog(LOG_WARNING, WARNING, buffer.str());
 
+#if GKDBUS
 				clientsManager.waitForClientsDisconnections();
 				clientsManager.cleanDBusRequests();
 				DBus.disconnectFromSystemBus();
+#endif
 				throw;
 			}
+
 		}
 		else {
 			// TODO non-daemon mode

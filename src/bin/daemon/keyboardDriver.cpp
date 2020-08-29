@@ -28,8 +28,10 @@
 #include <sstream>
 
 #include "lib/utils/utils.hpp"
-#include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/glogik.hpp"
+#if GKDBUS
+#include "lib/dbus/GKDBus.hpp"
+#endif
 
 #include "daemonControl.hpp"
 #include "keyboardDriver.hpp"
@@ -378,6 +380,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 	LOG(DEBUG) << device.getID() << " entering macro record mode";
 #endif
 
+#if GKDBUS
 	NSGKDBus::GKDBus* pDBus = nullptr;
 
 	/* ROOT_NODE only for introspection, don't care */
@@ -388,6 +391,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 		LOG(ERROR) << "GKDBus bad allocation";
 		pDBus = nullptr;
 	}
+#endif
 
 	auto & exit = device._exitMacroRecordMode;
 	exit = false;
@@ -437,6 +441,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 						/* macro key pressed, recording macro */
 						device._pMacrosManager->setMacro(device._macroKey, device._newMacro);
 
+#if GKDBUS
 						if( pDBus ) {
 							const uint8_t bankID = toEnumType( device._pMacrosManager->getCurrentMacrosBankID() );
 
@@ -467,6 +472,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 								GKSysLog(LOG_WARNING, WARNING, e.what());
 							}
 						}
+#endif
 					}
 					catch (const GLogiKExcept & e) {
 						GKSysLog(LOG_WARNING, WARNING, e.what());
@@ -484,8 +490,10 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 
 	device._newMacro.clear();
 
+#if GKDBUS
 	delete pDBus;
 	pDBus = nullptr;
+#endif
 
 #if DEBUGGING_ON
 	LOG(DEBUG) << device.getID() << " exiting macro record mode";
@@ -654,6 +662,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 					if( this->checkDeviceCapability(device, Caps::GK_MEDIA_KEYS) ) {
 						if( device.getLastKeysInterruptTransferLength() == _keysEventsLength.MediaKeys ) {
 							if( this->checkMediaKey(device) ) {
+#if GKDBUS
 								NSGKDBus::GKDBus* pDBus = nullptr;
 
 								/* ROOT_NODE only for introspection, don't care */
@@ -688,6 +697,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 								}
 
 								delete pDBus; pDBus = nullptr;
+#endif
 							}
 						}
 					}

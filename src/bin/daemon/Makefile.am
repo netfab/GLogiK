@@ -23,8 +23,12 @@ GLogiKd_LDADD = \
 				@LIBUDEV_LIBS@ \
 				@PTHREAD_LIBS@ \
 				libGKUtils.la \
-				libGKDBus.la \
 				libGKShared.la
+
+if WITH_DBUS
+GLogiKd_LDADD += \
+				libGKDBus.la
+endif
 
 GLogiKd_SOURCES = \
 		%D%/main.cpp \
@@ -47,14 +51,18 @@ GLogiKd_SOURCES = \
 		%D%/logitechG510.hpp \
 		%D%/macrosManager.cpp \
 		%D%/macrosManager.hpp \
+		%D%/LCDScreenPluginsManager.cpp \
+		%D%/LCDScreenPluginsManager.hpp
+
+if WITH_DBUS
+GLogiKd_SOURCES += \
 		%D%/clientsManager.cpp \
 		%D%/clientsManager.hpp \
 		%D%/clientsSignals.cpp \
 		%D%/clientsSignals.hpp \
 		%D%/client.cpp \
-		%D%/client.hpp \
-		%D%/LCDScreenPluginsManager.cpp \
-		%D%/LCDScreenPluginsManager.hpp
+		%D%/client.hpp
+endif
 
 GLogiKd_SOURCES += \
 		%D%/LCDPlugins/PBM.hpp \

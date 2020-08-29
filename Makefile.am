@@ -4,24 +4,33 @@ ACLOCAL_AMFLAGS = -I m4
 DISTCHECK_CONFIGURE_FLAGS = --enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--enable-qt5
 
-include %D%/src/include/Makefile.am
-include %D%/src/lib/utils/Makefile.am
-include %D%/src/lib/dbus/Makefile.am
-include %D%/src/lib/shared/Makefile.am
-include %D%/src/bin/daemon/Makefile.am
-include %D%/src/bin/launcher/Makefile.am
-include %D%/src/bin/service/Makefile.am
-include %D%/data/autostart/Makefile.am
-include %D%/data/dbus/Makefile.am
 include %D%/data/init/openrc/Makefile.am
 include %D%/data/udev/Makefile.am
 include %D%/data/pbm/Makefile.am
+
+include %D%/src/include/Makefile.am
+include %D%/src/lib/utils/Makefile.am
+include %D%/src/lib/shared/Makefile.am
+
+if WITH_DBUS
+
+include %D%/data/autostart/Makefile.am
+include %D%/data/dbus/Makefile.am
+include %D%/src/lib/dbus/Makefile.am
+
+include %D%/src/bin/launcher/Makefile.am
+include %D%/src/bin/service/Makefile.am
 
 if WITH_QT5
 include %D%/src/bin/gui/Qt/Makefile.am
 include %D%/data/applications/Makefile.am
 include %D%/data/icons/Makefile.am
 endif
+
+endif
+
+include %D%/src/bin/daemon/Makefile.am
+
 
 maintainer-clean-local: maintainer-clean-libtool-files maintainer-clean-autotools-files
 

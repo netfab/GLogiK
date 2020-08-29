@@ -42,7 +42,7 @@ GLogiK=$PWD/.. CD=. {
 		init=init/ {
 			openrc=openrc/ {
 				Makefile.am
-				glogikd
+				glogikd.in
 			}
 			systemd=systemd/ {
 			}

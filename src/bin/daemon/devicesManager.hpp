@@ -34,10 +34,13 @@
 #include "include/keyEvent.hpp"
 #include "include/LCDPluginProperties.hpp"
 
+#if GKDBUS
 #include "lib/dbus/GKDBus.hpp"
 
-#include "DeviceID.hpp"
 #include "clientsSignals.hpp"
+#endif
+
+#include "DeviceID.hpp"
 
 #include "keyboardDriver.hpp"
 
@@ -96,19 +99,24 @@ void udevDeviceProperties(struct udev_device * pDevice, const std::string & subS
 #endif
 
 class DevicesManager
+#if GKDBUS
 	:	public ClientsSignals
+#endif
 {
 	public:
 		DevicesManager(void);
 		~DevicesManager(void);
 
-		void setDBus(NSGKDBus::GKDBus* pDBus);
-
 		void startMonitoring(void);
-		void checkDBusMessages(void) noexcept;
-		void resetDevicesStates(void);
+
+#if GKDBUS
+		void setDBus(NSGKDBus::GKDBus* pDBus);
 		void setNumClients(uint8_t num);
 
+		void checkDBusMessages(void) noexcept;
+#endif
+
+		void resetDevicesStates(void);
 		const bool startDevice(const std::string & devID);
 		const bool stopDevice(const std::string & devID) noexcept;
 		const std::vector<std::string> getStartedDevices(void) const;
@@ -137,8 +145,10 @@ class DevicesManager
 	protected:
 
 	private:
+#if GKDBUS
 		NSGKDBus::GKDBus* _pDBus;
 		uint8_t _numClients;
+#endif
 
 		const std::string _unknown;
 		std::vector<KeyboardDriver*> _drivers;

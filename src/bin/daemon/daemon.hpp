@@ -48,6 +48,7 @@ class GLogiKDaemon
 		pid_t _pid = 0;
 		FILE* _LOGfd = nullptr;
 		std::string _pidFileName;
+
 		bool _PIDFileCreated;
 
 		void createPIDFile(void);

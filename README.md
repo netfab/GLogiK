@@ -25,13 +25,13 @@ Last release : version 0.8.10
  - dev-libs/libusb 1.0.19 or later
  - virtual/libudev
  - dev-libs/libevdev 1.5.7 or later
+
+### Optional Build Dependencies
  - sys-apps/dbus 1.10.18 or later
  - x11-libs/libICE 1.0.9 or later
  - x11-libs/libSM 1.2.2 or later
  - x11-libs/libX11
  - x11-libs/libXtst
-
-### Optional Build Dependencies
  - Qt5 packages, including :
     * dev-qt/qtcore
     * dev-qt/qtgui
@@ -52,6 +52,8 @@ See following configure options :
 
 For desktop users, see also :
  - --with-glogiks-group : defaults to glogiks
+
+D-Bus support is required to build and run desktop binaries.
 
 Users who wants to run the GLogiKs desktop service must be in the glogiks group.
 (or whatever is defined with the above option).

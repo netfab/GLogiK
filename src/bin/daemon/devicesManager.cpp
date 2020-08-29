@@ -43,10 +43,15 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
+#if GKDBUS
 DevicesManager::DevicesManager()
 	:	_pDBus(nullptr),
 		_numClients(0),
 		_unknown("unknown")
+#else
+DevicesManager::DevicesManager()
+	:	_unknown("unknown")
+#endif
 {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing devices manager";
@@ -74,6 +79,7 @@ DevicesManager::~DevicesManager() {
 #endif
 }
 
+#if GKDBUS
 void DevicesManager::setDBus(NSGKDBus::GKDBus* pDBus)
 {
 	_pDBus = pDBus;
@@ -82,6 +88,12 @@ void DevicesManager::setDBus(NSGKDBus::GKDBus* pDBus)
 void DevicesManager::setNumClients(uint8_t num) {
 	_numClients = num;
 }
+
+void DevicesManager::checkDBusMessages(void) noexcept {
+	_pDBus->checkForMessages();
+}
+
+#endif
 
 /* exceptions are catched within the function body */
 void DevicesManager::initializeDevices(void) noexcept {
@@ -140,10 +152,12 @@ void DevicesManager::initializeDevices(void) noexcept {
 		}
 	} // for
 
+#if GKDBUS
 	if( startedDevices.size() > 0 ) {
 		/* inform clients */
 		this->sendStatusSignalArrayToClients(_numClients, _pDBus, "DevicesStarted", startedDevices);
 	}
+#endif
 
 	_detectedDevices.clear();
 #if DEBUGGING_ON
@@ -268,10 +282,12 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept {
 		}
 	}
 
+#if GKDBUS
 	if( toSend.size() > 0 ) {
 		/* inform clients */
 		this->sendStatusSignalArrayToClients(_numClients, _pDBus, "DevicesStopped", toSend);
 	}
+#endif
 }
 
 void DevicesManager::checkForUnpluggedDevices(void) noexcept {
@@ -340,10 +356,12 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 	LOG(DEBUG3) << "number of unplugged devices : " << toSend.size();
 #endif
 
+#if GKDBUS
 	if(toSend.size() > 0) {
 		/* inform clients */
 		this->sendStatusSignalArrayToClients(_numClients, _pDBus, "DevicesUnplugged", toSend);
 	}
+#endif
 }
 
 #if DEBUGGING_ON
@@ -754,10 +772,6 @@ void DevicesManager::resetDevicesStates(void) {
 	}
 }
 
-void DevicesManager::checkDBusMessages(void) noexcept {
-	_pDBus->checkForMessages();
-}
-
 /*
  *	Throws GLogiKExcept in many ways on udev related functions failures.
  *	LibUSB failures on devices start/stop are catched internally.
@@ -806,8 +820,10 @@ void DevicesManager::startMonitoring(void) {
 			this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
 			this->initializeDevices();
 
+#if GKDBUS
 			/* send signal, even if no client registered, clients could have started before daemon */
 			this->sendSignalToClients(_numClients, _pDBus, "DaemonIsStarting", true);
+#endif
 
 			unsigned short c = 0;
 
@@ -855,7 +871,9 @@ void DevicesManager::startMonitoring(void) {
 					udev_device_unref(dev);
 				}
 
+#if GKDBUS
 				this->checkDBusMessages();
+#endif
 				if(c++ >= 10) { /* bonus point */
 					this->checkInitializedDevicesThreadsStatus();
 					c = 0;
