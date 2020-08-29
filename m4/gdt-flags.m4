@@ -1,7 +1,7 @@
 dnl
 dnl	This file is part of GLogiK project.
 dnl	GLogiK, daemon to handle special features on gaming keyboards
-dnl	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+dnl	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
 dnl
 dnl	This program is free software: you can redistribute it and/or modify
 dnl	it under the terms of the GNU General Public License as published by
@@ -28,34 +28,52 @@ AC_DEFUN([GDT_ADD_CXXFLAG],
 AC_DEFUN([GDT_CONDITIONAL_ADD_CXXFLAG],
 [
 	AC_MSG_CHECKING([whether we want CXX flag $2])
-	if test "x$1" = xyes; then
-	    AC_MSG_RESULT([yes])
-		GDT_ADD_CXXFLAG([$2])
-	else
-	    AC_MSG_RESULT([no])
-	fi
+	AS_IF([test "x$1" = "xyes"],
+		[
+			AC_MSG_RESULT([yes])
+			GDT_ADD_CXXFLAG([$2])
+		], [
+			AC_MSG_RESULT([no])
+		]
+	)
 ])
 
 AC_DEFUN([GDT_CONDITIONAL_ADD_LDFLAGS],
 [
-	AC_MSG_CHECKING([whether we want $2])
-	if test "x$1" = xyes; then
-	    AC_MSG_RESULT([yes])
-	    AX_APPEND_LINK_FLAGS([$2], [AM_LDFLAGS])
-	else
-	    AC_MSG_RESULT([no])
-	fi
+	AC_MSG_CHECKING([whether we want linker flag $2])
+	AS_IF([test "x$1" = "xyes"],
+		[
+			AC_MSG_RESULT([yes])
+			AX_APPEND_LINK_FLAGS([$2], [AM_LDFLAGS])
+		], [
+			AC_MSG_RESULT([no])
+		]
+	)
 ])
 
 AC_DEFUN([GDT_DEBUG_FLAG],
 [
-	AC_MSG_CHECKING([whether we want $3 debugging])
-	if test "x$1" = xyes && test "x$enable_debugging" = xyes; then
-		AC_MSG_RESULT([yes])
-		AC_DEFINE([$2], [1], [$3 debugging])
-	else
-		AC_MSG_RESULT([no])
-		AC_DEFINE([$2], [0], [$3 debugging])
-	fi
+	AC_MSG_CHECKING([whether we want $3])
+	AS_IF([test "x$enable_debugging" = "xyes"],
+		[
+			AS_IF([test "x$1" = "xyes"],
+				[
+					AC_MSG_RESULT([yes])
+					AC_DEFINE([$2], [1], [$3])
+				], [
+					AC_MSG_RESULT([no])
+					AC_DEFINE([$2], [0], [$3])
+				]
+			)
+		], [
+			AS_IF([test "x$3" = "xglobal debugging"],
+				[
+					AC_MSG_RESULT([no])
+				], [
+					AC_MSG_ERROR([$3 requires global debugging])
+				]
+			)
+		]
+	)
 ])
 
