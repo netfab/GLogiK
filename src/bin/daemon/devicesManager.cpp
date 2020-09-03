@@ -74,6 +74,11 @@ DevicesManager::~DevicesManager() {
 #endif
 }
 
+void DevicesManager::setDBus(NSGKDBus::GKDBus* pDBus)
+{
+	_pDBus = pDBus;
+}
+
 void DevicesManager::setNumClients(uint8_t num) {
 	_numClients = num;
 }
@@ -757,11 +762,10 @@ void DevicesManager::checkDBusMessages(void) noexcept {
  *	Throws GLogiKExcept in many ways on udev related functions failures.
  *	LibUSB failures on devices start/stop are catched internally.
  */
-void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
+void DevicesManager::startMonitoring(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing libudev";
 #endif
-	_pDBus = pDBus;
 
 	struct udev * pUdev = udev_new();
 	if(pUdev == nullptr )

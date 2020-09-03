@@ -102,7 +102,9 @@ class DevicesManager
 		DevicesManager(void);
 		~DevicesManager(void);
 
-		void startMonitoring(NSGKDBus::GKDBus* pDBus);
+		void setDBus(NSGKDBus::GKDBus* pDBus);
+
+		void startMonitoring(void);
 		void checkDBusMessages(void) noexcept;
 		void resetDevicesStates(void);
 		void setNumClients(uint8_t num);

@@ -32,6 +32,7 @@
 #include "lib/dbus/GKDBus.hpp"
 
 #include "devicesManager.hpp"
+
 #include "clientsSignals.hpp"
 #include "client.hpp"
 
@@ -46,10 +47,11 @@ class ClientsManager
 	:	public ClientsSignals
 {
 	public:
-		ClientsManager(NSGKDBus::GKDBus* pDBus);
+		ClientsManager(DevicesManager* pDevicesManager);
 		~ClientsManager(void);
 
-		void runLoop(void);
+		void initializeDBusRequests(NSGKDBus::GKDBus* pDBus);
+		void waitForClientsDisconnections(void) noexcept;
 
 	protected:
 
@@ -92,8 +94,6 @@ class ClientsManager
 			const std::string & clientID,
 			const std::string & devID
 		);
-
-		void waitForClientsDisconnections(void) noexcept;
 
 		/* -- */
 			/* DevicesManager D-Bus object */
