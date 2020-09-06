@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -63,6 +63,19 @@ class GKDBusEvents
 			const std::vector<DBusMethodArgument> & args
 		);
 
+		void removeMethod(
+			const BusConnection eventBus,
+			const char* eventObject,
+			const char* eventInterface,
+			const char* eventName
+		);
+
+		void removeInterface(
+			const BusConnection eventBus,
+			const char* eventObject,
+			const char* eventInterface
+		);
+
 	protected:
 		GKDBusEvents(
 			const std::string & rootNode,
@@ -103,12 +116,20 @@ class GKDBusEvents
 		const std::string introspect(const std::string & askedObjectPath);
 		const std::string introspectRootNode(void);
 
-		void addIntrospectableEvent(
+		void removeEvent(
+			const BusConnection eventBus,
+			const char* eventObject,
+			const char* eventInterface,
+			const char* eventName
+		);
+
+		void addEvent(
 			const BusConnection eventBus,
 			const char* eventObject,
 			const char* eventInterface,
 			GKDBusEvent* event
 		);
+
 };
 
 } // namespace NSGKDBus

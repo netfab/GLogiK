@@ -153,6 +153,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 				 * handled after devices initialization into startMonitoring() */
 				devicesManager.startMonitoring();
 				clientsManager.waitForClientsDisconnections();
+				DBus.disconnectFromSystemBus();
 			}
 			catch (const GLogiKExcept & e) {	// catch any monitoring failure
 				std::ostringstream buffer(std::ios_base::app);
@@ -160,6 +161,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 				GKSysLog(LOG_WARNING, WARNING, buffer.str());
 
 				clientsManager.waitForClientsDisconnections();
+				DBus.disconnectFromSystemBus();
 				throw;
 			}
 		}

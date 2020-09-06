@@ -64,6 +64,19 @@ ClientsManager::~ClientsManager() {
 	}
 	_connectedClients.clear();
 
+	/* clients manager DBus object and interface */
+	const auto & CM_object = GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT;
+	const auto & CM_interf = GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
+
+	/* devices manager DBus object and interface */
+	const auto & DM_object = GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT;
+	const auto & DM_interf = GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
+
+	const NSGKDBus::BusConnection system_bus(NSGKDBus::BusConnection::GKDBUS_SYSTEM);
+
+	_pDBus->removeInterface(system_bus, CM_object, CM_interf);
+	_pDBus->removeInterface(system_bus, DM_object, DM_interf);
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "exiting clients manager";
 #endif

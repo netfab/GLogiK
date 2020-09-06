@@ -50,29 +50,8 @@ GKDBus::~GKDBus()
 	LOG(DEBUG1) << "dbus object destruction";
 #endif
 
-	if(_sessionConnection) {
-#if DEBUGGING_ON
-		LOG(DEBUG) << "closing DBus Session connection";
-#endif
-
-		if( ! _sessionName.empty() ) {
-			int ret = dbus_bus_release_name(_sessionConnection, _sessionName.c_str(), &_error);
-			this->checkReleasedName(ret);
-		}
-		dbus_connection_unref(_sessionConnection);
-	}
-
-	if(_systemConnection) {
-#if DEBUGGING_ON
-		LOG(DEBUG) << "closing DBus System connection";
-#endif
-
-		if( ! _systemName.empty() ) {
-			int ret = dbus_bus_release_name(_systemConnection, _systemName.c_str(), &_error);
-			this->checkReleasedName(ret);
-		}
-		dbus_connection_unref(_systemConnection);
-	}
+	this->disconnectFromSessionBus();
+	this->disconnectFromSystemBus();
 }
 
 void GKDBus::connectToSystemBus(
@@ -98,6 +77,22 @@ void GKDBus::connectToSystemBus(
 	}
 }
 
+void GKDBus::disconnectFromSystemBus(void)
+{
+	if(_systemConnection) {
+#if DEBUGGING_ON
+		LOG(DEBUG) << "closing DBus System connection";
+#endif
+
+		if( ! _systemName.empty() ) {
+			int ret = dbus_bus_release_name(_systemConnection, _systemName.c_str(), &_error);
+			this->checkReleasedName(ret);
+		}
+		dbus_connection_unref(_systemConnection);
+		_systemConnection = nullptr;
+	}
+}
+
 void GKDBus::connectToSessionBus(
 	const char* connectionName,
 	const ConnectionFlag flag)
@@ -118,6 +113,22 @@ void GKDBus::connectToSessionBus(
 
 	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
 		throw GLogiKExcept("DBus Session request name failure : not owner");
+	}
+}
+
+void GKDBus::disconnectFromSessionBus(void)
+{
+	if(_sessionConnection) {
+#if DEBUGGING_ON
+		LOG(DEBUG) << "closing DBus Session connection";
+#endif
+
+		if( ! _sessionName.empty() ) {
+			int ret = dbus_bus_release_name(_sessionConnection, _sessionName.c_str(), &_error);
+			this->checkReleasedName(ret);
+		}
+		dbus_connection_unref(_sessionConnection);
+		_sessionConnection = nullptr;
 	}
 }
 

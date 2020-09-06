@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -62,6 +62,8 @@ GKDBusEvents::~GKDBusEvents() {
 			}
 		}
 	}
+
+	_DBusEvents.clear();
 }
 
 const std::string & GKDBusEvents::getRootNode(void) const {
@@ -77,6 +79,57 @@ void GKDBusEvents::declareIntrospectableSignal(
 {
 	GKDBusIntrospectableSignal signal(name, args);
 	_DBusIntrospectableSignals[bus][object][interface].push_back(signal);
+}
+
+void GKDBusEvents::removeMethod(
+	const BusConnection eventBus,
+	const char* eventObject,
+	const char* eventInterface,
+	const char* eventName)
+{
+	this->removeEvent(eventBus, eventObject, eventInterface, eventName);
+}
+
+void GKDBusEvents::removeInterface(
+	const BusConnection eventBus,
+	const char* eventObject,
+	const char* eventInterface)
+{
+	auto find_interface = [this, &eventBus, &eventObject, &eventInterface] () -> const bool {
+		if(_DBusEvents.count(eventBus) == 1) {
+			if(_DBusEvents[eventBus].count(eventObject) == 1) {
+				if(_DBusEvents[eventBus][eventObject].count(eventInterface) == 1)
+					return true;
+			}
+		}
+		return false;
+	};
+
+	if( find_interface() ) {
+#if DEBUGGING_ON
+		LOG(DEBUG3) << "removing interface: " << eventInterface;
+#endif
+		auto & objectMap = _DBusEvents[eventBus][eventObject];
+		for(auto & DBusEvent : objectMap[eventInterface]) { /* vector of pointers */
+			delete DBusEvent; DBusEvent = nullptr;
+		}
+		objectMap[eventInterface].clear();
+		objectMap.erase(eventInterface);
+
+		if( (objectMap.size() == 1) and
+			(objectMap.count("org.freedesktop.DBus.Introspectable") == 1) ) {
+			this->removeInterface(eventBus, eventObject, "org.freedesktop.DBus.Introspectable");
+#if DEBUGGING_ON
+			LOG(DEBUG3) << "removing empty object: " << eventObject;
+#endif
+			_DBusEvents[eventBus].erase(eventObject);
+		}
+	}
+	else {
+		LOG(WARNING) << "Interface not found. bus: " << toUInt(toEnumType(eventBus))
+			<< " - obj: " << eventObject
+			<< " - int: " << eventInterface;
+	}
 }
 
 /*
@@ -106,7 +159,57 @@ const std::string GKDBusEvents::introspectRootNode(void) {
 	return xml.str();
 }
 
-void GKDBusEvents::addIntrospectableEvent(
+void GKDBusEvents::removeEvent(
+	const BusConnection eventBus,
+	const char* eventObject,
+	const char* eventInterface,
+	const char* eventName)
+{
+	auto get_index = [this, &eventBus, &eventObject, &eventInterface, &eventName] () -> const std::size_t {
+		if(_DBusEvents.count(eventBus) == 1) {
+			if(_DBusEvents[eventBus].count(eventObject) == 1) {
+				if(_DBusEvents[eventBus][eventObject].count(eventInterface) == 1) {
+					// vector of pointers
+					auto & vec = _DBusEvents[eventBus][eventObject][eventInterface];
+
+					for(auto it = vec.cbegin(); it != vec.cend(); ++it) {
+						if( (*it)->eventName == eventName ) {
+							const std::size_t index = (it - vec.cbegin());
+#if DEBUGGING_ON
+							LOG(DEBUG2) << "searched event found. bus: "
+								<< toUInt(toEnumType(eventBus))
+								<< " - obj: " << eventObject
+								<< " - int: " << eventInterface
+								<< " - ind: " << index;
+#endif
+							return index;
+						}
+					}
+
+				}
+			}
+		}
+
+		throw GLogiKExcept("event not found");
+	};
+
+	try {
+		const std::size_t index = get_index();
+		auto & vec = _DBusEvents[eventBus][eventObject][eventInterface];
+		delete vec[index]; vec[index] = nullptr;
+		vec.erase(vec.begin() + index);
+	}
+	catch ( const GLogiKExcept & e ) {
+		LOG(WARNING) << e.what()
+			<< ". bus: " << toUInt(toEnumType(eventBus))
+			<< " - obj: " << eventObject
+			<< " - int: " << eventInterface
+			<< " - name: " << eventName;
+	}
+
+}
+
+void GKDBusEvents::addEvent(
 	const BusConnection eventBus,
 	const char* eventObject,
 	const char* eventInterface,
