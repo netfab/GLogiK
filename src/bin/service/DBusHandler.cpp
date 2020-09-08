@@ -46,8 +46,9 @@ const char* restartRequest::what( void ) const throw()
 DBusHandler::DBusHandler(
 	pid_t pid,
 	SessionManager& session,
-	NSGKUtils::FileSystem* pGKfs)
-	:	_pDBus(nullptr),
+	NSGKUtils::FileSystem* pGKfs,
+	NSGKDBus::GKDBus* pDBus)
+	:	_pDBus(pDBus),
 		_sessionBus(NSGKDBus::BusConnection::GKDBUS_SESSION),
 		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
 		_registerStatus(false),
@@ -59,92 +60,92 @@ DBusHandler::DBusHandler(
 	_devices.setGKfs(pGKfs);
 
 	try {
+		this->setCurrentSessionObjectPath(pid);
+
 		try {
-			try {
-				_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE, GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE_PATH);
-			}
-			catch (const std::bad_alloc& e) { /* handle new() failure */
-				throw GLogiKBadAlloc("GKDBus bad allocation");
-			}
-
-			_pDBus->connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
-			_pDBus->connectToSessionBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
-
-			this->setCurrentSessionObjectPath(pid);
-
-			try {
-				unsigned int retries = 0;
-				while( ! _registerStatus ) {
-					if( ( session.isSessionAlive() )
-							and (retries < UNREACHABLE_DAEMON_MAX_RETRIES) )
-					{
-						if(retries > 0) {
-							LOG(INFO) << "register retry " << retries << " ...";
-						}
-
-						this->registerWithDaemon();
-
-						if( ! _registerStatus ) {
-							unsigned int timer = 5;
-							LOG(WARNING) << "retrying in " << timer << " seconds ...";
-							std::this_thread::sleep_for(std::chrono::seconds(timer));
-						}
+			unsigned int retries = 0;
+			while( ! _registerStatus ) {
+				if( ( session.isSessionAlive() )
+						and (retries < UNREACHABLE_DAEMON_MAX_RETRIES) )
+				{
+					if(retries > 0) {
+						LOG(INFO) << "register retry " << retries << " ...";
 					}
-					else {
-						LOG(ERROR) << "can't register, giving up";
-						throw GLogiKExcept("unable to register with daemon");
+
+					this->registerWithDaemon();
+
+					if( ! _registerStatus ) {
+						unsigned int timer = 5;
+						LOG(WARNING) << "retrying in " << timer << " seconds ...";
+						std::this_thread::sleep_for(std::chrono::seconds(timer));
 					}
-					retries++;
 				}
+				else {
+					LOG(ERROR) << "can't register, giving up";
+					throw GLogiKExcept("unable to register with daemon");
+				}
+				retries++;
 			}
-			catch ( const restartRequest & e ) {
-				this->sendRestartRequest(); /* throws */
-			}
-
-			this->updateSessionState();
-
-			this->initializeGKDBusSignals();
-			this->initializeGKDBusMethods();
-
-			/* set GKDBus pointer */
-			_devices.setDBus(_pDBus);
-			_devices.setClientID(_clientID);
-
-			this->initializeDevices();
 		}
-		catch ( const GLogiKExcept & e ) {
-			this->unregisterWithDaemon();
-			delete _pDBus; _pDBus = nullptr;
-			throw;
+		catch ( const restartRequest & e ) {
+			this->sendRestartRequest(); /* throws */
 		}
+
+		this->updateSessionState();
+
+		this->initializeGKDBusSignals();
+		this->initializeGKDBusMethods();
+
+		/* set GKDBus pointer */
+		_devices.setDBus(_pDBus);
+		_devices.setClientID(_clientID);
+
+		this->initializeDevices();
 	}
-	catch ( const GLogiKFatalError & e ) {
-		/* don't try to unregister in case of fatal error,
-		 * another GLogiKFatalError exception could be thrown */
-		delete _pDBus; _pDBus = nullptr;
+	catch ( const GLogiKExcept & e ) {
+		this->unregisterWithDaemon();
 		throw;
 	}
 }
 
 DBusHandler::~DBusHandler() {
-	if( _registerStatus ) {
-		try {
-			_devices.clearDevices();
-			this->unregisterWithDaemon();
-			/* send signal to GUI */
-			this->sendDevicesUpdatedSignal();
-		}
-		catch ( const GLogiKFatalError & e ) {
-			// giving up
-		}
-	}
-	else {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "client " << _currentSession << " already unregistered with deamon";
-#endif
-	}
+	/* remove SessionMessageHandler D-Bus interface and object */
+	_pDBus->removeInterface(_sessionBus,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 
-	delete _pDBus; _pDBus = nullptr;
+	/* remove GUISessionMessageHandler D-Bus interface and object */
+	_pDBus->removeInterface(_sessionBus,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE);
+
+	/* remove DevicesManager D-Bus interface and object */
+	_pDBus->removeInterface(_systemBus,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE);
+
+	/* remove ClientsManager D-Bus interface and object */
+	_pDBus->removeInterface(_systemBus,
+		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE);
+
+	const std::string object = _pDBus->getObjectFromObjectPath(_currentSession);
+
+	switch(_sessionFramework) {
+		/* logind */
+		case SessionFramework::FW_LOGIND:
+			_pDBus->removeInterface(_systemBus, object.c_str(),
+					"org.freedesktop.DBus.Properties");
+			break;
+		/* consolekit */
+		case SessionFramework::FW_CONSOLEKIT:
+			_pDBus->removeInterface(_systemBus, object.c_str(),
+					"org.freedesktop.ConsoleKit.Session");
+			break;
+		default:
+			LOG(WARNING) << "unknown session tracker";
+			break;
+	}
 }
 
 /*
@@ -156,19 +157,6 @@ DBusHandler::~DBusHandler() {
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
-
-void DBusHandler::checkDBusMessages(void) {
-	_pDBus->checkForMessages();
-}
-
-void DBusHandler::updateSessionState(void)
-{
-	_sessionState = this->getCurrentSessionState();
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "switching session state to : " << _sessionState;
-#endif
-	this->reportChangedState();
-}
 
 void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 {
@@ -196,6 +184,21 @@ void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 const bool DBusHandler::getExitStatus(void) const
 {
 	return ( ! _wantToExit );
+}
+
+void DBusHandler::clearAndUnregister(void)
+{
+	if( _registerStatus ) {
+		_devices.clearDevices();
+		this->unregisterWithDaemon();
+		/* send signal to GUI */
+		this->sendDevicesUpdatedSignal();
+	}
+	else {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "client " << _currentSession << " already unregistered with deamon";
+#endif
+	}
 }
 
 /*
@@ -429,6 +432,15 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 
 	/* fatal error */
 	throw GLogiKExcept("unable to contact a session manager");
+}
+
+void DBusHandler::updateSessionState(void)
+{
+	_sessionState = this->getCurrentSessionState();
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "switching session state to : " << _sessionState;
+#endif
+	this->reportChangedState();
 }
 
 /*
@@ -838,9 +850,9 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		std::bind(&DBusHandler::reportChangedState, this)
 	);
 
-	/* -- -- -- -- -- -- -- -- -- -- */
-	/*   GUI requests D-Bus object   */
-	/* -- -- -- -- -- -- -- -- -- -- */
+	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
+	/*   GUISessionMessageHandler GUI requests D-Bus object  */
+	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToVoid>::exposeSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
@@ -890,21 +902,8 @@ void DBusHandler::initializeGKDBusMethods(void)
 void DBusHandler::daemonIsStopping(void) {
 	std::ostringstream buffer("received signal: ", std::ios_base::app);
 	buffer << __func__;
-	if( _registerStatus ) {
-		LOG(INFO)	<< buffer.str()
-					<< " - saving state and unregistering with daemon";
-		_devices.clearDevices();
-		this->unregisterWithDaemon();
-		/* send signal to GUI */
-		this->sendDevicesUpdatedSignal();
-	}
-	else {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << buffer.str()
-					<< " - but we are NOT registered with daemon : "
-					<< _currentSession;
-#endif
-	}
+	LOG(INFO) << buffer.str();
+	this->clearAndUnregister();
 }
 
 void DBusHandler::daemonIsStarting(void) {

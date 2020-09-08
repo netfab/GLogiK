@@ -107,7 +107,8 @@ void GKDBusEvents::removeInterface(
 
 	if( find_interface() ) {
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "removing interface: " << eventInterface;
+		LOG(DEBUG2) << "removing interface: " << eventInterface
+					<< " from bus : " << toUInt(toEnumType(eventBus));
 #endif
 		auto & objectMap = _DBusEvents[eventBus][eventObject];
 		for(auto & DBusEvent : objectMap[eventInterface]) { /* vector of pointers */
@@ -116,13 +117,15 @@ void GKDBusEvents::removeInterface(
 		objectMap[eventInterface].clear();
 		objectMap.erase(eventInterface);
 
-		if( (objectMap.size() == 1) and
-			(objectMap.count("org.freedesktop.DBus.Introspectable") == 1) ) {
-			this->removeInterface(eventBus, eventObject, "org.freedesktop.DBus.Introspectable");
+		if( objectMap.empty() ) {
 #if DEBUGGING_ON
-			LOG(DEBUG3) << "removing empty object: " << eventObject;
+			LOG(DEBUG2) << "removing empty object: " << eventObject;
 #endif
 			_DBusEvents[eventBus].erase(eventObject);
+		}
+		else if( (objectMap.size() == 1) and
+			(objectMap.count("org.freedesktop.DBus.Introspectable") == 1) ) {
+			this->removeInterface(eventBus, eventObject, "org.freedesktop.DBus.Introspectable");
 		}
 	}
 	else {

@@ -34,6 +34,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
+#include "lib/dbus/GKDBus.hpp"
+#include "lib/utils/utils.hpp"
 #include "lib/shared/sessionManager.hpp"
 #include "lib/shared/glogik.hpp"
 
@@ -52,8 +54,7 @@ using namespace NSGKUtils;
 DesktopService::DesktopService() :
 	_pid(0),
 	_LOGfd(nullptr),
-	_verbose(false),
-	_pGKfs(nullptr)
+	_verbose(false)
 {
 	openlog(GLOGIKS_DESKTOP_SERVICE_NAME, LOG_PID|LOG_CONS, LOG_USER);
 
@@ -95,14 +96,13 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 #endif
 
 		{
-			try {
-				_pGKfs = new FileSystem();
-			}
-			catch (const std::bad_alloc& e) { /* handle new() failure */
-				throw GLogiKBadAlloc("GKfs bad allocation");
-			}
-
+			FileSystem GKfs;
 			SessionManager session;
+
+			NSGKDBus::GKDBus DBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE, GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE_PATH);
+
+			DBus.connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
+			DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 
 			struct pollfd fds[2];
 			nfds_t nfds = 2;
@@ -110,13 +110,13 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 			fds[0].fd = session.openConnection();
 			fds[0].events = POLLIN;
 
-			fds[1].fd = _pGKfs->getNotifyQueueDescriptor();
+			fds[1].fd = GKfs.getNotifyQueueDescriptor();
 			fds[1].events = POLLIN;
 
-			DBusHandler DBus(_pid, session, _pGKfs);
+			DBusHandler handler(_pid, session, &GKfs, &DBus);
 
 			while( session.isSessionAlive() and
-					DBus.getExitStatus() )
+					handler.getExitStatus() )
 			{
 				int num = poll(fds, nfds, 150);
 
@@ -131,15 +131,18 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 						/* checking if any received filesystem notification matches
 						 * any device configuration file. If yes, reload the file,
 						 * and send configuration to daemon */
-						DBus.checkNotifyEvents(_pGKfs);
+						handler.checkNotifyEvents(&GKfs);
 					}
 				}
 
-				DBus.checkDBusMessages();
+				DBus.checkForMessages();
 			}
-		}
 
-		delete _pGKfs; _pGKfs = nullptr;
+			handler.clearAndUnregister();
+
+			DBus.disconnectFromSessionBus();
+			DBus.disconnectFromSystemBus();
+		}
 
 #if DEBUGGING_ON
 		LOG(DEBUG) << "exiting with success";
@@ -147,14 +150,10 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
-		delete _pGKfs; _pGKfs = nullptr;
-
 		LOG(ERROR) << e.what();
 		return EXIT_FAILURE;
 	}
 	catch ( const GLogiKFatalError & e ) {
-		delete _pGKfs; _pGKfs = nullptr;
-
 		LOG(ERROR) << e.what();
 		return EXIT_FAILURE;
 	}

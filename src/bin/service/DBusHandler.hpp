@@ -68,16 +68,16 @@ class DBusHandler
 		DBusHandler(
 			pid_t pid,
 			SessionManager& session,
-			NSGKUtils::FileSystem* pGKfs
+			NSGKUtils::FileSystem* pGKfs,
+			NSGKDBus::GKDBus* pDBus
 		);
 		~DBusHandler(void);
-
-		void updateSessionState(void);
-		void checkDBusMessages(void);
 
 		const bool getExitStatus(void) const;
 
 		void checkNotifyEvents(NSGKUtils::FileSystem* pGKfs);
+
+		void clearAndUnregister(void);
 
 	protected:
 
@@ -97,6 +97,8 @@ class DBusHandler
 
 		void setCurrentSessionObjectPath(pid_t pid);
 		const std::string getCurrentSessionState(void);
+
+		void updateSessionState(void);
 
 		void registerWithDaemon(void);
 		void unregisterWithDaemon(void);
