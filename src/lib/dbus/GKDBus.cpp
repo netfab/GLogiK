@@ -77,7 +77,7 @@ void GKDBus::connectToSystemBus(
 	}
 }
 
-void GKDBus::disconnectFromSystemBus(void)
+void GKDBus::disconnectFromSystemBus(void) noexcept
 {
 	if(_systemConnection) {
 #if DEBUGGING_ON
@@ -116,7 +116,7 @@ void GKDBus::connectToSessionBus(
 	}
 }
 
-void GKDBus::disconnectFromSessionBus(void)
+void GKDBus::disconnectFromSessionBus(void) noexcept
 {
 	if(_sessionConnection) {
 #if DEBUGGING_ON
@@ -152,6 +152,17 @@ void GKDBus::checkForMessages(void) noexcept
 	if(_sessionConnection != nullptr)
 		this->checkForBusMessages(BusConnection::GKDBUS_SESSION, _sessionConnection);
 }
+
+
+/*
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ *
+ * === private === private === private === private === private ===
+ *
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ */
 
 /* -- */
 /*
@@ -256,18 +267,7 @@ void GKDBus::checkForBusMessages(const BusConnection bus, DBusConnection* connec
 	}
 }
 
-
-/*
- * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
- * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
- *
- * === private === private === private === private === private ===
- *
- * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
- * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
- */
-
-void GKDBus::checkReleasedName(int ret) {
+void GKDBus::checkReleasedName(int ret) noexcept {
 	switch(ret) {
 		case DBUS_RELEASE_NAME_REPLY_RELEASED:
 			LOG(DEBUG1) << "name released";
@@ -320,7 +320,7 @@ DBusConnection* GKDBus::getConnection(BusConnection bus) {
 	}
 }
 
-const unsigned int GKDBus::getDBusRequestFlags(const ConnectionFlag flag)
+const unsigned int GKDBus::getDBusRequestFlags(const ConnectionFlag flag) noexcept
 {
 	unsigned int ret = 0;
 	switch(flag) {
