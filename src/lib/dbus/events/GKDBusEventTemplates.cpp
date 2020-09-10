@@ -26,30 +26,6 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-void SignalRule::addSignalRuleMatch(
-		DBusConnection* connection,
-		const char* sender,
-		const char* interface,
-		const char* eventName
-	)
-{
-	std::string rule = "type='signal'";
-	if(sender != nullptr) {
-		rule += ",sender='";
-		rule += sender;
-	}
-	rule += "',interface='";
-	rule += interface;
-	rule += "',member='";
-	rule += eventName;
-	rule += "'";
-	dbus_bus_add_match(connection, rule.c_str(), nullptr);
-	dbus_connection_flush(connection);
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "DBus Signal match rule sent : " << eventName;
-#endif
-}
-
 template <>
 	void GKDBusCallbackEvent<VoidToVoid>::runCallback(
 		DBusConnection* connection,

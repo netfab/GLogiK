@@ -109,43 +109,6 @@ DBusHandler::DBusHandler(
 }
 
 DBusHandler::~DBusHandler() {
-	/* remove SessionMessageHandler D-Bus interface and object */
-	_pDBus->removeInterface(_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
-
-	/* remove GUISessionMessageHandler D-Bus interface and object */
-	_pDBus->removeInterface(_sessionBus,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE);
-
-	/* remove DevicesManager D-Bus interface and object */
-	_pDBus->removeInterface(_systemBus,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE);
-
-	/* remove ClientsManager D-Bus interface and object */
-	_pDBus->removeInterface(_systemBus,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE);
-
-	const std::string object = _pDBus->getObjectFromObjectPath(_currentSession);
-
-	switch(_sessionFramework) {
-		/* logind */
-		case SessionFramework::FW_LOGIND:
-			_pDBus->removeInterface(_systemBus, object.c_str(),
-					"org.freedesktop.DBus.Properties");
-			break;
-		/* consolekit */
-		case SessionFramework::FW_CONSOLEKIT:
-			_pDBus->removeInterface(_systemBus, object.c_str(),
-					"org.freedesktop.ConsoleKit.Session");
-			break;
-		default:
-			LOG(WARNING) << "unknown session tracker";
-			break;
-	}
 }
 
 /*
@@ -198,6 +161,55 @@ void DBusHandler::clearAndUnregister(void)
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "client " << _currentSession << " already unregistered with deamon";
 #endif
+	}
+}
+
+void DBusHandler::cleanDBusRequests(void) {
+	this->clearAndUnregister();
+
+	/* remove SessionMessageHandler D-Bus interface and object */
+	_pDBus->removeMethodsInterface(_sessionBus,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
+
+	/* remove GUISessionMessageHandler D-Bus interface and object */
+	_pDBus->removeSignalsInterface(_sessionBus,
+		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE);
+
+	/* remove DevicesManager D-Bus interface and object */
+	_pDBus->removeSignalsInterface(_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE);
+
+	/* remove ClientsManager D-Bus interface and object */
+	_pDBus->removeSignalsInterface(_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE);
+
+	const std::string object = _pDBus->getObjectFromObjectPath(_currentSession);
+
+	switch(_sessionFramework) {
+		/* logind */
+		case SessionFramework::FW_LOGIND:
+			_pDBus->removeSignalsInterface(_systemBus,
+				"org.freedesktop.login1",
+				object.c_str(),
+				"org.freedesktop.DBus.Properties");
+			break;
+		/* consolekit */
+		case SessionFramework::FW_CONSOLEKIT:
+			_pDBus->removeSignalsInterface(_systemBus,
+				"org.freedesktop.ConsoleKit",
+				object.c_str(),
+				"org.freedesktop.ConsoleKit.Session");
+			break;
+		default:
+			LOG(WARNING) << "unknown session tracker";
+			break;
 	}
 }
 

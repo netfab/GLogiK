@@ -74,10 +74,8 @@ class DBusHandler
 		~DBusHandler(void);
 
 		const bool getExitStatus(void) const;
-
 		void checkNotifyEvents(NSGKUtils::FileSystem* pGKfs);
-
-		void clearAndUnregister(void);
+		void cleanDBusRequests(void);
 
 	protected:
 
@@ -102,6 +100,8 @@ class DBusHandler
 
 		void registerWithDaemon(void);
 		void unregisterWithDaemon(void);
+
+		void clearAndUnregister(void);
 
 		void reportChangedState(void);
 

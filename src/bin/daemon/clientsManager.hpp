@@ -51,6 +51,7 @@ class ClientsManager
 		~ClientsManager(void);
 
 		void initializeDBusRequests(NSGKDBus::GKDBus* pDBus);
+		void cleanDBusRequests(void) noexcept;
 		void waitForClientsDisconnections(void) noexcept;
 
 	protected:

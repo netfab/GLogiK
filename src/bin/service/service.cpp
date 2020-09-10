@@ -138,7 +138,8 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 				DBus.checkForMessages();
 			}
 
-			handler.clearAndUnregister();
+			// also unregister with daemon before cleaning
+			handler.cleanDBusRequests();
 
 			DBus.disconnectFromSessionBus();
 			DBus.disconnectFromSystemBus();
