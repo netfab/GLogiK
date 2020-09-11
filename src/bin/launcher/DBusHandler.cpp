@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -37,27 +37,12 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-LauncherDBusHandler::LauncherDBusHandler(void)
-	:	_pDBus(nullptr),
+DBusHandler::DBusHandler(NSGKDBus::GKDBus* pDBus)
+	:	_pDBus(pDBus),
 		_sessionBus(NSGKDBus::BusConnection::GKDBUS_SESSION),
-		tenSeconds(chr::duration<int>(10))
+		_tenSeconds(chr::duration<int>(10))
 {
-	try {
-		try {
-			_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE, GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE_PATH);
-		}
-		catch (const std::bad_alloc& e) { /* handle new() failure */
-			throw GLogiKBadAlloc("GKDBus bad allocation");
-		}
-
-		_pDBus->connectToSessionBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
-
-		this->initializeGKDBusSignals();
-	}
-	catch ( const GLogiKExcept & e ) {
-		delete _pDBus; _pDBus = nullptr;
-		throw;
-	}
+	this->initializeGKDBusSignals();
 
 	/* initializing first time point */
 	_lastCall = chr::steady_clock::now();
@@ -70,13 +55,21 @@ LauncherDBusHandler::LauncherDBusHandler(void)
 	this->restartRequest();
 }
 
-LauncherDBusHandler::~LauncherDBusHandler(void)
+DBusHandler::~DBusHandler(void)
 {
-	delete _pDBus; _pDBus = nullptr;
 }
 
-void LauncherDBusHandler::checkDBusMessages(void) {
-	_pDBus->checkForMessages();
+void DBusHandler::cleanDBusRequests(void)
+{
+	_pDBus->removeSignalsInterface(_sessionBus,
+		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE);
+
+	_pDBus->removeSignalsInterface(_sessionBus,
+		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 }
 
 /*
@@ -90,7 +83,7 @@ void LauncherDBusHandler::checkDBusMessages(void) {
  *
  */
 
-void LauncherDBusHandler::initializeGKDBusSignals(void) {
+void DBusHandler::initializeGKDBusSignals(void) {
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
@@ -98,7 +91,7 @@ void LauncherDBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"RestartRequest",
 		{},
-		std::bind(&LauncherDBusHandler::restartRequest, this)
+		std::bind(&DBusHandler::restartRequest, this)
 	);
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
@@ -108,11 +101,11 @@ void LauncherDBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 		"RestartRequest",
 		{},
-		std::bind(&LauncherDBusHandler::restartRequest, this)
+		std::bind(&DBusHandler::restartRequest, this)
 	);
 }
 
-void LauncherDBusHandler::restartRequest(void)
+void DBusHandler::restartRequest(void)
 {
 	using steady = chr::steady_clock;
 
@@ -122,7 +115,7 @@ void LauncherDBusHandler::restartRequest(void)
 
 	const steady::time_point now = steady::now();
 	const steady::duration timeLapse = now - _lastCall;
-	if(timeLapse > tenSeconds) {
+	if(timeLapse > _tenSeconds) {
 		try {
 			bp::group g;
 			bp::spawn(GLOGIKS_DESKTOP_SERVICE_NAME, g);
