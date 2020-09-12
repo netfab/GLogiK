@@ -327,6 +327,8 @@ void MainWindow::build(void)
 		{ {"s", "device_id", "in", "device ID"}, },
 		std::bind(&MainWindow::configurationFileUpdated, this, std::placeholders::_1)
 	);
+
+	connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::aboutToQuit);
 }
 
 /*
@@ -338,6 +340,17 @@ void MainWindow::build(void)
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
+
+void MainWindow::aboutToQuit(void)
+{
+	_pDBus->removeSignalsInterface(
+		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
+
+	_pDBus->disconnectFromSessionBus();
+}
 
 void MainWindow::configurationFileUpdated(const std::string & devID)
 {

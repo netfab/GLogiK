@@ -98,6 +98,8 @@ class MainWindow
 
 		void aboutDialog(void);
 
+		void aboutToQuit(void);
+
 		void updateDevicesList(void);
 		void resetInterface(void);
 		void updateInterface(int index);
