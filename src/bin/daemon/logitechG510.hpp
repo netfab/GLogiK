@@ -29,7 +29,7 @@
 #include <vector>
 #include <string>
 
-#include "DeviceID.hpp"
+#include "USBDeviceID.hpp"
 #include "keyboardDriver.hpp"
 
 #include "include/enums.hpp"
@@ -69,42 +69,154 @@ struct MKeyLed
 	unsigned char mask;
 };
 
-class LogitechG510
-	:	public KeyboardDriver
+
+
+class G510Base
 {
 	public:
-		LogitechG510();
-		~LogitechG510();
-
-		const char* getDriverName() const;
-		const uint16_t getDriverID() const;
-		const std::vector<DeviceID> & getSupportedDevices(void) const;
-		const std::vector<std::string> & getMacroKeysNames(void) const;
 
 	protected:
-	private:
-		static const std::vector<RKey> fiveBytesKeysMap;
-		static const std::vector<RKey> twoBytesKeysMap;
-		static const std::vector<MKeyLed> ledsMask;
-		static const std::vector<DeviceID> knownDevices;
+		G510Base(void) = default;
+		~G510Base(void) = default;
 
-		KeyStatus processKeyEvent(USBDevice & device);
-		void sendUSBDeviceInitialization(USBDevice & device);
-		void setDeviceMxKeysLeds(USBDevice & device);
-		void setDeviceBacklightColor(
+		const char* getDriverName(void) const;
+		const uint16_t getDriverID(void) const;
+		const std::vector<USBDeviceID> & getSupportedDevices(void) const;
+		const std::vector<std::string> & getMacroKeysNames(void) const;
+
+		static const std::vector<MKeyLed> ledsMask;
+
+		virtual const bool checkMacroKey(USBDevice & device);
+		virtual const bool checkMediaKey(USBDevice & device);
+		virtual const bool checkLCDKey(USBDevice & device);
+
+		virtual KeyStatus processKeyEvent(USBDevice & device);
+
+		virtual void sendUSBDeviceInitialization(USBDevice & device);
+
+		virtual void setDeviceBacklightColor(
 			USBDevice & device,
 			const uint8_t r=0xFF,
 			const uint8_t g=0xFF,
 			const uint8_t b=0xFF
 		);
 
-		void processKeyEvent8Bytes(USBDevice & device);
-		void processKeyEvent5Bytes(USBDevice & device);
+		virtual void setDeviceMxKeysLeds(USBDevice & device);
+
+	private:
+		static const std::vector<RKey> fiveBytesKeysMap;
+		static const std::vector<RKey> twoBytesKeysMap;
+		static const std::vector<USBDeviceID> knownDevices;
+
 		void processKeyEvent2Bytes(USBDevice & device);
-		const bool checkMacroKey(USBDevice & device);
-		const bool checkMediaKey(USBDevice & device);
-		const bool checkLCDKey(USBDevice & device);
+		void processKeyEvent5Bytes(USBDevice & device);
+		void processKeyEvent8Bytes(USBDevice & device);
+
+		virtual void sendControlRequest(
+			USBDevice & device,
+			uint16_t wValue,
+			uint16_t wIndex,
+			unsigned char * data,
+			uint16_t wLength
+		) = 0;
+
+		virtual void fillStandardKeysEvents(USBDevice & device) = 0;
+
+#if DEBUGGING_ON && DEBUG_KEYS
+		virtual const std::string getBytes(const USBDevice & device) const = 0;
+#endif
+
 };
+
+
+template <typename USBAPI>
+class LogitechG510
+	:	public USBKeyboardDriver<USBAPI>,
+		public G510Base
+{
+	public:
+		LogitechG510();
+		~LogitechG510();
+
+	protected:
+		const char* getDriverName(void) const override {
+			return G510Base::getDriverName();
+		}
+		const uint16_t getDriverID(void) const override {
+			return G510Base::getDriverID();
+		}
+		const std::vector<USBDeviceID> & getSupportedDevices(void) const override {
+			return G510Base::getSupportedDevices();
+		}
+		const std::vector<std::string> & getMacroKeysNames(void) const override {
+			return G510Base::getMacroKeysNames();
+		}
+
+	private:
+		void sendControlRequest(
+			USBDevice & device,
+			uint16_t wValue,
+			uint16_t wIndex,
+			unsigned char * data,
+			uint16_t wLength
+		) override {
+			USBKeyboardDriver<USBAPI>::sendControlRequest(device, wValue, wIndex, data, wLength);
+		}
+
+		void setDeviceBacklightColor(
+			USBDevice & device,
+			const uint8_t r=0xFF,
+			const uint8_t g=0xFF,
+			const uint8_t b=0xFF
+		) override {
+			G510Base::setDeviceBacklightColor(device, r, g,  b);
+		}
+
+		void setDeviceMxKeysLeds(USBDevice & device) override {
+			G510Base::setDeviceMxKeysLeds(device);
+		}
+
+		void sendUSBDeviceInitialization(USBDevice & device) override {
+			return G510Base::sendUSBDeviceInitialization(device);
+		}
+
+		const bool checkMacroKey(USBDevice & device) override {
+			return G510Base::checkMacroKey(device);
+		}
+		const bool checkMediaKey(USBDevice & device) override {
+			return G510Base::checkMediaKey(device);
+		}
+		const bool checkLCDKey(USBDevice & device) override {
+			return G510Base::checkLCDKey(device);
+		}
+
+		void fillStandardKeysEvents(USBDevice & device) override {
+			USBKeyboardDriver<USBAPI>::fillStandardKeysEvents(device);
+		}
+
+		KeyStatus processKeyEvent(USBDevice & device) override {
+			return G510Base::processKeyEvent(device);
+		}
+
+#if DEBUGGING_ON && DEBUG_KEYS
+		const std::string getBytes(const USBDevice & device) const override {
+			return USBKeyboardDriver<USBAPI>::getBytes(device);
+		}
+#endif
+
+};
+
+
+template <typename USBAPI>
+LogitechG510<USBAPI>::LogitechG510()
+	:	USBKeyboardDriver<USBAPI>() {
+}
+
+template <typename USBAPI>
+LogitechG510<USBAPI>::~LogitechG510() {
+}
+
+
 
 } // namespace GLogiK
 

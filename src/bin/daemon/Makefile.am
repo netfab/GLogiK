@@ -44,7 +44,8 @@ GLogiKd_SOURCES = \
 		%D%/libUSB.hpp \
 		%D%/USBDevice.cpp \
 		%D%/USBDevice.hpp \
-		%D%/DeviceID.hpp \
+		%D%/USBDeviceID.cpp \
+		%D%/USBDeviceID.hpp \
 		%D%/virtualKeyboard.cpp \
 		%D%/virtualKeyboard.hpp \
 		%D%/logitechG510.cpp \

@@ -31,34 +31,18 @@
 namespace GLogiK
 {
 
-struct ExpectedDescriptorsValues {
-	uint8_t bConfigurationValue;
-	uint8_t bInterfaceNumber;
-	uint8_t bAlternateSetting;
-	uint8_t bNumEndpoints;
-};
-
 class LibUSB
 {
 	public:
 
 	protected:
-		LibUSB(const int maxLength, const ExpectedDescriptorsValues & eValues);
+		LibUSB(void);
 		~LibUSB(void);
-
-		const int getKeysInterruptBufferMaxLength(void) const
-		{
-			return _keysInterruptBufferMaxLength;
-		};
 
 		int USBError(int errorCode) noexcept;
 
 		void openUSBDevice(USBDevice & device);
 		void closeUSBDevice(USBDevice & device) noexcept;
-
-		void setUSBDeviceActiveConfiguration(USBDevice & device);
-		void findUSBDeviceInterface(USBDevice & device);
-		void releaseUSBDeviceInterfaces(USBDevice & device) noexcept;
 
 		void sendControlRequest(
 			USBDevice & device,
@@ -85,8 +69,9 @@ class LibUSB
 		static uint8_t counter;			/* initialized drivers counter */
 		static libusb_context * pContext;
 
-		const ExpectedDescriptorsValues _expectedDescriptorsValues;
-		int _keysInterruptBufferMaxLength;
+		void setUSBDeviceActiveConfiguration(USBDevice & device);
+		void findUSBDeviceInterface(USBDevice & device);
+		void releaseUSBDeviceInterfaces(USBDevice & device) noexcept;
 
 		void detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int numInt);
 		void attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexcept;

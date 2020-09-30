@@ -41,8 +41,7 @@ bool LibUSB::status = false;
 uint8_t LibUSB::counter = 0;
 libusb_context * LibUSB::pContext = nullptr;
 
-LibUSB::LibUSB(const int maxLength, const ExpectedDescriptorsValues & eValues)
-	:	_expectedDescriptorsValues(eValues)
+LibUSB::LibUSB(void)
 {
 	LibUSB::counter++;
 
@@ -57,14 +56,6 @@ LibUSB::LibUSB(const int maxLength, const ExpectedDescriptorsValues & eValues)
 
 		LibUSB::status = true;
 	}
-
-	_keysInterruptBufferMaxLength = maxLength;
-
-	if( maxLength > KEYS_BUFFER_LENGTH ) {
-		GKSysLog(LOG_WARNING, WARNING, "interrupt read length too large, set it to max buffer length");
-		_keysInterruptBufferMaxLength = KEYS_BUFFER_LENGTH;
-	}
-
 }
 
 LibUSB::~LibUSB() {
@@ -130,9 +121,22 @@ void LibUSB::openUSBDevice(USBDevice & device) {
 #endif
 
 	libusb_free_device_list(list, 1);
+
+	try {
+		this->setUSBDeviceActiveConfiguration(device);
+		this->findUSBDeviceInterface(device);
+	}
+	catch ( const GLogiKExcept & e ) {
+		this->closeUSBDevice(device);
+		throw;
+	}
 }
 
 void LibUSB::closeUSBDevice(USBDevice & device) noexcept {
+	/* if we ever claimed or detached some interfaces, set them back
+	 * to the same state in which we found them */
+	this->releaseUSBDeviceInterfaces(device);
+
 	libusb_close(device._pUSBDeviceHandle);
 	device._pUSBDeviceHandle = nullptr;
 #if DEBUGGING_ON
@@ -162,6 +166,8 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 	LOG(DEBUG1) << device.getID() << " setting up usb device configuration";
 #endif
 
+	int b = toInt( device.getBConfigurationValue() );
+
 	{
 		int bConfigurationValue = -1;
 		ret = libusb_get_configuration(device._pUSBDeviceHandle, &bConfigurationValue);
@@ -172,7 +178,7 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 		LOG(DEBUG3) << device.getID() << " current active configuration value : " << bConfigurationValue;
 #endif
 
-		if( bConfigurationValue == toInt(_expectedDescriptorsValues.bConfigurationValue) )
+		if( bConfigurationValue == b )
 		{
 #if DEBUGGING_ON
 			LOG(INFO) << device.getID() << " current active configuration value matches the wanted value, skipping configuration";
@@ -183,7 +189,7 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< device.getID()
-				<< " wanted configuration : " << toInt(_expectedDescriptorsValues.bConfigurationValue);
+				<< " wanted configuration : " << b;
 	LOG(DEBUG2) << device.getID() << " will try to set the active configuration to the wanted value";
 #endif
 
@@ -230,7 +236,7 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << device.getID() << " checking current active configuration";
 #endif
-	ret = libusb_set_configuration(device._pUSBDeviceHandle, toInt(_expectedDescriptorsValues.bConfigurationValue));
+	ret = libusb_set_configuration(device._pUSBDeviceHandle, b);
 	if ( this->USBError(ret) ) {
 		throw GLogiKExcept("libusb set_configuration failure");
 	}
@@ -311,7 +317,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 #endif
 #endif
 
-		if ( configDescriptor->bConfigurationValue != _expectedDescriptorsValues.bConfigurationValue ) {
+		if ( configDescriptor->bConfigurationValue != device.getBConfigurationValue() ) {
 			libusb_free_config_descriptor( configDescriptor ); /* free */
 			continue; /* skip non expected configuration */
 		}
@@ -351,11 +357,11 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 #endif
 #endif
 
-				if ( asDescriptor->bInterfaceNumber != _expectedDescriptorsValues.bInterfaceNumber) {
+				if ( asDescriptor->bInterfaceNumber != device.getBInterfaceNumber() ) {
 					continue; /* skip non expected interface */
 				}
 
-				if ( asDescriptor->bAlternateSetting != _expectedDescriptorsValues.bAlternateSetting) {
+				if ( asDescriptor->bAlternateSetting != device.getBAlternateSetting() ) {
 					continue; /* skip non expected alternate setting */
 				}
 
@@ -366,10 +372,10 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 					continue; /* sanity check */
 				}
 
-				if ( asDescriptor->bNumEndpoints != _expectedDescriptorsValues.bNumEndpoints) {
+				if ( asDescriptor->bNumEndpoints != device.getBNumEndpoints() ) {
 #if DEBUGGING_ON
 					LOG(WARNING) << "skipping settings. numEndpoints: " << toUInt(asDescriptor->bNumEndpoints)
-							<< " expected: " << toUInt(_expectedDescriptorsValues.bNumEndpoints);
+							<< " expected: " << toUInt(device.getBNumEndpoints());
 #endif
 					libusb_free_config_descriptor( configDescriptor ); /* free */
 					throw GLogiKExcept("num_endpoints does not match");
@@ -415,7 +421,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 #if DEBUGGING_ON
 					LOG(DEBUG2) << device.getID() << " current active configuration value : " << bConfigurationValue;
 #endif
-					if ( bConfigurationValue != toInt(_expectedDescriptorsValues.bConfigurationValue) ) {
+					if ( bConfigurationValue != toInt( device.getBConfigurationValue() ) ) {
 						libusb_free_config_descriptor( configDescriptor ); /* free */
 						std::ostringstream buffer(std::ios_base::app);
 						buffer << "wrong configuration value : " << bConfigurationValue;
@@ -549,7 +555,7 @@ int LibUSB::performKeysInterruptTransfer(
 			device._pUSBDeviceHandle,
 			device._keysEndpoint,
 			static_cast<unsigned char*>(device._pressedKeys),
-			this->getKeysInterruptBufferMaxLength(),
+			device.getKeysInterruptBufferMaxLength(),
 			&(device._lastKeysInterruptTransferLength),
 			timeout
 		);

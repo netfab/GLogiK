@@ -36,6 +36,7 @@
 #include "daemonControl.hpp"
 #include "logitechG510.hpp"
 #include "devicesManager.hpp"
+#include "libUSB.hpp"
 
 
 namespace GLogiK
@@ -132,7 +133,7 @@ void DevicesManager::initializeDevices(void) noexcept {
 			for(const auto & driver : _drivers) {
 				if( device.getDriverID() == driver->getDriverID() ) {
 					// initialization
-					driver->initializeDevice( device );
+					driver->openDevice( device );
 					_startedDevices[devID] = device;
 					startedDevices.push_back(devID);
 
@@ -174,7 +175,7 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
 				// initialization
-				driver->initializeDevice( device );
+				driver->openDevice( device );
 				_startedDevices[devID] = device;
 
 				std::ostringstream buffer(std::ios_base::app);
@@ -499,7 +500,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 								throw GLogiKExcept("stoi out of range");
 							}
 
-							const std::string devID( BusNumDeviceID::getDeviceID(bus, num) );
+							const std::string devID( USBDeviceID::getDeviceID(bus, num) );
 
 							try {
 								const DetectedDevice & d = _detectedDevices.at(devID);
@@ -513,6 +514,14 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 									device.getProductID(),
 									device.getCapabilities(),
 									bus, num,
+									device.getBConfigurationValue(),
+									device.getBInterfaceNumber(),
+									device.getBAlternateSetting(),
+									device.getBNumEndpoints(),
+									device.getKeysInterruptBufferMaxLength(),
+									device.getMacrosKeysLength(),
+									device.getMediaKeysLength(),
+									device.getLCDKeysLength(),
 									devnode, vendor, model,
 									serial, usec, driver->getDriverID()
 								);
@@ -811,7 +820,7 @@ void DevicesManager::startMonitoring(void) {
 			LOG(DEBUG2) << "loading drivers";
 #endif
 			try {
-				_drivers.push_back( new LogitechG510() );
+				_drivers.push_back( new LogitechG510<LibUSB>() );
 			}
 			catch (const std::bad_alloc& e) { /* handle new() failure */
 				throw GLogiKBadAlloc("catch driver wrong allocation");

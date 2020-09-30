@@ -27,11 +27,7 @@
 #include <algorithm>
 #include <sstream>
 
-#include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
-#if GKDBUS
-#include "lib/dbus/GKDBus.hpp"
-#endif
 
 #include "daemonControl.hpp"
 #include "keyboardDriver.hpp"
@@ -40,6 +36,11 @@ namespace GLogiK
 {
 
 using namespace NSGKUtils;
+
+
+/*
+ *	KeyboardDriver
+ */
 
 constexpr unsigned char KeyboardDriver::hidKeyboard[256];
 std::vector<std::string> KeyboardDriver::macrosKeysNames = {};
@@ -58,29 +59,9 @@ const std::vector< ModifierKey > KeyboardDriver::modifierKeys = {
 
 /* -- -- -- */
 
-KeyboardDriver::KeyboardDriver(
-	int keysInterruptBufferMaxLength,
-	const ExpectedDescriptorsValues & eValues,
-	const KeysEventsLength & eLength)
-		:	LibUSB(keysInterruptBufferMaxLength, eValues),
-			_keysEventsLength(eLength)
-{
-}
-
-KeyboardDriver::~KeyboardDriver() {
-}
-
-const bool KeyboardDriver::checkDeviceCapability(const DeviceID & device, Caps toCheck) {
-	return (device.getCapabilities() & toEnumType(toCheck));
-}
-
-const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void) {
-	KeyboardDriver::macrosKeysNames.clear();
-	return KeyboardDriver::macrosKeysNames;
-}
-
 #if DEBUGGING_ON && DEBUG_KEYS
-const std::string KeyboardDriver::getBytes(const USBDevice & device) const {
+const std::string KeyboardDriver::getBytes(const USBDevice & device) const
+{
 	const unsigned int last_length = toUInt(device.getLastKeysInterruptTransferLength());
 	if( last_length == 0 )
 		return "";
@@ -93,6 +74,16 @@ const std::string KeyboardDriver::getBytes(const USBDevice & device) const {
 }
 #endif
 
+
+const bool KeyboardDriver::checkDeviceCapability(const USBDeviceID & device, Caps toCheck) {
+	return (device.getCapabilities() & toEnumType(toCheck));
+}
+
+const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void) {
+	KeyboardDriver::macrosKeysNames.clear();
+	return KeyboardDriver::macrosKeysNames;
+}
+
 KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 	std::fill_n(device._pressedKeys, KEYS_BUFFER_LENGTH, 0);
 
@@ -103,7 +94,7 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 			if( device.getLastKeysInterruptTransferLength() > 0 ) {
 #if DEBUGGING_ON && DEBUG_KEYS
 				LOG(DEBUG)	<< device.getID()
-							<< " exp. rl: " << this->getKeysInterruptBufferMaxLength()
+							<< " exp. rl: " << device.getKeysInterruptBufferMaxLength()
 							<< " act_l: " << device.getLastKeysInterruptTransferLength() << ", xBuf[0]: "
 							<< std::hex << toUInt(device._pressedKeys[0]);
 #endif
@@ -134,6 +125,10 @@ void KeyboardDriver::notImplemented(const char* func) const {
 	GKSysLog(LOG_WARNING, WARNING, buffer.str());
 }
 
+void KeyboardDriver::sendUSBDeviceInitialization(USBDevice & device) {
+	this->notImplemented(__func__);
+}
+
 void KeyboardDriver::setDeviceMxKeysLeds(USBDevice & device) {
 	this->notImplemented(__func__);
 }
@@ -144,10 +139,6 @@ void KeyboardDriver::setDeviceBacklightColor(
 	const uint8_t g,
 	const uint8_t b)
 {
-	this->notImplemented(__func__);
-}
-
-void KeyboardDriver::sendUSBDeviceInitialization(USBDevice & device) {
 	this->notImplemented(__func__);
 }
 
@@ -237,7 +228,7 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 			bool skipEvent = false;
 			const uint8_t size = device._newMacro.size();
 
-			/* Macro Size Limit - see keyEvent.h */
+			/* Macro Size Limit - see keyEvent.hpp */
 			if(size >= MACRO_T_MAX_SIZE) {
 				/* skip all new events */
 #if DEBUGGING_ON
@@ -246,7 +237,7 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 				skipEvent = true;
 			}
 
-			/* Macro Size Limit - see keyEvent.h */
+			/* Macro Size Limit - see keyEvent.hpp */
 			if( ! skipEvent and (size >= MACRO_T_KEYPRESS_MAX_SIZE) ) {
 				/* skip events other than release */
 				if( e.event != EventValue::EVENT_KEY_RELEASE ) {
@@ -314,7 +305,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device) {
 	LOG(DEBUG2) << "	b	|	p";
 	LOG(DEBUG2) << "  ------------------------------";
 #endif
-	for(i = this->getKeysInterruptBufferMaxLength()-1; i >= 2; --i) {
+	for(i = device.getKeysInterruptBufferMaxLength()-1; i >= 2; --i) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "	" << toUInt(device._pressedKeys[i])
 					<< "	|	" << toUInt(device._previousPressedKeys[i]);
@@ -323,7 +314,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device) {
 			continue; /* nothing here */
 		}
 		else {
-			/* Macro Size Limit - see keyEvent.h */
+			/* Macro Size Limit - see keyEvent.hpp */
 			if(device._newMacro.size() >= MACRO_T_MAX_SIZE ) {
 				/* skip all new events */
 #if DEBUGGING_ON
@@ -348,7 +339,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device) {
 				continue;
 			}
 
-			/* Macro Size Limit - see keyEvent.h */
+			/* Macro Size Limit - see keyEvent.hpp */
 			if(device._newMacro.size() >= MACRO_T_KEYPRESS_MAX_SIZE ) {
 				/* skip events other than release */
 				if( e.event != EventValue::EVENT_KEY_RELEASE ) {
@@ -628,7 +619,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 						 * update M1-MR leds status, launch macro record mode and
 						 * run macros only after proper event length
 						 */
-						if( device.getLastKeysInterruptTransferLength() == _keysEventsLength.MacrosKeys ) {
+						if( device.getLastKeysInterruptTransferLength() == device.getMacrosKeysLength() ) {
 							/* update mask with potential pressed keys */
 							if(this->updateDeviceMxKeysLedsMask(device))
 								this->setDeviceMxKeysLeds(device);
@@ -662,7 +653,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 					}
 
 					if( this->checkDeviceCapability(device, Caps::GK_MEDIA_KEYS) ) {
-						if( device.getLastKeysInterruptTransferLength() == _keysEventsLength.MediaKeys ) {
+						if( device.getLastKeysInterruptTransferLength() == device.getMediaKeysLength() ) {
 							if( this->checkMediaKey(device) ) {
 #if GKDBUS
 								NSGKDBus::GKDBus* pDBus = nullptr;
@@ -705,7 +696,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 					}
 
 					if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-						if( device.getLastKeysInterruptTransferLength() == _keysEventsLength.LCDKeys ) {
+						if( device.getLastKeysInterruptTransferLength() == device.getLCDKeysLength() ) {
 							if( this->checkLCDKey(device) ) {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 								std::lock_guard<std::mutex> lock(device._LCDMutex);
@@ -734,83 +725,6 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 		std::ostringstream err("uncaught std::exception : ", std::ios_base::app);
 		err << e.what();
 		GKSysLog(LOG_ERR, ERROR, err.str());
-	}
-}
-
-/* throws GLogiKExcept on any failure */
-void KeyboardDriver::initializeDevice(const BusNumDeviceID & det)
-{
-	/* sanity check */
-	if(_initializedDevices.count(det.getID()) > 0) {
-		std::ostringstream err("device ID already used in started container : ", std::ios_base::app);
-		err << det.getID();
-		throw GLogiKExcept(err.str());
-	}
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << det.getID() << " initializing " << det.getName() << "("
-				<< det.getVendorID() << ":" << det.getProductID() << "), device "
-				<< toUInt(det.getNum()) << " on bus " << toUInt(det.getBus());
-#endif
-
-	USBDevice device(
-		det.getName(),
-		det.getVendorID(),
-		det.getProductID(),
-		det.getCapabilities(),
-		det.getBus(),
-		det.getNum()
-	);
-
-	this->openUSBDevice(device); /* throws on any failure */
-	/* libusb device opened */
-
-	try {
-		this->setUSBDeviceActiveConfiguration(device);
-		this->findUSBDeviceInterface(device);
-		this->sendUSBDeviceInitialization(device);
-
-		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			/* virtual keyboard name */
-			std::ostringstream buffer(std::ios_base::app);
-			buffer	<< "Virtual " << device.getName()
-					<< " " << device.getID();
-
-			device.initializeMacrosManager(
-				buffer.str().c_str(),
-				this->getMacroKeysNames()
-			);
-		}
-
-		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-			device.initializeLCDPluginsManager();
-		}
-
-		this->resetDeviceState(device);
-
-		_initializedDevices[ device.getID() ] = device;
-
-		/* spawn listening thread */
-		try {
-			std::thread listen_thread(&KeyboardDriver::listenLoop, this, device.getID() );
-			std::lock_guard<std::mutex> lock(_threadsMutex);
-			_threads.push_back( std::move(listen_thread) );
-		}
-		catch (const std::system_error& e) {
-			std::ostringstream buffer(std::ios_base::app);
-			buffer << "error while spawning listening thread : " << e.what();
-			throw GLogiKExcept(buffer.str());
-		}
-	}
-	catch ( const GLogiKExcept & e ) {
-		device.destroyMacrosManager();
-		device.destroyLCDPluginsManager();
-
-		/* if we ever claimed or detached some interfaces, set them back
-		 * to the same state in which we found them */
-		this->releaseUSBDeviceInterfaces(device);
-		this->closeUSBDevice(device);
-		throw;
 	}
 }
 
@@ -855,6 +769,25 @@ void KeyboardDriver::resetDeviceState(USBDevice & device) {
 	}
 }
 
+void KeyboardDriver::resetDeviceState(const USBDeviceID & det)
+{
+	const std::string & devID = det.getID();
+
+	try {
+		USBDevice & device = _initializedDevices.at(devID);
+#if DEBUGGING_ON
+		LOG(DEBUG3) << devID << " resetting state of " << device.getName() << "("
+					<< device.getVendorID() << ":" << device.getProductID() << "), device "
+					<< toUInt(device.getNum()) << " on bus " << toUInt(device.getBus());
+#endif
+
+		this->resetDeviceState(device);
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownDevice
+	}
+}
+
 void KeyboardDriver::setDeviceLCDPluginsMask(USBDevice & device, uint64_t mask)
 {
 	if( mask == 0 ) {
@@ -879,25 +812,6 @@ void KeyboardDriver::setDeviceLCDPluginsMask(USBDevice & device, uint64_t mask)
 	/* jump if current active plugin is not in the new mask */
 	if( ! (device._pLCDPluginsManager->getCurrentPluginID() & mask) ) {
 		device._pLCDPluginsManager->jumpToNextPlugin();
-	}
-}
-
-void KeyboardDriver::resetDeviceState(const BusNumDeviceID & det)
-{
-	const std::string & devID = det.getID();
-
-	try {
-		USBDevice & device = _initializedDevices.at(devID);
-#if DEBUGGING_ON
-		LOG(DEBUG3) << devID << " resetting state of " << device.getName() << "("
-					<< device.getVendorID() << ":" << device.getProductID() << "), device "
-					<< toUInt(device.getNum()) << " on bus " << toUInt(device.getBus());
-#endif
-
-		this->resetDeviceState(device);
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
 	}
 }
 
@@ -952,32 +866,6 @@ void KeyboardDriver::joinDeviceThreads(const USBDevice & device)
 		if(! found) {
 			GKSysLog(LOG_WARNING, WARNING, "LCD screen thread not found !");
 		}
-	}
-}
-
-void KeyboardDriver::closeDevice(const BusNumDeviceID & det) noexcept
-{
-	const std::string & devID = det.getID();
-
-	try {
-		USBDevice & device = _initializedDevices.at(devID);
-#if DEBUGGING_ON
-		LOG(DEBUG3) << device.getID() << " closing " << device.getName() << "("
-					<< device.getVendorID() << ":" << device.getProductID() << "), device "
-					<< toUInt(device.getNum()) << " on bus " << toUInt(device.getBus());
-#endif
-
-		device.deactivateThreads();
-		this->joinDeviceThreads(device);
-		this->resetDeviceState(device);
-		device.destroyMacrosManager(); /* reset device state needs this pointer */
-		device.destroyLCDPluginsManager();
-		this->releaseUSBDeviceInterfaces(device);
-		this->closeUSBDevice(device);
-		_initializedDevices.erase(devID);
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
 	}
 }
 
@@ -1042,6 +930,114 @@ const LCDPluginsPropertiesArray_type & KeyboardDriver::getDeviceLCDPluginsProper
 	}
 
 	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
+}
+
+/* throws GLogiKExcept on any failure */
+void KeyboardDriver::openDevice(const USBDeviceID & det)
+{
+	/* sanity check */
+	if(_initializedDevices.count(det.getID()) > 0) {
+		std::ostringstream err("device ID already used in started container : ", std::ios_base::app);
+		err << det.getID();
+		throw GLogiKExcept(err.str());
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG3) << det.getID() << " initializing " << det.getName() << "("
+				<< det.getVendorID() << ":" << det.getProductID() << "), device "
+				<< toUInt(det.getNum()) << " on bus " << toUInt(det.getBus());
+#endif
+
+	USBDevice device(
+		det.getName(),
+		det.getVendorID(),
+		det.getProductID(),
+		det.getCapabilities(),
+		det.getBus(),
+		det.getNum(),
+		/* USB_INTERFACE_DESCRIPTOR */
+		det.getBConfigurationValue(),
+		det.getBInterfaceNumber(),
+		det.getBAlternateSetting(),
+		det.getBNumEndpoints(),
+		det.getKeysInterruptBufferMaxLength(),
+		det.getMacrosKeysLength(),
+		det.getMediaKeysLength(),
+		det.getLCDKeysLength()
+	);
+
+	this->openUSBDevice(device); /* throws on any failure */
+	/* libusb device opened */
+
+	try {
+		this->sendUSBDeviceInitialization(device);
+
+		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+			/* virtual keyboard name */
+			std::ostringstream buffer(std::ios_base::app);
+			buffer	<< "Virtual " << device.getName()
+					<< " " << device.getID();
+
+			device.initializeMacrosManager(
+				buffer.str().c_str(),
+				this->getMacroKeysNames()
+			);
+		}
+
+		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+			device.initializeLCDPluginsManager();
+		}
+
+		this->resetDeviceState(device);
+
+		_initializedDevices[ device.getID() ] = device;
+
+		/* spawn listening thread */
+		try {
+			std::thread listen_thread(&KeyboardDriver::listenLoop, this, device.getID() );
+			std::lock_guard<std::mutex> lock(_threadsMutex);
+			_threads.push_back( std::move(listen_thread) );
+		}
+		catch (const std::system_error& e) {
+			std::ostringstream buffer(std::ios_base::app);
+			buffer << "error while spawning listening thread : " << e.what();
+			throw GLogiKExcept(buffer.str());
+		}
+	}
+	catch ( const GLogiKExcept & e ) {
+		device.destroyMacrosManager();
+		device.destroyLCDPluginsManager();
+
+		this->closeUSBDevice(device);
+		throw;
+	}
+}
+
+void KeyboardDriver::closeDevice(const USBDeviceID & det) noexcept
+{
+	const std::string & devID = det.getID();
+
+	try {
+		USBDevice & device = _initializedDevices.at(devID);
+#if DEBUGGING_ON
+		LOG(DEBUG3) << device.getID() << " closing " << device.getName() << "("
+					<< device.getVendorID() << ":" << device.getProductID() << "), device "
+					<< toUInt(device.getNum()) << " on bus " << toUInt(device.getBus());
+#endif
+
+		device.deactivateThreads();
+		this->joinDeviceThreads(device);
+		this->resetDeviceState(device);
+		device.destroyMacrosManager(); /* reset device state needs this pointer */
+		device.destroyLCDPluginsManager();
+
+		this->closeUSBDevice(device);
+
+		_initializedDevices.erase(devID);
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLog_UnknownDevice
+	}
 }
 
 } // namespace GLogiK

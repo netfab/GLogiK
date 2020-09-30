@@ -38,8 +38,28 @@ USBDevice::USBDevice(
 	const std::string & productID,
 	const uint64_t capabilities,
 	uint8_t bus,
-	uint8_t num)
-		:	BusNumDeviceID(name, vendorID, productID, capabilities, bus, num),
+	uint8_t num,
+	uint8_t C,		/* bConfigurationValue */
+	uint8_t I,		/* bInterfaceNumber    */
+	uint8_t A,		/* bAlternateSetting   */
+	uint8_t N,		/* bNumEndpoints       */
+	const int8_t bufferMaxLength,
+	const int8_t macrosKeysLength,
+	const int8_t mediaKeysLength,
+	const int8_t LCDKeysLength
+	)
+		:	USBDeviceID(
+				name,
+				vendorID,
+				productID,
+				capabilities,
+				bus, num,
+				C, I, A, N,
+				bufferMaxLength,
+				macrosKeysLength,
+				mediaKeysLength,
+				LCDKeysLength
+			),
 			_fatalErrors(0),
 			_pMacrosManager(nullptr),
 			_pLCDPluginsManager(nullptr),
@@ -68,6 +88,18 @@ void USBDevice::operator=(const USBDevice& dev)
 	_bus			= dev.getBus();
 	_num			= dev.getNum();
 	_devID			= dev.getID();
+
+	/* USB_INTERFACE_DESCRIPTOR */
+	_bConfigurationValue	= dev.getBConfigurationValue();
+	_bInterfaceNumber		= dev.getBInterfaceNumber();
+	_bAlternateSetting		= dev.getBAlternateSetting();
+	_bNumEndpoints			= dev.getBNumEndpoints();
+
+	_keysInterruptBufferMaxLength	= dev.getKeysInterruptBufferMaxLength();
+	_MacrosKeysLength				= dev.getMacrosKeysLength();
+	_MediaKeysLength				= dev.getMediaKeysLength();
+	_LCDKeysLength					= dev.getLCDKeysLength();
+
 	/* end friendship members */
 
 	/* public */

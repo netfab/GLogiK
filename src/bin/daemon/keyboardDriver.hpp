@@ -33,10 +33,16 @@
 #include <linux/input-event-codes.h>
 
 #include "include/enums.hpp"
+#include "include/keyEvent.hpp"
 #include "include/LCDPluginProperties.hpp"
 
-#include "DeviceID.hpp"
-#include "libUSB.hpp"
+#include "USBDeviceID.hpp"
+#include "USBDevice.hpp"
+
+#include "lib/utils/utils.hpp"
+#if GKDBUS
+#include "lib/dbus/GKDBus.hpp"
+#endif
 
 #define DEVICE_LISTENING_THREAD_MAX_ERRORS 3
 #define unk	KEY_UNKNOWN
@@ -69,38 +75,22 @@ struct ModifierKey {
 	const GKModifierKeys key;	/* modifier key */
 };
 
-struct KeysEventsLength {
-	KeysEventsLength(
-		const int8_t a = -1,
-		const int8_t b = -1,
-		const int8_t c = -1
-	)	:	MacrosKeys(a),
-			MediaKeys(b),
-			LCDKeys(c) {}
-
-	const int8_t MacrosKeys;
-	const int8_t MediaKeys;
-	const int8_t LCDKeys;
-};
 
 class KeyboardDriver
-	:	public LibUSB
 {
 	public:
-		virtual ~KeyboardDriver();
+		virtual ~KeyboardDriver(void) = default;
 
+		/* --- */
 		static std::vector<std::string> macrosKeysNames;
 
-		virtual const char* getDriverName() const = 0;
-		virtual const uint16_t getDriverID() const = 0;
-		virtual const std::vector<DeviceID> & getSupportedDevices(void) const = 0;
-		virtual const std::vector<std::string> & getMacroKeysNames(void) const = 0;
-
+		static const bool checkDeviceCapability(const USBDeviceID & device, Caps toCheck);
 		static const std::vector<std::string> & getEmptyStringVector(void);
 
-		void initializeDevice(const BusNumDeviceID & det);
-		void closeDevice(const BusNumDeviceID & det) noexcept;
-		void resetDeviceState(const BusNumDeviceID & det);
+		/* --- */
+		const bool getDeviceThreadsStatus(const std::string & devID) const;
+
+		void resetDeviceState(const USBDeviceID & det);
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,
@@ -110,53 +100,22 @@ class KeyboardDriver
 			const uint8_t b,
 			const uint64_t LCDPluginsMask1
 		);
-
 		const banksMap_type & getDeviceMacrosBanks(const std::string & devID) const;
 		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID
 		) const;
 
-		const bool getDeviceThreadsStatus(const std::string & devID) const;
+		/* --- */
+		virtual const uint16_t getDriverID() const = 0;
 
-		static const bool checkDeviceCapability(const DeviceID & device, Caps toCheck);
+		virtual void openDevice(const USBDeviceID & det);
+		virtual void closeDevice(const USBDeviceID & det) noexcept;
+
+		virtual const std::vector<USBDeviceID> & getSupportedDevices(void) const = 0;
+		virtual const std::vector<std::string> & getMacroKeysNames(void) const = 0;
 
 	protected:
-		KeyboardDriver(void) = delete;
-		KeyboardDriver(
-			int keysInterruptBufferMaxLength,
-			const ExpectedDescriptorsValues & eValues,
-			const KeysEventsLength & eLength
-		);
-
-#if DEBUGGING_ON && DEBUG_KEYS
-		const std::string getBytes(const USBDevice & device) const;
-#endif
-
-		virtual KeyStatus processKeyEvent(USBDevice & device) = 0;
-		virtual KeyStatus getPressedKeys(USBDevice & device);
-		virtual const bool checkMacroKey(USBDevice & device) = 0;
-		virtual const bool checkMediaKey(USBDevice & device) = 0;
-		virtual const bool checkLCDKey(USBDevice & device) = 0;
-
-		virtual void sendUSBDeviceInitialization(USBDevice & device);
-		virtual void setDeviceMxKeysLeds(USBDevice & device);
-		virtual void setDeviceBacklightColor(
-			USBDevice & device,
-			const uint8_t r=0xFF,
-			const uint8_t g=0xFF,
-			const uint8_t b=0xFF
-		);
-
-		void fillStandardKeysEvents(USBDevice & device);
-
-	private:
-		const KeysEventsLength _keysEventsLength;
-
-		static const std::vector< ModifierKey > modifierKeys;
-
-		std::map<const std::string, USBDevice> _initializedDevices;
-		std::vector<std::thread> _threads;
-		std::mutex _threadsMutex;
+		KeyboardDriver(void) = default;
 
 		/* USB HID Usage Tables as defined in USB specification,
 		 *        Chapter 10 "Keyboard/Keypad Page (0x07)"
@@ -186,25 +145,129 @@ class KeyboardDriver
 			150,158,159,128,136,177,178,176,142,152,173,140,unk,unk,unk,unk
 		};
 
-		void notImplemented(const char* func) const;
+		std::mutex _threadsMutex;
 
-		void checkDeviceFatalErrors(USBDevice & device, const std::string & place) const;
+		std::vector<std::thread> _threads;
+		std::map<const std::string, USBDevice> _initializedDevices;
+
+#if DEBUGGING_ON && DEBUG_KEYS
+		const std::string getBytes(const USBDevice & device) const;
+#endif
+
+		void fillStandardKeysEvents(USBDevice & device);
+
+	private:
+		/* USBAPI */
+		virtual int performKeysInterruptTransfer(
+			USBDevice & device,
+			unsigned int timeout
+		) = 0;
+		virtual int performLCDScreenInterruptTransfer(
+			USBDevice & device,
+			unsigned char* buffer,
+			int bufferLength,
+			unsigned int timeout
+		) = 0;
+
+		virtual void openUSBDevice(USBDevice & device) = 0;
+		virtual void closeUSBDevice(USBDevice & device) = 0;
+		/* --- */
+
+		static const std::vector< ModifierKey > modifierKeys;
+
 		void enterMacroRecordMode(USBDevice & device, const std::string & devID);
-
 		void LCDScreenLoop(const std::string & devID);
+		void runMacro(const std::string & devID) const;
 		void listenLoop(const std::string & devID);
 
-		const bool updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR=false);
+		/* internal */
+		void notImplemented(const char* func) const;
 
-		const uint8_t handleModifierKeys(USBDevice & device, const uint16_t interval);
+		KeyStatus getPressedKeys(USBDevice & device);
+
+		const bool updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR=false);
+		void setDeviceLCDPluginsMask(USBDevice & device, uint64_t mask = 0);
 
 		uint16_t getTimeLapse(USBDevice & device);
-		void runMacro(const std::string & devID) const;
+		const uint8_t handleModifierKeys(USBDevice & device, const uint16_t interval);
 
-		void setDeviceLCDPluginsMask(USBDevice & device, uint64_t mask = 0);
+		void checkDeviceFatalErrors(USBDevice & device, const std::string & place) const;
+
 		void resetDeviceState(USBDevice & device);
 		void joinDeviceThreads(const USBDevice & device);
+		/* --- */
+
+		/* driver instantiation */
+		virtual KeyStatus processKeyEvent(USBDevice & device) = 0;
+		virtual void setDeviceMxKeysLeds(USBDevice & device);
+		virtual void setDeviceBacklightColor(
+			USBDevice & device,
+			const uint8_t r=0xFF,
+			const uint8_t g=0xFF,
+			const uint8_t b=0xFF
+		);
+		virtual const bool checkMacroKey(USBDevice & device) = 0;
+		virtual const bool checkMediaKey(USBDevice & device) = 0;
+		virtual const bool checkLCDKey(USBDevice & device) = 0;
+
+	protected:
+		virtual void sendUSBDeviceInitialization(USBDevice & device);
+		/* --- */
+
 };
+
+template <typename USBAPI>
+class USBKeyboardDriver
+	:	public USBAPI,
+		public KeyboardDriver
+{
+	public:
+		virtual ~USBKeyboardDriver();
+
+		virtual const char* getDriverName() const = 0;
+
+	protected:
+		USBKeyboardDriver(void);
+
+	private:
+		/* USBAPI */
+		int performKeysInterruptTransfer(
+			USBDevice & device,
+			unsigned int timeout
+		) override {
+			return USBAPI::performKeysInterruptTransfer(device, timeout);
+		}
+
+		int performLCDScreenInterruptTransfer(
+			USBDevice & device,
+			unsigned char* buffer,
+			int bufferLength,
+			unsigned int timeout
+		) override {
+			return USBAPI::performLCDScreenInterruptTransfer(device, buffer, bufferLength, timeout);
+		}
+
+		void openUSBDevice(USBDevice & device) override {
+			USBAPI::openUSBDevice(device);
+		}
+
+		void closeUSBDevice(USBDevice & device) override {
+			USBAPI::closeUSBDevice(device);
+		}
+		/* --- */
+};
+
+template <typename USBAPI>
+USBKeyboardDriver<USBAPI>::USBKeyboardDriver(void)
+{
+}
+
+template <typename USBAPI>
+USBKeyboardDriver<USBAPI>::~USBKeyboardDriver() {
+}
+
+
+
 
 } // namespace GLogiK
 

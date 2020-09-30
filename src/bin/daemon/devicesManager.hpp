@@ -40,7 +40,7 @@
 #include "clientsSignals.hpp"
 #endif
 
-#include "DeviceID.hpp"
+#include "USBDeviceID.hpp"
 
 #include "keyboardDriver.hpp"
 
@@ -48,7 +48,7 @@ namespace GLogiK
 {
 
 class DetectedDevice
-	:	public BusNumDeviceID
+	:	public USBDeviceID
 {
 	public:
 		DetectedDevice(void) = default;
@@ -59,19 +59,33 @@ class DetectedDevice
 			const uint64_t caps,
 			const uint8_t bus,
 			const uint8_t num,
+			const uint8_t C,		/* bConfigurationValue */
+			const uint8_t I,		/* bInterfaceNumber    */
+			const uint8_t A,		/* bAlternateSetting   */
+			const uint8_t N,		/* bNumEndpoints       */
+			const int8_t bufferMaxLength,
+			const int8_t macrosKeysLength,
+			const int8_t mediaKeysLength,
+			const int8_t LCDKeysLength,
 			const std::string & node,
 			const std::string & vendor,
 			const std::string & model,
 			const std::string & serial,
 			const std::string & us,
 			const uint16_t id
-		)	:	BusNumDeviceID(
+		)	:	USBDeviceID(
 					name,
 					vendorID,
 					productID,
 					caps,
 					bus,
-					num),
+					num,
+					C, I, A, N,
+					bufferMaxLength,
+					macrosKeysLength,
+					mediaKeysLength,
+					LCDKeysLength
+					),
 				_devNode(node),
 				_vendor(vendor),
 				_model(model),

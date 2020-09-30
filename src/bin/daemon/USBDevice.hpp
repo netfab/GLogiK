@@ -31,7 +31,7 @@
 #include <chrono>
 #include <mutex>
 
-#include "DeviceID.hpp"
+#include "USBDeviceID.hpp"
 
 #include <libusb-1.0/libusb.h>
 
@@ -41,13 +41,11 @@
 #include "macrosManager.hpp"
 #include "LCDScreenPluginsManager.hpp"
 
-#define KEYS_BUFFER_LENGTH 16
-
 namespace GLogiK
 {
 
 class USBDevice
-	:	public BusNumDeviceID
+	:	public USBDeviceID
 {
 	public:
 		USBDevice(void) = default;
@@ -60,7 +58,16 @@ class USBDevice
 			const std::string & productID,
 			const uint64_t capabilities,
 			uint8_t bus,
-			uint8_t num);
+			uint8_t num,
+			uint8_t C,		/* bConfigurationValue */
+			uint8_t I,		/* bInterfaceNumber    */
+			uint8_t A,		/* bAlternateSetting   */
+			uint8_t N,		/* bNumEndpoints       */
+			const int8_t bufferMaxLength,
+			const int8_t macrosKeysLength,
+			const int8_t mediaKeysLength,
+			const int8_t LCDKeysLength
+			);
 
 		void operator=(const USBDevice& dev);
 

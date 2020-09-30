@@ -32,7 +32,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-const std::vector<RKey> LogitechG510::fiveBytesKeysMap = {
+const std::vector<RKey> G510Base::fiveBytesKeysMap = {
 	{1, 0x01, Keys::GK_KEY_G1,  "G1",  true},
 	{1, 0x02, Keys::GK_KEY_G2,  "G2",  true},
 	{1, 0x04, Keys::GK_KEY_G3,  "G3",  true},
@@ -70,7 +70,7 @@ const std::vector<RKey> LogitechG510::fiveBytesKeysMap = {
 //	{4, 0x80, Keys::GK_KEY_},
 };
 
-const std::vector<RKey> LogitechG510::twoBytesKeysMap = {
+const std::vector<RKey> G510Base::twoBytesKeysMap = {
 	{1, 0x01, Keys::GK_KEY_AUDIO_NEXT,			XF86_AUDIO_NEXT},			/* XF86AudioNext */
 	{1, 0x02, Keys::GK_KEY_AUDIO_PREV,			XF86_AUDIO_PREV},			/* XF86AudioPrev */
 	{1, 0x04, Keys::GK_KEY_AUDIO_STOP,			XF86_AUDIO_STOP},			/* XF86AudioStop */
@@ -81,65 +81,58 @@ const std::vector<RKey> LogitechG510::twoBytesKeysMap = {
 //	{1, 0x80, Keys::GK_KEY_},
 };
 
-const std::vector<MKeyLed> LogitechG510::ledsMask = {
+const std::vector<MKeyLed> G510Base::ledsMask = {
 	{Leds::GK_LED_M1, 0x80},
 	{Leds::GK_LED_M2, 0x40},
 	{Leds::GK_LED_M3, 0x20},
 	{Leds::GK_LED_MR, 0x10},
 };
 
-const std::vector<DeviceID> LogitechG510::knownDevices = {
+const std::vector<USBDeviceID> G510Base::knownDevices = {
 	// name, vendor_id, product_id, capabilities
 	{	"Logitech G510/G510s Gaming Keyboard",
 		VENDOR_LOGITECH, "c22d",
 		toEnumType(	Caps::GK_BACKLIGHT_COLOR |
 					Caps::GK_MACROS_KEYS |
 					Caps::GK_MEDIA_KEYS |
-					Caps::GK_LCD_SCREEN )
+					Caps::GK_LCD_SCREEN ),
+		0, 0,	/* bus, num */
+		1, 1, 0, 2,
+		8,		// expected libusb keys interrupt read max length
+		5,		// MacrosKeys transfer length
+		2,		// MediaKeys transfer length
+		5		// LCDKeys transfer length
 	},
 	{	"Logitech G510/G510s Gaming Keyboard",
 		VENDOR_LOGITECH, "c22e",				/* with onboard audio enabled */
 		toEnumType(	Caps::GK_BACKLIGHT_COLOR |
 					Caps::GK_MACROS_KEYS |
 					Caps::GK_MEDIA_KEYS |
-					Caps::GK_LCD_SCREEN )
+					Caps::GK_LCD_SCREEN ),
+		0, 0,	/* bus, num */
+		1, 1, 0, 2,
+		8,		// expected libusb keys interrupt read max length
+		5,		// MacrosKeys transfer length
+		2,		// MediaKeys transfer length
+		5		// LCDKeys transfer length
 	},
 };
 
-LogitechG510::LogitechG510()
-	:	KeyboardDriver(
-			8,	/* expected libusb keys interrupt read max length */
-			/* libusb device initialization */
-			{	1,		/* bConfigurationValue */
-				1,		/* bInterfaceNumber */
-				0,		/* bAlternateSetting */
-				2	},	/* bNumEndpoints */
-			/* KeysEventsLength */
-			{	5,		/* MacrosKeys */
-				2,		/* MediaKeys */
-				5	}	/* LCDKeys */
-		)
-{
-}
-
-LogitechG510::~LogitechG510() {
-}
-
-const char* LogitechG510::getDriverName() const {
+const char* G510Base::getDriverName() const {
 	return "Logitech G510/G510s driver";
 }
 
-const uint16_t LogitechG510::getDriverID() const {
+const uint16_t G510Base::getDriverID() const {
 	return GLOGIKD_DRIVER_ID_G510;
 }
 
-const std::vector<DeviceID> & LogitechG510::getSupportedDevices(void) const {
-	return LogitechG510::knownDevices;
+const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const {
+	return G510Base::knownDevices;
 }
 
-const std::vector<std::string> & LogitechG510::getMacroKeysNames(void) const {
+const std::vector<std::string> & G510Base::getMacroKeysNames(void) const {
 	KeyboardDriver::macrosKeysNames.clear();
-	for (const auto & key : LogitechG510::fiveBytesKeysMap ) {
+	for (const auto & key : G510Base::fiveBytesKeysMap ) {
 		if( key.isMacroKey )
 			KeyboardDriver::macrosKeysNames.push_back(key.name);
 	}
@@ -147,8 +140,8 @@ const std::vector<std::string> & LogitechG510::getMacroKeysNames(void) const {
 }
 
 /* return true if any macro key (G1-G18) is pressed  */
-const bool LogitechG510::checkMacroKey(USBDevice & device) {
-	for (const auto & key : LogitechG510::fiveBytesKeysMap ) {
+const bool G510Base::checkMacroKey(USBDevice & device) {
+	for (const auto & key : G510Base::fiveBytesKeysMap ) {
 		if( key.isMacroKey and (device._pressedRKeysMask & toEnumType(key.key)) ) {
 			device._macroKey = key.name;
 			return true;
@@ -158,8 +151,8 @@ const bool LogitechG510::checkMacroKey(USBDevice & device) {
 }
 
 /* return true if any media key is pressed */
-const bool LogitechG510::checkMediaKey(USBDevice & device) {
-	for (const auto & key : LogitechG510::twoBytesKeysMap ) {
+const bool G510Base::checkMediaKey(USBDevice & device) {
+	for (const auto & key : G510Base::twoBytesKeysMap ) {
 		if( device._pressedRKeysMask & toEnumType(key.key) ) {
 			device._mediaKey = key.name;
 			return true;
@@ -169,8 +162,8 @@ const bool LogitechG510::checkMediaKey(USBDevice & device) {
 }
 
 /* return true if any LCD key is pressed */
-const bool LogitechG510::checkLCDKey(USBDevice & device) {
-	for (const auto & key : LogitechG510::fiveBytesKeysMap ) {
+const bool G510Base::checkLCDKey(USBDevice & device) {
+	for (const auto & key : G510Base::fiveBytesKeysMap ) {
 		if( key.isLCDKey and device._pressedRKeysMask & toEnumType(key.key) ) {
 			std::lock_guard<std::mutex> lock(device._LCDMutex);
 			device._LCDKey = key.name;
@@ -185,9 +178,9 @@ const bool LogitechG510::checkLCDKey(USBDevice & device) {
  *  - one double 5 bytes event : Keys::GK_KEY_LIGHT
  *  - one 2 bytes event with first byte equal to 0x04
  */
-void LogitechG510::processKeyEvent2Bytes(USBDevice & device) {
+void G510Base::processKeyEvent2Bytes(USBDevice & device) {
 	if (device._pressedKeys[0] == 0x02) {
-		for (const auto & key : LogitechG510::twoBytesKeysMap ) {
+		for (const auto & key : G510Base::twoBytesKeysMap ) {
 			if( device._pressedKeys[key.index] & key.mask )
 				device._pressedRKeysMask |= toEnumType(key.key);
 		}
@@ -225,19 +218,20 @@ void LogitechG510::processKeyEvent2Bytes(USBDevice & device) {
 	}
 }
 
-void LogitechG510::processKeyEvent5Bytes(USBDevice & device) {
+void G510Base::processKeyEvent5Bytes(USBDevice & device) {
 	if (device._pressedKeys[0] != 0x03) {
 		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 5 bytes event");
 		return;
 	}
 
-	for (const auto & key : LogitechG510::fiveBytesKeysMap ) {
+	for (const auto & key : G510Base::fiveBytesKeysMap ) {
 		if( device._pressedKeys[key.index] & key.mask )
 			device._pressedRKeysMask |= toEnumType(key.key);
 	}
 }
 
-void LogitechG510::processKeyEvent8Bytes(USBDevice & device) {
+void G510Base::processKeyEvent8Bytes(USBDevice & device)
+{
 	if (device._pressedKeys[0] != 0x01) {
 		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 8 bytes event");
 		return;
@@ -246,7 +240,7 @@ void LogitechG510::processKeyEvent8Bytes(USBDevice & device) {
 	this->fillStandardKeysEvents(device);
 }
 
-KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
+KeyStatus G510Base::processKeyEvent(USBDevice & device)
 {
 	device._pressedRKeysMask = 0;
 
@@ -297,36 +291,6 @@ KeyStatus LogitechG510::processKeyEvent(USBDevice & device)
 	return KeyStatus::S_KEY_UNKNOWN;
 }
 
-void LogitechG510::setDeviceBacklightColor(
-	USBDevice & device,
-	const uint8_t r,
-	const uint8_t g,
-	const uint8_t b)
-{
-	device.setRGBBytes( r, g, b );
-#if DEBUGGING_ON
-	LOG(DEBUG3) << device.getID() << " setting " << device.getName()
-				<< " backlight color with following RGB bytes : " << getHexRGB(r, g, b);
-#endif
-	unsigned char data[4] = { 5, r, g, b };
-	this->sendControlRequest(device, 0x305, 1, data, 4);
-}
-
-void LogitechG510::setDeviceMxKeysLeds(USBDevice & device) {
-	unsigned char mask = 0;
-	for (const auto & led : LogitechG510::ledsMask ) {
-		if( device._MxKeysLedsMask & toEnumType(led.led) )
-			mask |= led.mask;
-	}
-
-#if DEBUGGING_ON
-	LOG(DEBUG1) << device.getID() << " setting " << device.getName()
-				<< " MxKeys leds using current mask : 0x" << std::hex << toUInt(mask);
-#endif
-	unsigned char data[2] = { 4, mask };
-	this->sendControlRequest(device, 0x304, 1, data, 2);
-}
-
 /*
  *	Send G510/G510s control requests for device initialization
  *	When the keyboard is first plugged-in, the firmware is setting up the device
@@ -337,7 +301,8 @@ void LogitechG510::setDeviceMxKeysLeds(USBDevice & device) {
  *	control of the keyboard.
  *	The following initialization disable (at least) this behavior.
  */
-void LogitechG510::sendUSBDeviceInitialization(USBDevice & device) {
+void G510Base::sendUSBDeviceInitialization(USBDevice & device)
+{
 #if DEBUGGING_ON
 	LOG(INFO) << device.getID() << " sending " << device.getName() << " initialization requests";
 #endif
@@ -356,6 +321,37 @@ void LogitechG510::sendUSBDeviceInitialization(USBDevice & device) {
 
 		this->sendControlRequest(device, 0x309, 1, data, 8);
 	}
+}
+
+void G510Base::setDeviceBacklightColor(
+	USBDevice & device,
+	const uint8_t r,
+	const uint8_t g,
+	const uint8_t b)
+{
+	device.setRGBBytes( r, g, b );
+#if DEBUGGING_ON
+	LOG(DEBUG3) << device.getID() << " setting " << device.getName()
+				<< " backlight color with following RGB bytes : " << getHexRGB(r, g, b);
+#endif
+	unsigned char data[4] = { 5, r, g, b };
+	this->sendControlRequest(device, 0x305, 1, data, 4);
+}
+
+void G510Base::setDeviceMxKeysLeds(USBDevice & device)
+{
+	unsigned char mask = 0;
+	for (const auto & led : G510Base::ledsMask ) {
+		if( device._MxKeysLedsMask & toEnumType(led.led) )
+			mask |= led.mask;
+	}
+
+#if DEBUGGING_ON
+	LOG(DEBUG1) << device.getID() << " setting " << device.getName()
+				<< " MxKeys leds using current mask : 0x" << std::hex << toUInt(mask);
+#endif
+	unsigned char data[2] = { 4, mask };
+	this->sendControlRequest(device, 0x304, 1, data, 2);
 }
 
 } // namespace GLogiK
