@@ -70,8 +70,15 @@ AC_DEFUN([GDT_DEBUG_FLAG],
 				[
 					AC_MSG_RESULT([no])
 				], [
-					AC_MSG_ERROR([$3 requires global debugging])
-				]
+						AS_IF([test "x$1" = "xyes"],
+							[
+								AC_MSG_ERROR([$3 requires global debugging])
+							], [
+								AC_MSG_RESULT([no])
+								AC_DEFINE([$2], [0], [$3])
+							]
+						)
+					]
 			)
 		]
 	)
