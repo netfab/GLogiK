@@ -128,7 +128,9 @@ class KeyboardDriver
 			const KeysEventsLength & eLength
 		);
 
-		std::string getBytes(const USBDevice & device) const;
+#if DEBUGGING_ON && DEBUG_KEYS
+		const std::string getBytes(const USBDevice & device) const;
+#endif
 
 		virtual KeyStatus processKeyEvent(USBDevice & device) = 0;
 		virtual KeyStatus getPressedKeys(USBDevice & device);

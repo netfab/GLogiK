@@ -79,7 +79,8 @@ const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void) {
 	return KeyboardDriver::macrosKeysNames;
 }
 
-std::string KeyboardDriver::getBytes(const USBDevice & device) const {
+#if DEBUGGING_ON && DEBUG_KEYS
+const std::string KeyboardDriver::getBytes(const USBDevice & device) const {
 	const unsigned int last_length = toUInt(device.getLastKeysInterruptTransferLength());
 	if( last_length == 0 )
 		return "";
@@ -90,6 +91,7 @@ std::string KeyboardDriver::getBytes(const USBDevice & device) const {
 	}
 	return s.str();
 }
+#endif
 
 KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 	std::fill_n(device._pressedKeys, KEYS_BUFFER_LENGTH, 0);
