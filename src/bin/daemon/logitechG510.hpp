@@ -77,7 +77,7 @@ class G510Base
 
 	protected:
 		G510Base(void) = default;
-		~G510Base(void) = default;
+		virtual ~G510Base(void) = default;
 
 		const char* getDriverName(void) const;
 		const uint16_t getDriverID(void) const;
