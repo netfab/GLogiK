@@ -21,15 +21,20 @@ Last release : version 0.8.10
  - Multimedia keys support
 
 ### Build Dependencies :
- - dev-libs/boost 1.64.0 or later
- - dev-libs/libusb 1.0.19 or later
- - virtual/libudev
- - dev-libs/libevdev 1.5.7 or later
+ - >=dev-libs/boost-1.64.0
+ - any of libudev provider :
+    * sys-fs/eudev
+	* sys-fs/udev
+	* sys-apps/systemd
+ - >=dev-libs/libevdev-1.5.7
+ - any of USB API provider :
+    * >=dev-libs/hidapi-0.10.0 (libusb backend)
+    * >=dev-libs/libusb-1.0.19
 
 ### Optional Build Dependencies
- - sys-apps/dbus 1.10.18 or later
- - x11-libs/libICE 1.0.9 or later
- - x11-libs/libSM 1.2.2 or later
+ - >=sys-apps/dbus-1.10.18
+ - x11-libs/libICE
+ - x11-libs/libSM
  - x11-libs/libX11
  - x11-libs/libXtst
  - Qt5 packages, including :

@@ -120,10 +120,13 @@ GLogiK=$PWD/.. CD=. {
 				daemonControl.hpp
 				devicesManager.cpp
 				devicesManager.hpp
+				USBAPIenums.hpp
 				keyboardDriver.cpp
 				keyboardDriver.hpp
 				LCDScreenPluginsManager.cpp
 				LCDScreenPluginsManager.hpp
+				hidapi.cpp
+				hidapi.hpp
 				libUSB.cpp
 				libUSB.hpp
 				logitechG510.cpp

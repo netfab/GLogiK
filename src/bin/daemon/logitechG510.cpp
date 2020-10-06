@@ -333,7 +333,7 @@ void G510Base::setDeviceBacklightColor(
 {
 	device.setRGBBytes( r, g, b );
 #if DEBUGGING_ON
-	LOG(DEBUG3) << device.getID() << " setting " << device.getName()
+	LOG(DEBUG1) << device.getID() << " setting " << device.getName()
 				<< " backlight color with following RGB bytes : " << getHexRGB(r, g, b);
 #endif
 	const unsigned char ReportID = 0x05;

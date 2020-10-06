@@ -35,7 +35,14 @@
 
 #include "daemonControl.hpp"
 #include "logitechG510.hpp"
+
+#include "devicesManager.hpp"
+
+#if GKLIBUSB
 #include "libUSB.hpp"
+#elif GKHIDAPI
+#include "hidapi.hpp"
+#endif
 
 #include "include/enums.hpp"
 
@@ -821,7 +828,11 @@ void DevicesManager::startMonitoring(void) {
 			LOG(DEBUG2) << "loading drivers";
 #endif
 			try {
+#if GKLIBUSB
 				_drivers.push_back( new LogitechG510<LibUSB>() );
+#elif GKHIDAPI
+				_drivers.push_back( new LogitechG510<hidapi>() );
+#endif
 			}
 			catch (const std::bad_alloc& e) { /* handle new() failure */
 				throw GLogiKBadAlloc("catch driver wrong allocation");

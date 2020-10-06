@@ -37,6 +37,7 @@
 #include "keyboardDriver.hpp"
 
 #include "daemonControl.hpp"
+#include "USBAPIenums.hpp"
 
 namespace GLogiK
 {
@@ -107,7 +108,7 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 				return this->processKeyEvent(device);
 			}
 			break;
-		case LIBUSB_ERROR_TIMEOUT:
+		case toEnumType(USBAPIKeysTransferStatus::TRANSFER_TIMEOUT):
 #if 0 && DEBUGGING_ON
 			LOG(DEBUG5) << "timeout reached";
 #endif

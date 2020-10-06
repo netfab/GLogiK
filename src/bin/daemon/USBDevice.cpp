@@ -69,11 +69,15 @@ USBDevice::USBDevice(
 			_LCDPluginsMask1(0),
 			_lastKeysInterruptTransferLength(0),
 			_lastLCDInterruptTransferLength(0),
-			_keysEndpoint(0),
-			_LCDEndpoint(0),
+			_threadsStatus(true),
+#if GKLIBUSB
 			_pUSBDevice(nullptr),
 			_pUSBDeviceHandle(nullptr),
-			_threadsStatus(true)
+			_keysEndpoint(0),
+			_LCDEndpoint(0)
+#elif GKHIDAPI
+			_pHIDDevice(nullptr)
+#endif
 {
 	std::fill_n(_pressedKeys, KEYS_BUFFER_LENGTH, 0);
 	std::fill_n(_previousPressedKeys, KEYS_BUFFER_LENGTH, 0);
@@ -132,14 +136,20 @@ void USBDevice::operator=(const USBDevice& dev)
 	this->setRGBBytes(dev._RGB[0], dev._RGB[1], dev._RGB[2]);
 	_lastKeysInterruptTransferLength	= dev.getLastKeysInterruptTransferLength();
 	_lastLCDInterruptTransferLength		= dev.getLastLCDInterruptTransferLength();
-	_keysEndpoint		= dev._keysEndpoint;
-	_LCDEndpoint		= dev._LCDEndpoint;
+	_threadsStatus		= static_cast<bool>(dev._threadsStatus);
+
+#if GKLIBUSB
 	_pUSBDevice			= dev._pUSBDevice;
 	_pUSBDeviceHandle	= dev._pUSBDeviceHandle;
+
+	_keysEndpoint		= dev._keysEndpoint;
+	_LCDEndpoint		= dev._LCDEndpoint;
+
 	_toRelease			= dev._toRelease;
 	_toAttach			= dev._toAttach;
-
-	_threadsStatus		= static_cast<bool>(dev._threadsStatus);
+#elif GKHIDAPI
+	_pHIDDevice			= dev._pHIDDevice;
+#endif
 }
 
 void USBDevice::initializeMacrosManager(

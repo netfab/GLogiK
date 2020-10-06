@@ -31,8 +31,6 @@
 #include <chrono>
 #include <mutex>
 
-#include <libusb-1.0/libusb.h>
-
 #include "virtualKeyboard.hpp"
 #include "macrosManager.hpp"
 #include "LCDScreenPluginsManager.hpp"
@@ -40,6 +38,14 @@
 #include "USBDeviceID.hpp"
 
 #include "include/keyEvent.hpp"
+
+#include <config.h>
+
+#if GKLIBUSB
+#include <libusb-1.0/libusb.h>
+#elif GKHIDAPI
+#include <hidapi.h>
+#endif
 
 namespace GLogiK
 {
@@ -116,21 +122,30 @@ class USBDevice
 		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
 
 	private:
-		friend class LibUSB;
-
 		uint8_t _RGB[3];
 
-		int 					_lastKeysInterruptTransferLength;
-		int 					_lastLCDInterruptTransferLength;
-		unsigned char			_keysEndpoint;
-		unsigned char			_LCDEndpoint;
+		int 				_lastKeysInterruptTransferLength;
+		int 				_lastLCDInterruptTransferLength;
+		std::atomic<bool>	_threadsStatus;
+
+#if GKLIBUSB
+		friend class LibUSB;
+
 		libusb_device *			_pUSBDevice;
 		libusb_device_handle *	_pUSBDeviceHandle;
+
+		unsigned char		_keysEndpoint;
+		unsigned char		_LCDEndpoint;
+
 		std::vector<int>		_toRelease;
 		std::vector<int>		_toAttach;
 
-		std::atomic<bool>	_threadsStatus;
 		std::mutex			_libUSBMutex;
+#elif GKHIDAPI
+		friend class hidapi;
+
+		hid_device * _pHIDDevice;
+#endif
 };
 
 } // namespace GLogiK

@@ -93,6 +93,16 @@ AC_ARG_ENABLE( [qt5],
                AC_HELP_STRING( [--enable-qt5], [Enable Qt5 client GUI]),
                [enable_qt5=$enableval], [enable_qt5=no])
 
+dnl check for libusb support
+AC_ARG_ENABLE( [libusb],
+               AC_HELP_STRING( [--enable-libusb], [Enable libusb API support]),
+               [enable_libusb=$enableval], [enable_libusb=no])
+
+dnl check for hidapi support
+AC_ARG_ENABLE( [hidapi],
+               AC_HELP_STRING( [--enable-hidapi], [Enable hidapi API support]),
+               [enable_hidapi=$enableval], [enable_hidapi=yes])
+
 AC_ARG_VAR(DEBUG_DIR, [Directory where debug file will be written])
 AC_ARG_VAR(DATA_DIR, [Directory where data files will be installed])
 AC_ARG_VAR(PBM_DATA_DIR, [Directory where pbm data files will be installed])
@@ -199,6 +209,51 @@ AS_IF([test "x$enable_dbus" = "xyes"], [
 ])
 AM_CONDITIONAL([WITH_DBUS], [test "x$enable_dbus" = "xyes"])
 
+
+dnl ---
+dnl checking for libusb support
+AM_CONDITIONAL([WITH_LIBUSB], [test "x$enable_libusb" = "xyes"])
+
+AC_MSG_CHECKING([whether we want libusb support])
+AS_IF([test "x$enable_libusb" = "xyes"],
+	[
+		AC_MSG_RESULT([yes])
+		AC_DEFINE([GKLIBUSB], [1], [GKLIBUSB enabled])
+	], [
+		AC_MSG_RESULT([no])
+	])
+dnl ---
+
+dnl ---
+dnl checking for hidapi support
+AM_CONDITIONAL([WITH_HIDAPI], [test "x$enable_hidapi" = "xyes"])
+
+AC_MSG_CHECKING([whether we want hidapi support])
+AS_IF([test "x$enable_hidapi" = "xyes"],
+	[
+		AC_MSG_RESULT([yes])
+		AC_DEFINE([GKHIDAPI], [1], [GKHIDAPI enabled])
+	], [
+		AC_MSG_RESULT([no])
+	])
+dnl ---
+
+AS_IF([test "x$enable_hidapi" = "xno"],
+	[
+		AS_IF(
+			[test "x$enable_libusb" = "xno"],
+			[AC_MSG_ERROR([you must choose between libusb or hidapi support. one must be enabled])],
+			[]
+		)
+	], [
+		AS_IF(
+			[test "x$enable_libusb" = "xyes"],
+			[AC_MSG_ERROR([you must choose between libusb or hidapi support. both can't enabled together])],
+			[]
+		)
+	])
+
+
 dnl ---
 dnl checking for Qt5 GUI
 AM_CONDITIONAL([WITH_QT5], [test "x$enable_qt5" = "xyes"])
@@ -220,6 +275,7 @@ AS_IF([test "x$enable_qt5" = "xyes"],
 dnl AX_HAVE_QT have its own test to avoid mixed configure output
 AS_IF([test "x$enable_qt5" = "xyes"], [AX_HAVE_QT], [])
 dnl ---
+
 
 dnl abort compilation after first error
 GDT_ADD_CXXFLAG([-Wfatal-errors])
@@ -248,12 +304,19 @@ dnl -------------------------------------------------------------------------
 dnl                       checking for libraries
 dnl -------------------------------------------------------------------------
 
-PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.0])
 PKG_CHECK_MODULES([LIBUDEV], [libudev])
 PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
+
+AS_IF([test "x$enable_hidapi" = "xyes"],
+	[
+		PKG_CHECK_MODULES([LIBHIDAPI], [hidapi-libusb >= 0.10.0])
+	], [
+		PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.19])
+	])
+
 AS_IF([test "x$enable_dbus" = "xyes"],
 	[
-		PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.10])
+		PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.10.18])
 		dnl SMlib used only by desktop binaries
 		PKG_CHECK_MODULES([SM], [sm ice])
 		dnl X libraries used only by user service
@@ -321,6 +384,8 @@ AC_MSG_NOTICE([
                   SM CFLAGS : ${SM_CFLAGS}
             libevdev CFLAGS : ${LIBEVDEV_CFLAGS}
               libevdev LIBS : ${LIBEVDEV_LIBS}
+                hidapi LIBS : ${LIBHIDAPI_LIBS}
+              hidapi CFLAGS : ${LIBHIDAPI_CFLAGS}
               libusb CFLAGS : ${LIBUSB_CFLAGS}
                 libusb LIBS : ${LIBUSB_LIBS}
                libudev LIBS : ${LIBUDEV_LIBS}
@@ -341,6 +406,8 @@ AC_MSG_NOTICE([
                 Qt CXXFLAGS : ${QT_CXXFLAGS}
 --------------------------------------------------------------
         with Qt5 client GUI : ${enable_qt5}
+--------------------------------------------------------------
+---  DEBUGGING --- DEBUGGING ---- DEBUGGING --- DEBUGGING  ---
 --------------------------------------------------------------
   Global debugging : ${enable_debugging}
               keys : ${enable_keys_debugging}

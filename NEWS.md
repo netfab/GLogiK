@@ -9,6 +9,8 @@
   desktop service and GUI support, you want D-Bus enabled
 - Under-the-hood work to reorganize keyboard driver classes, allowing us
   to select USB library provider at configure time
+- Added dev-libs/hidapi support (with libusb backend) and make it
+  default over dev-libs/libusb
 
 0.8.10 (2020-08-02)
 ===================
