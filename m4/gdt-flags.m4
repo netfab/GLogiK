@@ -62,7 +62,6 @@ AC_DEFUN([GDT_DEBUG_FLAG],
 					AC_DEFINE([$2], [1], [$3])
 				], [
 					AC_MSG_RESULT([no])
-					AC_DEFINE([$2], [0], [$3])
 				]
 			)
 		], [
@@ -75,7 +74,6 @@ AC_DEFUN([GDT_DEBUG_FLAG],
 								AC_MSG_ERROR([$3 requires global debugging])
 							], [
 								AC_MSG_RESULT([no])
-								AC_DEFINE([$2], [0], [$3])
 							]
 						)
 					]

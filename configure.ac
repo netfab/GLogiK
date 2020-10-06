@@ -196,9 +196,8 @@ AS_IF([test "x$enable_dbus" = "xyes"], [
 ], [
 	AC_MSG_RESULT([no])
 	AC_SUBST([INIT_NEED_DBUS], [])
-	AC_DEFINE([GKDBUS], [0], [GKDBus disabled])
 ])
-AM_CONDITIONAL([WITH_DBUS], [test "x$enable_dbus" = xyes])
+AM_CONDITIONAL([WITH_DBUS], [test "x$enable_dbus" = "xyes"])
 
 dnl ---
 dnl checking for Qt5 GUI
@@ -209,14 +208,13 @@ AS_IF([test "x$enable_qt5" = "xyes"],
 	[
 		AC_MSG_RESULT([yes])
 		AS_IF(
-			[test "x$enable_dbus" = xyes],
+			[test "x$enable_dbus" = "xyes"],
 			[],
-			[AC_MSG_ERROR(Qt5 client GUI requires D-Bus support enabled)]
+			[AC_MSG_ERROR([Qt5 client GUI requires D-Bus support enabled])]
 		)
 		AC_DEFINE([QT5_GUI], [1], [Qt5 client GUI])
 	], [
 		AC_MSG_RESULT([no])
-		AC_DEFINE([QT5_GUI], [0], [Qt5 client GUI])
 	])
 
 dnl AX_HAVE_QT have its own test to avoid mixed configure output
