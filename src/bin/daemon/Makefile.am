@@ -5,7 +5,6 @@ GLogiKd_CXXFLAGS = \
 				@LIBEVDEV_CFLAGS@ \
 				@LIBUSB_CFLAGS@ \
 				@BOOST_CPPFLAGS@ \
-				@DBUS_CFLAGS@ \
 				@PTHREAD_CFLAGS@ \
 				@AM_CXXFLAGS@
 
@@ -24,11 +23,6 @@ GLogiKd_LDADD = \
 				@PTHREAD_LIBS@ \
 				libGKUtils.la \
 				libGKShared.la
-
-if WITH_DBUS
-GLogiKd_LDADD += \
-				libGKDBus.la
-endif
 
 GLogiKd_SOURCES = \
 		%D%/main.cpp \
@@ -56,6 +50,12 @@ GLogiKd_SOURCES = \
 		%D%/LCDScreenPluginsManager.hpp
 
 if WITH_DBUS
+GLogiKd_CXXFLAGS += \
+				@DBUS_CFLAGS@
+
+GLogiKd_LDADD += \
+				libGKDBus.la
+
 GLogiKd_SOURCES += \
 		%D%/clientsManager.cpp \
 		%D%/clientsManager.hpp \
