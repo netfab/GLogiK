@@ -22,9 +22,9 @@
 #include <cmath>
 #include <cfenv>
 
-#include <cstdint>
 #include <unistd.h>
-#include <limits.h>
+#include <cstdint>
+#include <climits>
 
 #include <iomanip>
 #include <sstream>
