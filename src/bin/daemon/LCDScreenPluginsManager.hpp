@@ -25,11 +25,11 @@
 #include <string>
 #include <vector>
 
-#include "include/LCDPluginProperties.hpp"
-
 #include "LCDPlugins/PBM.hpp"
 #include "LCDPlugins/LCDPlugin.hpp"
 #include "LCDPlugins/fontsManager.hpp"
+
+#include "include/LCDPluginProperties.hpp"
 
 namespace GLogiK
 {

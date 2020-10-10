@@ -31,12 +31,13 @@
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
-#include "include/enums.hpp"
+#include "devicesManager.hpp"
 
 #include "daemonControl.hpp"
 #include "logitechG510.hpp"
-#include "devicesManager.hpp"
 #include "libUSB.hpp"
+
+#include "include/enums.hpp"
 
 
 namespace GLogiK

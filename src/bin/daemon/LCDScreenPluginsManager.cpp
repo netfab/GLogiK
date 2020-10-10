@@ -26,11 +26,11 @@
 
 #include "LCDScreenPluginsManager.hpp"
 
-#include "include/enums.hpp"
-
 #include "LCDPlugins/endscreen.hpp"
 #include "LCDPlugins/splashscreen.hpp"
 #include "LCDPlugins/systemMonitor.hpp"
+
+#include "include/enums.hpp"
 
 namespace GLogiK
 {

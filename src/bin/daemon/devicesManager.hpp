@@ -31,18 +31,18 @@
 
 #include <config.h>
 
-#include "include/keyEvent.hpp"
-#include "include/LCDPluginProperties.hpp"
-
 #if GKDBUS
 #include "lib/dbus/GKDBus.hpp"
 
 #include "clientsSignals.hpp"
 #endif
 
+#include "keyboardDriver.hpp"
+
 #include "USBDeviceID.hpp"
 
-#include "keyboardDriver.hpp"
+#include "include/keyEvent.hpp"
+#include "include/LCDPluginProperties.hpp"
 
 namespace GLogiK
 {

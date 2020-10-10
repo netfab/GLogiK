@@ -31,15 +31,15 @@
 #include <chrono>
 #include <mutex>
 
-#include "USBDeviceID.hpp"
-
 #include <libusb-1.0/libusb.h>
-
-#include "include/keyEvent.hpp"
 
 #include "virtualKeyboard.hpp"
 #include "macrosManager.hpp"
 #include "LCDScreenPluginsManager.hpp"
+
+#include "USBDeviceID.hpp"
+
+#include "include/keyEvent.hpp"
 
 namespace GLogiK
 {

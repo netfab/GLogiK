@@ -32,17 +32,14 @@
 
 #include <linux/input-event-codes.h>
 
-#include "include/enums.hpp"
-#include "include/keyEvent.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include <config.h>
 
 #include "USBDeviceID.hpp"
 #include "USBDevice.hpp"
 
-#include "lib/utils/utils.hpp"
-#if GKDBUS
-#include "lib/dbus/GKDBus.hpp"
-#endif
+#include "include/enums.hpp"
+#include "include/keyEvent.hpp"
+#include "include/LCDPluginProperties.hpp"
 
 #define DEVICE_LISTENING_THREAD_MAX_ERRORS 3
 #define unk	KEY_UNKNOWN

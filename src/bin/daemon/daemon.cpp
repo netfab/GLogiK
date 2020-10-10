@@ -44,6 +44,8 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
+#include "daemon.hpp"
+
 #include "devicesManager.hpp"
 
 #if GKDBUS
@@ -51,8 +53,6 @@
 
 #include "clientsManager.hpp"
 #endif
-
-#include "daemon.hpp"
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;

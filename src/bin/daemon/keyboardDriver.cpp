@@ -28,9 +28,15 @@
 #include <sstream>
 
 #include "lib/shared/glogik.hpp"
+#include "lib/utils/utils.hpp"
+
+#if GKDBUS
+#include "lib/dbus/GKDBus.hpp"
+#endif
+
+#include "keyboardDriver.hpp"
 
 #include "daemonControl.hpp"
-#include "keyboardDriver.hpp"
 
 namespace GLogiK
 {

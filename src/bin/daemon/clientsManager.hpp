@@ -26,15 +26,15 @@
 #include <string>
 #include <map>
 
-#include "include/keyEvent.hpp"
-#include "include/LCDPluginProperties.hpp"
-
 #include "lib/dbus/GKDBus.hpp"
 
 #include "devicesManager.hpp"
 
 #include "clientsSignals.hpp"
 #include "client.hpp"
+
+#include "include/keyEvent.hpp"
+#include "include/LCDPluginProperties.hpp"
 
 #define GKSysLog_UnknownClient \
 	std::string error(CONST_STRING_UNKNOWN_CLIENT); error += clientID;\

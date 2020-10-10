@@ -29,8 +29,12 @@
 #include <vector>
 #include <string>
 
-#include "USBDeviceID.hpp"
+#include <config.h>
+
 #include "keyboardDriver.hpp"
+
+#include "USBDeviceID.hpp"
+#include "USBDevice.hpp"
 
 #include "include/enums.hpp"
 
