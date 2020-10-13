@@ -44,9 +44,7 @@ class LibUSB
 
 		void sendControlRequest(
 			USBDevice & device,
-			uint16_t wValue,
-			uint16_t wIndex,
-			unsigned char * data,
+			const unsigned char * data,
 			uint16_t wLength
 		);
 

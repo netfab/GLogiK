@@ -307,19 +307,21 @@ void G510Base::sendUSBDeviceInitialization(USBDevice & device)
 	LOG(INFO) << device.getID() << " sending " << device.getName() << " initialization requests";
 #endif
 	{
-		unsigned char data[] = {
-			1, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0, 0, 0, 0, 0, 0,
-			0, 0, 0
+		const unsigned char ReportID = 0x01;
+		const unsigned char data[] = {
+			ReportID, 0, 0, 0, 0, 0, 0, 0,
+				   0, 0, 0, 0, 0, 0, 0, 0,
+				   0, 0, 0
 		};
-		this->sendControlRequest(device, 0x301, 1, data, 19);
+		this->sendControlRequest(device, data, 19);
 	}
 	{
-		unsigned char data[] = {
-			0x09, 0x02, 0, 0, 0, 0, 0, 0
+		const unsigned char ReportID = 0x09;
+		const unsigned char data[] = {
+			ReportID, 0x02, 0, 0, 0, 0, 0, 0
 		};
 
-		this->sendControlRequest(device, 0x309, 1, data, 8);
+		this->sendControlRequest(device, data, 8);
 	}
 }
 
@@ -334,8 +336,9 @@ void G510Base::setDeviceBacklightColor(
 	LOG(DEBUG3) << device.getID() << " setting " << device.getName()
 				<< " backlight color with following RGB bytes : " << getHexRGB(r, g, b);
 #endif
-	unsigned char data[4] = { 5, r, g, b };
-	this->sendControlRequest(device, 0x305, 1, data, 4);
+	const unsigned char ReportID = 0x05;
+	const unsigned char data[4] = { ReportID, r, g, b };
+	this->sendControlRequest(device, data, 4);
 }
 
 void G510Base::setDeviceMxKeysLeds(USBDevice & device)
@@ -350,8 +353,9 @@ void G510Base::setDeviceMxKeysLeds(USBDevice & device)
 	LOG(DEBUG1) << device.getID() << " setting " << device.getName()
 				<< " MxKeys leds using current mask : 0x" << std::hex << toUInt(mask);
 #endif
-	unsigned char data[2] = { 4, mask };
-	this->sendControlRequest(device, 0x304, 1, data, 2);
+	const unsigned char ReportID = 0x04;
+	const unsigned char data[2] = { ReportID, mask };
+	this->sendControlRequest(device, data, 2);
 }
 
 } // namespace GLogiK

@@ -118,9 +118,7 @@ class G510Base
 
 		virtual void sendControlRequest(
 			USBDevice & device,
-			uint16_t wValue,
-			uint16_t wIndex,
-			unsigned char * data,
+			const unsigned char * data,
 			uint16_t wLength
 		) = 0;
 
@@ -159,12 +157,10 @@ class LogitechG510
 	private:
 		void sendControlRequest(
 			USBDevice & device,
-			uint16_t wValue,
-			uint16_t wIndex,
-			unsigned char * data,
+			const unsigned char * data,
 			uint16_t wLength
 		) override {
-			USBKeyboardDriver<USBAPI>::sendControlRequest(device, wValue, wIndex, data, wLength);
+			USBKeyboardDriver<USBAPI>::sendControlRequest(device, data, wLength);
 		}
 
 		void setDeviceBacklightColor(

@@ -141,27 +141,44 @@ void LibUSB::closeUSBDevice(USBDevice & device) noexcept {
 
 void LibUSB::sendControlRequest(
 	USBDevice & device,
-	uint16_t wValue,
-	uint16_t wIndex,
-	unsigned char * data,
+	const unsigned char * data,
 	uint16_t wLength)
 {
-	yield_for(std::chrono::microseconds(100));
+	/*
+	 *	Device Class Definition for HID 1.11
+	 *		7.2   Class-Specific Requests
+	 *		7.2.2 Set_Report Request
+	 *	https://www.usb.org/document-library/device-class-definition-hid-111
+	 */
+	const uint16_t HIDReportType = 0x03 << 8;  /* high byte - Report Type: Feature */
+	const uint16_t HIDReportID = data[0];      /* low byte  - Report ID */
+	// TODO - support when HIDReportID == 0
+	if( HIDReportID == 0) {
+		GKSysLog(LOG_ERR, ERROR, "HIDReportID 0 not implemented");
+		return;
+	}
 
 	int ret = 0;
+	yield_for(std::chrono::microseconds(100));
 	{
 		std::lock_guard<std::mutex> lock(device._libUSBMutex);
-		ret = libusb_control_transfer( device._pUSBDeviceHandle,
+		ret = libusb_control_transfer(
+			device._pUSBDeviceHandle,
 			LIBUSB_ENDPOINT_OUT|LIBUSB_REQUEST_TYPE_CLASS|LIBUSB_RECIPIENT_INTERFACE,
-			LIBUSB_REQUEST_SET_CONFIGURATION, /* 0x09 */
-			wValue, wIndex, data, wLength, 10000 );
+			0x09,                           /* bRequest - SET_REPORT */
+			(HIDReportType | HIDReportID),  /* wValue - Report Type and ReportID */
+			device.getBInterfaceNumber(),   /* wIndex - interface */
+			const_cast<unsigned char *>(data),
+			wLength,
+			1000
+		);
 	}
 	if( ret < 0 ) {
 		GKSysLog(LOG_ERR, ERROR, "error sending control request");
 		this->USBError(ret);
 	}
 	else {
-#if DEBUGGING_ON && DEBUG_LIBUSB_EXTRA
+#if DEBUGGING_ON
 		LOG(DEBUG2) << "sent " << ret << " bytes - expected: " << wLength;
 #endif
 	}
