@@ -100,7 +100,7 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 			if( device.getLastKeysInterruptTransferLength() > 0 ) {
 #if DEBUGGING_ON && DEBUG_KEYS
 				LOG(DEBUG)	<< device.getID()
-							<< " exp. rl: " << device.getKeysInterruptBufferMaxLength()
+							<< " exp. rl: " << toInt(device.getKeysInterruptBufferMaxLength())
 							<< " act_l: " << device.getLastKeysInterruptTransferLength() << ", xBuf[0]: "
 							<< std::hex << toUInt(device._pressedKeys[0]);
 #endif
