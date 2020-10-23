@@ -573,50 +573,78 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 				for (unsigned int l = 0; l < toUInt(asDescriptor->bNumEndpoints); l++) {
 					const libusb_endpoint_descriptor * ep = &(asDescriptor->endpoint[l]);
 
-					unsigned int addr = toUInt(ep->bEndpointAddress);
-					if( addr & LIBUSB_ENDPOINT_IN ) { /* In: device-to-host */
+					/* check transfer type */
+					if( (toUInt(ep->bmAttributes) & LIBUSB_TRANSFER_TYPE_MASK)
+							== LIBUSB_TRANSFER_TYPE_INTERRUPT ) {
+
+						const unsigned int addr = toUInt(ep->bEndpointAddress);
+
+						if( (addr & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_IN ) {
+							/* In: device-to-host */
+
+							if(device._keysEndpoint != 0) {
+								LOG(WARNING) << "[Keys] endpoint already found !";
+							}
+							else {
 #if DEBUGGING_ON
-						LOG(DEBUG3) << "found [Keys] endpoint, address 0x" << std::hex << addr
-									<< " MaxPacketSize " << toUInt(ep->wMaxPacketSize);
+								LOG(DEBUG3) << "found [Keys] endpoint, address 0x" << std::hex << addr
+											<< " MaxPacketSize " << toUInt(ep->wMaxPacketSize);
 #endif
-						device._keysEndpoint = addr & 0xff;
-					}
-					else { /* Out: host-to-device */
+								device._keysEndpoint = addr & 0xff;
+							}
+						}
+						else if( (addr & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_OUT ) {
+							/* Out: host-to-device */
+
+							if(device._LCDEndpoint != 0) {
+								LOG(WARNING) << "[LCD] endpoint already found !";
+							}
+							else {
 #if DEBUGGING_ON
-						LOG(DEBUG3) << "found [LCD] endpoint, address 0x" << std::hex << addr
-									<< " MaxPacketSize " << toUInt(ep->wMaxPacketSize);
+								LOG(DEBUG3) << "found [LCD] endpoint, address 0x" << std::hex << addr
+											<< " MaxPacketSize " << toUInt(ep->wMaxPacketSize);
 #endif
-						device._LCDEndpoint = addr & 0xff;
-					}
+								device._LCDEndpoint = addr & 0xff;
+							}
+						}
 
 #if DEBUGGING_ON
-					LOG(DEBUG3) << "int. " << j << " alt_s. " << toUInt(asDescriptor->bAlternateSetting)
-								<< " endpoint " << l;
+						LOG(DEBUG3) << "int. " << j
+									<< " alt_s. " << toUInt(asDescriptor->bAlternateSetting)
+									<< " endpoint " << l;
 
 #if DEBUG_LIBUSB_EXTRA
-					LOG(DEBUG3) << "--";
-					LOG(DEBUG3) << "endpoint descriptor";
-					LOG(DEBUG3) << "--";
-					LOG(DEBUG3) << "bLength          : " << toUInt(ep->bLength);
-					LOG(DEBUG3) << "bDescriptorType  : " << toUInt(ep->bDescriptorType);
-					LOG(DEBUG3) << "bEndpointAddress : " << toUInt(ep->bEndpointAddress);
-					LOG(DEBUG3) << "bmAttributes     : " << toUInt(ep->bmAttributes);
-					LOG(DEBUG3) << "wMaxPacketSize   : " << toUInt(ep->wMaxPacketSize);
-					LOG(DEBUG3) << "bInterval        : " << toUInt(ep->bInterval);
-					LOG(DEBUG3) << "bRefresh         : " << toUInt(ep->bRefresh);
-					LOG(DEBUG3) << "bSynchAddress    : " << toUInt(ep->bSynchAddress);
-					/* extra parsing */
-					LOG(DEBUG3) << "extra_length     : " << static_cast<int>(ep->extra_length);
-					LOG(DEBUG3) << "--";
-					LOG(DEBUG3) << "--";
-					LOG(DEBUG3) << "--";
+						LOG(DEBUG3) << "--";
+						LOG(DEBUG3) << "endpoint descriptor";
+						LOG(DEBUG3) << "--";
+						LOG(DEBUG3) << "bLength          : " << toUInt(ep->bLength);
+						LOG(DEBUG3) << "bDescriptorType  : " << toUInt(ep->bDescriptorType);
+						LOG(DEBUG3) << "bEndpointAddress : " << toUInt(ep->bEndpointAddress);
+						LOG(DEBUG3) << "bmAttributes     : " << toUInt(ep->bmAttributes);
+						LOG(DEBUG3) << "wMaxPacketSize   : " << toUInt(ep->wMaxPacketSize);
+						LOG(DEBUG3) << "bInterval        : " << toUInt(ep->bInterval);
+						LOG(DEBUG3) << "bRefresh         : " << toUInt(ep->bRefresh);
+						LOG(DEBUG3) << "bSynchAddress    : " << toUInt(ep->bSynchAddress);
+						/* extra parsing */
+						LOG(DEBUG3) << "extra_length     : " << static_cast<int>(ep->extra_length);
+						LOG(DEBUG3) << "--";
+						LOG(DEBUG3) << "--";
+						LOG(DEBUG3) << "--";
 #endif
 #endif
+					}
 				}
 
 				if(device._keysEndpoint == 0) {
 					libusb_free_config_descriptor( configDescriptor ); /* free */
 					const std::string err("[Keys] endpoint not found");
+					GKSysLog(LOG_ERR, ERROR, err);
+					throw GLogiKExcept(err);
+				}
+
+				if(device._LCDEndpoint == 0) {
+					libusb_free_config_descriptor( configDescriptor ); /* free */
+					const std::string err("[LCD] endpoint not found");
 					GKSysLog(LOG_ERR, ERROR, err);
 					throw GLogiKExcept(err);
 				}

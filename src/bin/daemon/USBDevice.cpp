@@ -70,6 +70,7 @@ USBDevice::USBDevice(
 			_lastKeysInterruptTransferLength(0),
 			_lastLCDInterruptTransferLength(0),
 			_keysEndpoint(0),
+			_LCDEndpoint(0),
 			_pUSBDevice(nullptr),
 			_pUSBDeviceHandle(nullptr),
 			_threadsStatus(true)
