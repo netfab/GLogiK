@@ -1,105 +1,74 @@
 
----
+0.8.10 (2020-08-02)
+===================
+- Implemented LCD plugin locking mechanism. Press L2 LCD key to
+  lock/unlock current LCD plugin
+- Fixed potential daemon crash when handling unresponsive clients
+- Setted logind as default session tracker (instead of consolekit)
+- Use /proc/meminfo pseudo file to get more precise value
+  of current memory usage for systemMonitor LCD plugin
+- Updated splashscreen LCD plugin
+- Updated default DEBUG_DIR. Debug files are now created in a more
+  secured way
+- Miscellaneous fixs
 
-## version 0.8.10 - 2020-08-02
-#### Added features
- * implemented LCD plugin locking mechanism. Press L2 LCD key to
-   lock/unlock current LCD plugin
-
-#### Changes / Fixs
- * fixed potential daemon crash when handling unresponsive clients
- * setted logind as default session tracker (instead of consolekit)
- * use /proc/meminfo pseudo file to get more precise value
-   of current memory usage for systemMonitor LCD plugin
- * updated splashscreen LCD plugin
- * updated default DEBUG_DIR. Debug files are now created in a more
-   secured way
- * miscellaneous fixs
-
----
-
-## version 0.8.8 - 2019-05-12
-#### Added features
- * added LCD screen plugins tab in Qt5 GUI. Implemented all related
-   glue code into service and daemon
-
-#### Changes / Fixs
- * removed media key events old implementation. Now simulate XF86 media
-   events by linking desktop service to following X11 libraries :
-	- x11-libs/libX11
-	- x11-libs/libXtst
- * fixed potential memory leaks when building Qt5 interface
- * fixed start request sent to launcher when Qt5 GUI is starting and
+0.8.8 (2019-05-12)
+==================
+- Added LCD screen plugins tab in Qt5 GUI. Implemented all related
+  glue code into service and daemon
+- Removed media key events old implementation. Now simulate XF86 media
+  events by linking desktop service to following X11 libraries :
+    * x11-libs/libX11
+    * x11-libs/libXtst
+- Fixed potential memory leaks when building Qt5 interface
+- Fixed start request sent to launcher when Qt5 GUI is starting and
    desktop service is not running
- * miscellaneous fixs (launcher linking error, crash in GKDBus)
+- Miscellaneous fixs (launcher linking error, crash in GKDBus)
 
----
+0.8.6 (2019-04-01)
+==================
+- Added device : Logitech G510s Gaming Keyboard (046d:c22e)
+    (onboard audio enabled)
+- Several fixs regarding GLogiKs desktop service start
+- Miscellaneous fixs
+- Added Qt5 Graphical User Interface :
+    * Ability to start desktop service if necessary
+	* Ability to control device state (start/stop/restart)
+	* Ability to modify device backlight color
 
-## version 0.8.6 - 2019-04-01
-#### Added devices
- * Logitech G510s Gaming Keyboard with onboard audio enabled (046d:c22e)
+0.8.4 (2019-02-26)
+==================
+- Added desktop launcher binary
+- Added GKDBus signals introspectability
+- Ability to enable/disable LCD screen plugins from userland
+- Check for version mismatch between daemon and clients
+- Run media commands synchronously
+- Fix GKDBus signals implementation and usage
+- Desktop file now run the launcher binary (instead of GLogiKs)
 
-#### Changes / Fixs
- * several fixs regarding GLogiKs desktop service start
- * miscellaneous fixs
+0.8.2 (2018-09-10)
+==================
+- Added LCD keys L1-L2-L3-L4-L5 support into LCD plugins
+- Updated Splashscreen LCD plugin
+- Updated SystemMonitor LCD plugin
+- Fix wrong macro clearing behavior
 
-#### Added features :
- * added Qt5 Graphical User Interface :
-	- ability to start desktop service if necessary
-	- ability to control device state (start/stop/restart)
-	- ability to modify device backlight color
+0.8.0 (2018-08-09)
+==================
+- Multimedia keys support
+- Beginning of LCD screen support
+- Optionally depends on libnotify >= 0.7.7
+- now depends on dev-libs/boost >= 1.64.0 (boost process requirement)
+    https://github.com/klemens-morgenstern/boost-process
 
----
-
-## version 0.8.4 - 2019-02-26
-#### Added features
- * added desktop launcher binary
- * added GKDBus signals introspectability
- * ability to enable/disable LCD screen plugins from userland
- * check for version mismatch between daemon and clients
-
-#### Changes / Fixs
- * run media commands synchronously
- * fix GKDBus signals implementation and usage
- * the desktop file now run the launcher binary (instead of GLogiKs)
-
----
-
-## version 0.8.2 - 2018-09-10
-#### Added features
- * added LCD keys L1-L2-L3-L4-L5 support into LCD plugins
-
-#### Changes / Fixs
- * updated Splashscreen LCD plugin
- * updated SystemMonitor LCD plugin
- * Fix wrong macro clearing behavior
-
----
-
-## version 0.8.0 - 2018-08-09
-#### Added features :
- * multimedia keys support
- * beginning of LCD screen support
- * now optionally depends on libnotify >= 0.7.7
-
-#### Changes / Fixs
- * now depends on dev-libs/boost >= 1.64.0 (boost process requirement)\
-   https://github.com/klemens-morgenstern/boost-process
-
----
-
-## version 0.6.0 - 2018-03-29 - (first release)
-#### Added devices :
- * Logitech G510s Gaming Keyboard (046d:c22d)
-
-#### Added features :
- * multi-users environment session switch support
- * hotplug device monitoring
- * device configuration file monitoring
- * record/assign/clear device macros
- * set device backlight color
- * control device via DBus (start/stop/restart/...)
- * handle multiple devices simultaneously
-
----
+0.6.0 (2018-03-29)
+==================
+- Added device : Logitech G510s Gaming Keyboard (046d:c22d)
+- Multi-users environment session switch support
+- Hotplug device monitoring
+- Device configuration file monitoring
+- Record/assign/clear device macros
+- Set device backlight color
+- Control device via DBus (start/stop/restart/...)
+- Handle multiple devices simultaneously
 
