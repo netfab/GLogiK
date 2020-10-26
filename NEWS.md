@@ -1,4 +1,15 @@
 
+0.8.xx (2020-xx-xx)
+===================
+- Improved LCDPlugin progress bar drawing function
+- Internal work on GKDBus allowing binaries to disconnect from
+  busses and free allocated resources in the correct order
+- Make D-Bus dependency optional. D-Bus dependency optional means that
+  without D-bus support, only the daemon will be built. If you want
+  desktop service and GUI support, you want D-Bus enabled
+- Under-the-hood work to reorganize keyboard driver classes, allowing us
+  to select USB library provider at configure time
+
 0.8.10 (2020-08-02)
 ===================
 - Implemented LCD plugin locking mechanism. Press L2 LCD key to
