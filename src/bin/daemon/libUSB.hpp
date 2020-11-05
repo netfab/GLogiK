@@ -61,9 +61,9 @@ class LibUSB
 		);
 
 	private:
-		static bool status;				/* is libusb initialized ? */
-		static uint8_t counter;			/* initialized drivers counter */
 		static libusb_context * pContext;
+		static uint8_t counter;			/* initialized drivers counter */
+		static bool status;				/* is libusb initialized ? */
 
 		void setUSBDeviceActiveConfiguration(USBDevice & device);
 		void findUSBDeviceInterface(USBDevice & device);

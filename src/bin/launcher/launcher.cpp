@@ -48,9 +48,9 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DesktopServiceLauncher::DesktopServiceLauncher() :
-	_pid(0),
-	_LOGfd(nullptr)
+DesktopServiceLauncher::DesktopServiceLauncher()
+	:	_LOGfd(nullptr),
+		_pid(0)
 {
 	openlog(DESKTOP_SERVICE_LAUNCHER_NAME, LOG_PID|LOG_CONS, LOG_USER);
 

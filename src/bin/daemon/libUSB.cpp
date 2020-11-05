@@ -37,9 +37,9 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-bool LibUSB::status = false;
-uint8_t LibUSB::counter = 0;
 libusb_context * LibUSB::pContext = nullptr;
+uint8_t LibUSB::counter = 0;
+bool LibUSB::status = false;
 
 /*
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

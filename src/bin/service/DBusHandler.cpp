@@ -48,14 +48,16 @@ DBusHandler::DBusHandler(
 	SessionManager& session,
 	NSGKUtils::FileSystem* pGKfs,
 	NSGKDBus::GKDBus* pDBus)
-	:	_pDBus(pDBus),
+	:	_clientID("undefined"),
+		_daemonVersion("unknown"),
+		_currentSession(""),
+		_sessionState(""),
+		_pDBus(pDBus),
+		_sessionFramework(SessionFramework::FW_UNKNOWN),
 		_sessionBus(NSGKDBus::BusConnection::GKDBUS_SESSION),
 		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
 		_registerStatus(false),
-		_wantToExit(false),
-		_clientID("undefined"),
-		_sessionFramework(SessionFramework::FW_UNKNOWN),
-		_daemonVersion("unknown")
+		_wantToExit(false)
 {
 	_devices.setGKfs(pGKfs);
 

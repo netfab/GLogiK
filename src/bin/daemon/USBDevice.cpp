@@ -60,28 +60,33 @@ USBDevice::USBDevice(
 				mediaKeysLength,
 				LCDKeysLength
 			),
-			_fatalErrors(0),
+			_pressedRKeysMask(0),
+			_LCDPluginsMask1(0),
 			_pMacrosManager(nullptr),
 			_pLCDPluginsManager(nullptr),
-			_pressedRKeysMask(0),
-			_MxKeysLedsMask(0),
-			_exitMacroRecordMode(false),
-			_LCDPluginsMask1(0),
-			_lastKeysInterruptTransferLength(0),
-			_lastLCDInterruptTransferLength(0),
-			_threadsStatus(true),
 #if GKLIBUSB
 			_pUSBDevice(nullptr),
 			_pUSBDeviceHandle(nullptr),
+#elif GKHIDAPI
+			_pHIDDevice(nullptr),
+#endif
+			_MxKeysLedsMask(0),
+			_exitMacroRecordMode(false),
+			_threadsStatus(true),
+			_lastKeysInterruptTransferLength(0),
+			_lastLCDInterruptTransferLength(0),
+#if GKLIBUSB
+			_fatalErrors(0),
 			_keysEndpoint(0),
 			_LCDEndpoint(0)
 #elif GKHIDAPI
-			_pHIDDevice(nullptr)
+			_fatalErrors(0)
 #endif
 {
 	std::fill_n(_pressedKeys, KEYS_BUFFER_LENGTH, 0);
 	std::fill_n(_previousPressedKeys, KEYS_BUFFER_LENGTH, 0);
 	this->setRGBBytes(0xFF, 0xFF, 0xFF);
+	_lastTimePoint = std::chrono::steady_clock::now();
 }
 
 void USBDevice::operator=(const USBDevice& dev)

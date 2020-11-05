@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -45,10 +45,10 @@ class SessionManager
 		SmcConn _pSMCConnexion;
 		IceConn _pICEConnexion;
 
-		int _ICEfd = -1;
-
-		unsigned long _mask;
 		SmcCallbacks _callbacks;
+
+		unsigned long _mask = 0;
+		int _ICEfd = -1;
 
 		char* _pPreviousID = nullptr;
 		char* _pClientID = nullptr;

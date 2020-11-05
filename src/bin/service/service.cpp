@@ -52,8 +52,8 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 DesktopService::DesktopService() :
-	_pid(0),
 	_LOGfd(nullptr),
+	_pid(0),
 	_verbose(false)
 {
 	openlog(GLOGIKS_DESKTOP_SERVICE_NAME, LOG_PID|LOG_CONS, LOG_USER);

@@ -44,10 +44,10 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 DevicesHandler::DevicesHandler()
-	:	_pDBus(nullptr),
+	:	_clientID("undefined"),
+		_pDBus(nullptr),
 		_pGKfs(nullptr),
-		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
-		_clientID("undefined")
+		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler initialization";

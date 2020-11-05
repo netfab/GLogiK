@@ -103,11 +103,11 @@ class GKDBus
 	private:
 		DBusError _error;
 
-		DBusConnection* _sessionConnection;
-		DBusConnection* _systemConnection;
-
 		std::string _sessionName;
 		std::string _systemName;
+
+		DBusConnection* _sessionConnection;
+		DBusConnection* _systemConnection;
 
 		DBusMessage* _message;
 

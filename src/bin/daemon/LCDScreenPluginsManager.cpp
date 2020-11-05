@@ -40,10 +40,10 @@ using namespace NSGKUtils;
 const LCDPluginsPropertiesArray_type LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray = {};
 
 LCDScreenPluginsManager::LCDScreenPluginsManager()
-	:	_frameCounter(0),
+	:	_pFonts(&_fontsManager),
+		_frameCounter(0),
 		_noPlugins(false),
-		_currentPluginLocked(false),
-		_pFonts(&_fontsManager)
+		_currentPluginLocked(false)
 {
 	try {
 		_plugins.push_back( new Splashscreen() );

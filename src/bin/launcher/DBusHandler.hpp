@@ -40,10 +40,10 @@ class DBusHandler
 	protected:
 
 	private:
-		NSGKDBus::GKDBus* _pDBus;
-		const NSGKDBus::BusConnection _sessionBus;
 		const std::chrono::steady_clock::duration _tenSeconds;
 		std::chrono::steady_clock::time_point _lastCall;
+		NSGKDBus::GKDBus* _pDBus;
+		const NSGKDBus::BusConnection _sessionBus;
 
 		void initializeGKDBusSignals(void);
 		void restartRequest(void);

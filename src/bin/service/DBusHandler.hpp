@@ -80,18 +80,23 @@ class DBusHandler
 	protected:
 
 	private:
-		NSGKDBus::GKDBus* _pDBus;
-		const NSGKDBus::BusConnection _sessionBus;
-		const NSGKDBus::BusConnection _systemBus;
 		DevicesHandler _devices;
-		bool _registerStatus;		/* true == registered with daemon */
-		bool _wantToExit;			/* true if we want to exit after a restart request */
-		std::string _clientID;
-		SessionFramework _sessionFramework;
-		std::string _daemonVersion;
 
+		std::string _clientID;
+		std::string _daemonVersion;
 		std::string _currentSession;	/* current session object path */
 		std::string _sessionState;		/* session state */
+
+		NSGKDBus::GKDBus* _pDBus;
+
+		SessionFramework _sessionFramework;
+		const NSGKDBus::BusConnection _sessionBus;
+		const NSGKDBus::BusConnection _systemBus;
+
+		bool _registerStatus;		/* true == registered with daemon */
+		bool _wantToExit;			/* true if we want to exit after a restart request */
+
+		/* -- -- -- */
 
 		void setCurrentSessionObjectPath(pid_t pid);
 		const std::string getCurrentSessionState(void);

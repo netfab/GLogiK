@@ -54,9 +54,9 @@ using namespace NSGKUtils;
 
 #if GKDBUS
 DevicesManager::DevicesManager()
-	:	_pDBus(nullptr),
-		_numClients(0),
-		_unknown("unknown")
+	:	_unknown("unknown"),
+		_pDBus(nullptr),
+		_numClients(0)
 #else
 DevicesManager::DevicesManager()
 	:	_unknown("unknown")

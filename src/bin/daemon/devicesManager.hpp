@@ -159,17 +159,17 @@ class DevicesManager
 	protected:
 
 	private:
-#if GKDBUS
-		NSGKDBus::GKDBus* _pDBus;
-		uint8_t _numClients;
-#endif
-
 		const std::string _unknown;
 		std::vector<KeyboardDriver*> _drivers;
 		std::map<const std::string, DetectedDevice> _detectedDevices;
 		std::map<const std::string, DetectedDevice> _startedDevices;
 		std::map<const std::string, DetectedDevice> _stoppedDevices;
 		std::set<std::string> _unpluggedDevices;
+
+#if GKDBUS
+		NSGKDBus::GKDBus* _pDBus;
+		uint8_t _numClients;
+#endif
 
 		void searchSupportedDevices(struct udev * pUdev);
 		void initializeDevices(void) noexcept;

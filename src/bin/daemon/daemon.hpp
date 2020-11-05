@@ -45,10 +45,9 @@ class GLogiKDaemon
 
 	protected:
 	private:
-		pid_t _pid = 0;
-		FILE* _LOGfd = nullptr;
 		std::string _pidFileName;
-
+		FILE* _LOGfd = nullptr;
+		pid_t _pid = 0;
 		bool _PIDFileCreated;
 
 		void createPIDFile(void);

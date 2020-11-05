@@ -77,26 +77,78 @@ class USBDevice
 
 		void operator=(const USBDevice& dev);
 
-		unsigned int				_fatalErrors;
-		std::thread::id				_keysThreadID;
-		std::thread::id				_LCDThreadID;
-		MacrosManager*				_pMacrosManager;
-		LCDScreenPluginsManager*	_pLCDPluginsManager;
-		uint64_t					_pressedRKeysMask;
-		std::atomic<uint8_t>		_MxKeysLedsMask;
-		std::atomic<bool>			_exitMacroRecordMode;
-		uint64_t					_LCDPluginsMask1;
-		unsigned char				_pressedKeys[KEYS_BUFFER_LENGTH];
-		unsigned char				_previousPressedKeys[KEYS_BUFFER_LENGTH];
+		std::mutex					_LCDMutex;
+
+#if GKLIBUSB
+	private:
+		friend class LibUSB;
+
+		std::mutex					_libUSBMutex;
+#endif
+
+	public:
 		std::string					_macroKey;
 		std::string					_mediaKey;
 		std::string					_LCDKey;
+
 		macro_type					_newMacro;
 
-		std::mutex					_LCDMutex;
+#if GKLIBUSB
+	private:
+		std::vector<int>			_toRelease;
+		std::vector<int>			_toAttach;
+#endif
 
-		std::chrono::steady_clock::time_point _lastTimePoint;
+	public:
+		uint64_t					_pressedRKeysMask;
+		uint64_t					_LCDPluginsMask1;
 
+		MacrosManager*				_pMacrosManager;
+		LCDScreenPluginsManager*	_pLCDPluginsManager;
+
+	private:
+#if GKLIBUSB
+		libusb_device*				_pUSBDevice;
+		libusb_device_handle*		_pUSBDeviceHandle;
+#elif GKHIDAPI
+		friend class hidapi;
+
+		hid_device*					_pHIDDevice;
+#endif
+
+	public:
+		std::thread::id				_keysThreadID;
+		std::thread::id				_LCDThreadID;
+
+		std::chrono::steady_clock::time_point
+									_lastTimePoint;
+
+		std::atomic<uint8_t>		_MxKeysLedsMask;
+		std::atomic<bool>			_exitMacroRecordMode;
+
+	private:
+		std::atomic<bool>			_threadsStatus;
+
+		int							_lastKeysInterruptTransferLength;
+		int							_lastLCDInterruptTransferLength;
+
+		uint8_t _RGB[3];
+
+	public:
+		unsigned int				_fatalErrors;
+
+		unsigned char				_pressedKeys[KEYS_BUFFER_LENGTH];
+		unsigned char				_previousPressedKeys[KEYS_BUFFER_LENGTH];
+
+#if GKLIBUSB
+	private:
+		unsigned char				_keysEndpoint;
+		unsigned char				_LCDEndpoint;
+#endif
+
+		/* -- -- -- */
+
+	public:
 		void initializeMacrosManager(
 			const char* virtualKeyboardName,
 			const std::vector<std::string> & keysNames
@@ -120,32 +172,6 @@ class USBDevice
 		}
 		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
 		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
-
-	private:
-		uint8_t _RGB[3];
-
-		int 				_lastKeysInterruptTransferLength;
-		int 				_lastLCDInterruptTransferLength;
-		std::atomic<bool>	_threadsStatus;
-
-#if GKLIBUSB
-		friend class LibUSB;
-
-		libusb_device *			_pUSBDevice;
-		libusb_device_handle *	_pUSBDeviceHandle;
-
-		unsigned char		_keysEndpoint;
-		unsigned char		_LCDEndpoint;
-
-		std::vector<int>		_toRelease;
-		std::vector<int>		_toAttach;
-
-		std::mutex			_libUSBMutex;
-#elif GKHIDAPI
-		friend class hidapi;
-
-		hid_device * _pHIDDevice;
-#endif
 };
 
 } // namespace GLogiK

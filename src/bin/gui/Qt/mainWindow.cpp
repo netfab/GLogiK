@@ -61,18 +61,18 @@ using namespace NSGKUtils;
 MainWindow::MainWindow(QWidget *parent)
 	:	QMainWindow(parent),
 		_pDBus(nullptr),
-		_pid(0),
 		_LOGfd(nullptr),
-		_GUIResetThrow(true),
-		_serviceStartRequest(false),
-		_ignoreNextSignal(false),
-		_statusBarTimeout(3000),
 		_devicesComboBox(nullptr),
 		_tabbedWidgets(nullptr),
 		_daemonAndServiceTab(nullptr),
 		_deviceControlTab(nullptr),
 		_backlightColorTab(nullptr),
-		_LCDPluginsTab(nullptr)
+		_LCDPluginsTab(nullptr),
+		_statusBarTimeout(3000),
+		_pid(0),
+		_GUIResetThrow(true),
+		_serviceStartRequest(false),
+		_ignoreNextSignal(false)
 {
 	openlog("GKcQt5", LOG_PID|LOG_CONS, LOG_USER);
 

@@ -57,9 +57,6 @@ class LCDScreenPluginsManager
 	protected:
 
 	private:
-		unsigned short _frameCounter;
-		bool _noPlugins;
-		bool _currentPluginLocked;
 		std::vector<LCDPlugin*> _plugins;
 		std::vector<LCDPlugin*>::iterator _itCurrentPlugin;
 
@@ -68,6 +65,10 @@ class LCDScreenPluginsManager
 		LCDDataArray _LCDBuffer;
 		FontsManager _fontsManager;
 		FontsManager* const _pFonts;
+
+		unsigned short _frameCounter;
+		bool _noPlugins;
+		bool _currentPluginLocked;
 
 		void stopLCDPlugins(void);
 		void dumpPBMDataIntoLCDBuffer(LCDDataArray & LCDBuffer, const PBMDataArray & PBMData);
