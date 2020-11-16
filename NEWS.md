@@ -11,6 +11,7 @@
   to select USB library provider at configure time
 - Added dev-libs/hidapi support (with libusb backend) and make it
   default over dev-libs/libusb
+- Removed consolekit support
 
 0.8.10 (2020-08-02)
 ===================

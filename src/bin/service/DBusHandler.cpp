@@ -202,13 +202,6 @@ void DBusHandler::cleanDBusRequests(void) {
 				object.c_str(),
 				"org.freedesktop.DBus.Properties");
 			break;
-		/* consolekit */
-		case SessionFramework::FW_CONSOLEKIT:
-			_pDBus->removeSignalsInterface(_systemBus,
-				"org.freedesktop.ConsoleKit",
-				object.c_str(),
-				"org.freedesktop.ConsoleKit.Session");
-			break;
 		default:
 			LOG(WARNING) << "unknown session tracker";
 			break;
@@ -394,54 +387,6 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(ERROR) << e.what();
-		LOG(INFO) << "contacting consolekit";
-
-		const std::string remoteMethod("GetCurrentSession");
-
-		try {
-			/* getting consolekit current session */
-			_pDBus->initializeRemoteMethodCall(
-				_systemBus,
-				"org.freedesktop.ConsoleKit",
-				"/org/freedesktop/ConsoleKit/Manager",
-				"org.freedesktop.ConsoleKit.Manager",
-				remoteMethod.c_str()
-			);
-			_pDBus->sendRemoteMethodCall();
-
-			try {
-				_pDBus->waitForRemoteMethodCallReply();
-				_currentSession = _pDBus->getNextStringArgument();
-#if DEBUGGING_ON
-				LOG(DEBUG1) << "current session : " << _currentSession;
-#endif
-				_sessionFramework = SessionFramework::FW_CONSOLEKIT;
-
-				/* update session state when ActiveChanged signal receipted */
-				const std::string object = _pDBus->getObjectFromObjectPath(_currentSession);
-
-				_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
-					_systemBus,
-					"org.freedesktop.ConsoleKit",
-					object.c_str(),
-					"org.freedesktop.ConsoleKit.Session",
-					"ActiveChanged",
-					{},
-					std::bind(&DBusHandler::updateSessionState, this)
-				);
-
-				LOG(INFO) << "successfully contacted consolekit";
-				return; /* everything ok */
-			}
-			catch (const GLogiKExcept & e) {
-				LogRemoteCallGetReplyFailure
-				throw GLogiKExcept("failure to get session ID from consolekit");
-			}
-		}
-		catch (const GKDBusMessageWrongBuild & e) {
-			_pDBus->abandonRemoteMethodCall();
-			LogRemoteCallFailure
-		}
 	}
 
 	/* fatal error */
@@ -468,32 +413,6 @@ void DBusHandler::updateSessionState(void)
 const std::string DBusHandler::getCurrentSessionState(void) {
 	std::string remoteMethod;
 	switch(_sessionFramework) {
-		/* consolekit */
-		case SessionFramework::FW_CONSOLEKIT:
-			remoteMethod = "GetSessionState";
-			try {
-				_pDBus->initializeRemoteMethodCall(
-					_systemBus,
-					"org.freedesktop.ConsoleKit",
-					_currentSession.c_str(),
-					"org.freedesktop.ConsoleKit.Session",
-					remoteMethod.c_str()
-				);
-				_pDBus->sendRemoteMethodCall();
-
-				try {
-					_pDBus->waitForRemoteMethodCallReply();
-					return _pDBus->getNextStringArgument();
-				}
-				catch (const GLogiKExcept & e) {
-					LogRemoteCallGetReplyFailure
-				}
-			}
-			catch (const GKDBusMessageWrongBuild & e) {
-				_pDBus->abandonRemoteMethodCall();
-				LogRemoteCallFailure
-			}
-			break;
 		case SessionFramework::FW_LOGIND:
 			/* logind */
 			remoteMethod = "Get";

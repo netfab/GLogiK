@@ -53,10 +53,10 @@ Optional Build Dependencies
 Runtime Dependencies
 ====================
 
- * a user-seat-session manager :
+ * if built with D-Bus support, a user-seat-session manager is required to
+ run desktop binaries :
    - sys-auth/elogind
    - sys-apps/systemd
-   - sys-auth/consolekit >= 1.1.2
 
 GLogiK Daemon and Desktop Service
 =================================
@@ -71,6 +71,6 @@ For desktop users, see also :
 
 D-Bus support is required to build and run desktop binaries.
 
-Users who wants to run the GLogiKs desktop service must be in the glogiks group.
-(or whatever is defined with the above option).
+Users who wants to run the GLogiKs desktop service must be in the glogiks
+group (or whatever is defined with the above option).
 
