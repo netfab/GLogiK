@@ -116,8 +116,6 @@ void USBDevice::operator=(const USBDevice& dev)
 	_fatalErrors					= dev._fatalErrors;
 	_keysThreadID					= dev._keysThreadID;
 	_LCDThreadID					= dev._LCDThreadID;
-	_pMacrosManager					= dev._pMacrosManager;
-	_pLCDPluginsManager				= dev._pLCDPluginsManager;
 	_pressedRKeysMask				= dev._pressedRKeysMask;
 	_MxKeysLedsMask					= static_cast<uint8_t>(dev._MxKeysLedsMask);
 	_exitMacroRecordMode			= static_cast<bool>(dev._exitMacroRecordMode);
@@ -138,6 +136,9 @@ void USBDevice::operator=(const USBDevice& dev)
 	_lastTimePoint		= dev._lastTimePoint;
 
 	/* private */
+	_pMacrosManager					= dev._pMacrosManager;
+	_pLCDPluginsManager				= dev._pLCDPluginsManager;
+
 	this->setRGBBytes(dev._RGB[0], dev._RGB[1], dev._RGB[2]);
 	_lastKeysInterruptTransferLength	= dev.getLastKeysInterruptTransferLength();
 	_lastLCDInterruptTransferLength		= dev.getLastLCDInterruptTransferLength();
@@ -157,18 +158,6 @@ void USBDevice::operator=(const USBDevice& dev)
 #endif
 }
 
-void USBDevice::initializeMacrosManager(
-	const char* virtualKeyboardName,
-	const std::vector<std::string> & keysNames)
-{
-	try {
-		_pMacrosManager = new MacrosManager(virtualKeyboardName, keysNames);
-	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
-		throw GLogiKBadAlloc("macros manager allocation failure");
-	}
-}
-
 void USBDevice::destroyMacrosManager(void) noexcept {
 	if( _pMacrosManager ) {
 		delete _pMacrosManager;
@@ -176,17 +165,7 @@ void USBDevice::destroyMacrosManager(void) noexcept {
 	}
 }
 
-void USBDevice::initializeLCDPluginsManager(void)
-{
-	try {
-		_pLCDPluginsManager = new LCDScreenPluginsManager();
-	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
-		throw GLogiKBadAlloc("LCD Plugins manager allocation failure");
-	}
-}
-
-void USBDevice::destroyLCDPluginsManager(void)
+void USBDevice::destroyLCDPluginsManager(void) noexcept
 {
 	if( _pLCDPluginsManager ) {
 		delete _pLCDPluginsManager;

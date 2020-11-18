@@ -103,10 +103,10 @@ class USBDevice
 		uint64_t					_pressedRKeysMask;
 		uint64_t					_LCDPluginsMask1;
 
+	private:
 		MacrosManager*				_pMacrosManager;
 		LCDScreenPluginsManager*	_pLCDPluginsManager;
 
-	private:
 #if GKLIBUSB
 		libusb_device*				_pUSBDevice;
 		libusb_device_handle*		_pUSBDeviceHandle;
@@ -149,14 +149,21 @@ class USBDevice
 		/* -- -- -- */
 
 	public:
-		void initializeMacrosManager(
-			const char* virtualKeyboardName,
-			const std::vector<std::string> & keysNames
-		);
+		void setMacrosManager(MacrosManager* pMacrosManager) {
+			_pMacrosManager = pMacrosManager;
+		}
+		MacrosManager* const & getMacrosManager(void) const {
+			return _pMacrosManager;
+		}
 		void destroyMacrosManager(void) noexcept;
 
-		void initializeLCDPluginsManager(void);
-		void destroyLCDPluginsManager(void);
+		void setLCDPluginsManager(LCDScreenPluginsManager* pLCDPluginsManager) {
+			_pLCDPluginsManager = pLCDPluginsManager;
+		}
+		LCDScreenPluginsManager* const & getLCDPluginsManager(void) const {
+			return _pLCDPluginsManager;
+		}
+		void destroyLCDPluginsManager(void) noexcept;
 
 		const bool getThreadsStatus(void) const {
 			return _threadsStatus;
