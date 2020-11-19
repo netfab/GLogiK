@@ -191,7 +191,7 @@ class KeyboardDriver
 		void checkDeviceFatalErrors(USBDevice & device, const std::string & place) const;
 
 		void resetDeviceState(USBDevice & device);
-		void joinDeviceThreads(const USBDevice & device);
+		void joinDeviceThreads(USBDevice & device);
 		/* --- */
 
 		/* driver instantiation */
@@ -249,6 +249,9 @@ class USBKeyboardDriver
 		}
 
 		void closeUSBDevice(USBDevice & device) override {
+			device.destroyMacrosManager();
+			device.destroyLCDPluginsManager();
+
 			USBAPI::closeUSBDevice(device);
 		}
 		/* --- */

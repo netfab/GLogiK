@@ -822,8 +822,10 @@ void KeyboardDriver::setDeviceLCDPluginsMask(USBDevice & device, uint64_t mask)
 	}
 }
 
-void KeyboardDriver::joinDeviceThreads(const USBDevice & device)
+void KeyboardDriver::joinDeviceThreads(USBDevice & device)
 {
+	device.deactivateThreads();
+
 	bool found = false;
 	std::thread::id thread_id;
 
@@ -1019,9 +1021,6 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 		}
 	}
 	catch ( const GLogiKExcept & e ) {
-		device.destroyMacrosManager();
-		device.destroyLCDPluginsManager();
-
 		this->closeUSBDevice(device);
 		throw;
 	}
@@ -1039,12 +1038,8 @@ void KeyboardDriver::closeDevice(const USBDeviceID & det) noexcept
 					<< toUInt(device.getNum()) << " on bus " << toUInt(device.getBus());
 #endif
 
-		device.deactivateThreads();
 		this->joinDeviceThreads(device);
 		this->resetDeviceState(device);
-		device.destroyMacrosManager(); /* reset device state needs this pointer */
-		device.destroyLCDPluginsManager();
-
 		this->closeUSBDevice(device);
 
 		_initializedDevices.erase(devID);
