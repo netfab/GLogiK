@@ -90,26 +90,24 @@ const std::vector<MKeyLed> G510Base::ledsMask = {
 
 const std::vector<USBDeviceID> G510Base::knownDevices = {
 	// name, vendor_id, product_id, capabilities
-	{	"Logitech G510/G510s Gaming Keyboard",
+	{	"Logitech", "G510/G510s Gaming Keyboard",	/* vendor, product */
 		VENDOR_LOGITECH, "c22d",
 		toEnumType(	Caps::GK_BACKLIGHT_COLOR |
 					Caps::GK_MACROS_KEYS |
 					Caps::GK_MEDIA_KEYS |
 					Caps::GK_LCD_SCREEN ),
-		0, 0,	/* bus, num */
 		1, 1, 0, 2,
 		8,		// expected libusb keys interrupt read max length
 		5,		// MacrosKeys transfer length
 		2,		// MediaKeys transfer length
 		5		// LCDKeys transfer length
 	},
-	{	"Logitech G510/G510s Gaming Keyboard",
-		VENDOR_LOGITECH, "c22e",				/* with onboard audio enabled */
+	{	"Logitech", "G510/G510s Gaming Keyboard",	/* vendor, product */
+		VENDOR_LOGITECH, "c22e",					/* with onboard audio enabled */
 		toEnumType(	Caps::GK_BACKLIGHT_COLOR |
 					Caps::GK_MACROS_KEYS |
 					Caps::GK_MEDIA_KEYS |
 					Caps::GK_LCD_SCREEN ),
-		0, 0,	/* bus, num */
 		1, 1, 0, 2,
 		8,		// expected libusb keys interrupt read max length
 		5,		// MacrosKeys transfer length
@@ -304,7 +302,9 @@ KeyStatus G510Base::processKeyEvent(USBDevice & device)
 void G510Base::sendUSBDeviceInitialization(USBDevice & device)
 {
 #if DEBUGGING_ON
-	LOG(INFO) << device.getID() << " sending " << device.getName() << " initialization requests";
+	LOG(INFO)	<< device.getID() << " sending "
+				<< device.getVendor() << " " << device.getProduct()
+				<< " initialization requests";
 #endif
 	{
 		const unsigned char ReportID = 0x01;
@@ -333,7 +333,8 @@ void G510Base::setDeviceBacklightColor(
 {
 	device.setRGBBytes( r, g, b );
 #if DEBUGGING_ON
-	LOG(DEBUG1) << device.getID() << " setting " << device.getName()
+	LOG(DEBUG1) << device.getID() << " setting "
+				<< device.getVendor() << " " << device.getProduct()
 				<< " backlight color with following RGB bytes : " << getHexRGB(r, g, b);
 #endif
 	const unsigned char ReportID = 0x05;
@@ -350,7 +351,8 @@ void G510Base::setDeviceMxKeysLeds(USBDevice & device)
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << device.getID() << " setting " << device.getName()
+	LOG(DEBUG1) << device.getID() << " setting "
+				<< device.getVendor() << " " << device.getProduct()
 				<< " MxKeys leds using current mask : 0x" << std::hex << toUInt(mask);
 #endif
 	const unsigned char ReportID = 0x04;

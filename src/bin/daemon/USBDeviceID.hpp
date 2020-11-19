@@ -33,10 +33,16 @@ namespace GLogiK
 class USBDeviceID
 {
 	public:
-		const std::string & getName(void) const { return _name; }
+		const std::string & getVendor(void) const { return _vendor; }
+		const std::string & getProduct(void) const { return _product; }
 		const std::string & getVendorID(void) const { return _vendorID; }
 		const std::string & getProductID(void) const { return _productID; }
+		const std::string & getNode(void) const { return _node; }
+		const std::string & getUSec(void) const { return _usec; }
+
 		const uint64_t getCapabilities(void) const { return _capabilities; }
+
+		const uint16_t getDriverID(void) const { return _driverID; }
 
 		const uint8_t getBus(void) const { return _bus; }
 		const uint8_t getNum(void) const { return _num; }
@@ -72,21 +78,30 @@ class USBDeviceID
 
 		USBDeviceID(void) = default;
 		USBDeviceID(
-			const std::string & n,
-			const std::string & v,
-			const std::string & p,
-			const uint64_t c,
-			const uint8_t b,
-			const uint8_t num,
-			const uint8_t C,
-			const uint8_t I,
-			const uint8_t A,
-			const uint8_t N,
+			const std::string & vendor,
+			const std::string & product,
+			const std::string & vendorID,
+			const std::string & productID,
+			const uint64_t capabilities,
+			const uint8_t bConfigurationValue,
+			const uint8_t bInterfaceNumber,
+			const uint8_t bAlternateSetting,
+			const uint8_t bNumEndpoints,
 			const int8_t bufferMaxLength,
 			const int8_t macrosKeysLength,
 			const int8_t mediaKeysLength,
 			const int8_t LCDKeysLength
 		);
+		USBDeviceID(
+			const USBDeviceID & device,
+			const std::string & node,
+			const std::string & serial,
+			const std::string & usec,
+			const uint16_t driverID,
+			const uint8_t bus,
+			const uint8_t num
+		);
+		USBDeviceID(const USBDeviceID & device) = default;
 		~USBDeviceID(void) = default;
 
 	protected:
@@ -94,12 +109,19 @@ class USBDeviceID
 	private:
 		friend class USBDevice;
 
-		std::string _name;
+		std::string _vendor;
+		std::string _product;
 		std::string _vendorID;
 		std::string _productID;
 		std::string _devID; /* [b1d3] */
 
+		std::string _node;
+		std::string _serial;
+		std::string _usec;
+
 		uint64_t _capabilities;
+
+		uint16_t _driverID;
 
 		uint8_t _bus;
 		uint8_t _num;

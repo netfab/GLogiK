@@ -29,41 +29,72 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 USBDeviceID::USBDeviceID(
-			const std::string & n,
-			const std::string & v,
-			const std::string & p,
-			const uint64_t c,
-			const uint8_t b,
-			const uint8_t num,
-			const uint8_t C,
-			const uint8_t I,
-			const uint8_t A,
-			const uint8_t N,
+			const std::string & vendor,
+			const std::string & product,
+			const std::string & vendorID,
+			const std::string & productID,
+			const uint64_t capabilities,
+			const uint8_t bConfigurationValue,
+			const uint8_t bInterfaceNumber,
+			const uint8_t bAlternateSetting,
+			const uint8_t bNumEndpoints,
 			const int8_t bufferMaxLength,
 			const int8_t macrosKeysLength,
 			const int8_t mediaKeysLength,
 			const int8_t LCDKeysLength
-		)	:	_name(n),
-				_vendorID(v),
-				_productID(p),
-				_devID(USBDeviceID::getDeviceID(b, num)),
-				_capabilities(c),
-				_bus(b),
-				_num(num),
-				_bConfigurationValue(C),
-				_bInterfaceNumber(I),
-				_bAlternateSetting(A),
-				_bNumEndpoints(N),
+		)	:	_vendor(vendor),
+				_product(product),
+				_vendorID(vendorID),
+				_productID(productID),
+				_capabilities(capabilities),
+				_bConfigurationValue(bConfigurationValue),
+				_bInterfaceNumber(bInterfaceNumber),
+				_bAlternateSetting(bAlternateSetting),
+				_bNumEndpoints(bNumEndpoints),
 				_MacrosKeysLength(macrosKeysLength),
 				_MediaKeysLength(mediaKeysLength),
 				_LCDKeysLength(LCDKeysLength)
 {
+	_node = _serial = _usec = "";
+	_driverID = _bus = _num = 0;
+
 	_keysInterruptBufferMaxLength = bufferMaxLength;
 
 	if( bufferMaxLength > KEYS_BUFFER_LENGTH ) {
 		GKSysLog(LOG_WARNING, WARNING, "interrupt read length too large, set it to max buffer length");
 		_keysInterruptBufferMaxLength = KEYS_BUFFER_LENGTH;
 	}
+}
+
+USBDeviceID::USBDeviceID(
+	const USBDeviceID & device,
+	const std::string & node,
+	const std::string & serial,
+	const std::string & usec,
+	const uint16_t driverID,
+	const uint8_t bus,
+	const uint8_t num
+	)	:	_devID(USBDeviceID::getDeviceID(bus, num)),
+			_node(node),
+			_serial(serial),
+			_usec(usec),
+			_driverID(driverID),
+			_bus(bus),
+			_num(num)
+{
+	_vendor							= device._vendor;
+	_product						= device._product;
+	_vendorID						= device._vendorID;
+	_productID						= device._productID;
+	_capabilities					= device._capabilities;
+	_bConfigurationValue			= device._bConfigurationValue;
+	_bInterfaceNumber				= device._bInterfaceNumber;
+	_bAlternateSetting				= device._bAlternateSetting;
+	_bNumEndpoints					= device._bNumEndpoints;
+	_keysInterruptBufferMaxLength	= device._keysInterruptBufferMaxLength;
+	_MacrosKeysLength				= device._MacrosKeysLength;
+	_MediaKeysLength				= device._MediaKeysLength;
+	_LCDKeysLength					= device._LCDKeysLength;
 }
 
 } // namespace GLogiK

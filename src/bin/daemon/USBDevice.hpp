@@ -56,24 +56,9 @@ class USBDevice
 	public:
 		USBDevice(void) = default;
 		~USBDevice(void) = default;
-		USBDevice(const USBDevice & dev) = delete;
 
-		USBDevice(
-			const std::string & name,
-			const std::string & vendorID,
-			const std::string & productID,
-			const uint64_t capabilities,
-			uint8_t bus,
-			uint8_t num,
-			uint8_t C,		/* bConfigurationValue */
-			uint8_t I,		/* bInterfaceNumber    */
-			uint8_t A,		/* bAlternateSetting   */
-			uint8_t N,		/* bNumEndpoints       */
-			const int8_t bufferMaxLength,
-			const int8_t macrosKeysLength,
-			const int8_t mediaKeysLength,
-			const int8_t LCDKeysLength
-			);
+		USBDevice(const USBDevice & dev) = delete;
+		USBDevice(const USBDeviceID & dev);
 
 		void operator=(const USBDevice& dev);
 

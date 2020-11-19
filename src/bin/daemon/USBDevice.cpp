@@ -32,34 +32,9 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-USBDevice::USBDevice(
-	const std::string & name,
-	const std::string & vendorID,
-	const std::string & productID,
-	const uint64_t capabilities,
-	uint8_t bus,
-	uint8_t num,
-	uint8_t C,		/* bConfigurationValue */
-	uint8_t I,		/* bInterfaceNumber    */
-	uint8_t A,		/* bAlternateSetting   */
-	uint8_t N,		/* bNumEndpoints       */
-	const int8_t bufferMaxLength,
-	const int8_t macrosKeysLength,
-	const int8_t mediaKeysLength,
-	const int8_t LCDKeysLength
-	)
-		:	USBDeviceID(
-				name,
-				vendorID,
-				productID,
-				capabilities,
-				bus, num,
-				C, I, A, N,
-				bufferMaxLength,
-				macrosKeysLength,
-				mediaKeysLength,
-				LCDKeysLength
-			),
+
+USBDevice::USBDevice(const USBDeviceID & device)
+		:	USBDeviceID(device),
 			_pressedRKeysMask(0),
 			_LCDPluginsMask1(0),
 			_pMacrosManager(nullptr),
@@ -91,13 +66,17 @@ USBDevice::USBDevice(
 
 void USBDevice::operator=(const USBDevice& dev)
 {
-	_name			= dev.getName();
 	_vendorID		= dev.getVendorID();
 	_productID		= dev.getProductID();
 	_capabilities	= dev.getCapabilities();
 	_bus			= dev.getBus();
 	_num			= dev.getNum();
 	_devID			= dev.getID();
+
+	_node			= dev._node;
+	_serial			= dev._serial;
+	_usec			= dev._usec;
+	_driverID		= dev._driverID;
 
 	/* USB_INTERFACE_DESCRIPTOR */
 	_bConfigurationValue	= dev.getBConfigurationValue();

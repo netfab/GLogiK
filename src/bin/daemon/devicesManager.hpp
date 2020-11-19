@@ -47,67 +47,6 @@
 namespace GLogiK
 {
 
-class DetectedDevice
-	:	public USBDeviceID
-{
-	public:
-		DetectedDevice(void) = default;
-		DetectedDevice(
-			const std::string & name,
-			const std::string & vendorID,
-			const std::string & productID,
-			const uint64_t caps,
-			const uint8_t bus,
-			const uint8_t num,
-			const uint8_t C,		/* bConfigurationValue */
-			const uint8_t I,		/* bInterfaceNumber    */
-			const uint8_t A,		/* bAlternateSetting   */
-			const uint8_t N,		/* bNumEndpoints       */
-			const int8_t bufferMaxLength,
-			const int8_t macrosKeysLength,
-			const int8_t mediaKeysLength,
-			const int8_t LCDKeysLength,
-			const std::string & node,
-			const std::string & vendor,
-			const std::string & model,
-			const std::string & serial,
-			const std::string & us,
-			const uint16_t id
-		)	:	USBDeviceID(
-					name,
-					vendorID,
-					productID,
-					caps,
-					bus,
-					num,
-					C, I, A, N,
-					bufferMaxLength,
-					macrosKeysLength,
-					mediaKeysLength,
-					LCDKeysLength
-					),
-				_devNode(node),
-				_vendor(vendor),
-				_model(model),
-				_serial(serial),
-				_usec(us),
-				_driverID(id) {};
-
-		const std::string & getDevNode(void) const { return _devNode; }
-		const std::string & getVendor(void) const { return _vendor; }
-		const std::string & getModel(void) const { return _model; }
-		const std::string & getUSec(void) const { return _usec; }
-		const uint16_t getDriverID(void) const { return _driverID; }
-
-	private:
-		std::string _devNode;
-		std::string _vendor;
-		std::string _model;
-		std::string _serial;
-		std::string _usec;
-		uint16_t _driverID;
-};
-
 #if DEBUGGING_ON
 void udevDeviceProperties(struct udev_device * pDevice, const std::string & subSystem);
 #endif
@@ -161,9 +100,9 @@ class DevicesManager
 	private:
 		const std::string _unknown;
 		std::vector<KeyboardDriver*> _drivers;
-		std::map<const std::string, DetectedDevice> _detectedDevices;
-		std::map<const std::string, DetectedDevice> _startedDevices;
-		std::map<const std::string, DetectedDevice> _stoppedDevices;
+		std::map<const std::string, USBDeviceID> _detectedDevices;
+		std::map<const std::string, USBDeviceID> _startedDevices;
+		std::map<const std::string, USBDeviceID> _stoppedDevices;
 		std::set<std::string> _unpluggedDevices;
 
 #if GKDBUS
