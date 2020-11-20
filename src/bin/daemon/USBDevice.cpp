@@ -66,6 +66,8 @@ USBDevice::USBDevice(const USBDeviceID & device)
 
 void USBDevice::operator=(const USBDevice& dev)
 {
+	_vendor			= dev._vendor;
+	_product		= dev._product;
 	_vendorID		= dev.getVendorID();
 	_productID		= dev.getProductID();
 	_capabilities	= dev.getCapabilities();
