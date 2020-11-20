@@ -68,12 +68,12 @@ void USBDevice::operator=(const USBDevice& dev)
 {
 	_vendor			= dev._vendor;
 	_product		= dev._product;
-	_vendorID		= dev.getVendorID();
-	_productID		= dev.getProductID();
-	_capabilities	= dev.getCapabilities();
-	_bus			= dev.getBus();
-	_num			= dev.getNum();
-	_devID			= dev.getID();
+	_vendorID		= dev._vendorID;
+	_productID		= dev._productID;
+	_capabilities	= dev._capabilities;
+	_bus			= dev._bus;
+	_num			= dev._num;
+	_devID			= dev._devID;
 
 	_node			= dev._node;
 	_serial			= dev._serial;
@@ -81,15 +81,15 @@ void USBDevice::operator=(const USBDevice& dev)
 	_driverID		= dev._driverID;
 
 	/* USB_INTERFACE_DESCRIPTOR */
-	_bConfigurationValue	= dev.getBConfigurationValue();
-	_bInterfaceNumber		= dev.getBInterfaceNumber();
-	_bAlternateSetting		= dev.getBAlternateSetting();
-	_bNumEndpoints			= dev.getBNumEndpoints();
+	_bConfigurationValue	= dev._bConfigurationValue;
+	_bInterfaceNumber		= dev._bInterfaceNumber;
+	_bAlternateSetting		= dev._bAlternateSetting;
+	_bNumEndpoints			= dev._bNumEndpoints;
 
-	_keysInterruptBufferMaxLength	= dev.getKeysInterruptBufferMaxLength();
-	_MacrosKeysLength				= dev.getMacrosKeysLength();
-	_MediaKeysLength				= dev.getMediaKeysLength();
-	_LCDKeysLength					= dev.getLCDKeysLength();
+	_keysInterruptBufferMaxLength	= dev._keysInterruptBufferMaxLength;
+	_MacrosKeysLength				= dev._MacrosKeysLength;
+	_MediaKeysLength				= dev._MediaKeysLength;
+	_LCDKeysLength					= dev._LCDKeysLength;
 
 	/* end friendship members */
 
@@ -121,8 +121,8 @@ void USBDevice::operator=(const USBDevice& dev)
 	_pLCDPluginsManager				= dev._pLCDPluginsManager;
 
 	this->setRGBBytes(dev._RGB[0], dev._RGB[1], dev._RGB[2]);
-	_lastKeysInterruptTransferLength	= dev.getLastKeysInterruptTransferLength();
-	_lastLCDInterruptTransferLength		= dev.getLastLCDInterruptTransferLength();
+	_lastKeysInterruptTransferLength	= dev._lastKeysInterruptTransferLength;
+	_lastLCDInterruptTransferLength		= dev._lastLCDInterruptTransferLength;
 	_threadsStatus		= static_cast<bool>(dev._threadsStatus);
 
 #if GKLIBUSB
