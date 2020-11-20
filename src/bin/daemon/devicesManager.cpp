@@ -488,8 +488,8 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 							udevDeviceProperties(dev, devss);
 #endif
 
-							const std::string vendor( toString( udev_device_get_property_value(dev, "ID_VENDOR") ) );
-							const std::string model( toString( udev_device_get_property_value(dev, "ID_MODEL") ) );
+							//const std::string vendor( toString( udev_device_get_property_value(dev, "ID_VENDOR") ) );
+							//const std::string model( toString( udev_device_get_property_value(dev, "ID_MODEL") ) );
 							const std::string serial( toString( udev_device_get_property_value(dev, "ID_SERIAL") ) );
 							const std::string usec( toString( udev_device_get_property_value(dev, "USEC_INITIALIZED") ) );
 
