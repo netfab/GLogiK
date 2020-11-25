@@ -109,7 +109,10 @@ void DevicesManager::initializeDevices(void) noexcept {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing detected devices";
 #endif
+
+#if GKDBUS
 	std::vector<std::string> startedDevices;
+#endif
 
 	for(const auto & devicePair : _detectedDevices) {
 		const auto & devID = devicePair.first;
@@ -143,7 +146,10 @@ void DevicesManager::initializeDevices(void) noexcept {
 					// initialization
 					driver->openDevice( device );
 					_startedDevices[devID] = device;
+
+#if GKDBUS
 					startedDevices.push_back(devID);
+#endif
 
 					std::ostringstream buffer(std::ios_base::app);
 					buffer	<< device.getVendor() << " " << device.getProduct()
@@ -270,7 +276,9 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept {
 	LOG(DEBUG2) << "checking initialized devices threads status";
 #endif
 
+#if GKDBUS
 	std::vector<std::string> toSend;
+#endif
 
 	std::vector<std::string> toCheck;
 	for(const auto& devicePair : _startedDevices) {
@@ -285,7 +293,9 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept {
 					GKSysLog(LOG_WARNING, WARNING, "We are forced to hard stop a device.");
 					GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
 					this->stopDevice(devID);
+#if GKDBUS
 					toSend.push_back(devID);
+#endif
 				}
 			}
 		}
@@ -304,7 +314,9 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 	LOG(DEBUG2) << "checking for unplugged devices";
 #endif
 
+#if GKDBUS
 	std::vector<std::string> toSend;
+#endif
 
 	/* checking for unplugged unstopped devices */
 	std::vector<std::string> toClean;
@@ -330,7 +342,9 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 			if( this->stopDevice(devID) ) {
 				_stoppedDevices.erase(devID);
 				_unpluggedDevices.insert(devID);
+#if GKDBUS
 				toSend.push_back(devID);
+#endif
 			}
 		}
 		catch (const std::out_of_range& oor) {
@@ -354,7 +368,9 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 #endif
 		_stoppedDevices.erase(devID);
 		_unpluggedDevices.insert(devID);
+#if GKDBUS
 		toSend.push_back(devID);
+#endif
 	}
 	toClean.clear();
 
@@ -362,7 +378,9 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "number of devices still initialized : " << _startedDevices.size();
+#if GKDBUS
 	LOG(DEBUG3) << "number of unplugged devices : " << toSend.size();
+#endif
 #endif
 
 #if GKDBUS
