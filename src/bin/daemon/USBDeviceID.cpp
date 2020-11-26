@@ -55,7 +55,7 @@ USBDeviceID::USBDeviceID(
 				_MediaKeysLength(mediaKeysLength),
 				_LCDKeysLength(LCDKeysLength)
 {
-	_node = _serial = _usec = "";
+	_devnode = _serial = _usec = "";
 	_driverID = _bus = _num = 0;
 
 	_keysInterruptBufferMaxLength = bufferMaxLength;
@@ -68,14 +68,14 @@ USBDeviceID::USBDeviceID(
 
 USBDeviceID::USBDeviceID(
 	const USBDeviceID & device,
-	const std::string & node,
+	const std::string & devnode,
 	const std::string & serial,
 	const std::string & usec,
 	const uint16_t driverID,
 	const uint8_t bus,
 	const uint8_t num
 	)	:	_devID(USBDeviceID::getDeviceID(bus, num)),
-			_node(node),
+			_devnode(devnode),
 			_serial(serial),
 			_usec(usec),
 			_driverID(driverID),

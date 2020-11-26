@@ -75,7 +75,7 @@ void USBDevice::operator=(const USBDevice& dev)
 	_num			= dev._num;
 	_devID			= dev._devID;
 
-	_node			= dev._node;
+	_devnode		= dev._devnode;
 	_serial			= dev._serial;
 	_usec			= dev._usec;
 	_driverID		= dev._driverID;
