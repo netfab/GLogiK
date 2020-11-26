@@ -415,7 +415,7 @@ void udevDeviceProperties(struct udev_device * pDevice, const std::string & subS
 	std::string attr;
 	udev_list_entry_foreach( devs_list_entry, devs_props ) {
 		attr = toString( udev_list_entry_get_name( devs_list_entry ) );
-		if( attr == "" )
+		if( attr.empty() )
 			continue;
 
 		value = toString( udev_device_get_property_value(pDevice, attr.c_str()) );
@@ -426,7 +426,7 @@ void udevDeviceProperties(struct udev_device * pDevice, const std::string & subS
 	LOG(DEBUG4) << "--";
 	udev_list_entry_foreach( devs_list_entry, devs_attr ) {
 		attr = toString( udev_list_entry_get_name( devs_list_entry ) );
-		if( attr == "" )
+		if( attr.empty() )
 			continue;
 
 		value = toString( udev_device_get_sysattr_value(pDevice, attr.c_str()) );
@@ -469,7 +469,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 			// Get the filename of the /sys entry for the device
 			// and create a udev_device object (dev) representing it
 			const std::string path( toString( udev_list_entry_get_name(dev_list_entry) ) );
-			if( path == "" )
+			if( path.empty() )
 				throw GLogiKExcept("entry_get_name failure");
 
 			struct udev_device *dev = udev_device_new_from_syspath(pUdev, path.c_str());
@@ -482,7 +482,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 
 #if DEBUGGING_ON
 			const std::string devss( toString( udev_device_get_subsystem(dev) ) );
-			if( devss == "" ) {
+			if( devss.empty() ) {
 				udev_device_unref(dev);
 				throw GLogiKExcept("get_subsystem failure");
 			}
@@ -492,7 +492,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 
 			const std::string vendorID( toString( udev_device_get_property_value(dev, "ID_VENDOR_ID") ) );
 			const std::string productID( toString( udev_device_get_property_value(dev, "ID_MODEL_ID") ) );
-			if( (vendorID == "") or (productID == "") ) {
+			if( vendorID.empty() or productID.empty() ) {
 				udev_device_unref(dev);
 				continue;
 			}
@@ -504,7 +504,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 
 							// path to the event device node in /dev
 							const std::string devnode( toString( udev_device_get_devnode(dev) ) );
-							if( devnode == "" ) {
+							if( devnode.empty() ) {
 								udev_device_unref(dev);
 								continue;
 							}
@@ -876,28 +876,31 @@ void DevicesManager::startMonitoring(void) {
 
 					try { /* dev unref on catch */
 						const std::string action( toString( udev_device_get_action(dev) ) );
-						if( action == "" ) {
+						if( action.empty() ) {
 							throw GLogiKExcept("device_get_action() failure");
 						}
 
 						const std::string devnode( toString( udev_device_get_devnode(dev) ) );
-						// filtering empty events
-						if( devnode != "" ) {
-#if DEBUGGING_ON
-							LOG(DEBUG3) << "Action : " << action;
-#endif
-							this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
 
-							if( action == "add" ) {
-								this->initializeDevices();
-							}
-							else if( action == "remove" ) {
-								this->checkForUnpluggedDevices();
-							}
-							else {
-								/* clear detected devices container */
-								_detectedDevices.clear();
-							}
+						// filtering empty events
+						if( devnode.empty() ) {
+							continue;
+						}
+
+#if DEBUGGING_ON
+						LOG(DEBUG3) << "Action : " << action;
+#endif
+						this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
+
+						if( action == "add" ) {
+							this->initializeDevices();
+						}
+						else if( action == "remove" ) {
+							this->checkForUnpluggedDevices();
+						}
+						else {
+							/* clear detected devices container */
+							_detectedDevices.clear();
 						}
 					}
 					catch ( const GLogiKExcept & e ) {
