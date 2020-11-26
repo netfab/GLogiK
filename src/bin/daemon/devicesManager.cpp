@@ -461,7 +461,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 		udev_list_entry_foreach(dev_list_entry, devices) {
 			// Get the filename of the /sys entry for the device
 			// and create a udev_device object (dev) representing it
-			std::string path = toString( udev_list_entry_get_name(dev_list_entry) );
+			const std::string path( toString( udev_list_entry_get_name(dev_list_entry) ) );
 			if( path == "" )
 				throw GLogiKExcept("entry_get_name failure");
 
@@ -474,7 +474,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 			}
 
 #if DEBUGGING_ON
-			std::string devss = toString( udev_device_get_subsystem(dev) );
+			const std::string devss( toString( udev_device_get_subsystem(dev) ) );
 			if( devss == "" ) {
 				udev_device_unref(dev);
 				throw GLogiKExcept("get_subsystem failure");
@@ -496,7 +496,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 						if( device.getProductID() == productID ) {
 
 							// path to the event device node in /dev
-							std::string devnode = toString( udev_device_get_devnode(dev) );
+							const std::string devnode( toString( udev_device_get_devnode(dev) ) );
 							if( devnode == "" ) {
 								udev_device_unref(dev);
 								continue;
@@ -868,12 +868,12 @@ void DevicesManager::startMonitoring(void) {
 						throw GLogiKExcept("no device from receive_device(), something is wrong");
 
 					try { /* dev unref on catch */
-						std::string action = toString( udev_device_get_action(dev) );
+						const std::string action( toString( udev_device_get_action(dev) ) );
 						if( action == "" ) {
 							throw GLogiKExcept("device_get_action() failure");
 						}
 
-						std::string devnode = toString( udev_device_get_devnode(dev) );
+						const std::string devnode( toString( udev_device_get_devnode(dev) ) );
 						// filtering empty events
 						if( devnode != "" ) {
 #if DEBUGGING_ON
