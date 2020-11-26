@@ -328,7 +328,6 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 
 	for(const auto & devID : toClean) {
 		try {
-
 			const auto & device = _startedDevices.at(devID);
 			std::ostringstream buffer(std::ios_base::app);
 			buffer	<< "erasing unplugged initialized driver : "
@@ -340,8 +339,8 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 			GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
 
 			if( this->stopDevice(devID) ) {
+				_unpluggedDevices[devID] = device;
 				_stoppedDevices.erase(devID);
-				_unpluggedDevices.insert(devID);
 #if GKDBUS
 				toSend.push_back(devID);
 #endif
@@ -363,14 +362,22 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 		}
 	}
 	for(const auto & devID : toClean) {
+		try {
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "removing " << devID << " from stopped devices container";
+			LOG(DEBUG3) << "removing " << devID << " from stopped devices container";
 #endif
-		_stoppedDevices.erase(devID);
-		_unpluggedDevices.insert(devID);
+			const auto & device = _stoppedDevices.at(devID);
+			_unpluggedDevices[devID] = device;
+			_stoppedDevices.erase(devID);
 #if GKDBUS
-		toSend.push_back(devID);
+			toSend.push_back(devID);
 #endif
+		}
+		catch (const std::out_of_range& oor) {
+			std::ostringstream buffer(std::ios_base::app);
+			buffer << "!?! device not found !?! " << devID;
+			GKSysLog(LOG_WARNING, WARNING, buffer.str());
+		}
 	}
 	toClean.clear();
 

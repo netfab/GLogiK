@@ -27,7 +27,6 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <set>
 
 #include <config.h>
 
@@ -103,7 +102,7 @@ class DevicesManager
 		std::map<const std::string, USBDeviceID> _detectedDevices;
 		std::map<const std::string, USBDeviceID> _startedDevices;
 		std::map<const std::string, USBDeviceID> _stoppedDevices;
-		std::set<std::string> _unpluggedDevices;
+		std::map<const std::string, USBDeviceID> _unpluggedDevices;
 
 #if GKDBUS
 		NSGKDBus::GKDBus* _pDBus;
