@@ -38,6 +38,7 @@ class USBDeviceID
 		const std::string & getVendorID(void) const { return _vendorID; }
 		const std::string & getProductID(void) const { return _productID; }
 		const std::string & getDevnode(void) const { return _devnode; }
+		const std::string & getDevpath(void) const { return _devpath; }
 		const std::string & getUSec(void) const { return _usec; }
 
 		const uint64_t getCapabilities(void) const { return _capabilities; }
@@ -94,7 +95,8 @@ class USBDeviceID
 		);
 		USBDeviceID(
 			const USBDeviceID & device,
-			const std::string & node,
+			const std::string & devnode,
+			const std::string & devpath,
 			const std::string & serial,
 			const std::string & usec,
 			const uint16_t driverID,
@@ -104,10 +106,21 @@ class USBDeviceID
 		USBDeviceID(const USBDeviceID & device) = default;
 		~USBDeviceID(void) = default;
 
+		void setDirtyFlag(void);
+		void setResetFlag(void);
+		const bool isDirty(void) const;
+
 	protected:
 
 	private:
 		friend class USBDevice;
+
+		enum class USBDeviceState : uint8_t
+		{
+			USBDEVCLEAN = 1 << 0,
+			USBDEVDIRTY = 1 << 1,
+			USBDEVRESET = 1 << 2,
+		};
 
 		std::string _vendor;
 		std::string _product;
@@ -116,12 +129,15 @@ class USBDeviceID
 		std::string _devID; /* [b1d3] */
 
 		std::string _devnode;
+		std::string _devpath;
 		std::string _serial;
 		std::string _usec;
 
 		uint64_t _capabilities;
 
 		uint16_t _driverID;
+
+		USBDeviceState _state;
 
 		uint8_t _bus;
 		uint8_t _num;

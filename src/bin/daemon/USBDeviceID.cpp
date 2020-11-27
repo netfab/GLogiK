@@ -55,7 +55,8 @@ USBDeviceID::USBDeviceID(
 				_MediaKeysLength(mediaKeysLength),
 				_LCDKeysLength(LCDKeysLength)
 {
-	_devnode = _serial = _usec = "";
+	_devpath = _devnode = _serial = _usec = "";
+	_state = USBDeviceState::USBDEVCLEAN;
 	_driverID = _bus = _num = 0;
 
 	_keysInterruptBufferMaxLength = bufferMaxLength;
@@ -69,6 +70,7 @@ USBDeviceID::USBDeviceID(
 USBDeviceID::USBDeviceID(
 	const USBDeviceID & device,
 	const std::string & devnode,
+	const std::string & devpath,
 	const std::string & serial,
 	const std::string & usec,
 	const uint16_t driverID,
@@ -76,6 +78,7 @@ USBDeviceID::USBDeviceID(
 	const uint8_t num
 	)	:	_devID(USBDeviceID::getDeviceID(bus, num)),
 			_devnode(devnode),
+			_devpath(devpath),
 			_serial(serial),
 			_usec(usec),
 			_driverID(driverID),
@@ -87,6 +90,7 @@ USBDeviceID::USBDeviceID(
 	_vendorID						= device._vendorID;
 	_productID						= device._productID;
 	_capabilities					= device._capabilities;
+	_state							= device._state;
 	_bConfigurationValue			= device._bConfigurationValue;
 	_bInterfaceNumber				= device._bInterfaceNumber;
 	_bAlternateSetting				= device._bAlternateSetting;
@@ -95,6 +99,21 @@ USBDeviceID::USBDeviceID(
 	_MacrosKeysLength				= device._MacrosKeysLength;
 	_MediaKeysLength				= device._MediaKeysLength;
 	_LCDKeysLength					= device._LCDKeysLength;
+}
+
+void USBDeviceID::setDirtyFlag(void)
+{
+	_state = USBDeviceState::USBDEVDIRTY;
+}
+
+void USBDeviceID::setResetFlag(void)
+{
+	_state = USBDeviceState::USBDEVRESET;
+}
+
+const bool USBDeviceID::isDirty(void) const
+{
+	return (_state == USBDeviceState::USBDEVDIRTY);
 }
 
 } // namespace GLogiK

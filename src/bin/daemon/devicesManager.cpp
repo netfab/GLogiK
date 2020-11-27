@@ -287,11 +287,17 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept {
 
 	for(const auto & devID : toCheck) {
 		for(const auto & driver : _drivers) {
-			if( _startedDevices[devID].getDriverID() == driver->getDriverID() ) {
+			auto & device = _startedDevices.at(devID);
+
+			if( device.getDriverID() == driver->getDriverID() ) {
 				if( ! driver->getDeviceThreadsStatus(devID) ) {
 					GKSysLog(LOG_WARNING, WARNING, "USB port software reset detected, not cool :(");
 					GKSysLog(LOG_WARNING, WARNING, "We are forced to hard stop a device.");
 					GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
+
+					/* mark device as dirty */
+					device.setDirtyFlag();
+
 					this->stopDevice(devID);
 #if GKDBUS
 					toSend.push_back(devID);
@@ -329,7 +335,7 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 	for(const auto & devID : toClean) {
 		try {
 			{
-				const auto & device = _startedDevices.at(devID);
+				auto & device = _startedDevices.at(devID);
 				std::ostringstream buffer(std::ios_base::app);
 				buffer	<< "erasing unplugged initialized driver : "
 						<< device.getVendorID() << ":" << device.getProductID()
@@ -338,6 +344,9 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 				GKSysLog(LOG_WARNING, WARNING, buffer.str());
 				GKSysLog(LOG_WARNING, WARNING, "Did you unplug your device before properly stopping it ?");
 				GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
+
+				/* mark device as dirty */
+				device.setDirtyFlag();
 			}
 
 			if( this->stopDevice(devID) ) {
@@ -538,6 +547,12 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 
 							const std::string devID( USBDeviceID::getDeviceID(bus, num) );
 
+							const std::string devpath( toString( udev_device_get_sysattr_value(dev, "devpath") ) );
+							if( devpath.empty() ) {
+								udev_device_unref(dev);
+								continue;
+							}
+
 							try {
 								const USBDeviceID & d = _detectedDevices.at(devID);
 								LOG(WARNING) << "found already detected device : " << devID << " " << d.getDevnode();
@@ -547,6 +562,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 								USBDeviceID found(
 									device,
 									devnode,
+									devpath,
 									serial,
 									usec,
 									driver->getDriverID(),
