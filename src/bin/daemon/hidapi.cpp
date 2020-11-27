@@ -57,7 +57,7 @@ void hidapi::openUSBDevice(USBDevice & device)
 	auto make_hidapi_path = [&device] () -> const std::string {
 		std::ostringstream os;
 		os	<< std::setfill('0')
-			<< std::setw(4) << toInt(device.getBus()) << ":"
+			<< std::setw(4) << std::hex << toInt(device.getBus()) << ":"
 			<< std::setw(4) << toInt(device.getNum()) << ":"
 			<< std::setw(2) << toInt(device.getBInterfaceNumber());
 		return os.str();
