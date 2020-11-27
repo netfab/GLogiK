@@ -328,17 +328,20 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 
 	for(const auto & devID : toClean) {
 		try {
-			const auto & device = _startedDevices.at(devID);
-			std::ostringstream buffer(std::ios_base::app);
-			buffer	<< "erasing unplugged initialized driver : "
-					<< device.getVendorID() << ":" << device.getProductID()
-					<< ":" << device.getDevnode() << ":" << device.getUSec();
+			{
+				const auto & device = _startedDevices.at(devID);
+				std::ostringstream buffer(std::ios_base::app);
+				buffer	<< "erasing unplugged initialized driver : "
+						<< device.getVendorID() << ":" << device.getProductID()
+						<< ":" << device.getDevnode() << ":" << device.getUSec();
 
-			GKSysLog(LOG_WARNING, WARNING, buffer.str());
-			GKSysLog(LOG_WARNING, WARNING, "Did you unplug your device before properly stopping it ?");
-			GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
+				GKSysLog(LOG_WARNING, WARNING, buffer.str());
+				GKSysLog(LOG_WARNING, WARNING, "Did you unplug your device before properly stopping it ?");
+				GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
+			}
 
 			if( this->stopDevice(devID) ) {
+				const auto & device = _stoppedDevices.at(devID);
 				_unpluggedDevices[devID] = device;
 				_stoppedDevices.erase(devID);
 #if GKDBUS
