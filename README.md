@@ -64,7 +64,7 @@ GLogiK Daemon and Desktop Service
 The GLogiKd daemon starts as root and drops its privileges.  
 See following configure options :
  * --with-glogikd-user : defaults to glogikd
- * --with-glogikd-group : defaults to plugdev
+ * --with-glogikd-group : defaults to usb
 
 For desktop users, see also :
  * --with-glogiks-group : defaults to glogiks

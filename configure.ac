@@ -124,10 +124,10 @@ AC_DEFINE_UNQUOTED(GLOGIKD_USER,"$GLOGIKD_USER", [User for running the glogik da
 dnl group
 AC_ARG_WITH(
 	[glogikd_group],
-	AS_HELP_STRING([--with-glogikd-group=<group>], [Group for running the glogik daemon (plugdev)])
+	AS_HELP_STRING([--with-glogikd-group=<group>], [Group for running the glogik daemon (usb)])
 )
 AS_IF([test -z "$with_glogikd_group"],
-		[GLOGIKD_GROUP=plugdev],
+		[GLOGIKD_GROUP=usb],
 		[GLOGIKD_GROUP=$with_glogikd_group])
 AC_SUBST(GLOGIKD_GROUP)
 AC_DEFINE_UNQUOTED(GLOGIKD_GROUP,"$GLOGIKD_GROUP", [Group for running the glogik daemon])

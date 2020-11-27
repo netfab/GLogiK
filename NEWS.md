@@ -12,6 +12,7 @@
 - Added dev-libs/hidapi support (with libusb backend) and make it
   default over dev-libs/libusb
 - Removed consolekit support
+- Switch from plugdev group to usb group for devices access
 
 0.8.10 (2020-08-02)
 ===================
