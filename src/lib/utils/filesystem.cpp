@@ -19,10 +19,9 @@
  *
  */
 
-#include <errno.h>
-
 #include <syslog.h>
 
+#include <cerrno>
 #include <cstring>
 #include <cstdlib>
 

@@ -19,8 +19,8 @@
  *
  */
 
-#include <errno.h>
 
+#include <cerrno>
 #include <cstring>
 #include <cstdint>
 #include <unistd.h>

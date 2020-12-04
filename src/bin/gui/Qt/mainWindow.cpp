@@ -19,8 +19,6 @@
  *
  */
 
-#include <errno.h>
-
 #include <csignal>
 
 #include <syslog.h>

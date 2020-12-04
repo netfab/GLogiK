@@ -19,12 +19,11 @@
  *
  */
 
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <csignal>
-
-#include <errno.h>
 
 #include <pwd.h>
 #include <grp.h>
