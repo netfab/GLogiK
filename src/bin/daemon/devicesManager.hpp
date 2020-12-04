@@ -70,7 +70,10 @@ class DevicesManager
 
 		void resetDevicesStates(void);
 		const bool startDevice(const std::string & devID);
-		const bool stopDevice(const std::string & devID) noexcept;
+		const bool stopDevice(
+			const std::string & devID,
+			const bool skipUSBRequests = false
+		) noexcept;
 		const std::vector<std::string> getStartedDevices(void) const;
 		const std::vector<std::string> getStoppedDevices(void) const;
 

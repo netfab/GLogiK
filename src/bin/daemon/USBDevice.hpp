@@ -113,6 +113,7 @@ class USBDevice
 
 	private:
 		std::atomic<bool>			_threadsStatus;
+		std::atomic<bool>			_skipUSBRequests;
 
 		int							_lastKeysInterruptTransferLength;
 		int							_lastLCDInterruptTransferLength;
@@ -155,6 +156,12 @@ class USBDevice
 		}
 		void deactivateThreads(void) noexcept {
 			_threadsStatus = false;
+		}
+		const bool runDeviceUSBRequests(void) const {
+			return (! _skipUSBRequests);
+		}
+		void skipUSBRequests(void) noexcept {
+			_skipUSBRequests = true;
 		}
 		const int getLastKeysInterruptTransferLength(void) const {
 			return _lastKeysInterruptTransferLength;

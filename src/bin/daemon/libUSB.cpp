@@ -128,9 +128,14 @@ void LibUSB::openUSBDevice(USBDevice & device) {
 }
 
 void LibUSB::closeUSBDevice(USBDevice & device) noexcept {
-	/* if we ever claimed or detached some interfaces, set them back
-	 * to the same state in which we found them */
-	this->releaseUSBDeviceInterfaces(device);
+	if( device.runDeviceUSBRequests() ) {
+		/* if we ever claimed or detached some interfaces, set them back
+		 * to the same state in which we found them */
+		this->releaseUSBDeviceInterfaces(device);
+	}
+	else {
+		GKSysLog(LOG_WARNING, WARNING, "skip device interfaces release, would probably fail");
+	}
 
 	libusb_close(device._pUSBDeviceHandle);
 	device._pUSBDeviceHandle = nullptr;
@@ -144,6 +149,11 @@ void LibUSB::sendControlRequest(
 	const unsigned char * data,
 	uint16_t wLength)
 {
+	if( ! device.runDeviceUSBRequests() ) {
+		GKSysLog(LOG_WARNING, WARNING, "skip device feature report sending, would probably fail");
+		return;
+	}
+
 	/*
 	 *	Device Class Definition for HID 1.11
 	 *		7.2   Class-Specific Requests
@@ -188,6 +198,11 @@ int LibUSB::performKeysInterruptTransfer(
 	USBDevice & device,
 	unsigned int timeout)
 {
+	if( ! device.runDeviceUSBRequests() ) {
+		GKSysLog(LOG_WARNING, WARNING, "skip device interrupt transfer read, would probably fail");
+		return 0;
+	}
+
 	yield_for(std::chrono::microseconds(100));
 
 	int ret = 0;
@@ -216,6 +231,11 @@ int LibUSB::performLCDScreenInterruptTransfer(
 	int bufferLength,
 	unsigned int timeout)
 {
+	if( ! device.runDeviceUSBRequests() ) {
+		GKSysLog(LOG_WARNING, WARNING, "skip device interrupt transfer write, would probably fail");
+		return 0;
+	}
+
 	int ret = 0;
 	{
 		std::lock_guard<std::mutex> lock(device._libUSBMutex);

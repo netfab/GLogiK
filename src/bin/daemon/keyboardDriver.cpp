@@ -1020,7 +1020,9 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 	}
 }
 
-void KeyboardDriver::closeDevice(const USBDeviceID & det) noexcept
+void KeyboardDriver::closeDevice(
+	const USBDeviceID & det,
+	const bool skipUSBRequests) noexcept
 {
 	const std::string & devID = det.getID();
 
@@ -1032,6 +1034,8 @@ void KeyboardDriver::closeDevice(const USBDeviceID & det) noexcept
 					<< device.getVendorID() << ":" << device.getProductID() << "), device "
 					<< toUInt(device.getNum()) << " on bus " << toUInt(device.getBus());
 #endif
+		if(skipUSBRequests)
+			device.skipUSBRequests();
 
 		this->joinDeviceThreads(device);
 		this->resetDeviceState(device);

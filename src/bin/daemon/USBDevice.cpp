@@ -48,6 +48,7 @@ USBDevice::USBDevice(const USBDeviceID & device)
 			_MxKeysLedsMask(0),
 			_exitMacroRecordMode(false),
 			_threadsStatus(true),
+			_skipUSBRequests(false),
 			_lastKeysInterruptTransferLength(0),
 			_lastLCDInterruptTransferLength(0),
 #if GKLIBUSB
@@ -125,6 +126,7 @@ void USBDevice::operator=(const USBDevice& dev)
 	_lastKeysInterruptTransferLength	= dev._lastKeysInterruptTransferLength;
 	_lastLCDInterruptTransferLength		= dev._lastLCDInterruptTransferLength;
 	_threadsStatus		= static_cast<bool>(dev._threadsStatus);
+	_skipUSBRequests	= static_cast<bool>(dev._skipUSBRequests);
 
 #if GKLIBUSB
 	_pUSBDevice			= dev._pUSBDevice;

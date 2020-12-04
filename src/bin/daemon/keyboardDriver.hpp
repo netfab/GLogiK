@@ -106,7 +106,10 @@ class KeyboardDriver
 		virtual const uint16_t getDriverID() const = 0;
 
 		virtual void openDevice(const USBDeviceID & det);
-		virtual void closeDevice(const USBDeviceID & det) noexcept;
+		virtual void closeDevice(
+			const USBDeviceID & det,
+			const bool skipUSBRequests = false
+		) noexcept;
 
 		virtual const std::vector<USBDeviceID> & getSupportedDevices(void) const = 0;
 		virtual const std::vector<std::string> & getMacroKeysNames(void) const = 0;

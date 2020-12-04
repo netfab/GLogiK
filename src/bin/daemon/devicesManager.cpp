@@ -143,6 +143,7 @@ void DevicesManager::initializeDevices(void) noexcept {
 		try {
 			for(const auto & driver : _drivers) {
 				if( device.getDriverID() == driver->getDriverID() ) {
+
 					// initialization
 					driver->openDevice( device );
 					_startedDevices[devID] = device;
@@ -218,7 +219,9 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 	return false;
 }
 
-const bool DevicesManager::stopDevice(const std::string & devID) noexcept {
+const bool DevicesManager::stopDevice(
+	const std::string & devID,
+	const bool skipUSBRequests) noexcept {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "stopping device " << devID;
 #endif
@@ -227,7 +230,7 @@ const bool DevicesManager::stopDevice(const std::string & devID) noexcept {
 		const auto & device = _startedDevices.at(devID);
 		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
-				driver->closeDevice( device );
+				driver->closeDevice( device, skipUSBRequests );
 
 				std::ostringstream buffer(std::ios_base::app);
 				buffer	<< device.getVendor() << " " << device.getProduct()
@@ -298,7 +301,7 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept {
 					/* mark device as dirty */
 					device.setDirtyFlag();
 
-					this->stopDevice(devID);
+					this->stopDevice(devID, true);
 #if GKDBUS
 					toSend.push_back(devID);
 #endif
@@ -349,7 +352,7 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 				device.setDirtyFlag();
 			}
 
-			if( this->stopDevice(devID) ) {
+			if( this->stopDevice(devID, true) ) {
 				const auto & device = _stoppedDevices.at(devID);
 				_unpluggedDevices[devID] = device;
 				_stoppedDevices.erase(devID);

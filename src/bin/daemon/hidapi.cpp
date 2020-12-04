@@ -130,6 +130,11 @@ void hidapi::sendControlRequest(
 	const unsigned char * data,
 	uint16_t wLength)
 {
+	if( ! device.runDeviceUSBRequests() ) {
+		GKSysLog(LOG_WARNING, WARNING, "skip device feature report sending, would probably fail");
+		return;
+	}
+
 	int ret = hid_send_feature_report(device._pHIDDevice, data, wLength);
 	if( ret == -1 ) {
 		GKSysLog(LOG_ERR, ERROR, "error sending feature report");
@@ -146,6 +151,11 @@ int hidapi::performKeysInterruptTransfer(
 	USBDevice & device,
 	unsigned int timeout)
 {
+	if( ! device.runDeviceUSBRequests() ) {
+		GKSysLog(LOG_WARNING, WARNING, "skip device hid_read_timeout, would probably fail");
+		return 0;
+	}
+
 	device._lastKeysInterruptTransferLength = 0;
 
 	int ret = hid_read_timeout(
@@ -177,6 +187,11 @@ int hidapi::performLCDScreenInterruptTransfer(
 	int bufferLength,
 	unsigned int timeout)
 {
+	if( ! device.runDeviceUSBRequests() ) {
+		GKSysLog(LOG_WARNING, WARNING, "skip device hid_write, would probably fail");
+		return 0;
+	}
+
 	int ret = hid_write(device._pHIDDevice, buffer, bufferLength);
 
 	/* error */
