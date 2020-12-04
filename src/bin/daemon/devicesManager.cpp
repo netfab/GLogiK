@@ -24,6 +24,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+//#include <thread>
+//#include <chrono>
 
 #include <poll.h>
 #include <libudev.h>
@@ -143,6 +145,27 @@ void DevicesManager::initializeDevices(void) noexcept {
 		try {
 			for(const auto & driver : _drivers) {
 				if( device.getDriverID() == driver->getDriverID() ) {
+
+/*
+					{
+						for(auto & unpluggedDevicePair : _unpluggedDevices) {
+							auto & unpluggedDevice = unpluggedDevicePair.second;
+							if( device.getDevpath() == unpluggedDevice.getDevpath() ) {
+								if( unpluggedDevice.isDirty() ) {
+									// found unplugged dirty device on same USB port
+									// trying to reset detected device
+									unpluggedDevice.setResetFlag();
+									std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+									GKSysLog(LOG_WARNING, WARNING, "found unplugged dirty device, trying to reset detected device");
+									driver->resetDevice( device );
+									break;
+								}
+							}
+						}
+					}
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+*/
 
 					// initialization
 					driver->openDevice( device );

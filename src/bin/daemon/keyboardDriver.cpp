@@ -19,6 +19,13 @@
  *
  */
 
+/*
+#include <cstring>
+#include <cerrno>
+#include <fcntl.h>
+#include <linux/usbdevice_fs.h>
+*/
+
 #include <stdexcept>
 #include <new>
 #include <iostream>
@@ -948,6 +955,35 @@ const LCDPluginsPropertiesArray_type & KeyboardDriver::getDeviceLCDPluginsProper
 
 	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
+
+/*
+void KeyboardDriver::resetDevice(const USBDeviceID & det)
+{
+	LOG(INFO) << det.getID() << " resetting USB device : " << det.getDevnode();
+
+	int fd = open(det.getDevnode().c_str(), O_WRONLY);
+	if (fd < 0) {
+		std::ostringstream buffer(std::ios_base::app);
+		buffer << "error opening device node file : " << det.getDevnode();
+		if(errno != 0) {
+			buffer << " : " << strerror(errno);
+		}
+
+		GKSysLog(LOG_ERR, ERROR, buffer.str());
+		throw GLogiKExcept("reset device failure");
+	}
+
+	int rc = ioctl(fd, USBDEVFS_RESET, 0);
+	if (rc < 0) {
+		GKSysLog(LOG_ERR, ERROR, "ioctl error");
+		throw GLogiKExcept("reset device failure");
+	}
+
+	LOG(INFO) << det.getID() << " reset successful";
+
+	close(fd);
+}
+*/
 
 /* throws GLogiKExcept on any failure */
 void KeyboardDriver::openDevice(const USBDeviceID & det)
