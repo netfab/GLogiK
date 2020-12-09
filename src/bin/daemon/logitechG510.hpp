@@ -41,7 +41,7 @@
 namespace GLogiK
 {
 
-#define VENDOR_LOGITECH "046d"
+#define VENDOR_ID_LOGITECH "046d"
 
 /* RKey - Recognized Keys */
 struct RKey

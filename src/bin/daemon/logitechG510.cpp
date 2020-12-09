@@ -91,7 +91,8 @@ const std::vector<MKeyLed> G510Base::ledsMask = {
 const std::vector<USBDeviceID> G510Base::knownDevices = {
 	// name, vendor_id, product_id, capabilities
 	{	"Logitech", "G510/G510s Gaming Keyboard",	/* vendor, product */
-		VENDOR_LOGITECH, "c22d",
+		VENDOR_ID_LOGITECH,
+		"c22d",
 		toEnumType(	Caps::GK_BACKLIGHT_COLOR |
 					Caps::GK_MACROS_KEYS |
 					Caps::GK_MEDIA_KEYS |
@@ -103,7 +104,8 @@ const std::vector<USBDeviceID> G510Base::knownDevices = {
 		5		// LCDKeys transfer length
 	},
 	{	"Logitech", "G510/G510s Gaming Keyboard",	/* vendor, product */
-		VENDOR_LOGITECH, "c22e",					/* with onboard audio enabled */
+		VENDOR_ID_LOGITECH,
+		"c22e",										/* with onboard audio enabled */
 		toEnumType(	Caps::GK_BACKLIGHT_COLOR |
 					Caps::GK_MACROS_KEYS |
 					Caps::GK_MEDIA_KEYS |
