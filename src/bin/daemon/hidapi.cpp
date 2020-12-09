@@ -35,7 +35,7 @@ using namespace NSGKUtils;
 
 hidapi::hidapi()
 {
-	LOG(INFO) << "initializing HIDAPI version " << HID_API_VERSION_STR;
+	LOG(INFO) << "initializing HIDAPI version " << hid_version_str();
 
 	if(hid_init() != 0)
 		throw GLogiKExcept("initializing HIDAPI failure");
