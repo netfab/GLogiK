@@ -31,6 +31,7 @@ using namespace NSGKUtils;
 USBDeviceID::USBDeviceID(
 			const std::string & vendor,
 			const std::string & product,
+			const std::string & name,
 			const std::string & vendorID,
 			const std::string & productID,
 			const uint64_t capabilities,
@@ -44,6 +45,7 @@ USBDeviceID::USBDeviceID(
 			const int8_t LCDKeysLength
 		)	:	_vendor(vendor),
 				_product(product),
+				_name(name),
 				_vendorID(vendorID),
 				_productID(productID),
 				_capabilities(capabilities),
@@ -58,6 +60,12 @@ USBDeviceID::USBDeviceID(
 	_devpath = _devnode = _serial = _usec = "";
 	_state = USBDeviceState::USBDEVCLEAN;
 	_driverID = _bus = _num = 0;
+
+	_fullname  = vendor;
+	_fullname += " ";
+	_fullname += product;
+	_fullname += " ";
+	_fullname += name;
 
 	_keysInterruptBufferMaxLength = bufferMaxLength;
 
@@ -87,6 +95,8 @@ USBDeviceID::USBDeviceID(
 {
 	_vendor							= device._vendor;
 	_product						= device._product;
+	_name							= device._name;
+	_fullname						= device._fullname;
 	_vendorID						= device._vendorID;
 	_productID						= device._productID;
 	_capabilities					= device._capabilities;

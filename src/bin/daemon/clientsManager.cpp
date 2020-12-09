@@ -765,7 +765,8 @@ void ClientsManager::getDeviceProperties(
 			 * store properties in upcoming setDevice{Foo,Bar} calls */
 			pClient->initializeDevice(_pDevicesManager, devID);
 			_pDBus->appendAsyncString( _pDevicesManager->getDeviceVendor(devID) );
-			_pDBus->appendAsyncString( _pDevicesManager->getDeviceModel(devID) );
+			_pDBus->appendAsyncString( _pDevicesManager->getDeviceProduct(devID) );
+			_pDBus->appendAsyncString( _pDevicesManager->getDeviceName(devID) );
 			_pDBus->appendAsyncUInt64( _pDevicesManager->getDeviceCapabilities(devID) );
 			return;
 		}

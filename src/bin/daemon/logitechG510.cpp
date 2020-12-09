@@ -89,8 +89,9 @@ const std::vector<MKeyLed> G510Base::ledsMask = {
 };
 
 const std::vector<USBDeviceID> G510Base::knownDevices = {
-	// name, vendor_id, product_id, capabilities
-	{	"Logitech", "G510/G510s Gaming Keyboard",	/* vendor, product */
+	{	"Logitech",			/* vendor */
+		"G510s",			/* model */
+		"Gaming Keyboard",	/* product name */
 		VENDOR_ID_LOGITECH,
 		"c22d",
 		toEnumType(	Caps::GK_BACKLIGHT_COLOR |
@@ -103,7 +104,9 @@ const std::vector<USBDeviceID> G510Base::knownDevices = {
 		2,		// MediaKeys transfer length
 		5		// LCDKeys transfer length
 	},
-	{	"Logitech", "G510/G510s Gaming Keyboard",	/* vendor, product */
+	{	"Logitech",			/* vendor */
+		"G510s",			/* model */
+		"Gaming Keyboard",	/* product name */
 		VENDOR_ID_LOGITECH,
 		"c22e",										/* with onboard audio enabled */
 		toEnumType(	Caps::GK_BACKLIGHT_COLOR |
@@ -304,8 +307,7 @@ KeyStatus G510Base::processKeyEvent(USBDevice & device)
 void G510Base::sendUSBDeviceInitialization(USBDevice & device)
 {
 #if DEBUGGING_ON
-	LOG(INFO)	<< device.getID() << " sending "
-				<< device.getVendor() << " " << device.getProduct()
+	LOG(INFO)	<< device.getID() << " sending " << device.getFullName()
 				<< " initialization requests";
 #endif
 	{
@@ -335,8 +337,7 @@ void G510Base::setDeviceBacklightColor(
 {
 	device.setRGBBytes( r, g, b );
 #if DEBUGGING_ON
-	LOG(DEBUG1) << device.getID() << " setting "
-				<< device.getVendor() << " " << device.getProduct()
+	LOG(DEBUG1) << device.getID() << " setting " << device.getFullName()
 				<< " backlight color with following RGB bytes : " << getHexRGB(r, g, b);
 #endif
 	const unsigned char ReportID = 0x05;
@@ -353,8 +354,7 @@ void G510Base::setDeviceMxKeysLeds(USBDevice & device)
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << device.getID() << " setting "
-				<< device.getVendor() << " " << device.getProduct()
+	LOG(DEBUG1) << device.getID() << " setting " << device.getFullName()
 				<< " MxKeys leds using current mask : 0x" << std::hex << toUInt(mask);
 #endif
 	const unsigned char ReportID = 0x04;

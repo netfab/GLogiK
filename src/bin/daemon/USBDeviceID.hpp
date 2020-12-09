@@ -35,6 +35,8 @@ class USBDeviceID
 	public:
 		const std::string & getVendor(void) const { return _vendor; }
 		const std::string & getProduct(void) const { return _product; }
+		const std::string & getName(void) const { return _name; }
+		const std::string & getFullName(void) const { return _fullname; };
 		const std::string & getVendorID(void) const { return _vendorID; }
 		const std::string & getProductID(void) const { return _productID; }
 		const std::string & getDevnode(void) const { return _devnode; }
@@ -81,6 +83,7 @@ class USBDeviceID
 		USBDeviceID(
 			const std::string & vendor,
 			const std::string & product,
+			const std::string & name,
 			const std::string & vendorID,
 			const std::string & productID,
 			const uint64_t capabilities,
@@ -124,6 +127,8 @@ class USBDeviceID
 
 		std::string _vendor;
 		std::string _product;
+		std::string _name;
+		std::string _fullname;
 		std::string _vendorID;
 		std::string _productID;
 		std::string _devID; /* [b1d3] */

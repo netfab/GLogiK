@@ -493,7 +493,8 @@ void MainWindow::updateInterface(int index)
 					_configurationFilePath /= device.getConfigFilePath();
 
 					_openedConfigurationFile.setVendor(device.getVendor());
-					_openedConfigurationFile.setModel(device.getModel());
+					_openedConfigurationFile.setProduct(device.getProduct());
+					_openedConfigurationFile.setName(device.getName());
 					_openedConfigurationFile.setConfigFilePath(device.getConfigFilePath());
 					DeviceConfigurationFile::load(_configurationFilePath.string(), _openedConfigurationFile);
 
@@ -606,7 +607,9 @@ void MainWindow::resetInterface(void)
 				item += " ";
 				item += devicePair.second.getVendor();
 				item += " ";
-				item += devicePair.second.getModel();
+				item += devicePair.second.getProduct();
+				item += " ";
+				item += devicePair.second.getName();
 				std::replace( item.begin(), item.end(), '_', ' ');
 				items << item.c_str();
 			}

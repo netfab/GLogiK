@@ -375,8 +375,8 @@ void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device, const std::strin
 	/* check to give up */
 	if(device._fatalErrors > DEVICE_LISTENING_THREAD_MAX_ERRORS) {
 		std::ostringstream err(device.getID(), std::ios_base::app);
-		err << "[" << place << "]" << " device "
-			<< device.getVendor() << " " << device.getProduct() << " on bus " << toUInt(device.getBus());
+		err << "[" << place << "]" << " device " << device.getFullName()
+			<< " on bus " << toUInt(device.getBus());
 		GKSysLog(LOG_ERR, ERROR, err.str());
 		GKSysLog(LOG_ERR, ERROR, "reached listening thread maximum fatal errors, giving up");
 		device.deactivateThreads();
@@ -513,7 +513,7 @@ void KeyboardDriver::runMacro(const std::string & devID) const {
 		const USBDevice & device = _initializedDevices.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG2)	<< device.getID() << " spawned running macro thread for "
-					<< device.getVendor() << " " << device.getProduct();
+					<< device.getFullName();
 #endif
 		device.getMacrosManager()->runMacro(device._macroKey);
 #if DEBUGGING_ON
@@ -532,7 +532,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 
 #if DEBUGGING_ON
 		LOG(INFO)	<< device.getID() << " spawned LCD screen thread for "
-					<< device.getVendor() << " " << device.getProduct();
+					<< device.getFullName();
 #endif
 
 		while( DaemonControl::isDaemonRunning() ) {
@@ -567,7 +567,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 			LOG(DEBUG1) << "refreshed LCD screen for "
-				<< device.getVendor() << " " << device.getProduct()
+				<< device.getFullName()
 				<< " - ret: " << ret
 				<< " - interval: " << interval.count()
 				<< " - next sleep: " << one.count();
@@ -593,7 +593,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 
 #if DEBUGGING_ON
 		LOG(INFO)	<< device.getID() << " exiting LCD screen thread for "
-					<< device.getVendor() << " " << device.getProduct();
+					<< device.getFullName();
 #endif
 	} /* try */
 	catch (const std::out_of_range& oor) {
@@ -616,7 +616,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 
 #if DEBUGGING_ON
 		LOG(INFO)	<< device.getID() << " spawned listening thread for "
-					<< device.getVendor() << " " << device.getProduct();
+					<< device.getFullName();
 #endif
 
 		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
@@ -733,7 +733,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 
 #if DEBUGGING_ON
 		LOG(INFO)	<< device.getID() << " exiting listening thread for "
-					<< device.getVendor() << " " << device.getProduct();
+					<< device.getFullName();
 #endif
 	} /* try */
 	catch (const std::out_of_range& oor) {
@@ -798,7 +798,7 @@ void KeyboardDriver::resetDeviceState(const USBDeviceID & det)
 		USBDevice & device = _initializedDevices.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG3) << devID << " resetting state of "
-					<< device.getVendor() << " " << device.getProduct()
+					<< device.getFullName()
 					<< "(" << device.getVendorID() << ":" << device.getProductID() << "), device "
 					<< toUInt(device.getNum()) << " on bus " << toUInt(device.getBus());
 #endif
@@ -997,7 +997,7 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 
 #if DEBUGGING_ON
 	LOG(DEBUG3) << det.getID() << " initializing "
-				<< det.getVendor() << " " << det.getProduct() << "("
+				<< det.getFullName() << " ("
 				<< det.getVendorID() << ":" << det.getProductID() << "), device "
 				<< toUInt(det.getNum()) << " on bus " << toUInt(det.getBus());
 #endif
@@ -1014,9 +1014,7 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 			try {
 				/* virtual keyboard name */
 				std::ostringstream buffer(std::ios_base::app);
-				buffer	<< "Virtual "
-						<< device.getVendor() << " " << device.getProduct()
-						<< " " << device.getID();
+				buffer	<< "Virtual " << device.getFullName() << " " << device.getID();
 
 				device.setMacrosManager( new MacrosManager(buffer.str().c_str(), this->getMacroKeysNames()) );
 			}
@@ -1066,7 +1064,7 @@ void KeyboardDriver::closeDevice(
 		USBDevice & device = _initializedDevices.at(devID);
 #if DEBUGGING_ON
 		LOG(DEBUG3) << device.getID() << " closing "
-					<< device.getVendor() << " " << device.getProduct() << "("
+					<< device.getFullName() << " ("
 					<< device.getVendorID() << ":" << device.getProductID() << "), device "
 					<< toUInt(device.getNum()) << " on bus " << toUInt(device.getBus());
 #endif

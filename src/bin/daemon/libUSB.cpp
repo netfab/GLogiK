@@ -671,7 +671,7 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 
 #if DEBUGGING_ON
 				LOG(INFO)	<< device.getID() << " all done ! "
-							<< device.getVendor() << " " << device.getProduct()
+							<< device.getFullName()
 							<< " interface " << numInt
 							<< " opened and ready for I/O transfers";
 #endif

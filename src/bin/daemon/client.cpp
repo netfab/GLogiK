@@ -100,7 +100,8 @@ void Client::initializeDevice(
 		DeviceProperties device;
 		device.setProperties(
 			pDevicesManager->getDeviceVendor(devID),		/* vendor */
-			pDevicesManager->getDeviceModel(devID),			/* model */
+			pDevicesManager->getDeviceProduct(devID),		/* model */
+			pDevicesManager->getDeviceName(devID),			/* name */
 			pDevicesManager->getDeviceCapabilities(devID)	/* capabilities */
 		);
 		device.initMacrosBanks( pDevicesManager->getDeviceMacroKeysNames(devID) );

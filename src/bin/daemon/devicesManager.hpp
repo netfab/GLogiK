@@ -78,7 +78,8 @@ class DevicesManager
 		const std::vector<std::string> getStoppedDevices(void) const;
 
 		const std::string & getDeviceVendor(const std::string & devID) const;
-		const std::string & getDeviceModel(const std::string & devID) const;
+		const std::string & getDeviceProduct(const std::string & devID) const;
+		const std::string & getDeviceName(const std::string & devID) const;
 		const uint64_t getDeviceCapabilities(const std::string & devID) const;
 		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID
