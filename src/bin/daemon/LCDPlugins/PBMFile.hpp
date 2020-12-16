@@ -41,7 +41,7 @@ class PBMFile
 		~PBMFile(void);
 
 		static void readPBM(
-			const std::string & path,
+			const std::string & PBMPath,
 			PBMDataArray & PBMData,
 			const uint16_t PBMWidth,
 			const uint16_t PBMHeight);

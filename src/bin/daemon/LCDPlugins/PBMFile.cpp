@@ -37,7 +37,7 @@ PBMFile::~PBMFile()
 }
 
 void PBMFile::readPBM(
-	const std::string & path,
+	const std::string & PBMPath,
 	PBMDataArray & PBMData,
 	const uint16_t PBMWidth,
 	const uint16_t PBMHeight)
@@ -46,19 +46,20 @@ void PBMFile::readPBM(
 	pbm.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "opening : " << path;
+	LOG(DEBUG2) << "opening : " << PBMPath;
 #endif
 
 	try {
-		pbm.open(path, std::ifstream::in|std::ifstream::binary);
+		pbm.open(PBMPath, std::ifstream::in|std::ifstream::binary);
 
 		std::string magic;
 		uint16_t width, height = 0;
 
 		PBMFile::parsePBMHeader(pbm, magic, width, height);
 
-		if( magic != "P4" or width != PBMWidth or height != PBMHeight )
+		if( magic != "P4" or width != PBMWidth or height != PBMHeight ) {
 			throw GLogiKExcept("wrong PBM header");
+		}
 
 		PBMFile::extractPBMData(pbm, PBMData);
 

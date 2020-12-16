@@ -53,11 +53,11 @@ class PBMFont
 
 	protected:
 		PBMFont(
-			const std::string & pbmName,
+			const std::string & PBMName,
 			const uint16_t PBMWidth,
 			const uint16_t PBMHeight,
-			const uint16_t width,
-			const uint16_t height,
+			const uint16_t charWidth,
+			const uint16_t charHeight,
 			const charactersMap_type charsMap = PBMFont::defaultCharsMap
 		);
 

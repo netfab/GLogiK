@@ -59,22 +59,22 @@ const charactersMap_type PBMFont::defaultCharsMap =
 	};
 
 PBMFont::PBMFont(
-	const std::string & pbmName,
+	const std::string & PBMName,
 	const uint16_t PBMWidth,
 	const uint16_t PBMHeight,
-	const uint16_t width,
-	const uint16_t height,
+	const uint16_t charWidth,
+	const uint16_t charHeight,
 	const charactersMap_type charsMap)
-	:	_fontName(pbmName),
-		_charWidth(width),
-		_charHeight(height),
+	:	_fontName(PBMName),
+		_charWidth(charWidth),
+		_charHeight(charHeight),
 		_charX(0),
 		_charY(0),
 		_charsMap(charsMap)
 {
 	fs::path fullpath(PBM_DATA_DIR);
 	fullpath /= "fonts";
-	fullpath /= pbmName;
+	fullpath /= PBMName;
 	fullpath += ".pbm";
 
 	try {
