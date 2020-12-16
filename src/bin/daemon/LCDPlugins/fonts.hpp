@@ -43,7 +43,7 @@ class FontMonospace85
 {
 	public:
 		FontMonospace85(void)
-			:	PBMFont("monospace85", 5) {};
+			:	PBMFont("monospace85", PBM_WIDTH, PBM_HEIGHT, 5, 10) {};
 		~FontMonospace85() = default;
 
 	protected:
@@ -57,7 +57,7 @@ class FontMonospace86
 {
 	public:
 		FontMonospace86(void)
-			:	PBMFont("monospace86", 6) {};
+			:	PBMFont("monospace86", PBM_WIDTH, PBM_HEIGHT, 6, 10) {};
 		~FontMonospace86() = default;
 
 	protected:

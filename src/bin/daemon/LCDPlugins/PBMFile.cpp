@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -39,8 +39,8 @@ PBMFile::~PBMFile()
 void PBMFile::readPBM(
 	const std::string & path,
 	PBMDataArray & PBMData,
-	const uint16_t expectedWidth,
-	const uint16_t expectedHeight)
+	const uint16_t PBMWidth,
+	const uint16_t PBMHeight)
 {
 	std::ifstream pbm;
 	pbm.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -57,7 +57,7 @@ void PBMFile::readPBM(
 
 		PBMFile::parsePBMHeader(pbm, magic, width, height);
 
-		if( magic != "P4" or width != expectedWidth or height != expectedHeight )
+		if( magic != "P4" or width != PBMWidth or height != PBMHeight )
 			throw GLogiKExcept("wrong PBM header");
 
 		PBMFile::extractPBMData(pbm, PBMData);

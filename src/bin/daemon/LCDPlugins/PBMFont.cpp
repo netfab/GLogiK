@@ -60,6 +60,8 @@ const charactersMap_type PBMFont::defaultCharsMap =
 
 PBMFont::PBMFont(
 	const std::string & pbmName,
+	const uint16_t PBMWidth,
+	const uint16_t PBMHeight,
 	const uint16_t width,
 	const uint16_t height,
 	const charactersMap_type charsMap)
@@ -76,7 +78,7 @@ PBMFont::PBMFont(
 	fullpath += ".pbm";
 
 	try {
-		this->readPBM(fullpath.string(), _PBMData);
+		this->readPBM(fullpath.string(), _PBMData, PBMWidth, PBMHeight);
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "exception while reading PBM file: " << fullpath.string();

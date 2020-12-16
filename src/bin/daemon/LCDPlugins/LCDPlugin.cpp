@@ -156,7 +156,7 @@ void LCDPlugin::addPBMFrame(
 
 	_PBMFrames.emplace_back(num);
 	try {
-		this->readPBM(filePath.string(), _PBMFrames.back()._PBMData);
+		this->readPBM(filePath.string(), _PBMFrames.back()._PBMData, PBM_WIDTH, PBM_HEIGHT);
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "exception while reading PBM file: " << filePath.string();

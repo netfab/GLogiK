@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -43,8 +43,8 @@ class PBMFile
 		static void readPBM(
 			const std::string & path,
 			PBMDataArray & PBMData,
-			const uint16_t expectedWidth = PBM_WIDTH,
-			const uint16_t expectedHeight = PBM_HEIGHT);
+			const uint16_t PBMWidth,
+			const uint16_t PBMHeight);
 
 	private:
 		static void parsePBMHeader(
