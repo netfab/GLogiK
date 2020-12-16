@@ -22,6 +22,8 @@
 #ifndef SRC_BIN_DAEMON_LCD_SCREEN_PLUGINS_MANAGER_HPP_
 #define SRC_BIN_DAEMON_LCD_SCREEN_PLUGINS_MANAGER_HPP_
 
+#include <cstdint>
+
 #include <string>
 #include <vector>
 
@@ -48,7 +50,7 @@ class LCDScreenPluginsManager
 			const std::string & LCDKey,
 			const uint64_t LCDPluginsMask1
 		);
-		const unsigned short getPluginTiming(void);
+		const uint16_t getPluginTiming(void);
 
 		void unlockPlugin(void);
 		const uint64_t getCurrentPluginID(void);
@@ -66,7 +68,7 @@ class LCDScreenPluginsManager
 		FontsManager _fontsManager;
 		FontsManager* const _pFonts;
 
-		unsigned short _frameCounter;
+		uint16_t _frameCounter;
 		bool _noPlugins;
 		bool _currentPluginLocked;
 

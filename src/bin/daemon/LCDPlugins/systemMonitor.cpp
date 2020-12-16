@@ -167,7 +167,7 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 		std::fesetround(FE_TONEAREST);
 		freeMem = std::nearbyint(freeMem);
 
-		unsigned short usedMem = static_cast<unsigned short>(freeMem);
+		uint16_t usedMem = static_cast<uint16_t>(freeMem);
 		usedMem = 100 - usedMem;
 
 		this->drawProgressBarOnFrame(usedMem, 24, 33);
@@ -242,11 +242,11 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 
 	/* -- -- -- */
 	/* FontID::MONOSPACE85 char width is 5 pixels */
-	const unsigned short FONT_CHAR_WIDTH = 5;
+	const uint16_t FONT_CHAR_WIDTH = 5;
 
 	/* padded percentage string size is always 5 chars */
-	const unsigned int PERC_POS_X = (PBM_WIDTH - 1) - (5 * FONT_CHAR_WIDTH);
-	const unsigned int NET_POS_X = (PBM_WIDTH - 1) - (paddedRateString.size() * FONT_CHAR_WIDTH);
+	const uint16_t PERC_POS_X = (PBM_WIDTH - 1) - (5 * FONT_CHAR_WIDTH);
+	const uint16_t NET_POS_X = (PBM_WIDTH - 1) - (paddedRateString.size() * FONT_CHAR_WIDTH);
 
 	/* percent - max 5 chars */
 	/* net rate - max 12 chars */

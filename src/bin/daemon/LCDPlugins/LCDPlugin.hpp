@@ -51,19 +51,19 @@ enum class LCDPluginTempo : uint8_t
 class LCDPBMFrame
 {
 	public:
-		LCDPBMFrame(const unsigned short i)
+		LCDPBMFrame(const uint16_t i)
 			:	_frameCounter(i) {}
 		LCDPBMFrame(void) = delete;
 		~LCDPBMFrame() = default;
 
 		PBMDataArray _PBMData;
 
-		const bool switchToNextFrame(const unsigned short currentFrameCounter);
+		const bool switchToNextFrame(const uint16_t currentFrameCounter);
 
 	protected:
 
 	private:
-		const unsigned short _frameCounter;
+		const uint16_t _frameCounter;
 
 };
 
@@ -79,8 +79,8 @@ class LCDPlugin
 		const LCDPluginProperties getPluginProperties(void) const;
 		const std::string & getPluginName(void) const;
 		const uint64_t getPluginID(void) const;
-		const unsigned short getPluginTiming(void) const;
-		const unsigned short getPluginMaxFrames(void) const;
+		const uint16_t getPluginTiming(void) const;
+		const uint16_t getPluginMaxFrames(void) const;
 		void resetPBMFrameIndex(void);
 		void prepareNextPBMFrame(void);
 		void resetEverLocked(void);
@@ -100,54 +100,54 @@ class LCDPlugin
 		void addPBMFrame(
 			const fs::path & PBMDirectory,
 			const std::string & file,
-			const unsigned short num = 1
+			const uint16_t num = 1
 		);
 
 		void addPBMClearedFrame(
-			const unsigned short num = 1
+			const uint16_t num = 1
 		);
 
-		const unsigned short getNextPBMFrameID(void) const;
+		const uint16_t getNextPBMFrameID(void) const;
 		PBMDataArray & getCurrentPBMFrame(void);
 
 		void writeStringOnFrame(
 			FontsManager* const pFonts,
 			const FontID fontID,
 			const std::string & string,
-			unsigned int PBMXPos,
-			const unsigned int PBMYPos
+			uint16_t PBMXPos,
+			const uint16_t PBMYPos
 		);
 
 		void writeStringOnLastFrame(
 			FontsManager* const pFonts,
 			const FontID fontID,
 			const std::string & string,
-			unsigned int PBMXPos,
-			const unsigned int PBMYPos
+			uint16_t PBMXPos,
+			const uint16_t PBMYPos
 		);
 
 		void drawProgressBarOnFrame(
-			const unsigned short percent,
-			const unsigned int PBMXPos,
-			const unsigned int PBMYPos
+			const uint16_t percent,
+			const uint16_t PBMXPos,
+			const uint16_t PBMYPos
 		);
 
 		void drawPadlockOnFrame(
 			const bool lockedPlugin,
-			const unsigned int PBMXPos = 1,
-			const unsigned int PBMYPos = 1
+			const uint16_t PBMXPos = 1,
+			const uint16_t PBMYPos = 1
 		);
 
 	private:
 		bool _initialized;
 		bool _everLocked;
-		unsigned short _frameCounter;		/* frame counter */
-		unsigned short _frameIndex;			/* frame index in the container */
+		uint16_t _frameCounter;		/* frame counter */
+		uint16_t _frameIndex;			/* frame index in the container */
 		std::vector<LCDPBMFrame> _PBMFrames;
 		std::vector<LCDPBMFrame>::iterator _itCurrentFrame;
 
 		void checkPBMFrameIndex(void);
-		static std::tuple<unsigned short, unsigned short> getTempo(const LCDPluginTempo tempo);
+		static std::tuple<uint16_t, uint16_t> getTempo(const LCDPluginTempo tempo);
 };
 
 } // namespace GLogiK

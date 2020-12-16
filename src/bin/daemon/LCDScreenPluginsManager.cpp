@@ -99,7 +99,7 @@ const LCDPluginsPropertiesArray_type & LCDScreenPluginsManager::getLCDPluginsPro
 	return _pluginsPropertiesArray;
 }
 
-const unsigned short LCDScreenPluginsManager::getPluginTiming(void)
+const uint16_t LCDScreenPluginsManager::getPluginTiming(void)
 {
 	if(_itCurrentPlugin != _plugins.end() )
 		return (*_itCurrentPlugin)->getPluginTiming();

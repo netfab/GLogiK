@@ -39,8 +39,8 @@ PBMFile::~PBMFile()
 void PBMFile::readPBM(
 	const std::string & path,
 	PBMDataArray & PBMData,
-	const unsigned int expectedWidth,
-	const unsigned int expectedHeight)
+	const uint16_t expectedWidth,
+	const uint16_t expectedHeight)
 {
 	std::ifstream pbm;
 	pbm.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -53,7 +53,7 @@ void PBMFile::readPBM(
 		pbm.open(path, std::ifstream::in|std::ifstream::binary);
 
 		std::string magic;
-		unsigned int width, height = 0;
+		uint16_t width, height = 0;
 
 		PBMFile::parsePBMHeader(pbm, magic, width, height);
 
@@ -84,8 +84,8 @@ void PBMFile::closePBM(std::ifstream & pbm)
 void PBMFile::parsePBMHeader(
 	std::ifstream & pbm,
 	std::string & magic,
-	unsigned int & width,
-	unsigned int & height)
+	uint16_t & width,
+	uint16_t & height)
 {
 	const char white = 0x0a;
 	const char space = 0x20;

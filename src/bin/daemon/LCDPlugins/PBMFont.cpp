@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -60,8 +60,8 @@ const charactersMap_type PBMFont::defaultCharsMap =
 
 PBMFont::PBMFont(
 	const std::string & pbmName,
-	const unsigned short width,
-	const unsigned short height,
+	const uint16_t width,
+	const uint16_t height,
 	const charactersMap_type charsMap)
 	:	_fontName(pbmName),
 		_charWidth(width),
@@ -94,11 +94,11 @@ PBMFont::~PBMFont()
 void PBMFont::printCharacterOnFrame(
 	PBMDataArray & frame,
 	const std::string & c,
-	unsigned int & PBMXPos,
-	const unsigned int PBMYPos)
+	uint16_t & PBMXPos,
+	const uint16_t PBMYPos)
 {
-	const unsigned short xByte = PBMXPos / 8;
-	const unsigned short xModulo = PBMXPos % 8;
+	const uint16_t xByte = PBMXPos / 8;
+	const uint16_t xModulo = PBMXPos % 8;
 
 #if DEBUG_PBMFONT
 	LOG(DEBUG2) << "xPos: " << PBMXPos
@@ -116,7 +116,7 @@ void PBMFont::printCharacterOnFrame(
 		throw GLogiKExcept( warn.str() );
 	}
 
-	unsigned short index = 0;
+	uint16_t index = 0;
 
 	if(PBMXPos >= (PBM_WIDTH - _charWidth)) {
 		std::ostringstream warn(_fontName, std::ios_base::app);
@@ -130,7 +130,7 @@ void PBMFont::printCharacterOnFrame(
 	}
 
 	try {
-		for(unsigned short i = 0; i < _charHeight; i++) {
+		for(uint16_t i = 0; i < _charHeight; i++) {
 			unsigned char c = this->getCharacterLine(i);
 			index = (PBM_WIDTH_IN_BYTES * (PBMYPos+i)) + xByte;
 
@@ -140,7 +140,7 @@ void PBMFont::printCharacterOnFrame(
 			//LOG(DEBUG) << bits.to_string();
 
 			// FIXME _charWidth should be <= 8 here
-			const unsigned short xModuloComp8 = (8 - xModulo);
+			const uint16_t xModuloComp8 = (8 - xModulo);
 			short rightShift = (_charWidth - xModuloComp8);
 
 			frame.at(index) &= (0b11111111 << xModuloComp8);
@@ -162,10 +162,10 @@ void PBMFont::printCharacterOnFrame(
 	PBMXPos += _charWidth;
 }
 
-const unsigned char PBMFont::getCharacterLine(const unsigned short line) const
+const unsigned char PBMFont::getCharacterLine(const uint16_t line) const
 {
 	unsigned char c = 0;
-	const unsigned short i =
+	const uint16_t i =
 		/* PBM_Y_line which contains the character (in bytes) */
 		(_charY * _charHeight * PBM_WIDTH_IN_BYTES) +
 		/* character's PBM_X position on the PBM_Y_line (in bytes) */

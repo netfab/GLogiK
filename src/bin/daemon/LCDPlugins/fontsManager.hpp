@@ -45,8 +45,8 @@ class FontsManager
 			const FontID fontID,
 			PBMDataArray & frame,
 			const std::string & c,
-			unsigned int & PBMXPos,
-			const unsigned int PBMYPos
+			uint16_t & PBMXPos,
+			const uint16_t PBMYPos
 		);
 
 	protected:

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #ifndef SRC_BIN_DAEMON_LCDPLUGINS_PBM_FONT_HPP_
 #define SRC_BIN_DAEMON_LCDPLUGINS_PBM_FONT_HPP_
 
+#include <cstdint>
+
 #include <utility>
 #include <string>
 #include <map>
@@ -34,7 +36,7 @@ namespace GLogiK
 {
 
 
-typedef std::initializer_list<std::pair<const std::string, std::pair<unsigned short, unsigned short>>> charactersMap_type;
+typedef std::initializer_list<std::pair<const std::string, std::pair<uint16_t, uint16_t>>> charactersMap_type;
 
 class PBMFont
 	:	virtual private PBMFile
@@ -45,31 +47,31 @@ class PBMFont
 		void printCharacterOnFrame(
 			PBMDataArray & frame,
 			const std::string & c,
-			unsigned int & PBMXPos,
-			const unsigned int PBMYPos
+			uint16_t & PBMXPos,
+			const uint16_t PBMYPos
 		);
 
 	protected:
 		PBMFont(
 			const std::string & pbmName,
-			const unsigned short width,
-			const unsigned short height = 10,
+			const uint16_t width,
+			const uint16_t height = 10,
 			const charactersMap_type charsMap = PBMFont::defaultCharsMap
 		);
 
 	private:
 		PBMDataArray _PBMData;
 		const std::string _fontName;
-		const unsigned int _charWidth;
-		const unsigned int _charHeight;
-		unsigned short _charX;
-		unsigned short _charY;
+		const uint16_t _charWidth;
+		const uint16_t _charHeight;
+		uint16_t _charX;
+		uint16_t _charY;
 
-		std::map<const std::string, std::pair<unsigned short, unsigned short>> _charsMap;
+		std::map<const std::string, std::pair<uint16_t, uint16_t>> _charsMap;
 
 		static const charactersMap_type defaultCharsMap;
 
-		const unsigned char getCharacterLine(const unsigned short line) const;
+		const unsigned char getCharacterLine(const uint16_t line) const;
 };
 
 } // namespace GLogiK

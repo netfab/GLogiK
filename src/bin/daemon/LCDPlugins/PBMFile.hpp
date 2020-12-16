@@ -22,6 +22,8 @@
 #ifndef SRC_BIN_DAEMON_LCDPLUGINS_PBM_FILE_HPP_
 #define SRC_BIN_DAEMON_LCDPLUGINS_PBM_FILE_HPP_
 
+#include <cstdint>
+
 #include <string>
 #include <fstream>
 
@@ -41,15 +43,15 @@ class PBMFile
 		static void readPBM(
 			const std::string & path,
 			PBMDataArray & PBMData,
-			const unsigned int expectedWidth = PBM_WIDTH,
-			const unsigned int expectedHeight = PBM_HEIGHT);
+			const uint16_t expectedWidth = PBM_WIDTH,
+			const uint16_t expectedHeight = PBM_HEIGHT);
 
 	private:
 		static void parsePBMHeader(
 			std::ifstream & pbm,
 			std::string & magic,
-			unsigned int & width,
-			unsigned int & height);
+			uint16_t & width,
+			uint16_t & height);
 
 		static void extractPBMData(
 			std::ifstream & pbm,
