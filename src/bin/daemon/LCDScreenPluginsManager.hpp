@@ -46,6 +46,8 @@ class LCDScreenPluginsManager
 
 		const LCDPluginsPropertiesArray_type & getLCDPluginsProperties(void) const;
 
+		const bool findOneLCDScreenPlugin(const uint64_t LCDPluginsMask1) const;
+
 		LCDDataArray & getNextLCDScreenBuffer(
 			const std::string & LCDKey,
 			const uint64_t LCDPluginsMask1

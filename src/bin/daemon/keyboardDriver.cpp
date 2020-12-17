@@ -585,10 +585,17 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 		device.getLCDPluginsManager()->unlockPlugin();
 		device.getLCDPluginsManager()->jumpToNextPlugin();
 
-		LCDDataArray & LCDBuffer = device.getLCDPluginsManager()->getNextLCDScreenBuffer("", toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN));
-		int ret = this->performLCDScreenInterruptTransfer( device, LCDBuffer.data(), LCDBuffer.size(), 1000);
-		if(ret != 0) {
-			GKSysLog(LOG_ERR, ERROR, "endscreen LCD refresh failure");
+		const uint64_t endscreen = toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN);
+		/* make sure endscreen plugin is loaded before using it */
+		if( device.getLCDPluginsManager()->findOneLCDScreenPlugin( endscreen ) ) {
+			LCDDataArray & LCDBuffer = device.getLCDPluginsManager()->getNextLCDScreenBuffer("", endscreen);
+			int ret = this->performLCDScreenInterruptTransfer(device, LCDBuffer.data(), LCDBuffer.size(), 1000);
+			if(ret != 0) {
+				GKSysLog(LOG_ERR, ERROR, "endscreen LCD refresh failure");
+			}
+		}
+		else {
+			GKSysLog(LOG_WARNING, WARNING, "endscreen LCD plugin not loaded");
 		}
 
 #if DEBUGGING_ON

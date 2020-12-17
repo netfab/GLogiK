@@ -146,6 +146,23 @@ void LCDScreenPluginsManager::jumpToNextPlugin(void)
 	}
 }
 
+const bool LCDScreenPluginsManager::findOneLCDScreenPlugin(const uint64_t LCDPluginsMask1) const
+{
+	bool ret = false;
+
+	if( ! _noPlugins ) {
+		for(auto it = _plugins.cbegin(); it != _plugins.cend(); ++it) {
+			/* check that current plugin is loaded */
+			if( LCDPluginsMask1 & (*it)->getPluginID() ) {
+				ret = true;
+				break;
+			}
+		}
+	}
+
+	return ret;
+}
+
 LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 	const std::string & LCDKey,
 	const uint64_t LCDPluginsMask1
