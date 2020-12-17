@@ -188,6 +188,7 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 
 				if( _frameCounter >= (*_itCurrentPlugin)->getPluginMaxFrames() ) {
 					bool found = false;
+					const std::vector<LCDPlugin*>::const_iterator itFirstPlugin = _itCurrentPlugin;
 					while( ! found ) {
 						/* locked plugin ? */
 						if( ! _currentPluginLocked ) {
@@ -202,6 +203,12 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 						/* check that current plugin is enabled */
 						if( LCDPluginsMask1 & (*_itCurrentPlugin)->getPluginID() )
 							found = true;
+
+						if( (! found) and (_itCurrentPlugin == itFirstPlugin) ) {
+							const std::string warn("detected potential infinite loop");
+							GKSysLog(LOG_WARNING, WARNING, warn);
+							throw GLogiKExcept(warn);
+						}
 					}
 
 					/* reset frames to beginning */
