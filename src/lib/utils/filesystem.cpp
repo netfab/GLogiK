@@ -21,6 +21,7 @@
 
 #include <syslog.h>
 
+#include <cstdint>
 #include <cerrno>
 #include <cstring>
 #include <cstdlib>
@@ -58,7 +59,7 @@ const std::string FileSystem::getNextAvailableFileName(
 	const std::string & extension,
 	bool mustExist)
 {
-	unsigned int c = 0;
+	uint16_t c = 0;
 
 	std::string base(baseName);
 	std::replace( base.begin(), base.end(), '/', '_');

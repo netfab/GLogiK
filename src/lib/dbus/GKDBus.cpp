@@ -176,7 +176,7 @@ void GKDBus::checkForMessages(void) noexcept
 void GKDBus::checkForBusMessages(const BusConnection bus, DBusConnection* connection) noexcept {
 	GKDBusEvents::currentBus = bus; /* used on introspection */
 
-	unsigned int c = 0;
+	uint16_t c = 0;
 	while( true ) {
 		dbus_connection_read_write(connection, 0);
 		_message = dbus_connection_pop_message(connection);

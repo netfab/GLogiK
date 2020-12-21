@@ -317,7 +317,7 @@ void ClientsManager::waitForClientsDisconnections(void) noexcept {
 
 	this->sendSignalToClients(_connectedClients.size(), _pDBus, "DaemonIsStopping");
 
-	unsigned int c = 0;
+	uint16_t c = 0;
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "waiting for clients to unregister ...";
 #endif

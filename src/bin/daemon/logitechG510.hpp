@@ -46,14 +46,14 @@ namespace GLogiK
 /* RKey - Recognized Keys */
 struct RKey
 {
-	const unsigned short index;
+	const uint16_t index;
 	const unsigned char mask;
 	const Keys key;
 	const char* const name;
 	const bool isMacroKey;
 	const bool isLCDKey;
 
-	RKey(	const unsigned short i,
+	RKey(	const uint16_t i,
 			const unsigned char m,
 			const Keys k,
 			const char* const n=nullptr,

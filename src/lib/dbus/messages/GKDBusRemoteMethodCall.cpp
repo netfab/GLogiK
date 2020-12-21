@@ -185,7 +185,7 @@ void GKDBusMessageRemoteMethodCall::abandonRemoteMethodCall(void)
 void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void) {
 	dbus_pending_call_block(_pendingCall);
 
-	unsigned int c = 0;
+	uint16_t c = 0;
 
 	DBusMessage* message = nullptr;
 	// TODO could set a timer between retries ?

@@ -143,7 +143,7 @@ void PBMFont::printCharacterOnFrame(
 
 			// FIXME _charWidth should be <= 8 here
 			const uint16_t xModuloComp8 = (8 - xModulo);
-			short rightShift = (_charWidth - xModuloComp8);
+			int16_t rightShift = (_charWidth - xModuloComp8);
 
 			frame.at(index) &= (0b11111111 << xModuloComp8);
 			if(rightShift <= 0) {

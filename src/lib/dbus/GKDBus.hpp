@@ -22,6 +22,8 @@
 #ifndef SRC_LIB_DBUS_GKDBUS_HPP_
 #define SRC_LIB_DBUS_GKDBUS_HPP_
 
+#include <cstdint>
+
 #include <string>
 #include <vector>
 

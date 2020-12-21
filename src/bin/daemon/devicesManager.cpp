@@ -926,7 +926,7 @@ void DevicesManager::startMonitoring(void) {
 			this->sendSignalToClients(_numClients, _pDBus, "DaemonIsStarting", true);
 #endif
 
-			unsigned short c = 0;
+			uint16_t c = 0;
 
 			while( DaemonControl::isDaemonRunning() )
 			{
