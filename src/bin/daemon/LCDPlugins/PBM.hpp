@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #define SRC_BIN_DAEMON_LCDPLUGINS_PBM_HPP_
 
 #include <array>
+#include <vector>
 
 #define PBM_HEIGHT 48
 #define PBM_WIDTH 160
@@ -40,7 +41,7 @@
 namespace GLogiK
 {
 
-typedef std::array<unsigned char, PBM_DATA_IN_BYTES> PBMDataArray;
+typedef std::vector<unsigned char> PBMDataArray;
 typedef std::array<unsigned char, PBM_DATA_IN_BYTES+LCD_BUFFER_OFFSET> LCDDataArray;
 
 } // namespace GLogiK

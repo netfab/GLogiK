@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -78,11 +78,17 @@ PBMFont::PBMFont(
 	fullpath += ".pbm";
 
 	try {
+		/* initialize PBM container */
+		_PBMData.resize( (PBMWidth / 8) * PBMHeight, 0 );
 		this->readPBM(fullpath.string(), _PBMData, PBMWidth, PBMHeight);
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "exception while reading PBM file: " << fullpath.string();
 		throw;
+	}
+	catch (const std::exception & e) {
+		LOG(ERROR) << "vector resize exception ? " << fullpath.string();
+		throw GLogiKExcept( e.what() );
 	}
 }
 

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -154,7 +154,8 @@ void LCDPlugin::addPBMFrame(
 	fs::path filePath(PBMDirectory);
 	filePath /= file;
 
-	_PBMFrames.emplace_back(num);
+	this->addPBMClearedFrame(num);
+
 	try {
 		this->readPBM(filePath.string(), _PBMFrames.back()._PBMData, PBM_WIDTH, PBM_HEIGHT);
 	}
@@ -167,8 +168,13 @@ void LCDPlugin::addPBMFrame(
 void LCDPlugin::addPBMClearedFrame(
 	const uint16_t num)
 {
-	_PBMFrames.emplace_back(num);
-	_PBMFrames.back()._PBMData.fill(0x0);
+	try {
+		_PBMFrames.emplace_back(num);
+	}
+	catch (const std::exception & e) {
+		LOG(ERROR) << "LCDPBMFrame constructor vector resize exception ?";
+		throw GLogiKExcept("initializing PBM frame failure");
+	}
 }
 
 const uint16_t LCDPlugin::getNextPBMFrameID(void) const
