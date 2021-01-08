@@ -1,12 +1,8 @@
 
 pbm_dir = $(datadir)/$(PACKAGE)/pbm
-endscreen_dir = $(pbm_dir)/endscreen
 splashscreen_dir = $(pbm_dir)/splashscreen
 systemMonitor_dir = $(pbm_dir)/systemMonitor
 pbmFonts_dir = $(pbm_dir)/fonts
-
-dist_endscreen__DATA = \
-	%D%/endscreen/endscreen.pbm
 
 dist_splashscreen__DATA = \
 	%D%/splashscreen/splashscreen01.pbm
