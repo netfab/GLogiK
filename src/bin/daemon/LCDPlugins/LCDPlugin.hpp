@@ -149,7 +149,7 @@ class LCDPlugin
 		bool _initialized;
 		bool _everLocked;
 		uint16_t _frameCounter;		/* frame counter */
-		uint16_t _frameIndex;			/* frame index in the container */
+		uint16_t _frameIndex;		/* frame index in the container */
 		std::vector<LCDPBMFrame> _PBMFrames;
 		std::vector<LCDPBMFrame>::iterator _itCurrentFrame;
 
