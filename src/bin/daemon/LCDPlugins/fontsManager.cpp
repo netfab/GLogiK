@@ -42,6 +42,35 @@ FontsManager::~FontsManager()
 	_fonts.clear();
 }
 
+const uint16_t FontsManager::getCenteredXPos(
+	const FontID fontID,
+	const std::string & string
+) {
+	try {
+		return _fonts.at(fontID)->getCenteredXPos(string);
+	}
+	catch (const std::out_of_range& oor) {
+		this->initializeFont(fontID);
+		return _fonts.at(fontID)->getCenteredXPos(string);
+	}
+}
+
+void FontsManager::printCharacterOnFrame(
+	const FontID fontID,
+	PBMDataArray & frame,
+	const std::string & c,
+	uint16_t & PBMXPos,
+	const uint16_t PBMYPos)
+{
+	try {
+		_fonts.at(fontID)->printCharacterOnFrame(frame, c, PBMXPos, PBMYPos);
+	}
+	catch (const std::out_of_range& oor) {
+		this->initializeFont(fontID);
+		_fonts.at(fontID)->printCharacterOnFrame(frame, c, PBMXPos, PBMYPos);
+	}
+}
+
 void FontsManager::initializeFont(const FontID fontID)
 {
 #if DEBUGGING_ON
@@ -68,22 +97,6 @@ void FontsManager::initializeFont(const FontID fontID)
 	}
 
 	_fonts[fontID] = font;
-}
-
-void FontsManager::printCharacterOnFrame(
-	const FontID fontID,
-	PBMDataArray & frame,
-	const std::string & c,
-	uint16_t & PBMXPos,
-	const uint16_t PBMYPos)
-{
-	try {
-		_fonts.at(fontID)->printCharacterOnFrame(frame, c, PBMXPos, PBMYPos);
-	}
-	catch (const std::out_of_range& oor) {
-		this->initializeFont(fontID);
-		_fonts.at(fontID)->printCharacterOnFrame(frame, c, PBMXPos, PBMYPos);
-	}
 }
 
 } // namespace GLogiK

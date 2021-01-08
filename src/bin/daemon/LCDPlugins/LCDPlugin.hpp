@@ -121,7 +121,7 @@ class LCDPlugin
 			FontsManager* const pFonts,
 			const FontID fontID,
 			const std::string & string,
-			uint16_t PBMXPos,
+			const int16_t PBMXPos,
 			const uint16_t PBMYPos
 		);
 
@@ -129,7 +129,7 @@ class LCDPlugin
 			FontsManager* const pFonts,
 			const FontID fontID,
 			const std::string & string,
-			uint16_t PBMXPos,
+			const int16_t PBMXPos,
 			const uint16_t PBMYPos
 		);
 

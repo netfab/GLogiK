@@ -44,6 +44,8 @@ class PBMFont
 	public:
 		virtual ~PBMFont(void);
 
+		const uint16_t getCenteredXPos(const std::string & string);
+
 		void printCharacterOnFrame(
 			PBMDataArray & frame,
 			const std::string & character,
@@ -80,6 +82,7 @@ class PBMFont
 		std::map<const std::string, std::pair<uint16_t, uint16_t>> _charsMap;
 
 		static const charactersMap_type defaultCharsMap;
+		static const std::string hackstring;
 
 		const unsigned char getCharacterLine(
 			const uint16_t line,

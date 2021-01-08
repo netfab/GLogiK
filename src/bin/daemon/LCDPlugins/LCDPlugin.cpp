@@ -194,16 +194,24 @@ void LCDPlugin::writeStringOnFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
 	const std::string & string,
-	uint16_t PBMXPos,
+	const int16_t PBMXPos,
 	const uint16_t PBMYPos)
 {
 	try {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 		LOG(DEBUG2) << this->getPluginName() << " PBM # " << _frameIndex << " - writing string : " << string;
 #endif
+		uint16_t XPos = 0;
+		if( PBMXPos < 0 ) { /* centered */
+			XPos = pFonts->getCenteredXPos(fontID, string);
+		}
+		else {
+			XPos = static_cast<uint16_t>(PBMXPos);
+		}
+
 		for(const char & c : string) {
 			const std::string character(1, c);
-			pFonts->printCharacterOnFrame( fontID, (*_itCurrentFrame)._PBMData, character, PBMXPos, PBMYPos );
+			pFonts->printCharacterOnFrame( fontID, (*_itCurrentFrame)._PBMData, character, XPos, PBMYPos );
 		} /* for each character in the string */
 	}
 	catch (const GLogiKExcept & e) {
@@ -215,7 +223,7 @@ void LCDPlugin::writeStringOnLastFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
 	const std::string & string,
-	uint16_t PBMXPos,
+	const int16_t PBMXPos,
 	const uint16_t PBMYPos)
 {
 	try {

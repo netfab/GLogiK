@@ -59,6 +59,8 @@ const charactersMap_type PBMFont::defaultCharsMap =
 		{";", {15,2} }, {"/", {16,2} }, {"-", {17,2} }, {"%", {18,2} },
 	};
 
+const std::string PBMFont::hackstring("mGMW%");
+
 PBMFont::PBMFont(
 	const std::string & PBMName,
 	const uint16_t PBMWidth,
@@ -106,6 +108,21 @@ PBMFont::~PBMFont()
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "deleting font " << _fontName;
 #endif
+}
+
+const uint16_t PBMFont::getCenteredXPos(const std::string & string)
+{
+	uint16_t XPos = PBM_WIDTH;
+	for(const char & c : string) {
+		XPos -= (_charWidth - _fontLeftShift);
+		// XXX
+		if(_extraLeftShift > 0) {
+			if(hackstring.find(c) == std::string::npos) {
+				XPos += _extraLeftShift;
+			}
+		}
+	}
+	return static_cast<uint16_t>(XPos/2);
 }
 
 void PBMFont::printCharacterOnFrame(
@@ -181,7 +198,7 @@ void PBMFont::printCharacterOnFrame(
 	// applying another leftshift, except for those characters
 	// which are very wide compared to others
 	if(_extraLeftShift > 0) {
-		if(std::string("mGMW%").find(character) == std::string::npos) {
+		if(hackstring.find(character) == std::string::npos) {
 			PBMXPos -= _extraLeftShift;
 		}
 	}

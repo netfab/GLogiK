@@ -39,6 +39,11 @@ class FontsManager
 		FontsManager(void);
 		~FontsManager(void);
 
+		const uint16_t getCenteredXPos(
+			const FontID fontID,
+			const std::string & string
+		);
+
 		void printCharacterOnFrame(
 			const FontID fontID,
 			PBMDataArray & frame,
