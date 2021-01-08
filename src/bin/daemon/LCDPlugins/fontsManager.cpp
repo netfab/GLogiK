@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -44,32 +44,30 @@ FontsManager::~FontsManager()
 
 void FontsManager::initializeFont(const FontID fontID)
 {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "initializing font " << toUInt(toEnumType(fontID));
+#endif
+	PBMFont* font = nullptr;
 	try {
-		_fonts.at(fontID);
+		switch(fontID) {
+			case FontID::MONOSPACE85:
+				font = new FontMonospace85();
+				break;
+			case FontID::MONOSPACE86:
+				font = new FontMonospace86();
+				break;
+			case FontID::DEJAVUSANSBOLD1616:
+				font = new FontDejaVuSansBold1616();
+				break;
+			default:
+				throw GLogiKExcept("unknown font ID");
+		}
 	}
-	catch (const std::out_of_range& oor) {
-		PBMFont* font = nullptr;
-		try {
-			switch(fontID) {
-				case FontID::MONOSPACE85:
-					font = new FontMonospace85();
-					break;
-				case FontID::MONOSPACE86:
-					font = new FontMonospace86();
-					break;
-				case FontID::DEJAVUSANSBOLD1616:
-					font = new FontDejaVuSansBold1616();
-					break;
-				default:
-					throw GLogiKExcept("unknown font ID");
-			}
-		}
-		catch (const std::bad_alloc& e) { /* handle new() failure */
-			throw GLogiKBadAlloc("font bad allocation");
-		}
+	catch (const std::bad_alloc& e) { /* handle new() failure */
+		throw GLogiKBadAlloc("font bad allocation");
+	}
 
-		_fonts[fontID] = font;
-	}
+	_fonts[fontID] = font;
 }
 
 void FontsManager::printCharacterOnFrame(
@@ -83,10 +81,8 @@ void FontsManager::printCharacterOnFrame(
 		_fonts.at(fontID)->printCharacterOnFrame(frame, c, PBMXPos, PBMYPos);
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn("unknown font : ");
-		warn += std::to_string(toEnumType(fontID));
-		GKSysLog(LOG_WARNING, WARNING, warn);
-		throw GLogiKExcept("unknown font ID");
+		this->initializeFont(fontID);
+		_fonts.at(fontID)->printCharacterOnFrame(frame, c, PBMXPos, PBMYPos);
 	}
 }
 

@@ -55,8 +55,6 @@ void Splashscreen::init(FontsManager* const pFonts, const std::string & product)
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _plugin.getName();
 
-	pFonts->initializeFont(FontID::MONOSPACE85);
-
 	this->addPBMClearedFrame();	/* frame #0 */
 	this->addPBMFrame(PBMDirectory, "splashscreen01.pbm", 1); /* #1 */
 	this->addPBMFrame(PBMDirectory, "splashscreen01.pbm", 3); /* #2 #3 #4 */

@@ -65,8 +65,6 @@ void SystemMonitor::init(FontsManager* const pFonts, const std::string & product
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _plugin.getName();
 
-	pFonts->initializeFont(FontID::MONOSPACE85);
-
 	this->addPBMFrame(PBMDirectory, "skeleton.pbm");
 
 	std::string host;
