@@ -116,7 +116,7 @@ void LCDPlugin::prepareNextPBMFrame(void)
 	_frameCounter++; /* for next call */
 }
 
-void LCDPlugin::init(FontsManager* const pFonts)
+void LCDPlugin::init(FontsManager* const pFonts, const std::string & product)
 {
 	this->resetPBMFrameIndex();
 	_initialized = true;

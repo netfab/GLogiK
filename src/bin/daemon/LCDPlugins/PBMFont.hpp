@@ -46,7 +46,7 @@ class PBMFont
 
 		void printCharacterOnFrame(
 			PBMDataArray & frame,
-			const std::string & c,
+			const std::string & character,
 			uint16_t & PBMXPos,
 			const uint16_t PBMYPos
 		);
@@ -58,14 +58,22 @@ class PBMFont
 			const uint16_t PBMHeight,
 			const uint16_t charWidth,
 			const uint16_t charHeight,
+			const uint16_t fontLeftShift = 0,
+			const uint16_t extraLeftShift = 0,
 			const charactersMap_type charsMap = PBMFont::defaultCharsMap
 		);
 
 	private:
 		PBMDataArray _PBMData;
 		const std::string _fontName;
+		const uint16_t _PBMWidth;
+		const uint16_t _PBMHeight;
 		const uint16_t _charWidth;
 		const uint16_t _charHeight;
+		const uint16_t _charBytes;
+		const uint16_t _shiftCharBase;
+		const uint16_t _fontLeftShift;
+		const uint16_t _extraLeftShift;
 		uint16_t _charX;
 		uint16_t _charY;
 
@@ -73,7 +81,10 @@ class PBMFont
 
 		static const charactersMap_type defaultCharsMap;
 
-		const unsigned char getCharacterLine(const uint16_t line) const;
+		const unsigned char getCharacterLine(
+			const uint16_t line,
+			const uint16_t charByte
+		) const;
 };
 
 } // namespace GLogiK

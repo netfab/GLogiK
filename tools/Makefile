@@ -97,6 +97,7 @@ configure_it: init_it autoreconf_it
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--enable-dbus --enable-qt5 \
 	--enable-hidapi --disable-libusb \
+	$(CONF_FLAGS) \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
 
 install_it: uninstall_it
@@ -121,6 +122,7 @@ configure_it: init_it autoreconf_it
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--enable-dbus --enable-qt5 \
 	--enable-hidapi --disable-libusb \
+	$(CONF_FLAGS) \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
 
 install_it: uninstall_it

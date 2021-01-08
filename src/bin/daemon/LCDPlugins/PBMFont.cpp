@@ -19,6 +19,7 @@
  *
  */
 
+//#include <bitset>
 #include <sstream>
 #include <stdexcept>
 
@@ -64,10 +65,18 @@ PBMFont::PBMFont(
 	const uint16_t PBMHeight,
 	const uint16_t charWidth,
 	const uint16_t charHeight,
+	const uint16_t fontLeftShift,
+	const uint16_t extraLeftShift,
 	const charactersMap_type charsMap)
 	:	_fontName(PBMName),
+		_PBMWidth(PBMWidth),
+		_PBMHeight(PBMHeight),
 		_charWidth(charWidth),
 		_charHeight(charHeight),
+		_charBytes(((charWidth / 8) == 0) ? 1 : (charWidth / 8)),
+		_shiftCharBase(((charWidth % 8) == 0) ? 8 : charWidth),
+		_fontLeftShift(fontLeftShift),
+		_extraLeftShift(extraLeftShift),
 		_charX(0),
 		_charY(0),
 		_charsMap(charsMap)
@@ -101,30 +110,19 @@ PBMFont::~PBMFont()
 
 void PBMFont::printCharacterOnFrame(
 	PBMDataArray & frame,
-	const std::string & c,
+	const std::string & character,
 	uint16_t & PBMXPos,
 	const uint16_t PBMYPos)
 {
-	const uint16_t xByte = PBMXPos / 8;
-	const uint16_t xModulo = PBMXPos % 8;
-
-#if DEBUG_PBMFONT
-	LOG(DEBUG2) << "xPos: " << PBMXPos
-				<< " - xByte: " << xByte
-				<< " - xByte modulo: " << xModulo;
-#endif
-
 	try {
-		_charX = _charsMap.at(c).first;
-		_charY = _charsMap[c].second;
+		_charX = _charsMap.at(character).first;
+		_charY = _charsMap[character].second;
 	}
 	catch (const std::out_of_range& oor) {
 		std::ostringstream warn(_fontName, std::ios_base::app);
-		warn << " font : unknown character : " << c;
+		warn << " font : unknown character : " << character;
 		throw GLogiKExcept( warn.str() );
 	}
-
-	uint16_t index = 0;
 
 	if(PBMXPos >= (PBM_WIDTH - _charWidth)) {
 		std::ostringstream warn(_fontName, std::ios_base::app);
@@ -137,29 +135,39 @@ void PBMFont::printCharacterOnFrame(
 		throw GLogiKExcept( warn.str() );
 	}
 
+	uint16_t index = 0;
+
+	const uint16_t xByte = PBMXPos / 8;
+	const uint16_t xModulo = PBMXPos % 8;
+
+	const uint16_t xModuloComp8 = (8 - xModulo);
+
+	/* if _shiftCharBase == 8, rightShift = xModulo */
+	const  int16_t rightShift = (_shiftCharBase - xModuloComp8);
+
+#if DEBUG_PBMFONT
+	LOG(DEBUG2) << "xPos: " << PBMXPos
+				<< " - xByte: " << xByte
+				<< " - xByte modulo: " << xModulo;
+	LOG(DEBUG3) << "PBMFont charBytes: " << _charBytes;
+#endif
+
 	try {
 		for(uint16_t i = 0; i < _charHeight; i++) {
-			unsigned char c = this->getCharacterLine(i);
-			index = (PBM_WIDTH_IN_BYTES * (PBMYPos+i)) + xByte;
+			for(uint16_t j = 0; j < _charBytes; j++) {
+				const unsigned char c = this->getCharacterLine(i, j);
+				index = (PBM_WIDTH_IN_BYTES * (PBMYPos+i)) + xByte + j;
 
-			// just for debugging
-			//#include <bitset>
-			//std::bitset<8> bits(c);
-			//LOG(DEBUG) << bits.to_string();
-
-			// FIXME _charWidth should be <= 8 here
-			const uint16_t xModuloComp8 = (8 - xModulo);
-			int16_t rightShift = (_charWidth - xModuloComp8);
-
-			frame.at(index) &= (0b11111111 << xModuloComp8);
-			if(rightShift <= 0) {
-				frame.at(index) |= (c << (-rightShift));
+				frame.at(index) &= (0b11111111 << xModuloComp8);
+				if(rightShift > 0) {
+					frame.at(index+1) = (c << (8 - rightShift));
+					frame[index] |= (c >> rightShift);
+				}
+				else {
+					frame.at(index) |= (c << (-rightShift));
+				}
 			}
-			else {
-				frame.at(index+1) = (c << (8 - rightShift));
-				frame[index] |= (c >> rightShift);
-			}
-		} // for each line in character
+		}
 	}
 	catch (const std::out_of_range& oor) {
 		std::ostringstream warn(_fontName, std::ios_base::app);
@@ -167,19 +175,29 @@ void PBMFont::printCharacterOnFrame(
 		throw GLogiKExcept( warn.str() );
 	}
 
-	PBMXPos += _charWidth;
+	PBMXPos += (_charWidth - _fontLeftShift);
+
+	// XXX ugly hack
+	// applying another leftshift, except for those characters
+	// which are very wide compared to others
+	if(_extraLeftShift > 0) {
+		if(std::string("mGMW%").find(character) == std::string::npos) {
+			PBMXPos -= _extraLeftShift;
+		}
+	}
+
 }
 
-const unsigned char PBMFont::getCharacterLine(const uint16_t line) const
+const unsigned char PBMFont::getCharacterLine(const uint16_t line, const uint16_t charByte) const
 {
 	unsigned char c = 0;
 	const uint16_t i =
 		/* PBM_Y_line which contains the character (in bytes) */
-		(_charY * _charHeight * PBM_WIDTH_IN_BYTES) +
+		(_charY * _charHeight * (_PBMWidth / 8)) +
 		/* character's PBM_X position on the PBM_Y_line (in bytes) */
 		( (_charX * _charWidth) / 8 ) +
 		/* line in the selected character (in bytes) */
-		line * PBM_WIDTH_IN_BYTES;
+		line * (_PBMWidth / 8);
 
 #if 0 && DEBUGGING_ON
 	LOG(DEBUG2) << "charX: " << _charX
@@ -238,6 +256,10 @@ const unsigned char PBMFont::getCharacterLine(const uint16_t line) const
 					break;
 			}
 		}
+		else if((_charWidth % 8) == 0) {
+			/* charByte modifier when _charWidth multiple of 8 */
+			c = (_PBMData.at(i + charByte));
+		}
 	}
 	catch (const std::out_of_range& oor) {
 		std::ostringstream error(_fontName, std::ios_base::app);
@@ -247,6 +269,10 @@ const unsigned char PBMFont::getCharacterLine(const uint16_t line) const
 		error << " - charX: " << std::to_string(_charX);
 		GKSysLog(LOG_ERR, ERROR, error.str());
 	}
+
+	//std::bitset<8> bits(c);
+	//LOG(DEBUG) << bits.to_string();
+
 	return c;
 }
 

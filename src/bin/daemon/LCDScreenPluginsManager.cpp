@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ using namespace NSGKUtils;
 
 const LCDPluginsPropertiesArray_type LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray = {};
 
-LCDScreenPluginsManager::LCDScreenPluginsManager()
+LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
 	:	_pFonts(&_fontsManager),
 		_frameCounter(0),
 		_noPlugins(false),
@@ -58,7 +58,7 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 	/* initialize each plugin */
 	for(const auto & plugin : _plugins) {
 		try {
-			plugin->init(_pFonts);
+			plugin->init(_pFonts, product);
 			_pluginsPropertiesArray.push_back( plugin->getPluginProperties() );
 		}
 		catch (const GLogiKExcept & e) {

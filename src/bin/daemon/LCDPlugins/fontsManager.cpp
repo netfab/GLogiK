@@ -57,6 +57,9 @@ void FontsManager::initializeFont(const FontID fontID)
 				case FontID::MONOSPACE86:
 					font = new FontMonospace86();
 					break;
+				case FontID::DEJAVUSANSBOLD1616:
+					font = new FontDejaVuSansBold1616();
+					break;
 				default:
 					throw GLogiKExcept("unknown font ID");
 			}

@@ -32,8 +32,9 @@ namespace GLogiK
 
 enum class FontID : uint8_t
 {
-	MONOSPACE85 = 1 << 0,
-	MONOSPACE86 = 1 << 1,
+			MONOSPACE85	= 1 << 0,
+			MONOSPACE86	= 1 << 1,
+	 DEJAVUSANSBOLD1616	= 1 << 2,
 };
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
@@ -60,6 +61,28 @@ class FontMonospace86
 		FontMonospace86(void)
 			:	PBMFont("monospace86", PBM_WIDTH, PBM_HEIGHT, 6, 10) {};
 		~FontMonospace86() = default;
+
+	protected:
+
+	private:
+
+};
+
+class FontDejaVuSansBold1616
+	:	public PBMFont
+{
+	public:
+		FontDejaVuSansBold1616(void)
+			:	PBMFont(
+					"DejaVuSansBold1616",	// font name
+					416,					// PBM width
+					64,						// PBM height
+					16,						// character width
+					16,						// character height
+					3,						// font left shift
+					2						// extra left shift
+				) {};
+		~FontDejaVuSansBold1616() = default;
 
 	protected:
 

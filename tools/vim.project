@@ -52,6 +52,7 @@ GLogiK=$PWD/.. CD=. {
 			fonts=fonts/ {
 				monospace85.pbm
 				monospace86.pbm
+				DejaVuSansBold1616.pbm
 			}
 			splashscreen=splashscreen/ {
 				splashscreen01.pbm

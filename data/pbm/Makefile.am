@@ -16,4 +16,5 @@ dist_systemMonitor__DATA = \
 
 dist_pbmFonts__DATA = \
 	%D%/fonts/monospace85.pbm \
-	%D%/fonts/monospace86.pbm
+	%D%/fonts/monospace86.pbm \
+	%D%/fonts/DejaVuSansBold1616.pbm

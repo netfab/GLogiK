@@ -77,7 +77,10 @@ class LCDPlugin
 	public:
 		virtual ~LCDPlugin(void);
 
-		virtual void init(FontsManager* const pFonts) = 0;
+		virtual void init(
+			FontsManager* const pFonts,
+			const std::string & product
+		) = 0;
 		const bool isInitialized(void) const;
 
 		const LCDPluginProperties getPluginProperties(void) const;
