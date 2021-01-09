@@ -195,23 +195,25 @@ void LCDPlugin::writeStringOnFrame(
 	const FontID fontID,
 	const std::string & string,
 	const int16_t PBMXPos,
-	const uint16_t PBMYPos)
+	const int16_t PBMYPos)
 {
 	try {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 		LOG(DEBUG2) << this->getPluginName() << " PBM # " << _frameIndex << " - writing string : " << string;
 #endif
-		uint16_t XPos = 0;
-		if( PBMXPos < 0 ) { /* centered */
-			XPos = pFonts->getCenteredXPos(fontID, string);
-		}
-		else {
-			XPos = static_cast<uint16_t>(PBMXPos);
-		}
+		uint16_t XPos, YPos = 0;
+
+		XPos = (PBMXPos < 0) ? /* centered */
+				pFonts->getCenteredXPos(fontID, string) :
+				static_cast<uint16_t>(PBMXPos);
+
+		YPos = (PBMYPos < 0) ? /* centered */
+				pFonts->getCenteredYPos(fontID) :
+				static_cast<uint16_t>(PBMYPos);
 
 		for(const char & c : string) {
 			const std::string character(1, c);
-			pFonts->printCharacterOnFrame( fontID, (*_itCurrentFrame)._PBMData, character, XPos, PBMYPos );
+			pFonts->printCharacterOnFrame( fontID, (*_itCurrentFrame)._PBMData, character, XPos, YPos );
 		} /* for each character in the string */
 	}
 	catch (const GLogiKExcept & e) {
@@ -224,7 +226,7 @@ void LCDPlugin::writeStringOnLastFrame(
 	const FontID fontID,
 	const std::string & string,
 	const int16_t PBMXPos,
-	const uint16_t PBMYPos)
+	const int16_t PBMYPos)
 {
 	try {
 		if( _PBMFrames.empty() )

@@ -45,6 +45,7 @@ class PBMFont
 		virtual ~PBMFont(void);
 
 		const uint16_t getCenteredXPos(const std::string & string);
+		const uint16_t getCenteredYPos(void);
 
 		void printCharacterOnFrame(
 			PBMDataArray & frame,

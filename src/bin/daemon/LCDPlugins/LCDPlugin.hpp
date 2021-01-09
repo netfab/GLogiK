@@ -122,7 +122,7 @@ class LCDPlugin
 			const FontID fontID,
 			const std::string & string,
 			const int16_t PBMXPos,
-			const uint16_t PBMYPos
+			const int16_t PBMYPos
 		);
 
 		void writeStringOnLastFrame(
@@ -130,7 +130,7 @@ class LCDPlugin
 			const FontID fontID,
 			const std::string & string,
 			const int16_t PBMXPos,
-			const uint16_t PBMYPos
+			const int16_t PBMYPos
 		);
 
 		void drawProgressBarOnFrame(

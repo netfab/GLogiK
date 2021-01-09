@@ -44,6 +44,8 @@ class FontsManager
 			const std::string & string
 		);
 
+		const uint16_t getCenteredYPos(const FontID fontID);
+
 		void printCharacterOnFrame(
 			const FontID fontID,
 			PBMDataArray & frame,

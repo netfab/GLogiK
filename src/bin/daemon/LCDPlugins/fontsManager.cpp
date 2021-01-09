@@ -44,14 +44,25 @@ FontsManager::~FontsManager()
 
 const uint16_t FontsManager::getCenteredXPos(
 	const FontID fontID,
-	const std::string & string
-) {
+	const std::string & string)
+{
 	try {
 		return _fonts.at(fontID)->getCenteredXPos(string);
 	}
 	catch (const std::out_of_range& oor) {
 		this->initializeFont(fontID);
 		return _fonts.at(fontID)->getCenteredXPos(string);
+	}
+}
+
+const uint16_t FontsManager::getCenteredYPos(const FontID fontID)
+{
+	try {
+		return _fonts.at(fontID)->getCenteredYPos();
+	}
+	catch (const std::out_of_range& oor) {
+		this->initializeFont(fontID);
+		return _fonts.at(fontID)->getCenteredYPos();
 	}
 }
 

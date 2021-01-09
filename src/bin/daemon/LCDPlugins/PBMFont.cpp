@@ -125,6 +125,13 @@ const uint16_t PBMFont::getCenteredXPos(const std::string & string)
 	return static_cast<uint16_t>(XPos/2);
 }
 
+const uint16_t PBMFont::getCenteredYPos(void)
+{
+	uint16_t YPos = PBM_HEIGHT; // FIXME LCD_HEIGHT
+	YPos -= _charHeight;
+	return static_cast<uint16_t>(YPos/2);
+}
+
 void PBMFont::printCharacterOnFrame(
 	PBMDataArray & frame,
 	const std::string & character,
