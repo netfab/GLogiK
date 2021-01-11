@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -89,36 +89,45 @@ const std::vector<MKeyLed> G510Base::ledsMask = {
 };
 
 const std::vector<USBDeviceID> G510Base::knownDevices = {
-	{	"Logitech",			/* vendor */
-		"G510s",			/* model */
-		"Gaming Keyboard",	/* product name */
-		VENDOR_ID_LOGITECH,
-		"c22d",
-		toEnumType(	Caps::GK_BACKLIGHT_COLOR |
-					Caps::GK_MACROS_KEYS |
-					Caps::GK_MEDIA_KEYS |
-					Caps::GK_LCD_SCREEN ),
-		1, 1, 0, 2,
-		8,		// expected libusb keys interrupt read max length
-		5,		// MacrosKeys transfer length
-		2,		// MediaKeys transfer length
-		5		// LCDKeys transfer length
-	},
-	{	"Logitech",			/* vendor */
-		"G510s",			/* model */
-		"Gaming Keyboard",	/* product name */
-		VENDOR_ID_LOGITECH,
-		"c22e",										/* with onboard audio enabled */
-		toEnumType(	Caps::GK_BACKLIGHT_COLOR |
-					Caps::GK_MACROS_KEYS |
-					Caps::GK_MEDIA_KEYS |
-					Caps::GK_LCD_SCREEN ),
-		1, 1, 0, 2,
-		8,		// expected libusb keys interrupt read max length
-		5,		// MacrosKeys transfer length
-		2,		// MediaKeys transfer length
-		5		// LCDKeys transfer length
-	},
+/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
+										{
+/*								vendor */	VENDOR_LOGITECH,
+/*								 model */	"G510s",
+/*						  product name */	"Gaming Keyboard",
+/*							 vendor ID */	VENDOR_ID_LOGITECH,
+/*							product ID */	"c22d",
+/*						  capabilities */	toEnumType(
+												Caps::GK_BACKLIGHT_COLOR |
+												Caps::GK_MACROS_KEYS |
+												Caps::GK_MEDIA_KEYS |
+												Caps::GK_LCD_SCREEN
+											),
+											1, 1, 0, 2,
+/*	(libusb) interrupt read max length */	8,
+/*			MacrosKeys transfer length */	5,
+/*			 MediaKeys transfer length */	2,
+/*			   LCDKeys transfer length */	5
+										},
+/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
+										{
+/*								vendor */	VENDOR_LOGITECH,
+/*								 model */	"G510s",
+/*						  product name */	"Gaming Keyboard",
+/*							 vendor ID */	VENDOR_ID_LOGITECH,
+/*			(onboard audio) product ID */	"c22e",
+/*						  capabilities */	toEnumType(
+												Caps::GK_BACKLIGHT_COLOR |
+												Caps::GK_MACROS_KEYS |
+												Caps::GK_MEDIA_KEYS |
+												Caps::GK_LCD_SCREEN
+											),
+											1, 1, 0, 2,
+/*	(libusb) interrupt read max length */	8,
+/*			MacrosKeys transfer length */	5,
+/*			 MediaKeys transfer length */	2,
+/*			   LCDKeys transfer length */	5
+										},
+/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 };
 
 const char* G510Base::getDriverName() const {

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,8 +22,6 @@
 #ifndef SRC_BIN_DAEMON_LOGITECH_G510_DRIVER_HPP_
 #define SRC_BIN_DAEMON_LOGITECH_G510_DRIVER_HPP_
 
-#define GLOGIKD_DRIVER_ID_G510 ( 1 << 0 )
-
 #include <cstdint>
 
 #include <vector>
@@ -41,7 +39,10 @@
 namespace GLogiK
 {
 
-#define VENDOR_ID_LOGITECH "046d"
+#define GLOGIKD_DRIVER_ID_G510 ( 1 << 0 )
+
+#define	   VENDOR_LOGITECH "Logitech"
+#define	VENDOR_ID_LOGITECH "046d"
 
 /* RKey - Recognized Keys */
 struct RKey
