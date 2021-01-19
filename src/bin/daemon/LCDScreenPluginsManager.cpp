@@ -197,7 +197,7 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 								_itCurrentPlugin = _plugins.begin();
 
 							/* reset everLocked boolean */
-							(*_itCurrentPlugin)->resetEverLocked();
+							(*_itCurrentPlugin)->resetPluginEverLocked();
 						}
 
 						/* check that current plugin is enabled */
@@ -211,7 +211,7 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 						}
 					}
 
-					/* reset frames to beginning */
+					/* reset PBM frame to beginning */
 					(*_itCurrentPlugin)->resetPBMFrameIndex();
 					_frameCounter = 0;
 				}

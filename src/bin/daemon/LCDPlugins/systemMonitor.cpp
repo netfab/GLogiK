@@ -75,7 +75,7 @@ void SystemMonitor::init(FontsManager* const pFonts, const std::string & product
 		hostname[HOST_NAME_MAX-1] = '\0';
 		host.assign(hostname);
 	}
-	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, host, 16, 1);
+	this->writeStringOnLastPBMFrame(pFonts, FontID::MONOSPACE85, host, 16, 1);
 
 	LCDPlugin::init(pFonts, product);
 }
@@ -86,7 +86,7 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 	const bool lockedPlugin
 	)
 {
-	this->drawPadlockOnFrame(lockedPlugin);
+	this->drawPadlockOnPBMFrame(lockedPlugin);
 
 	/* -- -- -- */
 	std::string usedPhysicalMemory("");
@@ -168,7 +168,7 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 		uint16_t usedMem = static_cast<uint16_t>(freeMem);
 		usedMem = 100 - usedMem;
 
-		this->drawProgressBarOnFrame(usedMem, 24, 33);
+		this->drawProgressBarOnPBMFrame(usedMem, 24, 33);
 		usedPhysicalMemory = getPaddedPercentString(usedMem);
 	}
 
@@ -188,7 +188,7 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 		std::fesetround(FE_TONEAREST);
 		cpuPercentTotal = std::nearbyint(cpuPercentTotal);
 
-		this->drawProgressBarOnFrame(cpuPercentTotal, 24, 15);
+		this->drawProgressBarOnPBMFrame(cpuPercentTotal, 24, 15);
 		usedCPUActiveTotal = getPaddedPercentString(cpuPercentTotal);
 
 		_snapshot1 = s2;
@@ -248,9 +248,9 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 
 	/* percent - max 5 chars */
 	/* net rate - max 12 chars */
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, usedCPUActiveTotal, PERC_POS_X, 14);
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, paddedRateString, NET_POS_X, 23);
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, usedPhysicalMemory, PERC_POS_X, 32);
+	this->writeStringOnPBMFrame(pFonts, FontID::MONOSPACE85, usedCPUActiveTotal, PERC_POS_X, 14);
+	this->writeStringOnPBMFrame(pFonts, FontID::MONOSPACE85, paddedRateString, NET_POS_X, 23);
+	this->writeStringOnPBMFrame(pFonts, FontID::MONOSPACE85, usedPhysicalMemory, PERC_POS_X, 32);
 
 	return LCDPlugin::getCurrentPBMFrame();
 }

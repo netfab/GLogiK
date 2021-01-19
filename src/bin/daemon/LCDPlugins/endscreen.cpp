@@ -55,10 +55,10 @@ void Endscreen::init(FontsManager* const pFonts, const std::string & product)
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _plugin.getName();
 
-	this->addPBMClearedFrame();	/* frame #0 */
-	this->writeStringOnLastFrame(pFonts, FontID::DEJAVUSANSBOLD1616, product, -1, -1);
+	this->addPBMEmptyFrame();	/* frame #0 */
+	this->writeStringOnLastPBMFrame(pFonts, FontID::DEJAVUSANSBOLD1616, product, -1, -1);
 
-	//this->addPBMFrame(PBMDirectory, "endscreen.pbm", 1); /* frame #0 */
+	//this->addLCDFrame(PBMDirectory, "endscreen.pbm", 1); /* frame #0 */
 
 	LCDPlugin::init(pFonts, product);
 }

@@ -83,9 +83,10 @@ class LCDPlugin
 		const uint64_t getPluginID(void) const;
 		const uint16_t getPluginTiming(void) const;
 		const uint16_t getPluginMaxFrames(void) const;
+		void resetPluginEverLocked(void);
+
 		void resetPBMFrameIndex(void);
 		void prepareNextPBMFrame(void);
-		void resetEverLocked(void);
 
 		virtual const PBMDataArray & getNextPBMFrame(
 			FontsManager* const pFonts,
@@ -105,14 +106,14 @@ class LCDPlugin
 			const uint16_t num = 1
 		);
 
-		void addPBMClearedFrame(
+		void addPBMEmptyFrame(
 			const uint16_t num = 1
 		);
 
 		const uint16_t getNextPBMFrameID(void) const;
 		PBMDataArray & getCurrentPBMFrame(void);
 
-		void writeStringOnFrame(
+		void writeStringOnPBMFrame(
 			FontsManager* const pFonts,
 			const FontID fontID,
 			const std::string & string,
@@ -120,7 +121,7 @@ class LCDPlugin
 			const int16_t PBMYPos
 		);
 
-		void writeStringOnLastFrame(
+		void writeStringOnLastPBMFrame(
 			FontsManager* const pFonts,
 			const FontID fontID,
 			const std::string & string,
@@ -128,13 +129,13 @@ class LCDPlugin
 			const int16_t PBMYPos
 		);
 
-		void drawProgressBarOnFrame(
+		void drawProgressBarOnPBMFrame(
 			const uint16_t percent,
 			const uint16_t PBMXPos,
 			const uint16_t PBMYPos
 		);
 
-		void drawPadlockOnFrame(
+		void drawPadlockOnPBMFrame(
 			const bool lockedPlugin,
 			const uint16_t PBMXPos = 1,
 			const uint16_t PBMYPos = 1

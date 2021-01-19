@@ -137,7 +137,7 @@ const PBMDataArray & LCDPlugin::getNextPBMFrame(
 	const std::string & LCDKey,
 	const bool lockedPlugin)
 {
-	this->drawPadlockOnFrame(lockedPlugin);
+	this->drawPadlockOnPBMFrame(lockedPlugin);
 	return this->getCurrentPBMFrame();
 }
 
@@ -164,7 +164,7 @@ void LCDPlugin::addPBMFrame(
 	fs::path filePath(PBMDirectory);
 	filePath /= file;
 
-	this->addPBMClearedFrame(num);
+	this->addPBMEmptyFrame(num);
 
 	try {
 		this->readPBM(filePath.string(), _PBMFrames.back()._PBMData, PBM_WIDTH, PBM_HEIGHT);
@@ -175,7 +175,7 @@ void LCDPlugin::addPBMFrame(
 	}
 }
 
-void LCDPlugin::addPBMClearedFrame(
+void LCDPlugin::addPBMEmptyFrame(
 	const uint16_t num)
 {
 	try {
@@ -201,7 +201,7 @@ PBMDataArray & LCDPlugin::getCurrentPBMFrame(void)
 	return (*_itCurrentPBMFrame)._PBMData;
 }
 
-void LCDPlugin::writeStringOnFrame(
+void LCDPlugin::writeStringOnPBMFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
 	const std::string & string,
@@ -234,7 +234,7 @@ void LCDPlugin::writeStringOnFrame(
 	}
 }
 
-void LCDPlugin::writeStringOnLastFrame(
+void LCDPlugin::writeStringOnLastPBMFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
 	const std::string & string,
@@ -247,14 +247,14 @@ void LCDPlugin::writeStringOnLastFrame(
 		_itCurrentPBMFrame = --(_PBMFrames.end());
 		_PBMFrameIndex = (_itCurrentPBMFrame - _PBMFrames.begin());
 
-		this->writeStringOnFrame(pFonts, fontID, string, PBMXPos, PBMYPos);
+		this->writeStringOnPBMFrame(pFonts, fontID, string, PBMXPos, PBMYPos);
 	}
 	catch (const GLogiKExcept & e) {
 		GKSysLog(LOG_WARNING, WARNING, e.what());
 	}
 }
 
-void LCDPlugin::drawProgressBarOnFrame(
+void LCDPlugin::drawProgressBarOnPBMFrame(
 	const uint16_t percent,
 	const uint16_t PBMXPos,
 	const uint16_t PBMYPos)
@@ -359,7 +359,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 	}
 }
 
-void LCDPlugin::drawPadlockOnFrame(
+void LCDPlugin::drawPadlockOnPBMFrame(
 	const bool lockedPlugin,
 	const uint16_t PBMXPos,
 	const uint16_t PBMYPos)
@@ -398,7 +398,7 @@ void LCDPlugin::drawPadlockOnFrame(
 	}
 }
 
-void LCDPlugin::resetEverLocked(void)
+void LCDPlugin::resetPluginEverLocked(void)
 {
 	_everLocked = false;
 }
