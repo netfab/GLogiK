@@ -32,9 +32,16 @@ using namespace NSGKUtils;
 
 /* -- -- -- */
 
-const bool LCDPBMFrame::switchToNextFrame(const uint16_t currentFrameCounter)
+PBMFrame::PBMFrame(const uint16_t num)
+	:	_numFrames(num)
 {
-	return (currentFrameCounter >= _frameCounter);
+	/* initialize PBM frame container */
+	_PBMData.resize( (PBM_WIDTH / 8) * PBM_HEIGHT, 0 );
+}
+
+const bool PBMFrame::switchToNextFrame(const uint16_t currentFrameCounter)
+{
+	return (currentFrameCounter >= _numFrames);
 }
 
 /* -- -- -- */
@@ -43,8 +50,8 @@ LCDPlugin::LCDPlugin()
 	:	_pluginTempo(LCDPluginTempo::TEMPO_DEFAULT),
 		_initialized(false),
 		_everLocked(false),
-		_frameCounter(0),
-		_frameIndex(0)
+		_PBMFrameCounter(0),
+		_PBMFrameIndex(0)
 {
 }
 
@@ -72,7 +79,7 @@ const bool LCDPlugin::isInitialized(void) const
 
 void LCDPlugin::resetPBMFrameIndex(void)
 {
-	_itCurrentFrame = _PBMFrames.end();
+	_itCurrentPBMFrame = _PBMFrames.end();
 	this->checkPBMFrameIndex(); /* may throw */
 }
 
@@ -106,14 +113,17 @@ void LCDPlugin::prepareNextPBMFrame(void)
 {
 	/* update internal frame counter and iterator to allow the plugin
 	 * to have multiples PBM loaded and simulate animation */
-	if( (*_itCurrentFrame).switchToNextFrame(_frameCounter) ) {
-		_itCurrentFrame++;
+	if( (*_itCurrentPBMFrame).switchToNextFrame(_PBMFrameCounter) ) {
+		_itCurrentPBMFrame++;
 		this->checkPBMFrameIndex(); /* may throw */
-		_frameIndex = (_itCurrentFrame - _PBMFrames.begin());
-		_frameCounter = 0;
+		_PBMFrameIndex = (_itCurrentPBMFrame - _PBMFrames.begin());
+		_PBMFrameCounter = 0;
 	}
 
-	_frameCounter++; /* for next call */
+	_PBMFrameCounter++; /* for next call */
+#if DEBUGGING_ON && DEBUG_LCD_PLUGINS
+	LOG(DEBUG2) << this->getPluginName() << " - frameCount #" << _PBMFrameCounter;
+#endif
 }
 
 void LCDPlugin::init(FontsManager* const pFonts, const std::string & product)
@@ -172,22 +182,23 @@ void LCDPlugin::addPBMClearedFrame(
 		_PBMFrames.emplace_back(num);
 	}
 	catch (const std::exception & e) {
-		LOG(ERROR) << "LCDPBMFrame constructor vector resize exception ?";
+		LOG(ERROR) << "PBMFrame constructor vector resize exception ?";
 		throw GLogiKExcept("initializing PBM frame failure");
 	}
 }
 
 const uint16_t LCDPlugin::getNextPBMFrameID(void) const
 {
-	return _frameIndex;
+	return _PBMFrameIndex;
 }
 
 PBMDataArray & LCDPlugin::getCurrentPBMFrame(void)
 {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-	LOG(DEBUG3) << this->getPluginName() << " PBM # " << _frameIndex;
+	LOG(DEBUG2)	<< this->getPluginName()
+				<< " - PBMFrameindex: " << _PBMFrameIndex;
 #endif
-	return (*_itCurrentFrame)._PBMData;
+	return (*_itCurrentPBMFrame)._PBMData;
 }
 
 void LCDPlugin::writeStringOnFrame(
@@ -199,7 +210,9 @@ void LCDPlugin::writeStringOnFrame(
 {
 	try {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-		LOG(DEBUG2) << this->getPluginName() << " PBM # " << _frameIndex << " - writing string : " << string;
+		LOG(DEBUG2)	<< this->getPluginName()
+					<< " - PBMFrameindex: " << _PBMFrameIndex
+					<< " - writing string : " << string;
 #endif
 		uint16_t XPos, YPos = 0;
 
@@ -213,7 +226,7 @@ void LCDPlugin::writeStringOnFrame(
 
 		for(const char & c : string) {
 			const std::string character(1, c);
-			pFonts->printCharacterOnFrame( fontID, (*_itCurrentFrame)._PBMData, character, XPos, YPos );
+			pFonts->printCharacterOnFrame( fontID, (*_itCurrentPBMFrame)._PBMData, character, XPos, YPos );
 		} /* for each character in the string */
 	}
 	catch (const GLogiKExcept & e) {
@@ -231,8 +244,8 @@ void LCDPlugin::writeStringOnLastFrame(
 	try {
 		if( _PBMFrames.empty() )
 			throw GLogiKExcept("accessing last element on empty container");
-		_itCurrentFrame = --(_PBMFrames.end());
-		_frameIndex = (_itCurrentFrame - _PBMFrames.begin());
+		_itCurrentPBMFrame = --(_PBMFrames.end());
+		_PBMFrameIndex = (_itCurrentPBMFrame - _PBMFrames.begin());
 
 		this->writeStringOnFrame(pFonts, fontID, string, PBMXPos, PBMYPos);
 	}
@@ -257,7 +270,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 	}
 
 	try {
-		PBMDataArray & frame = (*_itCurrentFrame)._PBMData;
+		PBMDataArray & frame = (*_itCurrentPBMFrame)._PBMData;
 
 		auto drawHorizontalLine = [&frame] (const uint16_t index) -> void
 		{
@@ -354,7 +367,7 @@ void LCDPlugin::drawPadlockOnFrame(
 	const uint16_t xByte = PBMXPos / 8;
 	const uint16_t index = (PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
 
-	PBMDataArray & frame = (*_itCurrentFrame)._PBMData;
+	PBMDataArray & frame = (*_itCurrentPBMFrame)._PBMData;
 
 	if( lockedPlugin ) {
 		_everLocked = true;
@@ -402,14 +415,14 @@ void LCDPlugin::resetEverLocked(void)
 
 void LCDPlugin::checkPBMFrameIndex(void)
 {
-	if( _itCurrentFrame == _PBMFrames.end() ) {
-		_itCurrentFrame = _PBMFrames.begin();
+	if( _itCurrentPBMFrame == _PBMFrames.end() ) {
+		_itCurrentPBMFrame = _PBMFrames.begin();
 
-		if( _itCurrentFrame == _PBMFrames.end() )
+		if( _itCurrentPBMFrame == _PBMFrames.end() )
 			throw GLogiKExcept("plugin frame iterator exception");
 
-		_frameCounter = 0;
-		_frameIndex = 0;
+		_PBMFrameCounter = 0;
+		_PBMFrameIndex = 0;
 	}
 }
 

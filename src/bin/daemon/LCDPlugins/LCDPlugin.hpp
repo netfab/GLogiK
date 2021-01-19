@@ -48,17 +48,12 @@ enum class LCDPluginTempo : uint8_t
 	TEMPO_400_15,
 };
 
-class LCDPBMFrame
+class PBMFrame
 {
 	public:
-		LCDPBMFrame(const uint16_t i)
-			:	_frameCounter(i)
-		{
-			/* initialize LCD PBM container */
-			_PBMData.resize( (PBM_WIDTH / 8) * PBM_HEIGHT, 0 );
-		}
-		LCDPBMFrame(void) = delete;
-		~LCDPBMFrame() = default;
+		PBMFrame(const uint16_t num);
+		PBMFrame(void) = delete;
+		~PBMFrame() = default;
 
 		PBMDataArray _PBMData;
 
@@ -67,7 +62,7 @@ class LCDPBMFrame
 	protected:
 
 	private:
-		const uint16_t _frameCounter;
+		const uint16_t _numFrames;
 
 };
 
@@ -148,10 +143,10 @@ class LCDPlugin
 	private:
 		bool _initialized;
 		bool _everLocked;
-		uint16_t _frameCounter;		/* frame counter */
-		uint16_t _frameIndex;		/* frame index in the container */
-		std::vector<LCDPBMFrame> _PBMFrames;
-		std::vector<LCDPBMFrame>::iterator _itCurrentFrame;
+		uint16_t _PBMFrameCounter;	/* frame counter */
+		uint16_t _PBMFrameIndex;	/* frame index in the container */
+		std::vector<PBMFrame> _PBMFrames;
+		std::vector<PBMFrame>::iterator _itCurrentPBMFrame;
 
 		void checkPBMFrameIndex(void);
 		static std::tuple<uint16_t, uint16_t> getTempo(const LCDPluginTempo tempo);
