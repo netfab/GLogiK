@@ -36,7 +36,7 @@ PBMFrame::PBMFrame(const uint16_t num)
 	:	_numFrames(num)
 {
 	/* initialize PBM frame container */
-	_PBMData.resize( (PBM_WIDTH / 8) * PBM_HEIGHT, 0 );
+	_PBMData.resize( (DEFAULT_PBM_WIDTH / 8) * DEFAULT_PBM_HEIGHT, 0 );
 }
 
 const bool PBMFrame::switchToNextFrame(const uint16_t currentFrameCounter)
@@ -167,7 +167,12 @@ void LCDPlugin::addPBMFrame(
 	this->addPBMEmptyFrame(num);
 
 	try {
-		this->readPBM(filePath.string(), _PBMFrames.back()._PBMData, PBM_WIDTH, PBM_HEIGHT);
+		this->readPBM(
+			filePath.string(),
+			_PBMFrames.back()._PBMData,
+			DEFAULT_PBM_WIDTH,
+			DEFAULT_PBM_HEIGHT
+		);
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "exception while reading PBM file: " << filePath.string();
@@ -262,7 +267,7 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 	const uint16_t PROGRESS_BAR_WIDTH = 102;
 	const uint16_t PROGRESS_BAR_HEIGHT = 7;
 
-	if(PBMXPos + PROGRESS_BAR_WIDTH > (PBM_WIDTH - 1)) {
+	if(PBMXPos + PROGRESS_BAR_WIDTH > (LCD_SCREEN_WIDTH - 1)) {
 		std::ostringstream buffer(std::ios_base::app);
 		buffer << "wrong progress bar X position : " << PBMXPos;
 		GKSysLog(LOG_WARNING, WARNING, buffer.str());
@@ -332,7 +337,7 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 		};
 
 		const uint16_t xByte = PBMXPos / 8;
-		const uint16_t index = (PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
+		const uint16_t index = (DEFAULT_PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
 
 		/* checking for out of range */
 		frame.at(index+12);
@@ -348,9 +353,9 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 		 */
 		drawHorizontalLine(index);
 		for(uint16_t i = 1; i < (PROGRESS_BAR_HEIGHT-1); ++i) {
-			drawProgressBarLine(index + (PBM_WIDTH_IN_BYTES * i), i);
+			drawProgressBarLine(index + (DEFAULT_PBM_WIDTH_IN_BYTES * i), i);
 		}
-		drawHorizontalLine(index + (PBM_WIDTH_IN_BYTES * (PROGRESS_BAR_HEIGHT-1)));
+		drawHorizontalLine(index + (DEFAULT_PBM_WIDTH_IN_BYTES * (PROGRESS_BAR_HEIGHT-1)));
 	}
 	catch (const std::out_of_range& oor) {
 		std::ostringstream buffer(std::ios_base::app);
@@ -365,35 +370,35 @@ void LCDPlugin::drawPadlockOnPBMFrame(
 	const uint16_t PBMYPos)
 {
 	const uint16_t xByte = PBMXPos / 8;
-	const uint16_t index = (PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
+	const uint16_t index = (DEFAULT_PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
 
 	PBMDataArray & frame = (*_itCurrentPBMFrame)._PBMData;
 
 	if( lockedPlugin ) {
 		_everLocked = true;
-		frame[index+(PBM_WIDTH_IN_BYTES * 0)] = 0b00000000;
-		frame[index+(PBM_WIDTH_IN_BYTES * 1)] = 0b00110000;
-		frame[index+(PBM_WIDTH_IN_BYTES * 2)] = 0b01001000;
-		frame[index+(PBM_WIDTH_IN_BYTES * 3)] = 0b01111000;
-		frame[index+(PBM_WIDTH_IN_BYTES * 4)] = 0b01111000;
-		frame[index+(PBM_WIDTH_IN_BYTES * 5)] = 0b01111000;
+		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 0)] = 0b00000000;
+		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 1)] = 0b00110000;
+		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 2)] = 0b01001000;
+		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 3)] = 0b01111000;
+		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 4)] = 0b01111000;
+		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 5)] = 0b01111000;
 	}
 	else {
 		if( _everLocked ) {
-			frame[index+(PBM_WIDTH_IN_BYTES * 0)] = 0b00000110;
-			frame[index+(PBM_WIDTH_IN_BYTES * 1)] = 0b00001001;
-			frame[index+(PBM_WIDTH_IN_BYTES * 2)] = 0b00001000;
-			frame[index+(PBM_WIDTH_IN_BYTES * 3)] = 0b01111000;
-			frame[index+(PBM_WIDTH_IN_BYTES * 4)] = 0b01111000;
-			frame[index+(PBM_WIDTH_IN_BYTES * 5)] = 0b01111000;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 0)] = 0b00000110;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 1)] = 0b00001001;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 2)] = 0b00001000;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 3)] = 0b01111000;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 4)] = 0b01111000;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 5)] = 0b01111000;
 		}
 		else {
-			frame[index+(PBM_WIDTH_IN_BYTES * 0)] = 0;
-			frame[index+(PBM_WIDTH_IN_BYTES * 1)] = 0;
-			frame[index+(PBM_WIDTH_IN_BYTES * 2)] = 0;
-			frame[index+(PBM_WIDTH_IN_BYTES * 3)] = 0;
-			frame[index+(PBM_WIDTH_IN_BYTES * 4)] = 0;
-			frame[index+(PBM_WIDTH_IN_BYTES * 5)] = 0;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 0)] = 0;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 1)] = 0;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 2)] = 0;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 3)] = 0;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 4)] = 0;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 5)] = 0;
 		}
 	}
 }

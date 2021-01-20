@@ -243,8 +243,8 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 	const uint16_t FONT_CHAR_WIDTH = 5;
 
 	/* padded percentage string size is always 5 chars */
-	const uint16_t PERC_POS_X = (PBM_WIDTH - 1) - (5 * FONT_CHAR_WIDTH);
-	const uint16_t NET_POS_X = (PBM_WIDTH - 1) - (paddedRateString.size() * FONT_CHAR_WIDTH);
+	const uint16_t PERC_POS_X = (LCD_SCREEN_WIDTH - 1) - (5 * FONT_CHAR_WIDTH);
+	const uint16_t  NET_POS_X = (LCD_SCREEN_WIDTH - 1) - (paddedRateString.size() * FONT_CHAR_WIDTH);
 
 	/* percent - max 5 chars */
 	/* net rate - max 12 chars */

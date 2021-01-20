@@ -257,13 +257,13 @@ void LCDScreenPluginsManager::stopLCDPlugins(void) {
  * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
  *	A7 A6 A5 A4 A3 A2 A1 A0 B7 B6 B5 B4 B3 B2 B1 B0  .  .
  *	U7 U6 U5 U4 U3 U2 U1 U0  .  .  .  .  .  .  .  .  .  . --->
- *	 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . ---> on PBM_WIDTH_IN_BYTES bytes
+ *	 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . ---> on DEFAULT_PBM_WIDTH_IN_BYTES bytes
  *	 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . --->
  *	 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
  *	                      |  |  |
  *	                       \   /
  *	                        \ /
- *	                 on PBM_HEIGHT bytes
+ *	             on DEFAULT_PBM_HEIGHT bytes
  *
  * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
  * LCD data binary format (without header). Description coming from libg15.
@@ -307,10 +307,10 @@ void LCDScreenPluginsManager::stopLCDPlugins(void) {
  */
 void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(LCDDataArray & LCDBuffer, const PBMDataArray & PBMData)
 {
-	for(unsigned int row = 0; row < PBM_HEIGHT_IN_BYTES; ++row) {
+	for(unsigned int row = 0; row < DEFAULT_PBM_HEIGHT_IN_BYTES; ++row) {
 		unsigned int LCDCol = 0;
-		unsigned int indexOffset = (PBM_WIDTH * row);
-		for(unsigned int PBMByte = 0; PBMByte < PBM_WIDTH_IN_BYTES; ++PBMByte) {
+		unsigned int indexOffset = (DEFAULT_PBM_WIDTH * row);
+		for(unsigned int PBMByte = 0; PBMByte < DEFAULT_PBM_WIDTH_IN_BYTES; ++PBMByte) {
 
 			for(int bit = 7; bit > -1; --bit) {
 
@@ -324,14 +324,14 @@ void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(LCDDataArray & LCDBuffer,
 #endif
 
 				LCDBuffer[LCD_BUFFER_OFFSET + LCDCol + indexOffset] =
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 0) + indexOffset] >> bit) & 1) << 0 ) |
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 1) + indexOffset] >> bit) & 1) << 1 ) |
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 2) + indexOffset] >> bit) & 1) << 2 ) |
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 3) + indexOffset] >> bit) & 1) << 3 ) |
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 4) + indexOffset] >> bit) & 1) << 4 ) |
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 5) + indexOffset] >> bit) & 1) << 5 ) |
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 6) + indexOffset] >> bit) & 1) << 6 ) |
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 7) + indexOffset] >> bit) & 1) << 7 ) ;
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 0) + indexOffset] >> bit) & 1) << 0 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 1) + indexOffset] >> bit) & 1) << 1 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 2) + indexOffset] >> bit) & 1) << 2 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 3) + indexOffset] >> bit) & 1) << 3 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 4) + indexOffset] >> bit) & 1) << 4 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 5) + indexOffset] >> bit) & 1) << 5 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 6) + indexOffset] >> bit) & 1) << 6 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 7) + indexOffset] >> bit) & 1) << 7 ) ;
 
 				LCDCol++;
 			}
