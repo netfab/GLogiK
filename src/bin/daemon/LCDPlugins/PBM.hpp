@@ -45,8 +45,7 @@
 namespace GLogiK
 {
 
-typedef std::vector<unsigned char> PBMDataArray;
-typedef std::vector<unsigned char> LCDDataArray;
+typedef std::vector<unsigned char> PixelsData;
 
 } // namespace GLogiK
 

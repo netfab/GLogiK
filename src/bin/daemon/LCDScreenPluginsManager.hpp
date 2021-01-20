@@ -48,7 +48,7 @@ class LCDScreenPluginsManager
 
 		const bool findOneLCDScreenPlugin(const uint64_t LCDPluginsMask1) const;
 
-		LCDDataArray & getNextLCDScreenBuffer(
+		PixelsData & getNextLCDScreenBuffer(
 			const std::string & LCDKey,
 			const uint64_t LCDPluginsMask1
 		);
@@ -66,7 +66,7 @@ class LCDScreenPluginsManager
 
 		LCDPluginsPropertiesArray_type _pluginsPropertiesArray;
 
-		LCDDataArray _LCDBuffer;
+		PixelsData _LCDBuffer;
 		FontsManager _fontsManager;
 		FontsManager* const _pFonts;
 
@@ -75,7 +75,7 @@ class LCDScreenPluginsManager
 		bool _currentPluginLocked;
 
 		void stopLCDPlugins(void);
-		void dumpPBMDataIntoLCDBuffer(LCDDataArray & LCDBuffer, const PBMDataArray & PBMData);
+		void dumpPBMDataIntoLCDBuffer(PixelsData & LCDBuffer, const PixelsData & PBMData);
 };
 
 } // namespace GLogiK

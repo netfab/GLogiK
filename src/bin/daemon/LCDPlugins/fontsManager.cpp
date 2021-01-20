@@ -68,7 +68,7 @@ const uint16_t FontsManager::getCenteredYPos(const FontID fontID)
 
 void FontsManager::printCharacterOnFrame(
 	const FontID fontID,
-	PBMDataArray & frame,
+	PixelsData & frame,
 	const std::string & c,
 	uint16_t & PBMXPos,
 	const uint16_t PBMYPos)

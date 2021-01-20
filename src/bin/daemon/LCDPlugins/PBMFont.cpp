@@ -133,7 +133,7 @@ const uint16_t PBMFont::getCenteredYPos(void)
 }
 
 void PBMFont::printCharacterOnFrame(
-	PBMDataArray & frame,
+	PixelsData & frame,
 	const std::string & character,
 	uint16_t & PBMXPos,
 	const uint16_t PBMYPos)

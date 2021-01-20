@@ -38,7 +38,7 @@ PBMFile::~PBMFile()
 
 void PBMFile::readPBM(
 	const std::string & PBMPath,
-	PBMDataArray & PBMData,
+	PixelsData & PBMData,
 	const uint16_t PBMWidth,
 	const uint16_t PBMHeight)
 {
@@ -129,7 +129,7 @@ void PBMFile::parsePBMHeader(
 
 void PBMFile::extractPBMData(
 	std::ifstream & pbm,
-	PBMDataArray & PBMData)
+	PixelsData & PBMData)
 {
 	pbm.read(reinterpret_cast<char*>(&PBMData.front()), PBMData.size());
 
@@ -138,7 +138,7 @@ void PBMFile::extractPBMData(
 				<< " - expected: " << PBMData.size() << std::endl;
 #endif
 
-	if( PBMData.size() != static_cast<PBMDataArray::size_type>( pbm.gcount() ) )
+	if( PBMData.size() != static_cast<PixelsData::size_type>( pbm.gcount() ) )
 		throw GLogiKExcept("unexpected numbers of bytes read");
 
 	// checking that we really reached the EoF

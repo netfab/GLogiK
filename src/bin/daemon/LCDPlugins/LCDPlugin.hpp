@@ -55,7 +55,7 @@ class PBMFrame
 		PBMFrame(void) = delete;
 		~PBMFrame() = default;
 
-		PBMDataArray _PBMData;
+		PixelsData _PBMData;
 
 		const bool switchToNextFrame(const uint16_t currentFrameCounter);
 
@@ -88,7 +88,7 @@ class LCDPlugin
 		void resetPBMFrameIndex(void);
 		void prepareNextPBMFrame(void);
 
-		virtual const PBMDataArray & getNextPBMFrame(
+		virtual const PixelsData & getNextPBMFrame(
 			FontsManager* const pFonts,
 			const std::string & LCDKey,
 			const bool lockedPlugin
@@ -111,7 +111,7 @@ class LCDPlugin
 		);
 
 		const uint16_t getNextPBMFrameID(void) const;
-		PBMDataArray & getCurrentPBMFrame(void);
+		PixelsData & getCurrentPBMFrame(void);
 
 		void writeStringOnPBMFrame(
 			FontsManager* const pFonts,

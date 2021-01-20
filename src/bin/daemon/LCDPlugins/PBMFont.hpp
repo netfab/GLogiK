@@ -48,7 +48,7 @@ class PBMFont
 		const uint16_t getCenteredYPos(void);
 
 		void printCharacterOnFrame(
-			PBMDataArray & frame,
+			PixelsData & frame,
 			const std::string & character,
 			uint16_t & PBMXPos,
 			const uint16_t PBMYPos
@@ -67,7 +67,7 @@ class PBMFont
 		);
 
 	private:
-		PBMDataArray _PBMData;
+		PixelsData _PBMData;
 		const std::string _fontName;
 		const uint16_t _PBMWidth;
 		const uint16_t _PBMHeight;

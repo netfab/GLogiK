@@ -40,7 +40,7 @@ class SystemMonitor
 
 		void init(FontsManager* const pFonts, const std::string & product);
 
-		const PBMDataArray & getNextPBMFrame(
+		const PixelsData & getNextPBMFrame(
 			FontsManager* const pFonts,
 			const std::string & LCDKey,
 			const bool lockedPlugin

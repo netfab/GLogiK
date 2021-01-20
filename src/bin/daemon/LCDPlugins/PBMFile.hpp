@@ -42,7 +42,7 @@ class PBMFile
 
 		static void readPBM(
 			const std::string & PBMPath,
-			PBMDataArray & PBMData,
+			PixelsData & PBMData,
 			const uint16_t PBMWidth,
 			const uint16_t PBMHeight);
 
@@ -55,7 +55,7 @@ class PBMFile
 
 		static void extractPBMData(
 			std::ifstream & pbm,
-			PBMDataArray & PBMData);
+			PixelsData & PBMData);
 
 		static void closePBM(std::ifstream & pbm);
 

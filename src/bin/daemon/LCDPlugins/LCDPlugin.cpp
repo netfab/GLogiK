@@ -132,7 +132,7 @@ void LCDPlugin::init(FontsManager* const pFonts, const std::string & product)
 	_initialized = true;
 }
 
-const PBMDataArray & LCDPlugin::getNextPBMFrame(
+const PixelsData & LCDPlugin::getNextPBMFrame(
 	FontsManager* const pFonts,
 	const std::string & LCDKey,
 	const bool lockedPlugin)
@@ -197,7 +197,7 @@ const uint16_t LCDPlugin::getNextPBMFrameID(void) const
 	return _PBMFrameIndex;
 }
 
-PBMDataArray & LCDPlugin::getCurrentPBMFrame(void)
+PixelsData & LCDPlugin::getCurrentPBMFrame(void)
 {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 	LOG(DEBUG2)	<< this->getPluginName()
@@ -275,7 +275,7 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 	}
 
 	try {
-		PBMDataArray & frame = (*_itCurrentPBMFrame)._PBMData;
+		PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
 
 		auto drawHorizontalLine = [&frame] (const uint16_t index) -> void
 		{
@@ -372,7 +372,7 @@ void LCDPlugin::drawPadlockOnPBMFrame(
 	const uint16_t xByte = PBMXPos / 8;
 	const uint16_t index = (DEFAULT_PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
 
-	PBMDataArray & frame = (*_itCurrentPBMFrame)._PBMData;
+	PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
 
 	if( lockedPlugin ) {
 		_everLocked = true;

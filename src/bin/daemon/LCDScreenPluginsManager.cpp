@@ -166,7 +166,7 @@ const bool LCDScreenPluginsManager::findOneLCDScreenPlugin(const uint64_t LCDPlu
 	return ret;
 }
 
-LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
+PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 	const std::string & LCDKey,
 	const uint64_t LCDPluginsMask1
 ) {
@@ -310,7 +310,7 @@ void LCDScreenPluginsManager::stopLCDPlugins(void) {
  *	A2		pixels of the 43-pixel high display.)
  *
  */
-void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(LCDDataArray & LCDBuffer, const PBMDataArray & PBMData)
+void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(PixelsData & LCDBuffer, const PixelsData & PBMData)
 {
 	for(unsigned int row = 0; row < DEFAULT_PBM_HEIGHT_IN_BYTES; ++row) {
 		unsigned int LCDCol = 0;
