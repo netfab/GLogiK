@@ -19,6 +19,7 @@
  *
  */
 
+#include <algorithm>
 #include <new>
 
 #include "lib/utils/utils.hpp"
@@ -87,7 +88,9 @@ LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
 		GKSysLog(LOG_WARNING, WARNING, "no LCD screen plugin initialized");
 		_noPlugins = true;
 	}
-	_LCDBuffer.fill(0x0);
+
+	/* initialize LCD frame container */
+	_LCDBuffer.resize( DEFAULT_PBM_DATA_IN_BYTES + LCD_DATA_HEADER_OFFSET, 0 );
 }
 
 LCDScreenPluginsManager::~LCDScreenPluginsManager() {
@@ -224,15 +227,17 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 					(*_itCurrentPlugin)->getNextPBMFrame(_pFonts, LCDKey, _currentPluginLocked)
 				);
 			}
-			else /* else blank screen */
-				_LCDBuffer.fill(0x0);
+			else {
+				/* blank screen */
+				std::fill(_LCDBuffer.begin(), _LCDBuffer.end(), 0x0);
+			}
 		}
 		catch (const GLogiKExcept & e) {
 			LOG(ERROR) << e.what();
-			_LCDBuffer.fill(0x0);
+			std::fill(_LCDBuffer.begin(), _LCDBuffer.end(), 0x0);
 		}
 
-		std::fill_n(_LCDBuffer.begin(), LCD_BUFFER_OFFSET, 0);
+		std::fill_n(_LCDBuffer.begin(), LCD_DATA_HEADER_OFFSET, 0x0);
 	}
 
 	/* the keyboard needs this magic byte */
@@ -323,7 +328,7 @@ void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(LCDDataArray & LCDBuffer,
 							<< " bit: " << bit << "\n";
 #endif
 
-				LCDBuffer[LCD_BUFFER_OFFSET + LCDCol + indexOffset] =
+				LCDBuffer[LCD_DATA_HEADER_OFFSET + LCDCol + indexOffset] =
 					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 0) + indexOffset] >> bit) & 1) << 0 ) |
 					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 1) + indexOffset] >> bit) & 1) << 1 ) |
 					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 2) + indexOffset] >> bit) & 1) << 2 ) |

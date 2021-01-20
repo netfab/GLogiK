@@ -22,9 +22,9 @@
 #ifndef SRC_BIN_DAEMON_LCDPLUGINS_PBM_HPP_
 #define SRC_BIN_DAEMON_LCDPLUGINS_PBM_HPP_
 
-#include <array>
 #include <vector>
 
+/* LCD screen real sizes in pixels */
 #define				  LCD_SCREEN_HEIGHT		43
 #define				   LCD_SCREEN_WIDTH		160
 
@@ -33,10 +33,10 @@
 #define		DEFAULT_PBM_HEIGHT_IN_BYTES		(DEFAULT_PBM_HEIGHT/8)
 #define		 DEFAULT_PBM_WIDTH_IN_BYTES		(DEFAULT_PBM_WIDTH/8)
 
-#define PBM_DATA_IN_BYTES (DEFAULT_PBM_WIDTH_IN_BYTES * DEFAULT_PBM_HEIGHT)
+#define		  DEFAULT_PBM_DATA_IN_BYTES		(DEFAULT_PBM_WIDTH_IN_BYTES * DEFAULT_PBM_HEIGHT)
 
 /* LCD header length */
-#define LCD_BUFFER_OFFSET 32
+#define			 LCD_DATA_HEADER_OFFSET		32
 
 // formula when PBM_HEIGHT not multiple of 8
 // TODO do we need it ?
@@ -46,7 +46,7 @@ namespace GLogiK
 {
 
 typedef std::vector<unsigned char> PBMDataArray;
-typedef std::array<unsigned char, PBM_DATA_IN_BYTES+LCD_BUFFER_OFFSET> LCDDataArray;
+typedef std::vector<unsigned char> LCDDataArray;
 
 } // namespace GLogiK
 

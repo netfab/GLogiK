@@ -36,7 +36,7 @@ PBMFrame::PBMFrame(const uint16_t num)
 	:	_numFrames(num)
 {
 	/* initialize PBM frame container */
-	_PBMData.resize( (DEFAULT_PBM_WIDTH / 8) * DEFAULT_PBM_HEIGHT, 0 );
+	_PBMData.resize( DEFAULT_PBM_DATA_IN_BYTES, 0 );
 }
 
 const bool PBMFrame::switchToNextFrame(const uint16_t currentFrameCounter)
