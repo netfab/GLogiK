@@ -314,7 +314,7 @@ void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(PixelsData & LCDBuffer, c
 {
 	for(unsigned int row = 0; row < DEFAULT_PBM_HEIGHT_IN_BYTES; ++row) {
 		unsigned int LCDCol = 0;
-		unsigned int indexOffset = (DEFAULT_PBM_WIDTH * row);
+		unsigned int rowOffset = (DEFAULT_PBM_WIDTH * row);
 		for(unsigned int PBMByte = 0; PBMByte < DEFAULT_PBM_WIDTH_IN_BYTES; ++PBMByte) {
 
 			for(int bit = 7; bit > -1; --bit) {
@@ -323,20 +323,20 @@ void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(PixelsData & LCDBuffer, c
 				LOG(DEBUG2)	<< "row: " << row
 							<< " PBMByte: " << PBMByte
 							<< " LCDCol: " << LCDCol
-							<< " indexOffset: " << indexOffset
-							<< " lcd_index: " << LCDCol + indexOffset
+							<< " rowOffset: " << rowOffset
+							<< " lcd_index: " << LCDCol + rowOffset
 							<< " bit: " << bit << "\n";
 #endif
 
-				LCDBuffer[LCD_DATA_HEADER_OFFSET + LCDCol + indexOffset] =
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 0) + indexOffset] >> bit) & 1) << 0 ) |
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 1) + indexOffset] >> bit) & 1) << 1 ) |
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 2) + indexOffset] >> bit) & 1) << 2 ) |
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 3) + indexOffset] >> bit) & 1) << 3 ) |
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 4) + indexOffset] >> bit) & 1) << 4 ) |
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 5) + indexOffset] >> bit) & 1) << 5 ) |
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 6) + indexOffset] >> bit) & 1) << 6 ) |
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 7) + indexOffset] >> bit) & 1) << 7 ) ;
+				LCDBuffer[LCD_DATA_HEADER_OFFSET + LCDCol + rowOffset] =
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 0) + rowOffset] >> bit) & 1) << 0 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 1) + rowOffset] >> bit) & 1) << 1 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 2) + rowOffset] >> bit) & 1) << 2 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 3) + rowOffset] >> bit) & 1) << 3 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 4) + rowOffset] >> bit) & 1) << 4 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 5) + rowOffset] >> bit) & 1) << 5 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 6) + rowOffset] >> bit) & 1) << 6 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 7) + rowOffset] >> bit) & 1) << 7 ) ;
 
 				LCDCol++;
 			}
