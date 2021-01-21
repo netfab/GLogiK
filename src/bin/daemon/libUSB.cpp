@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -227,7 +227,7 @@ int LibUSB::performKeysInterruptTransfer(
 
 int LibUSB::performLCDScreenInterruptTransfer(
 	USBDevice & device,
-	unsigned char* buffer,
+	const unsigned char * buffer,
 	int bufferLength,
 	unsigned int timeout)
 {
@@ -239,10 +239,13 @@ int LibUSB::performLCDScreenInterruptTransfer(
 	int ret = 0;
 	{
 		std::lock_guard<std::mutex> lock(device._libUSBMutex);
+		/* here we assume that buffer will be used read-only by
+		 * interrupt_transfer since _LCDEndpoint direction is OUT
+		 * (host-to-device) */
 		ret = libusb_interrupt_transfer(
 			device._pUSBDeviceHandle,
 			device._LCDEndpoint,
-			buffer,
+			const_cast<unsigned char *>(buffer),
 			bufferLength,
 			&(device._lastLCDInterruptTransferLength),
 			timeout

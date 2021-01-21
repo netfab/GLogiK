@@ -48,7 +48,7 @@ class LCDScreenPluginsManager
 
 		const bool findOneLCDScreenPlugin(const uint64_t LCDPluginsMask1) const;
 
-		PixelsData & getNextLCDScreenBuffer(
+		const PixelsData & getNextLCDScreenBuffer(
 			const std::string & LCDKey,
 			const uint64_t LCDPluginsMask1
 		);

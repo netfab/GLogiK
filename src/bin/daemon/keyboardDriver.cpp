@@ -555,12 +555,13 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 				LCDPluginsMask1 = device._LCDPluginsMask1;
 			}
 
-			PixelsData & LCDBuffer = device.getLCDPluginsManager()->getNextLCDScreenBuffer(LCDKey, LCDPluginsMask1);
+			const PixelsData & LCDBuffer = device.getLCDPluginsManager()->getNextLCDScreenBuffer(LCDKey, LCDPluginsMask1);
 			int ret = this->performLCDScreenInterruptTransfer(
 				device,
 				LCDBuffer.data(),
 				LCDBuffer.size(),
-				1000);
+				1000
+			);
 
 			auto interval = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t1);
 			auto one = std::chrono::milliseconds( device.getLCDPluginsManager()->getPluginTiming() );
@@ -588,8 +589,13 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 		const uint64_t endscreen = toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN);
 		/* make sure endscreen plugin is loaded before using it */
 		if( device.getLCDPluginsManager()->findOneLCDScreenPlugin( endscreen ) ) {
-			PixelsData & LCDBuffer = device.getLCDPluginsManager()->getNextLCDScreenBuffer("", endscreen);
-			int ret = this->performLCDScreenInterruptTransfer(device, LCDBuffer.data(), LCDBuffer.size(), 1000);
+			const PixelsData & LCDBuffer = device.getLCDPluginsManager()->getNextLCDScreenBuffer("", endscreen);
+			int ret = this->performLCDScreenInterruptTransfer(
+				device,
+				LCDBuffer.data(),
+				LCDBuffer.size(),
+				1000
+			);
 			if(ret != 0) {
 				GKSysLog(LOG_ERR, ERROR, "endscreen LCD refresh failure");
 			}

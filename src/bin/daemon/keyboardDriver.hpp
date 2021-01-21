@@ -165,7 +165,7 @@ class KeyboardDriver
 		) = 0;
 		virtual int performLCDScreenInterruptTransfer(
 			USBDevice & device,
-			unsigned char* buffer,
+			const unsigned char * buffer,
 			int bufferLength,
 			unsigned int timeout
 		) = 0;
@@ -241,7 +241,7 @@ class USBKeyboardDriver
 
 		int performLCDScreenInterruptTransfer(
 			USBDevice & device,
-			unsigned char* buffer,
+			const unsigned char * buffer,
 			int bufferLength,
 			unsigned int timeout
 		) override {
