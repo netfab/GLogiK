@@ -22,18 +22,21 @@
 #ifndef SRC_BIN_DAEMON_CLIENTS_MANAGER_HPP_
 #define SRC_BIN_DAEMON_CLIENTS_MANAGER_HPP_
 
+#include <cstdint>
+
 #include <vector>
 #include <string>
 #include <map>
 
-#include "include/keyEvent.hpp"
-#include "include/LCDPluginProperties.hpp"
-
 #include "lib/dbus/GKDBus.hpp"
 
 #include "devicesManager.hpp"
+
 #include "clientsSignals.hpp"
 #include "client.hpp"
+
+#include "include/keyEvent.hpp"
+#include "include/LCDPluginProperties.hpp"
 
 #define GKSysLog_UnknownClient \
 	std::string error(CONST_STRING_UNKNOWN_CLIENT); error += clientID;\
@@ -46,10 +49,12 @@ class ClientsManager
 	:	public ClientsSignals
 {
 	public:
-		ClientsManager(NSGKDBus::GKDBus* pDBus);
+		ClientsManager(DevicesManager* pDevicesManager);
 		~ClientsManager(void);
 
-		void runLoop(void);
+		void initializeDBusRequests(NSGKDBus::GKDBus* pDBus);
+		void cleanDBusRequests(void) noexcept;
+		void waitForClientsDisconnections(void) noexcept;
 
 	protected:
 
@@ -92,8 +97,6 @@ class ClientsManager
 			const std::string & clientID,
 			const std::string & devID
 		);
-
-		void waitForClientsDisconnections(void) noexcept;
 
 		/* -- */
 			/* DevicesManager D-Bus object */

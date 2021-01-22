@@ -35,6 +35,7 @@
 //#include <boost/program_options.hpp>
 
 #include "lib/utils/utils.hpp"
+#include "lib/shared/glogik.hpp"
 #include "lib/shared/sessionManager.hpp"
 
 #include "DBusHandler.hpp"
@@ -47,9 +48,9 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DesktopServiceLauncher::DesktopServiceLauncher() :
-	_pid(0),
-	_LOGfd(nullptr)
+DesktopServiceLauncher::DesktopServiceLauncher()
+	:	_LOGfd(nullptr),
+		_pid(0)
 {
 	openlog(DESKTOP_SERVICE_LAUNCHER_NAME, LOG_PID|LOG_CONS, LOG_USER);
 
@@ -95,13 +96,20 @@ int DesktopServiceLauncher::run( const int& argc, char *argv[] ) {
 		{
 			SessionManager session;
 
+			NSGKDBus::GKDBus DBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE,
+				GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE_PATH);
+
+			DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME,
+				NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
+
 			struct pollfd fds[1];
 			nfds_t nfds = 1;
 
 			fds[0].fd = session.openConnection();
 			fds[0].events = POLLIN;
 
-			LauncherDBusHandler DBus;
+			DBusHandler handler(&DBus);
+
 			while( session.isSessionAlive() ) {
 				int num = poll(fds, nfds, 150);
 
@@ -113,8 +121,12 @@ int DesktopServiceLauncher::run( const int& argc, char *argv[] ) {
 					}
 				}
 
-				DBus.checkDBusMessages();
+				DBus.checkForMessages();
 			}
+
+			handler.cleanDBusRequests();
+
+			DBus.disconnectFromSessionBus();
 		}
 
 #if DEBUGGING_ON

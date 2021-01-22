@@ -19,33 +19,52 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_PBM_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_PBM_HPP_
+#ifndef SRC_BIN_DAEMON_HIDAPI_HPP_
+#define SRC_BIN_DAEMON_HIDAPI_HPP_
 
-#include <vector>
+#include <cstdint>
 
-/* LCD screen real sizes in pixels */
-#define				  LCD_SCREEN_HEIGHT		43
-#define				   LCD_SCREEN_WIDTH		160
+#include "USBDevice.hpp"
 
-#define				 DEFAULT_PBM_HEIGHT		48
-#define				  DEFAULT_PBM_WIDTH		160
-#define		DEFAULT_PBM_HEIGHT_IN_BYTES		(DEFAULT_PBM_HEIGHT/8)
-#define		 DEFAULT_PBM_WIDTH_IN_BYTES		(DEFAULT_PBM_WIDTH/8)
-
-#define		  DEFAULT_PBM_DATA_IN_BYTES		(DEFAULT_PBM_WIDTH_IN_BYTES * DEFAULT_PBM_HEIGHT)
-
-/* LCD header length */
-#define			 LCD_DATA_HEADER_OFFSET		32
-
-// formula when PBM_HEIGHT not multiple of 8
-// TODO do we need it ?
-//#define PBM_HEIGHT_IN_BYTES ((PBM_HEIGHT + ((8 - (PBM_HEIGHT % 8)) % 8)) / 8)
+#include <hidapi.h>
 
 namespace GLogiK
 {
 
-typedef std::vector<unsigned char> PixelsData;
+class hidapi
+{
+	public:
+
+	protected:
+		hidapi(void);
+		~hidapi(void);
+
+		void openUSBDevice(USBDevice & device);
+		void closeUSBDevice(USBDevice & device) noexcept;
+
+		void sendControlRequest(
+			USBDevice & device,
+			const unsigned char * data,
+			uint16_t wLength
+		);
+
+		int performKeysInterruptTransfer(
+			USBDevice & device,
+			unsigned int timeout
+		);
+
+		int performLCDScreenInterruptTransfer(
+			USBDevice & device,
+			const unsigned char * buffer,
+			int bufferLength,
+			unsigned int timeout
+		);
+
+	private:
+
+		void error(hid_device *dev) noexcept;
+
+};
 
 } // namespace GLogiK
 

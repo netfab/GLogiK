@@ -94,12 +94,11 @@ class DevicesHandler
 	protected:
 
 	private:
+		fs::path _configurationRootDirectory;
+		std::string _clientID;
 		NSGKDBus::GKDBus* _pDBus;
 		NSGKUtils::FileSystem* _pGKfs;
 		const NSGKDBus::BusConnection _systemBus;
-		std::string _clientID;
-
-		fs::path _configurationRootDirectory;
 
 		std::map<const std::string, DeviceProperties> _startedDevices;
 		std::map<const std::string, DeviceProperties> _stoppedDevices;

@@ -19,13 +19,14 @@
  *
  */
 
-#include <errno.h>
-
 #include <syslog.h>
 
+#include <cstdint>
+#include <cerrno>
 #include <cstring>
 #include <cstdlib>
 
+#include <algorithm>
 #include <sstream>
 #include <chrono>
 
@@ -58,9 +59,14 @@ const std::string FileSystem::getNextAvailableFileName(
 	const std::string & extension,
 	bool mustExist)
 {
-	unsigned int c = 0;
+	uint16_t c = 0;
+
+	std::string base(baseName);
+	std::replace( base.begin(), base.end(), '/', '_');
+	std::replace( base.begin(), base.end(), ' ', '_');
+
 	while( c++ < 10 ) { /* bonus point */
-		fs::path file(baseName);
+		fs::path file(base);
 		file += "_";
 		file += std::to_string(c);
 		file += ".";

@@ -68,14 +68,17 @@ class MainWindow
 		void build(void);
 
 	private:
-		NSGKDBus::GKDBus* _pDBus;
-		pid_t _pid;
-		FILE* _LOGfd;	/* log file descriptor */
-		bool _GUIResetThrow;
-		bool _serviceStartRequest;
-		bool _ignoreNextSignal;
-		int _statusBarTimeout;
+		DeviceProperties _openedConfigurationFile;
+
+		fs::path _configurationRootDirectory;
+		fs::path _configurationFilePath;
+
 		std::string _devID;
+
+		devices_map_type _devices;
+
+		NSGKDBus::GKDBus* _pDBus;
+		FILE* _LOGfd;	/* log file descriptor */
 
 		QComboBox* _devicesComboBox;
 		QTabWidget* _tabbedWidgets;
@@ -85,9 +88,14 @@ class MainWindow
 		BacklightColorTab* _backlightColorTab;
 		LCDPluginsTab* _LCDPluginsTab;
 
-		fs::path _configurationRootDirectory;
-		fs::path _configurationFilePath;
-		DeviceProperties _openedConfigurationFile;
+		int _statusBarTimeout;
+		pid_t _pid;
+
+		bool _GUIResetThrow;
+		bool _serviceStartRequest;
+		bool _ignoreNextSignal;
+
+		/* -- -- -- */
 
 		static void handleSignal(int sig);
 
@@ -98,6 +106,8 @@ class MainWindow
 
 		void aboutDialog(void);
 
+		void aboutToQuit(void);
+
 		void updateDevicesList(void);
 		void resetInterface(void);
 		void updateInterface(int index);
@@ -105,8 +115,6 @@ class MainWindow
 		void saveFile(const TabApplyButton tab);
 
 		void configurationFileUpdated(const std::string & devID);
-
-		devices_map_type _devices;
 };
 
 } // namespace GLogiK

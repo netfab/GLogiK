@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -50,21 +50,19 @@ Splashscreen::Splashscreen()
 Splashscreen::~Splashscreen() {
 }
 
-void Splashscreen::init(FontsManager* const pFonts)
+void Splashscreen::init(FontsManager* const pFonts, const std::string & product)
 {
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _plugin.getName();
 
-	pFonts->initializeFont(FontID::MONOSPACE85);
-
-	this->addPBMClearedFrame();	/* frame #0 */
+	this->addPBMEmptyFrame();	/* frame #0 */
 	this->addPBMFrame(PBMDirectory, "splashscreen01.pbm", 1); /* #1 */
 	this->addPBMFrame(PBMDirectory, "splashscreen01.pbm", 3); /* #2 #3 #4 */
 
 	std::string version(" version "); version += PACKAGE_VERSION;
-	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, version, 48, 32);
+	this->writeStringOnLastPBMFrame(pFonts, FontID::MONOSPACE85, version, 48, 32);
 
-	LCDPlugin::init(pFonts);
+	LCDPlugin::init(pFonts, product);
 }
 
 } // namespace GLogiK

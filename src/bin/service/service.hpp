@@ -26,8 +26,6 @@
 
 #include <cstdio>
 
-#include "lib/utils/utils.hpp"
-
 namespace GLogiK
 {
 
@@ -42,11 +40,9 @@ class DesktopService
 	protected:
 
 	private:
-		pid_t _pid;
 		FILE* _LOGfd;	/* log file descriptor */
+		pid_t _pid;
 		bool _verbose;
-
-		NSGKUtils::FileSystem* _pGKfs;
 
 		void parseCommandLine(const int& argc, char *argv[]);
 };

@@ -31,8 +31,6 @@
 
 #include "daemonControl.hpp"
 
-#include "lib/dbus/GKDBus.hpp"
-
 namespace GLogiK
 {
 
@@ -47,10 +45,9 @@ class GLogiKDaemon
 
 	protected:
 	private:
-		pid_t _pid = 0;
-		FILE* _LOGfd = nullptr;
 		std::string _pidFileName;
-		NSGKDBus::GKDBus* _pDBus;
+		FILE* _LOGfd = nullptr;
+		pid_t _pid = 0;
 		bool _PIDFileCreated;
 
 		void createPIDFile(void);

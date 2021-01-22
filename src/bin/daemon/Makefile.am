@@ -3,9 +3,7 @@ sbin_PROGRAMS = GLogiKd
 
 GLogiKd_CXXFLAGS = \
 				@LIBEVDEV_CFLAGS@ \
-				@LIBUSB_CFLAGS@ \
 				@BOOST_CPPFLAGS@ \
-				@DBUS_CFLAGS@ \
 				@PTHREAD_CFLAGS@ \
 				@AM_CXXFLAGS@
 
@@ -15,7 +13,6 @@ GLogiKd_LDFLAGS = \
 
 GLogiKd_LDADD = \
 				@LIBEVDEV_LIBS@ \
-				@LIBUSB_LIBS@ \
 				@BOOST_PROGRAM_OPTIONS_LIB@ \
 				@BOOST_SYSTEM_LIB@ \
 				@BOOST_FILESYSTEM_LIB@ \
@@ -23,7 +20,6 @@ GLogiKd_LDADD = \
 				@LIBUDEV_LIBS@ \
 				@PTHREAD_LIBS@ \
 				libGKUtils.la \
-				libGKDBus.la \
 				libGKShared.la
 
 GLogiKd_SOURCES = \
@@ -34,27 +30,62 @@ GLogiKd_SOURCES = \
 		%D%/daemonControl.hpp \
 		%D%/devicesManager.cpp \
 		%D%/devicesManager.hpp \
+		%D%/USBAPIenums.hpp \
 		%D%/keyboardDriver.cpp \
 		%D%/keyboardDriver.hpp \
-		%D%/libUSB.cpp \
-		%D%/libUSB.hpp \
 		%D%/USBDevice.cpp \
 		%D%/USBDevice.hpp \
-		%D%/DeviceID.hpp \
+		%D%/USBDeviceID.cpp \
+		%D%/USBDeviceID.hpp \
 		%D%/virtualKeyboard.cpp \
 		%D%/virtualKeyboard.hpp \
 		%D%/logitechG510.cpp \
 		%D%/logitechG510.hpp \
 		%D%/macrosManager.cpp \
 		%D%/macrosManager.hpp \
+		%D%/LCDScreenPluginsManager.cpp \
+		%D%/LCDScreenPluginsManager.hpp
+
+
+if WITH_LIBUSB
+GLogiKd_CXXFLAGS += \
+				@LIBUSB_CFLAGS@
+
+GLogiKd_LDADD += \
+				@LIBUSB_LIBS@
+
+GLogiKd_SOURCES += \
+		%D%/libUSB.cpp \
+		%D%/libUSB.hpp
+endif
+
+if WITH_HIDAPI
+GLogiKd_CXXFLAGS += \
+				@LIBHIDAPI_CFLAGS@
+
+GLogiKd_LDADD += \
+				@LIBHIDAPI_LIBS@
+
+GLogiKd_SOURCES += \
+		%D%/hidapi.cpp \
+		%D%/hidapi.hpp
+endif
+
+if WITH_DBUS
+GLogiKd_CXXFLAGS += \
+				@DBUS_CFLAGS@
+
+GLogiKd_LDADD += \
+				libGKDBus.la
+
+GLogiKd_SOURCES += \
 		%D%/clientsManager.cpp \
 		%D%/clientsManager.hpp \
 		%D%/clientsSignals.cpp \
 		%D%/clientsSignals.hpp \
 		%D%/client.cpp \
-		%D%/client.hpp \
-		%D%/LCDScreenPluginsManager.cpp \
-		%D%/LCDScreenPluginsManager.hpp
+		%D%/client.hpp
+endif
 
 GLogiKd_SOURCES += \
 		%D%/LCDPlugins/PBM.hpp \

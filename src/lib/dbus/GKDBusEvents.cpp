@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -62,6 +62,8 @@ GKDBusEvents::~GKDBusEvents() {
 			}
 		}
 	}
+
+	_DBusEvents.clear();
 }
 
 const std::string & GKDBusEvents::getRootNode(void) const {
@@ -80,8 +82,87 @@ void GKDBusEvents::declareIntrospectableSignal(
 }
 
 /*
+void GKDBusEvents::removeMethod(
+	const BusConnection eventBus,
+	const char* eventObject,
+	const char* eventInterface,
+	const char* eventName)
+{
+	this->removeEvent(eventBus, eventObject, eventInterface, eventName);
+}
+*/
+
+void GKDBusEvents::removeMethodsInterface(
+	const BusConnection eventBus,
+	const char* eventObject,
+	const char* eventInterface) noexcept
+{
+	this->removeInterface(eventBus, nullptr, eventObject, eventInterface);
+}
+
+void GKDBusEvents::removeSignalsInterface(
+	const BusConnection eventBus,
+	const char* eventSender,
+	const char* eventObject,
+	const char* eventInterface) noexcept
+{
+	this->removeInterface(eventBus, eventSender, eventObject, eventInterface);
+}
+
+/*
  * private
  */
+
+void GKDBusEvents::removeInterface(
+	const BusConnection eventBus,
+	const char* eventSender,
+	const char* eventObject,
+	const char* eventInterface) noexcept
+{
+	auto find_interface = [this, &eventBus, &eventObject, &eventInterface] () -> const bool {
+		if(_DBusEvents.count(eventBus) == 1) {
+			if(_DBusEvents[eventBus].count(eventObject) == 1) {
+				if(_DBusEvents[eventBus][eventObject].count(eventInterface) == 1)
+					return true;
+			}
+		}
+		return false;
+	};
+
+	if( find_interface() ) {
+#if DEBUGGING_ON
+		LOG(DEBUG2) << "removing interface: " << eventInterface
+					<< " from bus : " << toUInt(toEnumType(eventBus));
+#endif
+		auto & objectMap = _DBusEvents[eventBus][eventObject];
+		for(auto & DBusEvent : objectMap[eventInterface]) { /* vector of pointers */
+			// if event is a signal, build and remove signal rule match
+			if(DBusEvent->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
+				this->removeSignalRuleMatch(eventBus, eventSender, eventInterface, DBusEvent->eventName.c_str());
+			}
+
+			delete DBusEvent; DBusEvent = nullptr;
+		}
+		objectMap[eventInterface].clear();
+		objectMap.erase(eventInterface);
+
+		if( objectMap.empty() ) {
+#if DEBUGGING_ON
+			LOG(DEBUG2) << "removing empty object: " << eventObject;
+#endif
+			_DBusEvents[eventBus].erase(eventObject);
+		}
+		else if( (objectMap.size() == 1) and
+			(objectMap.count("org.freedesktop.DBus.Introspectable") == 1) ) {
+			this->removeInterface(eventBus, nullptr, eventObject, "org.freedesktop.DBus.Introspectable");
+		}
+	}
+	else {
+		LOG(WARNING) << "Interface not found. bus: " << toUInt(toEnumType(eventBus))
+			<< " - obj: " << eventObject
+			<< " - int: " << eventInterface;
+	}
+}
 
 const std::string GKDBusEvents::introspectRootNode(void) {
 	std::ostringstream xml;
@@ -106,8 +187,67 @@ const std::string GKDBusEvents::introspectRootNode(void) {
 	return xml.str();
 }
 
-void GKDBusEvents::addIntrospectableEvent(
+/*
+void GKDBusEvents::removeEvent(
 	const BusConnection eventBus,
+	const char* eventObject,
+	const char* eventInterface,
+	const char* eventName)
+{
+	auto get_index = [this, &eventBus, &eventObject, &eventInterface, &eventName] () -> const std::size_t {
+		if(_DBusEvents.count(eventBus) == 1) {
+			if(_DBusEvents[eventBus].count(eventObject) == 1) {
+				if(_DBusEvents[eventBus][eventObject].count(eventInterface) == 1) {
+					// vector of pointers
+					auto & vec = _DBusEvents[eventBus][eventObject][eventInterface];
+
+					for(auto it = vec.cbegin(); it != vec.cend(); ++it) {
+						if( (*it)->eventName == eventName ) {
+							const std::size_t index = (it - vec.cbegin());
+#if DEBUGGING_ON
+							LOG(DEBUG2) << "searched event found. bus: "
+								<< toUInt(toEnumType(eventBus))
+								<< " - obj: " << eventObject
+								<< " - int: " << eventInterface
+								<< " - ind: " << index;
+#endif
+							return index;
+						}
+					}
+
+				}
+			}
+		}
+
+		throw GLogiKExcept("event not found");
+	};
+
+	try {
+		const std::size_t index = get_index();
+		auto & vec = _DBusEvents[eventBus][eventObject][eventInterface];
+
+		// TODO fix eventSender and check
+		auto & DBusEvent = vec[index];
+		if(DBusEvent->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
+			this->removeSignalRuleMatch(eventBus, eventSender, eventInterface, DBusEvent->eventName.c_str());
+		}
+
+		delete DBusEvent; DBusEvent = nullptr;
+		vec.erase(vec.begin() + index);
+	}
+	catch ( const GLogiKExcept & e ) {
+		LOG(WARNING) << e.what()
+			<< ". bus: " << toUInt(toEnumType(eventBus))
+			<< " - obj: " << eventObject
+			<< " - int: " << eventInterface
+			<< " - name: " << eventName;
+	}
+}
+*/
+
+void GKDBusEvents::addEvent(
+	const BusConnection eventBus,
+	const char* eventSender,
 	const char* eventObject,
 	const char* eventInterface,
 	GKDBusEvent* event)
@@ -129,6 +269,11 @@ void GKDBusEvents::addIntrospectableEvent(
 				GKDBusEventType::GKDBUS_EVENT_METHOD, false);
 		}
 	}
+
+	if( event->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL ) {
+		this->addSignalRuleMatch(eventBus, eventSender, eventInterface, event->eventName.c_str());
+	}
+
 	_DBusInterfaces.insert(eventInterface);
 	_DBusEvents[eventBus][eventObject][eventInterface].push_back(event);
 }
@@ -232,6 +377,69 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath) 
 	xml << "</node>\n";
 
 	return xml.str();
+}
+
+const std::string GKDBusEvents::buildSignalRuleMatch(
+	const char* sender,
+	const char* interface,
+	const char* eventName) noexcept
+{
+	std::string rule = "type='signal',sender='";
+	rule += sender;
+	rule += "',interface='";
+	rule += interface;
+	rule += "',member='";
+	rule += eventName;
+	rule += "'";
+	return rule;
+}
+
+void GKDBusEvents::addSignalRuleMatch(
+	const BusConnection eventBus,
+	const char* sender,
+	const char* interface,
+	const char* eventName) noexcept
+{
+	DBusConnection* connection = nullptr;
+	try {
+		connection = this->getConnection(eventBus);
+	}
+	catch ( const GLogiKExcept & e ) {
+		LOG(WARNING) << e.what();
+		return;
+	}
+
+	const std::string rule = this->buildSignalRuleMatch(sender, interface, eventName);
+
+	dbus_bus_add_match(connection, rule.c_str(), nullptr);
+	dbus_connection_flush(connection);
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "DBus Signal match rule added : " << eventName;
+#endif
+}
+
+void GKDBusEvents::removeSignalRuleMatch(
+	const BusConnection eventBus,
+	const char* sender,
+	const char* interface,
+	const char* eventName) noexcept
+{
+	DBusConnection* connection = nullptr;
+	try {
+		connection = this->getConnection(eventBus);
+	}
+	catch ( const GLogiKExcept & e ) {
+		LOG(WARNING) << e.what();
+		return;
+	}
+
+	const std::string rule = this->buildSignalRuleMatch(sender, interface, eventName);
+
+	dbus_bus_remove_match(connection, rule.c_str(), nullptr);
+	dbus_connection_flush(connection);
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "DBus Signal match rule removed : " << eventName;
+#endif
 }
 
 /* -- */

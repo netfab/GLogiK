@@ -64,11 +64,11 @@ AC_ARG_ENABLE( [debug],
 				[enable_debugging=$enableval], [enable_debugging=no])
 
 AC_ARG_ENABLE( [debug-keys],
-				AC_HELP_STRING( [--enable-debug-keys], [Enable keys debugging, default: no]),
+				AC_HELP_STRING( [--enable-debug-keys], [Enable keys extra debugging, default: no]),
 				[enable_keys_debugging=$enableval], [enable_keys_debugging=no])
 
 AC_ARG_ENABLE( [debug-gkdbus],
-				AC_HELP_STRING( [--enable-debug-gkdbus], [Enable gkdbus debugging, default: no]),
+				AC_HELP_STRING( [--enable-debug-gkdbus], [Enable gkdbus extra debugging, default: no]),
 				[enable_gkdbus_debugging=$enableval], [enable_gkdbus_debugging=no])
 
 AC_ARG_ENABLE( [debug-libusb],
@@ -76,17 +76,32 @@ AC_ARG_ENABLE( [debug-libusb],
 				[enable_libusb_extra_debugging=$enableval], [enable_libusb_extra_debugging=no])
 
 AC_ARG_ENABLE( [debug-pbmfont],
-				AC_HELP_STRING( [--enable-debug-pbmfont], [Enable pbmfont debugging, default: no]),
+				AC_HELP_STRING( [--enable-debug-pbmfont], [Enable pbmfont extra debugging, default: no]),
 				[enable_pbmfont_debugging=$enableval], [enable_pbmfont_debugging=no])
 
 AC_ARG_ENABLE( [debug-lcd-plugins],
-				AC_HELP_STRING( [--enable-debug-lcd-plugins], [Enable LCD plugins debugging, default: no]),
+				AC_HELP_STRING( [--enable-debug-lcd-plugins], [Enable LCD plugins extra debugging, default: no]),
 				[enable_lcd_plugins_debugging=$enableval], [enable_lcd_plugins_debugging=no])
+
+dnl check for DBus support
+AC_ARG_ENABLE( [dbus],
+               AC_HELP_STRING( [--enable-dbus], [Enable D-Bus support]),
+               [enable_dbus=$enableval], [enable_dbus=yes])
 
 dnl check for Qt5 client GUI
 AC_ARG_ENABLE( [qt5],
                AC_HELP_STRING( [--enable-qt5], [Enable Qt5 client GUI]),
                [enable_qt5=$enableval], [enable_qt5=no])
+
+dnl check for libusb support
+AC_ARG_ENABLE( [libusb],
+               AC_HELP_STRING( [--enable-libusb], [Enable libusb API support]),
+               [enable_libusb=$enableval], [enable_libusb=no])
+
+dnl check for hidapi support
+AC_ARG_ENABLE( [hidapi],
+               AC_HELP_STRING( [--enable-hidapi], [Enable hidapi API support]),
+               [enable_hidapi=$enableval], [enable_hidapi=yes])
 
 AC_ARG_VAR(DEBUG_DIR, [Directory where debug file will be written])
 AC_ARG_VAR(DATA_DIR, [Directory where data files will be installed])
@@ -100,24 +115,20 @@ AC_ARG_WITH(
 	[glogikd_user],
 	AS_HELP_STRING([--with-glogikd-user=<user>], [User for running the glogik daemon (glogikd)])
 )
-if test -z "$with_glogikd_user" ; then
-	GLOGIKD_USER=glogikd
-else
-	GLOGIKD_USER=$with_glogikd_user
-fi
+AS_IF([test -z "$with_glogikd_user"],
+		[GLOGIKD_USER=glogikd],
+		[GLOGIKD_USER=$with_glogikd_user])
 AC_SUBST(GLOGIKD_USER)
 AC_DEFINE_UNQUOTED(GLOGIKD_USER,"$GLOGIKD_USER", [User for running the glogik daemon])
 
 dnl group
 AC_ARG_WITH(
 	[glogikd_group],
-	AS_HELP_STRING([--with-glogikd-group=<group>], [Group for running the glogik daemon (plugdev)])
+	AS_HELP_STRING([--with-glogikd-group=<group>], [Group for running the glogik daemon (usb)])
 )
-if test -z "$with_glogikd_group" ; then
-	GLOGIKD_GROUP=plugdev
-else
-	GLOGIKD_GROUP=$with_glogikd_group
-fi
+AS_IF([test -z "$with_glogikd_group"],
+		[GLOGIKD_GROUP=usb],
+		[GLOGIKD_GROUP=$with_glogikd_group])
 AC_SUBST(GLOGIKD_GROUP)
 AC_DEFINE_UNQUOTED(GLOGIKD_GROUP,"$GLOGIKD_GROUP", [Group for running the glogik daemon])
 
@@ -132,27 +143,21 @@ AC_ARG_WITH(
 	[glogiks_group],
 	AS_HELP_STRING([--with-glogiks-group=<group>], [Group for running the glogik desktop service (glogiks)])
 )
-if test -z "$with_glogiks_group" ; then
-	GLOGIKS_GROUP=glogiks
-else
-	GLOGIKS_GROUP=$with_glogiks_group
-fi
+
+AS_IF([test -z "$with_glogiks_group"],
+		[GLOGIKS_GROUP=glogiks],
+		[GLOGIKS_GROUP=$with_glogiks_group])
 AC_SUBST(GLOGIKS_GROUP)
 AC_DEFINE_UNQUOTED(GLOGIKS_GROUP,"$GLOGIKS_GROUP", [User for running the glogik desktop service])
 
 dnl ---------------------------------------------------------------------------
 dnl             Where to install udev rules
 dnl ---------------------------------------------------------------------------
-if test "$prefix" = "/usr" -o "$prefix" = "/usr/local" ; then
-	dnl AC_SUBST([udevrulesdir], [$($PKG_CONFIG --variable=udevdir udev)/rules.d])
-	udev_rules_dir_default=$($PKG_CONFIG --variable=udevdir udev)"/rules.d"
-else
-	dnl AC_SUBST([udevrulesdir], [$prefix/lib/udev/rules.d])
-	udev_rules_dir_default=$prefix/lib/udev/rules.d
-fi
+AS_IF([test "$prefix" = "/usr" -o "$prefix" = "/usr/local"],
+		[udev_rules_dir_default=$($PKG_CONFIG --variable=udevdir udev)"/rules.d"],
+		[udev_rules_dir_default=$prefix/lib/udev/rules.d])
 
-AC_ARG_WITH(
-	[udevrulesdir],
+AC_ARG_WITH([udevrulesdir],
 	AS_HELP_STRING([--with-udevrulesdir=DIR], [Directory where udev expects its rules files]),
 	[],
 	[with_udevrulesdir=$udev_rules_dir_default]
@@ -168,23 +173,109 @@ GDT_CONDITIONAL_ADD_LDFLAGS([$enable_as_needed], [-Wl,--as-needed])
 GDT_CONDITIONAL_ADD_CXXFLAG([$enable_gcc_wall], [-Wall])
 GDT_CONDITIONAL_ADD_CXXFLAG([$enable_gcc_werror], [-Werror])
 
-GDT_DEBUG_FLAG([$enable_debugging], [DEBUGGING_ON], [global])
-GDT_DEBUG_FLAG([$enable_keys_debugging], [DEBUG_KEYS], [keys])
-GDT_DEBUG_FLAG([$enable_gkdbus_debugging], [DEBUG_GKDBUS_SUBOBJECTS], [GKDBus sub-objects])
-GDT_DEBUG_FLAG([$enable_libusb_extra_debugging], [DEBUG_LIBUSB_EXTRA], [LibUSB extra])
-GDT_DEBUG_FLAG([$enable_pbmfont_debugging], [DEBUG_PBMFONT], [pbmfont])
-GDT_DEBUG_FLAG([$enable_lcd_plugins_debugging], [DEBUG_LCD_PLUGINS], [LCD plugins])
+GDT_DEBUG_FLAG(	[$enable_debugging],
+				[DEBUGGING_ON],
+				[global debugging])
 
-AM_CONDITIONAL([WITH_QT5], [test "x$enable_qt5" = xyes])
-AC_MSG_CHECKING([whether we want Qt5 client GUI])
-if test "x$enable_qt5" = xyes; then
+GDT_DEBUG_FLAG(	[$enable_keys_debugging],
+				[DEBUG_KEYS],
+				[keys extra debugging])
+
+GDT_DEBUG_FLAG(	[$enable_gkdbus_debugging],
+				[DEBUG_GKDBUS_SUBOBJECTS],
+				[GKDBus extra debugging])
+
+GDT_DEBUG_FLAG(	[$enable_libusb_extra_debugging],
+				[DEBUG_LIBUSB_EXTRA],
+				[LibUSB extra debugging])
+
+GDT_DEBUG_FLAG(	[$enable_pbmfont_debugging],
+				[DEBUG_PBMFONT],
+				[pbmfont extra debugging])
+
+GDT_DEBUG_FLAG(	[$enable_lcd_plugins_debugging],
+				[DEBUG_LCD_PLUGINS],
+				[LCD plugins extra debugging])
+
+
+AC_MSG_CHECKING([whether we want D-Bus support])
+AS_IF([test "x$enable_dbus" = "xyes"], [
 	AC_MSG_RESULT([yes])
-	AX_HAVE_QT
-	AC_DEFINE([QT5_GUI], [1], [Qt5 client GUI])
-else
+	AC_SUBST([INIT_NEED_DBUS], [dbus])
+	AC_DEFINE([GKDBUS], [1], [GKDBus enabled])
+], [
 	AC_MSG_RESULT([no])
-	AC_DEFINE([QT5_GUI], [0], [Qt5 client GUI])
-fi
+	AC_SUBST([INIT_NEED_DBUS], [])
+])
+AM_CONDITIONAL([WITH_DBUS], [test "x$enable_dbus" = "xyes"])
+
+
+dnl ---
+dnl checking for libusb support
+AM_CONDITIONAL([WITH_LIBUSB], [test "x$enable_libusb" = "xyes"])
+
+AC_MSG_CHECKING([whether we want libusb support])
+AS_IF([test "x$enable_libusb" = "xyes"],
+	[
+		AC_MSG_RESULT([yes])
+		AC_DEFINE([GKLIBUSB], [1], [GKLIBUSB enabled])
+	], [
+		AC_MSG_RESULT([no])
+	])
+dnl ---
+
+dnl ---
+dnl checking for hidapi support
+AM_CONDITIONAL([WITH_HIDAPI], [test "x$enable_hidapi" = "xyes"])
+
+AC_MSG_CHECKING([whether we want hidapi support])
+AS_IF([test "x$enable_hidapi" = "xyes"],
+	[
+		AC_MSG_RESULT([yes])
+		AC_DEFINE([GKHIDAPI], [1], [GKHIDAPI enabled])
+	], [
+		AC_MSG_RESULT([no])
+	])
+dnl ---
+
+AS_IF([test "x$enable_hidapi" = "xno"],
+	[
+		AS_IF(
+			[test "x$enable_libusb" = "xno"],
+			[AC_MSG_ERROR([you must choose between libusb or hidapi support. one must be enabled])],
+			[]
+		)
+	], [
+		AS_IF(
+			[test "x$enable_libusb" = "xyes"],
+			[AC_MSG_ERROR([you must choose between libusb or hidapi support. both can't enabled together])],
+			[]
+		)
+	])
+
+
+dnl ---
+dnl checking for Qt5 GUI
+AM_CONDITIONAL([WITH_QT5], [test "x$enable_qt5" = "xyes"])
+
+AC_MSG_CHECKING([whether we want Qt5 client GUI])
+AS_IF([test "x$enable_qt5" = "xyes"],
+	[
+		AC_MSG_RESULT([yes])
+		AS_IF(
+			[test "x$enable_dbus" = "xyes"],
+			[],
+			[AC_MSG_ERROR([Qt5 client GUI requires D-Bus support enabled])]
+		)
+		AC_DEFINE([QT5_GUI], [1], [Qt5 client GUI])
+	], [
+		AC_MSG_RESULT([no])
+	])
+
+dnl AX_HAVE_QT have its own test to avoid mixed configure output
+AS_IF([test "x$enable_qt5" = "xyes"], [AX_HAVE_QT], [])
+dnl ---
+
 
 dnl abort compilation after first error
 GDT_ADD_CXXFLAG([-Wfatal-errors])
@@ -197,7 +288,7 @@ dnl -------------------------------------------------------------------------
 dnl                       defining custom macro variables
 dnl -------------------------------------------------------------------------
 
-AS_IF([[test "x$DEBUG_DIR" = "x"]], [DEBUG_DIR="/var/tmp/GKDebug"])
+AS_IF([test "x$DEBUG_DIR" = "x"], [DEBUG_DIR="/var/tmp/GKDebug"], [])
 AC_DEFINE_UNQUOTED([DEBUG_DIR], ["${DEBUG_DIR}"], [Directory for debug file])
 
 AC_DEFINE_UNQUOTED([DATA_DIR], ["${prefix}/share"], [Root directory for data files installation])
@@ -213,13 +304,25 @@ dnl -------------------------------------------------------------------------
 dnl                       checking for libraries
 dnl -------------------------------------------------------------------------
 
-PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.0])
 PKG_CHECK_MODULES([LIBUDEV], [libudev])
 PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
-PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.10])
-PKG_CHECK_MODULES([SM], [sm ice])
-PKG_CHECK_MODULES([LIBX11], [x11])
-PKG_CHECK_MODULES([LIBXTST], [xtst])
+
+AS_IF([test "x$enable_hidapi" = "xyes"],
+	[
+		PKG_CHECK_MODULES([LIBHIDAPI], [hidapi-libusb >= 0.10.0])
+	], [
+		PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.19])
+	])
+
+AS_IF([test "x$enable_dbus" = "xyes"],
+	[
+		PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.10.18])
+		dnl SMlib used only by desktop binaries
+		PKG_CHECK_MODULES([SM], [sm ice])
+		dnl X libraries used only by user service
+		PKG_CHECK_MODULES([LIBX11], [x11])
+		PKG_CHECK_MODULES([LIBXTST], [xtst])
+	], [])
 
 
 AX_BOOST_BASE([1.64.0], [], AC_MSG_ERROR([Could not find a useful version of boost libraries]))
@@ -231,10 +334,14 @@ AX_BOOST_SERIALIZATION
 AX_PTHREAD
 
 AC_CONFIG_FILES([
-        Makefile
-        data/dbus/GLogiK.conf
-        data/udev/99-GLogiK.rules
+	Makefile
+	data/init/openrc/glogikd
+	data/udev/99-GLogiK.rules
 	])
+
+AS_IF([test "x$enable_dbus" = "xyes"],
+	[AC_CONFIG_FILES([data/dbus/GLogiK.conf])],
+	[])
 
 # Generate config.status and launch it.
 AC_OUTPUT
@@ -277,6 +384,8 @@ AC_MSG_NOTICE([
                   SM CFLAGS : ${SM_CFLAGS}
             libevdev CFLAGS : ${LIBEVDEV_CFLAGS}
               libevdev LIBS : ${LIBEVDEV_LIBS}
+                hidapi LIBS : ${LIBHIDAPI_LIBS}
+              hidapi CFLAGS : ${LIBHIDAPI_CFLAGS}
               libusb CFLAGS : ${LIBUSB_CFLAGS}
                 libusb LIBS : ${LIBUSB_LIBS}
                libudev LIBS : ${LIBUDEV_LIBS}
@@ -297,6 +406,8 @@ AC_MSG_NOTICE([
                 Qt CXXFLAGS : ${QT_CXXFLAGS}
 --------------------------------------------------------------
         with Qt5 client GUI : ${enable_qt5}
+--------------------------------------------------------------
+---  DEBUGGING --- DEBUGGING ---- DEBUGGING --- DEBUGGING  ---
 --------------------------------------------------------------
   Global debugging : ${enable_debugging}
               keys : ${enable_keys_debugging}

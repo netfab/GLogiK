@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -24,15 +24,20 @@
 
 #include <cstdint>
 
+#include "PBM.hpp"
 #include "PBMFont.hpp"
+
+#define DEFAULT_PBM_FONT_HEIGHT DEFAULT_PBM_HEIGHT
+#define  DEFAULT_PBM_FONT_WIDTH DEFAULT_PBM_WIDTH
 
 namespace GLogiK
 {
 
 enum class FontID : uint8_t
 {
-	MONOSPACE85 = 1 << 0,
-	MONOSPACE86 = 1 << 1,
+			MONOSPACE85	= 1 << 0,
+			MONOSPACE86	= 1 << 1,
+	 DEJAVUSANSBOLD1616	= 1 << 2,
 };
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
@@ -43,7 +48,13 @@ class FontMonospace85
 {
 	public:
 		FontMonospace85(void)
-			:	PBMFont("monospace85", 5) {};
+			:	PBMFont(
+					"monospace85",
+					DEFAULT_PBM_FONT_WIDTH,
+					DEFAULT_PBM_FONT_HEIGHT,
+					5,
+					10
+				) {};
 		~FontMonospace85() = default;
 
 	protected:
@@ -57,8 +68,36 @@ class FontMonospace86
 {
 	public:
 		FontMonospace86(void)
-			:	PBMFont("monospace86", 6) {};
+			:	PBMFont(
+					"monospace86",
+					DEFAULT_PBM_FONT_WIDTH,
+					DEFAULT_PBM_FONT_HEIGHT,
+					6,
+					10
+				) {};
 		~FontMonospace86() = default;
+
+	protected:
+
+	private:
+
+};
+
+class FontDejaVuSansBold1616
+	:	public PBMFont
+{
+	public:
+		FontDejaVuSansBold1616(void)
+			:	PBMFont(
+					"DejaVuSansBold1616",	// font name
+					416,					// PBM width
+					64,						// PBM height
+					16,						// character width
+					16,						// character height
+					3,						// font left shift
+					2						// extra left shift
+				) {};
+		~FontDejaVuSansBold1616() = default;
 
 	protected:
 

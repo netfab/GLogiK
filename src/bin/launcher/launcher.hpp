@@ -42,8 +42,8 @@ class DesktopServiceLauncher
 	protected:
 
 	private:
-		pid_t _pid;
 		FILE* _LOGfd;	/* log file descriptor */
+		pid_t _pid;
 };
 
 } // namespace GLogiK

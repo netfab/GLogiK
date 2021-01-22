@@ -42,7 +42,7 @@ GLogiK=$PWD/.. CD=. {
 		init=init/ {
 			openrc=openrc/ {
 				Makefile.am
-				glogikd
+				glogikd.in
 			}
 			systemd=systemd/ {
 			}
@@ -52,6 +52,7 @@ GLogiK=$PWD/.. CD=. {
 			fonts=fonts/ {
 				monospace85.pbm
 				monospace86.pbm
+				DejaVuSansBold1616.pbm
 			}
 			splashscreen=splashscreen/ {
 				splashscreen01.pbm
@@ -120,10 +121,13 @@ GLogiK=$PWD/.. CD=. {
 				daemonControl.hpp
 				devicesManager.cpp
 				devicesManager.hpp
+				USBAPIenums.hpp
 				keyboardDriver.cpp
 				keyboardDriver.hpp
 				LCDScreenPluginsManager.cpp
 				LCDScreenPluginsManager.hpp
+				hidapi.cpp
+				hidapi.hpp
 				libUSB.cpp
 				libUSB.hpp
 				logitechG510.cpp
@@ -132,7 +136,8 @@ GLogiK=$PWD/.. CD=. {
 				macrosManager.hpp
 				USBDevice.cpp
 				USBDevice.hpp
-				DeviceID.hpp
+				USBDeviceID.cpp
+				USBDeviceID.hpp
 				virtualKeyboard.cpp
 				virtualKeyboard.hpp
 			}

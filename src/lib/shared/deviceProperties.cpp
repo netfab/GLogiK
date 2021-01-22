@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -32,11 +32,11 @@ using namespace NSGKUtils;
 
 DeviceProperties::DeviceProperties()
 	:	_capabilities(0),
-		_watchedDescriptor(-1),
+		_LCDPluginsMask1(0),
 		_backlightRed(0xFF),
 		_backlightGreen(0xFF),
 		_backlightBlue(0xFF),
-		_LCDPluginsMask1(0)
+		_watchedDescriptor(-1)
 {
 }
 
@@ -53,11 +53,13 @@ void DeviceProperties::setWatchDescriptor(int wd) {
 
 void DeviceProperties::setProperties(
 	const std::string & vendor,
-	const std::string & model,
+	const std::string & product,
+	const std::string & name,
 	const uint64_t capabilities)
 {
 	this->setVendor(vendor);
-	this->setModel(model);
+	this->setProduct(product);
+	this->setName(name);
 	_capabilities = capabilities;
 }
 

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -31,40 +31,20 @@
 namespace GLogiK
 {
 
-struct ExpectedDescriptorsValues {
-	uint8_t bConfigurationValue;
-	uint8_t bInterfaceNumber;
-	uint8_t bAlternateSetting;
-	uint8_t bNumEndpoints;
-};
-
 class LibUSB
 {
 	public:
 
 	protected:
-		LibUSB(const int maxLength, const ExpectedDescriptorsValues & eValues);
+		LibUSB(void);
 		~LibUSB(void);
-
-		const int getKeysInterruptBufferMaxLength(void) const
-		{
-			return _keysInterruptBufferMaxLength;
-		};
-
-		int USBError(int errorCode) noexcept;
 
 		void openUSBDevice(USBDevice & device);
 		void closeUSBDevice(USBDevice & device) noexcept;
 
-		void setUSBDeviceActiveConfiguration(USBDevice & device);
-		void findUSBDeviceInterface(USBDevice & device);
-		void releaseUSBDeviceInterfaces(USBDevice & device) noexcept;
-
 		void sendControlRequest(
 			USBDevice & device,
-			uint16_t wValue,
-			uint16_t wIndex,
-			unsigned char * data,
+			const unsigned char * data,
 			uint16_t wLength
 		);
 
@@ -75,21 +55,24 @@ class LibUSB
 
 		int performLCDScreenInterruptTransfer(
 			USBDevice & device,
-			unsigned char* buffer,
+			const unsigned char * buffer,
 			int bufferLength,
 			unsigned int timeout
 		);
 
 	private:
-		static bool status;				/* is libusb initialized ? */
-		static uint8_t counter;			/* initialized drivers counter */
 		static libusb_context * pContext;
+		static uint8_t counter;			/* initialized drivers counter */
+		static bool status;				/* is libusb initialized ? */
 
-		const ExpectedDescriptorsValues _expectedDescriptorsValues;
-		int _keysInterruptBufferMaxLength;
+		void setUSBDeviceActiveConfiguration(USBDevice & device);
+		void findUSBDeviceInterface(USBDevice & device);
+		void releaseUSBDeviceInterfaces(USBDevice & device) noexcept;
 
 		void detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int numInt);
 		void attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexcept;
+
+		int USBError(int errorCode) noexcept;
 
 };
 
