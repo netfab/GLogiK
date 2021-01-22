@@ -1,5 +1,5 @@
 
-0.8.xx (2020-xx-xx)
+0.8.12 (2021-01-22)
 ===================
 - Improved LCDPlugin progress bar drawing function
 - Internal work on GKDBus allowing binaries to disconnect from
