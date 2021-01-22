@@ -24,6 +24,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+//#include <thread>
+//#include <chrono>
 
 #include <poll.h>
 #include <libudev.h>
@@ -31,11 +33,20 @@
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
-#include "include/enums.hpp"
+#include "devicesManager.hpp"
 
 #include "daemonControl.hpp"
 #include "logitechG510.hpp"
+
 #include "devicesManager.hpp"
+
+#if GKLIBUSB
+#include "libUSB.hpp"
+#elif GKHIDAPI
+#include "hidapi.hpp"
+#endif
+
+#include "include/enums.hpp"
 
 
 namespace GLogiK
@@ -43,10 +54,15 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
+#if GKDBUS
 DevicesManager::DevicesManager()
-	:	_pDBus(nullptr),
-		_numClients(0),
-		_unknown("unknown")
+	:	_unknown("unknown"),
+		_pDBus(nullptr),
+		_numClients(0)
+#else
+DevicesManager::DevicesManager()
+	:	_unknown("unknown")
+#endif
 {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing devices manager";
@@ -74,16 +90,31 @@ DevicesManager::~DevicesManager() {
 #endif
 }
 
+#if GKDBUS
+void DevicesManager::setDBus(NSGKDBus::GKDBus* pDBus)
+{
+	_pDBus = pDBus;
+}
+
 void DevicesManager::setNumClients(uint8_t num) {
 	_numClients = num;
 }
+
+void DevicesManager::checkDBusMessages(void) noexcept {
+	_pDBus->checkForMessages();
+}
+
+#endif
 
 /* exceptions are catched within the function body */
 void DevicesManager::initializeDevices(void) noexcept {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing detected devices";
 #endif
+
+#if GKDBUS
 	std::vector<std::string> startedDevices;
+#endif
 
 	for(const auto & devicePair : _detectedDevices) {
 		const auto & devID = devicePair.first;
@@ -94,7 +125,7 @@ void DevicesManager::initializeDevices(void) noexcept {
 			LOG(DEBUG3) << "device "
 						<< device.getVendorID() << ":"
 						<< device.getProductID() << " - "
-						<< device.getDevNode() << " already initialized";
+						<< device.getDevnode() << " already initialized";
 #endif
 			continue; // jump to next detected device
 		}
@@ -105,7 +136,7 @@ void DevicesManager::initializeDevices(void) noexcept {
 			LOG(DEBUG3) << "device "
 						<< device.getVendorID() << ":"
 						<< device.getProductID() << " - "
-						<< device.getDevNode() << " has been stopped";
+						<< device.getDevnode() << " has been stopped";
 			LOG(DEBUG3) << "automatic initialization is disabled for stopped devices";
 #endif
 			continue; // jump to next detected device
@@ -114,14 +145,39 @@ void DevicesManager::initializeDevices(void) noexcept {
 		try {
 			for(const auto & driver : _drivers) {
 				if( device.getDriverID() == driver->getDriverID() ) {
+
+/*
+					{
+						for(auto & unpluggedDevicePair : _unpluggedDevices) {
+							auto & unpluggedDevice = unpluggedDevicePair.second;
+							if( device.getDevpath() == unpluggedDevice.getDevpath() ) {
+								if( unpluggedDevice.isDirty() ) {
+									// found unplugged dirty device on same USB port
+									// trying to reset detected device
+									unpluggedDevice.setResetFlag();
+									std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+									GKSysLog(LOG_WARNING, WARNING, "found unplugged dirty device, trying to reset detected device");
+									driver->resetDevice( device );
+									break;
+								}
+							}
+						}
+					}
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+*/
+
 					// initialization
-					driver->initializeDevice( device );
+					driver->openDevice( device );
 					_startedDevices[devID] = device;
+
+#if GKDBUS
 					startedDevices.push_back(devID);
+#endif
 
 					std::ostringstream buffer(std::ios_base::app);
-					buffer	<< device.getName() << " " << device.getVendorID()
-							<< ":" << device.getProductID()
+					buffer	<< device.getFullName() << " "
+							<< device.getVendorID() << ":" << device.getProductID()
 							<< " on bus " << toUInt(device.getBus()) << " initialized";
 					GKSysLog(LOG_INFO, INFO, buffer.str());
 					break;
@@ -135,10 +191,12 @@ void DevicesManager::initializeDevices(void) noexcept {
 		}
 	} // for
 
+#if GKDBUS
 	if( startedDevices.size() > 0 ) {
 		/* inform clients */
 		this->sendStatusSignalArrayToClients(_numClients, _pDBus, "DevicesStarted", startedDevices);
 	}
+#endif
 
 	_detectedDevices.clear();
 #if DEBUGGING_ON
@@ -155,12 +213,12 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
 				// initialization
-				driver->initializeDevice( device );
+				driver->openDevice( device );
 				_startedDevices[devID] = device;
 
 				std::ostringstream buffer(std::ios_base::app);
-				buffer	<< device.getName() << " " << device.getVendorID()
-						<< ":" << device.getProductID()
+				buffer	<< device.getFullName() << " "
+						<< device.getVendorID() << ":" << device.getProductID()
 						<< " on bus " << toUInt(device.getBus()) << " initialized";
 				GKSysLog(LOG_INFO, INFO, buffer.str());
 
@@ -184,7 +242,9 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 	return false;
 }
 
-const bool DevicesManager::stopDevice(const std::string & devID) noexcept {
+const bool DevicesManager::stopDevice(
+	const std::string & devID,
+	const bool skipUSBRequests) noexcept {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "stopping device " << devID;
 #endif
@@ -193,11 +253,11 @@ const bool DevicesManager::stopDevice(const std::string & devID) noexcept {
 		const auto & device = _startedDevices.at(devID);
 		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
-				driver->closeDevice( device );
+				driver->closeDevice( device, skipUSBRequests );
 
 				std::ostringstream buffer(std::ios_base::app);
-				buffer	<< device.getName() << " " << device.getVendorID()
-						<< ":" << device.getProductID()
+				buffer	<< device.getFullName() << " "
+						<< device.getVendorID() << ":" << device.getProductID()
 						<< " on bus " << toUInt(device.getBus()) << " stopped";
 				GKSysLog(LOG_INFO, INFO, buffer.str());
 
@@ -242,7 +302,9 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept {
 	LOG(DEBUG2) << "checking initialized devices threads status";
 #endif
 
+#if GKDBUS
 	std::vector<std::string> toSend;
+#endif
 
 	std::vector<std::string> toCheck;
 	for(const auto& devicePair : _startedDevices) {
@@ -251,22 +313,32 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept {
 
 	for(const auto & devID : toCheck) {
 		for(const auto & driver : _drivers) {
-			if( _startedDevices[devID].getDriverID() == driver->getDriverID() ) {
+			auto & device = _startedDevices.at(devID);
+
+			if( device.getDriverID() == driver->getDriverID() ) {
 				if( ! driver->getDeviceThreadsStatus(devID) ) {
 					GKSysLog(LOG_WARNING, WARNING, "USB port software reset detected, not cool :(");
 					GKSysLog(LOG_WARNING, WARNING, "We are forced to hard stop a device.");
 					GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
-					this->stopDevice(devID);
+
+					/* mark device as dirty */
+					device.setDirtyFlag();
+
+					this->stopDevice(devID, true);
+#if GKDBUS
 					toSend.push_back(devID);
+#endif
 				}
 			}
 		}
 	}
 
+#if GKDBUS
 	if( toSend.size() > 0 ) {
 		/* inform clients */
 		this->sendStatusSignalArrayToClients(_numClients, _pDBus, "DevicesStopped", toSend);
 	}
+#endif
 }
 
 void DevicesManager::checkForUnpluggedDevices(void) noexcept {
@@ -274,7 +346,9 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 	LOG(DEBUG2) << "checking for unplugged devices";
 #endif
 
+#if GKDBUS
 	std::vector<std::string> toSend;
+#endif
 
 	/* checking for unplugged unstopped devices */
 	std::vector<std::string> toClean;
@@ -286,21 +360,28 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 
 	for(const auto & devID : toClean) {
 		try {
+			{
+				auto & device = _startedDevices.at(devID);
+				std::ostringstream buffer(std::ios_base::app);
+				buffer	<< "erasing unplugged initialized driver : "
+						<< device.getVendorID() << ":" << device.getProductID()
+						<< ":" << device.getDevnode() << ":" << device.getUSec();
 
-			const auto & device = _startedDevices.at(devID);
-			std::ostringstream buffer(std::ios_base::app);
-			buffer	<< "erasing unplugged initialized driver : "
-					<< device.getVendorID() << ":" << device.getProductID()
-					<< ":" << device.getDevNode() << ":" << device.getUSec();
+				GKSysLog(LOG_WARNING, WARNING, buffer.str());
+				GKSysLog(LOG_WARNING, WARNING, "Did you unplug your device before properly stopping it ?");
+				GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
 
-			GKSysLog(LOG_WARNING, WARNING, buffer.str());
-			GKSysLog(LOG_WARNING, WARNING, "Did you unplug your device before properly stopping it ?");
-			GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
+				/* mark device as dirty */
+				device.setDirtyFlag();
+			}
 
-			if( this->stopDevice(devID) ) {
+			if( this->stopDevice(devID, true) ) {
+				const auto & device = _stoppedDevices.at(devID);
+				_unpluggedDevices[devID] = device;
 				_stoppedDevices.erase(devID);
-				_unpluggedDevices.insert(devID);
+#if GKDBUS
 				toSend.push_back(devID);
+#endif
 			}
 		}
 		catch (const std::out_of_range& oor) {
@@ -319,12 +400,22 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 		}
 	}
 	for(const auto & devID : toClean) {
+		try {
 #if DEBUGGING_ON
-		LOG(DEBUG3) << "removing " << devID << " from stopped devices container";
+			LOG(DEBUG3) << "removing " << devID << " from stopped devices container";
 #endif
-		_stoppedDevices.erase(devID);
-		_unpluggedDevices.insert(devID);
-		toSend.push_back(devID);
+			const auto & device = _stoppedDevices.at(devID);
+			_unpluggedDevices[devID] = device;
+			_stoppedDevices.erase(devID);
+#if GKDBUS
+			toSend.push_back(devID);
+#endif
+		}
+		catch (const std::out_of_range& oor) {
+			std::ostringstream buffer(std::ios_base::app);
+			buffer << "!?! device not found !?! " << devID;
+			GKSysLog(LOG_WARNING, WARNING, buffer.str());
+		}
 	}
 	toClean.clear();
 
@@ -332,13 +423,17 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "number of devices still initialized : " << _startedDevices.size();
+#if GKDBUS
 	LOG(DEBUG3) << "number of unplugged devices : " << toSend.size();
 #endif
+#endif
 
+#if GKDBUS
 	if(toSend.size() > 0) {
 		/* inform clients */
 		this->sendStatusSignalArrayToClients(_numClients, _pDBus, "DevicesUnplugged", toSend);
 	}
+#endif
 }
 
 #if DEBUGGING_ON
@@ -358,7 +453,7 @@ void udevDeviceProperties(struct udev_device * pDevice, const std::string & subS
 	std::string attr;
 	udev_list_entry_foreach( devs_list_entry, devs_props ) {
 		attr = toString( udev_list_entry_get_name( devs_list_entry ) );
-		if( attr == "" )
+		if( attr.empty() )
 			continue;
 
 		value = toString( udev_device_get_property_value(pDevice, attr.c_str()) );
@@ -369,7 +464,7 @@ void udevDeviceProperties(struct udev_device * pDevice, const std::string & subS
 	LOG(DEBUG4) << "--";
 	udev_list_entry_foreach( devs_list_entry, devs_attr ) {
 		attr = toString( udev_list_entry_get_name( devs_list_entry ) );
-		if( attr == "" )
+		if( attr.empty() )
 			continue;
 
 		value = toString( udev_device_get_sysattr_value(pDevice, attr.c_str()) );
@@ -411,8 +506,8 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 		udev_list_entry_foreach(dev_list_entry, devices) {
 			// Get the filename of the /sys entry for the device
 			// and create a udev_device object (dev) representing it
-			std::string path = toString( udev_list_entry_get_name(dev_list_entry) );
-			if( path == "" )
+			const std::string path( toString( udev_list_entry_get_name(dev_list_entry) ) );
+			if( path.empty() )
 				throw GLogiKExcept("entry_get_name failure");
 
 			struct udev_device *dev = udev_device_new_from_syspath(pUdev, path.c_str());
@@ -424,8 +519,8 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 			}
 
 #if DEBUGGING_ON
-			std::string devss = toString( udev_device_get_subsystem(dev) );
-			if( devss == "" ) {
+			const std::string devss( toString( udev_device_get_subsystem(dev) ) );
+			if( devss.empty() ) {
 				udev_device_unref(dev);
 				throw GLogiKExcept("get_subsystem failure");
 			}
@@ -435,7 +530,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 
 			const std::string vendorID( toString( udev_device_get_property_value(dev, "ID_VENDOR_ID") ) );
 			const std::string productID( toString( udev_device_get_property_value(dev, "ID_MODEL_ID") ) );
-			if( (vendorID == "") or (productID == "") ) {
+			if( vendorID.empty() or productID.empty() ) {
 				udev_device_unref(dev);
 				continue;
 			}
@@ -446,8 +541,8 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 						if( device.getProductID() == productID ) {
 
 							// path to the event device node in /dev
-							std::string devnode = toString( udev_device_get_devnode(dev) );
-							if( devnode == "" ) {
+							const std::string devnode( toString( udev_device_get_devnode(dev) ) );
+							if( devnode.empty() ) {
 								udev_device_unref(dev);
 								continue;
 							}
@@ -456,8 +551,8 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 							udevDeviceProperties(dev, devss);
 #endif
 
-							const std::string vendor( toString( udev_device_get_property_value(dev, "ID_VENDOR") ) );
-							const std::string model( toString( udev_device_get_property_value(dev, "ID_MODEL") ) );
+							//const std::string vendor( toString( udev_device_get_property_value(dev, "ID_VENDOR") ) );
+							//const std::string model( toString( udev_device_get_property_value(dev, "ID_MODEL") ) );
 							const std::string serial( toString( udev_device_get_property_value(dev, "ID_SERIAL") ) );
 							const std::string usec( toString( udev_device_get_property_value(dev, "USEC_INITIALIZED") ) );
 
@@ -476,28 +571,34 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 								throw GLogiKExcept("stoi out of range");
 							}
 
-							const std::string devID( BusNumDeviceID::getDeviceID(bus, num) );
+							const std::string devID( USBDeviceID::getDeviceID(bus, num) );
+
+							const std::string devpath( toString( udev_device_get_sysattr_value(dev, "devpath") ) );
+							if( devpath.empty() ) {
+								udev_device_unref(dev);
+								continue;
+							}
 
 							try {
-								const DetectedDevice & d = _detectedDevices.at(devID);
-								LOG(WARNING) << "found already detected device : " << devID << " " << d.getDevNode();
+								const USBDeviceID & d = _detectedDevices.at(devID);
+								LOG(WARNING) << "found already detected device : " << devID << " " << d.getDevnode();
 							}
 							catch (const std::out_of_range& oor) {
 
-								DetectedDevice found(
-									device.getName(),
-									device.getVendorID(),
-									device.getProductID(),
-									device.getCapabilities(),
-									bus, num,
-									devnode, vendor, model,
-									serial, usec, driver->getDriverID()
+								USBDeviceID found(
+									device,
+									devnode,
+									devpath,
+									serial,
+									usec,
+									driver->getDriverID(),
+									bus, num
 								);
 
 								_detectedDevices[devID] = found;
 
 #if DEBUGGING_ON
-								LOG(DEBUG3) << "found device - Vid:Pid:DevNode:usec | bus:num : " << vendorID
+								LOG(DEBUG3) << "found device - Vid:Pid:node:usec | bus:num : " << vendorID
 											<< ":" << productID << ":" << devnode << ":" << usec
 											<< " | " << toUInt(bus) << ":" << toUInt(num);
 #endif
@@ -586,16 +687,35 @@ const uint64_t DevicesManager::getDeviceCapabilities(const std::string & devID) 
 	return 0;
 }
 
-const std::string & DevicesManager::getDeviceModel(const std::string & devID) const
+const std::string & DevicesManager::getDeviceProduct(const std::string & devID) const
 {
 	try {
 		const auto & device = _startedDevices.at(devID);
-		return device.getModel();
+		return device.getProduct();
 	}
 	catch (const std::out_of_range& oor) {
 		try {
 			const auto & device = _stoppedDevices.at(devID);
-			return device.getModel();
+			return device.getProduct();
+		}
+		catch (const std::out_of_range& oor) {
+			GKSysLog_UnknownDevice
+		}
+	}
+
+	return _unknown;
+}
+
+const std::string & DevicesManager::getDeviceName(const std::string & devID) const
+{
+	try {
+		const auto & device = _startedDevices.at(devID);
+		return device.getName();
+	}
+	catch (const std::out_of_range& oor) {
+		try {
+			const auto & device = _stoppedDevices.at(devID);
+			return device.getName();
 		}
 		catch (const std::out_of_range& oor) {
 			GKSysLog_UnknownDevice
@@ -612,7 +732,7 @@ const LCDPluginsPropertiesArray_type & DevicesManager::getDeviceLCDPluginsProper
 	try {
 		const auto & device = _startedDevices.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
+		LOG(DEBUG2) << " found " << devID << " in started devices";
 #endif
 		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
@@ -624,7 +744,7 @@ const LCDPluginsPropertiesArray_type & DevicesManager::getDeviceLCDPluginsProper
 		try {
 			const auto & device = _stoppedDevices.at(devID);
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "found " << device.getModel() << " in stopped devices";
+			LOG(DEBUG2) << "found " << devID << " in stopped devices";
 #endif
 			for(const auto & driver : _drivers) {
 				if( device.getDriverID() == driver->getDriverID() ) {
@@ -663,7 +783,7 @@ void DevicesManager::setDeviceActiveConfiguration(
 	try {
 		const auto & device = _startedDevices.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
+		LOG(DEBUG2) << "found " << devID << " in started devices";
 #endif
 		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
@@ -682,7 +802,7 @@ const banksMap_type & DevicesManager::getDeviceMacrosBanks(const std::string & d
 	try {
 		const auto & device = _startedDevices.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
+		LOG(DEBUG2) << "found " << devID << " in started devices";
 #endif
 		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			for(const auto & driver : _drivers) {
@@ -703,7 +823,7 @@ const std::vector<std::string> & DevicesManager::getDeviceMacroKeysNames(const s
 	try {
 		const auto & device = _startedDevices.at(devID);
 #if DEBUGGING_ON
-		LOG(DEBUG2) << "found " << device.getModel() << " in started devices";
+		LOG(DEBUG2) << "found " << devID << " in started devices";
 #endif
 		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			for(const auto & driver : _drivers) {
@@ -717,7 +837,7 @@ const std::vector<std::string> & DevicesManager::getDeviceMacroKeysNames(const s
 		try {
 			const auto & device = _stoppedDevices.at(devID);
 #if DEBUGGING_ON
-			LOG(DEBUG2) << "found " << device.getModel() << " in stopped devices";
+			LOG(DEBUG2) << "found " << devID << " in stopped devices";
 #endif
 			if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 				for(const auto & driver : _drivers) {
@@ -749,19 +869,14 @@ void DevicesManager::resetDevicesStates(void) {
 	}
 }
 
-void DevicesManager::checkDBusMessages(void) noexcept {
-	_pDBus->checkForMessages();
-}
-
 /*
  *	Throws GLogiKExcept in many ways on udev related functions failures.
  *	LibUSB failures on devices start/stop are catched internally.
  */
-void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
+void DevicesManager::startMonitoring(void) {
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing libudev";
 #endif
-	_pDBus = pDBus;
 
 	struct udev * pUdev = udev_new();
 	if(pUdev == nullptr )
@@ -793,7 +908,11 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 			LOG(DEBUG2) << "loading drivers";
 #endif
 			try {
-				_drivers.push_back( new LogitechG510() );
+#if GKLIBUSB
+				_drivers.push_back( new LogitechG510<LibUSB>() );
+#elif GKHIDAPI
+				_drivers.push_back( new LogitechG510<hidapi>() );
+#endif
 			}
 			catch (const std::bad_alloc& e) { /* handle new() failure */
 				throw GLogiKBadAlloc("catch driver wrong allocation");
@@ -802,10 +921,12 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 			this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
 			this->initializeDevices();
 
+#if GKDBUS
 			/* send signal, even if no client registered, clients could have started before daemon */
 			this->sendSignalToClients(_numClients, _pDBus, "DaemonIsStarting", true);
+#endif
 
-			unsigned short c = 0;
+			uint16_t c = 0;
 
 			while( DaemonControl::isDaemonRunning() )
 			{
@@ -818,29 +939,32 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 						throw GLogiKExcept("no device from receive_device(), something is wrong");
 
 					try { /* dev unref on catch */
-						std::string action = toString( udev_device_get_action(dev) );
-						if( action == "" ) {
+						const std::string action( toString( udev_device_get_action(dev) ) );
+						if( action.empty() ) {
 							throw GLogiKExcept("device_get_action() failure");
 						}
 
-						std::string devnode = toString( udev_device_get_devnode(dev) );
-						// filtering empty events
-						if( devnode != "" ) {
-#if DEBUGGING_ON
-							LOG(DEBUG3) << "Action : " << action;
-#endif
-							this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
+						const std::string devnode( toString( udev_device_get_devnode(dev) ) );
 
-							if( action == "add" ) {
-								this->initializeDevices();
-							}
-							else if( action == "remove" ) {
-								this->checkForUnpluggedDevices();
-							}
-							else {
-								/* clear detected devices container */
-								_detectedDevices.clear();
-							}
+						// filtering empty events
+						if( devnode.empty() ) {
+							continue;
+						}
+
+#if DEBUGGING_ON
+						LOG(DEBUG3) << "Action : " << action;
+#endif
+						this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
+
+						if( action == "add" ) {
+							this->initializeDevices();
+						}
+						else if( action == "remove" ) {
+							this->checkForUnpluggedDevices();
+						}
+						else {
+							/* clear detected devices container */
+							_detectedDevices.clear();
 						}
 					}
 					catch ( const GLogiKExcept & e ) {
@@ -851,7 +975,9 @@ void DevicesManager::startMonitoring(NSGKDBus::GKDBus* pDBus) {
 					udev_device_unref(dev);
 				}
 
+#if GKDBUS
 				this->checkDBusMessages();
+#endif
 				if(c++ >= 10) { /* bonus point */
 					this->checkInitializedDevicesThreadsStatus();
 					c = 0;

@@ -32,50 +32,75 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-USBDevice::USBDevice(
-	const std::string & name,
-	const std::string & vendorID,
-	const std::string & productID,
-	const uint64_t capabilities,
-	uint8_t bus,
-	uint8_t num)
-		:	BusNumDeviceID(name, vendorID, productID, capabilities, bus, num),
-			_fatalErrors(0),
+
+USBDevice::USBDevice(const USBDeviceID & device)
+		:	USBDeviceID(device),
+			_pressedRKeysMask(0),
+			_LCDPluginsMask1(0),
 			_pMacrosManager(nullptr),
 			_pLCDPluginsManager(nullptr),
-			_pressedRKeysMask(0),
-			_MxKeysLedsMask(0),
-			_exitMacroRecordMode(false),
-			_LCDPluginsMask1(0),
-			_lastKeysInterruptTransferLength(0),
-			_lastLCDInterruptTransferLength(0),
-			_keysEndpoint(0),
+#if GKLIBUSB
 			_pUSBDevice(nullptr),
 			_pUSBDeviceHandle(nullptr),
-			_threadsStatus(true)
+#elif GKHIDAPI
+			_pHIDDevice(nullptr),
+#endif
+			_MxKeysLedsMask(0),
+			_exitMacroRecordMode(false),
+			_threadsStatus(true),
+			_skipUSBRequests(false),
+			_lastKeysInterruptTransferLength(0),
+			_lastLCDInterruptTransferLength(0),
+#if GKLIBUSB
+			_fatalErrors(0),
+			_keysEndpoint(0),
+			_LCDEndpoint(0)
+#elif GKHIDAPI
+			_fatalErrors(0)
+#endif
 {
 	std::fill_n(_pressedKeys, KEYS_BUFFER_LENGTH, 0);
 	std::fill_n(_previousPressedKeys, KEYS_BUFFER_LENGTH, 0);
 	this->setRGBBytes(0xFF, 0xFF, 0xFF);
+	_lastTimePoint = std::chrono::steady_clock::now();
 }
 
 void USBDevice::operator=(const USBDevice& dev)
 {
-	_name			= dev.getName();
-	_vendorID		= dev.getVendorID();
-	_productID		= dev.getProductID();
-	_capabilities	= dev.getCapabilities();
-	_bus			= dev.getBus();
-	_num			= dev.getNum();
-	_devID			= dev.getID();
+	_vendor			= dev._vendor;
+	_product		= dev._product;
+	_name			= dev._name;
+	_fullname		= dev._fullname;
+	_vendorID		= dev._vendorID;
+	_productID		= dev._productID;
+	_capabilities	= dev._capabilities;
+	_bus			= dev._bus;
+	_num			= dev._num;
+	_devID			= dev._devID;
+
+	_devnode		= dev._devnode;
+	_serial			= dev._serial;
+	_usec			= dev._usec;
+	_driverID		= dev._driverID;
+	_state			= dev._state;
+
+	/* USB_INTERFACE_DESCRIPTOR */
+	_bConfigurationValue	= dev._bConfigurationValue;
+	_bInterfaceNumber		= dev._bInterfaceNumber;
+	_bAlternateSetting		= dev._bAlternateSetting;
+	_bNumEndpoints			= dev._bNumEndpoints;
+
+	_keysInterruptBufferMaxLength	= dev._keysInterruptBufferMaxLength;
+	_MacrosKeysLength				= dev._MacrosKeysLength;
+	_MediaKeysLength				= dev._MediaKeysLength;
+	_LCDKeysLength					= dev._LCDKeysLength;
+
 	/* end friendship members */
 
 	/* public */
 	_fatalErrors					= dev._fatalErrors;
 	_keysThreadID					= dev._keysThreadID;
 	_LCDThreadID					= dev._LCDThreadID;
-	_pMacrosManager					= dev._pMacrosManager;
-	_pLCDPluginsManager				= dev._pLCDPluginsManager;
 	_pressedRKeysMask				= dev._pressedRKeysMask;
 	_MxKeysLedsMask					= static_cast<uint8_t>(dev._MxKeysLedsMask);
 	_exitMacroRecordMode			= static_cast<bool>(dev._exitMacroRecordMode);
@@ -96,29 +121,27 @@ void USBDevice::operator=(const USBDevice& dev)
 	_lastTimePoint		= dev._lastTimePoint;
 
 	/* private */
+	_pMacrosManager					= dev._pMacrosManager;
+	_pLCDPluginsManager				= dev._pLCDPluginsManager;
+
 	this->setRGBBytes(dev._RGB[0], dev._RGB[1], dev._RGB[2]);
-	_lastKeysInterruptTransferLength	= dev.getLastKeysInterruptTransferLength();
-	_lastLCDInterruptTransferLength		= dev.getLastLCDInterruptTransferLength();
-	_keysEndpoint		= dev._keysEndpoint;
-	_LCDEndpoint		= dev._LCDEndpoint;
+	_lastKeysInterruptTransferLength	= dev._lastKeysInterruptTransferLength;
+	_lastLCDInterruptTransferLength		= dev._lastLCDInterruptTransferLength;
+	_threadsStatus		= static_cast<bool>(dev._threadsStatus);
+	_skipUSBRequests	= static_cast<bool>(dev._skipUSBRequests);
+
+#if GKLIBUSB
 	_pUSBDevice			= dev._pUSBDevice;
 	_pUSBDeviceHandle	= dev._pUSBDeviceHandle;
+
+	_keysEndpoint		= dev._keysEndpoint;
+	_LCDEndpoint		= dev._LCDEndpoint;
+
 	_toRelease			= dev._toRelease;
 	_toAttach			= dev._toAttach;
-
-	_threadsStatus		= static_cast<bool>(dev._threadsStatus);
-}
-
-void USBDevice::initializeMacrosManager(
-	const char* virtualKeyboardName,
-	const std::vector<std::string> & keysNames)
-{
-	try {
-		_pMacrosManager = new MacrosManager(virtualKeyboardName, keysNames);
-	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
-		throw GLogiKBadAlloc("macros manager allocation failure");
-	}
+#elif GKHIDAPI
+	_pHIDDevice			= dev._pHIDDevice;
+#endif
 }
 
 void USBDevice::destroyMacrosManager(void) noexcept {
@@ -128,17 +151,7 @@ void USBDevice::destroyMacrosManager(void) noexcept {
 	}
 }
 
-void USBDevice::initializeLCDPluginsManager(void)
-{
-	try {
-		_pLCDPluginsManager = new LCDScreenPluginsManager();
-	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
-		throw GLogiKBadAlloc("LCD Plugins manager allocation failure");
-	}
-}
-
-void USBDevice::destroyLCDPluginsManager(void)
+void USBDevice::destroyLCDPluginsManager(void) noexcept
 {
 	if( _pLCDPluginsManager ) {
 		delete _pLCDPluginsManager;

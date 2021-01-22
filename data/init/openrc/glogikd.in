@@ -17,7 +17,7 @@ runas_user=glogikd:root
 depend() {
 	use logger
 	after bootmisc
-	need localmount dbus
+	need localmount @INIT_NEED_DBUS@
 }
 
 start_pre() {

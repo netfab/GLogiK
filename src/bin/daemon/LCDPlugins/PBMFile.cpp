@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -37,37 +37,43 @@ PBMFile::~PBMFile()
 }
 
 void PBMFile::readPBM(
-	const std::string & path,
-	PBMDataArray & PBMData,
-	const unsigned int expectedWidth,
-	const unsigned int expectedHeight)
+	const std::string & PBMPath,
+	PixelsData & PBMData,
+	const uint16_t PBMWidth,
+	const uint16_t PBMHeight)
 {
 	std::ifstream pbm;
 	pbm.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "opening : " << path;
+	LOG(DEBUG2) << "opening : " << PBMPath;
 #endif
 
 	try {
-		pbm.open(path, std::ifstream::in|std::ifstream::binary);
+		try {
+			pbm.open(PBMPath, std::ifstream::in|std::ifstream::binary);
 
-		std::string magic;
-		unsigned int width, height = 0;
+			std::string magic;
+			uint16_t width, height = 0;
 
-		PBMFile::parsePBMHeader(pbm, magic, width, height);
+			PBMFile::parsePBMHeader(pbm, magic, width, height);
 
-		if( magic != "P4" or width != expectedWidth or height != expectedHeight )
-			throw GLogiKExcept("wrong PBM header");
+			if( magic != "P4" or width != PBMWidth or height != PBMHeight ) {
+				throw GLogiKExcept("wrong PBM header");
+			}
 
-		PBMFile::extractPBMData(pbm, PBMData);
+			PBMFile::extractPBMData(pbm, PBMData);
 
-		pbm.close();
+			pbm.close();
+		}
+		catch (const std::ios_base::failure & e) {
+			LOG(ERROR) << "error opening/reading/closing PBM file : " << e.what();
+			throw GLogiKExcept("PBM ifstream error");
+		}
 	}
-	catch (const std::ios_base::failure & e) {
-		LOG(ERROR) << "error opening/reading/closing PBM file : " << e.what();
+	catch (const GLogiKExcept & e) {
 		PBMFile::closePBM(pbm);
-		throw GLogiKExcept("PBM ifstream error");
+		throw;
 	}
 
 	if( pbm.is_open() )
@@ -84,8 +90,8 @@ void PBMFile::closePBM(std::ifstream & pbm)
 void PBMFile::parsePBMHeader(
 	std::ifstream & pbm,
 	std::string & magic,
-	unsigned int & width,
-	unsigned int & height)
+	uint16_t & width,
+	uint16_t & height)
 {
 	const char white = 0x0a;
 	const char space = 0x20;
@@ -123,7 +129,7 @@ void PBMFile::parsePBMHeader(
 
 void PBMFile::extractPBMData(
 	std::ifstream & pbm,
-	PBMDataArray & PBMData)
+	PixelsData & PBMData)
 {
 	pbm.read(reinterpret_cast<char*>(&PBMData.front()), PBMData.size());
 
@@ -132,7 +138,7 @@ void PBMFile::extractPBMData(
 				<< " - expected: " << PBMData.size() << std::endl;
 #endif
 
-	if( PBMData.size() != pbm.gcount() )
+	if( PBMData.size() != static_cast<PixelsData::size_type>( pbm.gcount() ) )
 		throw GLogiKExcept("unexpected numbers of bytes read");
 
 	// checking that we really reached the EoF

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -48,22 +48,21 @@ enum class LCDPluginTempo : uint8_t
 	TEMPO_400_15,
 };
 
-class LCDPBMFrame
+class PBMFrame
 {
 	public:
-		LCDPBMFrame(const unsigned short i)
-			:	_frameCounter(i) {}
-		LCDPBMFrame(void) = delete;
-		~LCDPBMFrame() = default;
+		PBMFrame(const uint16_t num);
+		PBMFrame(void) = delete;
+		~PBMFrame() = default;
 
-		PBMDataArray _PBMData;
+		PixelsData _PBMData;
 
-		const bool switchToNextFrame(const unsigned short currentFrameCounter);
+		const bool switchToNextFrame(const uint16_t currentFrameCounter);
 
 	protected:
 
 	private:
-		const unsigned short _frameCounter;
+		const uint16_t _numFrames;
 
 };
 
@@ -73,19 +72,23 @@ class LCDPlugin
 	public:
 		virtual ~LCDPlugin(void);
 
-		virtual void init(FontsManager* const pFonts) = 0;
+		virtual void init(
+			FontsManager* const pFonts,
+			const std::string & product
+		) = 0;
 		const bool isInitialized(void) const;
 
 		const LCDPluginProperties getPluginProperties(void) const;
 		const std::string & getPluginName(void) const;
 		const uint64_t getPluginID(void) const;
-		const unsigned short getPluginTiming(void) const;
-		const unsigned short getPluginMaxFrames(void) const;
+		const uint16_t getPluginTiming(void) const;
+		const uint16_t getPluginMaxFrames(void) const;
+		void resetPluginEverLocked(void);
+
 		void resetPBMFrameIndex(void);
 		void prepareNextPBMFrame(void);
-		void resetEverLocked(void);
 
-		virtual const PBMDataArray & getNextPBMFrame(
+		virtual const PixelsData & getNextPBMFrame(
 			FontsManager* const pFonts,
 			const std::string & LCDKey,
 			const bool lockedPlugin
@@ -100,54 +103,54 @@ class LCDPlugin
 		void addPBMFrame(
 			const fs::path & PBMDirectory,
 			const std::string & file,
-			const unsigned short num = 1
+			const uint16_t num = 1
 		);
 
-		void addPBMClearedFrame(
-			const unsigned short num = 1
+		void addPBMEmptyFrame(
+			const uint16_t num = 1
 		);
 
-		const unsigned short getNextPBMFrameID(void) const;
-		PBMDataArray & getCurrentPBMFrame(void);
+		const uint16_t getNextPBMFrameID(void) const;
+		PixelsData & getCurrentPBMFrame(void);
 
-		void writeStringOnFrame(
+		void writeStringOnPBMFrame(
 			FontsManager* const pFonts,
 			const FontID fontID,
 			const std::string & string,
-			unsigned int PBMXPos,
-			const unsigned int PBMYPos
+			const int16_t PBMXPos,
+			const int16_t PBMYPos
 		);
 
-		void writeStringOnLastFrame(
+		void writeStringOnLastPBMFrame(
 			FontsManager* const pFonts,
 			const FontID fontID,
 			const std::string & string,
-			unsigned int PBMXPos,
-			const unsigned int PBMYPos
+			const int16_t PBMXPos,
+			const int16_t PBMYPos
 		);
 
-		void drawProgressBarOnFrame(
-			const unsigned short percent,
-			const unsigned int PBMXPos,
-			const unsigned int PBMYPos
+		void drawProgressBarOnPBMFrame(
+			const uint16_t percent,
+			const uint16_t PBMXPos,
+			const uint16_t PBMYPos
 		);
 
-		void drawPadlockOnFrame(
+		void drawPadlockOnPBMFrame(
 			const bool lockedPlugin,
-			const unsigned int PBMXPos = 1,
-			const unsigned int PBMYPos = 1
+			const uint16_t PBMXPos = 1,
+			const uint16_t PBMYPos = 1
 		);
 
 	private:
 		bool _initialized;
 		bool _everLocked;
-		unsigned short _frameCounter;		/* frame counter */
-		unsigned short _frameIndex;			/* frame index in the container */
-		std::vector<LCDPBMFrame> _PBMFrames;
-		std::vector<LCDPBMFrame>::iterator _itCurrentFrame;
+		uint16_t _PBMFrameCounter;	/* frame counter */
+		uint16_t _PBMFrameIndex;	/* frame index in the container */
+		std::vector<PBMFrame> _PBMFrames;
+		std::vector<PBMFrame>::iterator _itCurrentPBMFrame;
 
 		void checkPBMFrameIndex(void);
-		static std::tuple<unsigned short, unsigned short> getTempo(const LCDPluginTempo tempo);
+		static std::tuple<uint16_t, uint16_t> getTempo(const LCDPluginTempo tempo);
 };
 
 } // namespace GLogiK

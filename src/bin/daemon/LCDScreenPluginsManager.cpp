@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
  *
  */
 
+#include <algorithm>
 #include <new>
 
 #include "lib/utils/utils.hpp"
@@ -26,11 +27,11 @@
 
 #include "LCDScreenPluginsManager.hpp"
 
-#include "include/enums.hpp"
-
 #include "LCDPlugins/endscreen.hpp"
 #include "LCDPlugins/splashscreen.hpp"
 #include "LCDPlugins/systemMonitor.hpp"
+
+#include "include/enums.hpp"
 
 namespace GLogiK
 {
@@ -39,11 +40,11 @@ using namespace NSGKUtils;
 
 const LCDPluginsPropertiesArray_type LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray = {};
 
-LCDScreenPluginsManager::LCDScreenPluginsManager()
-	:	_frameCounter(0),
+LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
+	:	_pFonts(&_fontsManager),
+		_frameCounter(0),
 		_noPlugins(false),
-		_currentPluginLocked(false),
-		_pFonts(&_fontsManager)
+		_currentPluginLocked(false)
 {
 	try {
 		_plugins.push_back( new Splashscreen() );
@@ -58,7 +59,7 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 	/* initialize each plugin */
 	for(const auto & plugin : _plugins) {
 		try {
-			plugin->init(_pFonts);
+			plugin->init(_pFonts, product);
 			_pluginsPropertiesArray.push_back( plugin->getPluginProperties() );
 		}
 		catch (const GLogiKExcept & e) {
@@ -87,7 +88,9 @@ LCDScreenPluginsManager::LCDScreenPluginsManager()
 		GKSysLog(LOG_WARNING, WARNING, "no LCD screen plugin initialized");
 		_noPlugins = true;
 	}
-	_LCDBuffer.fill(0x0);
+
+	/* initialize LCD frame container */
+	_LCDBuffer.resize( DEFAULT_PBM_DATA_IN_BYTES + LCD_DATA_HEADER_OFFSET, 0 );
 }
 
 LCDScreenPluginsManager::~LCDScreenPluginsManager() {
@@ -99,7 +102,7 @@ const LCDPluginsPropertiesArray_type & LCDScreenPluginsManager::getLCDPluginsPro
 	return _pluginsPropertiesArray;
 }
 
-const unsigned short LCDScreenPluginsManager::getPluginTiming(void)
+const uint16_t LCDScreenPluginsManager::getPluginTiming(void)
 {
 	if(_itCurrentPlugin != _plugins.end() )
 		return (*_itCurrentPlugin)->getPluginTiming();
@@ -146,7 +149,24 @@ void LCDScreenPluginsManager::jumpToNextPlugin(void)
 	}
 }
 
-LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
+const bool LCDScreenPluginsManager::findOneLCDScreenPlugin(const uint64_t LCDPluginsMask1) const
+{
+	bool ret = false;
+
+	if( ! _noPlugins ) {
+		for(auto it = _plugins.cbegin(); it != _plugins.cend(); ++it) {
+			/* check that current plugin is loaded */
+			if( LCDPluginsMask1 & (*it)->getPluginID() ) {
+				ret = true;
+				break;
+			}
+		}
+	}
+
+	return ret;
+}
+
+const PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 	const std::string & LCDKey,
 	const uint64_t LCDPluginsMask1
 ) {
@@ -171,6 +191,7 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 
 				if( _frameCounter >= (*_itCurrentPlugin)->getPluginMaxFrames() ) {
 					bool found = false;
+					const std::vector<LCDPlugin*>::const_iterator itFirstPlugin = _itCurrentPlugin;
 					while( ! found ) {
 						/* locked plugin ? */
 						if( ! _currentPluginLocked ) {
@@ -179,15 +200,21 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 								_itCurrentPlugin = _plugins.begin();
 
 							/* reset everLocked boolean */
-							(*_itCurrentPlugin)->resetEverLocked();
+							(*_itCurrentPlugin)->resetPluginEverLocked();
 						}
 
 						/* check that current plugin is enabled */
 						if( LCDPluginsMask1 & (*_itCurrentPlugin)->getPluginID() )
 							found = true;
+
+						if( (! found) and (_itCurrentPlugin == itFirstPlugin) ) {
+							const std::string warn("detected potential infinite loop");
+							GKSysLog(LOG_WARNING, WARNING, warn);
+							throw GLogiKExcept(warn);
+						}
 					}
 
-					/* reset frames to beginning */
+					/* reset PBM frame to beginning */
 					(*_itCurrentPlugin)->resetPBMFrameIndex();
 					_frameCounter = 0;
 				}
@@ -200,15 +227,17 @@ LCDDataArray & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 					(*_itCurrentPlugin)->getNextPBMFrame(_pFonts, LCDKey, _currentPluginLocked)
 				);
 			}
-			else /* else blank screen */
-				_LCDBuffer.fill(0x0);
+			else {
+				/* blank screen */
+				std::fill(_LCDBuffer.begin(), _LCDBuffer.end(), 0x0);
+			}
 		}
 		catch (const GLogiKExcept & e) {
 			LOG(ERROR) << e.what();
-			_LCDBuffer.fill(0x0);
+			std::fill(_LCDBuffer.begin(), _LCDBuffer.end(), 0x0);
 		}
 
-		std::fill_n(_LCDBuffer.begin(), LCD_BUFFER_OFFSET, 0);
+		std::fill_n(_LCDBuffer.begin(), LCD_DATA_HEADER_OFFSET, 0x0);
 	}
 
 	/* the keyboard needs this magic byte */
@@ -233,13 +262,13 @@ void LCDScreenPluginsManager::stopLCDPlugins(void) {
  * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
  *	A7 A6 A5 A4 A3 A2 A1 A0 B7 B6 B5 B4 B3 B2 B1 B0  .  .
  *	U7 U6 U5 U4 U3 U2 U1 U0  .  .  .  .  .  .  .  .  .  . --->
- *	 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . ---> on PBM_WIDTH_IN_BYTES bytes
+ *	 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . ---> on DEFAULT_PBM_WIDTH_IN_BYTES bytes
  *	 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . --->
  *	 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
  *	                      |  |  |
  *	                       \   /
  *	                        \ /
- *	                 on PBM_HEIGHT bytes
+ *	             on DEFAULT_PBM_HEIGHT bytes
  *
  * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
  * LCD data binary format (without header). Description coming from libg15.
@@ -281,12 +310,12 @@ void LCDScreenPluginsManager::stopLCDPlugins(void) {
  *	A2		pixels of the 43-pixel high display.)
  *
  */
-void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(LCDDataArray & LCDBuffer, const PBMDataArray & PBMData)
+void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(PixelsData & LCDBuffer, const PixelsData & PBMData)
 {
-	for(unsigned int row = 0; row < PBM_HEIGHT_IN_BYTES; ++row) {
+	for(unsigned int row = 0; row < DEFAULT_PBM_HEIGHT_IN_BYTES; ++row) {
 		unsigned int LCDCol = 0;
-		unsigned int indexOffset = (PBM_WIDTH * row);
-		for(unsigned int PBMByte = 0; PBMByte < PBM_WIDTH_IN_BYTES; ++PBMByte) {
+		unsigned int rowOffset = (DEFAULT_PBM_WIDTH * row);
+		for(unsigned int PBMByte = 0; PBMByte < DEFAULT_PBM_WIDTH_IN_BYTES; ++PBMByte) {
 
 			for(int bit = 7; bit > -1; --bit) {
 
@@ -294,20 +323,20 @@ void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(LCDDataArray & LCDBuffer,
 				LOG(DEBUG2)	<< "row: " << row
 							<< " PBMByte: " << PBMByte
 							<< " LCDCol: " << LCDCol
-							<< " indexOffset: " << indexOffset
-							<< " lcd_index: " << LCDCol + indexOffset
+							<< " rowOffset: " << rowOffset
+							<< " lcd_index: " << LCDCol + rowOffset
 							<< " bit: " << bit << "\n";
 #endif
 
-				LCDBuffer[LCD_BUFFER_OFFSET + LCDCol + indexOffset] =
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 0) + indexOffset] >> bit) & 1) << 0 ) |
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 1) + indexOffset] >> bit) & 1) << 1 ) |
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 2) + indexOffset] >> bit) & 1) << 2 ) |
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 3) + indexOffset] >> bit) & 1) << 3 ) |
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 4) + indexOffset] >> bit) & 1) << 4 ) |
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 5) + indexOffset] >> bit) & 1) << 5 ) |
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 6) + indexOffset] >> bit) & 1) << 6 ) |
-					(((PBMData[PBMByte + (PBM_WIDTH_IN_BYTES * 7) + indexOffset] >> bit) & 1) << 7 ) ;
+				LCDBuffer[LCD_DATA_HEADER_OFFSET + LCDCol + rowOffset] =
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 0) + rowOffset] >> bit) & 1) << 0 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 1) + rowOffset] >> bit) & 1) << 1 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 2) + rowOffset] >> bit) & 1) << 2 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 3) + rowOffset] >> bit) & 1) << 3 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 4) + rowOffset] >> bit) & 1) << 4 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 5) + rowOffset] >> bit) & 1) << 5 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 6) + rowOffset] >> bit) & 1) << 6 ) |
+					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 7) + rowOffset] >> bit) & 1) << 7 ) ;
 
 				LCDCol++;
 			}

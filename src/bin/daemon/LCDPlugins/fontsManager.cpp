@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -42,49 +42,72 @@ FontsManager::~FontsManager()
 	_fonts.clear();
 }
 
-void FontsManager::initializeFont(const FontID fontID)
+const uint16_t FontsManager::getCenteredXPos(
+	const FontID fontID,
+	const std::string & string)
 {
 	try {
-		_fonts.at(fontID);
+		return _fonts.at(fontID)->getCenteredXPos(string);
 	}
 	catch (const std::out_of_range& oor) {
-		PBMFont* font = nullptr;
-		try {
-			switch(fontID) {
-				case FontID::MONOSPACE85:
-					font = new FontMonospace85();
-					break;
-				case FontID::MONOSPACE86:
-					font = new FontMonospace86();
-					break;
-				default:
-					throw GLogiKExcept("unknown font ID");
-			}
-		}
-		catch (const std::bad_alloc& e) { /* handle new() failure */
-			throw GLogiKBadAlloc("font bad allocation");
-		}
+		this->initializeFont(fontID);
+		return _fonts.at(fontID)->getCenteredXPos(string);
+	}
+}
 
-		_fonts[fontID] = font;
+const uint16_t FontsManager::getCenteredYPos(const FontID fontID)
+{
+	try {
+		return _fonts.at(fontID)->getCenteredYPos();
+	}
+	catch (const std::out_of_range& oor) {
+		this->initializeFont(fontID);
+		return _fonts.at(fontID)->getCenteredYPos();
 	}
 }
 
 void FontsManager::printCharacterOnFrame(
 	const FontID fontID,
-	PBMDataArray & frame,
+	PixelsData & frame,
 	const std::string & c,
-	unsigned int & PBMXPos,
-	const unsigned int PBMYPos)
+	uint16_t & PBMXPos,
+	const uint16_t PBMYPos)
 {
 	try {
 		_fonts.at(fontID)->printCharacterOnFrame(frame, c, PBMXPos, PBMYPos);
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn("unknown font : ");
-		warn += std::to_string(toEnumType(fontID));
-		GKSysLog(LOG_WARNING, WARNING, warn);
-		throw GLogiKExcept("unknown font ID");
+		this->initializeFont(fontID);
+		_fonts.at(fontID)->printCharacterOnFrame(frame, c, PBMXPos, PBMYPos);
 	}
+}
+
+void FontsManager::initializeFont(const FontID fontID)
+{
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "initializing font " << toUInt(toEnumType(fontID));
+#endif
+	PBMFont* font = nullptr;
+	try {
+		switch(fontID) {
+			case FontID::MONOSPACE85:
+				font = new FontMonospace85();
+				break;
+			case FontID::MONOSPACE86:
+				font = new FontMonospace86();
+				break;
+			case FontID::DEJAVUSANSBOLD1616:
+				font = new FontDejaVuSansBold1616();
+				break;
+			default:
+				throw GLogiKExcept("unknown font ID");
+		}
+	}
+	catch (const std::bad_alloc& e) { /* handle new() failure */
+		throw GLogiKBadAlloc("font bad allocation");
+	}
+
+	_fonts[fontID] = font;
 }
 
 } // namespace GLogiK

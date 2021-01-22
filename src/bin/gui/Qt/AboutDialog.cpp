@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -112,7 +112,7 @@ void AboutDialog::buildDialog(void)
 		}
 
 		{
-			QString descText("Copyright 2016 - 2019 Fabrice Delliaux");
+			QString descText("Copyright 2016 - 2020 Fabrice Delliaux");
 
 			QLabel* descLabel = new QLabel(descText);
 			vBox->addWidget(descLabel);

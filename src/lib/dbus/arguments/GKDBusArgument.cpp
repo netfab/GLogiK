@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ thread_local std::vector<bool> GKDBusArgument::booleanArguments = {};
 void GKDBusArgument::decodeArgumentFromIterator(
 	DBusMessageIter* iter,
 	const char* signature,
-	const unsigned int num)
+	const uint16_t num)
 {
 	int currentType = dbus_message_iter_get_arg_type(iter);
 
@@ -78,7 +78,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 			break;
 		case DBUS_TYPE_ARRAY:
 			{
-				unsigned int c = 0;
+				uint16_t c = 0;
 				DBusMessageIter itArray;
 				dbus_message_iter_recurse(iter, &itArray);
 				/* checking that we really have an array here, else
@@ -121,7 +121,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 		case DBUS_TYPE_STRUCT:
 			{
 				do {
-					unsigned int c = 0;
+					uint16_t c = 0;
 					DBusMessageIter itStruct;
 					dbus_message_iter_recurse(iter, &itStruct);
 					do {
@@ -137,7 +137,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 			break;
 		case DBUS_TYPE_VARIANT:
 			{
-				unsigned int c = 0;
+				uint16_t c = 0;
 				DBusMessageIter itSub;
 				//LOG(DEBUG4) << "parsing variant";
 				dbus_message_iter_recurse(iter, &itSub);
@@ -164,7 +164,7 @@ void GKDBusArgument::fillInArguments(DBusMessage* message) {
 		return;
 	}
 
-	unsigned int c = 0;
+	uint16_t c = 0;
 	DBusMessageIter itArgument;
 
 	if( ! dbus_message_iter_init(message, &itArgument) )
@@ -201,7 +201,7 @@ const int GKDBusArgument::decodeNextArgument(DBusMessageIter* itArgument) {
 	if(currentType == DBUS_TYPE_INVALID) /* no more arguments, or struct or array */
 		return currentType;
 
-	unsigned int c = 0;
+	uint16_t c = 0;
 	char* signature = dbus_message_iter_get_signature(itArgument);
 	GKDBusArgument::decodeArgumentFromIterator(itArgument, signature, c);
 	dbus_free(signature);

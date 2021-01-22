@@ -36,9 +36,9 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
-	:	_pDBus(pDBus),
-		_pDevicesManager(nullptr),
+ClientsManager::ClientsManager(DevicesManager* pDevicesManager)
+	:	_pDBus(nullptr),
+		_pDevicesManager(pDevicesManager),
 		_active("active"),
 		_numActive(0),
 		_enabledSignals(true)
@@ -46,13 +46,32 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing clients manager";
 #endif
+}
 
-	try {
-		_pDevicesManager = new DevicesManager();
+ClientsManager::~ClientsManager() {
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "destroying clients manager";
+#endif
+
+	for( auto & clientPair : _connectedClients ) {
+		Client* pClient = clientPair.second;
+		if( pClient != nullptr ) { /* sanity check */
+			std::ostringstream buffer(std::ios_base::app);
+			buffer << "destroying unfreed client : " << clientPair.first;
+			GKSysLog(LOG_WARNING, WARNING, buffer.str());
+			delete pClient; pClient = nullptr;
+		}
 	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
-		throw GLogiKBadAlloc("devices manager allocation failure");
-	}
+	_connectedClients.clear();
+
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "exiting clients manager";
+#endif
+}
+
+void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
+{
+	_pDBus = pDBus;
 
 	/* clients manager DBus object and interface */
 	const auto & CM_object = GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT;
@@ -272,28 +291,20 @@ ClientsManager::ClientsManager(NSGKDBus::GKDBus* pDBus)
 	);
 }
 
-ClientsManager::~ClientsManager() {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "destroying clients manager";
-#endif
+void ClientsManager::cleanDBusRequests(void) noexcept
+{
+	/* clients manager DBus object and interface */
+	const auto & CM_object = GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT;
+	const auto & CM_interf = GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
 
-	delete _pDevicesManager;
-	_pDevicesManager = nullptr;
+	/* devices manager DBus object and interface */
+	const auto & DM_object = GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT;
+	const auto & DM_interf = GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
 
-	for( auto & clientPair : _connectedClients ) {
-		Client* pClient = clientPair.second;
-		if( pClient != nullptr ) { /* sanity check */
-			std::ostringstream buffer(std::ios_base::app);
-			buffer << "destroying unfreed client : " << clientPair.first;
-			GKSysLog(LOG_WARNING, WARNING, buffer.str());
-			delete pClient; pClient = nullptr;
-		}
-	}
-	_connectedClients.clear();
+	const NSGKDBus::BusConnection system_bus(NSGKDBus::BusConnection::GKDBUS_SYSTEM);
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "exiting clients manager";
-#endif
+	_pDBus->removeMethodsInterface(system_bus, CM_object, CM_interf);
+	_pDBus->removeMethodsInterface(system_bus, DM_object, DM_interf);
 }
 
 void ClientsManager::waitForClientsDisconnections(void) noexcept {
@@ -306,7 +317,7 @@ void ClientsManager::waitForClientsDisconnections(void) noexcept {
 
 	this->sendSignalToClients(_connectedClients.size(), _pDBus, "DaemonIsStopping");
 
-	unsigned int c = 0;
+	uint16_t c = 0;
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "waiting for clients to unregister ...";
 #endif
@@ -316,21 +327,6 @@ void ClientsManager::waitForClientsDisconnections(void) noexcept {
 		LOG(DEBUG3) << "sleeping for 40 ms ...";
 #endif
 		std::this_thread::sleep_for(std::chrono::milliseconds(40));
-	}
-}
-
-void ClientsManager::runLoop(void) {
-	try {
-		_pDevicesManager->startMonitoring(_pDBus);
-		this->waitForClientsDisconnections();
-	}
-	catch (const GLogiKExcept & e) {	/* catch any udev failure */
-		std::ostringstream buffer(std::ios_base::app);
-		buffer << "catched exception from device monitoring : " << e.what();
-		GKSysLog(LOG_WARNING, WARNING, buffer.str());
-
-		this->waitForClientsDisconnections();
-		throw;
 	}
 }
 
@@ -769,7 +765,8 @@ void ClientsManager::getDeviceProperties(
 			 * store properties in upcoming setDevice{Foo,Bar} calls */
 			pClient->initializeDevice(_pDevicesManager, devID);
 			_pDBus->appendAsyncString( _pDevicesManager->getDeviceVendor(devID) );
-			_pDBus->appendAsyncString( _pDevicesManager->getDeviceModel(devID) );
+			_pDBus->appendAsyncString( _pDevicesManager->getDeviceProduct(devID) );
+			_pDBus->appendAsyncString( _pDevicesManager->getDeviceName(devID) );
 			_pDBus->appendAsyncUInt64( _pDevicesManager->getDeviceCapabilities(devID) );
 			return;
 		}

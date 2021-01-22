@@ -44,10 +44,10 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 DevicesHandler::DevicesHandler()
-	:	_pDBus(nullptr),
+	:	_clientID("undefined"),
+		_pDBus(nullptr),
 		_pGKfs(nullptr),
-		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM),
-		_clientID("undefined")
+		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM)
 {
 #if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler initialization";
@@ -113,14 +113,16 @@ const std::vector<std::string> DevicesHandler::getDevicesList(void) {
 		ret.push_back(dev.first);
 		ret.push_back("started");
 		ret.push_back(dev.second.getVendor());
-		ret.push_back(dev.second.getModel());
+		ret.push_back(dev.second.getProduct());
+		ret.push_back(dev.second.getName());
 		ret.push_back(dev.second.getConfigFilePath());
 	}
 	for(const auto & dev : _stoppedDevices) {
 		ret.push_back(dev.first);
 		ret.push_back("stopped");
 		ret.push_back(dev.second.getVendor());
-		ret.push_back(dev.second.getModel());
+		ret.push_back(dev.second.getProduct());
+		ret.push_back(dev.second.getName());
 		ret.push_back(dev.second.getConfigFilePath());
 	}
 	return ret;
@@ -432,12 +434,13 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 			_pDBus->waitForRemoteMethodCallReply();
 
 			const std::string vendor( _pDBus->getNextStringArgument() );
-			const std::string model( _pDBus->getNextStringArgument() );
+			const std::string product( _pDBus->getNextStringArgument() );
+			const std::string name( _pDBus->getNextStringArgument() );
 			const uint64_t caps( _pDBus->getNextUInt64Argument() );
-			device.setProperties( vendor, model, caps );
+			device.setProperties( vendor, product, name, caps );
 
 #if DEBUGGING_ON
-			LOG(DEBUG3) << devID << " got 3 properties";
+			LOG(DEBUG3) << devID << " got 4 properties";
 #endif
 		}
 		catch (const GLogiKExcept & e) {
@@ -541,9 +544,13 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 	try {
 		try {
+			std::string baseName(device.getProduct());
+			baseName += " ";
+			baseName += device.getName();
+
 			/* searching for an existing configuration file */
 			device.setConfigFilePath(
-				_pGKfs->getNextAvailableFileName(alreadyUsed, directory, device.getModel(), "cfg", true)
+				_pGKfs->getNextAvailableFileName(alreadyUsed, directory, baseName, "cfg", true)
 			);
 		}
 		catch ( const GLogiKExcept & e ) {
@@ -559,7 +566,9 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		/* loading configuration file */
 		this->loadDeviceConfigurationFile(device);
 		LOG(INFO)	<< "found device " << devID << " - "
-					<< device.getVendor() << " " << device.getModel();
+					<< device.getVendor() << " "
+					<< device.getProduct() << " "
+					<< device.getName();
 		LOG(INFO)	<< devID << " configuration file found and loaded";
 
 		/* assuming that directory is readable since we just load
@@ -572,14 +581,20 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 #if DEBUGGING_ON
 		LOG(DEBUG1) << e.what();
 #endif
-		LOG(INFO) << devID << " started device : " << device.getVendor()
-				<< " " << device.getModel();
+		LOG(INFO)	<< devID << " started device : "
+					<< device.getVendor() << " "
+					<< device.getProduct() << " "
+					<< device.getName();
 		LOG(INFO) << devID << " creating default configuration file";
 
 		try {
+			std::string baseName(device.getProduct());
+			baseName += " ";
+			baseName += device.getName();
+
 			/* none found, assign a new configuration file to this device */
 			device.setConfigFilePath(
-				_pGKfs->getNextAvailableFileName(alreadyUsed, directory, device.getModel(), "cfg")
+				_pGKfs->getNextAvailableFileName(alreadyUsed, directory, baseName, "cfg")
 			);
 
 #if DEBUGGING_ON

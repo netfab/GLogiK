@@ -50,29 +50,8 @@ GKDBus::~GKDBus()
 	LOG(DEBUG1) << "dbus object destruction";
 #endif
 
-	if(_sessionConnection) {
-#if DEBUGGING_ON
-		LOG(DEBUG) << "closing DBus Session connection";
-#endif
-
-		if( ! _sessionName.empty() ) {
-			int ret = dbus_bus_release_name(_sessionConnection, _sessionName.c_str(), &_error);
-			this->checkReleasedName(ret);
-		}
-		dbus_connection_unref(_sessionConnection);
-	}
-
-	if(_systemConnection) {
-#if DEBUGGING_ON
-		LOG(DEBUG) << "closing DBus System connection";
-#endif
-
-		if( ! _systemName.empty() ) {
-			int ret = dbus_bus_release_name(_systemConnection, _systemName.c_str(), &_error);
-			this->checkReleasedName(ret);
-		}
-		dbus_connection_unref(_systemConnection);
-	}
+	this->disconnectFromSessionBus();
+	this->disconnectFromSystemBus();
 }
 
 void GKDBus::connectToSystemBus(
@@ -95,6 +74,22 @@ void GKDBus::connectToSystemBus(
 
 	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
 		throw GLogiKExcept("DBus System request name failure : not owner");
+	}
+}
+
+void GKDBus::disconnectFromSystemBus(void) noexcept
+{
+	if(_systemConnection) {
+#if DEBUGGING_ON
+		LOG(DEBUG) << "closing DBus System connection";
+#endif
+
+		if( ! _systemName.empty() ) {
+			int ret = dbus_bus_release_name(_systemConnection, _systemName.c_str(), &_error);
+			this->checkReleasedName(ret);
+		}
+		dbus_connection_unref(_systemConnection);
+		_systemConnection = nullptr;
 	}
 }
 
@@ -121,6 +116,22 @@ void GKDBus::connectToSessionBus(
 	}
 }
 
+void GKDBus::disconnectFromSessionBus(void) noexcept
+{
+	if(_sessionConnection) {
+#if DEBUGGING_ON
+		LOG(DEBUG) << "closing DBus Session connection";
+#endif
+
+		if( ! _sessionName.empty() ) {
+			int ret = dbus_bus_release_name(_sessionConnection, _sessionName.c_str(), &_error);
+			this->checkReleasedName(ret);
+		}
+		dbus_connection_unref(_sessionConnection);
+		_sessionConnection = nullptr;
+	}
+}
+
 const std::string GKDBus::getObjectFromObjectPath(const std::string & objectPath)
 {
 	std::string object;
@@ -142,6 +153,17 @@ void GKDBus::checkForMessages(void) noexcept
 		this->checkForBusMessages(BusConnection::GKDBUS_SESSION, _sessionConnection);
 }
 
+
+/*
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ *
+ * === private === private === private === private === private ===
+ *
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+ */
+
 /* -- */
 /*
  * check if :
@@ -154,7 +176,7 @@ void GKDBus::checkForMessages(void) noexcept
 void GKDBus::checkForBusMessages(const BusConnection bus, DBusConnection* connection) noexcept {
 	GKDBusEvents::currentBus = bus; /* used on introspection */
 
-	unsigned int c = 0;
+	uint16_t c = 0;
 	while( true ) {
 		dbus_connection_read_write(connection, 0);
 		_message = dbus_connection_pop_message(connection);
@@ -245,18 +267,7 @@ void GKDBus::checkForBusMessages(const BusConnection bus, DBusConnection* connec
 	}
 }
 
-
-/*
- * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
- * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
- *
- * === private === private === private === private === private ===
- *
- * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
- * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
- */
-
-void GKDBus::checkReleasedName(int ret) {
+void GKDBus::checkReleasedName(int ret) noexcept {
 	switch(ret) {
 		case DBUS_RELEASE_NAME_REPLY_RELEASED:
 			LOG(DEBUG1) << "name released";
@@ -309,7 +320,7 @@ DBusConnection* GKDBus::getConnection(BusConnection bus) {
 	}
 }
 
-const unsigned int GKDBus::getDBusRequestFlags(const ConnectionFlag flag)
+const unsigned int GKDBus::getDBusRequestFlags(const ConnectionFlag flag) noexcept
 {
 	unsigned int ret = 0;
 	switch(flag) {

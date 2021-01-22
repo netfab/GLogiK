@@ -19,33 +19,29 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_PBM_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_PBM_HPP_
+#ifndef SRC_BIN_DAEMON_USBAPI_ENUMS_HPP_
+#define SRC_BIN_DAEMON_USBAPI_ENUMS_HPP_
 
-#include <vector>
+#include <cstdint>
 
-/* LCD screen real sizes in pixels */
-#define				  LCD_SCREEN_HEIGHT		43
-#define				   LCD_SCREEN_WIDTH		160
+#include <config.h>
 
-#define				 DEFAULT_PBM_HEIGHT		48
-#define				  DEFAULT_PBM_WIDTH		160
-#define		DEFAULT_PBM_HEIGHT_IN_BYTES		(DEFAULT_PBM_HEIGHT/8)
-#define		 DEFAULT_PBM_WIDTH_IN_BYTES		(DEFAULT_PBM_WIDTH/8)
-
-#define		  DEFAULT_PBM_DATA_IN_BYTES		(DEFAULT_PBM_WIDTH_IN_BYTES * DEFAULT_PBM_HEIGHT)
-
-/* LCD header length */
-#define			 LCD_DATA_HEADER_OFFSET		32
-
-// formula when PBM_HEIGHT not multiple of 8
-// TODO do we need it ?
-//#define PBM_HEIGHT_IN_BYTES ((PBM_HEIGHT + ((8 - (PBM_HEIGHT % 8)) % 8)) / 8)
+#if GKLIBUSB
+#include <libusb-1.0/libusb.h>
+#endif
 
 namespace GLogiK
 {
 
-typedef std::vector<unsigned char> PixelsData;
+enum class USBAPIKeysTransferStatus : int8_t
+{
+	TRANSFER_ERROR = -1,
+#if GKLIBUSB
+	TRANSFER_TIMEOUT = LIBUSB_ERROR_TIMEOUT,
+#elif GKHIDAPI
+	TRANSFER_TIMEOUT = -7,
+#endif
+};
 
 } // namespace GLogiK
 

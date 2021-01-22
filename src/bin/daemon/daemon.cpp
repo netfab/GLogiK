@@ -19,12 +19,11 @@
  *
  */
 
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <csignal>
-
-#include <errno.h>
 
 #include <pwd.h>
 #include <grp.h>
@@ -44,9 +43,15 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
-#include "clientsManager.hpp"
-
 #include "daemon.hpp"
+
+#include "devicesManager.hpp"
+
+#if GKDBUS
+#include "lib/dbus/GKDBus.hpp"
+
+#include "clientsManager.hpp"
+#endif
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
@@ -57,8 +62,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 GLogiKDaemon::GLogiKDaemon()
-	:	_pDBus(nullptr),
-		_PIDFileCreated(false)
+	:	_PIDFileCreated(false)
 {
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 
@@ -137,27 +141,43 @@ int GLogiKDaemon::run( const int& argc, char *argv[] ) {
 			std::signal(SIGTERM, GLogiKDaemon::handleSignal);
 			//std::signal(SIGHUP, GLogiKDaemon::handleSignal);
 
+#if GKDBUS
+			NSGKDBus::GKDBus DBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
+			DBus.connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
+#endif
+
+			DevicesManager devicesManager;
+
+#if GKDBUS
+			devicesManager.setDBus(&DBus);
+
+			ClientsManager clientsManager(&devicesManager);
+			clientsManager.initializeDBusRequests(&DBus);
+#endif
+
 			try {
-				try {
-					_pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
-				}
-				catch (const std::bad_alloc& e) { /* handle new() failure */
-					throw GLogiKBadAlloc("GKDBus bad allocation");
-				}
-
-				_pDBus->connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
-
-				{
-					ClientsManager c(_pDBus);
-					c.runLoop();
-				}	/* destroy client manager before DBus pointer */
-
-				delete _pDBus; _pDBus = nullptr;
+				/* potential D-Bus requests received from services will be
+				 * handled after devices initialization into startMonitoring() */
+				devicesManager.startMonitoring();
+#if GKDBUS
+				clientsManager.waitForClientsDisconnections();
+				clientsManager.cleanDBusRequests();
+				DBus.disconnectFromSystemBus();
+#endif
 			}
-			catch ( const GLogiKExcept & e ) {
-				delete _pDBus; _pDBus = nullptr;
+			catch (const GLogiKExcept & e) {	// catch any monitoring failure
+				std::ostringstream buffer(std::ios_base::app);
+				buffer << "catched exception from device monitoring : " << e.what();
+				GKSysLog(LOG_WARNING, WARNING, buffer.str());
+
+#if GKDBUS
+				clientsManager.waitForClientsDisconnections();
+				clientsManager.cleanDBusRequests();
+				DBus.disconnectFromSystemBus();
+#endif
 				throw;
 			}
+
 		}
 		else {
 			// TODO non-daemon mode

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -32,9 +32,16 @@ using namespace NSGKUtils;
 
 /* -- -- -- */
 
-const bool LCDPBMFrame::switchToNextFrame(const unsigned short currentFrameCounter)
+PBMFrame::PBMFrame(const uint16_t num)
+	:	_numFrames(num)
 {
-	return (currentFrameCounter >= _frameCounter);
+	/* initialize PBM frame container */
+	_PBMData.resize( DEFAULT_PBM_DATA_IN_BYTES, 0 );
+}
+
+const bool PBMFrame::switchToNextFrame(const uint16_t currentFrameCounter)
+{
+	return (currentFrameCounter >= _numFrames);
 }
 
 /* -- -- -- */
@@ -43,8 +50,8 @@ LCDPlugin::LCDPlugin()
 	:	_pluginTempo(LCDPluginTempo::TEMPO_DEFAULT),
 		_initialized(false),
 		_everLocked(false),
-		_frameCounter(0),
-		_frameIndex(0)
+		_PBMFrameCounter(0),
+		_PBMFrameIndex(0)
 {
 }
 
@@ -72,7 +79,7 @@ const bool LCDPlugin::isInitialized(void) const
 
 void LCDPlugin::resetPBMFrameIndex(void)
 {
-	_itCurrentFrame = _PBMFrames.end();
+	_itCurrentPBMFrame = _PBMFrames.end();
 	this->checkPBMFrameIndex(); /* may throw */
 }
 
@@ -86,18 +93,18 @@ const std::string & LCDPlugin::getPluginName(void) const
 	return _plugin.getName();
 }
 
-const unsigned short LCDPlugin::getPluginTiming(void) const
+const uint16_t LCDPlugin::getPluginTiming(void) const
 {
-	unsigned short timing = 0;
-	unsigned short maxFrames = 0;
+	uint16_t timing = 0;
+	uint16_t maxFrames = 0;
 	std::tie(timing, maxFrames) = this->getTempo(_pluginTempo);
 	return timing;
 }
 
-const unsigned short LCDPlugin::getPluginMaxFrames(void) const
+const uint16_t LCDPlugin::getPluginMaxFrames(void) const
 {
-	unsigned short timing = 0;
-	unsigned short maxFrames = 0;
+	uint16_t timing = 0;
+	uint16_t maxFrames = 0;
 	std::tie(timing, maxFrames) = this->getTempo(_pluginTempo);
 	return maxFrames;
 }
@@ -106,28 +113,31 @@ void LCDPlugin::prepareNextPBMFrame(void)
 {
 	/* update internal frame counter and iterator to allow the plugin
 	 * to have multiples PBM loaded and simulate animation */
-	if( (*_itCurrentFrame).switchToNextFrame(_frameCounter) ) {
-		_itCurrentFrame++;
+	if( (*_itCurrentPBMFrame).switchToNextFrame(_PBMFrameCounter) ) {
+		_itCurrentPBMFrame++;
 		this->checkPBMFrameIndex(); /* may throw */
-		_frameIndex = (_itCurrentFrame - _PBMFrames.begin());
-		_frameCounter = 0;
+		_PBMFrameIndex = (_itCurrentPBMFrame - _PBMFrames.begin());
+		_PBMFrameCounter = 0;
 	}
 
-	_frameCounter++; /* for next call */
+	_PBMFrameCounter++; /* for next call */
+#if DEBUGGING_ON && DEBUG_LCD_PLUGINS
+	LOG(DEBUG2) << this->getPluginName() << " - frameCount #" << _PBMFrameCounter;
+#endif
 }
 
-void LCDPlugin::init(FontsManager* const pFonts)
+void LCDPlugin::init(FontsManager* const pFonts, const std::string & product)
 {
 	this->resetPBMFrameIndex();
 	_initialized = true;
 }
 
-const PBMDataArray & LCDPlugin::getNextPBMFrame(
+const PixelsData & LCDPlugin::getNextPBMFrame(
 	FontsManager* const pFonts,
 	const std::string & LCDKey,
 	const bool lockedPlugin)
 {
-	this->drawPadlockOnFrame(lockedPlugin);
+	this->drawPadlockOnPBMFrame(lockedPlugin);
 	return this->getCurrentPBMFrame();
 }
 
@@ -149,14 +159,20 @@ const LCDPluginProperties LCDPlugin::getPluginProperties(void) const
 void LCDPlugin::addPBMFrame(
 	const fs::path & PBMDirectory,
 	const std::string & file,
-	const unsigned short num)
+	const uint16_t num)
 {
 	fs::path filePath(PBMDirectory);
 	filePath /= file;
 
-	_PBMFrames.emplace_back(num);
+	this->addPBMEmptyFrame(num);
+
 	try {
-		this->readPBM(filePath.string(), _PBMFrames.back()._PBMData);
+		this->readPBM(
+			filePath.string(),
+			_PBMFrames.back()._PBMData,
+			DEFAULT_PBM_WIDTH,
+			DEFAULT_PBM_HEIGHT
+		);
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(ERROR) << "exception while reading PBM file: " << filePath.string();
@@ -164,40 +180,58 @@ void LCDPlugin::addPBMFrame(
 	}
 }
 
-void LCDPlugin::addPBMClearedFrame(
-	const unsigned short num)
+void LCDPlugin::addPBMEmptyFrame(
+	const uint16_t num)
 {
-	_PBMFrames.emplace_back(num);
-	_PBMFrames.back()._PBMData.fill(0x0);
+	try {
+		_PBMFrames.emplace_back(num);
+	}
+	catch (const std::exception & e) {
+		LOG(ERROR) << "PBMFrame constructor vector resize exception ?";
+		throw GLogiKExcept("initializing PBM frame failure");
+	}
 }
 
-const unsigned short LCDPlugin::getNextPBMFrameID(void) const
+const uint16_t LCDPlugin::getNextPBMFrameID(void) const
 {
-	return _frameIndex;
+	return _PBMFrameIndex;
 }
 
-PBMDataArray & LCDPlugin::getCurrentPBMFrame(void)
+PixelsData & LCDPlugin::getCurrentPBMFrame(void)
 {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-	LOG(DEBUG3) << this->getPluginName() << " PBM # " << _frameIndex;
+	LOG(DEBUG2)	<< this->getPluginName()
+				<< " - PBMFrameindex: " << _PBMFrameIndex;
 #endif
-	return (*_itCurrentFrame)._PBMData;
+	return (*_itCurrentPBMFrame)._PBMData;
 }
 
-void LCDPlugin::writeStringOnFrame(
+void LCDPlugin::writeStringOnPBMFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
 	const std::string & string,
-	unsigned int PBMXPos,
-	const unsigned int PBMYPos)
+	const int16_t PBMXPos,
+	const int16_t PBMYPos)
 {
 	try {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-		LOG(DEBUG2) << this->getPluginName() << " PBM # " << _frameIndex << " - writing string : " << string;
+		LOG(DEBUG2)	<< this->getPluginName()
+					<< " - PBMFrameindex: " << _PBMFrameIndex
+					<< " - writing string : " << string;
 #endif
+		uint16_t XPos, YPos = 0;
+
+		XPos = (PBMXPos < 0) ? /* centered */
+				pFonts->getCenteredXPos(fontID, string) :
+				static_cast<uint16_t>(PBMXPos);
+
+		YPos = (PBMYPos < 0) ? /* centered */
+				pFonts->getCenteredYPos(fontID) :
+				static_cast<uint16_t>(PBMYPos);
+
 		for(const char & c : string) {
 			const std::string character(1, c);
-			pFonts->printCharacterOnFrame( fontID, (*_itCurrentFrame)._PBMData, character, PBMXPos, PBMYPos );
+			pFonts->printCharacterOnFrame( fontID, (*_itCurrentPBMFrame)._PBMData, character, XPos, YPos );
 		} /* for each character in the string */
 	}
 	catch (const GLogiKExcept & e) {
@@ -205,35 +239,35 @@ void LCDPlugin::writeStringOnFrame(
 	}
 }
 
-void LCDPlugin::writeStringOnLastFrame(
+void LCDPlugin::writeStringOnLastPBMFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
 	const std::string & string,
-	unsigned int PBMXPos,
-	const unsigned int PBMYPos)
+	const int16_t PBMXPos,
+	const int16_t PBMYPos)
 {
 	try {
 		if( _PBMFrames.empty() )
 			throw GLogiKExcept("accessing last element on empty container");
-		_itCurrentFrame = --(_PBMFrames.end());
-		_frameIndex = (_itCurrentFrame - _PBMFrames.begin());
+		_itCurrentPBMFrame = --(_PBMFrames.end());
+		_PBMFrameIndex = (_itCurrentPBMFrame - _PBMFrames.begin());
 
-		this->writeStringOnFrame(pFonts, fontID, string, PBMXPos, PBMYPos);
+		this->writeStringOnPBMFrame(pFonts, fontID, string, PBMXPos, PBMYPos);
 	}
 	catch (const GLogiKExcept & e) {
 		GKSysLog(LOG_WARNING, WARNING, e.what());
 	}
 }
 
-void LCDPlugin::drawProgressBarOnFrame(
-	const unsigned short percent,
-	const unsigned int PBMXPos,
-	const unsigned int PBMYPos)
+void LCDPlugin::drawProgressBarOnPBMFrame(
+	const uint16_t percent,
+	const uint16_t PBMXPos,
+	const uint16_t PBMYPos)
 {
-	const unsigned int PROGRESS_BAR_WIDTH = 102;
-	const unsigned int PROGRESS_BAR_HEIGHT = 7;
+	const uint16_t PROGRESS_BAR_WIDTH = 102;
+	const uint16_t PROGRESS_BAR_HEIGHT = 7;
 
-	if(PBMXPos + PROGRESS_BAR_WIDTH > (PBM_WIDTH - 1)) {
+	if(PBMXPos + PROGRESS_BAR_WIDTH > (LCD_SCREEN_WIDTH - 1)) {
 		std::ostringstream buffer(std::ios_base::app);
 		buffer << "wrong progress bar X position : " << PBMXPos;
 		GKSysLog(LOG_WARNING, WARNING, buffer.str());
@@ -241,23 +275,37 @@ void LCDPlugin::drawProgressBarOnFrame(
 	}
 
 	try {
-		PBMDataArray & frame = (*_itCurrentFrame)._PBMData;
+		PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
 
-		auto drawHorizontalLine = [&frame] (const unsigned short index) -> void
+		auto drawHorizontalLine = [&frame] (const uint16_t index) -> void
 		{
 			frame[index+12] |= 0b11111100;
-			for(unsigned short i = 0; i < 12; ++i) {
+			for(uint16_t i = 0; i < 12; ++i) {
 				frame[index+i] = 0b11111111;
 			}
 		};
 
 		auto drawProgressBarLine = [&frame, &percent]
-			(const unsigned short index, const unsigned short line) -> void
+			(const uint16_t index, const uint16_t line) -> void
 		{
-			const unsigned short percentByte = percent / 8;
-			const unsigned short percentModulo = percent % 8;
+			const unsigned char B10 = 0b10101010;
+			const unsigned char B01 = 0b01010101;
+			const unsigned char B11 = 0b11111111;
+
+			const uint16_t percentByte = percent / 8;
+			const uint16_t percentModulo = percent % 8;
 			/* -1 to consider the bar left border */
-			const unsigned short leftShift = ((8-1) - percentModulo);
+			const uint16_t leftShift = ((8-1) - percentModulo);
+
+			const unsigned char & Byte1 = (line % 2 == 1) ? B10 : B01;
+			const unsigned char & Byte2 = (line % 2 == 1) ? B01 : B10;
+			const unsigned char & cByte = (leftShift % 2 == 1) ? Byte2 : Byte1;
+
+			auto getShiftedByte = [&leftShift]
+				(const unsigned char & b) -> unsigned char
+			{
+				return static_cast<unsigned char>( b << leftShift );
+			};
 
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 			LOG(DEBUG3)	<< "index: " << index
@@ -267,60 +315,29 @@ void LCDPlugin::drawProgressBarOnFrame(
 						<< " leftShift: " << leftShift;
 #endif
 
-			for(unsigned short i = 0; i < 12; ++i) {
+			for(uint16_t i = 0; i < 12; ++i) {
 				if((i == 0) and (percent < 8)) {
-						if(line % 2 == 1)
-							frame[index+i] = 0b10101010 << leftShift;
-						else
-							frame[index+i] = 0b01010101 << leftShift;
+					frame[index+i] = getShiftedByte(cByte);
 				}
 				else if(i < percentByte) {
-					if(i < 8) {
-						if(line % 2 == 1)
-							frame[index+i] = 0b10101010;
-						else
-							frame[index+i] = 0b01010101;
-					}
-					else {
-						frame[index+i] = 0b11111111;
-					}
+					frame[index+i] = (i < 8) ? Byte1 : B11;
 				}
 				else if(i == percentByte) {
-					if(i < 8) {
-						if(line % 2 == 1) {
-							if(leftShift % 2 == 1)
-								frame[index+i] = 0b01010101 << leftShift;
-							else
-								frame[index+i] = 0b10101010 << leftShift;
-						}
-						else {
-							if(leftShift % 2 == 1)
-								frame[index+i] = 0b10101010 << leftShift;
-							else
-								frame[index+i] = 0b01010101 << leftShift;
-						}
-					}
-					else {
-						frame[index+i] = 0b11111111 << leftShift;
-					}
+					frame[index+i] = (i < 8) ? getShiftedByte(cByte) : getShiftedByte(B11);
 				}
 				else {
 					frame[index+i] = 0;
 				}
 			}
 
-			if(percentByte == 12) {
-				frame[index+12] = 0b11111111 << leftShift;
-			}
-			else
-				frame[index+12] = 0;
+			frame[index+12] = (percentByte == 12) ? getShiftedByte(B11) : 0;
 
 			frame[index]    |= 0b10000000;	/* left border */
 			frame[index+12] |= 0b00000100;	/* right border */
 		};
 
-		const unsigned short xByte = PBMXPos / 8;
-		const unsigned short index = (PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
+		const uint16_t xByte = PBMXPos / 8;
+		const uint16_t index = (DEFAULT_PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
 
 		/* checking for out of range */
 		frame.at(index+12);
@@ -335,10 +352,10 @@ void LCDPlugin::drawProgressBarOnFrame(
 		 *	------------- one horizontal line
 		 */
 		drawHorizontalLine(index);
-		for(unsigned short i = 1; i < (PROGRESS_BAR_HEIGHT-1); ++i) {
-			drawProgressBarLine(index + (PBM_WIDTH_IN_BYTES * i), i);
+		for(uint16_t i = 1; i < (PROGRESS_BAR_HEIGHT-1); ++i) {
+			drawProgressBarLine(index + (DEFAULT_PBM_WIDTH_IN_BYTES * i), i);
 		}
-		drawHorizontalLine(index + (PBM_WIDTH_IN_BYTES * (PROGRESS_BAR_HEIGHT-1)));
+		drawHorizontalLine(index + (DEFAULT_PBM_WIDTH_IN_BYTES * (PROGRESS_BAR_HEIGHT-1)));
 	}
 	catch (const std::out_of_range& oor) {
 		std::ostringstream buffer(std::ios_base::app);
@@ -347,46 +364,46 @@ void LCDPlugin::drawProgressBarOnFrame(
 	}
 }
 
-void LCDPlugin::drawPadlockOnFrame(
+void LCDPlugin::drawPadlockOnPBMFrame(
 	const bool lockedPlugin,
-	const unsigned int PBMXPos,
-	const unsigned int PBMYPos)
+	const uint16_t PBMXPos,
+	const uint16_t PBMYPos)
 {
-	const unsigned short xByte = PBMXPos / 8;
-	const unsigned short index = (PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
+	const uint16_t xByte = PBMXPos / 8;
+	const uint16_t index = (DEFAULT_PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
 
-	PBMDataArray & frame = (*_itCurrentFrame)._PBMData;
+	PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
 
 	if( lockedPlugin ) {
 		_everLocked = true;
-		frame[index+(PBM_WIDTH_IN_BYTES * 0)] = 0b00000000;
-		frame[index+(PBM_WIDTH_IN_BYTES * 1)] = 0b00110000;
-		frame[index+(PBM_WIDTH_IN_BYTES * 2)] = 0b01001000;
-		frame[index+(PBM_WIDTH_IN_BYTES * 3)] = 0b01111000;
-		frame[index+(PBM_WIDTH_IN_BYTES * 4)] = 0b01111000;
-		frame[index+(PBM_WIDTH_IN_BYTES * 5)] = 0b01111000;
+		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 0)] = 0b00000000;
+		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 1)] = 0b00110000;
+		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 2)] = 0b01001000;
+		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 3)] = 0b01111000;
+		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 4)] = 0b01111000;
+		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 5)] = 0b01111000;
 	}
 	else {
 		if( _everLocked ) {
-			frame[index+(PBM_WIDTH_IN_BYTES * 0)] = 0b00000110;
-			frame[index+(PBM_WIDTH_IN_BYTES * 1)] = 0b00001001;
-			frame[index+(PBM_WIDTH_IN_BYTES * 2)] = 0b00001000;
-			frame[index+(PBM_WIDTH_IN_BYTES * 3)] = 0b01111000;
-			frame[index+(PBM_WIDTH_IN_BYTES * 4)] = 0b01111000;
-			frame[index+(PBM_WIDTH_IN_BYTES * 5)] = 0b01111000;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 0)] = 0b00000110;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 1)] = 0b00001001;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 2)] = 0b00001000;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 3)] = 0b01111000;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 4)] = 0b01111000;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 5)] = 0b01111000;
 		}
 		else {
-			frame[index+(PBM_WIDTH_IN_BYTES * 0)] = 0;
-			frame[index+(PBM_WIDTH_IN_BYTES * 1)] = 0;
-			frame[index+(PBM_WIDTH_IN_BYTES * 2)] = 0;
-			frame[index+(PBM_WIDTH_IN_BYTES * 3)] = 0;
-			frame[index+(PBM_WIDTH_IN_BYTES * 4)] = 0;
-			frame[index+(PBM_WIDTH_IN_BYTES * 5)] = 0;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 0)] = 0;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 1)] = 0;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 2)] = 0;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 3)] = 0;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 4)] = 0;
+			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 5)] = 0;
 		}
 	}
 }
 
-void LCDPlugin::resetEverLocked(void)
+void LCDPlugin::resetPluginEverLocked(void)
 {
 	_everLocked = false;
 }
@@ -403,18 +420,18 @@ void LCDPlugin::resetEverLocked(void)
 
 void LCDPlugin::checkPBMFrameIndex(void)
 {
-	if( _itCurrentFrame == _PBMFrames.end() ) {
-		_itCurrentFrame = _PBMFrames.begin();
+	if( _itCurrentPBMFrame == _PBMFrames.end() ) {
+		_itCurrentPBMFrame = _PBMFrames.begin();
 
-		if( _itCurrentFrame == _PBMFrames.end() )
+		if( _itCurrentPBMFrame == _PBMFrames.end() )
 			throw GLogiKExcept("plugin frame iterator exception");
 
-		_frameCounter = 0;
-		_frameIndex = 0;
+		_PBMFrameCounter = 0;
+		_PBMFrameIndex = 0;
 	}
 }
 
-std::tuple<unsigned short, unsigned short> LCDPlugin::getTempo(const LCDPluginTempo tempo)
+std::tuple<uint16_t, uint16_t> LCDPlugin::getTempo(const LCDPluginTempo tempo)
 {
 	if(tempo == LCDPluginTempo::TEMPO_500_20)
 		return std::make_tuple(500, 20);

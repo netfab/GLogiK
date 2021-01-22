@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -189,28 +189,8 @@ template <typename T>
 		T callback;
 };
 
-class SignalRule
-{
-	public:
-
-	protected:
-		SignalRule() = default;
-		~SignalRule() = default;
-
-		static void addSignalRuleMatch(
-			DBusConnection* connection,
-			const char* sender,
-			const char* interface,
-			const char* eventName
-		);
-
-	private:
-
-};
-
 template <typename T>
 	class EventGKDBusCallback
-		:	private SignalRule
 {
 	public:
 		void exposeMethod(
@@ -249,14 +229,13 @@ template <typename T>
 		);
 
 	private:
-		virtual void addIntrospectableEvent(
+		virtual void addEvent(
 			const BusConnection bus,
+			const char* sender,
 			const char* object,
 			const char* interface,
 			GKDBusEvent* event
 		) = 0;
-
-		virtual DBusConnection* getConnection(BusConnection wantedConnection) = 0;
 };
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
@@ -335,11 +314,7 @@ template <typename T>
 		throw NSGKUtils::GLogiKBadAlloc("DBus event bad allocation");
 	}
 
-	this->addIntrospectableEvent(bus, object, interface, event);
-	if( eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL ) {
-		DBusConnection* connection = this->getConnection(bus);
-		this->addSignalRuleMatch(connection, sender, interface, eventName);
-	}
+	this->addEvent(bus, sender, object, interface, event);
 }
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */

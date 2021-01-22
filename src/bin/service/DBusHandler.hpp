@@ -46,7 +46,6 @@ namespace GLogiK
 enum class SessionFramework : uint8_t
 {
 	FW_UNKNOWN = 0,
-	FW_CONSOLEKIT,
 	FW_LOGIND,
 };
 
@@ -68,38 +67,45 @@ class DBusHandler
 		DBusHandler(
 			pid_t pid,
 			SessionManager& session,
-			NSGKUtils::FileSystem* pGKfs
+			NSGKUtils::FileSystem* pGKfs,
+			NSGKDBus::GKDBus* pDBus
 		);
 		~DBusHandler(void);
 
-		void updateSessionState(void);
-		void checkDBusMessages(void);
-
 		const bool getExitStatus(void) const;
-
 		void checkNotifyEvents(NSGKUtils::FileSystem* pGKfs);
+		void cleanDBusRequests(void);
 
 	protected:
 
 	private:
-		NSGKDBus::GKDBus* _pDBus;
-		const NSGKDBus::BusConnection _sessionBus;
-		const NSGKDBus::BusConnection _systemBus;
 		DevicesHandler _devices;
-		bool _registerStatus;		/* true == registered with daemon */
-		bool _wantToExit;			/* true if we want to exit after a restart request */
-		std::string _clientID;
-		SessionFramework _sessionFramework;
-		std::string _daemonVersion;
 
+		std::string _clientID;
+		std::string _daemonVersion;
 		std::string _currentSession;	/* current session object path */
 		std::string _sessionState;		/* session state */
+
+		NSGKDBus::GKDBus* _pDBus;
+
+		SessionFramework _sessionFramework;
+		const NSGKDBus::BusConnection _sessionBus;
+		const NSGKDBus::BusConnection _systemBus;
+
+		bool _registerStatus;		/* true == registered with daemon */
+		bool _wantToExit;			/* true if we want to exit after a restart request */
+
+		/* -- -- -- */
 
 		void setCurrentSessionObjectPath(pid_t pid);
 		const std::string getCurrentSessionState(void);
 
+		void updateSessionState(void);
+
 		void registerWithDaemon(void);
 		void unregisterWithDaemon(void);
+
+		void clearAndUnregister(void);
 
 		void reportChangedState(void);
 

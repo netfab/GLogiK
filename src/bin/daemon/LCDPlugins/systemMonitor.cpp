@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,9 +22,9 @@
 #include <cmath>
 #include <cfenv>
 
-#include <cstdint>
 #include <unistd.h>
-#include <limits.h>
+#include <cstdint>
+#include <climits>
 
 #include <iomanip>
 #include <sstream>
@@ -60,12 +60,10 @@ SystemMonitor::SystemMonitor()
 SystemMonitor::~SystemMonitor() {
 }
 
-void SystemMonitor::init(FontsManager* const pFonts)
+void SystemMonitor::init(FontsManager* const pFonts, const std::string & product)
 {
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _plugin.getName();
-
-	pFonts->initializeFont(FontID::MONOSPACE85);
 
 	this->addPBMFrame(PBMDirectory, "skeleton.pbm");
 
@@ -77,18 +75,18 @@ void SystemMonitor::init(FontsManager* const pFonts)
 		hostname[HOST_NAME_MAX-1] = '\0';
 		host.assign(hostname);
 	}
-	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, host, 16, 1);
+	this->writeStringOnLastPBMFrame(pFonts, FontID::MONOSPACE85, host, 16, 1);
 
-	LCDPlugin::init(pFonts);
+	LCDPlugin::init(pFonts, product);
 }
 
-const PBMDataArray & SystemMonitor::getNextPBMFrame(
+const PixelsData & SystemMonitor::getNextPBMFrame(
 	FontsManager* const pFonts,
 	const std::string & LCDKey,
 	const bool lockedPlugin
 	)
 {
-	this->drawPadlockOnFrame(lockedPlugin);
+	this->drawPadlockOnPBMFrame(lockedPlugin);
 
 	/* -- -- -- */
 	std::string usedPhysicalMemory("");
@@ -167,10 +165,10 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 		std::fesetround(FE_TONEAREST);
 		freeMem = std::nearbyint(freeMem);
 
-		unsigned short usedMem = static_cast<unsigned short>(freeMem);
+		uint16_t usedMem = static_cast<uint16_t>(freeMem);
 		usedMem = 100 - usedMem;
 
-		this->drawProgressBarOnFrame(usedMem, 24, 33);
+		this->drawProgressBarOnPBMFrame(usedMem, 24, 33);
 		usedPhysicalMemory = getPaddedPercentString(usedMem);
 	}
 
@@ -190,7 +188,7 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 		std::fesetround(FE_TONEAREST);
 		cpuPercentTotal = std::nearbyint(cpuPercentTotal);
 
-		this->drawProgressBarOnFrame(cpuPercentTotal, 24, 15);
+		this->drawProgressBarOnPBMFrame(cpuPercentTotal, 24, 15);
 		usedCPUActiveTotal = getPaddedPercentString(cpuPercentTotal);
 
 		_snapshot1 = s2;
@@ -222,13 +220,13 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 			if(_currentRate == NetDirection::NET_RX) {
 				_currentRate = NetDirection::NET_TX;
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-				LOG(DEBUG3) << _pluginName << " switched network rate to upload";
+				LOG(DEBUG3) << _plugin.getName() << " switched network rate to upload";
 #endif
 			}
 			else {
 				_currentRate = NetDirection::NET_RX;
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-				LOG(DEBUG3) << _pluginName << " switched network rate to download";
+				LOG(DEBUG3) << _plugin.getName() << " switched network rate to download";
 #endif
 			}
 		}
@@ -242,17 +240,17 @@ const PBMDataArray & SystemMonitor::getNextPBMFrame(
 
 	/* -- -- -- */
 	/* FontID::MONOSPACE85 char width is 5 pixels */
-	const unsigned short FONT_CHAR_WIDTH = 5;
+	const uint16_t FONT_CHAR_WIDTH = 5;
 
 	/* padded percentage string size is always 5 chars */
-	const unsigned int PERC_POS_X = (PBM_WIDTH - 1) - (5 * FONT_CHAR_WIDTH);
-	const unsigned int NET_POS_X = (PBM_WIDTH - 1) - (paddedRateString.size() * FONT_CHAR_WIDTH);
+	const uint16_t PERC_POS_X = (LCD_SCREEN_WIDTH - 1) - (5 * FONT_CHAR_WIDTH);
+	const uint16_t  NET_POS_X = (LCD_SCREEN_WIDTH - 1) - (paddedRateString.size() * FONT_CHAR_WIDTH);
 
 	/* percent - max 5 chars */
 	/* net rate - max 12 chars */
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, usedCPUActiveTotal, PERC_POS_X, 14);
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, paddedRateString, NET_POS_X, 23);
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, usedPhysicalMemory, PERC_POS_X, 32);
+	this->writeStringOnPBMFrame(pFonts, FontID::MONOSPACE85, usedCPUActiveTotal, PERC_POS_X, 14);
+	this->writeStringOnPBMFrame(pFonts, FontID::MONOSPACE85, paddedRateString, NET_POS_X, 23);
+	this->writeStringOnPBMFrame(pFonts, FontID::MONOSPACE85, usedPhysicalMemory, PERC_POS_X, 32);
 
 	return LCDPlugin::getCurrentPBMFrame();
 }

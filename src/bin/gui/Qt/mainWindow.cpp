@@ -19,8 +19,6 @@
  *
  */
 
-#include <errno.h>
-
 #include <csignal>
 
 #include <syslog.h>
@@ -61,18 +59,18 @@ using namespace NSGKUtils;
 MainWindow::MainWindow(QWidget *parent)
 	:	QMainWindow(parent),
 		_pDBus(nullptr),
-		_pid(0),
 		_LOGfd(nullptr),
-		_GUIResetThrow(true),
-		_serviceStartRequest(false),
-		_ignoreNextSignal(false),
-		_statusBarTimeout(3000),
 		_devicesComboBox(nullptr),
 		_tabbedWidgets(nullptr),
 		_daemonAndServiceTab(nullptr),
 		_deviceControlTab(nullptr),
 		_backlightColorTab(nullptr),
-		_LCDPluginsTab(nullptr)
+		_LCDPluginsTab(nullptr),
+		_statusBarTimeout(3000),
+		_pid(0),
+		_GUIResetThrow(true),
+		_serviceStartRequest(false),
+		_ignoreNextSignal(false)
 {
 	openlog("GKcQt5", LOG_PID|LOG_CONS, LOG_USER);
 
@@ -258,7 +256,7 @@ void MainWindow::build(void)
 	catch (const GLogiKExcept & e) {
 		if(! _serviceStartRequest) {
 			/* should not happen since the desktop service is assumed stopped
-			 * until sucessful daemonAndServiceTab::updateTab() call */
+			 * until successful daemonAndServiceTab::updateTab() call */
 			throw;
 		}
 
@@ -327,6 +325,8 @@ void MainWindow::build(void)
 		{ {"s", "device_id", "in", "device ID"}, },
 		std::bind(&MainWindow::configurationFileUpdated, this, std::placeholders::_1)
 	);
+
+	connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::aboutToQuit);
 }
 
 /*
@@ -339,18 +339,28 @@ void MainWindow::build(void)
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
+void MainWindow::aboutToQuit(void)
+{
+	_pDBus->removeSignalsInterface(
+		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
+
+	_pDBus->disconnectFromSessionBus();
+}
+
 void MainWindow::configurationFileUpdated(const std::string & devID)
 {
-	bool ignore = _ignoreNextSignal;
-	_ignoreNextSignal = false;
-	if( ignore ) {
+	if( _ignoreNextSignal ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << __func__ << " signal ignored";
 #endif
+		_ignoreNextSignal = false;
 		return;
 	}
 
-	if( _devID != devID)
+	if(_devID != devID)
 		return;
 
 	{
@@ -483,7 +493,8 @@ void MainWindow::updateInterface(int index)
 					_configurationFilePath /= device.getConfigFilePath();
 
 					_openedConfigurationFile.setVendor(device.getVendor());
-					_openedConfigurationFile.setModel(device.getModel());
+					_openedConfigurationFile.setProduct(device.getProduct());
+					_openedConfigurationFile.setName(device.getName());
 					_openedConfigurationFile.setConfigFilePath(device.getConfigFilePath());
 					DeviceConfigurationFile::load(_configurationFilePath.string(), _openedConfigurationFile);
 
@@ -596,7 +607,9 @@ void MainWindow::resetInterface(void)
 				item += " ";
 				item += devicePair.second.getVendor();
 				item += " ";
-				item += devicePair.second.getModel();
+				item += devicePair.second.getProduct();
+				item += " ";
+				item += devicePair.second.getName();
 				std::replace( item.begin(), item.end(), '_', ' ');
 				items << item.c_str();
 			}

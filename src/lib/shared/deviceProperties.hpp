@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -62,7 +62,8 @@ class DeviceProperties
 
 		void setProperties(
 			const std::string & vendor,
-			const std::string & model,
+			const std::string & product,
+			const std::string & name,
 			const uint64_t capabilities
 		);
 		void setProperties(const DeviceProperties & dev);
@@ -77,14 +78,15 @@ class DeviceProperties
 
 	private:
 		uint64_t _capabilities;
-		int _watchedDescriptor;
+		uint64_t _LCDPluginsMask1;
+
+		LCDPluginsPropertiesArray_type _LCDPluginsProperties;
 
 		uint8_t _backlightRed;
 		uint8_t _backlightGreen;
 		uint8_t _backlightBlue;
 
-		uint64_t _LCDPluginsMask1;
-		LCDPluginsPropertiesArray_type _LCDPluginsProperties;
+		int _watchedDescriptor;
 
 		friend class boost::serialization::access;
 

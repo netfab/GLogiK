@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -67,11 +67,50 @@ const std::string toString(const char* s)
 	}
 }
 
+const std::wstring toWString(const wchar_t* s)
+{
+	if(s == nullptr)
+		return std::wstring();
+
+	try {
+		const std::wstring ret(s);
+		return ret;
+	}
+	catch (const std::bad_alloc& e) {
+		throw GLogiKBadAlloc( e.what() );
+	}
+	catch (const std::length_error& e) {
+		std::string error("wstring length error : ");
+		error += e.what();
+		throw GLogiKExcept(error);
+	}
+}
+
 const unsigned int toUInt(const std::string & s)
+{
+	unsigned long ret = toUL(s);
+
+	if(ret > std::numeric_limits<unsigned int>::max() )
+		throw GLogiKExcept("UINT_MAX out of range");
+
+	return static_cast<unsigned int>(ret);
+}
+
+const unsigned short toUShort(const std::string & s, int base)
+{
+	unsigned long ret = toUL(s, base);
+
+	if(ret > std::numeric_limits<unsigned short>::max() )
+		throw GLogiKExcept("USHRT_MAX out of range");
+
+	return static_cast<unsigned short>(ret);
+}
+
+const unsigned long toUL(const std::string & s, int base)
 {
 	unsigned long ret = 0;
 	try {
-		ret = std::stoul(s);
+		ret = std::stoul(s, nullptr, base);
 	}
 	catch (const std::invalid_argument& ia) {
 		throw GLogiKExcept("stoul invalid argument");
@@ -80,10 +119,7 @@ const unsigned int toUInt(const std::string & s)
 		throw GLogiKExcept("stoul out of range");
 	}
 
-	if(ret > std::numeric_limits<unsigned int>::max() )
-		throw GLogiKExcept("UINT_MAX out of range");
-
-	return static_cast<unsigned int>(ret);
+	return ret;
 }
 
 const unsigned long long toULL(const std::string & s)

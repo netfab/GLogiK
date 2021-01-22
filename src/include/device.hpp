@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -36,19 +36,22 @@ class Device
 	public:
 		Device()
 			:	_vendor("unknown"),
-				_model("unknown"),
+				_product("unknown"),
+				_name("unknown"),
 				_status("unknown"),
 				_filePath("none")
 			{}
 		~Device() = default;
 
 		const std::string & getVendor(void) const { return _vendor; };
-		const std::string & getModel(void) const { return _model; };
+		const std::string & getProduct(void) const { return _product; };
+		const std::string & getName(void) const { return _name; };
 		const std::string & getStatus(void) const { return _status; };
 		const std::string & getConfigFilePath(void) const { return _filePath; };
 
 		void setVendor(const std::string & vendor) { _vendor = vendor; };
-		void setModel(const std::string & model) { _model = model; };
+		void setProduct(const std::string & product) { _product = product; };
+		void setName(const std::string & name) { _name = name; };
 		void setStatus(const std::string & status) { _status = status; };
 		void setConfigFilePath(const std::string & path) { _filePath = path; };
 
@@ -56,7 +59,8 @@ class Device
 
 	private:
 		std::string _vendor;
-		std::string _model;
+		std::string _product;
+		std::string _name;
 		std::string _status;
 		std::string _filePath;
 
@@ -66,7 +70,8 @@ class Device
 			void serialize(Archive & ar, const unsigned int version)
 		{
 			ar & _vendor;
-			ar & _model;
+			ar & _product;
+			ar & _name;
 		}
 };
 

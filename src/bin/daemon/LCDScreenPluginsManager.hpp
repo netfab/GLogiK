@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,14 +22,16 @@
 #ifndef SRC_BIN_DAEMON_LCD_SCREEN_PLUGINS_MANAGER_HPP_
 #define SRC_BIN_DAEMON_LCD_SCREEN_PLUGINS_MANAGER_HPP_
 
+#include <cstdint>
+
 #include <string>
 #include <vector>
-
-#include "include/LCDPluginProperties.hpp"
 
 #include "LCDPlugins/PBM.hpp"
 #include "LCDPlugins/LCDPlugin.hpp"
 #include "LCDPlugins/fontsManager.hpp"
+
+#include "include/LCDPluginProperties.hpp"
 
 namespace GLogiK
 {
@@ -37,18 +39,20 @@ namespace GLogiK
 class LCDScreenPluginsManager
 {
 	public:
-		LCDScreenPluginsManager(void);
+		LCDScreenPluginsManager(const std::string & product);
 		~LCDScreenPluginsManager(void);
 
 		static const LCDPluginsPropertiesArray_type _LCDPluginsPropertiesEmptyArray;
 
 		const LCDPluginsPropertiesArray_type & getLCDPluginsProperties(void) const;
 
-		LCDDataArray & getNextLCDScreenBuffer(
+		const bool findOneLCDScreenPlugin(const uint64_t LCDPluginsMask1) const;
+
+		const PixelsData & getNextLCDScreenBuffer(
 			const std::string & LCDKey,
 			const uint64_t LCDPluginsMask1
 		);
-		const unsigned short getPluginTiming(void);
+		const uint16_t getPluginTiming(void);
 
 		void unlockPlugin(void);
 		const uint64_t getCurrentPluginID(void);
@@ -57,20 +61,21 @@ class LCDScreenPluginsManager
 	protected:
 
 	private:
-		unsigned short _frameCounter;
-		bool _noPlugins;
-		bool _currentPluginLocked;
 		std::vector<LCDPlugin*> _plugins;
 		std::vector<LCDPlugin*>::iterator _itCurrentPlugin;
 
 		LCDPluginsPropertiesArray_type _pluginsPropertiesArray;
 
-		LCDDataArray _LCDBuffer;
+		PixelsData _LCDBuffer;
 		FontsManager _fontsManager;
 		FontsManager* const _pFonts;
 
+		uint16_t _frameCounter;
+		bool _noPlugins;
+		bool _currentPluginLocked;
+
 		void stopLCDPlugins(void);
-		void dumpPBMDataIntoLCDBuffer(LCDDataArray & LCDBuffer, const PBMDataArray & PBMData);
+		void dumpPBMDataIntoLCDBuffer(PixelsData & LCDBuffer, const PixelsData & PBMData);
 };
 
 } // namespace GLogiK
