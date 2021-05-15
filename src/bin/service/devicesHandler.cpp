@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -52,10 +52,14 @@ DevicesHandler::DevicesHandler()
 #if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler initialization";
 #endif
+
 	_configurationRootDirectory = XDGUserDirs::getConfigurationRootDirectory();
 	_configurationRootDirectory /= PACKAGE_NAME;
 
 	FileSystem::createDirectory(_configurationRootDirectory, fs::owner_all);
+#if DEBUGGING_ON
+	FileSystem::traceLastDirectoryCreation();
+#endif
 }
 
 DevicesHandler::~DevicesHandler() {
@@ -171,6 +175,9 @@ void DevicesHandler::saveDeviceConfigurationFile(
 		filePath /= device.getVendor();
 
 		FileSystem::createDirectory(filePath, fs::owner_all);
+#if DEBUGGING_ON
+		FileSystem::traceLastDirectoryCreation();
+#endif
 
 		filePath /= device.getConfigFilePath();
 
@@ -255,7 +262,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 				const bool ret = _pDBus->getNextBooleanArgument();
 				if( ret ) {
-					LOG(VERB)	<< devID << " successfully setted device backlight color : "
+					LOG(DEBUG)	<< devID << " successfully setted device backlight color : "
 								<< getHexRGB(r, g, b);
 				}
 				else {
@@ -311,7 +318,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 						const bool ret = _pDBus->getNextBooleanArgument();
 						if( ret ) {
-							LOG(VERB) << devID << " successfully resetted device MacrosBank " << toUInt(bankID);
+							LOG(DEBUG) << devID << " successfully resetted device MacrosBank " << toUInt(bankID);
 						}
 						else {
 							LOG(ERROR) << devID << " failed to reset device MacrosBank " << toUInt(bankID) << " : false";
@@ -351,7 +358,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 					const bool ret = _pDBus->getNextBooleanArgument();
 					if( ret ) {
-						LOG(VERB) << devID << " successfully setted device MacrosBank " << toUInt(bankID);
+						LOG(DEBUG) << devID << " successfully setted device MacrosBank " << toUInt(bankID);
 					}
 					else {
 						LOG(ERROR) << devID << " failed to set device MacrosBank " << toUInt(bankID) << " : false";
@@ -394,7 +401,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 
 				const bool ret = _pDBus->getNextBooleanArgument();
 				if( ret ) {
-					LOG(VERB) << devID << " successfully setted device LCD Plugins Mask " << toUInt(maskID);
+					LOG(DEBUG) << devID << " successfully setted device LCD Plugins Mask " << toUInt(maskID);
 				}
 				else {
 					LOG(ERROR) << devID << " failed to set device LCD Plugins Mask " << toUInt(maskID) << " : false";

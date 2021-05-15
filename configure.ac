@@ -271,6 +271,10 @@ AC_DEFINE_UNQUOTED([DEBUG_DIR], ["${DEBUG_DIR}"], [Directory for debug file])
 AC_DEFINE_UNQUOTED([DATA_DIR], ["${prefix}/share"], [Root directory for data files installation])
 AC_DEFINE_UNQUOTED([PBM_DATA_DIR], ["${prefix}/share/${PACKAGE_NAME}/pbm"], [Directory for pbm file installation])
 
+dnl #define BOOST_LOG_DYN_LINK
+AC_DEFINE_UNQUOTED([BOOST_LOG_DYN_LINK], [], [Link dynamically with boost log libs])
+
+
 dnl -------------------------------------------------------------------------
 dnl                       checking for functions
 dnl -------------------------------------------------------------------------
@@ -307,6 +311,9 @@ AX_BOOST_SYSTEM
 AX_BOOST_FILESYSTEM
 AX_BOOST_IOSTREAMS
 AX_BOOST_SERIALIZATION
+AX_BOOST_LOG_SETUP
+AX_BOOST_LOG
+AX_BOOST_THREAD
 AX_PTHREAD
 
 AC_CONFIG_FILES([
@@ -370,6 +377,9 @@ AC_MSG_NOTICE([
              Boost CPPFLAGS : ${BOOST_CPPFLAGS}
               Boost LDFLAGS : ${BOOST_LDFLAGS}
    Boost serialization LIBS : ${BOOST_SERIALIZATION_LIB}
+       Boost log setup LIBS : ${BOOST_LOG_SETUP_LIB}
+             Boost log LIBS : ${BOOST_LOG_LIB}
+          Boost thread LIBS : ${BOOST_THREAD_LIB}
           Boost system LIBS : ${BOOST_SYSTEM_LIB}
       Boost filesystem LIBS : ${BOOST_FILESYSTEM_LIB}
  Boost program options LIBS : ${BOOST_PROGRAM_OPTIONS_LIB}

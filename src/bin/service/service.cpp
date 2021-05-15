@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -34,6 +34,10 @@
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
+#include <config.h>
+
+#include "lib/utils/GKLogging.hpp"
+
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/utils/utils.hpp"
 #include "lib/shared/sessionManager.hpp"
@@ -57,15 +61,6 @@ DesktopService::DesktopService() :
 	_verbose(false)
 {
 	openlog(GLOGIKS_DESKTOP_SERVICE_NAME, LOG_PID|LOG_CONS, LOG_USER);
-
-	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
-	if( LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() != NONE ) {
-		LOG_TO_FILE_AND_CONSOLE::ConsoleStream() = stderr;
-	}
-
-#if DEBUGGING_ON
-	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
-#endif
 }
 
 DesktopService::~DesktopService() {
@@ -82,9 +77,16 @@ DesktopService::~DesktopService() {
 
 int DesktopService::run( const int& argc, char *argv[] ) {
 	try {
-#if DEBUGGING_ON
-		FileSystem::openDebugFile(GLOGIKS_DESKTOP_SERVICE_NAME, _LOGfd, fs::owner_read|fs::owner_write|fs::group_read);
-#endif
+
+		// initialize logging
+		try {
+			GKLogging::initDebugFile(GLOGIKS_DESKTOP_SERVICE_NAME, fs::owner_read|fs::owner_write|fs::group_read);
+			GKLogging::initConsoleLog();
+		}
+		catch (const std::exception & e) {
+			syslog(LOG_ERR, "%s", e.what());
+			return EXIT_FAILURE;
+		}
 
 		LOG(INFO) << "Starting " << GLOGIKS_DESKTOP_SERVICE_NAME << " vers. " << VERSION;
 
@@ -165,6 +167,7 @@ void DesktopService::parseCommandLine(const int& argc, char *argv[]) {
 	LOG(DEBUG2) << "parsing command line arguments";
 #endif
 
+	// TODO
 	po::options_description desc("Allowed options");
 	desc.add_options()
 		("verbose,v", po::bool_switch(&_verbose)->default_value(false), "verbose mode")
@@ -178,11 +181,6 @@ void DesktopService::parseCommandLine(const int& argc, char *argv[]) {
 		throw GLogiKExcept( e.what() );
 	}
 	po::notify(vm);
-
-	if( _verbose ) {
-		LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = VERB;
-		LOG(VERB) << "verbose mode on";
-	}
 
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "parsing arguments done";

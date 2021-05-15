@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -34,6 +34,9 @@
 #include <boost/filesystem.hpp>
 //#include <boost/program_options.hpp>
 
+#include <config.h>
+
+#include "lib/utils/GKLogging.hpp"
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 #include "lib/shared/sessionManager.hpp"
@@ -53,15 +56,6 @@ DesktopServiceLauncher::DesktopServiceLauncher()
 		_pid(0)
 {
 	openlog(DESKTOP_SERVICE_LAUNCHER_NAME, LOG_PID|LOG_CONS, LOG_USER);
-
-	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
-	if( LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() != NONE ) {
-		LOG_TO_FILE_AND_CONSOLE::ConsoleStream() = stderr;
-	}
-
-#if DEBUGGING_ON
-	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
-#endif
 }
 
 DesktopServiceLauncher::~DesktopServiceLauncher() {
@@ -78,10 +72,15 @@ DesktopServiceLauncher::~DesktopServiceLauncher() {
 
 int DesktopServiceLauncher::run( const int& argc, char *argv[] ) {
 	try {
-
-#if DEBUGGING_ON
-		FileSystem::openDebugFile(DESKTOP_SERVICE_LAUNCHER_NAME, _LOGfd, fs::owner_read|fs::owner_write|fs::group_read);
-#endif
+		// initialize logging
+		try {
+			GKLogging::initDebugFile(DESKTOP_SERVICE_LAUNCHER_NAME, fs::owner_read|fs::owner_write|fs::group_read);
+			GKLogging::initConsoleLog();
+		}
+		catch (const std::exception & e) {
+			syslog(LOG_ERR, "%s", e.what());
+			return EXIT_FAILURE;
+		}
 
 		LOG(INFO) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
 

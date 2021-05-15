@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,25 +22,26 @@
 #include <syslog.h>
 
 #include <cstdint>
-#include <cerrno>
+//#include <cerrno>
 #include <cstring>
 #include <cstdlib>
 
 #include <algorithm>
 #include <sstream>
-#include <chrono>
+//#include <chrono>
 
 #include <config.h>
 
+#include "GKLogging.hpp"
+
 #define UTILS_COMPILATION 1
 
-#include "log.hpp"
 #include "exception.hpp"
 #include "filesystem.hpp"
 
 #undef UTILS_COMPILATION
 
-namespace chr = std::chrono;
+//namespace chr = std::chrono;
 
 namespace NSGKUtils
 {
@@ -51,6 +52,9 @@ FileSystem::FileSystem()
 
 FileSystem::~FileSystem() {
 }
+
+bool FileSystem::createDirectorySuccess = false;
+std::string FileSystem::lastDirectoryCreation;
 
 const std::string FileSystem::getNextAvailableFileName(
 	const std::set<std::string> & toSkip,
@@ -114,10 +118,8 @@ void FileSystem::createDirectory(
 	const fs::path & directory,
 	const fs::perms prms)
 {
-#if DEBUGGING_ON
-	bool success = false;
-	LOG(DEBUG2) << "creating directory : " << directory.string();
-#endif
+	FileSystem::createDirectorySuccess = false;
+	lastDirectoryCreation = directory.string();
 
 	auto throwError = [] (
 		const std::string & error,
@@ -129,12 +131,7 @@ void FileSystem::createDirectory(
 	};
 
 	try {
-#if DEBUGGING_ON
-		success = fs::create_directory( directory );
-#else
-		fs::create_directory( directory );
-#endif
-
+		FileSystem::createDirectorySuccess = fs::create_directory( directory );
 		if( prms != fs::no_perms ) {
 			fs::permissions(directory, prms);
 		}
@@ -145,17 +142,23 @@ void FileSystem::createDirectory(
 	catch (const std::exception & e) {
 		throwError("directory creation or set permissions (allocation) failure", e.what());
 	}
-
-#if DEBUGGING_ON
-	if( ! success ) {
-		LOG(DEBUG3) << "directory not created because it seems already exists";
-	}
-	else {
-		LOG(DEBUG3) << "directory successfully created";
-	}
-#endif
 }
 
+#if DEBUGGING_ON
+void FileSystem::traceLastDirectoryCreation(void)
+{
+	if(GLogiK::GKDebug) {
+		if(FileSystem::createDirectorySuccess) {
+			LOG(trace) << "created directory : " << lastDirectoryCreation;
+		}
+		else {
+			LOG(trace) << "directory not created because it seems already exists : " << lastDirectoryCreation;
+		}
+	}
+}
+#endif
+
+/*
 #if DEBUGGING_ON
 void FileSystem::openDebugFile(
 	const std::string & baseName,
@@ -236,6 +239,7 @@ void FileSystem::openDebugFile(
 		syslog(LOG_INFO, "debug file not opened");
 }
 #endif
+*/
 
 } // namespace NSGKUtils
 

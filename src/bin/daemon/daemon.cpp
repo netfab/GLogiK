@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -40,6 +40,9 @@
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
+#include <config.h>
+
+#include "lib/utils/GKLogging.hpp"
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
@@ -65,11 +68,6 @@ GLogiKDaemon::GLogiKDaemon()
 	:	_PIDFileCreated(false)
 {
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
-
-#if DEBUGGING_ON
-	// console output disabled by default
-	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
-#endif
 }
 
 GLogiKDaemon::~GLogiKDaemon()
@@ -104,30 +102,47 @@ GLogiKDaemon::~GLogiKDaemon()
 	closelog();
 }
 
-int GLogiKDaemon::run( const int& argc, char *argv[] ) {
+int GLogiKDaemon::run( const int& argc, char *argv[] )
+{
 	try {
-		// drop privileges before opening debug file
-		try {
-			this->dropPrivileges();
-		}
-		catch ( const GLogiKExcept & e ) {
-			syslog(LOG_ERR, "%s", e.what());
-			return EXIT_FAILURE;
-		}
+		{
+			// drop privileges before opening debug file
+			try {
+				this->dropPrivileges();
+			}
+			catch ( const GLogiKExcept & e ) {
+				syslog(LOG_ERR, "%s", e.what());
+				return EXIT_FAILURE;
+			}
+
+			this->parseCommandLine(argc, argv);
 
 #if DEBUGGING_ON
-		FileSystem::openDebugFile("GLogiKd", _LOGfd, fs::owner_read|fs::owner_write|fs::group_read, true);
+			if(GKDebug) {
+				FileSystem::createDirectory(DEBUG_DIR, fs::owner_all | fs::group_all);
+
+				// initialize logging
+				try {
+					GKLogging::initDebugFile("GLogiKd", fs::owner_read|fs::owner_write|fs::group_read);
+				}
+				catch (const std::exception & e) {
+					syslog(LOG_ERR, "%s", e.what());
+					syslog(LOG_ERR, "%s", "debug file not opened");
+					return EXIT_FAILURE;
+				}
+
+				BOOST_LOG_FUNCTION()
+
+				FileSystem::traceLastDirectoryCreation();
+			}
 #endif
 
-		GKSysLog(LOG_INFO, INFO, "successfully dropped root privileges");
+			GKSysLog(LOG_INFO, INFO, "successfully dropped root privileges");
 
-		{
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "Starting " << GLOGIKD_DAEMON_NAME << " vers. " << VERSION;
 			GKSysLog(LOG_INFO, INFO, buffer.str());
 		}
-
-		this->parseCommandLine(argc, argv);
 
 		if( GLogiKDaemon::isDaemonRunning() ) {
 
@@ -269,16 +284,14 @@ void GLogiKDaemon::createPIDFile(void) {
 }
 
 void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "parsing command line arguments";
-#endif
-
-	bool d = false;
+	bool daemonized = false;
+	bool debug = false;
 
 	po::options_description desc("Allowed options");
 	desc.add_options()
 //		("help,h", "produce help message")
-		("daemonize,d", po::bool_switch(&d)->default_value(false), "run in daemon mode")
+		("daemonize,d", po::bool_switch(&daemonized)->default_value(false), "run in daemon mode")
+		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
 		("pid-file,p", po::value(&_pidFileName), "define the PID file")
 	;
 
@@ -303,10 +316,9 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	if (vm.count("daemonize")) {
 		GLogiKDaemon::daemonized = vm["daemonize"].as<bool>();
 	}
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "parsing arguments done";
-#endif
+	if (vm.count("debug")) {
+		GKDebug = vm["debug"].as<bool>();
+	}
 }
 
 void GLogiKDaemon::dropPrivileges(void) {

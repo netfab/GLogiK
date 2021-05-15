@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -42,6 +42,10 @@
 #include <QIcon>
 #include <QMessageBox>
 
+#include <config.h>
+
+#include "lib/utils/GKLogging.hpp"
+
 #include "lib/shared/glogik.hpp"
 #include "lib/shared/deviceConfigurationFile.hpp"
 #include "lib/utils/utils.hpp"
@@ -73,19 +77,6 @@ MainWindow::MainWindow(QWidget *parent)
 		_ignoreNextSignal(false)
 {
 	openlog("GKcQt5", LOG_PID|LOG_CONS, LOG_USER);
-
-	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
-	if( LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() != NONE ) {
-		LOG_TO_FILE_AND_CONSOLE::ConsoleStream() = stderr;
-	}
-
-#if DEBUGGING_ON
-	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
-#endif
-
-	std::signal(SIGINT, MainWindow::handleSignal);
-	std::signal(SIGTERM, MainWindow::handleSignal);
-	std::signal(SIGHUP, MainWindow::handleSignal);
 }
 
 MainWindow::~MainWindow() {
@@ -120,11 +111,21 @@ void MainWindow::handleSignal(int sig)
 
 void MainWindow::init(void)
 {
-#if DEBUGGING_ON
-	FileSystem::openDebugFile("GKcQt5", _LOGfd, fs::owner_read|fs::owner_write|fs::group_read);
-#endif
+	// initialize logging
+	try {
+		GKLogging::initDebugFile("GKcQt5", fs::owner_read|fs::owner_write|fs::group_read);
+		GKLogging::initConsoleLog();
+	}
+	catch (const std::exception & e) {
+		syslog(LOG_ERR, "%s", e.what());
+		throw GLogiKExcept("logging initialization failure");
+	}
 
 	LOG(INFO) << "Starting GKcQt5 vers. " << VERSION;
+
+	std::signal(SIGINT, MainWindow::handleSignal);
+	std::signal(SIGTERM, MainWindow::handleSignal);
+	std::signal(SIGHUP, MainWindow::handleSignal);
 
 	try {
 		_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE, GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE_PATH);

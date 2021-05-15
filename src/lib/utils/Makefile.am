@@ -11,7 +11,10 @@ libGKUtils_la_LDFLAGS = \
 
 libGKUtils_la_LIBADD = \
 				@BOOST_SYSTEM_LIB@ \
-				@BOOST_FILESYSTEM_LIB@
+				@BOOST_FILESYSTEM_LIB@ \
+				@BOOST_LOG_SETUP_LIB@ \
+				@BOOST_LOG_LIB@ \
+				@BOOST_THREAD_LIB@
 
 libGKUtils_la_SOURCES = \
 	%D%/randomGenerator.cpp \
@@ -26,5 +29,6 @@ libGKUtils_la_SOURCES = \
 	%D%/exception.hpp \
 	%D%/XDGUserDirs.cpp \
 	%D%/XDGUserDirs.hpp \
-	%D%/log.hpp \
+	%D%/GKLogging.cpp \
+	%D%/GKLogging.hpp \
 	%D%/utils.hpp

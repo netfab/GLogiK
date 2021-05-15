@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -26,10 +26,7 @@
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
-#include <cstdio>
-
 #include <set>
-#include <map>
 #include <string>
 #include <boost/filesystem.hpp>
 
@@ -51,6 +48,11 @@ class FileSystem
 			const fs::path & directory,
 			const fs::perms prms = fs::no_perms
 		);
+
+#if DEBUGGING_ON
+		static void traceLastDirectoryCreation(void);
+#endif
+
 		const std::string getNextAvailableFileName(
 			const std::set<std::string> & toSkip,
 			const fs::path & directory,
@@ -59,18 +61,11 @@ class FileSystem
 			bool mustExist=false
 		);
 
-#if DEBUGGING_ON
-		static void openDebugFile(
-			const std::string & baseName,
-			FILE* & pFile,
-			const fs::perms prms = fs::no_perms,
-			const bool createDir = false
-		);
-#endif
-
 	protected:
 
 	private:
+		static bool createDirectorySuccess;
+		static std::string lastDirectoryCreation;
 };
 
 } // namespace NSGKUtils
