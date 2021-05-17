@@ -56,7 +56,6 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 DesktopService::DesktopService() :
-	_LOGfd(nullptr),
 	_pid(0),
 	_verbose(false)
 {
@@ -69,8 +68,6 @@ DesktopService::~DesktopService() {
 #endif
 
 	LOG(INFO) << GLOGIKS_DESKTOP_SERVICE_NAME << " : bye !";
-	if( _LOGfd != nullptr )
-		std::fclose(_LOGfd);
 
 	closelog();
 }

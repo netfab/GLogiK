@@ -63,7 +63,6 @@ using namespace NSGKUtils;
 MainWindow::MainWindow(QWidget *parent)
 	:	QMainWindow(parent),
 		_pDBus(nullptr),
-		_LOGfd(nullptr),
 		_devicesComboBox(nullptr),
 		_tabbedWidgets(nullptr),
 		_daemonAndServiceTab(nullptr),
@@ -87,8 +86,6 @@ MainWindow::~MainWindow() {
 #endif
 
 	LOG(INFO) << "GKcQt5 : bye !";
-	if( _LOGfd != nullptr )
-		std::fclose(_LOGfd);
 
 	closelog();
 }

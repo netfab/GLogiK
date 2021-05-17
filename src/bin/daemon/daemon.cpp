@@ -96,8 +96,6 @@ GLogiKDaemon::~GLogiKDaemon()
 	}
 
 	GKSysLog(LOG_INFO, INFO, "bye !");
-	if(_LOGfd != nullptr)
-		std::fclose(_LOGfd);
 
 	closelog();
 }

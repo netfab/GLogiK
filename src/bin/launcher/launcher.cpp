@@ -52,8 +52,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 DesktopServiceLauncher::DesktopServiceLauncher()
-	:	_LOGfd(nullptr),
-		_pid(0)
+	:	_pid(0)
 {
 	openlog(DESKTOP_SERVICE_LAUNCHER_NAME, LOG_PID|LOG_CONS, LOG_USER);
 }
@@ -64,8 +63,6 @@ DesktopServiceLauncher::~DesktopServiceLauncher() {
 #endif
 
 	LOG(INFO) << DESKTOP_SERVICE_LAUNCHER_NAME << " : bye !";
-	if( _LOGfd != nullptr )
-		std::fclose(_LOGfd);
 
 	closelog();
 }
