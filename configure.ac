@@ -14,6 +14,17 @@ AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_SRCDIR([src/bin/daemon/main.cpp])
 
+dnl Fix:	configure.ac:334: warning: AC_ARG_PROGRAM was called before AC_CANONICAL_TARGET
+dnl 		aclocal.m4:2390: AX_PTHREAD is expanded from...
+dnl 		configure.ac:334: the top level
+dnl
+dnl After:	AX_PTHREAD version 29
+dnl
+dnl			https://git.savannah.gnu.org/gitweb/?p=autoconf-archive.git;
+dnl     		a=commitdiff;h=2567e0ce0f3a11b535c6b527386197fb49ff172b
+dnl
+AC_CANONICAL_TARGET
+
 # Automake initialisation
 AM_INIT_AUTOMAKE([subdir-objects])
 
