@@ -77,9 +77,13 @@ std::ostream& operator<< (std::ostream& strm, severity_level level)
 		"DEBUG",
 		"trace",
 		"INFO",
+		"info",
 		"WARNING",
+		"warning",
 		"ERROR",
-		"CRITICAL"
+		"error",
+		"CRITICAL",
+		"critical"
     };
 
     if (static_cast< std::size_t >(level) < sizeof(strings) / sizeof(*strings))

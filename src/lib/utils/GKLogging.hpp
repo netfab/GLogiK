@@ -19,7 +19,9 @@
  *
  */
 
+#include <ios>
 #include <string>
+#include <sstream>
 
 #include <syslog.h>
 
@@ -51,9 +53,13 @@ enum severity_level
 	DEBUG,
 	trace,
 	INFO,
+	info,
 	WARNING,
+	warning,
 	ERROR,
-	CRITICAL
+	error,
+	CRITICAL,
+	critical
 };
 
 class GKLogging
@@ -78,13 +84,64 @@ class GKLogging
 
 #define LOG(sev)	BOOST_LOG_SEV(GKLogging::GKLogger, sev)
 
-inline void GKSysLog(const int priority, const severity_level level, const std::string & to_log) {
+// log «msg» message of «level» severity only if
+// debugging was enabled at build and run time
+inline void GKLog(
+	const severity_level level,
+	const std::string & msg)
+{
 #if DEBUGGING_ON
 	if(GLogiK::GKDebug) {
-		LOG(level) << to_log;
+		LOG(level) << msg;
 	}
 #endif
-	syslog(priority, "%s", to_log.c_str());
+}
+
+// log «msg1» and «msg2» messages of «level» severity only if
+// debugging was enabled at build and run time
+inline void GKLog(
+	const severity_level level,
+	const std::string & msg1,
+	const std::string & msg2)
+{
+#if DEBUGGING_ON
+	if(GLogiK::GKDebug) {
+		LOG(level) << msg1 << msg2;
+	}
+#endif
+}
+
+inline void GKSysLog(
+	const int priority,
+	const severity_level level,
+	const std::string & msg)
+{
+	GKLog(level, msg);
+	syslog(priority, "%s", msg.c_str());
+}
+
+inline void GKSysLogInfo(const std::string & msg)
+{
+	GKSysLog(LOG_INFO, info, msg);
+}
+
+inline void GKSysLogWarning(const std::string & msg)
+{
+	GKSysLog(LOG_WARNING, warning, msg);
+}
+
+inline void GKSysLogError(const std::string & msg)
+{
+	GKSysLog(LOG_ERR, error, msg);
+}
+
+inline void GKSysLogError(
+	const std::string & msg1,
+	const std::string & msg2)
+{
+	std::ostringstream buffer(std::ios_base::app);
+	buffer << msg1 << msg2;
+	GKSysLogError(buffer.str());
 }
 
 #define GKSysLog_UnknownDevice \
