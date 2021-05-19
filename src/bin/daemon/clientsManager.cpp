@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -43,12 +43,17 @@ ClientsManager::ClientsManager(DevicesManager* pDevicesManager)
 		_numActive(0),
 		_enabledSignals(true)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing clients manager";
 #endif
 }
 
-ClientsManager::~ClientsManager() {
+ClientsManager::~ClientsManager()
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "destroying clients manager";
 #endif
@@ -307,7 +312,10 @@ void ClientsManager::cleanDBusRequests(void) noexcept
 	_pDBus->removeMethodsInterface(system_bus, DM_object, DM_interf);
 }
 
-void ClientsManager::waitForClientsDisconnections(void) noexcept {
+void ClientsManager::waitForClientsDisconnections(void) noexcept
+{
+	GK_LOG_FUNC
+
 	if( _connectedClients.empty() ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "no client, empty container";
@@ -330,7 +338,8 @@ void ClientsManager::waitForClientsDisconnections(void) noexcept {
 	}
 }
 
-const std::string ClientsManager::generateRandomClientID(void) const {
+const std::string ClientsManager::generateRandomClientID(void) const
+{
 	RandomGenerator rand;
 	std::ostringstream ret(std::ios_base::app);
 	ret << rand.getString(6) << "-" << rand.getString(4) << "-"
@@ -339,8 +348,10 @@ const std::string ClientsManager::generateRandomClientID(void) const {
 }
 
 const bool ClientsManager::registerClient(
-	const std::string & clientSessionObjectPath
-)	{
+	const std::string & clientSessionObjectPath)
+{
+	GK_LOG_FUNC
+
 	try {
 		std::vector<std::string> toUnregister;
 
@@ -431,8 +442,10 @@ const bool ClientsManager::registerClient(
 }
 
 const bool ClientsManager::unregisterClient(
-	const std::string & clientID
-)	{
+	const std::string & clientID)
+{
+	GK_LOG_FUNC
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 
@@ -463,8 +476,10 @@ const bool ClientsManager::unregisterClient(
 
 const bool ClientsManager::updateClientState(
 	const std::string & clientID,
-	const std::string & state
-)	{
+	const std::string & state)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << CONST_STRING_CLIENT << clientID << " state: " << state;
 #endif
@@ -523,9 +538,10 @@ const bool ClientsManager::updateClientState(
 	return false;
 }
 
-const bool ClientsManager::toggleClientReadyPropertie(
-	const std::string & clientID
-)	{
+const bool ClientsManager::toggleClientReadyPropertie(const std::string & clientID)
+{
+	GK_LOG_FUNC
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		pClient->toggleClientReadyPropertie();
@@ -549,8 +565,10 @@ const bool ClientsManager::toggleClientReadyPropertie(
 
 const bool ClientsManager::deleteDeviceConfiguration(
 	const std::string & clientID,
-	const std::string & devID
-)	{
+	const std::string & devID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
@@ -568,8 +586,10 @@ const bool ClientsManager::deleteDeviceConfiguration(
 
 const bool ClientsManager::stopDevice(
 	const std::string & clientID,
-	const std::string & devID
-)	{
+	const std::string & devID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
@@ -607,8 +627,10 @@ const bool ClientsManager::stopDevice(
 
 const bool ClientsManager::startDevice(
 	const std::string & clientID,
-	const std::string & devID
-)	{
+	const std::string & devID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
@@ -651,8 +673,10 @@ const bool ClientsManager::startDevice(
 
 const bool ClientsManager::restartDevice(
 	const std::string & clientID,
-	const std::string & devID
-)	{
+	const std::string & devID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
@@ -693,9 +717,11 @@ const bool ClientsManager::restartDevice(
 	return false;
 }
 
-const std::vector<std::string> ClientsManager::getStartedDevices(
-	const std::string & clientID
-)	{
+const std::vector<std::string>
+	ClientsManager::getStartedDevices(const std::string & clientID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << CONST_STRING_CLIENT << clientID;
 #endif
@@ -712,9 +738,11 @@ const std::vector<std::string> ClientsManager::getStartedDevices(
 	return ret;
 }
 
-const std::vector<std::string> ClientsManager::getStoppedDevices(
-	const std::string & clientID
-)	{
+const std::vector<std::string>
+	ClientsManager::getStoppedDevices(const std::string & clientID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << CONST_STRING_CLIENT << clientID;
 #endif
@@ -733,8 +761,10 @@ const std::vector<std::string> ClientsManager::getStoppedDevices(
 
 const std::string ClientsManager::getDeviceStatus(
 	const std::string & clientID,
-	const std::string & devID
-)	{
+	const std::string & devID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
@@ -752,8 +782,10 @@ const std::string ClientsManager::getDeviceStatus(
 
 void ClientsManager::getDeviceProperties(
 	const std::string & clientID,
-	const std::string & devID
-)	{
+	const std::string & devID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
@@ -777,10 +809,13 @@ void ClientsManager::getDeviceProperties(
 	}
 }
 
-const LCDPluginsPropertiesArray_type & ClientsManager::getDeviceLCDPluginsProperties(
-	const std::string & clientID,
-	const std::string & devID)
+const LCDPluginsPropertiesArray_type &
+	ClientsManager::getDeviceLCDPluginsProperties(
+		const std::string & clientID,
+		const std::string & devID)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
@@ -804,8 +839,10 @@ const bool ClientsManager::setDeviceBacklightColor(
 	const std::string & devID,
 	const uint8_t r,
 	const uint8_t g,
-	const uint8_t b
-)	{
+	const uint8_t b)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
@@ -826,8 +863,10 @@ const macro_type & ClientsManager::getDeviceMacro(
 	const std::string & clientID,
 	const std::string & devID,
 	const std::string & keyName,
-	const uint8_t bankID
-)	{
+	const uint8_t bankID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
@@ -857,10 +896,13 @@ const macro_type & ClientsManager::getDeviceMacro(
 	return MacrosBanks::emptyMacro;
 }
 
-const std::vector<std::string> & ClientsManager::getDeviceMacroKeysNames(
-	const std::string & clientID,
-	const std::string & devID
-)	{
+const std::vector<std::string> &
+	ClientsManager::getDeviceMacroKeysNames(
+		const std::string & clientID,
+		const std::string & devID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
@@ -880,8 +922,10 @@ const bool ClientsManager::setDeviceMacrosBank(
 	const std::string & clientID,
 	const std::string & devID,
 	const uint8_t bankID,
-	const mBank_type & bank
-)	{
+	const mBank_type & bank)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
@@ -903,6 +947,8 @@ const bool ClientsManager::resetDeviceMacrosBank(
 	const std::string & devID,
 	const uint8_t bankID)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;
@@ -925,6 +971,8 @@ const bool ClientsManager::setDeviceLCDPluginsMask(
 	const uint8_t maskID,
 	const uint64_t mask)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
 				<< CONST_STRING_CLIENT << clientID;

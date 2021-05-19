@@ -163,6 +163,8 @@ void yield_for(std::chrono::microseconds us)
 
 pid_t detachProcess(const bool closeDescriptors)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG) << "detaching process";
 #endif

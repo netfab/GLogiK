@@ -57,6 +57,8 @@ LCDPlugin::LCDPlugin()
 
 LCDPlugin::~LCDPlugin()
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "deleting " << this->getPluginName() << " LCD plugin";
 #endif
@@ -111,6 +113,8 @@ const uint16_t LCDPlugin::getPluginMaxFrames(void) const
 
 void LCDPlugin::prepareNextPBMFrame(void)
 {
+	GK_LOG_FUNC
+
 	/* update internal frame counter and iterator to allow the plugin
 	 * to have multiples PBM loaded and simulate animation */
 	if( (*_itCurrentPBMFrame).switchToNextFrame(_PBMFrameCounter) ) {
@@ -161,6 +165,8 @@ void LCDPlugin::addPBMFrame(
 	const std::string & file,
 	const uint16_t num)
 {
+	GK_LOG_FUNC
+
 	fs::path filePath(PBMDirectory);
 	filePath /= file;
 
@@ -174,9 +180,10 @@ void LCDPlugin::addPBMFrame(
 	);
 }
 
-void LCDPlugin::addPBMEmptyFrame(
-	const uint16_t num)
+void LCDPlugin::addPBMEmptyFrame(const uint16_t num)
 {
+	GK_LOG_FUNC
+
 	try {
 		_PBMFrames.emplace_back(num);
 	}
@@ -193,6 +200,8 @@ const uint16_t LCDPlugin::getNextPBMFrameID(void) const
 
 PixelsData & LCDPlugin::getCurrentPBMFrame(void)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 	LOG(DEBUG2)	<< this->getPluginName()
 				<< " - PBMFrameindex: " << _PBMFrameIndex;
@@ -207,6 +216,8 @@ void LCDPlugin::writeStringOnPBMFrame(
 	const int16_t PBMXPos,
 	const int16_t PBMYPos)
 {
+	GK_LOG_FUNC
+
 	try {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 		LOG(DEBUG2)	<< this->getPluginName()
@@ -240,6 +251,8 @@ void LCDPlugin::writeStringOnLastPBMFrame(
 	const int16_t PBMXPos,
 	const int16_t PBMYPos)
 {
+	GK_LOG_FUNC
+
 	try {
 		if( _PBMFrames.empty() )
 			throw GLogiKExcept("accessing last element on empty container");
@@ -258,6 +271,8 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 	const uint16_t PBMXPos,
 	const uint16_t PBMYPos)
 {
+	GK_LOG_FUNC
+
 	const uint16_t PROGRESS_BAR_WIDTH = 102;
 	const uint16_t PROGRESS_BAR_HEIGHT = 7;
 

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -40,6 +40,8 @@ MacrosManager::MacrosManager(
 		:	_virtualKeyboard(virtualKeyboardName),
 			_currentBankID(BankID::BANK_M0)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG) << "initializing " << keysNames.size() << " macro keys";
 #endif
@@ -52,7 +54,10 @@ MacrosManager::~MacrosManager()
 }
 
 /* returns true if a macro is defined for this key on the current memory bank */
-const bool MacrosManager::macroDefined(const std::string & keyName) {
+const bool MacrosManager::macroDefined(const std::string & keyName)
+{
+	GK_LOG_FUNC
+
 	try {
 		const macro_type & macro = _macrosBanks[_currentBankID].at(keyName);
 		return (macro.size() > 0);
@@ -65,7 +70,10 @@ const bool MacrosManager::macroDefined(const std::string & keyName) {
 }
 
 /* run a macro on the virtual keyboard */
-void MacrosManager::runMacro(const std::string & keyName) {
+void MacrosManager::runMacro(const std::string & keyName)
+{
+	GK_LOG_FUNC
+
 	try {
 		const macro_type & macro = _macrosBanks[_currentBankID].at(keyName);
 		if(macro.size() == 0) {
@@ -89,14 +97,18 @@ void MacrosManager::runMacro(const std::string & keyName) {
 	}
 }
 
-void MacrosManager::setCurrentMacrosBankID(BankID bankID) {
+void MacrosManager::setCurrentMacrosBankID(BankID bankID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG) << "setting current bank ID : " << bankID;
 #endif
 	_currentBankID = bankID;
 }
 
-const BankID MacrosManager::getCurrentMacrosBankID(void) const {
+const BankID MacrosManager::getCurrentMacrosBankID(void) const
+{
 	return _currentBankID;
 }
 
@@ -104,6 +116,8 @@ void MacrosManager::setMacro(
 	const std::string & keyName,
 	macro_type & macro)
 {
+	GK_LOG_FUNC
+
 	{
 		std::vector<MacroEvent> pressedEvents;
 		std::vector<MacroEvent> releasedEvents;
@@ -131,7 +145,10 @@ void MacrosManager::setMacro(
 	MacrosBanks::setMacro(_currentBankID, keyName, macro);
 }
 
-void MacrosManager::resetMacrosBanks(void) {
+void MacrosManager::resetMacrosBanks(void)
+{
+	GK_LOG_FUNC
+
 	this->setCurrentMacrosBankID(BankID::BANK_M0);
 	for(auto & idBankPair : _macrosBanks) {
 #if DEBUGGING_ON
@@ -162,6 +179,8 @@ void MacrosManager::fixMacroReleaseEvents(
 	std::vector<MacroEvent> & releasedEvents,
 	macro_type & macro)
 {
+	GK_LOG_FUNC
+
 	/* fix missing release events */
 	for(const auto & pressed : pressedEvents) {
 		bool found = false;
@@ -208,6 +227,8 @@ void MacrosManager::fixMacroSize(
 	std::vector<MacroEvent> & releasedEvents,
 	macro_type & macro)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "pressed events : " << pressedEvents.size();
 	LOG(DEBUG1) << "released events : " << releasedEvents.size();

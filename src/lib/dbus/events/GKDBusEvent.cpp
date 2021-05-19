@@ -37,7 +37,10 @@ GKDBusEvent::GKDBusEvent(
 {
 }
 
-GKDBusEvent::~GKDBusEvent() {
+GKDBusEvent::~GKDBusEvent()
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "destroying event: " << eventName;
 #endif
@@ -49,9 +52,10 @@ GKDBusEvent::~GKDBusEvent() {
 void GKDBusEvent::sendReplyError(
 	DBusConnection* const connection,
 	DBusMessage* message,
-	const char* error
-	)
+	const char* error)
 {
+	GK_LOG_FUNC
+
 	LOG(ERROR) << "DBus reply failure : " << error;
 	this->abandonReply();	/* delete reply object if allocated */
 	this->buildAndSendErrorReply(connection, message, error);
@@ -63,9 +67,10 @@ void GKDBusEvent::sendReplyError(
 void GKDBusEvent::sendCallbackError(
 	DBusConnection* const connection,
 	DBusMessage* message,
-	const char* error
-	)
+	const char* error)
 {
+	GK_LOG_FUNC
+
 	LOG(ERROR) << error;
 
 	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {

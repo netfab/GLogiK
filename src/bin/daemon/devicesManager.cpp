@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -64,12 +64,17 @@ DevicesManager::DevicesManager()
 	:	_unknown("unknown")
 #endif
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing devices manager";
 #endif
 }
 
-DevicesManager::~DevicesManager() {
+DevicesManager::~DevicesManager()
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "destroying devices manager";
 #endif
@@ -96,18 +101,23 @@ void DevicesManager::setDBus(NSGKDBus::GKDBus* pDBus)
 	_pDBus = pDBus;
 }
 
-void DevicesManager::setNumClients(uint8_t num) {
+void DevicesManager::setNumClients(uint8_t num)
+{
 	_numClients = num;
 }
 
-void DevicesManager::checkDBusMessages(void) noexcept {
+void DevicesManager::checkDBusMessages(void) noexcept
+{
 	_pDBus->checkForMessages();
 }
 
 #endif
 
 /* exceptions are catched within the function body */
-void DevicesManager::initializeDevices(void) noexcept {
+void DevicesManager::initializeDevices(void) noexcept
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing detected devices";
 #endif
@@ -204,7 +214,10 @@ void DevicesManager::initializeDevices(void) noexcept {
 #endif
 }
 
-const bool DevicesManager::startDevice(const std::string & devID) {
+const bool DevicesManager::startDevice(const std::string & devID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "starting device " << devID;
 #endif
@@ -244,7 +257,10 @@ const bool DevicesManager::startDevice(const std::string & devID) {
 
 const bool DevicesManager::stopDevice(
 	const std::string & devID,
-	const bool skipUSBRequests) noexcept {
+	const bool skipUSBRequests) noexcept
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "stopping device " << devID;
 #endif
@@ -279,7 +295,10 @@ const bool DevicesManager::stopDevice(
 	return false;
 }
 
-void DevicesManager::stopInitializedDevices(void) {
+void DevicesManager::stopInitializedDevices(void)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "stopping initialized devices";
 #endif
@@ -297,7 +316,10 @@ void DevicesManager::stopInitializedDevices(void) {
 	_startedDevices.clear();
 }
 
-void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept {
+void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept
+{
+	GK_LOG_FUNC
+
 #if 0 && DEBUGGING_ON
 	LOG(DEBUG2) << "checking initialized devices threads status";
 #endif
@@ -341,7 +363,10 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept {
 #endif
 }
 
-void DevicesManager::checkForUnpluggedDevices(void) noexcept {
+void DevicesManager::checkForUnpluggedDevices(void) noexcept
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "checking for unplugged devices";
 #endif
@@ -437,7 +462,10 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept {
 }
 
 #if DEBUGGING_ON
-void udevDeviceProperties(struct udev_device * pDevice, const std::string & subSystem) {
+void udevDeviceProperties(struct udev_device * pDevice, const std::string & subSystem)
+{
+	GK_LOG_FUNC
+
 	struct udev_list_entry *devs_props = nullptr;
 	struct udev_list_entry *devs_attr = nullptr;
 	struct udev_list_entry *devs_list_entry = nullptr;
@@ -476,7 +504,10 @@ void udevDeviceProperties(struct udev_device * pDevice, const std::string & subS
 }
 #endif
 
-void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
+void DevicesManager::searchSupportedDevices(struct udev * pUdev)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "searching for supported devices";
 #endif
@@ -626,7 +657,8 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev) {
 	udev_enumerate_unref(enumerate);
 }
 
-const std::vector<std::string> DevicesManager::getStartedDevices(void) const {
+const std::vector<std::string> DevicesManager::getStartedDevices(void) const
+{
 	std::vector<std::string> ret;
 
 	// dev code
@@ -639,7 +671,8 @@ const std::vector<std::string> DevicesManager::getStartedDevices(void) const {
 	return ret;
 }
 
-const std::vector<std::string> DevicesManager::getStoppedDevices(void) const {
+const std::vector<std::string> DevicesManager::getStoppedDevices(void) const
+{
 	std::vector<std::string> ret;
 
 	for(const auto & devicePair : _stoppedDevices) {
@@ -651,6 +684,8 @@ const std::vector<std::string> DevicesManager::getStoppedDevices(void) const {
 
 const std::string & DevicesManager::getDeviceVendor(const std::string & devID) const
 {
+	GK_LOG_FUNC
+
 	try {
 		const auto & device = _startedDevices.at(devID);
 		return device.getVendor();
@@ -670,6 +705,8 @@ const std::string & DevicesManager::getDeviceVendor(const std::string & devID) c
 
 const uint64_t DevicesManager::getDeviceCapabilities(const std::string & devID) const
 {
+	GK_LOG_FUNC
+
 	try {
 		const auto & device = _startedDevices.at(devID);
 		return device.getCapabilities();
@@ -689,6 +726,8 @@ const uint64_t DevicesManager::getDeviceCapabilities(const std::string & devID) 
 
 const std::string & DevicesManager::getDeviceProduct(const std::string & devID) const
 {
+	GK_LOG_FUNC
+
 	try {
 		const auto & device = _startedDevices.at(devID);
 		return device.getProduct();
@@ -708,6 +747,8 @@ const std::string & DevicesManager::getDeviceProduct(const std::string & devID) 
 
 const std::string & DevicesManager::getDeviceName(const std::string & devID) const
 {
+	GK_LOG_FUNC
+
 	try {
 		const auto & device = _startedDevices.at(devID);
 		return device.getName();
@@ -725,10 +766,11 @@ const std::string & DevicesManager::getDeviceName(const std::string & devID) con
 	return _unknown;
 }
 
-const LCDPluginsPropertiesArray_type & DevicesManager::getDeviceLCDPluginsProperties(
-	const std::string & devID
-) const
+const LCDPluginsPropertiesArray_type &
+	DevicesManager::getDeviceLCDPluginsProperties(const std::string & devID) const
 {
+	GK_LOG_FUNC
+
 	try {
 		const auto & device = _startedDevices.at(devID);
 #if DEBUGGING_ON
@@ -778,8 +820,10 @@ void DevicesManager::setDeviceActiveConfiguration(
 	const uint8_t r,
 	const uint8_t g,
 	const uint8_t b,
-	const uint64_t LCDPluginsMask1
-) {
+	const uint64_t LCDPluginsMask1)
+{
+	GK_LOG_FUNC
+
 	try {
 		const auto & device = _startedDevices.at(devID);
 #if DEBUGGING_ON
@@ -799,6 +843,8 @@ void DevicesManager::setDeviceActiveConfiguration(
 
 const banksMap_type & DevicesManager::getDeviceMacrosBanks(const std::string & devID) const
 {
+	GK_LOG_FUNC
+
 	try {
 		const auto & device = _startedDevices.at(devID);
 #if DEBUGGING_ON
@@ -818,8 +864,11 @@ const banksMap_type & DevicesManager::getDeviceMacrosBanks(const std::string & d
 	return MacrosBanks::emptyMacrosBanks;
 }
 
-const std::vector<std::string> & DevicesManager::getDeviceMacroKeysNames(const std::string & devID) const
+const std::vector<std::string> &
+	DevicesManager::getDeviceMacroKeysNames(const std::string & devID) const
 {
+	GK_LOG_FUNC
+
 	try {
 		const auto & device = _startedDevices.at(devID);
 #if DEBUGGING_ON
@@ -855,7 +904,10 @@ const std::vector<std::string> & DevicesManager::getDeviceMacroKeysNames(const s
 	return KeyboardDriver::getEmptyStringVector();
 }
 
-void DevicesManager::resetDevicesStates(void) {
+void DevicesManager::resetDevicesStates(void)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "resetting initialized devices states";
 #endif
@@ -874,6 +926,8 @@ void DevicesManager::resetDevicesStates(void) {
  *	USB library failures on devices start/stop are catched internally.
  */
 void DevicesManager::startMonitoring(void) {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing libudev";
 #endif

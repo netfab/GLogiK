@@ -57,7 +57,10 @@ DesktopServiceLauncher::DesktopServiceLauncher()
 	openlog(DESKTOP_SERVICE_LAUNCHER_NAME, LOG_PID|LOG_CONS, LOG_USER);
 }
 
-DesktopServiceLauncher::~DesktopServiceLauncher() {
+DesktopServiceLauncher::~DesktopServiceLauncher()
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "exiting desktop service launcher process";
 #endif
@@ -67,7 +70,10 @@ DesktopServiceLauncher::~DesktopServiceLauncher() {
 	closelog();
 }
 
-int DesktopServiceLauncher::run( const int& argc, char *argv[] ) {
+int DesktopServiceLauncher::run( const int& argc, char *argv[] )
+{
+	GK_LOG_FUNC
+
 	try {
 		// initialize logging
 		try {

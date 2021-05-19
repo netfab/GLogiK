@@ -50,7 +50,8 @@ FileSystem::FileSystem()
 {
 }
 
-FileSystem::~FileSystem() {
+FileSystem::~FileSystem()
+{
 }
 
 bool FileSystem::createDirectorySuccess = false;
@@ -63,6 +64,8 @@ const std::string FileSystem::getNextAvailableFileName(
 	const std::string & extension,
 	bool mustExist)
 {
+	GK_LOG_FUNC
+
 	uint16_t c = 0;
 
 	std::string base(baseName);
@@ -147,6 +150,8 @@ void FileSystem::createDirectory(
 #if DEBUGGING_ON
 void FileSystem::traceLastDirectoryCreation(void)
 {
+	GK_LOG_FUNC
+
 	if(GLogiK::GKDebug) {
 		if(FileSystem::createDirectorySuccess) {
 			LOG(trace) << "created directory : " << lastDirectoryCreation;

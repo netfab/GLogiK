@@ -58,7 +58,10 @@ FSNotify::FSNotify()
 	}
 }
 
-FSNotify::~FSNotify() {
+FSNotify::~FSNotify()
+{
+	GK_LOG_FUNC
+
 	/* sanity check */
 	if( ! _watchedDescriptorsMap.empty() ) {
 		LOG(WARNING) << "some watch descriptors were not removed";
@@ -77,7 +80,12 @@ FSNotify::~FSNotify() {
 }
 
 /* make sure path is readable before calling this one */
-const int FSNotify::addNotifyDirectoryWatch(const std::string & path, const bool checkIfAlreadyWatched) {
+const int FSNotify::addNotifyDirectoryWatch(
+	const std::string & path,
+	const bool checkIfAlreadyWatched)
+{
+	GK_LOG_FUNC
+
 	/* check first if this path is already watched */
 	/* returns its descriptor in this case */
 	if( checkIfAlreadyWatched ) {
@@ -94,7 +102,10 @@ const int FSNotify::addNotifyDirectoryWatch(const std::string & path, const bool
 	return this->addNotifyWatch(path, mask);
 }
 
-void FSNotify::removeNotifyWatch(const int wd) {
+void FSNotify::removeNotifyWatch(const int wd)
+{
+	GK_LOG_FUNC
+
 	if(wd == -1) {
 		LOG(ERROR) << "[" << wd << "] - negative watch descriptor";
 		return;
@@ -126,11 +137,15 @@ void FSNotify::removeNotifyWatch(const int wd) {
 	erase_if(_watchedDescriptorsMap, findDescriptor);
 }
 
-const int FSNotify::getNotifyQueueDescriptor(void) const {
+const int FSNotify::getNotifyQueueDescriptor(void) const
+{
 	return _inotifyQueueFD;
 }
 
-void FSNotify::readNotifyEvents(files_map_type & filesMap) {
+void FSNotify::readNotifyEvents(files_map_type & filesMap)
+{
+	GK_LOG_FUNC
+
 	char *ptr;
 	ssize_t len;
 	char buf[4096] __attribute__ ((aligned(__alignof__(struct inotify_event))));
@@ -233,7 +248,10 @@ void FSNotify::readNotifyEvents(files_map_type & filesMap) {
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-const int FSNotify::addNotifyWatch(const std::string & path, const uint32_t & mask) {
+const int FSNotify::addNotifyWatch(const std::string & path, const uint32_t & mask)
+{
+	GK_LOG_FUNC
+
 	auto it = _watchedDescriptorsMap.find(path);
 
 	if(it == _watchedDescriptorsMap.end()) {

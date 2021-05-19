@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@ void GKDBusArgument::decodeArgumentFromIterator(
 	const char* signature,
 	const uint16_t num)
 {
+	GK_LOG_FUNC
+
 	int currentType = dbus_message_iter_get_arg_type(iter);
 
 	DBusSignatureIter itSignature;
@@ -152,7 +154,10 @@ void GKDBusArgument::decodeArgumentFromIterator(
 	}
 }
 
-void GKDBusArgument::fillInArguments(DBusMessage* message) {
+void GKDBusArgument::fillInArguments(DBusMessage* message)
+{
+	GK_LOG_FUNC
+
 	GKDBusArgument::stringArguments.clear();
 	GKDBusArgument::booleanArguments.clear();
 	GKDBusArgument::byteArguments.clear();
@@ -190,7 +195,8 @@ void GKDBusArgument::fillInArguments(DBusMessage* message) {
 		std::reverse(GKDBusArgument::uint64Arguments.begin(), GKDBusArgument::uint64Arguments.end());
 }
 
-const int GKDBusArgument::decodeNextArgument(DBusMessageIter* itArgument) {
+const int GKDBusArgument::decodeNextArgument(DBusMessageIter* itArgument)
+{
 	GKDBusArgument::stringArguments.clear();
 	GKDBusArgument::booleanArguments.clear();
 	GKDBusArgument::byteArguments.clear();

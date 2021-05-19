@@ -42,6 +42,8 @@ void PBMFile::readPBM(
 	const uint16_t PBMWidth,
 	const uint16_t PBMHeight)
 {
+	GK_LOG_FUNC
+
 	std::ifstream pbm;
 	pbm.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
@@ -94,6 +96,8 @@ void PBMFile::parsePBMHeader(
 	uint16_t & width,
 	uint16_t & height)
 {
+	GK_LOG_FUNC
+
 	const char white = 0x0a;
 	const char space = 0x20;
 	const char comment = 0x23;
@@ -132,6 +136,8 @@ void PBMFile::extractPBMData(
 	std::ifstream & pbm,
 	PixelsData & PBMData)
 {
+	GK_LOG_FUNC
+
 	pbm.read(reinterpret_cast<char*>(&PBMData.front()), PBMData.size());
 
 #if DEBUGGING_ON

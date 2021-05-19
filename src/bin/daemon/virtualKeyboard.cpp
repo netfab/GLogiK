@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -35,7 +35,10 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-VirtualKeyboard::VirtualKeyboard(const char* deviceName) {
+VirtualKeyboard::VirtualKeyboard(const char* deviceName)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "initializing " << deviceName;
 #endif
@@ -71,7 +74,10 @@ VirtualKeyboard::VirtualKeyboard(const char* deviceName) {
 	}
 }
 
-VirtualKeyboard::~VirtualKeyboard() {
+VirtualKeyboard::~VirtualKeyboard()
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "destroying " << libevdev_get_name(_pDevice);
 #endif
@@ -80,7 +86,8 @@ VirtualKeyboard::~VirtualKeyboard() {
 	libevdev_free(_pDevice);
 }
 
-void VirtualKeyboard::enableEventType(unsigned int type) {
+void VirtualKeyboard::enableEventType(unsigned int type)
+{
 	if ( libevdev_enable_event_type(_pDevice, type) != 0 ) {
 		std::ostringstream buffer(std::ios_base::ate);
 		buffer << "enable event type failure : " << type;
@@ -88,7 +95,8 @@ void VirtualKeyboard::enableEventType(unsigned int type) {
 	}
 }
 
-void VirtualKeyboard::enableEventCode(unsigned int type, unsigned int code) {
+void VirtualKeyboard::enableEventCode(unsigned int type, unsigned int code)
+{
 	if ( libevdev_enable_event_code(_pDevice, type, code, nullptr) != 0 ) {
 		std::ostringstream buffer(std::ios_base::ate);
 		buffer << "enable event code failure : type " << type << " code " << code;
@@ -96,7 +104,10 @@ void VirtualKeyboard::enableEventCode(unsigned int type, unsigned int code) {
 	}
 }
 
-void VirtualKeyboard::sendKeyEvent(const KeyEvent & key) {
+void VirtualKeyboard::sendKeyEvent(const KeyEvent & key)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "key event : ";
 	LOG(DEBUG2)	<< "code : " << toUInt(key.code);

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -34,12 +34,14 @@ using namespace NSGKUtils;
 
 Client::Client(
 	const std::string & objectPath,
-	DevicesManager* pDevicesManager
-)	:	_sessionState("unknown"),
+	DevicesManager* pDevicesManager)
+	:	_sessionState("unknown"),
 		_sessionObjectPath(objectPath),
 		_check(true),
 		_ready(false)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing new client";
 #endif
@@ -51,38 +53,48 @@ Client::Client(
 #endif
 }
 
-Client::~Client() {
+Client::~Client()
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "destroying client";
 #endif
 }
 
-const std::string & Client::getSessionObjectPath(void) const {
+const std::string & Client::getSessionObjectPath(void) const
+{
 	return _sessionObjectPath;
 }
 
-const std::string & Client::getSessionCurrentState(void) const {
+const std::string & Client::getSessionCurrentState(void) const
+{
 	return _sessionState;
 }
 
-void Client::updateSessionState(const std::string & newState) {
+void Client::updateSessionState(const std::string & newState)
+{
 	_sessionState = newState;
 	_check = true;
 }
 
-void Client::uncheck(void) {
+void Client::uncheck(void)
+{
 	_check = false;
 }
 
-const bool Client::isAlive(void) const {
+const bool Client::isAlive(void) const
+{
 	return _check;
 }
 
-const bool Client::isReady(void) const {
+const bool Client::isReady(void) const
+{
 	return _ready;
 }
 
-void Client::toggleClientReadyPropertie(void) {
+void Client::toggleClientReadyPropertie(void)
+{
 	_ready = ! _ready;
 }
 
@@ -90,6 +102,8 @@ void Client::initializeDevice(
 	DevicesManager* pDevicesManager,
 	const std::string & devID)
 {
+	GK_LOG_FUNC
+
 	try {
 		_devices.at(devID);
 	}
@@ -110,7 +124,10 @@ void Client::initializeDevice(
 	}
 }
 
-const bool Client::deleteDevice(const std::string & devID) {
+const bool Client::deleteDevice(const std::string & devID)
+{
+	GK_LOG_FUNC
+
 	try {
 		_devices.at(devID);
 		_devices.erase(devID);
@@ -130,8 +147,10 @@ const bool Client::setDeviceBacklightColor(
 	const std::string & devID,
 	const uint8_t r,
 	const uint8_t g,
-	const uint8_t b
-)	{
+	const uint8_t b)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "setting client backlight color for device " << devID;
 #endif
@@ -149,8 +168,10 @@ const bool Client::setDeviceBacklightColor(
 
 void Client::setDeviceActiveUser(
 	const std::string & devID,
-	DevicesManager* pDevicesManager
-)	{
+	DevicesManager* pDevicesManager)
+{
+	GK_LOG_FUNC
+
 	try {
 		const DeviceProperties & device = _devices.at(devID);
 
@@ -169,7 +190,12 @@ void Client::setDeviceActiveUser(
 	}
 }
 
-void Client::syncDeviceMacrosBanks(const std::string & devID, const banksMap_type & macrosBanks) {
+void Client::syncDeviceMacrosBanks(
+	const std::string & devID,
+	const banksMap_type & macrosBanks)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "synchonizing macros banks for device " << devID;
 #endif
@@ -185,8 +211,10 @@ void Client::syncDeviceMacrosBanks(const std::string & devID, const banksMap_typ
 const macro_type & Client::getDeviceMacro(
 	const std::string & devID,
 	const std::string & keyName,
-	const uint8_t bankID
-) {
+	const uint8_t bankID)
+{
+	GK_LOG_FUNC
+
 	try {
 		DeviceProperties & device = _devices.at(devID);
 		return device.getMacro(bankID, keyName);
@@ -201,8 +229,10 @@ const macro_type & Client::getDeviceMacro(
 const bool Client::setDeviceMacrosBank(
 	const std::string & devID,
 	const uint8_t bankID,
-	const mBank_type & bank
-) {
+	const mBank_type & bank)
+{
+	GK_LOG_FUNC
+
 	bool ret = true;
 
 	try {
@@ -234,6 +264,8 @@ const bool Client::resetDeviceMacrosBank(
 	const std::string & devID,
 	const uint8_t bankID)
 {
+	GK_LOG_FUNC
+
 	bool ret = false;
 
 	try {
@@ -256,6 +288,8 @@ const bool Client::setDeviceLCDPluginsMask(
 	const uint8_t maskID,
 	const uint64_t mask)
 {
+	GK_LOG_FUNC
+
 	bool ret = false;
 
 	try {

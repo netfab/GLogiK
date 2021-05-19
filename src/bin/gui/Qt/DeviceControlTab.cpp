@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -34,8 +34,8 @@ using namespace NSGKUtils;
 
 DeviceControlTab::DeviceControlTab(
 	NSGKDBus::GKDBus* pDBus,
-	const QString & name
-)	:	Tab(pDBus),
+	const QString & name)
+	:	Tab(pDBus),
 		_deviceStatusLabel(nullptr),
 		_pStartButton(nullptr),
 		_pStopButton(nullptr),
@@ -52,6 +52,8 @@ DeviceControlTab::~DeviceControlTab()
 
 void DeviceControlTab::buildTab(void)
 {
+	GK_LOG_FUNC
+
 	QVBoxLayout* vBox = nullptr;
 	QHBoxLayout* hBox = nullptr;
 
@@ -155,6 +157,8 @@ void DeviceControlTab::updateTab(
 	const std::string & devID,
 	const bool status)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "updating DeviceControlTab";
 	LOG(DEBUG2) << "device " << devID;
@@ -183,6 +187,8 @@ void DeviceControlTab::updateTab(
 
 void DeviceControlTab::sendStatusSignal(const std::string & signal)
 {
+	GK_LOG_FUNC
+
 	LOG(INFO) << "sending " << signal << " signal for device " << _devID;
 
 	try {

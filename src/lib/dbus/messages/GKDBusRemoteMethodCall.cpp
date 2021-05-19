@@ -40,6 +40,8 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 	DBusPendingCall** pending)
 		:	GKDBusMessage(connection), _pendingCall(pending)
 {
+	GK_LOG_FUNC
+
 	if( ! dbus_validate_bus_name(busName, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid bus name");
 	if( ! dbus_validate_path(objectPath, nullptr) )
@@ -65,7 +67,10 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 #endif
 }
 
-GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
+GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall()
+{
+	GK_LOG_FUNC
+
 	if(_hosedMessage) {
 		LOG(WARNING) << "DBus hosed message, giving up";
 		dbus_message_unref(_message);
@@ -119,6 +124,8 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 	const char* interface,
 	const char* method)
 {
+	GK_LOG_FUNC
+
 	if(_remoteMethodCall) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus remote_method_call already allocated");
 
@@ -133,33 +140,40 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 	}
 }
 
-void GKDBusMessageRemoteMethodCall::appendStringToRemoteMethodCall(const std::string & value) {
+void GKDBusMessageRemoteMethodCall::appendStringToRemoteMethodCall(const std::string & value)
+{
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendString(value);
 }
 
-void GKDBusMessageRemoteMethodCall::appendUInt8ToRemoteMethodCall(const uint8_t value) {
+void GKDBusMessageRemoteMethodCall::appendUInt8ToRemoteMethodCall(const uint8_t value)
+{
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendUInt8(value);
 }
 
-void GKDBusMessageRemoteMethodCall::appendUInt32ToRemoteMethodCall(const uint32_t value) {
+void GKDBusMessageRemoteMethodCall::appendUInt32ToRemoteMethodCall(const uint32_t value)
+{
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendUInt32(value);
 }
 
-void GKDBusMessageRemoteMethodCall::appendUInt64ToRemoteMethodCall(const uint64_t value) {
+void GKDBusMessageRemoteMethodCall::appendUInt64ToRemoteMethodCall(const uint64_t value)
+{
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendUInt64(value);
 }
 
-void GKDBusMessageRemoteMethodCall::appendMacrosBankToRemoteMethodCall(const GLogiK::mBank_type & bank) {
+void GKDBusMessageRemoteMethodCall::appendMacrosBankToRemoteMethodCall(const GLogiK::mBank_type & bank)
+{
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendMacrosBank(bank);
 }
 
 void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall(void)
 {
+	GK_LOG_FUNC
+
 	if(_remoteMethodCall) { /* sanity check */
 		delete _remoteMethodCall;
 		_remoteMethodCall = nullptr;
@@ -172,6 +186,8 @@ void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall(void)
 
 void GKDBusMessageRemoteMethodCall::abandonRemoteMethodCall(void)
 {
+	GK_LOG_FUNC
+
 	if(_remoteMethodCall) { /* sanity check */
 		_remoteMethodCall->abandon();
 		delete _remoteMethodCall;
@@ -182,7 +198,10 @@ void GKDBusMessageRemoteMethodCall::abandonRemoteMethodCall(void)
 	}
 }
 
-void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void) {
+void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void)
+{
+	GK_LOG_FUNC
+
 	dbus_pending_call_block(_pendingCall);
 
 	uint16_t c = 0;

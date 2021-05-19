@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -49,6 +49,8 @@ void DeviceConfigurationFile::load(
 	const std::string & filePath,
 	DeviceProperties & device) noexcept
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "loading device configuration file " << device.getConfigFilePath();
 #endif
@@ -91,6 +93,8 @@ void DeviceConfigurationFile::save(
 	const std::string & filePath,
 	const DeviceProperties & device) noexcept
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "opening configuration file for writing : " << filePath;
 #endif

@@ -78,7 +78,10 @@ MainWindow::MainWindow(QWidget *parent)
 	openlog("GKcQt5", LOG_PID|LOG_CONS, LOG_USER);
 }
 
-MainWindow::~MainWindow() {
+MainWindow::~MainWindow()
+{
+	GK_LOG_FUNC
+
 	delete _pDBus; _pDBus = nullptr;
 
 #if DEBUGGING_ON
@@ -108,6 +111,8 @@ void MainWindow::handleSignal(int sig)
 
 void MainWindow::init(void)
 {
+	GK_LOG_FUNC
+
 	// initialize logging
 	try {
 		GKLogging::initDebugFile("GKcQt5", fs::owner_read|fs::owner_write|fs::group_read);
@@ -139,11 +144,12 @@ void MainWindow::init(void)
 	_configurationRootDirectory /= PACKAGE_NAME;
 
 	/* -- -- -- */
-
 }
 
 void MainWindow::build(void)
 {
+	GK_LOG_FUNC
+
 	QVBoxLayout* vBox = nullptr;
 
 	try {
@@ -350,6 +356,8 @@ void MainWindow::aboutToQuit(void)
 
 void MainWindow::configurationFileUpdated(const std::string & devID)
 {
+	GK_LOG_FUNC
+
 	if( _ignoreNextSignal ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << __func__ << " signal ignored";
@@ -396,6 +404,8 @@ void MainWindow::configurationFileUpdated(const std::string & devID)
 
 void MainWindow::aboutDialog(void)
 {
+	GK_LOG_FUNC
+
 	try {
 		AboutDialog* about = new AboutDialog(this);
 		about->buildDialog();
@@ -412,6 +422,8 @@ void MainWindow::aboutDialog(void)
 
 void MainWindow::saveFile(const TabApplyButton tab)
 {
+	GK_LOG_FUNC
+
 	bool dosave = false;
 
 	if( tab == TabApplyButton::TAB_BACKLIGHT ) {
@@ -456,6 +468,8 @@ void MainWindow::saveFile(const TabApplyButton tab)
 
 void MainWindow::updateInterface(int index)
 {
+	GK_LOG_FUNC
+
 	/* update interface with index 0 on combobox clear()
 	 * this happens at the very beginning of ::resetInterface() */
 	if(index == -1) {
@@ -521,6 +535,8 @@ void MainWindow::updateInterface(int index)
 
 void MainWindow::updateDevicesList(void)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "updating devices list";
 #endif
@@ -566,6 +582,8 @@ void MainWindow::updateDevicesList(void)
 
 void MainWindow::resetInterface(void)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "resetting interface";
 #endif
@@ -629,6 +647,8 @@ void MainWindow::resetInterface(void)
 
 QWidget* MainWindow::getTabbedWidget(const std::string & name)
 {
+	GK_LOG_FUNC
+
 	QString n(name.c_str());
 	QWidget* pTab = _tabbedWidgets->findChild<QWidget *>(n);
 	if(pTab == 0) {
@@ -640,6 +660,8 @@ QWidget* MainWindow::getTabbedWidget(const std::string & name)
 
 void MainWindow::setTabEnabled(const std::string & name, const bool status)
 {
+	GK_LOG_FUNC
+
 	try {
 		QWidget* pTab = this->getTabbedWidget(name);
 		int index = _tabbedWidgets->indexOf(pTab);
@@ -658,6 +680,8 @@ void MainWindow::setTabEnabled(const std::string & name, const bool status)
 
 void MainWindow::setCurrentTab(const std::string & name)
 {
+	GK_LOG_FUNC
+
 	try {
 		QWidget* pTab = this->getTabbedWidget(name);
 		int index = _tabbedWidgets->indexOf(pTab);

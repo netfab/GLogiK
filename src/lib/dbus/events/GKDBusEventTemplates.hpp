@@ -258,6 +258,8 @@ template <typename T>
 		DBusConnection* const connection,
 		DBusMessage* message)
 {
+	GK_LOG_FUNC
+
 	using namespace NSGKUtils;
 	const char* error = "runCallback not implemented";
 	LOG(ERROR) << error;

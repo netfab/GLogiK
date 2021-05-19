@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -33,8 +33,8 @@ using namespace NSGKUtils;
 
 BacklightColorTab::BacklightColorTab(
 	NSGKDBus::GKDBus* pDBus,
-	const QString & name
-)	:	Tab(pDBus),
+	const QString & name)
+	:	Tab(pDBus),
 		_pCurrentColorLabel(nullptr),
 		_pNewColorLabel(nullptr),
 		_colorDialog(nullptr)
@@ -48,6 +48,8 @@ BacklightColorTab::~BacklightColorTab()
 
 void BacklightColorTab::buildTab(void)
 {
+	GK_LOG_FUNC
+
 	QVBoxLayout* vBox = nullptr;
 	QHBoxLayout* hBox = nullptr;
 
@@ -136,9 +138,10 @@ void BacklightColorTab::disableApplyButton(void)
 	_pApplyButton->setEnabled(false);
 }
 
-void BacklightColorTab::updateTab(
-	const DeviceProperties & device
-) {
+void BacklightColorTab::updateTab(const DeviceProperties & device)
+{
+	GK_LOG_FUNC
+
 	uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 	QColor color(r, g, b);
 

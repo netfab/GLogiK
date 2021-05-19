@@ -32,6 +32,8 @@ template <>
 		DBusMessage* message
 	)
 {
+	GK_LOG_FUNC
+
 	/* don't need arguments */
 
 	try {
@@ -471,6 +473,8 @@ template <>
 		DBusMessage* message
 	)
 {
+	GK_LOG_FUNC
+
 	GKDBusArgumentString::fillInArguments(message);
 
 	try {

@@ -38,6 +38,8 @@ GKDBus::GKDBus(
 			_sessionConnection(nullptr),
 			_systemConnection(nullptr)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "dbus object initialization";
 #endif
@@ -46,6 +48,8 @@ GKDBus::GKDBus(
 
 GKDBus::~GKDBus()
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "dbus object destruction";
 #endif
@@ -58,6 +62,8 @@ void GKDBus::connectToSystemBus(
 	const char* connectionName,
 	const ConnectionFlag flag)
 {
+	GK_LOG_FUNC
+
 	_systemConnection = dbus_bus_get(DBUS_BUS_SYSTEM, &_error);
 	this->checkDBusError("DBus System connection failure");
 #if DEBUGGING_ON
@@ -79,6 +85,8 @@ void GKDBus::connectToSystemBus(
 
 void GKDBus::disconnectFromSystemBus(void) noexcept
 {
+	GK_LOG_FUNC
+
 	if(_systemConnection) {
 #if DEBUGGING_ON
 		LOG(DEBUG) << "closing DBus System connection";
@@ -97,6 +105,8 @@ void GKDBus::connectToSessionBus(
 	const char* connectionName,
 	const ConnectionFlag flag)
 {
+	GK_LOG_FUNC
+
 	_sessionConnection = dbus_bus_get(DBUS_BUS_SESSION, &_error);
 	this->checkDBusError("DBus Session connection failure");
 #if DEBUGGING_ON
@@ -118,6 +128,8 @@ void GKDBus::connectToSessionBus(
 
 void GKDBus::disconnectFromSessionBus(void) noexcept
 {
+	GK_LOG_FUNC
+
 	if(_sessionConnection) {
 #if DEBUGGING_ON
 		LOG(DEBUG) << "closing DBus Session connection";
@@ -237,6 +249,8 @@ void GKDBus::checkForBusMessages(
 	const BusConnection bus,
 	DBusConnection* const connection) noexcept
 {
+	GK_LOG_FUNC
+
 	GKDBusEvents::currentBus = bus; /* used on introspection */
 
 	uint16_t c = 0;
@@ -276,6 +290,8 @@ void GKDBus::checkForBusMessages(
 
 void GKDBus::checkReleasedName(int ret) noexcept
 {
+	GK_LOG_FUNC
+
 	switch(ret) {
 		case DBUS_RELEASE_NAME_REPLY_RELEASED:
 			LOG(DEBUG1) << "name released";

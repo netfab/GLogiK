@@ -38,6 +38,8 @@ GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 	const char* signal			/* name of signal */
 	) : GKDBusMessage(connection)
 {
+	GK_LOG_FUNC
+
 	if( ! dbus_validate_path(objectPath, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid object path");
 	if( ! dbus_validate_interface(interface, nullptr) )
@@ -63,7 +65,10 @@ GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 #endif
 }
 
-GKDBusBroadcastSignal::~GKDBusBroadcastSignal() {
+GKDBusBroadcastSignal::~GKDBusBroadcastSignal()
+{
+	GK_LOG_FUNC
+
 	if(_hosedMessage) {
 		LOG(WARNING) << "DBus hosed message, giving up";
 		dbus_message_unref(_message);
@@ -116,6 +121,8 @@ void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 	const char* interface,
 	const char* signal)
 {
+	GK_LOG_FUNC
+
 	if(_signal) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus signal already allocated");
 
@@ -146,7 +153,10 @@ void GKDBusMessageBroadcastSignal::appendStringVectorToBroadcastSignal(const std
 		_signal->appendStringVector(list);
 }
 
-void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void) {
+void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void)
+{
+	GK_LOG_FUNC
+
 	if(_signal) { /* sanity check */
 		delete _signal;
 		_signal = nullptr;
@@ -157,7 +167,10 @@ void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void) {
 	}
 }
 
-void GKDBusMessageBroadcastSignal::abandonBroadcastSignal(void) {
+void GKDBusMessageBroadcastSignal::abandonBroadcastSignal(void)
+{
+	GK_LOG_FUNC
+
 	if(_signal) { /* sanity check */
 		_signal->abandon();
 		delete _signal;

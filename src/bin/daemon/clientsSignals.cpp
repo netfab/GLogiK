@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -38,6 +38,8 @@ void ClientsSignals::sendSignalToClients(
 	const std::string & signal,
 	const bool forceSend) noexcept
 {
+	GK_LOG_FUNC
+
 	/* don't try to send signal if we know that there is no clients */
 	if( (numClients == 0 ) and (! forceSend) )
 		return;
@@ -83,6 +85,8 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 	const std::string & signal,
 	const std::vector<std::string> & devIDArray) noexcept
 {
+	GK_LOG_FUNC
+
 	/* don't try to send signal if we know that there is no clients */
 	if( numClients == 0 )
 		return;

@@ -72,6 +72,8 @@ GLogiKDaemon::GLogiKDaemon()
 
 GLogiKDaemon::~GLogiKDaemon()
 {
+	GK_LOG_FUNC
+
 	GKLog(trace, "exiting daemon process");
 
 	try {
@@ -98,6 +100,8 @@ GLogiKDaemon::~GLogiKDaemon()
 
 int GLogiKDaemon::run( const int& argc, char *argv[] )
 {
+	GK_LOG_FUNC
+
 	try {
 		{
 			// drop privileges before opening debug file
@@ -206,6 +210,8 @@ int GLogiKDaemon::run( const int& argc, char *argv[] )
 }
 
 void GLogiKDaemon::handleSignal(int sig) {
+	GK_LOG_FUNC
+
 	std::ostringstream buffer("caught signal : ", std::ios_base::app);
 	switch( sig ) {
 		case SIGINT:
@@ -224,6 +230,8 @@ void GLogiKDaemon::handleSignal(int sig) {
 }
 
 void GLogiKDaemon::createPIDFile(void) {
+	GK_LOG_FUNC
+
 	const fs::path PIDFile(_pidFileName);
 
 	auto throwError = [&PIDFile] (const std::string & error, const char* what = nullptr) -> void {

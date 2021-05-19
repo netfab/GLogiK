@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -43,7 +43,10 @@ GKDBusEvents::GKDBusEvents(
 {
 }
 
-GKDBusEvents::~GKDBusEvents() {
+GKDBusEvents::~GKDBusEvents()
+{
+	GK_LOG_FUNC
+
 	for(const auto & busPair : _DBusEvents) {
 #if DEBUGGING_ON
 		LOG(DEBUG1) << "current bus: " << toUInt(toEnumType(busPair.first));
@@ -66,7 +69,8 @@ GKDBusEvents::~GKDBusEvents() {
 	_DBusEvents.clear();
 }
 
-const std::string & GKDBusEvents::getRootNode(void) const {
+const std::string & GKDBusEvents::getRootNode(void) const
+{
 	return _rootNode;
 }
 
@@ -119,6 +123,8 @@ void GKDBusEvents::removeInterface(
 	const char* eventObject,
 	const char* eventInterface) noexcept
 {
+	GK_LOG_FUNC
+
 	auto find_interface = [this, &eventBus, &eventObject, &eventInterface] () -> const bool {
 		if(_DBusEvents.count(eventBus) == 1) {
 			if(_DBusEvents[eventBus].count(eventObject) == 1) {
@@ -164,7 +170,10 @@ void GKDBusEvents::removeInterface(
 	}
 }
 
-const std::string GKDBusEvents::introspectRootNode(void) {
+const std::string GKDBusEvents::introspectRootNode(void)
+{
+	GK_LOG_FUNC
+
 	std::ostringstream xml;
 
 	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
@@ -194,6 +203,8 @@ void GKDBusEvents::removeEvent(
 	const char* eventInterface,
 	const char* eventName)
 {
+	GK_LOG_FUNC
+
 	auto get_index = [this, &eventBus, &eventObject, &eventInterface, &eventName] () -> const std::size_t {
 		if(_DBusEvents.count(eventBus) == 1) {
 			if(_DBusEvents[eventBus].count(eventObject) == 1) {
@@ -252,6 +263,8 @@ void GKDBusEvents::addEvent(
 	const char* eventInterface,
 	GKDBusEvent* event)
 {
+	GK_LOG_FUNC
+
 	if(event->introspectable) {
 		try {
 			const auto & bus = _DBusEvents.at(eventBus);
@@ -281,8 +294,8 @@ void GKDBusEvents::addEvent(
 void GKDBusEvents::openXMLInterface(
 	std::ostringstream & xml,
 	bool & interfaceOpened,
-	const std::string & interface
-) {
+	const std::string & interface)
+{
 	if( ! interfaceOpened ) {
 		xml << "  <interface name=\"" << interface << "\">\n";
 		interfaceOpened = true;
@@ -291,8 +304,8 @@ void GKDBusEvents::openXMLInterface(
 
 void GKDBusEvents::eventToXMLMethod(
 	std::ostringstream & xml,
-	const GKDBusEvent* DBusEvent
-) {
+	const GKDBusEvent* DBusEvent)
+{
 	if( DBusEvent->eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
 		xml << "    <method name=\"" << DBusEvent->eventName << "\">\n";
 		for(const auto & arg : DBusEvent->arguments) {
@@ -306,7 +319,10 @@ void GKDBusEvents::eventToXMLMethod(
 	}
 }
 
-const std::string GKDBusEvents::introspect(const std::string & askedObjectPath) {
+const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "object path asked : " << askedObjectPath;
 #endif
@@ -400,6 +416,8 @@ void GKDBusEvents::addSignalRuleMatch(
 	const char* interface,
 	const char* eventName) noexcept
 {
+	GK_LOG_FUNC
+
 	DBusConnection* connection = nullptr;
 	try {
 		connection = this->getConnection(eventBus);
@@ -424,6 +442,8 @@ void GKDBusEvents::removeSignalRuleMatch(
 	const char* interface,
 	const char* eventName) noexcept
 {
+	GK_LOG_FUNC
+
 	DBusConnection* connection = nullptr;
 	try {
 		connection = this->getConnection(eventBus);

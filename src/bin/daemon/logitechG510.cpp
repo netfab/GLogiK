@@ -130,19 +130,23 @@ const std::vector<USBDeviceID> G510Base::knownDevices = {
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 };
 
-const char* G510Base::getDriverName() const {
+const char* G510Base::getDriverName() const
+{
 	return "Logitech G510/G510s driver";
 }
 
-const uint16_t G510Base::getDriverID() const {
+const uint16_t G510Base::getDriverID() const
+{
 	return GLOGIKD_DRIVER_ID_G510;
 }
 
-const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const {
+const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const
+{
 	return G510Base::knownDevices;
 }
 
-const std::vector<std::string> & G510Base::getMacroKeysNames(void) const {
+const std::vector<std::string> & G510Base::getMacroKeysNames(void) const
+{
 	KeyboardDriver::macrosKeysNames.clear();
 	for (const auto & key : G510Base::fiveBytesKeysMap ) {
 		if( key.isMacroKey )
@@ -152,7 +156,8 @@ const std::vector<std::string> & G510Base::getMacroKeysNames(void) const {
 }
 
 /* return true if any macro key (G1-G18) is pressed  */
-const bool G510Base::checkMacroKey(USBDevice & device) {
+const bool G510Base::checkMacroKey(USBDevice & device)
+{
 	for (const auto & key : G510Base::fiveBytesKeysMap ) {
 		if( key.isMacroKey and (device._pressedRKeysMask & toEnumType(key.key)) ) {
 			device._macroKey = key.name;
@@ -163,7 +168,8 @@ const bool G510Base::checkMacroKey(USBDevice & device) {
 }
 
 /* return true if any media key is pressed */
-const bool G510Base::checkMediaKey(USBDevice & device) {
+const bool G510Base::checkMediaKey(USBDevice & device)
+{
 	for (const auto & key : G510Base::twoBytesKeysMap ) {
 		if( device._pressedRKeysMask & toEnumType(key.key) ) {
 			device._mediaKey = key.name;
@@ -174,7 +180,8 @@ const bool G510Base::checkMediaKey(USBDevice & device) {
 }
 
 /* return true if any LCD key is pressed */
-const bool G510Base::checkLCDKey(USBDevice & device) {
+const bool G510Base::checkLCDKey(USBDevice & device)
+{
 	for (const auto & key : G510Base::fiveBytesKeysMap ) {
 		if( key.isLCDKey and device._pressedRKeysMask & toEnumType(key.key) ) {
 			std::lock_guard<std::mutex> lock(device._LCDMutex);
@@ -190,7 +197,10 @@ const bool G510Base::checkLCDKey(USBDevice & device) {
  *  - one double 5 bytes event : Keys::GK_KEY_LIGHT
  *  - one 2 bytes event with first byte equal to 0x04
  */
-void G510Base::processKeyEvent2Bytes(USBDevice & device) {
+void G510Base::processKeyEvent2Bytes(USBDevice & device)
+{
+	GK_LOG_FUNC
+
 	if (device._pressedKeys[0] == 0x02) {
 		for (const auto & key : G510Base::twoBytesKeysMap ) {
 			if( device._pressedKeys[key.index] & key.mask )
@@ -230,7 +240,10 @@ void G510Base::processKeyEvent2Bytes(USBDevice & device) {
 	}
 }
 
-void G510Base::processKeyEvent5Bytes(USBDevice & device) {
+void G510Base::processKeyEvent5Bytes(USBDevice & device)
+{
+	GK_LOG_FUNC
+
 	if (device._pressedKeys[0] != 0x03) {
 		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 5 bytes event");
 		return;
@@ -244,6 +257,8 @@ void G510Base::processKeyEvent5Bytes(USBDevice & device) {
 
 void G510Base::processKeyEvent8Bytes(USBDevice & device)
 {
+	GK_LOG_FUNC
+
 	if (device._pressedKeys[0] != 0x01) {
 		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 8 bytes event");
 		return;
@@ -254,6 +269,8 @@ void G510Base::processKeyEvent8Bytes(USBDevice & device)
 
 KeyStatus G510Base::processKeyEvent(USBDevice & device)
 {
+	GK_LOG_FUNC
+
 	device._pressedRKeysMask = 0;
 
 	switch(device.getLastKeysInterruptTransferLength()) {
@@ -315,6 +332,8 @@ KeyStatus G510Base::processKeyEvent(USBDevice & device)
  */
 void G510Base::sendUSBDeviceInitialization(USBDevice & device)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(INFO)	<< device.getID() << " sending " << device.getFullName()
 				<< " initialization requests";
@@ -344,6 +363,8 @@ void G510Base::setDeviceBacklightColor(
 	const uint8_t g,
 	const uint8_t b)
 {
+	GK_LOG_FUNC
+
 	device.setRGBBytes( r, g, b );
 #if DEBUGGING_ON
 	LOG(DEBUG1) << device.getID() << " setting " << device.getFullName()
@@ -356,6 +377,8 @@ void G510Base::setDeviceBacklightColor(
 
 void G510Base::setDeviceMxKeysLeds(USBDevice & device)
 {
+	GK_LOG_FUNC
+
 	unsigned char mask = 0;
 	for (const auto & led : G510Base::ledsMask ) {
 		if( device._MxKeysLedsMask & toEnumType(led.led) )

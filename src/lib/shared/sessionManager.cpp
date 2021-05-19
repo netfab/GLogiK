@@ -37,6 +37,8 @@ using namespace NSGKUtils;
 bool SessionManager::stillRunning = true;
 
 SessionManager::SessionManager() {
+	GK_LOG_FUNC
+
 	_mask = (SmcSaveYourselfProcMask|SmcDieProcMask|SmcSaveCompleteProcMask|SmcShutdownCancelledProcMask);
 
 	_callbacks.save_yourself.client_data = nullptr;
@@ -56,6 +58,8 @@ SessionManager::SessionManager() {
 }
 
 SessionManager::~SessionManager() {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "destroying session manager";
 #endif
@@ -77,6 +81,8 @@ SessionManager::~SessionManager() {
  */
 
 const int SessionManager::openConnection(void) {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG) << "opening session manager connection";
 #endif
@@ -133,6 +139,8 @@ void SessionManager::processICEMessages(void) {
  */
 
 void SessionManager::closeConnection(void) {
+	GK_LOG_FUNC
+
 	if(_pSMCConnexion == nullptr)
 		return;
 
@@ -158,6 +166,8 @@ void SessionManager::closeConnection(void) {
 }
 
 void SessionManager::handleSignal(int sig) {
+	GK_LOG_FUNC
+
 	std::ostringstream buff("caught signal : ", std::ios_base::app);
 	switch( sig ) {
 		case SIGINT:
@@ -176,6 +186,8 @@ void SessionManager::handleSignal(int sig) {
 }
 
 void SessionManager::processICEMessages(IceConn ice_conn) {
+	GK_LOG_FUNC
+
 	int ret = IceProcessMessages(ice_conn, nullptr, nullptr);
 
 	switch(ret) {
@@ -219,6 +231,8 @@ void SessionManager::SaveYourselfCallback(
 	int interact_style,
 	Bool fast)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "SM save yourself call";
 #endif
@@ -227,6 +241,8 @@ void SessionManager::SaveYourselfCallback(
 
 void SessionManager::DieCallback(SmcConn smc_conn, SmPointer client_data)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "SM die call, behaves like we received SIGTERM";
 #endif
@@ -235,6 +251,8 @@ void SessionManager::DieCallback(SmcConn smc_conn, SmPointer client_data)
 
 void SessionManager::SaveCompleteCallback(SmcConn smc_conn, SmPointer client_data)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "SM save complete call";
 #endif
@@ -242,6 +260,8 @@ void SessionManager::SaveCompleteCallback(SmcConn smc_conn, SmPointer client_dat
 
 void SessionManager::ShutdownCancelledCallback(SmcConn smc_conn, SmPointer client_data)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "SM shutdown cancelled call";
 #endif

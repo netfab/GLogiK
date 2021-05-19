@@ -33,6 +33,8 @@ using namespace NSGKUtils;
 GKDBusReply::GKDBusReply(DBusConnection* const connection, DBusMessage* message)
 	:	GKDBusMessage(connection)
 {
+	GK_LOG_FUNC
+
 	/* sanity check */
 	if(message == nullptr)
 		throw GKDBusMessageWrongBuild("DBus message is NULL");
@@ -51,6 +53,8 @@ GKDBusReply::GKDBusReply(DBusConnection* const connection, DBusMessage* message)
 
 GKDBusReply::~GKDBusReply()
 {
+	GK_LOG_FUNC
+
 	if(_hosedMessage) {
 		LOG(WARNING) << "DBus hosed reply, giving up";
 		dbus_message_unref(_message);
@@ -85,6 +89,8 @@ GKDBusMessageReply::~GKDBusMessageReply()
 
 void GKDBusMessageReply::initializeReply(DBusConnection* const connection, DBusMessage* message)
 {
+	GK_LOG_FUNC
+
 	if(_reply) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus reply already allocated");
 
@@ -121,7 +127,8 @@ void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_type & macro)
 		_reply->appendMacro(macro);
 }
 
-void GKDBusMessageReply::appendLCDPluginsPropertiesArrayToReply(const GLogiK::LCDPluginsPropertiesArray_type & array)
+void GKDBusMessageReply::appendLCDPluginsPropertiesArrayToReply(
+	const GLogiK::LCDPluginsPropertiesArray_type & array)
 {
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendLCDPluginsPropertiesArray(array);
@@ -135,6 +142,8 @@ void GKDBusMessageReply::appendUInt64ToReply(const uint64_t value)
 
 void GKDBusMessageReply::appendAsyncArgsToReply(void)
 {
+	GK_LOG_FUNC
+
 	if( this->isAsyncContainerEmpty() )
 		return;
 
@@ -180,6 +189,8 @@ void GKDBusMessageReply::appendAsyncArgsToReply(void)
 
 void GKDBusMessageReply::sendReply(void)
 {
+	GK_LOG_FUNC
+
 	this->destroyAsyncContainer();
 
 	if(_reply == nullptr) { /* sanity check */
@@ -193,6 +204,8 @@ void GKDBusMessageReply::sendReply(void)
 
 void GKDBusMessageReply::abandonReply(void)
 {
+	GK_LOG_FUNC
+
 	this->destroyAsyncContainer();
 
 	if(_reply) { /* sanity check */

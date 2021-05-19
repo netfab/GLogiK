@@ -110,6 +110,8 @@ void DBusHandler::initializeGKDBusSignals(void) {
 
 void DBusHandler::restartRequest(void)
 {
+	GK_LOG_FUNC
+
 	using steady = chr::steady_clock;
 
 	LOG(INFO) << "received signal: " << __func__;

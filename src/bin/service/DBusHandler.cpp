@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -59,6 +59,8 @@ DBusHandler::DBusHandler(
 		_registerStatus(false),
 		_wantToExit(false)
 {
+	GK_LOG_FUNC
+
 	_devices.setGKfs(pGKfs);
 
 	try {
@@ -110,7 +112,8 @@ DBusHandler::DBusHandler(
 	}
 }
 
-DBusHandler::~DBusHandler() {
+DBusHandler::~DBusHandler()
+{
 }
 
 /*
@@ -125,6 +128,8 @@ DBusHandler::~DBusHandler() {
 
 void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 {
+	GK_LOG_FUNC
+
 	devices_files_map_t devicesMap = _devices.getDevicesMap();
 
 	pGKfs->readNotifyEvents( devicesMap );
@@ -153,6 +158,8 @@ const bool DBusHandler::getExitStatus(void) const
 
 void DBusHandler::clearAndUnregister(void)
 {
+	GK_LOG_FUNC
+
 	if( _registerStatus ) {
 		_devices.clearDevices();
 		this->unregisterWithDaemon();
@@ -166,7 +173,10 @@ void DBusHandler::clearAndUnregister(void)
 	}
 }
 
-void DBusHandler::cleanDBusRequests(void) {
+void DBusHandler::cleanDBusRequests(void)
+{
+	GK_LOG_FUNC
+
 	this->clearAndUnregister();
 
 	/* remove SessionMessageHandler D-Bus interface and object */
@@ -223,7 +233,10 @@ void DBusHandler::cleanDBusRequests(void) {
  * throws restartRequest exception if register was sucessful but something
  * goes wrong after (like daemon version mismatch)
  */
-void DBusHandler::registerWithDaemon(void) {
+void DBusHandler::registerWithDaemon(void)
+{
+	GK_LOG_FUNC
+
 	if( _registerStatus ) {
 		LOG(WARNING) << "don't need to register, since we are already registered";
 		return;
@@ -289,7 +302,10 @@ void DBusHandler::registerWithDaemon(void) {
 	}
 }
 
-void DBusHandler::unregisterWithDaemon(void) {
+void DBusHandler::unregisterWithDaemon(void)
+{
+	GK_LOG_FUNC
+
 	if( ! _registerStatus ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "can't unregister, since we are not currently registered";
@@ -335,7 +351,10 @@ void DBusHandler::unregisterWithDaemon(void) {
 	}
 }
 
-void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
+void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
+{
+	GK_LOG_FUNC
+
 	try {
 		const std::string remoteMethod("GetSessionByPID");
 
@@ -395,6 +414,8 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 
 void DBusHandler::updateSessionState(void)
 {
+	GK_LOG_FUNC
+
 	_sessionState = this->getCurrentSessionState();
 #if DEBUGGING_ON
 	LOG(DEBUG1) << "switching session state to : " << _sessionState;
@@ -410,7 +431,10 @@ void DBusHandler::updateSessionState(void)
  *  - online
  *  - closing
  */
-const std::string DBusHandler::getCurrentSessionState(void) {
+const std::string DBusHandler::getCurrentSessionState(void)
+{
+	GK_LOG_FUNC
+
 	std::string remoteMethod;
 	switch(_sessionFramework) {
 		case SessionFramework::FW_LOGIND:
@@ -449,7 +473,10 @@ const std::string DBusHandler::getCurrentSessionState(void) {
 	throw GLogiKExcept("unable to get session state");
 }
 
-void DBusHandler::reportChangedState(void) {
+void DBusHandler::reportChangedState(void)
+{
+	GK_LOG_FUNC
+
 	if( ! _registerStatus ) {
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "currently not registered, skipping report state";
@@ -494,7 +521,10 @@ void DBusHandler::reportChangedState(void) {
 	}
 }
 
-void DBusHandler::initializeDevices(void) {
+void DBusHandler::initializeDevices(void)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing devices";
 #endif
@@ -608,6 +638,8 @@ void DBusHandler::initializeDevices(void) {
 
 void DBusHandler::sendRestartRequest(void)
 {
+	GK_LOG_FUNC
+
 	std::string status("restart request");
 	try {
 		/* asking the launcher for a restart */
@@ -633,6 +665,8 @@ void DBusHandler::sendRestartRequest(void)
 
 void DBusHandler::sendDevicesUpdatedSignal(void)
 {
+	GK_LOG_FUNC
+
 	std::string status("devices updated signal");
 	try {
 		/* send DevicesUpdated signal to GUI applications */
@@ -668,7 +702,8 @@ void DBusHandler::sendDevicesUpdatedSignal(void)
  *
  */
 
-void DBusHandler::initializeGKDBusSignals(void) {
+void DBusHandler::initializeGKDBusSignals(void)
+{
 	/*
 	 * want to be warned by the daemon about those signals
 	 * each declaration can throw a GLogiKExcept exception
@@ -832,14 +867,20 @@ void DBusHandler::initializeGKDBusMethods(void)
 		std::bind(&DBusHandler::getDeviceLCDPluginsProperties, this, std::placeholders::_1, r_ed) );
 }
 
-void DBusHandler::daemonIsStopping(void) {
+void DBusHandler::daemonIsStopping(void)
+{
+	GK_LOG_FUNC
+
 	std::ostringstream buffer("received signal: ", std::ios_base::app);
 	buffer << __func__;
 	LOG(INFO) << buffer.str();
 	this->clearAndUnregister();
 }
 
-void DBusHandler::daemonIsStarting(void) {
+void DBusHandler::daemonIsStarting(void)
+{
+	GK_LOG_FUNC
+
 	std::ostringstream buffer("received signal: ", std::ios_base::app);
 	buffer << __func__;
 	if( _registerStatus ) {
@@ -875,7 +916,10 @@ void DBusHandler::daemonIsStarting(void) {
 	}
 }
 
-void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
+void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - with " << devicesID.size() << " devices";
@@ -938,7 +982,10 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 	}
 }
 
-void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
+void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - with " << devicesID.size() << " devices";
@@ -993,7 +1040,10 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 	}
 }
 
-void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
+void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - with " << devicesID.size() << " devices";
@@ -1053,6 +1103,8 @@ const bool DBusHandler::macroRecorded(
 	const std::string & keyName,
 	const uint8_t bankID)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - device: " << devID
@@ -1082,6 +1134,8 @@ const bool DBusHandler::macroCleared(
 	const std::string & keyName,
 	const uint8_t bankID)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - device: " << devID
@@ -1110,6 +1164,8 @@ void DBusHandler::deviceMediaEvent(
 	const std::string & devID,
 	const std::string & mediaKeyEvent)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << __func__ << " signal"
 				<< " - device: " << devID
@@ -1160,6 +1216,8 @@ void DBusHandler::deviceStatusChangeRequest(
 	const std::string & devID,
 	const std::string & remoteMethod)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "received " << remoteMethod << " signal for device " << devID;
 #endif

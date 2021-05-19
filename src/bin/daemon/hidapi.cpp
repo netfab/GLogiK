@@ -36,6 +36,8 @@ using namespace NSGKUtils;
 
 hidapi::hidapi()
 {
+	GK_LOG_FUNC
+
 	LOG(INFO) << "initializing HIDAPI version " << hid_version_str();
 
 	if(hid_init() != 0)
@@ -44,6 +46,8 @@ hidapi::hidapi()
 
 hidapi::~hidapi()
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "closing HIDAPI";
 #endif
@@ -55,6 +59,8 @@ hidapi::~hidapi()
 
 void hidapi::openUSBDevice(USBDevice & device)
 {
+	GK_LOG_FUNC
+
 	auto make_hidapi_path = [&device] () -> const std::string {
 		std::ostringstream os;
 
@@ -145,6 +151,8 @@ void hidapi::openUSBDevice(USBDevice & device)
 
 void hidapi::closeUSBDevice(USBDevice & device) noexcept
 {
+	GK_LOG_FUNC
+
 	if(device._pHIDDevice != nullptr) {
 		hid_close(device._pHIDDevice);
 #if DEBUGGING_ON
@@ -158,6 +166,8 @@ void hidapi::sendUSBDeviceFeatureReport(
 	const unsigned char * data,
 	uint16_t wLength)
 {
+	GK_LOG_FUNC
+
 	if( ! device.getUSBRequestsStatus() ) {
 		GKSysLog(LOG_WARNING, WARNING, "skip device feature report sending, would probably fail");
 		return;
@@ -179,6 +189,8 @@ int hidapi::performUSBDeviceKeysInterruptTransfer(
 	USBDevice & device,
 	unsigned int timeout)
 {
+	GK_LOG_FUNC
+
 	if( ! device.getUSBRequestsStatus() ) {
 		GKSysLog(LOG_WARNING, WARNING, "skip device hid_read_timeout, would probably fail");
 		return 0;
@@ -215,6 +227,8 @@ int hidapi::performUSBDeviceLCDScreenInterruptTransfer(
 	int bufferLength,
 	unsigned int timeout)
 {
+	GK_LOG_FUNC
+
 	if( ! device.getUSBRequestsStatus() ) {
 		GKSysLog(LOG_WARNING, WARNING, "skip device hid_write, would probably fail");
 		return 0;
@@ -236,6 +250,8 @@ int hidapi::performUSBDeviceLCDScreenInterruptTransfer(
 
 void hidapi::logUSBDeviceHIDError(hid_device *dev) noexcept
 {
+	GK_LOG_FUNC
+
 	/* dev may be NULL for hid_open error */
 	const std::wstring ws( toWString(hid_error(dev)) );
 	const std::string error( ws.begin(), ws.end() );

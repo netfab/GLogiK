@@ -57,7 +57,8 @@ SystemMonitor::SystemMonitor()
 	_pluginTempo = LCDPluginTempo::TEMPO_500_20;
 }
 
-SystemMonitor::~SystemMonitor() {
+SystemMonitor::~SystemMonitor()
+{
 }
 
 void SystemMonitor::init(FontsManager* const pFonts, const std::string & product)
@@ -86,6 +87,8 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 	const bool lockedPlugin
 	)
 {
+	GK_LOG_FUNC
+
 	this->drawPadlockOnPBMFrame(lockedPlugin);
 
 	/* -- -- -- */

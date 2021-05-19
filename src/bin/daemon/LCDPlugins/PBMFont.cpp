@@ -83,6 +83,8 @@ PBMFont::PBMFont(
 		_charY(0),
 		_charsMap(charsMap)
 {
+	GK_LOG_FUNC
+
 	fs::path fullpath(PBM_DATA_DIR);
 	fullpath /= "fonts";
 	fullpath /= PBMName;
@@ -105,6 +107,8 @@ PBMFont::PBMFont(
 
 PBMFont::~PBMFont()
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "deleting font " << _fontName;
 #endif
@@ -138,6 +142,8 @@ void PBMFont::printCharacterOnFrame(
 	uint16_t & PBMXPos,
 	const uint16_t PBMYPos)
 {
+	GK_LOG_FUNC
+
 	try {
 		_charX = _charsMap.at(character).first;
 		_charY = _charsMap[character].second;
@@ -214,6 +220,8 @@ void PBMFont::printCharacterOnFrame(
 
 const unsigned char PBMFont::getCharacterLine(const uint16_t line, const uint16_t charByte) const
 {
+	GK_LOG_FUNC
+
 	unsigned char c = 0;
 	const uint16_t i =
 		/* PBM_Y_line which contains the character (in bytes) */

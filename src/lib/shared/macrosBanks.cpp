@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@ MacrosBanks::~MacrosBanks() {
 }
 
 void MacrosBanks::initMacrosBanks(const std::vector<std::string> & keysNames) {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initialize " << keysNames.size() << " macro keys";
 #endif
@@ -59,6 +61,8 @@ const banksMap_type & MacrosBanks::getMacrosBanks(void) const
 
 void MacrosBanks::setMacrosBanks(const banksMap_type & macrosBanks)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG3) << "setting macros banks";
 #endif
@@ -69,6 +73,8 @@ void MacrosBanks::clearMacro(
 	const BankID bankID,
 	const std::string & keyName)
 {
+	GK_LOG_FUNC
+
 	try {
 		LOG(INFO) << "macros bankID: M" << bankID
 			<< " - Macro Key: " << keyName
@@ -101,6 +107,8 @@ void MacrosBanks::setMacro(
 	const std::string & keyName,
 	const macro_type & macro)
 {
+	GK_LOG_FUNC
+
 	try {
 		LOG(INFO) << "macros bankID: M" << bankID
 			<< " - Macro Key: " << keyName
@@ -136,6 +144,8 @@ void MacrosBanks::setMacro(
 
 const macro_type & MacrosBanks::getMacro(const uint8_t bankID, const std::string & keyName)
 {
+	GK_LOG_FUNC
+
 	if(bankID > BankID::BANK_M3)
 		throw GLogiKExcept("wrong bankID value");
 

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -33,6 +33,8 @@ using namespace NSGKUtils;
 GKDBusAsyncContainer::GKDBusAsyncContainer(void)
 	:	GKDBusMessage(nullptr, true), _numArgs(0)
 {
+	GK_LOG_FUNC
+
 	/* initialize fake message */
 	_message = dbus_message_new(DBUS_MESSAGE_TYPE_ERROR);
 	if(_message == nullptr)
@@ -47,6 +49,8 @@ GKDBusAsyncContainer::GKDBusAsyncContainer(void)
 
 GKDBusAsyncContainer::~GKDBusAsyncContainer()
 {
+	GK_LOG_FUNC
+
 	dbus_message_unref(_message);
 #if DEBUG_GKDBUS_SUBOBJECTS
 	LOG(DEBUG2) << "DBus Async Container destroyed";
@@ -58,7 +62,8 @@ DBusMessage* GKDBusAsyncContainer::getAsyncContainerPointer(void) const
 	return _message;
 }
 
-void GKDBusAsyncContainer::incArgs(void) {
+void GKDBusAsyncContainer::incArgs(void)
+{
 	_numArgs++;
 }
 
@@ -83,6 +88,8 @@ GKDBusMessageAsyncContainer::~GKDBusMessageAsyncContainer()
 
 void GKDBusMessageAsyncContainer::initializeAsyncContainer(void)
 {
+	GK_LOG_FUNC
+
 	if(_asyncContainer) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus AsyncContainer already allocated");
 

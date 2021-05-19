@@ -84,6 +84,8 @@ void FontsManager::printCharacterOnFrame(
 
 void FontsManager::initializeFont(const FontID fontID)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "initializing font " << toUInt(toEnumType(fontID));
 #endif

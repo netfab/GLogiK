@@ -49,6 +49,8 @@ using namespace NSGKUtils;
 
 void libusb::openUSBDevice(USBDevice & device)
 {
+	GK_LOG_FUNC
+
 	/* throws on failure */
 	this->seekUSBDevice(device);
 
@@ -73,6 +75,8 @@ void libusb::openUSBDevice(USBDevice & device)
 
 void libusb::closeUSBDevice(USBDevice & device) noexcept
 {
+	GK_LOG_FUNC
+
 	if( device.getUSBRequestsStatus() ) {
 		/* if we ever claimed or detached some interfaces, set them back
 		 * to the same state in which we found them */
@@ -94,6 +98,8 @@ void libusb::sendUSBDeviceFeatureReport(
 	const unsigned char * data,
 	uint16_t wLength)
 {
+	GK_LOG_FUNC
+
 	if( ! device.getUSBRequestsStatus() ) {
 		GKSysLog(LOG_WARNING, WARNING, "skip device feature report sending, would probably fail");
 		return;
@@ -143,6 +149,8 @@ int libusb::performUSBDeviceKeysInterruptTransfer(
 	USBDevice & device,
 	unsigned int timeout)
 {
+	GK_LOG_FUNC
+
 	if( ! device.getUSBRequestsStatus() ) {
 		GKSysLog(LOG_WARNING, WARNING, "skip device interrupt transfer read, would probably fail");
 		return 0;
@@ -176,6 +184,8 @@ int libusb::performUSBDeviceLCDScreenInterruptTransfer(
 	int bufferLength,
 	unsigned int timeout)
 {
+	GK_LOG_FUNC
+
 	if( ! device.getUSBRequestsStatus() ) {
 		GKSysLog(LOG_WARNING, WARNING, "skip device interrupt transfer write, would probably fail");
 		return 0;
@@ -219,6 +229,8 @@ int libusb::performUSBDeviceLCDScreenInterruptTransfer(
 
 void libusb::releaseUSBDeviceInterfaces(USBDevice & device) noexcept
 {
+	GK_LOG_FUNC
+
 	int ret = 0;
 	for(auto it = device._toRelease.begin(); it != device._toRelease.end();) {
 		int numInt = (*it);
@@ -255,6 +267,8 @@ void libusb::releaseUSBDeviceInterfaces(USBDevice & device) noexcept
  */
 void libusb::setUSBDeviceActiveConfiguration(USBDevice & device)
 {
+	GK_LOG_FUNC
+
 	int ret = 0;
 
 #if DEBUGGING_ON
@@ -339,7 +353,10 @@ void libusb::setUSBDeviceActiveConfiguration(USBDevice & device)
 	this->attachUSBDeviceInterfacesToKernelDrivers(device);
 }
 
-void libusb::findUSBDeviceInterface(USBDevice & device) {
+void libusb::findUSBDeviceInterface(USBDevice & device)
+{
+	GK_LOG_FUNC
+
 	int ret = 0;
 
 #if DEBUGGING_ON
@@ -620,6 +637,8 @@ void libusb::findUSBDeviceInterface(USBDevice & device) {
 
 void libusb::attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexcept
 {
+	GK_LOG_FUNC
+
 	int ret = 0;
 	for(auto it = device._toAttach.begin(); it != device._toAttach.end();) {
 		int numInt = (*it);
@@ -639,6 +658,8 @@ void libusb::attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexce
 
 void libusb::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int numInt)
 {
+	GK_LOG_FUNC
+
 	int ret = libusb_kernel_driver_active(device._pUSBDeviceHandle, numInt);
 	if( ret < 0 ) {
 		this->USBError(ret);

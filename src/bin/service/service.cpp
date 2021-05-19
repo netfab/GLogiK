@@ -62,7 +62,10 @@ DesktopService::DesktopService() :
 	openlog(GLOGIKS_DESKTOP_SERVICE_NAME, LOG_PID|LOG_CONS, LOG_USER);
 }
 
-DesktopService::~DesktopService() {
+DesktopService::~DesktopService()
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "exiting desktop service process";
 #endif
@@ -72,7 +75,10 @@ DesktopService::~DesktopService() {
 	closelog();
 }
 
-int DesktopService::run( const int& argc, char *argv[] ) {
+int DesktopService::run( const int& argc, char *argv[] )
+{
+	GK_LOG_FUNC
+
 	try {
 
 		// initialize logging
@@ -159,7 +165,10 @@ int DesktopService::run( const int& argc, char *argv[] ) {
 	}
 }
 
-void DesktopService::parseCommandLine(const int& argc, char *argv[]) {
+void DesktopService::parseCommandLine(const int& argc, char *argv[])
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "parsing command line arguments";
 #endif

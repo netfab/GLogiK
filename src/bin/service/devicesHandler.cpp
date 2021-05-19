@@ -49,6 +49,8 @@ DevicesHandler::DevicesHandler()
 		_pGKfs(nullptr),
 		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler initialization";
 #endif
@@ -62,25 +64,32 @@ DevicesHandler::DevicesHandler()
 #endif
 }
 
-DevicesHandler::~DevicesHandler() {
+DevicesHandler::~DevicesHandler()
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG) << "Devices Handler destruction";
 #endif
 }
 
-void DevicesHandler::setGKfs(NSGKUtils::FileSystem* pGKfs) {
+void DevicesHandler::setGKfs(NSGKUtils::FileSystem* pGKfs)
+{
 	_pGKfs = pGKfs;
 }
 
-void DevicesHandler::setDBus(NSGKDBus::GKDBus* pDBus) {
+void DevicesHandler::setDBus(NSGKDBus::GKDBus* pDBus)
+{
 	_pDBus = pDBus;
 }
 
-void DevicesHandler::setClientID(const std::string & id) {
+void DevicesHandler::setClientID(const std::string & id)
+{
 	_clientID = id;
 }
 
-void DevicesHandler::clearDevices(void) {
+void DevicesHandler::clearDevices(void)
+{
 	std::set<std::string> devicesID;
 
 	for( const auto & devicePair : _startedDevices ) {
@@ -100,7 +109,8 @@ void DevicesHandler::clearDevices(void) {
 	_stoppedDevices.clear();
 }
 
-const devices_files_map_t DevicesHandler::getDevicesMap(void) {
+const devices_files_map_t DevicesHandler::getDevicesMap(void)
+{
 	devices_files_map_t ret;
 	for(const auto & dev : _startedDevices) {
 		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
@@ -111,7 +121,8 @@ const devices_files_map_t DevicesHandler::getDevicesMap(void) {
 	return ret;
 }
 
-const std::vector<std::string> DevicesHandler::getDevicesList(void) {
+const std::vector<std::string> DevicesHandler::getDevicesList(void)
+{
 	std::vector<std::string> ret;
 	for(const auto & dev : _startedDevices) {
 		ret.push_back(dev.first);
@@ -132,11 +143,15 @@ const std::vector<std::string> DevicesHandler::getDevicesList(void) {
 	return ret;
 }
 
-const bool DevicesHandler::checkDeviceCapability(const DeviceProperties & device, Caps toCheck) {
+const bool DevicesHandler::checkDeviceCapability(const DeviceProperties & device, Caps toCheck)
+{
 	return (device.getCapabilities() & toEnumType(toCheck));
 }
 
-void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
+void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID)
+{
+	GK_LOG_FUNC
+
 	try {
 		DeviceProperties & device = _startedDevices.at(devID);
 		this->loadDeviceConfigurationFile(device);
@@ -166,6 +181,8 @@ void DevicesHandler::saveDeviceConfigurationFile(
 	const std::string & devID,
 	const DeviceProperties & device)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG1) << devID << " saving device configuration file";
 #endif
@@ -202,6 +219,8 @@ void DevicesHandler::saveDeviceConfigurationFile(
 
 void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devID)
 {
+	GK_LOG_FUNC
+
 	std::string status("DeviceConfigurationSaved signal");
 	try {
 		/* send DeviceConfigurationSaved signal to GUI applications */
@@ -227,7 +246,8 @@ void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devI
 #endif
 }
 
-void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
+void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device)
+{
 	fs::path filePath(_configurationRootDirectory);
 	filePath /= device.getVendor();
 	filePath /= device.getConfigFilePath();
@@ -235,7 +255,12 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 	DeviceConfigurationFile::load(filePath.string(), device);
 }
 
-void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, const DeviceProperties & device) {
+void DevicesHandler::sendDeviceConfigurationToDaemon(
+	const std::string & devID,
+	const DeviceProperties & device)
+{
+	GK_LOG_FUNC
+
 	if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
 		/* set backlight color */
 		const std::string remoteMethod("SetDeviceBacklightColor");
@@ -420,7 +445,12 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 	LOG(INFO) << devID << " sent device configuration to daemon";
 }
 
-void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProperties & device) {
+void DevicesHandler::setDeviceProperties(
+	const std::string & devID,
+	DeviceProperties & device)
+{
+	GK_LOG_FUNC
+
 	/* initialize device properties */
 	std::string remoteMethod("GetDeviceProperties");
 
@@ -620,7 +650,10 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 	}
 }
 
-void DevicesHandler::startDevice(const std::string & devID) {
+void DevicesHandler::startDevice(const std::string & devID)
+{
+	GK_LOG_FUNC
+
 	try {
 		_startedDevices.at(devID);
 #if DEBUGGING_ON
@@ -646,7 +679,10 @@ void DevicesHandler::startDevice(const std::string & devID) {
 	}
 }
 
-void DevicesHandler::stopDevice(const std::string & devID) {
+void DevicesHandler::stopDevice(const std::string & devID)
+{
+	GK_LOG_FUNC
+
 	try {
 		_stoppedDevices.at(devID);
 #if DEBUGGING_ON
@@ -679,7 +715,10 @@ void DevicesHandler::stopDevice(const std::string & devID) {
 	}
 }
 
-void DevicesHandler::unplugDevice(const std::string & devID) {
+void DevicesHandler::unplugDevice(const std::string & devID)
+{
+	GK_LOG_FUNC
+
 	try {
 		_stoppedDevices.at(devID);
 #if DEBUGGING_ON
@@ -693,7 +732,10 @@ void DevicesHandler::unplugDevice(const std::string & devID) {
 	}
 }
 
-void DevicesHandler::unrefDevice(const std::string & devID) {
+void DevicesHandler::unrefDevice(const std::string & devID)
+{
+	GK_LOG_FUNC
+
 	try {
 		const DeviceProperties & device = _stoppedDevices.at(devID);
 
@@ -750,6 +792,8 @@ const bool DevicesHandler::setDeviceMacro(
 	const std::string & keyName,
 	const uint8_t bankID)
 {
+	GK_LOG_FUNC
+
 	try {
 		DeviceProperties & device = _startedDevices.at(devID);
 
@@ -808,6 +852,8 @@ const bool DevicesHandler::clearDeviceMacro(
 	const std::string & keyName,
 	const uint8_t bankID)
 {
+	GK_LOG_FUNC
+
 	try {
 		DeviceProperties & device = _startedDevices.at(devID);
 
@@ -828,7 +874,10 @@ const bool DevicesHandler::clearDeviceMacro(
 	return false;
 }
 
-void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check) {
+void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check)
+{
+	GK_LOG_FUNC
+
 	fs::path directory(_configurationRootDirectory);
 	directory /= device.getVendor();
 
@@ -845,6 +894,8 @@ void DevicesHandler::doDeviceFakeKeyEvent(
 	const std::string & devID,
 	const std::string & mediaKeyEvent)
 {
+	GK_LOG_FUNC
+
 	try {
 		_startedDevices.at(devID);
 
@@ -885,9 +936,12 @@ void DevicesHandler::doDeviceFakeKeyEvent(
 	}
 }
 
-const LCDPluginsPropertiesArray_type & DevicesHandler::getDeviceLCDPluginsProperties(
-	const std::string & devID)
+const LCDPluginsPropertiesArray_type &
+	DevicesHandler::getDeviceLCDPluginsProperties(
+		const std::string & devID)
 {
+	GK_LOG_FUNC
+
 	try {
 		try {
 			DeviceProperties & device = _startedDevices.at(devID);

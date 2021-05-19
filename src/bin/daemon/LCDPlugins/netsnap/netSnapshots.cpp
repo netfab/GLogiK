@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -45,6 +45,8 @@ NetSnapshots::NetSnapshots()
 		_defaultNetworkInterfaceName(""),
 		_networkInterfaceName("")
 {
+	GK_LOG_FUNC
+
 	try {
 		this->findDefaultRouteNetworkInterfaceName();
 	}
@@ -134,6 +136,8 @@ const std::string NetSnapshots::getRateString(
 
 void NetSnapshots::findDefaultRouteNetworkInterfaceName(void)
 {
+	GK_LOG_FUNC
+
 	try {
 		std::ifstream routeFile("/proc/net/route");
 
@@ -162,6 +166,8 @@ void NetSnapshots::findDefaultRouteNetworkInterfaceName(void)
 
 void NetSnapshots::setBytesSnapshotValue(const NetDirection d, unsigned long long & value)
 {
+	GK_LOG_FUNC
+
 	try {
 		fs::path file("/sys/class/net");
 		file /= _networkInterfaceName;

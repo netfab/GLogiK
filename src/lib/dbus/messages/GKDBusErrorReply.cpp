@@ -33,9 +33,11 @@ using namespace NSGKUtils;
 GKDBusErrorReply::GKDBusErrorReply(
 	DBusConnection* const connection,
 	DBusMessage* message,
-	const char* errorMessage
-)	:	GKDBusMessage(connection)
+	const char* errorMessage)
+	:	GKDBusMessage(connection)
 {
+	GK_LOG_FUNC
+
 	/* sanity check */
 	if(message == nullptr)
 		throw GKDBusMessageWrongBuild("DBus message is NULL");
@@ -52,6 +54,8 @@ GKDBusErrorReply::GKDBusErrorReply(
 
 GKDBusErrorReply::~GKDBusErrorReply()
 {
+	GK_LOG_FUNC
+
 	if(_hosedMessage) {
 		LOG(WARNING) << "DBus hosed reply, giving up";
 		dbus_message_unref(_message);
@@ -87,8 +91,10 @@ GKDBusMessageErrorReply::~GKDBusMessageErrorReply()
 void GKDBusMessageErrorReply::initializeErrorReply(
 	DBusConnection* const connection,
 	DBusMessage* message,
-	const char* errorMessage
-) {
+	const char* errorMessage)
+{
+	GK_LOG_FUNC
+
 	if(_errorReply) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus reply already allocated");
 
@@ -101,7 +107,10 @@ void GKDBusMessageErrorReply::initializeErrorReply(
 	}
 }
 
-void GKDBusMessageErrorReply::sendErrorReply(void) {
+void GKDBusMessageErrorReply::sendErrorReply(void)
+{
+	GK_LOG_FUNC
+
 	if(_errorReply) { /* sanity check */
 		delete _errorReply;
 		_errorReply = nullptr;
@@ -114,8 +123,10 @@ void GKDBusMessageErrorReply::sendErrorReply(void) {
 void GKDBusMessageErrorReply::buildAndSendErrorReply(
 	DBusConnection* const connection,
 	DBusMessage* message,
-	const char* errorMessage
-) {
+	const char* errorMessage)
+{
+	GK_LOG_FUNC
+
 	try {
 		this->initializeErrorReply(connection, message, errorMessage);
 	}

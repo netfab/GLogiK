@@ -57,6 +57,8 @@ LCDPluginsTab::~LCDPluginsTab()
 
 void LCDPluginsTab::buildTab(void)
 {
+	GK_LOG_FUNC
+
 	QVBoxLayout* vBox = nullptr;
 
 	try {
@@ -128,6 +130,8 @@ void LCDPluginsTab::updateTab(
 	const std::string & devID,
 	const DeviceProperties & device)
 {
+	GK_LOG_FUNC
+
 	disconnect(_pPluginsTable, &QTableWidget::cellClicked, this, &LCDPluginsTab::toggleCheckbox);
 
 	/* removing table items */
@@ -215,6 +219,8 @@ const uint64_t LCDPluginsTab::getAndSetNewLCDPluginsMask(void)
 
 void LCDPluginsTab::toggleCheckbox(int row, int column)
 {
+	GK_LOG_FUNC
+
 	if(column != 0)
 		return;
 
@@ -228,6 +234,8 @@ void LCDPluginsTab::toggleCheckbox(int row, int column)
 
 void LCDPluginsTab::updateNewLCDPluginsMask(int checkboxState)
 {
+	GK_LOG_FUNC
+
 	QObject* cb = sender();
 	const QVariant value = cb->property(_idProperty.c_str());
 	/* checking that property was found */

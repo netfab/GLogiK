@@ -46,6 +46,8 @@ LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
 		_noPlugins(false),
 		_currentPluginLocked(false)
 {
+	GK_LOG_FUNC
+
 	try {
 		_plugins.push_back( new Splashscreen() );
 		_plugins.push_back( new SystemMonitor() );
@@ -93,11 +95,13 @@ LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
 	_LCDBuffer.resize( DEFAULT_PBM_DATA_IN_BYTES + LCD_DATA_HEADER_OFFSET, 0 );
 }
 
-LCDScreenPluginsManager::~LCDScreenPluginsManager() {
+LCDScreenPluginsManager::~LCDScreenPluginsManager()
+{
 	this->stopLCDPlugins();
 }
 
-const LCDPluginsPropertiesArray_type & LCDScreenPluginsManager::getLCDPluginsProperties(void) const
+const LCDPluginsPropertiesArray_type &
+	LCDScreenPluginsManager::getLCDPluginsProperties(void) const
 {
 	return _pluginsPropertiesArray;
 }
@@ -112,6 +116,8 @@ const uint16_t LCDScreenPluginsManager::getPluginTiming(void)
 
 void LCDScreenPluginsManager::unlockPlugin(void)
 {
+	GK_LOG_FUNC
+
 	if(_currentPluginLocked) {
 #if DEBUGGING_ON
 		if( ! _noPlugins ) {
@@ -137,6 +143,8 @@ const uint64_t LCDScreenPluginsManager::getCurrentPluginID(void)
 
 void LCDScreenPluginsManager::jumpToNextPlugin(void)
 {
+	GK_LOG_FUNC
+
 	if( ! _noPlugins ) {
 		if(_itCurrentPlugin != _plugins.end() ) {
 #if DEBUGGING_ON
@@ -168,8 +176,10 @@ const bool LCDScreenPluginsManager::findOneLCDScreenPlugin(const uint64_t LCDPlu
 
 const PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 	const std::string & LCDKey,
-	const uint64_t LCDPluginsMask1
-) {
+	const uint64_t LCDPluginsMask1)
+{
+	GK_LOG_FUNC
+
 	if( ! _noPlugins ) {
 		try {
 			/* make sure there at least one plugin */
@@ -246,7 +256,10 @@ const PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 	return _LCDBuffer;
 }
 
-void LCDScreenPluginsManager::stopLCDPlugins(void) {
+void LCDScreenPluginsManager::stopLCDPlugins(void)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
 	LOG(DEBUG2) << "stopping LCD screen plugins";
 #endif
