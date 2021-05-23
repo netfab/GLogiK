@@ -72,7 +72,7 @@ USBDeviceID::USBDeviceID(
 	_keysInterruptBufferMaxLength = bufferMaxLength;
 
 	if( bufferMaxLength > KEYS_BUFFER_LENGTH ) {
-		GKSysLog(LOG_WARNING, WARNING, "interrupt read length too large, set it to max buffer length");
+		GKSysLogWarning("interrupt read length too large, set it to max buffer length");
 		_keysInterruptBufferMaxLength = KEYS_BUFFER_LENGTH;
 	}
 }

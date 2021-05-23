@@ -299,7 +299,7 @@ const unsigned char PBMFont::getCharacterLine(const uint16_t line, const uint16_
 		error << oor.what();
 		error << " - char_width: " << std::to_string(_charWidth);
 		error << " - charX: " << std::to_string(_charX);
-		GKSysLog(LOG_ERR, ERROR, error.str());
+		GKSysLogError(error.str());
 	}
 
 	//std::bitset<8> bits(c);

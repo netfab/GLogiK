@@ -240,7 +240,7 @@ void LCDPlugin::writeStringOnPBMFrame(
 		} /* for each character in the string */
 	}
 	catch (const GLogiKExcept & e) {
-		GKSysLog(LOG_WARNING, WARNING, e.what());
+		GKSysLogWarning(e.what());
 	}
 }
 
@@ -262,7 +262,7 @@ void LCDPlugin::writeStringOnLastPBMFrame(
 		this->writeStringOnPBMFrame(pFonts, fontID, string, PBMXPos, PBMYPos);
 	}
 	catch (const GLogiKExcept & e) {
-		GKSysLog(LOG_WARNING, WARNING, e.what());
+		GKSysLogWarning(e.what());
 	}
 }
 
@@ -279,7 +279,7 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 	if(PBMXPos + PROGRESS_BAR_WIDTH > (LCD_SCREEN_WIDTH - 1)) {
 		std::ostringstream buffer(std::ios_base::app);
 		buffer << "wrong progress bar X position : " << PBMXPos;
-		GKSysLog(LOG_WARNING, WARNING, buffer.str());
+		GKSysLogWarning(buffer.str());
 		return;
 	}
 
@@ -367,9 +367,7 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 		drawHorizontalLine(index + (DEFAULT_PBM_WIDTH_IN_BYTES * (PROGRESS_BAR_HEIGHT-1)));
 	}
 	catch (const std::out_of_range& oor) {
-		std::ostringstream buffer(std::ios_base::app);
-		buffer << "wrong frame index";
-		GKSysLog(LOG_WARNING, WARNING, buffer.str());
+		GKSysLogWarning("wrong frame index");
 	}
 }
 

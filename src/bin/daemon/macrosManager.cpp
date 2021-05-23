@@ -63,7 +63,7 @@ const bool MacrosManager::macroDefined(const std::string & keyName)
 		return (macro.size() > 0);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog(LOG_WARNING, WARNING, "macro key container not found");
+		GKSysLogWarning("macro key container not found");
 	}
 
 	return false;
@@ -93,7 +93,7 @@ void MacrosManager::runMacro(const std::string & keyName)
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog(LOG_WARNING, WARNING, "macro key container not found");
+		GKSysLogWarning("macro key container not found");
 	}
 }
 
@@ -134,7 +134,7 @@ void MacrosManager::setMacro(
 		//}
 
 		if(macro.size() >= MACRO_T_MAX_SIZE) {
-			GKSysLog(LOG_WARNING, WARNING, "macro size greater than MACRO_T_MAX_SIZE, fixing it");
+			GKSysLogWarning("macro size greater than MACRO_T_MAX_SIZE, fixing it");
 			pressedEvents.clear();
 			releasedEvents.clear();
 			this->fillInVectors(macro, pressedEvents, releasedEvents);
@@ -197,7 +197,7 @@ void MacrosManager::fixMacroReleaseEvents(
 		if( ! found ) {
 			std::ostringstream buffer(std::ios_base::ate);
 			buffer << "missing release event for index " << toUInt(pressed.index) << " - adding event";
-			GKSysLog(LOG_WARNING, WARNING, buffer.str());
+			GKSysLogWarning(buffer.str());
 			KeyEvent e = pressed.key;
 			e.event = EventValue::EVENT_KEY_RELEASE;
 			e.interval = 1;
@@ -235,10 +235,10 @@ void MacrosManager::fixMacroSize(
 #endif
 	/* sanity check */
 	if(pressedEvents.size() != releasedEvents.size()) {
-		GKSysLog(LOG_WARNING, WARNING, "pressed and released events disparity :");
+		GKSysLogWarning("pressed and released events disparity :");
 		std::ostringstream buffer(std::ios_base::ate);
 		buffer << "pressed: " << pressedEvents.size() << " - released: " << releasedEvents.size();
-		GKSysLog(LOG_WARNING, WARNING, buffer.str());
+		GKSysLogWarning(buffer.str());
 	}
 
 	std::vector<unsigned int> indexes;
@@ -285,7 +285,7 @@ void MacrosManager::fixMacroSize(
 #if DEBUGGING_ON
 		LOG(DEBUG2) << "macro size : " << macro.size();
 #endif
-		GKSysLog(LOG_WARNING, WARNING, "macro still greater than MACRO_T_MAX_SIZE, force resize it");
+		GKSysLogWarning("macro still greater than MACRO_T_MAX_SIZE, force resize it");
 		macro.resize(MACRO_T_MAX_SIZE - 1);
 	}
 

@@ -85,7 +85,7 @@ void MacrosBanks::clearMacro(
 	catch (const std::out_of_range& oor) {
 		std::string warn("wrong map key : ");
 		warn += keyName;
-		GKSysLog(LOG_WARNING, WARNING, warn);
+		GKSysLogWarning(warn);
 		throw GLogiKExcept("macro not cleared");
 	}
 }
@@ -124,7 +124,7 @@ void MacrosBanks::setMacro(
 	catch (const std::out_of_range& oor) {
 		std::string warn("wrong map key : ");
 		warn += keyName;
-		GKSysLog(LOG_WARNING, WARNING, warn);
+		GKSysLogWarning(warn);
 		throw GLogiKExcept("macro not updated");
 	}
 }
@@ -156,7 +156,7 @@ const macro_type & MacrosBanks::getMacro(const uint8_t bankID, const std::string
 	catch (const std::out_of_range& oor) {
 		std::string warn("wrong map key : ");
 		warn += keyName;
-		GKSysLog(LOG_WARNING, WARNING, warn);
+		GKSysLogWarning(warn);
 		throw GLogiKExcept("can't get macro");
 	}
 

@@ -144,10 +144,6 @@ inline void GKSysLogError(
 	GKSysLogError(buffer.str());
 }
 
-#define GKSysLog_UnknownDevice \
-	std::string error(CONST_STRING_UNKNOWN_DEVICE); error += devID;\
-	GKSysLog(LOG_ERR, ERROR, error);
-
 
 #if DEBUGGING_ON
 #define GK_LOG_FUNC BOOST_LOG_FUNC()

@@ -236,7 +236,7 @@ void G510Base::processKeyEvent2Bytes(USBDevice & device)
 #endif
 	}
 	else {
-		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 2 bytes event");
+		GKSysLogWarning("wrong first byte value on 2 bytes event");
 	}
 }
 
@@ -245,7 +245,7 @@ void G510Base::processKeyEvent5Bytes(USBDevice & device)
 	GK_LOG_FUNC
 
 	if (device._pressedKeys[0] != 0x03) {
-		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 5 bytes event");
+		GKSysLogWarning("wrong first byte value on 5 bytes event");
 		return;
 	}
 
@@ -260,7 +260,7 @@ void G510Base::processKeyEvent8Bytes(USBDevice & device)
 	GK_LOG_FUNC
 
 	if (device._pressedKeys[0] != 0x01) {
-		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 8 bytes event");
+		GKSysLogWarning("wrong first byte value on 8 bytes event");
 		return;
 	}
 

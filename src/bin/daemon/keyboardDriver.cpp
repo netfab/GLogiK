@@ -127,9 +127,7 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device)
 			return KeyStatus::S_KEY_TIMEDOUT;
 			break;
 		default:
-			std::ostringstream err(device.getID(), std::ios_base::app);
-			err << " getPressedKeys interrupt read error";
-			GKSysLog(LOG_ERR, ERROR, err.str());
+			GKSysLogError(device.getID(), " interrupt read error");
 			device._fatalErrors++;
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
@@ -144,7 +142,7 @@ void KeyboardDriver::notImplemented(const char* func) const
 
 	std::ostringstream buffer(std::ios_base::app);
 	buffer << "not implemented : " << func;
-	GKSysLog(LOG_WARNING, WARNING, buffer.str());
+	GKSysLogWarning(buffer.str());
 }
 
 void KeyboardDriver::sendUSBDeviceInitialization(USBDevice & device)
@@ -302,7 +300,7 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 	 * function could have been mixed-up. I don't know if the keyboard can produce such
 	 * events. In theory, maybe. But never seen it. And I tried.
 	 */
-	GKSysLog(LOG_WARNING, WARNING, "diff not equal to zero");
+	GKSysLogWarning("diff not equal to zero");
 	return ret;
 }
 
@@ -367,7 +365,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device)
 				e.event = EventValue::EVENT_KEY_RELEASE; /* KeyRelease */
 			}
 			else {
-				GKSysLog(LOG_WARNING, WARNING, "two different byte values");
+				GKSysLogWarning("two different byte values");
 				continue;
 			}
 
@@ -398,8 +396,8 @@ void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device, const std::strin
 		std::ostringstream err(device.getID(), std::ios_base::app);
 		err << "[" << place << "]" << " device " << device.getFullName()
 			<< " on bus " << toUInt(device.getBus());
-		GKSysLog(LOG_ERR, ERROR, err.str());
-		GKSysLog(LOG_ERR, ERROR, "reached listening thread maximum fatal errors, giving up");
+		GKSysLogError(err.str());
+		GKSysLogError("reached listening thread maximum fatal errors, giving up");
 		device.stopThreads();
 	}
 }
@@ -501,13 +499,13 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 							}
 							catch (const GKDBusMessageWrongBuild & e) {
 								pDBus->abandonBroadcastSignal();
-								GKSysLog(LOG_WARNING, WARNING, e.what());
+								GKSysLogWarning(e.what());
 							}
 						}
 #endif
 					}
 					catch (const GLogiKExcept & e) {
-						GKSysLog(LOG_WARNING, WARNING, e.what());
+						GKSysLogWarning(e.what());
 					}
 				}
 
@@ -548,7 +546,7 @@ void KeyboardDriver::runMacro(const std::string & devID) const
 #endif
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 }
 
@@ -604,7 +602,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 				<< " - next sleep: " << one.count();
 #endif
 			if(ret != 0) { // TODO stop thread ?
-				GKSysLog(LOG_ERR, ERROR, "LCD refresh failure");
+				GKSysLogError("LCD refresh failure");
 			}
 
 			if( interval < one ) {
@@ -627,11 +625,11 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 				1000
 			);
 			if(ret != 0) {
-				GKSysLog(LOG_ERR, ERROR, "endscreen LCD refresh failure");
+				GKSysLogError("endscreen LCD refresh failure");
 			}
 		}
 		else {
-			GKSysLog(LOG_WARNING, WARNING, "endscreen LCD plugin not loaded");
+			GKSysLogWarning("endscreen LCD plugin not loaded");
 		}
 
 #if DEBUGGING_ON
@@ -640,15 +638,13 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 #endif
 	} /* try */
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 	catch (const GLogiKExcept & e) {
-		GKSysLog(LOG_ERR, ERROR, e.what());
+		GKSysLogError(e.what());
 	}
 	catch( const std::exception & e ) {
-		std::ostringstream err("uncaught std::exception : ", std::ios_base::app);
-		err << e.what();
-		GKSysLog(LOG_ERR, ERROR, err.str());
+		GKSysLogError("uncaught std::exception : ", e.what());
 	}
 }
 
@@ -711,7 +707,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 										}
 									}
 									catch (const std::system_error& e) {
-										GKSysLog(LOG_WARNING, WARNING, "error while spawning running macro thread");
+										GKSysLogWarning("error while spawning running macro thread");
 									}
 								}
 							}
@@ -751,7 +747,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 									}
 									catch (const GKDBusMessageWrongBuild & e) {
 										pDBus->abandonBroadcastSignal();
-										GKSysLog(LOG_WARNING, WARNING, e.what());
+										GKSysLogWarning(e.what());
 									}
 								}
 
@@ -783,15 +779,13 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 #endif
 	} /* try */
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 	catch (const std::system_error& e) {
-		GKSysLog(LOG_ERR, ERROR, "error while spawning LCDScreen loop thread");
+		GKSysLogError("error while spawning LCDScreen loop thread");
 	}
 	catch( const std::exception & e ) {
-		std::ostringstream err("uncaught std::exception : ", std::ios_base::app);
-		err << e.what();
-		GKSysLog(LOG_ERR, ERROR, err.str());
+		GKSysLogError("uncaught std::exception : ", e.what());
 	}
 }
 
@@ -803,7 +797,7 @@ const bool KeyboardDriver::getDeviceThreadsStatus(const std::string & devID) con
 		return _initializedDevices.at(devID).getThreadsStatus();
 	} /* try */
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 
 	return false;
@@ -859,7 +853,7 @@ void KeyboardDriver::resetDeviceState(const USBDeviceID & det)
 		this->resetDeviceState(device);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 }
 
@@ -926,7 +920,7 @@ void KeyboardDriver::joinDeviceThreads(USBDevice & device)
 	}
 
 	if(! found) {
-		GKSysLog(LOG_WARNING, WARNING, "listening thread not found !");
+		GKSysLogWarning("listening thread not found !");
 	}
 
 	/* Caps::GK_LCD_SCREEN */
@@ -945,7 +939,7 @@ void KeyboardDriver::joinDeviceThreads(USBDevice & device)
 		}
 
 		if(! found) {
-			GKSysLog(LOG_WARNING, WARNING, "LCD screen thread not found !");
+			GKSysLogWarning("LCD screen thread not found !");
 		}
 	}
 }
@@ -982,7 +976,7 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 }
 
@@ -998,7 +992,7 @@ const banksMap_type &
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 
 	return MacrosBanks::emptyMacrosBanks;
@@ -1014,7 +1008,7 @@ const LCDPluginsPropertiesArray_type &
 		return device.getLCDPluginsManager()->getLCDPluginsProperties();
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 
 	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
@@ -1035,13 +1029,13 @@ void KeyboardDriver::resetDevice(const USBDeviceID & det)
 			buffer << " : " << strerror(errno);
 		}
 
-		GKSysLog(LOG_ERR, ERROR, buffer.str());
+		GKSysLogError(buffer.str());
 		throw GLogiKExcept("reset device failure");
 	}
 
 	int rc = ioctl(fd, USBDEVFS_RESET, 0);
 	if (rc < 0) {
-		GKSysLog(LOG_ERR, ERROR, "ioctl error");
+		GKSysLogError("ioctl error");
 		throw GLogiKExcept("reset device failure");
 	}
 
@@ -1148,7 +1142,7 @@ void KeyboardDriver::closeDevice(
 		_initializedDevices.erase(devID);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 }
 

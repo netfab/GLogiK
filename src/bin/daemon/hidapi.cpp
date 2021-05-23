@@ -53,7 +53,7 @@ hidapi::~hidapi()
 #endif
 
 	if(hid_exit() != 0) {
-		GKSysLog(LOG_ERR, ERROR, "exiting HIDAPI failure");
+		GKSysLogError("exiting HIDAPI failure");
 	}
 }
 
@@ -169,13 +169,13 @@ void hidapi::sendUSBDeviceFeatureReport(
 	GK_LOG_FUNC
 
 	if( ! device.getUSBRequestsStatus() ) {
-		GKSysLog(LOG_WARNING, WARNING, "skip device feature report sending, would probably fail");
+		GKSysLogWarning("skip device feature report sending, would probably fail");
 		return;
 	}
 
 	int ret = hid_send_feature_report(device._pHIDDevice, data, wLength);
 	if( ret == -1 ) {
-		GKSysLog(LOG_ERR, ERROR, "error sending feature report");
+		GKSysLogError("error sending feature report");
 		this->logUSBDeviceHIDError(device._pHIDDevice);
 	}
 #if DEBUGGING_ON
@@ -192,7 +192,7 @@ int hidapi::performUSBDeviceKeysInterruptTransfer(
 	GK_LOG_FUNC
 
 	if( ! device.getUSBRequestsStatus() ) {
-		GKSysLog(LOG_WARNING, WARNING, "skip device hid_read_timeout, would probably fail");
+		GKSysLogWarning("skip device hid_read_timeout, would probably fail");
 		return 0;
 	}
 
@@ -211,7 +211,7 @@ int hidapi::performUSBDeviceKeysInterruptTransfer(
 
 	/* hid_read_timeout error */
 	if(ret == -1) {
-		GKSysLog(LOG_ERR, ERROR, "hid_read_timeout error");
+		GKSysLogError("hid_read_timeout error");
 		this->logUSBDeviceHIDError(device._pHIDDevice);
 		return toEnumType(USBAPIKeysTransferStatus::TRANSFER_ERROR);
 	}
@@ -230,7 +230,7 @@ int hidapi::performUSBDeviceLCDScreenInterruptTransfer(
 	GK_LOG_FUNC
 
 	if( ! device.getUSBRequestsStatus() ) {
-		GKSysLog(LOG_WARNING, WARNING, "skip device hid_write, would probably fail");
+		GKSysLogWarning("skip device hid_write, would probably fail");
 		return 0;
 	}
 
@@ -238,7 +238,7 @@ int hidapi::performUSBDeviceLCDScreenInterruptTransfer(
 
 	/* hid_write error */
 	if(ret == -1) {
-		GKSysLog(LOG_ERR, ERROR, "hid_write error");
+		GKSysLogError("hid_write error");
 		this->logUSBDeviceHIDError(device._pHIDDevice);
 		return toEnumType(USBAPIKeysTransferStatus::TRANSFER_ERROR);
 	}
@@ -256,9 +256,7 @@ void hidapi::logUSBDeviceHIDError(hid_device *dev) noexcept
 	const std::wstring ws( toWString(hid_error(dev)) );
 	const std::string error( ws.begin(), ws.end() );
 
-	std::ostringstream buffer(std::ios_base::app);
-	buffer	<< "HIDAPI error : " << error;
-	GKSysLog(LOG_ERR, ERROR, buffer.str());
+	GKSysLogError("HIDAPI error : ", error);
 }
 
 } // namespace GLogiK

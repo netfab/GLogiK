@@ -127,13 +127,13 @@ void VirtualKeyboard::sendKeyEvent(const KeyEvent & key)
 		if(ret != 0 ) {
 			std::ostringstream buffer(std::ios_base::ate);
 			buffer << "EV_SYN/SYN_REPORT/0 write_event : " << -ret << " : " << strerror(-ret);
-			GKSysLog(LOG_WARNING, WARNING, buffer.str());
+			GKSysLogWarning(buffer.str());
 		}
 	}
 	else {
 		std::ostringstream buffer(std::ios_base::ate);
 		buffer << "EV_KEY write_event : " << -ret << " : " << strerror(-ret);
-		GKSysLog(LOG_WARNING, WARNING, buffer.str());
+		GKSysLogWarning(buffer.str());
 	}
 }
 

@@ -87,7 +87,7 @@ LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
 
 	_itCurrentPlugin = _plugins.begin();
 	if( _plugins.empty() ) {
-		GKSysLog(LOG_WARNING, WARNING, "no LCD screen plugin initialized");
+		GKSysLogWarning("no LCD screen plugin initialized");
 		_noPlugins = true;
 	}
 
@@ -219,7 +219,7 @@ const PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 
 						if( (! found) and (_itCurrentPlugin == itFirstPlugin) ) {
 							const std::string warn("detected potential infinite loop");
-							GKSysLog(LOG_WARNING, WARNING, warn);
+							GKSysLogWarning(warn);
 							throw GLogiKExcept(warn);
 						}
 					}

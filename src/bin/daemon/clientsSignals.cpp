@@ -71,7 +71,7 @@ void ClientsSignals::sendSignalToClients(
 		warn += e.what();
 		/* don't warn nor syslog if we force sending the signal */
 		if(! forceSend) {
-			GKSysLog(LOG_WARNING, WARNING, warn);
+			GKSysLogWarning(warn);
 		}
 		else {
 			LOG(DEBUG) << warn;
@@ -112,7 +112,7 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 		pDBus->abandonBroadcastSignal();
 		std::string warn("DBus targets signal failure : ");
 		warn += e.what();
-		GKSysLog(LOG_WARNING, WARNING, warn);
+		GKSysLogWarning(warn);
 	}
 }
 

@@ -38,10 +38,6 @@
 #include "include/keyEvent.hpp"
 #include "include/LCDPluginProperties.hpp"
 
-#define GKSysLog_UnknownClient \
-	std::string error(CONST_STRING_UNKNOWN_CLIENT); error += clientID;\
-	GKSysLog(LOG_ERR, ERROR, error);
-
 namespace GLogiK
 {
 

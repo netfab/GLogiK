@@ -166,7 +166,7 @@ void DevicesManager::initializeDevices(void) noexcept
 									// trying to reset detected device
 									unpluggedDevice.setResetFlag();
 									std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-									GKSysLog(LOG_WARNING, WARNING, "found unplugged dirty device, trying to reset detected device");
+									GKSysLogWarning("found unplugged dirty device, trying to reset detected device");
 									driver->resetDevice( device );
 									break;
 								}
@@ -189,15 +189,13 @@ void DevicesManager::initializeDevices(void) noexcept
 					buffer	<< device.getFullName() << " "
 							<< device.getVendorID() << ":" << device.getProductID()
 							<< " on bus " << toUInt(device.getBus()) << " initialized";
-					GKSysLog(LOG_INFO, INFO, buffer.str());
+					GKSysLogInfo(buffer.str());
 					break;
 				}
 			} // for
 		}
 		catch ( const GLogiKExcept & e ) {
-			std::ostringstream buffer(std::ios_base::app);
-			buffer << "device initialization failure : " << e.what();
-			GKSysLog(LOG_ERR, ERROR, buffer.str());
+			GKSysLogError("device initialization failure : ", e.what());
 		}
 	} // for
 
@@ -233,7 +231,7 @@ const bool DevicesManager::startDevice(const std::string & devID)
 				buffer	<< device.getFullName() << " "
 						<< device.getVendorID() << ":" << device.getProductID()
 						<< " on bus " << toUInt(device.getBus()) << " initialized";
-				GKSysLog(LOG_INFO, INFO, buffer.str());
+				GKSysLogInfo(buffer.str());
 
 #if DEBUGGING_ON
 				LOG(DEBUG3) << "removing " << devID << " from stopped devices container";
@@ -245,13 +243,11 @@ const bool DevicesManager::startDevice(const std::string & devID)
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		std::ostringstream buffer(std::ios_base::app);
-		buffer << "device starting failure : device not found in stopped devices container : " << oor.what();
-		GKSysLog(LOG_ERR, ERROR, buffer.str());
+		GKSysLogError("device starting failure : device not found in stopped devices container : ", oor.what());
 		return false;
 	}
 
-	GKSysLog(LOG_ERR, ERROR, "device starting failure : driver not found !?");
+	GKSysLogError("device starting failure : driver not found !?");
 	return false;
 }
 
@@ -275,7 +271,7 @@ const bool DevicesManager::stopDevice(
 				buffer	<< device.getFullName() << " "
 						<< device.getVendorID() << ":" << device.getProductID()
 						<< " on bus " << toUInt(device.getBus()) << " stopped";
-				GKSysLog(LOG_INFO, INFO, buffer.str());
+				GKSysLogInfo(buffer.str());
 
 				_stoppedDevices[devID] = device;
 				_startedDevices.erase(devID);
@@ -285,13 +281,11 @@ const bool DevicesManager::stopDevice(
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		std::ostringstream buffer(std::ios_base::app);
-		buffer << "device stopping failure : device not found in started devices container : " << oor.what();
-		GKSysLog(LOG_ERR, ERROR, buffer.str());
+		GKSysLogError("device stopping failure : device not found in started devices container : ", oor.what());
 		return false;
 	}
 
-	GKSysLog(LOG_ERR, ERROR, "device stopping failure : driver not found !?");
+	GKSysLogError("device stopping failure : driver not found !?");
 	return false;
 }
 
@@ -339,9 +333,9 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept
 
 			if( device.getDriverID() == driver->getDriverID() ) {
 				if( ! driver->getDeviceThreadsStatus(devID) ) {
-					GKSysLog(LOG_WARNING, WARNING, "USB port software reset detected, not cool :(");
-					GKSysLog(LOG_WARNING, WARNING, "We are forced to hard stop a device.");
-					GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
+					GKSysLogWarning("USB port software reset detected, not cool :(");
+					GKSysLogWarning("We are forced to hard stop a device.");
+					GKSysLogWarning("You will get libusb warnings/errors if you do this.");
 
 					/* mark device as dirty */
 					device.setDirtyFlag();
@@ -392,9 +386,9 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept
 						<< device.getVendorID() << ":" << device.getProductID()
 						<< ":" << device.getDevnode() << ":" << device.getUSec();
 
-				GKSysLog(LOG_WARNING, WARNING, buffer.str());
-				GKSysLog(LOG_WARNING, WARNING, "Did you unplug your device before properly stopping it ?");
-				GKSysLog(LOG_WARNING, WARNING, "You will get libusb warnings/errors if you do this.");
+				GKSysLogWarning(buffer.str());
+				GKSysLogWarning("Did you unplug your device before properly stopping it ?");
+				GKSysLogWarning("You will get libusb warnings/errors if you do this.");
 
 				/* mark device as dirty */
 				device.setDirtyFlag();
@@ -412,7 +406,7 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept
 		catch (const std::out_of_range& oor) {
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "!?! device not found !?! " << devID;
-			GKSysLog(LOG_WARNING, WARNING, buffer.str());
+			GKSysLogWarning(buffer.str());
 		}
 	}
 
@@ -439,7 +433,7 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept
 		catch (const std::out_of_range& oor) {
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "!?! device not found !?! " << devID;
-			GKSysLog(LOG_WARNING, WARNING, buffer.str());
+			GKSysLogWarning(buffer.str());
 		}
 	}
 	toClean.clear();
@@ -696,7 +690,7 @@ const std::string & DevicesManager::getDeviceVendor(const std::string & devID) c
 			return device.getVendor();
 		}
 		catch (const std::out_of_range& oor) {
-			GKSysLog_UnknownDevice
+			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -717,7 +711,7 @@ const uint64_t DevicesManager::getDeviceCapabilities(const std::string & devID) 
 			return device.getCapabilities();
 		}
 		catch (const std::out_of_range& oor) {
-			GKSysLog_UnknownDevice
+			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -738,7 +732,7 @@ const std::string & DevicesManager::getDeviceProduct(const std::string & devID) 
 			return device.getProduct();
 		}
 		catch (const std::out_of_range& oor) {
-			GKSysLog_UnknownDevice
+			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -759,7 +753,7 @@ const std::string & DevicesManager::getDeviceName(const std::string & devID) con
 			return device.getName();
 		}
 		catch (const std::out_of_range& oor) {
-			GKSysLog_UnknownDevice
+			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -795,7 +789,7 @@ const LCDPluginsPropertiesArray_type &
 			}
 		}
 		catch (const std::out_of_range& oor) {
-			GKSysLog_UnknownDevice
+			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -837,7 +831,7 @@ void DevicesManager::setDeviceActiveConfiguration(
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 }
 
@@ -859,7 +853,7 @@ const banksMap_type & DevicesManager::getDeviceMacrosBanks(const std::string & d
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 	return MacrosBanks::emptyMacrosBanks;
 }
@@ -897,7 +891,7 @@ const std::vector<std::string> &
 			}
 		}
 		catch (const std::out_of_range& oor) {
-			GKSysLog_UnknownDevice
+			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 		}
 	}
 

@@ -137,7 +137,7 @@ const bool Client::deleteDevice(const std::string & devID)
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 
 	return false;
@@ -160,7 +160,7 @@ const bool Client::setDeviceBacklightColor(
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 
 	return false;
@@ -186,7 +186,7 @@ void Client::setDeviceActiveUser(
 		);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 }
 
@@ -204,7 +204,7 @@ void Client::syncDeviceMacrosBanks(
 		device.setMacrosBanks(macrosBanks);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 }
 
@@ -220,7 +220,7 @@ const macro_type & Client::getDeviceMacro(
 		return device.getMacro(bankID, keyName);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 
 	return MacrosBanks::emptyMacro;
@@ -244,17 +244,17 @@ const bool Client::setDeviceMacrosBank(
 			}
 			catch (const GLogiKExcept & e) {
 				ret = false;
-				GKSysLog(LOG_WARNING, WARNING, e.what());
+				GKSysLogWarning(e.what());
 			}
 		}
 	}
 	catch (const std::out_of_range& oor) {
 		ret = false;
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 	catch (const GLogiKExcept & e) {
 		ret = false;
-		GKSysLog(LOG_WARNING, WARNING, e.what());
+		GKSysLogWarning(e.what());
 	}
 
 	return ret;
@@ -274,10 +274,10 @@ const bool Client::resetDeviceMacrosBank(
 		ret = true;
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 	catch (const GLogiKExcept & e) {
-		GKSysLog(LOG_WARNING, WARNING, e.what());
+		GKSysLogWarning(e.what());
 	}
 
 	return ret;
@@ -298,10 +298,10 @@ const bool Client::setDeviceLCDPluginsMask(
 		ret = true;
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownDevice
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 	catch (const GLogiKExcept & e) {
-		GKSysLog(LOG_WARNING, WARNING, e.what());
+		GKSysLogWarning(e.what());
 	}
 
 	return ret;

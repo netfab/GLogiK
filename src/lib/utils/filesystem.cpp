@@ -229,7 +229,7 @@ void FileSystem::openDebugFile(
 					std::ostringstream buffer(std::ios_base::app);
 					buffer << "failed to set file permissions : " << filePath
 							<< " : " << ec.message();
-					GKSysLog(LOG_ERR, ERROR, buffer.str());
+					GKSysLogError(buffer.str());
 				}
 			}
 
