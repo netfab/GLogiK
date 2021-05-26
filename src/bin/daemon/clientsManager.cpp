@@ -45,18 +45,14 @@ ClientsManager::ClientsManager(DevicesManager* pDevicesManager)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "initializing clients manager";
-#endif
+	GKLog(trace, "initializing clients manager")
 }
 
 ClientsManager::~ClientsManager()
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "destroying clients manager";
-#endif
+	GKLog(trace, "destroying clients manager")
 
 	for( auto & clientPair : _connectedClients ) {
 		Client* pClient = clientPair.second;
@@ -69,9 +65,7 @@ ClientsManager::~ClientsManager()
 	}
 	_connectedClients.clear();
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "exiting clients manager";
-#endif
+	GKLog(trace, "exiting clients manager")
 }
 
 void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
@@ -317,23 +311,18 @@ void ClientsManager::waitForClientsDisconnections(void) noexcept
 	GK_LOG_FUNC
 
 	if( _connectedClients.empty() ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "no client, empty container";
-#endif
+		GKLog(trace, "no client, empty container")
 		return;
 	}
 
 	this->sendSignalToClients(_connectedClients.size(), _pDBus, "DaemonIsStopping");
 
 	uint16_t c = 0;
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "waiting for clients to unregister ...";
-#endif
+	GKLog(trace, "waiting for clients to unregister ...")
+
 	while( c++ < 40 and _connectedClients.size() > 0 ) { /* bonus point */
 		_pDevicesManager->checkDBusMessages();
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "sleeping for 40 ms ...";
-#endif
+		GKLog(trace, "sleeping for 40 ms ...")
 		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
 }
@@ -454,9 +443,7 @@ const bool ClientsManager::unregisterClient(
 		/* resetting devices states first */
 		if( pClient->getSessionCurrentState() == _active ) {
 			_pDevicesManager->resetDevicesStates();
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "decreasing active users # : " << _numActive;
-#endif
+			GKLog2(trace, "decreasing active users # : ", _numActive)
 			_numActive--;
 		}
 
@@ -478,9 +465,9 @@ const bool ClientsManager::updateClientState(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << CONST_STRING_CLIENT << clientID << " state: " << state;
-#endif
+	GKLog2x2(trace,
+		CONST_STRING_CLIENT, clientID,
+		"state : ", state)
 
 	if( (state != _active) and (state != "online") ) {
 		std::ostringstream buffer(std::ios_base::app);
@@ -495,34 +482,25 @@ const bool ClientsManager::updateClientState(
 		pClient->updateSessionState(state);
 
 		if( (oldState == _active) and (state != _active) ) {
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "decreasing active users # : " << _numActive;
-#endif
+			GKLog2(trace, "decreasing active users # : ", _numActive)
 			_numActive--;
 		}
 
 		if(state == _active) {
 			if(oldState != _active) {
-#if DEBUGGING_ON
-				LOG(DEBUG3) << "increasing active users # : " << _numActive;
-#endif
+				GKLog2(trace, "increasing active users # : ", _numActive)
 				_numActive++;
 			}
 
 			if( pClient->isReady() ) {
-#if DEBUGGING_ON
-				LOG(DEBUG1) << "setting active user's parameters for all started devices";
-#endif
+				GKLog(trace, "setting active user's parameters for all started devices")
 				for(const auto & devID : _pDevicesManager->getStartedDevices()) {
 					pClient->setDeviceActiveUser(devID, _pDevicesManager);
 				}
 			}
 		}
 
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "active users # : " << _numActive;
-#endif
-
+		GKLog2(trace, "active users # : ", _numActive)
 		if(_numActive == 0) {
 			_pDevicesManager->resetDevicesStates();
 		}
@@ -545,9 +523,7 @@ const bool ClientsManager::toggleClientReadyPropertie(const std::string & client
 		pClient->toggleClientReadyPropertie();
 		if( pClient->isReady() ) {
 			if(pClient->getSessionCurrentState() == _active) {
-#if DEBUGGING_ON
-				LOG(DEBUG1) << "setting active user's parameters for all started devices";
-#endif
+				GKLog(trace, "setting active user's parameters for all started devices")
 				for(const auto & devID : _pDevicesManager->getStartedDevices()) {
 					pClient->setDeviceActiveUser(devID, _pDevicesManager);
 				}
@@ -567,10 +543,10 @@ const bool ClientsManager::deleteDeviceConfiguration(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	GKLog2x2(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		return pClient->deleteDevice(devID);
@@ -588,10 +564,10 @@ const bool ClientsManager::stopDevice(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	GKLog2x2(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 
@@ -629,10 +605,10 @@ const bool ClientsManager::startDevice(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	GKLog2x2(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 
@@ -675,19 +651,16 @@ const bool ClientsManager::restartDevice(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	GKLog2x2(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID)
 
 	_enabledSignals = false;
 	const std::vector<std::string> array = {devID};
 
 	if( this->stopDevice(clientID, devID) ) {
 
-#if DEBUGGING_ON
-		LOG(DEBUG) << "sleeping for 1000 ms";
-#endif
+		GKLog(trace, "sleeping for 1000 ms")
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 		if( this->startDevice(clientID, devID) ) {
@@ -720,9 +693,8 @@ const std::vector<std::string>
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << CONST_STRING_CLIENT << clientID;
-#endif
+	GKLog2(trace, CONST_STRING_CLIENT, clientID)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		pClient->isAlive(); /* to avoid warning */
@@ -741,9 +713,8 @@ const std::vector<std::string>
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << CONST_STRING_CLIENT << clientID;
-#endif
+	GKLog2(trace, CONST_STRING_CLIENT, clientID)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		pClient->isAlive(); /* to avoid warning */
@@ -763,10 +734,10 @@ const std::string ClientsManager::getDeviceStatus(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	GKLog2x2(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID)
+
 	try {
 		_connectedClients.at(clientID);
 		return _pDevicesManager->getDeviceStatus(devID);
@@ -784,10 +755,10 @@ void ClientsManager::getDeviceProperties(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	GKLog2x2(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		if( pClient->isAlive() ) {
@@ -814,10 +785,10 @@ const LCDPluginsPropertiesArray_type &
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	GKLog2x2(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		if( pClient->isAlive() ) {
@@ -841,12 +812,11 @@ const bool ClientsManager::setDeviceBacklightColor(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-	LOG(DEBUG3) << "with following RGB bytes : "
-				<< getHexRGB(r, g, b);
-#endif
+	GKLog2x3(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID,
+		"RGB bytes : ", getHexRGB(r, g, b))
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		return pClient->setDeviceBacklightColor(devID, r, g, b);
@@ -863,14 +833,16 @@ const macro_type & ClientsManager::getDeviceMacro(
 	const std::string & keyName,
 	const uint8_t bankID)
 {
+
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-	LOG(DEBUG3) << "   key : " << keyName;
-	LOG(DEBUG3) << "bankID : " << toUInt(bankID);
-#endif
+	GKLog2x2(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID)
+	GKLog2x2(trace,
+		"key : ", keyName,
+		"bankID : ", toUInt(bankID))
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 
@@ -901,10 +873,10 @@ const std::vector<std::string> &
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	GKLog2x2(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID)
+
 	try {
 		_connectedClients.at(clientID);
 		return _pDevicesManager->getDeviceMacroKeysNames(devID);
@@ -924,11 +896,11 @@ const bool ClientsManager::setDeviceMacrosBank(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-	LOG(DEBUG3) << "bankID : " << toUInt(bankID);
-#endif
+	GKLog2x3(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID,
+		"bankID : ", toUInt(bankID))
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		return pClient->setDeviceMacrosBank(devID, bankID, bank);
@@ -947,11 +919,11 @@ const bool ClientsManager::resetDeviceMacrosBank(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-	LOG(DEBUG3) << "bankID : " << toUInt(bankID);
-#endif
+	GKLog2x3(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID,
+		"bankID : ", toUInt(bankID))
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		return pClient->resetDeviceMacrosBank(devID, bankID);
@@ -971,11 +943,10 @@ const bool ClientsManager::setDeviceLCDPluginsMask(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-	LOG(DEBUG3) << "maskID : " << toUInt(maskID);
-#endif
+	GKLog2x3(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID,
+		"maskID : ", toUInt(maskID))
 
 	try {
 		Client* pClient = _connectedClients.at(clientID);

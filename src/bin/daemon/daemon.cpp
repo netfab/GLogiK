@@ -74,11 +74,11 @@ GLogiKDaemon::~GLogiKDaemon()
 {
 	GK_LOG_FUNC
 
-	GKLog(trace, "exiting daemon process");
+	GKLog(trace, "exiting daemon process")
 
 	try {
 		if( _PIDFileCreated && fs::is_regular_file(_pidFileName) ) {
-			GKLog(info, "destroying PID file");
+			GKLog(info, "destroying PID file")
 			if( unlink(_pidFileName.c_str()) != 0 ) {
 				GKSysLogError("failed to unlink PID file");
 			}
@@ -279,7 +279,7 @@ void GLogiKDaemon::createPIDFile(void) {
 
 	_PIDFileCreated = true;
 
-	GKLog(info, "created PID file : ", _pidFileName);
+	GKLog2(info, "created PID file : ", _pidFileName)
 }
 
 void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {

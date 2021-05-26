@@ -42,9 +42,7 @@ Client::Client(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "initializing new client";
-#endif
+	GKLog(trace, "initializing new client")
 
 	this->initializeDevices(pDevicesManager);
 
@@ -57,9 +55,7 @@ Client::~Client()
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "destroying client";
-#endif
+	GKLog(trace, "destroying client")
 }
 
 const std::string & Client::getSessionObjectPath(void) const
@@ -108,9 +104,8 @@ void Client::initializeDevice(
 		_devices.at(devID);
 	}
 	catch (const std::out_of_range& oor) {
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "initializing device " << devID << " properties";
-#endif
+		GKLog2(trace, devID, " initializing properties")
+
 		DeviceProperties device;
 		device.setProperties(
 			pDevicesManager->getDeviceVendor(devID),		/* vendor */
@@ -131,9 +126,7 @@ const bool Client::deleteDevice(const std::string & devID)
 	try {
 		_devices.at(devID);
 		_devices.erase(devID);
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "deleted device : " << devID;
-#endif
+		GKLog2(trace, devID, " deleted device")
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
@@ -151,9 +144,8 @@ const bool Client::setDeviceBacklightColor(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "setting client backlight color for device " << devID;
-#endif
+	GKLog2(trace, devID, " setting client backlight color")
+
 	try {
 		DeviceProperties & device = _devices.at(devID);
 		device.setRGBBytes(r, g, b);
@@ -177,9 +169,8 @@ void Client::setDeviceActiveUser(
 
 		uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "setting active configuration for device " << devID;
-#endif
+		GKLog2(trace, devID, " setting active configuration")
+
 		pDevicesManager->setDeviceActiveConfiguration(
 			devID, device.getMacrosBanks(),
 			r, g, b, device.getLCDPluginsMask1()
@@ -196,9 +187,8 @@ void Client::syncDeviceMacrosBanks(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "synchonizing macros banks for device " << devID;
-#endif
+	GKLog2(trace, devID, " synchonizing macros banks")
+
 	try {
 		DeviceProperties & device = _devices.at(devID);
 		device.setMacrosBanks(macrosBanks);

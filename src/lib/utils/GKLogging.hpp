@@ -84,32 +84,26 @@ class GKLogging
 
 #define LOG(sev)	BOOST_LOG_SEV(GKLogging::GKLogger, sev)
 
-// log «msg» message of «level» severity only if
-// debugging was enabled at build and run time
-inline void GKLog(
-	const severity_level level,
-	const std::string & msg)
-{
 #if DEBUGGING_ON
-	if(GLogiK::GKDebug) {
-		LOG(level) << msg;
+#define GKLog(level, m1) if(GLogiK::GKDebug) { LOG(level) << m1; }
+#define GKLog2(level, m1, m2) if(GLogiK::GKDebug) { LOG(level) << m1 << m2; }
+#define GKLog2x2(level, m1, m2, m3, m4) \
+	if(GLogiK::GKDebug) { \
+		LOG(level) << m1 << m2; \
+		LOG(level) << m3 << m4; \
 	}
-#endif
-}
-
-// log «msg1» and «msg2» messages of «level» severity only if
-// debugging was enabled at build and run time
-inline void GKLog(
-	const severity_level level,
-	const std::string & msg1,
-	const std::string & msg2)
-{
-#if DEBUGGING_ON
-	if(GLogiK::GKDebug) {
-		LOG(level) << msg1 << msg2;
+#define GKLog2x3(level, m1, m2, m3, m4, m5, m6) \
+	if(GLogiK::GKDebug) { \
+		LOG(level) << m1 << m2; \
+		LOG(level) << m3 << m4; \
+		LOG(level) << m5 << m6; \
 	}
+#else
+#define GKLog(level, m1)
+#define GKLog2(level, m1, m2)
+#define GKLog2x2(level, m1, m2, m3, m4)
+#define GKLog2x3(level, m1, m2, m3, m4, m5, m6)
 #endif
-}
 
 inline void GKSysLog(
 	const int priority,
