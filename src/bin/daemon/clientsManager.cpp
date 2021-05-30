@@ -467,7 +467,8 @@ const bool ClientsManager::updateClientState(
 
 	GKLog2x2(trace,
 		CONST_STRING_CLIENT, clientID,
-		"state : ", state)
+		"state : ", state
+	)
 
 	if( (state != _active) and (state != "online") ) {
 		std::ostringstream buffer(std::ios_base::app);
@@ -545,7 +546,8 @@ const bool ClientsManager::deleteDeviceConfiguration(
 
 	GKLog2x2(trace,
 		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID)
+		CONST_STRING_CLIENT, clientID
+	)
 
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -566,7 +568,8 @@ const bool ClientsManager::stopDevice(
 
 	GKLog2x2(trace,
 		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID)
+		CONST_STRING_CLIENT, clientID
+	)
 
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -607,7 +610,8 @@ const bool ClientsManager::startDevice(
 
 	GKLog2x2(trace,
 		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID)
+		CONST_STRING_CLIENT, clientID
+	)
 
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -653,7 +657,8 @@ const bool ClientsManager::restartDevice(
 
 	GKLog2x2(trace,
 		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID)
+		CONST_STRING_CLIENT, clientID
+	)
 
 	_enabledSignals = false;
 	const std::vector<std::string> array = {devID};
@@ -736,7 +741,8 @@ const std::string ClientsManager::getDeviceStatus(
 
 	GKLog2x2(trace,
 		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID)
+		CONST_STRING_CLIENT, clientID
+	)
 
 	try {
 		_connectedClients.at(clientID);
@@ -757,7 +763,8 @@ void ClientsManager::getDeviceProperties(
 
 	GKLog2x2(trace,
 		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID)
+		CONST_STRING_CLIENT, clientID
+	)
 
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -787,7 +794,8 @@ const LCDPluginsPropertiesArray_type &
 
 	GKLog2x2(trace,
 		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID)
+		CONST_STRING_CLIENT, clientID
+	)
 
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -838,10 +846,12 @@ const macro_type & ClientsManager::getDeviceMacro(
 
 	GKLog2x2(trace,
 		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID)
+		CONST_STRING_CLIENT, clientID
+	)
 	GKLog2x2(trace,
 		"key : ", keyName,
-		"bankID : ", toUInt(bankID))
+		"bankID : ", toUInt(bankID)
+	)
 
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -875,7 +885,8 @@ const std::vector<std::string> &
 
 	GKLog2x2(trace,
 		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID)
+		CONST_STRING_CLIENT, clientID
+	)
 
 	try {
 		_connectedClients.at(clientID);

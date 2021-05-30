@@ -52,9 +52,8 @@ void ClientsSignals::sendSignalToClients(
 		if(signal != "DaemonIsStopping")
 			return;
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "sending clients " << signal << " signal";
-#endif
+	GKLog2(trace, "sending signal : ", signal)
+
 	try {
 		pDBus->initializeBroadcastSignal(
 			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
@@ -95,9 +94,8 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 	if( ! DaemonControl::isDaemonRunning() )
 		return;
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "sending clients " << signal << " signal";
-#endif
+	GKLog2(trace, "sending signal : ", signal)
+
 	try {
 		pDBus->initializeBroadcastSignal(
 			NSGKDBus::BusConnection::GKDBUS_SYSTEM,

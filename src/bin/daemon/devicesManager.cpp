@@ -66,33 +66,25 @@ DevicesManager::DevicesManager()
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "initializing devices manager";
-#endif
+	GKLog(trace, "initializing devices manager")
 }
 
 DevicesManager::~DevicesManager()
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "destroying devices manager";
-#endif
+	GKLog(trace, "destroying devices manager")
 
 	this->stopInitializedDevices();
 	_stoppedDevices.clear();
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "stopping drivers";
-#endif
+	GKLog(trace, "stopping drivers")
 	for(const auto & driver : _drivers) {
 		delete driver;
 	}
 	_drivers.clear();
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "exiting devices manager";
-#endif
+	GKLog(trace, "exiting devices manager")
 }
 
 #if GKDBUS
@@ -118,9 +110,7 @@ void DevicesManager::initializeDevices(void) noexcept
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "initializing detected devices";
-#endif
+	GKLog(trace, "initializing detected devices")
 
 #if GKDBUS
 	std::vector<std::string> startedDevices;
@@ -207,18 +197,16 @@ void DevicesManager::initializeDevices(void) noexcept
 #endif
 
 	_detectedDevices.clear();
-#if DEBUGGING_ON
-	LOG(INFO) << "device(s) initialized : " << _startedDevices.size();
-#endif
+
+	GKLog2(info, "device(s) initialized : ", _startedDevices.size())
 }
 
 const bool DevicesManager::startDevice(const std::string & devID)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "starting device " << devID;
-#endif
+	GKLog2(trace, devID, " starting device")
+
 	try {
 		const auto & device = _stoppedDevices.at(devID);
 		for(const auto & driver : _drivers) {
@@ -233,9 +221,7 @@ const bool DevicesManager::startDevice(const std::string & devID)
 						<< " on bus " << toUInt(device.getBus()) << " initialized";
 				GKSysLogInfo(buffer.str());
 
-#if DEBUGGING_ON
-				LOG(DEBUG3) << "removing " << devID << " from stopped devices container";
-#endif
+				GKLog2(trace, devID, " removing device from stopped-devices container")
 				_stoppedDevices.erase(devID);
 
 				return true;
@@ -257,9 +243,7 @@ const bool DevicesManager::stopDevice(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "stopping device " << devID;
-#endif
+	GKLog2(trace, devID, " stopping device")
 
 	try {
 		const auto & device = _startedDevices.at(devID);
@@ -293,9 +277,7 @@ void DevicesManager::stopInitializedDevices(void)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "stopping initialized devices";
-#endif
+	GKLog(trace, "stopping initialized devices")
 
 	std::vector<std::string> toStop;
 	for(const auto & devicePair : _startedDevices) {
@@ -361,9 +343,7 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "checking for unplugged devices";
-#endif
+	GKLog(trace, "checking for unplugged devices")
 
 #if GKDBUS
 	std::vector<std::string> toSend;
@@ -420,9 +400,7 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept
 	}
 	for(const auto & devID : toClean) {
 		try {
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "removing " << devID << " from stopped devices container";
-#endif
+			GKLog2(trace, devID, " removing device from stopped-devices container")
 			const auto & device = _stoppedDevices.at(devID);
 			_unpluggedDevices[devID] = device;
 			_stoppedDevices.erase(devID);

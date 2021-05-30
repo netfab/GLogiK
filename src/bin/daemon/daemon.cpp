@@ -116,7 +116,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] )
 			this->parseCommandLine(argc, argv);
 
 #if DEBUGGING_ON
-			if(GKDebug) {
+			if(GLogiK::GKDebug) {
 				FileSystem::createDirectory(DEBUG_DIR, fs::owner_all | fs::group_all);
 
 				// initialize logging
@@ -316,7 +316,7 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 		GLogiKDaemon::daemonized = vm["daemonize"].as<bool>();
 	}
 	if (vm.count("debug")) {
-		GKDebug = vm["debug"].as<bool>();
+		GLogiK::GKDebug = vm["debug"].as<bool>();
 	}
 }
 

@@ -56,8 +56,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 DesktopService::DesktopService() :
-	_pid(0),
-	_verbose(false)
+	_pid(0)
 {
 	openlog(GLOGIKS_DESKTOP_SERVICE_NAME, LOG_PID|LOG_CONS, LOG_USER);
 }
@@ -66,11 +65,7 @@ DesktopService::~DesktopService()
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "exiting desktop service process";
-#endif
-
-	LOG(INFO) << GLOGIKS_DESKTOP_SERVICE_NAME << " : bye !";
+	LOG(info) << GLOGIKS_DESKTOP_SERVICE_NAME << " desktop service process exiting, bye !";
 
 	closelog();
 }
@@ -81,9 +76,15 @@ int DesktopService::run( const int& argc, char *argv[] )
 
 	try {
 
+		this->parseCommandLine(argc, argv);
+
 		// initialize logging
 		try {
-			GKLogging::initDebugFile(GLOGIKS_DESKTOP_SERVICE_NAME, fs::owner_read|fs::owner_write|fs::group_read);
+#if DEBUGGING_ON
+			if(GLogiK::GKDebug) {
+				GKLogging::initDebugFile(GLOGIKS_DESKTOP_SERVICE_NAME, fs::owner_read|fs::owner_write|fs::group_read);
+			}
+#endif
 			GKLogging::initConsoleLog();
 		}
 		catch (const std::exception & e) {
@@ -91,14 +92,11 @@ int DesktopService::run( const int& argc, char *argv[] )
 			return EXIT_FAILURE;
 		}
 
-		LOG(INFO) << "Starting " << GLOGIKS_DESKTOP_SERVICE_NAME << " vers. " << VERSION;
-
-		this->parseCommandLine(argc, argv);
+		LOG(info) << "Starting " << GLOGIKS_DESKTOP_SERVICE_NAME << " vers. " << VERSION;
 
 		_pid = detachProcess();
-#if DEBUGGING_ON
-		LOG(DEBUG) << "process detached - pid: " << _pid;
-#endif
+
+		GKLog2(trace, "process detached - pid: ", _pid)
 
 		{
 			FileSystem GKfs;
@@ -132,7 +130,7 @@ int DesktopService::run( const int& argc, char *argv[] )
 						continue;
 					}
 
-					if( fds[1].revents & POLLIN) {
+					if( fds[1].revents & POLLIN ) {
 						/* checking if any received filesystem notification matches
 						 * any device configuration file. If yes, reload the file,
 						 * and send configuration to daemon */
@@ -150,17 +148,16 @@ int DesktopService::run( const int& argc, char *argv[] )
 			DBus.disconnectFromSystemBus();
 		}
 
-#if DEBUGGING_ON
-		LOG(DEBUG) << "exiting with success";
-#endif
+		GKLog(trace, "exiting with success")
+
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(ERROR) << e.what();
+		LOG(error) << e.what();
 		return EXIT_FAILURE;
 	}
 	catch ( const GLogiKFatalError & e ) {
-		LOG(ERROR) << e.what();
+		LOG(error) << e.what();
 		return EXIT_FAILURE;
 	}
 }
@@ -169,14 +166,11 @@ void DesktopService::parseCommandLine(const int& argc, char *argv[])
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "parsing command line arguments";
-#endif
+	bool debug = false;
 
-	// TODO
 	po::options_description desc("Allowed options");
 	desc.add_options()
-		("verbose,v", po::bool_switch(&_verbose)->default_value(false), "verbose mode")
+		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
 	;
 
 	po::variables_map vm;
@@ -188,9 +182,9 @@ void DesktopService::parseCommandLine(const int& argc, char *argv[])
 	}
 	po::notify(vm);
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "parsing arguments done";
-#endif
+	if (vm.count("debug")) {
+		GLogiK::GKDebug = vm["debug"].as<bool>();
+	}
 }
 
 } // namespace GLogiK

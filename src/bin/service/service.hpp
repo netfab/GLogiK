@@ -39,7 +39,6 @@ class DesktopService
 
 	private:
 		pid_t _pid;
-		bool _verbose;
 
 		void parseCommandLine(const int& argc, char *argv[]);
 };
