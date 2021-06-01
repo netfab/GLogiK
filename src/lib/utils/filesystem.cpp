@@ -82,9 +82,7 @@ const std::string FileSystem::getNextAvailableFileName(
 		const std::string fileName( file.string() );
 
 		if( toSkip.count(fileName) == 1 ) {
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "already used : " << fileName;
-#endif
+			GKLog2(trace, "already used : ", fileName)
 			continue;
 		}
 
@@ -92,25 +90,21 @@ const std::string FileSystem::getNextAvailableFileName(
 			fs::path fullPath = directory / file;
 			try {
 				if( ! fs::is_regular_file(fullPath) ) {
-#if DEBUGGING_ON
-					LOG(DEBUG3) << "does not exist : " << fullPath.string();
-#endif
+					GKLog2(trace, "does not exist : ", fullPath.string())
 					continue;
 				}
 			}
 			catch (const fs::filesystem_error & e) {
-				LOG(WARNING) << "boost::filesystem::is_regular_file() error : " << e.what();
+				LOG(warning) << "boost::filesystem::is_regular_file() error : " << e.what();
 				continue;
 			}
 			catch (const std::exception & e) {
-				LOG(WARNING) << "boost::filesystem::is_regular_file() (allocation) error : " << e.what();
+				LOG(warning) << "boost::filesystem::is_regular_file() (allocation) error : " << e.what();
 				continue;
 			}
 		}
 
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "returning new filename : " << fileName;
-#endif
+		GKLog2(trace, "returning new filename : ", fileName)
 		return fileName;
 	}
 

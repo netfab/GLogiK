@@ -165,9 +165,8 @@ pid_t detachProcess(const bool closeDescriptors)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG) << "detaching process";
-#endif
+	GKLog(trace, "detaching process")
+
 	pid_t pid;
 
 	pid = fork();
@@ -176,28 +175,20 @@ pid_t detachProcess(const bool closeDescriptors)
 
 	// parent exit
 	if(pid > 0) {
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "first fork done. pid: " << pid;
-#endif
+		GKLog2(trace, "first fork done. pid : ", pid)
 		std::this_thread::sleep_for(std::chrono::milliseconds(20));
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "exiting parent";
-#endif
+		GKLog(trace, "exiting parent")
 		exit(EXIT_SUCCESS);
 	}
 	else {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "continue child execution";
-#endif
+		GKLog(trace, "continue child execution")
 	}
 
 	// new session for child process
 	if(setsid() == -1)
 		throw GLogiKExcept("session creation failure");
 
-#if DEBUGGING_ON
-	LOG(DEBUG) << "new session done";
-#endif
+	GKLog(trace, "new session done")
 
 	// Ignore signals
 	std::signal(SIGCHLD, SIG_IGN);
@@ -209,19 +200,13 @@ pid_t detachProcess(const bool closeDescriptors)
 
 	// parent exit
 	if(pid > 0) {
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "second fork done. pid: " << pid;
-#endif
+		GKLog2(trace, "second fork done. pid : ", pid)
 		std::this_thread::sleep_for(std::chrono::milliseconds(20));
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "exiting parent";
-#endif
+		GKLog(trace, "exiting parent")
 		exit(EXIT_SUCCESS);
 	}
 	else {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "continue child execution";
-#endif
+		GKLog(trace, "continue child execution")
 	}
 
 	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
@@ -241,17 +226,11 @@ pid_t detachProcess(const bool closeDescriptors)
 		stdout = std::fopen("/dev/null", "w+");
 		stderr = std::fopen("/dev/null", "w+");
 
-#if DEBUGGING_ON
-		LOG(DEBUG) << "descriptors closed, process daemonized";
-#endif
+		GKLog(trace, "descriptors closed, process daemonized")
 	}
 
 	pid = getpid();
-
-#if DEBUGGING_ON
-	LOG(DEBUG) << "returning pid: " << pid;
-#endif
-
+	GKLog2(trace, "returning pid : ", pid)
 	return pid;
 }
 
