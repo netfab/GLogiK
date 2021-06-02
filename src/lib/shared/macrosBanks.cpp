@@ -43,15 +43,14 @@ MacrosBanks::~MacrosBanks() {
 void MacrosBanks::initMacrosBanks(const std::vector<std::string> & keysNames) {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "initialize " << keysNames.size() << " macro keys";
-#endif
 	macro_type macro;
 	for( const auto & name : keysNames ) {
 		for(auto & idBankPair : _macrosBanks) {
 			idBankPair.second.insert( std::pair<const std::string, macro_type>(name, macro));
 		}
 	}
+
+	GKLog2(trace, "initialized macro keys : ", keysNames.size())
 }
 
 const banksMap_type & MacrosBanks::getMacrosBanks(void) const
@@ -63,9 +62,8 @@ void MacrosBanks::setMacrosBanks(const banksMap_type & macrosBanks)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "setting macros banks";
-#endif
+	GKLog(trace, "setting macros banks")
+
 	_macrosBanks = macrosBanks;
 }
 
@@ -76,7 +74,7 @@ void MacrosBanks::clearMacro(
 	GK_LOG_FUNC
 
 	try {
-		LOG(INFO) << "macros bankID: M" << bankID
+		LOG(info) << "macros bankID: M" << bankID
 			<< " - Macro Key: " << keyName
 			<< " - clearing macro";
 
@@ -110,12 +108,12 @@ void MacrosBanks::setMacro(
 	GK_LOG_FUNC
 
 	try {
-		LOG(INFO) << "macros bankID: M" << bankID
+		LOG(info) << "macros bankID: M" << bankID
 			<< " - Macro Key: " << keyName
 			<< " - Macro Size: " << macro.size()
 			<< " - setting macro";
 		if( macro.size() >= MACRO_T_MAX_SIZE ) {
-			LOG(WARNING) << "skipping macro - size >= MACRO_T_MAX_SIZE";
+			LOG(warning) << "skipping macro - size >= MACRO_T_MAX_SIZE";
 			throw GLogiKExcept("skipping macro");
 		}
 
