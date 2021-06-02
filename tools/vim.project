@@ -256,7 +256,6 @@ GLogiK=$PWD/.. CD=. {
 				functions.hpp
 				exception.cpp
 				exception.hpp
-				log.hpp
 				GKLogging.cpp
 				GKLogging.hpp
 				randomGenerator.cpp
