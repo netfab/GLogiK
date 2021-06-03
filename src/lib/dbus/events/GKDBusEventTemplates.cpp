@@ -41,8 +41,7 @@ template <>
 		this->callback();
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << error;
+		LOG(error) << e.what();
 	}
 	/* don't need to send a reply */
 }
@@ -484,8 +483,7 @@ template <>
 		this->callback(arg);
 	}
 	catch ( const GLogiKExcept & e ) {
-		const char* error = e.what();
-		LOG(ERROR) << error;
+		LOG(error) << e.what();
 	}
 
 	/* don't need to send a reply */

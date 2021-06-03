@@ -48,17 +48,11 @@ GKDBusEvents::~GKDBusEvents()
 	GK_LOG_FUNC
 
 	for(const auto & busPair : _DBusEvents) {
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "current bus: " << toUInt(toEnumType(busPair.first));
-#endif
+		GKLog2(trace, "current bus : ", toUInt(toEnumType(busPair.first)))
 		for(const auto & objectPair : busPair.second) {
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "object: " << objectPair.first;
-#endif
+			GKLog2(trace, "object : ", objectPair.first)
 			for(const auto & interfacePair : objectPair.second) {
-#if DEBUGGING_ON
-				LOG(DEBUG3) << "interface: " << interfacePair.first;
-#endif
+				GKLog2(trace, "interface : ", interfacePair.first)
 				for(auto & DBusEvent : interfacePair.second) { /* vector of pointers */
 					delete DBusEvent;
 				}
@@ -136,10 +130,11 @@ void GKDBusEvents::removeInterface(
 	};
 
 	if( find_interface() ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "removing interface: " << eventInterface
-					<< " from bus : " << toUInt(toEnumType(eventBus));
-#endif
+		GKLog4(trace,
+			"removing interface : ", eventInterface,
+			"from bus : ", toUInt(toEnumType(eventBus))
+		)
+
 		auto & objectMap = _DBusEvents[eventBus][eventObject];
 		for(auto & DBusEvent : objectMap[eventInterface]) { /* vector of pointers */
 			// if event is a signal, build and remove signal rule match
@@ -153,9 +148,7 @@ void GKDBusEvents::removeInterface(
 		objectMap.erase(eventInterface);
 
 		if( objectMap.empty() ) {
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "removing empty object: " << eventObject;
-#endif
+			GKLog2(trace, "removing empty object : ", eventObject)
 			_DBusEvents[eventBus].erase(eventObject);
 		}
 		else if( (objectMap.size() == 1) and
@@ -164,7 +157,7 @@ void GKDBusEvents::removeInterface(
 		}
 	}
 	else {
-		LOG(WARNING) << "Interface not found. bus: " << toUInt(toEnumType(eventBus))
+		LOG(warning) << "Interface not found. bus: " << toUInt(toEnumType(eventBus))
 			<< " - obj: " << eventObject
 			<< " - int: " << eventInterface;
 	}
@@ -189,7 +182,7 @@ const std::string GKDBusEvents::introspectRootNode(void)
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "can't get current bus container";
+		LOG(warning) << "can't get current bus container";
 	}
 
 	xml << "</node>\n";
@@ -216,7 +209,8 @@ void GKDBusEvents::removeEvent(
 						if( (*it)->eventName == eventName ) {
 							const std::size_t index = (it - vec.cbegin());
 #if DEBUGGING_ON
-							LOG(DEBUG2) << "searched event found. bus: "
+							// TODO GKDebug
+							LOG(trace) << "searched event found. bus: "
 								<< toUInt(toEnumType(eventBus))
 								<< " - obj: " << eventObject
 								<< " - int: " << eventInterface
@@ -247,7 +241,7 @@ void GKDBusEvents::removeEvent(
 		vec.erase(vec.begin() + index);
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(WARNING) << e.what()
+		LOG(warning) << e.what()
 			<< ". bus: " << toUInt(toEnumType(eventBus))
 			<< " - obj: " << eventObject
 			<< " - int: " << eventInterface
@@ -272,9 +266,7 @@ void GKDBusEvents::addEvent(
 			obj.at("org.freedesktop.DBus.Introspectable");
 		}
 		catch (const std::out_of_range& oor) {
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "adding Introspectable object : " << eventObject;
-#endif
+			GKLog2(trace, "adding Introspectable object : ", eventObject)
 			this->EventGKDBusCallback<StringToString>::exposeEvent(
 				eventBus, nullptr, eventObject, "org.freedesktop.DBus.Introspectable", "Introspect",
 				{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
@@ -323,9 +315,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "object path asked : " << askedObjectPath;
-#endif
+	GKLog2(trace, "object path asked : ", askedObjectPath)
 
 	if( askedObjectPath == _rootNodePath )
 		return this->introspectRootNode();
@@ -387,7 +377,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "can't get current bus container";
+		LOG(warning) << "can't get current bus container";
 	}
 
 	xml << "</node>\n";
@@ -423,7 +413,7 @@ void GKDBusEvents::addSignalRuleMatch(
 		connection = this->getConnection(eventBus);
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(WARNING) << e.what();
+		LOG(warning) << e.what();
 		return;
 	}
 
@@ -431,9 +421,8 @@ void GKDBusEvents::addSignalRuleMatch(
 
 	dbus_bus_add_match(connection, rule.c_str(), nullptr);
 	dbus_connection_flush(connection);
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "DBus Signal match rule added : " << eventName;
-#endif
+
+	GKLog2(trace, "added DBus signal match rule : ", eventName)
 }
 
 void GKDBusEvents::removeSignalRuleMatch(
@@ -449,7 +438,7 @@ void GKDBusEvents::removeSignalRuleMatch(
 		connection = this->getConnection(eventBus);
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(WARNING) << e.what();
+		LOG(warning) << e.what();
 		return;
 	}
 
@@ -457,9 +446,8 @@ void GKDBusEvents::removeSignalRuleMatch(
 
 	dbus_bus_remove_match(connection, rule.c_str(), nullptr);
 	dbus_connection_flush(connection);
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "DBus Signal match rule removed : " << eventName;
-#endif
+
+	GKLog2(trace, "removed DBus signal match rule : ", eventName)
 }
 
 /* -- */

@@ -59,11 +59,13 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 	dbus_message_iter_init_append(_message, &_itMessage);
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "Remote Object Method Call DBus message initialized";
-	LOG(DEBUG3) << "bus name    : " << busName;
-	LOG(DEBUG3) << "object path : " << objectPath;
-	LOG(DEBUG3) << "interface   : " << interface;
-	LOG(DEBUG3) << "method      : " << method;
+	if(GLogiK::GKDebug) {
+		LOG(trace) << "Remote Object Method Call DBus message initialized";
+		LOG(trace) << "bus name    : " << busName;
+		LOG(trace) << "object path : " << objectPath;
+		LOG(trace) << "interface   : " << interface;
+		LOG(trace) << "method      : " << method;
+	}
 #endif
 }
 
@@ -72,14 +74,14 @@ GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall()
 	GK_LOG_FUNC
 
 	if(_hosedMessage) {
-		LOG(WARNING) << "DBus hosed message, giving up";
+		LOG(warning) << "DBus hosed message, giving up";
 		dbus_message_unref(_message);
 		return;
 	}
 
 	if( ! dbus_connection_send_with_reply(_connection, _message, _pendingCall, DBUS_TIMEOUT_USE_DEFAULT)) {
 		dbus_message_unref(_message);
-		LOG(ERROR) << "DBus remote method call with pending reply sending failure";
+		LOG(error) << "DBus remote method call with pending reply sending failure";
 		return;
 	}
 
@@ -87,7 +89,7 @@ GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall()
 	dbus_message_unref(_message);
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus remote method call with pending reply sent";
+	GKLog(trace, "DBus remote method call with pending reply sent")
 #endif
 }
 
@@ -135,7 +137,7 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 			&_pendingCall);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus remote_method_call allocation failure : " << e.what();
+		LOG(error) << "GKDBus remote_method_call allocation failure : " << e.what();
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
 }
@@ -179,7 +181,7 @@ void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall(void)
 		_remoteMethodCall = nullptr;
 	}
 	else {
-		LOG(WARNING) << "tried to send NULL remote method call";
+		LOG(warning) << "tried to send NULL remote method call";
 		throw GKDBusMessageWrongBuild("tried to send NULL remote method call");
 	}
 }
@@ -194,7 +196,7 @@ void GKDBusMessageRemoteMethodCall::abandonRemoteMethodCall(void)
 		_remoteMethodCall = nullptr;
 	}
 	else {
-		LOG(WARNING) << "tried to abandon NULL remote method call";
+		LOG(warning) << "tried to abandon NULL remote method call";
 	}
 }
 
@@ -216,7 +218,7 @@ void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void)
 	dbus_pending_call_unref(_pendingCall);
 
 	if(message == nullptr) {
-		LOG(WARNING) << __func__ << " message is NULL, retried 10 times";
+		LOG(warning) << "message is NULL, retried 10 times";
 		throw GKDBusRemoteCallNoReply("can't get pending call reply");
 	}
 

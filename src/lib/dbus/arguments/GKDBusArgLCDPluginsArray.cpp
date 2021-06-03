@@ -35,9 +35,8 @@ const GLogiK::LCDPluginsPropertiesArray_type GKDBusArgumentLCDPluginsArray::getN
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "rebuilding LCDPluginsProperties vector from GKDBus values";
-#endif
+	GKLog(trace, "rebuilding LCDPluginsProperties vector from GKDBus values")
+
 	GLogiK::LCDPluginsPropertiesArray_type pluginsArray;
 
 	try {
@@ -51,17 +50,16 @@ const GLogiK::LCDPluginsPropertiesArray_type GKDBusArgumentLCDPluginsArray::getN
 		while( ! GKDBusArgumentString::stringArguments.empty() );
 	}
 	catch ( const EmptyContainer & e ) {
-		LOG(WARNING) << "missing argument : " << e.what();
+		LOG(warning) << "missing argument : " << e.what();
 		throw GLogiKExcept("rebuilding LCDPluginsProperties vector failed");
 	}
 
 	if( ! GKDBusArgumentUInt64::uint64Arguments.empty() ) { /* sanity check */
-		LOG(WARNING) << "UInt64 container not empty";
+		LOG(warning) << "UInt64 container not empty";
 	}
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "LCDPluginsProperties vector size : " << pluginsArray.size();
-#endif
+	GKLog2(trace, "LCDPluginsProperties vector size : ", pluginsArray.size())
+
 	return pluginsArray;
 }
 

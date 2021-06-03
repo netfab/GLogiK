@@ -53,7 +53,7 @@ GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 
 	if( destination != nullptr ) {
 #if DEBUG_GKDBUS_SUBOBJECTS
-		LOG(DEBUG2) << "prepare sending signal to " << destination;
+		GKLog2(trace, "prepare sending signal to ", destination)
 #endif
 		dbus_message_set_destination(_message, destination);
 	}
@@ -61,7 +61,7 @@ GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 	/* initialize potential arguments iterator */
 	dbus_message_iter_init_append(_message, &_itMessage);
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus signal initialized";
+	GKLog(trace, "DBus signal initialized")
 #endif
 }
 
@@ -70,7 +70,7 @@ GKDBusBroadcastSignal::~GKDBusBroadcastSignal()
 	GK_LOG_FUNC
 
 	if(_hosedMessage) {
-		LOG(WARNING) << "DBus hosed message, giving up";
+		LOG(warning) << "DBus hosed message, giving up";
 		dbus_message_unref(_message);
 		return;
 	}
@@ -78,14 +78,14 @@ GKDBusBroadcastSignal::~GKDBusBroadcastSignal()
 	// TODO dbus_uint32_t serial;
 	if( ! dbus_connection_send(_connection, _message, nullptr) ) {
 		dbus_message_unref(_message);
-		LOG(ERROR) << "DBus signal sending failure";
+		LOG(error) << "DBus signal sending failure";
 		return;
 	}
 
 	dbus_connection_flush(_connection);
 	dbus_message_unref(_message);
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus signal sent";
+	GKLog(trace, "DBus signal sent")
 #endif
 }
 
@@ -130,7 +130,7 @@ void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 		_signal = new GKDBusBroadcastSignal(connection, nullptr, objectPath, interface, signal);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus broadcast signal allocation failure : " << e.what();
+		LOG(error) << "GKDBus broadcast signal allocation failure : " << e.what();
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
 }
@@ -162,7 +162,7 @@ void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void)
 		_signal = nullptr;
 	}
 	else {
-		LOG(WARNING) << "tried to send NULL signal";
+		LOG(warning) << "tried to send NULL signal";
 		throw GKDBusMessageWrongBuild("tried to send NULL signal");
 	}
 }
@@ -177,7 +177,7 @@ void GKDBusMessageBroadcastSignal::abandonBroadcastSignal(void)
 		_signal = nullptr;
 	}
 	else {
-		LOG(WARNING) << "tried to abandon NULL signal";
+		LOG(warning) << "tried to abandon NULL signal";
 	}
 }
 

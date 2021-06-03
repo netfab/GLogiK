@@ -261,10 +261,10 @@ template <typename T>
 	GK_LOG_FUNC
 
 	using namespace NSGKUtils;
-	const char* error = "runCallback not implemented";
-	LOG(ERROR) << error;
+	const char* errorString = "runCallback not implemented";
+	LOG(error) << errorString;
 	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL)
-		this->buildAndSendErrorReply(connection, message, error);
+		this->buildAndSendErrorReply(connection, message, errorString);
 }
 
 template <typename T>

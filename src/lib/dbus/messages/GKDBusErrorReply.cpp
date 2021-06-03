@@ -48,7 +48,7 @@ GKDBusErrorReply::GKDBusErrorReply(
 		throw GKDBusMessageWrongBuild("can't allocate memory for DBus reply message");
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus error reply message initialized";
+	GKLog(trace, "DBus error reply message initialized")
 #endif
 }
 
@@ -57,7 +57,7 @@ GKDBusErrorReply::~GKDBusErrorReply()
 	GK_LOG_FUNC
 
 	if(_hosedMessage) {
-		LOG(WARNING) << "DBus hosed reply, giving up";
+		LOG(warning) << "DBus hosed reply, giving up";
 		dbus_message_unref(_message);
 		return;
 	}
@@ -65,14 +65,14 @@ GKDBusErrorReply::~GKDBusErrorReply()
 	// TODO dbus_uint32_t serial;
 	if( ! dbus_connection_send(_connection, _message, nullptr) ) {
 		dbus_message_unref(_message);
-		LOG(ERROR) << "DBus error reply message sending failure";
+		LOG(error) << "DBus error reply message sending failure";
 		return;
 	}
 
 	dbus_connection_flush(_connection);
 	dbus_message_unref(_message);
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus error reply message sent";
+	GKLog(trace, "DBus error reply message sent")
 #endif
 }
 
@@ -102,7 +102,7 @@ void GKDBusMessageErrorReply::initializeErrorReply(
 		_errorReply = new GKDBusErrorReply(connection, message, errorMessage);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus reply allocation failure : " << e.what();
+		LOG(error) << "GKDBus reply allocation failure : " << e.what();
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
 }
@@ -116,7 +116,7 @@ void GKDBusMessageErrorReply::sendErrorReply(void)
 		_errorReply = nullptr;
 	}
 	else {
-		LOG(WARNING) << "tried to send NULL error reply";
+		LOG(warning) << "tried to send NULL error reply";
 	}
 }
 
@@ -131,7 +131,7 @@ void GKDBusMessageErrorReply::buildAndSendErrorReply(
 		this->initializeErrorReply(connection, message, errorMessage);
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "DBus error reply failure : " << e.what();
+		LOG(error) << "DBus error reply failure : " << e.what();
 	}
 
 	/* delete error reply if allocated */

@@ -38,9 +38,8 @@ const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigne
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "rebuilding macro from GKDBus values";
-#endif
+	GKLog(trace, "rebuilding macro from GKDBus values")
+
 	GLogiK::macro_type macro;
 	try {
 		bool nextRun = true;
@@ -70,17 +69,16 @@ const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigne
 		while( nextRun );
 	}
 	catch ( const EmptyContainer & e ) {
-		LOG(WARNING) << "missing macro argument : " << e.what();
+		LOG(warning) << "missing macro argument : " << e.what();
 		throw GLogiKExcept("rebuilding macro failed");
 	}
 
 	if( ( macroSize == 0 ) and ( ! GKDBusArgumentUInt16::uint16Arguments.empty() ) ) { /* sanity check */
-		LOG(WARNING) << "uint16 container not empty";
+		LOG(warning) << "uint16 container not empty";
 	}
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "events array size : " << macro.size() << " - expected : " << macroSize;
-#endif
+	GKLog4(trace, "events array size : ", macro.size(), " - expected : ", macroSize)
+
 	return macro;
 }
 

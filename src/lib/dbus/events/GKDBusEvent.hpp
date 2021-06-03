@@ -76,13 +76,13 @@ class GKDBusEvent
 		void sendReplyError(
 			DBusConnection* const connection,
 			DBusMessage* message,
-			const char* error
+			const char* errorString
 		);
 
 		void sendCallbackError(
 			DBusConnection* const connection,
 			DBusMessage* message,
-			const char* error
+			const char* errorString
 		);
 
 	private:

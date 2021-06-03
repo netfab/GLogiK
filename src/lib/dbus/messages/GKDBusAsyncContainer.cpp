@@ -42,8 +42,9 @@ GKDBusAsyncContainer::GKDBusAsyncContainer(void)
 
 	/* initialize potential arguments iterator */
 	dbus_message_iter_init_append(_message, &_itMessage);
+
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus Async Container initialized";
+	GKLog(trace, "DBus Async Container initialized")
 #endif
 }
 
@@ -52,8 +53,9 @@ GKDBusAsyncContainer::~GKDBusAsyncContainer()
 	GK_LOG_FUNC
 
 	dbus_message_unref(_message);
+
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus Async Container destroyed";
+	GKLog(trace, "DBus Async Container destroyed")
 #endif
 }
 
@@ -97,7 +99,7 @@ void GKDBusMessageAsyncContainer::initializeAsyncContainer(void)
 		_asyncContainer = new GKDBusAsyncContainer();
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus AsyncContainer allocation failure : " << e.what();
+		LOG(error) << "GKDBus AsyncContainer allocation failure : " << e.what();
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
 }
