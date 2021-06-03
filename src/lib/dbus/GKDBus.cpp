@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -164,6 +164,66 @@ void GKDBus::checkForMessages(void) noexcept
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
+void GKDBus::checkDBusMessage(DBusConnection* connection)
+{
+	const std::string object = this->getObjectFromObjectPath(toString(dbus_message_get_path(_message)));
+
+	for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
+		/* handle root node introspection special case */
+		if( object != this->getRootNode() )
+			/* object must match */
+			if(object != objectPair.first) {
+#if 0 && DEBUGGING_ON
+				LOG(DEBUG3) << "skipping " << objectPair.first << " object - not " << object;
+#endif
+				continue;
+			}
+
+		for(const auto & interfacePair : objectPair.second) {
+			const char* interface = interfacePair.first.c_str();
+#if 0 && DEBUGGING_ON
+			LOG(DEBUG2) << "checking " << interface << " interface";
+#endif
+
+			for(const auto & DBusEvent : interfacePair.second) { /* vector of pointers */
+				const char* eventName = DBusEvent->eventName.c_str();
+#if 0 && DEBUGGING_ON
+				LOG(DEBUG3) << "checking " << eventName << " event";
+#endif
+				switch(DBusEvent->eventType) {
+					case GKDBusEventType::GKDBUS_EVENT_METHOD:
+					{
+						if( dbus_message_is_method_call(_message, interface, eventName) )
+						{
+#if DEBUGGING_ON
+							LOG(DEBUG1) << "DBus " << eventName << " method called !";
+#endif
+							DBusEvent->runCallback(connection, _message);
+							return;
+						}
+						break;
+					}
+					case GKDBusEventType::GKDBUS_EVENT_SIGNAL:
+					{
+						if( dbus_message_is_signal(_message, interface, eventName) )
+						{
+#if DEBUGGING_ON
+							LOG(DEBUG1) << "DBus " << eventName << " signal receipted !";
+#endif
+							DBusEvent->runCallback(connection, _message);
+							return;
+						}
+						break;
+					}
+					default:
+						throw GLogiKExcept("wrong event type");
+						break;
+				}
+			}
+		}
+	}
+}
+
 /* -- */
 /*
  * check if :
@@ -192,66 +252,10 @@ void GKDBus::checkForBusMessages(const BusConnection bus, DBusConnection* connec
 		}
 
 		try {
-			const std::string object = this->getObjectFromObjectPath(toString(dbus_message_get_path(_message)));
-
-			for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
-				/* handle root node introspection special case */
-				if( object != this->getRootNode() )
-					/* object must match */
-					if(object != objectPair.first) {
-#if 0 && DEBUGGING_ON
-						LOG(DEBUG3) << "skipping " << objectPair.first << " object - not " << object;
-#endif
-						continue;
-					}
-
-				for(const auto & interfacePair : objectPair.second) {
-					const char* interface = interfacePair.first.c_str();
-#if 0 && DEBUGGING_ON
-					LOG(DEBUG2) << "checking " << interface << " interface";
-#endif
-
-					for(const auto & DBusEvent : interfacePair.second) { /* vector of pointers */
-						const char* eventName = DBusEvent->eventName.c_str();
-#if 0 && DEBUGGING_ON
-						LOG(DEBUG3) << "checking " << eventName << " event";
-#endif
-						switch(DBusEvent->eventType) {
-							case GKDBusEventType::GKDBUS_EVENT_METHOD: {
-								if( dbus_message_is_method_call(_message, interface, eventName) ) {
-#if DEBUGGING_ON
-									LOG(DEBUG1) << "DBus " << eventName << " method called !";
-#endif
-									DBusEvent->runCallback(connection, _message);
-									throw GKDBusEventFound();
-								}
-								break;
-							}
-							case GKDBusEventType::GKDBUS_EVENT_SIGNAL: {
-								if( dbus_message_is_signal(_message, interface, eventName) ) {
-#if DEBUGGING_ON
-									LOG(DEBUG1) << "DBus " << eventName << " signal receipted !";
-#endif
-									DBusEvent->runCallback(connection, _message);
-									throw GKDBusEventFound();
-								}
-								break;
-							}
-							default:
-								throw GLogiKExcept("wrong event type");
-								break;
-						}
-					}
-				}
-			}
+			this->checkDBusMessage(connection);
 		}
 		catch (const std::out_of_range& oor) {
 			LOG(ERROR) << "current bus connection oor";
-		}
-		catch ( const GKDBusEventFound & e ) {
-#if 0 && DEBUGGING_ON
-			LOG(DEBUG2) << e.what();
-#endif
 		}
 		catch ( const GLogiKExcept & e ) {
 			LOG(ERROR) << e.what();
