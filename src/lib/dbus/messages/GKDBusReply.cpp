@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-GKDBusReply::GKDBusReply(DBusConnection* connection, DBusMessage* message)
+GKDBusReply::GKDBusReply(DBusConnection* const connection, DBusMessage* message)
 	:	GKDBusMessage(connection)
 {
 	/* sanity check */
@@ -49,7 +49,8 @@ GKDBusReply::GKDBusReply(DBusConnection* connection, DBusMessage* message)
 #endif
 }
 
-GKDBusReply::~GKDBusReply() {
+GKDBusReply::~GKDBusReply()
+{
 	if(_hosedMessage) {
 		LOG(WARNING) << "DBus hosed reply, giving up";
 		dbus_message_unref(_message);
@@ -82,7 +83,8 @@ GKDBusMessageReply::~GKDBusMessageReply()
 {
 }
 
-void GKDBusMessageReply::initializeReply(DBusConnection* connection, DBusMessage* message) {
+void GKDBusMessageReply::initializeReply(DBusConnection* const connection, DBusMessage* message)
+{
 	if(_reply) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus reply already allocated");
 
@@ -95,22 +97,26 @@ void GKDBusMessageReply::initializeReply(DBusConnection* connection, DBusMessage
 	}
 }
 
-void GKDBusMessageReply::appendBooleanToReply(const bool value) {
+void GKDBusMessageReply::appendBooleanToReply(const bool value)
+{
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendBoolean(value);
 }
 
-void GKDBusMessageReply::appendStringToReply(const std::string & value) {
+void GKDBusMessageReply::appendStringToReply(const std::string & value)
+{
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendString(value);
 }
 
-void GKDBusMessageReply::appendStringVectorToReply(const std::vector<std::string> & list) {
+void GKDBusMessageReply::appendStringVectorToReply(const std::vector<std::string> & list)
+{
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendStringVector(list);
 }
 
-void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_type & macro) {
+void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_type & macro)
+{
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendMacro(macro);
 }
@@ -121,7 +127,8 @@ void GKDBusMessageReply::appendLCDPluginsPropertiesArrayToReply(const GLogiK::LC
 		_reply->appendLCDPluginsPropertiesArray(array);
 }
 
-void GKDBusMessageReply::appendUInt64ToReply(const uint64_t value) {
+void GKDBusMessageReply::appendUInt64ToReply(const uint64_t value)
+{
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendUInt64(value);
 }
@@ -171,7 +178,8 @@ void GKDBusMessageReply::appendAsyncArgsToReply(void)
 	}
 }
 
-void GKDBusMessageReply::sendReply(void) {
+void GKDBusMessageReply::sendReply(void)
+{
 	this->destroyAsyncContainer();
 
 	if(_reply == nullptr) { /* sanity check */
@@ -183,7 +191,8 @@ void GKDBusMessageReply::sendReply(void) {
 	_reply = nullptr;
 }
 
-void GKDBusMessageReply::abandonReply(void) {
+void GKDBusMessageReply::abandonReply(void)
+{
 	this->destroyAsyncContainer();
 
 	if(_reply) { /* sanity check */

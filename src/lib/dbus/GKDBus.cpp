@@ -164,7 +164,7 @@ void GKDBus::checkForMessages(void) noexcept
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void GKDBus::checkDBusMessage(DBusConnection* connection)
+void GKDBus::checkDBusMessage(DBusConnection* const connection)
 {
 	const std::string object = this->getObjectFromObjectPath(toString(dbus_message_get_path(_message)));
 
@@ -233,7 +233,10 @@ void GKDBus::checkDBusMessage(DBusConnection* connection)
  * was called. if yes, then run the corresponding callback function
  * and send DBus reply after appending the return value
  */
-void GKDBus::checkForBusMessages(const BusConnection bus, DBusConnection* connection) noexcept {
+void GKDBus::checkForBusMessages(
+	const BusConnection bus,
+	DBusConnection* const connection) noexcept
+{
 	GKDBusEvents::currentBus = bus; /* used on introspection */
 
 	uint16_t c = 0;
@@ -271,7 +274,8 @@ void GKDBus::checkForBusMessages(const BusConnection bus, DBusConnection* connec
 	}
 }
 
-void GKDBus::checkReleasedName(int ret) noexcept {
+void GKDBus::checkReleasedName(int ret) noexcept
+{
 	switch(ret) {
 		case DBUS_RELEASE_NAME_REPLY_RELEASED:
 			LOG(DEBUG1) << "name released";
@@ -297,7 +301,8 @@ void GKDBus::checkReleasedName(int ret) noexcept {
 	}
 }
 
-void GKDBus::checkDBusError(const char* error) {
+void GKDBus::checkDBusError(const char* error)
+{
 	if( dbus_error_is_set(&_error) ) {
 		std::ostringstream buffer;
 		buffer << error << " : " << _error.message;
@@ -306,7 +311,8 @@ void GKDBus::checkDBusError(const char* error) {
 	}
 }
 
-DBusConnection* GKDBus::getConnection(BusConnection bus) {
+DBusConnection* GKDBus::getConnection(BusConnection bus)
+{
 	switch(bus) {
 		case BusConnection::GKDBUS_SESSION :
 			if(_sessionConnection == nullptr)

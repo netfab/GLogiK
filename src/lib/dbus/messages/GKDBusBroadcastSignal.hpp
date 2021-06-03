@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ class GKDBusBroadcastSignal : public GKDBusMessage
 {
 	public:
 		GKDBusBroadcastSignal(
-			DBusConnection* connection,	/* connection to send the signal on */
+			DBusConnection* const connection,	/* connection to send the signal on */
 			const char* destination,	/* destination, if NULL, broadcast */
 			const char* objectPath,		/* the path to the object emitting the signal */
 			const char* interface,		/* interface the signal is emitted from */
@@ -72,7 +72,7 @@ class GKDBusMessageBroadcastSignal
 		~GKDBusMessageBroadcastSignal();
 
 		void initializeBroadcastSignal(
-			DBusConnection* connection,
+			DBusConnection* const connection,
 			const char* objectPath,
 			const char* interface,
 			const char* signal

@@ -105,8 +105,10 @@ class GKDBus
 
 		DBusMessage* _message;
 
-		void checkDBusMessage(DBusConnection* connection);
-		void checkForBusMessages(const BusConnection bus, DBusConnection* connection) noexcept;
+		void checkDBusMessage(DBusConnection* const connection);
+		void checkForBusMessages(
+			const BusConnection bus,
+			DBusConnection* const connection) noexcept;
 		void checkReleasedName(int ret) noexcept;
 		void checkDBusError(const char* error);
 		DBusConnection* getConnection(BusConnection bus);
