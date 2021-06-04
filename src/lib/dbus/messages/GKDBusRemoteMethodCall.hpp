@@ -98,7 +98,7 @@ class GKDBusMessageRemoteMethodCall
 		GKDBusRemoteMethodCall* _remoteMethodCall;
 		DBusPendingCall* _pendingCall;
 
-		virtual DBusConnection* getConnection(BusConnection wantedConnection) = 0;
+		virtual DBusConnection* const getConnection(BusConnection wantedConnection) const = 0;
 };
 
 } // namespace NSGKDBus
