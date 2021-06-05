@@ -40,12 +40,6 @@ MacrosManager::MacrosManager(
 		:	_virtualKeyboard(virtualKeyboardName),
 			_currentBankID(BankID::BANK_M0)
 {
-	GK_LOG_FUNC
-
-#if DEBUGGING_ON
-	LOG(DEBUG) << "initializing " << keysNames.size() << " macro keys";
-#endif
-
 	this->initMacrosBanks(keysNames);
 }
 
@@ -78,15 +72,21 @@ void MacrosManager::runMacro(const std::string & keyName)
 		const macro_type & macro = _macrosBanks[_currentBankID].at(keyName);
 		if(macro.size() == 0) {
 #if DEBUGGING_ON
-			LOG(DEBUG) << "Memory Bank: " << _currentBankID
-				<< " - Macro Key: " << keyName << " - no macro recorded";
+			if(GLogiK::GKDebug) {
+				LOG(trace)	<< "Memory Bank: " << _currentBankID
+							<< " - Macro Key: " << keyName
+							<< " - no macro recorded";
+			}
 #endif
 			return;
 		}
 
 #if DEBUGGING_ON
-		LOG(INFO) << "Memory Bank: " << _currentBankID
-			<< " - Macro Key: " << keyName << " - running macro";
+		if(GLogiK::GKDebug) {
+			LOG(trace)	<< "Memory Bank: " << _currentBankID
+						<< " - Macro Key: " << keyName
+						<< " - running macro";
+		}
 #endif
 		for( const auto &key : macro ) {
 			_virtualKeyboard.sendKeyEvent(key);
@@ -101,9 +101,8 @@ void MacrosManager::setCurrentMacrosBankID(BankID bankID)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG) << "setting current bank ID : " << bankID;
-#endif
+	GKLog2(trace, "setting current bank ID : ", bankID)
+
 	_currentBankID = bankID;
 }
 
@@ -151,9 +150,7 @@ void MacrosManager::resetMacrosBanks(void)
 
 	this->setCurrentMacrosBankID(BankID::BANK_M0);
 	for(auto & idBankPair : _macrosBanks) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "clearing all macros for Memory Bank: " << idBankPair.first;
-#endif
+		GKLog2(trace, "clearing all macros for Memory Bank: ", idBankPair.first)
 		this->resetMacrosBank(idBankPair.first);
 	}
 }
@@ -207,15 +204,13 @@ void MacrosManager::fixMacroReleaseEvents(
 
 	/* remove redundant release events in reverse order */
 	if( ! releasedEvents.empty() ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "some redundant release events were found : " << releasedEvents.size();
-#endif
+		GKLog2(trace, "some redundant release events were found : ", releasedEvents.size())
+
 		std::reverse(releasedEvents.begin(), releasedEvents.end());
 
 		for(const auto & redundant : releasedEvents) {
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "erasing redundant release event at index : " << toUInt(redundant.index);
-#endif
+			GKLog2(trace, "erasing redundant release event at index : ", toUInt(redundant.index))
+
 			auto it = std::next(macro.begin(), redundant.index);
 			macro.erase(it);
 		}
@@ -229,10 +224,8 @@ void MacrosManager::fixMacroSize(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "pressed events : " << pressedEvents.size();
-	LOG(DEBUG1) << "released events : " << releasedEvents.size();
-#endif
+	GKLog4(trace, "pressed : ", pressedEvents.size(), " - released : ", releasedEvents.size())
+
 	/* sanity check */
 	if(pressedEvents.size() != releasedEvents.size()) {
 		GKSysLogWarning("pressed and released events disparity :");
@@ -258,23 +251,21 @@ void MacrosManager::fixMacroSize(
 
 	std::sort(indexes.begin(), indexes.end());
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "indexes size : " << indexes.size();
-#endif
+	GKLog2(trace, "indexes size : ", indexes.size())
 
 	while( (indexes.size() > 1) and (macro.size() >= MACRO_T_MAX_SIZE) ) {
 		auto & index = indexes.back();
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "erasing index : " << index;
-#endif
+
+		GKLog2(trace, "erasing index : ", index)
+
 		auto it = std::next(macro.begin(), index);
 		macro.erase(it);
 		indexes.pop_back();
 
 		index = indexes.back();
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "erasing index : " << index;
-#endif
+
+		GKLog2(trace, "erasing index : ", index)
+
 		it = std::next(macro.begin(), index);
 		macro.erase(it);
 		indexes.pop_back();
@@ -282,9 +273,8 @@ void MacrosManager::fixMacroSize(
 
 	/* sanity check */
 	if( macro.size() >= MACRO_T_MAX_SIZE ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "macro size : " << macro.size();
-#endif
+		GKLog2(trace, "macro size : ", macro.size())
+
 		GKSysLogWarning("macro still greater than MACRO_T_MAX_SIZE, force resize it");
 		macro.resize(MACRO_T_MAX_SIZE - 1);
 	}

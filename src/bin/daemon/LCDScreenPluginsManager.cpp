@@ -65,7 +65,7 @@ LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
 			_pluginsPropertiesArray.push_back( plugin->getPluginProperties() );
 		}
 		catch (const GLogiKExcept & e) {
-			LOG(ERROR) << e.what();
+			GKSysLogError(e.what());
 		}
 	}
 
@@ -122,7 +122,7 @@ void LCDScreenPluginsManager::unlockPlugin(void)
 #if DEBUGGING_ON
 		if( ! _noPlugins ) {
 			if(_itCurrentPlugin != _plugins.end() ) {
-				LOG(DEBUG2) << "LCD plugin unlocked : " << (*_itCurrentPlugin)->getPluginName();
+				GKLog2(trace, "LCD plugin unlocked : ", (*_itCurrentPlugin)->getPluginName())
 			}
 		}
 #endif
@@ -147,9 +147,8 @@ void LCDScreenPluginsManager::jumpToNextPlugin(void)
 
 	if( ! _noPlugins ) {
 		if(_itCurrentPlugin != _plugins.end() ) {
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "jumping to next LCD plugin";
-#endif
+			GKLog(trace, "jumping to next LCD plugin")
+
 			/* make sure it is unlocked */
 			_currentPluginLocked = false;
 			_frameCounter = (*_itCurrentPlugin)->getPluginMaxFrames();
@@ -191,10 +190,10 @@ const PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 					_currentPluginLocked = ! (_currentPluginLocked);
 #if DEBUGGING_ON
 					if( _currentPluginLocked ) {
-						LOG(DEBUG3) << "LCD plugin   locked : " << (*_itCurrentPlugin)->getPluginName();
+						GKLog2(trace, "LCD plugin   locked : ", (*_itCurrentPlugin)->getPluginName())
 					}
 					else {
-						LOG(DEBUG3) << "LCD plugin unlocked : " << (*_itCurrentPlugin)->getPluginName();
+						GKLog2(trace, "LCD plugin unlocked : ", (*_itCurrentPlugin)->getPluginName())
 					}
 #endif
 				}
@@ -243,7 +242,10 @@ const PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 			}
 		}
 		catch (const GLogiKExcept & e) {
-			LOG(ERROR) << e.what();
+			/* if something goes wrong, don't spam
+			 * syslog with errors on each cycle */
+			GKLog(error, e.what())
+
 			std::fill(_LCDBuffer.begin(), _LCDBuffer.end(), 0x0);
 		}
 
@@ -260,9 +262,8 @@ void LCDScreenPluginsManager::stopLCDPlugins(void)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "stopping LCD screen plugins";
-#endif
+	GKLog(trace, "stopping LCD screen plugins")
+
 	for(const auto & plugin : _plugins) {
 		delete plugin;
 	}
@@ -333,7 +334,7 @@ void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(PixelsData & LCDBuffer, c
 			for(int bit = 7; bit > -1; --bit) {
 
 #if 0 && DEBUGGING_ON
-				LOG(DEBUG2)	<< "row: " << row
+				LOG(trace)	<< "row: " << row
 							<< " PBMByte: " << PBMByte
 							<< " LCDCol: " << LCDCol
 							<< " rowOffset: " << rowOffset

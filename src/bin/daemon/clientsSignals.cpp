@@ -73,7 +73,7 @@ void ClientsSignals::sendSignalToClients(
 			GKSysLogWarning(warn);
 		}
 		else {
-			LOG(DEBUG) << warn;
+			GKLog(trace, warn)
 		}
 	}
 }
@@ -108,7 +108,7 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 	}
 	catch (const GLogiKExcept & e) {
 		pDBus->abandonBroadcastSignal();
-		std::string warn("DBus targets signal failure : ");
+		std::string warn("failed to send signal : ");
 		warn += e.what();
 		GKSysLogWarning(warn);
 	}

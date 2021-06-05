@@ -45,10 +45,6 @@ Client::Client(
 	GKLog(trace, "initializing new client")
 
 	this->initializeDevices(pDevicesManager);
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "initialized " << _devices.size() << " client devices configurations";
-#endif
 }
 
 Client::~Client()
@@ -306,6 +302,8 @@ void Client::initializeDevices(DevicesManager* pDevicesManager)
 	for( const auto & devID : pDevicesManager->getStoppedDevices() ) {
 		this->initializeDevice(pDevicesManager, devID);
 	}
+
+	GKLog2(trace, "number of initialized devices configurations : ", _devices.size())
 }
 
 } // namespace GLogiK

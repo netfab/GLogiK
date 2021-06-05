@@ -59,9 +59,7 @@ LCDPlugin::~LCDPlugin()
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "deleting " << this->getPluginName() << " LCD plugin";
-#endif
+	GKLog2(trace, "deleting LCD plugin : ", this->getPluginName())
 }
 
 /*
@@ -126,7 +124,7 @@ void LCDPlugin::prepareNextPBMFrame(void)
 
 	_PBMFrameCounter++; /* for next call */
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-	LOG(DEBUG2) << this->getPluginName() << " - frameCount #" << _PBMFrameCounter;
+	GKLog3(trace, this->getPluginName(), " - frameCount #", _PBMFrameCounter)
 #endif
 }
 
@@ -188,8 +186,8 @@ void LCDPlugin::addPBMEmptyFrame(const uint16_t num)
 		_PBMFrames.emplace_back(num);
 	}
 	catch (const std::exception & e) {
-		LOG(ERROR) << "PBMFrame constructor vector resize exception ?";
-		throw GLogiKExcept("initializing PBM frame failure");
+		// PBMFrame constructor vector resize exception ?
+		throw GLogiKExcept("failed to initialize PBM empty frame");
 	}
 }
 
@@ -203,8 +201,7 @@ PixelsData & LCDPlugin::getCurrentPBMFrame(void)
 	GK_LOG_FUNC
 
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-	LOG(DEBUG2)	<< this->getPluginName()
-				<< " - PBMFrameindex: " << _PBMFrameIndex;
+	GKLog3(trace, this->getPluginName(), " - PBMFrameindex: ", _PBMFrameIndex)
 #endif
 	return (*_itCurrentPBMFrame)._PBMData;
 }
@@ -220,9 +217,11 @@ void LCDPlugin::writeStringOnPBMFrame(
 
 	try {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-		LOG(DEBUG2)	<< this->getPluginName()
-					<< " - PBMFrameindex: " << _PBMFrameIndex
-					<< " - writing string : " << string;
+		if(GLogiK::GKDebug) {
+			LOG(trace)	<< this->getPluginName()
+						<< " - PBMFrameindex: " << _PBMFrameIndex
+						<< " - writing string : " << string;
+		}
 #endif
 		uint16_t XPos, YPos = 0;
 
@@ -317,11 +316,13 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 			};
 
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-			LOG(DEBUG3)	<< "index: " << index
-						<< " line: " << line
-						<< " pByte: " << percentByte
-						<< " pModulo: " << percentModulo
-						<< " leftShift: " << leftShift;
+			if(GLogiK::GKDebug) {
+				LOG(trace)	<< "index: " << index
+							<< " line: " << line
+							<< " pByte: " << percentByte
+							<< " pModulo: " << percentModulo
+							<< " leftShift: " << leftShift;
+			}
 #endif
 
 			for(uint16_t i = 0; i < 12; ++i) {

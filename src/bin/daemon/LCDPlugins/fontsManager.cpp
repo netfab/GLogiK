@@ -86,9 +86,8 @@ void FontsManager::initializeFont(const FontID fontID)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "initializing font " << toUInt(toEnumType(fontID));
-#endif
+	GKLog2(trace, "initializing font ", toUInt(toEnumType(fontID)))
+
 	PBMFont* font = nullptr;
 	try {
 		switch(fontID) {

@@ -38,22 +38,20 @@ hidapi::hidapi()
 {
 	GK_LOG_FUNC
 
-	LOG(INFO) << "initializing HIDAPI version " << hid_version_str();
+	GKLog2(trace, "initializing HIDAPI version ", hid_version_str())
 
 	if(hid_init() != 0)
-		throw GLogiKExcept("initializing HIDAPI failure");
+		throw GLogiKExcept("failed to initialize HIDAPI library");
 }
 
 hidapi::~hidapi()
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "closing HIDAPI";
-#endif
+	GKLog(trace, "closing HIDAPI")
 
 	if(hid_exit() != 0) {
-		GKSysLogError("exiting HIDAPI failure");
+		GKSysLogError("failed to exit HIDAPI library");
 	}
 }
 
@@ -98,9 +96,7 @@ void hidapi::openUSBDevice(USBDevice & device)
 	};
 
 	const std::string searchedPath(make_hidapi_path());
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "searched path: " << searchedPath;
-#endif
+	GKLog2(trace, "searched path : ", searchedPath)
 
 	/* getVendorID() and getProductID() return strings in hexadecimal format */
 	const unsigned short vendor_id  = toUShort( device.getVendorID(),  16 );
@@ -116,24 +112,22 @@ void hidapi::openUSBDevice(USBDevice & device)
 			(cur_dev->product_id == product_id)) {
 
 			const std::string currentPath(cur_dev->path);
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "detected HIDAPI device path: " << currentPath;
-#endif
+
+			GKLog2(trace, "detected HIDAPI device path : ", currentPath)
+
 			if(currentPath == searchedPath) {
-#if DEBUGGING_ON
-				LOG(INFO) << device.getID() << " found HIDAPI device: " << searchedPath;
-#endif
+				GKLog3(trace, device.getID(), " found HIDAPI device : ", searchedPath)
+
 				device._pHIDDevice = hid_open_path(searchedPath.c_str());
 
 				/* open_path failure */
 				if(device._pHIDDevice == nullptr) {
 					this->logUSBDeviceHIDError(nullptr);
 					hid_free_enumeration(devs); /* free */
-					throw GLogiKExcept("opening HIDAPI USB device failure");
+					throw GLogiKExcept("failed to open HIDAPI USB device");
 				}
-#if DEBUGGING_ON
-				LOG(DEBUG3) << device.getID() << " opened HIDAPI USB device";
-#endif
+
+				GKLog2(trace, device.getID(), " opened HIDAPI USB device")
 				break;
 			}
 		}
@@ -155,9 +149,8 @@ void hidapi::closeUSBDevice(USBDevice & device) noexcept
 
 	if(device._pHIDDevice != nullptr) {
 		hid_close(device._pHIDDevice);
-#if DEBUGGING_ON
-		LOG(DEBUG3) << device.getID() << " closed HIDAPI USB device";
-#endif
+
+		GKLog2(trace, device.getID(), " closed HIDAPI USB device")
 	}
 }
 
@@ -180,7 +173,11 @@ void hidapi::sendUSBDeviceFeatureReport(
 	}
 #if DEBUGGING_ON
 	else {
-		LOG(DEBUG2) << "sent HIDAPI feature report: " << ret << " bytes - expected: " << wLength;
+		if(GLogiK::GKDebug) {
+			LOG(trace)	<< device.getID()
+						<< " sent HIDAPI feature report: " << ret
+						<< " bytes - expected: " << wLength;
+		}
 	}
 #endif
 }

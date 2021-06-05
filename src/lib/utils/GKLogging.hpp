@@ -133,6 +133,15 @@ inline void GKSysLogError(const std::string & msg)
 	GKSysLog(LOG_ERR, error, msg);
 }
 
+inline void GKSysLogWarning(
+	const std::string & msg1,
+	const std::string & msg2)
+{
+	std::ostringstream buffer(std::ios_base::app);
+	buffer << msg1 << msg2;
+	GKSysLogWarning(buffer.str());
+}
+
 inline void GKSysLogError(
 	const std::string & msg1,
 	const std::string & msg2)

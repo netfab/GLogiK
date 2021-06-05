@@ -132,13 +132,13 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 				}
 
 				if( memShot.size() == memItems.size() ) {
-					//LOG(DEBUG3) << "found each item :-)";
+					//LOG(trace) << "found each item :-)";
 					break;
 				}
 			}
 		}
 		catch (const std::ifstream::failure & e) {
-			LOG(ERROR) << "error opening/reading/closing /proc/meminfo : " << e.what();
+			GKSysLogError("error opening/reading/closing /proc/meminfo : ", e.what());
 			throw GLogiKExcept("ifstream error");
 		}
 
@@ -156,11 +156,11 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 			}
 		}
 		catch (const std::out_of_range& oor) {
-			LOG(WARNING) << "meminfo parsing problem : " << oor.what();
+			GKSysLogWarning("meminfo parsing problem : ", oor.what());
 			freePMem = 0;
 		}
 		catch (const GLogiKExcept & e) {
-			LOG(WARNING) << "meminfo conversion failure : " << e.what();
+			GKSysLogWarning("meminfo conversion failure : ", e.what());
 			freePMem = 0;
 		}
 
@@ -223,13 +223,13 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 			if(_currentRate == NetDirection::NET_RX) {
 				_currentRate = NetDirection::NET_TX;
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-				LOG(DEBUG3) << _plugin.getName() << " switched network rate to upload";
+				GKLog2(trace, _plugin.getName(), " switched network rate to upload")
 #endif
 			}
 			else {
 				_currentRate = NetDirection::NET_RX;
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-				LOG(DEBUG3) << _plugin.getName() << " switched network rate to download";
+				GKLog2(trace, _plugin.getName(), " switched network rate to download")
 #endif
 			}
 		}
@@ -238,7 +238,7 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 		paddedRateString = getPaddedRateString(rateString, _lastRateStringSize);
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "network calculations error : " << e.what();
+		GKSysLogError("network calculations error : ", e.what());
 	}
 
 	/* -- -- -- */

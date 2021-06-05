@@ -112,18 +112,18 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device)
 		case 0:
 			if( device.getLastKeysInterruptTransferLength() > 0 ) {
 #if DEBUGGING_ON && DEBUG_KEYS
-				LOG(DEBUG)	<< device.getID()
-							<< " exp. rl: " << toInt(device.getKeysInterruptBufferMaxLength())
-							<< " act_l: " << device.getLastKeysInterruptTransferLength() << ", xBuf[0]: "
-							<< std::hex << toUInt(device._pressedKeys[0]);
+				if(GLogiK::GKDebug) {
+					LOG(trace)	<< device.getID()
+								<< " exp. rl: " << toInt(device.getKeysInterruptBufferMaxLength())
+								<< " act_l: " << device.getLastKeysInterruptTransferLength()
+								<< " xBuf[0]: " << std::hex << toUInt(device._pressedKeys[0]);
+				}
 #endif
 				return this->processKeyEvent(device);
 			}
 			break;
 		case toEnumType(USBAPIKeysTransferStatus::TRANSFER_TIMEOUT):
-#if 0 && DEBUGGING_ON
-			LOG(DEBUG5) << "timeout reached";
-#endif
+			//GKLog(trace, "timeout reached")
 			return KeyStatus::S_KEY_TIMEDOUT;
 			break;
 		default:
@@ -257,20 +257,18 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 			/* Macro Size Limit - see keyEvent.hpp */
 			if(size >= MACRO_T_MAX_SIZE) {
 				/* skip all new events */
-#if DEBUGGING_ON
-				LOG(WARNING) << "skipping modifier key event, reached macro max size";
-#endif
 				skipEvent = true;
+
+				GKLog(trace, "skipped modifier key event, reached macro max size")
 			}
 
 			/* Macro Size Limit - see keyEvent.hpp */
 			if( ! skipEvent and (size >= MACRO_T_KEYPRESS_MAX_SIZE) ) {
 				/* skip events other than release */
 				if( e.event != EventValue::EVENT_KEY_RELEASE ) {
-#if DEBUGGING_ON
-					LOG(WARNING) << "skipping modifier keypress event, reached macro keypress max size";
-#endif
 					skipEvent = true;
+
+					GKLog(trace, "skipped modifier keypress event, reached macro keypress max size")
 				}
 			}
 
@@ -324,22 +322,26 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device)
 	const uint8_t num = this->handleModifierKeys(device, interval);
 
 	if( num > 0 ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << toUInt(num) << " modifier keys event(s) added";
-#endif
+		GKLog2(trace, toUInt(num), " modifier keys event(s) added")
+
 		/* only first event should have a real timelapse interval */
 		interval = 1;
 	}
 
 #if DEBUGGING_ON
-	LOG(DEBUG2) << "	b	|	p";
-	LOG(DEBUG2) << "  ------------------------------";
+	if(GLogiK::GKDebug) {
+		LOG(trace) << "	b	|	p";
+		LOG(trace) << "  ------------------------------";
+	}
 #endif
+
 	for(i = device.getKeysInterruptBufferMaxLength()-1; i >= 2; --i) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "	" << toUInt(device._pressedKeys[i])
-					<< "	|	" << toUInt(device._previousPressedKeys[i]);
-#endif
+
+		GKLog4(trace,
+			"    ", toUInt(device._pressedKeys[i]),
+			"    |   ", toUInt(device._previousPressedKeys[i])
+		)
+
 		if( device._previousPressedKeys[i] == device._pressedKeys[i] ) {
 			continue; /* nothing here */
 		}
@@ -347,9 +349,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device)
 			/* Macro Size Limit - see keyEvent.hpp */
 			if(device._newMacro.size() >= MACRO_T_MAX_SIZE ) {
 				/* skip all new events */
-#if DEBUGGING_ON
-				LOG(WARNING) << "skipping key event, reached macro max size";
-#endif
+				GKLog(trace, "skipped key event, reached macro max size")
 				continue;
 			}
 
@@ -373,9 +373,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device)
 			if(device._newMacro.size() >= MACRO_T_KEYPRESS_MAX_SIZE ) {
 				/* skip events other than release */
 				if( e.event != EventValue::EVENT_KEY_RELEASE ) {
-#if DEBUGGING_ON
-					LOG(WARNING) << "skipping keypress event, reached macro keypress max size";
-#endif
+					GKLog(trace, "skipped keypress event, reached macro keypress max size")
 					continue;
 				}
 			}
@@ -406,9 +404,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG) << device.getID() << " entering macro record mode";
-#endif
+	GKLog2(trace, device.getID(), " entering macro record mode")
 
 #if GKDBUS
 	NSGKDBus::GKDBus* pDBus = nullptr;
@@ -418,7 +414,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 		pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus bad allocation";
+		GKSysLogError("GKDBus bad allocation");
 		pDBus = nullptr;
 	}
 #endif
@@ -461,9 +457,8 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 				if( ! device.getMacrosManager()->macroDefined(device._macroKey) and
 					  device._newMacro.empty() ) {
 					setMacro = false;
-#if DEBUGGING_ON
-					LOG(DEBUG2) << device.getID() << " no change for key: " << device._macroKey;
-#endif
+
+					GKLog3(trace, device.getID(), " no change for key : ", device._macroKey)
 				}
 
 				if(setMacro) {
@@ -525,9 +520,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 	pDBus = nullptr;
 #endif
 
-#if DEBUGGING_ON
-	LOG(DEBUG) << device.getID() << " exiting macro record mode";
-#endif
+	GKLog2(trace, device.getID(), " exiting macro record mode")
 }
 
 void KeyboardDriver::runMacro(const std::string & devID) const
@@ -536,14 +529,12 @@ void KeyboardDriver::runMacro(const std::string & devID) const
 
 	try {
 		const USBDevice & device = _initializedDevices.at(devID);
-#if DEBUGGING_ON
-		LOG(DEBUG2)	<< device.getID() << " spawned running macro thread for "
-					<< device.getFullName();
-#endif
+
+		GKLog3(trace, devID, " spawned running macro thread for ", device.getFullName())
+
 		device.getMacrosManager()->runMacro(device._macroKey);
-#if DEBUGGING_ON
-		LOG(DEBUG2) << device.getID() << " exiting running macro thread";
-#endif
+
+		GKLog2(trace, devID, " exiting running macro thread")
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
@@ -558,10 +549,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 		USBDevice & device = _initializedDevices.at(devID);
 		device._LCDThreadID = std::this_thread::get_id();
 
-#if DEBUGGING_ON
-		LOG(INFO)	<< device.getID() << " spawned LCD screen thread for "
-					<< device.getFullName();
-#endif
+		GKLog3(trace, devID, " spawned LCD screen thread for ", device.getFullName())
 
 		while( DaemonControl::isDaemonRunning() ) {
 			this->checkDeviceFatalErrors(device, "LCD screen loop");
@@ -595,11 +583,13 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 			auto one = std::chrono::milliseconds( device.getLCDPluginsManager()->getPluginTiming() );
 
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-			LOG(DEBUG1) << "refreshed LCD screen for "
-				<< device.getFullName()
-				<< " - ret: " << ret
-				<< " - interval: " << interval.count()
-				<< " - next sleep: " << one.count();
+			if(GLogiK::GKDebug) {
+				LOG(trace)	<< devID << " refreshed LCD screen for "
+							<< device.getFullName()
+							<< " - ret: " << ret
+							<< " - interval: " << interval.count()
+							<< " - next sleep: " << one.count();
+			}
 #endif
 			if(ret != 0) { // TODO stop thread ?
 				GKSysLogError("LCD refresh failure");
@@ -632,10 +622,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 			GKSysLogWarning("endscreen LCD plugin not loaded");
 		}
 
-#if DEBUGGING_ON
-		LOG(INFO)	<< device.getID() << " exiting LCD screen thread for "
-					<< device.getFullName();
-#endif
+		GKLog3(trace, devID, " exiting LCD screen thread for ", device.getFullName())
 	} /* try */
 	catch (const std::out_of_range& oor) {
 		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
@@ -656,10 +643,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 		USBDevice & device = _initializedDevices.at(devID);
 		device._keysThreadID = std::this_thread::get_id();
 
-#if DEBUGGING_ON
-		LOG(INFO)	<< device.getID() << " spawned listening thread for "
-					<< device.getFullName();
-#endif
+		GKLog3(trace, devID, " spawned listening thread for ", device.getFullName())
 
 		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
 			std::thread lcd_thread(&KeyboardDriver::LCDScreenLoop, this, devID);
@@ -725,7 +709,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 									pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
 								}
 								catch (const std::bad_alloc& e) { /* handle new() failure */
-									LOG(ERROR) << "GKDBus bad allocation";
+									GKSysLogError("GKDBus bad allocation");
 									pDBus = nullptr;
 								}
 
@@ -762,7 +746,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 							if( this->checkLCDKey(device) ) {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 								std::lock_guard<std::mutex> lock(device._LCDMutex);
-								LOG(DEBUG2) << device.getID() << " LCD key pressed : " << device._LCDKey;
+								GKLog3(trace, devID, " LCD key pressed : ", device._LCDKey)
 #endif
 							}
 						}
@@ -773,10 +757,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 			}
 		}
 
-#if DEBUGGING_ON
-		LOG(INFO)	<< device.getID() << " exiting listening thread for "
-					<< device.getFullName();
-#endif
+		GKLog3(trace, devID, " exiting listening thread for ", device.getFullName())
 	} /* try */
 	catch (const std::out_of_range& oor) {
 		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
@@ -807,30 +788,27 @@ void KeyboardDriver::resetDeviceState(USBDevice & device)
 {
 	GK_LOG_FUNC
 
+	GKLog3(trace, device.getID(), " resetting state of device : ", device.getFullName())
+
 	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+		GKLog2(trace, device.getID(), " resetting device MxKeys leds status")
+
 		/* exit MacroRecordMode if necessary */
 		device._exitMacroRecordMode = true;
-
 		device.getMacrosManager()->resetMacrosBanks();
-
-#if DEBUGGING_ON
-		LOG(DEBUG1) << device.getID() << " resetting device MxKeys leds status";
-#endif
 		device._MxKeysLedsMask = 0;
 		this->setDeviceMxKeysLeds(device);
 	}
 
 	if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
-#if DEBUGGING_ON
-		LOG(DEBUG1) << device.getID() << " resetting device backlight color";
-#endif
+		GKLog2(trace, device.getID(), " resetting device backlight color")
+
 		this->setDeviceBacklightColor(device);
 	}
 
 	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-#if DEBUGGING_ON
-		LOG(DEBUG1) << device.getID() << " resetting device LCD plugins mask";
-#endif
+		GKLog2(trace, device.getID(), " resetting device LCD plugins mask")
+
 		this->setDeviceLCDPluginsMask(device);
 	}
 }
@@ -839,21 +817,12 @@ void KeyboardDriver::resetDeviceState(const USBDeviceID & det)
 {
 	GK_LOG_FUNC
 
-	const std::string & devID = det.getID();
-
 	try {
-		USBDevice & device = _initializedDevices.at(devID);
-#if DEBUGGING_ON
-		LOG(DEBUG3) << devID << " resetting state of "
-					<< device.getFullName()
-					<< "(" << device.getVendorID() << ":" << device.getProductID() << "), device "
-					<< toUInt(device.getNum()) << " on bus " << toUInt(device.getBus());
-#endif
-
+		USBDevice & device = _initializedDevices.at(det.getID());
 		this->resetDeviceState(device);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, det.getID());
 	}
 }
 
@@ -867,9 +836,7 @@ void KeyboardDriver::setDeviceLCDPluginsMask(USBDevice & device, uint64_t mask)
 		mask |= toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);
 	}
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << device.getID() << " setting device LCD plugins mask to : " << mask;
-#endif
+	GKLog3(trace, device.getID(), " setting device LCD plugins mask to : ", mask)
 
 	{
 		yield_for(std::chrono::microseconds(100));
@@ -898,9 +865,7 @@ void KeyboardDriver::joinDeviceThreads(USBDevice & device)
 	auto find_thread = [&thread_id, &found] (auto & item) -> const bool {
 		if( thread_id == item.get_id() ) {
 			found = true;
-#if DEBUGGING_ON
-			LOG(DEBUG1) << "thread found !";
-#endif
+			GKLog(trace, "thread found !")
 			item.join();
 			return true;
 		}
@@ -908,9 +873,8 @@ void KeyboardDriver::joinDeviceThreads(USBDevice & device)
 	};
 
 	found = false; thread_id = device._keysThreadID;
-#if DEBUGGING_ON
-	LOG(DEBUG) << device.getID() << " waiting for listening thread";
-#endif
+
+	GKLog2(trace, device.getID(), " waiting for listening thread")
 	{
 		std::lock_guard<std::mutex> lock(_threadsMutex);
 		_threads.erase(
@@ -927,9 +891,7 @@ void KeyboardDriver::joinDeviceThreads(USBDevice & device)
 	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
 		found = false; thread_id = device._LCDThreadID;
 
-#if DEBUGGING_ON
-		LOG(DEBUG) << device.getID() << " waiting for LCD screen thread";
-#endif
+		GKLog2(trace, device.getID(), " waiting for LCD screen thread")
 		{
 			std::lock_guard<std::mutex> lock(_threadsMutex);
 			_threads.erase(
@@ -1019,7 +981,7 @@ void KeyboardDriver::resetDevice(const USBDeviceID & det)
 {
 	GK_LOG_FUNC
 
-	LOG(INFO) << det.getID() << " resetting USB device : " << det.getDevnode();
+	GKLog3(info, det.getID(), " resetting USB device : ", det.getDevnode())
 
 	int fd = open(det.getDevnode().c_str(), O_WRONLY);
 	if (fd < 0) {
@@ -1039,7 +1001,7 @@ void KeyboardDriver::resetDevice(const USBDeviceID & det)
 		throw GLogiKExcept("reset device failure");
 	}
 
-	LOG(INFO) << det.getID() << " reset successful";
+	GKLog2(info, det.getID(), " reset successful")
 
 	close(fd);
 }
@@ -1050,19 +1012,14 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 {
 	GK_LOG_FUNC
 
+	GKLog3(trace, det.getID(), " initializing device : ", det.getFullName())
+
 	/* sanity check */
 	if(_initializedDevices.count(det.getID()) > 0) {
 		std::ostringstream err("device ID already used in started container : ", std::ios_base::app);
 		err << det.getID();
 		throw GLogiKExcept(err.str());
 	}
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << det.getID() << " initializing "
-				<< det.getFullName() << " ("
-				<< det.getVendorID() << ":" << det.getProductID() << "), device "
-				<< toUInt(det.getNum()) << " on bus " << toUInt(det.getBus());
-#endif
 
 	USBDevice device(det);
 
@@ -1124,14 +1081,11 @@ void KeyboardDriver::closeDevice(
 
 	const std::string & devID = det.getID();
 
+	GKLog3(trace, devID, " closing device : ", det.getFullName())
+
 	try {
 		USBDevice & device = _initializedDevices.at(devID);
-#if DEBUGGING_ON
-		LOG(DEBUG3) << device.getID() << " closing "
-					<< device.getFullName() << " ("
-					<< device.getVendorID() << ":" << device.getProductID() << "), device "
-					<< toUInt(device.getNum()) << " on bus " << toUInt(device.getBus());
-#endif
+
 		if(skipUSBRequests)
 			device.skipUSBRequests();
 

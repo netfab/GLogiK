@@ -51,15 +51,14 @@ NetSnapshots::NetSnapshots()
 		this->findDefaultRouteNetworkInterfaceName();
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << e.what();
+		GKSysLogError(e.what());
 	}
 
 	if( _defaultNetworkInterfaceName.empty() ) {
 		throw GLogiKExcept("unable to find default route interface name");
 	}
-#if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-	LOG(DEBUG2) << "found default route interface name: " << _defaultNetworkInterfaceName;
-#endif
+
+	GKLog2(trace, "found default route interface name : ", _defaultNetworkInterfaceName)
 
 	_networkInterfaceName = _defaultNetworkInterfaceName;
 
@@ -79,7 +78,7 @@ NetSnapshots::NetSnapshots()
 		_txDiff = (10 * (s4 - s3)); /* extrapolation */
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << e.what();
+		GKSysLogError(e.what());
 	}
 }
 
@@ -155,11 +154,11 @@ void NetSnapshots::findDefaultRouteNetworkInterfaceName(void)
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(ERROR) << "vector index out of bounds : " << oor.what();
+		GKSysLogError("vector index out of bounds : ", oor.what());
 		throw GLogiKExcept("route line parsing error");
 	}
 	catch (const std::ifstream::failure & e) {
-		LOG(ERROR) << "error opening/reading/closing kernel route file : " << e.what();
+		GKSysLogError("error opening/reading/closing kernel route file : ", e.what());
 		throw GLogiKExcept("ifstream error");
 	}
 }
@@ -183,7 +182,7 @@ void NetSnapshots::setBytesSnapshotValue(const NetDirection d, unsigned long lon
 		value = toULL(line);
 	}
 	catch (const std::ifstream::failure & e) {
-		LOG(ERROR) << "error opening/reading/closing kernel route file : " << e.what();
+		GKSysLogError("error opening/reading/closing kernel route file : ", e.what());
 		throw GLogiKExcept("ifstream error");
 	}
 }

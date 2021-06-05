@@ -39,9 +39,7 @@ VirtualKeyboard::VirtualKeyboard(const char* deviceName)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "initializing " << deviceName;
-#endif
+	GKLog2(trace, "initializing ", deviceName)
 
 	_pDevice = libevdev_new();
 	libevdev_set_name(_pDevice, deviceName);
@@ -78,9 +76,7 @@ VirtualKeyboard::~VirtualKeyboard()
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "destroying " << libevdev_get_name(_pDevice);
-#endif
+	GKLog2(trace, "destroying ", libevdev_get_name(_pDevice))
 
 	libevdev_uinput_destroy(_pUInputDevice);
 	libevdev_free(_pDevice);
@@ -109,16 +105,17 @@ void VirtualKeyboard::sendKeyEvent(const KeyEvent & key)
 	GK_LOG_FUNC
 
 #if DEBUGGING_ON
-	LOG(DEBUG1) << "key event : ";
-	LOG(DEBUG2)	<< "code : " << toUInt(key.code);
-	LOG(DEBUG2)	<< "event : " << key.event;
-	LOG(DEBUG2)	<< "interval : " << key.interval << " ms";
+	if(GLogiK::GKDebug) {
+		LOG(trace) << "key event : ";
+		LOG(trace) << "code : " << toUInt(key.code);
+		LOG(trace) << "event : " << key.event;
+		LOG(trace) << "interval : " << key.interval << " ms";
+	}
 #endif
 
 	if( key.interval > 20 ) {
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "sleeping for : " << key.interval << "ms";
-#endif
+		GKLog3(trace, "sleeping for : ", key.interval, "ms")
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(key.interval));
 	}
 	int ret = libevdev_uinput_write_event(_pUInputDevice, EV_KEY, key.code, static_cast<int>(key.event));

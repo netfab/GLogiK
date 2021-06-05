@@ -209,29 +209,33 @@ void G510Base::processKeyEvent2Bytes(USBDevice & device)
 	}
 	else if (device._pressedKeys[0] == 0x04) {
 #if DEBUGGING_ON
+		/* continue only when debug is on */
+		if( ! GLogiK::GKDebug )
+			return;
+
 		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_BACKLIGHT_OFF)) {
-			LOG(DEBUG3) << "backlight off";
+			LOG(trace) << "backlight off";
 		}
 		else {
-			LOG(DEBUG3) << "backlight on";
+			LOG(trace) << "backlight on";
 		}
 
-		/* audio onboard disabled */
+		/* continue only when audio onboard is enabled */
 		if( ! (device._pressedKeys[1] & toEnumType(SpecialKeys::GK_ONBOARD_AUDIO_ON) ) )
 			return;
 
 		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_HEADSET_OFF)) {
-			LOG(DEBUG3) << "headset off";
+			LOG(trace) << "headset off";
 		}
 		else {
-			LOG(DEBUG3) << "headset on";
+			LOG(trace) << "headset on";
 		}
 
 		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_MICRO_OFF)) {
-			LOG(DEBUG3) << "micro off";
+			LOG(trace) << "micro off";
 		}
 		else {
-			LOG(DEBUG3) << "micro on";
+			LOG(trace) << "micro on";
 		}
 #endif
 	}
@@ -276,14 +280,14 @@ KeyStatus G510Base::processKeyEvent(USBDevice & device)
 	switch(device.getLastKeysInterruptTransferLength()) {
 		case 2:
 #if DEBUGGING_ON && DEBUG_KEYS
-			LOG(DEBUG1) << device.getID() << " 2 bytes : " << this->getBytes(device);
+			GKLog3(trace, device.getID(), " 2 bytes : ", this->getBytes(device))
 #endif
 			this->processKeyEvent2Bytes(device);
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 5:
 #if DEBUGGING_ON && DEBUG_KEYS
-			LOG(DEBUG1) << "5 bytes : " << this->getBytes(device);
+			GKLog3(trace, device.getID(), " 5 bytes : ", this->getBytes(device))
 #endif
 			this->processKeyEvent5Bytes(device);
 			if( device._pressedRKeysMask == 0 ) /* skip release key events */
@@ -294,9 +298,9 @@ KeyStatus G510Base::processKeyEvent(USBDevice & device)
 			/* process those events only if Macro Record Mode on */
 			if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) ) {
 #if DEBUGGING_ON && DEBUG_KEYS
-				LOG(DEBUG1) << device.getID() << " 8 bytes : processing standard key event : "
-							<< this->getBytes(device);
+				GKLog3(trace, device.getID(), " 8 bytes : ", this->getBytes(device))
 #endif
+				/* process standard key event */
 				this->processKeyEvent8Bytes(device);
 				std::copy(
 						std::begin(device._pressedKeys), std::end(device._pressedKeys),
@@ -304,14 +308,13 @@ KeyStatus G510Base::processKeyEvent(USBDevice & device)
 				return KeyStatus::S_KEY_PROCESSED;
 			}
 #if DEBUGGING_ON && DEBUG_KEYS
-			LOG(DEBUG1) << device.getID() << " 8 bytes : skipping standard key event : "
-						<< this->getBytes(device);
+			GKLog3(trace, device.getID(), " 8 bytes (skipped) : ", this->getBytes(device))
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
 		default:
 #if DEBUGGING_ON && DEBUG_KEYS
-			LOG(DEBUG1) << device.getID() << " not implemented: " << device.getLastKeysInterruptTransferLength() << " bytes !";
+			GKLog3(trace, device.getID(), " not implemented : bytes : ", device.getLastKeysInterruptTransferLength())
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
@@ -334,10 +337,8 @@ void G510Base::sendUSBDeviceInitialization(USBDevice & device)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(INFO)	<< device.getID() << " sending " << device.getFullName()
-				<< " initialization requests";
-#endif
+	GKLog2(info, device.getID(), " sending device initialization requests")
+
 	{
 		const unsigned char ReportID = 0x01;
 		const unsigned char data[] = {
@@ -366,10 +367,12 @@ void G510Base::setDeviceBacklightColor(
 	GK_LOG_FUNC
 
 	device.setRGBBytes( r, g, b );
-#if DEBUGGING_ON
-	LOG(DEBUG1) << device.getID() << " setting " << device.getFullName()
-				<< " backlight color with following RGB bytes : " << getHexRGB(r, g, b);
-#endif
+
+	GKLog3(info, device.getID(),
+		" setting device backlight color with RGB bytes : ",
+		getHexRGB(r, g, b)
+	)
+
 	const unsigned char ReportID = 0x05;
 	const unsigned char data[4] = { ReportID, r, g, b };
 	this->sendUSBDeviceFeatureReport(device, data, 4);
@@ -385,10 +388,10 @@ void G510Base::setDeviceMxKeysLeds(USBDevice & device)
 			mask |= led.mask;
 	}
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << device.getID() << " setting " << device.getFullName()
-				<< " MxKeys leds using current mask : 0x" << std::hex << toUInt(mask);
-#endif
+	GKLog3(info, device.getID(),
+		" setting MxKeys leds with mask : ", toUInt(mask)
+	)
+
 	const unsigned char ReportID = 0x04;
 	const unsigned char data[2] = { ReportID, mask };
 	this->sendUSBDeviceFeatureReport(device, data, 2);
