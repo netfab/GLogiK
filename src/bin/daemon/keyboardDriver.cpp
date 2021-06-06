@@ -383,7 +383,7 @@ void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device, const std::strin
 	}
 }
 
-void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string & devID) {
+void KeyboardDriver::enterMacroRecordMode(USBDevice & device) {
 #if DEBUGGING_ON
 	LOG(DEBUG) << device.getID() << " entering macro record mode";
 #endif
@@ -469,7 +469,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device, const std::string 
 									signal.c_str()
 								);
 
-								pDBus->appendStringToBroadcastSignal(devID);
+								pDBus->appendStringToBroadcastSignal(device.getID());
 								pDBus->appendStringToBroadcastSignal(device._macroKey);
 								pDBus->appendUInt8ToBroadcastSignal(bankID);
 
@@ -659,7 +659,7 @@ void KeyboardDriver::listenLoop(const std::string & devID) {
 
 							/* is macro record mode enabled ? */
 							if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) ) {
-								this->enterMacroRecordMode(device, devID);
+								this->enterMacroRecordMode(device);
 
 								/* don't need to update leds status if the mask is already 0 */
 								if(device._MxKeysLedsMask != 0) {
