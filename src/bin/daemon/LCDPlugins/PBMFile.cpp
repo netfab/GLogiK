@@ -67,7 +67,8 @@ void PBMFile::readPBM(
 			pbm.close();
 		}
 		catch (const std::ios_base::failure & e) {
-			LOG(ERROR) << "error opening/reading/closing PBM file : " << e.what();
+			LOG(ERROR)	<< "error opening/reading/closing PBM file : "
+						<< PBMPath << " : " << e.what();
 			throw GLogiKExcept("PBM ifstream error");
 		}
 	}

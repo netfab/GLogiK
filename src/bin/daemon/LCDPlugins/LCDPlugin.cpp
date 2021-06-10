@@ -166,18 +166,12 @@ void LCDPlugin::addPBMFrame(
 
 	this->addPBMEmptyFrame(num);
 
-	try {
-		this->readPBM(
-			filePath.string(),
-			_PBMFrames.back()._PBMData,
-			DEFAULT_PBM_WIDTH,
-			DEFAULT_PBM_HEIGHT
-		);
-	}
-	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "exception while reading PBM file: " << filePath.string();
-		throw;
-	}
+	this->readPBM(
+		filePath.string(),
+		_PBMFrames.back()._PBMData,
+		DEFAULT_PBM_WIDTH,
+		DEFAULT_PBM_HEIGHT
+	);
 }
 
 void LCDPlugin::addPBMEmptyFrame(
