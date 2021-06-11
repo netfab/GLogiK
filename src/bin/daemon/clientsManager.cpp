@@ -465,7 +465,7 @@ const bool ClientsManager::updateClientState(
 {
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		CONST_STRING_CLIENT, clientID,
 		"state : ", state
 	)
@@ -544,7 +544,7 @@ const bool ClientsManager::deleteDeviceConfiguration(
 {
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		CONST_STRING_DEVICE, devID,
 		CONST_STRING_CLIENT, clientID
 	)
@@ -566,7 +566,7 @@ const bool ClientsManager::stopDevice(
 {
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		CONST_STRING_DEVICE, devID,
 		CONST_STRING_CLIENT, clientID
 	)
@@ -608,7 +608,7 @@ const bool ClientsManager::startDevice(
 {
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		CONST_STRING_DEVICE, devID,
 		CONST_STRING_CLIENT, clientID
 	)
@@ -655,7 +655,7 @@ const bool ClientsManager::restartDevice(
 {
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		CONST_STRING_DEVICE, devID,
 		CONST_STRING_CLIENT, clientID
 	)
@@ -739,7 +739,7 @@ const std::string ClientsManager::getDeviceStatus(
 {
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		CONST_STRING_DEVICE, devID,
 		CONST_STRING_CLIENT, clientID
 	)
@@ -761,7 +761,7 @@ void ClientsManager::getDeviceProperties(
 {
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		CONST_STRING_DEVICE, devID,
 		CONST_STRING_CLIENT, clientID
 	)
@@ -792,7 +792,7 @@ const LCDPluginsPropertiesArray_type &
 {
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		CONST_STRING_DEVICE, devID,
 		CONST_STRING_CLIENT, clientID
 	)
@@ -844,11 +844,11 @@ const macro_type & ClientsManager::getDeviceMacro(
 
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		CONST_STRING_DEVICE, devID,
 		CONST_STRING_CLIENT, clientID
 	)
-	GKLog2x2(trace,
+	GKLog4(trace,
 		"key : ", keyName,
 		"bankID : ", toUInt(bankID)
 	)
@@ -883,7 +883,7 @@ const std::vector<std::string> &
 {
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		CONST_STRING_DEVICE, devID,
 		CONST_STRING_CLIENT, clientID
 	)

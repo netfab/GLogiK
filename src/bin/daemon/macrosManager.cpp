@@ -224,7 +224,7 @@ void MacrosManager::fixMacroSize(
 {
 	GK_LOG_FUNC
 
-	GKLog4(trace, "pressed : ", pressedEvents.size(), " - released : ", releasedEvents.size())
+	GKLog4(trace, "pressed : ", pressedEvents.size(), "released : ", releasedEvents.size())
 
 	/* sanity check */
 	if(pressedEvents.size() != releasedEvents.size()) {

@@ -130,10 +130,7 @@ void GKDBusEvents::removeInterface(
 	};
 
 	if( find_interface() ) {
-		GKLog4(trace,
-			"removing interface : ", eventInterface,
-			"from bus : ", toUInt(toEnumType(eventBus))
-		)
+		GKLog4(trace, "removing interface : ", eventInterface, "from bus : ", toUInt(toEnumType(eventBus)))
 
 		auto & objectMap = _DBusEvents[eventBus][eventObject];
 		for(auto & DBusEvent : objectMap[eventInterface]) { /* vector of pointers */

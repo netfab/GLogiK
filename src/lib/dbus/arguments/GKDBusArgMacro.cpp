@@ -77,7 +77,7 @@ const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigne
 		LOG(warning) << "uint16 container not empty";
 	}
 
-	GKLog4(trace, "events array size : ", macro.size(), " - expected : ", macroSize)
+	GKLog4(trace, "events array size : ", macro.size(), "expected : ", macroSize)
 
 	return macro;
 }

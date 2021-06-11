@@ -143,10 +143,7 @@ void PBMFile::extractPBMData(
 
 	pbm.read(reinterpret_cast<char*>(&PBMData.front()), PBMData.size());
 
-	GKLog4(trace,
-		"extracted bytes: ", pbm.gcount(),
-		" - expected: ", PBMData.size()
-	)
+	GKLog4(trace, "extracted bytes : ", pbm.gcount(), "expected : ", PBMData.size())
 
 	if( PBMData.size() != static_cast<PixelsData::size_type>( pbm.gcount() ) )
 		throw GLogiKExcept("unexpected numbers of bytes read");

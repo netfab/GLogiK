@@ -135,9 +135,9 @@ void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 	pGKfs->readNotifyEvents( devicesMap );
 
 	for( const auto & device : devicesMap ) {
-		GKLog2x2(trace,
+		GKLog4(trace,
 			device.first, " filesystem notification event",
-			"reloading configuration file : ", device.second
+			"reloading file : ", device.second
 		)
 		_devices.reloadDeviceConfigurationFile(device.first);
 
@@ -859,7 +859,7 @@ void DBusHandler::daemonIsStarting(void)
 	GK_LOG_FUNC
 
 	if( _registerStatus ) {
-		GKLog2x2(trace,
+		GKLog4(trace,
 			"received signal : ", __func__,
 			"but we are already registered with daemon : ", _currentSession
 		)
@@ -894,7 +894,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 {
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		"received signal : ", __func__,
 		"number of devices : ", devicesID.size()
 	)
@@ -958,7 +958,7 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
 {
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		"received signal : ", __func__,
 		"number of devices : ", devicesID.size()
 	)
@@ -1014,7 +1014,7 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 {
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		"received signal : ", __func__,
 		"number of devices : ", devicesID.size()
 	)
@@ -1125,7 +1125,7 @@ void DBusHandler::deviceMediaEvent(
 {
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		devID, " received signal : deviceMediaEvent",
 		"event : ", mediaKeyEvent
 	)
@@ -1172,7 +1172,7 @@ void DBusHandler::deviceStatusChangeRequest(
 {
 	GK_LOG_FUNC
 
-	GKLog2x2(trace,
+	GKLog4(trace,
 		devID, " received status change request",
 		"requested status : ", remoteMethod
 	)

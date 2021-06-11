@@ -337,10 +337,12 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device)
 
 	for(i = device.getKeysInterruptBufferMaxLength()-1; i >= 2; --i) {
 
-		GKLog4(trace,
-			"    ", toUInt(device._pressedKeys[i]),
-			"    |   ", toUInt(device._previousPressedKeys[i])
-		)
+#if DEBUGGING_ON
+		if(GLogiK::GKDebug) {
+			LOG(trace)	<< "    " << toUInt(device._pressedKeys[i])
+						<< "    |   " << toUInt(device._previousPressedKeys[i]);
+		}
+#endif
 
 		if( device._previousPressedKeys[i] == device._pressedKeys[i] ) {
 			continue; /* nothing here */

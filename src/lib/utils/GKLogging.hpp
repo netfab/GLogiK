@@ -88,12 +88,7 @@ class GKLogging
 #define GKLog(level, m1) if(GLogiK::GKDebug) { LOG(level) << m1; }
 #define GKLog2(level, m1, m2) if(GLogiK::GKDebug) { LOG(level) << m1 << m2; }
 #define GKLog3(level, m1, m2, m3) if(GLogiK::GKDebug) { LOG(level) << m1 << m2 << m3; }
-#define GKLog4(level, m1, m2, m3, m4) if(GLogiK::GKDebug) { LOG(level) << m1 << m2 << m3 << m4; }
-#define GKLog2x2(level, m1, m2, m3, m4) \
-	if(GLogiK::GKDebug) { \
-		LOG(level) << m1 << m2; \
-		LOG(level) << m3 << m4; \
-	}
+#define GKLog4(level, m1, m2, m3, m4) if(GLogiK::GKDebug) { LOG(level) << m1 << m2 << " - " << m3 << m4; }
 #define GKLog2x3(level, m1, m2, m3, m4, m5, m6) \
 	if(GLogiK::GKDebug) { \
 		LOG(level) << m1 << m2; \
@@ -105,7 +100,6 @@ class GKLogging
 #define GKLog2(level, m1, m2)
 #define GKLog3(level, m1, m2, m3)
 #define GKLog4(level, m1, m2, m3, m4)
-#define GKLog2x2(level, m1, m2, m3, m4)
 #define GKLog2x3(level, m1, m2, m3, m4, m5, m6)
 #endif
 

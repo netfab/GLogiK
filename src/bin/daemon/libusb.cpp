@@ -679,7 +679,7 @@ void libusb::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int nu
 		device._toAttach.push_back(numInt);	/* detached */
 	}
 	else {
-		GKLog4(trace, device.getID(), " interface ", numInt, " is currently free :)")
+		GKLog3(trace, device.getID(), " interface already freed : ", numInt)
 	}
 }
 

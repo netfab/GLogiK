@@ -174,10 +174,7 @@ void GKDBus::checkDBusMessage(DBusConnection* const connection)
 		if( object != this->getRootNode() )
 			/* object must match */
 			if(object != objectPair.first) {
-				//GKLog2x2(trace,
-				//	"skipping object : ", objectPair.first,
-				//	"not : ", object
-				//)
+				//GKLog4(trace, "skipping object : ", objectPair.first, "not : ", object)
 				continue;
 			}
 
