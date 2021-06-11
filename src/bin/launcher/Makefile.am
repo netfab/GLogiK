@@ -15,6 +15,7 @@ GKsLauncher_LDADD = \
 				@BOOST_PROGRAM_OPTIONS_LIB@ \
 				@BOOST_SYSTEM_LIB@ \
 				@BOOST_FILESYSTEM_LIB@ \
+				@BOOST_PROGRAM_OPTIONS_LIB@ \
 				@PTHREAD_LIBS@ \
 				libGKDBus.la \
 				libGKUtils.la \

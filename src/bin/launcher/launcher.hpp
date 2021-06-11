@@ -41,6 +41,8 @@ class DesktopServiceLauncher
 
 	private:
 		pid_t _pid;
+
+		void parseCommandLine(const int& argc, char *argv[]);
 };
 
 } // namespace GLogiK

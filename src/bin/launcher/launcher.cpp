@@ -32,7 +32,7 @@
 #include <sstream>
 
 #include <boost/filesystem.hpp>
-//#include <boost/program_options.hpp>
+#include <boost/program_options.hpp>
 
 #include <config.h>
 
@@ -45,6 +45,7 @@
 #include "launcher.hpp"
 
 namespace fs = boost::filesystem;
+namespace po = boost::program_options;
 
 namespace GLogiK
 {
@@ -73,9 +74,16 @@ int DesktopServiceLauncher::run( const int& argc, char *argv[] )
 	GK_LOG_FUNC
 
 	try {
+
+		this->parseCommandLine(argc, argv);
+
 		// initialize logging
 		try {
-			GKLogging::initDebugFile(DESKTOP_SERVICE_LAUNCHER_NAME, fs::owner_read|fs::owner_write|fs::group_read);
+#if DEBUGGING_ON
+			if(GLogiK::GKDebug) {
+				GKLogging::initDebugFile(DESKTOP_SERVICE_LAUNCHER_NAME, fs::owner_read|fs::owner_write|fs::group_read);
+			}
+#endif
 			GKLogging::initConsoleLog();
 		}
 		catch (const std::exception & e) {
@@ -84,9 +92,6 @@ int DesktopServiceLauncher::run( const int& argc, char *argv[] )
 		}
 
 		LOG(info) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
-
-		/* no expected arguments */
-		//this->parseCommandLine(argc, argv);
 
 		_pid = detachProcess();
 
@@ -138,6 +143,31 @@ int DesktopServiceLauncher::run( const int& argc, char *argv[] )
 	}
 
 	return EXIT_FAILURE;
+}
+
+void DesktopServiceLauncher::parseCommandLine(const int& argc, char *argv[])
+{
+	GK_LOG_FUNC
+
+	bool debug = false;
+
+	po::options_description desc("Allowed options");
+	desc.add_options()
+		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
+	;
+
+	po::variables_map vm;
+	try {
+		po::store(po::parse_command_line(argc, argv, desc), vm);
+	}
+	catch( const std::exception & e ) {
+		throw GLogiKExcept( e.what() );
+	}
+	po::notify(vm);
+
+	if (vm.count("debug")) {
+		GLogiK::GKDebug = vm["debug"].as<bool>();
+	}
 }
 
 } // namespace GLogiK
