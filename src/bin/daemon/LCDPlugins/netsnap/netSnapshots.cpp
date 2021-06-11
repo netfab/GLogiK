@@ -58,7 +58,9 @@ NetSnapshots::NetSnapshots()
 		throw GLogiKExcept("unable to find default route interface name");
 	}
 
+#if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 	GKLog2(trace, "found default route interface name : ", _defaultNetworkInterfaceName)
+#endif
 
 	_networkInterfaceName = _defaultNetworkInterfaceName;
 
