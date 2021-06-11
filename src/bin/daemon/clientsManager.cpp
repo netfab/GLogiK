@@ -820,10 +820,11 @@ const bool ClientsManager::setDeviceBacklightColor(
 {
 	GK_LOG_FUNC
 
-	GKLog2x3(trace,
+	GKLog6(trace,
 		CONST_STRING_DEVICE, devID,
 		CONST_STRING_CLIENT, clientID,
-		"RGB bytes : ", getHexRGB(r, g, b))
+		"RGB bytes : ", getHexRGB(r, g, b)
+	)
 
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -907,10 +908,11 @@ const bool ClientsManager::setDeviceMacrosBank(
 {
 	GK_LOG_FUNC
 
-	GKLog2x3(trace,
+	GKLog6(trace,
 		CONST_STRING_DEVICE, devID,
 		CONST_STRING_CLIENT, clientID,
-		"bankID : ", toUInt(bankID))
+		"bankID : ", toUInt(bankID)
+	)
 
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -930,10 +932,11 @@ const bool ClientsManager::resetDeviceMacrosBank(
 {
 	GK_LOG_FUNC
 
-	GKLog2x3(trace,
+	GKLog6(trace,
 		CONST_STRING_DEVICE, devID,
 		CONST_STRING_CLIENT, clientID,
-		"bankID : ", toUInt(bankID))
+		"bankID : ", toUInt(bankID)
+	)
 
 	try {
 		Client* pClient = _connectedClients.at(clientID);
@@ -954,10 +957,11 @@ const bool ClientsManager::setDeviceLCDPluginsMask(
 {
 	GK_LOG_FUNC
 
-	GKLog2x3(trace,
+	GKLog6(trace,
 		CONST_STRING_DEVICE, devID,
 		CONST_STRING_CLIENT, clientID,
-		"maskID : ", toUInt(maskID))
+		"maskID : ", toUInt(maskID)
+	)
 
 	try {
 		Client* pClient = _connectedClients.at(clientID);

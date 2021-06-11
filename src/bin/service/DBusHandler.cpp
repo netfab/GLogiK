@@ -1073,7 +1073,7 @@ const bool DBusHandler::macroRecorded(
 {
 	GK_LOG_FUNC
 
-	GKLog2x3(trace,
+	GKLog6(trace,
 		devID, " received signal : macroRecorded",
 		"bankID : ", toUInt(bankID),
 		"key : ", keyName
@@ -1099,7 +1099,7 @@ const bool DBusHandler::macroCleared(
 {
 	GK_LOG_FUNC
 
-	GKLog2x3(trace,
+	GKLog6(trace,
 		devID, " received signal : macroCleared",
 		"bankID : ", toUInt(bankID),
 		"key : ", keyName

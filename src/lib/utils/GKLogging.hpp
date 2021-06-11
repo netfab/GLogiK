@@ -89,18 +89,14 @@ class GKLogging
 #define GKLog2(level, m1, m2) if(GLogiK::GKDebug) { LOG(level) << m1 << m2; }
 #define GKLog3(level, m1, m2, m3) if(GLogiK::GKDebug) { LOG(level) << m1 << m2 << m3; }
 #define GKLog4(level, m1, m2, m3, m4) if(GLogiK::GKDebug) { LOG(level) << m1 << m2 << " - " << m3 << m4; }
-#define GKLog2x3(level, m1, m2, m3, m4, m5, m6) \
-	if(GLogiK::GKDebug) { \
-		LOG(level) << m1 << m2; \
-		LOG(level) << m3 << m4; \
-		LOG(level) << m5 << m6; \
-	}
+#define GKLog6(level, m1, m2, m3, m4, m5, m6) \
+	if(GLogiK::GKDebug) { LOG(level) << m1 << m2 << " - " << m3 << m4 << " - " << m5 << m6;	}
 #else
 #define GKLog(level, m1)
 #define GKLog2(level, m1, m2)
 #define GKLog3(level, m1, m2, m3)
 #define GKLog4(level, m1, m2, m3, m4)
-#define GKLog2x3(level, m1, m2, m3, m4, m5, m6)
+#define GKLog6(level, m1, m2, m3, m4, m5, m6)
 #endif
 
 inline void GKSysLog(
