@@ -61,11 +61,9 @@ DesktopServiceLauncher::~DesktopServiceLauncher()
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "exiting desktop service launcher process";
-#endif
+	GKLog(trace, "exiting desktop service launcher process")
 
-	LOG(INFO) << DESKTOP_SERVICE_LAUNCHER_NAME << " : bye !";
+	LOG(info) << DESKTOP_SERVICE_LAUNCHER_NAME << " : bye !";
 
 	closelog();
 }
@@ -85,15 +83,14 @@ int DesktopServiceLauncher::run( const int& argc, char *argv[] )
 			return EXIT_FAILURE;
 		}
 
-		LOG(INFO) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
+		LOG(info) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
 
 		/* no expected arguments */
 		//this->parseCommandLine(argc, argv);
 
 		_pid = detachProcess();
-#if DEBUGGING_ON
-		LOG(DEBUG) << "process detached - pid: " << _pid;
-#endif
+
+		GKLog2(trace, "process detached - pid : ", _pid)
 
 		{
 			SessionManager session;
@@ -131,13 +128,12 @@ int DesktopServiceLauncher::run( const int& argc, char *argv[] )
 			DBus.disconnectFromSessionBus();
 		}
 
-#if DEBUGGING_ON
-		LOG(DEBUG) << "exiting with success";
-#endif
+		GKLog(trace, "exiting with success")
+
 		return EXIT_SUCCESS;
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(ERROR) << e.what();
+		LOG(error) << e.what();
 		return EXIT_FAILURE;
 	}
 

@@ -114,8 +114,8 @@ void DBusHandler::restartRequest(void)
 
 	using steady = chr::steady_clock;
 
-	LOG(INFO) << "received signal: " << __func__;
-	LOG(INFO) << "sleeping 1 second before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
+	LOG(info) << "received signal: " << __func__;
+	LOG(info) << "sleeping 1 second before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
 	std::this_thread::sleep_for(chr::seconds(1));
 
 	const steady::time_point now = steady::now();
@@ -127,15 +127,15 @@ void DBusHandler::restartRequest(void)
 			g.wait();
 		}
 		catch (const bp::process_error & e) {
-			LOG(ERROR) << "exception catched while trying to spawn process: " << GLOGIKS_DESKTOP_SERVICE_NAME;
-			LOG(ERROR) << e.what();
+			LOG(error) << "exception catched while trying to spawn process: " << GLOGIKS_DESKTOP_SERVICE_NAME;
+			LOG(error) << e.what();
 		}
 
 		_lastCall = now;
 	}
 	else {
 		double nsec = static_cast<double>(timeLapse.count()) * steady::period::num / steady::period::den;
-		LOG(INFO) << "time lapse since last call : " << nsec << " seconds - ignoring";
+		LOG(info) << "time lapse since last call : " << nsec << " seconds - ignoring";
 	}
 }
 
