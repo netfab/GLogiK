@@ -62,7 +62,7 @@ class MainWindow
 		MainWindow(QWidget *parent = 0);
 		~MainWindow();
 
-		void init(void);
+		void init(const int& argc, char *argv[]);
 		void build(void);
 
 	private:
@@ -97,6 +97,8 @@ class MainWindow
 		static void handleSignal(int sig);
 
 		QWidget* getTabbedWidget(const std::string & name);
+
+		void parseCommandLine(const int& argc, char *argv[]);
 
 		void setTabEnabled(const std::string & name, const bool status);
 		void setCurrentTab(const std::string & name);

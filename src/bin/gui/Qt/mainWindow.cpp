@@ -44,6 +44,8 @@
 
 #include <config.h>
 
+#include <boost/program_options.hpp>
+
 #include "lib/utils/GKLogging.hpp"
 
 #include "lib/shared/glogik.hpp"
@@ -54,6 +56,8 @@
 
 #include "AboutDialog.hpp"
 #include "mainWindow.hpp"
+
+namespace po = boost::program_options;
 
 namespace GLogiK
 {
@@ -109,13 +113,19 @@ void MainWindow::handleSignal(int sig)
 	QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
 }
 
-void MainWindow::init(void)
+void MainWindow::init(const int& argc, char *argv[])
 {
 	GK_LOG_FUNC
 
+	this->parseCommandLine(argc, argv);
+
 	// initialize logging
 	try {
-		GKLogging::initDebugFile("GKcQt5", fs::owner_read|fs::owner_write|fs::group_read);
+#if DEBUGGING_ON
+		if(GLogiK::GKDebug) {
+			GKLogging::initDebugFile("GKcQt5", fs::owner_read|fs::owner_write|fs::group_read);
+		}
+#endif
 		GKLogging::initConsoleLog();
 	}
 	catch (const std::exception & e) {
@@ -342,6 +352,31 @@ void MainWindow::build(void)
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
+
+void MainWindow::parseCommandLine(const int& argc, char *argv[])
+{
+	GK_LOG_FUNC
+
+	bool debug = false;
+
+	po::options_description desc("Allowed options");
+	desc.add_options()
+		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
+	;
+
+	po::variables_map vm;
+	try {
+		po::store(po::parse_command_line(argc, argv, desc), vm);
+	}
+	catch( const std::exception & e ) {
+		throw GLogiKExcept( e.what() );
+	}
+	po::notify(vm);
+
+	if (vm.count("debug")) {
+		GLogiK::GKDebug = vm["debug"].as<bool>();
+	}
+}
 
 void MainWindow::aboutToQuit(void)
 {
