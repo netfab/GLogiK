@@ -113,6 +113,7 @@ int GLogiKDaemon::run( const int& argc, char *argv[] )
 				return EXIT_FAILURE;
 			}
 
+			/* boost::po may throw */
 			this->parseCommandLine(argc, argv);
 
 #if DEBUGGING_ON
@@ -295,12 +296,9 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	;
 
 	po::variables_map vm;
-	try {
-		po::store(po::parse_command_line(argc, argv, desc), vm);
-	}
-	catch (const std::exception & e) {
-		throw GLogiKExcept( e.what() );
-	}
+
+	po::store(po::parse_command_line(argc, argv, desc), vm);
+
 	po::notify(vm);
 
 /*

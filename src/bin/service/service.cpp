@@ -74,23 +74,28 @@ int DesktopService::run( const int& argc, char *argv[] )
 {
 	GK_LOG_FUNC
 
+	// initialize logging
 	try {
-
+		/* boost::po may throw */
 		this->parseCommandLine(argc, argv);
 
-		// initialize logging
-		try {
 #if DEBUGGING_ON
-			if(GLogiK::GKDebug) {
-				GKLogging::initDebugFile(GLOGIKS_DESKTOP_SERVICE_NAME, fs::owner_read|fs::owner_write|fs::group_read);
-			}
+		if(GLogiK::GKDebug) {
+			GKLogging::initDebugFile(GLOGIKS_DESKTOP_SERVICE_NAME, fs::owner_read|fs::owner_write|fs::group_read);
+		}
 #endif
-			GKLogging::initConsoleLog();
-		}
-		catch (const std::exception & e) {
-			syslog(LOG_ERR, "%s", e.what());
-			return EXIT_FAILURE;
-		}
+		GKLogging::initConsoleLog();
+	}
+	catch (const std::exception & e) {
+		syslog(LOG_ERR, "%s", e.what());
+		return EXIT_FAILURE;
+	}
+
+	/* -- -- -- */
+	/* -- -- -- */
+	/* -- -- -- */
+
+	try {
 
 		LOG(info) << "Starting " << GLOGIKS_DESKTOP_SERVICE_NAME << " vers. " << VERSION;
 
@@ -170,12 +175,9 @@ void DesktopService::parseCommandLine(const int& argc, char *argv[])
 	;
 
 	po::variables_map vm;
-	try {
-		po::store(po::parse_command_line(argc, argv, desc), vm);
-	}
-	catch( const std::exception & e ) {
-		throw GLogiKExcept( e.what() );
-	}
+
+	po::store(po::parse_command_line(argc, argv, desc), vm);
+
 	po::notify(vm);
 
 	if (vm.count("debug")) {

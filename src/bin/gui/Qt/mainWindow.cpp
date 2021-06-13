@@ -107,10 +107,11 @@ void MainWindow::init(const int& argc, char *argv[])
 {
 	GK_LOG_FUNC
 
-	this->parseCommandLine(argc, argv);
-
 	// initialize logging
 	try {
+		/* boost::po may throw */
+		this->parseCommandLine(argc, argv);
+
 #if DEBUGGING_ON
 		if(GLogiK::GKDebug) {
 			GKLogging::initDebugFile("GKcQt5", fs::owner_read|fs::owner_write|fs::group_read);
@@ -122,6 +123,10 @@ void MainWindow::init(const int& argc, char *argv[])
 		syslog(LOG_ERR, "%s", e.what());
 		throw GLogiKExcept("logging initialization failure");
 	}
+
+	/* -- -- -- */
+	/* -- -- -- */
+	/* -- -- -- */
 
 	LOG(INFO) << "Starting GKcQt5 vers. " << VERSION;
 
@@ -355,12 +360,9 @@ void MainWindow::parseCommandLine(const int& argc, char *argv[])
 	;
 
 	po::variables_map vm;
-	try {
-		po::store(po::parse_command_line(argc, argv, desc), vm);
-	}
-	catch( const std::exception & e ) {
-		throw GLogiKExcept( e.what() );
-	}
+
+	po::store(po::parse_command_line(argc, argv, desc), vm);
+
 	po::notify(vm);
 
 	if (vm.count("debug")) {
