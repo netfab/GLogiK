@@ -102,38 +102,42 @@ int GLogiKDaemon::run( const int& argc, char *argv[] )
 {
 	GK_LOG_FUNC
 
+	// drop privileges before doing anything else
 	try {
-		{
-			// drop privileges before opening debug file
-			try {
-				this->dropPrivileges();
-			}
-			catch ( const GLogiKExcept & e ) {
-				syslog(LOG_ERR, "%s", e.what());
-				return EXIT_FAILURE;
-			}
+		this->dropPrivileges();
+	}
+	catch (const std::exception & e) {
+		syslog(LOG_ERR, "%s", e.what());
+		return EXIT_FAILURE;
+	}
 
-			/* boost::po may throw */
-			this->parseCommandLine(argc, argv);
+	/* -- -- -- */
+
+	// initialize logging
+	try {
+		/* boost::po may throw */
+		this->parseCommandLine(argc, argv);
 
 #if DEBUGGING_ON
-			if(GLogiK::GKDebug) {
-				FileSystem::createDirectory(DEBUG_DIR, fs::owner_all | fs::group_all);
+		if(GLogiK::GKDebug) {
+			FileSystem::createDirectory(DEBUG_DIR, fs::owner_all | fs::group_all);
 
-				// initialize logging
-				try {
-					GKLogging::initDebugFile("GLogiKd", fs::owner_read|fs::owner_write|fs::group_read);
-				}
-				catch (const std::exception & e) {
-					syslog(LOG_ERR, "%s", e.what());
-					syslog(LOG_ERR, "%s", "debug file not opened");
-					return EXIT_FAILURE;
-				}
+			GKLogging::initDebugFile("GLogiKd", fs::owner_read|fs::owner_write|fs::group_read);
 
-				FileSystem::traceLastDirectoryCreation();
-			}
+			FileSystem::traceLastDirectoryCreation();
+		}
 #endif
+	}
+	catch (const std::exception & e) {
+		syslog(LOG_ERR, "%s", e.what());
+		syslog(LOG_ERR, "%s", "debug file not opened");
+		return EXIT_FAILURE;
+	}
 
+	/* -- -- -- */
+
+	try {
+		{
 			GKSysLogInfo("successfully dropped root privileges");
 
 			std::ostringstream buffer(std::ios_base::app);
