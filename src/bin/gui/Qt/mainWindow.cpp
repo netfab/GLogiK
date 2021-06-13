@@ -84,16 +84,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-	GK_LOG_FUNC
-
-	delete _pDBus; _pDBus = nullptr;
-
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "exiting MainWindow process";
-#endif
-
-	LOG(INFO) << "GKcQt5 : bye !";
-
 	closelog();
 }
 
@@ -380,6 +370,8 @@ void MainWindow::parseCommandLine(const int& argc, char *argv[])
 
 void MainWindow::aboutToQuit(void)
 {
+	GK_LOG_FUNC
+
 	_pDBus->removeSignalsInterface(
 		NSGKDBus::BusConnection::GKDBUS_SESSION,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
@@ -387,6 +379,14 @@ void MainWindow::aboutToQuit(void)
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 
 	_pDBus->disconnectFromSessionBus();
+
+	delete _pDBus; _pDBus = nullptr;
+
+#if DEBUGGING_ON
+	LOG(DEBUG2) << "exiting MainWindow process";
+#endif
+
+	LOG(INFO) << "GKcQt5 : bye !";
 }
 
 void MainWindow::configurationFileUpdated(const std::string & devID)
