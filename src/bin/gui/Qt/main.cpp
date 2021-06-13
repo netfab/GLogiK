@@ -40,6 +40,14 @@ int main(int argc, char *argv[])
 
 	try {
 		window.init(argc, argv);
+	}
+	catch ( const GLogiKExcept & e ) {
+		/* window initialization fails */
+		syslog(LOG_ERR, "%s", e.what());
+		return EXIT_FAILURE;
+	}
+
+	try {
 		window.build();
 
 		window.setFixedSize(800, 600);
@@ -54,7 +62,7 @@ int main(int argc, char *argv[])
 		window.show();
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(ERROR) << e.what();
+		LOG(error) << e.what();
 		return EXIT_FAILURE;
 	}
 
