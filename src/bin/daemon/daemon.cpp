@@ -204,14 +204,9 @@ int GLogiKDaemon::run( const int& argc, char *argv[] )
 	}
 	catch ( const GLogiKExcept & e ) {
 		GKSysLogError(e.what());
-		return EXIT_FAILURE;
 	}
-/*
-	catch ( const DisplayHelp & e ) {
-		std::cout << "\n" << e.what() << "\n";
-		return EXIT_SUCCESS;
-	}
-*/
+
+	return EXIT_FAILURE;
 }
 
 void GLogiKDaemon::handleSignal(int sig) {

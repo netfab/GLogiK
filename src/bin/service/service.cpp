@@ -159,8 +159,9 @@ int DesktopService::run( const int& argc, char *argv[] )
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(error) << e.what();
-		return EXIT_FAILURE;
 	}
+
+	return EXIT_FAILURE;
 }
 
 void DesktopService::parseCommandLine(const int& argc, char *argv[])

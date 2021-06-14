@@ -44,20 +44,6 @@ class GLogiKExcept : public std::exception
 		std::string message;
 };
 
-/*
-class DisplayHelp : public std::exception
-{
-	public :
-		DisplayHelp( const std::string& msg = "" );
-
-		virtual ~DisplayHelp( void ) throw();
-		virtual const char* what( void ) const throw();
-
-	protected :
-		std::string message;
-};
-*/
-
 class EmptyContainer : public GLogiKExcept
 {
 	public:

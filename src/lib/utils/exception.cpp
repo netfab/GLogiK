@@ -36,15 +36,5 @@ const char* GLogiKExcept::what( void ) const throw()
     return message.c_str();
 }
 
-/*
-DisplayHelp::DisplayHelp( const std::string& msg ) : message(msg) {}
-DisplayHelp::~DisplayHelp( void ) throw() {}
-
-const char* DisplayHelp::what( void ) const throw()
-{
-    return message.c_str();
-}
-*/
-
 } // namespace NSGKUtils
 
