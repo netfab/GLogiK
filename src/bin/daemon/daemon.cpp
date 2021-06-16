@@ -64,10 +64,40 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-GLogiKDaemon::GLogiKDaemon()
+GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
 	:	_PIDFileCreated(false)
 {
+	GK_LOG_FUNC
+
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
+
+	// drop privileges before doing anything else
+	this->dropPrivileges();
+
+	/* -- -- -- */
+
+	// initialize logging
+	try {
+		/* boost::po may throw */
+		this->parseCommandLine(argc, argv);
+
+#if DEBUGGING_ON
+		if(GLogiK::GKDebug) {
+			FileSystem::createDirectory(DEBUG_DIR, fs::owner_all | fs::group_all);
+
+			GKLogging::initDebugFile("GLogiKd", fs::owner_read|fs::owner_write|fs::group_read);
+
+			FileSystem::traceLastDirectoryCreation();
+		}
+#endif
+
+		GKSysLogInfo("successfully dropped root privileges");
+	}
+	catch (const std::exception & e) {
+		syslog(LOG_ERR, "%s", e.what());
+		syslog(LOG_ERR, "%s", "debug file not opened");
+		throw InitFailure();
+	}
 }
 
 GLogiKDaemon::~GLogiKDaemon()
@@ -98,115 +128,74 @@ GLogiKDaemon::~GLogiKDaemon()
 	closelog();
 }
 
-int GLogiKDaemon::run( const int& argc, char *argv[] )
+int GLogiKDaemon::run(void)
 {
 	GK_LOG_FUNC
 
-	// drop privileges before doing anything else
-	try {
-		this->dropPrivileges();
-	}
-	catch (const std::exception & e) {
-		syslog(LOG_ERR, "%s", e.what());
-		return EXIT_FAILURE;
-	}
-
 	/* -- -- -- */
 
-	// initialize logging
-	try {
-		/* boost::po may throw */
-		this->parseCommandLine(argc, argv);
+	{
+		std::ostringstream buffer(std::ios_base::app);
+		buffer << "Starting " << GLOGIKD_DAEMON_NAME << " vers. " << VERSION;
+		GKSysLogInfo(buffer.str());
+	}
 
-#if DEBUGGING_ON
-		if(GLogiK::GKDebug) {
-			FileSystem::createDirectory(DEBUG_DIR, fs::owner_all | fs::group_all);
+	if( GLogiKDaemon::isDaemonRunning() ) {
 
-			GKLogging::initDebugFile("GLogiKd", fs::owner_read|fs::owner_write|fs::group_read);
+		_pid = detachProcess(true);
+		syslog(LOG_INFO, "process successfully daemonized");
 
-			FileSystem::traceLastDirectoryCreation();
-		}
+		this->createPIDFile();
+
+		// TODO handle return values and errno ?
+		std::signal(SIGINT, GLogiKDaemon::handleSignal);
+		std::signal(SIGTERM, GLogiKDaemon::handleSignal);
+		//std::signal(SIGHUP, GLogiKDaemon::handleSignal);
+
+#if GKDBUS
+		NSGKDBus::GKDBus DBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
+		DBus.connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
 #endif
-	}
-	catch (const std::exception & e) {
-		syslog(LOG_ERR, "%s", e.what());
-		syslog(LOG_ERR, "%s", "debug file not opened");
-		return EXIT_FAILURE;
-	}
 
-	/* -- -- -- */
+		DevicesManager devicesManager;
 
-	try {
-		{
-			GKSysLogInfo("successfully dropped root privileges");
+#if GKDBUS
+		devicesManager.setDBus(&DBus);
 
+		ClientsManager clientsManager(&devicesManager);
+		clientsManager.initializeDBusRequests(&DBus);
+#endif
+
+		try {
+			/* potential D-Bus requests received from services will be
+			 * handled after devices initialization into startMonitoring() */
+			devicesManager.startMonitoring();
+#if GKDBUS
+			clientsManager.waitForClientsDisconnections();
+			clientsManager.cleanDBusRequests();
+			DBus.disconnectFromSystemBus();
+#endif
+		}
+		catch (const GLogiKExcept & e) {	// catch any monitoring failure
 			std::ostringstream buffer(std::ios_base::app);
-			buffer << "Starting " << GLOGIKD_DAEMON_NAME << " vers. " << VERSION;
-			GKSysLogInfo(buffer.str());
+			buffer << "catched exception from device monitoring : " << e.what();
+			GKSysLogWarning(buffer.str());
+
+#if GKDBUS
+			clientsManager.waitForClientsDisconnections();
+			clientsManager.cleanDBusRequests();
+			DBus.disconnectFromSystemBus();
+#endif
+			throw;
 		}
 
-		if( GLogiKDaemon::isDaemonRunning() ) {
-
-			_pid = detachProcess(true);
-			syslog(LOG_INFO, "process successfully daemonized");
-
-			this->createPIDFile();
-
-			// TODO handle return values and errno ?
-			std::signal(SIGINT, GLogiKDaemon::handleSignal);
-			std::signal(SIGTERM, GLogiKDaemon::handleSignal);
-			//std::signal(SIGHUP, GLogiKDaemon::handleSignal);
-
-#if GKDBUS
-			NSGKDBus::GKDBus DBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
-			DBus.connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
-#endif
-
-			DevicesManager devicesManager;
-
-#if GKDBUS
-			devicesManager.setDBus(&DBus);
-
-			ClientsManager clientsManager(&devicesManager);
-			clientsManager.initializeDBusRequests(&DBus);
-#endif
-
-			try {
-				/* potential D-Bus requests received from services will be
-				 * handled after devices initialization into startMonitoring() */
-				devicesManager.startMonitoring();
-#if GKDBUS
-				clientsManager.waitForClientsDisconnections();
-				clientsManager.cleanDBusRequests();
-				DBus.disconnectFromSystemBus();
-#endif
-			}
-			catch (const GLogiKExcept & e) {	// catch any monitoring failure
-				std::ostringstream buffer(std::ios_base::app);
-				buffer << "catched exception from device monitoring : " << e.what();
-				GKSysLogWarning(buffer.str());
-
-#if GKDBUS
-				clientsManager.waitForClientsDisconnections();
-				clientsManager.cleanDBusRequests();
-				DBus.disconnectFromSystemBus();
-#endif
-				throw;
-			}
-
-		}
-		else {
-			// TODO non-daemon mode
-			GKSysLogInfo("non-daemon mode");
-		}
-
-		return EXIT_SUCCESS;
 	}
-	catch ( const GLogiKExcept & e ) {
-		GKSysLogError(e.what());
+	else {
+		// TODO non-daemon mode
+		GKSysLogInfo("non-daemon mode");
 	}
 
-	return EXIT_FAILURE;
+	return EXIT_SUCCESS;
 }
 
 void GLogiKDaemon::handleSignal(int sig) {

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,12 +19,25 @@
  *
  */
 
+#include "lib/utils/utils.hpp"
 #include "daemon.hpp"
 
 using namespace GLogiK;
 
 int main(int argc, char *argv[]) {
-	GLogiKDaemon daemon;
-	return daemon.run(argc, argv);
+	using namespace NSGKUtils;
+
+	try {
+		GLogiKDaemon daemon(argc, argv);
+		return daemon.run();
+	}
+	catch(const InitFailure & e) {
+		syslog(LOG_ERR, "%s", e.what());
+	}
+	catch(const GLogiKExcept & e) {
+		GKSysLogError(e.what());
+	}
+
+	return EXIT_FAILURE;
 }
 

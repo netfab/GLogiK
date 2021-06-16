@@ -37,10 +37,10 @@ class GLogiKDaemon
 	:	public DaemonControl
 {
 	public:
-		GLogiKDaemon(void);
+		GLogiKDaemon(const int& argc, char *argv[]);
 		~GLogiKDaemon(void);
 
-		int run(const int& argc, char *argv[]);
+		int run(void);
 
 	protected:
 	private:
