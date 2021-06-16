@@ -32,10 +32,10 @@ namespace GLogiK
 class DesktopServiceLauncher
 {
 	public:
-		DesktopServiceLauncher(void);
+		DesktopServiceLauncher(const int& argc, char *argv[]);
 		~DesktopServiceLauncher(void);
 
-		int run(const int& argc, char *argv[]);
+		int run(void);
 
 	protected:
 

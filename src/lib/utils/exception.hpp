@@ -44,6 +44,13 @@ class GLogiKExcept : public std::exception
 		std::string message;
 };
 
+class InitFailure : public GLogiKExcept
+{
+	public:
+		InitFailure(const std::string& msg = "object initialization failure") : GLogiKExcept(msg) {};
+		virtual ~InitFailure( void ) throw() {};
+};
+
 class EmptyContainer : public GLogiKExcept
 {
 	public:
