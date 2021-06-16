@@ -55,24 +55,12 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DesktopService::DesktopService() :
+DesktopService::DesktopService(const int& argc, char *argv[]) :
 	_pid(0)
 {
+	GK_LOG_FUNC
+
 	openlog(GLOGIKS_DESKTOP_SERVICE_NAME, LOG_PID|LOG_CONS, LOG_USER);
-}
-
-DesktopService::~DesktopService()
-{
-	GK_LOG_FUNC
-
-	LOG(info) << GLOGIKS_DESKTOP_SERVICE_NAME << " desktop service process exiting, bye !";
-
-	closelog();
-}
-
-int DesktopService::run( const int& argc, char *argv[] )
-{
-	GK_LOG_FUNC
 
 	// initialize logging
 	try {
@@ -88,80 +76,86 @@ int DesktopService::run( const int& argc, char *argv[] )
 	}
 	catch (const std::exception & e) {
 		syslog(LOG_ERR, "%s", e.what());
-		return EXIT_FAILURE;
+		throw InitFailure();
 	}
+}
+
+DesktopService::~DesktopService()
+{
+	GK_LOG_FUNC
+
+	LOG(info) << GLOGIKS_DESKTOP_SERVICE_NAME << " desktop service process exiting, bye !";
+
+	closelog();
+}
+
+int DesktopService::run(void)
+{
+	GK_LOG_FUNC
 
 	/* -- -- -- */
 	/* -- -- -- */
 	/* -- -- -- */
 
-	try {
+	LOG(info) << "Starting " << GLOGIKS_DESKTOP_SERVICE_NAME << " vers. " << VERSION;
 
-		LOG(info) << "Starting " << GLOGIKS_DESKTOP_SERVICE_NAME << " vers. " << VERSION;
+	_pid = detachProcess();
 
-		_pid = detachProcess();
+	GKLog2(trace, "process detached - pid: ", _pid)
 
-		GKLog2(trace, "process detached - pid: ", _pid)
+	{
+		FileSystem GKfs;
+		SessionManager session;
 
+		NSGKDBus::GKDBus DBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE, GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE_PATH);
+
+		DBus.connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
+		DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
+
+		struct pollfd fds[2];
+		nfds_t nfds = 2;
+
+		fds[0].fd = session.openConnection();
+		fds[0].events = POLLIN;
+
+		fds[1].fd = GKfs.getNotifyQueueDescriptor();
+		fds[1].events = POLLIN;
+
+		DBusHandler handler(_pid, session, &GKfs, &DBus);
+
+		while( session.isSessionAlive() and
+				handler.getExitStatus() )
 		{
-			FileSystem GKfs;
-			SessionManager session;
+			int num = poll(fds, nfds, 150);
 
-			NSGKDBus::GKDBus DBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE, GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE_PATH);
-
-			DBus.connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
-			DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
-
-			struct pollfd fds[2];
-			nfds_t nfds = 2;
-
-			fds[0].fd = session.openConnection();
-			fds[0].events = POLLIN;
-
-			fds[1].fd = GKfs.getNotifyQueueDescriptor();
-			fds[1].events = POLLIN;
-
-			DBusHandler handler(_pid, session, &GKfs, &DBus);
-
-			while( session.isSessionAlive() and
-					handler.getExitStatus() )
-			{
-				int num = poll(fds, nfds, 150);
-
-				// data to read ?
-				if( num > 0 ) {
-					if( fds[0].revents & POLLIN ) {
-						session.processICEMessages();
-						continue;
-					}
-
-					if( fds[1].revents & POLLIN ) {
-						/* checking if any received filesystem notification matches
-						 * any device configuration file. If yes, reload the file,
-						 * and send configuration to daemon */
-						handler.checkNotifyEvents(&GKfs);
-					}
+			// data to read ?
+			if( num > 0 ) {
+				if( fds[0].revents & POLLIN ) {
+					session.processICEMessages();
+					continue;
 				}
 
-				DBus.checkForMessages();
+				if( fds[1].revents & POLLIN ) {
+					/* checking if any received filesystem notification matches
+					 * any device configuration file. If yes, reload the file,
+					 * and send configuration to daemon */
+					handler.checkNotifyEvents(&GKfs);
+				}
 			}
 
-			// also unregister with daemon before cleaning
-			handler.cleanDBusRequests();
-
-			DBus.disconnectFromSessionBus();
-			DBus.disconnectFromSystemBus();
+			DBus.checkForMessages();
 		}
 
-		GKLog(trace, "exiting with success")
+		// also unregister with daemon before cleaning
+		handler.cleanDBusRequests();
 
-		return EXIT_SUCCESS;
-	}
-	catch ( const GLogiKExcept & e ) {
-		LOG(error) << e.what();
+		DBus.disconnectFromSessionBus();
+		DBus.disconnectFromSystemBus();
 	}
 
-	return EXIT_FAILURE;
+	GKLog(trace, "exiting with success")
+
+	return EXIT_SUCCESS;
 }
 
 void DesktopService::parseCommandLine(const int& argc, char *argv[])

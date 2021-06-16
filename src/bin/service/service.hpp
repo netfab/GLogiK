@@ -30,10 +30,10 @@ namespace GLogiK
 class DesktopService
 {
 	public:
-		DesktopService(void);
+		DesktopService(const int& argc, char *argv[]);
 		~DesktopService(void);
 
-		int run(const int& argc, char *argv[]);
+		int run(void);
 
 	protected:
 
