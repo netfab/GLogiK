@@ -82,9 +82,7 @@ DesktopServiceLauncher::~DesktopServiceLauncher()
 {
 	GK_LOG_FUNC
 
-	GKLog(trace, "exiting desktop service launcher process")
-
-	LOG(info) << DESKTOP_SERVICE_LAUNCHER_NAME << " : bye !";
+	LOG(info) << DESKTOP_SERVICE_LAUNCHER_NAME << " desktop service launcher process, bye !";
 
 	closelog();
 }
