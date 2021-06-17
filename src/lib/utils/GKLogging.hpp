@@ -46,19 +46,10 @@ namespace NSGKUtils
 
 enum severity_level
 {
-	DEBUG4,
-	DEBUG3,
-	DEBUG2,
-	DEBUG1,
-	DEBUG,
 	trace,
-	INFO,
 	info,
-	WARNING,
 	warning,
-	ERROR,
 	error,
-	CRITICAL,
 	critical
 };
 

@@ -70,19 +70,10 @@ std::ostream& operator<< (std::ostream& strm, severity_level level)
 {
     static const char* strings[] =
     {
-		"DEBUG4",
-		"DEBUG3",
-		"DEBUG2",
-		"DEBUG1",
-		"DEBUG",
 		"trace",
-		"INFO",
 		"info",
-		"WARNING",
 		"warning",
-		"ERROR",
 		"error",
-		"CRITICAL",
 		"critical"
     };
 
@@ -131,7 +122,7 @@ void GKLogging::initConsoleLog(void)
             << expr::smessage
     );
 
-	consoleSink->set_filter(severity >= INFO);
+	consoleSink->set_filter(severity >= info);
 
 	logging::core::get()->add_sink(consoleSink);
 }
