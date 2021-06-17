@@ -45,9 +45,7 @@ AboutDialog::~AboutDialog()
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "deleting AboutDialog";
-#endif
+	GKLog(trace, "deleting AboutDialog")
 }
 
 void AboutDialog::buildDialog(void)
@@ -58,9 +56,8 @@ void AboutDialog::buildDialog(void)
 
 	try {
 		vBox = new QVBoxLayout(this);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QVBoxLayout";
-#endif
+		GKLog(trace, "allocated QVBoxLayout")
+
 		this->setLayout(vBox);
 
 		vBox->addSpacing(10);
@@ -172,9 +169,7 @@ void AboutDialog::buildDialog(void)
 		/* -- -- */
 
 		QHBoxLayout* hBox = new QHBoxLayout();
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QHBoxLayout";
-#endif
+		GKLog(trace, "allocated QHBoxLayout")
 
 		vBox->addLayout(hBox);
 
@@ -186,9 +181,8 @@ void AboutDialog::buildDialog(void)
 			//QIcon infoIcon = cStyle->standardIcon(QStyle::SP_MessageBoxInformation);
 
 			QPushButton* pCloseButton = new QPushButton(closeIcon, "&Close");
-#if DEBUGGING_ON
-			LOG(DEBUG1) << "allocated Close button";
-#endif
+			GKLog(trace, "allocated Close button")
+
 			hBox->addWidget(pCloseButton);
 
 			connect(pCloseButton, &QPushButton::clicked, this, &AboutDialog::closeDialog);
@@ -199,7 +193,7 @@ void AboutDialog::buildDialog(void)
 
 	}
 	catch (const std::bad_alloc& e) {
-		LOG(ERROR) << e.what();
+		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
 }

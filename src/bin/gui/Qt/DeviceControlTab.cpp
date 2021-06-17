@@ -59,9 +59,8 @@ void DeviceControlTab::buildTab(void)
 
 	try {
 		vBox = new QVBoxLayout(this);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QVBoxLayout";
-#endif
+		GKLog(trace, "allocated QVBoxLayout")
+
 		this->setLayout(vBox);
 
 		/* -- -- -- */
@@ -74,9 +73,7 @@ void DeviceControlTab::buildTab(void)
 		vBox->addWidget(_deviceStatusLabel);
 
 		hBox = new QHBoxLayout();
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QHBoxLayout";
-#endif
+		GKLog(trace, "allocated QHBoxLayout")
 
 		/* -- -- -- */
 
@@ -99,25 +96,22 @@ void DeviceControlTab::buildTab(void)
 		/* -- -- -- */
 
 		_pStartButton = new QPushButton("Start");
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated Start button";
-#endif
+		GKLog(trace, "allocated Start button")
+
 		hBox->addWidget(_pStartButton);
 
 		_pStopButton = new QPushButton("Stop");
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated Stop button";
-#endif
+		GKLog(trace, "allocated Stop button")
+
 		hBox->addWidget(_pStopButton);
 
 		_pRestartButton = new QPushButton("Restart");
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated Restart button";
-#endif
+		GKLog(trace, "allocated Restart button")
+
 		hBox->addWidget(_pRestartButton);
 	}
 	catch (const std::bad_alloc& e) {
-		LOG(ERROR) << e.what();
+		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
 
@@ -159,10 +153,8 @@ void DeviceControlTab::updateTab(
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "updating DeviceControlTab";
-	LOG(DEBUG2) << "device " << devID;
-#endif
+	GKLog2(trace, "updating DeviceControlTab, device ", devID)
+
 	_devID = devID;
 
 	if(status) { /* device status == "started" */
@@ -189,7 +181,7 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 {
 	GK_LOG_FUNC
 
-	LOG(INFO) << "sending " << signal << " signal for device " << _devID;
+	LOG(info) << "sending " << signal << " signal for device " << _devID;
 
 	try {
 		_pDBus->initializeBroadcastSignal(
@@ -204,7 +196,7 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		_pDBus->abandonBroadcastSignal();
-		LOG(ERROR) << e.what();
+		LOG(error) << e.what();
 	}
 
 	this->disableButtons();

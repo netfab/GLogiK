@@ -99,7 +99,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::handleSignal(int sig)
 {
-	LOG(INFO) << "catched signal : " << sig;
+	LOG(info) << "catched signal : " << sig;
 	QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
 }
 
@@ -128,7 +128,7 @@ void MainWindow::init(const int& argc, char *argv[])
 	/* -- -- -- */
 	/* -- -- -- */
 
-	LOG(INFO) << "Starting GKcQt5 vers. " << VERSION;
+	LOG(info) << "Starting GKcQt5 vers. " << VERSION;
 
 	std::signal(SIGINT, MainWindow::handleSignal);
 	std::signal(SIGTERM, MainWindow::handleSignal);
@@ -162,17 +162,13 @@ void MainWindow::build(void)
 		this->setCentralWidget(frame);
 
 		vBox = new QVBoxLayout(frame);
-
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QVBoxLayout";
-#endif
+		GKLog(trace, "allocated QVBoxLayout")
 
 		/* -- -- -- */
 
 		_devicesComboBox = new QComboBox();
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "allocated QComboBox";
-#endif
+		GKLog(trace, "allocated QComboBox")
+
 		_devicesComboBox->setObjectName("devicesList");
 
 		vBox->addWidget(_devicesComboBox);
@@ -180,22 +176,23 @@ void MainWindow::build(void)
 		/* -- -- -- */
 
 		QFrame* line = new QFrame();
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "allocated QFrame";
-#endif
+		GKLog(trace, "allocated QFrame")
 
 		line->setFrameShape(QFrame::HLine);
 		line->setFrameShadow(QFrame::Sunken);
 
 		vBox->addWidget(line);
+
 		/* -- -- -- */
 
 		_tabbedWidgets = new QTabWidget();
-		vBox->addWidget(_tabbedWidgets);
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "allocated QTabWidget";
-#endif
+		GKLog(trace, "allocated QTabWidget")
+
 		_tabbedWidgets->setObjectName("Tabs");
+
+		vBox->addWidget(_tabbedWidgets);
+
+		/* -- -- -- */
 
 		_daemonAndServiceTab = new DaemonAndServiceTab(_pDBus, "DaemonAndService");
 		_tabbedWidgets->addTab(_daemonAndServiceTab, tr("Daemon and Service"));
@@ -214,9 +211,7 @@ void MainWindow::build(void)
 		_LCDPluginsTab->buildTab();
 
 		//_tabbedWidgets->addTab(new QWidget(), tr("Macros"));
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "allocated 4 tabs";
-#endif
+		GKLog(trace, "allocated 4 tabs")
 
 		this->setTabEnabled("DaemonAndService", true);
 		this->setTabEnabled("DeviceControl", false);
@@ -238,9 +233,7 @@ void MainWindow::build(void)
 		connect(quit, &QAction::triggered, qApp, QApplication::quit);
 		connect(about, &QAction::triggered, this, &MainWindow::aboutDialog);
 
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "built Qt menu";
-#endif
+		GKLog(trace, "built Qt menu")
 
 		/* -- -- -- */
 		/* initializing timer */
@@ -249,9 +242,7 @@ void MainWindow::build(void)
 		connect(timer, &QTimer::timeout, this, &MainWindow::checkDBusMessages);
 		timer->start(100);
 
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "Qt timer started";
-#endif
+		GKLog(trace, "Qt timer started")
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		throw GLogiKBadAlloc("Qt bad alloc :(");
@@ -281,12 +272,12 @@ void MainWindow::build(void)
 			_pDBus->sendBroadcastSignal();
 
 			status += " sent to launcher";
-			LOG(WARNING) << status;
+			LOG(warning) << status;
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
 			_pDBus->abandonBroadcastSignal();
 			status += " to launcher failed";
-			LOG(ERROR) << status << " - " << e.what();
+			LOG(error) << status << " - " << e.what();
 			throw GLogiKExcept("Service RestartRequest failed");
 		}
 
@@ -310,9 +301,7 @@ void MainWindow::build(void)
 	connect(     _LCDPluginsTab->getApplyButton(), &QPushButton::clicked,
 			 std::bind(&MainWindow::saveFile, this, TabApplyButton::TAB_LCD_PLUGINS) );
 
-#if DEBUGGING_ON
-	LOG(DEBUG) << "Qt signals connected to slots";
-#endif
+	GKLog(trace, "Qt signals connected to slots")
 
 	/* initializing GKDBus signals */
 	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
@@ -384,11 +373,7 @@ void MainWindow::aboutToQuit(void)
 
 	delete _pDBus; _pDBus = nullptr;
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "exiting MainWindow process";
-#endif
-
-	LOG(INFO) << "GKcQt5 : bye !";
+	LOG(info) << "GKcQt5 MainWindow process exiting, bye !";
 }
 
 void MainWindow::configurationFileUpdated(const std::string & devID)
@@ -396,9 +381,8 @@ void MainWindow::configurationFileUpdated(const std::string & devID)
 	GK_LOG_FUNC
 
 	if( _ignoreNextSignal ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << __func__ << " signal ignored";
-#endif
+		GKLog(trace, "DeviceConfigurationSaved signal ignored")
+
 		_ignoreNextSignal = false;
 		return;
 	}
@@ -407,7 +391,7 @@ void MainWindow::configurationFileUpdated(const std::string & devID)
 		return;
 
 	{
-		LOG(WARNING) << "configuration file updated since last read for device : " << devID;
+		LOG(warning) << "configuration file updated since last read for device : " << devID;
 	}
 
 	QMessageBox msgBox;
@@ -430,10 +414,8 @@ void MainWindow::configurationFileUpdated(const std::string & devID)
 	msgBox.setDefaultButton(QMessageBox::Ok);
 
 	int ret = msgBox.exec();
+	GKLog2(trace, "got ret value from messageBox : ", ret)
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "got ret value from messageBox : " << ret;
-#endif
 	if(ret == QMessageBox::Ok) {
 		this->updateInterface( _devicesComboBox->currentIndex() );
 	}
@@ -453,7 +435,7 @@ void MainWindow::aboutDialog(void)
 		about->open();
 	}
 	catch (const std::bad_alloc& e) {
-		LOG(ERROR) << "catched bad_alloc : " << e.what();
+		LOG(error) << "catched bad_alloc : " << e.what();
 	}
 }
 
@@ -469,24 +451,20 @@ void MainWindow::saveFile(const TabApplyButton tab)
 		/* setting color */
 		_openedConfigurationFile.setRGBBytes(r, g, b);
 		dosave = true;
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "backlight color updated";
-#endif
+
+		GKLog(trace, "backlight color updated")
 	}
 	else if( tab == TabApplyButton::TAB_LCD_PLUGINS ) {
 		auto maskID = toEnumType(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1);
 		/* setting new LCD Plugins mask */
 		_openedConfigurationFile.setLCDPluginsMask(maskID, _LCDPluginsTab->getAndSetNewLCDPluginsMask());
 		dosave = true;
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "LCD plugins mask updated";
-#endif
+
+		GKLog(trace, "LCD plugins mask updated")
 	}
 
 	if(dosave) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "saving file";
-#endif
+		GKLog(trace, "saving file")
 
 		/* desktop service will detect that configuration file was modified,
 		 * and will send us a signal. Ignore it. */
@@ -499,7 +477,7 @@ void MainWindow::saveFile(const TabApplyButton tab)
 	else  {
 		QString msg("Error updating configuration file, nothing changed");
 		this->statusBar()->showMessage(msg, _statusBarTimeout);
-		LOG(WARNING) << msg.toStdString();
+		LOG(warning) << msg.toStdString();
 	}
 }
 
@@ -512,9 +490,8 @@ void MainWindow::updateInterface(int index)
 	if(index == -1) {
 		index = 0;
 	}
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "updating interface with index : " << index;
-#endif
+
+	GKLog2(trace, "updating interface with index : ", index)
 
 	try {
 		if(index == 0) {
@@ -526,9 +503,8 @@ void MainWindow::updateInterface(int index)
 		}
 		else {
 			_devID = _devicesComboBox->currentText().split(" ").at(0).toStdString();
-#if DEBUGGING_ON
-			LOG(DEBUG) << "updating tabs";
-#endif
+
+			GKLog(trace, "updating tabs")
 
 			try {
 				const Device & device = _devices.at(_devID);
@@ -566,7 +542,7 @@ void MainWindow::updateInterface(int index)
 		}
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "error updating interface : " << e.what();
+		LOG(error) << "error updating interface : " << e.what();
 	}
 }
 
@@ -574,9 +550,7 @@ void MainWindow::updateDevicesList(void)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "updating devices list";
-#endif
+	GKLog(trace, "updating devices list")
 
 	_devices.clear();
 
@@ -602,7 +576,7 @@ void MainWindow::updateDevicesList(void)
 			msg += QString::number(_devices.size());
 			msg += " device(s)";
 
-			LOG(INFO) << msg.toStdString();
+			LOG(info) << msg.toStdString();
 			this->statusBar()->showMessage(msg, _statusBarTimeout);
 		}
 		catch (const GLogiKExcept & e) {
@@ -621,9 +595,7 @@ void MainWindow::resetInterface(void)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "resetting interface";
-#endif
+	GKLog(trace, "resetting interface")
 
 	try {
 		this->setCurrentTab("DaemonAndService");
@@ -675,7 +647,7 @@ void MainWindow::resetInterface(void)
 		this->setTabEnabled("DeviceControl", true);
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "error resetting interface : " << e.what();
+		LOG(error) << "error resetting interface : " << e.what();
 		if(_GUIResetThrow) {
 			throw GLogiKExcept("interface reset failure");
 		}
@@ -689,7 +661,7 @@ QWidget* MainWindow::getTabbedWidget(const std::string & name)
 	QString n(name.c_str());
 	QWidget* pTab = _tabbedWidgets->findChild<QWidget *>(n);
 	if(pTab == 0) {
-		LOG(ERROR) << "tab not found : " << name;
+		LOG(error) << "tab not found : " << name;
 		throw GLogiKExcept("tab not found in tabWidget");
 	}
 	return pTab;
@@ -703,14 +675,14 @@ void MainWindow::setTabEnabled(const std::string & name, const bool status)
 		QWidget* pTab = this->getTabbedWidget(name);
 		int index = _tabbedWidgets->indexOf(pTab);
 		if(index == -1) {
-			LOG(ERROR) << "index not found : " << name;
+			LOG(error) << "index not found : " << name;
 			throw GLogiKExcept("tab index not found");
 		}
 
 		_tabbedWidgets->setTabEnabled(index, status);
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "error setting TabEnabled property : " << e.what();
+		LOG(error) << "error setting TabEnabled property : " << e.what();
 		throw;
 	}
 }
@@ -723,14 +695,14 @@ void MainWindow::setCurrentTab(const std::string & name)
 		QWidget* pTab = this->getTabbedWidget(name);
 		int index = _tabbedWidgets->indexOf(pTab);
 		if(index == -1) {
-			LOG(ERROR) << "index not found : " << name;
+			LOG(error) << "index not found : " << name;
 			throw GLogiKExcept("tab index not found");
 		}
 
 		_tabbedWidgets->setCurrentIndex(index);
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "error setting currentIndex : " << e.what();
+		LOG(error) << "error setting currentIndex : " << e.what();
 		throw;
 	}
 }

@@ -63,9 +63,8 @@ void DaemonAndServiceTab::buildTab(void)
 
 	try {
 		vBox = new QVBoxLayout(this);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QVBoxLayout";
-#endif
+		GKLog(trace, "allocated QVBoxLayout")
+
 		this->setLayout(vBox);
 
 		/* -- -- -- */
@@ -113,9 +112,8 @@ void DaemonAndServiceTab::buildTab(void)
 			layout->addWidget(_serviceStatusLabel);
 
 			_pStartButton = new QPushButton("Start service");
-#if DEBUGGING_ON
-			LOG(DEBUG1) << "allocated Start button";
-#endif
+			GKLog(trace, "allocated Start button")
+
 			layout->addWidget(_pStartButton);
 
 			/* keeping space used when hiding button */
@@ -131,7 +129,7 @@ void DaemonAndServiceTab::buildTab(void)
 		/* -- -- -- */
 	}
 	catch (const std::bad_alloc& e) {
-		LOG(ERROR) << e.what();
+		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
 }
@@ -150,9 +148,7 @@ void DaemonAndServiceTab::updateTab(void)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "updating DaemonAndServiceTab";
-#endif
+	GKLog(trace, "updating DaemonAndServiceTab")
 
 	{
 		const QString vers("Version : unknown");
@@ -242,12 +238,12 @@ void DaemonAndServiceTab::startSignal(void)
 		_pDBus->sendBroadcastSignal();
 
 		status += " sent to launcher";
-		LOG(INFO) << status;
+		LOG(info) << status;
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		_pDBus->abandonBroadcastSignal();
 		status += " to launcher failed";
-		LOG(ERROR) << status << " - " << e.what();
+		LOG(error) << status << " - " << e.what();
 		throw GLogiKExcept("service RestartRequest failed");
 	}
 }

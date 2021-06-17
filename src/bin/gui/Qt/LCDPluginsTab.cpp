@@ -63,9 +63,8 @@ void LCDPluginsTab::buildTab(void)
 
 	try {
 		vBox = new QVBoxLayout(this);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QVBoxLayout";
-#endif
+		GKLog(trace, "allocated QVBoxLayout")
+
 		this->setLayout(vBox);
 
 		/* -- -- -- */
@@ -103,9 +102,8 @@ void LCDPluginsTab::buildTab(void)
 
 		/* -- -- -- */
 		QHBoxLayout* hBox = new QHBoxLayout();
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QHBoxLayout";
-#endif
+		GKLog(trace, "allocated QHBoxLayout")
+
 		vBox->addLayout(hBox);
 
 		hBox->addSpacing(10);
@@ -121,7 +119,7 @@ void LCDPluginsTab::buildTab(void)
 		vBox->addWidget( this->getHLine() );
 	}
 	catch (const std::bad_alloc& e) {
-		LOG(ERROR) << e.what();
+		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
 }
@@ -228,7 +226,7 @@ void LCDPluginsTab::toggleCheckbox(int row, int column)
 	if( check )
 		check->toggle();
 	else {
-		LOG(WARNING) << "wrong dynamic cast";
+		LOG(warning) << "wrong dynamic cast";
 	}
 }
 
@@ -251,20 +249,18 @@ void LCDPluginsTab::updateNewLCDPluginsMask(int checkboxState)
 				_newLCDPluginsMask &= ~(pluginID);
 			}
 			else {
-				LOG(WARNING) << "unhandled checkbox state : " << checkboxState;
+				LOG(warning) << "unhandled checkbox state : " << checkboxState;
 			}
 
 			_pApplyButton->setEnabled( !(_LCDPluginsMask == _newLCDPluginsMask) );
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "id: " << id << " - mask: " << _newLCDPluginsMask;
-#endif
+			GKLog4(trace, "id: ", id, "mask: ", _newLCDPluginsMask)
 		}
 		else {
-			LOG(WARNING) << "conversion failure";
+			LOG(warning) << "conversion failure";
 		}
 	}
 	else {
-		LOG(WARNING) << "invalid QVariant";
+		LOG(warning) << "invalid QVariant";
 	}
 }
 

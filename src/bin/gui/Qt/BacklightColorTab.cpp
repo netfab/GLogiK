@@ -55,9 +55,8 @@ void BacklightColorTab::buildTab(void)
 
 	try {
 		vBox = new QVBoxLayout(this);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QVBoxLayout";
-#endif
+		GKLog(trace, "allocated QVBoxLayout")
+
 		this->setLayout(vBox);
 
 		/* -- -- -- */
@@ -82,9 +81,7 @@ void BacklightColorTab::buildTab(void)
 		/* -- -- -- */
 
 		hBox = new QHBoxLayout();
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QHBoxLayout";
-#endif
+		GKLog(trace, "allocated QHBoxLayout")
 
 		vBox->addLayout(hBox);
 
@@ -121,7 +118,7 @@ void BacklightColorTab::buildTab(void)
 		connect(_colorDialog, &QColorDialog::currentColorChanged, this, &BacklightColorTab::setNewColorLabel);
 	}
 	catch (const std::bad_alloc& e) {
-		LOG(ERROR) << e.what();
+		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
 }
@@ -145,10 +142,8 @@ void BacklightColorTab::updateTab(const DeviceProperties & device)
 	uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 	QColor color(r, g, b);
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "updating BacklightColorTab";
-	LOG(DEBUG2) << "color : " << color.name().toStdString();
-#endif
+	GKLog2(trace, "updating BacklightColorTab, color : ", color.name().toStdString())
+
 	this->setCurrentColorLabel(color);
 	_colorDialog->setCurrentColor(color);
 }

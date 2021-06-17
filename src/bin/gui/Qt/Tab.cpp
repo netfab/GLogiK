@@ -38,9 +38,8 @@ QFrame* Tab::getHLine(void)
 	GK_LOG_FUNC
 
 	QFrame* line = new QFrame();
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "allocated QFrame";
-#endif
+	GKLog(trace, "allocated QFrame")
+
 	line->setFrameShape(QFrame::HLine);
 	line->setFrameShadow(QFrame::Sunken);
 	return line;
@@ -51,9 +50,7 @@ void Tab::prepareApplyButton(void)
 	GK_LOG_FUNC
 
 	_pApplyButton = new QPushButton("Appl&y Changes");
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "allocated Apply button";
-#endif
+	GKLog(trace, "allocated Apply button")
 
 	/* Default visual properties for widgets are defined by QStyle
 	 * styleSheet() returns empty QString */
