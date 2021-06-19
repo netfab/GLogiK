@@ -58,7 +58,6 @@ namespace attrs = boost::log::attributes;
 
 BOOST_LOG_ATTRIBUTE_KEYWORD(line_id, "LineID", unsigned int)
 BOOST_LOG_ATTRIBUTE_KEYWORD(severity, "Severity", severity_level)
-BOOST_LOG_ATTRIBUTE_KEYWORD(tag_attr, "Tag", std::string)
 BOOST_LOG_ATTRIBUTE_KEYWORD(scope, "Scope", attrs::named_scope::value_type)
 BOOST_LOG_ATTRIBUTE_KEYWORD(timeline, "Timeline", attrs::timer::value_type)
 
@@ -111,10 +110,6 @@ void GKLogging::initConsoleLog(void)
             << std::hex << std::setw(8) << std::setfill('0') << line_id << std::dec << std::setfill(' ')
             << ": <" << severity << ">\t"
             << "(" << scope << ") "
-            << expr::if_(expr::has_attr(tag_attr))
-               [
-                    expr::stream << "[" << tag_attr << "] "
-               ]
             << expr::if_(expr::has_attr(timeline))
                [
                     expr::stream << "[" << timeline << "] "
@@ -167,10 +162,6 @@ void GKLogging::initDebugFile(const std::string & baseName, const fs::perms prms
             << std::hex << std::setw(8) << std::setfill('0') << line_id << std::dec << std::setfill(' ')
             << ": <" << severity << ">\t"
             << "(" << scope << ") "
-            << expr::if_(expr::has_attr(tag_attr))
-               [
-                    expr::stream << "[" << tag_attr << "] "
-               ]
             << expr::if_(expr::has_attr(timeline))
                [
                     expr::stream << "[" << timeline << "] "
