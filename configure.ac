@@ -83,7 +83,7 @@ AC_ARG_ENABLE( [debug-gkdbus],
 				[enable_gkdbus_debugging=$enableval], [enable_gkdbus_debugging=no])
 
 AC_ARG_ENABLE( [debug-libusb],
-				AC_HELP_STRING( [--enable-debug-libusb], [Enable LibUSB extra debugging, default: no]),
+				AC_HELP_STRING( [--enable-debug-libusb], [Enable libusb extra debugging, default: no]),
 				[enable_libusb_extra_debugging=$enableval], [enable_libusb_extra_debugging=no])
 
 AC_ARG_ENABLE( [debug-pbmfont],
@@ -198,7 +198,7 @@ GDT_DEBUG_FLAG(	[$enable_gkdbus_debugging],
 
 GDT_DEBUG_FLAG(	[$enable_libusb_extra_debugging],
 				[DEBUG_LIBUSB_EXTRA],
-				[LibUSB extra debugging])
+				[libusb extra debugging])
 
 GDT_DEBUG_FLAG(	[$enable_pbmfont_debugging],
 				[DEBUG_PBMFONT],
@@ -423,7 +423,7 @@ AC_MSG_NOTICE([
   Global debugging : ${enable_debugging}
               keys : ${enable_keys_debugging}
             GKDBus : ${enable_gkdbus_debugging}
-            LibUSB : ${enable_libusb_extra_debugging}
+            libusb : ${enable_libusb_extra_debugging}
            PBMFont : ${enable_pbmfont_debugging}
        LCD plugins : ${enable_lcd_plugins_debugging}
          debug dir : ${DEBUG_DIR}

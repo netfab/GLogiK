@@ -31,13 +31,13 @@
 namespace GLogiK
 {
 
-class LibUSB
+class libusb
 {
 	public:
 
 	protected:
-		LibUSB(void);
-		~LibUSB(void);
+		libusb(void);
+		~libusb(void);
 
 		void openUSBDevice(USBDevice & device);
 		void closeUSBDevice(USBDevice & device) noexcept;

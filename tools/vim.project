@@ -128,8 +128,8 @@ GLogiK=$PWD/.. CD=. {
 				LCDScreenPluginsManager.hpp
 				hidapi.cpp
 				hidapi.hpp
-				libUSB.cpp
-				libUSB.hpp
+				libusb.cpp
+				libusb.hpp
 				logitechG510.cpp
 				logitechG510.hpp
 				macrosManager.cpp

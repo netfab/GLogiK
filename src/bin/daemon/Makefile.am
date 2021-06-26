@@ -55,8 +55,8 @@ GLogiKd_LDADD += \
 				@LIBUSB_LIBS@
 
 GLogiKd_SOURCES += \
-		%D%/libUSB.cpp \
-		%D%/libUSB.hpp
+		%D%/libusb.cpp \
+		%D%/libusb.hpp
 endif
 
 if WITH_HIDAPI

@@ -30,16 +30,16 @@
 
 #include "lib/utils/utils.hpp"
 
-#include "libUSB.hpp"
+#include "libusb.hpp"
 
 namespace GLogiK
 {
 
 using namespace NSGKUtils;
 
-libusb_context * LibUSB::pContext = nullptr;
-uint8_t LibUSB::counter = 0;
-bool LibUSB::status = false;
+libusb_context * libusb::pContext = nullptr;
+uint8_t libusb::counter = 0;
+bool libusb::status = false;
 
 /*
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -51,38 +51,40 @@ bool LibUSB::status = false;
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-LibUSB::LibUSB(void)
+libusb::libusb(void)
 {
-	LibUSB::counter++;
+	libusb::counter++;
 
-	if( ! LibUSB::status ) {
+	if( ! libusb::status ) {
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "initializing libusb";
 #endif
-		int ret = libusb_init( &(LibUSB::pContext) );
+		int ret = libusb_init( &(libusb::pContext) );
 		if ( this->USBError(ret) ) {
 			throw GLogiKExcept("libusb initialization failure");
 		}
 
-		LibUSB::status = true;
+		libusb::status = true;
 	}
 }
 
-LibUSB::~LibUSB() {
-	LibUSB::counter--;
+libusb::~libusb()
+{
+	libusb::counter--;
 
-	if (LibUSB::status and LibUSB::counter == 0) {
+	if (libusb::status and libusb::counter == 0) {
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "closing libusb";
 #endif
-		libusb_exit(LibUSB::pContext);
-		LibUSB::status = false;
+		libusb_exit(libusb::pContext);
+		libusb::status = false;
 	}
 }
 
-void LibUSB::openUSBDevice(USBDevice & device) {
+void libusb::openUSBDevice(USBDevice & device)
+{
 	libusb_device **list;
-	int numDevices = libusb_get_device_list(LibUSB::pContext, &(list));
+	int numDevices = libusb_get_device_list(libusb::pContext, &(list));
 	if( numDevices < 0 ) {
 		this->USBError(numDevices);
 		throw GLogiKExcept("error getting USB devices list");
@@ -127,7 +129,8 @@ void LibUSB::openUSBDevice(USBDevice & device) {
 	}
 }
 
-void LibUSB::closeUSBDevice(USBDevice & device) noexcept {
+void libusb::closeUSBDevice(USBDevice & device) noexcept
+{
 	if( device.runDeviceUSBRequests() ) {
 		/* if we ever claimed or detached some interfaces, set them back
 		 * to the same state in which we found them */
@@ -144,7 +147,7 @@ void LibUSB::closeUSBDevice(USBDevice & device) noexcept {
 #endif
 }
 
-void LibUSB::sendControlRequest(
+void libusb::sendControlRequest(
 	USBDevice & device,
 	const unsigned char * data,
 	uint16_t wLength)
@@ -194,7 +197,7 @@ void LibUSB::sendControlRequest(
 	}
 }
 
-int LibUSB::performKeysInterruptTransfer(
+int libusb::performKeysInterruptTransfer(
 	USBDevice & device,
 	unsigned int timeout)
 {
@@ -225,7 +228,7 @@ int LibUSB::performKeysInterruptTransfer(
 	return ret;
 }
 
-int LibUSB::performLCDScreenInterruptTransfer(
+int libusb::performLCDScreenInterruptTransfer(
 	USBDevice & device,
 	const unsigned char * buffer,
 	int bufferLength,
@@ -272,7 +275,8 @@ int LibUSB::performLCDScreenInterruptTransfer(
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-int LibUSB::USBError(int errorCode) noexcept {
+int libusb::USBError(int errorCode) noexcept
+{
 	switch(errorCode) {
 		case LIBUSB_SUCCESS:
 			break;
@@ -287,7 +291,8 @@ int LibUSB::USBError(int errorCode) noexcept {
 	return errorCode;
 }
 
-void LibUSB::releaseUSBDeviceInterfaces(USBDevice & device) noexcept {
+void libusb::releaseUSBDeviceInterfaces(USBDevice & device) noexcept
+{
 	int ret = 0;
 	for(auto it = device._toRelease.begin(); it != device._toRelease.end();) {
 		int numInt = (*it);
@@ -322,7 +327,8 @@ void LibUSB::releaseUSBDeviceInterfaces(USBDevice & device) noexcept {
  *			libusb_set_configuration() may succeed.
  *
  */
-void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
+void libusb::setUSBDeviceActiveConfiguration(USBDevice & device)
+{
 	int ret = 0;
 
 #if DEBUGGING_ON
@@ -407,7 +413,7 @@ void LibUSB::setUSBDeviceActiveConfiguration(USBDevice & device) {
 	this->attachUSBDeviceInterfacesToKernelDrivers(device);
 }
 
-void LibUSB::findUSBDeviceInterface(USBDevice & device) {
+void libusb::findUSBDeviceInterface(USBDevice & device) {
 	int ret = 0;
 
 #if DEBUGGING_ON
@@ -684,9 +690,10 @@ void LibUSB::findUSBDeviceInterface(USBDevice & device) {
 
 		libusb_free_config_descriptor( configDescriptor ); /* free */
 	} /* for .bNumConfigurations */
-
 }
-void LibUSB::attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexcept {
+
+void libusb::attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexcept
+{
 	int ret = 0;
 	for(auto it = device._toAttach.begin(); it != device._toAttach.end();) {
 		int numInt = (*it);
@@ -704,7 +711,8 @@ void LibUSB::attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexce
 	device._toAttach.clear();
 }
 
-void LibUSB::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int numInt) {
+void libusb::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int numInt)
+{
 	int ret = libusb_kernel_driver_active(device._pUSBDeviceHandle, numInt);
 	if( ret < 0 ) {
 		this->USBError(ret);

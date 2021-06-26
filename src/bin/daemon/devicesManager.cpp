@@ -41,7 +41,7 @@
 #include "devicesManager.hpp"
 
 #if GKLIBUSB
-#include "libUSB.hpp"
+#include "libusb.hpp"
 #elif GKHIDAPI
 #include "hidapi.hpp"
 #endif
@@ -871,7 +871,7 @@ void DevicesManager::resetDevicesStates(void) {
 
 /*
  *	Throws GLogiKExcept in many ways on udev related functions failures.
- *	LibUSB failures on devices start/stop are catched internally.
+ *	USB library failures on devices start/stop are catched internally.
  */
 void DevicesManager::startMonitoring(void) {
 #if DEBUGGING_ON
@@ -909,7 +909,7 @@ void DevicesManager::startMonitoring(void) {
 #endif
 			try {
 #if GKLIBUSB
-				_drivers.push_back( new LogitechG510<LibUSB>() );
+				_drivers.push_back( new LogitechG510<libusb>() );
 #elif GKHIDAPI
 				_drivers.push_back( new LogitechG510<hidapi>() );
 #endif
