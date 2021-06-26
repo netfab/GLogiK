@@ -37,9 +37,9 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-libusb_context * libusb::pContext = nullptr;
-uint8_t libusb::counter = 0;
-bool libusb::status = false;
+libusb_context * USBInit::pContext = nullptr;
+uint8_t USBInit::counter = 0;
+bool USBInit::status = false;
 
 /*
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -51,40 +51,56 @@ bool libusb::status = false;
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-libusb::libusb(void)
+USBInit::USBInit(void)
 {
-	libusb::counter++;
-
-	if( ! libusb::status ) {
+	if( ! USBInit::status ) {
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "initializing libusb";
 #endif
-		int ret = libusb_init( &(libusb::pContext) );
+		int ret = libusb_init( &(USBInit::pContext) );
 		if ( this->USBError(ret) ) {
 			throw GLogiKExcept("libusb initialization failure");
 		}
 
-		libusb::status = true;
+		USBInit::status = true;
 	}
+
+	USBInit::counter++;
 }
 
-libusb::~libusb()
+USBInit::~USBInit(void)
 {
-	libusb::counter--;
+	USBInit::counter--;
 
-	if (libusb::status and libusb::counter == 0) {
+	if (USBInit::status and USBInit::counter == 0) {
 #if DEBUGGING_ON
 		LOG(DEBUG3) << "closing libusb";
 #endif
-		libusb_exit(libusb::pContext);
-		libusb::status = false;
+		libusb_exit(USBInit::pContext);
+		USBInit::status = false;
 	}
 }
 
-void libusb::openUSBDevice(USBDevice & device)
+int USBInit::USBError(int errorCode) noexcept
+{
+	switch(errorCode) {
+		case LIBUSB_SUCCESS:
+			break;
+		default:
+			std::ostringstream buffer(std::ios_base::app);
+			buffer	<< "libusb error (" << libusb_error_name(errorCode) << ") : "
+					<< libusb_strerror( (libusb_error)errorCode );
+			GKSysLog(LOG_ERR, ERROR, buffer.str());
+			break;
+	}
+
+	return errorCode;
+}
+
+void USBInit::seekUSBDevice(USBDevice & device)
 {
 	libusb_device **list;
-	int numDevices = libusb_get_device_list(libusb::pContext, &(list));
+	int numDevices = libusb_get_device_list(USBInit::pContext, &(list));
 	if( numDevices < 0 ) {
 		this->USBError(numDevices);
 		throw GLogiKExcept("error getting USB devices list");
@@ -107,17 +123,24 @@ void libusb::openUSBDevice(USBDevice & device)
 		throw GLogiKExcept(buffer.str());
 	}
 
+	libusb_free_device_list(list, 1);
+}
+
+/* -- -- -- */
+
+void libusb::openUSBDevice(USBDevice & device)
+{
+	/* throws on failure */
+	this->seekUSBDevice(device);
+
 	int ret = libusb_open( device._pUSBDevice, &(device._pUSBDeviceHandle) );
 	if( this->USBError(ret) ) {
-		libusb_free_device_list(list, 1);
 		throw GLogiKExcept("opening device failure");
 	}
 
 #if DEBUGGING_ON
 	LOG(DEBUG3) << device.getID() << " opened USB device";
 #endif
-
-	libusb_free_device_list(list, 1);
 
 	try {
 		this->setUSBDeviceActiveConfiguration(device);
@@ -274,22 +297,6 @@ int libusb::performLCDScreenInterruptTransfer(
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
-
-int libusb::USBError(int errorCode) noexcept
-{
-	switch(errorCode) {
-		case LIBUSB_SUCCESS:
-			break;
-		default:
-			std::ostringstream buffer(std::ios_base::app);
-			buffer	<< "libusb error (" << libusb_error_name(errorCode) << ") : "
-					<< libusb_strerror( (libusb_error)errorCode );
-			GKSysLog(LOG_ERR, ERROR, buffer.str());
-			break;
-	}
-
-	return errorCode;
-}
 
 void libusb::releaseUSBDeviceInterfaces(USBDevice & device) noexcept
 {

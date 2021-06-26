@@ -66,6 +66,7 @@ class USBDevice
 
 #if GKLIBUSB
 	private:
+		friend class USBInit;
 		friend class libusb;
 
 		std::mutex					_libUSBMutex;
