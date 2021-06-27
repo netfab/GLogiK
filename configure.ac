@@ -317,13 +317,12 @@ dnl -------------------------------------------------------------------------
 
 PKG_CHECK_MODULES([LIBUDEV], [libudev])
 PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
+PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.19])
 
 AS_IF([test "x$enable_hidapi" = "xyes"],
 	[
 		PKG_CHECK_MODULES([LIBHIDAPI], [hidapi-libusb >= 0.10.0])
-	], [
-		PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.19])
-	])
+	], [])
 
 AS_IF([test "x$enable_dbus" = "xyes"],
 	[

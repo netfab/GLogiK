@@ -126,6 +126,8 @@ GLogiK=$PWD/.. CD=. {
 				keyboardDriver.hpp
 				LCDScreenPluginsManager.cpp
 				LCDScreenPluginsManager.hpp
+				usbinit.cpp
+				usbinit.hpp
 				hidapi.cpp
 				hidapi.hpp
 				libusb.cpp

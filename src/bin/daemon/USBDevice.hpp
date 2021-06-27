@@ -41,9 +41,9 @@
 
 #include <config.h>
 
-#if GKLIBUSB
 #include <libusb-1.0/libusb.h>
-#elif GKHIDAPI
+
+#if GKHIDAPI
 #include <hidapi.h>
 #endif
 
@@ -66,7 +66,6 @@ class USBDevice
 
 #if GKLIBUSB
 	private:
-		friend class USBInit;
 		friend class libusb;
 
 		std::mutex					_libUSBMutex;
@@ -90,11 +89,14 @@ class USBDevice
 		uint64_t					_LCDPluginsMask1;
 
 	private:
+		friend class USBInit;
+
 		MacrosManager*				_pMacrosManager;
 		LCDScreenPluginsManager*	_pLCDPluginsManager;
 
-#if GKLIBUSB
 		libusb_device*				_pUSBDevice;
+
+#if GKLIBUSB
 		libusb_device_handle*		_pUSBDeviceHandle;
 #elif GKHIDAPI
 		friend class hidapi;

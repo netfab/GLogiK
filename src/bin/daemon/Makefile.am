@@ -4,6 +4,7 @@ sbin_PROGRAMS = GLogiKd
 GLogiKd_CXXFLAGS = \
 				@LIBEVDEV_CFLAGS@ \
 				@BOOST_CPPFLAGS@ \
+				@LIBUSB_CFLAGS@ \
 				@PTHREAD_CFLAGS@ \
 				@AM_CXXFLAGS@
 
@@ -18,6 +19,7 @@ GLogiKd_LDADD = \
 				@BOOST_FILESYSTEM_LIB@ \
 				@BOOST_IOSTREAMS_LIB@ \
 				@LIBUDEV_LIBS@ \
+				@LIBUSB_LIBS@ \
 				@PTHREAD_LIBS@ \
 				libGKUtils.la \
 				libGKShared.la
@@ -33,6 +35,8 @@ GLogiKd_SOURCES = \
 		%D%/USBAPIenums.hpp \
 		%D%/keyboardDriver.cpp \
 		%D%/keyboardDriver.hpp \
+		%D%/usbinit.cpp \
+		%D%/usbinit.hpp \
 		%D%/USBDevice.cpp \
 		%D%/USBDevice.hpp \
 		%D%/USBDeviceID.cpp \
@@ -48,12 +52,6 @@ GLogiKd_SOURCES = \
 
 
 if WITH_LIBUSB
-GLogiKd_CXXFLAGS += \
-				@LIBUSB_CFLAGS@
-
-GLogiKd_LDADD += \
-				@LIBUSB_LIBS@
-
 GLogiKd_SOURCES += \
 		%D%/libusb.cpp \
 		%D%/libusb.hpp
