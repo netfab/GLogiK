@@ -63,9 +63,9 @@ void hidapi::openUSBDevice(USBDevice & device)
 			(hid_version()->minor == 10) ) {
 			/* 0003:0002:01 */
 			os	<< std::setfill('0')
-				<< std::setw(4) << std::hex << toInt(device.getBus()) << ":"
-				<< std::setw(4) << toInt(device.getNum()) << ":"
-				<< std::setw(2) << toInt(device.getBInterfaceNumber());
+				<< std::setw(4) << std::hex << toUInt(device.getBus()) << ":"
+				<< std::setw(4) << toUInt(device.getNum()) << ":"
+				<< std::setw(2) << toUInt(device.getBInterfaceNumber());
 		}
 		else {
 			/* 3-2:1.1 */
