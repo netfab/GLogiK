@@ -72,6 +72,28 @@ USBInit::~USBInit(void)
 	}
 }
 
+const int USBInit::getUSBDevicePortNumbers(
+	USBDevice & device,
+	USBPortNumbers_type & port_numbers)
+{
+	/* throws on failure */
+	this->seekUSBDevice(device);
+
+	int num_ports = libusb_get_port_numbers(device._pUSBDevice, &port_numbers[0], port_numbers.size());
+
+	if(num_ports == LIBUSB_ERROR_OVERFLOW) {
+		throw GLogiKExcept("array overflow error");
+	}
+
+	device._pUSBDevice = nullptr;
+
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "number of ports : " << num_ports;
+#endif
+
+	return num_ports;
+}
+
 int USBInit::USBError(int errorCode) noexcept
 {
 	switch(errorCode) {

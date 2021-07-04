@@ -22,7 +22,10 @@
 #ifndef SRC_BIN_DAEMON_USBINIT_HPP_
 #define SRC_BIN_DAEMON_USBINIT_HPP_
 
+#include <cstddef>
 #include <cstdint>
+
+#include <array>
 
 #include <libusb-1.0/libusb.h>
 
@@ -31,13 +34,23 @@
 namespace GLogiK
 {
 
+/* As per the USB 3.0 specs, the current maximum limit for the depth is 7. */
+const std::size_t PORT_NUMBERS_LEN = 7;
+
+typedef std::array<uint8_t, PORT_NUMBERS_LEN> USBPortNumbers_type;
+
 class USBInit
 {
 	public:
-	protected:
 		USBInit(void);
 		~USBInit(void);
 
+		const int getUSBDevicePortNumbers(
+			USBDevice & device,
+			USBPortNumbers_type & port_numbers
+		);
+
+	protected:
 		int USBError(int errorCode) noexcept;
 		void seekUSBDevice(USBDevice & device);
 

@@ -24,6 +24,7 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "usbinit.hpp"
 #include "hidapi.hpp"
 
 #include "USBAPIenums.hpp"
@@ -56,14 +57,44 @@ void hidapi::openUSBDevice(USBDevice & device)
 {
 	auto make_hidapi_path = [&device] () -> const std::string {
 		std::ostringstream os;
-		os	<< std::setfill('0')
-			<< std::setw(4) << std::hex << toInt(device.getBus()) << ":"
-			<< std::setw(4) << toInt(device.getNum()) << ":"
-			<< std::setw(2) << toInt(device.getBInterfaceNumber());
+
+		/* hidapi versions 0.10.0 and 0.10.1 */
+		if( (hid_version()->major == 0) and
+			(hid_version()->minor == 10) ) {
+			/* 0003:0002:01 */
+			os	<< std::setfill('0')
+				<< std::setw(4) << std::hex << toInt(device.getBus()) << ":"
+				<< std::setw(4) << toInt(device.getNum()) << ":"
+				<< std::setw(2) << toInt(device.getBInterfaceNumber());
+		}
+		else {
+			/* 3-2:1.1 */
+			USBInit dev;
+
+			USBPortNumbers_type port_numbers{0, 0, 0, 0, 0, 0, 0};
+
+			const int num = dev.getUSBDevicePortNumbers(device, port_numbers);
+
+			if(num < 1)
+				throw GLogiKExcept("wrong number of ports");
+
+			os << toUInt(device.getBus()) << "-" << toUInt(port_numbers[0]);
+
+			for(int i = 1; i < num; i++) {
+				os << "." << toUInt(port_numbers[i]);
+			}
+
+			os	<< ":" << toUInt(device.getBConfigurationValue())
+				<< "." << toUInt(device.getBInterfaceNumber());
+		}
+
 		return os.str();
 	};
 
 	const std::string searchedPath(make_hidapi_path());
+#if DEBUGGING_ON
+	LOG(DEBUG1) << "searched path: " << searchedPath;
+#endif
 
 	/* getVendorID() and getProductID() return strings in hexadecimal format */
 	const unsigned short vendor_id  = toUShort( device.getVendorID(),  16 );
@@ -74,9 +105,6 @@ void hidapi::openUSBDevice(USBDevice & device)
 	devs = hid_enumerate(vendor_id, product_id);
 	cur_dev = devs;
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "searched path: " << searchedPath;
-#endif
 	while( cur_dev ) {
 		if ((cur_dev->vendor_id == vendor_id) and
 			(cur_dev->product_id == product_id)) {
