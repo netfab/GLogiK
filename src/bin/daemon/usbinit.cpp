@@ -45,9 +45,8 @@ bool USBInit::status = false;
 USBInit::USBInit(void)
 {
 	if( ! USBInit::status ) {
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "initializing libusb";
-#endif
+		GKLog(trace, "initializing libusb")
+
 		int ret = libusb_init( &(USBInit::pContext) );
 		if ( this->USBError(ret) ) {
 			throw GLogiKExcept("libusb initialization failure");
@@ -64,9 +63,8 @@ USBInit::~USBInit(void)
 	USBInit::counter--;
 
 	if (USBInit::status and USBInit::counter == 0) {
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "closing libusb";
-#endif
+		GKLog(trace, "closing libusb")
+
 		libusb_exit(USBInit::pContext);
 		USBInit::status = false;
 	}
@@ -87,9 +85,7 @@ const int USBInit::getUSBDevicePortNumbers(
 
 	device._pUSBDevice = nullptr;
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "number of ports : " << num_ports;
-#endif
+	GKLog2(trace, "number of ports : ", num_ports)
 
 	return num_ports;
 }
@@ -103,7 +99,7 @@ int USBInit::USBError(int errorCode) noexcept
 			std::ostringstream buffer(std::ios_base::app);
 			buffer	<< "libusb error (" << libusb_error_name(errorCode) << ") : "
 					<< libusb_strerror( (libusb_error)errorCode );
-			GKSysLog(LOG_ERR, ERROR, buffer.str());
+			GKSysLogError(buffer.str());
 			break;
 	}
 
