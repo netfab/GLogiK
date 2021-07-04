@@ -26,6 +26,7 @@
 
 #include <libusb-1.0/libusb.h>
 
+#include "usbinit.hpp"
 #include "USBDevice.hpp"
 
 namespace GLogiK
