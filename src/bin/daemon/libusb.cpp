@@ -73,7 +73,7 @@ void libusb::openUSBDevice(USBDevice & device)
 
 void libusb::closeUSBDevice(USBDevice & device) noexcept
 {
-	if( device.runDeviceUSBRequests() ) {
+	if( device.getUSBRequestsStatus() ) {
 		/* if we ever claimed or detached some interfaces, set them back
 		 * to the same state in which we found them */
 		this->releaseUSBDeviceInterfaces(device);
@@ -94,7 +94,7 @@ void libusb::sendControlRequest(
 	const unsigned char * data,
 	uint16_t wLength)
 {
-	if( ! device.runDeviceUSBRequests() ) {
+	if( ! device.getUSBRequestsStatus() ) {
 		GKSysLog(LOG_WARNING, WARNING, "skip device feature report sending, would probably fail");
 		return;
 	}
@@ -143,7 +143,7 @@ int libusb::performKeysInterruptTransfer(
 	USBDevice & device,
 	unsigned int timeout)
 {
-	if( ! device.runDeviceUSBRequests() ) {
+	if( ! device.getUSBRequestsStatus() ) {
 		GKSysLog(LOG_WARNING, WARNING, "skip device interrupt transfer read, would probably fail");
 		return 0;
 	}
@@ -176,7 +176,7 @@ int libusb::performLCDScreenInterruptTransfer(
 	int bufferLength,
 	unsigned int timeout)
 {
-	if( ! device.runDeviceUSBRequests() ) {
+	if( ! device.getUSBRequestsStatus() ) {
 		GKSysLog(LOG_WARNING, WARNING, "skip device interrupt transfer write, would probably fail");
 		return 0;
 	}

@@ -379,7 +379,7 @@ void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device, const std::strin
 			<< " on bus " << toUInt(device.getBus());
 		GKSysLog(LOG_ERR, ERROR, err.str());
 		GKSysLog(LOG_ERR, ERROR, "reached listening thread maximum fatal errors, giving up");
-		device.deactivateThreads();
+		device.stopThreads();
 	}
 }
 
@@ -852,7 +852,7 @@ void KeyboardDriver::setDeviceLCDPluginsMask(USBDevice & device, uint64_t mask)
 
 void KeyboardDriver::joinDeviceThreads(USBDevice & device)
 {
-	device.deactivateThreads();
+	device.stopThreads();
 
 	bool found = false;
 	std::thread::id thread_id;
