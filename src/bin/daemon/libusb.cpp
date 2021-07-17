@@ -89,7 +89,7 @@ void libusb::closeUSBDevice(USBDevice & device) noexcept
 #endif
 }
 
-void libusb::sendControlRequest(
+void libusb::sendUSBDeviceFeatureReport(
 	USBDevice & device,
 	const unsigned char * data,
 	uint16_t wLength)
@@ -139,7 +139,7 @@ void libusb::sendControlRequest(
 	}
 }
 
-int libusb::performKeysInterruptTransfer(
+int libusb::performUSBDeviceKeysInterruptTransfer(
 	USBDevice & device,
 	unsigned int timeout)
 {
@@ -170,7 +170,7 @@ int libusb::performKeysInterruptTransfer(
 	return ret;
 }
 
-int libusb::performLCDScreenInterruptTransfer(
+int libusb::performUSBDeviceLCDScreenInterruptTransfer(
 	USBDevice & device,
 	const unsigned char * buffer,
 	int bufferLength,

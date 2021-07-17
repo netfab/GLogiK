@@ -101,7 +101,7 @@ const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void) {
 KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device) {
 	std::fill_n(device._pressedKeys, KEYS_BUFFER_LENGTH, 0);
 
-	int ret = this->performKeysInterruptTransfer(device, 10);
+	int ret = this->performUSBDeviceKeysInterruptTransfer(device, 10);
 
 	switch(ret) {
 		case 0:
@@ -556,7 +556,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 			}
 
 			const PixelsData & LCDBuffer = device.getLCDPluginsManager()->getNextLCDScreenBuffer(LCDKey, LCDPluginsMask1);
-			int ret = this->performLCDScreenInterruptTransfer(
+			int ret = this->performUSBDeviceLCDScreenInterruptTransfer(
 				device,
 				LCDBuffer.data(),
 				LCDBuffer.size(),
@@ -590,7 +590,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID) {
 		/* make sure endscreen plugin is loaded before using it */
 		if( device.getLCDPluginsManager()->findOneLCDScreenPlugin( endscreen ) ) {
 			const PixelsData & LCDBuffer = device.getLCDPluginsManager()->getNextLCDScreenBuffer("", endscreen);
-			int ret = this->performLCDScreenInterruptTransfer(
+			int ret = this->performUSBDeviceLCDScreenInterruptTransfer(
 				device,
 				LCDBuffer.data(),
 				LCDBuffer.size(),

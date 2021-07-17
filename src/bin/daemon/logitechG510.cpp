@@ -326,7 +326,7 @@ void G510Base::sendUSBDeviceInitialization(USBDevice & device)
 				   0, 0, 0, 0, 0, 0, 0, 0,
 				   0, 0, 0
 		};
-		this->sendControlRequest(device, data, 19);
+		this->sendUSBDeviceFeatureReport(device, data, 19);
 	}
 	{
 		const unsigned char ReportID = 0x09;
@@ -334,7 +334,7 @@ void G510Base::sendUSBDeviceInitialization(USBDevice & device)
 			ReportID, 0x02, 0, 0, 0, 0, 0, 0
 		};
 
-		this->sendControlRequest(device, data, 8);
+		this->sendUSBDeviceFeatureReport(device, data, 8);
 	}
 }
 
@@ -351,7 +351,7 @@ void G510Base::setDeviceBacklightColor(
 #endif
 	const unsigned char ReportID = 0x05;
 	const unsigned char data[4] = { ReportID, r, g, b };
-	this->sendControlRequest(device, data, 4);
+	this->sendUSBDeviceFeatureReport(device, data, 4);
 }
 
 void G510Base::setDeviceMxKeysLeds(USBDevice & device)
@@ -368,7 +368,7 @@ void G510Base::setDeviceMxKeysLeds(USBDevice & device)
 #endif
 	const unsigned char ReportID = 0x04;
 	const unsigned char data[2] = { ReportID, mask };
-	this->sendControlRequest(device, data, 2);
+	this->sendUSBDeviceFeatureReport(device, data, 2);
 }
 
 } // namespace GLogiK

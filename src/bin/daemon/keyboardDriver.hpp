@@ -159,11 +159,11 @@ class KeyboardDriver
 
 	private:
 		/* USBAPI */
-		virtual int performKeysInterruptTransfer(
+		virtual int performUSBDeviceKeysInterruptTransfer(
 			USBDevice & device,
 			unsigned int timeout
 		) = 0;
-		virtual int performLCDScreenInterruptTransfer(
+		virtual int performUSBDeviceLCDScreenInterruptTransfer(
 			USBDevice & device,
 			const unsigned char * buffer,
 			int bufferLength,
@@ -232,20 +232,20 @@ class USBKeyboardDriver
 
 	private:
 		/* USBAPI */
-		int performKeysInterruptTransfer(
+		int performUSBDeviceKeysInterruptTransfer(
 			USBDevice & device,
 			unsigned int timeout
 		) override {
-			return USBAPI::performKeysInterruptTransfer(device, timeout);
+			return USBAPI::performUSBDeviceKeysInterruptTransfer(device, timeout);
 		}
 
-		int performLCDScreenInterruptTransfer(
+		int performUSBDeviceLCDScreenInterruptTransfer(
 			USBDevice & device,
 			const unsigned char * buffer,
 			int bufferLength,
 			unsigned int timeout
 		) override {
-			return USBAPI::performLCDScreenInterruptTransfer(device, buffer, bufferLength, timeout);
+			return USBAPI::performUSBDeviceLCDScreenInterruptTransfer(device, buffer, bufferLength, timeout);
 		}
 
 		void openUSBDevice(USBDevice & device) override {

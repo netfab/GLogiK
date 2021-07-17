@@ -121,7 +121,7 @@ void hidapi::openUSBDevice(USBDevice & device)
 
 				/* open_path failure */
 				if(device._pHIDDevice == nullptr) {
-					this->error(nullptr);
+					this->logUSBDeviceHIDError(nullptr);
 					hid_free_enumeration(devs); /* free */
 					throw GLogiKExcept("opening HIDAPI USB device failure");
 				}
@@ -153,7 +153,7 @@ void hidapi::closeUSBDevice(USBDevice & device) noexcept
 	}
 }
 
-void hidapi::sendControlRequest(
+void hidapi::sendUSBDeviceFeatureReport(
 	USBDevice & device,
 	const unsigned char * data,
 	uint16_t wLength)
@@ -166,7 +166,7 @@ void hidapi::sendControlRequest(
 	int ret = hid_send_feature_report(device._pHIDDevice, data, wLength);
 	if( ret == -1 ) {
 		GKSysLog(LOG_ERR, ERROR, "error sending feature report");
-		this->error(device._pHIDDevice);
+		this->logUSBDeviceHIDError(device._pHIDDevice);
 	}
 #if DEBUGGING_ON
 	else {
@@ -175,7 +175,7 @@ void hidapi::sendControlRequest(
 #endif
 }
 
-int hidapi::performKeysInterruptTransfer(
+int hidapi::performUSBDeviceKeysInterruptTransfer(
 	USBDevice & device,
 	unsigned int timeout)
 {
@@ -197,10 +197,10 @@ int hidapi::performKeysInterruptTransfer(
 	if(ret == 0)
 		return toEnumType(USBAPIKeysTransferStatus::TRANSFER_TIMEOUT);
 
-	/* error */
+	/* hid_read_timeout error */
 	if(ret == -1) {
 		GKSysLog(LOG_ERR, ERROR, "hid_read_timeout error");
-		this->error(device._pHIDDevice);
+		this->logUSBDeviceHIDError(device._pHIDDevice);
 		return toEnumType(USBAPIKeysTransferStatus::TRANSFER_ERROR);
 	}
 
@@ -209,7 +209,7 @@ int hidapi::performKeysInterruptTransfer(
 	return 0;
 }
 
-int hidapi::performLCDScreenInterruptTransfer(
+int hidapi::performUSBDeviceLCDScreenInterruptTransfer(
 	USBDevice & device,
 	const unsigned char * buffer,
 	int bufferLength,
@@ -222,10 +222,10 @@ int hidapi::performLCDScreenInterruptTransfer(
 
 	int ret = hid_write(device._pHIDDevice, buffer, bufferLength);
 
-	/* error */
+	/* hid_write error */
 	if(ret == -1) {
 		GKSysLog(LOG_ERR, ERROR, "hid_write error");
-		this->error(device._pHIDDevice);
+		this->logUSBDeviceHIDError(device._pHIDDevice);
 		return toEnumType(USBAPIKeysTransferStatus::TRANSFER_ERROR);
 	}
 
@@ -234,7 +234,7 @@ int hidapi::performLCDScreenInterruptTransfer(
 	return 0;
 }
 
-void hidapi::error(hid_device *dev) noexcept
+void hidapi::logUSBDeviceHIDError(hid_device *dev) noexcept
 {
 	/* dev may be NULL for hid_open error */
 	const std::wstring ws( toWString(hid_error(dev)) );
