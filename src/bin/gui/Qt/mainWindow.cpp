@@ -341,12 +341,15 @@ void MainWindow::parseCommandLine(const int& argc, char *argv[])
 {
 	GK_LOG_FUNC
 
+	po::options_description desc("Allowed options");
+
+#if DEBUGGING_ON
 	bool debug = false;
 
-	po::options_description desc("Allowed options");
 	desc.add_options()
 		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
 	;
+#endif
 
 	po::variables_map vm;
 
@@ -354,9 +357,11 @@ void MainWindow::parseCommandLine(const int& argc, char *argv[])
 
 	po::notify(vm);
 
+#if DEBUGGING_ON
 	if (vm.count("debug")) {
 		GLogiK::GKDebug = vm["debug"].as<bool>();
 	}
+#endif
 }
 
 void MainWindow::aboutToQuit(void)

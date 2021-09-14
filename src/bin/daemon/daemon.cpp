@@ -273,15 +273,22 @@ void GLogiKDaemon::createPIDFile(void) {
 
 void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	bool daemonized = false;
-	bool debug = false;
 
 	po::options_description desc("Allowed options");
+
 	desc.add_options()
 //		("help,h", "produce help message")
 		("daemonize,d", po::bool_switch(&daemonized)->default_value(false), "run in daemon mode")
-		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
 		("pid-file,p", po::value(&_pidFileName), "define the PID file")
 	;
+
+#if DEBUGGING_ON
+	bool debug = false;
+
+	desc.add_options()
+		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
+	;
+#endif
 
 	po::variables_map vm;
 
@@ -301,9 +308,12 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	if (vm.count("daemonize")) {
 		GLogiKDaemon::daemonized = vm["daemonize"].as<bool>();
 	}
+
+#if DEBUGGING_ON
 	if (vm.count("debug")) {
 		GLogiK::GKDebug = vm["debug"].as<bool>();
 	}
+#endif
 }
 
 void GLogiKDaemon::dropPrivileges(void) {
