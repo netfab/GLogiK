@@ -77,12 +77,12 @@ std::ostream& operator<< (std::ostream& strm, severity_level level)
 		"critical"
     };
 
-    if (static_cast< std::size_t >(level) < sizeof(strings) / sizeof(*strings))
-        strm << strings[level];
-    else
-        strm << static_cast< int >(level);
+	if (static_cast< std::size_t >(level) < sizeof(strings) / sizeof(*strings))
+		strm << strings[level];
+	else
+		strm << static_cast< int >(level);
 
-    return strm;
+	return strm;
 }
 
 void GKLogging::init(void)
@@ -106,17 +106,14 @@ void GKLogging::initConsoleLog(void)
 		boost::shared_ptr< std::ostream >(&std::clog, boost::null_deleter()));
 
 	consoleSink->set_formatter
-    (
-        expr::stream
-            << std::hex << std::setw(8) << std::setfill('0') << line_id << std::dec << std::setfill(' ')
-            << " - " << severity << "\t - "
-            //<< "(" << scope << ") "
-            << expr::if_(expr::has_attr(timeline))
-               [
-                    expr::stream << "[" << timeline << "] "
-               ]
-            << expr::smessage
-    );
+	(
+		expr::stream
+			<< std::hex << std::setw(8) << std::setfill('0') << line_id << std::dec << std::setfill(' ')
+			<< " - " << severity << "\t - "
+			//<< "(" << scope << ") "
+			<< expr::if_(expr::has_attr(timeline)) [ expr::stream << "[" << timeline << "] " ]
+			<< expr::smessage
+	);
 
 	consoleSink->set_filter(severity >= info);
 
@@ -158,18 +155,15 @@ void GKLogging::initDebugFile(const std::string & baseName, const fs::perms prms
 	fileSink->locked_backend()->auto_flush(true);
 
 	fileSink->set_formatter
-    (
-        expr::stream
-            << std::hex << std::setw(8) << std::setfill('0') << line_id << std::dec << std::setfill(' ')
-            << " - " << thread_id
-            << " - " << severity << "\t - "
-            << "(" << scope << ") "
-            << expr::if_(expr::has_attr(timeline))
-               [
-                    expr::stream << "[" << timeline << "] "
-               ]
-            << expr::smessage
-    );
+	(
+		expr::stream
+			<< std::hex << std::setw(8) << std::setfill('0') << line_id << std::dec << std::setfill(' ')
+			<< " - " << thread_id
+			<< " - " << severity << "\t - "
+			<< "(" << scope << ") "
+			<< expr::if_(expr::has_attr(timeline)) [ expr::stream << "[" << timeline << "] " ]
+			<< expr::smessage
+	);
 
 	logging::core::get()->add_sink(fileSink);
 }
