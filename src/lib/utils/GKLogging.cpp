@@ -60,6 +60,7 @@ BOOST_LOG_ATTRIBUTE_KEYWORD(line_id, "LineID", unsigned int)
 BOOST_LOG_ATTRIBUTE_KEYWORD(severity, "Severity", severity_level)
 BOOST_LOG_ATTRIBUTE_KEYWORD(scope, "Scope", attrs::named_scope::value_type)
 BOOST_LOG_ATTRIBUTE_KEYWORD(timeline, "Timeline", attrs::timer::value_type)
+BOOST_LOG_ATTRIBUTE_KEYWORD(thread_id, "ThreadID", attrs::current_thread_id::value_type)
 
 bool GKLogging::initialized = false;
 src::severity_logger< severity_level > GKLogging::GKLogger;
@@ -108,7 +109,7 @@ void GKLogging::initConsoleLog(void)
     (
         expr::stream
             << std::hex << std::setw(8) << std::setfill('0') << line_id << std::dec << std::setfill(' ')
-            << ": <" << severity << ">\t"
+            << " - " << severity << "\t - "
             //<< "(" << scope << ") "
             << expr::if_(expr::has_attr(timeline))
                [
@@ -160,7 +161,8 @@ void GKLogging::initDebugFile(const std::string & baseName, const fs::perms prms
     (
         expr::stream
             << std::hex << std::setw(8) << std::setfill('0') << line_id << std::dec << std::setfill(' ')
-            << ": <" << severity << ">\t"
+            << " - " << thread_id
+            << " - " << severity << "\t - "
             << "(" << scope << ") "
             << expr::if_(expr::has_attr(timeline))
                [
