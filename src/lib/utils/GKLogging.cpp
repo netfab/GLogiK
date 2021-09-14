@@ -109,7 +109,7 @@ void GKLogging::initConsoleLog(void)
         expr::stream
             << std::hex << std::setw(8) << std::setfill('0') << line_id << std::dec << std::setfill(' ')
             << ": <" << severity << ">\t"
-            << "(" << scope << ") "
+            //<< "(" << scope << ") "
             << expr::if_(expr::has_attr(timeline))
                [
                     expr::stream << "[" << timeline << "] "
