@@ -1,4 +1,11 @@
 
+0.8.xx (2021-xx-xx)
+===================
+- Fix autoreconf warning
+- Support >=dev-libs/hidapi-0.11. dev-libs/libusb is now mandatory to
+  determine hidapi devices paths
+- Miscellaneous internal fixs and improvements
+
 0.8.12 (2021-01-22)
 ===================
 - Improved LCDPlugin progress bar drawing function
