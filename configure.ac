@@ -104,11 +104,6 @@ AC_ARG_ENABLE( [qt5],
                AC_HELP_STRING( [--enable-qt5], [Enable Qt5 client GUI]),
                [enable_qt5=$enableval], [enable_qt5=no])
 
-dnl check for libusb support
-AC_ARG_ENABLE( [libusb],
-               AC_HELP_STRING( [--enable-libusb], [Enable libusb API support]),
-               [enable_libusb=$enableval], [enable_libusb=no])
-
 dnl check for hidapi support
 AC_ARG_ENABLE( [hidapi],
                AC_HELP_STRING( [--enable-hidapi], [Enable hidapi API support]),
@@ -220,21 +215,6 @@ AS_IF([test "x$enable_dbus" = "xyes"], [
 ])
 AM_CONDITIONAL([WITH_DBUS], [test "x$enable_dbus" = "xyes"])
 
-
-dnl ---
-dnl checking for libusb support
-AM_CONDITIONAL([WITH_LIBUSB], [test "x$enable_libusb" = "xyes"])
-
-AC_MSG_CHECKING([whether we want libusb support])
-AS_IF([test "x$enable_libusb" = "xyes"],
-	[
-		AC_MSG_RESULT([yes])
-		AC_DEFINE([GKLIBUSB], [1], [GKLIBUSB enabled])
-	], [
-		AC_MSG_RESULT([no])
-	])
-dnl ---
-
 dnl ---
 dnl checking for hidapi support
 AM_CONDITIONAL([WITH_HIDAPI], [test "x$enable_hidapi" = "xyes"])
@@ -246,23 +226,9 @@ AS_IF([test "x$enable_hidapi" = "xyes"],
 		AC_DEFINE([GKHIDAPI], [1], [GKHIDAPI enabled])
 	], [
 		AC_MSG_RESULT([no])
+		AC_DEFINE([GKLIBUSB], [1], [GKLIBUSB enabled])
 	])
 dnl ---
-
-AS_IF([test "x$enable_hidapi" = "xno"],
-	[
-		AS_IF(
-			[test "x$enable_libusb" = "xno"],
-			[AC_MSG_ERROR([you must choose between libusb or hidapi support. one must be enabled])],
-			[]
-		)
-	], [
-		AS_IF(
-			[test "x$enable_libusb" = "xyes"],
-			[AC_MSG_ERROR([you must choose between libusb or hidapi support. both can't enabled together])],
-			[]
-		)
-	])
 
 
 dnl ---

@@ -50,13 +50,6 @@ GLogiKd_SOURCES = \
 		%D%/LCDScreenPluginsManager.cpp \
 		%D%/LCDScreenPluginsManager.hpp
 
-
-if WITH_LIBUSB
-GLogiKd_SOURCES += \
-		%D%/libusb.cpp \
-		%D%/libusb.hpp
-endif
-
 if WITH_HIDAPI
 GLogiKd_CXXFLAGS += \
 				@LIBHIDAPI_CFLAGS@
@@ -67,6 +60,10 @@ GLogiKd_LDADD += \
 GLogiKd_SOURCES += \
 		%D%/hidapi.cpp \
 		%D%/hidapi.hpp
+else
+GLogiKd_SOURCES += \
+		%D%/libusb.cpp \
+		%D%/libusb.hpp
 endif
 
 if WITH_DBUS
