@@ -174,6 +174,8 @@ dnl -------------------------------------------------------------------------
 dnl             run tests and do things accordingly to results
 dnl -------------------------------------------------------------------------
 
+AM_CONDITIONAL([WITH_DEBUG], [test "x$enable_debugging" = "xyes"])
+
 GDT_CONDITIONAL_ADD_LDFLAGS([$enable_as_needed], [-Wl,--as-needed])
 
 GDT_CONDITIONAL_ADD_CXXFLAG([$enable_gcc_wall], [-Wall])
@@ -321,6 +323,7 @@ AC_CONFIG_FILES([
 	Makefile
 	data/init/openrc/glogikd
 	data/udev/99-GLogiK.rules
+	data/tmpfiles.d/GLogiK.conf
 	])
 
 AS_IF([test "x$enable_dbus" = "xyes"],

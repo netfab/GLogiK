@@ -62,6 +62,10 @@ GLogiK=$PWD/.. CD=. {
 				skeleton.pbm
 			}
 		}
+		tmpfiles.d=tmpfiles.d/ {
+			Makefile.am
+			GLogiK.conf.in
+		}
 		udev=udev/ {
 			Makefile.am
 			99-GLogiK.rules.in
