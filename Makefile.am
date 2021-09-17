@@ -8,10 +8,6 @@ include %D%/data/init/openrc/Makefile.am
 include %D%/data/udev/Makefile.am
 include %D%/data/pbm/Makefile.am
 
-if WITH_DEBUG
-include %D%/data/tmpfiles.d/Makefile.am
-endif
-
 include %D%/src/include/Makefile.am
 include %D%/src/lib/utils/Makefile.am
 include %D%/src/lib/shared/Makefile.am
@@ -35,6 +31,7 @@ endif
 
 include %D%/src/bin/daemon/Makefile.am
 
+EXTRA_DIST += %D%/data/tmpfiles.d/GLogiK.conf
 
 maintainer-clean-local: maintainer-clean-libtool-files maintainer-clean-autotools-files
 

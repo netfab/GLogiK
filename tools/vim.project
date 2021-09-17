@@ -63,7 +63,6 @@ GLogiK=$PWD/.. CD=. {
 			}
 		}
 		tmpfiles.d=tmpfiles.d/ {
-			Makefile.am
 			GLogiK.conf.in
 		}
 		udev=udev/ {

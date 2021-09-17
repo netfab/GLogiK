@@ -109,7 +109,6 @@ AC_ARG_ENABLE( [hidapi],
                AC_HELP_STRING( [--enable-hidapi], [Enable hidapi API support]),
                [enable_hidapi=$enableval], [enable_hidapi=yes])
 
-AC_ARG_VAR(DEBUG_DIR, [Directory where debug file will be written])
 AC_ARG_VAR(DATA_DIR, [Directory where data files will be installed])
 AC_ARG_VAR(PBM_DATA_DIR, [Directory where pbm data files will be installed])
 
@@ -173,8 +172,6 @@ AC_SUBST([udevrulesdir], [$with_udevrulesdir])
 dnl -------------------------------------------------------------------------
 dnl             run tests and do things accordingly to results
 dnl -------------------------------------------------------------------------
-
-AM_CONDITIONAL([WITH_DEBUG], [test "x$enable_debugging" = "xyes"])
 
 GDT_CONDITIONAL_ADD_LDFLAGS([$enable_as_needed], [-Wl,--as-needed])
 
@@ -267,7 +264,7 @@ dnl -------------------------------------------------------------------------
 dnl                       defining custom macro variables
 dnl -------------------------------------------------------------------------
 
-AS_IF([test "x$DEBUG_DIR" = "x"], [DEBUG_DIR="/var/tmp/GKDebug"], [])
+AC_SUBST(DEBUG_DIR, ["/var/tmp/GKDebug"])
 AC_DEFINE_UNQUOTED([DEBUG_DIR], ["${DEBUG_DIR}"], [Directory for debug file])
 
 AC_DEFINE_UNQUOTED([DATA_DIR], ["${prefix}/share"], [Root directory for data files installation])
