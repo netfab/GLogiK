@@ -132,7 +132,18 @@ void DBusHandler::restartRequest(void)
 			}
 
 			bp::group g;
+
+#if DEBUGGING_ON
+			if(GLogiK::GKDebug) {
+				bp::spawn(p, "-D", g);
+			}
+			else {
+				bp::spawn(p, g);
+			}
+#else
 			bp::spawn(p, g);
+#endif
+
 			g.wait();
 		}
 		catch (const bp::process_error & e) {
