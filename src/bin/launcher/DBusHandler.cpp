@@ -24,6 +24,7 @@
 #include <thread>
 
 #include <boost/process.hpp>
+#include <boost/process/search_path.hpp>
 
 #include <config.h>
 
@@ -121,17 +122,23 @@ void DBusHandler::restartRequest(void)
 	const steady::time_point now = steady::now();
 	const steady::duration timeLapse = now - _lastCall;
 	if(timeLapse > _tenSeconds) {
+		_lastCall = now;
+
 		try {
+			auto p = boost::process::search_path(GLOGIKS_DESKTOP_SERVICE_NAME);
+			if( p.empty() ) {
+				LOG(error) << GLOGIKS_DESKTOP_SERVICE_NAME << " executable not found in PATH";
+				return;
+			}
+
 			bp::group g;
-			bp::spawn(GLOGIKS_DESKTOP_SERVICE_NAME, g);
+			bp::spawn(p, g);
 			g.wait();
 		}
 		catch (const bp::process_error & e) {
 			LOG(error) << "exception catched while trying to spawn process: " << GLOGIKS_DESKTOP_SERVICE_NAME;
 			LOG(error) << e.what();
 		}
-
-		_lastCall = now;
 	}
 	else {
 		double nsec = static_cast<double>(timeLapse.count()) * steady::period::num / steady::period::den;
