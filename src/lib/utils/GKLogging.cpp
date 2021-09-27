@@ -166,6 +166,17 @@ void GKLogging::initDebugFile(const std::string & baseName, const fs::perms prms
 	);
 
 	logging::core::get()->add_sink(fileSink);
+
+	if( prms != fs::no_perms ) {
+		boost::system::error_code ec;
+		fs::permissions(debugFile, prms, ec);
+		if( ec.value() != 0 ) {
+			std::ostringstream buffer(std::ios_base::app);
+			buffer	<< "failed to set file permissions : " << debugFile.string()
+					<< " : " << ec.message();
+			throw GLogiKExcept(buffer.str());
+		}
+	}
 }
 
 } // namespace NSGKUtils
