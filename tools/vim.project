@@ -9,10 +9,13 @@ GLogiK=$PWD/.. CD=. {
 	VERSION
 	configure.ac
 	Makefile.am
+	meson.build
+	meson_options.txt
 	doc=doc/ {
 		debian_9.x_stretch
 	}
 	tools=tools/ {
+		meson.sh
 		Makefile
 		do-release.sh
 		glogik-daemon.sh
@@ -26,20 +29,25 @@ GLogiK=$PWD/.. CD=. {
 	data=data/ {
 		applications=applications/ {
 			Makefile.am
+			meson.build
 			GLogiK.desktop
 		}
 		autostart=autostart/ {
 			Makefile.am
+			meson.build
 			GKsLauncher.desktop
 		}
 		dbus=dbus/ {
 			Makefile.am
+			meson.build
 			GLogiK.conf.in
 		}
 		icons=icons/ {
 			Makefile.am
+			meson.build
 		}
 		init=init/ {
+			meson.build
 			openrc=openrc/ {
 				Makefile.am
 				glogikd.in
@@ -49,6 +57,7 @@ GLogiK=$PWD/.. CD=. {
 		}
 		pbm=pbm/ {
 			Makefile.am
+			meson.build
 			fonts=fonts/ {
 				monospace85.pbm
 				monospace86.pbm
@@ -67,6 +76,7 @@ GLogiK=$PWD/.. CD=. {
 		}
 		udev=udev/ {
 			Makefile.am
+			meson.build
 			99-GLogiK.rules.in
 		}
 	}
@@ -81,6 +91,7 @@ GLogiK=$PWD/.. CD=. {
 		binaries=bin/ {
 			daemon=daemon/ {
 				Makefile.am
+				meson.build
 				LCDPlugins=LCDPlugins/ {
 					CPUStats=cpu-stats/ {
 						CPUData.cpp
@@ -148,6 +159,7 @@ GLogiK=$PWD/.. CD=. {
 			}
 			launcher=launcher/ {
 				Makefile.am
+				meson.build
 				main.cpp
 				DBusHandler.cpp
 				DBusHandler.hpp
@@ -157,6 +169,7 @@ GLogiK=$PWD/.. CD=. {
 			gui=gui/ {
 				qt=Qt/ {
 					Makefile.am
+					meson.build
 					AboutDialog.cpp
 					AboutDialog.hpp
 					Tab.cpp
@@ -176,6 +189,7 @@ GLogiK=$PWD/.. CD=. {
 			}
 			service=service/ {
 				Makefile.am
+				meson.build
 				main.cpp
 				devicesHandler.cpp
 				devicesHandler.hpp
@@ -188,6 +202,7 @@ GLogiK=$PWD/.. CD=. {
 		libraries=lib/ {
 			GKDBus=dbus/ {
 				Makefile.am
+				meson.build
 				arguments=arguments/ {
 					GKDBusArgument.cpp
 					GKDBusArgument.hpp
@@ -238,6 +253,7 @@ GLogiK=$PWD/.. CD=. {
 			}
 			GKShared=shared/ {
 				Makefile.am
+				meson.build
 				deviceProperties.cpp
 				deviceProperties.hpp
 				deviceConfigurationFile.cpp
@@ -251,6 +267,7 @@ GLogiK=$PWD/.. CD=. {
 			}
 			GKUtils=utils/ {
 				Makefile.am
+				meson.build
 				filesystem.cpp
 				filesystem.hpp
 				FSNotify.cpp

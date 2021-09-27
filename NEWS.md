@@ -5,6 +5,7 @@
 - Support >=dev-libs/hidapi-0.11. dev-libs/libusb is now mandatory to
   determine hidapi devices paths
 - Log system is now Boost.Log
+- Add meson build system support.
 - Miscellaneous internal fixs and improvements
 
 0.8.12 (2021-01-22)

@@ -31,7 +31,24 @@ endif
 
 include %D%/src/bin/daemon/Makefile.am
 
-EXTRA_DIST += %D%/data/tmpfiles.d/GLogiK.conf
+EXTRA_DIST += \
+	%D%/data/tmpfiles.d/GLogiK.conf \
+	%D%/meson.build \
+	%D%/meson_options.txt \
+	%D%/src/lib/utils/meson.build \
+	%D%/src/lib/shared/meson.build \
+	%D%/src/lib/dbus/meson.build \
+	%D%/src/bin/launcher/meson.build \
+	%D%/src/bin/service/meson.build \
+	%D%/src/bin/gui/Qt/meson.build \
+	%D%/src/bin/daemon/meson.build \
+	%D%/data/applications/meson.build \
+	%D%/data/udev/meson.build \
+	%D%/data/dbus/meson.build \
+	%D%/data/init/meson.build \
+	%D%/data/autostart/meson.build \
+	%D%/data/pbm/meson.build \
+	%D%/data/icons/meson.build
 
 maintainer-clean-local: maintainer-clean-libtool-files maintainer-clean-autotools-files
 
