@@ -25,8 +25,6 @@
 namespace GLogiK
 {
 
-bool GKDebug = false;
-
 c_str CONST_STRING_CLIENT				= "client : ";
 c_str CONST_STRING_DEVICE				= "device : ";
 c_str CONST_STRING_UNKNOWN_CLIENT		= "unknown client : ";

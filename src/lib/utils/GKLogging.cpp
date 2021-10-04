@@ -62,6 +62,7 @@ BOOST_LOG_ATTRIBUTE_KEYWORD(scope, "Scope", attrs::named_scope::value_type)
 BOOST_LOG_ATTRIBUTE_KEYWORD(timeline, "Timeline", attrs::timer::value_type)
 BOOST_LOG_ATTRIBUTE_KEYWORD(thread_id, "ThreadID", attrs::current_thread_id::value_type)
 
+bool GKLogging::GKDebug = false;
 bool GKLogging::initialized = false;
 src::severity_logger< severity_level > GKLogging::GKLogger;
 

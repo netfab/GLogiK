@@ -82,7 +82,7 @@ GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
 		this->parseCommandLine(argc, argv);
 
 #if DEBUGGING_ON
-		if(GLogiK::GKDebug) {
+		if(GKLogging::GKDebug) {
 			FileSystem::createDirectory(DEBUG_DIR, fs::owner_all | fs::group_all);
 
 			GKLogging::initDebugFile("GLogiKd", fs::owner_read|fs::owner_write|fs::group_read);
@@ -311,7 +311,7 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 
 #if DEBUGGING_ON
 	if (vm.count("debug")) {
-		GLogiK::GKDebug = vm["debug"].as<bool>();
+		GKLogging::GKDebug = vm["debug"].as<bool>();
 	}
 #endif
 }

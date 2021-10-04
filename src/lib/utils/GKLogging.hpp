@@ -31,8 +31,6 @@
 #include <boost/log/sources/severity_logger.hpp>
 #include <boost/log/sources/record_ostream.hpp>
 
-#include "lib/shared/glogik.hpp"
-
 #include <config.h>
 
 #ifndef SRC_LIB_UTILS_GKLOGGING_HPP_
@@ -59,6 +57,7 @@ class GKLogging
 		GKLogging(void) = delete;
 		~GKLogging(void) = delete;
 
+		static bool GKDebug;
 		static src::severity_logger< severity_level > GKLogger;
 
 		static void initConsoleLog(void);
@@ -76,12 +75,12 @@ class GKLogging
 #define LOG(sev)	BOOST_LOG_SEV(GKLogging::GKLogger, sev)
 
 #if DEBUGGING_ON
-#define GKLog(level, m1) if(GLogiK::GKDebug) { LOG(level) << m1; }
-#define GKLog2(level, m1, m2) if(GLogiK::GKDebug) { LOG(level) << m1 << m2; }
-#define GKLog3(level, m1, m2, m3) if(GLogiK::GKDebug) { LOG(level) << m1 << m2 << m3; }
-#define GKLog4(level, m1, m2, m3, m4) if(GLogiK::GKDebug) { LOG(level) << m1 << m2 << " - " << m3 << m4; }
+#define GKLog(level, m1) if(GKLogging::GKDebug) { LOG(level) << m1; }
+#define GKLog2(level, m1, m2) if(GKLogging::GKDebug) { LOG(level) << m1 << m2; }
+#define GKLog3(level, m1, m2, m3) if(GKLogging::GKDebug) { LOG(level) << m1 << m2 << m3; }
+#define GKLog4(level, m1, m2, m3, m4) if(GKLogging::GKDebug) { LOG(level) << m1 << m2 << " - " << m3 << m4; }
 #define GKLog6(level, m1, m2, m3, m4, m5, m6) \
-	if(GLogiK::GKDebug) { LOG(level) << m1 << m2 << " - " << m3 << m4 << " - " << m5 << m6;	}
+	if(GKLogging::GKDebug) { LOG(level) << m1 << m2 << " - " << m3 << m4 << " - " << m5 << m6;	}
 #else
 #define GKLog(level, m1)
 #define GKLog2(level, m1, m2)

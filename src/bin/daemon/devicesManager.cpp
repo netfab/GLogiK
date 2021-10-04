@@ -122,7 +122,7 @@ void DevicesManager::initializeDevices(void) noexcept
 
 		if(_startedDevices.count(devID) == 1) {
 #if DEBUGGING_ON
-			if(GLogiK::GKDebug) {
+			if(GKLogging::GKDebug) {
 				LOG(trace)	<< "device already started : "
 							<< device.getVendorID() << ":"
 							<< device.getProductID() << " - "
@@ -135,7 +135,7 @@ void DevicesManager::initializeDevices(void) noexcept
 		// TODO option ?
 		if(_stoppedDevices.count(devID) == 1) {
 #if DEBUGGING_ON
-			if(GLogiK::GKDebug) {
+			if(GKLogging::GKDebug) {
 				LOG(trace)	<< "device already initialized, but is in stopped state : "
 							<< device.getVendorID() << ":"
 							<< device.getProductID() << " - "
@@ -597,7 +597,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev)
 								_detectedDevices[devID] = found;
 
 #if DEBUGGING_ON
-								if(GLogiK::GKDebug) {
+								if(GKLogging::GKDebug) {
 									LOG(trace)	<< "found device - Vid:Pid:node:usec | bus:num - "
 												<< vendorID << ":" << productID << ":"
 												<< devnode << ":" << usec

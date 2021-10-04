@@ -29,8 +29,6 @@ namespace GLogiK
 
 typedef const char* const c_str;
 
-extern bool GKDebug;
-
 extern c_str CONST_STRING_CLIENT;
 extern c_str CONST_STRING_DEVICE;
 extern c_str CONST_STRING_UNKNOWN_CLIENT;

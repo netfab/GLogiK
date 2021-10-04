@@ -105,7 +105,7 @@ void VirtualKeyboard::sendKeyEvent(const KeyEvent & key)
 	GK_LOG_FUNC
 
 #if DEBUGGING_ON
-	if(GLogiK::GKDebug) {
+	if(GKLogging::GKDebug) {
 		LOG(trace) << "key event : ";
 		LOG(trace) << "code : " << toUInt(key.code);
 		LOG(trace) << "event : " << key.event;

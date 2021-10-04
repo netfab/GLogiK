@@ -113,7 +113,7 @@ void MainWindow::init(const int& argc, char *argv[])
 		this->parseCommandLine(argc, argv);
 
 #if DEBUGGING_ON
-		if(GLogiK::GKDebug) {
+		if(GKLogging::GKDebug) {
 			GKLogging::initDebugFile("GKcQt5", fs::owner_read|fs::owner_write|fs::group_read);
 		}
 #endif
@@ -359,7 +359,7 @@ void MainWindow::parseCommandLine(const int& argc, char *argv[])
 
 #if DEBUGGING_ON
 	if (vm.count("debug")) {
-		GLogiK::GKDebug = vm["debug"].as<bool>();
+		GKLogging::GKDebug = vm["debug"].as<bool>();
 	}
 #endif
 }

@@ -65,7 +65,7 @@ DesktopServiceLauncher::DesktopServiceLauncher(const int& argc, char *argv[])
 		this->parseCommandLine(argc, argv);
 
 #if DEBUGGING_ON
-		if(GLogiK::GKDebug) {
+		if(GKLogging::GKDebug) {
 			GKLogging::initDebugFile(DESKTOP_SERVICE_LAUNCHER_NAME, fs::owner_read|fs::owner_write|fs::group_read);
 		}
 #endif
@@ -164,7 +164,7 @@ void DesktopServiceLauncher::parseCommandLine(const int& argc, char *argv[])
 
 #if DEBUGGING_ON
 	if (vm.count("debug")) {
-		GLogiK::GKDebug = vm["debug"].as<bool>();
+		GKLogging::GKDebug = vm["debug"].as<bool>();
 	}
 #endif
 }

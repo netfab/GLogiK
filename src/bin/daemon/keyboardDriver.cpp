@@ -112,7 +112,7 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device)
 		case 0:
 			if( device.getLastKeysInterruptTransferLength() > 0 ) {
 #if DEBUGGING_ON && DEBUG_KEYS
-				if(GLogiK::GKDebug) {
+				if(GKLogging::GKDebug) {
 					LOG(trace)	<< device.getID()
 								<< " exp. rl: " << toInt(device.getKeysInterruptBufferMaxLength())
 								<< " act_l: " << device.getLastKeysInterruptTransferLength()
@@ -329,7 +329,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device)
 	}
 
 #if DEBUGGING_ON
-	if(GLogiK::GKDebug) {
+	if(GKLogging::GKDebug) {
 		LOG(trace) << "	b	|	p";
 		LOG(trace) << "  ------------------------------";
 	}
@@ -338,7 +338,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device)
 	for(i = device.getKeysInterruptBufferMaxLength()-1; i >= 2; --i) {
 
 #if DEBUGGING_ON
-		if(GLogiK::GKDebug) {
+		if(GKLogging::GKDebug) {
 			LOG(trace)	<< "    " << toUInt(device._pressedKeys[i])
 						<< "    |   " << toUInt(device._previousPressedKeys[i]);
 		}
@@ -585,7 +585,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 			auto one = std::chrono::milliseconds( device.getLCDPluginsManager()->getPluginTiming() );
 
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-			if(GLogiK::GKDebug) {
+			if(GKLogging::GKDebug) {
 				LOG(trace)	<< devID << " refreshed LCD screen for "
 							<< device.getFullName()
 							<< " - ret: " << ret

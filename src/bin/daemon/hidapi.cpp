@@ -173,7 +173,7 @@ void hidapi::sendUSBDeviceFeatureReport(
 	}
 #if DEBUGGING_ON
 	else {
-		if(GLogiK::GKDebug) {
+		if(GKLogging::GKDebug) {
 			LOG(trace)	<< device.getID()
 						<< " sent HIDAPI feature report: " << ret
 						<< " bytes - expected: " << wLength;

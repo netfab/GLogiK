@@ -72,7 +72,7 @@ void MacrosManager::runMacro(const std::string & keyName)
 		const macro_type & macro = _macrosBanks[_currentBankID].at(keyName);
 		if(macro.size() == 0) {
 #if DEBUGGING_ON
-			if(GLogiK::GKDebug) {
+			if(GKLogging::GKDebug) {
 				LOG(trace)	<< "Memory Bank: " << _currentBankID
 							<< " - Macro Key: " << keyName
 							<< " - no macro recorded";
@@ -82,7 +82,7 @@ void MacrosManager::runMacro(const std::string & keyName)
 		}
 
 #if DEBUGGING_ON
-		if(GLogiK::GKDebug) {
+		if(GKLogging::GKDebug) {
 			LOG(trace)	<< "Memory Bank: " << _currentBankID
 						<< " - Macro Key: " << keyName
 						<< " - running macro";

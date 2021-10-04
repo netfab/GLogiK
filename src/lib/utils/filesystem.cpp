@@ -140,7 +140,7 @@ void FileSystem::traceLastDirectoryCreation(void)
 {
 	GK_LOG_FUNC
 
-	if(GLogiK::GKDebug) {
+	if(GKLogging::GKDebug) {
 		if(FileSystem::createDirectorySuccess) {
 			LOG(trace) << "created directory : " << lastDirectoryCreation;
 		}

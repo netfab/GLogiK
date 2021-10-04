@@ -210,7 +210,7 @@ void G510Base::processKeyEvent2Bytes(USBDevice & device)
 	else if (device._pressedKeys[0] == 0x04) {
 #if DEBUGGING_ON
 		/* continue only when debug is on */
-		if( ! GLogiK::GKDebug )
+		if( ! GKLogging::GKDebug )
 			return;
 
 		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_BACKLIGHT_OFF)) {

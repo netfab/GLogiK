@@ -134,7 +134,7 @@ void DBusHandler::restartRequest(void)
 			bp::group g;
 
 #if DEBUGGING_ON
-			if(GLogiK::GKDebug) {
+			if(GKLogging::GKDebug) {
 				bp::spawn(p, "-D", g);
 			}
 			else {

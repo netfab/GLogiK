@@ -127,7 +127,7 @@ void PBMFile::parsePBMHeader(
 	height = toUInt(ex);
 
 #if DEBUGGING_ON
-	if(GLogiK::GKDebug) {
+	if(GKLogging::GKDebug) {
 		LOG(trace)	<< "magic: " << magic
 					<< " - width: " << width
 					<< " - height: " << height;
