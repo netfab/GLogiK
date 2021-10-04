@@ -153,7 +153,7 @@ AS_IF([test -z "$with_glogiks_group"],
 		[GLOGIKS_GROUP=glogiks],
 		[GLOGIKS_GROUP=$with_glogiks_group])
 AC_SUBST(GLOGIKS_GROUP)
-AC_DEFINE_UNQUOTED(GLOGIKS_GROUP,"$GLOGIKS_GROUP", [User for running the glogik desktop service])
+AC_DEFINE_UNQUOTED(GLOGIKS_GROUP,"$GLOGIKS_GROUP", [Group for running the glogik desktop service])
 
 dnl ---------------------------------------------------------------------------
 dnl             Where to install udev rules
