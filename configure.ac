@@ -3,6 +3,8 @@
 m4_define([GLOGIK_NAME], [GLogiK])
 m4_define(GLOGIK_VERSION,regexp(m4_include(VERSION),[version \([-.0-9A-Za-z]+\)],[\1]))
 
+AC_PREREQ([2.59])
+
 # project infos
 AC_INIT(GLOGIK_NAME, GLOGIK_VERSION, [https://framagit.org/netfab/GLogiK/issues], GLOGIK_NAME, [https://glogik.tuxfamily.org/])
 
@@ -57,56 +59,56 @@ dnl -------------------------------------------------------------------------
 
 dnl check for overlinking option
 AC_ARG_ENABLE( [as-needed],
-               AC_HELP_STRING( [--enable-as-needed], [Enable overlinking protection]),
+               AS_HELP_STRING( [--enable-as-needed], [Enable overlinking protection]),
                [enable_as_needed=$enableval], [enable_as_needed=no])
 
 dnl do we want to -Wall flag ?
 AC_ARG_ENABLE( [gcc-wall],
-               AC_HELP_STRING( [--enable-gcc-wall], [Enable gcc -Wall flag]),
+               AS_HELP_STRING( [--enable-gcc-wall], [Enable gcc -Wall flag]),
                [enable_gcc_wall=$enableval], [enable_gcc_wall=no])
 
 dnl do we want to -Werror flag ?
 AC_ARG_ENABLE( [gcc-werror],
-               AC_HELP_STRING( [--enable-gcc-werror], [Enable gcc -Werror flag]),
+               AS_HELP_STRING( [--enable-gcc-werror], [Enable gcc -Werror flag]),
                [enable_gcc_werror=$enableval], [enable_gcc_werror=no])
 
 AC_ARG_ENABLE( [debug],
-				AC_HELP_STRING( [--enable-debug], [Enable debugging, default: no]),
+				AS_HELP_STRING( [--enable-debug], [Enable debugging, default: no]),
 				[enable_debugging=$enableval], [enable_debugging=no])
 
 AC_ARG_ENABLE( [debug-keys],
-				AC_HELP_STRING( [--enable-debug-keys], [Enable keys extra debugging, default: no]),
+				AS_HELP_STRING( [--enable-debug-keys], [Enable keys extra debugging, default: no]),
 				[enable_keys_debugging=$enableval], [enable_keys_debugging=no])
 
 AC_ARG_ENABLE( [debug-gkdbus],
-				AC_HELP_STRING( [--enable-debug-gkdbus], [Enable gkdbus extra debugging, default: no]),
+				AS_HELP_STRING( [--enable-debug-gkdbus], [Enable gkdbus extra debugging, default: no]),
 				[enable_gkdbus_debugging=$enableval], [enable_gkdbus_debugging=no])
 
 AC_ARG_ENABLE( [debug-libusb],
-				AC_HELP_STRING( [--enable-debug-libusb], [Enable libusb extra debugging, default: no]),
+				AS_HELP_STRING( [--enable-debug-libusb], [Enable libusb extra debugging, default: no]),
 				[enable_libusb_extra_debugging=$enableval], [enable_libusb_extra_debugging=no])
 
 AC_ARG_ENABLE( [debug-pbmfont],
-				AC_HELP_STRING( [--enable-debug-pbmfont], [Enable pbmfont extra debugging, default: no]),
+				AS_HELP_STRING( [--enable-debug-pbmfont], [Enable pbmfont extra debugging, default: no]),
 				[enable_pbmfont_debugging=$enableval], [enable_pbmfont_debugging=no])
 
 AC_ARG_ENABLE( [debug-lcd-plugins],
-				AC_HELP_STRING( [--enable-debug-lcd-plugins], [Enable LCD plugins extra debugging, default: no]),
+				AS_HELP_STRING( [--enable-debug-lcd-plugins], [Enable LCD plugins extra debugging, default: no]),
 				[enable_lcd_plugins_debugging=$enableval], [enable_lcd_plugins_debugging=no])
 
 dnl check for DBus support
 AC_ARG_ENABLE( [dbus],
-               AC_HELP_STRING( [--enable-dbus], [Enable D-Bus support]),
+               AS_HELP_STRING( [--enable-dbus], [Enable D-Bus support]),
                [enable_dbus=$enableval], [enable_dbus=yes])
 
 dnl check for Qt5 client GUI
 AC_ARG_ENABLE( [qt5],
-               AC_HELP_STRING( [--enable-qt5], [Enable Qt5 client GUI]),
+               AS_HELP_STRING( [--enable-qt5], [Enable Qt5 client GUI]),
                [enable_qt5=$enableval], [enable_qt5=no])
 
 dnl check for hidapi support
 AC_ARG_ENABLE( [hidapi],
-               AC_HELP_STRING( [--enable-hidapi], [Enable hidapi API support]),
+               AS_HELP_STRING( [--enable-hidapi], [Enable hidapi API support]),
                [enable_hidapi=$enableval], [enable_hidapi=yes])
 
 AC_ARG_VAR(DATA_DIR, [Directory where data files will be installed])
