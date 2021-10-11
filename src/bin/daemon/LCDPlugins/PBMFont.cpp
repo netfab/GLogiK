@@ -170,7 +170,7 @@ void PBMFont::printCharacterOnFrame(
 	const  int16_t rightShift = (_shiftCharBase - xModuloComp8);
 
 #if DEBUG_PBMFONT
-	if(GLogiK::GKDebug) {
+	if(GKLogging::GKDebug) {
 		LOG(trace)	<< "xPos: " << PBMXPos
 					<< " - xByte: " << xByte
 					<< " - xByte modulo: " << xModulo;

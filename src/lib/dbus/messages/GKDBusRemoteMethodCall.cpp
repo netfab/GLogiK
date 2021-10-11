@@ -59,7 +59,7 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 	dbus_message_iter_init_append(_message, &_itMessage);
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	if(GLogiK::GKDebug) {
+	if(GKLogging::GKDebug) {
 		LOG(trace) << "Remote Object Method Call DBus message initialized";
 		LOG(trace) << "bus name    : " << busName;
 		LOG(trace) << "object path : " << objectPath;

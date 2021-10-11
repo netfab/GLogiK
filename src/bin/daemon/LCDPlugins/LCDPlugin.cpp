@@ -217,7 +217,7 @@ void LCDPlugin::writeStringOnPBMFrame(
 
 	try {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-		if(GLogiK::GKDebug) {
+		if(GKLogging::GKDebug) {
 			LOG(trace)	<< this->getPluginName()
 						<< " - PBMFrameindex: " << _PBMFrameIndex
 						<< " - writing string : " << string;
@@ -316,7 +316,7 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 			};
 
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-			if(GLogiK::GKDebug) {
+			if(GKLogging::GKDebug) {
 				LOG(trace)	<< "index: " << index
 							<< " line: " << line
 							<< " pByte: " << percentByte
