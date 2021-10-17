@@ -72,6 +72,7 @@ GLogiK=$PWD/.. CD=. {
 			}
 		}
 		tmpfiles.d=tmpfiles.d/ {
+			meson.build
 			GLogiK.conf.in
 		}
 		udev=udev/ {

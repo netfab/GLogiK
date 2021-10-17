@@ -108,13 +108,15 @@ glogiks_group = get_option('desktop_service_group')
 
 #! ----------
 
+debug_dir = '/var/tmp/GKDebug'
+
 define_array = [
   ['PACKAGE', meson.project_name()],
   ['PACKAGE_NAME', meson.project_name()],
   ['PACKAGE_URL', 'https://glogik.tuxfamily.org/'],
   ['PACKAGE_VERSION', meson.project_version()],
   ['VERSION', meson.project_version()],
-  ['DEBUG_DIR', '/var/tmp/GKDebug'],
+  ['DEBUG_DIR', debug_dir],
   ['GLOGIKD_USER', glogikd_user],
   ['GLOGIKD_GROUP', glogikd_group],
   ['DATA_DIR', gk_datadir],
@@ -171,6 +173,8 @@ cdata.set('INIT_NEED_DBUS', 'dbus')
 #! used by data/udev
 cdata.set('DEVICES_MODE', '0660')
 cdata.set('GLOGIKD_GROUP', glogikd_group)
+#! used by data/tmpfiles.d
+cdata.set('DEBUG_DIR', debug_dir)
 
 #! ----------
 subdir('src/lib/utils')  #! GKUtils_lib_dep
@@ -200,6 +204,10 @@ if enable_dbus
 	subdir('src/bin/gui/Qt')
 	subdir('data/icons')
   endif
+endif
+
+if enable_debug
+	subdir('data/tmpfiles.d')
 endif
 
 config_h.set10('GKDBUS', dbus_dep.found())
