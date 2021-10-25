@@ -191,7 +191,6 @@ subdir('data/init')
 subdir('data/udev')
 
 subdir('data/pbm')
-subdir('data/applications')
 
 #! ----------
 
@@ -203,6 +202,7 @@ if enable_dbus
   if enable_qt5
 	subdir('src/bin/gui/Qt')
 	subdir('data/icons')
+	subdir('data/applications')
   endif
 endif
 
