@@ -194,6 +194,11 @@ subdir('data/pbm')
 
 #! ----------
 
+if((not enable_dbus) and enable_qt5)
+  warning('dbus is disabled => qt5 is disabled')
+  enable_qt5 = false
+endif
+
 if enable_dbus
   subdir('src/bin/service')
   subdir('src/bin/launcher')
