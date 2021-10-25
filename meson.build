@@ -159,7 +159,7 @@ enable_hidapi = get_option('hidapi')
 enable_qt5 = get_option('qt5')
 
 #! ----------
-null_dep = disabler()
+null_dep = dependency('', required: false)
 dbus_dep = null_dep
 GKDBus_lib_dep = null_dep
 
