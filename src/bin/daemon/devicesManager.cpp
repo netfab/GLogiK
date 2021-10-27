@@ -322,7 +322,7 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept
 					GKSysLogWarning("You will get libusb warnings/errors if you do this.");
 
 					/* mark device as dirty */
-					device.setDirtyFlag();
+					//device.setDirtyFlag();
 
 					this->stopDevice(devID, true);
 #if GKDBUS
@@ -373,7 +373,7 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept
 				GKSysLogWarning("You will get libusb warnings/errors if you do this.");
 
 				/* mark device as dirty */
-				device.setDirtyFlag();
+				//device.setDirtyFlag();
 			}
 
 			if( this->stopDevice(devID, true) ) {

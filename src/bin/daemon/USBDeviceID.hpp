@@ -109,21 +109,25 @@ class USBDeviceID
 		USBDeviceID(const USBDeviceID & device) = default;
 		~USBDeviceID(void) = default;
 
+/*
 		void setDirtyFlag(void);
 		void setResetFlag(void);
 		const bool isDirty(void) const;
+*/
 
 	protected:
 
 	private:
 		friend class USBDevice;
 
+/*
 		enum class USBDeviceState : uint8_t
 		{
 			USBDEVCLEAN = 1 << 0,
 			USBDEVDIRTY = 1 << 1,
 			USBDEVRESET = 1 << 2,
 		};
+*/
 
 		std::string _vendor;
 		std::string _product;
@@ -142,7 +146,7 @@ class USBDeviceID
 
 		uint16_t _driverID;
 
-		USBDeviceState _state;
+		//USBDeviceState _state;
 
 		uint8_t _bus;
 		uint8_t _num;
