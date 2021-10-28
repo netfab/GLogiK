@@ -82,7 +82,6 @@ void USBDevice::operator=(const USBDevice& dev)
 	_serial			= dev._serial;
 	_usec			= dev._usec;
 	_driverID		= dev._driverID;
-	//_state			= dev._state;
 
 	/* USB_INTERFACE_DESCRIPTOR */
 	_bConfigurationValue	= dev._bConfigurationValue;

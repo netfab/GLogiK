@@ -60,7 +60,6 @@ USBDeviceID::USBDeviceID(
 	GK_LOG_FUNC
 
 	_devpath = _devnode = _serial = _usec = "";
-	//_state = USBDeviceState::USBDEVCLEAN;
 	_driverID = _bus = _num = 0;
 
 	_fullname  = vendor;
@@ -102,7 +101,6 @@ USBDeviceID::USBDeviceID(
 	_vendorID						= device._vendorID;
 	_productID						= device._productID;
 	_capabilities					= device._capabilities;
-	//_state							= device._state;
 	_bConfigurationValue			= device._bConfigurationValue;
 	_bInterfaceNumber				= device._bInterfaceNumber;
 	_bAlternateSetting				= device._bAlternateSetting;
@@ -112,23 +110,6 @@ USBDeviceID::USBDeviceID(
 	_MediaKeysLength				= device._MediaKeysLength;
 	_LCDKeysLength					= device._LCDKeysLength;
 }
-
-/*
-void USBDeviceID::setDirtyFlag(void)
-{
-	_state = USBDeviceState::USBDEVDIRTY;
-}
-
-void USBDeviceID::setResetFlag(void)
-{
-	_state = USBDeviceState::USBDEVRESET;
-}
-
-const bool USBDeviceID::isDirty(void) const
-{
-	return (_state == USBDeviceState::USBDEVDIRTY);
-}
-*/
 
 } // namespace GLogiK
 

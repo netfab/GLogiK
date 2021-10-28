@@ -24,8 +24,6 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
-//#include <thread>
-//#include <chrono>
 
 #include <poll.h>
 #include <libudev.h>
@@ -149,27 +147,6 @@ void DevicesManager::initializeDevices(void) noexcept
 		try {
 			for(const auto & driver : _drivers) {
 				if( device.getDriverID() == driver->getDriverID() ) {
-
-/*
-					{
-						for(auto & unpluggedDevicePair : _unpluggedDevices) {
-							auto & unpluggedDevice = unpluggedDevicePair.second;
-							if( device.getDevpath() == unpluggedDevice.getDevpath() ) {
-								if( unpluggedDevice.isDirty() ) {
-									// found unplugged dirty device on same USB port
-									// trying to reset detected device
-									unpluggedDevice.setResetFlag();
-									std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-									GKSysLogWarning("found unplugged dirty device, trying to reset detected device");
-									driver->resetDevice( device );
-									break;
-								}
-							}
-						}
-					}
-
-					std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-*/
 
 					// initialization
 					driver->openDevice( device );
@@ -321,9 +298,6 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept
 					GKSysLogWarning("We are forced to hard stop a device.");
 					GKSysLogWarning("You will get libusb warnings/errors if you do this.");
 
-					/* mark device as dirty */
-					//device.setDirtyFlag();
-
 					this->stopDevice(devID, true);
 #if GKDBUS
 					toSend.push_back(devID);
@@ -371,9 +345,6 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept
 				GKSysLogWarning(buffer.str());
 				GKSysLogWarning("Did you unplug your device before properly stopping it ?");
 				GKSysLogWarning("You will get libusb warnings/errors if you do this.");
-
-				/* mark device as dirty */
-				//device.setDirtyFlag();
 			}
 
 			if( this->stopDevice(devID, true) ) {
