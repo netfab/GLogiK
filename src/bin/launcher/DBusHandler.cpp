@@ -125,7 +125,7 @@ void DBusHandler::restartRequest(void)
 		_lastCall = now;
 
 		try {
-			auto p = boost::process::search_path(GLOGIKS_DESKTOP_SERVICE_NAME);
+			auto p = bp::search_path(GLOGIKS_DESKTOP_SERVICE_NAME);
 			if( p.empty() ) {
 				LOG(error) << GLOGIKS_DESKTOP_SERVICE_NAME << " executable not found in PATH";
 				return;
