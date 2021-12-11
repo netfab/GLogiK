@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -41,15 +41,16 @@ MacrosBanks::~MacrosBanks() {
 }
 
 void MacrosBanks::initMacrosBanks(const std::vector<std::string> & keysNames) {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "initialize " << keysNames.size() << " macro keys";
-#endif
+	GK_LOG_FUNC
+
 	macro_type macro;
 	for( const auto & name : keysNames ) {
 		for(auto & idBankPair : _macrosBanks) {
 			idBankPair.second.insert( std::pair<const std::string, macro_type>(name, macro));
 		}
 	}
+
+	GKLog2(trace, "initialized macro keys : ", keysNames.size())
 }
 
 const banksMap_type & MacrosBanks::getMacrosBanks(void) const
@@ -59,9 +60,10 @@ const banksMap_type & MacrosBanks::getMacrosBanks(void) const
 
 void MacrosBanks::setMacrosBanks(const banksMap_type & macrosBanks)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "setting macros banks";
-#endif
+	GK_LOG_FUNC
+
+	GKLog(trace, "setting macros banks")
+
 	_macrosBanks = macrosBanks;
 }
 
@@ -69,8 +71,10 @@ void MacrosBanks::clearMacro(
 	const BankID bankID,
 	const std::string & keyName)
 {
+	GK_LOG_FUNC
+
 	try {
-		LOG(INFO) << "macros bankID: M" << bankID
+		LOG(info) << "macros bankID: M" << bankID
 			<< " - Macro Key: " << keyName
 			<< " - clearing macro";
 
@@ -79,7 +83,7 @@ void MacrosBanks::clearMacro(
 	catch (const std::out_of_range& oor) {
 		std::string warn("wrong map key : ");
 		warn += keyName;
-		GKSysLog(LOG_WARNING, WARNING, warn);
+		GKSysLogWarning(warn);
 		throw GLogiKExcept("macro not cleared");
 	}
 }
@@ -101,13 +105,15 @@ void MacrosBanks::setMacro(
 	const std::string & keyName,
 	const macro_type & macro)
 {
+	GK_LOG_FUNC
+
 	try {
-		LOG(INFO) << "macros bankID: M" << bankID
+		LOG(info) << "macros bankID: M" << bankID
 			<< " - Macro Key: " << keyName
 			<< " - Macro Size: " << macro.size()
 			<< " - setting macro";
 		if( macro.size() >= MACRO_T_MAX_SIZE ) {
-			LOG(WARNING) << "skipping macro - size >= MACRO_T_MAX_SIZE";
+			LOG(warning) << "skipping macro - size >= MACRO_T_MAX_SIZE";
 			throw GLogiKExcept("skipping macro");
 		}
 
@@ -116,7 +122,7 @@ void MacrosBanks::setMacro(
 	catch (const std::out_of_range& oor) {
 		std::string warn("wrong map key : ");
 		warn += keyName;
-		GKSysLog(LOG_WARNING, WARNING, warn);
+		GKSysLogWarning(warn);
 		throw GLogiKExcept("macro not updated");
 	}
 }
@@ -136,6 +142,8 @@ void MacrosBanks::setMacro(
 
 const macro_type & MacrosBanks::getMacro(const uint8_t bankID, const std::string & keyName)
 {
+	GK_LOG_FUNC
+
 	if(bankID > BankID::BANK_M3)
 		throw GLogiKExcept("wrong bankID value");
 
@@ -146,7 +154,7 @@ const macro_type & MacrosBanks::getMacro(const uint8_t bankID, const std::string
 	catch (const std::out_of_range& oor) {
 		std::string warn("wrong map key : ");
 		warn += keyName;
-		GKSysLog(LOG_WARNING, WARNING, warn);
+		GKSysLogWarning(warn);
 		throw GLogiKExcept("can't get macro");
 	}
 

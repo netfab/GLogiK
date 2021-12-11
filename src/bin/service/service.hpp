@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -24,25 +24,21 @@
 
 #include <sys/types.h>
 
-#include <cstdio>
-
 namespace GLogiK
 {
 
 class DesktopService
 {
 	public:
-		DesktopService(void);
+		DesktopService(const int& argc, char *argv[]);
 		~DesktopService(void);
 
-		int run(const int& argc, char *argv[]);
+		int run(void);
 
 	protected:
 
 	private:
-		FILE* _LOGfd;	/* log file descriptor */
 		pid_t _pid;
-		bool _verbose;
 
 		void parseCommandLine(const int& argc, char *argv[]);
 };

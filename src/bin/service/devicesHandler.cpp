@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -49,34 +49,43 @@ DevicesHandler::DevicesHandler()
 		_pGKfs(nullptr),
 		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG) << "Devices Handler initialization";
-#endif
+	GK_LOG_FUNC
+
+	GKLog(trace, "Devices Handler initialization")
+
 	_configurationRootDirectory = XDGUserDirs::getConfigurationRootDirectory();
 	_configurationRootDirectory /= PACKAGE_NAME;
 
 	FileSystem::createDirectory(_configurationRootDirectory, fs::owner_all);
-}
-
-DevicesHandler::~DevicesHandler() {
 #if DEBUGGING_ON
-	LOG(DEBUG) << "Devices Handler destruction";
+	FileSystem::traceLastDirectoryCreation();
 #endif
 }
 
-void DevicesHandler::setGKfs(NSGKUtils::FileSystem* pGKfs) {
+DevicesHandler::~DevicesHandler()
+{
+	GK_LOG_FUNC
+
+	GKLog(trace, "Devices Handler destruction")
+}
+
+void DevicesHandler::setGKfs(NSGKUtils::FileSystem* pGKfs)
+{
 	_pGKfs = pGKfs;
 }
 
-void DevicesHandler::setDBus(NSGKDBus::GKDBus* pDBus) {
+void DevicesHandler::setDBus(NSGKDBus::GKDBus* pDBus)
+{
 	_pDBus = pDBus;
 }
 
-void DevicesHandler::setClientID(const std::string & id) {
+void DevicesHandler::setClientID(const std::string & id)
+{
 	_clientID = id;
 }
 
-void DevicesHandler::clearDevices(void) {
+void DevicesHandler::clearDevices(void)
+{
 	std::set<std::string> devicesID;
 
 	for( const auto & devicePair : _startedDevices ) {
@@ -96,7 +105,8 @@ void DevicesHandler::clearDevices(void) {
 	_stoppedDevices.clear();
 }
 
-const devices_files_map_t DevicesHandler::getDevicesMap(void) {
+const devices_files_map_t DevicesHandler::getDevicesMap(void)
+{
 	devices_files_map_t ret;
 	for(const auto & dev : _startedDevices) {
 		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
@@ -107,7 +117,8 @@ const devices_files_map_t DevicesHandler::getDevicesMap(void) {
 	return ret;
 }
 
-const std::vector<std::string> DevicesHandler::getDevicesList(void) {
+const std::vector<std::string> DevicesHandler::getDevicesList(void)
+{
 	std::vector<std::string> ret;
 	for(const auto & dev : _startedDevices) {
 		ret.push_back(dev.first);
@@ -128,11 +139,15 @@ const std::vector<std::string> DevicesHandler::getDevicesList(void) {
 	return ret;
 }
 
-const bool DevicesHandler::checkDeviceCapability(const DeviceProperties & device, Caps toCheck) {
+const bool DevicesHandler::checkDeviceCapability(const DeviceProperties & device, Caps toCheck)
+{
 	return (device.getCapabilities() & toEnumType(toCheck));
 }
 
-void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
+void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID)
+{
+	GK_LOG_FUNC
+
 	try {
 		DeviceProperties & device = _startedDevices.at(devID);
 		this->loadDeviceConfigurationFile(device);
@@ -153,7 +168,7 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) {
 			this->sendDeviceConfigurationSavedSignal(devID);
 		}
 		catch (const std::out_of_range& oor) {
-			LOG(WARNING) << "device " << devID << " not found in containers, giving up";
+			LOG(warning) << devID << " device not found in containers, giving up";
 		}
 	}
 }
@@ -162,15 +177,26 @@ void DevicesHandler::saveDeviceConfigurationFile(
 	const std::string & devID,
 	const DeviceProperties & device)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG1) << devID << " saving device configuration file";
-#endif
+	GK_LOG_FUNC
+
+	GKLog2(trace, devID, " saving device configuration file")
+
+	auto logError = [&devID] (const std::string & msg, const std::string & what) -> void {
+		LOG(error)	<< devID
+					<< " saving device configuration file failed : "
+					<< msg
+					<< " : "
+					<< what;
+	};
 
 	try {
 		fs::path filePath(_configurationRootDirectory);
 		filePath /= device.getVendor();
 
 		FileSystem::createDirectory(filePath, fs::owner_all);
+#if DEBUGGING_ON
+		FileSystem::traceLastDirectoryCreation();
+#endif
 
 		filePath /= device.getConfigFilePath();
 
@@ -180,22 +206,23 @@ void DevicesHandler::saveDeviceConfigurationFile(
 			fs::permissions(filePath, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 		}
 		catch (const fs::filesystem_error & e) {
-			LOG(ERROR) << "set permissions failure on configuration file : " << e.what();
+			logError("set permissions failure", e.what());
 		}
 		catch (const std::exception & e) {
-			LOG(ERROR) << "set permissions (allocation) failure on configuration file : " << e.what();
+			logError("set permissions (allocation) failure", e.what());
 		}
 
 		this->sendDeviceConfigurationSavedSignal(devID);
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(ERROR) << e.what();
+		logError("catched exception", e.what());
 	}
 }
 
 void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devID)
 {
-	std::string status("DeviceConfigurationSaved signal");
+	GK_LOG_FUNC
+
 	try {
 		/* send DeviceConfigurationSaved signal to GUI applications */
 		_pDBus->initializeBroadcastSignal(
@@ -207,20 +234,16 @@ void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devI
 		_pDBus->appendStringToBroadcastSignal(devID);
 		_pDBus->sendBroadcastSignal();
 
-		status += " sent";
+		GKLog2(trace, devID, " sent signal on session bus : DeviceConfigurationSaved")
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		_pDBus->abandonBroadcastSignal();
-		status += " failure";
-		LOG(ERROR) << status << " - " << e.what();
+		LOG(error) << devID << " failed to send signal on session bus : " << e.what();
 	}
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << status << " on session bus";
-#endif
 }
 
-void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
+void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device)
+{
 	fs::path filePath(_configurationRootDirectory);
 	filePath /= device.getVendor();
 	filePath /= device.getConfigFilePath();
@@ -228,7 +251,12 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) {
 	DeviceConfigurationFile::load(filePath.string(), device);
 }
 
-void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, const DeviceProperties & device) {
+void DevicesHandler::sendDeviceConfigurationToDaemon(
+	const std::string & devID,
+	const DeviceProperties & device)
+{
+	GK_LOG_FUNC
+
 	if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
 		/* set backlight color */
 		const std::string remoteMethod("SetDeviceBacklightColor");
@@ -254,12 +282,11 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 				_pDBus->waitForRemoteMethodCallReply();
 
 				const bool ret = _pDBus->getNextBooleanArgument();
-				if( ret ) {
-					LOG(VERB)	<< devID << " successfully setted device backlight color : "
-								<< getHexRGB(r, g, b);
+				if( ! ret ) {
+					LOG(error) << devID << " failed to set device backlight color : false";
 				}
 				else {
-					LOG(ERROR) << devID << " failed to set device backlight color : false";
+					GKLog3(trace, devID, " successfully setted device backlight color : ", getHexRGB(r, g, b))
 				}
 			}
 			catch (const GLogiKExcept & e) {
@@ -310,11 +337,11 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 						_pDBus->waitForRemoteMethodCallReply();
 
 						const bool ret = _pDBus->getNextBooleanArgument();
-						if( ret ) {
-							LOG(VERB) << devID << " successfully resetted device MacrosBank " << toUInt(bankID);
+						if( ! ret ) {
+							LOG(error) << devID << " failed to reset device MacrosBank " << toUInt(bankID) << " : false";
 						}
 						else {
-							LOG(ERROR) << devID << " failed to reset device MacrosBank " << toUInt(bankID) << " : false";
+							GKLog3(trace, devID, " successfully resetted device MacrosBank : ", toUInt(bankID))
 						}
 					}
 					catch (const GLogiKExcept & e) {
@@ -350,11 +377,11 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 					_pDBus->waitForRemoteMethodCallReply();
 
 					const bool ret = _pDBus->getNextBooleanArgument();
-					if( ret ) {
-						LOG(VERB) << devID << " successfully setted device MacrosBank " << toUInt(bankID);
+					if( ! ret ) {
+						LOG(error) << devID << " failed to set device MacrosBank " << toUInt(bankID) << " : false";
 					}
 					else {
-						LOG(ERROR) << devID << " failed to set device MacrosBank " << toUInt(bankID) << " : false";
+						GKLog3(trace, devID, " successfully setted device MacrosBank : ", toUInt(bankID))
 					}
 				}
 				catch (const GLogiKExcept & e) {
@@ -393,11 +420,11 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 				_pDBus->waitForRemoteMethodCallReply();
 
 				const bool ret = _pDBus->getNextBooleanArgument();
-				if( ret ) {
-					LOG(VERB) << devID << " successfully setted device LCD Plugins Mask " << toUInt(maskID);
+				if( ! ret ) {
+					LOG(error) << devID << " failed to set device LCD Plugins Mask " << toUInt(maskID) << " : false";
 				}
 				else {
-					LOG(ERROR) << devID << " failed to set device LCD Plugins Mask " << toUInt(maskID) << " : false";
+					GKLog3(trace, devID, " successfully setted device LCD Plugins Mask : ", toUInt(maskID))
 				}
 			}
 			catch (const GLogiKExcept & e) {
@@ -410,10 +437,15 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(const std::string & devID, 
 		}
 	}
 
-	LOG(INFO) << devID << " sent device configuration to daemon";
+	LOG(info) << devID << " sent device configuration to daemon";
 }
 
-void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProperties & device) {
+void DevicesHandler::setDeviceProperties(
+	const std::string & devID,
+	DeviceProperties & device)
+{
+	GK_LOG_FUNC
+
 	/* initialize device properties */
 	std::string remoteMethod("GetDeviceProperties");
 
@@ -439,9 +471,7 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 			const uint64_t caps( _pDBus->getNextUInt64Argument() );
 			device.setProperties( vendor, product, name, caps );
 
-#if DEBUGGING_ON
-			LOG(DEBUG3) << devID << " got 4 properties";
-#endif
+			GKLog2(trace, devID, " got 4 properties")
 		}
 		catch (const GLogiKExcept & e) {
 			LogRemoteCallGetReplyFailure
@@ -474,9 +504,8 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 				const LCDPluginsPropertiesArray_type array = _pDBus->getNextLCDPluginsArrayArgument();
 				device.setLCDPluginsProperties(array);
-#if DEBUGGING_ON
-				LOG(DEBUG3) << devID << " got " << array.size() << " LCDPluginsProperties objects";
-#endif
+
+				GKLog3(trace, devID, " number of LCDPluginsProperties objects : ", array.size())
 			}
 			catch (const GLogiKExcept & e) {
 				LogRemoteCallGetReplyFailure
@@ -510,9 +539,8 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 				const std::vector<std::string> keysNames( _pDBus->getStringsArray() );
 				device.initMacrosBanks(keysNames);
-#if DEBUGGING_ON
-				LOG(DEBUG3) << devID << " initialized " << keysNames.size() << " macro keys";
-#endif
+
+				GKLog3(trace, devID, " number of initialized macro keys : ", keysNames.size())
 			}
 			catch (const GLogiKExcept & e) {
 				LogRemoteCallGetReplyFailure
@@ -526,9 +554,8 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 
 	/* search a configuration file */
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << devID << " assigning a configuration file";
-#endif
+	GKLog2(trace, devID, " assigning configuration file")
+
 	fs::path directory(_configurationRootDirectory);
 	directory /= device.getVendor();
 
@@ -554,22 +581,19 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 			);
 		}
 		catch ( const GLogiKExcept & e ) {
-#if DEBUGGING_ON
-			LOG(DEBUG1) << e.what();
-#endif
+			GKLog(trace, e.what())
 			throw GLogiKExcept("configuration file not found");
 		}
 
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "found : " << device.getConfigFilePath();
-#endif
+		GKLog3(trace, devID, " found file : ", device.getConfigFilePath())
+
 		/* loading configuration file */
 		this->loadDeviceConfigurationFile(device);
-		LOG(INFO)	<< "found device " << devID << " - "
+		LOG(info)	<< "found device " << devID << " - "
 					<< device.getVendor() << " "
 					<< device.getProduct() << " "
 					<< device.getName();
-		LOG(INFO)	<< devID << " configuration file found and loaded";
+		LOG(info)	<< devID << " configuration file found and loaded";
 
 		/* assuming that directory is readable since we just load
 		 * the configuration file */
@@ -578,14 +602,13 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 		this->sendDeviceConfigurationToDaemon(devID, device);
 	}
 	catch ( const GLogiKExcept & e ) { /* should happen only when configuration file not found */
-#if DEBUGGING_ON
-		LOG(DEBUG1) << e.what();
-#endif
-		LOG(INFO)	<< devID << " started device : "
+		GKLog(trace, e.what())
+
+		LOG(info)	<< devID << " started device : "
 					<< device.getVendor() << " "
 					<< device.getProduct() << " "
 					<< device.getName();
-		LOG(INFO) << devID << " creating default configuration file";
+		LOG(info)	<< devID << " creating default configuration file";
 
 		try {
 			std::string baseName(device.getProduct());
@@ -597,9 +620,8 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 				_pGKfs->getNextAvailableFileName(alreadyUsed, directory, baseName, "cfg")
 			);
 
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "new one : " << device.getConfigFilePath();
-#endif
+			GKLog3(trace, devID, " new file : ", device.getConfigFilePath())
+
 			/* we need to create the directory before watching it */
 			this->saveDeviceConfigurationFile(devID, device);
 
@@ -608,29 +630,29 @@ void DevicesHandler::setDeviceProperties(const std::string & devID, DeviceProper
 			this->watchDirectory(device, false);
 		}
 		catch ( const GLogiKExcept & e ) {
-			LOG(ERROR) << e.what();
+			LOG(error) << devID << " failed to create default configuration file : " << e.what();
 		}
 	}
 }
 
-void DevicesHandler::startDevice(const std::string & devID) {
+void DevicesHandler::startDevice(const std::string & devID)
+{
+	GK_LOG_FUNC
+
 	try {
 		_startedDevices.at(devID);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "found already started device: " << devID;
-#endif
+
+		GKLog2(trace, devID, " device already started")
 	}
 	catch (const std::out_of_range& oor) {
 		try {
 			DeviceProperties & device = _stoppedDevices.at(devID);
-			LOG(INFO) << "starting device: " << devID;
+			LOG(info) << devID << " starting device";
 			_startedDevices[devID] = device;
 			_stoppedDevices.erase(devID);
 		}
 		catch (const std::out_of_range& oor) {
-#if DEBUGGING_ON
-			LOG(DEBUG) << "initializing device: " << devID;
-#endif
+			LOG(info) << devID << " initializing and starting device";
 			DeviceProperties device;
 			/* also load configuration file */
 			this->setDeviceProperties(devID, device);
@@ -639,45 +661,49 @@ void DevicesHandler::startDevice(const std::string & devID) {
 	}
 }
 
-void DevicesHandler::stopDevice(const std::string & devID) {
+void DevicesHandler::stopDevice(const std::string & devID)
+{
+	GK_LOG_FUNC
+
 	try {
 		_stoppedDevices.at(devID);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "found already stopped device: " << devID;
-#endif
+
+		GKLog2(trace, devID, " device already stopped")
 	}
 	catch (const std::out_of_range& oor) {
 		try {
 			DeviceProperties & device = _startedDevices.at(devID);
-			LOG(INFO) << "stopping device: " << devID;
+			LOG(info) << devID << " stopping device";
 			_stoppedDevices[devID] = device;
 			_startedDevices.erase(devID);
 		}
 		catch (const std::out_of_range& oor) {
 			/* this can happen when GLogiKs start and this device is already stopped
 			 * so we must start the device to stop it */
-#if DEBUGGING_ON
-			LOG(DEBUG) << "device " << devID << " not found in containers, initializing and stopping it";
-#endif
+			GKLog2(trace, devID, " device not found in containers, initializing and stopping it")
+
 			this->startDevice(devID);
-			LOG(INFO) << "stopping device: " << devID;
 			try {
+				LOG(info) << devID << " stopping device";
 				_stoppedDevices[devID] = _startedDevices.at(devID);
 				_startedDevices.erase(devID);
 			}
 			catch (const std::out_of_range& oor) {
-				LOG(ERROR) << "started device not found, something is really wrong";
+				LOG(error) << devID << " started device not found, something is really wrong";
 			}
 		}
 	}
 }
 
-void DevicesHandler::unplugDevice(const std::string & devID) {
+void DevicesHandler::unplugDevice(const std::string & devID)
+{
+	GK_LOG_FUNC
+
 	try {
 		_stoppedDevices.at(devID);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "found already stopped device: " << devID;
-#endif
+
+		GKLog2(trace, devID, " device already stopped")
+
 		this->unrefDevice(devID);
 	}
 	catch (const std::out_of_range& oor) {
@@ -686,16 +712,18 @@ void DevicesHandler::unplugDevice(const std::string & devID) {
 	}
 }
 
-void DevicesHandler::unrefDevice(const std::string & devID) {
+void DevicesHandler::unrefDevice(const std::string & devID)
+{
+	GK_LOG_FUNC
+
 	try {
 		const DeviceProperties & device = _stoppedDevices.at(devID);
 
 		_pGKfs->removeNotifyWatch( device.getWatchDescriptor() );
 
 		_stoppedDevices.erase(devID);
-#if DEBUGGING_ON
-		LOG(DEBUG2) << devID << " erased device";
-#endif
+
+		GKLog2(trace, devID, " device erased")
 
 		std::string remoteMethod("DeleteDeviceConfiguration");
 
@@ -715,13 +743,11 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 			try {
 				_pDBus->waitForRemoteMethodCallReply();
 				const bool ret = _pDBus->getNextBooleanArgument();
-				if( ret ) {
-#if DEBUGGING_ON
-					LOG(DEBUG3) << devID << " successfully deleted remote device configuration ";
-#endif
+				if( ! ret ) {
+					LOG(error) << devID << " failed to delete remote device configuration : false";
 				}
 				else {
-					LOG(ERROR) << devID << " failed to delete remote device configuration : false";
+					GKLog2(trace, devID, " successfully deleted remote device configuration")
 				}
 			}
 			catch (const GLogiKExcept & e) {
@@ -734,7 +760,7 @@ void DevicesHandler::unrefDevice(const std::string & devID) {
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "device not found in stopped device container: " << devID;
+		LOG(warning) << devID << " device not found in stopped-devices container";
 	}
 }
 
@@ -743,6 +769,8 @@ const bool DevicesHandler::setDeviceMacro(
 	const std::string & keyName,
 	const uint8_t bankID)
 {
+	GK_LOG_FUNC
+
 	try {
 		DeviceProperties & device = _startedDevices.at(devID);
 
@@ -790,7 +818,7 @@ const bool DevicesHandler::setDeviceMacro(
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "device not found : " << devID;
+		LOG(warning) << devID << " device not found in started-devices container";
 	}
 
 	return false;
@@ -801,6 +829,8 @@ const bool DevicesHandler::clearDeviceMacro(
 	const std::string & keyName,
 	const uint8_t bankID)
 {
+	GK_LOG_FUNC
+
 	try {
 		DeviceProperties & device = _startedDevices.at(devID);
 
@@ -813,15 +843,18 @@ const bool DevicesHandler::clearDeviceMacro(
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "device not found : " << devID;
+		LOG(warning) << devID << " device not found in started-devices container";
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "clear macro failure: " << e.what();
+		LOG(error) << devID << " failed to clear macro : " << e.what();
 	}
 	return false;
 }
 
-void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check) {
+void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check)
+{
+	GK_LOG_FUNC
+
 	fs::path directory(_configurationRootDirectory);
 	directory /= device.getVendor();
 
@@ -829,8 +862,8 @@ void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check)
 		device.setWatchDescriptor( _pGKfs->addNotifyDirectoryWatch( directory.string(), check ) );
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(WARNING) << e.what();
-		LOG(WARNING) << "configuration file monitoring will be disabled";
+		LOG(warning) << e.what();
+		LOG(warning) << "configuration file monitoring will be disabled";
 	}
 }
 
@@ -838,6 +871,8 @@ void DevicesHandler::doDeviceFakeKeyEvent(
 	const std::string & devID,
 	const std::string & mediaKeyEvent)
 {
+	GK_LOG_FUNC
+
 	try {
 		_startedDevices.at(devID);
 
@@ -864,41 +899,43 @@ void DevicesHandler::doDeviceFakeKeyEvent(
 		XTestFakeKeyEvent(dpy, code, True, 0);
 		XTestFakeKeyEvent(dpy, code, False, 0);
 		XFlush(dpy);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "done fake media event : " << mediaKeyEvent;
-#endif
 
 		XCloseDisplay(dpy);
+
+		GKLog3(trace, devID, " done fake media event : ", mediaKeyEvent)
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "device not found : " << devID;
+		LOG(warning) << devID << " device not found in started-devices container";
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "error simulating media key event : " << e.what();
+		LOG(error) << devID << " error faking media key event : " << e.what();
 	}
 }
 
-const LCDPluginsPropertiesArray_type & DevicesHandler::getDeviceLCDPluginsProperties(
-	const std::string & devID)
+const LCDPluginsPropertiesArray_type &
+	DevicesHandler::getDeviceLCDPluginsProperties(
+		const std::string & devID)
 {
+	GK_LOG_FUNC
+
 	try {
 		try {
 			DeviceProperties & device = _startedDevices.at(devID);
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "found started device: " << devID;
-#endif
+
+			GKLog2(trace, devID, " started device")
+
 			return device.getLCDPluginsProperties();
 		}
 		catch (const std::out_of_range& oor) {
 			DeviceProperties & device = _stoppedDevices.at(devID);
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "found stopped device: " << devID;
-#endif
+
+			GKLog2(trace, devID, " stopped device")
+
 			return device.getLCDPluginsProperties();
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "device not found : " << devID;
+		LOG(warning) << devID << " device not found";
 	}
 
 	return DeviceProperties::_LCDPluginsPropertiesEmptyArray;

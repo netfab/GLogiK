@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ class GKDBusMessageRemoteMethodCall
 
 		/* Remote Method Call with Pending Reply */
 		void initializeRemoteMethodCall(
-			DBusConnection* connection,
+			DBusConnection* const connection,
 			const char* busName,
 			const char* objectPath,
 			const char* interface,
@@ -98,7 +98,7 @@ class GKDBusMessageRemoteMethodCall
 		GKDBusRemoteMethodCall* _remoteMethodCall;
 		DBusPendingCall* _pendingCall;
 
-		virtual DBusConnection* getConnection(BusConnection wantedConnection) = 0;
+		virtual DBusConnection* const getConnection(BusConnection wantedConnection) const = 0;
 };
 
 } // namespace NSGKDBus

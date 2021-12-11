@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -33,8 +33,8 @@ using namespace NSGKUtils;
 
 BacklightColorTab::BacklightColorTab(
 	NSGKDBus::GKDBus* pDBus,
-	const QString & name
-)	:	Tab(pDBus),
+	const QString & name)
+	:	Tab(pDBus),
 		_pCurrentColorLabel(nullptr),
 		_pNewColorLabel(nullptr),
 		_colorDialog(nullptr)
@@ -48,14 +48,15 @@ BacklightColorTab::~BacklightColorTab()
 
 void BacklightColorTab::buildTab(void)
 {
+	GK_LOG_FUNC
+
 	QVBoxLayout* vBox = nullptr;
 	QHBoxLayout* hBox = nullptr;
 
 	try {
 		vBox = new QVBoxLayout(this);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QVBoxLayout";
-#endif
+		GKLog(trace, "allocated QVBoxLayout")
+
 		this->setLayout(vBox);
 
 		/* -- -- -- */
@@ -80,9 +81,7 @@ void BacklightColorTab::buildTab(void)
 		/* -- -- -- */
 
 		hBox = new QHBoxLayout();
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QHBoxLayout";
-#endif
+		GKLog(trace, "allocated QHBoxLayout")
 
 		vBox->addLayout(hBox);
 
@@ -119,7 +118,7 @@ void BacklightColorTab::buildTab(void)
 		connect(_colorDialog, &QColorDialog::currentColorChanged, this, &BacklightColorTab::setNewColorLabel);
 	}
 	catch (const std::bad_alloc& e) {
-		LOG(ERROR) << e.what();
+		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
 }
@@ -136,16 +135,15 @@ void BacklightColorTab::disableApplyButton(void)
 	_pApplyButton->setEnabled(false);
 }
 
-void BacklightColorTab::updateTab(
-	const DeviceProperties & device
-) {
+void BacklightColorTab::updateTab(const DeviceProperties & device)
+{
+	GK_LOG_FUNC
+
 	uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 	QColor color(r, g, b);
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "updating BacklightColorTab";
-	LOG(DEBUG2) << "color : " << color.name().toStdString();
-#endif
+	GKLog2(trace, "updating BacklightColorTab, color : ", color.name().toStdString())
+
 	this->setCurrentColorLabel(color);
 	_colorDialog->setCurrentColor(color);
 }

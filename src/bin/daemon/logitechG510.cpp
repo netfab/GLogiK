@@ -130,19 +130,23 @@ const std::vector<USBDeviceID> G510Base::knownDevices = {
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 };
 
-const char* G510Base::getDriverName() const {
+const char* G510Base::getDriverName() const
+{
 	return "Logitech G510/G510s driver";
 }
 
-const uint16_t G510Base::getDriverID() const {
+const uint16_t G510Base::getDriverID() const
+{
 	return GLOGIKD_DRIVER_ID_G510;
 }
 
-const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const {
+const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const
+{
 	return G510Base::knownDevices;
 }
 
-const std::vector<std::string> & G510Base::getMacroKeysNames(void) const {
+const std::vector<std::string> & G510Base::getMacroKeysNames(void) const
+{
 	KeyboardDriver::macrosKeysNames.clear();
 	for (const auto & key : G510Base::fiveBytesKeysMap ) {
 		if( key.isMacroKey )
@@ -152,7 +156,8 @@ const std::vector<std::string> & G510Base::getMacroKeysNames(void) const {
 }
 
 /* return true if any macro key (G1-G18) is pressed  */
-const bool G510Base::checkMacroKey(USBDevice & device) {
+const bool G510Base::checkMacroKey(USBDevice & device)
+{
 	for (const auto & key : G510Base::fiveBytesKeysMap ) {
 		if( key.isMacroKey and (device._pressedRKeysMask & toEnumType(key.key)) ) {
 			device._macroKey = key.name;
@@ -163,7 +168,8 @@ const bool G510Base::checkMacroKey(USBDevice & device) {
 }
 
 /* return true if any media key is pressed */
-const bool G510Base::checkMediaKey(USBDevice & device) {
+const bool G510Base::checkMediaKey(USBDevice & device)
+{
 	for (const auto & key : G510Base::twoBytesKeysMap ) {
 		if( device._pressedRKeysMask & toEnumType(key.key) ) {
 			device._mediaKey = key.name;
@@ -174,7 +180,8 @@ const bool G510Base::checkMediaKey(USBDevice & device) {
 }
 
 /* return true if any LCD key is pressed */
-const bool G510Base::checkLCDKey(USBDevice & device) {
+const bool G510Base::checkLCDKey(USBDevice & device)
+{
 	for (const auto & key : G510Base::fiveBytesKeysMap ) {
 		if( key.isLCDKey and device._pressedRKeysMask & toEnumType(key.key) ) {
 			std::lock_guard<std::mutex> lock(device._LCDMutex);
@@ -190,7 +197,10 @@ const bool G510Base::checkLCDKey(USBDevice & device) {
  *  - one double 5 bytes event : Keys::GK_KEY_LIGHT
  *  - one 2 bytes event with first byte equal to 0x04
  */
-void G510Base::processKeyEvent2Bytes(USBDevice & device) {
+void G510Base::processKeyEvent2Bytes(USBDevice & device)
+{
+	GK_LOG_FUNC
+
 	if (device._pressedKeys[0] == 0x02) {
 		for (const auto & key : G510Base::twoBytesKeysMap ) {
 			if( device._pressedKeys[key.index] & key.mask )
@@ -199,40 +209,47 @@ void G510Base::processKeyEvent2Bytes(USBDevice & device) {
 	}
 	else if (device._pressedKeys[0] == 0x04) {
 #if DEBUGGING_ON
+		/* continue only when debug is on */
+		if( ! GKLogging::GKDebug )
+			return;
+
 		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_BACKLIGHT_OFF)) {
-			LOG(DEBUG3) << "backlight off";
+			LOG(trace) << "backlight off";
 		}
 		else {
-			LOG(DEBUG3) << "backlight on";
+			LOG(trace) << "backlight on";
 		}
 
-		/* audio onboard disabled */
+		/* continue only when audio onboard is enabled */
 		if( ! (device._pressedKeys[1] & toEnumType(SpecialKeys::GK_ONBOARD_AUDIO_ON) ) )
 			return;
 
 		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_HEADSET_OFF)) {
-			LOG(DEBUG3) << "headset off";
+			LOG(trace) << "headset off";
 		}
 		else {
-			LOG(DEBUG3) << "headset on";
+			LOG(trace) << "headset on";
 		}
 
 		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_MICRO_OFF)) {
-			LOG(DEBUG3) << "micro off";
+			LOG(trace) << "micro off";
 		}
 		else {
-			LOG(DEBUG3) << "micro on";
+			LOG(trace) << "micro on";
 		}
 #endif
 	}
 	else {
-		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 2 bytes event");
+		GKSysLogWarning("wrong first byte value on 2 bytes event");
 	}
 }
 
-void G510Base::processKeyEvent5Bytes(USBDevice & device) {
+void G510Base::processKeyEvent5Bytes(USBDevice & device)
+{
+	GK_LOG_FUNC
+
 	if (device._pressedKeys[0] != 0x03) {
-		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 5 bytes event");
+		GKSysLogWarning("wrong first byte value on 5 bytes event");
 		return;
 	}
 
@@ -244,8 +261,10 @@ void G510Base::processKeyEvent5Bytes(USBDevice & device) {
 
 void G510Base::processKeyEvent8Bytes(USBDevice & device)
 {
+	GK_LOG_FUNC
+
 	if (device._pressedKeys[0] != 0x01) {
-		GKSysLog(LOG_WARNING, WARNING, "wrong first byte value on 8 bytes event");
+		GKSysLogWarning("wrong first byte value on 8 bytes event");
 		return;
 	}
 
@@ -254,19 +273,21 @@ void G510Base::processKeyEvent8Bytes(USBDevice & device)
 
 KeyStatus G510Base::processKeyEvent(USBDevice & device)
 {
+	GK_LOG_FUNC
+
 	device._pressedRKeysMask = 0;
 
 	switch(device.getLastKeysInterruptTransferLength()) {
 		case 2:
 #if DEBUGGING_ON && DEBUG_KEYS
-			LOG(DEBUG1) << device.getID() << " 2 bytes : " << this->getBytes(device);
+			GKLog3(trace, device.getID(), " 2 bytes : ", this->getBytes(device))
 #endif
 			this->processKeyEvent2Bytes(device);
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 5:
 #if DEBUGGING_ON && DEBUG_KEYS
-			LOG(DEBUG1) << "5 bytes : " << this->getBytes(device);
+			GKLog3(trace, device.getID(), " 5 bytes : ", this->getBytes(device))
 #endif
 			this->processKeyEvent5Bytes(device);
 			if( device._pressedRKeysMask == 0 ) /* skip release key events */
@@ -277,9 +298,9 @@ KeyStatus G510Base::processKeyEvent(USBDevice & device)
 			/* process those events only if Macro Record Mode on */
 			if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) ) {
 #if DEBUGGING_ON && DEBUG_KEYS
-				LOG(DEBUG1) << device.getID() << " 8 bytes : processing standard key event : "
-							<< this->getBytes(device);
+				GKLog3(trace, device.getID(), " 8 bytes : ", this->getBytes(device))
 #endif
+				/* process standard key event */
 				this->processKeyEvent8Bytes(device);
 				std::copy(
 						std::begin(device._pressedKeys), std::end(device._pressedKeys),
@@ -287,14 +308,13 @@ KeyStatus G510Base::processKeyEvent(USBDevice & device)
 				return KeyStatus::S_KEY_PROCESSED;
 			}
 #if DEBUGGING_ON && DEBUG_KEYS
-			LOG(DEBUG1) << device.getID() << " 8 bytes : skipping standard key event : "
-						<< this->getBytes(device);
+			GKLog3(trace, device.getID(), " 8 bytes (skipped) : ", this->getBytes(device))
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
 		default:
 #if DEBUGGING_ON && DEBUG_KEYS
-			LOG(DEBUG1) << device.getID() << " not implemented: " << device.getLastKeysInterruptTransferLength() << " bytes !";
+			GKLog3(trace, device.getID(), " not implemented : bytes : ", device.getLastKeysInterruptTransferLength())
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
@@ -315,10 +335,10 @@ KeyStatus G510Base::processKeyEvent(USBDevice & device)
  */
 void G510Base::sendUSBDeviceInitialization(USBDevice & device)
 {
-#if DEBUGGING_ON
-	LOG(INFO)	<< device.getID() << " sending " << device.getFullName()
-				<< " initialization requests";
-#endif
+	GK_LOG_FUNC
+
+	GKLog2(info, device.getID(), " sending device initialization requests")
+
 	{
 		const unsigned char ReportID = 0x01;
 		const unsigned char data[] = {
@@ -326,7 +346,7 @@ void G510Base::sendUSBDeviceInitialization(USBDevice & device)
 				   0, 0, 0, 0, 0, 0, 0, 0,
 				   0, 0, 0
 		};
-		this->sendControlRequest(device, data, 19);
+		this->sendUSBDeviceFeatureReport(device, data, 19);
 	}
 	{
 		const unsigned char ReportID = 0x09;
@@ -334,7 +354,7 @@ void G510Base::sendUSBDeviceInitialization(USBDevice & device)
 			ReportID, 0x02, 0, 0, 0, 0, 0, 0
 		};
 
-		this->sendControlRequest(device, data, 8);
+		this->sendUSBDeviceFeatureReport(device, data, 8);
 	}
 }
 
@@ -344,31 +364,37 @@ void G510Base::setDeviceBacklightColor(
 	const uint8_t g,
 	const uint8_t b)
 {
+	GK_LOG_FUNC
+
 	device.setRGBBytes( r, g, b );
-#if DEBUGGING_ON
-	LOG(DEBUG1) << device.getID() << " setting " << device.getFullName()
-				<< " backlight color with following RGB bytes : " << getHexRGB(r, g, b);
-#endif
+
+	GKLog3(info, device.getID(),
+		" setting device backlight color with RGB bytes : ",
+		getHexRGB(r, g, b)
+	)
+
 	const unsigned char ReportID = 0x05;
 	const unsigned char data[4] = { ReportID, r, g, b };
-	this->sendControlRequest(device, data, 4);
+	this->sendUSBDeviceFeatureReport(device, data, 4);
 }
 
 void G510Base::setDeviceMxKeysLeds(USBDevice & device)
 {
+	GK_LOG_FUNC
+
 	unsigned char mask = 0;
 	for (const auto & led : G510Base::ledsMask ) {
 		if( device._MxKeysLedsMask & toEnumType(led.led) )
 			mask |= led.mask;
 	}
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << device.getID() << " setting " << device.getFullName()
-				<< " MxKeys leds using current mask : 0x" << std::hex << toUInt(mask);
-#endif
+	GKLog3(info, device.getID(),
+		" setting MxKeys leds with mask : ", toUInt(mask)
+	)
+
 	const unsigned char ReportID = 0x04;
 	const unsigned char data[2] = { ReportID, mask };
-	this->sendControlRequest(device, data, 2);
+	this->sendUSBDeviceFeatureReport(device, data, 2);
 }
 
 } // namespace GLogiK

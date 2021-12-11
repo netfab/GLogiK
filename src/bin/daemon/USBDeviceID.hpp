@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -109,21 +109,10 @@ class USBDeviceID
 		USBDeviceID(const USBDeviceID & device) = default;
 		~USBDeviceID(void) = default;
 
-		void setDirtyFlag(void);
-		void setResetFlag(void);
-		const bool isDirty(void) const;
-
 	protected:
 
 	private:
 		friend class USBDevice;
-
-		enum class USBDeviceState : uint8_t
-		{
-			USBDEVCLEAN = 1 << 0,
-			USBDEVDIRTY = 1 << 1,
-			USBDEVRESET = 1 << 2,
-		};
 
 		std::string _vendor;
 		std::string _product;
@@ -141,8 +130,6 @@ class USBDeviceID
 		uint64_t _capabilities;
 
 		uint16_t _driverID;
-
-		USBDeviceState _state;
 
 		uint8_t _bus;
 		uint8_t _num;

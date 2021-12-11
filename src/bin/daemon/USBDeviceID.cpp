@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -57,8 +57,9 @@ USBDeviceID::USBDeviceID(
 				_MediaKeysLength(mediaKeysLength),
 				_LCDKeysLength(LCDKeysLength)
 {
+	GK_LOG_FUNC
+
 	_devpath = _devnode = _serial = _usec = "";
-	_state = USBDeviceState::USBDEVCLEAN;
 	_driverID = _bus = _num = 0;
 
 	_fullname  = vendor;
@@ -70,7 +71,7 @@ USBDeviceID::USBDeviceID(
 	_keysInterruptBufferMaxLength = bufferMaxLength;
 
 	if( bufferMaxLength > KEYS_BUFFER_LENGTH ) {
-		GKSysLog(LOG_WARNING, WARNING, "interrupt read length too large, set it to max buffer length");
+		GKSysLogWarning("interrupt read length too large, set it to max buffer length");
 		_keysInterruptBufferMaxLength = KEYS_BUFFER_LENGTH;
 	}
 }
@@ -100,7 +101,6 @@ USBDeviceID::USBDeviceID(
 	_vendorID						= device._vendorID;
 	_productID						= device._productID;
 	_capabilities					= device._capabilities;
-	_state							= device._state;
 	_bConfigurationValue			= device._bConfigurationValue;
 	_bInterfaceNumber				= device._bInterfaceNumber;
 	_bAlternateSetting				= device._bAlternateSetting;
@@ -109,21 +109,6 @@ USBDeviceID::USBDeviceID(
 	_MacrosKeysLength				= device._MacrosKeysLength;
 	_MediaKeysLength				= device._MediaKeysLength;
 	_LCDKeysLength					= device._LCDKeysLength;
-}
-
-void USBDeviceID::setDirtyFlag(void)
-{
-	_state = USBDeviceState::USBDEVDIRTY;
-}
-
-void USBDeviceID::setResetFlag(void)
-{
-	_state = USBDeviceState::USBDEVRESET;
-}
-
-const bool USBDeviceID::isDirty(void) const
-{
-	return (_state == USBDeviceState::USBDEVDIRTY);
 }
 
 } // namespace GLogiK

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -57,13 +57,14 @@ DaemonAndServiceTab::~DaemonAndServiceTab()
 
 void DaemonAndServiceTab::buildTab(void)
 {
+	GK_LOG_FUNC
+
 	QVBoxLayout* vBox = nullptr;
 
 	try {
 		vBox = new QVBoxLayout(this);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QVBoxLayout";
-#endif
+		GKLog(trace, "allocated QVBoxLayout")
+
 		this->setLayout(vBox);
 
 		/* -- -- -- */
@@ -111,9 +112,8 @@ void DaemonAndServiceTab::buildTab(void)
 			layout->addWidget(_serviceStatusLabel);
 
 			_pStartButton = new QPushButton("Start service");
-#if DEBUGGING_ON
-			LOG(DEBUG1) << "allocated Start button";
-#endif
+			GKLog(trace, "allocated Start button")
+
 			layout->addWidget(_pStartButton);
 
 			/* keeping space used when hiding button */
@@ -129,7 +129,7 @@ void DaemonAndServiceTab::buildTab(void)
 		/* -- -- -- */
 	}
 	catch (const std::bad_alloc& e) {
-		LOG(ERROR) << e.what();
+		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
 }
@@ -146,9 +146,9 @@ const bool DaemonAndServiceTab::isServiceRegistered(void) const
 
 void DaemonAndServiceTab::updateTab(void)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "updating DaemonAndServiceTab";
-#endif
+	GK_LOG_FUNC
+
+	GKLog(trace, "updating DaemonAndServiceTab")
 
 	{
 		const QString vers("Version : unknown");
@@ -222,6 +222,8 @@ void DaemonAndServiceTab::updateTab(void)
 
 void DaemonAndServiceTab::startSignal(void)
 {
+	GK_LOG_FUNC
+
 	_pStartButton->setEnabled(false);
 
 	std::string status("desktop service request");
@@ -236,12 +238,12 @@ void DaemonAndServiceTab::startSignal(void)
 		_pDBus->sendBroadcastSignal();
 
 		status += " sent to launcher";
-		LOG(INFO) << status;
+		LOG(info) << status;
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		_pDBus->abandonBroadcastSignal();
 		status += " to launcher failed";
-		LOG(ERROR) << status << " - " << e.what();
+		LOG(error) << status << " - " << e.what();
 		throw GLogiKExcept("service RestartRequest failed");
 	}
 }

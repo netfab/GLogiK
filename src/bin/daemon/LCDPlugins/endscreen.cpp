@@ -47,7 +47,8 @@ Endscreen::Endscreen()
 	//_pluginTempo = LCDPluginTempo::TEMPO_DEFAULT;
 }
 
-Endscreen::~Endscreen() {
+Endscreen::~Endscreen()
+{
 }
 
 void Endscreen::init(FontsManager* const pFonts, const std::string & product)

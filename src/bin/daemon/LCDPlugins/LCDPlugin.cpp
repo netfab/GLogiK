@@ -57,9 +57,9 @@ LCDPlugin::LCDPlugin()
 
 LCDPlugin::~LCDPlugin()
 {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "deleting " << this->getPluginName() << " LCD plugin";
-#endif
+	GK_LOG_FUNC
+
+	GKLog2(trace, "deleting LCD plugin : ", this->getPluginName())
 }
 
 /*
@@ -111,6 +111,8 @@ const uint16_t LCDPlugin::getPluginMaxFrames(void) const
 
 void LCDPlugin::prepareNextPBMFrame(void)
 {
+	GK_LOG_FUNC
+
 	/* update internal frame counter and iterator to allow the plugin
 	 * to have multiples PBM loaded and simulate animation */
 	if( (*_itCurrentPBMFrame).switchToNextFrame(_PBMFrameCounter) ) {
@@ -122,7 +124,7 @@ void LCDPlugin::prepareNextPBMFrame(void)
 
 	_PBMFrameCounter++; /* for next call */
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-	LOG(DEBUG2) << this->getPluginName() << " - frameCount #" << _PBMFrameCounter;
+	GKLog3(trace, this->getPluginName(), " - frameCount #", _PBMFrameCounter)
 #endif
 }
 
@@ -161,34 +163,31 @@ void LCDPlugin::addPBMFrame(
 	const std::string & file,
 	const uint16_t num)
 {
+	GK_LOG_FUNC
+
 	fs::path filePath(PBMDirectory);
 	filePath /= file;
 
 	this->addPBMEmptyFrame(num);
 
-	try {
-		this->readPBM(
-			filePath.string(),
-			_PBMFrames.back()._PBMData,
-			DEFAULT_PBM_WIDTH,
-			DEFAULT_PBM_HEIGHT
-		);
-	}
-	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "exception while reading PBM file: " << filePath.string();
-		throw;
-	}
+	this->readPBM(
+		filePath.string(),
+		_PBMFrames.back()._PBMData,
+		DEFAULT_PBM_WIDTH,
+		DEFAULT_PBM_HEIGHT
+	);
 }
 
-void LCDPlugin::addPBMEmptyFrame(
-	const uint16_t num)
+void LCDPlugin::addPBMEmptyFrame(const uint16_t num)
 {
+	GK_LOG_FUNC
+
 	try {
 		_PBMFrames.emplace_back(num);
 	}
 	catch (const std::exception & e) {
-		LOG(ERROR) << "PBMFrame constructor vector resize exception ?";
-		throw GLogiKExcept("initializing PBM frame failure");
+		// PBMFrame constructor vector resize exception ?
+		throw GLogiKExcept("failed to initialize PBM empty frame");
 	}
 }
 
@@ -199,9 +198,10 @@ const uint16_t LCDPlugin::getNextPBMFrameID(void) const
 
 PixelsData & LCDPlugin::getCurrentPBMFrame(void)
 {
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-	LOG(DEBUG2)	<< this->getPluginName()
-				<< " - PBMFrameindex: " << _PBMFrameIndex;
+	GKLog3(trace, this->getPluginName(), " - PBMFrameindex: ", _PBMFrameIndex)
 #endif
 	return (*_itCurrentPBMFrame)._PBMData;
 }
@@ -213,11 +213,15 @@ void LCDPlugin::writeStringOnPBMFrame(
 	const int16_t PBMXPos,
 	const int16_t PBMYPos)
 {
+	GK_LOG_FUNC
+
 	try {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-		LOG(DEBUG2)	<< this->getPluginName()
-					<< " - PBMFrameindex: " << _PBMFrameIndex
-					<< " - writing string : " << string;
+		if(GKLogging::GKDebug) {
+			LOG(trace)	<< this->getPluginName()
+						<< " - PBMFrameindex: " << _PBMFrameIndex
+						<< " - writing string : " << string;
+		}
 #endif
 		uint16_t XPos, YPos = 0;
 
@@ -235,7 +239,7 @@ void LCDPlugin::writeStringOnPBMFrame(
 		} /* for each character in the string */
 	}
 	catch (const GLogiKExcept & e) {
-		GKSysLog(LOG_WARNING, WARNING, e.what());
+		GKSysLogWarning(e.what());
 	}
 }
 
@@ -246,6 +250,8 @@ void LCDPlugin::writeStringOnLastPBMFrame(
 	const int16_t PBMXPos,
 	const int16_t PBMYPos)
 {
+	GK_LOG_FUNC
+
 	try {
 		if( _PBMFrames.empty() )
 			throw GLogiKExcept("accessing last element on empty container");
@@ -255,7 +261,7 @@ void LCDPlugin::writeStringOnLastPBMFrame(
 		this->writeStringOnPBMFrame(pFonts, fontID, string, PBMXPos, PBMYPos);
 	}
 	catch (const GLogiKExcept & e) {
-		GKSysLog(LOG_WARNING, WARNING, e.what());
+		GKSysLogWarning(e.what());
 	}
 }
 
@@ -264,13 +270,15 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 	const uint16_t PBMXPos,
 	const uint16_t PBMYPos)
 {
+	GK_LOG_FUNC
+
 	const uint16_t PROGRESS_BAR_WIDTH = 102;
 	const uint16_t PROGRESS_BAR_HEIGHT = 7;
 
 	if(PBMXPos + PROGRESS_BAR_WIDTH > (LCD_SCREEN_WIDTH - 1)) {
 		std::ostringstream buffer(std::ios_base::app);
 		buffer << "wrong progress bar X position : " << PBMXPos;
-		GKSysLog(LOG_WARNING, WARNING, buffer.str());
+		GKSysLogWarning(buffer.str());
 		return;
 	}
 
@@ -308,11 +316,13 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 			};
 
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-			LOG(DEBUG3)	<< "index: " << index
-						<< " line: " << line
-						<< " pByte: " << percentByte
-						<< " pModulo: " << percentModulo
-						<< " leftShift: " << leftShift;
+			if(GKLogging::GKDebug) {
+				LOG(trace)	<< "index: " << index
+							<< " line: " << line
+							<< " pByte: " << percentByte
+							<< " pModulo: " << percentModulo
+							<< " leftShift: " << leftShift;
+			}
 #endif
 
 			for(uint16_t i = 0; i < 12; ++i) {
@@ -358,9 +368,7 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 		drawHorizontalLine(index + (DEFAULT_PBM_WIDTH_IN_BYTES * (PROGRESS_BAR_HEIGHT-1)));
 	}
 	catch (const std::out_of_range& oor) {
-		std::ostringstream buffer(std::ios_base::app);
-		buffer << "wrong frame index";
-		GKSysLog(LOG_WARNING, WARNING, buffer.str());
+		GKSysLogWarning("wrong frame index");
 	}
 }
 

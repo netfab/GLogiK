@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -49,16 +49,16 @@ void DeviceConfigurationFile::load(
 	const std::string & filePath,
 	DeviceProperties & device) noexcept
 {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "loading device configuration file " << device.getConfigFilePath();
-#endif
+	GK_LOG_FUNC
+
+	GKLog2(trace, "loading device configuration file : ", device.getConfigFilePath())
+
 	try {
 		std::ifstream ifs;
 		ifs.exceptions(std::ifstream::badbit);
 		ifs.open(filePath);
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "configuration file successfully opened for reading";
-#endif
+
+		GKLog(trace, "configuration file successfully opened for reading")
 
 		{
 			DeviceProperties newDevice;
@@ -68,20 +68,19 @@ void DeviceConfigurationFile::load(
 			device.setProperties( newDevice );
 		}
 
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "success, closing";
-#endif
+		GKLog(trace, "success, closing")
+
 		ifs.close();
 	}
 	catch (const std::ifstream::failure & e) {
 		std::ostringstream buffer("fail to open configuration file : ", std::ios_base::app);
 		buffer << e.what();
-		LOG(ERROR) << buffer.str();
+		LOG(error) << buffer.str();
 	}
 	catch(const boost::archive::archive_exception & e) {
 		std::ostringstream buffer("boost::archive exception : ", std::ios_base::app);
 		buffer << e.what();
-		LOG(ERROR) << buffer.str();
+		LOG(error) << buffer.str();
 		// TODO throw GLogiKExcept to create new configuration
 		// file and avoid overwriting on close ?
 	}
@@ -91,34 +90,34 @@ void DeviceConfigurationFile::save(
 	const std::string & filePath,
 	const DeviceProperties & device) noexcept
 {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "opening configuration file for writing : " << filePath;
-#endif
+	GK_LOG_FUNC
+
+	GKLog2(trace, "opening configuration file for writing : ", filePath)
+
 	try {
 		std::ofstream ofs;
 		ofs.exceptions(std::ofstream::failbit|std::ofstream::badbit);
 		ofs.open(filePath, std::ofstream::out|std::ofstream::trunc);
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "opened";
-#endif
+
+		GKLog(trace, "opened")
 
 		{
 			boost::archive::text_oarchive outputArchive(ofs);
 			outputArchive << device;
 		}
 
-		LOG(INFO) << "successfully saved configuration file, closing";
+		LOG(info) << "successfully saved configuration file, closing";
 		ofs.close();
 	}
 	catch (const std::ofstream::failure & e) {
 		std::ostringstream buffer("fail to open configuration file : ", std::ios_base::app);
 		buffer << e.what();
-		LOG(ERROR) << buffer.str();
+		LOG(error) << buffer.str();
 	}
 	catch(const boost::archive::archive_exception & e) {
 		std::ostringstream buffer("boost::archive exception : ", std::ios_base::app);
 		buffer << e.what();
-		LOG(ERROR) << buffer.str();
+		LOG(error) << buffer.str();
 	}
 }
 

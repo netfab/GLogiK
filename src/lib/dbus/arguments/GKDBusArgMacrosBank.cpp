@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -31,10 +31,12 @@ using namespace NSGKUtils;
 /*
  * helper function rebuilding mBank_type map
  */
-const GLogiK::mBank_type GKDBusArgumentMacrosBank::getNextMacrosBankArgument(void) {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "rebuilding macros bank from GKDBus values";
-#endif
+const GLogiK::mBank_type GKDBusArgumentMacrosBank::getNextMacrosBankArgument(void)
+{
+	GK_LOG_FUNC
+
+	GKLog(trace, "rebuilding macros bank from GKDBus values")
+
 	GLogiK::mBank_type bank;
 
 	try {
@@ -48,17 +50,16 @@ const GLogiK::mBank_type GKDBusArgumentMacrosBank::getNextMacrosBankArgument(voi
 		while( ! GKDBusArgumentString::stringArguments.empty() );
 	}
 	catch ( const EmptyContainer & e ) {
-		LOG(WARNING) << "missing argument : " << e.what();
+		LOG(warning) << "missing argument : " << e.what();
 		throw GLogiKExcept("rebuilding MacrosBank failed");
 	}
 
 	if( ! GKDBusArgumentByte::byteArguments.empty() ) { /* sanity check */
-		LOG(WARNING) << "byte container not empty";
+		LOG(warning) << "byte container not empty";
 	}
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "macros bank size : " << bank.size();
-#endif
+	GKLog2(trace, "macros bank size : ", bank.size())
+
 	return bank;
 }
 

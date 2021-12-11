@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@ void GKDBusArgument::decodeArgumentFromIterator(
 	const char* signature,
 	const uint16_t num)
 {
+	GK_LOG_FUNC
+
 	int currentType = dbus_message_iter_get_arg_type(iter);
 
 	DBusSignatureIter itSignature;
@@ -54,7 +56,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 	}
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG3) << "decoding argument: " << num << " type: "
+	LOG(trace)	<< "decoding argument: " << num << " type: "
 				<< static_cast<char>(currentType) << " sig: " << signature;
 #endif
 
@@ -64,7 +66,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 			{
 				const char* value = nullptr;
 				dbus_message_iter_get_basic(iter, &value);
-				//LOG(DEBUG4) << "string arg value : " << value;
+				//GKLog2(trace, "string arg value : ", value)
 				GKDBusArgument::stringArguments.push_back(value);
 			}
 			break;
@@ -72,7 +74,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 			{
 				bool value = false;
 				dbus_message_iter_get_basic(iter, &value);
-				//LOG(DEBUG4) << "bool arg value : " << value;
+				//GKLog2(trace, "bool arg value : ", value)
 				GKDBusArgument::booleanArguments.push_back(value);
 			}
 			break;
@@ -99,7 +101,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 				uint8_t byte = 0;
 				dbus_message_iter_get_basic(iter, &byte);
 				GKDBusArgument::byteArguments.push_back(byte);
-				//LOG(DEBUG4) << "byte arg value : " << byte;
+				//GKLog2(trace, "uint8_t arg value : ", value)
 			}
 			break;
 		case DBUS_TYPE_UINT16:
@@ -107,7 +109,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 				uint16_t value = 0;
 				dbus_message_iter_get_basic(iter, &value);
 				GKDBusArgument::uint16Arguments.push_back(value);
-				//LOG(DEBUG4) << "uint16 arg value : " << value;
+				//GKLog2(trace, "uint16_t arg value : ", value)
 			}
 			break;
 		case DBUS_TYPE_UINT64:
@@ -115,7 +117,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 				uint64_t value = 0;
 				dbus_message_iter_get_basic(iter, &value);
 				GKDBusArgument::uint64Arguments.push_back(value);
-				//LOG(DEBUG4) << "uint64 arg value : " << value;
+				//GKLog2(trace, "uint64_t arg value : ", value)
 			}
 			break;
 		case DBUS_TYPE_STRUCT:
@@ -139,7 +141,7 @@ void GKDBusArgument::decodeArgumentFromIterator(
 			{
 				uint16_t c = 0;
 				DBusMessageIter itSub;
-				//LOG(DEBUG4) << "parsing variant";
+				//GKLog(trace, "parsing variant")
 				dbus_message_iter_recurse(iter, &itSub);
 				char* sig = dbus_message_iter_get_signature(&itSub);
 				GKDBusArgument::decodeArgumentFromIterator(&itSub, sig, c);
@@ -147,12 +149,15 @@ void GKDBusArgument::decodeArgumentFromIterator(
 			}
 			break;
 		default: // other dbus type
-			LOG(ERROR) << "unhandled argument type: " << static_cast<char>(currentType) << " sig: " << signature;
+			LOG(error) << "unhandled argument type: " << static_cast<char>(currentType) << " sig: " << signature;
 			break;
 	}
 }
 
-void GKDBusArgument::fillInArguments(DBusMessage* message) {
+void GKDBusArgument::fillInArguments(DBusMessage* message)
+{
+	GK_LOG_FUNC
+
 	GKDBusArgument::stringArguments.clear();
 	GKDBusArgument::booleanArguments.clear();
 	GKDBusArgument::byteArguments.clear();
@@ -160,7 +165,7 @@ void GKDBusArgument::fillInArguments(DBusMessage* message) {
 	GKDBusArgument::uint64Arguments.clear();
 
 	if(message == nullptr) {
-		LOG(WARNING) << __func__ << " : message is NULL";
+		LOG(warning) << "message is NULL";
 		return;
 	}
 
@@ -190,7 +195,8 @@ void GKDBusArgument::fillInArguments(DBusMessage* message) {
 		std::reverse(GKDBusArgument::uint64Arguments.begin(), GKDBusArgument::uint64Arguments.end());
 }
 
-const int GKDBusArgument::decodeNextArgument(DBusMessageIter* itArgument) {
+const int GKDBusArgument::decodeNextArgument(DBusMessageIter* itArgument)
+{
 	GKDBusArgument::stringArguments.clear();
 	GKDBusArgument::booleanArguments.clear();
 	GKDBusArgument::byteArguments.clear();

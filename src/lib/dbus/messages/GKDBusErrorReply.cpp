@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -31,11 +31,13 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 GKDBusErrorReply::GKDBusErrorReply(
-	DBusConnection* connection,
+	DBusConnection* const connection,
 	DBusMessage* message,
-	const char* errorMessage
-)	:	GKDBusMessage(connection)
+	const char* errorMessage)
+	:	GKDBusMessage(connection)
 {
+	GK_LOG_FUNC
+
 	/* sanity check */
 	if(message == nullptr)
 		throw GKDBusMessageWrongBuild("DBus message is NULL");
@@ -46,14 +48,16 @@ GKDBusErrorReply::GKDBusErrorReply(
 		throw GKDBusMessageWrongBuild("can't allocate memory for DBus reply message");
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus error reply message initialized";
+	GKLog(trace, "DBus error reply message initialized")
 #endif
 }
 
 GKDBusErrorReply::~GKDBusErrorReply()
 {
+	GK_LOG_FUNC
+
 	if(_hosedMessage) {
-		LOG(WARNING) << "DBus hosed reply, giving up";
+		LOG(warning) << "DBus hosed reply, giving up";
 		dbus_message_unref(_message);
 		return;
 	}
@@ -61,14 +65,14 @@ GKDBusErrorReply::~GKDBusErrorReply()
 	// TODO dbus_uint32_t serial;
 	if( ! dbus_connection_send(_connection, _message, nullptr) ) {
 		dbus_message_unref(_message);
-		LOG(ERROR) << "DBus error reply message sending failure";
+		LOG(error) << "DBus error reply message sending failure";
 		return;
 	}
 
 	dbus_connection_flush(_connection);
 	dbus_message_unref(_message);
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus error reply message sent";
+	GKLog(trace, "DBus error reply message sent")
 #endif
 }
 
@@ -85,10 +89,12 @@ GKDBusMessageErrorReply::~GKDBusMessageErrorReply()
 }
 
 void GKDBusMessageErrorReply::initializeErrorReply(
-	DBusConnection* connection,
+	DBusConnection* const connection,
 	DBusMessage* message,
-	const char* errorMessage
-) {
+	const char* errorMessage)
+{
+	GK_LOG_FUNC
+
 	if(_errorReply) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus reply already allocated");
 
@@ -96,31 +102,36 @@ void GKDBusMessageErrorReply::initializeErrorReply(
 		_errorReply = new GKDBusErrorReply(connection, message, errorMessage);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus reply allocation failure : " << e.what();
+		LOG(error) << "GKDBus reply allocation failure : " << e.what();
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
 }
 
-void GKDBusMessageErrorReply::sendErrorReply(void) {
+void GKDBusMessageErrorReply::sendErrorReply(void)
+{
+	GK_LOG_FUNC
+
 	if(_errorReply) { /* sanity check */
 		delete _errorReply;
 		_errorReply = nullptr;
 	}
 	else {
-		LOG(WARNING) << "tried to send NULL error reply";
+		LOG(warning) << "tried to send NULL error reply";
 	}
 }
 
 void GKDBusMessageErrorReply::buildAndSendErrorReply(
-	DBusConnection* connection,
+	DBusConnection* const connection,
 	DBusMessage* message,
-	const char* errorMessage
-) {
+	const char* errorMessage)
+{
+	GK_LOG_FUNC
+
 	try {
 		this->initializeErrorReply(connection, message, errorMessage);
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "DBus error reply failure : " << e.what();
+		LOG(error) << "DBus error reply failure : " << e.what();
 	}
 
 	/* delete error reply if allocated */

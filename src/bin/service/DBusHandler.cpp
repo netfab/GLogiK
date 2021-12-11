@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -59,6 +59,8 @@ DBusHandler::DBusHandler(
 		_registerStatus(false),
 		_wantToExit(false)
 {
+	GK_LOG_FUNC
+
 	_devices.setGKfs(pGKfs);
 
 	try {
@@ -71,19 +73,19 @@ DBusHandler::DBusHandler(
 						and (retries < UNREACHABLE_DAEMON_MAX_RETRIES) )
 				{
 					if(retries > 0) {
-						LOG(INFO) << "register retry " << retries << " ...";
+						LOG(info) << "register retry " << retries << " ...";
 					}
 
 					this->registerWithDaemon();
 
 					if( ! _registerStatus ) {
 						unsigned int timer = 5;
-						LOG(WARNING) << "retrying in " << timer << " seconds ...";
+						LOG(warning) << "retrying in " << timer << " seconds ...";
 						std::this_thread::sleep_for(std::chrono::seconds(timer));
 					}
 				}
 				else {
-					LOG(ERROR) << "can't register, giving up";
+					LOG(error) << "can't register, giving up";
 					throw GLogiKExcept("unable to register with daemon");
 				}
 				retries++;
@@ -110,7 +112,8 @@ DBusHandler::DBusHandler(
 	}
 }
 
-DBusHandler::~DBusHandler() {
+DBusHandler::~DBusHandler()
+{
 }
 
 /*
@@ -125,14 +128,17 @@ DBusHandler::~DBusHandler() {
 
 void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 {
+	GK_LOG_FUNC
+
 	devices_files_map_t devicesMap = _devices.getDevicesMap();
 
 	pGKfs->readNotifyEvents( devicesMap );
 
 	for( const auto & device : devicesMap ) {
-#if DEBUGGING_ON
-		LOG(DEBUG) << device.first << " reload configuration file: " << device.second;
-#endif
+		GKLog4(trace,
+			device.first, " filesystem notification event",
+			"reloading file : ", device.second
+		)
 		_devices.reloadDeviceConfigurationFile(device.first);
 
 		/*
@@ -153,6 +159,8 @@ const bool DBusHandler::getExitStatus(void) const
 
 void DBusHandler::clearAndUnregister(void)
 {
+	GK_LOG_FUNC
+
 	if( _registerStatus ) {
 		_devices.clearDevices();
 		this->unregisterWithDaemon();
@@ -160,13 +168,14 @@ void DBusHandler::clearAndUnregister(void)
 		this->sendDevicesUpdatedSignal();
 	}
 	else {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "client " << _currentSession << " already unregistered with deamon";
-#endif
+		GKLog2(trace, "client not registered with deamon : ", _currentSession)
 	}
 }
 
-void DBusHandler::cleanDBusRequests(void) {
+void DBusHandler::cleanDBusRequests(void)
+{
+	GK_LOG_FUNC
+
 	this->clearAndUnregister();
 
 	/* remove SessionMessageHandler D-Bus interface and object */
@@ -203,7 +212,7 @@ void DBusHandler::cleanDBusRequests(void) {
 				"org.freedesktop.DBus.Properties");
 			break;
 		default:
-			LOG(WARNING) << "unknown session tracker";
+			LOG(warning) << "unknown session tracker";
 			break;
 	}
 }
@@ -223,9 +232,12 @@ void DBusHandler::cleanDBusRequests(void) {
  * throws restartRequest exception if register was sucessful but something
  * goes wrong after (like daemon version mismatch)
  */
-void DBusHandler::registerWithDaemon(void) {
+void DBusHandler::registerWithDaemon(void)
+{
+	GK_LOG_FUNC
+
 	if( _registerStatus ) {
-		LOG(WARNING) << "don't need to register, since we are already registered";
+		LOG(warning) << "don't need to register, since we are already registered";
 		return;
 	}
 
@@ -260,10 +272,10 @@ void DBusHandler::registerWithDaemon(void) {
 						throw GLogiKExcept(mismatch);
 					}
 
-					LOG(INFO) << "successfully registered with daemon - " << _clientID;
+					LOG(info) << "successfully registered with daemon - " << _clientID;
 				}
 				catch (const GLogiKExcept & e) {
-					LOG(WARNING) << e.what() << " - will unregister";
+					LOG(warning) << e.what() << " - will unregister";
 					this->unregisterWithDaemon();
 					throw restartRequest();
 				}
@@ -274,9 +286,9 @@ void DBusHandler::registerWithDaemon(void) {
 					reason = _pDBus->getNextStringArgument();
 				}
 				catch (const GLogiKExcept & e) {
-					LOG(ERROR) << e.what();
+					LOG(error) << e.what();
 				}
-				LOG(ERROR) << "failed to register with daemon : false - " << reason;
+				LOG(error) << "failed to register with daemon : false - " << reason;
 			}
 		}
 		catch (const GLogiKExcept & e) {
@@ -289,11 +301,12 @@ void DBusHandler::registerWithDaemon(void) {
 	}
 }
 
-void DBusHandler::unregisterWithDaemon(void) {
+void DBusHandler::unregisterWithDaemon(void)
+{
+	GK_LOG_FUNC
+
 	if( ! _registerStatus ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "can't unregister, since we are not currently registered";
-#endif
+		GKLog(trace, "cannot unregister, since we are not currently registered")
 		return;
 	}
 
@@ -319,10 +332,10 @@ void DBusHandler::unregisterWithDaemon(void) {
 				_registerStatus = false;
 				_clientID = "undefined";
 				_daemonVersion = "unknown";
-				LOG(INFO) << "successfully unregistered with daemon";
+				LOG(info) << "successfully unregistered with daemon";
 			}
 			else {
-				LOG(ERROR) << "failed to unregister with daemon : false";
+				LOG(error) << "failed to unregister with daemon : false";
 			}
 		}
 		catch (const GLogiKExcept & e) {
@@ -335,7 +348,10 @@ void DBusHandler::unregisterWithDaemon(void) {
 	}
 }
 
-void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
+void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
+{
+	GK_LOG_FUNC
+
 	try {
 		const std::string remoteMethod("GetSessionByPID");
 
@@ -354,9 +370,9 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 			try {
 				_pDBus->waitForRemoteMethodCallReply();
 				_currentSession = _pDBus->getNextStringArgument();
-#if DEBUGGING_ON
-				LOG(DEBUG1) << "current session : " << _currentSession;
-#endif
+
+				GKLog2(trace, "GetSessionByPID : ", _currentSession)
+
 				_sessionFramework = SessionFramework::FW_LOGIND;
 
 				/* update session state when PropertyChanged signal receipted */
@@ -372,7 +388,7 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 					std::bind(&DBusHandler::updateSessionState, this)
 				);
 
-				LOG(INFO) << "successfully contacted logind";
+				LOG(info) << "successfully contacted logind";
 				return; /* everything ok */
 			}
 			catch (const GLogiKExcept & e) {
@@ -386,7 +402,7 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 		}
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(ERROR) << e.what();
+		LOG(error) << e.what();
 	}
 
 	/* fatal error */
@@ -395,10 +411,12 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid) {
 
 void DBusHandler::updateSessionState(void)
 {
+	GK_LOG_FUNC
+
 	_sessionState = this->getCurrentSessionState();
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "switching session state to : " << _sessionState;
-#endif
+
+	GKLog2(trace, "switching session state to : ", _sessionState)
+
 	this->reportChangedState();
 }
 
@@ -410,7 +428,10 @@ void DBusHandler::updateSessionState(void)
  *  - online
  *  - closing
  */
-const std::string DBusHandler::getCurrentSessionState(void) {
+const std::string DBusHandler::getCurrentSessionState(void)
+{
+	GK_LOG_FUNC
+
 	std::string remoteMethod;
 	switch(_sessionFramework) {
 		case SessionFramework::FW_LOGIND:
@@ -449,11 +470,12 @@ const std::string DBusHandler::getCurrentSessionState(void) {
 	throw GLogiKExcept("unable to get session state");
 }
 
-void DBusHandler::reportChangedState(void) {
+void DBusHandler::reportChangedState(void)
+{
+	GK_LOG_FUNC
+
 	if( ! _registerStatus ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "currently not registered, skipping report state";
-#endif
+		GKLog(trace, "currently not registered, skipping report state")
 		return;
 	}
 
@@ -474,13 +496,11 @@ void DBusHandler::reportChangedState(void) {
 		try {
 			_pDBus->waitForRemoteMethodCallReply();
 			const bool ret( _pDBus->getNextBooleanArgument() );
-			if( ret ) {
-#if DEBUGGING_ON
-				LOG(DEBUG2) << "successfully reported changed state : " << _sessionState;
-#endif
+			if( ! ret ) {
+				LOG(error) << "failed to report changed state : false";
 			}
 			else {
-				LOG(ERROR) << "failed to report changed state : false";
+				GKLog2(trace, "successfully reported changed state : ", _sessionState)
 			}
 			return;
 		}
@@ -494,15 +514,14 @@ void DBusHandler::reportChangedState(void) {
 	}
 }
 
-void DBusHandler::initializeDevices(void) {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "initializing devices";
-#endif
+void DBusHandler::initializeDevices(void)
+{
+	GK_LOG_FUNC
+
+	GKLog(trace, "initializing devices")
 
 	if( ! _registerStatus ) {
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "currently not registered, giving up";
-#endif
+		GKLog(trace, "currently not registered, giving up")
 		return;
 	}
 
@@ -558,13 +577,11 @@ void DBusHandler::initializeDevices(void) {
 			_pDBus->waitForRemoteMethodCallReply();
 
 			const bool ret = _pDBus->getNextBooleanArgument();
-			if( ret ) {
-#if DEBUGGING_ON
-				LOG(DEBUG2) << "successfully toggled ready propertie";
-#endif
+			if( ! ret ) {
+				LOG(warning) << "failed to toggle ready propertie : false";
 			}
 			else {
-				LOG(WARNING) << "toggling ready propertie failed : false";
+				GKLog(trace, "successfully toggled ready propertie")
 			}
 		}
 		catch (const GLogiKExcept & e) {
@@ -608,7 +625,8 @@ void DBusHandler::initializeDevices(void) {
 
 void DBusHandler::sendRestartRequest(void)
 {
-	std::string status("restart request");
+	GK_LOG_FUNC
+
 	try {
 		/* asking the launcher for a restart */
 		_pDBus->initializeBroadcastSignal(
@@ -619,21 +637,20 @@ void DBusHandler::sendRestartRequest(void)
 		);
 		_pDBus->sendBroadcastSignal();
 
-		status += " sent";
-		LOG(WARNING) << status;
+		LOG(info) << "sent signal : RestartRequest";
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		_pDBus->abandonBroadcastSignal();
-		status += " failure";
-		LOG(ERROR) << status << " - " << e.what();
+		LOG(error) << "failed to send signal : RestartRequest : " << e.what();
 	}
 
-	throw GLogiKExcept(status);
+	throw GLogiKExcept("restart request done");
 }
 
 void DBusHandler::sendDevicesUpdatedSignal(void)
 {
-	std::string status("devices updated signal");
+	GK_LOG_FUNC
+
 	try {
 		/* send DevicesUpdated signal to GUI applications */
 		_pDBus->initializeBroadcastSignal(
@@ -644,17 +661,12 @@ void DBusHandler::sendDevicesUpdatedSignal(void)
 		);
 		_pDBus->sendBroadcastSignal();
 
-		status += " sent";
+		LOG(info) << "sent signal : DevicesUpdated";
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		_pDBus->abandonBroadcastSignal();
-		status += " failure";
-		LOG(ERROR) << status << " - " << e.what();
+		LOG(error) << "failed to send signal : DevicesUpdated : " << e.what();
 	}
-
-#if DEBUGGING_ON
-	LOG(DEBUG3) << status << " on session bus";
-#endif
 }
 
 /*
@@ -668,7 +680,8 @@ void DBusHandler::sendDevicesUpdatedSignal(void)
  *
  */
 
-void DBusHandler::initializeGKDBusSignals(void) {
+void DBusHandler::initializeGKDBusSignals(void)
+{
 	/*
 	 * want to be warned by the daemon about those signals
 	 * each declaration can throw a GLogiKExcept exception
@@ -832,25 +845,27 @@ void DBusHandler::initializeGKDBusMethods(void)
 		std::bind(&DBusHandler::getDeviceLCDPluginsProperties, this, std::placeholders::_1, r_ed) );
 }
 
-void DBusHandler::daemonIsStopping(void) {
-	std::ostringstream buffer("received signal: ", std::ios_base::app);
-	buffer << __func__;
-	LOG(INFO) << buffer.str();
+void DBusHandler::daemonIsStopping(void)
+{
+	GK_LOG_FUNC
+
+	LOG(info) << "received signal : " << __func__;
+
 	this->clearAndUnregister();
 }
 
-void DBusHandler::daemonIsStarting(void) {
-	std::ostringstream buffer("received signal: ", std::ios_base::app);
-	buffer << __func__;
+void DBusHandler::daemonIsStarting(void)
+{
+	GK_LOG_FUNC
+
 	if( _registerStatus ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << buffer.str()
-			<< " - but we are already registered with daemon : "
-			<< _currentSession;
-#endif
+		GKLog4(trace,
+			"received signal : ", __func__,
+			"but we are already registered with daemon : ", _currentSession
+		)
 	}
 	else {
-		LOG(INFO)	<< buffer.str()
+		LOG(info)	<< "received signal : " << __func__
 					<< " - contacting the daemon";
 
 		try {
@@ -863,7 +878,7 @@ void DBusHandler::daemonIsStarting(void) {
 			}
 		}
 		catch (const GLogiKExcept & e) {
-			LOG(WARNING) << e.what();
+			LOG(info) << e.what();
 		}
 
 		if( _registerStatus ) {
@@ -875,11 +890,15 @@ void DBusHandler::daemonIsStarting(void) {
 	}
 }
 
-void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "received " << __func__ << " signal"
-				<< " - with " << devicesID.size() << " devices";
-#endif
+void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		"received signal : ", __func__,
+		"number of devices : ", devicesID.size()
+	)
+
 	const std::string remoteMethod("GetDeviceStatus");
 
 	bool devicesUpdated(false);
@@ -902,16 +921,13 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 
 				const std::string deviceStatus( _pDBus->getNextStringArgument() );
 				if(deviceStatus == "started") {
-#if DEBUGGING_ON
-					LOG(DEBUG3) << "device status from daemon: " << devID << " started";
-#endif
+					GKLog2(trace, devID, " status from daemon : started")
 					_devices.startDevice(devID);
-
 					devicesUpdated = true;
 				}
 				else {
-					LOG(WARNING) << "received devicesStarted signal for device " << devID;
-					LOG(WARNING) << "but daemon is saying that device status is : " << deviceStatus;
+					LOG(warning) << "received devicesStarted signal for device " << devID;
+					LOG(warning) << "but daemon is saying that device status is : " << deviceStatus;
 				}
 			}
 			catch (const GLogiKExcept & e) {
@@ -938,11 +954,15 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID) {
 	}
 }
 
-void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "received " << __func__ << " signal"
-				<< " - with " << devicesID.size() << " devices";
-#endif
+void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		"received signal : ", __func__,
+		"number of devices : ", devicesID.size()
+	)
+
 	const std::string remoteMethod("GetDeviceStatus");
 
 	bool devicesUpdated(false);
@@ -965,16 +985,13 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 
 				const std::string deviceStatus( _pDBus->getNextStringArgument() );
 				if(deviceStatus == "stopped") {
-#if DEBUGGING_ON
-					LOG(DEBUG3) << "device status from daemon: " << devID << " stopped";
-#endif
+					GKLog2(trace, devID, " status from daemon : stopped")
 					_devices.stopDevice(devID);
-
 					devicesUpdated = true;
 				}
 				else {
-					LOG(WARNING) << "received devicesStopped signal for device " << devID;
-					LOG(WARNING) << "but daemon is saying that device status is : " << deviceStatus;
+					LOG(warning) << "received devicesStopped signal for device " << devID;
+					LOG(warning) << "but daemon is saying that device status is : " << deviceStatus;
 				}
 			}
 			catch (const GLogiKExcept & e) {
@@ -993,11 +1010,15 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID) {
 	}
 }
 
-void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "received " << __func__ << " signal"
-				<< " - with " << devicesID.size() << " devices";
-#endif
+void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		"received signal : ", __func__,
+		"number of devices : ", devicesID.size()
+	)
+
 	const std::string remoteMethod("GetDeviceStatus");
 
 	bool devicesUpdated(false);
@@ -1020,16 +1041,13 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID) {
 
 				const std::string deviceStatus( _pDBus->getNextStringArgument() );
 				if(deviceStatus == "unplugged") {
-#if DEBUGGING_ON
-					LOG(DEBUG3) << "device status from daemon: " << devID << " unplugged";
-#endif
+					GKLog2(trace, devID, " status from daemon : unplugged")
 					_devices.unplugDevice(devID);
-
 					devicesUpdated = true;
 				}
 				else {
-					LOG(WARNING) << "received devicesUnplugged signal for device " << devID;
-					LOG(WARNING) << "but daemon is saying that device status is : " << deviceStatus;
+					LOG(warning) << "received devicesUnplugged signal for device " << devID;
+					LOG(warning) << "but daemon is saying that device status is : " << deviceStatus;
 				}
 			}
 			catch (const GLogiKExcept & e) {
@@ -1053,24 +1071,21 @@ const bool DBusHandler::macroRecorded(
 	const std::string & keyName,
 	const uint8_t bankID)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "received " << __func__ << " signal"
-				<< " - device: " << devID
-				<< " bankID: " << toUInt(bankID)
-				<< " key: " << keyName;
-#endif
+	GK_LOG_FUNC
+
+	GKLog6(trace,
+		devID, " received signal : macroRecorded",
+		"bankID : ", toUInt(bankID),
+		"key : ", keyName
+	)
 
 	if( ! _registerStatus ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "currently not registered, skipping";
-#endif
+		GKLog(trace, "currently not registered, skipping")
 		return false;
 	}
 
 	if( _sessionState != "active" ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "currently not active, skipping";
-#endif
+		GKLog(trace, "currently not active, skipping")
 		return false;
 	}
 
@@ -1082,24 +1097,22 @@ const bool DBusHandler::macroCleared(
 	const std::string & keyName,
 	const uint8_t bankID)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "received " << __func__ << " signal"
-				<< " - device: " << devID
-				<< " bankID: " << toUInt(bankID)
-				<< " key: " << keyName;
-#endif
+	GK_LOG_FUNC
+
+	GKLog6(trace,
+		devID, " received signal : macroCleared",
+		"bankID : ", toUInt(bankID),
+		"key : ", keyName
+	)
+
 
 	if( ! _registerStatus ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "currently not registered, skipping";
-#endif
+		GKLog(trace, "currently not registered, skipping")
 		return false;
 	}
 
 	if( _sessionState != "active" ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "currently not active, skipping";
-#endif
+		GKLog(trace, "currently not active, skipping")
 		return false;
 	}
 
@@ -1110,23 +1123,20 @@ void DBusHandler::deviceMediaEvent(
 	const std::string & devID,
 	const std::string & mediaKeyEvent)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "received " << __func__ << " signal"
-				<< " - device: " << devID
-				<< " event: " << mediaKeyEvent;
-#endif
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		devID, " received signal : deviceMediaEvent",
+		"event : ", mediaKeyEvent
+	)
 
 	if( ! _registerStatus ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "currently not registered, skipping";
-#endif
+		GKLog(trace, "currently not registered, skipping")
 		return;
 	}
 
 	if( _sessionState != "active" ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "currently not active, skipping";
-#endif
+		GKLog(trace, "currently not active, skipping")
 		return;
 	}
 
@@ -1160,14 +1170,17 @@ void DBusHandler::deviceStatusChangeRequest(
 	const std::string & devID,
 	const std::string & remoteMethod)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "received " << remoteMethod << " signal for device " << devID;
-#endif
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		devID, " received status change request",
+		"requested status : ", remoteMethod
+	)
 
 	if(	(remoteMethod !=  "StopDevice") and
 		(remoteMethod !=  "StartDevice") and
 		(remoteMethod !=  "RestartDevice") ) {
-		LOG(WARNING) << "ignoring wrong remoteMethod : " << remoteMethod;
+		LOG(warning) << devID << " ignoring wrong remote method : " << remoteMethod;
 		return;
 	}
 
@@ -1187,13 +1200,11 @@ void DBusHandler::deviceStatusChangeRequest(
 			_pDBus->waitForRemoteMethodCallReply();
 
 			const bool ret = _pDBus->getNextBooleanArgument();
-			if( ret ) {
-#if DEBUGGING_ON
-				LOG(DEBUG2) << remoteMethod << " successful for device " << devID;
-#endif
+			if( ! ret ) {
+				LOG(error) << devID << " request failure : false";
 			}
 			else {
-				LOG(INFO) << remoteMethod << " failure for device " << devID << " : false";
+				GKLog2(trace, devID, " request successfully done")
 			}
 		}
 		catch (const GLogiKExcept & e) {

@@ -1,0 +1,65 @@
+
+GKDBus_sources = [
+	'arguments/GKDBusArgument.cpp',
+	'arguments/GKDBusArgument.hpp',
+	'arguments/GKDBusArgString.cpp',
+	'arguments/GKDBusArgString.hpp',
+	'arguments/GKDBusArgBoolean.cpp',
+	'arguments/GKDBusArgBoolean.hpp',
+	'arguments/GKDBusArgByte.cpp',
+	'arguments/GKDBusArgByte.hpp',
+	'arguments/GKDBusArgUInt16.cpp',
+	'arguments/GKDBusArgUInt16.hpp',
+	'arguments/GKDBusArgUInt64.cpp',
+	'arguments/GKDBusArgUInt64.hpp',
+	'arguments/GKDBusArgMacro.cpp',
+	'arguments/GKDBusArgMacro.hpp',
+	'arguments/GKDBusArgMacrosBank.cpp',
+	'arguments/GKDBusArgMacrosBank.hpp',
+	'arguments/GKDBusArgDevicesMap.cpp',
+	'arguments/GKDBusArgDevicesMap.hpp',
+	'arguments/GKDBusArgLCDPluginsArray.cpp',
+	'arguments/GKDBusArgLCDPluginsArray.hpp',
+	'messages/GKDBusMessage.cpp',
+	'messages/GKDBusMessage.hpp',
+	'messages/GKDBusReply.cpp',
+	'messages/GKDBusReply.hpp',
+	'messages/GKDBusErrorReply.cpp',
+	'messages/GKDBusErrorReply.hpp',
+	'messages/GKDBusRemoteMethodCall.cpp',
+	'messages/GKDBusRemoteMethodCall.hpp',
+	'messages/GKDBusBroadcastSignal.cpp',
+	'messages/GKDBusBroadcastSignal.hpp',
+	'messages/GKDBusAsyncContainer.cpp',
+	'messages/GKDBusAsyncContainer.hpp',
+	'events/GKDBusEvent.cpp',
+	'events/GKDBusEvent.hpp',
+	'events/GKDBusEventTemplates.cpp',
+	'events/GKDBusEventTemplates.hpp',
+	'GKDBusConnection.hpp',
+	'GKDBus.cpp',
+	'GKDBus.hpp',
+	'GKDBusEvents.cpp',
+	'GKDBusEvents.hpp',
+]
+
+GKDBus_lib = library(
+	'GKDBus',
+	GKDBus_sources,
+	include_directories : inc,
+	dependencies : [
+		dbus_dep,
+		GKUtils_lib_dep,
+	],
+	version : '0.0.0',
+	soversion : '0',
+	install : true,
+)
+
+
+GKDBus_lib_dep = declare_dependency(
+	link_with: GKDBus_lib,
+	dependencies : [
+		dbus_dep,
+	]
+)

@@ -26,34 +26,36 @@
 
 #include <libusb-1.0/libusb.h>
 
+#include "usbinit.hpp"
 #include "USBDevice.hpp"
 
 namespace GLogiK
 {
 
-class LibUSB
+class libusb
+	:	private USBInit
 {
 	public:
 
 	protected:
-		LibUSB(void);
-		~LibUSB(void);
+		libusb(void) = default;
+		~libusb(void) = default;
 
 		void openUSBDevice(USBDevice & device);
 		void closeUSBDevice(USBDevice & device) noexcept;
 
-		void sendControlRequest(
+		void sendUSBDeviceFeatureReport(
 			USBDevice & device,
 			const unsigned char * data,
 			uint16_t wLength
 		);
 
-		int performKeysInterruptTransfer(
+		int performUSBDeviceKeysInterruptTransfer(
 			USBDevice & device,
 			unsigned int timeout
 		);
 
-		int performLCDScreenInterruptTransfer(
+		int performUSBDeviceLCDScreenInterruptTransfer(
 			USBDevice & device,
 			const unsigned char * buffer,
 			int bufferLength,
@@ -61,19 +63,12 @@ class LibUSB
 		);
 
 	private:
-		static libusb_context * pContext;
-		static uint8_t counter;			/* initialized drivers counter */
-		static bool status;				/* is libusb initialized ? */
-
 		void setUSBDeviceActiveConfiguration(USBDevice & device);
 		void findUSBDeviceInterface(USBDevice & device);
 		void releaseUSBDeviceInterfaces(USBDevice & device) noexcept;
 
 		void detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int numInt);
 		void attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexcept;
-
-		int USBError(int errorCode) noexcept;
-
 };
 
 } // namespace GLogiK

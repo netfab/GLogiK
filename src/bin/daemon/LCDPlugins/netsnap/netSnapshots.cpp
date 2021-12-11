@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -45,18 +45,21 @@ NetSnapshots::NetSnapshots()
 		_defaultNetworkInterfaceName(""),
 		_networkInterfaceName("")
 {
+	GK_LOG_FUNC
+
 	try {
 		this->findDefaultRouteNetworkInterfaceName();
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << e.what();
+		GKSysLogError(e.what());
 	}
 
 	if( _defaultNetworkInterfaceName.empty() ) {
 		throw GLogiKExcept("unable to find default route interface name");
 	}
+
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-	LOG(DEBUG2) << "found default route interface name: " << _defaultNetworkInterfaceName;
+	GKLog2(trace, "found default route interface name : ", _defaultNetworkInterfaceName)
 #endif
 
 	_networkInterfaceName = _defaultNetworkInterfaceName;
@@ -77,7 +80,7 @@ NetSnapshots::NetSnapshots()
 		_txDiff = (10 * (s4 - s3)); /* extrapolation */
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << e.what();
+		GKSysLogError(e.what());
 	}
 }
 
@@ -134,6 +137,8 @@ const std::string NetSnapshots::getRateString(
 
 void NetSnapshots::findDefaultRouteNetworkInterfaceName(void)
 {
+	GK_LOG_FUNC
+
 	try {
 		std::ifstream routeFile("/proc/net/route");
 
@@ -151,17 +156,19 @@ void NetSnapshots::findDefaultRouteNetworkInterfaceName(void)
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(ERROR) << "vector index out of bounds : " << oor.what();
+		GKSysLogError("vector index out of bounds : ", oor.what());
 		throw GLogiKExcept("route line parsing error");
 	}
 	catch (const std::ifstream::failure & e) {
-		LOG(ERROR) << "error opening/reading/closing kernel route file : " << e.what();
+		GKSysLogError("error opening/reading/closing kernel route file : ", e.what());
 		throw GLogiKExcept("ifstream error");
 	}
 }
 
 void NetSnapshots::setBytesSnapshotValue(const NetDirection d, unsigned long long & value)
 {
+	GK_LOG_FUNC
+
 	try {
 		fs::path file("/sys/class/net");
 		file /= _networkInterfaceName;
@@ -177,7 +184,7 @@ void NetSnapshots::setBytesSnapshotValue(const NetDirection d, unsigned long lon
 		value = toULL(line);
 	}
 	catch (const std::ifstream::failure & e) {
-		LOG(ERROR) << "error opening/reading/closing kernel route file : " << e.what();
+		GKSysLogError("error opening/reading/closing kernel route file : ", e.what());
 		throw GLogiKExcept("ifstream error");
 	}
 }

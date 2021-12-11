@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -179,7 +179,7 @@ template <typename T>
 		~GKDBusCallbackEvent() = default;
 
 		void runCallback(
-			DBusConnection* connection,
+			DBusConnection* const connection,
 			DBusMessage* message
 		);
 
@@ -255,14 +255,16 @@ template <typename T>
 
 template <typename T>
 	void GKDBusCallbackEvent<T>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message)
 {
+	GK_LOG_FUNC
+
 	using namespace NSGKUtils;
-	const char* error = "runCallback not implemented";
-	LOG(ERROR) << error;
+	const char* errorString = "runCallback not implemented";
+	LOG(error) << errorString;
 	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL)
-		this->buildAndSendErrorReply(connection, message, error);
+		this->buildAndSendErrorReply(connection, message, errorString);
 }
 
 template <typename T>
@@ -324,97 +326,97 @@ template <typename T>
 
 template <>
 	void GKDBusCallbackEvent<VoidToVoid>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<StringToVoid>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<TwoStringsToVoid>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<StringToBool>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<TwoStringsToBool>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<StringToString>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<TwoStringsToString>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<StringToStringsArray>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<TwoStringsToStringsArray>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<TwoStringsOneByteToBool>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<TwoStringsThreeBytesToBool>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<StringsArrayToVoid>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<ThreeStringsOneByteToMacro>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<TwoStringsToLCDPluginsPropertiesArray>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<TwoStringsOneByteOneMacrosBankToBool>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 
 template <>
 	void GKDBusCallbackEvent<TwoStringsOneByteOneUInt64ToBool>::runCallback(
-		DBusConnection* connection,
+		DBusConnection* const connection,
 		DBusMessage* message
 	);
 

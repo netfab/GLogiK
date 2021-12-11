@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -39,8 +39,15 @@ int main(int argc, char *argv[])
 	MainWindow window;
 
 	try {
+		window.init(argc, argv);
+	}
+	catch ( const GLogiKExcept & e ) {
+		/* window initialization fails */
+		syslog(LOG_ERR, "%s", e.what());
+		return EXIT_FAILURE;
+	}
 
-		window.init();
+	try {
 		window.build();
 
 		window.setFixedSize(800, 600);
@@ -55,7 +62,7 @@ int main(int argc, char *argv[])
 		window.show();
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(ERROR) << e.what();
+		LOG(error) << e.what();
 		return EXIT_FAILURE;
 	}
 

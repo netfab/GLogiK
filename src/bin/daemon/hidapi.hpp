@@ -42,18 +42,18 @@ class hidapi
 		void openUSBDevice(USBDevice & device);
 		void closeUSBDevice(USBDevice & device) noexcept;
 
-		void sendControlRequest(
+		void sendUSBDeviceFeatureReport(
 			USBDevice & device,
 			const unsigned char * data,
 			uint16_t wLength
 		);
 
-		int performKeysInterruptTransfer(
+		int performUSBDeviceKeysInterruptTransfer(
 			USBDevice & device,
 			unsigned int timeout
 		);
 
-		int performLCDScreenInterruptTransfer(
+		int performUSBDeviceLCDScreenInterruptTransfer(
 			USBDevice & device,
 			const unsigned char * buffer,
 			int bufferLength,
@@ -62,7 +62,7 @@ class hidapi
 
 	private:
 
-		void error(hid_device *dev) noexcept;
+		void logUSBDeviceHIDError(hid_device *dev) noexcept;
 
 };
 

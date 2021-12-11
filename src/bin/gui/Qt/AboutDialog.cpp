@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -43,20 +43,21 @@ AboutDialog::AboutDialog(QWidget* parent)
 
 AboutDialog::~AboutDialog()
 {
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "deleting AboutDialog";
-#endif
+	GK_LOG_FUNC
+
+	GKLog(trace, "deleting AboutDialog")
 }
 
 void AboutDialog::buildDialog(void)
 {
+	GK_LOG_FUNC
+
 	QVBoxLayout* vBox = nullptr;
 
 	try {
 		vBox = new QVBoxLayout(this);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QVBoxLayout";
-#endif
+		GKLog(trace, "allocated QVBoxLayout")
+
 		this->setLayout(vBox);
 
 		vBox->addSpacing(10);
@@ -168,9 +169,7 @@ void AboutDialog::buildDialog(void)
 		/* -- -- */
 
 		QHBoxLayout* hBox = new QHBoxLayout();
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QHBoxLayout";
-#endif
+		GKLog(trace, "allocated QHBoxLayout")
 
 		vBox->addLayout(hBox);
 
@@ -182,9 +181,8 @@ void AboutDialog::buildDialog(void)
 			//QIcon infoIcon = cStyle->standardIcon(QStyle::SP_MessageBoxInformation);
 
 			QPushButton* pCloseButton = new QPushButton(closeIcon, "&Close");
-#if DEBUGGING_ON
-			LOG(DEBUG1) << "allocated Close button";
-#endif
+			GKLog(trace, "allocated Close button")
+
 			hBox->addWidget(pCloseButton);
 
 			connect(pCloseButton, &QPushButton::clicked, this, &AboutDialog::closeDialog);
@@ -195,7 +193,7 @@ void AboutDialog::buildDialog(void)
 
 	}
 	catch (const std::bad_alloc& e) {
-		LOG(ERROR) << e.what();
+		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
 }

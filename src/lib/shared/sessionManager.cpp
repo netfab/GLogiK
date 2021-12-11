@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 
 #include <string>
 #include <iostream>
+#include <sstream>
 
 #include "lib/utils/utils.hpp"
 
@@ -36,6 +37,10 @@ using namespace NSGKUtils;
 bool SessionManager::stillRunning = true;
 
 SessionManager::SessionManager() {
+	GK_LOG_FUNC
+
+	GKLog(trace, "initializing session manager")
+
 	_mask = (SmcSaveYourselfProcMask|SmcDieProcMask|SmcSaveCompleteProcMask|SmcShutdownCancelledProcMask);
 
 	_callbacks.save_yourself.client_data = nullptr;
@@ -49,15 +54,13 @@ SessionManager::SessionManager() {
 
 	_callbacks.shutdown_cancelled.client_data = nullptr;
 	_callbacks.shutdown_cancelled.callback = SessionManager::ShutdownCancelledCallback;
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "session manager initialized";
-#endif
 }
 
 SessionManager::~SessionManager() {
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "destroying session manager";
-#endif
+	GK_LOG_FUNC
+
+	GKLog(trace, "destroying session manager")
+
 	IceRemoveConnectionWatch(SessionManager::ICEConnectionWatchCallback, nullptr);
 
 	this->closeConnection();
@@ -65,9 +68,7 @@ SessionManager::~SessionManager() {
 	if(_pClientID != nullptr)
 		free(_pClientID);
 
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "session manager destroyed";
-#endif
+	GKLog(trace, "session manager destroyed")
 }
 
 /* -- */
@@ -76,9 +77,10 @@ SessionManager::~SessionManager() {
  */
 
 const int SessionManager::openConnection(void) {
-#if DEBUGGING_ON
-	LOG(DEBUG) << "opening session manager connection";
-#endif
+	GK_LOG_FUNC
+
+	GKLog(trace, "opening session manager connection")
+
 	std::signal(SIGINT, SessionManager::handleSignal);
 	std::signal(SIGTERM, SessionManager::handleSignal);
 
@@ -111,9 +113,7 @@ const int SessionManager::openConnection(void) {
 	_pICEConnexion = SmcGetIceConnection(_pSMCConnexion);
 	_ICEfd = IceConnectionNumber(_pICEConnexion);
 
-#if DEBUGGING_ON
-	LOG(DEBUG) << "Session manager client ID : " << _pClientID;
-#endif
+	GKLog2(trace, "Session manager client ID : ", _pClientID)
 
 	return _ICEfd;
 }
@@ -132,66 +132,62 @@ void SessionManager::processICEMessages(void) {
  */
 
 void SessionManager::closeConnection(void) {
+	GK_LOG_FUNC
+
 	if(_pSMCConnexion == nullptr)
 		return;
 
 	SmcCloseStatus status = SmcCloseConnection(_pSMCConnexion, 0, nullptr);
 	switch( status ) {
 		case SmcClosedNow:
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "ICE connection was closed";
-#endif
+			GKLog(trace, "ICE connection was closed")
 			break;
 		case SmcClosedASAP:
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "ICE connection will be freed ASAP";
-#endif
+			GKLog(trace, "ICE connection will be freed ASAP")
 			break;
 		case SmcConnectionInUse:
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "ICE connection not closed because in used";
-#endif
+			GKLog(trace, "ICE connection not closed because in used")
 			break;
 	}
 
 }
 
 void SessionManager::handleSignal(int sig) {
+	GK_LOG_FUNC
+
 	std::ostringstream buff("caught signal : ", std::ios_base::app);
 	switch( sig ) {
 		case SIGINT:
 		case SIGTERM:
 			buff << sig << " --> bye bye";
-			LOG(INFO) << buff.str();
+			LOG(info) << buff.str();
 			std::signal(SIGINT, SIG_DFL);
 			std::signal(SIGTERM, SIG_DFL);
 			SessionManager::stillRunning = false;
 			break;
 		default:
 			buff << sig << " --> unhandled";
-			LOG(WARNING) << buff.str();
+			LOG(warning) << buff.str();
 			break;
 	}
 }
 
 void SessionManager::processICEMessages(IceConn ice_conn) {
+	GK_LOG_FUNC
+
 	int ret = IceProcessMessages(ice_conn, nullptr, nullptr);
 
 	switch(ret) {
 		case IceProcessMessagesSuccess:
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "ICE messages process success";
-#endif
+			GKLog(trace, "ICE messages process success")
 			break;
 		case IceProcessMessagesIOError:
-			LOG(WARNING) << "IO error, closing ICE connection";
+			LOG(warning) << "IO error, closing ICE connection";
 			IceCloseConnection(ice_conn);
 			// TODO throw ?
 			break;
 		case IceProcessMessagesConnectionClosed:
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "ICE connection has been closed";
-#endif
+			GKLog(trace, "ICE connection has been closed")
 			break;
 	}
 }
@@ -218,32 +214,34 @@ void SessionManager::SaveYourselfCallback(
 	int interact_style,
 	Bool fast)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "SM save yourself call";
-#endif
+	GK_LOG_FUNC
+
+	GKLog(trace, "SM save yourself call")
+
 	SmcSaveYourselfDone(smc_conn, true);
 }
 
 void SessionManager::DieCallback(SmcConn smc_conn, SmPointer client_data)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "SM die call, behaves like we received SIGTERM";
-#endif
+	GK_LOG_FUNC
+
+	GKLog(trace, "SM die call, behaves like we received SIGTERM")
+
 	SessionManager::handleSignal(SIGTERM);
 }
 
 void SessionManager::SaveCompleteCallback(SmcConn smc_conn, SmPointer client_data)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "SM save complete call";
-#endif
+	GK_LOG_FUNC
+
+	GKLog(trace, "SM save complete call")
 }
 
 void SessionManager::ShutdownCancelledCallback(SmcConn smc_conn, SmPointer client_data)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "SM shutdown cancelled call";
-#endif
+	GK_LOG_FUNC
+
+	GKLog(trace, "SM shutdown cancelled call")
 }
 
 } // namespace GLogiK

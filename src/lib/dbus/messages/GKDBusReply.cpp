@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -30,9 +30,11 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-GKDBusReply::GKDBusReply(DBusConnection* connection, DBusMessage* message)
+GKDBusReply::GKDBusReply(DBusConnection* const connection, DBusMessage* message)
 	:	GKDBusMessage(connection)
 {
+	GK_LOG_FUNC
+
 	/* sanity check */
 	if(message == nullptr)
 		throw GKDBusMessageWrongBuild("DBus message is NULL");
@@ -44,14 +46,18 @@ GKDBusReply::GKDBusReply(DBusConnection* connection, DBusMessage* message)
 
 	/* initialize potential arguments iterator */
 	dbus_message_iter_init_append(_message, &_itMessage);
+
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus reply initialized";
+	GKLog(trace, "DBus reply initialized")
 #endif
 }
 
-GKDBusReply::~GKDBusReply() {
+GKDBusReply::~GKDBusReply()
+{
+	GK_LOG_FUNC
+
 	if(_hosedMessage) {
-		LOG(WARNING) << "DBus hosed reply, giving up";
+		LOG(warning) << "DBus hosed reply, giving up";
 		dbus_message_unref(_message);
 		return;
 	}
@@ -59,14 +65,15 @@ GKDBusReply::~GKDBusReply() {
 	// TODO dbus_uint32_t serial;
 	if( ! dbus_connection_send(_connection, _message, nullptr) ) {
 		dbus_message_unref(_message);
-		LOG(ERROR) << "DBus reply sending failure";
+		LOG(error) << "DBus reply sending failure";
 		return;
 	}
 
 	dbus_connection_flush(_connection);
 	dbus_message_unref(_message);
+
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus reply sent";
+	GKLog(trace, "DBus reply sent")
 #endif
 }
 
@@ -82,7 +89,10 @@ GKDBusMessageReply::~GKDBusMessageReply()
 {
 }
 
-void GKDBusMessageReply::initializeReply(DBusConnection* connection, DBusMessage* message) {
+void GKDBusMessageReply::initializeReply(DBusConnection* const connection, DBusMessage* message)
+{
+	GK_LOG_FUNC
+
 	if(_reply) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus reply already allocated");
 
@@ -90,44 +100,52 @@ void GKDBusMessageReply::initializeReply(DBusConnection* connection, DBusMessage
 		_reply = new GKDBusReply(connection, message);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus reply allocation failure : " << e.what();
+		LOG(error) << "GKDBus reply allocation failure : " << e.what();
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
 }
 
-void GKDBusMessageReply::appendBooleanToReply(const bool value) {
+void GKDBusMessageReply::appendBooleanToReply(const bool value)
+{
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendBoolean(value);
 }
 
-void GKDBusMessageReply::appendStringToReply(const std::string & value) {
+void GKDBusMessageReply::appendStringToReply(const std::string & value)
+{
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendString(value);
 }
 
-void GKDBusMessageReply::appendStringVectorToReply(const std::vector<std::string> & list) {
+void GKDBusMessageReply::appendStringVectorToReply(const std::vector<std::string> & list)
+{
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendStringVector(list);
 }
 
-void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_type & macro) {
+void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_type & macro)
+{
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendMacro(macro);
 }
 
-void GKDBusMessageReply::appendLCDPluginsPropertiesArrayToReply(const GLogiK::LCDPluginsPropertiesArray_type & array)
+void GKDBusMessageReply::appendLCDPluginsPropertiesArrayToReply(
+	const GLogiK::LCDPluginsPropertiesArray_type & array)
 {
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendLCDPluginsPropertiesArray(array);
 }
 
-void GKDBusMessageReply::appendUInt64ToReply(const uint64_t value) {
+void GKDBusMessageReply::appendUInt64ToReply(const uint64_t value)
+{
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendUInt64(value);
 }
 
 void GKDBusMessageReply::appendAsyncArgsToReply(void)
 {
+	GK_LOG_FUNC
+
 	if( this->isAsyncContainerEmpty() )
 		return;
 
@@ -135,7 +153,7 @@ void GKDBusMessageReply::appendAsyncArgsToReply(void)
 	DBusMessageIter itArgument;
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "init Async parsing";
+	GKLog(trace, "init Async parsing")
 #endif
 
 	if( ! dbus_message_iter_init(asyncContainer, &itArgument) ) {
@@ -155,27 +173,30 @@ void GKDBusMessageReply::appendAsyncArgsToReply(void)
 					break;
 				case DBUS_TYPE_INVALID:
 					{
-						LOG(ERROR) << "invalid argument iterator";
+						LOG(error) << "invalid argument iterator";
 					}
 					break;
 				default: // other dbus type
-					LOG(ERROR) << "unhandled argument type: " << static_cast<char>(arg_type);
+					LOG(error) << "unhandled argument type: " << static_cast<char>(arg_type);
 					break;
 			}
 		}
 		while( dbus_message_iter_next(&itArgument) );
 	}
 	catch ( const GLogiKExcept & e ) { /* WrongBuild or EmptyContainer */
-		LOG(ERROR) << e.what();
+		LOG(error) << e.what();
 		throw GKDBusMessageWrongBuild("Async args append failure");
 	}
 }
 
-void GKDBusMessageReply::sendReply(void) {
+void GKDBusMessageReply::sendReply(void)
+{
+	GK_LOG_FUNC
+
 	this->destroyAsyncContainer();
 
 	if(_reply == nullptr) { /* sanity check */
-		LOG(WARNING) << "tried to send NULL reply";
+		LOG(warning) << "tried to send NULL reply";
 		return;
 	}
 
@@ -183,7 +204,10 @@ void GKDBusMessageReply::sendReply(void) {
 	_reply = nullptr;
 }
 
-void GKDBusMessageReply::abandonReply(void) {
+void GKDBusMessageReply::abandonReply(void)
+{
+	GK_LOG_FUNC
+
 	this->destroyAsyncContainer();
 
 	if(_reply) { /* sanity check */
@@ -192,7 +216,7 @@ void GKDBusMessageReply::abandonReply(void) {
 		_reply = nullptr;
 	}
 	else {
-		LOG(WARNING) << "tried to abandon NULL reply";
+		LOG(warning) << "tried to abandon NULL reply";
 	}
 }
 

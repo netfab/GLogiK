@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -32,18 +32,6 @@
 namespace NSGKUtils
 {
 
-class GLogiKFatalError : public std::exception
-{
-	public :
-		GLogiKFatalError( const std::string& msg = "fatal error" );
-
-		virtual ~GLogiKFatalError( void ) throw();
-		virtual const char* what( void ) const throw();
-
-	protected :
-		std::string message;
-};
-
 class GLogiKExcept : public std::exception
 {
 	public :
@@ -56,19 +44,12 @@ class GLogiKExcept : public std::exception
 		std::string message;
 };
 
-/*
-class DisplayHelp : public std::exception
+class InitFailure : public GLogiKExcept
 {
-	public :
-		DisplayHelp( const std::string& msg = "" );
-
-		virtual ~DisplayHelp( void ) throw();
-		virtual const char* what( void ) const throw();
-
-	protected :
-		std::string message;
+	public:
+		InitFailure(const std::string& msg = "object initialization failure") : GLogiKExcept(msg) {};
+		virtual ~InitFailure( void ) throw() {};
 };
-*/
 
 class EmptyContainer : public GLogiKExcept
 {

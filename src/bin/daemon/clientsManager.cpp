@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -43,30 +43,29 @@ ClientsManager::ClientsManager(DevicesManager* pDevicesManager)
 		_numActive(0),
 		_enabledSignals(true)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "initializing clients manager";
-#endif
+	GK_LOG_FUNC
+
+	GKLog(trace, "initializing clients manager")
 }
 
-ClientsManager::~ClientsManager() {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "destroying clients manager";
-#endif
+ClientsManager::~ClientsManager()
+{
+	GK_LOG_FUNC
+
+	GKLog(trace, "destroying clients manager")
 
 	for( auto & clientPair : _connectedClients ) {
 		Client* pClient = clientPair.second;
 		if( pClient != nullptr ) { /* sanity check */
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "destroying unfreed client : " << clientPair.first;
-			GKSysLog(LOG_WARNING, WARNING, buffer.str());
+			GKSysLogWarning(buffer.str());
 			delete pClient; pClient = nullptr;
 		}
 	}
 	_connectedClients.clear();
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "exiting clients manager";
-#endif
+	GKLog(trace, "exiting clients manager")
 }
 
 void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
@@ -307,30 +306,29 @@ void ClientsManager::cleanDBusRequests(void) noexcept
 	_pDBus->removeMethodsInterface(system_bus, DM_object, DM_interf);
 }
 
-void ClientsManager::waitForClientsDisconnections(void) noexcept {
+void ClientsManager::waitForClientsDisconnections(void) noexcept
+{
+	GK_LOG_FUNC
+
 	if( _connectedClients.empty() ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "no client, empty container";
-#endif
+		GKLog(trace, "no client, empty container")
 		return;
 	}
 
 	this->sendSignalToClients(_connectedClients.size(), _pDBus, "DaemonIsStopping");
 
 	uint16_t c = 0;
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "waiting for clients to unregister ...";
-#endif
+	GKLog(trace, "waiting for clients to unregister ...")
+
 	while( c++ < 40 and _connectedClients.size() > 0 ) { /* bonus point */
 		_pDevicesManager->checkDBusMessages();
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "sleeping for 40 ms ...";
-#endif
+		GKLog(trace, "sleeping for 40 ms ...")
 		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
 }
 
-const std::string ClientsManager::generateRandomClientID(void) const {
+const std::string ClientsManager::generateRandomClientID(void) const
+{
 	RandomGenerator rand;
 	std::ostringstream ret(std::ios_base::app);
 	ret << rand.getString(6) << "-" << rand.getString(4) << "-"
@@ -339,8 +337,10 @@ const std::string ClientsManager::generateRandomClientID(void) const {
 }
 
 const bool ClientsManager::registerClient(
-	const std::string & clientSessionObjectPath
-)	{
+	const std::string & clientSessionObjectPath)
+{
+	GK_LOG_FUNC
+
 	try {
 		std::vector<std::string> toUnregister;
 
@@ -358,7 +358,7 @@ const bool ClientsManager::registerClient(
 			if( pClient->getSessionObjectPath() == clientSessionObjectPath ) {
 				std::ostringstream buffer(std::ios_base::app);
 				buffer << "client already registered : " << clientSessionObjectPath;
-				GKSysLog(LOG_WARNING, WARNING, buffer.str());
+				GKSysLogWarning(buffer.str());
 
 				/* appending failure reason to DBus reply */
 				_pDBus->appendAsyncString("already registered");
@@ -380,7 +380,7 @@ const bool ClientsManager::registerClient(
 		for(const auto & clientID : toUnregister ) {
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "unregistering lost client (maybe crashed) with ID : " << clientID;
-			GKSysLog(LOG_WARNING, WARNING, buffer.str());
+			GKSysLogWarning(buffer.str());
 			this->unregisterClient(clientID);
 		}
 		toUnregister.clear();
@@ -395,26 +395,24 @@ const bool ClientsManager::registerClient(
 
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "registering new client with ID : " << clientID;
-			GKSysLog(LOG_INFO, DEBUG2, buffer.str());
+			GKSysLogInfo(buffer.str());
 
 			_connectedClients[clientID] = new Client(clientSessionObjectPath, _pDevicesManager);
 		}
 		catch (const std::bad_alloc& e) { /* handle new() failure */
 			const std::string s = "new client allocation failure";
-			GKSysLog(LOG_ERR, ERROR, s);
+			GKSysLogError(s);
 			_pDBus->appendAsyncString(s);
 			return false;
 		}
 		catch (const std::out_of_range& oor) {
-			std::ostringstream buffer(std::ios_base::app);
-			buffer << "tried to initialize unknown client : " << clientID;
-			GKSysLog(LOG_ERR, ERROR, buffer.str());
+			GKSysLogError("tried to initialize unknown client : ", clientID);
 
 			_pDBus->appendAsyncString("internal error");
 			return false;
 		}
 		catch (const GLogiKExcept & e) {
-			GKSysLog(LOG_ERR, ERROR, e.what());
+			GKSysLogError(e.what());
 			_pDBus->appendAsyncString("internal error");
 			return false;
 		}
@@ -431,21 +429,21 @@ const bool ClientsManager::registerClient(
 }
 
 const bool ClientsManager::unregisterClient(
-	const std::string & clientID
-)	{
+	const std::string & clientID)
+{
+	GK_LOG_FUNC
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 
 		std::ostringstream buffer(std::ios_base::app);
 		buffer << "unregistering client : " << clientID;
-		GKSysLog(LOG_INFO, DEBUG2, buffer.str());
+		GKSysLogInfo(buffer.str());
 
 		/* resetting devices states first */
 		if( pClient->getSessionCurrentState() == _active ) {
 			_pDevicesManager->resetDevicesStates();
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "decreasing active users # : " << _numActive;
-#endif
+			GKLog2(trace, "decreasing active users # : ", _numActive)
 			_numActive--;
 		}
 
@@ -456,23 +454,26 @@ const bool ClientsManager::unregisterClient(
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 	return false;
 }
 
 const bool ClientsManager::updateClientState(
 	const std::string & clientID,
-	const std::string & state
-)	{
-#if DEBUGGING_ON
-	LOG(DEBUG2) << CONST_STRING_CLIENT << clientID << " state: " << state;
-#endif
+	const std::string & state)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		CONST_STRING_CLIENT, clientID,
+		"state : ", state
+	)
 
 	if( (state != _active) and (state != "online") ) {
 		std::ostringstream buffer(std::ios_base::app);
 		buffer << "unhandled state for updating devices : " << state;
-		GKSysLog(LOG_WARNING, WARNING, buffer.str());
+		GKSysLogWarning(buffer.str());
 		return false;
 	}
 
@@ -482,34 +483,25 @@ const bool ClientsManager::updateClientState(
 		pClient->updateSessionState(state);
 
 		if( (oldState == _active) and (state != _active) ) {
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "decreasing active users # : " << _numActive;
-#endif
+			GKLog2(trace, "decreasing active users # : ", _numActive)
 			_numActive--;
 		}
 
 		if(state == _active) {
 			if(oldState != _active) {
-#if DEBUGGING_ON
-				LOG(DEBUG3) << "increasing active users # : " << _numActive;
-#endif
+				GKLog2(trace, "increasing active users # : ", _numActive)
 				_numActive++;
 			}
 
 			if( pClient->isReady() ) {
-#if DEBUGGING_ON
-				LOG(DEBUG1) << "setting active user's parameters for all started devices";
-#endif
+				GKLog(trace, "setting active user's parameters for all started devices")
 				for(const auto & devID : _pDevicesManager->getStartedDevices()) {
 					pClient->setDeviceActiveUser(devID, _pDevicesManager);
 				}
 			}
 		}
 
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "active users # : " << _numActive;
-#endif
-
+		GKLog2(trace, "active users # : ", _numActive)
 		if(_numActive == 0) {
 			_pDevicesManager->resetDevicesStates();
 		}
@@ -517,23 +509,22 @@ const bool ClientsManager::updateClientState(
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	return false;
 }
 
-const bool ClientsManager::toggleClientReadyPropertie(
-	const std::string & clientID
-)	{
+const bool ClientsManager::toggleClientReadyPropertie(const std::string & clientID)
+{
+	GK_LOG_FUNC
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		pClient->toggleClientReadyPropertie();
 		if( pClient->isReady() ) {
 			if(pClient->getSessionCurrentState() == _active) {
-#if DEBUGGING_ON
-				LOG(DEBUG1) << "setting active user's parameters for all started devices";
-#endif
+				GKLog(trace, "setting active user's parameters for all started devices")
 				for(const auto & devID : _pDevicesManager->getStartedDevices()) {
 					pClient->setDeviceActiveUser(devID, _pDevicesManager);
 				}
@@ -542,25 +533,28 @@ const bool ClientsManager::toggleClientReadyPropertie(
 		return true;
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 	return false;
 }
 
 const bool ClientsManager::deleteDeviceConfiguration(
 	const std::string & clientID,
-	const std::string & devID
-)	{
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	const std::string & devID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID
+	)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		return pClient->deleteDevice(devID);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	return false;
@@ -568,27 +562,30 @@ const bool ClientsManager::deleteDeviceConfiguration(
 
 const bool ClientsManager::stopDevice(
 	const std::string & clientID,
-	const std::string & devID
-)	{
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	const std::string & devID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID
+	)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 
 		if( ! pClient->isReady() ) {
-			GKSysLog(LOG_WARNING, WARNING, "device state change not allowed while client not ready");
+			GKSysLogWarning("device state change not allowed while client not ready");
 			return false;
 		}
 
 		if( ! pClient->isAlive() ) {
-			GKSysLog(LOG_WARNING, WARNING, "device state change not allowed because client not alive");
+			GKSysLogWarning("device state change not allowed because client not alive");
 			return false;
 		}
 
 		if(pClient->getSessionCurrentState() != _active) {
-			GKSysLog(LOG_WARNING, WARNING, "only active user can change device state");
+			GKSysLogWarning("only active user can change device state");
 			return false;
 		}
 
@@ -600,34 +597,37 @@ const bool ClientsManager::stopDevice(
 		return ret;
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 	return false;
 }
 
 const bool ClientsManager::startDevice(
 	const std::string & clientID,
-	const std::string & devID
-)	{
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	const std::string & devID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID
+	)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 
 		if( ! pClient->isReady() ) {
-			GKSysLog(LOG_WARNING, WARNING, "device state change not allowed while client not ready");
+			GKSysLogWarning("device state change not allowed while client not ready");
 			return false;
 		}
 
 		if( ! pClient->isAlive() ) {
-			GKSysLog(LOG_WARNING, WARNING, "device state change not allowed because client not alive");
+			GKSysLogWarning("device state change not allowed because client not alive");
 			return false;
 		}
 
 		if(pClient->getSessionCurrentState() != _active) {
-			GKSysLog(LOG_WARNING, WARNING, "only active user can change device state");
+			GKSysLogWarning("only active user can change device state");
 			return false;
 		}
 
@@ -644,28 +644,28 @@ const bool ClientsManager::startDevice(
 		return ret;
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 	return false;
 }
 
 const bool ClientsManager::restartDevice(
 	const std::string & clientID,
-	const std::string & devID
-)	{
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	const std::string & devID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID
+	)
 
 	_enabledSignals = false;
 	const std::vector<std::string> array = {devID};
 
 	if( this->stopDevice(clientID, devID) ) {
 
-#if DEBUGGING_ON
-		LOG(DEBUG) << "sleeping for 1000 ms";
-#endif
+		GKLog(trace, "sleeping for 1000 ms")
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 		if( this->startDevice(clientID, devID) ) {
@@ -676,7 +676,7 @@ const bool ClientsManager::restartDevice(
 
 		_enabledSignals = true;
 		this->sendStatusSignalArrayToClients(_connectedClients.size(), _pDBus, "DevicesStopped", array);
-		GKSysLog(LOG_ERR, ERROR, "device restarting failure : start failed");
+		GKSysLogError("device restarting failure : start failed");
 		return false;
 	}
 
@@ -689,42 +689,44 @@ const bool ClientsManager::restartDevice(
 	//  * devID not found by deviceManager in container
 	//  * device found but driver not found (unlikely)
 	// should send signal to clients to tell them to check device status
-	GKSysLog(LOG_ERR, ERROR, "device restarting failure : stop failed");
+	GKSysLogError("device restarting failure : stop failed");
 	return false;
 }
 
-const std::vector<std::string> ClientsManager::getStartedDevices(
-	const std::string & clientID
-)	{
-#if DEBUGGING_ON
-	LOG(DEBUG2) << CONST_STRING_CLIENT << clientID;
-#endif
+const std::vector<std::string>
+	ClientsManager::getStartedDevices(const std::string & clientID)
+{
+	GK_LOG_FUNC
+
+	GKLog2(trace, CONST_STRING_CLIENT, clientID)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		pClient->isAlive(); /* to avoid warning */
 		return _pDevicesManager->getStartedDevices();
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	const std::vector<std::string> ret;
 	return ret;
 }
 
-const std::vector<std::string> ClientsManager::getStoppedDevices(
-	const std::string & clientID
-)	{
-#if DEBUGGING_ON
-	LOG(DEBUG2) << CONST_STRING_CLIENT << clientID;
-#endif
+const std::vector<std::string>
+	ClientsManager::getStoppedDevices(const std::string & clientID)
+{
+	GK_LOG_FUNC
+
+	GKLog2(trace, CONST_STRING_CLIENT, clientID)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		pClient->isAlive(); /* to avoid warning */
 		return _pDevicesManager->getStoppedDevices();
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	const std::vector<std::string> ret;
@@ -733,18 +735,21 @@ const std::vector<std::string> ClientsManager::getStoppedDevices(
 
 const std::string ClientsManager::getDeviceStatus(
 	const std::string & clientID,
-	const std::string & devID
-)	{
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	const std::string & devID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID
+	)
+
 	try {
 		_connectedClients.at(clientID);
 		return _pDevicesManager->getDeviceStatus(devID);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	return "unknown";
@@ -752,12 +757,15 @@ const std::string ClientsManager::getDeviceStatus(
 
 void ClientsManager::getDeviceProperties(
 	const std::string & clientID,
-	const std::string & devID
-)	{
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	const std::string & devID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID
+	)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		if( pClient->isAlive() ) {
@@ -770,30 +778,34 @@ void ClientsManager::getDeviceProperties(
 			_pDBus->appendAsyncUInt64( _pDevicesManager->getDeviceCapabilities(devID) );
 			return;
 		}
-		GKSysLog(LOG_WARNING, WARNING, "getting device properties not allowed because client not alive");
+		GKSysLogWarning("getting device properties not allowed because client not alive");
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 }
 
-const LCDPluginsPropertiesArray_type & ClientsManager::getDeviceLCDPluginsProperties(
-	const std::string & clientID,
-	const std::string & devID)
+const LCDPluginsPropertiesArray_type &
+	ClientsManager::getDeviceLCDPluginsProperties(
+		const std::string & clientID,
+		const std::string & devID)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID
+	)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		if( pClient->isAlive() ) {
 			return _pDevicesManager->getDeviceLCDPluginsProperties(devID);
 		}
-		GKSysLog(LOG_WARNING, WARNING, "getting device LCDPluginsProperties not allowed because client not alive");
+		GKSysLogWarning("getting device LCDPluginsProperties not allowed because client not alive");
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
@@ -804,20 +816,22 @@ const bool ClientsManager::setDeviceBacklightColor(
 	const std::string & devID,
 	const uint8_t r,
 	const uint8_t g,
-	const uint8_t b
-)	{
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-	LOG(DEBUG3) << "with following RGB bytes : "
-				<< getHexRGB(r, g, b);
-#endif
+	const uint8_t b)
+{
+	GK_LOG_FUNC
+
+	GKLog6(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID,
+		"RGB bytes : ", getHexRGB(r, g, b)
+	)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		return pClient->setDeviceBacklightColor(devID, r, g, b);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 	return false;
 }
@@ -826,14 +840,20 @@ const macro_type & ClientsManager::getDeviceMacro(
 	const std::string & clientID,
 	const std::string & devID,
 	const std::string & keyName,
-	const uint8_t bankID
-)	{
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-	LOG(DEBUG3) << "   key : " << keyName;
-	LOG(DEBUG3) << "bankID : " << toUInt(bankID);
-#endif
+	const uint8_t bankID)
+{
+
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID
+	)
+	GKLog4(trace,
+		"key : ", keyName,
+		"bankID : ", toUInt(bankID)
+	)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 
@@ -843,34 +863,38 @@ const macro_type & ClientsManager::getDeviceMacro(
 				return pClient->getDeviceMacro(devID, keyName, bankID);
 			}
 			else {
-				GKSysLog(LOG_WARNING, WARNING, "getting device macro not allowed while client not ready");
+				GKSysLogWarning("getting device macro not allowed while client not ready");
 			}
 		}
 		else {
-			GKSysLog(LOG_WARNING, WARNING, "only active user can get device macro");
+			GKSysLogWarning("only active user can get device macro");
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	return MacrosBanks::emptyMacro;
 }
 
-const std::vector<std::string> & ClientsManager::getDeviceMacroKeysNames(
-	const std::string & clientID,
-	const std::string & devID
-)	{
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-#endif
+const std::vector<std::string> &
+	ClientsManager::getDeviceMacroKeysNames(
+		const std::string & clientID,
+		const std::string & devID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID
+	)
+
 	try {
 		_connectedClients.at(clientID);
 		return _pDevicesManager->getDeviceMacroKeysNames(devID);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	return KeyboardDriver::getEmptyStringVector();
@@ -880,19 +904,22 @@ const bool ClientsManager::setDeviceMacrosBank(
 	const std::string & clientID,
 	const std::string & devID,
 	const uint8_t bankID,
-	const mBank_type & bank
-)	{
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-	LOG(DEBUG3) << "bankID : " << toUInt(bankID);
-#endif
+	const mBank_type & bank)
+{
+	GK_LOG_FUNC
+
+	GKLog6(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID,
+		"bankID : ", toUInt(bankID)
+	)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		return pClient->setDeviceMacrosBank(devID, bankID, bank);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	return false;
@@ -903,17 +930,20 @@ const bool ClientsManager::resetDeviceMacrosBank(
 	const std::string & devID,
 	const uint8_t bankID)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-	LOG(DEBUG3) << "bankID : " << toUInt(bankID);
-#endif
+	GK_LOG_FUNC
+
+	GKLog6(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID,
+		"bankID : ", toUInt(bankID)
+	)
+
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		return pClient->resetDeviceMacrosBank(devID, bankID);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	return false;
@@ -925,18 +955,20 @@ const bool ClientsManager::setDeviceLCDPluginsMask(
 	const uint8_t maskID,
 	const uint64_t mask)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< CONST_STRING_DEVICE << devID << " "
-				<< CONST_STRING_CLIENT << clientID;
-	LOG(DEBUG3) << "maskID : " << toUInt(maskID);
-#endif
+	GK_LOG_FUNC
+
+	GKLog6(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID,
+		"maskID : ", toUInt(maskID)
+	)
 
 	try {
 		Client* pClient = _connectedClients.at(clientID);
 		return pClient->setDeviceLCDPluginsMask(devID, maskID, mask);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLog_UnknownClient
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 	return false;
 }
