@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -57,13 +57,14 @@ LCDPluginsTab::~LCDPluginsTab()
 
 void LCDPluginsTab::buildTab(void)
 {
+	GK_LOG_FUNC
+
 	QVBoxLayout* vBox = nullptr;
 
 	try {
 		vBox = new QVBoxLayout(this);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QVBoxLayout";
-#endif
+		GKLog(trace, "allocated QVBoxLayout")
+
 		this->setLayout(vBox);
 
 		/* -- -- -- */
@@ -101,9 +102,8 @@ void LCDPluginsTab::buildTab(void)
 
 		/* -- -- -- */
 		QHBoxLayout* hBox = new QHBoxLayout();
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QHBoxLayout";
-#endif
+		GKLog(trace, "allocated QHBoxLayout")
+
 		vBox->addLayout(hBox);
 
 		hBox->addSpacing(10);
@@ -119,7 +119,7 @@ void LCDPluginsTab::buildTab(void)
 		vBox->addWidget( this->getHLine() );
 	}
 	catch (const std::bad_alloc& e) {
-		LOG(ERROR) << e.what();
+		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
 }
@@ -128,6 +128,8 @@ void LCDPluginsTab::updateTab(
 	const std::string & devID,
 	const DeviceProperties & device)
 {
+	GK_LOG_FUNC
+
 	disconnect(_pPluginsTable, &QTableWidget::cellClicked, this, &LCDPluginsTab::toggleCheckbox);
 
 	/* removing table items */
@@ -153,7 +155,7 @@ void LCDPluginsTab::updateTab(
 
 			_pPluginsTable->setRowCount( array.size() );
 
-			std::size_t c = 0;
+			int c = 0;
 			_LCDPluginsMask = device.getLCDPluginsMask1();
 			_newLCDPluginsMask = _LCDPluginsMask;
 
@@ -215,6 +217,8 @@ const uint64_t LCDPluginsTab::getAndSetNewLCDPluginsMask(void)
 
 void LCDPluginsTab::toggleCheckbox(int row, int column)
 {
+	GK_LOG_FUNC
+
 	if(column != 0)
 		return;
 
@@ -222,12 +226,14 @@ void LCDPluginsTab::toggleCheckbox(int row, int column)
 	if( check )
 		check->toggle();
 	else {
-		LOG(WARNING) << "wrong dynamic cast";
+		LOG(warning) << "wrong dynamic cast";
 	}
 }
 
 void LCDPluginsTab::updateNewLCDPluginsMask(int checkboxState)
 {
+	GK_LOG_FUNC
+
 	QObject* cb = sender();
 	const QVariant value = cb->property(_idProperty.c_str());
 	/* checking that property was found */
@@ -243,20 +249,18 @@ void LCDPluginsTab::updateNewLCDPluginsMask(int checkboxState)
 				_newLCDPluginsMask &= ~(pluginID);
 			}
 			else {
-				LOG(WARNING) << "unhandled checkbox state : " << checkboxState;
+				LOG(warning) << "unhandled checkbox state : " << checkboxState;
 			}
 
 			_pApplyButton->setEnabled( !(_LCDPluginsMask == _newLCDPluginsMask) );
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "id: " << id << " - mask: " << _newLCDPluginsMask;
-#endif
+			GKLog4(trace, "id: ", id, "mask: ", _newLCDPluginsMask)
 		}
 		else {
-			LOG(WARNING) << "conversion failure";
+			LOG(warning) << "conversion failure";
 		}
 	}
 	else {
-		LOG(WARNING) << "invalid QVariant";
+		LOG(warning) << "invalid QVariant";
 	}
 }
 

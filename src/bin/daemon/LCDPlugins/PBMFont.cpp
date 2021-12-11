@@ -83,6 +83,8 @@ PBMFont::PBMFont(
 		_charY(0),
 		_charsMap(charsMap)
 {
+	GK_LOG_FUNC
+
 	fs::path fullpath(PBM_DATA_DIR);
 	fullpath /= "fonts";
 	fullpath /= PBMName;
@@ -93,21 +95,17 @@ PBMFont::PBMFont(
 		_PBMData.resize( (PBMWidth / 8) * PBMHeight, 0 );
 		this->readPBM(fullpath.string(), _PBMData, PBMWidth, PBMHeight);
 	}
-	catch (const GLogiKExcept & e) {
-		LOG(ERROR) << "exception while reading PBM file: " << fullpath.string();
-		throw;
-	}
 	catch (const std::exception & e) {
-		LOG(ERROR) << "vector resize exception ? " << fullpath.string();
+		GKSysLogError("vector resize exception ? ", fullpath.string());
 		throw GLogiKExcept( e.what() );
 	}
 }
 
 PBMFont::~PBMFont()
 {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "deleting font " << _fontName;
-#endif
+	GK_LOG_FUNC
+
+	GKLog2(trace, "deleting font ", _fontName)
 }
 
 const uint16_t PBMFont::getCenteredXPos(const std::string & string)
@@ -138,6 +136,8 @@ void PBMFont::printCharacterOnFrame(
 	uint16_t & PBMXPos,
 	const uint16_t PBMYPos)
 {
+	GK_LOG_FUNC
+
 	try {
 		_charX = _charsMap.at(character).first;
 		_charY = _charsMap[character].second;
@@ -170,10 +170,12 @@ void PBMFont::printCharacterOnFrame(
 	const  int16_t rightShift = (_shiftCharBase - xModuloComp8);
 
 #if DEBUG_PBMFONT
-	LOG(DEBUG2) << "xPos: " << PBMXPos
-				<< " - xByte: " << xByte
-				<< " - xByte modulo: " << xModulo;
-	LOG(DEBUG3) << "PBMFont charBytes: " << _charBytes;
+	if(GKLogging::GKDebug) {
+		LOG(trace)	<< "xPos: " << PBMXPos
+					<< " - xByte: " << xByte
+					<< " - xByte modulo: " << xModulo;
+		LOG(trace)	<< "PBMFont charBytes: " << _charBytes;
+	}
 #endif
 
 	try {
@@ -214,6 +216,8 @@ void PBMFont::printCharacterOnFrame(
 
 const unsigned char PBMFont::getCharacterLine(const uint16_t line, const uint16_t charByte) const
 {
+	GK_LOG_FUNC
+
 	unsigned char c = 0;
 	const uint16_t i =
 		/* PBM_Y_line which contains the character (in bytes) */
@@ -224,7 +228,7 @@ const unsigned char PBMFont::getCharacterLine(const uint16_t line, const uint16_
 		line * (_PBMWidth / 8);
 
 #if 0 && DEBUGGING_ON
-	LOG(DEBUG2) << "charX: " << _charX
+	LOG(trace)	<< "charX: " << _charX
 				<< " charY: " << _charY;
 				<< " index: " << i+1;
 #endif
@@ -291,11 +295,11 @@ const unsigned char PBMFont::getCharacterLine(const uint16_t line, const uint16_
 		error << oor.what();
 		error << " - char_width: " << std::to_string(_charWidth);
 		error << " - charX: " << std::to_string(_charX);
-		GKSysLog(LOG_ERR, ERROR, error.str());
+		GKSysLogError(error.str());
 	}
 
 	//std::bitset<8> bits(c);
-	//LOG(DEBUG) << bits.to_string();
+	//LOG(trace) << bits.to_string();
 
 	return c;
 }

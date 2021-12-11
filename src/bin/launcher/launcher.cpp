@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -32,8 +32,11 @@
 #include <sstream>
 
 #include <boost/filesystem.hpp>
-//#include <boost/program_options.hpp>
+#include <boost/program_options.hpp>
 
+#include <config.h>
+
+#include "lib/utils/GKLogging.hpp"
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 #include "lib/shared/sessionManager.hpp"
@@ -42,104 +45,128 @@
 #include "launcher.hpp"
 
 namespace fs = boost::filesystem;
+namespace po = boost::program_options;
 
 namespace GLogiK
 {
 
 using namespace NSGKUtils;
 
-DesktopServiceLauncher::DesktopServiceLauncher()
-	:	_LOGfd(nullptr),
-		_pid(0)
+DesktopServiceLauncher::DesktopServiceLauncher(const int& argc, char *argv[])
+	:	_pid(0)
 {
+	GK_LOG_FUNC
+
 	openlog(DESKTOP_SERVICE_LAUNCHER_NAME, LOG_PID|LOG_CONS, LOG_USER);
 
-	LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() = INFO;
-	if( LOG_TO_FILE_AND_CONSOLE::ConsoleReportingLevel() != NONE ) {
-		LOG_TO_FILE_AND_CONSOLE::ConsoleStream() = stderr;
-	}
+	// initialize logging
+	try {
+		/* boost::po may throw */
+		this->parseCommandLine(argc, argv);
 
 #if DEBUGGING_ON
-	LOG_TO_FILE_AND_CONSOLE::FileReportingLevel() = DEBUG3;
+		if(GKLogging::GKDebug) {
+			GKLogging::initDebugFile(DESKTOP_SERVICE_LAUNCHER_NAME, fs::owner_read|fs::owner_write|fs::group_read);
+		}
 #endif
+
+		GKLogging::initConsoleLog();
+	}
+	catch (const std::exception & e) {
+		syslog(LOG_ERR, "%s", e.what());
+		throw InitFailure();
+	}
 }
 
-DesktopServiceLauncher::~DesktopServiceLauncher() {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "exiting desktop service launcher process";
-#endif
+DesktopServiceLauncher::~DesktopServiceLauncher()
+{
+	GK_LOG_FUNC
 
-	LOG(INFO) << DESKTOP_SERVICE_LAUNCHER_NAME << " : bye !";
-	if( _LOGfd != nullptr )
-		std::fclose(_LOGfd);
+	LOG(info) << DESKTOP_SERVICE_LAUNCHER_NAME << " desktop service launcher process, bye !";
 
 	closelog();
 }
 
-int DesktopServiceLauncher::run( const int& argc, char *argv[] ) {
-	try {
+int DesktopServiceLauncher::run(void)
+{
+	GK_LOG_FUNC
 
-#if DEBUGGING_ON
-		FileSystem::openDebugFile(DESKTOP_SERVICE_LAUNCHER_NAME, _LOGfd, fs::owner_read|fs::owner_write|fs::group_read);
-#endif
+	/* -- -- -- */
+	/* -- -- -- */
+	/* -- -- -- */
 
-		LOG(INFO) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
+	LOG(info) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
 
-		/* no expected arguments */
-		//this->parseCommandLine(argc, argv);
+	_pid = detachProcess();
 
-		_pid = detachProcess();
-#if DEBUGGING_ON
-		LOG(DEBUG) << "process detached - pid: " << _pid;
-#endif
+	GKLog2(trace, "process detached - pid : ", _pid)
 
-		{
-			SessionManager session;
+	{
+		SessionManager session;
 
-			NSGKDBus::GKDBus DBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE,
-				GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE_PATH);
+		NSGKDBus::GKDBus DBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE,
+			GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE_PATH);
 
-			DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME,
-				NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
+		DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME,
+			NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
 
-			struct pollfd fds[1];
-			nfds_t nfds = 1;
+		struct pollfd fds[1];
+		nfds_t nfds = 1;
 
-			fds[0].fd = session.openConnection();
-			fds[0].events = POLLIN;
+		fds[0].fd = session.openConnection();
+		fds[0].events = POLLIN;
 
-			DBusHandler handler(&DBus);
+		DBusHandler handler(&DBus);
 
-			while( session.isSessionAlive() ) {
-				int num = poll(fds, nfds, 150);
+		while( session.isSessionAlive() ) {
+			int num = poll(fds, nfds, 150);
 
-				// data to read ?
-				if( num > 0 ) {
-					if( fds[0].revents & POLLIN ) {
-						session.processICEMessages();
-						continue;
-					}
+			// data to read ?
+			if( num > 0 ) {
+				if( fds[0].revents & POLLIN ) {
+					session.processICEMessages();
+					continue;
 				}
-
-				DBus.checkForMessages();
 			}
 
-			handler.cleanDBusRequests();
-
-			DBus.disconnectFromSessionBus();
+			DBus.checkForMessages();
 		}
 
-#if DEBUGGING_ON
-		LOG(DEBUG) << "exiting with success";
-#endif
-		return EXIT_SUCCESS;
-	}
-	catch ( const GLogiKExcept & e ) {
-		LOG(ERROR) << e.what();
-		return EXIT_FAILURE;
+		handler.cleanDBusRequests();
+
+		DBus.disconnectFromSessionBus();
 	}
 
-	return EXIT_FAILURE;
+	GKLog(trace, "exiting with success")
+
+	return EXIT_SUCCESS;
+}
+
+void DesktopServiceLauncher::parseCommandLine(const int& argc, char *argv[])
+{
+	GK_LOG_FUNC
+
+	po::options_description desc("Allowed options");
+
+#if DEBUGGING_ON
+	bool debug = false;
+
+	desc.add_options()
+		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
+	;
+#endif
+
+	po::variables_map vm;
+
+	po::store(po::parse_command_line(argc, argv, desc), vm);
+
+	po::notify(vm);
+
+#if DEBUGGING_ON
+	if (vm.count("debug")) {
+		GKLogging::GKDebug = vm["debug"].as<bool>();
+	}
+#endif
 }
 
 } // namespace GLogiK

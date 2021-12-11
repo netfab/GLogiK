@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -49,14 +49,6 @@
 
 namespace NSGKDBus
 {
-
-class GKDBusEventFound
-	:	public NSGKUtils::GLogiKExcept
-{
-	public:
-		GKDBusEventFound(const std::string & msg = "event found") : GLogiKExcept(msg) {};
-		virtual ~GKDBusEventFound( void ) throw() {};
-};
 
 enum class ConnectionFlag : uint8_t
 {
@@ -113,10 +105,13 @@ class GKDBus
 
 		DBusMessage* _message;
 
-		void checkForBusMessages(const BusConnection bus, DBusConnection* connection) noexcept;
+		void checkDBusMessage(DBusConnection* const connection);
+		void checkForBusMessages(
+			const BusConnection bus,
+			DBusConnection* const connection) noexcept;
 		void checkReleasedName(int ret) noexcept;
 		void checkDBusError(const char* error);
-		DBusConnection* getConnection(BusConnection bus);
+		DBusConnection* const getConnection(BusConnection bus) const;
 		const unsigned int getDBusRequestFlags(const ConnectionFlag flag) noexcept;
 };
 

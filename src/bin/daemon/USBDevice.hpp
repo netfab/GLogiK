@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -41,9 +41,9 @@
 
 #include <config.h>
 
-#if GKLIBUSB
 #include <libusb-1.0/libusb.h>
-#elif GKHIDAPI
+
+#if GKHIDAPI
 #include <hidapi.h>
 #endif
 
@@ -66,7 +66,7 @@ class USBDevice
 
 #if GKLIBUSB
 	private:
-		friend class LibUSB;
+		friend class libusb;
 
 		std::mutex					_libUSBMutex;
 #endif
@@ -89,11 +89,14 @@ class USBDevice
 		uint64_t					_LCDPluginsMask1;
 
 	private:
+		friend class USBInit;
+
 		MacrosManager*				_pMacrosManager;
 		LCDScreenPluginsManager*	_pLCDPluginsManager;
 
-#if GKLIBUSB
 		libusb_device*				_pUSBDevice;
+
+#if GKLIBUSB
 		libusb_device_handle*		_pUSBDeviceHandle;
 #elif GKHIDAPI
 		friend class hidapi;
@@ -113,7 +116,7 @@ class USBDevice
 
 	private:
 		std::atomic<bool>			_threadsStatus;
-		std::atomic<bool>			_skipUSBRequests;
+		std::atomic<bool>			_USBRequestsStatus;
 
 		int							_lastKeysInterruptTransferLength;
 		int							_lastLCDInterruptTransferLength;
@@ -135,40 +138,24 @@ class USBDevice
 		/* -- -- -- */
 
 	public:
-		void setMacrosManager(MacrosManager* pMacrosManager) {
-			_pMacrosManager = pMacrosManager;
-		}
-		MacrosManager* const & getMacrosManager(void) const {
-			return _pMacrosManager;
-		}
+		void setMacrosManager(MacrosManager* pMacrosManager) { _pMacrosManager = pMacrosManager; }
 		void destroyMacrosManager(void) noexcept;
 
-		void setLCDPluginsManager(LCDScreenPluginsManager* pLCDPluginsManager) {
-			_pLCDPluginsManager = pLCDPluginsManager;
-		}
-		LCDScreenPluginsManager* const & getLCDPluginsManager(void) const {
-			return _pLCDPluginsManager;
-		}
+		void setLCDPluginsManager(LCDScreenPluginsManager* pLCDPluginsManager) { _pLCDPluginsManager = pLCDPluginsManager; }
 		void destroyLCDPluginsManager(void) noexcept;
 
-		const bool getThreadsStatus(void) const {
-			return _threadsStatus;
-		}
-		void deactivateThreads(void) noexcept {
-			_threadsStatus = false;
-		}
-		const bool runDeviceUSBRequests(void) const {
-			return (! _skipUSBRequests);
-		}
-		void skipUSBRequests(void) noexcept {
-			_skipUSBRequests = true;
-		}
-		const int getLastKeysInterruptTransferLength(void) const {
-			return _lastKeysInterruptTransferLength;
-		}
-		const int getLastLCDInterruptTransferLength(void) const {
-			return _lastLCDInterruptTransferLength;
-		}
+		/* getters */
+		MacrosManager* const & getMacrosManager(void) const { return _pMacrosManager; }
+		LCDScreenPluginsManager* const & getLCDPluginsManager(void) const { return _pLCDPluginsManager; }
+		const bool getThreadsStatus(void) const { return _threadsStatus; }
+		const bool getUSBRequestsStatus(void) const { return _USBRequestsStatus; }
+		const int getLastKeysInterruptTransferLength(void) const { return _lastKeysInterruptTransferLength; }
+		const int getLastLCDInterruptTransferLength(void) const { return _lastLCDInterruptTransferLength; }
+		/* -- -- -- */
+
+		void stopThreads(void) noexcept { _threadsStatus = false; }
+		void skipUSBRequests(void) noexcept { _USBRequestsStatus = false; }
+
 		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
 		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
 };

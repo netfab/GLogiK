@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -35,10 +35,11 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-VirtualKeyboard::VirtualKeyboard(const char* deviceName) {
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "initializing " << deviceName;
-#endif
+VirtualKeyboard::VirtualKeyboard(const char* deviceName)
+{
+	GK_LOG_FUNC
+
+	GKLog2(trace, "initializing ", deviceName)
 
 	_pDevice = libevdev_new();
 	libevdev_set_name(_pDevice, deviceName);
@@ -71,16 +72,18 @@ VirtualKeyboard::VirtualKeyboard(const char* deviceName) {
 	}
 }
 
-VirtualKeyboard::~VirtualKeyboard() {
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "destroying " << libevdev_get_name(_pDevice);
-#endif
+VirtualKeyboard::~VirtualKeyboard()
+{
+	GK_LOG_FUNC
+
+	GKLog2(trace, "destroying ", libevdev_get_name(_pDevice))
 
 	libevdev_uinput_destroy(_pUInputDevice);
 	libevdev_free(_pDevice);
 }
 
-void VirtualKeyboard::enableEventType(unsigned int type) {
+void VirtualKeyboard::enableEventType(unsigned int type)
+{
 	if ( libevdev_enable_event_type(_pDevice, type) != 0 ) {
 		std::ostringstream buffer(std::ios_base::ate);
 		buffer << "enable event type failure : " << type;
@@ -88,7 +91,8 @@ void VirtualKeyboard::enableEventType(unsigned int type) {
 	}
 }
 
-void VirtualKeyboard::enableEventCode(unsigned int type, unsigned int code) {
+void VirtualKeyboard::enableEventCode(unsigned int type, unsigned int code)
+{
 	if ( libevdev_enable_event_code(_pDevice, type, code, nullptr) != 0 ) {
 		std::ostringstream buffer(std::ios_base::ate);
 		buffer << "enable event code failure : type " << type << " code " << code;
@@ -96,18 +100,22 @@ void VirtualKeyboard::enableEventCode(unsigned int type, unsigned int code) {
 	}
 }
 
-void VirtualKeyboard::sendKeyEvent(const KeyEvent & key) {
+void VirtualKeyboard::sendKeyEvent(const KeyEvent & key)
+{
+	GK_LOG_FUNC
+
 #if DEBUGGING_ON
-	LOG(DEBUG1) << "key event : ";
-	LOG(DEBUG2)	<< "code : " << toUInt(key.code);
-	LOG(DEBUG2)	<< "event : " << key.event;
-	LOG(DEBUG2)	<< "interval : " << key.interval << " ms";
+	if(GKLogging::GKDebug) {
+		LOG(trace) << "key event : ";
+		LOG(trace) << "code : " << toUInt(key.code);
+		LOG(trace) << "event : " << key.event;
+		LOG(trace) << "interval : " << key.interval << " ms";
+	}
 #endif
 
 	if( key.interval > 20 ) {
-#if DEBUGGING_ON
-		LOG(DEBUG3) << "sleeping for : " << key.interval << "ms";
-#endif
+		GKLog3(trace, "sleeping for : ", key.interval, "ms")
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(key.interval));
 	}
 	int ret = libevdev_uinput_write_event(_pUInputDevice, EV_KEY, key.code, static_cast<int>(key.event));
@@ -116,13 +124,13 @@ void VirtualKeyboard::sendKeyEvent(const KeyEvent & key) {
 		if(ret != 0 ) {
 			std::ostringstream buffer(std::ios_base::ate);
 			buffer << "EV_SYN/SYN_REPORT/0 write_event : " << -ret << " : " << strerror(-ret);
-			GKSysLog(LOG_WARNING, WARNING, buffer.str());
+			GKSysLogWarning(buffer.str());
 		}
 	}
 	else {
 		std::ostringstream buffer(std::ios_base::ate);
 		buffer << "EV_KEY write_event : " << -ret << " : " << strerror(-ret);
-		GKSysLog(LOG_WARNING, WARNING, buffer.str());
+		GKSysLogWarning(buffer.str());
 	}
 }
 

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -34,8 +34,8 @@ using namespace NSGKUtils;
 
 DeviceControlTab::DeviceControlTab(
 	NSGKDBus::GKDBus* pDBus,
-	const QString & name
-)	:	Tab(pDBus),
+	const QString & name)
+	:	Tab(pDBus),
 		_deviceStatusLabel(nullptr),
 		_pStartButton(nullptr),
 		_pStopButton(nullptr),
@@ -52,14 +52,15 @@ DeviceControlTab::~DeviceControlTab()
 
 void DeviceControlTab::buildTab(void)
 {
+	GK_LOG_FUNC
+
 	QVBoxLayout* vBox = nullptr;
 	QHBoxLayout* hBox = nullptr;
 
 	try {
 		vBox = new QVBoxLayout(this);
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QVBoxLayout";
-#endif
+		GKLog(trace, "allocated QVBoxLayout")
+
 		this->setLayout(vBox);
 
 		/* -- -- -- */
@@ -72,9 +73,7 @@ void DeviceControlTab::buildTab(void)
 		vBox->addWidget(_deviceStatusLabel);
 
 		hBox = new QHBoxLayout();
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated QHBoxLayout";
-#endif
+		GKLog(trace, "allocated QHBoxLayout")
 
 		/* -- -- -- */
 
@@ -97,25 +96,22 @@ void DeviceControlTab::buildTab(void)
 		/* -- -- -- */
 
 		_pStartButton = new QPushButton("Start");
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated Start button";
-#endif
+		GKLog(trace, "allocated Start button")
+
 		hBox->addWidget(_pStartButton);
 
 		_pStopButton = new QPushButton("Stop");
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated Stop button";
-#endif
+		GKLog(trace, "allocated Stop button")
+
 		hBox->addWidget(_pStopButton);
 
 		_pRestartButton = new QPushButton("Restart");
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "allocated Restart button";
-#endif
+		GKLog(trace, "allocated Restart button")
+
 		hBox->addWidget(_pRestartButton);
 	}
 	catch (const std::bad_alloc& e) {
-		LOG(ERROR) << e.what();
+		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
 
@@ -155,10 +151,10 @@ void DeviceControlTab::updateTab(
 	const std::string & devID,
 	const bool status)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG1) << "updating DeviceControlTab";
-	LOG(DEBUG2) << "device " << devID;
-#endif
+	GK_LOG_FUNC
+
+	GKLog2(trace, "updating DeviceControlTab, device ", devID)
+
 	_devID = devID;
 
 	if(status) { /* device status == "started" */
@@ -183,7 +179,9 @@ void DeviceControlTab::updateTab(
 
 void DeviceControlTab::sendStatusSignal(const std::string & signal)
 {
-	LOG(INFO) << "sending " << signal << " signal for device " << _devID;
+	GK_LOG_FUNC
+
+	LOG(info) << "sending " << signal << " signal for device " << _devID;
 
 	try {
 		_pDBus->initializeBroadcastSignal(
@@ -198,7 +196,7 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		_pDBus->abandonBroadcastSignal();
-		LOG(ERROR) << e.what();
+		LOG(error) << e.what();
 	}
 
 	this->disableButtons();

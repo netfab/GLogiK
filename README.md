@@ -1,6 +1,6 @@
 GLogiK, daemon to handle special features on some gaming keyboards
 
-Last release : version 0.8.12
+Last release : version 0.8.14
 
 Links
 =====
@@ -33,13 +33,12 @@ Build Dependencies
    - sys-fs/udev
    - sys-apps/systemd
  * dev-libs/libevdev >= 1.5.7
- * a libusb provider :
-   - dev-libs/hidapi (libusb backend) >= 0.10.0
-   - dev-libs/libusb >= 1.0.19
+ * dev-libs/libusb >= 1.0.19
 
 Optional Build Dependencies
 ===========================
 
+ * dev-libs/hidapi (libusb backend) >= 0.10.0
  * sys-apps/dbus >= 1.10.18
  * x11-libs/libICE
  * x11-libs/libSM

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -38,6 +38,8 @@ void ClientsSignals::sendSignalToClients(
 	const std::string & signal,
 	const bool forceSend) noexcept
 {
+	GK_LOG_FUNC
+
 	/* don't try to send signal if we know that there is no clients */
 	if( (numClients == 0 ) and (! forceSend) )
 		return;
@@ -50,9 +52,8 @@ void ClientsSignals::sendSignalToClients(
 		if(signal != "DaemonIsStopping")
 			return;
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "sending clients " << signal << " signal";
-#endif
+	GKLog2(trace, "sending signal : ", signal)
+
 	try {
 		pDBus->initializeBroadcastSignal(
 			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
@@ -69,10 +70,10 @@ void ClientsSignals::sendSignalToClients(
 		warn += e.what();
 		/* don't warn nor syslog if we force sending the signal */
 		if(! forceSend) {
-			GKSysLog(LOG_WARNING, WARNING, warn);
+			GKSysLogWarning(warn);
 		}
 		else {
-			LOG(DEBUG) << warn;
+			GKLog(trace, warn)
 		}
 	}
 }
@@ -83,6 +84,8 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 	const std::string & signal,
 	const std::vector<std::string> & devIDArray) noexcept
 {
+	GK_LOG_FUNC
+
 	/* don't try to send signal if we know that there is no clients */
 	if( numClients == 0 )
 		return;
@@ -91,9 +94,8 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 	if( ! DaemonControl::isDaemonRunning() )
 		return;
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "sending clients " << signal << " signal";
-#endif
+	GKLog2(trace, "sending signal : ", signal)
+
 	try {
 		pDBus->initializeBroadcastSignal(
 			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
@@ -106,9 +108,9 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 	}
 	catch (const GLogiKExcept & e) {
 		pDBus->abandonBroadcastSignal();
-		std::string warn("DBus targets signal failure : ");
+		std::string warn("failed to send signal : ");
 		warn += e.what();
-		GKSysLog(LOG_WARNING, WARNING, warn);
+		GKSysLogWarning(warn);
 	}
 }
 

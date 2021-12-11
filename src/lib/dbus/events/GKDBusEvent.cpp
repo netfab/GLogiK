@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -37,40 +37,43 @@ GKDBusEvent::GKDBusEvent(
 {
 }
 
-GKDBusEvent::~GKDBusEvent() {
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "destroying event: " << eventName;
-#endif
+GKDBusEvent::~GKDBusEvent()
+{
+	GK_LOG_FUNC
+
+	GKLog2(trace, "destroying event : ", eventName)
 }
 
 /*
  * exception was thrown while building reply
  */
 void GKDBusEvent::sendReplyError(
-	DBusConnection* connection,
+	DBusConnection* const connection,
 	DBusMessage* message,
-	const char* error
-	)
+	const char* errorString)
 {
-	LOG(ERROR) << "DBus reply failure : " << error;
+	GK_LOG_FUNC
+
+	LOG(error) << "DBus reply failure : " << errorString;
 	this->abandonReply();	/* delete reply object if allocated */
-	this->buildAndSendErrorReply(connection, message, error);
+	this->buildAndSendErrorReply(connection, message, errorString);
 }
 
 /*
  * exception was thrown before or while running callback
  */
 void GKDBusEvent::sendCallbackError(
-	DBusConnection* connection,
+	DBusConnection* const connection,
 	DBusMessage* message,
-	const char* error
-	)
+	const char* errorString)
 {
-	LOG(ERROR) << error;
+	GK_LOG_FUNC
+
+	LOG(error) << errorString;
 
 	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
 		/* send error if something was wrong when running callback */
-		this->buildAndSendErrorReply(connection, message, error);
+		this->buildAndSendErrorReply(connection, message, errorString);
 	}
 }
 

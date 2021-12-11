@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -33,9 +33,10 @@
 #include <config.h>
 
 
+#include "GKLogging.hpp"
+
 #define UTILS_COMPILATION 1
 
-#include "log.hpp"
 #include "exception.hpp"
 
 #undef UTILS_COMPILATION
@@ -57,10 +58,13 @@ FSNotify::FSNotify()
 	}
 }
 
-FSNotify::~FSNotify() {
+FSNotify::~FSNotify()
+{
+	GK_LOG_FUNC
+
 	/* sanity check */
 	if( ! _watchedDescriptorsMap.empty() ) {
-		LOG(WARNING) << "some watch descriptors were not removed";
+		LOG(warning) << "some watch descriptors were not removed";
 		for(const auto & watchedPair : _watchedDescriptorsMap) {
 			this->removeNotifyWatch(watchedPair.second.wd);
 		}
@@ -70,21 +74,24 @@ FSNotify::~FSNotify() {
 	/* closing queue */
 	if(_inotifyQueueFD > -1) {
 		if( close(_inotifyQueueFD) == -1 ) {
-			LOG(ERROR) << "inotify queue closing failure : " << strerror(errno);
+			LOG(error) << "inotify queue closing failure : " << strerror(errno);
 		}
 	}
 }
 
 /* make sure path is readable before calling this one */
-const int FSNotify::addNotifyDirectoryWatch(const std::string & path, const bool checkIfAlreadyWatched) {
+const int FSNotify::addNotifyDirectoryWatch(
+	const std::string & path,
+	const bool checkIfAlreadyWatched)
+{
+	GK_LOG_FUNC
+
 	/* check first if this path is already watched */
 	/* returns its descriptor in this case */
 	if( checkIfAlreadyWatched ) {
 		auto it = _watchedDescriptorsMap.find(path);
 		if ( it != _watchedDescriptorsMap.end() ) {
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "path already watched - " << path;
-#endif
+			GKLog2(trace, "path already watched : ", path)
 			return (*it).second.wd;
 		}
 	}
@@ -93,9 +100,12 @@ const int FSNotify::addNotifyDirectoryWatch(const std::string & path, const bool
 	return this->addNotifyWatch(path, mask);
 }
 
-void FSNotify::removeNotifyWatch(const int wd) {
+void FSNotify::removeNotifyWatch(const int wd)
+{
+	GK_LOG_FUNC
+
 	if(wd == -1) {
-		LOG(ERROR) << "[" << wd << "] - negative watch descriptor";
+		LOG(error) << "[" << wd << "] - negative watch descriptor";
 		return;
 	}
 
@@ -107,29 +117,29 @@ void FSNotify::removeNotifyWatch(const int wd) {
 		--watched.count;
 		if(watched.count == 0) {
 			if( inotify_rm_watch(fd, wd) == -1 ) {
-				LOG(ERROR) << "inotify rm watch failure : " << strerror(errno);
+				LOG(error) << "inotify rm watch failure : " << strerror(errno);
 			}
 			else {
-#if DEBUGGING_ON
-				LOG(DEBUG2) << "[" << wd << "] - removed path notify - " << item.first;
-#endif
+				GKLog3(trace, wd, " | removed path notify watch", item.first)
 			}
 			return true;
 		}
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "[" << wd << "] - path reference decremented - " << item.first;
-#endif
+		GKLog3(trace, wd, " | decremented reference to path notify watch", item.first)
 		return false;
 	};
 
 	erase_if(_watchedDescriptorsMap, findDescriptor);
 }
 
-const int FSNotify::getNotifyQueueDescriptor(void) const {
+const int FSNotify::getNotifyQueueDescriptor(void) const
+{
 	return _inotifyQueueFD;
 }
 
-void FSNotify::readNotifyEvents(files_map_type & filesMap) {
+void FSNotify::readNotifyEvents(files_map_type & filesMap)
+{
+	GK_LOG_FUNC
+
 	char *ptr;
 	ssize_t len;
 	char buf[4096] __attribute__ ((aligned(__alignof__(struct inotify_event))));
@@ -157,9 +167,7 @@ void FSNotify::readNotifyEvents(files_map_type & filesMap) {
 			/* file inside watched directory */
 			if (event->len) {
 				const std::string name(event->name);
-#if DEBUGGING_ON
-				LOG(DEBUG2) << wd << " - name: " << name;
-#endif
+				GKLog3(trace, wd, " | name : ", name)
 				/* map size will be 0 or 1 after that */
 				erase_if(filesMap, [&name]( auto & item ) -> const bool { return item.second != name; } );
 			}
@@ -179,33 +187,23 @@ void FSNotify::readNotifyEvents(files_map_type & filesMap) {
 					 * current IN_MOVE_SELF since we force remove the watch below
 					 */
 					if( event->mask & IN_IGNORED ) {
-#if DEBUGGING_ON
-						LOG(DEBUG2) << wd << "[IN_IGNORED] watch was removed";
-#endif
+						GKLog2(trace, wd, " | [IN_IGNORED] watch was removed")
 					}
 					else {
-#if DEBUGGING_ON
-						LOG(DEBUG2) << wd << "skip event : path not found";
-#endif
+						GKLog2(trace, wd, " | skip event : path not found")
 					}
 					continue; /* next event */
 				}
 
 				if( event->mask & IN_MOVE_SELF ) {
-#if DEBUGGING_ON
-					LOG(DEBUG2) << wd << "[IN_MOVE_SELF] watched object renamed or moved : " << path;
-#endif
+					GKLog3(trace, wd, " | [IN_MOVE_SELF] watched object renamed or moved : ", path)
 					toRemove.insert(path);
 				}
 				if( event->mask & IN_DELETE_SELF ) {
-#if DEBUGGING_ON
-					LOG(DEBUG2) << wd << "[IN_DELETE_SELF] watched object deleted : " << path;
-#endif
+					GKLog3(trace, wd, " | [IN_DELETE_SELF] watched object deleted : ", path)
 				}
 				if( event->mask & IN_IGNORED ) {
-#if DEBUGGING_ON
-					LOG(DEBUG2) << wd << "[IN_IGNORED] watch was removed : " << path;
-#endif
+					GKLog3(trace, wd, " | [IN_IGNORED] watch was removed : ", path)
 					_watchedDescriptorsMap.erase(path);
 				}
 			}
@@ -232,7 +230,10 @@ void FSNotify::readNotifyEvents(files_map_type & filesMap) {
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-const int FSNotify::addNotifyWatch(const std::string & path, const uint32_t & mask) {
+const int FSNotify::addNotifyWatch(const std::string & path, const uint32_t & mask)
+{
+	GK_LOG_FUNC
+
 	auto it = _watchedDescriptorsMap.find(path);
 
 	if(it == _watchedDescriptorsMap.end()) {
@@ -246,16 +247,12 @@ const int FSNotify::addNotifyWatch(const std::string & path, const uint32_t & ma
 		_watchedDescriptorsMap.insert( std::pair<const std::string, WatchedObject>(path, WatchedObject(ret)) );
 		it = _watchedDescriptorsMap.find(path);
 
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "[" << (*it).second.wd << "] - added path notify - " << path;
-#endif
+		GKLog3(trace, (*it).second.wd, " | added path notify watch : ", path)
 	}
 	else {
 		(*it).second.count++;
 
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "[" << (*it).second.wd << "] - path reference incremented - " << path;
-#endif
+		GKLog3(trace, (*it).second.wd, " | incremented reference to path notify watch : ", path)
 	}
 
 	return (*it).second.wd;

@@ -47,7 +47,8 @@ Splashscreen::Splashscreen()
 	_pluginTempo = LCDPluginTempo::TEMPO_400_15;
 }
 
-Splashscreen::~Splashscreen() {
+Splashscreen::~Splashscreen()
+{
 }
 
 void Splashscreen::init(FontsManager* const pFonts, const std::string & product)

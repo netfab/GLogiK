@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2019  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -33,9 +33,10 @@ using namespace NSGKUtils;
  */
 const GLogiK::LCDPluginsPropertiesArray_type GKDBusArgumentLCDPluginsArray::getNextLCDPluginsArrayArgument(void)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "rebuilding LCDPluginsProperties vector from GKDBus values";
-#endif
+	GK_LOG_FUNC
+
+	GKLog(trace, "rebuilding LCDPluginsProperties vector from GKDBus values")
+
 	GLogiK::LCDPluginsPropertiesArray_type pluginsArray;
 
 	try {
@@ -49,17 +50,16 @@ const GLogiK::LCDPluginsPropertiesArray_type GKDBusArgumentLCDPluginsArray::getN
 		while( ! GKDBusArgumentString::stringArguments.empty() );
 	}
 	catch ( const EmptyContainer & e ) {
-		LOG(WARNING) << "missing argument : " << e.what();
+		LOG(warning) << "missing argument : " << e.what();
 		throw GLogiKExcept("rebuilding LCDPluginsProperties vector failed");
 	}
 
 	if( ! GKDBusArgumentUInt64::uint64Arguments.empty() ) { /* sanity check */
-		LOG(WARNING) << "UInt64 container not empty";
+		LOG(warning) << "UInt64 container not empty";
 	}
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "LCDPluginsProperties vector size : " << pluginsArray.size();
-#endif
+	GKLog2(trace, "LCDPluginsProperties vector size : ", pluginsArray.size())
+
 	return pluginsArray;
 }
 

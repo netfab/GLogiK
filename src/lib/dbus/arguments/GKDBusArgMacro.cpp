@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -34,10 +34,12 @@ using namespace NSGKUtils;
  * helper function rebuilding macro_type vector
  * mirror of GKDBusMessage::appendMacro
  */
-const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigned int macroSize) {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "rebuilding macro from GKDBus values";
-#endif
+const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigned int macroSize)
+{
+	GK_LOG_FUNC
+
+	GKLog(trace, "rebuilding macro from GKDBus values")
+
 	GLogiK::macro_type macro;
 	try {
 		bool nextRun = true;
@@ -67,17 +69,16 @@ const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigne
 		while( nextRun );
 	}
 	catch ( const EmptyContainer & e ) {
-		LOG(WARNING) << "missing macro argument : " << e.what();
+		LOG(warning) << "missing macro argument : " << e.what();
 		throw GLogiKExcept("rebuilding macro failed");
 	}
 
 	if( ( macroSize == 0 ) and ( ! GKDBusArgumentUInt16::uint16Arguments.empty() ) ) { /* sanity check */
-		LOG(WARNING) << "uint16 container not empty";
+		LOG(warning) << "uint16 container not empty";
 	}
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "events array size : " << macro.size() << " - expected : " << macroSize;
-#endif
+	GKLog4(trace, "events array size : ", macro.size(), "expected : ", macroSize)
+
 	return macro;
 }
 

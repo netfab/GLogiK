@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
-	DBusConnection* connection,
+	DBusConnection* const connection,
 	const char* busName,
 	const char* objectPath,
 	const char* interface,
@@ -40,6 +40,8 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 	DBusPendingCall** pending)
 		:	GKDBusMessage(connection), _pendingCall(pending)
 {
+	GK_LOG_FUNC
+
 	if( ! dbus_validate_bus_name(busName, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid bus name");
 	if( ! dbus_validate_path(objectPath, nullptr) )
@@ -57,24 +59,29 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 	dbus_message_iter_init_append(_message, &_itMessage);
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "Remote Object Method Call DBus message initialized";
-	LOG(DEBUG3) << "bus name    : " << busName;
-	LOG(DEBUG3) << "object path : " << objectPath;
-	LOG(DEBUG3) << "interface   : " << interface;
-	LOG(DEBUG3) << "method      : " << method;
+	if(GKLogging::GKDebug) {
+		LOG(trace) << "Remote Object Method Call DBus message initialized";
+		LOG(trace) << "bus name    : " << busName;
+		LOG(trace) << "object path : " << objectPath;
+		LOG(trace) << "interface   : " << interface;
+		LOG(trace) << "method      : " << method;
+	}
 #endif
 }
 
-GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
+GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall()
+{
+	GK_LOG_FUNC
+
 	if(_hosedMessage) {
-		LOG(WARNING) << "DBus hosed message, giving up";
+		LOG(warning) << "DBus hosed message, giving up";
 		dbus_message_unref(_message);
 		return;
 	}
 
 	if( ! dbus_connection_send_with_reply(_connection, _message, _pendingCall, DBUS_TIMEOUT_USE_DEFAULT)) {
 		dbus_message_unref(_message);
-		LOG(ERROR) << "DBus remote method call with pending reply sending failure";
+		LOG(error) << "DBus remote method call with pending reply sending failure";
 		return;
 	}
 
@@ -82,7 +89,7 @@ GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall() {
 	dbus_message_unref(_message);
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus remote method call with pending reply sent";
+	GKLog(trace, "DBus remote method call with pending reply sent")
 #endif
 }
 
@@ -113,12 +120,14 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 }
 
 void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
-	DBusConnection* connection,
+	DBusConnection* const connection,
 	const char* busName,
 	const char* objectPath,
 	const char* interface,
 	const char* method)
 {
+	GK_LOG_FUNC
+
 	if(_remoteMethodCall) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus remote_method_call already allocated");
 
@@ -128,61 +137,73 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 			&_pendingCall);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus remote_method_call allocation failure : " << e.what();
+		LOG(error) << "GKDBus remote_method_call allocation failure : " << e.what();
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
 }
 
-void GKDBusMessageRemoteMethodCall::appendStringToRemoteMethodCall(const std::string & value) {
+void GKDBusMessageRemoteMethodCall::appendStringToRemoteMethodCall(const std::string & value)
+{
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendString(value);
 }
 
-void GKDBusMessageRemoteMethodCall::appendUInt8ToRemoteMethodCall(const uint8_t value) {
+void GKDBusMessageRemoteMethodCall::appendUInt8ToRemoteMethodCall(const uint8_t value)
+{
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendUInt8(value);
 }
 
-void GKDBusMessageRemoteMethodCall::appendUInt32ToRemoteMethodCall(const uint32_t value) {
+void GKDBusMessageRemoteMethodCall::appendUInt32ToRemoteMethodCall(const uint32_t value)
+{
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendUInt32(value);
 }
 
-void GKDBusMessageRemoteMethodCall::appendUInt64ToRemoteMethodCall(const uint64_t value) {
+void GKDBusMessageRemoteMethodCall::appendUInt64ToRemoteMethodCall(const uint64_t value)
+{
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendUInt64(value);
 }
 
-void GKDBusMessageRemoteMethodCall::appendMacrosBankToRemoteMethodCall(const GLogiK::mBank_type & bank) {
+void GKDBusMessageRemoteMethodCall::appendMacrosBankToRemoteMethodCall(const GLogiK::mBank_type & bank)
+{
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendMacrosBank(bank);
 }
 
 void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall(void)
 {
+	GK_LOG_FUNC
+
 	if(_remoteMethodCall) { /* sanity check */
 		delete _remoteMethodCall;
 		_remoteMethodCall = nullptr;
 	}
 	else {
-		LOG(WARNING) << "tried to send NULL remote method call";
+		LOG(warning) << "tried to send NULL remote method call";
 		throw GKDBusMessageWrongBuild("tried to send NULL remote method call");
 	}
 }
 
 void GKDBusMessageRemoteMethodCall::abandonRemoteMethodCall(void)
 {
+	GK_LOG_FUNC
+
 	if(_remoteMethodCall) { /* sanity check */
 		_remoteMethodCall->abandon();
 		delete _remoteMethodCall;
 		_remoteMethodCall = nullptr;
 	}
 	else {
-		LOG(WARNING) << "tried to abandon NULL remote method call";
+		LOG(warning) << "tried to abandon NULL remote method call";
 	}
 }
 
-void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void) {
+void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void)
+{
+	GK_LOG_FUNC
+
 	dbus_pending_call_block(_pendingCall);
 
 	uint16_t c = 0;
@@ -197,7 +218,7 @@ void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void) {
 	dbus_pending_call_unref(_pendingCall);
 
 	if(message == nullptr) {
-		LOG(WARNING) << __func__ << " message is NULL, retried 10 times";
+		LOG(warning) << "message is NULL, retried 10 times";
 		throw GKDBusRemoteCallNoReply("can't get pending call reply");
 	}
 

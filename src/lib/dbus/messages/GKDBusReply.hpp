@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ class GKDBusReply
 	:	public GKDBusMessage
 {
 	public:
-		GKDBusReply(DBusConnection* connection, DBusMessage* message);
+		GKDBusReply(DBusConnection* const connection, DBusMessage* message);
 		~GKDBusReply();
 
 	protected:
@@ -64,7 +64,7 @@ class GKDBusMessageReply
 		GKDBusMessageReply();
 		~GKDBusMessageReply();
 
-		void initializeReply(DBusConnection* connection, DBusMessage* message);
+		void initializeReply(DBusConnection* const connection, DBusMessage* message);
 
 		void appendBooleanToReply(const bool value);
 		void appendStringToReply(const std::string & value);

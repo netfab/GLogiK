@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -23,8 +23,6 @@
 #define SRC_BIN_GUI_QT_MAIN_WINDOW_HPP_
 
 #include <sys/types.h>
-
-#include <cstdio>
 
 #include <string>
 #include <map>
@@ -64,7 +62,7 @@ class MainWindow
 		MainWindow(QWidget *parent = 0);
 		~MainWindow();
 
-		void init(void);
+		void init(const int& argc, char *argv[]);
 		void build(void);
 
 	private:
@@ -78,7 +76,6 @@ class MainWindow
 		devices_map_type _devices;
 
 		NSGKDBus::GKDBus* _pDBus;
-		FILE* _LOGfd;	/* log file descriptor */
 
 		QComboBox* _devicesComboBox;
 		QTabWidget* _tabbedWidgets;
@@ -100,6 +97,8 @@ class MainWindow
 		static void handleSignal(int sig);
 
 		QWidget* getTabbedWidget(const std::string & name);
+
+		void parseCommandLine(const int& argc, char *argv[]);
 
 		void setTabEnabled(const std::string & name, const bool status);
 		void setCurrentTab(const std::string & name);

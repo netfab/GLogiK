@@ -105,7 +105,6 @@ class KeyboardDriver
 		/* --- */
 		virtual const uint16_t getDriverID() const = 0;
 
-		//void resetDevice(const USBDeviceID & det);
 		virtual void openDevice(const USBDeviceID & det);
 		virtual void closeDevice(
 			const USBDeviceID & det,
@@ -159,11 +158,11 @@ class KeyboardDriver
 
 	private:
 		/* USBAPI */
-		virtual int performKeysInterruptTransfer(
+		virtual int performUSBDeviceKeysInterruptTransfer(
 			USBDevice & device,
 			unsigned int timeout
 		) = 0;
-		virtual int performLCDScreenInterruptTransfer(
+		virtual int performUSBDeviceLCDScreenInterruptTransfer(
 			USBDevice & device,
 			const unsigned char * buffer,
 			int bufferLength,
@@ -176,7 +175,7 @@ class KeyboardDriver
 
 		static const std::vector< ModifierKey > modifierKeys;
 
-		void enterMacroRecordMode(USBDevice & device, const std::string & devID);
+		void enterMacroRecordMode(USBDevice & device);
 		void LCDScreenLoop(const std::string & devID);
 		void runMacro(const std::string & devID) const;
 		void listenLoop(const std::string & devID);
@@ -232,20 +231,20 @@ class USBKeyboardDriver
 
 	private:
 		/* USBAPI */
-		int performKeysInterruptTransfer(
+		int performUSBDeviceKeysInterruptTransfer(
 			USBDevice & device,
 			unsigned int timeout
 		) override {
-			return USBAPI::performKeysInterruptTransfer(device, timeout);
+			return USBAPI::performUSBDeviceKeysInterruptTransfer(device, timeout);
 		}
 
-		int performLCDScreenInterruptTransfer(
+		int performUSBDeviceLCDScreenInterruptTransfer(
 			USBDevice & device,
 			const unsigned char * buffer,
 			int bufferLength,
 			unsigned int timeout
 		) override {
-			return USBAPI::performLCDScreenInterruptTransfer(device, buffer, bufferLength, timeout);
+			return USBAPI::performUSBDeviceLCDScreenInterruptTransfer(device, buffer, bufferLength, timeout);
 		}
 
 		void openUSBDevice(USBDevice & device) override {

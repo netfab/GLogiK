@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -24,7 +24,11 @@
 #include <thread>
 
 #include <boost/process.hpp>
+#include <boost/process/search_path.hpp>
 
+#include <config.h>
+
+#include "lib/utils/GKLogging.hpp"
 #include "lib/shared/glogik.hpp"
 
 #include "DBusHandler.hpp"
@@ -107,30 +111,49 @@ void DBusHandler::initializeGKDBusSignals(void) {
 
 void DBusHandler::restartRequest(void)
 {
+	GK_LOG_FUNC
+
 	using steady = chr::steady_clock;
 
-	LOG(INFO) << "received signal: " << __func__;
-	LOG(INFO) << "sleeping 1 second before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
+	LOG(info) << "received signal: " << __func__;
+	LOG(info) << "sleeping 1 second before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
 	std::this_thread::sleep_for(chr::seconds(1));
 
 	const steady::time_point now = steady::now();
 	const steady::duration timeLapse = now - _lastCall;
 	if(timeLapse > _tenSeconds) {
+		_lastCall = now;
+
 		try {
+			auto p = bp::search_path(GLOGIKS_DESKTOP_SERVICE_NAME);
+			if( p.empty() ) {
+				LOG(error) << GLOGIKS_DESKTOP_SERVICE_NAME << " executable not found in PATH";
+				return;
+			}
+
 			bp::group g;
-			bp::spawn(GLOGIKS_DESKTOP_SERVICE_NAME, g);
+
+#if DEBUGGING_ON
+			if(GKLogging::GKDebug) {
+				bp::spawn(p, "-D", g);
+			}
+			else {
+				bp::spawn(p, g);
+			}
+#else
+			bp::spawn(p, g);
+#endif
+
 			g.wait();
 		}
 		catch (const bp::process_error & e) {
-			LOG(ERROR) << "exception catched while trying to spawn process: " << GLOGIKS_DESKTOP_SERVICE_NAME;
-			LOG(ERROR) << e.what();
+			LOG(error) << "exception catched while trying to spawn process: " << GLOGIKS_DESKTOP_SERVICE_NAME;
+			LOG(error) << e.what();
 		}
-
-		_lastCall = now;
 	}
 	else {
 		double nsec = static_cast<double>(timeLapse.count()) * steady::period::num / steady::period::den;
-		LOG(INFO) << "time lapse since last call : " << nsec << " seconds - ignoring";
+		LOG(info) << "time lapse since last call : " << nsec << " seconds - ignoring";
 	}
 }
 

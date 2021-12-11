@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -43,19 +43,16 @@ GKDBusEvents::GKDBusEvents(
 {
 }
 
-GKDBusEvents::~GKDBusEvents() {
+GKDBusEvents::~GKDBusEvents()
+{
+	GK_LOG_FUNC
+
 	for(const auto & busPair : _DBusEvents) {
-#if DEBUGGING_ON
-		LOG(DEBUG1) << "current bus: " << toUInt(toEnumType(busPair.first));
-#endif
+		GKLog2(trace, "current bus : ", toUInt(toEnumType(busPair.first)))
 		for(const auto & objectPair : busPair.second) {
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "object: " << objectPair.first;
-#endif
+			GKLog2(trace, "object : ", objectPair.first)
 			for(const auto & interfacePair : objectPair.second) {
-#if DEBUGGING_ON
-				LOG(DEBUG3) << "interface: " << interfacePair.first;
-#endif
+				GKLog2(trace, "interface : ", interfacePair.first)
 				for(auto & DBusEvent : interfacePair.second) { /* vector of pointers */
 					delete DBusEvent;
 				}
@@ -66,7 +63,8 @@ GKDBusEvents::~GKDBusEvents() {
 	_DBusEvents.clear();
 }
 
-const std::string & GKDBusEvents::getRootNode(void) const {
+const std::string & GKDBusEvents::getRootNode(void) const
+{
 	return _rootNode;
 }
 
@@ -119,6 +117,8 @@ void GKDBusEvents::removeInterface(
 	const char* eventObject,
 	const char* eventInterface) noexcept
 {
+	GK_LOG_FUNC
+
 	auto find_interface = [this, &eventBus, &eventObject, &eventInterface] () -> const bool {
 		if(_DBusEvents.count(eventBus) == 1) {
 			if(_DBusEvents[eventBus].count(eventObject) == 1) {
@@ -130,10 +130,8 @@ void GKDBusEvents::removeInterface(
 	};
 
 	if( find_interface() ) {
-#if DEBUGGING_ON
-		LOG(DEBUG2) << "removing interface: " << eventInterface
-					<< " from bus : " << toUInt(toEnumType(eventBus));
-#endif
+		GKLog4(trace, "removing interface : ", eventInterface, "from bus : ", toUInt(toEnumType(eventBus)))
+
 		auto & objectMap = _DBusEvents[eventBus][eventObject];
 		for(auto & DBusEvent : objectMap[eventInterface]) { /* vector of pointers */
 			// if event is a signal, build and remove signal rule match
@@ -147,9 +145,7 @@ void GKDBusEvents::removeInterface(
 		objectMap.erase(eventInterface);
 
 		if( objectMap.empty() ) {
-#if DEBUGGING_ON
-			LOG(DEBUG2) << "removing empty object: " << eventObject;
-#endif
+			GKLog2(trace, "removing empty object : ", eventObject)
 			_DBusEvents[eventBus].erase(eventObject);
 		}
 		else if( (objectMap.size() == 1) and
@@ -158,13 +154,16 @@ void GKDBusEvents::removeInterface(
 		}
 	}
 	else {
-		LOG(WARNING) << "Interface not found. bus: " << toUInt(toEnumType(eventBus))
+		LOG(warning) << "Interface not found. bus: " << toUInt(toEnumType(eventBus))
 			<< " - obj: " << eventObject
 			<< " - int: " << eventInterface;
 	}
 }
 
-const std::string GKDBusEvents::introspectRootNode(void) {
+const std::string GKDBusEvents::introspectRootNode(void)
+{
+	GK_LOG_FUNC
+
 	std::ostringstream xml;
 
 	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
@@ -180,7 +179,7 @@ const std::string GKDBusEvents::introspectRootNode(void) {
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "can't get current bus container";
+		LOG(warning) << "can't get current bus container";
 	}
 
 	xml << "</node>\n";
@@ -194,6 +193,8 @@ void GKDBusEvents::removeEvent(
 	const char* eventInterface,
 	const char* eventName)
 {
+	GK_LOG_FUNC
+
 	auto get_index = [this, &eventBus, &eventObject, &eventInterface, &eventName] () -> const std::size_t {
 		if(_DBusEvents.count(eventBus) == 1) {
 			if(_DBusEvents[eventBus].count(eventObject) == 1) {
@@ -205,7 +206,8 @@ void GKDBusEvents::removeEvent(
 						if( (*it)->eventName == eventName ) {
 							const std::size_t index = (it - vec.cbegin());
 #if DEBUGGING_ON
-							LOG(DEBUG2) << "searched event found. bus: "
+							// TODO GKDebug
+							LOG(trace) << "searched event found. bus: "
 								<< toUInt(toEnumType(eventBus))
 								<< " - obj: " << eventObject
 								<< " - int: " << eventInterface
@@ -236,7 +238,7 @@ void GKDBusEvents::removeEvent(
 		vec.erase(vec.begin() + index);
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(WARNING) << e.what()
+		LOG(warning) << e.what()
 			<< ". bus: " << toUInt(toEnumType(eventBus))
 			<< " - obj: " << eventObject
 			<< " - int: " << eventInterface
@@ -252,6 +254,8 @@ void GKDBusEvents::addEvent(
 	const char* eventInterface,
 	GKDBusEvent* event)
 {
+	GK_LOG_FUNC
+
 	if(event->introspectable) {
 		try {
 			const auto & bus = _DBusEvents.at(eventBus);
@@ -259,9 +263,7 @@ void GKDBusEvents::addEvent(
 			obj.at("org.freedesktop.DBus.Introspectable");
 		}
 		catch (const std::out_of_range& oor) {
-#if DEBUGGING_ON
-			LOG(DEBUG3) << "adding Introspectable object : " << eventObject;
-#endif
+			GKLog2(trace, "adding Introspectable object : ", eventObject)
 			this->EventGKDBusCallback<StringToString>::exposeEvent(
 				eventBus, nullptr, eventObject, "org.freedesktop.DBus.Introspectable", "Introspect",
 				{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
@@ -281,8 +283,8 @@ void GKDBusEvents::addEvent(
 void GKDBusEvents::openXMLInterface(
 	std::ostringstream & xml,
 	bool & interfaceOpened,
-	const std::string & interface
-) {
+	const std::string & interface)
+{
 	if( ! interfaceOpened ) {
 		xml << "  <interface name=\"" << interface << "\">\n";
 		interfaceOpened = true;
@@ -291,8 +293,8 @@ void GKDBusEvents::openXMLInterface(
 
 void GKDBusEvents::eventToXMLMethod(
 	std::ostringstream & xml,
-	const GKDBusEvent* DBusEvent
-) {
+	const GKDBusEvent* DBusEvent)
+{
 	if( DBusEvent->eventType == GKDBusEventType::GKDBUS_EVENT_METHOD ) {
 		xml << "    <method name=\"" << DBusEvent->eventName << "\">\n";
 		for(const auto & arg : DBusEvent->arguments) {
@@ -306,10 +308,11 @@ void GKDBusEvents::eventToXMLMethod(
 	}
 }
 
-const std::string GKDBusEvents::introspect(const std::string & askedObjectPath) {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "object path asked : " << askedObjectPath;
-#endif
+const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
+{
+	GK_LOG_FUNC
+
+	GKLog2(trace, "object path asked : ", askedObjectPath)
 
 	if( askedObjectPath == _rootNodePath )
 		return this->introspectRootNode();
@@ -371,7 +374,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath) 
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(WARNING) << "can't get current bus container";
+		LOG(warning) << "can't get current bus container";
 	}
 
 	xml << "</node>\n";
@@ -400,12 +403,14 @@ void GKDBusEvents::addSignalRuleMatch(
 	const char* interface,
 	const char* eventName) noexcept
 {
+	GK_LOG_FUNC
+
 	DBusConnection* connection = nullptr;
 	try {
 		connection = this->getConnection(eventBus);
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(WARNING) << e.what();
+		LOG(warning) << e.what();
 		return;
 	}
 
@@ -413,9 +418,8 @@ void GKDBusEvents::addSignalRuleMatch(
 
 	dbus_bus_add_match(connection, rule.c_str(), nullptr);
 	dbus_connection_flush(connection);
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "DBus Signal match rule added : " << eventName;
-#endif
+
+	GKLog2(trace, "added DBus signal match rule : ", eventName)
 }
 
 void GKDBusEvents::removeSignalRuleMatch(
@@ -424,12 +428,14 @@ void GKDBusEvents::removeSignalRuleMatch(
 	const char* interface,
 	const char* eventName) noexcept
 {
+	GK_LOG_FUNC
+
 	DBusConnection* connection = nullptr;
 	try {
 		connection = this->getConnection(eventBus);
 	}
 	catch ( const GLogiKExcept & e ) {
-		LOG(WARNING) << e.what();
+		LOG(warning) << e.what();
 		return;
 	}
 
@@ -437,9 +443,8 @@ void GKDBusEvents::removeSignalRuleMatch(
 
 	dbus_bus_remove_match(connection, rule.c_str(), nullptr);
 	dbus_connection_flush(connection);
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "DBus Signal match rule removed : " << eventName;
-#endif
+
+	GKLog2(trace, "removed DBus signal match rule : ", eventName)
 }
 
 /* -- */

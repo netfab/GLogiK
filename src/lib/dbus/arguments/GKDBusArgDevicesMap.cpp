@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -33,9 +33,10 @@ using namespace NSGKUtils;
  */
 const GLogiK::devices_map_type GKDBusArgumentDevicesMap::getNextDevicesMapArgument(void)
 {
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "rebuilding devices_map_type map from GKDBus values";
-#endif
+	GK_LOG_FUNC
+
+	GKLog(trace, "rebuilding devices_map_type map from GKDBus values")
+
 	GLogiK::devices_map_type devicesMap;
 
 	try {
@@ -55,13 +56,12 @@ const GLogiK::devices_map_type GKDBusArgumentDevicesMap::getNextDevicesMapArgume
 		while( ! GKDBusArgumentString::stringArguments.empty() );
 	}
 	catch ( const EmptyContainer & e ) {
-		LOG(WARNING) << "missing argument : " << e.what();
+		LOG(warning) << "missing argument : " << e.what();
 		throw GLogiKExcept("rebuilding devices_map_type map failed");
 	}
 
-#if DEBUGGING_ON
-	LOG(DEBUG3) << "devices_map_type map size : " << devicesMap.size();
-#endif
+	GKLog2(trace, "devices_map_type map size : ", devicesMap.size())
+
 	return devicesMap;
 }
 

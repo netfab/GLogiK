@@ -19,6 +19,8 @@
  *
  */
 
+#include <sstream>
+
 #include "lib/utils/utils.hpp"
 
 #include "PBMFile.hpp"
@@ -42,12 +44,12 @@ void PBMFile::readPBM(
 	const uint16_t PBMWidth,
 	const uint16_t PBMHeight)
 {
+	GK_LOG_FUNC
+
 	std::ifstream pbm;
 	pbm.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-#if DEBUGGING_ON
-	LOG(DEBUG2) << "opening : " << PBMPath;
-#endif
+	GKLog2(trace, "opening : ", PBMPath)
 
 	try {
 		try {
@@ -67,7 +69,10 @@ void PBMFile::readPBM(
 			pbm.close();
 		}
 		catch (const std::ios_base::failure & e) {
-			LOG(ERROR) << "error opening/reading/closing PBM file : " << e.what();
+			std::ostringstream buffer(std::ios_base::app);
+			buffer	<< "error opening/reading/closing PBM file : "
+					<< PBMPath << " : " << e.what();
+			GKSysLogError(buffer.str());
 			throw GLogiKExcept("PBM ifstream error");
 		}
 	}
@@ -93,6 +98,8 @@ void PBMFile::parsePBMHeader(
 	uint16_t & width,
 	uint16_t & height)
 {
+	GK_LOG_FUNC
+
 	const char white = 0x0a;
 	const char space = 0x20;
 	const char comment = 0x23;
@@ -108,9 +115,8 @@ void PBMFile::parsePBMHeader(
 		pbm.get(c);
 		if( c == comment) {
 			std::getline(pbm, ex, white);
-#if DEBUGGING_ON
-			LOG(DEBUG3)	<< "skipped PBM comment";
-#endif
+
+			GKLog(trace, "skipped PBM comment")
 		}
 		else pbm.unget();
 	}
@@ -121,9 +127,11 @@ void PBMFile::parsePBMHeader(
 	height = toUInt(ex);
 
 #if DEBUGGING_ON
-	LOG(DEBUG2)	<< "magic: " << magic
-				<< " - width: " << width
-				<< " - height: " << height << "\n";
+	if(GKLogging::GKDebug) {
+		LOG(trace)	<< "magic: " << magic
+					<< " - width: " << width
+					<< " - height: " << height;
+	}
 #endif
 }
 
@@ -131,12 +139,11 @@ void PBMFile::extractPBMData(
 	std::ifstream & pbm,
 	PixelsData & PBMData)
 {
+	GK_LOG_FUNC
+
 	pbm.read(reinterpret_cast<char*>(&PBMData.front()), PBMData.size());
 
-#if DEBUGGING_ON
-	LOG(DEBUG2)	<< "extracted bytes: " << pbm.gcount()
-				<< " - expected: " << PBMData.size() << std::endl;
-#endif
+	GKLog4(trace, "extracted bytes : ", pbm.gcount(), "expected : ", PBMData.size())
 
 	if( PBMData.size() != static_cast<PixelsData::size_type>( pbm.gcount() ) )
 		throw GLogiKExcept("unexpected numbers of bytes read");

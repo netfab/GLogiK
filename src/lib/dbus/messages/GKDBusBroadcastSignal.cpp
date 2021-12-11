@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -31,13 +31,15 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 GKDBusBroadcastSignal::GKDBusBroadcastSignal(
-	DBusConnection* connection,
+	DBusConnection* const connection,
 	const char* destination,	/* destination, if NULL, broadcast */
 	const char* objectPath,		/* the path to the object emitting the signal */
 	const char* interface,		/* interface the signal is emitted from */
 	const char* signal			/* name of signal */
 	) : GKDBusMessage(connection)
 {
+	GK_LOG_FUNC
+
 	if( ! dbus_validate_path(objectPath, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid object path");
 	if( ! dbus_validate_interface(interface, nullptr) )
@@ -51,7 +53,7 @@ GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 
 	if( destination != nullptr ) {
 #if DEBUG_GKDBUS_SUBOBJECTS
-		LOG(DEBUG2) << "prepare sending signal to " << destination;
+		GKLog2(trace, "prepare sending signal to ", destination)
 #endif
 		dbus_message_set_destination(_message, destination);
 	}
@@ -59,13 +61,16 @@ GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 	/* initialize potential arguments iterator */
 	dbus_message_iter_init_append(_message, &_itMessage);
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus signal initialized";
+	GKLog(trace, "DBus signal initialized")
 #endif
 }
 
-GKDBusBroadcastSignal::~GKDBusBroadcastSignal() {
+GKDBusBroadcastSignal::~GKDBusBroadcastSignal()
+{
+	GK_LOG_FUNC
+
 	if(_hosedMessage) {
-		LOG(WARNING) << "DBus hosed message, giving up";
+		LOG(warning) << "DBus hosed message, giving up";
 		dbus_message_unref(_message);
 		return;
 	}
@@ -73,14 +78,14 @@ GKDBusBroadcastSignal::~GKDBusBroadcastSignal() {
 	// TODO dbus_uint32_t serial;
 	if( ! dbus_connection_send(_connection, _message, nullptr) ) {
 		dbus_message_unref(_message);
-		LOG(ERROR) << "DBus signal sending failure";
+		LOG(error) << "DBus signal sending failure";
 		return;
 	}
 
 	dbus_connection_flush(_connection);
 	dbus_message_unref(_message);
 #if DEBUG_GKDBUS_SUBOBJECTS
-	LOG(DEBUG2) << "DBus signal sent";
+	GKLog(trace, "DBus signal sent")
 #endif
 }
 
@@ -111,11 +116,13 @@ void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 }
 
 void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
-	DBusConnection* connection,
+	DBusConnection* const connection,
 	const char* objectPath,
 	const char* interface,
 	const char* signal)
 {
+	GK_LOG_FUNC
+
 	if(_signal) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus signal already allocated");
 
@@ -123,7 +130,7 @@ void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 		_signal = new GKDBusBroadcastSignal(connection, nullptr, objectPath, interface, signal);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(ERROR) << "GKDBus broadcast signal allocation failure : " << e.what();
+		LOG(error) << "GKDBus broadcast signal allocation failure : " << e.what();
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
 }
@@ -146,25 +153,31 @@ void GKDBusMessageBroadcastSignal::appendStringVectorToBroadcastSignal(const std
 		_signal->appendStringVector(list);
 }
 
-void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void) {
+void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void)
+{
+	GK_LOG_FUNC
+
 	if(_signal) { /* sanity check */
 		delete _signal;
 		_signal = nullptr;
 	}
 	else {
-		LOG(WARNING) << "tried to send NULL signal";
+		LOG(warning) << "tried to send NULL signal";
 		throw GKDBusMessageWrongBuild("tried to send NULL signal");
 	}
 }
 
-void GKDBusMessageBroadcastSignal::abandonBroadcastSignal(void) {
+void GKDBusMessageBroadcastSignal::abandonBroadcastSignal(void)
+{
+	GK_LOG_FUNC
+
 	if(_signal) { /* sanity check */
 		_signal->abandon();
 		delete _signal;
 		_signal = nullptr;
 	}
 	else {
-		LOG(WARNING) << "tried to abandon NULL signal";
+		LOG(warning) << "tried to abandon NULL signal";
 	}
 }
 
