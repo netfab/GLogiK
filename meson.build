@@ -6,7 +6,7 @@ project(
 	'debug=false'
   ],
   license: 'GPL-3',
-  version: '0.8.13-git'
+  version: '0.8.14'
 )
 
 #! ----------

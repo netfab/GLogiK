@@ -1,5 +1,5 @@
 
-0.8.xx (2021-xx-xx)
+0.8.14 (2021-12-11)
 ===================
 - Fix autoreconf warning
 - Support >=dev-libs/hidapi-0.11. dev-libs/libusb is now mandatory to
