@@ -238,6 +238,7 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 		paddedRateString = getPaddedRateString(rateString, _lastRateStringSize);
 	}
 	catch (const GLogiKExcept & e) {
+		paddedRateString = getPaddedRateString(paddedRateString, _lastRateStringSize);
 		GKLog2(error, "network calculations error : ", e.what());
 	}
 
