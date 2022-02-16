@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -50,11 +50,8 @@ void BacklightColorTab::buildTab(void)
 {
 	GK_LOG_FUNC
 
-	QVBoxLayout* vBox = nullptr;
-	QHBoxLayout* hBox = nullptr;
-
 	try {
-		vBox = new QVBoxLayout(this);
+		QVBoxLayout* vBox = new QVBoxLayout(this);
 		GKLog(trace, "allocated QVBoxLayout")
 
 		this->setLayout(vBox);
@@ -80,40 +77,42 @@ void BacklightColorTab::buildTab(void)
 		vBox->addWidget( this->getHLine() );
 		/* -- -- -- */
 
-		hBox = new QHBoxLayout();
-		GKLog(trace, "allocated QHBoxLayout")
+		{
+			QHBoxLayout* hBox = new QHBoxLayout();
+			GKLog(trace, "allocated QHBoxLayout")
 
-		vBox->addLayout(hBox);
+			vBox->addLayout(hBox);
 
-		hBox->addWidget(new QLabel("Current backlight color : "));
+			hBox->addWidget(new QLabel("Current backlight color : "));
 
-		_pCurrentColorLabel = new QLabel();
-		hBox->addWidget(_pCurrentColorLabel);
-		_pCurrentColorLabel->setFixedSize(26, 26);
+			_pCurrentColorLabel = new QLabel();
+			_pCurrentColorLabel->setFixedSize(26, 26);
+			hBox->addWidget(_pCurrentColorLabel);
 
-		QColor initialColor(255, 255, 255);
-		this->setCurrentColorLabel(initialColor);
+			QColor initialColor(255, 255, 255);
+			this->setCurrentColorLabel(initialColor);
 
-		hBox->addStretch();
+			hBox->addStretch();
 
-		hBox->addWidget(new QLabel("New color : "));
+			hBox->addWidget(new QLabel("New color : "));
 
-		_pNewColorLabel = new QLabel();
-		hBox->addWidget(_pNewColorLabel);
-		_pNewColorLabel->setFixedSize(26, 26);
+			_pNewColorLabel = new QLabel();
+			_pNewColorLabel->setFixedSize(26, 26);
+			hBox->addWidget(_pNewColorLabel);
 
-		hBox->addSpacing(10);
+			hBox->addSpacing(10);
 
-		this->prepareApplyButton();
-		hBox->addWidget(_pApplyButton);
+			this->prepareApplyButton();
+			hBox->addWidget(_pApplyButton);
 
-		hBox->addSpacing(10);
+			hBox->addSpacing(10);
+
+			this->setNewColorLabel(initialColor);
+		}
 
 		/* -- -- -- */
 		vBox->addWidget( this->getHLine() );
 		/* -- -- -- */
-
-		this->setNewColorLabel(initialColor);
 
 		connect(_colorDialog, &QColorDialog::currentColorChanged, this, &BacklightColorTab::setNewColorLabel);
 	}
