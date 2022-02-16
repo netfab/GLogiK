@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -59,10 +59,8 @@ void LCDPluginsTab::buildTab(void)
 {
 	GK_LOG_FUNC
 
-	QVBoxLayout* vBox = nullptr;
-
 	try {
-		vBox = new QVBoxLayout(this);
+		QVBoxLayout* vBox = new QVBoxLayout(this);
 		GKLog(trace, "allocated QVBoxLayout")
 
 		this->setLayout(vBox);
@@ -77,43 +75,50 @@ void LCDPluginsTab::buildTab(void)
 		QVBoxLayout* scrollLayout = new QVBoxLayout();
 		mainFrame->setLayout(scrollLayout);
 
-		QScrollArea* scrollArea = new QScrollArea();
-		scrollLayout->addWidget(scrollArea);
+		{
+			QScrollArea* scrollArea = new QScrollArea();
+			scrollLayout->addWidget(scrollArea);
 
-		scrollArea->setWidgetResizable(true);
-		scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-		scrollLayout->setContentsMargins(0, 0, 0, 0);
+			scrollArea->setWidgetResizable(true);
+			scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+			scrollLayout->setContentsMargins(0, 0, 0, 0);
 
-		_pPluginsTable = new QTableWidget(0, 3);
-		scrollArea->setWidget(_pPluginsTable);
+			_pPluginsTable = new QTableWidget(0, 3);
 
-		const QStringList header = { "enabled", "name", "description" };
-		_pPluginsTable->setHorizontalHeaderLabels(header);
-		_pPluginsTable->horizontalHeader()->setStretchLastSection(true);
-		_pPluginsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-		_pPluginsTable->horizontalHeader()->setSectionsClickable(false);
-		_pPluginsTable->verticalHeader()->setVisible(false);
-		_pPluginsTable->setShowGrid(false);
-		_pPluginsTable->setSelectionMode(QAbstractItemView::NoSelection);
-		_pPluginsTable->setFocusPolicy(Qt::NoFocus);
+			{
+				const QStringList header = { "enabled", "name", "description" };
+				_pPluginsTable->setHorizontalHeaderLabels(header);
+				_pPluginsTable->horizontalHeader()->setStretchLastSection(true);
+				_pPluginsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+				_pPluginsTable->horizontalHeader()->setSectionsClickable(false);
+				_pPluginsTable->verticalHeader()->setVisible(false);
+				_pPluginsTable->setShowGrid(false);
+				_pPluginsTable->setSelectionMode(QAbstractItemView::NoSelection);
+				_pPluginsTable->setFocusPolicy(Qt::NoFocus);
+			}
+
+			scrollArea->setWidget(_pPluginsTable);
+		}
 
 		/* -- -- -- */
 		vBox->addWidget( this->getHLine() );
 
 		/* -- -- -- */
-		QHBoxLayout* hBox = new QHBoxLayout();
-		GKLog(trace, "allocated QHBoxLayout")
+		{
+			QHBoxLayout* hBox = new QHBoxLayout();
+			GKLog(trace, "allocated QHBoxLayout")
 
-		vBox->addLayout(hBox);
+			vBox->addLayout(hBox);
 
-		hBox->addSpacing(10);
-		hBox->addStretch();
+			hBox->addSpacing(10);
+			hBox->addStretch();
 
-		this->prepareApplyButton();
-		hBox->addWidget(_pApplyButton);
-		_pApplyButton->setEnabled(false);
+			this->prepareApplyButton();
+			hBox->addWidget(_pApplyButton);
+			_pApplyButton->setEnabled(false);
 
-		hBox->addSpacing(10);
+			hBox->addSpacing(10);
+		}
 
 		/* -- -- -- */
 		vBox->addWidget( this->getHLine() );
