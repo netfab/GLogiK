@@ -89,7 +89,7 @@ void BacklightColorTab::buildTab(void)
 			_pCurrentColorLabel->setFixedSize(26, 26);
 			hBox->addWidget(_pCurrentColorLabel);
 
-			QColor initialColor(255, 255, 255);
+			const QColor initialColor(255, 255, 255);
 			this->setCurrentColorLabel(initialColor);
 
 			hBox->addStretch();
