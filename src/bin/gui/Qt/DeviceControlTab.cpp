@@ -66,7 +66,7 @@ void DeviceControlTab::buildTab(void)
 
 		/* -- -- -- */
 
-		_deviceStatusLabel = new QLabel("aaaa");
+		_deviceStatusLabel = new QLabel("Device status : unknown");
 		vBox->addWidget(_deviceStatusLabel);
 
 		/* -- -- -- */
