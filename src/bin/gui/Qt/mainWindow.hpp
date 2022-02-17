@@ -43,6 +43,7 @@
 #include "DeviceControlTab.hpp"
 #include "BacklightColorTab.hpp"
 #include "LCDPluginsTab.hpp"
+#include "GKeysTab.hpp"
 
 namespace fs = boost::filesystem;
 
@@ -84,6 +85,7 @@ class MainWindow
 		DeviceControlTab* _deviceControlTab;
 		BacklightColorTab* _backlightColorTab;
 		LCDPluginsTab* _LCDPluginsTab;
+		GKeysTab* _GKeysTab;
 
 		int _statusBarTimeout;
 		pid_t _pid;

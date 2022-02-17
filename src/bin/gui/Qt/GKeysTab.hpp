@@ -19,49 +19,31 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_TAB_HPP_
-#define SRC_BIN_GUI_QT_TAB_HPP_
+#ifndef SRC_BIN_GUI_QT_GKEYS_TAB_HPP_
+#define SRC_BIN_GUI_QT_GKEYS_TAB_HPP_
 
-#include <QWidget>
-#include <QFrame>
-#include <QPushButton>
+#include <QString>
 
-#include "lib/dbus/GKDBus.hpp"
-
-#define LogRemoteCallFailure \
-	LOG(critical) << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
-#define LogRemoteCallGetReplyFailure \
-	LOG(error) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
+#include "Tab.hpp"
 
 namespace GLogiK
 {
 
-class Tab
-	:	public QWidget
+class GKeysTab
+	:	public Tab
 {
 	public:
-		Tab(NSGKDBus::GKDBus* pDBus)
-			:	_pDBus(pDBus),
-				_pApplyButton(nullptr)
-			{};
-		virtual ~Tab() = default;
-		Tab() = delete;
+		GKeysTab(
+			NSGKDBus::GKDBus* pDBus,
+			const QString & name
+		);
+		~GKeysTab();
 
-		virtual void buildTab(void) = 0;
-		virtual void updateTab(void) {};
-
-		QFrame* getHLine(void);
-		QFrame* getVLine(void);
-		const QPushButton* getApplyButton(void) const;
-
-	protected:
-		NSGKDBus::GKDBus* _pDBus;
-
-		QPushButton* _pApplyButton;
-
-		void prepareApplyButton(void);
+		void buildTab(void);
+		void updateTab(void);
 
 	private:
+		GKeysTab() = delete;
 };
 
 } // namespace GLogiK

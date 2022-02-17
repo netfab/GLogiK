@@ -210,13 +210,17 @@ void MainWindow::build(void)
 		_tabbedWidgets->addTab(_LCDPluginsTab, tr("LCD Screen Plugins"));
 		_LCDPluginsTab->buildTab();
 
-		//_tabbedWidgets->addTab(new QWidget(), tr("Macros"));
-		GKLog(trace, "allocated 4 tabs")
+		_GKeysTab = new GKeysTab(_pDBus, "GKeys");
+		_tabbedWidgets->addTab(_GKeysTab, tr("G-Keys"));
+		_GKeysTab->buildTab();
+
+		GKLog(trace, "allocated 5 tabs")
 
 		this->setTabEnabled("DaemonAndService", true);
 		this->setTabEnabled("DeviceControl", false);
 		this->setTabEnabled("BacklightColor", false);
 		this->setTabEnabled("LCDPlugins", false);
+		this->setTabEnabled("GKeys", false);
 
 		this->setCurrentTab("DaemonAndService");
 
@@ -504,6 +508,7 @@ void MainWindow::updateInterface(int index)
 			_deviceControlTab->disableAndHide();
 			this->setTabEnabled("BacklightColor", false);
 			this->setTabEnabled("LCDPlugins", false);
+			this->setTabEnabled("GKeys", false);
 			this->statusBar()->showMessage("Selected device : none", _statusBarTimeout);
 		}
 		else {
@@ -534,6 +539,7 @@ void MainWindow::updateInterface(int index)
 				}
 				this->setTabEnabled("BacklightColor", status);
 				this->setTabEnabled("LCDPlugins", status);
+				this->setTabEnabled("GKeys", status);
 			}
 			catch (const std::out_of_range& oor) {
 				std::string error("device not found in container : ");
