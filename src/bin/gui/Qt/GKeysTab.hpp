@@ -23,6 +23,9 @@
 #define SRC_BIN_GUI_QT_GKEYS_TAB_HPP_
 
 #include <QString>
+#include <QVBoxLayout>
+
+#include "lib/shared/deviceProperties.hpp"
 
 #include "Tab.hpp"
 
@@ -40,10 +43,15 @@ class GKeysTab
 		~GKeysTab();
 
 		void buildTab(void);
-		void updateTab(void);
+		void updateTab(
+			const DeviceProperties & device
+		);
+
 
 	private:
 		GKeysTab() = delete;
+
+		QVBoxLayout* _pGroupBoxLayout = nullptr;
 };
 
 } // namespace GLogiK

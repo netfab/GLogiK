@@ -536,6 +536,7 @@ void MainWindow::updateInterface(int index)
 					_backlightColorTab->updateTab(_openedConfigurationFile);
 
 					_LCDPluginsTab->updateTab(_devID, _openedConfigurationFile);
+					_GKeysTab->updateTab(_openedConfigurationFile);
 				}
 				this->setTabEnabled("BacklightColor", status);
 				this->setTabEnabled("LCDPlugins", status);
