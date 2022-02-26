@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -36,6 +36,27 @@ extern c_str CONST_STRING_UNKNOWN_DEVICE;
 extern c_str CONST_STRING_METHOD_CALL_FAILURE;
 extern c_str CONST_STRING_METHOD_REPLY_FAILURE;
 
+/*   G Keys */
+extern c_str G_KEY_G1;
+extern c_str G_KEY_G2;
+extern c_str G_KEY_G3;
+extern c_str G_KEY_G4;
+extern c_str G_KEY_G5;
+extern c_str G_KEY_G6;
+extern c_str G_KEY_G7;
+extern c_str G_KEY_G8;
+extern c_str G_KEY_G9;
+extern c_str G_KEY_G10;
+extern c_str G_KEY_G11;
+extern c_str G_KEY_G12;
+extern c_str G_KEY_G13;
+extern c_str G_KEY_G14;
+extern c_str G_KEY_G15;
+extern c_str G_KEY_G16;
+extern c_str G_KEY_G17;
+extern c_str G_KEY_G18;
+
+/* LCD Keys */
 extern c_str LCD_KEY_L1;
 extern c_str LCD_KEY_L2;
 extern c_str LCD_KEY_L3;

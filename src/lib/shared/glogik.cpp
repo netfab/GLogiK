@@ -3,7 +3,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -32,6 +32,27 @@ c_str CONST_STRING_UNKNOWN_DEVICE		= "unknown device : ";
 c_str CONST_STRING_METHOD_CALL_FAILURE	= " method call failure : ";
 c_str CONST_STRING_METHOD_REPLY_FAILURE	= " method reply failure : ";
 
+/*   G Keys */
+c_str G_KEY_G1  = "G1";
+c_str G_KEY_G2  = "G2";
+c_str G_KEY_G3  = "G3";
+c_str G_KEY_G4  = "G4";
+c_str G_KEY_G5  = "G5";
+c_str G_KEY_G6  = "G6";
+c_str G_KEY_G7  = "G7";
+c_str G_KEY_G8  = "G8";
+c_str G_KEY_G9  = "G9";
+c_str G_KEY_G10 = "G10";
+c_str G_KEY_G11 = "G11";
+c_str G_KEY_G12 = "G12";
+c_str G_KEY_G13 = "G13";
+c_str G_KEY_G14 = "G14";
+c_str G_KEY_G15 = "G15";
+c_str G_KEY_G16 = "G16";
+c_str G_KEY_G17 = "G17";
+c_str G_KEY_G18 = "G18";
+
+/* LCD Keys */
 c_str LCD_KEY_L1 = "L1";
 c_str LCD_KEY_L2 = "L2";
 c_str LCD_KEY_L3 = "L3";
