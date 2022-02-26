@@ -51,18 +51,15 @@ struct RKey
 	const unsigned char mask;
 	const Keys key;
 	const char* const name;
-	const bool isMacroKey;
 
 	RKey(	const uint16_t i,
 			const unsigned char m,
 			const Keys k,
-			const char* const n=nullptr,
-			const bool bMacro=false )
+			const char* const n=nullptr)
 		:	index(i),
 			mask(m),
 			key(k),
-			name(n),
-			isMacroKey(bMacro) {}
+			name(n) {}
 };
 
 struct MKeyLed
@@ -107,6 +104,7 @@ class G510Base
 
 	private:
 		static const std::vector<RKey> fiveBytesKeysMap;
+		static const std::vector<RKey>   GKeys5BytesMap;
 		static const std::vector<RKey> LCDKeys5BytesMap;
 		static const std::vector<RKey> twoBytesKeysMap;
 		static const std::vector<USBDeviceID> knownDevices;

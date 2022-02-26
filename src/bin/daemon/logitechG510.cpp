@@ -33,26 +33,6 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 const std::vector<RKey> G510Base::fiveBytesKeysMap = {
-	{1, 0x01, Keys::GK_KEY_G1,  "G1",  true},
-	{1, 0x02, Keys::GK_KEY_G2,  "G2",  true},
-	{1, 0x04, Keys::GK_KEY_G3,  "G3",  true},
-	{1, 0x08, Keys::GK_KEY_G4,  "G4",  true},
-	{1, 0x10, Keys::GK_KEY_G5,  "G5",  true},
-	{1, 0x20, Keys::GK_KEY_G6,  "G6",  true},
-	{1, 0x40, Keys::GK_KEY_G7,  "G7",  true},
-	{1, 0x80, Keys::GK_KEY_G8,  "G8",  true},
-
-	{2, 0x01, Keys::GK_KEY_G9,  "G9",  true},
-	{2, 0x02, Keys::GK_KEY_G10, "G10", true},
-	{2, 0x04, Keys::GK_KEY_G11, "G11", true},
-	{2, 0x08, Keys::GK_KEY_G12, "G12", true},
-	{2, 0x10, Keys::GK_KEY_G13, "G13", true},
-	{2, 0x20, Keys::GK_KEY_G14, "G14", true},
-	{2, 0x40, Keys::GK_KEY_G15, "G15", true},
-	{2, 0x80, Keys::GK_KEY_G16, "G16", true},
-
-	{3, 0x01, Keys::GK_KEY_G17, "G17", true},
-	{3, 0x02, Keys::GK_KEY_G18, "G18", true},
 //	{3, 0x04, Keys::GK_KEY_},
 	{3, 0x08, Keys::GK_KEY_LIGHT},
 	{3, 0x10, Keys::GK_KEY_M1},
@@ -63,6 +43,29 @@ const std::vector<RKey> G510Base::fiveBytesKeysMap = {
 	{4, 0x20, Keys::GK_KEY_MUTE_HEADSET},
 	{4, 0x40, Keys::GK_KEY_MUTE_MICRO},
 //	{4, 0x80, Keys::GK_KEY_},
+};
+
+const std::vector<RKey> G510Base::GKeys5BytesMap = {
+	{1, 0x01, Keys::GK_KEY_G1,  "G1"},
+	{1, 0x02, Keys::GK_KEY_G2,  "G2"},
+	{1, 0x04, Keys::GK_KEY_G3,  "G3"},
+	{1, 0x08, Keys::GK_KEY_G4,  "G4"},
+	{1, 0x10, Keys::GK_KEY_G5,  "G5"},
+	{1, 0x20, Keys::GK_KEY_G6,  "G6"},
+	{1, 0x40, Keys::GK_KEY_G7,  "G7"},
+	{1, 0x80, Keys::GK_KEY_G8,  "G8"},
+
+	{2, 0x01, Keys::GK_KEY_G9,  "G9"},
+	{2, 0x02, Keys::GK_KEY_G10, "G10"},
+	{2, 0x04, Keys::GK_KEY_G11, "G11"},
+	{2, 0x08, Keys::GK_KEY_G12, "G12"},
+	{2, 0x10, Keys::GK_KEY_G13, "G13"},
+	{2, 0x20, Keys::GK_KEY_G14, "G14"},
+	{2, 0x40, Keys::GK_KEY_G15, "G15"},
+	{2, 0x80, Keys::GK_KEY_G16, "G16"},
+
+	{3, 0x01, Keys::GK_KEY_G17, "G17"},
+	{3, 0x02, Keys::GK_KEY_G18, "G18"},
 };
 
 const std::vector<RKey> G510Base::LCDKeys5BytesMap = {
@@ -151,9 +154,8 @@ const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const
 const std::vector<std::string> & G510Base::getMacroKeysNames(void) const
 {
 	KeyboardDriver::macrosKeysNames.clear();
-	for (const auto & key : G510Base::fiveBytesKeysMap ) {
-		if( key.isMacroKey )
-			KeyboardDriver::macrosKeysNames.push_back(key.name);
+	for( const auto & key : G510Base::GKeys5BytesMap ) {
+		KeyboardDriver::macrosKeysNames.push_back(key.name);
 	}
 	return KeyboardDriver::macrosKeysNames;
 }
@@ -161,8 +163,8 @@ const std::vector<std::string> & G510Base::getMacroKeysNames(void) const
 /* return true if any macro key (G1-G18) is pressed  */
 const bool G510Base::checkMacroKey(USBDevice & device)
 {
-	for (const auto & key : G510Base::fiveBytesKeysMap ) {
-		if( key.isMacroKey and (device._pressedRKeysMask & toEnumType(key.key)) ) {
+	for( const auto & key : G510Base::GKeys5BytesMap ) {
+		if( device._pressedRKeysMask & toEnumType(key.key) ) {
 			device._macroKey = key.name;
 			return true;
 		}
@@ -261,6 +263,13 @@ void G510Base::processKeyEvent5Bytes(USBDevice & device)
 			device._pressedRKeysMask |= toEnumType(key.key);
 	}
 
+	/* G Keys */
+	for(const auto & key : G510Base::GKeys5BytesMap) {
+		if( device._pressedKeys[key.index] & key.mask )
+			device._pressedRKeysMask |= toEnumType(key.key);
+	}
+
+	/* LCD Keys */
 	for(const auto & key : G510Base::LCDKeys5BytesMap) {
 		if( device._pressedKeys[key.index] & key.mask )
 			device._pressedRKeysMask |= toEnumType(key.key);
