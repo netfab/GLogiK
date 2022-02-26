@@ -43,9 +43,9 @@ const std::vector<RKey> G510Base::fiveBytesKeysMap = {
 };
 
 const std::vector<RKey> G510Base::MKeys5BytesMap = {
-	{3, 0x10, Keys::GK_KEY_M1},
-	{3, 0x20, Keys::GK_KEY_M2},
-	{3, 0x40, Keys::GK_KEY_M3},
+	{3, 0x10, Keys::GK_KEY_M1,  M_KEY_M1},
+	{3, 0x20, Keys::GK_KEY_M2,  M_KEY_M2},
+	{3, 0x40, Keys::GK_KEY_M3,  M_KEY_M3},
 };
 
 const std::vector<RKey> G510Base::GKeys5BytesMap = {
