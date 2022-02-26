@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -60,14 +60,17 @@ const std::vector<RKey> G510Base::fiveBytesKeysMap = {
 	{3, 0x40, Keys::GK_KEY_M3},
 	{3, 0x80, Keys::GK_KEY_MR},
 
-	{4, 0x01, Keys::GK_KEY_L1, LCD_KEY_L1, false, true},
-	{4, 0x02, Keys::GK_KEY_L2, LCD_KEY_L2, false, true},
-	{4, 0x04, Keys::GK_KEY_L3, LCD_KEY_L3, false, true},
-	{4, 0x08, Keys::GK_KEY_L4, LCD_KEY_L4, false, true},
-	{4, 0x10, Keys::GK_KEY_L5, LCD_KEY_L5, false, true},
 	{4, 0x20, Keys::GK_KEY_MUTE_HEADSET},
 	{4, 0x40, Keys::GK_KEY_MUTE_MICRO},
 //	{4, 0x80, Keys::GK_KEY_},
+};
+
+const std::vector<RKey> G510Base::LCDKeys5BytesMap = {
+	{4, 0x01, Keys::GK_KEY_L1, LCD_KEY_L1},
+	{4, 0x02, Keys::GK_KEY_L2, LCD_KEY_L2},
+	{4, 0x04, Keys::GK_KEY_L3, LCD_KEY_L3},
+	{4, 0x08, Keys::GK_KEY_L4, LCD_KEY_L4},
+	{4, 0x10, Keys::GK_KEY_L5, LCD_KEY_L5},
 };
 
 const std::vector<RKey> G510Base::twoBytesKeysMap = {
@@ -182,8 +185,8 @@ const bool G510Base::checkMediaKey(USBDevice & device)
 /* return true if any LCD key is pressed */
 const bool G510Base::checkLCDKey(USBDevice & device)
 {
-	for (const auto & key : G510Base::fiveBytesKeysMap ) {
-		if( key.isLCDKey and device._pressedRKeysMask & toEnumType(key.key) ) {
+	for( const auto & key : G510Base::LCDKeys5BytesMap ) {
+		if( device._pressedRKeysMask & toEnumType(key.key) ) {
 			std::lock_guard<std::mutex> lock(device._LCDMutex);
 			device._LCDKey = key.name;
 			return true;
@@ -254,6 +257,11 @@ void G510Base::processKeyEvent5Bytes(USBDevice & device)
 	}
 
 	for (const auto & key : G510Base::fiveBytesKeysMap ) {
+		if( device._pressedKeys[key.index] & key.mask )
+			device._pressedRKeysMask |= toEnumType(key.key);
+	}
+
+	for(const auto & key : G510Base::LCDKeys5BytesMap) {
 		if( device._pressedKeys[key.index] & key.mask )
 			device._pressedRKeysMask |= toEnumType(key.key);
 	}

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -52,20 +52,17 @@ struct RKey
 	const Keys key;
 	const char* const name;
 	const bool isMacroKey;
-	const bool isLCDKey;
 
 	RKey(	const uint16_t i,
 			const unsigned char m,
 			const Keys k,
 			const char* const n=nullptr,
-			const bool bMacro=false,
-			const bool bLCD=false )
+			const bool bMacro=false )
 		:	index(i),
 			mask(m),
 			key(k),
 			name(n),
-			isMacroKey(bMacro),
-			isLCDKey(bLCD)	{}
+			isMacroKey(bMacro) {}
 };
 
 struct MKeyLed
@@ -110,6 +107,7 @@ class G510Base
 
 	private:
 		static const std::vector<RKey> fiveBytesKeysMap;
+		static const std::vector<RKey> LCDKeys5BytesMap;
 		static const std::vector<RKey> twoBytesKeysMap;
 		static const std::vector<USBDeviceID> knownDevices;
 
