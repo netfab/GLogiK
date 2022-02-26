@@ -32,7 +32,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-const std::vector<RKey> G510Base::fiveBytesKeysMap = {
+const std::vector<RKey> G510Base::keys5BytesMap = {
 //	{3, 0x04, Keys::GK_KEY_},
 	{3, 0x08, Keys::GK_KEY_LIGHT},
 	{3, 0x80, Keys::GK_KEY_MR},
@@ -261,7 +261,7 @@ void G510Base::processKeyEvent5Bytes(USBDevice & device)
 		return;
 	}
 
-	for (const auto & key : G510Base::fiveBytesKeysMap ) {
+	for(const auto & key : G510Base::keys5BytesMap) {
 		if( device._pressedKeys[key.index] & key.mask )
 			device._pressedRKeysMask |= toEnumType(key.key);
 	}

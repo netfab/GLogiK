@@ -103,7 +103,7 @@ class G510Base
 		virtual void setDeviceMxKeysLeds(USBDevice & device);
 
 	private:
-		static const std::vector<RKey> fiveBytesKeysMap;
+		static const std::vector<RKey>    keys5BytesMap;
 		static const std::vector<RKey>   MKeys5BytesMap;
 		static const std::vector<RKey>   GKeys5BytesMap;
 		static const std::vector<RKey> LCDKeys5BytesMap;
