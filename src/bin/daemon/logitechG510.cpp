@@ -35,14 +35,17 @@ using namespace NSGKUtils;
 const std::vector<RKey> G510Base::fiveBytesKeysMap = {
 //	{3, 0x04, Keys::GK_KEY_},
 	{3, 0x08, Keys::GK_KEY_LIGHT},
-	{3, 0x10, Keys::GK_KEY_M1},
-	{3, 0x20, Keys::GK_KEY_M2},
-	{3, 0x40, Keys::GK_KEY_M3},
 	{3, 0x80, Keys::GK_KEY_MR},
 
 	{4, 0x20, Keys::GK_KEY_MUTE_HEADSET},
 	{4, 0x40, Keys::GK_KEY_MUTE_MICRO},
 //	{4, 0x80, Keys::GK_KEY_},
+};
+
+const std::vector<RKey> G510Base::MKeys5BytesMap = {
+	{3, 0x10, Keys::GK_KEY_M1},
+	{3, 0x20, Keys::GK_KEY_M2},
+	{3, 0x40, Keys::GK_KEY_M3},
 };
 
 const std::vector<RKey> G510Base::GKeys5BytesMap = {
@@ -259,6 +262,12 @@ void G510Base::processKeyEvent5Bytes(USBDevice & device)
 	}
 
 	for (const auto & key : G510Base::fiveBytesKeysMap ) {
+		if( device._pressedKeys[key.index] & key.mask )
+			device._pressedRKeysMask |= toEnumType(key.key);
+	}
+
+	/* M Keys */
+	for(const auto & key : G510Base::MKeys5BytesMap) {
 		if( device._pressedKeys[key.index] & key.mask )
 			device._pressedRKeysMask |= toEnumType(key.key);
 	}

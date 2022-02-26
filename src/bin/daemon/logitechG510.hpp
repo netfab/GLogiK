@@ -104,6 +104,7 @@ class G510Base
 
 	private:
 		static const std::vector<RKey> fiveBytesKeysMap;
+		static const std::vector<RKey>   MKeys5BytesMap;
 		static const std::vector<RKey>   GKeys5BytesMap;
 		static const std::vector<RKey> LCDKeys5BytesMap;
 		static const std::vector<RKey> twoBytesKeysMap;
