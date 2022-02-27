@@ -51,11 +51,6 @@ struct RKey
 	const char* const name;
 	const uint16_t index;
 	const unsigned char mask;
-
-	RKey(
-		const Keys k, const char* const n,
-		const uint16_t i, const unsigned char m
-	) :	key(k), name(n), index(i), mask(m) {}
 };
 
 struct MKeyLed
