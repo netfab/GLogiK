@@ -47,19 +47,14 @@ namespace GLogiK
 /* RKey - Recognized Keys */
 struct RKey
 {
-	const uint16_t index;
-	const unsigned char mask;
 	const Keys key;
 	const char* const name;
+	const uint16_t index;
+	const unsigned char mask;
 
-	RKey(	const uint16_t i,
-			const unsigned char m,
-			const Keys k,
-			const char* const n)
-		:	index(i),
-			mask(m),
-			key(k),
-			name(n) {}
+	RKey(const uint16_t i, const unsigned char m,
+		 const Keys k, const char* const n)
+		 : key(k), name(n), index(i), mask(m) {}
 };
 
 struct MKeyLed
