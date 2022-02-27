@@ -33,13 +33,13 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 const std::vector<RKey> G510Base::keys5BytesMap = {
-//	{3, 0x04, Keys::GK_KEY_},
-	{3, 0x08, Keys::GK_KEY_LIGHT},
-	{3, 0x80, Keys::GK_KEY_MR},
+//	{3, 0x04, Keys::GK_KEY_, nullptr},
+	{3, 0x08, Keys::GK_KEY_LIGHT, nullptr},
+	{3, 0x80, Keys::GK_KEY_MR, nullptr},
 
-	{4, 0x20, Keys::GK_KEY_MUTE_HEADSET},
-	{4, 0x40, Keys::GK_KEY_MUTE_MICRO},
-//	{4, 0x80, Keys::GK_KEY_},
+	{4, 0x20, Keys::GK_KEY_MUTE_HEADSET, nullptr},
+	{4, 0x40, Keys::GK_KEY_MUTE_MICRO, nullptr},
+//	{4, 0x80, Keys::GK_KEY_, nullptr},
 };
 
 const std::vector<RKey> G510Base::MKeys5BytesMap = {

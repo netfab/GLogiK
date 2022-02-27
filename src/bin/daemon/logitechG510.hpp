@@ -55,7 +55,7 @@ struct RKey
 	RKey(	const uint16_t i,
 			const unsigned char m,
 			const Keys k,
-			const char* const n=nullptr)
+			const char* const n)
 		:	index(i),
 			mask(m),
 			key(k),
