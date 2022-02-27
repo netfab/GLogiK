@@ -98,7 +98,7 @@ class G510Base
 		static const std::vector<RKey>   MKeys5BytesMap;
 		static const std::vector<RKey>   GKeys5BytesMap;
 		static const std::vector<RKey> LCDKeys5BytesMap;
-		static const std::vector<RKey> twoBytesKeysMap;
+		static const std::vector<RKey> mediaKeys2BytesMap;
 		static const std::vector<USBDeviceID> knownDevices;
 
 		void processKeyEvent2Bytes(USBDevice & device);

@@ -79,7 +79,7 @@ const std::vector<RKey> G510Base::LCDKeys5BytesMap = {
 	{ Keys::GK_KEY_L5,	LCD_KEY_L5,	4,	1 << 4 },
 };
 
-const std::vector<RKey> G510Base::twoBytesKeysMap = {
+const std::vector<RKey> G510Base::mediaKeys2BytesMap = {
 	{ Keys::GK_KEY_AUDIO_NEXT,			XF86_AUDIO_NEXT,			1,	1 << 0 },
 	{ Keys::GK_KEY_AUDIO_PREV,			XF86_AUDIO_PREV,			1,	1 << 1 },
 	{ Keys::GK_KEY_AUDIO_STOP,			XF86_AUDIO_STOP,			1,	1 << 2 },
@@ -178,7 +178,7 @@ const bool G510Base::checkMacroKey(USBDevice & device)
 /* return true if any media key is pressed */
 const bool G510Base::checkMediaKey(USBDevice & device)
 {
-	for (const auto & key : G510Base::twoBytesKeysMap ) {
+	for( const auto & key : G510Base::mediaKeys2BytesMap ) {
 		if( device._pressedRKeysMask & toEnumType(key.key) ) {
 			device._mediaKey = key.name;
 			return true;
@@ -210,7 +210,7 @@ void G510Base::processKeyEvent2Bytes(USBDevice & device)
 	GK_LOG_FUNC
 
 	if (device._pressedKeys[0] == 0x02) {
-		for (const auto & key : G510Base::twoBytesKeysMap ) {
+		for( const auto & key : G510Base::mediaKeys2BytesMap ) {
 			if( device._pressedKeys[key.index] & key.mask )
 				device._pressedRKeysMask |= toEnumType(key.key);
 		}
