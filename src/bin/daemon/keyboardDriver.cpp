@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ using namespace NSGKUtils;
  */
 
 constexpr unsigned char KeyboardDriver::hidKeyboard[256];
-std::vector<std::string> KeyboardDriver::macrosKeysNames = {};
+std::vector<std::string> KeyboardDriver::keysNames = {};
 
 /* KEY_FOO from linux/input-event-codes.h */
 const std::vector< ModifierKey > KeyboardDriver::modifierKeys = {
@@ -89,8 +89,8 @@ const bool KeyboardDriver::checkDeviceCapability(const USBDeviceID & device, Cap
 
 const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void)
 {
-	KeyboardDriver::macrosKeysNames.clear();
-	return KeyboardDriver::macrosKeysNames;
+	KeyboardDriver::keysNames.clear();
+	return KeyboardDriver::keysNames;
 }
 
 KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device)
