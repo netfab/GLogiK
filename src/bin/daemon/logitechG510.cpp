@@ -33,61 +33,61 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 const std::vector<RKey> G510Base::keys5BytesMap = {
-//	{3, 0x04, Keys::GK_KEY_, nullptr},
-	{3, 0x08, Keys::GK_KEY_LIGHT, nullptr},
-	{3, 0x80, Keys::GK_KEY_MR, nullptr},
+//	{ Keys::GK_KEY_,				nullptr,	3, 0x04 },
+	{ Keys::GK_KEY_LIGHT,			nullptr,	3, 0x08 },
+	{ Keys::GK_KEY_MR,				nullptr,	3, 0x80 },
 
-	{4, 0x20, Keys::GK_KEY_MUTE_HEADSET, nullptr},
-	{4, 0x40, Keys::GK_KEY_MUTE_MICRO, nullptr},
-//	{4, 0x80, Keys::GK_KEY_, nullptr},
+	{ Keys::GK_KEY_MUTE_HEADSET,	nullptr,	4, 0x20 },
+	{ Keys::GK_KEY_MUTE_MICRO,		nullptr,	4, 0x40 },
+//	{ Keys::GK_KEY_,				nullptr,	4, 0x80 },
 };
 
 const std::vector<RKey> G510Base::MKeys5BytesMap = {
-	{3, 0x10, Keys::GK_KEY_M1,  M_KEY_M1},
-	{3, 0x20, Keys::GK_KEY_M2,  M_KEY_M2},
-	{3, 0x40, Keys::GK_KEY_M3,  M_KEY_M3},
+	{ Keys::GK_KEY_M1,	M_KEY_M1,	3, 0x10 },
+	{ Keys::GK_KEY_M2,	M_KEY_M2,	3, 0x20 },
+	{ Keys::GK_KEY_M3,	M_KEY_M3,	3, 0x40 },
 };
 
 const std::vector<RKey> G510Base::GKeys5BytesMap = {
-	{1, 0x01, Keys::GK_KEY_G1,  G_KEY_G1},
-	{1, 0x02, Keys::GK_KEY_G2,  G_KEY_G2},
-	{1, 0x04, Keys::GK_KEY_G3,  G_KEY_G3},
-	{1, 0x08, Keys::GK_KEY_G4,  G_KEY_G4},
-	{1, 0x10, Keys::GK_KEY_G5,  G_KEY_G5},
-	{1, 0x20, Keys::GK_KEY_G6,  G_KEY_G6},
-	{1, 0x40, Keys::GK_KEY_G7,  G_KEY_G7},
-	{1, 0x80, Keys::GK_KEY_G8,  G_KEY_G8},
+	{ Keys::GK_KEY_G1,	G_KEY_G1,	1, 0x01 },
+	{ Keys::GK_KEY_G2,	G_KEY_G2,	1, 0x02 },
+	{ Keys::GK_KEY_G3,	G_KEY_G3,	1, 0x04 },
+	{ Keys::GK_KEY_G4,	G_KEY_G4,	1, 0x08 },
+	{ Keys::GK_KEY_G5,	G_KEY_G5,	1, 0x10 },
+	{ Keys::GK_KEY_G6,	G_KEY_G6,	1, 0x20 },
+	{ Keys::GK_KEY_G7,	G_KEY_G7,	1, 0x40 },
+	{ Keys::GK_KEY_G8,	G_KEY_G8,	1, 0x80 },
 
-	{2, 0x01, Keys::GK_KEY_G9,  G_KEY_G9},
-	{2, 0x02, Keys::GK_KEY_G10, G_KEY_G10},
-	{2, 0x04, Keys::GK_KEY_G11, G_KEY_G11},
-	{2, 0x08, Keys::GK_KEY_G12, G_KEY_G12},
-	{2, 0x10, Keys::GK_KEY_G13, G_KEY_G13},
-	{2, 0x20, Keys::GK_KEY_G14, G_KEY_G14},
-	{2, 0x40, Keys::GK_KEY_G15, G_KEY_G15},
-	{2, 0x80, Keys::GK_KEY_G16, G_KEY_G16},
+	{ Keys::GK_KEY_G9,	G_KEY_G9,	2, 0x01 },
+	{ Keys::GK_KEY_G10,	G_KEY_G10,	2, 0x02 },
+	{ Keys::GK_KEY_G11,	G_KEY_G11,	2, 0x04 },
+	{ Keys::GK_KEY_G12,	G_KEY_G12,	2, 0x08 },
+	{ Keys::GK_KEY_G13,	G_KEY_G13,	2, 0x10 },
+	{ Keys::GK_KEY_G14,	G_KEY_G14,	2, 0x20 },
+	{ Keys::GK_KEY_G15,	G_KEY_G15,	2, 0x40 },
+	{ Keys::GK_KEY_G16,	G_KEY_G16,	2, 0x80 },
 
-	{3, 0x01, Keys::GK_KEY_G17, G_KEY_G17},
-	{3, 0x02, Keys::GK_KEY_G18, G_KEY_G18},
+	{ Keys::GK_KEY_G17,	G_KEY_G17,	3, 0x01 },
+	{ Keys::GK_KEY_G18,	G_KEY_G18,	3, 0x02 },
 };
 
 const std::vector<RKey> G510Base::LCDKeys5BytesMap = {
-	{4, 0x01, Keys::GK_KEY_L1, LCD_KEY_L1},
-	{4, 0x02, Keys::GK_KEY_L2, LCD_KEY_L2},
-	{4, 0x04, Keys::GK_KEY_L3, LCD_KEY_L3},
-	{4, 0x08, Keys::GK_KEY_L4, LCD_KEY_L4},
-	{4, 0x10, Keys::GK_KEY_L5, LCD_KEY_L5},
+	{ Keys::GK_KEY_L1,	LCD_KEY_L1,	4, 0x01 },
+	{ Keys::GK_KEY_L2,	LCD_KEY_L2,	4, 0x02 },
+	{ Keys::GK_KEY_L3,	LCD_KEY_L3,	4, 0x04 },
+	{ Keys::GK_KEY_L4,	LCD_KEY_L4,	4, 0x08 },
+	{ Keys::GK_KEY_L5,	LCD_KEY_L5,	4, 0x10 },
 };
 
 const std::vector<RKey> G510Base::twoBytesKeysMap = {
-	{1, 0x01, Keys::GK_KEY_AUDIO_NEXT,			XF86_AUDIO_NEXT},			/* XF86AudioNext */
-	{1, 0x02, Keys::GK_KEY_AUDIO_PREV,			XF86_AUDIO_PREV},			/* XF86AudioPrev */
-	{1, 0x04, Keys::GK_KEY_AUDIO_STOP,			XF86_AUDIO_STOP},			/* XF86AudioStop */
-	{1, 0x08, Keys::GK_KEY_AUDIO_PLAY,			XF86_AUDIO_PLAY},			/* XF86AudioPlay */
-	{1, 0x10, Keys::GK_KEY_AUDIO_MUTE,			XF86_AUDIO_MUTE},			/* XF86AudioMute */
-	{1, 0x20, Keys::GK_KEY_AUDIO_RAISE_VOLUME,	XF86_AUDIO_RAISE_VOLUME},	/* XF86AudioRaiseVolume */
-	{1, 0x40, Keys::GK_KEY_AUDIO_LOWER_VOLUME,	XF86_AUDIO_LOWER_VOLUME},	/* XF86AudioLowerVolume */
-//	{1, 0x80, Keys::GK_KEY_},
+	{ Keys::GK_KEY_AUDIO_NEXT,			XF86_AUDIO_NEXT,			1, 0x01 },
+	{ Keys::GK_KEY_AUDIO_PREV,			XF86_AUDIO_PREV,			1, 0x02 },
+	{ Keys::GK_KEY_AUDIO_STOP,			XF86_AUDIO_STOP,			1, 0x04 },
+	{ Keys::GK_KEY_AUDIO_PLAY,			XF86_AUDIO_PLAY,			1, 0x08 },
+	{ Keys::GK_KEY_AUDIO_MUTE,			XF86_AUDIO_MUTE,			1, 0x10 },
+	{ Keys::GK_KEY_AUDIO_RAISE_VOLUME,	XF86_AUDIO_RAISE_VOLUME,	1, 0x20 },
+	{ Keys::GK_KEY_AUDIO_LOWER_VOLUME,	XF86_AUDIO_LOWER_VOLUME,	1, 0x40 },
+//	{ Keys::GK_KEY_,					nullptr,					1, 0x80 },
 };
 
 const std::vector<MKeyLed> G510Base::ledsMask = {
