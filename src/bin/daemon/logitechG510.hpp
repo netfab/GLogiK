@@ -60,8 +60,8 @@ struct RKey
 
 struct MKeyLed
 {
-	Leds led;
-	unsigned char mask;
+	const Leds led;
+	const unsigned char mask;
 };
 
 
