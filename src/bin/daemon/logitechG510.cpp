@@ -163,6 +163,15 @@ const std::vector<std::string> & G510Base::getGKeysNames(void) const
 	return KeyboardDriver::keysNames;
 }
 
+const std::vector<std::string> & G510Base::getMKeysNames(void) const
+{
+	KeyboardDriver::keysNames.clear();
+	for( const auto & key : G510Base::MKeys5BytesMap ) {
+		KeyboardDriver::keysNames.push_back(key.name);
+	}
+	return KeyboardDriver::keysNames;
+}
+
 /* return true if any macro key (G1-G18) is pressed  */
 const bool G510Base::checkMacroKey(USBDevice & device)
 {
