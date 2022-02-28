@@ -154,7 +154,7 @@ const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const
 	return G510Base::knownDevices;
 }
 
-const std::vector<std::string> & G510Base::getMacroKeysNames(void) const
+const std::vector<std::string> & G510Base::getGKeysNames(void) const
 {
 	KeyboardDriver::keysNames.clear();
 	for( const auto & key : G510Base::GKeys5BytesMap ) {

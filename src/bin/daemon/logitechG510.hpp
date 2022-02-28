@@ -72,7 +72,7 @@ class G510Base
 		const char* getDriverName(void) const;
 		const uint16_t getDriverID(void) const;
 		const std::vector<USBDeviceID> & getSupportedDevices(void) const;
-		const std::vector<std::string> & getMacroKeysNames(void) const;
+		const std::vector<std::string> & getGKeysNames(void) const;
 
 		static const std::vector<MKeyLed> ledsMask;
 
@@ -139,8 +139,8 @@ class LogitechG510
 		const std::vector<USBDeviceID> & getSupportedDevices(void) const override {
 			return G510Base::getSupportedDevices();
 		}
-		const std::vector<std::string> & getMacroKeysNames(void) const override {
-			return G510Base::getMacroKeysNames();
+		const std::vector<std::string> & getGKeysNames(void) const override {
+			return G510Base::getGKeysNames();
 		}
 
 	private:
