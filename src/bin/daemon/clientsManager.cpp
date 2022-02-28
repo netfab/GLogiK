@@ -195,7 +195,7 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 		std::bind(&ClientsManager::getDeviceLCDPluginsProperties, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToStringsArray>::exposeMethod(
-		system_bus, DM_object, DM_interf, "GetDeviceMacroKeysNames",
+		system_bus, DM_object, DM_interf, "GetDeviceGKeysNames",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"as", "array_of_strings", dOUT, "string array of device macro keys names"} },
