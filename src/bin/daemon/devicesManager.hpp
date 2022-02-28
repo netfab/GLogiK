@@ -97,6 +97,8 @@ class DevicesManager
 		const banksMap_type & getDeviceMacrosBanks(const std::string & devID) const;
 		const std::vector<std::string> &
 			getDeviceGKeysNames(const std::string & devID) const;
+		const std::vector<std::string> &
+			getDeviceMKeysNames(const std::string & devID) const;
 		const std::string getDeviceStatus(const std::string & devID) const;
 
 	protected:
