@@ -109,7 +109,7 @@ void Client::initializeDevice(
 			pDevicesManager->getDeviceName(devID),			/* name */
 			pDevicesManager->getDeviceCapabilities(devID)	/* capabilities */
 		);
-		device.initMacrosBanks( pDevicesManager->getDeviceMacroKeysNames(devID) );
+		device.initMacrosBanks( pDevicesManager->getDeviceGKeysNames(devID) );
 
 		_devices[devID] = device;
 	}

@@ -891,7 +891,7 @@ const std::vector<std::string> &
 
 	try {
 		_connectedClients.at(clientID);
-		return _pDevicesManager->getDeviceMacroKeysNames(devID);
+		return _pDevicesManager->getDeviceGKeysNames(devID);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);

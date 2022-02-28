@@ -801,7 +801,7 @@ const banksMap_type & DevicesManager::getDeviceMacrosBanks(const std::string & d
 }
 
 const std::vector<std::string> &
-	DevicesManager::getDeviceMacroKeysNames(const std::string & devID) const
+	DevicesManager::getDeviceGKeysNames(const std::string & devID) const
 {
 	GK_LOG_FUNC
 
