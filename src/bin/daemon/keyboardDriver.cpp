@@ -50,7 +50,6 @@ using namespace NSGKUtils;
  */
 
 constexpr unsigned char KeyboardDriver::hidKeyboard[256];
-std::vector<std::string> KeyboardDriver::keysNames = {};
 
 /* KEY_FOO from linux/input-event-codes.h */
 const std::vector< ModifierKey > KeyboardDriver::modifierKeys = {

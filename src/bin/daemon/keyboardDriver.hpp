@@ -78,9 +78,6 @@ class KeyboardDriver
 	public:
 		virtual ~KeyboardDriver(void) = default;
 
-		/* --- */
-		static std::vector<std::string> keysNames;
-
 		static const bool checkDeviceCapability(const USBDeviceID & device, Caps toCheck);
 
 		/* --- */
@@ -111,8 +108,8 @@ class KeyboardDriver
 		) noexcept;
 
 		virtual const std::vector<USBDeviceID> & getSupportedDevices(void) const = 0;
-		virtual const std::vector<std::string> & getGKeysNames(void) const = 0;
-		virtual const std::vector<std::string> & getMKeysNames(void) const = 0;
+		virtual const std::vector<std::string> getGKeysNames(void) const = 0;
+		virtual const std::vector<std::string> getMKeysNames(void) const = 0;
 
 	protected:
 		KeyboardDriver(void) = default;

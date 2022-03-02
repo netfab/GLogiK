@@ -154,22 +154,22 @@ const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const
 	return G510Base::knownDevices;
 }
 
-const std::vector<std::string> & G510Base::getGKeysNames(void) const
+const std::vector<std::string> G510Base::getGKeysNames(void) const
 {
-	KeyboardDriver::keysNames.clear();
+	std::vector<std::string> ret;
 	for( const auto & key : G510Base::GKeys5BytesMap ) {
-		KeyboardDriver::keysNames.push_back(key.name);
+		ret.push_back(key.name);
 	}
-	return KeyboardDriver::keysNames;
+	return ret;
 }
 
-const std::vector<std::string> & G510Base::getMKeysNames(void) const
+const std::vector<std::string> G510Base::getMKeysNames(void) const
 {
-	KeyboardDriver::keysNames.clear();
+	std::vector<std::string> ret;
 	for( const auto & key : G510Base::MKeys5BytesMap ) {
-		KeyboardDriver::keysNames.push_back(key.name);
+		ret.push_back(key.name);
 	}
-	return KeyboardDriver::keysNames;
+	return ret;
 }
 
 /* return true if any macro key (G1-G18) is pressed  */
