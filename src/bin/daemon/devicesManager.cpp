@@ -800,7 +800,7 @@ const banksMap_type & DevicesManager::getDeviceMacrosBanks(const std::string & d
 	return MacrosBanks::emptyMacrosBanks;
 }
 
-const std::vector<std::string> &
+const std::vector<std::string>
 	DevicesManager::getDeviceGKeysNames(const std::string & devID) const
 {
 	GK_LOG_FUNC
@@ -835,10 +835,11 @@ const std::vector<std::string> &
 		}
 	}
 
-	return KeyboardDriver::getEmptyStringVector();
+	std::vector<std::string> ret;
+	return ret;
 }
 
-const std::vector<std::string> &
+const std::vector<std::string>
 	DevicesManager::getDeviceMKeysNames(const std::string & devID) const
 {
 	GK_LOG_FUNC
@@ -873,7 +874,8 @@ const std::vector<std::string> &
 		}
 	}
 
-	return KeyboardDriver::getEmptyStringVector();
+	std::vector<std::string> ret;
+	return ret;
 }
 
 void DevicesManager::resetDevicesStates(void)

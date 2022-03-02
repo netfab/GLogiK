@@ -884,7 +884,7 @@ const macro_type & ClientsManager::getDeviceMacro(
 	return MacrosBanks::emptyMacro;
 }
 
-const std::vector<std::string> &
+const std::vector<std::string>
 	ClientsManager::getDeviceGKeysNames(
 		const std::string & clientID,
 		const std::string & devID)
@@ -904,10 +904,11 @@ const std::vector<std::string> &
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
-	return KeyboardDriver::getEmptyStringVector();
+	std::vector<std::string> ret;
+	return ret;
 }
 
-const std::vector<std::string> &
+const std::vector<std::string>
 	ClientsManager::getDeviceMKeysNames(
 		const std::string & clientID,
 		const std::string & devID)
@@ -927,7 +928,8 @@ const std::vector<std::string> &
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
-	return KeyboardDriver::getEmptyStringVector();
+	std::vector<std::string> ret;
+	return ret;
 }
 
 const bool ClientsManager::setDeviceMacrosBank(

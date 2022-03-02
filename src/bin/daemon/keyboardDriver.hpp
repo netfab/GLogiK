@@ -82,7 +82,6 @@ class KeyboardDriver
 		static std::vector<std::string> keysNames;
 
 		static const bool checkDeviceCapability(const USBDeviceID & device, Caps toCheck);
-		static const std::vector<std::string> & getEmptyStringVector(void);
 
 		/* --- */
 		const bool getDeviceThreadsStatus(const std::string & devID) const;

@@ -87,12 +87,6 @@ const bool KeyboardDriver::checkDeviceCapability(const USBDeviceID & device, Cap
 	return (device.getCapabilities() & toEnumType(toCheck));
 }
 
-const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void)
-{
-	KeyboardDriver::keysNames.clear();
-	return KeyboardDriver::keysNames;
-}
-
 KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device)
 {
 	GK_LOG_FUNC
