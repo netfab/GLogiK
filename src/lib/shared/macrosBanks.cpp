@@ -92,10 +92,7 @@ void MacrosBanks::clearMacro(
 	const uint8_t bankID,
 	const std::string & keyName)
 {
-	if(bankID > BankID::BANK_M3)
-		throw GLogiKExcept("wrong bankID value");
-
-	const BankID id = static_cast<BankID>(bankID);
+	const BankID id = this->getBankID(bankID);
 
 	this->clearMacro(id, keyName);
 }
@@ -132,10 +129,7 @@ void MacrosBanks::setMacro(
 	const std::string & keyName,
 	const macro_type & macro)
 {
-	if(bankID > BankID::BANK_M3)
-		throw GLogiKExcept("wrong bankID value");
-
-	const BankID id = static_cast<BankID>(bankID);
+	const BankID id = this->getBankID(bankID);
 
 	this->setMacro(id, keyName, macro);
 }
@@ -144,10 +138,8 @@ const macro_type & MacrosBanks::getMacro(const uint8_t bankID, const std::string
 {
 	GK_LOG_FUNC
 
-	if(bankID > BankID::BANK_M3)
-		throw GLogiKExcept("wrong bankID value");
+	const BankID id = this->getBankID(bankID);
 
-	const BankID id = static_cast<BankID>(bankID);
 	try {
 		return _macrosBanks[id].at(keyName);
 	}
@@ -163,10 +155,7 @@ const macro_type & MacrosBanks::getMacro(const uint8_t bankID, const std::string
 
 void MacrosBanks::resetMacrosBank(const uint8_t bankID)
 {
-	if(bankID > BankID::BANK_M3)
-		throw GLogiKExcept("wrong bankID value");
-
-	const BankID id = static_cast<BankID>(bankID);
+	const BankID id = this->getBankID(bankID);
 
 	this->resetMacrosBank(id);
 }
@@ -176,6 +165,16 @@ void MacrosBanks::resetMacrosBank(const BankID bankID)
 	for(auto & keyMacroPair : _macrosBanks[bankID]) {
 		keyMacroPair.second.clear();
 	}
+}
+
+const BankID MacrosBanks::getBankID(const uint8_t num) const
+{
+	if(num > BankID::BANK_M3)
+		throw GLogiKExcept("wrong bankID value");
+
+	const BankID id = static_cast<BankID>(num);
+
+	return id;
 }
 
 } // namespace GLogiK

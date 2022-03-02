@@ -40,7 +40,6 @@ namespace GLogiK
 class MacrosBanks
 {
 	public:
-
 		static const macro_type emptyMacro;
 		static const banksMap_type emptyMacrosBanks;
 
@@ -97,6 +96,8 @@ class MacrosBanks
 		};
 
 	private:
+		const BankID getBankID(const uint8_t num) const;
+
 };
 
 } // namespace GLogiK
