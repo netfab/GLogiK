@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -43,7 +43,10 @@ class MacrosBanks
 		static const macro_type emptyMacro;
 		static const banksMap_type emptyMacrosBanks;
 
-		void initMacrosBanks(const std::vector<std::string> & keysNames);
+		void initMacrosBanks(
+			const uint8_t numBanks,
+			const std::vector<std::string> & keysNames
+		);
 
 		const banksMap_type & getMacrosBanks(void) const;
 		void setMacrosBanks(const banksMap_type & macrosBanks);
@@ -88,12 +91,7 @@ class MacrosBanks
 			ar & _macrosBanks;
 		}
 
-		banksMap_type _macrosBanks = {
-			{ BankID::BANK_M0, {}},
-			{ BankID::BANK_M1, {}},
-			{ BankID::BANK_M2, {}},
-			{ BankID::BANK_M3, {}}
-		};
+		banksMap_type _macrosBanks;
 
 	private:
 		const BankID getBankID(const uint8_t num) const;

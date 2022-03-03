@@ -518,38 +518,53 @@ void DevicesHandler::setDeviceProperties(
 	}
 
 	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-		/* initialize macro keys */
-		remoteMethod = "GetDeviceGKeysNames";
 
-		try {
-			_pDBus->initializeRemoteMethodCall(
-				_systemBus,
-				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				remoteMethod.c_str()
-			);
-			_pDBus->appendStringToRemoteMethodCall(_clientID);
-			_pDBus->appendStringToRemoteMethodCall(devID);
-
-			_pDBus->sendRemoteMethodCall();
+		auto getStringArray = [&] (const std::string & remoteMethod)
+			-> const std::vector<std::string>
+		{
+			std::vector<std::string> keysNames;
 
 			try {
-				_pDBus->waitForRemoteMethodCallReply();
+				_pDBus->initializeRemoteMethodCall(
+					_systemBus,
+					GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+					remoteMethod.c_str()
+				);
+				_pDBus->appendStringToRemoteMethodCall(_clientID);
+				_pDBus->appendStringToRemoteMethodCall(devID);
 
-				const std::vector<std::string> keysNames( _pDBus->getStringsArray() );
-				device.initMacrosBanks(keysNames);
+				_pDBus->sendRemoteMethodCall();
 
-				GKLog3(trace, devID, " number of initialized macro keys : ", keysNames.size())
+				try {
+					_pDBus->waitForRemoteMethodCallReply();
+
+					keysNames = _pDBus->getStringsArray();
+				}
+				catch (const GLogiKExcept & e) {
+					LogRemoteCallGetReplyFailure
+				}
 			}
-			catch (const GLogiKExcept & e) {
-				LogRemoteCallGetReplyFailure
+			catch (const GKDBusMessageWrongBuild & e) {
+				_pDBus->abandonRemoteMethodCall();
+				LogRemoteCallFailure
 			}
-		}
-		catch (const GKDBusMessageWrongBuild & e) {
-			_pDBus->abandonRemoteMethodCall();
-			LogRemoteCallFailure
-		}
+
+			return keysNames;
+		};
+
+		/* initialize macro keys banks */
+		remoteMethod = "GetDeviceMKeysNames";
+
+		const std::vector<std::string> MKeysNames( getStringArray(remoteMethod) );
+		GKLog3(trace, devID, " number of M-keys banks : ", MKeysNames.size())
+
+		remoteMethod = "GetDeviceGKeysNames";
+		const std::vector<std::string> GKeysNames( getStringArray(remoteMethod) );
+		GKLog3(trace, devID, " number of G-keys per bank : ", GKeysNames.size())
+
+		device.initMacrosBanks(MKeysNames.size(), GKeysNames);
 	}
 
 	/* search a configuration file */

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -34,23 +34,66 @@ using namespace NSGKUtils;
 const macro_type MacrosBanks::emptyMacro = {};
 const banksMap_type MacrosBanks::emptyMacrosBanks = {};
 
-MacrosBanks::MacrosBanks() {
+MacrosBanks::MacrosBanks()
+{
 }
 
-MacrosBanks::~MacrosBanks() {
+MacrosBanks::~MacrosBanks()
+{
 }
 
-void MacrosBanks::initMacrosBanks(const std::vector<std::string> & keysNames) {
+void MacrosBanks::initMacrosBanks(
+	const uint8_t numBanks,
+	const std::vector<std::string> & keysNames)
+{
 	GK_LOG_FUNC
 
-	macro_type macro;
-	for( const auto & name : keysNames ) {
-		for(auto & idBankPair : _macrosBanks) {
-			idBankPair.second.insert( std::pair<const std::string, macro_type>(name, macro));
+	GKLog4(trace, "numBanks: ", toUInt(numBanks), "numKeys: ", keysNames.size())
+
+	for(unsigned int bankID = 0; bankID <= toUInt(numBanks); ++bankID) {
+		try {
+			const BankID id = this->getBankID(bankID);
+
+			{
+				/* XXX - c++17 structured bindings */
+				typedef std::pair<banksMap_type::iterator, bool> bankInsRet;
+				bankInsRet ret = _macrosBanks.insert( std::pair<const BankID, mBank_type>(id, {}) );
+				if( ! ret.second )
+					throw GLogiKExcept("bank insert failure");
+			}
+
+			unsigned short insertedKeys = 0;
+
+			for(const auto & name : keysNames) {
+				/* XXX - c++17 structured bindings */
+				typedef std::pair<mBank_type::iterator, bool> keyInsRet;
+
+				auto insertStatus = [&insertedKeys] (const keyInsRet & r) -> void
+				{
+					if(r.second) {
+						insertedKeys++;
+						//GKLog2(trace, "inserted key: ", r.first->first)
+					}
+					else {
+						LOG(error) << "failed to insert key: " << r.first->first;
+					}
+				};
+
+				keyInsRet insKey = _macrosBanks[id].insert(
+					std::pair<const std::string, macro_type>(
+						name, MacrosBanks::emptyMacro
+					)
+				);
+
+				insertStatus(insKey);
+			}
+
+			GKLog4(trace, "bank id: ", bankID, "number of initialized G-keys: ", insertedKeys)
+		}
+		catch(const GLogiKExcept & e) {
+			LOG(error) << "bank id: " << bankID << " - failed to initialize: " << e.what();
 		}
 	}
-
-	GKLog2(trace, "initialized macro keys : ", keysNames.size())
 }
 
 const banksMap_type & MacrosBanks::getMacrosBanks(void) const
