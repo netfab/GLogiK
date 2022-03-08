@@ -22,10 +22,16 @@
 #ifndef SRC_BIN_GUI_QT_GKEYS_TAB_HPP_
 #define SRC_BIN_GUI_QT_GKEYS_TAB_HPP_
 
+#include <map>
+
 #include <QString>
 #include <QVBoxLayout>
 
 #include "lib/shared/deviceProperties.hpp"
+#include "lib/shared/glogik.hpp"
+#include "lib/utils/utils.hpp"
+
+#include "include/base.hpp"
 
 #include "Tab.hpp"
 
@@ -52,6 +58,8 @@ class GKeysTab
 		GKeysTab() = delete;
 
 		QVBoxLayout* _pGroupBoxLayout = nullptr;
+
+		static const std::map<const MKeysID, c_str> bankNames;
 };
 
 } // namespace GLogiK

@@ -32,6 +32,8 @@
 #include <type_traits>
 #include <chrono>
 
+#include "GKLogging.hpp"
+
 namespace NSGKUtils
 {
 
@@ -39,6 +41,21 @@ template <typename T>
 constexpr typename std::underlying_type<T>::type toEnumType(T obj) noexcept
 {
 	return static_cast<typename std::underlying_type<T>::type>(obj);
+}
+
+template <typename Iterator>
+const size_t safeAdvance(Iterator & it, const Iterator & end,
+	const std::size_t n)
+{
+	std::size_t i = 0;
+	for(; i != n ; ++i)
+	{
+		it++;
+		if(it == end)
+			break;
+	}
+	GKLog2(trace, "undone steps: ", (n - i))
+	return (n - i);
 }
 
 const std::string toString(const char* s);

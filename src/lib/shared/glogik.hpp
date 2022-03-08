@@ -43,6 +43,7 @@ extern c_str CONST_STRING_METHOD_CALL_FAILURE;
 extern c_str CONST_STRING_METHOD_REPLY_FAILURE;
 
 /*   M Keys */
+extern c_str M_KEY_M0;
 extern c_str M_KEY_M1;
 extern c_str M_KEY_M2;
 extern c_str M_KEY_M3;

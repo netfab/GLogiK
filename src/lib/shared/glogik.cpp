@@ -37,6 +37,7 @@ c_str CONST_STRING_METHOD_CALL_FAILURE	= " method call failure : ";
 c_str CONST_STRING_METHOD_REPLY_FAILURE	= " method reply failure : ";
 
 /*   M Keys */
+c_str M_KEY_M0  = "M0"; // virtual key
 c_str M_KEY_M1  = "M1";
 c_str M_KEY_M2  = "M2";
 c_str M_KEY_M3  = "M3";

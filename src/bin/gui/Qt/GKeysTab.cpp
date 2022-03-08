@@ -19,6 +19,8 @@
  *
  */
 
+#include <string>
+
 #include <QHBoxLayout>
 #include <QGroupBox>
 #include <QLayoutItem>
@@ -31,6 +33,13 @@ namespace GLogiK
 {
 
 using namespace NSGKUtils;
+
+const std::map<const MKeysID, c_str> GKeysTab::bankNames = {
+	{MKeysID::MKEY_M0, M_KEY_M0},
+	{MKeysID::MKEY_M1, M_KEY_M1},
+	{MKeysID::MKEY_M2, M_KEY_M2},
+	{MKeysID::MKEY_M3, M_KEY_M3},
+};
 
 GKeysTab::GKeysTab(
 	NSGKDBus::GKDBus* pDBus,
@@ -50,8 +59,13 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 
 	GKLog(trace, "updating GKeysTab")
 
+	unsigned int layoutNum = 0;
+
+	/* -- -- -- */
+
 	auto clearLayout = [] (QLayout* mainLayout) -> void {
-		std::function<void (QLayout*) > clearQLayout = [&](QLayout* parentLayout)
+		std::function<void (QLayout*)> clearQLayout =
+			[&clearQLayout](QLayout* parentLayout) -> void
 		{
 			if(parentLayout == nullptr)
 				return;
@@ -98,21 +112,51 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		clearQLayout(mainLayout);
 	};
 
-	auto newButtonsLayout = [] (
-				const QString & layout, const QString & button1,
-				const QString & button2, const QString & button3) -> QHBoxLayout*
+	auto nextLayoutName = [&layoutNum] () -> const QString
 	{
-		auto newButton = [] (const QString & text) -> QPushButton* {
-			QPushButton* b = new QPushButton(text);
-			b->setObjectName(text);
-			b->setFixedWidth(32);
-			GKLog2(trace, "allocated QPushButton ", text.toStdString())
-			return b;
-		};
+		QString layoutName("hBox ");
+		layoutName += std::to_string(layoutNum).c_str();
+		layoutNum++;
+		return layoutName;
+	};
 
+	auto newButton = [] (const QString & text) -> QPushButton* {
+		QPushButton* b = new QPushButton(text);
+		b->setObjectName(text);
+		b->setFixedWidth(32);
+		GKLog2(trace, "allocated QPushButton ", text.toStdString())
+		return b;
+	};
+
+	auto newBanksLayout = [&nextLayoutName, &newButton] (
+		const std::vector<MKeysID> & banks ) -> QHBoxLayout*
+	{
 		QHBoxLayout* hBox = new QHBoxLayout();
-		hBox->setObjectName(layout);
-		GKLog2(trace, "allocated QHBoxLayout ", layout.toStdString())
+
+		hBox->setObjectName( nextLayoutName() );
+		GKLog2(trace, "allocated QHBoxLayout ", hBox->objectName().toStdString())
+
+		for(const auto & id : banks) {
+			if(id == MKeysID::MKEY_M0)
+				continue; // skip virtual M0 key
+
+			auto n = bankNames.at(id);
+			hBox->addWidget( newButton( n ) );
+			GKLog2(trace, "allocated M-key bank button: ", n)
+		}
+
+		return hBox;
+	};
+
+	auto newButtonsLayout = [&nextLayoutName, &newButton] (
+				const QString & button1,
+				const QString & button2,
+				const QString & button3) -> QHBoxLayout*
+	{
+		QHBoxLayout* hBox = new QHBoxLayout();
+
+		hBox->setObjectName( nextLayoutName() );
+		GKLog2(trace, "allocated QHBoxLayout ", hBox->objectName().toStdString())
 
 		hBox->addWidget( newButton(button1) );
 		hBox->addWidget( newButton(button2) );
@@ -123,11 +167,57 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 
 	/* -- -- -- */
 
+	const MKeysID currentID = MKeysID::MKEY_M0; // TODO
+	const unsigned short keysPerLine = 3;	// TODO
+
+	const banksMap_type & banks = device.getMacrosBanks();
+
+	const mBank_type & bank = banks.at(currentID);
+
+	if( (bank.size() % keysPerLine) != 0 )
+		throw GLogiKExcept("G-Keys modulo not null");
+
+	/* -- -- -- */
+
 	clearLayout(_pGroupBoxLayout);
 
 	try {
-		_pGroupBoxLayout->addLayout( newButtonsLayout("hBox 1", "G1", "G2", "G3") );
-		_pGroupBoxLayout->addLayout( newButtonsLayout("hBox 2", "G4", "G5", "G6") );
+		{	// initialize M-keys layout
+			std::vector<MKeysID> ids;
+			for(const auto & idBankPair : banks) {
+				const MKeysID & bankID = idBankPair.first;
+				ids.push_back(bankID);
+			}
+
+			_pGroupBoxLayout->addLayout( newBanksLayout(ids) );
+		}
+
+		_pGroupBoxLayout->addSpacing(10);
+
+		/* G-keys */
+		for(unsigned short i = 0; i < (bank.size() / keysPerLine); ++i)
+		{
+			mBank_type::const_iterator it1 = bank.begin();
+			if(safeAdvance(it1, bank.end(), i*keysPerLine) != 0)
+				throw GLogiKExcept("wrong G-Keys offset");
+
+			auto it2 = it1;
+			if(safeAdvance(it2, bank.end(), 1) != 0)
+				throw GLogiKExcept("wrong second G-Key");
+
+			auto it3 = it2;
+			if(safeAdvance(it3, bank.end(), 1) != 0)
+				throw GLogiKExcept("wrong third G-Key");
+
+			const QString key1(getGKeyName(it1->first).c_str());
+			const QString key2(getGKeyName(it2->first).c_str());
+			const QString key3(getGKeyName(it3->first).c_str());
+
+			_pGroupBoxLayout->addLayout(
+				newButtonsLayout(key1, key2, key3)
+			);
+		}
+
 		_pGroupBoxLayout->addStretch();
 	}
 	catch (const std::bad_alloc& e) {
