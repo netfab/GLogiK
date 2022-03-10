@@ -106,10 +106,10 @@ class DevicesManager
 	private:
 		const std::string _unknown;
 		std::vector<KeyboardDriver*> _drivers;
-		std::map<const std::string, USBDeviceID> _detectedDevices;
-		std::map<const std::string, USBDeviceID> _startedDevices;
-		std::map<const std::string, USBDeviceID> _stoppedDevices;
-		std::map<const std::string, USBDeviceID> _unpluggedDevices;
+		std::map<std::string, USBDeviceID> _detectedDevices;
+		std::map<std::string, USBDeviceID> _startedDevices;
+		std::map<std::string, USBDeviceID> _stoppedDevices;
+		std::map<std::string, USBDeviceID> _unpluggedDevices;
 
 #if GKDBUS
 		NSGKDBus::GKDBus* _pDBus;

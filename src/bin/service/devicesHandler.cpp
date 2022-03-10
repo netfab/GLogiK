@@ -109,10 +109,10 @@ const devices_files_map_t DevicesHandler::getDevicesMap(void)
 {
 	devices_files_map_t ret;
 	for(const auto & dev : _startedDevices) {
-		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
+		ret.insert( std::pair<std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
 	}
 	for(const auto & dev : _stoppedDevices) {
-		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
+		ret.insert( std::pair<std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
 	}
 	return ret;
 }

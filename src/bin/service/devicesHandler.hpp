@@ -43,7 +43,7 @@
 #define LogRemoteCallGetReplyFailure \
 	LOG(error) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
 
-typedef std::map<const std::string, const std::string> devices_files_map_t;
+typedef std::map<std::string, const std::string> devices_files_map_t;
 
 namespace fs = boost::filesystem;
 
@@ -100,8 +100,8 @@ class DevicesHandler
 		NSGKUtils::FileSystem* _pGKfs;
 		const NSGKDBus::BusConnection _systemBus;
 
-		std::map<const std::string, DeviceProperties> _startedDevices;
-		std::map<const std::string, DeviceProperties> _stoppedDevices;
+		std::map<std::string, DeviceProperties> _startedDevices;
+		std::map<std::string, DeviceProperties> _stoppedDevices;
 
 		void setDeviceProperties(
 			const std::string & devID,

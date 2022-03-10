@@ -59,7 +59,7 @@ class ClientsManager
 		DevicesManager* _pDevicesManager;
 
 		const std::string _active;
-		std::map<const std::string, Client*> _connectedClients;
+		std::map<std::string, Client*> _connectedClients;
 
 		/* internal counter of active clients used
 		 * in ::updateClientState()

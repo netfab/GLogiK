@@ -145,7 +145,7 @@ class KeyboardDriver
 		std::mutex _threadsMutex;
 
 		std::vector<std::thread> _threads;
-		std::map<const std::string, USBDevice> _initializedDevices;
+		std::map<std::string, USBDevice> _initializedDevices;
 
 #if DEBUGGING_ON && DEBUG_KEYS
 		const std::string getBytes(const USBDevice & device) const;

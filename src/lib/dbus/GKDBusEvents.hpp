@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -94,9 +94,9 @@ class GKDBusEvents
 
 		thread_local static BusConnection currentBus;
 
-		std::map< const BusConnection,
-			std::map< const std::string, /* object */
-				std::map< const std::string, /* interface */
+		std::map<BusConnection,
+			std::map<std::string, /* object */
+				std::map<std::string, /* interface */
 					std::vector<GKDBusEvent*> > > > _DBusEvents;
 
 		const std::string & getRootNode(void) const;
@@ -107,9 +107,9 @@ class GKDBusEvents
 		std::string _rootNodePath;
 		std::set<std::string> _DBusInterfaces;
 
-		std::map< const BusConnection,
-			std::map< const std::string, /* object */
-				std::map< const std::string, /* interface */
+		std::map<BusConnection,
+			std::map<std::string, /* object */
+				std::map<std::string, /* interface */
 					std::vector<GKDBusIntrospectableSignal> > > > _DBusIntrospectableSignals;
 
 		virtual DBusConnection* const getConnection(BusConnection wantedConnection) const = 0;

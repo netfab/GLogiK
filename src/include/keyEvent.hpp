@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -103,9 +103,12 @@ inline const bool operator > (const uint8_t value, const BankID bankID)
 	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(bankID)));
 }
 
+// macro
 typedef std::vector<KeyEvent> macro_type;
-typedef std::map<const std::string, macro_type> mBank_type;		/* macros bank */
-typedef std::map<const BankID, mBank_type> banksMap_type;		/* banks map container */
+// macros bank
+typedef std::map<std::string, macro_type> mBank_type;
+// banks map container
+typedef std::map<BankID, mBank_type> banksMap_type;
 
 } // namespace GLogiK
 
