@@ -48,7 +48,6 @@ namespace GLogiK
 struct RKey
 {
 	const Keys key;
-	const char* const name;
 	const uint16_t index;
 	const unsigned char mask;
 };

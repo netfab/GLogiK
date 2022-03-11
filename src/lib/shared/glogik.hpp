@@ -22,6 +22,11 @@
 #ifndef SRC_LIB_SHARED_GLOGIK_HPP_
 #define SRC_LIB_SHARED_GLOGIK_HPP_
 
+#include <string>
+#include <map>
+
+#include "include/enums.hpp"
+
 #define GLOGIKS_DESKTOP_SERVICE_NAME "GLogiKs"
 
 namespace GLogiK
@@ -67,6 +72,29 @@ extern c_str LCD_KEY_L2;
 extern c_str LCD_KEY_L3;
 extern c_str LCD_KEY_L4;
 extern c_str LCD_KEY_L5;
+
+/* --- ---- --- */
+
+extern c_str XF86_AUDIO_NEXT;
+extern c_str XF86_AUDIO_PREV;
+extern c_str XF86_AUDIO_STOP;
+extern c_str XF86_AUDIO_PLAY;
+extern c_str XF86_AUDIO_MUTE;
+extern c_str XF86_AUDIO_RAISE_VOLUME;
+extern c_str XF86_AUDIO_LOWER_VOLUME;
+
+/* --- ---- --- */
+
+extern c_str KEY_LIGHT;
+extern c_str M_KEY_MR;
+extern c_str MUTE_HEADSET;
+extern c_str MUTE_MICRO;
+
+/* --- ---- --- */
+
+extern const std::map<Keys, c_str> keysNamesMap;
+
+const std::string getKeyName(const Keys key);
 
 /* --- ---- --- *
  * -- GKDBus -- *
@@ -117,16 +145,6 @@ extern c_str GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME;
 extern c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT;
 extern c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH;
 extern c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE;
-
-/* --- ---- --- */
-
-extern c_str XF86_AUDIO_NEXT;
-extern c_str XF86_AUDIO_PREV;
-extern c_str XF86_AUDIO_STOP;
-extern c_str XF86_AUDIO_PLAY;
-extern c_str XF86_AUDIO_MUTE;
-extern c_str XF86_AUDIO_RAISE_VOLUME;
-extern c_str XF86_AUDIO_LOWER_VOLUME;
 
 } // namespace GLogiK
 

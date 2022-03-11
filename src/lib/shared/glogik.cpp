@@ -20,6 +20,10 @@
  *
  */
 
+#include <stdexcept>
+
+#include "lib/utils/utils.hpp"
+
 #include "glogik.hpp"
 
 namespace GLogiK
@@ -63,6 +67,82 @@ c_str LCD_KEY_L2 = "L2";
 c_str LCD_KEY_L3 = "L3";
 c_str LCD_KEY_L4 = "L4";
 c_str LCD_KEY_L5 = "L5";
+
+c_str XF86_AUDIO_NEXT			= "XF86AudioNext";
+c_str XF86_AUDIO_PREV			= "XF86AudioPrev";
+c_str XF86_AUDIO_STOP			= "XF86AudioStop";
+c_str XF86_AUDIO_PLAY			= "XF86AudioPlay";
+c_str XF86_AUDIO_MUTE			= "XF86AudioMute";
+c_str XF86_AUDIO_RAISE_VOLUME	= "XF86AudioRaiseVolume";
+c_str XF86_AUDIO_LOWER_VOLUME	= "XF86AudioLowerVolume";
+
+/* --- ---- --- */
+
+c_str KEY_LIGHT     = "";
+c_str M_KEY_MR		= "";
+c_str MUTE_HEADSET	= "";
+c_str MUTE_MICRO	= "";
+
+/* --- ---- --- */
+
+const std::map<Keys, c_str> keysNamesMap = {
+  { Keys::GK_KEY_M1, M_KEY_M1 },
+  { Keys::GK_KEY_M2, M_KEY_M2 },
+  { Keys::GK_KEY_M3, M_KEY_M3 },
+  /* -- */
+  { Keys::GK_KEY_G1, G_KEY_G1 },
+  { Keys::GK_KEY_G2, G_KEY_G2 },
+  { Keys::GK_KEY_G3, G_KEY_G3 },
+  { Keys::GK_KEY_G4, G_KEY_G4 },
+  { Keys::GK_KEY_G5, G_KEY_G5 },
+  { Keys::GK_KEY_G6, G_KEY_G6 },
+  { Keys::GK_KEY_G7, G_KEY_G7 },
+  { Keys::GK_KEY_G8, G_KEY_G8 },
+  { Keys::GK_KEY_G9, G_KEY_G9 },
+  { Keys::GK_KEY_G10, G_KEY_G10 },
+  { Keys::GK_KEY_G11, G_KEY_G11 },
+  { Keys::GK_KEY_G12, G_KEY_G12 },
+  { Keys::GK_KEY_G13, G_KEY_G13 },
+  { Keys::GK_KEY_G14, G_KEY_G14 },
+  { Keys::GK_KEY_G15, G_KEY_G15 },
+  { Keys::GK_KEY_G16, G_KEY_G16 },
+  { Keys::GK_KEY_G17, G_KEY_G17 },
+  { Keys::GK_KEY_G18, G_KEY_G18 },
+  /* -- */
+  { Keys::GK_KEY_L1, LCD_KEY_L1 },
+  { Keys::GK_KEY_L2, LCD_KEY_L2 },
+  { Keys::GK_KEY_L3, LCD_KEY_L3 },
+  { Keys::GK_KEY_L4, LCD_KEY_L4 },
+  { Keys::GK_KEY_L5, LCD_KEY_L5 },
+  /* -- */
+  { Keys::GK_KEY_AUDIO_NEXT,            XF86_AUDIO_NEXT },
+  { Keys::GK_KEY_AUDIO_PREV,            XF86_AUDIO_PREV },
+  { Keys::GK_KEY_AUDIO_STOP,			XF86_AUDIO_STOP },
+  { Keys::GK_KEY_AUDIO_PLAY,			XF86_AUDIO_PLAY },
+  { Keys::GK_KEY_AUDIO_MUTE,			XF86_AUDIO_MUTE },
+  { Keys::GK_KEY_AUDIO_RAISE_VOLUME,	XF86_AUDIO_RAISE_VOLUME },
+  { Keys::GK_KEY_AUDIO_LOWER_VOLUME,	XF86_AUDIO_LOWER_VOLUME },
+  /* -- */
+  { Keys::GK_KEY_LIGHT,         KEY_LIGHT },
+  { Keys::GK_KEY_MR,            M_KEY_MR },
+  { Keys::GK_KEY_MUTE_HEADSET,  MUTE_HEADSET },
+  { Keys::GK_KEY_MUTE_MICRO,    MUTE_MICRO },
+};
+
+const std::string getKeyName(const Keys key)
+{
+  using namespace NSGKUtils;
+
+  std::string ret("");
+  try {
+    ret = keysNamesMap.at(key);
+  }
+  catch (const std::out_of_range& oor) {
+    LOG(error) << "invalid key: " << toEnumType(key);
+  }
+
+  return ret;
+}
 
 /* --- ---- --- *
  * -- GKDBus -- *
@@ -115,14 +195,6 @@ c_str GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME					= "com.glogik.qt5gui";
 c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT						= "GUISessionMessageHandler";
 c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH					= "/com/glogik/qt5gui/GUISessionMessageHandler";
 c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE						= "com.glogik.qt5gui.GUISessionMessageHandler";
-
-c_str XF86_AUDIO_NEXT			= "XF86AudioNext";
-c_str XF86_AUDIO_PREV			= "XF86AudioPrev";
-c_str XF86_AUDIO_STOP			= "XF86AudioStop";
-c_str XF86_AUDIO_PLAY			= "XF86AudioPlay";
-c_str XF86_AUDIO_MUTE			= "XF86AudioMute";
-c_str XF86_AUDIO_RAISE_VOLUME	= "XF86AudioRaiseVolume";
-c_str XF86_AUDIO_LOWER_VOLUME	= "XF86AudioLowerVolume";
 
 } // namespace GLogiK
 
