@@ -992,13 +992,10 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 				std::ostringstream buffer(std::ios_base::app);
 				buffer	<< "Virtual " << device.getFullName() << " " << device.getID();
 
-				device.setMacrosManager(
-					new MacrosManager(
-						buffer.str().c_str(),
-						this->getMKeysNames().size(),
-						this->getGKeysNames()
-					)
-				);
+				MacrosManager* mm = new MacrosManager(buffer.str());
+				mm->initMacrosBanks(this->getMKeysNames().size(), this->getGKeysNames());
+
+				device.setMacrosManager(mm);
 			}
 			catch (const std::bad_alloc& e) { /* handle new() failure */
 				throw GLogiKBadAlloc("macros manager allocation failure");

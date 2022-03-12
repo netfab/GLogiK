@@ -34,14 +34,10 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-MacrosManager::MacrosManager(
-	const char* virtualKeyboardName,
-	const uint8_t numBanks,
-	const std::vector<std::string> & keysNames)
+MacrosManager::MacrosManager(const std::string & virtualKeyboardName)
 		:	_virtualKeyboard(virtualKeyboardName),
 			_currentBankID(BankID::BANK_M0)
 {
-	this->initMacrosBanks(numBanks, keysNames);
 }
 
 MacrosManager::~MacrosManager()

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #ifndef SRC_BIN_DAEMON_VIRTUAL_KEYBOARD_HPP_
 #define SRC_BIN_DAEMON_VIRTUAL_KEYBOARD_HPP_
 
+#include <string>
+
 #include <libevdev/libevdev.h>
 #include <libevdev/libevdev-uinput.h>
 
@@ -33,7 +35,7 @@ namespace GLogiK
 class VirtualKeyboard
 {
 	public:
-		VirtualKeyboard(const char* deviceName);
+		VirtualKeyboard(const std::string & deviceName);
 		~VirtualKeyboard();
 
 		void sendKeyEvent(const KeyEvent & key);

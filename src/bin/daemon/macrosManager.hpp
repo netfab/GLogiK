@@ -22,8 +22,6 @@
 #ifndef SRC_BIN_DAEMON_MACROS_MANAGER_HPP_
 #define SRC_BIN_DAEMON_MACROS_MANAGER_HPP_
 
-#include <cstdint>
-
 #include <vector>
 #include <string>
 
@@ -48,11 +46,7 @@ struct MacroEvent {
 class MacrosManager : public MacrosBanks
 {
 	public:
-		MacrosManager(
-			const char* virtualKeyboardName,
-			const uint8_t numBanks,
-			const std::vector<std::string> & keysNames
-		);
+		MacrosManager(const std::string & virtualKeyboardName);
 		~MacrosManager();
 
 		void setCurrentMacrosBankID(BankID bankID);
