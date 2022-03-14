@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -121,14 +121,6 @@ typedef std::function<
 			void(
 				const std::vector<std::string> &
 			) > StringsArrayToVoid;
-
-typedef std::function<
-			const GLogiK::macro_type &(
-				const std::string&,
-				const std::string&,
-				const std::string&,
-				const uint8_t
-			) > ThreeStringsOneByteToMacro;
 
 typedef std::function<
 			const GLogiK::macro_type (
@@ -401,12 +393,6 @@ template <>
 
 template <>
 	void GKDBusCallbackEvent<StringsArrayToVoid>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	);
-
-template <>
-	void GKDBusCallbackEvent<ThreeStringsOneByteToMacro>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);
