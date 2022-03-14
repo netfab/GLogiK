@@ -393,7 +393,7 @@ template <>
 	try {
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
 		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
-		const uint8_t arg3 = this->getNextByteArgument();
+		const uint8_t arg3 = GKDBusArgumentByte::getNextByteArgument();
 
 		/* call two strings one byte to bool callback */
 		ret = this->callback(arg1, arg2, arg3);
@@ -436,9 +436,9 @@ template <>
 	try {
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
 		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
-		const uint8_t arg3 = this->getNextByteArgument();
-		const uint8_t arg4 = this->getNextByteArgument();
-		const uint8_t arg5 = this->getNextByteArgument();
+		const uint8_t arg3 = GKDBusArgumentByte::getNextByteArgument();
+		const uint8_t arg4 = GKDBusArgumentByte::getNextByteArgument();
+		const uint8_t arg5 = GKDBusArgumentByte::getNextByteArgument();
 
 		/* call two strings three bytes to bool callback */
 		ret = this->callback(arg1, arg2, arg3, arg4, arg5);
@@ -589,7 +589,7 @@ template <>
 	try {
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
 		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
-		const uint8_t arg3 = this->getNextByteArgument();
+		const uint8_t arg3 = GKDBusArgumentByte::getNextByteArgument();
 		const GLogiK::mBank_type arg4 = this->getNextMacrosBankArgument();
 
 		/* call two strings one byte one MacrosBank(mBank_type) to bool callback */
@@ -632,8 +632,8 @@ template <>
 	try {
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
 		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
-		const uint8_t arg3 = this->getNextByteArgument();
-		const uint64_t arg4 = this->getNextUInt64Argument();
+		const uint8_t arg3 = GKDBusArgumentByte::getNextByteArgument();
+		const uint64_t arg4 = GKDBusArgumentUInt64::getNextUInt64Argument();
 
 		/* call two strings one byte one UInt64_t to bool callback */
 		ret = this->callback(arg1, arg2, arg3, arg4);
