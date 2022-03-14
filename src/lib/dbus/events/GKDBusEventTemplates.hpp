@@ -43,6 +43,7 @@
 #include "lib/dbus/arguments/GKDBusArgString.hpp"
 #include "lib/dbus/arguments/GKDBusArgByte.hpp"
 #include "lib/dbus/arguments/GKDBusArgUInt64.hpp"
+#include "lib/dbus/arguments/GKDBusArgMKeysID.hpp"
 #include "lib/dbus/arguments/GKDBusArgMacrosBank.hpp"
 
 
@@ -128,6 +129,14 @@ typedef std::function<
 				const std::string&,
 				const uint8_t
 			) > ThreeStringsOneByteToMacro;
+
+typedef std::function<
+			const GLogiK::macro_type (
+				const std::string&,
+				const std::string&,
+				const std::string&,
+				const GLogiK::MKeysID
+			) > GetDeviceMacro;
 
 typedef std::function<
 			const GLogiK::LCDPluginsPropertiesArray_type &(
@@ -398,6 +407,12 @@ template <>
 
 template <>
 	void GKDBusCallbackEvent<ThreeStringsOneByteToMacro>::runCallback(
+		DBusConnection* const connection,
+		DBusMessage* message
+	);
+
+template <>
+	void GKDBusCallbackEvent<GetDeviceMacro>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);

@@ -25,6 +25,8 @@ libGKDBus_la_SOURCES = \
 	%D%/arguments/GKDBusArgUInt16.hpp \
 	%D%/arguments/GKDBusArgUInt64.cpp \
 	%D%/arguments/GKDBusArgUInt64.hpp \
+	%D%/arguments/GKDBusArgMKeysID.cpp \
+	%D%/arguments/GKDBusArgMKeysID.hpp \
 	%D%/arguments/GKDBusArgMacro.cpp \
 	%D%/arguments/GKDBusArgMacro.hpp \
 	%D%/arguments/GKDBusArgMacrosBank.cpp \

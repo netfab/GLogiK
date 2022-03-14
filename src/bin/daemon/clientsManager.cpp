@@ -147,7 +147,7 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 			{"b", "did_restart_succeeded", dOUT, "did the RestartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<ThreeStringsOneByteToMacro>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<GetDeviceMacro>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceMacro",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
@@ -847,7 +847,7 @@ const macro_type & ClientsManager::getDeviceMacro(
 	const std::string & clientID,
 	const std::string & devID,
 	const std::string & keyName,
-	const uint8_t bankID)
+	const MKeysID bankID)
 {
 
 	GK_LOG_FUNC
@@ -858,7 +858,7 @@ const macro_type & ClientsManager::getDeviceMacro(
 	)
 	GKLog4(trace,
 		"key : ", keyName,
-		"bankID : ", toUInt(bankID)
+		"bankID : ", bankID
 	)
 
 	try {
@@ -866,8 +866,9 @@ const macro_type & ClientsManager::getDeviceMacro(
 
 		if(pClient->getSessionCurrentState() == _active) {
 			if( pClient->isReady() ) {
+				const uint8_t id = toEnumType(bankID); // FIXME
 				pClient->syncDeviceMacrosBanks(devID, _pDevicesManager->getDeviceMacrosBanks(devID));
-				return pClient->getDeviceMacro(devID, keyName, bankID);
+				return pClient->getDeviceMacro(devID, keyName, id);
 			}
 			else {
 				GKSysLogWarning("getting device macro not allowed while client not ready");

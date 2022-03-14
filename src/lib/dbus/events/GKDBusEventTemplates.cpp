@@ -534,6 +534,50 @@ template <>
 }
 
 template <>
+	void GKDBusCallbackEvent<GetDeviceMacro>::runCallback(
+		DBusConnection* const connection,
+		DBusMessage* message
+	)
+{
+	GKDBusArgumentString::fillInArguments(message);
+
+	GLogiK::macro_type ret;
+
+	try {
+		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg3( GKDBusArgumentString::getNextStringArgument() );
+		const GLogiK::MKeysID arg4 = GKDBusArgumentMKeysID::getNextMKeysIDArgument();
+
+		/* call GetDeviceMacro callback */
+		ret = this->callback(arg1, arg2, arg3, arg4);
+	}
+	catch ( const GLogiKExcept & e ) {
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
+	}
+
+	/* signals don't send reply */
+	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+		return;
+
+	try {
+		this->initializeReply(connection, message);
+		this->appendMacroToReply(ret);
+
+		this->appendAsyncArgsToReply();
+	}
+	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
+		this->sendReplyError(connection, message, e.what());
+		return;
+	}
+
+	/* delete reply object if allocated */
+	this->sendReply();
+}
+
+template <>
 	void GKDBusCallbackEvent<TwoStringsToLCDPluginsPropertiesArray>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message

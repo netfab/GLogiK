@@ -12,6 +12,8 @@ GKDBus_sources = [
 	'arguments/GKDBusArgUInt16.hpp',
 	'arguments/GKDBusArgUInt64.cpp',
 	'arguments/GKDBusArgUInt64.hpp',
+	'arguments/GKDBusArgMKeysID.cpp',
+	'arguments/GKDBusArgMKeysID.hpp',
 	'arguments/GKDBusArgMacro.cpp',
 	'arguments/GKDBusArgMacro.hpp',
 	'arguments/GKDBusArgMacrosBank.cpp',

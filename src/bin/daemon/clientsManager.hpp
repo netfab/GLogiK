@@ -149,7 +149,7 @@ class ClientsManager
 			const std::string & clientID,
 			const std::string & devID,
 			const std::string & keyName,
-			const uint8_t bankID
+			const MKeysID bankID
 		);
 
 		const bool setDeviceMacrosBank(
