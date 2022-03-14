@@ -165,30 +165,30 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 		Mx_ON = mask & toEnumType(Leds::GK_LED_M1);
 		mask = 0;
 		mask_updated = true;
-		device.getMacrosManager()->setCurrentMacrosBankID(BankID::BANK_M0);
+		device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M0);
 		if( ! Mx_ON ) {
 			mask |= toEnumType(Leds::GK_LED_M1);
-			device.getMacrosManager()->setCurrentMacrosBankID(BankID::BANK_M1);
+			device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M1);
 		}
 	}
 	else if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M2) ) {
 		Mx_ON = mask & toEnumType(Leds::GK_LED_M2);
 		mask = 0;
 		mask_updated = true;
-		device.getMacrosManager()->setCurrentMacrosBankID(BankID::BANK_M0);
+		device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M0);
 		if( ! Mx_ON ) {
 			mask |= toEnumType(Leds::GK_LED_M2);
-			device.getMacrosManager()->setCurrentMacrosBankID(BankID::BANK_M2);
+			device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M2);
 		}
 	}
 	else if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M3) ) {
 		Mx_ON = mask & toEnumType(Leds::GK_LED_M3);
 		mask = 0;
 		mask_updated = true;
-		device.getMacrosManager()->setCurrentMacrosBankID(BankID::BANK_M0);
+		device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M0);
 		if( ! Mx_ON ) {
 			mask |= toEnumType(Leds::GK_LED_M3);
-			device.getMacrosManager()->setCurrentMacrosBankID(BankID::BANK_M3);
+			device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M3);
 		}
 	}
 

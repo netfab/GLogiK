@@ -36,7 +36,7 @@ using namespace NSGKUtils;
 
 MacrosManager::MacrosManager(const std::string & virtualKeyboardName)
 		:	_virtualKeyboard(virtualKeyboardName),
-			_currentBankID(BankID::BANK_M0)
+			_currentBankID(MKeysID::MKEY_M0)
 {
 }
 
@@ -94,7 +94,7 @@ void MacrosManager::runMacro(const std::string & keyName)
 	}
 }
 
-void MacrosManager::setCurrentMacrosBankID(BankID bankID)
+void MacrosManager::setCurrentMacrosBankID(MKeysID bankID)
 {
 	GK_LOG_FUNC
 
@@ -103,7 +103,7 @@ void MacrosManager::setCurrentMacrosBankID(BankID bankID)
 	_currentBankID = bankID;
 }
 
-const BankID MacrosManager::getCurrentMacrosBankID(void) const
+const MKeysID MacrosManager::getCurrentMacrosBankID(void) const
 {
 	return _currentBankID;
 }
@@ -145,7 +145,7 @@ void MacrosManager::resetMacrosBanks(void)
 {
 	GK_LOG_FUNC
 
-	this->setCurrentMacrosBankID(BankID::BANK_M0);
+	this->setCurrentMacrosBankID(MKeysID::MKEY_M0);
 	for(auto & idBankPair : _macrosBanks) {
 		GKLog2(trace, "clearing all macros for Memory Bank: ", idBankPair.first)
 		this->resetMacrosBank(idBankPair.first);

@@ -49,8 +49,8 @@ class MacrosManager : public MacrosBanks
 		MacrosManager(const std::string & virtualKeyboardName);
 		~MacrosManager();
 
-		void setCurrentMacrosBankID(BankID bankID);
-		const BankID getCurrentMacrosBankID(void) const;
+		void setCurrentMacrosBankID(MKeysID bankID);
+		const MKeysID getCurrentMacrosBankID(void) const;
 
 		const bool macroDefined(const std::string & keyName);
 		void runMacro(const std::string & keyName);
@@ -66,7 +66,7 @@ class MacrosManager : public MacrosBanks
 
 	private:
 		VirtualKeyboard _virtualKeyboard;
-		BankID _currentBankID;
+		MKeysID _currentBankID;
 
 		void fillInVectors(
 			const macro_type & macro,

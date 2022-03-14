@@ -66,18 +66,18 @@ class MacrosBanks
 		);
 
 		void clearMacro(
-			const BankID bankID,
+			const MKeysID bankID,
 			const std::string & keyName
 		);
 
 		void setMacro(
-			const BankID bankID,
+			const MKeysID bankID,
 			const std::string & keyName,
 			const macro_type & macro
 		);
 
 		void resetMacrosBank(const uint8_t bankID);
-		void resetMacrosBank(const BankID bankID);
+		void resetMacrosBank(const MKeysID bankID);
 
 	protected:
 		MacrosBanks(void);
@@ -94,7 +94,7 @@ class MacrosBanks
 		banksMap_type _macrosBanks;
 
 	private:
-		const BankID getBankID(const uint8_t num) const;
+		const MKeysID getBankID(const uint8_t num) const;
 
 };
 

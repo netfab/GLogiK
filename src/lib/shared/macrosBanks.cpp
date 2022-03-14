@@ -52,12 +52,12 @@ void MacrosBanks::initMacrosBanks(
 
 	for(unsigned int bankID = 0; bankID <= toUInt(numBanks); ++bankID) {
 		try {
-			const BankID id = this->getBankID(bankID);
+			const MKeysID id = this->getBankID(bankID);
 
 			{
 				/* XXX - c++17 structured bindings */
 				typedef std::pair<banksMap_type::iterator, bool> bankInsRet;
-				bankInsRet ret = _macrosBanks.insert( std::pair<const BankID, mBank_type>(id, {}) );
+				bankInsRet ret = _macrosBanks.insert( std::pair<const MKeysID, mBank_type>(id, {}) );
 				if( ! ret.second )
 					throw GLogiKExcept("bank insert failure");
 			}
@@ -111,7 +111,7 @@ void MacrosBanks::setMacrosBanks(const banksMap_type & macrosBanks)
 }
 
 void MacrosBanks::clearMacro(
-	const BankID bankID,
+	const MKeysID bankID,
 	const std::string & keyName)
 {
 	GK_LOG_FUNC
@@ -135,13 +135,13 @@ void MacrosBanks::clearMacro(
 	const uint8_t bankID,
 	const std::string & keyName)
 {
-	const BankID id = this->getBankID(bankID);
+	const MKeysID id = this->getBankID(bankID);
 
 	this->clearMacro(id, keyName);
 }
 
 void MacrosBanks::setMacro(
-	const BankID bankID,
+	const MKeysID bankID,
 	const std::string & keyName,
 	const macro_type & macro)
 {
@@ -172,7 +172,7 @@ void MacrosBanks::setMacro(
 	const std::string & keyName,
 	const macro_type & macro)
 {
-	const BankID id = this->getBankID(bankID);
+	const MKeysID id = this->getBankID(bankID);
 
 	this->setMacro(id, keyName, macro);
 }
@@ -181,7 +181,7 @@ const macro_type & MacrosBanks::getMacro(const uint8_t bankID, const std::string
 {
 	GK_LOG_FUNC
 
-	const BankID id = this->getBankID(bankID);
+	const MKeysID id = this->getBankID(bankID);
 
 	try {
 		return _macrosBanks[id].at(keyName);
@@ -198,24 +198,24 @@ const macro_type & MacrosBanks::getMacro(const uint8_t bankID, const std::string
 
 void MacrosBanks::resetMacrosBank(const uint8_t bankID)
 {
-	const BankID id = this->getBankID(bankID);
+	const MKeysID id = this->getBankID(bankID);
 
 	this->resetMacrosBank(id);
 }
 
-void MacrosBanks::resetMacrosBank(const BankID bankID)
+void MacrosBanks::resetMacrosBank(const MKeysID bankID)
 {
 	for(auto & keyMacroPair : _macrosBanks[bankID]) {
 		keyMacroPair.second.clear();
 	}
 }
 
-const BankID MacrosBanks::getBankID(const uint8_t num) const
+const MKeysID MacrosBanks::getBankID(const uint8_t num) const
 {
-	if(num > BankID::BANK_M3)
+	if(num > MKeysID::MKEY_M3)
 		throw GLogiKExcept("wrong bankID value");
 
-	const BankID id = static_cast<BankID>(num);
+	const MKeysID id = static_cast<MKeysID>(num);
 
 	return id;
 }
