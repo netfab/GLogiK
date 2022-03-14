@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ class GKDBusMessage
 		void appendUInt32(const uint32_t value);
 		void appendUInt64(const uint64_t value);
 
+		void appendMKeysID(const GLogiK::MKeysID keyID);
 		void appendMacro(const GLogiK::macro_type & macro);
 		void appendMacrosBank(const GLogiK::mBank_type & bank);
 		void appendLCDPluginsPropertiesArray(

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -134,6 +134,12 @@ void GKDBusMessage::appendUInt32(const uint32_t value)
 void GKDBusMessage::appendUInt64(const uint64_t value)
 {
 	this->appendUInt64(&_itMessage, value);
+}
+
+void GKDBusMessage::appendMKeysID(const GLogiK::MKeysID keyID)
+{
+	const uint8_t value = toEnumType(keyID);
+	this->appendUInt8(value);
 }
 
 void GKDBusMessage::appendMacro(const GLogiK::macro_type & macro)
