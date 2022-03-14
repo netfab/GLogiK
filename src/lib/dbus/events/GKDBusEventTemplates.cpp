@@ -19,6 +19,8 @@
  *
  */
 
+#include "arguments/GKDBusArgument.hpp"
+
 #include "GKDBusEventTemplates.hpp"
 
 namespace NSGKDBus
@@ -52,7 +54,7 @@ template <>
 		DBusMessage* message
 	)
 {
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgument::fillInArguments(message);
 
 	try {
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
@@ -90,7 +92,7 @@ template <>
 		DBusMessage* message
 	)
 {
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgument::fillInArguments(message);
 
 	try {
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
@@ -129,7 +131,7 @@ template <>
 		DBusMessage* message
 	)
 {
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgument::fillInArguments(message);
 
 	bool ret = false;
 
@@ -170,7 +172,7 @@ template <>
 		DBusMessage* message
 	)
 {
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgument::fillInArguments(message);
 
 	bool ret = false;
 
@@ -221,7 +223,7 @@ template <>
 			arg = toString( dbus_message_get_path(message) );
 		}
 		else {
-			GKDBusArgumentString::fillInArguments(message);
+			GKDBusArgument::fillInArguments(message);
 			arg = GKDBusArgumentString::getNextStringArgument();
 		}
 
@@ -259,7 +261,7 @@ template <>
 		DBusMessage* message
 	)
 {
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgument::fillInArguments(message);
 
 	std::string ret;
 
@@ -301,7 +303,7 @@ template <>
 		DBusMessage* message
 	)
 {
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgument::fillInArguments(message);
 
 	std::vector<std::string> ret;
 
@@ -342,7 +344,7 @@ template <>
 		DBusMessage* message
 	)
 {
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgument::fillInArguments(message);
 
 	std::vector<std::string> ret;
 
@@ -384,7 +386,7 @@ template <>
 		DBusMessage* message
 	)
 {
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgument::fillInArguments(message);
 
 	bool ret = false;
 
@@ -427,7 +429,7 @@ template <>
 		DBusMessage* message
 	)
 {
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgument::fillInArguments(message);
 
 	bool ret = false;
 
@@ -474,7 +476,7 @@ template <>
 {
 	GK_LOG_FUNC
 
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgument::fillInArguments(message);
 
 	try {
 		const std::vector<std::string> arg( GKDBusArgumentString::getStringsArray() );
@@ -495,7 +497,7 @@ template <>
 		DBusMessage* message
 	)
 {
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgument::fillInArguments(message);
 
 	GLogiK::macro_type ret;
 
@@ -539,7 +541,7 @@ template <>
 		DBusMessage* message
 	)
 {
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgument::fillInArguments(message);
 
 	GLogiK::LCDPluginsPropertiesArray_type ret;
 
@@ -581,7 +583,7 @@ template <>
 		DBusMessage* message
 	)
 {
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgument::fillInArguments(message);
 	bool ret = false;
 
 	try {
@@ -624,7 +626,7 @@ template <>
 		DBusMessage* message
 	)
 {
-	GKDBusArgumentString::fillInArguments(message);
+	GKDBusArgument::fillInArguments(message);
 	bool ret = false;
 
 	try {
