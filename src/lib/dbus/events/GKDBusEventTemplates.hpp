@@ -140,14 +140,6 @@ typedef std::function<
 			const bool(
 				const std::string&,
 				const std::string&,
-				const uint8_t,
-				const GLogiK::mBank_type &
-			) > TwoStringsOneByteOneMacrosBankToBool;
-
-typedef std::function<
-			const bool(
-				const std::string&,
-				const std::string&,
 				const GLogiK::MKeysID,
 				const GLogiK::mBank_type &
 			) > SetDeviceMacrosBank;
@@ -413,12 +405,6 @@ template <>
 
 template <>
 	void GKDBusCallbackEvent<TwoStringsToLCDPluginsPropertiesArray>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	);
-
-template <>
-	void GKDBusCallbackEvent<TwoStringsOneByteOneMacrosBankToBool>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);
