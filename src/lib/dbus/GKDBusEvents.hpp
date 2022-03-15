@@ -44,6 +44,7 @@ class GKDBusEvents
 		public EventGKDBusCallback<TwoStringsToVoid>,
 		public EventGKDBusCallback<TwoStringsToBool>,
 		public EventGKDBusCallback<TwoStringsOneByteToBool>,
+		public EventGKDBusCallback<ResetDeviceMacrosBank>,
 		public EventGKDBusCallback<TwoStringsThreeBytesToBool>,
 		public EventGKDBusCallback<StringToString>,
 		public EventGKDBusCallback<TwoStringsToString>,

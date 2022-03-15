@@ -162,7 +162,7 @@ class ClientsManager
 		const bool resetDeviceMacrosBank(
 			const std::string & clientID,
 			const std::string & devID,
-			const uint8_t bankID
+			const MKeysID bankID
 		);
 
 		const bool setDeviceLCDPluginsMask(

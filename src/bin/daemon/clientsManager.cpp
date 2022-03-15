@@ -229,7 +229,7 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 		std::bind(&ClientsManager::setDeviceMacrosBank, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<ResetDeviceMacrosBank>::exposeMethod(
 		system_bus, DM_object, DM_interf, "ResetDeviceMacrosBank",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
@@ -961,19 +961,20 @@ const bool ClientsManager::setDeviceMacrosBank(
 const bool ClientsManager::resetDeviceMacrosBank(
 	const std::string & clientID,
 	const std::string & devID,
-	const uint8_t bankID)
+	const MKeysID bankID)
 {
 	GK_LOG_FUNC
 
 	GKLog6(trace,
 		CONST_STRING_DEVICE, devID,
 		CONST_STRING_CLIENT, clientID,
-		"bankID : ", toUInt(bankID)
+		"bankID : ", bankID
 	)
 
 	try {
+		const uint8_t id = toEnumType(bankID); // FIXME
 		Client* pClient = _connectedClients.at(clientID);
-		return pClient->resetDeviceMacrosBank(devID, bankID);
+		return pClient->resetDeviceMacrosBank(devID, id);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
