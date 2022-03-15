@@ -148,6 +148,14 @@ typedef std::function<
 			const bool(
 				const std::string&,
 				const std::string&,
+				const GLogiK::MKeysID,
+				const GLogiK::mBank_type &
+			) > SetDeviceMacrosBank;
+
+typedef std::function<
+			const bool(
+				const std::string&,
+				const std::string&,
 				const uint8_t,
 				const uint64_t
 			) > TwoStringsOneByteOneUInt64ToBool;
@@ -411,6 +419,12 @@ template <>
 
 template <>
 	void GKDBusCallbackEvent<TwoStringsOneByteOneMacrosBankToBool>::runCallback(
+		DBusConnection* const connection,
+		DBusMessage* message
+	);
+
+template <>
+	void GKDBusCallbackEvent<SetDeviceMacrosBank>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);

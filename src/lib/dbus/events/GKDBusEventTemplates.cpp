@@ -621,6 +621,49 @@ template <>
 }
 
 template <>
+	void GKDBusCallbackEvent<SetDeviceMacrosBank>::runCallback(
+		DBusConnection* const connection,
+		DBusMessage* message
+	)
+{
+	GKDBusArgument::fillInArguments(message);
+	bool ret = false;
+
+	try {
+		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
+		const GLogiK::MKeysID arg3 = GKDBusArgumentMKeysID::getNextMKeysIDArgument();
+		const GLogiK::mBank_type arg4 = this->getNextMacrosBankArgument();
+
+		/* call two strings one byte one MacrosBank(mBank_type) to bool callback */
+		ret = this->callback(arg1, arg2, arg3, arg4);
+	}
+	catch ( const GLogiKExcept & e ) {
+		/* send error if necessary when something was wrong */
+		this->sendCallbackError(connection, message, e.what());
+	}
+
+	/* signals don't send reply */
+	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+		return;
+
+	try {
+		this->initializeReply(connection, message);
+		this->appendBooleanToReply(ret);
+
+		this->appendAsyncArgsToReply();
+	}
+	catch ( const GLogiKExcept & e ) {
+		/* delete reply object if allocated and send error reply */
+		this->sendReplyError(connection, message, e.what());
+		return;
+	}
+
+	/* delete reply object if allocated */
+	this->sendReply();
+}
+
+template <>
 	void GKDBusCallbackEvent<TwoStringsOneByteOneUInt64ToBool>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message

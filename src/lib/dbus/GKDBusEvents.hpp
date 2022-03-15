@@ -52,6 +52,7 @@ class GKDBusEvents
 		public EventGKDBusCallback<GetDeviceMacro>,
 		public EventGKDBusCallback<TwoStringsToLCDPluginsPropertiesArray>,
 		public EventGKDBusCallback<TwoStringsOneByteOneMacrosBankToBool>,
+		public EventGKDBusCallback<SetDeviceMacrosBank>,
 		public EventGKDBusCallback<TwoStringsOneByteOneUInt64ToBool>
 {
 	public:
