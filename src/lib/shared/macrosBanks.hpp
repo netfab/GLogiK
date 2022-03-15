@@ -37,6 +37,8 @@
 namespace GLogiK
 {
 
+const std::string idToString(const MKeysID keyID);
+
 class MacrosBanks
 {
 	public:
@@ -61,7 +63,7 @@ class MacrosBanks
 			const macro_type & macro
 		);
 		const macro_type & getMacro(
-			const uint8_t bankID,
+			const MKeysID bankID,
 			const std::string & keyName
 		);
 
@@ -94,6 +96,11 @@ class MacrosBanks
 		banksMap_type _macrosBanks;
 
 	private:
+		void throwWarn(
+			const std::string & s1,
+			const std::string & s2,
+			const std::string & s3
+		) const;
 		const MKeysID getBankID(const uint8_t num) const;
 
 };

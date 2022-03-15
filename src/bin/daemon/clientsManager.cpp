@@ -866,9 +866,8 @@ const macro_type & ClientsManager::getDeviceMacro(
 
 		if(pClient->getSessionCurrentState() == _active) {
 			if( pClient->isReady() ) {
-				const uint8_t id = toEnumType(bankID); // FIXME
 				pClient->syncDeviceMacrosBanks(devID, _pDevicesManager->getDeviceMacrosBanks(devID));
-				return pClient->getDeviceMacro(devID, keyName, id);
+				return pClient->getDeviceMacro(devID, keyName, bankID);
 			}
 			else {
 				GKSysLogWarning("getting device macro not allowed while client not ready");

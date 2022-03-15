@@ -31,6 +31,12 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
+const std::string idToString(const MKeysID keyID)
+{
+	const std::string ret(std::to_string(static_cast<unsigned int>(keyID)));
+	return ret;
+}
+
 const macro_type MacrosBanks::emptyMacro = {};
 const banksMap_type MacrosBanks::emptyMacrosBanks = {};
 
@@ -124,10 +130,7 @@ void MacrosBanks::clearMacro(
 		_macrosBanks[bankID].at(keyName).clear();
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn("wrong map key : ");
-		warn += keyName;
-		GKSysLogWarning(warn);
-		throw GLogiKExcept("macro not cleared");
+		this->throwWarn("wrong map key: ", keyName, "macro not cleared");
 	}
 }
 
@@ -160,10 +163,7 @@ void MacrosBanks::setMacro(
 		_macrosBanks[bankID].at(keyName) = macro;
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn("wrong map key : ");
-		warn += keyName;
-		GKSysLogWarning(warn);
-		throw GLogiKExcept("macro not updated");
+		this->throwWarn("wrong map key: ", keyName, "macro not updated");
 	}
 }
 
@@ -177,20 +177,21 @@ void MacrosBanks::setMacro(
 	this->setMacro(id, keyName, macro);
 }
 
-const macro_type & MacrosBanks::getMacro(const uint8_t bankID, const std::string & keyName)
+const macro_type & MacrosBanks::getMacro(const MKeysID bankID, const std::string & keyName)
 {
 	GK_LOG_FUNC
 
-	const MKeysID id = this->getBankID(bankID);
-
 	try {
-		return _macrosBanks[id].at(keyName);
+		mBank_type & bank = _macrosBanks.at(bankID);
+		try {
+			return bank.at(keyName);
+		}
+		catch(const std::out_of_range& oor) {
+			this->throwWarn("wrong map key: ", keyName, "can't get macro");
+		}
 	}
 	catch (const std::out_of_range& oor) {
-		std::string warn("wrong map key : ");
-		warn += keyName;
-		GKSysLogWarning(warn);
-		throw GLogiKExcept("can't get macro");
+		this->throwWarn("wrong bankID: ", idToString(bankID), "can't get macro");
 	}
 
 	return MacrosBanks::emptyMacro;
@@ -208,6 +209,16 @@ void MacrosBanks::resetMacrosBank(const MKeysID bankID)
 	for(auto & keyMacroPair : _macrosBanks[bankID]) {
 		keyMacroPair.second.clear();
 	}
+}
+
+void MacrosBanks::throwWarn(
+	const std::string & s1,
+	const std::string & s2,
+	const std::string & s3) const
+{
+	std::string warn(s1); warn += s2;
+	GKSysLogWarning(warn);
+	throw GLogiKExcept(s3);
 }
 
 const MKeysID MacrosBanks::getBankID(const uint8_t num) const

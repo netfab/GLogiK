@@ -200,7 +200,7 @@ void Client::syncDeviceMacrosBanks(
 const macro_type & Client::getDeviceMacro(
 	const std::string & devID,
 	const std::string & keyName,
-	const uint8_t bankID)
+	const MKeysID bankID)
 {
 	GK_LOG_FUNC
 
