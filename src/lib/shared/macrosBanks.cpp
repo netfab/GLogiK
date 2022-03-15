@@ -167,6 +167,7 @@ void MacrosBanks::setMacro(
 	}
 }
 
+/* deprecated */
 void MacrosBanks::setMacro(
 	const uint8_t bankID,
 	const std::string & keyName,
@@ -195,13 +196,6 @@ const macro_type & MacrosBanks::getMacro(const MKeysID bankID, const std::string
 	}
 
 	return MacrosBanks::emptyMacro;
-}
-
-void MacrosBanks::resetMacrosBank(const uint8_t bankID)
-{
-	const MKeysID id = this->getBankID(bankID);
-
-	this->resetMacrosBank(id);
 }
 
 void MacrosBanks::resetMacrosBank(const MKeysID bankID)

@@ -80,13 +80,13 @@ class Client
 
 		const bool setDeviceMacrosBank(
 			const std::string & devID,
-			const uint8_t bankID,
+			const MKeysID bankID,
 			const mBank_type & bank
 		);
 
 		const bool resetDeviceMacrosBank(
 			const std::string & devID,
-			const uint8_t bankID
+			const MKeysID bankID
 		);
 
 		const bool setDeviceLCDPluginsMask(

@@ -217,7 +217,7 @@ const macro_type & Client::getDeviceMacro(
 
 const bool Client::setDeviceMacrosBank(
 	const std::string & devID,
-	const uint8_t bankID,
+	const MKeysID bankID,
 	const mBank_type & bank)
 {
 	GK_LOG_FUNC
@@ -251,7 +251,7 @@ const bool Client::setDeviceMacrosBank(
 
 const bool Client::resetDeviceMacrosBank(
 	const std::string & devID,
-	const uint8_t bankID)
+	const MKeysID bankID)
 {
 	GK_LOG_FUNC
 

@@ -947,9 +947,8 @@ const bool ClientsManager::setDeviceMacrosBank(
 	)
 
 	try {
-		const uint8_t id = toEnumType(bankID); // FIXME
 		Client* pClient = _connectedClients.at(clientID);
-		return pClient->setDeviceMacrosBank(devID, id, bank);
+		return pClient->setDeviceMacrosBank(devID, bankID, bank);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
@@ -972,9 +971,8 @@ const bool ClientsManager::resetDeviceMacrosBank(
 	)
 
 	try {
-		const uint8_t id = toEnumType(bankID); // FIXME
 		Client* pClient = _connectedClients.at(clientID);
-		return pClient->resetDeviceMacrosBank(devID, id);
+		return pClient->resetDeviceMacrosBank(devID, bankID);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);

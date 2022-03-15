@@ -57,7 +57,7 @@ class MacrosBanks
 			const uint8_t bankID,
 			const std::string & keyName
 		);
-		void setMacro(
+		void setMacro( /* deprecated */
 			const uint8_t bankID,
 			const std::string & keyName,
 			const macro_type & macro
@@ -78,7 +78,6 @@ class MacrosBanks
 			const macro_type & macro
 		);
 
-		void resetMacrosBank(const uint8_t bankID);
 		void resetMacrosBank(const MKeysID bankID);
 
 	protected:
