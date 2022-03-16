@@ -456,7 +456,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 
 #if GKDBUS
 						if( pDBus ) {
-							const uint8_t bankID = toEnumType( device.getMacrosManager()->getCurrentMacrosBankID() );
+							const MKeysID bankID = device.getMacrosManager()->getCurrentMacrosBankID();
 
 							/* open a new connection, GKDBus is not thread-safe */
 							pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
@@ -476,7 +476,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 
 								pDBus->appendStringToBroadcastSignal(device.getID());
 								pDBus->appendStringToBroadcastSignal(device._macroKey);
-								pDBus->appendUInt8ToBroadcastSignal(bankID);
+								pDBus->appendMKeysIDToBroadcastSignal(bankID);
 
 								pDBus->sendBroadcastSignal();
 							}

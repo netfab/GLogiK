@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -145,6 +145,12 @@ void GKDBusMessageBroadcastSignal::appendUInt8ToBroadcastSignal(const uint8_t va
 {
 	if(_signal != nullptr) /* sanity check */
 		_signal->appendUInt8(value);
+}
+
+void GKDBusMessageBroadcastSignal::appendMKeysIDToBroadcastSignal(const GLogiK::MKeysID bankID)
+{
+	if(_signal != nullptr) /* sanity check */
+		_signal->appendMKeysID(bankID);
 }
 
 void GKDBusMessageBroadcastSignal::appendStringVectorToBroadcastSignal(const std::vector<std::string> & list)

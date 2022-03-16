@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@
 #define SRC_LIB_DBUS_MSG_GKDBUS_BROADCAST_SIGNAL_HPP_
 
 #include <dbus/dbus.h>
+
+#include "include/keyEvent.hpp"
 
 #include "lib/dbus/GKDBusConnection.hpp"
 
@@ -60,6 +62,7 @@ class GKDBusMessageBroadcastSignal
 
 		void appendStringToBroadcastSignal(const std::string & value);
 		void appendUInt8ToBroadcastSignal(const uint8_t value);
+		void appendMKeysIDToBroadcastSignal(const GLogiK::MKeysID bankID);
 		void appendStringVectorToBroadcastSignal(
 			const std::vector<std::string> & list
 		);
