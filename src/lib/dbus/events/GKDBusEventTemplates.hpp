@@ -108,6 +108,15 @@ typedef std::function<
 				const uint8_t
 			) > TwoStringsOneByteToBool;
 
+/* TODO currently same signature as ResetDeviceMacrosBank
+typedef std::function<
+			const bool(
+				const std::string&,
+				const std::string&,
+				const GLogiK::MKeysID
+			) > DeviceMacroChanged;
+*/
+
 typedef std::function<
 			const bool(
 				const std::string&,
@@ -391,6 +400,14 @@ template <>
 		DBusConnection* const connection,
 		DBusMessage* message
 	);
+
+/* TODO currently same signature as ResetDeviceMacrosBank
+template <>
+	void GKDBusCallbackEvent<DeviceMacroChanged>::runCallback(
+		DBusConnection* const connection,
+		DBusMessage* message
+	);
+*/
 
 template <>
 	void GKDBusCallbackEvent<ResetDeviceMacrosBank>::runCallback(

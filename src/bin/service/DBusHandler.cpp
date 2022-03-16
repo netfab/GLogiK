@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -721,7 +721,9 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::devicesUnplugged, this, std::placeholders::_1)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
+/* TODO currently same signature as ResetDeviceMacrosBank */
+//	_pDBus->NSGKDBus::EventGKDBusCallback<DeviceMacroChanged>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<ResetDeviceMacrosBank>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
@@ -735,7 +737,9 @@ void DBusHandler::initializeGKDBusSignals(void)
 		)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
+/* TODO currently same signature as ResetDeviceMacrosBank */
+//	_pDBus->NSGKDBus::EventGKDBusCallback<DeviceMacroChanged>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<ResetDeviceMacrosBank>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
@@ -1069,13 +1073,13 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 const bool DBusHandler::macroRecorded(
 	const std::string & devID,
 	const std::string & keyName,
-	const uint8_t bankID)
+	const MKeysID bankID)
 {
 	GK_LOG_FUNC
 
 	GKLog6(trace,
 		devID, " received signal : macroRecorded",
-		"bankID : ", toUInt(bankID),
+		"bankID : ", bankID,
 		"key : ", keyName
 	)
 
@@ -1089,19 +1093,20 @@ const bool DBusHandler::macroRecorded(
 		return false;
 	}
 
-	return _devices.setDeviceMacro(devID, keyName, bankID);
+	const uint8_t id = toEnumType(bankID); // FIXME
+	return _devices.setDeviceMacro(devID, keyName, id);
 }
 
 const bool DBusHandler::macroCleared(
 	const std::string & devID,
 	const std::string & keyName,
-	const uint8_t bankID)
+	const MKeysID bankID)
 {
 	GK_LOG_FUNC
 
 	GKLog6(trace,
 		devID, " received signal : macroCleared",
-		"bankID : ", toUInt(bankID),
+		"bankID : ", bankID,
 		"key : ", keyName
 	)
 
@@ -1116,7 +1121,8 @@ const bool DBusHandler::macroCleared(
 		return false;
 	}
 
-	return _devices.clearDeviceMacro(devID, keyName, bankID);
+	const uint8_t id = toEnumType(bankID); // FIXME
+	return _devices.clearDeviceMacro(devID, keyName, id);
 }
 
 void DBusHandler::deviceMediaEvent(
