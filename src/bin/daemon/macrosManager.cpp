@@ -148,7 +148,12 @@ void MacrosManager::resetMacrosBanks(void)
 	this->setCurrentMacrosBankID(MKeysID::MKEY_M0);
 	for(auto & idBankPair : _macrosBanks) {
 		GKLog2(trace, "clearing all macros for Memory Bank: ", idBankPair.first)
-		this->resetMacrosBank(idBankPair.first);
+		try {
+			this->resetMacrosBank(idBankPair.first);
+		}
+		catch(const GLogiKExcept & e) {
+			GKSysLogWarning(e.what());
+		}
 	}
 }
 
