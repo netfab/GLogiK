@@ -302,7 +302,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 		/* set macros banks */
 		for( const auto & idBankPair : device.getMacrosBanks() ) {
-			const uint8_t bankID = toEnumType(idBankPair.first);
+			const MKeysID bankID = idBankPair.first;
 			const mBank_type & bank = idBankPair.second;
 
 			/* test whether this MacrosBank is empty */
@@ -329,7 +329,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 					);
 					_pDBus->appendStringToRemoteMethodCall(_clientID);
 					_pDBus->appendStringToRemoteMethodCall(devID);
-					_pDBus->appendUInt8ToRemoteMethodCall(bankID);
+					_pDBus->appendMKeysIDToRemoteMethodCall(bankID);
 
 					_pDBus->sendRemoteMethodCall();
 
@@ -338,10 +338,10 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 
 						const bool ret = _pDBus->getNextBooleanArgument();
 						if( ! ret ) {
-							LOG(error) << devID << " failed to reset device MacrosBank " << toUInt(bankID) << " : false";
+							LOG(error) << devID << " failed to reset device MacrosBank " << bankID << " : false";
 						}
 						else {
-							GKLog3(trace, devID, " successfully resetted device MacrosBank : ", toUInt(bankID))
+							GKLog3(trace, devID, " successfully resetted device MacrosBank : ", bankID)
 						}
 					}
 					catch (const GLogiKExcept & e) {
@@ -368,7 +368,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 				);
 				_pDBus->appendStringToRemoteMethodCall(_clientID);
 				_pDBus->appendStringToRemoteMethodCall(devID);
-				_pDBus->appendUInt8ToRemoteMethodCall(bankID);
+				_pDBus->appendMKeysIDToRemoteMethodCall(bankID);
 				_pDBus->appendMacrosBankToRemoteMethodCall(bank);
 
 				_pDBus->sendRemoteMethodCall();
@@ -378,10 +378,10 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 
 					const bool ret = _pDBus->getNextBooleanArgument();
 					if( ! ret ) {
-						LOG(error) << devID << " failed to set device MacrosBank " << toUInt(bankID) << " : false";
+						LOG(error) << devID << " failed to set device MacrosBank " << bankID << " : false";
 					}
 					else {
-						GKLog3(trace, devID, " successfully setted device MacrosBank : ", toUInt(bankID))
+						GKLog3(trace, devID, " successfully setted device MacrosBank : ", bankID)
 					}
 				}
 				catch (const GLogiKExcept & e) {
