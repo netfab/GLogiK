@@ -53,15 +53,6 @@ class MacrosBanks
 		const banksMap_type & getMacrosBanks(void) const;
 		void setMacrosBanks(const banksMap_type & macrosBanks);
 
-		void clearMacro(
-			const uint8_t bankID,
-			const std::string & keyName
-		);
-		void setMacro( /* deprecated */
-			const uint8_t bankID,
-			const std::string & keyName,
-			const macro_type & macro
-		);
 		const macro_type & getMacro(
 			const MKeysID bankID,
 			const std::string & keyName

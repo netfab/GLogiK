@@ -123,24 +123,22 @@ void MacrosBanks::clearMacro(
 	GK_LOG_FUNC
 
 	try {
-		LOG(info) << "macros bankID: M" << bankID
-			<< " - Macro Key: " << keyName
-			<< " - clearing macro";
+		mBank_type & bank = _macrosBanks.at(bankID);
 
-		_macrosBanks[bankID].at(keyName).clear();
+		try {
+			LOG(info) << "macros bankID: M" << bankID
+				<< " - Macro Key: " << keyName
+				<< " - clearing macro";
+
+			bank.at(keyName).clear();
+		}
+		catch(const std::out_of_range& oor) {
+			this->throwWarn("wrong map key: ", keyName, "can't set macro");
+		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->throwWarn("wrong map key: ", keyName, "macro not cleared");
+		this->throwWarn("wrong bankID: ", idToString(bankID), "can't clear macro");
 	}
-}
-
-void MacrosBanks::clearMacro(
-	const uint8_t bankID,
-	const std::string & keyName)
-{
-	const MKeysID id = this->getBankID(bankID);
-
-	this->clearMacro(id, keyName);
 }
 
 void MacrosBanks::setMacro(
@@ -151,31 +149,27 @@ void MacrosBanks::setMacro(
 	GK_LOG_FUNC
 
 	try {
-		LOG(info) << "macros bankID: M" << bankID
-			<< " - Macro Key: " << keyName
-			<< " - Macro Size: " << macro.size()
-			<< " - setting macro";
-		if( macro.size() >= MACRO_T_MAX_SIZE ) {
-			LOG(warning) << "skipping macro - size >= MACRO_T_MAX_SIZE";
-			throw GLogiKExcept("skipping macro");
-		}
+		mBank_type & bank = _macrosBanks.at(bankID);
 
-		_macrosBanks[bankID].at(keyName) = macro;
+		try {
+			LOG(info) << "macros bankID: M" << bankID
+				<< " - Macro Key: " << keyName
+				<< " - Macro Size: " << macro.size()
+				<< " - setting macro";
+			if( macro.size() >= MACRO_T_MAX_SIZE ) {
+				LOG(warning) << "skipping macro - size >= MACRO_T_MAX_SIZE";
+				throw GLogiKExcept("skipping macro");
+			}
+
+			bank.at(keyName) = macro;
+		}
+		catch(const std::out_of_range& oor) {
+			this->throwWarn("wrong map key: ", keyName, "can't set macro");
+		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->throwWarn("wrong map key: ", keyName, "macro not updated");
+		this->throwWarn("wrong bankID: ", idToString(bankID), "can't set macro");
 	}
-}
-
-/* deprecated */
-void MacrosBanks::setMacro(
-	const uint8_t bankID,
-	const std::string & keyName,
-	const macro_type & macro)
-{
-	const MKeysID id = this->getBankID(bankID);
-
-	this->setMacro(id, keyName, macro);
 }
 
 const macro_type & MacrosBanks::getMacro(const MKeysID bankID, const std::string & keyName)
@@ -200,8 +194,13 @@ const macro_type & MacrosBanks::getMacro(const MKeysID bankID, const std::string
 
 void MacrosBanks::resetMacrosBank(const MKeysID bankID)
 {
-	for(auto & keyMacroPair : _macrosBanks[bankID]) {
-		keyMacroPair.second.clear();
+	try {
+		for(auto & keyMacroPair : _macrosBanks.at(bankID)) {
+			keyMacroPair.second.clear();
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		this->throwWarn("wrong bankID: ", idToString(bankID), "can't reset macro bank");
 	}
 }
 
