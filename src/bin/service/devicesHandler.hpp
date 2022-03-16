@@ -36,6 +36,7 @@
 #include "lib/shared/deviceProperties.hpp"
 
 #include "include/enums.hpp"
+#include "include/keyEvent.hpp"
 #include "include/LCDPluginProperties.hpp"
 
 #define LogRemoteCallFailure \
@@ -69,13 +70,13 @@ class DevicesHandler
 		const bool setDeviceMacro(
 			const std::string & devID,
 			const std::string & keyName,
-			const uint8_t bankID
+			const MKeysID bankID
 		);
 
 		const bool clearDeviceMacro(
 			const std::string & devID,
 			const std::string & keyName,
-			const uint8_t bankID
+			const MKeysID bankID
 		);
 
 		void doDeviceFakeKeyEvent(

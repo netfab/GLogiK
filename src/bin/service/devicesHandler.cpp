@@ -782,7 +782,7 @@ void DevicesHandler::unrefDevice(const std::string & devID)
 const bool DevicesHandler::setDeviceMacro(
 	const std::string & devID,
 	const std::string & keyName,
-	const uint8_t bankID)
+	const MKeysID bankID)
 {
 	GK_LOG_FUNC
 
@@ -805,7 +805,7 @@ const bool DevicesHandler::setDeviceMacro(
 				_pDBus->appendStringToRemoteMethodCall(_clientID);
 				_pDBus->appendStringToRemoteMethodCall(devID);
 				_pDBus->appendStringToRemoteMethodCall(keyName);
-				_pDBus->appendUInt8ToRemoteMethodCall(bankID);
+				_pDBus->appendMKeysIDToRemoteMethodCall(bankID);
 
 				_pDBus->sendRemoteMethodCall();
 
@@ -842,7 +842,7 @@ const bool DevicesHandler::setDeviceMacro(
 const bool DevicesHandler::clearDeviceMacro(
 	const std::string & devID,
 	const std::string & keyName,
-	const uint8_t bankID)
+	const MKeysID bankID)
 {
 	GK_LOG_FUNC
 

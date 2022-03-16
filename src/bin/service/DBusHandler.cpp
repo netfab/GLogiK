@@ -1093,8 +1093,7 @@ const bool DBusHandler::macroRecorded(
 		return false;
 	}
 
-	const uint8_t id = toEnumType(bankID); // FIXME
-	return _devices.setDeviceMacro(devID, keyName, id);
+	return _devices.setDeviceMacro(devID, keyName, bankID);
 }
 
 const bool DBusHandler::macroCleared(
@@ -1121,8 +1120,7 @@ const bool DBusHandler::macroCleared(
 		return false;
 	}
 
-	const uint8_t id = toEnumType(bankID); // FIXME
-	return _devices.clearDeviceMacro(devID, keyName, id);
+	return _devices.clearDeviceMacro(devID, keyName, bankID);
 }
 
 void DBusHandler::deviceMediaEvent(
