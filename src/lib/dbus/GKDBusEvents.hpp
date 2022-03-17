@@ -42,7 +42,7 @@ class GKDBusEvents
 		public EventGKDBusCallback<SIGs2b>,
 		public EventGKDBusCallback<SIGs2v>,
 		public EventGKDBusCallback<SIGss2v>,
-		public EventGKDBusCallback<TwoStringsToBool>,
+		public EventGKDBusCallback<SIGss2b>,
 		public EventGKDBusCallback<TwoStringsOneByteToBool>,
 		// TODO currently same signature as ResetDeviceMacrosBank
 		//public EventGKDBusCallback<DeviceMacroChanged>,

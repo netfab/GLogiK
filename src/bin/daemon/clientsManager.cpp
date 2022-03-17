@@ -102,14 +102,14 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 			{"b", "did_unregister_succeeded", dOUT, "did the UnregisterClient method succeeded ?"} },
 		std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2b>::exposeMethod(
 		system_bus, CM_object, CM_interf, "UpdateClientState",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "client_new_state", dIN, "client new state"},
 			{"b", "did_updateclientstate_succeeded", dOUT, "did the UpdateClientState method succeeded ?"} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2b>::exposeMethod(
 		system_bus, CM_object, CM_interf, "DeleteDeviceConfiguration",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
@@ -126,21 +126,21 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 	/*  DevicesManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2b>::exposeMethod(
 		system_bus, DM_object, DM_interf, "StopDevice",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
 			{"b", "did_stop_succeeded", dOUT, "did the StopDevice method succeeded ?"} },
 		std::bind(&ClientsManager::stopDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2b>::exposeMethod(
 		system_bus, DM_object, DM_interf, "StartDevice",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStoppedDevices"},
 			{"b", "did_start_succeeded", dOUT, "did the StartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::startDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToBool>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2b>::exposeMethod(
 		system_bus, DM_object, DM_interf, "RestartDevice",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
