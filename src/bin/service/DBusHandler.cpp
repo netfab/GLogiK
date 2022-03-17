@@ -378,7 +378,7 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
 				/* update session state when PropertyChanged signal receipted */
 				const std::string object = _pDBus->getObjectFromObjectPath(_currentSession);
 
-				_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+				_pDBus->NSGKDBus::EventGKDBusCallback<SIGv2v>::exposeSignal(
 					_systemBus,
 					"org.freedesktop.login1",
 					object.c_str(),
@@ -770,7 +770,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  ClientsManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
-	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGv2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
@@ -780,7 +780,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::daemonIsStopping, this)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGv2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
@@ -790,7 +790,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::daemonIsStarting, this)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGv2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,

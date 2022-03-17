@@ -38,24 +38,15 @@
 
 /* -- */
 #include "GKDBusEvent.hpp"
+#include "GKDBusEventCallback.hpp"
 
 #include "lib/dbus/GKDBusConnection.hpp"
-#include "lib/dbus/arguments/GKDBusArgString.hpp"
-#include "lib/dbus/arguments/GKDBusArgByte.hpp"
-#include "lib/dbus/arguments/GKDBusArgUInt64.hpp"
-#include "lib/dbus/arguments/GKDBusArgMKeysID.hpp"
-#include "lib/dbus/arguments/GKDBusArgMacrosBank.hpp"
 
-
+#include "SIGv2v.hpp"
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
 /* -- -- -- --  typedefs   -- -- -- -- */
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
-
-typedef std::function<
-			void(
-				void
-			) > VoidToVoid;
 
 typedef std::function<
 			void(
@@ -177,34 +168,6 @@ namespace NSGKDBus
 {
 
 
-template <typename T>
-	class GKDBusCallbackEvent
-		:	public GKDBusEvent,
-			virtual private GKDBusArgumentString,
-			virtual private GKDBusArgumentByte,
-			virtual private GKDBusArgumentUInt64,
-			private GKDBusArgumentMacrosBank
-{
-	public:
-		GKDBusCallbackEvent(
-			const char* n,
-			const std::vector<DBusMethodArgument> & a,
-			T c,
-			GKDBusEventType t,
-			const bool i
-			);
-		~GKDBusCallbackEvent() = default;
-
-		void runCallback(
-			DBusConnection* const connection,
-			DBusMessage* message
-		);
-
-	private:
-		GKDBusCallbackEvent() = delete;
-
-		T callback;
-};
 
 template <typename T>
 	class EventGKDBusCallback
@@ -258,31 +221,6 @@ template <typename T>
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
 /* -- -- --  implementations  -- -- -- */
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
-
-template <typename T>
-	GKDBusCallbackEvent<T>::GKDBusCallbackEvent(
-		const char* n,
-		const std::vector<DBusMethodArgument> & a,
-		T c,
-		GKDBusEventType t,
-		const bool i
-	)		: GKDBusEvent(n, a, t, i), callback(c)
-{
-}
-
-template <typename T>
-	void GKDBusCallbackEvent<T>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message)
-{
-	GK_LOG_FUNC
-
-	using namespace NSGKUtils;
-	const char* errorString = "runCallback not implemented";
-	LOG(error) << errorString;
-	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL)
-		this->buildAndSendErrorReply(connection, message, errorString);
-}
 
 template <typename T>
 	void EventGKDBusCallback<T>::exposeMethod(
@@ -340,12 +278,6 @@ template <typename T>
 /* --   template member functions   -- */
 /* --		specialization          -- */
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
-
-template <>
-	void GKDBusCallbackEvent<VoidToVoid>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	);
 
 template <>
 	void GKDBusCallbackEvent<StringToVoid>::runCallback(

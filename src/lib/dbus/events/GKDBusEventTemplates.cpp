@@ -21,32 +21,15 @@
 
 #include "arguments/GKDBusArgument.hpp"
 
+#include "arguments/GKDBusArgMKeysID.hpp"
+#include "arguments/GKDBusArgMacrosBank.hpp"
+
 #include "GKDBusEventTemplates.hpp"
 
 namespace NSGKDBus
 {
 
 using namespace NSGKUtils;
-
-template <>
-	void GKDBusCallbackEvent<VoidToVoid>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	)
-{
-	GK_LOG_FUNC
-
-	/* don't need arguments */
-
-	try {
-		/* call void to void callback */
-		this->callback();
-	}
-	catch ( const GLogiKExcept & e ) {
-		LOG(error) << e.what();
-	}
-	/* don't need to send a reply */
-}
 
 template <>
 	void GKDBusCallbackEvent<StringToVoid>::runCallback(
@@ -678,7 +661,7 @@ template <>
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
 		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
 		const GLogiK::MKeysID arg3 = GKDBusArgumentMKeysID::getNextMKeysIDArgument();
-		const GLogiK::mBank_type arg4 = this->getNextMacrosBankArgument();
+		const GLogiK::mBank_type arg4 = GKDBusArgumentMacrosBank::getNextMacrosBankArgument();
 
 		/* call SetDeviceMacrosBank callback */
 		ret = this->callback(arg1, arg2, arg3, arg4);

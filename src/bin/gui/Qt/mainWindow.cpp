@@ -304,7 +304,7 @@ void MainWindow::build(void)
 	GKLog(trace, "Qt signals connected to slots")
 
 	/* initializing GKDBus signals */
-	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGv2v>::exposeSignal(
 		NSGKDBus::BusConnection::GKDBUS_SESSION,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
