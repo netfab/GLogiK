@@ -44,7 +44,7 @@ namespace NSGKDBus
 /* -- -- -- -- -- -- -- -- -- -- -- */
 
 template <typename T>
-	class GKDBusCallbackEvent
+	class GKDBusEventCallback
 		:	public GKDBusEvent,
 			virtual private GKDBusArgumentString,
 			virtual private GKDBusArgumentByte,
@@ -52,14 +52,14 @@ template <typename T>
 			private GKDBusArgumentMacrosBank
 {
 	public:
-		GKDBusCallbackEvent(
+		GKDBusEventCallback(
 			const char* n,
 			const std::vector<DBusMethodArgument> & a,
 			T c,
 			GKDBusEventType t,
 			const bool i
 			);
-		~GKDBusCallbackEvent() = default;
+		~GKDBusEventCallback() = default;
 
 		void runCallback(
 			DBusConnection* const connection,
@@ -67,7 +67,7 @@ template <typename T>
 		);
 
 	private:
-		GKDBusCallbackEvent() = delete;
+		GKDBusEventCallback() = delete;
 
 		T callback;
 };
@@ -77,7 +77,7 @@ template <typename T>
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
 
 template <typename T>
-	GKDBusCallbackEvent<T>::GKDBusCallbackEvent(
+	GKDBusEventCallback<T>::GKDBusEventCallback(
 		const char* n,
 		const std::vector<DBusMethodArgument> & a,
 		T c,
@@ -88,7 +88,7 @@ template <typename T>
 }
 
 template <typename T>
-	void GKDBusCallbackEvent<T>::runCallback(
+	void GKDBusEventCallback<T>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message)
 {

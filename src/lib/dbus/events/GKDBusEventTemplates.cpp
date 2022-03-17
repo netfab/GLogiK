@@ -32,7 +32,7 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 template <>
-	void GKDBusCallbackEvent<StringToVoid>::runCallback(
+	void GKDBusEventCallback<StringToVoid>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -70,7 +70,7 @@ template <>
 }
 
 template <>
-	void GKDBusCallbackEvent<TwoStringsToVoid>::runCallback(
+	void GKDBusEventCallback<TwoStringsToVoid>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -109,7 +109,7 @@ template <>
 }
 
 template <>
-	void GKDBusCallbackEvent<StringToBool>::runCallback(
+	void GKDBusEventCallback<StringToBool>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -150,7 +150,7 @@ template <>
 }
 
 template <>
-	void GKDBusCallbackEvent<TwoStringsToBool>::runCallback(
+	void GKDBusEventCallback<TwoStringsToBool>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -192,7 +192,7 @@ template <>
 }
 
 template <>
-	void GKDBusCallbackEvent<StringToString>::runCallback(
+	void GKDBusEventCallback<StringToString>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -239,7 +239,7 @@ template <>
 }
 
 template <>
-	void GKDBusCallbackEvent<TwoStringsToString>::runCallback(
+	void GKDBusEventCallback<TwoStringsToString>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -281,7 +281,7 @@ template <>
 }
 
 template <>
-	void GKDBusCallbackEvent<StringToStringsArray>::runCallback(
+	void GKDBusEventCallback<StringToStringsArray>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -322,7 +322,7 @@ template <>
 }
 
 template <>
-	void GKDBusCallbackEvent<TwoStringsToStringsArray>::runCallback(
+	void GKDBusEventCallback<TwoStringsToStringsArray>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -364,7 +364,7 @@ template <>
 }
 
 template <>
-	void GKDBusCallbackEvent<TwoStringsOneByteToBool>::runCallback(
+	void GKDBusEventCallback<TwoStringsOneByteToBool>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -408,7 +408,7 @@ template <>
 
 /* TODO currently same signature as ResetDeviceMacrosBank
 template <>
-	void GKDBusCallbackEvent<DeviceMacroChanged>::runCallback(
+	void GKDBusEventCallback<DeviceMacroChanged>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -452,7 +452,7 @@ template <>
 */
 
 template <>
-	void GKDBusCallbackEvent<ResetDeviceMacrosBank>::runCallback(
+	void GKDBusEventCallback<ResetDeviceMacrosBank>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -495,7 +495,7 @@ template <>
 }
 
 template <>
-	void GKDBusCallbackEvent<TwoStringsThreeBytesToBool>::runCallback(
+	void GKDBusEventCallback<TwoStringsThreeBytesToBool>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -540,7 +540,7 @@ template <>
 }
 
 template <>
-	void GKDBusCallbackEvent<StringsArrayToVoid>::runCallback(
+	void GKDBusEventCallback<StringsArrayToVoid>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -563,7 +563,7 @@ template <>
 }
 
 template <>
-	void GKDBusCallbackEvent<GetDeviceMacro>::runCallback(
+	void GKDBusEventCallback<GetDeviceMacro>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -607,7 +607,7 @@ template <>
 }
 
 template <>
-	void GKDBusCallbackEvent<TwoStringsToLCDPluginsPropertiesArray>::runCallback(
+	void GKDBusEventCallback<TwoStringsToLCDPluginsPropertiesArray>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -649,7 +649,7 @@ template <>
 }
 
 template <>
-	void GKDBusCallbackEvent<SetDeviceMacrosBank>::runCallback(
+	void GKDBusEventCallback<SetDeviceMacrosBank>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
@@ -692,7 +692,7 @@ template <>
 }
 
 template <>
-	void GKDBusCallbackEvent<TwoStringsOneByteOneUInt64ToBool>::runCallback(
+	void GKDBusEventCallback<TwoStringsOneByteOneUInt64ToBool>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
