@@ -53,6 +53,8 @@ libGKDBus_la_SOURCES = \
 	%D%/events/GKDBusEventCallback.hpp \
 	%D%/events/GKDBusEventTemplates.cpp \
 	%D%/events/GKDBusEventTemplates.hpp \
+	%D%/events/SIGs2v.cpp \
+	%D%/events/SIGs2v.hpp \
 	%D%/events/SIGv2v.cpp \
 	%D%/events/SIGv2v.hpp \
 	%D%/GKDBusConnection.hpp \

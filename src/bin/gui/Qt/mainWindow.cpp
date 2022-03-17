@@ -314,7 +314,7 @@ void MainWindow::build(void)
 		std::bind(&MainWindow::resetInterface, this)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGs2v>::exposeSignal(
 		NSGKDBus::BusConnection::GKDBUS_SESSION,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
