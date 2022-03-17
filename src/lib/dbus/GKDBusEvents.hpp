@@ -39,7 +39,7 @@ namespace NSGKDBus
 class GKDBusEvents
 	:	public EventGKDBusCallback<SIGv2v>,
 		public EventGKDBusCallback<StringsArrayToVoid>,
-		public EventGKDBusCallback<StringToBool>,
+		public EventGKDBusCallback<SIGs2b>,
 		public EventGKDBusCallback<SIGs2v>,
 		public EventGKDBusCallback<SIGss2v>,
 		public EventGKDBusCallback<TwoStringsToBool>,

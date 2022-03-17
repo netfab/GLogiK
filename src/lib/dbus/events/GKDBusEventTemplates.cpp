@@ -32,47 +32,6 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 template <>
-	void GKDBusEventCallback<StringToBool>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	)
-{
-	GKDBusArgument::fillInArguments(message);
-
-	bool ret = false;
-
-	try {
-		const std::string arg( GKDBusArgumentString::getNextStringArgument() );
-
-		/* call string to bool callback */
-		ret = this->callback(arg);
-	}
-	catch ( const GLogiKExcept & e ) {
-		/* send error if necessary when something was wrong */
-		this->sendCallbackError(connection, message, e.what());
-	}
-
-	/* signals don't send reply */
-	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
-		return;
-
-	try {
-		this->initializeReply(connection, message);
-		this->appendBooleanToReply(ret);
-
-		this->appendAsyncArgsToReply();
-	}
-	catch ( const GLogiKExcept & e ) {
-		/* delete reply object if allocated and send error reply */
-		this->sendReplyError(connection, message, e.what());
-		return;
-	}
-
-	/* delete reply object if allocated */
-	this->sendReply();
-}
-
-template <>
 	void GKDBusEventCallback<TwoStringsToBool>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message

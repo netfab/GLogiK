@@ -89,14 +89,14 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 	/*  ClientsManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringToBool>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGs2b>::exposeMethod(
 		system_bus, CM_object, CM_interf, "RegisterClient",
 		{	{"s", "client_session_object_path", dIN, "client session object path"},
 			{"b", "did_register_succeeded", dOUT, "did the RegisterClient method succeeded ?"},
 			{"s", "failure_reason_or_client_id", dOUT, "if register success (bool==true), unique client ID, else (bool=false) failure reason"} },
 		std::bind(&ClientsManager::registerClient, this, std::placeholders::_1) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringToBool>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGs2b>::exposeMethod(
 		system_bus, CM_object, CM_interf, "UnregisterClient",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"b", "did_unregister_succeeded", dOUT, "did the UnregisterClient method succeeded ?"} },
@@ -116,7 +116,7 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 			{"b", "did_deletedeviceconfiguration_succeeded", dOUT, "did the DeleteDeviceConfiguration method succeeded ?"} },
 		std::bind(&ClientsManager::deleteDeviceConfiguration, this, std::placeholders::_1, std::placeholders::_2) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringToBool>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGs2b>::exposeMethod(
 		system_bus, CM_object, CM_interf, "ToggleClientReadyPropertie",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"b", "did_method_succeeded", dOUT, "did the method succeeded ?"} },

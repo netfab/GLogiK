@@ -46,6 +46,8 @@ GKDBus_sources = [
 	'events/SIGs2v.hpp',
 	'events/SIGv2v.cpp',
 	'events/SIGv2v.hpp',
+	'events/SIGs2b.cpp',
+	'events/SIGs2b.hpp',
 	'GKDBusConnection.hpp',
 	'GKDBus.cpp',
 	'GKDBus.hpp',
