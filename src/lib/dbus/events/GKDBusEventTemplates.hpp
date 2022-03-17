@@ -42,18 +42,13 @@
 
 #include "lib/dbus/GKDBusConnection.hpp"
 
-#include "SIGv2v.hpp" /*   void to void */
-#include "SIGs2v.hpp" /* string to void */
+#include "SIGv2v.hpp"	/*        void to void */
+#include "SIGs2v.hpp" 	/*      string to void */
+#include "SIGss2v.hpp"	/* two strings to void */
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
 /* -- -- -- --  typedefs   -- -- -- -- */
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
-
-typedef std::function<
-			void(
-				const std::string&,
-				const std::string&
-			) > TwoStringsToVoid;
 
 typedef std::function<
 			const bool(
@@ -274,12 +269,6 @@ template <typename T>
 /* --   template member functions   -- */
 /* --		specialization          -- */
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
-
-template <>
-	void GKDBusEventCallback<TwoStringsToVoid>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	);
 
 template <>
 	void GKDBusEventCallback<StringToBool>::runCallback(

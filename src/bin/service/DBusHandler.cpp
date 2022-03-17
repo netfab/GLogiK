@@ -753,7 +753,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
@@ -803,7 +803,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 	/*   GUISessionMessageHandler GUI requests D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2v>::exposeSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
