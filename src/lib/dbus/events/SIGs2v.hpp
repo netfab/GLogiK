@@ -30,7 +30,7 @@
 #include "GKDBusEventCallback.hpp"
 
 
-typedef std::function<void(const std::string&)> SIGs2v;
+typedef std::function<void(const std::string &)> SIGs2v; /* string to void */
 
 namespace NSGKDBus
 {

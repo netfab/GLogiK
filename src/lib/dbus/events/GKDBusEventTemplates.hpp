@@ -42,8 +42,8 @@
 
 #include "lib/dbus/GKDBusConnection.hpp"
 
-#include "SIGv2v.hpp"
-#include "SIGs2v.hpp"
+#include "SIGv2v.hpp" /*   void to void */
+#include "SIGs2v.hpp" /* string to void */
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
 /* -- -- -- --  typedefs   -- -- -- -- */
