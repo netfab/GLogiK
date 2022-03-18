@@ -70,13 +70,6 @@ typedef std::function<
 				const std::string&
 			) > TwoStringsToStringsArray;
 
-typedef std::function<
-			const bool(
-				const std::string&,
-				const std::string&,
-				const uint8_t
-			) > TwoStringsOneByteToBool;
-
 /* TODO currently same signature as ResetDeviceMacrosBank
 typedef std::function<
 			const bool(
@@ -271,12 +264,6 @@ template <>
 
 template <>
 	void GKDBusEventCallback<TwoStringsToStringsArray>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	);
-
-template <>
-	void GKDBusEventCallback<TwoStringsOneByteToBool>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);
