@@ -49,7 +49,6 @@ libGKDBus_la_SOURCES = \
 	%D%/messages/GKDBusAsyncContainer.hpp \
 	%D%/events/GKDBusEvent.cpp \
 	%D%/events/GKDBusEvent.hpp \
-	%D%/events/GKDBusEventCallback.cpp \
 	%D%/events/GKDBusEventCallback.hpp \
 	%D%/events/GKDBusEventTemplates.cpp \
 	%D%/events/GKDBusEventTemplates.hpp \
