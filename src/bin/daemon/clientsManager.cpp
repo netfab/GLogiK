@@ -161,13 +161,13 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 		/* methods used to initialize devices on service-side */
 		/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGs2as>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetStartedDevices",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"as", "array_of_strings", dOUT, "array of started devices ID strings"} },
 		std::bind(&ClientsManager::getStartedDevices, this, std::placeholders::_1) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGs2as>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetStoppedDevices",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"as", "array_of_strings", dOUT, "array of stopped devices ID strings"} },

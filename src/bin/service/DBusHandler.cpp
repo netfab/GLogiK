@@ -820,7 +820,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 {
 	const std::string r_ed("reserved");
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGs2as>::exposeMethod(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -829,7 +829,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 			{"as", "array_of_strings", "out", "array of devices ID and configuration files"} },
 		std::bind(&DBusHandler::getDevicesList, this, r_ed) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGs2as>::exposeMethod(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,

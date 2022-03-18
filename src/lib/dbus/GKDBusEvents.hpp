@@ -37,7 +37,8 @@ namespace NSGKDBus
 
 
 class GKDBusEvents
-	:	public EventGKDBusCallback<SIGs2b>,
+	:	public EventGKDBusCallback<SIGs2as>,
+		public EventGKDBusCallback<SIGs2b>,
 		public EventGKDBusCallback<SIGs2s>,
 		public EventGKDBusCallback<SIGs2v>,
 		public EventGKDBusCallback<SIGss2b>,
@@ -49,7 +50,6 @@ class GKDBusEvents
 		//public EventGKDBusCallback<DeviceMacroChanged>,
 		public EventGKDBusCallback<ResetDeviceMacrosBank>,
 		public EventGKDBusCallback<TwoStringsThreeBytesToBool>,
-		public EventGKDBusCallback<StringToStringsArray>,
 		public EventGKDBusCallback<TwoStringsToStringsArray>,
 		public EventGKDBusCallback<GetDeviceMacro>,
 		public EventGKDBusCallback<TwoStringsToLCDPluginsPropertiesArray>,

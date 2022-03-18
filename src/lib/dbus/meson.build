@@ -39,6 +39,8 @@ GKDBus_sources = [
 	'events/GKDBusEventCallback.hpp',
 	'events/GKDBusEventTemplates.cpp',
 	'events/GKDBusEventTemplates.hpp',
+	'events/SIGs2as.cpp',
+	'events/SIGs2as.hpp',
 	'events/SIGs2b.cpp',
 	'events/SIGs2b.hpp',
 	'events/SIGs2s.cpp',
