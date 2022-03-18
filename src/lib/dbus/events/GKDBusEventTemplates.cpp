@@ -19,11 +19,6 @@
  *
  */
 
-#include "arguments/GKDBusArgument.hpp"
-
-#include "arguments/GKDBusArgMKeysID.hpp"
-#include "arguments/GKDBusArgMacrosBank.hpp"
-
 #include "GKDBusEventTemplates.hpp"
 
 namespace NSGKDBus

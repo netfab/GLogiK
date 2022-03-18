@@ -21,9 +21,6 @@
 
 #include "lib/utils/utils.hpp"
 
-#include "arguments/GKDBusArgString.hpp"
-#include "arguments/GKDBusArgument.hpp"
-
 #include "SIGs2b.hpp"
 
 
