@@ -42,22 +42,17 @@
 
 #include "lib/dbus/GKDBusConnection.hpp"
 
-#include "SIGv2v.hpp"	/*        void to void */
-#include "SIGs2v.hpp" 	/*      string to void */
-#include "SIGss2v.hpp"	/* two strings to void */
-#include "SIGs2b.hpp" 	/*      string to bool */
-#include "SIGss2b.hpp" 	/* two strings to bool */
-#include "SIGs2s.hpp" 	/*    string to string */
+#include "SIGs2b.hpp" 	/*        string to bool */
+#include "SIGs2s.hpp" 	/*      string to string */
+#include "SIGs2v.hpp" 	/*        string to void */
+#include "SIGss2b.hpp" 	/*   two strings to bool */
+#include "SIGss2s.hpp" 	/* two strings to string */
+#include "SIGss2v.hpp"	/*   two strings to void */
+#include "SIGv2v.hpp"	/*          void to void */
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
 /* -- -- -- --  typedefs   -- -- -- -- */
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
-
-typedef std::function<
-			const std::string(
-				const std::string&,
-				const std::string&
-			) > TwoStringsToString;
 
 typedef std::function<
 			const std::vector<std::string>(
@@ -249,12 +244,6 @@ template <typename T>
 /* --   template member functions   -- */
 /* --		specialization          -- */
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
-
-template <>
-	void GKDBusEventCallback<TwoStringsToString>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	);
 
 template <>
 	void GKDBusEventCallback<StringToStringsArray>::runCallback(

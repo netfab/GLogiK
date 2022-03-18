@@ -173,7 +173,7 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 			{"as", "array_of_strings", dOUT, "array of stopped devices ID strings"} },
 		std::bind(&ClientsManager::getStoppedDevices, this, std::placeholders::_1) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToString>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2s>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceStatus",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID"},
