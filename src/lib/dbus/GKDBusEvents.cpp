@@ -264,7 +264,7 @@ void GKDBusEvents::addEvent(
 		}
 		catch (const std::out_of_range& oor) {
 			GKLog2(trace, "adding Introspectable object : ", eventObject)
-			this->EventGKDBusCallback<StringToString>::exposeEvent(
+			this->EventGKDBusCallback<SIGs2s>::exposeEvent(
 				eventBus, nullptr, eventObject, "org.freedesktop.DBus.Introspectable", "Introspect",
 				{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
 				std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),

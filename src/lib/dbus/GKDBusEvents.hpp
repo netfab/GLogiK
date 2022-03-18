@@ -48,7 +48,7 @@ class GKDBusEvents
 		//public EventGKDBusCallback<DeviceMacroChanged>,
 		public EventGKDBusCallback<ResetDeviceMacrosBank>,
 		public EventGKDBusCallback<TwoStringsThreeBytesToBool>,
-		public EventGKDBusCallback<StringToString>,
+		public EventGKDBusCallback<SIGs2s>,
 		public EventGKDBusCallback<TwoStringsToString>,
 		public EventGKDBusCallback<StringToStringsArray>,
 		public EventGKDBusCallback<TwoStringsToStringsArray>,

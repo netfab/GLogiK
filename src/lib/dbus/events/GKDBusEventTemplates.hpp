@@ -47,15 +47,11 @@
 #include "SIGss2v.hpp"	/* two strings to void */
 #include "SIGs2b.hpp" 	/*      string to bool */
 #include "SIGss2b.hpp" 	/* two strings to bool */
+#include "SIGs2s.hpp" 	/*    string to string */
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
 /* -- -- -- --  typedefs   -- -- -- -- */
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
-
-typedef std::function<
-			const std::string(
-				const std::string&
-			) > StringToString;
 
 typedef std::function<
 			const std::string(
@@ -260,12 +256,6 @@ template <typename T>
 /* --   template member functions   -- */
 /* --		specialization          -- */
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
-
-template <>
-	void GKDBusEventCallback<StringToString>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	);
 
 template <>
 	void GKDBusEventCallback<TwoStringsToString>::runCallback(
