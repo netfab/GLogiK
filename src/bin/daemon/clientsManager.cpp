@@ -229,7 +229,7 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 		std::bind(&ClientsManager::setDeviceMacrosBank, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<ResetDeviceMacrosBank>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGssm2b>::exposeMethod(
 		system_bus, DM_object, DM_interf, "ResetDeviceMacrosBank",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},

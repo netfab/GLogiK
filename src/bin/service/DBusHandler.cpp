@@ -723,7 +723,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 
 /* TODO currently same signature as ResetDeviceMacrosBank */
 //	_pDBus->NSGKDBus::EventGKDBusCallback<DeviceMacroChanged>::exposeSignal(
-	_pDBus->NSGKDBus::EventGKDBusCallback<ResetDeviceMacrosBank>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGssm2b>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
@@ -739,7 +739,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 
 /* TODO currently same signature as ResetDeviceMacrosBank */
 //	_pDBus->NSGKDBus::EventGKDBusCallback<DeviceMacroChanged>::exposeSignal(
-	_pDBus->NSGKDBus::EventGKDBusCallback<ResetDeviceMacrosBank>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGssm2b>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,

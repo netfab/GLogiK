@@ -42,6 +42,16 @@
 
 #include "lib/dbus/GKDBusConnection.hpp"
 
+// "s" - string
+// "a" - array of
+// "v" - void
+// "b" - bool
+// "y" - byte
+// "m" - M-KeyID
+// "G" - G-KeyID
+// "M" - Macro
+// "B" - Bank
+
 #include "SIGs2as.hpp"    //       string to array of string
 #include "SIGs2b.hpp"     //                  string to bool
 #include "SIGs2s.hpp"     //                string to string
@@ -50,6 +60,7 @@
 #include "SIGss2b.hpp"    //             two strings to bool
 #include "SIGss2s.hpp"    //           two strings to string
 #include "SIGss2v.hpp"    //             two strings to void
+#include "SIGssm2b.hpp"   // two strings one M-KeyID to bool
 #include "SIGssyyy2b.hpp" // two strings three bytes to bool
 #include "SIGv2v.hpp"     //                    void to void
 
@@ -65,13 +76,6 @@ typedef std::function<
 				const GLogiK::MKeysID
 			) > DeviceMacroChanged;
 */
-
-typedef std::function<
-			const bool(
-				const std::string&,
-				const std::string&,
-				const GLogiK::MKeysID
-			) > ResetDeviceMacrosBank;
 
 typedef std::function<
 			void(
@@ -235,12 +239,6 @@ template <>
 		DBusMessage* message
 	);
 */
-
-template <>
-	void GKDBusEventCallback<ResetDeviceMacrosBank>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	);
 
 template <>
 	void GKDBusEventCallback<StringsArrayToVoid>::runCallback(
