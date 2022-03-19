@@ -115,51 +115,6 @@ template <>
 }
 
 template <>
-	void GKDBusEventCallback<TwoStringsThreeBytesToBool>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	)
-{
-	GKDBusArgument::fillInArguments(message);
-
-	bool ret = false;
-
-	try {
-		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
-		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
-		const uint8_t arg3 = GKDBusArgumentByte::getNextByteArgument();
-		const uint8_t arg4 = GKDBusArgumentByte::getNextByteArgument();
-		const uint8_t arg5 = GKDBusArgumentByte::getNextByteArgument();
-
-		/* call two strings three bytes to bool callback */
-		ret = this->callback(arg1, arg2, arg3, arg4, arg5);
-	}
-	catch ( const GLogiKExcept & e ) {
-		/* send error if necessary when something was wrong */
-		this->sendCallbackError(connection, message, e.what());
-	}
-
-	/* signals don't send reply */
-	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
-		return;
-
-	try {
-		this->initializeReply(connection, message);
-		this->appendBooleanToReply(ret);
-
-		this->appendAsyncArgsToReply();
-	}
-	catch ( const GLogiKExcept & e ) {
-		/* delete reply object if allocated and send error reply */
-		this->sendReplyError(connection, message, e.what());
-		return;
-	}
-
-	/* delete reply object if allocated */
-	this->sendReply();
-}
-
-template <>
 	void GKDBusEventCallback<StringsArrayToVoid>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
