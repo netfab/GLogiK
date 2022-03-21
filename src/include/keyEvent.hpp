@@ -92,10 +92,38 @@ enum class MKeysID : uint8_t
 	MKEY_M3,
 };
 
+enum class GKeysID : uint8_t
+{
+	GKEY_G0 = 0,
+	GKEY_G1,
+	GKEY_G2,
+	GKEY_G3,
+	GKEY_G4,
+	GKEY_G5,
+	GKEY_G6,
+	GKEY_G7,
+	GKEY_G8,
+	GKEY_G9,
+	GKEY_G10,
+	GKEY_G11,
+	GKEY_G12,
+	GKEY_G13,
+	GKEY_G14,
+	GKEY_G15,
+	GKEY_G16,
+	GKEY_G17,
+	GKEY_G18,
+};
+
 inline std::ostream & operator << (std::ostream & stream, const MKeysID keyID)
 {
 	stream << static_cast<unsigned int>(keyID);
 	return stream;
+}
+
+inline const bool operator > (const uint8_t value, const GKeysID keyID)
+{
+	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(keyID)));
 }
 
 inline const bool operator > (const uint8_t value, const MKeysID keyID)
