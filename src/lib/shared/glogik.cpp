@@ -68,6 +68,7 @@ c_str LCD_KEY_L3 = "L3";
 c_str LCD_KEY_L4 = "L4";
 c_str LCD_KEY_L5 = "L5";
 
+/* Media Keys */
 c_str XF86_AUDIO_NEXT			= "XF86AudioNext";
 c_str XF86_AUDIO_PREV			= "XF86AudioPrev";
 c_str XF86_AUDIO_STOP			= "XF86AudioStop";
@@ -129,6 +130,48 @@ const std::map<Keys, c_str> keysNamesMap = {
   { Keys::GK_KEY_MUTE_MICRO,    MUTE_MICRO },
 };
 
+const std::map<GKeysID, c_str> GKeysNamesMap = {
+  { GKeysID::GKEY_G1, G_KEY_G1 },
+  { GKeysID::GKEY_G2, G_KEY_G2 },
+  { GKeysID::GKEY_G3, G_KEY_G3 },
+  { GKeysID::GKEY_G4, G_KEY_G4 },
+  { GKeysID::GKEY_G5, G_KEY_G5 },
+  { GKeysID::GKEY_G6, G_KEY_G6 },
+  { GKeysID::GKEY_G7, G_KEY_G7 },
+  { GKeysID::GKEY_G8, G_KEY_G8 },
+  { GKeysID::GKEY_G9, G_KEY_G9 },
+  { GKeysID::GKEY_G10, G_KEY_G10 },
+  { GKeysID::GKEY_G11, G_KEY_G11 },
+  { GKeysID::GKEY_G12, G_KEY_G12 },
+  { GKeysID::GKEY_G13, G_KEY_G13 },
+  { GKeysID::GKEY_G14, G_KEY_G14 },
+  { GKeysID::GKEY_G15, G_KEY_G15 },
+  { GKeysID::GKEY_G16, G_KEY_G16 },
+  { GKeysID::GKEY_G17, G_KEY_G17 },
+  { GKeysID::GKEY_G18, G_KEY_G18 },
+};
+
+const std::map<Keys, GKeysID> keys2GKeysIDMap = {
+  { Keys::GK_KEY_G1, GKeysID::GKEY_G1 },
+  { Keys::GK_KEY_G2, GKeysID::GKEY_G2 },
+  { Keys::GK_KEY_G3, GKeysID::GKEY_G3 },
+  { Keys::GK_KEY_G4, GKeysID::GKEY_G4 },
+  { Keys::GK_KEY_G5, GKeysID::GKEY_G5 },
+  { Keys::GK_KEY_G6, GKeysID::GKEY_G6 },
+  { Keys::GK_KEY_G7, GKeysID::GKEY_G7 },
+  { Keys::GK_KEY_G8, GKeysID::GKEY_G8 },
+  { Keys::GK_KEY_G9, GKeysID::GKEY_G9 },
+  { Keys::GK_KEY_G10, GKeysID::GKEY_G10 },
+  { Keys::GK_KEY_G11, GKeysID::GKEY_G11 },
+  { Keys::GK_KEY_G12, GKeysID::GKEY_G12 },
+  { Keys::GK_KEY_G13, GKeysID::GKEY_G13 },
+  { Keys::GK_KEY_G14, GKeysID::GKEY_G14 },
+  { Keys::GK_KEY_G15, GKeysID::GKEY_G15 },
+  { Keys::GK_KEY_G16, GKeysID::GKEY_G16 },
+  { Keys::GK_KEY_G17, GKeysID::GKEY_G17 },
+  { Keys::GK_KEY_G18, GKeysID::GKEY_G18 },
+};
+
 const std::string getKeyName(const Keys key)
 {
   using namespace NSGKUtils;
@@ -142,6 +185,25 @@ const std::string getKeyName(const Keys key)
   }
 
   return ret;
+}
+
+const std::string getGKeyName(const GKeysID keyID)
+{
+  using namespace NSGKUtils;
+
+  std::string GKey("G0");
+  try {
+    GKey = GKeysNamesMap.at(keyID);
+  }
+  catch (const std::out_of_range& oor) {
+    LOG(error) << "invalid GKeysID: " << toEnumType(keyID);
+  }
+  return GKey;
+}
+
+const GKeysID getGKeyID(const Keys key)
+{
+  return keys2GKeysIDMap.at(key);
 }
 
 /* --- ---- --- *

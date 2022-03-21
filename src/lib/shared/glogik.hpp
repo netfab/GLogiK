@@ -26,6 +26,7 @@
 #include <map>
 
 #include "include/enums.hpp"
+#include "include/keyEvent.hpp"
 
 #define GLOGIKS_DESKTOP_SERVICE_NAME "GLogiKs"
 
@@ -73,8 +74,7 @@ extern c_str LCD_KEY_L3;
 extern c_str LCD_KEY_L4;
 extern c_str LCD_KEY_L5;
 
-/* --- ---- --- */
-
+/* Media Keys */
 extern c_str XF86_AUDIO_NEXT;
 extern c_str XF86_AUDIO_PREV;
 extern c_str XF86_AUDIO_STOP;
@@ -93,8 +93,14 @@ extern c_str MUTE_MICRO;
 /* --- ---- --- */
 
 extern const std::map<Keys, c_str> keysNamesMap;
+extern const std::map<GKeysID, c_str> GKeysNamesMap;
+extern const std::map<Keys, GKeysID> keys2GKeysIDMap;
 
 const std::string getKeyName(const Keys key);
+const std::string getGKeyName(const GKeysID keyID);
+const GKeysID getGKeyID(const Keys key);
+
+/* --- ---- --- */
 
 /* --- ---- --- *
  * -- GKDBus -- *
