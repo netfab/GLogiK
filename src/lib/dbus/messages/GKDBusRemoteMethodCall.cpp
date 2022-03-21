@@ -166,6 +166,12 @@ void GKDBusMessageRemoteMethodCall::appendUInt64ToRemoteMethodCall(const uint64_
 		_remoteMethodCall->appendUInt64(value);
 }
 
+void GKDBusMessageRemoteMethodCall::appendGKeysIDToRemoteMethodCall(const GLogiK::GKeysID keyID)
+{
+	if(_remoteMethodCall != nullptr) /* sanity check */
+		_remoteMethodCall->appendGKeysID(keyID);
+}
+
 void GKDBusMessageRemoteMethodCall::appendMKeysIDToRemoteMethodCall(const GLogiK::MKeysID bankID)
 {
 	if(_remoteMethodCall != nullptr) /* sanity check */

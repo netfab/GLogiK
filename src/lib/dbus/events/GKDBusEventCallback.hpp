@@ -34,6 +34,7 @@
 #include "lib/dbus/arguments/GKDBusArgByte.hpp"
 #include "lib/dbus/arguments/GKDBusArgUInt64.hpp"
 
+#include "lib/dbus/arguments/GKDBusArgGKeysID.hpp"
 #include "lib/dbus/arguments/GKDBusArgMKeysID.hpp"
 #include "lib/dbus/arguments/GKDBusArgMacrosBank.hpp"
 
@@ -50,6 +51,7 @@ template <typename T>
 			virtual private GKDBusArgumentString,
 			virtual private GKDBusArgumentByte,
 			virtual private GKDBusArgumentUInt64,
+			private GKDBusArgumentGKeysID,
 			private GKDBusArgumentMKeysID,
 			private GKDBusArgumentMacrosBank
 {

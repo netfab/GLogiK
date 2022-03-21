@@ -136,6 +136,12 @@ void GKDBusMessage::appendUInt64(const uint64_t value)
 	this->appendUInt64(&_itMessage, value);
 }
 
+void GKDBusMessage::appendGKeysID(const GLogiK::GKeysID keyID)
+{
+	const uint8_t value = toEnumType(keyID);
+	this->appendUInt8(value);
+}
+
 void GKDBusMessage::appendMKeysID(const GLogiK::MKeysID keyID)
 {
 	const uint8_t value = toEnumType(keyID);
