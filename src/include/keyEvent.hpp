@@ -115,6 +115,9 @@ enum class GKeysID : uint8_t
 	GKEY_G18,
 };
 
+// GKeysIDArray
+typedef std::vector<GKeysID> GKeysIDArray_type;
+
 inline std::ostream & operator << (std::ostream & stream, const MKeysID keyID)
 {
 	stream << static_cast<unsigned int>(keyID);
