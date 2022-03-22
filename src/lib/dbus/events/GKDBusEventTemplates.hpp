@@ -56,11 +56,12 @@
 #include "SIGs2b.hpp"     //                  string to bool
 #include "SIGs2s.hpp"     //                string to string
 #include "SIGs2v.hpp"     //                  string to void
+#include "SIGss2aG.hpp"   //  two strings to array of G-KeyID
 #include "SIGss2as.hpp"   //  two strings to array of string
 #include "SIGss2b.hpp"    //             two strings to bool
 #include "SIGss2s.hpp"    //           two strings to string
 #include "SIGss2v.hpp"    //             two strings to void
-#include "SIGssBG2M.hpp"  // two strings one M-KeysID one G-KeysID to macro
+#include "SIGssBG2M.hpp"  // two strings one M-KeyID one G-KeyID to macro
 #include "SIGssm2b.hpp"   // two strings one M-KeyID to bool
 #include "SIGssyyy2b.hpp" // two strings three bytes to bool
 #include "SIGv2v.hpp"     //                    void to void

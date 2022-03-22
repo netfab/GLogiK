@@ -41,6 +41,7 @@ class GKDBusEvents
 		public EventGKDBusCallback<SIGs2b>,
 		public EventGKDBusCallback<SIGs2s>,
 		public EventGKDBusCallback<SIGs2v>,
+		public EventGKDBusCallback<SIGss2aG>,
 		public EventGKDBusCallback<SIGss2as>,
 		public EventGKDBusCallback<SIGss2b>,
 		public EventGKDBusCallback<SIGss2s>,
