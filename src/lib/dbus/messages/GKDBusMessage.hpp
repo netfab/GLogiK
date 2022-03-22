@@ -47,6 +47,7 @@ class GKDBusMessage
 
 		void appendGKeysID(const GLogiK::GKeysID keyID);
 		void appendMKeysID(const GLogiK::MKeysID keyID);
+		void appendGKeysIDArray(const GLogiK::GKeysIDArray_type & array);
 		void appendMacro(const GLogiK::macro_type & macro);
 		void appendMacrosBank(const GLogiK::mBank_type & bank);
 		void appendLCDPluginsPropertiesArray(
@@ -74,6 +75,7 @@ class GKDBusMessage
 		void appendUInt8(DBusMessageIter *iter, const uint8_t value);
 		void appendUInt16(DBusMessageIter *iter, const uint16_t value);
 		void appendUInt64(DBusMessageIter *iter, const uint64_t value);
+
 		void appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro);
 		void appendLCDPluginsPropertiesArray(
 			DBusMessageIter *iter,
