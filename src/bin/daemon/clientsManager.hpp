@@ -133,10 +133,6 @@ class ClientsManager
 			const std::string & clientID,
 			const std::string & devID
 		);
-		const std::vector<std::string> getDeviceGKeysNames(
-			const std::string & clientID,
-			const std::string & devID
-		);
 		const std::vector<std::string> getDeviceMKeysNames(
 			const std::string & clientID,
 			const std::string & devID

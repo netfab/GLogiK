@@ -202,13 +202,6 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 		std::bind(&ClientsManager::getDeviceGKeysID, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2as>::exposeMethod(
-		system_bus, DM_object, DM_interf, "GetDeviceGKeysNames",
-		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
-			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"as", "array_of_strings", dOUT, "string array of device macro keys names"} },
-		std::bind(&ClientsManager::getDeviceGKeysNames, this, std::placeholders::_1, std::placeholders::_2) );
-
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2as>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceMKeysNames",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
@@ -912,30 +905,6 @@ const GKeysIDArray_type
 	}
 
 	GKeysIDArray_type ret;
-	return ret;
-}
-
-const std::vector<std::string>
-	ClientsManager::getDeviceGKeysNames(
-		const std::string & clientID,
-		const std::string & devID)
-{
-	GK_LOG_FUNC
-
-	GKLog4(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID
-	)
-
-	try {
-		_connectedClients.at(clientID);
-		return _pDevicesManager->getDeviceGKeysNames(devID);
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
-	}
-
-	std::vector<std::string> ret;
 	return ret;
 }
 

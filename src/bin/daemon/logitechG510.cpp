@@ -168,14 +168,6 @@ const GKeysIDArray_type G510Base::getGKeysID(void) const
 	}
 	return ret;
 }
-const std::vector<std::string> G510Base::getGKeysNames(void) const
-{
-	std::vector<std::string> ret;
-	for( const auto & key : G510Base::GKeys5BytesMap ) {
-		ret.push_back(getKeyName(key.key));
-	}
-	return ret;
-}
 
 const std::vector<std::string> G510Base::getMKeysNames(void) const
 {
