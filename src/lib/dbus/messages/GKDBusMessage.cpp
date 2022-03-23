@@ -154,6 +154,9 @@ void GKDBusMessage::appendGKeysIDArray(const GLogiK::GKeysIDArray_type & keysID)
 
 	DBusMessageIter itContainer;
 
+	const uint8_t size = keysID.size();
+	this->appendUInt8(size);
+
 	if( ! dbus_message_iter_open_container(&_itMessage, DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &itContainer) ) {
 		_hosedMessage = true;
 		LOG(error) << "GKeysID array open_container failure, not enough memory";
