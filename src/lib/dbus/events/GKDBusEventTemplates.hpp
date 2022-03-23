@@ -56,6 +56,7 @@
 #include "SIGs2b.hpp"     //                  string to bool
 #include "SIGs2s.hpp"     //                string to string
 #include "SIGs2v.hpp"     //                  string to void
+#include "SIGsmG2b.hpp"   // one string one M-KeyID one G-KeyID to bool
 #include "SIGss2aG.hpp"   //  two strings to array of G-KeyID
 #include "SIGss2as.hpp"   //  two strings to array of string
 #include "SIGss2b.hpp"    //             two strings to bool
