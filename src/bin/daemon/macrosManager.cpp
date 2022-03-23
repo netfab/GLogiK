@@ -25,6 +25,7 @@
 #include <sstream>
 #include <iostream>
 
+#include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
 #include "macrosManager.hpp"
@@ -45,12 +46,12 @@ MacrosManager::~MacrosManager()
 }
 
 /* returns true if a macro is defined for this key on the current memory bank */
-const bool MacrosManager::macroDefined(const std::string & keyName)
+const bool MacrosManager::macroDefined(const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
 	try {
-		const macro_type & macro = _macrosBanks[_currentBankID].at(keyName);
+		const macro_type & macro = _macrosBanks[_currentBankID].at(keyID);
 		return (macro.size() > 0);
 	}
 	catch (const std::out_of_range& oor) {
@@ -61,17 +62,17 @@ const bool MacrosManager::macroDefined(const std::string & keyName)
 }
 
 /* run a macro on the virtual keyboard */
-void MacrosManager::runMacro(const std::string & keyName)
+void MacrosManager::runMacro(const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
 	try {
-		const macro_type & macro = _macrosBanks[_currentBankID].at(keyName);
+		const macro_type & macro = _macrosBanks[_currentBankID].at(keyID);
 		if(macro.size() == 0) {
 #if DEBUGGING_ON
 			if(GKLogging::GKDebug) {
 				LOG(trace)	<< "Memory Bank: " << _currentBankID
-							<< " - Macro Key: " << keyName
+							<< " - Macro Key: " << getGKeyName(keyID)
 							<< " - no macro recorded";
 			}
 #endif
@@ -81,7 +82,7 @@ void MacrosManager::runMacro(const std::string & keyName)
 #if DEBUGGING_ON
 		if(GKLogging::GKDebug) {
 			LOG(trace)	<< "Memory Bank: " << _currentBankID
-						<< " - Macro Key: " << keyName
+						<< " - Macro Key: " << getGKeyName(keyID)
 						<< " - running macro";
 		}
 #endif
@@ -109,7 +110,7 @@ const MKeysID MacrosManager::getCurrentMacrosBankID(void) const
 }
 
 void MacrosManager::setMacro(
-	const std::string & keyName,
+	const GKeysID keyID,
 	macro_type & macro)
 {
 	GK_LOG_FUNC
@@ -138,7 +139,7 @@ void MacrosManager::setMacro(
 		}
 	}
 
-	MacrosBanks::setMacro(_currentBankID, keyName, macro);
+	MacrosBanks::setMacro(_currentBankID, keyID, macro);
 }
 
 void MacrosManager::resetMacrosBanks(void)

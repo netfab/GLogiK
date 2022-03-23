@@ -137,7 +137,7 @@ inline const bool operator > (const uint8_t value, const MKeysID keyID)
 // macro
 typedef std::vector<KeyEvent> macro_type;
 // macros bank
-typedef std::map<std::string, macro_type> mBank_type;
+typedef std::map<GKeysID, macro_type> mBank_type;
 // banks map container
 typedef std::map<MKeysID, mBank_type> banksMap_type;
 

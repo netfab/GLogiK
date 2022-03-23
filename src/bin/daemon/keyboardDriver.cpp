@@ -442,17 +442,17 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 				 * no new macro defined and current macro for the pressed key
 				 * is already empty
 				 */
-				if( ! device.getMacrosManager()->macroDefined(device._macroKey) and
+				if( ! device.getMacrosManager()->macroDefined(device._GKeyID) and
 					  device._newMacro.empty() ) {
 					setMacro = false;
 
-					GKLog3(trace, device.getID(), " no change for key : ", device._macroKey)
+					GKLog3(trace, device.getID(), " no change for key : ", getGKeyName(device._GKeyID))
 				}
 
 				if(setMacro) {
 					try {
 						/* macro key pressed, recording macro */
-						device.getMacrosManager()->setMacro(device._macroKey, device._newMacro);
+						device.getMacrosManager()->setMacro(device._GKeyID, device._newMacro);
 
 #if GKDBUS
 						if( pDBus ) {
@@ -475,7 +475,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 								);
 
 								pDBus->appendStringToBroadcastSignal(device.getID());
-								pDBus->appendStringToBroadcastSignal(device._macroKey);
+								pDBus->appendUInt8ToBroadcastSignal(toEnumType(device._GKeyID));
 								pDBus->appendMKeysIDToBroadcastSignal(bankID);
 
 								pDBus->sendBroadcastSignal();
@@ -520,7 +520,7 @@ void KeyboardDriver::runMacro(const std::string & devID) const
 
 		GKLog3(trace, devID, " spawned running macro thread for ", device.getFullName())
 
-		device.getMacrosManager()->runMacro(device._macroKey);
+		device.getMacrosManager()->runMacro(device._GKeyID);
 
 		GKLog2(trace, devID, " exiting running macro thread")
 	}
@@ -673,7 +673,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 								if( this->checkMacroKey(device) ) {
 									try {
 										/* spawn thread only if macro defined */
-										if(device.getMacrosManager()->macroDefined(device._macroKey)) {
+										if(device.getMacrosManager()->macroDefined(device._GKeyID)) {
 											std::thread macro_thread(&KeyboardDriver::runMacro, this, devID);
 											macro_thread.detach();
 										}
@@ -993,7 +993,7 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 				buffer	<< "Virtual " << device.getFullName() << " " << device.getID();
 
 				MacrosManager* mm = new MacrosManager(buffer.str());
-				mm->initMacrosBanks(this->getMKeysNames().size(), this->getGKeysNames());
+				mm->initMacrosBanks(this->getMKeysNames().size(), this->getGKeysID());
 
 				device.setMacrosManager(mm);
 			}

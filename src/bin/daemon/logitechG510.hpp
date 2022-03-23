@@ -35,6 +35,7 @@
 #include "USBDevice.hpp"
 
 #include "include/enums.hpp"
+#include "include/keyEvent.hpp"
 
 namespace GLogiK
 {
@@ -71,6 +72,7 @@ class G510Base
 		const char* getDriverName(void) const;
 		const uint16_t getDriverID(void) const;
 		const std::vector<USBDeviceID> & getSupportedDevices(void) const;
+		const GKeysIDArray_type getGKeysID(void) const;
 		const std::vector<std::string> getGKeysNames(void) const;
 		const std::vector<std::string> getMKeysNames(void) const;
 
@@ -138,6 +140,9 @@ class LogitechG510
 		}
 		const std::vector<USBDeviceID> & getSupportedDevices(void) const override {
 			return G510Base::getSupportedDevices();
+		}
+		const GKeysIDArray_type getGKeysID(void) const override {
+			return G510Base::getGKeysID();
 		}
 		const std::vector<std::string> getGKeysNames(void) const override {
 			return G510Base::getGKeysNames();

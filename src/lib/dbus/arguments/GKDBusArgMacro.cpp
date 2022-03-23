@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -29,6 +29,14 @@ namespace NSGKDBus
 {
 
 using namespace NSGKUtils;
+
+const GLogiK::GKeysID getGKeysID(const uint8_t keyID)
+{
+	if(keyID > GLogiK::GKeysID::GKEY_G18)
+		throw GLogiKExcept("wrong GKeysID value");
+	const GLogiK::GKeysID id = static_cast<GLogiK::GKeysID>(keyID);
+	return id;
+};
 
 /*
  * helper function rebuilding macro_type vector

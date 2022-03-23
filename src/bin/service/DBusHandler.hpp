@@ -123,13 +123,13 @@ class DBusHandler
 
 		const bool macroRecorded(
 			const std::string & devID,
-			const std::string & keyName,
-			const MKeysID bankID
+			const MKeysID bankID,
+			const GKeysID keyID
 		);
 		const bool macroCleared(
 			const std::string & devID,
-			const std::string & keyName,
-			const MKeysID bankID
+			const MKeysID bankID,
+			const GKeysID keyID
 		);
 
 		void devicesStarted(const std::vector<std::string> & devicesID);

@@ -19,6 +19,7 @@
  *
  */
 
+#include <stdexcept>
 #include <algorithm>
 #include <mutex>
 
@@ -154,6 +155,19 @@ const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const
 	return G510Base::knownDevices;
 }
 
+const GKeysIDArray_type G510Base::getGKeysID(void) const
+{
+	GKeysIDArray_type ret;
+	for(const auto & key : G510Base::GKeys5BytesMap) {
+		try {
+			ret.push_back(getGKeyID(key.key));
+		}
+		catch(const std::out_of_range& oor) {
+			GKSysLogWarning("invalid key for GKeysID");
+		}
+	}
+	return ret;
+}
 const std::vector<std::string> G510Base::getGKeysNames(void) const
 {
 	std::vector<std::string> ret;
@@ -177,7 +191,7 @@ const bool G510Base::checkMacroKey(USBDevice & device)
 {
 	for( const auto & key : G510Base::GKeys5BytesMap ) {
 		if( device._pressedRKeysMask & toEnumType(key.key) ) {
-			device._macroKey = getKeyName(key.key);
+			device._GKeyID = getGKeyID(key.key);
 			return true;
 		}
 	}

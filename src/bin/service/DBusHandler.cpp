@@ -723,15 +723,15 @@ void DBusHandler::initializeGKDBusSignals(void)
 
 /* TODO currently same signature as ResetDeviceMacrosBank */
 //	_pDBus->NSGKDBus::EventGKDBusCallback<DeviceMacroChanged>::exposeSignal(
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGssm2b>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGsmG2b>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"MacroRecorded",
 		{	{"s", "device_id", "in", "device ID"},
-			{"s", "macro_key_name", "in", "macro key name"},
-			{"y", "macro_bankID", "in", "macro bankID"} },
+			{"y", "macro_bankID", "in", "macro bankID"},
+			{"y", "macro_keyID", "in", "macro key ID"} },
 		std::bind(&DBusHandler::macroRecorded, this,
 			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
 		)
@@ -739,15 +739,15 @@ void DBusHandler::initializeGKDBusSignals(void)
 
 /* TODO currently same signature as ResetDeviceMacrosBank */
 //	_pDBus->NSGKDBus::EventGKDBusCallback<DeviceMacroChanged>::exposeSignal(
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGssm2b>::exposeSignal(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGsmG2b>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"MacroCleared",
 		{	{"s", "device_id", "in", "device ID"},
-			{"s", "macro_key_name", "in", "macro key name"},
-			{"y", "macro_bankID", "in", "macro bankID"} },
+			{"y", "macro_bankID", "in", "macro bankID"},
+			{"y", "macro_keyID", "in", "macro key ID"} },
 		std::bind(&DBusHandler::macroCleared, this,
 			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
 		)
@@ -1072,15 +1072,15 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 
 const bool DBusHandler::macroRecorded(
 	const std::string & devID,
-	const std::string & keyName,
-	const MKeysID bankID)
+	const MKeysID bankID,
+	const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
 	GKLog6(trace,
 		devID, " received signal : macroRecorded",
 		"bankID : ", bankID,
-		"key : ", keyName
+		"key : ", getGKeyName(keyID)
 	)
 
 	if( ! _registerStatus ) {
@@ -1093,20 +1093,20 @@ const bool DBusHandler::macroRecorded(
 		return false;
 	}
 
-	return _devices.setDeviceMacro(devID, keyName, bankID);
+	return _devices.setDeviceMacro(devID, bankID, keyID);
 }
 
 const bool DBusHandler::macroCleared(
 	const std::string & devID,
-	const std::string & keyName,
-	const MKeysID bankID)
+	const MKeysID bankID,
+	const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
 	GKLog6(trace,
 		devID, " received signal : macroCleared",
 		"bankID : ", bankID,
-		"key : ", keyName
+		"key : ", getGKeyName(keyID)
 	)
 
 
@@ -1120,7 +1120,7 @@ const bool DBusHandler::macroCleared(
 		return false;
 	}
 
-	return _devices.clearDeviceMacro(devID, keyName, bankID);
+	return _devices.clearDeviceMacro(devID, bankID, keyID);
 }
 
 void DBusHandler::deviceMediaEvent(

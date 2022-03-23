@@ -28,6 +28,8 @@
 #include "lib/shared/macrosBanks.hpp"
 #include "virtualKeyboard.hpp"
 
+#include "include/keyEvent.hpp"
+
 namespace GLogiK
 {
 
@@ -52,11 +54,11 @@ class MacrosManager : public MacrosBanks
 		void setCurrentMacrosBankID(MKeysID bankID);
 		const MKeysID getCurrentMacrosBankID(void) const;
 
-		const bool macroDefined(const std::string & keyName);
-		void runMacro(const std::string & keyName);
+		const bool macroDefined(const GKeysID keyID);
+		void runMacro(const GKeysID keyID);
 
 		void setMacro(
-			const std::string & keyName,
+			const GKeysID keyID,
 			macro_type & macro
 		);
 

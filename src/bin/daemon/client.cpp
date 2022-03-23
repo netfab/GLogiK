@@ -111,7 +111,7 @@ void Client::initializeDevice(
 		);
 		device.initMacrosBanks(
 			pDevicesManager->getDeviceMKeysNames(devID).size(),
-			pDevicesManager->getDeviceGKeysNames(devID)
+			pDevicesManager->getDeviceGKeysID(devID)
 		);
 
 		_devices[devID] = device;
@@ -199,14 +199,14 @@ void Client::syncDeviceMacrosBanks(
 
 const macro_type & Client::getDeviceMacro(
 	const std::string & devID,
-	const std::string & keyName,
-	const MKeysID bankID)
+	const MKeysID bankID,
+	const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
 	try {
 		DeviceProperties & device = _devices.at(devID);
-		return device.getMacro(bankID, keyName);
+		return device.getMacro(bankID, keyID);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);

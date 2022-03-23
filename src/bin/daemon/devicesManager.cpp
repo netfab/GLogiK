@@ -800,8 +800,45 @@ const banksMap_type & DevicesManager::getDeviceMacrosBanks(const std::string & d
 	return MacrosBanks::emptyMacrosBanks;
 }
 
-const std::vector<std::string>
-	DevicesManager::getDeviceGKeysNames(const std::string & devID) const
+const GKeysIDArray_type DevicesManager::getDeviceGKeysID(const std::string & devID) const
+{
+	GK_LOG_FUNC
+
+	try {
+		const auto & device = _startedDevices.at(devID);
+		GKLog2(trace, devID, " device is started")
+
+		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+			for(const auto & driver : _drivers) {
+				if( device.getDriverID() == driver->getDriverID() ) {
+					return driver->getGKeysID();
+				}
+			}
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		try {
+			const auto & device = _stoppedDevices.at(devID);
+			GKLog2(trace, devID, " device is stopped")
+
+			if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+				for(const auto & driver : _drivers) {
+					if( device.getDriverID() == driver->getDriverID() ) {
+						return driver->getGKeysID();
+					}
+				}
+			}
+		}
+		catch (const std::out_of_range& oor) {
+			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		}
+	}
+
+	GKeysIDArray_type ret;
+	return ret;
+}
+
+const std::vector<std::string> DevicesManager::getDeviceGKeysNames(const std::string & devID) const
 {
 	GK_LOG_FUNC
 
@@ -839,8 +876,7 @@ const std::vector<std::string>
 	return ret;
 }
 
-const std::vector<std::string>
-	DevicesManager::getDeviceMKeysNames(const std::string & devID) const
+const std::vector<std::string> DevicesManager::getDeviceMKeysNames(const std::string & devID) const
 {
 	GK_LOG_FUNC
 

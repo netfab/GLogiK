@@ -24,6 +24,7 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "glogik.hpp"
 #include "macrosBanks.hpp"
 
 namespace GLogiK
@@ -50,11 +51,11 @@ MacrosBanks::~MacrosBanks()
 
 void MacrosBanks::initMacrosBanks(
 	const uint8_t numBanks,
-	const std::vector<std::string> & keysNames)
+	const GKeysIDArray_type & keysID)
 {
 	GK_LOG_FUNC
 
-	GKLog4(trace, "numBanks: ", toUInt(numBanks), "numKeys: ", keysNames.size())
+	GKLog4(trace, "numBanks: ", toUInt(numBanks), "numKeys: ", keysID.size())
 
 	for(unsigned int bankID = 0; bankID <= toUInt(numBanks); ++bankID) {
 		try {
@@ -70,7 +71,7 @@ void MacrosBanks::initMacrosBanks(
 
 			unsigned short insertedKeys = 0;
 
-			for(const auto & name : keysNames) {
+			for(const auto & keyID : keysID) {
 				/* XXX - c++17 structured bindings */
 				typedef std::pair<mBank_type::iterator, bool> keyInsRet;
 
@@ -78,16 +79,16 @@ void MacrosBanks::initMacrosBanks(
 				{
 					if(r.second) {
 						insertedKeys++;
-						//GKLog2(trace, "inserted key: ", r.first->first)
+						//GKLog2(trace, "inserted key: ", getGKeyName(r.first->first))
 					}
 					else {
-						LOG(error) << "failed to insert key: " << r.first->first;
+						LOG(error) << "failed to insert key: " << getGKeyName(r.first->first);
 					}
 				};
 
 				keyInsRet insKey = _macrosBanks[id].insert(
-					std::pair<const std::string, macro_type>(
-						name, MacrosBanks::emptyMacro
+					std::pair<GKeysID, macro_type>(
+						keyID, MacrosBanks::emptyMacro
 					)
 				);
 
@@ -118,7 +119,7 @@ void MacrosBanks::setMacrosBanks(const banksMap_type & macrosBanks)
 
 void MacrosBanks::clearMacro(
 	const MKeysID bankID,
-	const std::string & keyName)
+	const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
@@ -127,13 +128,13 @@ void MacrosBanks::clearMacro(
 
 		try {
 			LOG(info) << "macros bankID: M" << bankID
-				<< " - Macro Key: " << keyName
+				<< " - Macro Key: " << getGKeyName(keyID)
 				<< " - clearing macro";
 
-			bank.at(keyName).clear();
+			bank.at(keyID).clear();
 		}
 		catch(const std::out_of_range& oor) {
-			this->throwWarn("wrong map key: ", keyName, "can't set macro");
+			this->throwWarn("wrong map key: ", getGKeyName(keyID), "can't set macro");
 		}
 	}
 	catch (const std::out_of_range& oor) {
@@ -143,7 +144,7 @@ void MacrosBanks::clearMacro(
 
 void MacrosBanks::setMacro(
 	const MKeysID bankID,
-	const std::string & keyName,
+	const GKeysID keyID,
 	const macro_type & macro)
 {
 	GK_LOG_FUNC
@@ -153,7 +154,7 @@ void MacrosBanks::setMacro(
 
 		try {
 			LOG(info) << "macros bankID: M" << bankID
-				<< " - Macro Key: " << keyName
+				<< " - Macro Key: " << getGKeyName(keyID)
 				<< " - Macro Size: " << macro.size()
 				<< " - setting macro";
 			if( macro.size() >= MACRO_T_MAX_SIZE ) {
@@ -161,10 +162,10 @@ void MacrosBanks::setMacro(
 				throw GLogiKExcept("skipping macro");
 			}
 
-			bank.at(keyName) = macro;
+			bank.at(keyID) = macro;
 		}
 		catch(const std::out_of_range& oor) {
-			this->throwWarn("wrong map key: ", keyName, "can't set macro");
+			this->throwWarn("wrong map key: ", getGKeyName(keyID), "can't set macro");
 		}
 	}
 	catch (const std::out_of_range& oor) {
@@ -172,17 +173,17 @@ void MacrosBanks::setMacro(
 	}
 }
 
-const macro_type & MacrosBanks::getMacro(const MKeysID bankID, const std::string & keyName)
+const macro_type & MacrosBanks::getMacro(const MKeysID bankID, const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
 	try {
 		mBank_type & bank = _macrosBanks.at(bankID);
 		try {
-			return bank.at(keyName);
+			return bank.at(keyID);
 		}
 		catch(const std::out_of_range& oor) {
-			this->throwWarn("wrong map key: ", keyName, "can't get macro");
+			this->throwWarn("wrong map key: ", getGKeyName(keyID), "can't get macro");
 		}
 	}
 	catch (const std::out_of_range& oor) {

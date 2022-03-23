@@ -47,7 +47,7 @@ class MacrosBanks
 
 		void initMacrosBanks(
 			const uint8_t numBanks,
-			const std::vector<std::string> & keysNames
+			const GKeysIDArray_type & keysID
 		);
 
 		const banksMap_type & getMacrosBanks(void) const;
@@ -55,17 +55,17 @@ class MacrosBanks
 
 		const macro_type & getMacro(
 			const MKeysID bankID,
-			const std::string & keyName
+			const GKeysID keyID
 		);
 
 		void clearMacro(
 			const MKeysID bankID,
-			const std::string & keyName
+			const GKeysID keyID
 		);
 
 		void setMacro(
 			const MKeysID bankID,
-			const std::string & keyName,
+			const GKeysID keyID,
 			const macro_type & macro
 		);
 

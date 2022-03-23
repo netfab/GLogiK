@@ -560,11 +560,36 @@ void DevicesHandler::setDeviceProperties(
 		const std::vector<std::string> MKeysNames( getStringArray(remoteMethod) );
 		GKLog3(trace, devID, " number of M-keys banks : ", MKeysNames.size())
 
-		remoteMethod = "GetDeviceGKeysNames";
-		const std::vector<std::string> GKeysNames( getStringArray(remoteMethod) );
-		GKLog3(trace, devID, " number of G-keys per bank : ", GKeysNames.size())
+		remoteMethod = "GetDeviceGKeysID";
 
-		device.initMacrosBanks(MKeysNames.size(), GKeysNames);
+		try {
+			_pDBus->initializeRemoteMethodCall(
+				_systemBus,
+				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				remoteMethod.c_str()
+			);
+			_pDBus->appendStringToRemoteMethodCall(_clientID);
+			_pDBus->appendStringToRemoteMethodCall(devID);
+
+			_pDBus->sendRemoteMethodCall();
+
+			try {
+				_pDBus->waitForRemoteMethodCallReply();
+
+				const GKeysIDArray_type keysID = _pDBus->getNextGKeysIDArrayArgument();
+				GKLog3(trace, devID, " number of G-keys per bank : ", keysID.size())
+				device.initMacrosBanks(MKeysNames.size(), keysID);
+			}
+			catch (const GLogiKExcept & e) {
+				LogRemoteCallGetReplyFailure
+			}
+		}
+		catch (const GKDBusMessageWrongBuild & e) {
+			_pDBus->abandonRemoteMethodCall();
+			LogRemoteCallFailure
+		}
 	}
 
 	/* search a configuration file */
@@ -781,8 +806,8 @@ void DevicesHandler::unrefDevice(const std::string & devID)
 
 const bool DevicesHandler::setDeviceMacro(
 	const std::string & devID,
-	const std::string & keyName,
-	const MKeysID bankID)
+	const MKeysID bankID,
+	const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
@@ -804,8 +829,8 @@ const bool DevicesHandler::setDeviceMacro(
 
 				_pDBus->appendStringToRemoteMethodCall(_clientID);
 				_pDBus->appendStringToRemoteMethodCall(devID);
-				_pDBus->appendStringToRemoteMethodCall(keyName);
 				_pDBus->appendMKeysIDToRemoteMethodCall(bankID);
+				_pDBus->appendGKeysIDToRemoteMethodCall(keyID);
 
 				_pDBus->sendRemoteMethodCall();
 
@@ -815,7 +840,7 @@ const bool DevicesHandler::setDeviceMacro(
 					/* use helper function to get the macro */
 					const macro_type macro = _pDBus->getNextMacroArgument();
 
-					device.setMacro(bankID, keyName, macro);
+					device.setMacro(bankID, keyID, macro);
 
 					this->saveDeviceConfigurationFile(devID, device);
 					this->watchDirectory(device);
@@ -841,8 +866,8 @@ const bool DevicesHandler::setDeviceMacro(
 
 const bool DevicesHandler::clearDeviceMacro(
 	const std::string & devID,
-	const std::string & keyName,
-	const MKeysID bankID)
+	const MKeysID bankID,
+	const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
@@ -850,7 +875,7 @@ const bool DevicesHandler::clearDeviceMacro(
 		DeviceProperties & device = _startedDevices.at(devID);
 
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			device.clearMacro(bankID, keyName);
+			device.clearMacro(bankID, keyID);
 
 			this->saveDeviceConfigurationFile(devID, device);
 			this->watchDirectory(device);

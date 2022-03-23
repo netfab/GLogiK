@@ -196,9 +196,10 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::mBank_type & bank)
 
 	DBusMessageIter itArray;
 
+	// signature = (yya(yyq))
 	const char array_sig[] = \
 		DBUS_STRUCT_BEGIN_CHAR_AS_STRING\
-		DBUS_TYPE_STRING_AS_STRING\
+		DBUS_TYPE_BYTE_AS_STRING\
 		DBUS_TYPE_BYTE_AS_STRING\
 		DBUS_TYPE_ARRAY_AS_STRING\
 		DBUS_STRUCT_BEGIN_CHAR_AS_STRING\
@@ -232,7 +233,7 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::mBank_type & bank)
 
 	try {
 		for(const auto & keyMacroPair : bank) {
-			const std::string & key = keyMacroPair.first;
+			const uint8_t key = toEnumType(keyMacroPair.first);
 			const GLogiK::macro_type & macro = keyMacroPair.second;
 
 			bool append_macro = false;
@@ -258,7 +259,7 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::mBank_type & bank)
 			try {
 				const uint8_t size = macro.size();
 
-				this->appendString(&itStruct, key);
+				this->appendUInt8(&itStruct, key);
 				this->appendUInt8(&itStruct, size);
 				this->appendMacro(&itStruct, macro);
 			}
@@ -384,6 +385,7 @@ void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type 
 
 	DBusMessageIter itArray;
 
+	// signature = (yyq)
 	const char array_sig[] = \
 							DBUS_STRUCT_BEGIN_CHAR_AS_STRING\
 							DBUS_TYPE_BYTE_AS_STRING\

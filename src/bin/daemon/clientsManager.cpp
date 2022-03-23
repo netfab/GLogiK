@@ -147,12 +147,12 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 			{"b", "did_restart_succeeded", dOUT, "did the RestartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<GetDeviceMacro>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGssBG2M>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceMacro",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
-			{"s", "macro_key_name", dIN, "macro key name"},
 			{"y", "macro_bankID", dIN, "macro bankID"},
+			{"y", "macro_keyID", dIN, "macro key ID"},
 			{"a(yyq)", "macro_array", dOUT, "macro array"} },
 		std::bind(&ClientsManager::getDeviceMacro, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4) );
@@ -193,6 +193,13 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"a(tss)", "get_lcd_plugins_properties_array", dOUT, "LCDPluginsProperties array"} },
 		std::bind(&ClientsManager::getDeviceLCDPluginsProperties, this, std::placeholders::_1, std::placeholders::_2) );
+
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2aG>::exposeMethod(
+		system_bus, DM_object, DM_interf, "GetDeviceGKeysID",
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
+			{"ay", "array_of_keys_id", dOUT, "string array of device G-keys ID"} },
+		std::bind(&ClientsManager::getDeviceGKeysID, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2as>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceGKeysNames",
@@ -279,15 +286,15 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 	_pDBus->declareIntrospectableSignal(
 		system_bus, DM_object, DM_interf, "MacroRecorded",
 		{	{"s", "device_id", dOUT, "device ID"},
-			{"s", "macro_key_name", dOUT, "macro key name"},
-			{"y", "macro_bankID", dOUT, "macro bankID"} }
+			{"y", "macro_bankID", "in", "macro bankID"},
+			{"y", "macro_keyID", "in", "macro key ID"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
 		system_bus, DM_object, DM_interf, "MacroCleared",
 		{	{"s", "device_id", dOUT, "device ID"},
-			{"s", "macro_key_name", dOUT, "macro key name"},
-			{"y", "macro_bankID", dOUT, "macro bankID"} }
+			{"y", "macro_bankID", "in", "macro bankID"},
+			{"y", "macro_keyID", "in", "macro key ID"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
@@ -846,8 +853,8 @@ const bool ClientsManager::setDeviceBacklightColor(
 const macro_type & ClientsManager::getDeviceMacro(
 	const std::string & clientID,
 	const std::string & devID,
-	const std::string & keyName,
-	const MKeysID bankID)
+	const MKeysID bankID,
+	const GKeysID keyID)
 {
 
 	GK_LOG_FUNC
@@ -857,7 +864,7 @@ const macro_type & ClientsManager::getDeviceMacro(
 		CONST_STRING_CLIENT, clientID
 	)
 	GKLog4(trace,
-		"key : ", keyName,
+		"key : ", getGKeyName(keyID),
 		"bankID : ", bankID
 	)
 
@@ -867,7 +874,7 @@ const macro_type & ClientsManager::getDeviceMacro(
 		if(pClient->getSessionCurrentState() == _active) {
 			if( pClient->isReady() ) {
 				pClient->syncDeviceMacrosBanks(devID, _pDevicesManager->getDeviceMacrosBanks(devID));
-				return pClient->getDeviceMacro(devID, keyName, bankID);
+				return pClient->getDeviceMacro(devID, bankID, keyID);
 			}
 			else {
 				GKSysLogWarning("getting device macro not allowed while client not ready");
@@ -882,6 +889,30 @@ const macro_type & ClientsManager::getDeviceMacro(
 	}
 
 	return MacrosBanks::emptyMacro;
+}
+
+const GKeysIDArray_type
+	ClientsManager::getDeviceGKeysID(
+		const std::string & clientID,
+		const std::string & devID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID
+	)
+
+	try {
+		_connectedClients.at(clientID);
+		return _pDevicesManager->getDeviceGKeysID(devID);
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+	}
+
+	GKeysIDArray_type ret;
+	return ret;
 }
 
 const std::vector<std::string>

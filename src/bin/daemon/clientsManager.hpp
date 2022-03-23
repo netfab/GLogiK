@@ -129,6 +129,10 @@ class ClientsManager
 			const std::string & clientID,
 			const std::string & devID
 		);
+		const GKeysIDArray_type getDeviceGKeysID(
+			const std::string & clientID,
+			const std::string & devID
+		);
 		const std::vector<std::string> getDeviceGKeysNames(
 			const std::string & clientID,
 			const std::string & devID
@@ -148,8 +152,8 @@ class ClientsManager
 		const macro_type & getDeviceMacro(
 			const std::string & clientID,
 			const std::string & devID,
-			const std::string & keyName,
-			const MKeysID bankID
+			const MKeysID bankID,
+			const GKeysID keyID
 		);
 
 		const bool setDeviceMacrosBank(
