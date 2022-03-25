@@ -68,7 +68,7 @@
       send_member="GetDeviceMacro"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
-      send_member="GetDeviceGKeysNames"/>
+      send_member="GetDeviceGKeysID"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
       send_member="GetDeviceMKeysNames"/>
