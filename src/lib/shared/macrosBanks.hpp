@@ -52,6 +52,7 @@ class MacrosBanks
 
 		const banksMap_type & getMacrosBanks(void) const;
 		void setMacrosBanks(const banksMap_type & macrosBanks);
+		void checkMacrosBanksKeys(void);
 
 		const macro_type & getMacro(
 			const MKeysID bankID,

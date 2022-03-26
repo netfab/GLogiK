@@ -117,6 +117,44 @@ void MacrosBanks::setMacrosBanks(const banksMap_type & macrosBanks)
 	_macrosBanks = macrosBanks;
 }
 
+void MacrosBanks::checkMacrosBanksKeys(void)
+{
+	for(auto bankIt = _macrosBanks.begin(); bankIt != _macrosBanks.end();) {
+		try {
+			// checking bankID
+			this->getBankID(toEnumType(bankIt->first));
+			//GKLog2(trace, "checked MKeyID: ", bankIt->first)
+			++bankIt;
+		}
+		catch(const GLogiKExcept & e) {
+			LOG(warning) << e.what()
+				<< " - erasing whole bankID: "
+				<< static_cast<unsigned int>(bankIt->first);
+			bankIt = _macrosBanks.erase(bankIt);
+		}
+	}
+
+	for(auto bankIt = _macrosBanks.begin(); bankIt != _macrosBanks.end(); bankIt++) {
+		auto & mBank = bankIt->second;
+		for(auto it = mBank.begin(); it != mBank.end();) {
+			try {
+				const uint8_t id = toEnumType(it->first);
+				if(id > GLogiK::GKeysID::GKEY_G18)
+					throw GLogiKExcept("wrong GKeysID value");
+
+				//GKLog2(trace, "checked GKeyID: ", getGKeyName(it->first))
+				++it;
+			}
+			catch(const GLogiKExcept & e) {
+				LOG(warning) << e.what()
+					<< " - erasing GKeyID: "
+					<< static_cast<unsigned int>(it->first);
+				it = mBank.erase(it);
+			}
+		}
+	}
+}
+
 void MacrosBanks::clearMacro(
 	const MKeysID bankID,
 	const GKeysID keyID)
