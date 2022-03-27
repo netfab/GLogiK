@@ -73,15 +73,6 @@
 /* -- -- -- --  typedefs   -- -- -- -- */
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
 
-/* TODO currently same signature as ResetDeviceMacrosBank
-typedef std::function<
-			const bool(
-				const std::string&,
-				const std::string&,
-				const GLogiK::MKeysID
-			) > DeviceMacroChanged;
-*/
-
 typedef std::function<
 			const GLogiK::LCDPluginsPropertiesArray_type &(
 				const std::string&,
@@ -215,14 +206,6 @@ template <typename T>
 /* --   template member functions   -- */
 /* --		specialization          -- */
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
-
-/* TODO currently same signature as ResetDeviceMacrosBank
-template <>
-	void GKDBusEventCallback<DeviceMacroChanged>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	);
-*/
 
 template <>
 	void GKDBusEventCallback<TwoStringsToLCDPluginsPropertiesArray>::runCallback(
