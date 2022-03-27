@@ -47,6 +47,7 @@
 // "v" - void
 // "b" - bool
 // "y" - byte
+// "t" - uint64_t
 // "m" - M-KeyID
 // "G" - G-KeyID
 // "M" - Macro
@@ -68,20 +69,9 @@
 #include "SIGssm2b.hpp"   // two strings one M-KeyID to bool
 #include "SIGssmB2b.hpp"  // two strings one M-KeysID one mBank_type to bool
 #include "SIGssmG2M.hpp"  // two strings one M-KeyID one G-KeyID to macro
+#include "SIGssyt2b.hpp"  // two strings one byte one uint64_t to bool
 #include "SIGssyyy2b.hpp" // two strings three bytes to bool
 #include "SIGv2v.hpp"     //                    void to void
-
-/* -- -- -- -- -- -- -- -- -- -- -- -- */
-/* -- -- -- --  typedefs   -- -- -- -- */
-/* -- -- -- -- -- -- -- -- -- -- -- -- */
-
-typedef std::function<
-			const bool(
-				const std::string&,
-				const std::string&,
-				const uint8_t,
-				const uint64_t
-			) > TwoStringsOneByteOneUInt64ToBool;
 
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
@@ -197,17 +187,6 @@ template <typename T>
 
 	this->addEvent(bus, sender, object, interface, event);
 }
-
-/* -- -- -- -- -- -- -- -- -- -- -- -- */
-/* --   template member functions   -- */
-/* --		specialization          -- */
-/* -- -- -- -- -- -- -- -- -- -- -- -- */
-
-template <>
-	void GKDBusEventCallback<TwoStringsOneByteOneUInt64ToBool>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	);
 
 } // namespace NSGKDBus
 

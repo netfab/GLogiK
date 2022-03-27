@@ -19,13 +19,39 @@
  *
  */
 
-#include "GKDBusEventTemplates.hpp"
+#ifndef SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TYPE_SIG_SSYT2B_HPP_
+#define SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TYPE_SIG_SSYT2B_HPP_
+
+#include <cstdint>
+
+#include <string>
+#include <functional>
+
+#include <dbus/dbus.h>
+
+#include "GKDBusEventCallback.hpp"
+
+
+/* two strings one byte one uint64_t to bool */
+typedef std::function<
+	const bool(
+		const std::string&,
+		const std::string&,
+		const uint8_t,
+		const uint64_t
+	) > SIGssyt2b;
+
+
 
 namespace NSGKDBus
 {
 
-using namespace NSGKUtils;
-
+template <>
+	void GKDBusEventCallback<SIGssyt2b>::runCallback(
+		DBusConnection* const connection,
+		DBusMessage* message
+	);
 
 } // namespace NSGKDBus
 
+#endif

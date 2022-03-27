@@ -52,9 +52,9 @@ class GKDBusEvents
 		public EventGKDBusCallback<SIGssm2b>,
 		public EventGKDBusCallback<SIGssmB2b>,
 		public EventGKDBusCallback<SIGssmG2M>,
+		public EventGKDBusCallback<SIGssyt2b>,
 		public EventGKDBusCallback<SIGssyyy2b>,
-		public EventGKDBusCallback<SIGv2v>,
-		public EventGKDBusCallback<TwoStringsOneByteOneUInt64ToBool>
+		public EventGKDBusCallback<SIGv2v>
 {
 	public:
 		void declareIntrospectableSignal(

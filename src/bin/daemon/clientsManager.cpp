@@ -238,7 +238,7 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 		std::bind(&ClientsManager::resetDeviceMacrosBank, this,
 			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteOneUInt64ToBool>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGssyt2b>::exposeMethod(
 		system_bus, DM_object, DM_interf, "SetDeviceLCDPluginsMask",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
