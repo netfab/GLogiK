@@ -32,6 +32,37 @@
 
 #include "lib/dbus/GKDBusConnection.hpp"
 
+// "s" - string
+// "a" - array of
+// "v" - void
+// "b" - bool
+// "y" - byte
+// "t" - uint64_t
+// "m" - M-KeyID
+// "G" - G-KeyID
+// "M" - Macro
+// "B" - Bank (mBank_type)
+// "P" - LCD Plugins Properties
+
+#include "SIGas2v.hpp"    //         array of string to void
+#include "SIGs2as.hpp"    //       string to array of string
+#include "SIGs2b.hpp"     //                  string to bool
+#include "SIGs2s.hpp"     //                string to string
+#include "SIGs2v.hpp"     //                  string to void
+#include "SIGsmG2b.hpp"   // one string one M-KeyID one G-KeyID to bool
+#include "SIGss2aG.hpp"   //  two strings to array of G-KeyID
+#include "SIGss2aP.hpp"   //  two strings to array of LCD Plugins Properties
+#include "SIGss2as.hpp"   //  two strings to array of string
+#include "SIGss2b.hpp"    //             two strings to bool
+#include "SIGss2s.hpp"    //           two strings to string
+#include "SIGss2v.hpp"    //             two strings to void
+#include "SIGssm2b.hpp"   // two strings one M-KeyID to bool
+#include "SIGssmB2b.hpp"  // two strings one M-KeysID one mBank_type to bool
+#include "SIGssmG2M.hpp"  // two strings one M-KeyID one G-KeyID to macro
+#include "SIGssyt2b.hpp"  // two strings one byte one uint64_t to bool
+#include "SIGssyyy2b.hpp" // two strings three bytes to bool
+#include "SIGv2v.hpp"     //                    void to void
+
 namespace NSGKDBus
 {
 

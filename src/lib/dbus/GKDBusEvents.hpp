@@ -32,8 +32,6 @@
 
 #include "events/callback.hpp"
 
-#include "events/GKDBusEventTemplates.hpp"
-
 namespace NSGKDBus
 {
 
