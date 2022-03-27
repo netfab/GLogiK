@@ -82,14 +82,6 @@ typedef std::function<
 */
 
 typedef std::function<
-			const GLogiK::macro_type (
-				const std::string&,
-				const std::string&,
-				const std::string&,
-				const GLogiK::MKeysID
-			) > GetDeviceMacro;
-
-typedef std::function<
 			const GLogiK::LCDPluginsPropertiesArray_type &(
 				const std::string&,
 				const std::string&
@@ -238,12 +230,6 @@ template <>
 		DBusMessage* message
 	);
 */
-
-template <>
-	void GKDBusEventCallback<GetDeviceMacro>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	);
 
 template <>
 	void GKDBusEventCallback<TwoStringsToLCDPluginsPropertiesArray>::runCallback(

@@ -54,7 +54,6 @@ class GKDBusEvents
 		public EventGKDBusCallback<SIGv2v>,
 		// TODO currently same signature as ResetDeviceMacrosBank
 		//public EventGKDBusCallback<DeviceMacroChanged>,
-		public EventGKDBusCallback<GetDeviceMacro>,
 		public EventGKDBusCallback<TwoStringsToLCDPluginsPropertiesArray>,
 		public EventGKDBusCallback<SetDeviceMacrosBank>,
 		public EventGKDBusCallback<TwoStringsOneByteOneUInt64ToBool>
