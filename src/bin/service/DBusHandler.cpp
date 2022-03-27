@@ -378,7 +378,7 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
 				/* update session state when PropertyChanged signal receipted */
 				const std::string object = _pDBus->getObjectFromObjectPath(_currentSession);
 
-				_pDBus->NSGKDBus::EventGKDBusCallback<SIGv2v>::exposeSignal(
+				_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
 					_systemBus,
 					"org.freedesktop.login1",
 					object.c_str(),
@@ -691,7 +691,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  DevicesManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGas2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGas2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
@@ -701,7 +701,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::devicesStarted, this, std::placeholders::_1)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGas2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGas2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
@@ -711,7 +711,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::devicesStopped, this, std::placeholders::_1)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGas2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGas2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
@@ -721,9 +721,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::devicesUnplugged, this, std::placeholders::_1)
 	);
 
-/* TODO currently same signature as ResetDeviceMacrosBank */
-//	_pDBus->NSGKDBus::EventGKDBusCallback<DeviceMacroChanged>::exposeSignal(
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGsmG2b>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGsmG2b>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
@@ -737,9 +735,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		)
 	);
 
-/* TODO currently same signature as ResetDeviceMacrosBank */
-//	_pDBus->NSGKDBus::EventGKDBusCallback<DeviceMacroChanged>::exposeSignal(
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGsmG2b>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGsmG2b>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
@@ -753,7 +749,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGss2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
@@ -770,7 +766,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  ClientsManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGv2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
@@ -780,7 +776,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::daemonIsStopping, this)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGv2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
@@ -790,7 +786,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::daemonIsStarting, this)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGv2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
@@ -803,7 +799,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 	/*   GUISessionMessageHandler GUI requests D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGss2v>::exposeSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
@@ -820,7 +816,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 {
 	const std::string r_ed("reserved");
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGs2as>::exposeMethod(
+	_pDBus->NSGKDBus::Callback<SIGs2as>::exposeMethod(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -829,7 +825,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 			{"as", "array_of_strings", "out", "array of devices ID and configuration files"} },
 		std::bind(&DBusHandler::getDevicesList, this, r_ed) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGs2as>::exposeMethod(
+	_pDBus->NSGKDBus::Callback<SIGs2as>::exposeMethod(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -838,7 +834,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 			{"as", "array_of_strings", "out", "array of informations strings"} },
 		std::bind(&DBusHandler::getInformations, this, r_ed) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2aP>::exposeMethod(
+	_pDBus->NSGKDBus::Callback<SIGss2aP>::exposeMethod(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,

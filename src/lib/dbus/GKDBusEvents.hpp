@@ -30,6 +30,8 @@
 
 #include "lib/dbus/GKDBusConnection.hpp"
 
+#include "events/callback.hpp"
+
 #include "events/GKDBusEventTemplates.hpp"
 
 namespace NSGKDBus
@@ -37,24 +39,24 @@ namespace NSGKDBus
 
 
 class GKDBusEvents
-	:	public EventGKDBusCallback<SIGas2v>,
-		public EventGKDBusCallback<SIGs2as>,
-		public EventGKDBusCallback<SIGs2b>,
-		public EventGKDBusCallback<SIGs2s>,
-		public EventGKDBusCallback<SIGs2v>,
-		public EventGKDBusCallback<SIGsmG2b>,
-		public EventGKDBusCallback<SIGss2aG>,
-		public EventGKDBusCallback<SIGss2aP>,
-		public EventGKDBusCallback<SIGss2as>,
-		public EventGKDBusCallback<SIGss2b>,
-		public EventGKDBusCallback<SIGss2s>,
-		public EventGKDBusCallback<SIGss2v>,
-		public EventGKDBusCallback<SIGssm2b>,
-		public EventGKDBusCallback<SIGssmB2b>,
-		public EventGKDBusCallback<SIGssmG2M>,
-		public EventGKDBusCallback<SIGssyt2b>,
-		public EventGKDBusCallback<SIGssyyy2b>,
-		public EventGKDBusCallback<SIGv2v>
+	:	public Callback<SIGas2v>,
+		public Callback<SIGs2as>,
+		public Callback<SIGs2b>,
+		public Callback<SIGs2s>,
+		public Callback<SIGs2v>,
+		public Callback<SIGsmG2b>,
+		public Callback<SIGss2aG>,
+		public Callback<SIGss2aP>,
+		public Callback<SIGss2as>,
+		public Callback<SIGss2b>,
+		public Callback<SIGss2s>,
+		public Callback<SIGss2v>,
+		public Callback<SIGssm2b>,
+		public Callback<SIGssmB2b>,
+		public Callback<SIGssmG2M>,
+		public Callback<SIGssyt2b>,
+		public Callback<SIGssyyy2b>,
+		public Callback<SIGv2v>
 {
 	public:
 		void declareIntrospectableSignal(
