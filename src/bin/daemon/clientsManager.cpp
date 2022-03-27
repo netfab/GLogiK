@@ -219,7 +219,7 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 		std::bind(&ClientsManager::setDeviceBacklightColor, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<SetDeviceMacrosBank>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGssmB2b>::exposeMethod(
 		system_bus, DM_object, DM_interf, "SetDeviceMacrosBank",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},

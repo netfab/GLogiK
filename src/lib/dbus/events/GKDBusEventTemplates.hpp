@@ -50,7 +50,7 @@
 // "m" - M-KeyID
 // "G" - G-KeyID
 // "M" - Macro
-// "B" - Bank
+// "B" - Bank (mBank_type)
 
 #include "SIGas2v.hpp"    //         array of string to void
 #include "SIGs2as.hpp"    //       string to array of string
@@ -64,6 +64,7 @@
 #include "SIGss2s.hpp"    //           two strings to string
 #include "SIGss2v.hpp"    //             two strings to void
 #include "SIGssm2b.hpp"   // two strings one M-KeyID to bool
+#include "SIGssmB2b.hpp"  // two strings one M-KeysID one mBank_type to bool
 #include "SIGssmG2M.hpp"  // two strings one M-KeyID one G-KeyID to macro
 #include "SIGssyyy2b.hpp" // two strings three bytes to bool
 #include "SIGv2v.hpp"     //                    void to void
@@ -86,14 +87,6 @@ typedef std::function<
 				const std::string&,
 				const std::string&
 			) > TwoStringsToLCDPluginsPropertiesArray;
-
-typedef std::function<
-			const bool(
-				const std::string&,
-				const std::string&,
-				const GLogiK::MKeysID,
-				const GLogiK::mBank_type &
-			) > SetDeviceMacrosBank;
 
 typedef std::function<
 			const bool(
@@ -233,12 +226,6 @@ template <>
 
 template <>
 	void GKDBusEventCallback<TwoStringsToLCDPluginsPropertiesArray>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	);
-
-template <>
-	void GKDBusEventCallback<SetDeviceMacrosBank>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);
