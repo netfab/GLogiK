@@ -48,8 +48,8 @@ class GKDBusEvents
 		public EventGKDBusCallback<SIGss2b>,
 		public EventGKDBusCallback<SIGss2s>,
 		public EventGKDBusCallback<SIGss2v>,
-		public EventGKDBusCallback<SIGssBG2M>,
 		public EventGKDBusCallback<SIGssm2b>,
+		public EventGKDBusCallback<SIGssmG2M>,
 		public EventGKDBusCallback<SIGssyyy2b>,
 		public EventGKDBusCallback<SIGv2v>,
 		// TODO currently same signature as ResetDeviceMacrosBank

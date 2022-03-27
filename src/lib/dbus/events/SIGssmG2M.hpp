@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TYPE_SIG_SSBG2M_HPP_
-#define SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TYPE_SIG_SSBG2M_HPP_
+#ifndef SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TYPE_SIG_SSmG2M_HPP_
+#define SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TYPE_SIG_SSmG2M_HPP_
 
 #include <string>
 #include <functional>
@@ -39,14 +39,14 @@ typedef std::function<
 		const std::string&,
 		const GLogiK::MKeysID,
 		const GLogiK::GKeysID
-	) > SIGssBG2M;
+	) > SIGssmG2M;
 
 
 namespace NSGKDBus
 {
 
 template <>
-	void GKDBusEventCallback<SIGssBG2M>::runCallback(
+	void GKDBusEventCallback<SIGssmG2M>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);

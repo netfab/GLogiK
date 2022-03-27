@@ -21,7 +21,7 @@
 
 #include "lib/utils/utils.hpp"
 
-#include "SIGssBG2M.hpp"
+#include "SIGssmG2M.hpp"
 
 
 namespace NSGKDBus
@@ -30,7 +30,7 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 template <>
-	void GKDBusEventCallback<SIGssBG2M>::runCallback(
+	void GKDBusEventCallback<SIGssmG2M>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)

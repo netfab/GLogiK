@@ -63,8 +63,8 @@
 #include "SIGss2b.hpp"    //             two strings to bool
 #include "SIGss2s.hpp"    //           two strings to string
 #include "SIGss2v.hpp"    //             two strings to void
-#include "SIGssBG2M.hpp"  // two strings one M-KeyID one G-KeyID to macro
 #include "SIGssm2b.hpp"   // two strings one M-KeyID to bool
+#include "SIGssmG2M.hpp"  // two strings one M-KeyID one G-KeyID to macro
 #include "SIGssyyy2b.hpp" // two strings three bytes to bool
 #include "SIGv2v.hpp"     //                    void to void
 
