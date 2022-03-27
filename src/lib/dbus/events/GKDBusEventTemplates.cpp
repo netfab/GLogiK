@@ -72,29 +72,6 @@ template <>
 */
 
 template <>
-	void GKDBusEventCallback<StringsArrayToVoid>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	)
-{
-	GK_LOG_FUNC
-
-	GKDBusArgument::fillInArguments(message);
-
-	try {
-		const std::vector<std::string> arg( GKDBusArgumentString::getStringsArray() );
-
-		/* call string to void callback */
-		this->callback(arg);
-	}
-	catch ( const GLogiKExcept & e ) {
-		LOG(error) << e.what();
-	}
-
-	/* don't need to send a reply */
-}
-
-template <>
 	void GKDBusEventCallback<GetDeviceMacro>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message

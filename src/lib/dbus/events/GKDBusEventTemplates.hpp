@@ -52,6 +52,7 @@
 // "M" - Macro
 // "B" - Bank
 
+#include "SIGas2v.hpp"    //         array of string to void
 #include "SIGs2as.hpp"    //       string to array of string
 #include "SIGs2b.hpp"     //                  string to bool
 #include "SIGs2s.hpp"     //                string to string
@@ -79,11 +80,6 @@ typedef std::function<
 				const GLogiK::MKeysID
 			) > DeviceMacroChanged;
 */
-
-typedef std::function<
-			void(
-				const std::vector<std::string> &
-			) > StringsArrayToVoid;
 
 typedef std::function<
 			const GLogiK::macro_type (
@@ -242,12 +238,6 @@ template <>
 		DBusMessage* message
 	);
 */
-
-template <>
-	void GKDBusEventCallback<StringsArrayToVoid>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	);
 
 template <>
 	void GKDBusEventCallback<GetDeviceMacro>::runCallback(

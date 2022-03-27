@@ -37,7 +37,8 @@ namespace NSGKDBus
 
 
 class GKDBusEvents
-	:	public EventGKDBusCallback<SIGs2as>,
+	:	public EventGKDBusCallback<SIGas2v>,
+		public EventGKDBusCallback<SIGs2as>,
 		public EventGKDBusCallback<SIGs2b>,
 		public EventGKDBusCallback<SIGs2s>,
 		public EventGKDBusCallback<SIGs2v>,
@@ -51,7 +52,6 @@ class GKDBusEvents
 		public EventGKDBusCallback<SIGssm2b>,
 		public EventGKDBusCallback<SIGssyyy2b>,
 		public EventGKDBusCallback<SIGv2v>,
-		public EventGKDBusCallback<StringsArrayToVoid>,
 		// TODO currently same signature as ResetDeviceMacrosBank
 		//public EventGKDBusCallback<DeviceMacroChanged>,
 		public EventGKDBusCallback<GetDeviceMacro>,
