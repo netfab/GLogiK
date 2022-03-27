@@ -187,7 +187,7 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 			{"sst", "get_device_properties", dOUT, "device properties"} },
 		std::bind(&ClientsManager::getDeviceProperties, this, std::placeholders::_1, std::placeholders::_2) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToLCDPluginsPropertiesArray>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2aP>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceLCDPluginsProperties",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},

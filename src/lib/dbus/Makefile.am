@@ -70,6 +70,8 @@ libGKDBus_la_SOURCES = \
 	%D%/events/SIGsmG2b.hpp \
 	%D%/events/SIGss2aG.cpp \
 	%D%/events/SIGss2aG.hpp \
+	%D%/events/SIGss2aP.cpp \
+	%D%/events/SIGss2aP.hpp \
 	%D%/events/SIGss2as.cpp \
 	%D%/events/SIGss2as.hpp \
 	%D%/events/SIGss2b.cpp \

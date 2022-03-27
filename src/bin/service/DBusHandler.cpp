@@ -838,7 +838,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 			{"as", "array_of_strings", "out", "array of informations strings"} },
 		std::bind(&DBusHandler::getInformations, this, r_ed) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToLCDPluginsPropertiesArray>::exposeMethod(
+	_pDBus->NSGKDBus::EventGKDBusCallback<SIGss2aP>::exposeMethod(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,

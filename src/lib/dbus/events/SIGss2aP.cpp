@@ -19,7 +19,10 @@
  *
  */
 
-#include "GKDBusEventTemplates.hpp"
+#include "lib/utils/utils.hpp"
+
+#include "SIGss2aP.hpp"
+
 
 namespace NSGKDBus
 {
@@ -27,22 +30,21 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 template <>
-	void GKDBusEventCallback<TwoStringsOneByteOneUInt64ToBool>::runCallback(
+	void GKDBusEventCallback<SIGss2aP>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)
 {
 	GKDBusArgument::fillInArguments(message);
-	bool ret = false;
+
+	GLogiK::LCDPluginsPropertiesArray_type ret;
 
 	try {
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
 		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
-		const uint8_t arg3 = GKDBusArgumentByte::getNextByteArgument();
-		const uint64_t arg4 = GKDBusArgumentUInt64::getNextUInt64Argument();
 
-		/* call two strings one byte one UInt64_t to bool callback */
-		ret = this->callback(arg1, arg2, arg3, arg4);
+		/* call two strings to LCDPluginsProperties array callback */
+		ret = this->callback(arg1, arg2);
 	}
 	catch ( const GLogiKExcept & e ) {
 		/* send error if necessary when something was wrong */
@@ -55,7 +57,7 @@ template <>
 
 	try {
 		this->initializeReply(connection, message);
-		this->appendBooleanToReply(ret);
+		this->appendLCDPluginsPropertiesArrayToReply(ret);
 
 		this->appendAsyncArgsToReply();
 	}

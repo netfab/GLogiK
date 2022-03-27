@@ -51,6 +51,7 @@
 // "G" - G-KeyID
 // "M" - Macro
 // "B" - Bank (mBank_type)
+// "P" - LCD Plugins Properties
 
 #include "SIGas2v.hpp"    //         array of string to void
 #include "SIGs2as.hpp"    //       string to array of string
@@ -59,6 +60,7 @@
 #include "SIGs2v.hpp"     //                  string to void
 #include "SIGsmG2b.hpp"   // one string one M-KeyID one G-KeyID to bool
 #include "SIGss2aG.hpp"   //  two strings to array of G-KeyID
+#include "SIGss2aP.hpp"   //  two strings to array of LCD Plugins Properties
 #include "SIGss2as.hpp"   //  two strings to array of string
 #include "SIGss2b.hpp"    //             two strings to bool
 #include "SIGss2s.hpp"    //           two strings to string
@@ -72,12 +74,6 @@
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
 /* -- -- -- --  typedefs   -- -- -- -- */
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
-
-typedef std::function<
-			const GLogiK::LCDPluginsPropertiesArray_type &(
-				const std::string&,
-				const std::string&
-			) > TwoStringsToLCDPluginsPropertiesArray;
 
 typedef std::function<
 			const bool(
@@ -206,12 +202,6 @@ template <typename T>
 /* --   template member functions   -- */
 /* --		specialization          -- */
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
-
-template <>
-	void GKDBusEventCallback<TwoStringsToLCDPluginsPropertiesArray>::runCallback(
-		DBusConnection* const connection,
-		DBusMessage* message
-	);
 
 template <>
 	void GKDBusEventCallback<TwoStringsOneByteOneUInt64ToBool>::runCallback(

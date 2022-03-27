@@ -44,6 +44,7 @@ class GKDBusEvents
 		public EventGKDBusCallback<SIGs2v>,
 		public EventGKDBusCallback<SIGsmG2b>,
 		public EventGKDBusCallback<SIGss2aG>,
+		public EventGKDBusCallback<SIGss2aP>,
 		public EventGKDBusCallback<SIGss2as>,
 		public EventGKDBusCallback<SIGss2b>,
 		public EventGKDBusCallback<SIGss2s>,
@@ -53,7 +54,6 @@ class GKDBusEvents
 		public EventGKDBusCallback<SIGssmG2M>,
 		public EventGKDBusCallback<SIGssyyy2b>,
 		public EventGKDBusCallback<SIGv2v>,
-		public EventGKDBusCallback<TwoStringsToLCDPluginsPropertiesArray>,
 		public EventGKDBusCallback<TwoStringsOneByteOneUInt64ToBool>
 {
 	public:
