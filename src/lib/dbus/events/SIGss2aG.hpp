@@ -29,7 +29,7 @@
 
 #include "include/keyEvent.hpp"
 
-#include "GKDBusEventCallback.hpp"
+#include "callbackEvent.hpp"
 
 
 /* two strings to array of G-KeysID */
@@ -40,7 +40,7 @@ namespace NSGKDBus
 {
 
 template <>
-	void GKDBusEventCallback<SIGss2aG>::runCallback(
+	void callbackEvent<SIGss2aG>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);

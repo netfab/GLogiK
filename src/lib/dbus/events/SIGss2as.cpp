@@ -30,7 +30,7 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 template <>
-	void GKDBusEventCallback<SIGss2as>::runCallback(
+	void callbackEvent<SIGss2as>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	)

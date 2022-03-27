@@ -27,7 +27,7 @@
 
 #include <dbus/dbus.h>
 
-#include "GKDBusEventCallback.hpp"
+#include "callbackEvent.hpp"
 
 
 /* two strings to void */
@@ -37,7 +37,7 @@ namespace NSGKDBus
 {
 
 template <>
-	void GKDBusEventCallback<SIGss2v>::runCallback(
+	void callbackEvent<SIGss2v>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);

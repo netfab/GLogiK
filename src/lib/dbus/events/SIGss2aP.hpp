@@ -29,7 +29,7 @@
 
 #include "include/LCDPluginProperties.hpp"
 
-#include "GKDBusEventCallback.hpp"
+#include "callbackEvent.hpp"
 
 
 /* two strings to array of LCD Plugins Properties */
@@ -44,7 +44,7 @@ namespace NSGKDBus
 {
 
 template <>
-	void GKDBusEventCallback<SIGss2aP>::runCallback(
+	void callbackEvent<SIGss2aP>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);

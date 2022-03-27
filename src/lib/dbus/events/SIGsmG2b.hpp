@@ -29,7 +29,7 @@
 
 #include "include/keyEvent.hpp"
 
-#include "GKDBusEventCallback.hpp"
+#include "callbackEvent.hpp"
 
 
 /* one string one MKeyID one GKeyID to bool */
@@ -45,7 +45,7 @@ namespace NSGKDBus
 {
 
 template <>
-	void GKDBusEventCallback<SIGsmG2b>::runCallback(
+	void callbackEvent<SIGsmG2b>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);

@@ -26,7 +26,7 @@
 
 #include <dbus/dbus.h>
 
-#include "GKDBusEventCallback.hpp"
+#include "callbackEvent.hpp"
 
 
 typedef std::function<void(void)> SIGv2v; /* void to void */
@@ -35,7 +35,7 @@ namespace NSGKDBus
 {
 
 template <>
-	void GKDBusEventCallback<SIGv2v>::runCallback(
+	void callbackEvent<SIGv2v>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);

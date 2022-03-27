@@ -27,7 +27,7 @@
 
 #include <dbus/dbus.h>
 
-#include "GKDBusEventCallback.hpp"
+#include "callbackEvent.hpp"
 
 
 typedef std::function<const bool(const std::string &)> SIGs2b; /* string to bool */
@@ -36,7 +36,7 @@ namespace NSGKDBus
 {
 
 template <>
-	void GKDBusEventCallback<SIGs2b>::runCallback(
+	void callbackEvent<SIGs2b>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);

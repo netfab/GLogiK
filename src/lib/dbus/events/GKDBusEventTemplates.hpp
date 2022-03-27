@@ -38,7 +38,7 @@
 
 /* -- */
 #include "GKDBusEvent.hpp"
-#include "GKDBusEventCallback.hpp"
+#include "callbackEvent.hpp"
 
 #include "lib/dbus/GKDBusConnection.hpp"
 
@@ -179,7 +179,7 @@ template <typename T>
 {
 	GKDBusEvent* event = nullptr;
 	try {
-		event = new GKDBusEventCallback<T>(eventName, args, callback, eventType, introspectable);
+		event = new callbackEvent<T>(eventName, args, callback, eventType, introspectable);
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		throw NSGKUtils::GLogiKBadAlloc("DBus event bad allocation");

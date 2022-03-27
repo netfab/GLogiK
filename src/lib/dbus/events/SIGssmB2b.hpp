@@ -29,7 +29,7 @@
 
 #include "include/keyEvent.hpp"
 
-#include "GKDBusEventCallback.hpp"
+#include "callbackEvent.hpp"
 
 
 /* two strings one M-KeysID one mBank_type to bool */
@@ -45,7 +45,7 @@ namespace NSGKDBus
 {
 
 template <>
-	void GKDBusEventCallback<SIGssmB2b>::runCallback(
+	void callbackEvent<SIGssmB2b>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_CALLBACK_HPP_
-#define SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_CALLBACK_HPP_
+#ifndef SRC_LIB_DBUS_EVENTS_CALLBACK_EVENT_HPP_
+#define SRC_LIB_DBUS_EVENTS_CALLBACK_EVENT_HPP_
 
 #include <vector>
 
@@ -46,7 +46,7 @@ namespace NSGKDBus
 /* -- -- -- -- -- -- -- -- -- -- -- */
 
 template <typename T>
-	class GKDBusEventCallback
+	class callbackEvent
 		:	public GKDBusEvent,
 			virtual private GKDBusArgumentString,
 			virtual private GKDBusArgumentByte,
@@ -56,14 +56,14 @@ template <typename T>
 			private GKDBusArgumentMacrosBank
 {
 	public:
-		GKDBusEventCallback(
+		callbackEvent(
 			const char* n,
 			const std::vector<DBusMethodArgument> & a,
 			T c,
 			GKDBusEventType t,
 			const bool i
 			);
-		~GKDBusEventCallback() = default;
+		~callbackEvent() = default;
 
 		void runCallback(
 			DBusConnection* const connection,
@@ -71,7 +71,7 @@ template <typename T>
 		);
 
 	private:
-		GKDBusEventCallback() = delete;
+		callbackEvent() = delete;
 
 		T callback;
 };
@@ -81,7 +81,7 @@ template <typename T>
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
 
 template <typename T>
-	GKDBusEventCallback<T>::GKDBusEventCallback(
+	callbackEvent<T>::callbackEvent(
 		const char* n,
 		const std::vector<DBusMethodArgument> & a,
 		T c,
@@ -92,7 +92,7 @@ template <typename T>
 }
 
 template <typename T>
-	void GKDBusEventCallback<T>::runCallback(
+	void callbackEvent<T>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message)
 {

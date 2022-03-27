@@ -29,7 +29,7 @@
 
 #include <dbus/dbus.h>
 
-#include "GKDBusEventCallback.hpp"
+#include "callbackEvent.hpp"
 
 
 /* two strings one byte one uint64_t to bool */
@@ -47,7 +47,7 @@ namespace NSGKDBus
 {
 
 template <>
-	void GKDBusEventCallback<SIGssyt2b>::runCallback(
+	void callbackEvent<SIGssyt2b>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message
 	);
