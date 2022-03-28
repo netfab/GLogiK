@@ -42,9 +42,6 @@ const GLogiK::mBank_type GKDBusArgumentMacrosBank::getNextMacrosBankArgument(voi
 	try {
 		do {
 			const GLogiK::GKeysID keyID = GKDBusArgumentGKeysID::getNextGKeysIDArgument();
-			if( keyID == GLogiK::GKeysID::GKEY_G0 )
-				throw GLogiKExcept("wrong GKeyID - bank rebuild failed");
-
 			const uint8_t size = GKDBusArgumentByte::getNextByteArgument();
 			const GLogiK::macro_type macro = GKDBusArgumentMacro::getNextMacroArgument(size);
 

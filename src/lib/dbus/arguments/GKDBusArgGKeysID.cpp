@@ -38,7 +38,7 @@ const GLogiK::GKeysID GKDBusArgumentGKeysID::getNextGKeysIDArgument(void)
 {
 	GK_LOG_FUNC
 
-	GLogiK::GKeysID id = GLogiK::GKeysID::GKEY_G0;
+	GLogiK::GKeysID id = GLogiK::GKeyID_INV; // invalid
 
 	try {
 		const uint8_t value = GKDBusArgumentByte::getNextByteArgument();
@@ -47,6 +47,9 @@ const GLogiK::GKeysID GKDBusArgumentGKeysID::getNextGKeysIDArgument(void)
 			throw GLogiKExcept("wrong GKeysID value");
 
 		id = static_cast<GLogiK::GKeysID>(value);
+
+		if(id == GLogiK::GKeyID_INV )
+			throw GLogiKExcept("invalid GKeyID");
 	}
 	catch ( const EmptyContainer & e ) {
 		LOG(warning) << "missing argument : " << e.what();

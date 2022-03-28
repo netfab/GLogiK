@@ -58,7 +58,7 @@ USBDevice::USBDevice(const USBDeviceID & device)
 #elif GKHIDAPI
 			_fatalErrors(0),
 #endif
-			_GKeyID(GKeysID::GKEY_G0)
+			_GKeyID(GKeyID_INV) // invalid
 {
 	std::fill_n(_pressedKeys, KEYS_BUFFER_LENGTH, 0);
 	std::fill_n(_previousPressedKeys, KEYS_BUFFER_LENGTH, 0);
