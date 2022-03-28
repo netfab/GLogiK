@@ -30,14 +30,6 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-const GLogiK::GKeysID getGKeysID(const uint8_t keyID)
-{
-	if(keyID > GLogiK::GKeysID::GKEY_G18)
-		throw GLogiKExcept("wrong GKeysID value");
-	const GLogiK::GKeysID id = static_cast<GLogiK::GKeysID>(keyID);
-	return id;
-};
-
 /*
  * helper function rebuilding macro_type vector
  * mirror of GKDBusMessage::appendMacro

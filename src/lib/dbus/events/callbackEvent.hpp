@@ -51,7 +51,7 @@ template <typename T>
 			virtual private GKDBusArgumentString,
 			virtual private GKDBusArgumentByte,
 			virtual private GKDBusArgumentUInt64,
-			private GKDBusArgumentGKeysID,
+			virtual private GKDBusArgumentGKeysID,
 			private GKDBusArgumentMKeysID,
 			private GKDBusArgumentMacrosBank
 {

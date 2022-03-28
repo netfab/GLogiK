@@ -31,7 +31,7 @@ namespace NSGKDBus
 
 class GKDBusArgumentGKeysIDArray
 	:	virtual private GKDBusArgumentByte,
-		private GKDBusArgumentGKeysID
+		virtual private GKDBusArgumentGKeysID
 {
 	public:
 		static const GLogiK::GKeysIDArray_type getNextGKeysIDArrayArgument(void);

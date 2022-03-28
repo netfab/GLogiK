@@ -30,8 +30,6 @@
 namespace NSGKDBus
 {
 
-const GLogiK::GKeysID getGKeysID(const uint8_t keyID);
-
 class GKDBusArgumentMacro
 	:	virtual private GKDBusArgumentByte,
 		virtual private GKDBusArgumentUInt16

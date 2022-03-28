@@ -23,6 +23,7 @@
 #define SRC_LIB_DBUS_ARG_GKDBUS_ARG_MACROS_BANK_HPP_
 
 #include "GKDBusArgByte.hpp"
+#include "GKDBusArgGKeysID.hpp"
 #include "GKDBusArgMacro.hpp"
 
 #include "include/keyEvent.hpp"
@@ -32,6 +33,7 @@ namespace NSGKDBus
 
 class GKDBusArgumentMacrosBank
 	:	virtual private GKDBusArgumentByte,
+		virtual private GKDBusArgumentGKeysID,
 		private GKDBusArgumentMacro
 {
 	public:
