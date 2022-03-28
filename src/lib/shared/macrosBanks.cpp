@@ -248,8 +248,7 @@ void MacrosBanks::throwWarn(
 	const std::string & s2,
 	const std::string & s3) const
 {
-	std::string warn(s1); warn += s2;
-	GKSysLogWarning(warn);
+	LOG(warning) << s1 << s2;
 	throw GLogiKExcept(s3);
 }
 
