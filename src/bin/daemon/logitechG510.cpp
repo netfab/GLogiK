@@ -155,7 +155,7 @@ const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const
 	return G510Base::knownDevices;
 }
 
-const GKeysIDArray_type G510Base::getGKeysID(void) const
+const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 {
 	GKeysIDArray_type ret;
 	for(const auto & key : G510Base::GKeys5BytesMap) {

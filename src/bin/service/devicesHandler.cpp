@@ -560,7 +560,7 @@ void DevicesHandler::setDeviceProperties(
 		const std::vector<std::string> MKeysNames( getStringArray(remoteMethod) );
 		GKLog3(trace, devID, " number of M-keys banks : ", MKeysNames.size())
 
-		remoteMethod = "GetDeviceGKeysID";
+		remoteMethod = "GetDeviceGKeysIDArray";
 
 		try {
 			_pDBus->initializeRemoteMethodCall(

@@ -800,7 +800,7 @@ const banksMap_type & DevicesManager::getDeviceMacrosBanks(const std::string & d
 	return MacrosBanks::emptyMacrosBanks;
 }
 
-const GKeysIDArray_type DevicesManager::getDeviceGKeysID(const std::string & devID) const
+const GKeysIDArray_type DevicesManager::getDeviceGKeysIDArray(const std::string & devID) const
 {
 	GK_LOG_FUNC
 
@@ -811,7 +811,7 @@ const GKeysIDArray_type DevicesManager::getDeviceGKeysID(const std::string & dev
 		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			for(const auto & driver : _drivers) {
 				if( device.getDriverID() == driver->getDriverID() ) {
-					return driver->getGKeysID();
+					return driver->getGKeysIDArray();
 				}
 			}
 		}
@@ -824,7 +824,7 @@ const GKeysIDArray_type DevicesManager::getDeviceGKeysID(const std::string & dev
 			if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 				for(const auto & driver : _drivers) {
 					if( device.getDriverID() == driver->getDriverID() ) {
-						return driver->getGKeysID();
+						return driver->getGKeysIDArray();
 					}
 				}
 			}

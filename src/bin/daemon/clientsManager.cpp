@@ -195,11 +195,11 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 		std::bind(&ClientsManager::getDeviceLCDPluginsProperties, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2aG>::exposeMethod(
-		system_bus, DM_object, DM_interf, "GetDeviceGKeysID",
+		system_bus, DM_object, DM_interf, "GetDeviceGKeysIDArray",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"ay", "array_of_keys_id", dOUT, "string array of device G-keys ID"} },
-		std::bind(&ClientsManager::getDeviceGKeysID, this, std::placeholders::_1, std::placeholders::_2) );
+		std::bind(&ClientsManager::getDeviceGKeysIDArray, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2as>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceMKeysNames",
@@ -885,7 +885,7 @@ const macro_type & ClientsManager::getDeviceMacro(
 }
 
 const GKeysIDArray_type
-	ClientsManager::getDeviceGKeysID(
+	ClientsManager::getDeviceGKeysIDArray(
 		const std::string & clientID,
 		const std::string & devID)
 {
@@ -898,7 +898,7 @@ const GKeysIDArray_type
 
 	try {
 		_connectedClients.at(clientID);
-		return _pDevicesManager->getDeviceGKeysID(devID);
+		return _pDevicesManager->getDeviceGKeysIDArray(devID);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);

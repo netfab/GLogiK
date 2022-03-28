@@ -108,7 +108,7 @@ class KeyboardDriver
 		) noexcept;
 
 		virtual const std::vector<USBDeviceID> & getSupportedDevices(void) const = 0;
-		virtual const GKeysIDArray_type getGKeysID(void) const = 0;
+		virtual const GKeysIDArray_type getGKeysIDArray(void) const = 0;
 		virtual const std::vector<std::string> getMKeysNames(void) const = 0;
 
 	protected:
