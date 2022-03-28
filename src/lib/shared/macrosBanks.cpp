@@ -139,7 +139,7 @@ void MacrosBanks::checkMacrosBanksKeys(void)
 		for(auto it = mBank.begin(); it != mBank.end();) {
 			try {
 				const uint8_t id = toEnumType(it->first);
-				if(id > GLogiK::GKeysID::GKEY_G18)
+				if(id > GLogiK::GKeyID_MAX)
 					throw GLogiKExcept("wrong GKeysID value");
 
 				//GKLog2(trace, "checked GKeyID: ", getGKeyName(it->first))
