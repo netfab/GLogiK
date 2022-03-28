@@ -254,7 +254,7 @@ void MacrosBanks::throwWarn(
 
 const MKeysID MacrosBanks::getBankID(const uint8_t num) const
 {
-	if(num > MKeysID::MKEY_M3)
+	if(num > GLogiK::MKeyID_MAX)
 		throw GLogiKExcept("wrong bankID value");
 
 	const MKeysID id = static_cast<MKeysID>(num);

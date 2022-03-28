@@ -117,6 +117,7 @@ enum class GKeysID : uint8_t
 
 const GKeysID GKeyID_MAX = GKeysID::GKEY_G18;
 const GKeysID GKeyID_INV = GKeysID::GKEY_G0; // invalid
+const MKeysID MKeyID_MAX = MKeysID::MKEY_M3;
 
 // GKeysIDArray
 typedef std::vector<GKeysID> GKeysIDArray_type;

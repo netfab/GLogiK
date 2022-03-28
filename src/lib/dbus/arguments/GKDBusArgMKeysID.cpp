@@ -43,7 +43,7 @@ const GLogiK::MKeysID GKDBusArgumentMKeysID::getNextMKeysIDArgument(void)
 	try {
 		const uint8_t value = GKDBusArgumentByte::getNextByteArgument();
 
-		if(value > GLogiK::MKeysID::MKEY_M3)
+		if(value > GLogiK::MKeyID_MAX)
 			throw GLogiKExcept("wrong MKeysID value");
 
 		id = static_cast<GLogiK::MKeysID>(value);
