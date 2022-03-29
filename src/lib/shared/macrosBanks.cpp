@@ -32,12 +32,6 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-const std::string idToString(const MKeysID keyID)
-{
-	const std::string ret(std::to_string(static_cast<unsigned int>(keyID)));
-	return ret;
-}
-
 const macro_type MacrosBanks::emptyMacro = {};
 const banksMap_type MacrosBanks::emptyMacrosBanks = {};
 
@@ -172,11 +166,13 @@ void MacrosBanks::clearMacro(
 			bank.at(keyID).clear();
 		}
 		catch(const std::out_of_range& oor) {
-			this->throwWarn("wrong map key: ", getGKeyName(keyID), "can't set macro");
+			LOG(warning) << "wrong GKeyID: " << keyID;
+			throw GLogiKExcept("clear macro failed");
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->throwWarn("wrong bankID: ", idToString(bankID), "can't clear macro");
+		LOG(warning) << "wrong bankID: " << bankID;
+		throw GLogiKExcept("clear macro failed");
 	}
 }
 
@@ -203,11 +199,13 @@ void MacrosBanks::setMacro(
 			bank.at(keyID) = macro;
 		}
 		catch(const std::out_of_range& oor) {
-			this->throwWarn("wrong map key: ", getGKeyName(keyID), "can't set macro");
+			LOG(warning) << "wrong GKeyID: " << keyID;
+			throw GLogiKExcept("set macro failed");
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->throwWarn("wrong bankID: ", idToString(bankID), "can't set macro");
+		LOG(warning) << "wrong bankID: " << bankID;
+		throw GLogiKExcept("set macro failed");
 	}
 }
 
@@ -221,11 +219,13 @@ const macro_type & MacrosBanks::getMacro(const MKeysID bankID, const GKeysID key
 			return bank.at(keyID);
 		}
 		catch(const std::out_of_range& oor) {
-			this->throwWarn("wrong map key: ", getGKeyName(keyID), "can't get macro");
+			LOG(warning) << "wrong GKeyID: " << keyID;
+			throw GLogiKExcept("get macro failed");
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->throwWarn("wrong bankID: ", idToString(bankID), "can't get macro");
+		LOG(warning) << "wrong bankID: " << bankID;
+		throw GLogiKExcept("get macro failed");
 	}
 
 	return MacrosBanks::emptyMacro;
@@ -239,17 +239,9 @@ void MacrosBanks::resetMacrosBank(const MKeysID bankID)
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		this->throwWarn("wrong bankID: ", idToString(bankID), "can't reset macro bank");
+		LOG(warning) << "wrong bankID: " << bankID;
+		throw GLogiKExcept("reset bank failed");
 	}
-}
-
-void MacrosBanks::throwWarn(
-	const std::string & s1,
-	const std::string & s2,
-	const std::string & s3) const
-{
-	LOG(warning) << s1 << s2;
-	throw GLogiKExcept(s3);
 }
 
 const MKeysID MacrosBanks::getBankID(const uint8_t num) const

@@ -128,6 +128,12 @@ inline std::ostream & operator << (std::ostream & stream, const MKeysID keyID)
 	return stream;
 }
 
+inline std::ostream & operator << (std::ostream & stream, const GKeysID keyID)
+{
+	stream << static_cast<unsigned int>(keyID);
+	return stream;
+}
+
 inline const bool operator > (const uint8_t value, const GKeysID keyID)
 {
 	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(keyID)));
