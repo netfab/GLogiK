@@ -38,7 +38,7 @@
 #include "USBDevice.hpp"
 
 #include "include/enums.hpp"
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 #include "include/LCDPluginProperties.hpp"
 
 #define DEVICE_LISTENING_THREAD_MAX_ERRORS 3

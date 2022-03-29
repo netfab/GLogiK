@@ -31,7 +31,7 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/map.hpp>
 
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 
 namespace GLogiK
 {

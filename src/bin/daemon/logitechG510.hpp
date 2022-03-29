@@ -35,7 +35,7 @@
 #include "USBDevice.hpp"
 
 #include "include/enums.hpp"
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 
 namespace GLogiK
 {

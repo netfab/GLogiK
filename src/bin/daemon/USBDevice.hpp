@@ -37,7 +37,7 @@
 
 #include "USBDeviceID.hpp"
 
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 
 #include <config.h>
 

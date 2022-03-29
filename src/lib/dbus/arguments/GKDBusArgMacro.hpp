@@ -25,7 +25,7 @@
 #include "GKDBusArgByte.hpp"
 #include "GKDBusArgUInt16.hpp"
 
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 
 namespace NSGKDBus
 {

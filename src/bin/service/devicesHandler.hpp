@@ -36,7 +36,7 @@
 #include "lib/shared/deviceProperties.hpp"
 
 #include "include/enums.hpp"
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 #include "include/LCDPluginProperties.hpp"
 
 #define LogRemoteCallFailure \

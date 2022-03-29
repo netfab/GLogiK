@@ -28,7 +28,7 @@
 #include "lib/shared/macrosBanks.hpp"
 #include "virtualKeyboard.hpp"
 
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 
 namespace GLogiK
 {

@@ -34,7 +34,7 @@
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/sessionManager.hpp"
 
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 #include "include/LCDPluginProperties.hpp"
 
 #include "devicesHandler.hpp"

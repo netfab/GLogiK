@@ -240,7 +240,7 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 			bool skipEvent = false;
 			const uint8_t size = device._newMacro.size();
 
-			/* Macro Size Limit - see keyEvent.hpp */
+			/* Macro Size Limit - see base.hpp */
 			if(size >= MACRO_T_MAX_SIZE) {
 				/* skip all new events */
 				skipEvent = true;
@@ -248,7 +248,7 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 				GKLog(trace, "skipped modifier key event, reached macro max size")
 			}
 
-			/* Macro Size Limit - see keyEvent.hpp */
+			/* Macro Size Limit - see base.hpp */
 			if( ! skipEvent and (size >= MACRO_T_KEYPRESS_MAX_SIZE) ) {
 				/* skip events other than release */
 				if( e.event != EventValue::EVENT_KEY_RELEASE ) {
@@ -334,7 +334,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device)
 			continue; /* nothing here */
 		}
 		else {
-			/* Macro Size Limit - see keyEvent.hpp */
+			/* Macro Size Limit - see base.hpp */
 			if(device._newMacro.size() >= MACRO_T_MAX_SIZE ) {
 				/* skip all new events */
 				GKLog(trace, "skipped key event, reached macro max size")
@@ -357,7 +357,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device)
 				continue;
 			}
 
-			/* Macro Size Limit - see keyEvent.hpp */
+			/* Macro Size Limit - see base.hpp */
 			if(device._newMacro.size() >= MACRO_T_KEYPRESS_MAX_SIZE ) {
 				/* skip events other than release */
 				if( e.event != EventValue::EVENT_KEY_RELEASE ) {

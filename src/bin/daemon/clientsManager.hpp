@@ -35,7 +35,7 @@
 #include "clientsSignals.hpp"
 #include "client.hpp"
 
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 #include "include/LCDPluginProperties.hpp"
 
 namespace GLogiK

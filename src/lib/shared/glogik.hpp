@@ -26,7 +26,7 @@
 #include <map>
 
 #include "include/enums.hpp"
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 
 #define GLOGIKS_DESKTOP_SERVICE_NAME "GLogiKs"
 

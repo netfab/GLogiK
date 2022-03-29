@@ -32,7 +32,7 @@
 
 #include "devicesManager.hpp"
 
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 
 namespace GLogiK
 {

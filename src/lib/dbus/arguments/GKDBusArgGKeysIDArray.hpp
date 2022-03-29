@@ -22,7 +22,7 @@
 #ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_GKEYS_ID_ARRAY_HPP_
 #define SRC_LIB_DBUS_ARG_GKDBUS_ARG_GKEYS_ID_ARRAY_HPP_
 
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 
 #include "GKDBusArgGKeysID.hpp"
 

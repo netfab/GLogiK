@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SRC_INCLUDE_KEY_EVENT_HPP_
-#define SRC_INCLUDE_KEY_EVENT_HPP_
+#ifndef SRC_INCLUDE_BASE_HPP_
+#define SRC_INCLUDE_BASE_HPP_
 
 #include <cstdint>
 

@@ -28,7 +28,7 @@
 
 #include <dbus/dbus.h>
 
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 #include "lib/dbus/GKDBusConnection.hpp"
 #include "lib/dbus/arguments/GKDBusArgString.hpp"
 
