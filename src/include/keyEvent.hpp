@@ -51,17 +51,6 @@ enum class EventValue : uint8_t
 	EVENT_KEY_UNKNOWN,
 };
 
-inline std::ostream & operator << (std::ostream & stream, const EventValue & event)
-{
-	stream << static_cast<unsigned int>(event);
-	return stream;
-}
-
-inline const bool operator > (const uint8_t value, const EventValue & event)
-{
-	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(event)));
-}
-
 struct KeyEvent {
 	public:
 		uint8_t code;
@@ -114,19 +103,28 @@ enum class GKeysID : uint8_t
 	GKEY_G18,
 };
 
-const GKeysID GKeyID_MAX = GKeysID::GKEY_G18;
 const GKeysID GKeyID_INV = GKeysID::GKEY_G0; // invalid
+const GKeysID GKeyID_MAX = GKeysID::GKEY_G18;
 const MKeysID MKeyID_MAX = MKeysID::MKEY_M3;
 
-// GKeysIDArray
-typedef std::vector<GKeysID> GKeysIDArray_type;
 
-inline std::ostream & operator << (std::ostream & stream, const MKeysID keyID)
+/* -- -- -- */
+/* -- -- -- */
+/* -- -- -- */
+
+// EventValue
+inline std::ostream & operator << (std::ostream & stream, const EventValue & event)
 {
-	stream << static_cast<unsigned int>(keyID);
+	stream << static_cast<unsigned int>(event);
 	return stream;
 }
 
+inline const bool operator > (const uint8_t value, const EventValue & event)
+{
+	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(event)));
+}
+
+// GKeysID
 inline std::ostream & operator << (std::ostream & stream, const GKeysID keyID)
 {
 	stream << static_cast<unsigned int>(keyID);
@@ -138,10 +136,25 @@ inline const bool operator > (const uint8_t value, const GKeysID keyID)
 	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(keyID)));
 }
 
+// MKeysID
+inline std::ostream & operator << (std::ostream & stream, const MKeysID keyID)
+{
+	stream << static_cast<unsigned int>(keyID);
+	return stream;
+}
+
 inline const bool operator > (const uint8_t value, const MKeysID keyID)
 {
 	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(keyID)));
 }
+
+
+/* -- -- -- */
+/* -- -- -- */
+/* -- -- -- */
+
+// GKeysIDArray
+typedef std::vector<GKeysID> GKeysIDArray_type;
 
 // macro
 typedef std::vector<KeyEvent> macro_type;
