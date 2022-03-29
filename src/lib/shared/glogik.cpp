@@ -151,6 +151,12 @@ const std::map<GKeysID, c_str> GKeysNamesMap = {
   { GKeysID::GKEY_G18, G_KEY_G18 },
 };
 
+const std::map<Keys, MKeysID> keys2MKeysIDMap = {
+  { Keys::GK_KEY_M1, MKeysID::MKEY_M1 },
+  { Keys::GK_KEY_M2, MKeysID::MKEY_M2 },
+  { Keys::GK_KEY_M3, MKeysID::MKEY_M3 },
+};
+
 const std::map<Keys, GKeysID> keys2GKeysIDMap = {
   { Keys::GK_KEY_G1, GKeysID::GKEY_G1 },
   { Keys::GK_KEY_G2, GKeysID::GKEY_G2 },
@@ -199,6 +205,11 @@ const std::string getGKeyName(const GKeysID keyID)
     LOG(error) << "invalid GKeysID: " << toEnumType(keyID);
   }
   return GKey;
+}
+
+const MKeysID getMKeyID(const Keys key)
+{
+  return keys2MKeysIDMap.at(key);
 }
 
 const GKeysID getGKeyID(const Keys key)

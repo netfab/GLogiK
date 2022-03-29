@@ -153,6 +153,8 @@ inline const bool operator > (const uint8_t value, const MKeysID keyID)
 /* -- -- -- */
 /* -- -- -- */
 
+// MKeysIDArray
+typedef std::vector<MKeysID> MKeysIDArray_type;
 // GKeysIDArray
 typedef std::vector<GKeysID> GKeysIDArray_type;
 

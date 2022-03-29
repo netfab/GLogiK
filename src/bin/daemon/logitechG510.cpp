@@ -155,6 +155,20 @@ const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const
 	return G510Base::knownDevices;
 }
 
+const MKeysIDArray_type G510Base::getMKeysIDArray(void) const
+{
+	MKeysIDArray_type ret;
+	for(const auto & key : G510Base::MKeys5BytesMap) {
+		try {
+			ret.push_back(getMKeyID(key.key));
+		}
+		catch(const std::out_of_range& oor) {
+			GKSysLogWarning("invalid key for MKeysID");
+		}
+	}
+	return ret;
+}
+
 const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 {
 	GKeysIDArray_type ret;

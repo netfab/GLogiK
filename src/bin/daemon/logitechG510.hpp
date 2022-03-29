@@ -72,6 +72,7 @@ class G510Base
 		const char* getDriverName(void) const;
 		const uint16_t getDriverID(void) const;
 		const std::vector<USBDeviceID> & getSupportedDevices(void) const;
+		const MKeysIDArray_type getMKeysIDArray(void) const;
 		const GKeysIDArray_type getGKeysIDArray(void) const;
 		const std::vector<std::string> getMKeysNames(void) const;
 
@@ -139,6 +140,9 @@ class LogitechG510
 		}
 		const std::vector<USBDeviceID> & getSupportedDevices(void) const override {
 			return G510Base::getSupportedDevices();
+		}
+		const MKeysIDArray_type getMKeysIDArray(void) const override {
+			return G510Base::getMKeysIDArray();
 		}
 		const GKeysIDArray_type getGKeysIDArray(void) const override {
 			return G510Base::getGKeysIDArray();
