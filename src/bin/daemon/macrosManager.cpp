@@ -50,6 +50,11 @@ const bool MacrosManager::macroDefined(const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
+	if(keyID == GKeyID_INV) {
+		GKSysLogError("invalid GKeyID");
+		return false;
+	}
+
 	try {
 		const macro_type & macro = _macrosBanks[_currentBankID].at(keyID);
 		return (macro.size() > 0);
@@ -65,6 +70,11 @@ const bool MacrosManager::macroDefined(const GKeysID keyID)
 void MacrosManager::runMacro(const GKeysID keyID)
 {
 	GK_LOG_FUNC
+
+	if(keyID == GKeyID_INV) {
+		GKSysLogError("invalid GKeyID");
+		return;
+	}
 
 	try {
 		const macro_type & macro = _macrosBanks[_currentBankID].at(keyID);
@@ -114,6 +124,11 @@ void MacrosManager::setMacro(
 	macro_type & macro)
 {
 	GK_LOG_FUNC
+
+	if(keyID == GKeyID_INV) {
+		GKSysLogError("invalid GKeyID");
+		return;
+	}
 
 	{
 		std::vector<MacroEvent> pressedEvents;

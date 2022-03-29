@@ -132,9 +132,13 @@ void MacrosBanks::checkMacrosBanksKeys(void)
 		auto & mBank = bankIt->second;
 		for(auto it = mBank.begin(); it != mBank.end();) {
 			try {
+				if(it->first == GKeyID_INV)
+					throw GLogiKExcept("invalid value");
+
 				const uint8_t id = toEnumType(it->first);
+
 				if(id > GLogiK::GKeyID_MAX)
-					throw GLogiKExcept("wrong GKeysID value");
+					throw GLogiKExcept("wrong GKeyID value");
 
 				//GKLog2(trace, "checked GKeyID: ", getGKeyName(it->first))
 				++it;
@@ -154,6 +158,11 @@ void MacrosBanks::clearMacro(
 	const GKeysID keyID)
 {
 	GK_LOG_FUNC
+
+	if(keyID == GKeyID_INV) {
+		LOG(error) << "invalid GKeyID";
+		throw GLogiKExcept("clear macro failed");
+	}
 
 	try {
 		mBank_type & bank = _macrosBanks.at(bankID);
@@ -182,6 +191,11 @@ void MacrosBanks::setMacro(
 	const macro_type & macro)
 {
 	GK_LOG_FUNC
+
+	if(keyID == GKeyID_INV) {
+		LOG(error) << "invalid GKeyID";
+		throw GLogiKExcept("set macro failed");
+	}
 
 	try {
 		mBank_type & bank = _macrosBanks.at(bankID);
@@ -212,6 +226,11 @@ void MacrosBanks::setMacro(
 const macro_type & MacrosBanks::getMacro(const MKeysID bankID, const GKeysID keyID)
 {
 	GK_LOG_FUNC
+
+	if(keyID == GKeyID_INV) {
+		LOG(error) << "invalid GKeyID";
+		throw GLogiKExcept("get macro failed");
+	}
 
 	try {
 		mBank_type & bank = _macrosBanks.at(bankID);
