@@ -71,7 +71,7 @@
       send_member="GetDeviceGKeysIDArray"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
-      send_member="GetDeviceMKeysNames"/>
+      send_member="GetDeviceMKeysIDArray"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
       send_member="SetDeviceMacrosBank"/>

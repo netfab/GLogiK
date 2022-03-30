@@ -208,13 +208,6 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 			{"ay", "array_of_keys_id", dOUT, "array of M-keys ID"} },
 		std::bind(&ClientsManager::getDeviceMKeysIDArray, this, std::placeholders::_1, std::placeholders::_2) );
 
-	_pDBus->NSGKDBus::Callback<SIGss2as>::exposeMethod(
-		system_bus, DM_object, DM_interf, "GetDeviceMKeysNames",
-		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
-			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"as", "array_of_strings", dOUT, "string array of M-keys names"} },
-		std::bind(&ClientsManager::getDeviceMKeysNames, this, std::placeholders::_1, std::placeholders::_2) );
-
 	_pDBus->NSGKDBus::Callback<SIGssyyy2b>::exposeMethod(
 		system_bus, DM_object, DM_interf, "SetDeviceBacklightColor",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
