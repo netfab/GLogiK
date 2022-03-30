@@ -884,6 +884,30 @@ const macro_type & ClientsManager::getDeviceMacro(
 	return MacrosBanks::emptyMacro;
 }
 
+const MKeysIDArray_type
+	ClientsManager::getDeviceMKeysIDArray(
+		const std::string & clientID,
+		const std::string & devID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		CONST_STRING_DEVICE, devID,
+		CONST_STRING_CLIENT, clientID
+	)
+
+	try {
+		_connectedClients.at(clientID);
+		return _pDevicesManager->getDeviceMKeysIDArray(devID);
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+	}
+
+	MKeysIDArray_type ret;
+	return ret;
+}
+
 const GKeysIDArray_type
 	ClientsManager::getDeviceGKeysIDArray(
 		const std::string & clientID,

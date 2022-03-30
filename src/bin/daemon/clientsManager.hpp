@@ -129,6 +129,10 @@ class ClientsManager
 			const std::string & clientID,
 			const std::string & devID
 		);
+		const MKeysIDArray_type getDeviceMKeysIDArray(
+			const std::string & clientID,
+			const std::string & devID
+		);
 		const GKeysIDArray_type getDeviceGKeysIDArray(
 			const std::string & clientID,
 			const std::string & devID
