@@ -74,7 +74,6 @@ class G510Base
 		const std::vector<USBDeviceID> & getSupportedDevices(void) const;
 		const MKeysIDArray_type getMKeysIDArray(void) const;
 		const GKeysIDArray_type getGKeysIDArray(void) const;
-		const std::vector<std::string> getMKeysNames(void) const;
 
 		static const std::vector<MKeyLed> ledsMask;
 
@@ -146,9 +145,6 @@ class LogitechG510
 		}
 		const GKeysIDArray_type getGKeysIDArray(void) const override {
 			return G510Base::getGKeysIDArray();
-		}
-		const std::vector<std::string> getMKeysNames(void) const override {
-			return G510Base::getMKeysNames();
 		}
 
 	private:

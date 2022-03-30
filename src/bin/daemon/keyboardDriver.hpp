@@ -110,7 +110,6 @@ class KeyboardDriver
 		virtual const std::vector<USBDeviceID> & getSupportedDevices(void) const = 0;
 		virtual const MKeysIDArray_type getMKeysIDArray(void) const = 0;
 		virtual const GKeysIDArray_type getGKeysIDArray(void) const = 0;
-		virtual const std::vector<std::string> getMKeysNames(void) const = 0;
 
 	protected:
 		KeyboardDriver(void) = default;

@@ -183,15 +183,6 @@ const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 	return ret;
 }
 
-const std::vector<std::string> G510Base::getMKeysNames(void) const
-{
-	std::vector<std::string> ret;
-	for( const auto & key : G510Base::MKeys5BytesMap ) {
-		ret.push_back(getKeyName(key.key));
-	}
-	return ret;
-}
-
 /* return true if any macro key (G1-G18) is pressed  */
 const bool G510Base::checkMacroKey(USBDevice & device)
 {

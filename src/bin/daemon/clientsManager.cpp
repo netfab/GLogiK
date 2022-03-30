@@ -932,30 +932,6 @@ const GKeysIDArray_type
 	return ret;
 }
 
-const std::vector<std::string>
-	ClientsManager::getDeviceMKeysNames(
-		const std::string & clientID,
-		const std::string & devID)
-{
-	GK_LOG_FUNC
-
-	GKLog4(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID
-	)
-
-	try {
-		_connectedClients.at(clientID);
-		return _pDevicesManager->getDeviceMKeysNames(devID);
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
-	}
-
-	std::vector<std::string> ret;
-	return ret;
-}
-
 const bool ClientsManager::setDeviceMacrosBank(
 	const std::string & clientID,
 	const std::string & devID,

@@ -876,44 +876,6 @@ const GKeysIDArray_type DevicesManager::getDeviceGKeysIDArray(const std::string 
 	return ret;
 }
 
-const std::vector<std::string> DevicesManager::getDeviceMKeysNames(const std::string & devID) const
-{
-	GK_LOG_FUNC
-
-	try {
-		const auto & device = _startedDevices.at(devID);
-		GKLog2(trace, devID, " device is started")
-
-		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			for(const auto & driver : _drivers) {
-				if( device.getDriverID() == driver->getDriverID() ) {
-					return driver->getMKeysNames();
-				}
-			}
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		try {
-			const auto & device = _stoppedDevices.at(devID);
-			GKLog2(trace, devID, " device is stopped")
-
-			if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-				for(const auto & driver : _drivers) {
-					if( device.getDriverID() == driver->getDriverID() ) {
-						return driver->getMKeysNames();
-					}
-				}
-			}
-		}
-		catch (const std::out_of_range& oor) {
-			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-		}
-	}
-
-	std::vector<std::string> ret;
-	return ret;
-}
-
 void DevicesManager::resetDevicesStates(void)
 {
 	GK_LOG_FUNC
