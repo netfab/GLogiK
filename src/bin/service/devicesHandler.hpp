@@ -129,6 +129,9 @@ class DevicesHandler
 		void unrefDevice(const std::string & devID);
 
 		const bool checkDeviceCapability(const DeviceProperties & device, Caps toCheck);
+
+		const MKeysIDArray_type getDeviceMKeysIDArray(const std::string & devID);
+		const GKeysIDArray_type getDeviceGKeysIDArray(const std::string & devID);
 };
 
 } // namespace GLogiK

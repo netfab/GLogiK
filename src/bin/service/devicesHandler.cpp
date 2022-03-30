@@ -518,82 +518,15 @@ void DevicesHandler::setDeviceProperties(
 	}
 
 	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-
-		auto getStringArray = [&] (const std::string & remoteMethod)
-			-> const std::vector<std::string>
-		{
-			std::vector<std::string> keysNames;
-
-			try {
-				_pDBus->initializeRemoteMethodCall(
-					_systemBus,
-					GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-					remoteMethod.c_str()
-				);
-				_pDBus->appendStringToRemoteMethodCall(_clientID);
-				_pDBus->appendStringToRemoteMethodCall(devID);
-
-				_pDBus->sendRemoteMethodCall();
-
-				try {
-					_pDBus->waitForRemoteMethodCallReply();
-
-					keysNames = _pDBus->getStringsArray();
-				}
-				catch (const GLogiKExcept & e) {
-					LogRemoteCallGetReplyFailure
-				}
-			}
-			catch (const GKDBusMessageWrongBuild & e) {
-				_pDBus->abandonRemoteMethodCall();
-				LogRemoteCallFailure
-			}
-
-			return keysNames;
-		};
-
 		/* initialize macro keys banks */
-		remoteMethod = "GetDeviceMKeysNames";
-
-		const std::vector<std::string> MKeysNames( getStringArray(remoteMethod) );
-		GKLog3(trace, devID, " number of M-keys banks : ", MKeysNames.size())
-
-		remoteMethod = "GetDeviceGKeysIDArray";
-
-		try {
-			_pDBus->initializeRemoteMethodCall(
-				_systemBus,
-				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				remoteMethod.c_str()
-			);
-			_pDBus->appendStringToRemoteMethodCall(_clientID);
-			_pDBus->appendStringToRemoteMethodCall(devID);
-
-			_pDBus->sendRemoteMethodCall();
-
-			try {
-				_pDBus->waitForRemoteMethodCallReply();
-
-				const GKeysIDArray_type keysID = _pDBus->getNextGKeysIDArrayArgument();
-				GKLog3(trace, devID, " number of G-keys per bank : ", keysID.size())
-				device.initMacrosBanks(MKeysNames.size(), keysID);
-			}
-			catch (const GLogiKExcept & e) {
-				LogRemoteCallGetReplyFailure
-			}
-		}
-		catch (const GKDBusMessageWrongBuild & e) {
-			_pDBus->abandonRemoteMethodCall();
-			LogRemoteCallFailure
+		const MKeysIDArray_type MKeysIDArray = this->getDeviceMKeysIDArray(devID);
+		if( ! MKeysIDArray.empty() ) {
+			const GKeysIDArray_type GKeysIDArray = this->getDeviceGKeysIDArray(devID);
+			device.initMacrosBanks(MKeysIDArray.size(), GKeysIDArray);
 		}
 	}
 
 	/* search a configuration file */
-
 	GKLog2(trace, devID, " assigning configuration file")
 
 	fs::path directory(_configurationRootDirectory);
@@ -979,6 +912,78 @@ const LCDPluginsPropertiesArray_type &
 	}
 
 	return DeviceProperties::_LCDPluginsPropertiesEmptyArray;
+}
+
+const MKeysIDArray_type DevicesHandler::getDeviceMKeysIDArray(const std::string & devID)
+{
+	MKeysIDArray_type MKeysIDArray;
+	const std::string remoteMethod("GetDeviceMKeysIDArray");
+
+	try {
+		_pDBus->initializeRemoteMethodCall(
+			_systemBus,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			remoteMethod.c_str()
+		);
+		_pDBus->appendStringToRemoteMethodCall(_clientID);
+		_pDBus->appendStringToRemoteMethodCall(devID);
+
+		_pDBus->sendRemoteMethodCall();
+
+		try {
+			_pDBus->waitForRemoteMethodCallReply();
+
+			MKeysIDArray = _pDBus->getNextMKeysIDArrayArgument();
+			GKLog3(trace, devID, " number of M-keys ID : ", MKeysIDArray.size())
+		}
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
+		}
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonRemoteMethodCall();
+		LogRemoteCallFailure
+	}
+
+	return MKeysIDArray;
+}
+
+const GKeysIDArray_type DevicesHandler::getDeviceGKeysIDArray(const std::string & devID)
+{
+	GKeysIDArray_type GKeysIDArray;
+	const std::string remoteMethod("GetDeviceGKeysIDArray");
+
+	try {
+		_pDBus->initializeRemoteMethodCall(
+			_systemBus,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			remoteMethod.c_str()
+		);
+		_pDBus->appendStringToRemoteMethodCall(_clientID);
+		_pDBus->appendStringToRemoteMethodCall(devID);
+
+		_pDBus->sendRemoteMethodCall();
+
+		try {
+			_pDBus->waitForRemoteMethodCallReply();
+
+			GKeysIDArray = _pDBus->getNextGKeysIDArrayArgument();
+			GKLog3(trace, devID, " number of G-keys ID : ", GKeysIDArray.size())
+		}
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
+		}
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonRemoteMethodCall();
+		LogRemoteCallFailure
+	}
+
+	return GKeysIDArray;
 }
 
 } // namespace GLogiK
