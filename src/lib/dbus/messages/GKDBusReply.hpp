@@ -70,7 +70,8 @@ class GKDBusMessageReply
 		void appendStringToReply(const std::string & value);
 		void appendStringVectorToReply(const std::vector<std::string> & list);
 
-		void appendGKeysIDArrayToReply(const GLogiK::GKeysIDArray_type & array);
+		void appendGKeysIDArrayToReply(const GLogiK::GKeysIDArray_type & keysID);
+		void appendMKeysIDArrayToReply(const GLogiK::MKeysIDArray_type & keysID);
 		void appendMacroToReply(const GLogiK::macro_type & macro);
 		void appendLCDPluginsPropertiesArrayToReply(const GLogiK::LCDPluginsPropertiesArray_type & array);
 

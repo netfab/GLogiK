@@ -46,6 +46,7 @@
 #include "arguments/GKDBusArgMacro.hpp"
 #include "arguments/GKDBusArgDevicesMap.hpp"
 #include "arguments/GKDBusArgGKeysIDArray.hpp"
+#include "arguments/GKDBusArgMKeysIDArray.hpp"
 #include "arguments/GKDBusArgLCDPluginsArray.hpp"
 
 namespace NSGKDBus
@@ -70,6 +71,7 @@ class GKDBus
 		public GKDBusArgumentMacro,
 		public GKDBusArgumentDevicesMap,
 		public GKDBusArgumentGKeysIDArray,
+		public GKDBusArgumentMKeysIDArray,
 		public GKDBusArgumentLCDPluginsArray
 {
 	public:

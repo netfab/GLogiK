@@ -31,6 +31,8 @@ libGKDBus_la_SOURCES = \
 	%D%/arguments/GKDBusArgGKeysIDArray.hpp \
 	%D%/arguments/GKDBusArgMKeysID.cpp \
 	%D%/arguments/GKDBusArgMKeysID.hpp \
+	%D%/arguments/GKDBusArgMKeysIDArray.cpp \
+	%D%/arguments/GKDBusArgMKeysIDArray.hpp \
 	%D%/arguments/GKDBusArgMacro.cpp \
 	%D%/arguments/GKDBusArgMacro.hpp \
 	%D%/arguments/GKDBusArgMacrosBank.cpp \
@@ -69,6 +71,8 @@ libGKDBus_la_SOURCES = \
 	%D%/events/SIGsmG2b.hpp \
 	%D%/events/SIGss2aG.cpp \
 	%D%/events/SIGss2aG.hpp \
+	%D%/events/SIGss2am.cpp \
+	%D%/events/SIGss2am.hpp \
 	%D%/events/SIGss2aP.cpp \
 	%D%/events/SIGss2aP.hpp \
 	%D%/events/SIGss2as.cpp \

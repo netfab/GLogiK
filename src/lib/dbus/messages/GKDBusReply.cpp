@@ -123,10 +123,16 @@ void GKDBusMessageReply::appendStringVectorToReply(const std::vector<std::string
 		_reply->appendStringVector(list);
 }
 
-void GKDBusMessageReply::appendGKeysIDArrayToReply(const GLogiK::GKeysIDArray_type & array)
+void GKDBusMessageReply::appendGKeysIDArrayToReply(const GLogiK::GKeysIDArray_type & keysID)
 {
 	if(_reply != nullptr) /* sanity check */
-		_reply->appendGKeysIDArray(array);
+		_reply->appendGKeysIDArray(keysID);
+}
+
+void GKDBusMessageReply::appendMKeysIDArrayToReply(const GLogiK::MKeysIDArray_type & keysID)
+{
+	if(_reply != nullptr) /* sanity check */
+		_reply->appendMKeysIDArray(keysID);
 }
 
 void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_type & macro)

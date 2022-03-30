@@ -47,7 +47,8 @@ class GKDBusMessage
 
 		void appendGKeysID(const GLogiK::GKeysID keyID);
 		void appendMKeysID(const GLogiK::MKeysID keyID);
-		void appendGKeysIDArray(const GLogiK::GKeysIDArray_type & array);
+		void appendGKeysIDArray(const GLogiK::GKeysIDArray_type & keysID);
+		void appendMKeysIDArray(const GLogiK::MKeysIDArray_type & keysID);
 		void appendMacro(const GLogiK::macro_type & macro);
 		void appendMacrosBank(const GLogiK::mBank_type & bank);
 		void appendLCDPluginsPropertiesArray(
