@@ -53,7 +53,6 @@
 #include "SIGss2aG.hpp"   //  two strings to array of G-KeyID
 #include "SIGss2am.hpp"   //  two strings to array of M-KeyID
 #include "SIGss2aP.hpp"   //  two strings to array of LCD Plugins Properties
-#include "SIGss2as.hpp"   //  two strings to array of string
 #include "SIGss2b.hpp"    //             two strings to bool
 #include "SIGss2s.hpp"    //           two strings to string
 #include "SIGss2v.hpp"    //             two strings to void
