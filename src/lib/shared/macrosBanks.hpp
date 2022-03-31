@@ -43,8 +43,8 @@ class MacrosBanks
 		static const banksMap_type emptyMacrosBanks;
 
 		void initMacrosBanks(
-			const uint8_t numBanks,
-			const GKeysIDArray_type & keysID
+			const MKeysIDArray_type & MKeysIDArray,
+			const GKeysIDArray_type & GKeysIDArray
 		);
 
 		const banksMap_type & getMacrosBanks(void) const;

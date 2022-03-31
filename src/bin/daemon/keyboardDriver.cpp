@@ -993,7 +993,7 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 				buffer	<< "Virtual " << device.getFullName() << " " << device.getID();
 
 				MacrosManager* mm = new MacrosManager(buffer.str());
-				mm->initMacrosBanks(this->getMKeysIDArray().size(), this->getGKeysIDArray());
+				mm->initMacrosBanks(this->getMKeysIDArray(), this->getGKeysIDArray());
 
 				device.setMacrosManager(mm);
 			}

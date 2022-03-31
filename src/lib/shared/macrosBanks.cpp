@@ -44,17 +44,23 @@ MacrosBanks::~MacrosBanks()
 }
 
 void MacrosBanks::initMacrosBanks(
-	const uint8_t numBanks,
-	const GKeysIDArray_type & keysID)
+	const MKeysIDArray_type & MKeysIDArray,
+	const GKeysIDArray_type & GKeysIDArray)
 {
 	GK_LOG_FUNC
 
-	GKLog4(trace, "numBanks: ", toUInt(numBanks), "numKeys: ", keysID.size())
+	GKLog4(trace, "numBanks: ", MKeysIDArray.size(), "numKeys: ", GKeysIDArray.size())
 
-	for(unsigned int bankID = 0; bankID <= toUInt(numBanks); ++bankID) {
+	if( MKeysIDArray.empty() ) {
+		LOG(error) << "empty MKeysID array !";
+		return;
+	}
+
+	MKeysIDArray_type MKeysIDArr(MKeysIDArray);
+	MKeysIDArr.emplace(MKeysIDArr.begin(), MKeysID::MKEY_M0);
+
+	for(const MKeysID & id : MKeysIDArr) {
 		try {
-			const MKeysID id = this->getBankID(bankID);
-
 			{
 				/* XXX - c++17 structured bindings */
 				typedef std::pair<banksMap_type::iterator, bool> bankInsRet;
@@ -65,7 +71,7 @@ void MacrosBanks::initMacrosBanks(
 
 			unsigned short insertedKeys = 0;
 
-			for(const auto & keyID : keysID) {
+			for(const auto & keyID : GKeysIDArray) {
 				/* XXX - c++17 structured bindings */
 				typedef std::pair<mBank_type::iterator, bool> keyInsRet;
 
@@ -89,10 +95,10 @@ void MacrosBanks::initMacrosBanks(
 				insertStatus(insKey);
 			}
 
-			GKLog4(trace, "bank id: ", bankID, "number of initialized G-keys: ", insertedKeys)
+			GKLog4(trace, "bank id: ", id, "number of initialized G-keys: ", insertedKeys)
 		}
 		catch(const GLogiKExcept & e) {
-			LOG(error) << "bank id: " << bankID << " - failed to initialize: " << e.what();
+			LOG(error) << "bank id: " << id << " - failed to initialize: " << e.what();
 		}
 	}
 }
