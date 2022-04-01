@@ -198,14 +198,14 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 		system_bus, DM_object, DM_interf, "GetDeviceGKeysIDArray",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"ay", "array_of_keys_id", dOUT, "array of device G-keys ID"} },
+			{"ay", "array_of_keys_id", dOUT, "array of G-keys ID for the device"} },
 		std::bind(&ClientsManager::getDeviceGKeysIDArray, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2am>::exposeMethod(
 		system_bus, DM_object, DM_interf, "GetDeviceMKeysIDArray",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"ay", "array_of_keys_id", dOUT, "array of M-keys ID"} },
+			{"ay", "array_of_keys_id", dOUT, "array of M-keys ID for the device"} },
 		std::bind(&ClientsManager::getDeviceMKeysIDArray, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGssyyy2b>::exposeMethod(
