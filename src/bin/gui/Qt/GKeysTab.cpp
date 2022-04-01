@@ -179,7 +179,7 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 
 	/* -- -- -- */
 
-	clearLayout(_pGroupBoxLayout);
+	clearLayout(_pKeysBoxLayout);
 
 	try {
 		{	// initialize M-keys layout
@@ -189,10 +189,10 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 				ids.push_back(bankID);
 			}
 
-			_pGroupBoxLayout->addLayout( newBanksLayout(ids) );
+			_pKeysBoxLayout->addLayout( newBanksLayout(ids) );
 		}
 
-		_pGroupBoxLayout->addSpacing(10);
+		_pKeysBoxLayout->addSpacing(10);
 
 		/* G-keys */
 		for(unsigned short i = 0; i < (bank.size() / keysPerLine); ++i)
@@ -213,12 +213,12 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 			const QString key2(getGKeyName(it2->first).c_str());
 			const QString key3(getGKeyName(it3->first).c_str());
 
-			_pGroupBoxLayout->addLayout(
+			_pKeysBoxLayout->addLayout(
 				newButtonsLayout(key1, key2, key3)
 			);
 		}
 
-		_pGroupBoxLayout->addStretch();
+		_pKeysBoxLayout->addStretch();
 	}
 	catch (const std::bad_alloc& e) {
 		LOG(error) << "bad allocation : " << e.what();
@@ -249,16 +249,16 @@ void GKeysTab::buildTab(void)
 
 			/* -- -- -- */
 
-			QGroupBox* GKeysBox = new QGroupBox();
-			GKeysBox->setTitle("");
-			//GKeysBox->setFlat(true);
+			QGroupBox* keysBox = new QGroupBox();
+			keysBox->setTitle("");
+			//keysBox->setFlat(true);
 
-			_pGroupBoxLayout = new QVBoxLayout();
-			_pGroupBoxLayout->setObjectName("GroupBoxLayout");
+			_pKeysBoxLayout = new QVBoxLayout();
+			_pKeysBoxLayout->setObjectName("KeysBoxLayout");
 
-			GKeysBox->setLayout(_pGroupBoxLayout);
+			keysBox->setLayout(_pKeysBoxLayout);
 
-			hBox->addWidget(GKeysBox);
+			hBox->addWidget(keysBox);
 
 			/* -- -- -- */
 			hBox->addWidget( this->getVLine() );

@@ -57,7 +57,7 @@ class GKeysTab
 	private:
 		GKeysTab() = delete;
 
-		QVBoxLayout* _pGroupBoxLayout = nullptr;
+		QVBoxLayout* _pKeysBoxLayout = nullptr;
 
 		static const std::map<const MKeysID, c_str> bankNames;
 };
