@@ -26,6 +26,7 @@
 
 #include <QString>
 #include <QVBoxLayout>
+#include <QButtonGroup>
 
 #include "lib/shared/deviceProperties.hpp"
 #include "lib/shared/glogik.hpp"
@@ -58,6 +59,10 @@ class GKeysTab
 		GKeysTab() = delete;
 
 		QVBoxLayout* _pKeysBoxLayout = nullptr;
+		//QVBoxLayout* _pInputsBoxLayout = nullptr;
+		QButtonGroup* _pRadioButtonsGroup = nullptr;
+
+		void setRadioButtonsEnabled(const bool status);
 
 		static const std::map<const MKeysID, c_str> bankNames;
 };

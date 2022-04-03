@@ -21,11 +21,13 @@
 
 #include <string>
 
+#include <QList>
 #include <QHBoxLayout>
 #include <QGroupBox>
 #include <QLayoutItem>
 #include <QSpacerItem>
 #include <QPushButton>
+#include <QRadioButton>
 
 #include "GKeysTab.hpp"
 
@@ -180,6 +182,7 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 	/* -- -- -- */
 
 	clearLayout(_pKeysBoxLayout);
+	//clearLayout(_pInputsBoxLayout);
 
 	try {
 		{	// initialize M-keys layout
@@ -194,7 +197,7 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 
 		_pKeysBoxLayout->addSpacing(10);
 
-		/* G-keys */
+		/* G-keys layouts */
 		for(unsigned short i = 0; i < (bank.size() / keysPerLine); ++i)
 		{
 			mBank_type::const_iterator it1 = bank.begin();
@@ -241,31 +244,70 @@ void GKeysTab::buildTab(void)
 
 		/* -- -- -- */
 
-		{
+		{ // keysBox + VLine + inputsBox
 			QHBoxLayout* hBox = new QHBoxLayout();
 			GKLog(trace, "allocated QHBoxLayout")
 
 			vBox->addLayout(hBox);
 
 			/* -- -- -- */
+			{ // keysBox
+				QGroupBox* keysBox = new QGroupBox();
+				keysBox->setTitle("");
+				//keysBox->setFlat(true);
 
-			QGroupBox* keysBox = new QGroupBox();
-			keysBox->setTitle("");
-			//keysBox->setFlat(true);
+				_pKeysBoxLayout = new QVBoxLayout();
+				_pKeysBoxLayout->setObjectName("KeysBoxLayout");
 
-			_pKeysBoxLayout = new QVBoxLayout();
-			_pKeysBoxLayout->setObjectName("KeysBoxLayout");
+				keysBox->setLayout(_pKeysBoxLayout);
 
-			keysBox->setLayout(_pKeysBoxLayout);
-
-			hBox->addWidget(keysBox);
+				hBox->addWidget(keysBox);
+				GKLog(trace, "keysBox added")
+			}
 
 			/* -- -- -- */
 			hBox->addWidget( this->getVLine() );
 			/* -- -- -- */
 
-			hBox->addStretch();
-		}
+			/* -- -- -- */
+			{ // inputsBox
+				QGroupBox* inputsBox = new QGroupBox();
+				inputsBox->setTitle("");
+				//inputsBox->setFlat(true);
+
+				QVBoxLayout* inputsVBoxLayout = new QVBoxLayout();
+				inputsVBoxLayout->setObjectName("InputsVBoxLayout");
+
+				inputsBox->setLayout(inputsVBoxLayout);
+				{ // header
+					QHBoxLayout* headerHBoxLayout = new QHBoxLayout();
+					inputsVBoxLayout->addLayout(headerHBoxLayout);
+
+					_pRadioButtonsGroup = new QButtonGroup(this);
+					QRadioButton* button1 = new QRadioButton("Macro");
+					QRadioButton* button2 = new QRadioButton("Command");
+					_pRadioButtonsGroup->addButton(button1);
+					_pRadioButtonsGroup->addButton(button2);
+
+					headerHBoxLayout->addStretch();
+
+					headerHBoxLayout->addWidget(button1);
+					headerHBoxLayout->addWidget(button2);
+					this->setRadioButtonsEnabled(false);
+
+					GKLog(trace, "inputsBox header added")
+				}
+
+				inputsVBoxLayout->addWidget( this->getHLine() );
+
+				// --
+				inputsVBoxLayout->addStretch();
+
+				// --
+				hBox->addWidget(inputsBox);
+				GKLog(trace, "inputsBox added")
+			}
+		} // end (keysBox + VLine + inputsBox)
 
 		/* -- -- -- */
 		vBox->addWidget( this->getHLine() );
@@ -294,6 +336,23 @@ void GKeysTab::buildTab(void)
 		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
+}
+
+void GKeysTab::setRadioButtonsEnabled(const bool status)
+{
+	if(_pRadioButtonsGroup == nullptr)
+		return;
+
+	using T = QList<QAbstractButton*>;
+
+	const T radioButtons(_pRadioButtonsGroup->buttons());
+
+	for(T::const_iterator it = radioButtons.constBegin();
+		it != radioButtons.constEnd(); ++it)
+	{
+		(*it)->setEnabled(status);
+	}
+
 }
 
 } // namespace GLogiK
