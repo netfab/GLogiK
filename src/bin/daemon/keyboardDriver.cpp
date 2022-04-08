@@ -475,8 +475,8 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 								);
 
 								pDBus->appendStringToBroadcastSignal(device.getID());
-								pDBus->appendUInt8ToBroadcastSignal(toEnumType(device._GKeyID));
 								pDBus->appendMKeysIDToBroadcastSignal(bankID);
+								pDBus->appendGKeysIDToBroadcastSignal(device._GKeyID);
 
 								pDBus->sendBroadcastSignal();
 							}
