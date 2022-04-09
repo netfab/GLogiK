@@ -27,6 +27,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 
 #include <boost/filesystem.hpp>
 
@@ -100,6 +101,10 @@ class DevicesHandler
 		NSGKDBus::GKDBus* _pDBus;
 		NSGKUtils::FileSystem* _pGKfs;
 		const NSGKDBus::BusConnection _systemBus;
+
+		typedef std::set<std::string> devIDSet;
+
+		devIDSet _ignoredFSNotifications;
 
 		std::map<std::string, DeviceProperties> _startedDevices;
 		std::map<std::string, DeviceProperties> _stoppedDevices;

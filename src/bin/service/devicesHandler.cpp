@@ -22,7 +22,6 @@
 #include <utility>
 #include <exception>
 #include <stdexcept>
-#include <set>
 
 #include <boost/archive/archive_exception.hpp>
 #include <boost/archive/xml_archive_exception.hpp>
@@ -86,7 +85,7 @@ void DevicesHandler::setClientID(const std::string & id)
 
 void DevicesHandler::clearDevices(void)
 {
-	std::set<std::string> devicesID;
+	devIDSet devicesID;
 
 	for( const auto & devicePair : _startedDevices ) {
 		devicesID.insert(devicePair.first);
@@ -148,6 +147,16 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID)
 {
 	GK_LOG_FUNC
 
+	{
+		devIDSet::const_iterator it = _ignoredFSNotifications.find(devID);
+		/* iterator to device ID was found */
+		if( it != _ignoredFSNotifications.cend() ) {
+			GKLog2(trace, devID, " ignoring filesystem notification after configuration file save")
+			_ignoredFSNotifications.erase(it);
+			return;
+		}
+	}
+
 	try {
 		DeviceProperties & device = _startedDevices.at(devID);
 		this->loadDeviceConfigurationFile(device);
@@ -193,6 +202,15 @@ void DevicesHandler::saveDeviceConfigurationFile(
 		fs::path filePath(_configurationRootDirectory);
 		filePath /= device.getVendor();
 		filePath /= device.getConfigFilePath();
+
+		/* ignore next filesystem notification for this device, this will
+		 * abort next reloadDeviceConfigurationFile call for this devID
+		 */
+		typedef std::pair<devIDSet::iterator, bool> ignoredInsRet;
+		ignoredInsRet ret = _ignoredFSNotifications.insert(devID);
+		if( ! ret.second ) {
+			GKLog2(warning, devID, "device ID already exists in container")
+		}
 
 		DeviceConfigurationFile::save(filePath.string(), device);
 
