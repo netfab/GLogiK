@@ -192,12 +192,6 @@ void DevicesHandler::saveDeviceConfigurationFile(
 	try {
 		fs::path filePath(_configurationRootDirectory);
 		filePath /= device.getVendor();
-
-		FileSystem::createDirectory(filePath, fs::owner_all);
-#if DEBUGGING_ON
-		FileSystem::traceLastDirectoryCreation();
-#endif
-
 		filePath /= device.getConfigFilePath();
 
 		DeviceConfigurationFile::save(filePath.string(), device);
@@ -560,17 +554,14 @@ void DevicesHandler::setDeviceProperties(
 
 		GKLog3(trace, devID, " found file : ", device.getConfigFilePath())
 
-		/* loading configuration file */
+		this->initializeConfigurationDirectory(device, false);
 		this->loadDeviceConfigurationFile(device);
+
 		LOG(info)	<< "found device " << devID << " - "
 					<< device.getVendor() << " "
 					<< device.getProduct() << " "
 					<< device.getName();
 		LOG(info)	<< devID << " configuration file found and loaded";
-
-		/* assuming that directory is readable since we just load
-		 * the configuration file */
-		this->watchDirectory(device, false);
 
 		this->sendDeviceConfigurationToDaemon(devID, device);
 	}
@@ -595,12 +586,8 @@ void DevicesHandler::setDeviceProperties(
 
 			GKLog3(trace, devID, " new file : ", device.getConfigFilePath())
 
-			/* we need to create the directory before watching it */
+			this->initializeConfigurationDirectory(device, false);
 			this->saveDeviceConfigurationFile(devID, device);
-
-			/* assuming that directory is readable since we just save
-			 * the configuration file and set permissions on directory */
-			this->watchDirectory(device, false);
 		}
 		catch ( const GLogiKExcept & e ) {
 			LOG(error) << devID << " failed to create default configuration file : " << e.what();
@@ -775,8 +762,8 @@ const bool DevicesHandler::setDeviceMacro(
 
 					device.setMacro(bankID, keyID, macro);
 
+					this->initializeConfigurationDirectory(device);
 					this->saveDeviceConfigurationFile(devID, device);
-					this->watchDirectory(device);
 					return true;
 				}
 				catch (const GLogiKExcept & e) {
@@ -810,8 +797,8 @@ const bool DevicesHandler::clearDeviceMacro(
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			device.clearMacro(bankID, keyID);
 
+			this->initializeConfigurationDirectory(device);
 			this->saveDeviceConfigurationFile(devID, device);
-			this->watchDirectory(device);
 			return true;
 		}
 	}
@@ -824,7 +811,7 @@ const bool DevicesHandler::clearDeviceMacro(
 	return false;
 }
 
-void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check)
+void DevicesHandler::initializeConfigurationDirectory(DeviceProperties & device, const bool check)
 {
 	GK_LOG_FUNC
 
@@ -832,6 +819,11 @@ void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check)
 	directory /= device.getVendor();
 
 	try {
+		FileSystem::createDirectory(directory, fs::owner_all);
+#if DEBUGGING_ON
+		FileSystem::traceLastDirectoryCreation();
+#endif
+
 		device.setWatchDescriptor( _pGKfs->addNotifyDirectoryWatch( directory.string(), check ) );
 	}
 	catch ( const GLogiKExcept & e ) {

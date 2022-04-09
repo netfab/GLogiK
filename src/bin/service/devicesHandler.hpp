@@ -115,7 +115,7 @@ class DevicesHandler
 			const std::string & devID,
 			const DeviceProperties & device
 		);
-		void watchDirectory(
+		void initializeConfigurationDirectory(
 			DeviceProperties & device,
 			const bool check=true
 		);
