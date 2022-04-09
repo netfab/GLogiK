@@ -63,6 +63,9 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 
 	unsigned int layoutNum = 0;
 
+	const MKeysID currentID = MKeysID::MKEY_M2; // TODO
+	const unsigned short keysPerLine = 3;	// TODO
+
 	/* -- -- -- */
 
 	auto clearLayout = [] (QLayout* mainLayout) -> void {
@@ -122,15 +125,47 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		return layoutName;
 	};
 
-	auto newButton = [] (const QString & text) -> QPushButton* {
-		QPushButton* b = new QPushButton(text);
-		b->setObjectName(text);
+	auto newMButton = [&currentID] (
+			const MKeysID & keyID,
+			const QString & keyName) -> QPushButton*
+	{
+		QPushButton* b = new QPushButton(keyName);
+
+		QString style = "background-color:#333333;";
+		if(keyID == currentID)
+			style += "color:#FF8C00;";
+		else
+			style += "color:#FFFFFF;";
+
+		b->setStyleSheet(style);
+		b->setObjectName(keyName);
 		b->setFixedWidth(32);
-		GKLog2(trace, "allocated QPushButton ", text.toStdString())
+
+		GKLog2(trace, "allocated M-Key QPushButton ", keyName.toStdString())
 		return b;
 	};
 
-	auto newBanksLayout = [&nextLayoutName, &newButton] (
+	auto newGButton = [] (
+			mBank_type::const_iterator & it) -> QPushButton*
+	{
+		const QString keyName(getGKeyName(it->first).c_str());
+
+		QPushButton* b = new QPushButton(keyName);
+
+		// this G-Key is currently used - macro is defined
+		if( ! (it->second).empty() ) {
+			const QString style = "background-color:#FF0000;";
+			b->setStyleSheet(style);
+		}
+
+		b->setObjectName(keyName);
+		b->setFixedWidth(40);
+
+		GKLog2(trace, "allocated G-Key QPushButton ", keyName.toStdString())
+		return b;
+	};
+
+	auto newBanksLayout = [&nextLayoutName, &newMButton] (
 		const std::vector<MKeysID> & banks ) -> QHBoxLayout*
 	{
 		QHBoxLayout* hBox = new QHBoxLayout();
@@ -143,38 +178,40 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 				continue; // skip virtual M0 key
 
 			auto n = bankNames.at(id);
-			hBox->addWidget( newButton( n ) );
+			hBox->addWidget( newMButton( id, n ) );
 			GKLog2(trace, "allocated M-key bank button: ", n)
 		}
 
 		return hBox;
 	};
 
-	auto newButtonsLayout = [&nextLayoutName, &newButton] (
-				const QString & button1,
-				const QString & button2,
-				const QString & button3) -> QHBoxLayout*
+	auto newButtonsLayout = [&nextLayoutName, &newGButton] (
+		mBank_type::const_iterator & it1,
+		mBank_type::const_iterator & it2,
+		mBank_type::const_iterator & it3) -> QHBoxLayout*
 	{
 		QHBoxLayout* hBox = new QHBoxLayout();
 
 		hBox->setObjectName( nextLayoutName() );
 		GKLog2(trace, "allocated QHBoxLayout ", hBox->objectName().toStdString())
 
-		hBox->addWidget( newButton(button1) );
-		hBox->addWidget( newButton(button2) );
-		hBox->addWidget( newButton(button3) );
+		hBox->addWidget( newGButton(it1) );
+		hBox->addWidget( newGButton(it2) );
+		hBox->addWidget( newGButton(it3) );
 
 		return hBox;
 	};
 
 	/* -- -- -- */
 
-	const MKeysID currentID = MKeysID::MKEY_M0; // TODO
-	const unsigned short keysPerLine = 3;	// TODO
-
 	const banksMap_type & banks = device.getMacrosBanks();
 
 	const mBank_type & bank = banks.at(currentID);
+
+	//for(const auto & GMacroPair : bank) {
+	//	LOG(trace)	<< "key|size: " << getGKeyName(GMacroPair.first)
+	//				<< "|" << (GMacroPair.second).size();
+	//}
 
 	if( (bank.size() % keysPerLine) != 0 )
 		throw GLogiKExcept("G-Keys modulo not null");
@@ -212,12 +249,8 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 			if(safeAdvance(it3, bank.end(), 1) != 0)
 				throw GLogiKExcept("wrong third G-Key");
 
-			const QString key1(getGKeyName(it1->first).c_str());
-			const QString key2(getGKeyName(it2->first).c_str());
-			const QString key3(getGKeyName(it3->first).c_str());
-
 			_pKeysBoxLayout->addLayout(
-				newButtonsLayout(key1, key2, key3)
+				newButtonsLayout(it1, it2, it3)
 			);
 		}
 
