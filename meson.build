@@ -19,6 +19,7 @@ gk_bindir = join_paths(gk_prefix, get_option('bindir'))
 gk_datadir = join_paths(gk_prefix, get_option('datadir'))
 
 pbm_data_dir = gk_datadir / meson.project_name() / 'pbm'
+qt_data_dir = gk_datadir / meson.project_name() / 'qt'
 
 #! ----------
 
@@ -121,6 +122,7 @@ define_array = [
   ['GLOGIKD_GROUP', glogikd_group],
   ['DATA_DIR', gk_datadir],
   ['PBM_DATA_DIR', pbm_data_dir],
+  ['QT_DATA_DIR', qt_data_dir],
 ]
 
 define_dep_array = [
@@ -206,8 +208,9 @@ if enable_dbus
 
   if enable_qt5
 	subdir('src/bin/gui/Qt')
-	subdir('data/icons')
 	subdir('data/applications')
+    subdir('data/gui')
+	subdir('data/icons')
   endif
 endif
 

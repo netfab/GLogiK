@@ -1,0 +1,29 @@
+
+#keysBox {
+  background-color:#555555;
+}
+
+#keysBox QPushButton {
+  border: 2px solid #000000;
+  color:#FFFFFF;
+  height: 28px;
+  border-radius: 6px;
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                    stop: 0 #444444, stop: 1 #222222);
+}
+
+#keysBox QPushButton:pressed,
+#keysBox QPushButton[class="macroGKey"]:pressed {
+    background-color: #000000;
+}
+
+#keysBox QPushButton[class="currentBank"] {
+  color:#FF8C00;
+}
+
+#keysBox QPushButton[class="macroGKey"] {
+  border: 2px solid #000000;
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                    stop: 0 #555555, stop: 1 #111111);
+}
+

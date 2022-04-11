@@ -41,6 +41,7 @@
 #include <QMetaObject>
 #include <QIcon>
 #include <QMessageBox>
+#include <QFile>
 
 #include <config.h>
 
@@ -158,6 +159,16 @@ void MainWindow::build(void)
 	QVBoxLayout* vBox = nullptr;
 
 	try {
+		{ /* loading stylesheet */
+			QString stylepath(QT_DATA_DIR); stylepath += "/qss/stylesheet.qss";
+
+			QFile qssfile(stylepath);
+			qssfile.open(QFile::ReadOnly);
+
+			QString styleSheet = QLatin1String(qssfile.readAll());
+			qApp->setStyleSheet(styleSheet);
+		}
+
 		QFrame *frame = new QFrame(this);
 		this->setCentralWidget(frame);
 

@@ -21,6 +21,7 @@
 
 #include <string>
 
+#include <QVariant>
 #include <QList>
 #include <QHBoxLayout>
 #include <QGroupBox>
@@ -131,13 +132,9 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 	{
 		QPushButton* b = new QPushButton(keyName);
 
-		QString style = "background-color:#333333;";
 		if(keyID == currentID)
-			style += "color:#FF8C00;";
-		else
-			style += "color:#FFFFFF;";
+			b->setProperty("class", QVariant("currentBank")); // css class
 
-		b->setStyleSheet(style);
 		b->setObjectName(keyName);
 		b->setFixedWidth(32);
 
@@ -153,10 +150,8 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		QPushButton* b = new QPushButton(keyName);
 
 		// this G-Key is currently used - macro is defined
-		if( ! (it->second).empty() ) {
-			const QString style = "background-color:#FF0000;";
-			b->setStyleSheet(style);
-		}
+		if( ! (it->second).empty() )
+			b->setProperty("class", QVariant("macroGKey")); // css class
 
 		b->setObjectName(keyName);
 		b->setFixedWidth(40);
@@ -193,6 +188,7 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		QHBoxLayout* hBox = new QHBoxLayout();
 
 		hBox->setObjectName( nextLayoutName() );
+
 		GKLog2(trace, "allocated QHBoxLayout ", hBox->objectName().toStdString())
 
 		hBox->addWidget( newGButton(it1) );
@@ -233,6 +229,7 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		}
 
 		_pKeysBoxLayout->addSpacing(10);
+		unsigned short c = 0;
 
 		/* G-keys layouts */
 		for(unsigned short i = 0; i < (bank.size() / keysPerLine); ++i)
@@ -252,6 +249,9 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 			_pKeysBoxLayout->addLayout(
 				newButtonsLayout(it1, it2, it3)
 			);
+
+			if((++c % 2) == 0)
+				_pKeysBoxLayout->addSpacing(20);
 		}
 
 		_pKeysBoxLayout->addStretch();
@@ -287,6 +287,7 @@ void GKeysTab::buildTab(void)
 			{ // keysBox
 				QGroupBox* keysBox = new QGroupBox();
 				keysBox->setTitle("");
+				keysBox->setObjectName("keysBox"); // css ID
 				//keysBox->setFlat(true);
 
 				_pKeysBoxLayout = new QVBoxLayout();
