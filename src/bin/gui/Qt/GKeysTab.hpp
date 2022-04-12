@@ -25,7 +25,7 @@
 #include <map>
 
 #include <QString>
-#include <QVBoxLayout>
+#include <QGroupBox>
 #include <QButtonGroup>
 
 #include "lib/shared/deviceProperties.hpp"
@@ -58,8 +58,8 @@ class GKeysTab
 	private:
 		GKeysTab() = delete;
 
-		QVBoxLayout* _pKeysBoxLayout = nullptr;
-		//QVBoxLayout* _pInputsBoxLayout = nullptr;
+		QGroupBox* _pKeysBox = nullptr;
+		QGroupBox* _pInputsBox = nullptr;
 		QButtonGroup* _pRadioButtonsGroup = nullptr;
 
 		void setRadioButtonsEnabled(const bool status);

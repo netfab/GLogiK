@@ -21,10 +21,11 @@
 
 #include <string>
 
+#include <QColor>
 #include <QVariant>
 #include <QList>
+#include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QGroupBox>
 #include <QLayoutItem>
 #include <QSpacerItem>
 #include <QPushButton>
@@ -67,7 +68,23 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 	const MKeysID currentID = MKeysID::MKEY_M2; // TODO
 	const unsigned short keysPerLine = 3;	// TODO
 
+	uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
+	const QColor color(r, g, b);
+
+	GKLog2(trace, "got color: ", color.name().toStdString())
+
 	/* -- -- -- */
+
+	auto setButtonColor = [&color] (QPushButton* button) -> void {
+		if( ! button ) {
+			GKLog(warning, "null pointer detected")
+			return;
+		}
+		QString style = "color:";
+		style += color.name();
+		style += ";";
+		button->setStyleSheet(style);
+	};
 
 	auto clearLayout = [] (QLayout* mainLayout) -> void {
 		std::function<void (QLayout*)> clearQLayout =
@@ -142,8 +159,7 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		return b;
 	};
 
-	auto newGButton = [] (
-			mBank_type::const_iterator & it) -> QPushButton*
+	auto newGButton = [&setButtonColor] (mBank_type::const_iterator & it) -> QPushButton*
 	{
 		const QString keyName(getGKeyName(it->first).c_str());
 
@@ -155,6 +171,8 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 
 		b->setObjectName(keyName);
 		b->setFixedWidth(40);
+
+		setButtonColor(b);
 
 		GKLog2(trace, "allocated G-Key QPushButton ", keyName.toStdString())
 		return b;
@@ -214,8 +232,12 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 
 	/* -- -- -- */
 
-	clearLayout(_pKeysBoxLayout);
-	//clearLayout(_pInputsBoxLayout);
+	QPushButton* button = _pInputsBox->findChild<QPushButton *>("macroKeyExample");
+	setButtonColor(button);
+
+	QVBoxLayout* keysBoxLayout = static_cast<QVBoxLayout*>(_pKeysBox->layout());
+
+	clearLayout(keysBoxLayout);
 
 	try {
 		{	// initialize M-keys layout
@@ -225,10 +247,10 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 				ids.push_back(bankID);
 			}
 
-			_pKeysBoxLayout->addLayout( newBanksLayout(ids) );
+			keysBoxLayout->addLayout( newBanksLayout(ids) );
 		}
 
-		_pKeysBoxLayout->addSpacing(10);
+		keysBoxLayout->addSpacing(10);
 		unsigned short c = 0;
 
 		/* G-keys layouts */
@@ -246,15 +268,15 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 			if(safeAdvance(it3, bank.end(), 1) != 0)
 				throw GLogiKExcept("wrong third G-Key");
 
-			_pKeysBoxLayout->addLayout(
+			keysBoxLayout->addLayout(
 				newButtonsLayout(it1, it2, it3)
 			);
 
 			if((++c % 2) == 0)
-				_pKeysBoxLayout->addSpacing(20);
+				keysBoxLayout->addSpacing(20);
 		}
 
-		_pKeysBoxLayout->addStretch();
+		keysBoxLayout->addStretch();
 	}
 	catch (const std::bad_alloc& e) {
 		LOG(error) << "bad allocation : " << e.what();
@@ -285,17 +307,17 @@ void GKeysTab::buildTab(void)
 
 			/* -- -- -- */
 			{ // keysBox
-				QGroupBox* keysBox = new QGroupBox();
-				keysBox->setTitle("");
-				keysBox->setObjectName("keysBox"); // css ID
-				//keysBox->setFlat(true);
+				_pKeysBox = new QGroupBox();
+				_pKeysBox->setTitle("");
+				_pKeysBox->setObjectName("keysBox"); // css ID
+				//_pKeysBox->setFlat(true);
 
-				_pKeysBoxLayout = new QVBoxLayout();
-				_pKeysBoxLayout->setObjectName("KeysBoxLayout");
+				QVBoxLayout* keysBoxLayout = new QVBoxLayout();
+				keysBoxLayout->setObjectName("KeysBoxLayout");
 
-				keysBox->setLayout(_pKeysBoxLayout);
+				_pKeysBox->setLayout(keysBoxLayout);
 
-				hBox->addWidget(keysBox);
+				hBox->addWidget(_pKeysBox);
 				GKLog(trace, "keysBox added")
 			}
 
@@ -305,17 +327,34 @@ void GKeysTab::buildTab(void)
 
 			/* -- -- -- */
 			{ // inputsBox
-				QGroupBox* inputsBox = new QGroupBox();
-				inputsBox->setTitle("");
-				//inputsBox->setFlat(true);
+				_pInputsBox = new QGroupBox();
+				_pInputsBox->setTitle("");
+				_pInputsBox->setObjectName("inputsBox"); // css ID
+				//_pInputsBox->setFlat(true);
 
-				QVBoxLayout* inputsVBoxLayout = new QVBoxLayout();
-				inputsVBoxLayout->setObjectName("InputsVBoxLayout");
+				QVBoxLayout* inputsBoxLayout = new QVBoxLayout();
+				inputsBoxLayout->setObjectName("InputsVBoxLayout");
 
-				inputsBox->setLayout(inputsVBoxLayout);
+				_pInputsBox->setLayout(inputsBoxLayout);
 				{ // header
+					auto newGButton = [] (
+						const QString & name, const QString & qssClass) -> QPushButton*
+					{
+						const QString keyName("G*");
+
+						QPushButton* b = new QPushButton(keyName);
+
+						b->setProperty("class", QVariant(qssClass)); // css class
+						b->setObjectName(name);
+						b->setFixedWidth(40);
+						b->setEnabled(false);
+
+						GKLog2(trace, "allocated G-Key example QPushButton ", keyName.toStdString())
+						return b;
+					};
+
 					QHBoxLayout* headerHBoxLayout = new QHBoxLayout();
-					inputsVBoxLayout->addLayout(headerHBoxLayout);
+					inputsBoxLayout->addLayout(headerHBoxLayout);
 
 					_pRadioButtonsGroup = new QButtonGroup(this);
 					QRadioButton* button1 = new QRadioButton("Macro");
@@ -323,22 +362,29 @@ void GKeysTab::buildTab(void)
 					_pRadioButtonsGroup->addButton(button1);
 					_pRadioButtonsGroup->addButton(button2);
 
+					headerHBoxLayout->addWidget( this->getVLine() );
+					headerHBoxLayout->addWidget( newGButton("macroKeyExample", "macroGKey") );
+					headerHBoxLayout->addWidget(button1);
+					headerHBoxLayout->addWidget( this->getVLine() );
+
 					headerHBoxLayout->addStretch();
 
-					headerHBoxLayout->addWidget(button1);
+					headerHBoxLayout->addWidget( this->getVLine() );
 					headerHBoxLayout->addWidget(button2);
+					headerHBoxLayout->addWidget( this->getVLine() );
+
 					this->setRadioButtonsEnabled(false);
 
 					GKLog(trace, "inputsBox header added")
 				}
 
-				inputsVBoxLayout->addWidget( this->getHLine() );
+				inputsBoxLayout->addWidget( this->getHLine() );
 
 				// --
-				inputsVBoxLayout->addStretch();
+				inputsBoxLayout->addStretch();
 
 				// --
-				hBox->addWidget(inputsBox);
+				hBox->addWidget(_pInputsBox);
 				GKLog(trace, "inputsBox added")
 			}
 		} // end (keysBox + VLine + inputsBox)
