@@ -49,6 +49,7 @@ GKeysTab::GKeysTab(
 	NSGKDBus::GKDBus* pDBus,
 	const QString & name)
 	:	Tab(pDBus),
+		_stubCommandKeyName("stubCommandKey"),
 		_stubMacroKeyName("stubMacroKey")
 {
 	this->setObjectName(name);
@@ -169,11 +170,12 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		// this G-Key is currently used - macro is defined
 		if( ! (it->second).empty() )
 			b->setProperty("class", QVariant("macroGKey")); // css class
+		else {
+			setButtonColor(b);
+		}
 
 		b->setObjectName(keyName);
 		b->setFixedWidth(40);
-
-		setButtonColor(b);
 
 		connect( b, &QPushButton::clicked, std::bind(&GKeysTab::updateInputsBox, this, it) );
 
@@ -234,10 +236,12 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		throw GLogiKExcept("G-Keys modulo not null");
 
 	/* -- -- -- */
+	/*
 	{
 		QPushButton* button = _pInputsBox->findChild<QPushButton *>(_stubMacroKeyName);
 		setButtonColor(button);
 	}
+	*/
 
 	QVBoxLayout* keysBoxLayout = static_cast<QVBoxLayout*>(_pKeysBox->layout());
 
@@ -374,6 +378,7 @@ void GKeysTab::buildTab(void)
 					headerHBoxLayout->addStretch();
 
 					headerHBoxLayout->addWidget( this->getVLine() );
+					headerHBoxLayout->addWidget( newStubGButton(_stubCommandKeyName, "cmmndGKey") );
 					headerHBoxLayout->addWidget(button2);
 					headerHBoxLayout->addWidget( this->getVLine() );
 
@@ -443,8 +448,8 @@ void GKeysTab::updateInputsBox(mBank_type::const_iterator & it)
 {
 	const GKeysID & GKeyID = it->first;
 
-	{
-		QPushButton* button = _pInputsBox->findChild<QPushButton *>(_stubMacroKeyName);
+	auto setStubButtonText = [this, &GKeyID] (const QString & stubButtonName) -> void {
+		QPushButton* button = _pInputsBox->findChild<QPushButton *>(stubButtonName);
 		if(! button) {
 			GKLog(warning, "cannot find stub G-Key")
 		}
@@ -452,7 +457,10 @@ void GKeysTab::updateInputsBox(mBank_type::const_iterator & it)
 			const QString keyName(getGKeyName(GKeyID).c_str());
 			button->setText(keyName);
 		}
-	}
+	};
+
+	setStubButtonText(_stubMacroKeyName);
+	setStubButtonText(_stubCommandKeyName);
 }
 
 } // namespace GLogiK

@@ -14,7 +14,9 @@
 }
 
 #keysBox QPushButton:pressed,
-#keysBox QPushButton[class="macroGKey"]:pressed {
+#keysBox QPushButton[class="macroGKey"]:pressed,
+#keysBox QPushButton[class="cmmndGKey"]:pressed
+{
     background-color: #000000;
 }
 
@@ -23,8 +25,15 @@
 }
 
 #keysBox QPushButton[class="macroGKey"],
-#inputsBox QPushButton[class="macroGKey"] {
+#inputsBox QPushButton[class="macroGKey"]
+{
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #777777, stop: 1 #222222);
+                                    stop: 0 #007700, stop: 1 #002400);
 }
 
+#keysBox QPushButton[class="cmmndGKey"],
+#inputsBox QPushButton[class="cmmndGKey"]
+{
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                    stop: 0 #FF0000, stop: 1 #002400);
+}
