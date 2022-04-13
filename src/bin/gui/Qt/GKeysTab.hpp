@@ -63,6 +63,7 @@ class GKeysTab
 		QButtonGroup* _pRadioButtonsGroup = nullptr;
 
 		void setRadioButtonsEnabled(const bool status);
+		void updateInputsBox(mBank_type::const_iterator & it);
 
 		static const std::map<const MKeysID, c_str> bankNames;
 };

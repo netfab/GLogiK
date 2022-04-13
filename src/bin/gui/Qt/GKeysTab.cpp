@@ -159,7 +159,7 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		return b;
 	};
 
-	auto newGButton = [&setButtonColor] (mBank_type::const_iterator & it) -> QPushButton*
+	auto newGButton = [this, &setButtonColor] (mBank_type::const_iterator & it) -> QPushButton*
 	{
 		const QString keyName(getGKeyName(it->first).c_str());
 
@@ -173,6 +173,8 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		b->setFixedWidth(40);
 
 		setButtonColor(b);
+
+		connect( b, &QPushButton::clicked, std::bind(&GKeysTab::updateInputsBox, this, it) );
 
 		GKLog2(trace, "allocated G-Key QPushButton ", keyName.toStdString())
 		return b;
@@ -231,9 +233,10 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		throw GLogiKExcept("G-Keys modulo not null");
 
 	/* -- -- -- */
-
-	QPushButton* button = _pInputsBox->findChild<QPushButton *>("macroKeyExample");
-	setButtonColor(button);
+	{
+		QPushButton* button = _pInputsBox->findChild<QPushButton *>("stubMacroKey");
+		setButtonColor(button);
+	}
 
 	QVBoxLayout* keysBoxLayout = static_cast<QVBoxLayout*>(_pKeysBox->layout());
 
@@ -340,7 +343,7 @@ void GKeysTab::buildTab(void)
 					auto newGButton = [] (
 						const QString & name, const QString & qssClass) -> QPushButton*
 					{
-						const QString keyName("G*");
+						const QString keyName("G0");
 
 						QPushButton* b = new QPushButton(keyName);
 
@@ -363,7 +366,7 @@ void GKeysTab::buildTab(void)
 					_pRadioButtonsGroup->addButton(button2);
 
 					headerHBoxLayout->addWidget( this->getVLine() );
-					headerHBoxLayout->addWidget( newGButton("macroKeyExample", "macroGKey") );
+					headerHBoxLayout->addWidget( newGButton("stubMacroKey", "macroGKey") );
 					headerHBoxLayout->addWidget(button1);
 					headerHBoxLayout->addWidget( this->getVLine() );
 
@@ -433,6 +436,22 @@ void GKeysTab::setRadioButtonsEnabled(const bool status)
 		(*it)->setEnabled(status);
 	}
 
+}
+
+void GKeysTab::updateInputsBox(mBank_type::const_iterator & it)
+{
+	const GKeysID & GKeyID = it->first;
+
+	{
+		QPushButton* button = _pInputsBox->findChild<QPushButton *>("stubMacroKey");
+		if(! button) {
+			GKLog(warning, "cannot find stub G-Key")
+		}
+		else {
+			const QString keyName(getGKeyName(GKeyID).c_str());
+			button->setText(keyName);
+		}
+	}
 }
 
 } // namespace GLogiK
