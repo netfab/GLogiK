@@ -23,6 +23,7 @@
 
 #include <QColor>
 #include <QVariant>
+#include <QLabel>
 #include <QList>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -49,6 +50,7 @@ GKeysTab::GKeysTab(
 	NSGKDBus::GKDBus* pDBus,
 	const QString & name)
 	:	Tab(pDBus),
+		_stubGKeyName("stubGKey"),
 		_stubCommandKeyName("stubCommandKey"),
 		_stubMacroKeyName("stubMacroKey")
 {
@@ -236,12 +238,10 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		throw GLogiKExcept("G-Keys modulo not null");
 
 	/* -- -- -- */
-	/*
 	{
-		QPushButton* button = _pInputsBox->findChild<QPushButton *>(_stubMacroKeyName);
+		QPushButton* button = _pInputsBox->findChild<QPushButton *>(_stubGKeyName);
 		setButtonColor(button);
 	}
-	*/
 
 	QVBoxLayout* keysBoxLayout = static_cast<QVBoxLayout*>(_pKeysBox->layout());
 
@@ -346,13 +346,15 @@ void GKeysTab::buildTab(void)
 				_pInputsBox->setLayout(inputsBoxLayout);
 				{ // header
 					auto newStubGButton = [] (
-						const QString & name, const QString & qssClass) -> QPushButton*
+						const QString & name, const QString & qssClass = "") -> QPushButton*
 					{
 						const QString keyName("G0");
 
 						QPushButton* b = new QPushButton(keyName);
 
-						b->setProperty("class", QVariant(qssClass)); // css class
+						if(qssClass != "") {
+							b->setProperty("class", QVariant(qssClass)); // css class
+						}
 						b->setObjectName(name);
 						b->setFixedWidth(40);
 						b->setEnabled(false);
@@ -374,6 +376,11 @@ void GKeysTab::buildTab(void)
 					headerHBoxLayout->addWidget( newStubGButton(_stubMacroKeyName, "macroGKey") );
 					headerHBoxLayout->addWidget(button1);
 					headerHBoxLayout->addWidget( this->getVLine() );
+
+					headerHBoxLayout->addStretch();
+
+					headerHBoxLayout->addWidget( newStubGButton(_stubGKeyName) );
+					headerHBoxLayout->addWidget( new QLabel("not used") );
 
 					headerHBoxLayout->addStretch();
 
@@ -460,6 +467,7 @@ void GKeysTab::updateInputsBox(mBank_type::const_iterator & it)
 	};
 
 	setStubButtonText(_stubMacroKeyName);
+	setStubButtonText(_stubGKeyName);
 	setStubButtonText(_stubCommandKeyName);
 }
 

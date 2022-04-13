@@ -62,6 +62,7 @@ class GKeysTab
 		QGroupBox* _pInputsBox = nullptr;
 		QButtonGroup* _pRadioButtonsGroup = nullptr;
 
+		const QString _stubGKeyName;
 		const QString _stubCommandKeyName;
 		const QString _stubMacroKeyName;
 
