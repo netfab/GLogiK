@@ -48,7 +48,8 @@ const std::map<const MKeysID, c_str> GKeysTab::bankNames = {
 GKeysTab::GKeysTab(
 	NSGKDBus::GKDBus* pDBus,
 	const QString & name)
-	:	Tab(pDBus)
+	:	Tab(pDBus),
+		_stubMacroKeyName("stubMacroKey")
 {
 	this->setObjectName(name);
 }
@@ -234,7 +235,7 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 
 	/* -- -- -- */
 	{
-		QPushButton* button = _pInputsBox->findChild<QPushButton *>("stubMacroKey");
+		QPushButton* button = _pInputsBox->findChild<QPushButton *>(_stubMacroKeyName);
 		setButtonColor(button);
 	}
 
@@ -340,7 +341,7 @@ void GKeysTab::buildTab(void)
 
 				_pInputsBox->setLayout(inputsBoxLayout);
 				{ // header
-					auto newGButton = [] (
+					auto newStubGButton = [] (
 						const QString & name, const QString & qssClass) -> QPushButton*
 					{
 						const QString keyName("G0");
@@ -366,7 +367,7 @@ void GKeysTab::buildTab(void)
 					_pRadioButtonsGroup->addButton(button2);
 
 					headerHBoxLayout->addWidget( this->getVLine() );
-					headerHBoxLayout->addWidget( newGButton("stubMacroKey", "macroGKey") );
+					headerHBoxLayout->addWidget( newStubGButton(_stubMacroKeyName, "macroGKey") );
 					headerHBoxLayout->addWidget(button1);
 					headerHBoxLayout->addWidget( this->getVLine() );
 
@@ -443,7 +444,7 @@ void GKeysTab::updateInputsBox(mBank_type::const_iterator & it)
 	const GKeysID & GKeyID = it->first;
 
 	{
-		QPushButton* button = _pInputsBox->findChild<QPushButton *>("stubMacroKey");
+		QPushButton* button = _pInputsBox->findChild<QPushButton *>(_stubMacroKeyName);
 		if(! button) {
 			GKLog(warning, "cannot find stub G-Key")
 		}

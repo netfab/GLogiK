@@ -62,6 +62,8 @@ class GKeysTab
 		QGroupBox* _pInputsBox = nullptr;
 		QButtonGroup* _pRadioButtonsGroup = nullptr;
 
+		const QString _stubMacroKeyName;
+
 		void setRadioButtonsEnabled(const bool status);
 		void updateInputsBox(mBank_type::const_iterator & it);
 
