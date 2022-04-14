@@ -29,7 +29,6 @@
 #include <QHBoxLayout>
 #include <QLayoutItem>
 #include <QSpacerItem>
-#include <QPushButton>
 #include <QRadioButton>
 
 #include "GKeysTab.hpp"
@@ -78,17 +77,6 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 	GKLog2(trace, "got color: ", color.name().toStdString())
 
 	/* -- -- -- */
-
-	auto setButtonColor = [&color] (QPushButton* button) -> void {
-		if( ! button ) {
-			GKLog(warning, "null pointer detected")
-			return;
-		}
-		QString style = "color:";
-		style += color.name();
-		style += ";";
-		button->setStyleSheet(style);
-	};
 
 	auto clearLayout = [] (QLayout* mainLayout) -> void {
 		std::function<void (QLayout*)> clearQLayout =
@@ -139,6 +127,18 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		clearQLayout(mainLayout);
 	};
 
+	auto setButtonColor = [&color] (QPushButton* button) -> void
+	{
+		if( ! button ) {
+			GKLog(warning, "null pointer detected")
+			return;
+		}
+		QString style = "color:";
+		style += color.name();
+		style += ";";
+		button->setStyleSheet(style);
+	};
+
 	auto nextLayoutName = [&layoutNum] () -> const QString
 	{
 		QString layoutName("hBox ");
@@ -151,38 +151,39 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 			const MKeysID & keyID,
 			const QString & keyName) -> QPushButton*
 	{
-		QPushButton* b = new QPushButton(keyName);
+		QPushButton* button = new QPushButton(keyName);
 
 		if(keyID == currentID)
-			b->setProperty("class", QVariant("currentBank")); // css class
+			button->setProperty("class", QVariant("currentBank")); // css class
 
-		b->setObjectName(keyName);
-		b->setFixedWidth(32);
+		button->setObjectName(keyName);
+		button->setFixedWidth(32);
 
 		GKLog2(trace, "allocated M-Key QPushButton ", keyName.toStdString())
-		return b;
+		return button;
 	};
 
 	auto newGButton = [this, &setButtonColor] (mBank_type::const_iterator & it) -> QPushButton*
 	{
-		const QString keyName(getGKeyName(it->first).c_str());
+		const QString buttonName(getGKeyName(it->first).c_str());
+		const bool macroDefined = (! (it->second).empty());
 
-		QPushButton* b = new QPushButton(keyName);
+		QPushButton* button = new QPushButton(buttonName);
 
-		// this G-Key is currently used - macro is defined
-		if( ! (it->second).empty() )
-			b->setProperty("class", QVariant("macroGKey")); // css class
+		button->setObjectName(buttonName);
+		button->setFixedWidth(40);
+
+		// this G-Key is currently used
+		if( macroDefined )
+			button->setProperty("class", QVariant("macroGKey")); // css class
 		else {
-			setButtonColor(b);
+			setButtonColor(button);
 		}
 
-		b->setObjectName(keyName);
-		b->setFixedWidth(40);
+		connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateInputsBox, this, it) );
 
-		connect( b, &QPushButton::clicked, std::bind(&GKeysTab::updateInputsBox, this, it) );
-
-		GKLog2(trace, "allocated G-Key QPushButton ", keyName.toStdString())
-		return b;
+		GKLog2(trace, "allocated G-Key QPushButton ", buttonName.toStdString())
+		return button;
 	};
 
 	auto newBanksLayout = [&nextLayoutName, &newMButton] (
@@ -205,7 +206,7 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		return hBox;
 	};
 
-	auto newButtonsLayout = [&nextLayoutName, &newGButton] (
+	auto newGKeysLayout = [&nextLayoutName, &newGButton] (
 		mBank_type::const_iterator & it1,
 		mBank_type::const_iterator & it2,
 		mBank_type::const_iterator & it3) -> QHBoxLayout*
@@ -239,8 +240,13 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 
 	/* -- -- -- */
 	{
-		QPushButton* button = _pInputsBox->findChild<QPushButton *>(_stubGKeyName);
+		QPushButton* button = this->findButtonIn(_pInputsBox, _stubGKeyName);
 		setButtonColor(button);
+
+		const QString buttonText("G0");
+		this->setStubButtonText(_stubMacroKeyName, buttonText);
+		this->setStubButtonText(_stubGKeyName, buttonText);
+		this->setStubButtonText(_stubCommandKeyName, buttonText);
 	}
 
 	QVBoxLayout* keysBoxLayout = static_cast<QVBoxLayout*>(_pKeysBox->layout());
@@ -277,7 +283,7 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 				throw GLogiKExcept("wrong third G-Key");
 
 			keysBoxLayout->addLayout(
-				newButtonsLayout(it1, it2, it3)
+				newGKeysLayout(it1, it2, it3)
 			);
 
 			if((++c % 2) == 0)
@@ -350,17 +356,17 @@ void GKeysTab::buildTab(void)
 					{
 						const QString keyName("G0");
 
-						QPushButton* b = new QPushButton(keyName);
+						QPushButton* button = new QPushButton(keyName);
 
 						if(qssClass != "") {
-							b->setProperty("class", QVariant(qssClass)); // css class
+							button->setProperty("class", QVariant(qssClass)); // css class
 						}
-						b->setObjectName(name);
-						b->setFixedWidth(40);
-						b->setEnabled(false);
+						button->setObjectName(name);
+						button->setFixedWidth(40);
+						button->setEnabled(false);
 
 						GKLog2(trace, "allocated G-Key example QPushButton ", keyName.toStdString())
-						return b;
+						return button;
 					};
 
 					QHBoxLayout* headerHBoxLayout = new QHBoxLayout();
@@ -455,20 +461,33 @@ void GKeysTab::updateInputsBox(mBank_type::const_iterator & it)
 {
 	const GKeysID & GKeyID = it->first;
 
-	auto setStubButtonText = [this, &GKeyID] (const QString & stubButtonName) -> void {
-		QPushButton* button = _pInputsBox->findChild<QPushButton *>(stubButtonName);
-		if(! button) {
-			GKLog(warning, "cannot find stub G-Key")
-		}
-		else {
-			const QString keyName(getGKeyName(GKeyID).c_str());
-			button->setText(keyName);
-		}
-	};
+	const QString buttonText(getGKeyName(GKeyID).c_str());
+	this->setStubButtonText(_stubMacroKeyName, buttonText);
+	this->setStubButtonText(_stubGKeyName, buttonText);
+	this->setStubButtonText(_stubCommandKeyName, buttonText);
+}
 
-	setStubButtonText(_stubMacroKeyName);
-	setStubButtonText(_stubGKeyName);
-	setStubButtonText(_stubCommandKeyName);
+QPushButton* GKeysTab::findButtonIn(QObject* parentWidget, const QString & buttonName)
+{
+	QPushButton* button = nullptr;
+	if(! parentWidget) {
+		GKLog(error, "null parent widget")
+	}
+	else {
+		button = parentWidget->findChild<QPushButton *>(buttonName);
+	}
+	return button;
+}
+
+void GKeysTab::setStubButtonText(const QString & buttonName, const QString & buttonText)
+{
+	QPushButton* button = this->findButtonIn(_pInputsBox, buttonName);
+	if(! button) {
+		GKLog(warning, "cannot find stub key")
+	}
+	else {
+		button->setText(buttonText);
+	}
 }
 
 } // namespace GLogiK

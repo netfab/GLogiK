@@ -24,9 +24,11 @@
 
 #include <map>
 
+#include <QObject>
 #include <QString>
 #include <QGroupBox>
 #include <QButtonGroup>
+#include <QPushButton>
 
 #include "lib/shared/deviceProperties.hpp"
 #include "lib/shared/glogik.hpp"
@@ -68,6 +70,9 @@ class GKeysTab
 
 		void setRadioButtonsEnabled(const bool status);
 		void updateInputsBox(mBank_type::const_iterator & it);
+
+		QPushButton* findButtonIn(QObject* parentWidget, const QString & buttonName);
+		void setStubButtonText(const QString & buttonName, const QString & buttonText);
 
 		static const std::map<const MKeysID, c_str> bankNames;
 };
