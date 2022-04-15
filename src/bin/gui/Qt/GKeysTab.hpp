@@ -60,19 +60,26 @@ class GKeysTab
 	private:
 		GKeysTab() = delete;
 
-		QGroupBox* _pKeysBox = nullptr;
-		QGroupBox* _pInputsBox = nullptr;
-		QButtonGroup* _pRadioButtonsGroup = nullptr;
-
 		const QString _stubGKeyName;
 		const QString _stubCommandKeyName;
 		const QString _stubMacroKeyName;
 
+		QGroupBox* _pKeysBox;
+		QGroupBox* _pInputsBox;
+		QButtonGroup* _pRadioButtonsGroup;
+
+		MKeysID _currentBankID;
+
+
 		void setRadioButtonsEnabled(const bool status);
-		void updateInputsBox(mBank_type::const_iterator & it);
+		void updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID);
 
 		QPushButton* findButtonIn(QObject* parentWidget, const QString & buttonName);
 		void setStubButtonText(const QString & buttonName, const QString & buttonText);
+		void updateCurrentBankID(
+			const DeviceProperties & device,
+			const MKeysID bankID
+		);
 
 		static const std::map<const MKeysID, c_str> bankNames;
 };

@@ -51,7 +51,11 @@ GKeysTab::GKeysTab(
 	:	Tab(pDBus),
 		_stubGKeyName("stubGKey"),
 		_stubCommandKeyName("stubCommandKey"),
-		_stubMacroKeyName("stubMacroKey")
+		_stubMacroKeyName("stubMacroKey"),
+		_pKeysBox(nullptr),
+		_pInputsBox(nullptr),
+		_pRadioButtonsGroup(nullptr),
+		_currentBankID(MKeysID::MKEY_M0)
 {
 	this->setObjectName(name);
 }
@@ -68,7 +72,6 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 
 	unsigned int layoutNum = 0;
 
-	const MKeysID currentID = MKeysID::MKEY_M2; // TODO
 	const unsigned short keysPerLine = 3;	// TODO
 
 	uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
@@ -116,6 +119,8 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 					itemName = "widget ";
 					itemName += widget->objectName().toStdString();
 					GKLog2(trace, "deleting ", itemName)
+
+					widget->disconnect();
 					delete widget; widget = nullptr;
 				}
 
@@ -147,26 +152,30 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 		return layoutName;
 	};
 
-	auto newMButton = [&currentID] (
-			const MKeysID & keyID,
+	auto newMButton = [this, &device] (
+			const MKeysID & bankID,
 			const QString & keyName) -> QPushButton*
 	{
 		QPushButton* button = new QPushButton(keyName);
 
-		if(keyID == currentID)
+		if(bankID == _currentBankID)
 			button->setProperty("class", QVariant("currentBank")); // css class
 
 		button->setObjectName(keyName);
 		button->setFixedWidth(32);
 
+		connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateCurrentBankID, this, device, bankID) );
+
 		GKLog2(trace, "allocated M-Key QPushButton ", keyName.toStdString())
 		return button;
 	};
 
-	auto newGButton = [this, &setButtonColor] (mBank_type::const_iterator & it) -> QPushButton*
+	auto newGButton = [this, &device, &setButtonColor] (mBank_type::const_iterator & it) -> QPushButton*
 	{
-		const QString buttonName(getGKeyName(it->first).c_str());
+		const GKeysID GKeyID = it->first;
 		const bool macroDefined = (! (it->second).empty());
+
+		const QString buttonName(getGKeyName(GKeyID).c_str());
 
 		QPushButton* button = new QPushButton(buttonName);
 
@@ -180,7 +189,7 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 			setButtonColor(button);
 		}
 
-		connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateInputsBox, this, it) );
+		connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateInputsBox, this, device, GKeyID) );
 
 		GKLog2(trace, "allocated G-Key QPushButton ", buttonName.toStdString())
 		return button;
@@ -228,7 +237,7 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 
 	const banksMap_type & banks = device.getMacrosBanks();
 
-	const mBank_type & bank = banks.at(currentID);
+	const mBank_type & bank = banks.at(_currentBankID);
 
 	//for(const auto & GMacroPair : bank) {
 	//	LOG(trace)	<< "key|size: " << getGKeyName(GMacroPair.first)
@@ -457,9 +466,10 @@ void GKeysTab::setRadioButtonsEnabled(const bool status)
 
 }
 
-void GKeysTab::updateInputsBox(mBank_type::const_iterator & it)
+void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID)
 {
-	const GKeysID & GKeyID = it->first;
+	//const banksMap_type & banks = device.getMacrosBanks();
+	//const mBank_type & bank = banks.at(_currentBankID);
 
 	const QString buttonText(getGKeyName(GKeyID).c_str());
 	this->setStubButtonText(_stubMacroKeyName, buttonText);
@@ -488,6 +498,12 @@ void GKeysTab::setStubButtonText(const QString & buttonName, const QString & but
 	else {
 		button->setText(buttonText);
 	}
+}
+
+void GKeysTab::updateCurrentBankID(const DeviceProperties & device, const MKeysID bankID)
+{
+	_currentBankID = (_currentBankID == bankID) ? MKeysID::MKEY_M0 : bankID;
+	this->updateTab(device);
 }
 
 } // namespace GLogiK
