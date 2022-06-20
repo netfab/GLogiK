@@ -36,6 +36,14 @@ function change_directory() {
 	fi
 }
 
+function print_help() {
+	printf " Known parameters:\n"
+	printf " -C|--configure\n"
+	printf " -c|--compile\n"
+	printf " -i|--install\n"
+	printf " -f|--fullclean\n"
+}
+
 # -- -- -- -- -- -- -- -- -- #
 
 declare configure=0
@@ -64,6 +72,10 @@ while [[ "${#}" -gt 0 ]]; do
 		-f|--fullclean)
 			fullclean=1
 		;;
+		-h|--help)
+			print_help
+			exit 0
+		;;
 		-i|--install)
 			configure=1
 			compile=1
@@ -79,6 +91,7 @@ while [[ "${#}" -gt 0 ]]; do
 			add_meson_option "${1}" 'false'
 		;;
 		*)
+			print_help
 			die "unknown parameter: ${1}"
 		;;
 	esac
