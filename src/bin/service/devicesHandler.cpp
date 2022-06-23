@@ -23,11 +23,6 @@
 #include <exception>
 #include <stdexcept>
 
-#include <boost/archive/archive_exception.hpp>
-#include <boost/archive/xml_archive_exception.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-
 #include <X11/Xlib.h>
 #include <X11/extensions/XTest.h>
 
