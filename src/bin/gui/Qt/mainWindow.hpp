@@ -113,7 +113,8 @@ class MainWindow
 		void resetInterface(void);
 		void updateInterface(int index);
 		void checkDBusMessages(void);
-		void saveFile(const TabApplyButton tab);
+		void saveConfigurationFile(const TabApplyButton tab);
+		void saveConfigurationFileAndUpdateInterface(const TabApplyButton tab);
 
 		void configurationFileUpdated(const std::string & devID);
 };

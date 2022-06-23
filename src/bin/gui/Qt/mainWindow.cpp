@@ -312,9 +312,9 @@ void MainWindow::build(void)
 	/* initializing Qt signals */
 	connect(_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
 	connect( _backlightColorTab->getApplyButton(), &QPushButton::clicked,
-			 std::bind(&MainWindow::saveFile, this, TabApplyButton::TAB_BACKLIGHT) );
+			 std::bind(&MainWindow::saveConfigurationFileAndUpdateInterface, this, TabApplyButton::TAB_BACKLIGHT) );
 	connect(     _LCDPluginsTab->getApplyButton(), &QPushButton::clicked,
-			 std::bind(&MainWindow::saveFile, this, TabApplyButton::TAB_LCD_PLUGINS) );
+			 std::bind(&MainWindow::saveConfigurationFileAndUpdateInterface, this, TabApplyButton::TAB_LCD_PLUGINS) );
 
 	GKLog(trace, "Qt signals connected to slots")
 
@@ -459,7 +459,7 @@ void MainWindow::aboutDialog(void)
 	}
 }
 
-void MainWindow::saveFile(const TabApplyButton tab)
+void MainWindow::saveConfigurationFile(const TabApplyButton tab)
 {
 	GK_LOG_FUNC
 
@@ -567,6 +567,13 @@ void MainWindow::updateInterface(int index)
 	catch (const GLogiKExcept & e) {
 		LOG(error) << "error updating interface : " << e.what();
 	}
+}
+
+void MainWindow::saveConfigurationFileAndUpdateInterface(const TabApplyButton tab)
+{
+	this->saveConfigurationFile(tab);
+	/* update interface to reload the configuration file */
+	this->updateInterface( _devicesComboBox->currentIndex() );
 }
 
 void MainWindow::updateDevicesList(void)
