@@ -30,15 +30,29 @@ using namespace NSGKUtils;
 
 thread_local std::string GKDBusArgumentString::currentString("");
 
-const std::string & GKDBusArgumentString::getNextStringArgument(void) {
-	if( GKDBusArgument::stringArguments.empty() )
-		throw EmptyContainer("missing argument : string");
-	GKDBusArgumentString::currentString = GKDBusArgument::stringArguments.back();
-	GKDBusArgument::stringArguments.pop_back();
+const std::string & GKDBusArgumentString::getNextStringArgument(void)
+{
+	GKDBusArgumentString::currentString.clear();
+
+	const uint64_t size = GKDBusArgumentUInt64::getNextUInt64Argument();
+
+	if( size != 0 ) {
+		if( GKDBusArgument::stringArguments.empty() )
+			throw EmptyContainer("missing argument : string");
+
+		GKDBusArgumentString::currentString = GKDBusArgument::stringArguments.back();
+		GKDBusArgument::stringArguments.pop_back();
+
+		if( GKDBusArgumentString::currentString.size() != size ) {
+			LOG(warning) << "wrong string size";
+		}
+	}
+
 	return GKDBusArgumentString::currentString;
 }
 
-const std::vector<std::string> & GKDBusArgumentString::getStringsArray(void) {
+const std::vector<std::string> & GKDBusArgumentString::getStringsArray(void)
+{
 	return GKDBusArgument::stringArguments;
 }
 

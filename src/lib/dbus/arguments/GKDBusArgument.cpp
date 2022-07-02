@@ -67,7 +67,15 @@ void GKDBusArgument::decodeArgumentFromIterator(
 				const char* value = nullptr;
 				dbus_message_iter_get_basic(iter, &value);
 				//GKLog2(trace, "string arg value : ", value)
-				GKDBusArgument::stringArguments.push_back(value);
+
+				const std::string arg(value);
+				/* ability to send empty strings, see
+				 * GKDBusArgumentString::getNextStringArgument() and
+				 * GKDBusMessage::appendString()
+				 */
+				GKDBusArgument::uint64Arguments.push_back(arg.size());
+
+				GKDBusArgument::stringArguments.push_back(arg);
 			}
 			break;
 		case DBUS_TYPE_BOOLEAN:

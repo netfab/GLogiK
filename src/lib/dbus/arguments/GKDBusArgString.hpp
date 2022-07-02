@@ -22,16 +22,18 @@
 #ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_STRING_HPP_
 #define SRC_LIB_DBUS_ARG_GKDBUS_ARG_STRING_HPP_
 
-#include "GKDBusArgument.hpp"
-
 #include <string>
 #include <vector>
+
+#include "GKDBusArgument.hpp"
+#include "GKDBusArgUInt64.hpp"
 
 namespace NSGKDBus
 {
 
 class GKDBusArgumentString
-	:	protected GKDBusArgument
+	:	virtual protected GKDBusArgument,
+		virtual private GKDBusArgumentUInt64
 {
 	public:
 		static const std::string & getNextStringArgument(void);

@@ -495,15 +495,27 @@ void GKDBusMessage::appendString(DBusMessageIter *iter, const std::string & valu
 {
 	GK_LOG_FUNC
 
-	const char* p = value.c_str();
-	if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &p) ) {
-		_hosedMessage = true;
-		LOG(error) << "string append_basic failure, not enough memory";
-		throw GKDBusMessageWrongBuild(_appendFailure);
-	}
 #if DEBUG_GKDBUS_SUBOBJECTS
-	GKLog(trace, "string appended")
+	GKLog(trace, "appending string")
 #endif
+
+	if( ! value.empty() ) {
+		const char* p = value.c_str();
+		if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &p) ) {
+			_hosedMessage = true;
+			LOG(error) << "string append_basic failure, not enough memory";
+			throw GKDBusMessageWrongBuild(_appendFailure);
+		}
+#if DEBUG_GKDBUS_SUBOBJECTS
+		GKLog(trace, "string appended")
+#endif
+	}
+	else {
+		this->appendUInt64(iter, 0);
+#if DEBUG_GKDBUS_SUBOBJECTS
+		GKLog(trace, "empty string appended")
+#endif
+	}
 }
 
 void GKDBusMessage::appendUInt8(DBusMessageIter *iter, const uint8_t value)
