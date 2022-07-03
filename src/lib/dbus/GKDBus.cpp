@@ -43,6 +43,11 @@ GKDBus::GKDBus(
 	GKLog(trace, "GKDBus initialization")
 
 	dbus_error_init(&_error);
+
+	std::string s;
+	GKLog4(trace, "checking std::string ::max_size(): ", s.max_size(), "UINT64_MAX: ", UINT64_MAX)
+	if( s.max_size() > UINT64_MAX )
+		throw GLogiKExcept("std::string ::max_size() overflow detected");
 }
 
 GKDBus::~GKDBus()
