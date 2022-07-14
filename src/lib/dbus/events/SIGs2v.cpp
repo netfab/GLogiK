@@ -32,7 +32,8 @@ using namespace NSGKUtils;
 template <>
 	void callbackEvent<SIGs2v>::runCallback(
 		DBusConnection* const connection,
-		DBusMessage* message
+		DBusMessage* message,
+		DBusMessage* asyncContainer
 	)
 {
 	GKDBusArgument::fillInArguments(message);
@@ -55,7 +56,7 @@ template <>
 	try {
 		this->initializeReply(connection, message);
 
-		this->appendAsyncArgsToReply();
+		this->appendAsyncArgsToReply(asyncContainer);
 	}
 	catch ( const GLogiKExcept & e ) {
 		/* delete reply object if allocated and send error reply */

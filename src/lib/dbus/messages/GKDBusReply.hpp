@@ -35,8 +35,6 @@
 #include "lib/dbus/arguments/GKDBusArgString.hpp"
 #include "lib/dbus/arguments/GKDBusArgUInt64.hpp"
 
-#include "lib/dbus/messages/GKDBusAsyncContainer.hpp"
-
 namespace NSGKDBus
 {
 
@@ -55,8 +53,7 @@ class GKDBusReply
 
 class GKDBusMessageReply
 	:	virtual private GKDBusArgumentString,
-		virtual private GKDBusArgumentUInt64,
-		private GKDBusMessageAsyncContainer
+		virtual private GKDBusArgumentUInt64
 {
 	public:
 
@@ -77,7 +74,7 @@ class GKDBusMessageReply
 
 		void appendUInt64ToReply(const uint64_t value);
 
-		void appendAsyncArgsToReply(void);
+		void appendAsyncArgsToReply(DBusMessage* asyncContainer);
 
 		void sendReply(void);
 		void abandonReply(void);

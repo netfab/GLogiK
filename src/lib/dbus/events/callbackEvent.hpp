@@ -67,7 +67,8 @@ template <typename T>
 
 		void runCallback(
 			DBusConnection* const connection,
-			DBusMessage* message
+			DBusMessage* message,
+			DBusMessage* asyncContainer
 		);
 
 	private:
@@ -94,7 +95,8 @@ template <typename T>
 template <typename T>
 	void callbackEvent<T>::runCallback(
 		DBusConnection* const connection,
-		DBusMessage* message)
+		DBusMessage* message,
+		DBusMessage* asyncContainer)
 {
 	GK_LOG_FUNC
 

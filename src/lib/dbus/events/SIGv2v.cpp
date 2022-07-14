@@ -32,7 +32,8 @@ using namespace NSGKUtils;
 template <>
 	void callbackEvent<SIGv2v>::runCallback(
 		DBusConnection* const connection,
-		DBusMessage* message
+		DBusMessage* message,
+		DBusMessage* asyncContainer
 	)
 {
 	GK_LOG_FUNC

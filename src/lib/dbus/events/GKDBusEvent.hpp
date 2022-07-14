@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -61,7 +61,11 @@ class GKDBusEvent
 		GKDBusEventType eventType;
 		const bool introspectable;
 
-		virtual void runCallback(DBusConnection* const connection, DBusMessage* message) = 0;
+		virtual void runCallback(
+			DBusConnection* const connection,
+			DBusMessage* message,
+			DBusMessage* asyncContainer
+		) = 0;
 
 		virtual ~GKDBusEvent(void);
 

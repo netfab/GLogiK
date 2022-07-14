@@ -41,7 +41,8 @@ namespace NSGKDBus
 template <>
 	void callbackEvent<SIGs2as>::runCallback(
 		DBusConnection* const connection,
-		DBusMessage* message
+		DBusMessage* message,
+		DBusMessage* asyncContainer
 	);
 
 } // namespace NSGKDBus
