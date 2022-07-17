@@ -930,11 +930,18 @@ void DevicesManager::startMonitoring(void) {
 			GKLog(trace, "loading drivers")
 
 			try {
+				KeyboardDriver* driver = nullptr;
 #if GKLIBUSB
-				_drivers.push_back( new LogitechG510<libusb>() );
+				driver = new LogitechG510<libusb>();
 #elif GKHIDAPI
-				_drivers.push_back( new LogitechG510<hidapi>() );
+				driver = new LogitechG510<hidapi>();
 #endif
+
+#if GKDBUS
+				driver->setDBus(_pDBus);
+#endif
+
+				_drivers.push_back( driver );
 			}
 			catch (const std::bad_alloc& e) { /* handle new() failure */
 				throw GLogiKBadAlloc("catch driver wrong allocation");

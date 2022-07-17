@@ -30,10 +30,6 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
-#if GKDBUS
-#include "lib/dbus/GKDBus.hpp"
-#endif
-
 #include "keyboardDriver.hpp"
 
 #include "daemonControl.hpp"
@@ -64,6 +60,13 @@ const std::vector< ModifierKey > KeyboardDriver::modifierKeys = {
 };
 
 /* -- -- -- */
+
+#if GKDBUS
+void KeyboardDriver::setDBus(NSGKDBus::GKDBus* pDBus)
+{
+	_pDBus = pDBus;
+}
+#endif
 
 #if DEBUGGING_ON && DEBUG_KEYS
 const std::string KeyboardDriver::getBytes(const USBDevice & device) const
@@ -394,19 +397,6 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 
 	GKLog2(trace, device.getID(), " entering macro record mode")
 
-#if GKDBUS
-	NSGKDBus::GKDBus* pDBus = nullptr;
-
-	/* ROOT_NODE only for introspection, don't care */
-	try {
-		pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
-	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
-		GKSysLogError("GKDBus bad allocation");
-		pDBus = nullptr;
-	}
-#endif
-
 	auto & exit = device._exitMacroRecordMode;
 	exit = false;
 	/* initializing time_point */
@@ -455,11 +445,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 						device.getMacrosManager()->setMacro(device._GKeyID, device._newMacro);
 
 #if GKDBUS
-						if( pDBus ) {
 							const MKeysID bankID = device.getMacrosManager()->getCurrentMacrosBankID();
-
-							/* open a new connection, GKDBus is not thread-safe */
-							pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
 
 							try {
 								std::string signal("MacroRecorded");
@@ -467,24 +453,23 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 									signal = "MacroCleared";
 								}
 
-								pDBus->initializeBroadcastSignal(
+								_pDBus->initializeBroadcastSignal(
 									NSGKDBus::BusConnection::GKDBUS_SYSTEM,
 									GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 									GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 									signal.c_str()
 								);
 
-								pDBus->appendStringToBroadcastSignal(device.getID());
-								pDBus->appendMKeysIDToBroadcastSignal(bankID);
-								pDBus->appendGKeysIDToBroadcastSignal(device._GKeyID);
+								_pDBus->appendStringToBroadcastSignal(device.getID());
+								_pDBus->appendMKeysIDToBroadcastSignal(bankID);
+								_pDBus->appendGKeysIDToBroadcastSignal(device._GKeyID);
 
-								pDBus->sendBroadcastSignal();
+								_pDBus->sendBroadcastSignal();
 							}
 							catch (const GKDBusMessageWrongBuild & e) {
-								pDBus->abandonBroadcastSignal();
+								_pDBus->abandonBroadcastSignal();
 								GKSysLogWarning(e.what());
 							}
-						}
 #endif
 					}
 					catch (const GLogiKExcept & e) {
@@ -502,11 +487,6 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 	}
 
 	device._newMacro.clear();
-
-#if GKDBUS
-	delete pDBus;
-	pDBus = nullptr;
-#endif
 
 	GKLog2(trace, device.getID(), " exiting macro record mode")
 }
@@ -690,40 +670,23 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 						if( device.getLastKeysInterruptTransferLength() == device.getMediaKeysLength() ) {
 							if( this->checkMediaKey(device) ) {
 #if GKDBUS
-								NSGKDBus::GKDBus* pDBus = nullptr;
-
-								/* ROOT_NODE only for introspection, don't care */
 								try {
-									pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
+									_pDBus->initializeBroadcastSignal(
+										NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+										GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+										GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+										"deviceMediaEvent"
+									);
+
+									_pDBus->appendStringToBroadcastSignal(devID);
+									_pDBus->appendStringToBroadcastSignal(device._mediaKey);
+
+									_pDBus->sendBroadcastSignal();
 								}
-								catch (const std::bad_alloc& e) { /* handle new() failure */
-									GKSysLogError("GKDBus bad allocation");
-									pDBus = nullptr;
+								catch (const GKDBusMessageWrongBuild & e) {
+									_pDBus->abandonBroadcastSignal();
+									GKSysLogWarning(e.what());
 								}
-
-								if( pDBus ) {
-									pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
-
-									try {
-										pDBus->initializeBroadcastSignal(
-											NSGKDBus::BusConnection::GKDBUS_SYSTEM,
-											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-											"deviceMediaEvent"
-										);
-
-										pDBus->appendStringToBroadcastSignal(devID);
-										pDBus->appendStringToBroadcastSignal(device._mediaKey);
-
-										pDBus->sendBroadcastSignal();
-									}
-									catch (const GKDBusMessageWrongBuild & e) {
-										pDBus->abandonBroadcastSignal();
-										GKSysLogWarning(e.what());
-									}
-								}
-
-								delete pDBus; pDBus = nullptr;
 #endif
 							}
 						}

@@ -34,6 +34,10 @@
 
 #include <config.h>
 
+#if GKDBUS
+#include "lib/dbus/GKDBus.hpp"
+#endif
+
 #include "USBDeviceID.hpp"
 #include "USBDevice.hpp"
 
@@ -77,6 +81,10 @@ class KeyboardDriver
 {
 	public:
 		virtual ~KeyboardDriver(void) = default;
+
+#if GKDBUS
+		void setDBus(NSGKDBus::GKDBus* pDBus);
+#endif
 
 		static const bool checkDeviceCapability(const USBDeviceID & device, Caps toCheck);
 
@@ -154,6 +162,8 @@ class KeyboardDriver
 		void fillStandardKeysEvents(USBDevice & device);
 
 	private:
+		NSGKDBus::GKDBus* _pDBus;
+
 		/* USBAPI */
 		virtual int performUSBDeviceKeysInterruptTransfer(
 			USBDevice & device,
@@ -263,7 +273,8 @@ USBKeyboardDriver<USBAPI>::USBKeyboardDriver(void)
 }
 
 template <typename USBAPI>
-USBKeyboardDriver<USBAPI>::~USBKeyboardDriver() {
+USBKeyboardDriver<USBAPI>::~USBKeyboardDriver()
+{
 }
 
 
