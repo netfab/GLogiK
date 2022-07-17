@@ -153,6 +153,8 @@ const std::string GKDBus::getObjectFromObjectPath(const std::string & objectPath
 
 void GKDBus::checkForMessages(void) noexcept
 {
+	std::lock_guard<std::mutex> lock(_lockMutex);
+
 	if(_systemConnection != nullptr)
 		this->checkForBusMessages(BusConnection::GKDBUS_SYSTEM, _systemConnection);
 	if(_sessionConnection != nullptr)

@@ -26,6 +26,7 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 
 #include <dbus/dbus.h>
 
@@ -103,6 +104,8 @@ class GKDBus
 
 		std::string _sessionName;
 		std::string _systemName;
+
+		std::mutex _lockMutex;
 
 		DBusConnection* _sessionConnection;
 		DBusConnection* _systemConnection;
