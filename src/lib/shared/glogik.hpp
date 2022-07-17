@@ -107,8 +107,6 @@ const GKeysID getGKeyID(const Keys key);
 /* --- ---- --- *
  * -- GKDBus -- *
  * --- ---- --- */
-/* devices thread */
-extern c_str GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME;
 
 /* daemon thread */
 extern c_str GLOGIK_DAEMON_DBUS_ROOT_NODE;
