@@ -159,52 +159,52 @@ void KeyboardDriver::setDeviceBacklightColor(
 const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR)
 {
 	auto & mask = device._MxKeysLedsMask;
-	/* is macro record mode enabled ? */
-	bool MR_ON = mask & toEnumType(Leds::GK_LED_MR);
-	bool Mx_ON = false;
 	bool mask_updated = false;
 
+	/* was MR key enabled ? */
+	const bool MR_ON = mask & toEnumType(Leds::GK_LED_MR);
+
+	auto update_MxKey_mask = [&] (const Leds keyledmask, const MKeysID sMKey) -> void
+	{
+		/* was this Mx key already enabled */
+		const bool Mx_ON = mask & toEnumType(keyledmask);
+
+		/* an Mx key (M1, M2, or M3) was pressed
+		 * we must reset the mask, else two differents
+		 * Mx keys LEDs could be on at the same time */
+		mask = 0;
+		device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M0);
+		if( ! Mx_ON ) { /* Mx was off, enable it */
+			mask |= toEnumType(keyledmask);
+			device.getMacrosManager()->setCurrentMacrosBankID(sMKey);
+		}
+		mask_updated = true;
+	};
+
+	/* M1 key was pressed */
 	if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M1) ) {
-		Mx_ON = mask & toEnumType(Leds::GK_LED_M1);
-		mask = 0;
-		mask_updated = true;
-		device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M0);
-		if( ! Mx_ON ) {
-			mask |= toEnumType(Leds::GK_LED_M1);
-			device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M1);
-		}
+		update_MxKey_mask(Leds::GK_LED_M1, MKeysID::MKEY_M1);
 	}
+	/* M2 key was pressed */
 	else if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M2) ) {
-		Mx_ON = mask & toEnumType(Leds::GK_LED_M2);
-		mask = 0;
-		mask_updated = true;
-		device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M0);
-		if( ! Mx_ON ) {
-			mask |= toEnumType(Leds::GK_LED_M2);
-			device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M2);
-		}
+		update_MxKey_mask(Leds::GK_LED_M2, MKeysID::MKEY_M2);
 	}
+	/* M3 key was pressed */
 	else if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M3) ) {
-		Mx_ON = mask & toEnumType(Leds::GK_LED_M3);
-		mask = 0;
-		mask_updated = true;
-		device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M0);
-		if( ! Mx_ON ) {
-			mask |= toEnumType(Leds::GK_LED_M3);
-			device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M3);
-		}
+		update_MxKey_mask(Leds::GK_LED_M3, MKeysID::MKEY_M3);
 	}
 
+	/* MR key was pressed */
 	if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_MR) ) {
-		if(! MR_ON) { /* MR off, enable it */
+		if(! MR_ON) { /* MR was off, enable it */
 			mask |= toEnumType(Leds::GK_LED_MR);
 		}
-		else { /* MR on, disable it */
+		else { /* MR was on, disable it */
 			mask &= ~(toEnumType(Leds::GK_LED_MR));
 		}
 		mask_updated = true;
 	}
-	else if(disableMR) {
+	else if(disableMR) { /* force disable MR */
 		mask &= ~(toEnumType(Leds::GK_LED_MR));
 		mask_updated = true;
 	}
