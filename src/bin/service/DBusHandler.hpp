@@ -121,6 +121,10 @@ class DBusHandler
 		void daemonIsStopping(void);
 		void daemonIsStarting(void);
 
+		void GBankSwitch(
+			const std::string & devID,
+			const MKeysID bankID
+		);
 		const bool macroRecorded(
 			const std::string & devID,
 			const MKeysID bankID,

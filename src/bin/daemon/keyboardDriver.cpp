@@ -160,6 +160,7 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 {
 	auto & mask = device._MxKeysLedsMask;
 	bool mask_updated = false;
+	MKeysID pressed_MKey = MKeysID::MKEY_M0;
 
 	/* was MR key enabled ? */
 	const bool MR_ON = mask & toEnumType(Leds::GK_LED_MR);
@@ -169,14 +170,16 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 		/* was this Mx key already enabled */
 		const bool Mx_ON = mask & toEnumType(keyledmask);
 
-		/* an Mx key (M1, M2, or M3) was pressed
-		 * we must reset the mask, else two differents
-		 * Mx keys LEDs could be on at the same time */
+		/* an Mx key (M1, M2, or M3) was pressed, we must reset
+		 * the mask, else two differents Mx keys LEDs could be
+		 * on at the same time; this also disables Macro Record
+		 * mode if MR LED was on */
 		mask = 0;
 		device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M0);
 		if( ! Mx_ON ) { /* Mx was off, enable it */
 			mask |= toEnumType(keyledmask);
 			device.getMacrosManager()->setCurrentMacrosBankID(sMKey);
+			pressed_MKey = sMKey;
 		}
 		mask_updated = true;
 	};
@@ -192,6 +195,26 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 	/* M3 key was pressed */
 	else if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M3) ) {
 		update_MxKey_mask(Leds::GK_LED_M3, MKeysID::MKEY_M3);
+	}
+
+	if( mask_updated ) { /* if a Mx key was pressed */
+		try {
+			_pDBus->initializeBroadcastSignal(
+				NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				"GBankSwitch"
+			);
+
+			_pDBus->appendStringToBroadcastSignal(device.getID());
+			_pDBus->appendMKeysIDToBroadcastSignal(pressed_MKey);
+
+			_pDBus->sendBroadcastSignal();
+		}
+		catch (const GKDBusMessageWrongBuild & e) {
+			_pDBus->abandonBroadcastSignal();
+			GKSysLogWarning(e.what());
+		}
 	}
 
 	/* MR key was pressed */

@@ -49,6 +49,7 @@
 #include "SIGs2b.hpp"     //                  string to bool
 #include "SIGs2s.hpp"     //                string to string
 #include "SIGs2v.hpp"     //                  string to void
+#include "SIGsm2v.hpp"    // one string one M-KeyID to void
 #include "SIGsmG2b.hpp"   // one string one M-KeyID one G-KeyID to bool
 #include "SIGss2aG.hpp"   //  two strings to array of G-KeyID
 #include "SIGss2am.hpp"   //  two strings to array of M-KeyID
@@ -57,7 +58,7 @@
 #include "SIGss2s.hpp"    //           two strings to string
 #include "SIGss2v.hpp"    //             two strings to void
 #include "SIGssm2b.hpp"   // two strings one M-KeyID to bool
-#include "SIGssmB2b.hpp"  // two strings one M-KeysID one mBank_type to bool
+#include "SIGssmB2b.hpp"  // two strings one M-KeyID one mBank_type to bool
 #include "SIGssmG2M.hpp"  // two strings one M-KeyID one G-KeyID to macro
 #include "SIGssyt2b.hpp"  // two strings one byte one uint64_t to bool
 #include "SIGssyyy2b.hpp" // two strings three bytes to bool

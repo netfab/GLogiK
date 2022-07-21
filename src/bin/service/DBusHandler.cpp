@@ -721,6 +721,20 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::devicesUnplugged, this, std::placeholders::_1)
 	);
 
+	_pDBus->NSGKDBus::Callback<SIGsm2v>::exposeSignal(
+		_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		"GBankSwitch",
+		{	{"s", "device_id", "in", "device ID"},
+			{"y", "macro_bankID", "in", "macro bankID"}
+		},
+		std::bind(&DBusHandler::GBankSwitch, this,
+			std::placeholders::_1, std::placeholders::_2
+		)
+	);
+
 	_pDBus->NSGKDBus::Callback<SIGsmG2b>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -1064,6 +1078,30 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 		/* send signal to GUI */
 		this->sendDevicesUpdatedSignal();
 	}
+}
+
+void DBusHandler::GBankSwitch(
+	const std::string & devID,
+	const MKeysID bankID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		devID, " received signal : GBankSwitch",
+		"bankID : ", bankID
+	)
+
+	if( ! _registerStatus ) {
+		GKLog(trace, "currently not registered, skipping")
+		return;
+	}
+
+	if( _sessionState != "active" ) {
+		GKLog(trace, "currently not active, skipping")
+		return;
+	}
+
+	LOG(info) << "received GBankSwitch signal : " << bankID;
 }
 
 const bool DBusHandler::macroRecorded(
