@@ -145,26 +145,6 @@ class ClientsManager
 			const uint8_t g,
 			const uint8_t b
 		);
-		const macro_type & getDeviceMacro(
-			const std::string & clientID,
-			const std::string & devID,
-			const MKeysID bankID,
-			const GKeysID keyID
-		);
-
-		const bool setDeviceMacrosBank(
-			const std::string & clientID,
-			const std::string & devID,
-			const MKeysID bankID,
-			const mBank_type & bank
-		);
-
-		const bool resetDeviceMacrosBank(
-			const std::string & clientID,
-			const std::string & devID,
-			const MKeysID bankID
-		);
-
 		const bool setDeviceLCDPluginsMask(
 			const std::string & clientID,
 			const std::string & devID,

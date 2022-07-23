@@ -95,13 +95,11 @@ class KeyboardDriver
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,
-			const banksMap_type & macrosBanks,
 			const uint8_t r,
 			const uint8_t g,
 			const uint8_t b,
 			const uint64_t LCDPluginsMask1
 		);
-		const banksMap_type & getDeviceMacrosBanks(const std::string & devID) const;
 		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID
 		) const;
@@ -184,7 +182,6 @@ class KeyboardDriver
 
 		void enterMacroRecordMode(USBDevice & device);
 		void LCDScreenLoop(const std::string & devID);
-		void runMacro(const std::string & devID) const;
 		void listenLoop(const std::string & devID);
 
 		/* internal */
@@ -259,7 +256,6 @@ class USBKeyboardDriver
 		}
 
 		void closeUSBDevice(USBDevice & device) override {
-			device.destroyMacrosManager();
 			device.destroyLCDPluginsManager();
 
 			USBAPI::closeUSBDevice(device);

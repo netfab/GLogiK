@@ -147,15 +147,8 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 			{"b", "did_restart_succeeded", dOUT, "did the RestartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	_pDBus->NSGKDBus::Callback<SIGssmG2M>::exposeMethod(
-		system_bus, DM_object, DM_interf, "GetDeviceMacro",
-		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
-			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
-			{"y", "macro_bankID", dIN, "macro bankID"},
-			{"y", "macro_keyID", dIN, "macro key ID"},
-			{"a(yyq)", "macro_array", dOUT, "macro array"} },
-		std::bind(&ClientsManager::getDeviceMacro, this, std::placeholders::_1, std::placeholders::_2,
-			std::placeholders::_3, std::placeholders::_4) );
+	// FIXME
+	// SIGssmG2M
 
 		/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 		/* methods used to initialize devices on service-side */
@@ -219,24 +212,9 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 		std::bind(&ClientsManager::setDeviceBacklightColor, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
 
-	_pDBus->NSGKDBus::Callback<SIGssmB2b>::exposeMethod(
-		system_bus, DM_object, DM_interf, "SetDeviceMacrosBank",
-		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
-			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
-			{"y", "macro_bankID", dIN, "macro bankID"},
-			{"a(sya(yyq))", "macros_bank", dIN, "macros bank"},
-			{"b", "did_setbank_succeeded", dOUT, "did the SetDeviceMacrosBank method succeeded ?"} },
-		std::bind(&ClientsManager::setDeviceMacrosBank, this, std::placeholders::_1, std::placeholders::_2,
-			std::placeholders::_3, std::placeholders::_4) );
-
-	_pDBus->NSGKDBus::Callback<SIGssm2b>::exposeMethod(
-		system_bus, DM_object, DM_interf, "ResetDeviceMacrosBank",
-		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
-			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
-			{"y", "macro_bankID", dIN, "macro bankID"},
-			{"b", "did_resetbank_succeeded", dOUT, "did the ResetDeviceMacrosBank method succeeded ?"} },
-		std::bind(&ClientsManager::resetDeviceMacrosBank, this,
-			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3) );
+	// FIXME
+	// SIGssmB2b
+	// SIGssm2b
 
 	_pDBus->NSGKDBus::Callback<SIGssyt2b>::exposeMethod(
 		system_bus, DM_object, DM_interf, "SetDeviceLCDPluginsMask",
@@ -843,47 +821,6 @@ const bool ClientsManager::setDeviceBacklightColor(
 	return false;
 }
 
-const macro_type & ClientsManager::getDeviceMacro(
-	const std::string & clientID,
-	const std::string & devID,
-	const MKeysID bankID,
-	const GKeysID keyID)
-{
-
-	GK_LOG_FUNC
-
-	GKLog4(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID
-	)
-	GKLog4(trace,
-		"key : ", getGKeyName(keyID),
-		"bankID : ", bankID
-	)
-
-	try {
-		Client* pClient = _connectedClients.at(clientID);
-
-		if(pClient->getSessionCurrentState() == _active) {
-			if( pClient->isReady() ) {
-				pClient->syncDeviceMacrosBanks(devID, _pDevicesManager->getDeviceMacrosBanks(devID));
-				return pClient->getDeviceMacro(devID, bankID, keyID);
-			}
-			else {
-				GKSysLogWarning("getting device macro not allowed while client not ready");
-			}
-		}
-		else {
-			GKSysLogWarning("only active user can get device macro");
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
-	}
-
-	return MacrosBanks::emptyMacro;
-}
-
 const MKeysIDArray_type
 	ClientsManager::getDeviceMKeysIDArray(
 		const std::string & clientID,
@@ -930,55 +867,6 @@ const GKeysIDArray_type
 
 	GKeysIDArray_type ret;
 	return ret;
-}
-
-const bool ClientsManager::setDeviceMacrosBank(
-	const std::string & clientID,
-	const std::string & devID,
-	const MKeysID bankID,
-	const mBank_type & bank)
-{
-	GK_LOG_FUNC
-
-	GKLog6(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID,
-		"bankID : ", bankID
-	)
-
-	try {
-		Client* pClient = _connectedClients.at(clientID);
-		return pClient->setDeviceMacrosBank(devID, bankID, bank);
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
-	}
-
-	return false;
-}
-
-const bool ClientsManager::resetDeviceMacrosBank(
-	const std::string & clientID,
-	const std::string & devID,
-	const MKeysID bankID)
-{
-	GK_LOG_FUNC
-
-	GKLog6(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID,
-		"bankID : ", bankID
-	)
-
-	try {
-		Client* pClient = _connectedClients.at(clientID);
-		return pClient->resetDeviceMacrosBank(devID, bankID);
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
-	}
-
-	return false;
 }
 
 const bool ClientsManager::setDeviceLCDPluginsMask(

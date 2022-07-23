@@ -754,7 +754,6 @@ const std::string DevicesManager::getDeviceStatus(const std::string & devID) con
 
 void DevicesManager::setDeviceActiveConfiguration(
 	const std::string & devID,
-	const banksMap_type & macrosBanks,
 	const uint8_t r,
 	const uint8_t g,
 	const uint8_t b,
@@ -768,7 +767,7 @@ void DevicesManager::setDeviceActiveConfiguration(
 
 		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
-				driver->setDeviceActiveConfiguration(devID, macrosBanks, r, g, b, LCDPluginsMask1);
+				driver->setDeviceActiveConfiguration(devID, r, g, b, LCDPluginsMask1);
 				return;
 			}
 		}
@@ -776,28 +775,6 @@ void DevicesManager::setDeviceActiveConfiguration(
 	catch (const std::out_of_range& oor) {
 		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
-}
-
-const banksMap_type & DevicesManager::getDeviceMacrosBanks(const std::string & devID) const
-{
-	GK_LOG_FUNC
-
-	try {
-		const auto & device = _startedDevices.at(devID);
-		GKLog2(trace, devID, " device is started")
-
-		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			for(const auto & driver : _drivers) {
-				if( device.getDriverID() == driver->getDriverID() ) {
-					return driver->getDeviceMacrosBanks(devID);
-				}
-			}
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-	}
-	return MacrosBanks::emptyMacrosBanks;
 }
 
 const MKeysIDArray_type DevicesManager::getDeviceMKeysIDArray(const std::string & devID) const

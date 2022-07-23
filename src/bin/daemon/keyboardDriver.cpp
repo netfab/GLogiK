@@ -175,10 +175,8 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 		 * on at the same time; this also disables Macro Record
 		 * mode if MR LED was on */
 		mask = 0;
-		device.getMacrosManager()->setCurrentMacrosBankID(MKeysID::MKEY_M0);
 		if( ! Mx_ON ) { /* Mx was off, enable it */
 			mask |= toEnumType(keyledmask);
-			device.getMacrosManager()->setCurrentMacrosBankID(sMKey);
 			pressed_MKey = sMKey;
 		}
 		mask_updated = true;
@@ -450,25 +448,11 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 					continue;
 				}
 
-				bool setMacro = true;
-				/* don't set macro and don't send signal if
-				 * no new macro defined and current macro for the pressed key
-				 * is already empty
-				 */
-				if( ! device.getMacrosManager()->macroDefined(device._GKeyID) and
-					  device._newMacro.empty() ) {
-					setMacro = false;
-
-					GKLog3(trace, device.getID(), " no change for key : ", getGKeyName(device._GKeyID))
-				}
-
-				if(setMacro) {
+				// FIXME
 					try {
-						/* macro key pressed, recording macro */
-						device.getMacrosManager()->setMacro(device._GKeyID, device._newMacro);
-
 #if GKDBUS
-							const MKeysID bankID = device.getMacrosManager()->getCurrentMacrosBankID();
+						// FIXME fix signal
+							const MKeysID bankID = MKeysID::MKEY_M0;
 
 							try {
 								std::string signal("MacroRecorded");
@@ -498,7 +482,6 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 					catch (const GLogiKExcept & e) {
 						GKSysLogWarning(e.what());
 					}
-				}
 
 				exit = true;
 				break;
@@ -512,24 +495,6 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 	device._newMacro.clear();
 
 	GKLog2(trace, device.getID(), " exiting macro record mode")
-}
-
-void KeyboardDriver::runMacro(const std::string & devID) const
-{
-	GK_LOG_FUNC
-
-	try {
-		const USBDevice & device = _initializedDevices.at(devID);
-
-		GKLog3(trace, devID, " spawned running macro thread for ", device.getFullName())
-
-		device.getMacrosManager()->runMacro(device._GKeyID);
-
-		GKLog2(trace, devID, " exiting running macro thread")
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-	}
 }
 
 void KeyboardDriver::LCDScreenLoop(const std::string & devID)
@@ -674,16 +639,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 							}
 							else { /* check to run macro */
 								if( this->checkMacroKey(device) ) {
-									try {
-										/* spawn thread only if macro defined */
-										if(device.getMacrosManager()->macroDefined(device._GKeyID)) {
-											std::thread macro_thread(&KeyboardDriver::runMacro, this, devID);
-											macro_thread.detach();
-										}
-									}
-									catch (const std::system_error& e) {
-										GKSysLogWarning("error while spawning running macro thread");
-									}
+									// send DBus GKey signal
 								}
 							}
 						}
@@ -769,7 +725,6 @@ void KeyboardDriver::resetDeviceState(USBDevice & device)
 
 		/* exit MacroRecordMode if necessary */
 		device._exitMacroRecordMode = true;
-		device.getMacrosManager()->resetMacrosBanks();
 		device._MxKeysLedsMask = 0;
 		this->setDeviceMxKeysLeds(device);
 	}
@@ -883,7 +838,6 @@ void KeyboardDriver::joinDeviceThreads(USBDevice & device)
 /* called when setting active user's configuration */
 void KeyboardDriver::setDeviceActiveConfiguration(
 	const std::string & devID,
-	const banksMap_type & macrosBanks,
 	const uint8_t r,
 	const uint8_t g,
 	const uint8_t b,
@@ -897,9 +851,6 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			/* exit MacroRecordMode if necessary */
 			device._exitMacroRecordMode = true;
-
-			/* set macros banks */
-			device.getMacrosManager()->setMacrosBanks(macrosBanks);
 		}
 
 		if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
@@ -914,24 +865,6 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 	catch (const std::out_of_range& oor) {
 		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
-}
-
-const banksMap_type &
-	KeyboardDriver::getDeviceMacrosBanks(const std::string & devID) const
-{
-	GK_LOG_FUNC
-
-	try {
-		const USBDevice & device = _initializedDevices.at(devID);
-		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			return device.getMacrosManager()->getMacrosBanks();
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-	}
-
-	return MacrosBanks::emptyMacrosBanks;
 }
 
 const LCDPluginsPropertiesArray_type &
@@ -972,21 +905,9 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 	try {
 		this->sendUSBDeviceInitialization(device);
 
-		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			try {
-				/* virtual keyboard name */
-				std::ostringstream buffer(std::ios_base::app);
-				buffer	<< "Virtual " << device.getFullName() << " " << device.getID();
-
-				MacrosManager* mm = new MacrosManager(buffer.str());
-				mm->initMacrosBanks(this->getMKeysIDArray(), this->getGKeysIDArray());
-
-				device.setMacrosManager(mm);
-			}
-			catch (const std::bad_alloc& e) { /* handle new() failure */
-				throw GLogiKBadAlloc("macros manager allocation failure");
-			}
-		}
+		// FIXME
+		//if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+		//}
 
 		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
 			try {

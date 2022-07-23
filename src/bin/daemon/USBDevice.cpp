@@ -37,7 +37,6 @@ USBDevice::USBDevice(const USBDeviceID & device)
 		:	USBDeviceID(device),
 			_pressedRKeysMask(0),
 			_LCDPluginsMask1(0),
-			_pMacrosManager(nullptr),
 			_pLCDPluginsManager(nullptr),
 #if GKLIBUSB
 			_pUSBDevice(nullptr),
@@ -121,7 +120,6 @@ void USBDevice::operator=(const USBDevice& dev)
 	_lastTimePoint		= dev._lastTimePoint;
 
 	/* private */
-	_pMacrosManager					= dev._pMacrosManager;
 	_pLCDPluginsManager				= dev._pLCDPluginsManager;
 
 	this->setRGBBytes(dev._RGB[0], dev._RGB[1], dev._RGB[2]);
@@ -142,13 +140,6 @@ void USBDevice::operator=(const USBDevice& dev)
 #elif GKHIDAPI
 	_pHIDDevice			= dev._pHIDDevice;
 #endif
-}
-
-void USBDevice::destroyMacrosManager(void) noexcept {
-	if( _pMacrosManager ) {
-		delete _pMacrosManager;
-		_pMacrosManager = nullptr;
-	}
 }
 
 void USBDevice::destroyLCDPluginsManager(void) noexcept

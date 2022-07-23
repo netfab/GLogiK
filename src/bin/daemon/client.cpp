@@ -109,10 +109,6 @@ void Client::initializeDevice(
 			pDevicesManager->getDeviceName(devID),			/* name */
 			pDevicesManager->getDeviceCapabilities(devID)	/* capabilities */
 		);
-		device.initMacrosBanks(
-			pDevicesManager->getDeviceMKeysIDArray(devID),
-			pDevicesManager->getDeviceGKeysIDArray(devID)
-		);
 
 		_devices[devID] = device;
 	}
@@ -171,105 +167,12 @@ void Client::setDeviceActiveUser(
 		GKLog2(trace, devID, " setting active configuration")
 
 		pDevicesManager->setDeviceActiveConfiguration(
-			devID, device.getMacrosBanks(),
-			r, g, b, device.getLCDPluginsMask1()
+			devID, r, g, b, device.getLCDPluginsMask1()
 		);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
-}
-
-void Client::syncDeviceMacrosBanks(
-	const std::string & devID,
-	const banksMap_type & macrosBanks)
-{
-	GK_LOG_FUNC
-
-	GKLog2(trace, devID, " synchonizing macros banks")
-
-	try {
-		DeviceProperties & device = _devices.at(devID);
-		device.setMacrosBanks(macrosBanks);
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-	}
-}
-
-const macro_type & Client::getDeviceMacro(
-	const std::string & devID,
-	const MKeysID bankID,
-	const GKeysID keyID)
-{
-	GK_LOG_FUNC
-
-	try {
-		DeviceProperties & device = _devices.at(devID);
-		return device.getMacro(bankID, keyID);
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-	}
-
-	return MacrosBanks::emptyMacro;
-}
-
-const bool Client::setDeviceMacrosBank(
-	const std::string & devID,
-	const MKeysID bankID,
-	const mBank_type & bank)
-{
-	GK_LOG_FUNC
-
-	bool ret = true;
-
-	try {
-		DeviceProperties & device = _devices.at(devID);
-		device.resetMacrosBank(bankID);
-		for(const auto & keyMacroPair : bank) {
-			try {
-				device.setMacro(bankID, keyMacroPair.first, keyMacroPair.second);
-			}
-			catch (const GLogiKExcept & e) {
-				ret = false;
-				GKSysLogWarning(e.what());
-			}
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		ret = false;
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-	}
-	catch (const GLogiKExcept & e) {
-		ret = false;
-		GKSysLogWarning(e.what());
-	}
-
-	return ret;
-}
-
-const bool Client::resetDeviceMacrosBank(
-	const std::string & devID,
-	const MKeysID bankID)
-{
-	GK_LOG_FUNC
-
-	bool ret = false;
-
-	try {
-		DeviceProperties & device = _devices.at(devID);
-		device.resetMacrosBank(bankID);
-		ret = true;
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-	}
-	catch (const GLogiKExcept & e) {
-		GKSysLogWarning(e.what());
-	}
-
-	return ret;
 }
 
 const bool Client::setDeviceLCDPluginsMask(

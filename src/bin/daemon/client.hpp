@@ -67,28 +67,6 @@ class Client
 			DevicesManager* pDevicesManager
 		);
 
-		void syncDeviceMacrosBanks(
-			const std::string & devID,
-			const banksMap_type & macrosBanks
-		);
-
-		const macro_type & getDeviceMacro(
-			const std::string & devID,
-			const MKeysID bankID,
-			const GKeysID keyID
-		);
-
-		const bool setDeviceMacrosBank(
-			const std::string & devID,
-			const MKeysID bankID,
-			const mBank_type & bank
-		);
-
-		const bool resetDeviceMacrosBank(
-			const std::string & devID,
-			const MKeysID bankID
-		);
-
 		const bool setDeviceLCDPluginsMask(
 			const std::string & devID,
 			const uint8_t maskID,
