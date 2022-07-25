@@ -37,7 +37,7 @@
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/deviceProperties.hpp"
 
-#include "include/device.hpp"
+#include "include/DeviceID.hpp"
 
 #include "DaemonAndServiceTab.hpp"
 #include "DeviceControlTab.hpp"

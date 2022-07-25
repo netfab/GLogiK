@@ -1,6 +1,6 @@
 
 EXTRA_DIST = \
-	%D%/device.hpp \
+	%D%/DeviceID.hpp \
 	%D%/enums.hpp \
 	%D%/base.hpp \
 	%D%/LCDPluginProperties.hpp

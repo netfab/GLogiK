@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SRC_INCLUDE_DEVICE_HPP_
-#define SRC_INCLUDE_DEVICE_HPP_
+#ifndef SRC_INCLUDE_DEVICE_ID_HPP_
+#define SRC_INCLUDE_DEVICE_ID_HPP_
 
 #include <string>
 #include <map>
@@ -31,17 +31,17 @@
 namespace GLogiK
 {
 
-class Device
+class DeviceID
 {
 	public:
-		Device()
+		DeviceID()
 			:	_vendor("unknown"),
 				_product("unknown"),
 				_name("unknown"),
 				_status("unknown"),
 				_filePath("none")
 			{}
-		~Device() = default;
+		~DeviceID() = default;
 
 		const std::string & getVendor(void) const { return _vendor; };
 		const std::string & getProduct(void) const { return _product; };
@@ -75,7 +75,7 @@ class Device
 		}
 };
 
-typedef std::map<std::string, Device> devices_map_type;
+typedef std::map<std::string, DeviceID> devices_map_type;
 
 } // namespace GLogiK
 

@@ -30,8 +30,8 @@
 #include <boost/serialization/access.hpp>
 //#include <boost/serialization/version.hpp>
 
+#include "include/DeviceID.hpp"
 #include "include/LCDPluginProperties.hpp"
-#include "include/device.hpp"
 
 #include "glogik.hpp"
 #include "macrosBanks.hpp"
@@ -103,7 +103,7 @@ class DeviceProperties
 	:	public BacklightCapability,
 		public LCDScreenCapability,
 		public MacrosBanks,
-		public Device
+		public DeviceID
 {
 	public:
 		DeviceProperties(void);
@@ -135,7 +135,7 @@ class DeviceProperties
 			void serialize(Archive & ar, const unsigned int version)
 		{
 			//if(version > 0)
-			ar & boost::serialization::base_object<Device>(*this);
+			ar & boost::serialization::base_object<DeviceID>(*this);
 			ar & boost::serialization::base_object<BacklightCapability>(*this);
 			ar & boost::serialization::base_object<LCDScreenCapability>(*this);
 			ar & boost::serialization::base_object<MacrosBanks>(*this);

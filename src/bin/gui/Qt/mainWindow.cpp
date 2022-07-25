@@ -512,7 +512,7 @@ void MainWindow::updateInterface(int index)
 			GKLog(trace, "updating tabs")
 
 			try {
-				const Device & device = _devices.at(_devID);
+				const DeviceID & device = _devices.at(_devID);
 				const bool status = (device.getStatus() == "started");
 
 				_deviceControlTab->updateTab(_devID, status);
