@@ -39,23 +39,77 @@
 namespace GLogiK
 {
 
-class DeviceProperties
-	:	public MacrosBanks,
-		public Device
+class BacklightCapability
 {
 	public:
-		DeviceProperties(void);
-		~DeviceProperties(void);
+		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
+		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
 
+	protected:
+		BacklightCapability(void);
+		virtual ~BacklightCapability(void) = 0;
+
+		uint8_t _red;
+		uint8_t _green;
+		uint8_t _blue;
+
+	private:
+		friend class boost::serialization::access;
+
+		template<class Archive>
+			void serialize(Archive & ar, const unsigned int version)
+		{
+			//if(version > 0)
+			ar & _red;
+			ar & _green;
+			ar & _blue;
+		}
+};
+
+class LCDScreenCapability
+{
+	public:
 		static const LCDPluginsPropertiesArray_type _LCDPluginsPropertiesEmptyArray;
 
-		const uint64_t getCapabilities(void) const;
+		const LCDPluginsPropertiesArray_type & getLCDPluginsProperties(void) const;
+		void setLCDPluginsProperties(const LCDPluginsPropertiesArray_type & props);
 
 		const uint64_t getLCDPluginsMask1(void) const;
 		void setLCDPluginsMask(
 			const uint8_t maskID,
 			const uint64_t mask
 		);
+
+	protected:
+		LCDScreenCapability(void);
+		virtual ~LCDScreenCapability(void) = 0;
+
+		uint64_t _LCDPluginsMask1;
+
+	private:
+
+		LCDPluginsPropertiesArray_type _LCDPluginsProperties;
+
+		friend class boost::serialization::access;
+
+		template<class Archive>
+			void serialize(Archive & ar, const unsigned int version)
+		{
+			ar & _LCDPluginsMask1;
+		}
+};
+
+class DeviceProperties
+	:	public BacklightCapability,
+		public LCDScreenCapability,
+		public MacrosBanks,
+		public Device
+{
+	public:
+		DeviceProperties(void);
+		~DeviceProperties(void);
+
+		const uint64_t getCapabilities(void) const;
 
 		const int getWatchDescriptor(void) const;
 		void setWatchDescriptor(int wd);
@@ -68,23 +122,10 @@ class DeviceProperties
 		);
 		void setProperties(const DeviceProperties & dev);
 
-		const LCDPluginsPropertiesArray_type & getLCDPluginsProperties(void) const;
-		void setLCDPluginsProperties(const LCDPluginsPropertiesArray_type & array);
-
-		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
-		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
-
 	protected:
 
 	private:
 		uint64_t _capabilities;
-		uint64_t _LCDPluginsMask1;
-
-		LCDPluginsPropertiesArray_type _LCDPluginsProperties;
-
-		uint8_t _backlightRed;
-		uint8_t _backlightGreen;
-		uint8_t _backlightBlue;
 
 		int _watchedDescriptor;
 
@@ -95,13 +136,8 @@ class DeviceProperties
 		{
 			//if(version > 0)
 			ar & boost::serialization::base_object<Device>(*this);
-
-			ar & _backlightRed;
-			ar & _backlightGreen;
-			ar & _backlightBlue;
-			ar & _LCDPluginsMask1;
-
-			// serialize base class information
+			ar & boost::serialization::base_object<BacklightCapability>(*this);
+			ar & boost::serialization::base_object<LCDScreenCapability>(*this);
 			ar & boost::serialization::base_object<MacrosBanks>(*this);
 		}
 };
