@@ -16,12 +16,8 @@ GLogiKd_sources = [
 	'USBDevice.hpp',
 	'USBDeviceID.cpp',
 	'USBDeviceID.hpp',
-	'virtualKeyboard.cpp',
-	'virtualKeyboard.hpp',
 	'logitechG510.cpp',
 	'logitechG510.hpp',
-	'macrosManager.cpp',
-	'macrosManager.hpp',
 	'LCDScreenPluginsManager.cpp',
 	'LCDScreenPluginsManager.hpp',
 ]

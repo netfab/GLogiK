@@ -40,12 +40,8 @@ GLogiKd_SOURCES = \
 		%D%/USBDevice.hpp \
 		%D%/USBDeviceID.cpp \
 		%D%/USBDeviceID.hpp \
-		%D%/virtualKeyboard.cpp \
-		%D%/virtualKeyboard.hpp \
 		%D%/logitechG510.cpp \
 		%D%/logitechG510.hpp \
-		%D%/macrosManager.cpp \
-		%D%/macrosManager.hpp \
 		%D%/LCDScreenPluginsManager.cpp \
 		%D%/LCDScreenPluginsManager.hpp
 
