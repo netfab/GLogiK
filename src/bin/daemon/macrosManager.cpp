@@ -56,7 +56,7 @@ const bool MacrosManager::macroDefined(const GKeysID keyID)
 	}
 
 	try {
-		const macro_type & macro = _macrosBanks[_currentBankID].at(keyID);
+		const macro_type & macro = _GKeysBanks[_currentBankID].at(keyID);
 		return (macro.size() > 0);
 	}
 	catch (const std::out_of_range& oor) {
@@ -77,7 +77,7 @@ void MacrosManager::runMacro(const GKeysID keyID)
 	}
 
 	try {
-		const macro_type & macro = _macrosBanks[_currentBankID].at(keyID);
+		const macro_type & macro = _GKeysBanks[_currentBankID].at(keyID);
 		if(macro.size() == 0) {
 #if DEBUGGING_ON
 			if(GKLogging::GKDebug) {
@@ -154,7 +154,7 @@ void MacrosManager::setMacro(
 		}
 	}
 
-	MacrosBanks::setMacro(_currentBankID, keyID, macro);
+	GKeysBanksCapability::setMacro(_currentBankID, keyID, macro);
 }
 
 void MacrosManager::resetMacrosBanks(void)
@@ -162,10 +162,10 @@ void MacrosManager::resetMacrosBanks(void)
 	GK_LOG_FUNC
 
 	this->setCurrentMacrosBankID(MKeysID::MKEY_M0);
-	for(auto & idBankPair : _macrosBanks) {
+	for(auto & idBankPair : _GKeysBanks) {
 		GKLog2(trace, "clearing all macros for Memory Bank: ", idBankPair.first)
 		try {
-			this->resetMacrosBank(idBankPair.first);
+			this->resetBank(idBankPair.first);
 		}
 		catch(const GLogiKExcept & e) {
 			GKSysLogWarning(e.what());

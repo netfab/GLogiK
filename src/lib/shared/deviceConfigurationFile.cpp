@@ -86,7 +86,7 @@ void DeviceConfigurationFile::load(
 	}
 
 	// check maps keys consistency after file loading
-	device.checkMacrosBanksKeys();
+	device.checkBanksKeys();
 }
 
 void DeviceConfigurationFile::save(

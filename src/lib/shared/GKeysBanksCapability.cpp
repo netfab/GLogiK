@@ -25,25 +25,25 @@
 #include "lib/utils/utils.hpp"
 
 #include "glogik.hpp"
-#include "macrosBanks.hpp"
+#include "GKeysBanksCapability.hpp"
 
 namespace GLogiK
 {
 
 using namespace NSGKUtils;
 
-const macro_type MacrosBanks::emptyMacro = {};
-const banksMap_type MacrosBanks::emptyMacrosBanks = {};
+const macro_type GKeysBanksCapability::emptyMacro = {};
+const banksMap_type GKeysBanksCapability::emptyGKeysBanks = {};
 
-MacrosBanks::MacrosBanks()
+GKeysBanksCapability::GKeysBanksCapability()
 {
 }
 
-MacrosBanks::~MacrosBanks()
+GKeysBanksCapability::~GKeysBanksCapability()
 {
 }
 
-void MacrosBanks::initMacrosBanks(
+void GKeysBanksCapability::initBanks(
 	const MKeysIDArray_type & MKeysIDArray,
 	const GKeysIDArray_type & GKeysIDArray)
 {
@@ -64,7 +64,7 @@ void MacrosBanks::initMacrosBanks(
 			{
 				/* XXX - c++17 structured bindings */
 				typedef std::pair<banksMap_type::iterator, bool> bankInsRet;
-				bankInsRet ret = _macrosBanks.insert( std::pair<const MKeysID, mBank_type>(id, {}) );
+				bankInsRet ret = _GKeysBanks.insert( std::pair<const MKeysID, mBank_type>(id, {}) );
 				if( ! ret.second )
 					throw GLogiKExcept("bank insert failure");
 			}
@@ -86,16 +86,16 @@ void MacrosBanks::initMacrosBanks(
 					}
 				};
 
-				keyInsRet insKey = _macrosBanks[id].insert(
+				keyInsRet insKey = _GKeysBanks[id].insert(
 					std::pair<GKeysID, macro_type>(
-						keyID, MacrosBanks::emptyMacro
+						keyID, GKeysBanksCapability::emptyMacro
 					)
 				);
 
 				insertStatus(insKey);
 			}
 
-			GKLog4(trace, "bank id: ", id, "number of initialized G-keys: ", insertedKeys)
+			GKLog4(trace, "bank id: ", id, "number of initialized G-Keys: ", insertedKeys)
 		}
 		catch(const GLogiKExcept & e) {
 			LOG(error) << "bank id: " << id << " - failed to initialize: " << e.what();
@@ -103,23 +103,23 @@ void MacrosBanks::initMacrosBanks(
 	}
 }
 
-const banksMap_type & MacrosBanks::getMacrosBanks(void) const
+const banksMap_type & GKeysBanksCapability::getBanks(void) const
 {
-	return _macrosBanks;
+	return _GKeysBanks;
 }
 
-void MacrosBanks::setMacrosBanks(const banksMap_type & macrosBanks)
+void GKeysBanksCapability::setBanks(const banksMap_type & GKeysBanks)
 {
 	GK_LOG_FUNC
 
-	GKLog(trace, "setting macros banks")
+	GKLog(trace, "setting G-Keys banks")
 
-	_macrosBanks = macrosBanks;
+	_GKeysBanks = GKeysBanks;
 }
 
-void MacrosBanks::checkMacrosBanksKeys(void)
+void GKeysBanksCapability::checkBanksKeys(void)
 {
-	for(auto bankIt = _macrosBanks.begin(); bankIt != _macrosBanks.end();) {
+	for(auto bankIt = _GKeysBanks.begin(); bankIt != _GKeysBanks.end();) {
 		try {
 			// checking bankID
 			this->getBankID(toEnumType(bankIt->first));
@@ -130,11 +130,11 @@ void MacrosBanks::checkMacrosBanksKeys(void)
 			LOG(warning) << e.what()
 				<< " - erasing whole bankID: "
 				<< static_cast<unsigned int>(bankIt->first);
-			bankIt = _macrosBanks.erase(bankIt);
+			bankIt = _GKeysBanks.erase(bankIt);
 		}
 	}
 
-	for(auto bankIt = _macrosBanks.begin(); bankIt != _macrosBanks.end(); bankIt++) {
+	for(auto bankIt = _GKeysBanks.begin(); bankIt != _GKeysBanks.end(); bankIt++) {
 		auto & mBank = bankIt->second;
 		for(auto it = mBank.begin(); it != mBank.end();) {
 			try {
@@ -159,7 +159,7 @@ void MacrosBanks::checkMacrosBanksKeys(void)
 	}
 }
 
-void MacrosBanks::clearMacro(
+void GKeysBanksCapability::clearMacro(
 	const MKeysID bankID,
 	const GKeysID keyID)
 {
@@ -171,7 +171,7 @@ void MacrosBanks::clearMacro(
 	}
 
 	try {
-		mBank_type & bank = _macrosBanks.at(bankID);
+		mBank_type & bank = _GKeysBanks.at(bankID);
 
 		try {
 			LOG(info) << "macros bankID: M" << bankID
@@ -191,7 +191,7 @@ void MacrosBanks::clearMacro(
 	}
 }
 
-void MacrosBanks::setMacro(
+void GKeysBanksCapability::setMacro(
 	const MKeysID bankID,
 	const GKeysID keyID,
 	const macro_type & macro)
@@ -204,7 +204,7 @@ void MacrosBanks::setMacro(
 	}
 
 	try {
-		mBank_type & bank = _macrosBanks.at(bankID);
+		mBank_type & bank = _GKeysBanks.at(bankID);
 
 		try {
 			LOG(info) << "macros bankID: M" << bankID
@@ -229,7 +229,7 @@ void MacrosBanks::setMacro(
 	}
 }
 
-const macro_type & MacrosBanks::getMacro(const MKeysID bankID, const GKeysID keyID)
+const macro_type & GKeysBanksCapability::getMacro(const MKeysID bankID, const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
@@ -239,7 +239,7 @@ const macro_type & MacrosBanks::getMacro(const MKeysID bankID, const GKeysID key
 	}
 
 	try {
-		mBank_type & bank = _macrosBanks.at(bankID);
+		mBank_type & bank = _GKeysBanks.at(bankID);
 		try {
 			return bank.at(keyID);
 		}
@@ -253,13 +253,13 @@ const macro_type & MacrosBanks::getMacro(const MKeysID bankID, const GKeysID key
 		throw GLogiKExcept("get macro failed");
 	}
 
-	return MacrosBanks::emptyMacro;
+	return GKeysBanksCapability::emptyMacro;
 }
 
-void MacrosBanks::resetMacrosBank(const MKeysID bankID)
+void GKeysBanksCapability::resetBank(const MKeysID bankID)
 {
 	try {
-		for(auto & keyMacroPair : _macrosBanks.at(bankID)) {
+		for(auto & keyMacroPair : _GKeysBanks.at(bankID)) {
 			keyMacroPair.second.clear();
 		}
 	}
@@ -269,7 +269,7 @@ void MacrosBanks::resetMacrosBank(const MKeysID bankID)
 	}
 }
 
-const MKeysID MacrosBanks::getBankID(const uint8_t num) const
+const MKeysID GKeysBanksCapability::getBankID(const uint8_t num) const
 {
 	if(num > GLogiK::MKeyID_MAX)
 		throw GLogiKExcept("wrong bankID value");

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SRC_LIB_SHARED_MACROS_BANKS_HPP_
-#define SRC_LIB_SHARED_MACROS_BANKS_HPP_
+#ifndef SRC_LIB_SHARED_GKEYS_BANKS_CAPABILITY_HPP_
+#define SRC_LIB_SHARED_GKEYS_BANKS_CAPABILITY_HPP_
 
 #include <cstdint>
 
@@ -36,20 +36,20 @@
 namespace GLogiK
 {
 
-class MacrosBanks
+class GKeysBanksCapability
 {
 	public:
 		static const macro_type emptyMacro;
-		static const banksMap_type emptyMacrosBanks;
+		static const banksMap_type emptyGKeysBanks;
 
-		void initMacrosBanks(
+		void initBanks(
 			const MKeysIDArray_type & MKeysIDArray,
 			const GKeysIDArray_type & GKeysIDArray
 		);
 
-		const banksMap_type & getMacrosBanks(void) const;
-		void setMacrosBanks(const banksMap_type & macrosBanks);
-		void checkMacrosBanksKeys(void);
+		const banksMap_type & getBanks(void) const;
+		void setBanks(const banksMap_type & GKeysBanks);
+		void checkBanksKeys(void);
 
 		const macro_type & getMacro(
 			const MKeysID bankID,
@@ -67,21 +67,21 @@ class MacrosBanks
 			const macro_type & macro
 		);
 
-		void resetMacrosBank(const MKeysID bankID);
+		void resetBank(const MKeysID bankID);
 
 	protected:
-		MacrosBanks(void);
-		~MacrosBanks(void);
+		GKeysBanksCapability(void);
+		virtual ~GKeysBanksCapability(void) = 0;
 
 		friend class boost::serialization::access;
 
 		template<class Archive>
 			void serialize(Archive & ar, const unsigned int version)
 		{
-			ar & _macrosBanks;
+			ar & _GKeysBanks;
 		}
 
-		banksMap_type _macrosBanks;
+		banksMap_type _GKeysBanks;
 
 	private:
 		const MKeysID getBankID(const uint8_t num) const;

@@ -25,7 +25,7 @@
 #include <vector>
 #include <string>
 
-#include "lib/shared/macrosBanks.hpp"
+#include "lib/shared/GKeysBanksCapability.hpp"
 #include "virtualKeyboard.hpp"
 
 #include "include/base.hpp"
@@ -45,7 +45,7 @@ struct MacroEvent {
 		MacroEvent(void) = delete;
 };
 
-class MacrosManager : public MacrosBanks
+class MacrosManager : public GKeysBanksCapability
 {
 	public:
 		MacrosManager(const std::string & virtualKeyboardName);

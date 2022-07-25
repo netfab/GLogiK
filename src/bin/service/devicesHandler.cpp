@@ -437,7 +437,7 @@ void DevicesHandler::setDeviceProperties(
 		const MKeysIDArray_type MKeysIDArray = this->getDeviceMKeysIDArray(devID);
 		if( ! MKeysIDArray.empty() ) {
 			const GKeysIDArray_type GKeysIDArray = this->getDeviceGKeysIDArray(devID);
-			device.initMacrosBanks(MKeysIDArray, GKeysIDArray);
+			device.initBanks(MKeysIDArray, GKeysIDArray);
 		}
 	}
 

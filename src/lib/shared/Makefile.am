@@ -24,12 +24,12 @@ libGKShared_la_LIBADD += \
 endif
 
 libGKShared_la_SOURCES = \
-	%D%/macrosBanks.cpp \
-	%D%/macrosBanks.hpp \
 	%D%/deviceProperties.cpp \
 	%D%/deviceProperties.hpp \
 	%D%/deviceConfigurationFile.cpp \
 	%D%/deviceConfigurationFile.hpp \
+	%D%/GKeysBanksCapability.cpp \
+	%D%/GKeysBanksCapability.hpp \
 	%D%/glogik.cpp \
 	%D%/glogik.hpp
 

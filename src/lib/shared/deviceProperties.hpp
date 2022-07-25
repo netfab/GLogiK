@@ -34,7 +34,7 @@
 #include "include/LCDPluginProperties.hpp"
 
 #include "glogik.hpp"
-#include "macrosBanks.hpp"
+#include "GKeysBanksCapability.hpp"
 
 namespace GLogiK
 {
@@ -102,7 +102,7 @@ class LCDScreenCapability
 class DeviceProperties
 	:	public BacklightCapability,
 		public LCDScreenCapability,
-		public MacrosBanks,
+		public GKeysBanksCapability,
 		public DeviceID
 {
 	public:
@@ -138,7 +138,7 @@ class DeviceProperties
 			ar & boost::serialization::base_object<DeviceID>(*this);
 			ar & boost::serialization::base_object<BacklightCapability>(*this);
 			ar & boost::serialization::base_object<LCDScreenCapability>(*this);
-			ar & boost::serialization::base_object<MacrosBanks>(*this);
+			ar & boost::serialization::base_object<GKeysBanksCapability>(*this);
 		}
 };
 

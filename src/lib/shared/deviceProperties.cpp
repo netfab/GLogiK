@@ -126,7 +126,7 @@ void DeviceProperties::setProperties(const DeviceProperties & dev)
 {
 	dev.getRGBBytes(_red, _green, _blue);
 
-	_macrosBanks		= dev.getMacrosBanks();
+	_GKeysBanks			= dev.getBanks();
 	_LCDPluginsMask1	= dev.getLCDPluginsMask1();
 
 	if( _LCDPluginsMask1 == 0 ) {
