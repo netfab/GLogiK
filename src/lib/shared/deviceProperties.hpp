@@ -99,20 +99,16 @@ class LCDScreenCapability
 		}
 };
 
-class DeviceProperties
+class clientDevice
 	:	public BacklightCapability,
 		public LCDScreenCapability,
-		public GKeysBanksCapability,
 		public DeviceID
 {
 	public:
-		DeviceProperties(void);
-		~DeviceProperties(void);
+		clientDevice(void);
+		~clientDevice(void);
 
 		const uint64_t getCapabilities(void) const;
-
-		const int getWatchDescriptor(void) const;
-		void setWatchDescriptor(int wd);
 
 		void setProperties(
 			const std::string & vendor,
@@ -120,14 +116,11 @@ class DeviceProperties
 			const std::string & name,
 			const uint64_t capabilities
 		);
-		void setProperties(const DeviceProperties & dev);
 
 	protected:
-
-	private:
 		uint64_t _capabilities;
 
-		int _watchedDescriptor;
+	private:
 
 		friend class boost::serialization::access;
 
@@ -138,6 +131,42 @@ class DeviceProperties
 			ar & boost::serialization::base_object<DeviceID>(*this);
 			ar & boost::serialization::base_object<BacklightCapability>(*this);
 			ar & boost::serialization::base_object<LCDScreenCapability>(*this);
+		}
+};
+
+class DeviceProperties
+	:	public clientDevice,
+		public GKeysBanksCapability
+{
+	public:
+		DeviceProperties(void);
+		~DeviceProperties(void);
+
+		const int getWatchDescriptor(void) const;
+		void setWatchDescriptor(int wd);
+
+		void setProperties(
+			const std::string & vendor,
+			const std::string & product,
+			const std::string & name,
+			const uint64_t capabilities)
+		{
+			clientDevice::setProperties(vendor, product, name, capabilities);
+		}
+
+		void setProperties(const DeviceProperties & dev);
+
+	protected:
+	private:
+		int _watchedDescriptor;
+
+		friend class boost::serialization::access;
+
+		template<class Archive>
+			void serialize(Archive & ar, const unsigned int version)
+		{
+			//if(version > 0)
+			ar & boost::serialization::base_object<clientDevice>(*this);
 			ar & boost::serialization::base_object<GKeysBanksCapability>(*this);
 		}
 };

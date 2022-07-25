@@ -95,22 +95,17 @@ void LCDScreenCapability::setLCDPluginsProperties(const LCDPluginsPropertiesArra
 
 /* -- -- -- */
 
-DeviceProperties::DeviceProperties()
-	:	_capabilities(0),
-		_watchedDescriptor(-1)
+clientDevice::clientDevice()
+	:	_capabilities(0)
 {
 }
 
-DeviceProperties::~DeviceProperties() {
+clientDevice::~clientDevice() {
 }
 
 /* -- -- -- */
 
-void DeviceProperties::setWatchDescriptor(int wd) {
-	_watchedDescriptor = wd;
-}
-
-void DeviceProperties::setProperties(
+void clientDevice::setProperties(
 	const std::string & vendor,
 	const std::string & product,
 	const std::string & name,
@@ -120,6 +115,30 @@ void DeviceProperties::setProperties(
 	this->setProduct(product);
 	this->setName(name);
 	_capabilities = capabilities;
+}
+
+/* -- -- -- */
+
+const uint64_t clientDevice::getCapabilities(void) const {
+	return _capabilities;
+}
+
+/* -- -- -- */
+
+DeviceProperties::DeviceProperties(void)
+	:	_watchedDescriptor(-1)
+{
+}
+
+DeviceProperties::~DeviceProperties(void) {
+}
+
+const int DeviceProperties::getWatchDescriptor(void) const {
+	return _watchedDescriptor;
+}
+
+void DeviceProperties::setWatchDescriptor(int wd) {
+	_watchedDescriptor = wd;
 }
 
 void DeviceProperties::setProperties(const DeviceProperties & dev)
@@ -137,14 +156,5 @@ void DeviceProperties::setProperties(const DeviceProperties & dev)
 }
 
 /* -- -- -- */
-
-const uint64_t DeviceProperties::getCapabilities(void) const {
-	return _capabilities;
-}
-
-const int DeviceProperties::getWatchDescriptor(void) const {
-	return _watchedDescriptor;
-}
-
 } // namespace GLogiK
 

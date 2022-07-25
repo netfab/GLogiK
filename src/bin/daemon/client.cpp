@@ -102,7 +102,7 @@ void Client::initializeDevice(
 	catch (const std::out_of_range& oor) {
 		GKLog2(trace, devID, " initializing properties")
 
-		DeviceProperties device;
+		clientDevice device;
 		device.setProperties(
 			pDevicesManager->getDeviceVendor(devID),		/* vendor */
 			pDevicesManager->getDeviceProduct(devID),		/* model */
@@ -142,7 +142,7 @@ const bool Client::setDeviceBacklightColor(
 	GKLog2(trace, devID, " setting client backlight color")
 
 	try {
-		DeviceProperties & device = _devices.at(devID);
+		clientDevice & device = _devices.at(devID);
 		device.setRGBBytes(r, g, b);
 		return true;
 	}
@@ -160,7 +160,7 @@ void Client::setDeviceActiveUser(
 	GK_LOG_FUNC
 
 	try {
-		const DeviceProperties & device = _devices.at(devID);
+		const clientDevice & device = _devices.at(devID);
 
 		uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 
@@ -185,7 +185,7 @@ const bool Client::setDeviceLCDPluginsMask(
 	bool ret = false;
 
 	try {
-		DeviceProperties & device = _devices.at(devID);
+		clientDevice & device = _devices.at(devID);
 		device.setLCDPluginsMask(maskID, mask);
 		ret = true;
 	}
