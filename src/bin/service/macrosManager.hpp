@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_MACROS_MANAGER_HPP_
-#define SRC_BIN_DAEMON_MACROS_MANAGER_HPP_
+#ifndef SRC_BIN_SERVICE_MACROS_MANAGER_HPP_
+#define SRC_BIN_SERVICE_MACROS_MANAGER_HPP_
 
 #include <vector>
 #include <string>

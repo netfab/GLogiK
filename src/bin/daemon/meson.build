@@ -83,7 +83,6 @@ endif
 #! ----------
 
 libudev_dep = dependency('libudev')
-libevdev_dep = dependency('libevdev')
 
 #! ----------
 
@@ -122,7 +121,6 @@ executable(
 	boost_filesystem_dep,
 	boost_program_options_dep,
 	libudev_dep,
-	libevdev_dep,
 	libusb_dep,
 	hidapi_dep,
 	GKUtils_lib_dep,

@@ -2,6 +2,7 @@
 bin_PROGRAMS += GLogiKs
 
 GLogiKs_CXXFLAGS = \
+				@LIBEVDEV_CFLAGS@ \
 				@BOOST_CPPFLAGS@ \
 				@DBUS_CFLAGS@ \
 				@PTHREAD_CFLAGS@ \
@@ -14,6 +15,7 @@ GLogiKs_LDFLAGS = \
 				@AM_LDFLAGS@
 
 GLogiKs_LDADD = \
+				@LIBEVDEV_LIBS@ \
 				@BOOST_SERIALIZATION_LIB@ \
 				@BOOST_SYSTEM_LIB@ \
 				@BOOST_FILESYSTEM_LIB@ \

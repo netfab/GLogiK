@@ -287,7 +287,6 @@ dnl                       checking for libraries
 dnl -------------------------------------------------------------------------
 
 PKG_CHECK_MODULES([LIBUDEV], [libudev])
-PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
 PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.19])
 
 AS_IF([test "x$enable_hidapi" = "xyes"],
@@ -298,6 +297,7 @@ AS_IF([test "x$enable_hidapi" = "xyes"],
 AS_IF([test "x$enable_dbus" = "xyes"],
 	[
 		PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.10.18])
+		PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
 		dnl SMlib used only by desktop binaries
 		PKG_CHECK_MODULES([SM], [sm ice])
 		dnl X libraries used only by user service
