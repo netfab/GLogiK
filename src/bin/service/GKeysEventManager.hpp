@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef SRC_BIN_SERVICE_MACROS_MANAGER_HPP_
-#define SRC_BIN_SERVICE_MACROS_MANAGER_HPP_
+#ifndef SRC_BIN_SERVICE_GKEYS_EVENT_MANAGER_HPP_
+#define SRC_BIN_SERVICE_GKEYS_EVENT_MANAGER_HPP_
 
 #include <vector>
 #include <string>
@@ -45,11 +45,11 @@ struct MacroEvent {
 		MacroEvent(void) = delete;
 };
 
-class MacrosManager : public GKeysBanksCapability
+class GKeysEventManager : public GKeysBanksCapability
 {
 	public:
-		MacrosManager(const std::string & virtualKeyboardName);
-		~MacrosManager();
+		GKeysEventManager(const std::string & virtualKeyboardName);
+		~GKeysEventManager();
 
 		void setCurrentMacrosBankID(MKeysID bankID);
 		const MKeysID getCurrentMacrosBankID(void) const;

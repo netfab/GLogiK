@@ -28,25 +28,25 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
-#include "macrosManager.hpp"
+#include "GKeysEventManager.hpp"
 
 namespace GLogiK
 {
 
 using namespace NSGKUtils;
 
-MacrosManager::MacrosManager(const std::string & virtualKeyboardName)
+GKeysEventManager::GKeysEventManager(const std::string & virtualKeyboardName)
 		:	_virtualKeyboard(virtualKeyboardName),
 			_currentBankID(MKeysID::MKEY_M0)
 {
 }
 
-MacrosManager::~MacrosManager()
+GKeysEventManager::~GKeysEventManager()
 {
 }
 
 /* returns true if a macro is defined for this key on the current memory bank */
-const bool MacrosManager::macroDefined(const GKeysID keyID)
+const bool GKeysEventManager::macroDefined(const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
@@ -67,7 +67,7 @@ const bool MacrosManager::macroDefined(const GKeysID keyID)
 }
 
 /* run a macro on the virtual keyboard */
-void MacrosManager::runMacro(const GKeysID keyID)
+void GKeysEventManager::runMacro(const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
@@ -105,7 +105,7 @@ void MacrosManager::runMacro(const GKeysID keyID)
 	}
 }
 
-void MacrosManager::setCurrentMacrosBankID(MKeysID bankID)
+void GKeysEventManager::setCurrentMacrosBankID(MKeysID bankID)
 {
 	GK_LOG_FUNC
 
@@ -114,12 +114,12 @@ void MacrosManager::setCurrentMacrosBankID(MKeysID bankID)
 	_currentBankID = bankID;
 }
 
-const MKeysID MacrosManager::getCurrentMacrosBankID(void) const
+const MKeysID GKeysEventManager::getCurrentMacrosBankID(void) const
 {
 	return _currentBankID;
 }
 
-void MacrosManager::setMacro(
+void GKeysEventManager::setMacro(
 	const GKeysID keyID,
 	macro_type & macro)
 {
@@ -157,7 +157,7 @@ void MacrosManager::setMacro(
 	GKeysBanksCapability::setMacro(_currentBankID, keyID, macro);
 }
 
-void MacrosManager::fillInVectors(
+void GKeysEventManager::fillInVectors(
 	const macro_type & macro,
 	std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents)
@@ -173,7 +173,7 @@ void MacrosManager::fillInVectors(
 	}
 }
 
-void MacrosManager::fixMacroReleaseEvents(
+void GKeysEventManager::fixMacroReleaseEvents(
 	const std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents,
 	macro_type & macro)
@@ -219,7 +219,7 @@ void MacrosManager::fixMacroReleaseEvents(
 	}
 }
 
-void MacrosManager::fixMacroSize(
+void GKeysEventManager::fixMacroSize(
 	const std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents,
 	macro_type & macro)
