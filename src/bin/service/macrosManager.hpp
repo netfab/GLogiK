@@ -62,8 +62,6 @@ class MacrosManager : public GKeysBanksCapability
 			macro_type & macro
 		);
 
-		void resetMacrosBanks(void);
-
 	protected:
 
 	private:

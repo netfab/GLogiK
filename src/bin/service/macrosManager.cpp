@@ -157,22 +157,6 @@ void MacrosManager::setMacro(
 	GKeysBanksCapability::setMacro(_currentBankID, keyID, macro);
 }
 
-void MacrosManager::resetMacrosBanks(void)
-{
-	GK_LOG_FUNC
-
-	this->setCurrentMacrosBankID(MKeysID::MKEY_M0);
-	for(auto & idBankPair : _GKeysBanks) {
-		GKLog2(trace, "clearing all macros for Memory Bank: ", idBankPair.first)
-		try {
-			this->resetBank(idBankPair.first);
-		}
-		catch(const GLogiKExcept & e) {
-			GKSysLogWarning(e.what());
-		}
-	}
-}
-
 void MacrosManager::fillInVectors(
 	const macro_type & macro,
 	std::vector<MacroEvent> & pressedEvents,
