@@ -56,7 +56,7 @@ const bool MacrosManager::macroDefined(const GKeysID keyID)
 	}
 
 	try {
-		const macro_type & macro = _GKeysBanks[_currentBankID].at(keyID);
+		const macro_type & macro = _GKeysBanks[_currentBankID].at(keyID).getMacro();
 		return (macro.size() > 0);
 	}
 	catch (const std::out_of_range& oor) {
@@ -77,7 +77,7 @@ void MacrosManager::runMacro(const GKeysID keyID)
 	}
 
 	try {
-		const macro_type & macro = _GKeysBanks[_currentBankID].at(keyID);
+		const macro_type & macro = _GKeysBanks[_currentBankID].at(keyID).getMacro();
 		if(macro.size() == 0) {
 #if DEBUGGING_ON
 			if(GKLogging::GKDebug) {

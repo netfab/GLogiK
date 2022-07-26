@@ -269,9 +269,9 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::mBank_type & bank)
 	*/
 
 	try {
-		for(const auto & keyMacroPair : bank) {
-			const uint8_t key = toEnumType(keyMacroPair.first);
-			const GLogiK::macro_type & macro = keyMacroPair.second;
+		for(const auto & keyEventPair : bank) {
+			const uint8_t key = toEnumType(keyEventPair.first);
+			const GLogiK::macro_type & macro = keyEventPair.second.getMacro();
 
 			bool append_macro = false;
 			if( ( ! macro.empty() ) ) {

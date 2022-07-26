@@ -87,9 +87,7 @@ void GKeysBanksCapability::initBanks(
 				};
 
 				keyInsRet insKey = _GKeysBanks[id].insert(
-					std::pair<GKeysID, macro_type>(
-						keyID, GKeysBanksCapability::emptyMacro
-					)
+					std::pair<GKeysID, GKeysEvent>( keyID, GKeysBanksCapability::emptyMacro )
 				);
 
 				insertStatus(insKey);
@@ -178,7 +176,7 @@ void GKeysBanksCapability::clearMacro(
 				<< " - Macro Key: " << getGKeyName(keyID)
 				<< " - clearing macro";
 
-			bank.at(keyID).clear();
+			bank.at(keyID).clearMacro();
 		}
 		catch(const std::out_of_range& oor) {
 			LOG(warning) << "wrong GKeyID: " << keyID;
@@ -216,7 +214,7 @@ void GKeysBanksCapability::setMacro(
 				throw GLogiKExcept("skipping macro");
 			}
 
-			bank.at(keyID) = macro;
+			bank.at(keyID) = GKeysEvent(macro);
 		}
 		catch(const std::out_of_range& oor) {
 			LOG(warning) << "wrong GKeyID: " << keyID;
@@ -241,7 +239,7 @@ const macro_type & GKeysBanksCapability::getMacro(const MKeysID bankID, const GK
 	try {
 		mBank_type & bank = _GKeysBanks.at(bankID);
 		try {
-			return bank.at(keyID);
+			return bank.at(keyID).getMacro();
 		}
 		catch(const std::out_of_range& oor) {
 			LOG(warning) << "wrong GKeyID: " << keyID;
@@ -259,8 +257,8 @@ const macro_type & GKeysBanksCapability::getMacro(const MKeysID bankID, const GK
 void GKeysBanksCapability::resetBank(const MKeysID bankID)
 {
 	try {
-		for(auto & keyMacroPair : _GKeysBanks.at(bankID)) {
-			keyMacroPair.second.clear();
+		for(auto & keyEventPair : _GKeysBanks.at(bankID)) {
+			keyEventPair.second.clearMacro();
 		}
 	}
 	catch (const std::out_of_range& oor) {

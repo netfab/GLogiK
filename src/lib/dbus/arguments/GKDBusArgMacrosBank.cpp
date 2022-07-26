@@ -45,7 +45,7 @@ const GLogiK::mBank_type GKDBusArgumentMacrosBank::getNextMacrosBankArgument(voi
 			const uint8_t size = GKDBusArgumentByte::getNextByteArgument();
 			const GLogiK::macro_type macro = GKDBusArgumentMacro::getNextMacroArgument(size);
 
-			bank[keyID] = macro;
+			bank[keyID] = GLogiK::GKeysEvent(macro);
 		}
 		while( ! GKDBusArgumentByte::byteArguments.empty() );
 	}
