@@ -35,8 +35,8 @@ namespace GLogiK
 class VirtualKeyboard
 {
 	public:
-		VirtualKeyboard(const std::string & deviceName);
-		~VirtualKeyboard();
+		VirtualKeyboard(void);
+		~VirtualKeyboard(void);
 
 		void sendKeyEvent(const KeyEvent & key);
 

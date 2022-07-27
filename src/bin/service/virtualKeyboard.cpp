@@ -27,6 +27,7 @@
 #include <cstring>
 
 #include "lib/utils/utils.hpp"
+#include "lib/shared/glogik.hpp"
 
 #include "virtualKeyboard.hpp"
 
@@ -35,9 +36,12 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-VirtualKeyboard::VirtualKeyboard(const std::string & deviceName)
+VirtualKeyboard::VirtualKeyboard(void)
 {
 	GK_LOG_FUNC
+
+	std::string deviceName(GLOGIKS_DESKTOP_SERVICE_NAME);
+	deviceName += " virtual keyboard";
 
 	GKLog2(trace, "initializing ", deviceName)
 
@@ -72,7 +76,7 @@ VirtualKeyboard::VirtualKeyboard(const std::string & deviceName)
 	}
 }
 
-VirtualKeyboard::~VirtualKeyboard()
+VirtualKeyboard::~VirtualKeyboard(void)
 {
 	GK_LOG_FUNC
 

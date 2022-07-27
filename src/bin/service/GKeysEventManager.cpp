@@ -35,13 +35,12 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-GKeysEventManager::GKeysEventManager(const std::string & virtualKeyboardName)
-		:	_virtualKeyboard(virtualKeyboardName),
-			_currentBankID(MKeysID::MKEY_M0)
+GKeysEventManager::GKeysEventManager(void)
+		:	_currentBankID(MKeysID::MKEY_M0)
 {
 }
 
-GKeysEventManager::~GKeysEventManager()
+GKeysEventManager::~GKeysEventManager(void)
 {
 }
 

@@ -38,6 +38,7 @@
 #include "include/LCDPluginProperties.hpp"
 
 #include "devicesHandler.hpp"
+#include "GKeysEventManager.hpp"
 
 #define UNREACHABLE_DAEMON_MAX_RETRIES 3
 
@@ -80,6 +81,7 @@ class DBusHandler
 	protected:
 
 	private:
+		GKeysEventManager _GKeysEvent;
 		DevicesHandler _devices;
 
 		std::string _clientID;

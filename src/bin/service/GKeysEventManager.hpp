@@ -48,8 +48,8 @@ struct MacroEvent {
 class GKeysEventManager : public GKeysBanksCapability
 {
 	public:
-		GKeysEventManager(const std::string & virtualKeyboardName);
-		~GKeysEventManager();
+		GKeysEventManager(void);
+		~GKeysEventManager(void);
 
 		void setCurrentMacrosBankID(MKeysID bankID);
 		const MKeysID getCurrentMacrosBankID(void) const;
