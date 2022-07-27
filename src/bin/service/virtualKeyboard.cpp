@@ -126,15 +126,11 @@ void VirtualKeyboard::sendKeyEvent(const KeyEvent & key)
 	if(ret == 0) {
 		ret = libevdev_uinput_write_event(_pUInputDevice, EV_SYN, SYN_REPORT, 0);
 		if(ret != 0 ) {
-			std::ostringstream buffer(std::ios_base::ate);
-			buffer << "EV_SYN/SYN_REPORT/0 write_event : " << -ret << " : " << strerror(-ret);
-			GKSysLogWarning(buffer.str());
+			LOG(warning) << "EV_SYN/SYN_REPORT/0 write_event : " << -ret << " : " << strerror(-ret);
 		}
 	}
 	else {
-		std::ostringstream buffer(std::ios_base::ate);
-		buffer << "EV_KEY write_event : " << -ret << " : " << strerror(-ret);
-		GKSysLogWarning(buffer.str());
+		LOG(warning) << "EV_KEY write_event : " << -ret << " : " << strerror(-ret);
 	}
 }
 

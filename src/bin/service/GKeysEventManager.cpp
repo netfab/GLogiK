@@ -50,7 +50,7 @@ const bool GKeysEventManager::macroDefined(const GKeysID keyID)
 	GK_LOG_FUNC
 
 	if(keyID == GKeyID_INV) {
-		GKSysLogError("invalid GKeyID");
+		LOG(error) << "invalid GKeyID";
 		return false;
 	}
 
@@ -59,7 +59,7 @@ const bool GKeysEventManager::macroDefined(const GKeysID keyID)
 		return (macro.size() > 0);
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLogWarning("macro key container not found");
+		LOG(warning) << "macro key container not found";
 	}
 
 	return false;
@@ -71,7 +71,7 @@ void GKeysEventManager::runMacro(const GKeysID keyID)
 	GK_LOG_FUNC
 
 	if(keyID == GKeyID_INV) {
-		GKSysLogError("invalid GKeyID");
+		LOG(error) << "invalid GKeyID";
 		return;
 	}
 
@@ -100,7 +100,7 @@ void GKeysEventManager::runMacro(const GKeysID keyID)
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLogWarning("macro key container not found");
+		LOG(warning) << "macro key container not found";
 	}
 }
 
@@ -125,7 +125,7 @@ void GKeysEventManager::setMacro(
 	GK_LOG_FUNC
 
 	if(keyID == GKeyID_INV) {
-		GKSysLogError("invalid GKeyID");
+		LOG(error) << "invalid GKeyID";
 		return;
 	}
 
@@ -145,7 +145,7 @@ void GKeysEventManager::setMacro(
 		//}
 
 		if(macro.size() >= MACRO_T_MAX_SIZE) {
-			GKSysLogWarning("macro size greater than MACRO_T_MAX_SIZE, fixing it");
+			LOG(warning) << "macro size greater than MACRO_T_MAX_SIZE, fixing it";
 			pressedEvents.clear();
 			releasedEvents.clear();
 			this->fillInVectors(macro, pressedEvents, releasedEvents);
@@ -193,9 +193,7 @@ void GKeysEventManager::fixMacroReleaseEvents(
 			}
 		}
 		if( ! found ) {
-			std::ostringstream buffer(std::ios_base::ate);
-			buffer << "missing release event for index " << toUInt(pressed.index) << " - adding event";
-			GKSysLogWarning(buffer.str());
+			LOG(warning) << "missing release event for index " << toUInt(pressed.index) << " - adding event";
 			KeyEvent e = pressed.key;
 			e.event = EventValue::EVENT_KEY_RELEASE;
 			e.interval = 1;
@@ -229,10 +227,8 @@ void GKeysEventManager::fixMacroSize(
 
 	/* sanity check */
 	if(pressedEvents.size() != releasedEvents.size()) {
-		GKSysLogWarning("pressed and released events disparity :");
-		std::ostringstream buffer(std::ios_base::ate);
-		buffer << "pressed: " << pressedEvents.size() << " - released: " << releasedEvents.size();
-		GKSysLogWarning(buffer.str());
+		LOG(warning) << "pressed and released events disparity :";
+		LOG(warning) << "pressed: " << pressedEvents.size() << " - released: " << releasedEvents.size();
 	}
 
 	std::vector<unsigned int> indexes;
@@ -276,7 +272,7 @@ void GKeysEventManager::fixMacroSize(
 	if( macro.size() >= MACRO_T_MAX_SIZE ) {
 		GKLog2(trace, "macro size : ", macro.size())
 
-		GKSysLogWarning("macro still greater than MACRO_T_MAX_SIZE, force resize it");
+		LOG(warning) << "macro still greater than MACRO_T_MAX_SIZE, force resize it";
 		macro.resize(MACRO_T_MAX_SIZE - 1);
 	}
 
