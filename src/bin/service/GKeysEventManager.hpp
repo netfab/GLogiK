@@ -33,18 +33,6 @@
 namespace GLogiK
 {
 
-struct MacroEvent {
-	public:
-		MacroEvent(const GLogiK::KeyEvent & k, const unsigned int i)
-			:	key(k), index(i) {}
-
-		GLogiK::KeyEvent key;
-		unsigned int index;
-
-	private:
-		MacroEvent(void) = delete;
-};
-
 class GKeysEventManager : public GKeysBanksCapability
 {
 	public:
@@ -65,6 +53,18 @@ class GKeysEventManager : public GKeysBanksCapability
 	protected:
 
 	private:
+		struct MacroEvent {
+			public:
+				MacroEvent(const GLogiK::KeyEvent & k, const unsigned int i)
+					:	key(k), index(i) {}
+
+				GLogiK::KeyEvent key;
+				unsigned int index;
+
+			private:
+				MacroEvent(void) = delete;
+		};
+
 		VirtualKeyboard _virtualKeyboard;
 		MKeysID _currentBankID;
 
