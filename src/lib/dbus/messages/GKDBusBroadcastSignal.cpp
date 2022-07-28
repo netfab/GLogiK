@@ -165,6 +165,12 @@ void GKDBusMessageBroadcastSignal::appendStringVectorToBroadcastSignal(const std
 		_signal->appendStringVector(list);
 }
 
+void GKDBusMessageBroadcastSignal::appendMacroToBroadcastSignal(const GLogiK::macro_type & macro)
+{
+	if(_signal != nullptr) /* sanity check */
+		_signal->appendMacro(macro);
+}
+
 void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void)
 {
 	GK_LOG_FUNC

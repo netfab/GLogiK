@@ -19,33 +19,37 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_MACROS_BANK_HPP_
-#define SRC_LIB_DBUS_ARG_GKDBUS_ARG_MACROS_BANK_HPP_
+#ifndef SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TYPE_SIG_SGM2V_HPP_
+#define SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TYPE_SIG_SGM2V_HPP_
 
-#include "GKDBusArgByte.hpp"
-#include "GKDBusArgGKeysID.hpp"
-#include "GKDBusArgMacro.hpp"
+#include <string>
+#include <functional>
+
+#include <dbus/dbus.h>
 
 #include "include/base.hpp"
+
+#include "callbackEvent.hpp"
+
+
+/* one string one GKeyID one macro to void */
+typedef std::function<
+			void(
+				const std::string&,
+				const GLogiK::GKeysID,
+				const GLogiK::macro_type
+			) > SIGsGM2v;
+
 
 namespace NSGKDBus
 {
 
-class GKDBusArgumentMacrosBank
-	:	virtual private GKDBusArgumentByte,
-		virtual private GKDBusArgumentGKeysID,
-		virtual private GKDBusArgumentMacro
-{
-	public:
-		static const GLogiK::mBank_type getNextMacrosBankArgument(void);
-
-	protected:
-		GKDBusArgumentMacrosBank(void) = default;
-		~GKDBusArgumentMacrosBank(void) = default;
-
-	private:
-
-};
+template <>
+	void callbackEvent<SIGsGM2v>::runCallback(
+		DBusConnection* const connection,
+		DBusMessage* message,
+		DBusMessage* asyncContainer
+	);
 
 } // namespace NSGKDBus
 

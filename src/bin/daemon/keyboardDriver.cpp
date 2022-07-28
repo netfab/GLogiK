@@ -449,9 +449,6 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 				}
 
 #if GKDBUS
-				// FIXME fix signal
-				const MKeysID bankID = MKeysID::MKEY_M0;
-
 				try {
 					std::string signal("MacroRecorded");
 					if( device._newMacro.empty() ) {
@@ -466,8 +463,12 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 					);
 
 					_pDBus->appendStringToBroadcastSignal(device.getID());
-					_pDBus->appendMKeysIDToBroadcastSignal(bankID);
 					_pDBus->appendGKeysIDToBroadcastSignal(device._GKeyID);
+
+					/* sending macro */
+					if( ! device._newMacro.empty() ) {
+						_pDBus->appendMacroToBroadcastSignal(device._newMacro);
+					}
 
 					_pDBus->sendBroadcastSignal();
 				}

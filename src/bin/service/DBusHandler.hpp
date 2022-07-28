@@ -127,10 +127,10 @@ class DBusHandler
 			const std::string & devID,
 			const MKeysID bankID
 		);
-		const bool macroRecorded(
+		void macroRecorded(
 			const std::string & devID,
-			const MKeysID bankID,
-			const GKeysID keyID
+			const GKeysID keyID,
+			const macro_type macro
 		);
 		const bool macroCleared(
 			const std::string & devID,
