@@ -42,7 +42,6 @@ class GKeysEventManager : public GKeysBanksCapability
 		void setCurrentMacrosBankID(MKeysID bankID);
 		const MKeysID getCurrentMacrosBankID(void) const;
 
-		const bool macroDefined(const GKeysID keyID);
 		void runMacro(const GKeysID keyID);
 
 		void setMacro(

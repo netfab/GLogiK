@@ -44,27 +44,6 @@ GKeysEventManager::~GKeysEventManager(void)
 {
 }
 
-/* returns true if a macro is defined for this key on the current memory bank */
-const bool GKeysEventManager::macroDefined(const GKeysID keyID)
-{
-	GK_LOG_FUNC
-
-	if(keyID == GKeyID_INV) {
-		LOG(error) << "invalid GKeyID";
-		return false;
-	}
-
-	try {
-		const macro_type & macro = _GKeysBanks[_currentBankID].at(keyID).getMacro();
-		return (macro.size() > 0);
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(warning) << "macro key container not found";
-	}
-
-	return false;
-}
-
 /* run a macro on the virtual keyboard */
 void GKeysEventManager::runMacro(const GKeysID keyID)
 {
