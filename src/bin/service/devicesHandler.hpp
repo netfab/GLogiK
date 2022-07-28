@@ -68,12 +68,6 @@ class DevicesHandler
 
 		void clearDevices(void);
 
-		const bool setDeviceMacro(
-			const std::string & devID,
-			const MKeysID bankID,
-			const GKeysID keyID
-		);
-
 		const bool clearDeviceMacro(
 			const std::string & devID,
 			const MKeysID bankID,

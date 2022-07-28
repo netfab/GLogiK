@@ -645,66 +645,6 @@ void DevicesHandler::unrefDevice(const std::string & devID)
 	}
 }
 
-const bool DevicesHandler::setDeviceMacro(
-	const std::string & devID,
-	const MKeysID bankID,
-	const GKeysID keyID)
-{
-	GK_LOG_FUNC
-
-	try {
-		DeviceProperties & device = _startedDevices.at(devID);
-
-		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			std::string remoteMethod("GetDeviceMacro");
-
-			try {
-				/* getting recorded macro from daemon */
-				_pDBus->initializeRemoteMethodCall(
-					_systemBus,
-					GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-					remoteMethod.c_str()
-				);
-
-				_pDBus->appendStringToRemoteMethodCall(_clientID);
-				_pDBus->appendStringToRemoteMethodCall(devID);
-				_pDBus->appendMKeysIDToRemoteMethodCall(bankID);
-				_pDBus->appendGKeysIDToRemoteMethodCall(keyID);
-
-				_pDBus->sendRemoteMethodCall();
-
-				try {
-					_pDBus->waitForRemoteMethodCallReply();
-
-					/* use helper function to get the macro */
-					const macro_type macro = _pDBus->getNextMacroArgument();
-
-					device.setMacro(bankID, keyID, macro);
-
-					this->initializeConfigurationDirectory(device);
-					this->saveDeviceConfigurationFile(devID, device);
-					return true;
-				}
-				catch (const GLogiKExcept & e) {
-					/* setMacro can also throws */
-					LogRemoteCallGetReplyFailure
-				}
-			}
-			catch (const GKDBusMessageWrongBuild & e) {
-				_pDBus->abandonRemoteMethodCall();
-				LogRemoteCallFailure
-			}
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(warning) << devID << " device not found in started-devices container";
-	}
-
-	return false;
-}
-
 const bool DevicesHandler::clearDeviceMacro(
 	const std::string & devID,
 	const MKeysID bankID,

@@ -1128,7 +1128,7 @@ void DBusHandler::macroRecorded(
 		return;
 	}
 
-	//return _devices.setDeviceMacro(devID, bankID, keyID);
+	// FIXME
 }
 
 const bool DBusHandler::macroCleared(
