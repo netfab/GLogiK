@@ -448,40 +448,34 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 					continue;
 				}
 
-				// FIXME
-					try {
 #if GKDBUS
-						// FIXME fix signal
-							const MKeysID bankID = MKeysID::MKEY_M0;
+				// FIXME fix signal
+				const MKeysID bankID = MKeysID::MKEY_M0;
 
-							try {
-								std::string signal("MacroRecorded");
-								if( device._newMacro.empty() ) {
-									signal = "MacroCleared";
-								}
+				try {
+					std::string signal("MacroRecorded");
+					if( device._newMacro.empty() ) {
+						signal = "MacroCleared";
+					}
 
-								_pDBus->initializeBroadcastSignal(
-									NSGKDBus::BusConnection::GKDBUS_SYSTEM,
-									GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-									GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-									signal.c_str()
-								);
+					_pDBus->initializeBroadcastSignal(
+						NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+						GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+						GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+						signal.c_str()
+					);
 
-								_pDBus->appendStringToBroadcastSignal(device.getID());
-								_pDBus->appendMKeysIDToBroadcastSignal(bankID);
-								_pDBus->appendGKeysIDToBroadcastSignal(device._GKeyID);
+					_pDBus->appendStringToBroadcastSignal(device.getID());
+					_pDBus->appendMKeysIDToBroadcastSignal(bankID);
+					_pDBus->appendGKeysIDToBroadcastSignal(device._GKeyID);
 
-								_pDBus->sendBroadcastSignal();
-							}
-							catch (const GKDBusMessageWrongBuild & e) {
-								_pDBus->abandonBroadcastSignal();
-								GKSysLogWarning(e.what());
-							}
+					_pDBus->sendBroadcastSignal();
+				}
+				catch (const GKDBusMessageWrongBuild & e) {
+					_pDBus->abandonBroadcastSignal();
+					GKSysLogWarning(e.what());
+				}
 #endif
-					}
-					catch (const GLogiKExcept & e) {
-						GKSysLogWarning(e.what());
-					}
 
 				exit = true;
 				break;
