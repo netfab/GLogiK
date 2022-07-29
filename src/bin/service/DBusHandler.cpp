@@ -1155,7 +1155,8 @@ const bool DBusHandler::macroCleared(
 		return false;
 	}
 
-	return _devices.clearDeviceMacro(devID, bankID, keyID);
+	// FIXME
+	return true;
 }
 
 void DBusHandler::deviceMediaEvent(

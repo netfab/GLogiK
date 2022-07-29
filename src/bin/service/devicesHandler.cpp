@@ -645,33 +645,6 @@ void DevicesHandler::unrefDevice(const std::string & devID)
 	}
 }
 
-const bool DevicesHandler::clearDeviceMacro(
-	const std::string & devID,
-	const MKeysID bankID,
-	const GKeysID keyID)
-{
-	GK_LOG_FUNC
-
-	try {
-		DeviceProperties & device = _startedDevices.at(devID);
-
-		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			device.clearMacro(bankID, keyID);
-
-			this->initializeConfigurationDirectory(device);
-			this->saveDeviceConfigurationFile(devID, device);
-			return true;
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(warning) << devID << " device not found in started-devices container";
-	}
-	catch (const GLogiKExcept & e) {
-		LOG(error) << devID << " failed to clear macro : " << e.what();
-	}
-	return false;
-}
-
 void DevicesHandler::initializeConfigurationDirectory(DeviceProperties & device, const bool check)
 {
 	GK_LOG_FUNC
