@@ -751,17 +751,18 @@ void DBusHandler::initializeGKDBusSignals(void)
 		)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGsmG2b>::exposeSignal(
+	// FIXME SIGsmG2b
+	_pDBus->NSGKDBus::Callback<SIGsG2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"MacroCleared",
 		{	{"s", "device_id", "in", "device ID"},
-			{"y", "macro_bankID", "in", "macro bankID"},
-			{"y", "macro_keyID", "in", "macro key ID"} },
+			{"y", "macro_keyID", "in", "macro key ID"}
+		},
 		std::bind(&DBusHandler::macroCleared, this,
-			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
+			std::placeholders::_1, std::placeholders::_2
 		)
 	);
 
@@ -1109,7 +1110,7 @@ void DBusHandler::GBankSwitch(
 void DBusHandler::macroRecorded(
 	const std::string & devID,
 	const GKeysID keyID,
-	const macro_type macro)
+	const macro_type & macro)
 {
 	GK_LOG_FUNC
 
@@ -1131,32 +1132,27 @@ void DBusHandler::macroRecorded(
 	// FIXME
 }
 
-const bool DBusHandler::macroCleared(
-	const std::string & devID,
-	const MKeysID bankID,
-	const GKeysID keyID)
+void DBusHandler::macroCleared(const std::string & devID, const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
-	GKLog6(trace,
+	GKLog4(trace,
 		devID, " received signal : macroCleared",
-		"bankID : ", bankID,
 		"key : ", getGKeyName(keyID)
 	)
 
 
 	if( ! _registerStatus ) {
 		GKLog(trace, "currently not registered, skipping")
-		return false;
+		return;
 	}
 
 	if( _sessionState != "active" ) {
 		GKLog(trace, "currently not active, skipping")
-		return false;
+		return;
 	}
 
 	// FIXME
-	return true;
 }
 
 void DBusHandler::deviceMediaEvent(

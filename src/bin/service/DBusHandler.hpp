@@ -130,13 +130,9 @@ class DBusHandler
 		void macroRecorded(
 			const std::string & devID,
 			const GKeysID keyID,
-			const macro_type macro
+			const macro_type & macro
 		);
-		const bool macroCleared(
-			const std::string & devID,
-			const MKeysID bankID,
-			const GKeysID keyID
-		);
+		void macroCleared(const std::string & devID, const GKeysID keyID);
 
 		void devicesStarted(const std::vector<std::string> & devicesID);
 		void devicesStopped(const std::vector<std::string> & devicesID);
