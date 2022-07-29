@@ -208,6 +208,9 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 			_pDBus->appendMKeysIDToBroadcastSignal(pressed_MKey);
 
 			_pDBus->sendBroadcastSignal();
+
+			LOG(trace)	<< device.getID() << " sent DBus signal: GBankSwitch - M"
+						<< pressed_MKey;
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
 			_pDBus->abandonBroadcastSignal();
@@ -471,6 +474,9 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 					}
 
 					_pDBus->sendBroadcastSignal();
+
+					LOG(trace)	<< device.getID() << " sent DBus signal: "
+								<< signal << " - " << getGKeyName(device._GKeyID);
 				}
 				catch (const GKDBusMessageWrongBuild & e) {
 					_pDBus->abandonBroadcastSignal();
@@ -656,6 +662,9 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 									_pDBus->appendStringToBroadcastSignal(device._mediaKey);
 
 									_pDBus->sendBroadcastSignal();
+
+									LOG(trace)	<< devID << " sent DBus signal: deviceMediaEvent - "
+												<< device._mediaKey;
 								}
 								catch (const GKDBusMessageWrongBuild & e) {
 									_pDBus->abandonBroadcastSignal();
