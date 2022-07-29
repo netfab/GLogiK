@@ -681,6 +681,23 @@ void DevicesHandler::initializeConfigurationDirectory(DeviceProperties & device,
 	}
 }
 
+void DevicesHandler::setDeviceCurrentBankID(const std::string & devID, const MKeysID bankID)
+{
+	GK_LOG_FUNC
+
+	try {
+		DeviceProperties & device = _startedDevices.at(devID);
+
+		GKLog2(trace, devID, " started device")
+
+		device.setCurrentBankID(bankID);
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(warning) << devID << " device not found in started-devices container";
+		throw GLogiKExcept("unable to set device bankID");
+	}
+}
+
 banksMap_type & DevicesHandler::getDeviceBanks(const std::string & devID, MKeysID & bankID)
 {
 	GK_LOG_FUNC

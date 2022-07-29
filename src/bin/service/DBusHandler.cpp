@@ -1105,6 +1105,13 @@ void DBusHandler::GBankSwitch(
 	}
 
 	LOG(info) << "received GBankSwitch signal : " << bankID;
+
+	try {
+		_devices.setDeviceCurrentBankID(devID, bankID);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(error) << devID << " setting bankID failure - " << bankID;
+	}
 }
 
 void DBusHandler::macroRecorded(

@@ -68,6 +68,7 @@ class DevicesHandler
 
 		void clearDevices(void);
 
+		void setDeviceCurrentBankID(const std::string & devID, const MKeysID bankID);
 		banksMap_type & getDeviceBanks(const std::string & devID, MKeysID & bankID);
 
 		void doDeviceFakeKeyEvent(
