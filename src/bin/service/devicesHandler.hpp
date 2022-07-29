@@ -68,6 +68,8 @@ class DevicesHandler
 
 		void clearDevices(void);
 
+		banksMap_type & getDeviceBanks(const std::string & devID, MKeysID & bankID);
+
 		void doDeviceFakeKeyEvent(
 			const std::string & devID,
 			const std::string & mediaKeyEvent

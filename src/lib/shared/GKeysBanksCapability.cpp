@@ -102,7 +102,7 @@ void GKeysBanksCapability::initBanks(
 	}
 }
 
-const banksMap_type & GKeysBanksCapability::getBanks(void) const
+banksMap_type & GKeysBanksCapability::getBanks(void)
 {
 	return _GKeysBanks;
 }
