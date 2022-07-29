@@ -177,6 +177,21 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID)
 	}
 }
 
+void DevicesHandler::saveDeviceConfigurationFile(const std::string & devID)
+{
+	GK_LOG_FUNC
+
+	try {
+		DeviceProperties & device = _startedDevices.at(devID);
+
+		this->initializeConfigurationDirectory(device);
+		this->saveDeviceConfigurationFile(devID, device);
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(warning) << devID << " device not found in started-devices container";
+	}
+}
+
 void DevicesHandler::saveDeviceConfigurationFile(
 	const std::string & devID,
 	const DeviceProperties & device)

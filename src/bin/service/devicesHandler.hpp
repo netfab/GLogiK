@@ -80,6 +80,7 @@ class DevicesHandler
 		);
 
 		void reloadDeviceConfigurationFile(const std::string & devID);
+		void saveDeviceConfigurationFile(const std::string & devID);
 
 	protected:
 

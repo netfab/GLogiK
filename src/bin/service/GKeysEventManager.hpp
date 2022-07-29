@@ -33,20 +33,35 @@
 namespace GLogiK
 {
 
-class GKeysEventManager : public GKeysBanksCapability
+class GKeysEventManager
 {
 	public:
 		GKeysEventManager(void);
 		~GKeysEventManager(void);
 
-		void setCurrentMacrosBankID(MKeysID bankID);
-		const MKeysID getCurrentMacrosBankID(void) const;
-
-		void runMacro(const GKeysID keyID);
+		void runMacro(
+			const banksMap_type & GKeysBanks,
+			const MKeysID bankID,
+			const GKeysID keyID
+		);
 
 		void setMacro(
-			const GKeysID keyID,
-			macro_type & macro
+			banksMap_type & GKeysBanks,
+			macro_type & macro,
+			const MKeysID bankID,
+			const GKeysID keyID
+		);
+
+		const macro_type & getMacro(
+			const banksMap_type & GKeysBanks,
+			const MKeysID bankID,
+			const GKeysID keyID
+		);
+
+		void clearMacro(
+			banksMap_type & GKeysBanks,
+			const MKeysID bankID,
+			const GKeysID keyID
 		);
 
 	protected:
@@ -65,7 +80,13 @@ class GKeysEventManager : public GKeysBanksCapability
 		};
 
 		VirtualKeyboard _virtualKeyboard;
-		MKeysID _currentBankID;
+
+		void setMacro(
+			banksMap_type & GKeysBanks,
+			const MKeysID bankID,
+			const GKeysID keyID,
+			const macro_type & macro
+		);
 
 		void fillInVectors(
 			const macro_type & macro,

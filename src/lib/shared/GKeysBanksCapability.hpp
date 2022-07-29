@@ -51,21 +51,8 @@ class GKeysBanksCapability
 		void setBanks(const banksMap_type & GKeysBanks);
 		void checkBanksKeys(void);
 
-		const macro_type & getMacro(
-			const MKeysID bankID,
-			const GKeysID keyID
-		);
-
-		void clearMacro(
-			const MKeysID bankID,
-			const GKeysID keyID
-		);
-
-		void setMacro(
-			const MKeysID bankID,
-			const GKeysID keyID,
-			const macro_type & macro
-		);
+		void setCurrentBankID(MKeysID bankID);
+		const MKeysID getCurrentBankID(void) const;
 
 		void resetBank(const MKeysID bankID);
 
@@ -86,6 +73,7 @@ class GKeysBanksCapability
 	private:
 		const MKeysID getBankID(const uint8_t num) const;
 
+		MKeysID _currentBankID;
 };
 
 } // namespace GLogiK

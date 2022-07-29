@@ -35,11 +35,12 @@ using namespace NSGKUtils;
 const macro_type GKeysBanksCapability::emptyMacro = {};
 const banksMap_type GKeysBanksCapability::emptyGKeysBanks = {};
 
-GKeysBanksCapability::GKeysBanksCapability()
+GKeysBanksCapability::GKeysBanksCapability(void)
+	:	_currentBankID(MKeysID::MKEY_M0)
 {
 }
 
-GKeysBanksCapability::~GKeysBanksCapability()
+GKeysBanksCapability::~GKeysBanksCapability(void)
 {
 }
 
@@ -157,101 +158,18 @@ void GKeysBanksCapability::checkBanksKeys(void)
 	}
 }
 
-void GKeysBanksCapability::clearMacro(
-	const MKeysID bankID,
-	const GKeysID keyID)
+void GKeysBanksCapability::setCurrentBankID(MKeysID bankID)
 {
 	GK_LOG_FUNC
 
-	if(keyID == GKeyID_INV) {
-		LOG(error) << "invalid GKeyID";
-		throw GLogiKExcept("clear macro failed");
-	}
+	GKLog2(trace, "setting current bank ID : ", bankID)
 
-	try {
-		mBank_type & bank = _GKeysBanks.at(bankID);
-
-		try {
-			LOG(info) << "macros bankID: M" << bankID
-				<< " - Macro Key: " << getGKeyName(keyID)
-				<< " - clearing macro";
-
-			bank.at(keyID).clearMacro();
-		}
-		catch(const std::out_of_range& oor) {
-			LOG(warning) << "wrong GKeyID: " << keyID;
-			throw GLogiKExcept("clear macro failed");
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(warning) << "wrong bankID: " << bankID;
-		throw GLogiKExcept("clear macro failed");
-	}
+	_currentBankID = bankID;
 }
 
-void GKeysBanksCapability::setMacro(
-	const MKeysID bankID,
-	const GKeysID keyID,
-	const macro_type & macro)
+const MKeysID GKeysBanksCapability::getCurrentBankID(void) const
 {
-	GK_LOG_FUNC
-
-	if(keyID == GKeyID_INV) {
-		LOG(error) << "invalid GKeyID";
-		throw GLogiKExcept("set macro failed");
-	}
-
-	try {
-		mBank_type & bank = _GKeysBanks.at(bankID);
-
-		try {
-			LOG(info) << "macros bankID: M" << bankID
-				<< " - Macro Key: " << getGKeyName(keyID)
-				<< " - Macro Size: " << macro.size()
-				<< " - setting macro";
-			if( macro.size() >= MACRO_T_MAX_SIZE ) {
-				LOG(warning) << "skipping macro - size >= MACRO_T_MAX_SIZE";
-				throw GLogiKExcept("skipping macro");
-			}
-
-			bank.at(keyID) = GKeysEvent(macro);
-		}
-		catch(const std::out_of_range& oor) {
-			LOG(warning) << "wrong GKeyID: " << keyID;
-			throw GLogiKExcept("set macro failed");
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(warning) << "wrong bankID: " << bankID;
-		throw GLogiKExcept("set macro failed");
-	}
-}
-
-const macro_type & GKeysBanksCapability::getMacro(const MKeysID bankID, const GKeysID keyID)
-{
-	GK_LOG_FUNC
-
-	if(keyID == GKeyID_INV) {
-		LOG(error) << "invalid GKeyID";
-		throw GLogiKExcept("get macro failed");
-	}
-
-	try {
-		mBank_type & bank = _GKeysBanks.at(bankID);
-		try {
-			return bank.at(keyID).getMacro();
-		}
-		catch(const std::out_of_range& oor) {
-			LOG(warning) << "wrong GKeyID: " << keyID;
-			throw GLogiKExcept("get macro failed");
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(warning) << "wrong bankID: " << bankID;
-		throw GLogiKExcept("get macro failed");
-	}
-
-	return GKeysBanksCapability::emptyMacro;
+	return _currentBankID;
 }
 
 void GKeysBanksCapability::resetBank(const MKeysID bankID)
