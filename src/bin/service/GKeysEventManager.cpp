@@ -87,7 +87,7 @@ void GKeysEventManager::runMacro(
 
 void GKeysEventManager::setMacro(
 	banksMap_type & GKeysBanks,
-	macro_type & macro,
+	macro_type macro,
 	const MKeysID bankID,
 	const GKeysID keyID)
 {

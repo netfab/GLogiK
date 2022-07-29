@@ -1129,7 +1129,17 @@ void DBusHandler::macroRecorded(
 		return;
 	}
 
-	// FIXME
+	try {
+		MKeysID bankID;
+		banksMap_type & banksMap = _devices.getDeviceBanks(devID, bankID);
+
+		_GKeysEvent.setMacro(banksMap, macro, bankID, keyID);
+
+		_devices.saveDeviceConfigurationFile(devID);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(error) << devID << " macro record failure - " << keyID;
+	}
 }
 
 void DBusHandler::macroCleared(const std::string & devID, const GKeysID keyID)
