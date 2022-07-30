@@ -209,9 +209,6 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 		std::bind(&ClientsManager::setDeviceBacklightColor, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
 
-	// FIXME
-	// SIGssmB2b
-
 	_pDBus->NSGKDBus::Callback<SIGssyt2b>::exposeMethod(
 		system_bus, DM_object, DM_interf, "SetDeviceLCDPluginsMask",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
