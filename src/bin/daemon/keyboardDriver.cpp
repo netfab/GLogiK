@@ -640,7 +640,28 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 							}
 							else { /* check to run macro */
 								if( this->checkMacroKey(device) ) {
-									// send DBus GKey signal
+#if GKDBUS
+									try {
+										_pDBus->initializeBroadcastSignal(
+											NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+											"deviceGKeyEvent"
+										);
+
+										_pDBus->appendStringToBroadcastSignal(devID);
+										_pDBus->appendGKeysIDToBroadcastSignal(device._GKeyID);
+
+										_pDBus->sendBroadcastSignal();
+
+										LOG(trace)	<< device.getID() << " sent DBus signal: deviceGKeyEvent - "
+													<< getGKeyName(device._GKeyID);
+									}
+									catch (const GKDBusMessageWrongBuild & e) {
+										_pDBus->abandonBroadcastSignal();
+										GKSysLogWarning(e.what());
+									}
+#endif
 								}
 							}
 						}

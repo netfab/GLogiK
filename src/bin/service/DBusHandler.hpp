@@ -139,6 +139,7 @@ class DBusHandler
 		void devicesUnplugged(const std::vector<std::string> & devicesID);
 
 		void deviceMediaEvent(const std::string & devID, const std::string & mediaKeyEvent);
+		void deviceGKeyEvent(const std::string & devID, const GKeysID keyID);
 		/* -- */
 
 		/* signal and request from GUI  */

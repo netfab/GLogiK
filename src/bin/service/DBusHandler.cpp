@@ -766,6 +766,20 @@ void DBusHandler::initializeGKDBusSignals(void)
 		)
 	);
 
+	_pDBus->NSGKDBus::Callback<SIGsG2v>::exposeSignal(
+		_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		"deviceGKeyEvent",
+		{	{"s", "device_id", "in", "device ID"},
+			{"y", "macro_keyID", "in", "macro key ID"}
+		},
+		std::bind(&DBusHandler::deviceGKeyEvent, this,
+			std::placeholders::_1, std::placeholders::_2
+		)
+	);
+
 	_pDBus->NSGKDBus::Callback<SIGss2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -1205,6 +1219,36 @@ void DBusHandler::deviceMediaEvent(
 
 	_devices.doDeviceFakeKeyEvent(devID, mediaKeyEvent);
 }
+
+void DBusHandler::deviceGKeyEvent(const std::string & devID, const GKeysID keyID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		devID, " received signal : deviceGKeyEvent",
+		"key : ", getGKeyName(keyID)
+	)
+
+	if( ! _registerStatus ) {
+		GKLog(trace, "currently not registered, skipping")
+		return;
+	}
+
+	if( _sessionState != "active" ) {
+		GKLog(trace, "currently not active, skipping")
+		return;
+	}
+
+	try {
+		MKeysID bankID;
+		banksMap_type & banksMap = _devices.getDeviceBanks(devID, bankID);
+
+		_GKeysEvent.runMacro(banksMap, bankID, keyID);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(error) << devID << " run macro failure - " << keyID;
+	}
+};
 
 const std::vector<std::string> DBusHandler::getDevicesList(const std::string & reserved) {
 	return _devices.getDevicesList();
