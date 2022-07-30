@@ -61,7 +61,6 @@
 #include "SIGss2v.hpp"    //             two strings to void
 #include "SIGssm2b.hpp"   // two strings one M-KeyID to bool
 #include "SIGssmB2b.hpp"  // two strings one M-KeyID one mBank_type to bool
-#include "SIGssmG2M.hpp"  // two strings one M-KeyID one G-KeyID to macro
 #include "SIGssyt2b.hpp"  // two strings one byte one uint64_t to bool
 #include "SIGssyyy2b.hpp" // two strings three bytes to bool
 #include "SIGv2v.hpp"     //                    void to void

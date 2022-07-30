@@ -54,7 +54,6 @@ class GKDBusEvents
 		public Callback<SIGss2v>,
 		public Callback<SIGssm2b>,
 		public Callback<SIGssmB2b>,
-		public Callback<SIGssmG2M>,
 		public Callback<SIGssyt2b>,
 		public Callback<SIGssyyy2b>,
 		public Callback<SIGv2v>

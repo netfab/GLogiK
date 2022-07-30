@@ -147,9 +147,6 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 			{"b", "did_restart_succeeded", dOUT, "did the RestartDevice method succeeded ?"} },
 		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
-	// FIXME
-	// SIGssmG2M
-
 		/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 		/* methods used to initialize devices on service-side */
 		/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
