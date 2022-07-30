@@ -1,4 +1,10 @@
 
+0.8.xx (202x-xx-xx)
+===================
+- Move macro manager from daemon to service. libevdev dependency is
+  added to the service and removed from the daemon
+- (lot of) Miscellaneous internal fixs and improvements
+
 0.8.14 (2021-12-11)
 ===================
 - Fix autoreconf warning
