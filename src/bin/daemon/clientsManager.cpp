@@ -248,21 +248,21 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		system_bus, DM_object, DM_interf, "MacroRecorded",
+		system_bus, DM_object, DM_interf, "DeviceMacroRecorded",
 		{	{"s", "device_id", dOUT, "device ID"},
 			{"y", "macro_bankID", "in", "macro bankID"},
 			{"y", "macro_keyID", "in", "macro key ID"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		system_bus, DM_object, DM_interf, "MacroCleared",
+		system_bus, DM_object, DM_interf, "DeviceMacroCleared",
 		{	{"s", "device_id", dOUT, "device ID"},
 			{"y", "macro_bankID", "in", "macro bankID"},
 			{"y", "macro_keyID", "in", "macro key ID"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		system_bus, DM_object, DM_interf, "deviceMediaEvent",
+		system_bus, DM_object, DM_interf, "DeviceMediaEvent",
 		{	{"s", "device_id", "in", "device ID"},
 			{"s", "media_key_event", "in", "media key event"} }
 	);

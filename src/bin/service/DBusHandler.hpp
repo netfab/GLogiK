@@ -123,23 +123,20 @@ class DBusHandler
 		void daemonIsStopping(void);
 		void daemonIsStarting(void);
 
-		void GBankSwitch(
-			const std::string & devID,
-			const MKeysID bankID
-		);
-		void macroRecorded(
-			const std::string & devID,
-			const GKeysID keyID,
-			const macro_type & macro
-		);
-		void macroCleared(const std::string & devID, const GKeysID keyID);
-
 		void devicesStarted(const std::vector<std::string> & devicesID);
 		void devicesStopped(const std::vector<std::string> & devicesID);
 		void devicesUnplugged(const std::vector<std::string> & devicesID);
 
 		void deviceMediaEvent(const std::string & devID, const std::string & mediaKeyEvent);
 		void deviceGKeyEvent(const std::string & devID, const GKeysID keyID);
+		void deviceMBankSwitch(const std::string & devID, const MKeysID bankID);
+		void deviceMacroRecorded(
+			const std::string & devID,
+			const GKeysID keyID,
+			const macro_type & macro
+		);
+		void deviceMacroCleared(const std::string & devID, const GKeysID keyID);
+
 		/* -- */
 
 		/* signal and request from GUI  */

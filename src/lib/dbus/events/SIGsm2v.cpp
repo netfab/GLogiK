@@ -44,7 +44,7 @@ template <>
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
 		const GLogiK::MKeysID arg2 = GKDBusArgumentMKeysID::getNextMKeysIDArgument();
 
-		/* call GBankSwitch callback */
+		/* call DBusHandler::deviceMBankSwitch callback */
 		this->callback(arg1, arg2);
 	}
 	catch ( const GLogiKExcept & e ) {

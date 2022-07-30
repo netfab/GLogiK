@@ -726,11 +726,11 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"GBankSwitch",
+		"DeviceMBankSwitch",
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_bankID", "in", "macro bankID"}
 		},
-		std::bind(&DBusHandler::GBankSwitch, this,
+		std::bind(&DBusHandler::deviceMBankSwitch, this,
 			std::placeholders::_1, std::placeholders::_2
 		)
 	);
@@ -740,12 +740,12 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"MacroRecorded",
+		"DeviceMacroRecorded",
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_keyID", "in", "macro key ID"},
 			{"a(yyq)", "macro_array", "in", "macro array"}
 		},
-		std::bind(&DBusHandler::macroRecorded, this,
+		std::bind(&DBusHandler::deviceMacroRecorded, this,
 			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
 		)
 	);
@@ -755,11 +755,11 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"MacroCleared",
+		"DeviceMacroCleared",
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_keyID", "in", "macro key ID"}
 		},
-		std::bind(&DBusHandler::macroCleared, this,
+		std::bind(&DBusHandler::deviceMacroCleared, this,
 			std::placeholders::_1, std::placeholders::_2
 		)
 	);
@@ -769,7 +769,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"deviceGKeyEvent",
+		"DeviceGKeyEvent",
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_keyID", "in", "macro key ID"}
 		},
@@ -783,7 +783,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"deviceMediaEvent",
+		"DeviceMediaEvent",
 		{	{"s", "device_id", "in", "device ID"},
 			{"s", "media_key_event", "in", "media key event"}
 		},
@@ -1095,14 +1095,14 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 	}
 }
 
-void DBusHandler::GBankSwitch(
+void DBusHandler::deviceMBankSwitch(
 	const std::string & devID,
 	const MKeysID bankID)
 {
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		devID, " received signal : GBankSwitch",
+		devID, " received signal : DeviceMBankSwitch",
 		"bankID : ", bankID
 	)
 
@@ -1116,7 +1116,7 @@ void DBusHandler::GBankSwitch(
 		return;
 	}
 
-	LOG(info) << "received GBankSwitch signal : " << bankID;
+	LOG(info) << "received DeviceMBankSwitch signal : " << bankID;
 
 	try {
 		_devices.setDeviceCurrentBankID(devID, bankID);
@@ -1126,7 +1126,7 @@ void DBusHandler::GBankSwitch(
 	}
 }
 
-void DBusHandler::macroRecorded(
+void DBusHandler::deviceMacroRecorded(
 	const std::string & devID,
 	const GKeysID keyID,
 	const macro_type & macro)
@@ -1134,7 +1134,7 @@ void DBusHandler::macroRecorded(
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		devID, " received signal : macroRecorded",
+		devID, " received signal : DeviceMacroRecorded",
 		"key : ", getGKeyName(keyID)
 	)
 
@@ -1161,12 +1161,12 @@ void DBusHandler::macroRecorded(
 	}
 }
 
-void DBusHandler::macroCleared(const std::string & devID, const GKeysID keyID)
+void DBusHandler::deviceMacroCleared(const std::string & devID, const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		devID, " received signal : macroCleared",
+		devID, " received signal : DeviceMacroCleared",
 		"key : ", getGKeyName(keyID)
 	)
 
@@ -1201,7 +1201,7 @@ void DBusHandler::deviceMediaEvent(
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		devID, " received signal : deviceMediaEvent",
+		devID, " received signal : DeviceMediaEvent",
 		"event : ", mediaKeyEvent
 	)
 
@@ -1223,7 +1223,7 @@ void DBusHandler::deviceGKeyEvent(const std::string & devID, const GKeysID keyID
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		devID, " received signal : deviceGKeyEvent",
+		devID, " received signal : DeviceGKeyEvent",
 		"key : ", getGKeyName(keyID)
 	)
 

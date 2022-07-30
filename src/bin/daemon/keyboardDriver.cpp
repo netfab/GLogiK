@@ -201,7 +201,7 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 				NSGKDBus::BusConnection::GKDBUS_SYSTEM,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				"GBankSwitch"
+				"DeviceMBankSwitch"
 			);
 
 			_pDBus->appendStringToBroadcastSignal(device.getID());
@@ -209,7 +209,7 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 
 			_pDBus->sendBroadcastSignal();
 
-			LOG(trace)	<< device.getID() << " sent DBus signal: GBankSwitch - M"
+			LOG(trace)	<< device.getID() << " sent DBus signal: DeviceMBankSwitch - M"
 						<< pressed_MKey;
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
@@ -453,9 +453,9 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 
 #if GKDBUS
 				try {
-					std::string signal("MacroRecorded");
+					std::string signal("DeviceMacroRecorded");
 					if( device._newMacro.empty() ) {
-						signal = "MacroCleared";
+						signal = "DeviceMacroCleared";
 					}
 
 					_pDBus->initializeBroadcastSignal(
@@ -647,7 +647,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 											NSGKDBus::BusConnection::GKDBUS_SYSTEM,
 											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-											"deviceGKeyEvent"
+											"DeviceGKeyEvent"
 										);
 
 										_pDBus->appendStringToBroadcastSignal(devID);
@@ -655,7 +655,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 
 										_pDBus->sendBroadcastSignal();
 
-										LOG(trace)	<< device.getID() << " sent DBus signal: deviceGKeyEvent - "
+										LOG(trace)	<< device.getID() << " sent DBus signal: DeviceGKeyEvent - "
 													<< getGKeyName(device._GKeyID);
 									}
 									catch (const GKDBusMessageWrongBuild & e) {
@@ -677,7 +677,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 										NSGKDBus::BusConnection::GKDBUS_SYSTEM,
 										GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 										GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-										"deviceMediaEvent"
+										"DeviceMediaEvent"
 									);
 
 									_pDBus->appendStringToBroadcastSignal(devID);
@@ -685,7 +685,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 
 									_pDBus->sendBroadcastSignal();
 
-									LOG(trace)	<< devID << " sent DBus signal: deviceMediaEvent - "
+									LOG(trace)	<< devID << " sent DBus signal: DeviceMediaEvent - "
 												<< device._mediaKey;
 								}
 								catch (const GKDBusMessageWrongBuild & e) {

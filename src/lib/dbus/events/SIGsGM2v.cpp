@@ -43,7 +43,7 @@ template <>
 		const GLogiK::GKeysID arg2 = GKDBusArgumentGKeysID::getNextGKeysIDArgument();
 		const GLogiK::macro_type arg3 = GKDBusArgumentMacro::getNextMacroArgument();
 
-		/* call DBusHandler::macroRecorded callback */
+		/* call DBusHandler::deviceMacroRecorded callback */
 		this->callback(arg1, arg2, arg3);
 	}
 	catch ( const GLogiKExcept & e ) {

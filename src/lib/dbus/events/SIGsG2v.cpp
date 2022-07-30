@@ -42,7 +42,7 @@ template <>
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
 		const GLogiK::GKeysID arg2 = GKDBusArgumentGKeysID::getNextGKeysIDArgument();
 
-		/* call DBusHandler::macroCleared callback */
+		/* call DBusHandler::deviceMacroCleared callback */
 		this->callback(arg1, arg2);
 	}
 	catch ( const GLogiKExcept & e ) {
