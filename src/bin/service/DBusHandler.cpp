@@ -735,7 +735,6 @@ void DBusHandler::initializeGKDBusSignals(void)
 		)
 	);
 
-	//FIXME SIGsmG2b
 	_pDBus->NSGKDBus::Callback<SIGsGM2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -751,7 +750,6 @@ void DBusHandler::initializeGKDBusSignals(void)
 		)
 	);
 
-	// FIXME SIGsmG2b
 	_pDBus->NSGKDBus::Callback<SIGsG2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,

@@ -52,7 +52,6 @@
 #include "SIGsG2v.hpp"    // one string one G-KeyID to void
 #include "SIGsGM2v.hpp"   // one string one G-KeyID one macro to void
 #include "SIGsm2v.hpp"    // one string one M-KeyID to void
-#include "SIGsmG2b.hpp"   // one string one M-KeyID one G-KeyID to bool
 #include "SIGss2aG.hpp"   //  two strings to array of G-KeyID
 #include "SIGss2am.hpp"   //  two strings to array of M-KeyID
 #include "SIGss2aP.hpp"   //  two strings to array of LCD Plugins Properties
