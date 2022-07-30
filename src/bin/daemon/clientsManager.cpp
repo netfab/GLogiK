@@ -211,7 +211,6 @@ void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
 
 	// FIXME
 	// SIGssmB2b
-	// SIGssm2b
 
 	_pDBus->NSGKDBus::Callback<SIGssyt2b>::exposeMethod(
 		system_bus, DM_object, DM_interf, "SetDeviceLCDPluginsMask",
