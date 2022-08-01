@@ -214,7 +214,7 @@ class KeyboardDriver
 			const uint8_t g=0xFF,
 			const uint8_t b=0xFF
 		);
-		virtual const bool checkMacroKey(USBDevice & device) = 0;
+		virtual const bool checkGKey(USBDevice & device) = 0;
 		virtual const bool checkMediaKey(USBDevice & device) = 0;
 		virtual const bool checkLCDKey(USBDevice & device) = 0;
 

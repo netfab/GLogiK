@@ -445,9 +445,9 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 					continue;
 				}
 
-				if( ! this->checkMacroKey(device) ) {
+				if( ! this->checkGKey(device) ) {
 					/* continue to store standard key events
-					 * while a macro key is not pressed */
+					 * while a G-Key is not pressed */
 					continue;
 				}
 
@@ -640,8 +640,8 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 										this->setDeviceMxKeysLeds(device);
 								}
 							}
-							else { /* check to run macro */
-								if( this->checkMacroKey(device) ) {
+							else { /* check to trigger G-Key event */
+								if( this->checkGKey(device) ) {
 #if GKDBUS
 									try {
 										_pDBus->initializeBroadcastSignal(

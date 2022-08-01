@@ -183,8 +183,8 @@ const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 	return ret;
 }
 
-/* return true if any macro key (G1-G18) is pressed  */
-const bool G510Base::checkMacroKey(USBDevice & device)
+/* return true if any G-Key (G1-G18) is pressed  */
+const bool G510Base::checkGKey(USBDevice & device)
 {
 	for( const auto & key : G510Base::GKeys5BytesMap ) {
 		if( device._pressedRKeysMask & toEnumType(key.key) ) {

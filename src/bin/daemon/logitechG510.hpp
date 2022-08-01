@@ -77,7 +77,7 @@ class G510Base
 
 		static const std::vector<MKeyLed> ledsMask;
 
-		virtual const bool checkMacroKey(USBDevice & device);
+		virtual const bool checkGKey(USBDevice & device);
 		virtual const bool checkMediaKey(USBDevice & device);
 		virtual const bool checkLCDKey(USBDevice & device);
 
@@ -173,8 +173,8 @@ class LogitechG510
 			return G510Base::sendUSBDeviceInitialization(device);
 		}
 
-		const bool checkMacroKey(USBDevice & device) override {
-			return G510Base::checkMacroKey(device);
+		const bool checkGKey(USBDevice & device) override {
+			return G510Base::checkGKey(device);
 		}
 		const bool checkMediaKey(USBDevice & device) override {
 			return G510Base::checkMediaKey(device);
