@@ -36,6 +36,7 @@
 
 #if GKDBUS
 #include "lib/dbus/GKDBus.hpp"
+#include "lib/shared/GKeysMacro.hpp"
 #endif
 
 #include "USBDeviceID.hpp"
@@ -78,6 +79,9 @@ struct ModifierKey {
 
 
 class KeyboardDriver
+#if GKDBUS
+	:	private GKeysMacro
+#endif
 {
 	public:
 		virtual ~KeyboardDriver(void) = default;

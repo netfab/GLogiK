@@ -452,6 +452,8 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 				}
 
 #if GKDBUS
+				this->checkMacro(device._newMacro);
+
 				try {
 					std::string signal("DeviceMacroRecorded");
 					if( device._newMacro.empty() ) {
@@ -470,7 +472,6 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 
 					/* sending macro */
 					if( ! device._newMacro.empty() ) {
-						// FIXME : macro size
 						_pDBus->appendMacroToBroadcastSignal(device._newMacro);
 					}
 
