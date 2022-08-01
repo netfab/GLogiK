@@ -6,6 +6,8 @@ GKShared_sources = [
   'deviceConfigurationFile.hpp',
   'GKeysBanksCapability.cpp',
   'GKeysBanksCapability.hpp',
+  'GKeysMacro.cpp',
+  'GKeysMacro.hpp',
   'glogik.cpp',
   'glogik.hpp',
 ]

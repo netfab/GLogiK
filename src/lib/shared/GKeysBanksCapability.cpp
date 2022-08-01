@@ -26,13 +26,13 @@
 
 #include "glogik.hpp"
 #include "GKeysBanksCapability.hpp"
+#include "GKeysMacro.hpp"
 
 namespace GLogiK
 {
 
 using namespace NSGKUtils;
 
-const macro_type GKeysBanksCapability::emptyMacro = {};
 const banksMap_type GKeysBanksCapability::emptyGKeysBanks = {};
 
 GKeysBanksCapability::GKeysBanksCapability(void)
@@ -88,7 +88,7 @@ void GKeysBanksCapability::initBanks(
 				};
 
 				keyInsRet insKey = _GKeysBanks[id].insert(
-					std::pair<GKeysID, GKeysEvent>( keyID, GKeysBanksCapability::emptyMacro )
+					std::pair<GKeysID, GKeysEvent>( keyID, GKeysMacro::emptyMacro )
 				);
 
 				insertStatus(insKey);

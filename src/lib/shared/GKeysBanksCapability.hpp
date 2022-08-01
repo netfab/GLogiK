@@ -39,7 +39,6 @@ namespace GLogiK
 class GKeysBanksCapability
 {
 	public:
-		static const macro_type emptyMacro;
 		static const banksMap_type emptyGKeysBanks;
 
 		void initBanks(

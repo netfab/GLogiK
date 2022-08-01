@@ -19,62 +19,55 @@
  *
  */
 
-#ifndef SRC_BIN_SERVICE_GKEYS_EVENT_MANAGER_HPP_
-#define SRC_BIN_SERVICE_GKEYS_EVENT_MANAGER_HPP_
+#ifndef SRC_LIB_SHARED_GKEYS_MACRO_HPP_
+#define SRC_LIB_SHARED_GKEYS_MACRO_HPP_
 
-#include "lib/shared/GKeysBanksCapability.hpp"
-#include "lib/shared/GKeysMacro.hpp"
-#include "virtualKeyboard.hpp"
+#include <vector>
 
 #include "include/base.hpp"
 
 namespace GLogiK
 {
 
-class GKeysEventManager
-	:	private GKeysMacro
+class GKeysMacro
 {
 	public:
-		GKeysEventManager(void);
-		~GKeysEventManager(void);
-
-		void runMacro(
-			const banksMap_type & GKeysBanks,
-			const MKeysID bankID,
-			const GKeysID keyID
-		);
-
-		void setMacro(
-			banksMap_type & GKeysBanks,
-			macro_type macro,
-			const MKeysID bankID,
-			const GKeysID keyID
-		);
-
-		const macro_type & getMacro(
-			const banksMap_type & GKeysBanks,
-			const MKeysID bankID,
-			const GKeysID keyID
-		);
-
-		void clearMacro(
-			banksMap_type & GKeysBanks,
-			const MKeysID bankID,
-			const GKeysID keyID
-		);
+		static const macro_type emptyMacro;
 
 	protected:
+		GKeysMacro(void) = default;
+		~GKeysMacro(void) = default;
+
+		void checkMacro(macro_type & macro);
 
 	private:
-		VirtualKeyboard _virtualKeyboard;
+		struct MacroEvent {
+			public:
+				MacroEvent(const GLogiK::KeyEvent & k, const unsigned int i)
+					:	key(k), index(i) {}
 
-		void setMacro(
-			banksMap_type & GKeysBanks,
-			const MKeysID bankID,
-			const GKeysID keyID,
-			const macro_type & macro
+				GLogiK::KeyEvent key;
+				unsigned int index;
+
+			private:
+				MacroEvent(void) = delete;
+		};
+
+		void fillInVectors(
+			const macro_type & macro,
+			std::vector<MacroEvent> & pressedEvents,
+			std::vector<MacroEvent> & releasedEvents
 		);
-
+		void fixMacroReleaseEvents(
+			const std::vector<MacroEvent> & pressedEvents,
+			std::vector<MacroEvent> & releasedEvents,
+			macro_type & macro
+		);
+		void fixMacroSize(
+			const std::vector<MacroEvent> & pressedEvents,
+			std::vector<MacroEvent> & releasedEvents,
+			macro_type & macro
+		);
 };
 
 } // namespace GLogiK

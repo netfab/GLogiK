@@ -30,6 +30,8 @@ libGKShared_la_SOURCES = \
 	%D%/deviceConfigurationFile.hpp \
 	%D%/GKeysBanksCapability.cpp \
 	%D%/GKeysBanksCapability.hpp \
+	%D%/GKeysMacro.cpp \
+	%D%/GKeysMacro.hpp \
 	%D%/glogik.cpp \
 	%D%/glogik.hpp
 
