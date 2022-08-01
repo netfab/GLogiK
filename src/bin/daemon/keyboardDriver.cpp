@@ -195,6 +195,7 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 		update_MxKey_mask(Leds::GK_LED_M3, MKeysID::MKEY_M3);
 	}
 
+#if GKDBUS
 	if( mask_updated ) { /* if a Mx key was pressed */
 		try {
 			_pDBus->initializeBroadcastSignal(
@@ -217,6 +218,7 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 			GKSysLogWarning(e.what());
 		}
 	}
+#endif
 
 	/* MR key was pressed */
 	if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_MR) ) {

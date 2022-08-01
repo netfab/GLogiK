@@ -164,7 +164,9 @@ class KeyboardDriver
 		void fillStandardKeysEvents(USBDevice & device);
 
 	private:
+#if GKDBUS
 		NSGKDBus::GKDBus* _pDBus;
+#endif
 
 		/* USBAPI */
 		virtual int performUSBDeviceKeysInterruptTransfer(
