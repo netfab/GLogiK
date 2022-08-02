@@ -186,7 +186,10 @@ class KeyboardDriver
 
 		static const std::vector< ModifierKey > modifierKeys;
 
+#if GKDBUS
 		void enterMacroRecordMode(USBDevice & device);
+#endif
+
 		void LCDScreenLoop(const std::string & devID);
 		void listenLoop(const std::string & devID);
 

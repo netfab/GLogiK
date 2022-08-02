@@ -417,6 +417,7 @@ void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device, const std::strin
 	}
 }
 
+#if GKDBUS
 void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 {
 	GK_LOG_FUNC
@@ -453,7 +454,6 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 					continue;
 				}
 
-#if GKDBUS
 				this->checkMacro(device._newMacro);
 
 				try {
@@ -486,7 +486,6 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 					_pDBus->abandonBroadcastSignal();
 					GKSysLogWarning(e.what());
 				}
-#endif
 
 				exit = true;
 				break;
@@ -501,6 +500,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 
 	GKLog2(trace, device.getID(), " exiting macro record mode")
 }
+#endif
 
 void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 {
@@ -631,20 +631,20 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 							if(this->updateDeviceMxKeysLedsMask(device))
 								this->setDeviceMxKeysLeds(device);
 
-							/* is macro record mode enabled ? */
+#if GKDBUS
+							/* is MR key enabled ? */
 							if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) ) {
 								this->enterMacroRecordMode(device);
 
 								/* don't need to update leds status if the mask is already 0 */
 								if(device._MxKeysLedsMask != 0) {
-									/* disabling macro record mode */
+									/* disabling MR key */
 									if(this->updateDeviceMxKeysLedsMask(device, true))
 										this->setDeviceMxKeysLeds(device);
 								}
 							}
 							else { /* check to trigger G-Key event */
 								if( this->checkGKey(device) ) {
-#if GKDBUS
 									try {
 										_pDBus->initializeBroadcastSignal(
 											NSGKDBus::BusConnection::GKDBUS_SYSTEM,
@@ -665,9 +665,18 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 										_pDBus->abandonBroadcastSignal();
 										GKSysLogWarning(e.what());
 									}
-#endif
 								}
 							}
+#else
+							/* is MR key enabled ? */
+							if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) ) {
+								if( this->checkGKey(device) ) { /* G-Key pressed */
+									/* disabling MR key */
+									if(this->updateDeviceMxKeysLedsMask(device, true))
+										this->setDeviceMxKeysLeds(device);
+								}
+							}
+#endif
 						}
 					}
 
