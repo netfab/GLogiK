@@ -129,6 +129,8 @@ class USBDevice
 	private:
 		unsigned char				_keysEndpoint;
 		unsigned char				_LCDEndpoint;
+
+	public:
 #endif
 
 		GKeysID						_GKeyID; // G-Key
