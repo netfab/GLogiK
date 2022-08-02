@@ -668,9 +668,11 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 								}
 							}
 #else
-							/* is MR key enabled ? */
-							if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) ) {
-								if( this->checkGKey(device) ) { /* G-Key pressed */
+							if( this->checkGKey(device) ) { /* G-Key pressed */
+								LOG(trace) << device.getID() << " G-Key pressed: " << getGKeyName(device._GKeyID);
+
+								/* is MR key enabled ? */
+								if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) ) {
 									/* disabling MR key */
 									if(this->updateDeviceMxKeysLedsMask(device, true))
 										this->setDeviceMxKeysLeds(device);
@@ -683,6 +685,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 					if( this->checkDeviceCapability(device, Caps::GK_MEDIA_KEYS) ) {
 						if( device.getLastKeysInterruptTransferLength() == device.getMediaKeysTransferLength() ) {
 							if( this->checkMediaKey(device) ) {
+								LOG(trace) << device.getID() << " media key pressed: " << device._mediaKey;
 #if GKDBUS
 								try {
 									_pDBus->initializeBroadcastSignal(
