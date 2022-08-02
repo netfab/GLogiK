@@ -60,9 +60,9 @@ class USBDeviceID
 			return _keysInterruptBufferMaxLength;
 		};
 
-		const int8_t getMacrosKeysLength(void) const { return _MacrosKeysLength; }
-		const int8_t getMediaKeysLength(void) const { return _MediaKeysLength; }
-		const int8_t getLCDKeysLength(void) const { return _LCDKeysLength; }
+		const int8_t getGKeysTransferLength(void) const { return _GKeysTransferLength; }
+		const int8_t getMediaKeysTransferLength(void) const { return _MediaKeysTransferLength; }
+		const int8_t getLCDKeysTransferLength(void) const { return _LCDKeysTransferLength; }
 
 		static const std::string getDeviceID(const uint8_t bus, const uint8_t num)
 		{
@@ -92,9 +92,9 @@ class USBDeviceID
 			const uint8_t bAlternateSetting,
 			const uint8_t bNumEndpoints,
 			const int8_t bufferMaxLength,
-			const int8_t macrosKeysLength,
-			const int8_t mediaKeysLength,
-			const int8_t LCDKeysLength
+			const int8_t GKeysTransferLength,
+			const int8_t mediaKeysTransferLength,
+			const int8_t LCDKeysTransferLength
 		);
 		USBDeviceID(
 			const USBDeviceID & device,
@@ -142,9 +142,9 @@ class USBDeviceID
 
 		int8_t _keysInterruptBufferMaxLength;
 
-		int8_t _MacrosKeysLength;
-		int8_t _MediaKeysLength;
-		int8_t _LCDKeysLength;
+		int8_t _GKeysTransferLength;
+		int8_t _MediaKeysTransferLength;
+		int8_t _LCDKeysTransferLength;
 };
 
 } // namespace GLogiK

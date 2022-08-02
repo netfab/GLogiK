@@ -90,9 +90,9 @@ void USBDevice::operator=(const USBDevice& dev)
 	_bNumEndpoints			= dev._bNumEndpoints;
 
 	_keysInterruptBufferMaxLength	= dev._keysInterruptBufferMaxLength;
-	_MacrosKeysLength				= dev._MacrosKeysLength;
-	_MediaKeysLength				= dev._MediaKeysLength;
-	_LCDKeysLength					= dev._LCDKeysLength;
+	_GKeysTransferLength			= dev._GKeysTransferLength;
+	_MediaKeysTransferLength		= dev._MediaKeysTransferLength;
+	_LCDKeysTransferLength			= dev._LCDKeysTransferLength;
 
 	/* end friendship members */
 

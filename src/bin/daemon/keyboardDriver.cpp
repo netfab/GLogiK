@@ -626,7 +626,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 						 * update M1-MR leds status, launch macro record mode and
 						 * run macros only after proper event length
 						 */
-						if( device.getLastKeysInterruptTransferLength() == device.getMacrosKeysLength() ) {
+						if( device.getLastKeysInterruptTransferLength() == device.getGKeysTransferLength() ) {
 							/* update mask with potential pressed keys */
 							if(this->updateDeviceMxKeysLedsMask(device))
 								this->setDeviceMxKeysLeds(device);
@@ -672,7 +672,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 					}
 
 					if( this->checkDeviceCapability(device, Caps::GK_MEDIA_KEYS) ) {
-						if( device.getLastKeysInterruptTransferLength() == device.getMediaKeysLength() ) {
+						if( device.getLastKeysInterruptTransferLength() == device.getMediaKeysTransferLength() ) {
 							if( this->checkMediaKey(device) ) {
 #if GKDBUS
 								try {
@@ -701,7 +701,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 					}
 
 					if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-						if( device.getLastKeysInterruptTransferLength() == device.getLCDKeysLength() ) {
+						if( device.getLastKeysInterruptTransferLength() == device.getLCDKeysTransferLength() ) {
 							if( this->checkLCDKey(device) ) {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 								std::lock_guard<std::mutex> lock(device._LCDMutex);
