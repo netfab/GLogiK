@@ -107,12 +107,6 @@ const GKeysID GKeyID_INV = GKeysID::GKEY_G0; // invalid
 const GKeysID GKeyID_MAX = GKeysID::GKEY_G18;
 const MKeysID MKeyID_MAX = MKeysID::MKEY_M3;
 
-enum class GKeyActiveEvent : uint8_t
-{
-	GKEY_INACTIVE = 0,
-	GKEY_MACRO,
-};
-
 /* -- -- -- */
 /* -- -- -- */
 /* -- -- -- */
@@ -165,40 +159,6 @@ typedef std::vector<GKeysID> GKeysIDArray_type;
 
 // macro
 typedef std::vector<KeyEvent> macro_type;
-
-class GKeysEvent {
-	public:
-		GKeysEvent(void) :
-			_activeEvent(GKeyActiveEvent::GKEY_INACTIVE),
-			_GKeyMacro({})
-		{}
-
-		GKeysEvent(const macro_type & macro) :
-			_activeEvent(GKeyActiveEvent::GKEY_MACRO),
-			_GKeyMacro(macro)
-		{}
-
-		void clearMacro(void) { _GKeyMacro.clear(); }
-		const macro_type & getMacro(void) const { return _GKeyMacro; }
-
-	private:
-		GKeyActiveEvent _activeEvent;
-		macro_type _GKeyMacro;
-
-		friend class boost::serialization::access;
-
-		template<class Archive>
-			void serialize(Archive & ar, const unsigned int version)
-		{
-			ar & _activeEvent;
-			ar & _GKeyMacro;
-		}
-};
-
-// macros bank
-typedef std::map<GKeysID, GKeysEvent> mBank_type;
-// banks map container
-typedef std::map<MKeysID, mBank_type> banksMap_type;
 
 } // namespace GLogiK
 

@@ -19,62 +19,53 @@
  *
  */
 
-#ifndef SRC_LIB_SHARED_GKEYS_BANKS_CAPABILITY_HPP_
-#define SRC_LIB_SHARED_GKEYS_BANKS_CAPABILITY_HPP_
+#ifndef SRC_INCLUDE_MBANK_HPP_
+#define SRC_INCLUDE_MBANK_HPP_
 
-#include <cstdint>
-
-#include <vector>
-#include <map>
-
-#include <boost/serialization/access.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/map.hpp>
-
-#include "include/base.hpp"
-#include "include/MBank.hpp"
+#include "base.hpp"
 
 namespace GLogiK
 {
 
-class GKeysBanksCapability
+enum class GKeyActiveEvent : uint8_t
 {
+	GKEY_INACTIVE = 0,
+	GKEY_MACRO,
+};
+
+class GKeysEvent {
 	public:
-		static const banksMap_type emptyGKeysBanks;
+		GKeysEvent(void) :
+			_activeEvent(GKeyActiveEvent::GKEY_INACTIVE),
+			_GKeyMacro({})
+		{}
 
-		void initBanks(
-			const MKeysIDArray_type & MKeysIDArray,
-			const GKeysIDArray_type & GKeysIDArray
-		);
+		GKeysEvent(const macro_type & macro) :
+			_activeEvent(GKeyActiveEvent::GKEY_MACRO),
+			_GKeyMacro(macro)
+		{}
 
-		banksMap_type & getBanks(void);
-		void setBanks(const banksMap_type & GKeysBanks);
-		void checkBanksKeys(void);
+		void clearMacro(void) { _GKeyMacro.clear(); }
+		const macro_type & getMacro(void) const { return _GKeyMacro; }
 
-		void setCurrentBankID(MKeysID bankID);
-		const MKeysID getCurrentBankID(void) const;
-
-		void resetBank(const MKeysID bankID);
-
-	protected:
-		GKeysBanksCapability(void);
-		virtual ~GKeysBanksCapability(void) = 0;
+	private:
+		GKeyActiveEvent _activeEvent;
+		macro_type _GKeyMacro;
 
 		friend class boost::serialization::access;
 
 		template<class Archive>
 			void serialize(Archive & ar, const unsigned int version)
 		{
-			ar & _GKeysBanks;
+			ar & _activeEvent;
+			ar & _GKeyMacro;
 		}
-
-		banksMap_type _GKeysBanks;
-
-	private:
-		const MKeysID getBankID(const uint8_t num) const;
-
-		MKeysID _currentBankID;
 };
+
+// MBank map container
+typedef std::map<GKeysID, GKeysEvent> mBank_type;
+// top container
+typedef std::map<MKeysID, mBank_type> banksMap_type;
 
 } // namespace GLogiK
 

@@ -28,6 +28,7 @@
 #include <dbus/dbus.h>
 
 #include "include/base.hpp"
+#include "include/MBank.hpp"
 #include "include/LCDPluginProperties.hpp"
 
 namespace NSGKDBus

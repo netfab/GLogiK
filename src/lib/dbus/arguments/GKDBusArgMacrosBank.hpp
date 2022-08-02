@@ -26,7 +26,7 @@
 #include "GKDBusArgGKeysID.hpp"
 #include "GKDBusArgMacro.hpp"
 
-#include "include/base.hpp"
+#include "include/MBank.hpp"
 
 namespace NSGKDBus
 {

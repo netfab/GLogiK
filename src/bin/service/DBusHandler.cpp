@@ -30,6 +30,8 @@
 
 #include "DBusHandler.hpp"
 
+#include "include/MBank.hpp"
+
 namespace GLogiK
 {
 

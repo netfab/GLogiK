@@ -38,6 +38,7 @@
 
 #include "include/enums.hpp"
 #include "include/base.hpp"
+#include "include/MBank.hpp"
 #include "include/LCDPluginProperties.hpp"
 
 #define LogRemoteCallFailure \

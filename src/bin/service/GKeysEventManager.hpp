@@ -27,6 +27,7 @@
 #include "virtualKeyboard.hpp"
 
 #include "include/base.hpp"
+#include "include/MBank.hpp"
 
 namespace GLogiK
 {
