@@ -1172,7 +1172,6 @@ void DBusHandler::deviceMacroCleared(const std::string & devID, const GKeysID ke
 		"key : ", getGKeyName(keyID)
 	)
 
-
 	if( ! _registerStatus ) {
 		GKLog(trace, "currently not registered, skipping")
 		return;
@@ -1187,9 +1186,9 @@ void DBusHandler::deviceMacroCleared(const std::string & devID, const GKeysID ke
 		MKeysID bankID;
 		banksMap_type & banksMap = _devices.getDeviceBanks(devID, bankID);
 
-		_GKeysEvent.clearMacro(banksMap, bankID, keyID);
-
-		_devices.saveDeviceConfigurationFile(devID);
+		if( _GKeysEvent.clearMacro(banksMap, bankID, keyID) ) {
+			_devices.saveDeviceConfigurationFile(devID);
+		}
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(error) << devID << " clear macro failure - " << keyID;

@@ -58,7 +58,7 @@ class GKeysEventManager
 			const GKeysID keyID
 		);
 
-		void clearMacro(
+		const bool clearMacro(
 			banksMap_type & GKeysBanks,
 			const MKeysID bankID,
 			const GKeysID keyID

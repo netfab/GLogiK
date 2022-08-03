@@ -129,7 +129,8 @@ const macro_type & GKeysEventManager::getMacro(
 	return GKeysMacro::emptyMacro;
 }
 
-void GKeysEventManager::clearMacro(
+/* return true if macro was not empty and has been cleared */
+const bool GKeysEventManager::clearMacro(
 	banksMap_type & GKeysBanks,
 	const MKeysID bankID,
 	const GKeysID keyID)
@@ -145,11 +146,14 @@ void GKeysEventManager::clearMacro(
 		mBank_type & bank = GKeysBanks.at(bankID);
 
 		try {
-			LOG(info) << "MBank: " << bankID
-				<< " - GKey: " << getGKeyName(keyID)
-				<< " - clearing macro";
+			if( ! bank.at(keyID).getMacro().empty() ) {
+				LOG(info) << "MBank: " << bankID
+					<< " - GKey: " << getGKeyName(keyID)
+					<< " - clearing macro";
 
-			bank.at(keyID).clearMacro();
+				bank[keyID].clearMacro();
+				return true;
+			}
 		}
 		catch(const std::out_of_range& oor) {
 			LOG(warning) << "wrong GKeyID: " << keyID;
@@ -160,6 +164,8 @@ void GKeysEventManager::clearMacro(
 		LOG(warning) << "wrong bankID: " << bankID;
 		throw GLogiKExcept("clear macro failed");
 	}
+
+	return false;
 }
 
 void GKeysEventManager::setMacro(
