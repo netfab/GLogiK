@@ -107,6 +107,11 @@ banksMap_type & GKeysBanksCapability::getBanks(void)
 	return _GKeysBanks;
 }
 
+const banksMap_type & GKeysBanksCapability::getBanks(void) const
+{
+	return _GKeysBanks;
+}
+
 void GKeysBanksCapability::setBanks(const banksMap_type & GKeysBanks)
 {
 	GK_LOG_FUNC

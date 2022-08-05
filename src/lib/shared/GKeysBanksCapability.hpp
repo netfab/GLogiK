@@ -48,6 +48,7 @@ class GKeysBanksCapability
 		);
 
 		banksMap_type & getBanks(void);
+		const banksMap_type & getBanks(void) const;
 		void setBanks(const banksMap_type & GKeysBanks);
 		void checkBanksKeys(void);
 
