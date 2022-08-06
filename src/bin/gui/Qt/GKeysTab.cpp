@@ -173,7 +173,7 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 	auto newGButton = [this, &device, &setButtonColor] (mBank_type::const_iterator & it) -> QPushButton*
 	{
 		const GKeysID GKeyID = it->first;
-		const bool macroDefined = (! (it->second).empty());
+		const bool macroDefined = (! (it->second).getMacro().empty());
 
 		const QString buttonName(getGKeyName(GKeyID).c_str());
 
@@ -235,7 +235,7 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 
 	/* -- -- -- */
 
-	const banksMap_type & banks = device.getMacrosBanks();
+	const banksMap_type & banks = device.getBanks();
 
 	const mBank_type & bank = banks.at(_currentBankID);
 
@@ -468,7 +468,7 @@ void GKeysTab::setRadioButtonsEnabled(const bool status)
 
 void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID)
 {
-	//const banksMap_type & banks = device.getMacrosBanks();
+	//const banksMap_type & banks = device.getBanks();
 	//const mBank_type & bank = banks.at(_currentBankID);
 
 	const QString buttonText(getGKeyName(GKeyID).c_str());
