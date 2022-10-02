@@ -547,7 +547,9 @@ void MainWindow::updateInterface(int index)
 					_backlightColorTab->updateTab(_openedConfigurationFile);
 
 					_LCDPluginsTab->updateTab(_devID, _openedConfigurationFile);
-					_GKeysTab->updateTab(_openedConfigurationFile);
+
+					/* reset currentBankID with updateTab() call */
+					_GKeysTab->updateTab(_openedConfigurationFile, true);
 				}
 				this->setTabEnabled("BacklightColor", status);
 				this->setTabEnabled("LCDPlugins", status);
