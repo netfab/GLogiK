@@ -68,6 +68,7 @@ LOCAL_AUTOTOOLS_FILES = \
 	$(top_srcdir)/install-sh \
 	$(top_srcdir)/missing \
 	$(top_srcdir)/configure \
+	$(top_srcdir)/configure~ \
 	$(top_srcdir)/config.h.in~ \
 	$(top_srcdir)/config.guess \
     $(top_srcdir)/config.sub \
