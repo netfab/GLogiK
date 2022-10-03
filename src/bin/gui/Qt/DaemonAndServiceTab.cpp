@@ -121,7 +121,7 @@ void DaemonAndServiceTab::buildTab(void)
 
 			_pStartButton->setEnabled(false);
 
-			connect(_pStartButton, &QPushButton::clicked, this, &DaemonAndServiceTab::startSignal);
+			QObject::connect(_pStartButton, &QPushButton::clicked, this, &DaemonAndServiceTab::startSignal);
 		}
 
 		/* -- -- -- */

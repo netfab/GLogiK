@@ -185,7 +185,7 @@ void AboutDialog::buildDialog(void)
 
 			hBox->addWidget(pCloseButton);
 
-			connect(pCloseButton, &QPushButton::clicked, this, &AboutDialog::closeDialog);
+			QObject::connect(pCloseButton, &QPushButton::clicked, this, &AboutDialog::closeDialog);
 		}
 
 		/* -- -- */

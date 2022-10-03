@@ -135,7 +135,7 @@ void LCDPluginsTab::updateTab(
 {
 	GK_LOG_FUNC
 
-	disconnect(_pPluginsTable, &QTableWidget::cellClicked, this, &LCDPluginsTab::toggleCheckbox);
+	QObject::disconnect(_pPluginsTable, &QTableWidget::cellClicked, this, &LCDPluginsTab::toggleCheckbox);
 
 	/* removing table items */
 	_pPluginsTable->clearContents();
@@ -179,7 +179,7 @@ void LCDPluginsTab::updateTab(
 				}
 
 				/* connecting checkbox */
-				connect(checkbox, &QCheckBox::stateChanged, this, &LCDPluginsTab::updateNewLCDPluginsMask);
+				QObject::connect(checkbox, &QCheckBox::stateChanged, this, &LCDPluginsTab::updateNewLCDPluginsMask);
 
 				QTableWidgetItem* item = nullptr;
 
@@ -199,7 +199,7 @@ void LCDPluginsTab::updateTab(
 			_pPluginsTable->resizeColumnsToContents();
 
 			/* connect cellClicked events to checkbox toggle */
-			connect(_pPluginsTable, &QTableWidget::cellClicked, this, &LCDPluginsTab::toggleCheckbox);
+			QObject::connect(_pPluginsTable, &QTableWidget::cellClicked, this, &LCDPluginsTab::toggleCheckbox);
 		}
 		catch (const GLogiKExcept & e) {
 			LogRemoteCallGetReplyFailure

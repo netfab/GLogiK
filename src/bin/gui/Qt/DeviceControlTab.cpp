@@ -111,9 +111,9 @@ void DeviceControlTab::buildTab(void)
 		throw;
 	}
 
-	connect(_pStartButton   , &QPushButton::clicked, this, &DeviceControlTab::startSignal);
-	connect(_pStopButton    , &QPushButton::clicked, this, &DeviceControlTab::stopSignal);
-	connect(_pRestartButton , &QPushButton::clicked, this, &DeviceControlTab::restartSignal);
+	QObject::connect(_pStartButton   , &QPushButton::clicked, this, &DeviceControlTab::startSignal);
+	QObject::connect(_pStopButton    , &QPushButton::clicked, this, &DeviceControlTab::stopSignal);
+	QObject::connect(_pRestartButton , &QPushButton::clicked, this, &DeviceControlTab::restartSignal);
 
 	this->disableAndHide();
 }

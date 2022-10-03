@@ -164,7 +164,7 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 		button->setObjectName(keyName);
 		button->setFixedWidth(32);
 
-		connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateCurrentBankID, this, device, bankID) );
+		QObject::connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateCurrentBankID, this, device, bankID) );
 
 		GKLog2(trace, "allocated M-Key QPushButton ", keyName.toStdString())
 		return button;
@@ -189,7 +189,7 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 			setButtonColor(button);
 		}
 
-		connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateInputsBox, this, device, GKeyID) );
+		QObject::connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateInputsBox, this, device, GKeyID) );
 
 		GKLog2(trace, "allocated G-Key QPushButton ", buttonName.toStdString())
 		return button;

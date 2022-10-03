@@ -114,7 +114,7 @@ void BacklightColorTab::buildTab(void)
 		vBox->addWidget( this->getHLine() );
 		/* -- -- -- */
 
-		connect(_colorDialog, &QColorDialog::currentColorChanged, this, &BacklightColorTab::setNewColorLabel);
+		QObject::connect(_colorDialog, &QColorDialog::currentColorChanged, this, &BacklightColorTab::setNewColorLabel);
 	}
 	catch (const std::bad_alloc& e) {
 		LOG(error) << "bad allocation : " << e.what();

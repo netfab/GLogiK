@@ -245,8 +245,8 @@ void MainWindow::build(void)
 		QAction* about = new QAction("&About", this);
 		helpMenu->addAction(about);
 
-		connect(quit, &QAction::triggered, qApp, QApplication::quit);
-		connect(about, &QAction::triggered, this, &MainWindow::aboutDialog);
+		QObject::connect(quit, &QAction::triggered, qApp, QApplication::quit);
+		QObject::connect(about, &QAction::triggered, this, &MainWindow::aboutDialog);
 
 		GKLog(trace, "built Qt menu")
 
@@ -254,7 +254,7 @@ void MainWindow::build(void)
 		/* initializing timer */
 		QTimer* timer = new QTimer(this);
 
-		connect(timer, &QTimer::timeout, this, &MainWindow::checkDBusMessages);
+		QObject::connect(timer, &QTimer::timeout, this, &MainWindow::checkDBusMessages);
 		timer->start(100);
 
 		GKLog(trace, "Qt timer started")
@@ -310,10 +310,10 @@ void MainWindow::build(void)
 	/* -- -- -- */
 
 	/* initializing Qt signals */
-	connect(_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
-	connect( _backlightColorTab->getApplyButton(), &QPushButton::clicked,
+	QObject::connect(_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
+	QObject::connect( _backlightColorTab->getApplyButton(), &QPushButton::clicked,
 			 std::bind(&MainWindow::saveConfigurationFileAndUpdateInterface, this, TabApplyButton::TAB_BACKLIGHT) );
-	connect(     _LCDPluginsTab->getApplyButton(), &QPushButton::clicked,
+	QObject::connect( _LCDPluginsTab->getApplyButton(), &QPushButton::clicked,
 			 std::bind(&MainWindow::saveConfigurationFileAndUpdateInterface, this, TabApplyButton::TAB_LCD_PLUGINS) );
 
 	GKLog(trace, "Qt signals connected to slots")
@@ -339,7 +339,7 @@ void MainWindow::build(void)
 		std::bind(&MainWindow::configurationFileUpdated, this, std::placeholders::_1)
 	);
 
-	connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::aboutToQuit);
+	QObject::connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::aboutToQuit);
 }
 
 /*
