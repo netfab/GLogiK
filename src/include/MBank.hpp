@@ -45,7 +45,10 @@ class GKeysEvent {
 			_GKeyMacro(macro)
 		{}
 
-		void clearMacro(void) { _GKeyMacro.clear(); }
+		void clearMacro(void) {
+			_GKeyMacro.clear();
+			_activeEvent = GKeyActiveEvent::GKEY_INACTIVE;
+		}
 		const macro_type & getMacro(void) const { return _GKeyMacro; }
 
 	private:
