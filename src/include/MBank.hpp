@@ -43,7 +43,10 @@ class GKeysEvent {
 		GKeysEvent(const macro_type & macro) :
 			_GKeyEventType(GKeyEventType::GKEY_MACRO),
 			_GKeyMacro(macro)
-		{}
+		{
+			if( macro.empty() )
+				_GKeyEventType = GKeyEventType::GKEY_INACTIVE;
+		}
 
 		void clearMacro(void) {
 			_GKeyMacro.clear();
