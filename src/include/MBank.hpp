@@ -27,7 +27,7 @@
 namespace GLogiK
 {
 
-enum class GKeyActiveEvent : uint8_t
+enum class GKeyEventType : uint8_t
 {
 	GKEY_INACTIVE = 0,
 	GKEY_MACRO,
@@ -36,23 +36,23 @@ enum class GKeyActiveEvent : uint8_t
 class GKeysEvent {
 	public:
 		GKeysEvent(void) :
-			_activeEvent(GKeyActiveEvent::GKEY_INACTIVE),
+			_GKeyEventType(GKeyEventType::GKEY_INACTIVE),
 			_GKeyMacro({})
 		{}
 
 		GKeysEvent(const macro_type & macro) :
-			_activeEvent(GKeyActiveEvent::GKEY_MACRO),
+			_GKeyEventType(GKeyEventType::GKEY_MACRO),
 			_GKeyMacro(macro)
 		{}
 
 		void clearMacro(void) {
 			_GKeyMacro.clear();
-			_activeEvent = GKeyActiveEvent::GKEY_INACTIVE;
+			_GKeyEventType = GKeyEventType::GKEY_INACTIVE;
 		}
 		const macro_type & getMacro(void) const { return _GKeyMacro; }
 
 	private:
-		GKeyActiveEvent _activeEvent;
+		GKeyEventType _GKeyEventType;
 		macro_type _GKeyMacro;
 
 		friend class boost::serialization::access;
@@ -60,7 +60,7 @@ class GKeysEvent {
 		template<class Archive>
 			void serialize(Archive & ar, const unsigned int version)
 		{
-			ar & _activeEvent;
+			ar & _GKeyEventType;
 			ar & _GKeyMacro;
 		}
 };
