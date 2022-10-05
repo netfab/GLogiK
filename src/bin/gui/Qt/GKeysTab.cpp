@@ -49,12 +49,8 @@ GKeysTab::GKeysTab(
 	NSGKDBus::GKDBus* pDBus,
 	const QString & name)
 	:	Tab(pDBus),
-		_stubGKeyName("stubGKey"),
-		_stubCommandKeyName("stubCommandKey"),
-		_stubMacroKeyName("stubMacroKey"),
 		_pKeysBox(nullptr),
 		_pInputsBox(nullptr),
-		_pRadioButtonsGroup(nullptr),
 		_currentBankID(MKeysID::MKEY_M0)
 {
 	this->setObjectName(name);
@@ -250,17 +246,6 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 	if( (bank.size() % keysPerLine) != 0 )
 		throw GLogiKExcept("G-Keys modulo not null");
 
-	/* -- -- -- */
-	{
-		QPushButton* button = this->findButtonIn(_pInputsBox, _stubGKeyName);
-		setButtonColor(button);
-
-		const QString buttonText("G0");
-		this->setStubButtonText(_stubMacroKeyName, buttonText);
-		this->setStubButtonText(_stubGKeyName, buttonText);
-		this->setStubButtonText(_stubCommandKeyName, buttonText);
-	}
-
 	QVBoxLayout* keysBoxLayout = static_cast<QVBoxLayout*>(_pKeysBox->layout());
 
 	clearLayout(keysBoxLayout);
@@ -363,51 +348,10 @@ void GKeysTab::buildTab(void)
 
 				_pInputsBox->setLayout(inputsBoxLayout);
 				{ // header
-					auto newStubGButton = [] (
-						const QString & name, const QString & qssClass = "") -> QPushButton*
-					{
-						const QString keyName("G0");
-
-						QPushButton* button = new QPushButton(keyName);
-
-						if(qssClass != "") {
-							button->setProperty("class", QVariant(qssClass)); // css class
-						}
-						button->setObjectName(name);
-						button->setFixedWidth(40);
-						button->setEnabled(false);
-
-						GKLog2(trace, "allocated G-Key example QPushButton ", keyName.toStdString())
-						return button;
-					};
-
 					QHBoxLayout* headerHBoxLayout = new QHBoxLayout();
 					inputsBoxLayout->addLayout(headerHBoxLayout);
 
-					_pRadioButtonsGroup = new QButtonGroup(this);
-					QRadioButton* button1 = new QRadioButton("Macro");
-					QRadioButton* button2 = new QRadioButton("Command");
-					_pRadioButtonsGroup->addButton(button1);
-					_pRadioButtonsGroup->addButton(button2);
-
-					headerHBoxLayout->addWidget( this->getVLine() );
-					headerHBoxLayout->addWidget( newStubGButton(_stubMacroKeyName, "macroGKey") );
-					headerHBoxLayout->addWidget(button1);
-					headerHBoxLayout->addWidget( this->getVLine() );
-
 					headerHBoxLayout->addStretch();
-
-					headerHBoxLayout->addWidget( newStubGButton(_stubGKeyName) );
-					headerHBoxLayout->addWidget( new QLabel("not used") );
-
-					headerHBoxLayout->addStretch();
-
-					headerHBoxLayout->addWidget( this->getVLine() );
-					headerHBoxLayout->addWidget( newStubGButton(_stubCommandKeyName, "cmmndGKey") );
-					headerHBoxLayout->addWidget(button2);
-					headerHBoxLayout->addWidget( this->getVLine() );
-
-					this->setRadioButtonsEnabled(false);
 
 					GKLog(trace, "inputsBox header added")
 				}
@@ -452,32 +396,10 @@ void GKeysTab::buildTab(void)
 	}
 }
 
-void GKeysTab::setRadioButtonsEnabled(const bool status)
-{
-	if(_pRadioButtonsGroup == nullptr)
-		return;
-
-	using T = QList<QAbstractButton*>;
-
-	const T radioButtons(_pRadioButtonsGroup->buttons());
-
-	for(T::const_iterator it = radioButtons.constBegin();
-		it != radioButtons.constEnd(); ++it)
-	{
-		(*it)->setEnabled(status);
-	}
-
-}
-
 void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID)
 {
 	//const banksMap_type & banks = device.getBanks();
 	//const mBank_type & bank = banks.at(_currentBankID);
-
-	const QString buttonText(getGKeyName(GKeyID).c_str());
-	this->setStubButtonText(_stubMacroKeyName, buttonText);
-	this->setStubButtonText(_stubGKeyName, buttonText);
-	this->setStubButtonText(_stubCommandKeyName, buttonText);
 }
 
 QPushButton* GKeysTab::findButtonIn(QObject* parentWidget, const QString & buttonName)

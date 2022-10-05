@@ -27,7 +27,6 @@
 #include <QObject>
 #include <QString>
 #include <QGroupBox>
-#include <QButtonGroup>
 #include <QPushButton>
 
 #include "lib/shared/deviceProperties.hpp"
@@ -61,13 +60,8 @@ class GKeysTab
 	private:
 		GKeysTab() = delete;
 
-		const QString _stubGKeyName;
-		const QString _stubCommandKeyName;
-		const QString _stubMacroKeyName;
-
 		QGroupBox* _pKeysBox;
 		QGroupBox* _pInputsBox;
-		QButtonGroup* _pRadioButtonsGroup;
 
 		MKeysID _currentBankID;
 
