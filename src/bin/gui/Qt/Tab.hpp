@@ -22,6 +22,7 @@
 #ifndef SRC_BIN_GUI_QT_TAB_HPP_
 #define SRC_BIN_GUI_QT_TAB_HPP_
 
+#include <QLayout>
 #include <QWidget>
 #include <QFrame>
 #include <QPushButton>
@@ -60,6 +61,7 @@ class Tab
 		QPushButton* _pApplyButton;
 
 		void prepareApplyButton(void);
+		void clearLayout(QLayout* parentLayout);
 
 	private:
 };

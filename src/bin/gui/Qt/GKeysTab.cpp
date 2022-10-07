@@ -77,57 +77,6 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 
 	/* -- -- -- */
 
-	auto clearLayout = [] (QLayout* mainLayout) -> void {
-		std::function<void (QLayout*)> clearQLayout =
-			[&clearQLayout](QLayout* parentLayout) -> void
-		{
-			if(parentLayout == nullptr)
-				return;
-
-			QLayoutItem* item;
-			while( (item = parentLayout->takeAt(0) ) != nullptr)
-			{
-				std::string itemName("spacer");
-
-				/*
-				 * From the (QLayoutItem) Qt documentation.
-				 *
-				 *   If this item *is* a QLayout, ->layout() returns
-				 *     it as a QLayout; otherwise nullptr is returned.
-				 *   If this item *is* a QSpacerItem, ->spacerItem() returns
-				 *     it as a QSpacerItem; otherwise nullptr is returned.
-				 *   If this item *manages* a QWidget, ->widget() returns
-				 *     that widget; otherwise nullptr is returned.
-				 */
-
-				QLayout* layout = item->layout();
-				if( layout != nullptr ) {
-					clearQLayout(layout);
-
-					itemName = "layout ";
-					itemName += layout->objectName().toStdString();
-
-					layout = nullptr;
-				}
-
-				QWidget* widget = item->widget();
-				if( widget != nullptr ) {
-					itemName = "widget ";
-					itemName += widget->objectName().toStdString();
-					GKLog2(trace, "deleting ", itemName)
-
-					widget->disconnect();
-					delete widget; widget = nullptr;
-				}
-
-				GKLog2(trace, "deleting layout item : ", itemName)
-				delete item;
-			}
-		};
-
-		clearQLayout(mainLayout);
-	};
-
 	auto setButtonColor = [&color] (QPushButton* button) -> void
 	{
 		if( ! button ) {
@@ -248,7 +197,7 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 
 	QVBoxLayout* keysBoxLayout = static_cast<QVBoxLayout*>(_pKeysBox->layout());
 
-	clearLayout(keysBoxLayout);
+	this->clearLayout(keysBoxLayout);
 
 	try {
 		{	// initialize M-keys layout

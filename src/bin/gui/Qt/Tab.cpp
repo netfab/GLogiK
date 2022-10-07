@@ -19,6 +19,8 @@
  *
  */
 
+#include <string>
+
 #include "lib/utils/utils.hpp"
 
 #include "Tab.hpp"
@@ -67,6 +69,54 @@ void Tab::prepareApplyButton(void)
 	/* Default visual properties for widgets are defined by QStyle
 	 * styleSheet() returns empty QString */
 	_pApplyButton->setStyleSheet("padding:3px 12px 3px 12px;");
+}
+
+void Tab::clearLayout(QLayout* parentLayout)
+{
+	GK_LOG_FUNC
+
+	if(parentLayout == nullptr)
+		return;
+
+	QLayoutItem* item;
+	while( (item = parentLayout->takeAt(0) ) != nullptr)
+	{
+		std::string itemName("spacer");
+
+		/*
+		 * From the (QLayoutItem) Qt documentation.
+		 *
+		 *   If this item *is* a QLayout, ->layout() returns
+		 *     it as a QLayout; otherwise nullptr is returned.
+		 *   If this item *is* a QSpacerItem, ->spacerItem() returns
+		 *     it as a QSpacerItem; otherwise nullptr is returned.
+		 *   If this item *manages* a QWidget, ->widget() returns
+		 *     that widget; otherwise nullptr is returned.
+		 */
+
+		QLayout* layout = item->layout();
+		if( layout != nullptr ) {
+			this->clearLayout(layout);
+
+			itemName = "layout ";
+			itemName += layout->objectName().toStdString();
+
+			layout = nullptr;
+		}
+
+		QWidget* widget = item->widget();
+		if( widget != nullptr ) {
+			itemName = "widget ";
+			itemName += widget->objectName().toStdString();
+			GKLog2(trace, "deleting ", itemName)
+
+			widget->disconnect();
+			delete widget; widget = nullptr;
+		}
+
+		GKLog2(trace, "deleting layout item : ", itemName)
+		delete item;
+	}
 }
 
 } // namespace GLogiK
