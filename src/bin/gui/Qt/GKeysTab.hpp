@@ -26,8 +26,10 @@
 
 #include <QObject>
 #include <QString>
+#include <QLabel>
 #include <QGroupBox>
 #include <QPushButton>
+#include <QHBoxLayout>
 
 #include "lib/shared/deviceProperties.hpp"
 #include "lib/shared/glogik.hpp"
@@ -63,11 +65,23 @@ class GKeysTab
 		QGroupBox* _pKeysBox;
 		QGroupBox* _pInputsBox;
 
+		QHBoxLayout* _pHeaderHBoxLayout;
+
+		QLabel* _pHelpLabel;
+
 		MKeysID _currentBankID;
 
+		QString _helpLabel;
 
 		void setRadioButtonsEnabled(const bool status);
 		void updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID);
+
+		QPushButton* newGKeyButton(
+			const GKeysID GKeyID,
+			const GKeyEventType eventType,
+			const QString & colorName = "#RRGGBB"
+		);
+		QPushButton* newBlankButton(void);
 
 		QPushButton* findButtonIn(QObject* parentWidget, const QString & buttonName);
 		void setStubButtonText(const QString & buttonName, const QString & buttonText);

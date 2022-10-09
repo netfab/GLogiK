@@ -48,6 +48,8 @@ class GKeysEvent {
 				_GKeyEventType = GKeyEventType::GKEY_INACTIVE;
 		}
 
+		const GKeyEventType getEventType(void) const { return _GKeyEventType; }
+
 		void clearMacro(void) {
 			_GKeyMacro.clear();
 			_GKeyEventType = GKeyEventType::GKEY_INACTIVE;

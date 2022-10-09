@@ -5,12 +5,29 @@
 
 #keysBox QPushButton,
 #inputsBox QPushButton {
-  border: 2px solid #000000;
-  color:#FFFFFF;
   height: 28px;
+}
+
+#inputsBox QPushButton[class="blankButton"]
+{
+  border: 2px solid #c4c4c4;
   border-radius: 6px;
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #444444, stop: 1 #222222);
+}
+
+/* *[class="inactiveGKey"] { } */
+
+#keysBox QPushButton[class="inactiveBank"],
+#keysBox QPushButton[class="currentBank"],
+#keysBox QPushButton[class="inactiveGKey"],
+#keysBox QPushButton[class="macroGKey"],
+#keysBox QPushButton[class="cmmndGKey"],
+#inputsBox QPushButton[class="inactiveGKey"],
+#inputsBox QPushButton[class="macroGKey"],
+#inputsBox QPushButton[class="cmmndGKey"]
+{
+  color:#FFFFFF;
+  border: 2px solid #000000;
+  border-radius: 6px;
 }
 
 #keysBox QPushButton:pressed,
@@ -22,6 +39,15 @@
 
 #keysBox QPushButton[class="currentBank"] {
   color:#FF8C00;
+}
+
+#keysBox QPushButton[class="inactiveBank"],
+#keysBox QPushButton[class="currentBank"],
+#keysBox QPushButton[class="inactiveGKey"],
+#inputsBox QPushButton[class="inactiveGKey"]
+{
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                    stop: 0 #444444, stop: 1 #222222);
 }
 
 #keysBox QPushButton[class="macroGKey"],

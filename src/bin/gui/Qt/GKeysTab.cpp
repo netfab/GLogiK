@@ -51,7 +51,10 @@ GKeysTab::GKeysTab(
 	:	Tab(pDBus),
 		_pKeysBox(nullptr),
 		_pInputsBox(nullptr),
-		_currentBankID(MKeysID::MKEY_M0)
+		_pHeaderHBoxLayout(nullptr),
+		_pHelpLabel(nullptr),
+		_currentBankID(MKeysID::MKEY_M0),
+		_helpLabel("Click on a G-Key and/or a M-Key")
 {
 	this->setObjectName(name);
 }
@@ -72,22 +75,10 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 
 	uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 	const QColor color(r, g, b);
-
-	GKLog2(trace, "got color: ", color.name().toStdString())
+	const QString colorName = color.name();
+	GKLog2(trace, "got color: ", colorName.toStdString())
 
 	/* -- -- -- */
-
-	auto setButtonColor = [&color] (QPushButton* button) -> void
-	{
-		if( ! button ) {
-			GKLog(warning, "null pointer detected")
-			return;
-		}
-		QString style = "color:";
-		style += color.name();
-		style += ";";
-		button->setStyleSheet(style);
-	};
 
 	auto nextLayoutName = [&layoutNum] () -> const QString
 	{
@@ -105,6 +96,8 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 
 		if(bankID == _currentBankID)
 			button->setProperty("class", QVariant("currentBank")); // css class
+		else
+			button->setProperty("class", QVariant("inactiveBank")); // css class
 
 		button->setObjectName(keyName);
 		button->setFixedWidth(32);
@@ -115,28 +108,13 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 		return button;
 	};
 
-	auto newGButton = [this, &device, &setButtonColor] (mBank_type::const_iterator & it) -> QPushButton*
+	auto newGButton = [this, &device, &colorName] (mBank_type::const_iterator & it) -> QPushButton*
 	{
 		const GKeysID GKeyID = it->first;
-		const bool macroDefined = (! (it->second).getMacro().empty());
+		const GKeyEventType eventType = (it->second).getEventType();
 
-		const QString buttonName(getGKeyName(GKeyID).c_str());
-
-		QPushButton* button = new QPushButton(buttonName);
-
-		button->setObjectName(buttonName);
-		button->setFixedWidth(40);
-
-		// this G-Key is currently used
-		if( macroDefined )
-			button->setProperty("class", QVariant("macroGKey")); // css class
-		else {
-			setButtonColor(button);
-		}
-
+		QPushButton* button = this->newGKeyButton(GKeyID, eventType, colorName);
 		QObject::connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateInputsBox, this, device, GKeyID) );
-
-		GKLog2(trace, "allocated G-Key QPushButton ", buttonName.toStdString())
 		return button;
 	};
 
@@ -296,11 +274,20 @@ void GKeysTab::buildTab(void)
 				inputsBoxLayout->setObjectName("InputsVBoxLayout");
 
 				_pInputsBox->setLayout(inputsBoxLayout);
-				{ // header
-					QHBoxLayout* headerHBoxLayout = new QHBoxLayout();
-					inputsBoxLayout->addLayout(headerHBoxLayout);
 
-					headerHBoxLayout->addStretch();
+				_pHelpLabel = new QLabel(_helpLabel);
+				inputsBoxLayout->addWidget( _pHelpLabel );
+
+				inputsBoxLayout->addWidget( this->getHLine() );
+
+				{ // header
+					_pHeaderHBoxLayout = new QHBoxLayout();
+					inputsBoxLayout->addLayout(_pHeaderHBoxLayout);
+
+					QPushButton* button = this->newBlankButton();
+					_pHeaderHBoxLayout->addWidget(button);
+
+					_pHeaderHBoxLayout->addStretch();
 
 					GKLog(trace, "inputsBox header added")
 				}
@@ -312,6 +299,7 @@ void GKeysTab::buildTab(void)
 
 				// --
 				hBox->addWidget(_pInputsBox);
+
 				GKLog(trace, "inputsBox added")
 			}
 		} // end (keysBox + VLine + inputsBox)
@@ -345,10 +333,74 @@ void GKeysTab::buildTab(void)
 	}
 }
 
+QPushButton* GKeysTab::newBlankButton(void)
+{
+	QPushButton* button = new QPushButton("");
+
+	button->setProperty("class", QVariant("blankButton")); // css class
+	button->setObjectName("BlankButton");
+	button->setFixedWidth(40);
+	button->setEnabled(false);
+
+	return button;
+}
+
+QPushButton* GKeysTab::newGKeyButton(
+	const GKeysID GKeyID,
+	const GKeyEventType eventType,
+	const QString & colorName)
+{
+	const QString buttonText(getGKeyName(GKeyID).c_str());
+
+	QPushButton* button = new QPushButton(buttonText);
+
+	button->setObjectName(buttonText);
+	button->setFixedWidth(40);
+
+	if( eventType == GKeyEventType::GKEY_MACRO ) {
+		button->setProperty("class", QVariant("macroGKey")); // css class
+	}
+	else if( eventType == GKeyEventType::GKEY_INACTIVE ) {
+		button->setProperty("class", QVariant("inactiveGKey")); // css class
+		QString style = "color:";
+		style += colorName;
+		style += ";";
+
+		button->setStyleSheet(style);
+	}
+
+	GKLog2(trace, "allocated G-Key QPushButton ", buttonText.toStdString())
+	return button;
+}
+
 void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID)
 {
-	//const banksMap_type & banks = device.getBanks();
-	//const mBank_type & bank = banks.at(_currentBankID);
+	const banksMap_type & banks = device.getBanks();
+	const mBank_type & bank = banks.at(_currentBankID);
+	const GKeyEventType eventType = bank.at(GKeyID).getEventType();
+
+	uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
+	const QColor color(r, g, b);
+	const QString colorName = color.name();
+	GKLog2(trace, "got color: ", colorName.toStdString())
+
+	/* -- -- -- */
+
+	/* ->clear() is producing a visual artefact */
+	//_pHelpLabel->clear();
+	_pHelpLabel->setText("");
+
+	this->clearLayout(_pHeaderHBoxLayout);
+
+	/* -- -- -- */
+
+	QPushButton* button = this->newGKeyButton(GKeyID, eventType, colorName);
+
+	button->setEnabled(false);
+
+	_pHeaderHBoxLayout->addWidget(button);
+
+	_pHeaderHBoxLayout->addStretch();
 }
 
 QPushButton* GKeysTab::findButtonIn(QObject* parentWidget, const QString & buttonName)
@@ -377,6 +429,21 @@ void GKeysTab::setStubButtonText(const QString & buttonName, const QString & but
 void GKeysTab::updateCurrentBankID(const DeviceProperties & device, const MKeysID bankID)
 {
 	_currentBankID = (_currentBankID == bankID) ? MKeysID::MKEY_M0 : bankID;
+
+	/* -- -- -- */
+
+	_pHelpLabel->setText(_helpLabel);
+
+	this->clearLayout(_pHeaderHBoxLayout);
+
+	/* -- -- -- */
+
+	QPushButton* button = this->newBlankButton();
+	_pHeaderHBoxLayout->addWidget(button);
+	_pHeaderHBoxLayout->addStretch();
+
+	/* -- -- -- */
+
 	this->updateTab(device);
 }
 
