@@ -126,13 +126,18 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 		hBox->setObjectName( nextLayoutName() );
 		GKLog2(trace, "allocated QHBoxLayout ", hBox->objectName().toStdString())
 
-		for(const auto & id : banks) {
-			if(id == MKeysID::MKEY_M0)
-				continue; // skip virtual M0 key
+		try {
+			for(const auto & id : banks) {
+				if(id == MKeysID::MKEY_M0)
+					continue; // skip virtual M0 key
 
-			auto n = bankNames.at(id);
-			hBox->addWidget( newMButton( id, n ) );
-			GKLog2(trace, "allocated M-key bank button: ", n)
+				auto n = bankNames.at(id);
+				hBox->addWidget( newMButton( id, n ) );
+				GKLog2(trace, "allocated M-key bank button: ", n)
+			}
+		}
+		catch (const std::out_of_range& oor) {
+			throw GLogiKExcept("newBanksLayout: id not found");
 		}
 
 		return hBox;
@@ -161,64 +166,68 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 	if( resetCurrentBankID )
 		_currentBankID = MKeysID::MKEY_M0;
 
-	const banksMap_type & banks = device.getBanks();
-
-	const mBank_type & bank = banks.at(_currentBankID);
-
-	//for(const auto & GMacroPair : bank) {
-	//	LOG(trace)	<< "key|size: " << getGKeyName(GMacroPair.first)
-	//				<< "|" << (GMacroPair.second).size();
-	//}
-
-	if( (bank.size() % keysPerLine) != 0 )
-		throw GLogiKExcept("G-Keys modulo not null");
-
-	QVBoxLayout* keysBoxLayout = static_cast<QVBoxLayout*>(_pKeysBox->layout());
-
-	this->clearLayout(keysBoxLayout);
-
 	try {
-		{	// initialize M-keys layout
-			std::vector<MKeysID> ids;
-			for(const auto & idBankPair : banks) {
-				const MKeysID & bankID = idBankPair.first;
-				ids.push_back(bankID);
+		const banksMap_type & banks = device.getBanks();
+		const mBank_type & bank = banks.at(_currentBankID);
+
+		//for(const auto & GMacroPair : bank) {
+		//	LOG(trace)	<< "key|size: " << getGKeyName(GMacroPair.first)
+		//				<< "|" << (GMacroPair.second).size();
+		//}
+
+		if( (bank.size() % keysPerLine) != 0 )
+			throw GLogiKExcept("G-Keys modulo not null");
+
+		QVBoxLayout* keysBoxLayout = static_cast<QVBoxLayout*>(_pKeysBox->layout());
+
+		this->clearLayout(keysBoxLayout);
+
+		try {
+			{	// initialize M-keys layout
+				std::vector<MKeysID> ids;
+				for(const auto & idBankPair : banks) {
+					const MKeysID & bankID = idBankPair.first;
+					ids.push_back(bankID);
+				}
+
+				keysBoxLayout->addLayout( newBanksLayout(ids) );
 			}
 
-			keysBoxLayout->addLayout( newBanksLayout(ids) );
+			keysBoxLayout->addSpacing(10);
+			unsigned short c = 0;
+
+			/* G-keys layouts */
+			for(unsigned short i = 0; i < (bank.size() / keysPerLine); ++i)
+			{
+				mBank_type::const_iterator it1 = bank.begin();
+				if(safeAdvance(it1, bank.end(), i*keysPerLine) != 0)
+					throw GLogiKExcept("wrong G-Keys offset");
+
+				auto it2 = it1;
+				if(safeAdvance(it2, bank.end(), 1) != 0)
+					throw GLogiKExcept("wrong second G-Key");
+
+				auto it3 = it2;
+				if(safeAdvance(it3, bank.end(), 1) != 0)
+					throw GLogiKExcept("wrong third G-Key");
+
+				keysBoxLayout->addLayout(
+					newGKeysLayout(it1, it2, it3)
+				);
+
+				if((++c % 2) == 0)
+					keysBoxLayout->addSpacing(20);
+			}
+
+			keysBoxLayout->addStretch();
 		}
-
-		keysBoxLayout->addSpacing(10);
-		unsigned short c = 0;
-
-		/* G-keys layouts */
-		for(unsigned short i = 0; i < (bank.size() / keysPerLine); ++i)
-		{
-			mBank_type::const_iterator it1 = bank.begin();
-			if(safeAdvance(it1, bank.end(), i*keysPerLine) != 0)
-				throw GLogiKExcept("wrong G-Keys offset");
-
-			auto it2 = it1;
-			if(safeAdvance(it2, bank.end(), 1) != 0)
-				throw GLogiKExcept("wrong second G-Key");
-
-			auto it3 = it2;
-			if(safeAdvance(it3, bank.end(), 1) != 0)
-				throw GLogiKExcept("wrong third G-Key");
-
-			keysBoxLayout->addLayout(
-				newGKeysLayout(it1, it2, it3)
-			);
-
-			if((++c % 2) == 0)
-				keysBoxLayout->addSpacing(20);
+		catch (const std::bad_alloc& e) {
+			LOG(error) << "bad allocation : " << e.what();
+			throw GLogiKBadAlloc("bad allocation");
 		}
-
-		keysBoxLayout->addStretch();
 	}
-	catch (const std::bad_alloc& e) {
-		LOG(error) << "bad allocation : " << e.what();
-		throw GLogiKBadAlloc("bad allocation");
+	catch (const std::out_of_range& oor) {
+		throw GLogiKExcept("currentBankID not found");
 	}
 }
 
@@ -375,32 +384,35 @@ QPushButton* GKeysTab::newGKeyButton(
 
 void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID)
 {
-	const banksMap_type & banks = device.getBanks();
-	const mBank_type & bank = banks.at(_currentBankID);
-	const GKeyEventType eventType = bank.at(GKeyID).getEventType();
+	try {
+		const banksMap_type & banks = device.getBanks();
+		const mBank_type & bank = banks.at(_currentBankID);
+		const GKeyEventType eventType = bank.at(GKeyID).getEventType();
 
-	uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
-	const QColor color(r, g, b);
-	const QString colorName = color.name();
-	GKLog2(trace, "got color: ", colorName.toStdString())
+		uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
+		const QColor color(r, g, b);
+		const QString colorName = color.name();
+		GKLog2(trace, "got color: ", colorName.toStdString())
 
-	/* -- -- -- */
+		/* -- -- -- */
 
-	/* ->clear() is producing a visual artefact */
-	//_pHelpLabel->clear();
-	_pHelpLabel->setText("");
+		/* ->clear() is producing a visual artefact */
+		//_pHelpLabel->clear();
+		_pHelpLabel->setText("");
 
-	this->clearLayout(_pHeaderHBoxLayout);
+		this->clearLayout(_pHeaderHBoxLayout);
 
-	/* -- -- -- */
+		/* -- -- -- */
 
-	QPushButton* button = this->newGKeyButton(GKeyID, eventType, colorName);
+		QPushButton* button = this->newGKeyButton(GKeyID, eventType, colorName);
+		button->setEnabled(false);
 
-	button->setEnabled(false);
-
-	_pHeaderHBoxLayout->addWidget(button);
-
-	_pHeaderHBoxLayout->addStretch();
+		_pHeaderHBoxLayout->addWidget(button);
+		_pHeaderHBoxLayout->addStretch();
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(error) << "updateInputsBox: out of range detected: " << oor.what();
+	}
 }
 
 QPushButton* GKeysTab::findButtonIn(QObject* parentWidget, const QString & buttonName)
