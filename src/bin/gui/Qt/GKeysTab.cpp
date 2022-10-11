@@ -410,6 +410,9 @@ void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GK
 		_pHeaderHBoxLayout->addWidget(button);
 		_pHeaderHBoxLayout->addStretch();
 	}
+	catch (const std::bad_alloc& e) {
+		LOG(error) << "updateInputsBox: bad allocation detected: " << e.what();
+	}
 	catch (const std::out_of_range& oor) {
 		LOG(error) << "updateInputsBox: out of range detected: " << oor.what();
 	}
