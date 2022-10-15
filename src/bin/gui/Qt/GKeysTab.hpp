@@ -31,6 +31,7 @@
 #include <QComboBox>
 #include <QGroupBox>
 #include <QPushButton>
+#include <QVBoxLayout>
 #include <QHBoxLayout>
 
 #include "lib/shared/deviceProperties.hpp"
@@ -66,6 +67,7 @@ class GKeysTab
 
 		QGroupBox* _pKeysBox;
 
+		QVBoxLayout* _pKeysBoxLayout;
 		QHBoxLayout* _pInputsBoxHeaderLayout;
 
 		QLabel* _pHelpLabel;

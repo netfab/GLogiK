@@ -51,6 +51,7 @@ GKeysTab::GKeysTab(
 	const QString & name)
 	:	Tab(pDBus),
 		_pKeysBox(nullptr),
+		_pKeysBoxLayout(nullptr),
 		_pInputsBoxHeaderLayout(nullptr),
 		_pHelpLabel(nullptr),
 		_GKeyEventTypeComboBox(nullptr),
@@ -183,8 +184,7 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 
 		this->disconnectAllKeysBoxButtons();
 
-		QVBoxLayout* keysBoxLayout = static_cast<QVBoxLayout*>(_pKeysBox->layout());
-		this->clearLayout(keysBoxLayout);
+		this->clearLayout(_pKeysBoxLayout);
 
 		try {
 			{	// initialize M-keys layout
@@ -194,10 +194,10 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 					ids.push_back(bankID);
 				}
 
-				keysBoxLayout->addLayout( newBanksLayout(ids) );
+				_pKeysBoxLayout->addLayout( newBanksLayout(ids) );
 			}
 
-			keysBoxLayout->addSpacing(10);
+			_pKeysBoxLayout->addSpacing(10);
 			unsigned short c = 0;
 
 			/* G-keys layouts */
@@ -215,15 +215,15 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 				if(safeAdvance(it3, bank.end(), 1) != 0)
 					throw GLogiKExcept("wrong third G-Key");
 
-				keysBoxLayout->addLayout(
+				_pKeysBoxLayout->addLayout(
 					newGKeysLayout(it1, it2, it3)
 				);
 
 				if((++c % 2) == 0)
-					keysBoxLayout->addSpacing(20);
+					_pKeysBoxLayout->addSpacing(20);
 			}
 
-			keysBoxLayout->addStretch();
+			_pKeysBoxLayout->addStretch();
 		}
 		catch (const std::bad_alloc& e) {
 			LOG(error) << "bad allocation : " << e.what();
@@ -263,10 +263,10 @@ void GKeysTab::buildTab(void)
 				_pKeysBox->setObjectName("keysBox"); // css ID
 				//_pKeysBox->setFlat(true);
 
-				QVBoxLayout* keysBoxLayout = new QVBoxLayout();
-				keysBoxLayout->setObjectName("KeysBoxLayout");
+				_pKeysBoxLayout = new QVBoxLayout();
+				_pKeysBoxLayout->setObjectName("KeysBoxLayout");
 
-				_pKeysBox->setLayout(keysBoxLayout);
+				_pKeysBox->setLayout(_pKeysBoxLayout);
 
 				hBox->addWidget(_pKeysBox);
 				GKLog(trace, "keysBox added")
