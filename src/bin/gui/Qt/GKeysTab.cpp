@@ -25,6 +25,7 @@
 #include <QVariant>
 #include <QLabel>
 #include <QList>
+#include <QGroupBox>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLayoutItem>
@@ -50,7 +51,6 @@ GKeysTab::GKeysTab(
 	const QString & name)
 	:	Tab(pDBus),
 		_pKeysBox(nullptr),
-		_pInputsBox(nullptr),
 		_pInputsBoxHeaderLayout(nullptr),
 		_pHelpLabel(nullptr),
 		_GKeyEventTypeComboBox(nullptr),
@@ -278,15 +278,14 @@ void GKeysTab::buildTab(void)
 
 			/* -- -- -- */
 			{ // inputsBox
-				_pInputsBox = new QGroupBox();
-				_pInputsBox->setTitle("");
-				_pInputsBox->setObjectName("inputsBox"); // css ID
-				//_pInputsBox->setFlat(true);
+				QGroupBox* inputsBox = new QGroupBox();
+				inputsBox->setTitle("");
+				inputsBox->setObjectName("inputsBox"); // css ID
 
 				QVBoxLayout* inputsBoxLayout = new QVBoxLayout();
 				inputsBoxLayout->setObjectName("InputsVBoxLayout");
 
-				_pInputsBox->setLayout(inputsBoxLayout);
+				inputsBox->setLayout(inputsBoxLayout);
 
 				_pHelpLabel = new QLabel(_helpLabel);
 				inputsBoxLayout->addWidget( _pHelpLabel );
@@ -311,7 +310,7 @@ void GKeysTab::buildTab(void)
 				inputsBoxLayout->addStretch();
 
 				// --
-				hBox->addWidget(_pInputsBox);
+				hBox->addWidget(inputsBox);
 
 				GKLog(trace, "inputsBox added")
 			}

@@ -65,7 +65,6 @@ class GKeysTab
 		GKeysTab() = delete;
 
 		QGroupBox* _pKeysBox;
-		QGroupBox* _pInputsBox;
 
 		QHBoxLayout* _pInputsBoxHeaderLayout;
 
