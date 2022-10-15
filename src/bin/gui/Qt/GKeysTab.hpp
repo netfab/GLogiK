@@ -67,7 +67,7 @@ class GKeysTab
 		QGroupBox* _pKeysBox;
 		QGroupBox* _pInputsBox;
 
-		QHBoxLayout* _pHeaderHBoxLayout;
+		QHBoxLayout* _pInputsBoxHeaderLayout;
 
 		QLabel* _pHelpLabel;
 		QComboBox* _GKeyEventTypeComboBox;

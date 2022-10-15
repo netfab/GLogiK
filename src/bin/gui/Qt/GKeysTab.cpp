@@ -51,7 +51,7 @@ GKeysTab::GKeysTab(
 	:	Tab(pDBus),
 		_pKeysBox(nullptr),
 		_pInputsBox(nullptr),
-		_pHeaderHBoxLayout(nullptr),
+		_pInputsBoxHeaderLayout(nullptr),
 		_pHelpLabel(nullptr),
 		_GKeyEventTypeComboBox(nullptr),
 		_currentBankID(MKeysID::MKEY_M0),
@@ -294,13 +294,13 @@ void GKeysTab::buildTab(void)
 				inputsBoxLayout->addWidget( this->getHLine() );
 
 				{ // header
-					_pHeaderHBoxLayout = new QHBoxLayout();
-					inputsBoxLayout->addLayout(_pHeaderHBoxLayout);
+					_pInputsBoxHeaderLayout = new QHBoxLayout();
+					inputsBoxLayout->addLayout(_pInputsBoxHeaderLayout);
 
 					QPushButton* button = this->newBlankButton();
-					_pHeaderHBoxLayout->addWidget(button);
+					_pInputsBoxHeaderLayout->addWidget(button);
 
-					_pHeaderHBoxLayout->addStretch();
+					_pInputsBoxHeaderLayout->addStretch();
 
 					GKLog(trace, "inputsBox header added")
 				}
@@ -437,9 +437,9 @@ void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GK
 			_GKeyEventTypeComboBox->setEnabled(true);
 		}
 
-		_pHeaderHBoxLayout->addWidget(button);
-		_pHeaderHBoxLayout->addWidget(_GKeyEventTypeComboBox);
-		_pHeaderHBoxLayout->addStretch();
+		_pInputsBoxHeaderLayout->addWidget(button);
+		_pInputsBoxHeaderLayout->addWidget(_GKeyEventTypeComboBox);
+		_pInputsBoxHeaderLayout->addStretch();
 
 		QObject::connect(
 			_GKeyEventTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -546,7 +546,7 @@ void GKeysTab::clearInputsBoxHeaderLayout(void)
 		QObject::disconnect(_GKeyEventTypeComboBox, nullptr, nullptr, nullptr);
 	}
 
-	this->clearLayout(_pHeaderHBoxLayout);
+	this->clearLayout(_pInputsBoxHeaderLayout);
 
 	_GKeyEventTypeComboBox = nullptr;
 }
@@ -566,8 +566,8 @@ void GKeysTab::updateCurrentBankID(const DeviceProperties & device, const MKeysI
 	/* -- -- -- */
 
 	QPushButton* button = this->newBlankButton();
-	_pHeaderHBoxLayout->addWidget(button);
-	_pHeaderHBoxLayout->addStretch();
+	_pInputsBoxHeaderLayout->addWidget(button);
+	_pInputsBoxHeaderLayout->addStretch();
 
 	/* -- -- -- */
 
