@@ -76,7 +76,7 @@ class GKeysTab
 
 		std::vector<QPushButton*> _buttonsSignalsToClear;
 
-		void disconnectAllKeysBoxButtons(void);
+		void clearKeysBoxLayout(void);
 		void clearInputsBoxHeaderLayout(void);
 
 		void setRadioButtonsEnabled(const bool status);

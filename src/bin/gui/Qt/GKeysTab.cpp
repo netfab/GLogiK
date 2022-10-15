@@ -181,9 +181,7 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 		if( (bank.size() % keysPerLine) != 0 )
 			throw GLogiKExcept("G-Keys modulo not null");
 
-		this->disconnectAllKeysBoxButtons();
-
-		this->clearLayout(_pKeysBoxLayout);
+		this->clearKeysBoxLayout();
 
 		try {
 			{	// initialize M-keys layout
@@ -496,7 +494,7 @@ void GKeysTab::switchGKeyEventType(DeviceProperties & device, const GKeysID GKey
 	}
 }
 
-void GKeysTab::disconnectAllKeysBoxButtons(void)
+void GKeysTab::clearKeysBoxLayout(void)
 {
 	GK_LOG_FUNC
 
@@ -507,6 +505,8 @@ void GKeysTab::disconnectAllKeysBoxButtons(void)
 		}
 	}
 	_buttonsSignalsToClear.clear();
+
+	this->clearLayout(_pKeysBoxLayout);
 }
 
 void GKeysTab::clearInputsBoxHeaderLayout(void)
