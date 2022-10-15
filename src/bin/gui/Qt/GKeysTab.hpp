@@ -22,11 +22,13 @@
 #ifndef SRC_BIN_GUI_QT_GKEYS_TAB_HPP_
 #define SRC_BIN_GUI_QT_GKEYS_TAB_HPP_
 
+#include <vector>
 #include <map>
 
 #include <QObject>
 #include <QString>
 #include <QLabel>
+#include <QComboBox>
 #include <QGroupBox>
 #include <QPushButton>
 #include <QHBoxLayout>
@@ -68,13 +70,20 @@ class GKeysTab
 		QHBoxLayout* _pHeaderHBoxLayout;
 
 		QLabel* _pHelpLabel;
+		QComboBox* _GKeyEventTypeComboBox;
 
 		MKeysID _currentBankID;
 
 		QString _helpLabel;
 
+		std::vector<QPushButton*> _buttonsSignalsToClear;
+
+		void disconnectAllKeysBoxButtons(void);
+		void clearInputsBoxHeaderLayout(void);
+
 		void setRadioButtonsEnabled(const bool status);
 		void updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID);
+		void switchGKeyEventType(DeviceProperties & device, const GKeysID GKeyID);
 
 		QPushButton* newGKeyButton(
 			const GKeysID GKeyID,

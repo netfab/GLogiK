@@ -53,6 +53,7 @@ GKeysTab::GKeysTab(
 		_pInputsBox(nullptr),
 		_pHeaderHBoxLayout(nullptr),
 		_pHelpLabel(nullptr),
+		_GKeyEventTypeComboBox(nullptr),
 		_currentBankID(MKeysID::MKEY_M0),
 		_helpLabel("Click on a G-Key and/or a M-Key")
 {
@@ -103,6 +104,7 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 		button->setFixedWidth(32);
 
 		QObject::connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateCurrentBankID, this, device, bankID) );
+		_buttonsSignalsToClear.push_back(button);
 
 		GKLog2(trace, "allocated M-Key QPushButton ", keyName.toStdString())
 		return button;
@@ -115,6 +117,7 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 
 		QPushButton* button = this->newGKeyButton(GKeyID, eventType, colorName);
 		QObject::connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateInputsBox, this, device, GKeyID) );
+		_buttonsSignalsToClear.push_back(button);
 		return button;
 	};
 
@@ -178,8 +181,9 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 		if( (bank.size() % keysPerLine) != 0 )
 			throw GLogiKExcept("G-Keys modulo not null");
 
-		QVBoxLayout* keysBoxLayout = static_cast<QVBoxLayout*>(_pKeysBox->layout());
+		this->disconnectAllKeysBoxButtons();
 
+		QVBoxLayout* keysBoxLayout = static_cast<QVBoxLayout*>(_pKeysBox->layout());
 		this->clearLayout(keysBoxLayout);
 
 		try {
@@ -328,7 +332,7 @@ void GKeysTab::buildTab(void)
 
 			this->prepareApplyButton();
 			hBox->addWidget(_pApplyButton);
-			//_pApplyButton->setEnabled(false);
+			_pApplyButton->setEnabled(false);
 
 			hBox->addSpacing(10);
 		}
@@ -359,6 +363,8 @@ QPushButton* GKeysTab::newGKeyButton(
 	const GKeyEventType eventType,
 	const QString & colorName)
 {
+	GK_LOG_FUNC
+
 	const QString buttonText(getGKeyName(GKeyID).c_str());
 
 	QPushButton* button = new QPushButton(buttonText);
@@ -384,6 +390,8 @@ QPushButton* GKeysTab::newGKeyButton(
 
 void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID)
 {
+	GK_LOG_FUNC
+
 	try {
 		const banksMap_type & banks = device.getBanks();
 		const mBank_type & bank = banks.at(_currentBankID);
@@ -400,21 +408,94 @@ void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GK
 		//_pHelpLabel->clear();
 		_pHelpLabel->setText("");
 
-		this->clearLayout(_pHeaderHBoxLayout);
+		this->clearInputsBoxHeaderLayout();
 
 		/* -- -- -- */
 
 		QPushButton* button = this->newGKeyButton(GKeyID, eventType, colorName);
 		button->setEnabled(false);
 
+		_GKeyEventTypeComboBox = new QComboBox();
+		GKLog(trace, "allocated QComboBox")
+		_GKeyEventTypeComboBox->setObjectName("GKeyEventTypeComboBox");
+
+		{
+			/* see QVariant::QVariant(uint val) constructor */
+			uint v = static_cast<unsigned int>(GKeyEventType::GKEY_INACTIVE);
+			const QVariant eType1(v);
+			v = static_cast<unsigned int>(GKeyEventType::GKEY_MACRO);
+			const QVariant eType2(v);
+
+			_GKeyEventTypeComboBox->addItem("inactive", eType1);
+			_GKeyEventTypeComboBox->addItem("macro", eType2);
+
+			if(eventType == GKeyEventType::GKEY_INACTIVE)
+				_GKeyEventTypeComboBox->setCurrentIndex(0);
+			if(eventType == GKeyEventType::GKEY_MACRO)
+				_GKeyEventTypeComboBox->setCurrentIndex(1);
+
+			_GKeyEventTypeComboBox->setEnabled(true);
+		}
+
 		_pHeaderHBoxLayout->addWidget(button);
+		_pHeaderHBoxLayout->addWidget(_GKeyEventTypeComboBox);
 		_pHeaderHBoxLayout->addStretch();
+
+		QObject::connect(
+			_GKeyEventTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+			std::bind(&GKeysTab::switchGKeyEventType, this, device, GKeyID)
+		);
 	}
 	catch (const std::bad_alloc& e) {
-		LOG(error) << "updateInputsBox: bad allocation detected: " << e.what();
+		LOG(error) << "bad allocation detected: " << e.what();
 	}
 	catch (const std::out_of_range& oor) {
-		LOG(error) << "updateInputsBox: out of range detected: " << oor.what();
+		LOG(error) << "out of range detected: " << oor.what();
+	}
+}
+
+void GKeysTab::switchGKeyEventType(DeviceProperties & device, const GKeysID GKeyID)
+{
+	GK_LOG_FUNC
+
+	try {
+		banksMap_type & banks = device.getBanks();
+		mBank_type & bank = banks.at(_currentBankID);
+
+		auto getDataEventType = [] (const QVariant & itemData) -> const GKeyEventType
+		{
+			bool ok = false;
+			const uint value = itemData.toUInt(&ok);
+			if(ok and value <= 255) {
+				if(value > (static_cast<unsigned int>(GKeyEventType::GKEY_MACRO))) {
+					throw GLogiKExcept("value greater than enum maximum");
+				}
+
+				return static_cast<GKeyEventType>(value);
+			}
+			throw GLogiKExcept("value greater than 255 or conversion failure");
+		};
+
+		try {
+			const int index = _GKeyEventTypeComboBox->currentIndex();
+			const QVariant data = _GKeyEventTypeComboBox->itemData(index).value<QVariant>();
+
+			GKLog2(trace, "GKey ComboBox index: ", index)
+
+			const GKeyEventType newEventType = getDataEventType(data);
+			mBank_type::iterator it = bank.find(GKeyID);
+			if(it == bank.end()) {
+				throw std::out_of_range("GKeyID not found");
+			}
+			GKeysEvent & event = it->second;
+			_pApplyButton->setEnabled( (event.getEventType() != newEventType) );
+		}
+		catch (const GLogiKExcept & e) {
+			LOG(error) << "error getting event type: " << e.what();
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(error) << "out of range detected: " << oor.what();
 	}
 }
 
@@ -441,15 +522,46 @@ void GKeysTab::setStubButtonText(const QString & buttonName, const QString & but
 	}
 }
 
+void GKeysTab::disconnectAllKeysBoxButtons(void)
+{
+	GK_LOG_FUNC
+
+	for(auto button : _buttonsSignalsToClear) {
+		if(button) {
+			GKLog2(trace, "disconnecting ::clicked signal for button: ", button->objectName().toStdString())
+			QObject::disconnect(button, nullptr, nullptr, nullptr);
+		}
+	}
+	_buttonsSignalsToClear.clear();
+}
+
+void GKeysTab::clearInputsBoxHeaderLayout(void)
+{
+	GK_LOG_FUNC
+
+	if(_GKeyEventTypeComboBox) {
+		GKLog(trace, "disconnecting GKeyEventTypeComboBox currentIndexChanged signal")
+		// make sure combobox's currentIndexChanged signal is disconnected
+		// before clearing layout and deleting widget
+		QObject::disconnect(_GKeyEventTypeComboBox, nullptr, nullptr, nullptr);
+	}
+
+	this->clearLayout(_pHeaderHBoxLayout);
+
+	_GKeyEventTypeComboBox = nullptr;
+}
+
 void GKeysTab::updateCurrentBankID(const DeviceProperties & device, const MKeysID bankID)
 {
+	GK_LOG_FUNC
+
 	_currentBankID = (_currentBankID == bankID) ? MKeysID::MKEY_M0 : bankID;
 
 	/* -- -- -- */
 
 	_pHelpLabel->setText(_helpLabel);
 
-	this->clearLayout(_pHeaderHBoxLayout);
+	this->clearInputsBoxHeaderLayout();
 
 	/* -- -- -- */
 
