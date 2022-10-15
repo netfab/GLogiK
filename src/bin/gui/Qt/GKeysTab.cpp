@@ -511,17 +511,6 @@ QPushButton* GKeysTab::findButtonIn(QObject* parentWidget, const QString & butto
 	return button;
 }
 
-void GKeysTab::setStubButtonText(const QString & buttonName, const QString & buttonText)
-{
-	QPushButton* button = this->findButtonIn(_pInputsBox, buttonName);
-	if(! button) {
-		GKLog(warning, "cannot find stub key")
-	}
-	else {
-		button->setText(buttonText);
-	}
-}
-
 void GKeysTab::disconnectAllKeysBoxButtons(void)
 {
 	GK_LOG_FUNC

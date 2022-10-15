@@ -93,7 +93,6 @@ class GKeysTab
 		QPushButton* newBlankButton(void);
 
 		QPushButton* findButtonIn(QObject* parentWidget, const QString & buttonName);
-		void setStubButtonText(const QString & buttonName, const QString & buttonText);
 		void updateCurrentBankID(
 			const DeviceProperties & device,
 			const MKeysID bankID
