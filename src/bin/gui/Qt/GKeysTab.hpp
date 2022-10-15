@@ -79,7 +79,6 @@ class GKeysTab
 		void clearKeysBoxLayout(void);
 		void clearInputsBoxHeaderLayout(void);
 
-		void setRadioButtonsEnabled(const bool status);
 		void updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID);
 		void switchGKeyEventType(DeviceProperties & device, const GKeysID GKeyID);
 
