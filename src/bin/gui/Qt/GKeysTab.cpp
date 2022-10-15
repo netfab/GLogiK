@@ -50,7 +50,6 @@ GKeysTab::GKeysTab(
 	NSGKDBus::GKDBus* pDBus,
 	const QString & name)
 	:	Tab(pDBus),
-		_pKeysBox(nullptr),
 		_pKeysBoxLayout(nullptr),
 		_pInputsBoxHeaderLayout(nullptr),
 		_pHelpLabel(nullptr),
@@ -258,17 +257,16 @@ void GKeysTab::buildTab(void)
 
 			/* -- -- -- */
 			{ // keysBox
-				_pKeysBox = new QGroupBox();
-				_pKeysBox->setTitle("");
-				_pKeysBox->setObjectName("keysBox"); // css ID
-				//_pKeysBox->setFlat(true);
+				QGroupBox* keysBox = new QGroupBox();
+				keysBox->setTitle("");
+				keysBox->setObjectName("keysBox"); // css ID
 
 				_pKeysBoxLayout = new QVBoxLayout();
 				_pKeysBoxLayout->setObjectName("KeysBoxLayout");
 
-				_pKeysBox->setLayout(_pKeysBoxLayout);
+				keysBox->setLayout(_pKeysBoxLayout);
 
-				hBox->addWidget(_pKeysBox);
+				hBox->addWidget(keysBox);
 				GKLog(trace, "keysBox added")
 			}
 
