@@ -499,18 +499,6 @@ void GKeysTab::switchGKeyEventType(DeviceProperties & device, const GKeysID GKey
 	}
 }
 
-QPushButton* GKeysTab::findButtonIn(QObject* parentWidget, const QString & buttonName)
-{
-	QPushButton* button = nullptr;
-	if(! parentWidget) {
-		GKLog(error, "null parent widget")
-	}
-	else {
-		button = parentWidget->findChild<QPushButton *>(buttonName);
-	}
-	return button;
-}
-
 void GKeysTab::disconnectAllKeysBoxButtons(void)
 {
 	GK_LOG_FUNC
