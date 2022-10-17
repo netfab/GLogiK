@@ -31,6 +31,7 @@
 #include <QLayoutItem>
 #include <QSpacerItem>
 #include <QRadioButton>
+#include <QStandardItemModel>
 
 #include "GKeysTab.hpp"
 
@@ -103,7 +104,7 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 		button->setObjectName(keyName);
 		button->setFixedWidth(32);
 
-		QObject::connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateCurrentBankID, this, device, bankID) );
+		QObject::connect( button, &QPushButton::clicked, std::bind(&GKeysTab::switchCurrentBankID, this, device, bankID) );
 		_buttonsSignalsToClear.push_back(button);
 
 		GKLog2(trace, "allocated M-Key QPushButton ", keyName.toStdString())
@@ -294,7 +295,6 @@ void GKeysTab::buildTab(void)
 
 					QPushButton* button = this->newBlankButton();
 					_pInputsBoxHeaderLayout->addWidget(button);
-
 					_pInputsBoxHeaderLayout->addStretch();
 
 					GKLog(trace, "inputsBox header added")
@@ -390,7 +390,8 @@ void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GK
 	try {
 		const banksMap_type & banks = device.getBanks();
 		const mBank_type & bank = banks.at(_currentBankID);
-		const GKeyEventType eventType = bank.at(GKeyID).getEventType();
+		const GKeysEvent & event = bank.at(GKeyID);
+		const GKeyEventType eventType = event.getEventType();
 
 		uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 		const QColor color(r, g, b);
@@ -424,10 +425,30 @@ void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GK
 			_GKeyEventTypeComboBox->addItem("inactive", eType1);
 			_GKeyEventTypeComboBox->addItem("macro", eType2);
 
-			if(eventType == GKeyEventType::GKEY_INACTIVE)
+			GKeyEventType itemEventType = eventType;
+			const bool emptyMacro = event.getMacro().empty();
+
+			if(emptyMacro) {
+				QStandardItemModel* model = qobject_cast<QStandardItemModel*>(_GKeyEventTypeComboBox->model());
+				if(model == nullptr)
+					throw GLogiKExcept("can't get QStandardItemModel pointer");
+
+				QStandardItem *item = model->item(1);
+				/* disabling combobox item since macro is empty */
+				item->setFlags( item->flags() & ~Qt::ItemIsEnabled );
+			}
+
+			if(itemEventType == GKeyEventType::GKEY_MACRO) {
+				if(emptyMacro) { // sanity check
+					LOG(warning) << "empty macro event";
+					itemEventType = GKeyEventType::GKEY_INACTIVE;
+				}
+				else
+					_GKeyEventTypeComboBox->setCurrentIndex(1);
+			}
+
+			if(itemEventType == GKeyEventType::GKEY_INACTIVE)
 				_GKeyEventTypeComboBox->setCurrentIndex(0);
-			if(eventType == GKeyEventType::GKEY_MACRO)
-				_GKeyEventTypeComboBox->setCurrentIndex(1);
 
 			_GKeyEventTypeComboBox->setEnabled(true);
 		}
@@ -447,16 +468,16 @@ void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GK
 	catch (const std::out_of_range& oor) {
 		LOG(error) << "out of range detected: " << oor.what();
 	}
+	catch (const GLogiKExcept & e) {
+		LOG(error) << e.what();
+	}
 }
 
-void GKeysTab::switchGKeyEventType(DeviceProperties & device, const GKeysID GKeyID)
+void GKeysTab::switchGKeyEventType(const DeviceProperties & device, const GKeysID GKeyID)
 {
 	GK_LOG_FUNC
 
 	try {
-		banksMap_type & banks = device.getBanks();
-		mBank_type & bank = banks.at(_currentBankID);
-
 		auto getDataEventType = [] (const QVariant & itemData) -> const GKeyEventType
 		{
 			bool ok = false;
@@ -471,26 +492,24 @@ void GKeysTab::switchGKeyEventType(DeviceProperties & device, const GKeysID GKey
 			throw GLogiKExcept("value greater than 255 or conversion failure");
 		};
 
-		try {
-			const int index = _GKeyEventTypeComboBox->currentIndex();
-			const QVariant data = _GKeyEventTypeComboBox->itemData(index).value<QVariant>();
+		const int index = _GKeyEventTypeComboBox->currentIndex();
+		const QVariant data = _GKeyEventTypeComboBox->itemData(index).value<QVariant>();
 
-			GKLog2(trace, "GKey ComboBox index: ", index)
+		GKLog2(trace, "GKey ComboBox index: ", index)
 
-			const GKeyEventType newEventType = getDataEventType(data);
-			mBank_type::iterator it = bank.find(GKeyID);
-			if(it == bank.end()) {
-				throw std::out_of_range("GKeyID not found");
-			}
-			GKeysEvent & event = it->second;
-			_pApplyButton->setEnabled( (event.getEventType() != newEventType) );
-		}
-		catch (const GLogiKExcept & e) {
-			LOG(error) << "error getting event type: " << e.what();
-		}
+		const GKeyEventType newEventType = getDataEventType(data);
+
+		const banksMap_type & banks = device.getBanks();
+		const mBank_type & bank = banks.at(_currentBankID);
+		const GKeysEvent & event = bank.at(GKeyID);
+
+		_pApplyButton->setEnabled( (event.getEventType() != newEventType) );
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(error) << "out of range detected: " << oor.what();
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(error) << "error getting event type: " << e.what();
 	}
 }
 
@@ -525,7 +544,7 @@ void GKeysTab::clearInputsBoxHeaderLayout(void)
 	_GKeyEventTypeComboBox = nullptr;
 }
 
-void GKeysTab::updateCurrentBankID(const DeviceProperties & device, const MKeysID bankID)
+void GKeysTab::switchCurrentBankID(const DeviceProperties & device, const MKeysID bankID)
 {
 	GK_LOG_FUNC
 

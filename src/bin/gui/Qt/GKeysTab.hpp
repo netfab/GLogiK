@@ -80,7 +80,8 @@ class GKeysTab
 		void clearInputsBoxHeaderLayout(void);
 
 		void updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID);
-		void switchGKeyEventType(DeviceProperties & device, const GKeysID GKeyID);
+		void switchGKeyEventType(const DeviceProperties & device, const GKeysID GKeyID);
+		void switchCurrentBankID(const DeviceProperties & device, const MKeysID bankID);
 
 		QPushButton* newGKeyButton(
 			const GKeysID GKeyID,
@@ -88,11 +89,6 @@ class GKeysTab
 			const QString & colorName = "#RRGGBB"
 		);
 		QPushButton* newBlankButton(void);
-
-		void updateCurrentBankID(
-			const DeviceProperties & device,
-			const MKeysID bankID
-		);
 
 		static const std::map<const MKeysID, c_str> bankNames;
 };
