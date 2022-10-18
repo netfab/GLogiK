@@ -56,8 +56,7 @@ class GKeysTab
 
 		void buildTab(void);
 		void updateTab(
-			const DeviceProperties & device,
-			const bool resetCurrentBankID = false
+			const DeviceProperties & device
 		);
 
 

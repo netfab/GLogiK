@@ -65,7 +65,7 @@ GKeysTab::~GKeysTab()
 {
 }
 
-void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurrentBankID)
+void GKeysTab::updateTab(const DeviceProperties & device)
 {
 	GK_LOG_FUNC
 
@@ -166,9 +166,6 @@ void GKeysTab::updateTab(const DeviceProperties & device, const bool resetCurren
 	};
 
 	/* -- -- -- */
-
-	if( resetCurrentBankID )
-		_currentBankID = MKeysID::MKEY_M0;
 
 	try {
 		const banksMap_type & banks = device.getBanks();
