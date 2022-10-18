@@ -168,6 +168,21 @@ void GKeysTab::updateTab(const DeviceProperties & device)
 	/* -- -- -- */
 
 	try {
+		{ // resetting right panel
+			_pHelpLabel->setText(_helpLabel);
+
+			this->clearInputsBoxHeaderLayout();
+
+			/* -- -- -- */
+
+			QPushButton* button = this->newBlankButton();
+			_pInputsBoxHeaderLayout->addWidget(button);
+			_pInputsBoxHeaderLayout->addStretch();
+		} //
+
+		/* -- -- -- */
+		// redrawing left panel
+
 		const banksMap_type & banks = device.getBanks();
 		const mBank_type & bank = banks.at(_currentBankID);
 
@@ -289,10 +304,6 @@ void GKeysTab::buildTab(void)
 				{ // header
 					_pInputsBoxHeaderLayout = new QHBoxLayout();
 					inputsBoxLayout->addLayout(_pInputsBoxHeaderLayout);
-
-					QPushButton* button = this->newBlankButton();
-					_pInputsBoxHeaderLayout->addWidget(button);
-					_pInputsBoxHeaderLayout->addStretch();
 
 					GKLog(trace, "inputsBox header added")
 				}
@@ -546,20 +557,6 @@ void GKeysTab::switchCurrentBankID(const DeviceProperties & device, const MKeysI
 	GK_LOG_FUNC
 
 	_currentBankID = (_currentBankID == bankID) ? MKeysID::MKEY_M0 : bankID;
-
-	/* -- -- -- */
-
-	_pHelpLabel->setText(_helpLabel);
-
-	this->clearInputsBoxHeaderLayout();
-
-	/* -- -- -- */
-
-	QPushButton* button = this->newBlankButton();
-	_pInputsBoxHeaderLayout->addWidget(button);
-	_pInputsBoxHeaderLayout->addStretch();
-
-	/* -- -- -- */
 
 	this->updateTab(device);
 }
