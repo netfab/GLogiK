@@ -55,10 +55,7 @@ class GKeysTab
 		~GKeysTab();
 
 		void buildTab(void);
-		void updateTab(
-			const DeviceProperties & device
-		);
-
+		void updateTab(const DeviceProperties & device, const MKeysID bankID);
 
 	private:
 		GKeysTab() = delete;
@@ -75,19 +72,20 @@ class GKeysTab
 
 		std::vector<QPushButton*> _buttonsSignalsToClear;
 
-		void clearKeysBoxLayout(void);
-		void clearInputsBoxHeaderLayout(void);
-
-		void updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID);
-		void switchGKeyEventType(const DeviceProperties & device, const GKeysID GKeyID);
-		void switchCurrentBankID(const DeviceProperties & device, const MKeysID bankID);
-
+		QPushButton* newBlankButton(void);
 		QPushButton* newGKeyButton(
 			const GKeysID GKeyID,
 			const GKeyEventType eventType,
 			const QString & colorName = "#RRGGBB"
 		);
-		QPushButton* newBlankButton(void);
+
+		void clearInputsBoxHeaderLayout(void);
+		void clearKeysBoxLayout(void);
+
+		void updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID);
+		void switchGKeyEventType(const DeviceProperties & device, const GKeysID GKeyID);
+
+		void redrawTab(const DeviceProperties & device);
 
 		static const std::map<const MKeysID, c_str> bankNames;
 };
