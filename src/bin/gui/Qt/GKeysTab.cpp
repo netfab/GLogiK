@@ -179,7 +179,15 @@ void GKeysTab::updateTab(const DeviceProperties & device, const MKeysID bankID)
 	_updateGKeyEvent = false;
 	_pApplyButton->setEnabled(false);
 
-	this->redrawTab(device);
+	/* exceptions can be thrown from QPushButton::clicked events
+	 * see newMButton() lambda in ::redrawTab()
+	 */
+	try {
+		this->redrawTab(device);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(error) << "redrawing tab failure: " << e.what();
+	}
 }
 
 void GKeysTab::getGKeyEventParams(MKeysID & bankID, GKeysID & keyID, GKeyEventType & eventType)
