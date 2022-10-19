@@ -315,6 +315,8 @@ void MainWindow::build(void)
 			 std::bind(&MainWindow::saveConfigurationFileAndUpdateInterface, this, TabApplyButton::TAB_BACKLIGHT) );
 	QObject::connect( _LCDPluginsTab->getApplyButton(), &QPushButton::clicked,
 			 std::bind(&MainWindow::saveConfigurationFileAndUpdateInterface, this, TabApplyButton::TAB_LCD_PLUGINS) );
+	QObject::connect( _GKeysTab->getApplyButton(), &QPushButton::clicked,
+			 std::bind(&MainWindow::saveConfigurationFileAndUpdateInterface, this, TabApplyButton::TAB_GKEYS) );
 
 	GKLog(trace, "Qt signals connected to slots")
 
@@ -481,6 +483,29 @@ void MainWindow::saveConfigurationFile(const TabApplyButton tab)
 		dosave = true;
 
 		GKLog(trace, "LCD plugins mask updated")
+	}
+	else if( tab == TabApplyButton::TAB_GKEYS ) {
+		MKeysID bankID;
+		GKeysID keyID;
+		GKeyEventType eventType;
+		try {
+			_GKeysTab->getGKeyEventParams(bankID, keyID, eventType);
+
+			banksMap_type & banks = _openedConfigurationFile.getBanks();
+			mBank_type & bank = banks.at(bankID);
+			GKeysEvent & event = bank.at(keyID);
+
+			event.setEventType(eventType);
+			dosave = true;
+
+			GKLog(trace, "GKeys updated")
+		}
+		catch (const GLogiKExcept & e) {
+			LOG(error) << "can't get GKeyEvent parameters " << e.what();
+		}
+		catch (const std::out_of_range& oor) {
+			LOG(error) << "out of range detected: " << oor.what();
+		}
 	}
 
 	if(dosave) {

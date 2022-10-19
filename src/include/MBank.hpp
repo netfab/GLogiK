@@ -49,6 +49,7 @@ class GKeysEvent {
 		}
 
 		const GKeyEventType getEventType(void) const { return _GKeyEventType; }
+		void setEventType(const GKeyEventType eventType) { _GKeyEventType = eventType; }
 
 		void clearMacro(void) {
 			_GKeyMacro.clear();

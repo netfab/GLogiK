@@ -56,7 +56,8 @@ GKeysTab::GKeysTab(
 		_pHelpLabel(nullptr),
 		_GKeyEventTypeComboBox(nullptr),
 		_currentBankID(MKeysID::MKEY_M0),
-		_helpLabel("Click on a G-Key and/or a M-Key")
+		_helpLabel("Click on a G-Key and/or a M-Key"),
+		_updateGKeyEvent(false)
 {
 	this->setObjectName(name);
 }
@@ -175,7 +176,21 @@ void GKeysTab::updateTab(const DeviceProperties & device, const MKeysID bankID)
 
 	_currentBankID = (_currentBankID == bankID) ? MKeysID::MKEY_M0 : bankID;
 
+	_updateGKeyEvent = false;
+	_pApplyButton->setEnabled(false);
+
 	this->redrawTab(device);
+}
+
+void GKeysTab::getGKeyEventParams(MKeysID & bankID, GKeysID & keyID, GKeyEventType & eventType)
+{
+	if(! _updateGKeyEvent)
+		throw GLogiKExcept("internal logic error");
+
+	bankID = _currentBankID;
+	keyID  = _currentGKeyID;
+	eventType = _newEventType;
+	_updateGKeyEvent = false;
 }
 
 /*
@@ -258,6 +273,8 @@ void GKeysTab::clearKeysBoxLayout(void)
 void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID)
 {
 	GK_LOG_FUNC
+
+	_updateGKeyEvent = false;
 
 	try {
 		const banksMap_type & banks = device.getBanks();
@@ -365,17 +382,18 @@ void GKeysTab::switchGKeyEventType(const DeviceProperties & device, const GKeysI
 		};
 
 		const int index = _GKeyEventTypeComboBox->currentIndex();
-		const QVariant data = _GKeyEventTypeComboBox->itemData(index).value<QVariant>();
-
 		GKLog2(trace, "GKey ComboBox index: ", index)
-
-		const GKeyEventType newEventType = getDataEventType(data);
 
 		const banksMap_type & banks = device.getBanks();
 		const mBank_type & bank = banks.at(_currentBankID);
 		const GKeysEvent & event = bank.at(GKeyID);
+		const QVariant data = _GKeyEventTypeComboBox->itemData(index).value<QVariant>();
 
-		_pApplyButton->setEnabled( (event.getEventType() != newEventType) );
+		_newEventType = getDataEventType(data);
+		_currentGKeyID = GKeyID;
+
+		_updateGKeyEvent = true;
+		_pApplyButton->setEnabled( (event.getEventType() != _newEventType) );
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(error) << "out of range detected: " << oor.what();

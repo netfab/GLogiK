@@ -56,6 +56,7 @@ class GKeysTab
 
 		void buildTab(void);
 		void updateTab(const DeviceProperties & device, const MKeysID bankID);
+		void getGKeyEventParams(MKeysID & bankID, GKeysID & keyID, GKeyEventType & eventType);
 
 	private:
 		GKeysTab() = delete;
@@ -67,10 +68,14 @@ class GKeysTab
 		QComboBox* _GKeyEventTypeComboBox;
 
 		MKeysID _currentBankID;
+		GKeysID _currentGKeyID;
+		GKeyEventType _newEventType;
 
 		QString _helpLabel;
 
 		std::vector<QPushButton*> _buttonsSignalsToClear;
+
+		bool _updateGKeyEvent;
 
 		QPushButton* newBlankButton(void);
 		QPushButton* newGKeyButton(
