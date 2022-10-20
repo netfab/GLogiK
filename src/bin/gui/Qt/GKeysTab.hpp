@@ -77,6 +77,8 @@ class GKeysTab
 
 		bool _updateGKeyEvent;
 
+		void setApplyButtonStatus(const bool status);
+
 		QPushButton* newBlankButton(void);
 		QPushButton* newGKeyButton(
 			const GKeysID GKeyID,

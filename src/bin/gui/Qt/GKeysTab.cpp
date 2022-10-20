@@ -176,8 +176,7 @@ void GKeysTab::updateTab(const DeviceProperties & device, const MKeysID bankID)
 
 	_currentBankID = (_currentBankID == bankID) ? MKeysID::MKEY_M0 : bankID;
 
-	_updateGKeyEvent = false;
-	_pApplyButton->setEnabled(false);
+	this->setApplyButtonStatus(false);
 
 	/* exceptions can be thrown from QPushButton::clicked events
 	 * see newMButton() lambda in ::redrawTab()
@@ -198,12 +197,19 @@ void GKeysTab::getGKeyEventParams(MKeysID & bankID, GKeysID & keyID, GKeyEventTy
 	bankID = _currentBankID;
 	keyID  = _currentGKeyID;
 	eventType = _newEventType;
-	_updateGKeyEvent = false;
+
+	this->setApplyButtonStatus(false);
 }
 
 /*
  * -- private
  */
+
+void GKeysTab::setApplyButtonStatus(const bool status)
+{
+	_updateGKeyEvent = status;
+	_pApplyButton->setEnabled(status);
+}
 
 QPushButton* GKeysTab::newBlankButton(void)
 {
@@ -282,7 +288,7 @@ void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GK
 {
 	GK_LOG_FUNC
 
-	_updateGKeyEvent = false;
+	this->setApplyButtonStatus(false);
 
 	try {
 		const banksMap_type & banks = device.getBanks();
@@ -400,8 +406,7 @@ void GKeysTab::switchGKeyEventType(const DeviceProperties & device, const GKeysI
 		_newEventType = getDataEventType(data);
 		_currentGKeyID = GKeyID;
 
-		_updateGKeyEvent = true;
-		_pApplyButton->setEnabled( (event.getEventType() != _newEventType) );
+		this->setApplyButtonStatus( (event.getEventType() != _newEventType) );
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(error) << "out of range detected: " << oor.what();
