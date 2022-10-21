@@ -45,12 +45,6 @@ class GKeysEventManager
 			const GKeysID keyID
 		);
 
-		void runMacro(
-			const banksMap_type & GKeysBanks,
-			const MKeysID bankID,
-			const GKeysID keyID
-		);
-
 		void setMacro(
 			banksMap_type & GKeysBanks,
 			macro_type macro,

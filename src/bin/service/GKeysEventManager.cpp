@@ -85,48 +85,6 @@ void GKeysEventManager::runEvent(
 
 }
 
-/* run a macro on the virtual keyboard */
-void GKeysEventManager::runMacro(
-	const banksMap_type & GKeysBanks,
-	const MKeysID bankID,
-	const GKeysID keyID)
-{
-	GK_LOG_FUNC
-
-	if(keyID == GKeyID_INV) {
-		LOG(error) << "invalid GKeyID";
-		return;
-	}
-
-	try {
-		const macro_type & macro = this->getMacro(GKeysBanks, bankID, keyID);
-		if(macro.size() == 0) {
-#if DEBUGGING_ON
-			if(GKLogging::GKDebug) {
-				LOG(trace)	<< "MBank: " << bankID
-							<< " - GKey: " << getGKeyName(keyID)
-							<< " - no macro recorded";
-			}
-#endif
-			return;
-		}
-
-#if DEBUGGING_ON
-		if(GKLogging::GKDebug) {
-			LOG(trace)	<< "MBank: " << bankID
-						<< " - GKey: " << getGKeyName(keyID)
-						<< " - running macro";
-		}
-#endif
-		for(const auto & key : macro) {
-			_virtualKeyboard.sendKeyEvent(key);
-		}
-	}
-	catch (const GLogiKExcept & e) {
-		LOG(warning) << "macro key container not found";
-	}
-}
-
 void GKeysEventManager::setMacro(
 	banksMap_type & GKeysBanks,
 	macro_type macro,
