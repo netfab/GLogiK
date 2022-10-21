@@ -103,36 +103,6 @@ void GKeysEventManager::setMacro(
 	this->setMacro(GKeysBanks, bankID, keyID, macro);
 }
 
-const macro_type & GKeysEventManager::getMacro(
-	const banksMap_type & GKeysBanks,
-	const MKeysID bankID,
-	const GKeysID keyID)
-{
-	GK_LOG_FUNC
-
-	if(keyID == GKeyID_INV) {
-		LOG(error) << "invalid GKeyID";
-		throw GLogiKExcept("get macro failed");
-	}
-
-	try {
-		const mBank_type & bank = GKeysBanks.at(bankID);
-		try {
-			return bank.at(keyID).getMacro();
-		}
-		catch(const std::out_of_range& oor) {
-			LOG(warning) << "wrong GKeyID: " << keyID;
-			throw GLogiKExcept("get macro failed");
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(warning) << "wrong bankID: " << bankID;
-		throw GLogiKExcept("get macro failed");
-	}
-
-	return GKeysMacro::emptyMacro;
-}
-
 /* return true if macro was not empty and has been cleared */
 const bool GKeysEventManager::clearMacro(
 	banksMap_type & GKeysBanks,
