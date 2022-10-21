@@ -1242,10 +1242,10 @@ void DBusHandler::deviceGKeyEvent(const std::string & devID, const GKeysID keyID
 		MKeysID bankID;
 		banksMap_type & banksMap = _devices.getDeviceBanks(devID, bankID);
 
-		_GKeysEvent.runMacro(banksMap, bankID, keyID);
+		_GKeysEvent.runEvent(banksMap, bankID, keyID);
 	}
 	catch (const GLogiKExcept & e) {
-		LOG(error) << devID << " run macro failure - " << keyID;
+		LOG(error) << devID << " run event failure - " << keyID;
 	}
 };
 

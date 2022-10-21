@@ -39,6 +39,52 @@ GKeysEventManager::~GKeysEventManager(void)
 {
 }
 
+void GKeysEventManager::runEvent(
+	const banksMap_type & GKeysBanks,
+	const MKeysID bankID,
+	const GKeysID keyID)
+{
+	GK_LOG_FUNC
+
+	if(keyID == GKeyID_INV) {
+		LOG(error) << "invalid GKeyID";
+		return;
+	}
+
+	try {
+		const mBank_type & bank = GKeysBanks.at(bankID);
+		try {
+			const GKeysEvent & event = bank.at(keyID);
+			GKLog4(trace, "MBank: ", bankID, "GKey: ", getGKeyName(keyID))
+
+			if(event.getEventType() == GKeyEventType::GKEY_INACTIVE) {
+				GKLog(trace, "inactive event")
+			}
+			else if(event.getEventType() == GKeyEventType::GKEY_MACRO) {
+				const macro_type & macro = event.getMacro();
+				if( macro.empty() ) {
+					GKLog(trace, "empty macro")
+					return;
+				}
+
+				GKLog(trace, "running macro")
+				for(const auto & key : macro) {
+					_virtualKeyboard.sendKeyEvent(key);
+				}
+			}
+		}
+		catch(const std::out_of_range& oor) {
+			LOG(warning) << "wrong GKeyID: " << keyID;
+			throw GLogiKExcept("run event failed");
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(warning) << "wrong bankID: " << bankID;
+		throw GLogiKExcept("run event failed");
+	}
+
+}
+
 /* run a macro on the virtual keyboard */
 void GKeysEventManager::runMacro(
 	const banksMap_type & GKeysBanks,

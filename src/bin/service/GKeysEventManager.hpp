@@ -39,6 +39,12 @@ class GKeysEventManager
 		GKeysEventManager(void);
 		~GKeysEventManager(void);
 
+		void runEvent(
+			const banksMap_type & GKeysBanks,
+			const MKeysID bankID,
+			const GKeysID keyID
+		);
+
 		void runMacro(
 			const banksMap_type & GKeysBanks,
 			const MKeysID bankID,
