@@ -24,6 +24,8 @@
 
 #include "base.hpp"
 
+#include <string>
+
 namespace GLogiK
 {
 
@@ -33,16 +35,20 @@ enum class GKeyEventType : uint8_t
 	GKEY_MACRO,
 };
 
-class GKeysEvent {
+class GKeysEvent
+{
 	public:
 		GKeysEvent(void) :
-			_GKeyEventType(GKeyEventType::GKEY_INACTIVE),
-			_GKeyMacro({})
-		{}
+			_GKeyMacro({}),
+			_GKeyCommand(""),
+			_GKeyEventType(GKeyEventType::GKEY_INACTIVE)
+		{
+		}
 
 		GKeysEvent(const macro_type & macro) :
-			_GKeyEventType(GKeyEventType::GKEY_MACRO),
-			_GKeyMacro(macro)
+			_GKeyMacro(macro),
+			_GKeyCommand(""),
+			_GKeyEventType(GKeyEventType::GKEY_MACRO)
 		{
 			if( macro.empty() )
 				_GKeyEventType = GKeyEventType::GKEY_INACTIVE;
@@ -58,8 +64,9 @@ class GKeysEvent {
 		const macro_type & getMacro(void) const { return _GKeyMacro; }
 
 	private:
-		GKeyEventType _GKeyEventType;
 		macro_type _GKeyMacro;
+		std::string _GKeyCommand;
+		GKeyEventType _GKeyEventType;
 
 		friend class boost::serialization::access;
 
@@ -68,6 +75,7 @@ class GKeysEvent {
 		{
 			ar & _GKeyEventType;
 			ar & _GKeyMacro;
+			ar & _GKeyCommand;
 		}
 };
 
