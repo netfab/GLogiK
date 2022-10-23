@@ -25,7 +25,6 @@
 #include <vector>
 #include <map>
 
-#include <QObject>
 #include <QString>
 #include <QLabel>
 #include <QComboBox>

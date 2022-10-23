@@ -24,13 +24,9 @@
 #include <QColor>
 #include <QVariant>
 #include <QLabel>
-#include <QList>
 #include <QGroupBox>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QLayoutItem>
-#include <QSpacerItem>
-#include <QRadioButton>
 #include <QStandardItemModel>
 
 #include "GKeysTab.hpp"

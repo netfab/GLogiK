@@ -21,6 +21,9 @@
 
 #include <string>
 
+#include <QLayoutItem>
+#include <QSpacerItem>
+
 #include "lib/utils/utils.hpp"
 
 #include "Tab.hpp"
