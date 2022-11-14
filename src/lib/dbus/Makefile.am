@@ -35,8 +35,6 @@ libGKDBus_la_SOURCES = \
 	%D%/arguments/GKDBusArgMKeysIDArray.hpp \
 	%D%/arguments/GKDBusArgMacro.cpp \
 	%D%/arguments/GKDBusArgMacro.hpp \
-	%D%/arguments/GKDBusArgMacrosBank.cpp \
-	%D%/arguments/GKDBusArgMacrosBank.hpp \
 	%D%/arguments/GKDBusArgDevicesMap.cpp \
 	%D%/arguments/GKDBusArgDevicesMap.hpp \
 	%D%/arguments/GKDBusArgLCDPluginsArray.cpp \

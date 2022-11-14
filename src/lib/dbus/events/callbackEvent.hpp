@@ -37,7 +37,6 @@
 #include "lib/dbus/arguments/GKDBusArgGKeysID.hpp"
 #include "lib/dbus/arguments/GKDBusArgMKeysID.hpp"
 #include "lib/dbus/arguments/GKDBusArgMacro.hpp"
-#include "lib/dbus/arguments/GKDBusArgMacrosBank.hpp"
 
 namespace NSGKDBus
 {
@@ -54,8 +53,7 @@ template <typename T>
 			virtual private GKDBusArgumentUInt64,
 			virtual private GKDBusArgumentGKeysID,
 			private GKDBusArgumentMKeysID,
-			virtual private GKDBusArgumentMacro,
-			private GKDBusArgumentMacrosBank
+			virtual private GKDBusArgumentMacro
 {
 	public:
 		callbackEvent(

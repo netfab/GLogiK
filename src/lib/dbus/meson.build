@@ -22,8 +22,6 @@ GKDBus_sources = [
 	'arguments/GKDBusArgMKeysIDArray.hpp',
 	'arguments/GKDBusArgMacro.cpp',
 	'arguments/GKDBusArgMacro.hpp',
-	'arguments/GKDBusArgMacrosBank.cpp',
-	'arguments/GKDBusArgMacrosBank.hpp',
 	'arguments/GKDBusArgDevicesMap.cpp',
 	'arguments/GKDBusArgDevicesMap.hpp',
 	'arguments/GKDBusArgLCDPluginsArray.cpp',
