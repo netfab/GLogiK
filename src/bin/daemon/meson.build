@@ -16,12 +16,8 @@ GLogiKd_sources = [
 	'USBDevice.hpp',
 	'USBDeviceID.cpp',
 	'USBDeviceID.hpp',
-	'virtualKeyboard.cpp',
-	'virtualKeyboard.hpp',
 	'logitechG510.cpp',
 	'logitechG510.hpp',
-	'macrosManager.cpp',
-	'macrosManager.hpp',
 	'LCDScreenPluginsManager.cpp',
 	'LCDScreenPluginsManager.hpp',
 ]
@@ -87,7 +83,6 @@ endif
 #! ----------
 
 libudev_dep = dependency('libudev')
-libevdev_dep = dependency('libevdev')
 
 #! ----------
 
@@ -126,7 +121,6 @@ executable(
 	boost_filesystem_dep,
 	boost_program_options_dep,
 	libudev_dep,
-	libevdev_dep,
 	libusb_dep,
 	hidapi_dep,
 	GKUtils_lib_dep,

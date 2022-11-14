@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -136,6 +136,92 @@ void GKDBusMessage::appendUInt64(const uint64_t value)
 	this->appendUInt64(&_itMessage, value);
 }
 
+void GKDBusMessage::appendGKeysID(const GLogiK::GKeysID keyID)
+{
+	const uint8_t value = toEnumType(keyID);
+	this->appendUInt8(value);
+}
+
+void GKDBusMessage::appendMKeysID(const GLogiK::MKeysID keyID)
+{
+	const uint8_t value = toEnumType(keyID);
+	this->appendUInt8(value);
+}
+
+void GKDBusMessage::appendGKeysIDArray(const GLogiK::GKeysIDArray_type & keysID)
+{
+	GK_LOG_FUNC
+
+	DBusMessageIter itContainer;
+
+	const uint8_t size = keysID.size();
+	this->appendUInt8(size);
+
+	if( ! dbus_message_iter_open_container(&_itMessage, DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &itContainer) ) {
+		_hosedMessage = true;
+		LOG(error) << "GKeysID array open_container failure, not enough memory";
+		throw GKDBusMessageWrongBuild(_appendFailure);
+	}
+
+	for(const GLogiK::GKeysID keyID : keysID) {
+		const uint8_t value = toEnumType(keyID);
+		if( ! dbus_message_iter_append_basic(&itContainer, DBUS_TYPE_BYTE, &value) ) {
+			LOG(error) << "GKeysID array append_basic failure, not enough memory";
+			_hosedMessage = true;
+			dbus_message_iter_abandon_container(&_itMessage, &itContainer);
+			throw GKDBusMessageWrongBuild(_appendFailure);
+		}
+	}
+
+	if( ! dbus_message_iter_close_container(&_itMessage, &itContainer) ) {
+		LOG(error) << "GKeysID array close_container failure, not enough memory";
+		_hosedMessage = true;
+		dbus_message_iter_abandon_container(&_itMessage, &itContainer);
+		throw GKDBusMessageWrongBuild(_appendFailure);
+	}
+
+#if DEBUG_GKDBUS_SUBOBJECTS
+	GKLog(trace, "GKeysID array appended")
+#endif
+}
+
+void GKDBusMessage::appendMKeysIDArray(const GLogiK::MKeysIDArray_type & keysID)
+{
+	GK_LOG_FUNC
+
+	DBusMessageIter itContainer;
+
+	const uint8_t size = keysID.size();
+	this->appendUInt8(size);
+
+	if( ! dbus_message_iter_open_container(&_itMessage, DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &itContainer) ) {
+		_hosedMessage = true;
+		LOG(error) << "GKeysID array open_container failure, not enough memory";
+		throw GKDBusMessageWrongBuild(_appendFailure);
+	}
+
+	for(const GLogiK::MKeysID keyID : keysID) {
+		const uint8_t value = toEnumType(keyID);
+		if( ! dbus_message_iter_append_basic(&itContainer, DBUS_TYPE_BYTE, &value) ) {
+			LOG(error) << "MKeysID array append_basic failure, not enough memory";
+			_hosedMessage = true;
+			dbus_message_iter_abandon_container(&_itMessage, &itContainer);
+			throw GKDBusMessageWrongBuild(_appendFailure);
+		}
+	}
+
+	if( ! dbus_message_iter_close_container(&_itMessage, &itContainer) ) {
+		LOG(error) << "MKeysID array close_container failure, not enough memory";
+		_hosedMessage = true;
+		dbus_message_iter_abandon_container(&_itMessage, &itContainer);
+		throw GKDBusMessageWrongBuild(_appendFailure);
+	}
+
+#if DEBUG_GKDBUS_SUBOBJECTS
+	GKLog(trace, "MKeysID array appended")
+#endif
+}
+
 void GKDBusMessage::appendMacro(const GLogiK::macro_type & macro)
 {
 	this->appendMacro(&_itMessage, macro);
@@ -147,9 +233,10 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::mBank_type & bank)
 
 	DBusMessageIter itArray;
 
+	// signature = (yya(yyq))
 	const char array_sig[] = \
 		DBUS_STRUCT_BEGIN_CHAR_AS_STRING\
-		DBUS_TYPE_STRING_AS_STRING\
+		DBUS_TYPE_BYTE_AS_STRING\
 		DBUS_TYPE_BYTE_AS_STRING\
 		DBUS_TYPE_ARRAY_AS_STRING\
 		DBUS_STRUCT_BEGIN_CHAR_AS_STRING\
@@ -182,9 +269,9 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::mBank_type & bank)
 	*/
 
 	try {
-		for(const auto & keyMacroPair : bank) {
-			const std::string & key = keyMacroPair.first;
-			const GLogiK::macro_type & macro = keyMacroPair.second;
+		for(const auto & keyEventPair : bank) {
+			const uint8_t key = toEnumType(keyEventPair.first);
+			const GLogiK::macro_type & macro = keyEventPair.second.getMacro();
 
 			bool append_macro = false;
 			if( ( ! macro.empty() ) ) {
@@ -209,7 +296,7 @@ void GKDBusMessage::appendMacrosBank(const GLogiK::mBank_type & bank)
 			try {
 				const uint8_t size = macro.size();
 
-				this->appendString(&itStruct, key);
+				this->appendUInt8(&itStruct, key);
 				this->appendUInt8(&itStruct, size);
 				this->appendMacro(&itStruct, macro);
 			}
@@ -335,6 +422,7 @@ void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type 
 
 	DBusMessageIter itArray;
 
+	// signature = (yyq)
 	const char array_sig[] = \
 							DBUS_STRUCT_BEGIN_CHAR_AS_STRING\
 							DBUS_TYPE_BYTE_AS_STRING\
@@ -407,15 +495,27 @@ void GKDBusMessage::appendString(DBusMessageIter *iter, const std::string & valu
 {
 	GK_LOG_FUNC
 
-	const char* p = value.c_str();
-	if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &p) ) {
-		_hosedMessage = true;
-		LOG(error) << "string append_basic failure, not enough memory";
-		throw GKDBusMessageWrongBuild(_appendFailure);
-	}
 #if DEBUG_GKDBUS_SUBOBJECTS
-	GKLog(trace, "string appended")
+	GKLog(trace, "appending string")
 #endif
+
+	if( ! value.empty() ) {
+		const char* p = value.c_str();
+		if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &p) ) {
+			_hosedMessage = true;
+			LOG(error) << "string append_basic failure, not enough memory";
+			throw GKDBusMessageWrongBuild(_appendFailure);
+		}
+#if DEBUG_GKDBUS_SUBOBJECTS
+		GKLog(trace, "string appended")
+#endif
+	}
+	else {
+		this->appendUInt64(iter, 0);
+#if DEBUG_GKDBUS_SUBOBJECTS
+		GKLog(trace, "empty string appended")
+#endif
+	}
 }
 
 void GKDBusMessage::appendUInt8(DBusMessageIter *iter, const uint8_t value)

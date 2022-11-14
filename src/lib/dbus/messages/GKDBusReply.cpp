@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -123,6 +123,18 @@ void GKDBusMessageReply::appendStringVectorToReply(const std::vector<std::string
 		_reply->appendStringVector(list);
 }
 
+void GKDBusMessageReply::appendGKeysIDArrayToReply(const GLogiK::GKeysIDArray_type & keysID)
+{
+	if(_reply != nullptr) /* sanity check */
+		_reply->appendGKeysIDArray(keysID);
+}
+
+void GKDBusMessageReply::appendMKeysIDArrayToReply(const GLogiK::MKeysIDArray_type & keysID)
+{
+	if(_reply != nullptr) /* sanity check */
+		_reply->appendMKeysIDArray(keysID);
+}
+
 void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_type & macro)
 {
 	if(_reply != nullptr) /* sanity check */
@@ -142,21 +154,21 @@ void GKDBusMessageReply::appendUInt64ToReply(const uint64_t value)
 		_reply->appendUInt64(value);
 }
 
-void GKDBusMessageReply::appendAsyncArgsToReply(void)
+void GKDBusMessageReply::appendAsyncArgsToReply(DBusMessage* asyncContainer)
 {
 	GK_LOG_FUNC
 
-	if( this->isAsyncContainerEmpty() )
-		return;
-
-	DBusMessage* asyncContainer = this->getAsyncContainerPointer();
 	DBusMessageIter itArgument;
 
-#if DEBUG_GKDBUS_SUBOBJECTS
-	GKLog(trace, "init Async parsing")
-#endif
+	if(asyncContainer == nullptr) {
+		LOG(error) << "null async container";
+		return;
+	}
 
 	if( ! dbus_message_iter_init(asyncContainer, &itArgument) ) {
+#if DEBUG_GKDBUS_SUBOBJECTS
+		GKLog(trace, "no arguments in async container")
+#endif
 		return; /* no arguments */
 	}
 
@@ -167,9 +179,11 @@ void GKDBusMessageReply::appendAsyncArgsToReply(void)
 				case DBUS_TYPE_STRING:
 				//case DBUS_TYPE_OBJECT_PATH:
 					this->appendStringToReply( GKDBusArgumentString::getNextStringArgument() );
+					GKLog(trace, "appended async string")
 					break;
 				case DBUS_TYPE_UINT64:
 					this->appendUInt64ToReply( GKDBusArgumentUInt64::getNextUInt64Argument() );
+					GKLog(trace, "appended async uint64")
 					break;
 				case DBUS_TYPE_INVALID:
 					{
@@ -193,8 +207,6 @@ void GKDBusMessageReply::sendReply(void)
 {
 	GK_LOG_FUNC
 
-	this->destroyAsyncContainer();
-
 	if(_reply == nullptr) { /* sanity check */
 		LOG(warning) << "tried to send NULL reply";
 		return;
@@ -207,8 +219,6 @@ void GKDBusMessageReply::sendReply(void)
 void GKDBusMessageReply::abandonReply(void)
 {
 	GK_LOG_FUNC
-
-	this->destroyAsyncContainer();
 
 	if(_reply) { /* sanity check */
 		_reply->abandon();

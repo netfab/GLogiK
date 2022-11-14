@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -101,7 +101,7 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 	};
 
 	{
-		std::map<const std::string, std::vector<std::string>> memShot;
+		std::map<std::string, std::vector<std::string>> memShot;
 
 		uint64_t freePMem = 0;
 		uint64_t totalPMem = 1;
@@ -126,7 +126,7 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 					for(const auto & item : memItems) {
 						const std::string & s = words[0];
 						if( s.substr(0, s.size()-1) == item ) {
-							memShot.insert( std::pair<const std::string, std::vector<std::string>>(item, words));
+							memShot.insert( std::pair<std::string, std::vector<std::string>>(item, words));
 						}
 					}
 				}
@@ -238,7 +238,8 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 		paddedRateString = getPaddedRateString(rateString, _lastRateStringSize);
 	}
 	catch (const GLogiKExcept & e) {
-		GKSysLogError("network calculations error : ", e.what());
+		paddedRateString = getPaddedRateString(paddedRateString, _lastRateStringSize);
+		GKLog2(error, "network calculations error : ", e.what());
 	}
 
 	/* -- -- -- */

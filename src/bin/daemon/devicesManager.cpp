@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -754,7 +754,6 @@ const std::string DevicesManager::getDeviceStatus(const std::string & devID) con
 
 void DevicesManager::setDeviceActiveConfiguration(
 	const std::string & devID,
-	const banksMap_type & macrosBanks,
 	const uint8_t r,
 	const uint8_t g,
 	const uint8_t b,
@@ -768,7 +767,7 @@ void DevicesManager::setDeviceActiveConfiguration(
 
 		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
-				driver->setDeviceActiveConfiguration(devID, macrosBanks, r, g, b, LCDPluginsMask1);
+				driver->setDeviceActiveConfiguration(devID, r, g, b, LCDPluginsMask1);
 				return;
 			}
 		}
@@ -778,7 +777,7 @@ void DevicesManager::setDeviceActiveConfiguration(
 	}
 }
 
-const banksMap_type & DevicesManager::getDeviceMacrosBanks(const std::string & devID) const
+const MKeysIDArray_type DevicesManager::getDeviceMKeysIDArray(const std::string & devID) const
 {
 	GK_LOG_FUNC
 
@@ -789,30 +788,7 @@ const banksMap_type & DevicesManager::getDeviceMacrosBanks(const std::string & d
 		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			for(const auto & driver : _drivers) {
 				if( device.getDriverID() == driver->getDriverID() ) {
-					return driver->getDeviceMacrosBanks(devID);
-				}
-			}
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-	}
-	return MacrosBanks::emptyMacrosBanks;
-}
-
-const std::vector<std::string> &
-	DevicesManager::getDeviceMacroKeysNames(const std::string & devID) const
-{
-	GK_LOG_FUNC
-
-	try {
-		const auto & device = _startedDevices.at(devID);
-		GKLog2(trace, devID, " device is started")
-
-		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			for(const auto & driver : _drivers) {
-				if( device.getDriverID() == driver->getDriverID() ) {
-					return driver->getMacroKeysNames();
+					return driver->getMKeysIDArray();
 				}
 			}
 		}
@@ -825,7 +801,7 @@ const std::vector<std::string> &
 			if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 				for(const auto & driver : _drivers) {
 					if( device.getDriverID() == driver->getDriverID() ) {
-						return driver->getMacroKeysNames();
+						return driver->getMKeysIDArray();
 					}
 				}
 			}
@@ -835,7 +811,46 @@ const std::vector<std::string> &
 		}
 	}
 
-	return KeyboardDriver::getEmptyStringVector();
+	MKeysIDArray_type ret;
+	return ret;
+}
+
+const GKeysIDArray_type DevicesManager::getDeviceGKeysIDArray(const std::string & devID) const
+{
+	GK_LOG_FUNC
+
+	try {
+		const auto & device = _startedDevices.at(devID);
+		GKLog2(trace, devID, " device is started")
+
+		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+			for(const auto & driver : _drivers) {
+				if( device.getDriverID() == driver->getDriverID() ) {
+					return driver->getGKeysIDArray();
+				}
+			}
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		try {
+			const auto & device = _stoppedDevices.at(devID);
+			GKLog2(trace, devID, " device is stopped")
+
+			if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+				for(const auto & driver : _drivers) {
+					if( device.getDriverID() == driver->getDriverID() ) {
+						return driver->getGKeysIDArray();
+					}
+				}
+			}
+		}
+		catch (const std::out_of_range& oor) {
+			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		}
+	}
+
+	GKeysIDArray_type ret;
+	return ret;
 }
 
 void DevicesManager::resetDevicesStates(void)
@@ -892,11 +907,18 @@ void DevicesManager::startMonitoring(void) {
 			GKLog(trace, "loading drivers")
 
 			try {
+				KeyboardDriver* driver = nullptr;
 #if GKLIBUSB
-				_drivers.push_back( new LogitechG510<libusb>() );
+				driver = new LogitechG510<libusb>();
 #elif GKHIDAPI
-				_drivers.push_back( new LogitechG510<hidapi>() );
+				driver = new LogitechG510<hidapi>();
 #endif
+
+#if GKDBUS
+				driver->setDBus(_pDBus);
+#endif
+
+				_drivers.push_back( driver );
 			}
 			catch (const std::bad_alloc& e) { /* handle new() failure */
 				throw GLogiKBadAlloc("catch driver wrong allocation");

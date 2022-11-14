@@ -37,8 +37,6 @@
 
 #include <config.h>
 
-#include "GKLogging.hpp"
-
 #define UTILS_COMPILATION 1
 
 #include "exception.hpp"

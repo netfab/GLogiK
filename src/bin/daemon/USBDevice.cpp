@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@ USBDevice::USBDevice(const USBDeviceID & device)
 		:	USBDeviceID(device),
 			_pressedRKeysMask(0),
 			_LCDPluginsMask1(0),
-			_pMacrosManager(nullptr),
 			_pLCDPluginsManager(nullptr),
 #if GKLIBUSB
 			_pUSBDevice(nullptr),
@@ -54,10 +53,11 @@ USBDevice::USBDevice(const USBDeviceID & device)
 #if GKLIBUSB
 			_fatalErrors(0),
 			_keysEndpoint(0),
-			_LCDEndpoint(0)
+			_LCDEndpoint(0),
 #elif GKHIDAPI
-			_fatalErrors(0)
+			_fatalErrors(0),
 #endif
+			_GKeyID(GKeyID_INV) // invalid
 {
 	std::fill_n(_pressedKeys, KEYS_BUFFER_LENGTH, 0);
 	std::fill_n(_previousPressedKeys, KEYS_BUFFER_LENGTH, 0);
@@ -90,9 +90,9 @@ void USBDevice::operator=(const USBDevice& dev)
 	_bNumEndpoints			= dev._bNumEndpoints;
 
 	_keysInterruptBufferMaxLength	= dev._keysInterruptBufferMaxLength;
-	_MacrosKeysLength				= dev._MacrosKeysLength;
-	_MediaKeysLength				= dev._MediaKeysLength;
-	_LCDKeysLength					= dev._LCDKeysLength;
+	_GKeysTransferLength			= dev._GKeysTransferLength;
+	_MediaKeysTransferLength		= dev._MediaKeysTransferLength;
+	_LCDKeysTransferLength			= dev._LCDKeysTransferLength;
 
 	/* end friendship members */
 
@@ -114,13 +114,12 @@ void USBDevice::operator=(const USBDevice& dev)
 		std::end(dev._previousPressedKeys),
 		std::begin(_previousPressedKeys)
 	);
-	_macroKey			= dev._macroKey;
+	_GKeyID				= dev._GKeyID;
 	_mediaKey			= dev._mediaKey;
 	_newMacro			= dev._newMacro;
 	_lastTimePoint		= dev._lastTimePoint;
 
 	/* private */
-	_pMacrosManager					= dev._pMacrosManager;
 	_pLCDPluginsManager				= dev._pLCDPluginsManager;
 
 	this->setRGBBytes(dev._RGB[0], dev._RGB[1], dev._RGB[2]);
@@ -141,13 +140,6 @@ void USBDevice::operator=(const USBDevice& dev)
 #elif GKHIDAPI
 	_pHIDDevice			= dev._pHIDDevice;
 #endif
-}
-
-void USBDevice::destroyMacrosManager(void) noexcept {
-	if( _pMacrosManager ) {
-		delete _pMacrosManager;
-		_pMacrosManager = nullptr;
-	}
 }
 
 void USBDevice::destroyLCDPluginsManager(void) noexcept

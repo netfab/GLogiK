@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,34 +19,29 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_VIRTUAL_KEYBOARD_HPP_
-#define SRC_BIN_DAEMON_VIRTUAL_KEYBOARD_HPP_
+#ifndef SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TYPE_SIG_S2V_HPP_
+#define SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TYPE_SIG_S2V_HPP_
 
-#include <libevdev/libevdev.h>
-#include <libevdev/libevdev-uinput.h>
+#include <string>
+#include <functional>
 
-#include "include/keyEvent.hpp"
+#include <dbus/dbus.h>
 
-namespace GLogiK
+#include "callbackEvent.hpp"
+
+
+typedef std::function<void(const std::string &)> SIGs2v; /* string to void */
+
+namespace NSGKDBus
 {
 
-class VirtualKeyboard
-{
-	public:
-		VirtualKeyboard(const char* deviceName);
-		~VirtualKeyboard();
+template <>
+	void callbackEvent<SIGs2v>::runCallback(
+		DBusConnection* const connection,
+		DBusMessage* message,
+		DBusMessage* asyncContainer
+	);
 
-		void sendKeyEvent(const KeyEvent & key);
-
-	protected:
-	private:
-		libevdev *_pDevice;
-		libevdev_uinput *_pUInputDevice;
-
-		void enableEventType(unsigned int type);
-		void enableEventCode(unsigned int type, unsigned int code);
-};
-
-} // namespace GLogiK
+} // namespace NSGKDBus
 
 #endif

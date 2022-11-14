@@ -30,28 +30,82 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DeviceProperties::DeviceProperties()
-	:	_capabilities(0),
-		_LCDPluginsMask1(0),
-		_backlightRed(0xFF),
-		_backlightGreen(0xFF),
-		_backlightBlue(0xFF),
-		_watchedDescriptor(-1)
+BacklightCapability::BacklightCapability(void)
+	:	_red(0xFF),
+		_green(0xFF),
+		_blue(0xFF)
 {
 }
 
-DeviceProperties::~DeviceProperties() {
+BacklightCapability::~BacklightCapability(void)
+{
 }
 
-const LCDPluginsPropertiesArray_type DeviceProperties::_LCDPluginsPropertiesEmptyArray = {};
+void BacklightCapability::setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b) {
+	_red	= r & 0xFF;
+	_green	= g & 0xFF;
+	_blue	= b & 0xFF;
+}
+
+void BacklightCapability::getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const
+{
+	r = _red;
+	g = _green;
+	b = _blue;
+}
 
 /* -- -- -- */
 
-void DeviceProperties::setWatchDescriptor(int wd) {
-	_watchedDescriptor = wd;
+const LCDPluginsPropertiesArray_type LCDScreenCapability::_LCDPluginsPropertiesEmptyArray = {};
+
+LCDScreenCapability::LCDScreenCapability(void)
+	:	_LCDPluginsMask1(0)
+{
 }
 
-void DeviceProperties::setProperties(
+LCDScreenCapability::~LCDScreenCapability(void)
+{
+}
+
+const uint64_t LCDScreenCapability::getLCDPluginsMask1(void) const
+{
+	return _LCDPluginsMask1;
+}
+
+void LCDScreenCapability::setLCDPluginsMask(
+	const uint8_t maskID,
+	const uint64_t mask)
+{
+	if(maskID > static_cast<unsigned int>(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1))
+		throw GLogiKExcept("wrong maskID value");
+
+	//const LCDPluginsMask id = static_cast<LCDPluginsMask>(maskID);
+	_LCDPluginsMask1 = mask;
+}
+
+const LCDPluginsPropertiesArray_type & LCDScreenCapability::getLCDPluginsProperties(void) const
+{
+	return _LCDPluginsProperties;
+}
+
+void LCDScreenCapability::setLCDPluginsProperties(const LCDPluginsPropertiesArray_type & props)
+{
+	_LCDPluginsProperties = props;
+}
+
+/* -- -- -- */
+
+clientDevice::clientDevice()
+	:	_capabilities(0)
+{
+}
+
+clientDevice::~clientDevice() {
+}
+
+/* -- -- -- */
+
+void clientDevice::setProperties(
 	const std::string & vendor,
 	const std::string & product,
 	const std::string & name,
@@ -63,11 +117,35 @@ void DeviceProperties::setProperties(
 	_capabilities = capabilities;
 }
 
+/* -- -- -- */
+
+const uint64_t clientDevice::getCapabilities(void) const {
+	return _capabilities;
+}
+
+/* -- -- -- */
+
+DeviceProperties::DeviceProperties(void)
+	:	_watchedDescriptor(-1)
+{
+}
+
+DeviceProperties::~DeviceProperties(void) {
+}
+
+const int DeviceProperties::getWatchDescriptor(void) const {
+	return _watchedDescriptor;
+}
+
+void DeviceProperties::setWatchDescriptor(int wd) {
+	_watchedDescriptor = wd;
+}
+
 void DeviceProperties::setProperties(const DeviceProperties & dev)
 {
-	dev.getRGBBytes(_backlightRed, _backlightGreen, _backlightBlue);
+	dev.getRGBBytes(_red, _green, _blue);
 
-	_macrosBanks		= dev.getMacrosBanks();
+	_GKeysBanks			= dev._GKeysBanks;
 	_LCDPluginsMask1	= dev.getLCDPluginsMask1();
 
 	if( _LCDPluginsMask1 == 0 ) {
@@ -77,54 +155,6 @@ void DeviceProperties::setProperties(const DeviceProperties & dev)
 	}
 }
 
-const LCDPluginsPropertiesArray_type & DeviceProperties::getLCDPluginsProperties(void) const
-{
-	return _LCDPluginsProperties;
-}
-
-void DeviceProperties::setLCDPluginsProperties(const LCDPluginsPropertiesArray_type & array)
-{
-	_LCDPluginsProperties = array;
-}
-
-void DeviceProperties::setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b) {
-	_backlightRed	= r & 0xFF;
-	_backlightGreen	= g & 0xFF;
-	_backlightBlue	= b & 0xFF;
-}
-
-void DeviceProperties::setLCDPluginsMask(
-	const uint8_t maskID,
-	const uint64_t mask)
-{
-	if(maskID > static_cast<unsigned int>(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1))
-		throw GLogiKExcept("wrong maskID value");
-
-	//const LCDPluginsMask id = static_cast<LCDPluginsMask>(maskID);
-	_LCDPluginsMask1 = mask;
-}
-
 /* -- -- -- */
-
-const uint64_t DeviceProperties::getCapabilities(void) const {
-	return _capabilities;
-}
-
-const int DeviceProperties::getWatchDescriptor(void) const {
-	return _watchedDescriptor;
-}
-
-const uint64_t DeviceProperties::getLCDPluginsMask1(void) const
-{
-	return _LCDPluginsMask1;
-}
-
-void DeviceProperties::getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const
-{
-	r = _backlightRed;
-	g = _backlightGreen;
-	b = _backlightBlue;
-}
-
 } // namespace GLogiK
 

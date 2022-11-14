@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 
 #include <boost/filesystem.hpp>
 
@@ -36,6 +37,8 @@
 #include "lib/shared/deviceProperties.hpp"
 
 #include "include/enums.hpp"
+#include "include/base.hpp"
+#include "include/MBank.hpp"
 #include "include/LCDPluginProperties.hpp"
 
 #define LogRemoteCallFailure \
@@ -43,7 +46,7 @@
 #define LogRemoteCallGetReplyFailure \
 	LOG(error) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
 
-typedef std::map<const std::string, const std::string> devices_files_map_t;
+typedef std::map<std::string, const std::string> devices_files_map_t;
 
 namespace fs = boost::filesystem;
 
@@ -66,17 +69,8 @@ class DevicesHandler
 
 		void clearDevices(void);
 
-		const bool setDeviceMacro(
-			const std::string & devID,
-			const std::string & keyName,
-			const uint8_t bankID
-		);
-
-		const bool clearDeviceMacro(
-			const std::string & devID,
-			const std::string & keyName,
-			const uint8_t bankID
-		);
+		void setDeviceCurrentBankID(const std::string & devID, const MKeysID bankID);
+		banksMap_type & getDeviceBanks(const std::string & devID, MKeysID & bankID);
 
 		void doDeviceFakeKeyEvent(
 			const std::string & devID,
@@ -90,6 +84,7 @@ class DevicesHandler
 		);
 
 		void reloadDeviceConfigurationFile(const std::string & devID);
+		void saveDeviceConfigurationFile(const std::string & devID);
 
 	protected:
 
@@ -100,8 +95,12 @@ class DevicesHandler
 		NSGKUtils::FileSystem* _pGKfs;
 		const NSGKDBus::BusConnection _systemBus;
 
-		std::map<const std::string, DeviceProperties> _startedDevices;
-		std::map<const std::string, DeviceProperties> _stoppedDevices;
+		typedef std::set<std::string> devIDSet;
+
+		devIDSet _ignoredFSNotifications;
+
+		std::map<std::string, DeviceProperties> _startedDevices;
+		std::map<std::string, DeviceProperties> _stoppedDevices;
 
 		void setDeviceProperties(
 			const std::string & devID,
@@ -114,7 +113,7 @@ class DevicesHandler
 			const std::string & devID,
 			const DeviceProperties & device
 		);
-		void watchDirectory(
+		void initializeConfigurationDirectory(
 			DeviceProperties & device,
 			const bool check=true
 		);
@@ -128,6 +127,9 @@ class DevicesHandler
 		void unrefDevice(const std::string & devID);
 
 		const bool checkDeviceCapability(const DeviceProperties & device, Caps toCheck);
+
+		const MKeysIDArray_type getDeviceMKeysIDArray(const std::string & devID);
+		const GKeysIDArray_type getDeviceGKeysIDArray(const std::string & devID);
 };
 
 } // namespace GLogiK

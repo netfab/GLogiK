@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -164,6 +164,18 @@ void GKDBusMessageRemoteMethodCall::appendUInt64ToRemoteMethodCall(const uint64_
 {
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendUInt64(value);
+}
+
+void GKDBusMessageRemoteMethodCall::appendGKeysIDToRemoteMethodCall(const GLogiK::GKeysID keyID)
+{
+	if(_remoteMethodCall != nullptr) /* sanity check */
+		_remoteMethodCall->appendGKeysID(keyID);
+}
+
+void GKDBusMessageRemoteMethodCall::appendMKeysIDToRemoteMethodCall(const GLogiK::MKeysID bankID)
+{
+	if(_remoteMethodCall != nullptr) /* sanity check */
+		_remoteMethodCall->appendMKeysID(bankID);
 }
 
 void GKDBusMessageRemoteMethodCall::appendMacrosBankToRemoteMethodCall(const GLogiK::mBank_type & bank)

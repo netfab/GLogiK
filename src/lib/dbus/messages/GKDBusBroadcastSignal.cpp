@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -147,10 +147,28 @@ void GKDBusMessageBroadcastSignal::appendUInt8ToBroadcastSignal(const uint8_t va
 		_signal->appendUInt8(value);
 }
 
+void GKDBusMessageBroadcastSignal::appendGKeysIDToBroadcastSignal(const GLogiK::GKeysID keyID)
+{
+	if(_signal != nullptr) /* sanity check */
+		_signal->appendGKeysID(keyID);
+}
+
+void GKDBusMessageBroadcastSignal::appendMKeysIDToBroadcastSignal(const GLogiK::MKeysID bankID)
+{
+	if(_signal != nullptr) /* sanity check */
+		_signal->appendMKeysID(bankID);
+}
+
 void GKDBusMessageBroadcastSignal::appendStringVectorToBroadcastSignal(const std::vector<std::string> & list)
 {
 	if(_signal != nullptr) /* sanity check */
 		_signal->appendStringVector(list);
+}
+
+void GKDBusMessageBroadcastSignal::appendMacroToBroadcastSignal(const GLogiK::macro_type & macro)
+{
+	if(_signal != nullptr) /* sanity check */
+		_signal->appendMacro(macro);
 }
 
 void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void)

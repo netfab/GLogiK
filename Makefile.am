@@ -24,6 +24,7 @@ include %D%/src/bin/service/Makefile.am
 if WITH_QT5
 include %D%/src/bin/gui/Qt/Makefile.am
 include %D%/data/applications/Makefile.am
+include %D%/data/gui/Makefile.am
 include %D%/data/icons/Makefile.am
 endif
 
@@ -45,6 +46,7 @@ EXTRA_DIST += \
 	%D%/data/applications/meson.build \
 	%D%/data/udev/meson.build \
 	%D%/data/dbus/meson.build \
+	%D%/data/gui/meson.build \
 	%D%/data/init/meson.build \
 	%D%/data/autostart/meson.build \
 	%D%/data/pbm/meson.build \
@@ -68,6 +70,7 @@ LOCAL_AUTOTOOLS_FILES = \
 	$(top_srcdir)/install-sh \
 	$(top_srcdir)/missing \
 	$(top_srcdir)/configure \
+	$(top_srcdir)/configure~ \
 	$(top_srcdir)/config.h.in~ \
 	$(top_srcdir)/config.guess \
     $(top_srcdir)/config.sub \

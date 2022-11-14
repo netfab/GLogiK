@@ -4,10 +4,12 @@ GKShared_sources = [
   'deviceProperties.hpp',
   'deviceConfigurationFile.cpp',
   'deviceConfigurationFile.hpp',
+  'GKeysBanksCapability.cpp',
+  'GKeysBanksCapability.hpp',
+  'GKeysMacro.cpp',
+  'GKeysMacro.hpp',
   'glogik.cpp',
   'glogik.hpp',
-  'macrosBanks.cpp',
-  'macrosBanks.hpp',
 ]
 
 ice_dep = null_dep

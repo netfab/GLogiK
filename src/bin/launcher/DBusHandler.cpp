@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -88,7 +88,7 @@ void DBusHandler::cleanDBusRequests(void)
  */
 
 void DBusHandler::initializeGKDBusSignals(void) {
-	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
@@ -98,7 +98,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		std::bind(&DBusHandler::restartRequest, this)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,

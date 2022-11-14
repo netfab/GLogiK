@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@
 #include <QMetaObject>
 #include <QIcon>
 #include <QMessageBox>
+#include <QFile>
 
 #include <config.h>
 
@@ -158,6 +159,16 @@ void MainWindow::build(void)
 	QVBoxLayout* vBox = nullptr;
 
 	try {
+		{ /* loading stylesheet */
+			QString stylepath(QT_DATA_DIR); stylepath += "/qss/stylesheet.qss";
+
+			QFile qssfile(stylepath);
+			qssfile.open(QFile::ReadOnly);
+
+			QString styleSheet = QLatin1String(qssfile.readAll());
+			qApp->setStyleSheet(styleSheet);
+		}
+
 		QFrame *frame = new QFrame(this);
 		this->setCentralWidget(frame);
 
@@ -210,13 +221,17 @@ void MainWindow::build(void)
 		_tabbedWidgets->addTab(_LCDPluginsTab, tr("LCD Screen Plugins"));
 		_LCDPluginsTab->buildTab();
 
-		//_tabbedWidgets->addTab(new QWidget(), tr("Macros"));
-		GKLog(trace, "allocated 4 tabs")
+		_GKeysTab = new GKeysTab(_pDBus, "GKeys");
+		_tabbedWidgets->addTab(_GKeysTab, tr("G-Keys"));
+		_GKeysTab->buildTab();
+
+		GKLog(trace, "allocated 5 tabs")
 
 		this->setTabEnabled("DaemonAndService", true);
 		this->setTabEnabled("DeviceControl", false);
 		this->setTabEnabled("BacklightColor", false);
 		this->setTabEnabled("LCDPlugins", false);
+		this->setTabEnabled("GKeys", false);
 
 		this->setCurrentTab("DaemonAndService");
 
@@ -230,8 +245,8 @@ void MainWindow::build(void)
 		QAction* about = new QAction("&About", this);
 		helpMenu->addAction(about);
 
-		connect(quit, &QAction::triggered, qApp, QApplication::quit);
-		connect(about, &QAction::triggered, this, &MainWindow::aboutDialog);
+		QObject::connect(quit, &QAction::triggered, qApp, QApplication::quit);
+		QObject::connect(about, &QAction::triggered, this, &MainWindow::aboutDialog);
 
 		GKLog(trace, "built Qt menu")
 
@@ -239,7 +254,7 @@ void MainWindow::build(void)
 		/* initializing timer */
 		QTimer* timer = new QTimer(this);
 
-		connect(timer, &QTimer::timeout, this, &MainWindow::checkDBusMessages);
+		QObject::connect(timer, &QTimer::timeout, this, &MainWindow::checkDBusMessages);
 		timer->start(100);
 
 		GKLog(trace, "Qt timer started")
@@ -295,16 +310,18 @@ void MainWindow::build(void)
 	/* -- -- -- */
 
 	/* initializing Qt signals */
-	connect(_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
-	connect( _backlightColorTab->getApplyButton(), &QPushButton::clicked,
-			 std::bind(&MainWindow::saveFile, this, TabApplyButton::TAB_BACKLIGHT) );
-	connect(     _LCDPluginsTab->getApplyButton(), &QPushButton::clicked,
-			 std::bind(&MainWindow::saveFile, this, TabApplyButton::TAB_LCD_PLUGINS) );
+	QObject::connect(_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
+	QObject::connect( _backlightColorTab->getApplyButton(), &QPushButton::clicked,
+			 std::bind(&MainWindow::saveConfigurationFileAndUpdateInterface, this, TabApplyButton::TAB_BACKLIGHT) );
+	QObject::connect( _LCDPluginsTab->getApplyButton(), &QPushButton::clicked,
+			 std::bind(&MainWindow::saveConfigurationFileAndUpdateInterface, this, TabApplyButton::TAB_LCD_PLUGINS) );
+	QObject::connect( _GKeysTab->getApplyButton(), &QPushButton::clicked,
+			 std::bind(&MainWindow::saveConfigurationFileAndUpdateInterface, this, TabApplyButton::TAB_GKEYS) );
 
 	GKLog(trace, "Qt signals connected to slots")
 
 	/* initializing GKDBus signals */
-	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
 		NSGKDBus::BusConnection::GKDBUS_SESSION,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
@@ -314,7 +331,7 @@ void MainWindow::build(void)
 		std::bind(&MainWindow::resetInterface, this)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGs2v>::exposeSignal(
 		NSGKDBus::BusConnection::GKDBUS_SESSION,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
@@ -324,7 +341,7 @@ void MainWindow::build(void)
 		std::bind(&MainWindow::configurationFileUpdated, this, std::placeholders::_1)
 	);
 
-	connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::aboutToQuit);
+	QObject::connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::aboutToQuit);
 }
 
 /*
@@ -444,7 +461,7 @@ void MainWindow::aboutDialog(void)
 	}
 }
 
-void MainWindow::saveFile(const TabApplyButton tab)
+void MainWindow::saveConfigurationFile(const TabApplyButton tab)
 {
 	GK_LOG_FUNC
 
@@ -466,6 +483,29 @@ void MainWindow::saveFile(const TabApplyButton tab)
 		dosave = true;
 
 		GKLog(trace, "LCD plugins mask updated")
+	}
+	else if( tab == TabApplyButton::TAB_GKEYS ) {
+		MKeysID bankID;
+		GKeysID keyID;
+		GKeyEventType eventType;
+		try {
+			_GKeysTab->getGKeyEventParams(bankID, keyID, eventType);
+
+			banksMap_type & banks = _openedConfigurationFile.getBanks();
+			mBank_type & bank = banks.at(bankID);
+			GKeysEvent & event = bank.at(keyID);
+
+			event.setEventType(eventType);
+			dosave = true;
+
+			GKLog(trace, "GKeys updated")
+		}
+		catch (const GLogiKExcept & e) {
+			LOG(error) << "can't get GKeyEvent parameters " << e.what();
+		}
+		catch (const std::out_of_range& oor) {
+			LOG(error) << "out of range detected: " << oor.what();
+		}
 	}
 
 	if(dosave) {
@@ -504,6 +544,7 @@ void MainWindow::updateInterface(int index)
 			_deviceControlTab->disableAndHide();
 			this->setTabEnabled("BacklightColor", false);
 			this->setTabEnabled("LCDPlugins", false);
+			this->setTabEnabled("GKeys", false);
 			this->statusBar()->showMessage("Selected device : none", _statusBarTimeout);
 		}
 		else {
@@ -512,7 +553,7 @@ void MainWindow::updateInterface(int index)
 			GKLog(trace, "updating tabs")
 
 			try {
-				const Device & device = _devices.at(_devID);
+				const DeviceID & device = _devices.at(_devID);
 				const bool status = (device.getStatus() == "started");
 
 				_deviceControlTab->updateTab(_devID, status);
@@ -531,9 +572,12 @@ void MainWindow::updateInterface(int index)
 					_backlightColorTab->updateTab(_openedConfigurationFile);
 
 					_LCDPluginsTab->updateTab(_devID, _openedConfigurationFile);
+					// updating GKeysTab and resetting bankID
+					_GKeysTab->updateTab(_openedConfigurationFile, MKeysID::MKEY_M0);
 				}
 				this->setTabEnabled("BacklightColor", status);
 				this->setTabEnabled("LCDPlugins", status);
+				this->setTabEnabled("GKeys", status);
 			}
 			catch (const std::out_of_range& oor) {
 				std::string error("device not found in container : ");
@@ -549,6 +593,13 @@ void MainWindow::updateInterface(int index)
 	catch (const GLogiKExcept & e) {
 		LOG(error) << "error updating interface : " << e.what();
 	}
+}
+
+void MainWindow::saveConfigurationFileAndUpdateInterface(const TabApplyButton tab)
+{
+	this->saveConfigurationFile(tab);
+	/* update interface to reload the configuration file */
+	this->updateInterface( _devicesComboBox->currentIndex() );
 }
 
 void MainWindow::updateDevicesList(void)

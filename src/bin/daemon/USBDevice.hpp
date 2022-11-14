@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -31,13 +31,11 @@
 #include <chrono>
 #include <mutex>
 
-#include "virtualKeyboard.hpp"
-#include "macrosManager.hpp"
 #include "LCDScreenPluginsManager.hpp"
 
 #include "USBDeviceID.hpp"
 
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 
 #include <config.h>
 
@@ -72,7 +70,6 @@ class USBDevice
 #endif
 
 	public:
-		std::string					_macroKey;
 		std::string					_mediaKey;
 		std::string					_LCDKey;
 
@@ -91,7 +88,6 @@ class USBDevice
 	private:
 		friend class USBInit;
 
-		MacrosManager*				_pMacrosManager;
 		LCDScreenPluginsManager*	_pLCDPluginsManager;
 
 		libusb_device*				_pUSBDevice;
@@ -133,19 +129,19 @@ class USBDevice
 	private:
 		unsigned char				_keysEndpoint;
 		unsigned char				_LCDEndpoint;
+
+	public:
 #endif
+
+		GKeysID						_GKeyID; // G-Key
 
 		/* -- -- -- */
 
 	public:
-		void setMacrosManager(MacrosManager* pMacrosManager) { _pMacrosManager = pMacrosManager; }
-		void destroyMacrosManager(void) noexcept;
-
 		void setLCDPluginsManager(LCDScreenPluginsManager* pLCDPluginsManager) { _pLCDPluginsManager = pLCDPluginsManager; }
 		void destroyLCDPluginsManager(void) noexcept;
 
 		/* getters */
-		MacrosManager* const & getMacrosManager(void) const { return _pMacrosManager; }
 		LCDScreenPluginsManager* const & getLCDPluginsManager(void) const { return _pLCDPluginsManager; }
 		const bool getThreadsStatus(void) const { return _threadsStatus; }
 		const bool getUSBRequestsStatus(void) const { return _USBRequestsStatus; }

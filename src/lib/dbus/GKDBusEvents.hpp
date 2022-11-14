@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -30,29 +30,30 @@
 
 #include "lib/dbus/GKDBusConnection.hpp"
 
-#include "events/GKDBusEventTemplates.hpp"
+#include "events/callback.hpp"
 
 namespace NSGKDBus
 {
 
 
 class GKDBusEvents
-	:	public EventGKDBusCallback<VoidToVoid>,
-		public EventGKDBusCallback<StringsArrayToVoid>,
-		public EventGKDBusCallback<StringToBool>,
-		public EventGKDBusCallback<StringToVoid>,
-		public EventGKDBusCallback<TwoStringsToVoid>,
-		public EventGKDBusCallback<TwoStringsToBool>,
-		public EventGKDBusCallback<TwoStringsOneByteToBool>,
-		public EventGKDBusCallback<TwoStringsThreeBytesToBool>,
-		public EventGKDBusCallback<StringToString>,
-		public EventGKDBusCallback<TwoStringsToString>,
-		public EventGKDBusCallback<StringToStringsArray>,
-		public EventGKDBusCallback<TwoStringsToStringsArray>,
-		public EventGKDBusCallback<ThreeStringsOneByteToMacro>,
-		public EventGKDBusCallback<TwoStringsToLCDPluginsPropertiesArray>,
-		public EventGKDBusCallback<TwoStringsOneByteOneMacrosBankToBool>,
-		public EventGKDBusCallback<TwoStringsOneByteOneUInt64ToBool>
+	:	public Callback<SIGas2v>,
+		public Callback<SIGs2as>,
+		public Callback<SIGs2b>,
+		public Callback<SIGs2s>,
+		public Callback<SIGs2v>,
+		public Callback<SIGsG2v>,
+		public Callback<SIGsGM2v>,
+		public Callback<SIGsm2v>,
+		public Callback<SIGss2aG>,
+		public Callback<SIGss2am>,
+		public Callback<SIGss2aP>,
+		public Callback<SIGss2b>,
+		public Callback<SIGss2s>,
+		public Callback<SIGss2v>,
+		public Callback<SIGssyt2b>,
+		public Callback<SIGssyyy2b>,
+		public Callback<SIGv2v>
 {
 	public:
 		void declareIntrospectableSignal(
@@ -94,9 +95,9 @@ class GKDBusEvents
 
 		thread_local static BusConnection currentBus;
 
-		std::map< const BusConnection,
-			std::map< const std::string, /* object */
-				std::map< const std::string, /* interface */
+		std::map<BusConnection,
+			std::map<std::string, /* object */
+				std::map<std::string, /* interface */
 					std::vector<GKDBusEvent*> > > > _DBusEvents;
 
 		const std::string & getRootNode(void) const;
@@ -107,9 +108,9 @@ class GKDBusEvents
 		std::string _rootNodePath;
 		std::set<std::string> _DBusInterfaces;
 
-		std::map< const BusConnection,
-			std::map< const std::string, /* object */
-				std::map< const std::string, /* interface */
+		std::map<BusConnection,
+			std::map<std::string, /* object */
+				std::map<std::string, /* interface */
 					std::vector<GKDBusIntrospectableSignal> > > > _DBusIntrospectableSignals;
 
 		virtual DBusConnection* const getConnection(BusConnection wantedConnection) const = 0;

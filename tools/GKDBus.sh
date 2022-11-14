@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# /* devices thread */
-declare -r GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME="com.glogik.Device"
-
 # /* daemon thread */
 declare -r GLOGIK_DAEMON_DBUS_ROOT_NODE="Daemon"
 declare -r GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH="/com/glogik/Daemon"

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -30,10 +30,6 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
-#if GKDBUS
-#include "lib/dbus/GKDBus.hpp"
-#endif
-
 #include "keyboardDriver.hpp"
 
 #include "daemonControl.hpp"
@@ -50,7 +46,6 @@ using namespace NSGKUtils;
  */
 
 constexpr unsigned char KeyboardDriver::hidKeyboard[256];
-std::vector<std::string> KeyboardDriver::macrosKeysNames = {};
 
 /* KEY_FOO from linux/input-event-codes.h */
 const std::vector< ModifierKey > KeyboardDriver::modifierKeys = {
@@ -65,6 +60,13 @@ const std::vector< ModifierKey > KeyboardDriver::modifierKeys = {
 };
 
 /* -- -- -- */
+
+#if GKDBUS
+void KeyboardDriver::setDBus(NSGKDBus::GKDBus* pDBus)
+{
+	_pDBus = pDBus;
+}
+#endif
 
 #if DEBUGGING_ON && DEBUG_KEYS
 const std::string KeyboardDriver::getBytes(const USBDevice & device) const
@@ -85,12 +87,6 @@ const std::string KeyboardDriver::getBytes(const USBDevice & device) const
 const bool KeyboardDriver::checkDeviceCapability(const USBDeviceID & device, Caps toCheck)
 {
 	return (device.getCapabilities() & toEnumType(toCheck));
-}
-
-const std::vector<std::string> & KeyboardDriver::getEmptyStringVector(void)
-{
-	KeyboardDriver::macrosKeysNames.clear();
-	return KeyboardDriver::macrosKeysNames;
 }
 
 KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device)
@@ -163,52 +159,78 @@ void KeyboardDriver::setDeviceBacklightColor(
 const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR)
 {
 	auto & mask = device._MxKeysLedsMask;
-	/* is macro record mode enabled ? */
-	bool MR_ON = mask & toEnumType(Leds::GK_LED_MR);
-	bool Mx_ON = false;
 	bool mask_updated = false;
+	MKeysID pressed_MKey = MKeysID::MKEY_M0;
 
+	/* was MR key enabled ? */
+	const bool MR_ON = mask & toEnumType(Leds::GK_LED_MR);
+
+	auto update_MxKey_mask = [&] (const Leds keyledmask, const MKeysID sMKey) -> void
+	{
+		/* was this Mx key already enabled */
+		const bool Mx_ON = mask & toEnumType(keyledmask);
+
+		/* an Mx key (M1, M2, or M3) was pressed, we must reset
+		 * the mask, else two differents Mx keys LEDs could be
+		 * on at the same time; this also disables Macro Record
+		 * mode if MR LED was on */
+		mask = 0;
+		if( ! Mx_ON ) { /* Mx was off, enable it */
+			mask |= toEnumType(keyledmask);
+			pressed_MKey = sMKey;
+		}
+		mask_updated = true;
+	};
+
+	/* M1 key was pressed */
 	if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M1) ) {
-		Mx_ON = mask & toEnumType(Leds::GK_LED_M1);
-		mask = 0;
-		mask_updated = true;
-		device.getMacrosManager()->setCurrentMacrosBankID(BankID::BANK_M0);
-		if( ! Mx_ON ) {
-			mask |= toEnumType(Leds::GK_LED_M1);
-			device.getMacrosManager()->setCurrentMacrosBankID(BankID::BANK_M1);
-		}
+		update_MxKey_mask(Leds::GK_LED_M1, MKeysID::MKEY_M1);
 	}
+	/* M2 key was pressed */
 	else if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M2) ) {
-		Mx_ON = mask & toEnumType(Leds::GK_LED_M2);
-		mask = 0;
-		mask_updated = true;
-		device.getMacrosManager()->setCurrentMacrosBankID(BankID::BANK_M0);
-		if( ! Mx_ON ) {
-			mask |= toEnumType(Leds::GK_LED_M2);
-			device.getMacrosManager()->setCurrentMacrosBankID(BankID::BANK_M2);
-		}
+		update_MxKey_mask(Leds::GK_LED_M2, MKeysID::MKEY_M2);
 	}
+	/* M3 key was pressed */
 	else if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M3) ) {
-		Mx_ON = mask & toEnumType(Leds::GK_LED_M3);
-		mask = 0;
-		mask_updated = true;
-		device.getMacrosManager()->setCurrentMacrosBankID(BankID::BANK_M0);
-		if( ! Mx_ON ) {
-			mask |= toEnumType(Leds::GK_LED_M3);
-			device.getMacrosManager()->setCurrentMacrosBankID(BankID::BANK_M3);
-		}
+		update_MxKey_mask(Leds::GK_LED_M3, MKeysID::MKEY_M3);
 	}
 
+#if GKDBUS
+	if( mask_updated ) { /* if a Mx key was pressed */
+		try {
+			_pDBus->initializeBroadcastSignal(
+				NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				"DeviceMBankSwitch"
+			);
+
+			_pDBus->appendStringToBroadcastSignal(device.getID());
+			_pDBus->appendMKeysIDToBroadcastSignal(pressed_MKey);
+
+			_pDBus->sendBroadcastSignal();
+
+			LOG(trace)	<< device.getID() << " sent DBus signal: DeviceMBankSwitch - M"
+						<< pressed_MKey;
+		}
+		catch (const GKDBusMessageWrongBuild & e) {
+			_pDBus->abandonBroadcastSignal();
+			GKSysLogWarning(e.what());
+		}
+	}
+#endif
+
+	/* MR key was pressed */
 	if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_MR) ) {
-		if(! MR_ON) { /* MR off, enable it */
+		if(! MR_ON) { /* MR was off, enable it */
 			mask |= toEnumType(Leds::GK_LED_MR);
 		}
-		else { /* MR on, disable it */
+		else { /* MR was on, disable it */
 			mask &= ~(toEnumType(Leds::GK_LED_MR));
 		}
 		mask_updated = true;
 	}
-	else if(disableMR) {
+	else if(disableMR) { /* force disable MR */
 		mask &= ~(toEnumType(Leds::GK_LED_MR));
 		mask_updated = true;
 	}
@@ -247,7 +269,7 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 			bool skipEvent = false;
 			const uint8_t size = device._newMacro.size();
 
-			/* Macro Size Limit - see keyEvent.hpp */
+			/* Macro Size Limit - see base.hpp */
 			if(size >= MACRO_T_MAX_SIZE) {
 				/* skip all new events */
 				skipEvent = true;
@@ -255,7 +277,7 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 				GKLog(trace, "skipped modifier key event, reached macro max size")
 			}
 
-			/* Macro Size Limit - see keyEvent.hpp */
+			/* Macro Size Limit - see base.hpp */
 			if( ! skipEvent and (size >= MACRO_T_KEYPRESS_MAX_SIZE) ) {
 				/* skip events other than release */
 				if( e.event != EventValue::EVENT_KEY_RELEASE ) {
@@ -341,7 +363,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device)
 			continue; /* nothing here */
 		}
 		else {
-			/* Macro Size Limit - see keyEvent.hpp */
+			/* Macro Size Limit - see base.hpp */
 			if(device._newMacro.size() >= MACRO_T_MAX_SIZE ) {
 				/* skip all new events */
 				GKLog(trace, "skipped key event, reached macro max size")
@@ -364,7 +386,7 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device)
 				continue;
 			}
 
-			/* Macro Size Limit - see keyEvent.hpp */
+			/* Macro Size Limit - see base.hpp */
 			if(device._newMacro.size() >= MACRO_T_KEYPRESS_MAX_SIZE ) {
 				/* skip events other than release */
 				if( e.event != EventValue::EVENT_KEY_RELEASE ) {
@@ -395,24 +417,12 @@ void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device, const std::strin
 	}
 }
 
+#if GKDBUS
 void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 {
 	GK_LOG_FUNC
 
 	GKLog2(trace, device.getID(), " entering macro record mode")
-
-#if GKDBUS
-	NSGKDBus::GKDBus* pDBus = nullptr;
-
-	/* ROOT_NODE only for introspection, don't care */
-	try {
-		pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
-	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
-		GKSysLogError("GKDBus bad allocation");
-		pDBus = nullptr;
-	}
-#endif
 
 	auto & exit = device._exitMacroRecordMode;
 	exit = false;
@@ -438,65 +448,43 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 					continue;
 				}
 
-				if( ! this->checkMacroKey(device) ) {
+				if( ! this->checkGKey(device) ) {
 					/* continue to store standard key events
-					 * while a macro key is not pressed */
+					 * while a G-Key is not pressed */
 					continue;
 				}
 
-				bool setMacro = true;
-				/* don't set macro and don't send signal if
-				 * no new macro defined and current macro for the pressed key
-				 * is already empty
-				 */
-				if( ! device.getMacrosManager()->macroDefined(device._macroKey) and
-					  device._newMacro.empty() ) {
-					setMacro = false;
+				this->checkMacro(device._newMacro);
 
-					GKLog3(trace, device.getID(), " no change for key : ", device._macroKey)
+				try {
+					std::string signal("DeviceMacroRecorded");
+					if( device._newMacro.empty() ) {
+						signal = "DeviceMacroCleared";
+					}
+
+					_pDBus->initializeBroadcastSignal(
+						NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+						GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+						GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+						signal.c_str()
+					);
+
+					_pDBus->appendStringToBroadcastSignal(device.getID());
+					_pDBus->appendGKeysIDToBroadcastSignal(device._GKeyID);
+
+					/* sending macro */
+					if( ! device._newMacro.empty() ) {
+						_pDBus->appendMacroToBroadcastSignal(device._newMacro);
+					}
+
+					_pDBus->sendBroadcastSignal();
+
+					LOG(trace)	<< device.getID() << " sent DBus signal: "
+								<< signal << " - " << getGKeyName(device._GKeyID);
 				}
-
-				if(setMacro) {
-					try {
-						/* macro key pressed, recording macro */
-						device.getMacrosManager()->setMacro(device._macroKey, device._newMacro);
-
-#if GKDBUS
-						if( pDBus ) {
-							const uint8_t bankID = toEnumType( device.getMacrosManager()->getCurrentMacrosBankID() );
-
-							/* open a new connection, GKDBus is not thread-safe */
-							pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
-
-							try {
-								std::string signal("MacroRecorded");
-								if( device._newMacro.empty() ) {
-									signal = "MacroCleared";
-								}
-
-								pDBus->initializeBroadcastSignal(
-									NSGKDBus::BusConnection::GKDBUS_SYSTEM,
-									GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-									GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-									signal.c_str()
-								);
-
-								pDBus->appendStringToBroadcastSignal(device.getID());
-								pDBus->appendStringToBroadcastSignal(device._macroKey);
-								pDBus->appendUInt8ToBroadcastSignal(bankID);
-
-								pDBus->sendBroadcastSignal();
-							}
-							catch (const GKDBusMessageWrongBuild & e) {
-								pDBus->abandonBroadcastSignal();
-								GKSysLogWarning(e.what());
-							}
-						}
-#endif
-					}
-					catch (const GLogiKExcept & e) {
-						GKSysLogWarning(e.what());
-					}
+				catch (const GKDBusMessageWrongBuild & e) {
+					_pDBus->abandonBroadcastSignal();
+					GKSysLogWarning(e.what());
 				}
 
 				exit = true;
@@ -510,31 +498,9 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 
 	device._newMacro.clear();
 
-#if GKDBUS
-	delete pDBus;
-	pDBus = nullptr;
-#endif
-
 	GKLog2(trace, device.getID(), " exiting macro record mode")
 }
-
-void KeyboardDriver::runMacro(const std::string & devID) const
-{
-	GK_LOG_FUNC
-
-	try {
-		const USBDevice & device = _initializedDevices.at(devID);
-
-		GKLog3(trace, devID, " spawned running macro thread for ", device.getFullName())
-
-		device.getMacrosManager()->runMacro(device._macroKey);
-
-		GKLog2(trace, devID, " exiting running macro thread")
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-	}
-}
+#endif
 
 void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 {
@@ -660,84 +626,94 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 						 * update M1-MR leds status, launch macro record mode and
 						 * run macros only after proper event length
 						 */
-						if( device.getLastKeysInterruptTransferLength() == device.getMacrosKeysLength() ) {
+						if( device.getLastKeysInterruptTransferLength() == device.getGKeysTransferLength() ) {
 							/* update mask with potential pressed keys */
 							if(this->updateDeviceMxKeysLedsMask(device))
 								this->setDeviceMxKeysLeds(device);
 
-							/* is macro record mode enabled ? */
+#if GKDBUS
+							/* is MR key enabled ? */
 							if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) ) {
 								this->enterMacroRecordMode(device);
 
 								/* don't need to update leds status if the mask is already 0 */
 								if(device._MxKeysLedsMask != 0) {
-									/* disabling macro record mode */
+									/* disabling MR key */
 									if(this->updateDeviceMxKeysLedsMask(device, true))
 										this->setDeviceMxKeysLeds(device);
 								}
 							}
-							else { /* check to run macro */
-								if( this->checkMacroKey(device) ) {
+							else { /* check to trigger G-Key event */
+								if( this->checkGKey(device) ) {
 									try {
-										/* spawn thread only if macro defined */
-										if(device.getMacrosManager()->macroDefined(device._macroKey)) {
-											std::thread macro_thread(&KeyboardDriver::runMacro, this, devID);
-											macro_thread.detach();
-										}
+										_pDBus->initializeBroadcastSignal(
+											NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+											"DeviceGKeyEvent"
+										);
+
+										_pDBus->appendStringToBroadcastSignal(devID);
+										_pDBus->appendGKeysIDToBroadcastSignal(device._GKeyID);
+
+										_pDBus->sendBroadcastSignal();
+
+										LOG(trace)	<< device.getID() << " sent DBus signal: DeviceGKeyEvent - "
+													<< getGKeyName(device._GKeyID);
 									}
-									catch (const std::system_error& e) {
-										GKSysLogWarning("error while spawning running macro thread");
+									catch (const GKDBusMessageWrongBuild & e) {
+										_pDBus->abandonBroadcastSignal();
+										GKSysLogWarning(e.what());
 									}
 								}
 							}
+#else
+							if( this->checkGKey(device) ) { /* G-Key pressed */
+								LOG(trace) << device.getID() << " G-Key pressed: " << getGKeyName(device._GKeyID);
+
+								/* is MR key enabled ? */
+								if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) ) {
+									/* disabling MR key */
+									if(this->updateDeviceMxKeysLedsMask(device, true))
+										this->setDeviceMxKeysLeds(device);
+								}
+							}
+#endif
 						}
 					}
 
 					if( this->checkDeviceCapability(device, Caps::GK_MEDIA_KEYS) ) {
-						if( device.getLastKeysInterruptTransferLength() == device.getMediaKeysLength() ) {
+						if( device.getLastKeysInterruptTransferLength() == device.getMediaKeysTransferLength() ) {
 							if( this->checkMediaKey(device) ) {
+								LOG(trace) << device.getID() << " media key pressed: " << device._mediaKey;
 #if GKDBUS
-								NSGKDBus::GKDBus* pDBus = nullptr;
-
-								/* ROOT_NODE only for introspection, don't care */
 								try {
-									pDBus = new NSGKDBus::GKDBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
+									_pDBus->initializeBroadcastSignal(
+										NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+										GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+										GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+										"DeviceMediaEvent"
+									);
+
+									_pDBus->appendStringToBroadcastSignal(devID);
+									_pDBus->appendStringToBroadcastSignal(device._mediaKey);
+
+									_pDBus->sendBroadcastSignal();
+
+									LOG(trace)	<< devID << " sent DBus signal: DeviceMediaEvent - "
+												<< device._mediaKey;
 								}
-								catch (const std::bad_alloc& e) { /* handle new() failure */
-									GKSysLogError("GKDBus bad allocation");
-									pDBus = nullptr;
+								catch (const GKDBusMessageWrongBuild & e) {
+									_pDBus->abandonBroadcastSignal();
+									GKSysLogWarning(e.what());
 								}
-
-								if( pDBus ) {
-									pDBus->connectToSystemBus(GLOGIK_DEVICE_THREAD_DBUS_BUS_CONNECTION_NAME);
-
-									try {
-										pDBus->initializeBroadcastSignal(
-											NSGKDBus::BusConnection::GKDBUS_SYSTEM,
-											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-											"deviceMediaEvent"
-										);
-
-										pDBus->appendStringToBroadcastSignal(devID);
-										pDBus->appendStringToBroadcastSignal(device._mediaKey);
-
-										pDBus->sendBroadcastSignal();
-									}
-									catch (const GKDBusMessageWrongBuild & e) {
-										pDBus->abandonBroadcastSignal();
-										GKSysLogWarning(e.what());
-									}
-								}
-
-								delete pDBus; pDBus = nullptr;
 #endif
 							}
 						}
 					}
 
 					if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-						if( device.getLastKeysInterruptTransferLength() == device.getLCDKeysLength() ) {
+						if( device.getLastKeysInterruptTransferLength() == device.getLCDKeysTransferLength() ) {
 							if( this->checkLCDKey(device) ) {
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 								std::lock_guard<std::mutex> lock(device._LCDMutex);
@@ -790,7 +766,6 @@ void KeyboardDriver::resetDeviceState(USBDevice & device)
 
 		/* exit MacroRecordMode if necessary */
 		device._exitMacroRecordMode = true;
-		device.getMacrosManager()->resetMacrosBanks();
 		device._MxKeysLedsMask = 0;
 		this->setDeviceMxKeysLeds(device);
 	}
@@ -904,7 +879,6 @@ void KeyboardDriver::joinDeviceThreads(USBDevice & device)
 /* called when setting active user's configuration */
 void KeyboardDriver::setDeviceActiveConfiguration(
 	const std::string & devID,
-	const banksMap_type & macrosBanks,
 	const uint8_t r,
 	const uint8_t g,
 	const uint8_t b,
@@ -918,9 +892,6 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
 			/* exit MacroRecordMode if necessary */
 			device._exitMacroRecordMode = true;
-
-			/* set macros banks */
-			device.getMacrosManager()->setMacrosBanks(macrosBanks);
 		}
 
 		if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
@@ -935,24 +906,6 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 	catch (const std::out_of_range& oor) {
 		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
-}
-
-const banksMap_type &
-	KeyboardDriver::getDeviceMacrosBanks(const std::string & devID) const
-{
-	GK_LOG_FUNC
-
-	try {
-		const USBDevice & device = _initializedDevices.at(devID);
-		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			return device.getMacrosManager()->getMacrosBanks();
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-	}
-
-	return MacrosBanks::emptyMacrosBanks;
 }
 
 const LCDPluginsPropertiesArray_type &
@@ -993,18 +946,9 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 	try {
 		this->sendUSBDeviceInitialization(device);
 
-		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			try {
-				/* virtual keyboard name */
-				std::ostringstream buffer(std::ios_base::app);
-				buffer	<< "Virtual " << device.getFullName() << " " << device.getID();
-
-				device.setMacrosManager( new MacrosManager(buffer.str().c_str(), this->getMacroKeysNames()) );
-			}
-			catch (const std::bad_alloc& e) { /* handle new() failure */
-				throw GLogiKBadAlloc("macros manager allocation failure");
-			}
-		}
+		// FIXME
+		//if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+		//}
 
 		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
 			try {

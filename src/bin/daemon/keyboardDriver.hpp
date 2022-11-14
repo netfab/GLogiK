@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -34,11 +34,16 @@
 
 #include <config.h>
 
+#if GKDBUS
+#include "lib/dbus/GKDBus.hpp"
+#include "lib/shared/GKeysMacro.hpp"
+#endif
+
 #include "USBDeviceID.hpp"
 #include "USBDevice.hpp"
 
 #include "include/enums.hpp"
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 #include "include/LCDPluginProperties.hpp"
 
 #define DEVICE_LISTENING_THREAD_MAX_ERRORS 3
@@ -74,15 +79,18 @@ struct ModifierKey {
 
 
 class KeyboardDriver
+#if GKDBUS
+	:	private GKeysMacro
+#endif
 {
 	public:
 		virtual ~KeyboardDriver(void) = default;
 
-		/* --- */
-		static std::vector<std::string> macrosKeysNames;
+#if GKDBUS
+		void setDBus(NSGKDBus::GKDBus* pDBus);
+#endif
 
 		static const bool checkDeviceCapability(const USBDeviceID & device, Caps toCheck);
-		static const std::vector<std::string> & getEmptyStringVector(void);
 
 		/* --- */
 		const bool getDeviceThreadsStatus(const std::string & devID) const;
@@ -91,13 +99,11 @@ class KeyboardDriver
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,
-			const banksMap_type & macrosBanks,
 			const uint8_t r,
 			const uint8_t g,
 			const uint8_t b,
 			const uint64_t LCDPluginsMask1
 		);
-		const banksMap_type & getDeviceMacrosBanks(const std::string & devID) const;
 		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID
 		) const;
@@ -112,7 +118,8 @@ class KeyboardDriver
 		) noexcept;
 
 		virtual const std::vector<USBDeviceID> & getSupportedDevices(void) const = 0;
-		virtual const std::vector<std::string> & getMacroKeysNames(void) const = 0;
+		virtual const MKeysIDArray_type getMKeysIDArray(void) const = 0;
+		virtual const GKeysIDArray_type getGKeysIDArray(void) const = 0;
 
 	protected:
 		KeyboardDriver(void) = default;
@@ -148,7 +155,7 @@ class KeyboardDriver
 		std::mutex _threadsMutex;
 
 		std::vector<std::thread> _threads;
-		std::map<const std::string, USBDevice> _initializedDevices;
+		std::map<std::string, USBDevice> _initializedDevices;
 
 #if DEBUGGING_ON && DEBUG_KEYS
 		const std::string getBytes(const USBDevice & device) const;
@@ -157,6 +164,10 @@ class KeyboardDriver
 		void fillStandardKeysEvents(USBDevice & device);
 
 	private:
+#if GKDBUS
+		NSGKDBus::GKDBus* _pDBus;
+#endif
+
 		/* USBAPI */
 		virtual int performUSBDeviceKeysInterruptTransfer(
 			USBDevice & device,
@@ -175,9 +186,11 @@ class KeyboardDriver
 
 		static const std::vector< ModifierKey > modifierKeys;
 
+#if GKDBUS
 		void enterMacroRecordMode(USBDevice & device);
+#endif
+
 		void LCDScreenLoop(const std::string & devID);
-		void runMacro(const std::string & devID) const;
 		void listenLoop(const std::string & devID);
 
 		/* internal */
@@ -206,7 +219,7 @@ class KeyboardDriver
 			const uint8_t g=0xFF,
 			const uint8_t b=0xFF
 		);
-		virtual const bool checkMacroKey(USBDevice & device) = 0;
+		virtual const bool checkGKey(USBDevice & device) = 0;
 		virtual const bool checkMediaKey(USBDevice & device) = 0;
 		virtual const bool checkLCDKey(USBDevice & device) = 0;
 
@@ -252,7 +265,6 @@ class USBKeyboardDriver
 		}
 
 		void closeUSBDevice(USBDevice & device) override {
-			device.destroyMacrosManager();
 			device.destroyLCDPluginsManager();
 
 			USBAPI::closeUSBDevice(device);
@@ -266,7 +278,8 @@ USBKeyboardDriver<USBAPI>::USBKeyboardDriver(void)
 }
 
 template <typename USBAPI>
-USBKeyboardDriver<USBAPI>::~USBKeyboardDriver() {
+USBKeyboardDriver<USBAPI>::~USBKeyboardDriver()
+{
 }
 
 

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 
 #include "devicesManager.hpp"
 
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 
 namespace GLogiK
 {
@@ -67,28 +67,6 @@ class Client
 			DevicesManager* pDevicesManager
 		);
 
-		void syncDeviceMacrosBanks(
-			const std::string & devID,
-			const banksMap_type & macrosBanks
-		);
-
-		const macro_type & getDeviceMacro(
-			const std::string & devID,
-			const std::string & keyName,
-			const uint8_t bankID
-		);
-
-		const bool setDeviceMacrosBank(
-			const std::string & devID,
-			const uint8_t bankID,
-			const mBank_type & bank
-		);
-
-		const bool resetDeviceMacrosBank(
-			const std::string & devID,
-			const uint8_t bankID
-		);
-
 		const bool setDeviceLCDPluginsMask(
 			const std::string & devID,
 			const uint8_t maskID,
@@ -102,7 +80,7 @@ class Client
 	private:
 		std::string _sessionState;
 		const std::string _sessionObjectPath;
-		std::map<const std::string, DeviceProperties> _devices;
+		std::map<std::string, clientDevice> _devices;
 		bool _check;
 		bool _ready;
 

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -30,120 +30,86 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-GKDBusAsyncContainer::GKDBusAsyncContainer(void)
-	:	GKDBusMessage(nullptr, true), _numArgs(0)
+/* --- --- --- */
+/*    public   */
+/* --- --- --- */
+
+void GKDBusMessageAsyncContainer::appendAsyncString(const std::string & value)
+{
+	this->appendString(value);
+}
+
+void GKDBusMessageAsyncContainer::appendAsyncUInt64(const uint64_t value)
+{
+	this->appendUInt64(value);
+}
+
+/* --- --- --- */
+/*  protected  */
+/* --- --- --- */
+
+GKDBusMessageAsyncContainer::GKDBusMessageAsyncContainer(void)
+	:	GKDBusMessage(nullptr, true)
+{
+	this->newAsyncContainer();
+}
+
+GKDBusMessageAsyncContainer::~GKDBusMessageAsyncContainer(void)
+{
+	this->freeAsyncContainer();
+}
+
+void GKDBusMessageAsyncContainer::resetAsyncContainer(void)
+{
+	this->freeAsyncContainer();
+	this->newAsyncContainer();
+}
+
+DBusMessage* GKDBusMessageAsyncContainer::getAsyncContainer(void) const
+{
+	return _message;
+}
+
+/* --- --- --- */
+/*   private   */
+/* --- --- --- */
+
+void GKDBusMessageAsyncContainer::newAsyncContainer(void)
 {
 	GK_LOG_FUNC
+
+	if(_message != nullptr) {
+		LOG(warning) << "async container not NULL";
+	}
 
 	/* initialize fake message */
 	_message = dbus_message_new(DBUS_MESSAGE_TYPE_ERROR);
 	if(_message == nullptr)
-		throw GKDBusMessageWrongBuild("can't allocate memory for DBus Async Container message");
+		throw GKDBusMessageWrongBuild("can't allocate memory for DBus async container message");
 
 	/* initialize potential arguments iterator */
 	dbus_message_iter_init_append(_message, &_itMessage);
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	GKLog(trace, "DBus Async Container initialized")
+	GKLog(trace, "async container initialized")
 #endif
 }
 
-GKDBusAsyncContainer::~GKDBusAsyncContainer()
+void GKDBusMessageAsyncContainer::freeAsyncContainer(void)
 {
 	GK_LOG_FUNC
+
+	if(_message == nullptr) {
+		LOG(warning) << "NULL async container";
+		return;
+	}
 
 	dbus_message_unref(_message);
+	_message = nullptr;
 
 #if DEBUG_GKDBUS_SUBOBJECTS
-	GKLog(trace, "DBus Async Container destroyed")
+	GKLog(trace, "async container freed")
 #endif
-}
-
-DBusMessage* GKDBusAsyncContainer::getAsyncContainerPointer(void) const
-{
-	return _message;
-}
-
-void GKDBusAsyncContainer::incArgs(void)
-{
-	_numArgs++;
-}
-
-const bool GKDBusAsyncContainer::isAsyncContainerEmpty(void) const
-{
-	return (_numArgs == 0);
-}
-
-/* --- --- --- */
-/* --- --- --- */
-/* --- --- --- */
-
-thread_local GKDBusAsyncContainer* GKDBusMessageAsyncContainer::_asyncContainer(nullptr);
-
-GKDBusMessageAsyncContainer::GKDBusMessageAsyncContainer()
-{
-}
-
-GKDBusMessageAsyncContainer::~GKDBusMessageAsyncContainer()
-{
-}
-
-void GKDBusMessageAsyncContainer::initializeAsyncContainer(void)
-{
-	GK_LOG_FUNC
-
-	if(_asyncContainer) /* sanity check */
-		throw GKDBusMessageWrongBuild("DBus AsyncContainer already allocated");
-
-	try {
-		_asyncContainer = new GKDBusAsyncContainer();
-	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
-		LOG(error) << "GKDBus AsyncContainer allocation failure : " << e.what();
-		throw GKDBusMessageWrongBuild("allocation error");
-	}
-}
-
-void GKDBusMessageAsyncContainer::destroyAsyncContainer(void)
-{
-	if(_asyncContainer) {
-		delete _asyncContainer;
-		_asyncContainer = nullptr;
-	}
-}
-
-void GKDBusMessageAsyncContainer::appendAsyncString(const std::string & value)
-{
-	if(_asyncContainer == nullptr) { /* sanity check */
-		this->initializeAsyncContainer();
-	}
-
-	_asyncContainer->appendString(value);
-	_asyncContainer->incArgs();
-}
-
-void GKDBusMessageAsyncContainer::appendAsyncUInt64(const uint64_t value)
-{
-	if(_asyncContainer == nullptr) { /* sanity check */
-		this->initializeAsyncContainer();
-	}
-
-	_asyncContainer->appendUInt64(value);
-	_asyncContainer->incArgs();
-}
-
-const bool GKDBusMessageAsyncContainer::isAsyncContainerEmpty(void) const
-{
-	if(_asyncContainer == nullptr)
-		return true;
-	return _asyncContainer->isAsyncContainerEmpty();
-}
-
-DBusMessage* GKDBusMessageAsyncContainer::getAsyncContainerPointer(void) const
-{
-	if(_asyncContainer == nullptr)
-		return nullptr;
-	return _asyncContainer->getAsyncContainerPointer();
 }
 
 } // namespace NSGKDBus

@@ -2,7 +2,6 @@
 sbin_PROGRAMS = GLogiKd
 
 GLogiKd_CXXFLAGS = \
-				@LIBEVDEV_CFLAGS@ \
 				@BOOST_CPPFLAGS@ \
 				@LIBUSB_CFLAGS@ \
 				@PTHREAD_CFLAGS@ \
@@ -13,7 +12,6 @@ GLogiKd_LDFLAGS = \
 				@AM_LDFLAGS@
 
 GLogiKd_LDADD = \
-				@LIBEVDEV_LIBS@ \
 				@BOOST_PROGRAM_OPTIONS_LIB@ \
 				@BOOST_SYSTEM_LIB@ \
 				@BOOST_FILESYSTEM_LIB@ \
@@ -40,12 +38,8 @@ GLogiKd_SOURCES = \
 		%D%/USBDevice.hpp \
 		%D%/USBDeviceID.cpp \
 		%D%/USBDeviceID.hpp \
-		%D%/virtualKeyboard.cpp \
-		%D%/virtualKeyboard.hpp \
 		%D%/logitechG510.cpp \
 		%D%/logitechG510.hpp \
-		%D%/macrosManager.cpp \
-		%D%/macrosManager.hpp \
 		%D%/LCDScreenPluginsManager.cpp \
 		%D%/LCDScreenPluginsManager.hpp
 

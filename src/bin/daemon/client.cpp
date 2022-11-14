@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -102,14 +102,13 @@ void Client::initializeDevice(
 	catch (const std::out_of_range& oor) {
 		GKLog2(trace, devID, " initializing properties")
 
-		DeviceProperties device;
+		clientDevice device;
 		device.setProperties(
 			pDevicesManager->getDeviceVendor(devID),		/* vendor */
 			pDevicesManager->getDeviceProduct(devID),		/* model */
 			pDevicesManager->getDeviceName(devID),			/* name */
 			pDevicesManager->getDeviceCapabilities(devID)	/* capabilities */
 		);
-		device.initMacrosBanks( pDevicesManager->getDeviceMacroKeysNames(devID) );
 
 		_devices[devID] = device;
 	}
@@ -143,7 +142,7 @@ const bool Client::setDeviceBacklightColor(
 	GKLog2(trace, devID, " setting client backlight color")
 
 	try {
-		DeviceProperties & device = _devices.at(devID);
+		clientDevice & device = _devices.at(devID);
 		device.setRGBBytes(r, g, b);
 		return true;
 	}
@@ -161,112 +160,19 @@ void Client::setDeviceActiveUser(
 	GK_LOG_FUNC
 
 	try {
-		const DeviceProperties & device = _devices.at(devID);
+		const clientDevice & device = _devices.at(devID);
 
 		uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 
 		GKLog2(trace, devID, " setting active configuration")
 
 		pDevicesManager->setDeviceActiveConfiguration(
-			devID, device.getMacrosBanks(),
-			r, g, b, device.getLCDPluginsMask1()
+			devID, r, g, b, device.getLCDPluginsMask1()
 		);
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
-}
-
-void Client::syncDeviceMacrosBanks(
-	const std::string & devID,
-	const banksMap_type & macrosBanks)
-{
-	GK_LOG_FUNC
-
-	GKLog2(trace, devID, " synchonizing macros banks")
-
-	try {
-		DeviceProperties & device = _devices.at(devID);
-		device.setMacrosBanks(macrosBanks);
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-	}
-}
-
-const macro_type & Client::getDeviceMacro(
-	const std::string & devID,
-	const std::string & keyName,
-	const uint8_t bankID)
-{
-	GK_LOG_FUNC
-
-	try {
-		DeviceProperties & device = _devices.at(devID);
-		return device.getMacro(bankID, keyName);
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-	}
-
-	return MacrosBanks::emptyMacro;
-}
-
-const bool Client::setDeviceMacrosBank(
-	const std::string & devID,
-	const uint8_t bankID,
-	const mBank_type & bank)
-{
-	GK_LOG_FUNC
-
-	bool ret = true;
-
-	try {
-		DeviceProperties & device = _devices.at(devID);
-		device.resetMacrosBank(bankID);
-		for(const auto & keyMacroPair : bank) {
-			try {
-				device.setMacro(bankID, keyMacroPair.first, keyMacroPair.second);
-			}
-			catch (const GLogiKExcept & e) {
-				ret = false;
-				GKSysLogWarning(e.what());
-			}
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		ret = false;
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-	}
-	catch (const GLogiKExcept & e) {
-		ret = false;
-		GKSysLogWarning(e.what());
-	}
-
-	return ret;
-}
-
-const bool Client::resetDeviceMacrosBank(
-	const std::string & devID,
-	const uint8_t bankID)
-{
-	GK_LOG_FUNC
-
-	bool ret = false;
-
-	try {
-		DeviceProperties & device = _devices.at(devID);
-		device.resetMacrosBank(bankID);
-		ret = true;
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
-	}
-	catch (const GLogiKExcept & e) {
-		GKSysLogWarning(e.what());
-	}
-
-	return ret;
 }
 
 const bool Client::setDeviceLCDPluginsMask(
@@ -279,7 +185,7 @@ const bool Client::setDeviceLCDPluginsMask(
 	bool ret = false;
 
 	try {
-		DeviceProperties & device = _devices.at(devID);
+		clientDevice & device = _devices.at(devID);
 		device.setLCDPluginsMask(maskID, mask);
 		ret = true;
 	}

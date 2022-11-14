@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@
 #include "lib/shared/glogik.hpp"
 
 #include "DBusHandler.hpp"
+
+#include "include/MBank.hpp"
 
 namespace GLogiK
 {
@@ -378,7 +380,7 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
 				/* update session state when PropertyChanged signal receipted */
 				const std::string object = _pDBus->getObjectFromObjectPath(_currentSession);
 
-				_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+				_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
 					_systemBus,
 					"org.freedesktop.login1",
 					object.c_str(),
@@ -691,7 +693,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  DevicesManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGas2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
@@ -701,7 +703,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::devicesStarted, this, std::placeholders::_1)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGas2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
@@ -711,7 +713,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::devicesStopped, this, std::placeholders::_1)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringsArrayToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGas2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
@@ -721,40 +723,69 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::devicesUnplugged, this, std::placeholders::_1)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGsm2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"MacroRecorded",
+		"DeviceMBankSwitch",
 		{	{"s", "device_id", "in", "device ID"},
-			{"s", "macro_key_name", "in", "macro key name"},
-			{"y", "macro_bankID", "in", "macro bankID"} },
-		std::bind(&DBusHandler::macroRecorded, this,
+			{"y", "macro_bankID", "in", "macro bankID"}
+		},
+		std::bind(&DBusHandler::deviceMBankSwitch, this,
+			std::placeholders::_1, std::placeholders::_2
+		)
+	);
+
+	_pDBus->NSGKDBus::Callback<SIGsGM2v>::exposeSignal(
+		_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		"DeviceMacroRecorded",
+		{	{"s", "device_id", "in", "device ID"},
+			{"y", "macro_keyID", "in", "macro key ID"},
+			{"a(yyq)", "macro_array", "in", "macro array"}
+		},
+		std::bind(&DBusHandler::deviceMacroRecorded, this,
 			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
 		)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsOneByteToBool>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGsG2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"MacroCleared",
+		"DeviceMacroCleared",
 		{	{"s", "device_id", "in", "device ID"},
-			{"s", "macro_key_name", "in", "macro key name"},
-			{"y", "macro_bankID", "in", "macro bankID"} },
-		std::bind(&DBusHandler::macroCleared, this,
-			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
+			{"y", "macro_keyID", "in", "macro key ID"}
+		},
+		std::bind(&DBusHandler::deviceMacroCleared, this,
+			std::placeholders::_1, std::placeholders::_2
 		)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGsG2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"deviceMediaEvent",
+		"DeviceGKeyEvent",
+		{	{"s", "device_id", "in", "device ID"},
+			{"y", "macro_keyID", "in", "macro key ID"}
+		},
+		std::bind(&DBusHandler::deviceGKeyEvent, this,
+			std::placeholders::_1, std::placeholders::_2
+		)
+	);
+
+	_pDBus->NSGKDBus::Callback<SIGss2v>::exposeSignal(
+		_systemBus,
+		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		"DeviceMediaEvent",
 		{	{"s", "device_id", "in", "device ID"},
 			{"s", "media_key_event", "in", "media key event"}
 		},
@@ -766,7 +797,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  ClientsManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
-	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
@@ -776,7 +807,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::daemonIsStopping, this)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
@@ -786,7 +817,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::daemonIsStarting, this)
 	);
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<VoidToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
@@ -799,7 +830,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 	/*   GUISessionMessageHandler GUI requests D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToVoid>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGss2v>::exposeSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
@@ -816,7 +847,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 {
 	const std::string r_ed("reserved");
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
+	_pDBus->NSGKDBus::Callback<SIGs2as>::exposeMethod(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -825,7 +856,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 			{"as", "array_of_strings", "out", "array of devices ID and configuration files"} },
 		std::bind(&DBusHandler::getDevicesList, this, r_ed) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<StringToStringsArray>::exposeMethod(
+	_pDBus->NSGKDBus::Callback<SIGs2as>::exposeMethod(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -834,7 +865,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 			{"as", "array_of_strings", "out", "array of informations strings"} },
 		std::bind(&DBusHandler::getInformations, this, r_ed) );
 
-	_pDBus->NSGKDBus::EventGKDBusCallback<TwoStringsToLCDPluginsPropertiesArray>::exposeMethod(
+	_pDBus->NSGKDBus::Callback<SIGss2aP>::exposeMethod(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -1066,57 +1097,102 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 	}
 }
 
-const bool DBusHandler::macroRecorded(
+void DBusHandler::deviceMBankSwitch(
 	const std::string & devID,
-	const std::string & keyName,
-	const uint8_t bankID)
+	const MKeysID bankID)
 {
 	GK_LOG_FUNC
 
-	GKLog6(trace,
-		devID, " received signal : macroRecorded",
-		"bankID : ", toUInt(bankID),
-		"key : ", keyName
+	GKLog4(trace,
+		devID, " received signal : DeviceMBankSwitch",
+		"bankID : ", bankID
 	)
 
 	if( ! _registerStatus ) {
 		GKLog(trace, "currently not registered, skipping")
-		return false;
+		return;
 	}
 
 	if( _sessionState != "active" ) {
 		GKLog(trace, "currently not active, skipping")
-		return false;
+		return;
 	}
 
-	return _devices.setDeviceMacro(devID, keyName, bankID);
+	LOG(info) << "received DeviceMBankSwitch signal : " << bankID;
+
+	try {
+		_devices.setDeviceCurrentBankID(devID, bankID);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(error) << devID << " setting bankID failure - " << bankID;
+	}
 }
 
-const bool DBusHandler::macroCleared(
+void DBusHandler::deviceMacroRecorded(
 	const std::string & devID,
-	const std::string & keyName,
-	const uint8_t bankID)
+	const GKeysID keyID,
+	const macro_type & macro)
 {
 	GK_LOG_FUNC
 
-	GKLog6(trace,
-		devID, " received signal : macroCleared",
-		"bankID : ", toUInt(bankID),
-		"key : ", keyName
+	GKLog4(trace,
+		devID, " received signal : DeviceMacroRecorded",
+		"key : ", getGKeyName(keyID)
 	)
-
 
 	if( ! _registerStatus ) {
 		GKLog(trace, "currently not registered, skipping")
-		return false;
+		return;
 	}
 
 	if( _sessionState != "active" ) {
 		GKLog(trace, "currently not active, skipping")
-		return false;
+		return;
 	}
 
-	return _devices.clearDeviceMacro(devID, keyName, bankID);
+	try {
+		MKeysID bankID;
+		banksMap_type & banksMap = _devices.getDeviceBanks(devID, bankID);
+
+		_GKeysEvent.setMacro(banksMap, macro, bankID, keyID);
+
+		_devices.saveDeviceConfigurationFile(devID);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(error) << devID << " macro record failure - " << keyID;
+	}
+}
+
+void DBusHandler::deviceMacroCleared(const std::string & devID, const GKeysID keyID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		devID, " received signal : DeviceMacroCleared",
+		"key : ", getGKeyName(keyID)
+	)
+
+	if( ! _registerStatus ) {
+		GKLog(trace, "currently not registered, skipping")
+		return;
+	}
+
+	if( _sessionState != "active" ) {
+		GKLog(trace, "currently not active, skipping")
+		return;
+	}
+
+	try {
+		MKeysID bankID;
+		banksMap_type & banksMap = _devices.getDeviceBanks(devID, bankID);
+
+		if( _GKeysEvent.clearMacro(banksMap, bankID, keyID) ) {
+			_devices.saveDeviceConfigurationFile(devID);
+		}
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(error) << devID << " clear macro failure - " << keyID;
+	}
 }
 
 void DBusHandler::deviceMediaEvent(
@@ -1126,7 +1202,7 @@ void DBusHandler::deviceMediaEvent(
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		devID, " received signal : deviceMediaEvent",
+		devID, " received signal : DeviceMediaEvent",
 		"event : ", mediaKeyEvent
 	)
 
@@ -1142,6 +1218,36 @@ void DBusHandler::deviceMediaEvent(
 
 	_devices.doDeviceFakeKeyEvent(devID, mediaKeyEvent);
 }
+
+void DBusHandler::deviceGKeyEvent(const std::string & devID, const GKeysID keyID)
+{
+	GK_LOG_FUNC
+
+	GKLog4(trace,
+		devID, " received signal : DeviceGKeyEvent",
+		"key : ", getGKeyName(keyID)
+	)
+
+	if( ! _registerStatus ) {
+		GKLog(trace, "currently not registered, skipping")
+		return;
+	}
+
+	if( _sessionState != "active" ) {
+		GKLog(trace, "currently not active, skipping")
+		return;
+	}
+
+	try {
+		MKeysID bankID;
+		banksMap_type & banksMap = _devices.getDeviceBanks(devID, bankID);
+
+		_GKeysEvent.runEvent(banksMap, bankID, keyID);
+	}
+	catch (const GLogiKExcept & e) {
+		LOG(error) << devID << " run event failure - " << keyID;
+	}
+};
 
 const std::vector<std::string> DBusHandler::getDevicesList(const std::string & reserved) {
 	return _devices.getDevicesList();
