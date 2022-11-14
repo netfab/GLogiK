@@ -1,9 +1,10 @@
 
-0.8.xx (202x-xx-xx)
+0.8.16 (2022-11-14)
 ===================
-- Move macro manager from daemon to service. libevdev dependency is
-  added to the service and removed from the daemon
-- (lot of) Miscellaneous internal fixs and improvements
+- Added Qt GUI tab for G-Keys handling
+- Move GKeysEvent manager and libevdev dependency from daemon to service
+- Updated service configuration file format
+- Miscellaneous internal fixs and improvements
 
 0.8.14 (2021-12-11)
 ===================
