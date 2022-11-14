@@ -31,12 +31,7 @@
 #include "GKDBusEvent.hpp"
 
 #include "lib/dbus/arguments/GKDBusArgString.hpp"
-#include "lib/dbus/arguments/GKDBusArgByte.hpp"
 #include "lib/dbus/arguments/GKDBusArgUInt64.hpp"
-
-#include "lib/dbus/arguments/GKDBusArgGKeysID.hpp"
-#include "lib/dbus/arguments/GKDBusArgMKeysID.hpp"
-#include "lib/dbus/arguments/GKDBusArgMacro.hpp"
 
 namespace NSGKDBus
 {
@@ -49,11 +44,7 @@ template <typename T>
 	class callbackEvent
 		:	public GKDBusEvent,
 			virtual private GKDBusArgumentString,
-			virtual private GKDBusArgumentByte,
-			virtual private GKDBusArgumentUInt64,
-			virtual private GKDBusArgumentGKeysID,
-			private GKDBusArgumentMKeysID,
-			virtual private GKDBusArgumentMacro
+			virtual private GKDBusArgumentUInt64
 {
 	public:
 		callbackEvent(

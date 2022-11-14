@@ -21,6 +21,8 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "lib/dbus/arguments/GKDBusArgByte.hpp"
+
 #include "SIGssyyy2b.hpp"
 
 

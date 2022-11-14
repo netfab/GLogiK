@@ -21,6 +21,9 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "lib/dbus/arguments/GKDBusArgGKeysID.hpp"
+#include "lib/dbus/arguments/GKDBusArgMacro.hpp"
+
 #include "SIGsGM2v.hpp"
 
 
