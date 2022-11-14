@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <cstring>
 
 #include "lib/utils/utils.hpp"
+#include "lib/shared/glogik.hpp"
 
 #include "virtualKeyboard.hpp"
 
@@ -35,14 +36,17 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-VirtualKeyboard::VirtualKeyboard(const char* deviceName)
+VirtualKeyboard::VirtualKeyboard(void)
 {
 	GK_LOG_FUNC
+
+	std::string deviceName(GLOGIKS_DESKTOP_SERVICE_NAME);
+	deviceName += " virtual keyboard";
 
 	GKLog2(trace, "initializing ", deviceName)
 
 	_pDevice = libevdev_new();
-	libevdev_set_name(_pDevice, deviceName);
+	libevdev_set_name(_pDevice, deviceName.c_str());
 
 	try {
 		this->enableEventType(EV_KEY);
@@ -72,7 +76,7 @@ VirtualKeyboard::VirtualKeyboard(const char* deviceName)
 	}
 }
 
-VirtualKeyboard::~VirtualKeyboard()
+VirtualKeyboard::~VirtualKeyboard(void)
 {
 	GK_LOG_FUNC
 
@@ -122,15 +126,11 @@ void VirtualKeyboard::sendKeyEvent(const KeyEvent & key)
 	if(ret == 0) {
 		ret = libevdev_uinput_write_event(_pUInputDevice, EV_SYN, SYN_REPORT, 0);
 		if(ret != 0 ) {
-			std::ostringstream buffer(std::ios_base::ate);
-			buffer << "EV_SYN/SYN_REPORT/0 write_event : " << -ret << " : " << strerror(-ret);
-			GKSysLogWarning(buffer.str());
+			LOG(warning) << "EV_SYN/SYN_REPORT/0 write_event : " << -ret << " : " << strerror(-ret);
 		}
 	}
 	else {
-		std::ostringstream buffer(std::ios_base::ate);
-		buffer << "EV_KEY write_event : " << -ret << " : " << strerror(-ret);
-		GKSysLogWarning(buffer.str());
+		LOG(warning) << "EV_KEY write_event : " << -ret << " : " << strerror(-ret);
 	}
 }
 

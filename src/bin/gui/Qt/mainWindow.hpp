@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -37,12 +37,13 @@
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/deviceProperties.hpp"
 
-#include "include/device.hpp"
+#include "include/DeviceID.hpp"
 
 #include "DaemonAndServiceTab.hpp"
 #include "DeviceControlTab.hpp"
 #include "BacklightColorTab.hpp"
 #include "LCDPluginsTab.hpp"
+#include "GKeysTab.hpp"
 
 namespace fs = boost::filesystem;
 
@@ -52,7 +53,8 @@ namespace GLogiK
 enum class TabApplyButton : uint8_t
 {
 	TAB_BACKLIGHT = 1,
-	TAB_LCD_PLUGINS
+	TAB_LCD_PLUGINS,
+	TAB_GKEYS
 };
 
 class MainWindow
@@ -84,6 +86,7 @@ class MainWindow
 		DeviceControlTab* _deviceControlTab;
 		BacklightColorTab* _backlightColorTab;
 		LCDPluginsTab* _LCDPluginsTab;
+		GKeysTab* _GKeysTab;
 
 		int _statusBarTimeout;
 		pid_t _pid;
@@ -111,7 +114,8 @@ class MainWindow
 		void resetInterface(void);
 		void updateInterface(int index);
 		void checkDBusMessages(void);
-		void saveFile(const TabApplyButton tab);
+		void saveConfigurationFile(const TabApplyButton tab);
+		void saveConfigurationFileAndUpdateInterface(const TabApplyButton tab);
 
 		void configurationFileUpdated(const std::string & devID);
 };

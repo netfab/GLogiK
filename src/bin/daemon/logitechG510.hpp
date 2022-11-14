@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@
 #include "USBDevice.hpp"
 
 #include "include/enums.hpp"
+#include "include/base.hpp"
 
 namespace GLogiK
 {
@@ -47,31 +48,15 @@ namespace GLogiK
 /* RKey - Recognized Keys */
 struct RKey
 {
+	const Keys key;
 	const uint16_t index;
 	const unsigned char mask;
-	const Keys key;
-	const char* const name;
-	const bool isMacroKey;
-	const bool isLCDKey;
-
-	RKey(	const uint16_t i,
-			const unsigned char m,
-			const Keys k,
-			const char* const n=nullptr,
-			const bool bMacro=false,
-			const bool bLCD=false )
-		:	index(i),
-			mask(m),
-			key(k),
-			name(n),
-			isMacroKey(bMacro),
-			isLCDKey(bLCD)	{}
 };
 
 struct MKeyLed
 {
-	Leds led;
-	unsigned char mask;
+	const Leds led;
+	const unsigned char mask;
 };
 
 
@@ -87,11 +72,12 @@ class G510Base
 		const char* getDriverName(void) const;
 		const uint16_t getDriverID(void) const;
 		const std::vector<USBDeviceID> & getSupportedDevices(void) const;
-		const std::vector<std::string> & getMacroKeysNames(void) const;
+		const MKeysIDArray_type getMKeysIDArray(void) const;
+		const GKeysIDArray_type getGKeysIDArray(void) const;
 
 		static const std::vector<MKeyLed> ledsMask;
 
-		virtual const bool checkMacroKey(USBDevice & device);
+		virtual const bool checkGKey(USBDevice & device);
 		virtual const bool checkMediaKey(USBDevice & device);
 		virtual const bool checkLCDKey(USBDevice & device);
 
@@ -109,8 +95,11 @@ class G510Base
 		virtual void setDeviceMxKeysLeds(USBDevice & device);
 
 	private:
-		static const std::vector<RKey> fiveBytesKeysMap;
-		static const std::vector<RKey> twoBytesKeysMap;
+		static const std::vector<RKey>    keys5BytesMap;
+		static const std::vector<RKey>   MKeys5BytesMap;
+		static const std::vector<RKey>   GKeys5BytesMap;
+		static const std::vector<RKey> LCDKeys5BytesMap;
+		static const std::vector<RKey> mediaKeys2BytesMap;
 		static const std::vector<USBDeviceID> knownDevices;
 
 		void processKeyEvent2Bytes(USBDevice & device);
@@ -151,8 +140,11 @@ class LogitechG510
 		const std::vector<USBDeviceID> & getSupportedDevices(void) const override {
 			return G510Base::getSupportedDevices();
 		}
-		const std::vector<std::string> & getMacroKeysNames(void) const override {
-			return G510Base::getMacroKeysNames();
+		const MKeysIDArray_type getMKeysIDArray(void) const override {
+			return G510Base::getMKeysIDArray();
+		}
+		const GKeysIDArray_type getGKeysIDArray(void) const override {
+			return G510Base::getGKeysIDArray();
 		}
 
 	private:
@@ -181,8 +173,8 @@ class LogitechG510
 			return G510Base::sendUSBDeviceInitialization(device);
 		}
 
-		const bool checkMacroKey(USBDevice & device) override {
-			return G510Base::checkMacroKey(device);
+		const bool checkGKey(USBDevice & device) override {
+			return G510Base::checkGKey(device);
 		}
 		const bool checkMediaKey(USBDevice & device) override {
 			return G510Base::checkMediaKey(device);

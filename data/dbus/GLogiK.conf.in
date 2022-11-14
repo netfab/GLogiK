@@ -5,7 +5,6 @@
   <!-- Only the glogik user can own those connections names -->
   <policy user="@GLOGIKD_USER@">
     <allow own="com.glogik.Daemon"/>
-    <allow own="com.glogik.Device"/>
   </policy>
   <policy group="@GLOGIKS_GROUP@">
     <allow own="com.glogik.Client"/>
@@ -65,16 +64,10 @@
       send_member="SetDeviceBacklightColor"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
-      send_member="GetDeviceMacro"/>
+      send_member="GetDeviceGKeysIDArray"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
-      send_member="GetDeviceMacroKeysNames"/>
-    <allow send_destination="com.glogik.Daemon"
-      send_interface="com.glogik.Daemon.Device1"
-      send_member="SetDeviceMacrosBank"/>
-    <allow send_destination="com.glogik.Daemon"
-      send_interface="com.glogik.Daemon.Device1"
-      send_member="ResetDeviceMacrosBank"/>
+      send_member="GetDeviceMKeysIDArray"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"
       send_member="SetDeviceLCDPluginsMask"/>

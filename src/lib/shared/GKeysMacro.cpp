@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -21,141 +21,44 @@
 
 #include <algorithm>
 #include <iterator>
-#include <stdexcept>
-#include <sstream>
-#include <iostream>
+
+#include "GKeysMacro.hpp"
 
 #include "lib/utils/utils.hpp"
-
-#include "macrosManager.hpp"
 
 namespace GLogiK
 {
 
 using namespace NSGKUtils;
 
-MacrosManager::MacrosManager(
-	const char* virtualKeyboardName,
-	const std::vector<std::string> & keysNames)
-		:	_virtualKeyboard(virtualKeyboardName),
-			_currentBankID(BankID::BANK_M0)
+const macro_type GKeysMacro::emptyMacro = {};
+
+void GKeysMacro::checkMacro(macro_type & macro)
 {
-	this->initMacrosBanks(keysNames);
-}
+	std::vector<MacroEvent> pressedEvents;
+	std::vector<MacroEvent> releasedEvents;
 
-MacrosManager::~MacrosManager()
-{
-}
+	this->fillInVectors(macro, pressedEvents, releasedEvents);
+	this->fixMacroReleaseEvents(pressedEvents, releasedEvents, macro);
 
-/* returns true if a macro is defined for this key on the current memory bank */
-const bool MacrosManager::macroDefined(const std::string & keyName)
-{
-	GK_LOG_FUNC
+	//// debug code
+	//KeyEvent e1(KEY_UNKNOWN, EventValue::EVENT_KEY_PRESS, 1);
+	//KeyEvent e2(KEY_UNKNOWN, EventValue::EVENT_KEY_RELEASE, 1);
+	//for(unsigned int i = 0; i < 12; ++i) {
+	//	macro.push_back(e1);
+	//	macro.push_back(e2);
+	//}
 
-	try {
-		const macro_type & macro = _macrosBanks[_currentBankID].at(keyName);
-		return (macro.size() > 0);
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogWarning("macro key container not found");
-	}
-
-	return false;
-}
-
-/* run a macro on the virtual keyboard */
-void MacrosManager::runMacro(const std::string & keyName)
-{
-	GK_LOG_FUNC
-
-	try {
-		const macro_type & macro = _macrosBanks[_currentBankID].at(keyName);
-		if(macro.size() == 0) {
-#if DEBUGGING_ON
-			if(GKLogging::GKDebug) {
-				LOG(trace)	<< "Memory Bank: " << _currentBankID
-							<< " - Macro Key: " << keyName
-							<< " - no macro recorded";
-			}
-#endif
-			return;
-		}
-
-#if DEBUGGING_ON
-		if(GKLogging::GKDebug) {
-			LOG(trace)	<< "Memory Bank: " << _currentBankID
-						<< " - Macro Key: " << keyName
-						<< " - running macro";
-		}
-#endif
-		for( const auto &key : macro ) {
-			_virtualKeyboard.sendKeyEvent(key);
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		GKSysLogWarning("macro key container not found");
-	}
-}
-
-void MacrosManager::setCurrentMacrosBankID(BankID bankID)
-{
-	GK_LOG_FUNC
-
-	GKLog2(trace, "setting current bank ID : ", bankID)
-
-	_currentBankID = bankID;
-}
-
-const BankID MacrosManager::getCurrentMacrosBankID(void) const
-{
-	return _currentBankID;
-}
-
-void MacrosManager::setMacro(
-	const std::string & keyName,
-	macro_type & macro)
-{
-	GK_LOG_FUNC
-
-	{
-		std::vector<MacroEvent> pressedEvents;
-		std::vector<MacroEvent> releasedEvents;
-
+	if(macro.size() >= MACRO_T_MAX_SIZE) {
+		LOG(warning) << "macro size greater than MACRO_T_MAX_SIZE, fixing it";
+		pressedEvents.clear();
+		releasedEvents.clear();
 		this->fillInVectors(macro, pressedEvents, releasedEvents);
-		this->fixMacroReleaseEvents(pressedEvents, releasedEvents, macro);
-
-		//// debug code
-		//KeyEvent e1(KEY_UNKNOWN, EventValue::EVENT_KEY_PRESS, 1);
-		//KeyEvent e2(KEY_UNKNOWN, EventValue::EVENT_KEY_RELEASE, 1);
-		//for(unsigned int i = 0; i < 12; ++i) {
-		//	macro.push_back(e1);
-		//	macro.push_back(e2);
-		//}
-
-		if(macro.size() >= MACRO_T_MAX_SIZE) {
-			GKSysLogWarning("macro size greater than MACRO_T_MAX_SIZE, fixing it");
-			pressedEvents.clear();
-			releasedEvents.clear();
-			this->fillInVectors(macro, pressedEvents, releasedEvents);
-			this->fixMacroSize(pressedEvents, releasedEvents, macro);
-		}
-	}
-
-	MacrosBanks::setMacro(_currentBankID, keyName, macro);
-}
-
-void MacrosManager::resetMacrosBanks(void)
-{
-	GK_LOG_FUNC
-
-	this->setCurrentMacrosBankID(BankID::BANK_M0);
-	for(auto & idBankPair : _macrosBanks) {
-		GKLog2(trace, "clearing all macros for Memory Bank: ", idBankPair.first)
-		this->resetMacrosBank(idBankPair.first);
+		this->fixMacroSize(pressedEvents, releasedEvents, macro);
 	}
 }
 
-void MacrosManager::fillInVectors(
+void GKeysMacro::fillInVectors(
 	const macro_type & macro,
 	std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents)
@@ -171,7 +74,7 @@ void MacrosManager::fillInVectors(
 	}
 }
 
-void MacrosManager::fixMacroReleaseEvents(
+void GKeysMacro::fixMacroReleaseEvents(
 	const std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents,
 	macro_type & macro)
@@ -192,9 +95,7 @@ void MacrosManager::fixMacroReleaseEvents(
 			}
 		}
 		if( ! found ) {
-			std::ostringstream buffer(std::ios_base::ate);
-			buffer << "missing release event for index " << toUInt(pressed.index) << " - adding event";
-			GKSysLogWarning(buffer.str());
+			LOG(warning) << "missing release event for index " << toUInt(pressed.index) << " - adding event";
 			KeyEvent e = pressed.key;
 			e.event = EventValue::EVENT_KEY_RELEASE;
 			e.interval = 1;
@@ -217,7 +118,7 @@ void MacrosManager::fixMacroReleaseEvents(
 	}
 }
 
-void MacrosManager::fixMacroSize(
+void GKeysMacro::fixMacroSize(
 	const std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents,
 	macro_type & macro)
@@ -228,10 +129,8 @@ void MacrosManager::fixMacroSize(
 
 	/* sanity check */
 	if(pressedEvents.size() != releasedEvents.size()) {
-		GKSysLogWarning("pressed and released events disparity :");
-		std::ostringstream buffer(std::ios_base::ate);
-		buffer << "pressed: " << pressedEvents.size() << " - released: " << releasedEvents.size();
-		GKSysLogWarning(buffer.str());
+		LOG(warning) << "pressed and released events disparity :";
+		LOG(warning) << "pressed: " << pressedEvents.size() << " - released: " << releasedEvents.size();
 	}
 
 	std::vector<unsigned int> indexes;
@@ -275,7 +174,7 @@ void MacrosManager::fixMacroSize(
 	if( macro.size() >= MACRO_T_MAX_SIZE ) {
 		GKLog2(trace, "macro size : ", macro.size())
 
-		GKSysLogWarning("macro still greater than MACRO_T_MAX_SIZE, force resize it");
+		LOG(warning) << "macro still greater than MACRO_T_MAX_SIZE, force resize it";
 		macro.resize(MACRO_T_MAX_SIZE - 1);
 	}
 

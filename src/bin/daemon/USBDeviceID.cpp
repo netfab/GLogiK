@@ -40,9 +40,9 @@ USBDeviceID::USBDeviceID(
 			const uint8_t bAlternateSetting,
 			const uint8_t bNumEndpoints,
 			const int8_t bufferMaxLength,
-			const int8_t macrosKeysLength,
-			const int8_t mediaKeysLength,
-			const int8_t LCDKeysLength
+			const int8_t GKeysTransferLength,
+			const int8_t mediaKeysTransferLength,
+			const int8_t LCDKeysTransferLength
 		)	:	_vendor(vendor),
 				_product(product),
 				_name(name),
@@ -53,9 +53,9 @@ USBDeviceID::USBDeviceID(
 				_bInterfaceNumber(bInterfaceNumber),
 				_bAlternateSetting(bAlternateSetting),
 				_bNumEndpoints(bNumEndpoints),
-				_MacrosKeysLength(macrosKeysLength),
-				_MediaKeysLength(mediaKeysLength),
-				_LCDKeysLength(LCDKeysLength)
+				_GKeysTransferLength(GKeysTransferLength),
+				_MediaKeysTransferLength(mediaKeysTransferLength),
+				_LCDKeysTransferLength(LCDKeysTransferLength)
 {
 	GK_LOG_FUNC
 
@@ -106,9 +106,9 @@ USBDeviceID::USBDeviceID(
 	_bAlternateSetting				= device._bAlternateSetting;
 	_bNumEndpoints					= device._bNumEndpoints;
 	_keysInterruptBufferMaxLength	= device._keysInterruptBufferMaxLength;
-	_MacrosKeysLength				= device._MacrosKeysLength;
-	_MediaKeysLength				= device._MediaKeysLength;
-	_LCDKeysLength					= device._LCDKeysLength;
+	_GKeysTransferLength			= device._GKeysTransferLength;
+	_MediaKeysTransferLength		= device._MediaKeysTransferLength;
+	_LCDKeysTransferLength			= device._LCDKeysTransferLength;
 }
 
 } // namespace GLogiK

@@ -35,6 +35,8 @@ GKcQt5_SOURCES = \
 		%D%/BacklightColorTab.hpp \
 		%D%/LCDPluginsTab.cpp \
 		%D%/LCDPluginsTab.hpp \
+		%D%/GKeysTab.cpp \
+		%D%/GKeysTab.hpp \
 		%D%/mainWindow.cpp \
 		%D%/mainWindow.hpp \
 		%D%/main.cpp

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -34,9 +34,11 @@
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/sessionManager.hpp"
 
+#include "include/base.hpp"
 #include "include/LCDPluginProperties.hpp"
 
 #include "devicesHandler.hpp"
+#include "GKeysEventManager.hpp"
 
 #define UNREACHABLE_DAEMON_MAX_RETRIES 3
 
@@ -79,6 +81,7 @@ class DBusHandler
 	protected:
 
 	private:
+		GKeysEventManager _GKeysEvent;
 		DevicesHandler _devices;
 
 		std::string _clientID;
@@ -120,22 +123,20 @@ class DBusHandler
 		void daemonIsStopping(void);
 		void daemonIsStarting(void);
 
-		const bool macroRecorded(
-			const std::string & devID,
-			const std::string & keyName,
-			const uint8_t bankID
-		);
-		const bool macroCleared(
-			const std::string & devID,
-			const std::string & keyName,
-			const uint8_t bankID
-		);
-
 		void devicesStarted(const std::vector<std::string> & devicesID);
 		void devicesStopped(const std::vector<std::string> & devicesID);
 		void devicesUnplugged(const std::vector<std::string> & devicesID);
 
 		void deviceMediaEvent(const std::string & devID, const std::string & mediaKeyEvent);
+		void deviceGKeyEvent(const std::string & devID, const GKeysID keyID);
+		void deviceMBankSwitch(const std::string & devID, const MKeysID bankID);
+		void deviceMacroRecorded(
+			const std::string & devID,
+			const GKeysID keyID,
+			const macro_type & macro
+		);
+		void deviceMacroCleared(const std::string & devID, const GKeysID keyID);
+
 		/* -- */
 
 		/* signal and request from GUI  */

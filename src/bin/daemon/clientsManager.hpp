@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@
 #include "clientsSignals.hpp"
 #include "client.hpp"
 
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 #include "include/LCDPluginProperties.hpp"
 
 namespace GLogiK
@@ -59,7 +59,7 @@ class ClientsManager
 		DevicesManager* _pDevicesManager;
 
 		const std::string _active;
-		std::map<const std::string, Client*> _connectedClients;
+		std::map<std::string, Client*> _connectedClients;
 
 		/* internal counter of active clients used
 		 * in ::updateClientState()
@@ -129,7 +129,11 @@ class ClientsManager
 			const std::string & clientID,
 			const std::string & devID
 		);
-		const std::vector<std::string> & getDeviceMacroKeysNames(
+		const MKeysIDArray_type getDeviceMKeysIDArray(
+			const std::string & clientID,
+			const std::string & devID
+		);
+		const GKeysIDArray_type getDeviceGKeysIDArray(
 			const std::string & clientID,
 			const std::string & devID
 		);
@@ -141,26 +145,6 @@ class ClientsManager
 			const uint8_t g,
 			const uint8_t b
 		);
-		const macro_type & getDeviceMacro(
-			const std::string & clientID,
-			const std::string & devID,
-			const std::string & keyName,
-			const uint8_t bankID
-		);
-
-		const bool setDeviceMacrosBank(
-			const std::string & clientID,
-			const std::string & devID,
-			const uint8_t bankID,
-			const mBank_type & bank
-		);
-
-		const bool resetDeviceMacrosBank(
-			const std::string & clientID,
-			const std::string & devID,
-			const uint8_t bankID
-		);
-
 		const bool setDeviceLCDPluginsMask(
 			const std::string & clientID,
 			const std::string & devID,

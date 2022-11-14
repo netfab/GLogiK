@@ -2,6 +2,7 @@
 bin_PROGRAMS += GLogiKs
 
 GLogiKs_CXXFLAGS = \
+				@LIBEVDEV_CFLAGS@ \
 				@BOOST_CPPFLAGS@ \
 				@DBUS_CFLAGS@ \
 				@PTHREAD_CFLAGS@ \
@@ -14,6 +15,7 @@ GLogiKs_LDFLAGS = \
 				@AM_LDFLAGS@
 
 GLogiKs_LDADD = \
+				@LIBEVDEV_LIBS@ \
 				@BOOST_SERIALIZATION_LIB@ \
 				@BOOST_SYSTEM_LIB@ \
 				@BOOST_FILESYSTEM_LIB@ \
@@ -29,8 +31,12 @@ GLogiKs_SOURCES = \
 		%D%/main.cpp \
 		%D%/devicesHandler.cpp \
 		%D%/devicesHandler.hpp \
+		%D%/GKeysEventManager.cpp \
+		%D%/GKeysEventManager.hpp \
 		%D%/DBusHandler.cpp \
 		%D%/DBusHandler.hpp \
 		%D%/service.cpp \
-		%D%/service.hpp
+		%D%/service.hpp \
+		%D%/virtualKeyboard.cpp \
+		%D%/virtualKeyboard.hpp
 

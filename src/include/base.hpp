@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2018  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,13 +19,12 @@
  *
  */
 
-#ifndef SRC_INCLUDE_KEY_EVENT_HPP_
-#define SRC_INCLUDE_KEY_EVENT_HPP_
+#ifndef SRC_INCLUDE_BASE_HPP_
+#define SRC_INCLUDE_BASE_HPP_
 
 #include <cstdint>
 
 #include <sstream>
-#include <string>
 #include <vector>
 #include <map>
 
@@ -52,17 +51,6 @@ enum class EventValue : uint8_t
 	EVENT_KEY_UNKNOWN,
 };
 
-inline std::ostream & operator << (std::ostream & stream, const EventValue & event)
-{
-	stream << static_cast<unsigned int>(event);
-	return stream;
-}
-
-inline const bool operator > (const uint8_t value, const EventValue & event)
-{
-	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(event)));
-}
-
 struct KeyEvent {
 	public:
 		uint8_t code;
@@ -84,28 +72,93 @@ struct KeyEvent {
 		}
 };
 
-enum class BankID : uint8_t
+enum class MKeysID : uint8_t
 {
-	BANK_M0 = 0,
-	BANK_M1,
-	BANK_M2,
-	BANK_M3,
+	MKEY_M0 = 0,
+	MKEY_M1,
+	MKEY_M2,
+	MKEY_M3,
 };
 
-inline std::ostream & operator << (std::ostream & stream, const BankID bankID)
+enum class GKeysID : uint8_t
 {
-	stream << static_cast<unsigned int>(bankID);
+	GKEY_G0 = 0,
+	GKEY_G1,
+	GKEY_G2,
+	GKEY_G3,
+	GKEY_G4,
+	GKEY_G5,
+	GKEY_G6,
+	GKEY_G7,
+	GKEY_G8,
+	GKEY_G9,
+	GKEY_G10,
+	GKEY_G11,
+	GKEY_G12,
+	GKEY_G13,
+	GKEY_G14,
+	GKEY_G15,
+	GKEY_G16,
+	GKEY_G17,
+	GKEY_G18,
+};
+
+const GKeysID GKeyID_INV = GKeysID::GKEY_G0; // invalid
+const GKeysID GKeyID_MAX = GKeysID::GKEY_G18;
+const MKeysID MKeyID_MAX = MKeysID::MKEY_M3;
+
+/* -- -- -- */
+/* -- -- -- */
+/* -- -- -- */
+
+// EventValue
+inline std::ostream & operator << (std::ostream & stream, const EventValue & event)
+{
+	stream << static_cast<unsigned int>(event);
 	return stream;
 }
 
-inline const bool operator > (const uint8_t value, const BankID bankID)
+inline const bool operator > (const uint8_t value, const EventValue & event)
 {
-	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(bankID)));
+	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(event)));
 }
 
+// GKeysID
+inline std::ostream & operator << (std::ostream & stream, const GKeysID keyID)
+{
+	stream << static_cast<unsigned int>(keyID);
+	return stream;
+}
+
+inline const bool operator > (const uint8_t value, const GKeysID keyID)
+{
+	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(keyID)));
+}
+
+// MKeysID
+inline std::ostream & operator << (std::ostream & stream, const MKeysID keyID)
+{
+	stream << static_cast<unsigned int>(keyID);
+	return stream;
+}
+
+inline const bool operator > (const uint8_t value, const MKeysID keyID)
+{
+	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(keyID)));
+}
+
+
+/* -- -- -- */
+/* -- -- -- */
+/* -- -- -- */
+
+// MKeysIDArray
+typedef std::vector<MKeysID> MKeysIDArray_type;
+// GKeysIDArray
+typedef std::vector<GKeysID> GKeysIDArray_type;
+
+// macro
 typedef std::vector<KeyEvent> macro_type;
-typedef std::map<const std::string, macro_type> mBank_type;		/* macros bank */
-typedef std::map<const BankID, mBank_type> banksMap_type;		/* banks map container */
 
 } // namespace GLogiK
 

@@ -271,6 +271,7 @@ AC_DEFINE_UNQUOTED([DEBUG_DIR], ["${DEBUG_DIR}"], [Directory for debug file])
 
 AC_DEFINE_UNQUOTED([DATA_DIR], ["${prefix}/share"], [Root directory for data files installation])
 AC_DEFINE_UNQUOTED([PBM_DATA_DIR], ["${prefix}/share/${PACKAGE_NAME}/pbm"], [Directory for pbm file installation])
+AC_DEFINE_UNQUOTED([QT_DATA_DIR], ["${prefix}/share/${PACKAGE_NAME}/qt"], [Directory for Qt specific files installation])
 
 dnl #define BOOST_LOG_DYN_LINK
 AC_DEFINE_UNQUOTED([BOOST_LOG_DYN_LINK], [], [Link dynamically with boost log libs])
@@ -287,7 +288,6 @@ dnl                       checking for libraries
 dnl -------------------------------------------------------------------------
 
 PKG_CHECK_MODULES([LIBUDEV], [libudev])
-PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
 PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.19])
 
 AS_IF([test "x$enable_hidapi" = "xyes"],
@@ -298,6 +298,7 @@ AS_IF([test "x$enable_hidapi" = "xyes"],
 AS_IF([test "x$enable_dbus" = "xyes"],
 	[
 		PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.10.18])
+		PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
 		dnl SMlib used only by desktop binaries
 		PKG_CHECK_MODULES([SM], [sm ice])
 		dnl X libraries used only by user service

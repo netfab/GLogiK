@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #include <map>
 #include <string>
 
-typedef std::map<const std::string, const std::string> files_map_type;
+typedef std::map<std::string, const std::string> files_map_type;
 
 namespace NSGKUtils
 {
@@ -73,7 +73,7 @@ class FSNotify
 		~FSNotify(void);
 
 	private:
-		std::map<const std::string, WatchedObject> _watchedDescriptorsMap;
+		std::map<std::string, WatchedObject> _watchedDescriptorsMap;
 
 		int _inotifyQueueFD;
 

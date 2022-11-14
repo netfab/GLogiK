@@ -3,12 +3,17 @@ GLogiKs_sources = [
   'main.cpp',
   'devicesHandler.cpp',
   'devicesHandler.hpp',
+  'GKeysEventManager.cpp',
+  'GKeysEventManager.hpp',
   'DBusHandler.cpp',
   'DBusHandler.hpp',
   'service.cpp',
   'service.hpp',
+  'virtualKeyboard.cpp',
+  'virtualKeyboard.hpp',
 ]
 
+libevdev_dep = dependency('libevdev')
 x11_dep = dependency('x11')
 xtst_dep = dependency('xtst')
 
@@ -23,6 +28,7 @@ executable(
 	boost_filesystem_dep,
 	boost_program_options_dep,
 	boost_serialization_dep,
+	libevdev_dep,
 	x11_dep,
 	xtst_dep,
 	GKUtils_lib_dep,

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -18,6 +18,11 @@
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+#include <string>
+
+#include <QLayoutItem>
+#include <QSpacerItem>
 
 #include "lib/utils/utils.hpp"
 
@@ -45,6 +50,18 @@ QFrame* Tab::getHLine(void)
 	return line;
 }
 
+QFrame* Tab::getVLine(void)
+{
+	GK_LOG_FUNC
+
+	QFrame* line = new QFrame();
+	GKLog(trace, "allocated QFrame")
+
+	line->setFrameShape(QFrame::VLine);
+	line->setFrameShadow(QFrame::Sunken);
+	return line;
+}
+
 void Tab::prepareApplyButton(void)
 {
 	GK_LOG_FUNC
@@ -55,6 +72,54 @@ void Tab::prepareApplyButton(void)
 	/* Default visual properties for widgets are defined by QStyle
 	 * styleSheet() returns empty QString */
 	_pApplyButton->setStyleSheet("padding:3px 12px 3px 12px;");
+}
+
+void Tab::clearLayout(QLayout* parentLayout)
+{
+	GK_LOG_FUNC
+
+	if(parentLayout == nullptr)
+		return;
+
+	QLayoutItem* item;
+	while( (item = parentLayout->takeAt(0) ) != nullptr)
+	{
+		std::string itemName("spacer");
+
+		/*
+		 * From the (QLayoutItem) Qt documentation.
+		 *
+		 *   If this item *is* a QLayout, ->layout() returns
+		 *     it as a QLayout; otherwise nullptr is returned.
+		 *   If this item *is* a QSpacerItem, ->spacerItem() returns
+		 *     it as a QSpacerItem; otherwise nullptr is returned.
+		 *   If this item *manages* a QWidget, ->widget() returns
+		 *     that widget; otherwise nullptr is returned.
+		 */
+
+		QLayout* layout = item->layout();
+		if( layout != nullptr ) {
+			this->clearLayout(layout);
+
+			itemName = "layout ";
+			itemName += layout->objectName().toStdString();
+
+			layout = nullptr;
+		}
+
+		QWidget* widget = item->widget();
+		if( widget != nullptr ) {
+			itemName = "widget ";
+			itemName += widget->objectName().toStdString();
+			GKLog2(trace, "deleting ", itemName)
+
+			widget->disconnect();
+			delete widget; widget = nullptr;
+		}
+
+		GKLog2(trace, "deleting layout item : ", itemName)
+		delete item;
+	}
 }
 
 } // namespace GLogiK

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,19 +22,19 @@
 #ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_MACROS_BANK_HPP_
 #define SRC_LIB_DBUS_ARG_GKDBUS_ARG_MACROS_BANK_HPP_
 
-#include "GKDBusArgString.hpp"
 #include "GKDBusArgByte.hpp"
+#include "GKDBusArgGKeysID.hpp"
 #include "GKDBusArgMacro.hpp"
 
-#include "include/keyEvent.hpp"
+#include "include/MBank.hpp"
 
 namespace NSGKDBus
 {
 
 class GKDBusArgumentMacrosBank
-	:	virtual private GKDBusArgumentString,
-		virtual private GKDBusArgumentByte,
-		private GKDBusArgumentMacro
+	:	virtual private GKDBusArgumentByte,
+		virtual private GKDBusArgumentGKeysID,
+		virtual private GKDBusArgumentMacro
 {
 	public:
 		static const GLogiK::mBank_type getNextMacrosBankArgument(void);

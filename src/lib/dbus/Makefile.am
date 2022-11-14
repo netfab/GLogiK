@@ -25,6 +25,14 @@ libGKDBus_la_SOURCES = \
 	%D%/arguments/GKDBusArgUInt16.hpp \
 	%D%/arguments/GKDBusArgUInt64.cpp \
 	%D%/arguments/GKDBusArgUInt64.hpp \
+	%D%/arguments/GKDBusArgGKeysID.cpp \
+	%D%/arguments/GKDBusArgGKeysID.hpp \
+	%D%/arguments/GKDBusArgGKeysIDArray.cpp \
+	%D%/arguments/GKDBusArgGKeysIDArray.hpp \
+	%D%/arguments/GKDBusArgMKeysID.cpp \
+	%D%/arguments/GKDBusArgMKeysID.hpp \
+	%D%/arguments/GKDBusArgMKeysIDArray.cpp \
+	%D%/arguments/GKDBusArgMKeysIDArray.hpp \
 	%D%/arguments/GKDBusArgMacro.cpp \
 	%D%/arguments/GKDBusArgMacro.hpp \
 	%D%/arguments/GKDBusArgMacrosBank.cpp \
@@ -45,10 +53,44 @@ libGKDBus_la_SOURCES = \
 	%D%/messages/GKDBusBroadcastSignal.hpp \
 	%D%/messages/GKDBusAsyncContainer.cpp \
 	%D%/messages/GKDBusAsyncContainer.hpp \
+	%D%/events/callback.hpp \
+	%D%/events/callbackEvent.hpp \
 	%D%/events/GKDBusEvent.cpp \
 	%D%/events/GKDBusEvent.hpp \
-	%D%/events/GKDBusEventTemplates.cpp \
-	%D%/events/GKDBusEventTemplates.hpp \
+	%D%/events/SIGas2v.cpp \
+	%D%/events/SIGas2v.hpp \
+	%D%/events/SIGs2as.cpp \
+	%D%/events/SIGs2as.hpp \
+	%D%/events/SIGs2b.cpp \
+	%D%/events/SIGs2b.hpp \
+	%D%/events/SIGs2s.cpp \
+	%D%/events/SIGs2s.hpp \
+	%D%/events/SIGs2v.cpp \
+	%D%/events/SIGs2v.hpp \
+	%D%/events/SIGsG2v.cpp \
+	%D%/events/SIGsG2v.hpp \
+	%D%/events/SIGsGM2v.cpp \
+	%D%/events/SIGsGM2v.hpp \
+	%D%/events/SIGsm2v.cpp \
+	%D%/events/SIGsm2v.hpp \
+	%D%/events/SIGss2aG.cpp \
+	%D%/events/SIGss2aG.hpp \
+	%D%/events/SIGss2am.cpp \
+	%D%/events/SIGss2am.hpp \
+	%D%/events/SIGss2aP.cpp \
+	%D%/events/SIGss2aP.hpp \
+	%D%/events/SIGss2b.cpp \
+	%D%/events/SIGss2b.hpp \
+	%D%/events/SIGss2s.cpp \
+	%D%/events/SIGss2s.hpp \
+	%D%/events/SIGss2v.cpp \
+	%D%/events/SIGss2v.hpp \
+	%D%/events/SIGssyt2b.cpp \
+	%D%/events/SIGssyt2b.hpp \
+	%D%/events/SIGssyyy2b.cpp \
+	%D%/events/SIGssyyy2b.hpp \
+	%D%/events/SIGv2v.cpp \
+	%D%/events/SIGv2v.hpp \
 	%D%/GKDBusConnection.hpp \
 	%D%/GKDBus.cpp \
 	%D%/GKDBus.hpp \

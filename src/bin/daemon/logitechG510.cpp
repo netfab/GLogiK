@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
  *
  */
 
+#include <stdexcept>
 #include <algorithm>
 #include <mutex>
 
@@ -32,60 +33,69 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-const std::vector<RKey> G510Base::fiveBytesKeysMap = {
-	{1, 0x01, Keys::GK_KEY_G1,  "G1",  true},
-	{1, 0x02, Keys::GK_KEY_G2,  "G2",  true},
-	{1, 0x04, Keys::GK_KEY_G3,  "G3",  true},
-	{1, 0x08, Keys::GK_KEY_G4,  "G4",  true},
-	{1, 0x10, Keys::GK_KEY_G5,  "G5",  true},
-	{1, 0x20, Keys::GK_KEY_G6,  "G6",  true},
-	{1, 0x40, Keys::GK_KEY_G7,  "G7",  true},
-	{1, 0x80, Keys::GK_KEY_G8,  "G8",  true},
+const std::vector<RKey> G510Base::keys5BytesMap = {
+//	{ Keys::GK_KEY_,				3,	1 << 2 },
+	{ Keys::GK_KEY_LIGHT,			3,	1 << 3 },
+	{ Keys::GK_KEY_MR,				3,	1 << 7 },
 
-	{2, 0x01, Keys::GK_KEY_G9,  "G9",  true},
-	{2, 0x02, Keys::GK_KEY_G10, "G10", true},
-	{2, 0x04, Keys::GK_KEY_G11, "G11", true},
-	{2, 0x08, Keys::GK_KEY_G12, "G12", true},
-	{2, 0x10, Keys::GK_KEY_G13, "G13", true},
-	{2, 0x20, Keys::GK_KEY_G14, "G14", true},
-	{2, 0x40, Keys::GK_KEY_G15, "G15", true},
-	{2, 0x80, Keys::GK_KEY_G16, "G16", true},
-
-	{3, 0x01, Keys::GK_KEY_G17, "G17", true},
-	{3, 0x02, Keys::GK_KEY_G18, "G18", true},
-//	{3, 0x04, Keys::GK_KEY_},
-	{3, 0x08, Keys::GK_KEY_LIGHT},
-	{3, 0x10, Keys::GK_KEY_M1},
-	{3, 0x20, Keys::GK_KEY_M2},
-	{3, 0x40, Keys::GK_KEY_M3},
-	{3, 0x80, Keys::GK_KEY_MR},
-
-	{4, 0x01, Keys::GK_KEY_L1, LCD_KEY_L1, false, true},
-	{4, 0x02, Keys::GK_KEY_L2, LCD_KEY_L2, false, true},
-	{4, 0x04, Keys::GK_KEY_L3, LCD_KEY_L3, false, true},
-	{4, 0x08, Keys::GK_KEY_L4, LCD_KEY_L4, false, true},
-	{4, 0x10, Keys::GK_KEY_L5, LCD_KEY_L5, false, true},
-	{4, 0x20, Keys::GK_KEY_MUTE_HEADSET},
-	{4, 0x40, Keys::GK_KEY_MUTE_MICRO},
-//	{4, 0x80, Keys::GK_KEY_},
+	{ Keys::GK_KEY_MUTE_HEADSET,	4,	1 << 5 },
+	{ Keys::GK_KEY_MUTE_MICRO,		4,	1 << 6 },
+//	{ Keys::GK_KEY_,				4,	1 << 7 },
 };
 
-const std::vector<RKey> G510Base::twoBytesKeysMap = {
-	{1, 0x01, Keys::GK_KEY_AUDIO_NEXT,			XF86_AUDIO_NEXT},			/* XF86AudioNext */
-	{1, 0x02, Keys::GK_KEY_AUDIO_PREV,			XF86_AUDIO_PREV},			/* XF86AudioPrev */
-	{1, 0x04, Keys::GK_KEY_AUDIO_STOP,			XF86_AUDIO_STOP},			/* XF86AudioStop */
-	{1, 0x08, Keys::GK_KEY_AUDIO_PLAY,			XF86_AUDIO_PLAY},			/* XF86AudioPlay */
-	{1, 0x10, Keys::GK_KEY_AUDIO_MUTE,			XF86_AUDIO_MUTE},			/* XF86AudioMute */
-	{1, 0x20, Keys::GK_KEY_AUDIO_RAISE_VOLUME,	XF86_AUDIO_RAISE_VOLUME},	/* XF86AudioRaiseVolume */
-	{1, 0x40, Keys::GK_KEY_AUDIO_LOWER_VOLUME,	XF86_AUDIO_LOWER_VOLUME},	/* XF86AudioLowerVolume */
-//	{1, 0x80, Keys::GK_KEY_},
+const std::vector<RKey> G510Base::MKeys5BytesMap = {
+	{ Keys::GK_KEY_M1,	3,	1 << 4 },
+	{ Keys::GK_KEY_M2,	3,	1 << 5 },
+	{ Keys::GK_KEY_M3,	3,	1 << 6 },
+};
+
+const std::vector<RKey> G510Base::GKeys5BytesMap = {
+	{ Keys::GK_KEY_G1,	1,	1 << 0 },
+	{ Keys::GK_KEY_G2,	1,	1 << 1 },
+	{ Keys::GK_KEY_G3,	1,	1 << 2 },
+	{ Keys::GK_KEY_G4,	1,	1 << 3 },
+	{ Keys::GK_KEY_G5,	1,	1 << 4 },
+	{ Keys::GK_KEY_G6,	1,	1 << 5 },
+	{ Keys::GK_KEY_G7,	1,	1 << 6 },
+	{ Keys::GK_KEY_G8,	1,	1 << 7 },
+
+	{ Keys::GK_KEY_G9,	2,	1 << 0 },
+	{ Keys::GK_KEY_G10,	2,	1 << 1 },
+	{ Keys::GK_KEY_G11,	2,	1 << 2 },
+	{ Keys::GK_KEY_G12,	2,	1 << 3 },
+	{ Keys::GK_KEY_G13,	2,	1 << 4 },
+	{ Keys::GK_KEY_G14,	2,	1 << 5 },
+	{ Keys::GK_KEY_G15,	2,	1 << 6 },
+	{ Keys::GK_KEY_G16,	2,	1 << 7 },
+
+	{ Keys::GK_KEY_G17,	3,	1 << 0 },
+	{ Keys::GK_KEY_G18,	3,	1 << 1 },
+};
+
+const std::vector<RKey> G510Base::LCDKeys5BytesMap = {
+	{ Keys::GK_KEY_L1,	4,	1 << 0 },
+	{ Keys::GK_KEY_L2,	4,	1 << 1 },
+	{ Keys::GK_KEY_L3,	4,	1 << 2 },
+	{ Keys::GK_KEY_L4,	4,	1 << 3 },
+	{ Keys::GK_KEY_L5,	4,	1 << 4 },
+};
+
+const std::vector<RKey> G510Base::mediaKeys2BytesMap = {
+	{ Keys::GK_KEY_AUDIO_NEXT,			1,	1 << 0 },
+	{ Keys::GK_KEY_AUDIO_PREV,			1,	1 << 1 },
+	{ Keys::GK_KEY_AUDIO_STOP,			1,	1 << 2 },
+	{ Keys::GK_KEY_AUDIO_PLAY,			1,	1 << 3 },
+	{ Keys::GK_KEY_AUDIO_MUTE,			1,	1 << 4 },
+	{ Keys::GK_KEY_AUDIO_RAISE_VOLUME,	1,	1 << 5 },
+	{ Keys::GK_KEY_AUDIO_LOWER_VOLUME,	1,	1 << 6 },
+//	{ Keys::GK_KEY_,					1,	1 << 7 },
 };
 
 const std::vector<MKeyLed> G510Base::ledsMask = {
-	{Leds::GK_LED_M1, 0x80},
-	{Leds::GK_LED_M2, 0x40},
-	{Leds::GK_LED_M3, 0x20},
-	{Leds::GK_LED_MR, 0x10},
+	{ Leds::GK_LED_M1, 1 << 7 },
+	{ Leds::GK_LED_M2, 1 << 6 },
+	{ Leds::GK_LED_M3, 1 << 5 },
+	{ Leds::GK_LED_MR, 1 << 4 },
 };
 
 const std::vector<USBDeviceID> G510Base::knownDevices = {
@@ -145,22 +155,40 @@ const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const
 	return G510Base::knownDevices;
 }
 
-const std::vector<std::string> & G510Base::getMacroKeysNames(void) const
+const MKeysIDArray_type G510Base::getMKeysIDArray(void) const
 {
-	KeyboardDriver::macrosKeysNames.clear();
-	for (const auto & key : G510Base::fiveBytesKeysMap ) {
-		if( key.isMacroKey )
-			KeyboardDriver::macrosKeysNames.push_back(key.name);
+	MKeysIDArray_type ret;
+	for(const auto & key : G510Base::MKeys5BytesMap) {
+		try {
+			ret.push_back(getMKeyID(key.key));
+		}
+		catch(const std::out_of_range& oor) {
+			GKSysLogWarning("invalid key for MKeysID");
+		}
 	}
-	return KeyboardDriver::macrosKeysNames;
+	return ret;
 }
 
-/* return true if any macro key (G1-G18) is pressed  */
-const bool G510Base::checkMacroKey(USBDevice & device)
+const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 {
-	for (const auto & key : G510Base::fiveBytesKeysMap ) {
-		if( key.isMacroKey and (device._pressedRKeysMask & toEnumType(key.key)) ) {
-			device._macroKey = key.name;
+	GKeysIDArray_type ret;
+	for(const auto & key : G510Base::GKeys5BytesMap) {
+		try {
+			ret.push_back(getGKeyID(key.key));
+		}
+		catch(const std::out_of_range& oor) {
+			GKSysLogWarning("invalid key for GKeysID");
+		}
+	}
+	return ret;
+}
+
+/* return true if any G-Key (G1-G18) is pressed  */
+const bool G510Base::checkGKey(USBDevice & device)
+{
+	for( const auto & key : G510Base::GKeys5BytesMap ) {
+		if( device._pressedRKeysMask & toEnumType(key.key) ) {
+			device._GKeyID = getGKeyID(key.key);
 			return true;
 		}
 	}
@@ -170,9 +198,9 @@ const bool G510Base::checkMacroKey(USBDevice & device)
 /* return true if any media key is pressed */
 const bool G510Base::checkMediaKey(USBDevice & device)
 {
-	for (const auto & key : G510Base::twoBytesKeysMap ) {
+	for( const auto & key : G510Base::mediaKeys2BytesMap ) {
 		if( device._pressedRKeysMask & toEnumType(key.key) ) {
-			device._mediaKey = key.name;
+			device._mediaKey = getKeyName(key.key);
 			return true;
 		}
 	}
@@ -182,10 +210,11 @@ const bool G510Base::checkMediaKey(USBDevice & device)
 /* return true if any LCD key is pressed */
 const bool G510Base::checkLCDKey(USBDevice & device)
 {
-	for (const auto & key : G510Base::fiveBytesKeysMap ) {
-		if( key.isLCDKey and device._pressedRKeysMask & toEnumType(key.key) ) {
+	for( const auto & key : G510Base::LCDKeys5BytesMap ) {
+		if( device._pressedRKeysMask & toEnumType(key.key) ) {
+			const std::string Key(getKeyName(key.key));
 			std::lock_guard<std::mutex> lock(device._LCDMutex);
-			device._LCDKey = key.name;
+			device._LCDKey = Key;
 			return true;
 		}
 	}
@@ -202,7 +231,7 @@ void G510Base::processKeyEvent2Bytes(USBDevice & device)
 	GK_LOG_FUNC
 
 	if (device._pressedKeys[0] == 0x02) {
-		for (const auto & key : G510Base::twoBytesKeysMap ) {
+		for( const auto & key : G510Base::mediaKeys2BytesMap ) {
 			if( device._pressedKeys[key.index] & key.mask )
 				device._pressedRKeysMask |= toEnumType(key.key);
 		}
@@ -253,7 +282,25 @@ void G510Base::processKeyEvent5Bytes(USBDevice & device)
 		return;
 	}
 
-	for (const auto & key : G510Base::fiveBytesKeysMap ) {
+	for(const auto & key : G510Base::keys5BytesMap) {
+		if( device._pressedKeys[key.index] & key.mask )
+			device._pressedRKeysMask |= toEnumType(key.key);
+	}
+
+	/* M Keys */
+	for(const auto & key : G510Base::MKeys5BytesMap) {
+		if( device._pressedKeys[key.index] & key.mask )
+			device._pressedRKeysMask |= toEnumType(key.key);
+	}
+
+	/* G Keys */
+	for(const auto & key : G510Base::GKeys5BytesMap) {
+		if( device._pressedKeys[key.index] & key.mask )
+			device._pressedRKeysMask |= toEnumType(key.key);
+	}
+
+	/* LCD Keys */
+	for(const auto & key : G510Base::LCDKeys5BytesMap) {
 		if( device._pressedKeys[key.index] & key.mask )
 			device._pressedRKeysMask |= toEnumType(key.key);
 	}

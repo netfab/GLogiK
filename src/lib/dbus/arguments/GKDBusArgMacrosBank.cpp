@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -41,13 +41,13 @@ const GLogiK::mBank_type GKDBusArgumentMacrosBank::getNextMacrosBankArgument(voi
 
 	try {
 		do {
-			const std::string key = GKDBusArgumentString::getNextStringArgument();
+			const GLogiK::GKeysID keyID = GKDBusArgumentGKeysID::getNextGKeysIDArgument();
 			const uint8_t size = GKDBusArgumentByte::getNextByteArgument();
 			const GLogiK::macro_type macro = GKDBusArgumentMacro::getNextMacroArgument(size);
 
-			bank[key] = macro;
+			bank[keyID] = GLogiK::GKeysEvent(macro);
 		}
-		while( ! GKDBusArgumentString::stringArguments.empty() );
+		while( ! GKDBusArgumentByte::byteArguments.empty() );
 	}
 	catch ( const EmptyContainer & e ) {
 		LOG(warning) << "missing argument : " << e.what();

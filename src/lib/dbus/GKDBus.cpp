@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -43,6 +43,11 @@ GKDBus::GKDBus(
 	GKLog(trace, "GKDBus initialization")
 
 	dbus_error_init(&_error);
+
+	std::string s;
+	GKLog4(trace, "checking std::string ::max_size(): ", s.max_size(), "UINT64_MAX: ", UINT64_MAX)
+	if( s.max_size() > UINT64_MAX )
+		throw GLogiKExcept("std::string ::max_size() overflow detected");
 }
 
 GKDBus::~GKDBus()
@@ -148,6 +153,8 @@ const std::string GKDBus::getObjectFromObjectPath(const std::string & objectPath
 
 void GKDBus::checkForMessages(void) noexcept
 {
+	std::lock_guard<std::mutex> lock(_lockMutex);
+
 	if(_systemConnection != nullptr)
 		this->checkForBusMessages(BusConnection::GKDBUS_SYSTEM, _systemConnection);
 	if(_sessionConnection != nullptr)
@@ -165,9 +172,13 @@ void GKDBus::checkForMessages(void) noexcept
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void GKDBus::checkDBusMessage(DBusConnection* const connection)
+void GKDBus::checkDBusMessage(
+	DBusConnection* const connection,
+	DBusMessage* message)
 {
-	const std::string object = this->getObjectFromObjectPath(toString(dbus_message_get_path(_message)));
+	const std::string object = this->getObjectFromObjectPath(
+		toString(dbus_message_get_path(message))
+	);
 
 	for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
 		/* handle root node introspection special case */
@@ -189,20 +200,24 @@ void GKDBus::checkDBusMessage(DBusConnection* const connection)
 				switch(DBusEvent->eventType) {
 					case GKDBusEventType::GKDBUS_EVENT_METHOD:
 					{
-						if( dbus_message_is_method_call(_message, interface, eventName) )
+						if( dbus_message_is_method_call(message, interface, eventName) )
 						{
 							GKLog2(trace, "receipted DBus method call : ", eventName)
-							DBusEvent->runCallback(connection, _message);
+							DBusMessage* asyncContainer = this->getAsyncContainer();
+							DBusEvent->runCallback(connection, message, asyncContainer);
+							this->resetAsyncContainer();
 							return;
 						}
 						break;
 					}
 					case GKDBusEventType::GKDBUS_EVENT_SIGNAL:
 					{
-						if( dbus_message_is_signal(_message, interface, eventName) )
+						if( dbus_message_is_signal(message, interface, eventName) )
 						{
 							GKLog2(trace, "receipted DBus signal : ", eventName)
-							DBusEvent->runCallback(connection, _message);
+							DBusMessage* asyncContainer = this->getAsyncContainer();
+							DBusEvent->runCallback(connection, message, asyncContainer);
+							this->resetAsyncContainer();
 							return;
 						}
 						break;
@@ -239,10 +254,10 @@ void GKDBus::checkForBusMessages(
 
 	while( true ) {
 		dbus_connection_read_write(connection, 0);
-		_message = dbus_connection_pop_message(connection);
+		DBusMessage* message = dbus_connection_pop_message(connection);
 
 		/* no message */
-		if(_message == nullptr) {
+		if(message == nullptr) {
 #if DEBUGGING_ON
 			if(c > 0) {
 				GKLog3(trace, "processed ", c, " DBus messages")
@@ -252,7 +267,7 @@ void GKDBus::checkForBusMessages(
 		}
 
 		try {
-			this->checkDBusMessage(connection);
+			this->checkDBusMessage(connection, message);
 		}
 		catch (const std::out_of_range& oor) {
 			LOG(error) << "current bus connection oor";
@@ -262,8 +277,8 @@ void GKDBus::checkForBusMessages(
 		}
 
 		//GKLog(trace, "freeing DBus message")
-		dbus_message_unref(_message);
-		_message = nullptr;
+		dbus_message_unref(message);
+		message = nullptr;
 
 #if DEBUGGING_ON
 		c++;

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 
 #include <dbus/dbus.h>
 
@@ -45,6 +46,8 @@
 #include "arguments/GKDBusArgUInt64.hpp"
 #include "arguments/GKDBusArgMacro.hpp"
 #include "arguments/GKDBusArgDevicesMap.hpp"
+#include "arguments/GKDBusArgGKeysIDArray.hpp"
+#include "arguments/GKDBusArgMKeysIDArray.hpp"
 #include "arguments/GKDBusArgLCDPluginsArray.hpp"
 
 namespace NSGKDBus
@@ -68,6 +71,8 @@ class GKDBus
 		virtual public GKDBusArgumentUInt64,
 		public GKDBusArgumentMacro,
 		public GKDBusArgumentDevicesMap,
+		public GKDBusArgumentGKeysIDArray,
+		public GKDBusArgumentMKeysIDArray,
 		public GKDBusArgumentLCDPluginsArray
 {
 	public:
@@ -100,15 +105,19 @@ class GKDBus
 		std::string _sessionName;
 		std::string _systemName;
 
+		std::mutex _lockMutex;
+
 		DBusConnection* _sessionConnection;
 		DBusConnection* _systemConnection;
 
-		DBusMessage* _message;
-
-		void checkDBusMessage(DBusConnection* const connection);
+		void checkDBusMessage(
+			DBusConnection* const connection,
+			DBusMessage* message
+		);
 		void checkForBusMessages(
 			const BusConnection bus,
-			DBusConnection* const connection) noexcept;
+			DBusConnection* const connection
+		) noexcept;
 		void checkReleasedName(int ret) noexcept;
 		void checkDBusError(const char* error);
 		DBusConnection* const getConnection(BusConnection bus) const;

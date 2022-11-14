@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #ifndef SRC_BIN_GUI_QT_TAB_HPP_
 #define SRC_BIN_GUI_QT_TAB_HPP_
 
+#include <QLayout>
 #include <QWidget>
 #include <QFrame>
 #include <QPushButton>
@@ -50,8 +51,9 @@ class Tab
 		virtual void buildTab(void) = 0;
 		virtual void updateTab(void) {};
 
-		const QPushButton* getApplyButton(void) const;
 		QFrame* getHLine(void);
+		QFrame* getVLine(void);
+		const QPushButton* getApplyButton(void) const;
 
 	protected:
 		NSGKDBus::GKDBus* _pDBus;
@@ -59,6 +61,7 @@ class Tab
 		QPushButton* _pApplyButton;
 
 		void prepareApplyButton(void);
+		void clearLayout(QLayout* parentLayout);
 
 	private:
 };

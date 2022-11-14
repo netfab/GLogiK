@@ -47,12 +47,7 @@ NetSnapshots::NetSnapshots()
 {
 	GK_LOG_FUNC
 
-	try {
-		this->findDefaultRouteNetworkInterfaceName();
-	}
-	catch (const GLogiKExcept & e) {
-		GKSysLogError(e.what());
-	}
+	this->findDefaultRouteNetworkInterfaceName();
 
 	if( _defaultNetworkInterfaceName.empty() ) {
 		throw GLogiKExcept("unable to find default route interface name");
@@ -64,24 +59,19 @@ NetSnapshots::NetSnapshots()
 
 	_networkInterfaceName = _defaultNetworkInterfaceName;
 
-	try {
-		unsigned long long s1, s2 = 0;
-		unsigned long long s3, s4 = 0;
-		this->setBytesSnapshotValue(NetDirection::NET_RX, s1);
-		this->setBytesSnapshotValue(NetDirection::NET_TX, s3);
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		this->setBytesSnapshotValue(NetDirection::NET_RX, s2);
-		this->setBytesSnapshotValue(NetDirection::NET_TX, s4);
-		if( (s1 == 0) or (s2 == 0) )
-			throw GLogiKExcept("wrong RX bytes snapshot");
-		if( (s3 == 0) or (s4 == 0) )
-			throw GLogiKExcept("wrong TX bytes snapshot");
-		_rxDiff = (10 * (s2 - s1)); /* extrapolation */
-		_txDiff = (10 * (s4 - s3)); /* extrapolation */
-	}
-	catch (const GLogiKExcept & e) {
-		GKSysLogError(e.what());
-	}
+	unsigned long long s1, s2 = 0;
+	unsigned long long s3, s4 = 0;
+	this->setBytesSnapshotValue(NetDirection::NET_RX, s1);
+	this->setBytesSnapshotValue(NetDirection::NET_TX, s3);
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	this->setBytesSnapshotValue(NetDirection::NET_RX, s2);
+	this->setBytesSnapshotValue(NetDirection::NET_TX, s4);
+	if( (s1 == 0) or (s2 == 0) )
+		throw GLogiKExcept("wrong RX bytes snapshot");
+	if( (s3 == 0) or (s4 == 0) )
+		throw GLogiKExcept("wrong TX bytes snapshot");
+	_rxDiff = (10 * (s2 - s1)); /* extrapolation */
+	_txDiff = (10 * (s4 - s3)); /* extrapolation */
 }
 
 NetSnapshots::~NetSnapshots()
@@ -156,12 +146,10 @@ void NetSnapshots::findDefaultRouteNetworkInterfaceName(void)
 		}
 	}
 	catch (const std::out_of_range& oor) {
-		GKSysLogError("vector index out of bounds : ", oor.what());
-		throw GLogiKExcept("route line parsing error");
+		GKLog2(error, "vector index out of bounds : ", oor.what());
 	}
 	catch (const std::ifstream::failure & e) {
-		GKSysLogError("error opening/reading/closing kernel route file : ", e.what());
-		throw GLogiKExcept("ifstream error");
+		GKLog2(error, "error opening/reading/closing kernel route file : ", e.what());
 	}
 }
 
@@ -184,7 +172,7 @@ void NetSnapshots::setBytesSnapshotValue(const NetDirection d, unsigned long lon
 		value = toULL(line);
 	}
 	catch (const std::ifstream::failure & e) {
-		GKSysLogError("error opening/reading/closing kernel route file : ", e.what());
+		GKLog2(error, "error opening/reading/closing kernel route file : ", e.what());
 		throw GLogiKExcept("ifstream error");
 	}
 }

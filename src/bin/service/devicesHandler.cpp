@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,12 +22,6 @@
 #include <utility>
 #include <exception>
 #include <stdexcept>
-#include <set>
-
-#include <boost/archive/archive_exception.hpp>
-#include <boost/archive/xml_archive_exception.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
 
 #include <X11/Xlib.h>
 #include <X11/extensions/XTest.h>
@@ -86,7 +80,7 @@ void DevicesHandler::setClientID(const std::string & id)
 
 void DevicesHandler::clearDevices(void)
 {
-	std::set<std::string> devicesID;
+	devIDSet devicesID;
 
 	for( const auto & devicePair : _startedDevices ) {
 		devicesID.insert(devicePair.first);
@@ -109,10 +103,10 @@ const devices_files_map_t DevicesHandler::getDevicesMap(void)
 {
 	devices_files_map_t ret;
 	for(const auto & dev : _startedDevices) {
-		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
+		ret.insert( std::pair<std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
 	}
 	for(const auto & dev : _stoppedDevices) {
-		ret.insert( std::pair<const std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
+		ret.insert( std::pair<std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
 	}
 	return ret;
 }
@@ -148,6 +142,16 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID)
 {
 	GK_LOG_FUNC
 
+	{
+		devIDSet::const_iterator it = _ignoredFSNotifications.find(devID);
+		/* iterator to device ID was found */
+		if( it != _ignoredFSNotifications.cend() ) {
+			GKLog2(trace, devID, " ignoring filesystem notification after configuration file save")
+			_ignoredFSNotifications.erase(it);
+			return;
+		}
+	}
+
 	try {
 		DeviceProperties & device = _startedDevices.at(devID);
 		this->loadDeviceConfigurationFile(device);
@@ -173,6 +177,21 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID)
 	}
 }
 
+void DevicesHandler::saveDeviceConfigurationFile(const std::string & devID)
+{
+	GK_LOG_FUNC
+
+	try {
+		DeviceProperties & device = _startedDevices.at(devID);
+
+		this->initializeConfigurationDirectory(device);
+		this->saveDeviceConfigurationFile(devID, device);
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(warning) << devID << " device not found in started-devices container";
+	}
+}
+
 void DevicesHandler::saveDeviceConfigurationFile(
 	const std::string & devID,
 	const DeviceProperties & device)
@@ -192,13 +211,16 @@ void DevicesHandler::saveDeviceConfigurationFile(
 	try {
 		fs::path filePath(_configurationRootDirectory);
 		filePath /= device.getVendor();
-
-		FileSystem::createDirectory(filePath, fs::owner_all);
-#if DEBUGGING_ON
-		FileSystem::traceLastDirectoryCreation();
-#endif
-
 		filePath /= device.getConfigFilePath();
+
+		/* ignore next filesystem notification for this device, this will
+		 * abort next reloadDeviceConfigurationFile call for this devID
+		 */
+		typedef std::pair<devIDSet::iterator, bool> ignoredInsRet;
+		ignoredInsRet ret = _ignoredFSNotifications.insert(devID);
+		if( ! ret.second ) {
+			GKLog2(warning, devID, "device ID already exists in container")
+		}
 
 		DeviceConfigurationFile::save(filePath.string(), device);
 
@@ -299,101 +321,9 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 		}
 	}
 
-	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-		/* set macros banks */
-		for( const auto & idBankPair : device.getMacrosBanks() ) {
-			const uint8_t bankID = toEnumType(idBankPair.first);
-			const mBank_type & bank = idBankPair.second;
-
-			/* test whether this MacrosBank is empty */
-			bool empty = true;
-			for(const auto & keyMacroPair : bank) {
-				const macro_type & macro = keyMacroPair.second;
-				if( ! macro.empty() ) {
-					empty = false;
-					break;
-				}
-			}
-
-			if( empty ) {
-				/* resetting empty MacrosBank */
-				const std::string remoteMethod = "ResetDeviceMacrosBank";
-
-				try {
-					_pDBus->initializeRemoteMethodCall(
-						_systemBus,
-						GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-						GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-						GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-						remoteMethod.c_str()
-					);
-					_pDBus->appendStringToRemoteMethodCall(_clientID);
-					_pDBus->appendStringToRemoteMethodCall(devID);
-					_pDBus->appendUInt8ToRemoteMethodCall(bankID);
-
-					_pDBus->sendRemoteMethodCall();
-
-					try {
-						_pDBus->waitForRemoteMethodCallReply();
-
-						const bool ret = _pDBus->getNextBooleanArgument();
-						if( ! ret ) {
-							LOG(error) << devID << " failed to reset device MacrosBank " << toUInt(bankID) << " : false";
-						}
-						else {
-							GKLog3(trace, devID, " successfully resetted device MacrosBank : ", toUInt(bankID))
-						}
-					}
-					catch (const GLogiKExcept & e) {
-						LogRemoteCallGetReplyFailure
-					}
-				}
-				catch (const GKDBusMessageWrongBuild & e) {
-					_pDBus->abandonRemoteMethodCall();
-					LogRemoteCallFailure
-				}
-
-				continue; /* jump to next bank */
-			}
-
-			const std::string remoteMethod = "SetDeviceMacrosBank";
-
-			try {
-				_pDBus->initializeRemoteMethodCall(
-					_systemBus,
-					GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-					remoteMethod.c_str()
-				);
-				_pDBus->appendStringToRemoteMethodCall(_clientID);
-				_pDBus->appendStringToRemoteMethodCall(devID);
-				_pDBus->appendUInt8ToRemoteMethodCall(bankID);
-				_pDBus->appendMacrosBankToRemoteMethodCall(bank);
-
-				_pDBus->sendRemoteMethodCall();
-
-				try {
-					_pDBus->waitForRemoteMethodCallReply();
-
-					const bool ret = _pDBus->getNextBooleanArgument();
-					if( ! ret ) {
-						LOG(error) << devID << " failed to set device MacrosBank " << toUInt(bankID) << " : false";
-					}
-					else {
-						GKLog3(trace, devID, " successfully setted device MacrosBank : ", toUInt(bankID))
-					}
-				}
-				catch (const GLogiKExcept & e) {
-					LogRemoteCallGetReplyFailure
-				}
-			}
-			catch (const GKDBusMessageWrongBuild & e) {
-				_pDBus->abandonRemoteMethodCall();
-				LogRemoteCallFailure
-			}
-		}
-	}
+	// FIXME
+	//if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+	//}
 
 	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
 		const std::string remoteMethod = "SetDeviceLCDPluginsMask";
@@ -518,42 +448,15 @@ void DevicesHandler::setDeviceProperties(
 	}
 
 	if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-		/* initialize macro keys */
-		remoteMethod = "GetDeviceMacroKeysNames";
-
-		try {
-			_pDBus->initializeRemoteMethodCall(
-				_systemBus,
-				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				remoteMethod.c_str()
-			);
-			_pDBus->appendStringToRemoteMethodCall(_clientID);
-			_pDBus->appendStringToRemoteMethodCall(devID);
-
-			_pDBus->sendRemoteMethodCall();
-
-			try {
-				_pDBus->waitForRemoteMethodCallReply();
-
-				const std::vector<std::string> keysNames( _pDBus->getStringsArray() );
-				device.initMacrosBanks(keysNames);
-
-				GKLog3(trace, devID, " number of initialized macro keys : ", keysNames.size())
-			}
-			catch (const GLogiKExcept & e) {
-				LogRemoteCallGetReplyFailure
-			}
-		}
-		catch (const GKDBusMessageWrongBuild & e) {
-			_pDBus->abandonRemoteMethodCall();
-			LogRemoteCallFailure
+		/* initialize macro keys banks */
+		const MKeysIDArray_type MKeysIDArray = this->getDeviceMKeysIDArray(devID);
+		if( ! MKeysIDArray.empty() ) {
+			const GKeysIDArray_type GKeysIDArray = this->getDeviceGKeysIDArray(devID);
+			device.initBanks(MKeysIDArray, GKeysIDArray);
 		}
 	}
 
 	/* search a configuration file */
-
 	GKLog2(trace, devID, " assigning configuration file")
 
 	fs::path directory(_configurationRootDirectory);
@@ -587,17 +490,14 @@ void DevicesHandler::setDeviceProperties(
 
 		GKLog3(trace, devID, " found file : ", device.getConfigFilePath())
 
-		/* loading configuration file */
+		this->initializeConfigurationDirectory(device, false);
 		this->loadDeviceConfigurationFile(device);
+
 		LOG(info)	<< "found device " << devID << " - "
 					<< device.getVendor() << " "
 					<< device.getProduct() << " "
 					<< device.getName();
 		LOG(info)	<< devID << " configuration file found and loaded";
-
-		/* assuming that directory is readable since we just load
-		 * the configuration file */
-		this->watchDirectory(device, false);
 
 		this->sendDeviceConfigurationToDaemon(devID, device);
 	}
@@ -622,12 +522,8 @@ void DevicesHandler::setDeviceProperties(
 
 			GKLog3(trace, devID, " new file : ", device.getConfigFilePath())
 
-			/* we need to create the directory before watching it */
+			this->initializeConfigurationDirectory(device, false);
 			this->saveDeviceConfigurationFile(devID, device);
-
-			/* assuming that directory is readable since we just save
-			 * the configuration file and set permissions on directory */
-			this->watchDirectory(device, false);
 		}
 		catch ( const GLogiKExcept & e ) {
 			LOG(error) << devID << " failed to create default configuration file : " << e.what();
@@ -764,94 +660,7 @@ void DevicesHandler::unrefDevice(const std::string & devID)
 	}
 }
 
-const bool DevicesHandler::setDeviceMacro(
-	const std::string & devID,
-	const std::string & keyName,
-	const uint8_t bankID)
-{
-	GK_LOG_FUNC
-
-	try {
-		DeviceProperties & device = _startedDevices.at(devID);
-
-		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			std::string remoteMethod("GetDeviceMacro");
-
-			try {
-				/* getting recorded macro from daemon */
-				_pDBus->initializeRemoteMethodCall(
-					_systemBus,
-					GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-					GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-					remoteMethod.c_str()
-				);
-
-				_pDBus->appendStringToRemoteMethodCall(_clientID);
-				_pDBus->appendStringToRemoteMethodCall(devID);
-				_pDBus->appendStringToRemoteMethodCall(keyName);
-				_pDBus->appendUInt8ToRemoteMethodCall(bankID);
-
-				_pDBus->sendRemoteMethodCall();
-
-				try {
-					_pDBus->waitForRemoteMethodCallReply();
-
-					/* use helper function to get the macro */
-					const macro_type macro = _pDBus->getNextMacroArgument();
-
-					device.setMacro(bankID, keyName, macro);
-
-					this->saveDeviceConfigurationFile(devID, device);
-					this->watchDirectory(device);
-					return true;
-				}
-				catch (const GLogiKExcept & e) {
-					/* setMacro can also throws */
-					LogRemoteCallGetReplyFailure
-				}
-			}
-			catch (const GKDBusMessageWrongBuild & e) {
-				_pDBus->abandonRemoteMethodCall();
-				LogRemoteCallFailure
-			}
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(warning) << devID << " device not found in started-devices container";
-	}
-
-	return false;
-}
-
-const bool DevicesHandler::clearDeviceMacro(
-	const std::string & devID,
-	const std::string & keyName,
-	const uint8_t bankID)
-{
-	GK_LOG_FUNC
-
-	try {
-		DeviceProperties & device = _startedDevices.at(devID);
-
-		if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			device.clearMacro(bankID, keyName);
-
-			this->saveDeviceConfigurationFile(devID, device);
-			this->watchDirectory(device);
-			return true;
-		}
-	}
-	catch (const std::out_of_range& oor) {
-		LOG(warning) << devID << " device not found in started-devices container";
-	}
-	catch (const GLogiKExcept & e) {
-		LOG(error) << devID << " failed to clear macro : " << e.what();
-	}
-	return false;
-}
-
-void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check)
+void DevicesHandler::initializeConfigurationDirectory(DeviceProperties & device, const bool check)
 {
 	GK_LOG_FUNC
 
@@ -859,11 +668,53 @@ void DevicesHandler::watchDirectory(DeviceProperties & device, const bool check)
 	directory /= device.getVendor();
 
 	try {
+		FileSystem::createDirectory(directory, fs::owner_all);
+#if DEBUGGING_ON
+		FileSystem::traceLastDirectoryCreation();
+#endif
+
 		device.setWatchDescriptor( _pGKfs->addNotifyDirectoryWatch( directory.string(), check ) );
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(warning) << e.what();
 		LOG(warning) << "configuration file monitoring will be disabled";
+	}
+}
+
+void DevicesHandler::setDeviceCurrentBankID(const std::string & devID, const MKeysID bankID)
+{
+	GK_LOG_FUNC
+
+	try {
+		DeviceProperties & device = _startedDevices.at(devID);
+
+		GKLog2(trace, devID, " started device")
+
+		device.setCurrentBankID(bankID);
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(warning) << devID << " device not found in started-devices container";
+		throw GLogiKExcept("unable to set device bankID");
+	}
+}
+
+banksMap_type & DevicesHandler::getDeviceBanks(const std::string & devID, MKeysID & bankID)
+{
+	GK_LOG_FUNC
+
+	try {
+		DeviceProperties & device = _startedDevices.at(devID);
+
+		GKLog2(trace, devID, " started device")
+
+		/* setting current bank ID */
+		bankID = device.getCurrentBankID();
+
+		return device.getBanks();
+	}
+	catch (const std::out_of_range& oor) {
+		LOG(warning) << devID << " device not found in started-devices container";
+		throw GLogiKExcept("unable to get device banks");
 	}
 }
 
@@ -939,6 +790,78 @@ const LCDPluginsPropertiesArray_type &
 	}
 
 	return DeviceProperties::_LCDPluginsPropertiesEmptyArray;
+}
+
+const MKeysIDArray_type DevicesHandler::getDeviceMKeysIDArray(const std::string & devID)
+{
+	MKeysIDArray_type MKeysIDArray;
+	const std::string remoteMethod("GetDeviceMKeysIDArray");
+
+	try {
+		_pDBus->initializeRemoteMethodCall(
+			_systemBus,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			remoteMethod.c_str()
+		);
+		_pDBus->appendStringToRemoteMethodCall(_clientID);
+		_pDBus->appendStringToRemoteMethodCall(devID);
+
+		_pDBus->sendRemoteMethodCall();
+
+		try {
+			_pDBus->waitForRemoteMethodCallReply();
+
+			MKeysIDArray = _pDBus->getNextMKeysIDArrayArgument();
+			GKLog3(trace, devID, " number of M-keys ID : ", MKeysIDArray.size())
+		}
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
+		}
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonRemoteMethodCall();
+		LogRemoteCallFailure
+	}
+
+	return MKeysIDArray;
+}
+
+const GKeysIDArray_type DevicesHandler::getDeviceGKeysIDArray(const std::string & devID)
+{
+	GKeysIDArray_type GKeysIDArray;
+	const std::string remoteMethod("GetDeviceGKeysIDArray");
+
+	try {
+		_pDBus->initializeRemoteMethodCall(
+			_systemBus,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			remoteMethod.c_str()
+		);
+		_pDBus->appendStringToRemoteMethodCall(_clientID);
+		_pDBus->appendStringToRemoteMethodCall(devID);
+
+		_pDBus->sendRemoteMethodCall();
+
+		try {
+			_pDBus->waitForRemoteMethodCallReply();
+
+			GKeysIDArray = _pDBus->getNextGKeysIDArrayArgument();
+			GKLog3(trace, devID, " number of G-keys ID : ", GKeysIDArray.size())
+		}
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
+		}
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonRemoteMethodCall();
+		LogRemoteCallFailure
+	}
+
+	return GKeysIDArray;
 }
 
 } // namespace GLogiK

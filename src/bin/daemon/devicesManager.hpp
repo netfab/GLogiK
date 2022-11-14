@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 
 #include "USBDeviceID.hpp"
 
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
 #include "include/LCDPluginProperties.hpp"
 
 namespace GLogiK
@@ -87,15 +87,14 @@ class DevicesManager
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,
-			const banksMap_type & macrosBanks,
 			const uint8_t r,
 			const uint8_t g,
 			const uint8_t b,
 			const uint64_t LCDPluginsMask1
 		);
 
-		const banksMap_type & getDeviceMacrosBanks(const std::string & devID) const;
-		const std::vector<std::string> & getDeviceMacroKeysNames(const std::string & devID) const;
+		const MKeysIDArray_type getDeviceMKeysIDArray(const std::string & devID) const;
+		const GKeysIDArray_type getDeviceGKeysIDArray(const std::string & devID) const;
 		const std::string getDeviceStatus(const std::string & devID) const;
 
 	protected:
@@ -103,10 +102,10 @@ class DevicesManager
 	private:
 		const std::string _unknown;
 		std::vector<KeyboardDriver*> _drivers;
-		std::map<const std::string, USBDeviceID> _detectedDevices;
-		std::map<const std::string, USBDeviceID> _startedDevices;
-		std::map<const std::string, USBDeviceID> _stoppedDevices;
-		std::map<const std::string, USBDeviceID> _unpluggedDevices;
+		std::map<std::string, USBDeviceID> _detectedDevices;
+		std::map<std::string, USBDeviceID> _startedDevices;
+		std::map<std::string, USBDeviceID> _stoppedDevices;
+		std::map<std::string, USBDeviceID> _unpluggedDevices;
 
 #if GKDBUS
 		NSGKDBus::GKDBus* _pDBus;

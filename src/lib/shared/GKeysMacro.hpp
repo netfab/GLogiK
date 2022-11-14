@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,59 +19,39 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_MACROS_MANAGER_HPP_
-#define SRC_BIN_DAEMON_MACROS_MANAGER_HPP_
-
-#include <cstdint>
+#ifndef SRC_LIB_SHARED_GKEYS_MACRO_HPP_
+#define SRC_LIB_SHARED_GKEYS_MACRO_HPP_
 
 #include <vector>
-#include <string>
 
-#include "lib/shared/macrosBanks.hpp"
-#include "virtualKeyboard.hpp"
+#include "include/base.hpp"
 
 namespace GLogiK
 {
 
-struct MacroEvent {
-	public:
-		MacroEvent(const GLogiK::KeyEvent & k, const unsigned int i)
-			:	key(k), index(i) {}
-
-		GLogiK::KeyEvent key;
-		unsigned int index;
-
-	private:
-		MacroEvent(void) = delete;
-};
-
-class MacrosManager : public MacrosBanks
+class GKeysMacro
 {
 	public:
-		MacrosManager(
-			const char* virtualKeyboardName,
-			const std::vector<std::string> & keysNames
-		);
-		~MacrosManager();
-
-		void setCurrentMacrosBankID(BankID bankID);
-		const BankID getCurrentMacrosBankID(void) const;
-
-		const bool macroDefined(const std::string & keyName);
-		void runMacro(const std::string & keyName);
-
-		void setMacro(
-			const std::string & keyName,
-			macro_type & macro
-		);
-
-		void resetMacrosBanks(void);
+		static const macro_type emptyMacro;
 
 	protected:
+		GKeysMacro(void) = default;
+		~GKeysMacro(void) = default;
+
+		void checkMacro(macro_type & macro);
 
 	private:
-		VirtualKeyboard _virtualKeyboard;
-		BankID _currentBankID;
+		struct MacroEvent {
+			public:
+				MacroEvent(const GLogiK::KeyEvent & k, const unsigned int i)
+					:	key(k), index(i) {}
+
+				GLogiK::KeyEvent key;
+				unsigned int index;
+
+			private:
+				MacroEvent(void) = delete;
+		};
 
 		void fillInVectors(
 			const macro_type & macro,

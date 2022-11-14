@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,7 +27,8 @@
 
 #include <dbus/dbus.h>
 
-#include "include/keyEvent.hpp"
+#include "include/base.hpp"
+#include "include/MBank.hpp"
 #include "include/LCDPluginProperties.hpp"
 
 namespace NSGKDBus
@@ -45,6 +46,10 @@ class GKDBusMessage
 		void appendUInt32(const uint32_t value);
 		void appendUInt64(const uint64_t value);
 
+		void appendGKeysID(const GLogiK::GKeysID keyID);
+		void appendMKeysID(const GLogiK::MKeysID keyID);
+		void appendGKeysIDArray(const GLogiK::GKeysIDArray_type & keysID);
+		void appendMKeysIDArray(const GLogiK::MKeysIDArray_type & keysID);
 		void appendMacro(const GLogiK::macro_type & macro);
 		void appendMacrosBank(const GLogiK::mBank_type & bank);
 		void appendLCDPluginsPropertiesArray(
@@ -72,6 +77,7 @@ class GKDBusMessage
 		void appendUInt8(DBusMessageIter *iter, const uint8_t value);
 		void appendUInt16(DBusMessageIter *iter, const uint16_t value);
 		void appendUInt64(DBusMessageIter *iter, const uint64_t value);
+
 		void appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro);
 		void appendLCDPluginsPropertiesArray(
 			DBusMessageIter *iter,

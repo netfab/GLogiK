@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -54,11 +54,8 @@ void DeviceControlTab::buildTab(void)
 {
 	GK_LOG_FUNC
 
-	QVBoxLayout* vBox = nullptr;
-	QHBoxLayout* hBox = nullptr;
-
 	try {
-		vBox = new QVBoxLayout(this);
+		QVBoxLayout* vBox = new QVBoxLayout(this);
 		GKLog(trace, "allocated QVBoxLayout")
 
 		this->setLayout(vBox);
@@ -69,11 +66,8 @@ void DeviceControlTab::buildTab(void)
 
 		/* -- -- -- */
 
-		_deviceStatusLabel = new QLabel("aaaa");
+		_deviceStatusLabel = new QLabel("Device status : unknown");
 		vBox->addWidget(_deviceStatusLabel);
-
-		hBox = new QHBoxLayout();
-		GKLog(trace, "allocated QHBoxLayout")
 
 		/* -- -- -- */
 
@@ -81,9 +75,28 @@ void DeviceControlTab::buildTab(void)
 		vBox->addWidget( _HLineFrame2 );
 
 		/* -- -- -- */
+		{
+			QHBoxLayout* hBox = new QHBoxLayout();
+			GKLog(trace, "allocated QHBoxLayout")
 
-		vBox->addLayout(hBox);
+			/* -- -- -- */
 
+			vBox->addLayout(hBox);
+
+			/* -- -- -- */
+
+			_pStartButton = new QPushButton("Start");
+			GKLog(trace, "allocated Start button")
+			hBox->addWidget(_pStartButton);
+
+			_pStopButton = new QPushButton("Stop");
+			GKLog(trace, "allocated Stop button")
+			hBox->addWidget(_pStopButton);
+
+			_pRestartButton = new QPushButton("Restart");
+			GKLog(trace, "allocated Restart button")
+			hBox->addWidget(_pRestartButton);
+		}
 		/* -- -- -- */
 
 		_HLineFrame3 = this->getHLine();
@@ -92,32 +105,15 @@ void DeviceControlTab::buildTab(void)
 		/* -- -- -- */
 
 		vBox->addSpacing(300);
-
-		/* -- -- -- */
-
-		_pStartButton = new QPushButton("Start");
-		GKLog(trace, "allocated Start button")
-
-		hBox->addWidget(_pStartButton);
-
-		_pStopButton = new QPushButton("Stop");
-		GKLog(trace, "allocated Stop button")
-
-		hBox->addWidget(_pStopButton);
-
-		_pRestartButton = new QPushButton("Restart");
-		GKLog(trace, "allocated Restart button")
-
-		hBox->addWidget(_pRestartButton);
 	}
 	catch (const std::bad_alloc& e) {
 		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
 
-	connect(_pStartButton   , &QPushButton::clicked, this, &DeviceControlTab::startSignal);
-	connect(_pStopButton    , &QPushButton::clicked, this, &DeviceControlTab::stopSignal);
-	connect(_pRestartButton , &QPushButton::clicked, this, &DeviceControlTab::restartSignal);
+	QObject::connect(_pStartButton   , &QPushButton::clicked, this, &DeviceControlTab::startSignal);
+	QObject::connect(_pStopButton    , &QPushButton::clicked, this, &DeviceControlTab::stopSignal);
+	QObject::connect(_pRestartButton , &QPushButton::clicked, this, &DeviceControlTab::restartSignal);
 
 	this->disableAndHide();
 }
