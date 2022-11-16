@@ -33,6 +33,7 @@ enum class GKeyEventType : uint8_t
 {
 	GKEY_INACTIVE = 0,
 	GKEY_MACRO,
+	GKEY_INVALID /* must be last in enum */
 };
 
 class GKeysEvent

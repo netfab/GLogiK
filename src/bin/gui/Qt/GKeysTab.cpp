@@ -382,13 +382,13 @@ void GKeysTab::switchGKeyEventType(const DeviceProperties & device, const GKeysI
 			bool ok = false;
 			const uint value = itemData.toUInt(&ok);
 			if(ok and value <= 255) {
-				if(value > (static_cast<unsigned int>(GKeyEventType::GKEY_MACRO))) {
-					throw GLogiKExcept("value greater than enum maximum");
+				if(value >= (static_cast<unsigned int>(GKeyEventType::GKEY_INVALID))) {
+					throw GLogiKExcept("invalid GKeyEventType value");
 				}
 
 				return static_cast<GKeyEventType>(value);
 			}
-			throw GLogiKExcept("value greater than 255 or conversion failure");
+			throw GLogiKExcept("invalid value or conversion failure");
 		};
 
 		const int index = _GKeyEventTypeComboBox->currentIndex();
