@@ -62,15 +62,13 @@ void GKeysEventManager::runEvent(
 			}
 			else if(event.getEventType() == GKeyEventType::GKEY_MACRO) {
 				const macro_type & macro = event.getMacro();
-				if( macro.empty() ) {
-					GKLog(trace, "empty macro")
-					return;
+				if( ! macro.empty() ) {
+					GKLog(trace, "running macro")
+					for(const auto & key : macro) {
+						_virtualKeyboard.sendKeyEvent(key);
+					}
 				}
 
-				GKLog(trace, "running macro")
-				for(const auto & key : macro) {
-					_virtualKeyboard.sendKeyEvent(key);
-				}
 			}
 		}
 		catch(const std::out_of_range& oor) {
