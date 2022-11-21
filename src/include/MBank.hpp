@@ -33,6 +33,7 @@ enum class GKeyEventType : uint8_t
 {
 	GKEY_INACTIVE = 0,
 	GKEY_MACRO,
+	GKEY_RUNCMD,
 	GKEY_INVALID /* must be last in enum */
 };
 
@@ -63,6 +64,19 @@ class GKeysEvent
 			_GKeyEventType = GKeyEventType::GKEY_INACTIVE;
 		}
 		const macro_type & getMacro(void) const { return _GKeyMacro; }
+
+		const std::string & getCommand(void) const { return _GKeyCommand; };
+		void setCommand(const std::string & command) {
+			if( ! command.empty() ) {
+				_GKeyCommand = command;
+				_GKeyEventType = GKeyEventType::GKEY_RUNCMD;
+			}
+			else this->clearCommand();
+		};
+		void clearCommand(void) {
+			_GKeyCommand.clear();
+			_GKeyEventType = GKeyEventType::GKEY_INACTIVE;
+		}
 
 	private:
 		macro_type _GKeyMacro;

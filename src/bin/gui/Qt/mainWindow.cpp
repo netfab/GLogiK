@@ -488,14 +488,16 @@ void MainWindow::saveConfigurationFile(const TabApplyButton tab)
 		MKeysID bankID;
 		GKeysID keyID;
 		GKeyEventType eventType;
+		std::string eventCommand;
 		try {
-			_GKeysTab->getGKeyEventParams(bankID, keyID, eventType);
+			_GKeysTab->getGKeyEventParams(bankID, keyID, eventType, eventCommand);
 
 			banksMap_type & banks = _openedConfigurationFile.getBanks();
 			mBank_type & bank = banks.at(bankID);
 			GKeysEvent & event = bank.at(keyID);
 
 			event.setEventType(eventType);
+			event.setCommand(eventCommand);
 			dosave = true;
 
 			GKLog(trace, "GKeys updated")

@@ -24,9 +24,11 @@
 
 #include <vector>
 #include <map>
+#include <string>
 
 #include <QString>
 #include <QLabel>
+#include <QLineEdit>
 #include <QComboBox>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -37,8 +39,11 @@
 #include "lib/utils/utils.hpp"
 
 #include "include/base.hpp"
+#include "include/MBank.hpp"
 
 #include "Tab.hpp"
+
+#define GKEY_COMMAND_LINE_STRING_MAX_LENGTH 64
 
 namespace GLogiK
 {
@@ -55,15 +60,22 @@ class GKeysTab
 
 		void buildTab(void);
 		void updateTab(const DeviceProperties & device, const MKeysID bankID);
-		void getGKeyEventParams(MKeysID & bankID, GKeysID & keyID, GKeyEventType & eventType);
+		void getGKeyEventParams(
+			MKeysID & bankID,
+			GKeysID & keyID,
+			GKeyEventType & eventType,
+			std::string & eventCommand
+		);
 
 	private:
 		GKeysTab() = delete;
 
 		QVBoxLayout* _pKeysBoxLayout;
 		QHBoxLayout* _pInputsBoxHeaderLayout;
+		QHBoxLayout* _pInputsBoxBodyLayout;
 
 		QLabel* _pHelpLabel;
+		QLineEdit* _pCommandLineEdit;
 		QComboBox* _GKeyEventTypeComboBox;
 
 		MKeysID _currentBankID;
@@ -71,12 +83,14 @@ class GKeysTab
 		GKeyEventType _newEventType;
 
 		QString _helpLabel;
+		std::string _currentEventCommand;
 
 		std::vector<QPushButton*> _buttonsSignalsToClear;
 
 		bool _updateGKeyEvent;
 
 		void setApplyButtonStatus(const bool status);
+		void updateApplyButtonStatus(const QString & newString);
 
 		QPushButton* newBlankButton(void);
 		QPushButton* newGKeyButton(
@@ -86,7 +100,15 @@ class GKeysTab
 		);
 
 		void clearInputsBoxHeaderLayout(void);
+		void clearInputsBoxBodyLayout(void);
 		void clearKeysBoxLayout(void);
+
+		void setGKeyEventParams(
+			const std::string & eventCommand,
+			const GKeyEventType eventType,
+			const GKeysID GKeyID
+		);
+		void prepareCommandWidget(const GKeysEvent & GKeyEvent, const GKeysID GKeyID);
 
 		void updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID);
 		void switchGKeyEventType(const DeviceProperties & device, const GKeysID GKeyID);
