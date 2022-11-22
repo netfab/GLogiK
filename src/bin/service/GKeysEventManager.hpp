@@ -70,6 +70,7 @@ class GKeysEventManager
 			const macro_type & macro
 		);
 
+		void spawnProcess(const std::string & command);
 };
 
 } // namespace GLogiK

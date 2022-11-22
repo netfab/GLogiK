@@ -19,12 +19,20 @@
  *
  */
 
+#include <string>
+#include <vector>
+#include <sstream>
 #include <stdexcept>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
+#include <boost/process.hpp>
+#include <boost/process/search_path.hpp>
+
 #include "GKeysEventManager.hpp"
+
+namespace bp = boost::process;
 
 namespace GLogiK
 {
@@ -69,6 +77,13 @@ void GKeysEventManager::runEvent(
 					}
 				}
 
+			}
+			else if(event.getEventType() == GKeyEventType::GKEY_RUNCMD) {
+				this->spawnProcess(event.getCommand());
+			}
+			else if(event.getEventType() == GKeyEventType::GKEY_INVALID) {
+				LOG(error) << "invalid event type";
+				return;
 			}
 		}
 		catch(const std::out_of_range& oor) {
@@ -176,6 +191,43 @@ void GKeysEventManager::setMacro(
 	catch (const std::out_of_range& oor) {
 		LOG(warning) << "wrong bankID: " << bankID;
 		throw GLogiKExcept("set macro failed");
+	}
+}
+
+void GKeysEventManager::spawnProcess(const std::string & command)
+{
+	GK_LOG_FUNC
+
+	GKLog2(trace, "command line: ", command)
+
+	std::string exe;
+	std::vector<std::string> args;
+	{
+		std::istringstream tmpstream(command);
+		std::string tmpstring;
+		std::getline(tmpstream, exe, ' ');
+		while(std::getline(tmpstream, tmpstring, ' '))
+		{
+			args.push_back(tmpstring);
+		}
+	}
+
+	try {
+		auto p = bp::search_path(exe);
+		if( p.empty() ) {
+			LOG(error) << exe << " executable not found in PATH";
+			return;
+		}
+
+		GKLog4(trace, "spawning: ", exe, "with args size: ", args.size())
+
+		bp::group g;
+		bp::spawn(p, bp::args(args), g);
+		g.wait();
+	}
+	catch (const bp::process_error & e) {
+		LOG(error) << "exception catched while trying to spawn process: " << command;
+		LOG(error) << e.what();
 	}
 }
 
