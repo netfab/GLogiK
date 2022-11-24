@@ -606,12 +606,6 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 
 		GKLog3(trace, devID, " spawned listening thread for ", device.getFullName())
 
-		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-			std::thread lcd_thread(&KeyboardDriver::LCDScreenLoop, this, devID);
-			std::lock_guard<std::mutex> lock(_threadsMutex);
-			_threads.push_back( std::move(lcd_thread) );
-		}
-
 		while( DaemonControl::isDaemonRunning() ) {
 			this->checkDeviceFatalErrors(device, "listen loop");
 			if( ! device.getThreadsStatus() )
@@ -980,6 +974,12 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 		USBDevice & device = _initializedDevices.at(devID);
 
 		try {
+			if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+				std::thread lcd_thread(&KeyboardDriver::LCDScreenLoop, this, device.getID());
+				std::lock_guard<std::mutex> lock(_threadsMutex);
+				_threads.push_back( std::move(lcd_thread) );
+			}
+
 			/* spawn listening thread */
 			std::thread listen_thread(&KeyboardDriver::listenLoop, this, device.getID() );
 			std::lock_guard<std::mutex> lock(_threadsMutex);
@@ -987,8 +987,8 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 		}
 		catch (const std::system_error& e) {
 			std::ostringstream buffer(std::ios_base::app);
-			buffer << "error while spawning listening thread : " << e.what();
-			this->closeUSBDevice(device);
+			buffer << "error while spawning thread : " << e.what();
+			this->closeDevice(det);
 			throw GLogiKExcept(buffer.str());
 		}
 	}
