@@ -149,6 +149,7 @@ void hidapi::closeUSBDevice(USBDevice & device) noexcept
 
 	if(device._pHIDDevice != nullptr) {
 		hid_close(device._pHIDDevice);
+		device._pHIDDevice = nullptr;
 
 		GKLog2(trace, device.getID(), " closed HIDAPI USB device")
 	}
