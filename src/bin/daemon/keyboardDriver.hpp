@@ -111,6 +111,7 @@ class KeyboardDriver
 		/* --- */
 		virtual const uint16_t getDriverID() const = 0;
 
+		virtual void initializeDevice(const USBDeviceID & det);
 		virtual void openDevice(const USBDeviceID & det);
 		virtual void closeDevice(
 			const USBDeviceID & det,

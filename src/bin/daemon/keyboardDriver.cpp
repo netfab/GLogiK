@@ -924,8 +924,9 @@ const LCDPluginsPropertiesArray_type &
 	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
+
 /* throws GLogiKExcept on any failure */
-void KeyboardDriver::openDevice(const USBDeviceID & det)
+void KeyboardDriver::initializeDevice(const USBDeviceID & det)
 {
 	GK_LOG_FUNC
 
@@ -962,9 +963,24 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 		this->resetDeviceState(device);
 
 		_initializedDevices[ device.getID() ] = device;
+	}
+	catch ( const GLogiKExcept & e ) {
+		this->closeUSBDevice(device);
+		throw;
+	}
+}
 
-		/* spawn listening thread */
+void KeyboardDriver::openDevice(const USBDeviceID & det)
+{
+	GK_LOG_FUNC
+
+	const std::string & devID = det.getID();
+
+	try {
+		USBDevice & device = _initializedDevices.at(devID);
+
 		try {
+			/* spawn listening thread */
 			std::thread listen_thread(&KeyboardDriver::listenLoop, this, device.getID() );
 			std::lock_guard<std::mutex> lock(_threadsMutex);
 			_threads.push_back( std::move(listen_thread) );
@@ -972,12 +988,13 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 		catch (const std::system_error& e) {
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "error while spawning listening thread : " << e.what();
+			this->closeUSBDevice(device);
 			throw GLogiKExcept(buffer.str());
 		}
 	}
-	catch ( const GLogiKExcept & e ) {
-		this->closeUSBDevice(device);
-		throw;
+	catch (const std::out_of_range& oor) {
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		throw GLogiKExcept("device not initialized");
 	}
 }
 

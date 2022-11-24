@@ -149,6 +149,7 @@ void DevicesManager::initializeDevices(void) noexcept
 				if( device.getDriverID() == driver->getDriverID() ) {
 
 					// initialization
+					driver->initializeDevice( device );
 					driver->openDevice( device );
 					_startedDevices[devID] = device;
 
@@ -166,7 +167,7 @@ void DevicesManager::initializeDevices(void) noexcept
 			} // for
 		}
 		catch ( const GLogiKExcept & e ) {
-			GKSysLogError("device initialization failure : ", e.what());
+			GKSysLogError("device failure : ", e.what());
 		}
 	} // for
 
@@ -193,6 +194,7 @@ const bool DevicesManager::startDevice(const std::string & devID)
 		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
 				// initialization
+				driver->initializeDevice( device );
 				driver->openDevice( device );
 				_startedDevices[devID] = device;
 
@@ -211,6 +213,10 @@ const bool DevicesManager::startDevice(const std::string & devID)
 	}
 	catch (const std::out_of_range& oor) {
 		GKSysLogError("device starting failure : device not found in stopped devices container : ", oor.what());
+		return false;
+	}
+	catch ( const GLogiKExcept & e ) {
+		GKSysLogError("device failure : ", e.what());
 		return false;
 	}
 
