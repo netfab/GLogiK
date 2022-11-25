@@ -918,52 +918,29 @@ const LCDPluginsPropertiesArray_type &
 	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
-
-/* throws GLogiKExcept on any failure */
 void KeyboardDriver::initializeDevice(const USBDeviceID & det)
 {
 	GK_LOG_FUNC
 
-	GKLog3(trace, det.getID(), " initializing device : ", det.getFullName())
+	const std::string & devID = det.getID();
+
+	GKLog3(trace, devID, " initializing device : ", det.getFullName())
 
 	/* sanity check */
-	if(_initializedDevices.count(det.getID()) > 0) {
-		std::ostringstream err("device ID already used in started container : ", std::ios_base::app);
-		err << det.getID();
-		throw GLogiKExcept(err.str());
+	if(_initializedDevices.count(devID) > 0) {
+		std::ostringstream buffer(std::ios_base::app);
+		buffer << devID << " device already initialized";
+		GKSysLogWarning(buffer.str());
+		return;
 	}
 
 	USBDevice device(det);
+	_initializedDevices[ device.getID() ] = device;
 
-	this->openUSBDevice(device); /* throws on any failure */
-	/* libusb device opened */
-
-	try {
-		this->sendUSBDeviceInitialization(device);
-
-		// FIXME
-		//if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-		//}
-
-		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-			try {
-				device.setLCDPluginsManager( new LCDScreenPluginsManager(device.getProduct()) );
-			}
-			catch (const std::bad_alloc& e) { /* handle new() failure */
-				throw GLogiKBadAlloc("LCD Plugins manager allocation failure");
-			}
-		}
-
-		this->resetDeviceState(device);
-
-		_initializedDevices[ device.getID() ] = device;
-	}
-	catch ( const GLogiKExcept & e ) {
-		this->closeUSBDevice(device);
-		throw;
-	}
+	GKLog2(trace, devID, " device initialized")
 }
 
+/* throws GLogiKExcept on any failure */
 void KeyboardDriver::openDevice(const USBDeviceID & det)
 {
 	GK_LOG_FUNC
@@ -972,6 +949,32 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 
 	try {
 		USBDevice & device = _initializedDevices.at(devID);
+
+		this->openUSBDevice(device); /* throws on any failure */
+		/* libusb/hidapi device opened */
+
+		try {
+			this->sendUSBDeviceInitialization(device);
+
+			// FIXME
+			//if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+			//}
+
+			if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+				try {
+					device.setLCDPluginsManager( new LCDScreenPluginsManager(device.getProduct()) );
+				}
+				catch (const std::bad_alloc& e) { /* handle new() failure */
+					throw GLogiKBadAlloc("LCD Plugins manager allocation failure");
+				}
+			}
+
+			this->resetDeviceState(device);
+		}
+		catch ( const GLogiKExcept & e ) {
+			this->closeUSBDevice(device);
+			throw;
+		}
 
 		try {
 			if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
