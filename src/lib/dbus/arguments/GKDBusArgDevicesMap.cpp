@@ -39,25 +39,40 @@ const GLogiK::devices_map_type GKDBusArgumentDevicesMap::getNextDevicesMapArgume
 
 	GLogiK::devices_map_type devicesMap;
 
+	std::string devID;
+
+	/* handle case where DevicesMap is empty */
 	try {
-		do {
-			GLogiK::DeviceID device;
+		devID = GKDBusArgumentString::getNextStringArgument();
 
-			const std::string devID( GKDBusArgumentString::getNextStringArgument() );
+		try {
+			do {
+				GLogiK::DeviceID device;
 
-			device.setStatus( GKDBusArgumentString::getNextStringArgument() );
-			device.setVendor( GKDBusArgumentString::getNextStringArgument() );
-			device.setProduct( GKDBusArgumentString::getNextStringArgument() );
-			device.setName( GKDBusArgumentString::getNextStringArgument() );
-			device.setConfigFilePath( GKDBusArgumentString::getNextStringArgument() );
+				/* don't get string on first iteration */
+				if( devID.empty() )
+					devID = GKDBusArgumentString::getNextStringArgument();
 
-			devicesMap[devID] = device;
+				device.setStatus( GKDBusArgumentString::getNextStringArgument() );
+				device.setVendor( GKDBusArgumentString::getNextStringArgument() );
+				device.setProduct( GKDBusArgumentString::getNextStringArgument() );
+				device.setName( GKDBusArgumentString::getNextStringArgument() );
+				device.setConfigFilePath( GKDBusArgumentString::getNextStringArgument() );
+
+				devicesMap[devID] = device;
+
+				/* for next loop iteration */
+				devID.clear();
+			}
+			while( ! GKDBusArgumentString::stringArguments.empty() );
 		}
-		while( ! GKDBusArgumentString::stringArguments.empty() );
+		catch ( const EmptyContainer & e ) {
+			LOG(warning) << "missing argument : " << e.what();
+			throw GLogiKExcept("rebuilding devices_map_type map failed");
+		}
 	}
 	catch ( const EmptyContainer & e ) {
-		LOG(warning) << "missing argument : " << e.what();
-		throw GLogiKExcept("rebuilding devices_map_type map failed");
+		GKLog(trace, "no devID, empty devicesMap ?")
 	}
 
 	GKLog2(trace, "devices_map_type map size : ", devicesMap.size())
