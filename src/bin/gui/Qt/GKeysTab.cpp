@@ -262,7 +262,10 @@ QPushButton* GKeysTab::newGKeyButton(
 	button->setObjectName(buttonText);
 	button->setFixedWidth(40);
 
-	if( eventType == GKeyEventType::GKEY_MACRO ) {
+	if( eventType == GKeyEventType::GKEY_RUNCMD ) {
+		button->setProperty("class", QVariant("cmmndGKey")); // css class
+	}
+	else if( eventType == GKeyEventType::GKEY_MACRO ) {
 		button->setProperty("class", QVariant("macroGKey")); // css class
 	}
 	else if( eventType == GKeyEventType::GKEY_INACTIVE ) {
