@@ -113,7 +113,7 @@ class DevicesManager
 #endif
 
 		void searchSupportedDevices(struct udev * pUdev);
-		void initializeDevices(void) noexcept;
+		void initializeDevices(const bool openDevices) noexcept;
 		void stopInitializedDevices(void);
 		void checkInitializedDevicesThreadsStatus(void) noexcept;
 

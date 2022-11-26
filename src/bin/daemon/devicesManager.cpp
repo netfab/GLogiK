@@ -104,17 +104,18 @@ void DevicesManager::checkDBusMessages(void) noexcept
 #endif
 
 /* exceptions are catched within the function body */
-void DevicesManager::initializeDevices(void) noexcept
+void DevicesManager::initializeDevices(const bool openDevices) noexcept
 {
 	GK_LOG_FUNC
 
 	GKLog(trace, "initializing detected devices")
 
 #if GKDBUS
-	std::vector<std::string> startedDevices;
+	std::vector<std::string> initializedDevices;
 #endif
 
-	for(const auto & devicePair : _detectedDevices) {
+	for(const auto & devicePair : _detectedDevices)
+	{
 		const auto & devID = devicePair.first;
 		const auto & device = devicePair.second;
 
@@ -144,43 +145,56 @@ void DevicesManager::initializeDevices(void) noexcept
 			continue; // jump to next detected device
 		}
 
-		try {
-			for(const auto & driver : _drivers) {
-				if( device.getDriverID() == driver->getDriverID() ) {
+		for(const auto & driver : _drivers) {
+			if( device.getDriverID() == driver->getDriverID() ) {
+				std::ostringstream buffer(std::ios_base::app);
+				buffer	<< device.getFullName() << " "
+						<< device.getVendorID() << ":" << device.getProductID()
+						<< " on bus " << toUInt(device.getBus());
 
+				try {
 					// initialization
 					driver->initializeDevice( device );
-					driver->openDevice( device );
-					_startedDevices[devID] = device;
 
+					if(openDevices) {
+						/* openDevice() throws GLogiKExcept on any failure */
+						driver->openDevice( device );
+						_startedDevices[devID] = device;
+						buffer << " initialized (started)";
+					}
+					else {
+						_stoppedDevices[devID] = device;
+						buffer << " initialized (stopped)";
+					}
 #if GKDBUS
-					startedDevices.push_back(devID);
+					initializedDevices.push_back(devID);
 #endif
-
-					std::ostringstream buffer(std::ios_base::app);
-					buffer	<< device.getFullName() << " "
-							<< device.getVendorID() << ":" << device.getProductID()
-							<< " on bus " << toUInt(device.getBus()) << " initialized";
-					GKSysLogInfo(buffer.str());
-					break;
 				}
-			} // for
-		}
-		catch ( const GLogiKExcept & e ) {
-			GKSysLogError("device failure : ", e.what());
-		}
-	} // for
+				catch ( const GLogiKExcept & e ) {
+					buffer << " NOT initialized (failed)";
+					GKSysLogError("device initialization failure : ", e.what());
+				}
+
+				GKSysLogInfo(buffer.str());
+				break;
+			}
+		} // for : _drivers
+	} // for : _detectedDevices
 
 #if GKDBUS
-	if( startedDevices.size() > 0 ) {
+	if( initializedDevices.size() > 0 ) {
+		std::string signal("DevicesStopped");
+		if(openDevices)
+			signal = "DevicesStarted";
+
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(_numClients, _pDBus, "DevicesStarted", startedDevices);
+		this->sendStatusSignalArrayToClients(_numClients, _pDBus, signal, initializedDevices);
 	}
 #endif
 
 	_detectedDevices.clear();
 
-	GKLog2(info, "device(s) initialized : ", _startedDevices.size())
+	GKLog2(info, "device(s) initialized: ", initializedDevices.size())
 }
 
 const bool DevicesManager::startDevice(const std::string & devID)
@@ -193,10 +207,9 @@ const bool DevicesManager::startDevice(const std::string & devID)
 		const auto & device = _stoppedDevices.at(devID);
 		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
-				// initialization
-				driver->initializeDevice( device );
+				/* device should have already been initiailized in ::initializeDevices()
+				 * openDevice() throws GLogiKExcept on any failure */
 				driver->openDevice( device );
-				_startedDevices[devID] = device;
 
 				std::ostringstream buffer(std::ios_base::app);
 				buffer	<< device.getFullName() << " "
@@ -204,7 +217,7 @@ const bool DevicesManager::startDevice(const std::string & devID)
 						<< " on bus " << toUInt(device.getBus()) << " initialized";
 				GKSysLogInfo(buffer.str());
 
-				GKLog2(trace, devID, " removing device from stopped-devices container")
+				_startedDevices[devID] = device;
 				_stoppedDevices.erase(devID);
 
 				return true;
@@ -931,7 +944,7 @@ void DevicesManager::startMonitoring(void) {
 			}
 
 			this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
-			this->initializeDevices();
+			this->initializeDevices(true);
 
 #if GKDBUS
 			/* send signal, even if no client registered, clients could have started before daemon */
@@ -968,7 +981,7 @@ void DevicesManager::startMonitoring(void) {
 						this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
 
 						if( action == "add" ) {
-							this->initializeDevices();
+							this->initializeDevices(false);
 						}
 						else if( action == "remove" ) {
 							this->checkForUnpluggedDevices();

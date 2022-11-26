@@ -935,6 +935,25 @@ void KeyboardDriver::initializeDevice(const USBDeviceID & det)
 	}
 
 	USBDevice device(det);
+
+	// FIXME
+	//if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+	//}
+
+	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+		/* plugins manager pointer is required in ->getDeviceLCDPluginsProperties()
+		 * for all initialized devices (even for the stopped ones) */
+		try {
+			device.setLCDPluginsManager( new LCDScreenPluginsManager(device.getProduct()) );
+		}
+		catch (const std::bad_alloc& e) { /* handle new() failure */
+			std::ostringstream buffer(std::ios_base::app);
+			buffer << devID << " LCD Plugins manager allocation failure";
+			GKSysLogError(buffer.str());
+			return;
+		}
+	}
+
 	_initializedDevices[ device.getID() ] = device;
 
 	GKLog2(trace, devID, " device initialized")
@@ -955,19 +974,6 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 
 		try {
 			this->sendUSBDeviceInitialization(device);
-
-			// FIXME
-			//if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-			//}
-
-			if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-				try {
-					device.setLCDPluginsManager( new LCDScreenPluginsManager(device.getProduct()) );
-				}
-				catch (const std::bad_alloc& e) { /* handle new() failure */
-					throw GLogiKBadAlloc("LCD Plugins manager allocation failure");
-				}
-			}
 
 			this->resetDeviceState(device);
 		}
