@@ -131,14 +131,16 @@ const bool GKeysEventManager::clearMacro(
 
 	try {
 		mBank_type & bank = GKeysBanks.at(bankID);
+		GKeysEvent & event = bank.at(keyID);
 
 		try {
-			if( ! bank.at(keyID).getMacro().empty() ) {
+			if( ! event.getMacro().empty() ) {
 				LOG(info) << "MBank: " << bankID
 					<< " - GKey: " << getGKeyName(keyID)
 					<< " - clearing macro";
 
-				bank[keyID].clearMacro();
+				event.clearMacro();
+				event.setEventType(GKeyEventType::GKEY_INACTIVE);
 				return true;
 			}
 		}

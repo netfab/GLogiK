@@ -181,7 +181,10 @@ void GKeysBanksCapability::resetBank(const MKeysID bankID)
 {
 	try {
 		for(auto & keyEventPair : _GKeysBanks.at(bankID)) {
-			keyEventPair.second.clearMacro();
+			GKeysEvent & event = keyEventPair.second;
+			event.clearMacro();
+			event.setEventType(GKeyEventType::GKEY_INACTIVE);
+			// FIXME reset command ?
 		}
 	}
 	catch (const std::out_of_range& oor) {

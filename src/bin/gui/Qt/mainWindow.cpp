@@ -496,8 +496,9 @@ void MainWindow::saveConfigurationFile(const TabApplyButton tab)
 			mBank_type & bank = banks.at(bankID);
 			GKeysEvent & event = bank.at(keyID);
 
-			event.setEventType(eventType);
 			event.setCommand(eventCommand);
+			event.setEventType(eventType);
+
 			dosave = true;
 
 			GKLog(trace, "GKeys updated")

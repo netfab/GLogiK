@@ -61,7 +61,6 @@ class GKeysEvent
 
 		void clearMacro(void) {
 			_GKeyMacro.clear();
-			_GKeyEventType = GKeyEventType::GKEY_INACTIVE;
 		}
 		const macro_type & getMacro(void) const { return _GKeyMacro; }
 
@@ -69,13 +68,11 @@ class GKeysEvent
 		void setCommand(const std::string & command) {
 			if( ! command.empty() ) {
 				_GKeyCommand = command;
-				_GKeyEventType = GKeyEventType::GKEY_RUNCMD;
 			}
 			else this->clearCommand();
 		};
 		void clearCommand(void) {
 			_GKeyCommand.clear();
-			_GKeyEventType = GKeyEventType::GKEY_INACTIVE;
 		}
 
 	private:
