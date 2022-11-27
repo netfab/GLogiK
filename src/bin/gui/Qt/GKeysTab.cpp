@@ -494,10 +494,26 @@ void GKeysTab::switchGKeyEventType(const DeviceProperties & device, const GKeysI
 		const GKeysEvent & event = bank.at(GKeyID);
 		const QVariant data = _GKeyEventTypeComboBox->itemData(index).value<QVariant>();
 
+		auto getApplyButtonStatus = [&] () -> const bool
+		{
+			bool ret = false;
+
+			if(event.getEventType() != _newEventType)
+				ret = true;
+
+			if((_newEventType == GKeyEventType::GKEY_MACRO) && (event.getMacro().empty()))
+				ret = false;
+
+			if((_newEventType == GKeyEventType::GKEY_RUNCMD) && (event.getCommand().empty()))
+				ret = false;
+
+			return ret;
+		};
+
 		/* prepare internal variables for potential click on ApplyButton */
 		this->setGKeyEventParams(event.getCommand(), getDataEventType(data), GKeyID);
 
-		this->setApplyButtonStatus( ((event.getEventType() != _newEventType) && (! event.getCommand().empty())) );
+		this->setApplyButtonStatus( getApplyButtonStatus() );
 
 		/* -- -- -- */
 
