@@ -492,6 +492,9 @@ void MainWindow::saveConfigurationFile(const TabApplyButton tab)
 		try {
 			_GKeysTab->getGKeyEventParams(bankID, keyID, eventType, eventCommand);
 
+			GKLog4(trace, "MBank: ", bankID, "GKey: ", getGKeyName(keyID))
+			GKLog4(trace, "eventType: ", GKeysTab::getEventTypeString(eventType), "command: ", eventCommand)
+
 			banksMap_type & banks = _openedConfigurationFile.getBanks();
 			mBank_type & bank = banks.at(bankID);
 			GKeysEvent & event = bank.at(keyID);

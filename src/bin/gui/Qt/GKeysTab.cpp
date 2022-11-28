@@ -65,6 +65,30 @@ GKeysTab::~GKeysTab()
 {
 }
 
+#if DEBUGGING_ON
+const char* GKeysTab::getEventTypeString(const GKeyEventType eventType)
+{
+	switch(eventType)
+	{
+		case GKeyEventType::GKEY_INACTIVE:
+			return "GKEY_INACTIVE";
+			break;
+		case GKeyEventType::GKEY_MACRO:
+			return "GKEY_MACRO";
+			break;
+		case GKeyEventType::GKEY_RUNCMD:
+			return "GKEY_RUNCMD";
+			break;
+		case GKeyEventType::GKEY_INVALID:
+			return "GKEY_INVALID";
+			break;
+		default:
+			return "GKEY_UNKNOWN";
+			break;
+	}
+}
+#endif
+
 void GKeysTab::buildTab(void)
 {
 	GK_LOG_FUNC
@@ -196,7 +220,7 @@ void GKeysTab::updateTab(const DeviceProperties & device, const MKeysID bankID)
 }
 
 void GKeysTab::getGKeyEventParams(
-	MKeysID & bankID, GKeysID & keyID,
+	MKeysID & bankID, GKeysID & GKeyID,
 	GKeyEventType & eventType, std::string & eventCommand)
 {
 	GK_LOG_FUNC
@@ -205,8 +229,11 @@ void GKeysTab::getGKeyEventParams(
 		throw GLogiKExcept("internal logic error");
 
 	bankID = _currentBankID;
-	keyID  = _currentGKeyID;
+	GKeyID  = _currentGKeyID;
 	eventType = _newEventType;
+
+	GKLog4(trace, "MBank: ", _currentBankID, "GKey: ", getGKeyName(GKeyID))
+	GKLog4(trace, "eventType: ", GKeysTab::getEventTypeString(eventType), "command: ", eventCommand)
 
 	if(_pCommandLineEdit) {
 		GKLog(trace, "setting event command from pQLineEdit")
@@ -335,8 +362,10 @@ void GKeysTab::setGKeyEventParams(
 	_newEventType = eventType;
 	_currentGKeyID = GKeyID;
 
+	GKLog4(trace, "MBank: ", _currentBankID, "GKey: ", getGKeyName(GKeyID))
+	GKLog4(trace, "eventType: ", GKeysTab::getEventTypeString(eventType), "command: ", eventCommand)
+
 	if(! eventCommand.empty()) {
-		GKLog2(trace, "setting eventCommand: ", eventCommand)
 		_currentEventCommand = eventCommand;
 	}
 }

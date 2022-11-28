@@ -58,11 +58,15 @@ class GKeysTab
 		);
 		~GKeysTab();
 
+#if DEBUGGING_ON
+		static const char* getEventTypeString(const GKeyEventType eventType);
+#endif
+
 		void buildTab(void);
 		void updateTab(const DeviceProperties & device, const MKeysID bankID);
 		void getGKeyEventParams(
 			MKeysID & bankID,
-			GKeysID & keyID,
+			GKeysID & GKeyID,
 			GKeyEventType & eventType,
 			std::string & eventCommand
 		);
