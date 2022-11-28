@@ -157,8 +157,7 @@ void DevicesManager::initializeDevices(const bool openDevices) noexcept
 					driver->initializeDevice( device );
 
 					if(openDevices) {
-						/* openDevice() throws GLogiKExcept on any failure */
-						driver->openDevice( device );
+						driver->openDevice( device ); /* throws GLogiKExcept on any failure */
 						_startedDevices[devID] = device;
 						buffer << " initialized (started)";
 					}
@@ -207,9 +206,8 @@ const bool DevicesManager::startDevice(const std::string & devID)
 		const auto & device = _stoppedDevices.at(devID);
 		for(const auto & driver : _drivers) {
 			if( device.getDriverID() == driver->getDriverID() ) {
-				/* device should have already been initiailized in ::initializeDevices()
-				 * openDevice() throws GLogiKExcept on any failure */
-				driver->openDevice( device );
+				driver->initializeDevice( device );
+				driver->openDevice( device ); /* throws GLogiKExcept on any failure */
 
 				std::ostringstream buffer(std::ios_base::app);
 				buffer	<< device.getFullName() << " "

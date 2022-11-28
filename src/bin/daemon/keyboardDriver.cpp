@@ -926,11 +926,12 @@ void KeyboardDriver::initializeDevice(const USBDeviceID & det)
 
 	GKLog3(trace, devID, " initializing device : ", det.getFullName())
 
-	/* sanity check */
+	/* device may already have been initialized
+	 * (before DevicesManager startMonitoring() main loop) */
 	if(_initializedDevices.count(devID) > 0) {
 		std::ostringstream buffer(std::ios_base::app);
 		buffer << devID << " device already initialized";
-		GKSysLogWarning(buffer.str());
+		GKSysLogInfo(buffer.str());
 		return;
 	}
 
