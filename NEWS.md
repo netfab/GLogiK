@@ -1,4 +1,9 @@
 
+0.8.18 (202x-xx-xx)
+===================
+- Added running command feature from GKey event
+- Usual internal cleanings and improvements
+
 0.8.16 (2022-11-14)
 ===================
 - Added Qt GUI tab for G-Keys handling
