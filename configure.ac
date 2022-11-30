@@ -101,6 +101,16 @@ AC_ARG_ENABLE( [dbus],
                AS_HELP_STRING( [--enable-dbus], [Enable D-Bus support]),
                [enable_dbus=$enableval], [enable_dbus=yes])
 
+dnl check for notifications support
+AC_ARG_ENABLE( [notifications],
+               AS_HELP_STRING( [--enable-notifications], [Enable notifications support]),
+               [enable_notifications=$enableval], [enable_notifications=yes])
+
+dnl check for libnotify support
+AC_ARG_ENABLE( [libnotify],
+               AS_HELP_STRING( [--enable-libnotify], [Enable libnotify support]),
+               [enable_libnotify=$enableval], [enable_libnotify=yes])
+
 dnl check for Qt5 client GUI
 AC_ARG_ENABLE( [qt5],
                AS_HELP_STRING( [--enable-qt5], [Enable Qt5 client GUI]),
@@ -217,9 +227,33 @@ AS_IF([test "x$enable_dbus" = "xyes"], [
 AM_CONDITIONAL([WITH_DBUS], [test "x$enable_dbus" = "xyes"])
 
 dnl ---
-dnl checking for hidapi support
-AM_CONDITIONAL([WITH_HIDAPI], [test "x$enable_hidapi" = "xyes"])
+dnl checking for notifcations support
+AC_MSG_CHECKING([whether we want notifications support])
+AS_IF([test "x$enable_notifications" = "xyes"], [
+	AC_MSG_RESULT([yes])
+	AC_DEFINE([HAVE_DESKTOP_NOTIFICATIONS], [1], [desktop notifications enabled])
 
+	AC_MSG_CHECKING([whether we want libnotify support])
+	AS_IF([test "x$enable_libnotify" = "xyes"], [
+		AC_MSG_RESULT([yes])
+		AC_DEFINE([HAVE_LIBNOTIFY], [1], [libnotify enabled])
+	], [
+		AC_MSG_RESULT([no])
+		AC_DEFINE([HAVE_LIBNOTIFY], [0], [libnotify disabled])
+		AC_MSG_ERROR([notifications via D-Bus only are currently not implemented])
+	])
+], [
+	AC_MSG_RESULT([no])
+	AC_MSG_CHECKING([whether we want libnotify support])
+	AS_IF([test "x$enable_libnotify" = "xyes"], [
+		AC_MSG_RESULT([yes])
+		AC_MSG_ERROR([notifications support is required by libnotify support])
+	], [AC_MSG_RESULT([no])])
+])
+AM_CONDITIONAL([WITH_DESKTOP_NOTIFICATIONS], [test "x$enable_notifications" = "xyes"])
+
+dnl ---
+dnl checking for hidapi support
 AC_MSG_CHECKING([whether we want hidapi support])
 AS_IF([test "x$enable_hidapi" = "xyes"],
 	[
@@ -229,8 +263,7 @@ AS_IF([test "x$enable_hidapi" = "xyes"],
 		AC_MSG_RESULT([no])
 		AC_DEFINE([GKLIBUSB], [1], [GKLIBUSB enabled])
 	])
-dnl ---
-
+AM_CONDITIONAL([WITH_HIDAPI], [test "x$enable_hidapi" = "xyes"])
 
 dnl ---
 dnl checking for Qt5 GUI
@@ -297,6 +330,8 @@ AS_IF([test "x$enable_hidapi" = "xyes"],
 
 AS_IF([test "x$enable_dbus" = "xyes"],
 	[
+		AS_IF([test "x$enable_notifications" = "xyes" && test "x$enable_libnotify" = "xyes"],
+			[ PKG_CHECK_MODULES([LIBNOTIFY], [libnotify >= 0.8.1]) ], [])
 		PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.10.18])
 		PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
 		dnl SMlib used only by desktop binaries
@@ -370,6 +405,8 @@ AC_MSG_NOTICE([
                   SM CFLAGS : ${SM_CFLAGS}
             libevdev CFLAGS : ${LIBEVDEV_CFLAGS}
               libevdev LIBS : ${LIBEVDEV_LIBS}
+             libnotify LIBS : ${LIBNOTIFY_LIBS}
+           libnotify CFLAGS : ${LIBNOTIFY_CFLAGS}
                 hidapi LIBS : ${LIBHIDAPI_LIBS}
               hidapi CFLAGS : ${LIBHIDAPI_CFLAGS}
               libusb CFLAGS : ${LIBUSB_CFLAGS}

@@ -108,7 +108,7 @@ class DBusHandler
 		void registerWithDaemon(void);
 		void unregisterWithDaemon(void);
 
-		void clearAndUnregister(void);
+		void clearAndUnregister(const bool notifications = true);
 
 		void reportChangedState(void);
 

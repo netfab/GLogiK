@@ -21,11 +21,17 @@ include %D%/src/lib/dbus/Makefile.am
 include %D%/src/bin/launcher/Makefile.am
 include %D%/src/bin/service/Makefile.am
 
+if WITH_DESKTOP_NOTIFICATIONS
+include %D%/data/icons/Makefile.am
+endif
+
 if WITH_QT5
 include %D%/src/bin/gui/Qt/Makefile.am
 include %D%/data/applications/Makefile.am
 include %D%/data/gui/Makefile.am
+if !WITH_DESKTOP_NOTIFICATIONS
 include %D%/data/icons/Makefile.am
+endif
 endif
 
 endif

@@ -8,6 +8,8 @@ option('debug_pbmfont', type: 'boolean', value: false, description: 'PBMFont ext
 option('debug_lcd_plugins', type: 'boolean', value: false, description: 'LCD plugins extra debugging. default: no')
 option('desktop_service_group', type: 'string', value: 'glogiks', description: 'GLogiKs desktop service group')
 option('hidapi', type: 'boolean', value: true, description: 'hidapi support')
+option('notifications', type: 'boolean', value: true, description: 'notifications support')
+option('libnotify', type: 'boolean', value: true, description: 'libnotify support')
 option('qt5', type: 'boolean', value: true, description: 'Qt5 Graphical User Interface')
 option('relative_udev_rules_dir', type: 'boolean', value: false, description: 'Relative udev rules installation directory. Used only for debugging/development.')
 option('udev_rules_dir', type: 'string', value: '', description: 'udev rules installation directory')

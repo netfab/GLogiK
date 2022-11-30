@@ -159,12 +159,12 @@ const bool DBusHandler::getExitStatus(void) const
 	return ( ! _wantToExit );
 }
 
-void DBusHandler::clearAndUnregister(void)
+void DBusHandler::clearAndUnregister(const bool notifications)
 {
 	GK_LOG_FUNC
 
 	if( _registerStatus ) {
-		_devices.clearDevices();
+		_devices.clearDevices(notifications);
 		this->unregisterWithDaemon();
 		/* send signal to GUI */
 		this->sendDevicesUpdatedSignal();
@@ -178,7 +178,11 @@ void DBusHandler::cleanDBusRequests(void)
 {
 	GK_LOG_FUNC
 
-	this->clearAndUnregister();
+	/* ::cleanDBusRequests() is called right before service exiting
+	 * but the daemon may still running and handling devices
+	 * do not show desktop notifications when service exit
+	 */
+	this->clearAndUnregister(false);
 
 	/* remove SessionMessageHandler D-Bus interface and object */
 	_pDBus->removeMethodsInterface(_sessionBus,

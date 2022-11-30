@@ -158,11 +158,14 @@ inc = include_directories('.', 'src')
 
 enable_dbus = get_option('dbus')
 enable_hidapi = get_option('hidapi')
+enable_notifications = get_option('notifications')
+enable_libnotify = get_option('libnotify')
 enable_qt5 = get_option('qt5')
 
 #! ----------
 null_dep = dependency('', required: false)
 dbus_dep = null_dep
+libnotify_dep = null_dep
 GKDBus_lib_dep = null_dep
 
 #! ----------
@@ -201,16 +204,41 @@ if((not enable_dbus) and enable_qt5)
   enable_qt5 = false
 endif
 
+if((not enable_dbus) and enable_notifications)
+  warning('dbus is disabled => notifications are disabled')
+  enable_notifications = false
+endif
+
+if enable_notifications
+  config_h.set('HAVE_DESKTOP_NOTIFICATIONS', 1)
+  if enable_libnotify
+    libnotify_dep = dependency('libnotify', version: '>= 0.8.1')
+    config_h.set('HAVE_LIBNOTIFY', 1)
+  else
+    error('notifications via D-Bus only are currently not implemented')
+  endif
+else
+  if enable_libnotify
+    error('--enable-notifications is required by --enable-libnotify')
+  endif
+endif
+
 if enable_dbus
   subdir('src/bin/service')
   subdir('src/bin/launcher')
   subdir('data/autostart')
 
+  if enable_notifications
+    subdir('data/icons')
+  endif
+
   if enable_qt5
 	subdir('src/bin/gui/Qt')
 	subdir('data/applications')
     subdir('data/gui')
-	subdir('data/icons')
+    if(not enable_notifications)
+      subdir('data/icons')
+    endif
   endif
 endif
 
@@ -240,9 +268,11 @@ report += '      datadir: ' + gk_datadir + '\n'
 report += ' udevrulesdir: ' + udev_rules_dir + '\n'
 report += '\nBuild options:\n'
 report += '==============\n'
-report += '   dbus: ' + enable_dbus.to_string() + '\n'
-report += ' hidapi: ' + enable_hidapi.to_string() + '\n'
-report += '    qt5: ' + enable_qt5.to_string() + '\n'
+report += '          dbus: ' + enable_dbus.to_string() + '\n'
+report += ' notifications: ' + enable_notifications.to_string() + '\n'
+report += '     libnotify: ' + enable_libnotify.to_string() + '\n'
+report += '        hidapi: ' + enable_hidapi.to_string() + '\n'
+report += '           qt5: ' + enable_qt5.to_string() + '\n'
 report += '\nDebug options:\n'
 report += '==============\n'
 report += '             debug: ' + enable_debug.to_string() + '\n'

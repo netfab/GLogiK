@@ -41,6 +41,8 @@
 #include "include/MBank.hpp"
 #include "include/LCDPluginProperties.hpp"
 
+#include <config.h>
+
 #define LogRemoteCallFailure \
 	LOG(critical) << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
 #define LogRemoteCallGetReplyFailure \
@@ -63,11 +65,11 @@ class DevicesHandler
 		void setDBus(NSGKDBus::GKDBus* pDBus);
 		void setClientID(const std::string & id);
 
-		void startDevice(const std::string & devID);
-		void stopDevice(const std::string & devID);
-		void unplugDevice(const std::string & devID);
+		void startDevice(const std::string & devID, const bool notifications = true);
+		void stopDevice(const std::string & devID, const bool notifications = true);
+		void unplugDevice(const std::string & devID, const bool notifications = true);
 
-		void clearDevices(void);
+		void clearDevices(const bool notifications);
 
 		void setDeviceCurrentBankID(const std::string & devID, const MKeysID bankID);
 		banksMap_type & getDeviceBanks(const std::string & devID, MKeysID & bankID);
@@ -101,6 +103,14 @@ class DevicesHandler
 
 		std::map<std::string, DeviceProperties> _startedDevices;
 		std::map<std::string, DeviceProperties> _stoppedDevices;
+
+#if HAVE_DESKTOP_NOTIFICATIONS
+		void showNotification(
+			const std::string & devID,
+			const std::string & summary,
+			const DeviceProperties & device
+		);
+#endif
 
 		void setDeviceProperties(
 			const std::string & devID,

@@ -40,3 +40,15 @@ GLogiKs_SOURCES = \
 		%D%/virtualKeyboard.cpp \
 		%D%/virtualKeyboard.hpp
 
+if WITH_DESKTOP_NOTIFICATIONS
+GLogiKs_CXXFLAGS += \
+				@LIBNOTIFY_CFLAGS@
+
+GLogiKs_LDADD += \
+				@LIBNOTIFY_LIBS@
+
+GLogiKs_SOURCES += \
+		%D%/desktopNotification.cpp \
+		%D%/desktopNotification.hpp
+endif
+

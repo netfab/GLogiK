@@ -30,6 +30,12 @@
 
 #include "lib/shared/deviceConfigurationFile.hpp"
 
+#include <config.h>
+
+#if HAVE_DESKTOP_NOTIFICATIONS
+#include "desktopNotification.hpp"
+#endif
+
 #include "devicesHandler.hpp"
 
 namespace GLogiK
@@ -78,7 +84,7 @@ void DevicesHandler::setClientID(const std::string & id)
 	_clientID = id;
 }
 
-void DevicesHandler::clearDevices(void)
+void DevicesHandler::clearDevices(const bool notifications)
 {
 	devIDSet devicesID;
 
@@ -91,7 +97,7 @@ void DevicesHandler::clearDevices(void)
 
 	/* stop each device if not already stopped, and unref it */
 	for(const auto & devID : devicesID) {
-		this->unplugDevice(devID);
+		this->unplugDevice(devID, notifications);
 	}
 
 	/* clear all containers */
@@ -531,7 +537,7 @@ void DevicesHandler::setDeviceProperties(
 	}
 }
 
-void DevicesHandler::startDevice(const std::string & devID)
+void DevicesHandler::startDevice(const std::string & devID, const bool notifications)
 {
 	GK_LOG_FUNC
 
@@ -546,6 +552,11 @@ void DevicesHandler::startDevice(const std::string & devID)
 			LOG(info) << devID << " starting device";
 			_startedDevices[devID] = device;
 			_stoppedDevices.erase(devID);
+
+#if HAVE_DESKTOP_NOTIFICATIONS
+			if(notifications)
+				this->showNotification(devID, "Device started", device);
+#endif
 		}
 		catch (const std::out_of_range& oor) {
 			LOG(info) << devID << " initializing and starting device";
@@ -553,11 +564,16 @@ void DevicesHandler::startDevice(const std::string & devID)
 			/* also load configuration file */
 			this->setDeviceProperties(devID, device);
 			_startedDevices[devID] = device;
+
+#if HAVE_DESKTOP_NOTIFICATIONS
+			if(notifications)
+				this->showNotification(devID, "Device started", device);
+#endif
 		}
 	}
 }
 
-void DevicesHandler::stopDevice(const std::string & devID)
+void DevicesHandler::stopDevice(const std::string & devID, const bool notifications)
 {
 	GK_LOG_FUNC
 
@@ -572,17 +588,28 @@ void DevicesHandler::stopDevice(const std::string & devID)
 			LOG(info) << devID << " stopping device";
 			_stoppedDevices[devID] = device;
 			_startedDevices.erase(devID);
+
+#if HAVE_DESKTOP_NOTIFICATIONS
+			if(notifications)
+				this->showNotification(devID, "Device stopped", device);
+#endif
 		}
 		catch (const std::out_of_range& oor) {
 			/* this can happen when GLogiKs start and this device is already stopped
 			 * so we must start the device to stop it */
 			GKLog2(trace, devID, " device not found in containers, initializing and stopping it")
 
-			this->startDevice(devID);
+			this->startDevice(devID, false);
 			try {
+				DeviceProperties & device = _startedDevices.at(devID);
 				LOG(info) << devID << " stopping device";
-				_stoppedDevices[devID] = _startedDevices.at(devID);
+				_stoppedDevices[devID] = device;
 				_startedDevices.erase(devID);
+
+#if HAVE_DESKTOP_NOTIFICATIONS
+				if(notifications)
+					this->showNotification(devID, "Device stopped", device);
+#endif
 			}
 			catch (const std::out_of_range& oor) {
 				LOG(error) << devID << " started device not found, something is really wrong";
@@ -591,7 +618,7 @@ void DevicesHandler::stopDevice(const std::string & devID)
 	}
 }
 
-void DevicesHandler::unplugDevice(const std::string & devID)
+void DevicesHandler::unplugDevice(const std::string & devID, const bool notifications)
 {
 	GK_LOG_FUNC
 
@@ -603,7 +630,7 @@ void DevicesHandler::unplugDevice(const std::string & devID)
 		this->unrefDevice(devID);
 	}
 	catch (const std::out_of_range& oor) {
-		this->stopDevice(devID);
+		this->stopDevice(devID, notifications);
 		this->unrefDevice(devID);
 	}
 }
@@ -863,6 +890,25 @@ const GKeysIDArray_type DevicesHandler::getDeviceGKeysIDArray(const std::string 
 
 	return GKeysIDArray;
 }
+
+#if HAVE_DESKTOP_NOTIFICATIONS
+void DevicesHandler::showNotification(
+	const std::string & devID,
+	const std::string & summary,
+	const DeviceProperties & device)
+{
+	std::string body(devID);
+	body += " ";
+	body += device.getVendor();
+	body += " ";
+	body += device.getProduct();
+	body += " ";
+	body += device.getName();
+
+	// icon - "dialog-information"
+	desktopNotification n(summary, body, "GLogiK");
+}
+#endif
 
 } // namespace GLogiK
 
