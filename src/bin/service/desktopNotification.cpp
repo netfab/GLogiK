@@ -19,12 +19,15 @@
  *
  */
 
+#include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
 #include "desktopNotification.hpp"
 
 namespace GLogiK
 {
+
+using namespace NSGKUtils;
 
 #if HAVE_LIBNOTIFY
 
@@ -63,7 +66,13 @@ void desktopNotification::setParameters(
 
 void desktopNotification::show(void)
 {
-	notify_notification_show(_pNotification, nullptr);
+	GError *notifyError = nullptr;
+
+	if( ! notify_notification_show(_pNotification, &notifyError) ) {
+		LOG(error) << "failed to send notification : " << notifyError->message;
+		g_error_free(notifyError);
+	}
+
 	g_object_unref(G_OBJECT(_pNotification));
 	_pNotification = nullptr;
 }
