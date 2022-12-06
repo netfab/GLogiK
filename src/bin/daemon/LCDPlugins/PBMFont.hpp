@@ -35,7 +35,6 @@
 namespace GLogiK
 {
 
-
 typedef std::initializer_list<std::pair<const std::string, std::pair<uint16_t, uint16_t>>> charactersMap_type;
 
 class PBMFont
@@ -43,6 +42,8 @@ class PBMFont
 {
 	public:
 		virtual ~PBMFont(void);
+
+		static const std::string deg;
 
 		const uint16_t getCenteredXPos(const std::string & string);
 		const uint16_t getCenteredYPos(void);
