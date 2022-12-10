@@ -96,6 +96,8 @@ GLogiKd_SOURCES += \
 		%D%/LCDPlugins/netsnap/netSnapshots.hpp \
 		%D%/LCDPlugins/systemMonitor.cpp \
 		%D%/LCDPlugins/systemMonitor.hpp \
+		%D%/LCDPlugins/coretemp.cpp \
+		%D%/LCDPlugins/coretemp.hpp \
 		%D%/LCDPlugins/endscreen.cpp \
 		%D%/LCDPlugins/endscreen.hpp
 

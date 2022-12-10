@@ -1,6 +1,7 @@
 
 0.8.18 (202x-xx-xx)
 ===================
+- Added new coretemp LCD plugin
 - Added desktop notifications support using libnotify
 - Added running command feature from GKey event
 - Usual internal cleanings and improvements

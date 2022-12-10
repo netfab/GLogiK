@@ -43,6 +43,8 @@ GLogiKd_sources += [
 	'LCDPlugins/netsnap/netSnapshots.hpp',
 	'LCDPlugins/systemMonitor.cpp',
 	'LCDPlugins/systemMonitor.hpp',
+	'LCDPlugins/coretemp.cpp',
+	'LCDPlugins/coretemp.hpp',
 	'LCDPlugins/endscreen.cpp',
 	'LCDPlugins/endscreen.hpp',
 ]

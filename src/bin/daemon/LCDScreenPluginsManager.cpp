@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@
  *
  */
 
+#include <vector>
+#include <string>
 #include <algorithm>
 #include <new>
 
@@ -27,6 +29,7 @@
 
 #include "LCDScreenPluginsManager.hpp"
 
+#include "LCDPlugins/coretemp.hpp"
 #include "LCDPlugins/endscreen.hpp"
 #include "LCDPlugins/splashscreen.hpp"
 #include "LCDPlugins/systemMonitor.hpp"
@@ -48,9 +51,18 @@ LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
 {
 	GK_LOG_FUNC
 
+	// TODO optional build ?
+	const std::vector<std::string> coretempIDs = Coretemp::getCoretempID();
+	if(coretempIDs.empty()) {
+		GKSysLogWarning("coretemp directory not found, disabling coretemp LCD plugin");
+	}
+
 	try {
 		_plugins.push_back( new Splashscreen() );
 		_plugins.push_back( new SystemMonitor() );
+		for( const auto & ID : coretempIDs ) {
+			_plugins.push_back( new Coretemp(ID) );
+		}
 		_plugins.push_back( new Endscreen() );
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */

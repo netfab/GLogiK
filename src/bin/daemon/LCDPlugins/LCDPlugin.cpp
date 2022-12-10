@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -130,7 +130,10 @@ void LCDPlugin::prepareNextPBMFrame(void)
 
 void LCDPlugin::init(FontsManager* const pFonts, const std::string & product)
 {
+	GK_LOG_FUNC
+
 	this->resetPBMFrameIndex();
+	GKLog2(trace, "initialized LCD plugin: ", this->getPluginName())
 	_initialized = true;
 }
 
@@ -408,6 +411,26 @@ void LCDPlugin::drawPadlockOnPBMFrame(
 			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 4)] = 0;
 			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 5)] = 0;
 		}
+	}
+}
+
+void LCDPlugin::drawVerticalLineOnPBMFrame(
+	const uint16_t PBMXPos,
+	const uint16_t PBMYPos,
+	const uint16_t size)
+{
+	try {
+		PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
+
+		const uint16_t xByte = PBMXPos / 8;
+		const uint16_t index = (DEFAULT_PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
+
+		for(uint16_t i = 1; i < size; ++i) {
+			frame[index + (DEFAULT_PBM_WIDTH_IN_BYTES * i)] |= 0b00100000;
+		}
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLogWarning("wrong frame index");
 	}
 }
 
