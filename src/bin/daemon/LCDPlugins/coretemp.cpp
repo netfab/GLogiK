@@ -81,6 +81,8 @@ const std::vector<std::string> & Coretemp::getCoretempID(void)
 {
 	GK_LOG_FUNC
 	
+	Coretemp::coretempIDs.clear();
+
 	const std::string basedir("/sys/devices/platform/coretemp.");
 
 	unsigned int x = 0;
