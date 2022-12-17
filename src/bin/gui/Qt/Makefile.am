@@ -1,11 +1,9 @@
 
 bin_PROGRAMS += GKcQt5
 
-### QT_CXXFLAGS adds '-W', which is the old name of '-Wextra'
 GKcQt5_CXXFLAGS = \
 				@BOOST_CPPFLAGS@ \
-				@QT_CXXFLAGS@ \
-				-Wno-extra \
+				@QT5_CFLAGS@ \
 				@DBUS_CFLAGS@ \
 				@AM_CXXFLAGS@
 
@@ -14,7 +12,7 @@ GKcQt5_LDFLAGS = \
 				@AM_LDFLAGS@
 
 GKcQt5_LDADD = \
-		@QT_LIBS@ \
+		@QT5_LIBS@ \
 		@BOOST_SYSTEM_LIB@ \
 		@BOOST_FILESYSTEM_LIB@ \
 		@BOOST_PROGRAM_OPTIONS_LIB@ \

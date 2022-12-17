@@ -6,6 +6,9 @@ DEBUG_LOGS_DIR=/var/tmp/GKDebug
 build_dir=$(PREFIX_DEV_DIR)/build
 PREFIX_DIR=$(PREFIX_DEV_DIR)/GLogiK
 
+QT5_BIN_DIR=/usr/lib64/qt5/bin
+export PATH:=${QT5_BIN_DIR}:${PATH}
+
 LANG=C
 
 CXXFLAGS=-O2 -pipe \
