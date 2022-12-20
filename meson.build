@@ -199,14 +199,15 @@ subdir('data/pbm')
 
 #! ----------
 
-if((not enable_dbus) and enable_qt5)
-  warning('dbus is disabled => qt5 is disabled')
-  enable_qt5 = false
-endif
-
-if((not enable_dbus) and enable_notifications)
-  warning('dbus is disabled => notifications are disabled')
-  enable_notifications = false
+if not enable_dbus
+  if enable_qt5
+    warning('dbus is disabled => qt5 is disabled')
+    enable_qt5 = false
+  endif
+  if enable_notifications
+    warning('dbus is disabled => notifications are disabled')
+    enable_notifications = false
+  endif
 endif
 
 if enable_notifications
@@ -218,9 +219,8 @@ if enable_notifications
     error('notifications via D-Bus only are currently not implemented')
   endif
 else
-  if enable_libnotify
-    error('--enable-notifications is required by --enable-libnotify')
-  endif
+  warning('notifications are disabled => libnotify is disabled')
+  enable_libnotify = false
 endif
 
 if enable_dbus
