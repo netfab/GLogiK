@@ -315,25 +315,27 @@ dnl -------------------------------------------------------------------------
 dnl                       checking for libraries
 dnl -------------------------------------------------------------------------
 
-PKG_CHECK_MODULES([LIBUDEV], [libudev])
-PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.19])
+GDT_PKG_CHECK_MODULE([LIBUDEV], [libudev])
+GDT_PKG_CHECK_MODULE([LIBUSB], [libusb-1.0 >= 1.0.19])
 
 AS_IF([test "x$enable_hidapi" = "xyes"],
 	[
-		PKG_CHECK_MODULES([LIBHIDAPI], [hidapi-libusb >= 0.10.0])
+		GDT_PKG_CHECK_MODULE([LIBHIDAPI], [hidapi-libusb >= 0.10.0])
 	], [])
 
 AS_IF([test "x$enable_dbus" = "xyes"],
 	[
 		AS_IF([test "x$enable_notifications" = "xyes" && test "x$enable_libnotify" = "xyes"],
-			[ PKG_CHECK_MODULES([LIBNOTIFY], [libnotify >= 0.8.1]) ], [])
-		PKG_CHECK_MODULES([DBUS], [dbus-1 >= 1.10.18])
-		PKG_CHECK_MODULES([LIBEVDEV], [libevdev])
+			[ GDT_PKG_CHECK_MODULE([LIBNOTIFY], [libnotify >= 0.8.1]) ])
+		GDT_PKG_CHECK_MODULE([DBUS], [dbus-1 >= 1.10.18])
+		GDT_PKG_CHECK_MODULE([LIBEVDEV], [libevdev])
 		dnl SMlib used only by desktop binaries
 		PKG_CHECK_MODULES([SM], [sm ice])
+		GDT_PKG_MODULE_DEFINE_VERSION([SM], [sm])
+		GDT_PKG_MODULE_DEFINE_VERSION([ICE], [ice])
 		dnl X libraries used only by user service
-		PKG_CHECK_MODULES([LIBX11], [x11])
-		PKG_CHECK_MODULES([LIBXTST], [xtst])
+		GDT_PKG_CHECK_MODULE([LIBX11], [x11])
+		GDT_PKG_CHECK_MODULE([LIBXTST], [xtst])
 		AS_IF([test "x$enable_qt5" = "xyes"],
 			[ PKG_CHECK_MODULES([QT5], [Qt5Core Qt5Gui Qt5Widgets]) ], [])
 	], [])
@@ -363,6 +365,7 @@ AS_IF([test "x$enable_qt5" = "xyes"],
 				AC_MSG_ERROR([Wrong Qt5 qmake version.])
 	        fi
 
+			AC_DEFINE_UNQUOTED([GK_DEP_QT5_VERSION], ["$qmake5_test_ver"], [detected compile-time Qt5 version])
 			qt5_incdirs="`$QMAKE5 -query QT_INSTALL_HEADERS`"
 
 			saved_CPPFLAGS=$CPPFLAGS
@@ -394,7 +397,7 @@ AS_IF([test "x$enable_qt5" = "xyes"],
 		fi
 	], [])
 
-AX_BOOST_BASE([1.64.0], [], AC_MSG_ERROR([Could not find a useful version of boost libraries]))
+AX_BOOST_BASE([1.64.0], [], GDT_PKG_NOT_FOUND([boost libraries]))
 AX_BOOST_PROGRAM_OPTIONS
 AX_BOOST_SYSTEM
 AX_BOOST_FILESYSTEM

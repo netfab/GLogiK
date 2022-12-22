@@ -86,6 +86,12 @@ endif
 
 libudev_dep = dependency('libudev')
 
+deps_versions_array += [
+  ['LIBHIDAPI', hidapi_dep],
+  ['LIBUSB', libusb_dep],
+  ['LIBUDEV', libudev_dep],
+]
+
 #! ----------
 
 cxx = meson.get_compiler('cpp')

@@ -25,6 +25,11 @@ if enable_dbus
   ]
 endif
 
+deps_versions_array += [
+  ['ICE', ice_dep],
+  ['SM', sm_dep],
+]
+
 GKShared_lib = library(
 	'GKShared',
 	GKShared_sources,

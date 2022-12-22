@@ -40,7 +40,19 @@ GKDBus::GKDBus(
 {
 	GK_LOG_FUNC
 
+	{
+		int major_vers, minor_vers, micro_vers = 0;
+		dbus_get_version(&major_vers, &minor_vers, &micro_vers);
+		_currentDBusVersion += std::to_string(major_vers);
+		_currentDBusVersion += ".";
+		_currentDBusVersion += std::to_string(minor_vers);
+		_currentDBusVersion += ".";
+		_currentDBusVersion += std::to_string(micro_vers);
+	}
+
 	GKLog(trace, "GKDBus initialization")
+	GKLog2(trace, "GKDBus built against DBus: ", _builtAgainstDBusVersion)
+	GKLog2(trace, "GKDBus running with DBus: ", _currentDBusVersion)
 
 	dbus_error_init(&_error);
 

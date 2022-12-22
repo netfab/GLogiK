@@ -13,16 +13,22 @@ GLogiKs_sources = [
   'virtualKeyboard.hpp',
 ]
 
-libevdev_dep = dependency('libevdev')
-x11_dep = dependency('x11')
-xtst_dep = dependency('xtst')
-
 if enable_notifications
   GLogiKs_sources += [
 	'desktopNotification.cpp',
 	'desktopNotification.hpp',
   ]
 endif
+
+libevdev_dep = dependency('libevdev')
+x11_dep = dependency('x11')
+xtst_dep = dependency('xtst')
+
+deps_versions_array += [
+  ['LIBEVDEV', libevdev_dep],
+  ['LIBX11', x11_dep],
+  ['LIBXTST', xtst_dep],
+]
 
 executable(
   'GLogiKs',

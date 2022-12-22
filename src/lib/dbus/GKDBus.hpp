@@ -82,6 +82,10 @@ class GKDBus
 		);
 		~GKDBus();
 
+		const std::string & getBuiltAgainstDBusVersion(void) {
+			return _builtAgainstDBusVersion;
+		}
+
 		void connectToSystemBus(
 			const char* connectionName,
 			const ConnectionFlag flag = ConnectionFlag::GKDBUS_MULTIPLE
@@ -101,6 +105,10 @@ class GKDBus
 
 	private:
 		DBusError _error;
+
+		std::string _currentDBusVersion;
+		/* see also DBUS_VERSION_STRING from dbus.h */
+		const std::string _builtAgainstDBusVersion = GK_DEP_DBUS_VERSION_STRING;
 
 		std::string _sessionName;
 		std::string _systemName;

@@ -182,6 +182,9 @@ cdata.set('GLOGIKD_GROUP', glogikd_group)
 cdata.set('DEBUG_DIR', debug_dir)
 
 #! ----------
+deps_versions_array = []
+
+#! ----------
 subdir('src/lib/utils')  #! GKUtils_lib_dep
 subdir('src/lib/shared') #! GKShared_lib_dep
 
@@ -245,6 +248,23 @@ endif
 if enable_debug
 	subdir('data/tmpfiles.d')
 endif
+
+#! ----------
+
+deps_versions_array += [
+  ['DBUS', dbus_dep],
+  ['LIBNOTIFY', libnotify_dep],
+]
+
+foreach define: deps_versions_array
+  dep_symbol = 'GK_DEP_' + define[0] + '_VERSION_STRING'
+  dep_version = define[1].version()
+  if dep_version != 'unknown'
+    config_h.set_quoted(dep_symbol, dep_version)
+  endif
+endforeach
+
+#! ----------
 
 config_h.set10('GKDBUS', dbus_dep.found())
 
