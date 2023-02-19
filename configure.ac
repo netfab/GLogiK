@@ -28,7 +28,7 @@ dnl
 AC_CANONICAL_TARGET
 
 # Automake initialisation
-AM_INIT_AUTOMAKE([subdir-objects])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 
 # Checks for programs.
 AC_PROG_CXX
