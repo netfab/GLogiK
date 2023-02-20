@@ -7,6 +7,7 @@ option('debug_libusb', type: 'boolean', value: false, description: 'Libusb extra
 option('debug_pbmfont', type: 'boolean', value: false, description: 'PBMFont extra debugging. default: no')
 option('debug_lcd_plugins', type: 'boolean', value: false, description: 'LCD plugins extra debugging. default: no')
 option('desktop_service_group', type: 'string', value: 'glogiks', description: 'GLogiKs desktop service group')
+option('docdir', type: 'string', value: 'GLogiK', description: 'documentation installation default directory')
 option('hidapi', type: 'boolean', value: true, description: 'hidapi support')
 option('notifications', type: 'boolean', value: true, description: 'notifications support')
 option('libnotify', type: 'boolean', value: true, description: 'libnotify support')

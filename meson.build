@@ -20,7 +20,7 @@ gk_datadir = join_paths(gk_prefix, get_option('datadir'))
 
 pbm_data_dir = gk_datadir / meson.project_name() / 'pbm'
 qt_data_dir = gk_datadir / meson.project_name() / 'qt'
-gk_docdir = gk_datadir / 'doc' / meson.project_name() + '-9999'
+gk_docdir = join_paths(gk_datadir, 'doc', get_option('docdir'))
 
 #! ----------
 

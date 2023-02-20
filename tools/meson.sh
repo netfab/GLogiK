@@ -133,6 +133,7 @@ function configure_action() {
 		-Db_asneeded=true
 		-Drelative_udev_rules_dir=true
 		--prefix="${ABS_INSTALL_DIR}"
+		-Ddocdir=GLogiK-9999
 		# XXX with DESTDIR
 		#--prefix=/usr
 		#--datadir=/usr/share
