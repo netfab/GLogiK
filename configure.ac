@@ -408,6 +408,8 @@ AX_BOOST_LOG
 AX_BOOST_THREAD
 AX_PTHREAD
 
+AC_CONFIG_LINKS([NEWS:NEWS.md README:README.md])
+
 AC_CONFIG_FILES([
 	Makefile
 	data/init/openrc/glogikd
@@ -437,6 +439,7 @@ AC_MSG_NOTICE([
      sysconfdir : ${sysconfdir}
     datarootdir : ${datarootdir}
         datadir : ${datadir}
+         docdir : ${docdir}
 
       pkglibdir : ${libdir}/$PACKAGE
          srcdir : ${srcdir}

@@ -101,7 +101,8 @@ configure_it: init_it autoreconf_it
 	--enable-dbus --enable-qt5 \
 	--enable-hidapi \
 	$(CONF_FLAGS) \
-	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
+	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR) \
+	--docdir=$(PREFIX_DIR)/share/doc/GLogiK-9999
 
 install_it: uninstall_it
 	cd $(build_dir) && make install-strip
@@ -126,7 +127,8 @@ configure_it: init_it autoreconf_it
 	--enable-dbus --enable-qt5 \
 	--enable-hidapi \
 	$(CONF_FLAGS) \
-	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR)
+	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR) \
+	--docdir=$(PREFIX_DIR)/share/doc/GLogiK-9999
 
 install_it: uninstall_it
 	test -d "$(DEBUG_LOGS_DIR)" && \

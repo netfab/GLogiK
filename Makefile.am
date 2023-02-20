@@ -88,3 +88,13 @@ maintainer-clean-libtool-files:
 
 maintainer-clean-autotools-files:
 	-rm -f $(LOCAL_AUTOTOOLS_FILES)
+
+docs_dir = $(docdir)
+
+docs__DATA = \
+	%D%/AUTHORS \
+	%D%/ChangeLog \
+	%D%/COPYING \
+	%D%/NEWS \
+	%D%/README \
+	%D%/VERSION

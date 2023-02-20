@@ -20,6 +20,7 @@ gk_datadir = join_paths(gk_prefix, get_option('datadir'))
 
 pbm_data_dir = gk_datadir / meson.project_name() / 'pbm'
 qt_data_dir = gk_datadir / meson.project_name() / 'qt'
+gk_docdir = gk_datadir / 'doc' / meson.project_name() + '-9999'
 
 #! ----------
 
@@ -250,6 +251,18 @@ if enable_debug
 endif
 
 #! ----------
+#! install documentation
+
+install_data(
+  ['NEWS.md', 'README.md'],
+  rename : ['NEWS', 'README'],
+  install_dir : gk_docdir)
+
+install_data(
+  ['AUTHORS', 'ChangeLog', 'COPYING', 'VERSION'],
+  install_dir : gk_docdir)
+
+#! ----------
 
 deps_versions_array += [
   ['DBUS', dbus_dep],
@@ -285,6 +298,7 @@ report += '       libdir: ' + gk_libdir + '\n'
 report += '       bindir: ' + gk_bindir + '\n'
 report += '      sbindir: ' + gk_sbindir + '\n'
 report += '      datadir: ' + gk_datadir + '\n'
+report += '       docdir: ' + gk_docdir + '\n'
 report += ' udevrulesdir: ' + udev_rules_dir + '\n'
 report += '\nBuild options:\n'
 report += '==============\n'
