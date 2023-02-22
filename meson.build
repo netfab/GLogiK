@@ -122,6 +122,7 @@ define_array = [
   ['GLOGIKD_USER', glogikd_user],
   ['GLOGIKD_GROUP', glogikd_group],
   ['DATA_DIR', gk_datadir],
+  ['DOC_DIR', gk_docdir],
   ['PBM_DATA_DIR', pbm_data_dir],
   ['QT_DATA_DIR', qt_data_dir],
 ]

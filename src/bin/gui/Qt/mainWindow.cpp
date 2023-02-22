@@ -452,7 +452,7 @@ void MainWindow::aboutDialog(void)
 		about->buildDialog();
 		about->setModal(true);
 		about->setAttribute(Qt::WA_DeleteOnClose);
-		about->setFixedSize(400, 300);
+		about->setFixedSize(560, 300);
 		about->setWindowTitle("About GKcQt5");
 		about->open();
 	}

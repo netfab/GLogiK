@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -26,6 +26,10 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QTabWidget>
+#include <QFile>
+#include <QPlainTextEdit>
+#include <QCryptographicHash>
 
 #include "lib/utils/utils.hpp"
 
@@ -36,33 +40,18 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-AboutDialog::AboutDialog(QWidget* parent)
-	:	QDialog(parent)
-{
-}
-
-AboutDialog::~AboutDialog()
+void FirstTab::buildTab(void)
 {
 	GK_LOG_FUNC
-
-	GKLog(trace, "deleting AboutDialog")
-}
-
-void AboutDialog::buildDialog(void)
-{
-	GK_LOG_FUNC
-
-	QVBoxLayout* vBox = nullptr;
 
 	try {
-		vBox = new QVBoxLayout(this);
+		QVBoxLayout* vBox = new QVBoxLayout(this);
 		GKLog(trace, "allocated QVBoxLayout")
 
 		this->setLayout(vBox);
 
 		vBox->addSpacing(10);
 
-		/* -- -- */
 		{
 			QString mainText("GKcQt5 ");
 			mainText += VERSION;
@@ -113,7 +102,7 @@ void AboutDialog::buildDialog(void)
 		}
 
 		{
-			QString descText("Copyright 2016 - 2020 Fabrice Delliaux");
+			QString descText("Copyright 2016 - 2023 Fabrice Delliaux");
 
 			QLabel* descLabel = new QLabel(descText);
 			vBox->addWidget(descLabel);
@@ -151,7 +140,7 @@ void AboutDialog::buildDialog(void)
 		{
 			QString descText("GLogiK is distributed under the GNU General Public Licence\n\
 			version 3, or (at your option) any later version. Please see\n\
-			COPYING file for the complete text.");
+			COPYING file (or the license tab) for the complete text.");
 
 			QLabel* descLabel = new QLabel(descText);
 			vBox->addWidget(descLabel);
@@ -163,6 +152,126 @@ void AboutDialog::buildDialog(void)
 			cFont.setPointSize(8);
 			descLabel->setFont(cFont);
 		}
+	}
+	catch (const std::bad_alloc& e) {
+		LOG(error) << "bad allocation : " << e.what();
+		throw;
+	}
+}
+
+void LicenseTab::buildTab(void)
+{
+	GK_LOG_FUNC
+
+	try {
+		QVBoxLayout* vBox = new QVBoxLayout(this);
+		GKLog(trace, "allocated QVBoxLayout")
+
+		this->setLayout(vBox);
+
+		vBox->addSpacing(10);
+
+		QPlainTextEdit* licenseWidget = new QPlainTextEdit();
+		GKLog(trace, "allocated QPlainTextEdit")
+
+		licenseWidget->setObjectName("LicenseWidget");
+		licenseWidget->setReadOnly(true);
+
+		QString licensePath(DOC_DIR); licensePath += "/COPYING";
+		QFile licenseFile(licensePath);
+
+		if(licenseFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+			auto get_hash = [] (QFile & file, QCryptographicHash::Algorithm algo)
+				-> const std::string
+			{
+				QCryptographicHash hash(algo);
+				QString hashString;
+				if( hash.addData(&file) ) {
+					QByteArray result = hash.result();
+					hashString = result.toHex();
+				}
+				else {
+					LOG(error) << "addData failure";
+				}
+
+				/* reset QFile before return */
+				const std::string boolret( file.reset() ? "true" : "false" );
+				GKLog2(trace, "file reset: ", boolret)
+
+				return hashString.toStdString();
+			};
+
+			const std::string sha1( get_hash(licenseFile, QCryptographicHash::Sha1) );
+			/* found license file */
+			if( sha1 == LICENSE_FILE_SHA1 ) {
+				QByteArray data(licenseFile.readAll());
+				licenseWidget->setPlainText(QString(data));
+			}
+			else {
+				GKLog2(trace, "license sha1: ", sha1)
+				const std::string wrongError("error: license file sha1 does not match");
+				licenseWidget->setPlainText(wrongError.c_str());
+				LOG(error) << wrongError;
+			}
+		}
+		else {
+			const std::string openError("error: cannot open license file");
+			licenseWidget->setPlainText(openError.c_str());
+			LOG(error) << openError;
+		}
+
+		vBox->addWidget(licenseWidget);
+	}
+	catch (const std::bad_alloc& e) {
+		LOG(error) << "bad allocation : " << e.what();
+		throw;
+	}
+}
+
+AboutDialog::AboutDialog(QWidget* parent)
+	:	QDialog(parent)
+{
+}
+
+AboutDialog::~AboutDialog()
+{
+	GK_LOG_FUNC
+
+	GKLog(trace, "deleting AboutDialog")
+}
+
+void AboutDialog::buildDialog(void)
+{
+	GK_LOG_FUNC
+
+	try {
+		QVBoxLayout* vBox = new QVBoxLayout(this);
+		GKLog(trace, "allocated QVBoxLayout")
+
+		this->setLayout(vBox);
+
+		vBox->addSpacing(10);
+
+		/* -- -- */
+
+		QTabWidget* tabbedWidgets = new QTabWidget();
+		GKLog(trace, "allocated QTabWidget")
+
+		tabbedWidgets->setObjectName("AboutTabs");
+
+		vBox->addWidget(tabbedWidgets);
+
+		/* -- -- */
+		FirstTab* firstTab = new FirstTab();
+		tabbedWidgets->addTab(firstTab, tr("About"));
+		firstTab->buildTab();
+
+		/* -- -- */
+		LicenseTab* licenseTab = new LicenseTab();
+		tabbedWidgets->addTab(licenseTab, tr("License"));
+		licenseTab->buildTab();
+
+		/* -- -- */
 
 		vBox->addStretch();
 

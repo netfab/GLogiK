@@ -298,6 +298,7 @@ AC_SUBST(DEBUG_DIR, ["/var/tmp/GKDebug"])
 AC_DEFINE_UNQUOTED([DEBUG_DIR], ["${DEBUG_DIR}"], [Directory for debug file])
 
 AC_DEFINE_UNQUOTED([DATA_DIR], ["${prefix}/share"], [Root directory for data files installation])
+AC_DEFINE_UNQUOTED([DOC_DIR], ["${docdir}"], [Directory for documentation files installation])
 AC_DEFINE_UNQUOTED([PBM_DATA_DIR], ["${prefix}/share/${PACKAGE_NAME}/pbm"], [Directory for pbm file installation])
 AC_DEFINE_UNQUOTED([QT_DATA_DIR], ["${prefix}/share/${PACKAGE_NAME}/qt"], [Directory for Qt specific files installation])
 

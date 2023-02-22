@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -25,8 +25,49 @@
 #include <QWidget>
 #include <QDialog>
 
+#define LICENSE_FILE_SHA1 "8624bcdae55baeef00cd11d5dfcfa60f68710a02"
+
 namespace GLogiK
 {
+
+class AboutTab
+	:	public QWidget
+{
+	public:
+		AboutTab(void) = default;
+		virtual ~AboutTab(void) = default;
+
+		virtual void buildTab(void) = 0;
+
+	protected:
+	private:
+};
+
+class FirstTab
+	:	public AboutTab
+{
+	public:
+		FirstTab(void) = default;
+		~FirstTab(void) = default;
+
+		void buildTab(void);
+
+	protected:
+	private:
+};
+
+class LicenseTab
+	:	public AboutTab
+{
+	public:
+		LicenseTab(void) = default;
+		~LicenseTab(void) = default;
+
+		void buildTab(void);
+
+	protected:
+	private:
+};
 
 class AboutDialog
 	:	public QDialog
