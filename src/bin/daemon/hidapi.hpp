@@ -24,6 +24,8 @@
 
 #include <cstdint>
 
+#include <string>
+
 #include "USBDevice.hpp"
 
 #include <hidapi.h>
@@ -34,6 +36,7 @@ namespace GLogiK
 class hidapi
 {
 	public:
+		static const std::string getHIDAPIVersion(void);
 
 	protected:
 		hidapi(void);

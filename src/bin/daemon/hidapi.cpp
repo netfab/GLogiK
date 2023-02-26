@@ -55,6 +55,12 @@ hidapi::~hidapi()
 	}
 }
 
+const std::string hidapi::getHIDAPIVersion(void)
+{
+	std::string ret(hid_version_str());
+	return ret;
+}
+
 void hidapi::openUSBDevice(USBDevice & device)
 {
 	GK_LOG_FUNC

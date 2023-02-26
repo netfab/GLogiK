@@ -28,6 +28,9 @@
 #include <poll.h>
 #include <libudev.h>
 
+#include <boost/process.hpp>
+#include <boost/process/search_path.hpp>
+
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
@@ -46,6 +49,7 @@
 
 #include "include/enums.hpp"
 
+namespace bp = boost::process;
 
 namespace GLogiK
 {
@@ -83,6 +87,48 @@ DevicesManager::~DevicesManager()
 	_drivers.clear();
 
 	GKLog(trace, "exiting devices manager")
+}
+
+const std::string DevicesManager::getLibudevVersion(void)
+{
+	GK_LOG_FUNC
+
+	std::vector<std::string> data;
+	std::string ret;
+
+	try {
+		bp::ipstream is;
+		std::string line;
+
+		auto p = bp::search_path("udevadm");
+		if( p.empty() ) {
+			GKSysLogError("udevadm executable not found in PATH");
+			return ret;
+		}
+
+		GKLog(trace, "running udevadm --version")
+		bp::child c(p, "--version", bp::std_out > is);
+
+		while(c.running() && std::getline(is, line) && !line.empty())
+			data.push_back(line);
+
+		c.wait();
+	}
+	catch (const bp::process_error & e) {
+		GKSysLogError("exception catched while trying to run udevadm process");
+		GKSysLogError( e.what() );
+	}
+
+	if( data.empty() ) {
+		GKSysLogError("no output from udevadm --version");
+		return ret;
+	}
+	else if( data.size() > 1 ) {
+		GKSysLogWarning("multiple lines from udevadm --version");
+	}
+
+	ret = data[0];
+	return ret;
 }
 
 #if GKDBUS

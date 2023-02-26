@@ -37,6 +37,7 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <boost/version.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
@@ -47,6 +48,11 @@
 #include "lib/utils/utils.hpp"
 
 #include "daemon.hpp"
+#include "usbinit.hpp"
+
+#if GKHIDAPI
+#include "hidapi.hpp"
+#endif
 
 #include "devicesManager.hpp"
 
@@ -55,6 +61,9 @@
 
 #include "clientsManager.hpp"
 #endif
+
+#include "include/DepsMap.hpp"
+
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
@@ -65,7 +74,8 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
-	:	_PIDFileCreated(false)
+	:	_version(false),
+		_PIDFileCreated(false)
 {
 	GK_LOG_FUNC
 
@@ -90,6 +100,10 @@ GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
 			FileSystem::traceLastDirectoryCreation();
 		}
 #endif
+
+		if( ! GLogiKDaemon::isDaemonRunning() ) {
+			GKLogging::initConsoleLog();
+		}
 
 		GKSysLogInfo("successfully dropped root privileges");
 	}
@@ -134,10 +148,43 @@ int GLogiKDaemon::run(void)
 
 	/* -- -- -- */
 
+	GKDepsMap_type dependencies;
+
+	std::string binaryVersion(GLOGIKD_DAEMON_NAME);
+	binaryVersion += " version ";
+	binaryVersion += VERSION;
+	GKSysLogInfo(binaryVersion);
+
 	{
-		std::ostringstream buffer(std::ios_base::app);
-		buffer << "Starting " << GLOGIKD_DAEMON_NAME << " vers. " << VERSION;
-		GKSysLogInfo(buffer.str());
+		std::string boost_version;
+		{
+			int major = BOOST_VERSION / 100000;
+			int minor = BOOST_VERSION / 100 % 1000;
+			int patch = BOOST_VERSION % 100;
+
+			boost_version += std::to_string(major);
+			boost_version += ".";
+			boost_version += std::to_string(minor);
+			boost_version += ".";
+			boost_version += std::to_string(patch);
+		}
+
+		dependencies[GKBinary::GK_DAEMON] =
+			{
+				{"boost", boost_version, "-"},
+				{"libudev", GK_DEP_LIBUDEV_VERSION_STRING, DevicesManager::getLibudevVersion()},
+				{"libusb", GK_DEP_LIBUSB_VERSION_STRING, USBInit::getLibUSBVersion()},
+#if GKHIDAPI
+				{"hidapi", GK_DEP_LIBHIDAPI_VERSION_STRING, hidapi::getHIDAPIVersion()},
+#else
+				{"hidapi", "-", "-"},
+#endif
+#if GKDBUS
+				{"DBus", GK_DEP_DBUS_VERSION_STRING, NSGKDBus::GKDBus::getDBusVersion()},
+#else
+				{"DBus", "-", "-"},
+#endif
+			};
 	}
 
 	if( GLogiKDaemon::isDaemonRunning() ) {
@@ -190,9 +237,12 @@ int GLogiKDaemon::run(void)
 		}
 
 	}
-	else {
-		// TODO non-daemon mode
+	else { // non-daemon mode
 		GKSysLogInfo("non-daemon mode");
+
+		if(_version) {
+			printVersionDeps(binaryVersion, dependencies);
+		}
 	}
 
 	return EXIT_SUCCESS;
@@ -280,6 +330,7 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 //		("help,h", "produce help message")
 		("daemonize,d", po::bool_switch(&daemonized)->default_value(false), "run in daemon mode")
 		("pid-file,p", po::value(&_pidFileName), "define the PID file")
+		("version,v", po::bool_switch(&_version)->default_value(false), "print some versions informations and exit")
 	;
 
 #if DEBUGGING_ON
@@ -307,6 +358,11 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 
 	if (vm.count("daemonize")) {
 		GLogiKDaemon::daemonized = vm["daemonize"].as<bool>();
+	}
+
+	if (vm.count("version")) {
+		/* disable daemon mode */
+		GLogiKDaemon::daemonized = false;
 	}
 
 #if DEBUGGING_ON

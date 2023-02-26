@@ -72,6 +72,32 @@ GKDBus::~GKDBus()
 	this->disconnectFromSystemBus();
 }
 
+const std::string GKDBus::getDBusVersion(void)
+{
+	struct DBusVersion {
+		int major = -1;
+		int minor = -1;
+		int micro = -1;
+	};
+
+	DBusVersion version;
+	int* major = &(version.major);
+	int* minor = &(version.minor);
+	int* micro = &(version.micro);
+
+	dbus_get_version(major, minor, micro);
+
+	std::string ret;
+
+	ret += std::to_string(*major);
+	ret += ".";
+	ret += std::to_string(*minor);
+	ret += ".";
+	ret += std::to_string(*micro);
+
+	return ret;
+}
+
 void GKDBus::connectToSystemBus(
 	const char* connectionName,
 	const ConnectionFlag flag)

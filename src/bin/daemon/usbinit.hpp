@@ -26,6 +26,7 @@
 #include <cstdint>
 
 #include <array>
+#include <string>
 
 #include <libusb-1.0/libusb.h>
 
@@ -44,6 +45,8 @@ class USBInit
 	public:
 		USBInit(void);
 		~USBInit(void);
+
+		static const std::string getLibUSBVersion(void);
 
 		const int getUSBDevicePortNumbers(
 			USBDevice & device,

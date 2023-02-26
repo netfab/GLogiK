@@ -82,6 +82,8 @@ class GKDBus
 		);
 		~GKDBus();
 
+		static const std::string getDBusVersion(void);
+
 		const std::string & getBuiltAgainstDBusVersion(void) {
 			return _builtAgainstDBusVersion;
 		}

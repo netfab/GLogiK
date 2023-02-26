@@ -32,6 +32,21 @@ libusb_context * USBInit::pContext = nullptr;
 uint8_t USBInit::counter = 0;
 bool USBInit::status = false;
 
+const std::string USBInit::getLibUSBVersion(void)
+{
+	const struct libusb_version* version = libusb_get_version();
+
+	std::string ret;
+
+	ret += std::to_string(version->major);
+	ret += ".";
+	ret += std::to_string(version->minor);
+	ret += ".";
+	ret += std::to_string(version->micro);
+
+	return ret;
+}
+
 /*
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

@@ -3,7 +3,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
  */
 
 #include <stdexcept>
+#include <iomanip>
 
 #include "lib/utils/utils.hpp"
 
@@ -216,6 +217,32 @@ const MKeysID getMKeyID(const Keys key)
 const GKeysID getGKeyID(const Keys key)
 {
 	return keys2GKeysIDMap.at(key);
+}
+
+void printVersionDeps(const std::string & binaryVersion, const GKDepsMap_type & dependencies)
+{
+	using namespace NSGKUtils;
+
+	std::ostringstream buffer(std::ios_base::app);
+	buffer	<< binaryVersion << "\n"
+			<< std::setfill('-') << std::setw(38) << "-" << "\n"
+			<< std::setfill(' ') << std::setw(12) << "dependency"
+			<< std::setw(2) << "|" << std::setw(14) << "built-against"
+			<< std::setw(2) << "|" << std::setw(8) << "runtime" << "\n"
+			<< std::setfill('-') << std::setw(38) << "-" << "\n"
+			<< std::setfill(' ');
+
+	for(const auto & x : dependencies) {
+		for(const auto & v : x.second) {
+			buffer
+				<< std::setw(12) << v.getDependency()
+				<< std::setw(2) << "|" << std::setw(14) << v.getCompileTimeVersion()
+				<< std::setw(2) << "|" << std::setw(8) << v.getRunTimeVersion() << "\n";
+		}
+	}
+
+	LOG(info) << buffer.str() << std::endl;
+	//LOG(info) << dependencies[GKBinary::GK_DAEMON].size();
 }
 
 /* --- ---- --- *

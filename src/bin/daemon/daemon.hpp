@@ -46,6 +46,7 @@ class GLogiKDaemon
 	private:
 		std::string _pidFileName;
 		pid_t _pid = 0;
+		bool _version;
 		bool _PIDFileCreated;
 
 		void createPIDFile(void);

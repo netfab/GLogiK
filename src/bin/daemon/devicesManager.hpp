@@ -59,6 +59,8 @@ class DevicesManager
 		DevicesManager(void);
 		~DevicesManager(void);
 
+		static const std::string getLibudevVersion(void);
+
 		void startMonitoring(void);
 
 #if GKDBUS
