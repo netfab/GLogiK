@@ -47,6 +47,8 @@
 
 #include "service.hpp"
 
+#include "include/DepsMap.hpp"
+
 namespace fs = boost::filesystem;
 namespace po = boost::program_options;
 
@@ -55,8 +57,9 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DesktopService::DesktopService(const int& argc, char *argv[]) :
-	_pid(0)
+DesktopService::DesktopService(const int& argc, char *argv[])
+	:	_pid(0),
+		_version(false)
 {
 	GK_LOG_FUNC
 
@@ -94,10 +97,37 @@ int DesktopService::run(void)
 	GK_LOG_FUNC
 
 	/* -- -- -- */
-	/* -- -- -- */
+
+	GKDepsMap_type dependencies;
+
+	std::string binaryVersion(GLOGIKS_DESKTOP_SERVICE_NAME);
+	binaryVersion += " version ";
+	binaryVersion += VERSION;
+
+		dependencies[GKBinary::GK_DESKTOP_SERVICE] =
+			{
+				{"libevdev", GK_DEP_LIBEVDEV_VERSION_STRING, "-"},
+				{"libSM", GK_DEP_SM_VERSION_STRING, "-"},
+				{"libICE", GK_DEP_ICE_VERSION_STRING, "-"},
+				{"libX11", GK_DEP_LIBX11_VERSION_STRING, "-"},
+				{"libXtst", GK_DEP_LIBXTST_VERSION_STRING, "-"},
+#if HAVE_DESKTOP_NOTIFICATIONS
+				{"libnotify", GK_DEP_LIBNOTIFY_VERSION_STRING, "-"},
+#else
+				{"libnotify", "-", "-"},
+#endif
+			};
+
 	/* -- -- -- */
 
-	LOG(info) << "Starting " << GLOGIKS_DESKTOP_SERVICE_NAME << " vers. " << VERSION;
+	if(_version) {
+		printVersionDeps(binaryVersion, dependencies);
+		return EXIT_SUCCESS;
+	}
+
+	/* -- -- -- */
+
+	LOG(info) << "Starting " << binaryVersion;
 
 	_pid = detachProcess();
 
@@ -163,6 +193,10 @@ void DesktopService::parseCommandLine(const int& argc, char *argv[])
 	GK_LOG_FUNC
 
 	po::options_description desc("Allowed options");
+
+	desc.add_options()
+		("version,v", po::bool_switch(&_version)->default_value(false), "print some versions informations and exit")
+	;
 
 #if DEBUGGING_ON
 	bool debug = false;
