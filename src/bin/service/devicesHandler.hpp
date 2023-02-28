@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -48,8 +48,6 @@
 #define LogRemoteCallGetReplyFailure \
 	LOG(error) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
 
-typedef std::map<std::string, const std::string> devices_files_map_t;
-
 namespace fs = boost::filesystem;
 
 namespace GLogiK
@@ -79,7 +77,7 @@ class DevicesHandler
 			const std::string & mediaKeyEvent
 		);
 
-		const devices_files_map_t getDevicesMap(void);
+		const DevicesFilesMap_type getDevicesMap(void);
 		const std::vector<std::string> getDevicesList(void);
 		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID

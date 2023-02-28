@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -105,9 +105,9 @@ void DevicesHandler::clearDevices(const bool notifications)
 	_stoppedDevices.clear();
 }
 
-const devices_files_map_t DevicesHandler::getDevicesMap(void)
+const DevicesFilesMap_type DevicesHandler::getDevicesMap(void)
 {
-	devices_files_map_t ret;
+	DevicesFilesMap_type ret;
 	for(const auto & dev : _startedDevices) {
 		ret.insert( std::pair<std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
 	}
