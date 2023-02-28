@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -29,15 +29,15 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 /*
- * helper function rebuilding devices_map_type map
+ * helper function rebuilding DevicesMap_type map
  */
-const GLogiK::devices_map_type GKDBusArgumentDevicesMap::getNextDevicesMapArgument(void)
+const GLogiK::DevicesMap_type GKDBusArgumentDevicesMap::getNextDevicesMapArgument(void)
 {
 	GK_LOG_FUNC
 
-	GKLog(trace, "rebuilding devices_map_type map from GKDBus values")
+	GKLog(trace, "rebuilding DevicesMap_type map from GKDBus values")
 
-	GLogiK::devices_map_type devicesMap;
+	GLogiK::DevicesMap_type devicesMap;
 
 	std::string devID;
 
@@ -68,14 +68,14 @@ const GLogiK::devices_map_type GKDBusArgumentDevicesMap::getNextDevicesMapArgume
 		}
 		catch ( const EmptyContainer & e ) {
 			LOG(warning) << "missing argument : " << e.what();
-			throw GLogiKExcept("rebuilding devices_map_type map failed");
+			throw GLogiKExcept("rebuilding DevicesMap_type map failed");
 		}
 	}
 	catch ( const EmptyContainer & e ) {
 		GKLog(trace, "no devID, empty devicesMap ?")
 	}
 
-	GKLog2(trace, "devices_map_type map size : ", devicesMap.size())
+	GKLog2(trace, "DevicesMap_type map size : ", devicesMap.size())
 
 	return devicesMap;
 }
