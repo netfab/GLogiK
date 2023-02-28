@@ -105,7 +105,7 @@ void DevicesHandler::clearDevices(const bool notifications)
 	_stoppedDevices.clear();
 }
 
-const DevicesFilesMap_type DevicesHandler::getDevicesMap(void)
+const DevicesFilesMap_type DevicesHandler::getDevicesFilesMap(void)
 {
 	DevicesFilesMap_type ret;
 	for(const auto & dev : _startedDevices) {

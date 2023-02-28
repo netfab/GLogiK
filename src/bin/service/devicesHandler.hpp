@@ -77,7 +77,7 @@ class DevicesHandler
 			const std::string & mediaKeyEvent
 		);
 
-		const DevicesFilesMap_type getDevicesMap(void);
+		const DevicesFilesMap_type getDevicesFilesMap(void);
 		const std::vector<std::string> getDevicesList(void);
 		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID

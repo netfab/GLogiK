@@ -132,7 +132,7 @@ void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 {
 	GK_LOG_FUNC
 
-	DevicesFilesMap_type devicesMap = _devices.getDevicesMap();
+	DevicesFilesMap_type devicesMap = _devices.getDevicesFilesMap();
 
 	pGKfs->readNotifyEvents( devicesMap );
 
