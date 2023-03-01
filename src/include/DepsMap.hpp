@@ -33,7 +33,8 @@ namespace GLogiK
 
 enum class GKBinary : uint8_t
 {
-	GK_DAEMON = 1,
+	GK_INVALID = 0,
+	GK_DAEMON,
 	GK_DESKTOP_SERVICE,
 	GK_GUI_QT,
 };
@@ -44,7 +45,7 @@ class GKDependency
 		GKDependency(
 			const std::string & dependency,
 			const std::string & compileTimeVersion,
-			const std::string & runTimeVersion = "") :
+			const std::string & runTimeVersion = "-") :
 				_dependency(dependency),
 				_compileTimeVersion(compileTimeVersion),
 				_runTimeVersion(runTimeVersion) {}

@@ -171,18 +171,18 @@ int GLogiKDaemon::run(void)
 
 		dependencies[GKBinary::GK_DAEMON] =
 			{
-				{"boost", boost_version, "-"},
+				{"boost", boost_version},
 				{"libudev", GK_DEP_LIBUDEV_VERSION_STRING, DevicesManager::getLibudevVersion()},
 				{"libusb", GK_DEP_LIBUSB_VERSION_STRING, USBInit::getLibUSBVersion()},
 #if GKHIDAPI
 				{"hidapi", GK_DEP_LIBHIDAPI_VERSION_STRING, hidapi::getHIDAPIVersion()},
 #else
-				{"hidapi", "-", "-"},
+				{"hidapi", "-"},
 #endif
 #if GKDBUS
 				{"DBus", GK_DEP_DBUS_VERSION_STRING, NSGKDBus::GKDBus::getDBusVersion()},
 #else
-				{"DBus", "-", "-"},
+				{"DBus", "-"},
 #endif
 			};
 	}

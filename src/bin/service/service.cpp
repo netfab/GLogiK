@@ -106,15 +106,15 @@ int DesktopService::run(void)
 
 		dependencies[GKBinary::GK_DESKTOP_SERVICE] =
 			{
-				{"libevdev", GK_DEP_LIBEVDEV_VERSION_STRING, "-"},
-				{"libSM", GK_DEP_SM_VERSION_STRING, "-"},
-				{"libICE", GK_DEP_ICE_VERSION_STRING, "-"},
-				{"libX11", GK_DEP_LIBX11_VERSION_STRING, "-"},
-				{"libXtst", GK_DEP_LIBXTST_VERSION_STRING, "-"},
+				{"libevdev", GK_DEP_LIBEVDEV_VERSION_STRING},
+				{"libSM", GK_DEP_SM_VERSION_STRING},
+				{"libICE", GK_DEP_ICE_VERSION_STRING},
+				{"libX11", GK_DEP_LIBX11_VERSION_STRING},
+				{"libXtst", GK_DEP_LIBXTST_VERSION_STRING},
 #if HAVE_DESKTOP_NOTIFICATIONS
-				{"libnotify", GK_DEP_LIBNOTIFY_VERSION_STRING, "-"},
+				{"libnotify", GK_DEP_LIBNOTIFY_VERSION_STRING},
 #else
-				{"libnotify", "-", "-"},
+				{"libnotify", "-"},
 #endif
 			};
 
