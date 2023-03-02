@@ -49,5 +49,13 @@ void TypeUInt16::appendUInt16(DBusMessageIter *iter, const uint16_t value)
 #endif
 }
 
+const uint16_t ArgUInt16::getNextUInt16Argument(void) {
+	if( ArgBase::uint16Arguments.empty() )
+		throw EmptyContainer("missing argument : uint16");
+	const uint16_t ret = ArgBase::uint16Arguments.back();
+	ArgBase::uint16Arguments.pop_back();
+	return ret;
+}
+
 } // namespace NSGKDBus
 

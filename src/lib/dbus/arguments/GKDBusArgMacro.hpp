@@ -28,13 +28,14 @@
 #include "include/base.hpp"
 
 #include "lib/dbus/ArgTypes/uint8.hpp"
+#include "lib/dbus/ArgTypes/uint16.hpp"
 
 namespace NSGKDBus
 {
 
 class GKDBusArgumentMacro
 	:	virtual private ArgUInt8,
-		virtual private GKDBusArgumentUInt16
+		virtual private ArgUInt16
 {
 	public:
 		static const GLogiK::macro_type getNextMacroArgument(const unsigned int macroSize = 0);

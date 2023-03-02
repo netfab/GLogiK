@@ -19,8 +19,6 @@
  *
  */
 
-#include <dbus/dbus.h>
-
 #include "lib/utils/utils.hpp"
 
 #include "uint8.hpp"

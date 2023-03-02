@@ -53,7 +53,7 @@ const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigne
 				throw GLogiKExcept("wrong event value for enum conversion");
 
 			e.event		 = static_cast<GLogiK::EventValue>(value);
-			e.interval	 = GKDBusArgumentUInt16::getNextUInt16Argument();
+			e.interval	 = ArgUInt16::getNextUInt16Argument();
 
 			macro.push_back(e);
 
@@ -73,7 +73,7 @@ const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigne
 		throw GLogiKExcept("rebuilding macro failed");
 	}
 
-	if( ( macroSize == 0 ) and ( ! GKDBusArgumentUInt16::uint16Arguments.empty() ) ) { /* sanity check */
+	if( ( macroSize == 0 ) and ( ! ArgUInt16::uint16Arguments.empty() ) ) { /* sanity check */
 		LOG(warning) << "uint16 container not empty";
 	}
 
