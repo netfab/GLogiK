@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -39,8 +39,9 @@
 #include "messages/GKDBusBroadcastSignal.hpp"
 #include "messages/GKDBusAsyncContainer.hpp"
 
+#include "lib/dbus/ArgTypes/boolean.hpp"
+
 #include "arguments/GKDBusArgString.hpp"
-#include "arguments/GKDBusArgBoolean.hpp"
 #include "arguments/GKDBusArgByte.hpp"
 #include "arguments/GKDBusArgUInt16.hpp"
 #include "arguments/GKDBusArgUInt64.hpp"
@@ -65,7 +66,7 @@ class GKDBus
 		public GKDBusMessageBroadcastSignal,
 		public GKDBusMessageAsyncContainer,
 		virtual public GKDBusArgumentString,
-		public GKDBusArgumentBoolean,
+		public ArgBoolean,
 		virtual public GKDBusArgumentByte,
 		virtual public GKDBusArgumentUInt16,
 		virtual public GKDBusArgumentUInt64,

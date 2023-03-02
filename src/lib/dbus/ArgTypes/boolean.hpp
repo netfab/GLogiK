@@ -23,6 +23,7 @@
 #define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_BOOLEAN_HPP_
 
 #include "TypeBase.hpp"
+#include "ArgBase.hpp"
 
 namespace NSGKDBus
 {
@@ -38,6 +39,21 @@ class TypeBoolean
 		~TypeBoolean(void) = default;
 
 	private:
+};
+
+
+class ArgBoolean
+	:	protected ArgBase
+{
+	public:
+		static const bool getNextBooleanArgument(void);
+
+	protected:
+		ArgBoolean(void) = default;
+		~ArgBoolean(void) = default;
+
+	private:
+
 };
 
 } // namespace NSGKDBus

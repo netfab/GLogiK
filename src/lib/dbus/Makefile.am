@@ -17,8 +17,6 @@ libGKDBus_la_SOURCES = \
 	%D%/arguments/GKDBusArgument.hpp \
 	%D%/arguments/GKDBusArgString.cpp \
 	%D%/arguments/GKDBusArgString.hpp \
-	%D%/arguments/GKDBusArgBoolean.cpp \
-	%D%/arguments/GKDBusArgBoolean.hpp \
 	%D%/arguments/GKDBusArgByte.cpp \
 	%D%/arguments/GKDBusArgByte.hpp \
 	%D%/arguments/GKDBusArgUInt16.cpp \
@@ -39,6 +37,8 @@ libGKDBus_la_SOURCES = \
 	%D%/arguments/GKDBusArgDevicesMap.hpp \
 	%D%/arguments/GKDBusArgLCDPluginsArray.cpp \
 	%D%/arguments/GKDBusArgLCDPluginsArray.hpp \
+	%D%/ArgTypes/ArgBase.cpp \
+	%D%/ArgTypes/ArgBase.hpp \
 	%D%/ArgTypes/TypeBase.cpp \
 	%D%/ArgTypes/TypeBase.hpp \
 	%D%/ArgTypes/boolean.cpp \

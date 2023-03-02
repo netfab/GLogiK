@@ -19,40 +19,45 @@
  *
  */
 
+#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_ARGBASE_HPP_
+#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_ARGBASE_HPP_
+
+#include <cstdint>
+
+#include <string>
+#include <vector>
+
 #include <dbus/dbus.h>
-
-#include "lib/utils/utils.hpp"
-
-#include "boolean.hpp"
 
 namespace NSGKDBus
 {
 
-using namespace NSGKUtils;
-
-void TypeBoolean::appendBoolean(const bool value)
+class ArgBase
 {
-	GK_LOG_FUNC
+	public:
 
-	dbus_bool_t v = value;
-	if( ! dbus_message_iter_append_basic(&_itMessage, DBUS_TYPE_BOOLEAN, &v) ) {
-		_hosedMessage = true;
-		LOG(error) << "boolean append_basic failure, not enough memory";
-		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
-	}
-#if DEBUG_GKDBUS_SUBOBJECTS
-	GKLog(trace, "boolean appended")
-#endif
-}
+	protected:
+		ArgBase(void) = default;
+		~ArgBase(void) = default;
 
-const bool ArgBoolean::getNextBooleanArgument(void)
-{
-	if( ArgBase::booleanArguments.empty() )
-		throw EmptyContainer("missing argument : boolean");
-	const bool ret = ArgBase::booleanArguments.back();
-	ArgBase::booleanArguments.pop_back();
-	return ret;
-}
+		static void fillInArguments(DBusMessage* message);
+		static const int decodeNextArgument(DBusMessageIter* itArgument);
+
+		thread_local static std::vector<std::string> stringArguments;
+		thread_local static std::vector<uint8_t> byteArguments;
+		thread_local static std::vector<uint16_t> uint16Arguments;
+		thread_local static std::vector<uint64_t> uint64Arguments;
+		thread_local static std::vector<bool> booleanArguments;
+
+	private:
+		static void decodeArgumentFromIterator(
+			DBusMessageIter* iter,
+			const char* signature,
+			const uint16_t num
+		);
+
+};
 
 } // namespace NSGKDBus
 
+#endif
