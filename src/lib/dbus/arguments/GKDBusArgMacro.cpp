@@ -46,9 +46,9 @@ const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigne
 		do {
 			GLogiK::KeyEvent e;
 
-			e.code = GKDBusArgumentByte::getNextByteArgument();
+			e.code = ArgUInt8::getNextByteArgument();
 
-			const uint8_t value = GKDBusArgumentByte::getNextByteArgument();
+			const uint8_t value = ArgUInt8::getNextByteArgument();
 			if(value > GLogiK::EventValue::EVENT_KEY_UNKNOWN)
 				throw GLogiKExcept("wrong event value for enum conversion");
 
@@ -62,7 +62,7 @@ const GLogiK::macro_type GKDBusArgumentMacro::getNextMacroArgument(const unsigne
 					nextRun = false;
 			}
 			else {
-				if( GKDBusArgumentByte::byteArguments.empty() )
+				if( ArgUInt8::byteArguments.empty() )
 					nextRun = false;
 			}
 		}

@@ -27,11 +27,13 @@
 
 #include "include/base.hpp"
 
+#include "lib/dbus/ArgTypes/uint8.hpp"
+
 namespace NSGKDBus
 {
 
 class GKDBusArgumentMacro
-	:	virtual private GKDBusArgumentByte,
+	:	virtual private ArgUInt8,
 		virtual private GKDBusArgumentUInt16
 {
 	public:

@@ -27,6 +27,7 @@
 #include <dbus/dbus.h>
 
 #include "TypeBase.hpp"
+#include "ArgBase.hpp"
 
 namespace NSGKDBus
 {
@@ -42,6 +43,19 @@ class TypeUInt8
 		~TypeUInt8(void) = default;
 
 		void appendUInt8(DBusMessageIter *iter, const uint8_t value);
+
+	private:
+};
+
+class ArgUInt8
+	:	protected ArgBase
+{
+	public:
+		static const uint8_t getNextByteArgument(void);
+
+	protected:
+		ArgUInt8(void) = default;
+		~ArgUInt8(void) = default;
 
 	private:
 };

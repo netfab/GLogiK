@@ -40,9 +40,9 @@
 #include "messages/GKDBusAsyncContainer.hpp"
 
 #include "lib/dbus/ArgTypes/boolean.hpp"
+#include "lib/dbus/ArgTypes/uint8.hpp"
 
 #include "arguments/GKDBusArgString.hpp"
-#include "arguments/GKDBusArgByte.hpp"
 #include "arguments/GKDBusArgUInt16.hpp"
 #include "arguments/GKDBusArgUInt64.hpp"
 #include "arguments/GKDBusArgMacro.hpp"
@@ -67,7 +67,7 @@ class GKDBus
 		public GKDBusMessageAsyncContainer,
 		virtual public GKDBusArgumentString,
 		public ArgBoolean,
-		virtual public GKDBusArgumentByte,
+		virtual public ArgUInt8,
 		virtual public GKDBusArgumentUInt16,
 		virtual public GKDBusArgumentUInt64,
 		public GKDBusArgumentMacro,

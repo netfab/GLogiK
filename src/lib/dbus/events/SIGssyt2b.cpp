@@ -44,7 +44,7 @@ template <>
 	try {
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
 		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
-		const uint8_t arg3 = GKDBusArgumentByte::getNextByteArgument();
+		const uint8_t arg3 = ArgUInt8::getNextByteArgument();
 		const uint64_t arg4 = GKDBusArgumentUInt64::getNextUInt64Argument();
 
 		/* call two strings one byte one UInt64_t to bool callback */

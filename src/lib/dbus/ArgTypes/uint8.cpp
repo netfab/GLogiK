@@ -49,5 +49,13 @@ void TypeUInt8::appendUInt8(DBusMessageIter *iter, const uint8_t value)
 #endif
 }
 
+const uint8_t ArgUInt8::getNextByteArgument(void) {
+	if( ArgBase::byteArguments.empty() )
+		throw EmptyContainer("missing argument : byte");
+	const uint8_t ret = ArgBase::byteArguments.back();
+	ArgBase::byteArguments.pop_back();
+	return ret;
+}
+
 } // namespace NSGKDBus
 

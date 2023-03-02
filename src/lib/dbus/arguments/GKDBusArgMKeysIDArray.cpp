@@ -41,7 +41,7 @@ const GLogiK::MKeysIDArray_type GKDBusArgumentMKeysIDArray::getNextMKeysIDArrayA
 	GLogiK::MKeysIDArray_type ret;
 
 	try {
-		const uint8_t size = GKDBusArgumentByte::getNextByteArgument();
+		const uint8_t size = ArgUInt8::getNextByteArgument();
 
 		bool nextRun = true;
 		do {

@@ -30,7 +30,7 @@ namespace NSGKDBus
 {
 
 class GKDBusArgumentGKeysIDArray
-	:	virtual private GKDBusArgumentByte,
+	:	virtual private ArgUInt8,
 		virtual private GKDBusArgumentGKeysID
 {
 	public:

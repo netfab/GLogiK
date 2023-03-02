@@ -22,7 +22,7 @@
 #ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_MKEYS_ID_HPP_
 #define SRC_LIB_DBUS_ARG_GKDBUS_ARG_MKEYS_ID_HPP_
 
-#include "GKDBusArgByte.hpp"
+#include "lib/dbus/ArgTypes/uint8.hpp"
 
 #include "include/base.hpp"
 
@@ -30,7 +30,7 @@ namespace NSGKDBus
 {
 
 class GKDBusArgumentMKeysID
-	:	virtual private GKDBusArgumentByte
+	:	virtual private ArgUInt8
 {
 	public:
 		static const GLogiK::MKeysID getNextMKeysIDArgument(void);

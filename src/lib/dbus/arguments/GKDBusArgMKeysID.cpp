@@ -41,7 +41,7 @@ const GLogiK::MKeysID GKDBusArgumentMKeysID::getNextMKeysIDArgument(void)
 	GLogiK::MKeysID id = GLogiK::MKeysID::MKEY_M0;
 
 	try {
-		const uint8_t value = GKDBusArgumentByte::getNextByteArgument();
+		const uint8_t value = ArgUInt8::getNextByteArgument();
 
 		if(value > GLogiK::MKeyID_MAX)
 			throw GLogiKExcept("wrong MKeysID value");
