@@ -22,9 +22,6 @@
 #ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_MACRO_HPP_
 #define SRC_LIB_DBUS_ARG_GKDBUS_ARG_MACRO_HPP_
 
-#include "GKDBusArgByte.hpp"
-#include "GKDBusArgUInt16.hpp"
-
 #include "include/base.hpp"
 
 #include "lib/dbus/ArgTypes/uint8.hpp"

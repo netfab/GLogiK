@@ -13,8 +13,6 @@ libGKDBus_la_LIBADD = \
 				libGKUtils.la
 
 libGKDBus_la_SOURCES = \
-	%D%/arguments/GKDBusArgument.cpp \
-	%D%/arguments/GKDBusArgument.hpp \
 	%D%/arguments/GKDBusArgString.cpp \
 	%D%/arguments/GKDBusArgString.hpp \
 	%D%/arguments/GKDBusArgGKeysID.cpp \
