@@ -36,7 +36,7 @@ template <>
 		DBusMessage* asyncContainer
 	)
 {
-	GKDBusArgument::fillInArguments(message);
+	ArgBase::fillInArguments(message);
 
 	bool ret = false;
 

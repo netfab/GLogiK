@@ -27,6 +27,7 @@
 #include <dbus/dbus.h>
 
 #include "TypeBase.hpp"
+#include "ArgBase.hpp"
 
 namespace NSGKDBus
 {
@@ -44,6 +45,20 @@ class TypeUInt64
 		void appendUInt64(DBusMessageIter *iter, const uint64_t value);
 
 	private:
+};
+
+class ArgUInt64
+	:	virtual protected ArgBase
+{
+	public:
+		static const uint64_t getNextUInt64Argument(void);
+
+	protected:
+		ArgUInt64(void) = default;
+		~ArgUInt64(void) = default;
+
+	private:
+
 };
 
 } // namespace NSGKDBus

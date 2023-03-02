@@ -48,7 +48,7 @@ class TypeUInt8
 };
 
 class ArgUInt8
-	:	protected ArgBase
+	:	virtual protected ArgBase
 {
 	public:
 		static const uint8_t getNextByteArgument(void);

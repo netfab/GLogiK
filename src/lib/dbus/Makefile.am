@@ -17,8 +17,6 @@ libGKDBus_la_SOURCES = \
 	%D%/arguments/GKDBusArgument.hpp \
 	%D%/arguments/GKDBusArgString.cpp \
 	%D%/arguments/GKDBusArgString.hpp \
-	%D%/arguments/GKDBusArgUInt64.cpp \
-	%D%/arguments/GKDBusArgUInt64.hpp \
 	%D%/arguments/GKDBusArgGKeysID.cpp \
 	%D%/arguments/GKDBusArgGKeysID.hpp \
 	%D%/arguments/GKDBusArgGKeysIDArray.cpp \

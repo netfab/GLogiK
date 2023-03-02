@@ -174,7 +174,7 @@ void GKDBusMessageReply::appendAsyncArgsToReply(DBusMessage* asyncContainer)
 
 	try {
 		do {
-			const int arg_type = GKDBusArgument::decodeNextArgument(&itArgument);
+			const int arg_type = ArgBase::decodeNextArgument(&itArgument);
 			switch(arg_type) {
 				case DBUS_TYPE_STRING:
 				//case DBUS_TYPE_OBJECT_PATH:
@@ -182,7 +182,7 @@ void GKDBusMessageReply::appendAsyncArgsToReply(DBusMessage* asyncContainer)
 					GKLog(trace, "appended async string")
 					break;
 				case DBUS_TYPE_UINT64:
-					this->appendUInt64ToReply( GKDBusArgumentUInt64::getNextUInt64Argument() );
+					this->appendUInt64ToReply( ArgUInt64::getNextUInt64Argument() );
 					GKLog(trace, "appended async uint64")
 					break;
 				case DBUS_TYPE_INVALID:

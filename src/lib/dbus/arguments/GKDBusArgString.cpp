@@ -34,14 +34,14 @@ const std::string & GKDBusArgumentString::getNextStringArgument(void)
 {
 	GKDBusArgumentString::currentString.clear();
 
-	const uint64_t size = GKDBusArgumentUInt64::getNextUInt64Argument();
+	const uint64_t size = ArgUInt64::getNextUInt64Argument();
 
 	if( size != 0 ) {
-		if( GKDBusArgument::stringArguments.empty() )
+		if( ArgBase::stringArguments.empty() )
 			throw EmptyContainer("missing argument : string");
 
-		GKDBusArgumentString::currentString = GKDBusArgument::stringArguments.back();
-		GKDBusArgument::stringArguments.pop_back();
+		GKDBusArgumentString::currentString = ArgBase::stringArguments.back();
+		ArgBase::stringArguments.pop_back();
 
 		if( GKDBusArgumentString::currentString.size() != size ) {
 			LOG(warning) << "wrong string size";
@@ -53,7 +53,7 @@ const std::string & GKDBusArgumentString::getNextStringArgument(void)
 
 const std::vector<std::string> & GKDBusArgumentString::getStringsArray(void)
 {
-	return GKDBusArgument::stringArguments;
+	return ArgBase::stringArguments;
 }
 
 } // namespace NSGKDBus

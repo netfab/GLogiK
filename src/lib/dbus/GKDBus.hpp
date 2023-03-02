@@ -42,9 +42,9 @@
 #include "ArgTypes/boolean.hpp"
 #include "ArgTypes/uint8.hpp"
 #include "ArgTypes/uint16.hpp"
+#include "ArgTypes/uint64.hpp"
 
 #include "arguments/GKDBusArgString.hpp"
-#include "arguments/GKDBusArgUInt64.hpp"
 #include "arguments/GKDBusArgMacro.hpp"
 #include "arguments/GKDBusArgDevicesMap.hpp"
 #include "arguments/GKDBusArgGKeysIDArray.hpp"
@@ -69,7 +69,7 @@ class GKDBus
 		public ArgBoolean,
 		virtual public ArgUInt8,
 		virtual public ArgUInt16,
-		virtual public GKDBusArgumentUInt64,
+		virtual public ArgUInt64,
 		public GKDBusArgumentMacro,
 		public GKDBusArgumentDevicesMap,
 		public GKDBusArgumentGKeysIDArray,

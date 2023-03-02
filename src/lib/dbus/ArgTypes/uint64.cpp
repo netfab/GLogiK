@@ -49,5 +49,13 @@ void TypeUInt64::appendUInt64(DBusMessageIter *iter, const uint64_t value)
 #endif
 }
 
+const uint64_t ArgUInt64::getNextUInt64Argument(void) {
+	if( ArgBase::uint64Arguments.empty() )
+		throw EmptyContainer("missing argument : uint64");
+	const uint64_t ret = ArgBase::uint64Arguments.back();
+	ArgBase::uint64Arguments.pop_back();
+	return ret;
+}
+
 } // namespace NSGKDBus
 

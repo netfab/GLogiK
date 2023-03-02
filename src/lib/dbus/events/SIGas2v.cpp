@@ -38,7 +38,7 @@ template <>
 {
 	GK_LOG_FUNC
 
-	GKDBusArgument::fillInArguments(message);
+	ArgBase::fillInArguments(message);
 
 	try {
 		const std::vector<std::string> arg( GKDBusArgumentString::getStringsArray() );

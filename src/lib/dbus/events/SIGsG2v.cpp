@@ -38,7 +38,7 @@ template <>
 		DBusMessage* asyncContainer
 	)
 {
-	GKDBusArgument::fillInArguments(message);
+	ArgBase::fillInArguments(message);
 
 	try {
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );

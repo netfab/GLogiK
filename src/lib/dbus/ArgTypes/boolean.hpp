@@ -43,7 +43,7 @@ class TypeBoolean
 
 
 class ArgBoolean
-	:	protected ArgBase
+	:	virtual protected ArgBase
 {
 	public:
 		static const bool getNextBooleanArgument(void);

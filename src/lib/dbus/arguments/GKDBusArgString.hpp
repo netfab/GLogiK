@@ -25,15 +25,15 @@
 #include <string>
 #include <vector>
 
-#include "GKDBusArgument.hpp"
-#include "GKDBusArgUInt64.hpp"
+#include "lib/dbus/ArgTypes/ArgBase.hpp"
+#include "lib/dbus/ArgTypes/uint64.hpp"
 
 namespace NSGKDBus
 {
 
 class GKDBusArgumentString
-	:	virtual protected GKDBusArgument,
-		virtual private GKDBusArgumentUInt64
+	:	virtual protected ArgBase,
+		virtual private ArgUInt64
 {
 	public:
 		static const std::string & getNextStringArgument(void);

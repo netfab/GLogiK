@@ -41,7 +41,7 @@ const GLogiK::LCDPluginsPropertiesArray_type GKDBusArgumentLCDPluginsArray::getN
 
 	try {
 		do {
-			const uint64_t id = GKDBusArgumentUInt64::getNextUInt64Argument();
+			const uint64_t id = ArgUInt64::getNextUInt64Argument();
 			const std::string name = GKDBusArgumentString::getNextStringArgument();
 			const std::string desc = GKDBusArgumentString::getNextStringArgument();
 
@@ -54,7 +54,7 @@ const GLogiK::LCDPluginsPropertiesArray_type GKDBusArgumentLCDPluginsArray::getN
 		throw GLogiKExcept("rebuilding LCDPluginsProperties vector failed");
 	}
 
-	if( ! GKDBusArgumentUInt64::uint64Arguments.empty() ) { /* sanity check */
+	if( ! ArgUInt64::uint64Arguments.empty() ) { /* sanity check */
 		LOG(warning) << "UInt64 container not empty";
 	}
 

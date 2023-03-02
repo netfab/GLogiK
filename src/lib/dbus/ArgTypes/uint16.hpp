@@ -48,7 +48,7 @@ class TypeUInt16
 };
 
 class ArgUInt16
-	:	protected ArgBase
+	:	virtual protected ArgBase
 {
 	public:
 		static const uint16_t getNextUInt16Argument(void);

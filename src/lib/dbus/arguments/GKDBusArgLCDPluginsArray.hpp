@@ -23,7 +23,7 @@
 #define SRC_LIB_DBUS_ARG_GKDBUS_ARG_LCD_PLUGINS_ARRAY_HPP_
 
 #include "GKDBusArgString.hpp"
-#include "GKDBusArgUInt64.hpp"
+#include "lib/dbus/ArgTypes/uint64.hpp"
 
 #include "include/LCDPluginProperties.hpp"
 
@@ -32,7 +32,7 @@ namespace NSGKDBus
 
 class GKDBusArgumentLCDPluginsArray
 	:	virtual private GKDBusArgumentString,
-		virtual private GKDBusArgumentUInt64
+		virtual private ArgUInt64
 {
 	public:
 		static const GLogiK::LCDPluginsPropertiesArray_type getNextLCDPluginsArrayArgument(void);

@@ -45,7 +45,7 @@ template <>
 			arg = toString( dbus_message_get_path(message) );
 		}
 		else {
-			GKDBusArgument::fillInArguments(message);
+			ArgBase::fillInArguments(message);
 			arg = GKDBusArgumentString::getNextStringArgument();
 		}
 

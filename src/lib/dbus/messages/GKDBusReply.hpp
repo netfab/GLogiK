@@ -33,7 +33,7 @@
 #include "GKDBusMessage.hpp"
 
 #include "lib/dbus/arguments/GKDBusArgString.hpp"
-#include "lib/dbus/arguments/GKDBusArgUInt64.hpp"
+#include "lib/dbus/ArgTypes/uint64.hpp"
 
 namespace NSGKDBus
 {
@@ -53,7 +53,7 @@ class GKDBusReply
 
 class GKDBusMessageReply
 	:	virtual private GKDBusArgumentString,
-		virtual private GKDBusArgumentUInt64
+		virtual private ArgUInt64
 {
 	public:
 

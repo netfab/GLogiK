@@ -21,8 +21,6 @@
 
 #include "lib/utils/utils.hpp"
 
-#include "lib/dbus/arguments/GKDBusArgByte.hpp"
-
 #include "SIGssyt2b.hpp"
 
 
@@ -38,14 +36,14 @@ template <>
 		DBusMessage* asyncContainer
 	)
 {
-	GKDBusArgument::fillInArguments(message);
+	ArgBase::fillInArguments(message);
 	bool ret = false;
 
 	try {
 		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
 		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
 		const uint8_t arg3 = ArgUInt8::getNextByteArgument();
-		const uint64_t arg4 = GKDBusArgumentUInt64::getNextUInt64Argument();
+		const uint64_t arg4 = ArgUInt64::getNextUInt64Argument();
 
 		/* call two strings one byte one UInt64_t to bool callback */
 		ret = this->callback(arg1, arg2, arg3, arg4);
