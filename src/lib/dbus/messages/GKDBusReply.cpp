@@ -120,7 +120,7 @@ void GKDBusMessageReply::appendStringToReply(const std::string & value)
 void GKDBusMessageReply::appendStringVectorToReply(const std::vector<std::string> & list)
 {
 	if(_reply != nullptr) /* sanity check */
-		_reply->appendStringVector(list);
+		_reply->appendStringArray(list);
 }
 
 void GKDBusMessageReply::appendGKeysIDArrayToReply(const GLogiK::GKeysIDArray_type & keysID)

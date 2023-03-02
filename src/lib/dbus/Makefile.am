@@ -39,6 +39,22 @@ libGKDBus_la_SOURCES = \
 	%D%/arguments/GKDBusArgDevicesMap.hpp \
 	%D%/arguments/GKDBusArgLCDPluginsArray.cpp \
 	%D%/arguments/GKDBusArgLCDPluginsArray.hpp \
+	%D%/ArgTypes/TypeBase.cpp \
+	%D%/ArgTypes/TypeBase.hpp \
+	%D%/ArgTypes/boolean.cpp \
+	%D%/ArgTypes/boolean.hpp \
+	%D%/ArgTypes/string.cpp \
+	%D%/ArgTypes/string.hpp \
+	%D%/ArgTypes/stringArray.cpp \
+	%D%/ArgTypes/stringArray.hpp \
+	%D%/ArgTypes/uint16.cpp \
+	%D%/ArgTypes/uint16.hpp \
+	%D%/ArgTypes/uint32.cpp \
+	%D%/ArgTypes/uint32.hpp \
+	%D%/ArgTypes/uint64.cpp \
+	%D%/ArgTypes/uint64.hpp \
+	%D%/ArgTypes/uint8.cpp \
+	%D%/ArgTypes/uint8.hpp \
 	%D%/messages/GKDBusMessage.cpp \
 	%D%/messages/GKDBusMessage.hpp \
 	%D%/messages/GKDBusReply.cpp \

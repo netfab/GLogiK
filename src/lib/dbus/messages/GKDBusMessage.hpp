@@ -31,21 +31,29 @@
 #include "include/MBank.hpp"
 #include "include/LCDPluginProperties.hpp"
 
+#include "lib/dbus/ArgTypes/TypeBase.hpp"
+#include "lib/dbus/ArgTypes/boolean.hpp"
+#include "lib/dbus/ArgTypes/string.hpp"
+#include "lib/dbus/ArgTypes/stringArray.hpp"
+#include "lib/dbus/ArgTypes/uint16.hpp"
+#include "lib/dbus/ArgTypes/uint32.hpp"
+#include "lib/dbus/ArgTypes/uint64.hpp"
+#include "lib/dbus/ArgTypes/uint8.hpp"
+
 namespace NSGKDBus
 {
 
 class GKDBusMessage
+	:	virtual public TypeBase,
+		public TypeBoolean,
+		public TypeString,
+		public TypeStringArray,
+		virtual public TypeUInt64,
+		public TypeUInt8,
+		public TypeUInt16,
+		public TypeUInt32
 {
 	public:
-		void appendBoolean(const bool value);
-		void appendString(const std::string & value);
-		void appendStringVector(const std::vector<std::string> & list);
-
-		void appendUInt8(const uint8_t value);
-		void appendUInt16(const uint16_t value);
-		void appendUInt32(const uint32_t value);
-		void appendUInt64(const uint64_t value);
-
 		void appendGKeysID(const GLogiK::GKeysID keyID);
 		void appendMKeysID(const GLogiK::MKeysID keyID);
 		void appendGKeysIDArray(const GLogiK::GKeysIDArray_type & keysID);
@@ -56,8 +64,6 @@ class GKDBusMessage
 			const GLogiK::LCDPluginsPropertiesArray_type & pluginsArray
 		);
 
-		void abandon(void);
-
 	protected:
 		GKDBusMessage(
 			DBusConnection* const connection,
@@ -67,23 +73,13 @@ class GKDBusMessage
 
 		DBusConnection* _connection;
 		DBusMessage* _message;
-		DBusMessageIter _itMessage;
-		bool _hosedMessage;
-
-		const std::string _appendFailure = "message append failure";
 
 	private:
-		void appendString(DBusMessageIter *iter, const std::string & value);
-		void appendUInt8(DBusMessageIter *iter, const uint8_t value);
-		void appendUInt16(DBusMessageIter *iter, const uint16_t value);
-		void appendUInt64(DBusMessageIter *iter, const uint64_t value);
-
 		void appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro);
 		void appendLCDPluginsPropertiesArray(
 			DBusMessageIter *iter,
 			const GLogiK::LCDPluginsPropertiesArray_type & pluginsArray
 		);
-
 };
 
 } // namespace NSGKDBus

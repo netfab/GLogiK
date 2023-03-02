@@ -162,7 +162,7 @@ void GKDBusMessageBroadcastSignal::appendMKeysIDToBroadcastSignal(const GLogiK::
 void GKDBusMessageBroadcastSignal::appendStringVectorToBroadcastSignal(const std::vector<std::string> & list)
 {
 	if(_signal != nullptr) /* sanity check */
-		_signal->appendStringVector(list);
+		_signal->appendStringArray(list);
 }
 
 void GKDBusMessageBroadcastSignal::appendMacroToBroadcastSignal(const GLogiK::macro_type & macro)
