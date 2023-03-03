@@ -46,10 +46,10 @@
 #include "ArgTypes/string.hpp"
 #include "ArgTypes/stringArray.hpp"
 #include "ArgTypes/GKeysIDArray.hpp"
+#include "ArgTypes/MKeysIDArray.hpp"
 
 #include "arguments/GKDBusArgMacro.hpp"
 #include "arguments/GKDBusArgDevicesMap.hpp"
-#include "arguments/GKDBusArgMKeysIDArray.hpp"
 #include "arguments/GKDBusArgLCDPluginsArray.hpp"
 
 namespace NSGKDBus
@@ -75,7 +75,7 @@ class GKDBus
 		public GKDBusArgumentMacro,
 		public GKDBusArgumentDevicesMap,
 		public ArgGKeysIDArray,
-		public GKDBusArgumentMKeysIDArray,
+		public ArgMKeysIDArray,
 		public GKDBusArgumentLCDPluginsArray
 {
 	public:
