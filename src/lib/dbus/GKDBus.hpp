@@ -44,6 +44,7 @@
 #include "ArgTypes/uint16.hpp"
 #include "ArgTypes/uint64.hpp"
 #include "ArgTypes/string.hpp"
+#include "ArgTypes/stringArray.hpp"
 
 #include "arguments/GKDBusArgMacro.hpp"
 #include "arguments/GKDBusArgDevicesMap.hpp"
@@ -66,6 +67,7 @@ class GKDBus
 		public GKDBusMessageBroadcastSignal,
 		public GKDBusMessageAsyncContainer,
 		virtual public ArgString,
+		public ArgStringArray,
 		public ArgBoolean,
 		virtual public ArgUInt8,
 		virtual public ArgUInt16,

@@ -551,7 +551,7 @@ void DBusHandler::initializeDevices(void)
 		try {
 			_pDBus->waitForRemoteMethodCallReply();
 
-			devicesID = _pDBus->getStringsArray();
+			devicesID = _pDBus->getStringArray();
 			this->devicesStarted(devicesID);
 		}
 		catch (const GLogiKExcept & e) {
@@ -616,7 +616,7 @@ void DBusHandler::initializeDevices(void)
 		try {
 			_pDBus->waitForRemoteMethodCallReply();
 
-			devicesID = _pDBus->getStringsArray();
+			devicesID = _pDBus->getStringArray();
 			this->devicesStopped(devicesID);
 		}
 		catch (const GLogiKExcept & e) {

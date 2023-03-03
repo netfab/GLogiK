@@ -41,7 +41,7 @@ template <>
 	ArgBase::fillInArguments(message);
 
 	try {
-		const std::vector<std::string> arg( ArgString::getStringsArray() );
+		const std::vector<std::string> arg( ArgStringArray::getStringArray() );
 
 		/* call array of string to void callback */
 		this->callback(arg);

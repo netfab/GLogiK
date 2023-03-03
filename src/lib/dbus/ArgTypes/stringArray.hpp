@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "TypeBase.hpp"
+#include "ArgBase.hpp"
 
 namespace NSGKDBus
 {
@@ -41,6 +42,20 @@ class TypeStringArray
 		~TypeStringArray(void) = default;
 
 	private:
+};
+
+class ArgStringArray
+	:	virtual protected ArgBase
+{
+	public:
+		static const std::vector<std::string> & getStringArray(void);
+
+	protected:
+		ArgStringArray(void) = default;
+		~ArgStringArray(void) = default;
+
+	private:
+
 };
 
 } // namespace NSGKDBus

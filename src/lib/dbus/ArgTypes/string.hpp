@@ -56,7 +56,6 @@ class ArgString
 {
 	public:
 		static const std::string & getNextStringArgument(void);
-		static const std::vector<std::string> & getStringsArray(void); // FIXME
 
 	protected:
 		ArgString(void) = default;

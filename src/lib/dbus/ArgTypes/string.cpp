@@ -83,10 +83,4 @@ const std::string & ArgString::getNextStringArgument(void)
 	return ArgString::currentString;
 }
 
-// FIXME
-const std::vector<std::string> & ArgString::getStringsArray(void)
-{
-	return ArgBase::stringArguments;
-}
-
 } // namespace NSGKDBus

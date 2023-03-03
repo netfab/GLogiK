@@ -64,5 +64,10 @@ void TypeStringArray::appendStringArray(const std::vector<std::string> & stringA
 #endif
 }
 
+const std::vector<std::string> & ArgStringArray::getStringArray(void)
+{
+	return ArgBase::stringArguments;
+}
+
 } // namespace NSGKDBus
 
