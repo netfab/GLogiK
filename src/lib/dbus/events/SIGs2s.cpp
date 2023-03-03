@@ -46,7 +46,7 @@ template <>
 		}
 		else {
 			ArgBase::fillInArguments(message);
-			arg = GKDBusArgumentString::getNextStringArgument();
+			arg = ArgString::getNextStringArgument();
 		}
 
 		/* call string to string callback */

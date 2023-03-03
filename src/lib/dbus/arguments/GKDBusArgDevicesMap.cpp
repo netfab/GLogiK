@@ -43,7 +43,7 @@ const GLogiK::DevicesMap_type GKDBusArgumentDevicesMap::getNextDevicesMapArgumen
 
 	/* handle case where DevicesMap is empty */
 	try {
-		devID = GKDBusArgumentString::getNextStringArgument();
+		devID = ArgString::getNextStringArgument();
 
 		try {
 			do {
@@ -51,20 +51,20 @@ const GLogiK::DevicesMap_type GKDBusArgumentDevicesMap::getNextDevicesMapArgumen
 
 				/* don't get string on first iteration */
 				if( devID.empty() )
-					devID = GKDBusArgumentString::getNextStringArgument();
+					devID = ArgString::getNextStringArgument();
 
-				device.setStatus( GKDBusArgumentString::getNextStringArgument() );
-				device.setVendor( GKDBusArgumentString::getNextStringArgument() );
-				device.setProduct( GKDBusArgumentString::getNextStringArgument() );
-				device.setName( GKDBusArgumentString::getNextStringArgument() );
-				device.setConfigFilePath( GKDBusArgumentString::getNextStringArgument() );
+				device.setStatus( ArgString::getNextStringArgument() );
+				device.setVendor( ArgString::getNextStringArgument() );
+				device.setProduct( ArgString::getNextStringArgument() );
+				device.setName( ArgString::getNextStringArgument() );
+				device.setConfigFilePath( ArgString::getNextStringArgument() );
 
 				devicesMap[devID] = device;
 
 				/* for next loop iteration */
 				devID.clear();
 			}
-			while( ! GKDBusArgumentString::stringArguments.empty() );
+			while( ! ArgString::stringArguments.empty() );
 		}
 		catch ( const EmptyContainer & e ) {
 			LOG(warning) << "missing argument : " << e.what();

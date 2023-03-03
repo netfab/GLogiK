@@ -70,7 +70,7 @@ void ArgBase::decodeArgumentFromIterator(
 
 				const std::string arg(value);
 				/* ability to send empty strings, see
-				 * GKDBusArgumentString::getNextStringArgument() and
+				 * ArgString::getNextStringArgument() and
 				 * GKDBusMessage::appendString()
 				 */
 				ArgBase::uint64Arguments.push_back(arg.size());

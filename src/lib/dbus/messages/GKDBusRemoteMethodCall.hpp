@@ -31,7 +31,7 @@
 #include "include/base.hpp"
 #include "include/MBank.hpp"
 #include "lib/dbus/GKDBusConnection.hpp"
-#include "lib/dbus/arguments/GKDBusArgString.hpp"
+#include "lib/dbus/ArgTypes/string.hpp"
 
 #include "GKDBusMessage.hpp"
 
@@ -59,7 +59,7 @@ class GKDBusRemoteMethodCall
 };
 
 class GKDBusMessageRemoteMethodCall
-	:	virtual private GKDBusArgumentString
+	:	virtual private ArgString
 {
 	public:
 		/* Remote Method Call with Pending Reply */

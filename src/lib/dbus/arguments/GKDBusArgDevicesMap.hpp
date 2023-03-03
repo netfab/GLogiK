@@ -22,7 +22,7 @@
 #ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_DEVICES_MAP_HPP_
 #define SRC_LIB_DBUS_ARG_GKDBUS_ARG_DEVICES_MAP_HPP_
 
-#include "GKDBusArgString.hpp"
+#include "lib/dbus/ArgTypes/string.hpp"
 
 #include "include/DeviceID.hpp"
 
@@ -30,7 +30,7 @@ namespace NSGKDBus
 {
 
 class GKDBusArgumentDevicesMap
-	:	virtual private GKDBusArgumentString
+	:	virtual private ArgString
 {
 	public:
 		static const GLogiK::DevicesMap_type getNextDevicesMapArgument(void);

@@ -41,7 +41,7 @@ template <>
 	bool ret = false;
 
 	try {
-		const std::string arg( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg( ArgString::getNextStringArgument() );
 
 		/* call string to bool callback */
 		ret = this->callback(arg);

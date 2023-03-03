@@ -23,10 +23,12 @@
 #define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_STRING_HPP_
 
 #include <string>
+#include <vector>
 
 #include <dbus/dbus.h>
 
 #include "TypeBase.hpp"
+#include "ArgBase.hpp"
 #include "uint64.hpp"
 
 namespace NSGKDBus
@@ -46,6 +48,23 @@ class TypeString
 		void appendString(DBusMessageIter *iter, const std::string & value);
 
 	private:
+};
+
+class ArgString
+	:	virtual protected ArgBase,
+		virtual private ArgUInt64
+{
+	public:
+		static const std::string & getNextStringArgument(void);
+		static const std::vector<std::string> & getStringsArray(void); // FIXME
+
+	protected:
+		ArgString(void) = default;
+		~ArgString(void) = default;
+
+	private:
+		thread_local static std::string currentString;
+
 };
 
 } // namespace NSGKDBus

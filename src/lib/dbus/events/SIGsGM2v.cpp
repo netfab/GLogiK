@@ -42,7 +42,7 @@ template <>
 	ArgBase::fillInArguments(message);
 
 	try {
-		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg1( ArgString::getNextStringArgument() );
 		const GLogiK::GKeysID arg2 = GKDBusArgumentGKeysID::getNextGKeysIDArgument();
 		const GLogiK::macro_type arg3 = GKDBusArgumentMacro::getNextMacroArgument();
 

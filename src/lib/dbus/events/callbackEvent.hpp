@@ -30,7 +30,7 @@
 
 #include "GKDBusEvent.hpp"
 
-#include "lib/dbus/arguments/GKDBusArgString.hpp"
+#include "lib/dbus/ArgTypes/string.hpp"
 #include "lib/dbus/ArgTypes/uint64.hpp"
 
 namespace NSGKDBus
@@ -43,7 +43,7 @@ namespace NSGKDBus
 template <typename T>
 	class callbackEvent
 		:	public GKDBusEvent,
-			virtual private GKDBusArgumentString,
+			virtual private ArgString,
 			virtual private ArgUInt64
 {
 	public:

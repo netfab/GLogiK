@@ -41,8 +41,8 @@ template <>
 	GLogiK::LCDPluginsPropertiesArray_type ret;
 
 	try {
-		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
-		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg1( ArgString::getNextStringArgument() );
+		const std::string arg2( ArgString::getNextStringArgument() );
 
 		/* call two strings to LCDPluginsProperties array callback */
 		ret = this->callback(arg1, arg2);

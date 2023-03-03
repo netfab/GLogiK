@@ -43,7 +43,7 @@ template <>
 	bool ret = false;
 
 	try {
-		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg1( ArgString::getNextStringArgument() );
 		const GLogiK::MKeysID arg2 = GKDBusArgumentMKeysID::getNextMKeysIDArgument();
 
 		/* call DBusHandler::deviceMBankSwitch callback */

@@ -60,4 +60,33 @@ void TypeString::appendString(DBusMessageIter *iter, const std::string & value)
 	}
 }
 
+thread_local std::string ArgString::currentString("");
+
+const std::string & ArgString::getNextStringArgument(void)
+{
+	ArgString::currentString.clear();
+
+	const uint64_t size = ArgUInt64::getNextUInt64Argument();
+
+	if( size != 0 ) {
+		if( ArgBase::stringArguments.empty() )
+			throw EmptyContainer("missing argument : string");
+
+		ArgString::currentString = ArgBase::stringArguments.back();
+		ArgBase::stringArguments.pop_back();
+
+		if( ArgString::currentString.size() != size ) {
+			LOG(warning) << "wrong string size";
+		}
+	}
+
+	return ArgString::currentString;
+}
+
+// FIXME
+const std::vector<std::string> & ArgString::getStringsArray(void)
+{
+	return ArgBase::stringArguments;
+}
+
 } // namespace NSGKDBus

@@ -43,8 +43,8 @@
 #include "ArgTypes/uint8.hpp"
 #include "ArgTypes/uint16.hpp"
 #include "ArgTypes/uint64.hpp"
+#include "ArgTypes/string.hpp"
 
-#include "arguments/GKDBusArgString.hpp"
 #include "arguments/GKDBusArgMacro.hpp"
 #include "arguments/GKDBusArgDevicesMap.hpp"
 #include "arguments/GKDBusArgGKeysIDArray.hpp"
@@ -65,7 +65,7 @@ class GKDBus
 		virtual public GKDBusMessageRemoteMethodCall,
 		public GKDBusMessageBroadcastSignal,
 		public GKDBusMessageAsyncContainer,
-		virtual public GKDBusArgumentString,
+		virtual public ArgString,
 		public ArgBoolean,
 		virtual public ArgUInt8,
 		virtual public ArgUInt16,

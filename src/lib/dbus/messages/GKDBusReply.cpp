@@ -178,7 +178,7 @@ void GKDBusMessageReply::appendAsyncArgsToReply(DBusMessage* asyncContainer)
 			switch(arg_type) {
 				case DBUS_TYPE_STRING:
 				//case DBUS_TYPE_OBJECT_PATH:
-					this->appendStringToReply( GKDBusArgumentString::getNextStringArgument() );
+					this->appendStringToReply( ArgString::getNextStringArgument() );
 					GKLog(trace, "appended async string")
 					break;
 				case DBUS_TYPE_UINT64:

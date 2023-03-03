@@ -41,7 +41,7 @@ template <>
 	ArgBase::fillInArguments(message);
 
 	try {
-		const std::vector<std::string> arg( GKDBusArgumentString::getStringsArray() );
+		const std::vector<std::string> arg( ArgString::getStringsArray() );
 
 		/* call array of string to void callback */
 		this->callback(arg);

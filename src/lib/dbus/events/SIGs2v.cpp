@@ -39,7 +39,7 @@ template <>
 	ArgBase::fillInArguments(message);
 
 	try {
-		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg1( ArgString::getNextStringArgument() );
 
 		/* call string to void callback */
 		this->callback(arg1);

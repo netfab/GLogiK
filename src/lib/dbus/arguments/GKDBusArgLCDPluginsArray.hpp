@@ -22,7 +22,7 @@
 #ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_LCD_PLUGINS_ARRAY_HPP_
 #define SRC_LIB_DBUS_ARG_GKDBUS_ARG_LCD_PLUGINS_ARRAY_HPP_
 
-#include "GKDBusArgString.hpp"
+#include "lib/dbus/ArgTypes/string.hpp"
 #include "lib/dbus/ArgTypes/uint64.hpp"
 
 #include "include/LCDPluginProperties.hpp"
@@ -31,7 +31,7 @@ namespace NSGKDBus
 {
 
 class GKDBusArgumentLCDPluginsArray
-	:	virtual private GKDBusArgumentString,
+	:	virtual private ArgString,
 		virtual private ArgUInt64
 {
 	public:

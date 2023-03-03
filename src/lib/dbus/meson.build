@@ -1,7 +1,5 @@
 
 GKDBus_sources = [
-	'arguments/GKDBusArgString.cpp',
-	'arguments/GKDBusArgString.hpp',
 	'arguments/GKDBusArgGKeysID.cpp',
 	'arguments/GKDBusArgGKeysID.hpp',
 	'arguments/GKDBusArgGKeysIDArray.cpp',

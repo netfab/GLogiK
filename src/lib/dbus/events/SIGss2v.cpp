@@ -39,8 +39,8 @@ template <>
 	ArgBase::fillInArguments(message);
 
 	try {
-		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
-		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg1( ArgString::getNextStringArgument() );
+		const std::string arg2( ArgString::getNextStringArgument() );
 
 		/* call two strings to void callback */
 		this->callback(arg1, arg2);

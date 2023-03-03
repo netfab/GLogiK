@@ -41,7 +41,7 @@ template <>
 	std::vector<std::string> ret;
 
 	try {
-		const std::string arg( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg( ArgString::getNextStringArgument() );
 
 		/* call string to strings array callback */
 		ret = this->callback(arg);

@@ -42,12 +42,12 @@ const GLogiK::LCDPluginsPropertiesArray_type GKDBusArgumentLCDPluginsArray::getN
 	try {
 		do {
 			const uint64_t id = ArgUInt64::getNextUInt64Argument();
-			const std::string name = GKDBusArgumentString::getNextStringArgument();
-			const std::string desc = GKDBusArgumentString::getNextStringArgument();
+			const std::string name = ArgString::getNextStringArgument();
+			const std::string desc = ArgString::getNextStringArgument();
 
 			pluginsArray.push_back({id, name, desc});
 		}
-		while( ! GKDBusArgumentString::stringArguments.empty() );
+		while( ! ArgString::stringArguments.empty() );
 	}
 	catch ( const EmptyContainer & e ) {
 		LOG(warning) << "missing argument : " << e.what();

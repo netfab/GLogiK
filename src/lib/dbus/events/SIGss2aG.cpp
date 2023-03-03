@@ -41,8 +41,8 @@ template <>
 	GLogiK::GKeysIDArray_type ret;
 
 	try {
-		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
-		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg1( ArgString::getNextStringArgument() );
+		const std::string arg2( ArgString::getNextStringArgument() );
 
 		/* call two strings to array of GKeysID callback */
 		ret = this->callback(arg1, arg2);
