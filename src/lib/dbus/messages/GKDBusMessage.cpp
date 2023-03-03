@@ -43,12 +43,6 @@ GKDBusMessage::~GKDBusMessage()
 {
 }
 
-void GKDBusMessage::appendGKeysID(const GLogiK::GKeysID keyID)
-{
-	const uint8_t value = toEnumType(keyID);
-	this->appendUInt8(value);
-}
-
 void GKDBusMessage::appendMKeysID(const GLogiK::MKeysID keyID)
 {
 	const uint8_t value = toEnumType(keyID);

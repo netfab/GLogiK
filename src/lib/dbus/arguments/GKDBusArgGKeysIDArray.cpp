@@ -45,7 +45,7 @@ const GLogiK::GKeysIDArray_type GKDBusArgumentGKeysIDArray::getNextGKeysIDArrayA
 
 		bool nextRun = true;
 		do {
-			ret.push_back(GKDBusArgumentGKeysID::getNextGKeysIDArgument());
+			ret.push_back(ArgGKeysID::getNextGKeysIDArgument());
 
 			if( ret.size() == size )
 				nextRun = false;

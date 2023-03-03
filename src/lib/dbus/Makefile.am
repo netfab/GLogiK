@@ -13,8 +13,6 @@ libGKDBus_la_LIBADD = \
 				libGKUtils.la
 
 libGKDBus_la_SOURCES = \
-	%D%/arguments/GKDBusArgGKeysID.cpp \
-	%D%/arguments/GKDBusArgGKeysID.hpp \
 	%D%/arguments/GKDBusArgGKeysIDArray.cpp \
 	%D%/arguments/GKDBusArgGKeysIDArray.hpp \
 	%D%/arguments/GKDBusArgMKeysID.cpp \
@@ -45,6 +43,8 @@ libGKDBus_la_SOURCES = \
 	%D%/ArgTypes/uint64.hpp \
 	%D%/ArgTypes/uint8.cpp \
 	%D%/ArgTypes/uint8.hpp \
+	%D%/ArgTypes/GKeysID.cpp \
+	%D%/ArgTypes/GKeysID.hpp \
 	%D%/messages/GKDBusMessage.cpp \
 	%D%/messages/GKDBusMessage.hpp \
 	%D%/messages/GKDBusReply.cpp \

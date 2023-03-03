@@ -21,7 +21,7 @@
 
 #include "lib/utils/utils.hpp"
 
-#include "lib/dbus/arguments/GKDBusArgGKeysID.hpp"
+#include "lib/dbus/ArgTypes/GKeysID.hpp"
 
 #include "SIGsG2v.hpp"
 
@@ -42,7 +42,7 @@ template <>
 
 	try {
 		const std::string arg1( ArgString::getNextStringArgument() );
-		const GLogiK::GKeysID arg2 = GKDBusArgumentGKeysID::getNextGKeysIDArgument();
+		const GLogiK::GKeysID arg2 = ArgGKeysID::getNextGKeysIDArgument();
 
 		/* call DBusHandler::deviceMacroCleared callback */
 		this->callback(arg1, arg2);

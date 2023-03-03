@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,25 +19,41 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_GKEYS_ID_HPP_
-#define SRC_LIB_DBUS_ARG_GKDBUS_ARG_GKEYS_ID_HPP_
+#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_GKEYSID_HPP_
+#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_GKEYSID_HPP_
 
-#include "lib/dbus/ArgTypes/uint8.hpp"
+#include "TypeBase.hpp"
+#include "ArgBase.hpp"
+#include "uint8.hpp"
 
 #include "include/base.hpp"
 
 namespace NSGKDBus
 {
 
-class GKDBusArgumentGKeysID
+class TypeGKeysID
+	:	virtual private TypeBase,
+		virtual private TypeUInt8
+{
+	public:
+		void appendGKeysID(const GLogiK::GKeysID keyID);
+
+	protected:
+		TypeGKeysID(void) = default;
+		~TypeGKeysID(void) = default;
+
+	private:
+};
+
+class ArgGKeysID
 	:	virtual private ArgUInt8
 {
 	public:
 		static const GLogiK::GKeysID getNextGKeysIDArgument(void);
 
 	protected:
-		GKDBusArgumentGKeysID(void) = default;
-		~GKDBusArgumentGKeysID(void) = default;
+		ArgGKeysID(void) = default;
+		~ArgGKeysID(void) = default;
 
 	private:
 

@@ -1,7 +1,5 @@
 
 GKDBus_sources = [
-	'arguments/GKDBusArgGKeysID.cpp',
-	'arguments/GKDBusArgGKeysID.hpp',
 	'arguments/GKDBusArgGKeysIDArray.cpp',
 	'arguments/GKDBusArgGKeysIDArray.hpp',
 	'arguments/GKDBusArgMKeysID.cpp',
@@ -32,6 +30,8 @@ GKDBus_sources = [
 	'ArgTypes/uint64.hpp',
 	'ArgTypes/uint8.cpp',
 	'ArgTypes/uint8.hpp',
+	'ArgTypes/GKeysID.cpp',
+	'ArgTypes/GKeysID.hpp',
 	'messages/GKDBusMessage.cpp',
 	'messages/GKDBusMessage.hpp',
 	'messages/GKDBusReply.cpp',
