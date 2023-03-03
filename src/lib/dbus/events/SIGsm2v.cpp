@@ -21,7 +21,7 @@
 
 #include "lib/utils/utils.hpp"
 
-#include "lib/dbus/arguments/GKDBusArgMKeysID.hpp"
+#include "lib/dbus/ArgTypes/MKeysID.hpp"
 
 #include "SIGsm2v.hpp"
 
@@ -44,7 +44,7 @@ template <>
 
 	try {
 		const std::string arg1( ArgString::getNextStringArgument() );
-		const GLogiK::MKeysID arg2 = GKDBusArgumentMKeysID::getNextMKeysIDArgument();
+		const GLogiK::MKeysID arg2 = ArgMKeysID::getNextMKeysIDArgument();
 
 		/* call DBusHandler::deviceMBankSwitch callback */
 		this->callback(arg1, arg2);

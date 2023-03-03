@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,41 +19,46 @@
  *
  */
 
-#include <cstdint>
+#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_MKEYSID_HPP_
+#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_MKEYSID_HPP_
 
-#include "lib/utils/utils.hpp"
+#include "TypeBase.hpp"
+#include "ArgBase.hpp"
+#include "uint8.hpp"
 
-#include "GKDBusArgMKeysID.hpp"
+#include "include/base.hpp"
 
 namespace NSGKDBus
 {
 
-using namespace NSGKUtils;
-
-/*
- * helper function to get MKeysID
- * see also GKDBusMessage::appendMKeysID
- */
-const GLogiK::MKeysID GKDBusArgumentMKeysID::getNextMKeysIDArgument(void)
+class TypeMKeysID
+	:	virtual private TypeBase,
+		virtual private TypeUInt8
 {
-	GK_LOG_FUNC
+	public:
+		void appendMKeysID(const GLogiK::MKeysID keyID);
 
-	GLogiK::MKeysID id = GLogiK::MKeysID::MKEY_M0;
+	protected:
+		TypeMKeysID(void) = default;
+		~TypeMKeysID(void) = default;
 
-	try {
-		const uint8_t value = ArgUInt8::getNextByteArgument();
+	private:
+};
 
-		if(value > GLogiK::MKeyID_MAX)
-			throw GLogiKExcept("wrong MKeysID value");
+class ArgMKeysID
+	:	virtual private ArgUInt8
+{
+	public:
+		static const GLogiK::MKeysID getNextMKeysIDArgument(void);
 
-		id = static_cast<GLogiK::MKeysID>(value);
-	}
-	catch ( const EmptyContainer & e ) {
-		LOG(warning) << "missing argument : " << e.what();
-		throw GLogiKExcept("get MKeysID argument failed");
-	}
+	protected:
+		ArgMKeysID(void) = default;
+		~ArgMKeysID(void) = default;
 
-	return id;
-}
+	private:
+
+};
 
 } // namespace NSGKDBus
+
+#endif

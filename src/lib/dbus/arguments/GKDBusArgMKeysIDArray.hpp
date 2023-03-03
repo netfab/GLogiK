@@ -24,14 +24,14 @@
 
 #include "include/base.hpp"
 
-#include "GKDBusArgMKeysID.hpp"
+#include "lib/dbus/ArgTypes/MKeysID.hpp"
 
 namespace NSGKDBus
 {
 
 class GKDBusArgumentMKeysIDArray
 	:	virtual private ArgUInt8,
-		virtual private GKDBusArgumentMKeysID
+		virtual private ArgMKeysID
 {
 	public:
 		static const GLogiK::MKeysIDArray_type getNextMKeysIDArrayArgument(void);

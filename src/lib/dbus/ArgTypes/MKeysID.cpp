@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -21,46 +21,43 @@
 
 #include "lib/utils/utils.hpp"
 
-#include "GKDBusArgMKeysIDArray.hpp"
+#include "MKeysID.hpp"
 
 namespace NSGKDBus
 {
 
 using namespace NSGKUtils;
 
+void TypeMKeysID::appendMKeysID(const GLogiK::MKeysID keyID)
+{
+	const uint8_t value = toEnumType(keyID);
+	this->appendUInt8(value);
+}
+
 /*
- * helper function rebuilding MKeysIDArray
- * mirror of GKDBusMessage::appendMKeysIDArray
+ * helper function to get MKeysID
+ * see also TypeMKeysID::appendMKeysID
  */
-const GLogiK::MKeysIDArray_type GKDBusArgumentMKeysIDArray::getNextMKeysIDArrayArgument(void)
+const GLogiK::MKeysID ArgMKeysID::getNextMKeysIDArgument(void)
 {
 	GK_LOG_FUNC
 
-	GKLog(trace, "rebuilding MKeysIDArray from GKDBus values")
-
-	GLogiK::MKeysIDArray_type ret;
+	GLogiK::MKeysID id = GLogiK::MKeysID::MKEY_M0;
 
 	try {
-		const uint8_t size = ArgUInt8::getNextByteArgument();
+		const uint8_t value = ArgUInt8::getNextByteArgument();
 
-		bool nextRun = true;
-		do {
-			ret.push_back(ArgMKeysID::getNextMKeysIDArgument());
+		if(value > GLogiK::MKeyID_MAX)
+			throw GLogiKExcept("wrong MKeysID value");
 
-			if( ret.size() == size )
-				nextRun = false;
-		}
-		while( nextRun );
+		id = static_cast<GLogiK::MKeysID>(value);
 	}
-	catch( const EmptyContainer & e ) {
-		LOG(warning) << "missing MKeysID argument : " << e.what();
-		throw GLogiKExcept("rebuilding MKeysIDArray failed");
+	catch ( const EmptyContainer & e ) {
+		LOG(warning) << "missing argument : " << e.what();
+		throw GLogiKExcept("get MKeysID argument failed");
 	}
 
-	GKLog2(trace, "MKeysIDArray size: ", ret.size())
-
-	return ret;
+	return id;
 }
 
 } // namespace NSGKDBus
-
