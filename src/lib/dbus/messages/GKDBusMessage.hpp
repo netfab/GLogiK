@@ -40,6 +40,7 @@
 #include "lib/dbus/ArgTypes/uint64.hpp"
 #include "lib/dbus/ArgTypes/uint8.hpp"
 #include "lib/dbus/ArgTypes/GKeysID.hpp"
+#include "lib/dbus/ArgTypes/GKeysIDArray.hpp"
 
 namespace NSGKDBus
 {
@@ -53,11 +54,11 @@ class GKDBusMessage
 		virtual public TypeUInt8,
 		public TypeUInt16,
 		public TypeUInt32,
-		public TypeGKeysID
+		public TypeGKeysID,
+		public TypeGKeysIDArray
 {
 	public:
 		void appendMKeysID(const GLogiK::MKeysID keyID);
-		void appendGKeysIDArray(const GLogiK::GKeysIDArray_type & keysID);
 		void appendMKeysIDArray(const GLogiK::MKeysIDArray_type & keysID);
 		void appendMacro(const GLogiK::macro_type & macro);
 		void appendMacrosBank(const GLogiK::mBank_type & bank);

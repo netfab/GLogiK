@@ -45,10 +45,10 @@
 #include "ArgTypes/uint64.hpp"
 #include "ArgTypes/string.hpp"
 #include "ArgTypes/stringArray.hpp"
+#include "ArgTypes/GKeysIDArray.hpp"
 
 #include "arguments/GKDBusArgMacro.hpp"
 #include "arguments/GKDBusArgDevicesMap.hpp"
-#include "arguments/GKDBusArgGKeysIDArray.hpp"
 #include "arguments/GKDBusArgMKeysIDArray.hpp"
 #include "arguments/GKDBusArgLCDPluginsArray.hpp"
 
@@ -74,7 +74,7 @@ class GKDBus
 		virtual public ArgUInt64,
 		public GKDBusArgumentMacro,
 		public GKDBusArgumentDevicesMap,
-		public GKDBusArgumentGKeysIDArray,
+		public ArgGKeysIDArray,
 		public GKDBusArgumentMKeysIDArray,
 		public GKDBusArgumentLCDPluginsArray
 {

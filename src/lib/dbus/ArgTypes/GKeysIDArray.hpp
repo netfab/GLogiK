@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,17 +19,33 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_GKEYS_ID_ARRAY_HPP_
-#define SRC_LIB_DBUS_ARG_GKDBUS_ARG_GKEYS_ID_ARRAY_HPP_
+#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_GKEYSID_ARRAY_HPP_
+#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_GKEYSID_ARRAY_HPP_
+
+#include "TypeBase.hpp"
+#include "uint8.hpp"
+#include "GKeysID.hpp"
 
 #include "include/base.hpp"
-
-#include "lib/dbus/ArgTypes/GKeysID.hpp"
 
 namespace NSGKDBus
 {
 
-class GKDBusArgumentGKeysIDArray
+class TypeGKeysIDArray
+	:	virtual private TypeBase,
+		virtual private TypeUInt8
+{
+	public:
+		void appendGKeysIDArray(const GLogiK::GKeysIDArray_type & keysID);
+
+	protected:
+		TypeGKeysIDArray(void) = default;
+		~TypeGKeysIDArray(void) = default;
+
+	private:
+};
+
+class ArgGKeysIDArray
 	:	virtual private ArgUInt8,
 		virtual private ArgGKeysID
 {
@@ -37,8 +53,8 @@ class GKDBusArgumentGKeysIDArray
 		static const GLogiK::GKeysIDArray_type getNextGKeysIDArrayArgument(void);
 
 	protected:
-		GKDBusArgumentGKeysIDArray(void) = default;
-		~GKDBusArgumentGKeysIDArray(void) = default;
+		ArgGKeysIDArray(void) = default;
+		~ArgGKeysIDArray(void) = default;
 
 	private:
 };
