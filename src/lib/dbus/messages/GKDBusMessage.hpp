@@ -43,6 +43,7 @@
 #include "lib/dbus/ArgTypes/GKeysIDArray.hpp"
 #include "lib/dbus/ArgTypes/MKeysID.hpp"
 #include "lib/dbus/ArgTypes/MKeysIDArray.hpp"
+#include "lib/dbus/ArgTypes/macro.hpp"
 
 namespace NSGKDBus
 {
@@ -54,15 +55,15 @@ class GKDBusMessage
 		public TypeStringArray,
 		virtual public TypeUInt64,
 		virtual public TypeUInt8,
-		public TypeUInt16,
+		virtual public TypeUInt16,
 		public TypeUInt32,
 		public TypeGKeysID,
 		public TypeGKeysIDArray,
 		public TypeMKeysID,
-		public TypeMKeysIDArray
+		public TypeMKeysIDArray,
+		public TypeMacro
 {
 	public:
-		void appendMacro(const GLogiK::macro_type & macro);
 		void appendLCDPluginsPropertiesArray(
 			const GLogiK::LCDPluginsPropertiesArray_type & pluginsArray
 		);
@@ -78,7 +79,6 @@ class GKDBusMessage
 		DBusMessage* _message;
 
 	private:
-		void appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro);
 		void appendLCDPluginsPropertiesArray(
 			DBusMessageIter *iter,
 			const GLogiK::LCDPluginsPropertiesArray_type & pluginsArray

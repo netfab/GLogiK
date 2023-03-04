@@ -43,11 +43,6 @@ GKDBusMessage::~GKDBusMessage()
 {
 }
 
-void GKDBusMessage::appendMacro(const GLogiK::macro_type & macro)
-{
-	this->appendMacro(&_itMessage, macro);
-}
-
 void GKDBusMessage::appendLCDPluginsPropertiesArray(const GLogiK::LCDPluginsPropertiesArray_type & pluginsArray)
 {
 	this->appendLCDPluginsPropertiesArray(&_itMessage, pluginsArray);
@@ -134,80 +129,6 @@ void GKDBusMessage::appendLCDPluginsPropertiesArray(
 #endif
 }
 
-void GKDBusMessage::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro)
-{
-	GK_LOG_FUNC
-
-	DBusMessageIter itArray;
-
-	// signature = (yyq)
-	const char array_sig[] = \
-							DBUS_STRUCT_BEGIN_CHAR_AS_STRING\
-							DBUS_TYPE_BYTE_AS_STRING\
-							DBUS_TYPE_BYTE_AS_STRING\
-							DBUS_TYPE_UINT16_AS_STRING\
-							DBUS_STRUCT_END_CHAR_AS_STRING;
-
-	if( ! dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, array_sig, &itArray) ) {
-		_hosedMessage = true;
-		LOG(error) << "macro array open_container failure, not enough memory";
-		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
-	}
-
-	/*
-	 * From DBus dbus_message_iter_open_container documentation :
-	 *		For structs and dict entries, contained_signature should be NULL;
-	 */
-	/*
-	const char struct_sig[] = \
-							DBUS_TYPE_BYTE_AS_STRING\
-							DBUS_TYPE_BYTE_AS_STRING\
-							DBUS_TYPE_UINT16_AS_STRING;
-	*/
-
-	try {
-		for(const auto & keyEvent : macro) {
-			DBusMessageIter itStruct;
-
-			if( ! dbus_message_iter_open_container(&itArray, DBUS_TYPE_STRUCT, nullptr, &itStruct) ) {
-				LOG(error) << "DBus struct open_container failure, not enough memory";
-				throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
-			}
-
-			try {
-				this->appendUInt8(&itStruct, keyEvent.code);
-				this->appendUInt8(&itStruct, toEnumType(keyEvent.event));
-				this->appendUInt16(&itStruct, keyEvent.interval);
-			}
-			catch (const GKDBusMessageWrongBuild & e) {
-				dbus_message_iter_abandon_container(&itArray, &itStruct);
-				throw;
-			}
-
-			if( ! dbus_message_iter_close_container(&itArray, &itStruct) ) {
-				LOG(error) << "DBus struct close_container failure, not enough memory";
-				dbus_message_iter_abandon_container(&itArray, &itStruct);
-				throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
-			}
-		}
-	}
-	catch (const GKDBusMessageWrongBuild & e) {
-		_hosedMessage = true;
-		dbus_message_iter_abandon_container(iter, &itArray);
-		throw;
-	}
-
-	if( ! dbus_message_iter_close_container(iter, &itArray) ) {
-		LOG(error) << "macro array close_container failure, not enough memory";
-		_hosedMessage = true;
-		dbus_message_iter_abandon_container(iter, &itArray);
-		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
-	}
-
-#if DEBUG_GKDBUS_SUBOBJECTS
-	GKLog(trace, "macro appended")
-#endif
-}
 
 } // namespace NSGKDBus
 

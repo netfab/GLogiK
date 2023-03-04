@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,27 +19,51 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_MACRO_HPP_
-#define SRC_LIB_DBUS_ARG_GKDBUS_ARG_MACRO_HPP_
+#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_MACRO_HPP_
+#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_MACRO_HPP_
 
 #include "include/base.hpp"
 
-#include "lib/dbus/ArgTypes/uint8.hpp"
-#include "lib/dbus/ArgTypes/uint16.hpp"
+#include <dbus/dbus.h>
+
+#include "TypeBase.hpp"
+#include "ArgBase.hpp"
+
+#include "uint8.hpp"
+#include "uint16.hpp"
 
 namespace NSGKDBus
 {
 
-class GKDBusArgumentMacro
-	:	virtual private ArgUInt8,
+class TypeMacro
+	:	virtual private TypeBase,
+		virtual private TypeUInt8,
+		virtual private TypeUInt16
+{
+	public:
+		void appendMacro(const GLogiK::macro_type & macro);
+
+	protected:
+		TypeMacro(void) = default;
+		~TypeMacro(void) = default;
+
+		void appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro);
+
+	private:
+};
+
+
+class ArgMacro
+	:	virtual protected ArgBase,
+		virtual private ArgUInt8,
 		virtual private ArgUInt16
 {
 	public:
 		static const GLogiK::macro_type getNextMacroArgument(const unsigned int macroSize = 0);
 
 	protected:
-		GKDBusArgumentMacro(void) = default;
-		~GKDBusArgumentMacro(void) = default;
+		ArgMacro(void) = default;
+		~ArgMacro(void) = default;
 
 	private:
 

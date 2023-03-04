@@ -47,8 +47,8 @@
 #include "ArgTypes/stringArray.hpp"
 #include "ArgTypes/GKeysIDArray.hpp"
 #include "ArgTypes/MKeysIDArray.hpp"
+#include "ArgTypes/macro.hpp"
 
-#include "arguments/GKDBusArgMacro.hpp"
 #include "arguments/GKDBusArgDevicesMap.hpp"
 #include "arguments/GKDBusArgLCDPluginsArray.hpp"
 
@@ -72,7 +72,7 @@ class GKDBus
 		virtual public ArgUInt8,
 		virtual public ArgUInt16,
 		virtual public ArgUInt64,
-		public GKDBusArgumentMacro,
+		public ArgMacro,
 		public GKDBusArgumentDevicesMap,
 		public ArgGKeysIDArray,
 		public ArgMKeysIDArray,
