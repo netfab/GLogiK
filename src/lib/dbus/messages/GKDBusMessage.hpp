@@ -63,7 +63,6 @@ class GKDBusMessage
 {
 	public:
 		void appendMacro(const GLogiK::macro_type & macro);
-		void appendMacrosBank(const GLogiK::mBank_type & bank);
 		void appendLCDPluginsPropertiesArray(
 			const GLogiK::LCDPluginsPropertiesArray_type & pluginsArray
 		);

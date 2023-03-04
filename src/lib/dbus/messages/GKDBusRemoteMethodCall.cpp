@@ -178,12 +178,6 @@ void GKDBusMessageRemoteMethodCall::appendMKeysIDToRemoteMethodCall(const GLogiK
 		_remoteMethodCall->appendMKeysID(bankID);
 }
 
-void GKDBusMessageRemoteMethodCall::appendMacrosBankToRemoteMethodCall(const GLogiK::mBank_type & bank)
-{
-	if(_remoteMethodCall != nullptr) /* sanity check */
-		_remoteMethodCall->appendMacrosBank(bank);
-}
-
 void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall(void)
 {
 	GK_LOG_FUNC

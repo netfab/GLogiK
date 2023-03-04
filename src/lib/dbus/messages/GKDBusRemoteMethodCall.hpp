@@ -77,7 +77,6 @@ class GKDBusMessageRemoteMethodCall
 		void appendUInt64ToRemoteMethodCall(const uint64_t value);
 		void appendGKeysIDToRemoteMethodCall(const GLogiK::GKeysID keyID);
 		void appendMKeysIDToRemoteMethodCall(const GLogiK::MKeysID bankID);
-		void appendMacrosBankToRemoteMethodCall(const GLogiK::mBank_type & bank);
 
 		void sendRemoteMethodCall(void);
 		void abandonRemoteMethodCall(void);
