@@ -321,23 +321,20 @@ void GLogiKDaemon::createPIDFile(void) {
 	GKLog2(info, "created PID file : ", _pidFileName)
 }
 
-void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
-	bool daemonized = false;
-
+void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[])
+{
 	po::options_description desc("Allowed options");
 
 	desc.add_options()
 //		("help,h", "produce help message")
-		("daemonize,d", po::bool_switch(&daemonized)->default_value(false), "run in daemon mode")
+		("daemonize,d", po::bool_switch()->default_value(false), "run in daemon mode")
 		("pid-file,p", po::value(&_pidFileName), "define the PID file")
-		("version,v", po::bool_switch(&_version)->default_value(false), "print some versions informations and exit")
+		("version,v", po::bool_switch()->default_value(false), "print some versions informations and exit")
 	;
 
 #if DEBUGGING_ON
-	bool debug = false;
-
 	desc.add_options()
-		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
+		("debug,D", po::bool_switch()->default_value(false), "run in debug mode")
 	;
 #endif
 
@@ -346,6 +343,9 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	po::store(po::parse_command_line(argc, argv, desc), vm);
 
 	po::notify(vm);
+
+	bool daemonized = vm.count("daemonize") ? vm["daemonize"].as<bool>() : false;
+	_version = vm.count("version") ? vm["version"].as<bool>() : false;
 
 /*
 	if (vm.count("help")) {
@@ -356,18 +356,19 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	}
 */
 
-	if (vm.count("daemonize")) {
-		GLogiKDaemon::daemonized = vm["daemonize"].as<bool>();
-	}
-
-	if (vm.count("version")) {
+	if( _version ) {
 		/* disable daemon mode */
 		GLogiKDaemon::daemonized = false;
 	}
+	else if( daemonized ) {
+		GLogiKDaemon::daemonized = true;
+	}
 
 #if DEBUGGING_ON
-	if (vm.count("debug")) {
-		GKLogging::GKDebug = vm["debug"].as<bool>();
+	bool debug = vm.count("debug") ? vm["debug"].as<bool>() : false;
+
+	if( debug ) {
+		GKLogging::GKDebug = true;
 	}
 #endif
 }
