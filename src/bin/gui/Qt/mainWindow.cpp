@@ -361,10 +361,8 @@ void MainWindow::parseCommandLine(const int& argc, char *argv[])
 	po::options_description desc("Allowed options");
 
 #if DEBUGGING_ON
-	bool debug = false;
-
 	desc.add_options()
-		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
+		("debug,D", po::bool_switch()->default_value(false), "run in debug mode")
 	;
 #endif
 
@@ -375,8 +373,10 @@ void MainWindow::parseCommandLine(const int& argc, char *argv[])
 	po::notify(vm);
 
 #if DEBUGGING_ON
-	if (vm.count("debug")) {
-		GKLogging::GKDebug = vm["debug"].as<bool>();
+	bool debug = vm.count("debug") ? vm["debug"].as<bool>() : false;
+
+	if( debug ) {
+		GKLogging::GKDebug = true;
 	}
 #endif
 }
