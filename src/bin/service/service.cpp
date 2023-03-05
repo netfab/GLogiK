@@ -195,14 +195,12 @@ void DesktopService::parseCommandLine(const int& argc, char *argv[])
 	po::options_description desc("Allowed options");
 
 	desc.add_options()
-		("version,v", po::bool_switch(&_version)->default_value(false), "print some versions informations and exit")
+		("version,v", po::bool_switch()->default_value(false), "print some versions informations and exit")
 	;
 
 #if DEBUGGING_ON
-	bool debug = false;
-
 	desc.add_options()
-		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
+		("debug,D", po::bool_switch()->default_value(false), "run in debug mode")
 	;
 #endif
 
@@ -212,9 +210,13 @@ void DesktopService::parseCommandLine(const int& argc, char *argv[])
 
 	po::notify(vm);
 
+	_version = vm.count("version") ? vm["version"].as<bool>() : false;
+
 #if DEBUGGING_ON
-	if (vm.count("debug")) {
-		GKLogging::GKDebug = vm["debug"].as<bool>();
+	bool debug = vm.count("debug") ? vm["debug"].as<bool>() : false;
+
+	if( debug ) {
+		GKLogging::GKDebug = true;
 	}
 #endif
 }
