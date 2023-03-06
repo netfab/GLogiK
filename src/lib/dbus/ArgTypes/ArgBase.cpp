@@ -68,11 +68,26 @@ void ArgBase::decodeArgumentFromIterator(
 				dbus_message_iter_get_basic(iter, &value);
 				//GKLog2(trace, "string arg value : ", value)
 
-				const std::string arg(value);
-				/* ability to send empty strings, see
-				 * ArgString::getNextStringArgument() and
-				 * GKDBusMessage::appendString()
+				/* -
+				 * ability to send empty strings, see
+				 * ArgString::getNextStringArgument() and TypeString::appendString()
+				 * in ArgTypes/string.cpp
+				 *
+				 * for non-empty strings, uint64_t argument must be added here, else
+				 * ::decodeArgumentFromIterator() will fail to decode arguments from
+				 * DBusMessage(s) that were NOT sent using libGKDBus
+				 *
+				 * typical error (with appendUInt64() implemented into appendString()) when
+				 * trying to start desktop service :
+				 * -
+				 * error    - (...) GetSessionByPID method reply failure : missing argument : uint64
+				 * error    - (...) failure to get session ID from logind
+				 * (...)
+				 * info     - (~DesktopService) GLogiKs desktop service process exiting, bye !
+				 * error    - () unable to contact a session manager
+				 * -
 				 */
+				const std::string arg(value);
 				ArgBase::uint64Arguments.push_back(arg.size());
 
 				ArgBase::stringArguments.push_back(arg);

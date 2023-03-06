@@ -53,6 +53,9 @@ void TypeString::appendString(DBusMessageIter *iter, const std::string & value)
 #endif
 	}
 	else {
+		/* ability to send empty strings,
+		 * see ArgBase::decodeArgumentFromIterator()
+		 * in ArgTypes/ArgBase.cpp */
 		this->appendUInt64(iter, 0);
 #if DEBUG_GKDBUS_SUBOBJECTS
 		GKLog(trace, "empty string appended")
@@ -66,6 +69,9 @@ const std::string & ArgString::getNextStringArgument(void)
 {
 	ArgString::currentString.clear();
 
+	/* ability to send empty strings,
+	 * see ArgBase::decodeArgumentFromIterator()
+	 * in ArgTypes/ArgBase.cpp */
 	const uint64_t size = ArgUInt64::getNextUInt64Argument();
 
 	if( size != 0 ) {
