@@ -28,11 +28,16 @@
 #include "TypeBase.hpp"
 #include "ArgBase.hpp"
 
+#include "uint64.hpp"
+#include "string.hpp"
+
 namespace NSGKDBus
 {
 
 class TypeStringArray
-	:	virtual private TypeBase
+	:	virtual private TypeBase,
+		virtual private TypeUInt64,
+		virtual private TypeString
 {
 	public:
 		void appendStringArray(const std::vector<std::string> & stringArray);
@@ -45,10 +50,12 @@ class TypeStringArray
 };
 
 class ArgStringArray
-	:	virtual protected ArgBase
+	:	virtual protected ArgBase,
+		virtual private ArgUInt64,
+		virtual private ArgString
 {
 	public:
-		static const std::vector<std::string> & getStringArray(void);
+		static const std::vector<std::string> getNextStringArray(void);
 
 	protected:
 		ArgStringArray(void) = default;

@@ -19,6 +19,8 @@
  *
  */
 
+#include <algorithm>
+
 #include <dbus/dbus.h>
 
 #include "lib/utils/utils.hpp"
@@ -34,6 +36,8 @@ void TypeStringArray::appendStringArray(const std::vector<std::string> & stringA
 {
 	GK_LOG_FUNC
 
+	this->appendUInt64(&_itMessage, stringArray.size());
+
 	DBusMessageIter itContainer;
 
 	if( ! dbus_message_iter_open_container(&_itMessage, DBUS_TYPE_ARRAY, DBUS_TYPE_STRING_AS_STRING, &itContainer) ) {
@@ -42,14 +46,15 @@ void TypeStringArray::appendStringArray(const std::vector<std::string> & stringA
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 	}
 
-	for (const std::string & s : stringArray) {
-		const char* p = s.c_str();
-		if( ! dbus_message_iter_append_basic(&itContainer, DBUS_TYPE_STRING, &p) ) {
-			LOG(error) << "string array append_basic failure, not enough memory";
-			_hosedMessage = true;
-			dbus_message_iter_abandon_container(&_itMessage, &itContainer);
-			throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
+	try {
+		for (const std::string & s : stringArray) {
+			this->appendString(&itContainer, s);
 		}
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_hosedMessage = true;
+		dbus_message_iter_abandon_container(&_itMessage, &itContainer);
+		throw;
 	}
 
 	if( ! dbus_message_iter_close_container(&_itMessage, &itContainer) ) {
@@ -64,9 +69,30 @@ void TypeStringArray::appendStringArray(const std::vector<std::string> & stringA
 #endif
 }
 
-const std::vector<std::string> & ArgStringArray::getStringArray(void)
+const std::vector<std::string> ArgStringArray::getNextStringArray(void)
 {
-	return ArgBase::stringArguments;
+	GK_LOG_FUNC
+
+	const uint64_t size = ArgUInt64::getNextUInt64Argument();
+	std::vector<std::string> ret;
+
+	if(size > 0) {
+		auto & x = ArgBase::stringArguments;
+		if(x.size() < size) {
+			LOG(error) << "vector size: " << x.size() << " - wanted size: " << size;
+			throw GLogiKExcept("wrong string array size");
+		}
+
+		ret.assign(x.end() - size, x.end());
+		x.resize(x.size() - size);
+
+		if( ! ret.empty() )
+			std::reverse(ret.begin(), ret.end());
+	}
+
+	GKLog4(trace, "returning string array size: ", ret.size(), "expected: ", size)
+
+	return ret;
 }
 
 } // namespace NSGKDBus

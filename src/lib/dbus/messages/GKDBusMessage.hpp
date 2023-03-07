@@ -51,7 +51,7 @@ namespace NSGKDBus
 class GKDBusMessage
 	:	virtual public TypeBase,
 		public TypeBoolean,
-		public TypeString,
+		virtual public TypeString,
 		public TypeStringArray,
 		virtual public TypeUInt64,
 		virtual public TypeUInt8,

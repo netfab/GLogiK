@@ -25,7 +25,6 @@
 #include <cstdint>
 
 #include <string>
-#include <vector>
 #include <mutex>
 
 #include <dbus/dbus.h>

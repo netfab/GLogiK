@@ -22,6 +22,7 @@
 #include <new>
 #include <algorithm>
 #include <sstream>
+#include <vector>
 
 #include "messages/GKDBusMessage.hpp"
 #include "GKDBus.hpp"
@@ -60,6 +61,11 @@ GKDBus::GKDBus(
 	GKLog4(trace, "checking std::string ::max_size(): ", s.max_size(), "UINT64_MAX: ", UINT64_MAX)
 	if( s.max_size() > UINT64_MAX )
 		throw GLogiKExcept("std::string ::max_size() overflow detected");
+
+	const std::vector<std::string> v;
+	GKLog4(trace, "checking std::vector<std::string> ::max_size(): ", v.max_size(), "UINT64_MAX: ", UINT64_MAX)
+	if( v.max_size() > UINT64_MAX )
+		throw GLogiKExcept("std::vector<std::string> ::max_size() overflow detected");
 }
 
 GKDBus::~GKDBus()
