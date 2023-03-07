@@ -64,7 +64,7 @@ class GKDBusMessageBroadcastSignal
 		void appendUInt8ToBroadcastSignal(const uint8_t value);
 		void appendGKeysIDToBroadcastSignal(const GLogiK::GKeysID keyID);
 		void appendMKeysIDToBroadcastSignal(const GLogiK::MKeysID bankID);
-		void appendStringVectorToBroadcastSignal(
+		void appendStringArrayToBroadcastSignal(
 			const std::vector<std::string> & list
 		);
 		void appendMacroToBroadcastSignal(const GLogiK::macro_type & macro);

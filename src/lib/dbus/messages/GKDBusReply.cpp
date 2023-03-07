@@ -117,7 +117,7 @@ void GKDBusMessageReply::appendStringToReply(const std::string & value)
 		_reply->appendString(value);
 }
 
-void GKDBusMessageReply::appendStringVectorToReply(const std::vector<std::string> & list)
+void GKDBusMessageReply::appendStringArrayToReply(const std::vector<std::string> & list)
 {
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendStringArray(list);

@@ -159,7 +159,7 @@ void GKDBusMessageBroadcastSignal::appendMKeysIDToBroadcastSignal(const GLogiK::
 		_signal->appendMKeysID(bankID);
 }
 
-void GKDBusMessageBroadcastSignal::appendStringVectorToBroadcastSignal(const std::vector<std::string> & list)
+void GKDBusMessageBroadcastSignal::appendStringArrayToBroadcastSignal(const std::vector<std::string> & list)
 {
 	if(_signal != nullptr) /* sanity check */
 		_signal->appendStringArray(list);

@@ -65,7 +65,7 @@ class GKDBusMessageReply
 
 		void appendBooleanToReply(const bool value);
 		void appendStringToReply(const std::string & value);
-		void appendStringVectorToReply(const std::vector<std::string> & list);
+		void appendStringArrayToReply(const std::vector<std::string> & list);
 
 		void appendGKeysIDArrayToReply(const GLogiK::GKeysIDArray_type & keysID);
 		void appendMKeysIDArrayToReply(const GLogiK::MKeysIDArray_type & keysID);

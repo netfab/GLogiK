@@ -103,7 +103,7 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			signal.c_str()
 		);
-		pDBus->appendStringVectorToBroadcastSignal(devIDArray);
+		pDBus->appendStringArrayToBroadcastSignal(devIDArray);
 		pDBus->sendBroadcastSignal();
 	}
 	catch (const GLogiKExcept & e) {

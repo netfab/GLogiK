@@ -57,7 +57,7 @@ template <>
 
 	try {
 		this->initializeReply(connection, message);
-		this->appendStringVectorToReply(ret);
+		this->appendStringArrayToReply(ret);
 
 		this->appendAsyncArgsToReply(asyncContainer);
 	}
