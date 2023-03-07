@@ -177,16 +177,20 @@ void DaemonAndServiceTab::updateTab(void)
 		try {
 			_pDBus->waitForRemoteMethodCallReply();
 
+			const std::vector<std::string> ret = _pDBus->getNextStringArray();
+			if(ret.size() != 3)
+				throw GLogiKExcept("wrong informations array size");
+
 			QString labelText("Version : ");
-			labelText += _pDBus->getNextStringArgument().c_str();
+			labelText += ret[0].c_str();
 			_daemonVersionLabel->setText(labelText);
 
 			labelText = "Version : ";
-			labelText += _pDBus->getNextStringArgument().c_str();
+			labelText += ret[1].c_str();
 			_serviceVersionLabel->setText(labelText);
 
 			labelText = "Status : started and ";
-			QString status(_pDBus->getNextStringArgument().c_str());
+			QString status(ret[2].c_str());
 			labelText += status;
 			_serviceStatusLabel->setText(labelText);
 
