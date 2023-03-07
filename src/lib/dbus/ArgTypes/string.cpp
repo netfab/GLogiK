@@ -67,6 +67,8 @@ thread_local std::string ArgString::currentString("");
 
 const std::string & ArgString::getNextStringArgument(void)
 {
+	GK_LOG_FUNC
+
 	ArgString::currentString.clear();
 
 	/* ability to send empty strings,
@@ -81,8 +83,9 @@ const std::string & ArgString::getNextStringArgument(void)
 		ArgString::currentString = ArgBase::stringArguments.back();
 		ArgBase::stringArguments.pop_back();
 
-		if( ArgString::currentString.size() != size ) {
-			LOG(warning) << "wrong string size";
+		auto s = ArgString::currentString.size();
+		if( s != size ) {
+			LOG(warning) << "current string: " << ArgString::currentString << " - size: " << s << " - expected: " << size;
 		}
 	}
 
