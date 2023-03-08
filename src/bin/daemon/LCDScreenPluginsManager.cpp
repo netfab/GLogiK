@@ -41,7 +41,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-const LCDPluginsPropertiesArray_type LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray = {};
+const LCDPPArray_type LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray = {};
 
 LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
 	:	_pFonts(&_fontsManager),
@@ -112,8 +112,7 @@ LCDScreenPluginsManager::~LCDScreenPluginsManager()
 	this->stopLCDPlugins();
 }
 
-const LCDPluginsPropertiesArray_type &
-	LCDScreenPluginsManager::getLCDPluginsProperties(void) const
+const LCDPPArray_type & LCDScreenPluginsManager::getLCDPluginsProperties(void) const
 {
 	return _pluginsPropertiesArray;
 }

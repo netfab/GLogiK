@@ -27,14 +27,14 @@
 
 #include <dbus/dbus.h>
 
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 #include "callbackEvent.hpp"
 
 
 /* two strings to array of LCD Plugins Properties */
 typedef std::function<
-	const GLogiK::LCDPluginsPropertiesArray_type (
+	const GLogiK::LCDPPArray_type (
 		const std::string&,
 		const std::string&
 	) > SIGss2aP;

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -29,16 +29,19 @@
 namespace GLogiK
 {
 
-class LCDPluginProperties
+class LCDPP
 {
 	public:
-		LCDPluginProperties()
+		LCDPP(void)
 			:	_ID(0),
 				_name("unknown"),
 				_desc("unknown") {};
-		LCDPluginProperties(const uint64_t i, const std::string & n, const std::string & d)
-			{ _ID = i; _name = n; _desc = d; }
-		~LCDPluginProperties() = default;
+		LCDPP(const uint64_t i, const std::string & n, const std::string & d)
+			:	_ID(i),
+				_name(n),
+				_desc(d)
+			{}
+		~LCDPP(void) = default;
 
 		const uint64_t getID(void) const { return _ID; }
 		const std::string & getName(void) const { return _name; }
@@ -54,7 +57,7 @@ class LCDPluginProperties
 		std::string _desc;
 };
 
-typedef std::vector<LCDPluginProperties> LCDPluginsPropertiesArray_type;
+typedef std::vector<LCDPP> LCDPPArray_type;
 
 } // namespace GLogiK
 

@@ -28,7 +28,7 @@
 #include <dbus/dbus.h>
 
 #include "include/base.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 #include "GKDBusMessage.hpp"
 
@@ -70,7 +70,7 @@ class GKDBusMessageReply
 		void appendGKeysIDArrayToReply(const GLogiK::GKeysIDArray_type & keysID);
 		void appendMKeysIDArrayToReply(const GLogiK::MKeysIDArray_type & keysID);
 		void appendMacroToReply(const GLogiK::macro_type & macro);
-		void appendLCDPluginsPropertiesArrayToReply(const GLogiK::LCDPluginsPropertiesArray_type & array);
+		void appendLCDPluginsPropertiesArrayToReply(const GLogiK::LCDPPArray_type & array);
 
 		void appendUInt64ToReply(const uint64_t value);
 

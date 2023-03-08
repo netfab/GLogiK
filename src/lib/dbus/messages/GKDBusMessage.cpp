@@ -43,7 +43,7 @@ GKDBusMessage::~GKDBusMessage()
 {
 }
 
-void GKDBusMessage::appendLCDPluginsPropertiesArray(const GLogiK::LCDPluginsPropertiesArray_type & pluginsArray)
+void GKDBusMessage::appendLCDPluginsPropertiesArray(const GLogiK::LCDPPArray_type & pluginsArray)
 {
 	this->appendLCDPluginsPropertiesArray(&_itMessage, pluginsArray);
 }
@@ -60,7 +60,7 @@ void GKDBusMessage::appendLCDPluginsPropertiesArray(const GLogiK::LCDPluginsProp
 
 void GKDBusMessage::appendLCDPluginsPropertiesArray(
 	DBusMessageIter *iter,
-	const GLogiK::LCDPluginsPropertiesArray_type & pluginsArray)
+	const GLogiK::LCDPPArray_type & pluginsArray)
 {
 	GK_LOG_FUNC
 

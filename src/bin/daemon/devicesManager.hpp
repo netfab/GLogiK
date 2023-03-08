@@ -41,7 +41,7 @@
 #include "USBDeviceID.hpp"
 
 #include "include/base.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 namespace GLogiK
 {
@@ -83,7 +83,7 @@ class DevicesManager
 		const std::string & getDeviceProduct(const std::string & devID) const;
 		const std::string & getDeviceName(const std::string & devID) const;
 		const uint64_t getDeviceCapabilities(const std::string & devID) const;
-		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+		const LCDPPArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID
 		) const;
 

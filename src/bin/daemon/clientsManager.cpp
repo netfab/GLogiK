@@ -763,8 +763,7 @@ void ClientsManager::getDeviceProperties(
 	}
 }
 
-const LCDPluginsPropertiesArray_type &
-	ClientsManager::getDeviceLCDPluginsProperties(
+const LCDPPArray_type & ClientsManager::getDeviceLCDPluginsProperties(
 		const std::string & clientID,
 		const std::string & devID)
 {

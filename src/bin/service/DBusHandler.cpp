@@ -1269,7 +1269,7 @@ const std::vector<std::string> DBusHandler::getInformations(const std::string & 
 	return ret;
 }
 
-const LCDPluginsPropertiesArray_type & DBusHandler::getDeviceLCDPluginsProperties(
+const LCDPPArray_type & DBusHandler::getDeviceLCDPluginsProperties(
 	const std::string & devID,
 	const std::string & reserved)
 {

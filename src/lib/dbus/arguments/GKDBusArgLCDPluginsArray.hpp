@@ -25,7 +25,7 @@
 #include "lib/dbus/ArgTypes/string.hpp"
 #include "lib/dbus/ArgTypes/uint64.hpp"
 
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 namespace NSGKDBus
 {
@@ -35,7 +35,7 @@ class GKDBusArgumentLCDPluginsArray
 		virtual private ArgUInt64
 {
 	public:
-		static const GLogiK::LCDPluginsPropertiesArray_type getNextLCDPluginsArrayArgument(void);
+		static const GLogiK::LCDPPArray_type getNextLCDPluginsArrayArgument(void);
 
 	protected:
 		GKDBusArgumentLCDPluginsArray(void) = default;

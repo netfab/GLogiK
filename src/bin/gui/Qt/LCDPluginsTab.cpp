@@ -31,7 +31,7 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 #include "LCDPluginsTab.hpp"
 
@@ -156,7 +156,7 @@ void LCDPluginsTab::updateTab(
 
 		try {
 			_pDBus->waitForRemoteMethodCallReply();
-			const LCDPluginsPropertiesArray_type array = _pDBus->getNextLCDPluginsArrayArgument();
+			const LCDPPArray_type array = _pDBus->getNextLCDPluginsArrayArgument();
 
 			_pPluginsTable->setRowCount( array.size() );
 

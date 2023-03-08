@@ -156,7 +156,7 @@ const PixelsData & LCDPlugin::getNextPBMFrame(
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-const LCDPluginProperties LCDPlugin::getPluginProperties(void) const
+const LCDPP LCDPlugin::getPluginProperties(void) const
 {
 	return _plugin;
 }

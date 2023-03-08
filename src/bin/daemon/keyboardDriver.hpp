@@ -44,7 +44,7 @@
 
 #include "include/enums.hpp"
 #include "include/base.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 #define DEVICE_LISTENING_THREAD_MAX_ERRORS 3
 #define unk	KEY_UNKNOWN
@@ -104,7 +104,7 @@ class KeyboardDriver
 			const uint8_t b,
 			const uint64_t LCDPluginsMask1
 		);
-		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+		const LCDPPArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID
 		) const;
 

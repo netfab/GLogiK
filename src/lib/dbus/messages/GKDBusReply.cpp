@@ -141,8 +141,7 @@ void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_type & macro)
 		_reply->appendMacro(macro);
 }
 
-void GKDBusMessageReply::appendLCDPluginsPropertiesArrayToReply(
-	const GLogiK::LCDPluginsPropertiesArray_type & array)
+void GKDBusMessageReply::appendLCDPluginsPropertiesArrayToReply(const GLogiK::LCDPPArray_type & array)
 {
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendLCDPluginsPropertiesArray(array);

@@ -39,7 +39,7 @@
 #include "include/enums.hpp"
 #include "include/base.hpp"
 #include "include/MBank.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 #include <config.h>
 
@@ -79,7 +79,7 @@ class DevicesHandler
 
 		const DevicesFilesMap_type getDevicesFilesMap(void);
 		const std::vector<std::string> getDevicesList(void);
-		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+		const LCDPPArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID
 		);
 

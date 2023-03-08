@@ -56,7 +56,7 @@ void BacklightCapability::getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) con
 
 /* -- -- -- */
 
-const LCDPluginsPropertiesArray_type LCDScreenCapability::_LCDPluginsPropertiesEmptyArray = {};
+const LCDPPArray_type LCDScreenCapability::_LCDPluginsPropertiesEmptyArray = {};
 
 LCDScreenCapability::LCDScreenCapability(void)
 	:	_LCDPluginsMask1(0)
@@ -83,12 +83,12 @@ void LCDScreenCapability::setLCDPluginsMask(
 	_LCDPluginsMask1 = mask;
 }
 
-const LCDPluginsPropertiesArray_type & LCDScreenCapability::getLCDPluginsProperties(void) const
+const LCDPPArray_type & LCDScreenCapability::getLCDPluginsProperties(void) const
 {
 	return _LCDPluginsProperties;
 }
 
-void LCDScreenCapability::setLCDPluginsProperties(const LCDPluginsPropertiesArray_type & props)
+void LCDScreenCapability::setLCDPluginsProperties(const LCDPPArray_type & props)
 {
 	_LCDPluginsProperties = props;
 }

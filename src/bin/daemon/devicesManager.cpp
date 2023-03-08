@@ -769,7 +769,7 @@ const std::string & DevicesManager::getDeviceName(const std::string & devID) con
 	return _unknown;
 }
 
-const LCDPluginsPropertiesArray_type &
+const LCDPPArray_type &
 	DevicesManager::getDeviceLCDPluginsProperties(const std::string & devID) const
 {
 	GK_LOG_FUNC

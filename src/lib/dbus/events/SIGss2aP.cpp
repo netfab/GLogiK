@@ -38,13 +38,13 @@ template <>
 {
 	ArgBase::fillInArguments(message);
 
-	GLogiK::LCDPluginsPropertiesArray_type ret;
+	GLogiK::LCDPPArray_type ret;
 
 	try {
 		const std::string arg1( ArgString::getNextStringArgument() );
 		const std::string arg2( ArgString::getNextStringArgument() );
 
-		/* call two strings to LCDPluginsProperties array callback */
+		/* call two strings to LCDPP array callback */
 		ret = this->callback(arg1, arg2);
 	}
 	catch ( const GLogiKExcept & e ) {

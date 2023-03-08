@@ -29,15 +29,15 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 /*
- * helper function rebuilding LCDPluginsPropertiesArray_type array
+ * helper function rebuilding LCDPPArray_type array
  */
-const GLogiK::LCDPluginsPropertiesArray_type GKDBusArgumentLCDPluginsArray::getNextLCDPluginsArrayArgument(void)
+const GLogiK::LCDPPArray_type GKDBusArgumentLCDPluginsArray::getNextLCDPluginsArrayArgument(void)
 {
 	GK_LOG_FUNC
 
 	GKLog(trace, "rebuilding LCDPluginsProperties vector from GKDBus values")
 
-	GLogiK::LCDPluginsPropertiesArray_type pluginsArray;
+	GLogiK::LCDPPArray_type pluginsArray;
 
 	try {
 		do {

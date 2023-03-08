@@ -35,7 +35,7 @@
 #include "lib/shared/sessionManager.hpp"
 
 #include "include/base.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 #include "devicesHandler.hpp"
 #include "GKeysEventManager.hpp"
@@ -147,7 +147,7 @@ class DBusHandler
 
 		const std::vector<std::string> getDevicesList(const std::string & reserved);
 		const std::vector<std::string> getInformations(const std::string & reserved);
-		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+		const LCDPPArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID,
 			const std::string & reserved
 		);

@@ -29,7 +29,7 @@
 
 #include "include/base.hpp"
 #include "include/MBank.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 #include "lib/dbus/ArgTypes/TypeBase.hpp"
 #include "lib/dbus/ArgTypes/boolean.hpp"
@@ -65,7 +65,7 @@ class GKDBusMessage
 {
 	public:
 		void appendLCDPluginsPropertiesArray(
-			const GLogiK::LCDPluginsPropertiesArray_type & pluginsArray
+			const GLogiK::LCDPPArray_type & pluginsArray
 		);
 
 	protected:
@@ -81,7 +81,7 @@ class GKDBusMessage
 	private:
 		void appendLCDPluginsPropertiesArray(
 			DBusMessageIter *iter,
-			const GLogiK::LCDPluginsPropertiesArray_type & pluginsArray
+			const GLogiK::LCDPPArray_type & pluginsArray
 		);
 };
 

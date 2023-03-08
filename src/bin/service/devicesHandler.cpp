@@ -26,8 +26,6 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/XTest.h>
 
-#include "include/LCDPluginProperties.hpp"
-
 #include "lib/shared/deviceConfigurationFile.hpp"
 
 #include <config.h>
@@ -438,7 +436,7 @@ void DevicesHandler::setDeviceProperties(
 			try {
 				_pDBus->waitForRemoteMethodCallReply();
 
-				const LCDPluginsPropertiesArray_type array = _pDBus->getNextLCDPluginsArrayArgument();
+				const LCDPPArray_type array = _pDBus->getNextLCDPluginsArrayArgument();
 				device.setLCDPluginsProperties(array);
 
 				GKLog3(trace, devID, " number of LCDPluginsProperties objects : ", array.size())
@@ -790,7 +788,7 @@ void DevicesHandler::doDeviceFakeKeyEvent(
 	}
 }
 
-const LCDPluginsPropertiesArray_type &
+const LCDPPArray_type &
 	DevicesHandler::getDeviceLCDPluginsProperties(
 		const std::string & devID)
 {

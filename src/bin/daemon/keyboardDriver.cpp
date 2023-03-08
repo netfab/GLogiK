@@ -902,7 +902,7 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 	}
 }
 
-const LCDPluginsPropertiesArray_type &
+const LCDPPArray_type &
 	KeyboardDriver::getDeviceLCDPluginsProperties(const std::string & devID) const
 {
 	GK_LOG_FUNC

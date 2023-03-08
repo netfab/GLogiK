@@ -5,4 +5,4 @@ EXTRA_DIST = \
 	%D%/enums.hpp \
 	%D%/base.hpp \
 	%D%/MBank.hpp \
-	%D%/LCDPluginProperties.hpp
+	%D%/LCDPP.hpp

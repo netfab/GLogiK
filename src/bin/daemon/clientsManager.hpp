@@ -36,7 +36,7 @@
 #include "client.hpp"
 
 #include "include/base.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 namespace GLogiK
 {
@@ -125,7 +125,7 @@ class ClientsManager
 			const std::string & clientID,
 			const std::string & devID
 		);
-		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+		const LCDPPArray_type & getDeviceLCDPluginsProperties(
 			const std::string & clientID,
 			const std::string & devID
 		);
