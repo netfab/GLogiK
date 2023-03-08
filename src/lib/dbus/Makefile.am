@@ -13,8 +13,6 @@ libGKDBus_la_LIBADD = \
 				libGKUtils.la
 
 libGKDBus_la_SOURCES = \
-	%D%/arguments/GKDBusArgLCDPluginsArray.cpp \
-	%D%/arguments/GKDBusArgLCDPluginsArray.hpp \
 	%D%/ArgTypes/ArgBase.cpp \
 	%D%/ArgTypes/ArgBase.hpp \
 	%D%/ArgTypes/TypeBase.cpp \
@@ -45,6 +43,8 @@ libGKDBus_la_SOURCES = \
 	%D%/ArgTypes/macro.hpp \
 	%D%/ArgTypes/DevicesMap.cpp \
 	%D%/ArgTypes/DevicesMap.hpp \
+	%D%/ArgTypes/LCDPPArray.cpp \
+	%D%/ArgTypes/LCDPPArray.hpp \
 	%D%/messages/GKDBusMessage.cpp \
 	%D%/messages/GKDBusMessage.hpp \
 	%D%/messages/GKDBusReply.cpp \

@@ -22,14 +22,7 @@
 #ifndef SRC_LIB_DBUS_MSG_GKDBUS_MESSAGE_HPP_
 #define SRC_LIB_DBUS_MSG_GKDBUS_MESSAGE_HPP_
 
-#include <string>
-#include <vector>
-
 #include <dbus/dbus.h>
-
-#include "include/base.hpp"
-#include "include/MBank.hpp"
-#include "include/LCDPP.hpp"
 
 #include "lib/dbus/ArgTypes/TypeBase.hpp"
 #include "lib/dbus/ArgTypes/boolean.hpp"
@@ -44,6 +37,7 @@
 #include "lib/dbus/ArgTypes/MKeysID.hpp"
 #include "lib/dbus/ArgTypes/MKeysIDArray.hpp"
 #include "lib/dbus/ArgTypes/macro.hpp"
+#include "lib/dbus/ArgTypes/LCDPPArray.hpp"
 
 namespace NSGKDBus
 {
@@ -61,12 +55,10 @@ class GKDBusMessage
 		public TypeGKeysIDArray,
 		public TypeMKeysID,
 		public TypeMKeysIDArray,
-		public TypeMacro
+		public TypeMacro,
+		public TypeLCDPPArray
 {
 	public:
-		void appendLCDPluginsPropertiesArray(
-			const GLogiK::LCDPPArray_type & pluginsArray
-		);
 
 	protected:
 		GKDBusMessage(
@@ -79,10 +71,7 @@ class GKDBusMessage
 		DBusMessage* _message;
 
 	private:
-		void appendLCDPluginsPropertiesArray(
-			DBusMessageIter *iter,
-			const GLogiK::LCDPPArray_type & pluginsArray
-		);
+
 };
 
 } // namespace NSGKDBus

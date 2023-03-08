@@ -156,7 +156,7 @@ void LCDPluginsTab::updateTab(
 
 		try {
 			_pDBus->waitForRemoteMethodCallReply();
-			const LCDPPArray_type array = _pDBus->getNextLCDPluginsArrayArgument();
+			const LCDPPArray_type array = _pDBus->getNextLCDPPArrayArgument();
 
 			_pPluginsTable->setRowCount( array.size() );
 

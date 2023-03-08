@@ -436,7 +436,7 @@ void DevicesHandler::setDeviceProperties(
 			try {
 				_pDBus->waitForRemoteMethodCallReply();
 
-				const LCDPPArray_type array = _pDBus->getNextLCDPluginsArrayArgument();
+				const LCDPPArray_type array = _pDBus->getNextLCDPPArrayArgument();
 				device.setLCDPluginsProperties(array);
 
 				GKLog3(trace, devID, " number of LCDPluginsProperties objects : ", array.size())

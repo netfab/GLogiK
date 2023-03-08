@@ -58,7 +58,7 @@ template <>
 
 	try {
 		this->initializeReply(connection, message);
-		this->appendLCDPluginsPropertiesArrayToReply(ret);
+		this->appendLCDPPArrayToReply(ret);
 
 		this->appendAsyncArgsToReply(asyncContainer);
 	}

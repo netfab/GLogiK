@@ -1,7 +1,5 @@
 
 GKDBus_sources = [
-	'arguments/GKDBusArgLCDPluginsArray.cpp',
-	'arguments/GKDBusArgLCDPluginsArray.hpp',
 	'ArgTypes/ArgBase.cpp',
 	'ArgTypes/ArgBase.hpp',
 	'ArgTypes/TypeBase.cpp',
@@ -32,6 +30,8 @@ GKDBus_sources = [
 	'ArgTypes/macro.hpp',
 	'ArgTypes/DevicesMap.cpp',
 	'ArgTypes/DevicesMap.hpp',
+	'ArgTypes/LCDPPArray.cpp',
+	'ArgTypes/LCDPPArray.hpp',
 	'messages/GKDBusMessage.cpp',
 	'messages/GKDBusMessage.hpp',
 	'messages/GKDBusReply.cpp',
