@@ -19,27 +19,30 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARG_DEVICES_MAP_HPP_
-#define SRC_LIB_DBUS_ARG_GKDBUS_ARG_DEVICES_MAP_HPP_
+#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_DEVICES_MAP_HPP_
+#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_DEVICES_MAP_HPP_
 
-#include "lib/dbus/ArgTypes/string.hpp"
+#include "ArgBase.hpp"
+#include "stringArray.hpp"
 
 #include "include/DeviceID.hpp"
 
 namespace NSGKDBus
 {
 
-class GKDBusArgumentDevicesMap
-	:	virtual private ArgString
+class ArgDevicesMap
+	:	virtual protected ArgBase,
+		virtual private ArgStringArray
 {
 	public:
 		static const GLogiK::DevicesMap_type getNextDevicesMapArgument(void);
 
 	protected:
-		GKDBusArgumentDevicesMap(void) = default;
-		~GKDBusArgumentDevicesMap(void) = default;
+		ArgDevicesMap(void) = default;
+		~ArgDevicesMap(void) = default;
 
 	private:
+
 };
 
 } // namespace NSGKDBus

@@ -47,8 +47,8 @@
 #include "ArgTypes/GKeysIDArray.hpp"
 #include "ArgTypes/MKeysIDArray.hpp"
 #include "ArgTypes/macro.hpp"
+#include "ArgTypes/DevicesMap.hpp"
 
-#include "arguments/GKDBusArgDevicesMap.hpp"
 #include "arguments/GKDBusArgLCDPluginsArray.hpp"
 
 namespace NSGKDBus
@@ -66,13 +66,13 @@ class GKDBus
 		public GKDBusMessageBroadcastSignal,
 		public GKDBusMessageAsyncContainer,
 		virtual public ArgString,
-		public ArgStringArray,
+		virtual public ArgStringArray,
 		public ArgBoolean,
 		virtual public ArgUInt8,
 		virtual public ArgUInt16,
 		virtual public ArgUInt64,
 		public ArgMacro,
-		public GKDBusArgumentDevicesMap,
+		public ArgDevicesMap,
 		public ArgGKeysIDArray,
 		public ArgMKeysIDArray,
 		public GKDBusArgumentLCDPluginsArray

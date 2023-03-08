@@ -96,7 +96,8 @@ void LCDScreenCapability::setLCDPluginsProperties(const LCDPluginsPropertiesArra
 /* -- -- -- */
 
 clientDevice::clientDevice()
-	:	_capabilities(0)
+	:	DeviceID("unknown", "unknown", "unknown", "unknown", "none"),
+		_capabilities(0)
 {
 }
 

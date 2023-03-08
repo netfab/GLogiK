@@ -28,20 +28,21 @@
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/access.hpp>
 
+#define DEVICE_ID_NUM_PROPERTIES 5
+
 namespace GLogiK
 {
 
 class DeviceID
 {
 	public:
-		DeviceID()
-			:	_vendor("unknown"),
-				_product("unknown"),
-				_name("unknown"),
-				_status("unknown"),
-				_filePath("none")
+		DeviceID(
+			const std::string & vendor, const std::string & product, const std::string & name,
+			const std::string & status, const std::string & path) :
+				_vendor(vendor), _product(product), _name(name),
+				_status(status), _filePath(path)
 			{}
-		~DeviceID() = default;
+		~DeviceID(void) = default;
 
 		const std::string & getVendor(void) const { return _vendor; };
 		const std::string & getProduct(void) const { return _product; };
