@@ -19,6 +19,10 @@
  *
  */
 
+#include <stdexcept>
+#include <new>
+#include <string>
+
 #include "lib/utils/utils.hpp"
 
 #include "LCDPPArray.hpp"
@@ -114,14 +118,18 @@ const GLogiK::LCDPPArray_type ArgLCDPPArray::getNextLCDPPArrayArgument(void)
 
 	GKLog(trace, "rebuilding LCDPluginsProperties vector from GKDBus values")
 
-	GLogiK::LCDPPArray_type pluginsArray;
+	const std::string rebuild_failed("rebuilding LCDPluginsProperties vector failed");
 
 	const uint64_t size = ArgUInt64::getNextUInt64Argument();
 
 	using Size = GLogiK::LCDPPArray_type::size_type;
-
 	Size i = 0;
+
+	GLogiK::LCDPPArray_type pluginsArray;
+
 	try {
+		pluginsArray.reserve(size);
+
 		while(i < size) {
 			const uint64_t id = ArgUInt64::getNextUInt64Argument();
 			const std::string name = ArgString::getNextStringArgument();
@@ -132,7 +140,15 @@ const GLogiK::LCDPPArray_type ArgLCDPPArray::getNextLCDPPArrayArgument(void)
 	}
 	catch ( const EmptyContainer & e ) {
 		LOG(warning) << "missing argument : " << e.what();
-		throw GLogiKExcept("rebuilding LCDPluginsProperties vector failed");
+		throw GLogiKExcept(rebuild_failed);
+	}
+	catch( const std::length_error & e ) {
+		LOG(warning) << "reserve length_error failure : " << e.what();
+		throw GLogiKExcept(rebuild_failed);
+	}
+	catch( const std::bad_alloc & e ) {
+		LOG(warning) << "reserve bad_alloc failure : " << e.what();
+		throw GLogiKExcept(rebuild_failed);
 	}
 
 	GKLog4(trace, "LCDPluginsProperties vector size : ", pluginsArray.size(), "expected: ", size)
