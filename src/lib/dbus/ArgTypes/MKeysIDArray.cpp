@@ -19,6 +19,10 @@
  *
  */
 
+#include <stdexcept>
+#include <new>
+#include <string>
+
 #include <dbus/dbus.h>
 
 #include "lib/utils/utils.hpp"
@@ -77,23 +81,33 @@ const GLogiK::MKeysIDArray_type ArgMKeysIDArray::getNextMKeysIDArrayArgument(voi
 
 	GKLog(trace, "rebuilding MKeysIDArray from GKDBus values")
 
+	const std::string rebuild_failed("rebuilding MKeysIDArray failed");
 	GLogiK::MKeysIDArray_type ret;
 
 	try {
-		const uint8_t size = ArgUInt8::getNextByteArgument();
+		using Size = GLogiK::MKeysIDArray_type::size_type;
 
-		bool nextRun = true;
-		do {
+		const Size size = ArgUInt8::getNextByteArgument();
+		Size i = 0;
+
+		ret.reserve(size);
+
+		while(i < size) {
 			ret.push_back(ArgMKeysID::getNextMKeysIDArgument());
-
-			if( ret.size() == size )
-				nextRun = false;
+			++i;
 		}
-		while( nextRun );
 	}
 	catch( const EmptyContainer & e ) {
 		LOG(warning) << "missing MKeysID argument : " << e.what();
-		throw GLogiKExcept("rebuilding MKeysIDArray failed");
+		throw GLogiKExcept(rebuild_failed);
+	}
+	catch( const std::length_error & e ) {
+		LOG(warning) << "reserve length_error failure : " << e.what();
+		throw GLogiKExcept(rebuild_failed);
+	}
+	catch( const std::bad_alloc & e ) {
+		LOG(warning) << "reserve bad_alloc failure : " << e.what();
+		throw GLogiKExcept(rebuild_failed);
 	}
 
 	GKLog2(trace, "MKeysIDArray size: ", ret.size())
