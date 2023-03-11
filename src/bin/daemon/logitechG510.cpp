@@ -20,6 +20,7 @@
  */
 
 #include <stdexcept>
+#include <new>
 #include <algorithm>
 #include <mutex>
 
@@ -158,28 +159,53 @@ const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const
 const MKeysIDArray_type G510Base::getMKeysIDArray(void) const
 {
 	MKeysIDArray_type ret;
-	for(const auto & key : G510Base::MKeys5BytesMap) {
-		try {
-			ret.push_back(getMKeyID(key.key));
-		}
-		catch(const std::out_of_range& oor) {
-			GKSysLogWarning("invalid key for MKeysID");
+
+	try {
+		ret.reserve(G510Base::MKeys5BytesMap.size());
+
+		for(const auto & key : G510Base::MKeys5BytesMap) {
+			try {
+				ret.push_back(getMKeyID(key.key));
+			}
+			catch(const std::out_of_range& oor) {
+				GKSysLogWarning("invalid key for MKeysID");
+			}
 		}
 	}
+	catch( const std::length_error & e ) {
+		GKSysLogError("reserve length_error failure : ", e.what());
+	}
+	catch( const std::bad_alloc & e ) {
+		GKSysLogError("reserve bad_alloc failure : ", e.what());
+	}
+
 	return ret;
 }
 
 const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 {
 	GKeysIDArray_type ret;
-	for(const auto & key : G510Base::GKeys5BytesMap) {
-		try {
-			ret.push_back(getGKeyID(key.key));
-		}
-		catch(const std::out_of_range& oor) {
-			GKSysLogWarning("invalid key for GKeysID");
+
+	try {
+		ret.reserve(G510Base::GKeys5BytesMap.size());
+
+		for(const auto & key : G510Base::GKeys5BytesMap)
+		{
+			try {
+				ret.push_back(getGKeyID(key.key));
+			}
+			catch(const std::out_of_range& oor) {
+				GKSysLogWarning("invalid key for GKeysID");
+			}
 		}
 	}
+	catch( const std::length_error & e ) {
+		GKSysLogError("reserve length_error failure : ", e.what());
+	}
+	catch( const std::bad_alloc & e ) {
+		GKSysLogError("reserve bad_alloc failure : ", e.what());
+	}
+
 	return ret;
 }
 
