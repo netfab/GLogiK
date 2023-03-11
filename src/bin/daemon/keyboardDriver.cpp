@@ -429,6 +429,16 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 	/* initializing time_point */
 	device._lastTimePoint = std::chrono::steady_clock::now();
 
+	try {
+		device._newMacro.reserve(MACRO_T_MAX_SIZE);
+	}
+	catch( const std::length_error & e ) {
+		GKSysLogError("reserve length_error failure : ", e.what());
+	}
+	catch( const std::bad_alloc & e ) {
+		GKSysLogError("reserve bad_alloc failure : ", e.what());
+	}
+
 	while( (! exit) and DaemonControl::isDaemonRunning() ) {
 		this->checkDeviceFatalErrors(device, "macro record loop");
 		if( ! device.getThreadsStatus() )
