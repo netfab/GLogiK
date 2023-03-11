@@ -22,6 +22,7 @@
 #include <utility>
 #include <exception>
 #include <stdexcept>
+#include <new>
 
 #include <X11/Xlib.h>
 #include <X11/extensions/XTest.h>
@@ -35,6 +36,8 @@
 #endif
 
 #include "devicesHandler.hpp"
+
+#include "include/DeviceID.hpp"
 
 namespace GLogiK
 {
@@ -118,22 +121,46 @@ const DevicesFilesMap_type DevicesHandler::getDevicesFilesMap(void)
 const std::vector<std::string> DevicesHandler::getDevicesList(void)
 {
 	std::vector<std::string> ret;
-	for(const auto & dev : _startedDevices) {
-		ret.push_back(dev.first);
-		ret.push_back("started");
-		ret.push_back(dev.second.getVendor());
-		ret.push_back(dev.second.getProduct());
-		ret.push_back(dev.second.getName());
-		ret.push_back(dev.second.getConfigFilePath());
+
+	try {
+		using Size = std::vector<std::string>::size_type;
+		/* assuming that we don't have millions of devices connected */
+		const Size num( _startedDevices.size() + _stoppedDevices.size() );
+
+		ret.reserve( num * (DEVICE_ID_NUM_PROPERTIES+1) );
 	}
-	for(const auto & dev : _stoppedDevices) {
-		ret.push_back(dev.first);
-		ret.push_back("stopped");
-		ret.push_back(dev.second.getVendor());
-		ret.push_back(dev.second.getProduct());
-		ret.push_back(dev.second.getName());
-		ret.push_back(dev.second.getConfigFilePath());
+	catch( const std::length_error & e ) {
+		GKSysLogError("reserve length_error failure : ", e.what());
 	}
+	catch( const std::bad_alloc & e ) {
+		GKSysLogError("reserve bad_alloc failure : ", e.what());
+	}
+
+	for(const auto & dev : _startedDevices)
+	{
+		const auto & devID = dev.first;
+		const auto & device = dev.second;
+
+		ret.push_back(devID);
+		ret.push_back("started"); // status
+		ret.push_back(device.getVendor());
+		ret.push_back(device.getProduct());
+		ret.push_back(device.getName());
+		ret.push_back(device.getConfigFilePath());
+	}
+	for(const auto & dev : _stoppedDevices)
+	{
+		const auto & devID = dev.first;
+		const auto & device = dev.second;
+
+		ret.push_back(devID);
+		ret.push_back("stopped"); // status
+		ret.push_back(device.getVendor());
+		ret.push_back(device.getProduct());
+		ret.push_back(device.getName());
+		ret.push_back(device.getConfigFilePath());
+	}
+
 	return ret;
 }
 
