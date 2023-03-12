@@ -85,7 +85,6 @@ void TypeLCDPPArray::appendLCDPPArray(DBusMessageIter *iter, const GLogiK::LCDPP
 
 			if( ! dbus_message_iter_close_container(&itArray, &itStruct) ) {
 				LOG(error) << "DBus struct close_container failure, not enough memory";
-				dbus_message_iter_abandon_container(&itArray, &itStruct);
 				throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 			}
 		}
@@ -100,7 +99,6 @@ void TypeLCDPPArray::appendLCDPPArray(DBusMessageIter *iter, const GLogiK::LCDPP
 	if( ! dbus_message_iter_close_container(iter, &itArray) ) {
 		LOG(error) << "LCDPluginsProperties array close_container failure, not enough memory";
 		_hosedMessage = true;
-		dbus_message_iter_abandon_container(iter, &itArray);
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 	}
 

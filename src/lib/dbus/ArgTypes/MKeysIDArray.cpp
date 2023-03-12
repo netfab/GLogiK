@@ -62,7 +62,6 @@ void TypeMKeysIDArray::appendMKeysIDArray(const GLogiK::MKeysIDArray_type & keys
 	if( ! dbus_message_iter_close_container(&_itMessage, &itContainer) ) {
 		LOG(error) << "MKeysID array close_container failure, not enough memory";
 		_hosedMessage = true;
-		dbus_message_iter_abandon_container(&_itMessage, &itContainer);
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 	}
 
