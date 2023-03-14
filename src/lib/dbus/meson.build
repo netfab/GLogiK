@@ -32,6 +32,8 @@ GKDBus_sources = [
 	'ArgTypes/DevicesMap.hpp',
 	'ArgTypes/LCDPPArray.cpp',
 	'ArgTypes/LCDPPArray.hpp',
+	'ArgTypes/DepsMap.cpp',
+	'ArgTypes/DepsMap.hpp',
 	'messages/GKDBusMessage.cpp',
 	'messages/GKDBusMessage.hpp',
 	'messages/GKDBusReply.cpp',

@@ -45,6 +45,8 @@ libGKDBus_la_SOURCES = \
 	%D%/ArgTypes/DevicesMap.hpp \
 	%D%/ArgTypes/LCDPPArray.cpp \
 	%D%/ArgTypes/LCDPPArray.hpp \
+	%D%/ArgTypes/DepsMap.cpp \
+	%D%/ArgTypes/DepsMap.hpp \
 	%D%/messages/GKDBusMessage.cpp \
 	%D%/messages/GKDBusMessage.hpp \
 	%D%/messages/GKDBusReply.cpp \

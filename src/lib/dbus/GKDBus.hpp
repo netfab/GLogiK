@@ -49,6 +49,7 @@
 #include "ArgTypes/macro.hpp"
 #include "ArgTypes/DevicesMap.hpp"
 #include "ArgTypes/LCDPPArray.hpp"
+#include "ArgTypes/DepsMap.hpp"
 
 namespace NSGKDBus
 {
@@ -74,7 +75,8 @@ class GKDBus
 		public ArgDevicesMap,
 		public ArgGKeysIDArray,
 		public ArgMKeysIDArray,
-		public ArgLCDPPArray
+		public ArgLCDPPArray,
+		public ArgGKDepsMap
 {
 	public:
 		GKDBus(

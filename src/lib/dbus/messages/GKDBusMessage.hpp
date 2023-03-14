@@ -38,6 +38,7 @@
 #include "lib/dbus/ArgTypes/MKeysIDArray.hpp"
 #include "lib/dbus/ArgTypes/macro.hpp"
 #include "lib/dbus/ArgTypes/LCDPPArray.hpp"
+#include "lib/dbus/ArgTypes/DepsMap.hpp"
 
 namespace NSGKDBus
 {
@@ -56,7 +57,8 @@ class GKDBusMessage
 		public TypeMKeysID,
 		public TypeMKeysIDArray,
 		public TypeMacro,
-		public TypeLCDPPArray
+		public TypeLCDPPArray,
+		public TypeGKDepsMap
 {
 	public:
 
