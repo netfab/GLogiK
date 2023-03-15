@@ -45,17 +45,19 @@ class ClientsManager
 	:	public ClientsSignals
 {
 	public:
-		ClientsManager(DevicesManager* const pDevicesManager);
+		ClientsManager(
+			NSGKDBus::GKDBus* const pDBus,
+			DevicesManager* const pDevicesManager
+		);
 		~ClientsManager(void);
 
-		void initializeDBusRequests(NSGKDBus::GKDBus* pDBus);
 		void cleanDBusRequests(void) noexcept;
 		void waitForClientsDisconnections(void) noexcept;
 
 	protected:
 
 	private:
-		NSGKDBus::GKDBus* _pDBus;
+		NSGKDBus::GKDBus* const _pDBus;
 		DevicesManager* const _pDevicesManager;
 
 		const std::string _active;
@@ -72,6 +74,8 @@ class ClientsManager
 		bool _enabledSignals; 
 
 		const std::string generateRandomClientID(void) const;
+
+		void initializeDBusRequests(void);
 
 		/* exposed over DBus */
 			/* ClientsManager D-Bus object */

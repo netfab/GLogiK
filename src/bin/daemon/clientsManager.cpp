@@ -36,8 +36,10 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-ClientsManager::ClientsManager(DevicesManager* const pDevicesManager)
-	:	_pDBus(nullptr),
+ClientsManager::ClientsManager(
+	NSGKDBus::GKDBus* const pDBus,
+	DevicesManager* const pDevicesManager
+)	:	_pDBus(pDBus),
 		_pDevicesManager(pDevicesManager),
 		_active("active"),
 		_numActive(0),
@@ -46,6 +48,8 @@ ClientsManager::ClientsManager(DevicesManager* const pDevicesManager)
 	GK_LOG_FUNC
 
 	GKLog(trace, "initializing clients manager")
+
+	this->initializeDBusRequests();
 }
 
 ClientsManager::~ClientsManager()
@@ -68,10 +72,8 @@ ClientsManager::~ClientsManager()
 	GKLog(trace, "exiting clients manager")
 }
 
-void ClientsManager::initializeDBusRequests(NSGKDBus::GKDBus* pDBus)
+void ClientsManager::initializeDBusRequests(void)
 {
-	_pDBus = pDBus;
-
 	/* clients manager DBus object and interface */
 	const auto & CM_object = GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT;
 	const auto & CM_interf = GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
