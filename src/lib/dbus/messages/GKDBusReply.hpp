@@ -71,6 +71,7 @@ class GKDBusMessageReply
 		void appendMKeysIDArrayToReply(const GLogiK::MKeysIDArray_type & keysID);
 		void appendMacroToReply(const GLogiK::macro_type & macro);
 		void appendLCDPPArrayToReply(const GLogiK::LCDPPArray_type & array);
+		void appendGKDepsMapToReply(const GLogiK::GKDepsMap_type & depsMap);
 
 		void appendUInt64ToReply(const uint64_t value);
 

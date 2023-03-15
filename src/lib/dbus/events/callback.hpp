@@ -43,10 +43,12 @@
 // "M" - Macro
 // "B" - Bank (mBank_type)
 // "P" - LCD Plugins Properties
+// "D" - GKDepsMap_type
 
 #include "SIGas2v.hpp"    //         array of string to void
 #include "SIGs2as.hpp"    //       string to array of string
 #include "SIGs2b.hpp"     //                  string to bool
+#include "SIGs2D.hpp"     //        string to GKDepsMap_type
 #include "SIGs2s.hpp"     //                string to string
 #include "SIGs2v.hpp"     //                  string to void
 #include "SIGsG2v.hpp"    // one string one G-KeyID to void

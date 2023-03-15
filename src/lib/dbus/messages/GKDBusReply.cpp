@@ -147,6 +147,12 @@ void GKDBusMessageReply::appendLCDPPArrayToReply(const GLogiK::LCDPPArray_type &
 		_reply->appendLCDPPArray(array);
 }
 
+void GKDBusMessageReply::appendGKDepsMapToReply(const GLogiK::GKDepsMap_type & depsMap)
+{
+	if(_reply != nullptr) /* sanity check */
+		_reply->appendGKDepsMap(depsMap);
+}
+
 void GKDBusMessageReply::appendUInt64ToReply(const uint64_t value)
 {
 	if(_reply != nullptr) /* sanity check */
