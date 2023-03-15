@@ -37,6 +37,7 @@
 
 #include "include/base.hpp"
 #include "include/LCDPP.hpp"
+#include "include/DepsMap.hpp"
 
 namespace GLogiK
 {
@@ -47,7 +48,8 @@ class ClientsManager
 	public:
 		ClientsManager(
 			NSGKDBus::GKDBus* const pDBus,
-			DevicesManager* const pDevicesManager
+			DevicesManager* const pDevicesManager,
+			GKDepsMap_type* const pDepsMap
 		);
 		~ClientsManager(void);
 
@@ -59,6 +61,7 @@ class ClientsManager
 	private:
 		NSGKDBus::GKDBus* const _pDBus;
 		DevicesManager* const _pDevicesManager;
+		GKDepsMap_type* const _pDepsMap;
 
 		const std::string _active;
 		std::map<std::string, Client*> _connectedClients;

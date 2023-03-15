@@ -38,9 +38,11 @@ using namespace NSGKUtils;
 
 ClientsManager::ClientsManager(
 	NSGKDBus::GKDBus* const pDBus,
-	DevicesManager* const pDevicesManager
+	DevicesManager* const pDevicesManager,
+	GKDepsMap_type* const pDepsMap
 )	:	_pDBus(pDBus),
 		_pDevicesManager(pDevicesManager),
+		_pDepsMap(pDepsMap),
 		_active("active"),
 		_numActive(0),
 		_enabledSignals(true)

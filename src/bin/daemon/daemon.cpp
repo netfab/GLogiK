@@ -209,7 +209,7 @@ int GLogiKDaemon::run(void)
 #if GKDBUS
 		devicesManager.setDBus(&DBus);
 
-		ClientsManager clientsManager(&DBus, &devicesManager);
+		ClientsManager clientsManager(&DBus, &devicesManager, &dependencies);
 #endif
 
 		try {
