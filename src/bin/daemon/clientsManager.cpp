@@ -36,7 +36,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-ClientsManager::ClientsManager(DevicesManager* pDevicesManager)
+ClientsManager::ClientsManager(DevicesManager* const pDevicesManager)
 	:	_pDBus(nullptr),
 		_pDevicesManager(pDevicesManager),
 		_active("active"),

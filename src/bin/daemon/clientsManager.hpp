@@ -45,7 +45,7 @@ class ClientsManager
 	:	public ClientsSignals
 {
 	public:
-		ClientsManager(DevicesManager* pDevicesManager);
+		ClientsManager(DevicesManager* const pDevicesManager);
 		~ClientsManager(void);
 
 		void initializeDBusRequests(NSGKDBus::GKDBus* pDBus);
@@ -56,7 +56,7 @@ class ClientsManager
 
 	private:
 		NSGKDBus::GKDBus* _pDBus;
-		DevicesManager* _pDevicesManager;
+		DevicesManager* const _pDevicesManager;
 
 		const std::string _active;
 		std::map<std::string, Client*> _connectedClients;
