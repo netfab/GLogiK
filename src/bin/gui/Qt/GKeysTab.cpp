@@ -19,6 +19,7 @@
  *
  */
 
+#include <new>
 #include <string>
 
 #include <QColor>
@@ -677,10 +678,25 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 		} //
 
 		/* -- -- -- */
-		// redrawing left panel
 
 		const banksMap_type & banks = device.getBanks();
 		const mBank_type & bank = banks.at(_currentBankID);
+
+		{ /* increasing vector's capacity before drawing {M,G}Keys layouts */
+			using Size = std::vector<QPushButton*>::size_type;
+			/* assuming that we don't have millions of keys */
+			const Size num( banks.size() + bank.size() );
+
+			try {
+				_buttonsSignalsToClear.reserve(num);
+			}
+			catch( const std::length_error & e ) {
+				LOG(error) << "reserve length_error failure : " << e.what();
+			}
+			catch( const std::bad_alloc & e ) {
+				LOG(error) << "reserve bad_alloc failure : " << e.what();
+			}
+		}
 
 		//for(const auto & GMacroPair : bank) {
 		//	LOG(trace)	<< "key|size: " << getGKeyName(GMacroPair.first)
@@ -690,10 +706,13 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 		if( (bank.size() % keysPerLine) != 0 )
 			throw GLogiKExcept("G-Keys modulo not null");
 
+		/* -- -- -- */
+		// redrawing left panel
+
 		this->clearKeysBoxLayout();
 
 		try {
-			{	// initialize M-keys layout
+			{	// initialize MKeys layout
 				std::vector<MKeysID> ids;
 				for(const auto & idBankPair : banks) {
 					const MKeysID & bankID = idBankPair.first;
@@ -706,7 +725,7 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 			_pKeysBoxLayout->addSpacing(10);
 			unsigned short c = 0;
 
-			/* G-keys layouts */
+			/* GKeys layouts */
 			for(unsigned short i = 0; i < (bank.size() / keysPerLine); ++i)
 			{
 				mBank_type::const_iterator it1 = bank.begin();
