@@ -22,12 +22,15 @@
 #ifndef SRC_BIN_GUI_QT_TAB_HPP_
 #define SRC_BIN_GUI_QT_TAB_HPP_
 
+#include <string>
+
 #include <QLayout>
 #include <QWidget>
 #include <QFrame>
 #include <QPushButton>
 
 #include "lib/dbus/GKDBus.hpp"
+#include "lib/shared/deviceProperties.hpp"
 
 #define LogRemoteCallFailure \
 	LOG(critical) << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
@@ -49,7 +52,7 @@ class Tab
 		Tab() = delete;
 
 		virtual void buildTab(void) = 0;
-		virtual void updateTab(void) {};
+		virtual void updateTab(const DeviceProperties & device, const std::string & devID) = 0;
 
 		QFrame* getHLine(void);
 		QFrame* getVLine(void);

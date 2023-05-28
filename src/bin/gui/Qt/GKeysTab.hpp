@@ -63,7 +63,11 @@ class GKeysTab
 #endif
 
 		void buildTab(void);
-		void updateTab(const DeviceProperties & device, const MKeysID bankID);
+		void updateTab(
+			const DeviceProperties & device,
+			const std::string & devID
+		);
+
 		void getGKeyEventParams(
 			MKeysID & bankID,
 			GKeysID & GKeyID,
@@ -117,6 +121,7 @@ class GKeysTab
 		void updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID);
 		void switchGKeyEventType(const DeviceProperties & device, const GKeysID GKeyID);
 
+		void updateAndRedrawTab(const DeviceProperties & device, const MKeysID bankID);
 		void redrawTab(const DeviceProperties & device);
 
 		static const std::map<const MKeysID, c_str> bankNames;

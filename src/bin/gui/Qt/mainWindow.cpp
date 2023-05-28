@@ -562,8 +562,6 @@ void MainWindow::updateInterface(int index)
 				const DeviceID & device = _devices.at(_devID);
 				const bool status = (device.getStatus() == "started");
 
-				_deviceControlTab->updateTab(_devID, status);
-
 				if(status) {
 					_configurationFilePath = _configurationRootDirectory;
 					_configurationFilePath /= device.getVendor();
@@ -575,12 +573,20 @@ void MainWindow::updateInterface(int index)
 					_openedConfigurationFile.setConfigFilePath(device.getConfigFilePath());
 					DeviceConfigurationFile::load(_configurationFilePath.string(), _openedConfigurationFile);
 
-					_backlightColorTab->updateTab(_openedConfigurationFile);
-
-					_LCDPluginsTab->updateTab(_devID, _openedConfigurationFile);
-					// updating GKeysTab and resetting bankID
-					_GKeysTab->updateTab(_openedConfigurationFile, MKeysID::MKEY_M0);
 				}
+
+				/* device status always required by deviceControlTab */
+				_openedConfigurationFile.setStatus(device.getStatus());
+
+				/* updating and enabling/disabling tabs */
+				_deviceControlTab->updateTab(_openedConfigurationFile, _devID);
+
+				if(status) {
+					_backlightColorTab->updateTab(_openedConfigurationFile, _devID);
+					_LCDPluginsTab->updateTab(_openedConfigurationFile, _devID);
+					_GKeysTab->updateTab(_openedConfigurationFile, _devID);
+				}
+
 				this->setTabEnabled("BacklightColor", status);
 				this->setTabEnabled("LCDPlugins", status);
 				this->setTabEnabled("GKeys", status);

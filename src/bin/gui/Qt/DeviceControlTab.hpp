@@ -30,6 +30,7 @@
 #include <QLabel>
 
 #include "lib/dbus/GKDBus.hpp"
+#include "lib/shared/deviceProperties.hpp"
 
 #include "Tab.hpp"
 
@@ -50,9 +51,10 @@ class DeviceControlTab
 
 		void buildTab(void);
 		void updateTab(
-			const std::string & devID,
-			const bool status
+			const DeviceProperties & device,
+			const std::string & devID
 		);
+
 		void disableAndHide(void);
 
 	private:

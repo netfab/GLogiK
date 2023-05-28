@@ -22,9 +22,13 @@
 #ifndef SRC_BIN_GUI_QT_DAEMON_AND_SERVICE_TAB_HPP_
 #define SRC_BIN_GUI_QT_DAEMON_AND_SERVICE_TAB_HPP_
 
+#include <string>
+
 #include <QPushButton>
 #include <QLabel>
 #include <QString>
+
+#include "lib/shared/deviceProperties.hpp"
 
 #include "Tab.hpp"
 
@@ -42,7 +46,13 @@ class DaemonAndServiceTab
 		~DaemonAndServiceTab();
 
 		void buildTab(void);
+
+		void updateTab(const DeviceProperties & device,	const std::string & devID)
+		{
+			this->updateTab();
+		}
 		void updateTab(void);
+
 		const bool isServiceStarted(void) const;
 		const bool isServiceRegistered(void) const;
 

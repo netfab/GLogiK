@@ -144,8 +144,8 @@ void DeviceControlTab::setVisibility(const bool visibility)
 }
 
 void DeviceControlTab::updateTab(
-	const std::string & devID,
-	const bool status)
+	const DeviceProperties & device,
+	const std::string & devID)
 {
 	GK_LOG_FUNC
 
@@ -153,7 +153,7 @@ void DeviceControlTab::updateTab(
 
 	_devID = devID;
 
-	if(status) { /* device status == "started" */
+	if(device.getStatus() == "started") {
 		_pStartButton->setEnabled(false);
 		_pStopButton->setEnabled(true);
 		_pRestartButton->setEnabled(true);

@@ -134,9 +134,11 @@ void BacklightColorTab::disableApplyButton(void)
 	_pApplyButton->setEnabled(false);
 }
 
-void BacklightColorTab::updateTab(const DeviceProperties & device)
+void BacklightColorTab::updateTab(const DeviceProperties & device, const std::string & devID)
 {
 	GK_LOG_FUNC
+
+	GKLog2(trace, "updating BacklightColorTab, device ", devID)
 
 	uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 	QColor color(r, g, b);

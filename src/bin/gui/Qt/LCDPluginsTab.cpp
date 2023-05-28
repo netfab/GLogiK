@@ -130,8 +130,8 @@ void LCDPluginsTab::buildTab(void)
 }
 
 void LCDPluginsTab::updateTab(
-	const std::string & devID,
-	const DeviceProperties & device)
+	const DeviceProperties & device,
+	const std::string & devID)
 {
 	GK_LOG_FUNC
 

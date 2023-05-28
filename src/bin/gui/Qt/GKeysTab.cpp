@@ -201,12 +201,17 @@ void GKeysTab::buildTab(void)
 	}
 }
 
-void GKeysTab::updateTab(const DeviceProperties & device, const MKeysID bankID)
+void GKeysTab::updateTab(const DeviceProperties & device, const std::string & devID)
+{
+	// updating GKeysTab and resetting bankID
+	this->updateAndRedrawTab(device, MKeysID::MKEY_M0);
+}
+
+void GKeysTab::updateAndRedrawTab(const DeviceProperties & device, const MKeysID bankID)
 {
 	GK_LOG_FUNC
 
 	_currentBankID = (_currentBankID == bankID) ? MKeysID::MKEY_M0 : bankID;
-
 	this->setApplyButtonStatus(false);
 
 	/* exceptions can be thrown from QPushButton::clicked events
@@ -359,7 +364,7 @@ void GKeysTab::setGKeyEventParams(
 {
 	GK_LOG_FUNC
 
-	/* _currentBankID is set in updateTab() */
+	/* _currentBankID is set in updateAndRedrawTab() */
 	_newEventType = eventType;
 	_currentGKeyID = GKeyID;
 
@@ -600,7 +605,7 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 		button->setObjectName(keyName);
 		button->setFixedWidth(32);
 
-		QObject::connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateTab, this, device, bankID) );
+		QObject::connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateAndRedrawTab, this, device, bankID) );
 		_buttonsSignalsToClear.push_back(button);
 
 		GKLog2(trace, "allocated M-Key QPushButton ", keyName.toStdString())

@@ -47,7 +47,8 @@ class BacklightColorTab
 
 		void buildTab(void);
 		void updateTab(
-			const DeviceProperties & device
+			const DeviceProperties & device,
+			const std::string & devID
 		);
 
 		const QColor & getAndSetNewColor(void);
