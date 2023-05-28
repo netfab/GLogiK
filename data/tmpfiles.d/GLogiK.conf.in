@@ -1,1 +1,2 @@
 d @DEBUG_DIR@ 0770 @GLOGIKD_USER@ @GLOGIKD_GROUP@ - -
+d /run/glogikd 0750 @GLOGIKD_GROUP@ - - -
