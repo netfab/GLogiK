@@ -1,6 +1,6 @@
 option('dbus', type: 'boolean', value: true, description: 'D-Bus support')
 option('daemon_user', type: 'string', value: 'glogikd', description: 'GLogiK daemon user')
-option('daemon_group', type: 'string', value: 'usb', description: 'GLogiK daemon group')
+option('daemon_group', type: 'string', value: 'glogikd', description: 'GLogiK daemon group')
 option('debug_gkdbus', type: 'boolean', value: false, description: 'GKDBus extra debugging. default: no')
 option('debug_keys', type: 'boolean', value: false, description: 'Keys extra debugging. default: no')
 option('debug_libusb', type: 'boolean', value: false, description: 'Libusb extra debugging. default: no')
