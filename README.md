@@ -71,6 +71,7 @@ For desktop users, see also :
 
 D-Bus support is required to build and run desktop binaries.
 
-Users who wants to run the GLogiKs desktop service must be in the glogiks
-group (or whatever is defined with the above option).
+Users who wants to run the GLogiKs desktop service must be in the following groups :
+ * glogiks (or whatever is defined with the above option)
+ * input (to gain write access to /dev/uinput)
 
