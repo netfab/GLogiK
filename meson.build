@@ -198,6 +198,7 @@ endif
 
 subdir('src/bin/daemon')
 subdir('data/init')
+subdir('data/tmpfiles.d')
 subdir('data/udev')
 
 subdir('data/pbm')
@@ -245,10 +246,6 @@ if enable_dbus
       subdir('data/icons')
     endif
   endif
-endif
-
-if enable_debug
-	subdir('data/tmpfiles.d')
 endif
 
 #! ----------
