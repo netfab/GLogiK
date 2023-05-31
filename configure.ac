@@ -415,6 +415,7 @@ AC_CONFIG_FILES([
 	Makefile
 	data/init/openrc/glogikd
 	data/udev/99-GLogiK.rules
+	data/sysusers.d/GLogiK.conf
 	data/tmpfiles.d/GLogiK.conf
 	])
 

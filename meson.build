@@ -198,6 +198,7 @@ endif
 
 subdir('src/bin/daemon')
 subdir('data/init')
+subdir('data/sysusers.d')
 subdir('data/tmpfiles.d')
 subdir('data/udev')
 
