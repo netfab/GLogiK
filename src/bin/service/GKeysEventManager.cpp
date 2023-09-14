@@ -223,9 +223,7 @@ void GKeysEventManager::spawnProcess(const std::string & command)
 
 		GKLog4(trace, "spawning: ", exe, "with args size: ", args.size())
 
-		bp::group g;
-		bp::spawn(p, bp::args(args), g);
-		g.wait();
+		bp::spawn(p, bp::args(args));
 	}
 	catch (const bp::process_error & e) {
 		LOG(error) << "exception catched while trying to spawn process: " << command;
