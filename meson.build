@@ -110,7 +110,7 @@ glogiks_group = get_option('desktop_service_group')
 
 #! ----------
 
-debug_dir = '/var/tmp/GKDebug'
+gk_logdir = '/var/log/GLogiK'
 
 define_array = [
   ['PACKAGE', meson.project_name()],
@@ -118,7 +118,7 @@ define_array = [
   ['PACKAGE_URL', 'https://glogik.tuxfamily.org/'],
   ['PACKAGE_VERSION', meson.project_version()],
   ['VERSION', meson.project_version()],
-  ['DEBUG_DIR', debug_dir],
+  ['GK_LOGDIR', gk_logdir],
   ['GLOGIKD_USER', glogikd_user],
   ['GLOGIKD_GROUP', glogikd_group],
   ['DATA_DIR', gk_datadir],
@@ -181,7 +181,7 @@ cdata.set('INIT_NEED_DBUS', 'dbus')
 cdata.set('DEVICES_MODE', '0660')
 cdata.set('GLOGIKD_GROUP', glogikd_group)
 #! used by data/tmpfiles.d
-cdata.set('DEBUG_DIR', debug_dir)
+cdata.set('GK_LOGDIR', gk_logdir)
 
 #! ----------
 deps_versions_array = []

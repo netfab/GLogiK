@@ -1,7 +1,7 @@
 SHELL = /bin/sh
 top_srcdir = $(CURDIR)/..
 PREFIX_DEV_DIR=/var/tmp/devcxx
-DEBUG_LOGS_DIR=/var/tmp/GKDebug
+GK_LOGDIR=/var/log/GLogiK
 
 build_dir=$(PREFIX_DEV_DIR)/build
 PREFIX_DIR=$(PREFIX_DEV_DIR)/GLogiK
@@ -86,7 +86,6 @@ ifeq ($(strip $(DEBUG_BUILD)),)
 # -- -- --
 # -- -- -- DEBUG OFF, STRIPPED BUILD
 # -- -- --
-# DEBUG_DIR=$(DEBUG_LOGS_DIR) \
 
 configure_it: init_it autoreconf_it
 	cd $(build_dir) && $(top_srcdir)/configure \
@@ -112,7 +111,6 @@ else
 # -- -- --
 # -- -- -- DEBUG ON, UNSTRIPPED
 # -- -- --
-# DEBUG_DIR=$(DEBUG_LOGS_DIR) \
 
 configure_it: init_it autoreconf_it
 	cd $(build_dir) && $(top_srcdir)/configure \
@@ -131,8 +129,8 @@ configure_it: init_it autoreconf_it
 	--docdir=$(PREFIX_DIR)/share/doc/GLogiK-9999
 
 install_it: uninstall_it
-	test -d "$(DEBUG_LOGS_DIR)" && \
-		find $(DEBUG_LOGS_DIR) -maxdepth 1 -type f -name 'G*.log' -mmin +180 -delete || echo 'no debug directory'
+	test -d "$(GK_LOGDIR)" && \
+		find $(GK_LOGDIR) -maxdepth 1 -type f -name 'G*.log' -mmin +180 -delete || echo 'no debug directory'
 	cd $(build_dir) && make install
 
 endif

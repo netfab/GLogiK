@@ -132,7 +132,7 @@ void GKLogging::initDebugFile(const std::string & baseName, const fs::perms prms
 
 	fs::path debugFile;
 	{
-		fs::path tmpPath(DEBUG_DIR);
+		fs::path tmpPath(GK_LOGDIR);
 		{
 			chr::seconds s = chr::duration_cast< chr::seconds >(
 				chr::system_clock::now().time_since_epoch()

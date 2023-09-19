@@ -93,8 +93,6 @@ GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
 
 #if DEBUGGING_ON
 		if(GKLogging::GKDebug) {
-			FileSystem::createDirectory(DEBUG_DIR, fs::owner_all | fs::group_all);
-
 			GKLogging::initDebugFile("GLogiKd", fs::owner_read|fs::owner_write|fs::group_read);
 
 			FileSystem::traceLastDirectoryCreation();

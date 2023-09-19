@@ -294,8 +294,8 @@ dnl -------------------------------------------------------------------------
 dnl                       defining custom macro variables
 dnl -------------------------------------------------------------------------
 
-AC_SUBST(DEBUG_DIR, ["/var/tmp/GKDebug"])
-AC_DEFINE_UNQUOTED([DEBUG_DIR], ["${DEBUG_DIR}"], [Directory for debug file])
+AC_SUBST(GK_LOGDIR, ["/var/log/GLogiK"])
+AC_DEFINE_UNQUOTED([GK_LOGDIR], ["${GK_LOGDIR}"], [Directory for debug file])
 
 AC_DEFINE_UNQUOTED([DATA_DIR], ["${prefix}/share"], [Root directory for data files installation])
 AC_DEFINE_UNQUOTED([DOC_DIR], ["${docdir}"], [Directory for documentation files installation])
@@ -502,7 +502,7 @@ AC_MSG_NOTICE([
             libusb : ${enable_libusb_extra_debugging}
            PBMFont : ${enable_pbmfont_debugging}
        LCD plugins : ${enable_lcd_plugins_debugging}
-         debug dir : ${DEBUG_DIR}
+     Log directory : ${GK_LOGDIR}
 --------------------------------------------------------------
 
 ])
