@@ -200,7 +200,7 @@ void GKeysEventManager::spawnProcess(const std::string & command)
 {
 	GK_LOG_FUNC
 
-	GKLog2(trace, "command line: ", command)
+	LOG(info) << "spawning process: " << command;
 
 	std::string exe;
 	std::vector<std::string> args;
