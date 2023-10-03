@@ -279,8 +279,11 @@ void GLogiKDaemon::createPIDFile(void) {
 
 	try {
 		if( fs::exists(PIDFile) ) {
-			throwError("already exist");
+			throw GLogiKExcept("already exist");
 		}
+	}
+	catch (const GLogiKExcept & e) {
+		throwError(e.what());
 	}
 	catch (const fs::filesystem_error & e) {
 		throwError("boost::filesystem error", e.what());
