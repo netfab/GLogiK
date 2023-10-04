@@ -32,7 +32,7 @@
 #include <type_traits>
 #include <chrono>
 
-#include "GKLogging.hpp"
+//#include "GKLogging.hpp"
 
 namespace NSGKUtils
 {
@@ -54,7 +54,7 @@ const size_t safeAdvance(Iterator & it, const Iterator & end,
 		if(it == end)
 			break;
 	}
-	GKLog2(trace, "undone steps: ", (n - i))
+	//GKLog2(trace, "undone steps: ", (n - i))
 	return (n - i);
 }
 

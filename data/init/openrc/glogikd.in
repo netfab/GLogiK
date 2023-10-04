@@ -1,5 +1,5 @@
 #!/sbin/openrc-run
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 command=/usr/sbin/GLogiKd
@@ -8,21 +8,13 @@ description="Daemon to handle special features on gaming keyboard"
 description_start="Start the GLogiK daemon"
 description_stop="Stop the GLogiK daemon"
 
-rundir=/run/glogikd
-pidfile="${rundir}/glogikd.pid"
-command_args="-d -p ${pidfile}"
+# The special RC_SVCNAME variable contains the name of this service.
+pidfile="/run/${RC_SVCNAME}.pid"
 
-runas_user=glogikd:root
+command_args="-d -p ${pidfile}"
 
 depend() {
 	use logger
 	after bootmisc
 	need localmount @INIT_NEED_DBUS@
 }
-
-start_pre() {
-	mkdir -p "${rundir}"
-	checkpath --directory --owner "${runas_user}" \
-		--mode 0750 "${rundir}"
-}
-

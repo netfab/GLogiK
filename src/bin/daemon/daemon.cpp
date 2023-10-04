@@ -81,16 +81,24 @@ GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
 
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 
-	// drop privileges before doing anything else
-	this->dropPrivileges();
-
 	/* -- -- -- */
 
-	// initialize logging
 	try {
 		/* boost::po may throw */
 		this->parseCommandLine(argc, argv);
 
+		if( GLogiKDaemon::isDaemonRunning() ) {
+			_pid = detachProcess(true);
+			syslog(LOG_INFO, "process successfully daemonized");
+
+			/* create PID file before dropping privileges */
+			this->createPIDFile();
+		}
+
+		this->dropPrivileges();
+
+		/* initialize logging */
+		/* -- -- -- */
 #if DEBUGGING_ON
 		if(GKLogging::GKDebug) {
 			GKLogging::initDebugFile("GLogiKd", fs::owner_read|fs::owner_write|fs::group_read);
@@ -101,13 +109,24 @@ GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
 			GKLogging::initConsoleLog();
 		}
 
+		/* -- -- -- */
+
 		GKSysLogInfo("successfully dropped root privileges");
+
+		if( GLogiKDaemon::isDaemonRunning() ) {
+			GKLog2(info, "created PID file : ", _pidFileName)
+
+			// TODO handle return values and errno ?
+			std::signal(SIGINT, GLogiKDaemon::handleSignal);
+			std::signal(SIGTERM, GLogiKDaemon::handleSignal);
+			//std::signal(SIGHUP, GLogiKDaemon::handleSignal);
+		}
 	}
 	catch (const std::exception & e) {
 		syslog(LOG_ERR, "%s", e.what());
-		syslog(LOG_ERR, "%s", "debug file not opened");
 		throw InitFailure();
 	}
+
 }
 
 GLogiKDaemon::~GLogiKDaemon()
@@ -115,24 +134,6 @@ GLogiKDaemon::~GLogiKDaemon()
 	GK_LOG_FUNC
 
 	GKLog(trace, "exiting daemon process")
-
-	try {
-		if( _PIDFileCreated && fs::is_regular_file(_pidFileName) ) {
-			GKLog(info, "destroying PID file")
-			if( unlink(_pidFileName.c_str()) != 0 ) {
-				GKSysLogError("failed to unlink PID file");
-			}
-			else
-				_PIDFileCreated = false;
-		}
-	}
-	catch (const fs::filesystem_error & e) {
-		GKSysLogError("boost::filesystem::is_regular_file() : ", e.what());
-	}
-	catch (const std::exception & e) {
-		GKSysLogError("error destroying PID file : ", e.what());
-	}
-
 	GKSysLogInfo("bye !");
 
 	closelog();
@@ -184,17 +185,6 @@ int GLogiKDaemon::run(void)
 	}
 
 	if( GLogiKDaemon::isDaemonRunning() ) {
-
-		_pid = detachProcess(true);
-		syslog(LOG_INFO, "process successfully daemonized");
-
-		this->createPIDFile();
-
-		// TODO handle return values and errno ?
-		std::signal(SIGINT, GLogiKDaemon::handleSignal);
-		std::signal(SIGTERM, GLogiKDaemon::handleSignal);
-		//std::signal(SIGHUP, GLogiKDaemon::handleSignal);
-
 #if GKDBUS
 		NSGKDBus::GKDBus DBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
 		DBus.connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
@@ -315,8 +305,6 @@ void GLogiKDaemon::createPIDFile(void) {
 	}
 
 	_PIDFileCreated = true;
-
-	GKLog2(info, "created PID file : ", _pidFileName)
 }
 
 void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[])

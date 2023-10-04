@@ -1,6 +1,7 @@
 
 0.8.18 (202x-xx-xx)
 ===================
+- Reworked daemon initialization (create PID file as root)
 - Added new coretemp LCD plugin
 - Added desktop notifications support using libnotify
 - Added running command feature from GKey event

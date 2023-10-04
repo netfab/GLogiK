@@ -1,2 +1,1 @@
 d @GK_LOGDIR@ 0770 @GLOGIKD_USER@ @GLOGIKS_GROUP@ - -
-d /run/glogikd 0750 @GLOGIKD_GROUP@ - - -
