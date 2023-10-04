@@ -116,10 +116,19 @@ GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
 		if( GLogiKDaemon::isDaemonRunning() ) {
 			GKLog2(info, "created PID file : ", _pidFileName)
 
-			// TODO handle return values and errno ?
-			std::signal(SIGINT, GLogiKDaemon::handleSignal);
-			std::signal(SIGTERM, GLogiKDaemon::handleSignal);
-			//std::signal(SIGHUP, GLogiKDaemon::handleSignal);
+			auto setSignal = [] (int signum) -> void {
+				const std::string sigdesc(toString(sigabbrev_np(signum)));
+				if(sigdesc.empty())
+					throw GLogiKExcept("invalid signal number");
+				GKLog2(trace, "setting signal handler: ", sigdesc)
+				if(std::signal(signum, GLogiKDaemon::handleSignal) == SIG_ERR) {
+					GKSysLogError("std::signal failure: ", sigdesc);
+				}
+			};
+
+			setSignal(SIGINT);
+			setSignal(SIGTERM);
+			//setSignal(SIGHUP);
 		}
 	}
 	catch (const std::exception & e) {
@@ -236,18 +245,31 @@ int GLogiKDaemon::run(void)
 void GLogiKDaemon::handleSignal(int sig) {
 	GK_LOG_FUNC
 
-	std::ostringstream buffer("caught signal : ", std::ios_base::app);
+	std::ostringstream buffer("caught signal: ", std::ios_base::app);
+	std::string sigdesc("");
+	try {
+		sigdesc = toString(sigabbrev_np(sig));
+		if(sigdesc.empty())
+			sigdesc = "invalid signal number";
+	}
+	catch (const GLogiKExcept & e) {
+		std::string warn("string conversion exception: ");
+		warn += e.what();
+		GKSysLogWarning(warn);
+		sigdesc = warn;
+	}
+
 	switch( sig ) {
 		case SIGINT:
 		case SIGTERM:
-			buffer << sig << " --> bye bye";
+			buffer << sigdesc << "(" << sig << ")" << " --> bye bye";
 			GKSysLogInfo(buffer.str());
 			std::signal(SIGINT, SIG_DFL);
 			std::signal(SIGTERM, SIG_DFL);
 			GLogiKDaemon::exitDaemon();
 			break;
 		default:
-			buffer << sig << " --> unhandled";
+			buffer << sigdesc << "(" << sig << ")" << " --> unhandled";
 			GKSysLogWarning(buffer.str());
 			break;
 	}
