@@ -94,7 +94,7 @@ const std::string DevicesManager::getLibudevVersion(void)
 	GK_LOG_FUNC
 
 	std::vector<std::string> data;
-	std::string ret;
+	std::string ret("error");
 
 	try {
 		bp::ipstream is;
@@ -107,12 +107,13 @@ const std::string DevicesManager::getLibudevVersion(void)
 		}
 
 		GKLog(trace, "running udevadm --version")
-		bp::child c(p, "--version", bp::std_out > is);
+		const int result = bp::system(p, "--version", bp::std_out > is);
+		if(result != 0) {
+			GKSysLogWarning("udevadm --version returned non-zero value");
+		}
 
-		while(c.running() && std::getline(is, line) && !line.empty())
+		while(std::getline(is, line) && !line.empty())
 			data.push_back(line);
-
-		c.wait();
 	}
 	catch (const bp::process_error & e) {
 		GKSysLogError("exception catched while trying to run udevadm process");
