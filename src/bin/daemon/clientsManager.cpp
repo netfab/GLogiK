@@ -111,6 +111,12 @@ void ClientsManager::initializeDBusRequests(void)
 			{"b", "did_updateclientstate_succeeded", dOUT, "did the UpdateClientState method succeeded ?"} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 
+	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
+		_systemBus, CM_object, CM_interf, "ToggleClientReadyPropertie",
+		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
+			{"b", "did_method_succeeded", dOUT, "did the method succeeded ?"} },
+		std::bind(&ClientsManager::toggleClientReadyPropertie, this, std::placeholders::_1) );
+
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
 		_systemBus, CM_object, CM_interf, "DeleteDeviceConfiguration",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
@@ -118,11 +124,11 @@ void ClientsManager::initializeDBusRequests(void)
 			{"b", "did_deletedeviceconfiguration_succeeded", dOUT, "did the DeleteDeviceConfiguration method succeeded ?"} },
 		std::bind(&ClientsManager::deleteDeviceConfiguration, this, std::placeholders::_1, std::placeholders::_2) );
 
-	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
-		_systemBus, CM_object, CM_interf, "ToggleClientReadyPropertie",
+	_pDBus->NSGKDBus::Callback<SIGs2D>::exposeMethod(
+		_systemBus, CM_object, CM_interf, "GetDaemonDependenciesMap",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
-			{"b", "did_method_succeeded", dOUT, "did the method succeeded ?"} },
-		std::bind(&ClientsManager::toggleClientReadyPropertie, this, std::placeholders::_1) );
+			{"a(yta(sss))", "dependencies_map", dOUT, "array of executable dependencies"} },
+		std::bind(&ClientsManager::getDaemonDependenciesMap, this, std::placeholders::_1) );
 
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  DevicesManager D-Bus object  */
@@ -536,6 +542,25 @@ const bool ClientsManager::deleteDeviceConfiguration(
 	}
 
 	return false;
+}
+
+const GKDepsMap_type &
+	ClientsManager::getDaemonDependenciesMap(const std::string & clientID)
+{
+	GK_LOG_FUNC
+
+	GKLog2(trace, CONST_STRING_CLIENT, clientID)
+
+	try {
+		/* just checking that provided ID is known or log error */
+		Client* pClient = _connectedClients.at(clientID);
+		pClient->isAlive(); /* to avoid warning */
+	}
+	catch (const std::out_of_range& oor) {
+		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+	}
+
+	return (*_pDepsMap);
 }
 
 const bool ClientsManager::stopDevice(

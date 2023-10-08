@@ -63,7 +63,7 @@ class ClientsManager
 
 		NSGKDBus::GKDBus* const _pDBus;
 		DevicesManager* const _pDevicesManager;
-		GKDepsMap_type* const _pDepsMap;
+		const GKDepsMap_type* const _pDepsMap;
 
 		const std::string _active;
 		std::map<std::string, Client*> _connectedClients;
@@ -101,6 +101,9 @@ class ClientsManager
 		const bool deleteDeviceConfiguration(
 			const std::string & clientID,
 			const std::string & devID
+		);
+		const GKDepsMap_type & getDaemonDependenciesMap(
+			const std::string & clientID
 		);
 
 		/* -- */

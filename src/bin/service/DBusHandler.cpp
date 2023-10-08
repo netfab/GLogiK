@@ -40,7 +40,8 @@ bool DBusHandler::WantToExit = false;
 
 DBusHandler::DBusHandler(
 	pid_t pid,
-	NSGKUtils::FileSystem* pGKfs)
+	NSGKUtils::FileSystem* pGKfs,
+	GKDepsMap_type* dependencies)
 	:	_clientID("undefined"),
 		_daemonVersion("unknown"),
 		_currentSession(""),
@@ -58,6 +59,8 @@ DBusHandler::DBusHandler(
 
 	try {
 		this->updateSessionState();
+
+		this->getDaemonDependenciesMap(dependencies);
 
 		this->initializeGKDBusSignals();
 		this->initializeGKDBusMethods();
@@ -332,6 +335,49 @@ void DBusHandler::unregisterWithDaemon(void)
 		DBus.abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
+}
+
+void DBusHandler::getDaemonDependenciesMap(GKDepsMap_type* const dependencies)
+{
+	GK_LOG_FUNC
+
+	if( ! _registerStatus ) {
+		LOG(warning) << "currently not registered";
+		return;
+	}
+
+	const std::string remoteMethod("GetDaemonDependenciesMap");
+
+	try {
+		DBus.initializeRemoteMethodCall(
+			_systemBus,
+			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+			remoteMethod.c_str()
+		);
+		DBus.appendStringToRemoteMethodCall(_clientID);
+		DBus.sendRemoteMethodCall();
+
+		try {
+			DBus.waitForRemoteMethodCallReply();
+
+			GKDepsMap_type daemonDeps = DBus.getNextGKDepsMapArgument();
+			dependencies->insert(daemonDeps.begin(), daemonDeps.end());
+			// /* debug */ printVersionDeps("daemon / service dependencies", (*dependencies));
+			return;
+		}
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
+		}
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		DBus.abandonRemoteMethodCall();
+		LogRemoteCallFailure
+	}
+
+	/* fatal error */
+	throw GLogiKExcept("unable to get daemon dependencies map");
 }
 
 void DBusHandler::setCurrentSessionObjectPath(pid_t pid)

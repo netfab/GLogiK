@@ -34,6 +34,7 @@
 
 #include "include/base.hpp"
 #include "include/LCDPP.hpp"
+#include "include/DepsMap.hpp"
 
 #include "devicesHandler.hpp"
 #include "GKeysEventManager.hpp"
@@ -54,7 +55,8 @@ class DBusHandler
 	public:
 		DBusHandler(
 			pid_t pid,
-			NSGKUtils::FileSystem* pGKfs
+			NSGKUtils::FileSystem* pGKfs,
+			GKDepsMap_type* dependencies
 		);
 		~DBusHandler(void);
 
@@ -92,6 +94,8 @@ class DBusHandler
 
 		void registerWithDaemon(void);
 		void unregisterWithDaemon(void);
+
+		void getDaemonDependenciesMap(GKDepsMap_type* const dependencies);
 
 		void clearAndUnregister(const bool notifications = true);
 
