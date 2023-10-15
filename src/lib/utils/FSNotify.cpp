@@ -33,15 +33,13 @@
 #include <config.h>
 
 
-#include "GKLogging.hpp"
-
 #define UTILS_COMPILATION 1
 
+#include "GKLogging.hpp"
 #include "exception.hpp"
+#include "FSNotify.hpp"
 
 #undef UTILS_COMPILATION
-
-#include "FSNotify.hpp"
 
 
 namespace NSGKUtils

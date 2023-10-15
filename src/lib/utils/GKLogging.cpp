@@ -37,10 +37,9 @@
 #include <boost/log/attributes/scoped_attribute.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 
-#include "GKLogging.hpp"
-
 #define UTILS_COMPILATION 1
 
+#include "GKLogging.hpp"
 #include "exception.hpp"
 
 #undef UTILS_COMPILATION

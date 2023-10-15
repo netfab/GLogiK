@@ -36,7 +36,6 @@
 
 #include <config.h>
 
-#include "lib/utils/GKLogging.hpp"
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 #include "lib/shared/sessionManager.hpp"

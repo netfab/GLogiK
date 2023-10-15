@@ -47,8 +47,6 @@
 
 #include <boost/program_options.hpp>
 
-#include "lib/utils/GKLogging.hpp"
-
 #include "lib/shared/glogik.hpp"
 #include "lib/shared/deviceConfigurationFile.hpp"
 #include "lib/utils/utils.hpp"

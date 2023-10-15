@@ -19,6 +19,13 @@
  *
  */
 
+#ifndef SRC_LIB_UTILS_GKLOGGING_HPP_
+#define SRC_LIB_UTILS_GKLOGGING_HPP_
+
+#if !defined (UTILS_INSIDE_UTILS_H) && !defined (UTILS_COMPILATION)
+#error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
+#endif
+
 #include <ios>
 #include <string>
 #include <sstream>
@@ -32,9 +39,6 @@
 #include <boost/log/sources/record_ostream.hpp>
 
 #include <config.h>
-
-#ifndef SRC_LIB_UTILS_GKLOGGING_HPP_
-#define SRC_LIB_UTILS_GKLOGGING_HPP_
 
 namespace fs = boost::filesystem;
 namespace src = boost::log::sources;
