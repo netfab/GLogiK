@@ -46,7 +46,7 @@ RandomGenerator::RandomGenerator(const std::vector<char> & charset)
 RandomGenerator::~RandomGenerator() {
 }
 
-std::string RandomGenerator::getString(std::size_t length) {
+const std::string RandomGenerator::getString(std::size_t length) {
 	std::string ret(length,0);
 	auto & c = _charset;
 	auto & d = _dist;

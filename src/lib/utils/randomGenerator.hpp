@@ -45,7 +45,7 @@ class RandomGenerator
 		);
 		~RandomGenerator(void);
 
-		std::string getString(std::size_t length);
+		const std::string getString(std::size_t length);
 
 	protected:
 
