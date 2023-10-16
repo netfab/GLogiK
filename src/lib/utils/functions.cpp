@@ -19,14 +19,6 @@
  *
  */
 
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/stat.h>
-
-#include <cstdio>
-#include <cstdlib>
-#include <csignal>
-
 #include <new>
 #include <stdexcept>
 #include <iomanip>
@@ -159,78 +151,6 @@ void yield_for(std::chrono::microseconds us)
 	} while (std::chrono::high_resolution_clock::now() < end);
 }
 
-pid_t detachProcess(const bool closeDescriptors)
-{
-	//GK_LOG_FUNC
-
-	//GKLog(trace, "detaching process")
-
-	pid_t pid;
-
-	pid = fork();
-	if(pid == -1)
-		throw GLogiKExcept("first fork failure");
-
-	// parent exit
-	if(pid > 0) {
-		//GKLog2(trace, "first fork done. pid : ", pid)
-		std::this_thread::sleep_for(std::chrono::milliseconds(20));
-		//GKLog(trace, "exiting parent")
-		exit(EXIT_SUCCESS);
-	}
-	//else {
-	//	GKLog(trace, "continue child execution")
-	//}
-
-	// new session for child process
-	if(setsid() == -1)
-		throw GLogiKExcept("session creation failure");
-
-	//GKLog(trace, "new session done")
-
-	// Ignore signals
-	std::signal(SIGCHLD, SIG_IGN);
-	std::signal(SIGHUP, SIG_IGN);
-
-	pid = fork();
-	if(pid == -1)
-		throw GLogiKExcept("second fork failure");
-
-	// parent exit
-	if(pid > 0) {
-		//GKLog2(trace, "second fork done. pid : ", pid)
-		std::this_thread::sleep_for(std::chrono::milliseconds(20));
-		//GKLog(trace, "exiting parent")
-		exit(EXIT_SUCCESS);
-	}
-	//else {
-	//	GKLog(trace, "continue child execution")
-	//}
-
-	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
-	if(chdir("/") == -1)
-		throw GLogiKExcept("change directory failure");
-
-	if( closeDescriptors ) {
-		// closing opened descriptors
-		//for(fd = sysconf(_SC_OPEN_MAX); fd > 0; fd--)
-		//	close(fd);
-		std::fclose(stdin);
-		std::fclose(stdout);
-		std::fclose(stderr);
-
-		// reopening standard outputs
-		stdin = std::fopen("/dev/null", "r");
-		stdout = std::fopen("/dev/null", "w+");
-		stderr = std::fopen("/dev/null", "w+");
-
-		//GKLog(trace, "descriptors closed, process daemonized")
-	}
-
-	pid = getpid();
-	//GKLog2(trace, "returning pid : ", pid)
-	return pid;
-}
 
 } // namespace NSGKUtils
 

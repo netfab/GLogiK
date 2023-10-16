@@ -19,23 +19,43 @@
  *
  */
 
-#ifndef SRC_LIB_UTILS_UTILS_HPP_
-#define SRC_LIB_UTILS_UTILS_HPP_
+#ifndef SRC_LIB_UTILS_TEMPLATES_HPP_
+#define SRC_LIB_UTILS_TEMPLATES_HPP_
 
-#include <config.h>
-
-#define UTILS_INSIDE_UTILS_H 1
-
-#include "templates.hpp"
-#include "GKLogging.hpp"
-#include "exception.hpp"
-#include "functions.hpp"
-#include "XDGUserDirs.hpp"
-#include "filesystem.hpp"
-#include "randomGenerator.hpp"
-#include "process.hpp"
-
-#undef UTILS_INSIDE_UTILS_H
-
+#if !defined (UTILS_INSIDE_UTILS_H) && !defined (UTILS_COMPILATION)
+#error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
+#include <cstddef>
+
+#include <type_traits>
+
+//#include "GKLogging.hpp"
+
+namespace NSGKUtils
+{
+
+template <typename T>
+constexpr typename std::underlying_type<T>::type toEnumType(T obj) noexcept
+{
+	return static_cast<typename std::underlying_type<T>::type>(obj);
+}
+
+template <typename Iterator>
+const std::size_t safeAdvance(Iterator & it, const Iterator & end,
+	const std::size_t n)
+{
+	std::size_t i = 0;
+	for(; i != n ; ++i)
+	{
+		it++;
+		if(it == end)
+			break;
+	}
+	//GKLog2(trace, "undone steps: ", (n - i))
+	return (n - i);
+}
+
+} // namespace NSGKUtils
+
+#endif

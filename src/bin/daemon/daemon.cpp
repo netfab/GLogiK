@@ -87,7 +87,7 @@ GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
 		this->parseCommandLine(argc, argv);
 
 		if( GLogiKDaemon::isDaemonRunning() ) {
-			_pid = detachProcess(true);
+			_pid = /*NSGKUtils::*/process::deamonize();
 			syslog(LOG_INFO, "process successfully daemonized");
 
 			/* create PID file before dropping privileges */

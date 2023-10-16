@@ -19,45 +19,55 @@
  *
  */
 
-#ifndef SRC_LIB_UTILS_FUNCTIONS_HPP_
-#define SRC_LIB_UTILS_FUNCTIONS_HPP_
+#ifndef SRC_LIB_UTILS_PROCESS_HPP_
+#define SRC_LIB_UTILS_PROCESS_HPP_
 
 #if !defined (UTILS_INSIDE_UTILS_H) && !defined (UTILS_COMPILATION)
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
 #include <cstdint>
-#include <string>
-#include <chrono>
+#include <sys/types.h>
+
+#include "templates.hpp"
 
 namespace NSGKUtils
 {
 
-const std::string toString(const char* s);
-const std::wstring toWString(const wchar_t* s);
-
-constexpr int toInt(const uint8_t c) noexcept
+class process
 {
-	return static_cast<int>(c);
+	public:
+		enum class mask : uint8_t
+		{
+			PROCESS_LOG_ENTRIES = 1 << 0,
+			PROCESS_CLOSE_DESCRIPTORS = 1 << 1,
+		};
+
+		static const pid_t detach(void);
+		static const pid_t deamonize(void);
+
+	protected:
+
+	private:
+		process(void) = delete;
+		~process(void) = delete;
+
+		static uint8_t options;
+
+		static const pid_t newPID(void);
+};
+
+inline const uint8_t operator & (const uint8_t value, const process::mask option)
+{
+	uint8_t ret(value);
+	ret &= toEnumType(option);
+	return ret;
 }
 
-constexpr unsigned int toUInt(const uint8_t c) noexcept
+inline uint8_t& operator |= (uint8_t& value, const process::mask option)
 {
-	return static_cast<unsigned int>(c);
+	return value=(value|toEnumType(option));
 }
-
-const unsigned int toUInt(const std::string & s);
-const unsigned short toUShort(const std::string & s, int base = 10);
-
-const unsigned long toUL(const std::string & s, int base = 10);
-const unsigned long long toULL(const std::string & s);
-
-const std::string getHexRGB(
-	const uint8_t red,
-	const uint8_t green,
-	const uint8_t blue);
-
-void yield_for(std::chrono::microseconds us);
 
 } // namespace NSGKUtils
 

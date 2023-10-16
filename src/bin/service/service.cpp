@@ -125,11 +125,13 @@ int DesktopService::run(void)
 
 	/* -- -- -- */
 
-	LOG(info) << "Starting " << binaryVersion;
+	{
+		LOG(info) << "Starting " << binaryVersion;
 
-	_pid = detachProcess();
+		_pid = /*NSGKUtils::*/process::detach();
 
-	GKLog2(trace, "process detached - pid: ", _pid)
+		GKLog2(trace, "process detached - pid: ", _pid)
+	}
 
 	{
 		FileSystem GKfs;

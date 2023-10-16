@@ -93,12 +93,13 @@ int DesktopServiceLauncher::run(void)
 	/* -- -- -- */
 	/* -- -- -- */
 	/* -- -- -- */
+	{
+		LOG(info) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
 
-	LOG(info) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
+		_pid = /*NSGKUtils::*/process::detach();
 
-	_pid = detachProcess();
-
-	GKLog2(trace, "process detached - pid : ", _pid)
+		GKLog2(trace, "process detached - pid : ", _pid)
+	}
 
 	{
 		SessionManager session;
