@@ -81,8 +81,8 @@ const int SessionManager::openConnection(void) {
 
 	GKLog(trace, "opening session manager connection")
 
-	std::signal(SIGINT, SessionManager::handleSignal);
-	std::signal(SIGTERM, SessionManager::handleSignal);
+	process::setSignalHandler( SIGINT, SessionManager::handleSignal);
+	process::setSignalHandler(SIGTERM, SessionManager::handleSignal);
 
 	_pSMCConnexion = SmcOpenConnection(
 							nullptr,				/* network_ids_list */
@@ -161,8 +161,10 @@ void SessionManager::handleSignal(int sig) {
 		case SIGTERM:
 			buff << sig << " --> bye bye";
 			LOG(info) << buff.str();
-			std::signal(SIGINT, SIG_DFL);
-			std::signal(SIGTERM, SIG_DFL);
+
+			process::resetSignalHandler(SIGINT);
+			process::resetSignalHandler(SIGTERM);
+
 			SessionManager::stillRunning = false;
 			break;
 		default:

@@ -115,19 +115,9 @@ GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
 		if( GLogiKDaemon::isDaemonRunning() ) {
 			GKLog2(info, "created PID file : ", _pidFileName)
 
-			auto setSignal = [] (int signum) -> void {
-				const std::string sigdesc(toString(sigabbrev_np(signum)));
-				if(sigdesc.empty())
-					throw GLogiKExcept("invalid signal number");
-				GKLog2(trace, "setting signal handler: ", sigdesc)
-				if(std::signal(signum, GLogiKDaemon::handleSignal) == SIG_ERR) {
-					GKSysLogError("std::signal failure: ", sigdesc);
-				}
-			};
-
-			setSignal(SIGINT);
-			setSignal(SIGTERM);
-			//setSignal(SIGHUP);
+			process::setSignalHandler( SIGINT, GLogiKDaemon::handleSignal);
+			process::setSignalHandler(SIGTERM, GLogiKDaemon::handleSignal);
+			// TODO SIGHUP ?
 		}
 	}
 	catch (const std::exception & e) {
@@ -263,8 +253,10 @@ void GLogiKDaemon::handleSignal(int sig) {
 		case SIGTERM:
 			buffer << sigdesc << "(" << sig << ")" << " --> bye bye";
 			GKSysLogInfo(buffer.str());
-			std::signal(SIGINT, SIG_DFL);
-			std::signal(SIGTERM, SIG_DFL);
+
+			process::resetSignalHandler(SIGINT);
+			process::resetSignalHandler(SIGTERM);
+
 			GLogiKDaemon::exitDaemon();
 			break;
 		default:

@@ -21,6 +21,7 @@
 
 #include <chrono>
 #include <thread>
+#include <string>
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -29,6 +30,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <csignal>
+#include <cstring>
 
 #include <config.h>
 
@@ -36,6 +38,7 @@
 
 #include "GKLogging.hpp"
 #include "exception.hpp"
+#include "functions.hpp"
 #include "process.hpp"
 
 #undef UTILS_COMPILATION
@@ -158,6 +161,31 @@ const pid_t process::newPID(void)
 #endif
 
 	return pid;
+}
+
+void process::setSignalHandler(int signum, __signal_handler_t __handler)
+{
+	GK_LOG_FUNC
+
+	const std::string sigdesc(toString(sigabbrev_np(signum)));
+	if(sigdesc.empty())
+		throw GLogiKExcept("invalid signal number");
+	GKLog2(trace, "setting signal handler: ", sigdesc)
+	if(std::signal(signum, __handler) == SIG_ERR) {
+		GKSysLogError("std::signal failure: ", sigdesc);
+	}
+}
+
+void process::resetSignalHandler(int signum)
+{
+	GK_LOG_FUNC
+
+	try {
+		process::setSignalHandler(signum, SIG_DFL);
+	}
+	catch (const GLogiKExcept & e) {
+		GKSysLogWarning(e.what());
+	}
 }
 
 } // namespace NSGKUtils

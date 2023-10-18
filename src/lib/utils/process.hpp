@@ -36,6 +36,8 @@ namespace NSGKUtils
 
 class process
 {
+	typedef void (*__signal_handler_t) (int);
+
 	public:
 		enum class mask : uint8_t
 		{
@@ -45,6 +47,8 @@ class process
 
 		static const pid_t detach(void);
 		static const pid_t deamonize(void);
+		static void setSignalHandler(int signum, __signal_handler_t __handler);
+		static void resetSignalHandler(int signum);
 
 	protected:
 
