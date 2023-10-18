@@ -263,13 +263,17 @@ void DBusHandler::registerWithDaemon(void)
 		/* -- */
 
 		try {
-			_pDBus->waitForRemoteMethodCallReply();
+			_pDBus->waitForRemoteMethodCallReply(); /* (1) */
 
-			const bool ret = _pDBus->getNextBooleanArgument();
+			const bool ret = _pDBus->getNextBooleanArgument(); /* (2) */
+			/* nextString - *clientID* or *failure reason* */
+			const std::string nextString = _pDBus->getNextStringArgument(); /* (3) */
+
 			if( ret ) {
+				_clientID = nextString;
 				_registerStatus = true;
+
 				try {
-					_clientID = _pDBus->getNextStringArgument();
 					_daemonVersion = _pDBus->getNextStringArgument();
 
 					if( _daemonVersion != VERSION ) {
@@ -287,17 +291,11 @@ void DBusHandler::registerWithDaemon(void)
 				}
 			}
 			else {
-				std::string reason("unknown");
-				try {
-					reason = _pDBus->getNextStringArgument();
-				}
-				catch (const GLogiKExcept & e) {
-					LOG(error) << e.what();
-				}
-				LOG(error) << "failed to register with daemon : false - " << reason;
+				LOG(error) << "failed to register with daemon : false - " << nextString;
 			}
 		}
 		catch (const GLogiKExcept & e) {
+			/* potential GKDBus exceptions on these calls: (1) (2) (3) */
 			LogRemoteCallGetReplyFailure
 		}
 	}
