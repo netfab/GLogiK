@@ -151,7 +151,7 @@ int DesktopService::run(void)
 		fds[1].fd = GKfs.getNotifyQueueDescriptor();
 		fds[1].events = POLLIN;
 
-		DBusHandler handler(_pid, session, &GKfs, &DBus);
+		DBusHandler handler(_pid, &GKfs, &DBus);
 
 		while( session.isSessionAlive() and
 				handler.getExitStatus() )

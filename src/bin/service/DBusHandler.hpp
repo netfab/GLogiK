@@ -24,7 +24,6 @@
 
 #include <vector>
 #include <string>
-#include <exception>
 
 #include <cstdint>
 
@@ -32,15 +31,12 @@
 
 #include "lib/utils/utils.hpp"
 #include "lib/dbus/GKDBus.hpp"
-#include "lib/shared/sessionManager.hpp"
 
 #include "include/base.hpp"
 #include "include/LCDPP.hpp"
 
 #include "devicesHandler.hpp"
 #include "GKeysEventManager.hpp"
-
-#define UNREACHABLE_DAEMON_MAX_RETRIES 3
 
 namespace GLogiK
 {
@@ -51,24 +47,11 @@ enum class SessionFramework : uint8_t
 	FW_LOGIND,
 };
 
-class restartRequest : public std::exception
-{
-	public :
-		restartRequest( const std::string& msg = "" );
-
-		virtual ~restartRequest( void ) throw();
-		virtual const char* what( void ) const throw();
-
-	protected :
-		std::string message;
-};
-
 class DBusHandler
 {
 	public:
 		DBusHandler(
 			pid_t pid,
-			SessionManager& session,
 			NSGKUtils::FileSystem* pGKfs,
 			NSGKDBus::GKDBus* pDBus
 		);
