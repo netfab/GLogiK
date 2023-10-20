@@ -114,7 +114,7 @@ class GKDBusEvents
 				std::map<std::string, /* interface */
 					std::vector<GKDBusIntrospectableSignal> > > > _DBusIntrospectableSignals;
 
-		virtual DBusConnection* const getConnection(BusConnection wantedConnection) const = 0;
+		virtual DBusConnection* const getDBusConnection(BusConnection wantedConnection) const = 0;
 
 		void openXMLInterface(
 			std::ostringstream & xml,

@@ -115,7 +115,7 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 	const char* method)
 {
 	this->initializeRemoteMethodCall(
-		this->getConnection(wantedConnection),
+		this->getDBusConnection(wantedConnection),
 		busName, objectPath, interface, method);
 }
 

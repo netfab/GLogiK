@@ -29,8 +29,6 @@
 
 #include <dbus/dbus.h>
 
-#include "lib/dbus/GKDBusConnection.hpp"
-
 #include "lib/dbus/messages/GKDBusReply.hpp"
 #include "lib/dbus/messages/GKDBusErrorReply.hpp"
 

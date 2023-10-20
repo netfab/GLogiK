@@ -407,7 +407,7 @@ void GKDBusEvents::addSignalRuleMatch(
 
 	DBusConnection* connection = nullptr;
 	try {
-		connection = this->getConnection(eventBus);
+		connection = this->getDBusConnection(eventBus);
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(warning) << e.what();
@@ -432,7 +432,7 @@ void GKDBusEvents::removeSignalRuleMatch(
 
 	DBusConnection* connection = nullptr;
 	try {
-		connection = this->getConnection(eventBus);
+		connection = this->getDBusConnection(eventBus);
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(warning) << e.what();

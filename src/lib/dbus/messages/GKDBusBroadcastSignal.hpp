@@ -86,7 +86,7 @@ class GKDBusMessageBroadcastSignal
 	private:
 		GKDBusBroadcastSignal* _signal;
 
-		virtual DBusConnection* const getConnection(BusConnection wantedConnection) const = 0;
+		virtual DBusConnection* const getDBusConnection(BusConnection wantedConnection) const = 0;
 };
 
 } // namespace NSGKDBus

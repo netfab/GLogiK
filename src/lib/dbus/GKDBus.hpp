@@ -133,7 +133,7 @@ class GKDBus
 		) noexcept;
 		void checkReleasedName(int ret) noexcept;
 		void checkDBusError(const char* error);
-		DBusConnection* const getConnection(BusConnection bus) const;
+		DBusConnection* const getDBusConnection(BusConnection bus) const;
 		const unsigned int getDBusRequestFlags(const ConnectionFlag flag) noexcept;
 };
 

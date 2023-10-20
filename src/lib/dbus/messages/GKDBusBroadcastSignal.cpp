@@ -111,7 +111,7 @@ void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 	const char* signal)
 {
 	this->initializeBroadcastSignal(
-		this->getConnection(wantedConnection),
+		this->getDBusConnection(wantedConnection),
 		objectPath, interface, signal);
 }
 

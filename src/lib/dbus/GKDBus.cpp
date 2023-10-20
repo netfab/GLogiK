@@ -369,7 +369,7 @@ void GKDBus::checkDBusError(const char* error)
 	}
 }
 
-DBusConnection* const GKDBus::getConnection(BusConnection bus) const
+DBusConnection* const GKDBus::getDBusConnection(BusConnection bus) const
 {
 	switch(bus) {
 		case BusConnection::GKDBUS_SESSION :
