@@ -199,7 +199,7 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 	if( mask_updated ) { /* if a Mx key was pressed */
 		try {
 			_pDBus->initializeBroadcastSignal(
-				NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+				_systemBus,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				"DeviceMBankSwitch"
@@ -473,7 +473,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 					}
 
 					_pDBus->initializeBroadcastSignal(
-						NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+						_systemBus,
 						GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 						GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 						signal.c_str()
@@ -651,7 +651,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 								if( this->checkGKey(device) ) {
 									try {
 										_pDBus->initializeBroadcastSignal(
-											NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+											_systemBus,
 											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 											"DeviceGKeyEvent"
@@ -693,7 +693,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 #if GKDBUS
 								try {
 									_pDBus->initializeBroadcastSignal(
-										NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+										_systemBus,
 										GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 										GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 										"DeviceMediaEvent"

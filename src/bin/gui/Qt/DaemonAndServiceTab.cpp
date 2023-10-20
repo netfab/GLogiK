@@ -164,7 +164,7 @@ void DaemonAndServiceTab::updateTab(void)
 	const std::string remoteMethod("GetInformations");
 	try {
 		_pDBus->initializeRemoteMethodCall(
-			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -232,7 +232,7 @@ void DaemonAndServiceTab::startSignal(void)
 	try {
 		/* asking the launcher for the desktop service start */
 		_pDBus->initializeBroadcastSignal(
-			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			_sessionBus,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 			"RestartRequest"

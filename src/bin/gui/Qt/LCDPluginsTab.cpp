@@ -143,7 +143,7 @@ void LCDPluginsTab::updateTab(
 	const std::string remoteMethod("GetDeviceLCDPluginsProperties");
 	try {
 		_pDBus->initializeRemoteMethodCall(
-			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,

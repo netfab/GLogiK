@@ -59,6 +59,8 @@ class Tab
 		const QPushButton* getApplyButton(void) const;
 
 	protected:
+		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
+
 		NSGKDBus::GKDBus* _pDBus;
 
 		QPushButton* _pApplyButton;

@@ -55,6 +55,7 @@ class ClientsSignals
 		) noexcept;
 
 	private:
+		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
 
 };
 

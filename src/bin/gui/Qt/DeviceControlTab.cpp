@@ -181,7 +181,7 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 
 	try {
 		_pDBus->initializeBroadcastSignal(
-			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			_sessionBus,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 			"DeviceStatusChangeRequest"

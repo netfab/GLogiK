@@ -85,6 +85,8 @@ class GKDBus
 		);
 		~GKDBus();
 
+		static const BusConnection SystemBus;
+		static const BusConnection SessionBus;
 		static const std::string getDBusVersion(void);
 
 		const std::string & getBuiltAgainstDBusVersion(void) {

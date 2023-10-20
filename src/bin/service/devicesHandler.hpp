@@ -89,11 +89,13 @@ class DevicesHandler
 	protected:
 
 	private:
+		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
+		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
+
 		fs::path _configurationRootDirectory;
 		std::string _clientID;
 		NSGKDBus::GKDBus* _pDBus;
 		NSGKUtils::FileSystem* _pGKfs;
-		const NSGKDBus::BusConnection _systemBus;
 
 		typedef std::set<std::string> devIDSet;
 

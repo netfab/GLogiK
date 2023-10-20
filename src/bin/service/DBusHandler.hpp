@@ -64,6 +64,9 @@ class DBusHandler
 	protected:
 
 	private:
+		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
+		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
+
 		GKeysEventManager _GKeysEvent;
 		DevicesHandler _devices;
 
@@ -75,8 +78,6 @@ class DBusHandler
 		NSGKDBus::GKDBus* _pDBus;
 
 		SessionFramework _sessionFramework;
-		const NSGKDBus::BusConnection _sessionBus;
-		const NSGKDBus::BusConnection _systemBus;
 
 		bool _registerStatus;		/* true == registered with daemon */
 		bool _wantToExit;			/* true if we want to exit after a restart request */

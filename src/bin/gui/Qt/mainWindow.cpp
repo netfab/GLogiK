@@ -277,7 +277,7 @@ void MainWindow::build(void)
 		try {
 			/* asking the launcher for the desktop service restart */
 			_pDBus->initializeBroadcastSignal(
-				NSGKDBus::BusConnection::GKDBUS_SESSION,
+				_sessionBus,
 				GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 				GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 				"RestartRequest"
@@ -320,7 +320,7 @@ void MainWindow::build(void)
 
 	/* initializing GKDBus signals */
 	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
-		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -330,7 +330,7 @@ void MainWindow::build(void)
 	);
 
 	_pDBus->NSGKDBus::Callback<SIGs2v>::exposeSignal(
-		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -384,7 +384,7 @@ void MainWindow::aboutToQuit(void)
 	GK_LOG_FUNC
 
 	_pDBus->removeSignalsInterface(
-		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
@@ -623,7 +623,7 @@ void MainWindow::updateDevicesList(void)
 	const std::string remoteMethod("GetDevicesList");
 	try {
 		_pDBus->initializeRemoteMethodCall(
-			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,

@@ -166,6 +166,7 @@ class KeyboardDriver
 
 	private:
 #if GKDBUS
+		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
 		NSGKDBus::GKDBus* _pDBus;
 #endif
 

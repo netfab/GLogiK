@@ -43,8 +43,7 @@ using namespace NSGKUtils;
 
 DBusHandler::DBusHandler(NSGKDBus::GKDBus* pDBus)
 	:	_tenSeconds(chr::duration<int>(10)),
-		_pDBus(pDBus),
-		_sessionBus(NSGKDBus::BusConnection::GKDBUS_SESSION)
+		_pDBus(pDBus)
 {
 	this->initializeGKDBusSignals();
 

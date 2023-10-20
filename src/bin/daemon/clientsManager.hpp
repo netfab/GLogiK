@@ -59,6 +59,8 @@ class ClientsManager
 	protected:
 
 	private:
+		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
+
 		NSGKDBus::GKDBus* const _pDBus;
 		DevicesManager* const _pDevicesManager;
 		GKDepsMap_type* const _pDepsMap;

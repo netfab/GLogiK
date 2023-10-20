@@ -47,8 +47,7 @@ using namespace NSGKUtils;
 DevicesHandler::DevicesHandler()
 	:	_clientID("undefined"),
 		_pDBus(nullptr),
-		_pGKfs(nullptr),
-		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM)
+		_pGKfs(nullptr)
 {
 	GK_LOG_FUNC
 
@@ -279,7 +278,7 @@ void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devI
 	try {
 		/* send DeviceConfigurationSaved signal to GUI applications */
 		_pDBus->initializeBroadcastSignal(
-			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 			"DeviceConfigurationSaved"

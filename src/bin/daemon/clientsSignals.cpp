@@ -56,7 +56,7 @@ void ClientsSignals::sendSignalToClients(
 
 	try {
 		pDBus->initializeBroadcastSignal(
-			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+			_systemBus,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			signal.c_str()
@@ -98,7 +98,7 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 
 	try {
 		pDBus->initializeBroadcastSignal(
-			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+			_systemBus,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			signal.c_str()

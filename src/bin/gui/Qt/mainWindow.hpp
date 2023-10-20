@@ -68,6 +68,8 @@ class MainWindow
 		void build(void);
 
 	private:
+		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
+
 		DeviceProperties _openedConfigurationFile;
 
 		fs::path _configurationRootDirectory;
