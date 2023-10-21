@@ -185,6 +185,7 @@ int GLogiKDaemon::run(void)
 	if( GLogiKDaemon::isDaemonRunning() ) {
 #if GKDBUS
 		NSGKDBus::GKDBus DBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
+		DBus.init();
 		DBus.connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
 #endif
 

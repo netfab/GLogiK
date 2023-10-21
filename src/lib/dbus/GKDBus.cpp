@@ -40,7 +40,16 @@ GKDBus::GKDBus(
 	const std::string & rootNodePath)
 		:	GKDBusEvents(rootNode, rootNodePath),
 			_sessionConnection(nullptr),
-			_systemConnection(nullptr)
+			_systemConnection(nullptr),
+			_initDone(false)
+{
+}
+
+GKDBus::~GKDBus()
+{
+}
+
+void GKDBus::init(void)
 {
 	GK_LOG_FUNC
 
@@ -69,10 +78,8 @@ GKDBus::GKDBus(
 	GKLog4(trace, "checking std::vector<std::string> ::max_size(): ", v.max_size(), "UINT64_MAX: ", UINT64_MAX)
 	if( v.max_size() > UINT64_MAX )
 		throw GLogiKExcept("std::vector<std::string> ::max_size() overflow detected");
-}
 
-GKDBus::~GKDBus()
-{
+	_initDone = true;
 }
 
 const std::string GKDBus::getDBusVersion(void)
@@ -107,6 +114,9 @@ void GKDBus::connectToSystemBus(
 {
 	GK_LOG_FUNC
 
+	if( ! _initDone )
+		throw GLogiKExcept(_initError);
+
 	_systemConnection = dbus_bus_get(DBUS_BUS_SYSTEM, &_error);
 	this->checkDBusError("failed to open system bus connection");
 
@@ -129,6 +139,9 @@ void GKDBus::connectToSessionBus(
 	const ConnectionFlag flag)
 {
 	GK_LOG_FUNC
+
+	if( ! _initDone )
+		throw GLogiKExcept(_initError);
 
 	_sessionConnection = dbus_bus_get(DBUS_BUS_SESSION, &_error);
 	this->checkDBusError("failed to open session bus connection");

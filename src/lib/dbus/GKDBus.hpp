@@ -79,15 +79,14 @@ class GKDBus
 		public ArgGKDepsMap
 {
 	public:
-		GKDBus(
-			const std::string & rootNode,
-			const std::string & rootNodePath
-		);
-		~GKDBus();
+		GKDBus(const std::string & rootNode, const std::string & rootNodePath);
+		~GKDBus(void);
 
 		static const BusConnection SystemBus;
 		static const BusConnection SessionBus;
 		static const std::string getDBusVersion(void);
+
+		void init(void);
 
 		const std::string & getBuiltAgainstDBusVersion(void) {
 			return _builtAgainstDBusVersion;
@@ -115,6 +114,7 @@ class GKDBus
 		std::string _currentDBusVersion;
 		/* see also DBUS_VERSION_STRING from dbus.h */
 		const std::string _builtAgainstDBusVersion = GK_DEP_DBUS_VERSION_STRING;
+		const std::string _initError = "GKDBus must be initialized before anything else";
 
 		std::string _sessionName;
 		std::string _systemName;
@@ -123,6 +123,8 @@ class GKDBus
 
 		DBusConnection* _sessionConnection;
 		DBusConnection* _systemConnection;
+
+		bool _initDone;
 
 		void disconnectFromSystemBus(void) noexcept;
 		void disconnectFromSessionBus(void) noexcept;
