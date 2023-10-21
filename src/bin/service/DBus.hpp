@@ -19,30 +19,25 @@
  *
  */
 
-#ifndef SRC_BIN_SERVICE_SERVICE_HPP_
-#define SRC_BIN_SERVICE_SERVICE_HPP_
+#ifndef SRC_BIN_SERVICE_DBUS_HPP_
+#define SRC_BIN_SERVICE_DBUS_HPP_
 
-#include <sys/types.h>
-
-#include "DBus.hpp"
+#include "lib/dbus/GKDBus.hpp"
 
 namespace GLogiK
 {
 
-class DesktopService
-	:	public DBusInst
+class DBusInst
 {
 	public:
-		DesktopService(const bool & version);
-		~DesktopService(void);
+		DBusInst(void) = default;
+		~DBusInst(void) = default;
 
-		int run(void);
+		static NSGKDBus::GKDBus DBus;
 
 	protected:
 
 	private:
-		pid_t _pid;
-		const bool _version;
 };
 
 } // namespace GLogiK

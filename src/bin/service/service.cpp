@@ -109,7 +109,7 @@ int DesktopService::run(void)
 		FileSystem GKfs;
 		SessionManager session;
 
-		NSGKDBus::GKDBus DBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE, GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE_PATH);
+		DBus.init();
 
 		DBus.connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 		DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
@@ -123,7 +123,7 @@ int DesktopService::run(void)
 		fds[1].fd = GKfs.getNotifyQueueDescriptor();
 		fds[1].events = POLLIN;
 
-		DBusHandler handler(_pid, &GKfs, &DBus);
+		DBusHandler handler(_pid, &GKfs);
 
 		while( session.isSessionAlive() and
 				handler.getExitStatus() )

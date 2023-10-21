@@ -37,6 +37,7 @@
 
 #include "devicesHandler.hpp"
 #include "GKeysEventManager.hpp"
+#include "DBus.hpp"
 
 namespace GLogiK
 {
@@ -48,12 +49,12 @@ enum class SessionFramework : uint8_t
 };
 
 class DBusHandler
+	:	public DBusInst
 {
 	public:
 		DBusHandler(
 			pid_t pid,
-			NSGKUtils::FileSystem* pGKfs,
-			NSGKDBus::GKDBus* pDBus
+			NSGKUtils::FileSystem* pGKfs
 		);
 		~DBusHandler(void);
 
@@ -74,8 +75,6 @@ class DBusHandler
 		std::string _daemonVersion;
 		std::string _currentSession;	/* current session object path */
 		std::string _sessionState;		/* session state */
-
-		NSGKDBus::GKDBus* _pDBus;
 
 		SessionFramework _sessionFramework;
 
