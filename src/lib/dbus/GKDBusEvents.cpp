@@ -45,22 +45,6 @@ GKDBusEvents::GKDBusEvents(
 
 GKDBusEvents::~GKDBusEvents()
 {
-	GK_LOG_FUNC
-
-	for(const auto & busPair : _DBusEvents) {
-		GKLog2(trace, "current bus : ", toUInt(toEnumType(busPair.first)))
-		for(const auto & objectPair : busPair.second) {
-			GKLog2(trace, "object : ", objectPair.first)
-			for(const auto & interfacePair : objectPair.second) {
-				GKLog2(trace, "interface : ", interfacePair.first)
-				for(auto & DBusEvent : interfacePair.second) { /* vector of pointers */
-					delete DBusEvent;
-				}
-			}
-		}
-	}
-
-	_DBusEvents.clear();
 }
 
 const std::string & GKDBusEvents::getRootNode(void) const
@@ -105,6 +89,26 @@ void GKDBusEvents::removeSignalsInterface(
 	const char* eventInterface) noexcept
 {
 	this->removeInterface(eventBus, eventSender, eventObject, eventInterface);
+}
+
+void GKDBusEvents::clearDBusEvents(void) noexcept
+{
+	GK_LOG_FUNC
+
+	for(const auto & busPair : _DBusEvents) {
+		GKLog2(trace, "current bus : ", toUInt(toEnumType(busPair.first)))
+		for(const auto & objectPair : busPair.second) {
+			GKLog2(trace, "object : ", objectPair.first)
+			for(const auto & interfacePair : objectPair.second) {
+				GKLog2(trace, "interface : ", interfacePair.first)
+				for(auto & DBusEvent : interfacePair.second) { /* vector of pointers */
+					delete DBusEvent;
+				}
+			}
+		}
+	}
+
+	_DBusEvents.clear();
 }
 
 /*

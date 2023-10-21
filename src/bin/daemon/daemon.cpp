@@ -203,7 +203,7 @@ int GLogiKDaemon::run(void)
 #if GKDBUS
 			clientsManager.waitForClientsDisconnections();
 			clientsManager.cleanDBusRequests();
-			DBus.disconnectFromSystemBus();
+			DBus.exit();
 #endif
 		}
 		catch (const GLogiKExcept & e) {	// catch any monitoring failure
@@ -214,7 +214,7 @@ int GLogiKDaemon::run(void)
 #if GKDBUS
 			clientsManager.waitForClientsDisconnections();
 			clientsManager.cleanDBusRequests();
-			DBus.disconnectFromSystemBus();
+			DBus.exit();
 #endif
 			throw;
 		}

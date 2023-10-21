@@ -73,12 +73,6 @@ GKDBus::GKDBus(
 
 GKDBus::~GKDBus()
 {
-	GK_LOG_FUNC
-
-	GKLog(trace, "GKDBus destruction")
-
-	this->disconnectFromSessionBus();
-	this->disconnectFromSystemBus();
 }
 
 const std::string GKDBus::getDBusVersion(void)
@@ -130,22 +124,6 @@ void GKDBus::connectToSystemBus(
 	}
 }
 
-void GKDBus::disconnectFromSystemBus(void) noexcept
-{
-	GK_LOG_FUNC
-
-	if(_systemConnection) {
-		GKLog(trace, "closing system bus connection")
-
-		if( ! _systemName.empty() ) {
-			int ret = dbus_bus_release_name(_systemConnection, _systemName.c_str(), &_error);
-			this->checkReleasedName(ret);
-		}
-		dbus_connection_unref(_systemConnection);
-		_systemConnection = nullptr;
-	}
-}
-
 void GKDBus::connectToSessionBus(
 	const char* connectionName,
 	const ConnectionFlag flag)
@@ -169,20 +147,15 @@ void GKDBus::connectToSessionBus(
 	}
 }
 
-void GKDBus::disconnectFromSessionBus(void) noexcept
+void GKDBus::exit(void) noexcept
 {
 	GK_LOG_FUNC
 
-	if(_sessionConnection) {
-		GKLog(trace, "closing session bus connection")
+	GKLog(trace, "disconnecting and clearing DBusEvents")
 
-		if( ! _sessionName.empty() ) {
-			int ret = dbus_bus_release_name(_sessionConnection, _sessionName.c_str(), &_error);
-			this->checkReleasedName(ret);
-		}
-		dbus_connection_unref(_sessionConnection);
-		_sessionConnection = nullptr;
-	}
+	this->disconnectFromSystemBus();
+	this->disconnectFromSessionBus();
+	this->clearDBusEvents();
 }
 
 const std::string GKDBus::getObjectFromObjectPath(const std::string & objectPath)
@@ -218,6 +191,38 @@ void GKDBus::checkForMessages(void) noexcept
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
+
+void GKDBus::disconnectFromSystemBus(void) noexcept
+{
+	GK_LOG_FUNC
+
+	if(_systemConnection) {
+		GKLog(trace, "closing system bus connection")
+
+		if( ! _systemName.empty() ) {
+			int ret = dbus_bus_release_name(_systemConnection, _systemName.c_str(), &_error);
+			this->checkReleasedName(ret);
+		}
+		dbus_connection_unref(_systemConnection);
+		_systemConnection = nullptr;
+	}
+}
+
+void GKDBus::disconnectFromSessionBus(void) noexcept
+{
+	GK_LOG_FUNC
+
+	if(_sessionConnection) {
+		GKLog(trace, "closing session bus connection")
+
+		if( ! _sessionName.empty() ) {
+			int ret = dbus_bus_release_name(_sessionConnection, _sessionName.c_str(), &_error);
+			this->checkReleasedName(ret);
+		}
+		dbus_connection_unref(_sessionConnection);
+		_sessionConnection = nullptr;
+	}
+}
 
 void GKDBus::checkDBusMessage(
 	DBusConnection* const connection,

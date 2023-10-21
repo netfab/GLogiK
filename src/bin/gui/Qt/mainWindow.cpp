@@ -389,7 +389,7 @@ void MainWindow::aboutToQuit(void)
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 
-	_pDBus->disconnectFromSessionBus();
+	_pDBus->exit();
 
 	delete _pDBus; _pDBus = nullptr;
 

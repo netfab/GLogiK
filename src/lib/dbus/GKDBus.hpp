@@ -102,8 +102,7 @@ class GKDBus
 			const ConnectionFlag flag = ConnectionFlag::GKDBUS_MULTIPLE
 		);
 
-		void disconnectFromSystemBus(void) noexcept;
-		void disconnectFromSessionBus(void) noexcept;
+		void exit(void) noexcept;
 
 		const std::string getObjectFromObjectPath(const std::string & objectPath);
 		void checkForMessages(void) noexcept;
@@ -124,6 +123,9 @@ class GKDBus
 
 		DBusConnection* _sessionConnection;
 		DBusConnection* _systemConnection;
+
+		void disconnectFromSystemBus(void) noexcept;
+		void disconnectFromSessionBus(void) noexcept;
 
 		void checkDBusMessage(
 			DBusConnection* const connection,

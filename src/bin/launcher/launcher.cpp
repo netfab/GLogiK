@@ -134,7 +134,7 @@ int DesktopServiceLauncher::run(void)
 
 		handler.cleanDBusRequests();
 
-		DBus.disconnectFromSessionBus();
+		DBus.exit();
 	}
 
 	GKLog(trace, "exiting with success")

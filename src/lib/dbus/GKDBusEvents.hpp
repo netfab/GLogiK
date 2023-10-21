@@ -102,6 +102,7 @@ class GKDBusEvents
 					std::vector<GKDBusEvent*> > > > _DBusEvents;
 
 		const std::string & getRootNode(void) const;
+		void clearDBusEvents(void) noexcept;
 
 	private:
 		static const std::string _rootNodeObject;

@@ -151,8 +151,7 @@ int DesktopService::run(void)
 		// also unregister with daemon before cleaning
 		handler.cleanDBusRequests();
 
-		DBus.disconnectFromSessionBus();
-		DBus.disconnectFromSystemBus();
+		DBus.exit();
 	}
 
 	GKLog(trace, "exiting with success")
