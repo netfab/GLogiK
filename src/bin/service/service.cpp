@@ -31,9 +31,6 @@
 #include <iostream>
 #include <sstream>
 
-#include <boost/filesystem.hpp>
-#include <boost/program_options.hpp>
-
 #include <config.h>
 
 #include "lib/dbus/GKDBus.hpp"
@@ -47,38 +44,15 @@
 
 #include "include/DepsMap.hpp"
 
-namespace fs = boost::filesystem;
-namespace po = boost::program_options;
-
 namespace GLogiK
 {
 
 using namespace NSGKUtils;
 
-DesktopService::DesktopService(const int& argc, char *argv[])
+DesktopService::DesktopService(const bool & version)
 	:	_pid(0),
-		_version(false)
+		_version(version)
 {
-	GK_LOG_FUNC
-
-	openlog(GLOGIKS_DESKTOP_SERVICE_NAME, LOG_PID|LOG_CONS, LOG_USER);
-
-	// initialize logging
-	try {
-		/* boost::po may throw */
-		this->parseCommandLine(argc, argv);
-
-#if DEBUGGING_ON
-		if(GKLogging::GKDebug) {
-			GKLogging::initDebugFile(GLOGIKS_DESKTOP_SERVICE_NAME, fs::owner_read|fs::owner_write|fs::group_read);
-		}
-#endif
-		GKLogging::initConsoleLog();
-	}
-	catch (const std::exception & e) {
-		syslog(LOG_ERR, "%s", e.what());
-		throw InitFailure();
-	}
 }
 
 DesktopService::~DesktopService()
@@ -86,8 +60,6 @@ DesktopService::~DesktopService()
 	GK_LOG_FUNC
 
 	LOG(info) << GLOGIKS_DESKTOP_SERVICE_NAME << " desktop service process exiting, bye !";
-
-	closelog();
 }
 
 int DesktopService::run(void)
@@ -186,39 +158,6 @@ int DesktopService::run(void)
 	GKLog(trace, "exiting with success")
 
 	return EXIT_SUCCESS;
-}
-
-void DesktopService::parseCommandLine(const int& argc, char *argv[])
-{
-	GK_LOG_FUNC
-
-	po::options_description desc("Allowed options");
-
-	desc.add_options()
-		("version,v", po::bool_switch()->default_value(false), "print some versions informations and exit")
-	;
-
-#if DEBUGGING_ON
-	desc.add_options()
-		("debug,D", po::bool_switch()->default_value(false), "run in debug mode")
-	;
-#endif
-
-	po::variables_map vm;
-
-	po::store(po::parse_command_line(argc, argv, desc), vm);
-
-	po::notify(vm);
-
-	_version = vm.count("version") ? vm["version"].as<bool>() : false;
-
-#if DEBUGGING_ON
-	bool debug = vm.count("debug") ? vm["debug"].as<bool>() : false;
-
-	if( debug ) {
-		GKLogging::GKDebug = true;
-	}
-#endif
 }
 
 } // namespace GLogiK

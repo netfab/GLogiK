@@ -33,6 +33,8 @@ GLogiKs_SOURCES = \
 		%D%/devicesHandler.hpp \
 		%D%/GKeysEventManager.cpp \
 		%D%/GKeysEventManager.hpp \
+		%D%/initLog.cpp \
+		%D%/initLog.hpp \
 		%D%/DBusHandler.cpp \
 		%D%/DBusHandler.hpp \
 		%D%/service.cpp \

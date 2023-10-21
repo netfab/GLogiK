@@ -5,6 +5,8 @@ GLogiKs_sources = [
   'devicesHandler.hpp',
   'GKeysEventManager.cpp',
   'GKeysEventManager.hpp',
+  'initLog.cpp',
+  'initLog.hpp',
   'DBusHandler.cpp',
   'DBusHandler.hpp',
   'service.cpp',

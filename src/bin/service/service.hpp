@@ -30,7 +30,7 @@ namespace GLogiK
 class DesktopService
 {
 	public:
-		DesktopService(const int& argc, char *argv[]);
+		DesktopService(const bool & version);
 		~DesktopService(void);
 
 		int run(void);
@@ -39,9 +39,7 @@ class DesktopService
 
 	private:
 		pid_t _pid;
-		bool _version;
-
-		void parseCommandLine(const int& argc, char *argv[]);
+		const bool _version;
 };
 
 } // namespace GLogiK

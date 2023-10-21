@@ -19,30 +19,33 @@
  *
  */
 
-#include "lib/utils/utils.hpp"
+#ifndef SRC_BIN_SERVICE_INIT_LOG_HPP_
+#define SRC_BIN_SERVICE_INIT_LOG_HPP_
 
-#include "initLog.hpp"
-#include "service.hpp"
+#include <string>
 
-using namespace GLogiK;
+#include <boost/program_options.hpp>
 
-int main(int argc, char *argv[])
+namespace po = boost::program_options;
+
+namespace GLogiK
 {
-	using namespace NSGKUtils;
 
-	try {
-		InitLog init(argc, argv);
+class InitLog
+{
+	public:
+		InitLog(const int& argc, char *argv[]);
+		~InitLog(void);
 
-		DesktopService service( init.getBooleanOption("version") );
-		return service.run();
-	}
-	catch(const InitFailure & e) {
-		syslog(LOG_ERR, "%s", e.what());
-	}
-	catch(const GLogiKExcept & e) {
-		LOG(error) << e.what();
-	}
+		const bool getBooleanOption(const std::string & optstr) const;
 
-	return EXIT_FAILURE;
-}
+	protected:
+	private:
+		po::variables_map _vm;
 
+		void parseCommandLine(const int& argc, char *argv[]);
+};
+
+} // namespace GLogiK
+
+#endif
