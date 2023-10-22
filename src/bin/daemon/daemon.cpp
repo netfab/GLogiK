@@ -232,13 +232,13 @@ int GLogiKDaemon::run(void)
 	return EXIT_SUCCESS;
 }
 
-void GLogiKDaemon::handleSignal(int sig) {
+void GLogiKDaemon::handleSignal(int signum) {
 	GK_LOG_FUNC
 
 	std::ostringstream buffer("caught signal: ", std::ios_base::app);
 	std::string sigdesc("");
 	try {
-		sigdesc = toString(sigabbrev_np(sig));
+		sigdesc = toString(sigabbrev_np(signum));
 		if(sigdesc.empty())
 			sigdesc = "invalid signal number";
 	}
@@ -249,10 +249,10 @@ void GLogiKDaemon::handleSignal(int sig) {
 		sigdesc = warn;
 	}
 
-	switch( sig ) {
+	switch( signum ) {
 		case SIGINT:
 		case SIGTERM:
-			buffer << sigdesc << "(" << sig << ")" << " --> bye bye";
+			buffer << sigdesc << "(" << signum << ")" << " --> bye bye";
 			GKSysLogInfo(buffer.str());
 
 			process::resetSignalHandler(SIGINT);
@@ -261,7 +261,7 @@ void GLogiKDaemon::handleSignal(int sig) {
 			GLogiKDaemon::exitDaemon();
 			break;
 		default:
-			buffer << sigdesc << "(" << sig << ")" << " --> unhandled";
+			buffer << sigdesc << "(" << signum << ")" << " --> unhandled";
 			GKSysLogWarning(buffer.str());
 			break;
 	}

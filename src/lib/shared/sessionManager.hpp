@@ -57,7 +57,7 @@ class SessionManager
 		void closeConnection(void);
 
 		static bool stillRunning;
-		static void handleSignal(int sig);
+		static void handleSignal(int signum);
 
 		static void processICEMessages(
 			IceConn ice_conn

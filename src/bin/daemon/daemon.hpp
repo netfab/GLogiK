@@ -52,7 +52,7 @@ class GLogiKDaemon
 		void createPIDFile(void);
 		void dropPrivileges(void);
 		void parseCommandLine(const int& argc, char *argv[]);
-		static void handleSignal(int sig);
+		static void handleSignal(int signum);
 };
 
 } // namespace GLogiK

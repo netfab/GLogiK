@@ -99,7 +99,7 @@ class MainWindow
 
 		/* -- -- -- */
 
-		static void handleSignal(int sig);
+		static void handleSignal(int signum);
 
 		QWidget* getTabbedWidget(const std::string & name);
 
