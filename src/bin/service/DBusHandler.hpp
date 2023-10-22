@@ -58,6 +58,9 @@ class DBusHandler
 		);
 		~DBusHandler(void);
 
+		static bool WantToExit;	/* true if we want to exit */
+		static void handleSignal(int signum);
+
 		const bool getExitStatus(void) const;
 		void checkNotifyEvents(NSGKUtils::FileSystem* pGKfs);
 		void cleanDBusRequests(void);
@@ -65,8 +68,8 @@ class DBusHandler
 	protected:
 
 	private:
-		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
-		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
+		static constexpr NSGKDBus::BusConnection const & _sessionBus = NSGKDBus::GKDBus::SessionBus;
+		static constexpr NSGKDBus::BusConnection const & _systemBus = NSGKDBus::GKDBus::SystemBus;
 
 		GKeysEventManager _GKeysEvent;
 		DevicesHandler _devices;
@@ -79,7 +82,6 @@ class DBusHandler
 		SessionFramework _sessionFramework;
 
 		bool _registerStatus;		/* true == registered with daemon */
-		bool _wantToExit;			/* true if we want to exit after a restart request */
 
 		/* -- -- -- */
 
@@ -99,7 +101,7 @@ class DBusHandler
 		void initializeGKDBusSignals(void);
 		void initializeGKDBusMethods(void);
 
-		void sendRestartRequest(void);
+		static void sendRestartRequest(void);
 		void sendDevicesUpdatedSignal(void);
 
 		/* signals from daemon */

@@ -23,6 +23,7 @@
 #include <new>
 #include <functional>
 #include <stdexcept>
+#include <csignal>
 
 #include "lib/shared/glogik.hpp"
 
@@ -35,6 +36,8 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
+bool DBusHandler::WantToExit = false;
+
 DBusHandler::DBusHandler(
 	pid_t pid,
 	NSGKUtils::FileSystem* pGKfs)
@@ -43,8 +46,7 @@ DBusHandler::DBusHandler(
 		_currentSession(""),
 		_sessionState(""),
 		_sessionFramework(SessionFramework::FW_UNKNOWN),
-		_registerStatus(false),
-		_wantToExit(false)
+		_registerStatus(false)
 {
 	GK_LOG_FUNC
 
@@ -63,6 +65,8 @@ DBusHandler::DBusHandler(
 		_devices.setClientID(_clientID);
 
 		this->initializeDevices();
+
+		process::setSignalHandler(SIGUSR1, DBusHandler::handleSignal);
 	}
 	catch ( const GLogiKExcept & e ) {
 		this->unregisterWithDaemon();
@@ -112,7 +116,7 @@ void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 /* return false if we want to exit on next main loop run */
 const bool DBusHandler::getExitStatus(void) const
 {
-	return ( ! _wantToExit );
+	return ( ! DBusHandler::WantToExit );
 }
 
 void DBusHandler::clearAndUnregister(const bool notifications)
@@ -188,6 +192,25 @@ void DBusHandler::cleanDBusRequests(void)
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
+
+void DBusHandler::handleSignal(int signum)
+{
+	GK_LOG_FUNC
+
+	switch( signum ) {
+		case SIGUSR1:
+			LOG(info) << process::getSignalHandlingDesc(signum, " --> sending restart request and exiting");
+
+			process::resetSignalHandler(SIGUSR1);
+
+			DBusHandler::WantToExit = true;
+			DBusHandler::sendRestartRequest();
+			break;
+		default:
+			LOG(warning) << process::getSignalHandlingDesc(signum, " --> unhandled");
+			break;
+	}
+}
 
 /*
  * register against the daemon, throws on failure
@@ -867,7 +890,7 @@ void DBusHandler::daemonIsStarting(void)
 		}
 		catch (const GLogiKExcept & e) {
 			LOG(error) << e.what();
-			_wantToExit = true;
+			DBusHandler::WantToExit = true;
 			this->sendRestartRequest();
 		}
 	}
