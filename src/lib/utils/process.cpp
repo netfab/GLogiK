@@ -22,6 +22,7 @@
 #include <chrono>
 #include <thread>
 #include <string>
+#include <sstream>
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -184,6 +185,14 @@ void process::resetSignalHandler(int signum)
 	catch (const GLogiKExcept & e) {
 		GKSysLogWarning(e.what());
 	}
+}
+
+const std::string process::getSignalHandlingDesc(const int & signum, const std::string & desc)
+{
+	const std::string sigdesc( process::getSignalAbbrev(signum) );
+	std::ostringstream buffer("caught signal: ", std::ios_base::app);
+	buffer << sigdesc << "(" << signum << ")" << desc;
+	return buffer.str();
 }
 
 const std::string process::getSignalAbbrev(int signum)

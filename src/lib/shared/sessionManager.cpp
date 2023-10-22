@@ -155,14 +155,10 @@ void SessionManager::closeConnection(void) {
 void SessionManager::handleSignal(int signum) {
 	GK_LOG_FUNC
 
-	std::ostringstream buff("caught signal : ", std::ios_base::app);
-	const std::string sigdesc( process::getSignalAbbrev(signum) );
-
 	switch( signum ) {
 		case SIGINT:
 		case SIGTERM:
-			buff << sigdesc << "(" << signum << ")" << " --> bye bye";
-			LOG(info) << buff.str();
+			LOG(info) << process::getSignalHandlingDesc(signum, " --> bye bye");
 
 			process::resetSignalHandler(SIGINT);
 			process::resetSignalHandler(SIGTERM);
@@ -170,8 +166,7 @@ void SessionManager::handleSignal(int signum) {
 			SessionManager::stillRunning = false;
 			break;
 		default:
-			buff << signum << " --> unhandled";
-			LOG(warning) << buff.str();
+			LOG(warning) << process::getSignalHandlingDesc(signum, " --> unhandled");
 			break;
 	}
 }

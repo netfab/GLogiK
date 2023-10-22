@@ -51,7 +51,7 @@ class process
 		static const pid_t deamonize(void);
 		static void setSignalHandler(int signum, __signal_handler_t __handler);
 		static void resetSignalHandler(int signum);
-		static const std::string getSignalAbbrev(int signum);
+		static const std::string getSignalHandlingDesc(const int & signum, const std::string & desc);
 
 	protected:
 
@@ -62,6 +62,7 @@ class process
 		static uint8_t options;
 
 		static const pid_t newPID(void);
+		static const std::string getSignalAbbrev(int signum);
 };
 
 inline const uint8_t operator & (const uint8_t value, const process::mask option)

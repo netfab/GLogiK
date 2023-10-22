@@ -98,7 +98,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::handleSignal(int signum)
 {
-	LOG(info) << "catched signal : " << signum;
+	LOG(info) << process::getSignalHandlingDesc(signum, " --> bye bye");
 	QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
 }
 

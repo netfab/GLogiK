@@ -235,15 +235,11 @@ int GLogiKDaemon::run(void)
 void GLogiKDaemon::handleSignal(int signum) {
 	GK_LOG_FUNC
 
-	std::ostringstream buffer("caught signal: ", std::ios_base::app);
-
-	const std::string sigdesc( process::getSignalAbbrev(signum) );
-
-	switch( signum ) {
+	switch( signum )
+	{
 		case SIGINT:
 		case SIGTERM:
-			buffer << sigdesc << "(" << signum << ")" << " --> bye bye";
-			GKSysLogInfo(buffer.str());
+			GKSysLogInfo( process::getSignalHandlingDesc(signum, " --> bye bye") );
 
 			process::resetSignalHandler(SIGINT);
 			process::resetSignalHandler(SIGTERM);
@@ -251,8 +247,7 @@ void GLogiKDaemon::handleSignal(int signum) {
 			GLogiKDaemon::exitDaemon();
 			break;
 		default:
-			buffer << sigdesc << "(" << signum << ")" << " --> unhandled";
-			GKSysLogWarning(buffer.str());
+			GKSysLogWarning( process::getSignalHandlingDesc(signum, " --> unhandled") );
 			break;
 	}
 }
