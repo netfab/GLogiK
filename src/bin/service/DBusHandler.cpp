@@ -67,6 +67,7 @@ DBusHandler::DBusHandler(
 		this->initializeDevices();
 
 		process::setSignalHandler(SIGUSR1, DBusHandler::handleSignal);
+		process::setSignalHandler(SIGUSR2, DBusHandler::handleSignal);
 	}
 	catch ( const GLogiKExcept & e ) {
 		this->unregisterWithDaemon();
