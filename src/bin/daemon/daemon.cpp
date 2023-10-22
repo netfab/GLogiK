@@ -236,18 +236,8 @@ void GLogiKDaemon::handleSignal(int signum) {
 	GK_LOG_FUNC
 
 	std::ostringstream buffer("caught signal: ", std::ios_base::app);
-	std::string sigdesc("");
-	try {
-		sigdesc = toString(sigabbrev_np(signum));
-		if(sigdesc.empty())
-			sigdesc = "invalid signal number";
-	}
-	catch (const GLogiKExcept & e) {
-		std::string warn("string conversion exception: ");
-		warn += e.what();
-		GKSysLogWarning(warn);
-		sigdesc = warn;
-	}
+
+	const std::string sigdesc( process::getSignalAbbrev(signum) );
 
 	switch( signum ) {
 		case SIGINT:

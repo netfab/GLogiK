@@ -167,9 +167,7 @@ void process::setSignalHandler(int signum, __signal_handler_t __handler)
 {
 	GK_LOG_FUNC
 
-	const std::string sigdesc(toString(sigabbrev_np(signum)));
-	if(sigdesc.empty())
-		throw GLogiKExcept("invalid signal number");
+	const std::string sigdesc( process::getSignalAbbrev(signum) );
 	GKLog2(trace, "setting signal handler: ", sigdesc)
 	if(std::signal(signum, __handler) == SIG_ERR) {
 		GKSysLogError("std::signal failure: ", sigdesc);
@@ -186,6 +184,25 @@ void process::resetSignalHandler(int signum)
 	catch (const GLogiKExcept & e) {
 		GKSysLogWarning(e.what());
 	}
+}
+
+const std::string process::getSignalAbbrev(int signum)
+{
+	GK_LOG_FUNC
+
+	std::string sigdesc("");
+	try {
+		sigdesc = toString(sigabbrev_np(signum));
+		if(sigdesc.empty())
+			sigdesc = "invalid signal number";
+	}
+	catch (const GLogiKExcept & e) {
+		std::string warn("string conversion exception: ");
+		warn += e.what();
+		GKSysLogWarning(warn);
+		sigdesc = warn;
+	}
+	return sigdesc;
 }
 
 } // namespace NSGKUtils

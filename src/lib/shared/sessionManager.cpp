@@ -156,10 +156,12 @@ void SessionManager::handleSignal(int signum) {
 	GK_LOG_FUNC
 
 	std::ostringstream buff("caught signal : ", std::ios_base::app);
+	const std::string sigdesc( process::getSignalAbbrev(signum) );
+
 	switch( signum ) {
 		case SIGINT:
 		case SIGTERM:
-			buff << signum << " --> bye bye";
+			buff << sigdesc << "(" << signum << ")" << " --> bye bye";
 			LOG(info) << buff.str();
 
 			process::resetSignalHandler(SIGINT);

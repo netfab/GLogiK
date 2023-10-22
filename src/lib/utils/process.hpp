@@ -26,6 +26,8 @@
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
+#include <string>
+
 #include <cstdint>
 #include <sys/types.h>
 
@@ -49,6 +51,7 @@ class process
 		static const pid_t deamonize(void);
 		static void setSignalHandler(int signum, __signal_handler_t __handler);
 		static void resetSignalHandler(int signum);
+		static const std::string getSignalAbbrev(int signum);
 
 	protected:
 
