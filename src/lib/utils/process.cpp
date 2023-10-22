@@ -177,14 +177,7 @@ void process::setSignalHandler(int signum, __signal_handler_t __handler)
 
 void process::resetSignalHandler(int signum)
 {
-	GK_LOG_FUNC
-
-	try {
-		process::setSignalHandler(signum, SIG_DFL);
-	}
-	catch (const GLogiKExcept & e) {
-		GKSysLogWarning(e.what());
-	}
+	process::setSignalHandler(signum, SIG_DFL);
 }
 
 const std::string process::getSignalHandlingDesc(const int & signum, const std::string & desc)
