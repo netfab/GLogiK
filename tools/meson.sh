@@ -21,6 +21,11 @@ declare -r ABS_BUILD_DIR="${PACKAGE_WORK_DIR}/${REL_BUILD_DIR}"
 declare -r ABS_SOURCE_DIR="${PWD%\/*}"
 declare -r ABS_INSTALL_DIR="${PACKAGE_WORK_DIR}/${REL_INSTALL_DIR}"
 
+# ccache automatically enabled if found
+# https://mesonbuild.com/Feature-autodetection.html#ccache
+#export PATH="/usr/lib/ccache/bin:${PATH}"
+export CCACHE_DIR='/var/tmp/devccache'
+
 # -- -- -- -- -- -- -- -- -- #
 
 function die() {
