@@ -81,6 +81,8 @@ class DBusHandler
 		std::string _currentSession;	/* current session object path */
 		std::string _sessionState;		/* session state */
 
+		const GKDepsMap_type* const _pDepsMap;
+
 		SessionFramework _sessionFramework;
 
 		bool _registerStatus;		/* true == registered with daemon */
@@ -140,6 +142,7 @@ class DBusHandler
 			const std::string & devID,
 			const std::string & reserved
 		);
+		const GKDepsMap_type & getExecutablesDependenciesMap(const std::string & reserved);
 };
 
 } // namespace GLogiK

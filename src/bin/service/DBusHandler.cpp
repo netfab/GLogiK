@@ -46,6 +46,7 @@ DBusHandler::DBusHandler(
 		_daemonVersion("unknown"),
 		_currentSession(""),
 		_sessionState(""),
+		_pDepsMap(dependencies),
 		_sessionFramework(SessionFramework::FW_UNKNOWN),
 		_registerStatus(false)
 {
@@ -902,6 +903,15 @@ void DBusHandler::initializeGKDBusMethods(void)
 			{"s", r_ed, "in", r_ed},
 			{"a(tss)", "get_lcd_plugins_properties_array", "out", "LCDPluginsProperties array"} },
 		std::bind(&DBusHandler::getDeviceLCDPluginsProperties, this, std::placeholders::_1, r_ed) );
+
+	DBus.NSGKDBus::Callback<SIGs2D>::exposeMethod(
+		_sessionBus,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		"GetExecutablesDependenciesMap",
+		{	{"s", r_ed, "in", r_ed},
+			{"a(yta(sss))", "dependencies_map", "out", "array of executable dependencies"} },
+		std::bind(&DBusHandler::getExecutablesDependenciesMap, this, r_ed) );
 }
 
 void DBusHandler::daemonIsStopping(void)
@@ -1292,6 +1302,11 @@ const LCDPPArray_type & DBusHandler::getDeviceLCDPluginsProperties(
 	const std::string & reserved)
 {
 	return _devices.getDeviceLCDPluginsProperties(devID);
+}
+
+const GKDepsMap_type & DBusHandler::getExecutablesDependenciesMap(const std::string & reserved)
+{
+	return (*_pDepsMap);
 }
 
 void DBusHandler::deviceStatusChangeRequest(

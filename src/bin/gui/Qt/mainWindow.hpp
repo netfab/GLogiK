@@ -38,6 +38,7 @@
 #include "lib/shared/deviceProperties.hpp"
 
 #include "include/DeviceID.hpp"
+#include "include/DepsMap.hpp"
 
 #include "DaemonAndServiceTab.hpp"
 #include "DeviceControlTab.hpp"
@@ -78,6 +79,7 @@ class MainWindow
 		std::string _devID;
 
 		DevicesMap_type _devices;
+		GKDepsMap_type _DepsMap;
 
 		NSGKDBus::GKDBus* _pDBus;
 
@@ -89,6 +91,8 @@ class MainWindow
 		BacklightColorTab* _backlightColorTab;
 		LCDPluginsTab* _LCDPluginsTab;
 		GKeysTab* _GKeysTab;
+
+		const GKDepsMap_type* const _pDepsMap = &_DepsMap;
 
 		int _statusBarTimeout;
 		pid_t _pid;
@@ -108,6 +112,7 @@ class MainWindow
 		void setTabEnabled(const std::string & name, const bool status);
 		void setCurrentTab(const std::string & name);
 
+		void getExecutablesDependenciesMap(void);
 		void aboutDialog(void);
 
 		void aboutToQuit(void);

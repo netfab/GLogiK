@@ -236,6 +236,9 @@ void MainWindow::build(void)
 
 		/* -- -- -- */
 
+		/* required by aboutDialog */
+		this->getExecutablesDependenciesMap();
+
 		QMenu* fileMenu = this->menuBar()->addMenu("&File");
 		QAction* quit = new QAction("&Quit", this);
 		fileMenu->addAction(quit);
@@ -439,6 +442,41 @@ void MainWindow::configurationFileUpdated(const std::string & devID)
 
 	if(ret == QMessageBox::Ok) {
 		this->updateInterface( _devicesComboBox->currentIndex() );
+	}
+}
+
+void MainWindow::getExecutablesDependenciesMap(void)
+{
+	GK_LOG_FUNC
+
+	GKLog(trace, "getting executables dependencies map")
+
+	const std::string remoteMethod("GetExecutablesDependenciesMap");
+	try {
+		_pDBus->initializeRemoteMethodCall(
+			_sessionBus,
+			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+			remoteMethod.c_str()
+		);
+		_pDBus->appendStringToRemoteMethodCall("reserved");
+
+		_pDBus->sendRemoteMethodCall();
+
+		try {
+			_pDBus->waitForRemoteMethodCallReply();
+			_DepsMap = _pDBus->getNextGKDepsMapArgument();
+		}
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
+			throw GLogiKExcept("failure to get request reply");
+		}
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonRemoteMethodCall();
+		LogRemoteCallFailure
+		throw GLogiKExcept("failure to build request");
 	}
 }
 
