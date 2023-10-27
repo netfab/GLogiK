@@ -177,6 +177,12 @@ void LicenseTab::buildTab(void)
 		licenseWidget->setObjectName("LicenseWidget");
 		licenseWidget->setReadOnly(true);
 
+		{
+			QFont cFont = licenseWidget->font();
+			cFont.setPointSize(10);
+			licenseWidget->setFont(cFont);
+		}
+
 		QString licensePath(DOC_DIR); licensePath += "/COPYING";
 		QFile licenseFile(licensePath);
 
