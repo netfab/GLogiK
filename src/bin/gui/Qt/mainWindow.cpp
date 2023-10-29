@@ -53,7 +53,7 @@
 
 #include "include/enums.hpp"
 
-#include "AboutDialog.hpp"
+#include "AboutDialog/AboutDialog.hpp"
 #include "mainWindow.hpp"
 
 namespace po = boost::program_options;

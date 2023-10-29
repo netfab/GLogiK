@@ -21,8 +21,15 @@ GKcQt5_LDADD = \
 		libGKShared.la
 
 GKcQt5_SOURCES = \
-		%D%/AboutDialog.cpp \
-		%D%/AboutDialog.hpp \
+		%D%/AboutDialog/AboutDialogTab.hpp \
+		%D%/AboutDialog/AboutTab.cpp \
+		%D%/AboutDialog/AboutTab.hpp \
+		%D%/AboutDialog/DependenciesTab.cpp \
+		%D%/AboutDialog/DependenciesTab.hpp \
+		%D%/AboutDialog/LicenseTab.cpp \
+		%D%/AboutDialog/LicenseTab.hpp \
+		%D%/AboutDialog/AboutDialog.cpp \
+		%D%/AboutDialog/AboutDialog.hpp \
 		%D%/Tab.cpp \
 		%D%/Tab.hpp \
 		%D%/DaemonAndServiceTab.cpp \

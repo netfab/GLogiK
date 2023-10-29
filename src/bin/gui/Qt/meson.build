@@ -1,7 +1,14 @@
 
 GKcQt5_sources = [
-  'AboutDialog.cpp',
-  'AboutDialog.hpp',
+  'AboutDialog/AboutDialogTab.hpp',
+  'AboutDialog/AboutTab.cpp',
+  'AboutDialog/AboutTab.hpp',
+  'AboutDialog/DependenciesTab.cpp',
+  'AboutDialog/DependenciesTab.hpp',
+  'AboutDialog/LicenseTab.cpp',
+  'AboutDialog/LicenseTab.hpp',
+  'AboutDialog/AboutDialog.cpp',
+  'AboutDialog/AboutDialog.hpp',
   'Tab.cpp',
   'Tab.hpp',
   'DaemonAndServiceTab.cpp',

@@ -19,47 +19,18 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_ABOUT_DIALOG_HPP_
-#define SRC_BIN_GUI_QT_ABOUT_DIALOG_HPP_
+#ifndef SRC_BIN_GUI_QT_LICENSE_TAB_HPP_
+#define SRC_BIN_GUI_QT_LICENSE_TAB_HPP_
 
-#include <QWidget>
-#include <QDialog>
-
-#include "include/DepsMap.hpp"
+#include "AboutDialogTab.hpp"
 
 #define LICENSE_FILE_SHA1 "8624bcdae55baeef00cd11d5dfcfa60f68710a02"
 
 namespace GLogiK
 {
 
-class AboutTab
-	:	public QWidget
-{
-	public:
-		AboutTab(void) = default;
-		virtual ~AboutTab(void) = default;
-
-		virtual void buildTab(void) = 0;
-
-	protected:
-	private:
-};
-
-class FirstTab
-	:	public AboutTab
-{
-	public:
-		FirstTab(void) = default;
-		~FirstTab(void) = default;
-
-		void buildTab(void);
-
-	protected:
-	private:
-};
-
 class LicenseTab
-	:	public AboutTab
+	:	public AboutDialogTab
 {
 	public:
 		LicenseTab(void) = default;
@@ -69,37 +40,6 @@ class LicenseTab
 
 	protected:
 	private:
-};
-
-class DependenciesTab
-	:	public AboutTab
-{
-	public:
-		DependenciesTab(void) = delete;
-		DependenciesTab(const GKDepsMap_type* const pDepsMap);
-		~DependenciesTab(void) = default;
-
-		void buildTab(void);
-
-	protected:
-	private:
-		const GKDepsMap_type* const _pDepsMap;
-};
-
-class AboutDialog
-	:	public QDialog
-{
-	public:
-		AboutDialog(QWidget* parent = 0);
-		~AboutDialog();
-
-		void buildDialog(const GKDepsMap_type* const pDepsMap);
-
-	protected:
-
-	private:
-		void closeDialog(void);
-
 };
 
 } // namespace GLogiK
