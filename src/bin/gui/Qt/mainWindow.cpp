@@ -486,7 +486,7 @@ void MainWindow::aboutDialog(void)
 
 	try {
 		AboutDialog* about = new AboutDialog(this);
-		about->buildDialog();
+		about->buildDialog(_pDepsMap);
 		about->setModal(true);
 		about->setAttribute(Qt::WA_DeleteOnClose);
 		about->setFixedSize(560, 300);

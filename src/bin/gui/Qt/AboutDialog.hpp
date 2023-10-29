@@ -25,6 +25,8 @@
 #include <QWidget>
 #include <QDialog>
 
+#include "include/DepsMap.hpp"
+
 #define LICENSE_FILE_SHA1 "8624bcdae55baeef00cd11d5dfcfa60f68710a02"
 
 namespace GLogiK
@@ -69,6 +71,21 @@ class LicenseTab
 	private:
 };
 
+class DependenciesTab
+	:	public AboutTab
+{
+	public:
+		DependenciesTab(void) = delete;
+		DependenciesTab(const GKDepsMap_type* const pDepsMap);
+		~DependenciesTab(void) = default;
+
+		void buildTab(void);
+
+	protected:
+	private:
+		const GKDepsMap_type* const _pDepsMap;
+};
+
 class AboutDialog
 	:	public QDialog
 {
@@ -76,7 +93,7 @@ class AboutDialog
 		AboutDialog(QWidget* parent = 0);
 		~AboutDialog();
 
-		void buildDialog(void);
+		void buildDialog(const GKDepsMap_type* const pDepsMap);
 
 	protected:
 
