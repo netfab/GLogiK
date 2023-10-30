@@ -29,6 +29,7 @@
 #include <chrono>
 #include <functional>
 
+#include <QtGlobal>
 #include <QString>
 #include <QStringList>
 #include <QTimer>
@@ -467,6 +468,11 @@ void MainWindow::getExecutablesDependenciesMap(void)
 		try {
 			_pDBus->waitForRemoteMethodCallReply();
 			_DepsMap = _pDBus->getNextGKDepsMapArgument();
+
+			_DepsMap[GKBinary::GK_GUI_QT] =
+				{ /* qVersion() from <QtGlobal> */
+					{"Qt5", GK_DEP_QT5_VERSION, qVersion()},
+				};
 		}
 		catch (const GLogiKExcept & e) {
 			LogRemoteCallGetReplyFailure
