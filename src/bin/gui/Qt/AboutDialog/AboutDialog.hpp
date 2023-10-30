@@ -24,6 +24,7 @@
 
 #include <QWidget>
 #include <QDialog>
+#include <QPushButton>
 
 #include "include/DepsMap.hpp"
 
@@ -42,7 +43,11 @@ class AboutDialog
 	protected:
 
 	private:
+		QPushButton* _pCopyButton;
+
 		void closeDialog(void);
+		void setCopyButtonVisibility(int index);
+		void copyToClipboard(const GKDepsMap_type* const pDepsMap);
 
 };
 
