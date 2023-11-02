@@ -158,14 +158,14 @@ void AboutDialog::copyToClipboard(const GKDepsMap_type* const pDepsMap)
 	{
 		//const auto & GKBin = depPair.first;
 		const auto & GKDeps = depPair.second;
-			for(const auto & GKDep : GKDeps)
-			{
-				const char* d  = GKDep.getDependency().c_str();
-				const char* ct = GKDep.getCompileTimeVersion().c_str();
-				const char* rt = GKDep.getRunTimeVersion().c_str();
+		for(const auto & GKDep : GKDeps)
+		{
+			const char* d  = GKDep.getDependency().c_str();
+			const char* ct = GKDep.getCompileTimeVersion().c_str();
+			const char* rt = GKDep.getRunTimeVersion().c_str();
 
-				text += QString("%1 %2 %3\n").arg(d, 10).arg(ct, pad).arg(rt, pad);
-			}
+			text += QString("%1 %2 %3\n").arg(d, 10).arg(ct, pad).arg(rt, pad);
+		}
 	}
 
 	clipboard->setText(text);
