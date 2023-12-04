@@ -78,8 +78,6 @@ class ClientsManager
 		 */
 		bool _enabledSignals; 
 
-		const std::string generateRandomClientID(void) const;
-
 		void initializeDBusRequests(void);
 
 		/* exposed over DBus */

@@ -311,15 +311,6 @@ void ClientsManager::waitForClientsDisconnections(void) noexcept
 	}
 }
 
-const std::string ClientsManager::generateRandomClientID(void) const
-{
-	RandomGenerator rand;
-	std::ostringstream ret(std::ios_base::app);
-	ret << rand.getString(6) << "-" << rand.getString(4) << "-"
-		<< rand.getString(4) << "-" << rand.getString(6);
-	return ret.str();
-}
-
 const bool ClientsManager::registerClient(
 	const std::string & clientSessionObjectPath)
 {
@@ -375,7 +366,16 @@ const bool ClientsManager::registerClient(
 		std::string clientID;
 
 		try {
-			clientID = this->generateRandomClientID();
+			auto get_random_clientID = [] () -> const std::string
+			{
+				RandomGenerator rand;
+				std::ostringstream ret(std::ios_base::app);
+				ret << rand.getString(6) << "-" << rand.getString(4) << "-"
+					<< rand.getString(4) << "-" << rand.getString(6);
+				return ret.str();
+			};
+
+			clientID = get_random_clientID();
 
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "registering new client with ID : " << clientID;
