@@ -266,6 +266,7 @@ install_data(
 deps_versions_array += [
   ['DBUS', dbus_dep],
   ['LIBNOTIFY', libnotify_dep],
+  ['QT5', qt5_dep],
 ]
 
 foreach define: deps_versions_array

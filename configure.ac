@@ -366,7 +366,7 @@ AS_IF([test "x$enable_qt5" = "xyes"],
 				AC_MSG_ERROR([Wrong Qt5 qmake version.])
 	        fi
 
-			AC_DEFINE_UNQUOTED([GK_DEP_QT5_VERSION], ["$qmake5_test_ver"], [detected compile-time Qt5 version])
+			AC_DEFINE_UNQUOTED([GK_DEP_QT5_VERSION_STRING], ["$qmake5_test_ver"], [detected compile-time Qt5 version])
 			qt5_incdirs="`$QMAKE5 -query QT_INSTALL_HEADERS`"
 
 			saved_CPPFLAGS=$CPPFLAGS
