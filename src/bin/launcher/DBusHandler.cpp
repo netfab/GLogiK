@@ -115,8 +115,8 @@ void DBusHandler::restartRequest(void)
 	using steady = chr::steady_clock;
 
 	LOG(info) << "received signal: " << __func__;
-	LOG(info) << "sleeping 1 second before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
-	std::this_thread::sleep_for(chr::seconds(1));
+	LOG(info) << "sleeping 100 milliseconds before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
+	std::this_thread::sleep_for(chr::milliseconds(100));
 
 	const steady::time_point now = steady::now();
 	const steady::duration timeLapse = now - _lastCall;
