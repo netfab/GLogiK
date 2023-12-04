@@ -381,18 +381,16 @@ const bool ClientsManager::registerClient(
 			buffer << "registering new client with ID : " << clientID;
 			GKSysLogInfo(buffer.str());
 
+			/* check that clientID not already used */
+			if( _connectedClients.find(clientID) != _connectedClients.end() )
+				throw GLogiKExcept("already connected clientID");
+
 			_connectedClients[clientID] = new Client(clientSessionObjectPath, _pDevicesManager);
 		}
 		catch (const std::bad_alloc& e) { /* handle new() failure */
 			const std::string s = "new client allocation failure";
 			GKSysLogError(s);
 			_pDBus->appendAsyncString(s);
-			return false;
-		}
-		catch (const std::out_of_range& oor) {
-			GKSysLogError("tried to initialize unknown client : ", clientID);
-
-			_pDBus->appendAsyncString("internal error");
 			return false;
 		}
 		catch (const GLogiKExcept & e) {
