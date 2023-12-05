@@ -53,7 +53,6 @@ class DaemonAndServiceTab
 		}
 		void updateTab(void);
 
-		const bool isServiceStarted(void) const;
 		const bool isServiceRegistered(void) const;
 
 	private:
@@ -65,7 +64,6 @@ class DaemonAndServiceTab
 
 		QPushButton* _pStartButton;
 
-		bool _serviceStarted;
 		bool _serviceRegistered;
 
 		void startSignal(void);

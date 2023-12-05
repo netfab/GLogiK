@@ -45,7 +45,6 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 		_daemonVersionLabel(nullptr),
 		_serviceVersionLabel(nullptr),
 		_serviceStatusLabel(nullptr),
-		_serviceStarted(false),
 		_serviceRegistered(false)
 {
 	this->setObjectName(name);
@@ -132,11 +131,6 @@ void DaemonAndServiceTab::buildTab(void)
 	}
 }
 
-const bool DaemonAndServiceTab::isServiceStarted(void) const
-{
-	return _serviceStarted;
-}
-
 const bool DaemonAndServiceTab::isServiceRegistered(void) const
 {
 	return _serviceRegistered;
@@ -156,7 +150,6 @@ void DaemonAndServiceTab::updateTab(void)
 		/* assuming service stopped */
 		_serviceStatusLabel->setText("Status : stopped");
 		_serviceRegistered = false;
-		_serviceStarted = false;
 		_pStartButton->setVisible(false);
 		_pStartButton->setEnabled(false);
 	}
@@ -195,7 +188,6 @@ void DaemonAndServiceTab::updateTab(void)
 			_serviceStatusLabel->setText(labelText);
 
 			_serviceRegistered = (status == "registered");
-			_serviceStarted = true;
 
 			_pStartButton->setVisible(false);
 			_pStartButton->setEnabled(false);
