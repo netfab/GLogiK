@@ -75,8 +75,6 @@ MainWindow::MainWindow(QWidget *parent)
 		_LCDPluginsTab(nullptr),
 		_statusBarTimeout(3000),
 		_pid(0),
-		_GUIResetThrow(true),
-		_serviceStartRequest(false),
 		_ignoreNextSignal(false)
 {
 	openlog("GKcQt5", LOG_PID|LOG_CONS, LOG_USER);
@@ -238,7 +236,14 @@ void MainWindow::build(void)
 		/* -- -- -- */
 
 		/* required by aboutDialog */
-		this->getExecutablesDependenciesMap();
+		try {
+			this->getExecutablesDependenciesMap();
+		}
+		catch (const GLogiKExcept & e) {
+			this->sendServiceStartRequest();
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			this->getExecutablesDependenciesMap();
+		}
 
 		QMenu* fileMenu = this->menuBar()->addMenu("&File");
 		QAction* quit = new QAction("&Quit", this);
@@ -268,47 +273,7 @@ void MainWindow::build(void)
 
 	/* -- -- -- */
 
-	try {
-		this->resetInterface(); /* try 1 */
-	}
-	catch (const GLogiKExcept & e) {
-		if(! _serviceStartRequest) {
-			/* should not happen since the desktop service is assumed stopped
-			 * until successful daemonAndServiceTab::updateTab() call */
-			throw;
-		}
-
-		std::string status("desktop service seems not started, request");
-		try {
-			/* asking the launcher for the desktop service restart */
-			_pDBus->initializeBroadcastSignal(
-				_sessionBus,
-				GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
-				GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-				"RestartRequest"
-			);
-			_pDBus->sendBroadcastSignal();
-
-			status += " sent to launcher";
-			LOG(warning) << status;
-		}
-		catch (const GKDBusMessageWrongBuild & e) {
-			_pDBus->abandonBroadcastSignal();
-			status += " to launcher failed";
-			LOG(error) << status << " - " << e.what();
-			throw GLogiKExcept("Service RestartRequest failed");
-		}
-
-		/* sleeping for 2 seconds before retrying */
-		std::this_thread::sleep_for(std::chrono::seconds(2));
-
-		this->resetInterface(); /* try 2 */
-	}
-
-	/* -- -- -- */
-
-	/* after here, don't throw if ::resetInterface() fails */
-	_GUIResetThrow = false;
+	this->resetInterface();
 
 	/* -- -- -- */
 
@@ -443,6 +408,29 @@ void MainWindow::configurationFileUpdated(const std::string & devID)
 
 	if(ret == QMessageBox::Ok) {
 		this->updateInterface( _devicesComboBox->currentIndex() );
+	}
+}
+
+void MainWindow::sendServiceStartRequest(void)
+{
+	std::string status("desktop service seems not started, request");
+	try {
+		/* asking the launcher for the desktop service restart */
+		_pDBus->initializeBroadcastSignal(
+			_sessionBus,
+			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+			"RestartRequest"
+		);
+		_pDBus->sendBroadcastSignal();
+
+		status += " sent to launcher";
+		LOG(warning) << status;
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonBroadcastSignal();
+		status += " to launcher failed";
+		LOG(error) << status << " - " << e.what();
 	}
 }
 
@@ -717,17 +705,7 @@ void MainWindow::resetInterface(void)
 
 		this->setTabEnabled("DeviceControl", false);
 
-		try {
-			_daemonAndServiceTab->updateTab();
-		}
-		catch (const GLogiKExcept & e) {
-			/* throws only if something was wrong when getting service infos
-			 * (pDBus internal error, or service not started) */
-
-			/* used only over initialization */
-			_serviceStartRequest = (_daemonAndServiceTab->isServiceStarted() == false);
-			throw;
-		}
+		_daemonAndServiceTab->updateTab(); /* may throw */
 
 		/* don't try to update devices list if the service
 		 * is not registered against the daemon */
@@ -759,9 +737,6 @@ void MainWindow::resetInterface(void)
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(error) << "error resetting interface : " << e.what();
-		if(_GUIResetThrow) {
-			throw GLogiKExcept("interface reset failure");
-		}
 	}
 }
 
