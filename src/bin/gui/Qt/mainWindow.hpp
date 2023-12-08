@@ -110,7 +110,6 @@ class MainWindow
 		void setTabEnabled(const std::string & name, const bool status);
 		void setCurrentTab(const std::string & name);
 
-		void sendServiceStartRequest(void);
 		void getExecutablesDependenciesMap(void);
 		void aboutDialog(void);
 

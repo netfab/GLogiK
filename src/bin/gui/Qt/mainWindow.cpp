@@ -240,7 +240,7 @@ void MainWindow::build(void)
 			this->getExecutablesDependenciesMap();
 		}
 		catch (const GLogiKExcept & e) {
-			this->sendServiceStartRequest();
+			_daemonAndServiceTab->sendServiceStartRequest();
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			this->getExecutablesDependenciesMap();
 		}
@@ -408,29 +408,6 @@ void MainWindow::configurationFileUpdated(const std::string & devID)
 
 	if(ret == QMessageBox::Ok) {
 		this->updateInterface( _devicesComboBox->currentIndex() );
-	}
-}
-
-void MainWindow::sendServiceStartRequest(void)
-{
-	std::string status("desktop service seems not started, request");
-	try {
-		/* asking the launcher for the desktop service restart */
-		_pDBus->initializeBroadcastSignal(
-			_sessionBus,
-			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-			"RestartRequest"
-		);
-		_pDBus->sendBroadcastSignal();
-
-		status += " sent to launcher";
-		LOG(warning) << status;
-	}
-	catch (const GKDBusMessageWrongBuild & e) {
-		_pDBus->abandonBroadcastSignal();
-		status += " to launcher failed";
-		LOG(error) << status << " - " << e.what();
 	}
 }
 

@@ -38,6 +38,7 @@ namespace NSGKDBus
 
 class GKDBusEvents
 	:	public Callback<SIGas2v>,
+		public Callback<SIGq2v>,
 		public Callback<SIGs2as>,
 		public Callback<SIGs2b>,
 		public Callback<SIGs2D>,

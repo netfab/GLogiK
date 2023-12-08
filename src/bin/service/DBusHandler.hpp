@@ -107,7 +107,7 @@ class DBusHandler
 		void initializeGKDBusSignals(void);
 		void initializeGKDBusMethods(void);
 
-		static void sendRestartRequest(void);
+		static void sendServiceStartRequest(void);
 		void sendDevicesUpdatedSignal(void);
 
 		/* signals from daemon */

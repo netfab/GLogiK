@@ -209,7 +209,7 @@ void DBusHandler::handleSignal(int signum)
 			process::resetSignalHandler(SIGUSR1);
 
 			DBusHandler::WantToExit = true;
-			DBusHandler::sendRestartRequest();
+			DBusHandler::sendServiceStartRequest();
 			break;
 		default:
 			LOG(warning) << process::getSignalHandlingDesc(signum, " --> unhandled");
@@ -656,25 +656,31 @@ void DBusHandler::initializeDevices(void)
 	}
 }
 
-void DBusHandler::sendRestartRequest(void)
+void DBusHandler::sendServiceStartRequest(void)
 {
 	GK_LOG_FUNC
 
 	try {
-		/* asking the launcher for a restart */
+		/* asking the launcher to spawn the service after sleeping 300 ms
+		 *
+		 * this process is about to exit, and the launcher must wait enough time
+		 * before starting a new service process, to make sure that the
+		 * GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME is not already used
+		 */
 		DBus.initializeBroadcastSignal(
 			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-			"RestartRequest"
+			"ServiceStartRequest"
 		);
+		DBus.appendUInt16ToBroadcastSignal(300);
 		DBus.sendBroadcastSignal();
 
-		LOG(info) << "sent signal : RestartRequest";
+		LOG(info) << "sent signal : ServiceStartRequest";
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		DBus.abandonBroadcastSignal();
-		LOG(error) << "failed to send signal : RestartRequest : " << e.what();
+		LOG(error) << "failed to send signal : ServiceStartRequest : " << e.what();
 	}
 }
 
@@ -948,7 +954,7 @@ void DBusHandler::daemonIsStarting(void)
 		catch (const GLogiKExcept & e) {
 			LOG(error) << e.what();
 			DBusHandler::WantToExit = true;
-			this->sendRestartRequest();
+			this->sendServiceStartRequest();
 		}
 	}
 }

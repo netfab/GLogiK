@@ -120,7 +120,8 @@ void DaemonAndServiceTab::buildTab(void)
 
 			_pStartButton->setEnabled(false);
 
-			QObject::connect(_pStartButton, &QPushButton::clicked, this, &DaemonAndServiceTab::startSignal);
+			QObject::connect(_pStartButton, &QPushButton::clicked,
+				this, &DaemonAndServiceTab::sendServiceStartRequest);
 		}
 
 		/* -- -- -- */
@@ -214,21 +215,22 @@ void DaemonAndServiceTab::updateTab(void)
 	}
 }
 
-void DaemonAndServiceTab::startSignal(void)
+void DaemonAndServiceTab::sendServiceStartRequest(void)
 {
 	GK_LOG_FUNC
 
 	_pStartButton->setEnabled(false);
 
-	std::string status("desktop service request");
+	std::string status("desktop service seems not started, request");
 	try {
-		/* asking the launcher for the desktop service start */
+		/* asking the launcher to spawn the service after sleeping 100 ms */
 		_pDBus->initializeBroadcastSignal(
 			_sessionBus,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-			"RestartRequest"
+			"ServiceStartRequest"
 		);
+		_pDBus->appendUInt16ToBroadcastSignal(100);
 		_pDBus->sendBroadcastSignal();
 
 		status += " sent to launcher";
@@ -238,7 +240,6 @@ void DaemonAndServiceTab::startSignal(void)
 		_pDBus->abandonBroadcastSignal();
 		status += " to launcher failed";
 		LOG(error) << status << " - " << e.what();
-		throw GLogiKExcept("service RestartRequest failed");
 	}
 }
 

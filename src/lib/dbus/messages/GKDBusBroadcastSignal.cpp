@@ -147,6 +147,12 @@ void GKDBusMessageBroadcastSignal::appendUInt8ToBroadcastSignal(const uint8_t va
 		_signal->appendUInt8(value);
 }
 
+void GKDBusMessageBroadcastSignal::appendUInt16ToBroadcastSignal(const uint16_t value)
+{
+	if(_signal != nullptr) /* sanity check */
+		_signal->appendUInt16(value);
+}
+
 void GKDBusMessageBroadcastSignal::appendGKeysIDToBroadcastSignal(const GLogiK::GKeysID keyID)
 {
 	if(_signal != nullptr) /* sanity check */

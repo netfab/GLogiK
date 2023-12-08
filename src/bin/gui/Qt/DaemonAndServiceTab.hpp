@@ -54,6 +54,7 @@ class DaemonAndServiceTab
 		void updateTab(void);
 
 		const bool isServiceRegistered(void) const;
+		void sendServiceStartRequest(void);
 
 	private:
 		DaemonAndServiceTab() = delete;
@@ -65,8 +66,6 @@ class DaemonAndServiceTab
 		QPushButton* _pStartButton;
 
 		bool _serviceRegistered;
-
-		void startSignal(void);
 };
 
 } // namespace GLogiK

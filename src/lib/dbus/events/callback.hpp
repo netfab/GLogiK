@@ -46,6 +46,7 @@
 // "D" - GKDepsMap_type
 
 #include "SIGas2v.hpp"    //         array of string to void
+#include "SIGq2v.hpp"     //                uint16_t to void
 #include "SIGs2as.hpp"    //       string to array of string
 #include "SIGs2b.hpp"     //                  string to bool
 #include "SIGs2D.hpp"     //        string to GKDepsMap_type
