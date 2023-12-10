@@ -6,6 +6,7 @@ project(
 	'debug=false'
   ],
   license: 'GPL-3',
+  meson_version: '>=1.1',
   version: run_command('version.sh', check: true).stdout().strip()
 )
 
