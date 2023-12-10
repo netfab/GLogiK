@@ -42,6 +42,7 @@ EXTRA_DIST += \
 	%D%/data/tmpfiles.d/GLogiK.conf \
 	%D%/meson.build \
 	%D%/meson_options.txt \
+	%D%/version.sh \
 	%D%/src/lib/utils/meson.build \
 	%D%/src/lib/shared/meson.build \
 	%D%/src/lib/dbus/meson.build \
