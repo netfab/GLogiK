@@ -2,7 +2,7 @@
 udev_rules_dir = get_option('udev_rules_dir')
 if udev_rules_dir == ''
   #! pkg-config --variable=udevdir udev
-  udev_rules_dir = dependency('udev').get_pkgconfig_variable('udevdir')
+  udev_rules_dir = dependency('udev').get_variable(pkgconfig: 'udevdir')
   #! absolute path, otherwise meson prepends the prefix
   udev_rules_dir = udev_rules_dir / 'rules.d'
 
