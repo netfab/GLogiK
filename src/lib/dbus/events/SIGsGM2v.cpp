@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -21,6 +21,9 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "lib/dbus/ArgTypes/GKeysID.hpp"
+#include "lib/dbus/ArgTypes/macro.hpp"
+
 #include "SIGsGM2v.hpp"
 
 
@@ -36,12 +39,12 @@ template <>
 		DBusMessage* asyncContainer
 	)
 {
-	GKDBusArgument::fillInArguments(message);
+	ArgBase::fillInArguments(message);
 
 	try {
-		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
-		const GLogiK::GKeysID arg2 = GKDBusArgumentGKeysID::getNextGKeysIDArgument();
-		const GLogiK::macro_type arg3 = GKDBusArgumentMacro::getNextMacroArgument();
+		const std::string arg1( ArgString::getNextStringArgument() );
+		const GLogiK::GKeysID arg2 = ArgGKeysID::getNextGKeysIDArgument();
+		const GLogiK::macro_type arg3 = ArgMacro::getNextMacroArgument();
 
 		/* call DBusHandler::deviceMacroRecorded callback */
 		this->callback(arg1, arg2, arg3);

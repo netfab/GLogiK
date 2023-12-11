@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include "LCDPlugins/LCDPlugin.hpp"
 #include "LCDPlugins/fontsManager.hpp"
 
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 namespace GLogiK
 {
@@ -42,9 +42,9 @@ class LCDScreenPluginsManager
 		LCDScreenPluginsManager(const std::string & product);
 		~LCDScreenPluginsManager(void);
 
-		static const LCDPluginsPropertiesArray_type _LCDPluginsPropertiesEmptyArray;
+		static const LCDPPArray_type _LCDPluginsPropertiesEmptyArray;
 
-		const LCDPluginsPropertiesArray_type & getLCDPluginsProperties(void) const;
+		const LCDPPArray_type & getLCDPluginsProperties(void) const;
 
 		const bool findOneLCDScreenPlugin(const uint64_t LCDPluginsMask1) const;
 
@@ -64,7 +64,7 @@ class LCDScreenPluginsManager
 		std::vector<LCDPlugin*> _plugins;
 		std::vector<LCDPlugin*>::iterator _itCurrentPlugin;
 
-		LCDPluginsPropertiesArray_type _pluginsPropertiesArray;
+		LCDPPArray_type _pluginsPropertiesArray;
 
 		PixelsData _LCDBuffer;
 		FontsManager _fontsManager;

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -36,7 +36,8 @@
 #include "client.hpp"
 
 #include "include/base.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
+#include "include/DepsMap.hpp"
 
 namespace GLogiK
 {
@@ -45,18 +46,24 @@ class ClientsManager
 	:	public ClientsSignals
 {
 	public:
-		ClientsManager(DevicesManager* pDevicesManager);
+		ClientsManager(
+			NSGKDBus::GKDBus* const pDBus,
+			DevicesManager* const pDevicesManager,
+			GKDepsMap_type* const pDepsMap
+		);
 		~ClientsManager(void);
 
-		void initializeDBusRequests(NSGKDBus::GKDBus* pDBus);
 		void cleanDBusRequests(void) noexcept;
 		void waitForClientsDisconnections(void) noexcept;
 
 	protected:
 
 	private:
-		NSGKDBus::GKDBus* _pDBus;
-		DevicesManager* _pDevicesManager;
+		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
+
+		NSGKDBus::GKDBus* const _pDBus;
+		DevicesManager* const _pDevicesManager;
+		const GKDepsMap_type* const _pDepsMap;
 
 		const std::string _active;
 		std::map<std::string, Client*> _connectedClients;
@@ -71,7 +78,7 @@ class ClientsManager
 		 */
 		bool _enabledSignals; 
 
-		const std::string generateRandomClientID(void) const;
+		void initializeDBusRequests(void);
 
 		/* exposed over DBus */
 			/* ClientsManager D-Bus object */
@@ -92,6 +99,9 @@ class ClientsManager
 		const bool deleteDeviceConfiguration(
 			const std::string & clientID,
 			const std::string & devID
+		);
+		const GKDepsMap_type & getDaemonDependenciesMap(
+			const std::string & clientID
 		);
 
 		/* -- */
@@ -125,7 +135,7 @@ class ClientsManager
 			const std::string & clientID,
 			const std::string & devID
 		);
-		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+		const LCDPPArray_type & getDeviceLCDPluginsProperties(
 			const std::string & clientID,
 			const std::string & devID
 		);

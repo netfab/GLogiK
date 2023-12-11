@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,12 +19,20 @@
  *
  */
 
+#include <string>
+#include <vector>
+#include <sstream>
 #include <stdexcept>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
+#include <boost/process.hpp>
+#include <boost/process/search_path.hpp>
+
 #include "GKeysEventManager.hpp"
+
+namespace bp = boost::process;
 
 namespace GLogiK
 {
@@ -62,15 +70,20 @@ void GKeysEventManager::runEvent(
 			}
 			else if(event.getEventType() == GKeyEventType::GKEY_MACRO) {
 				const macro_type & macro = event.getMacro();
-				if( macro.empty() ) {
-					GKLog(trace, "empty macro")
-					return;
+				if( ! macro.empty() ) {
+					GKLog(trace, "running macro")
+					for(const auto & key : macro) {
+						_virtualKeyboard.sendKeyEvent(key);
+					}
 				}
 
-				GKLog(trace, "running macro")
-				for(const auto & key : macro) {
-					_virtualKeyboard.sendKeyEvent(key);
-				}
+			}
+			else if(event.getEventType() == GKeyEventType::GKEY_RUNCMD) {
+				this->spawnProcess(event.getCommand());
+			}
+			else if(event.getEventType() == GKeyEventType::GKEY_INVALID) {
+				LOG(error) << "invalid event type";
+				return;
 			}
 		}
 		catch(const std::out_of_range& oor) {
@@ -118,14 +131,16 @@ const bool GKeysEventManager::clearMacro(
 
 	try {
 		mBank_type & bank = GKeysBanks.at(bankID);
+		GKeysEvent & event = bank.at(keyID);
 
 		try {
-			if( ! bank.at(keyID).getMacro().empty() ) {
+			if( ! event.getMacro().empty() ) {
 				LOG(info) << "MBank: " << bankID
 					<< " - GKey: " << getGKeyName(keyID)
 					<< " - clearing macro";
 
-				bank[keyID].clearMacro();
+				event.clearMacro();
+				event.setEventType(GKeyEventType::GKEY_INACTIVE);
 				return true;
 			}
 		}
@@ -178,6 +193,41 @@ void GKeysEventManager::setMacro(
 	catch (const std::out_of_range& oor) {
 		LOG(warning) << "wrong bankID: " << bankID;
 		throw GLogiKExcept("set macro failed");
+	}
+}
+
+void GKeysEventManager::spawnProcess(const std::string & command)
+{
+	GK_LOG_FUNC
+
+	LOG(info) << "spawning process: " << command;
+
+	std::string exe;
+	std::vector<std::string> args;
+	{
+		std::istringstream tmpstream(command);
+		std::string tmpstring;
+		std::getline(tmpstream, exe, ' ');
+		while(std::getline(tmpstream, tmpstring, ' '))
+		{
+			args.push_back(tmpstring);
+		}
+	}
+
+	try {
+		auto p = bp::search_path(exe);
+		if( p.empty() ) {
+			LOG(error) << exe << " executable not found in PATH";
+			return;
+		}
+
+		GKLog4(trace, "spawning: ", exe, "with args size: ", args.size())
+
+		bp::spawn(p, bp::args(args));
+	}
+	catch (const bp::process_error & e) {
+		LOG(error) << "exception catched while trying to spawn process: " << command;
+		LOG(error) << e.what();
 	}
 }
 

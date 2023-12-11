@@ -1,4 +1,13 @@
 
+0.8.18 (2023-12-11)
+===================
+- Implemented desktop service restart with SIGUSR1 signal
+- Reworked daemon initialization (create PID file as root)
+- Added new coretemp LCD plugin
+- Added desktop notifications support using libnotify
+- Added running command feature from GKey event
+- Usual internal cleanings and improvements
+
 0.8.16 (2022-11-14)
 ===================
 - Added Qt GUI tab for G-Keys handling

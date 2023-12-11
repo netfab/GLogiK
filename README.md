@@ -1,6 +1,6 @@
 GLogiK, daemon to handle special features on some gaming keyboards
 
-Last release : version 0.8.16
+Last release : version 0.8.18
 
 Links
 =====
@@ -40,6 +40,7 @@ Optional Build Dependencies
  * dev-libs/hidapi (libusb backend) >= 0.10.0
  * sys-apps/dbus >= 1.10.18
  * dev-libs/libevdev >= 1.5.7
+ * x11-libs/libnotify >= 0.8.1
  * x11-libs/libICE
  * x11-libs/libSM
  * x11-libs/libX11
@@ -63,13 +64,14 @@ GLogiK Daemon and Desktop Service
 The GLogiKd daemon starts as root and drops its privileges.  
 See following configure options :
  * --with-glogikd-user : defaults to glogikd
- * --with-glogikd-group : defaults to usb
+ * --with-glogikd-group : defaults to glogikd
 
 For desktop users, see also :
  * --with-glogiks-group : defaults to glogiks
 
 D-Bus support is required to build and run desktop binaries.
 
-Users who wants to run the GLogiKs desktop service must be in the glogiks
-group (or whatever is defined with the above option).
+Users who wants to run the GLogiKs desktop service must be in the following groups :
+ * glogiks (or whatever is defined with the above option)
+ * input (to gain write access to /dev/uinput)
 

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -39,14 +39,16 @@
 #include "include/enums.hpp"
 #include "include/base.hpp"
 #include "include/MBank.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
+
+#include "DBus.hpp"
+
+#include <config.h>
 
 #define LogRemoteCallFailure \
 	LOG(critical) << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
 #define LogRemoteCallGetReplyFailure \
 	LOG(error) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
-
-typedef std::map<std::string, const std::string> devices_files_map_t;
 
 namespace fs = boost::filesystem;
 
@@ -54,20 +56,20 @@ namespace GLogiK
 {
 
 class DevicesHandler
+	:	public DBusInst
 {
 	public:
 		DevicesHandler(void);
 		~DevicesHandler(void);
 
 		void setGKfs(NSGKUtils::FileSystem* pGKfs);
-		void setDBus(NSGKDBus::GKDBus* pDBus);
 		void setClientID(const std::string & id);
 
-		void startDevice(const std::string & devID);
-		void stopDevice(const std::string & devID);
-		void unplugDevice(const std::string & devID);
+		void startDevice(const std::string & devID, const bool notifications = true);
+		void stopDevice(const std::string & devID, const bool notifications = true);
+		void unplugDevice(const std::string & devID, const bool notifications = true);
 
-		void clearDevices(void);
+		void clearDevices(const bool notifications);
 
 		void setDeviceCurrentBankID(const std::string & devID, const MKeysID bankID);
 		banksMap_type & getDeviceBanks(const std::string & devID, MKeysID & bankID);
@@ -77,9 +79,9 @@ class DevicesHandler
 			const std::string & mediaKeyEvent
 		);
 
-		const devices_files_map_t getDevicesMap(void);
+		const DevicesFilesMap_type getDevicesFilesMap(void);
 		const std::vector<std::string> getDevicesList(void);
-		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+		const LCDPPArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID
 		);
 
@@ -89,11 +91,12 @@ class DevicesHandler
 	protected:
 
 	private:
+		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
+		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
+
 		fs::path _configurationRootDirectory;
 		std::string _clientID;
-		NSGKDBus::GKDBus* _pDBus;
 		NSGKUtils::FileSystem* _pGKfs;
-		const NSGKDBus::BusConnection _systemBus;
 
 		typedef std::set<std::string> devIDSet;
 
@@ -101,6 +104,14 @@ class DevicesHandler
 
 		std::map<std::string, DeviceProperties> _startedDevices;
 		std::map<std::string, DeviceProperties> _stoppedDevices;
+
+#if HAVE_DESKTOP_NOTIFICATIONS
+		void showNotification(
+			const std::string & devID,
+			const std::string & summary,
+			const DeviceProperties & device
+		);
+#endif
 
 		void setDeviceProperties(
 			const std::string & devID,

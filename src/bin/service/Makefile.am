@@ -33,10 +33,26 @@ GLogiKs_SOURCES = \
 		%D%/devicesHandler.hpp \
 		%D%/GKeysEventManager.cpp \
 		%D%/GKeysEventManager.hpp \
+		%D%/initLog.cpp \
+		%D%/initLog.hpp \
+		%D%/DBus.cpp \
+		%D%/DBus.hpp \
 		%D%/DBusHandler.cpp \
 		%D%/DBusHandler.hpp \
 		%D%/service.cpp \
 		%D%/service.hpp \
 		%D%/virtualKeyboard.cpp \
 		%D%/virtualKeyboard.hpp
+
+if WITH_DESKTOP_NOTIFICATIONS
+GLogiKs_CXXFLAGS += \
+				@LIBNOTIFY_CFLAGS@
+
+GLogiKs_LDADD += \
+				@LIBNOTIFY_LIBS@
+
+GLogiKs_SOURCES += \
+		%D%/desktopNotification.cpp \
+		%D%/desktopNotification.hpp
+endif
 

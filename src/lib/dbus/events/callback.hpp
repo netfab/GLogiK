@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -43,10 +43,13 @@
 // "M" - Macro
 // "B" - Bank (mBank_type)
 // "P" - LCD Plugins Properties
+// "D" - GKDepsMap_type
 
 #include "SIGas2v.hpp"    //         array of string to void
+#include "SIGq2v.hpp"     //                uint16_t to void
 #include "SIGs2as.hpp"    //       string to array of string
 #include "SIGs2b.hpp"     //                  string to bool
+#include "SIGs2D.hpp"     //        string to GKDepsMap_type
 #include "SIGs2s.hpp"     //                string to string
 #include "SIGs2v.hpp"     //                  string to void
 #include "SIGsG2v.hpp"    // one string one G-KeyID to void

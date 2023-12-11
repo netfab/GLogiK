@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@
 #include "USBDeviceID.hpp"
 
 #include "include/base.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 namespace GLogiK
 {
@@ -58,6 +58,8 @@ class DevicesManager
 	public:
 		DevicesManager(void);
 		~DevicesManager(void);
+
+		static const std::string getLibudevVersion(void);
 
 		void startMonitoring(void);
 
@@ -81,7 +83,7 @@ class DevicesManager
 		const std::string & getDeviceProduct(const std::string & devID) const;
 		const std::string & getDeviceName(const std::string & devID) const;
 		const uint64_t getDeviceCapabilities(const std::string & devID) const;
-		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+		const LCDPPArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID
 		) const;
 
@@ -113,7 +115,7 @@ class DevicesManager
 #endif
 
 		void searchSupportedDevices(struct udev * pUdev);
-		void initializeDevices(void) noexcept;
+		void initializeDevices(const bool openDevices) noexcept;
 		void stopInitializedDevices(void);
 		void checkInitializedDevicesThreadsStatus(void) noexcept;
 

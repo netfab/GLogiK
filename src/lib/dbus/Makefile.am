@@ -13,34 +13,40 @@ libGKDBus_la_LIBADD = \
 				libGKUtils.la
 
 libGKDBus_la_SOURCES = \
-	%D%/arguments/GKDBusArgument.cpp \
-	%D%/arguments/GKDBusArgument.hpp \
-	%D%/arguments/GKDBusArgString.cpp \
-	%D%/arguments/GKDBusArgString.hpp \
-	%D%/arguments/GKDBusArgBoolean.cpp \
-	%D%/arguments/GKDBusArgBoolean.hpp \
-	%D%/arguments/GKDBusArgByte.cpp \
-	%D%/arguments/GKDBusArgByte.hpp \
-	%D%/arguments/GKDBusArgUInt16.cpp \
-	%D%/arguments/GKDBusArgUInt16.hpp \
-	%D%/arguments/GKDBusArgUInt64.cpp \
-	%D%/arguments/GKDBusArgUInt64.hpp \
-	%D%/arguments/GKDBusArgGKeysID.cpp \
-	%D%/arguments/GKDBusArgGKeysID.hpp \
-	%D%/arguments/GKDBusArgGKeysIDArray.cpp \
-	%D%/arguments/GKDBusArgGKeysIDArray.hpp \
-	%D%/arguments/GKDBusArgMKeysID.cpp \
-	%D%/arguments/GKDBusArgMKeysID.hpp \
-	%D%/arguments/GKDBusArgMKeysIDArray.cpp \
-	%D%/arguments/GKDBusArgMKeysIDArray.hpp \
-	%D%/arguments/GKDBusArgMacro.cpp \
-	%D%/arguments/GKDBusArgMacro.hpp \
-	%D%/arguments/GKDBusArgMacrosBank.cpp \
-	%D%/arguments/GKDBusArgMacrosBank.hpp \
-	%D%/arguments/GKDBusArgDevicesMap.cpp \
-	%D%/arguments/GKDBusArgDevicesMap.hpp \
-	%D%/arguments/GKDBusArgLCDPluginsArray.cpp \
-	%D%/arguments/GKDBusArgLCDPluginsArray.hpp \
+	%D%/ArgTypes/ArgBase.cpp \
+	%D%/ArgTypes/ArgBase.hpp \
+	%D%/ArgTypes/TypeBase.cpp \
+	%D%/ArgTypes/TypeBase.hpp \
+	%D%/ArgTypes/boolean.cpp \
+	%D%/ArgTypes/boolean.hpp \
+	%D%/ArgTypes/string.cpp \
+	%D%/ArgTypes/string.hpp \
+	%D%/ArgTypes/stringArray.cpp \
+	%D%/ArgTypes/stringArray.hpp \
+	%D%/ArgTypes/uint16.cpp \
+	%D%/ArgTypes/uint16.hpp \
+	%D%/ArgTypes/uint32.cpp \
+	%D%/ArgTypes/uint32.hpp \
+	%D%/ArgTypes/uint64.cpp \
+	%D%/ArgTypes/uint64.hpp \
+	%D%/ArgTypes/uint8.cpp \
+	%D%/ArgTypes/uint8.hpp \
+	%D%/ArgTypes/GKeysID.cpp \
+	%D%/ArgTypes/GKeysID.hpp \
+	%D%/ArgTypes/GKeysIDArray.cpp \
+	%D%/ArgTypes/GKeysIDArray.hpp \
+	%D%/ArgTypes/MKeysID.cpp \
+	%D%/ArgTypes/MKeysID.hpp \
+	%D%/ArgTypes/MKeysIDArray.cpp \
+	%D%/ArgTypes/MKeysIDArray.hpp \
+	%D%/ArgTypes/macro.cpp \
+	%D%/ArgTypes/macro.hpp \
+	%D%/ArgTypes/DevicesMap.cpp \
+	%D%/ArgTypes/DevicesMap.hpp \
+	%D%/ArgTypes/LCDPPArray.cpp \
+	%D%/ArgTypes/LCDPPArray.hpp \
+	%D%/ArgTypes/DepsMap.cpp \
+	%D%/ArgTypes/DepsMap.hpp \
 	%D%/messages/GKDBusMessage.cpp \
 	%D%/messages/GKDBusMessage.hpp \
 	%D%/messages/GKDBusReply.cpp \
@@ -59,10 +65,14 @@ libGKDBus_la_SOURCES = \
 	%D%/events/GKDBusEvent.hpp \
 	%D%/events/SIGas2v.cpp \
 	%D%/events/SIGas2v.hpp \
+	%D%/events/SIGq2v.cpp \
+	%D%/events/SIGq2v.hpp \
 	%D%/events/SIGs2as.cpp \
 	%D%/events/SIGs2as.hpp \
 	%D%/events/SIGs2b.cpp \
 	%D%/events/SIGs2b.hpp \
+	%D%/events/SIGs2D.cpp \
+	%D%/events/SIGs2D.hpp \
 	%D%/events/SIGs2s.cpp \
 	%D%/events/SIGs2s.hpp \
 	%D%/events/SIGs2v.cpp \

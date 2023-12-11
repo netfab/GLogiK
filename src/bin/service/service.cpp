@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -31,12 +31,7 @@
 #include <iostream>
 #include <sstream>
 
-#include <boost/filesystem.hpp>
-#include <boost/program_options.hpp>
-
 #include <config.h>
-
-#include "lib/utils/GKLogging.hpp"
 
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/utils/utils.hpp"
@@ -47,37 +42,17 @@
 
 #include "service.hpp"
 
-namespace fs = boost::filesystem;
-namespace po = boost::program_options;
+#include "include/DepsMap.hpp"
 
 namespace GLogiK
 {
 
 using namespace NSGKUtils;
 
-DesktopService::DesktopService(const int& argc, char *argv[]) :
-	_pid(0)
+DesktopService::DesktopService(const bool & version)
+	:	_pid(0),
+		_version(version)
 {
-	GK_LOG_FUNC
-
-	openlog(GLOGIKS_DESKTOP_SERVICE_NAME, LOG_PID|LOG_CONS, LOG_USER);
-
-	// initialize logging
-	try {
-		/* boost::po may throw */
-		this->parseCommandLine(argc, argv);
-
-#if DEBUGGING_ON
-		if(GKLogging::GKDebug) {
-			GKLogging::initDebugFile(GLOGIKS_DESKTOP_SERVICE_NAME, fs::owner_read|fs::owner_write|fs::group_read);
-		}
-#endif
-		GKLogging::initConsoleLog();
-	}
-	catch (const std::exception & e) {
-		syslog(LOG_ERR, "%s", e.what());
-		throw InitFailure();
-	}
 }
 
 DesktopService::~DesktopService()
@@ -85,8 +60,6 @@ DesktopService::~DesktopService()
 	GK_LOG_FUNC
 
 	LOG(info) << GLOGIKS_DESKTOP_SERVICE_NAME << " desktop service process exiting, bye !";
-
-	closelog();
 }
 
 int DesktopService::run(void)
@@ -94,20 +67,49 @@ int DesktopService::run(void)
 	GK_LOG_FUNC
 
 	/* -- -- -- */
+
+	GKDepsMap_type dependencies;
+
+	std::string binaryVersion(GLOGIKS_DESKTOP_SERVICE_NAME);
+	binaryVersion += " version ";
+	binaryVersion += VERSION;
+
+		dependencies[GKBinary::GK_DESKTOP_SERVICE] =
+			{
+				{"libevdev", GK_DEP_LIBEVDEV_VERSION_STRING},
+				{"libSM", GK_DEP_SM_VERSION_STRING},
+				{"libICE", GK_DEP_ICE_VERSION_STRING},
+				{"libX11", GK_DEP_LIBX11_VERSION_STRING},
+				{"libXtst", GK_DEP_LIBXTST_VERSION_STRING},
+#if HAVE_DESKTOP_NOTIFICATIONS
+				{"libnotify", GK_DEP_LIBNOTIFY_VERSION_STRING},
+#else
+				{"libnotify", "-"},
+#endif
+			};
+
 	/* -- -- -- */
+
+	if(_version) {
+		printVersionDeps(binaryVersion, dependencies);
+		return EXIT_SUCCESS;
+	}
+
 	/* -- -- -- */
 
-	LOG(info) << "Starting " << GLOGIKS_DESKTOP_SERVICE_NAME << " vers. " << VERSION;
+	{
+		LOG(info) << "Starting " << binaryVersion;
 
-	_pid = detachProcess();
+		_pid = /*NSGKUtils::*/process::detach();
 
-	GKLog2(trace, "process detached - pid: ", _pid)
+		GKLog2(trace, "process detached - pid: ", _pid)
+	}
 
 	{
 		FileSystem GKfs;
 		SessionManager session;
 
-		NSGKDBus::GKDBus DBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE, GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE_PATH);
+		DBus.init();
 
 		DBus.connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
 		DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
@@ -121,7 +123,7 @@ int DesktopService::run(void)
 		fds[1].fd = GKfs.getNotifyQueueDescriptor();
 		fds[1].events = POLLIN;
 
-		DBusHandler handler(_pid, session, &GKfs, &DBus);
+		DBusHandler handler(_pid, &GKfs, &dependencies);
 
 		while( session.isSessionAlive() and
 				handler.getExitStatus() )
@@ -149,40 +151,12 @@ int DesktopService::run(void)
 		// also unregister with daemon before cleaning
 		handler.cleanDBusRequests();
 
-		DBus.disconnectFromSessionBus();
-		DBus.disconnectFromSystemBus();
+		DBus.exit();
 	}
 
 	GKLog(trace, "exiting with success")
 
 	return EXIT_SUCCESS;
-}
-
-void DesktopService::parseCommandLine(const int& argc, char *argv[])
-{
-	GK_LOG_FUNC
-
-	po::options_description desc("Allowed options");
-
-#if DEBUGGING_ON
-	bool debug = false;
-
-	desc.add_options()
-		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
-	;
-#endif
-
-	po::variables_map vm;
-
-	po::store(po::parse_command_line(argc, argv, desc), vm);
-
-	po::notify(vm);
-
-#if DEBUGGING_ON
-	if (vm.count("debug")) {
-		GKLogging::GKDebug = vm["debug"].as<bool>();
-	}
-#endif
 }
 
 } // namespace GLogiK

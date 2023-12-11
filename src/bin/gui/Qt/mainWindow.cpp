@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include <chrono>
 #include <functional>
 
+#include <QtGlobal>
 #include <QString>
 #include <QStringList>
 #include <QTimer>
@@ -47,15 +48,13 @@
 
 #include <boost/program_options.hpp>
 
-#include "lib/utils/GKLogging.hpp"
-
 #include "lib/shared/glogik.hpp"
 #include "lib/shared/deviceConfigurationFile.hpp"
 #include "lib/utils/utils.hpp"
 
 #include "include/enums.hpp"
 
-#include "AboutDialog.hpp"
+#include "AboutDialog/AboutDialog.hpp"
 #include "mainWindow.hpp"
 
 namespace po = boost::program_options;
@@ -76,8 +75,6 @@ MainWindow::MainWindow(QWidget *parent)
 		_LCDPluginsTab(nullptr),
 		_statusBarTimeout(3000),
 		_pid(0),
-		_GUIResetThrow(true),
-		_serviceStartRequest(false),
 		_ignoreNextSignal(false)
 {
 	openlog("GKcQt5", LOG_PID|LOG_CONS, LOG_USER);
@@ -98,9 +95,9 @@ MainWindow::~MainWindow()
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void MainWindow::handleSignal(int sig)
+void MainWindow::handleSignal(int signum)
 {
-	LOG(info) << "catched signal : " << sig;
+	LOG(info) << process::getSignalHandlingDesc(signum, " --> bye bye");
 	QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
 }
 
@@ -137,6 +134,7 @@ void MainWindow::init(const int& argc, char *argv[])
 
 	try {
 		_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE, GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE_PATH);
+		_pDBus->init();
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
 		throw GLogiKBadAlloc("GKDBus bad allocation");
@@ -237,6 +235,16 @@ void MainWindow::build(void)
 
 		/* -- -- -- */
 
+		/* required by aboutDialog */
+		try {
+			this->getExecutablesDependenciesMap();
+		}
+		catch (const GLogiKExcept & e) {
+			_daemonAndServiceTab->sendServiceStartRequest();
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			this->getExecutablesDependenciesMap();
+		}
+
 		QMenu* fileMenu = this->menuBar()->addMenu("&File");
 		QAction* quit = new QAction("&Quit", this);
 		fileMenu->addAction(quit);
@@ -265,47 +273,7 @@ void MainWindow::build(void)
 
 	/* -- -- -- */
 
-	try {
-		this->resetInterface(); /* try 1 */
-	}
-	catch (const GLogiKExcept & e) {
-		if(! _serviceStartRequest) {
-			/* should not happen since the desktop service is assumed stopped
-			 * until successful daemonAndServiceTab::updateTab() call */
-			throw;
-		}
-
-		std::string status("desktop service seems not started, request");
-		try {
-			/* asking the launcher for the desktop service restart */
-			_pDBus->initializeBroadcastSignal(
-				NSGKDBus::BusConnection::GKDBUS_SESSION,
-				GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
-				GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-				"RestartRequest"
-			);
-			_pDBus->sendBroadcastSignal();
-
-			status += " sent to launcher";
-			LOG(warning) << status;
-		}
-		catch (const GKDBusMessageWrongBuild & e) {
-			_pDBus->abandonBroadcastSignal();
-			status += " to launcher failed";
-			LOG(error) << status << " - " << e.what();
-			throw GLogiKExcept("Service RestartRequest failed");
-		}
-
-		/* sleeping for 2 seconds before retrying */
-		std::this_thread::sleep_for(std::chrono::seconds(2));
-
-		this->resetInterface(); /* try 2 */
-	}
-
-	/* -- -- -- */
-
-	/* after here, don't throw if ::resetInterface() fails */
-	_GUIResetThrow = false;
+	this->resetInterface();
 
 	/* -- -- -- */
 
@@ -322,7 +290,7 @@ void MainWindow::build(void)
 
 	/* initializing GKDBus signals */
 	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
-		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -332,7 +300,7 @@ void MainWindow::build(void)
 	);
 
 	_pDBus->NSGKDBus::Callback<SIGs2v>::exposeSignal(
-		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -361,10 +329,8 @@ void MainWindow::parseCommandLine(const int& argc, char *argv[])
 	po::options_description desc("Allowed options");
 
 #if DEBUGGING_ON
-	bool debug = false;
-
 	desc.add_options()
-		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
+		("debug,D", po::bool_switch()->default_value(false), "run in debug mode")
 	;
 #endif
 
@@ -375,8 +341,10 @@ void MainWindow::parseCommandLine(const int& argc, char *argv[])
 	po::notify(vm);
 
 #if DEBUGGING_ON
-	if (vm.count("debug")) {
-		GKLogging::GKDebug = vm["debug"].as<bool>();
+	bool debug = vm.count("debug") ? vm["debug"].as<bool>() : false;
+
+	if( debug ) {
+		GKLogging::GKDebug = true;
 	}
 #endif
 }
@@ -386,12 +354,12 @@ void MainWindow::aboutToQuit(void)
 	GK_LOG_FUNC
 
 	_pDBus->removeSignalsInterface(
-		NSGKDBus::BusConnection::GKDBUS_SESSION,
+		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 
-	_pDBus->disconnectFromSessionBus();
+	_pDBus->exit();
 
 	delete _pDBus; _pDBus = nullptr;
 
@@ -443,16 +411,56 @@ void MainWindow::configurationFileUpdated(const std::string & devID)
 	}
 }
 
+void MainWindow::getExecutablesDependenciesMap(void)
+{
+	GK_LOG_FUNC
+
+	GKLog(trace, "getting executables dependencies map")
+
+	const std::string remoteMethod("GetExecutablesDependenciesMap");
+	try {
+		_pDBus->initializeRemoteMethodCall(
+			_sessionBus,
+			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+			remoteMethod.c_str()
+		);
+		_pDBus->appendStringToRemoteMethodCall("reserved");
+
+		_pDBus->sendRemoteMethodCall();
+
+		try {
+			_pDBus->waitForRemoteMethodCallReply();
+			_DepsMap = _pDBus->getNextGKDepsMapArgument();
+
+			_DepsMap[GKBinary::GK_GUI_QT] =
+				{ /* qVersion() from <QtGlobal> */
+					{"Qt5", GK_DEP_QT5_VERSION_STRING, qVersion()},
+				};
+		}
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
+			throw GLogiKExcept("failure to get request reply");
+		}
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonRemoteMethodCall();
+		LogRemoteCallFailure
+		throw GLogiKExcept("failure to build request");
+	}
+}
+
 void MainWindow::aboutDialog(void)
 {
 	GK_LOG_FUNC
 
 	try {
 		AboutDialog* about = new AboutDialog(this);
-		about->buildDialog();
+		about->buildDialog(_pDepsMap);
 		about->setModal(true);
 		about->setAttribute(Qt::WA_DeleteOnClose);
-		about->setFixedSize(400, 300);
+		about->setFixedSize(560, 300);
 		about->setWindowTitle("About GKcQt5");
 		about->open();
 	}
@@ -488,14 +496,20 @@ void MainWindow::saveConfigurationFile(const TabApplyButton tab)
 		MKeysID bankID;
 		GKeysID keyID;
 		GKeyEventType eventType;
+		std::string eventCommand;
 		try {
-			_GKeysTab->getGKeyEventParams(bankID, keyID, eventType);
+			_GKeysTab->getGKeyEventParams(bankID, keyID, eventType, eventCommand);
+
+			GKLog4(trace, "MBank: ", bankID, "GKey: ", getGKeyName(keyID))
+			GKLog4(trace, "eventType: ", GKeysTab::getEventTypeString(eventType), "command: ", eventCommand)
 
 			banksMap_type & banks = _openedConfigurationFile.getBanks();
 			mBank_type & bank = banks.at(bankID);
 			GKeysEvent & event = bank.at(keyID);
 
+			event.setCommand(eventCommand);
 			event.setEventType(eventType);
+
 			dosave = true;
 
 			GKLog(trace, "GKeys updated")
@@ -556,8 +570,6 @@ void MainWindow::updateInterface(int index)
 				const DeviceID & device = _devices.at(_devID);
 				const bool status = (device.getStatus() == "started");
 
-				_deviceControlTab->updateTab(_devID, status);
-
 				if(status) {
 					_configurationFilePath = _configurationRootDirectory;
 					_configurationFilePath /= device.getVendor();
@@ -569,12 +581,20 @@ void MainWindow::updateInterface(int index)
 					_openedConfigurationFile.setConfigFilePath(device.getConfigFilePath());
 					DeviceConfigurationFile::load(_configurationFilePath.string(), _openedConfigurationFile);
 
-					_backlightColorTab->updateTab(_openedConfigurationFile);
-
-					_LCDPluginsTab->updateTab(_devID, _openedConfigurationFile);
-					// updating GKeysTab and resetting bankID
-					_GKeysTab->updateTab(_openedConfigurationFile, MKeysID::MKEY_M0);
 				}
+
+				/* device status always required by deviceControlTab */
+				_openedConfigurationFile.setStatus(device.getStatus());
+
+				/* updating and enabling/disabling tabs */
+				_deviceControlTab->updateTab(_openedConfigurationFile, _devID);
+
+				if(status) {
+					_backlightColorTab->updateTab(_openedConfigurationFile, _devID);
+					_LCDPluginsTab->updateTab(_openedConfigurationFile, _devID);
+					_GKeysTab->updateTab(_openedConfigurationFile, _devID);
+				}
+
 				this->setTabEnabled("BacklightColor", status);
 				this->setTabEnabled("LCDPlugins", status);
 				this->setTabEnabled("GKeys", status);
@@ -613,7 +633,7 @@ void MainWindow::updateDevicesList(void)
 	const std::string remoteMethod("GetDevicesList");
 	try {
 		_pDBus->initializeRemoteMethodCall(
-			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -662,17 +682,7 @@ void MainWindow::resetInterface(void)
 
 		this->setTabEnabled("DeviceControl", false);
 
-		try {
-			_daemonAndServiceTab->updateTab();
-		}
-		catch (const GLogiKExcept & e) {
-			/* throws only if something was wrong when getting service infos
-			 * (pDBus internal error, or service not started) */
-
-			/* used only over initialization */
-			_serviceStartRequest = (_daemonAndServiceTab->isServiceStarted() == false);
-			throw;
-		}
+		_daemonAndServiceTab->updateTab(); /* may throw */
 
 		/* don't try to update devices list if the service
 		 * is not registered against the daemon */
@@ -704,9 +714,6 @@ void MainWindow::resetInterface(void)
 	}
 	catch (const GLogiKExcept & e) {
 		LOG(error) << "error resetting interface : " << e.what();
-		if(_GUIResetThrow) {
-			throw GLogiKExcept("interface reset failure");
-		}
 	}
 }
 

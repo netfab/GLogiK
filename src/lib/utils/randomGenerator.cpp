@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ RandomGenerator::RandomGenerator(const std::vector<char> & charset)
 RandomGenerator::~RandomGenerator() {
 }
 
-std::string RandomGenerator::getString(std::size_t length) {
+const std::string RandomGenerator::getString(std::size_t length) {
 	std::string ret(length,0);
 	auto & c = _charset;
 	auto & d = _dist;

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -36,12 +36,12 @@ template <>
 		DBusMessage* asyncContainer
 	)
 {
-	GKDBusArgument::fillInArguments(message);
+	ArgBase::fillInArguments(message);
 
 	std::vector<std::string> ret;
 
 	try {
-		const std::string arg( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg( ArgString::getNextStringArgument() );
 
 		/* call string to strings array callback */
 		ret = this->callback(arg);
@@ -57,7 +57,7 @@ template <>
 
 	try {
 		this->initializeReply(connection, message);
-		this->appendStringVectorToReply(ret);
+		this->appendStringArrayToReply(ret);
 
 		this->appendAsyncArgsToReply(asyncContainer);
 	}

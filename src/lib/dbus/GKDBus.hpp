@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@
 #include <cstdint>
 
 #include <string>
-#include <vector>
 #include <mutex>
 
 #include <dbus/dbus.h>
@@ -39,16 +38,18 @@
 #include "messages/GKDBusBroadcastSignal.hpp"
 #include "messages/GKDBusAsyncContainer.hpp"
 
-#include "arguments/GKDBusArgString.hpp"
-#include "arguments/GKDBusArgBoolean.hpp"
-#include "arguments/GKDBusArgByte.hpp"
-#include "arguments/GKDBusArgUInt16.hpp"
-#include "arguments/GKDBusArgUInt64.hpp"
-#include "arguments/GKDBusArgMacro.hpp"
-#include "arguments/GKDBusArgDevicesMap.hpp"
-#include "arguments/GKDBusArgGKeysIDArray.hpp"
-#include "arguments/GKDBusArgMKeysIDArray.hpp"
-#include "arguments/GKDBusArgLCDPluginsArray.hpp"
+#include "ArgTypes/boolean.hpp"
+#include "ArgTypes/uint8.hpp"
+#include "ArgTypes/uint16.hpp"
+#include "ArgTypes/uint64.hpp"
+#include "ArgTypes/string.hpp"
+#include "ArgTypes/stringArray.hpp"
+#include "ArgTypes/GKeysIDArray.hpp"
+#include "ArgTypes/MKeysIDArray.hpp"
+#include "ArgTypes/macro.hpp"
+#include "ArgTypes/DevicesMap.hpp"
+#include "ArgTypes/LCDPPArray.hpp"
+#include "ArgTypes/DepsMap.hpp"
 
 namespace NSGKDBus
 {
@@ -64,23 +65,32 @@ class GKDBus
 		virtual public GKDBusMessageRemoteMethodCall,
 		public GKDBusMessageBroadcastSignal,
 		public GKDBusMessageAsyncContainer,
-		virtual public GKDBusArgumentString,
-		public GKDBusArgumentBoolean,
-		virtual public GKDBusArgumentByte,
-		virtual public GKDBusArgumentUInt16,
-		virtual public GKDBusArgumentUInt64,
-		public GKDBusArgumentMacro,
-		public GKDBusArgumentDevicesMap,
-		public GKDBusArgumentGKeysIDArray,
-		public GKDBusArgumentMKeysIDArray,
-		public GKDBusArgumentLCDPluginsArray
+		virtual public ArgString,
+		virtual public ArgStringArray,
+		public ArgBoolean,
+		virtual public ArgUInt8,
+		virtual public ArgUInt16,
+		virtual public ArgUInt64,
+		public ArgMacro,
+		public ArgDevicesMap,
+		public ArgGKeysIDArray,
+		public ArgMKeysIDArray,
+		public ArgLCDPPArray,
+		public ArgGKDepsMap
 {
 	public:
-		GKDBus(
-			const std::string & rootNode,
-			const std::string & rootNodePath
-		);
-		~GKDBus();
+		GKDBus(const std::string & rootNode, const std::string & rootNodePath);
+		~GKDBus(void);
+
+		static const BusConnection SystemBus;
+		static const BusConnection SessionBus;
+		static const std::string getDBusVersion(void);
+
+		void init(void);
+
+		const std::string & getBuiltAgainstDBusVersion(void) {
+			return _builtAgainstDBusVersion;
+		}
 
 		void connectToSystemBus(
 			const char* connectionName,
@@ -91,8 +101,7 @@ class GKDBus
 			const ConnectionFlag flag = ConnectionFlag::GKDBUS_MULTIPLE
 		);
 
-		void disconnectFromSystemBus(void) noexcept;
-		void disconnectFromSessionBus(void) noexcept;
+		void exit(void) noexcept;
 
 		const std::string getObjectFromObjectPath(const std::string & objectPath);
 		void checkForMessages(void) noexcept;
@@ -102,6 +111,11 @@ class GKDBus
 	private:
 		DBusError _error;
 
+		std::string _currentDBusVersion;
+		/* see also DBUS_VERSION_STRING from dbus.h */
+		const std::string _builtAgainstDBusVersion = GK_DEP_DBUS_VERSION_STRING;
+		const std::string _initError = "GKDBus must be initialized before anything else";
+
 		std::string _sessionName;
 		std::string _systemName;
 
@@ -109,6 +123,11 @@ class GKDBus
 
 		DBusConnection* _sessionConnection;
 		DBusConnection* _systemConnection;
+
+		bool _initDone;
+
+		void disconnectFromSystemBus(void) noexcept;
+		void disconnectFromSessionBus(void) noexcept;
 
 		void checkDBusMessage(
 			DBusConnection* const connection,
@@ -120,7 +139,7 @@ class GKDBus
 		) noexcept;
 		void checkReleasedName(int ret) noexcept;
 		void checkDBusError(const char* error);
-		DBusConnection* const getConnection(BusConnection bus) const;
+		DBusConnection* const getDBusConnection(BusConnection bus) const;
 		const unsigned int getDBusRequestFlags(const ConnectionFlag flag) noexcept;
 };
 

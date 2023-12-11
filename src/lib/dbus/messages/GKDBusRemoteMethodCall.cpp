@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -115,7 +115,7 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 	const char* method)
 {
 	this->initializeRemoteMethodCall(
-		this->getConnection(wantedConnection),
+		this->getDBusConnection(wantedConnection),
 		busName, objectPath, interface, method);
 }
 
@@ -178,12 +178,6 @@ void GKDBusMessageRemoteMethodCall::appendMKeysIDToRemoteMethodCall(const GLogiK
 		_remoteMethodCall->appendMKeysID(bankID);
 }
 
-void GKDBusMessageRemoteMethodCall::appendMacrosBankToRemoteMethodCall(const GLogiK::mBank_type & bank)
-{
-	if(_remoteMethodCall != nullptr) /* sanity check */
-		_remoteMethodCall->appendMacrosBank(bank);
-}
-
 void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall(void)
 {
 	GK_LOG_FUNC
@@ -236,10 +230,10 @@ void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void)
 
 	if(dbus_message_get_type(message) == DBUS_MESSAGE_TYPE_ERROR) {
 		std::ostringstream buffer("got DBus error as reply : ", std::ios_base::app);
-		GKDBusArgumentString::fillInArguments(message);
+		ArgString::fillInArguments(message);
 
 		try {
-			buffer << GKDBusArgumentString::getNextStringArgument();
+			buffer << ArgString::getNextStringArgument();
 		}
 		catch ( const EmptyContainer & e ) {
 			buffer << "no string argument with DBus error !";
@@ -249,7 +243,7 @@ void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void)
 		throw GKDBusRemoteCallNoReply( buffer.str() );
 	}
 
-	GKDBusArgumentString::fillInArguments(message);
+	ArgString::fillInArguments(message);
 	dbus_message_unref(message);
 }
 

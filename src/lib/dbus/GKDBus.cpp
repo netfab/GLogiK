@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include <new>
 #include <algorithm>
 #include <sstream>
+#include <vector>
 
 #include "messages/GKDBusMessage.hpp"
 #include "GKDBus.hpp"
@@ -31,16 +32,40 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
+const BusConnection GKDBus::SystemBus(BusConnection::GKDBUS_SYSTEM);
+const BusConnection GKDBus::SessionBus(BusConnection::GKDBUS_SESSION);
+
 GKDBus::GKDBus(
 	const std::string & rootNode,
 	const std::string & rootNodePath)
 		:	GKDBusEvents(rootNode, rootNodePath),
 			_sessionConnection(nullptr),
-			_systemConnection(nullptr)
+			_systemConnection(nullptr),
+			_initDone(false)
+{
+}
+
+GKDBus::~GKDBus()
+{
+}
+
+void GKDBus::init(void)
 {
 	GK_LOG_FUNC
 
+	{
+		int major_vers, minor_vers, micro_vers = 0;
+		dbus_get_version(&major_vers, &minor_vers, &micro_vers);
+		_currentDBusVersion += std::to_string(major_vers);
+		_currentDBusVersion += ".";
+		_currentDBusVersion += std::to_string(minor_vers);
+		_currentDBusVersion += ".";
+		_currentDBusVersion += std::to_string(micro_vers);
+	}
+
 	GKLog(trace, "GKDBus initialization")
+	GKLog2(trace, "GKDBus built against DBus: ", _builtAgainstDBusVersion)
+	GKLog2(trace, "GKDBus running with DBus: ", _currentDBusVersion)
 
 	dbus_error_init(&_error);
 
@@ -48,16 +73,39 @@ GKDBus::GKDBus(
 	GKLog4(trace, "checking std::string ::max_size(): ", s.max_size(), "UINT64_MAX: ", UINT64_MAX)
 	if( s.max_size() > UINT64_MAX )
 		throw GLogiKExcept("std::string ::max_size() overflow detected");
+
+	const std::vector<std::string> v;
+	GKLog4(trace, "checking std::vector<std::string> ::max_size(): ", v.max_size(), "UINT64_MAX: ", UINT64_MAX)
+	if( v.max_size() > UINT64_MAX )
+		throw GLogiKExcept("std::vector<std::string> ::max_size() overflow detected");
+
+	_initDone = true;
 }
 
-GKDBus::~GKDBus()
+const std::string GKDBus::getDBusVersion(void)
 {
-	GK_LOG_FUNC
+	struct DBusVersion {
+		int major = -1;
+		int minor = -1;
+		int micro = -1;
+	};
 
-	GKLog(trace, "GKDBus destruction")
+	DBusVersion version;
+	int* major = &(version.major);
+	int* minor = &(version.minor);
+	int* micro = &(version.micro);
 
-	this->disconnectFromSessionBus();
-	this->disconnectFromSystemBus();
+	dbus_get_version(major, minor, micro);
+
+	std::string ret;
+
+	ret += std::to_string(*major);
+	ret += ".";
+	ret += std::to_string(*minor);
+	ret += ".";
+	ret += std::to_string(*micro);
+
+	return ret;
 }
 
 void GKDBus::connectToSystemBus(
@@ -65,6 +113,9 @@ void GKDBus::connectToSystemBus(
 	const ConnectionFlag flag)
 {
 	GK_LOG_FUNC
+
+	if( ! _initDone )
+		throw GLogiKExcept(_initError);
 
 	_systemConnection = dbus_bus_get(DBUS_BUS_SYSTEM, &_error);
 	this->checkDBusError("failed to open system bus connection");
@@ -83,27 +134,14 @@ void GKDBus::connectToSystemBus(
 	}
 }
 
-void GKDBus::disconnectFromSystemBus(void) noexcept
-{
-	GK_LOG_FUNC
-
-	if(_systemConnection) {
-		GKLog(trace, "closing system bus connection")
-
-		if( ! _systemName.empty() ) {
-			int ret = dbus_bus_release_name(_systemConnection, _systemName.c_str(), &_error);
-			this->checkReleasedName(ret);
-		}
-		dbus_connection_unref(_systemConnection);
-		_systemConnection = nullptr;
-	}
-}
-
 void GKDBus::connectToSessionBus(
 	const char* connectionName,
 	const ConnectionFlag flag)
 {
 	GK_LOG_FUNC
+
+	if( ! _initDone )
+		throw GLogiKExcept(_initError);
 
 	_sessionConnection = dbus_bus_get(DBUS_BUS_SESSION, &_error);
 	this->checkDBusError("failed to open session bus connection");
@@ -122,20 +160,15 @@ void GKDBus::connectToSessionBus(
 	}
 }
 
-void GKDBus::disconnectFromSessionBus(void) noexcept
+void GKDBus::exit(void) noexcept
 {
 	GK_LOG_FUNC
 
-	if(_sessionConnection) {
-		GKLog(trace, "closing session bus connection")
+	GKLog(trace, "disconnecting and clearing DBusEvents")
 
-		if( ! _sessionName.empty() ) {
-			int ret = dbus_bus_release_name(_sessionConnection, _sessionName.c_str(), &_error);
-			this->checkReleasedName(ret);
-		}
-		dbus_connection_unref(_sessionConnection);
-		_sessionConnection = nullptr;
-	}
+	this->disconnectFromSystemBus();
+	this->disconnectFromSessionBus();
+	this->clearDBusEvents();
 }
 
 const std::string GKDBus::getObjectFromObjectPath(const std::string & objectPath)
@@ -171,6 +204,38 @@ void GKDBus::checkForMessages(void) noexcept
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
+
+void GKDBus::disconnectFromSystemBus(void) noexcept
+{
+	GK_LOG_FUNC
+
+	if(_systemConnection) {
+		GKLog(trace, "closing system bus connection")
+
+		if( ! _systemName.empty() ) {
+			int ret = dbus_bus_release_name(_systemConnection, _systemName.c_str(), &_error);
+			this->checkReleasedName(ret);
+		}
+		dbus_connection_unref(_systemConnection);
+		_systemConnection = nullptr;
+	}
+}
+
+void GKDBus::disconnectFromSessionBus(void) noexcept
+{
+	GK_LOG_FUNC
+
+	if(_sessionConnection) {
+		GKLog(trace, "closing session bus connection")
+
+		if( ! _sessionName.empty() ) {
+			int ret = dbus_bus_release_name(_sessionConnection, _sessionName.c_str(), &_error);
+			this->checkReleasedName(ret);
+		}
+		dbus_connection_unref(_sessionConnection);
+		_sessionConnection = nullptr;
+	}
+}
 
 void GKDBus::checkDBusMessage(
 	DBusConnection* const connection,
@@ -325,7 +390,7 @@ void GKDBus::checkDBusError(const char* error)
 	}
 }
 
-DBusConnection* const GKDBus::getConnection(BusConnection bus) const
+DBusConnection* const GKDBus::getDBusConnection(BusConnection bus) const
 {
 	switch(bus) {
 		case BusConnection::GKDBUS_SESSION :

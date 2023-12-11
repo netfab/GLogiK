@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -37,10 +37,9 @@
 #include <boost/log/attributes/scoped_attribute.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 
-#include "GKLogging.hpp"
-
 #define UTILS_COMPILATION 1
 
+#include "GKLogging.hpp"
 #include "exception.hpp"
 
 #undef UTILS_COMPILATION
@@ -132,7 +131,7 @@ void GKLogging::initDebugFile(const std::string & baseName, const fs::perms prms
 
 	fs::path debugFile;
 	{
-		fs::path tmpPath(DEBUG_DIR);
+		fs::path tmpPath(GK_LOGDIR);
 		{
 			chr::seconds s = chr::duration_cast< chr::seconds >(
 				chr::system_clock::now().time_since_epoch()

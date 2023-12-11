@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
  *
  */
 
+#include <new>
 #include <string>
 
 #include <QColor>
@@ -49,10 +50,13 @@ GKeysTab::GKeysTab(
 	:	Tab(pDBus),
 		_pKeysBoxLayout(nullptr),
 		_pInputsBoxHeaderLayout(nullptr),
+		_pInputsBoxBodyLayout(nullptr),
 		_pHelpLabel(nullptr),
+		_pCommandLineEdit(nullptr),
 		_GKeyEventTypeComboBox(nullptr),
 		_currentBankID(MKeysID::MKEY_M0),
 		_helpLabel("Click on a G-Key and/or a M-Key"),
+		_currentEventCommand(""),
 		_updateGKeyEvent(false)
 {
 	this->setObjectName(name);
@@ -61,6 +65,30 @@ GKeysTab::GKeysTab(
 GKeysTab::~GKeysTab()
 {
 }
+
+#if DEBUGGING_ON
+const char* GKeysTab::getEventTypeString(const GKeyEventType eventType)
+{
+	switch(eventType)
+	{
+		case GKeyEventType::GKEY_INACTIVE:
+			return "GKEY_INACTIVE";
+			break;
+		case GKeyEventType::GKEY_MACRO:
+			return "GKEY_MACRO";
+			break;
+		case GKeyEventType::GKEY_RUNCMD:
+			return "GKEY_RUNCMD";
+			break;
+		case GKeyEventType::GKEY_INVALID:
+			return "GKEY_INVALID";
+			break;
+		default:
+			return "GKEY_UNKNOWN";
+			break;
+	}
+}
+#endif
 
 void GKeysTab::buildTab(void)
 {
@@ -127,6 +155,13 @@ void GKeysTab::buildTab(void)
 
 				inputsBoxLayout->addWidget( this->getHLine() );
 
+				{ // body
+					_pInputsBoxBodyLayout = new QHBoxLayout();
+					inputsBoxLayout->addLayout(_pInputsBoxBodyLayout);
+
+					GKLog(trace, "inputsBox body added")
+				}
+
 				// --
 				inputsBoxLayout->addStretch();
 
@@ -166,12 +201,17 @@ void GKeysTab::buildTab(void)
 	}
 }
 
-void GKeysTab::updateTab(const DeviceProperties & device, const MKeysID bankID)
+void GKeysTab::updateTab(const DeviceProperties & device, const std::string & devID)
+{
+	// updating GKeysTab and resetting bankID
+	this->updateAndRedrawTab(device, MKeysID::MKEY_M0);
+}
+
+void GKeysTab::updateAndRedrawTab(const DeviceProperties & device, const MKeysID bankID)
 {
 	GK_LOG_FUNC
 
 	_currentBankID = (_currentBankID == bankID) ? MKeysID::MKEY_M0 : bankID;
-
 	this->setApplyButtonStatus(false);
 
 	/* exceptions can be thrown from QPushButton::clicked events
@@ -185,14 +225,26 @@ void GKeysTab::updateTab(const DeviceProperties & device, const MKeysID bankID)
 	}
 }
 
-void GKeysTab::getGKeyEventParams(MKeysID & bankID, GKeysID & keyID, GKeyEventType & eventType)
+void GKeysTab::getGKeyEventParams(
+	MKeysID & bankID, GKeysID & GKeyID,
+	GKeyEventType & eventType, std::string & eventCommand)
 {
+	GK_LOG_FUNC
+
 	if(! _updateGKeyEvent)
 		throw GLogiKExcept("internal logic error");
 
 	bankID = _currentBankID;
-	keyID  = _currentGKeyID;
+	GKeyID  = _currentGKeyID;
 	eventType = _newEventType;
+
+	GKLog4(trace, "MBank: ", _currentBankID, "GKey: ", getGKeyName(GKeyID))
+	GKLog4(trace, "eventType: ", GKeysTab::getEventTypeString(eventType), "command: ", eventCommand)
+
+	if(_pCommandLineEdit) {
+		GKLog(trace, "setting event command from pQLineEdit")
+		eventCommand = _pCommandLineEdit->text().toStdString();
+	}
 
 	this->setApplyButtonStatus(false);
 }
@@ -205,6 +257,16 @@ void GKeysTab::setApplyButtonStatus(const bool status)
 {
 	_updateGKeyEvent = status;
 	_pApplyButton->setEnabled(status);
+}
+
+void GKeysTab::updateApplyButtonStatus(const QString & newString)
+{
+	GK_LOG_FUNC
+
+	GKLog2(trace, "new string: ", newString.toStdString())
+
+	//this->setApplyButtonStatus( (! newString.isEmpty() && (_currentEventCommand != newString.toStdString()) ) );
+	this->setApplyButtonStatus( ! newString.isEmpty() );
 }
 
 QPushButton* GKeysTab::newBlankButton(void)
@@ -233,7 +295,10 @@ QPushButton* GKeysTab::newGKeyButton(
 	button->setObjectName(buttonText);
 	button->setFixedWidth(40);
 
-	if( eventType == GKeyEventType::GKEY_MACRO ) {
+	if( eventType == GKeyEventType::GKEY_RUNCMD ) {
+		button->setProperty("class", QVariant("cmmndGKey")); // css class
+	}
+	else if( eventType == GKeyEventType::GKEY_MACRO ) {
 		button->setProperty("class", QVariant("macroGKey")); // css class
 	}
 	else if( eventType == GKeyEventType::GKEY_INACTIVE ) {
@@ -254,7 +319,7 @@ void GKeysTab::clearInputsBoxHeaderLayout(void)
 	GK_LOG_FUNC
 
 	if(_GKeyEventTypeComboBox) {
-		GKLog(trace, "disconnecting GKeyEventTypeComboBox currentIndexChanged signal")
+		GKLog(trace, "disconnecting GKeyEventTypeComboBox ::currentIndexChanged signal")
 		// make sure combobox's currentIndexChanged signal is disconnected
 		// before clearing layout and deleting widget
 		QObject::disconnect(_GKeyEventTypeComboBox, nullptr, nullptr, nullptr);
@@ -263,6 +328,20 @@ void GKeysTab::clearInputsBoxHeaderLayout(void)
 	this->clearLayout(_pInputsBoxHeaderLayout);
 
 	_GKeyEventTypeComboBox = nullptr;
+}
+
+void GKeysTab::clearInputsBoxBodyLayout(void)
+{
+	GK_LOG_FUNC
+
+	if(_pCommandLineEdit) {
+		GKLog(trace, "disconnecting pQLineEdit ::textChanged signal")
+		QObject::disconnect(_pCommandLineEdit, nullptr, nullptr, nullptr);
+	}
+
+	this->clearLayout(_pInputsBoxBodyLayout);
+
+	_pCommandLineEdit = nullptr;
 }
 
 void GKeysTab::clearKeysBoxLayout(void)
@@ -278,6 +357,43 @@ void GKeysTab::clearKeysBoxLayout(void)
 	_buttonsSignalsToClear.clear();
 
 	this->clearLayout(_pKeysBoxLayout);
+}
+
+void GKeysTab::setGKeyEventParams(
+	const std::string & eventCommand, const GKeyEventType eventType, const GKeysID GKeyID)
+{
+	GK_LOG_FUNC
+
+	/* _currentBankID is set in updateAndRedrawTab() */
+	_newEventType = eventType;
+	_currentGKeyID = GKeyID;
+
+	GKLog4(trace, "MBank: ", _currentBankID, "GKey: ", getGKeyName(GKeyID))
+	GKLog4(trace, "eventType: ", GKeysTab::getEventTypeString(eventType), "command: ", eventCommand)
+
+	if(! eventCommand.empty()) {
+		_currentEventCommand = eventCommand;
+	}
+}
+
+void GKeysTab::prepareCommandWidget(const GKeysEvent & GKeyEvent, const GKeysID GKeyID)
+{
+	_pCommandLineEdit = new QLineEdit();
+
+	_pCommandLineEdit->setObjectName("CommandLineEdit");
+	_pCommandLineEdit->setClearButtonEnabled(true);
+	_pCommandLineEdit->setMaxLength(GKEY_COMMAND_LINE_STRING_MAX_LENGTH);
+
+	QString cmdLabel("Command to run when pressing ");
+	cmdLabel += getGKeyName(GKeyID).c_str();
+	cmdLabel += ": ";
+
+	_pInputsBoxBodyLayout->addWidget( new QLabel(cmdLabel) );
+	_pInputsBoxBodyLayout->addWidget( _pCommandLineEdit );
+
+	QObject::connect(_pCommandLineEdit, &QLineEdit::textChanged, this, &GKeysTab::updateApplyButtonStatus);
+
+	_pCommandLineEdit->setText( QString(GKeyEvent.getCommand().c_str()) );
 }
 
 void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID)
@@ -303,6 +419,7 @@ void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GK
 		//_pHelpLabel->clear();
 		_pHelpLabel->setText("");
 
+		this->clearInputsBoxBodyLayout();
 		this->clearInputsBoxHeaderLayout();
 
 		/* -- -- -- */
@@ -320,9 +437,12 @@ void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GK
 			const QVariant eType1(v);
 			v = static_cast<unsigned int>(GKeyEventType::GKEY_MACRO);
 			const QVariant eType2(v);
+			v = static_cast<unsigned int>(GKeyEventType::GKEY_RUNCMD);
+			const QVariant eType3(v);
 
 			_GKeyEventTypeComboBox->addItem("inactive", eType1);
 			_GKeyEventTypeComboBox->addItem("macro", eType2);
+			_GKeyEventTypeComboBox->addItem("command", eType3);
 
 			GKeyEventType itemEventType = eventType;
 			const bool emptyMacro = event.getMacro().empty();
@@ -336,6 +456,9 @@ void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GK
 				/* disabling combobox item since macro is empty */
 				item->setFlags( item->flags() & ~Qt::ItemIsEnabled );
 			}
+
+			if(itemEventType == GKeyEventType::GKEY_RUNCMD)
+				_GKeyEventTypeComboBox->setCurrentIndex(2);
 
 			if(itemEventType == GKeyEventType::GKEY_MACRO) {
 				if(emptyMacro) { // sanity check
@@ -355,6 +478,13 @@ void GKeysTab::updateInputsBox(const DeviceProperties & device, const GKeysID GK
 		_pInputsBoxHeaderLayout->addWidget(button);
 		_pInputsBoxHeaderLayout->addWidget(_GKeyEventTypeComboBox);
 		_pInputsBoxHeaderLayout->addStretch();
+
+		/* prepare internal variables for potential click on ApplyButton */
+		this->setGKeyEventParams(event.getCommand(), eventType, GKeyID);
+
+		if(eventType == GKeyEventType::GKEY_RUNCMD) {
+			this->prepareCommandWidget(event, GKeyID);
+		}
 
 		QObject::connect(
 			_GKeyEventTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -382,13 +512,13 @@ void GKeysTab::switchGKeyEventType(const DeviceProperties & device, const GKeysI
 			bool ok = false;
 			const uint value = itemData.toUInt(&ok);
 			if(ok and value <= 255) {
-				if(value > (static_cast<unsigned int>(GKeyEventType::GKEY_MACRO))) {
-					throw GLogiKExcept("value greater than enum maximum");
+				if(value >= (static_cast<unsigned int>(GKeyEventType::GKEY_INVALID))) {
+					throw GLogiKExcept("invalid GKeyEventType value");
 				}
 
 				return static_cast<GKeyEventType>(value);
 			}
-			throw GLogiKExcept("value greater than 255 or conversion failure");
+			throw GLogiKExcept("invalid value or conversion failure");
 		};
 
 		const int index = _GKeyEventTypeComboBox->currentIndex();
@@ -399,10 +529,34 @@ void GKeysTab::switchGKeyEventType(const DeviceProperties & device, const GKeysI
 		const GKeysEvent & event = bank.at(GKeyID);
 		const QVariant data = _GKeyEventTypeComboBox->itemData(index).value<QVariant>();
 
-		_newEventType = getDataEventType(data);
-		_currentGKeyID = GKeyID;
+		auto getApplyButtonStatus = [&] () -> const bool
+		{
+			bool ret = false;
 
-		this->setApplyButtonStatus( (event.getEventType() != _newEventType) );
+			if(event.getEventType() != _newEventType)
+				ret = true;
+
+			if((_newEventType == GKeyEventType::GKEY_MACRO) && (event.getMacro().empty()))
+				ret = false;
+
+			if((_newEventType == GKeyEventType::GKEY_RUNCMD) && (event.getCommand().empty()))
+				ret = false;
+
+			return ret;
+		};
+
+		/* prepare internal variables for potential click on ApplyButton */
+		this->setGKeyEventParams(event.getCommand(), getDataEventType(data), GKeyID);
+
+		this->setApplyButtonStatus( getApplyButtonStatus() );
+
+		/* -- -- -- */
+
+		this->clearInputsBoxBodyLayout();
+
+		if(_newEventType == GKeyEventType::GKEY_RUNCMD) {
+			this->prepareCommandWidget(event, GKeyID);
+		}
 	}
 	catch (const std::out_of_range& oor) {
 		LOG(error) << "out of range detected: " << oor.what();
@@ -451,7 +605,7 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 		button->setObjectName(keyName);
 		button->setFixedWidth(32);
 
-		QObject::connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateTab, this, device, bankID) );
+		QObject::connect( button, &QPushButton::clicked, std::bind(&GKeysTab::updateAndRedrawTab, this, device, bankID) );
 		_buttonsSignalsToClear.push_back(button);
 
 		GKLog2(trace, "allocated M-Key QPushButton ", keyName.toStdString())
@@ -518,6 +672,7 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 		{ // resetting right panel
 			_pHelpLabel->setText(_helpLabel);
 
+			this->clearInputsBoxBodyLayout();
 			this->clearInputsBoxHeaderLayout();
 
 			/* -- -- -- */
@@ -528,10 +683,25 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 		} //
 
 		/* -- -- -- */
-		// redrawing left panel
 
 		const banksMap_type & banks = device.getBanks();
 		const mBank_type & bank = banks.at(_currentBankID);
+
+		{ /* increasing vector's capacity before drawing {M,G}Keys layouts */
+			using Size = std::vector<QPushButton*>::size_type;
+			/* assuming that we don't have millions of keys */
+			const Size num( banks.size() + bank.size() );
+
+			try {
+				_buttonsSignalsToClear.reserve(num);
+			}
+			catch( const std::length_error & e ) {
+				LOG(error) << "reserve length_error failure : " << e.what();
+			}
+			catch( const std::bad_alloc & e ) {
+				LOG(error) << "reserve bad_alloc failure : " << e.what();
+			}
+		}
 
 		//for(const auto & GMacroPair : bank) {
 		//	LOG(trace)	<< "key|size: " << getGKeyName(GMacroPair.first)
@@ -541,10 +711,13 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 		if( (bank.size() % keysPerLine) != 0 )
 			throw GLogiKExcept("G-Keys modulo not null");
 
+		/* -- -- -- */
+		// redrawing left panel
+
 		this->clearKeysBoxLayout();
 
 		try {
-			{	// initialize M-keys layout
+			{	// initialize MKeys layout
 				std::vector<MKeysID> ids;
 				for(const auto & idBankPair : banks) {
 					const MKeysID & bankID = idBankPair.first;
@@ -557,7 +730,7 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 			_pKeysBoxLayout->addSpacing(10);
 			unsigned short c = 0;
 
-			/* G-keys layouts */
+			/* GKeys layouts */
 			for(unsigned short i = 0; i < (bank.size() / keysPerLine); ++i)
 			{
 				mBank_type::const_iterator it1 = bank.begin();

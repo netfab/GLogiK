@@ -32,6 +32,9 @@
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Client1"
       send_member="ToggleClientReadyPropertie"/>
+    <allow send_destination="com.glogik.Daemon"
+      send_interface="com.glogik.Daemon.Client1"
+      send_member="GetDaemonDependenciesMap"/>
 
     <deny send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Device1"/>

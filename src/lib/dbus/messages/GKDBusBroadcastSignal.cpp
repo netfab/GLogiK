@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -111,7 +111,7 @@ void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 	const char* signal)
 {
 	this->initializeBroadcastSignal(
-		this->getConnection(wantedConnection),
+		this->getDBusConnection(wantedConnection),
 		objectPath, interface, signal);
 }
 
@@ -147,6 +147,12 @@ void GKDBusMessageBroadcastSignal::appendUInt8ToBroadcastSignal(const uint8_t va
 		_signal->appendUInt8(value);
 }
 
+void GKDBusMessageBroadcastSignal::appendUInt16ToBroadcastSignal(const uint16_t value)
+{
+	if(_signal != nullptr) /* sanity check */
+		_signal->appendUInt16(value);
+}
+
 void GKDBusMessageBroadcastSignal::appendGKeysIDToBroadcastSignal(const GLogiK::GKeysID keyID)
 {
 	if(_signal != nullptr) /* sanity check */
@@ -159,10 +165,10 @@ void GKDBusMessageBroadcastSignal::appendMKeysIDToBroadcastSignal(const GLogiK::
 		_signal->appendMKeysID(bankID);
 }
 
-void GKDBusMessageBroadcastSignal::appendStringVectorToBroadcastSignal(const std::vector<std::string> & list)
+void GKDBusMessageBroadcastSignal::appendStringArrayToBroadcastSignal(const std::vector<std::string> & list)
 {
 	if(_signal != nullptr) /* sanity check */
-		_signal->appendStringVector(list);
+		_signal->appendStringArray(list);
 }
 
 void GKDBusMessageBroadcastSignal::appendMacroToBroadcastSignal(const GLogiK::macro_type & macro)

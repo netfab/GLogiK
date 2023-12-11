@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,12 +22,15 @@
 #ifndef SRC_BIN_GUI_QT_TAB_HPP_
 #define SRC_BIN_GUI_QT_TAB_HPP_
 
+#include <string>
+
 #include <QLayout>
 #include <QWidget>
 #include <QFrame>
 #include <QPushButton>
 
 #include "lib/dbus/GKDBus.hpp"
+#include "lib/shared/deviceProperties.hpp"
 
 #define LogRemoteCallFailure \
 	LOG(critical) << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
@@ -49,13 +52,15 @@ class Tab
 		Tab() = delete;
 
 		virtual void buildTab(void) = 0;
-		virtual void updateTab(void) {};
+		virtual void updateTab(const DeviceProperties & device, const std::string & devID) = 0;
 
 		QFrame* getHLine(void);
 		QFrame* getVLine(void);
 		const QPushButton* getApplyButton(void) const;
 
 	protected:
+		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
+
 		NSGKDBus::GKDBus* _pDBus;
 
 		QPushButton* _pApplyButton;

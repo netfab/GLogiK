@@ -1,8 +1,12 @@
 
 pbm_dir = $(datadir)/$(PACKAGE)/pbm
+coretemp_dir = $(pbm_dir)/coretemp
 splashscreen_dir = $(pbm_dir)/splashscreen
 systemMonitor_dir = $(pbm_dir)/systemMonitor
 pbmFonts_dir = $(pbm_dir)/fonts
+
+dist_coretemp__DATA = \
+	%D%/coretemp/skeleton.pbm
 
 dist_splashscreen__DATA = \
 	%D%/splashscreen/splashscreen01.pbm

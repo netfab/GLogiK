@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 
 #include <config.h>
 
-#include "lib/utils/GKLogging.hpp"
+#include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
 #include "DBusHandler.hpp"
@@ -43,8 +43,7 @@ using namespace NSGKUtils;
 
 DBusHandler::DBusHandler(NSGKDBus::GKDBus* pDBus)
 	:	_tenSeconds(chr::duration<int>(10)),
-		_pDBus(pDBus),
-		_sessionBus(NSGKDBus::BusConnection::GKDBUS_SESSION)
+		_pDBus(pDBus)
 {
 	this->initializeGKDBusSignals();
 
@@ -56,7 +55,7 @@ DBusHandler::DBusHandler(NSGKDBus::GKDBus* pDBus)
 	}
 
 	/* spawn desktop service on start */
-	this->restartRequest();
+	this->spawnService(100);
 }
 
 DBusHandler::~DBusHandler(void)
@@ -88,36 +87,36 @@ void DBusHandler::cleanDBusRequests(void)
  */
 
 void DBusHandler::initializeGKDBusSignals(void) {
-	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGq2v>::exposeSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		"RestartRequest",
+		"ServiceStartRequest",
 		{},
-		std::bind(&DBusHandler::restartRequest, this)
+		std::bind(&DBusHandler::spawnService, this, std::placeholders::_1)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGq2v>::exposeSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-		"RestartRequest",
+		"ServiceStartRequest",
 		{},
-		std::bind(&DBusHandler::restartRequest, this)
+		std::bind(&DBusHandler::spawnService, this, std::placeholders::_1)
 	);
 }
 
-void DBusHandler::restartRequest(void)
+void DBusHandler::spawnService(const uint16_t timelapse)
 {
 	GK_LOG_FUNC
 
 	using steady = chr::steady_clock;
 
 	LOG(info) << "received signal: " << __func__;
-	LOG(info) << "sleeping 1 second before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
-	std::this_thread::sleep_for(chr::seconds(1));
+	LOG(info) << "sleeping " << timelapse << " milliseconds before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
+	std::this_thread::sleep_for(chr::milliseconds(timelapse));
 
 	const steady::time_point now = steady::now();
 	const steady::duration timeLapse = now - _lastCall;
