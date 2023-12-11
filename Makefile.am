@@ -4,7 +4,7 @@ ACLOCAL_AMFLAGS = -I m4
 AM_DISTCHECK_CONFIGURE_FLAGS = --enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--enable-dbus --enable-qt5
 
-include %D%/data/init/openrc/Makefile.am
+include %D%/data/tmpfiles.d/Makefile.am
 include %D%/data/udev/Makefile.am
 include %D%/data/pbm/Makefile.am
 
@@ -21,11 +21,17 @@ include %D%/src/lib/dbus/Makefile.am
 include %D%/src/bin/launcher/Makefile.am
 include %D%/src/bin/service/Makefile.am
 
+if WITH_DESKTOP_NOTIFICATIONS
+include %D%/data/icons/Makefile.am
+endif
+
 if WITH_QT5
 include %D%/src/bin/gui/Qt/Makefile.am
 include %D%/data/applications/Makefile.am
 include %D%/data/gui/Makefile.am
+if !WITH_DESKTOP_NOTIFICATIONS
 include %D%/data/icons/Makefile.am
+endif
 endif
 
 endif
@@ -34,8 +40,10 @@ include %D%/src/bin/daemon/Makefile.am
 
 EXTRA_DIST += \
 	%D%/data/tmpfiles.d/GLogiK.conf \
+	%D%/data/sysusers.d/GLogiK.conf \
 	%D%/meson.build \
-	%D%/meson_options.txt \
+	%D%/meson.options \
+	%D%/version.sh \
 	%D%/src/lib/utils/meson.build \
 	%D%/src/lib/shared/meson.build \
 	%D%/src/lib/dbus/meson.build \
@@ -83,15 +91,12 @@ maintainer-clean-libtool-files:
 maintainer-clean-autotools-files:
 	-rm -f $(LOCAL_AUTOTOOLS_FILES)
 
+docs_dir = $(docdir)
 
-NEWS.md:
-
-README.md:
-
-NEWS: NEWS.md
-	-cp $< $@
-
-README: README.md
-	-cp $< $@
-
-CLEANFILES = NEWS README
+docs__DATA = \
+	%D%/AUTHORS \
+	%D%/ChangeLog \
+	%D%/COPYING \
+	%D%/NEWS \
+	%D%/README \
+	%D%/VERSION

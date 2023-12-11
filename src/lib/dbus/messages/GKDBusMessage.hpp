@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,41 +22,45 @@
 #ifndef SRC_LIB_DBUS_MSG_GKDBUS_MESSAGE_HPP_
 #define SRC_LIB_DBUS_MSG_GKDBUS_MESSAGE_HPP_
 
-#include <string>
-#include <vector>
-
 #include <dbus/dbus.h>
 
-#include "include/base.hpp"
-#include "include/MBank.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include "lib/dbus/ArgTypes/TypeBase.hpp"
+#include "lib/dbus/ArgTypes/boolean.hpp"
+#include "lib/dbus/ArgTypes/string.hpp"
+#include "lib/dbus/ArgTypes/stringArray.hpp"
+#include "lib/dbus/ArgTypes/uint16.hpp"
+#include "lib/dbus/ArgTypes/uint32.hpp"
+#include "lib/dbus/ArgTypes/uint64.hpp"
+#include "lib/dbus/ArgTypes/uint8.hpp"
+#include "lib/dbus/ArgTypes/GKeysID.hpp"
+#include "lib/dbus/ArgTypes/GKeysIDArray.hpp"
+#include "lib/dbus/ArgTypes/MKeysID.hpp"
+#include "lib/dbus/ArgTypes/MKeysIDArray.hpp"
+#include "lib/dbus/ArgTypes/macro.hpp"
+#include "lib/dbus/ArgTypes/LCDPPArray.hpp"
+#include "lib/dbus/ArgTypes/DepsMap.hpp"
 
 namespace NSGKDBus
 {
 
 class GKDBusMessage
+	:	virtual public TypeBase,
+		public TypeBoolean,
+		virtual public TypeString,
+		public TypeStringArray,
+		virtual public TypeUInt64,
+		virtual public TypeUInt8,
+		virtual public TypeUInt16,
+		public TypeUInt32,
+		public TypeGKeysID,
+		public TypeGKeysIDArray,
+		public TypeMKeysID,
+		public TypeMKeysIDArray,
+		public TypeMacro,
+		public TypeLCDPPArray,
+		public TypeGKDepsMap
 {
 	public:
-		void appendBoolean(const bool value);
-		void appendString(const std::string & value);
-		void appendStringVector(const std::vector<std::string> & list);
-
-		void appendUInt8(const uint8_t value);
-		void appendUInt16(const uint16_t value);
-		void appendUInt32(const uint32_t value);
-		void appendUInt64(const uint64_t value);
-
-		void appendGKeysID(const GLogiK::GKeysID keyID);
-		void appendMKeysID(const GLogiK::MKeysID keyID);
-		void appendGKeysIDArray(const GLogiK::GKeysIDArray_type & keysID);
-		void appendMKeysIDArray(const GLogiK::MKeysIDArray_type & keysID);
-		void appendMacro(const GLogiK::macro_type & macro);
-		void appendMacrosBank(const GLogiK::mBank_type & bank);
-		void appendLCDPluginsPropertiesArray(
-			const GLogiK::LCDPluginsPropertiesArray_type & pluginsArray
-		);
-
-		void abandon(void);
 
 	protected:
 		GKDBusMessage(
@@ -67,22 +71,8 @@ class GKDBusMessage
 
 		DBusConnection* _connection;
 		DBusMessage* _message;
-		DBusMessageIter _itMessage;
-		bool _hosedMessage;
-
-		const std::string _appendFailure = "message append failure";
 
 	private:
-		void appendString(DBusMessageIter *iter, const std::string & value);
-		void appendUInt8(DBusMessageIter *iter, const uint8_t value);
-		void appendUInt16(DBusMessageIter *iter, const uint16_t value);
-		void appendUInt64(DBusMessageIter *iter, const uint64_t value);
-
-		void appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro);
-		void appendLCDPluginsPropertiesArray(
-			DBusMessageIter *iter,
-			const GLogiK::LCDPluginsPropertiesArray_type & pluginsArray
-		);
 
 };
 

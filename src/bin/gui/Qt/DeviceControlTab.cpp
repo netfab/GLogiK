@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -144,8 +144,8 @@ void DeviceControlTab::setVisibility(const bool visibility)
 }
 
 void DeviceControlTab::updateTab(
-	const std::string & devID,
-	const bool status)
+	const DeviceProperties & device,
+	const std::string & devID)
 {
 	GK_LOG_FUNC
 
@@ -153,7 +153,7 @@ void DeviceControlTab::updateTab(
 
 	_devID = devID;
 
-	if(status) { /* device status == "started" */
+	if(device.getStatus() == "started") {
 		_pStartButton->setEnabled(false);
 		_pStopButton->setEnabled(true);
 		_pRestartButton->setEnabled(true);
@@ -181,7 +181,7 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 
 	try {
 		_pDBus->initializeBroadcastSignal(
-			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			_sessionBus,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 			"DeviceStatusChangeRequest"

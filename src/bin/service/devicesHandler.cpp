@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,15 +22,22 @@
 #include <utility>
 #include <exception>
 #include <stdexcept>
+#include <new>
 
 #include <X11/Xlib.h>
 #include <X11/extensions/XTest.h>
 
-#include "include/LCDPluginProperties.hpp"
-
 #include "lib/shared/deviceConfigurationFile.hpp"
 
+#include <config.h>
+
+#if HAVE_DESKTOP_NOTIFICATIONS
+#include "desktopNotification.hpp"
+#endif
+
 #include "devicesHandler.hpp"
+
+#include "include/DeviceID.hpp"
 
 namespace GLogiK
 {
@@ -39,9 +46,7 @@ using namespace NSGKUtils;
 
 DevicesHandler::DevicesHandler()
 	:	_clientID("undefined"),
-		_pDBus(nullptr),
-		_pGKfs(nullptr),
-		_systemBus(NSGKDBus::BusConnection::GKDBUS_SYSTEM)
+		_pGKfs(nullptr)
 {
 	GK_LOG_FUNC
 
@@ -68,17 +73,12 @@ void DevicesHandler::setGKfs(NSGKUtils::FileSystem* pGKfs)
 	_pGKfs = pGKfs;
 }
 
-void DevicesHandler::setDBus(NSGKDBus::GKDBus* pDBus)
-{
-	_pDBus = pDBus;
-}
-
 void DevicesHandler::setClientID(const std::string & id)
 {
 	_clientID = id;
 }
 
-void DevicesHandler::clearDevices(void)
+void DevicesHandler::clearDevices(const bool notifications)
 {
 	devIDSet devicesID;
 
@@ -91,7 +91,7 @@ void DevicesHandler::clearDevices(void)
 
 	/* stop each device if not already stopped, and unref it */
 	for(const auto & devID : devicesID) {
-		this->unplugDevice(devID);
+		this->unplugDevice(devID, notifications);
 	}
 
 	/* clear all containers */
@@ -99,9 +99,9 @@ void DevicesHandler::clearDevices(void)
 	_stoppedDevices.clear();
 }
 
-const devices_files_map_t DevicesHandler::getDevicesMap(void)
+const DevicesFilesMap_type DevicesHandler::getDevicesFilesMap(void)
 {
-	devices_files_map_t ret;
+	DevicesFilesMap_type ret;
 	for(const auto & dev : _startedDevices) {
 		ret.insert( std::pair<std::string, const std::string>(dev.first, dev.second.getConfigFilePath()) );
 	}
@@ -114,22 +114,46 @@ const devices_files_map_t DevicesHandler::getDevicesMap(void)
 const std::vector<std::string> DevicesHandler::getDevicesList(void)
 {
 	std::vector<std::string> ret;
-	for(const auto & dev : _startedDevices) {
-		ret.push_back(dev.first);
-		ret.push_back("started");
-		ret.push_back(dev.second.getVendor());
-		ret.push_back(dev.second.getProduct());
-		ret.push_back(dev.second.getName());
-		ret.push_back(dev.second.getConfigFilePath());
+
+	try {
+		using Size = std::vector<std::string>::size_type;
+		/* assuming that we don't have millions of devices connected */
+		const Size num( _startedDevices.size() + _stoppedDevices.size() );
+
+		ret.reserve( num * (DEVICE_ID_NUM_PROPERTIES+1) );
 	}
-	for(const auto & dev : _stoppedDevices) {
-		ret.push_back(dev.first);
-		ret.push_back("stopped");
-		ret.push_back(dev.second.getVendor());
-		ret.push_back(dev.second.getProduct());
-		ret.push_back(dev.second.getName());
-		ret.push_back(dev.second.getConfigFilePath());
+	catch( const std::length_error & e ) {
+		GKSysLogError("reserve length_error failure : ", e.what());
 	}
+	catch( const std::bad_alloc & e ) {
+		GKSysLogError("reserve bad_alloc failure : ", e.what());
+	}
+
+	for(const auto & dev : _startedDevices)
+	{
+		const auto & devID = dev.first;
+		const auto & device = dev.second;
+
+		ret.push_back(devID);
+		ret.push_back("started"); // status
+		ret.push_back(device.getVendor());
+		ret.push_back(device.getProduct());
+		ret.push_back(device.getName());
+		ret.push_back(device.getConfigFilePath());
+	}
+	for(const auto & dev : _stoppedDevices)
+	{
+		const auto & devID = dev.first;
+		const auto & device = dev.second;
+
+		ret.push_back(devID);
+		ret.push_back("stopped"); // status
+		ret.push_back(device.getVendor());
+		ret.push_back(device.getProduct());
+		ret.push_back(device.getName());
+		ret.push_back(device.getConfigFilePath());
+	}
+
 	return ret;
 }
 
@@ -247,19 +271,19 @@ void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devI
 
 	try {
 		/* send DeviceConfigurationSaved signal to GUI applications */
-		_pDBus->initializeBroadcastSignal(
-			NSGKDBus::BusConnection::GKDBUS_SESSION,
+		DBus.initializeBroadcastSignal(
+			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 			"DeviceConfigurationSaved"
 		);
-		_pDBus->appendStringToBroadcastSignal(devID);
-		_pDBus->sendBroadcastSignal();
+		DBus.appendStringToBroadcastSignal(devID);
+		DBus.sendBroadcastSignal();
 
 		GKLog2(trace, devID, " sent signal on session bus : DeviceConfigurationSaved")
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
-		_pDBus->abandonBroadcastSignal();
+		DBus.abandonBroadcastSignal();
 		LOG(error) << devID << " failed to send signal on session bus : " << e.what();
 	}
 }
@@ -284,26 +308,26 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 		const std::string remoteMethod("SetDeviceBacklightColor");
 
 		try {
-			_pDBus->initializeRemoteMethodCall(
+			DBus.initializeRemoteMethodCall(
 				_systemBus,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
-			_pDBus->appendStringToRemoteMethodCall(_clientID);
-			_pDBus->appendStringToRemoteMethodCall(devID);
+			DBus.appendStringToRemoteMethodCall(_clientID);
+			DBus.appendStringToRemoteMethodCall(devID);
 			uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
-			_pDBus->appendUInt8ToRemoteMethodCall(r);
-			_pDBus->appendUInt8ToRemoteMethodCall(g);
-			_pDBus->appendUInt8ToRemoteMethodCall(b);
+			DBus.appendUInt8ToRemoteMethodCall(r);
+			DBus.appendUInt8ToRemoteMethodCall(g);
+			DBus.appendUInt8ToRemoteMethodCall(b);
 
-			_pDBus->sendRemoteMethodCall();
+			DBus.sendRemoteMethodCall();
 
 			try {
-				_pDBus->waitForRemoteMethodCallReply();
+				DBus.waitForRemoteMethodCallReply();
 
-				const bool ret = _pDBus->getNextBooleanArgument();
+				const bool ret = DBus.getNextBooleanArgument();
 				if( ! ret ) {
 					LOG(error) << devID << " failed to set device backlight color : false";
 				}
@@ -316,7 +340,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 			}
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
-			_pDBus->abandonRemoteMethodCall();
+			DBus.abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	}
@@ -332,24 +356,24 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 			const uint8_t maskID = toEnumType(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1);
 			const uint64_t mask = device.getLCDPluginsMask1();
 
-			_pDBus->initializeRemoteMethodCall(
+			DBus.initializeRemoteMethodCall(
 				_systemBus,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
-			_pDBus->appendStringToRemoteMethodCall(_clientID);
-			_pDBus->appendStringToRemoteMethodCall(devID);
-			_pDBus->appendUInt8ToRemoteMethodCall(maskID);
-			_pDBus->appendUInt64ToRemoteMethodCall(mask);
+			DBus.appendStringToRemoteMethodCall(_clientID);
+			DBus.appendStringToRemoteMethodCall(devID);
+			DBus.appendUInt8ToRemoteMethodCall(maskID);
+			DBus.appendUInt64ToRemoteMethodCall(mask);
 
-			_pDBus->sendRemoteMethodCall();
+			DBus.sendRemoteMethodCall();
 
 			try {
-				_pDBus->waitForRemoteMethodCallReply();
+				DBus.waitForRemoteMethodCallReply();
 
-				const bool ret = _pDBus->getNextBooleanArgument();
+				const bool ret = DBus.getNextBooleanArgument();
 				if( ! ret ) {
 					LOG(error) << devID << " failed to set device LCD Plugins Mask " << toUInt(maskID) << " : false";
 				}
@@ -362,7 +386,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 			}
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
-			_pDBus->abandonRemoteMethodCall();
+			DBus.abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	}
@@ -380,25 +404,25 @@ void DevicesHandler::setDeviceProperties(
 	std::string remoteMethod("GetDeviceProperties");
 
 	try {
-		_pDBus->initializeRemoteMethodCall(
+		DBus.initializeRemoteMethodCall(
 			_systemBus,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
-		_pDBus->appendStringToRemoteMethodCall(_clientID);
-		_pDBus->appendStringToRemoteMethodCall(devID);
+		DBus.appendStringToRemoteMethodCall(_clientID);
+		DBus.appendStringToRemoteMethodCall(devID);
 
-		_pDBus->sendRemoteMethodCall();
+		DBus.sendRemoteMethodCall();
 
 		try {
-			_pDBus->waitForRemoteMethodCallReply();
+			DBus.waitForRemoteMethodCallReply();
 
-			const std::string vendor( _pDBus->getNextStringArgument() );
-			const std::string product( _pDBus->getNextStringArgument() );
-			const std::string name( _pDBus->getNextStringArgument() );
-			const uint64_t caps( _pDBus->getNextUInt64Argument() );
+			const std::string vendor( DBus.getNextStringArgument() );
+			const std::string product( DBus.getNextStringArgument() );
+			const std::string name( DBus.getNextStringArgument() );
+			const uint64_t caps( DBus.getNextUInt64Argument() );
 			device.setProperties( vendor, product, name, caps );
 
 			GKLog2(trace, devID, " got 4 properties")
@@ -408,7 +432,7 @@ void DevicesHandler::setDeviceProperties(
 		}
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
-		_pDBus->abandonRemoteMethodCall();
+		DBus.abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
 
@@ -417,22 +441,22 @@ void DevicesHandler::setDeviceProperties(
 		remoteMethod = "GetDeviceLCDPluginsProperties";
 
 		try {
-			_pDBus->initializeRemoteMethodCall(
+			DBus.initializeRemoteMethodCall(
 				_systemBus,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
-			_pDBus->appendStringToRemoteMethodCall(_clientID);
-			_pDBus->appendStringToRemoteMethodCall(devID);
+			DBus.appendStringToRemoteMethodCall(_clientID);
+			DBus.appendStringToRemoteMethodCall(devID);
 
-			_pDBus->sendRemoteMethodCall();
+			DBus.sendRemoteMethodCall();
 
 			try {
-				_pDBus->waitForRemoteMethodCallReply();
+				DBus.waitForRemoteMethodCallReply();
 
-				const LCDPluginsPropertiesArray_type array = _pDBus->getNextLCDPluginsArrayArgument();
+				const LCDPPArray_type array = DBus.getNextLCDPPArrayArgument();
 				device.setLCDPluginsProperties(array);
 
 				GKLog3(trace, devID, " number of LCDPluginsProperties objects : ", array.size())
@@ -442,7 +466,7 @@ void DevicesHandler::setDeviceProperties(
 			}
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
-			_pDBus->abandonRemoteMethodCall();
+			DBus.abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	}
@@ -531,7 +555,7 @@ void DevicesHandler::setDeviceProperties(
 	}
 }
 
-void DevicesHandler::startDevice(const std::string & devID)
+void DevicesHandler::startDevice(const std::string & devID, const bool notifications)
 {
 	GK_LOG_FUNC
 
@@ -546,6 +570,11 @@ void DevicesHandler::startDevice(const std::string & devID)
 			LOG(info) << devID << " starting device";
 			_startedDevices[devID] = device;
 			_stoppedDevices.erase(devID);
+
+#if HAVE_DESKTOP_NOTIFICATIONS
+			if(notifications)
+				this->showNotification(devID, "Device started", device);
+#endif
 		}
 		catch (const std::out_of_range& oor) {
 			LOG(info) << devID << " initializing and starting device";
@@ -553,11 +582,16 @@ void DevicesHandler::startDevice(const std::string & devID)
 			/* also load configuration file */
 			this->setDeviceProperties(devID, device);
 			_startedDevices[devID] = device;
+
+#if HAVE_DESKTOP_NOTIFICATIONS
+			if(notifications)
+				this->showNotification(devID, "Device started", device);
+#endif
 		}
 	}
 }
 
-void DevicesHandler::stopDevice(const std::string & devID)
+void DevicesHandler::stopDevice(const std::string & devID, const bool notifications)
 {
 	GK_LOG_FUNC
 
@@ -572,17 +606,28 @@ void DevicesHandler::stopDevice(const std::string & devID)
 			LOG(info) << devID << " stopping device";
 			_stoppedDevices[devID] = device;
 			_startedDevices.erase(devID);
+
+#if HAVE_DESKTOP_NOTIFICATIONS
+			if(notifications)
+				this->showNotification(devID, "Device stopped", device);
+#endif
 		}
 		catch (const std::out_of_range& oor) {
 			/* this can happen when GLogiKs start and this device is already stopped
 			 * so we must start the device to stop it */
 			GKLog2(trace, devID, " device not found in containers, initializing and stopping it")
 
-			this->startDevice(devID);
+			this->startDevice(devID, false);
 			try {
+				DeviceProperties & device = _startedDevices.at(devID);
 				LOG(info) << devID << " stopping device";
-				_stoppedDevices[devID] = _startedDevices.at(devID);
+				_stoppedDevices[devID] = device;
 				_startedDevices.erase(devID);
+
+#if HAVE_DESKTOP_NOTIFICATIONS
+				if(notifications)
+					this->showNotification(devID, "Device stopped", device);
+#endif
 			}
 			catch (const std::out_of_range& oor) {
 				LOG(error) << devID << " started device not found, something is really wrong";
@@ -591,7 +636,7 @@ void DevicesHandler::stopDevice(const std::string & devID)
 	}
 }
 
-void DevicesHandler::unplugDevice(const std::string & devID)
+void DevicesHandler::unplugDevice(const std::string & devID, const bool notifications)
 {
 	GK_LOG_FUNC
 
@@ -603,7 +648,7 @@ void DevicesHandler::unplugDevice(const std::string & devID)
 		this->unrefDevice(devID);
 	}
 	catch (const std::out_of_range& oor) {
-		this->stopDevice(devID);
+		this->stopDevice(devID, notifications);
 		this->unrefDevice(devID);
 	}
 }
@@ -624,21 +669,21 @@ void DevicesHandler::unrefDevice(const std::string & devID)
 		std::string remoteMethod("DeleteDeviceConfiguration");
 
 		try {
-			_pDBus->initializeRemoteMethodCall(
+			DBus.initializeRemoteMethodCall(
 				_systemBus,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
-			_pDBus->appendStringToRemoteMethodCall(_clientID);
-			_pDBus->appendStringToRemoteMethodCall(devID);
+			DBus.appendStringToRemoteMethodCall(_clientID);
+			DBus.appendStringToRemoteMethodCall(devID);
 
-			_pDBus->sendRemoteMethodCall();
+			DBus.sendRemoteMethodCall();
 
 			try {
-				_pDBus->waitForRemoteMethodCallReply();
-				const bool ret = _pDBus->getNextBooleanArgument();
+				DBus.waitForRemoteMethodCallReply();
+				const bool ret = DBus.getNextBooleanArgument();
 				if( ! ret ) {
 					LOG(error) << devID << " failed to delete remote device configuration : false";
 				}
@@ -651,7 +696,7 @@ void DevicesHandler::unrefDevice(const std::string & devID)
 			}
 		}
 		catch (const GKDBusMessageWrongBuild & e) {
-			_pDBus->abandonRemoteMethodCall();
+			DBus.abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	}
@@ -763,7 +808,7 @@ void DevicesHandler::doDeviceFakeKeyEvent(
 	}
 }
 
-const LCDPluginsPropertiesArray_type &
+const LCDPPArray_type &
 	DevicesHandler::getDeviceLCDPluginsProperties(
 		const std::string & devID)
 {
@@ -798,22 +843,22 @@ const MKeysIDArray_type DevicesHandler::getDeviceMKeysIDArray(const std::string 
 	const std::string remoteMethod("GetDeviceMKeysIDArray");
 
 	try {
-		_pDBus->initializeRemoteMethodCall(
+		DBus.initializeRemoteMethodCall(
 			_systemBus,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
-		_pDBus->appendStringToRemoteMethodCall(_clientID);
-		_pDBus->appendStringToRemoteMethodCall(devID);
+		DBus.appendStringToRemoteMethodCall(_clientID);
+		DBus.appendStringToRemoteMethodCall(devID);
 
-		_pDBus->sendRemoteMethodCall();
+		DBus.sendRemoteMethodCall();
 
 		try {
-			_pDBus->waitForRemoteMethodCallReply();
+			DBus.waitForRemoteMethodCallReply();
 
-			MKeysIDArray = _pDBus->getNextMKeysIDArrayArgument();
+			MKeysIDArray = DBus.getNextMKeysIDArrayArgument();
 			GKLog3(trace, devID, " number of M-keys ID : ", MKeysIDArray.size())
 		}
 		catch (const GLogiKExcept & e) {
@@ -821,7 +866,7 @@ const MKeysIDArray_type DevicesHandler::getDeviceMKeysIDArray(const std::string 
 		}
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
-		_pDBus->abandonRemoteMethodCall();
+		DBus.abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
 
@@ -834,22 +879,22 @@ const GKeysIDArray_type DevicesHandler::getDeviceGKeysIDArray(const std::string 
 	const std::string remoteMethod("GetDeviceGKeysIDArray");
 
 	try {
-		_pDBus->initializeRemoteMethodCall(
+		DBus.initializeRemoteMethodCall(
 			_systemBus,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
-		_pDBus->appendStringToRemoteMethodCall(_clientID);
-		_pDBus->appendStringToRemoteMethodCall(devID);
+		DBus.appendStringToRemoteMethodCall(_clientID);
+		DBus.appendStringToRemoteMethodCall(devID);
 
-		_pDBus->sendRemoteMethodCall();
+		DBus.sendRemoteMethodCall();
 
 		try {
-			_pDBus->waitForRemoteMethodCallReply();
+			DBus.waitForRemoteMethodCallReply();
 
-			GKeysIDArray = _pDBus->getNextGKeysIDArrayArgument();
+			GKeysIDArray = DBus.getNextGKeysIDArrayArgument();
 			GKLog3(trace, devID, " number of G-keys ID : ", GKeysIDArray.size())
 		}
 		catch (const GLogiKExcept & e) {
@@ -857,12 +902,31 @@ const GKeysIDArray_type DevicesHandler::getDeviceGKeysIDArray(const std::string 
 		}
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
-		_pDBus->abandonRemoteMethodCall();
+		DBus.abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
 
 	return GKeysIDArray;
 }
+
+#if HAVE_DESKTOP_NOTIFICATIONS
+void DevicesHandler::showNotification(
+	const std::string & devID,
+	const std::string & summary,
+	const DeviceProperties & device)
+{
+	std::string body(devID);
+	body += " ";
+	body += device.getVendor();
+	body += " ";
+	body += device.getProduct();
+	body += " ";
+	body += device.getName();
+
+	// icon - "dialog-information"
+	desktopNotification n(summary, body, "GLogiK");
+}
+#endif
 
 } // namespace GLogiK
 

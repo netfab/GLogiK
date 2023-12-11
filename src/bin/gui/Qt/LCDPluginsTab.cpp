@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 #include "LCDPluginsTab.hpp"
 
@@ -130,8 +130,8 @@ void LCDPluginsTab::buildTab(void)
 }
 
 void LCDPluginsTab::updateTab(
-	const std::string & devID,
-	const DeviceProperties & device)
+	const DeviceProperties & device,
+	const std::string & devID)
 {
 	GK_LOG_FUNC
 
@@ -143,7 +143,7 @@ void LCDPluginsTab::updateTab(
 	const std::string remoteMethod("GetDeviceLCDPluginsProperties");
 	try {
 		_pDBus->initializeRemoteMethodCall(
-			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -156,7 +156,7 @@ void LCDPluginsTab::updateTab(
 
 		try {
 			_pDBus->waitForRemoteMethodCallReply();
-			const LCDPluginsPropertiesArray_type array = _pDBus->getNextLCDPluginsArrayArgument();
+			const LCDPPArray_type array = _pDBus->getNextLCDPPArrayArgument();
 
 			_pPluginsTable->setRowCount( array.size() );
 

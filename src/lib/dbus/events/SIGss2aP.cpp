@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -36,15 +36,15 @@ template <>
 		DBusMessage* asyncContainer
 	)
 {
-	GKDBusArgument::fillInArguments(message);
+	ArgBase::fillInArguments(message);
 
-	GLogiK::LCDPluginsPropertiesArray_type ret;
+	GLogiK::LCDPPArray_type ret;
 
 	try {
-		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
-		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
+		const std::string arg1( ArgString::getNextStringArgument() );
+		const std::string arg2( ArgString::getNextStringArgument() );
 
-		/* call two strings to LCDPluginsProperties array callback */
+		/* call two strings to LCDPP array callback */
 		ret = this->callback(arg1, arg2);
 	}
 	catch ( const GLogiKExcept & e ) {
@@ -58,7 +58,7 @@ template <>
 
 	try {
 		this->initializeReply(connection, message);
-		this->appendLCDPluginsPropertiesArrayToReply(ret);
+		this->appendLCDPPArrayToReply(ret);
 
 		this->appendAsyncArgsToReply(asyncContainer);
 	}

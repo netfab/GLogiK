@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@ namespace GLogiK
 namespace fs = boost::filesystem;
 using namespace NSGKUtils;
 
+const std::string PBMFont::deg("\xB0"); // degree symbol °
+const std::string PBMFont::hackstring("mGMW%");
 
 const charactersMap_type PBMFont::defaultCharsMap =
 	{
@@ -56,10 +58,8 @@ const charactersMap_type PBMFont::defaultCharsMap =
 		{"1", {0,2} },  {"2", {1,2} },  {"3", {2,2} },  {"4", {3,2} },  {"5", {4,2} },
 		{"6", {5,2} },  {"7", {6,2} },  {"8", {7,2} },  {"9", {8,2} },  {"0", {9,2} },
 		{" ", {10,2} }, {".", {11,2} }, {":", {12,2} }, {"?", {13,2} }, {"!", {14,2} },
-		{";", {15,2} }, {"/", {16,2} }, {"-", {17,2} }, {"%", {18,2} },
+		{";", {15,2} }, {"/", {16,2} }, {"-", {17,2} }, {"%", {18,2} }, {PBMFont::deg, {19,2} },
 	};
-
-const std::string PBMFont::hackstring("mGMW%");
 
 PBMFont::PBMFont(
 	const std::string & PBMName,

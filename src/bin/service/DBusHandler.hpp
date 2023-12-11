@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@
 
 #include <vector>
 #include <string>
-#include <exception>
 
 #include <cstdint>
 
@@ -32,15 +31,14 @@
 
 #include "lib/utils/utils.hpp"
 #include "lib/dbus/GKDBus.hpp"
-#include "lib/shared/sessionManager.hpp"
 
 #include "include/base.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
+#include "include/DepsMap.hpp"
 
 #include "devicesHandler.hpp"
 #include "GKeysEventManager.hpp"
-
-#define UNREACHABLE_DAEMON_MAX_RETRIES 3
+#include "DBus.hpp"
 
 namespace GLogiK
 {
@@ -51,28 +49,19 @@ enum class SessionFramework : uint8_t
 	FW_LOGIND,
 };
 
-class restartRequest : public std::exception
-{
-	public :
-		restartRequest( const std::string& msg = "" );
-
-		virtual ~restartRequest( void ) throw();
-		virtual const char* what( void ) const throw();
-
-	protected :
-		std::string message;
-};
-
 class DBusHandler
+	:	public DBusInst
 {
 	public:
 		DBusHandler(
 			pid_t pid,
-			SessionManager& session,
 			NSGKUtils::FileSystem* pGKfs,
-			NSGKDBus::GKDBus* pDBus
+			GKDepsMap_type* dependencies
 		);
 		~DBusHandler(void);
+
+		static bool WantToExit;	/* true if we want to exit */
+		static void handleSignal(int signum);
 
 		const bool getExitStatus(void) const;
 		void checkNotifyEvents(NSGKUtils::FileSystem* pGKfs);
@@ -81,6 +70,9 @@ class DBusHandler
 	protected:
 
 	private:
+		static constexpr NSGKDBus::BusConnection const & _sessionBus = NSGKDBus::GKDBus::SessionBus;
+		static constexpr NSGKDBus::BusConnection const & _systemBus = NSGKDBus::GKDBus::SystemBus;
+
 		GKeysEventManager _GKeysEvent;
 		DevicesHandler _devices;
 
@@ -89,14 +81,11 @@ class DBusHandler
 		std::string _currentSession;	/* current session object path */
 		std::string _sessionState;		/* session state */
 
-		NSGKDBus::GKDBus* _pDBus;
+		const GKDepsMap_type* const _pDepsMap;
 
 		SessionFramework _sessionFramework;
-		const NSGKDBus::BusConnection _sessionBus;
-		const NSGKDBus::BusConnection _systemBus;
 
 		bool _registerStatus;		/* true == registered with daemon */
-		bool _wantToExit;			/* true if we want to exit after a restart request */
 
 		/* -- -- -- */
 
@@ -108,7 +97,9 @@ class DBusHandler
 		void registerWithDaemon(void);
 		void unregisterWithDaemon(void);
 
-		void clearAndUnregister(void);
+		void getDaemonDependenciesMap(GKDepsMap_type* const dependencies);
+
+		void clearAndUnregister(const bool notifications = true);
 
 		void reportChangedState(void);
 
@@ -116,7 +107,7 @@ class DBusHandler
 		void initializeGKDBusSignals(void);
 		void initializeGKDBusMethods(void);
 
-		void sendRestartRequest(void);
+		static void sendServiceStartRequest(void);
 		void sendDevicesUpdatedSignal(void);
 
 		/* signals from daemon */
@@ -147,10 +138,11 @@ class DBusHandler
 
 		const std::vector<std::string> getDevicesList(const std::string & reserved);
 		const std::vector<std::string> getInformations(const std::string & reserved);
-		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+		const LCDPPArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID,
 			const std::string & reserved
 		);
+		const GKDepsMap_type & getExecutablesDependenciesMap(const std::string & reserved);
 };
 
 } // namespace GLogiK

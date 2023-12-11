@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -199,7 +199,7 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 	if( mask_updated ) { /* if a Mx key was pressed */
 		try {
 			_pDBus->initializeBroadcastSignal(
-				NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+				_systemBus,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				"DeviceMBankSwitch"
@@ -429,6 +429,16 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 	/* initializing time_point */
 	device._lastTimePoint = std::chrono::steady_clock::now();
 
+	try {
+		device._newMacro.reserve(MACRO_T_MAX_SIZE);
+	}
+	catch( const std::length_error & e ) {
+		GKSysLogError("reserve length_error failure : ", e.what());
+	}
+	catch( const std::bad_alloc & e ) {
+		GKSysLogError("reserve bad_alloc failure : ", e.what());
+	}
+
 	while( (! exit) and DaemonControl::isDaemonRunning() ) {
 		this->checkDeviceFatalErrors(device, "macro record loop");
 		if( ! device.getThreadsStatus() )
@@ -463,7 +473,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 					}
 
 					_pDBus->initializeBroadcastSignal(
-						NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+						_systemBus,
 						GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 						GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 						signal.c_str()
@@ -606,12 +616,6 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 
 		GKLog3(trace, devID, " spawned listening thread for ", device.getFullName())
 
-		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-			std::thread lcd_thread(&KeyboardDriver::LCDScreenLoop, this, devID);
-			std::lock_guard<std::mutex> lock(_threadsMutex);
-			_threads.push_back( std::move(lcd_thread) );
-		}
-
 		while( DaemonControl::isDaemonRunning() ) {
 			this->checkDeviceFatalErrors(device, "listen loop");
 			if( ! device.getThreadsStatus() )
@@ -647,7 +651,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 								if( this->checkGKey(device) ) {
 									try {
 										_pDBus->initializeBroadcastSignal(
-											NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+											_systemBus,
 											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 											"DeviceGKeyEvent"
@@ -689,7 +693,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 #if GKDBUS
 								try {
 									_pDBus->initializeBroadcastSignal(
-										NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+										_systemBus,
 										GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 										GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 										"DeviceMediaEvent"
@@ -908,7 +912,7 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 	}
 }
 
-const LCDPluginsPropertiesArray_type &
+const LCDPPArray_type &
 	KeyboardDriver::getDeviceLCDPluginsProperties(const std::string & devID) const
 {
 	GK_LOG_FUNC
@@ -924,60 +928,93 @@ const LCDPluginsPropertiesArray_type &
 	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
+void KeyboardDriver::initializeDevice(const USBDeviceID & det)
+{
+	GK_LOG_FUNC
+
+	const std::string & devID = det.getID();
+
+	GKLog3(trace, devID, " initializing device : ", det.getFullName())
+
+	/* device may already have been initialized
+	 * (before DevicesManager startMonitoring() main loop) */
+	if(_initializedDevices.count(devID) > 0) {
+		std::ostringstream buffer(std::ios_base::app);
+		buffer << devID << " device already initialized";
+		GKSysLogInfo(buffer.str());
+		return;
+	}
+
+	USBDevice device(det);
+
+	// FIXME
+	//if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
+	//}
+
+	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+		/* plugins manager pointer is required in ->getDeviceLCDPluginsProperties()
+		 * for all initialized devices (even for the stopped ones) */
+		try {
+			device.setLCDPluginsManager( new LCDScreenPluginsManager(device.getProduct()) );
+		}
+		catch (const std::bad_alloc& e) { /* handle new() failure */
+			std::ostringstream buffer(std::ios_base::app);
+			buffer << devID << " LCD Plugins manager allocation failure";
+			GKSysLogError(buffer.str());
+			return;
+		}
+	}
+
+	_initializedDevices[ device.getID() ] = device;
+
+	GKLog2(trace, devID, " device initialized")
+}
+
 /* throws GLogiKExcept on any failure */
 void KeyboardDriver::openDevice(const USBDeviceID & det)
 {
 	GK_LOG_FUNC
 
-	GKLog3(trace, det.getID(), " initializing device : ", det.getFullName())
-
-	/* sanity check */
-	if(_initializedDevices.count(det.getID()) > 0) {
-		std::ostringstream err("device ID already used in started container : ", std::ios_base::app);
-		err << det.getID();
-		throw GLogiKExcept(err.str());
-	}
-
-	USBDevice device(det);
-
-	this->openUSBDevice(device); /* throws on any failure */
-	/* libusb device opened */
+	const std::string & devID = det.getID();
 
 	try {
-		this->sendUSBDeviceInitialization(device);
+		USBDevice & device = _initializedDevices.at(devID);
 
-		// FIXME
-		//if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) ) {
-		//}
+		this->openUSBDevice(device); /* throws on any failure */
+		/* libusb/hidapi device opened */
 
-		if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-			try {
-				device.setLCDPluginsManager( new LCDScreenPluginsManager(device.getProduct()) );
-			}
-			catch (const std::bad_alloc& e) { /* handle new() failure */
-				throw GLogiKBadAlloc("LCD Plugins manager allocation failure");
-			}
+		try {
+			this->sendUSBDeviceInitialization(device);
+
+			this->resetDeviceState(device);
+		}
+		catch ( const GLogiKExcept & e ) {
+			this->closeUSBDevice(device);
+			throw;
 		}
 
-		this->resetDeviceState(device);
-
-		_initializedDevices[ device.getID() ] = device;
-
-		/* spawn listening thread */
 		try {
+			if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
+				std::thread lcd_thread(&KeyboardDriver::LCDScreenLoop, this, device.getID());
+				std::lock_guard<std::mutex> lock(_threadsMutex);
+				_threads.push_back( std::move(lcd_thread) );
+			}
+
+			/* spawn listening thread */
 			std::thread listen_thread(&KeyboardDriver::listenLoop, this, device.getID() );
 			std::lock_guard<std::mutex> lock(_threadsMutex);
 			_threads.push_back( std::move(listen_thread) );
 		}
 		catch (const std::system_error& e) {
 			std::ostringstream buffer(std::ios_base::app);
-			buffer << "error while spawning listening thread : " << e.what();
+			buffer << "error while spawning thread : " << e.what();
+			this->closeDevice(det);
 			throw GLogiKExcept(buffer.str());
 		}
 	}
-	catch ( const GLogiKExcept & e ) {
-		this->closeUSBDevice(device);
-		throw;
+	catch (const std::out_of_range& oor) {
+		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		throw GLogiKExcept("device not initialized");
 	}
 }
 

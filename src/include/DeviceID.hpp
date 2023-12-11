@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -28,20 +28,21 @@
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/access.hpp>
 
+#define DEVICE_ID_NUM_PROPERTIES 5
+
 namespace GLogiK
 {
 
 class DeviceID
 {
 	public:
-		DeviceID()
-			:	_vendor("unknown"),
-				_product("unknown"),
-				_name("unknown"),
-				_status("unknown"),
-				_filePath("none")
+		DeviceID(
+			const std::string & vendor, const std::string & product, const std::string & name,
+			const std::string & status, const std::string & path) :
+				_vendor(vendor), _product(product), _name(name),
+				_status(status), _filePath(path)
 			{}
-		~DeviceID() = default;
+		~DeviceID(void) = default;
 
 		const std::string & getVendor(void) const { return _vendor; };
 		const std::string & getProduct(void) const { return _product; };
@@ -75,7 +76,7 @@ class DeviceID
 		}
 };
 
-typedef std::map<std::string, DeviceID> devices_map_type;
+typedef std::map<std::string, DeviceID> DevicesMap_type;
 
 } // namespace GLogiK
 

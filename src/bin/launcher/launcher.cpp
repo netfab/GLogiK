@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@
 
 #include <config.h>
 
-#include "lib/utils/GKLogging.hpp"
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 #include "lib/shared/sessionManager.hpp"
@@ -94,18 +93,20 @@ int DesktopServiceLauncher::run(void)
 	/* -- -- -- */
 	/* -- -- -- */
 	/* -- -- -- */
+	{
+		LOG(info) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
 
-	LOG(info) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
+		_pid = /*NSGKUtils::*/process::detach();
 
-	_pid = detachProcess();
-
-	GKLog2(trace, "process detached - pid : ", _pid)
+		GKLog2(trace, "process detached - pid : ", _pid)
+	}
 
 	{
 		SessionManager session;
 
 		NSGKDBus::GKDBus DBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE,
 			GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE_PATH);
+		DBus.init();
 
 		DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME,
 			NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
@@ -134,7 +135,7 @@ int DesktopServiceLauncher::run(void)
 
 		handler.cleanDBusRequests();
 
-		DBus.disconnectFromSessionBus();
+		DBus.exit();
 	}
 
 	GKLog(trace, "exiting with success")
@@ -149,10 +150,8 @@ void DesktopServiceLauncher::parseCommandLine(const int& argc, char *argv[])
 	po::options_description desc("Allowed options");
 
 #if DEBUGGING_ON
-	bool debug = false;
-
 	desc.add_options()
-		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
+		("debug,D", po::bool_switch()->default_value(false), "run in debug mode")
 	;
 #endif
 
@@ -163,8 +162,10 @@ void DesktopServiceLauncher::parseCommandLine(const int& argc, char *argv[])
 	po::notify(vm);
 
 #if DEBUGGING_ON
-	if (vm.count("debug")) {
-		GKLogging::GKDebug = vm["debug"].as<bool>();
+	bool debug = vm.count("debug") ? vm["debug"].as<bool>() : false;
+
+	if( debug ) {
+		GKLogging::GKDebug = true;
 	}
 #endif
 }

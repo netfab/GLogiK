@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@
 #include "lib/shared/deviceProperties.hpp"
 
 #include "include/DeviceID.hpp"
+#include "include/DepsMap.hpp"
 
 #include "DaemonAndServiceTab.hpp"
 #include "DeviceControlTab.hpp"
@@ -68,6 +69,8 @@ class MainWindow
 		void build(void);
 
 	private:
+		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
+
 		DeviceProperties _openedConfigurationFile;
 
 		fs::path _configurationRootDirectory;
@@ -75,7 +78,8 @@ class MainWindow
 
 		std::string _devID;
 
-		devices_map_type _devices;
+		DevicesMap_type _devices;
+		GKDepsMap_type _DepsMap;
 
 		NSGKDBus::GKDBus* _pDBus;
 
@@ -88,16 +92,16 @@ class MainWindow
 		LCDPluginsTab* _LCDPluginsTab;
 		GKeysTab* _GKeysTab;
 
+		const GKDepsMap_type* const _pDepsMap = &_DepsMap;
+
 		int _statusBarTimeout;
 		pid_t _pid;
 
-		bool _GUIResetThrow;
-		bool _serviceStartRequest;
 		bool _ignoreNextSignal;
 
 		/* -- -- -- */
 
-		static void handleSignal(int sig);
+		static void handleSignal(int signum);
 
 		QWidget* getTabbedWidget(const std::string & name);
 
@@ -106,6 +110,7 @@ class MainWindow
 		void setTabEnabled(const std::string & name, const bool status);
 		void setCurrentTab(const std::string & name);
 
+		void getExecutablesDependenciesMap(void);
 		void aboutDialog(void);
 
 		void aboutToQuit(void);

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -36,14 +36,14 @@ template <>
 		DBusMessage* asyncContainer
 	)
 {
-	GKDBusArgument::fillInArguments(message);
+	ArgBase::fillInArguments(message);
 	bool ret = false;
 
 	try {
-		const std::string arg1( GKDBusArgumentString::getNextStringArgument() );
-		const std::string arg2( GKDBusArgumentString::getNextStringArgument() );
-		const uint8_t arg3 = GKDBusArgumentByte::getNextByteArgument();
-		const uint64_t arg4 = GKDBusArgumentUInt64::getNextUInt64Argument();
+		const std::string arg1( ArgString::getNextStringArgument() );
+		const std::string arg2( ArgString::getNextStringArgument() );
+		const uint8_t arg3 = ArgUInt8::getNextByteArgument();
+		const uint64_t arg4 = ArgUInt64::getNextUInt64Argument();
 
 		/* call two strings one byte one UInt64_t to bool callback */
 		ret = this->callback(arg1, arg2, arg3, arg4);

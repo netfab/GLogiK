@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 //#include <boost/serialization/version.hpp>
 
 #include "include/DeviceID.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 #include "glogik.hpp"
 #include "GKeysBanksCapability.hpp"
@@ -69,10 +69,10 @@ class BacklightCapability
 class LCDScreenCapability
 {
 	public:
-		static const LCDPluginsPropertiesArray_type _LCDPluginsPropertiesEmptyArray;
+		static const LCDPPArray_type _LCDPluginsPropertiesEmptyArray;
 
-		const LCDPluginsPropertiesArray_type & getLCDPluginsProperties(void) const;
-		void setLCDPluginsProperties(const LCDPluginsPropertiesArray_type & props);
+		const LCDPPArray_type & getLCDPluginsProperties(void) const;
+		void setLCDPluginsProperties(const LCDPPArray_type & props);
 
 		const uint64_t getLCDPluginsMask1(void) const;
 		void setLCDPluginsMask(
@@ -88,7 +88,7 @@ class LCDScreenCapability
 
 	private:
 
-		LCDPluginsPropertiesArray_type _LCDPluginsProperties;
+		LCDPPArray_type _LCDPluginsProperties;
 
 		friend class boost::serialization::access;
 

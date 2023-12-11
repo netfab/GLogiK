@@ -1,5 +1,6 @@
 
 GKUtils_sources = [
+  'templates.hpp',
   'randomGenerator.cpp',
   'randomGenerator.hpp',
   'FSNotify.cpp',
@@ -14,6 +15,8 @@ GKUtils_sources = [
   'XDGUserDirs.hpp',
   'GKLogging.cpp',
   'GKLogging.hpp',
+  'process.cpp',
+  'process.hpp',
   'utils.hpp'
 ]
 

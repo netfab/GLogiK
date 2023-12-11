@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -37,16 +37,21 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <boost/version.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include <config.h>
 
-#include "lib/utils/GKLogging.hpp"
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
 #include "daemon.hpp"
+#include "usbinit.hpp"
+
+#if GKHIDAPI
+#include "hidapi.hpp"
+#endif
 
 #include "devicesManager.hpp"
 
@@ -55,6 +60,9 @@
 
 #include "clientsManager.hpp"
 #endif
+
+#include "include/DepsMap.hpp"
+
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
@@ -65,39 +73,58 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
-	:	_PIDFileCreated(false)
+	:	_version(false),
+		_PIDFileCreated(false)
 {
 	GK_LOG_FUNC
 
 	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 
-	// drop privileges before doing anything else
-	this->dropPrivileges();
-
 	/* -- -- -- */
 
-	// initialize logging
 	try {
 		/* boost::po may throw */
 		this->parseCommandLine(argc, argv);
 
+		if( GLogiKDaemon::isDaemonRunning() ) {
+			_pid = /*NSGKUtils::*/process::deamonize();
+			syslog(LOG_INFO, "process successfully daemonized");
+
+			/* create PID file before dropping privileges */
+			this->createPIDFile();
+		}
+
+		this->dropPrivileges();
+
+		/* initialize logging */
+		/* -- -- -- */
 #if DEBUGGING_ON
 		if(GKLogging::GKDebug) {
-			FileSystem::createDirectory(DEBUG_DIR, fs::owner_all | fs::group_all);
-
 			GKLogging::initDebugFile("GLogiKd", fs::owner_read|fs::owner_write|fs::group_read);
-
-			FileSystem::traceLastDirectoryCreation();
 		}
 #endif
 
+		if( ! GLogiKDaemon::isDaemonRunning() ) {
+			GKLogging::initConsoleLog();
+		}
+
+		/* -- -- -- */
+
 		GKSysLogInfo("successfully dropped root privileges");
+
+		if( GLogiKDaemon::isDaemonRunning() ) {
+			GKLog2(info, "created PID file : ", _pidFileName)
+
+			process::setSignalHandler( SIGINT, GLogiKDaemon::handleSignal);
+			process::setSignalHandler(SIGTERM, GLogiKDaemon::handleSignal);
+			// TODO SIGHUP ?
+		}
 	}
 	catch (const std::exception & e) {
 		syslog(LOG_ERR, "%s", e.what());
-		syslog(LOG_ERR, "%s", "debug file not opened");
 		throw InitFailure();
 	}
+
 }
 
 GLogiKDaemon::~GLogiKDaemon()
@@ -105,24 +132,6 @@ GLogiKDaemon::~GLogiKDaemon()
 	GK_LOG_FUNC
 
 	GKLog(trace, "exiting daemon process")
-
-	try {
-		if( _PIDFileCreated && fs::is_regular_file(_pidFileName) ) {
-			GKLog(info, "destroying PID file")
-			if( unlink(_pidFileName.c_str()) != 0 ) {
-				GKSysLogError("failed to unlink PID file");
-			}
-			else
-				_PIDFileCreated = false;
-		}
-	}
-	catch (const fs::filesystem_error & e) {
-		GKSysLogError("boost::filesystem::is_regular_file() : ", e.what());
-	}
-	catch (const std::exception & e) {
-		GKSysLogError("error destroying PID file : ", e.what());
-	}
-
 	GKSysLogInfo("bye !");
 
 	closelog();
@@ -134,26 +143,49 @@ int GLogiKDaemon::run(void)
 
 	/* -- -- -- */
 
+	GKDepsMap_type dependencies;
+
+	std::string binaryVersion(GLOGIKD_DAEMON_NAME);
+	binaryVersion += " version ";
+	binaryVersion += VERSION;
+	GKSysLogInfo(binaryVersion);
+
 	{
-		std::ostringstream buffer(std::ios_base::app);
-		buffer << "Starting " << GLOGIKD_DAEMON_NAME << " vers. " << VERSION;
-		GKSysLogInfo(buffer.str());
+		std::string boost_version;
+		{
+			int major = BOOST_VERSION / 100000;
+			int minor = BOOST_VERSION / 100 % 1000;
+			int patch = BOOST_VERSION % 100;
+
+			boost_version += std::to_string(major);
+			boost_version += ".";
+			boost_version += std::to_string(minor);
+			boost_version += ".";
+			boost_version += std::to_string(patch);
+		}
+
+		dependencies[GKBinary::GK_DAEMON] =
+			{
+				{"boost", boost_version},
+				{"libudev", GK_DEP_LIBUDEV_VERSION_STRING, DevicesManager::getLibudevVersion()},
+				{"libusb", GK_DEP_LIBUSB_VERSION_STRING, USBInit::getLibUSBVersion()},
+#if GKHIDAPI
+				{"hidapi", GK_DEP_LIBHIDAPI_VERSION_STRING, hidapi::getHIDAPIVersion()},
+#else
+				{"hidapi", "-"},
+#endif
+#if GKDBUS
+				{"DBus", GK_DEP_DBUS_VERSION_STRING, NSGKDBus::GKDBus::getDBusVersion()},
+#else
+				{"DBus", "-"},
+#endif
+			};
 	}
 
 	if( GLogiKDaemon::isDaemonRunning() ) {
-
-		_pid = detachProcess(true);
-		syslog(LOG_INFO, "process successfully daemonized");
-
-		this->createPIDFile();
-
-		// TODO handle return values and errno ?
-		std::signal(SIGINT, GLogiKDaemon::handleSignal);
-		std::signal(SIGTERM, GLogiKDaemon::handleSignal);
-		//std::signal(SIGHUP, GLogiKDaemon::handleSignal);
-
 #if GKDBUS
 		NSGKDBus::GKDBus DBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
+		DBus.init();
 		DBus.connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
 #endif
 
@@ -162,8 +194,7 @@ int GLogiKDaemon::run(void)
 #if GKDBUS
 		devicesManager.setDBus(&DBus);
 
-		ClientsManager clientsManager(&devicesManager);
-		clientsManager.initializeDBusRequests(&DBus);
+		ClientsManager clientsManager(&DBus, &devicesManager, &dependencies);
 #endif
 
 		try {
@@ -173,7 +204,7 @@ int GLogiKDaemon::run(void)
 #if GKDBUS
 			clientsManager.waitForClientsDisconnections();
 			clientsManager.cleanDBusRequests();
-			DBus.disconnectFromSystemBus();
+			DBus.exit();
 #endif
 		}
 		catch (const GLogiKExcept & e) {	// catch any monitoring failure
@@ -184,36 +215,39 @@ int GLogiKDaemon::run(void)
 #if GKDBUS
 			clientsManager.waitForClientsDisconnections();
 			clientsManager.cleanDBusRequests();
-			DBus.disconnectFromSystemBus();
+			DBus.exit();
 #endif
 			throw;
 		}
 
 	}
-	else {
-		// TODO non-daemon mode
+	else { // non-daemon mode
 		GKSysLogInfo("non-daemon mode");
+
+		if(_version) {
+			printVersionDeps(binaryVersion, dependencies);
+		}
 	}
 
 	return EXIT_SUCCESS;
 }
 
-void GLogiKDaemon::handleSignal(int sig) {
+void GLogiKDaemon::handleSignal(int signum) {
 	GK_LOG_FUNC
 
-	std::ostringstream buffer("caught signal : ", std::ios_base::app);
-	switch( sig ) {
+	switch( signum )
+	{
 		case SIGINT:
 		case SIGTERM:
-			buffer << sig << " --> bye bye";
-			GKSysLogInfo(buffer.str());
-			std::signal(SIGINT, SIG_DFL);
-			std::signal(SIGTERM, SIG_DFL);
+			GKSysLogInfo( process::getSignalHandlingDesc(signum, " --> bye bye") );
+
+			process::resetSignalHandler(SIGINT);
+			process::resetSignalHandler(SIGTERM);
+
 			GLogiKDaemon::exitDaemon();
 			break;
 		default:
-			buffer << sig << " --> unhandled";
-			GKSysLogWarning(buffer.str());
+			GKSysLogWarning( process::getSignalHandlingDesc(signum, " --> unhandled") );
 			break;
 	}
 }
@@ -234,8 +268,11 @@ void GLogiKDaemon::createPIDFile(void) {
 
 	try {
 		if( fs::exists(PIDFile) ) {
-			throwError("already exist");
+			throw GLogiKExcept("already exist");
 		}
+	}
+	catch (const GLogiKExcept & e) {
+		throwError(e.what());
 	}
 	catch (const fs::filesystem_error & e) {
 		throwError("boost::filesystem error", e.what());
@@ -267,26 +304,22 @@ void GLogiKDaemon::createPIDFile(void) {
 	}
 
 	_PIDFileCreated = true;
-
-	GKLog2(info, "created PID file : ", _pidFileName)
 }
 
-void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
-	bool daemonized = false;
-
+void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[])
+{
 	po::options_description desc("Allowed options");
 
 	desc.add_options()
 //		("help,h", "produce help message")
-		("daemonize,d", po::bool_switch(&daemonized)->default_value(false), "run in daemon mode")
+		("daemonize,d", po::bool_switch()->default_value(false), "run in daemon mode")
 		("pid-file,p", po::value(&_pidFileName), "define the PID file")
+		("version,v", po::bool_switch()->default_value(false), "print some versions informations and exit")
 	;
 
 #if DEBUGGING_ON
-	bool debug = false;
-
 	desc.add_options()
-		("debug,D", po::bool_switch(&debug)->default_value(false), "run in debug mode")
+		("debug,D", po::bool_switch()->default_value(false), "run in debug mode")
 	;
 #endif
 
@@ -295,6 +328,9 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	po::store(po::parse_command_line(argc, argv, desc), vm);
 
 	po::notify(vm);
+
+	bool daemonized = vm.count("daemonize") ? vm["daemonize"].as<bool>() : false;
+	_version = vm.count("version") ? vm["version"].as<bool>() : false;
 
 /*
 	if (vm.count("help")) {
@@ -305,13 +341,19 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[]) {
 	}
 */
 
-	if (vm.count("daemonize")) {
-		GLogiKDaemon::daemonized = vm["daemonize"].as<bool>();
+	if( _version ) {
+		/* disable daemon mode */
+		GLogiKDaemon::daemonized = false;
+	}
+	else if( daemonized ) {
+		GLogiKDaemon::daemonized = true;
 	}
 
 #if DEBUGGING_ON
-	if (vm.count("debug")) {
-		GKLogging::GKDebug = vm["debug"].as<bool>();
+	bool debug = vm.count("debug") ? vm["debug"].as<bool>() : false;
+
+	if( debug ) {
+		GKLogging::GKDebug = true;
 	}
 #endif
 }

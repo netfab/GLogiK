@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2020  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ void BacklightCapability::getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) con
 
 /* -- -- -- */
 
-const LCDPluginsPropertiesArray_type LCDScreenCapability::_LCDPluginsPropertiesEmptyArray = {};
+const LCDPPArray_type LCDScreenCapability::_LCDPluginsPropertiesEmptyArray = {};
 
 LCDScreenCapability::LCDScreenCapability(void)
 	:	_LCDPluginsMask1(0)
@@ -83,12 +83,12 @@ void LCDScreenCapability::setLCDPluginsMask(
 	_LCDPluginsMask1 = mask;
 }
 
-const LCDPluginsPropertiesArray_type & LCDScreenCapability::getLCDPluginsProperties(void) const
+const LCDPPArray_type & LCDScreenCapability::getLCDPluginsProperties(void) const
 {
 	return _LCDPluginsProperties;
 }
 
-void LCDScreenCapability::setLCDPluginsProperties(const LCDPluginsPropertiesArray_type & props)
+void LCDScreenCapability::setLCDPluginsProperties(const LCDPPArray_type & props)
 {
 	_LCDPluginsProperties = props;
 }
@@ -96,7 +96,8 @@ void LCDScreenCapability::setLCDPluginsProperties(const LCDPluginsPropertiesArra
 /* -- -- -- */
 
 clientDevice::clientDevice()
-	:	_capabilities(0)
+	:	DeviceID("unknown", "unknown", "unknown", "unknown", "none"),
+		_capabilities(0)
 {
 }
 

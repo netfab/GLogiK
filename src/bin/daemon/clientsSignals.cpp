@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ void ClientsSignals::sendSignalToClients(
 
 	try {
 		pDBus->initializeBroadcastSignal(
-			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+			_systemBus,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			signal.c_str()
@@ -98,12 +98,12 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 
 	try {
 		pDBus->initializeBroadcastSignal(
-			NSGKDBus::BusConnection::GKDBUS_SYSTEM,
+			_systemBus,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			signal.c_str()
 		);
-		pDBus->appendStringVectorToBroadcastSignal(devIDArray);
+		pDBus->appendStringArrayToBroadcastSignal(devIDArray);
 		pDBus->sendBroadcastSignal();
 	}
 	catch (const GLogiKExcept & e) {

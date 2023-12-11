@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -38,8 +38,10 @@ namespace NSGKDBus
 
 class GKDBusEvents
 	:	public Callback<SIGas2v>,
+		public Callback<SIGq2v>,
 		public Callback<SIGs2as>,
 		public Callback<SIGs2b>,
+		public Callback<SIGs2D>,
 		public Callback<SIGs2s>,
 		public Callback<SIGs2v>,
 		public Callback<SIGsG2v>,
@@ -101,6 +103,7 @@ class GKDBusEvents
 					std::vector<GKDBusEvent*> > > > _DBusEvents;
 
 		const std::string & getRootNode(void) const;
+		void clearDBusEvents(void) noexcept;
 
 	private:
 		static const std::string _rootNodeObject;
@@ -113,7 +116,7 @@ class GKDBusEvents
 				std::map<std::string, /* interface */
 					std::vector<GKDBusIntrospectableSignal> > > > _DBusIntrospectableSignals;
 
-		virtual DBusConnection* const getConnection(BusConnection wantedConnection) const = 0;
+		virtual DBusConnection* const getDBusConnection(BusConnection wantedConnection) const = 0;
 
 		void openXMLInterface(
 			std::ostringstream & xml,

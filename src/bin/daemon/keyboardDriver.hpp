@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 
 #include "include/enums.hpp"
 #include "include/base.hpp"
-#include "include/LCDPluginProperties.hpp"
+#include "include/LCDPP.hpp"
 
 #define DEVICE_LISTENING_THREAD_MAX_ERRORS 3
 #define unk	KEY_UNKNOWN
@@ -104,13 +104,14 @@ class KeyboardDriver
 			const uint8_t b,
 			const uint64_t LCDPluginsMask1
 		);
-		const LCDPluginsPropertiesArray_type & getDeviceLCDPluginsProperties(
+		const LCDPPArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID
 		) const;
 
 		/* --- */
 		virtual const uint16_t getDriverID() const = 0;
 
+		virtual void initializeDevice(const USBDeviceID & det);
 		virtual void openDevice(const USBDeviceID & det);
 		virtual void closeDevice(
 			const USBDeviceID & det,
@@ -165,6 +166,7 @@ class KeyboardDriver
 
 	private:
 #if GKDBUS
+		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
 		NSGKDBus::GKDBus* _pDBus;
 #endif
 

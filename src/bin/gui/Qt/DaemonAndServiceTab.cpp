@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -45,7 +45,6 @@ DaemonAndServiceTab::DaemonAndServiceTab(
 		_daemonVersionLabel(nullptr),
 		_serviceVersionLabel(nullptr),
 		_serviceStatusLabel(nullptr),
-		_serviceStarted(false),
 		_serviceRegistered(false)
 {
 	this->setObjectName(name);
@@ -121,7 +120,8 @@ void DaemonAndServiceTab::buildTab(void)
 
 			_pStartButton->setEnabled(false);
 
-			QObject::connect(_pStartButton, &QPushButton::clicked, this, &DaemonAndServiceTab::startSignal);
+			QObject::connect(_pStartButton, &QPushButton::clicked,
+				this, &DaemonAndServiceTab::sendServiceStartRequest);
 		}
 
 		/* -- -- -- */
@@ -130,11 +130,6 @@ void DaemonAndServiceTab::buildTab(void)
 		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
-}
-
-const bool DaemonAndServiceTab::isServiceStarted(void) const
-{
-	return _serviceStarted;
 }
 
 const bool DaemonAndServiceTab::isServiceRegistered(void) const
@@ -156,7 +151,6 @@ void DaemonAndServiceTab::updateTab(void)
 		/* assuming service stopped */
 		_serviceStatusLabel->setText("Status : stopped");
 		_serviceRegistered = false;
-		_serviceStarted = false;
 		_pStartButton->setVisible(false);
 		_pStartButton->setEnabled(false);
 	}
@@ -164,7 +158,7 @@ void DaemonAndServiceTab::updateTab(void)
 	const std::string remoteMethod("GetInformations");
 	try {
 		_pDBus->initializeRemoteMethodCall(
-			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -177,21 +171,24 @@ void DaemonAndServiceTab::updateTab(void)
 		try {
 			_pDBus->waitForRemoteMethodCallReply();
 
+			const std::vector<std::string> ret = _pDBus->getNextStringArray();
+			if(ret.size() != 3)
+				throw GLogiKExcept("wrong informations array size");
+
 			QString labelText("Version : ");
-			labelText += _pDBus->getNextStringArgument().c_str();
+			labelText += ret[0].c_str();
 			_daemonVersionLabel->setText(labelText);
 
 			labelText = "Version : ";
-			labelText += _pDBus->getNextStringArgument().c_str();
+			labelText += ret[1].c_str();
 			_serviceVersionLabel->setText(labelText);
 
 			labelText = "Status : started and ";
-			QString status(_pDBus->getNextStringArgument().c_str());
+			QString status(ret[2].c_str());
 			labelText += status;
 			_serviceStatusLabel->setText(labelText);
 
 			_serviceRegistered = (status == "registered");
-			_serviceStarted = true;
 
 			_pStartButton->setVisible(false);
 			_pStartButton->setEnabled(false);
@@ -218,21 +215,22 @@ void DaemonAndServiceTab::updateTab(void)
 	}
 }
 
-void DaemonAndServiceTab::startSignal(void)
+void DaemonAndServiceTab::sendServiceStartRequest(void)
 {
 	GK_LOG_FUNC
 
 	_pStartButton->setEnabled(false);
 
-	std::string status("desktop service request");
+	std::string status("desktop service seems not started, request");
 	try {
-		/* asking the launcher for the desktop service start */
+		/* asking the launcher to spawn the service after sleeping 100 ms */
 		_pDBus->initializeBroadcastSignal(
-			NSGKDBus::BusConnection::GKDBUS_SESSION,
+			_sessionBus,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-			"RestartRequest"
+			"ServiceStartRequest"
 		);
+		_pDBus->appendUInt16ToBroadcastSignal(100);
 		_pDBus->sendBroadcastSignal();
 
 		status += " sent to launcher";
@@ -242,7 +240,6 @@ void DaemonAndServiceTab::startSignal(void)
 		_pDBus->abandonBroadcastSignal();
 		status += " to launcher failed";
 		LOG(error) << status << " - " << e.what();
-		throw GLogiKExcept("service RestartRequest failed");
 	}
 }
 

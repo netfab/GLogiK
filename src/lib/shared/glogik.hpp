@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 
 #include "include/enums.hpp"
 #include "include/base.hpp"
+#include "include/DepsMap.hpp"
 
 #define GLOGIKS_DESKTOP_SERVICE_NAME "GLogiKs"
 
@@ -42,13 +43,13 @@ extern c_str CONST_STRING_UNKNOWN_DEVICE;
 extern c_str CONST_STRING_METHOD_CALL_FAILURE;
 extern c_str CONST_STRING_METHOD_REPLY_FAILURE;
 
-/*   M Keys */
+/* M Keys */
 extern c_str M_KEY_M0;
 extern c_str M_KEY_M1;
 extern c_str M_KEY_M2;
 extern c_str M_KEY_M3;
 
-/*   G Keys */
+/* G Keys */
 extern c_str G_KEY_G1;
 extern c_str G_KEY_G2;
 extern c_str G_KEY_G3;
@@ -102,6 +103,8 @@ const std::string getKeyName(const Keys key);
 const std::string getGKeyName(const GKeysID keyID);
 const MKeysID getMKeyID(const Keys key);
 const GKeysID getGKeyID(const Keys key);
+
+void printVersionDeps(const std::string & binaryVersion, const GKDepsMap_type & dependencies);
 
 /* --- ---- --- */
 

@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -30,14 +30,8 @@
 
 #include "GKDBusEvent.hpp"
 
-#include "lib/dbus/arguments/GKDBusArgString.hpp"
-#include "lib/dbus/arguments/GKDBusArgByte.hpp"
-#include "lib/dbus/arguments/GKDBusArgUInt64.hpp"
-
-#include "lib/dbus/arguments/GKDBusArgGKeysID.hpp"
-#include "lib/dbus/arguments/GKDBusArgMKeysID.hpp"
-#include "lib/dbus/arguments/GKDBusArgMacro.hpp"
-#include "lib/dbus/arguments/GKDBusArgMacrosBank.hpp"
+#include "lib/dbus/ArgTypes/string.hpp"
+#include "lib/dbus/ArgTypes/uint64.hpp"
 
 namespace NSGKDBus
 {
@@ -49,13 +43,8 @@ namespace NSGKDBus
 template <typename T>
 	class callbackEvent
 		:	public GKDBusEvent,
-			virtual private GKDBusArgumentString,
-			virtual private GKDBusArgumentByte,
-			virtual private GKDBusArgumentUInt64,
-			virtual private GKDBusArgumentGKeysID,
-			private GKDBusArgumentMKeysID,
-			virtual private GKDBusArgumentMacro,
-			private GKDBusArgumentMacrosBank
+			virtual private ArgString,
+			virtual private ArgUInt64
 {
 	public:
 		callbackEvent(

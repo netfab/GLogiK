@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include "include/base.hpp"
 #include "include/MBank.hpp"
 #include "lib/dbus/GKDBusConnection.hpp"
-#include "lib/dbus/arguments/GKDBusArgString.hpp"
+#include "lib/dbus/ArgTypes/string.hpp"
 
 #include "GKDBusMessage.hpp"
 
@@ -59,7 +59,7 @@ class GKDBusRemoteMethodCall
 };
 
 class GKDBusMessageRemoteMethodCall
-	:	virtual private GKDBusArgumentString
+	:	virtual private ArgString
 {
 	public:
 		/* Remote Method Call with Pending Reply */
@@ -77,7 +77,6 @@ class GKDBusMessageRemoteMethodCall
 		void appendUInt64ToRemoteMethodCall(const uint64_t value);
 		void appendGKeysIDToRemoteMethodCall(const GLogiK::GKeysID keyID);
 		void appendMKeysIDToRemoteMethodCall(const GLogiK::MKeysID bankID);
-		void appendMacrosBankToRemoteMethodCall(const GLogiK::mBank_type & bank);
 
 		void sendRemoteMethodCall(void);
 		void abandonRemoteMethodCall(void);
@@ -101,7 +100,7 @@ class GKDBusMessageRemoteMethodCall
 		GKDBusRemoteMethodCall* _remoteMethodCall;
 		DBusPendingCall* _pendingCall;
 
-		virtual DBusConnection* const getConnection(BusConnection wantedConnection) const = 0;
+		virtual DBusConnection* const getDBusConnection(BusConnection wantedConnection) const = 0;
 };
 
 } // namespace NSGKDBus

@@ -6,7 +6,8 @@ project(
 	'debug=false'
   ],
   license: 'GPL-3',
-  version: '0.8.15-git'
+  meson_version: '>=1.1',
+  version: run_command('version.sh', check: true).stdout().strip()
 )
 
 #! ----------
@@ -20,6 +21,7 @@ gk_datadir = join_paths(gk_prefix, get_option('datadir'))
 
 pbm_data_dir = gk_datadir / meson.project_name() / 'pbm'
 qt_data_dir = gk_datadir / meson.project_name() / 'qt'
+gk_docdir = join_paths(gk_datadir, 'doc', get_option('docdir'))
 
 #! ----------
 
@@ -109,7 +111,7 @@ glogiks_group = get_option('desktop_service_group')
 
 #! ----------
 
-debug_dir = '/var/tmp/GKDebug'
+gk_logdir = '/var/log/GLogiK'
 
 define_array = [
   ['PACKAGE', meson.project_name()],
@@ -117,10 +119,11 @@ define_array = [
   ['PACKAGE_URL', 'https://glogik.tuxfamily.org/'],
   ['PACKAGE_VERSION', meson.project_version()],
   ['VERSION', meson.project_version()],
-  ['DEBUG_DIR', debug_dir],
+  ['GK_LOGDIR', gk_logdir],
   ['GLOGIKD_USER', glogikd_user],
   ['GLOGIKD_GROUP', glogikd_group],
   ['DATA_DIR', gk_datadir],
+  ['DOC_DIR', gk_docdir],
   ['PBM_DATA_DIR', pbm_data_dir],
   ['QT_DATA_DIR', qt_data_dir],
 ]
@@ -158,11 +161,14 @@ inc = include_directories('.', 'src')
 
 enable_dbus = get_option('dbus')
 enable_hidapi = get_option('hidapi')
+enable_notifications = get_option('notifications')
+enable_libnotify = get_option('libnotify')
 enable_qt5 = get_option('qt5')
 
 #! ----------
 null_dep = dependency('', required: false)
 dbus_dep = null_dep
+libnotify_dep = null_dep
 GKDBus_lib_dep = null_dep
 
 #! ----------
@@ -176,7 +182,10 @@ cdata.set('INIT_NEED_DBUS', 'dbus')
 cdata.set('DEVICES_MODE', '0660')
 cdata.set('GLOGIKD_GROUP', glogikd_group)
 #! used by data/tmpfiles.d
-cdata.set('DEBUG_DIR', debug_dir)
+cdata.set('GK_LOGDIR', gk_logdir)
+
+#! ----------
+deps_versions_array = []
 
 #! ----------
 subdir('src/lib/utils')  #! GKUtils_lib_dep
@@ -190,15 +199,36 @@ endif
 
 subdir('src/bin/daemon')
 subdir('data/init')
+subdir('data/sysusers.d')
+subdir('data/tmpfiles.d')
 subdir('data/udev')
 
 subdir('data/pbm')
 
 #! ----------
 
-if((not enable_dbus) and enable_qt5)
-  warning('dbus is disabled => qt5 is disabled')
-  enable_qt5 = false
+if not enable_dbus
+  if enable_qt5
+    warning('dbus is disabled => qt5 is disabled')
+    enable_qt5 = false
+  endif
+  if enable_notifications
+    warning('dbus is disabled => notifications are disabled')
+    enable_notifications = false
+  endif
+endif
+
+if enable_notifications
+  config_h.set('HAVE_DESKTOP_NOTIFICATIONS', 1)
+  if enable_libnotify
+    libnotify_dep = dependency('libnotify', version: '>= 0.8.1')
+    config_h.set('HAVE_LIBNOTIFY', 1)
+  else
+    error('notifications via D-Bus only are currently not implemented')
+  endif
+else
+  warning('notifications are disabled => libnotify is disabled')
+  enable_libnotify = false
 endif
 
 if enable_dbus
@@ -206,17 +236,49 @@ if enable_dbus
   subdir('src/bin/launcher')
   subdir('data/autostart')
 
+  if enable_notifications
+    subdir('data/icons')
+  endif
+
   if enable_qt5
 	subdir('src/bin/gui/Qt')
 	subdir('data/applications')
     subdir('data/gui')
-	subdir('data/icons')
+    if(not enable_notifications)
+      subdir('data/icons')
+    endif
   endif
 endif
 
-if enable_debug
-	subdir('data/tmpfiles.d')
-endif
+#! ----------
+#! install documentation
+
+install_data(
+  ['NEWS.md', 'README.md'],
+  rename : ['NEWS', 'README'],
+  install_dir : gk_docdir)
+
+install_data(
+  ['AUTHORS', 'ChangeLog', 'COPYING', 'VERSION'],
+  install_dir : gk_docdir)
+
+#! ----------
+
+deps_versions_array += [
+  ['DBUS', dbus_dep],
+  ['LIBNOTIFY', libnotify_dep],
+  ['QT5', qt5_dep],
+]
+
+foreach define: deps_versions_array
+  dep_symbol = 'GK_DEP_' + define[0] + '_VERSION_STRING'
+  dep_version = define[1].version()
+  if dep_version != 'unknown'
+    config_h.set_quoted(dep_symbol, dep_version)
+  endif
+endforeach
+
+#! ----------
 
 config_h.set10('GKDBUS', dbus_dep.found())
 
@@ -237,12 +299,15 @@ report += '       libdir: ' + gk_libdir + '\n'
 report += '       bindir: ' + gk_bindir + '\n'
 report += '      sbindir: ' + gk_sbindir + '\n'
 report += '      datadir: ' + gk_datadir + '\n'
+report += '       docdir: ' + gk_docdir + '\n'
 report += ' udevrulesdir: ' + udev_rules_dir + '\n'
 report += '\nBuild options:\n'
 report += '==============\n'
-report += '   dbus: ' + enable_dbus.to_string() + '\n'
-report += ' hidapi: ' + enable_hidapi.to_string() + '\n'
-report += '    qt5: ' + enable_qt5.to_string() + '\n'
+report += '          dbus: ' + enable_dbus.to_string() + '\n'
+report += ' notifications: ' + enable_notifications.to_string() + '\n'
+report += '     libnotify: ' + enable_libnotify.to_string() + '\n'
+report += '        hidapi: ' + enable_hidapi.to_string() + '\n'
+report += '           qt5: ' + enable_qt5.to_string() + '\n'
 report += '\nDebug options:\n'
 report += '==============\n'
 report += '             debug: ' + enable_debug.to_string() + '\n'

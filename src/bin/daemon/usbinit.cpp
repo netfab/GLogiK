@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -31,6 +31,21 @@ using namespace NSGKUtils;
 libusb_context * USBInit::pContext = nullptr;
 uint8_t USBInit::counter = 0;
 bool USBInit::status = false;
+
+const std::string USBInit::getLibUSBVersion(void)
+{
+	const struct libusb_version* version = libusb_get_version();
+
+	std::string ret;
+
+	ret += std::to_string(version->major);
+	ret += ".";
+	ret += std::to_string(version->minor);
+	ret += ".";
+	ret += std::to_string(version->micro);
+
+	return ret;
+}
 
 /*
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

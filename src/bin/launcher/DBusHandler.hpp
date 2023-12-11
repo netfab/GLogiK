@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #ifndef SRC_BIN_LAUNCHER_DBUS_HANDLER_HPP_
 #define SRC_BIN_LAUNCHER_DBUS_HANDLER_HPP_
 
+#include <cstdint>
 #include <chrono>
 
 #include "lib/dbus/GKDBus.hpp"
@@ -40,13 +41,14 @@ class DBusHandler
 	protected:
 
 	private:
+		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
+
 		const std::chrono::steady_clock::duration _tenSeconds;
 		std::chrono::steady_clock::time_point _lastCall;
 		NSGKDBus::GKDBus* _pDBus;
-		const NSGKDBus::BusConnection _sessionBus;
 
 		void initializeGKDBusSignals(void);
-		void restartRequest(void);
+		void spawnService(const uint16_t timelapse);
 };
 
 } // namespace GLogiK

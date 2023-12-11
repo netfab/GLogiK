@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2021  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -81,8 +81,8 @@ const int SessionManager::openConnection(void) {
 
 	GKLog(trace, "opening session manager connection")
 
-	std::signal(SIGINT, SessionManager::handleSignal);
-	std::signal(SIGTERM, SessionManager::handleSignal);
+	process::setSignalHandler( SIGINT, SessionManager::handleSignal);
+	process::setSignalHandler(SIGTERM, SessionManager::handleSignal);
 
 	_pSMCConnexion = SmcOpenConnection(
 							nullptr,				/* network_ids_list */
@@ -152,22 +152,21 @@ void SessionManager::closeConnection(void) {
 
 }
 
-void SessionManager::handleSignal(int sig) {
+void SessionManager::handleSignal(int signum) {
 	GK_LOG_FUNC
 
-	std::ostringstream buff("caught signal : ", std::ios_base::app);
-	switch( sig ) {
+	switch( signum ) {
 		case SIGINT:
 		case SIGTERM:
-			buff << sig << " --> bye bye";
-			LOG(info) << buff.str();
-			std::signal(SIGINT, SIG_DFL);
-			std::signal(SIGTERM, SIG_DFL);
+			LOG(info) << process::getSignalHandlingDesc(signum, " --> bye bye");
+
+			process::resetSignalHandler(SIGINT);
+			process::resetSignalHandler(SIGTERM);
+
 			SessionManager::stillRunning = false;
 			break;
 		default:
-			buff << sig << " --> unhandled";
-			LOG(warning) << buff.str();
+			LOG(warning) << process::getSignalHandlingDesc(signum, " --> unhandled");
 			break;
 	}
 }

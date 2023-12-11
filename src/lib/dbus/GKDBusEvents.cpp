@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -45,22 +45,6 @@ GKDBusEvents::GKDBusEvents(
 
 GKDBusEvents::~GKDBusEvents()
 {
-	GK_LOG_FUNC
-
-	for(const auto & busPair : _DBusEvents) {
-		GKLog2(trace, "current bus : ", toUInt(toEnumType(busPair.first)))
-		for(const auto & objectPair : busPair.second) {
-			GKLog2(trace, "object : ", objectPair.first)
-			for(const auto & interfacePair : objectPair.second) {
-				GKLog2(trace, "interface : ", interfacePair.first)
-				for(auto & DBusEvent : interfacePair.second) { /* vector of pointers */
-					delete DBusEvent;
-				}
-			}
-		}
-	}
-
-	_DBusEvents.clear();
 }
 
 const std::string & GKDBusEvents::getRootNode(void) const
@@ -105,6 +89,26 @@ void GKDBusEvents::removeSignalsInterface(
 	const char* eventInterface) noexcept
 {
 	this->removeInterface(eventBus, eventSender, eventObject, eventInterface);
+}
+
+void GKDBusEvents::clearDBusEvents(void) noexcept
+{
+	GK_LOG_FUNC
+
+	for(const auto & busPair : _DBusEvents) {
+		GKLog2(trace, "current bus : ", toUInt(toEnumType(busPair.first)))
+		for(const auto & objectPair : busPair.second) {
+			GKLog2(trace, "object : ", objectPair.first)
+			for(const auto & interfacePair : objectPair.second) {
+				GKLog2(trace, "interface : ", interfacePair.first)
+				for(auto & DBusEvent : interfacePair.second) { /* vector of pointers */
+					delete DBusEvent;
+				}
+			}
+		}
+	}
+
+	_DBusEvents.clear();
 }
 
 /*
@@ -407,7 +411,7 @@ void GKDBusEvents::addSignalRuleMatch(
 
 	DBusConnection* connection = nullptr;
 	try {
-		connection = this->getConnection(eventBus);
+		connection = this->getDBusConnection(eventBus);
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(warning) << e.what();
@@ -432,7 +436,7 @@ void GKDBusEvents::removeSignalRuleMatch(
 
 	DBusConnection* connection = nullptr;
 	try {
-		connection = this->getConnection(eventBus);
+		connection = this->getDBusConnection(eventBus);
 	}
 	catch ( const GLogiKExcept & e ) {
 		LOG(warning) << e.what();

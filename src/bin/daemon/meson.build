@@ -43,6 +43,8 @@ GLogiKd_sources += [
 	'LCDPlugins/netsnap/netSnapshots.hpp',
 	'LCDPlugins/systemMonitor.cpp',
 	'LCDPlugins/systemMonitor.hpp',
+	'LCDPlugins/coretemp.cpp',
+	'LCDPlugins/coretemp.hpp',
 	'LCDPlugins/endscreen.cpp',
 	'LCDPlugins/endscreen.hpp',
 ]
@@ -83,6 +85,12 @@ endif
 #! ----------
 
 libudev_dep = dependency('libudev')
+
+deps_versions_array += [
+  ['LIBHIDAPI', hidapi_dep],
+  ['LIBUSB', libusb_dep],
+  ['LIBUDEV', libudev_dep],
+]
 
 #! ----------
 

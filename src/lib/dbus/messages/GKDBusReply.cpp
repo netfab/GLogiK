@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -117,10 +117,10 @@ void GKDBusMessageReply::appendStringToReply(const std::string & value)
 		_reply->appendString(value);
 }
 
-void GKDBusMessageReply::appendStringVectorToReply(const std::vector<std::string> & list)
+void GKDBusMessageReply::appendStringArrayToReply(const std::vector<std::string> & list)
 {
 	if(_reply != nullptr) /* sanity check */
-		_reply->appendStringVector(list);
+		_reply->appendStringArray(list);
 }
 
 void GKDBusMessageReply::appendGKeysIDArrayToReply(const GLogiK::GKeysIDArray_type & keysID)
@@ -141,11 +141,16 @@ void GKDBusMessageReply::appendMacroToReply(const GLogiK::macro_type & macro)
 		_reply->appendMacro(macro);
 }
 
-void GKDBusMessageReply::appendLCDPluginsPropertiesArrayToReply(
-	const GLogiK::LCDPluginsPropertiesArray_type & array)
+void GKDBusMessageReply::appendLCDPPArrayToReply(const GLogiK::LCDPPArray_type & array)
 {
 	if(_reply != nullptr) /* sanity check */
-		_reply->appendLCDPluginsPropertiesArray(array);
+		_reply->appendLCDPPArray(array);
+}
+
+void GKDBusMessageReply::appendGKDepsMapToReply(const GLogiK::GKDepsMap_type & depsMap)
+{
+	if(_reply != nullptr) /* sanity check */
+		_reply->appendGKDepsMap(depsMap);
 }
 
 void GKDBusMessageReply::appendUInt64ToReply(const uint64_t value)
@@ -174,15 +179,15 @@ void GKDBusMessageReply::appendAsyncArgsToReply(DBusMessage* asyncContainer)
 
 	try {
 		do {
-			const int arg_type = GKDBusArgument::decodeNextArgument(&itArgument);
+			const int arg_type = ArgBase::decodeNextArgument(&itArgument);
 			switch(arg_type) {
 				case DBUS_TYPE_STRING:
 				//case DBUS_TYPE_OBJECT_PATH:
-					this->appendStringToReply( GKDBusArgumentString::getNextStringArgument() );
+					this->appendStringToReply( ArgString::getNextStringArgument() );
 					GKLog(trace, "appended async string")
 					break;
 				case DBUS_TYPE_UINT64:
-					this->appendUInt64ToReply( GKDBusArgumentUInt64::getNextUInt64Argument() );
+					this->appendUInt64ToReply( ArgUInt64::getNextUInt64Argument() );
 					GKLog(trace, "appended async uint64")
 					break;
 				case DBUS_TYPE_INVALID:

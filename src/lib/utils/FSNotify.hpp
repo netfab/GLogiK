@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2022  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -22,10 +22,14 @@
 #ifndef SRC_LIB_UTILS_FS_NOTIFY_HPP_
 #define SRC_LIB_UTILS_FS_NOTIFY_HPP_
 
+#if !defined (UTILS_INSIDE_UTILS_H) && !defined (UTILS_COMPILATION)
+#error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
+#endif
+
 #include <map>
 #include <string>
 
-typedef std::map<std::string, const std::string> files_map_type;
+typedef std::map<std::string, const std::string> DevicesFilesMap_type;
 
 namespace NSGKUtils
 {
@@ -65,7 +69,7 @@ class FSNotify
 
 		const int getNotifyQueueDescriptor(void) const;
 
-		void readNotifyEvents(files_map_type & filesMap);
+		void readNotifyEvents(DevicesFilesMap_type & filesMap);
 
 
 	protected:
