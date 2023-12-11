@@ -40,6 +40,7 @@ include %D%/src/bin/daemon/Makefile.am
 
 EXTRA_DIST += \
 	%D%/data/tmpfiles.d/GLogiK.conf \
+	%D%/data/sysusers.d/GLogiK.conf \
 	%D%/meson.build \
 	%D%/meson.options \
 	%D%/version.sh \
