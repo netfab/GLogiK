@@ -1,5 +1,5 @@
 
-0.8.18 (202x-xx-xx)
+0.8.18 (2023-12-11)
 ===================
 - Implemented desktop service restart with SIGUSR1 signal
 - Reworked daemon initialization (create PID file as root)

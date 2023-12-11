@@ -1,6 +1,6 @@
 GLogiK, daemon to handle special features on some gaming keyboards
 
-Last release : version 0.8.16
+Last release : version 0.8.18
 
 Links
 =====
