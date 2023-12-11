@@ -1,4 +1,7 @@
 
+0.8.20 (202x-xx-xx)
+===================
+
 0.8.18 (2023-12-11)
 ===================
 - Implemented desktop service restart with SIGUSR1 signal
