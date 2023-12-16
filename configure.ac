@@ -278,7 +278,6 @@ AS_IF([test "x$enable_qt5" = "xyes"],
 			[],
 			[AC_MSG_ERROR([Qt5 client GUI requires D-Bus support enabled])]
 		)
-		AC_DEFINE([QT5_GUI], [1], [Qt5 client GUI])
 	], [
 		AC_MSG_RESULT([no])
 	])
