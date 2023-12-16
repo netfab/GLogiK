@@ -25,7 +25,7 @@ if WITH_DESKTOP_NOTIFICATIONS
 include %D%/data/icons/Makefile.am
 endif
 
-if WITH_QT5
+if WITH_QT
 include %D%/src/bin/gui/Qt/Makefile.am
 include %D%/data/applications/Makefile.am
 include %D%/data/gui/Makefile.am

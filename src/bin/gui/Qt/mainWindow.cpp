@@ -436,7 +436,7 @@ void MainWindow::getExecutablesDependenciesMap(void)
 
 			_DepsMap[GKBinary::GK_GUI_QT] =
 				{ /* qVersion() from <QtGlobal> */
-					{"Qt5", GK_DEP_QT5_VERSION_STRING, qVersion()},
+					{"Qt", GK_DEP_QT_VERSION_STRING, qVersion()},
 				};
 		}
 		catch (const GLogiKExcept & e) {

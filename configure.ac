@@ -267,7 +267,7 @@ AM_CONDITIONAL([WITH_HIDAPI], [test "x$enable_hidapi" = "xyes"])
 
 dnl ---
 dnl checking for Qt5 GUI
-AM_CONDITIONAL([WITH_QT5], [test "x$enable_qt5" = "xyes"])
+AM_CONDITIONAL([WITH_QT], [test "x$enable_qt5" = "xyes"])
 
 AC_MSG_CHECKING([whether we want Qt5 client GUI])
 AS_IF([test "x$enable_qt5" = "xyes"],
@@ -339,7 +339,7 @@ AS_IF([test "x$enable_dbus" = "xyes"],
 		GDT_PKG_CHECK_MODULE([LIBXTST], [xtst])
 
 		AS_IF([test "x$enable_qt5" = "xyes"],
-			[ GDT_QT_CHECK([QT5], [Qt5Core Qt5Gui Qt5Widgets]) ], [])
+			[ GDT_QT_CHECK([QT], [Qt5Core Qt5Gui Qt5Widgets]) ], [])
 	], [])
 
 AX_BOOST_BASE([1.64.0], [], GDT_PKG_NOT_FOUND([boost libraries]))
@@ -432,11 +432,11 @@ AC_MSG_NOTICE([
                  X11 CFLAGS : ${LIBX11_CFLAGS}
                   XTST LIBS : ${LIBXTST_LIBS}
                 XTST CFLAGS : ${LIBXTST_CFLAGS}
-                   Qt5 LIBS : ${QT5_LIBS}
-                 Qt5 CFLAGS : ${QT5_CFLAGS}
+                    Qt LIBS : ${QT_LIBS}
+                  Qt CFLAGS : ${QT_CFLAGS}
 --------------------------------------------------------------
         with Qt5 client GUI : ${enable_qt5}
-          found Qt5 version : ${qmake5_test_ver}
+           found Qt version : ${qmake_test_ver}
 --------------------------------------------------------------
 ---  DEBUGGING --- DEBUGGING ---- DEBUGGING --- DEBUGGING  ---
 --------------------------------------------------------------

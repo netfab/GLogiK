@@ -35,23 +35,23 @@ AC_DEFUN([GDT_QT_CHECK],
 	fi
 
 	dnl checking for qmake
-	AC_PATH_PROGS(QMAKE5, [qmake], no)
-	if test "$QMAKE5" = "no"; then
+	AC_PATH_PROGS(QMAKE, [qmake], no)
+	if test "$QMAKE" = "no"; then
 		GDT_WARN_QMAKE_PATH
-		AC_MSG_ERROR([Qt5 qmake not found.])
+		AC_MSG_ERROR([Qt qmake not found.])
 	else
-		dnl checking Qt5 version
-		qmake5_test_ver="`${QMAKE5} -v 2>&1 | ${SED} -n -e 's/^Using Qt version \(5\.[[0-9.]]\+\).*$/\1/p'`"
-		if test -z "$qmake5_test_ver"; then
+		dnl checking Qt version
+		qmake_test_ver="`${QMAKE} -v 2>&1 | ${SED} -n -e 's/^Using Qt version \(5\.[[0-9.]]\+\).*$/\1/p'`"
+		if test -z "$qmake_test_ver"; then
 			GDT_WARN_QMAKE_PATH
-			AC_MSG_ERROR([Wrong Qt5 qmake version.])
+			AC_MSG_ERROR([Wrong Qt qmake version.])
 	    fi
 
-		AC_DEFINE_UNQUOTED([GK_DEP_QT5_VERSION_STRING], ["$qmake5_test_ver"], [detected compile-time Qt5 version])
-		qt5_incdirs="`$QMAKE5 -query QT_INSTALL_HEADERS`"
+		AC_DEFINE_UNQUOTED([GK_DEP_QT_VERSION_STRING], ["$qmake_test_ver"], [detected compile-time Qt version])
+		qt_incdirs="`$QMAKE -query QT_INSTALL_HEADERS`"
 
 		saved_CPPFLAGS=$CPPFLAGS
-		CPPFLAGS="${CPPFLAGS} -I${qt5_incdirs}"
+		CPPFLAGS="${CPPFLAGS} -I${qt_incdirs}"
 		AC_CHECK_HEADER(QtCore/qconfig.h, [], [AC_MSG_ERROR(qconfig.h header not found.)], [])
 
 		XXX_PROGRAM="
@@ -63,14 +63,14 @@ AC_DEFUN([GDT_QT_CHECK],
 		int main(void) { return 0; }
 		"
 
-		AC_MSG_CHECKING([whether Qt5 was built with -reduce-relocations])
+		AC_MSG_CHECKING([whether Qt was built with -reduce-relocations])
 		AC_COMPILE_IFELSE(
 			[AC_LANG_SOURCE([$XXX_PROGRAM])],
 			[
 				AC_MSG_RESULT([yes])
-				AS_VAR_COPY([temp], [QT5_CFLAGS])
+				AS_VAR_COPY([temp], [QT_CFLAGS])
 				dnl $ grep -A 4 QT_REDUCE_RELOCATIONS /usr/include/qt5/QtCore/qglobal.h
-				AS_VAR_SET([QT5_CFLAGS], ["$temp -fPIC"])
+				AS_VAR_SET([QT_CFLAGS], ["$temp -fPIC"])
 			],
 			[AC_MSG_RESULT([no])]
 		)
