@@ -269,18 +269,8 @@ dnl ---
 dnl checking for Qt5 GUI
 AM_CONDITIONAL([WITH_QT], [test "x$enable_qt5" = "xyes"])
 
-AC_MSG_CHECKING([whether we want Qt5 client GUI])
-AS_IF([test "x$enable_qt5" = "xyes"],
-	[
-		AC_MSG_RESULT([yes])
-		AS_IF(
-			[test "x$enable_dbus" = "xyes"],
-			[],
-			[AC_MSG_ERROR([Qt5 client GUI requires D-Bus support enabled])]
-		)
-	], [
-		AC_MSG_RESULT([no])
-	])
+dnl Qt5 support requires DBus support
+GDT_OPTDEP_CHECK([Qt5 client GUI], [$enable_qt5], [D-Bus], [$enable_dbus])
 
 dnl abort compilation after first error
 GDT_ADD_CXXFLAG([-Wfatal-errors])
