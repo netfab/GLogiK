@@ -29,7 +29,7 @@ GKcQt5_sources = [
 qt5_dep = dependency('qt5', modules: ['Core', 'Gui', 'Widgets'])
 
 deps_versions_array += [
-  ['QT5', qt5_dep],
+  ['QT', qt5_dep],
 ]
 
 executable(
