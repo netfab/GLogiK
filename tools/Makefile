@@ -6,13 +6,31 @@ GK_LOGDIR=/var/log/GLogiK
 build_dir=$(PREFIX_DEV_DIR)/build
 PREFIX_DIR=$(PREFIX_DEV_DIR)/GLogiK
 
-QT5_BIN_DIR=/usr/lib64/qt5/bin
-export PATH:=${QT5_BIN_DIR}:${PATH}
+# --
+# Qt
+WANTED_QT=QT5
 
+ifeq ($(WANTED_QT),QT5)
+QT_BIN_DIR=/usr/lib64/qt5/bin
+QT_OPTS=--enable-qt5 --disable-qt6
+else
+ifeq ($(WANTED_QT),QT6)
+QT_BIN_DIR=/usr/lib64/qt6/bin
+QT_OPTS=--disable-qt5 --enable-qt6
+else
+$(error wrong Qt version)
+endif
+endif
+
+export PATH:=${QT_BIN_DIR}:${PATH}
+# --
+
+# --
 # enable ccache
 export PATH:=/usr/lib/ccache/bin:${PATH}
 export CCACHE_DIR:=/var/tmp/devccache
 
+# --
 LANG=C
 
 CXXFLAGS=-O2 -pipe \
@@ -101,7 +119,7 @@ configure_it: init_it autoreconf_it
 	--disable-debug-pbmfont \
 	--disable-debug-lcd-plugins \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
-	--enable-dbus --enable-qt5 \
+	--enable-dbus $(QT_OPTS) \
 	--enable-hidapi \
 	$(CONF_FLAGS) \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR) \
@@ -126,7 +144,7 @@ configure_it: init_it autoreconf_it
 	--disable-debug-pbmfont \
 	--disable-debug-lcd-plugins \
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
-	--enable-dbus --enable-qt5 \
+	--enable-dbus $(QT_OPTS) \
 	--enable-hidapi \
 	$(CONF_FLAGS) \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR) \

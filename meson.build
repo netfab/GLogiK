@@ -2,7 +2,7 @@ project(
   'GLogiK',
   'cpp',
   default_options: [
-	'cpp_std=c++14',
+	'cpp_std=c++17',
 	'debug=false'
   ],
   license: 'GPL-3',
@@ -164,6 +164,7 @@ enable_hidapi = get_option('hidapi')
 enable_notifications = get_option('notifications')
 enable_libnotify = get_option('libnotify')
 enable_qt5 = get_option('qt5')
+enable_qt6 = get_option('qt6')
 
 #! ----------
 null_dep = dependency('', required: false)
@@ -212,6 +213,10 @@ if not enable_dbus
     warning('dbus is disabled => qt5 is disabled')
     enable_qt5 = false
   endif
+  if enable_qt6
+    warning('dbus is disabled => qt6 is disabled')
+    enable_qt6 = false
+  endif
   if enable_notifications
     warning('dbus is disabled => notifications are disabled')
     enable_notifications = false
@@ -240,7 +245,13 @@ if enable_dbus
     subdir('data/icons')
   endif
 
-  if enable_qt5
+  if enable_qt5 and enable_qt6
+    warning('qt5 support is enabled')
+    warning('qt6 support is enabled')
+    error('different Qt versions are mutually exclusive')
+  endif
+
+  if enable_qt5 or enable_qt6
 	subdir('src/bin/gui/Qt')
 	subdir('data/applications')
     subdir('data/gui')
@@ -307,6 +318,7 @@ report += ' notifications: ' + enable_notifications.to_string() + '\n'
 report += '     libnotify: ' + enable_libnotify.to_string() + '\n'
 report += '        hidapi: ' + enable_hidapi.to_string() + '\n'
 report += '           qt5: ' + enable_qt5.to_string() + '\n'
+report += '           qt6: ' + enable_qt6.to_string() + '\n'
 report += '\nDebug options:\n'
 report += '==============\n'
 report += '             debug: ' + enable_debug.to_string() + '\n'

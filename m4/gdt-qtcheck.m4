@@ -22,12 +22,12 @@ AC_DEFUN([GDT_WARN_QMAKE_PATH],
 	AC_MSG_WARN([Please export your qmake installation directory to the PATH before running "configure"])
 ])
 
-dnl GDT_QT_CHECK(PACKAGE)
+dnl GDT_QT_CHECK(prefix, Qt-major-version, list-of-modules)
 dnl --------------------------------------------------------------
 dnl Check for Qt packages
 AC_DEFUN([GDT_QT_CHECK],
 [
-	PKG_CHECK_MODULES([$1], [$2])
+	PKG_CHECK_MODULES([$1], [$3])
 
 	AC_PATH_PROGS(SED, sed)
 	if test -z "${SED}"; then
@@ -41,11 +41,12 @@ AC_DEFUN([GDT_QT_CHECK],
 		AC_MSG_ERROR([Qt qmake not found.])
 	else
 		dnl checking Qt version
-		qmake_test_ver="`${QMAKE} -v 2>&1 | ${SED} -n -e 's/^Using Qt version \(5\.[[0-9.]]\+\).*$/\1/p'`"
+		qmake_test_ver="`${QMAKE} -v 2>&1 | ${SED} -n -e 's/^Using Qt version \([$2]\.[[0-9.]]\+\).*$/\1/p'`"
 		if test -z "$qmake_test_ver"; then
 			GDT_WARN_QMAKE_PATH
 			AC_MSG_ERROR([Wrong Qt qmake version.])
 	    fi
+		AC_MSG_NOTICE([found Qt version: $qmake_test_ver])
 
 		AC_DEFINE_UNQUOTED([GK_DEP_QT_VERSION_STRING], ["$qmake_test_ver"], [detected compile-time Qt version])
 		qt_incdirs="`$QMAKE -query QT_INSTALL_HEADERS`"

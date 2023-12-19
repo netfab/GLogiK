@@ -37,3 +37,11 @@ AC_DEFUN([GDT_OPTDEP_CHECK],
 			AC_MSG_RESULT([no])
 		])
 ])
+
+dnl GDT_OPTEXCL_CHECK(FEATURE1, option1, FEATURE2, option2)
+dnl --------------------------------------------------------------
+dnl option1 and option2 are mutually exclusive
+AC_DEFUN([GDT_OPTEXCL_CHECK],
+[
+	AS_IF([test "x$2" = "xyes" -a "x$4" = "xyes"], AC_MSG_ERROR([$1 and $3 are mutually exclusive]), [])
+])

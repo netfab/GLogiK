@@ -116,6 +116,11 @@ AC_ARG_ENABLE( [qt5],
                AS_HELP_STRING( [--enable-qt5], [Enable Qt5 client GUI]),
                [enable_qt5=$enableval], [enable_qt5=no])
 
+dnl check for Qt6 client GUI
+AC_ARG_ENABLE( [qt6],
+               AS_HELP_STRING( [--enable-qt6], [Enable Qt6 client GUI]),
+               [enable_qt6=$enableval], [enable_qt6=no])
+
 dnl check for hidapi support
 AC_ARG_ENABLE( [hidapi],
                AS_HELP_STRING( [--enable-hidapi], [Enable hidapi API support]),
@@ -266,15 +271,20 @@ AS_IF([test "x$enable_hidapi" = "xyes"],
 AM_CONDITIONAL([WITH_HIDAPI], [test "x$enable_hidapi" = "xyes"])
 
 dnl ---
-dnl checking for Qt5 GUI
-AM_CONDITIONAL([WITH_QT], [test "x$enable_qt5" = "xyes"])
-
-dnl Qt5 support requires DBus support
+dnl Qt support requires DBus support
 GDT_OPTDEP_CHECK([Qt5 client GUI], [$enable_qt5], [D-Bus], [$enable_dbus])
+GDT_OPTDEP_CHECK([Qt6 client GUI], [$enable_qt6], [D-Bus], [$enable_dbus])
 
+dnl different Qt versions are mutually exclusive
+GDT_OPTEXCL_CHECK([Qt5 support], [$enable_qt5], [Qt6 support], [$enable_qt6])
+
+dnl checking for Qt GUI
+AM_CONDITIONAL([WITH_QT], [test "x$enable_qt5" = "xyes" -o "x$enable_qt6" = "xyes" ])
+
+dnl ---
 dnl abort compilation after first error
 GDT_ADD_CXXFLAG([-Wfatal-errors])
-GDT_ADD_CXXFLAG([-std=c++14])
+GDT_ADD_CXXFLAG([-std=c++17])
 
 AC_SUBST(AM_CXXFLAGS)
 AC_SUBST(AM_LDFLAGS)
@@ -328,7 +338,10 @@ AS_IF([test "x$enable_dbus" = "xyes"],
 		GDT_PKG_CHECK_MODULE([LIBXTST], [xtst])
 
 		AS_IF([test "x$enable_qt5" = "xyes"],
-			[ GDT_QT_CHECK([QT], [Qt5Core Qt5Gui Qt5Widgets]) ], [])
+			[ GDT_QT_CHECK([QT], [5], [Qt5Core Qt5Gui Qt5Widgets]) ], [])
+
+		AS_IF([test "x$enable_qt6" = "xyes"],
+			[ GDT_QT_CHECK([QT], [6], [Qt6Core Qt6Gui Qt6Widgets]) ], [])
 	], [])
 
 AX_BOOST_BASE([1.64.0], [], GDT_PKG_NOT_FOUND([boost libraries]))
@@ -425,6 +438,7 @@ AC_MSG_NOTICE([
                   Qt CFLAGS : ${QT_CFLAGS}
 --------------------------------------------------------------
         with Qt5 client GUI : ${enable_qt5}
+        with Qt6 client GUI : ${enable_qt6}
            found Qt version : ${qmake_test_ver}
 --------------------------------------------------------------
 ---  DEBUGGING --- DEBUGGING ---- DEBUGGING --- DEBUGGING  ---
