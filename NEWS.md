@@ -2,6 +2,7 @@
 0.8.20 (202x-xx-xx)
 ===================
 - Added Qt6 support, a C++17 compatible compiler is now required
+- Renamed Qt gui executable
 
 0.8.18 (2023-12-11)
 ===================

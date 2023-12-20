@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 		window.build();
 
 		window.setFixedSize(800, 600);
-		window.setWindowTitle("GKcQt5");
+		window.setWindowTitle("GKcQt");
 
 		{
 			QString icon(DATA_DIR);

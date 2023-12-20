@@ -1,17 +1,17 @@
 
-bin_PROGRAMS += GKcQt5
+bin_PROGRAMS += GKcQt
 
-GKcQt5_CXXFLAGS = \
+GKcQt_CXXFLAGS = \
 				@BOOST_CPPFLAGS@ \
 				@QT_CFLAGS@ \
 				@DBUS_CFLAGS@ \
 				@AM_CXXFLAGS@
 
-GKcQt5_LDFLAGS = \
+GKcQt_LDFLAGS = \
 				@BOOST_LDFLAGS@ \
 				@AM_LDFLAGS@
 
-GKcQt5_LDADD = \
+GKcQt_LDADD = \
 		@QT_LIBS@ \
 		@BOOST_SYSTEM_LIB@ \
 		@BOOST_FILESYSTEM_LIB@ \
@@ -20,7 +20,7 @@ GKcQt5_LDADD = \
 		libGKUtils.la \
 		libGKShared.la
 
-GKcQt5_SOURCES = \
+GKcQt_SOURCES = \
 		%D%/AboutDialog/AboutDialogTab.hpp \
 		%D%/AboutDialog/AboutTab.cpp \
 		%D%/AboutDialog/AboutTab.hpp \

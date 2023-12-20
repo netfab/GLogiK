@@ -46,7 +46,7 @@ void AboutTab::buildTab(void)
 		vBox->addSpacing(10);
 
 		{
-			QString mainText("GKcQt5 ");
+			QString mainText("GKcQt ");
 			mainText += VERSION;
 
 			QLabel* mainLabel = new QLabel(mainText);

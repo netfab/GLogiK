@@ -1,5 +1,5 @@
 
-GKcQt5_sources = [
+GKcQt_sources = [
   'AboutDialog/AboutDialogTab.hpp',
   'AboutDialog/AboutTab.cpp',
   'AboutDialog/AboutTab.hpp',
@@ -41,8 +41,8 @@ deps_versions_array += [
 ]
 
 executable(
-  'GKcQt5',
-  GKcQt5_sources,
+  'GKcQt',
+  GKcQt_sources,
   include_directories : inc,
   dependencies : [
 	qt_dep,
