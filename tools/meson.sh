@@ -65,6 +65,14 @@ function add_meson_option() {
 	options+="-D${option}=${2} "
 }
 
+# default options values, overridable by command line parameters
+add_meson_option 'dbus' 'true'
+add_meson_option 'notifications' 'true'
+add_meson_option 'libnotify' 'true'
+#add_meson_option 'qt5' 'true'
+add_meson_option 'qt6' 'true'
+
+# parsing command line parameters
 while [[ "${#}" -gt 0 ]]; do
 	case "${1}" in
 		-C|--configure)
@@ -147,12 +155,6 @@ function configure_action() {
 		"${ABS_BUILD_DIR}"
 		"${ABS_SOURCE_DIR}"
 	)
-
-	add_meson_option 'dbus' 'true'
-	add_meson_option 'notifications' 'true'
-	add_meson_option 'libnotify' 'true'
-	add_meson_option 'qt5' 'true'
-	#add_meson_option 'qt6' 'true'
 
 	if [[ ${stripbuild} -eq 1 ]]; then
 		mesonconfigure+=('-Dstrip=true')

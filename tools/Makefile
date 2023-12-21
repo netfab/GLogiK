@@ -7,8 +7,8 @@ build_dir=$(PREFIX_DEV_DIR)/build
 PREFIX_DIR=$(PREFIX_DEV_DIR)/GLogiK
 
 # --
-# Qt
-WANTED_QT=QT5
+# Qt - if not defined in environment, defaults to QT6
+WANTED_QT ?= QT6
 
 ifeq ($(WANTED_QT),QT5)
 QT_BIN_DIR=/usr/lib64/qt5/bin
