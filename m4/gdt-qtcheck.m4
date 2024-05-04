@@ -57,7 +57,7 @@ AC_DEFUN([GDT_QT_CHECK],
 
 		XXX_PROGRAM="
 		#include <QtCore/qconfig.h>
-		#if QT_REDUCE_RELOCATIONS
+		#ifdef QT_REDUCE_RELOCATIONS
 		#else
 		#error \"Qt not built with -reduce-relocations\"
 		#endif
