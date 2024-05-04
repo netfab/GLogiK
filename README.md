@@ -15,7 +15,9 @@ Recognized devices
 Features
 ========
 
- * Macros keys (G-Keys) support (create, run or delete macros)
+ * G-Keys support :
+ *  - create and run macros
+ *  - spawn process
  * Keyboard backlight color support
  * Ability to set keyboard configuration on the fly in multi-users environment
  * Ability to handle multiple keyboard devices simultaneously
@@ -45,10 +47,7 @@ Optional Build Dependencies
  * x11-libs/libSM
  * x11-libs/libX11
  * x11-libs/libXtst
- * Qt5 packages, including :
-   - dev-qt/qtcore
-   - dev-qt/qtgui
-   - dev-qt/qtwidgets
+ * Qt5/Qt6 packages : qtcore, qtgui, qtwidgets
 
 Runtime Dependencies
 ====================
