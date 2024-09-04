@@ -61,6 +61,13 @@ class process
 
 		static uint8_t options;
 
+		static void logErrno(const int errnum, const std::string & errstr);
+		static void closeFD(int fd);
+		static void notifyParentProcess(int pipefd[], const int message);
+		static const int waitForChildNotification(int pipefd[]);
+
+		static void forkProcess(void);
+
 		static const pid_t newPID(void);
 		static const std::string getSignalAbbrev(int signum);
 };

@@ -62,6 +62,111 @@ const pid_t process::deamonize(void)
 	return process::newPID();
 }
 
+void process::logErrno(const int errnum, const std::string & errstr)
+{
+	LOG(error)	<< errstr << " : "
+				<< strerrorname_np(errnum) << " - "
+				<< strerrordesc_np(errnum);
+}
+
+void process::closeFD(int fd)
+{
+	if(close(fd) == -1)
+		process::logErrno(errno, "fd close");
+}
+
+void process::notifyParentProcess(int pipefd[], const int message)
+{
+	GK_LOG_FUNC
+
+	process::closeFD(pipefd[0]); /* close unused read-end */
+
+#if DEBUGGING_ON
+	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+		GKLog(trace, "closed unused read pipe file descriptor before write")
+	}
+#endif
+
+	const char byte = static_cast<const char>(message);
+	const ssize_t bytes_written = write(pipefd[1], &byte, 1);
+
+	if(bytes_written == -1) {
+		process::logErrno(errno, "write");
+		throw GLogiKExcept("error while trying to write pipe");
+	}
+	else if(bytes_written < 1) {
+		throw GLogiKExcept("byte not written");
+	}
+
+	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+		GKLog2(trace, "byte(s) written to pipe: ", std::to_string(bytes_written))
+	}
+}
+
+const int process::waitForChildNotification(int pipefd[])
+{
+	GK_LOG_FUNC
+
+	process::closeFD(pipefd[1]); /* close unused write-end */
+
+#if DEBUGGING_ON
+	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+		GKLog(trace, "closed unused write pipe file descriptor before read")
+	}
+#endif
+
+	char buf = -1;
+	const ssize_t bytes_read = read(pipefd[0], &buf, 1);
+
+	if(bytes_read == -1) {
+		process::logErrno(errno, "read");
+		throw GLogiKExcept("error while trying to read pipe");
+	}
+
+	if(bytes_read == 0)
+		throw GLogiKExcept("end of file reached while trying to read pipe");
+
+	// received one byte
+	return static_cast<const int>(buf);
+}
+
+void process::forkProcess(void)
+{
+	GK_LOG_FUNC
+
+	int pipefd[2];
+	pid_t pid;
+
+	/* create data channel before forking */
+	if(pipe(pipefd) == -1)
+		throw GLogiKExcept("failed to create pipe");
+
+	pid = fork();
+	if(pid == -1) {
+		throw GLogiKExcept("fork failure");
+	}
+	else if(pid > 0) { /* parent process */
+		if(process::waitForChildNotification(pipefd) != EXIT_SUCCESS)
+			throw GLogiKExcept("parent process wrong return value");
+
+#if DEBUGGING_ON
+		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+			GKLog2(trace, "exiting parent. first fork done. pid : ", pid)
+		}
+#endif
+		std::exit(EXIT_SUCCESS);
+	}
+	else { /* child process */
+		process::notifyParentProcess(pipefd, EXIT_SUCCESS);
+
+#if DEBUGGING_ON
+		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+			GKLog(trace, "continue child execution")
+		}
+#endif
+	}
+}
+
 const pid_t process::newPID(void)
 {
 	GK_LOG_FUNC
@@ -72,102 +177,7 @@ const pid_t process::newPID(void)
 	}
 #endif
 
-	int pipefd[2];
-
-	auto logerr = [] (const int errnum, const std::string & errstr) -> void
-	{
-		LOG(error)	<< errstr << " error : "
-					<< strerrorname_np(errnum)
-					<< " - " << strerrordesc_np(errnum);
-	};
-
-	auto closefd = [&logerr] (int fd) -> void
-	{
-		if(close(fd) == -1)
-			logerr(errno, "fd close");
-	};
-
-	auto notifyParentProcess = [&closefd, &logerr, &pipefd] (const int message) -> void
-	{
-		closefd(pipefd[0]); /* close unused read-end */
-
-#if DEBUGGING_ON
-		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-			GKLog(trace, "closed unused read pipe file descriptor before write")
-		}
-#endif
-
-		const char byte = static_cast<const char>(message);
-		const ssize_t bytes_written = write(pipefd[1], &byte, 1);
-
-		if(bytes_written == -1) {
-			logerr(errno, "write");
-			throw GLogiKExcept("error while trying to write pipe");
-		}
-		else if(bytes_written < 1) {
-			throw GLogiKExcept("byte not written");
-		}
-
-		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-			GKLog2(trace, "byte(s) written to pipe: ", std::to_string(bytes_written))
-		}
-	};
-
-	auto waitForNotification = [&closefd, &logerr, &pipefd] () -> const int
-	{
-		closefd(pipefd[1]); /* close unused write-end */
-
-#if DEBUGGING_ON
-		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-			GKLog(trace, "closed unused write pipe file descriptor before read")
-		}
-#endif
-
-		char buf = -1;
-		const ssize_t bytes_read = read(pipefd[0], &buf, 1);
-
-		if(bytes_read == -1) {
-			logerr(errno, "read");
-			throw GLogiKExcept("error while trying to read pipe");
-		}
-
-		if(bytes_read == 0)
-			throw GLogiKExcept("end of file reached while trying to read pipe");
-
-		// received one byte
-		return static_cast<const int>(buf);
-	};
-
-	pid_t pid;
-
-	/* create data channel before forking */
-	if(pipe(pipefd) == -1)
-		throw GLogiKExcept("failed to create pipe");
-
-	pid = fork();
-	if(pid == -1)
-		throw GLogiKExcept("first fork failure");
-
-	// parent exit
-	if(pid > 0) {
-		if(waitForNotification() != EXIT_SUCCESS)
-			throw GLogiKExcept("parent process wrong return value");
-
-#if DEBUGGING_ON
-		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-			GKLog2(trace, "exiting parent. first fork done. pid : ", pid)
-		}
-#endif
-		std::exit(EXIT_SUCCESS);
-	}
-
-	notifyParentProcess(EXIT_SUCCESS);
-
-#if DEBUGGING_ON
-	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-		GKLog(trace, "continue child execution")
-	}
-#endif
+	process::forkProcess();
 
 	// new session for child process
 	if(setsid() == -1)
@@ -183,34 +193,7 @@ const pid_t process::newPID(void)
 	std::signal(SIGCHLD, SIG_IGN);
 	std::signal(SIGHUP, SIG_IGN);
 
-	/* create data channel before forking */
-	if(pipe(pipefd) == -1)
-		throw GLogiKExcept("failed to create pipe");
-
-	pid = fork();
-	if(pid == -1)
-		throw GLogiKExcept("second fork failure");
-
-	// parent exit
-	if(pid > 0) {
-		if(waitForNotification() != EXIT_SUCCESS)
-			throw GLogiKExcept("parent process wrong return value");
-
-#if DEBUGGING_ON
-		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-			GKLog2(trace, "exiting parent. second fork done. pid : ", pid)
-		}
-#endif
-		std::exit(EXIT_SUCCESS);
-	}
-
-	notifyParentProcess(EXIT_SUCCESS);
-
-#if DEBUGGING_ON
-	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-		GKLog(trace, "continue child execution")
-	}
-#endif
+	process::forkProcess();
 
 	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	if(chdir("/") == -1)
@@ -236,7 +219,7 @@ const pid_t process::newPID(void)
 #endif
 	}
 
-	pid = getpid();
+	pid_t pid = getpid();
 
 #if DEBUGGING_ON
 		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
