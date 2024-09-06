@@ -65,8 +65,9 @@ class process
 		static void closeFD(int fd);
 		static void notifyParentProcess(int pipefd[], const int message);
 		static const int waitForChildNotification(int pipefd[]);
+		static void newSessionID(void);
 
-		static void forkProcess(void);
+		static void forkProcess(const bool newSessionID=false);
 
 		static const pid_t newPID(void);
 		static const std::string getSignalAbbrev(int signum);

@@ -130,7 +130,22 @@ const int process::waitForChildNotification(int pipefd[])
 	return static_cast<const int>(buf);
 }
 
-void process::forkProcess(void)
+void process::newSessionID(void)
+{
+	GK_LOG_FUNC
+
+	// new session for child process
+	if(setsid() == -1)
+		throw GLogiKExcept("session creation failure");
+
+#if DEBUGGING_ON
+	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+		GKLog(trace, "new session done")
+	}
+#endif
+}
+
+void process::forkProcess(const bool newSessionID)
 {
 	GK_LOG_FUNC
 
@@ -157,6 +172,12 @@ void process::forkProcess(void)
 		std::exit(EXIT_SUCCESS);
 	}
 	else { /* child process */
+		if(newSessionID) {
+			/* detach from parent terminal by creating new session ID
+			 * before notifying parent process */
+			process::newSessionID();
+		}
+
 		process::notifyParentProcess(pipefd, EXIT_SUCCESS);
 
 #if DEBUGGING_ON
@@ -181,17 +202,8 @@ const pid_t process::newPID(void)
 	process::setSignalHandler(SIGCHLD, SIG_IGN);
 	process::setSignalHandler(SIGHUP, SIG_IGN);
 
-	process::forkProcess();
-
-	// new session for child process
-	if(setsid() == -1)
-		throw GLogiKExcept("session creation failure");
-
-#if DEBUGGING_ON
-	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-		GKLog(trace, "new session done")
-	}
-#endif
+	/* detach child from parent terminal on first fork */
+	process::forkProcess(true);
 
 	process::forkProcess();
 
