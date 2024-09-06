@@ -97,6 +97,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::handleSignal(int signum)
 {
+	GK_LOG_FUNC
+
 	LOG(info) << process::getSignalHandlingDesc(signum, " --> bye bye");
 	QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
 }
@@ -128,9 +130,9 @@ void MainWindow::init(const int& argc, char *argv[])
 
 	LOG(info) << "Starting GKcQt vers. " << VERSION;
 
-	std::signal(SIGINT, MainWindow::handleSignal);
-	std::signal(SIGTERM, MainWindow::handleSignal);
-	std::signal(SIGHUP, MainWindow::handleSignal);
+	process::setSignalHandler(SIGINT, MainWindow::handleSignal);
+	process::setSignalHandler(SIGTERM, MainWindow::handleSignal);
+	process::setSignalHandler(SIGHUP, MainWindow::handleSignal);
 
 	try {
 		_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE, GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE_PATH);

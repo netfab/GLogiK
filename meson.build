@@ -10,6 +10,10 @@ project(
   version: run_command('version.sh', check: true).stdout().strip()
 )
 
+cxx = meson.get_compiler('cpp')
+
+cxx.has_header('csignal', required: true)
+
 #! ----------
 
 gk_prefix = get_option('prefix')

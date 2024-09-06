@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2024  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -189,9 +189,9 @@ const pid_t process::newPID(void)
 	}
 #endif
 
-	// Ignore signals
-	std::signal(SIGCHLD, SIG_IGN);
-	std::signal(SIGHUP, SIG_IGN);
+	// ignore signals
+	process::setSignalHandler(SIGCHLD, SIG_IGN);
+	process::setSignalHandler(SIGHUP, SIG_IGN);
 
 	process::forkProcess();
 
@@ -234,10 +234,34 @@ void process::setSignalHandler(int signum, __signal_handler_t __handler)
 {
 	GK_LOG_FUNC
 
-	const std::string sigdesc( process::getSignalAbbrev(signum) );
-	GKLog2(trace, "setting signal handler: ", sigdesc)
-	if(std::signal(signum, __handler) == SIG_ERR) {
-		GKSysLogError("std::signal failure: ", sigdesc);
+#if DEBUGGING_ON
+	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+		const std::string sigdesc( process::getSignalAbbrev(signum) );
+
+		if(__handler == SIG_DFL) {
+			GKLog2(trace, "resetting signal handler: ", sigdesc)
+		}
+		else if(__handler == SIG_IGN) {
+			GKLog2(trace, "ignoring signal: ", sigdesc)
+		}
+		else {
+			GKLog2(trace, "setting signal handler: ", sigdesc)
+		}
+	}
+#endif
+
+	struct sigaction new_action;
+
+	new_action.sa_handler = __handler;
+	if(sigemptyset(&new_action.sa_mask) == -1) {
+		process::logErrno(errno, "sigemptyset");
+	}
+	else {
+		new_action.sa_flags = 0;
+
+		if(sigaction(signum, &new_action, nullptr) == -1) {
+			process::logErrno(errno, "sigaction");
+		}
 	}
 }
 

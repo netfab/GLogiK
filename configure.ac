@@ -39,7 +39,7 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 
 # Checks for headers
-#AC_CHECK_HEADERS(climits)
+AC_CHECK_HEADERS(csignal)
 
 # libtool requirement and setup
 LT_PREREQ([2.4.6])
