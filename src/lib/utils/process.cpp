@@ -177,6 +177,10 @@ const pid_t process::newPID(void)
 	}
 #endif
 
+	// ignore signals
+	process::setSignalHandler(SIGCHLD, SIG_IGN);
+	process::setSignalHandler(SIGHUP, SIG_IGN);
+
 	process::forkProcess();
 
 	// new session for child process
@@ -188,10 +192,6 @@ const pid_t process::newPID(void)
 		GKLog(trace, "new session done")
 	}
 #endif
-
-	// ignore signals
-	process::setSignalHandler(SIGCHLD, SIG_IGN);
-	process::setSignalHandler(SIGHUP, SIG_IGN);
 
 	process::forkProcess();
 
