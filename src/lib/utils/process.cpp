@@ -72,8 +72,10 @@ void process::logErrno(const int errnum, const std::string & errstr)
 void process::closeFD(int fd, const std::string & tracestr)
 {
 	const int ret = close(fd);
+	const int close_errno = errno;
+
 	if(ret == -1)
-		process::logErrno(errno, "fd close");
+		process::logErrno(close_errno, "fd close");
 #if DEBUGGING_ON
 	else if(ret == 0) {
 		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
@@ -92,14 +94,14 @@ void process::notifyParentProcess(int pipefd[], const int message)
 
 	const char byte = static_cast<const char>(message);
 	const ssize_t bytes_written = write(pipefd[1], &byte, 1);
+	const int write_errno = errno;
 
 	if(bytes_written == -1) {
-		process::logErrno(errno, "write");
+		process::logErrno(write_errno, "write");
 		throw GLogiKExcept("error while trying to write pipe");
 	}
-	else if(bytes_written < 1) {
+	else if(bytes_written < 1)
 		throw GLogiKExcept("byte not written");
-	}
 
 	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
 		GKLog2(trace, "byte(s) written to pipe: ", std::to_string(bytes_written))
@@ -115,13 +117,13 @@ const int process::waitForChildNotification(int pipefd[])
 
 	char buf = -1;
 	const ssize_t bytes_read = read(pipefd[0], &buf, 1);
+	const int read_errno = errno;
 
 	if(bytes_read == -1) {
-		process::logErrno(errno, "read");
+		process::logErrno(read_errno, "read");
 		throw GLogiKExcept("error while trying to read pipe");
 	}
-
-	if(bytes_read == 0)
+	else if(bytes_read == 0)
 		throw GLogiKExcept("end of file reached while trying to read pipe");
 
 	// received one byte
