@@ -201,8 +201,28 @@ const pid_t process::newPID(void)
 		GKLog(trace, "detaching process")
 	}
 #endif
+	auto clearSignalMask = [] () -> void
+	{
+		sigset_t new_set;
+		if(sigemptyset(&new_set) == -1) {
+			process::logErrno(errno, "sigemptyset");
+		}
+		else {
+			if(sigprocmask(SIG_SETMASK, &new_set, NULL) == -1)
+				process::logErrno(errno, "sigprocmask");
+#if DEBUGGING_ON
+			else {
+				if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+					GKLog(trace, "signal mask cleared")
+				}
+			}
+#endif
+		}
+	};
 
-	// ignore signals
+	clearSignalMask();
+
+	/* ignore signals */
 	process::setSignalHandler(SIGCHLD, SIG_IGN);
 	process::setSignalHandler(SIGHUP, SIG_IGN);
 
