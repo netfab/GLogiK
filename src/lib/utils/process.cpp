@@ -79,7 +79,7 @@ void process::closeFD(int fd, const std::string & tracestr)
 #if DEBUGGING_ON
 	else if(ret == 0) {
 		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-			GKLog(trace, tracestr)
+			LOG(trace) << "closed fd: " << tracestr;
 		}
 	}
 #endif
@@ -90,13 +90,13 @@ void process::notifyParentProcess(int pipefd[], const int message)
 	GK_LOG_FUNC
 
 	/* close unused read-end */
-	process::closeFD(pipefd[0], "closed unused read-end pipe file descriptor before write");
+	process::closeFD(pipefd[0], "unused read-end");
 
 	const char byte = static_cast<const char>(message);
 	const ssize_t bytes_written = write(pipefd[1], &byte, 1);
 	const int write_errno = errno;
 
-	process::closeFD(pipefd[1], "closed remaining write-end pipe file descriptor");
+	process::closeFD(pipefd[1], "remaining write-end");
 
 	if(bytes_written == -1) {
 		process::logErrno(write_errno, "write");
@@ -115,13 +115,13 @@ const int process::waitForChildNotification(int pipefd[])
 	GK_LOG_FUNC
 
 	/* close unused write-end */
-	process::closeFD(pipefd[1], "closed unused write-end pipe file descriptor before read");
+	process::closeFD(pipefd[1], "unused write-end");
 
 	char buf = -1;
 	const ssize_t bytes_read = read(pipefd[0], &buf, 1);
 	const int read_errno = errno;
 
-	process::closeFD(pipefd[0], "closed remaining read-end pipe file descriptor");
+	process::closeFD(pipefd[0], "remaining read-end");
 
 	if(bytes_read == -1) {
 		process::logErrno(read_errno, "read");
