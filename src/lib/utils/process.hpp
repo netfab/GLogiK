@@ -62,7 +62,7 @@ class process
 		static uint8_t options;
 
 		static void logErrno(const int errnum, const std::string & errstr);
-		static void closeFD(int fd);
+		static void closeFD(int fd, const std::string & tracestr);
 		static void notifyParentProcess(int pipefd[], const int message);
 		static const int waitForChildNotification(int pipefd[]);
 		static void newSessionID(void);
