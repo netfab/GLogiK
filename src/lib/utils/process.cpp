@@ -96,6 +96,8 @@ void process::notifyParentProcess(int pipefd[], const int message)
 	const ssize_t bytes_written = write(pipefd[1], &byte, 1);
 	const int write_errno = errno;
 
+	process::closeFD(pipefd[1], "closed remaining write-end pipe file descriptor");
+
 	if(bytes_written == -1) {
 		process::logErrno(write_errno, "write");
 		throw GLogiKExcept("error while trying to write pipe");
@@ -118,6 +120,8 @@ const int process::waitForChildNotification(int pipefd[])
 	char buf = -1;
 	const ssize_t bytes_read = read(pipefd[0], &buf, 1);
 	const int read_errno = errno;
+
+	process::closeFD(pipefd[0], "closed remaining read-end pipe file descriptor");
 
 	if(bytes_read == -1) {
 		process::logErrno(read_errno, "read");
