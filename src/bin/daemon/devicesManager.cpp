@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2024  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -591,8 +591,8 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev)
 							uint8_t bus, num = 0;
 
 							try {
-								bus = std::stoi( toString( udev_device_get_sysattr_value(dev, "busnum")) );
-								num = std::stoi( toString( udev_device_get_sysattr_value(dev, "devnum")) );
+								bus = std::stoi( toString( udev_device_get_property_value(dev, "BUSNUM")) );
+								num = std::stoi( toString( udev_device_get_property_value(dev, "DEVNUM")) );
 							}
 							catch (const std::invalid_argument& ia) {
 								udev_device_unref(dev);
@@ -605,7 +605,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev)
 
 							const std::string devID( USBDeviceID::getDeviceID(bus, num) );
 
-							const std::string devpath( toString( udev_device_get_sysattr_value(dev, "devpath") ) );
+							const std::string devpath( toString( udev_device_get_property_value(dev, "DEVPATH") ) );
 							if( devpath.empty() ) {
 								udev_device_unref(dev);
 								continue;
