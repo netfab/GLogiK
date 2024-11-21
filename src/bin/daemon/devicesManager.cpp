@@ -1015,13 +1015,13 @@ void DevicesManager::startMonitoring(void) {
 						}
 
 						const std::string devnode( toString( udev_device_get_devnode(dev) ) );
-
-						// filtering empty events
 						if( devnode.empty() ) {
+							GKLog2(trace, "filtering empty devnode event : ", action)
 							continue;
 						}
 
-						GKLog2(trace, "Action : ", action)
+						GKLog2(trace, "device action : ", action)
+						GKLog2(trace, "device devnode: ", devnode)
 
 						this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
 
