@@ -178,8 +178,14 @@ void LCDPluginsTab::updateTab(
 					checkbox->setProperty(_idProperty.c_str(), value);
 				}
 
+/* QCheckBox::stateChanged(int) scheduled for deprecation in version 6.9. */
+#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
 				/* connecting checkbox */
 				QObject::connect(checkbox, &QCheckBox::stateChanged, this, &LCDPluginsTab::updateNewLCDPluginsMask);
+#else
+				/* connecting checkbox */
+				QObject::connect(checkbox, &QCheckBox::checkStateChanged, this, &LCDPluginsTab::updateNewLCDPluginsMask);
+#endif
 
 				QTableWidgetItem* item = nullptr;
 
