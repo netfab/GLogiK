@@ -352,8 +352,8 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 		const uint16_t xByte = PBMXPos / 8;
 		const uint16_t index = (DEFAULT_PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
 
-		/* checking for out of range */
-		frame.at(index+12);
+		/* checking for out of range before progress bar drawing */
+		[[maybe_unused]] const auto & pos = frame.at(index+12);
 
 		/*
 		 *	------------- one horizontal line
