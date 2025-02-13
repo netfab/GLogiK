@@ -3,6 +3,7 @@
 ===================
 - Added Qt6 support, a C++17 compatible compiler is now required
 - Renamed Qt gui executable
+- Improved process initialization when forking
 
 0.8.18 (2023-12-11)
 ===================
