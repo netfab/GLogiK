@@ -17,6 +17,7 @@ ltmain.sh
 
 compile
 
+.configured
 build/
 
 m4/libtool.m4
