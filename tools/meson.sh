@@ -114,6 +114,8 @@ done
 # -- -- -- -- -- -- -- -- -- #
 
 function clean_action() {
+	printf "${BLDRED}CLEANING WITH MESON${TXTRST}\n"
+
 	function safe_remove_dir() {
 		printf "removing « ${1} » directory ... "
 		if [[ -d "${1}" ]]; then
@@ -137,6 +139,8 @@ function clean_action() {
 }
 
 function configure_action() {
+	printf "${BLDRED}CONFIGURING WITH MESON${TXTRST}\n"
+
 	# https://mesonbuild.com/Builtin-options.html#build-type-options
 	local mesonconfigure=(
 		meson setup
@@ -174,11 +178,15 @@ function configure_action() {
 }
 
 function compile_action() {
+	printf "${BLDRED}BUILDING WITH MESON${TXTRST}\n"
+
 	change_directory "${ABS_BUILD_DIR}"
 	meson compile --verbose || die "compile failure"
 }
 
 function install_action() {
+	printf "${BLDRED}INSTALLING WITH MESON${TXTRST}\n"
+
 	change_directory "${ABS_BUILD_DIR}"
 	#DESTDIR="${ABS_INSTALL_DIR}-DESTDIR" meson install || die "install failure"
 	meson install || die "install failure"
