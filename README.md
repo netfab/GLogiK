@@ -5,7 +5,7 @@ Last release : version 0.8.18
 Links
 =====
 
- * [homepage / download](https://glogik.tuxfamily.org/)
+ * [homepage / download](https://netfab.frama.io/pages/glogik/)
 
 Recognized devices
 ==================
@@ -16,8 +16,8 @@ Features
 ========
 
  * G-Keys support :
- *  - create and run macros
- *  - spawn process
+   - create and run macros
+   - spawn process
  * Keyboard backlight color support
  * Ability to set keyboard configuration on the fly in multi-users environment
  * Ability to handle multiple keyboard devices simultaneously
