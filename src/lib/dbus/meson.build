@@ -10,6 +10,8 @@ GKDBus_sources = [
 	'ArgTypes/string.hpp',
 	'ArgTypes/stringArray.cpp',
 	'ArgTypes/stringArray.hpp',
+	'ArgTypes/int32.cpp',
+	'ArgTypes/int32.hpp',
 	'ArgTypes/uint16.cpp',
 	'ArgTypes/uint16.hpp',
 	'ArgTypes/uint32.cpp',

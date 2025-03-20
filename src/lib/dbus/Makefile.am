@@ -23,6 +23,8 @@ libGKDBus_la_SOURCES = \
 	%D%/ArgTypes/string.hpp \
 	%D%/ArgTypes/stringArray.cpp \
 	%D%/ArgTypes/stringArray.hpp \
+	%D%/ArgTypes/int32.cpp \
+	%D%/ArgTypes/int32.hpp \
 	%D%/ArgTypes/uint16.cpp \
 	%D%/ArgTypes/uint16.hpp \
 	%D%/ArgTypes/uint32.cpp \

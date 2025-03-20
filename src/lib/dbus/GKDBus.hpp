@@ -39,6 +39,7 @@
 #include "messages/GKDBusAsyncContainer.hpp"
 
 #include "ArgTypes/boolean.hpp"
+#include "ArgTypes/int32.hpp"
 #include "ArgTypes/uint8.hpp"
 #include "ArgTypes/uint16.hpp"
 #include "ArgTypes/uint64.hpp"
@@ -68,6 +69,7 @@ class GKDBus
 		virtual public ArgString,
 		virtual public ArgStringArray,
 		public ArgBoolean,
+		virtual public ArgInt32,
 		virtual public ArgUInt8,
 		virtual public ArgUInt16,
 		virtual public ArgUInt64,
