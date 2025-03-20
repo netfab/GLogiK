@@ -43,12 +43,6 @@
 namespace GLogiK
 {
 
-enum class SessionFramework : uint8_t
-{
-	FW_UNKNOWN = 0,
-	FW_LOGIND,
-};
-
 class DBusHandler
 	:	public DBusInst
 {

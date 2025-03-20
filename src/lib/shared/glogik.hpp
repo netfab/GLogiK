@@ -156,6 +156,12 @@ extern c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT;
 extern c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH;
 extern c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE;
 
+enum class SessionFramework : uint8_t
+{
+	FW_UNKNOWN = 0,
+	FW_LOGIND,
+};
+
 } // namespace GLogiK
 
 #endif
