@@ -24,6 +24,7 @@
 
 #include <cstdint>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -49,6 +50,13 @@ class ArgBase
 		thread_local static std::vector<uint16_t> uint16Arguments;
 		thread_local static std::vector<uint64_t> uint64Arguments;
 		thread_local static std::vector<bool> booleanArguments;
+
+		template<typename T, typename A>
+		static void reverse(std::vector<T, A> & ctn)
+		{
+			if( ! ctn.empty() )
+				std::reverse(ctn.begin(), ctn.end());
+		}
 
 	private:
 		static void decodeArgumentFromIterator(

@@ -19,8 +19,6 @@
  *
  */
 
-#include <algorithm>
-
 #include "lib/utils/utils.hpp"
 
 #include "ArgBase.hpp"
@@ -218,18 +216,12 @@ void ArgBase::fillInArguments(DBusMessage* message)
 	}
 	while( dbus_message_iter_next(&itArgument) );
 
-	if( ! ArgBase::stringArguments.empty() )
-		std::reverse(ArgBase::stringArguments.begin(), ArgBase::stringArguments.end());
-	if( ! ArgBase::booleanArguments.empty() )
-		std::reverse(ArgBase::booleanArguments.begin(), ArgBase::booleanArguments.end());
-	if( ! ArgBase::int32Arguments.empty() )
-		std::reverse(ArgBase::int32Arguments.begin(), ArgBase::int32Arguments.end());
-	if( ! ArgBase::byteArguments.empty() )
-		std::reverse(ArgBase::byteArguments.begin(), ArgBase::byteArguments.end());
-	if( ! ArgBase::uint16Arguments.empty() )
-		std::reverse(ArgBase::uint16Arguments.begin(), ArgBase::uint16Arguments.end());
-	if( ! ArgBase::uint64Arguments.empty() )
-		std::reverse(ArgBase::uint64Arguments.begin(), ArgBase::uint64Arguments.end());
+	ArgBase::reverse(ArgBase::stringArguments);
+	ArgBase::reverse(ArgBase::booleanArguments);
+	ArgBase::reverse(ArgBase::int32Arguments);
+	ArgBase::reverse(ArgBase::byteArguments);
+	ArgBase::reverse(ArgBase::uint16Arguments);
+	ArgBase::reverse(ArgBase::uint64Arguments);
 }
 
 const int ArgBase::decodeNextArgument(DBusMessageIter* itArgument)
