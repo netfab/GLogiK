@@ -44,6 +44,7 @@ class ArgBase
 		static const int decodeNextArgument(DBusMessageIter* itArgument);
 
 		thread_local static std::vector<std::string> stringArguments;
+		thread_local static std::vector<int32_t> int32Arguments;
 		thread_local static std::vector<uint8_t> byteArguments;
 		thread_local static std::vector<uint16_t> uint16Arguments;
 		thread_local static std::vector<uint64_t> uint64Arguments;

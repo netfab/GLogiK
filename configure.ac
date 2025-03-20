@@ -53,6 +53,9 @@ dnl preprocessor arguments
 AM_CPPFLAGS="-I\$(top_srcdir)/src"
 AC_SUBST(AM_CPPFLAGS)
 
+AC_CHECK_SIZEOF([int])
+AC_SUBST(SIZEOF_INT)
+
 dnl -------------------------------------------------------------------------
 dnl                     declare custom configure options
 dnl -------------------------------------------------------------------------

@@ -31,6 +31,7 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 thread_local std::vector<std::string> ArgBase::stringArguments = {};
+thread_local std::vector<int32_t> ArgBase::int32Arguments = {};
 thread_local std::vector<uint8_t> ArgBase::byteArguments = {};
 thread_local std::vector<uint16_t> ArgBase::uint16Arguments = {};
 thread_local std::vector<uint64_t> ArgBase::uint64Arguments = {};
@@ -143,6 +144,17 @@ void ArgBase::decodeArgumentFromIterator(
 				//GKLog2(trace, "uint64_t arg value : ", value)
 			}
 			break;
+		case DBUS_TYPE_UNIX_FD:
+			{
+#if SIZEOF_INT != 4
+#error "wrong int size, please report bug"
+#endif
+				int32_t value = -1;
+				dbus_message_iter_get_basic(iter, &value);
+				ArgBase::int32Arguments.push_back(value);
+				//GKLog2(trace, "int32_t arg value : ", value)
+			}
+			break;
 		case DBUS_TYPE_STRUCT:
 			{
 				do {
@@ -210,6 +222,8 @@ void ArgBase::fillInArguments(DBusMessage* message)
 		std::reverse(ArgBase::stringArguments.begin(), ArgBase::stringArguments.end());
 	if( ! ArgBase::booleanArguments.empty() )
 		std::reverse(ArgBase::booleanArguments.begin(), ArgBase::booleanArguments.end());
+	if( ! ArgBase::int32Arguments.empty() )
+		std::reverse(ArgBase::int32Arguments.begin(), ArgBase::int32Arguments.end());
 	if( ! ArgBase::byteArguments.empty() )
 		std::reverse(ArgBase::byteArguments.begin(), ArgBase::byteArguments.end());
 	if( ! ArgBase::uint16Arguments.empty() )
@@ -222,6 +236,7 @@ const int ArgBase::decodeNextArgument(DBusMessageIter* itArgument)
 {
 	ArgBase::stringArguments.clear();
 	ArgBase::booleanArguments.clear();
+	ArgBase::int32Arguments.clear();
 	ArgBase::byteArguments.clear();
 	ArgBase::uint16Arguments.clear();
 	ArgBase::uint64Arguments.clear();

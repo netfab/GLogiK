@@ -14,6 +14,8 @@ cxx = meson.get_compiler('cpp')
 
 cxx.has_header('csignal', required: true)
 
+int_size = cxx.sizeof('int')
+
 #! ----------
 
 gk_prefix = get_option('prefix')
@@ -158,6 +160,8 @@ endforeach
 foreach define: define_dep_array
   config_h.set10(define[0], define[1])
 endforeach
+
+config_h.set('SIZEOF_INT', int_size)
 
 #! ----------
 
