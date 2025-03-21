@@ -43,6 +43,11 @@
 #include "include/base.hpp"
 #include "include/LCDPP.hpp"
 
+#define LogRemoteCallFailure \
+	LOG(critical) << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
+#define LogRemoteCallGetReplyFailure \
+	LOG(error) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
+
 namespace GLogiK
 {
 
@@ -61,6 +66,8 @@ class DevicesManager
 
 		static const std::string getLibudevVersion(void);
 
+		void initializeDBusRequests(void);
+		void cleanDBusRequests(void) noexcept;
 		void startMonitoring(void);
 
 #if GKDBUS
@@ -102,24 +109,34 @@ class DevicesManager
 	protected:
 
 	private:
-		const std::string _unknown;
-		std::vector<KeyboardDriver*> _drivers;
+		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
+
 		std::map<std::string, USBDeviceID> _detectedDevices;
 		std::map<std::string, USBDeviceID> _startedDevices;
 		std::map<std::string, USBDeviceID> _stoppedDevices;
 		std::map<std::string, USBDeviceID> _unpluggedDevices;
+		std::vector<std::string> _sleepingDevices;
+		std::vector<KeyboardDriver*> _drivers;
+		const std::string _unknown;
 
 #if GKDBUS
 		NSGKDBus::GKDBus* _pDBus;
+		SessionFramework _sessionFramework;
 		uint8_t _numClients;
+		int32_t _delayLockPID;
 #endif
 
 		void searchSupportedDevices(struct udev * pUdev);
 		void initializeDevices(const bool openDevices) noexcept;
+		void startSleepingDevices(void);
 		void stopInitializedDevices(void);
 		void checkInitializedDevicesThreadsStatus(void) noexcept;
 
 		void checkForUnpluggedDevices(void) noexcept;
+
+		void inhibitSleepState(void);
+		void releaseDelayLock(void);
+		void HandleSleepEvent(const bool mode);
 };
 
 } // namespace GLogiK

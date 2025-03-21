@@ -193,6 +193,7 @@ int GLogiKDaemon::run(void)
 
 #if GKDBUS
 		devicesManager.setDBus(&DBus);
+		devicesManager.initializeDBusRequests();
 
 		ClientsManager clientsManager(&DBus, &devicesManager, &dependencies);
 #endif
@@ -204,6 +205,7 @@ int GLogiKDaemon::run(void)
 #if GKDBUS
 			clientsManager.waitForClientsDisconnections();
 			clientsManager.cleanDBusRequests();
+			devicesManager.cleanDBusRequests();
 			DBus.exit();
 #endif
 		}
@@ -215,6 +217,7 @@ int GLogiKDaemon::run(void)
 #if GKDBUS
 			clientsManager.waitForClientsDisconnections();
 			clientsManager.cleanDBusRequests();
+			devicesManager.cleanDBusRequests();
 			DBus.exit();
 #endif
 			throw;

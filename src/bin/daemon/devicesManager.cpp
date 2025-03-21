@@ -19,6 +19,8 @@
  *
  */
 
+#include <unistd.h>
+
 #include <new>
 #include <sstream>
 #include <iostream>
@@ -60,7 +62,9 @@ using namespace NSGKUtils;
 DevicesManager::DevicesManager()
 	:	_unknown("unknown"),
 		_pDBus(nullptr),
-		_numClients(0)
+		_sessionFramework(SessionFramework::FW_UNKNOWN),
+		_numClients(0),
+		_delayLockPID(-1)
 #else
 DevicesManager::DevicesManager()
 	:	_unknown("unknown")
@@ -78,7 +82,10 @@ DevicesManager::~DevicesManager()
 	GKLog(trace, "destroying devices manager")
 
 	this->stopInitializedDevices();
+	_sleepingDevices.clear();
 	_stoppedDevices.clear();
+
+	this->releaseDelayLock();
 
 	GKLog(trace, "stopping drivers")
 	for(const auto & driver : _drivers) {
@@ -318,22 +325,36 @@ const bool DevicesManager::stopDevice(
 	return false;
 }
 
+void DevicesManager::startSleepingDevices(void)
+{
+	GK_LOG_FUNC
+
+	GKLog(trace, "starting sleeping devices")
+
+	for(const auto & devID : _sleepingDevices) {
+		this->startDevice(devID);
+	}
+
+	_sleepingDevices.clear();
+}
+
 void DevicesManager::stopInitializedDevices(void)
 {
 	GK_LOG_FUNC
 
 	GKLog(trace, "stopping initialized devices")
 
-	std::vector<std::string> toStop;
+	/* sleeping devices will potentially be started again right after resume */
+	_sleepingDevices.clear();
+
 	for(const auto & devicePair : _startedDevices) {
-		toStop.push_back(devicePair.first);
+		_sleepingDevices.push_back(devicePair.first);
 	}
 
-	for(const auto & devID : toStop) {
+	for(const auto & devID : _sleepingDevices) {
 		this->stopDevice(devID);
 	}
 
-	toStop.clear();
 	_startedDevices.clear();
 }
 
@@ -933,6 +954,132 @@ void DevicesManager::resetDevicesStates(void)
 	}
 }
 
+void DevicesManager::initializeDBusRequests(void)
+{
+	GK_LOG_FUNC
+
+	this->inhibitSleepState();
+
+	switch(_sessionFramework) {
+		/* logind */
+		case SessionFramework::FW_LOGIND:
+			_pDBus->NSGKDBus::Callback<SIGb2v>::exposeSignal(
+				_systemBus,
+				"org.freedesktop.login1",
+				"login1",
+				"org.freedesktop.login1.Manager",
+				"PrepareForSleep",
+				{ {"b", "", "in", "mode"} },
+				std::bind(&DevicesManager::HandleSleepEvent, this, std::placeholders::_1)
+			);
+			break;
+		default:
+			LOG(warning) << "unknown session tracker";
+			break;
+	}
+}
+
+void DevicesManager::cleanDBusRequests(void) noexcept
+{
+	GK_LOG_FUNC
+
+	switch(_sessionFramework) {
+		/* logind */
+		case SessionFramework::FW_LOGIND:
+			_pDBus->removeSignalsInterface(_systemBus,
+				"org.freedesktop.login1",
+				"login1",
+				"org.freedesktop.login1.Manager");
+			break;
+		default:
+			LOG(warning) << "unknown session tracker";
+			break;
+	}
+}
+
+void DevicesManager::inhibitSleepState(void)
+{
+	GK_LOG_FUNC
+
+	const std::string remoteMethod("Inhibit");
+	try {
+		_pDBus->initializeRemoteMethodCall(
+			_systemBus,
+			"org.freedesktop.login1",
+			"/org/freedesktop/login1",
+			"org.freedesktop.login1.Manager",
+			remoteMethod.c_str()
+		);
+
+		_pDBus->appendStringToRemoteMethodCall("sleep"); /* What (lock type) */
+		_pDBus->appendStringToRemoteMethodCall("GLogiK Daemon"); /* Who */
+		_pDBus->appendStringToRemoteMethodCall("Release USB Devices"); /* Why */
+		_pDBus->appendStringToRemoteMethodCall("delay"); /* mode */
+
+		_pDBus->sendRemoteMethodCall();
+
+		try {
+			_pDBus->waitForRemoteMethodCallReply();
+
+			_delayLockPID = _pDBus->getNextInt32Argument();
+
+			_sessionFramework = SessionFramework::FW_LOGIND;
+			GKLog2(trace, "got pid for delay lock from logind: ", static_cast<int>(_delayLockPID))
+		}
+		catch (const GLogiKExcept & e) {
+			LogRemoteCallGetReplyFailure
+		}
+	}
+	catch (const GKDBusMessageWrongBuild & e) {
+		_pDBus->abandonRemoteMethodCall();
+		LogRemoteCallFailure
+	}
+
+	switch(_sessionFramework) {
+		/* logind */
+		case SessionFramework::FW_LOGIND:
+			LOG(info) << "successfully contacted logind";
+			break;
+		default:
+			LOG(warning) << "unknown session tracker";
+			break;
+	}
+}
+
+void DevicesManager::releaseDelayLock(void)
+{
+	GK_LOG_FUNC
+
+	GKLog(trace, "release delay lock")
+	if( _delayLockPID != -1 ) {
+		const int ret = close(_delayLockPID);
+		const int close_errno = errno;
+
+		if(ret == -1) {
+			LOG(error)	<< "delay lock close : " << getErrnoString(close_errno);
+		}
+
+		_delayLockPID = -1;
+		GKLog(trace, "released")
+	}
+}
+
+void DevicesManager::HandleSleepEvent(const bool mode)
+{
+	GK_LOG_FUNC
+
+	if(mode) {
+		GKLog(trace, "going to sleep, stopping devices")
+		this->stopInitializedDevices();
+		this->releaseDelayLock();
+	}
+	else {
+		GKLog(trace, "resuming from sleep, starting devices")
+		this->inhibitSleepState();
+		this->startSleepingDevices();
+	}
+}
+
 /*
  *	Throws GLogiKExcept in many ways on udev related functions failures.
  *	USB library failures on devices start/stop are catched internally.
@@ -943,7 +1090,7 @@ void DevicesManager::startMonitoring(void) {
 	GKLog(trace, "initializing libudev")
 
 	struct udev * pUdev = udev_new();
-	if(pUdev == nullptr )
+	if( pUdev == nullptr )
 		throw GLogiKExcept("udev context init failure");
 
 	try { /* pUdev unref on catch */
