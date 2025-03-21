@@ -1159,14 +1159,26 @@ void DevicesManager::startMonitoring(void) {
 						throw GLogiKExcept("no device from receive_device(), something is wrong");
 
 					try { /* dev unref on catch */
+
+						/* kernel action value, or NULL
+						 * Usual actions are:
+						 *   add, remove, bind, unbind, change, move, online, offline
+						 */
 						const std::string action( toString( udev_device_get_action(dev) ) );
-						if( action.empty() ) {
+
+						if( action.empty() )
 							throw GLogiKExcept("device_get_action() failure");
-						}
 
 						const std::string devnode( toString( udev_device_get_devnode(dev) ) );
 						if( devnode.empty() ) {
 							GKLog2(trace, "filtering empty devnode event : ", action)
+							udev_device_unref(dev);
+							continue;
+						}
+
+						/* only interested in 'add' or 'remove' events */
+						if(( action != "add" ) and ( action != "remove" )) {
+							GKLog2(trace, "filtering action : ", action)
 							udev_device_unref(dev);
 							continue;
 						}
