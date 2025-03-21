@@ -19,6 +19,8 @@
  *
  */
 
+#include <cstring>
+
 #include <new>
 #include <stdexcept>
 #include <iomanip>
@@ -75,6 +77,15 @@ const std::wstring toWString(const wchar_t* s)
 		error += e.what();
 		throw GLogiKExcept(error);
 	}
+}
+
+const std::string getErrnoString(const int errnum)
+{
+	std::string ret;
+	ret += toString(strerrorname_np(errnum));
+	ret += " - ";
+	ret += toString(strerrordesc_np(errnum));
+	return ret;
 }
 
 const unsigned int toUInt(const std::string & s)

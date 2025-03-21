@@ -64,9 +64,7 @@ const pid_t process::deamonize(void)
 
 void process::logErrno(const int errnum, const std::string & errstr)
 {
-	LOG(error)	<< errstr << " : "
-				<< strerrorname_np(errnum) << " - "
-				<< strerrordesc_np(errnum);
+	LOG(error)	<< errstr << " : " << getErrnoString(errnum);
 }
 
 void process::closeFD(int fd, const std::string & tracestr)

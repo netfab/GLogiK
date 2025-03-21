@@ -36,6 +36,8 @@ namespace NSGKUtils
 const std::string toString(const char* s);
 const std::wstring toWString(const wchar_t* s);
 
+const std::string getErrnoString(const int errnum);
+
 constexpr int toInt(const uint8_t c) noexcept
 {
 	return static_cast<int>(c);
