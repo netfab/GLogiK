@@ -26,6 +26,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <thread>
 
 #include <poll.h>
 #include <libudev.h>
@@ -1076,6 +1077,8 @@ void DevicesManager::HandleSleepEvent(const bool mode)
 	else {
 		GKLog(trace, "resuming from sleep, starting devices")
 		this->inhibitSleepState();
+		/* don't start devices too early after resuming */
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		this->startSleepingDevices();
 	}
 }
