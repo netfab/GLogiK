@@ -1167,6 +1167,7 @@ void DevicesManager::startMonitoring(void) {
 						const std::string devnode( toString( udev_device_get_devnode(dev) ) );
 						if( devnode.empty() ) {
 							GKLog2(trace, "filtering empty devnode event : ", action)
+							udev_device_unref(dev);
 							continue;
 						}
 
