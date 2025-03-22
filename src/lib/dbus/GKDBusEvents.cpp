@@ -161,9 +161,25 @@ void GKDBusEvents::removeInterface(
 	}
 }
 
+const std::string GKDBusEvents::getObjectFromObjectPath(const std::string & objectPath)
+{
+	std::string object;
+	std::istringstream path(objectPath);
+	/* get last part of object path */
+	while(std::getline(path, object, '/')) {}
+#if 0 && DEBUGGING_ON
+	LOG(trace) << "object path: " << objectPath;
+	LOG(trace) << "     object: " << object;
+#endif
+	return object;
+}
+
 const std::string GKDBusEvents::introspectRootNode(void)
 {
 	GK_LOG_FUNC
+
+	GKLog4(	trace, "introspecting root node: ", _rootNodePath, "on bus : ",
+			toUInt(toEnumType(GKDBusEvents::currentBus)))
 
 	std::ostringstream xml;
 
@@ -172,11 +188,11 @@ const std::string GKDBusEvents::introspectRootNode(void)
 	xml << "<node name=\"" << _rootNodePath << "\">\n";
 
 	try {
-		const auto & bus = _DBusEvents.at(GKDBusEvents::currentBus);
+		const auto & bus = _DBusIntrospectableObjects.at(GKDBusEvents::currentBus);
 
-		for(const auto & objectPair : bus) {
-			if(objectPair.first != GKDBusEvents::_rootNodeObject)
-				xml << "  <node name=\"" << objectPair.first << "\"/>\n";
+		for(const auto & object : bus)
+		{
+			xml << "  <node name=\"" << object << "\"/>\n";
 		}
 	}
 	catch (const std::out_of_range& oor) {
@@ -265,6 +281,8 @@ void GKDBusEvents::addEvent(
 		}
 		catch (const std::out_of_range& oor) {
 			GKLog2(trace, "adding Introspectable object : ", eventObject)
+			_DBusIntrospectableObjects[eventBus].push_back(this->getObjectFromObjectPath(eventObject));
+
 			this->Callback<SIGs2s>::exposeEvent(
 				eventBus, nullptr, eventObject, "org.freedesktop.DBus.Introspectable", "Introspect",
 				{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},

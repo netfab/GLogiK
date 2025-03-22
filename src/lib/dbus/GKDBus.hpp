@@ -105,7 +105,6 @@ class GKDBus
 
 		void exit(void) noexcept;
 
-		const std::string getObjectFromObjectPath(const std::string & objectPath);
 		void checkForMessages(void) noexcept;
 
 	protected:

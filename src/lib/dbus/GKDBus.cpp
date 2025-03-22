@@ -21,7 +21,6 @@
 
 #include <new>
 #include <algorithm>
-#include <sstream>
 #include <vector>
 
 #include "messages/GKDBusMessage.hpp"
@@ -167,19 +166,6 @@ void GKDBus::exit(void) noexcept
 	this->disconnectFromSystemBus();
 	this->disconnectFromSessionBus();
 	this->clearDBusEvents();
-}
-
-const std::string GKDBus::getObjectFromObjectPath(const std::string & objectPath)
-{
-	std::string object;
-	std::istringstream path(objectPath);
-	/* get last part of object path */
-	while(std::getline(path, object, '/')) {}
-#if 0 && DEBUGGING_ON
-	LOG(trace) << "object path: " << objectPath;
-	LOG(trace) << "     object: " << object;
-#endif
-	return object;
 }
 
 void GKDBus::checkForMessages(void) noexcept

@@ -112,6 +112,8 @@ class GKDBusEvents
 			std::map<std::string, /* object */
 				std::map<std::string, /* interface */
 					std::vector<GKDBusIntrospectableSignal> > > > _DBusIntrospectableSignals;
+		std::map<BusConnection,
+			std::vector<std::string> > _DBusIntrospectableObjects;
 
 		virtual DBusConnection* const getDBusConnection(BusConnection wantedConnection) const = 0;
 
@@ -124,6 +126,7 @@ class GKDBusEvents
 			std::ostringstream & xml,
 			const GKDBusEvent* DBusEvent
 		);
+		const std::string getObjectFromObjectPath(const std::string & objectPath);
 		const std::string introspect(const std::string & askedObjectPath);
 		const std::string introspectRootNode(void);
 
