@@ -330,10 +330,8 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 			bool interfaceOpened = false;
 
 			for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
-				std::string objectPath(_rootNodePath);
-				objectPath += "/"; objectPath += objectPair.first;
 				/* object path must match */
-				if( objectPath != askedObjectPath )
+				if( askedObjectPath != objectPair.first )
 					continue;
 				for(const auto & interfacePair : objectPair.second) {
 					if( interfacePair.first == interface ) {
@@ -346,10 +344,8 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 			}
 
 			for(const auto & objectPair : _DBusIntrospectableSignals.at(GKDBusEvents::currentBus)) {
-				std::string objectPath(_rootNodePath);
-				objectPath += "/"; objectPath += objectPair.first;
 				/* object path must match */
-				if( objectPath != askedObjectPath )
+				if( askedObjectPath != objectPair.first )
 					continue;
 				for(const auto & interfacePair : objectPair.second) {
 					if( interfacePair.first == interface ) {
