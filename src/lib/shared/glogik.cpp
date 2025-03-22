@@ -254,11 +254,9 @@ c_str GLOGIK_DAEMON_DBUS_ROOT_NODE									= "Daemon";
 c_str GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH								= "/com/glogik/Daemon";
 c_str GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME						= "com.glogik.Daemon";
 	/* -- */
-c_str GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT						= "ClientsManager";
 c_str GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH				= "/com/glogik/Daemon/ClientsManager";
 c_str GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE					= "com.glogik.Daemon.Client1";
 	/* -- */
-c_str GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT						= "DevicesManager";
 c_str GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH				= "/com/glogik/Daemon/DevicesManager";
 c_str GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE					= "com.glogik.Daemon.Device1";
 
@@ -268,7 +266,6 @@ c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE				= "Launcher";
 c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE_PATH			= "/com/glogik/Launcher";
 c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME		= "com.glogik.Launcher";
 	/* -- */
-//c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_SESSION_DBUS_OBJECT			= "SessionMessageHandler";
 //c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_SESSION_DBUS_OBJECT_PATH	= "/com/glogik/Launcher/SessionMessageHandler";
 //c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_SESSION_DBUS_INTERFACE		= "com.glogik.Launcher.SessionMessageHandler1";
 
@@ -278,11 +275,9 @@ c_str GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE							= "Client";
 c_str GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE_PATH					= "/com/glogik/Client";
 c_str GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME				= "com.glogik.Client";
 	/* -- */
-//c_str GLOGIK_DESKTOP_SERVICE_SYSTEM_DBUS_OBJECT					= "SystemMessageHandler";
 //c_str GLOGIK_DESKTOP_SERVICE_SYSTEM_DBUS_OBJECT_PATH				= "/com/glogik/Client/SystemMessageHandler";
 //c_str GLOGIK_DESKTOP_SERVICE_SYSTEM_DBUS_INTERFACE				= "com.glogik.Client.SystemMessageHandler1";
 	/* -- */
-c_str GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT					= "SessionMessageHandler";
 c_str GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH				= "/com/glogik/Client/SessionMessageHandler";
 c_str GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE					= "com.glogik.Client.SessionMessageHandler1";
 
@@ -291,7 +286,6 @@ c_str GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE								= "qt5gui";
 c_str GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE_PATH						= "/com/glogik/qt5gui";
 c_str GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME					= "com.glogik.qt5gui";
 	/* -- */
-c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT						= "GUISessionMessageHandler";
 c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH					= "/com/glogik/qt5gui/GUISessionMessageHandler";
 c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE						= "com.glogik.qt5gui.GUISessionMessageHandler";
 
