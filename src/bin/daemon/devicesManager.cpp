@@ -967,7 +967,7 @@ void DevicesManager::initializeDBusRequests(void)
 			_pDBus->NSGKDBus::Callback<SIGb2v>::exposeSignal(
 				_systemBus,
 				"org.freedesktop.login1",
-				"login1",
+				"/org/freedesktop/login1",
 				"org.freedesktop.login1.Manager",
 				"PrepareForSleep",
 				{ {"b", "", "in", "mode"} },
@@ -989,7 +989,7 @@ void DevicesManager::cleanDBusRequests(void) noexcept
 		case SessionFramework::FW_LOGIND:
 			_pDBus->removeSignalsInterface(_systemBus,
 				"org.freedesktop.login1",
-				"login1",
+				"/org/freedesktop/login1",
 				"org.freedesktop.login1.Manager");
 			break;
 		default:

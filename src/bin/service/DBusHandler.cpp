@@ -151,35 +151,33 @@ void DBusHandler::cleanDBusRequests(void)
 
 	/* remove SessionMessageHandler D-Bus interface and object */
 	DBus.removeMethodsInterface(_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 
 	/* remove GUISessionMessageHandler D-Bus interface and object */
 	DBus.removeSignalsInterface(_sessionBus,
 		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE);
 
 	/* remove DevicesManager D-Bus interface and object */
 	DBus.removeSignalsInterface(_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE);
 
 	/* remove ClientsManager D-Bus interface and object */
 	DBus.removeSignalsInterface(_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE);
-
-	const std::string object = DBus.getObjectFromObjectPath(_currentSession);
 
 	switch(_sessionFramework) {
 		/* logind */
 		case SessionFramework::FW_LOGIND:
 			DBus.removeSignalsInterface(_systemBus,
 				"org.freedesktop.login1",
-				object.c_str(),
+				_currentSession.c_str(),
 				"org.freedesktop.DBus.Properties");
 			break;
 		default:
@@ -409,12 +407,10 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
 				_sessionFramework = SessionFramework::FW_LOGIND;
 
 				/* update session state when PropertyChanged signal receipted */
-				const std::string object = DBus.getObjectFromObjectPath(_currentSession);
-
 				DBus.NSGKDBus::Callback<SIGv2v>::exposeSignal(
 					_systemBus,
 					"org.freedesktop.login1",
-					object.c_str(),
+					_currentSession.c_str(),
 					"org.freedesktop.DBus.Properties",
 					"PropertiesChanged",
 					{},
@@ -731,7 +727,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	DBus.NSGKDBus::Callback<SIGas2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"DevicesStarted",
 		{	{"as", "", "in", "array of started devices ID strings"} },
@@ -741,7 +737,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	DBus.NSGKDBus::Callback<SIGas2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"DevicesStopped",
 		{	{"as", "", "in", "array of stopped devices ID strings"} },
@@ -751,7 +747,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	DBus.NSGKDBus::Callback<SIGas2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"DevicesUnplugged",
 		{	{"as", "", "in", "array of unplugged devices ID strings"} },
@@ -761,7 +757,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	DBus.NSGKDBus::Callback<SIGsm2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"DeviceMBankSwitch",
 		{	{"s", "device_id", "in", "device ID"},
@@ -775,7 +771,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	DBus.NSGKDBus::Callback<SIGsGM2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"DeviceMacroRecorded",
 		{	{"s", "device_id", "in", "device ID"},
@@ -790,7 +786,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	DBus.NSGKDBus::Callback<SIGsG2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"DeviceMacroCleared",
 		{	{"s", "device_id", "in", "device ID"},
@@ -804,7 +800,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	DBus.NSGKDBus::Callback<SIGsG2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"DeviceGKeyEvent",
 		{	{"s", "device_id", "in", "device ID"},
@@ -818,7 +814,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	DBus.NSGKDBus::Callback<SIGss2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		"DeviceMediaEvent",
 		{	{"s", "device_id", "in", "device ID"},
@@ -835,7 +831,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	DBus.NSGKDBus::Callback<SIGv2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 		"DaemonIsStopping",
 		{},
@@ -845,7 +841,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	DBus.NSGKDBus::Callback<SIGv2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 		"DaemonIsStarting",
 		{},
@@ -855,7 +851,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	DBus.NSGKDBus::Callback<SIGv2v>::exposeSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT,
+		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 		"ReportYourself",
 		{},
@@ -868,7 +864,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	DBus.NSGKDBus::Callback<SIGss2v>::exposeSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 		"DeviceStatusChangeRequest",
 		{	{"s", "device_id", "in", "device ID"},
@@ -884,7 +880,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 
 	DBus.NSGKDBus::Callback<SIGs2as>::exposeMethod(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"GetDevicesList",
 		{	{"s", r_ed, "in", r_ed},
@@ -893,7 +889,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 
 	DBus.NSGKDBus::Callback<SIGs2as>::exposeMethod(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"GetInformations",
 		{	{"s", r_ed, "in", r_ed},
@@ -902,7 +898,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 
 	DBus.NSGKDBus::Callback<SIGss2aP>::exposeMethod(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"GetDeviceLCDPluginsProperties",
 		{	{"s", "device_id", "in", "device ID"},
@@ -912,7 +908,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 
 	DBus.NSGKDBus::Callback<SIGs2D>::exposeMethod(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"GetExecutablesDependenciesMap",
 		{	{"s", r_ed, "in", r_ed},

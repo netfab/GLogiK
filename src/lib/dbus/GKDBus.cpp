@@ -241,16 +241,16 @@ void GKDBus::checkDBusMessage(
 	DBusConnection* const connection,
 	DBusMessage* message)
 {
-	const std::string object = this->getObjectFromObjectPath(
-		toString(dbus_message_get_path(message))
-	);
+	const std::string objectPath = toString(dbus_message_get_path(message));
 
-	for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
-		/* handle root node introspection special case */
-		if( object != this->getRootNode() )
-			/* object must match */
-			if(object != objectPair.first) {
-				//GKLog4(trace, "skipping object : ", objectPair.first, "not : ", object)
+	for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus))
+	{
+		/* handle root node introspection special case FIXME */
+		if( objectPath != this->getRootNode() )
+			/* objectPath must match */
+			if(objectPath != objectPair.first)
+			{
+				GKLog4(trace, "skipping objectPath: ", objectPath, "map index: ", objectPair.first)
 				continue;
 			}
 
