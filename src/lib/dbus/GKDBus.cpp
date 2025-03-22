@@ -35,10 +35,8 @@ using namespace NSGKUtils;
 const BusConnection GKDBus::SystemBus(BusConnection::GKDBUS_SYSTEM);
 const BusConnection GKDBus::SessionBus(BusConnection::GKDBUS_SESSION);
 
-GKDBus::GKDBus(
-	const std::string & rootNode,
-	const std::string & rootNodePath)
-		:	GKDBusEvents(rootNode, rootNodePath),
+GKDBus::GKDBus(const std::string & rootNodePath)
+		:	GKDBusEvents(rootNodePath),
 			_sessionConnection(nullptr),
 			_systemConnection(nullptr),
 			_initDone(false)
@@ -242,11 +240,12 @@ void GKDBus::checkDBusMessage(
 	DBusMessage* message)
 {
 	const std::string objectPath = toString(dbus_message_get_path(message));
+	GKLog4(trace, "objectPath: ", objectPath, "RootNodePath: ", this->getRootNodePath())
 
 	for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus))
 	{
-		/* handle root node introspection special case FIXME */
-		if( objectPath != this->getRootNode() )
+		/* handle root node path introspection special case */
+		if( objectPath != this->getRootNodePath() )
 			/* objectPath must match */
 			if(objectPath != objectPair.first)
 			{

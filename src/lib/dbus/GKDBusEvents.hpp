@@ -90,10 +90,7 @@ class GKDBusEvents
 		) noexcept;
 
 	protected:
-		GKDBusEvents(
-			const std::string & rootNode,
-			const std::string & rootNodePath
-		);
+		GKDBusEvents(const std::string & rootNodePath);
 		~GKDBusEvents(void);
 
 		thread_local static BusConnection currentBus;
@@ -103,12 +100,11 @@ class GKDBusEvents
 				std::map<std::string, /* interface */
 					std::vector<GKDBusEvent*> > > > _DBusEvents;
 
-		const std::string & getRootNode(void) const;
+		const std::string & getRootNodePath(void) const;
 		void clearDBusEvents(void) noexcept;
 
 	private:
 		static const std::string _rootNodeObject;
-		std::string _rootNode;
 		std::string _rootNodePath;
 		std::set<std::string> _DBusInterfaces;
 

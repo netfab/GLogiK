@@ -35,11 +35,8 @@ using namespace NSGKUtils;
 const std::string GKDBusEvents::_rootNodeObject("RootNode");
 thread_local BusConnection GKDBusEvents::currentBus(BusConnection::GKDBUS_SYSTEM);
 
-GKDBusEvents::GKDBusEvents(
-	const std::string & rootNode,
-	const std::string & rootNodePath)
-		:	_rootNode(rootNode),
-			_rootNodePath(rootNodePath)
+GKDBusEvents::GKDBusEvents(const std::string & rootNodePath)
+		: _rootNodePath(rootNodePath)
 {
 }
 
@@ -47,9 +44,9 @@ GKDBusEvents::~GKDBusEvents()
 {
 }
 
-const std::string & GKDBusEvents::getRootNode(void) const
+const std::string & GKDBusEvents::getRootNodePath(void) const
 {
-	return _rootNode;
+	return _rootNodePath;
 }
 
 void GKDBusEvents::declareIntrospectableSignal(
