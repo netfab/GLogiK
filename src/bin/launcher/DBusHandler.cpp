@@ -87,7 +87,7 @@ void DBusHandler::cleanDBusRequests(void)
  */
 
 void DBusHandler::initializeGKDBusSignals(void) {
-	_pDBus->NSGKDBus::Callback<SIGq2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGq2v>::receiveSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
@@ -97,7 +97,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		std::bind(&DBusHandler::spawnService, this, std::placeholders::_1)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGq2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGq2v>::receiveSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,

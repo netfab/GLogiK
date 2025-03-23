@@ -964,7 +964,7 @@ void DevicesManager::initializeDBusRequests(void)
 	switch(_sessionFramework) {
 		/* logind */
 		case SessionFramework::FW_LOGIND:
-			_pDBus->NSGKDBus::Callback<SIGb2v>::exposeSignal(
+			_pDBus->NSGKDBus::Callback<SIGb2v>::receiveSignal(
 				_systemBus,
 				"org.freedesktop.login1",
 				"/org/freedesktop/login1",

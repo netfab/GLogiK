@@ -291,7 +291,7 @@ void MainWindow::build(void)
 	GKLog(trace, "Qt signals connected to slots")
 
 	/* initializing GKDBus signals */
-	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGv2v>::receiveSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
@@ -301,7 +301,7 @@ void MainWindow::build(void)
 		std::bind(&MainWindow::resetInterface, this)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGs2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGs2v>::receiveSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,

@@ -82,7 +82,7 @@ template <typename T>
 			T callback
 		);
 
-		void exposeSignal(
+		void receiveSignal(
 			const BusConnection bus,
 			const char* sender,
 			const char* object,
@@ -136,7 +136,7 @@ template <typename T>
 }
 
 template <typename T>
-	void Callback<T>::exposeSignal(
+	void Callback<T>::receiveSignal(
 		const BusConnection bus,
 		const char* sender,
 		const char* object,

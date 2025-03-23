@@ -407,7 +407,7 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
 				_sessionFramework = SessionFramework::FW_LOGIND;
 
 				/* update session state when PropertyChanged signal receipted */
-				DBus.NSGKDBus::Callback<SIGv2v>::exposeSignal(
+				DBus.NSGKDBus::Callback<SIGv2v>::receiveSignal(
 					_systemBus,
 					"org.freedesktop.login1",
 					_currentSession.c_str(),
@@ -724,7 +724,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  DevicesManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
-	DBus.NSGKDBus::Callback<SIGas2v>::exposeSignal(
+	DBus.NSGKDBus::Callback<SIGas2v>::receiveSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -734,7 +734,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::devicesStarted, this, std::placeholders::_1)
 	);
 
-	DBus.NSGKDBus::Callback<SIGas2v>::exposeSignal(
+	DBus.NSGKDBus::Callback<SIGas2v>::receiveSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -744,7 +744,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::devicesStopped, this, std::placeholders::_1)
 	);
 
-	DBus.NSGKDBus::Callback<SIGas2v>::exposeSignal(
+	DBus.NSGKDBus::Callback<SIGas2v>::receiveSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -754,7 +754,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::devicesUnplugged, this, std::placeholders::_1)
 	);
 
-	DBus.NSGKDBus::Callback<SIGsm2v>::exposeSignal(
+	DBus.NSGKDBus::Callback<SIGsm2v>::receiveSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -768,7 +768,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		)
 	);
 
-	DBus.NSGKDBus::Callback<SIGsGM2v>::exposeSignal(
+	DBus.NSGKDBus::Callback<SIGsGM2v>::receiveSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -783,7 +783,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		)
 	);
 
-	DBus.NSGKDBus::Callback<SIGsG2v>::exposeSignal(
+	DBus.NSGKDBus::Callback<SIGsG2v>::receiveSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -797,7 +797,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		)
 	);
 
-	DBus.NSGKDBus::Callback<SIGsG2v>::exposeSignal(
+	DBus.NSGKDBus::Callback<SIGsG2v>::receiveSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -811,7 +811,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		)
 	);
 
-	DBus.NSGKDBus::Callback<SIGss2v>::exposeSignal(
+	DBus.NSGKDBus::Callback<SIGss2v>::receiveSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -828,7 +828,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  ClientsManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
-	DBus.NSGKDBus::Callback<SIGv2v>::exposeSignal(
+	DBus.NSGKDBus::Callback<SIGv2v>::receiveSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
@@ -838,7 +838,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::daemonIsStopping, this)
 	);
 
-	DBus.NSGKDBus::Callback<SIGv2v>::exposeSignal(
+	DBus.NSGKDBus::Callback<SIGv2v>::receiveSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
@@ -848,7 +848,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::daemonIsStarting, this)
 	);
 
-	DBus.NSGKDBus::Callback<SIGv2v>::exposeSignal(
+	DBus.NSGKDBus::Callback<SIGv2v>::receiveSignal(
 		_systemBus,
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
@@ -861,7 +861,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 	/*   GUISessionMessageHandler GUI requests D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	DBus.NSGKDBus::Callback<SIGss2v>::exposeSignal(
+	DBus.NSGKDBus::Callback<SIGss2v>::receiveSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
