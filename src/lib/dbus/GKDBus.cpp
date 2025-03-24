@@ -225,32 +225,35 @@ void GKDBus::checkDBusMessage(
 	DBusConnection* const connection,
 	DBusMessage* message)
 {
-	const std::string objectPath = toString(dbus_message_get_path(message));
-	GKLog4(trace, "objectPath: ", objectPath, "RootNodePath: ", this->getRootNodePath())
+	const std::string msgObjectPath = toString(dbus_message_get_path(message));
+	GKLog4(trace, "objectPath: ", msgObjectPath, "RootNodePath: ", this->getRootNodePath())
 
-	for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus))
+	const auto & opMap = _DBusEvents.at(GKDBusEvents::currentBus); /* objectPath map */
+	for(const auto & [objectPath, interMap] : opMap) /* interface map */
 	{
 		/* handle root node path introspection special case */
-		if( objectPath != this->getRootNodePath() )
+		if( msgObjectPath != this->getRootNodePath() )
 			/* objectPath must match */
-			if(objectPath != objectPair.first)
+			if(msgObjectPath != objectPath)
 			{
-				GKLog4(trace, "skipping objectPath: ", objectPath, "map index: ", objectPair.first)
+				GKLog4(trace, "skipping objectPath: ", msgObjectPath, "map index: ", objectPath)
 				continue;
 			}
 
-		for(const auto & interfacePair : objectPair.second) {
-			const char* interface = interfacePair.first.c_str();
+		for(const auto & [interface, pVec] : interMap) /* vector of pointers */
+		{
+			const char* eventInterface = interface.c_str();
 			//GKLog2(trace, "checking interface : ", interface)
 
-			for(const auto & DBusEvent : interfacePair.second) { /* vector of pointers */
+			for(const auto & DBusEvent : pVec)
+			{
 				const char* eventName = DBusEvent->eventName.c_str();
 				//GKLog2(trace, "checking event : ", eventName)
 
 				switch(DBusEvent->eventType) {
 					case GKDBusEventType::GKDBUS_EVENT_METHOD:
 					{
-						if( dbus_message_is_method_call(message, interface, eventName) )
+						if( dbus_message_is_method_call(message, eventInterface, eventName) )
 						{
 							GKLog2(trace, "receipted DBus method call : ", eventName)
 							DBusMessage* asyncContainer = this->getAsyncContainer();
@@ -262,7 +265,7 @@ void GKDBus::checkDBusMessage(
 					}
 					case GKDBusEventType::GKDBUS_EVENT_SIGNAL:
 					{
-						if( dbus_message_is_signal(message, interface, eventName) )
+						if( dbus_message_is_signal(message, eventInterface, eventName) )
 						{
 							GKLog2(trace, "receipted DBus signal : ", eventName)
 							DBusMessage* asyncContainer = this->getAsyncContainer();

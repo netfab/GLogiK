@@ -92,13 +92,17 @@ void GKDBusEvents::clearDBusEvents(void) noexcept
 {
 	GK_LOG_FUNC
 
-	for(const auto & busPair : _DBusEvents) {
-		GKLog2(trace, "current bus : ", toUInt(toEnumType(busPair.first)))
-		for(const auto & kvPair : busPair.second) {
-			GKLog2(trace, "object path : ", kvPair.first)
-			for(const auto & interfacePair : kvPair.second) {
-				GKLog2(trace, "interface : ", interfacePair.first)
-				for(auto & DBusEvent : interfacePair.second) { /* vector of pointers */
+	for(const auto & [bus, opMap] : _DBusEvents) /* objectPath map */
+	{
+		GKLog2(trace, "current bus : ", toUInt(toEnumType(bus)))
+		for(const auto & [objectPath, interMap] : opMap) /* interface map */
+		{
+			GKLog2(trace, "object path : ", objectPath)
+			for(const auto & [interface, pVec ] : interMap) /* vector of pointers */
+			{
+				GKLog2(trace, "interface : ", interface)
+				for(auto & DBusEvent : pVec)
+				{
 					delete DBusEvent;
 				}
 			}
@@ -342,43 +346,59 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
 	xml << "<node name=\"" << askedObjectPath << "\">\n";
 
-	try {
-		for(const auto & interface : _DBusInterfaces) {
+	try
+	{
+		for(const auto & DBusInterface : _DBusInterfaces)
+		{
 
 			bool interfaceOpened = false;
 
-			for(const auto & kvPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
-				/* object path must match */
-				if( askedObjectPath != kvPair.first )
-					continue;
-				for(const auto & interfacePair : kvPair.second) {
-					if( interfacePair.first == interface ) {
-						this->openXMLInterface(xml, interfaceOpened, interface);
-						for(const auto & DBusEvent : interfacePair.second) { /* vector of pointers */
-							this->eventToXMLMethod(xml, DBusEvent);
+			{
+				const auto & opMap = _DBusEvents.at(GKDBusEvents::currentBus); /* objectPath map */
+				for(const auto & [objectPath, interMap] : opMap) /* interface map */
+				{
+					/* object path must match */
+					if( askedObjectPath != objectPath )
+						continue;
+					for(const auto & [interface, pVec ] : interMap) /* vector of pointers */
+					{
+						if( DBusInterface == interface  )
+						{
+							this->openXMLInterface(xml, interfaceOpened, DBusInterface);
+							for(const auto & DBusEvent : pVec)
+							{
+								this->eventToXMLMethod(xml, DBusEvent);
+							}
 						}
 					}
 				}
 			}
 
-			for(const auto & kvPair : _DBusIntrospectableSignals.at(GKDBusEvents::currentBus)) {
-				/* object path must match */
-				if( askedObjectPath != kvPair.first )
-					continue;
-				for(const auto & interfacePair : kvPair.second) {
-					if( interfacePair.first == interface ) {
-						this->openXMLInterface(xml, interfaceOpened, interface);
-						for(const auto & signal : interfacePair.second) { /* vector of  objects */
-							xml << "    <signal name=\"" << signal.name << "\">\n";
-							for(const auto & arg : signal.arguments) {
-								xml << "      <!-- " << arg.comment << " -->\n";
-								xml << "      <arg type=\"" << arg.type << "\" ";
-								if( ! arg.name.empty() ) /* name attribute on arguments is optional */
-									xml << "name=\"" << arg.name << "\" ";
-								//xml << "direction=\"out\" />\n";
-								xml << "/>\n";
+			{
+				const auto & opMap = _DBusIntrospectableSignals.at(GKDBusEvents::currentBus); /* objectPath map */
+				for(const auto & [objectPath, interMap] : opMap) /* interface map */
+				{
+					/* object path must match */
+					if( askedObjectPath != objectPath )
+						continue;
+					for(const auto & [interface, oVec ] : interMap) /* vector of objects */
+					{
+						if( DBusInterface == interface )
+						{
+							this->openXMLInterface(xml, interfaceOpened, DBusInterface);
+							for(const auto & signal : oVec) {
+								xml << "    <signal name=\"" << signal.name << "\">\n";
+								for(const auto & arg : signal.arguments)
+								{
+									xml << "      <!-- " << arg.comment << " -->\n";
+									xml << "      <arg type=\"" << arg.type << "\" ";
+									if( ! arg.name.empty() ) /* name attribute on arguments is optional */
+										xml << "name=\"" << arg.name << "\" ";
+									//xml << "direction=\"out\" />\n";
+									xml << "/>\n";
+								}
+								xml << "    </signal>\n";
 							}
-							xml << "    </signal>\n";
 						}
 					}
 				}
@@ -388,7 +408,8 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 				xml << "  </interface>\n";
 		}
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		LOG(warning) << "can't get current bus container";
 	}
 
