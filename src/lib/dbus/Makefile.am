@@ -61,6 +61,7 @@ libGKDBus_la_SOURCES = \
 	%D%/messages/GKDBusBroadcastSignal.hpp \
 	%D%/messages/GKDBusAsyncContainer.cpp \
 	%D%/messages/GKDBusAsyncContainer.hpp \
+	%D%/events/callback.cpp \
 	%D%/events/callback.hpp \
 	%D%/events/callbackEvent.hpp \
 	%D%/events/GKDBusEvent.cpp \

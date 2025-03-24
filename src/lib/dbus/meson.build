@@ -48,6 +48,7 @@ GKDBus_sources = [
 	'messages/GKDBusBroadcastSignal.hpp',
 	'messages/GKDBusAsyncContainer.cpp',
 	'messages/GKDBusAsyncContainer.hpp',
+	'events/callback.cpp',
 	'events/callback.hpp',
 	'events/callbackEvent.hpp',
 	'events/GKDBusEvent.cpp',

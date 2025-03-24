@@ -96,6 +96,7 @@ template <typename T>
 		Callback() = default;
 		virtual ~Callback() = default;
 
+	private:
 		void exposeEvent(
 			const BusConnection bus,
 			const char* sender,
@@ -108,7 +109,6 @@ template <typename T>
 			const bool introspectable
 		);
 
-	private:
 		virtual void addEvent(
 			const BusConnection bus,
 			const char* sender,
@@ -173,6 +173,67 @@ template <typename T>
 
 	this->addEvent(bus, sender, object, interface, event);
 }
+
+/* -- -- -- -- -- -- -- -- -- -- -- -- */
+/* -- -- explicit specialization -- -- */
+/* -- -- -- -- -- -- -- -- -- -- -- -- */
+
+/*
+ * SIGs2s used only internally by introspection.
+ * Same implementation as template above for ::exposeEvent(),
+ * the only difference is the access modifier : protected here, private above.
+ */
+
+template <>
+	class Callback<SIGs2s>
+{
+	public:
+/*
+		void exposeMethod(
+			const BusConnection bus,
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			const std::vector<DBusMethodArgument> & args,
+			SIGs2s callback
+		);
+
+		void receiveSignal(
+			const BusConnection bus,
+			const char* sender,
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			const std::vector<DBusMethodArgument> & args,
+			SIGs2s callback
+		);
+*/
+
+	protected:
+		Callback() = default;
+		virtual ~Callback() = default;
+
+		void exposeEvent(
+			const BusConnection bus,
+			const char* sender,
+			const char* object,
+			const char* interface,
+			const char* eventName,
+			const std::vector<DBusMethodArgument> & args,
+			SIGs2s callback,
+			GKDBusEventType t,
+			const bool introspectable
+		);
+
+	private:
+		virtual void addEvent(
+			const BusConnection bus,
+			const char* sender,
+			const char* object,
+			const char* interface,
+			GKDBusEvent* event
+		) = 0;
+};
 
 } // namespace NSGKDBus
 
