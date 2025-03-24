@@ -6,6 +6,7 @@ export LANG=C
 
 declare -r BLDRED='\e[1;31m' # Red Bold
 declare -r BLDGRN='\e[1;32m' # Green Bold
+declare -r BLDYLW='\e[1;33m' # Yellow Bold
 declare -r BLDBLU='\e[1;34m' # Blue Bold
 declare -r TXTRST='\e[0m'    # Text Reset
 
@@ -16,18 +17,25 @@ function die() {
 	exit 7
 }
 
+function warn() {
+	printf " ${BLDYLW}WARNING${TXTRST}: ${@}\n" >&2
+	exit 8
+}
+
 function print_help() {
 	printf " Known parameters:\n"
 	printf " -c|--clean\n"
 	printf " -d|--debug\n"
 	printf " -h|--help\n"
 	printf " -A|--autotools\n"
+	printf " -D|--distcheck (only with autotools)\n"
 	printf " -M|--meson\n"
 }
 
 # -- -- -- -- -- -- -- -- -- #
 
 declare -i autotools=0
+declare -i distcheck=0
 declare -i clean=0
 declare -i debug=0
 declare -i meson=0
@@ -47,6 +55,9 @@ while [[ "${#}" -gt 0 ]]; do
 		;;
 		-A|--autotools)
 			autotools=1
+		;;
+		-D|--distcheck)
+			distcheck=1
 		;;
 		-M|--meson)
 			meson=1
@@ -96,7 +107,11 @@ function autotools_build()
 		fi
 	fi
 
-	autotools_make_targets build_it install_it
+	if [[ ${distcheck} -eq 1 ]]; then
+		autotools_make_targets distcheck_it
+	else
+		autotools_make_targets build_it install_it
+	fi
 }
 
 function meson_clean()
@@ -111,6 +126,11 @@ function meson_build()
 		debug_opt='--enable-debug'
 	fi
 	bash meson.sh --install ${debug_opt}
+
+	if [[ ${distcheck} -eq 1 ]]; then
+		warn "--distcheck not available with meson"
+	fi
+
 }
 
 # -- -- -- -- -- -- -- -- -- #
