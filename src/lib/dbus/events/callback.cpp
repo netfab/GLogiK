@@ -31,20 +31,20 @@ namespace NSGKDBus
 /*
 void Callback<SIGs2s>::exposeMethod(
 		const BusConnection bus,
-		const char* object,
+		const char* objectPath,
 		const char* interface,
 		const char* eventName,
 		const std::vector<DBusMethodArgument> & args,
 		SIGs2s callback
 	)
 {
-	this->exposeEvent(bus, nullptr, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_METHOD, true);
+	this->exposeEvent(bus, nullptr, objectPath, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_METHOD, true);
 }
 
 void Callback<SIGs2s>::receiveSignal(
 		const BusConnection bus,
 		const char* sender,
-		const char* object,
+		const char* objectPath,
 		const char* interface,
 		const char* eventName,
 		const std::vector<DBusMethodArgument> & args,
@@ -52,14 +52,14 @@ void Callback<SIGs2s>::receiveSignal(
 	)
 {
 	// signals declared as events with callback functions are not introspectable
-	this->exposeEvent(bus, sender, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, false);
+	this->exposeEvent(bus, sender, objectPath, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, false);
 }
 */
 
 void Callback<SIGs2s>::exposeEvent(
 		const BusConnection bus,
 		const char* sender,
-		const char* object,
+		const char* objectPath,
 		const char* interface,
 		const char* eventName,
 		const std::vector<DBusMethodArgument> & args,
@@ -76,7 +76,7 @@ void Callback<SIGs2s>::exposeEvent(
 		throw NSGKUtils::GLogiKBadAlloc("DBus event bad allocation");
 	}
 
-	this->addEvent(bus, sender, object, interface, event);
+	this->addEvent(bus, sender, objectPath, interface, event);
 }
 
 } // namespace NSGKDBus

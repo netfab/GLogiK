@@ -75,7 +75,7 @@ template <typename T>
 	public:
 		void exposeMethod(
 			const BusConnection bus,
-			const char* object,
+			const char* objectPath,
 			const char* interface,
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
@@ -85,7 +85,7 @@ template <typename T>
 		void receiveSignal(
 			const BusConnection bus,
 			const char* sender,
-			const char* object,
+			const char* objectPath,
 			const char* interface,
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
@@ -100,7 +100,7 @@ template <typename T>
 		void exposeEvent(
 			const BusConnection bus,
 			const char* sender,
-			const char* object,
+			const char* objectPath,
 			const char* interface,
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
@@ -112,7 +112,7 @@ template <typename T>
 		virtual void addEvent(
 			const BusConnection bus,
 			const char* sender,
-			const char* object,
+			const char* objectPath,
 			const char* interface,
 			GKDBusEvent* event
 		) = 0;
@@ -125,21 +125,21 @@ template <typename T>
 template <typename T>
 	void Callback<T>::exposeMethod(
 		const BusConnection bus,
-		const char* object,
+		const char* objectPath,
 		const char* interface,
 		const char* eventName,
 		const std::vector<DBusMethodArgument> & args,
 		T callback
 	)
 {
-	this->exposeEvent(bus, nullptr, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_METHOD, true);
+	this->exposeEvent(bus, nullptr, objectPath, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_METHOD, true);
 }
 
 template <typename T>
 	void Callback<T>::receiveSignal(
 		const BusConnection bus,
 		const char* sender,
-		const char* object,
+		const char* objectPath,
 		const char* interface,
 		const char* eventName,
 		const std::vector<DBusMethodArgument> & args,
@@ -147,14 +147,14 @@ template <typename T>
 	)
 {
 	/* signals declared as events with callback functions are not introspectable */
-	this->exposeEvent(bus, sender, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, false);
+	this->exposeEvent(bus, sender, objectPath, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, false);
 }
 
 template <typename T>
 	void Callback<T>::exposeEvent(
 		const BusConnection bus,
 		const char* sender,
-		const char* object,
+		const char* objectPath,
 		const char* interface,
 		const char* eventName,
 		const std::vector<DBusMethodArgument> & args,
@@ -171,7 +171,7 @@ template <typename T>
 		throw NSGKUtils::GLogiKBadAlloc("DBus event bad allocation");
 	}
 
-	this->addEvent(bus, sender, object, interface, event);
+	this->addEvent(bus, sender, objectPath, interface, event);
 }
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
@@ -191,7 +191,7 @@ template <>
 /*
 		void exposeMethod(
 			const BusConnection bus,
-			const char* object,
+			const char* objectPath,
 			const char* interface,
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
@@ -201,7 +201,7 @@ template <>
 		void receiveSignal(
 			const BusConnection bus,
 			const char* sender,
-			const char* object,
+			const char* objectPath,
 			const char* interface,
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
@@ -216,7 +216,7 @@ template <>
 		void exposeEvent(
 			const BusConnection bus,
 			const char* sender,
-			const char* object,
+			const char* objectPath,
 			const char* interface,
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
@@ -229,7 +229,7 @@ template <>
 		virtual void addEvent(
 			const BusConnection bus,
 			const char* sender,
-			const char* object,
+			const char* objectPath,
 			const char* interface,
 			GKDBusEvent* event
 		) = 0;

@@ -63,29 +63,29 @@ void GKDBusEvents::declareIntrospectableSignal(
 /*
 void GKDBusEvents::removeMethod(
 	const BusConnection eventBus,
-	const char* eventObject,
+	const char* eventObjectPath,
 	const char* eventInterface,
 	const char* eventName)
 {
-	this->removeEvent(eventBus, eventObject, eventInterface, eventName);
+	this->removeEvent(eventBus, eventObjectPath, eventInterface, eventName);
 }
 */
 
 void GKDBusEvents::removeMethodsInterface(
 	const BusConnection eventBus,
-	const char* eventObject,
+	const char* eventObjectPath,
 	const char* eventInterface) noexcept
 {
-	this->removeInterface(eventBus, nullptr, eventObject, eventInterface);
+	this->removeInterface(eventBus, nullptr, eventObjectPath, eventInterface);
 }
 
 void GKDBusEvents::removeSignalsInterface(
 	const BusConnection eventBus,
 	const char* eventSender,
-	const char* eventObject,
+	const char* eventObjectPath,
 	const char* eventInterface) noexcept
 {
-	this->removeInterface(eventBus, eventSender, eventObject, eventInterface);
+	this->removeInterface(eventBus, eventSender, eventObjectPath, eventInterface);
 }
 
 void GKDBusEvents::clearDBusEvents(void) noexcept
@@ -94,9 +94,9 @@ void GKDBusEvents::clearDBusEvents(void) noexcept
 
 	for(const auto & busPair : _DBusEvents) {
 		GKLog2(trace, "current bus : ", toUInt(toEnumType(busPair.first)))
-		for(const auto & objectPair : busPair.second) {
-			GKLog2(trace, "object : ", objectPair.first)
-			for(const auto & interfacePair : objectPair.second) {
+		for(const auto & kvPair : busPair.second) {
+			GKLog2(trace, "object path : ", kvPair.first)
+			for(const auto & interfacePair : kvPair.second) {
 				GKLog2(trace, "interface : ", interfacePair.first)
 				for(auto & DBusEvent : interfacePair.second) { /* vector of pointers */
 					delete DBusEvent;
@@ -115,15 +115,15 @@ void GKDBusEvents::clearDBusEvents(void) noexcept
 void GKDBusEvents::removeInterface(
 	const BusConnection eventBus,
 	const char* eventSender,
-	const char* eventObject,
+	const char* eventObjectPath,
 	const char* eventInterface) noexcept
 {
 	GK_LOG_FUNC
 
-	auto find_interface = [this, &eventBus, &eventObject, &eventInterface] () -> const bool {
+	auto find_interface = [this, &eventBus, &eventObjectPath, &eventInterface] () -> const bool {
 		if(_DBusEvents.count(eventBus) == 1) {
-			if(_DBusEvents[eventBus].count(eventObject) == 1) {
-				if(_DBusEvents[eventBus][eventObject].count(eventInterface) == 1)
+			if(_DBusEvents[eventBus].count(eventObjectPath) == 1) {
+				if(_DBusEvents[eventBus][eventObjectPath].count(eventInterface) == 1)
 					return true;
 			}
 		}
@@ -133,8 +133,8 @@ void GKDBusEvents::removeInterface(
 	if( find_interface() ) {
 		GKLog4(trace, "removing interface : ", eventInterface, "from bus : ", toUInt(toEnumType(eventBus)))
 
-		auto & objectMap = _DBusEvents[eventBus][eventObject];
-		for(auto & DBusEvent : objectMap[eventInterface]) { /* vector of pointers */
+		auto & objectPathMap = _DBusEvents[eventBus][eventObjectPath];
+		for(auto & DBusEvent : objectPathMap[eventInterface]) { /* vector of pointers */
 			// if event is a signal, build and remove signal rule match
 			if(DBusEvent->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
 				this->removeSignalRuleMatch(eventBus, eventSender, eventInterface, DBusEvent->eventName.c_str());
@@ -142,21 +142,21 @@ void GKDBusEvents::removeInterface(
 
 			delete DBusEvent; DBusEvent = nullptr;
 		}
-		objectMap[eventInterface].clear();
-		objectMap.erase(eventInterface);
+		objectPathMap[eventInterface].clear();
+		objectPathMap.erase(eventInterface);
 
-		if( objectMap.empty() ) {
-			GKLog2(trace, "removing empty object : ", eventObject)
-			_DBusEvents[eventBus].erase(eventObject);
+		if( objectPathMap.empty() ) {
+			GKLog2(trace, "removing empty object path : ", eventObjectPath)
+			_DBusEvents[eventBus].erase(eventObjectPath);
 		}
-		else if( (objectMap.size() == 1) and
-			(objectMap.count("org.freedesktop.DBus.Introspectable") == 1) ) {
-			this->removeInterface(eventBus, nullptr, eventObject, "org.freedesktop.DBus.Introspectable");
+		else if( (objectPathMap.size() == 1) and
+			(objectPathMap.count("org.freedesktop.DBus.Introspectable") == 1) ) {
+			this->removeInterface(eventBus, nullptr, eventObjectPath, "org.freedesktop.DBus.Introspectable");
 		}
 	}
 	else {
 		LOG(warning) << "Interface not found. bus: " << toUInt(toEnumType(eventBus))
-			<< " - obj: " << eventObject
+			<< " - obj path: " << eventObjectPath
 			<< " - int: " << eventInterface;
 	}
 }
@@ -206,18 +206,18 @@ const std::string GKDBusEvents::introspectRootNode(void)
 /*
 void GKDBusEvents::removeEvent(
 	const BusConnection eventBus,
-	const char* eventObject,
+	const char* eventObjectPath,
 	const char* eventInterface,
 	const char* eventName)
 {
 	GK_LOG_FUNC
 
-	auto get_index = [this, &eventBus, &eventObject, &eventInterface, &eventName] () -> const std::size_t {
+	auto get_index = [this, &eventBus, &eventObjectPath, &eventInterface, &eventName] () -> const std::size_t {
 		if(_DBusEvents.count(eventBus) == 1) {
-			if(_DBusEvents[eventBus].count(eventObject) == 1) {
-				if(_DBusEvents[eventBus][eventObject].count(eventInterface) == 1) {
+			if(_DBusEvents[eventBus].count(eventObjectPath) == 1) {
+				if(_DBusEvents[eventBus][eventObjectPath].count(eventInterface) == 1) {
 					// vector of pointers
-					auto & vec = _DBusEvents[eventBus][eventObject][eventInterface];
+					auto & vec = _DBusEvents[eventBus][eventObjectPath][eventInterface];
 
 					for(auto it = vec.cbegin(); it != vec.cend(); ++it) {
 						if( (*it)->eventName == eventName ) {
@@ -226,7 +226,7 @@ void GKDBusEvents::removeEvent(
 							// TODO GKDebug
 							LOG(trace) << "searched event found. bus: "
 								<< toUInt(toEnumType(eventBus))
-								<< " - obj: " << eventObject
+								<< " - obj path: " << eventObjectPath
 								<< " - int: " << eventInterface
 								<< " - ind: " << index;
 #endif
@@ -243,7 +243,7 @@ void GKDBusEvents::removeEvent(
 
 	try {
 		const std::size_t index = get_index();
-		auto & vec = _DBusEvents[eventBus][eventObject][eventInterface];
+		auto & vec = _DBusEvents[eventBus][eventObjectPath][eventInterface];
 
 		// TODO fix eventSender and check
 		auto & DBusEvent = vec[index];
@@ -257,7 +257,7 @@ void GKDBusEvents::removeEvent(
 	catch ( const GLogiKExcept & e ) {
 		LOG(warning) << e.what()
 			<< ". bus: " << toUInt(toEnumType(eventBus))
-			<< " - obj: " << eventObject
+			<< " - obj path: " << eventObjectPath
 			<< " - int: " << eventInterface
 			<< " - name: " << eventName;
 	}
@@ -267,7 +267,7 @@ void GKDBusEvents::removeEvent(
 void GKDBusEvents::addEvent(
 	const BusConnection eventBus,
 	const char* eventSender,
-	const char* eventObject,
+	const char* eventObjectPath,
 	const char* eventInterface,
 	GKDBusEvent* event)
 {
@@ -276,15 +276,15 @@ void GKDBusEvents::addEvent(
 	if(event->introspectable) {
 		try {
 			const auto & bus = _DBusEvents.at(eventBus);
-			const auto & obj = bus.at(eventObject);
-			obj.at("org.freedesktop.DBus.Introspectable");
+			const auto & objpath = bus.at(eventObjectPath);
+			objpath.at("org.freedesktop.DBus.Introspectable");
 		}
 		catch (const std::out_of_range& oor) {
-			GKLog2(trace, "adding Introspectable object : ", eventObject)
-			_DBusIntrospectableObjects[eventBus].push_back(this->getObjectFromObjectPath(eventObject));
+			GKLog2(trace, "adding Introspectable object path : ", eventObjectPath)
+			_DBusIntrospectableObjects[eventBus].push_back(this->getObjectFromObjectPath(eventObjectPath));
 
 			this->Callback<SIGs2s>::exposeEvent(
-				eventBus, nullptr, eventObject, "org.freedesktop.DBus.Introspectable", "Introspect",
+				eventBus, nullptr, eventObjectPath, "org.freedesktop.DBus.Introspectable", "Introspect",
 				{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
 				std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),
 				GKDBusEventType::GKDBUS_EVENT_METHOD, false);
@@ -296,7 +296,7 @@ void GKDBusEvents::addEvent(
 	}
 
 	_DBusInterfaces.insert(eventInterface);
-	_DBusEvents[eventBus][eventObject][eventInterface].push_back(event);
+	_DBusEvents[eventBus][eventObjectPath][eventInterface].push_back(event);
 }
 
 void GKDBusEvents::openXMLInterface(
@@ -347,11 +347,11 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 
 			bool interfaceOpened = false;
 
-			for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
+			for(const auto & kvPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
 				/* object path must match */
-				if( askedObjectPath != objectPair.first )
+				if( askedObjectPath != kvPair.first )
 					continue;
-				for(const auto & interfacePair : objectPair.second) {
+				for(const auto & interfacePair : kvPair.second) {
 					if( interfacePair.first == interface ) {
 						this->openXMLInterface(xml, interfaceOpened, interface);
 						for(const auto & DBusEvent : interfacePair.second) { /* vector of pointers */
@@ -361,11 +361,11 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 				}
 			}
 
-			for(const auto & objectPair : _DBusIntrospectableSignals.at(GKDBusEvents::currentBus)) {
+			for(const auto & kvPair : _DBusIntrospectableSignals.at(GKDBusEvents::currentBus)) {
 				/* object path must match */
-				if( askedObjectPath != objectPair.first )
+				if( askedObjectPath != kvPair.first )
 					continue;
-				for(const auto & interfacePair : objectPair.second) {
+				for(const auto & interfacePair : kvPair.second) {
 					if( interfacePair.first == interface ) {
 						this->openXMLInterface(xml, interfaceOpened, interface);
 						for(const auto & signal : interfacePair.second) { /* vector of  objects */

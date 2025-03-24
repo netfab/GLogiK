@@ -70,7 +70,7 @@ class GKDBusEvents
 /*
 		void removeMethod(
 			const BusConnection eventBus,
-			const char* eventObject,
+			const char* eventObjectPath,
 			const char* eventInterface,
 			const char* eventName
 		);
@@ -78,14 +78,14 @@ class GKDBusEvents
 
 		void removeMethodsInterface(
 			const BusConnection eventBus,
-			const char* eventObject,
+			const char* eventObjectPath,
 			const char* eventInterface
 		) noexcept;
 
 		void removeSignalsInterface(
 			const BusConnection eventBus,
 			const char* eventSender,
-			const char* eventObject,
+			const char* eventObjectPath,
 			const char* eventInterface
 		) noexcept;
 
@@ -96,7 +96,7 @@ class GKDBusEvents
 		thread_local static BusConnection currentBus;
 
 		std::map<BusConnection,
-			std::map<std::string, /* object */
+			std::map<std::string, /* object path */
 				std::map<std::string, /* interface */
 					std::vector<GKDBusEvent*> > > > _DBusEvents;
 
@@ -109,7 +109,7 @@ class GKDBusEvents
 		std::set<std::string> _DBusInterfaces;
 
 		std::map<BusConnection,
-			std::map<std::string, /* object */
+			std::map<std::string, /* object path */
 				std::map<std::string, /* interface */
 					std::vector<GKDBusIntrospectableSignal> > > > _DBusIntrospectableSignals;
 		std::map<BusConnection,
@@ -133,7 +133,7 @@ class GKDBusEvents
 		/*
 		void removeEvent(
 			const BusConnection eventBus,
-			const char* eventObject,
+			const char* eventObjectPath,
 			const char* eventInterface,
 			const char* eventName
 		);
@@ -142,7 +142,7 @@ class GKDBusEvents
 		void addEvent(
 			const BusConnection eventBus,
 			const char* eventSender,
-			const char* eventObject,
+			const char* eventObjectPath,
 			const char* eventInterface,
 			GKDBusEvent* event
 		);
@@ -170,7 +170,7 @@ class GKDBusEvents
 		void removeInterface(
 			const BusConnection eventBus,
 			const char* sender,
-			const char* eventObject,
+			const char* eventObjectPath,
 			const char* eventInterface
 		) noexcept;
 };
