@@ -966,9 +966,9 @@ void DevicesManager::initializeDBusRequests(void)
 		case SessionFramework::FW_LOGIND:
 			_pDBus->NSGKDBus::Callback<SIGb2v>::receiveSignal(
 				_systemBus,
-				"org.freedesktop.login1",
-				"/org/freedesktop/login1",
-				"org.freedesktop.login1.Manager",
+				LOGIND_DBUS_BUS_CONNECTION_NAME,
+				LOGIND_MANAGER_DBUS_OBJECT_PATH,
+				LOGIND_MANAGER_DBUS_INTERFACE,
 				"PrepareForSleep",
 				{ {"b", "", "in", "mode"} },
 				std::bind(&DevicesManager::HandleSleepEvent, this, std::placeholders::_1)
@@ -988,9 +988,9 @@ void DevicesManager::cleanDBusRequests(void) noexcept
 		/* logind */
 		case SessionFramework::FW_LOGIND:
 			_pDBus->removeSignalsInterface(_systemBus,
-				"org.freedesktop.login1",
-				"/org/freedesktop/login1",
-				"org.freedesktop.login1.Manager");
+				LOGIND_DBUS_BUS_CONNECTION_NAME,
+				LOGIND_MANAGER_DBUS_OBJECT_PATH,
+				LOGIND_MANAGER_DBUS_INTERFACE);
 			break;
 		default:
 			LOG(warning) << "unknown session tracker";
@@ -1006,9 +1006,9 @@ void DevicesManager::inhibitSleepState(void)
 	try {
 		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
-			"org.freedesktop.login1",
-			"/org/freedesktop/login1",
-			"org.freedesktop.login1.Manager",
+			LOGIND_DBUS_BUS_CONNECTION_NAME,
+			LOGIND_MANAGER_DBUS_OBJECT_PATH,
+			LOGIND_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 

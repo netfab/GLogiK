@@ -146,6 +146,17 @@ extern c_str GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME;
 extern c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH;
 extern c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE;
 
+/* logind */
+extern c_str LOGIND_DBUS_BUS_CONNECTION_NAME;
+
+extern c_str LOGIND_MANAGER_DBUS_OBJECT_PATH;
+extern c_str LOGIND_MANAGER_DBUS_INTERFACE;
+
+extern c_str LOGIND_SESSION_DBUS_INTERFACE;
+
+/* freedesktop standard interfaces */
+extern c_str FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE;
+
 enum class SessionFramework : uint8_t
 {
 	FW_UNKNOWN = 0,

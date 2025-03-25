@@ -44,7 +44,7 @@ DBusHandler::DBusHandler(
 	GKDepsMap_type* dependencies)
 	:	_clientID("undefined"),
 		_daemonVersion("unknown"),
-		_currentSession(""),
+		_CURRENT_SESSION_DBUS_OBJECT_PATH(""),
 		_sessionState(""),
 		_pDepsMap(dependencies),
 		_sessionFramework(SessionFramework::FW_UNKNOWN),
@@ -135,7 +135,7 @@ void DBusHandler::clearAndUnregister(const bool notifications)
 		this->sendDevicesUpdatedSignal();
 	}
 	else {
-		GKLog2(trace, "client not registered with deamon : ", _currentSession)
+		GKLog2(trace, "client not registered with deamon : ", _CURRENT_SESSION_DBUS_OBJECT_PATH)
 	}
 }
 
@@ -176,9 +176,9 @@ void DBusHandler::cleanDBusRequests(void)
 		/* logind */
 		case SessionFramework::FW_LOGIND:
 			DBus.removeSignalsInterface(_systemBus,
-				"org.freedesktop.login1",
-				_currentSession.c_str(),
-				"org.freedesktop.DBus.Properties");
+				LOGIND_DBUS_BUS_CONNECTION_NAME,
+				_CURRENT_SESSION_DBUS_OBJECT_PATH.c_str(),
+				FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE);
 			break;
 		default:
 			LOG(warning) << "unknown session tracker";
@@ -237,7 +237,7 @@ void DBusHandler::registerWithDaemon(void)
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
-		DBus.appendStringToRemoteMethodCall(_currentSession);
+		DBus.appendStringToRemoteMethodCall(_CURRENT_SESSION_DBUS_OBJECT_PATH);
 		DBus.sendRemoteMethodCall();
 
 		/* -- */
@@ -390,9 +390,9 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
 			/* getting logind current session */
 			DBus.initializeRemoteMethodCall(
 				_systemBus,
-				"org.freedesktop.login1",
-				"/org/freedesktop/login1",
-				"org.freedesktop.login1.Manager",
+				LOGIND_DBUS_BUS_CONNECTION_NAME,
+				LOGIND_MANAGER_DBUS_OBJECT_PATH,
+				LOGIND_MANAGER_DBUS_INTERFACE,
 				"GetSessionByPID"
 			);
 			DBus.appendUInt32ToRemoteMethodCall(pid);
@@ -400,18 +400,18 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
 
 			try {
 				DBus.waitForRemoteMethodCallReply();
-				_currentSession = DBus.getNextStringArgument();
+				_CURRENT_SESSION_DBUS_OBJECT_PATH = DBus.getNextStringArgument();
 
-				GKLog2(trace, "GetSessionByPID : ", _currentSession)
+				GKLog2(trace, "GetSessionByPID : ", _CURRENT_SESSION_DBUS_OBJECT_PATH)
 
 				_sessionFramework = SessionFramework::FW_LOGIND;
 
 				/* update session state when PropertyChanged signal receipted */
 				DBus.NSGKDBus::Callback<SIGv2v>::receiveSignal(
 					_systemBus,
-					"org.freedesktop.login1",
-					_currentSession.c_str(),
-					"org.freedesktop.DBus.Properties",
+					LOGIND_DBUS_BUS_CONNECTION_NAME,
+					_CURRENT_SESSION_DBUS_OBJECT_PATH.c_str(),
+					FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE,
 					"PropertiesChanged",
 					{},
 					std::bind(&DBusHandler::updateSessionState, this)
@@ -469,12 +469,12 @@ const std::string DBusHandler::getCurrentSessionState(void)
 			try {
 				DBus.initializeRemoteMethodCall(
 					_systemBus,
-					"org.freedesktop.login1",
-					_currentSession.c_str(),
-					"org.freedesktop.DBus.Properties",
+					LOGIND_DBUS_BUS_CONNECTION_NAME,
+					_CURRENT_SESSION_DBUS_OBJECT_PATH.c_str(),
+					FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE,
 					remoteMethod.c_str()
 				);
-				DBus.appendStringToRemoteMethodCall("org.freedesktop.login1.Session");
+				DBus.appendStringToRemoteMethodCall(LOGIND_SESSION_DBUS_INTERFACE);
 				DBus.appendStringToRemoteMethodCall("State");
 				DBus.sendRemoteMethodCall();
 
@@ -932,7 +932,7 @@ void DBusHandler::daemonIsStarting(void)
 	if( _registerStatus ) {
 		GKLog4(trace,
 			"received signal : ", __func__,
-			"but we are already registered with daemon : ", _currentSession
+			"but we are already registered with daemon : ", _CURRENT_SESSION_DBUS_OBJECT_PATH
 		)
 	}
 	else {

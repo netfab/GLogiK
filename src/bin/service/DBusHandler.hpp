@@ -72,7 +72,7 @@ class DBusHandler
 
 		std::string _clientID;
 		std::string _daemonVersion;
-		std::string _currentSession;	/* current session object path */
+		std::string _CURRENT_SESSION_DBUS_OBJECT_PATH;	/* current session object path */
 		std::string _sessionState;		/* session state */
 
 		const GKDepsMap_type* const _pDepsMap;

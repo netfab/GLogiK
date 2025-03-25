@@ -285,5 +285,16 @@ c_str GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME					= "com.glogik.qt5gui";
 c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH					= "/com/glogik/qt5gui/GUISessionMessageHandler";
 c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE						= "com.glogik.qt5gui.GUISessionMessageHandler";
 
+/* systemd-logind */
+c_str LOGIND_DBUS_BUS_CONNECTION_NAME								= "org.freedesktop.login1";
+	/* -- */
+c_str LOGIND_MANAGER_DBUS_OBJECT_PATH								= "/org/freedesktop/login1";
+c_str LOGIND_MANAGER_DBUS_INTERFACE									= "org.freedesktop.login1.Manager";
+
+c_str LOGIND_SESSION_DBUS_INTERFACE									= "org.freedesktop.login1.Session";
+
+/* freedesktop standard interfaces */
+c_str FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE				= "org.freedesktop.DBus.Properties";
+
 } // namespace GLogiK
 
