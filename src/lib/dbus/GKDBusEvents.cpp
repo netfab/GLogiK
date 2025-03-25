@@ -32,7 +32,6 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-const std::string GKDBusEvents::_rootNodeObject("RootNode");
 thread_local BusConnection GKDBusEvents::currentBus(BusConnection::GKDBUS_SYSTEM);
 
 GKDBusEvents::GKDBusEvents(const std::string & rootNodePath)

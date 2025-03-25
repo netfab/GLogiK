@@ -93,28 +93,30 @@ class GKDBusEvents
 		GKDBusEvents(const std::string & rootNodePath);
 		~GKDBusEvents(void);
 
-		thread_local static BusConnection currentBus;
+		const std::string & getRootNodePath(void) const;
+		void clearDBusEvents(void) noexcept;
 
 		std::map<BusConnection,
 			std::map<std::string, /* object path */
 				std::map<std::string, /* interface */
 					std::vector<GKDBusEvent*> > > > _DBusEvents;
 
-		const std::string & getRootNodePath(void) const;
-		void clearDBusEvents(void) noexcept;
-
 	private:
-		static const std::string _rootNodeObject;
-		std::string _rootNodePath;
-		std::set<std::string> _DBusInterfaces;
-
 		std::map<BusConnection,
 			std::map<std::string, /* object path */
 				std::map<std::string, /* interface */
 					std::vector<GKDBusIntrospectableSignal> > > > _DBusIntrospectableSignals;
+
 		std::map<BusConnection,
 			std::vector<std::string> > _DBusIntrospectableObjects;
 
+		std::set<std::string> _DBusInterfaces;
+		std::string _rootNodePath;
+
+	protected:
+		thread_local static BusConnection currentBus;
+
+	private:
 		virtual DBusConnection* const getDBusConnection(BusConnection wantedConnection) const = 0;
 
 		void openXMLInterface(
