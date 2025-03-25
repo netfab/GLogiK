@@ -117,6 +117,7 @@ class GKDBusEvents
 		thread_local static BusConnection currentBus;
 
 	private:
+		const char* const _FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE = "org.freedesktop.DBus.Introspectable";
 		virtual DBusConnection* const getDBusConnection(BusConnection wantedConnection) const = 0;
 
 		void openXMLInterface(

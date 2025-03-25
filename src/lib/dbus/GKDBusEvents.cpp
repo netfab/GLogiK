@@ -153,8 +153,8 @@ void GKDBusEvents::removeInterface(
 			_DBusEvents[eventBus].erase(eventObjectPath);
 		}
 		else if( (objectPathMap.size() == 1) and
-			(objectPathMap.count("org.freedesktop.DBus.Introspectable") == 1) ) {
-			this->removeInterface(eventBus, nullptr, eventObjectPath, "org.freedesktop.DBus.Introspectable");
+			(objectPathMap.count(_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE) == 1) ) {
+			this->removeInterface(eventBus, nullptr, eventObjectPath, _FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE);
 		}
 	}
 	else {
@@ -280,17 +280,32 @@ void GKDBusEvents::addEvent(
 		try {
 			const auto & bus = _DBusEvents.at(eventBus);
 			const auto & objpath = bus.at(eventObjectPath);
-			objpath.at("org.freedesktop.DBus.Introspectable");
+			objpath.at(_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE);
 		}
 		catch (const std::out_of_range& oor) {
 			GKLog2(trace, "adding Introspectable object path : ", eventObjectPath)
 			_DBusIntrospectableObjects[eventBus].push_back(this->getObjectFromObjectPath(eventObjectPath));
 
 			this->Callback<SIGs2s>::exposeEvent(
-				eventBus, nullptr, eventObjectPath, "org.freedesktop.DBus.Introspectable", "Introspect",
-				{{"s", "xml_data", "out", "xml data representing DBus interfaces"}},
-				std::bind(&GKDBusEvents::introspect, this, std::placeholders::_1),
-				GKDBusEventType::GKDBUS_EVENT_METHOD, false);
+				eventBus,			/* bus */
+				nullptr,			/* sender (used only if
+									   eventType == GKDBUS_EVENT_SIGNAL below,
+									   unused here --> nullptr) */
+				eventObjectPath,	/* event object path */
+				_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE,	/* event interface */
+				"Introspect",		/* event name */
+				{	{	"s",
+						"xml_data",
+						"out",
+						"xml data representing DBus interfaces"
+					} }, 								/* event arguments */
+				std::bind(
+					&GKDBusEvents::introspect,
+					this,
+					std::placeholders::_1),				/* callback method */
+				GKDBusEventType::GKDBUS_EVENT_METHOD,	/* event type (method|signal) */
+				false									/* introspectability */
+			);
 		}
 	}
 
