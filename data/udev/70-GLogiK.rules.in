@@ -2,9 +2,8 @@
 #
 # udev rules file for GLogiK devices
 
-# load uinput module if necessary ; Users must have write access
-# to /dev/uinput for libevdev virtual device creation
-KERNEL=="uinput", SUBSYSTEM=="misc", GROUP="input", MODE="0660", TAG+="uaccess", OPTIONS+="static_node=uinput"
+# Users must have write access to /dev/uinput for libevdev virtual device creation
+KERNEL=="uinput", SUBSYSTEM=="misc", MODE="0660", TAG+="uaccess", OPTIONS+="static_node=uinput"
 
 ACTION!="add", GOTO="glogik_rules_end"
 

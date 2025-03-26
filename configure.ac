@@ -363,7 +363,7 @@ AC_CONFIG_LINKS([NEWS:NEWS.md README:README.md])
 AC_CONFIG_FILES([
 	Makefile
 	data/init/openrc/glogikd
-	data/udev/99-GLogiK.rules
+	data/udev/70-GLogiK.rules
 	data/sysusers.d/GLogiK.conf
 	data/tmpfiles.d/GLogiK.conf
 	])
