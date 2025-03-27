@@ -47,7 +47,7 @@ GKDBusErrorReply::GKDBusErrorReply(
 	if(_message == nullptr)
 		throw GKDBusMessageWrongBuild("can't allocate memory for DBus reply message");
 
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "DBus error reply message initialized")
 #endif
 }
@@ -71,7 +71,7 @@ GKDBusErrorReply::~GKDBusErrorReply()
 
 	dbus_connection_flush(_connection);
 	dbus_message_unref(_message);
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "DBus error reply message sent")
 #endif
 }

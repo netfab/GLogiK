@@ -44,7 +44,7 @@ void TypeUInt16::appendUInt16(DBusMessageIter *iter, const uint16_t value)
 		throw GKDBusMessageWrongBuild("uint16_t append failure, not enough memory");
 	}
 
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "uint16_t appended")
 #endif
 }

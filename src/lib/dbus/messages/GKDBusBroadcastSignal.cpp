@@ -52,7 +52,7 @@ GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 		throw GKDBusMessageWrongBuild("can't allocate memory for Signal DBus message");
 
 	if( destination != nullptr ) {
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 		GKLog2(trace, "prepare sending signal to ", destination)
 #endif
 		dbus_message_set_destination(_message, destination);
@@ -60,7 +60,7 @@ GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 
 	/* initialize potential arguments iterator */
 	dbus_message_iter_init_append(_message, &_itMessage);
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "DBus signal initialized")
 #endif
 }
@@ -84,7 +84,7 @@ GKDBusBroadcastSignal::~GKDBusBroadcastSignal()
 
 	dbus_connection_flush(_connection);
 	dbus_message_unref(_message);
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "DBus signal sent")
 #endif
 }

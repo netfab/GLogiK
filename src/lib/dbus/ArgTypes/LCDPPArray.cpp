@@ -102,7 +102,7 @@ void TypeLCDPPArray::appendLCDPPArray(DBusMessageIter *iter, const GLogiK::LCDPP
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 	}
 
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "LCDPluginsProperties array appended")
 #endif
 }

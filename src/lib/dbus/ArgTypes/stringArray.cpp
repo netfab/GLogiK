@@ -63,7 +63,7 @@ void TypeStringArray::appendStringArray(const std::vector<std::string> & stringA
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 	}
 
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "string array appended")
 #endif
 }

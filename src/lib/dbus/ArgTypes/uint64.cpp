@@ -44,7 +44,7 @@ void TypeUInt64::appendUInt64(DBusMessageIter *iter, const uint64_t value)
 		throw GKDBusMessageWrongBuild("uint64_t append failure, not enough memory");
 	}
 
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "uint64_t appended")
 #endif
 }

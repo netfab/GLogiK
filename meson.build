@@ -145,7 +145,7 @@ define_dep_array = [
   ['HAVE_BOOST_DATE_TIME', boost_date_time_dep.found()],
   ['DEBUGGING_ON', enable_debug],
   ['DEBUG_KEYS', enable_debug_keys],
-  ['DEBUG_GKDBUS_SUBOBJECTS', enable_debug_gkdbus],
+  ['DEBUG_GKDBUS', enable_debug_gkdbus],
   ['DEBUG_LIBUSB_EXTRA', enable_debug_libusb],
   ['DEBUG_PBMFONT', enable_debug_pbmfont],
   ['DEBUG_LCD_PLUGINS', enable_debug_lcd_plugins],

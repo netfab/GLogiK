@@ -40,7 +40,7 @@ void TypeBoolean::appendBoolean(const bool value)
 		LOG(error) << "boolean append_basic failure, not enough memory";
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 	}
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "boolean appended")
 #endif
 }

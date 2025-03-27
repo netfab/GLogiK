@@ -40,7 +40,7 @@ void TypeUInt32::appendUInt32(const uint32_t value)
 		throw GKDBusMessageWrongBuild("uint32_t append failure, not enough memory");
 	}
 
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "uint32_t appended")
 #endif
 }

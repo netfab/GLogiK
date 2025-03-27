@@ -207,7 +207,7 @@ GDT_DEBUG_FLAG(	[$enable_keys_debugging],
 				[keys extra debugging])
 
 GDT_DEBUG_FLAG(	[$enable_gkdbus_debugging],
-				[DEBUG_GKDBUS_SUBOBJECTS],
+				[DEBUG_GKDBUS],
 				[GKDBus extra debugging])
 
 GDT_DEBUG_FLAG(	[$enable_libusb_extra_debugging],

@@ -37,7 +37,7 @@ void TypeString::appendString(DBusMessageIter *iter, const std::string & value)
 {
 	GK_LOG_FUNC
 
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "appending string")
 #endif
 
@@ -48,7 +48,7 @@ void TypeString::appendString(DBusMessageIter *iter, const std::string & value)
 			LOG(error) << "string append_basic failure, not enough memory";
 			throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 		}
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 		GKLog(trace, "string appended")
 #endif
 	}
@@ -57,7 +57,7 @@ void TypeString::appendString(DBusMessageIter *iter, const std::string & value)
 		 * see ArgBase::decodeArgumentFromIterator()
 		 * in ArgTypes/ArgBase.cpp */
 		this->appendUInt64(iter, 0);
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 		GKLog(trace, "empty string appended")
 #endif
 	}

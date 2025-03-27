@@ -65,7 +65,7 @@ void TypeMKeysIDArray::appendMKeysIDArray(const GLogiK::MKeysIDArray_type & keys
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 	}
 
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "MKeysID array appended")
 #endif
 }

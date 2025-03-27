@@ -42,7 +42,7 @@ void TypeUInt8::appendUInt8(DBusMessageIter *iter, const uint8_t value)
 		throw GKDBusMessageWrongBuild("uint8_t append failure, not enough memory");
 	}
 
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "uint8_t appended")
 #endif
 }

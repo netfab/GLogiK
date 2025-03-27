@@ -44,7 +44,7 @@ void TypeInt32::appendInt32(DBusMessageIter *iter, const int32_t value)
 		throw GKDBusMessageWrongBuild("int32_t append failure, not enough memory");
 	}
 
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "int32_t appended")
 #endif
 }

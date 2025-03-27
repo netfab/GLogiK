@@ -90,7 +90,7 @@ void GKDBusMessageAsyncContainer::newAsyncContainer(void)
 	/* initialize potential arguments iterator */
 	dbus_message_iter_init_append(_message, &_itMessage);
 
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "async container initialized")
 #endif
 }
@@ -107,7 +107,7 @@ void GKDBusMessageAsyncContainer::freeAsyncContainer(void)
 	dbus_message_unref(_message);
 	_message = nullptr;
 
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "async container freed")
 #endif
 }

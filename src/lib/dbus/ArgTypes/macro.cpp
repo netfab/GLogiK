@@ -105,7 +105,7 @@ void TypeMacro::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & ma
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 	}
 
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "macro appended")
 #endif
 }
