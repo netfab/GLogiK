@@ -86,7 +86,9 @@ DevicesManager::~DevicesManager()
 	_sleepingDevices.clear();
 	_stoppedDevices.clear();
 
+#if GKDBUS
 	this->releaseDelayLock();
+#endif
 
 	GKLog(trace, "stopping drivers")
 	for(const auto & driver : _drivers) {
@@ -165,9 +167,7 @@ void DevicesManager::initializeDevices(const bool openDevices) noexcept
 
 	GKLog(trace, "initializing detected devices")
 
-#if GKDBUS
 	std::vector<std::string> initializedDevices;
-#endif
 
 	for(const auto & devicePair : _detectedDevices)
 	{
@@ -220,9 +220,7 @@ void DevicesManager::initializeDevices(const bool openDevices) noexcept
 						_stoppedDevices[devID] = device;
 						buffer << " initialized (stopped)";
 					}
-#if GKDBUS
 					initializedDevices.push_back(devID);
-#endif
 				}
 				catch ( const GLogiKExcept & e ) {
 					buffer << " NOT initialized (failed)";
@@ -955,6 +953,7 @@ void DevicesManager::resetDevicesStates(void)
 	}
 }
 
+#if GKDBUS
 void DevicesManager::initializeDBusRequests(void)
 {
 	GK_LOG_FUNC
@@ -1082,6 +1081,8 @@ void DevicesManager::HandleSleepEvent(const bool mode)
 		this->startSleepingDevices();
 	}
 }
+
+#endif // #if GKDBUS
 
 /*
  *	Throws GLogiKExcept in many ways on udev related functions failures.

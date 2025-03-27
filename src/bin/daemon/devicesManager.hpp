@@ -109,8 +109,6 @@ class DevicesManager
 	protected:
 
 	private:
-		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
-
 		std::map<std::string, USBDeviceID> _detectedDevices;
 		std::map<std::string, USBDeviceID> _startedDevices;
 		std::map<std::string, USBDeviceID> _stoppedDevices;
@@ -120,10 +118,16 @@ class DevicesManager
 		const std::string _unknown;
 
 #if GKDBUS
+		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
+
 		NSGKDBus::GKDBus* _pDBus;
 		SessionFramework _sessionFramework;
 		uint8_t _numClients;
 		int32_t _delayLockPID;
+
+		void inhibitSleepState(void);
+		void releaseDelayLock(void);
+		void HandleSleepEvent(const bool mode);
 #endif
 
 		void searchSupportedDevices(struct udev * pUdev);
@@ -133,10 +137,6 @@ class DevicesManager
 		void checkInitializedDevicesThreadsStatus(void) noexcept;
 
 		void checkForUnpluggedDevices(void) noexcept;
-
-		void inhibitSleepState(void);
-		void releaseDelayLock(void);
-		void HandleSleepEvent(const bool mode);
 };
 
 } // namespace GLogiK
