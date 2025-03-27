@@ -60,7 +60,8 @@ declare stripbuild=0
 declare options=''
 
 function add_meson_option() {
-	local -r option="${1##*-}"
+	local option="${1##--enable-}"
+	option="${option##--disable-}"
 	[[ ${#option} -eq 0 ]] && die "wrong parameter: ${1}"
 	options+="-D${option}=${2} "
 }
