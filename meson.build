@@ -104,16 +104,16 @@ enable_debug_pbmfont = false
 enable_debug_lcd_plugins = false
 
 if enable_debug
-  enable_debug_gkdbus = get_option('debug_gkdbus')
-  enable_debug_keys = get_option('debug_keys')
-  enable_debug_libusb = get_option('debug_libusb')
-  enable_debug_pbmfont = get_option('debug_pbmfont')
-  enable_debug_lcd_plugins = get_option('debug_lcd_plugins')
+  enable_debug_gkdbus = get_option('debug-gkdbus')
+  enable_debug_keys = get_option('debug-keys')
+  enable_debug_libusb = get_option('debug-libusb')
+  enable_debug_pbmfont = get_option('debug-pbmfont')
+  enable_debug_lcd_plugins = get_option('debug-lcd-plugins')
 endif
 
-glogikd_user = get_option('daemon_user')
-glogikd_group = get_option('daemon_group')
-glogiks_group = get_option('desktop_service_group')
+glogikd_user = get_option('daemon-user')
+glogikd_group = get_option('daemon-group')
+glogiks_group = get_option('desktop-service-group')
 
 #! ----------
 
