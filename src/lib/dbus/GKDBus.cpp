@@ -226,7 +226,9 @@ void GKDBus::checkDBusMessage(
 	DBusMessage* message)
 {
 	const std::string msgObjectPath = toString(dbus_message_get_path(message));
+#if DEBUG_GKDBUS
 	GKLog4(trace, "objectPath: ", msgObjectPath, "RootNodePath: ", this->getRootNodePath())
+#endif
 
 	const auto & opMap = _DBusEvents.at(GKDBusEvents::currentBus); /* objectPath map */
 	for(const auto & [objectPath, interMap] : opMap) /* interface map */
@@ -236,7 +238,9 @@ void GKDBus::checkDBusMessage(
 			/* objectPath must match */
 			if(msgObjectPath != objectPath)
 			{
+#if DEBUG_GKDBUS
 				GKLog4(trace, "skipping objectPath: ", msgObjectPath, "map index: ", objectPath)
+#endif
 				continue;
 			}
 
