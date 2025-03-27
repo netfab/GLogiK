@@ -39,6 +39,7 @@ declare -i distcheck=0
 declare -i clean=0
 declare -i debug=0
 declare -i meson=0
+declare CONF_FLAGS=""
 
 # parsing command line parameters
 while [[ "${#}" -gt 0 ]]; do
@@ -61,6 +62,14 @@ while [[ "${#}" -gt 0 ]]; do
 		;;
 		-M|--meson)
 			meson=1
+		;;
+		# FIXME standardize and support other options
+		# (daemon-user, daemon-group, desktop-service-group, ...)
+		--enable-*)
+			CONF_FLAGS+=" ${1}"
+		;;
+		--disable-*)
+			CONF_FLAGS+=" ${1}"
 		;;
 		*)
 			print_help
@@ -98,6 +107,8 @@ function autotools_build()
 		export DEBUG_BUILD=1
 	fi
 
+	export EXTRA_FLAGS="${CONF_FLAGS} --enable-option-checking=fatal"
+
 	if [[ ! -f .configured ]]; then
 		autotools_make_targets autoreconf_it configure_it
 		if [[ $? -eq 0 ]]; then
@@ -125,7 +136,8 @@ function meson_build()
 	if [[ ${debug} -eq 1 ]]; then
 		debug_opt='--enable-debug'
 	fi
-	bash meson.sh --install ${debug_opt}
+
+	bash meson.sh --install ${debug_opt} ${CONF_FLAGS}
 
 	if [[ ${distcheck} -eq 1 ]]; then
 		warn "--distcheck not available with meson"

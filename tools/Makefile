@@ -121,7 +121,7 @@ configure_it: init_it autoreconf_it
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--enable-dbus $(QT_OPTS) \
 	--enable-hidapi \
-	$(CONF_FLAGS) \
+	$(EXTRA_FLAGS) \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR) \
 	--docdir=$(PREFIX_DIR)/share/doc/GLogiK-9999
 
@@ -146,7 +146,7 @@ configure_it: init_it autoreconf_it
 	--enable-gcc-wall --enable-gcc-werror --enable-as-needed \
 	--enable-dbus $(QT_OPTS) \
 	--enable-hidapi \
-	$(CONF_FLAGS) \
+	$(EXTRA_FLAGS) \
 	--srcdir=$(top_srcdir) --prefix=$(PREFIX_DIR) \
 	--docdir=$(PREFIX_DIR)/share/doc/GLogiK-9999
 
