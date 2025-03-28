@@ -8,6 +8,7 @@ declare -r BLDRED='\e[1;31m' # Red Bold
 declare -r BLDGRN='\e[1;32m' # Green Bold
 declare -r BLDYLW='\e[1;33m' # Yellow Bold
 declare -r BLDBLU='\e[1;34m' # Blue Bold
+declare -r BLDPUR='\e[1;35m' # Purple
 declare -r TXTRST='\e[0m'    # Text Reset
 
 # -- -- -- -- -- -- -- -- -- #
@@ -123,6 +124,9 @@ function autotools_build()
 	else
 		autotools_make_targets build_it install_it
 	fi
+
+	local -r ret=$?
+	return $ret
 }
 
 function meson_clean()
@@ -139,10 +143,13 @@ function meson_build()
 
 	bash meson.sh --install ${debug_opt} ${CONF_FLAGS}
 
+	local -r ret=$?
+
 	if [[ ${distcheck} -eq 1 ]]; then
 		warn "--distcheck not available with meson"
 	fi
 
+	return $ret
 }
 
 # -- -- -- -- -- -- -- -- -- #
