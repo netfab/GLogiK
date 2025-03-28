@@ -57,6 +57,8 @@ if enable_dbus
 	'clientsSignals.hpp',
 	'client.cpp',
 	'client.hpp',
+	'sleepInhibition.cpp',
+	'sleepInhibition.hpp',
   ]
 endif
 

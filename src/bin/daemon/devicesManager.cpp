@@ -63,9 +63,7 @@ using namespace NSGKUtils;
 DevicesManager::DevicesManager()
 	:	_unknown("unknown"),
 		_pDBus(nullptr),
-		_sessionFramework(SessionFramework::FW_UNKNOWN),
-		_numClients(0),
-		_delayLockPID(-1)
+		_numClients(0)
 #else
 DevicesManager::DevicesManager()
 	:	_unknown("unknown")
@@ -85,10 +83,6 @@ DevicesManager::~DevicesManager()
 	this->stopInitializedDevices();
 	_sleepingDevices.clear();
 	_stoppedDevices.clear();
-
-#if GKDBUS
-	this->releaseDelayLock();
-#endif
 
 	GKLog(trace, "stopping drivers")
 	for(const auto & driver : _drivers) {
@@ -952,137 +946,6 @@ void DevicesManager::resetDevicesStates(void)
 		}
 	}
 }
-
-#if GKDBUS
-void DevicesManager::initializeDBusRequests(void)
-{
-	GK_LOG_FUNC
-
-	this->inhibitSleepState();
-
-	switch(_sessionFramework) {
-		/* logind */
-		case SessionFramework::FW_LOGIND:
-			_pDBus->NSGKDBus::Callback<SIGb2v>::receiveSignal(
-				_systemBus,
-				LOGIND_DBUS_BUS_CONNECTION_NAME,
-				LOGIND_MANAGER_DBUS_OBJECT_PATH,
-				LOGIND_MANAGER_DBUS_INTERFACE,
-				"PrepareForSleep",
-				{ {"b", "", "in", "mode"} },
-				std::bind(&DevicesManager::HandleSleepEvent, this, std::placeholders::_1)
-			);
-			break;
-		default:
-			LOG(warning) << "unknown session tracker";
-			break;
-	}
-}
-
-void DevicesManager::cleanDBusRequests(void) noexcept
-{
-	GK_LOG_FUNC
-
-	switch(_sessionFramework) {
-		/* logind */
-		case SessionFramework::FW_LOGIND:
-			_pDBus->removeSignalsInterface(_systemBus,
-				LOGIND_DBUS_BUS_CONNECTION_NAME,
-				LOGIND_MANAGER_DBUS_OBJECT_PATH,
-				LOGIND_MANAGER_DBUS_INTERFACE);
-			break;
-		default:
-			LOG(warning) << "unknown session tracker";
-			break;
-	}
-}
-
-void DevicesManager::inhibitSleepState(void)
-{
-	GK_LOG_FUNC
-
-	const std::string remoteMethod("Inhibit");
-	try {
-		_pDBus->initializeRemoteMethodCall(
-			_systemBus,
-			LOGIND_DBUS_BUS_CONNECTION_NAME,
-			LOGIND_MANAGER_DBUS_OBJECT_PATH,
-			LOGIND_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
-		);
-
-		_pDBus->appendStringToRemoteMethodCall("sleep"); /* What (lock type) */
-		_pDBus->appendStringToRemoteMethodCall("GLogiK Daemon"); /* Who */
-		_pDBus->appendStringToRemoteMethodCall("Release USB Devices"); /* Why */
-		_pDBus->appendStringToRemoteMethodCall("delay"); /* mode */
-
-		_pDBus->sendRemoteMethodCall();
-
-		try {
-			_pDBus->waitForRemoteMethodCallReply();
-
-			_delayLockPID = _pDBus->getNextInt32Argument();
-
-			_sessionFramework = SessionFramework::FW_LOGIND;
-			GKLog2(trace, "got pid for delay lock from logind: ", static_cast<int>(_delayLockPID))
-		}
-		catch (const GLogiKExcept & e) {
-			LogRemoteCallGetReplyFailure
-		}
-	}
-	catch (const GKDBusMessageWrongBuild & e) {
-		_pDBus->abandonRemoteMethodCall();
-		LogRemoteCallFailure
-	}
-
-	switch(_sessionFramework) {
-		/* logind */
-		case SessionFramework::FW_LOGIND:
-			LOG(info) << "successfully contacted logind";
-			break;
-		default:
-			LOG(warning) << "unknown session tracker";
-			break;
-	}
-}
-
-void DevicesManager::releaseDelayLock(void)
-{
-	GK_LOG_FUNC
-
-	GKLog(trace, "release delay lock")
-	if( _delayLockPID != -1 ) {
-		const int ret = close(_delayLockPID);
-		const int close_errno = errno;
-
-		if(ret == -1) {
-			LOG(error)	<< "delay lock close : " << getErrnoString(close_errno);
-		}
-
-		_delayLockPID = -1;
-		GKLog(trace, "released")
-	}
-}
-
-void DevicesManager::HandleSleepEvent(const bool mode)
-{
-	GK_LOG_FUNC
-
-	if(mode) {
-		GKLog(trace, "going to sleep, stopping devices")
-		this->stopInitializedDevices();
-		this->releaseDelayLock();
-	}
-	else {
-		GKLog(trace, "resuming from sleep, starting devices")
-		this->inhibitSleepState();
-		/* don't start devices too early after resuming */
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-		this->startSleepingDevices();
-	}
-}
-
-#endif // #if GKDBUS
 
 /*
  *	Throws GLogiKExcept in many ways on udev related functions failures.

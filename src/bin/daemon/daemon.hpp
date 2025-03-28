@@ -30,11 +30,20 @@
 
 #include "daemonControl.hpp"
 
+#if GKDBUS
+#include "sleepInhibition.hpp"
+#endif
+
 namespace GLogiK
 {
 
 class GLogiKDaemon
+#if GKDBUS
+	:	public DaemonControl,
+		private SleepInhibition
+#else
 	:	public DaemonControl
+#endif
 {
 	public:
 		GLogiKDaemon(const int& argc, char *argv[]);
