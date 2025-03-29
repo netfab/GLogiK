@@ -40,7 +40,7 @@ namespace GLogiK
 class Client
 {
 	public:
-		Client(const std::string & objectPath, DevicesManager* pDevicesManager);
+		Client(const std::string & objectPath, DevicesManager* const pDevicesManager);
 		~Client(void);
 
 		const std::string & getSessionObjectPath(void) const;
@@ -51,7 +51,7 @@ class Client
 		const bool isReady(void) const;
 
 		void initializeDevice(
-			DevicesManager* pDevicesManager,
+			DevicesManager* const pDevicesManager,
 			const std::string & devID
 		);
 		const bool deleteDevice(const std::string & devID);
@@ -64,7 +64,7 @@ class Client
 
 		void setDeviceActiveUser(
 			const std::string & devID,
-			DevicesManager* pDevicesManager
+			DevicesManager* const pDevicesManager
 		);
 
 		const bool setDeviceLCDPluginsMask(
@@ -84,7 +84,7 @@ class Client
 		bool _check;
 		bool _ready;
 
-		void initializeDevices(DevicesManager* pDevicesManager);
+		void initializeDevices(DevicesManager* const pDevicesManager);
 };
 
 } // namespace GLogiK
