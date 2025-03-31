@@ -2,13 +2,19 @@ project(
   'GLogiK',
   'cpp',
   default_options: [
-	'cpp_std=c++14',
+	'cpp_std=c++17',
 	'debug=false'
   ],
   license: 'GPL-3',
   meson_version: '>=1.1',
   version: run_command('version.sh', check: true).stdout().strip()
 )
+
+cxx = meson.get_compiler('cpp')
+
+cxx.has_header('csignal', required: true)
+
+int_size = cxx.sizeof('int')
 
 #! ----------
 
@@ -98,16 +104,16 @@ enable_debug_pbmfont = false
 enable_debug_lcd_plugins = false
 
 if enable_debug
-  enable_debug_gkdbus = get_option('debug_gkdbus')
-  enable_debug_keys = get_option('debug_keys')
-  enable_debug_libusb = get_option('debug_libusb')
-  enable_debug_pbmfont = get_option('debug_pbmfont')
-  enable_debug_lcd_plugins = get_option('debug_lcd_plugins')
+  enable_debug_gkdbus = get_option('debug-gkdbus')
+  enable_debug_keys = get_option('debug-keys')
+  enable_debug_libusb = get_option('debug-libusb')
+  enable_debug_pbmfont = get_option('debug-pbmfont')
+  enable_debug_lcd_plugins = get_option('debug-lcd-plugins')
 endif
 
-glogikd_user = get_option('daemon_user')
-glogikd_group = get_option('daemon_group')
-glogiks_group = get_option('desktop_service_group')
+glogikd_user = get_option('daemon-user')
+glogikd_group = get_option('daemon-group')
+glogiks_group = get_option('desktop-service-group')
 
 #! ----------
 
@@ -139,7 +145,7 @@ define_dep_array = [
   ['HAVE_BOOST_DATE_TIME', boost_date_time_dep.found()],
   ['DEBUGGING_ON', enable_debug],
   ['DEBUG_KEYS', enable_debug_keys],
-  ['DEBUG_GKDBUS_SUBOBJECTS', enable_debug_gkdbus],
+  ['DEBUG_GKDBUS', enable_debug_gkdbus],
   ['DEBUG_LIBUSB_EXTRA', enable_debug_libusb],
   ['DEBUG_PBMFONT', enable_debug_pbmfont],
   ['DEBUG_LCD_PLUGINS', enable_debug_lcd_plugins],
@@ -155,6 +161,8 @@ foreach define: define_dep_array
   config_h.set10(define[0], define[1])
 endforeach
 
+config_h.set('SIZEOF_INT', int_size)
+
 #! ----------
 
 inc = include_directories('.', 'src')
@@ -164,6 +172,7 @@ enable_hidapi = get_option('hidapi')
 enable_notifications = get_option('notifications')
 enable_libnotify = get_option('libnotify')
 enable_qt5 = get_option('qt5')
+enable_qt6 = get_option('qt6')
 
 #! ----------
 null_dep = dependency('', required: false)
@@ -212,6 +221,10 @@ if not enable_dbus
     warning('dbus is disabled => qt5 is disabled')
     enable_qt5 = false
   endif
+  if enable_qt6
+    warning('dbus is disabled => qt6 is disabled')
+    enable_qt6 = false
+  endif
   if enable_notifications
     warning('dbus is disabled => notifications are disabled')
     enable_notifications = false
@@ -240,7 +253,13 @@ if enable_dbus
     subdir('data/icons')
   endif
 
-  if enable_qt5
+  if enable_qt5 and enable_qt6
+    warning('qt5 support is enabled')
+    warning('qt6 support is enabled')
+    error('different Qt versions are mutually exclusive')
+  endif
+
+  if enable_qt5 or enable_qt6
 	subdir('src/bin/gui/Qt')
 	subdir('data/applications')
     subdir('data/gui')
@@ -267,7 +286,6 @@ install_data(
 deps_versions_array += [
   ['DBUS', dbus_dep],
   ['LIBNOTIFY', libnotify_dep],
-  ['QT5', qt5_dep],
 ]
 
 foreach define: deps_versions_array
@@ -308,6 +326,7 @@ report += ' notifications: ' + enable_notifications.to_string() + '\n'
 report += '     libnotify: ' + enable_libnotify.to_string() + '\n'
 report += '        hidapi: ' + enable_hidapi.to_string() + '\n'
 report += '           qt5: ' + enable_qt5.to_string() + '\n'
+report += '           qt6: ' + enable_qt6.to_string() + '\n'
 report += '\nDebug options:\n'
 report += '==============\n'
 report += '             debug: ' + enable_debug.to_string() + '\n'

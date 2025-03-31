@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 #include "messages/GKDBusAsyncContainer.hpp"
 
 #include "ArgTypes/boolean.hpp"
+#include "ArgTypes/int32.hpp"
 #include "ArgTypes/uint8.hpp"
 #include "ArgTypes/uint16.hpp"
 #include "ArgTypes/uint64.hpp"
@@ -68,6 +69,7 @@ class GKDBus
 		virtual public ArgString,
 		virtual public ArgStringArray,
 		public ArgBoolean,
+		virtual public ArgInt32,
 		virtual public ArgUInt8,
 		virtual public ArgUInt16,
 		virtual public ArgUInt64,
@@ -79,7 +81,7 @@ class GKDBus
 		public ArgGKDepsMap
 {
 	public:
-		GKDBus(const std::string & rootNode, const std::string & rootNodePath);
+		GKDBus(const std::string & rootNodePath);
 		~GKDBus(void);
 
 		static const BusConnection SystemBus;
@@ -103,7 +105,6 @@ class GKDBus
 
 		void exit(void) noexcept;
 
-		const std::string getObjectFromObjectPath(const std::string & objectPath);
 		void checkForMessages(void) noexcept;
 
 	protected:

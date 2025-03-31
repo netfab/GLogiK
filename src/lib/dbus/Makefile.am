@@ -23,6 +23,8 @@ libGKDBus_la_SOURCES = \
 	%D%/ArgTypes/string.hpp \
 	%D%/ArgTypes/stringArray.cpp \
 	%D%/ArgTypes/stringArray.hpp \
+	%D%/ArgTypes/int32.cpp \
+	%D%/ArgTypes/int32.hpp \
 	%D%/ArgTypes/uint16.cpp \
 	%D%/ArgTypes/uint16.hpp \
 	%D%/ArgTypes/uint32.cpp \
@@ -59,12 +61,15 @@ libGKDBus_la_SOURCES = \
 	%D%/messages/GKDBusBroadcastSignal.hpp \
 	%D%/messages/GKDBusAsyncContainer.cpp \
 	%D%/messages/GKDBusAsyncContainer.hpp \
+	%D%/events/callback.cpp \
 	%D%/events/callback.hpp \
 	%D%/events/callbackEvent.hpp \
 	%D%/events/GKDBusEvent.cpp \
 	%D%/events/GKDBusEvent.hpp \
 	%D%/events/SIGas2v.cpp \
 	%D%/events/SIGas2v.hpp \
+	%D%/events/SIGb2v.cpp \
+	%D%/events/SIGb2v.hpp \
 	%D%/events/SIGq2v.cpp \
 	%D%/events/SIGq2v.hpp \
 	%D%/events/SIGs2as.cpp \

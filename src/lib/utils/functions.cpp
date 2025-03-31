@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+#include <cstring>
 
 #include <new>
 #include <stdexcept>
@@ -75,6 +77,15 @@ const std::wstring toWString(const wchar_t* s)
 		error += e.what();
 		throw GLogiKExcept(error);
 	}
+}
+
+const std::string getErrnoString(const int errnum)
+{
+	std::string ret;
+	ret += toString(strerrorname_np(errnum));
+	ret += " - ";
+	ret += toString(strerrordesc_np(errnum));
+	return ret;
 }
 
 const unsigned int toUInt(const std::string & s)

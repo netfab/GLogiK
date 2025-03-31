@@ -72,7 +72,9 @@ GLogiKd_SOURCES += \
 		%D%/clientsSignals.cpp \
 		%D%/clientsSignals.hpp \
 		%D%/client.cpp \
-		%D%/client.hpp
+		%D%/client.hpp \
+		%D%/sleepInhibition.cpp \
+		%D%/sleepInhibition.hpp
 endif
 
 GLogiKd_SOURCES += \

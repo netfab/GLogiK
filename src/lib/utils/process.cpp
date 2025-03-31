@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <cstdlib>
 #include <csignal>
 #include <cstring>
+#include <cerrno>
 
 #include <config.h>
 
@@ -61,38 +62,79 @@ const pid_t process::deamonize(void)
 	return process::newPID();
 }
 
-const pid_t process::newPID(void)
+void process::logErrno(const int errnum, const std::string & errstr)
+{
+	LOG(error)	<< errstr << " : " << getErrnoString(errnum);
+}
+
+void process::closeFD(int fd, const std::string & tracestr)
+{
+	const int ret = close(fd);
+	const int close_errno = errno;
+
+	if(ret == -1)
+		process::logErrno(close_errno, "fd close");
+#if DEBUGGING_ON
+	else if(ret == 0) {
+		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+			LOG(trace) << "closed fd: " << tracestr;
+		}
+	}
+#endif
+}
+
+void process::notifyParentProcess(int pipefd[], const int message)
 {
 	GK_LOG_FUNC
 
-#if DEBUGGING_ON
+	/* close unused read-end */
+	process::closeFD(pipefd[0], "unused read-end");
+
+	const char byte = static_cast<const char>(message);
+	const ssize_t bytes_written = write(pipefd[1], &byte, 1);
+	const int write_errno = errno;
+
+	process::closeFD(pipefd[1], "remaining write-end");
+
+	if(bytes_written == -1) {
+		process::logErrno(write_errno, "write");
+		throw GLogiKExcept("error while trying to write pipe");
+	}
+	else if(bytes_written < 1)
+		throw GLogiKExcept("byte not written");
+
 	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-		GKLog(trace, "detaching process")
+		GKLog2(trace, "byte(s) written to pipe: ", std::to_string(bytes_written))
 	}
-#endif
+}
 
-	pid_t pid;
+const int process::waitForChildNotification(int pipefd[])
+{
+	GK_LOG_FUNC
 
-	pid = fork();
-	if(pid == -1)
-		throw GLogiKExcept("first fork failure");
+	/* close unused write-end */
+	process::closeFD(pipefd[1], "unused write-end");
 
-	// parent exit
-	if(pid > 0) {
-#if DEBUGGING_ON
-		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-			GKLog2(trace, "exiting parent. first fork done. pid : ", pid)
-		}
-#endif
-		std::this_thread::sleep_for(std::chrono::milliseconds(20));
-		exit(EXIT_SUCCESS);
+	char buf = -1;
+	const ssize_t bytes_read = read(pipefd[0], &buf, 1);
+	const int read_errno = errno;
+
+	process::closeFD(pipefd[0], "remaining read-end");
+
+	if(bytes_read == -1) {
+		process::logErrno(read_errno, "read");
+		throw GLogiKExcept("error while trying to read pipe");
 	}
+	else if(bytes_read == 0)
+		throw GLogiKExcept("end of file reached while trying to read pipe");
 
-#if DEBUGGING_ON
-	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-		GKLog(trace, "continue child execution")
-	}
-#endif
+	// received one byte
+	return static_cast<const int>(buf);
+}
+
+void process::newSessionID(void)
+{
+	GK_LOG_FUNC
 
 	// new session for child process
 	if(setsid() == -1)
@@ -103,31 +145,89 @@ const pid_t process::newPID(void)
 		GKLog(trace, "new session done")
 	}
 #endif
+}
 
-	// Ignore signals
-	std::signal(SIGCHLD, SIG_IGN);
-	std::signal(SIGHUP, SIG_IGN);
+void process::forkProcess(const bool newSessionID)
+{
+	GK_LOG_FUNC
+
+	int pipefd[2];
+	pid_t pid;
+
+	/* create data channel before forking */
+	if(pipe(pipefd) == -1)
+		throw GLogiKExcept("failed to create pipe");
 
 	pid = fork();
-	if(pid == -1)
-		throw GLogiKExcept("second fork failure");
+	if(pid == -1) {
+		throw GLogiKExcept("fork failure");
+	}
+	else if(pid > 0) { /* parent process */
+		if(process::waitForChildNotification(pipefd) != EXIT_SUCCESS)
+			throw GLogiKExcept("parent process wrong return value");
 
-	// parent exit
-	if(pid > 0) {
 #if DEBUGGING_ON
 		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-			GKLog2(trace, "exiting parent. second fork done. pid : ", pid)
+			GKLog2(trace, "exiting parent. first fork done. pid : ", pid)
 		}
 #endif
-		std::this_thread::sleep_for(std::chrono::milliseconds(20));
-		exit(EXIT_SUCCESS);
+		std::exit(EXIT_SUCCESS);
 	}
+	else { /* child process */
+		if(newSessionID) {
+			/* detach from parent terminal by creating new session ID
+			 * before notifying parent process */
+			process::newSessionID();
+		}
+
+		process::notifyParentProcess(pipefd, EXIT_SUCCESS);
+
+#if DEBUGGING_ON
+		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+			GKLog(trace, "continue child execution")
+		}
+#endif
+	}
+}
+
+const pid_t process::newPID(void)
+{
+	GK_LOG_FUNC
 
 #if DEBUGGING_ON
 	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-		GKLog(trace, "continue child execution")
+		GKLog(trace, "detaching process")
 	}
 #endif
+	auto clearSignalMask = [] () -> void
+	{
+		sigset_t new_set;
+		if(sigemptyset(&new_set) == -1) {
+			process::logErrno(errno, "sigemptyset");
+		}
+		else {
+			if(sigprocmask(SIG_SETMASK, &new_set, NULL) == -1)
+				process::logErrno(errno, "sigprocmask");
+#if DEBUGGING_ON
+			else {
+				if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+					GKLog(trace, "signal mask cleared")
+				}
+			}
+#endif
+		}
+	};
+
+	clearSignalMask();
+
+	/* ignore signals */
+	process::setSignalHandler(SIGCHLD, SIG_IGN);
+	process::setSignalHandler(SIGHUP, SIG_IGN);
+
+	/* detach child from parent terminal on first fork */
+	process::forkProcess(true);
+
+	process::forkProcess();
 
 	umask(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 	if(chdir("/") == -1)
@@ -153,7 +253,7 @@ const pid_t process::newPID(void)
 #endif
 	}
 
-	pid = getpid();
+	pid_t pid = getpid();
 
 #if DEBUGGING_ON
 		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
@@ -168,10 +268,34 @@ void process::setSignalHandler(int signum, __signal_handler_t __handler)
 {
 	GK_LOG_FUNC
 
-	const std::string sigdesc( process::getSignalAbbrev(signum) );
-	GKLog2(trace, "setting signal handler: ", sigdesc)
-	if(std::signal(signum, __handler) == SIG_ERR) {
-		GKSysLogError("std::signal failure: ", sigdesc);
+#if DEBUGGING_ON
+	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+		const std::string sigdesc( process::getSignalAbbrev(signum) );
+
+		if(__handler == SIG_DFL) {
+			GKLog2(trace, "resetting signal handler: ", sigdesc)
+		}
+		else if(__handler == SIG_IGN) {
+			GKLog2(trace, "ignoring signal: ", sigdesc)
+		}
+		else {
+			GKLog2(trace, "setting signal handler: ", sigdesc)
+		}
+	}
+#endif
+
+	struct sigaction new_action;
+
+	new_action.sa_handler = __handler;
+	if(sigemptyset(&new_action.sa_mask) == -1) {
+		process::logErrno(errno, "sigemptyset");
+	}
+	else {
+		new_action.sa_flags = 0;
+
+		if(sigaction(signum, &new_action, nullptr) == -1) {
+			process::logErrno(errno, "sigaction");
+		}
 	}
 }
 

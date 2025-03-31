@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ void TypeBoolean::appendBoolean(const bool value)
 		LOG(error) << "boolean append_basic failure, not enough memory";
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 	}
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	GKLog(trace, "boolean appended")
 #endif
 }

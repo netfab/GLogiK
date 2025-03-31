@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@
  *
  */
 
-#include <algorithm>
-
 #include "lib/utils/utils.hpp"
 
 #include "ArgBase.hpp"
@@ -31,6 +29,7 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 thread_local std::vector<std::string> ArgBase::stringArguments = {};
+thread_local std::vector<int32_t> ArgBase::int32Arguments = {};
 thread_local std::vector<uint8_t> ArgBase::byteArguments = {};
 thread_local std::vector<uint16_t> ArgBase::uint16Arguments = {};
 thread_local std::vector<uint64_t> ArgBase::uint64Arguments = {};
@@ -55,7 +54,7 @@ void ArgBase::decodeArgumentFromIterator(
 		currentType = dbus_signature_iter_get_current_type(&itSignature);
 	}
 
-#if DEBUG_GKDBUS_SUBOBJECTS
+#if DEBUG_GKDBUS
 	LOG(trace)	<< "decoding argument: " << num << " type: "
 				<< static_cast<char>(currentType) << " sig: " << signature;
 #endif
@@ -143,6 +142,17 @@ void ArgBase::decodeArgumentFromIterator(
 				//GKLog2(trace, "uint64_t arg value : ", value)
 			}
 			break;
+		case DBUS_TYPE_UNIX_FD:
+			{
+#if SIZEOF_INT != 4
+#error "wrong int size, please report bug"
+#endif
+				int32_t value = -1;
+				dbus_message_iter_get_basic(iter, &value);
+				ArgBase::int32Arguments.push_back(value);
+				//GKLog2(trace, "int32_t arg value : ", value)
+			}
+			break;
 		case DBUS_TYPE_STRUCT:
 			{
 				do {
@@ -206,22 +216,19 @@ void ArgBase::fillInArguments(DBusMessage* message)
 	}
 	while( dbus_message_iter_next(&itArgument) );
 
-	if( ! ArgBase::stringArguments.empty() )
-		std::reverse(ArgBase::stringArguments.begin(), ArgBase::stringArguments.end());
-	if( ! ArgBase::booleanArguments.empty() )
-		std::reverse(ArgBase::booleanArguments.begin(), ArgBase::booleanArguments.end());
-	if( ! ArgBase::byteArguments.empty() )
-		std::reverse(ArgBase::byteArguments.begin(), ArgBase::byteArguments.end());
-	if( ! ArgBase::uint16Arguments.empty() )
-		std::reverse(ArgBase::uint16Arguments.begin(), ArgBase::uint16Arguments.end());
-	if( ! ArgBase::uint64Arguments.empty() )
-		std::reverse(ArgBase::uint64Arguments.begin(), ArgBase::uint64Arguments.end());
+	ArgBase::reverse(ArgBase::stringArguments);
+	ArgBase::reverse(ArgBase::booleanArguments);
+	ArgBase::reverse(ArgBase::int32Arguments);
+	ArgBase::reverse(ArgBase::byteArguments);
+	ArgBase::reverse(ArgBase::uint16Arguments);
+	ArgBase::reverse(ArgBase::uint64Arguments);
 }
 
 const int ArgBase::decodeNextArgument(DBusMessageIter* itArgument)
 {
 	ArgBase::stringArguments.clear();
 	ArgBase::booleanArguments.clear();
+	ArgBase::int32Arguments.clear();
 	ArgBase::byteArguments.clear();
 	ArgBase::uint16Arguments.clear();
 	ArgBase::uint64Arguments.clear();

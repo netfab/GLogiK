@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ MainWindow::MainWindow(QWidget *parent)
 		_pid(0),
 		_ignoreNextSignal(false)
 {
-	openlog("GKcQt5", LOG_PID|LOG_CONS, LOG_USER);
+	openlog("GKcQt", LOG_PID|LOG_CONS, LOG_USER);
 }
 
 MainWindow::~MainWindow()
@@ -97,6 +97,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::handleSignal(int signum)
 {
+	GK_LOG_FUNC
+
 	LOG(info) << process::getSignalHandlingDesc(signum, " --> bye bye");
 	QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
 }
@@ -112,7 +114,7 @@ void MainWindow::init(const int& argc, char *argv[])
 
 #if DEBUGGING_ON
 		if(GKLogging::GKDebug) {
-			GKLogging::initDebugFile("GKcQt5", fs::owner_read|fs::owner_write|fs::group_read);
+			GKLogging::initDebugFile("GKcQt", fs::owner_read|fs::owner_write|fs::group_read);
 		}
 #endif
 		GKLogging::initConsoleLog();
@@ -126,14 +128,14 @@ void MainWindow::init(const int& argc, char *argv[])
 	/* -- -- -- */
 	/* -- -- -- */
 
-	LOG(info) << "Starting GKcQt5 vers. " << VERSION;
+	LOG(info) << "Starting GKcQt vers. " << VERSION;
 
-	std::signal(SIGINT, MainWindow::handleSignal);
-	std::signal(SIGTERM, MainWindow::handleSignal);
-	std::signal(SIGHUP, MainWindow::handleSignal);
+	process::setSignalHandler(SIGINT, MainWindow::handleSignal);
+	process::setSignalHandler(SIGTERM, MainWindow::handleSignal);
+	process::setSignalHandler(SIGHUP, MainWindow::handleSignal);
 
 	try {
-		_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE, GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE_PATH);
+		_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE_PATH);
 		_pDBus->init();
 	}
 	catch (const std::bad_alloc& e) { /* handle new() failure */
@@ -289,20 +291,20 @@ void MainWindow::build(void)
 	GKLog(trace, "Qt signals connected to slots")
 
 	/* initializing GKDBus signals */
-	_pDBus->NSGKDBus::Callback<SIGv2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGv2v>::receiveSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"DevicesUpdated",
 		{},
 		std::bind(&MainWindow::resetInterface, this)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGs2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGs2v>::receiveSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"DeviceConfigurationSaved",
 		{ {"s", "device_id", "in", "device ID"}, },
@@ -356,14 +358,14 @@ void MainWindow::aboutToQuit(void)
 	_pDBus->removeSignalsInterface(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 
 	_pDBus->exit();
 
 	delete _pDBus; _pDBus = nullptr;
 
-	LOG(info) << "GKcQt5 MainWindow process exiting, bye !";
+	LOG(info) << "GKcQt MainWindow process exiting, bye !";
 }
 
 void MainWindow::configurationFileUpdated(const std::string & devID)
@@ -436,7 +438,7 @@ void MainWindow::getExecutablesDependenciesMap(void)
 
 			_DepsMap[GKBinary::GK_GUI_QT] =
 				{ /* qVersion() from <QtGlobal> */
-					{"Qt5", GK_DEP_QT5_VERSION_STRING, qVersion()},
+					{"Qt", GK_DEP_QT_VERSION_STRING, qVersion()},
 				};
 		}
 		catch (const GLogiKExcept & e) {
@@ -461,7 +463,7 @@ void MainWindow::aboutDialog(void)
 		about->setModal(true);
 		about->setAttribute(Qt::WA_DeleteOnClose);
 		about->setFixedSize(560, 300);
-		about->setWindowTitle("About GKcQt5");
+		about->setWindowTitle("About GKcQt");
 		about->open();
 	}
 	catch (const std::bad_alloc& e) {

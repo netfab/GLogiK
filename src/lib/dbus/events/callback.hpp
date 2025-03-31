@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@
 // "D" - GKDepsMap_type
 
 #include "SIGas2v.hpp"    //         array of string to void
+#include "SIGb2v.hpp"     //                    bool to void
 #include "SIGq2v.hpp"     //                uint16_t to void
 #include "SIGs2as.hpp"    //       string to array of string
 #include "SIGs2b.hpp"     //                  string to bool
@@ -74,17 +75,17 @@ template <typename T>
 	public:
 		void exposeMethod(
 			const BusConnection bus,
-			const char* object,
+			const char* objectPath,
 			const char* interface,
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
 			T callback
 		);
 
-		void exposeSignal(
+		void receiveSignal(
 			const BusConnection bus,
 			const char* sender,
-			const char* object,
+			const char* objectPath,
 			const char* interface,
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
@@ -95,10 +96,11 @@ template <typename T>
 		Callback() = default;
 		virtual ~Callback() = default;
 
+	private:
 		void exposeEvent(
 			const BusConnection bus,
 			const char* sender,
-			const char* object,
+			const char* objectPath,
 			const char* interface,
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
@@ -107,11 +109,10 @@ template <typename T>
 			const bool introspectable
 		);
 
-	private:
 		virtual void addEvent(
 			const BusConnection bus,
 			const char* sender,
-			const char* object,
+			const char* objectPath,
 			const char* interface,
 			GKDBusEvent* event
 		) = 0;
@@ -124,21 +125,21 @@ template <typename T>
 template <typename T>
 	void Callback<T>::exposeMethod(
 		const BusConnection bus,
-		const char* object,
+		const char* objectPath,
 		const char* interface,
 		const char* eventName,
 		const std::vector<DBusMethodArgument> & args,
 		T callback
 	)
 {
-	this->exposeEvent(bus, nullptr, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_METHOD, true);
+	this->exposeEvent(bus, nullptr, objectPath, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_METHOD, true);
 }
 
 template <typename T>
-	void Callback<T>::exposeSignal(
+	void Callback<T>::receiveSignal(
 		const BusConnection bus,
 		const char* sender,
-		const char* object,
+		const char* objectPath,
 		const char* interface,
 		const char* eventName,
 		const std::vector<DBusMethodArgument> & args,
@@ -146,14 +147,14 @@ template <typename T>
 	)
 {
 	/* signals declared as events with callback functions are not introspectable */
-	this->exposeEvent(bus, sender, object, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, false);
+	this->exposeEvent(bus, sender, objectPath, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, false);
 }
 
 template <typename T>
 	void Callback<T>::exposeEvent(
 		const BusConnection bus,
 		const char* sender,
-		const char* object,
+		const char* objectPath,
 		const char* interface,
 		const char* eventName,
 		const std::vector<DBusMethodArgument> & args,
@@ -170,8 +171,69 @@ template <typename T>
 		throw NSGKUtils::GLogiKBadAlloc("DBus event bad allocation");
 	}
 
-	this->addEvent(bus, sender, object, interface, event);
+	this->addEvent(bus, sender, objectPath, interface, event);
 }
+
+/* -- -- -- -- -- -- -- -- -- -- -- -- */
+/* -- -- explicit specialization -- -- */
+/* -- -- -- -- -- -- -- -- -- -- -- -- */
+
+/*
+ * SIGs2s used only internally by introspection.
+ * Same implementation as template above for ::exposeEvent(),
+ * the only difference is the access modifier : protected here, private above.
+ */
+
+template <>
+	class Callback<SIGs2s>
+{
+	public:
+/*
+		void exposeMethod(
+			const BusConnection bus,
+			const char* objectPath,
+			const char* interface,
+			const char* eventName,
+			const std::vector<DBusMethodArgument> & args,
+			SIGs2s callback
+		);
+
+		void receiveSignal(
+			const BusConnection bus,
+			const char* sender,
+			const char* objectPath,
+			const char* interface,
+			const char* eventName,
+			const std::vector<DBusMethodArgument> & args,
+			SIGs2s callback
+		);
+*/
+
+	protected:
+		Callback() = default;
+		virtual ~Callback() = default;
+
+		void exposeEvent(
+			const BusConnection bus,
+			const char* sender,
+			const char* objectPath,
+			const char* interface,
+			const char* eventName,
+			const std::vector<DBusMethodArgument> & args,
+			SIGs2s callback,
+			GKDBusEventType t,
+			const bool introspectable
+		);
+
+	private:
+		virtual void addEvent(
+			const BusConnection bus,
+			const char* sender,
+			const char* objectPath,
+			const char* interface,
+			GKDBusEvent* event
+		) = 0;
+};
 
 } // namespace NSGKDBus
 

@@ -13,8 +13,8 @@ if udev_rules_dir == ''
 endif
 
 configure_file(
-  input : '99-GLogiK.rules.in',
-  output : '99-GLogiK.rules',
+  input : '70-GLogiK.rules.in',
+  output : '70-GLogiK.rules',
   install_dir : udev_rules_dir,
   configuration : cdata
 )

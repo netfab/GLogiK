@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,11 +19,14 @@
  *
  */
 
+#include <unistd.h>
+
 #include <new>
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <thread>
 
 #include <poll.h>
 #include <libudev.h>
@@ -78,6 +81,7 @@ DevicesManager::~DevicesManager()
 	GKLog(trace, "destroying devices manager")
 
 	this->stopInitializedDevices();
+	_sleepingDevices.clear();
 	_stoppedDevices.clear();
 
 	GKLog(trace, "stopping drivers")
@@ -157,9 +161,7 @@ void DevicesManager::initializeDevices(const bool openDevices) noexcept
 
 	GKLog(trace, "initializing detected devices")
 
-#if GKDBUS
 	std::vector<std::string> initializedDevices;
-#endif
 
 	for(const auto & devicePair : _detectedDevices)
 	{
@@ -212,9 +214,7 @@ void DevicesManager::initializeDevices(const bool openDevices) noexcept
 						_stoppedDevices[devID] = device;
 						buffer << " initialized (stopped)";
 					}
-#if GKDBUS
 					initializedDevices.push_back(devID);
-#endif
 				}
 				catch ( const GLogiKExcept & e ) {
 					buffer << " NOT initialized (failed)";
@@ -318,22 +318,36 @@ const bool DevicesManager::stopDevice(
 	return false;
 }
 
+void DevicesManager::startSleepingDevices(void)
+{
+	GK_LOG_FUNC
+
+	GKLog(trace, "starting sleeping devices")
+
+	for(const auto & devID : _sleepingDevices) {
+		this->startDevice(devID);
+	}
+
+	_sleepingDevices.clear();
+}
+
 void DevicesManager::stopInitializedDevices(void)
 {
 	GK_LOG_FUNC
 
 	GKLog(trace, "stopping initialized devices")
 
-	std::vector<std::string> toStop;
+	/* sleeping devices will potentially be started again right after resume */
+	_sleepingDevices.clear();
+
 	for(const auto & devicePair : _startedDevices) {
-		toStop.push_back(devicePair.first);
+		_sleepingDevices.push_back(devicePair.first);
 	}
 
-	for(const auto & devID : toStop) {
+	for(const auto & devID : _sleepingDevices) {
 		this->stopDevice(devID);
 	}
 
-	toStop.clear();
 	_startedDevices.clear();
 }
 
@@ -591,8 +605,8 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev)
 							uint8_t bus, num = 0;
 
 							try {
-								bus = std::stoi( toString( udev_device_get_sysattr_value(dev, "busnum")) );
-								num = std::stoi( toString( udev_device_get_sysattr_value(dev, "devnum")) );
+								bus = std::stoi( toString( udev_device_get_property_value(dev, "BUSNUM")) );
+								num = std::stoi( toString( udev_device_get_property_value(dev, "DEVNUM")) );
 							}
 							catch (const std::invalid_argument& ia) {
 								udev_device_unref(dev);
@@ -605,7 +619,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev)
 
 							const std::string devID( USBDeviceID::getDeviceID(bus, num) );
 
-							const std::string devpath( toString( udev_device_get_sysattr_value(dev, "devpath") ) );
+							const std::string devpath( toString( udev_device_get_property_value(dev, "DEVPATH") ) );
 							if( devpath.empty() ) {
 								udev_device_unref(dev);
 								continue;
@@ -943,7 +957,7 @@ void DevicesManager::startMonitoring(void) {
 	GKLog(trace, "initializing libudev")
 
 	struct udev * pUdev = udev_new();
-	if(pUdev == nullptr )
+	if( pUdev == nullptr )
 		throw GLogiKExcept("udev context init failure");
 
 	try { /* pUdev unref on catch */
@@ -1009,19 +1023,32 @@ void DevicesManager::startMonitoring(void) {
 						throw GLogiKExcept("no device from receive_device(), something is wrong");
 
 					try { /* dev unref on catch */
+
+						/* kernel action value, or NULL
+						 * Usual actions are:
+						 *   add, remove, bind, unbind, change, move, online, offline
+						 */
 						const std::string action( toString( udev_device_get_action(dev) ) );
-						if( action.empty() ) {
+
+						if( action.empty() )
 							throw GLogiKExcept("device_get_action() failure");
-						}
 
 						const std::string devnode( toString( udev_device_get_devnode(dev) ) );
-
-						// filtering empty events
 						if( devnode.empty() ) {
+							GKLog2(trace, "filtering empty devnode event : ", action)
+							udev_device_unref(dev);
 							continue;
 						}
 
-						GKLog2(trace, "Action : ", action)
+						/* only interested in 'add' or 'remove' events */
+						if(( action != "add" ) and ( action != "remove" )) {
+							GKLog2(trace, "filtering action : ", action)
+							udev_device_unref(dev);
+							continue;
+						}
+
+						GKLog2(trace, "device action : ", action)
+						GKLog2(trace, "device devnode: ", devnode)
 
 						this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
 

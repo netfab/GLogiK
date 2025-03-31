@@ -60,11 +60,20 @@ declare stripbuild=0
 declare options=''
 
 function add_meson_option() {
-	local -r option="${1##*-}"
+	local option="${1##--enable-}"
+	option="${option##--disable-}"
 	[[ ${#option} -eq 0 ]] && die "wrong parameter: ${1}"
 	options+="-D${option}=${2} "
 }
 
+# default options values, overridable by command line parameters
+add_meson_option 'dbus' 'true'
+add_meson_option 'notifications' 'true'
+add_meson_option 'libnotify' 'true'
+#add_meson_option 'qt5' 'true'
+add_meson_option 'qt6' 'true'
+
+# parsing command line parameters
 while [[ "${#}" -gt 0 ]]; do
 	case "${1}" in
 		-C|--configure)
@@ -106,6 +115,8 @@ done
 # -- -- -- -- -- -- -- -- -- #
 
 function clean_action() {
+	printf "${BLDRED}CLEANING WITH MESON${TXTRST}\n"
+
 	function safe_remove_dir() {
 		printf "removing « ${1} » directory ... "
 		if [[ -d "${1}" ]]; then
@@ -129,6 +140,8 @@ function clean_action() {
 }
 
 function configure_action() {
+	printf "${BLDRED}CONFIGURING WITH MESON${TXTRST}\n"
+
 	# https://mesonbuild.com/Builtin-options.html#build-type-options
 	local mesonconfigure=(
 		meson setup
@@ -166,11 +179,15 @@ function configure_action() {
 }
 
 function compile_action() {
+	printf "${BLDRED}BUILDING WITH MESON${TXTRST}\n"
+
 	change_directory "${ABS_BUILD_DIR}"
 	meson compile --verbose || die "compile failure"
 }
 
 function install_action() {
+	printf "${BLDRED}INSTALLING WITH MESON${TXTRST}\n"
+
 	change_directory "${ABS_BUILD_DIR}"
 	#DESTDIR="${ABS_INSTALL_DIR}-DESTDIR" meson install || die "install failure"
 	meson install || die "install failure"

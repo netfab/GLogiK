@@ -1,5 +1,5 @@
 
-GKcQt5_sources = [
+GKcQt_sources = [
   'AboutDialog/AboutDialogTab.hpp',
   'AboutDialog/AboutTab.cpp',
   'AboutDialog/AboutTab.hpp',
@@ -26,18 +26,26 @@ GKcQt5_sources = [
   'main.cpp',
 ]
 
-qt5_dep = dependency('qt5', modules: ['Core', 'Gui', 'Widgets'])
+qt_dep = null_dep
+
+if enable_qt5
+  qt_dep = dependency('qt5', modules: ['Core', 'Gui', 'Widgets'])
+endif
+
+if enable_qt6
+  qt_dep = dependency('qt6', modules: ['Core', 'Gui', 'Widgets'])
+endif
 
 deps_versions_array += [
-  ['QT5', qt5_dep],
+  ['QT', qt_dep],
 ]
 
 executable(
-  'GKcQt5',
-  GKcQt5_sources,
+  'GKcQt',
+  GKcQt_sources,
   include_directories : inc,
   dependencies : [
-	qt5_dep,
+	qt_dep,
 	boost_system_dep,
 	boost_filesystem_dep,
 	boost_program_options_dep,

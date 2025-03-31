@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ namespace NSGKDBus
 
 class GKDBusEvents
 	:	public Callback<SIGas2v>,
+		public Callback<SIGb2v>,
 		public Callback<SIGq2v>,
 		public Callback<SIGs2as>,
 		public Callback<SIGs2b>,
@@ -69,7 +70,7 @@ class GKDBusEvents
 /*
 		void removeMethod(
 			const BusConnection eventBus,
-			const char* eventObject,
+			const char* eventObjectPath,
 			const char* eventInterface,
 			const char* eventName
 		);
@@ -77,45 +78,46 @@ class GKDBusEvents
 
 		void removeMethodsInterface(
 			const BusConnection eventBus,
-			const char* eventObject,
+			const char* eventObjectPath,
 			const char* eventInterface
 		) noexcept;
 
 		void removeSignalsInterface(
 			const BusConnection eventBus,
 			const char* eventSender,
-			const char* eventObject,
+			const char* eventObjectPath,
 			const char* eventInterface
 		) noexcept;
 
 	protected:
-		GKDBusEvents(
-			const std::string & rootNode,
-			const std::string & rootNodePath
-		);
+		GKDBusEvents(const std::string & rootNodePath);
 		~GKDBusEvents(void);
 
-		thread_local static BusConnection currentBus;
+		const std::string & getRootNodePath(void) const;
+		void clearDBusEvents(void) noexcept;
 
 		std::map<BusConnection,
-			std::map<std::string, /* object */
+			std::map<std::string, /* object path */
 				std::map<std::string, /* interface */
 					std::vector<GKDBusEvent*> > > > _DBusEvents;
 
-		const std::string & getRootNode(void) const;
-		void clearDBusEvents(void) noexcept;
-
 	private:
-		static const std::string _rootNodeObject;
-		std::string _rootNode;
-		std::string _rootNodePath;
-		std::set<std::string> _DBusInterfaces;
-
 		std::map<BusConnection,
-			std::map<std::string, /* object */
+			std::map<std::string, /* object path */
 				std::map<std::string, /* interface */
 					std::vector<GKDBusIntrospectableSignal> > > > _DBusIntrospectableSignals;
 
+		std::map<BusConnection,
+			std::vector<std::string> > _DBusIntrospectableObjects;
+
+		std::set<std::string> _DBusInterfaces;
+		std::string _rootNodePath;
+
+	protected:
+		thread_local static BusConnection currentBus;
+
+	private:
+		const char* const _FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE = "org.freedesktop.DBus.Introspectable";
 		virtual DBusConnection* const getDBusConnection(BusConnection wantedConnection) const = 0;
 
 		void openXMLInterface(
@@ -127,13 +129,14 @@ class GKDBusEvents
 			std::ostringstream & xml,
 			const GKDBusEvent* DBusEvent
 		);
+		const std::string getObjectFromObjectPath(const std::string & objectPath);
 		const std::string introspect(const std::string & askedObjectPath);
 		const std::string introspectRootNode(void);
 
 		/*
 		void removeEvent(
 			const BusConnection eventBus,
-			const char* eventObject,
+			const char* eventObjectPath,
 			const char* eventInterface,
 			const char* eventName
 		);
@@ -142,7 +145,7 @@ class GKDBusEvents
 		void addEvent(
 			const BusConnection eventBus,
 			const char* eventSender,
-			const char* eventObject,
+			const char* eventObjectPath,
 			const char* eventInterface,
 			GKDBusEvent* event
 		);
@@ -170,7 +173,7 @@ class GKDBusEvents
 		void removeInterface(
 			const BusConnection eventBus,
 			const char* sender,
-			const char* eventObject,
+			const char* eventObjectPath,
 			const char* eventInterface
 		) noexcept;
 };

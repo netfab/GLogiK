@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -43,12 +43,6 @@
 namespace GLogiK
 {
 
-enum class SessionFramework : uint8_t
-{
-	FW_UNKNOWN = 0,
-	FW_LOGIND,
-};
-
 class DBusHandler
 	:	public DBusInst
 {
@@ -78,7 +72,7 @@ class DBusHandler
 
 		std::string _clientID;
 		std::string _daemonVersion;
-		std::string _currentSession;	/* current session object path */
+		std::string _CURRENT_SESSION_DBUS_OBJECT_PATH;	/* current session object path */
 		std::string _sessionState;		/* session state */
 
 		const GKDepsMap_type* const _pDepsMap;

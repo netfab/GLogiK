@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2024  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -60,6 +60,14 @@ class process
 		~process(void) = delete;
 
 		static uint8_t options;
+
+		static void logErrno(const int errnum, const std::string & errstr);
+		static void closeFD(int fd, const std::string & tracestr);
+		static void notifyParentProcess(int pipefd[], const int message);
+		static const int waitForChildNotification(int pipefd[]);
+		static void newSessionID(void);
+
+		static void forkProcess(const bool newSessionID=false);
 
 		static const pid_t newPID(void);
 		static const std::string getSignalAbbrev(int signum);

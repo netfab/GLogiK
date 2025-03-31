@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -113,48 +113,55 @@ void printVersionDeps(const std::string & binaryVersion, const GKDepsMap_type & 
  * --- ---- --- */
 
 /* daemon thread */
-extern c_str GLOGIK_DAEMON_DBUS_ROOT_NODE;
 extern c_str GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH;
 extern c_str GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME;
 	/* -- */
-extern c_str GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT;
 extern c_str GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH;
 extern c_str GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
 	/* -- */
-extern c_str GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT;
 extern c_str GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH;
 extern c_str GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
 
 /* desktop service launcher */
-extern c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE;
 extern c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE_PATH;
 extern c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME;
 	/* -- */
-//extern c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_SESSION_DBUS_OBJECT;
 //extern c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_SESSION_DBUS_OBJECT_PATH;
 //extern c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_SESSION_DBUS_INTERFACE;
 
 /* desktop service */
-extern c_str GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE;
 extern c_str GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE_PATH;
 extern c_str GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME;
 	/* -- */
-//extern c_str GLOGIK_DESKTOP_SERVICE_SYSTEM_DBUS_OBJECT;
 //extern c_str GLOGIK_DESKTOP_SERVICE_SYSTEM_DBUS_OBJECT_PATH;
 //extern c_str GLOGIK_DESKTOP_SERVICE_SYSTEM_DBUS_INTERFACE;
 	/* -- */
-extern c_str GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT;
 extern c_str GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH;
 extern c_str GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE;
 
 /* Qt5 gui */
-extern c_str GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE;
 extern c_str GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE_PATH;
 extern c_str GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME;
 	/* -- */
-extern c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT;
 extern c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH;
 extern c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE;
+
+/* logind */
+extern c_str LOGIND_DBUS_BUS_CONNECTION_NAME;
+
+extern c_str LOGIND_MANAGER_DBUS_OBJECT_PATH;
+extern c_str LOGIND_MANAGER_DBUS_INTERFACE;
+
+extern c_str LOGIND_SESSION_DBUS_INTERFACE;
+
+/* freedesktop standard interfaces */
+extern c_str FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE;
+
+enum class SessionFramework : uint8_t
+{
+	FW_UNKNOWN = 0,
+	FW_LOGIND,
+};
 
 } // namespace GLogiK
 

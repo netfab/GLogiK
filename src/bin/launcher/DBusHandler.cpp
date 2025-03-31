@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -66,12 +66,12 @@ void DBusHandler::cleanDBusRequests(void)
 {
 	_pDBus->removeSignalsInterface(_sessionBus,
 		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE);
 
 	_pDBus->removeSignalsInterface(_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 }
 
@@ -87,20 +87,20 @@ void DBusHandler::cleanDBusRequests(void)
  */
 
 void DBusHandler::initializeGKDBusSignals(void) {
-	_pDBus->NSGKDBus::Callback<SIGq2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGq2v>::receiveSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"ServiceStartRequest",
 		{},
 		std::bind(&DBusHandler::spawnService, this, std::placeholders::_1)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGq2v>::exposeSignal(
+	_pDBus->NSGKDBus::Callback<SIGq2v>::receiveSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 		"ServiceStartRequest",
 		{},

@@ -2,7 +2,7 @@
 ACLOCAL_AMFLAGS = -I m4
 
 AM_DISTCHECK_CONFIGURE_FLAGS = --enable-gcc-wall --enable-gcc-werror --enable-as-needed \
-	--enable-dbus --enable-qt5
+	--enable-dbus --enable-qt6
 
 include %D%/data/tmpfiles.d/Makefile.am
 include %D%/data/udev/Makefile.am
@@ -25,7 +25,7 @@ if WITH_DESKTOP_NOTIFICATIONS
 include %D%/data/icons/Makefile.am
 endif
 
-if WITH_QT5
+if WITH_QT
 include %D%/src/bin/gui/Qt/Makefile.am
 include %D%/data/applications/Makefile.am
 include %D%/data/gui/Makefile.am

@@ -39,7 +39,7 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 
 # Checks for headers
-#AC_CHECK_HEADERS(climits)
+AC_CHECK_HEADERS(csignal)
 
 # libtool requirement and setup
 LT_PREREQ([2.4.6])
@@ -52,6 +52,9 @@ dnl preprocessor arguments
 #AM_CPPFLAGS="-I\$(top_srcdir)/src/libs -I\$(top_builddir)/src/include"
 AM_CPPFLAGS="-I\$(top_srcdir)/src"
 AC_SUBST(AM_CPPFLAGS)
+
+AC_CHECK_SIZEOF([int])
+AC_SUBST(SIZEOF_INT)
 
 dnl -------------------------------------------------------------------------
 dnl                     declare custom configure options
@@ -115,6 +118,11 @@ dnl check for Qt5 client GUI
 AC_ARG_ENABLE( [qt5],
                AS_HELP_STRING( [--enable-qt5], [Enable Qt5 client GUI]),
                [enable_qt5=$enableval], [enable_qt5=no])
+
+dnl check for Qt6 client GUI
+AC_ARG_ENABLE( [qt6],
+               AS_HELP_STRING( [--enable-qt6], [Enable Qt6 client GUI]),
+               [enable_qt6=$enableval], [enable_qt6=no])
 
 dnl check for hidapi support
 AC_ARG_ENABLE( [hidapi],
@@ -199,7 +207,7 @@ GDT_DEBUG_FLAG(	[$enable_keys_debugging],
 				[keys extra debugging])
 
 GDT_DEBUG_FLAG(	[$enable_gkdbus_debugging],
-				[DEBUG_GKDBUS_SUBOBJECTS],
+				[DEBUG_GKDBUS],
 				[GKDBus extra debugging])
 
 GDT_DEBUG_FLAG(	[$enable_libusb_extra_debugging],
@@ -266,26 +274,20 @@ AS_IF([test "x$enable_hidapi" = "xyes"],
 AM_CONDITIONAL([WITH_HIDAPI], [test "x$enable_hidapi" = "xyes"])
 
 dnl ---
-dnl checking for Qt5 GUI
-AM_CONDITIONAL([WITH_QT5], [test "x$enable_qt5" = "xyes"])
+dnl Qt support requires DBus support
+GDT_OPTDEP_CHECK([Qt5 client GUI], [$enable_qt5], [D-Bus], [$enable_dbus])
+GDT_OPTDEP_CHECK([Qt6 client GUI], [$enable_qt6], [D-Bus], [$enable_dbus])
 
-AC_MSG_CHECKING([whether we want Qt5 client GUI])
-AS_IF([test "x$enable_qt5" = "xyes"],
-	[
-		AC_MSG_RESULT([yes])
-		AS_IF(
-			[test "x$enable_dbus" = "xyes"],
-			[],
-			[AC_MSG_ERROR([Qt5 client GUI requires D-Bus support enabled])]
-		)
-		AC_DEFINE([QT5_GUI], [1], [Qt5 client GUI])
-	], [
-		AC_MSG_RESULT([no])
-	])
+dnl different Qt versions are mutually exclusive
+GDT_OPTEXCL_CHECK([Qt5 support], [$enable_qt5], [Qt6 support], [$enable_qt6])
 
+dnl checking for Qt GUI
+AM_CONDITIONAL([WITH_QT], [test "x$enable_qt5" = "xyes" -o "x$enable_qt6" = "xyes" ])
+
+dnl ---
 dnl abort compilation after first error
 GDT_ADD_CXXFLAG([-Wfatal-errors])
-GDT_ADD_CXXFLAG([-std=c++14])
+GDT_ADD_CXXFLAG([-std=c++17])
 
 AC_SUBST(AM_CXXFLAGS)
 AC_SUBST(AM_LDFLAGS)
@@ -337,65 +339,12 @@ AS_IF([test "x$enable_dbus" = "xyes"],
 		dnl X libraries used only by user service
 		GDT_PKG_CHECK_MODULE([LIBX11], [x11])
 		GDT_PKG_CHECK_MODULE([LIBXTST], [xtst])
+
 		AS_IF([test "x$enable_qt5" = "xyes"],
-			[ PKG_CHECK_MODULES([QT5], [Qt5Core Qt5Gui Qt5Widgets]) ], [])
-	], [])
+			[ GDT_QT_CHECK([QT], [5], [Qt5Core Qt5Gui Qt5Widgets]) ], [])
 
-AS_IF([test "x$enable_qt5" = "xyes"],
-	[
-		AC_DEFUN(
-			[GDT_WARN_QMAKE_PATH],
-			[ AC_MSG_WARN([Please export your qmake installation directory to the PATH before running "configure"]) ]
-		)
-
-		AC_PATH_PROGS(SED, sed)
-		if test -z "${SED}"; then
-			AC_MSG_ERROR([sed is required])
-		fi
-
-		dnl checking for qmake
-		AC_PATH_PROGS(QMAKE5, [qmake], no)
-		if test "$QMAKE5" = "no"; then
-			GDT_WARN_QMAKE_PATH
-			AC_MSG_ERROR([Qt5 qmake not found.])
-		else
-			dnl checking Qt5 version
-			qmake5_test_ver="`${QMAKE5} -v 2>&1 | ${SED} -n -e 's/^Using Qt version \(5\.[[0-9.]]\+\).*$/\1/p'`"
-			if test -z "$qmake5_test_ver"; then
-				GDT_WARN_QMAKE_PATH
-				AC_MSG_ERROR([Wrong Qt5 qmake version.])
-	        fi
-
-			AC_DEFINE_UNQUOTED([GK_DEP_QT5_VERSION_STRING], ["$qmake5_test_ver"], [detected compile-time Qt5 version])
-			qt5_incdirs="`$QMAKE5 -query QT_INSTALL_HEADERS`"
-
-			saved_CPPFLAGS=$CPPFLAGS
-			CPPFLAGS="${CPPFLAGS} -I${qt5_incdirs}"
-			AC_CHECK_HEADER(QtCore/qconfig.h, [], [AC_MSG_ERROR(qconfig.h header not found.)], [])
-
-			XXX_PROGRAM="
-			#include <QtCore/qconfig.h>
-			#if QT_REDUCE_RELOCATIONS
-			#else
-			#error \"Qt not built with -reduce-relocations\"
-			#endif
-			int main(void) { return 0; }
-			"
-
-			AC_MSG_CHECKING([whether Qt5 was built with -reduce-relocations])
-			AC_COMPILE_IFELSE(
-				[AC_LANG_SOURCE([$XXX_PROGRAM])],
-				[
-					AC_MSG_RESULT([yes])
-					AS_VAR_COPY([temp], [QT5_CFLAGS])
-					dnl $ grep -A 4 QT_REDUCE_RELOCATIONS /usr/include/qt5/QtCore/qglobal.h
-					AS_VAR_SET([QT5_CFLAGS], ["$temp -fPIC"])
-				],
-				[AC_MSG_RESULT([no])]
-			)
-
-			CPPFLAGS=$saved_CPPFLAGS
-		fi
+		AS_IF([test "x$enable_qt6" = "xyes"],
+			[ GDT_QT_CHECK([QT], [6], [Qt6Core Qt6Gui Qt6Widgets]) ], [])
 	], [])
 
 AX_BOOST_BASE([1.64.0], [], GDT_PKG_NOT_FOUND([boost libraries]))
@@ -414,7 +363,7 @@ AC_CONFIG_LINKS([NEWS:NEWS.md README:README.md])
 AC_CONFIG_FILES([
 	Makefile
 	data/init/openrc/glogikd
-	data/udev/99-GLogiK.rules
+	data/udev/70-GLogiK.rules
 	data/sysusers.d/GLogiK.conf
 	data/tmpfiles.d/GLogiK.conf
 	])
@@ -488,11 +437,12 @@ AC_MSG_NOTICE([
                  X11 CFLAGS : ${LIBX11_CFLAGS}
                   XTST LIBS : ${LIBXTST_LIBS}
                 XTST CFLAGS : ${LIBXTST_CFLAGS}
-                   Qt5 LIBS : ${QT5_LIBS}
-                 Qt5 CFLAGS : ${QT5_CFLAGS}
+                    Qt LIBS : ${QT_LIBS}
+                  Qt CFLAGS : ${QT_CFLAGS}
 --------------------------------------------------------------
         with Qt5 client GUI : ${enable_qt5}
-          found Qt5 version : ${qmake5_test_ver}
+        with Qt6 client GUI : ${enable_qt6}
+           found Qt version : ${qmake_test_ver}
 --------------------------------------------------------------
 ---  DEBUGGING --- DEBUGGING ---- DEBUGGING --- DEBUGGING  ---
 --------------------------------------------------------------

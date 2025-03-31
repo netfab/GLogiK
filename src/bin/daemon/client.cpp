@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ using namespace NSGKUtils;
 
 Client::Client(
 	const std::string & objectPath,
-	DevicesManager* pDevicesManager)
+	DevicesManager* const pDevicesManager)
 	:	_sessionState("unknown"),
 		_sessionObjectPath(objectPath),
 		_check(true),
@@ -91,7 +91,7 @@ void Client::toggleClientReadyPropertie(void)
 }
 
 void Client::initializeDevice(
-	DevicesManager* pDevicesManager,
+	DevicesManager* const pDevicesManager,
 	const std::string & devID)
 {
 	GK_LOG_FUNC
@@ -155,7 +155,7 @@ const bool Client::setDeviceBacklightColor(
 
 void Client::setDeviceActiveUser(
 	const std::string & devID,
-	DevicesManager* pDevicesManager)
+	DevicesManager* const pDevicesManager)
 {
 	GK_LOG_FUNC
 
@@ -199,7 +199,7 @@ const bool Client::setDeviceLCDPluginsMask(
 	return ret;
 }
 
-void Client::initializeDevices(DevicesManager* pDevicesManager)
+void Client::initializeDevices(DevicesManager* const pDevicesManager)
 {
 	for( const auto & devID : pDevicesManager->getStartedDevices() ) {
 		this->initializeDevice(pDevicesManager, devID);

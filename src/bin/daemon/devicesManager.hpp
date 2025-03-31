@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2024  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -70,6 +70,9 @@ class DevicesManager
 		void checkDBusMessages(void) noexcept;
 #endif
 
+		void startSleepingDevices(void);
+		void stopInitializedDevices(void);
+
 		void resetDevicesStates(void);
 		const bool startDevice(const std::string & devID);
 		const bool stopDevice(
@@ -102,12 +105,13 @@ class DevicesManager
 	protected:
 
 	private:
-		const std::string _unknown;
-		std::vector<KeyboardDriver*> _drivers;
 		std::map<std::string, USBDeviceID> _detectedDevices;
 		std::map<std::string, USBDeviceID> _startedDevices;
 		std::map<std::string, USBDeviceID> _stoppedDevices;
 		std::map<std::string, USBDeviceID> _unpluggedDevices;
+		std::vector<std::string> _sleepingDevices;
+		std::vector<KeyboardDriver*> _drivers;
+		const std::string _unknown;
 
 #if GKDBUS
 		NSGKDBus::GKDBus* _pDBus;
@@ -116,7 +120,6 @@ class DevicesManager
 
 		void searchSupportedDevices(struct udev * pUdev);
 		void initializeDevices(const bool openDevices) noexcept;
-		void stopInitializedDevices(void);
 		void checkInitializedDevicesThreadsStatus(void) noexcept;
 
 		void checkForUnpluggedDevices(void) noexcept;

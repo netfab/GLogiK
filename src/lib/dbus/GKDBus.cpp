@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 
 #include <new>
 #include <algorithm>
-#include <sstream>
 #include <vector>
 
 #include "messages/GKDBusMessage.hpp"
@@ -35,10 +34,8 @@ using namespace NSGKUtils;
 const BusConnection GKDBus::SystemBus(BusConnection::GKDBUS_SYSTEM);
 const BusConnection GKDBus::SessionBus(BusConnection::GKDBUS_SESSION);
 
-GKDBus::GKDBus(
-	const std::string & rootNode,
-	const std::string & rootNodePath)
-		:	GKDBusEvents(rootNode, rootNodePath),
+GKDBus::GKDBus(const std::string & rootNodePath)
+		:	GKDBusEvents(rootNodePath),
 			_sessionConnection(nullptr),
 			_systemConnection(nullptr),
 			_initDone(false)
@@ -171,19 +168,6 @@ void GKDBus::exit(void) noexcept
 	this->clearDBusEvents();
 }
 
-const std::string GKDBus::getObjectFromObjectPath(const std::string & objectPath)
-{
-	std::string object;
-	std::istringstream path(objectPath);
-	/* get last part of object path */
-	while(std::getline(path, object, '/')) {}
-#if 0 && DEBUGGING_ON
-	LOG(trace) << "object path: " << objectPath;
-	LOG(trace) << "     object: " << object;
-#endif
-	return object;
-}
-
 void GKDBus::checkForMessages(void) noexcept
 {
 	std::lock_guard<std::mutex> lock(_lockMutex);
@@ -241,31 +225,39 @@ void GKDBus::checkDBusMessage(
 	DBusConnection* const connection,
 	DBusMessage* message)
 {
-	const std::string object = this->getObjectFromObjectPath(
-		toString(dbus_message_get_path(message))
-	);
+	const std::string msgObjectPath = toString(dbus_message_get_path(message));
+#if DEBUG_GKDBUS
+	GKLog4(trace, "objectPath: ", msgObjectPath, "RootNodePath: ", this->getRootNodePath())
+#endif
 
-	for(const auto & objectPair : _DBusEvents.at(GKDBusEvents::currentBus)) {
-		/* handle root node introspection special case */
-		if( object != this->getRootNode() )
-			/* object must match */
-			if(object != objectPair.first) {
-				//GKLog4(trace, "skipping object : ", objectPair.first, "not : ", object)
+	const auto & opMap = _DBusEvents.at(GKDBusEvents::currentBus); /* objectPath map */
+	for(const auto & [objectPath, interMap] : opMap) /* interface map */
+	{
+		/* handle root node path introspection special case */
+		if( msgObjectPath != this->getRootNodePath() )
+			/* objectPath must match */
+			if(msgObjectPath != objectPath)
+			{
+#if DEBUG_GKDBUS
+				GKLog4(trace, "skipping objectPath: ", msgObjectPath, "map index: ", objectPath)
+#endif
 				continue;
 			}
 
-		for(const auto & interfacePair : objectPair.second) {
-			const char* interface = interfacePair.first.c_str();
+		for(const auto & [interface, pVec] : interMap) /* vector of pointers */
+		{
+			const char* eventInterface = interface.c_str();
 			//GKLog2(trace, "checking interface : ", interface)
 
-			for(const auto & DBusEvent : interfacePair.second) { /* vector of pointers */
+			for(const auto & DBusEvent : pVec)
+			{
 				const char* eventName = DBusEvent->eventName.c_str();
 				//GKLog2(trace, "checking event : ", eventName)
 
 				switch(DBusEvent->eventType) {
 					case GKDBusEventType::GKDBUS_EVENT_METHOD:
 					{
-						if( dbus_message_is_method_call(message, interface, eventName) )
+						if( dbus_message_is_method_call(message, eventInterface, eventName) )
 						{
 							GKLog2(trace, "receipted DBus method call : ", eventName)
 							DBusMessage* asyncContainer = this->getAsyncContainer();
@@ -277,7 +269,7 @@ void GKDBus::checkDBusMessage(
 					}
 					case GKDBusEventType::GKDBUS_EVENT_SIGNAL:
 					{
-						if( dbus_message_is_signal(message, interface, eventName) )
+						if( dbus_message_is_signal(message, eventInterface, eventName) )
 						{
 							GKLog2(trace, "receipted DBus signal : ", eventName)
 							DBusMessage* asyncContainer = this->getAsyncContainer();

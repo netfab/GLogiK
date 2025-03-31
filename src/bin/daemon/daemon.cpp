@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -184,7 +184,7 @@ int GLogiKDaemon::run(void)
 
 	if( GLogiKDaemon::isDaemonRunning() ) {
 #if GKDBUS
-		NSGKDBus::GKDBus DBus(GLOGIK_DAEMON_DBUS_ROOT_NODE, GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
+		NSGKDBus::GKDBus DBus(GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
 		DBus.init();
 		DBus.connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
 #endif
@@ -193,6 +193,7 @@ int GLogiKDaemon::run(void)
 
 #if GKDBUS
 		devicesManager.setDBus(&DBus);
+		this->startSleepInhibition(&DBus, &devicesManager);
 
 		ClientsManager clientsManager(&DBus, &devicesManager, &dependencies);
 #endif
@@ -204,6 +205,7 @@ int GLogiKDaemon::run(void)
 #if GKDBUS
 			clientsManager.waitForClientsDisconnections();
 			clientsManager.cleanDBusRequests();
+			this->stopSleepInhibition();
 			DBus.exit();
 #endif
 		}
@@ -215,6 +217,7 @@ int GLogiKDaemon::run(void)
 #if GKDBUS
 			clientsManager.waitForClientsDisconnections();
 			clientsManager.cleanDBusRequests();
+			this->stopSleepInhibition();
 			DBus.exit();
 #endif
 			throw;

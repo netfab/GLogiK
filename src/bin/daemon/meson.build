@@ -57,6 +57,8 @@ if enable_dbus
 	'clientsSignals.hpp',
 	'client.cpp',
 	'client.hpp',
+	'sleepInhibition.cpp',
+	'sleepInhibition.hpp',
   ]
 endif
 
@@ -93,8 +95,6 @@ deps_versions_array += [
 ]
 
 #! ----------
-
-cxx = meson.get_compiler('cpp')
 
 foreach ident : [
   ['getpwnam',    '''#include <sys/types.h>

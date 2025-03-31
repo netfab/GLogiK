@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2023  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 
 #include <cstdint>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -44,10 +45,18 @@ class ArgBase
 		static const int decodeNextArgument(DBusMessageIter* itArgument);
 
 		thread_local static std::vector<std::string> stringArguments;
+		thread_local static std::vector<int32_t> int32Arguments;
 		thread_local static std::vector<uint8_t> byteArguments;
 		thread_local static std::vector<uint16_t> uint16Arguments;
 		thread_local static std::vector<uint64_t> uint64Arguments;
 		thread_local static std::vector<bool> booleanArguments;
+
+		template<typename T, typename A>
+		static void reverse(std::vector<T, A> & ctn)
+		{
+			if( ! ctn.empty() )
+				std::reverse(ctn.begin(), ctn.end());
+		}
 
 	private:
 		static void decodeArgumentFromIterator(
