@@ -60,10 +60,6 @@ EXTRA_DIST += \
 	%D%/data/pbm/meson.build \
 	%D%/data/icons/meson.build
 
-maintainer-clean-local: maintainer-clean-libtool-files maintainer-clean-autotools-files
-
-.PHONY: maintainer-clean-libtool-files maintainer-clean-autotools-files
-
 LOCAL_LIBTOOL_FILES = \
 	$(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 \
@@ -85,11 +81,7 @@ LOCAL_AUTOTOOLS_FILES = \
 	$(top_srcdir)/compile \
 	$(top_srcdir)/ltmain.sh
 
-maintainer-clean-libtool-files:
-	-rm -f $(LOCAL_LIBTOOL_FILES)
-
-maintainer-clean-autotools-files:
-	-rm -f $(LOCAL_AUTOTOOLS_FILES)
+MAINTAINERCLEANFILES = $(LOCAL_LIBTOOL_FILES) $(LOCAL_AUTOTOOLS_FILES)
 
 docs_dir = $(docdir)
 
