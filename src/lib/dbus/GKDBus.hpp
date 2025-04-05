@@ -96,11 +96,11 @@ class GKDBus
 
 		void connectToSystemBus(
 			const char* connectionName,
-			const ConnectionFlag flag = ConnectionFlag::GKDBUS_MULTIPLE
+			const ConnectionFlag flag = ConnectionFlag::GKDBUS_SINGLE
 		);
 		void connectToSessionBus(
 			const char* connectionName,
-			const ConnectionFlag flag = ConnectionFlag::GKDBUS_MULTIPLE
+			const ConnectionFlag flag = ConnectionFlag::GKDBUS_SINGLE
 		);
 
 		void exit(void) noexcept;

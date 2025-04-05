@@ -142,7 +142,7 @@ void MainWindow::init(const int& argc, char *argv[])
 		throw GLogiKBadAlloc("GKDBus bad allocation");
 	}
 
-	_pDBus->connectToSessionBus(GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
+	_pDBus->connectToSessionBus(GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME);
 
 	this->statusBar();
 

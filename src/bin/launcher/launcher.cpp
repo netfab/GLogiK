@@ -107,8 +107,7 @@ int DesktopServiceLauncher::run(void)
 		NSGKDBus::GKDBus DBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE_PATH);
 		DBus.init();
 
-		DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME,
-			NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
+		DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME);
 
 		struct pollfd fds[1];
 		nfds_t nfds = 1;

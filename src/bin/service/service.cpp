@@ -111,8 +111,14 @@ int DesktopService::run(void)
 
 		DBus.init();
 
-		DBus.connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
-		DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
+		DBus.connectToSystemBus(
+			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+			NSGKDBus::ConnectionFlag::GKDBUS_MULTIPLE
+		);
+		DBus.connectToSessionBus(
+			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+			NSGKDBus::ConnectionFlag::GKDBUS_MULTIPLE
+		);
 
 		struct pollfd fds[2];
 		nfds_t nfds = 2;
