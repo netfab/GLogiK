@@ -74,6 +74,9 @@ DBusHandler::DBusHandler(
 		process::setSignalHandler(SIGUSR2, DBusHandler::handleSignal);
 	}
 	catch ( const GLogiKExcept & e ) {
+		/* don't show notifications */
+		this->clearAndUnregister(false);
+
 		/* clean each already declared DBus signal/method */
 		this->cleanDBusRequests();
 
@@ -84,6 +87,9 @@ DBusHandler::DBusHandler(
 DBusHandler::~DBusHandler()
 {
 	GK_LOG_FUNC
+
+	/* don't show notifications */
+	this->clearAndUnregister(false);
 
 	this->cleanDBusRequests();
 }
@@ -150,10 +156,7 @@ void DBusHandler::cleanDBusRequests(void)
 {
 	GK_LOG_FUNC
 
-	/* don't show notifications */
-	this->clearAndUnregister(false);
-
-	GKLog(trace, "clearing GKDBus configuration")
+	GKLog(trace, "cleaning GKDBus configuration")
 
 	/* remove SessionMessageHandler D-Bus interface and object */
 	DBus.removeMethodsInterface(_sessionBus,
