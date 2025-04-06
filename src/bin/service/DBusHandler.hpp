@@ -59,7 +59,6 @@ class DBusHandler
 
 		const bool getExitStatus(void) const;
 		void checkNotifyEvents(NSGKUtils::FileSystem* pGKfs);
-		void cleanDBusRequests(void);
 
 	protected:
 
@@ -93,6 +92,7 @@ class DBusHandler
 
 		void getDaemonDependenciesMap(GKDepsMap_type* const dependencies);
 
+		void cleanDBusRequests(void);
 		void clearAndUnregister(const bool notifications = true);
 
 		void reportChangedState(void);

@@ -74,8 +74,6 @@ DBusHandler::DBusHandler(
 		process::setSignalHandler(SIGUSR2, DBusHandler::handleSignal);
 	}
 	catch ( const GLogiKExcept & e ) {
-		this->unregisterWithDaemon();
-
 		/* clean each already declared DBus signal/method */
 		this->cleanDBusRequests();
 
@@ -85,6 +83,9 @@ DBusHandler::DBusHandler(
 
 DBusHandler::~DBusHandler()
 {
+	GK_LOG_FUNC
+
+	this->cleanDBusRequests();
 }
 
 /*
@@ -149,10 +150,7 @@ void DBusHandler::cleanDBusRequests(void)
 {
 	GK_LOG_FUNC
 
-	/* ::cleanDBusRequests() is called right before service exiting
-	 * but the daemon may still running and handling devices
-	 * do not show desktop notifications when service exit
-	 */
+	/* don't show notifications */
 	this->clearAndUnregister(false);
 
 	GKLog(trace, "clearing GKDBus configuration")

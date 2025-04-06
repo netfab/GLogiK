@@ -129,35 +129,35 @@ int DesktopService::run(void)
 		fds[1].fd = GKfs.getNotifyQueueDescriptor();
 		fds[1].events = POLLIN;
 
-		try {
-			/* DBusHandler constructor can potentially throw GLogiKExcept */
-			DBusHandler handler(_pid, &GKfs, &dependencies);
-
-			while( session.isSessionAlive() and
-					handler.getExitStatus() )
+		try
+		{
 			{
-				int num = poll(fds, nfds, 150);
+				/* DBusHandler constructor can potentially throw GLogiKExcept */
+				DBusHandler handler(_pid, &GKfs, &dependencies);
 
-				// data to read ?
-				if( num > 0 ) {
-					if( fds[0].revents & POLLIN ) {
-						session.processICEMessages();
-						continue;
+				while( session.isSessionAlive() and
+						handler.getExitStatus() )
+				{
+					int num = poll(fds, nfds, 150);
+
+					// data to read ?
+					if( num > 0 ) {
+						if( fds[0].revents & POLLIN ) {
+							session.processICEMessages();
+							continue;
+						}
+
+						if( fds[1].revents & POLLIN ) {
+							/* checking if any received filesystem notification matches
+							 * any device configuration file. If yes, reload the file,
+							 * and send configuration to daemon */
+							handler.checkNotifyEvents(&GKfs);
+						}
 					}
 
-					if( fds[1].revents & POLLIN ) {
-						/* checking if any received filesystem notification matches
-						 * any device configuration file. If yes, reload the file,
-						 * and send configuration to daemon */
-						handler.checkNotifyEvents(&GKfs);
-					}
+					DBus.checkForMessages();
 				}
-
-				DBus.checkForMessages();
-			}
-
-			// also unregister with daemon before cleaning
-			handler.cleanDBusRequests();
+			} // make sure DBusHandler object is destroyed to clean GKDBus events before exit
 
 			DBus.exit();
 		}
