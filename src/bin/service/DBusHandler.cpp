@@ -78,7 +78,7 @@ DBusHandler::DBusHandler(
 		this->clearAndUnregister(false);
 
 		/* clean each already declared DBus signal/method */
-		this->cleanDBusRequests();
+		this->cleanGKDBusEvents();
 
 		throw;
 	}
@@ -91,7 +91,7 @@ DBusHandler::~DBusHandler()
 	/* don't show notifications */
 	this->clearAndUnregister(false);
 
-	this->cleanDBusRequests();
+	this->cleanGKDBusEvents();
 }
 
 /*
@@ -152,7 +152,7 @@ void DBusHandler::clearAndUnregister(const bool notifications)
 	}
 }
 
-void DBusHandler::cleanDBusRequests(void)
+void DBusHandler::cleanGKDBusEvents(void) noexcept
 {
 	GK_LOG_FUNC
 
