@@ -129,35 +129,42 @@ int DesktopService::run(void)
 		fds[1].fd = GKfs.getNotifyQueueDescriptor();
 		fds[1].events = POLLIN;
 
-		DBusHandler handler(_pid, &GKfs, &dependencies);
+		try {
+			/* DBusHandler constructor can potentially throw GLogiKExcept */
+			DBusHandler handler(_pid, &GKfs, &dependencies);
 
-		while( session.isSessionAlive() and
-				handler.getExitStatus() )
-		{
-			int num = poll(fds, nfds, 150);
+			while( session.isSessionAlive() and
+					handler.getExitStatus() )
+			{
+				int num = poll(fds, nfds, 150);
 
-			// data to read ?
-			if( num > 0 ) {
-				if( fds[0].revents & POLLIN ) {
-					session.processICEMessages();
-					continue;
+				// data to read ?
+				if( num > 0 ) {
+					if( fds[0].revents & POLLIN ) {
+						session.processICEMessages();
+						continue;
+					}
+
+					if( fds[1].revents & POLLIN ) {
+						/* checking if any received filesystem notification matches
+						 * any device configuration file. If yes, reload the file,
+						 * and send configuration to daemon */
+						handler.checkNotifyEvents(&GKfs);
+					}
 				}
 
-				if( fds[1].revents & POLLIN ) {
-					/* checking if any received filesystem notification matches
-					 * any device configuration file. If yes, reload the file,
-					 * and send configuration to daemon */
-					handler.checkNotifyEvents(&GKfs);
-				}
+				DBus.checkForMessages();
 			}
 
-			DBus.checkForMessages();
+			// also unregister with daemon before cleaning
+			handler.cleanDBusRequests();
+
+			DBus.exit();
 		}
-
-		// also unregister with daemon before cleaning
-		handler.cleanDBusRequests();
-
-		DBus.exit();
+		catch (const GLogiKExcept & e) {
+			DBus.exit();
+			throw;
+		}
 	}
 
 	GKLog(trace, "exiting with success")

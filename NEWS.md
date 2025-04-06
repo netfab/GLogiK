@@ -1,6 +1,7 @@
 
 0.8.22 (202x-xx-xx)
 ===================
+- Fix potential memory leak in desktop service
 
 0.8.20 (2025-03-31)
 ===================
@@ -9,6 +10,7 @@
 - Improved process initialization when forking
 - Implemented suspend/hibernate handling in the daemon. Started devices
   are stopped before any sleep state, then restarted after resume
+- Usual internal cleanings and improvements
 
 0.8.18 (2023-12-11)
 ===================

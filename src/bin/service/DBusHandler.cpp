@@ -75,6 +75,10 @@ DBusHandler::DBusHandler(
 	}
 	catch ( const GLogiKExcept & e ) {
 		this->unregisterWithDaemon();
+
+		/* clean each already declared DBus signal/method */
+		this->cleanDBusRequests();
+
 		throw;
 	}
 }
@@ -128,6 +132,8 @@ void DBusHandler::clearAndUnregister(const bool notifications)
 {
 	GK_LOG_FUNC
 
+	GKLog(trace, "clearing devices and unregistering with daemon")
+
 	if( _registerStatus ) {
 		_devices.clearDevices(notifications);
 		this->unregisterWithDaemon();
@@ -148,6 +154,8 @@ void DBusHandler::cleanDBusRequests(void)
 	 * do not show desktop notifications when service exit
 	 */
 	this->clearAndUnregister(false);
+
+	GKLog(trace, "clearing GKDBus configuration")
 
 	/* remove SessionMessageHandler D-Bus interface and object */
 	DBus.removeMethodsInterface(_sessionBus,
@@ -172,6 +180,7 @@ void DBusHandler::cleanDBusRequests(void)
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE);
 
+	/* remove PropertyChanged signal event */
 	switch(_sessionFramework) {
 		/* logind */
 		case SessionFramework::FW_LOGIND:
@@ -405,17 +414,6 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
 				GKLog2(trace, "GetSessionByPID : ", _CURRENT_SESSION_DBUS_OBJECT_PATH)
 
 				_sessionFramework = SessionFramework::FW_LOGIND;
-
-				/* update session state when PropertyChanged signal receipted */
-				DBus.NSGKDBus::Callback<SIGv2v>::receiveSignal(
-					_systemBus,
-					LOGIND_DBUS_BUS_CONNECTION_NAME,
-					_CURRENT_SESSION_DBUS_OBJECT_PATH.c_str(),
-					FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE,
-					"PropertiesChanged",
-					{},
-					std::bind(&DBusHandler::updateSessionState, this)
-				);
 
 				LOG(info) << "successfully contacted logind";
 				return; /* everything ok */
@@ -715,6 +713,25 @@ void DBusHandler::sendDevicesUpdatedSignal(void)
 
 void DBusHandler::initializeGKDBusSignals(void)
 {
+	/* update session state when PropertyChanged signal receipted */
+	switch(_sessionFramework) {
+		/* logind */
+		case SessionFramework::FW_LOGIND:
+			DBus.NSGKDBus::Callback<SIGv2v>::receiveSignal(
+				_systemBus,
+				LOGIND_DBUS_BUS_CONNECTION_NAME,
+				_CURRENT_SESSION_DBUS_OBJECT_PATH.c_str(),
+				FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE,
+				"PropertiesChanged",
+				{},
+				std::bind(&DBusHandler::updateSessionState, this)
+			);
+			break;
+		default:
+			LOG(warning) << "unknown session tracker";
+			break;
+	}
+
 	/*
 	 * want to be warned by the daemon about those signals
 	 * each declaration can throw a GLogiKExcept exception
