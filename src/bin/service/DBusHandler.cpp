@@ -74,8 +74,8 @@ DBusHandler::DBusHandler(
 		process::setSignalHandler(SIGUSR2, DBusHandler::handleSignal);
 	}
 	catch ( const GLogiKExcept & e ) {
-		/* don't show notifications */
-		this->clearAndUnregister(false);
+		/* don't show desktop notifications */
+		this->prepareToStop(false);
 
 		/* clean each already declared DBus signal/method */
 		this->cleanGKDBusEvents();
@@ -88,8 +88,8 @@ DBusHandler::~DBusHandler()
 {
 	GK_LOG_FUNC
 
-	/* don't show notifications */
-	this->clearAndUnregister(false);
+	/* don't show desktop notifications */
+	this->prepareToStop(false);
 
 	this->cleanGKDBusEvents();
 }
@@ -135,15 +135,19 @@ const bool DBusHandler::getExitStatus(void) const
 	return ( ! DBusHandler::WantToExit );
 }
 
-void DBusHandler::clearAndUnregister(const bool notifications)
+void DBusHandler::prepareToStop(const bool notifications)
 {
 	GK_LOG_FUNC
 
 	GKLog(trace, "clearing devices and unregistering with daemon")
 
 	if( _registerStatus ) {
+		/* We must be registered against the daemon to clear (unref) devices.
+		 * Anyway, devices are always initialized *after* a successful registration. */
 		_devices.clearDevices(notifications);
+
 		this->unregisterWithDaemon();
+
 		/* send signal to GUI */
 		this->sendDevicesUpdatedSignal();
 	}
@@ -940,7 +944,7 @@ void DBusHandler::daemonIsStopping(void)
 
 	LOG(info) << "received signal : " << __func__;
 
-	this->clearAndUnregister();
+	this->prepareToStop();
 }
 
 void DBusHandler::daemonIsStarting(void)

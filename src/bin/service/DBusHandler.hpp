@@ -93,7 +93,7 @@ class DBusHandler
 		void getDaemonDependenciesMap(GKDepsMap_type* const dependencies);
 
 		void cleanGKDBusEvents(void) noexcept;
-		void clearAndUnregister(const bool notifications = true);
+		void prepareToStop(const bool notifications = true);
 
 		void reportChangedState(void);
 
