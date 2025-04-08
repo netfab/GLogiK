@@ -1,7 +1,9 @@
 
 0.8.22 (202x-xx-xx)
 ===================
-- Fix potential memory leak in desktop service
+- Fix desktop service not beeing informed by the daemon of devices
+  status changes on sleep/resume events
+- Fix potential memory leaks in desktop service
 
 0.8.20 (2025-03-31)
 ===================

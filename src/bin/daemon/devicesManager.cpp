@@ -324,9 +324,29 @@ void DevicesManager::startSleepingDevices(void)
 
 	GKLog(trace, "starting sleeping devices")
 
+#if GKDBUS
+	std::vector<std::string> toSend;
+#endif
+
 	for(const auto & devID : _sleepingDevices) {
-		this->startDevice(devID);
+		if( ! this->startDevice(devID) ) {
+			std::ostringstream buffer(std::ios_base::app);
+			buffer << devID << " failed to start device";
+			GKSysLogWarning(buffer.str());
+		}
+#if GKDBUS
+		else {
+			toSend.push_back(devID);
+		}
+#endif
 	}
+
+#if GKDBUS
+	if( toSend.size() > 0 ) {
+		/* inform clients */
+		this->sendStatusSignalArrayToClients(_numClients, _pDBus, "DevicesStarted", toSend);
+	}
+#endif
 
 	_sleepingDevices.clear();
 }
@@ -337,6 +357,10 @@ void DevicesManager::stopInitializedDevices(void)
 
 	GKLog(trace, "stopping initialized devices")
 
+#if GKDBUS
+	std::vector<std::string> toSend;
+#endif
+
 	/* sleeping devices will potentially be started again right after resume */
 	_sleepingDevices.clear();
 
@@ -345,8 +369,24 @@ void DevicesManager::stopInitializedDevices(void)
 	}
 
 	for(const auto & devID : _sleepingDevices) {
-		this->stopDevice(devID);
+		if( ! this->stopDevice(devID) ) {
+			std::ostringstream buffer(std::ios_base::app);
+			buffer << devID << " failed to stop device";
+			GKSysLogWarning(buffer.str());
+		}
+#if GKDBUS
+		else {
+			toSend.push_back(devID);
+		}
+#endif
 	}
+
+#if GKDBUS
+	if( toSend.size() > 0 ) {
+		/* inform clients */
+		this->sendStatusSignalArrayToClients(_numClients, _pDBus, "DevicesStopped", toSend);
+	}
+#endif
 
 	_startedDevices.clear();
 }
