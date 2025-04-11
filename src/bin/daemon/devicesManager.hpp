@@ -105,10 +105,12 @@ class DevicesManager
 	protected:
 
 	private:
-		std::map<std::string, USBDeviceID> _detectedDevices;
-		std::map<std::string, USBDeviceID> _startedDevices;
-		std::map<std::string, USBDeviceID> _stoppedDevices;
-		std::map<std::string, USBDeviceID> _unpluggedDevices;
+		typedef std::map<std::string, USBDeviceID> USBDeviceIDContainer_type;
+
+		USBDeviceIDContainer_type _startedDevices;
+		USBDeviceIDContainer_type _stoppedDevices;
+		USBDeviceIDContainer_type _unpluggedDevices;
+
 		std::vector<std::string> _sleepingDevices;
 		std::vector<KeyboardDriver*> _drivers;
 		const std::string _unknown;
@@ -118,11 +120,13 @@ class DevicesManager
 		uint8_t _numClients;
 #endif
 
-		void searchSupportedDevices(struct udev * pUdev);
-		void initializeDevices(const bool openDevices) noexcept;
-		void checkInitializedDevicesThreadsStatus(void) noexcept;
+		void searchSupportedDevices(
+			USBDeviceIDContainer_type & detectedDevices, struct udev * pUdev);
+		void initializeDevices(
+			const USBDeviceIDContainer_type & detectedDevices, const bool openDevices) noexcept;
+		void checkForUnpluggedDevices(const USBDeviceIDContainer_type & detectedDevices) noexcept;
 
-		void checkForUnpluggedDevices(void) noexcept;
+		void checkInitializedDevicesThreadsStatus(void) noexcept;
 };
 
 } // namespace GLogiK

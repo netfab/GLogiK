@@ -155,7 +155,8 @@ void DevicesManager::checkDBusMessages(void) noexcept
 #endif
 
 /* exceptions are catched within the function body */
-void DevicesManager::initializeDevices(const bool openDevices) noexcept
+void DevicesManager::initializeDevices(
+	const USBDeviceIDContainer_type & detectedDevices, const bool openDevices) noexcept
 {
 	GK_LOG_FUNC
 
@@ -163,7 +164,7 @@ void DevicesManager::initializeDevices(const bool openDevices) noexcept
 
 	std::vector<std::string> initializedDevices;
 
-	for(const auto & devicePair : _detectedDevices)
+	for(const auto & devicePair : detectedDevices)
 	{
 		const auto & devID = devicePair.first;
 		const auto & device = devicePair.second;
@@ -225,7 +226,7 @@ void DevicesManager::initializeDevices(const bool openDevices) noexcept
 				break;
 			}
 		} // for : _drivers
-	} // for : _detectedDevices
+	} // for : detectedDevices
 
 #if GKDBUS
 	if( initializedDevices.size() > 0 ) {
@@ -237,8 +238,6 @@ void DevicesManager::initializeDevices(const bool openDevices) noexcept
 		this->sendStatusSignalArrayToClients(_numClients, _pDBus, signal, initializedDevices);
 	}
 #endif
-
-	_detectedDevices.clear();
 
 	GKLog2(info, "device(s) initialized: ", initializedDevices.size())
 }
@@ -433,7 +432,8 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept
 #endif
 }
 
-void DevicesManager::checkForUnpluggedDevices(void) noexcept
+void DevicesManager::checkForUnpluggedDevices(
+	const USBDeviceIDContainer_type & detectedDevices) noexcept
 {
 	GK_LOG_FUNC
 
@@ -446,7 +446,7 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept
 	/* checking for unplugged unstopped devices */
 	std::vector<std::string> toClean;
 	for(const auto & devicePair : _startedDevices) {
-		if( _detectedDevices.count(devicePair.first) == 0 ) {
+		if( detectedDevices.count(devicePair.first) == 0 ) {
 			toClean.push_back(devicePair.first);
 		}
 	}
@@ -485,7 +485,7 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept
 
 	/* checking for unplugged but stopped devices */
 	for(const auto & devicePair : _stoppedDevices) {
-		if(_detectedDevices.count(devicePair.first) == 0 ) {
+		if(detectedDevices.count(devicePair.first) == 0 ) {
 			toClean.push_back(devicePair.first);
 		}
 	}
@@ -506,8 +506,6 @@ void DevicesManager::checkForUnpluggedDevices(void) noexcept
 		}
 	}
 	toClean.clear();
-
-	_detectedDevices.clear();
 
 #if GKDBUS
 	GKLog2(trace, "number of unplugged devices : ", toSend.size())
@@ -563,11 +561,15 @@ void udevDeviceProperties(struct udev_device * pDevice, const std::string & subS
 }
 #endif
 
-void DevicesManager::searchSupportedDevices(struct udev * pUdev)
+void DevicesManager::searchSupportedDevices(
+	USBDeviceIDContainer_type & detectedDevices, struct udev * pUdev)
 {
 	GK_LOG_FUNC
 
 	GKLog(trace, "searching for supported devices")
+
+	/* clear detected devices container first */
+	detectedDevices.clear();
 
 	struct udev_enumerate *enumerate;
 	struct udev_list_entry *devices, *dev_list_entry = nullptr;
@@ -666,7 +668,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev)
 							}
 
 							try {
-								const USBDeviceID & d = _detectedDevices.at(devID);
+								const USBDeviceID & d = detectedDevices.at(devID);
 								std::ostringstream buffer(std::ios_base::app);
 								buffer << devID << " found already detected device : " << d.getDevnode();
 								GKSysLogWarning(buffer.str());
@@ -683,7 +685,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev)
 									bus, num
 								);
 
-								_detectedDevices[devID] = found;
+								detectedDevices[devID] = found;
 
 #if DEBUGGING_ON
 								if(GKLogging::GKDebug) {
@@ -712,7 +714,7 @@ void DevicesManager::searchSupportedDevices(struct udev * pUdev)
 	// Free the enumerator object
 	udev_enumerate_unref(enumerate);
 
-	GKLog2(trace, "number of found device(s) : ", _detectedDevices.size())
+	GKLog2(trace, "number of found device(s) : ", detectedDevices.size())
 }
 
 const std::vector<std::string> DevicesManager::getStartedDevices(void) const
@@ -1042,8 +1044,11 @@ void DevicesManager::startMonitoring(void) {
 				throw GLogiKBadAlloc("catch driver wrong allocation");
 			}
 
-			this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
-			this->initializeDevices(true);
+			USBDeviceIDContainer_type detectedDevices;
+
+			/* throws GLogiKExcept on failure */
+			this->searchSupportedDevices(detectedDevices, pUdev);
+			this->initializeDevices(detectedDevices, true);
 
 #if GKDBUS
 			/* send signal, even if no client registered, clients could have started before daemon */
@@ -1090,17 +1095,14 @@ void DevicesManager::startMonitoring(void) {
 						GKLog2(trace, "device action : ", action)
 						GKLog2(trace, "device devnode: ", devnode)
 
-						this->searchSupportedDevices(pUdev);	/* throws GLogiKExcept on failure */
+						/* throws GLogiKExcept on failure */
+						this->searchSupportedDevices(detectedDevices, pUdev);
 
 						if( action == "add" ) {
-							this->initializeDevices(false);
+							this->initializeDevices(detectedDevices, false);
 						}
 						else if( action == "remove" ) {
-							this->checkForUnpluggedDevices();
-						}
-						else {
-							/* clear detected devices container */
-							_detectedDevices.clear();
+							this->checkForUnpluggedDevices(detectedDevices);
 						}
 					}
 					catch ( const GLogiKExcept & e ) {
