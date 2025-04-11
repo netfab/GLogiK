@@ -631,8 +631,8 @@ void DevicesManager::searchSupportedDevices(
 							// path to the event device node in /dev
 							const std::string devnode( toString( udev_device_get_devnode(dev) ) );
 							if( devnode.empty() ) {
-								udev_device_unref(dev);
-								continue;
+								GKLog(trace, "filtering empty devnode event")
+								continue; // nested for loop
 							}
 
 #if DEBUGGING_ON
@@ -663,8 +663,8 @@ void DevicesManager::searchSupportedDevices(
 
 							const std::string devpath( toString( udev_device_get_property_value(dev, "DEVPATH") ) );
 							if( devpath.empty() ) {
-								udev_device_unref(dev);
-								continue;
+								GKLog(trace, "filtering empty devpath event")
+								continue; // nested for loop
 							}
 
 							try {

@@ -1,6 +1,7 @@
 
 0.8.22 (202x-xx-xx)
 ===================
+- Fix potential daemon crash when searching supported devices
 - Fix desktop service not beeing informed by the daemon of devices
   status changes on sleep/resume events
 - Fix potential memory leaks in desktop service
