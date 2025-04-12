@@ -42,7 +42,10 @@ class Coretemp
 
 		static const std::vector<std::string> & getCoretempID(void);
 
-		void init(FontsManager* const pFonts, const std::string & product);
+		void init(
+			FontsManager* const pFonts,
+			const std::string & product
+		);
 
 		const PixelsData & getNextPBMFrame(
 			FontsManager* const pFonts,
