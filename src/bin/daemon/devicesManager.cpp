@@ -616,8 +616,13 @@ void DevicesManager::searchSupportedDevices(
 			//udevDeviceProperties(dev, devss);
 #endif
 
-			const std::string vendorID( toString( udev_device_get_property_value(dev, "ID_VENDOR_ID") ) );
-			const std::string productID( toString( udev_device_get_property_value(dev, "ID_MODEL_ID") ) );
+			auto getPropertyValue = [&dev] (const char * const key) -> const std::string
+			{
+				return toString( udev_device_get_property_value(dev, key) );
+			};
+
+			const std::string vendorID( getPropertyValue("ID_VENDOR_ID") );
+			const std::string productID( getPropertyValue("ID_MODEL_ID") );
 			if( vendorID.empty() or productID.empty() ) {
 				udev_device_unref(dev);
 				continue;
@@ -639,16 +644,16 @@ void DevicesManager::searchSupportedDevices(
 							udevDeviceProperties(dev, devss);
 #endif
 
-							//const std::string vendor( toString( udev_device_get_property_value(dev, "ID_VENDOR") ) );
-							//const std::string model( toString( udev_device_get_property_value(dev, "ID_MODEL") ) );
-							const std::string serial( toString( udev_device_get_property_value(dev, "ID_SERIAL") ) );
-							const std::string usec( toString( udev_device_get_property_value(dev, "USEC_INITIALIZED") ) );
+							//const std::string vendor( getPropertyValue("ID_VENDOR") );
+							//const std::string model( getPropertyValue("ID_MODEL") );
+							const std::string serial( getPropertyValue("ID_SERIAL") );
+							const std::string usec( getPropertyValue("USEC_INITIALIZED") );
 
 							uint8_t bus, num = 0;
 
 							try {
-								bus = std::stoi( toString( udev_device_get_property_value(dev, "BUSNUM")) );
-								num = std::stoi( toString( udev_device_get_property_value(dev, "DEVNUM")) );
+								bus = std::stoi( getPropertyValue("BUSNUM") );
+								num = std::stoi( getPropertyValue("DEVNUM") );
 							}
 							catch (const std::invalid_argument& ia) {
 								udev_device_unref(dev);
@@ -661,7 +666,7 @@ void DevicesManager::searchSupportedDevices(
 
 							const std::string devID( USBDeviceID::getDeviceID(bus, num) );
 
-							const std::string devpath( toString( udev_device_get_property_value(dev, "DEVPATH") ) );
+							const std::string devpath( getPropertyValue("DEVPATH") );
 							if( devpath.empty() ) {
 								GKLog(trace, "filtering empty devpath event")
 								continue; // nested for loop
