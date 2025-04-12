@@ -81,14 +81,14 @@ NetSnapshots::~NetSnapshots()
 const std::string NetSnapshots::getRateString(NetDirection direction)
 {
 	if(direction == NetDirection::NET_RX)
-		return this->getRateString(_rxDiff, " - download");
+		return this->getRateString(" - download", _rxDiff);
 	else
-		return this->getRateString(_txDiff, " - upload  ");
+		return this->getRateString(" - upload  ", _txDiff);
 }
 
 const std::string NetSnapshots::getRateString(
-	unsigned long long value,
-	const std::string & direction)
+	const std::string & direction,
+	const unsigned long long & value)
 {
 	std::ostringstream buffer("", std::ios_base::app);
 	std::string unit;
