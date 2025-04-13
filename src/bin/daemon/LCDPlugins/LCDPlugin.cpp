@@ -115,7 +115,8 @@ void LCDPlugin::prepareNextPBMFrame(void)
 
 	/* update internal frame counter and iterator to allow the plugin
 	 * to have multiples PBM loaded and simulate animation */
-	if( (*_itCurrentPBMFrame).switchToNextFrame(_PBMFrameCounter) ) {
+	if( (*_itCurrentPBMFrame).switchToNextFrame(_PBMFrameCounter) )
+	{
 		_itCurrentPBMFrame++;
 		this->checkPBMFrameIndex(); /* may throw */
 		_PBMFrameIndex = (_itCurrentPBMFrame - _PBMFrames.begin());
@@ -177,18 +178,19 @@ void LCDPlugin::addPBMFrame(
 		filePath.string(),
 		_PBMFrames.back()._PBMData,
 		DEFAULT_PBM_WIDTH,
-		DEFAULT_PBM_HEIGHT
-	);
+		DEFAULT_PBM_HEIGHT);
 }
 
 void LCDPlugin::addPBMEmptyFrame(const uint16_t num)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		_PBMFrames.emplace_back(num);
 	}
-	catch (const std::exception & e) {
+	catch (const std::exception & e)
+	{
 		// PBMFrame constructor vector resize exception ?
 		throw GLogiKExcept("failed to initialize PBM empty frame");
 	}
@@ -218,9 +220,11 @@ void LCDPlugin::writeStringOnPBMFrame(
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-		if(GKLogging::GKDebug) {
+		if(GKLogging::GKDebug)
+		{
 			LOG(trace)	<< this->getPluginName()
 						<< " - PBMFrameindex: " << _PBMFrameIndex
 						<< " - writing string : " << string;
@@ -236,12 +240,19 @@ void LCDPlugin::writeStringOnPBMFrame(
 				pFonts->getCenteredYPos(fontID) :
 				static_cast<uint16_t>(PBMYPos);
 
-		for(const char & c : string) {
+		for(const char & c : string)
+		{ /* for each character in the string */
 			const std::string character(1, c);
-			pFonts->printCharacterOnFrame( fontID, (*_itCurrentPBMFrame)._PBMData, character, XPos, YPos );
-		} /* for each character in the string */
+			pFonts->printCharacterOnFrame(
+				fontID,
+				(*_itCurrentPBMFrame)._PBMData,
+				character,
+				XPos,
+				YPos);
+		}
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		GKSysLogWarning(e.what());
 	}
 }
@@ -255,7 +266,8 @@ void LCDPlugin::writeStringOnLastPBMFrame(
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		if( _PBMFrames.empty() )
 			throw GLogiKExcept("accessing last element on empty container");
 		_itCurrentPBMFrame = --(_PBMFrames.end());
@@ -263,7 +275,8 @@ void LCDPlugin::writeStringOnLastPBMFrame(
 
 		this->writeStringOnPBMFrame(pFonts, fontID, string, PBMXPos, PBMYPos);
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		GKSysLogWarning(e.what());
 	}
 }
@@ -278,22 +291,23 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 	const uint16_t PROGRESS_BAR_WIDTH = 102;
 	const uint16_t PROGRESS_BAR_HEIGHT = 7;
 
-	if(PBMXPos + PROGRESS_BAR_WIDTH > (LCD_SCREEN_WIDTH - 1)) {
+	if(PBMXPos + PROGRESS_BAR_WIDTH > (LCD_SCREEN_WIDTH - 1))
+	{
 		std::ostringstream buffer(std::ios_base::app);
 		buffer << "wrong progress bar X position : " << PBMXPos;
 		GKSysLogWarning(buffer.str());
 		return;
 	}
 
-	try {
+	try
+	{
 		PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
 
 		auto drawHorizontalLine = [&frame] (const uint16_t index) -> void
 		{
 			frame[index+12] |= 0b11111100;
-			for(uint16_t i = 0; i < 12; ++i) {
+			for(uint16_t i = 0; i < 12; ++i)
 				frame[index+i] = 0b11111111;
-			}
 		};
 
 		auto drawProgressBarLine = [&frame, &percent]
@@ -319,7 +333,8 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 			};
 
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-			if(GKLogging::GKDebug) {
+			if(GKLogging::GKDebug)
+			{
 				LOG(trace)	<< "index: " << index
 							<< " line: " << line
 							<< " pByte: " << percentByte
@@ -328,19 +343,16 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 			}
 #endif
 
-			for(uint16_t i = 0; i < 12; ++i) {
-				if((i == 0) and (percent < 8)) {
+			for(uint16_t i = 0; i < 12; ++i)
+			{
+				if((i == 0) and (percent < 8))
 					frame[index+i] = getShiftedByte(cByte);
-				}
-				else if(i < percentByte) {
+				else if(i < percentByte)
 					frame[index+i] = (i < 8) ? Byte1 : B11;
-				}
-				else if(i == percentByte) {
+				else if(i == percentByte)
 					frame[index+i] = (i < 8) ? getShiftedByte(cByte) : getShiftedByte(B11);
-				}
-				else {
+				else
 					frame[index+i] = 0;
-				}
 			}
 
 			frame[index+12] = (percentByte == 12) ? getShiftedByte(B11) : 0;
@@ -365,12 +377,12 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 		 *	------------- one horizontal line
 		 */
 		drawHorizontalLine(index);
-		for(uint16_t i = 1; i < (PROGRESS_BAR_HEIGHT-1); ++i) {
+		for(uint16_t i = 1; i < (PROGRESS_BAR_HEIGHT-1); ++i)
 			drawProgressBarLine(index + (DEFAULT_PBM_WIDTH_IN_BYTES * i), i);
-		}
 		drawHorizontalLine(index + (DEFAULT_PBM_WIDTH_IN_BYTES * (PROGRESS_BAR_HEIGHT-1)));
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogWarning("wrong frame index");
 	}
 }
@@ -385,7 +397,8 @@ void LCDPlugin::drawPadlockOnPBMFrame(
 
 	PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
 
-	if( lockedPlugin ) {
+	if( lockedPlugin )
+	{
 		_everLocked = true;
 		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 0)] = 0b00000000;
 		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 1)] = 0b00110000;
@@ -394,8 +407,10 @@ void LCDPlugin::drawPadlockOnPBMFrame(
 		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 4)] = 0b01111000;
 		frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 5)] = 0b01111000;
 	}
-	else {
-		if( _everLocked ) {
+	else
+	{
+		if( _everLocked )
+		{
 			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 0)] = 0b00000110;
 			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 1)] = 0b00001001;
 			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 2)] = 0b00001000;
@@ -403,7 +418,8 @@ void LCDPlugin::drawPadlockOnPBMFrame(
 			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 4)] = 0b01111000;
 			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 5)] = 0b01111000;
 		}
-		else {
+		else
+		{
 			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 0)] = 0;
 			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 1)] = 0;
 			frame[index+(DEFAULT_PBM_WIDTH_IN_BYTES * 2)] = 0;
@@ -419,17 +435,18 @@ void LCDPlugin::drawVerticalLineOnPBMFrame(
 	const uint16_t PBMYPos,
 	const uint16_t size)
 {
-	try {
+	try
+	{
 		PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
 
 		const uint16_t xByte = PBMXPos / 8;
 		const uint16_t index = (DEFAULT_PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
 
-		for(uint16_t i = 1; i < size; ++i) {
+		for(uint16_t i = 1; i < size; ++i)
 			frame[index + (DEFAULT_PBM_WIDTH_IN_BYTES * i)] |= 0b00100000;
-		}
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogWarning("wrong frame index");
 	}
 }
@@ -451,7 +468,8 @@ void LCDPlugin::resetPluginEverLocked(void)
 
 void LCDPlugin::checkPBMFrameIndex(void)
 {
-	if( _itCurrentPBMFrame == _PBMFrames.end() ) {
+	if( _itCurrentPBMFrame == _PBMFrames.end() )
+	{
 		_itCurrentPBMFrame = _PBMFrames.begin();
 
 		if( _itCurrentPBMFrame == _PBMFrames.end() )

@@ -76,6 +76,7 @@ class LCDPlugin
 			FontsManager* const pFonts,
 			const std::string & product
 		) = 0;
+
 		const bool isInitialized(void) const;
 
 		const LCDPP getPluginProperties(void) const;
@@ -106,9 +107,7 @@ class LCDPlugin
 			const uint16_t num = 1
 		);
 
-		void addPBMEmptyFrame(
-			const uint16_t num = 1
-		);
+		void addPBMEmptyFrame(const uint16_t num = 1);
 
 		const uint16_t getNextPBMFrameID(void) const;
 		PixelsData & getCurrentPBMFrame(void);
