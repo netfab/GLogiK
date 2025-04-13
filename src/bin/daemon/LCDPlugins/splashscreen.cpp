@@ -51,7 +51,9 @@ Splashscreen::~Splashscreen()
 {
 }
 
-void Splashscreen::init(FontsManager* const pFonts, const std::string & product)
+void Splashscreen::init(
+	FontsManager* const pFonts,
+	const std::string & product)
 {
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _plugin.getName();
