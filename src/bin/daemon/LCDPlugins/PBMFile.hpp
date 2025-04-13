@@ -44,18 +44,21 @@ class PBMFile
 			const std::string & PBMPath,
 			PixelsData & PBMData,
 			const uint16_t PBMWidth,
-			const uint16_t PBMHeight);
+			const uint16_t PBMHeight
+		);
 
 	private:
 		static void parsePBMHeader(
 			std::ifstream & pbm,
 			std::string & magic,
 			uint16_t & width,
-			uint16_t & height);
+			uint16_t & height
+		);
 
 		static void extractPBMData(
 			std::ifstream & pbm,
-			PixelsData & PBMData);
+			PixelsData & PBMData
+		);
 
 		static void closePBM(std::ifstream & pbm);
 

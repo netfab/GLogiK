@@ -51,8 +51,10 @@ void PBMFile::readPBM(
 
 	GKLog2(trace, "opening : ", PBMPath)
 
-	try {
-		try {
+	try
+	{
+		try
+		{
 			pbm.open(PBMPath, std::ifstream::in|std::ifstream::binary);
 
 			std::string magic;
@@ -60,15 +62,15 @@ void PBMFile::readPBM(
 
 			PBMFile::parsePBMHeader(pbm, magic, width, height);
 
-			if( magic != "P4" or width != PBMWidth or height != PBMHeight ) {
+			if( magic != "P4" or width != PBMWidth or height != PBMHeight )
 				throw GLogiKExcept("wrong PBM header");
-			}
 
 			PBMFile::extractPBMData(pbm, PBMData);
 
 			pbm.close();
 		}
-		catch (const std::ios_base::failure & e) {
+		catch (const std::ios_base::failure & e)
+		{
 			std::ostringstream buffer(std::ios_base::app);
 			buffer	<< "error opening/reading/closing PBM file : "
 					<< PBMPath << " : " << e.what();
@@ -76,7 +78,8 @@ void PBMFile::readPBM(
 			throw GLogiKExcept("PBM ifstream error");
 		}
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		PBMFile::closePBM(pbm);
 		throw;
 	}
@@ -111,9 +114,11 @@ void PBMFile::parsePBMHeader(
 	std::string ex;
 
 	/* searching and skipping comments */
-	while( c == comment ) {
+	while( c == comment )
+	{
 		pbm.get(c);
-		if( c == comment) {
+		if( c == comment)
+		{
 			std::getline(pbm, ex, white);
 
 			GKLog(trace, "skipped PBM comment")
@@ -127,7 +132,8 @@ void PBMFile::parsePBMHeader(
 	height = toUInt(ex);
 
 #if DEBUGGING_ON
-	if(GKLogging::GKDebug) {
+	if(GKLogging::GKDebug)
+	{
 		LOG(trace)	<< "magic: " << magic
 					<< " - width: " << width
 					<< " - height: " << height;
