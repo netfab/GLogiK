@@ -40,12 +40,17 @@ namespace GLogiK
 class Client
 {
 	public:
-		Client(const std::string & objectPath, DevicesManager* const pDevicesManager);
+		Client(
+			const std::string & objectPath,
+			DevicesManager* const pDevicesManager
+		);
 		~Client(void);
 
 		const std::string & getSessionObjectPath(void) const;
 		const std::string & getSessionCurrentState(void) const;
-		void updateSessionState(const std::string & newState);
+		void updateSessionState(
+			const std::string & newState
+		);
 		void uncheck(void);
 		const bool isAlive(void) const;
 		const bool isReady(void) const;
@@ -55,7 +60,9 @@ class Client
 			DevicesManager* const pDevicesManager,
 			const std::string & devID
 		);
-		const bool deleteDevice(const std::string & devID);
+		const bool deleteDevice(
+			const std::string & devID
+		);
 		const bool setDeviceBacklightColor(
 			const std::string & devID,
 			const uint8_t r,
@@ -83,7 +90,9 @@ class Client
 		bool _check;
 		bool _ready;
 
-		void initializeDevices(DevicesManager* const pDevicesManager);
+		void initializeDevices(
+			DevicesManager* const pDevicesManager
+		);
 };
 
 } // namespace GLogiK
