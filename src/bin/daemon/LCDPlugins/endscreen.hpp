@@ -36,7 +36,10 @@ class Endscreen
 		Endscreen(void);
 		~Endscreen(void);
 
-		void init(FontsManager* const pFonts, const std::string & product);
+		void init(
+			FontsManager* const pFonts,
+			const std::string & product
+		);
 
 	protected:
 

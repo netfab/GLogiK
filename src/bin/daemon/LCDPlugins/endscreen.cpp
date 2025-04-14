@@ -51,7 +51,9 @@ Endscreen::~Endscreen()
 {
 }
 
-void Endscreen::init(FontsManager* const pFonts, const std::string & product)
+void Endscreen::init(
+	FontsManager* const pFonts,
+	const std::string & product)
 {
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _plugin.getName();
