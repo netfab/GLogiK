@@ -87,6 +87,8 @@ void ClientsManager::initializeDBusRequests(void)
 	const std::string dIN("in");	/* direction in */
 	const std::string dOUT("out");	/* direction out */
 
+	const std::string rValueComment("did the method succeeded ?");
+
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  ClientsManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
@@ -94,34 +96,34 @@ void ClientsManager::initializeDBusRequests(void)
 	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, "RegisterClient",
 		{	{"s", "client_session_object_path", dIN, "client session object path"},
-			{"b", "did_register_succeeded", dOUT, "did the RegisterClient method succeeded ?"},
+			{"b", "did_register_succeeded", dOUT, rValueComment},
 			{"s", "failure_reason_or_client_id", dOUT, "if register success (bool==true), unique client ID, else (bool=false) failure reason"} },
 		std::bind(&ClientsManager::registerClient, this, std::placeholders::_1) );
 
 	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, "UnregisterClient",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
-			{"b", "did_unregister_succeeded", dOUT, "did the UnregisterClient method succeeded ?"} },
+			{"b", "did_unregister_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, "UpdateClientState",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "client_new_state", dIN, "client new state"},
-			{"b", "did_updateclientstate_succeeded", dOUT, "did the UpdateClientState method succeeded ?"} },
+			{"b", "did_updateclientstate_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, "ToggleClientReadyPropertie",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
-			{"b", "did_method_succeeded", dOUT, "did the method succeeded ?"} },
+			{"b", "did_method_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::toggleClientReadyPropertie, this, std::placeholders::_1) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, "DeleteDeviceConfiguration",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"b", "did_deletedeviceconfiguration_succeeded", dOUT, "did the DeleteDeviceConfiguration method succeeded ?"} },
+			{"b", "did_deletedeviceconfiguration_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::deleteDeviceConfiguration, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGs2D>::exposeMethod(
@@ -138,21 +140,21 @@ void ClientsManager::initializeDBusRequests(void)
 		_systemBus, DM_OP, DM_IF, "StopDevice",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
-			{"b", "did_stop_succeeded", dOUT, "did the StopDevice method succeeded ?"} },
+			{"b", "did_stop_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::stopDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, "StartDevice",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStoppedDevices"},
-			{"b", "did_start_succeeded", dOUT, "did the StartDevice method succeeded ?"} },
+			{"b", "did_start_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::startDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, "RestartDevice",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
-			{"b", "did_restart_succeeded", dOUT, "did the RestartDevice method succeeded ?"} },
+			{"b", "did_restart_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
 		/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
@@ -213,7 +215,7 @@ void ClientsManager::initializeDBusRequests(void)
 			{"y", "red_byte", dIN, "red byte for the RGB color model"},
 			{"y", "green_byte", dIN, "green byte for the RGB color model"},
 			{"y", "blue_byte", dIN, "blue byte for the RGB color model"},
-			{"b", "did_setcolor_succeeded", dOUT, "did the SetDeviceBacklightColor method succeeded ?"} },
+			{"b", "did_setcolor_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::setDeviceBacklightColor, this, std::placeholders::_1, std::placeholders::_2,
 			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
 
@@ -223,7 +225,7 @@ void ClientsManager::initializeDBusRequests(void)
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
 			{"y", "LCD_Plugins_Mask_ID", dIN, "LCD plugins mask ID"},
 			{"t", "LCD_Plugins_Mask", dIN, "LCD plugins mask"},
-			{"b", "did_setmask_succeeded", dOUT, "did the SetDeviceLCDPluginsMask method succeeded ?"} },
+			{"b", "did_setmask_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::setDeviceLCDPluginsMask, this,
 			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4) );
 
