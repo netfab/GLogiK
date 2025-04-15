@@ -25,13 +25,13 @@
       send_member="UnregisterClient"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Client1"
+      send_member="SetClientReady"/>
+    <allow send_destination="com.glogik.Daemon"
+      send_interface="com.glogik.Daemon.Client1"
       send_member="UpdateClientState"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Client1"
       send_member="DeleteDeviceConfiguration"/>
-    <allow send_destination="com.glogik.Daemon"
-      send_interface="com.glogik.Daemon.Client1"
-      send_member="ToggleClientReadyPropertie"/>
     <allow send_destination="com.glogik.Daemon"
       send_interface="com.glogik.Daemon.Client1"
       send_member="GetDaemonDependenciesMap"/>

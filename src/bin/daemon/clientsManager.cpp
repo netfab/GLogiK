@@ -114,10 +114,10 @@ void ClientsManager::initializeDBusRequests(void)
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
-		_systemBus, CM_OP, CM_IF, "ToggleClientReadyPropertie",
+		_systemBus, CM_OP, CM_IF, "SetClientReady",
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"b", "did_method_succeeded", dOUT, rValueComment} },
-		std::bind(&ClientsManager::toggleClientReadyPropertie, this, std::placeholders::_1) );
+		std::bind(&ClientsManager::setClientReady, this, std::placeholders::_1) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, "DeleteDeviceConfiguration",
@@ -499,13 +499,13 @@ const bool ClientsManager::updateClientState(
 	return false;
 }
 
-const bool ClientsManager::toggleClientReadyPropertie(const std::string & clientID)
+const bool ClientsManager::setClientReady(const std::string & clientID)
 {
 	GK_LOG_FUNC
 
 	try {
 		Client* pClient = _connectedClients.at(clientID);
-		pClient->toggleClientReadyPropertie();
+		pClient->setReady();
 		if( pClient->isReady() ) {
 			if(pClient->getSessionCurrentState() == _active) {
 				GKLog(trace, "setting active user's parameters for all started devices")

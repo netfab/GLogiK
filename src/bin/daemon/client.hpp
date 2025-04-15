@@ -49,6 +49,7 @@ class Client
 		void uncheck(void);
 		const bool isAlive(void) const;
 		const bool isReady(void) const;
+		void setReady(void);
 
 		void initializeDevice(
 			DevicesManager* const pDevicesManager,
@@ -72,8 +73,6 @@ class Client
 			const uint8_t maskID,
 			const uint64_t mask
 		);
-
-		void toggleClientReadyPropertie(void);
 
 	protected:
 

@@ -85,9 +85,9 @@ const bool Client::isReady(void) const
 	return _ready;
 }
 
-void Client::toggleClientReadyPropertie(void)
+void Client::setReady(void)
 {
-	_ready = ! _ready;
+	_ready = true;
 }
 
 void Client::initializeDevice(

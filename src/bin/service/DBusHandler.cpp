@@ -591,7 +591,7 @@ void DBusHandler::initializeDevices(void)
 
 	devicesID.clear();
 
-	remoteMethod = "ToggleClientReadyPropertie";
+	remoteMethod = "SetClientReady";
 
 	/* saying the daemon that we are ready */
 	try {
@@ -610,10 +610,10 @@ void DBusHandler::initializeDevices(void)
 
 			const bool ret = DBus.getNextBooleanArgument();
 			if( ! ret ) {
-				LOG(warning) << "failed to toggle ready propertie : false";
+				LOG(warning) << "failed to enable ready state : false";
 			}
 			else {
-				GKLog(trace, "successfully toggled ready propertie")
+				GKLog(trace, "successfully enabled ready state")
 			}
 		}
 		catch (const GLogiKExcept & e) {
