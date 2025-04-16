@@ -278,6 +278,12 @@ void ClientsManager::initializeDBusRequests(void)
 	);
 
 	_pDBus->declareIntrospectableSignal(
+		_systemBus, DM_OP, DM_IF, "DeviceGKeyEvent",
+		{	{"s", "device_id", "in", "device ID"},
+			{"y", "macro_keyID", "in", "macro key ID"} }
+	);
+
+	_pDBus->declareIntrospectableSignal(
 		_systemBus, DM_OP, DM_IF, "DeviceMediaEvent",
 		{	{"s", "device_id", "in", "device ID"},
 			{"s", "media_key_event", "in", "media key event"} }
