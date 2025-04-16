@@ -119,7 +119,7 @@ void DeviceControlTab::buildTab(void)
 		_sessionBus,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-		"DeviceStatusChangeRequest",
+		GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST,
 		{	{"s", "device_id", "out", "device ID"},
 			{"s", "wanted_status", "out", "wanted status"}
 		}
@@ -194,7 +194,7 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 			_sessionBus,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-			"DeviceStatusChangeRequest"
+			GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST
 		);
 		_pDBus->appendStringToBroadcastSignal(_devID);
 		_pDBus->appendStringToBroadcastSignal(signal);
@@ -210,17 +210,20 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 
 void DeviceControlTab::startSignal(void)
 {
-	this->sendStatusSignal("StartDevice");
+	/* same method name as in daemon */
+	this->sendStatusSignal(GK_DBUS_DAEMON_METHOD_START_DEVICE);
 }
 
 void DeviceControlTab::stopSignal(void)
 {
-	this->sendStatusSignal("StopDevice");
+	/* same method name as in daemon */
+	this->sendStatusSignal(GK_DBUS_DAEMON_METHOD_STOP_DEVICE);
 }
 
 void DeviceControlTab::restartSignal(void)
 {
-	this->sendStatusSignal("RestartDevice");
+	/* same method name as in daemon */
+	this->sendStatusSignal(GK_DBUS_DAEMON_METHOD_RESTART_DEVICE);
 }
 
 } // namespace GLogiK

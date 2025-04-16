@@ -127,7 +127,7 @@ void DaemonAndServiceTab::buildTab(void)
 				_sessionBus,
 				GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 				GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-				"ServiceStartRequest",
+				GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
 				{ {"q", "sleep_ms", "out", "sleeping time in milliseconds before spawning service"} }
 			);
 		}
@@ -163,7 +163,7 @@ void DaemonAndServiceTab::updateTab(void)
 		_pStartButton->setEnabled(false);
 	}
 
-	const std::string remoteMethod("GetInformations");
+	const std::string remoteMethod(GK_DBUS_SERVICE_METHOD_GET_INFORMATIONS);
 	try {
 		_pDBus->initializeRemoteMethodCall(
 			_sessionBus,
@@ -236,7 +236,7 @@ void DaemonAndServiceTab::sendServiceStartRequest(void)
 			_sessionBus,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-			"ServiceStartRequest"
+			GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST
 		);
 		_pDBus->appendUInt16ToBroadcastSignal(100);
 		_pDBus->sendBroadcastSignal();

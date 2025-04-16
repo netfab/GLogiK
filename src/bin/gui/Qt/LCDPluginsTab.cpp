@@ -140,7 +140,8 @@ void LCDPluginsTab::updateTab(
 	/* removing table items */
 	_pPluginsTable->clearContents();
 
-	const std::string remoteMethod("GetDeviceLCDPluginsProperties");
+	/* same method name as in daemon */
+	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES);
 	try {
 		_pDBus->initializeRemoteMethodCall(
 			_sessionBus,

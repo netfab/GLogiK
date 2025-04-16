@@ -275,7 +275,7 @@ void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devI
 			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-			"DeviceConfigurationSaved"
+			GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED
 		);
 		DBus.appendStringToBroadcastSignal(devID);
 		DBus.sendBroadcastSignal();
@@ -305,7 +305,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 
 	if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) ) {
 		/* set backlight color */
-		const std::string remoteMethod("SetDeviceBacklightColor");
+		const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_SET_DEVICE_BACKLIGHT_COLOR);
 
 		try {
 			DBus.initializeRemoteMethodCall(
@@ -350,7 +350,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 	//}
 
 	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
-		const std::string remoteMethod = "SetDeviceLCDPluginsMask";
+		const std::string remoteMethod = GK_DBUS_DAEMON_METHOD_SET_DEVICE_LCD_PLUGINS_MASK;
 
 		try {
 			const uint8_t maskID = toEnumType(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1);
@@ -401,7 +401,7 @@ void DevicesHandler::setDeviceProperties(
 	GK_LOG_FUNC
 
 	/* initialize device properties */
-	std::string remoteMethod("GetDeviceProperties");
+	std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_PROPERTIES);
 
 	try {
 		DBus.initializeRemoteMethodCall(
@@ -438,7 +438,7 @@ void DevicesHandler::setDeviceProperties(
 
 	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) ) {
 		/* get LCD plugins properties */
-		remoteMethod = "GetDeviceLCDPluginsProperties";
+		remoteMethod = GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES;
 
 		try {
 			DBus.initializeRemoteMethodCall(
@@ -666,7 +666,7 @@ void DevicesHandler::unrefDevice(const std::string & devID)
 
 		GKLog2(trace, devID, " device erased")
 
-		std::string remoteMethod("DeleteDeviceConfiguration");
+		std::string remoteMethod(GK_DBUS_DAEMON_METHOD_DELETE_DEVICE_CONFIGURATION);
 
 		try {
 			DBus.initializeRemoteMethodCall(
@@ -840,7 +840,7 @@ const LCDPPArray_type &
 const MKeysIDArray_type DevicesHandler::getDeviceMKeysIDArray(const std::string & devID)
 {
 	MKeysIDArray_type MKeysIDArray;
-	const std::string remoteMethod("GetDeviceMKeysIDArray");
+	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_MKEYSID_ARRAY);
 
 	try {
 		DBus.initializeRemoteMethodCall(
@@ -876,7 +876,7 @@ const MKeysIDArray_type DevicesHandler::getDeviceMKeysIDArray(const std::string 
 const GKeysIDArray_type DevicesHandler::getDeviceGKeysIDArray(const std::string & devID)
 {
 	GKeysIDArray_type GKeysIDArray;
-	const std::string remoteMethod("GetDeviceGKeysIDArray");
+	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_GKEYSID_ARRAY);
 
 	try {
 		DBus.initializeRemoteMethodCall(

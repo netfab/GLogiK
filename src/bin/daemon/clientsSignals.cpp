@@ -49,7 +49,7 @@ void ClientsSignals::sendSignalToClients(
 	 * but DaemonIsStopping signal must always be sent
 	 */
 	if( ! DaemonControl::isDaemonRunning() )
-		if(signal != "DaemonIsStopping")
+		if(signal != GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING)
 			return;
 
 	GKLog2(trace, "sending signal : ", signal)

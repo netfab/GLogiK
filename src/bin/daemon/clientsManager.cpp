@@ -94,40 +94,40 @@ void ClientsManager::initializeDBusRequests(void)
 	/* -- -- -- -- -- -- -- -- -- -- */
 
 	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
-		_systemBus, CM_OP, CM_IF, "RegisterClient",
+		_systemBus, CM_OP, CM_IF, GK_DBUS_DAEMON_METHOD_REGISTER_CLIENT,
 		{	{"s", "client_session_object_path", dIN, "client session object path"},
 			{"b", "did_register_succeeded", dOUT, rValueComment},
 			{"s", "failure_reason_or_client_id", dOUT, "if register success (bool==true), unique client ID, else (bool=false) failure reason"} },
 		std::bind(&ClientsManager::registerClient, this, std::placeholders::_1) );
 
 	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
-		_systemBus, CM_OP, CM_IF, "UnregisterClient",
+		_systemBus, CM_OP, CM_IF, GK_DBUS_DAEMON_METHOD_UNREGISTER_CLIENT,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"b", "did_unregister_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
-		_systemBus, CM_OP, CM_IF, "UpdateClientState",
+		_systemBus, CM_OP, CM_IF, GK_DBUS_DAEMON_METHOD_UPDATE_CLIENT_STATE,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "client_new_state", dIN, "client new state"},
 			{"b", "did_updateclientstate_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
-		_systemBus, CM_OP, CM_IF, "SetClientReady",
+		_systemBus, CM_OP, CM_IF, GK_DBUS_DAEMON_METHOD_SET_CLIENT_READY,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"b", "did_method_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::setClientReady, this, std::placeholders::_1) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
-		_systemBus, CM_OP, CM_IF, "DeleteDeviceConfiguration",
+		_systemBus, CM_OP, CM_IF, GK_DBUS_DAEMON_METHOD_DELETE_DEVICE_CONFIGURATION,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"b", "did_deletedeviceconfiguration_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::deleteDeviceConfiguration, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGs2D>::exposeMethod(
-		_systemBus, CM_OP, CM_IF, "GetDaemonDependenciesMap",
+		_systemBus, CM_OP, CM_IF, GK_DBUS_DAEMON_METHOD_GET_DAEMON_DEPENDENCIES_MAP,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"a(yta(sss))", "dependencies_map", dOUT, "array of executable dependencies"} },
 		std::bind(&ClientsManager::getDaemonDependenciesMap, this, std::placeholders::_1) );
@@ -137,21 +137,21 @@ void ClientsManager::initializeDBusRequests(void)
 	/* -- -- -- -- -- -- -- -- -- -- */
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "StopDevice",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_STOP_DEVICE,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
 			{"b", "did_stop_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::stopDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "StartDevice",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_START_DEVICE,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStoppedDevices"},
 			{"b", "did_start_succeeded", dOUT, rValueComment} },
 		std::bind(&ClientsManager::startDevice, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "RestartDevice",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_RESTART_DEVICE,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
 			{"b", "did_restart_succeeded", dOUT, rValueComment} },
@@ -162,54 +162,54 @@ void ClientsManager::initializeDBusRequests(void)
 		/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 
 	_pDBus->NSGKDBus::Callback<SIGs2as>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "GetStartedDevices",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_GET_STARTED_DEVICES,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"as", "array_of_strings", dOUT, "array of started devices ID strings"} },
 		std::bind(&ClientsManager::getStartedDevices, this, std::placeholders::_1) );
 
 	_pDBus->NSGKDBus::Callback<SIGs2as>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "GetStoppedDevices",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_GET_STOPPED_DEVICES,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"as", "array_of_strings", dOUT, "array of stopped devices ID strings"} },
 		std::bind(&ClientsManager::getStoppedDevices, this, std::placeholders::_1) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2s>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "GetDeviceStatus",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID"},
 			{"s", "device status", dOUT, "string representing the device status"} },
 		std::bind(&ClientsManager::getDeviceStatus, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2v>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "GetDeviceProperties",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_GET_DEVICE_PROPERTIES,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"sst", "get_device_properties", dOUT, "device properties"} },
 		std::bind(&ClientsManager::getDeviceProperties, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2aP>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "GetDeviceLCDPluginsProperties",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"a(tss)", "get_lcd_plugins_properties_array", dOUT, "LCDPluginsProperties array"} },
 		std::bind(&ClientsManager::getDeviceLCDPluginsProperties, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2aG>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "GetDeviceGKeysIDArray",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_GET_DEVICE_GKEYSID_ARRAY,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"ay", "array_of_keys_id", dOUT, "array of G-keys ID for the device"} },
 		std::bind(&ClientsManager::getDeviceGKeysIDArray, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2am>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "GetDeviceMKeysIDArray",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_GET_DEVICE_MKEYSID_ARRAY,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"ay", "array_of_keys_id", dOUT, "array of M-keys ID for the device"} },
 		std::bind(&ClientsManager::getDeviceMKeysIDArray, this, std::placeholders::_1, std::placeholders::_2) );
 
 	_pDBus->NSGKDBus::Callback<SIGssyyy2b>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "SetDeviceBacklightColor",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_SET_DEVICE_BACKLIGHT_COLOR,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
 			{"y", "red_byte", dIN, "red byte for the RGB color model"},
@@ -220,7 +220,7 @@ void ClientsManager::initializeDBusRequests(void)
 			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
 
 	_pDBus->NSGKDBus::Callback<SIGssyt2b>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "SetDeviceLCDPluginsMask",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_SET_DEVICE_LCD_PLUGINS_MASK,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
 			{"y", "LCD_Plugins_Mask_ID", dIN, "LCD plugins mask ID"},
@@ -236,54 +236,54 @@ void ClientsManager::initializeDBusRequests(void)
 
 	/*  ClientsManager D-Bus object  */
 
-	_pDBus->declareIntrospectableSignal(_systemBus, CM_OP, CM_IF, "DaemonIsStopping", {});
-	_pDBus->declareIntrospectableSignal(_systemBus, CM_OP, CM_IF, "DaemonIsStarting", {});
-	_pDBus->declareIntrospectableSignal(_systemBus, CM_OP, CM_IF, "ReportYourself",   {});
+	_pDBus->declareIntrospectableSignal(_systemBus, CM_OP, CM_IF, GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING, {});
+	_pDBus->declareIntrospectableSignal(_systemBus, CM_OP, CM_IF, GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STARTING, {});
+	_pDBus->declareIntrospectableSignal(_systemBus, CM_OP, CM_IF, GK_DBUS_SERVICE_SIGNAL_REPORT_YOURSELF,   {});
 
 	/*  DevicesManager D-Bus object  */
 
 	_pDBus->declareIntrospectableSignal(
-		_systemBus, DM_OP, DM_IF, "DevicesStarted",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED,
 		{	{"as", "", dOUT, "array of started devices ID strings"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		_systemBus, DM_OP, DM_IF, "DevicesStopped",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED,
 		{	{"as", "", dOUT, "array of stopped devices ID strings"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		_systemBus, DM_OP, DM_IF, "DevicesUnplugged",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICES_UNPLUGGED,
 		{	{"as", "", dOUT, "array of unplugged devices ID strings"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		_systemBus, DM_OP, DM_IF, "DeviceMBankSwitch",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH,
 		{	{"s", "device_id", dOUT, "device ID"},
 			{"y", "macro_bankID", dOUT, "macro bankID"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		_systemBus, DM_OP, DM_IF, "DeviceMacroRecorded",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_RECORDED,
 		{	{"s", "device_id", dOUT, "device ID"},
 			{"y", "macro_keyID", dOUT, "macro key ID"},
 			{"a(yyq)", "macro_array", dOUT, "macro array"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		_systemBus, DM_OP, DM_IF, "DeviceMacroCleared",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_CLEARED,
 		{	{"s", "device_id", dOUT, "device ID"},
 			{"y", "macro_keyID", dOUT, "macro key ID"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		_systemBus, DM_OP, DM_IF, "DeviceGKeyEvent",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICE_GKEY_EVENT,
 		{	{"s", "device_id", dOUT, "device ID"},
 			{"y", "macro_keyID", dOUT, "macro key ID"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		_systemBus, DM_OP, DM_IF, "DeviceMediaEvent",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICE_MEDIA_EVENT,
 		{	{"s", "device_id", dOUT, "device ID"},
 			{"s", "media_key_event", dOUT, "media key event"} }
 	);
@@ -312,7 +312,7 @@ void ClientsManager::waitForClientsDisconnections(void) noexcept
 		return;
 	}
 
-	this->sendSignalToClients(_connectedClients.size(), _pDBus, "DaemonIsStopping");
+	this->sendSignalToClients(_connectedClients.size(), _pDBus, GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING);
 
 	uint16_t c = 0;
 	GKLog(trace, "waiting for clients to unregister ...")
@@ -357,7 +357,7 @@ const bool ClientsManager::registerClient(
 				for(auto & newPair : _connectedClients ) {
 					newPair.second->uncheck();
 				}
-				this->sendSignalToClients(_connectedClients.size(), _pDBus, "ReportYourself");
+				this->sendSignalToClients(_connectedClients.size(), _pDBus, GK_DBUS_SERVICE_SIGNAL_REPORT_YOURSELF);
 
 				/* register failure, sender should wait and retry */
 				return false;
@@ -606,7 +606,7 @@ const bool ClientsManager::stopDevice(
 		const bool ret = _pDevicesManager->stopDevice(devID);
 		if(ret and _enabledSignals) {
 			const std::vector<std::string> array = {devID};
-			this->sendStatusSignalArrayToClients(_connectedClients.size(), _pDBus, "DevicesStopped", array);
+			this->sendStatusSignalArrayToClients(_connectedClients.size(), _pDBus, GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED, array);
 		}
 		return ret;
 	}
@@ -652,7 +652,7 @@ const bool ClientsManager::startDevice(
 
 			if( _enabledSignals ) {
 				const std::vector<std::string> array = {devID};
-				this->sendStatusSignalArrayToClients(_connectedClients.size(), _pDBus, "DevicesStarted", array);
+				this->sendStatusSignalArrayToClients(_connectedClients.size(), _pDBus, GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED, array);
 			}
 		}
 		return ret;
@@ -684,12 +684,12 @@ const bool ClientsManager::restartDevice(
 
 		if( this->startDevice(clientID, devID) ) {
 			_enabledSignals = true;
-			this->sendStatusSignalArrayToClients(_connectedClients.size(), _pDBus, "DevicesStarted", array);
+			this->sendStatusSignalArrayToClients(_connectedClients.size(), _pDBus, GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED, array);
 			return true;
 		}
 
 		_enabledSignals = true;
-		this->sendStatusSignalArrayToClients(_connectedClients.size(), _pDBus, "DevicesStopped", array);
+		this->sendStatusSignalArrayToClients(_connectedClients.size(), _pDBus, GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED, array);
 		GKSysLogError("device restarting failure : start failed");
 		return false;
 	}

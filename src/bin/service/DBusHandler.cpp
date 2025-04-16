@@ -241,7 +241,7 @@ void DBusHandler::registerWithDaemon(void)
 		return;
 	}
 
-	const std::string remoteMethod("RegisterClient");
+	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_REGISTER_CLIENT);
 
 	try {
 		DBus.initializeRemoteMethodCall(
@@ -312,7 +312,7 @@ void DBusHandler::unregisterWithDaemon(void)
 		return;
 	}
 
-	const std::string remoteMethod("UnregisterClient");
+	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_UNREGISTER_CLIENT);
 
 	try {
 		/* telling the daemon we're killing ourself */
@@ -359,7 +359,7 @@ void DBusHandler::getDaemonDependenciesMap(GKDepsMap_type* const dependencies)
 		return;
 	}
 
-	const std::string remoteMethod("GetDaemonDependenciesMap");
+	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DAEMON_DEPENDENCIES_MAP);
 
 	try {
 		DBus.initializeRemoteMethodCall(
@@ -511,7 +511,7 @@ void DBusHandler::reportChangedState(void)
 		return;
 	}
 
-	std::string remoteMethod("UpdateClientState");
+	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_UPDATE_CLIENT_STATE);
 
 	try {
 		DBus.initializeRemoteMethodCall(
@@ -560,7 +560,7 @@ void DBusHandler::initializeDevices(void)
 	std::string device;
 	std::vector<std::string> devicesID;
 
-	std::string remoteMethod("GetStartedDevices");
+	std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_STARTED_DEVICES);
 
 	/* started devices */
 	try {
@@ -591,7 +591,7 @@ void DBusHandler::initializeDevices(void)
 
 	devicesID.clear();
 
-	remoteMethod = "SetClientReady";
+	remoteMethod = GK_DBUS_DAEMON_METHOD_SET_CLIENT_READY;
 
 	/* saying the daemon that we are ready */
 	try {
@@ -625,7 +625,7 @@ void DBusHandler::initializeDevices(void)
 		LogRemoteCallFailure
 	}
 
-	remoteMethod = "GetStoppedDevices";
+	remoteMethod = GK_DBUS_DAEMON_METHOD_GET_STOPPED_DEVICES;
 
 	/* stopped devices */
 	try {
@@ -670,16 +670,18 @@ void DBusHandler::sendServiceStartRequest(void)
 			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-			"ServiceStartRequest"
+			GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST
 		);
 		DBus.appendUInt16ToBroadcastSignal(300);
 		DBus.sendBroadcastSignal();
 
-		LOG(info) << "sent signal : ServiceStartRequest";
+		LOG(info) << "sent signal: " << GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST;
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		DBus.abandonBroadcastSignal();
-		LOG(error) << "failed to send signal : ServiceStartRequest : " << e.what();
+		LOG(error)	<< "failed to send signal: "
+					<< GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST
+					<< " - " << e.what();
 	}
 }
 
@@ -693,15 +695,17 @@ void DBusHandler::sendDevicesUpdatedSignal(void)
 			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-			"DevicesUpdated"
+			GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED
 		);
 		DBus.sendBroadcastSignal();
 
-		LOG(info) << "sent signal : DevicesUpdated";
+		LOG(info) << "sent signal: " << GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED;
 	}
 	catch (const GKDBusMessageWrongBuild & e) {
 		DBus.abandonBroadcastSignal();
-		LOG(error) << "failed to send signal : DevicesUpdated : " << e.what();
+		LOG(error)	<< "failed to send signal: "
+					<< GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED
+					<< " - " << e.what();
 	}
 }
 
@@ -751,7 +755,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"DevicesStarted",
+		GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED,
 		{	{"as", "", "in", "array of started devices ID strings"} },
 		std::bind(&DBusHandler::devicesStarted, this, std::placeholders::_1)
 	);
@@ -761,7 +765,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"DevicesStopped",
+		GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED,
 		{	{"as", "", "in", "array of stopped devices ID strings"} },
 		std::bind(&DBusHandler::devicesStopped, this, std::placeholders::_1)
 	);
@@ -771,7 +775,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"DevicesUnplugged",
+		GK_DBUS_SERVICE_SIGNAL_DEVICES_UNPLUGGED,
 		{	{"as", "", "in", "array of unplugged devices ID strings"} },
 		std::bind(&DBusHandler::devicesUnplugged, this, std::placeholders::_1)
 	);
@@ -781,7 +785,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"DeviceMBankSwitch",
+		GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH,
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_bankID", "in", "macro bankID"}
 		},
@@ -795,7 +799,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"DeviceMacroRecorded",
+		GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_RECORDED,
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_keyID", "in", "macro key ID"},
 			{"a(yyq)", "macro_array", "in", "macro array"}
@@ -810,7 +814,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"DeviceMacroCleared",
+		GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_CLEARED,
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_keyID", "in", "macro key ID"}
 		},
@@ -824,7 +828,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"DeviceGKeyEvent",
+		GK_DBUS_SERVICE_SIGNAL_DEVICE_GKEY_EVENT,
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_keyID", "in", "macro key ID"}
 		},
@@ -838,7 +842,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		"DeviceMediaEvent",
+		GK_DBUS_SERVICE_SIGNAL_DEVICE_MEDIA_EVENT,
 		{	{"s", "device_id", "in", "device ID"},
 			{"s", "media_key_event", "in", "media key event"}
 		},
@@ -855,7 +859,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-		"DaemonIsStopping",
+		GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING,
 		{},
 		std::bind(&DBusHandler::daemonIsStopping, this)
 	);
@@ -865,7 +869,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-		"DaemonIsStarting",
+		GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STARTING,
 		{},
 		std::bind(&DBusHandler::daemonIsStarting, this)
 	);
@@ -875,7 +879,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-		"ReportYourself",
+		GK_DBUS_SERVICE_SIGNAL_REPORT_YOURSELF,
 		{},
 		std::bind(&DBusHandler::reportChangedState, this)
 	);
@@ -888,7 +892,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-		"DeviceStatusChangeRequest",
+		GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST,
 		{	{"s", "device_id", "in", "device ID"},
 			{"s", "wanted_status", "in", "wanted status"}	},
 		std::bind(&DBusHandler::deviceStatusChangeRequest, this,
@@ -899,7 +903,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		"ServiceStartRequest",
+		GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
 		{ {"q", "sleep_ms", "out", "sleeping time in milliseconds before spawning service"} }
 	);
 
@@ -907,7 +911,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		"DevicesUpdated",
+		GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED,
 		{}
 	);
 
@@ -915,7 +919,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		"DeviceConfigurationSaved",
+		GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED,
 		{ {"s", "device_id", "out", "device ID"} }
 	);
 }
@@ -924,11 +928,15 @@ void DBusHandler::initializeGKDBusMethods(void)
 {
 	const std::string r_ed("reserved");
 
+	/* -- -- -- -- -- -- -- -- -- -- -- -- */
+	/*  SessionMessageHandler D-Bus object */
+	/* -- -- -- -- -- -- -- -- -- -- -- -- */
+
 	DBus.NSGKDBus::Callback<SIGs2as>::exposeMethod(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		"GetDevicesList",
+		GK_DBUS_SERVICE_METHOD_GET_DEVICES_LIST,
 		{	{"s", r_ed, "in", r_ed},
 			{"as", "array_of_strings", "out", "array of devices ID and configuration files"} },
 		std::bind(&DBusHandler::getDevicesList, this, r_ed) );
@@ -937,7 +945,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		"GetInformations",
+		GK_DBUS_SERVICE_METHOD_GET_INFORMATIONS,
 		{	{"s", r_ed, "in", r_ed},
 			{"as", "array_of_strings", "out", "array of informations strings"} },
 		std::bind(&DBusHandler::getInformations, this, r_ed) );
@@ -946,7 +954,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		"GetDeviceLCDPluginsProperties",
+		GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES, /* same method name as in daemon */
 		{	{"s", "device_id", "in", "device ID"},
 			{"s", r_ed, "in", r_ed},
 			{"a(tss)", "get_lcd_plugins_properties_array", "out", "LCDPluginsProperties array"} },
@@ -956,7 +964,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		"GetExecutablesDependenciesMap",
+		GK_DBUS_SERVICE_METHOD_GET_EXECUTABLES_DEPENDENCIES_MAP,
 		{	{"s", r_ed, "in", r_ed},
 			{"a(yta(sss))", "dependencies_map", "out", "array of executable dependencies"} },
 		std::bind(&DBusHandler::getExecutablesDependenciesMap, this, r_ed) );
@@ -1010,7 +1018,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 		"number of devices : ", devicesID.size()
 	)
 
-	const std::string remoteMethod("GetDeviceStatus");
+	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
 
 	bool devicesUpdated(false);
 
@@ -1074,7 +1082,7 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
 		"number of devices : ", devicesID.size()
 	)
 
-	const std::string remoteMethod("GetDeviceStatus");
+	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
 
 	bool devicesUpdated(false);
 
@@ -1130,7 +1138,7 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 		"number of devices : ", devicesID.size()
 	)
 
-	const std::string remoteMethod("GetDeviceStatus");
+	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
 
 	bool devicesUpdated(false);
 
@@ -1183,10 +1191,7 @@ void DBusHandler::deviceMBankSwitch(
 {
 	GK_LOG_FUNC
 
-	GKLog4(trace,
-		devID, " received signal : DeviceMBankSwitch",
-		"bankID : ", bankID
-	)
+	GKLog3(trace, devID, " received signal - bankID: ", bankID)
 
 	if( ! _registerStatus ) {
 		GKLog(trace, "currently not registered, skipping")
@@ -1198,7 +1203,8 @@ void DBusHandler::deviceMBankSwitch(
 		return;
 	}
 
-	LOG(info) << "received DeviceMBankSwitch signal : " << bankID;
+	LOG(info)	<< "received signal: " << GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH
+				<< " - " << bankID;
 
 	try {
 		_devices.setDeviceCurrentBankID(devID, bankID);
@@ -1215,10 +1221,7 @@ void DBusHandler::deviceMacroRecorded(
 {
 	GK_LOG_FUNC
 
-	GKLog4(trace,
-		devID, " received signal : DeviceMacroRecorded",
-		"key : ", getGKeyName(keyID)
-	)
+	GKLog3(trace, devID, " received signal for key: ", getGKeyName(keyID))
 
 	if( ! _registerStatus ) {
 		GKLog(trace, "currently not registered, skipping")
@@ -1247,10 +1250,7 @@ void DBusHandler::deviceMacroCleared(const std::string & devID, const GKeysID ke
 {
 	GK_LOG_FUNC
 
-	GKLog4(trace,
-		devID, " received signal : DeviceMacroCleared",
-		"key : ", getGKeyName(keyID)
-	)
+	GKLog3(trace, devID, " received signal for key: ", getGKeyName(keyID))
 
 	if( ! _registerStatus ) {
 		GKLog(trace, "currently not registered, skipping")
@@ -1281,10 +1281,7 @@ void DBusHandler::deviceMediaEvent(
 {
 	GK_LOG_FUNC
 
-	GKLog4(trace,
-		devID, " received signal : DeviceMediaEvent",
-		"event : ", mediaKeyEvent
-	)
+	GKLog3(trace, devID, " received signal for event: ", mediaKeyEvent)
 
 	if( ! _registerStatus ) {
 		GKLog(trace, "currently not registered, skipping")
@@ -1303,10 +1300,7 @@ void DBusHandler::deviceGKeyEvent(const std::string & devID, const GKeysID keyID
 {
 	GK_LOG_FUNC
 
-	GKLog4(trace,
-		devID, " received signal : DeviceGKeyEvent",
-		"key : ", getGKeyName(keyID)
-	)
+	GKLog3(trace, devID, " received signal for event: ", getGKeyName(keyID))
 
 	if( ! _registerStatus ) {
 		GKLog(trace, "currently not registered, skipping")
@@ -1368,9 +1362,12 @@ void DBusHandler::deviceStatusChangeRequest(
 		"requested status : ", remoteMethod
 	)
 
-	if(	(remoteMethod !=  "StopDevice") and
-		(remoteMethod !=  "StartDevice") and
-		(remoteMethod !=  "RestartDevice") ) {
+	/* request coming from GUI on session bus, but
+	 * methods names are the same as in the daemon
+	 */
+	if(	(remoteMethod !=  GK_DBUS_DAEMON_METHOD_STOP_DEVICE) and
+		(remoteMethod !=  GK_DBUS_DAEMON_METHOD_START_DEVICE) and
+		(remoteMethod !=  GK_DBUS_DAEMON_METHOD_RESTART_DEVICE) ) {
 		LOG(warning) << devID << " ignoring wrong remote method : " << remoteMethod;
 		return;
 	}

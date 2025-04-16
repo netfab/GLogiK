@@ -296,5 +296,51 @@ c_str LOGIND_SESSION_DBUS_INTERFACE									= "org.freedesktop.login1.Session";
 /* freedesktop standard interfaces */
 c_str FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE				= "org.freedesktop.DBus.Properties";
 
-} // namespace GLogiK
 
+/* daemon ClientsManager D-Bus object methods */
+c_str GK_DBUS_DAEMON_METHOD_REGISTER_CLIENT					= "RegisterClient";
+c_str GK_DBUS_DAEMON_METHOD_UNREGISTER_CLIENT				= "UnregisterClient";
+c_str GK_DBUS_DAEMON_METHOD_UPDATE_CLIENT_STATE				= "UpdateClientState";
+c_str GK_DBUS_DAEMON_METHOD_SET_CLIENT_READY				= "SetClientReady";
+c_str GK_DBUS_DAEMON_METHOD_DELETE_DEVICE_CONFIGURATION		= "DeleteDeviceConfiguration";
+c_str GK_DBUS_DAEMON_METHOD_GET_DAEMON_DEPENDENCIES_MAP		= "GetDaemonDependenciesMap";
+
+/* daemon DevicesManager D-Bus object methods */
+c_str GK_DBUS_DAEMON_METHOD_STOP_DEVICE							= "StopDevice";
+c_str GK_DBUS_DAEMON_METHOD_START_DEVICE						= "StartDevice";
+c_str GK_DBUS_DAEMON_METHOD_RESTART_DEVICE						= "RestartDevice";
+c_str GK_DBUS_DAEMON_METHOD_GET_STARTED_DEVICES					= "GetStartedDevices";
+c_str GK_DBUS_DAEMON_METHOD_GET_STOPPED_DEVICES					= "GetStoppedDevices";
+c_str GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS					= "GetDeviceStatus";
+c_str GK_DBUS_DAEMON_METHOD_GET_DEVICE_PROPERTIES				= "GetDeviceProperties";
+c_str GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES	= "GetDeviceLCDPluginsProperties";
+c_str GK_DBUS_DAEMON_METHOD_GET_DEVICE_GKEYSID_ARRAY			= "GetDeviceGKeysIDArray";
+c_str GK_DBUS_DAEMON_METHOD_GET_DEVICE_MKEYSID_ARRAY			= "GetDeviceMKeysIDArray";
+c_str GK_DBUS_DAEMON_METHOD_SET_DEVICE_BACKLIGHT_COLOR			= "SetDeviceBacklightColor";
+c_str GK_DBUS_DAEMON_METHOD_SET_DEVICE_LCD_PLUGINS_MASK			= "SetDeviceLCDPluginsMask";
+
+/* service SessionMessageHandler D-Bus object methods */
+c_str GK_DBUS_SERVICE_METHOD_GET_DEVICES_LIST					= "GetDevicesList";
+c_str GK_DBUS_SERVICE_METHOD_GET_INFORMATIONS					= "GetInformations";
+c_str GK_DBUS_SERVICE_METHOD_GET_EXECUTABLES_DEPENDENCIES_MAP	= "GetExecutablesDependenciesMap";
+
+/* D-Bus signals potentially sent to the desktop service */
+c_str GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING					= "DaemonIsStopping";
+c_str GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STARTING					= "DaemonIsStarting";
+c_str GK_DBUS_SERVICE_SIGNAL_REPORT_YOURSELF					= "ReportYourself";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED					= "DevicesStarted";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED					= "DevicesStopped";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICES_UNPLUGGED					= "DevicesUnplugged";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH				= "DeviceMBankSwitch";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_RECORDED				= "DeviceMacroRecorded";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_CLEARED				= "DeviceMacroCleared";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICE_GKEY_EVENT					= "DeviceGKeyEvent";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICE_MEDIA_EVENT					= "DeviceMediaEvent";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST		= "DeviceStatusChangeRequest";
+
+c_str GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST				= "ServiceStartRequest";
+
+c_str GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED						= "DevicesUpdated";
+c_str GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED				= "DeviceConfigurationSaved";
+
+} // namespace GLogiK

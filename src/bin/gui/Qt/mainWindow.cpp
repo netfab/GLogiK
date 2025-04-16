@@ -296,7 +296,7 @@ void MainWindow::build(void)
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		"DevicesUpdated",
+		GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED,
 		{},
 		std::bind(&MainWindow::resetInterface, this)
 	);
@@ -306,7 +306,7 @@ void MainWindow::build(void)
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		"DeviceConfigurationSaved",
+		GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED,
 		{ {"s", "device_id", "in", "device ID"}, },
 		std::bind(&MainWindow::configurationFileUpdated, this, std::placeholders::_1)
 	);
@@ -419,7 +419,7 @@ void MainWindow::getExecutablesDependenciesMap(void)
 
 	GKLog(trace, "getting executables dependencies map")
 
-	const std::string remoteMethod("GetExecutablesDependenciesMap");
+	const std::string remoteMethod(GK_DBUS_SERVICE_METHOD_GET_EXECUTABLES_DEPENDENCIES_MAP);
 	try {
 		_pDBus->initializeRemoteMethodCall(
 			_sessionBus,
@@ -632,7 +632,7 @@ void MainWindow::updateDevicesList(void)
 
 	_devices.clear();
 
-	const std::string remoteMethod("GetDevicesList");
+	const std::string remoteMethod(GK_DBUS_SERVICE_METHOD_GET_DEVICES_LIST);
 	try {
 		_pDBus->initializeRemoteMethodCall(
 			_sessionBus,
