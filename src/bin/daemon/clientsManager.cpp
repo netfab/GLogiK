@@ -258,6 +258,12 @@ void ClientsManager::initializeDBusRequests(void)
 	);
 
 	_pDBus->declareIntrospectableSignal(
+		_systemBus, DM_OP, DM_IF, "DeviceMBankSwitch",
+		{	{"s", "device_id", "in", "device ID"},
+			{"y", "macro_bankID", "in", "macro bankID"} }
+	);
+
+	_pDBus->declareIntrospectableSignal(
 		_systemBus, DM_OP, DM_IF, "DeviceMacroRecorded",
 		{	{"s", "device_id", dOUT, "device ID"},
 			{"y", "macro_bankID", "in", "macro bankID"},
