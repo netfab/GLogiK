@@ -385,61 +385,71 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
 	xml << "<node name=\"" << askedObjectPath << "\">\n";
 
-	try
+	for(const auto & DBusInterface : _DBusInterfaces)
 	{
-		for(const auto & DBusInterface : _DBusInterfaces)
+		GKLog2(trace, "DBus Interface: ", DBusInterface)
+
+		bool interfaceOpened = false;
+
+		try
 		{
-
-			bool interfaceOpened = false;
-
+			const auto & opMap = _DBusEvents.at(GKDBusEvents::currentBus); /* objectPath map */
+			for(const auto & [objectPath, interMap] : opMap) /* interface map */
 			{
-				const auto & opMap = _DBusEvents.at(GKDBusEvents::currentBus); /* objectPath map */
-				for(const auto & [objectPath, interMap] : opMap) /* interface map */
+				/* object path must match */
+				if( askedObjectPath != objectPath )
+					continue;
+				for(const auto & [interface, pVec ] : interMap) /* vector of pointers */
 				{
-					/* object path must match */
-					if( askedObjectPath != objectPath )
-						continue;
-					for(const auto & [interface, pVec ] : interMap) /* vector of pointers */
+					if( DBusInterface == interface  )
 					{
-						if( DBusInterface == interface  )
+						this->openXMLInterface(xml, interfaceOpened, DBusInterface);
+						for(const auto & DBusEvent : pVec)
 						{
-							this->openXMLInterface(xml, interfaceOpened, DBusInterface);
-							for(const auto & DBusEvent : pVec)
-							{
-								this->eventToXMLMethod(xml, DBusEvent);
-							}
+							this->eventToXMLMethod(xml, DBusEvent);
 						}
 					}
 				}
 			}
-
-			{
-				const auto & opMap = _DBusIntrospectableSignals.at(GKDBusEvents::currentBus); /* objectPath map */
-				for(const auto & [objectPath, interMap] : opMap) /* interface map */
-				{
-					/* object path must match */
-					if( askedObjectPath != objectPath )
-						continue;
-					for(const auto & [interface, oVec ] : interMap) /* vector of objects */
-					{
-						if( DBusInterface == interface )
-						{
-							this->openXMLInterface(xml, interfaceOpened, DBusInterface);
-							for(const auto & signal : oVec)
-							{
-								this->signalToXMLSignal(xml, signal);
-							}
-						}
-					}
-				}
-			}
-
-			this->closeXMLInterface(xml, interfaceOpened);
 		}
-	}
-	catch (const std::out_of_range& oor)
-	{
-		LOG(warning) << "can't get current bus container";
+		catch (const std::out_of_range& oor)
+		{
+			GKLog2(trace,
+				"can't iterate over DBusEvents. No bus container: ",
+				toUInt(toEnumType(GKDBusEvents::currentBus))
+			)
+		}
+
+		try
+		{
+			const auto & opMap = _DBusIntrospectableSignals.at(GKDBusEvents::currentBus); /* objectPath map */
+			for(const auto & [objectPath, interMap] : opMap) /* interface map */
+			{
+				/* object path must match */
+				if( askedObjectPath != objectPath )
+					continue;
+				for(const auto & [interface, oVec ] : interMap) /* vector of objects */
+				{
+					if( DBusInterface == interface )
+					{
+						this->openXMLInterface(xml, interfaceOpened, DBusInterface);
+						for(const auto & signal : oVec)
+						{
+							this->signalToXMLSignal(xml, signal);
+						}
+					}
+				}
+			}
+		}
+		catch (const std::out_of_range& oor)
+		{
+			GKLog2(trace,
+				"can't iterate over DBusIntrospectableSignals. No bus container: ",
+				toUInt(toEnumType(GKDBusEvents::currentBus))
+			)
+		}
+
+		this->closeXMLInterface(xml, interfaceOpened);
 	}
 
 	xml << "</node>\n";
