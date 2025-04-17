@@ -345,6 +345,23 @@ void GKDBusEvents::eventToXMLMethod(
 	}
 }
 
+void GKDBusEvents::signalToXMLSignal(
+	std::ostringstream & xml,
+	const GKDBusIntrospectableSignal & signal)
+{
+	xml << "    <signal name=\"" << signal.name << "\">\n";
+	for(const auto & arg : signal.arguments)
+	{
+		xml << "      <!-- " << arg.comment << " -->\n";
+		xml << "      <arg type=\"" << arg.type << "\" ";
+		if( ! arg.name.empty() ) /* name attribute on arguments is optional */
+			xml << "name=\"" << arg.name << "\" ";
+			//xml << "direction=\"out\" />\n";
+		xml << "/>\n";
+	}
+	xml << "    </signal>\n";
+}
+
 const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 {
 	GK_LOG_FUNC
@@ -400,18 +417,9 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 						if( DBusInterface == interface )
 						{
 							this->openXMLInterface(xml, interfaceOpened, DBusInterface);
-							for(const auto & signal : oVec) {
-								xml << "    <signal name=\"" << signal.name << "\">\n";
-								for(const auto & arg : signal.arguments)
-								{
-									xml << "      <!-- " << arg.comment << " -->\n";
-									xml << "      <arg type=\"" << arg.type << "\" ";
-									if( ! arg.name.empty() ) /* name attribute on arguments is optional */
-										xml << "name=\"" << arg.name << "\" ";
-									//xml << "direction=\"out\" />\n";
-									xml << "/>\n";
-								}
-								xml << "    </signal>\n";
+							for(const auto & signal : oVec)
+							{
+								this->signalToXMLSignal(xml, signal);
 							}
 						}
 					}

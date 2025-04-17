@@ -129,6 +129,10 @@ class GKDBusEvents
 			std::ostringstream & xml,
 			const GKDBusEvent* DBusEvent
 		);
+		void signalToXMLSignal(
+			std::ostringstream & xml,
+			const GKDBusIntrospectableSignal & signal
+		);
 		const std::string getObjectFromObjectPath(const std::string & objectPath);
 		const std::string introspect(const std::string & askedObjectPath);
 		const std::string introspectRootNode(void);
