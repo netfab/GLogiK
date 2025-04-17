@@ -328,6 +328,14 @@ void GKDBusEvents::openXMLInterface(
 	}
 }
 
+void GKDBusEvents::closeXMLInterface(
+	std::ostringstream & xml,
+	bool & interfaceOpened)
+{
+	if( interfaceOpened )
+		xml << "  </interface>\n";
+}
+
 void GKDBusEvents::eventToXMLMethod(
 	std::ostringstream & xml,
 	const GKDBusEvent* DBusEvent)
@@ -426,8 +434,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 				}
 			}
 
-			if( interfaceOpened )
-				xml << "  </interface>\n";
+			this->closeXMLInterface(xml, interfaceOpened);
 		}
 	}
 	catch (const std::out_of_range& oor)

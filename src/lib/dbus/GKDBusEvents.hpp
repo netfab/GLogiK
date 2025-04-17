@@ -125,6 +125,10 @@ class GKDBusEvents
 			bool & interfaceOpened,
 			const std::string & interface
 		);
+		void closeXMLInterface(
+			std::ostringstream & xml,
+			bool & interfaceOpened
+		);
 		void eventToXMLMethod(
 			std::ostringstream & xml,
 			const GKDBusEvent* DBusEvent
