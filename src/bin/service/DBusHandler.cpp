@@ -894,6 +894,30 @@ void DBusHandler::initializeGKDBusSignals(void)
 		std::bind(&DBusHandler::deviceStatusChangeRequest, this,
 		std::placeholders::_1, std::placeholders::_2)
 	);
+
+	DBus.declareIntrospectableSignal(
+		_sessionBus,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		"ServiceStartRequest",
+		{ {"q", "sleep_ms", "out", "sleeping time in milliseconds before spawning service"} }
+	);
+
+	DBus.declareIntrospectableSignal(
+		_sessionBus,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		"DevicesUpdated",
+		{}
+	);
+
+	DBus.declareIntrospectableSignal(
+		_sessionBus,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		"DeviceConfigurationSaved",
+		{ {"s", "device_id", "out", "device ID"} }
+	);
 }
 
 void DBusHandler::initializeGKDBusMethods(void)

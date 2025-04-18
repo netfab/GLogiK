@@ -93,7 +93,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		"ServiceStartRequest",
-		{},
+		{ {"q", "sleep_ms", "in", "sleeping time in milliseconds before spawning service"} },
 		std::bind(&DBusHandler::spawnService, this, std::placeholders::_1)
 	);
 
@@ -103,7 +103,7 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
 		"ServiceStartRequest",
-		{},
+		{ {"q", "sleep_ms", "in", "sleeping time in milliseconds before spawning service"} },
 		std::bind(&DBusHandler::spawnService, this, std::placeholders::_1)
 	);
 }

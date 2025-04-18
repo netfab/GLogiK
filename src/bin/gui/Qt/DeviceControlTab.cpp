@@ -115,6 +115,16 @@ void DeviceControlTab::buildTab(void)
 	QObject::connect(_pStopButton    , &QPushButton::clicked, this, &DeviceControlTab::stopSignal);
 	QObject::connect(_pRestartButton , &QPushButton::clicked, this, &DeviceControlTab::restartSignal);
 
+	_pDBus->declareIntrospectableSignal(
+		_sessionBus,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+		"DeviceStatusChangeRequest",
+		{	{"s", "device_id", "out", "device ID"},
+			{"s", "wanted_status", "out", "wanted status"}
+		}
+	);
+
 	this->disableAndHide();
 }
 

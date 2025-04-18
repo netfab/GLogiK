@@ -122,6 +122,14 @@ void DaemonAndServiceTab::buildTab(void)
 
 			QObject::connect(_pStartButton, &QPushButton::clicked,
 				this, &DaemonAndServiceTab::sendServiceStartRequest);
+
+			_pDBus->declareIntrospectableSignal(
+				_sessionBus,
+				GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
+				GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+				"ServiceStartRequest",
+				{ {"q", "sleep_ms", "out", "sleeping time in milliseconds before spawning service"} }
+			);
 		}
 
 		/* -- -- -- */
