@@ -243,7 +243,6 @@ const PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 			if(_itCurrentPlugin != _plugins.end() ) {
 				(*_itCurrentPlugin)->prepareNextPBMFrame();
 				this->dumpPBMDataIntoLCDBuffer(
-					_LCDBuffer,
 					(*_itCurrentPlugin)->getNextPBMFrame(_pFonts, LCDKey, _currentPluginLocked)
 				);
 			}
@@ -335,15 +334,28 @@ void LCDScreenPluginsManager::stopLCDPlugins(void)
  *	A2		pixels of the 43-pixel high display.)
  *
  */
-void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(PixelsData & LCDBuffer, const PixelsData & PBMData)
+void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData)
 {
-	for(unsigned int row = 0; row < DEFAULT_PBM_HEIGHT_IN_BYTES; ++row) {
-		unsigned int LCDCol = 0;
-		unsigned int rowOffset = (DEFAULT_PBM_WIDTH * row);
-		for(unsigned int PBMByte = 0; PBMByte < DEFAULT_PBM_WIDTH_IN_BYTES; ++PBMByte) {
+	unsigned int LCDCol = 0;
+	unsigned int rowOffset = 0;
+	unsigned int PBMByte = 0;
 
-			for(int bit = 7; bit > -1; --bit) {
+	auto get_PBMByte = [&rowOffset, &PBMByte]
+		(const unsigned short i) -> const unsigned short
+	{
+		// max: 959
+		return (PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * i) + rowOffset);
+	};
 
+	for(unsigned int row = 0; row < DEFAULT_PBM_HEIGHT_IN_BYTES/*=6*/; ++row)
+	{
+		LCDCol = 0;
+		rowOffset = (DEFAULT_PBM_WIDTH/*=160*/ * row);
+		for(PBMByte = 0; PBMByte < DEFAULT_PBM_WIDTH_IN_BYTES/*=20*/; ++PBMByte)
+		{
+
+			for(int bit = 7; bit > -1; --bit)
+			{
 #if 0 && DEBUGGING_ON
 				LOG(trace)	<< "row: " << row
 							<< " PBMByte: " << PBMByte
@@ -353,15 +365,15 @@ void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(PixelsData & LCDBuffer, c
 							<< " bit: " << bit << "\n";
 #endif
 
-				LCDBuffer[LCD_DATA_HEADER_OFFSET + LCDCol + rowOffset] =
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 0) + rowOffset] >> bit) & 1) << 0 ) |
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 1) + rowOffset] >> bit) & 1) << 1 ) |
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 2) + rowOffset] >> bit) & 1) << 2 ) |
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 3) + rowOffset] >> bit) & 1) << 3 ) |
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 4) + rowOffset] >> bit) & 1) << 4 ) |
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 5) + rowOffset] >> bit) & 1) << 5 ) |
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 6) + rowOffset] >> bit) & 1) << 6 ) |
-					(((PBMData[PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * 7) + rowOffset] >> bit) & 1) << 7 ) ;
+				_LCDBuffer[LCD_DATA_HEADER_OFFSET + LCDCol + rowOffset] =
+					(((PBMData[ get_PBMByte(0) ] >> bit) & 1) << 0 ) |
+					(((PBMData[ get_PBMByte(1) ] >> bit) & 1) << 1 ) |
+					(((PBMData[ get_PBMByte(2) ] >> bit) & 1) << 2 ) |
+					(((PBMData[ get_PBMByte(3) ] >> bit) & 1) << 3 ) |
+					(((PBMData[ get_PBMByte(4) ] >> bit) & 1) << 4 ) |
+					(((PBMData[ get_PBMByte(5) ] >> bit) & 1) << 5 ) |
+					(((PBMData[ get_PBMByte(6) ] >> bit) & 1) << 6 ) |
+					(((PBMData[ get_PBMByte(7) ] >> bit) & 1) << 7 ) ;
 
 				LCDCol++;
 			}
