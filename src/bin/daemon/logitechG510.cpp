@@ -34,7 +34,8 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-const std::vector<RKey> G510Base::keys5BytesMap = {
+const std::vector<RKey> G510Base::keys5BytesMap =
+{
 //	{ Keys::GK_KEY_,				3,	1 << 2 },
 	{ Keys::GK_KEY_LIGHT,			3,	1 << 3 },
 	{ Keys::GK_KEY_MR,				3,	1 << 7 },
@@ -44,13 +45,15 @@ const std::vector<RKey> G510Base::keys5BytesMap = {
 //	{ Keys::GK_KEY_,				4,	1 << 7 },
 };
 
-const std::vector<RKey> G510Base::MKeys5BytesMap = {
+const std::vector<RKey> G510Base::MKeys5BytesMap =
+{
 	{ Keys::GK_KEY_M1,	3,	1 << 4 },
 	{ Keys::GK_KEY_M2,	3,	1 << 5 },
 	{ Keys::GK_KEY_M3,	3,	1 << 6 },
 };
 
-const std::vector<RKey> G510Base::GKeys5BytesMap = {
+const std::vector<RKey> G510Base::GKeys5BytesMap =
+{
 	{ Keys::GK_KEY_G1,	1,	1 << 0 },
 	{ Keys::GK_KEY_G2,	1,	1 << 1 },
 	{ Keys::GK_KEY_G3,	1,	1 << 2 },
@@ -73,7 +76,8 @@ const std::vector<RKey> G510Base::GKeys5BytesMap = {
 	{ Keys::GK_KEY_G18,	3,	1 << 1 },
 };
 
-const std::vector<RKey> G510Base::LCDKeys5BytesMap = {
+const std::vector<RKey> G510Base::LCDKeys5BytesMap =
+{
 	{ Keys::GK_KEY_L1,	4,	1 << 0 },
 	{ Keys::GK_KEY_L2,	4,	1 << 1 },
 	{ Keys::GK_KEY_L3,	4,	1 << 2 },
@@ -81,7 +85,8 @@ const std::vector<RKey> G510Base::LCDKeys5BytesMap = {
 	{ Keys::GK_KEY_L5,	4,	1 << 4 },
 };
 
-const std::vector<RKey> G510Base::mediaKeys2BytesMap = {
+const std::vector<RKey> G510Base::mediaKeys2BytesMap =
+{
 	{ Keys::GK_KEY_AUDIO_NEXT,			1,	1 << 0 },
 	{ Keys::GK_KEY_AUDIO_PREV,			1,	1 << 1 },
 	{ Keys::GK_KEY_AUDIO_STOP,			1,	1 << 2 },
@@ -92,14 +97,16 @@ const std::vector<RKey> G510Base::mediaKeys2BytesMap = {
 //	{ Keys::GK_KEY_,					1,	1 << 7 },
 };
 
-const std::vector<MKeyLed> G510Base::ledsMask = {
+const std::vector<MKeyLed> G510Base::ledsMask =
+{
 	{ Leds::GK_LED_M1, 1 << 7 },
 	{ Leds::GK_LED_M2, 1 << 6 },
 	{ Leds::GK_LED_M3, 1 << 5 },
 	{ Leds::GK_LED_MR, 1 << 4 },
 };
 
-const std::vector<USBDeviceID> G510Base::knownDevices = {
+const std::vector<USBDeviceID> G510Base::knownDevices =
+{
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 										{
 /*								vendor */	VENDOR_LOGITECH,
@@ -160,22 +167,28 @@ const MKeysIDArray_type G510Base::getMKeysIDArray(void) const
 {
 	MKeysIDArray_type ret;
 
-	try {
+	try
+	{
 		ret.reserve(G510Base::MKeys5BytesMap.size());
 
-		for(const auto & key : G510Base::MKeys5BytesMap) {
-			try {
+		for(const auto & key : G510Base::MKeys5BytesMap)
+		{
+			try
+			{
 				ret.push_back(getMKeyID(key.key));
 			}
-			catch(const std::out_of_range& oor) {
+			catch(const std::out_of_range& oor)
+			{
 				GKSysLogWarning("invalid key for MKeysID");
 			}
 		}
 	}
-	catch( const std::length_error & e ) {
+	catch( const std::length_error & e )
+	{
 		GKSysLogError("reserve length_error failure : ", e.what());
 	}
-	catch( const std::bad_alloc & e ) {
+	catch( const std::bad_alloc & e )
+	{
 		GKSysLogError("reserve bad_alloc failure : ", e.what());
 	}
 
@@ -186,23 +199,28 @@ const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 {
 	GKeysIDArray_type ret;
 
-	try {
+	try
+	{
 		ret.reserve(G510Base::GKeys5BytesMap.size());
 
 		for(const auto & key : G510Base::GKeys5BytesMap)
 		{
-			try {
+			try
+			{
 				ret.push_back(getGKeyID(key.key));
 			}
-			catch(const std::out_of_range& oor) {
+			catch(const std::out_of_range& oor)
+			{
 				GKSysLogWarning("invalid key for GKeysID");
 			}
 		}
 	}
-	catch( const std::length_error & e ) {
+	catch( const std::length_error & e )
+	{
 		GKSysLogError("reserve length_error failure : ", e.what());
 	}
-	catch( const std::bad_alloc & e ) {
+	catch( const std::bad_alloc & e )
+	{
 		GKSysLogError("reserve bad_alloc failure : ", e.what());
 	}
 
@@ -212,8 +230,10 @@ const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 /* return true if any G-Key (G1-G18) is pressed  */
 const bool G510Base::checkGKey(USBDevice & device)
 {
-	for( const auto & key : G510Base::GKeys5BytesMap ) {
-		if( device._pressedRKeysMask & toEnumType(key.key) ) {
+	for( const auto & key : G510Base::GKeys5BytesMap )
+	{
+		if( device._pressedRKeysMask & toEnumType(key.key) )
+		{
 			device._GKeyID = getGKeyID(key.key);
 			return true;
 		}
@@ -224,8 +244,10 @@ const bool G510Base::checkGKey(USBDevice & device)
 /* return true if any media key is pressed */
 const bool G510Base::checkMediaKey(USBDevice & device)
 {
-	for( const auto & key : G510Base::mediaKeys2BytesMap ) {
-		if( device._pressedRKeysMask & toEnumType(key.key) ) {
+	for( const auto & key : G510Base::mediaKeys2BytesMap )
+	{
+		if( device._pressedRKeysMask & toEnumType(key.key) )
+		{
 			device._mediaKey = getKeyName(key.key);
 			return true;
 		}
@@ -236,8 +258,10 @@ const bool G510Base::checkMediaKey(USBDevice & device)
 /* return true if any LCD key is pressed */
 const bool G510Base::checkLCDKey(USBDevice & device)
 {
-	for( const auto & key : G510Base::LCDKeys5BytesMap ) {
-		if( device._pressedRKeysMask & toEnumType(key.key) ) {
+	for( const auto & key : G510Base::LCDKeys5BytesMap )
+	{
+		if( device._pressedRKeysMask & toEnumType(key.key) )
+		{
 			const std::string Key(getKeyName(key.key));
 			std::lock_guard<std::mutex> lock(device._LCDMutex);
 			device._LCDKey = Key;
@@ -256,22 +280,27 @@ void G510Base::processKeyEvent2Bytes(USBDevice & device)
 {
 	GK_LOG_FUNC
 
-	if (device._pressedKeys[0] == 0x02) {
-		for( const auto & key : G510Base::mediaKeys2BytesMap ) {
+	if( device._pressedKeys[0] == 0x02 )
+	{
+		for( const auto & key : G510Base::mediaKeys2BytesMap )
+		{
 			if( device._pressedKeys[key.index] & key.mask )
 				device._pressedRKeysMask |= toEnumType(key.key);
 		}
 	}
-	else if (device._pressedKeys[0] == 0x04) {
+	else if( device._pressedKeys[0] == 0x04 )
+	{
 #if DEBUGGING_ON
 		/* continue only when debug is on */
 		if( ! GKLogging::GKDebug )
 			return;
 
-		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_BACKLIGHT_OFF)) {
+		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_BACKLIGHT_OFF))
+		{
 			LOG(trace) << "backlight off";
 		}
-		else {
+		else
+		{
 			LOG(trace) << "backlight on";
 		}
 
@@ -279,22 +308,27 @@ void G510Base::processKeyEvent2Bytes(USBDevice & device)
 		if( ! (device._pressedKeys[1] & toEnumType(SpecialKeys::GK_ONBOARD_AUDIO_ON) ) )
 			return;
 
-		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_HEADSET_OFF)) {
+		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_HEADSET_OFF))
+		{
 			LOG(trace) << "headset off";
 		}
-		else {
+		else
+		{
 			LOG(trace) << "headset on";
 		}
 
-		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_MICRO_OFF)) {
+		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_MICRO_OFF))
+		{
 			LOG(trace) << "micro off";
 		}
-		else {
+		else
+		{
 			LOG(trace) << "micro on";
 		}
 #endif
 	}
-	else {
+	else
+	{
 		GKSysLogWarning("wrong first byte value on 2 bytes event");
 	}
 }
@@ -303,30 +337,35 @@ void G510Base::processKeyEvent5Bytes(USBDevice & device)
 {
 	GK_LOG_FUNC
 
-	if (device._pressedKeys[0] != 0x03) {
+	if (device._pressedKeys[0] != 0x03)
+	{
 		GKSysLogWarning("wrong first byte value on 5 bytes event");
 		return;
 	}
 
-	for(const auto & key : G510Base::keys5BytesMap) {
+	for(const auto & key : G510Base::keys5BytesMap)
+	{
 		if( device._pressedKeys[key.index] & key.mask )
 			device._pressedRKeysMask |= toEnumType(key.key);
 	}
 
 	/* M Keys */
-	for(const auto & key : G510Base::MKeys5BytesMap) {
+	for(const auto & key : G510Base::MKeys5BytesMap)
+	{
 		if( device._pressedKeys[key.index] & key.mask )
 			device._pressedRKeysMask |= toEnumType(key.key);
 	}
 
 	/* G Keys */
-	for(const auto & key : G510Base::GKeys5BytesMap) {
+	for(const auto & key : G510Base::GKeys5BytesMap)
+	{
 		if( device._pressedKeys[key.index] & key.mask )
 			device._pressedRKeysMask |= toEnumType(key.key);
 	}
 
 	/* LCD Keys */
-	for(const auto & key : G510Base::LCDKeys5BytesMap) {
+	for(const auto & key : G510Base::LCDKeys5BytesMap)
+	{
 		if( device._pressedKeys[key.index] & key.mask )
 			device._pressedRKeysMask |= toEnumType(key.key);
 	}
@@ -336,7 +375,8 @@ void G510Base::processKeyEvent8Bytes(USBDevice & device)
 {
 	GK_LOG_FUNC
 
-	if (device._pressedKeys[0] != 0x01) {
+	if (device._pressedKeys[0] != 0x01)
+	{
 		GKSysLogWarning("wrong first byte value on 8 bytes event");
 		return;
 	}
@@ -350,7 +390,8 @@ KeyStatus G510Base::processKeyEvent(USBDevice & device)
 
 	device._pressedRKeysMask = 0;
 
-	switch(device.getLastKeysInterruptTransferLength()) {
+	switch(device.getLastKeysInterruptTransferLength())
+	{
 		case 2:
 #if DEBUGGING_ON && DEBUG_KEYS
 			GKLog3(trace, device.getID(), " 2 bytes : ", this->getBytes(device))
@@ -369,7 +410,8 @@ KeyStatus G510Base::processKeyEvent(USBDevice & device)
 			break;
 		case 8:
 			/* process those events only if Macro Record Mode on */
-			if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) ) {
+			if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) )
+			{
 #if DEBUGGING_ON && DEBUG_KEYS
 				GKLog3(trace, device.getID(), " 8 bytes : ", this->getBytes(device))
 #endif
@@ -414,7 +456,8 @@ void G510Base::sendUSBDeviceInitialization(USBDevice & device)
 
 	{
 		const unsigned char ReportID = 0x01;
-		const unsigned char data[] = {
+		const unsigned char data[] =
+		{
 			ReportID, 0, 0, 0, 0, 0, 0, 0,
 				   0, 0, 0, 0, 0, 0, 0, 0,
 				   0, 0, 0
@@ -423,7 +466,8 @@ void G510Base::sendUSBDeviceInitialization(USBDevice & device)
 	}
 	{
 		const unsigned char ReportID = 0x09;
-		const unsigned char data[] = {
+		const unsigned char data[] =
+		{
 			ReportID, 0x02, 0, 0, 0, 0, 0, 0
 		};
 
@@ -456,7 +500,8 @@ void G510Base::setDeviceMxKeysLeds(USBDevice & device)
 	GK_LOG_FUNC
 
 	unsigned char mask = 0;
-	for (const auto & led : G510Base::ledsMask ) {
+	for (const auto & led : G510Base::ledsMask )
+	{
 		if( device._MxKeysLedsMask & toEnumType(led.led) )
 			mask |= led.mask;
 	}
