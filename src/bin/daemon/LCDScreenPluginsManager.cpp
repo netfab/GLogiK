@@ -53,30 +53,35 @@ LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
 
 	// TODO optional build ?
 	const std::vector<std::string> coretempIDs = Coretemp::getCoretempID();
-	if(coretempIDs.empty()) {
+	if(coretempIDs.empty())
+	{
 		GKSysLogWarning("coretemp directory not found, disabling coretemp LCD plugin");
 	}
 
-	try {
+	try
+	{
 		_plugins.push_back( new Splashscreen() );
 		_plugins.push_back( new SystemMonitor() );
-		for( const auto & ID : coretempIDs ) {
+		for( const auto & ID : coretempIDs )
 			_plugins.push_back( new Coretemp(ID) );
-		}
 		_plugins.push_back( new Endscreen() );
 	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
+	catch (const std::bad_alloc& e)
+	{ /* handle new() failure */
 		this->stopLCDPlugins();
 		throw GLogiKBadAlloc("LCD screen plugin bad allocation");
 	}
 
 	/* initialize each plugin */
-	for(const auto & plugin : _plugins) {
-		try {
+	for(const auto & plugin : _plugins)
+	{
+		try
+		{
 			plugin->init(_pFonts, product);
 			_pluginsPropertiesArray.push_back( plugin->getPluginProperties() );
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			GKSysLogError(e.what());
 		}
 	}
@@ -85,8 +90,10 @@ LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
 	 * (the ones that failed to read PBM for whatever
 	 * reason during initialization)
 	 */
-	for(auto & plugin : _plugins) {
-		if( ! plugin->isInitialized() ) {
+	for(auto & plugin : _plugins)
+	{
+		if( ! plugin->isInitialized() )
+		{
 			delete plugin; plugin = nullptr;
 		}
 	}
@@ -98,7 +105,8 @@ LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
 	);
 
 	_itCurrentPlugin = _plugins.begin();
-	if( _plugins.empty() ) {
+	if( _plugins.empty() )
+	{
 		GKSysLogWarning("no LCD screen plugin initialized");
 		_noPlugins = true;
 	}
@@ -129,13 +137,14 @@ void LCDScreenPluginsManager::unlockPlugin(void)
 {
 	GK_LOG_FUNC
 
-	if(_currentPluginLocked) {
+	if(_currentPluginLocked)
+	{
 #if DEBUGGING_ON
-		if( ! _noPlugins ) {
-			if(_itCurrentPlugin != _plugins.end() ) {
+		if( ! _noPlugins )
+			if(_itCurrentPlugin != _plugins.end() )
+			{
 				GKLog2(trace, "LCD plugin unlocked : ", (*_itCurrentPlugin)->getPluginName())
 			}
-		}
 #endif
 		_currentPluginLocked = false;
 	}
@@ -143,11 +152,9 @@ void LCDScreenPluginsManager::unlockPlugin(void)
 
 const uint64_t LCDScreenPluginsManager::getCurrentPluginID(void)
 {
-	if( ! _noPlugins ) {
-		if(_itCurrentPlugin != _plugins.end() ) {
+	if( ! _noPlugins )
+		if(_itCurrentPlugin != _plugins.end() )
 			return (*_itCurrentPlugin)->getPluginID();
-		}
-	}
 
 	return 0;
 }
@@ -156,25 +163,28 @@ void LCDScreenPluginsManager::jumpToNextPlugin(void)
 {
 	GK_LOG_FUNC
 
-	if( ! _noPlugins ) {
-		if(_itCurrentPlugin != _plugins.end() ) {
+	if( ! _noPlugins )
+		if(_itCurrentPlugin != _plugins.end() )
+		{
 			GKLog(trace, "jumping to next LCD plugin")
 
 			/* make sure it is unlocked */
 			_currentPluginLocked = false;
 			_frameCounter = (*_itCurrentPlugin)->getPluginMaxFrames();
 		}
-	}
 }
 
 const bool LCDScreenPluginsManager::findOneLCDScreenPlugin(const uint64_t LCDPluginsMask1) const
 {
 	bool ret = false;
 
-	if( ! _noPlugins ) {
-		for(auto it = _plugins.cbegin(); it != _plugins.cend(); ++it) {
+	if( ! _noPlugins )
+	{
+		for(auto it = _plugins.cbegin(); it != _plugins.cend(); ++it)
+		{
 			/* check that current plugin is loaded */
-			if( LCDPluginsMask1 & (*it)->getPluginID() ) {
+			if( LCDPluginsMask1 & (*it)->getPluginID() )
+			{
 				ret = true;
 				break;
 			}
@@ -190,31 +200,40 @@ const PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 {
 	GK_LOG_FUNC
 
-	if( ! _noPlugins ) {
-		try {
+	if( ! _noPlugins )
+	{
+		try
+		{
 			/* make sure there at least one plugin */
-			if(_itCurrentPlugin != _plugins.end() ) {
+			if(_itCurrentPlugin != _plugins.end() )
+			{
 				_frameCounter++;
 
 				/* pressed locking key ? */
-				if(LCDKey == LCD_KEY_L2) {
+				if(LCDKey == LCD_KEY_L2)
+				{
 					_currentPluginLocked = ! (_currentPluginLocked);
 #if DEBUGGING_ON
-					if( _currentPluginLocked ) {
+					if( _currentPluginLocked )
+					{
 						GKLog2(trace, "LCD plugin   locked : ", (*_itCurrentPlugin)->getPluginName())
 					}
-					else {
+					else
+					{
 						GKLog2(trace, "LCD plugin unlocked : ", (*_itCurrentPlugin)->getPluginName())
 					}
 #endif
 				}
 
-				if( _frameCounter >= (*_itCurrentPlugin)->getPluginMaxFrames() ) {
+				if( _frameCounter >= (*_itCurrentPlugin)->getPluginMaxFrames() )
+				{
 					bool found = false;
 					const std::vector<LCDPlugin*>::const_iterator itFirstPlugin = _itCurrentPlugin;
-					while( ! found ) {
+					while( ! found )
+					{
 						/* locked plugin ? */
-						if( ! _currentPluginLocked ) {
+						if( ! _currentPluginLocked )
+						{
 							_itCurrentPlugin++; /* jumping to next plugin */
 							if(_itCurrentPlugin == _plugins.end() )
 								_itCurrentPlugin = _plugins.begin();
@@ -227,7 +246,8 @@ const PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 						if( LCDPluginsMask1 & (*_itCurrentPlugin)->getPluginID() )
 							found = true;
 
-						if( (! found) and (_itCurrentPlugin == itFirstPlugin) ) {
+						if( (! found) and (_itCurrentPlugin == itFirstPlugin) )
+						{
 							const std::string warn("detected potential infinite loop");
 							GKSysLogWarning(warn);
 							throw GLogiKExcept(warn);
@@ -240,18 +260,21 @@ const PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 				}
 			}
 
-			if(_itCurrentPlugin != _plugins.end() ) {
+			if(_itCurrentPlugin != _plugins.end() )
+			{
 				(*_itCurrentPlugin)->prepareNextPBMFrame();
 				this->dumpPBMDataIntoLCDBuffer(
 					(*_itCurrentPlugin)->getNextPBMFrame(_pFonts, LCDKey, _currentPluginLocked)
 				);
 			}
-			else {
+			else
+			{
 				/* blank screen */
 				std::fill(_LCDBuffer.begin(), _LCDBuffer.end(), 0x0);
 			}
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			/* if something goes wrong, don't spam
 			 * syslog with errors on each cycle */
 			GKLog(error, e.what())
@@ -274,9 +297,8 @@ void LCDScreenPluginsManager::stopLCDPlugins(void)
 
 	GKLog(trace, "stopping LCD screen plugins")
 
-	for(const auto & plugin : _plugins) {
+	for(const auto & plugin : _plugins)
 		delete plugin;
-	}
 	_plugins.clear();
 }
 
