@@ -65,14 +65,29 @@ class DevicesHandler
 		void setGKfs(NSGKUtils::FileSystem* pGKfs);
 		void setClientID(const std::string & id);
 
-		void startDevice(const std::string & devID, const bool notifications = true);
-		void stopDevice(const std::string & devID, const bool notifications = true);
-		void unplugDevice(const std::string & devID, const bool notifications = true);
+		void startDevice(
+			const std::string & devID,
+			const bool notifications = true
+		);
+		void stopDevice(
+			const std::string & devID,
+			const bool notifications = true
+		);
+		void unplugDevice(
+			const std::string & devID,
+			const bool notifications = true
+		);
 
 		void clearDevices(const bool notifications);
 
-		void setDeviceCurrentBankID(const std::string & devID, const MKeysID bankID);
-		banksMap_type & getDeviceBanks(const std::string & devID, MKeysID & bankID);
+		void setDeviceCurrentBankID(
+			const std::string & devID,
+			const MKeysID bankID
+		);
+		banksMap_type & getDeviceBanks(
+			const std::string & devID,
+			MKeysID & bankID
+		);
 
 		void doDeviceFakeKeyEvent(
 			const std::string & devID,
@@ -81,9 +96,7 @@ class DevicesHandler
 
 		const DevicesFilesMap_type getDevicesFilesMap(void);
 		const std::vector<std::string> getDevicesList(void);
-		const LCDPPArray_type & getDeviceLCDPluginsProperties(
-			const std::string & devID
-		);
+		const LCDPPArray_type & getDeviceLCDPluginsProperties(const std::string & devID);
 
 		void reloadDeviceConfigurationFile(const std::string & devID) noexcept;
 		void saveDeviceConfigurationFile(const std::string & devID) noexcept;
@@ -137,7 +150,10 @@ class DevicesHandler
 
 		void unrefDevice(const std::string & devID);
 
-		const bool checkDeviceCapability(const DeviceProperties & device, Caps toCheck);
+		const bool checkDeviceCapability(
+			const DeviceProperties & device,
+			Caps toCheck
+		);
 
 		const MKeysIDArray_type getDeviceMKeysIDArray(const std::string & devID);
 		const GKeysIDArray_type getDeviceGKeysIDArray(const std::string & devID);
