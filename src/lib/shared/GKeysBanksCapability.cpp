@@ -121,7 +121,7 @@ void GKeysBanksCapability::setBanks(const banksMap_type & GKeysBanks)
 	_GKeysBanks = GKeysBanks;
 }
 
-void GKeysBanksCapability::checkBanksKeys(void)
+void GKeysBanksCapability::checkBanksKeys(void) noexcept
 {
 	for(auto bankIt = _GKeysBanks.begin(); bankIt != _GKeysBanks.end();) {
 		try {

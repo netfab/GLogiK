@@ -162,7 +162,7 @@ const bool DevicesHandler::checkDeviceCapability(const DeviceProperties & device
 	return (device.getCapabilities() & toEnumType(toCheck));
 }
 
-void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID)
+void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID) noexcept
 {
 	GK_LOG_FUNC
 
@@ -201,7 +201,7 @@ void DevicesHandler::reloadDeviceConfigurationFile(const std::string & devID)
 	}
 }
 
-void DevicesHandler::saveDeviceConfigurationFile(const std::string & devID)
+void DevicesHandler::saveDeviceConfigurationFile(const std::string & devID) noexcept
 {
 	GK_LOG_FUNC
 
@@ -218,7 +218,7 @@ void DevicesHandler::saveDeviceConfigurationFile(const std::string & devID)
 
 void DevicesHandler::saveDeviceConfigurationFile(
 	const std::string & devID,
-	const DeviceProperties & device)
+	const DeviceProperties & device) noexcept
 {
 	GK_LOG_FUNC
 
@@ -265,7 +265,7 @@ void DevicesHandler::saveDeviceConfigurationFile(
 	}
 }
 
-void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devID)
+void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devID) noexcept
 {
 	GK_LOG_FUNC
 
@@ -288,7 +288,7 @@ void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devI
 	}
 }
 
-void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device)
+void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) noexcept
 {
 	fs::path filePath(_configurationRootDirectory);
 	filePath /= device.getVendor();
@@ -299,7 +299,7 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device)
 
 void DevicesHandler::sendDeviceConfigurationToDaemon(
 	const std::string & devID,
-	const DeviceProperties & device)
+	const DeviceProperties & device) noexcept
 {
 	GK_LOG_FUNC
 
@@ -705,7 +705,7 @@ void DevicesHandler::unrefDevice(const std::string & devID)
 	}
 }
 
-void DevicesHandler::initializeConfigurationDirectory(DeviceProperties & device, const bool check)
+void DevicesHandler::initializeConfigurationDirectory(DeviceProperties & device, const bool check) noexcept
 {
 	GK_LOG_FUNC
 
@@ -713,11 +713,13 @@ void DevicesHandler::initializeConfigurationDirectory(DeviceProperties & device,
 	directory /= device.getVendor();
 
 	try {
+		/* ->createDirectory() can throw GLogiKExcept */
 		FileSystem::createDirectory(directory, fs::owner_all);
 #if DEBUGGING_ON
 		FileSystem::traceLastDirectoryCreation();
 #endif
 
+		/* ->addNotifyDirectoryWatch() can throw GLogiKExcept */
 		device.setWatchDescriptor( _pGKfs->addNotifyDirectoryWatch( directory.string(), check ) );
 	}
 	catch ( const GLogiKExcept & e ) {

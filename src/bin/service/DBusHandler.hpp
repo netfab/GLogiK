@@ -95,7 +95,7 @@ class DBusHandler
 		void cleanGKDBusEvents(void) noexcept;
 		void prepareToStop(const bool notifications = true);
 
-		void reportChangedState(void);
+		void reportChangedState(void) noexcept;
 
 		void initializeDevices(void);
 		void initializeGKDBusSignals(void);

@@ -85,8 +85,8 @@ class DevicesHandler
 			const std::string & devID
 		);
 
-		void reloadDeviceConfigurationFile(const std::string & devID);
-		void saveDeviceConfigurationFile(const std::string & devID);
+		void reloadDeviceConfigurationFile(const std::string & devID) noexcept;
+		void saveDeviceConfigurationFile(const std::string & devID) noexcept;
 
 	protected:
 
@@ -119,21 +119,21 @@ class DevicesHandler
 		);
 		void loadDeviceConfigurationFile(
 			DeviceProperties & device
-		);
+		) noexcept;
 		void saveDeviceConfigurationFile(
 			const std::string & devID,
 			const DeviceProperties & device
-		);
+		) noexcept;
 		void initializeConfigurationDirectory(
 			DeviceProperties & device,
 			const bool check=true
-		);
+		) noexcept;
 
 		void sendDeviceConfigurationToDaemon(
 			const std::string & devID,
 			const DeviceProperties & device
-		);
-		void sendDeviceConfigurationSavedSignal(const std::string & devID);
+		) noexcept;
+		void sendDeviceConfigurationSavedSignal(const std::string & devID) noexcept;
 
 		void unrefDevice(const std::string & devID);
 

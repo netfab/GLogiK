@@ -65,7 +65,7 @@ class FSNotify
 			const std::string & path,
 			const bool checkIfAlreadyWatched=false
 		);
-		void removeNotifyWatch(const int wd);
+		void removeNotifyWatch(const int wd) noexcept;
 
 		const int getNotifyQueueDescriptor(void) const;
 

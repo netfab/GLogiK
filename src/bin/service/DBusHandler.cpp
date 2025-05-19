@@ -110,6 +110,7 @@ void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 
 	DevicesFilesMap_type devicesMap = _devices.getDevicesFilesMap();
 
+	/* can thow */
 	pGKfs->readNotifyEvents( devicesMap );
 
 	for( const auto & device : devicesMap ) {
@@ -502,7 +503,7 @@ const std::string DBusHandler::getCurrentSessionState(void)
 	throw GLogiKExcept("unable to get session state");
 }
 
-void DBusHandler::reportChangedState(void)
+void DBusHandler::reportChangedState(void) noexcept
 {
 	GK_LOG_FUNC
 

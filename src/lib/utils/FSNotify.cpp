@@ -98,7 +98,7 @@ const int FSNotify::addNotifyDirectoryWatch(
 	return this->addNotifyWatch(path, mask);
 }
 
-void FSNotify::removeNotifyWatch(const int wd)
+void FSNotify::removeNotifyWatch(const int wd) noexcept
 {
 	GK_LOG_FUNC
 

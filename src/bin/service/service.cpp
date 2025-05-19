@@ -148,9 +148,9 @@ int DesktopService::run(void)
 						}
 
 						if( fds[1].revents & POLLIN ) {
-							/* checking if any received filesystem notification matches
+							/* check if any received filesystem notification matches
 							 * any device configuration file. If yes, reload the file,
-							 * and send configuration to daemon */
+							 * and send configuration to daemon. Can throw. */
 							handler.checkNotifyEvents(&GKfs);
 						}
 					}

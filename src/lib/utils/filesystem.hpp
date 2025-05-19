@@ -50,7 +50,7 @@ class FileSystem
 		);
 
 #if DEBUGGING_ON
-		static void traceLastDirectoryCreation(void);
+		static void traceLastDirectoryCreation(void) noexcept;
 #endif
 
 		const std::string getNextAvailableFileName(
