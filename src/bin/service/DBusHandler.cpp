@@ -58,7 +58,8 @@ DBusHandler::DBusHandler(
 
 	this->registerWithDaemon();
 
-	try {
+	try
+	{
 		this->updateSessionState();
 
 		this->getDaemonDependenciesMap(dependencies);
@@ -73,7 +74,8 @@ DBusHandler::DBusHandler(
 		process::setSignalHandler(SIGUSR1, DBusHandler::handleSignal);
 		process::setSignalHandler(SIGUSR2, DBusHandler::handleSignal);
 	}
-	catch ( const GLogiKExcept & e ) {
+	catch ( const GLogiKExcept & e )
+	{
 		/* don't show desktop notifications */
 		this->prepareToStop(false);
 
@@ -113,7 +115,8 @@ void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 	/* can thow */
 	pGKfs->readNotifyEvents( devicesMap );
 
-	for( const auto & device : devicesMap ) {
+	for( const auto & device : devicesMap )
+	{
 		GKLog4(trace,
 			device.first, " filesystem notification event",
 			"reloading file : ", device.second
@@ -124,9 +127,8 @@ void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 		 * force state update, to load active user's parameters
 		 * for all plugged devices
 		 */
-		if( _sessionState == "active" ) {
+		if( _sessionState == "active" )
 			this->reportChangedState();
-		}
 	}
 }
 
@@ -142,7 +144,8 @@ void DBusHandler::prepareToStop(const bool notifications)
 
 	GKLog(trace, "clearing devices and unregistering with daemon")
 
-	if( _registerStatus ) {
+	if( _registerStatus )
+	{
 		/* We must be registered against the daemon to clear (unref) devices.
 		 * Anyway, devices are always initialized *after* a successful registration. */
 		_devices.clearDevices(notifications);
@@ -152,7 +155,8 @@ void DBusHandler::prepareToStop(const bool notifications)
 		/* send signal to GUI */
 		this->sendDevicesUpdatedSignal();
 	}
-	else {
+	else
+	{
 		GKLog2(trace, "client not registered with deamon : ", _CURRENT_SESSION_DBUS_OBJECT_PATH)
 	}
 }
@@ -187,7 +191,8 @@ void DBusHandler::cleanGKDBusEvents(void) noexcept
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE);
 
 	/* remove PropertyChanged signal event */
-	switch(_sessionFramework) {
+	switch(_sessionFramework)
+	{
 		/* logind */
 		case SessionFramework::FW_LOGIND:
 			DBus.removeSignalsInterface(_systemBus,
@@ -215,7 +220,8 @@ void DBusHandler::handleSignal(int signum)
 {
 	GK_LOG_FUNC
 
-	switch( signum ) {
+	switch( signum )
+	{
 		case SIGUSR1:
 			LOG(info) << process::getSignalHandlingDesc(signum, " --> sending restart request and exiting");
 
@@ -237,14 +243,16 @@ void DBusHandler::registerWithDaemon(void)
 {
 	GK_LOG_FUNC
 
-	if( _registerStatus ) {
+	if( _registerStatus )
+	{
 		LOG(warning) << "don't need to register, since we are already registered";
 		return;
 	}
 
 	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_REGISTER_CLIENT);
 
-	try {
+	try
+	{
 		DBus.initializeRemoteMethodCall(
 			_systemBus,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -257,21 +265,25 @@ void DBusHandler::registerWithDaemon(void)
 
 		/* -- */
 
-		try {
+		try
+		{
 			DBus.waitForRemoteMethodCallReply(); /* (1) */
 
 			const bool ret = DBus.getNextBooleanArgument(); /* (2) */
 			/* nextString - *clientID* or *failure reason* */
 			const std::string nextString = DBus.getNextStringArgument(); /* (3) */
 
-			if( ret ) {
+			if( ret )
+			{
 				_clientID = nextString;
 				_registerStatus = true;
 
-				try {
+				try
+				{
 					_daemonVersion = DBus.getNextStringArgument();
 
-					if( _daemonVersion != VERSION ) {
+					if( _daemonVersion != VERSION )
+					{
 						std::string mismatch("daemon version mismatch : ");
 						mismatch += _daemonVersion;
 						throw GLogiKExcept(mismatch);
@@ -279,26 +291,31 @@ void DBusHandler::registerWithDaemon(void)
 
 					LOG(info) << "successfully registered with daemon - " << _clientID;
 				}
-				catch (const GLogiKExcept & e) {
+				catch (const GLogiKExcept & e)
+				{
 					LOG(warning) << e.what() << " - will unregister";
 					this->unregisterWithDaemon();
 				}
 			}
-			else {
+			else
+			{
 				LOG(error) << "failed to register with daemon : false - " << nextString;
 			}
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			/* potential GKDBus exceptions on these calls: (1) (2) (3) */
 			LogRemoteCallGetReplyFailure
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		DBus.abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
 
-	if( ! _registerStatus ) {
+	if( ! _registerStatus )
+	{
 		LOG(error) << "can't register, giving up";
 		throw GLogiKExcept("unable to register with daemon");
 	}
@@ -308,14 +325,16 @@ void DBusHandler::unregisterWithDaemon(void)
 {
 	GK_LOG_FUNC
 
-	if( ! _registerStatus ) {
+	if( ! _registerStatus )
+	{
 		GKLog(trace, "cannot unregister, since we are not currently registered")
 		return;
 	}
 
 	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_UNREGISTER_CLIENT);
 
-	try {
+	try
+	{
 		/* telling the daemon we're killing ourself */
 		DBus.initializeRemoteMethodCall(
 			_systemBus,
@@ -327,25 +346,30 @@ void DBusHandler::unregisterWithDaemon(void)
 		DBus.appendStringToRemoteMethodCall(_clientID);
 		DBus.sendRemoteMethodCall();
 
-		try {
+		try
+		{
 			DBus.waitForRemoteMethodCallReply();
 
 			const bool ret = DBus.getNextBooleanArgument();
-			if( ret ) {
+			if( ret )
+			{
 				_registerStatus = false;
 				_clientID = "undefined";
 				_daemonVersion = "unknown";
 				LOG(info) << "successfully unregistered with daemon";
 			}
-			else {
+			else
+			{
 				LOG(error) << "failed to unregister with daemon : false";
 			}
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			LogRemoteCallGetReplyFailure
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		DBus.abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
@@ -355,14 +379,16 @@ void DBusHandler::getDaemonDependenciesMap(GKDepsMap_type* const dependencies)
 {
 	GK_LOG_FUNC
 
-	if( ! _registerStatus ) {
+	if( ! _registerStatus )
+	{
 		LOG(warning) << "currently not registered";
 		return;
 	}
 
 	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DAEMON_DEPENDENCIES_MAP);
 
-	try {
+	try
+	{
 		DBus.initializeRemoteMethodCall(
 			_systemBus,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -373,7 +399,8 @@ void DBusHandler::getDaemonDependenciesMap(GKDepsMap_type* const dependencies)
 		DBus.appendStringToRemoteMethodCall(_clientID);
 		DBus.sendRemoteMethodCall();
 
-		try {
+		try
+		{
 			DBus.waitForRemoteMethodCallReply();
 
 			GKDepsMap_type daemonDeps = DBus.getNextGKDepsMapArgument();
@@ -381,11 +408,13 @@ void DBusHandler::getDaemonDependenciesMap(GKDepsMap_type* const dependencies)
 			// /* debug */ printVersionDeps("daemon / service dependencies", (*dependencies));
 			return;
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			LogRemoteCallGetReplyFailure
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		DBus.abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
@@ -398,10 +427,12 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		const std::string remoteMethod("GetSessionByPID");
 
-		try {
+		try
+		{
 			/* getting logind current session */
 			DBus.initializeRemoteMethodCall(
 				_systemBus,
@@ -413,7 +444,8 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
 			DBus.appendUInt32ToRemoteMethodCall(pid);
 			DBus.sendRemoteMethodCall();
 
-			try {
+			try
+			{
 				DBus.waitForRemoteMethodCallReply();
 				_CURRENT_SESSION_DBUS_OBJECT_PATH = DBus.getNextStringArgument();
 
@@ -424,17 +456,20 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
 				LOG(info) << "successfully contacted logind";
 				return; /* everything ok */
 			}
-			catch (const GLogiKExcept & e) {
+			catch (const GLogiKExcept & e)
+			{
 				LogRemoteCallGetReplyFailure
 				throw GLogiKExcept("failure to get session ID from logind");
 			}
 		}
-		catch (const GKDBusMessageWrongBuild & e) {
+		catch (const GKDBusMessageWrongBuild & e)
+		{
 			DBus.abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	}
-	catch ( const GLogiKExcept & e ) {
+	catch ( const GLogiKExcept & e )
+	{
 		LOG(error) << e.what();
 	}
 
@@ -466,11 +501,13 @@ const std::string DBusHandler::getCurrentSessionState(void)
 	GK_LOG_FUNC
 
 	std::string remoteMethod;
-	switch(_sessionFramework) {
+	switch(_sessionFramework)
+	{
 		case SessionFramework::FW_LOGIND:
 			/* logind */
 			remoteMethod = "Get";
-			try {
+			try
+			{
 				DBus.initializeRemoteMethodCall(
 					_systemBus,
 					LOGIND_DBUS_BUS_CONNECTION_NAME,
@@ -482,15 +519,18 @@ const std::string DBusHandler::getCurrentSessionState(void)
 				DBus.appendStringToRemoteMethodCall("State");
 				DBus.sendRemoteMethodCall();
 
-				try {
+				try
+				{
 					DBus.waitForRemoteMethodCallReply();
 					return DBus.getNextStringArgument();
 				}
-				catch (const GLogiKExcept & e) {
+				catch (const GLogiKExcept & e)
+				{
 					LogRemoteCallGetReplyFailure
 				}
 			}
-			catch (const GKDBusMessageWrongBuild & e) {
+			catch (const GKDBusMessageWrongBuild & e)
+			{
 				DBus.abandonRemoteMethodCall();
 				LogRemoteCallFailure
 			}
@@ -507,14 +547,16 @@ void DBusHandler::reportChangedState(void) noexcept
 {
 	GK_LOG_FUNC
 
-	if( ! _registerStatus ) {
+	if( ! _registerStatus )
+	{
 		GKLog(trace, "currently not registered, skipping report state")
 		return;
 	}
 
 	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_UPDATE_CLIENT_STATE);
 
-	try {
+	try
+	{
 		DBus.initializeRemoteMethodCall(
 			_systemBus,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -526,22 +568,27 @@ void DBusHandler::reportChangedState(void) noexcept
 		DBus.appendStringToRemoteMethodCall(_sessionState);
 		DBus.sendRemoteMethodCall();
 
-		try {
+		try
+		{
 			DBus.waitForRemoteMethodCallReply();
 			const bool ret( DBus.getNextBooleanArgument() );
-			if( ! ret ) {
+			if( ! ret )
+			{
 				LOG(error) << "failed to report changed state : false";
 			}
-			else {
+			else
+			{
 				GKLog2(trace, "successfully reported changed state : ", _sessionState)
 			}
 			return;
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			LogRemoteCallGetReplyFailure
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		DBus.abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
@@ -553,7 +600,8 @@ void DBusHandler::initializeDevices(void)
 
 	GKLog(trace, "initializing devices")
 
-	if( ! _registerStatus ) {
+	if( ! _registerStatus )
+	{
 		GKLog(trace, "currently not registered, giving up")
 		return;
 	}
@@ -564,7 +612,8 @@ void DBusHandler::initializeDevices(void)
 	std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_STARTED_DEVICES);
 
 	/* started devices */
-	try {
+	try
+	{
 		DBus.initializeRemoteMethodCall(
 			_systemBus,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -575,17 +624,20 @@ void DBusHandler::initializeDevices(void)
 		DBus.appendStringToRemoteMethodCall(_clientID);
 		DBus.sendRemoteMethodCall();
 
-		try {
+		try
+		{
 			DBus.waitForRemoteMethodCallReply();
 
 			devicesID = DBus.getNextStringArray();
 			this->devicesStarted(devicesID);
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			LogRemoteCallGetReplyFailure
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		DBus.abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
@@ -595,7 +647,8 @@ void DBusHandler::initializeDevices(void)
 	remoteMethod = GK_DBUS_DAEMON_METHOD_SET_CLIENT_READY;
 
 	/* saying the daemon that we are ready */
-	try {
+	try
+	{
 		DBus.initializeRemoteMethodCall(
 			_systemBus,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -606,22 +659,27 @@ void DBusHandler::initializeDevices(void)
 		DBus.appendStringToRemoteMethodCall(_clientID);
 		DBus.sendRemoteMethodCall();
 
-		try {
+		try
+		{
 			DBus.waitForRemoteMethodCallReply();
 
 			const bool ret = DBus.getNextBooleanArgument();
-			if( ! ret ) {
+			if( ! ret )
+			{
 				LOG(warning) << "failed to enable ready state : false";
 			}
-			else {
+			else
+			{
 				GKLog(trace, "successfully enabled ready state")
 			}
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			LogRemoteCallGetReplyFailure
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		DBus.abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
@@ -629,7 +687,8 @@ void DBusHandler::initializeDevices(void)
 	remoteMethod = GK_DBUS_DAEMON_METHOD_GET_STOPPED_DEVICES;
 
 	/* stopped devices */
-	try {
+	try
+	{
 		DBus.initializeRemoteMethodCall(
 			_systemBus,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -640,17 +699,20 @@ void DBusHandler::initializeDevices(void)
 		DBus.appendStringToRemoteMethodCall(_clientID);
 		DBus.sendRemoteMethodCall();
 
-		try {
+		try
+		{
 			DBus.waitForRemoteMethodCallReply();
 
 			devicesID = DBus.getNextStringArray();
 			this->devicesStopped(devicesID);
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			LogRemoteCallGetReplyFailure
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		DBus.abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
@@ -660,7 +722,8 @@ void DBusHandler::sendServiceStartRequest(void)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		/* asking the launcher to spawn the service after sleeping 300 ms
 		 *
 		 * this process is about to exit, and the launcher must wait enough time
@@ -678,7 +741,8 @@ void DBusHandler::sendServiceStartRequest(void)
 
 		LOG(info) << "sent signal: " << GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST;
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		DBus.abandonBroadcastSignal();
 		LOG(error)	<< "failed to send signal: "
 					<< GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST
@@ -690,7 +754,8 @@ void DBusHandler::sendDevicesUpdatedSignal(void)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		/* send DevicesUpdated signal to GUI applications */
 		DBus.initializeBroadcastSignal(
 			_sessionBus,
@@ -702,7 +767,8 @@ void DBusHandler::sendDevicesUpdatedSignal(void)
 
 		LOG(info) << "sent signal: " << GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED;
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		DBus.abandonBroadcastSignal();
 		LOG(error)	<< "failed to send signal: "
 					<< GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED
@@ -724,7 +790,8 @@ void DBusHandler::sendDevicesUpdatedSignal(void)
 void DBusHandler::initializeGKDBusSignals(void)
 {
 	/* update session state when PropertyChanged signal receipted */
-	switch(_sessionFramework) {
+	switch(_sessionFramework)
+	{
 		/* logind */
 		case SessionFramework::FW_LOGIND:
 			DBus.NSGKDBus::Callback<SIGv2v>::receiveSignal(
@@ -984,25 +1051,30 @@ void DBusHandler::daemonIsStarting(void)
 {
 	GK_LOG_FUNC
 
-	if( _registerStatus ) {
+	if( _registerStatus )
+	{
 		GKLog4(trace,
 			"received signal : ", __func__,
 			"but we are already registered with daemon : ", _CURRENT_SESSION_DBUS_OBJECT_PATH
 		)
 	}
-	else {
+	else
+	{
 		LOG(info)	<< "received signal : " << __func__
 					<< " - contacting the daemon";
 
-		try {
+		try
+		{
 			this->registerWithDaemon();
-			if( _registerStatus ) {
+			if( _registerStatus )
+			{
 				this->updateSessionState();
 				_devices.setClientID(_clientID);
 				this->initializeDevices();
 			}
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			LOG(error) << e.what();
 			DBusHandler::WantToExit = true;
 			this->sendServiceStartRequest();
@@ -1023,8 +1095,10 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 
 	bool devicesUpdated(false);
 
-	for(const auto& devID : devicesID) {
-		try {
+	for(const auto& devID : devicesID)
+	{
+		try
+		{
 			DBus.initializeRemoteMethodCall(
 				_systemBus,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -1036,31 +1110,37 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 			DBus.appendStringToRemoteMethodCall(devID);
 			DBus.sendRemoteMethodCall();
 
-			try {
+			try
+			{
 				DBus.waitForRemoteMethodCallReply();
 
 				const std::string deviceStatus( DBus.getNextStringArgument() );
-				if(deviceStatus == "started") {
+				if(deviceStatus == "started")
+				{
 					GKLog2(trace, devID, " status from daemon : started")
 					_devices.startDevice(devID);
 					devicesUpdated = true;
 				}
-				else {
+				else
+				{
 					LOG(warning) << "received devicesStarted signal for device " << devID;
 					LOG(warning) << "but daemon is saying that device status is : " << deviceStatus;
 				}
 			}
-			catch (const GLogiKExcept & e) {
+			catch (const GLogiKExcept & e)
+			{
 				LogRemoteCallGetReplyFailure
 			}
 		}
-		catch (const GKDBusMessageWrongBuild & e) {
+		catch (const GKDBusMessageWrongBuild & e)
+		{
 			DBus.abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	}
 
-	if(devicesUpdated) {
+	if(devicesUpdated)
+	{
 		/* send signal to GUI */
 		this->sendDevicesUpdatedSignal();
 	}
@@ -1069,7 +1149,8 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 	 * force state update, to load active user's parameters
 	 * for all hotplugged devices
 	 */
-	if( _sessionState == "active" ) {
+	if( _sessionState == "active" )
+	{
 		this->reportChangedState();
 	}
 }
@@ -1087,8 +1168,10 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
 
 	bool devicesUpdated(false);
 
-	for(const auto& devID : devicesID) {
-		try {
+	for(const auto& devID : devicesID)
+	{
+		try
+		{
 			DBus.initializeRemoteMethodCall(
 				_systemBus,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -1100,31 +1183,37 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
 			DBus.appendStringToRemoteMethodCall(devID);
 			DBus.sendRemoteMethodCall();
 
-			try {
+			try
+			{
 				DBus.waitForRemoteMethodCallReply();
 
 				const std::string deviceStatus( DBus.getNextStringArgument() );
-				if(deviceStatus == "stopped") {
+				if(deviceStatus == "stopped")
+				{
 					GKLog2(trace, devID, " status from daemon : stopped")
 					_devices.stopDevice(devID);
 					devicesUpdated = true;
 				}
-				else {
+				else
+				{
 					LOG(warning) << "received devicesStopped signal for device " << devID;
 					LOG(warning) << "but daemon is saying that device status is : " << deviceStatus;
 				}
 			}
-			catch (const GLogiKExcept & e) {
+			catch (const GLogiKExcept & e)
+			{
 				LogRemoteCallGetReplyFailure
 			}
 		}
-		catch (const GKDBusMessageWrongBuild & e) {
+		catch (const GKDBusMessageWrongBuild & e)
+		{
 			DBus.abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	}
 
-	if(devicesUpdated) {
+	if(devicesUpdated)
+	{
 		/* send signal to GUI */
 		this->sendDevicesUpdatedSignal();
 	}
@@ -1143,8 +1232,10 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 
 	bool devicesUpdated(false);
 
-	for(const auto& devID : devicesID) {
-		try {
+	for(const auto& devID : devicesID)
+	{
+		try
+		{
 			DBus.initializeRemoteMethodCall(
 				_systemBus,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -1156,31 +1247,37 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 			DBus.appendStringToRemoteMethodCall(devID);
 			DBus.sendRemoteMethodCall();
 
-			try {
+			try
+			{
 				DBus.waitForRemoteMethodCallReply();
 
 				const std::string deviceStatus( DBus.getNextStringArgument() );
-				if(deviceStatus == "unplugged") {
+				if(deviceStatus == "unplugged")
+				{
 					GKLog2(trace, devID, " status from daemon : unplugged")
 					_devices.unplugDevice(devID);
 					devicesUpdated = true;
 				}
-				else {
+				else
+				{
 					LOG(warning) << "received devicesUnplugged signal for device " << devID;
 					LOG(warning) << "but daemon is saying that device status is : " << deviceStatus;
 				}
 			}
-			catch (const GLogiKExcept & e) {
+			catch (const GLogiKExcept & e)
+			{
 				LogRemoteCallGetReplyFailure
 			}
 		}
-		catch (const GKDBusMessageWrongBuild & e) {
+		catch (const GKDBusMessageWrongBuild & e)
+		{
 			DBus.abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	}
 
-	if(devicesUpdated) {
+	if(devicesUpdated)
+	{
 		/* send signal to GUI */
 		this->sendDevicesUpdatedSignal();
 	}
@@ -1194,12 +1291,14 @@ void DBusHandler::deviceMBankSwitch(
 
 	GKLog3(trace, devID, " received signal - bankID: ", bankID)
 
-	if( ! _registerStatus ) {
+	if( ! _registerStatus )
+	{
 		GKLog(trace, "currently not registered, skipping")
 		return;
 	}
 
-	if( _sessionState != "active" ) {
+	if( _sessionState != "active" )
+	{
 		GKLog(trace, "currently not active, skipping")
 		return;
 	}
@@ -1207,10 +1306,12 @@ void DBusHandler::deviceMBankSwitch(
 	LOG(info)	<< "received signal: " << GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH
 				<< " - " << bankID;
 
-	try {
+	try
+	{
 		_devices.setDeviceCurrentBankID(devID, bankID);
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		LOG(error) << devID << " setting bankID failure - " << bankID;
 	}
 }
@@ -1224,17 +1325,20 @@ void DBusHandler::deviceMacroRecorded(
 
 	GKLog3(trace, devID, " received signal for key: ", getGKeyName(keyID))
 
-	if( ! _registerStatus ) {
+	if( ! _registerStatus )
+	{
 		GKLog(trace, "currently not registered, skipping")
 		return;
 	}
 
-	if( _sessionState != "active" ) {
+	if( _sessionState != "active" )
+	{
 		GKLog(trace, "currently not active, skipping")
 		return;
 	}
 
-	try {
+	try
+	{
 		MKeysID bankID;
 		banksMap_type & banksMap = _devices.getDeviceBanks(devID, bankID);
 
@@ -1242,36 +1346,42 @@ void DBusHandler::deviceMacroRecorded(
 
 		_devices.saveDeviceConfigurationFile(devID);
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		LOG(error) << devID << " macro record failure - " << keyID;
 	}
 }
 
-void DBusHandler::deviceMacroCleared(const std::string & devID, const GKeysID keyID)
+void DBusHandler::deviceMacroCleared(
+	const std::string & devID,
+	const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
 	GKLog3(trace, devID, " received signal for key: ", getGKeyName(keyID))
 
-	if( ! _registerStatus ) {
+	if( ! _registerStatus )
+	{
 		GKLog(trace, "currently not registered, skipping")
 		return;
 	}
 
-	if( _sessionState != "active" ) {
+	if( _sessionState != "active" )
+	{
 		GKLog(trace, "currently not active, skipping")
 		return;
 	}
 
-	try {
+	try
+	{
 		MKeysID bankID;
 		banksMap_type & banksMap = _devices.getDeviceBanks(devID, bankID);
 
-		if( _GKeysEvent.clearMacro(banksMap, bankID, keyID) ) {
+		if( _GKeysEvent.clearMacro(banksMap, bankID, keyID) )
 			_devices.saveDeviceConfigurationFile(devID);
-		}
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		LOG(error) << devID << " clear macro failure - " << keyID;
 	}
 }
@@ -1284,12 +1394,14 @@ void DBusHandler::deviceMediaEvent(
 
 	GKLog3(trace, devID, " received signal for event: ", mediaKeyEvent)
 
-	if( ! _registerStatus ) {
+	if( ! _registerStatus )
+	{
 		GKLog(trace, "currently not registered, skipping")
 		return;
 	}
 
-	if( _sessionState != "active" ) {
+	if( _sessionState != "active" )
+	{
 		GKLog(trace, "currently not active, skipping")
 		return;
 	}
@@ -1297,34 +1409,41 @@ void DBusHandler::deviceMediaEvent(
 	_devices.doDeviceFakeKeyEvent(devID, mediaKeyEvent);
 }
 
-void DBusHandler::deviceGKeyEvent(const std::string & devID, const GKeysID keyID)
+void DBusHandler::deviceGKeyEvent(
+	const std::string & devID,
+	const GKeysID keyID)
 {
 	GK_LOG_FUNC
 
 	GKLog3(trace, devID, " received signal for event: ", getGKeyName(keyID))
 
-	if( ! _registerStatus ) {
+	if( ! _registerStatus )
+	{
 		GKLog(trace, "currently not registered, skipping")
 		return;
 	}
 
-	if( _sessionState != "active" ) {
+	if( _sessionState != "active" )
+	{
 		GKLog(trace, "currently not active, skipping")
 		return;
 	}
 
-	try {
+	try
+	{
 		MKeysID bankID;
 		banksMap_type & banksMap = _devices.getDeviceBanks(devID, bankID);
 
 		_GKeysEvent.runEvent(banksMap, bankID, keyID);
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		LOG(error) << devID << " run event failure - " << keyID;
 	}
 };
 
-const std::vector<std::string> DBusHandler::getDevicesList(const std::string & reserved) {
+const std::vector<std::string> DBusHandler::getDevicesList(const std::string & reserved)
+{
 	return _devices.getDevicesList();
 }
 
@@ -1368,12 +1487,14 @@ void DBusHandler::deviceStatusChangeRequest(
 	 */
 	if(	(remoteMethod !=  GK_DBUS_DAEMON_METHOD_STOP_DEVICE) and
 		(remoteMethod !=  GK_DBUS_DAEMON_METHOD_START_DEVICE) and
-		(remoteMethod !=  GK_DBUS_DAEMON_METHOD_RESTART_DEVICE) ) {
+		(remoteMethod !=  GK_DBUS_DAEMON_METHOD_RESTART_DEVICE) )
+	{
 		LOG(warning) << devID << " ignoring wrong remote method : " << remoteMethod;
 		return;
 	}
 
-	try {
+	try
+	{
 		DBus.initializeRemoteMethodCall(
 			_systemBus,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
@@ -1385,22 +1506,27 @@ void DBusHandler::deviceStatusChangeRequest(
 		DBus.appendStringToRemoteMethodCall(devID);
 		DBus.sendRemoteMethodCall();
 
-		try {
+		try
+		{
 			DBus.waitForRemoteMethodCallReply();
 
 			const bool ret = DBus.getNextBooleanArgument();
-			if( ! ret ) {
+			if( ! ret )
+			{
 				LOG(error) << devID << " request failure : false";
 			}
-			else {
+			else
+			{
 				GKLog2(trace, devID, " request successfully done")
 			}
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			LogRemoteCallGetReplyFailure
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		DBus.abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}

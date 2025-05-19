@@ -112,15 +112,27 @@ class DBusHandler
 		void devicesStopped(const std::vector<std::string> & devicesID);
 		void devicesUnplugged(const std::vector<std::string> & devicesID);
 
-		void deviceMediaEvent(const std::string & devID, const std::string & mediaKeyEvent);
-		void deviceGKeyEvent(const std::string & devID, const GKeysID keyID);
-		void deviceMBankSwitch(const std::string & devID, const MKeysID bankID);
+		void deviceMediaEvent(
+			const std::string & devID,
+			const std::string & mediaKeyEvent
+		);
+		void deviceGKeyEvent(
+			const std::string & devID,
+			const GKeysID keyID
+		);
+		void deviceMBankSwitch(
+			const std::string & devID,
+			const MKeysID bankID
+		);
 		void deviceMacroRecorded(
 			const std::string & devID,
 			const GKeysID keyID,
 			const macro_type & macro
 		);
-		void deviceMacroCleared(const std::string & devID, const GKeysID keyID);
+		void deviceMacroCleared(
+			const std::string & devID,
+			const GKeysID keyID
+		);
 
 		/* -- */
 
