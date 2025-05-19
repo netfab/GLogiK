@@ -24,17 +24,21 @@
 
 using namespace GLogiK;
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	using namespace NSGKUtils;
 
-	try {
+	try
+	{
 		GLogiKDaemon daemon(argc, argv);
 		return daemon.run();
 	}
-	catch(const InitFailure & e) {
+	catch(const InitFailure & e)
+	{
 		syslog(LOG_ERR, "%s", e.what());
 	}
-	catch(const GLogiKExcept & e) {
+	catch(const GLogiKExcept & e)
+	{
 		GKSysLogError(e.what());
 	}
 

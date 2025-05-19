@@ -59,13 +59,13 @@ const std::string USBInit::getLibUSBVersion(void)
 
 USBInit::USBInit(void)
 {
-	if( ! USBInit::status ) {
+	if( ! USBInit::status )
+	{
 		GKLog(trace, "initializing libusb")
 
 		int ret = libusb_init( &(USBInit::pContext) );
-		if ( this->USBError(ret) ) {
+		if ( this->USBError(ret) )
 			throw GLogiKExcept("libusb initialization failure");
-		}
 
 		USBInit::status = true;
 	}
@@ -77,7 +77,8 @@ USBInit::~USBInit(void)
 {
 	USBInit::counter--;
 
-	if (USBInit::status and USBInit::counter == 0) {
+	if (USBInit::status and USBInit::counter == 0)
+	{
 		GKLog(trace, "closing libusb")
 
 		libusb_exit(USBInit::pContext);
@@ -94,9 +95,8 @@ const int USBInit::getUSBDevicePortNumbers(
 
 	int num_ports = libusb_get_port_numbers(device._pUSBDevice, &port_numbers[0], port_numbers.size());
 
-	if(num_ports == LIBUSB_ERROR_OVERFLOW) {
+	if(num_ports == LIBUSB_ERROR_OVERFLOW)
 		throw GLogiKExcept("array overflow error");
-	}
 
 	device._pUSBDevice = nullptr;
 
@@ -107,7 +107,8 @@ const int USBInit::getUSBDevicePortNumbers(
 
 int USBInit::USBError(int errorCode) noexcept
 {
-	switch(errorCode) {
+	switch(errorCode)
+	{
 		case LIBUSB_SUCCESS:
 			break;
 		default:
@@ -125,21 +126,25 @@ void USBInit::seekUSBDevice(USBDevice & device)
 {
 	libusb_device **list;
 	int numDevices = libusb_get_device_list(USBInit::pContext, &(list));
-	if( numDevices < 0 ) {
+	if( numDevices < 0 )
+	{
 		this->USBError(numDevices);
 		throw GLogiKExcept("error getting USB devices list");
 	}
 
-	for (int i = 0; i < numDevices; ++i) {
+	for (int i = 0; i < numDevices; ++i)
+	{
 		device._pUSBDevice = list[i];
 		if( libusb_get_bus_number(device._pUSBDevice) == device.getBus() and
-			libusb_get_device_address(device._pUSBDevice) == device.getNum() ) {
+			libusb_get_device_address(device._pUSBDevice) == device.getNum() )
+		{
 			break;
 		}
 		device._pUSBDevice = nullptr;
 	}
 
-	if( device._pUSBDevice == nullptr ) {
+	if( device._pUSBDevice == nullptr )
+	{
 		std::ostringstream buffer(std::ios_base::app);
 		buffer	<< "libusb cannot find device " << device.getNum()
 				<< " on bus " << device.getBus();
