@@ -68,7 +68,8 @@ void desktopNotification::show(void)
 {
 	GError *notifyError = nullptr;
 
-	if( ! notify_notification_show(_pNotification, &notifyError) ) {
+	if( ! notify_notification_show(_pNotification, &notifyError) )
+	{
 		LOG(error) << "failed to send notification : " << notifyError->message;
 		g_error_free(notifyError);
 	}

@@ -49,44 +49,53 @@ void GKeysEventManager::runEvent(
 {
 	GK_LOG_FUNC
 
-	if(keyID == GKeyID_INV) {
+	if(keyID == GKeyID_INV)
+	{
 		LOG(error) << "invalid GKeyID";
 		return;
 	}
 
-	try {
+	try
+	{
 		const mBank_type & bank = GKeysBanks.at(bankID);
-		try {
+		try
+		{
 			const GKeysEvent & event = bank.at(keyID);
 			GKLog4(trace, "MBank: ", bankID, "GKey: ", getGKeyName(keyID))
 
-			if(event.getEventType() == GKeyEventType::GKEY_INACTIVE) {
+			if(event.getEventType() == GKeyEventType::GKEY_INACTIVE)
+			{
 				GKLog(trace, "inactive event")
 			}
-			else if(event.getEventType() == GKeyEventType::GKEY_MACRO) {
+			else if(event.getEventType() == GKeyEventType::GKEY_MACRO)
+			{
 				const macro_type & macro = event.getMacro();
-				if( ! macro.empty() ) {
+				if( ! macro.empty() )
+				{
 					GKLog(trace, "running macro")
-					for(const auto & key : macro) {
+					for(const auto & key : macro)
 						_virtualKeyboard.sendKeyEvent(key);
-					}
 				}
 
 			}
-			else if(event.getEventType() == GKeyEventType::GKEY_RUNCMD) {
+			else if(event.getEventType() == GKeyEventType::GKEY_RUNCMD)
+			{
 				this->spawnProcess(event.getCommand());
 			}
-			else if(event.getEventType() == GKeyEventType::GKEY_INVALID) {
+			else if(event.getEventType() == GKeyEventType::GKEY_INVALID)
+			{
 				LOG(error) << "invalid event type";
 				return;
 			}
 		}
-		catch(const std::out_of_range& oor) {
+		catch(const std::out_of_range& oor)
+		{
 			LOG(warning) << "wrong GKeyID: " << keyID;
 			throw GLogiKExcept("run event failed");
 		}
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		LOG(warning) << "wrong bankID: " << bankID;
 		throw GLogiKExcept("run event failed");
 	}
@@ -101,7 +110,8 @@ void GKeysEventManager::setMacro(
 {
 	GK_LOG_FUNC
 
-	if(keyID == GKeyID_INV) {
+	if(keyID == GKeyID_INV)
+	{
 		LOG(error) << "invalid GKeyID";
 		return;
 	}
@@ -119,17 +129,21 @@ const bool GKeysEventManager::clearMacro(
 {
 	GK_LOG_FUNC
 
-	if(keyID == GKeyID_INV) {
+	if(keyID == GKeyID_INV)
+	{
 		LOG(error) << "invalid GKeyID";
 		throw GLogiKExcept("clear macro failed");
 	}
 
-	try {
+	try
+	{
 		mBank_type & bank = GKeysBanks.at(bankID);
 		GKeysEvent & event = bank.at(keyID);
 
-		try {
-			if( ! event.getMacro().empty() ) {
+		try
+		{
+			if( ! event.getMacro().empty() )
+			{
 				LOG(info) << "MBank: " << bankID
 					<< " - GKey: " << getGKeyName(keyID)
 					<< " - clearing macro";
@@ -139,12 +153,14 @@ const bool GKeysEventManager::clearMacro(
 				return true;
 			}
 		}
-		catch(const std::out_of_range& oor) {
+		catch(const std::out_of_range& oor)
+		{
 			LOG(warning) << "wrong GKeyID: " << keyID;
 			throw GLogiKExcept("clear macro failed");
 		}
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		LOG(warning) << "wrong bankID: " << bankID;
 		throw GLogiKExcept("clear macro failed");
 	}
@@ -160,32 +176,39 @@ void GKeysEventManager::setMacro(
 {
 	GK_LOG_FUNC
 
-	if(keyID == GKeyID_INV) {
+	if(keyID == GKeyID_INV)
+	{
 		LOG(error) << "invalid GKeyID";
 		throw GLogiKExcept("set macro failed");
 	}
 
-	try {
+	try
+	{
 		mBank_type & bank = GKeysBanks.at(bankID);
 
-		try {
+		try
+		{
 			LOG(info) << "MBank: " << bankID
 				<< " - GKey: " << getGKeyName(keyID)
 				<< " - Macro Size: " << macro.size()
 				<< " - setting macro";
-			if( macro.size() >= MACRO_T_MAX_SIZE ) {
+
+			if( macro.size() >= MACRO_T_MAX_SIZE )
+			{
 				LOG(warning) << "skipping macro - size >= MACRO_T_MAX_SIZE";
 				throw GLogiKExcept("skipping macro");
 			}
 
 			bank.at(keyID) = GKeysEvent(macro);
 		}
-		catch(const std::out_of_range& oor) {
+		catch(const std::out_of_range& oor)
+		{
 			LOG(warning) << "wrong GKeyID: " << keyID;
 			throw GLogiKExcept("set macro failed");
 		}
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		LOG(warning) << "wrong bankID: " << bankID;
 		throw GLogiKExcept("set macro failed");
 	}
@@ -203,9 +226,7 @@ void GKeysEventManager::spawnProcess(const std::string & command)
 		std::string tmpstring;
 		std::getline(tmpstream, exe, ' ');
 		while(std::getline(tmpstream, tmpstring, ' '))
-		{
 			args.push_back(tmpstring);
-		}
 	}
 
 	process::runCommand(exe, args);

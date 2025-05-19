@@ -30,16 +30,19 @@ int main(int argc, char *argv[])
 {
 	using namespace NSGKUtils;
 
-	try {
+	try
+	{
 		InitLog init(argc, argv);
 
 		DesktopService service( init.getBooleanOption("version") );
 		return service.run();
 	}
-	catch(const InitFailure & e) {
+	catch(const InitFailure & e)
+	{
 		syslog(LOG_ERR, "%s", e.what());
 	}
-	catch(const GLogiKExcept & e) {
+	catch(const GLogiKExcept & e)
+	{
 		LOG(error) << e.what();
 	}
 

@@ -90,7 +90,8 @@ int DesktopService::run(void)
 
 	/* -- -- -- */
 
-	if(_version) {
+	if(_version)
+	{
 		printVersionDeps(binaryVersion, dependencies);
 		return EXIT_SUCCESS;
 	}
@@ -141,13 +142,16 @@ int DesktopService::run(void)
 					int num = poll(fds, nfds, 150);
 
 					// data to read ?
-					if( num > 0 ) {
-						if( fds[0].revents & POLLIN ) {
+					if( num > 0 )
+					{
+						if( fds[0].revents & POLLIN )
+						{
 							session.processICEMessages();
 							continue;
 						}
 
-						if( fds[1].revents & POLLIN ) {
+						if( fds[1].revents & POLLIN )
+						{
 							/* check if any received filesystem notification matches
 							 * any device configuration file. If yes, reload the file,
 							 * and send configuration to daemon. Can throw. */
@@ -161,7 +165,8 @@ int DesktopService::run(void)
 
 			DBus.exit();
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			DBus.exit();
 			throw;
 		}
