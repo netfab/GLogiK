@@ -59,19 +59,20 @@ DesktopServiceLauncher::DesktopServiceLauncher(const int& argc, char *argv[])
 	openlog(DESKTOP_SERVICE_LAUNCHER_NAME, LOG_PID|LOG_CONS, LOG_USER);
 
 	// initialize logging
-	try {
+	try
+	{
 		/* boost::po may throw */
 		this->parseCommandLine(argc, argv);
 
 #if DEBUGGING_ON
-		if(GKLogging::GKDebug) {
+		if(GKLogging::GKDebug)
 			GKLogging::initDebugFile(DESKTOP_SERVICE_LAUNCHER_NAME, fs::owner_read|fs::owner_write|fs::group_read);
-		}
 #endif
 
 		GKLogging::initConsoleLog();
 	}
-	catch (const std::exception & e) {
+	catch (const std::exception & e)
+	{
 		syslog(LOG_ERR, "%s", e.what());
 		throw InitFailure();
 	}
@@ -117,12 +118,15 @@ int DesktopServiceLauncher::run(void)
 
 		DBusHandler handler(&DBus);
 
-		while( session.isSessionAlive() ) {
+		while( session.isSessionAlive() )
+		{
 			int num = poll(fds, nfds, 150);
 
 			// data to read ?
-			if( num > 0 ) {
-				if( fds[0].revents & POLLIN ) {
+			if( num > 0 )
+			{
+				if( fds[0].revents & POLLIN )
+				{
 					session.processICEMessages();
 					continue;
 				}
@@ -162,9 +166,8 @@ void DesktopServiceLauncher::parseCommandLine(const int& argc, char *argv[])
 #if DEBUGGING_ON
 	bool debug = vm.count("debug") ? vm["debug"].as<bool>() : false;
 
-	if( debug ) {
+	if( debug )
 		GKLogging::GKDebug = true;
-	}
 #endif
 }
 

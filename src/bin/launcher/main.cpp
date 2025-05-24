@@ -28,14 +28,17 @@ int main(int argc, char *argv[])
 {
 	using namespace NSGKUtils;
 
-	try {
+	try
+	{
 		DesktopServiceLauncher launcher(argc, argv);
 		return launcher.run();
 	}
-	catch(const InitFailure & e) {
+	catch(const InitFailure & e)
+	{
 		syslog(LOG_ERR, "%s", e.what());
 	}
-	catch(const GLogiKExcept & e) {
+	catch(const GLogiKExcept & e)
+	{
 		LOG(error) << e.what();
 	}
 

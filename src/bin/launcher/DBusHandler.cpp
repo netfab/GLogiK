@@ -82,7 +82,8 @@ void DBusHandler::cleanDBusRequests(void)
  *
  */
 
-void DBusHandler::initializeGKDBusSignals(void) {
+void DBusHandler::initializeGKDBusSignals(void)
+{
 	_pDBus->NSGKDBus::Callback<SIGq2v>::receiveSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
@@ -110,13 +111,15 @@ void DBusHandler::spawnService(const uint16_t timelapse)
 
 	using steady = chr::steady_clock;
 
-	LOG(info) << "received signal: " << __func__;
-	LOG(info) << "sleeping " << timelapse << " milliseconds before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
+	LOG(info)	<< "received signal: " << __func__;
+	LOG(info)	<< "sleeping " << timelapse
+				<< " milliseconds before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
 	std::this_thread::sleep_for(chr::milliseconds(timelapse));
 
 	const steady::time_point now = steady::now();
 	const steady::duration timeLapse = now - _lastCall;
-	if(timeLapse > _tenSeconds) {
+	if(timeLapse > _tenSeconds)
+	{
 		_lastCall = now;
 
 		std::vector<std::string> args;
@@ -128,8 +131,10 @@ void DBusHandler::spawnService(const uint16_t timelapse)
 
 		process::runCommand(GLOGIKS_DESKTOP_SERVICE_NAME, args);
 	}
-	else {
-		double nsec = static_cast<double>(timeLapse.count()) * steady::period::num / steady::period::den;
+	else
+	{
+		double nsec = static_cast<double>(timeLapse.count()) *
+			steady::period::num / steady::period::den;
 		LOG(info) << "time lapse since last call : " << nsec << " seconds - ignoring";
 	}
 }
