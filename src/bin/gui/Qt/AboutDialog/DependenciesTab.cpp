@@ -46,7 +46,8 @@ void DependenciesTab::buildTab(void)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		QVBoxLayout* vBox = new QVBoxLayout(this);
 		GKLog(trace, "allocated QVBoxLayout")
 
@@ -131,7 +132,8 @@ void DependenciesTab::buildTab(void)
 
 		vBox->addWidget( this->getHLine() );
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
 		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}

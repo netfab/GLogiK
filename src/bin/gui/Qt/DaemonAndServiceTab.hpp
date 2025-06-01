@@ -47,7 +47,9 @@ class DaemonAndServiceTab
 
 		void buildTab(void);
 
-		void updateTab(const DeviceProperties & device,	const std::string & devID)
+		void updateTab(
+			const DeviceProperties & device,
+			const std::string & devID)
 		{
 			this->updateTab();
 		}

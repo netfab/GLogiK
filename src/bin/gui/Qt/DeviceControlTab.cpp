@@ -54,7 +54,8 @@ void DeviceControlTab::buildTab(void)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		QVBoxLayout* vBox = new QVBoxLayout(this);
 		GKLog(trace, "allocated QVBoxLayout")
 
@@ -106,14 +107,24 @@ void DeviceControlTab::buildTab(void)
 
 		vBox->addSpacing(300);
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
 		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
 
-	QObject::connect(_pStartButton   , &QPushButton::clicked, this, &DeviceControlTab::startSignal);
-	QObject::connect(_pStopButton    , &QPushButton::clicked, this, &DeviceControlTab::stopSignal);
-	QObject::connect(_pRestartButton , &QPushButton::clicked, this, &DeviceControlTab::restartSignal);
+	QObject::connect(
+		_pStartButton, &QPushButton::clicked,
+		this, &DeviceControlTab::startSignal
+	);
+	QObject::connect(
+		_pStopButton, &QPushButton::clicked,
+		this, &DeviceControlTab::stopSignal
+	);
+	QObject::connect(
+		_pRestartButton, &QPushButton::clicked,
+		this, &DeviceControlTab::restartSignal
+	);
 
 	_pDBus->declareIntrospectableSignal(
 		_sessionBus,
@@ -163,7 +174,8 @@ void DeviceControlTab::updateTab(
 
 	_devID = devID;
 
-	if(device.getStatus() == "started") {
+	if(device.getStatus() == "started")
+	{
 		_pStartButton->setEnabled(false);
 		_pStopButton->setEnabled(true);
 		_pRestartButton->setEnabled(true);
@@ -172,7 +184,8 @@ void DeviceControlTab::updateTab(
 
 		_deviceStatusLabel->setText("Device status : started");
 	}
-	else {
+	else
+	{
 		_pStartButton->setEnabled(true);
 		_pStopButton->setEnabled(false);
 		_pRestartButton->setEnabled(false);
@@ -189,7 +202,8 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 
 	LOG(info) << "sending " << signal << " signal for device " << _devID;
 
-	try {
+	try
+	{
 		_pDBus->initializeBroadcastSignal(
 			_sessionBus,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
@@ -200,7 +214,8 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 		_pDBus->appendStringToBroadcastSignal(signal);
 		_pDBus->sendBroadcastSignal();
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		_pDBus->abandonBroadcastSignal();
 		LOG(error) << e.what();
 	}

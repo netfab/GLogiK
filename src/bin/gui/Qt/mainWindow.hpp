@@ -107,7 +107,10 @@ class MainWindow
 
 		void parseCommandLine(const int& argc, char *argv[]);
 
-		void setTabEnabled(const std::string & name, const bool status);
+		void setTabEnabled(
+			const std::string & name,
+			const bool status
+		);
 		void setCurrentTab(const std::string & name);
 
 		void getExecutablesDependenciesMap(void);

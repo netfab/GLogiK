@@ -98,7 +98,8 @@ void Tab::clearLayout(QLayout* parentLayout)
 		 */
 
 		QLayout* layout = item->layout();
-		if( layout != nullptr ) {
+		if( layout != nullptr )
+		{
 			this->clearLayout(layout);
 
 			itemName = "layout ";
@@ -108,7 +109,8 @@ void Tab::clearLayout(QLayout* parentLayout)
 		}
 
 		QWidget* widget = item->widget();
-		if( widget != nullptr ) {
+		if( widget != nullptr )
+		{
 			itemName = "widget ";
 			itemName += widget->objectName().toStdString();
 			GKLog2(trace, "deleting ", itemName)

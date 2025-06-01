@@ -108,18 +108,19 @@ void MainWindow::init(const int& argc, char *argv[])
 	GK_LOG_FUNC
 
 	// initialize logging
-	try {
+	try
+	{
 		/* boost::po may throw */
 		this->parseCommandLine(argc, argv);
 
 #if DEBUGGING_ON
-		if(GKLogging::GKDebug) {
+		if(GKLogging::GKDebug)
 			GKLogging::initDebugFile("GKcQt", fs::owner_read|fs::owner_write|fs::group_read);
-		}
 #endif
 		GKLogging::initConsoleLog();
 	}
-	catch (const std::exception & e) {
+	catch (const std::exception & e)
+	{
 		syslog(LOG_ERR, "%s", e.what());
 		throw GLogiKExcept("logging initialization failure");
 	}
@@ -134,11 +135,13 @@ void MainWindow::init(const int& argc, char *argv[])
 	process::setSignalHandler(SIGTERM, MainWindow::handleSignal);
 	process::setSignalHandler(SIGHUP, MainWindow::handleSignal);
 
-	try {
+	try
+	{
 		_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE_PATH);
 		_pDBus->init();
 	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
+	catch (const std::bad_alloc& e)
+	{ /* handle new() failure */
 		throw GLogiKBadAlloc("GKDBus bad allocation");
 	}
 
@@ -158,7 +161,8 @@ void MainWindow::build(void)
 
 	QVBoxLayout* vBox = nullptr;
 
-	try {
+	try
+	{
 		{ /* loading stylesheet */
 			QString stylepath(QT_DATA_DIR); stylepath += "/qss/stylesheet.qss";
 
@@ -238,10 +242,12 @@ void MainWindow::build(void)
 		/* -- -- -- */
 
 		/* required by aboutDialog */
-		try {
+		try
+		{
 			this->getExecutablesDependenciesMap();
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			_daemonAndServiceTab->sendServiceStartRequest();
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			this->getExecutablesDependenciesMap();
@@ -269,7 +275,8 @@ void MainWindow::build(void)
 
 		GKLog(trace, "Qt timer started")
 	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
+	catch (const std::bad_alloc& e)
+	{ /* handle new() failure */
 		throw GLogiKBadAlloc("Qt bad alloc :(");
 	}
 
@@ -280,13 +287,34 @@ void MainWindow::build(void)
 	/* -- -- -- */
 
 	/* initializing Qt signals */
-	QObject::connect(_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateInterface);
-	QObject::connect( _backlightColorTab->getApplyButton(), &QPushButton::clicked,
-			 std::bind(&MainWindow::saveConfigurationFileAndUpdateInterface, this, TabApplyButton::TAB_BACKLIGHT) );
-	QObject::connect( _LCDPluginsTab->getApplyButton(), &QPushButton::clicked,
-			 std::bind(&MainWindow::saveConfigurationFileAndUpdateInterface, this, TabApplyButton::TAB_LCD_PLUGINS) );
-	QObject::connect( _GKeysTab->getApplyButton(), &QPushButton::clicked,
-			 std::bind(&MainWindow::saveConfigurationFileAndUpdateInterface, this, TabApplyButton::TAB_GKEYS) );
+	QObject::connect(
+		_devicesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+		this, &MainWindow::updateInterface
+	);
+	QObject::connect(
+		_backlightColorTab->getApplyButton(), &QPushButton::clicked,
+		std::bind(
+			&MainWindow::saveConfigurationFileAndUpdateInterface,
+			this,
+			TabApplyButton::TAB_BACKLIGHT
+		)
+	);
+	QObject::connect(
+		_LCDPluginsTab->getApplyButton(), &QPushButton::clicked,
+		std::bind(
+			&MainWindow::saveConfigurationFileAndUpdateInterface,
+			this,
+			TabApplyButton::TAB_LCD_PLUGINS
+		)
+	);
+	QObject::connect(
+		_GKeysTab->getApplyButton(), &QPushButton::clicked,
+		std::bind(
+			&MainWindow::saveConfigurationFileAndUpdateInterface,
+			this,
+			TabApplyButton::TAB_GKEYS
+		)
+	);
 
 	GKLog(trace, "Qt signals connected to slots")
 
@@ -345,9 +373,8 @@ void MainWindow::parseCommandLine(const int& argc, char *argv[])
 #if DEBUGGING_ON
 	bool debug = vm.count("debug") ? vm["debug"].as<bool>() : false;
 
-	if( debug ) {
+	if( debug )
 		GKLogging::GKDebug = true;
-	}
 #endif
 }
 
@@ -372,7 +399,8 @@ void MainWindow::configurationFileUpdated(const std::string & devID)
 {
 	GK_LOG_FUNC
 
-	if( _ignoreNextSignal ) {
+	if( _ignoreNextSignal )
+	{
 		GKLog(trace, "DeviceConfigurationSaved signal ignored")
 
 		_ignoreNextSignal = false;
@@ -408,7 +436,8 @@ void MainWindow::configurationFileUpdated(const std::string & devID)
 	int ret = msgBox.exec();
 	GKLog2(trace, "got ret value from messageBox : ", ret)
 
-	if(ret == QMessageBox::Ok) {
+	if(ret == QMessageBox::Ok)
+	{
 		this->updateInterface( _devicesComboBox->currentIndex() );
 	}
 }
@@ -420,7 +449,8 @@ void MainWindow::getExecutablesDependenciesMap(void)
 	GKLog(trace, "getting executables dependencies map")
 
 	const std::string remoteMethod(GK_DBUS_SERVICE_METHOD_GET_EXECUTABLES_DEPENDENCIES_MAP);
-	try {
+	try
+	{
 		_pDBus->initializeRemoteMethodCall(
 			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
@@ -432,7 +462,8 @@ void MainWindow::getExecutablesDependenciesMap(void)
 
 		_pDBus->sendRemoteMethodCall();
 
-		try {
+		try
+		{
 			_pDBus->waitForRemoteMethodCallReply();
 			_DepsMap = _pDBus->getNextGKDepsMapArgument();
 
@@ -441,12 +472,14 @@ void MainWindow::getExecutablesDependenciesMap(void)
 					{"Qt", GK_DEP_QT_VERSION_STRING, qVersion()},
 				};
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			LogRemoteCallGetReplyFailure
 			throw GLogiKExcept("failure to get request reply");
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
 		throw GLogiKExcept("failure to build request");
@@ -457,7 +490,8 @@ void MainWindow::aboutDialog(void)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		AboutDialog* about = new AboutDialog(this);
 		about->buildDialog(_pDepsMap);
 		about->setModal(true);
@@ -466,7 +500,8 @@ void MainWindow::aboutDialog(void)
 		about->setWindowTitle("About GKcQt");
 		about->open();
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
 		LOG(error) << "catched bad_alloc : " << e.what();
 	}
 }
@@ -477,7 +512,8 @@ void MainWindow::saveConfigurationFile(const TabApplyButton tab)
 
 	bool dosave = false;
 
-	if( tab == TabApplyButton::TAB_BACKLIGHT ) {
+	if( tab == TabApplyButton::TAB_BACKLIGHT )
+	{
 		int r, g, b = 255;
 		_backlightColorTab->getAndSetNewColor().getRgb(&r, &g, &b);
 		/* setting color */
@@ -486,24 +522,32 @@ void MainWindow::saveConfigurationFile(const TabApplyButton tab)
 
 		GKLog(trace, "backlight color updated")
 	}
-	else if( tab == TabApplyButton::TAB_LCD_PLUGINS ) {
+	else if( tab == TabApplyButton::TAB_LCD_PLUGINS )
+	{
 		auto maskID = toEnumType(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1);
 		/* setting new LCD Plugins mask */
-		_openedConfigurationFile.setLCDPluginsMask(maskID, _LCDPluginsTab->getAndSetNewLCDPluginsMask());
+		_openedConfigurationFile.setLCDPluginsMask(
+			maskID, _LCDPluginsTab->getAndSetNewLCDPluginsMask()
+		);
 		dosave = true;
 
 		GKLog(trace, "LCD plugins mask updated")
 	}
-	else if( tab == TabApplyButton::TAB_GKEYS ) {
+	else if( tab == TabApplyButton::TAB_GKEYS )
+	{
 		MKeysID bankID;
 		GKeysID keyID;
 		GKeyEventType eventType;
 		std::string eventCommand;
-		try {
+		try
+		{
 			_GKeysTab->getGKeyEventParams(bankID, keyID, eventType, eventCommand);
 
 			GKLog4(trace, "MBank: ", bankID, "GKey: ", getGKeyName(keyID))
-			GKLog4(trace, "eventType: ", GKeysTab::getEventTypeString(eventType), "command: ", eventCommand)
+			GKLog4(
+				trace, "eventType: ", GKeysTab::getEventTypeString(eventType),
+				"command: ", eventCommand
+			)
 
 			banksMap_type & banks = _openedConfigurationFile.getBanks();
 			mBank_type & bank = banks.at(bankID);
@@ -516,15 +560,18 @@ void MainWindow::saveConfigurationFile(const TabApplyButton tab)
 
 			GKLog(trace, "GKeys updated")
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			LOG(error) << "can't get GKeyEvent parameters " << e.what();
 		}
-		catch (const std::out_of_range& oor) {
+		catch (const std::out_of_range& oor)
+		{
 			LOG(error) << "out of range detected: " << oor.what();
 		}
 	}
 
-	if(dosave) {
+	if(dosave)
+	{
 		GKLog(trace, "saving file")
 
 		/* desktop service will detect that configuration file was modified,
@@ -535,7 +582,8 @@ void MainWindow::saveConfigurationFile(const TabApplyButton tab)
 		QString msg("Configuration file saved");
 		this->statusBar()->showMessage(msg, _statusBarTimeout);
 	}
-	else  {
+	else
+	{
 		QString msg("Error updating configuration file, nothing changed");
 		this->statusBar()->showMessage(msg, _statusBarTimeout);
 		LOG(warning) << msg.toStdString();
@@ -548,14 +596,15 @@ void MainWindow::updateInterface(int index)
 
 	/* update interface with index 0 on combobox clear()
 	 * this happens at the very beginning of ::resetInterface() */
-	if(index == -1) {
+	if(index == -1)
 		index = 0;
-	}
 
 	GKLog2(trace, "updating interface with index : ", index)
 
-	try {
-		if(index == 0) {
+	try
+	{
+		if(index == 0)
+		{
 			_devID.clear();
 			_deviceControlTab->disableAndHide();
 			this->setTabEnabled("BacklightColor", false);
@@ -563,16 +612,19 @@ void MainWindow::updateInterface(int index)
 			this->setTabEnabled("GKeys", false);
 			this->statusBar()->showMessage("Selected device : none", _statusBarTimeout);
 		}
-		else {
+		else
+		{
 			_devID = _devicesComboBox->currentText().split(" ").at(0).toStdString();
 
 			GKLog(trace, "updating tabs")
 
-			try {
+			try
+			{
 				const DeviceID & device = _devices.at(_devID);
 				const bool status = (device.getStatus() == "started");
 
-				if(status) {
+				if(status)
+				{ // <<< load configuration file
 					_configurationFilePath = _configurationRootDirectory;
 					_configurationFilePath /= device.getVendor();
 					_configurationFilePath /= device.getConfigFilePath();
@@ -581,9 +633,11 @@ void MainWindow::updateInterface(int index)
 					_openedConfigurationFile.setProduct(device.getProduct());
 					_openedConfigurationFile.setName(device.getName());
 					_openedConfigurationFile.setConfigFilePath(device.getConfigFilePath());
-					DeviceConfigurationFile::load(_configurationFilePath.string(), _openedConfigurationFile);
+					DeviceConfigurationFile::load(
+						_configurationFilePath.string(), _openedConfigurationFile
+					);
 
-				}
+				} // >>>
 
 				/* device status always required by deviceControlTab */
 				_openedConfigurationFile.setStatus(device.getStatus());
@@ -591,17 +645,19 @@ void MainWindow::updateInterface(int index)
 				/* updating and enabling/disabling tabs */
 				_deviceControlTab->updateTab(_openedConfigurationFile, _devID);
 
-				if(status) {
+				if(status)
+				{ // <<< update tabs
 					_backlightColorTab->updateTab(_openedConfigurationFile, _devID);
 					_LCDPluginsTab->updateTab(_openedConfigurationFile, _devID);
 					_GKeysTab->updateTab(_openedConfigurationFile, _devID);
-				}
+				} // >>>
 
 				this->setTabEnabled("BacklightColor", status);
 				this->setTabEnabled("LCDPlugins", status);
 				this->setTabEnabled("GKeys", status);
 			}
-			catch (const std::out_of_range& oor) {
+			catch (const std::out_of_range& oor)
+			{
 				std::string error("device not found in container : ");
 				error += _devID;
 				throw GLogiKExcept(error);
@@ -612,7 +668,8 @@ void MainWindow::updateInterface(int index)
 			this->statusBar()->showMessage(msg, _statusBarTimeout);
 		}
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		LOG(error) << "error updating interface : " << e.what();
 	}
 }
@@ -633,7 +690,8 @@ void MainWindow::updateDevicesList(void)
 	_devices.clear();
 
 	const std::string remoteMethod(GK_DBUS_SERVICE_METHOD_GET_DEVICES_LIST);
-	try {
+	try
+	{
 		_pDBus->initializeRemoteMethodCall(
 			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
@@ -645,7 +703,8 @@ void MainWindow::updateDevicesList(void)
 
 		_pDBus->sendRemoteMethodCall();
 
-		try {
+		try
+		{
 			_pDBus->waitForRemoteMethodCallReply();
 
 			_devices = _pDBus->getNextDevicesMapArgument();
@@ -657,12 +716,14 @@ void MainWindow::updateDevicesList(void)
 			LOG(info) << msg.toStdString();
 			this->statusBar()->showMessage(msg, _statusBarTimeout);
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			LogRemoteCallGetReplyFailure
 			throw GLogiKExcept("failure to get request reply");
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
 		throw GLogiKExcept("failure to build request");
@@ -675,7 +736,8 @@ void MainWindow::resetInterface(void)
 
 	GKLog(trace, "resetting interface")
 
-	try {
+	try
+	{
 		this->setCurrentTab("DaemonAndService");
 
 		_devicesComboBox->setEnabled(false);
@@ -695,7 +757,8 @@ void MainWindow::resetInterface(void)
 
 		{
 			QStringList items = {""}; // index 0
-			for(const auto & devicePair : _devices) {
+			for(const auto & devicePair : _devices)
+			{
 				std::string item( devicePair.first );
 				item += " ";
 				item += devicePair.second.getVendor();
@@ -714,7 +777,8 @@ void MainWindow::resetInterface(void)
 		_deviceControlTab->disableButtons();
 		this->setTabEnabled("DeviceControl", true);
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		LOG(error) << "error resetting interface : " << e.what();
 	}
 }
@@ -725,7 +789,8 @@ QWidget* MainWindow::getTabbedWidget(const std::string & name)
 
 	QString n(name.c_str());
 	QWidget* pTab = _tabbedWidgets->findChild<QWidget *>(n);
-	if(pTab == 0) {
+	if(pTab == 0)
+	{
 		LOG(error) << "tab not found : " << name;
 		throw GLogiKExcept("tab not found in tabWidget");
 	}
@@ -736,17 +801,20 @@ void MainWindow::setTabEnabled(const std::string & name, const bool status)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		QWidget* pTab = this->getTabbedWidget(name);
 		int index = _tabbedWidgets->indexOf(pTab);
-		if(index == -1) {
+		if(index == -1)
+		{
 			LOG(error) << "index not found : " << name;
 			throw GLogiKExcept("tab index not found");
 		}
 
 		_tabbedWidgets->setTabEnabled(index, status);
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		LOG(error) << "error setting TabEnabled property : " << e.what();
 		throw;
 	}
@@ -756,17 +824,20 @@ void MainWindow::setCurrentTab(const std::string & name)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		QWidget* pTab = this->getTabbedWidget(name);
 		int index = _tabbedWidgets->indexOf(pTab);
-		if(index == -1) {
+		if(index == -1)
+		{
 			LOG(error) << "index not found : " << name;
 			throw GLogiKExcept("tab index not found");
 		}
 
 		_tabbedWidgets->setCurrentIndex(index);
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		LOG(error) << "error setting currentIndex : " << e.what();
 		throw;
 	}

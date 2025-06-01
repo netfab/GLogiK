@@ -39,7 +39,8 @@ void LicenseTab::buildTab(void)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		QVBoxLayout* vBox = new QVBoxLayout(this);
 		GKLog(trace, "allocated QVBoxLayout")
 
@@ -62,17 +63,20 @@ void LicenseTab::buildTab(void)
 		QString licensePath(DOC_DIR); licensePath += "/COPYING";
 		QFile licenseFile(licensePath);
 
-		if(licenseFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		if(licenseFile.open(QIODevice::ReadOnly | QIODevice::Text))
+		{
 			auto get_hash = [] (QFile & file, QCryptographicHash::Algorithm algo)
 				-> const std::string
 			{
 				QCryptographicHash hash(algo);
 				QString hashString;
-				if( hash.addData(&file) ) {
+				if( hash.addData(&file) )
+				{
 					QByteArray result = hash.result();
 					hashString = result.toHex();
 				}
-				else {
+				else
+				{
 					LOG(error) << "addData failure";
 				}
 
@@ -85,18 +89,21 @@ void LicenseTab::buildTab(void)
 
 			const std::string sha1( get_hash(licenseFile, QCryptographicHash::Sha1) );
 			/* found license file */
-			if( sha1 == LICENSE_FILE_SHA1 ) {
+			if( sha1 == LICENSE_FILE_SHA1 )
+			{
 				QByteArray data(licenseFile.readAll());
 				licenseWidget->setPlainText(QString(data));
 			}
-			else {
+			else
+			{
 				GKLog2(trace, "license sha1: ", sha1)
 				const std::string wrongError("error: license file sha1 does not match");
 				licenseWidget->setPlainText(wrongError.c_str());
 				LOG(error) << wrongError;
 			}
 		}
-		else {
+		else
+		{
 			const std::string openError("error: cannot open license file");
 			licenseWidget->setPlainText(openError.c_str());
 			LOG(error) << openError;
@@ -106,7 +113,8 @@ void LicenseTab::buildTab(void)
 
 		vBox->addWidget( this->getHLine() );
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
 		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}

@@ -59,7 +59,8 @@ void LCDPluginsTab::buildTab(void)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		QVBoxLayout* vBox = new QVBoxLayout(this);
 		GKLog(trace, "allocated QVBoxLayout")
 
@@ -123,7 +124,8 @@ void LCDPluginsTab::buildTab(void)
 		/* -- -- -- */
 		vBox->addWidget( this->getHLine() );
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
 		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
@@ -135,14 +137,18 @@ void LCDPluginsTab::updateTab(
 {
 	GK_LOG_FUNC
 
-	QObject::disconnect(_pPluginsTable, &QTableWidget::cellClicked, this, &LCDPluginsTab::toggleCheckbox);
+	QObject::disconnect(
+		_pPluginsTable, &QTableWidget::cellClicked,
+		this, &LCDPluginsTab::toggleCheckbox
+	);
 
 	/* removing table items */
 	_pPluginsTable->clearContents();
 
 	/* same method name as in daemon */
 	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES);
-	try {
+	try
+	{
 		_pDBus->initializeRemoteMethodCall(
 			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
@@ -155,7 +161,8 @@ void LCDPluginsTab::updateTab(
 
 		_pDBus->sendRemoteMethodCall();
 
-		try {
+		try
+		{
 			_pDBus->waitForRemoteMethodCallReply();
 			const LCDPPArray_type array = _pDBus->getNextLCDPPArrayArgument();
 
@@ -165,7 +172,8 @@ void LCDPluginsTab::updateTab(
 			_LCDPluginsMask = device.getLCDPluginsMask1();
 			_newLCDPluginsMask = _LCDPluginsMask;
 
-			for(const auto & plugin : array) {
+			for(const auto & plugin : array)
+			{
 				QCheckBox* checkbox =  new QCheckBox();
 				_pPluginsTable->setCellWidget(c, 0, checkbox);
 
@@ -182,10 +190,16 @@ void LCDPluginsTab::updateTab(
 /* QCheckBox::stateChanged(int) scheduled for deprecation in version 6.9. */
 #if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
 				/* connecting checkbox */
-				QObject::connect(checkbox, &QCheckBox::stateChanged, this, &LCDPluginsTab::updateNewLCDPluginsMask);
+				QObject::connect(
+					checkbox, &QCheckBox::stateChanged,
+					this, &LCDPluginsTab::updateNewLCDPluginsMask
+				);
 #else
 				/* connecting checkbox */
-				QObject::connect(checkbox, &QCheckBox::checkStateChanged, this, &LCDPluginsTab::updateNewLCDPluginsMask);
+				QObject::connect(
+					checkbox, &QCheckBox::checkStateChanged,
+					this, &LCDPluginsTab::updateNewLCDPluginsMask
+				);
 #endif
 
 				QTableWidgetItem* item = nullptr;
@@ -206,14 +220,19 @@ void LCDPluginsTab::updateTab(
 			_pPluginsTable->resizeColumnsToContents();
 
 			/* connect cellClicked events to checkbox toggle */
-			QObject::connect(_pPluginsTable, &QTableWidget::cellClicked, this, &LCDPluginsTab::toggleCheckbox);
+			QObject::connect(
+				_pPluginsTable, &QTableWidget::cellClicked,
+				this, &LCDPluginsTab::toggleCheckbox
+			);
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			LogRemoteCallGetReplyFailure
 			throw GLogiKExcept("failure to get request reply");
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
 		throw GLogiKExcept("failure to build request");
@@ -237,7 +256,8 @@ void LCDPluginsTab::toggleCheckbox(int row, int column)
 	QCheckBox* check = dynamic_cast<QCheckBox*>( _pPluginsTable->cellWidget(row, column) );
 	if( check )
 		check->toggle();
-	else {
+	else
+	{
 		LOG(warning) << "wrong dynamic cast";
 	}
 }
@@ -249,29 +269,32 @@ void LCDPluginsTab::updateNewLCDPluginsMask(int checkboxState)
 	QObject* cb = sender();
 	const QVariant value = cb->property(_idProperty.c_str());
 	/* checking that property was found */
-	if( value.isValid() ) {
+	if( value.isValid() )
+	{
 		bool converted = false;
 		const qulonglong id = value.toULongLong(&converted);
-		if( converted and id > 0 ) {
+		if( converted and id > 0 )
+		{
 			const uint64_t pluginID(id);
-			if( checkboxState == Qt::Checked )  {
+			if( checkboxState == Qt::Checked )
 				_newLCDPluginsMask |= pluginID;
-			}
-			else if( checkboxState == Qt::Unchecked ) {
+			else if( checkboxState == Qt::Unchecked )
 				_newLCDPluginsMask &= ~(pluginID);
-			}
-			else {
+			else
+			{
 				LOG(warning) << "unhandled checkbox state : " << checkboxState;
 			}
 
 			_pApplyButton->setEnabled( !(_LCDPluginsMask == _newLCDPluginsMask) );
 			GKLog4(trace, "id: ", id, "mask: ", _newLCDPluginsMask)
 		}
-		else {
+		else
+		{
 			LOG(warning) << "conversion failure";
 		}
 	}
-	else {
+	else
+	{
 		LOG(warning) << "invalid QVariant";
 	}
 }

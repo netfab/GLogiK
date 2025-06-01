@@ -63,7 +63,10 @@ class LCDPluginsTab
 
 		QTableWidget* _pPluginsTable;
 
-		void toggleCheckbox(int row, int column);
+		void toggleCheckbox(
+			int row,
+			int column
+		);
 		void updateNewLCDPluginsMask(int checkboxState);
 
 };
