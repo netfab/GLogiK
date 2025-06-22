@@ -31,8 +31,8 @@
 #include <poll.h>
 #include <libudev.h>
 
+#include <boost/asio.hpp>
 #include <boost/process.hpp>
-#include <boost/process/search_path.hpp>
 
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
@@ -53,6 +53,7 @@
 #include "include/enums.hpp"
 
 namespace bp = boost::process;
+namespace io = boost::asio;
 
 namespace GLogiK
 {
@@ -100,26 +101,60 @@ const std::string DevicesManager::getLibudevVersion(void)
 	std::vector<std::string> data;
 	std::string ret("error");
 
-	try {
-		bp::ipstream is;
+	try
+	{
 		std::string line;
+		std::string output;
+		boost::system::error_code ec;
 
-		auto p = bp::search_path("udevadm");
-		if( p.empty() ) {
+		auto search = bp::v2::environment::find_executable("udevadm");
+		if( search.empty() )
+		{
 			GKSysLogError("udevadm executable not found in PATH");
 			return ret;
 		}
+		const std::string udevadm_bin( search.string() );
 
-		GKLog(trace, "running udevadm --version")
-		const int result = bp::system(p, "--version", bp::std_out > is);
-		if(result != 0) {
-			GKSysLogWarning("udevadm --version returned non-zero value");
+		io::io_context ctx;
+		io::readable_pipe rp{ctx};
+
+		GKLog3(trace, "running: ", udevadm_bin, " --version")
+
+		bp::v2::process proc(
+			ctx,
+			udevadm_bin,
+			{"--version"},
+				bp::v2::process_stdio
+				{
+					.in = {}, /* in to default */
+					.out = rp,
+					.err = {} /* err to default */
+				}
+		);
+
+		[[maybe_unused]] std::size_t num = io::read(rp, io::dynamic_buffer(output), ec);
+		GKLog2(trace, "size read: ", num)
+
+		if(ec == io::error::eof)
+		{
+			GKLog(trace, "reached eof, connection closed cleanly while reading pipe")
+		}
+		else if( ! ec )
+		{
+			GKSysLogWarning("error reading udevadm output buffer");
+			throw GLogiKExcept(ec.message());
+		}
+		else
+		{
+			GKSysLogWarning("waiting for process");
+			proc.wait();
 		}
 
+		std::istringstream is(output);
 		while(std::getline(is, line) && !line.empty())
 			data.push_back(line);
 	}
-	catch (const bp::process_error & e) {
+	catch ( const GLogiKExcept & e ) {
 		GKSysLogError("exception catched while trying to run udevadm process");
 		GKSysLogError( e.what() );
 	}

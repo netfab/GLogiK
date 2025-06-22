@@ -128,6 +128,7 @@ executable(
 	boost_system_dep,
 	boost_filesystem_dep,
 	boost_program_options_dep,
+	boost_process_dep,
 	libudev_dep,
 	libusb_dep,
 	hidapi_dep,

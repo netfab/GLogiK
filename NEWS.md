@@ -1,6 +1,7 @@
 
 0.8.22 (202x-xx-xx)
 ===================
+- Raise boost libraries minimal version to 1.88.0
 - Fix potential daemon crash when searching supported devices
 - Fix desktop service not beeing informed by the daemon of devices
   status changes on sleep/resume events
