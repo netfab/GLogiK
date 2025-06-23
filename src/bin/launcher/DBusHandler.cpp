@@ -23,8 +23,8 @@
 #include <functional>
 #include <thread>
 
+#include <boost/asio.hpp>
 #include <boost/process.hpp>
-#include <boost/process/search_path.hpp>
 
 #include <config.h>
 
@@ -34,6 +34,7 @@
 #include "DBusHandler.hpp"
 
 namespace bp = boost::process;
+namespace io = boost::asio;
 namespace chr = std::chrono;
 
 namespace GLogiK
@@ -123,32 +124,33 @@ void DBusHandler::spawnService(const uint16_t timelapse)
 	if(timeLapse > _tenSeconds) {
 		_lastCall = now;
 
-		try {
-			auto p = bp::search_path(GLOGIKS_DESKTOP_SERVICE_NAME);
-			if( p.empty() ) {
-				LOG(error) << GLOGIKS_DESKTOP_SERVICE_NAME << " executable not found in PATH";
-				return;
-			}
+		auto search = bp::v2::environment::find_executable(GLOGIKS_DESKTOP_SERVICE_NAME);
+		if( search.empty() )
+		{
+			LOG(error) << GLOGIKS_DESKTOP_SERVICE_NAME << " executable not found in PATH";
+			return;
+		}
+		const std::string command_bin( search.string() );
 
-			bp::group g;
+		io::io_context ctx;
+		std::vector<std::string> args;
 
 #if DEBUGGING_ON
-			if(GKLogging::GKDebug) {
-				bp::spawn(p, "-D", g);
-			}
-			else {
-				bp::spawn(p, g);
-			}
-#else
-			bp::spawn(p, g);
+		if(GKLogging::GKDebug)
+			args.push_back("-D");
 #endif
+		{
+			std::string whole_cmd(command_bin);
+			for(const auto & arg : args)
+			{
+				whole_cmd += " ";
+				whole_cmd += arg;
+			}
+			GKLog2(info, "spawning: ", whole_cmd)
+		}
 
-			g.wait();
-		}
-		catch (const bp::process_error & e) {
-			LOG(error) << "exception catched while trying to spawn process: " << GLOGIKS_DESKTOP_SERVICE_NAME;
-			LOG(error) << e.what();
-		}
+		bp::v2::process proc(ctx, command_bin, args);
+		proc.detach();
 	}
 	else {
 		double nsec = static_cast<double>(timeLapse.count()) * steady::period::num / steady::period::den;

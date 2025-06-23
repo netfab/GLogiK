@@ -17,6 +17,7 @@ executable(
 	boost_dep,
 	boost_system_dep,
 	boost_filesystem_dep,
+	boost_process_dep,
 	boost_program_options_dep,
 	GKUtils_lib_dep,
 	GKShared_lib_dep,
