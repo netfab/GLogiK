@@ -53,7 +53,9 @@ class process
 		static void setSignalHandler(int signum, __signal_handler_t __handler);
 		static void resetSignalHandler(int signum);
 		static const std::string getSignalHandlingDesc(const int & signum, const std::string & desc);
+
 		static void runCommand(const std::string & binary, const std::vector<std::string> & args);
+		static const std::string runCommandAndGetOutput(const std::string & binary, const std::vector<std::string> & args);
 
 	protected:
 

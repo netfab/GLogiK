@@ -346,6 +346,63 @@ void process::runCommand(const std::string & binary, const std::vector<std::stri
 	proc.detach();
 }
 
+const std::string process::runCommandAndGetOutput(const std::string & binary, const std::vector<std::string> & args)
+{
+	GK_LOG_FUNC
+
+	namespace bp = boost::process;
+	namespace io = boost::asio;
+
+	std::string output;
+	boost::system::error_code ec;
+	io::io_context ctx;
+	io::readable_pipe rp{ctx};
+
+	auto search = bp::v2::environment::find_executable(binary);
+	if( search.empty() )
+		throw GLogiKExcept("searched binary not found in PATH");
+	const std::string command_bin( search.string() );
+
+	{
+		std::string whole_cmd(command_bin);
+		for(const auto & arg : args)
+		{
+			whole_cmd += " ";
+			whole_cmd += arg;
+		}
+		GKLog2(info, "spawning: ", whole_cmd)
+	}
+
+	bp::v2::process proc(
+		ctx,
+		command_bin,
+		args,
+		bp::v2::process_stdio
+		{
+			.in = {}, /* in to default */
+			.out = rp,
+			.err = {} /* err to default */
+		}
+	);
+
+	[[maybe_unused]] std::size_t num = io::read(rp, io::dynamic_buffer(output), ec);
+	GKLog2(trace, "size read: ", num)
+
+	if(ec == io::error::eof)
+	{
+		GKLog(trace, "reached eof, connection closed cleanly while reading pipe")
+	}
+	else if( ! ec )
+		throw GLogiKExcept(ec.message());
+	else
+	{
+		LOG(warning) << "waiting for process";
+		proc.wait();
+	}
+
+	return output;
+}
+
 const std::string process::getSignalAbbrev(int signum)
 {
 	GK_LOG_FUNC
