@@ -23,9 +23,6 @@
 #include <functional>
 #include <thread>
 
-#include <boost/asio.hpp>
-#include <boost/process.hpp>
-
 #include <config.h>
 
 #include "lib/utils/utils.hpp"
@@ -33,8 +30,6 @@
 
 #include "DBusHandler.hpp"
 
-namespace bp = boost::process;
-namespace io = boost::asio;
 namespace chr = std::chrono;
 
 namespace GLogiK
@@ -124,33 +119,14 @@ void DBusHandler::spawnService(const uint16_t timelapse)
 	if(timeLapse > _tenSeconds) {
 		_lastCall = now;
 
-		auto search = bp::v2::environment::find_executable(GLOGIKS_DESKTOP_SERVICE_NAME);
-		if( search.empty() )
-		{
-			LOG(error) << GLOGIKS_DESKTOP_SERVICE_NAME << " executable not found in PATH";
-			return;
-		}
-		const std::string command_bin( search.string() );
-
-		io::io_context ctx;
 		std::vector<std::string> args;
 
 #if DEBUGGING_ON
 		if(GKLogging::GKDebug)
 			args.push_back("-D");
 #endif
-		{
-			std::string whole_cmd(command_bin);
-			for(const auto & arg : args)
-			{
-				whole_cmd += " ";
-				whole_cmd += arg;
-			}
-			GKLog2(info, "spawning: ", whole_cmd)
-		}
 
-		bp::v2::process proc(ctx, command_bin, args);
-		proc.detach();
+		process::runCommand(GLOGIKS_DESKTOP_SERVICE_NAME, args);
 	}
 	else {
 		double nsec = static_cast<double>(timeLapse.count()) * steady::period::num / steady::period::den;

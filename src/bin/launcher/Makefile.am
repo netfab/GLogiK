@@ -14,7 +14,6 @@ GKsLauncher_LDFLAGS = \
 GKsLauncher_LDADD = \
 				@BOOST_SYSTEM_LIB@ \
 				@BOOST_FILESYSTEM_LIB@ \
-				@BOOST_PROCESS_LIB@ \
 				@BOOST_PROGRAM_OPTIONS_LIB@ \
 				@PTHREAD_LIBS@ \
 				libGKDBus.la \

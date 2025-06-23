@@ -36,6 +36,9 @@
 
 #include <config.h>
 
+#include <boost/asio.hpp>
+#include <boost/process.hpp>
+
 #define UTILS_COMPILATION 1
 
 #include "GKLogging.hpp"
@@ -310,6 +313,37 @@ const std::string process::getSignalHandlingDesc(const int & signum, const std::
 	std::ostringstream buffer("caught signal: ", std::ios_base::app);
 	buffer << sigdesc << "(" << signum << ")" << desc;
 	return buffer.str();
+}
+
+void process::runCommand(const std::string & binary, const std::vector<std::string> & args)
+{
+	GK_LOG_FUNC
+
+	namespace bp = boost::process;
+	namespace io = boost::asio;
+
+	auto search = bp::v2::environment::find_executable(binary);
+	if( search.empty() )
+	{
+		LOG(error) << binary << " executable not found in PATH";
+		return;
+	}
+	const std::string command_bin( search.string() );
+
+	{
+		std::string whole_cmd(command_bin);
+		for(const auto & arg : args)
+		{
+			whole_cmd += " ";
+			whole_cmd += arg;
+		}
+		GKLog2(info, "spawning: ", whole_cmd)
+	}
+
+	io::io_context ctx;
+
+	bp::v2::process proc(ctx, command_bin, args);
+	proc.detach();
 }
 
 const std::string process::getSignalAbbrev(int signum)

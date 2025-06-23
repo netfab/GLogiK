@@ -27,13 +27,7 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
-#include <boost/asio.hpp>
-#include <boost/process.hpp>
-
 #include "GKeysEventManager.hpp"
-
-namespace bp = boost::process;
-namespace io = boost::asio;
 
 namespace GLogiK
 {
@@ -214,28 +208,7 @@ void GKeysEventManager::spawnProcess(const std::string & command)
 		}
 	}
 
-	auto search = bp::v2::environment::find_executable(exe);
-	if( search.empty() )
-	{
-		LOG(error) << exe << " executable not found in PATH";
-		return;
-	}
-	const std::string command_bin( search.string() );
-
-	{
-		std::string whole_cmd(command_bin);
-		for(const auto & arg : args)
-		{
-			whole_cmd += " ";
-			whole_cmd += arg;
-		}
-		GKLog2(info, "spawning: ", whole_cmd)
-	}
-
-	io::io_context ctx;
-
-	bp::v2::process proc(ctx, command_bin, args);
-	proc.detach();
+	process::runCommand(exe, args);
 }
 
 } // namespace GLogiK
