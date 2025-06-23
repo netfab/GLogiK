@@ -27,12 +27,13 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
+#include <boost/asio.hpp>
 #include <boost/process.hpp>
-#include <boost/process/search_path.hpp>
 
 #include "GKeysEventManager.hpp"
 
 namespace bp = boost::process;
+namespace io = boost::asio;
 
 namespace GLogiK
 {
@@ -200,11 +201,10 @@ void GKeysEventManager::spawnProcess(const std::string & command)
 {
 	GK_LOG_FUNC
 
-	LOG(info) << "spawning process: " << command;
-
 	std::string exe;
 	std::vector<std::string> args;
 	{
+		GKLog2(trace, "user command: ", command)
 		std::istringstream tmpstream(command);
 		std::string tmpstring;
 		std::getline(tmpstream, exe, ' ');
@@ -214,21 +214,28 @@ void GKeysEventManager::spawnProcess(const std::string & command)
 		}
 	}
 
-	try {
-		auto p = bp::search_path(exe);
-		if( p.empty() ) {
-			LOG(error) << exe << " executable not found in PATH";
-			return;
+	auto search = bp::v2::environment::find_executable(exe);
+	if( search.empty() )
+	{
+		LOG(error) << exe << " executable not found in PATH";
+		return;
+	}
+	const std::string command_bin( search.string() );
+
+	{
+		std::string whole_cmd(command_bin);
+		for(const auto & arg : args)
+		{
+			whole_cmd += " ";
+			whole_cmd += arg;
 		}
-
-		GKLog4(trace, "spawning: ", exe, "with args size: ", args.size())
-
-		bp::spawn(p, bp::args(args));
+		GKLog2(info, "spawning: ", whole_cmd)
 	}
-	catch (const bp::process_error & e) {
-		LOG(error) << "exception catched while trying to spawn process: " << command;
-		LOG(error) << e.what();
-	}
+
+	io::io_context ctx;
+
+	bp::v2::process proc(ctx, command_bin, args);
+	proc.detach();
 }
 
 } // namespace GLogiK
