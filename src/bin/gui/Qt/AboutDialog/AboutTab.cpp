@@ -67,7 +67,7 @@ void AboutTab::buildTab(void)
 		/* -- -- */
 
 		{
-			QString descText("A Qt5 graphical user interface for the\nGLogiK desktop service.");
+			QString descText("A Qt graphical user interface for the\nGLogiK desktop service.");
 
 			QLabel* descLabel = new QLabel(descText);
 			vBox->addWidget(descLabel);
@@ -81,7 +81,7 @@ void AboutTab::buildTab(void)
 		}
 
 		{
-			QString descText("GLogiK, daemon to handle special features on\nsome gaming keyboards.");
+			QString descText("GLogiK, daemon and utilities to handle\nspecial features on some gaming keyboards.");
 
 			QLabel* descLabel = new QLabel(descText);
 			vBox->addWidget(descLabel);
@@ -95,7 +95,7 @@ void AboutTab::buildTab(void)
 		}
 
 		{
-			QString descText("Copyright 2016 - 2023 Fabrice Delliaux");
+			QString descText("Copyright 2016 - 2025 Fabrice Delliaux");
 
 			QLabel* descLabel = new QLabel(descText);
 			vBox->addWidget(descLabel);
