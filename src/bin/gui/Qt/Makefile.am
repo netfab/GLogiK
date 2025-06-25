@@ -21,6 +21,7 @@ GKcQt_LDADD = \
 		libGKShared.la
 
 GKcQt_SOURCES = \
+		%D%/AboutDialog/AboutDialogTab.cpp \
 		%D%/AboutDialog/AboutDialogTab.hpp \
 		%D%/AboutDialog/AboutTab.cpp \
 		%D%/AboutDialog/AboutTab.hpp \

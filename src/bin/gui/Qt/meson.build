@@ -1,5 +1,6 @@
 
 GKcQt_sources = [
+  'AboutDialog/AboutDialogTab.cpp',
   'AboutDialog/AboutDialogTab.hpp',
   'AboutDialog/AboutTab.cpp',
   'AboutDialog/AboutTab.hpp',

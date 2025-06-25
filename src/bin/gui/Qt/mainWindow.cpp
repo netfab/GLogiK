@@ -462,7 +462,7 @@ void MainWindow::aboutDialog(void)
 		about->buildDialog(_pDepsMap);
 		about->setModal(true);
 		about->setAttribute(Qt::WA_DeleteOnClose);
-		about->setFixedSize(560, 300);
+		about->setFixedSize(560, 330);
 		about->setWindowTitle("About GKcQt");
 		about->open();
 	}

@@ -43,7 +43,7 @@ void AboutTab::buildTab(void)
 
 		this->setLayout(vBox);
 
-		vBox->addSpacing(10);
+		vBox->addWidget( this->getHLine() );
 
 		{
 			QString mainText("GKcQt ");
@@ -62,7 +62,7 @@ void AboutTab::buildTab(void)
 
 		/* -- -- */
 
-		vBox->addSpacing(10);
+		vBox->addWidget( this->getHLine() );
 
 		/* -- -- */
 
@@ -145,6 +145,8 @@ void AboutTab::buildTab(void)
 			cFont.setPointSize(8);
 			descLabel->setFont(cFont);
 		}
+
+		vBox->addWidget( this->getHLine() );
 	}
 	catch (const std::bad_alloc& e) {
 		LOG(error) << "bad allocation : " << e.what();

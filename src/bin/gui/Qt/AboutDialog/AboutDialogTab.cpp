@@ -19,30 +19,26 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_ABOUT_DIALOG_TAB_HPP_
-#define SRC_BIN_GUI_QT_ABOUT_DIALOG_TAB_HPP_
+#include "lib/utils/utils.hpp"
 
-#include <QFrame>
-#include <QWidget>
+#include "AboutDialogTab.hpp"
 
 namespace GLogiK
 {
 
-class AboutDialogTab
-	:	public QWidget
+using namespace NSGKUtils;
+
+QFrame* AboutDialogTab::getHLine(void)
 {
-	public:
-		AboutDialogTab(void) = default;
-		virtual ~AboutDialogTab(void) = default;
+	GK_LOG_FUNC
 
-		virtual void buildTab(void) = 0;
+	QFrame* line = new QFrame();
+	GKLog(trace, "allocated QFrame")
 
-		QFrame* getHLine(void);
-
-	protected:
-	private:
-};
+	line->setFrameShape(QFrame::HLine);
+	line->setFrameShadow(QFrame::Sunken);
+	return line;
+}
 
 } // namespace GLogiK
 
-#endif

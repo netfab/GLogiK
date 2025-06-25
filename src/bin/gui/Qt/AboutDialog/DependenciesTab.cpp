@@ -52,7 +52,7 @@ void DependenciesTab::buildTab(void)
 
 		this->setLayout(vBox);
 
-		vBox->addSpacing(10);
+		vBox->addWidget( this->getHLine() );
 
 		/* -- -- -- */
 		QFrame* mainFrame = new QFrame();
@@ -128,6 +128,8 @@ void DependenciesTab::buildTab(void)
 
 			scrollArea->setWidget(depsTable);
 		}
+
+		vBox->addWidget( this->getHLine() );
 	}
 	catch (const std::bad_alloc& e) {
 		LOG(error) << "bad allocation : " << e.what();

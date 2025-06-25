@@ -45,7 +45,7 @@ void LicenseTab::buildTab(void)
 
 		this->setLayout(vBox);
 
-		vBox->addSpacing(10);
+		vBox->addWidget( this->getHLine() );
 
 		QPlainTextEdit* licenseWidget = new QPlainTextEdit();
 		GKLog(trace, "allocated QPlainTextEdit")
@@ -103,6 +103,8 @@ void LicenseTab::buildTab(void)
 		}
 
 		vBox->addWidget(licenseWidget);
+
+		vBox->addWidget( this->getHLine() );
 	}
 	catch (const std::bad_alloc& e) {
 		LOG(error) << "bad allocation : " << e.what();
