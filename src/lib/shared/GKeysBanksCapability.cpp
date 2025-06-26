@@ -52,7 +52,8 @@ void GKeysBanksCapability::initBanks(
 
 	GKLog4(trace, "numBanks: ", MKeysIDArray.size(), "numKeys: ", GKeysIDArray.size())
 
-	if( MKeysIDArray.empty() ) {
+	if( MKeysIDArray.empty() )
+	{
 		LOG(error) << "empty MKeysID array !";
 		return;
 	}
@@ -60,8 +61,10 @@ void GKeysBanksCapability::initBanks(
 	MKeysIDArray_type MKeysIDArr(MKeysIDArray);
 	MKeysIDArr.emplace(MKeysIDArr.begin(), MKeysID::MKEY_M0);
 
-	for(const MKeysID & id : MKeysIDArr) {
-		try {
+	for(const MKeysID & id : MKeysIDArr)
+	{
+		try
+		{
 			{
 				/* XXX - c++17 structured bindings */
 				typedef std::pair<banksMap_type::iterator, bool> bankInsRet;
@@ -72,17 +75,20 @@ void GKeysBanksCapability::initBanks(
 
 			unsigned short insertedKeys = 0;
 
-			for(const auto & keyID : GKeysIDArray) {
+			for(const auto & keyID : GKeysIDArray)
+			{
 				/* XXX - c++17 structured bindings */
 				typedef std::pair<mBank_type::iterator, bool> keyInsRet;
 
 				auto insertStatus = [&insertedKeys] (const keyInsRet & r) -> void
 				{
-					if(r.second) {
+					if(r.second)
+					{
 						insertedKeys++;
 						//GKLog2(trace, "inserted key: ", getGKeyName(r.first->first))
 					}
-					else {
+					else
+					{
 						LOG(error) << "failed to insert key: " << getGKeyName(r.first->first);
 					}
 				};
@@ -96,7 +102,8 @@ void GKeysBanksCapability::initBanks(
 
 			GKLog4(trace, "bank id: ", id, "number of initialized G-Keys: ", insertedKeys)
 		}
-		catch(const GLogiKExcept & e) {
+		catch(const GLogiKExcept & e)
+		{
 			LOG(error) << "bank id: " << id << " - failed to initialize: " << e.what();
 		}
 	}
@@ -123,14 +130,17 @@ void GKeysBanksCapability::setBanks(const banksMap_type & GKeysBanks)
 
 void GKeysBanksCapability::checkBanksKeys(void) noexcept
 {
-	for(auto bankIt = _GKeysBanks.begin(); bankIt != _GKeysBanks.end();) {
-		try {
+	for(auto bankIt = _GKeysBanks.begin(); bankIt != _GKeysBanks.end();)
+	{
+		try
+		{
 			// checking bankID
 			this->getBankID(toEnumType(bankIt->first));
 			//GKLog2(trace, "checked MKeyID: ", bankIt->first)
 			++bankIt;
 		}
-		catch(const GLogiKExcept & e) {
+		catch(const GLogiKExcept & e)
+		{
 			LOG(warning) << e.what()
 				<< " - erasing whole bankID: "
 				<< static_cast<unsigned int>(bankIt->first);
@@ -138,10 +148,13 @@ void GKeysBanksCapability::checkBanksKeys(void) noexcept
 		}
 	}
 
-	for(auto bankIt = _GKeysBanks.begin(); bankIt != _GKeysBanks.end(); bankIt++) {
+	for(auto bankIt = _GKeysBanks.begin(); bankIt != _GKeysBanks.end(); bankIt++)
+	{
 		auto & mBank = bankIt->second;
-		for(auto it = mBank.begin(); it != mBank.end();) {
-			try {
+		for(auto it = mBank.begin(); it != mBank.end();)
+		{
+			try
+			{
 				if(it->first == GKeyID_INV)
 					throw GLogiKExcept("invalid value");
 
@@ -153,7 +166,8 @@ void GKeysBanksCapability::checkBanksKeys(void) noexcept
 				//GKLog2(trace, "checked GKeyID: ", getGKeyName(it->first))
 				++it;
 			}
-			catch(const GLogiKExcept & e) {
+			catch(const GLogiKExcept & e)
+			{
 				LOG(warning) << e.what()
 					<< " - erasing GKeyID: "
 					<< static_cast<unsigned int>(it->first);
@@ -179,15 +193,18 @@ const MKeysID GKeysBanksCapability::getCurrentBankID(void) const
 
 void GKeysBanksCapability::resetBank(const MKeysID bankID)
 {
-	try {
-		for(auto & keyEventPair : _GKeysBanks.at(bankID)) {
+	try
+	{
+		for(auto & keyEventPair : _GKeysBanks.at(bankID))
+		{
 			GKeysEvent & event = keyEventPair.second;
 			event.clearMacro();
 			event.setEventType(GKeyEventType::GKEY_INACTIVE);
 			// FIXME reset command ?
 		}
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		LOG(warning) << "wrong bankID: " << bankID;
 		throw GLogiKExcept("reset bank failed");
 	}

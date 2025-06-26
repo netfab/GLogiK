@@ -44,12 +44,14 @@ void GKeysMacro::checkMacro(macro_type & macro)
 	//// debug code
 	//KeyEvent e1(KEY_UNKNOWN, EventValue::EVENT_KEY_PRESS, 1);
 	//KeyEvent e2(KEY_UNKNOWN, EventValue::EVENT_KEY_RELEASE, 1);
-	//for(unsigned int i = 0; i < 12; ++i) {
+	//for(unsigned int i = 0; i < 12; ++i)
+	//{
 	//	macro.push_back(e1);
 	//	macro.push_back(e2);
 	//}
 
-	if(macro.size() >= MACRO_T_MAX_SIZE) {
+	if(macro.size() >= MACRO_T_MAX_SIZE)
+	{
 		LOG(warning) << "macro size greater than MACRO_T_MAX_SIZE, fixing it";
 		pressedEvents.clear();
 		releasedEvents.clear();
@@ -63,7 +65,8 @@ void GKeysMacro::fillInVectors(
 	std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents)
 {
-	for(unsigned int i = 0; i != macro.size(); ++i) {
+	for(unsigned int i = 0; i != macro.size(); ++i)
+	{
 		const auto & keyEvent = macro[i];
 		MacroEvent e(keyEvent, i);
 
@@ -82,11 +85,15 @@ void GKeysMacro::fixMacroReleaseEvents(
 	GK_LOG_FUNC
 
 	/* fix missing release events */
-	for(const auto & pressed : pressedEvents) {
+	for(const auto & pressed : pressedEvents)
+	{
 		bool found = false;
-		for(auto it = releasedEvents.begin(); it != releasedEvents.end(); ++it) {
-			if(pressed.key.code == (*it).key.code) {
-				if(pressed.index < (*it).index) {
+		for(auto it = releasedEvents.begin(); it != releasedEvents.end(); ++it)
+		{
+			if(pressed.key.code == (*it).key.code)
+			{
+				if(pressed.index < (*it).index)
+				{
 					/* KEY_RELEASE event found for current KEY_PRESS event */
 					releasedEvents.erase(it);
 					found = true;
@@ -94,7 +101,8 @@ void GKeysMacro::fixMacroReleaseEvents(
 				}
 			}
 		}
-		if( ! found ) {
+		if( ! found )
+		{
 			LOG(warning) << "missing release event for index " << toUInt(pressed.index) << " - adding event";
 			KeyEvent e = pressed.key;
 			e.event = EventValue::EVENT_KEY_RELEASE;
@@ -104,12 +112,14 @@ void GKeysMacro::fixMacroReleaseEvents(
 	}
 
 	/* remove redundant release events in reverse order */
-	if( ! releasedEvents.empty() ) {
+	if( ! releasedEvents.empty() )
+	{
 		GKLog2(trace, "some redundant release events were found : ", releasedEvents.size())
 
 		std::reverse(releasedEvents.begin(), releasedEvents.end());
 
-		for(const auto & redundant : releasedEvents) {
+		for(const auto & redundant : releasedEvents)
+		{
 			GKLog2(trace, "erasing redundant release event at index : ", toUInt(redundant.index))
 
 			auto it = std::next(macro.begin(), redundant.index);
@@ -128,17 +138,22 @@ void GKeysMacro::fixMacroSize(
 	GKLog4(trace, "pressed : ", pressedEvents.size(), "released : ", releasedEvents.size())
 
 	/* sanity check */
-	if(pressedEvents.size() != releasedEvents.size()) {
+	if(pressedEvents.size() != releasedEvents.size())
+	{
 		LOG(warning) << "pressed and released events disparity :";
 		LOG(warning) << "pressed: " << pressedEvents.size() << " - released: " << releasedEvents.size();
 	}
 
 	std::vector<unsigned int> indexes;
 
-	for(const auto & pressed : pressedEvents) {
-		for(auto it = releasedEvents.begin(); it != releasedEvents.end(); ++it) {
-			if(pressed.key.code == (*it).key.code) {
-				if(pressed.index < (*it).index) {
+	for(const auto & pressed : pressedEvents)
+	{
+		for(auto it = releasedEvents.begin(); it != releasedEvents.end(); ++it)
+		{
+			if(pressed.key.code == (*it).key.code)
+			{
+				if(pressed.index < (*it).index)
+				{
 					indexes.push_back( pressed.index );
 					indexes.push_back( (*it).index );
 					releasedEvents.erase(it);
@@ -152,7 +167,8 @@ void GKeysMacro::fixMacroSize(
 
 	GKLog2(trace, "indexes size : ", indexes.size())
 
-	while( (indexes.size() > 1) and (macro.size() >= MACRO_T_MAX_SIZE) ) {
+	while( (indexes.size() > 1) and (macro.size() >= MACRO_T_MAX_SIZE) )
+	{
 		auto & index = indexes.back();
 
 		GKLog2(trace, "erasing index : ", index)
@@ -171,7 +187,8 @@ void GKeysMacro::fixMacroSize(
 	}
 
 	/* sanity check */
-	if( macro.size() >= MACRO_T_MAX_SIZE ) {
+	if( macro.size() >= MACRO_T_MAX_SIZE )
+	{
 		GKLog2(trace, "macro size : ", macro.size())
 
 		LOG(warning) << "macro still greater than MACRO_T_MAX_SIZE, force resize it";

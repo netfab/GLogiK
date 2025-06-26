@@ -88,7 +88,8 @@ c_str MUTE_MICRO	= "";
 
 /* --- ---- --- */
 
-const std::map<Keys, c_str> keysNamesMap = {
+const std::map<Keys, c_str> keysNamesMap =
+{
 	{ Keys::GK_KEY_M1, M_KEY_M1 },
 	{ Keys::GK_KEY_M2, M_KEY_M2 },
 	{ Keys::GK_KEY_M3, M_KEY_M3 },
@@ -132,7 +133,8 @@ const std::map<Keys, c_str> keysNamesMap = {
 	{ Keys::GK_KEY_MUTE_MICRO, 	MUTE_MICRO },
 };
 
-const std::map<GKeysID, c_str> GKeysNamesMap = {
+const std::map<GKeysID, c_str> GKeysNamesMap =
+{
 	{ GKeysID::GKEY_G1, G_KEY_G1 },
 	{ GKeysID::GKEY_G2, G_KEY_G2 },
 	{ GKeysID::GKEY_G3, G_KEY_G3 },
@@ -153,13 +155,15 @@ const std::map<GKeysID, c_str> GKeysNamesMap = {
 	{ GKeysID::GKEY_G18, G_KEY_G18 },
 };
 
-const std::map<Keys, MKeysID> keys2MKeysIDMap = {
+const std::map<Keys, MKeysID> keys2MKeysIDMap =
+{
 	{ Keys::GK_KEY_M1, MKeysID::MKEY_M1 },
 	{ Keys::GK_KEY_M2, MKeysID::MKEY_M2 },
 	{ Keys::GK_KEY_M3, MKeysID::MKEY_M3 },
 };
 
-const std::map<Keys, GKeysID> keys2GKeysIDMap = {
+const std::map<Keys, GKeysID> keys2GKeysIDMap =
+{
 	{ Keys::GK_KEY_G1, GKeysID::GKEY_G1 },
 	{ Keys::GK_KEY_G2, GKeysID::GKEY_G2 },
 	{ Keys::GK_KEY_G3, GKeysID::GKEY_G3 },
@@ -185,10 +189,12 @@ const std::string getKeyName(const Keys key)
 	using namespace NSGKUtils;
 
 	std::string ret("");
-	try {
+	try
+	{
 		ret = keysNamesMap.at(key);
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		LOG(error) << "invalid key: " << toEnumType(key);
 	}
 
@@ -200,10 +206,12 @@ const std::string getGKeyName(const GKeysID keyID)
 	using namespace NSGKUtils;
 
 	std::string GKey("G0");
-	try {
+	try
+	{
 		GKey = GKeysNamesMap.at(keyID);
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		LOG(error) << "invalid GKeysID: " << toEnumType(keyID);
 	}
 	return GKey;
@@ -219,7 +227,9 @@ const GKeysID getGKeyID(const Keys key)
 	return keys2GKeysIDMap.at(key);
 }
 
-void printVersionDeps(const std::string & binaryVersion, const GKDepsMap_type & dependencies)
+void printVersionDeps(
+	const std::string & binaryVersion,
+	const GKDepsMap_type & dependencies)
 {
 	using namespace NSGKUtils;
 
@@ -232,8 +242,10 @@ void printVersionDeps(const std::string & binaryVersion, const GKDepsMap_type & 
 			<< std::setfill('-') << std::setw(38) << "-" << "\n"
 			<< std::setfill(' ');
 
-	for(const auto & x : dependencies) {
-		for(const auto & v : x.second) {
+	for(const auto & x : dependencies)
+	{
+		for(const auto & v : x.second)
+		{
 			buffer
 				<< std::setw(12) << v.getDependency()
 				<< std::setw(2) << "|" << std::setw(14) << v.getCompileTimeVersion()

@@ -37,14 +37,6 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DeviceConfigurationFile::DeviceConfigurationFile()
-{
-}
-
-DeviceConfigurationFile::~DeviceConfigurationFile()
-{
-}
-
 void DeviceConfigurationFile::load(
 	const std::string & filePath,
 	DeviceProperties & device) noexcept
@@ -53,7 +45,8 @@ void DeviceConfigurationFile::load(
 
 	GKLog2(trace, "loading device configuration file : ", device.getConfigFilePath())
 
-	try {
+	try
+	{
 		std::ifstream ifs;
 		ifs.exceptions(std::ifstream::badbit);
 		ifs.open(filePath);
@@ -72,12 +65,14 @@ void DeviceConfigurationFile::load(
 
 		ifs.close();
 	}
-	catch (const std::ifstream::failure & e) {
+	catch (const std::ifstream::failure & e)
+	{
 		std::ostringstream buffer("fail to open configuration file : ", std::ios_base::app);
 		buffer << e.what();
 		LOG(error) << buffer.str();
 	}
-	catch(const boost::archive::archive_exception & e) {
+	catch(const boost::archive::archive_exception & e)
+	{
 		std::ostringstream buffer("boost::archive exception : ", std::ios_base::app);
 		buffer << e.what();
 		LOG(error) << buffer.str();
@@ -97,7 +92,8 @@ void DeviceConfigurationFile::save(
 
 	GKLog2(trace, "opening configuration file for writing : ", filePath)
 
-	try {
+	try
+	{
 		std::ofstream ofs;
 		ofs.exceptions(std::ofstream::failbit|std::ofstream::badbit);
 		ofs.open(filePath, std::ofstream::out|std::ofstream::trunc);
@@ -112,12 +108,14 @@ void DeviceConfigurationFile::save(
 		LOG(info) << "successfully saved configuration file, closing";
 		ofs.close();
 	}
-	catch (const std::ofstream::failure & e) {
+	catch (const std::ofstream::failure & e)
+	{
 		std::ostringstream buffer("fail to open configuration file : ", std::ios_base::app);
 		buffer << e.what();
 		LOG(error) << buffer.str();
 	}
-	catch(const boost::archive::archive_exception & e) {
+	catch(const boost::archive::archive_exception & e)
+	{
 		std::ostringstream buffer("boost::archive exception : ", std::ios_base::app);
 		buffer << e.what();
 		LOG(error) << buffer.str();

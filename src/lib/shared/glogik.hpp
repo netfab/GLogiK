@@ -104,7 +104,10 @@ const std::string getGKeyName(const GKeysID keyID);
 const MKeysID getMKeyID(const Keys key);
 const GKeysID getGKeyID(const Keys key);
 
-void printVersionDeps(const std::string & binaryVersion, const GKDepsMap_type & dependencies);
+void printVersionDeps(
+	const std::string & binaryVersion,
+	const GKDepsMap_type & dependencies
+);
 
 /* --- ---- --- */
 
