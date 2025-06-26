@@ -30,8 +30,10 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-GKDBusReply::GKDBusReply(DBusConnection* const connection, DBusMessage* message)
-	:	GKDBusMessage(connection)
+GKDBusReply::GKDBusReply(
+	DBusConnection* const connection,
+	DBusMessage* message)
+		:	GKDBusMessage(connection)
 {
 	GK_LOG_FUNC
 
@@ -56,14 +58,16 @@ GKDBusReply::~GKDBusReply()
 {
 	GK_LOG_FUNC
 
-	if(_hosedMessage) {
+	if(_hosedMessage)
+	{
 		LOG(warning) << "DBus hosed reply, giving up";
 		dbus_message_unref(_message);
 		return;
 	}
 
 	// TODO dbus_uint32_t serial;
-	if( ! dbus_connection_send(_connection, _message, nullptr) ) {
+	if( ! dbus_connection_send(_connection, _message, nullptr) )
+	{
 		dbus_message_unref(_message);
 		LOG(error) << "DBus reply sending failure";
 		return;
@@ -81,7 +85,8 @@ GKDBusReply::~GKDBusReply()
 /* --- --- --- */
 /* --- --- --- */
 
-GKDBusMessageReply::GKDBusMessageReply() : _reply(nullptr)
+GKDBusMessageReply::GKDBusMessageReply()
+	:	_reply(nullptr)
 {
 }
 
@@ -89,17 +94,21 @@ GKDBusMessageReply::~GKDBusMessageReply()
 {
 }
 
-void GKDBusMessageReply::initializeReply(DBusConnection* const connection, DBusMessage* message)
+void GKDBusMessageReply::initializeReply(
+	DBusConnection* const connection,
+	DBusMessage* message)
 {
 	GK_LOG_FUNC
 
 	if(_reply) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus reply already allocated");
 
-	try {
+	try
+	{
 		_reply = new GKDBusReply(connection, message);
 	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
+	catch (const std::bad_alloc& e)
+	{ /* handle new() failure */
 		LOG(error) << "GKDBus reply allocation failure : " << e.what();
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
@@ -165,22 +174,27 @@ void GKDBusMessageReply::appendAsyncArgsToReply(DBusMessage* asyncContainer)
 
 	DBusMessageIter itArgument;
 
-	if(asyncContainer == nullptr) {
+	if(asyncContainer == nullptr)
+	{
 		LOG(error) << "null async container";
 		return;
 	}
 
-	if( ! dbus_message_iter_init(asyncContainer, &itArgument) ) {
+	if( ! dbus_message_iter_init(asyncContainer, &itArgument) )
+	{
 #if DEBUG_GKDBUS
 		GKLog(trace, "no arguments in async container")
 #endif
 		return; /* no arguments */
 	}
 
-	try {
-		do {
+	try
+	{
+		do
+		{
 			const int arg_type = ArgBase::decodeNextArgument(&itArgument);
-			switch(arg_type) {
+			switch(arg_type)
+			{
 				case DBUS_TYPE_STRING:
 				//case DBUS_TYPE_OBJECT_PATH:
 					this->appendStringToReply( ArgString::getNextStringArgument() );
@@ -202,7 +216,8 @@ void GKDBusMessageReply::appendAsyncArgsToReply(DBusMessage* asyncContainer)
 		}
 		while( dbus_message_iter_next(&itArgument) );
 	}
-	catch ( const GLogiKExcept & e ) { /* WrongBuild or EmptyContainer */
+	catch ( const GLogiKExcept & e )
+	{ /* WrongBuild or EmptyContainer */
 		LOG(error) << e.what();
 		throw GKDBusMessageWrongBuild("Async args append failure");
 	}
@@ -212,7 +227,8 @@ void GKDBusMessageReply::sendReply(void)
 {
 	GK_LOG_FUNC
 
-	if(_reply == nullptr) { /* sanity check */
+	if(_reply == nullptr)
+	{ /* sanity check */
 		LOG(warning) << "tried to send NULL reply";
 		return;
 	}
@@ -225,12 +241,14 @@ void GKDBusMessageReply::abandonReply(void)
 {
 	GK_LOG_FUNC
 
-	if(_reply) { /* sanity check */
+	if(_reply)
+	{ /* sanity check */
 		_reply->abandon();
 		delete _reply;
 		_reply = nullptr;
 	}
-	else {
+	else
+	{
 		LOG(warning) << "tried to abandon NULL reply";
 	}
 }

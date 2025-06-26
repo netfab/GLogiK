@@ -37,7 +37,9 @@ void TypeLCDPPArray::appendLCDPPArray(const GLogiK::LCDPPArray_type & pluginsArr
 	this->appendLCDPPArray(&_itMessage, pluginsArray);
 }
 
-void TypeLCDPPArray::appendLCDPPArray(DBusMessageIter *iter, const GLogiK::LCDPPArray_type & pluginsArray)
+void TypeLCDPPArray::appendLCDPPArray(
+	DBusMessageIter *iter,
+	const GLogiK::LCDPPArray_type & pluginsArray)
 {
 	GK_LOG_FUNC
 
@@ -52,14 +54,16 @@ void TypeLCDPPArray::appendLCDPPArray(DBusMessageIter *iter, const GLogiK::LCDPP
 							DBUS_TYPE_STRING_AS_STRING\
 							DBUS_STRUCT_END_CHAR_AS_STRING;
 
-	if( ! dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, array_sig, &itArray) ) {
+	if( ! dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, array_sig, &itArray) )
+	{
 		_hosedMessage = true;
 		LOG(error) << "LCDPluginsProperties array open_container failure, not enough memory";
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 	}
 
 
-	try {
+	try
+	{
 		for(const auto & plugin : pluginsArray)
 		{
 			DBusMessageIter itStruct;
@@ -68,35 +72,41 @@ void TypeLCDPPArray::appendLCDPPArray(DBusMessageIter *iter, const GLogiK::LCDPP
 			 * From DBus dbus_message_iter_open_container documentation :
 			 *		For structs and dict entries, contained_signature should be NULL;
 			 */
-			if( ! dbus_message_iter_open_container(&itArray, DBUS_TYPE_STRUCT, nullptr, &itStruct) ) {
+			if( ! dbus_message_iter_open_container(&itArray, DBUS_TYPE_STRUCT, nullptr, &itStruct) )
+			{
 				LOG(error) << "DBus struct open_container failure, not enough memory";
 				throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 			}
 
-			try {
+			try
+			{
 				this->appendUInt64(&itStruct, plugin.getID());
 				this->appendString(&itStruct, plugin.getName());
 				this->appendString(&itStruct, plugin.getDesc());
 			}
-			catch (const GKDBusMessageWrongBuild & e) {
+			catch (const GKDBusMessageWrongBuild & e)
+			{
 				dbus_message_iter_abandon_container(&itArray, &itStruct);
 				throw;
 			}
 
-			if( ! dbus_message_iter_close_container(&itArray, &itStruct) ) {
+			if( ! dbus_message_iter_close_container(&itArray, &itStruct) )
+			{
 				LOG(error) << "DBus struct close_container failure, not enough memory";
 				throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 			}
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		_hosedMessage = true;
 		dbus_message_iter_abandon_container(iter, &itArray);
 		throw;
 	}
 	/* -- */
 
-	if( ! dbus_message_iter_close_container(iter, &itArray) ) {
+	if( ! dbus_message_iter_close_container(iter, &itArray) )
+	{
 		LOG(error) << "LCDPluginsProperties array close_container failure, not enough memory";
 		_hosedMessage = true;
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
@@ -125,10 +135,12 @@ const GLogiK::LCDPPArray_type ArgLCDPPArray::getNextLCDPPArrayArgument(void)
 
 	GLogiK::LCDPPArray_type pluginsArray;
 
-	try {
+	try
+	{
 		pluginsArray.reserve(size);
 
-		while(i < size) {
+		while(i < size)
+		{
 			const uint64_t id = ArgUInt64::getNextUInt64Argument();
 			const std::string name = ArgString::getNextStringArgument();
 			const std::string desc = ArgString::getNextStringArgument();
@@ -136,15 +148,18 @@ const GLogiK::LCDPPArray_type ArgLCDPPArray::getNextLCDPPArrayArgument(void)
 			++i;
 		}
 	}
-	catch ( const EmptyContainer & e ) {
+	catch ( const EmptyContainer & e )
+	{
 		LOG(warning) << "missing argument : " << e.what();
 		throw GLogiKExcept(rebuild_failed);
 	}
-	catch( const std::length_error & e ) {
+	catch( const std::length_error & e )
+	{
 		LOG(warning) << "reserve length_error failure : " << e.what();
 		throw GLogiKExcept(rebuild_failed);
 	}
-	catch( const std::bad_alloc & e ) {
+	catch( const std::bad_alloc & e )
+	{
 		LOG(warning) << "reserve bad_alloc failure : " << e.what();
 		throw GLogiKExcept(rebuild_failed);
 	}

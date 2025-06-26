@@ -44,7 +44,8 @@ const GLogiK::GKeysID ArgGKeysID::getNextGKeysIDArgument(void)
 
 	GLogiK::GKeysID id = GLogiK::GKeyID_INV; // invalid
 
-	try {
+	try
+	{
 		const uint8_t value = ArgUInt8::getNextByteArgument();
 
 		if(value > GLogiK::GKeyID_MAX)
@@ -55,7 +56,8 @@ const GLogiK::GKeysID ArgGKeysID::getNextGKeysIDArgument(void)
 		if(id == GLogiK::GKeyID_INV )
 			throw GLogiKExcept("invalid GKeyID");
 	}
-	catch ( const EmptyContainer & e ) {
+	catch ( const EmptyContainer & e )
+	{
 		LOG(warning) << "missing argument : " << e.what();
 		throw GLogiKExcept("get GKeysID argument failed");
 	}

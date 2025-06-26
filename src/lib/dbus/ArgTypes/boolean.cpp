@@ -35,7 +35,8 @@ void TypeBoolean::appendBoolean(const bool value)
 	GK_LOG_FUNC
 
 	dbus_bool_t v = value;
-	if( ! dbus_message_iter_append_basic(&_itMessage, DBUS_TYPE_BOOLEAN, &v) ) {
+	if( ! dbus_message_iter_append_basic(&_itMessage, DBUS_TYPE_BOOLEAN, &v) )
+	{
 		_hosedMessage = true;
 		LOG(error) << "boolean append_basic failure, not enough memory";
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);

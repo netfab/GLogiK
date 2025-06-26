@@ -33,11 +33,14 @@ void TypeUInt8::appendUInt8(const uint8_t value)
 	this->appendUInt8(&_itMessage, value);
 }
 
-void TypeUInt8::appendUInt8(DBusMessageIter *iter, const uint8_t value)
+void TypeUInt8::appendUInt8(
+	DBusMessageIter *iter,
+	const uint8_t value)
 {
 	GK_LOG_FUNC
 
-	if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_BYTE, &value) ) {
+	if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_BYTE, &value) )
+	{
 		_hosedMessage = true;
 		throw GKDBusMessageWrongBuild("uint8_t append failure, not enough memory");
 	}
@@ -47,7 +50,8 @@ void TypeUInt8::appendUInt8(DBusMessageIter *iter, const uint8_t value)
 #endif
 }
 
-const uint8_t ArgUInt8::getNextByteArgument(void) {
+const uint8_t ArgUInt8::getNextByteArgument(void)
+{
 	if( ArgBase::byteArguments.empty() )
 		throw EmptyContainer("missing argument : byte");
 	const uint8_t ret = ArgBase::byteArguments.back();

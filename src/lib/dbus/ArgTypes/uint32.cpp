@@ -35,7 +35,8 @@ void TypeUInt32::appendUInt32(const uint32_t value)
 	GK_LOG_FUNC
 
 	dbus_uint32_t v = value;
-	if( ! dbus_message_iter_append_basic(&_itMessage, DBUS_TYPE_UINT32, &v) ) {
+	if( ! dbus_message_iter_append_basic(&_itMessage, DBUS_TYPE_UINT32, &v) )
+	{
 		_hosedMessage = true;
 		throw GKDBusMessageWrongBuild("uint32_t append failure, not enough memory");
 	}

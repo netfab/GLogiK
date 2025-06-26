@@ -132,7 +132,17 @@ template <typename T>
 		T callback
 	)
 {
-	this->exposeEvent(bus, nullptr, objectPath, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_METHOD, true);
+	this->exposeEvent(
+		bus,
+		nullptr,
+		objectPath,
+		interface,
+		eventName,
+		args,
+		callback,
+		GKDBusEventType::GKDBUS_EVENT_METHOD,
+		true
+	);
 }
 
 template <typename T>
@@ -147,7 +157,17 @@ template <typename T>
 	)
 {
 	/* signals declared as events with callback functions are not introspectable */
-	this->exposeEvent(bus, sender, objectPath, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, false);
+	this->exposeEvent(
+		bus,
+		sender,
+		objectPath,
+		interface,
+		eventName,
+		args,
+		callback,
+		GKDBusEventType::GKDBUS_EVENT_SIGNAL,
+		false
+	);
 }
 
 template <typename T>
@@ -160,14 +180,15 @@ template <typename T>
 		const std::vector<DBusMethodArgument> & args,
 		T callback,
 		GKDBusEventType eventType,
-		const bool introspectable
-	)
+		const bool introspectable)
 {
 	GKDBusEvent* event = nullptr;
-	try {
+	try
+	{
 		event = new callbackEvent<T>(eventName, args, callback, eventType, introspectable);
 	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
+	catch (const std::bad_alloc& e)
+	{ /* handle new() failure */
 		throw NSGKUtils::GLogiKBadAlloc("DBus event bad allocation");
 	}
 

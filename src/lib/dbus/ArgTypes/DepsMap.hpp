@@ -48,7 +48,10 @@ class TypeGKDepsMap
 		TypeGKDepsMap(void) = default;
 		~TypeGKDepsMap(void) = default;
 
-		void appendGKDepsMap(DBusMessageIter *iter, const GLogiK::GKDepsMap_type & depsMap);
+		void appendGKDepsMap(
+			DBusMessageIter *iter,
+			const GLogiK::GKDepsMap_type & depsMap
+		);
 
 	private:
 };

@@ -33,7 +33,11 @@
 
 
 /* two strings to array of G-KeysID */
-typedef std::function<const GLogiK::GKeysIDArray_type(const std::string&, const std::string&) > SIGss2aG;
+typedef std::function<
+	const GLogiK::GKeysIDArray_type(
+		const std::string&,
+		const std::string&
+	) > SIGss2aG;
 
 
 namespace NSGKDBus

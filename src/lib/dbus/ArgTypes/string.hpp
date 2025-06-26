@@ -45,7 +45,10 @@ class TypeString
 		TypeString(void) = default;
 		~TypeString(void) = default;
 
-		void appendString(DBusMessageIter *iter, const std::string & value);
+		void appendString(
+			DBusMessageIter *iter,
+			const std::string & value
+		);
 
 	private:
 };

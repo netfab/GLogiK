@@ -33,7 +33,9 @@ void TypeGKDepsMap::appendGKDepsMap(const GLogiK::GKDepsMap_type & depsMap)
 	this->appendGKDepsMap(&_itMessage, depsMap);
 }
 
-void TypeGKDepsMap::appendGKDepsMap(DBusMessageIter *iter, const GLogiK::GKDepsMap_type & depsMap)
+void TypeGKDepsMap::appendGKDepsMap(
+	DBusMessageIter *iter,
+	const GLogiK::GKDepsMap_type & depsMap)
 {
 	GK_LOG_FUNC
 
@@ -62,7 +64,8 @@ void TypeGKDepsMap::appendGKDepsMap(DBusMessageIter *iter, const GLogiK::GKDepsM
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 	}
 
-	try {
+	try
+	{
 		for(const auto & x : depsMap)
 		{
 			const auto & bin = x.first;   // GLogiK::GKBinary
@@ -75,7 +78,8 @@ void TypeGKDepsMap::appendGKDepsMap(DBusMessageIter *iter, const GLogiK::GKDepsM
 			 *		For structs and dict entries, contained_signature should be NULL;
 			 */
 			/* opening array_1->struct_1 */
-			if( ! dbus_message_iter_open_container(&itArray_1, DBUS_TYPE_STRUCT, nullptr, &itStruct_1) )
+			if( ! dbus_message_iter_open_container(
+				&itArray_1, DBUS_TYPE_STRUCT, nullptr, &itStruct_1) )
 			{
 				LOG(error) << "first struct open_container failure, not enough memory";
 				throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
@@ -84,7 +88,8 @@ void TypeGKDepsMap::appendGKDepsMap(DBusMessageIter *iter, const GLogiK::GKDepsM
 			this->appendUInt8(&itStruct_1, toEnumType(bin));
 			this->appendUInt64(&itStruct_1, deps.size()); // vector size
 
-			try {
+			try
+			{
 				DBusMessageIter itArray_2;
 
 				// signature = (sss)
@@ -96,13 +101,15 @@ void TypeGKDepsMap::appendGKDepsMap(DBusMessageIter *iter, const GLogiK::GKDepsM
 					DBUS_STRUCT_END_CHAR_AS_STRING;
 
 				/* opening array_1->struct_1->array_2 */
-				if( ! dbus_message_iter_open_container(&itStruct_1, DBUS_TYPE_ARRAY, array_2_sig, &itArray_2) )
+				if( ! dbus_message_iter_open_container(
+					&itStruct_1, DBUS_TYPE_ARRAY, array_2_sig, &itArray_2) )
 				{
 					LOG(error) << "second array open_container failure, not enough memory";
 					throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 				}
 
-				try {
+				try
+				{
 					for(const auto & dep : deps) // iterating GLogiK::GKDepsArray_type vector
 					{
 						DBusMessageIter itStruct_2;
@@ -112,31 +119,36 @@ void TypeGKDepsMap::appendGKDepsMap(DBusMessageIter *iter, const GLogiK::GKDepsM
 						 *		For structs and dict entries, contained_signature should be NULL;
 						 */
 						/* opening array_1->struct_1->array_2->struct_2 */
-						if( ! dbus_message_iter_open_container(&itArray_2, DBUS_TYPE_STRUCT, nullptr, &itStruct_2) )
+						if( ! dbus_message_iter_open_container(
+							&itArray_2, DBUS_TYPE_STRUCT, nullptr, &itStruct_2) )
 						{
 							LOG(error) << "second struct open_container failure, not enough memory";
 							throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 						}
 
-						try {
+						try
+						{
 							this->appendString(&itStruct_2, dep.getDependency());
 							this->appendString(&itStruct_2, dep.getCompileTimeVersion());
 							this->appendString(&itStruct_2, dep.getRunTimeVersion());
 						}
-						catch (const GKDBusMessageWrongBuild & e) {
+						catch (const GKDBusMessageWrongBuild & e)
+						{
 							/* abandon array_1->struct_1->array_2->struct_2 */
 							dbus_message_iter_abandon_container(&itArray_2, &itStruct_2);
 							throw;
 						}
 
 						/* closing array_1->struct_1->array_2->struct_2 */
-						if( ! dbus_message_iter_close_container(&itArray_2, &itStruct_2) ) {
+						if( ! dbus_message_iter_close_container(&itArray_2, &itStruct_2) )
+						{
 							LOG(error) << "second struct close_container failure, not enough memory";
 							throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 						}
 					}
 				}
-				catch (const GKDBusMessageWrongBuild & e) {
+				catch (const GKDBusMessageWrongBuild & e)
+				{
 					/* abandon array_1->struct_1->array_2 */
 					dbus_message_iter_abandon_container(&itStruct_1, &itArray_2);
 					throw;
@@ -149,7 +161,8 @@ void TypeGKDepsMap::appendGKDepsMap(DBusMessageIter *iter, const GLogiK::GKDepsM
 					throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 				}
 			}
-			catch (const GKDBusMessageWrongBuild & e) {
+			catch (const GKDBusMessageWrongBuild & e)
+			{
 				/* abandon array_1->struct_1 */
 				dbus_message_iter_abandon_container(&itArray_1, &itStruct_1);
 				throw;
@@ -163,7 +176,8 @@ void TypeGKDepsMap::appendGKDepsMap(DBusMessageIter *iter, const GLogiK::GKDepsM
 			}
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		_hosedMessage = true;
 		/* abandon array_1 */
 		dbus_message_iter_abandon_container(iter, &itArray_1);
@@ -189,7 +203,8 @@ const GLogiK::GKBinary ArgGKBinary::getNextGKBinaryArgument(void)
 
 	GLogiK::GKBinary id = GLogiK::GKBinary::GK_INVALID; // invalid
 
-	try {
+	try
+	{
 		const uint8_t value = ArgUInt8::getNextByteArgument();
 
 		if(value > toEnumType(GLogiK::GKBinary::GK_GUI_QT))
@@ -200,7 +215,8 @@ const GLogiK::GKBinary ArgGKBinary::getNextGKBinaryArgument(void)
 		if(id == GLogiK::GKBinary::GK_INVALID)
 			throw GLogiKExcept("invalid GKBinary");
 	}
-	catch ( const EmptyContainer & e ) {
+	catch ( const EmptyContainer & e )
+	{
 		LOG(warning) << "missing argument : " << e.what();
 		throw GLogiKExcept("get GKBinary argument failed");
 	}
@@ -219,7 +235,8 @@ const GLogiK::GKDepsMap_type ArgGKDepsMap::getNextGKDepsMapArgument(void)
 
 	GLogiK::GKDepsMap_type depsMap;
 
-	try {
+	try
+	{
 		const uint64_t depsMapSize = ArgUInt64::getNextUInt64Argument();
 
 		uint64_t i = 0;
@@ -245,7 +262,8 @@ const GLogiK::GKDepsMap_type ArgGKDepsMap::getNextGKDepsMapArgument(void)
 			++i;
 		}
 	}
-	catch ( const EmptyContainer & e ) {
+	catch ( const EmptyContainer & e )
+	{
 		LOG(warning) << "missing argument : " << e.what();
 		throw GLogiKExcept("rebuilding GKDepsMap_type map failed");
 	}

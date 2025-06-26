@@ -79,7 +79,8 @@ template <typename T>
 		T c,
 		GKDBusEventType t,
 		const bool i
-	)		: GKDBusEvent(n, a, t, i), callback(c)
+	)		:	GKDBusEvent(n, a, t, i),
+				callback(c)
 {
 }
 

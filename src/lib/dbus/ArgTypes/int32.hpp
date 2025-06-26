@@ -42,7 +42,10 @@ class TypeInt32
 		TypeInt32(void) = default;
 		~TypeInt32(void) = default;
 
-		void appendInt32(DBusMessageIter *iter, const int32_t value);
+		void appendInt32(
+			DBusMessageIter *iter,
+			const int32_t value
+		);
 
 	private:
 };

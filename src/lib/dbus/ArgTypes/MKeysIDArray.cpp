@@ -43,15 +43,19 @@ void TypeMKeysIDArray::appendMKeysIDArray(const GLogiK::MKeysIDArray_type & keys
 	const uint8_t size = keysID.size();
 	this->appendUInt8(size);
 
-	if( ! dbus_message_iter_open_container(&_itMessage, DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &itContainer) ) {
+	if( ! dbus_message_iter_open_container(
+		&_itMessage, DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &itContainer) )
+	{
 		_hosedMessage = true;
 		LOG(error) << "GKeysID array open_container failure, not enough memory";
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 	}
 
-	for(const GLogiK::MKeysID keyID : keysID) {
+	for(const GLogiK::MKeysID keyID : keysID)
+	{
 		const uint8_t value = toEnumType(keyID);
-		if( ! dbus_message_iter_append_basic(&itContainer, DBUS_TYPE_BYTE, &value) ) {
+		if( ! dbus_message_iter_append_basic(&itContainer, DBUS_TYPE_BYTE, &value) )
+		{
 			LOG(error) << "MKeysID array append_basic failure, not enough memory";
 			_hosedMessage = true;
 			dbus_message_iter_abandon_container(&_itMessage, &itContainer);
@@ -59,7 +63,8 @@ void TypeMKeysIDArray::appendMKeysIDArray(const GLogiK::MKeysIDArray_type & keys
 		}
 	}
 
-	if( ! dbus_message_iter_close_container(&_itMessage, &itContainer) ) {
+	if( ! dbus_message_iter_close_container(&_itMessage, &itContainer) )
+	{
 		LOG(error) << "MKeysID array close_container failure, not enough memory";
 		_hosedMessage = true;
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
@@ -83,7 +88,8 @@ const GLogiK::MKeysIDArray_type ArgMKeysIDArray::getNextMKeysIDArrayArgument(voi
 	const std::string rebuild_failed("rebuilding MKeysIDArray failed");
 	GLogiK::MKeysIDArray_type ret;
 
-	try {
+	try
+	{
 		using Size = GLogiK::MKeysIDArray_type::size_type;
 
 		const Size size = ArgUInt8::getNextByteArgument();
@@ -91,20 +97,24 @@ const GLogiK::MKeysIDArray_type ArgMKeysIDArray::getNextMKeysIDArrayArgument(voi
 
 		ret.reserve(size);
 
-		while(i < size) {
+		while(i < size)
+		{
 			ret.push_back(ArgMKeysID::getNextMKeysIDArgument());
 			++i;
 		}
 	}
-	catch( const EmptyContainer & e ) {
+	catch( const EmptyContainer & e )
+	{
 		LOG(warning) << "missing MKeysID argument : " << e.what();
 		throw GLogiKExcept(rebuild_failed);
 	}
-	catch( const std::length_error & e ) {
+	catch( const std::length_error & e )
+	{
 		LOG(warning) << "reserve length_error failure : " << e.what();
 		throw GLogiKExcept(rebuild_failed);
 	}
-	catch( const std::bad_alloc & e ) {
+	catch( const std::bad_alloc & e )
+	{
 		LOG(warning) << "reserve bad_alloc failure : " << e.what();
 		throw GLogiKExcept(rebuild_failed);
 	}

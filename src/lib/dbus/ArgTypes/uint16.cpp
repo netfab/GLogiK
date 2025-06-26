@@ -35,11 +35,14 @@ void TypeUInt16::appendUInt16(const uint16_t value)
 	this->appendUInt16(&_itMessage, value);
 }
 
-void TypeUInt16::appendUInt16(DBusMessageIter *iter, const uint16_t value)
+void TypeUInt16::appendUInt16(
+	DBusMessageIter *iter,
+	const uint16_t value)
 {
 	GK_LOG_FUNC
 
-	if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_UINT16, &value) ) {
+	if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_UINT16, &value) )
+	{
 		_hosedMessage = true;
 		throw GKDBusMessageWrongBuild("uint16_t append failure, not enough memory");
 	}
@@ -49,7 +52,8 @@ void TypeUInt16::appendUInt16(DBusMessageIter *iter, const uint16_t value)
 #endif
 }
 
-const uint16_t ArgUInt16::getNextUInt16Argument(void) {
+const uint16_t ArgUInt16::getNextUInt16Argument(void)
+{
 	if( ArgBase::uint16Arguments.empty() )
 		throw EmptyContainer("missing argument : uint16");
 	const uint16_t ret = ArgBase::uint16Arguments.back();

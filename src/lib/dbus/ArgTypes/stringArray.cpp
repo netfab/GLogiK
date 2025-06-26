@@ -40,24 +40,28 @@ void TypeStringArray::appendStringArray(const std::vector<std::string> & stringA
 
 	DBusMessageIter itContainer;
 
-	if( ! dbus_message_iter_open_container(&_itMessage, DBUS_TYPE_ARRAY, DBUS_TYPE_STRING_AS_STRING, &itContainer) ) {
+	if( ! dbus_message_iter_open_container(
+		&_itMessage, DBUS_TYPE_ARRAY, DBUS_TYPE_STRING_AS_STRING, &itContainer) )
+	{
 		_hosedMessage = true;
 		LOG(error) << "string array open_container failure, not enough memory";
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 	}
 
-	try {
-		for (const std::string & s : stringArray) {
+	try
+	{
+		for (const std::string & s : stringArray)
 			this->appendString(&itContainer, s);
-		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		_hosedMessage = true;
 		dbus_message_iter_abandon_container(&_itMessage, &itContainer);
 		throw;
 	}
 
-	if( ! dbus_message_iter_close_container(&_itMessage, &itContainer) ) {
+	if( ! dbus_message_iter_close_container(&_itMessage, &itContainer) )
+	{
 		LOG(error) << "string array close_container failure, not enough memory";
 		_hosedMessage = true;
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
@@ -75,9 +79,11 @@ const std::vector<std::string> ArgStringArray::getNextStringArray(void)
 	const uint64_t size = ArgUInt64::getNextUInt64Argument();
 	std::vector<std::string> ret;
 
-	if(size > 0) {
+	if(size > 0)
+	{
 		auto & x = ArgBase::stringArguments;
-		if(x.size() < size) {
+		if(x.size() < size)
+		{
 			LOG(error) << "vector size: " << x.size() << " - wanted size: " << size;
 			throw GLogiKExcept("wrong string array size");
 		}

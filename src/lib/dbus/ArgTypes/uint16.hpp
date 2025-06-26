@@ -42,7 +42,10 @@ class TypeUInt16
 		TypeUInt16(void) = default;
 		~TypeUInt16(void) = default;
 
-		void appendUInt16(DBusMessageIter *iter, const uint16_t value);
+		void appendUInt16(
+			DBusMessageIter *iter,
+			const uint16_t value
+		);
 
 	private:
 };

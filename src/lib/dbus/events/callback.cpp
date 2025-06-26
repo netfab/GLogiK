@@ -38,7 +38,17 @@ void Callback<SIGs2s>::exposeMethod(
 		SIGs2s callback
 	)
 {
-	this->exposeEvent(bus, nullptr, objectPath, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_METHOD, true);
+	this->exposeEvent(
+		bus,
+		nullptr,
+		objectPath,
+		interface,
+		eventName,
+		args,
+		callback,
+		GKDBusEventType::GKDBUS_EVENT_METHOD,
+		true
+	);
 }
 
 void Callback<SIGs2s>::receiveSignal(
@@ -52,7 +62,17 @@ void Callback<SIGs2s>::receiveSignal(
 	)
 {
 	// signals declared as events with callback functions are not introspectable
-	this->exposeEvent(bus, sender, objectPath, interface, eventName, args, callback, GKDBusEventType::GKDBUS_EVENT_SIGNAL, false);
+	this->exposeEvent(
+		bus,
+		sender,
+		objectPath,
+		interface,
+		eventName,
+		args,
+		callback,
+		GKDBusEventType::GKDBUS_EVENT_SIGNAL,
+		false
+	);
 }
 */
 
@@ -65,14 +85,15 @@ void Callback<SIGs2s>::exposeEvent(
 		const std::vector<DBusMethodArgument> & args,
 		SIGs2s callback,
 		GKDBusEventType eventType,
-		const bool introspectable
-	)
+		const bool introspectable)
 {
 	GKDBusEvent* event = nullptr;
-	try {
+	try
+	{
 		event = new callbackEvent<SIGs2s>(eventName, args, callback, eventType, introspectable);
 	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
+	catch (const std::bad_alloc& e)
+	{ /* handle new() failure */
 		throw NSGKUtils::GLogiKBadAlloc("DBus event bad allocation");
 	}
 

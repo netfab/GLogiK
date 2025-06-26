@@ -40,11 +40,13 @@ template <>
 
 	// don't need arguments
 
-	try {
+	try
+	{
 		// call void to void callback
 		this->callback();
 	}
-	catch(const GLogiKExcept & e) {
+	catch(const GLogiKExcept & e)
+	{
 		LOG(error) << e.what();
 	}
 	// don't need to send a reply

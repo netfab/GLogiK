@@ -35,11 +35,14 @@ void TypeInt32::appendInt32(const int32_t value)
 	this->appendInt32(&_itMessage, value);
 }
 
-void TypeInt32::appendInt32(DBusMessageIter *iter, const int32_t value)
+void TypeInt32::appendInt32(
+	DBusMessageIter *iter,
+	const int32_t value)
 {
 	GK_LOG_FUNC
 
-	if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_INT32, &value) ) {
+	if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_INT32, &value) )
+	{
 		_hosedMessage = true;
 		throw GKDBusMessageWrongBuild("int32_t append failure, not enough memory");
 	}
@@ -49,7 +52,8 @@ void TypeInt32::appendInt32(DBusMessageIter *iter, const int32_t value)
 #endif
 }
 
-const int32_t ArgInt32::getNextInt32Argument(void) {
+const int32_t ArgInt32::getNextInt32Argument(void)
+{
 	if( ArgBase::int32Arguments.empty() )
 		throw EmptyContainer("missing argument : int32");
 	const int32_t ret = ArgBase::int32Arguments.back();

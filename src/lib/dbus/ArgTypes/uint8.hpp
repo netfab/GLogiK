@@ -42,7 +42,10 @@ class TypeUInt8
 		TypeUInt8(void) = default;
 		~TypeUInt8(void) = default;
 
-		void appendUInt8(DBusMessageIter *iter, const uint8_t value);
+		void appendUInt8(
+			DBusMessageIter *iter,
+			const uint8_t value
+		);
 
 	private:
 };
