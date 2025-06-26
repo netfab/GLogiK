@@ -108,7 +108,8 @@ void GKLogging::initConsoleLog(void)
 	consoleSink->set_formatter
 	(
 		expr::stream
-			<< std::hex << std::setw(8) << std::setfill('0') << line_id << std::dec << std::setfill(' ')
+			<< std::hex << std::setw(8) << std::setfill('0') << line_id
+			<< std::dec << std::setfill(' ')
 			<< " - " << severity << "\t - "
 			//<< "(" << scope << ") "
 			<< expr::if_(expr::has_attr(timeline)) [ expr::stream << "[" << timeline << "] " ]
@@ -145,9 +146,8 @@ void GKLogging::initDebugFile(const std::string & baseName, const fs::perms prms
 		debugFile = fs::unique_path(tmpPath);
 	}
 
-	if( fs::exists(debugFile) ) {
+	if( fs::exists(debugFile) )
 		throw GLogiKExcept("failed to create debug file : file exists");
-	}
 
 	fileSink->locked_backend()->add_stream(
 		boost::make_shared< std::ofstream >(debugFile.string()));
@@ -157,7 +157,8 @@ void GKLogging::initDebugFile(const std::string & baseName, const fs::perms prms
 	fileSink->set_formatter
 	(
 		expr::stream
-			<< std::hex << std::setw(8) << std::setfill('0') << line_id << std::dec << std::setfill(' ')
+			<< std::hex << std::setw(8) << std::setfill('0') << line_id
+			<< std::dec << std::setfill(' ')
 			<< " - " << thread_id
 			<< " - " << severity << "\t - "
 			<< "(" << scope << ") "
@@ -167,10 +168,12 @@ void GKLogging::initDebugFile(const std::string & baseName, const fs::perms prms
 
 	logging::core::get()->add_sink(fileSink);
 
-	if( prms != fs::no_perms ) {
+	if( prms != fs::no_perms )
+	{
 		boost::system::error_code ec;
 		fs::permissions(debugFile, prms, ec);
-		if( ec.value() != 0 ) {
+		if( ec.value() != 0 )
+		{
 			std::ostringstream buffer(std::ios_base::app);
 			buffer	<< "failed to set file permissions : " << debugFile.string()
 					<< " : " << ec.message();

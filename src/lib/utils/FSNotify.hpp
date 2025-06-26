@@ -36,14 +36,19 @@ namespace NSGKUtils
 
 // TODO see std::experimental::erase_if
 template< typename ContainerT, typename PredicateT >
-void erase_if( ContainerT& items, const PredicateT& predicate ) {
-	for( auto it = items.begin(); it != items.end(); ) {
-		if( predicate(*it) ) { it = items.erase(it); }
-		else { ++it; }
+void erase_if( ContainerT& items, const PredicateT& predicate )
+{
+	for( auto it = items.begin(); it != items.end(); )
+	{
+		if( predicate(*it) )
+			it = items.erase(it);
+		else
+			++it;
 	}
 }
 
-struct WatchedObject {
+struct WatchedObject
+{
 	public:
 		const int wd;
 		unsigned int count;
