@@ -27,6 +27,7 @@
 #include <string>
 #include <map>
 
+#include <QTimer>
 #include <QComboBox>
 #include <QMainWindow>
 #include <QWidget>
@@ -83,6 +84,7 @@ class MainWindow
 
 		NSGKDBus::GKDBus* _pDBus;
 
+		QTimer* _DBusTimer;
 		QComboBox* _devicesComboBox;
 		QTabWidget* _tabbedWidgets;
 

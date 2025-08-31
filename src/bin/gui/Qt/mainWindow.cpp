@@ -32,7 +32,6 @@
 #include <QtGlobal>
 #include <QString>
 #include <QStringList>
-#include <QTimer>
 #include <QtWidgets>
 #include <QFrame>
 #include <QVBoxLayout>
@@ -67,6 +66,7 @@ using namespace NSGKUtils;
 MainWindow::MainWindow(QWidget *parent)
 	:	QMainWindow(parent),
 		_pDBus(nullptr),
+		_DBusTimer(nullptr),
 		_devicesComboBox(nullptr),
 		_tabbedWidgets(nullptr),
 		_daemonAndServiceTab(nullptr),
@@ -268,10 +268,10 @@ void MainWindow::build(void)
 
 		/* -- -- -- */
 		/* initializing timer */
-		QTimer* timer = new QTimer(this);
+		_DBusTimer = new QTimer(this);
 
-		QObject::connect(timer, &QTimer::timeout, this, &MainWindow::checkDBusMessages);
-		timer->start(100);
+		QObject::connect(_DBusTimer, &QTimer::timeout, this, &MainWindow::checkDBusMessages);
+		_DBusTimer->start(100);
 
 		GKLog(trace, "Qt timer started")
 	}
@@ -381,6 +381,11 @@ void MainWindow::parseCommandLine(const int& argc, char *argv[])
 void MainWindow::aboutToQuit(void)
 {
 	GK_LOG_FUNC
+
+	GKLog(trace, "stopping and disconnecting DBus timer")
+
+	_DBusTimer->stop();
+	QObject::disconnect(_DBusTimer, nullptr, this, nullptr);
 
 	_pDBus->removeSignalsInterface(
 		_sessionBus,
@@ -845,7 +850,8 @@ void MainWindow::setCurrentTab(const std::string & name)
 
 void MainWindow::checkDBusMessages(void)
 {
-	_pDBus->checkForMessages();
+	if(_pDBus)
+		_pDBus->checkForMessages();
 }
 
 } // namespace GLogiK

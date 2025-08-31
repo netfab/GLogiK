@@ -2,10 +2,12 @@
 0.8.22 (202x-xx-xx)
 ===================
 - Raise boost libraries minimal version to 1.88.0
+     (boost::process::v2 migration)
 - Fix potential daemon crash when searching supported devices
-- Fix desktop service not beeing informed by the daemon of devices
+- Fix desktop service not being informed by the daemon of devices
   status changes on sleep/resume events
 - Fix potential memory leaks in desktop service
+- Fix Qt gui potential crash on exit because of unstopped timer
 
 0.8.20 (2025-03-31)
 ===================
