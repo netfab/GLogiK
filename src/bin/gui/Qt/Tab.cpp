@@ -115,7 +115,6 @@ void Tab::clearLayout(QLayout* parentLayout)
 			itemName += widget->objectName().toStdString();
 			GKLog2(trace, "deleting ", itemName)
 
-			widget->disconnect();
 			delete widget; widget = nullptr;
 		}
 
