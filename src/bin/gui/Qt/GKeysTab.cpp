@@ -336,7 +336,10 @@ void GKeysTab::clearInputsBoxHeaderLayout(void)
 		GKLog(trace, "disconnecting GKeyEventTypeComboBox ::currentIndexChanged signal")
 		// make sure combobox's currentIndexChanged signal is disconnected
 		// before clearing layout and deleting widget
-		QObject::disconnect(_GKeyEventTypeComboBox, nullptr, nullptr, nullptr);
+		QObject::disconnect(
+			_GKeyEventTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+			nullptr, nullptr
+		);
 	}
 
 	this->clearLayout(_pInputsBoxHeaderLayout);
@@ -351,7 +354,7 @@ void GKeysTab::clearInputsBoxBodyLayout(void)
 	if(_pCommandLineEdit)
 	{
 		GKLog(trace, "disconnecting pQLineEdit ::textChanged signal")
-		QObject::disconnect(_pCommandLineEdit, nullptr, nullptr, nullptr);
+		QObject::disconnect(_pCommandLineEdit, &QLineEdit::textChanged, nullptr, nullptr);
 	}
 
 	this->clearLayout(_pInputsBoxBodyLayout);
@@ -371,7 +374,7 @@ void GKeysTab::clearKeysBoxLayout(void)
 				trace, "disconnecting ::clicked signal for button: ",
 				button->objectName().toStdString()
 			)
-			QObject::disconnect(button, nullptr, nullptr, nullptr);
+			QObject::disconnect(button, &QPushButton::clicked, nullptr, nullptr);
 		}
 	}
 	_buttonsSignalsToClear.clear();
