@@ -1,5 +1,5 @@
 
-0.8.22 (202x-xx-xx)
+0.8.22 (2025-12-09)
 ===================
 - Raise boost libraries minimal version to 1.88.0
      (boost::process::v2 migration)
