@@ -50,7 +50,8 @@ void BacklightColorTab::buildTab(void)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		QVBoxLayout* vBox = new QVBoxLayout(this);
 		GKLog(trace, "allocated QVBoxLayout")
 
@@ -114,9 +115,13 @@ void BacklightColorTab::buildTab(void)
 		vBox->addWidget( this->getHLine() );
 		/* -- -- -- */
 
-		QObject::connect(_colorDialog, &QColorDialog::currentColorChanged, this, &BacklightColorTab::setNewColorLabel);
+		QObject::connect(
+			_colorDialog, &QColorDialog::currentColorChanged,
+			this, &BacklightColorTab::setNewColorLabel
+		);
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
 		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}

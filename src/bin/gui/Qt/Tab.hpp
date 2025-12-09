@@ -52,7 +52,10 @@ class Tab
 		Tab() = delete;
 
 		virtual void buildTab(void) = 0;
-		virtual void updateTab(const DeviceProperties & device, const std::string & devID) = 0;
+		virtual void updateTab(
+			const DeviceProperties & device,
+			const std::string & devID
+		) = 0;
 
 		QFrame* getHLine(void);
 		QFrame* getVLine(void);

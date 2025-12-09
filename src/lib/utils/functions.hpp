@@ -49,15 +49,22 @@ constexpr unsigned int toUInt(const uint8_t c) noexcept
 }
 
 const unsigned int toUInt(const std::string & s);
-const unsigned short toUShort(const std::string & s, int base = 10);
+const unsigned short toUShort(
+	const std::string & s,
+	int base = 10
+);
 
-const unsigned long toUL(const std::string & s, int base = 10);
+const unsigned long toUL(
+	const std::string & s,
+	int base = 10
+);
 const unsigned long long toULL(const std::string & s);
 
 const std::string getHexRGB(
 	const uint8_t red,
 	const uint8_t green,
-	const uint8_t blue);
+	const uint8_t blue
+);
 
 void yield_for(std::chrono::microseconds us);
 

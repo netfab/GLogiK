@@ -88,14 +88,14 @@ class ClientsManager
 		const bool unregisterClient(
 			const std::string & clientID
 		);
+		const bool setClientReady(
+			const std::string & clientID
+		);
 		const bool updateClientState(
 			const std::string & clientID,
 			const std::string & state
 		);
 
-		const bool toggleClientReadyPropertie(
-			const std::string & clientID
-		);
 		const bool deleteDeviceConfiguration(
 			const std::string & clientID,
 			const std::string & devID

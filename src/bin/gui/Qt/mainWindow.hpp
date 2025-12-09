@@ -27,6 +27,7 @@
 #include <string>
 #include <map>
 
+#include <QTimer>
 #include <QComboBox>
 #include <QMainWindow>
 #include <QWidget>
@@ -83,6 +84,7 @@ class MainWindow
 
 		NSGKDBus::GKDBus* _pDBus;
 
+		QTimer* _DBusTimer;
 		QComboBox* _devicesComboBox;
 		QTabWidget* _tabbedWidgets;
 
@@ -107,7 +109,10 @@ class MainWindow
 
 		void parseCommandLine(const int& argc, char *argv[]);
 
-		void setTabEnabled(const std::string & name, const bool status);
+		void setTabEnabled(
+			const std::string & name,
+			const bool status
+		);
 		void setCurrentTab(const std::string & name);
 
 		void getExecutablesDependenciesMap(void);

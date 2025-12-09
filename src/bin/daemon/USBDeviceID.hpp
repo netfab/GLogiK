@@ -33,36 +33,96 @@ namespace GLogiK
 class USBDeviceID
 {
 	public:
-		const std::string & getVendor(void) const { return _vendor; }
-		const std::string & getProduct(void) const { return _product; }
-		const std::string & getName(void) const { return _name; }
-		const std::string & getFullName(void) const { return _fullname; };
-		const std::string & getVendorID(void) const { return _vendorID; }
-		const std::string & getProductID(void) const { return _productID; }
-		const std::string & getDevnode(void) const { return _devnode; }
-		const std::string & getDevpath(void) const { return _devpath; }
-		const std::string & getUSec(void) const { return _usec; }
+		const std::string & getVendor(void) const
+		{
+			return _vendor;
+		}
+		const std::string & getProduct(void) const
+		{
+			return _product;
+		}
+		const std::string & getName(void) const
+		{
+			return _name;
+		}
+		const std::string & getFullName(void) const
+		{
+			return _fullname;
+		};
+		const std::string & getVendorID(void) const
+		{
+			return _vendorID;
+		}
+		const std::string & getProductID(void) const
+		{
+			return _productID;
+		}
+		const std::string & getDevnode(void) const
+		{
+			return _devnode;
+		}
+		const std::string & getDevpath(void) const
+		{
+			return _devpath;
+		}
+		const std::string & getUSec(void) const
+		{
+			return _usec;
+		}
 
-		const uint64_t getCapabilities(void) const { return _capabilities; }
+		const uint64_t getCapabilities(void) const
+		{
+			return _capabilities;
+		}
 
-		const uint16_t getDriverID(void) const { return _driverID; }
+		const uint16_t getDriverID(void) const
+		{
+			return _driverID;
+		}
 
-		const uint8_t getBus(void) const { return _bus; }
-		const uint8_t getNum(void) const { return _num; }
+		const uint8_t getBus(void) const
+		{
+			return _bus;
+		}
+		const uint8_t getNum(void) const
+		{
+			return _num;
+		}
 
-		const uint8_t getBConfigurationValue(void) const { return _bConfigurationValue; }
-		const uint8_t getBInterfaceNumber(void) const { return _bInterfaceNumber; }
-		const uint8_t getBAlternateSetting(void) const { return _bAlternateSetting; }
-		const uint8_t getBNumEndpoints(void) const { return _bNumEndpoints; }
+		const uint8_t getBConfigurationValue(void) const
+		{
+			return _bConfigurationValue;
+		}
+		const uint8_t getBInterfaceNumber(void) const
+		{
+			return _bInterfaceNumber;
+		}
+		const uint8_t getBAlternateSetting(void) const
+		{
+			return _bAlternateSetting;
+		}
+		const uint8_t getBNumEndpoints(void) const
+		{
+			return _bNumEndpoints;
+		}
 
 		const int8_t getKeysInterruptBufferMaxLength(void) const
 		{
 			return _keysInterruptBufferMaxLength;
 		};
 
-		const int8_t getGKeysTransferLength(void) const { return _GKeysTransferLength; }
-		const int8_t getMediaKeysTransferLength(void) const { return _MediaKeysTransferLength; }
-		const int8_t getLCDKeysTransferLength(void) const { return _LCDKeysTransferLength; }
+		const int8_t getGKeysTransferLength(void) const
+		{
+			return _GKeysTransferLength;
+		}
+		const int8_t getMediaKeysTransferLength(void) const
+		{
+			return _MediaKeysTransferLength;
+		}
+		const int8_t getLCDKeysTransferLength(void) const
+		{
+			return _LCDKeysTransferLength;
+		}
 
 		static const std::string getDeviceID(const uint8_t bus, const uint8_t num)
 		{

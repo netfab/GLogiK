@@ -41,10 +41,15 @@ class GKeysMacro
 		void checkMacro(macro_type & macro);
 
 	private:
-		struct MacroEvent {
+		struct MacroEvent
+		{
 			public:
-				MacroEvent(const GLogiK::KeyEvent & k, const unsigned int i)
-					:	key(k), index(i) {}
+				MacroEvent(
+					const GLogiK::KeyEvent & k,
+					const unsigned int i)
+						:	key(k), index(i)
+				{
+				}
 
 				GLogiK::KeyEvent key;
 				unsigned int index;

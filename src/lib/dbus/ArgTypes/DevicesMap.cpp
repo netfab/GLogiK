@@ -47,14 +47,16 @@ const GLogiK::DevicesMap_type ArgDevicesMap::getNextDevicesMapArgument(void)
 
 	Size s = stringArray.size();
 	GKLog2(trace, "DeviceID stringArray size : ", s)
-	if( (s % (DEVICE_ID_NUM_PROPERTIES + 1)) != 0 ) {
+	if( (s % (DEVICE_ID_NUM_PROPERTIES + 1)) != 0 )
+	{
 		LOG(error) << "vector size: " << s
 			<< " - wanted modulo: " << (DEVICE_ID_NUM_PROPERTIES + 1);
 		throw GLogiKExcept("wrong string array size");
 	}
 
 	Size i = 0;
-	while(i < s) {
+	while(i < s)
+	{
 		/* see DevicesHandler::getDevicesList() in service */
 		auto & devID	= stringArray[0 + i];
 		auto & status	= stringArray[1 + i];

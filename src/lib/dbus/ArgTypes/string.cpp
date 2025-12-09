@@ -33,7 +33,9 @@ void TypeString::appendString(const std::string & value)
 	this->appendString(&_itMessage, value);
 }
 
-void TypeString::appendString(DBusMessageIter *iter, const std::string & value)
+void TypeString::appendString(
+	DBusMessageIter *iter,
+	const std::string & value)
 {
 	GK_LOG_FUNC
 
@@ -41,9 +43,11 @@ void TypeString::appendString(DBusMessageIter *iter, const std::string & value)
 	GKLog(trace, "appending string")
 #endif
 
-	if( ! value.empty() ) {
+	if( ! value.empty() )
+	{
 		const char* p = value.c_str();
-		if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &p) ) {
+		if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &p) )
+		{
 			_hosedMessage = true;
 			LOG(error) << "string append_basic failure, not enough memory";
 			throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
@@ -52,7 +56,8 @@ void TypeString::appendString(DBusMessageIter *iter, const std::string & value)
 		GKLog(trace, "string appended")
 #endif
 	}
-	else {
+	else
+	{
 		/* ability to send empty strings,
 		 * see ArgBase::decodeArgumentFromIterator()
 		 * in ArgTypes/ArgBase.cpp */
@@ -76,7 +81,8 @@ const std::string & ArgString::getNextStringArgument(void)
 	 * in ArgTypes/ArgBase.cpp */
 	const uint64_t size = ArgUInt64::getNextUInt64Argument();
 
-	if( size != 0 ) {
+	if( size != 0 )
+	{
 		if( ArgBase::stringArguments.empty() )
 			throw EmptyContainer("missing argument : string");
 
@@ -84,8 +90,11 @@ const std::string & ArgString::getNextStringArgument(void)
 		ArgBase::stringArguments.pop_back();
 
 		auto s = ArgString::currentString.size();
-		if( s != size ) {
-			LOG(warning) << "current string: " << ArgString::currentString << " - size: " << s << " - expected: " << size;
+		if( s != size )
+		{
+			LOG(warning)
+				<< "current string: " << ArgString::currentString
+				<< " - size: " << s << " - expected: " << size;
 		}
 	}
 

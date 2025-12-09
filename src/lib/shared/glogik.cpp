@@ -88,7 +88,8 @@ c_str MUTE_MICRO	= "";
 
 /* --- ---- --- */
 
-const std::map<Keys, c_str> keysNamesMap = {
+const std::map<Keys, c_str> keysNamesMap =
+{
 	{ Keys::GK_KEY_M1, M_KEY_M1 },
 	{ Keys::GK_KEY_M2, M_KEY_M2 },
 	{ Keys::GK_KEY_M3, M_KEY_M3 },
@@ -132,7 +133,8 @@ const std::map<Keys, c_str> keysNamesMap = {
 	{ Keys::GK_KEY_MUTE_MICRO, 	MUTE_MICRO },
 };
 
-const std::map<GKeysID, c_str> GKeysNamesMap = {
+const std::map<GKeysID, c_str> GKeysNamesMap =
+{
 	{ GKeysID::GKEY_G1, G_KEY_G1 },
 	{ GKeysID::GKEY_G2, G_KEY_G2 },
 	{ GKeysID::GKEY_G3, G_KEY_G3 },
@@ -153,13 +155,15 @@ const std::map<GKeysID, c_str> GKeysNamesMap = {
 	{ GKeysID::GKEY_G18, G_KEY_G18 },
 };
 
-const std::map<Keys, MKeysID> keys2MKeysIDMap = {
+const std::map<Keys, MKeysID> keys2MKeysIDMap =
+{
 	{ Keys::GK_KEY_M1, MKeysID::MKEY_M1 },
 	{ Keys::GK_KEY_M2, MKeysID::MKEY_M2 },
 	{ Keys::GK_KEY_M3, MKeysID::MKEY_M3 },
 };
 
-const std::map<Keys, GKeysID> keys2GKeysIDMap = {
+const std::map<Keys, GKeysID> keys2GKeysIDMap =
+{
 	{ Keys::GK_KEY_G1, GKeysID::GKEY_G1 },
 	{ Keys::GK_KEY_G2, GKeysID::GKEY_G2 },
 	{ Keys::GK_KEY_G3, GKeysID::GKEY_G3 },
@@ -185,10 +189,12 @@ const std::string getKeyName(const Keys key)
 	using namespace NSGKUtils;
 
 	std::string ret("");
-	try {
+	try
+	{
 		ret = keysNamesMap.at(key);
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		LOG(error) << "invalid key: " << toEnumType(key);
 	}
 
@@ -200,10 +206,12 @@ const std::string getGKeyName(const GKeysID keyID)
 	using namespace NSGKUtils;
 
 	std::string GKey("G0");
-	try {
+	try
+	{
 		GKey = GKeysNamesMap.at(keyID);
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		LOG(error) << "invalid GKeysID: " << toEnumType(keyID);
 	}
 	return GKey;
@@ -219,7 +227,9 @@ const GKeysID getGKeyID(const Keys key)
 	return keys2GKeysIDMap.at(key);
 }
 
-void printVersionDeps(const std::string & binaryVersion, const GKDepsMap_type & dependencies)
+void printVersionDeps(
+	const std::string & binaryVersion,
+	const GKDepsMap_type & dependencies)
 {
 	using namespace NSGKUtils;
 
@@ -232,8 +242,10 @@ void printVersionDeps(const std::string & binaryVersion, const GKDepsMap_type & 
 			<< std::setfill('-') << std::setw(38) << "-" << "\n"
 			<< std::setfill(' ');
 
-	for(const auto & x : dependencies) {
-		for(const auto & v : x.second) {
+	for(const auto & x : dependencies)
+	{
+		for(const auto & v : x.second)
+		{
 			buffer
 				<< std::setw(12) << v.getDependency()
 				<< std::setw(2) << "|" << std::setw(14) << v.getCompileTimeVersion()
@@ -296,5 +308,51 @@ c_str LOGIND_SESSION_DBUS_INTERFACE									= "org.freedesktop.login1.Session";
 /* freedesktop standard interfaces */
 c_str FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE				= "org.freedesktop.DBus.Properties";
 
-} // namespace GLogiK
 
+/* daemon ClientsManager D-Bus object methods */
+c_str GK_DBUS_DAEMON_METHOD_REGISTER_CLIENT					= "RegisterClient";
+c_str GK_DBUS_DAEMON_METHOD_UNREGISTER_CLIENT				= "UnregisterClient";
+c_str GK_DBUS_DAEMON_METHOD_UPDATE_CLIENT_STATE				= "UpdateClientState";
+c_str GK_DBUS_DAEMON_METHOD_SET_CLIENT_READY				= "SetClientReady";
+c_str GK_DBUS_DAEMON_METHOD_DELETE_DEVICE_CONFIGURATION		= "DeleteDeviceConfiguration";
+c_str GK_DBUS_DAEMON_METHOD_GET_DAEMON_DEPENDENCIES_MAP		= "GetDaemonDependenciesMap";
+
+/* daemon DevicesManager D-Bus object methods */
+c_str GK_DBUS_DAEMON_METHOD_STOP_DEVICE							= "StopDevice";
+c_str GK_DBUS_DAEMON_METHOD_START_DEVICE						= "StartDevice";
+c_str GK_DBUS_DAEMON_METHOD_RESTART_DEVICE						= "RestartDevice";
+c_str GK_DBUS_DAEMON_METHOD_GET_STARTED_DEVICES					= "GetStartedDevices";
+c_str GK_DBUS_DAEMON_METHOD_GET_STOPPED_DEVICES					= "GetStoppedDevices";
+c_str GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS					= "GetDeviceStatus";
+c_str GK_DBUS_DAEMON_METHOD_GET_DEVICE_PROPERTIES				= "GetDeviceProperties";
+c_str GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES	= "GetDeviceLCDPluginsProperties";
+c_str GK_DBUS_DAEMON_METHOD_GET_DEVICE_GKEYSID_ARRAY			= "GetDeviceGKeysIDArray";
+c_str GK_DBUS_DAEMON_METHOD_GET_DEVICE_MKEYSID_ARRAY			= "GetDeviceMKeysIDArray";
+c_str GK_DBUS_DAEMON_METHOD_SET_DEVICE_BACKLIGHT_COLOR			= "SetDeviceBacklightColor";
+c_str GK_DBUS_DAEMON_METHOD_SET_DEVICE_LCD_PLUGINS_MASK			= "SetDeviceLCDPluginsMask";
+
+/* service SessionMessageHandler D-Bus object methods */
+c_str GK_DBUS_SERVICE_METHOD_GET_DEVICES_LIST					= "GetDevicesList";
+c_str GK_DBUS_SERVICE_METHOD_GET_INFORMATIONS					= "GetInformations";
+c_str GK_DBUS_SERVICE_METHOD_GET_EXECUTABLES_DEPENDENCIES_MAP	= "GetExecutablesDependenciesMap";
+
+/* D-Bus signals potentially sent to the desktop service */
+c_str GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING					= "DaemonIsStopping";
+c_str GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STARTING					= "DaemonIsStarting";
+c_str GK_DBUS_SERVICE_SIGNAL_REPORT_YOURSELF					= "ReportYourself";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED					= "DevicesStarted";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED					= "DevicesStopped";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICES_UNPLUGGED					= "DevicesUnplugged";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH				= "DeviceMBankSwitch";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_RECORDED				= "DeviceMacroRecorded";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_CLEARED				= "DeviceMacroCleared";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICE_GKEY_EVENT					= "DeviceGKeyEvent";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICE_MEDIA_EVENT					= "DeviceMediaEvent";
+c_str GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST		= "DeviceStatusChangeRequest";
+
+c_str GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST				= "ServiceStartRequest";
+
+c_str GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED						= "DevicesUpdated";
+c_str GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED				= "DeviceConfigurationSaved";
+
+} // namespace GLogiK

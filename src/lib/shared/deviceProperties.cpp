@@ -41,13 +41,20 @@ BacklightCapability::~BacklightCapability(void)
 {
 }
 
-void BacklightCapability::setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b) {
+void BacklightCapability::setRGBBytes(
+	const uint8_t r,
+	const uint8_t g,
+	const uint8_t b)
+{
 	_red	= r & 0xFF;
 	_green	= g & 0xFF;
 	_blue	= b & 0xFF;
 }
 
-void BacklightCapability::getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const
+void BacklightCapability::getRGBBytes(
+	uint8_t & r,
+	uint8_t & g,
+	uint8_t & b) const
 {
 	r = _red;
 	g = _green;
@@ -101,7 +108,8 @@ clientDevice::clientDevice()
 {
 }
 
-clientDevice::~clientDevice() {
+clientDevice::~clientDevice()
+{
 }
 
 /* -- -- -- */
@@ -120,7 +128,8 @@ void clientDevice::setProperties(
 
 /* -- -- -- */
 
-const uint64_t clientDevice::getCapabilities(void) const {
+const uint64_t clientDevice::getCapabilities(void) const
+{
 	return _capabilities;
 }
 
@@ -131,14 +140,17 @@ DeviceProperties::DeviceProperties(void)
 {
 }
 
-DeviceProperties::~DeviceProperties(void) {
+DeviceProperties::~DeviceProperties(void)
+{
 }
 
-const int DeviceProperties::getWatchDescriptor(void) const {
+const int DeviceProperties::getWatchDescriptor(void) const
+{
 	return _watchedDescriptor;
 }
 
-void DeviceProperties::setWatchDescriptor(int wd) {
+void DeviceProperties::setWatchDescriptor(int wd)
+{
 	_watchedDescriptor = wd;
 }
 
@@ -149,7 +161,8 @@ void DeviceProperties::setProperties(const DeviceProperties & dev)
 	_GKeysBanks			= dev._GKeysBanks;
 	_LCDPluginsMask1	= dev.getLCDPluginsMask1();
 
-	if( _LCDPluginsMask1 == 0 ) {
+	if( _LCDPluginsMask1 == 0 )
+	{
 		/* default enabled plugins */
 		_LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN);
 		_LCDPluginsMask1 |= toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);

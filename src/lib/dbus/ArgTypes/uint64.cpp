@@ -35,11 +35,14 @@ void TypeUInt64::appendUInt64(const uint64_t value)
 	this->appendUInt64(&_itMessage, value);
 }
 
-void TypeUInt64::appendUInt64(DBusMessageIter *iter, const uint64_t value)
+void TypeUInt64::appendUInt64(
+	DBusMessageIter *iter,
+	const uint64_t value)
 {
 	GK_LOG_FUNC
 
-	if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_UINT64, &value) ) {
+	if( ! dbus_message_iter_append_basic(iter, DBUS_TYPE_UINT64, &value) )
+	{
 		_hosedMessage = true;
 		throw GKDBusMessageWrongBuild("uint64_t append failure, not enough memory");
 	}
@@ -49,7 +52,8 @@ void TypeUInt64::appendUInt64(DBusMessageIter *iter, const uint64_t value)
 #endif
 }
 
-const uint64_t ArgUInt64::getNextUInt64Argument(void) {
+const uint64_t ArgUInt64::getNextUInt64Argument(void)
+{
 	if( ArgBase::uint64Arguments.empty() )
 		throw EmptyContainer("missing argument : uint64");
 	const uint64_t ret = ArgBase::uint64Arguments.back();

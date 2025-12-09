@@ -42,8 +42,16 @@ namespace GLogiK
 class BacklightCapability
 {
 	public:
-		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
-		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
+		void setRGBBytes(
+			const uint8_t r,
+			const uint8_t g,
+			const uint8_t b
+		);
+		void getRGBBytes(
+			uint8_t & r,
+			uint8_t & g,
+			uint8_t & b
+		) const;
 
 	protected:
 		BacklightCapability(void);
@@ -57,7 +65,9 @@ class BacklightCapability
 		friend class boost::serialization::access;
 
 		template<class Archive>
-			void serialize(Archive & ar, const unsigned int version)
+		void serialize(
+			Archive & ar,
+			const unsigned int version)
 		{
 			//if(version > 0)
 			ar & _red;
@@ -93,7 +103,9 @@ class LCDScreenCapability
 		friend class boost::serialization::access;
 
 		template<class Archive>
-			void serialize(Archive & ar, const unsigned int version)
+		void serialize(
+			Archive & ar,
+			const unsigned int version)
 		{
 			ar & _LCDPluginsMask1;
 		}
@@ -125,7 +137,9 @@ class clientDevice
 		friend class boost::serialization::access;
 
 		template<class Archive>
-			void serialize(Archive & ar, const unsigned int version)
+		void serialize(
+			Archive & ar,
+			const unsigned int version)
 		{
 			//if(version > 0)
 			ar & boost::serialization::base_object<DeviceID>(*this);
@@ -163,7 +177,9 @@ class DeviceProperties
 		friend class boost::serialization::access;
 
 		template<class Archive>
-			void serialize(Archive & ar, const unsigned int version)
+		void serialize(
+			Archive & ar,
+			const unsigned int version)
 		{
 			//if(version > 0)
 			ar & boost::serialization::base_object<clientDevice>(*this);

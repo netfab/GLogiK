@@ -42,7 +42,10 @@ class GKDBusReply
 	:	public GKDBusMessage
 {
 	public:
-		GKDBusReply(DBusConnection* const connection, DBusMessage* message);
+		GKDBusReply(
+			DBusConnection* const connection,
+			DBusMessage* message
+		);
 		~GKDBusReply();
 
 	protected:
@@ -61,7 +64,10 @@ class GKDBusMessageReply
 		GKDBusMessageReply();
 		~GKDBusMessageReply();
 
-		void initializeReply(DBusConnection* const connection, DBusMessage* message);
+		void initializeReply(
+			DBusConnection* const connection,
+			DBusMessage* message
+		);
 
 		void appendBooleanToReply(const bool value);
 		void appendStringToReply(const std::string & value);

@@ -117,7 +117,8 @@ class GKDBusEvents
 		thread_local static BusConnection currentBus;
 
 	private:
-		const char* const _FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE = "org.freedesktop.DBus.Introspectable";
+		const char* const _FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE =
+			"org.freedesktop.DBus.Introspectable";
 		virtual DBusConnection* const getDBusConnection(BusConnection wantedConnection) const = 0;
 
 		void openXMLInterface(
@@ -125,9 +126,17 @@ class GKDBusEvents
 			bool & interfaceOpened,
 			const std::string & interface
 		);
+		void closeXMLInterface(
+			std::ostringstream & xml,
+			bool & interfaceOpened
+		);
 		void eventToXMLMethod(
 			std::ostringstream & xml,
 			const GKDBusEvent* DBusEvent
+		);
+		void signalToXMLSignal(
+			std::ostringstream & xml,
+			const GKDBusIntrospectableSignal & signal
 		);
 		const std::string getObjectFromObjectPath(const std::string & objectPath);
 		const std::string introspect(const std::string & askedObjectPath);

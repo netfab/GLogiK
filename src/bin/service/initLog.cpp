@@ -40,18 +40,21 @@ InitLog::InitLog(const int& argc, char *argv[])
 	openlog(GLOGIKS_DESKTOP_SERVICE_NAME, LOG_PID|LOG_CONS, LOG_USER);
 
 	// initialize logging
-	try {
+	try
+	{
 		/* boost::po may throw */
 		this->parseCommandLine(argc, argv);
 
 #if DEBUGGING_ON
-		if(GKLogging::GKDebug) {
+		if(GKLogging::GKDebug)
+		{
 			GKLogging::initDebugFile(GLOGIKS_DESKTOP_SERVICE_NAME, fs::owner_read|fs::owner_write|fs::group_read);
 		}
 #endif
 		GKLogging::initConsoleLog();
 	}
-	catch (const std::exception & e) {
+	catch (const std::exception & e)
+	{
 		syslog(LOG_ERR, "%s", e.what());
 		throw InitFailure();
 	}
@@ -89,9 +92,8 @@ void InitLog::parseCommandLine(const int& argc, char *argv[])
 	po::notify(_vm);
 
 #if DEBUGGING_ON
-		if( this->getBooleanOption("debug") ) {
+		if( this->getBooleanOption("debug") )
 			GKLogging::GKDebug = true;
-		}
 #endif
 }
 

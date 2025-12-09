@@ -1,4 +1,14 @@
 
+0.8.22 (2025-12-09)
+===================
+- Raise boost libraries minimal version to 1.88.0
+     (boost::process::v2 migration)
+- Fix potential daemon crash when searching supported devices
+- Fix desktop service not being informed by the daemon of devices
+  status changes on sleep/resume events
+- Fix potential memory leaks in desktop service
+- Fix Qt gui potential crash on exit because of unstopped timer
+
 0.8.20 (2025-03-31)
 ===================
 - Added Qt6 support, a C++17 compatible compiler is now required
@@ -6,6 +16,7 @@
 - Improved process initialization when forking
 - Implemented suspend/hibernate handling in the daemon. Started devices
   are stopped before any sleep state, then restarted after resume
+- Usual internal cleanings and improvements
 
 0.8.18 (2023-12-11)
 ===================

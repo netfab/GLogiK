@@ -2,7 +2,7 @@
  *
  *	This file is part of GLogiK project.
  *	GLogiK, daemon to handle special features on gaming keyboards
- *	Copyright (C) 2016-2024  Fabrice Delliaux <netbox253@gmail.com>
+ *	Copyright (C) 2016-2025  Fabrice Delliaux <netbox253@gmail.com>
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -86,9 +86,7 @@ class DevicesManager
 		const std::string & getDeviceProduct(const std::string & devID) const;
 		const std::string & getDeviceName(const std::string & devID) const;
 		const uint64_t getDeviceCapabilities(const std::string & devID) const;
-		const LCDPPArray_type & getDeviceLCDPluginsProperties(
-			const std::string & devID
-		) const;
+		const LCDPPArray_type & getDeviceLCDPluginsProperties(const std::string & devID) const;
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,
@@ -105,10 +103,12 @@ class DevicesManager
 	protected:
 
 	private:
-		std::map<std::string, USBDeviceID> _detectedDevices;
-		std::map<std::string, USBDeviceID> _startedDevices;
-		std::map<std::string, USBDeviceID> _stoppedDevices;
-		std::map<std::string, USBDeviceID> _unpluggedDevices;
+		typedef std::map<std::string, USBDeviceID> USBDeviceIDContainer_type;
+
+		USBDeviceIDContainer_type _startedDevices;
+		USBDeviceIDContainer_type _stoppedDevices;
+		USBDeviceIDContainer_type _unpluggedDevices;
+
 		std::vector<std::string> _sleepingDevices;
 		std::vector<KeyboardDriver*> _drivers;
 		const std::string _unknown;
@@ -118,11 +118,17 @@ class DevicesManager
 		uint8_t _numClients;
 #endif
 
-		void searchSupportedDevices(struct udev * pUdev);
-		void initializeDevices(const bool openDevices) noexcept;
-		void checkInitializedDevicesThreadsStatus(void) noexcept;
+		void searchSupportedDevices(
+			USBDeviceIDContainer_type & detectedDevices,
+			struct udev * pUdev
+		);
+		void initializeDevices(
+			const USBDeviceIDContainer_type & detectedDevices,
+			const bool openDevices
+		) noexcept;
+		void checkForUnpluggedDevices(const USBDeviceIDContainer_type & detectedDevices) noexcept;
 
-		void checkForUnpluggedDevices(void) noexcept;
+		void checkInitializedDevicesThreadsStatus(void) noexcept;
 };
 
 } // namespace GLogiK

@@ -90,7 +90,8 @@ int DesktopService::run(void)
 
 	/* -- -- -- */
 
-	if(_version) {
+	if(_version)
+	{
 		printVersionDeps(binaryVersion, dependencies);
 		return EXIT_SUCCESS;
 	}
@@ -111,8 +112,14 @@ int DesktopService::run(void)
 
 		DBus.init();
 
-		DBus.connectToSystemBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
-		DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME);
+		DBus.connectToSystemBus(
+			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+			NSGKDBus::ConnectionFlag::GKDBUS_MULTIPLE
+		);
+		DBus.connectToSessionBus(
+			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+			NSGKDBus::ConnectionFlag::GKDBUS_MULTIPLE
+		);
 
 		struct pollfd fds[2];
 		nfds_t nfds = 2;
@@ -123,35 +130,46 @@ int DesktopService::run(void)
 		fds[1].fd = GKfs.getNotifyQueueDescriptor();
 		fds[1].events = POLLIN;
 
-		DBusHandler handler(_pid, &GKfs, &dependencies);
-
-		while( session.isSessionAlive() and
-				handler.getExitStatus() )
+		try
 		{
-			int num = poll(fds, nfds, 150);
+			{
+				/* DBusHandler constructor can potentially throw GLogiKExcept */
+				DBusHandler handler(_pid, &GKfs, &dependencies);
 
-			// data to read ?
-			if( num > 0 ) {
-				if( fds[0].revents & POLLIN ) {
-					session.processICEMessages();
-					continue;
+				while( session.isSessionAlive() and
+						handler.getExitStatus() )
+				{
+					int num = poll(fds, nfds, 150);
+
+					// data to read ?
+					if( num > 0 )
+					{
+						if( fds[0].revents & POLLIN )
+						{
+							session.processICEMessages();
+							continue;
+						}
+
+						if( fds[1].revents & POLLIN )
+						{
+							/* check if any received filesystem notification matches
+							 * any device configuration file. If yes, reload the file,
+							 * and send configuration to daemon. Can throw. */
+							handler.checkNotifyEvents(&GKfs);
+						}
+					}
+
+					DBus.checkForMessages();
 				}
+			} // make sure DBusHandler object is destroyed to clean GKDBus events before exit
 
-				if( fds[1].revents & POLLIN ) {
-					/* checking if any received filesystem notification matches
-					 * any device configuration file. If yes, reload the file,
-					 * and send configuration to daemon */
-					handler.checkNotifyEvents(&GKfs);
-				}
-			}
-
-			DBus.checkForMessages();
+			DBus.exit();
 		}
-
-		// also unregister with daemon before cleaning
-		handler.cleanDBusRequests();
-
-		DBus.exit();
+		catch (const GLogiKExcept & e)
+		{
+			DBus.exit();
+			throw;
+		}
 	}
 
 	GKLog(trace, "exiting with success")

@@ -48,7 +48,8 @@ VirtualKeyboard::VirtualKeyboard(void)
 	_pDevice = libevdev_new();
 	libevdev_set_name(_pDevice, deviceName.c_str());
 
-	try {
+	try
+	{
 		this->enableEventType(EV_KEY);
 
 		/* linux/input-event-codes.h */
@@ -59,7 +60,8 @@ VirtualKeyboard::VirtualKeyboard(void)
 		for (unsigned int i = KEY_PLAYCD; i <= KEY_MICMUTE; i++)
 			this->enableEventCode(EV_KEY, i);
 	}
-	catch ( const GLogiKExcept & e ) {
+	catch ( const GLogiKExcept & e )
+	{
 		libevdev_free(_pDevice);
 		throw;
 	}
@@ -67,7 +69,8 @@ VirtualKeyboard::VirtualKeyboard(void)
 	int err = libevdev_uinput_create_from_device(
 		_pDevice, LIBEVDEV_UINPUT_OPEN_MANAGED, &_pUInputDevice);
 
-	if (err < 0) {
+	if (err < 0)
+	{
 		libevdev_free(_pDevice);
 
 		std::ostringstream buffer(std::ios_base::ate);
@@ -88,7 +91,8 @@ VirtualKeyboard::~VirtualKeyboard(void)
 
 void VirtualKeyboard::enableEventType(unsigned int type)
 {
-	if ( libevdev_enable_event_type(_pDevice, type) != 0 ) {
+	if ( libevdev_enable_event_type(_pDevice, type) != 0 )
+	{
 		std::ostringstream buffer(std::ios_base::ate);
 		buffer << "enable event type failure : " << type;
 		throw GLogiKExcept(buffer.str());
@@ -97,7 +101,8 @@ void VirtualKeyboard::enableEventType(unsigned int type)
 
 void VirtualKeyboard::enableEventCode(unsigned int type, unsigned int code)
 {
-	if ( libevdev_enable_event_code(_pDevice, type, code, nullptr) != 0 ) {
+	if ( libevdev_enable_event_code(_pDevice, type, code, nullptr) != 0 )
+	{
 		std::ostringstream buffer(std::ios_base::ate);
 		buffer << "enable event code failure : type " << type << " code " << code;
 		throw GLogiKExcept(buffer.str());
@@ -109,7 +114,8 @@ void VirtualKeyboard::sendKeyEvent(const KeyEvent & key)
 	GK_LOG_FUNC
 
 #if DEBUGGING_ON
-	if(GKLogging::GKDebug) {
+	if(GKLogging::GKDebug)
+	{
 		LOG(trace) << "key event : ";
 		LOG(trace) << "code : " << toUInt(key.code);
 		LOG(trace) << "event : " << key.event;
@@ -117,19 +123,23 @@ void VirtualKeyboard::sendKeyEvent(const KeyEvent & key)
 	}
 #endif
 
-	if( key.interval > 20 ) {
+	if( key.interval > 20 )
+	{
 		GKLog3(trace, "sleeping for : ", key.interval, "ms")
-
 		std::this_thread::sleep_for(std::chrono::milliseconds(key.interval));
 	}
-	int ret = libevdev_uinput_write_event(_pUInputDevice, EV_KEY, key.code, static_cast<int>(key.event));
-	if(ret == 0) {
+	int ret = libevdev_uinput_write_event(
+			_pUInputDevice, EV_KEY, key.code, static_cast<int>(key.event));
+	if(ret == 0)
+	{
 		ret = libevdev_uinput_write_event(_pUInputDevice, EV_SYN, SYN_REPORT, 0);
-		if(ret != 0 ) {
+		if(ret != 0 )
+		{
 			LOG(warning) << "EV_SYN/SYN_REPORT/0 write_event : " << -ret << " : " << strerror(-ret);
 		}
 	}
-	else {
+	else
+	{
 		LOG(warning) << "EV_KEY write_event : " << -ret << " : " << strerror(-ret);
 	}
 }

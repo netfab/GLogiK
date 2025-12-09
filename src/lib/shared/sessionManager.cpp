@@ -36,12 +36,16 @@ using namespace NSGKUtils;
 
 bool SessionManager::stillRunning = true;
 
-SessionManager::SessionManager() {
+SessionManager::SessionManager()
+{
 	GK_LOG_FUNC
 
 	GKLog(trace, "initializing session manager")
 
-	_mask = (SmcSaveYourselfProcMask|SmcDieProcMask|SmcSaveCompleteProcMask|SmcShutdownCancelledProcMask);
+	_mask = (
+		SmcSaveYourselfProcMask|SmcDieProcMask|
+		SmcSaveCompleteProcMask|SmcShutdownCancelledProcMask
+	);
 
 	_callbacks.save_yourself.client_data = nullptr;
 	_callbacks.save_yourself.callback = SessionManager::SaveYourselfCallback;
@@ -56,7 +60,8 @@ SessionManager::SessionManager() {
 	_callbacks.shutdown_cancelled.callback = SessionManager::ShutdownCancelledCallback;
 }
 
-SessionManager::~SessionManager() {
+SessionManager::~SessionManager()
+{
 	GK_LOG_FUNC
 
 	GKLog(trace, "destroying session manager")
@@ -76,7 +81,8 @@ SessionManager::~SessionManager() {
  *	public
  */
 
-const int SessionManager::openConnection(void) {
+const int SessionManager::openConnection(void)
+{
 	GK_LOG_FUNC
 
 	GKLog(trace, "opening session manager connection")
@@ -84,20 +90,22 @@ const int SessionManager::openConnection(void) {
 	process::setSignalHandler( SIGINT, SessionManager::handleSignal);
 	process::setSignalHandler(SIGTERM, SessionManager::handleSignal);
 
-	_pSMCConnexion = SmcOpenConnection(
-							nullptr,				/* network_ids_list */
-							nullptr,				/* context */
-							1,						/* xsmp_major_rev */
-							0,						/* xsmp_minor_rev */
-							_mask,					/* mask */
-							&_callbacks,			/* callbacks */
-							_pPreviousID,			/* previous_id */
-							&_pClientID,			/* client_id_ret */
-							SM_ERROR_STRING_LENGTH, /* error_string_ret max length */
-							_errorString			/* error_string_ret */
-						);
+	_pSMCConnexion =
+		SmcOpenConnection(
+			nullptr,				/* network_ids_list */
+			nullptr,				/* context */
+			1,						/* xsmp_major_rev */
+			0,						/* xsmp_minor_rev */
+			_mask,					/* mask */
+			&_callbacks,			/* callbacks */
+			_pPreviousID,			/* previous_id */
+			&_pClientID,			/* client_id_ret */
+			SM_ERROR_STRING_LENGTH, /* error_string_ret max length */
+			_errorString			/* error_string_ret */
+		);
 
-	if(_pSMCConnexion == nullptr) {
+	if(_pSMCConnexion == nullptr)
+	{
 		char * s = _errorString;
 		std::string failure("Unable to open connection to session manager : ");
 		failure += s;
@@ -105,7 +113,8 @@ const int SessionManager::openConnection(void) {
 	}
 
 	Status ret = IceAddConnectionWatch(SessionManager::ICEConnectionWatchCallback, nullptr);
-	if( ret == 0 ) {
+	if( ret == 0 )
+	{
 		this->closeConnection();
 		throw GLogiKExcept("IceAddConnectionWatch failure");
 	}
@@ -118,11 +127,13 @@ const int SessionManager::openConnection(void) {
 	return _ICEfd;
 }
 
-const bool SessionManager::isSessionAlive(void) {
+const bool SessionManager::isSessionAlive(void)
+{
 	return SessionManager::stillRunning;
 }
 
-void SessionManager::processICEMessages(void) {
+void SessionManager::processICEMessages(void)
+{
 	SessionManager::processICEMessages(_pICEConnexion);
 }
 
@@ -131,14 +142,16 @@ void SessionManager::processICEMessages(void) {
  *	private
  */
 
-void SessionManager::closeConnection(void) {
+void SessionManager::closeConnection(void)
+{
 	GK_LOG_FUNC
 
 	if(_pSMCConnexion == nullptr)
 		return;
 
 	SmcCloseStatus status = SmcCloseConnection(_pSMCConnexion, 0, nullptr);
-	switch( status ) {
+	switch( status )
+	{
 		case SmcClosedNow:
 			GKLog(trace, "ICE connection was closed")
 			break;
@@ -152,10 +165,12 @@ void SessionManager::closeConnection(void) {
 
 }
 
-void SessionManager::handleSignal(int signum) {
+void SessionManager::handleSignal(int signum)
+{
 	GK_LOG_FUNC
 
-	switch( signum ) {
+	switch( signum )
+	{
 		case SIGINT:
 		case SIGTERM:
 			LOG(info) << process::getSignalHandlingDesc(signum, " --> bye bye");
@@ -171,12 +186,14 @@ void SessionManager::handleSignal(int signum) {
 	}
 }
 
-void SessionManager::processICEMessages(IceConn ice_conn) {
+void SessionManager::processICEMessages(IceConn ice_conn)
+{
 	GK_LOG_FUNC
 
 	int ret = IceProcessMessages(ice_conn, nullptr, nullptr);
 
-	switch(ret) {
+	switch(ret)
+	{
 		case IceProcessMessagesSuccess:
 			GKLog(trace, "ICE messages process success")
 			break;
@@ -194,8 +211,11 @@ void SessionManager::processICEMessages(IceConn ice_conn) {
 /*
  * callback called when ICE connections are created or destroyed
  */
-void SessionManager::ICEConnectionWatchCallback(IceConn ice_conn, IcePointer client_data,
-	Bool opening, IcePointer *watch_data)
+void SessionManager::ICEConnectionWatchCallback(
+	IceConn ice_conn,
+	IcePointer client_data,
+	Bool opening,
+	IcePointer *watch_data)
 {
 /*
 	if( ! opening ) {
@@ -220,7 +240,9 @@ void SessionManager::SaveYourselfCallback(
 	SmcSaveYourselfDone(smc_conn, true);
 }
 
-void SessionManager::DieCallback(SmcConn smc_conn, SmPointer client_data)
+void SessionManager::DieCallback(
+	SmcConn smc_conn,
+	SmPointer client_data)
 {
 	GK_LOG_FUNC
 
@@ -229,14 +251,18 @@ void SessionManager::DieCallback(SmcConn smc_conn, SmPointer client_data)
 	SessionManager::handleSignal(SIGTERM);
 }
 
-void SessionManager::SaveCompleteCallback(SmcConn smc_conn, SmPointer client_data)
+void SessionManager::SaveCompleteCallback(
+	SmcConn smc_conn,
+	SmPointer client_data)
 {
 	GK_LOG_FUNC
 
 	GKLog(trace, "SM save complete call")
 }
 
-void SessionManager::ShutdownCancelledCallback(SmcConn smc_conn, SmPointer client_data)
+void SessionManager::ShutdownCancelledCallback(
+	SmcConn smc_conn,
+	SmPointer client_data)
 {
 	GK_LOG_FUNC
 

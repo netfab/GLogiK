@@ -47,7 +47,10 @@ class TypeLCDPPArray
 		TypeLCDPPArray(void) = default;
 		~TypeLCDPPArray(void) = default;
 
-		void appendLCDPPArray(DBusMessageIter *iter, const GLogiK::LCDPPArray_type & pluginsArray);
+		void appendLCDPPArray(
+			DBusMessageIter *iter,
+			const GLogiK::LCDPPArray_type & pluginsArray
+		);
 
 	private:
 };

@@ -49,12 +49,15 @@ const std::string Coretemp::seekDirectoryPath(
 	unsigned int x = start;
 	std::string out;
 
-	try {
-		while(true) {
+	try
+	{
+		while(true)
+		{
 			fs::path searched(basedir);
 			searched += std::to_string(x);
 			if(fs::exists(searched))
-				if(fs::is_directory(searched)) {
+				if(fs::is_directory(searched))
+				{
 					out = searched.string();
 					break;
 				}
@@ -63,13 +66,15 @@ const std::string Coretemp::seekDirectoryPath(
 			
 			if(x == 12) // FIXME
 				break;
-			}
+		}
 	}
-	catch (const fs::filesystem_error & e) {
+	catch (const fs::filesystem_error & e)
+	{
 		GKSysLogError("boost::filesystem error", e.what());
 		throw GLogiKExcept("seek directory path error");
 	}
-	catch (const std::exception & e) {
+	catch (const std::exception & e)
+	{
 		GKSysLogError("boost::filesystem (allocation) error", e.what());
 		throw GLogiKExcept("seek directory path error");
 	}
@@ -86,14 +91,17 @@ const std::vector<std::string> & Coretemp::getCoretempID(void)
 	const std::string basedir("/sys/devices/platform/coretemp.");
 
 	unsigned int x = 0;
-	while(true) {
-		try {
+	while(true)
+	{
+		try
+		{
 			const std::string rootDir = Coretemp::seekDirectoryPath(basedir, x);
 			if(rootDir.empty())
 				break;
 			Coretemp::coretempIDs.push_back(rootDir);
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			GKSysLogWarning("can't get coretemp root directory: ", e.what());
 		}
 
@@ -118,7 +126,9 @@ Coretemp::~Coretemp()
 {
 }
 
-void Coretemp::init(FontsManager* const pFonts, const std::string & product)
+void Coretemp::init(
+	FontsManager* const pFonts,
+	const std::string & product)
 {
 	GK_LOG_FUNC
 
@@ -148,7 +158,8 @@ const PixelsData & Coretemp::getNextPBMFrame(
 
 	this->drawPadlockOnPBMFrame(lockedPlugin);
 
-	struct dev {
+	struct dev
+	{
 		std::string fullstr;
 		std::string input;
 		std::string label;
@@ -158,13 +169,15 @@ const PixelsData & Coretemp::getNextPBMFrame(
 
 	std::vector<dev> hwmon;
 	
-	try {
+	try
+	{
 		unsigned short x = 1;
 
 		std::ifstream infile;
 		infile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-		while(true) {
+		while(true)
+		{
 			std::string inputFile = _hwmonID;
 			inputFile += "/temp";
 			inputFile += std::to_string(x);
@@ -199,11 +212,13 @@ const PixelsData & Coretemp::getNextPBMFrame(
 			x++;
 		}
 	}
-	catch (const std::ifstream::failure & e) {
+	catch (const std::ifstream::failure & e)
+	{
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 		GKLog2(trace, "hwmon size: ", hwmon.size())
 #endif
-		if( hwmon.empty() ) {
+		if( hwmon.empty() )
+		{
 			GKSysLogError("error opening/reading/closing file : ", e.what());
 			throw GLogiKExcept("ifstream error");
 		}
@@ -217,7 +232,8 @@ const PixelsData & Coretemp::getNextPBMFrame(
 
 	unsigned short x = 0;
 
-	auto updatedPosX = [&pos_x] () -> const auto & {
+	auto updatedPosX = [&pos_x] () -> const auto &
+	{
 		const uint16_t MONOSPACE85_CHARACTER_WIDTH = 5;
 		const uint16_t num_chars = 6; // 0:100°
 
@@ -225,8 +241,10 @@ const PixelsData & Coretemp::getNextPBMFrame(
 		return pos_x;
 	};
 
-	for(const auto & device : hwmon) {
-		if((x > 0) and (x % 2) == 0) {
+	for(const auto & device : hwmon)
+	{
+		if((x > 0) and (x % 2) == 0)
+		{
 			pos_y = TEMP_POS_Y;
 			this->drawVerticalLineOnPBMFrame(updatedPosX(), (TEMP_POS_Y - 2), 23);
 		}
@@ -243,7 +261,8 @@ const PixelsData & Coretemp::getNextPBMFrame(
 
 		if(device.isPkg)
 			this->writeStringOnPBMFrame(pFonts, FontID::MONOSPACE85, temp, 1, 22);
-		else {
+		else
+		{
 			this->writeStringOnPBMFrame(pFonts, FontID::MONOSPACE85, temp, pos_x, pos_y);
 			pos_y += 9;
 			x++;

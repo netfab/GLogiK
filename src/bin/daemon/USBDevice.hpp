@@ -138,22 +138,54 @@ class USBDevice
 		/* -- -- -- */
 
 	public:
-		void setLCDPluginsManager(LCDScreenPluginsManager* pLCDPluginsManager) { _pLCDPluginsManager = pLCDPluginsManager; }
+		void setLCDPluginsManager(LCDScreenPluginsManager* pLCDPluginsManager)
+		{
+			_pLCDPluginsManager = pLCDPluginsManager;
+		}
 		void destroyLCDPluginsManager(void) noexcept;
 
 		/* getters */
-		LCDScreenPluginsManager* const & getLCDPluginsManager(void) const { return _pLCDPluginsManager; }
-		const bool getThreadsStatus(void) const { return _threadsStatus; }
-		const bool getUSBRequestsStatus(void) const { return _USBRequestsStatus; }
-		const int getLastKeysInterruptTransferLength(void) const { return _lastKeysInterruptTransferLength; }
-		const int getLastLCDInterruptTransferLength(void) const { return _lastLCDInterruptTransferLength; }
+		LCDScreenPluginsManager* const & getLCDPluginsManager(void) const
+		{
+			return _pLCDPluginsManager;
+		}
+		const bool getThreadsStatus(void) const
+		{
+			return _threadsStatus;
+		}
+		const bool getUSBRequestsStatus(void) const
+		{
+			return _USBRequestsStatus;
+		}
+		const int getLastKeysInterruptTransferLength(void) const
+		{
+			return _lastKeysInterruptTransferLength;
+		}
+		const int getLastLCDInterruptTransferLength(void) const
+		{
+			return _lastLCDInterruptTransferLength;
+		}
 		/* -- -- -- */
 
-		void stopThreads(void) noexcept { _threadsStatus = false; }
-		void skipUSBRequests(void) noexcept { _USBRequestsStatus = false; }
+		void stopThreads(void) noexcept
+		{
+			_threadsStatus = false;
+		}
+		void skipUSBRequests(void) noexcept
+		{
+			_USBRequestsStatus = false;
+		}
 
-		void setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b);
-		void getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const;
+		void setRGBBytes(
+			const uint8_t r,
+			const uint8_t g,
+			const uint8_t b
+		);
+		void getRGBBytes(
+			uint8_t & r,
+			uint8_t & g,
+			uint8_t & b
+		) const;
 };
 
 } // namespace GLogiK

@@ -39,8 +39,8 @@ class XDGUserDirs
 		static const fs::path getConfigurationRootDirectory(void);
 
 	protected:
-		XDGUserDirs(void);
-		~XDGUserDirs(void);
+		XDGUserDirs(void) = default;
+		~XDGUserDirs(void) = default;
 
 	private:
 };

@@ -116,12 +116,24 @@ class GKeysTab
 			const GKeyEventType eventType,
 			const GKeysID GKeyID
 		);
-		void prepareCommandWidget(const GKeysEvent & GKeyEvent, const GKeysID GKeyID);
+		void prepareCommandWidget(
+			const GKeysEvent & GKeyEvent,
+			const GKeysID GKeyID
+		);
 
-		void updateInputsBox(const DeviceProperties & device, const GKeysID GKeyID);
-		void switchGKeyEventType(const DeviceProperties & device, const GKeysID GKeyID);
+		void updateInputsBox(
+			const DeviceProperties & device,
+			const GKeysID GKeyID
+		);
+		void switchGKeyEventType(
+			const DeviceProperties & device,
+			const GKeysID GKeyID
+		);
 
-		void updateAndRedrawTab(const DeviceProperties & device, const MKeysID bankID);
+		void updateAndRedrawTab(
+			const DeviceProperties & device,
+			const MKeysID bankID
+		);
 		void redrawTab(const DeviceProperties & device);
 
 		static const std::map<const MKeysID, c_str> bankNames;

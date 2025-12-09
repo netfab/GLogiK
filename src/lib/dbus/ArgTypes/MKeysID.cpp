@@ -44,7 +44,8 @@ const GLogiK::MKeysID ArgMKeysID::getNextMKeysIDArgument(void)
 
 	GLogiK::MKeysID id = GLogiK::MKeysID::MKEY_M0;
 
-	try {
+	try
+	{
 		const uint8_t value = ArgUInt8::getNextByteArgument();
 
 		if(value > GLogiK::MKeyID_MAX)
@@ -52,7 +53,8 @@ const GLogiK::MKeysID ArgMKeysID::getNextMKeysIDArgument(void)
 
 		id = static_cast<GLogiK::MKeysID>(value);
 	}
-	catch ( const EmptyContainer & e ) {
+	catch ( const EmptyContainer & e )
+	{
 		LOG(warning) << "missing argument : " << e.what();
 		throw GLogiKExcept("get MKeysID argument failed");
 	}

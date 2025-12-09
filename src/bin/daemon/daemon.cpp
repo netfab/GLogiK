@@ -82,11 +82,13 @@ GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
 
 	/* -- -- -- */
 
-	try {
+	try
+	{
 		/* boost::po may throw */
 		this->parseCommandLine(argc, argv);
 
-		if( GLogiKDaemon::isDaemonRunning() ) {
+		if( GLogiKDaemon::isDaemonRunning() )
+		{
 			_pid = /*NSGKUtils::*/process::deamonize();
 			syslog(LOG_INFO, "process successfully daemonized");
 
@@ -99,20 +101,19 @@ GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
 		/* initialize logging */
 		/* -- -- -- */
 #if DEBUGGING_ON
-		if(GKLogging::GKDebug) {
+		if(GKLogging::GKDebug)
 			GKLogging::initDebugFile("GLogiKd", fs::owner_read|fs::owner_write|fs::group_read);
-		}
 #endif
 
-		if( ! GLogiKDaemon::isDaemonRunning() ) {
+		if( ! GLogiKDaemon::isDaemonRunning() )
 			GKLogging::initConsoleLog();
-		}
 
 		/* -- -- -- */
 
 		GKSysLogInfo("successfully dropped root privileges");
 
-		if( GLogiKDaemon::isDaemonRunning() ) {
+		if( GLogiKDaemon::isDaemonRunning() )
+		{
 			GKLog2(info, "created PID file : ", _pidFileName)
 
 			process::setSignalHandler( SIGINT, GLogiKDaemon::handleSignal);
@@ -120,7 +121,8 @@ GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
 			// TODO SIGHUP ?
 		}
 	}
-	catch (const std::exception & e) {
+	catch (const std::exception & e)
+	{
 		syslog(LOG_ERR, "%s", e.what());
 		throw InitFailure();
 	}
@@ -182,11 +184,12 @@ int GLogiKDaemon::run(void)
 			};
 	}
 
-	if( GLogiKDaemon::isDaemonRunning() ) {
+	if( GLogiKDaemon::isDaemonRunning() )
+	{
 #if GKDBUS
 		NSGKDBus::GKDBus DBus(GLOGIK_DAEMON_DBUS_ROOT_NODE_PATH);
 		DBus.init();
-		DBus.connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME, NSGKDBus::ConnectionFlag::GKDBUS_SINGLE);
+		DBus.connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
 #endif
 
 		DevicesManager devicesManager;
@@ -198,7 +201,8 @@ int GLogiKDaemon::run(void)
 		ClientsManager clientsManager(&DBus, &devicesManager, &dependencies);
 #endif
 
-		try {
+		try
+		{
 			/* potential D-Bus requests received from services will be
 			 * handled after devices initialization into startMonitoring() */
 			devicesManager.startMonitoring();
@@ -209,7 +213,8 @@ int GLogiKDaemon::run(void)
 			DBus.exit();
 #endif
 		}
-		catch (const GLogiKExcept & e) {	// catch any monitoring failure
+		catch (const GLogiKExcept & e)
+		{	// catch any monitoring failure
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "catched exception from device monitoring : " << e.what();
 			GKSysLogWarning(buffer.str());
@@ -224,18 +229,19 @@ int GLogiKDaemon::run(void)
 		}
 
 	}
-	else { // non-daemon mode
+	else
+	{ // non-daemon mode
 		GKSysLogInfo("non-daemon mode");
 
-		if(_version) {
+		if(_version)
 			printVersionDeps(binaryVersion, dependencies);
-		}
 	}
 
 	return EXIT_SUCCESS;
 }
 
-void GLogiKDaemon::handleSignal(int signum) {
+void GLogiKDaemon::handleSignal(int signum)
+{
 	GK_LOG_FUNC
 
 	switch( signum )
@@ -255,32 +261,38 @@ void GLogiKDaemon::handleSignal(int signum) {
 	}
 }
 
-void GLogiKDaemon::createPIDFile(void) {
+void GLogiKDaemon::createPIDFile(void)
+{
 	GK_LOG_FUNC
 
 	const fs::path PIDFile(_pidFileName);
 
-	auto throwError = [&PIDFile] (const std::string & error, const char* what = nullptr) -> void {
+	auto throwError = [&PIDFile] (
+		const std::string & error,
+		const char* what = nullptr) -> void
+	{
 		std::ostringstream buffer(std::ios_base::app);
 		buffer << "failed to create PID file" << " : " << PIDFile.c_str() << " : " << error;
-		if( what != nullptr ) {
+		if( what != nullptr )
 			buffer << " : " << what;
-		}
 		throw GLogiKExcept( buffer.str() );
 	};
 
-	try {
-		if( fs::exists(PIDFile) ) {
+	try
+	{
+		if( fs::exists(PIDFile) )
 			throw GLogiKExcept("already exist");
-		}
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		throwError(e.what());
 	}
-	catch (const fs::filesystem_error & e) {
+	catch (const fs::filesystem_error & e)
+	{
 		throwError("boost::filesystem error", e.what());
 	}
-	catch (const std::exception & e) {
+	catch (const std::exception & e)
+	{
 		throwError("boost::filesystem (allocation) error", e.what());
 	}
 
@@ -289,20 +301,24 @@ void GLogiKDaemon::createPIDFile(void) {
 
 	std::ofstream PIDStream;
 	PIDStream.exceptions( std::ofstream::failbit );
-	try {
+	try
+	{
 		PIDStream.open(_pidFileName, std::ofstream::trunc);
 		PIDStream << static_cast<long>(_pid);
 		PIDStream.close();
 
 		fs::permissions(PIDFile, fs::owner_read|fs::owner_write|fs::group_read|fs::others_read);
 	}
-	catch (const std::ofstream::failure & e) {
+	catch (const std::ofstream::failure & e)
+	{
 		throwError("open failure", e.what());
 	}
-	catch (const fs::filesystem_error & e) {
+	catch (const fs::filesystem_error & e)
+	{
 		throwError("set permissions failure", e.what());
 	}
-	catch (const std::exception & e) {
+	catch (const std::exception & e)
+	{
 		throwError("set permissions (allocation) failure", e.what());
 	}
 
@@ -315,9 +331,12 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[])
 
 	desc.add_options()
 //		("help,h", "produce help message")
-		("daemonize,d", po::bool_switch()->default_value(false), "run in daemon mode")
-		("pid-file,p", po::value(&_pidFileName), "define the PID file")
-		("version,v", po::bool_switch()->default_value(false), "print some versions informations and exit")
+		("daemonize,d", po::bool_switch()->default_value(false),
+			"run in daemon mode")
+		("pid-file,p", po::value(&_pidFileName),
+			"define the PID file")
+		("version,v", po::bool_switch()->default_value(false),
+			"print some versions informations and exit")
 	;
 
 #if DEBUGGING_ON
@@ -336,7 +355,8 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[])
 	_version = vm.count("version") ? vm["version"].as<bool>() : false;
 
 /*
-	if (vm.count("help")) {
+	if (vm.count("help")
+	{
 		GKSysLogInfo("displaying help");
 		std::ostringstream buffer(std::ios_base::app);
 		desc.print( buffer );
@@ -344,26 +364,25 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[])
 	}
 */
 
-	if( _version ) {
-		/* disable daemon mode */
+	if( _version ) /* disable daemon mode */
 		GLogiKDaemon::daemonized = false;
-	}
-	else if( daemonized ) {
+	else if( daemonized )
 		GLogiKDaemon::daemonized = true;
-	}
 
 #if DEBUGGING_ON
 	bool debug = vm.count("debug") ? vm["debug"].as<bool>() : false;
 
-	if( debug ) {
+	if( debug )
 		GKLogging::GKDebug = true;
-	}
 #endif
 }
 
-void GLogiKDaemon::dropPrivileges(void) {
-	auto throwError = [] (const std::string & error) -> void {
-		if(errno != 0) {
+void GLogiKDaemon::dropPrivileges(void)
+{
+	auto throwError = [] (const std::string & error) -> void
+	{
+		if(errno != 0)
+		{
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << error;
 			buffer << " : " << strerror(errno);

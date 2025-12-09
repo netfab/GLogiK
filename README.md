@@ -1,6 +1,6 @@
 GLogiK, daemon to handle special features on some gaming keyboards
 
-Last release : version 0.8.20
+Last release : version 0.8.22
 
 Links
 =====
@@ -29,7 +29,7 @@ Features
 Build Dependencies
 ==================
 
- * dev-libs/boost >= 1.64.0
+ * dev-libs/boost >= 1.88.0
  * a libudev provider :
    - sys-fs/eudev
    - sys-fs/udev

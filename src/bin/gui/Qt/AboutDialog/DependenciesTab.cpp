@@ -46,13 +46,14 @@ void DependenciesTab::buildTab(void)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		QVBoxLayout* vBox = new QVBoxLayout(this);
 		GKLog(trace, "allocated QVBoxLayout")
 
 		this->setLayout(vBox);
 
-		vBox->addSpacing(10);
+		vBox->addWidget( this->getHLine() );
 
 		/* -- -- -- */
 		QFrame* mainFrame = new QFrame();
@@ -128,8 +129,11 @@ void DependenciesTab::buildTab(void)
 
 			scrollArea->setWidget(depsTable);
 		}
+
+		vBox->addWidget( this->getHLine() );
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
 		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}

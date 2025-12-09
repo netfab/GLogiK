@@ -72,7 +72,10 @@ void GKDBus::init(void)
 		throw GLogiKExcept("std::string ::max_size() overflow detected");
 
 	const std::vector<std::string> v;
-	GKLog4(trace, "checking std::vector<std::string> ::max_size(): ", v.max_size(), "UINT64_MAX: ", UINT64_MAX)
+	GKLog4(trace,
+		"checking std::vector<std::string> ::max_size(): ", v.max_size(),
+		"UINT64_MAX: ",	UINT64_MAX
+	)
 	if( v.max_size() > UINT64_MAX )
 		throw GLogiKExcept("std::vector<std::string> ::max_size() overflow detected");
 
@@ -81,7 +84,8 @@ void GKDBus::init(void)
 
 const std::string GKDBus::getDBusVersion(void)
 {
-	struct DBusVersion {
+	struct DBusVersion
+	{
 		int major = -1;
 		int minor = -1;
 		int micro = -1;
@@ -120,15 +124,15 @@ void GKDBus::connectToSystemBus(
 	GKLog(trace, "opened system bus connection")
 
 	_systemName.clear();
-	int ret = dbus_bus_request_name(_systemConnection, connectionName, getDBusRequestFlags(flag), &_error);
+	int ret = dbus_bus_request_name(
+		_systemConnection, connectionName, getDBusRequestFlags(flag), &_error);
 	this->checkDBusError("failed to request system bus connection name");
 	_systemName = connectionName;
 
 	GKLog2(trace, "requested system bus connection name : ", connectionName)
 
-	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
+	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER)
 		throw GLogiKExcept("failed to request system bus connection name : not owner");
-	}
 }
 
 void GKDBus::connectToSessionBus(
@@ -146,15 +150,15 @@ void GKDBus::connectToSessionBus(
 	GKLog(trace, "opened session bus connection")
 
 	_sessionName.clear();
-	int ret = dbus_bus_request_name(_sessionConnection, connectionName, getDBusRequestFlags(flag), &_error);
+	int ret = dbus_bus_request_name(
+			_sessionConnection, connectionName, getDBusRequestFlags(flag), &_error);
 	this->checkDBusError("failed to request session bus connection name");
 	_sessionName = connectionName;
 
 	GKLog2(trace, "requested session bus connection name : ", connectionName)
 
-	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) {
+	if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER)
 		throw GLogiKExcept("failed to request session bus connection name : not owner");
-	}
 }
 
 void GKDBus::exit(void) noexcept
@@ -193,10 +197,12 @@ void GKDBus::disconnectFromSystemBus(void) noexcept
 {
 	GK_LOG_FUNC
 
-	if(_systemConnection) {
+	if(_systemConnection)
+	{
 		GKLog(trace, "closing system bus connection")
 
-		if( ! _systemName.empty() ) {
+		if( ! _systemName.empty() )
+		{
 			int ret = dbus_bus_release_name(_systemConnection, _systemName.c_str(), &_error);
 			this->checkReleasedName(ret);
 		}
@@ -209,10 +215,12 @@ void GKDBus::disconnectFromSessionBus(void) noexcept
 {
 	GK_LOG_FUNC
 
-	if(_sessionConnection) {
+	if(_sessionConnection)
+	{
 		GKLog(trace, "closing session bus connection")
 
-		if( ! _sessionName.empty() ) {
+		if( ! _sessionName.empty() )
+		{
 			int ret = dbus_bus_release_name(_sessionConnection, _sessionName.c_str(), &_error);
 			this->checkReleasedName(ret);
 		}
@@ -254,7 +262,8 @@ void GKDBus::checkDBusMessage(
 				const char* eventName = DBusEvent->eventName.c_str();
 				//GKLog2(trace, "checking event : ", eventName)
 
-				switch(DBusEvent->eventType) {
+				switch(DBusEvent->eventType)
+				{
 					case GKDBusEventType::GKDBUS_EVENT_METHOD:
 					{
 						if( dbus_message_is_method_call(message, eventInterface, eventName) )
@@ -309,27 +318,33 @@ void GKDBus::checkForBusMessages(
 	uint16_t c = 0;
 #endif
 
-	while( true ) {
+	while( true )
+	{
 		dbus_connection_read_write(connection, 0);
 		DBusMessage* message = dbus_connection_pop_message(connection);
 
 		/* no message */
-		if(message == nullptr) {
+		if(message == nullptr)
+		{
 #if DEBUGGING_ON
-			if(c > 0) {
+			if(c > 0)
+			{
 				GKLog3(trace, "processed ", c, " DBus messages")
 			}
 #endif
 			return;
 		}
 
-		try {
+		try
+		{
 			this->checkDBusMessage(connection, message);
 		}
-		catch (const std::out_of_range& oor) {
+		catch (const std::out_of_range& oor)
+		{
 			LOG(error) << "current bus connection oor";
 		}
-		catch ( const GLogiKExcept & e ) {
+		catch ( const GLogiKExcept & e )
+		{
 			LOG(error) << e.what();
 		}
 
@@ -347,7 +362,8 @@ void GKDBus::checkReleasedName(int ret) noexcept
 {
 	GK_LOG_FUNC
 
-	switch(ret) {
+	switch(ret)
+	{
 		case DBUS_RELEASE_NAME_REPLY_RELEASED:
 			GKLog(trace, "name released")
 			break;
@@ -358,11 +374,13 @@ void GKDBus::checkReleasedName(int ret) noexcept
 			GKLog(trace, "nobody owned the name")
 			break;
 		case -1:
-			if( dbus_error_is_set(&_error) ) {
+			if( dbus_error_is_set(&_error) )
+			{
 				LOG(error) << "release_name returns -1, error is : " << _error.message;
 				dbus_error_free(&_error);
 			}
-			else {
+			else
+			{
 				LOG(error) << "release_name returns -1, but unknown error :-(";
 			}
 			break;
@@ -374,7 +392,8 @@ void GKDBus::checkReleasedName(int ret) noexcept
 
 void GKDBus::checkDBusError(const char* error)
 {
-	if( dbus_error_is_set(&_error) ) {
+	if( dbus_error_is_set(&_error) )
+	{
 		std::ostringstream buffer;
 		buffer << error << " : " << _error.message;
 		dbus_error_free(&_error);
@@ -384,7 +403,8 @@ void GKDBus::checkDBusError(const char* error)
 
 DBusConnection* const GKDBus::getDBusConnection(BusConnection bus) const
 {
-	switch(bus) {
+	switch(bus)
+	{
 		case BusConnection::GKDBUS_SESSION :
 			if(_sessionConnection == nullptr)
 				throw GLogiKExcept("DBus Session connection not opened");
@@ -404,7 +424,8 @@ DBusConnection* const GKDBus::getDBusConnection(BusConnection bus) const
 const unsigned int GKDBus::getDBusRequestFlags(const ConnectionFlag flag) noexcept
 {
 	unsigned int ret = 0;
-	switch(flag) {
+	switch(flag)
+	{
 		case ConnectionFlag::GKDBUS_MULTIPLE :
 			ret = DBUS_NAME_FLAG_REPLACE_EXISTING|DBUS_NAME_FLAG_ALLOW_REPLACEMENT;
 			break;

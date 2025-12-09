@@ -31,10 +31,19 @@
 namespace NSGKUtils
 {
 
+const std::vector<char> RandomGenerator::defaultCharset =
+{
+	'0','1','2','3','4','5','6','7','8','9',
+	'a','b','c','d','e','f','g','h','i','j',
+	'k','l','m','n','o','p','q','r','s','t',
+	'u','v','w','x','y','z'
+};
+
 RandomGenerator::RandomGenerator(const std::vector<char> & charset)
 	: _rng(std::random_device{}())
 {
-	std::size_t size = charset.size();
+	const std::size_t size = charset.size();
+
 	if( size < 1 )
 		throw GLogiKExcept("RandomGenerator : charset vector is empty !");
 
@@ -43,10 +52,12 @@ RandomGenerator::RandomGenerator(const std::vector<char> & charset)
 	_dist = dist;
 }
 
-RandomGenerator::~RandomGenerator() {
+RandomGenerator::~RandomGenerator()
+{
 }
 
-const std::string RandomGenerator::getString(std::size_t length) {
+const std::string RandomGenerator::getString(std::size_t length)
+{
 	std::string ret(length,0);
 	auto & c = _charset;
 	auto & d = _dist;

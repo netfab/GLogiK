@@ -49,10 +49,13 @@ class NetSnapshots
 		std::string _defaultNetworkInterfaceName;
 		std::string _networkInterfaceName;
 		void findDefaultRouteNetworkInterfaceName(void);
-		void setBytesSnapshotValue(const NetDirection d, unsigned long long & value);
+		void setBytesSnapshotValue(
+			const NetDirection d,
+			unsigned long long & value
+		);
 		const std::string getRateString(
-			unsigned long long value,
-			const std::string & direction
+			const std::string & direction,
+			const unsigned long long & value
 		);
 };
 

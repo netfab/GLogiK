@@ -54,7 +54,8 @@ void DeviceControlTab::buildTab(void)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		QVBoxLayout* vBox = new QVBoxLayout(this);
 		GKLog(trace, "allocated QVBoxLayout")
 
@@ -106,14 +107,34 @@ void DeviceControlTab::buildTab(void)
 
 		vBox->addSpacing(300);
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
 		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
 
-	QObject::connect(_pStartButton   , &QPushButton::clicked, this, &DeviceControlTab::startSignal);
-	QObject::connect(_pStopButton    , &QPushButton::clicked, this, &DeviceControlTab::stopSignal);
-	QObject::connect(_pRestartButton , &QPushButton::clicked, this, &DeviceControlTab::restartSignal);
+	QObject::connect(
+		_pStartButton, &QPushButton::clicked,
+		this, &DeviceControlTab::startSignal
+	);
+	QObject::connect(
+		_pStopButton, &QPushButton::clicked,
+		this, &DeviceControlTab::stopSignal
+	);
+	QObject::connect(
+		_pRestartButton, &QPushButton::clicked,
+		this, &DeviceControlTab::restartSignal
+	);
+
+	_pDBus->declareIntrospectableSignal(
+		_sessionBus,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
+		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+		GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST,
+		{	{"s", "device_id", "out", "device ID"},
+			{"s", "wanted_status", "out", "wanted status"}
+		}
+	);
 
 	this->disableAndHide();
 }
@@ -153,7 +174,8 @@ void DeviceControlTab::updateTab(
 
 	_devID = devID;
 
-	if(device.getStatus() == "started") {
+	if(device.getStatus() == "started")
+	{
 		_pStartButton->setEnabled(false);
 		_pStopButton->setEnabled(true);
 		_pRestartButton->setEnabled(true);
@@ -162,7 +184,8 @@ void DeviceControlTab::updateTab(
 
 		_deviceStatusLabel->setText("Device status : started");
 	}
-	else {
+	else
+	{
 		_pStartButton->setEnabled(true);
 		_pStopButton->setEnabled(false);
 		_pRestartButton->setEnabled(false);
@@ -179,18 +202,20 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 
 	LOG(info) << "sending " << signal << " signal for device " << _devID;
 
-	try {
+	try
+	{
 		_pDBus->initializeBroadcastSignal(
 			_sessionBus,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-			"DeviceStatusChangeRequest"
+			GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST
 		);
 		_pDBus->appendStringToBroadcastSignal(_devID);
 		_pDBus->appendStringToBroadcastSignal(signal);
 		_pDBus->sendBroadcastSignal();
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		_pDBus->abandonBroadcastSignal();
 		LOG(error) << e.what();
 	}
@@ -200,17 +225,20 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 
 void DeviceControlTab::startSignal(void)
 {
-	this->sendStatusSignal("StartDevice");
+	/* same method name as in daemon */
+	this->sendStatusSignal(GK_DBUS_DAEMON_METHOD_START_DEVICE);
 }
 
 void DeviceControlTab::stopSignal(void)
 {
-	this->sendStatusSignal("StopDevice");
+	/* same method name as in daemon */
+	this->sendStatusSignal(GK_DBUS_DAEMON_METHOD_STOP_DEVICE);
 }
 
 void DeviceControlTab::restartSignal(void)
 {
-	this->sendStatusSignal("RestartDevice");
+	/* same method name as in daemon */
+	this->sendStatusSignal(GK_DBUS_DAEMON_METHOD_RESTART_DEVICE);
 }
 
 } // namespace GLogiK

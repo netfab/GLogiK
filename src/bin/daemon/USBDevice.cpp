@@ -144,20 +144,27 @@ void USBDevice::operator=(const USBDevice& dev)
 
 void USBDevice::destroyLCDPluginsManager(void) noexcept
 {
-	if( _pLCDPluginsManager ) {
+	if( _pLCDPluginsManager )
+	{
 		delete _pLCDPluginsManager;
 		_pLCDPluginsManager = nullptr;
 	}
 }
 
-void USBDevice::setRGBBytes(const uint8_t r, const uint8_t g, const uint8_t b)
+void USBDevice::setRGBBytes(
+	const uint8_t r,
+	const uint8_t g,
+	const uint8_t b)
 {
 	_RGB[0] = r;
 	_RGB[1] = g;
 	_RGB[2] = b;
 }
 
-void USBDevice::getRGBBytes(uint8_t & r, uint8_t & g, uint8_t & b) const
+void USBDevice::getRGBBytes(
+	uint8_t & r,
+	uint8_t & g,
+	uint8_t & b) const
 {
 	r = _RGB[0];
 	g = _RGB[1];

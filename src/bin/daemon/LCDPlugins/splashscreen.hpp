@@ -36,7 +36,10 @@ class Splashscreen
 		Splashscreen(void);
 		~Splashscreen(void);
 
-		void init(FontsManager* const pFonts, const std::string & product);
+		void init(
+			FontsManager* const pFonts,
+			const std::string & product
+		);
 
 	protected:
 

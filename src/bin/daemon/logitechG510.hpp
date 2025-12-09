@@ -131,19 +131,24 @@ class LogitechG510
 		~LogitechG510();
 
 	protected:
-		const char* getDriverName(void) const override {
+		const char* getDriverName(void) const override
+		{
 			return G510Base::getDriverName();
 		}
-		const uint16_t getDriverID(void) const override {
+		const uint16_t getDriverID(void) const override
+		{
 			return G510Base::getDriverID();
 		}
-		const std::vector<USBDeviceID> & getSupportedDevices(void) const override {
+		const std::vector<USBDeviceID> & getSupportedDevices(void) const override
+		{
 			return G510Base::getSupportedDevices();
 		}
-		const MKeysIDArray_type getMKeysIDArray(void) const override {
+		const MKeysIDArray_type getMKeysIDArray(void) const override
+		{
 			return G510Base::getMKeysIDArray();
 		}
-		const GKeysIDArray_type getGKeysIDArray(void) const override {
+		const GKeysIDArray_type getGKeysIDArray(void) const override
+		{
 			return G510Base::getGKeysIDArray();
 		}
 
@@ -152,7 +157,8 @@ class LogitechG510
 			USBDevice & device,
 			const unsigned char * data,
 			uint16_t wLength
-		) override {
+		) override
+		{
 			USBKeyboardDriver<USBAPI>::sendUSBDeviceFeatureReport(device, data, wLength);
 		}
 
@@ -161,38 +167,47 @@ class LogitechG510
 			const uint8_t r=0xFF,
 			const uint8_t g=0xFF,
 			const uint8_t b=0xFF
-		) override {
+		) override
+		{
 			G510Base::setDeviceBacklightColor(device, r, g,  b);
 		}
 
-		void setDeviceMxKeysLeds(USBDevice & device) override {
+		void setDeviceMxKeysLeds(USBDevice & device) override
+		{
 			G510Base::setDeviceMxKeysLeds(device);
 		}
 
-		void sendUSBDeviceInitialization(USBDevice & device) override {
+		void sendUSBDeviceInitialization(USBDevice & device) override
+		{
 			return G510Base::sendUSBDeviceInitialization(device);
 		}
 
-		const bool checkGKey(USBDevice & device) override {
+		const bool checkGKey(USBDevice & device) override
+		{
 			return G510Base::checkGKey(device);
 		}
-		const bool checkMediaKey(USBDevice & device) override {
+		const bool checkMediaKey(USBDevice & device) override
+		{
 			return G510Base::checkMediaKey(device);
 		}
-		const bool checkLCDKey(USBDevice & device) override {
+		const bool checkLCDKey(USBDevice & device) override
+		{
 			return G510Base::checkLCDKey(device);
 		}
 
-		void fillStandardKeysEvents(USBDevice & device) override {
+		void fillStandardKeysEvents(USBDevice & device) override
+		{
 			USBKeyboardDriver<USBAPI>::fillStandardKeysEvents(device);
 		}
 
-		KeyStatus processKeyEvent(USBDevice & device) override {
+		KeyStatus processKeyEvent(USBDevice & device) override
+		{
 			return G510Base::processKeyEvent(device);
 		}
 
 #if DEBUGGING_ON && DEBUG_KEYS
-		const std::string getBytes(const USBDevice & device) const override {
+		const std::string getBytes(const USBDevice & device) const override
+		{
 			return USBKeyboardDriver<USBAPI>::getBytes(device);
 		}
 #endif
@@ -202,14 +217,14 @@ class LogitechG510
 
 template <typename USBAPI>
 LogitechG510<USBAPI>::LogitechG510()
-	:	USBKeyboardDriver<USBAPI>() {
+	:	USBKeyboardDriver<USBAPI>()
+{
 }
 
 template <typename USBAPI>
-LogitechG510<USBAPI>::~LogitechG510() {
+LogitechG510<USBAPI>::~LogitechG510()
+{
 }
-
-
 
 } // namespace GLogiK
 

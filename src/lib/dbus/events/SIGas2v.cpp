@@ -33,20 +33,21 @@ template <>
 	void callbackEvent<SIGas2v>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message,
-		DBusMessage* asyncContainer
-	)
+		DBusMessage* asyncContainer)
 {
 	GK_LOG_FUNC
 
 	ArgBase::fillInArguments(message);
 
-	try {
+	try
+	{
 		const std::vector<std::string> arg( ArgStringArray::getNextStringArray() );
 
 		/* call array of string to void callback */
 		this->callback(arg);
 	}
-	catch ( const GLogiKExcept & e ) {
+	catch ( const GLogiKExcept & e )
+	{
 		LOG(error) << e.what();
 	}
 

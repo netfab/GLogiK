@@ -32,8 +32,11 @@ GKDBusEvent::GKDBusEvent(
 	const char* n,
 	const std::vector<DBusMethodArgument> & a,
 	GKDBusEventType t,
-	const bool i
-	)	: eventName(n), arguments(a), eventType(t), introspectable(i)
+	const bool i)
+		:	eventName(n),
+			arguments(a),
+			eventType(t),
+			introspectable(i)
 {
 }
 
@@ -71,8 +74,8 @@ void GKDBusEvent::sendCallbackError(
 
 	LOG(error) << errorString;
 
-	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL) {
-		/* send error if something was wrong when running callback */
+	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+	{ /* send error if something was wrong when running callback */
 		this->buildAndSendErrorReply(connection, message, errorString);
 	}
 }
@@ -80,7 +83,8 @@ void GKDBusEvent::sendCallbackError(
 GKDBusIntrospectableSignal::GKDBusIntrospectableSignal(
 	const char* signalName,
 	const std::vector<DBusMethodArgument> & args)
-		:	name(signalName), arguments(args)
+		:	name(signalName),
+			arguments(args)
 {
 }
 

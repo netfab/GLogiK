@@ -50,7 +50,8 @@ hidapi::~hidapi()
 
 	GKLog(trace, "closing HIDAPI")
 
-	if(hid_exit() != 0) {
+	if(hid_exit() != 0)
+	{
 		GKSysLogError("failed to exit HIDAPI library");
 	}
 }
@@ -70,14 +71,16 @@ void hidapi::openUSBDevice(USBDevice & device)
 
 		/* hidapi versions 0.10.0 and 0.10.1 */
 		if( (hid_version()->major == 0) and
-			(hid_version()->minor == 10) ) {
+			(hid_version()->minor == 10) )
+		{
 			/* 0003:0002:01 */
 			os	<< std::setfill('0')
 				<< std::setw(4) << std::hex << toUInt(device.getBus()) << ":"
 				<< std::setw(4) << toUInt(device.getNum()) << ":"
 				<< std::setw(2) << toUInt(device.getBInterfaceNumber());
 		}
-		else {
+		else
+		{
 			/* 3-2:1.1 */
 			USBInit dev;
 
@@ -90,7 +93,8 @@ void hidapi::openUSBDevice(USBDevice & device)
 
 			os << toUInt(device.getBus()) << "-" << toUInt(port_numbers[0]);
 
-			for(int i = 1; i < num; i++) {
+			for(int i = 1; i < num; i++)
+			{
 				os << "." << toUInt(port_numbers[i]);
 			}
 
@@ -113,21 +117,24 @@ void hidapi::openUSBDevice(USBDevice & device)
 	devs = hid_enumerate(vendor_id, product_id);
 	cur_dev = devs;
 
-	while( cur_dev ) {
+	while( cur_dev )
+	{
 		if ((cur_dev->vendor_id == vendor_id) and
-			(cur_dev->product_id == product_id)) {
-
+			(cur_dev->product_id == product_id))
+		{
 			const std::string currentPath(cur_dev->path);
 
 			GKLog2(trace, "detected HIDAPI device path : ", currentPath)
 
-			if(currentPath == searchedPath) {
+			if(currentPath == searchedPath)
+			{
 				GKLog3(trace, device.getID(), " found HIDAPI device : ", searchedPath)
 
 				device._pHIDDevice = hid_open_path(searchedPath.c_str());
 
 				/* open_path failure */
-				if(device._pHIDDevice == nullptr) {
+				if(device._pHIDDevice == nullptr)
+				{
 					this->logUSBDeviceHIDError(nullptr);
 					hid_free_enumeration(devs); /* free */
 					throw GLogiKExcept("failed to open HIDAPI USB device");
@@ -144,16 +151,16 @@ void hidapi::openUSBDevice(USBDevice & device)
 	hid_free_enumeration(devs); /* free */
 
 	/* searched path was not found in hid_enumerate results */
-	if(device._pHIDDevice == nullptr) {
+	if(device._pHIDDevice == nullptr)
 		throw GLogiKExcept("device not found by hidapi enumerate");
-	}
 }
 
 void hidapi::closeUSBDevice(USBDevice & device) noexcept
 {
 	GK_LOG_FUNC
 
-	if(device._pHIDDevice != nullptr) {
+	if(device._pHIDDevice != nullptr)
+	{
 		hid_close(device._pHIDDevice);
 		device._pHIDDevice = nullptr;
 
@@ -168,19 +175,23 @@ void hidapi::sendUSBDeviceFeatureReport(
 {
 	GK_LOG_FUNC
 
-	if( ! device.getUSBRequestsStatus() ) {
+	if( ! device.getUSBRequestsStatus() )
+	{
 		GKSysLogWarning("skip device feature report sending, would probably fail");
 		return;
 	}
 
 	int ret = hid_send_feature_report(device._pHIDDevice, data, wLength);
-	if( ret == -1 ) {
+	if( ret == -1 )
+	{
 		GKSysLogError("error sending feature report");
 		this->logUSBDeviceHIDError(device._pHIDDevice);
 	}
 #if DEBUGGING_ON
-	else {
-		if(GKLogging::GKDebug) {
+	else
+	{
+		if(GKLogging::GKDebug)
+		{
 			LOG(trace)	<< device.getID()
 						<< " sent HIDAPI feature report: " << ret
 						<< " bytes - expected: " << wLength;
@@ -195,7 +206,8 @@ int hidapi::performUSBDeviceKeysInterruptTransfer(
 {
 	GK_LOG_FUNC
 
-	if( ! device.getUSBRequestsStatus() ) {
+	if( ! device.getUSBRequestsStatus() )
+	{
 		GKSysLogWarning("skip device hid_read_timeout, would probably fail");
 		return 0;
 	}
@@ -214,7 +226,8 @@ int hidapi::performUSBDeviceKeysInterruptTransfer(
 		return toEnumType(USBAPIKeysTransferStatus::TRANSFER_TIMEOUT);
 
 	/* hid_read_timeout error */
-	if(ret == -1) {
+	if(ret == -1)
+	{
 		GKSysLogError("hid_read_timeout error");
 		this->logUSBDeviceHIDError(device._pHIDDevice);
 		return toEnumType(USBAPIKeysTransferStatus::TRANSFER_ERROR);
@@ -233,7 +246,8 @@ int hidapi::performUSBDeviceLCDScreenInterruptTransfer(
 {
 	GK_LOG_FUNC
 
-	if( ! device.getUSBRequestsStatus() ) {
+	if( ! device.getUSBRequestsStatus() )
+	{
 		GKSysLogWarning("skip device hid_write, would probably fail");
 		return 0;
 	}
@@ -241,7 +255,8 @@ int hidapi::performUSBDeviceLCDScreenInterruptTransfer(
 	int ret = hid_write(device._pHIDDevice, buffer, bufferLength);
 
 	/* hid_write error */
-	if(ret == -1) {
+	if(ret == -1)
+	{
 		GKSysLogError("hid_write error");
 		this->logUSBDeviceHIDError(device._pHIDDevice);
 		return toEnumType(USBAPIKeysTransferStatus::TRANSFER_ERROR);

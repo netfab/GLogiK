@@ -61,7 +61,9 @@ SystemMonitor::~SystemMonitor()
 {
 }
 
-void SystemMonitor::init(FontsManager* const pFonts, const std::string & product)
+void SystemMonitor::init(
+	FontsManager* const pFonts,
+	const std::string & product)
 {
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _plugin.getName();
@@ -84,8 +86,7 @@ void SystemMonitor::init(FontsManager* const pFonts, const std::string & product
 const PixelsData & SystemMonitor::getNextPBMFrame(
 	FontsManager* const pFonts,
 	const std::string & LCDKey,
-	const bool lockedPlugin
-	)
+	const bool lockedPlugin)
 {
 	GK_LOG_FUNC
 
@@ -94,7 +95,8 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 	/* -- -- -- */
 	std::string usedPhysicalMemory("");
 
-	auto getPaddedPercentString = [] (unsigned int i) -> const std::string {
+	auto getPaddedPercentString = [] (unsigned int i) -> const std::string
+	{
 		std::ostringstream out("", std::ios_base::app);
 		out << std::setw(3) << std::to_string(i) << " %";
 		return out.str();
@@ -106,7 +108,8 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 		uint64_t freePMem = 0;
 		uint64_t totalPMem = 1;
 
-		try {
+		try
+		{
 			std::ifstream meminfo("/proc/meminfo");
 			std::string line;
 			while( std::getline(meminfo, line) )
@@ -117,49 +120,54 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 
 				std::stringstream ss(line);
 				std::string word;
-				while( std::getline(ss, word, delim) ) {
+				while( std::getline(ss, word, delim) )
 					if( ! word.empty() )
 						words.push_back(word);
-			    }
 
-				if( ! words.empty() ) {
-					for(const auto & item : memItems) {
+				if( ! words.empty() )
+				{
+					for(const auto & item : memItems)
+					{
 						const std::string & s = words[0];
-						if( s.substr(0, s.size()-1) == item ) {
+						if( s.substr(0, s.size()-1) == item )
 							memShot.insert( std::pair<std::string, std::vector<std::string>>(item, words));
-						}
 					}
 				}
 
-				if( memShot.size() == memItems.size() ) {
+				if( memShot.size() == memItems.size() )
+				{
 					//LOG(trace) << "found each item :-)";
 					break;
 				}
 			}
 		}
-		catch (const std::ifstream::failure & e) {
+		catch (const std::ifstream::failure & e)
+		{
 			GKSysLogError("error opening/reading/closing /proc/meminfo : ", e.what());
 			throw GLogiKExcept("ifstream error");
 		}
 
-		try {
+		try
+		{
 			totalPMem = toULL( memShot.at("MemTotal").at(1) );
 
 			// Linux Kernel 3.14+
-			if( memShot.count("MemAvailable") == 1 ) {
+			if( memShot.count("MemAvailable") == 1 )
 				freePMem  = toULL( memShot["MemAvailable"].at(1) );
-			}
-			else {
+			else
+			{
 				freePMem  = toULL( memShot.at("MemFree").at(1) );
 				freePMem += toULL( memShot.at("Buffers").at(1) );
 				freePMem += toULL( memShot.at("Cached").at(1) );
 			}
 		}
-		catch (const std::out_of_range& oor) {
+		catch (const std::out_of_range& oor)
+		{
 			GKSysLogWarning("meminfo parsing problem : ", oor.what());
 			freePMem = 0;
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			GKSysLogWarning("meminfo conversion failure : ", e.what());
 			freePMem = 0;
 		}
@@ -198,14 +206,14 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 	}
 
 	/* -- -- -- */
-	auto getPaddedRateString = [] (
-		const std::string & netRate,
-		std::size_t & lastSize ) -> const std::string
+	auto getPaddedRateString = [] (const std::string & netRate, std::size_t & lastSize)
+		-> const std::string
 	{
 		std::string paddedNetRateString(netRate);
 
 		std::size_t currentSize = netRate.size();
-		if(lastSize > currentSize) {
+		if(lastSize > currentSize)
+		{
 			paddedNetRateString.assign( (lastSize - currentSize), ' ');
 			paddedNetRateString += netRate;
 		}
@@ -215,18 +223,22 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 	};
 
 	std::string paddedRateString("error");
-	try {
+	try
+	{
 		NetSnapshots n;
 
 		/* pressed L5, switching network direction */
-		if(LCDKey == LCD_KEY_L5) {
-			if(_currentRate == NetDirection::NET_RX) {
+		if(LCDKey == LCD_KEY_L5)
+		{
+			if(_currentRate == NetDirection::NET_RX)
+			{
 				_currentRate = NetDirection::NET_TX;
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 				GKLog2(trace, _plugin.getName(), " switched network rate to upload")
 #endif
 			}
-			else {
+			else
+			{
 				_currentRate = NetDirection::NET_RX;
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 				GKLog2(trace, _plugin.getName(), " switched network rate to download")
@@ -237,7 +249,8 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 		const std::string rateString(n.getRateString(_currentRate));
 		paddedRateString = getPaddedRateString(rateString, _lastRateStringSize);
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		paddedRateString = getPaddedRateString(paddedRateString, _lastRateStringSize);
 		GKLog2(error, "network calculations error : ", e.what());
 	}

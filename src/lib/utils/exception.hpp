@@ -32,7 +32,8 @@
 namespace NSGKUtils
 {
 
-class GLogiKExcept : public std::exception
+class GLogiKExcept
+	:	public std::exception
 {
 	public :
 		GLogiKExcept( const std::string& msg = "" );
@@ -44,38 +45,48 @@ class GLogiKExcept : public std::exception
 		std::string message;
 };
 
-class InitFailure : public GLogiKExcept
+class InitFailure
+	:	public GLogiKExcept
 {
 	public:
-		InitFailure(const std::string& msg = "object initialization failure") : GLogiKExcept(msg) {};
+		InitFailure(const std::string& msg = "object initialization failure")
+			:	GLogiKExcept(msg) {};
 		virtual ~InitFailure( void ) throw() {};
 };
 
-class EmptyContainer : public GLogiKExcept
+class EmptyContainer
+	:	public GLogiKExcept
 {
 	public:
-		EmptyContainer( const std::string& msg = "" ) : GLogiKExcept(msg) {};
+		EmptyContainer( const std::string& msg = "" )
+			:	GLogiKExcept(msg) {};
 		virtual ~EmptyContainer( void ) throw() {};
 };
 
-class GKDBusRemoteCallNoReply : public GLogiKExcept
+class GKDBusRemoteCallNoReply
+	:	public GLogiKExcept
 {
 	public:
-		GKDBusRemoteCallNoReply( const std::string& msg = "" ) : GLogiKExcept(msg) {};
+		GKDBusRemoteCallNoReply( const std::string& msg = "" )
+			:	GLogiKExcept(msg) {};
 		virtual ~GKDBusRemoteCallNoReply( void ) throw() {};
 };
 
-class GKDBusMessageWrongBuild : public GLogiKExcept
+class GKDBusMessageWrongBuild
+	:	public GLogiKExcept
 {
 	public:
-		GKDBusMessageWrongBuild( const std::string& msg = "" ) : GLogiKExcept(msg) {};
+		GKDBusMessageWrongBuild( const std::string& msg = "" )
+			:	GLogiKExcept(msg) {};
 		virtual ~GKDBusMessageWrongBuild( void ) throw() {};
 };
 
-class GLogiKBadAlloc : public GLogiKExcept
+class GLogiKBadAlloc
+	:	public GLogiKExcept
 {
 	public:
-		GLogiKBadAlloc(const std::string & msg = "caught bad_alloc, do not like that") : GLogiKExcept(msg) {};
+		GLogiKBadAlloc(const std::string & msg = "caught bad_alloc, do not like that")
+			:	GLogiKExcept(msg) {};
 		virtual ~GLogiKBadAlloc( void ) throw() {};
 };
 

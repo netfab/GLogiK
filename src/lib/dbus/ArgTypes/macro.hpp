@@ -47,7 +47,10 @@ class TypeMacro
 		TypeMacro(void) = default;
 		~TypeMacro(void) = default;
 
-		void appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro);
+		void appendMacro(
+			DBusMessageIter *iter,
+			const GLogiK::macro_type & macro
+		);
 
 	private:
 };

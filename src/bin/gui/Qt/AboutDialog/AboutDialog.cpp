@@ -55,7 +55,8 @@ void AboutDialog::buildDialog(const GKDepsMap_type* const pDepsMap)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		QVBoxLayout* vBox = new QVBoxLayout(this);
 		GKLog(trace, "allocated QVBoxLayout")
 
@@ -124,7 +125,8 @@ void AboutDialog::buildDialog(const GKDepsMap_type* const pDepsMap)
 		QObject::connect(tabbedWidgets, &QTabWidget::currentChanged, this, &AboutDialog::setCopyButtonVisibility);
 		QObject::connect(_pCopyButton, &QPushButton::clicked, std::bind(&AboutDialog::copyToClipboard, this, pDepsMap));
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
 		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}

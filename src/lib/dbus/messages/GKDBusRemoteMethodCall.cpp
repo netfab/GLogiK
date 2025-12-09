@@ -38,7 +38,8 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 	const char* interface,
 	const char* method,
 	DBusPendingCall** pending)
-		:	GKDBusMessage(connection), _pendingCall(pending)
+		:	GKDBusMessage(connection),
+			_pendingCall(pending)
 {
 	GK_LOG_FUNC
 
@@ -59,7 +60,8 @@ GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 	dbus_message_iter_init_append(_message, &_itMessage);
 
 #if DEBUG_GKDBUS
-	if(GKLogging::GKDebug) {
+	if(GKLogging::GKDebug)
+	{
 		LOG(trace) << "Remote Object Method Call DBus message initialized";
 		LOG(trace) << "bus name    : " << busName;
 		LOG(trace) << "object path : " << objectPath;
@@ -73,13 +75,16 @@ GKDBusRemoteMethodCall::~GKDBusRemoteMethodCall()
 {
 	GK_LOG_FUNC
 
-	if(_hosedMessage) {
+	if(_hosedMessage)
+	{
 		LOG(warning) << "DBus hosed message, giving up";
 		dbus_message_unref(_message);
 		return;
 	}
 
-	if( ! dbus_connection_send_with_reply(_connection, _message, _pendingCall, DBUS_TIMEOUT_USE_DEFAULT)) {
+	if( ! dbus_connection_send_with_reply(
+		_connection, _message, _pendingCall, DBUS_TIMEOUT_USE_DEFAULT))
+	{
 		dbus_message_unref(_message);
 		LOG(error) << "DBus remote method call with pending reply sending failure";
 		return;
@@ -131,12 +136,14 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 	if(_remoteMethodCall) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus remote_method_call already allocated");
 
-	try {
+	try
+	{
 		_remoteMethodCall = new GKDBusRemoteMethodCall(
 			connection, busName, objectPath, interface, method,
 			&_pendingCall);
 	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
+	catch (const std::bad_alloc& e)
+	{ /* handle new() failure */
 		LOG(error) << "GKDBus remote_method_call allocation failure : " << e.what();
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
@@ -182,11 +189,13 @@ void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall(void)
 {
 	GK_LOG_FUNC
 
-	if(_remoteMethodCall) { /* sanity check */
+	if(_remoteMethodCall)
+	{ /* sanity check */
 		delete _remoteMethodCall;
 		_remoteMethodCall = nullptr;
 	}
-	else {
+	else
+	{
 		LOG(warning) << "tried to send NULL remote method call";
 		throw GKDBusMessageWrongBuild("tried to send NULL remote method call");
 	}
@@ -196,12 +205,14 @@ void GKDBusMessageRemoteMethodCall::abandonRemoteMethodCall(void)
 {
 	GK_LOG_FUNC
 
-	if(_remoteMethodCall) { /* sanity check */
+	if(_remoteMethodCall)
+	{ /* sanity check */
 		_remoteMethodCall->abandon();
 		delete _remoteMethodCall;
 		_remoteMethodCall = nullptr;
 	}
-	else {
+	else
+	{
 		LOG(warning) << "tried to abandon NULL remote method call";
 	}
 }
@@ -216,26 +227,31 @@ void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void)
 
 	DBusMessage* message = nullptr;
 	// TODO could set a timer between retries ?
-	while( message == nullptr and c < 10 ) {
+	while( message == nullptr and c < 10 )
+	{
 		message = dbus_pending_call_steal_reply(_pendingCall);
 		c++; /* bonus point */
 	}
 
 	dbus_pending_call_unref(_pendingCall);
 
-	if(message == nullptr) {
+	if(message == nullptr)
+	{
 		LOG(warning) << "message is NULL, retried 10 times";
 		throw GKDBusRemoteCallNoReply("can't get pending call reply");
 	}
 
-	if(dbus_message_get_type(message) == DBUS_MESSAGE_TYPE_ERROR) {
+	if(dbus_message_get_type(message) == DBUS_MESSAGE_TYPE_ERROR)
+	{
 		std::ostringstream buffer("got DBus error as reply : ", std::ios_base::app);
 		ArgString::fillInArguments(message);
 
-		try {
+		try
+		{
 			buffer << ArgString::getNextStringArgument();
 		}
-		catch ( const EmptyContainer & e ) {
+		catch ( const EmptyContainer & e )
+		{
 			buffer << "no string argument with DBus error !";
 		}
 

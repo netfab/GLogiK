@@ -49,12 +49,13 @@ void ClientsSignals::sendSignalToClients(
 	 * but DaemonIsStopping signal must always be sent
 	 */
 	if( ! DaemonControl::isDaemonRunning() )
-		if(signal != "DaemonIsStopping")
+		if(signal != GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING)
 			return;
 
 	GKLog2(trace, "sending signal : ", signal)
 
-	try {
+	try
+	{
 		pDBus->initializeBroadcastSignal(
 			_systemBus,
 			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
@@ -63,16 +64,19 @@ void ClientsSignals::sendSignalToClients(
 		);
 		pDBus->sendBroadcastSignal();
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		pDBus->abandonBroadcastSignal();
 
 		std::string warn("DBus targets signal failure : ");
 		warn += e.what();
 		/* don't warn nor syslog if we force sending the signal */
-		if(! forceSend) {
+		if(! forceSend)
+		{
 			GKSysLogWarning(warn);
 		}
-		else {
+		else
+		{
 			GKLog(trace, warn)
 		}
 	}
@@ -96,7 +100,8 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 
 	GKLog2(trace, "sending signal : ", signal)
 
-	try {
+	try
+	{
 		pDBus->initializeBroadcastSignal(
 			_systemBus,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -106,7 +111,8 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 		pDBus->appendStringArrayToBroadcastSignal(devIDArray);
 		pDBus->sendBroadcastSignal();
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		pDBus->abandonBroadcastSignal();
 		std::string warn("failed to send signal : ");
 		warn += e.what();

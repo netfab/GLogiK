@@ -36,6 +36,9 @@
 
 #include <config.h>
 
+#include <boost/asio.hpp>
+#include <boost/process.hpp>
+
 #define UTILS_COMPILATION 1
 
 #include "GKLogging.hpp"
@@ -62,12 +65,16 @@ const pid_t process::deamonize(void)
 	return process::newPID();
 }
 
-void process::logErrno(const int errnum, const std::string & errstr)
+void process::logErrno(
+	const int errnum,
+	const std::string & errstr)
 {
 	LOG(error)	<< errstr << " : " << getErrnoString(errnum);
 }
 
-void process::closeFD(int fd, const std::string & tracestr)
+void process::closeFD(
+	int fd,
+	const std::string & tracestr)
 {
 	const int ret = close(fd);
 	const int close_errno = errno;
@@ -75,15 +82,16 @@ void process::closeFD(int fd, const std::string & tracestr)
 	if(ret == -1)
 		process::logErrno(close_errno, "fd close");
 #if DEBUGGING_ON
-	else if(ret == 0) {
-		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-			LOG(trace) << "closed fd: " << tracestr;
-		}
+	else if( (ret == 0) and (process::options & process::mask::PROCESS_LOG_ENTRIES) )
+	{
+		LOG(trace) << "closed fd: " << tracestr;
 	}
 #endif
 }
 
-void process::notifyParentProcess(int pipefd[], const int message)
+void process::notifyParentProcess(
+	int pipefd[],
+	const int message)
 {
 	GK_LOG_FUNC
 
@@ -96,14 +104,16 @@ void process::notifyParentProcess(int pipefd[], const int message)
 
 	process::closeFD(pipefd[1], "remaining write-end");
 
-	if(bytes_written == -1) {
+	if(bytes_written == -1)
+	{
 		process::logErrno(write_errno, "write");
 		throw GLogiKExcept("error while trying to write pipe");
 	}
 	else if(bytes_written < 1)
 		throw GLogiKExcept("byte not written");
 
-	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+	if(process::options & process::mask::PROCESS_LOG_ENTRIES)
+	{
 		GKLog2(trace, "byte(s) written to pipe: ", std::to_string(bytes_written))
 	}
 }
@@ -121,7 +131,8 @@ const int process::waitForChildNotification(int pipefd[])
 
 	process::closeFD(pipefd[0], "remaining read-end");
 
-	if(bytes_read == -1) {
+	if(bytes_read == -1)
+	{
 		process::logErrno(read_errno, "read");
 		throw GLogiKExcept("error while trying to read pipe");
 	}
@@ -141,7 +152,8 @@ void process::newSessionID(void)
 		throw GLogiKExcept("session creation failure");
 
 #if DEBUGGING_ON
-	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+	if(process::options & process::mask::PROCESS_LOG_ENTRIES)
+	{
 		GKLog(trace, "new session done")
 	}
 #endif
@@ -159,22 +171,25 @@ void process::forkProcess(const bool newSessionID)
 		throw GLogiKExcept("failed to create pipe");
 
 	pid = fork();
-	if(pid == -1) {
+	if(pid == -1)
 		throw GLogiKExcept("fork failure");
-	}
-	else if(pid > 0) { /* parent process */
+	else if(pid > 0)
+	{ /* parent process */
 		if(process::waitForChildNotification(pipefd) != EXIT_SUCCESS)
 			throw GLogiKExcept("parent process wrong return value");
 
 #if DEBUGGING_ON
-		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+		if(process::options & process::mask::PROCESS_LOG_ENTRIES)
+		{
 			GKLog2(trace, "exiting parent. first fork done. pid : ", pid)
 		}
 #endif
 		std::exit(EXIT_SUCCESS);
 	}
-	else { /* child process */
-		if(newSessionID) {
+	else
+	{ /* child process */
+		if(newSessionID)
+		{
 			/* detach from parent terminal by creating new session ID
 			 * before notifying parent process */
 			process::newSessionID();
@@ -183,7 +198,8 @@ void process::forkProcess(const bool newSessionID)
 		process::notifyParentProcess(pipefd, EXIT_SUCCESS);
 
 #if DEBUGGING_ON
-		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+		if(process::options & process::mask::PROCESS_LOG_ENTRIES)
+		{
 			GKLog(trace, "continue child execution")
 		}
 #endif
@@ -195,24 +211,24 @@ const pid_t process::newPID(void)
 	GK_LOG_FUNC
 
 #if DEBUGGING_ON
-	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+	if(process::options & process::mask::PROCESS_LOG_ENTRIES)
+	{
 		GKLog(trace, "detaching process")
 	}
 #endif
 	auto clearSignalMask = [] () -> void
 	{
 		sigset_t new_set;
-		if(sigemptyset(&new_set) == -1) {
+		if(sigemptyset(&new_set) == -1)
 			process::logErrno(errno, "sigemptyset");
-		}
-		else {
+		else
+		{
 			if(sigprocmask(SIG_SETMASK, &new_set, NULL) == -1)
 				process::logErrno(errno, "sigprocmask");
 #if DEBUGGING_ON
-			else {
-				if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
-					GKLog(trace, "signal mask cleared")
-				}
+			else if(process::options & process::mask::PROCESS_LOG_ENTRIES)
+			{
+				GKLog(trace, "signal mask cleared")
 			}
 #endif
 		}
@@ -233,7 +249,8 @@ const pid_t process::newPID(void)
 	if(chdir("/") == -1)
 		throw GLogiKExcept("change directory failure");
 
-	if(process::options & process::mask::PROCESS_CLOSE_DESCRIPTORS) {
+	if(process::options & process::mask::PROCESS_CLOSE_DESCRIPTORS)
+	{
 		// closing opened descriptors
 		//for(fd = sysconf(_SC_OPEN_MAX); fd > 0; fd--)
 		//	close(fd);
@@ -247,7 +264,8 @@ const pid_t process::newPID(void)
 		stderr = std::fopen("/dev/null", "w+");
 
 #if DEBUGGING_ON
-		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+		if(process::options & process::mask::PROCESS_LOG_ENTRIES)
+		{
 			GKLog(trace, "descriptors closed, process daemonized")
 		}
 #endif
@@ -256,7 +274,8 @@ const pid_t process::newPID(void)
 	pid_t pid = getpid();
 
 #if DEBUGGING_ON
-		if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+		if(process::options & process::mask::PROCESS_LOG_ENTRIES)
+		{
 			GKLog2(trace, "returning pid : ", pid)
 		}
 #endif
@@ -264,21 +283,27 @@ const pid_t process::newPID(void)
 	return pid;
 }
 
-void process::setSignalHandler(int signum, __signal_handler_t __handler)
+void process::setSignalHandler(
+	int signum,
+	__signal_handler_t __handler)
 {
 	GK_LOG_FUNC
 
 #if DEBUGGING_ON
-	if(process::options & process::mask::PROCESS_LOG_ENTRIES) {
+	if(process::options & process::mask::PROCESS_LOG_ENTRIES)
+	{
 		const std::string sigdesc( process::getSignalAbbrev(signum) );
 
-		if(__handler == SIG_DFL) {
+		if(__handler == SIG_DFL)
+		{
 			GKLog2(trace, "resetting signal handler: ", sigdesc)
 		}
-		else if(__handler == SIG_IGN) {
+		else if(__handler == SIG_IGN)
+		{
 			GKLog2(trace, "ignoring signal: ", sigdesc)
 		}
-		else {
+		else
+		{
 			GKLog2(trace, "setting signal handler: ", sigdesc)
 		}
 	}
@@ -287,15 +312,14 @@ void process::setSignalHandler(int signum, __signal_handler_t __handler)
 	struct sigaction new_action;
 
 	new_action.sa_handler = __handler;
-	if(sigemptyset(&new_action.sa_mask) == -1) {
+	if(sigemptyset(&new_action.sa_mask) == -1)
 		process::logErrno(errno, "sigemptyset");
-	}
-	else {
+	else
+	{
 		new_action.sa_flags = 0;
 
-		if(sigaction(signum, &new_action, nullptr) == -1) {
+		if(sigaction(signum, &new_action, nullptr) == -1)
 			process::logErrno(errno, "sigaction");
-		}
 	}
 }
 
@@ -304,7 +328,9 @@ void process::resetSignalHandler(int signum)
 	process::setSignalHandler(signum, SIG_DFL);
 }
 
-const std::string process::getSignalHandlingDesc(const int & signum, const std::string & desc)
+const std::string process::getSignalHandlingDesc(
+	const int & signum,
+	const std::string & desc)
 {
 	const std::string sigdesc( process::getSignalAbbrev(signum) );
 	std::ostringstream buffer("caught signal: ", std::ios_base::app);
@@ -312,17 +338,111 @@ const std::string process::getSignalHandlingDesc(const int & signum, const std::
 	return buffer.str();
 }
 
+void process::runCommand(
+	const std::string & binary,
+	const std::vector<std::string> & args)
+{
+	GK_LOG_FUNC
+
+	namespace bp = boost::process;
+	namespace io = boost::asio;
+
+	auto search = bp::v2::environment::find_executable(binary);
+	if( search.empty() )
+	{
+		LOG(error) << binary << " executable not found in PATH";
+		return;
+	}
+	const std::string command_bin( search.string() );
+
+	{
+		std::string whole_cmd(command_bin);
+		for(const auto & arg : args)
+		{
+			whole_cmd += " ";
+			whole_cmd += arg;
+		}
+		GKLog2(info, "spawning: ", whole_cmd)
+	}
+
+	io::io_context ctx;
+
+	bp::v2::process proc(ctx, command_bin, args);
+	proc.detach();
+}
+
+const std::string process::runCommandAndGetOutput(
+	const std::string & binary,
+	const std::vector<std::string> & args)
+{
+	GK_LOG_FUNC
+
+	namespace bp = boost::process;
+	namespace io = boost::asio;
+
+	std::string output;
+	boost::system::error_code ec;
+	io::io_context ctx;
+	io::readable_pipe rp{ctx};
+
+	auto search = bp::v2::environment::find_executable(binary);
+	if( search.empty() )
+		throw GLogiKExcept("searched binary not found in PATH");
+	const std::string command_bin( search.string() );
+
+	{
+		std::string whole_cmd(command_bin);
+		for(const auto & arg : args)
+		{
+			whole_cmd += " ";
+			whole_cmd += arg;
+		}
+		GKLog2(info, "spawning: ", whole_cmd)
+	}
+
+	bp::v2::process proc(
+		ctx,
+		command_bin,
+		args,
+		bp::v2::process_stdio
+		{
+			.in = {}, /* in to default */
+			.out = rp,
+			.err = {} /* err to default */
+		}
+	);
+
+	[[maybe_unused]] std::size_t num = io::read(rp, io::dynamic_buffer(output), ec);
+	GKLog2(trace, "size read: ", num)
+
+	if(ec == io::error::eof)
+	{
+		GKLog(trace, "reached eof, connection closed cleanly while reading pipe")
+	}
+	else if( ! ec )
+		throw GLogiKExcept(ec.message());
+	else
+	{
+		LOG(warning) << "waiting for process";
+		proc.wait();
+	}
+
+	return output;
+}
+
 const std::string process::getSignalAbbrev(int signum)
 {
 	GK_LOG_FUNC
 
 	std::string sigdesc("");
-	try {
+	try
+	{
 		sigdesc = toString(sigabbrev_np(signum));
 		if(sigdesc.empty())
 			sigdesc = "invalid signal number";
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		std::string warn("string conversion exception: ");
 		warn += e.what();
 		GKSysLogWarning(warn);

@@ -56,14 +56,16 @@ GKDBusErrorReply::~GKDBusErrorReply()
 {
 	GK_LOG_FUNC
 
-	if(_hosedMessage) {
+	if(_hosedMessage)
+	{
 		LOG(warning) << "DBus hosed reply, giving up";
 		dbus_message_unref(_message);
 		return;
 	}
 
 	// TODO dbus_uint32_t serial;
-	if( ! dbus_connection_send(_connection, _message, nullptr) ) {
+	if( ! dbus_connection_send(_connection, _message, nullptr) )
+	{
 		dbus_message_unref(_message);
 		LOG(error) << "DBus error reply message sending failure";
 		return;
@@ -80,7 +82,8 @@ GKDBusErrorReply::~GKDBusErrorReply()
 /* --- --- --- */
 /* --- --- --- */
 
-GKDBusMessageErrorReply::GKDBusMessageErrorReply() : _errorReply(nullptr)
+GKDBusMessageErrorReply::GKDBusMessageErrorReply()
+	:	_errorReply(nullptr)
 {
 }
 
@@ -98,10 +101,12 @@ void GKDBusMessageErrorReply::initializeErrorReply(
 	if(_errorReply) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus reply already allocated");
 
-	try {
+	try
+	{
 		_errorReply = new GKDBusErrorReply(connection, message, errorMessage);
 	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
+	catch (const std::bad_alloc& e)
+	{ /* handle new() failure */
 		LOG(error) << "GKDBus reply allocation failure : " << e.what();
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
@@ -111,11 +116,13 @@ void GKDBusMessageErrorReply::sendErrorReply(void)
 {
 	GK_LOG_FUNC
 
-	if(_errorReply) { /* sanity check */
+	if(_errorReply)
+	{ /* sanity check */
 		delete _errorReply;
 		_errorReply = nullptr;
 	}
-	else {
+	else
+	{
 		LOG(warning) << "tried to send NULL error reply";
 	}
 }
@@ -127,10 +134,12 @@ void GKDBusMessageErrorReply::buildAndSendErrorReply(
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		this->initializeErrorReply(connection, message, errorMessage);
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		LOG(error) << "DBus error reply failure : " << e.what();
 	}
 

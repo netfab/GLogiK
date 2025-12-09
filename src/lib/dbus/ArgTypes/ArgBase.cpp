@@ -49,7 +49,8 @@ void ArgBase::decodeArgumentFromIterator(
 	// sometimes currentType could not be recognized and
 	// is setted up as INVALID (for example when decoding arrays)
 	// in this cases, we are trying to use the expected signature
-	if(currentType == DBUS_TYPE_INVALID) {
+	if(currentType == DBUS_TYPE_INVALID)
+	{
 		dbus_signature_iter_init(&itSignature, signature);
 		currentType = dbus_signature_iter_get_current_type(&itSignature);
 	}
@@ -59,7 +60,8 @@ void ArgBase::decodeArgumentFromIterator(
 				<< static_cast<char>(currentType) << " sig: " << signature;
 #endif
 
-	switch(currentType) {
+	switch(currentType)
+	{
 		case DBUS_TYPE_STRING:
 		case DBUS_TYPE_OBJECT_PATH:
 			{
@@ -109,7 +111,8 @@ void ArgBase::decodeArgumentFromIterator(
 				 * with recursion this could lead to bad things */
 				if(dbus_message_iter_get_arg_type(&itArray) == DBUS_TYPE_INVALID)
 					break;
-				do {
+				do
+				{
 					c++; /* bonus point */
 					char* sig = dbus_message_iter_get_signature(&itArray);
 					ArgBase::decodeArgumentFromIterator(&itArray, sig, c);
@@ -155,11 +158,13 @@ void ArgBase::decodeArgumentFromIterator(
 			break;
 		case DBUS_TYPE_STRUCT:
 			{
-				do {
+				do
+				{
 					uint16_t c = 0;
 					DBusMessageIter itStruct;
 					dbus_message_iter_recurse(iter, &itStruct);
-					do {
+					do
+					{
 						c++; /* bonus point */
 						char* sig = dbus_message_iter_get_signature(&itStruct);
 						ArgBase::decodeArgumentFromIterator(&itStruct, sig, c);
@@ -182,7 +187,9 @@ void ArgBase::decodeArgumentFromIterator(
 			}
 			break;
 		default: // other dbus type
-			LOG(error) << "unhandled argument type: " << static_cast<char>(currentType) << " sig: " << signature;
+			LOG(error)
+				<< "unhandled argument type: " << static_cast<char>(currentType)
+				<< " sig: " << signature;
 			break;
 	}
 }
@@ -197,7 +204,8 @@ void ArgBase::fillInArguments(DBusMessage* message)
 	ArgBase::uint16Arguments.clear();
 	ArgBase::uint64Arguments.clear();
 
-	if(message == nullptr) {
+	if(message == nullptr)
+	{
 		LOG(warning) << "message is NULL";
 		return;
 	}
@@ -208,7 +216,8 @@ void ArgBase::fillInArguments(DBusMessage* message)
 	if( ! dbus_message_iter_init(message, &itArgument) )
 		return; /* no arguments */
 
-	do {
+	do
+	{
 		c++; /* bonus point */
 		char* signature = dbus_message_iter_get_signature(&itArgument);
 		ArgBase::decodeArgumentFromIterator(&itArgument, signature, c);

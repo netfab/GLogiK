@@ -26,17 +26,21 @@ namespace GLogiK
 
 std::atomic<bool> DaemonControl::daemonized(false);
 
-DaemonControl::DaemonControl() {
+DaemonControl::DaemonControl()
+{
 }
 
-DaemonControl::~DaemonControl() {
+DaemonControl::~DaemonControl()
+{
 }
 
-void DaemonControl::exitDaemon( void ) {
+void DaemonControl::exitDaemon( void )
+{
 	DaemonControl::daemonized = false;
 }
 
-bool DaemonControl::isDaemonRunning() {
+bool DaemonControl::isDaemonRunning()
+{
 	return DaemonControl::daemonized;
 }
 

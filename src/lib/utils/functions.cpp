@@ -46,14 +46,17 @@ const std::string toString(const char* s)
 	if(s == nullptr)
 		return "";
 
-	try {
+	try
+	{
 		const std::string ret(s);
 		return ret;
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
 		throw GLogiKBadAlloc( e.what() );
 	}
-	catch (const std::length_error& e) {
+	catch (const std::length_error& e)
+	{
 		std::string error("string length error : ");
 		error += e.what();
 		throw GLogiKExcept(error);
@@ -65,14 +68,17 @@ const std::wstring toWString(const wchar_t* s)
 	if(s == nullptr)
 		return std::wstring();
 
-	try {
+	try
+	{
 		const std::wstring ret(s);
 		return ret;
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
 		throw GLogiKBadAlloc( e.what() );
 	}
-	catch (const std::length_error& e) {
+	catch (const std::length_error& e)
+	{
 		std::string error("wstring length error : ");
 		error += e.what();
 		throw GLogiKExcept(error);
@@ -111,13 +117,16 @@ const unsigned short toUShort(const std::string & s, int base)
 const unsigned long toUL(const std::string & s, int base)
 {
 	unsigned long ret = 0;
-	try {
+	try
+	{
 		ret = std::stoul(s, nullptr, base);
 	}
-	catch (const std::invalid_argument& ia) {
+	catch (const std::invalid_argument& ia)
+	{
 		throw GLogiKExcept("stoul invalid argument");
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		throw GLogiKExcept("stoul out of range");
 	}
 
@@ -127,13 +136,16 @@ const unsigned long toUL(const std::string & s, int base)
 const unsigned long long toULL(const std::string & s)
 {
 	unsigned long long ret = 0;
-	try {
+	try
+	{
 		ret = std::stoull(s);
 	}
-	catch (const std::invalid_argument& ia) {
+	catch (const std::invalid_argument& ia)
+	{
 		throw GLogiKExcept("stoull invalid argument");
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		throw GLogiKExcept("stoull out of range");
 	}
 
@@ -157,9 +169,11 @@ void yield_for(std::chrono::microseconds us)
 {
 	auto start = std::chrono::high_resolution_clock::now();
 	auto end = start + us;
-	do {
+	do
+	{
 		std::this_thread::yield();
-	} while (std::chrono::high_resolution_clock::now() < end);
+	}
+	while (std::chrono::high_resolution_clock::now() < end);
 }
 
 

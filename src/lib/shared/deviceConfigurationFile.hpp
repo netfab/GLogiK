@@ -34,15 +34,17 @@ class DeviceConfigurationFile
 	public:
 		static void load(
 			const std::string & filePath,
-			DeviceProperties & device) noexcept;
+			DeviceProperties & device
+		) noexcept;
 
 		static void save(
 			const std::string & filePath,
-			const DeviceProperties & device) noexcept;
+			const DeviceProperties & device
+		) noexcept;
 
 	protected:
-		DeviceConfigurationFile();
-		~DeviceConfigurationFile();
+		DeviceConfigurationFile() = default;
+		~DeviceConfigurationFile() = default;
 
 	private:
 

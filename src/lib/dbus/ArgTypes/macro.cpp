@@ -37,7 +37,9 @@ void TypeMacro::appendMacro(const GLogiK::macro_type & macro)
 	this->appendMacro(&_itMessage, macro);
 }
 
-void TypeMacro::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & macro)
+void TypeMacro::appendMacro(
+	DBusMessageIter *iter,
+	const GLogiK::macro_type & macro)
 {
 	GK_LOG_FUNC
 
@@ -51,7 +53,8 @@ void TypeMacro::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & ma
 							DBUS_TYPE_UINT16_AS_STRING\
 							DBUS_STRUCT_END_CHAR_AS_STRING;
 
-	if( ! dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, array_sig, &itArray) ) {
+	if( ! dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, array_sig, &itArray) )
+	{
 		_hosedMessage = true;
 		LOG(error) << "macro array open_container failure, not enough memory";
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
@@ -68,38 +71,46 @@ void TypeMacro::appendMacro(DBusMessageIter *iter, const GLogiK::macro_type & ma
 							DBUS_TYPE_UINT16_AS_STRING;
 	*/
 
-	try {
-		for(const auto & keyEvent : macro) {
+	try
+	{
+		for(const auto & keyEvent : macro)
+		{
 			DBusMessageIter itStruct;
 
-			if( ! dbus_message_iter_open_container(&itArray, DBUS_TYPE_STRUCT, nullptr, &itStruct) ) {
+			if( ! dbus_message_iter_open_container(&itArray, DBUS_TYPE_STRUCT, nullptr, &itStruct) )
+			{
 				LOG(error) << "DBus struct open_container failure, not enough memory";
 				throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 			}
 
-			try {
+			try
+			{
 				this->appendUInt8(&itStruct, keyEvent.code);
 				this->appendUInt8(&itStruct, toEnumType(keyEvent.event));
 				this->appendUInt16(&itStruct, keyEvent.interval);
 			}
-			catch (const GKDBusMessageWrongBuild & e) {
+			catch (const GKDBusMessageWrongBuild & e)
+			{
 				dbus_message_iter_abandon_container(&itArray, &itStruct);
 				throw;
 			}
 
-			if( ! dbus_message_iter_close_container(&itArray, &itStruct) ) {
+			if( ! dbus_message_iter_close_container(&itArray, &itStruct) )
+			{
 				LOG(error) << "DBus struct close_container failure, not enough memory";
 				throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 			}
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		_hosedMessage = true;
 		dbus_message_iter_abandon_container(iter, &itArray);
 		throw;
 	}
 
-	if( ! dbus_message_iter_close_container(iter, &itArray) ) {
+	if( ! dbus_message_iter_close_container(iter, &itArray) )
+	{
 		LOG(error) << "macro array close_container failure, not enough memory";
 		_hosedMessage = true;
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
@@ -121,9 +132,11 @@ const GLogiK::macro_type ArgMacro::getNextMacroArgument(const unsigned int macro
 	GKLog(trace, "rebuilding macro from GKDBus values")
 
 	GLogiK::macro_type macro;
-	try {
+	try
+	{
 		bool nextRun = true;
-		do {
+		do
+		{
 			GLogiK::KeyEvent e;
 
 			e.code = ArgUInt8::getNextByteArgument();
@@ -137,23 +150,27 @@ const GLogiK::macro_type ArgMacro::getNextMacroArgument(const unsigned int macro
 
 			macro.push_back(e);
 
-			if( macroSize > 0 ) {
+			if( macroSize > 0 )
+			{
 				if( macro.size() == macroSize )
 					nextRun = false;
 			}
-			else {
+			else
+			{
 				if( ArgUInt8::byteArguments.empty() )
 					nextRun = false;
 			}
 		}
 		while( nextRun );
 	}
-	catch ( const EmptyContainer & e ) {
+	catch ( const EmptyContainer & e )
+	{
 		LOG(warning) << "missing macro argument : " << e.what();
 		throw GLogiKExcept("rebuilding macro failed");
 	}
 
-	if( ( macroSize == 0 ) and ( ! ArgUInt16::uint16Arguments.empty() ) ) { /* sanity check */
+	if( ( macroSize == 0 ) and ( ! ArgUInt16::uint16Arguments.empty() ) )
+	{ /* sanity check */
 		LOG(warning) << "uint16 container not empty";
 	}
 

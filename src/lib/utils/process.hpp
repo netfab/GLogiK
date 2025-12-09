@@ -26,6 +26,7 @@
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
+#include <vector>
 #include <string>
 
 #include <cstdint>
@@ -49,9 +50,24 @@ class process
 
 		static const pid_t detach(void);
 		static const pid_t deamonize(void);
-		static void setSignalHandler(int signum, __signal_handler_t __handler);
+		static void setSignalHandler(
+			int signum,
+			__signal_handler_t __handler
+		);
 		static void resetSignalHandler(int signum);
-		static const std::string getSignalHandlingDesc(const int & signum, const std::string & desc);
+		static const std::string getSignalHandlingDesc(
+			const int & signum,
+			const std::string & desc
+		);
+
+		static void runCommand(
+			const std::string & binary,
+			const std::vector<std::string> & args
+		);
+		static const std::string runCommandAndGetOutput(
+			const std::string & binary,
+			const std::vector<std::string> & args
+		);
 
 	protected:
 
@@ -61,9 +77,18 @@ class process
 
 		static uint8_t options;
 
-		static void logErrno(const int errnum, const std::string & errstr);
-		static void closeFD(int fd, const std::string & tracestr);
-		static void notifyParentProcess(int pipefd[], const int message);
+		static void logErrno(
+			const int errnum,
+			const std::string & errstr
+		);
+		static void closeFD(
+			int fd,
+			const std::string & tracestr
+		);
+		static void notifyParentProcess(
+			int pipefd[],
+			const int message
+		);
 		static const int waitForChildNotification(int pipefd[]);
 		static void newSessionID(void);
 
@@ -73,14 +98,18 @@ class process
 		static const std::string getSignalAbbrev(int signum);
 };
 
-inline const uint8_t operator & (const uint8_t value, const process::mask option)
+inline const uint8_t operator & (
+	const uint8_t value,
+	const process::mask option)
 {
 	uint8_t ret(value);
 	ret &= toEnumType(option);
 	return ret;
 }
 
-inline uint8_t& operator |= (uint8_t& value, const process::mask option)
+inline uint8_t& operator |= (
+	uint8_t& value,
+	const process::mask option)
 {
 	return value=(value|toEnumType(option));
 }

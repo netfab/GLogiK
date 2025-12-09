@@ -85,9 +85,9 @@ const bool Client::isReady(void) const
 	return _ready;
 }
 
-void Client::toggleClientReadyPropertie(void)
+void Client::setReady(void)
 {
-	_ready = ! _ready;
+	_ready = true;
 }
 
 void Client::initializeDevice(
@@ -96,19 +96,21 @@ void Client::initializeDevice(
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		_devices.at(devID);
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKLog2(trace, devID, " initializing properties")
 
 		clientDevice device;
+		/* vendor, model, name, capabilities */
 		device.setProperties(
-			pDevicesManager->getDeviceVendor(devID),		/* vendor */
-			pDevicesManager->getDeviceProduct(devID),		/* model */
-			pDevicesManager->getDeviceName(devID),			/* name */
-			pDevicesManager->getDeviceCapabilities(devID)	/* capabilities */
-		);
+			pDevicesManager->getDeviceVendor(devID),
+			pDevicesManager->getDeviceProduct(devID),
+			pDevicesManager->getDeviceName(devID),
+			pDevicesManager->getDeviceCapabilities(devID));
 
 		_devices[devID] = device;
 	}
@@ -118,13 +120,15 @@ const bool Client::deleteDevice(const std::string & devID)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		_devices.at(devID);
 		_devices.erase(devID);
 		GKLog2(trace, devID, " deleted device")
 		return true;
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 
@@ -141,12 +145,14 @@ const bool Client::setDeviceBacklightColor(
 
 	GKLog2(trace, devID, " setting client backlight color")
 
-	try {
+	try
+	{
 		clientDevice & device = _devices.at(devID);
 		device.setRGBBytes(r, g, b);
 		return true;
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 
@@ -159,7 +165,8 @@ void Client::setDeviceActiveUser(
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		const clientDevice & device = _devices.at(devID);
 
 		uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
@@ -167,10 +174,12 @@ void Client::setDeviceActiveUser(
 		GKLog2(trace, devID, " setting active configuration")
 
 		pDevicesManager->setDeviceActiveConfiguration(
-			devID, r, g, b, device.getLCDPluginsMask1()
-		);
+			devID,
+			r, g, b,
+			device.getLCDPluginsMask1());
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
 }
@@ -184,15 +193,18 @@ const bool Client::setDeviceLCDPluginsMask(
 
 	bool ret = false;
 
-	try {
+	try
+	{
 		clientDevice & device = _devices.at(devID);
 		device.setLCDPluginsMask(maskID, mask);
 		ret = true;
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
 	}
-	catch (const GLogiKExcept & e) {
+	catch (const GLogiKExcept & e)
+	{
 		GKSysLogWarning(e.what());
 	}
 
@@ -201,13 +213,11 @@ const bool Client::setDeviceLCDPluginsMask(
 
 void Client::initializeDevices(DevicesManager* const pDevicesManager)
 {
-	for( const auto & devID : pDevicesManager->getStartedDevices() ) {
+	for( const auto & devID : pDevicesManager->getStartedDevices() )
 		this->initializeDevice(pDevicesManager, devID);
-	}
 
-	for( const auto & devID : pDevicesManager->getStoppedDevices() ) {
+	for( const auto & devID : pDevicesManager->getStoppedDevices() )
 		this->initializeDevice(pDevicesManager, devID);
-	}
 
 	GKLog2(trace, "number of initialized devices configurations : ", _devices.size())
 }

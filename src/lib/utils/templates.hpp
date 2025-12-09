@@ -42,8 +42,7 @@ constexpr typename std::underlying_type<T>::type toEnumType(T obj) noexcept
 }
 
 template <typename Iterator>
-const std::size_t safeAdvance(Iterator & it, const Iterator & end,
-	const std::size_t n)
+const std::size_t safeAdvance(Iterator & it, const Iterator & end, const std::size_t n)
 {
 	std::size_t i = 0;
 	for(; i != n ; ++i)

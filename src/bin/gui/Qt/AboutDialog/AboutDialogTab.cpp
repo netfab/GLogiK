@@ -19,51 +19,26 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_PBM_FILE_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_PBM_FILE_HPP_
+#include "lib/utils/utils.hpp"
 
-#include <cstdint>
-
-#include <string>
-#include <fstream>
-
-#include "PBM.hpp"
+#include "AboutDialogTab.hpp"
 
 namespace GLogiK
 {
 
-class PBMFile
+using namespace NSGKUtils;
+
+QFrame* AboutDialogTab::getHLine(void)
 {
-	public:
+	GK_LOG_FUNC
 
-	protected:
-		PBMFile(void);
-		~PBMFile(void);
+	QFrame* line = new QFrame();
+	GKLog(trace, "allocated QFrame")
 
-		static void readPBM(
-			const std::string & PBMPath,
-			PixelsData & PBMData,
-			const uint16_t PBMWidth,
-			const uint16_t PBMHeight
-		);
-
-	private:
-		static void parsePBMHeader(
-			std::ifstream & pbm,
-			std::string & magic,
-			uint16_t & width,
-			uint16_t & height
-		);
-
-		static void extractPBMData(
-			std::ifstream & pbm,
-			PixelsData & PBMData
-		);
-
-		static void closePBM(std::ifstream & pbm);
-
-};
+	line->setFrameShape(QFrame::HLine);
+	line->setFrameShadow(QFrame::Sunken);
+	return line;
+}
 
 } // namespace GLogiK
 
-#endif

@@ -59,7 +59,6 @@ class DBusHandler
 
 		const bool getExitStatus(void) const;
 		void checkNotifyEvents(NSGKUtils::FileSystem* pGKfs);
-		void cleanDBusRequests(void);
 
 	protected:
 
@@ -93,9 +92,10 @@ class DBusHandler
 
 		void getDaemonDependenciesMap(GKDepsMap_type* const dependencies);
 
-		void clearAndUnregister(const bool notifications = true);
+		void cleanGKDBusEvents(void) noexcept;
+		void prepareToStop(const bool notifications = true);
 
-		void reportChangedState(void);
+		void reportChangedState(void) noexcept;
 
 		void initializeDevices(void);
 		void initializeGKDBusSignals(void);
@@ -112,15 +112,27 @@ class DBusHandler
 		void devicesStopped(const std::vector<std::string> & devicesID);
 		void devicesUnplugged(const std::vector<std::string> & devicesID);
 
-		void deviceMediaEvent(const std::string & devID, const std::string & mediaKeyEvent);
-		void deviceGKeyEvent(const std::string & devID, const GKeysID keyID);
-		void deviceMBankSwitch(const std::string & devID, const MKeysID bankID);
+		void deviceMediaEvent(
+			const std::string & devID,
+			const std::string & mediaKeyEvent
+		);
+		void deviceGKeyEvent(
+			const std::string & devID,
+			const GKeysID keyID
+		);
+		void deviceMBankSwitch(
+			const std::string & devID,
+			const MKeysID bankID
+		);
 		void deviceMacroRecorded(
 			const std::string & devID,
 			const GKeysID keyID,
 			const macro_type & macro
 		);
-		void deviceMacroCleared(const std::string & devID, const GKeysID keyID);
+		void deviceMacroCleared(
+			const std::string & devID,
+			const GKeysID keyID
+		);
 
 		/* -- */
 

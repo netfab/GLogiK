@@ -36,7 +36,7 @@ thread_dep = dependency('threads')
 #! boost deps
 #! ----------
 boost_static = false
-boost_minimal_version = '>=1.64.0'
+boost_minimal_version = '>=1.88.0'
 boost_dependency_name = 'boost'
 
 boost_dep = dependency(
@@ -93,6 +93,12 @@ boost_date_time_dep = dependency(
   static : boost_static
 )
 
+boost_process_dep = dependency(
+  boost_dependency_name,
+  modules : ['process'],
+  static : boost_static
+)
+
 #! ----------
 
 enable_debug = get_option('debug')
@@ -143,6 +149,7 @@ define_dep_array = [
   ['HAVE_BOOST_PROGRAM_OPTIONS', boost_program_options_dep.found()],
   ['HAVE_BOOST_SERIALIZATION', boost_serialization_dep.found()],
   ['HAVE_BOOST_DATE_TIME', boost_date_time_dep.found()],
+  ['HAVE_BOOST_PROCESS', boost_process_dep.found()],
   ['DEBUGGING_ON', enable_debug],
   ['DEBUG_KEYS', enable_debug_keys],
   ['DEBUG_GKDBUS', enable_debug_gkdbus],

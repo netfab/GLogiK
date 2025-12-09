@@ -49,9 +49,8 @@ NetSnapshots::NetSnapshots()
 
 	this->findDefaultRouteNetworkInterfaceName();
 
-	if( _defaultNetworkInterfaceName.empty() ) {
+	if( _defaultNetworkInterfaceName.empty() )
 		throw GLogiKExcept("unable to find default route interface name");
-	}
 
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 	GKLog2(trace, "found default route interface name : ", _defaultNetworkInterfaceName)
@@ -61,15 +60,20 @@ NetSnapshots::NetSnapshots()
 
 	unsigned long long s1, s2 = 0;
 	unsigned long long s3, s4 = 0;
+
 	this->setBytesSnapshotValue(NetDirection::NET_RX, s1);
 	this->setBytesSnapshotValue(NetDirection::NET_TX, s3);
+
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
 	this->setBytesSnapshotValue(NetDirection::NET_RX, s2);
 	this->setBytesSnapshotValue(NetDirection::NET_TX, s4);
+
 	if( (s1 == 0) or (s2 == 0) )
 		throw GLogiKExcept("wrong RX bytes snapshot");
 	if( (s3 == 0) or (s4 == 0) )
 		throw GLogiKExcept("wrong TX bytes snapshot");
+
 	_rxDiff = (10 * (s2 - s1)); /* extrapolation */
 	_txDiff = (10 * (s4 - s3)); /* extrapolation */
 }
@@ -81,28 +85,32 @@ NetSnapshots::~NetSnapshots()
 const std::string NetSnapshots::getRateString(NetDirection direction)
 {
 	if(direction == NetDirection::NET_RX)
-		return this->getRateString(_rxDiff, " - download");
+		return this->getRateString(" - download", _rxDiff);
 	else
-		return this->getRateString(_txDiff, " - upload  ");
+		return this->getRateString(" - upload  ", _txDiff);
 }
 
 const std::string NetSnapshots::getRateString(
-	unsigned long long value,
-	const std::string & direction)
+	const std::string & direction,
+	const unsigned long long & value)
 {
 	std::ostringstream buffer("", std::ios_base::app);
 	std::string unit;
-	if(value < 1024) {
+	if(value < 1024)
+	{
 		buffer << std::setw(4) << std::to_string(value);
 		unit = " B/s";
 	}
-	else {
+	else
+	{
 		float kB = value / 1024.f;
-		if(kB < 1024) {
+		if(kB < 1024)
+		{
 			buffer << std::setw(7) << std::fixed << kB;
 			unit = " kB/s";
 		}
-		else {
+		else
+		{
 			float mB = kB / 1024.f;
 			buffer << std::setw(7) << std::fixed << mB;
 			unit = " mB/s";
@@ -113,12 +121,7 @@ const std::string NetSnapshots::getRateString(
 	const std::size_t pos = rate.find_first_of('.');
 
 	std::string out;
-	if(pos == std::string::npos) {
-		out += rate;
-	}
-	else {
-		out += rate.substr(0, pos+3);
-	}
+	out += (pos == std::string::npos) ? rate : rate.substr(0, pos+3);
 
 	out += unit;
 	out += direction;
@@ -129,7 +132,8 @@ void NetSnapshots::findDefaultRouteNetworkInterfaceName(void)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		std::ifstream routeFile("/proc/net/route");
 
 		std::string line;
@@ -139,25 +143,31 @@ void NetSnapshots::findDefaultRouteNetworkInterfaceName(void)
 			std::vector<std::string> results;
 			boost::split(results, line, [](char c){return c == '\t';});
 
-			if(results.at(1) == "00000000") { /* default route */
+			if(results.at(1) == "00000000")
+			{ /* default route */
 				_defaultNetworkInterfaceName = results[0];
 				return;
 			}
 		}
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKLog2(error, "vector index out of bounds : ", oor.what());
 	}
-	catch (const std::ifstream::failure & e) {
+	catch (const std::ifstream::failure & e)
+	{
 		GKLog2(error, "error opening/reading/closing kernel route file : ", e.what());
 	}
 }
 
-void NetSnapshots::setBytesSnapshotValue(const NetDirection d, unsigned long long & value)
+void NetSnapshots::setBytesSnapshotValue(
+	const NetDirection d,
+	unsigned long long & value)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		fs::path file("/sys/class/net");
 		file /= _networkInterfaceName;
 		file /= "statistics";
@@ -171,7 +181,8 @@ void NetSnapshots::setBytesSnapshotValue(const NetDirection d, unsigned long lon
 		std::getline(snapshotFile, line);
 		value = toULL(line);
 	}
-	catch (const std::ifstream::failure & e) {
+	catch (const std::ifstream::failure & e)
+	{
 		GKLog2(error, "error opening/reading/closing kernel route file : ", e.what());
 		throw GLogiKExcept("ifstream error");
 	}

@@ -58,7 +58,8 @@ void DaemonAndServiceTab::buildTab(void)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		QVBoxLayout* vBox = new QVBoxLayout(this);
 		GKLog(trace, "allocated QVBoxLayout")
 
@@ -120,13 +121,24 @@ void DaemonAndServiceTab::buildTab(void)
 
 			_pStartButton->setEnabled(false);
 
-			QObject::connect(_pStartButton, &QPushButton::clicked,
-				this, &DaemonAndServiceTab::sendServiceStartRequest);
+			QObject::connect(
+				_pStartButton, &QPushButton::clicked,
+				this, &DaemonAndServiceTab::sendServiceStartRequest
+			);
+
+			_pDBus->declareIntrospectableSignal(
+				_sessionBus,
+				GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
+				GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+				GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
+				{ {"q", "sleep_ms", "out", "sleeping time in milliseconds before spawning service"} }
+			);
 		}
 
 		/* -- -- -- */
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
 		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}
@@ -155,8 +167,9 @@ void DaemonAndServiceTab::updateTab(void)
 		_pStartButton->setEnabled(false);
 	}
 
-	const std::string remoteMethod("GetInformations");
-	try {
+	const std::string remoteMethod(GK_DBUS_SERVICE_METHOD_GET_INFORMATIONS);
+	try
+	{
 		_pDBus->initializeRemoteMethodCall(
 			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
@@ -168,7 +181,8 @@ void DaemonAndServiceTab::updateTab(void)
 
 		_pDBus->sendRemoteMethodCall();
 
-		try {
+		try
+		{
 			_pDBus->waitForRemoteMethodCallReply();
 
 			const std::vector<std::string> ret = _pDBus->getNextStringArray();
@@ -193,13 +207,15 @@ void DaemonAndServiceTab::updateTab(void)
 			_pStartButton->setVisible(false);
 			_pStartButton->setEnabled(false);
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			/*  make service start button visible and usable only when
 			 *  service is not started */
 			std::string reason(e.what());
 			/* got DBus error as reply : The name com.glogik.Client
 			 * was not provided by any .service files */
-			if(reason.find("not provided") != std::string::npos) {
+			if(reason.find("not provided") != std::string::npos)
+			{
 				_pStartButton->setVisible(true);
 				_pStartButton->setEnabled(true);
 			}
@@ -208,7 +224,8 @@ void DaemonAndServiceTab::updateTab(void)
 			throw GLogiKExcept("failure to get request reply");
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
 		throw GLogiKExcept("failure to build request");
@@ -222,13 +239,14 @@ void DaemonAndServiceTab::sendServiceStartRequest(void)
 	_pStartButton->setEnabled(false);
 
 	std::string status("desktop service seems not started, request");
-	try {
+	try
+	{
 		/* asking the launcher to spawn the service after sleeping 100 ms */
 		_pDBus->initializeBroadcastSignal(
 			_sessionBus,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-			"ServiceStartRequest"
+			GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST
 		);
 		_pDBus->appendUInt16ToBroadcastSignal(100);
 		_pDBus->sendBroadcastSignal();
@@ -236,7 +254,8 @@ void DaemonAndServiceTab::sendServiceStartRequest(void)
 		status += " sent to launcher";
 		LOG(info) << status;
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		_pDBus->abandonBroadcastSignal();
 		status += " to launcher failed";
 		LOG(error) << status << " - " << e.what();

@@ -51,7 +51,8 @@ void SleepInhibition::startSleepInhibition(
 
 	this->inhibitSleepState();
 
-	switch(_sessionFramework) {
+	switch(_sessionFramework)
+	{
 		/* logind */
 		case SessionFramework::FW_LOGIND:
 			_pDBus->NSGKDBus::Callback<SIGb2v>::receiveSignal(
@@ -74,7 +75,8 @@ void SleepInhibition::stopSleepInhibition(void) noexcept
 {
 	GK_LOG_FUNC
 
-	switch(_sessionFramework) {
+	switch(_sessionFramework)
+	{
 		/* logind */
 		case SessionFramework::FW_LOGIND:
 			_pDBus->removeSignalsInterface(_systemBus,
@@ -95,7 +97,8 @@ void SleepInhibition::inhibitSleepState(void)
 	GK_LOG_FUNC
 
 	const std::string remoteMethod("Inhibit");
-	try {
+	try
+	{
 		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
 			LOGIND_DBUS_BUS_CONNECTION_NAME,
@@ -111,7 +114,8 @@ void SleepInhibition::inhibitSleepState(void)
 
 		_pDBus->sendRemoteMethodCall();
 
-		try {
+		try
+		{
 			_pDBus->waitForRemoteMethodCallReply();
 
 			_delayLockPID = _pDBus->getNextInt32Argument();
@@ -119,16 +123,19 @@ void SleepInhibition::inhibitSleepState(void)
 			_sessionFramework = SessionFramework::FW_LOGIND;
 			GKLog2(trace, "got pid for delay lock from logind: ", static_cast<int>(_delayLockPID))
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			LogRemoteCallGetReplyFailure
 		}
 	}
-	catch (const GKDBusMessageWrongBuild & e) {
+	catch (const GKDBusMessageWrongBuild & e)
+	{
 		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
 
-	switch(_sessionFramework) {
+	switch(_sessionFramework)
+	{
 		/* logind */
 		case SessionFramework::FW_LOGIND:
 			LOG(info) << "successfully contacted logind";
@@ -144,11 +151,13 @@ void SleepInhibition::releaseDelayLock(void)
 	GK_LOG_FUNC
 
 	GKLog(trace, "release delay lock")
-	if( _delayLockPID != -1 ) {
+	if( _delayLockPID != -1 )
+	{
 		const int ret = close(_delayLockPID);
 		const int close_errno = errno;
 
-		if(ret == -1) {
+		if(ret == -1)
+		{
 			LOG(error)	<< "delay lock close : " << getErrnoString(close_errno);
 		}
 
@@ -161,12 +170,14 @@ void SleepInhibition::handleSleepEvent(const bool mode)
 {
 	GK_LOG_FUNC
 
-	if(mode) {
+	if(mode)
+	{
 		GKLog(trace, "going to sleep, stopping devices")
 		_pDevicesManager->stopInitializedDevices();
 		this->releaseDelayLock();
 	}
-	else {
+	else
+	{
 		GKLog(trace, "resuming from sleep, starting devices")
 		this->inhibitSleepState();
 		/* don't start devices too early after resuming */

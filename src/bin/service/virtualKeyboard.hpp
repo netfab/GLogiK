@@ -46,7 +46,10 @@ class VirtualKeyboard
 		libevdev_uinput *_pUInputDevice;
 
 		void enableEventType(unsigned int type);
-		void enableEventCode(unsigned int type, unsigned int code);
+		void enableEventCode(
+			unsigned int type,
+			unsigned int code
+		);
 };
 
 } // namespace GLogiK

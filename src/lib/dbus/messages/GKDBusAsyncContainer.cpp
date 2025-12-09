@@ -78,7 +78,8 @@ void GKDBusMessageAsyncContainer::newAsyncContainer(void)
 {
 	GK_LOG_FUNC
 
-	if(_message != nullptr) {
+	if(_message != nullptr)
+	{
 		LOG(warning) << "async container not NULL";
 	}
 
@@ -99,7 +100,8 @@ void GKDBusMessageAsyncContainer::freeAsyncContainer(void)
 {
 	GK_LOG_FUNC
 
-	if(_message == nullptr) {
+	if(_message == nullptr)
+	{
 		LOG(warning) << "NULL async container";
 		return;
 	}

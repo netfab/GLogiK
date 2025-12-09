@@ -35,8 +35,8 @@ GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 	const char* destination,	/* destination, if NULL, broadcast */
 	const char* objectPath,		/* the path to the object emitting the signal */
 	const char* interface,		/* interface the signal is emitted from */
-	const char* signal			/* name of signal */
-	) : GKDBusMessage(connection)
+	const char* signal)			/* name of signal */
+		:	GKDBusMessage(connection)
 {
 	GK_LOG_FUNC
 
@@ -51,7 +51,8 @@ GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 	if(_message == nullptr)
 		throw GKDBusMessageWrongBuild("can't allocate memory for Signal DBus message");
 
-	if( destination != nullptr ) {
+	if( destination != nullptr )
+	{
 #if DEBUG_GKDBUS
 		GKLog2(trace, "prepare sending signal to ", destination)
 #endif
@@ -69,14 +70,16 @@ GKDBusBroadcastSignal::~GKDBusBroadcastSignal()
 {
 	GK_LOG_FUNC
 
-	if(_hosedMessage) {
+	if(_hosedMessage)
+	{
 		LOG(warning) << "DBus hosed message, giving up";
 		dbus_message_unref(_message);
 		return;
 	}
 
 	// TODO dbus_uint32_t serial;
-	if( ! dbus_connection_send(_connection, _message, nullptr) ) {
+	if( ! dbus_connection_send(_connection, _message, nullptr) )
+	{
 		dbus_message_unref(_message);
 		LOG(error) << "DBus signal sending failure";
 		return;
@@ -126,10 +129,12 @@ void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 	if(_signal) /* sanity check */
 		throw GKDBusMessageWrongBuild("DBus signal already allocated");
 
-	try {
+	try
+	{
 		_signal = new GKDBusBroadcastSignal(connection, nullptr, objectPath, interface, signal);
 	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
+	catch (const std::bad_alloc& e)
+	{ /* handle new() failure */
 		LOG(error) << "GKDBus broadcast signal allocation failure : " << e.what();
 		throw GKDBusMessageWrongBuild("allocation error");
 	}
@@ -181,11 +186,13 @@ void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void)
 {
 	GK_LOG_FUNC
 
-	if(_signal) { /* sanity check */
+	if(_signal)
+	{ /* sanity check */
 		delete _signal;
 		_signal = nullptr;
 	}
-	else {
+	else
+	{
 		LOG(warning) << "tried to send NULL signal";
 		throw GKDBusMessageWrongBuild("tried to send NULL signal");
 	}
@@ -195,12 +202,14 @@ void GKDBusMessageBroadcastSignal::abandonBroadcastSignal(void)
 {
 	GK_LOG_FUNC
 
-	if(_signal) { /* sanity check */
+	if(_signal)
+	{ /* sanity check */
 		_signal->abandon();
 		delete _signal;
 		_signal = nullptr;
 	}
-	else {
+	else
+	{
 		LOG(warning) << "tried to abandon NULL signal";
 	}
 }

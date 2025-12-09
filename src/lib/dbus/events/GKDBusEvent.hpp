@@ -42,7 +42,8 @@ enum class GKDBusEventType : uint8_t
 };
 
 /* structure for introspection */
-struct DBusMethodArgument {
+struct DBusMethodArgument
+{
 	const std::string type;
 	const std::string name;
 	const std::string direction;

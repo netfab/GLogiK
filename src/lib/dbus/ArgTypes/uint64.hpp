@@ -42,7 +42,10 @@ class TypeUInt64
 		TypeUInt64(void) = default;
 		~TypeUInt64(void) = default;
 
-		void appendUInt64(DBusMessageIter *iter, const uint64_t value);
+		void appendUInt64(
+			DBusMessageIter *iter,
+			const uint64_t value
+		);
 
 	private:
 };

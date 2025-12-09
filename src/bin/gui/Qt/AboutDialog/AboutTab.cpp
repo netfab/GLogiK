@@ -37,13 +37,14 @@ void AboutTab::buildTab(void)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		QVBoxLayout* vBox = new QVBoxLayout(this);
 		GKLog(trace, "allocated QVBoxLayout")
 
 		this->setLayout(vBox);
 
-		vBox->addSpacing(10);
+		vBox->addWidget( this->getHLine() );
 
 		{
 			QString mainText("GKcQt ");
@@ -62,12 +63,12 @@ void AboutTab::buildTab(void)
 
 		/* -- -- */
 
-		vBox->addSpacing(10);
+		vBox->addWidget( this->getHLine() );
 
 		/* -- -- */
 
 		{
-			QString descText("A Qt5 graphical user interface for the\nGLogiK desktop service.");
+			QString descText("A Qt graphical user interface for the\nGLogiK desktop service.");
 
 			QLabel* descLabel = new QLabel(descText);
 			vBox->addWidget(descLabel);
@@ -81,7 +82,7 @@ void AboutTab::buildTab(void)
 		}
 
 		{
-			QString descText("GLogiK, daemon to handle special features on\nsome gaming keyboards.");
+			QString descText("GLogiK, daemon and utilities to handle\nspecial features on some gaming keyboards.");
 
 			QLabel* descLabel = new QLabel(descText);
 			vBox->addWidget(descLabel);
@@ -95,7 +96,7 @@ void AboutTab::buildTab(void)
 		}
 
 		{
-			QString descText("Copyright 2016 - 2023 Fabrice Delliaux");
+			QString descText("Copyright 2016 - 2025 Fabrice Delliaux");
 
 			QLabel* descLabel = new QLabel(descText);
 			vBox->addWidget(descLabel);
@@ -145,8 +146,11 @@ void AboutTab::buildTab(void)
 			cFont.setPointSize(8);
 			descLabel->setFont(cFont);
 		}
+
+		vBox->addWidget( this->getHLine() );
 	}
-	catch (const std::bad_alloc& e) {
+	catch (const std::bad_alloc& e)
+	{
 		LOG(error) << "bad allocation : " << e.what();
 		throw;
 	}

@@ -33,21 +33,22 @@ template <>
 	void callbackEvent<SIGss2b>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message,
-		DBusMessage* asyncContainer
-	)
+		DBusMessage* asyncContainer)
 {
 	ArgBase::fillInArguments(message);
 
 	bool ret = false;
 
-	try {
+	try
+	{
 		const std::string arg1( ArgString::getNextStringArgument() );
 		const std::string arg2( ArgString::getNextStringArgument() );
 
 		/* call two strings to bool callback */
 		ret = this->callback(arg1, arg2);
 	}
-	catch ( const GLogiKExcept & e ) {
+	catch ( const GLogiKExcept & e )
+	{
 		/* send error if necessary when something was wrong */
 		this->sendCallbackError(connection, message, e.what());
 	}
@@ -56,13 +57,15 @@ template <>
 	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
 		return;
 
-	try {
+	try
+	{
 		this->initializeReply(connection, message);
 		this->appendBooleanToReply(ret);
 
 		this->appendAsyncArgsToReply(asyncContainer);
 	}
-	catch ( const GLogiKExcept & e ) {
+	catch ( const GLogiKExcept & e )
+	{
 		/* delete reply object if allocated and send error reply */
 		this->sendReplyError(connection, message, e.what());
 		return;

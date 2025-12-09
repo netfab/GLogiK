@@ -35,7 +35,8 @@
 namespace GLogiK
 {
 
-typedef std::initializer_list<std::pair<const std::string, std::pair<uint16_t, uint16_t>>> charactersMap_type;
+typedef std::initializer_list<
+	std::pair<const std::string, std::pair<uint16_t, uint16_t>>	> charactersMap_type;
 
 class PBMFont
 	:	virtual private PBMFile

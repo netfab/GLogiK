@@ -38,7 +38,10 @@ class SystemMonitor
 		SystemMonitor(void);
 		~SystemMonitor(void);
 
-		void init(FontsManager* const pFonts, const std::string & product);
+		void init(
+			FontsManager* const pFonts,
+			const std::string & product
+		);
 
 		const PixelsData & getNextPBMFrame(
 			FontsManager* const pFonts,

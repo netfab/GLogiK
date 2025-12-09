@@ -36,13 +36,7 @@ namespace NSGKUtils
 class RandomGenerator
 {
 	public:
-		RandomGenerator(const std::vector<char> & charset = 
-			{	'0','1','2','3','4','5','6','7','8','9',
-				'a','b','c','d','e','f','g','h','i','j',
-				'k','l','m','n','o','p','q','r','s','t',
-				'u','v','w','x','y','z'
-			}
-		);
+		RandomGenerator(const std::vector<char> & charset = RandomGenerator::defaultCharset);
 		~RandomGenerator(void);
 
 		const std::string getString(std::size_t length);
@@ -54,6 +48,7 @@ class RandomGenerator
 		std::default_random_engine _rng;
 		std::uniform_int_distribution<> _dist;
 
+		static const std::vector<char> defaultCharset;
 };
 
 } // namespace NSGKUtils

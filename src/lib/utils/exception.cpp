@@ -28,8 +28,14 @@
 namespace NSGKUtils
 {
 
-GLogiKExcept::GLogiKExcept( const std::string& msg ) : message(msg) {}
-GLogiKExcept::~GLogiKExcept( void ) throw() {}
+GLogiKExcept::GLogiKExcept( const std::string& msg )
+	:	message(msg)
+{
+}
+
+GLogiKExcept::~GLogiKExcept( void ) throw()
+{
+}
 
 const char* GLogiKExcept::what( void ) const throw()
 {

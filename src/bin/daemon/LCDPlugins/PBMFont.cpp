@@ -90,12 +90,14 @@ PBMFont::PBMFont(
 	fullpath /= PBMName;
 	fullpath += ".pbm";
 
-	try {
+	try
+	{
 		/* initialize PBM container */
 		_PBMData.resize( (PBMWidth / 8) * PBMHeight, 0 );
 		this->readPBM(fullpath.string(), _PBMData, PBMWidth, PBMHeight);
 	}
-	catch (const std::exception & e) {
+	catch (const std::exception & e)
+	{
 		GKSysLogError("vector resize exception ? ", fullpath.string());
 		throw GLogiKExcept( e.what() );
 	}
@@ -111,14 +113,13 @@ PBMFont::~PBMFont()
 const uint16_t PBMFont::getCenteredXPos(const std::string & string)
 {
 	uint16_t XPos = LCD_SCREEN_WIDTH;
-	for(const char & c : string) {
+	for(const char & c : string)
+	{
 		XPos -= (_charWidth - _fontLeftShift);
 		// XXX
-		if(_extraLeftShift > 0) {
-			if(hackstring.find(c) == std::string::npos) {
+		if(_extraLeftShift > 0)
+			if(hackstring.find(c) == std::string::npos)
 				XPos += _extraLeftShift;
-			}
-		}
 	}
 	return static_cast<uint16_t>(XPos/2);
 }
@@ -138,22 +139,26 @@ void PBMFont::printCharacterOnFrame(
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		_charX = _charsMap.at(character).first;
 		_charY = _charsMap[character].second;
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		std::ostringstream warn(_fontName, std::ios_base::app);
 		warn << " font : unknown character : " << character;
 		throw GLogiKExcept( warn.str() );
 	}
 
-	if(PBMXPos >= (LCD_SCREEN_WIDTH - _charWidth)) {
+	if(PBMXPos >= (LCD_SCREEN_WIDTH - _charWidth))
+	{
 		std::ostringstream warn(_fontName, std::ios_base::app);
 		warn << " font : pre-breaking write string loop : x : " << std::to_string(PBMXPos);
 		throw GLogiKExcept( warn.str() );
 	}
-	if(PBMYPos >= (LCD_SCREEN_HEIGHT - _charHeight)) {
+	if(PBMYPos >= (LCD_SCREEN_HEIGHT - _charHeight))
+	{
 		std::ostringstream warn(_fontName, std::ios_base::app);
 		warn << " font : pre-breaking write string loop : y : " << std::to_string(PBMYPos);
 		throw GLogiKExcept( warn.str() );
@@ -170,7 +175,8 @@ void PBMFont::printCharacterOnFrame(
 	const  int16_t rightShift = (_shiftCharBase - xModuloComp8);
 
 #if DEBUG_PBMFONT
-	if(GKLogging::GKDebug) {
+	if(GKLogging::GKDebug)
+	{
 		LOG(trace)	<< "xPos: " << PBMXPos
 					<< " - xByte: " << xByte
 					<< " - xByte modulo: " << xModulo;
@@ -178,24 +184,26 @@ void PBMFont::printCharacterOnFrame(
 	}
 #endif
 
-	try {
-		for(uint16_t i = 0; i < _charHeight; i++) {
-			for(uint16_t j = 0; j < _charBytes; j++) {
+	try
+	{
+		for(uint16_t i = 0; i < _charHeight; i++)
+			for(uint16_t j = 0; j < _charBytes; j++)
+			{
 				const unsigned char c = this->getCharacterLine(i, j);
 				index = (DEFAULT_PBM_WIDTH_IN_BYTES * (PBMYPos+i)) + xByte + j;
 
 				frame.at(index) &= (0b11111111 << xModuloComp8);
-				if(rightShift > 0) {
+				if(rightShift > 0)
+				{
 					frame.at(index+1) = (c << (8 - rightShift));
 					frame[index] |= (c >> rightShift);
 				}
-				else {
+				else
 					frame.at(index) |= (c << (-rightShift));
-				}
 			}
-		}
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		std::ostringstream warn(_fontName, std::ios_base::app);
 		warn << " font : wrong frame index : " << std::to_string(index);
 		throw GLogiKExcept( warn.str() );
@@ -206,15 +214,14 @@ void PBMFont::printCharacterOnFrame(
 	// XXX ugly hack
 	// applying another leftshift, except for those characters
 	// which are very wide compared to others
-	if(_extraLeftShift > 0) {
-		if(hackstring.find(character) == std::string::npos) {
+	if(_extraLeftShift > 0)
+		if(hackstring.find(character) == std::string::npos)
 			PBMXPos -= _extraLeftShift;
-		}
-	}
-
 }
 
-const unsigned char PBMFont::getCharacterLine(const uint16_t line, const uint16_t charByte) const
+const unsigned char PBMFont::getCharacterLine(
+	const uint16_t line,
+	const uint16_t charByte) const
 {
 	GK_LOG_FUNC
 
@@ -233,9 +240,12 @@ const unsigned char PBMFont::getCharacterLine(const uint16_t line, const uint16_
 				<< " index: " << i+1;
 #endif
 
-	try {
-		if(_charWidth == 6) {
-			switch( (_charX % 4) ) {
+	try
+	{
+		if(_charWidth == 6)
+		{
+			switch( (_charX % 4) )
+			{
 				case 0 :
 					c = (_PBMData.at(i) >> 2);
 					break;
@@ -252,8 +262,10 @@ const unsigned char PBMFont::getCharacterLine(const uint16_t line, const uint16_
 					break;
 			}
 		}
-		else if(_charWidth == 5) {
-			switch( (_charX % 8) ) {
+		else if(_charWidth == 5)
+		{
+			switch( (_charX % 8) )
+			{
 				case 0:
 					c = (_PBMData.at(i) >> 3);
 					break;
@@ -284,12 +296,14 @@ const unsigned char PBMFont::getCharacterLine(const uint16_t line, const uint16_
 					break;
 			}
 		}
-		else if((_charWidth % 8) == 0) {
+		else if((_charWidth % 8) == 0)
+		{
 			/* charByte modifier when _charWidth multiple of 8 */
 			c = (_PBMData.at(i + charByte));
 		}
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		std::ostringstream error(_fontName, std::ios_base::app);
 		error << " - wrong index : ";
 		error << oor.what();

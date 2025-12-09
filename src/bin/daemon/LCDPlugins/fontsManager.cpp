@@ -36,9 +36,8 @@ FontsManager::FontsManager()
 
 FontsManager::~FontsManager()
 {
-	for(const auto & font_pair : _fonts) {
+	for(const auto & font_pair : _fonts)
 		delete font_pair.second;
-	}
 	_fonts.clear();
 }
 
@@ -46,10 +45,12 @@ const uint16_t FontsManager::getCenteredXPos(
 	const FontID fontID,
 	const std::string & string)
 {
-	try {
+	try
+	{
 		return _fonts.at(fontID)->getCenteredXPos(string);
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		this->initializeFont(fontID);
 		return _fonts.at(fontID)->getCenteredXPos(string);
 	}
@@ -57,10 +58,12 @@ const uint16_t FontsManager::getCenteredXPos(
 
 const uint16_t FontsManager::getCenteredYPos(const FontID fontID)
 {
-	try {
+	try
+	{
 		return _fonts.at(fontID)->getCenteredYPos();
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		this->initializeFont(fontID);
 		return _fonts.at(fontID)->getCenteredYPos();
 	}
@@ -73,10 +76,12 @@ void FontsManager::printCharacterOnFrame(
 	uint16_t & PBMXPos,
 	const uint16_t PBMYPos)
 {
-	try {
+	try
+	{
 		_fonts.at(fontID)->printCharacterOnFrame(frame, c, PBMXPos, PBMYPos);
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		this->initializeFont(fontID);
 		_fonts.at(fontID)->printCharacterOnFrame(frame, c, PBMXPos, PBMYPos);
 	}
@@ -89,8 +94,10 @@ void FontsManager::initializeFont(const FontID fontID)
 	GKLog2(trace, "initializing font ", toUInt(toEnumType(fontID)))
 
 	PBMFont* font = nullptr;
-	try {
-		switch(fontID) {
+	try
+	{
+		switch(fontID)
+		{
 			case FontID::MONOSPACE85:
 				font = new FontMonospace85();
 				break;
@@ -104,7 +111,8 @@ void FontsManager::initializeFont(const FontID fontID)
 				throw GLogiKExcept("unknown font ID");
 		}
 	}
-	catch (const std::bad_alloc& e) { /* handle new() failure */
+	catch (const std::bad_alloc& e)
+	{ /* handle new() failure */
 		throw GLogiKBadAlloc("font bad allocation");
 	}
 

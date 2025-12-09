@@ -23,9 +23,6 @@
 #include <functional>
 #include <thread>
 
-#include <boost/process.hpp>
-#include <boost/process/search_path.hpp>
-
 #include <config.h>
 
 #include "lib/utils/utils.hpp"
@@ -33,7 +30,6 @@
 
 #include "DBusHandler.hpp"
 
-namespace bp = boost::process;
 namespace chr = std::chrono;
 
 namespace GLogiK
@@ -86,14 +82,15 @@ void DBusHandler::cleanDBusRequests(void)
  *
  */
 
-void DBusHandler::initializeGKDBusSignals(void) {
+void DBusHandler::initializeGKDBusSignals(void)
+{
 	_pDBus->NSGKDBus::Callback<SIGq2v>::receiveSignal(
 		_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		"ServiceStartRequest",
-		{},
+		GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
+		{ {"q", "sleep_ms", "in", "sleeping time in milliseconds before spawning service"} },
 		std::bind(&DBusHandler::spawnService, this, std::placeholders::_1)
 	);
 
@@ -102,8 +99,8 @@ void DBusHandler::initializeGKDBusSignals(void) {
 		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
-		"ServiceStartRequest",
-		{},
+		GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
+		{ {"q", "sleep_ms", "in", "sleeping time in milliseconds before spawning service"} },
 		std::bind(&DBusHandler::spawnService, this, std::placeholders::_1)
 	);
 }
@@ -114,44 +111,30 @@ void DBusHandler::spawnService(const uint16_t timelapse)
 
 	using steady = chr::steady_clock;
 
-	LOG(info) << "received signal: " << __func__;
-	LOG(info) << "sleeping " << timelapse << " milliseconds before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
+	LOG(info)	<< "received signal: " << __func__;
+	LOG(info)	<< "sleeping " << timelapse
+				<< " milliseconds before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
 	std::this_thread::sleep_for(chr::milliseconds(timelapse));
 
 	const steady::time_point now = steady::now();
 	const steady::duration timeLapse = now - _lastCall;
-	if(timeLapse > _tenSeconds) {
+	if(timeLapse > _tenSeconds)
+	{
 		_lastCall = now;
 
-		try {
-			auto p = bp::search_path(GLOGIKS_DESKTOP_SERVICE_NAME);
-			if( p.empty() ) {
-				LOG(error) << GLOGIKS_DESKTOP_SERVICE_NAME << " executable not found in PATH";
-				return;
-			}
-
-			bp::group g;
+		std::vector<std::string> args;
 
 #if DEBUGGING_ON
-			if(GKLogging::GKDebug) {
-				bp::spawn(p, "-D", g);
-			}
-			else {
-				bp::spawn(p, g);
-			}
-#else
-			bp::spawn(p, g);
+		if(GKLogging::GKDebug)
+			args.push_back("-D");
 #endif
 
-			g.wait();
-		}
-		catch (const bp::process_error & e) {
-			LOG(error) << "exception catched while trying to spawn process: " << GLOGIKS_DESKTOP_SERVICE_NAME;
-			LOG(error) << e.what();
-		}
+		process::runCommand(GLOGIKS_DESKTOP_SERVICE_NAME, args);
 	}
-	else {
-		double nsec = static_cast<double>(timeLapse.count()) * steady::period::num / steady::period::den;
+	else
+	{
+		double nsec = static_cast<double>(timeLapse.count()) *
+			steady::period::num / steady::period::den;
 		LOG(info) << "time lapse since last call : " << nsec << " seconds - ignoring";
 	}
 }

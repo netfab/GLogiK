@@ -50,7 +50,7 @@ class GKeysBanksCapability
 		banksMap_type & getBanks(void);
 		const banksMap_type & getBanks(void) const;
 		void setBanks(const banksMap_type & GKeysBanks);
-		void checkBanksKeys(void);
+		void checkBanksKeys(void) noexcept;
 
 		void setCurrentBankID(MKeysID bankID);
 		const MKeysID getCurrentBankID(void) const;
@@ -64,7 +64,9 @@ class GKeysBanksCapability
 		friend class boost::serialization::access;
 
 		template<class Archive>
-			void serialize(Archive & ar, const unsigned int version)
+		void serialize(
+			Archive & ar,
+			const unsigned int version)
 		{
 			ar & _GKeysBanks;
 		}

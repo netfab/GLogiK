@@ -33,18 +33,20 @@ template <>
 	void callbackEvent<SIGs2s>::runCallback(
 		DBusConnection* const connection,
 		DBusMessage* message,
-		DBusMessage* asyncContainer
-	)
+		DBusMessage* asyncContainer)
 {
 	std::string arg;
 	std::string ret;
 
-	try {
+	try
+	{
 		/* handle introspection special case */
-		if(this->eventName == "Introspect") {
+		if(this->eventName == "Introspect")
+		{
 			arg = toString( dbus_message_get_path(message) );
 		}
-		else {
+		else
+		{
 			ArgBase::fillInArguments(message);
 			arg = ArgString::getNextStringArgument();
 		}
@@ -52,7 +54,8 @@ template <>
 		/* call string to string callback */
 		ret = this->callback(arg);
 	}
-	catch ( const GLogiKExcept & e ) {
+	catch ( const GLogiKExcept & e )
+	{
 		/* send error if necessary when something was wrong */
 		this->sendCallbackError(connection, message, e.what());
 	}
@@ -61,13 +64,15 @@ template <>
 	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
 		return;
 
-	try {
+	try
+	{
 		this->initializeReply(connection, message);
 		this->appendStringToReply(ret);
 
 		this->appendAsyncArgsToReply(asyncContainer);
 	}
-	catch ( const GLogiKExcept & e ) {
+	catch ( const GLogiKExcept & e )
+	{
 		/* delete reply object if allocated and send error reply */
 		this->sendReplyError(connection, message, e.what());
 		return;

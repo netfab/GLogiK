@@ -104,9 +104,7 @@ class KeyboardDriver
 			const uint8_t b,
 			const uint64_t LCDPluginsMask1
 		);
-		const LCDPPArray_type & getDeviceLCDPluginsProperties(
-			const std::string & devID
-		) const;
+		const LCDPPArray_type & getDeviceLCDPluginsProperties(const std::string & devID) const;
 
 		/* --- */
 		virtual const uint16_t getDriverID() const = 0;
@@ -200,13 +198,25 @@ class KeyboardDriver
 
 		KeyStatus getPressedKeys(USBDevice & device);
 
-		const bool updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR=false);
-		void setDeviceLCDPluginsMask(USBDevice & device, uint64_t mask = 0);
+		const bool updateDeviceMxKeysLedsMask(
+			USBDevice & device,
+			bool disableMR=false
+		);
+		void setDeviceLCDPluginsMask(
+			USBDevice & device,
+			uint64_t mask = 0
+		);
 
 		uint16_t getTimeLapse(USBDevice & device);
-		const uint8_t handleModifierKeys(USBDevice & device, const uint16_t interval);
+		const uint8_t handleModifierKeys(
+			USBDevice & device,
+			const uint16_t interval
+		);
 
-		void checkDeviceFatalErrors(USBDevice & device, const std::string & place) const;
+		void checkDeviceFatalErrors(
+			USBDevice & device,
+			const std::string & place
+		) const;
 
 		void resetDeviceState(USBDevice & device);
 		void joinDeviceThreads(USBDevice & device);
@@ -259,7 +269,8 @@ class USBKeyboardDriver
 			int bufferLength,
 			unsigned int timeout
 		) override {
-			return USBAPI::performUSBDeviceLCDScreenInterruptTransfer(device, buffer, bufferLength, timeout);
+			return USBAPI::performUSBDeviceLCDScreenInterruptTransfer(
+				device, buffer, bufferLength, timeout);
 		}
 
 		void openUSBDevice(USBDevice & device) override {

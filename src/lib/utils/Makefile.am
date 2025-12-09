@@ -14,6 +14,7 @@ libGKUtils_la_LIBADD = \
 				@BOOST_FILESYSTEM_LIB@ \
 				@BOOST_LOG_SETUP_LIB@ \
 				@BOOST_LOG_LIB@ \
+				@BOOST_PROCESS_LIB@ \
 				@BOOST_THREAD_LIB@
 
 libGKUtils_la_SOURCES = \

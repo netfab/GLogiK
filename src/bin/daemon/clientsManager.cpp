@@ -39,8 +39,8 @@ using namespace NSGKUtils;
 ClientsManager::ClientsManager(
 	NSGKDBus::GKDBus* const pDBus,
 	DevicesManager* const pDevicesManager,
-	GKDepsMap_type* const pDepsMap
-)	:	_pDBus(pDBus),
+	GKDepsMap_type* const pDepsMap)
+	:	_pDBus(pDBus),
 		_pDevicesManager(pDevicesManager),
 		_pDepsMap(pDepsMap),
 		_active("active"),
@@ -60,9 +60,11 @@ ClientsManager::~ClientsManager()
 
 	GKLog(trace, "destroying clients manager")
 
-	for( auto & clientPair : _connectedClients ) {
+	for( auto & clientPair : _connectedClients )
+	{
 		Client* pClient = clientPair.second;
-		if( pClient != nullptr ) { /* sanity check */
+		if( pClient != nullptr )
+		{ /* sanity check */
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "destroying unfreed client : " << clientPair.first;
 			GKSysLogWarning(buffer.str());
@@ -76,6 +78,8 @@ ClientsManager::~ClientsManager()
 
 void ClientsManager::initializeDBusRequests(void)
 {
+	using namespace std::placeholders;  // for _1, _2, _3...
+
 	/* clients manager DBus object path and interface */
 	const auto & CM_OP = GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH;
 	const auto & CM_IF = GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE;
@@ -87,145 +91,164 @@ void ClientsManager::initializeDBusRequests(void)
 	const std::string dIN("in");	/* direction in */
 	const std::string dOUT("out");	/* direction out */
 
+	const std::string rValueComment("did the method succeeded ?");
+
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  ClientsManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
 
 	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
-		_systemBus, CM_OP, CM_IF, "RegisterClient",
+		_systemBus, CM_OP, CM_IF, GK_DBUS_DAEMON_METHOD_REGISTER_CLIENT,
 		{	{"s", "client_session_object_path", dIN, "client session object path"},
-			{"b", "did_register_succeeded", dOUT, "did the RegisterClient method succeeded ?"},
-			{"s", "failure_reason_or_client_id", dOUT, "if register success (bool==true), unique client ID, else (bool=false) failure reason"} },
-		std::bind(&ClientsManager::registerClient, this, std::placeholders::_1) );
+			{"b", "did_register_succeeded", dOUT, rValueComment},
+			{"s", "failure_reason_or_client_id", dOUT,
+			"if register success (bool==true), unique client ID, else (bool=false) failure reason"}
+		}, std::bind(&ClientsManager::registerClient, this, _1)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
-		_systemBus, CM_OP, CM_IF, "UnregisterClient",
+		_systemBus, CM_OP, CM_IF, GK_DBUS_DAEMON_METHOD_UNREGISTER_CLIENT,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
-			{"b", "did_unregister_succeeded", dOUT, "did the UnregisterClient method succeeded ?"} },
-		std::bind(&ClientsManager::unregisterClient, this, std::placeholders::_1) );
+			{"b", "did_unregister_succeeded", dOUT, rValueComment}
+		}, std::bind(&ClientsManager::unregisterClient, this, _1)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
-		_systemBus, CM_OP, CM_IF, "UpdateClientState",
+		_systemBus, CM_OP, CM_IF, GK_DBUS_DAEMON_METHOD_UPDATE_CLIENT_STATE,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "client_new_state", dIN, "client new state"},
-			{"b", "did_updateclientstate_succeeded", dOUT, "did the UpdateClientState method succeeded ?"} },
-		std::bind(&ClientsManager::updateClientState, this, std::placeholders::_1, std::placeholders::_2) );
+			{"b", "did_updateclientstate_succeeded", dOUT, rValueComment}
+		}, std::bind(&ClientsManager::updateClientState, this, _1, _2)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
-		_systemBus, CM_OP, CM_IF, "ToggleClientReadyPropertie",
+		_systemBus, CM_OP, CM_IF, GK_DBUS_DAEMON_METHOD_SET_CLIENT_READY,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
-			{"b", "did_method_succeeded", dOUT, "did the method succeeded ?"} },
-		std::bind(&ClientsManager::toggleClientReadyPropertie, this, std::placeholders::_1) );
+			{"b", "did_method_succeeded", dOUT, rValueComment}
+		}, std::bind(&ClientsManager::setClientReady, this, _1)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
-		_systemBus, CM_OP, CM_IF, "DeleteDeviceConfiguration",
+		_systemBus, CM_OP, CM_IF, GK_DBUS_DAEMON_METHOD_DELETE_DEVICE_CONFIGURATION,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"b", "did_deletedeviceconfiguration_succeeded", dOUT, "did the DeleteDeviceConfiguration method succeeded ?"} },
-		std::bind(&ClientsManager::deleteDeviceConfiguration, this, std::placeholders::_1, std::placeholders::_2) );
+			{"b", "did_deletedeviceconfiguration_succeeded", dOUT, rValueComment}
+		}, std::bind(&ClientsManager::deleteDeviceConfiguration, this, _1, _2)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGs2D>::exposeMethod(
-		_systemBus, CM_OP, CM_IF, "GetDaemonDependenciesMap",
+		_systemBus, CM_OP, CM_IF, GK_DBUS_DAEMON_METHOD_GET_DAEMON_DEPENDENCIES_MAP,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
-			{"a(yta(sss))", "dependencies_map", dOUT, "array of executable dependencies"} },
-		std::bind(&ClientsManager::getDaemonDependenciesMap, this, std::placeholders::_1) );
+			{"a(yta(sss))", "dependencies_map", dOUT, "array of executable dependencies"}
+		}, std::bind(&ClientsManager::getDaemonDependenciesMap, this, _1)
+	);
 
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  DevicesManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "StopDevice",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_STOP_DEVICE,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
-			{"b", "did_stop_succeeded", dOUT, "did the StopDevice method succeeded ?"} },
-		std::bind(&ClientsManager::stopDevice, this, std::placeholders::_1, std::placeholders::_2) );
+			{"b", "did_stop_succeeded", dOUT, rValueComment}
+		}, std::bind(&ClientsManager::stopDevice, this, _1, _2)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "StartDevice",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_START_DEVICE,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStoppedDevices"},
-			{"b", "did_start_succeeded", dOUT, "did the StartDevice method succeeded ?"} },
-		std::bind(&ClientsManager::startDevice, this, std::placeholders::_1, std::placeholders::_2) );
+			{"b", "did_start_succeeded", dOUT, rValueComment}
+		}, std::bind(&ClientsManager::startDevice, this, _1, _2)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "RestartDevice",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_RESTART_DEVICE,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
-			{"b", "did_restart_succeeded", dOUT, "did the RestartDevice method succeeded ?"} },
-		std::bind(&ClientsManager::restartDevice, this, std::placeholders::_1, std::placeholders::_2) );
+			{"b", "did_restart_succeeded", dOUT, rValueComment}
+		}, std::bind(&ClientsManager::restartDevice, this, _1, _2)
+	);
 
 		/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 		/* methods used to initialize devices on service-side */
 		/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 
 	_pDBus->NSGKDBus::Callback<SIGs2as>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "GetStartedDevices",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_GET_STARTED_DEVICES,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
-			{"as", "array_of_strings", dOUT, "array of started devices ID strings"} },
-		std::bind(&ClientsManager::getStartedDevices, this, std::placeholders::_1) );
+			{"as", "array_of_strings", dOUT, "array of started devices ID strings"}
+		}, std::bind(&ClientsManager::getStartedDevices, this, _1)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGs2as>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "GetStoppedDevices",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_GET_STOPPED_DEVICES,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
-			{"as", "array_of_strings", dOUT, "array of stopped devices ID strings"} },
-		std::bind(&ClientsManager::getStoppedDevices, this, std::placeholders::_1) );
+			{"as", "array_of_strings", dOUT, "array of stopped devices ID strings"}
+		}, std::bind(&ClientsManager::getStoppedDevices, this, _1)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGss2s>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "GetDeviceStatus",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID"},
-			{"s", "device status", dOUT, "string representing the device status"} },
-		std::bind(&ClientsManager::getDeviceStatus, this, std::placeholders::_1, std::placeholders::_2) );
+			{"s", "device status", dOUT, "string representing the device status"}
+		}, std::bind(&ClientsManager::getDeviceStatus, this, _1, _2)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGss2v>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "GetDeviceProperties",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_GET_DEVICE_PROPERTIES,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"sst", "get_device_properties", dOUT, "device properties"} },
-		std::bind(&ClientsManager::getDeviceProperties, this, std::placeholders::_1, std::placeholders::_2) );
+			{"sst", "get_device_properties", dOUT, "device properties"}
+		}, std::bind(&ClientsManager::getDeviceProperties, this, _1, _2)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGss2aP>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "GetDeviceLCDPluginsProperties",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"a(tss)", "get_lcd_plugins_properties_array", dOUT, "LCDPluginsProperties array"} },
-		std::bind(&ClientsManager::getDeviceLCDPluginsProperties, this, std::placeholders::_1, std::placeholders::_2) );
+			{"a(tss)", "get_lcd_plugins_properties_array", dOUT, "LCDPluginsProperties array"}
+		}, std::bind(&ClientsManager::getDeviceLCDPluginsProperties, this, _1, _2)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGss2aG>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "GetDeviceGKeysIDArray",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_GET_DEVICE_GKEYSID_ARRAY,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"ay", "array_of_keys_id", dOUT, "array of G-keys ID for the device"} },
-		std::bind(&ClientsManager::getDeviceGKeysIDArray, this, std::placeholders::_1, std::placeholders::_2) );
+			{"ay", "array_of_keys_id", dOUT, "array of G-keys ID for the device"}
+		}, std::bind(&ClientsManager::getDeviceGKeysIDArray, this, _1, _2)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGss2am>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "GetDeviceMKeysIDArray",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_GET_DEVICE_MKEYSID_ARRAY,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
-			{"ay", "array_of_keys_id", dOUT, "array of M-keys ID for the device"} },
-		std::bind(&ClientsManager::getDeviceMKeysIDArray, this, std::placeholders::_1, std::placeholders::_2) );
+			{"ay", "array_of_keys_id", dOUT, "array of M-keys ID for the device"}
+		}, std::bind(&ClientsManager::getDeviceMKeysIDArray, this, _1, _2)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGssyyy2b>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "SetDeviceBacklightColor",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_SET_DEVICE_BACKLIGHT_COLOR,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
 			{"y", "red_byte", dIN, "red byte for the RGB color model"},
 			{"y", "green_byte", dIN, "green byte for the RGB color model"},
 			{"y", "blue_byte", dIN, "blue byte for the RGB color model"},
-			{"b", "did_setcolor_succeeded", dOUT, "did the SetDeviceBacklightColor method succeeded ?"} },
-		std::bind(&ClientsManager::setDeviceBacklightColor, this, std::placeholders::_1, std::placeholders::_2,
-			std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
+			{"b", "did_setcolor_succeeded", dOUT, rValueComment}
+		}, std::bind(&ClientsManager::setDeviceBacklightColor, this, _1, _2, _3, _4, _5)
+	);
 
 	_pDBus->NSGKDBus::Callback<SIGssyt2b>::exposeMethod(
-		_systemBus, DM_OP, DM_IF, "SetDeviceLCDPluginsMask",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_DAEMON_METHOD_SET_DEVICE_LCD_PLUGINS_MASK,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
 			{"y", "LCD_Plugins_Mask_ID", dIN, "LCD plugins mask ID"},
 			{"t", "LCD_Plugins_Mask", dIN, "LCD plugins mask"},
-			{"b", "did_setmask_succeeded", dOUT, "did the SetDeviceLCDPluginsMask method succeeded ?"} },
-		std::bind(&ClientsManager::setDeviceLCDPluginsMask, this,
-			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4) );
+			{"b", "did_setmask_succeeded", dOUT, rValueComment}
+		}, std::bind(&ClientsManager::setDeviceLCDPluginsMask, this, _1, _2, _3, _4)
+	);
 
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- */
 	/*  declaration of introspectable signals */
@@ -234,45 +257,72 @@ void ClientsManager::initializeDBusRequests(void)
 
 	/*  ClientsManager D-Bus object  */
 
-	_pDBus->declareIntrospectableSignal(_systemBus, CM_OP, CM_IF, "DaemonIsStopping", {});
-	_pDBus->declareIntrospectableSignal(_systemBus, CM_OP, CM_IF, "DaemonIsStarting", {});
-	_pDBus->declareIntrospectableSignal(_systemBus, CM_OP, CM_IF, "ReportYourself",   {});
+	_pDBus->declareIntrospectableSignal(
+		_systemBus, CM_OP, CM_IF, GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING,
+		{}
+	);
+
+	_pDBus->declareIntrospectableSignal(
+		_systemBus, CM_OP, CM_IF, GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STARTING,
+		{}
+	);
+
+	_pDBus->declareIntrospectableSignal(
+		_systemBus, CM_OP, CM_IF, GK_DBUS_SERVICE_SIGNAL_REPORT_YOURSELF,
+		{}
+	);
 
 	/*  DevicesManager D-Bus object  */
 
 	_pDBus->declareIntrospectableSignal(
-		_systemBus, DM_OP, DM_IF, "DevicesStarted",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED,
 		{	{"as", "", dOUT, "array of started devices ID strings"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		_systemBus, DM_OP, DM_IF, "DevicesStopped",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED,
 		{	{"as", "", dOUT, "array of stopped devices ID strings"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		_systemBus, DM_OP, DM_IF, "DevicesUnplugged",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICES_UNPLUGGED,
 		{	{"as", "", dOUT, "array of unplugged devices ID strings"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		_systemBus, DM_OP, DM_IF, "DeviceMacroRecorded",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH,
 		{	{"s", "device_id", dOUT, "device ID"},
-			{"y", "macro_bankID", "in", "macro bankID"},
-			{"y", "macro_keyID", "in", "macro key ID"} }
+			{"y", "macro_bankID", dOUT, "macro bankID"}
+		}
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		_systemBus, DM_OP, DM_IF, "DeviceMacroCleared",
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_RECORDED,
 		{	{"s", "device_id", dOUT, "device ID"},
-			{"y", "macro_bankID", "in", "macro bankID"},
-			{"y", "macro_keyID", "in", "macro key ID"} }
+			{"y", "macro_keyID", dOUT, "macro key ID"},
+			{"a(yyq)", "macro_array", dOUT, "macro array"}
+		}
 	);
 
 	_pDBus->declareIntrospectableSignal(
-		_systemBus, DM_OP, DM_IF, "DeviceMediaEvent",
-		{	{"s", "device_id", "in", "device ID"},
-			{"s", "media_key_event", "in", "media key event"} }
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_CLEARED,
+		{	{"s", "device_id", dOUT, "device ID"},
+			{"y", "macro_keyID", dOUT, "macro key ID"}
+		}
+	);
+
+	_pDBus->declareIntrospectableSignal(
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICE_GKEY_EVENT,
+		{	{"s", "device_id", dOUT, "device ID"},
+			{"y", "macro_keyID", dOUT, "macro key ID"}
+		}
+	);
+
+	_pDBus->declareIntrospectableSignal(
+		_systemBus, DM_OP, DM_IF, GK_DBUS_SERVICE_SIGNAL_DEVICE_MEDIA_EVENT,
+		{	{"s", "device_id", dOUT, "device ID"},
+			{"s", "media_key_event", dOUT, "media key event"}
+		}
 	);
 }
 
@@ -294,43 +344,50 @@ void ClientsManager::waitForClientsDisconnections(void) noexcept
 {
 	GK_LOG_FUNC
 
-	if( _connectedClients.empty() ) {
+	if( _connectedClients.empty() )
+	{
 		GKLog(trace, "no client, empty container")
 		return;
 	}
 
-	this->sendSignalToClients(_connectedClients.size(), _pDBus, "DaemonIsStopping");
+	this->sendSignalToClients(
+		_connectedClients.size(), _pDBus, GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING
+	);
 
 	uint16_t c = 0;
 	GKLog(trace, "waiting for clients to unregister ...")
 
-	while( c++ < 40 and _connectedClients.size() > 0 ) { /* bonus point */
+	while( c++ < 40 and _connectedClients.size() > 0 )
+	{
 		_pDevicesManager->checkDBusMessages();
 		GKLog(trace, "sleeping for 40 ms ...")
 		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
 }
 
-const bool ClientsManager::registerClient(
-	const std::string & clientSessionObjectPath)
+const bool ClientsManager::registerClient(const std::string & clientSessionObjectPath)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		std::vector<std::string> toUnregister;
 
-		for(const auto & clientPair : _connectedClients ) {
+		for(const auto & clientPair : _connectedClients )
+		{
 			const std::string & clientID = clientPair.first;
 			Client* pClient = clientPair.second;
 
 			/* unresponsive client */
-			if( ! pClient->isAlive() ) {
+			if( ! pClient->isAlive() )
+			{
 				toUnregister.push_back(clientID);
 				continue;
 			}
 
 			/* this client is already registered, sending signal to check all clients */
-			if( pClient->getSessionObjectPath() == clientSessionObjectPath ) {
+			if( pClient->getSessionObjectPath() == clientSessionObjectPath )
+			{
 				std::ostringstream buffer(std::ios_base::app);
 				buffer << "client already registered : " << clientSessionObjectPath;
 				GKSysLogWarning(buffer.str());
@@ -341,10 +398,12 @@ const bool ClientsManager::registerClient(
 				/* process to check if registered clients are still alives, registered
 				 * clients will have 5 seconds to update their session state, else they
 				 * will be considered as crashed on next registerClient call */
-				for(auto & newPair : _connectedClients ) {
+				for(auto & newPair : _connectedClients )
 					newPair.second->uncheck();
-				}
-				this->sendSignalToClients(_connectedClients.size(), _pDBus, "ReportYourself");
+
+				this->sendSignalToClients(
+					_connectedClients.size(), _pDBus, GK_DBUS_SERVICE_SIGNAL_REPORT_YOURSELF
+				);
 
 				/* register failure, sender should wait and retry */
 				return false;
@@ -352,7 +411,8 @@ const bool ClientsManager::registerClient(
 		}
 
 		/* unregister crashed clients */
-		for(const auto & clientID : toUnregister ) {
+		for(const auto & clientID : toUnregister )
+		{
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "unregistering lost client (maybe crashed) with ID : " << clientID;
 			GKSysLogWarning(buffer.str());
@@ -362,10 +422,12 @@ const bool ClientsManager::registerClient(
 
 		throw std::out_of_range("not found");
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		std::string clientID;
 
-		try {
+		try
+		{
 			auto get_random_clientID = [] () -> const std::string
 			{
 				RandomGenerator rand;
@@ -387,13 +449,15 @@ const bool ClientsManager::registerClient(
 
 			_connectedClients[clientID] = new Client(clientSessionObjectPath, _pDevicesManager);
 		}
-		catch (const std::bad_alloc& e) { /* handle new() failure */
+		catch (const std::bad_alloc& e)
+		{ /* handle new() failure */
 			const std::string s = "new client allocation failure";
 			GKSysLogError(s);
 			_pDBus->appendAsyncString(s);
 			return false;
 		}
-		catch (const GLogiKExcept & e) {
+		catch (const GLogiKExcept & e)
+		{
 			GKSysLogError(e.what());
 			_pDBus->appendAsyncString("internal error");
 			return false;
@@ -410,12 +474,12 @@ const bool ClientsManager::registerClient(
 	return false;
 }
 
-const bool ClientsManager::unregisterClient(
-	const std::string & clientID)
+const bool ClientsManager::unregisterClient(const std::string & clientID)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		Client* pClient = _connectedClients.at(clientID);
 
 		std::ostringstream buffer(std::ios_base::app);
@@ -423,7 +487,8 @@ const bool ClientsManager::unregisterClient(
 		GKSysLogInfo(buffer.str());
 
 		/* resetting devices states first */
-		if( pClient->getSessionCurrentState() == _active ) {
+		if( pClient->getSessionCurrentState() == _active )
+		{
 			_pDevicesManager->resetDevicesStates();
 			GKLog2(trace, "decreasing active users # : ", _numActive)
 			_numActive--;
@@ -435,7 +500,8 @@ const bool ClientsManager::unregisterClient(
 
 		return true;
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 	return false;
@@ -452,69 +518,77 @@ const bool ClientsManager::updateClientState(
 		"state : ", state
 	)
 
-	if( (state != _active) and (state != "online") ) {
+	if( (state != _active) and (state != "online") )
+	{
 		std::ostringstream buffer(std::ios_base::app);
 		buffer << "unhandled state for updating devices : " << state;
 		GKSysLogWarning(buffer.str());
 		return false;
 	}
 
-	try {
+	try
+	{
 		Client* pClient = _connectedClients.at(clientID);
 		const std::string oldState( pClient->getSessionCurrentState() );
 		pClient->updateSessionState(state);
 
-		if( (oldState == _active) and (state != _active) ) {
+		if( (oldState == _active) and (state != _active) )
+		{
 			GKLog2(trace, "decreasing active users # : ", _numActive)
 			_numActive--;
 		}
 
-		if(state == _active) {
-			if(oldState != _active) {
+		if(state == _active)
+		{
+			if(oldState != _active)
+			{
 				GKLog2(trace, "increasing active users # : ", _numActive)
 				_numActive++;
 			}
 
-			if( pClient->isReady() ) {
+			if( pClient->isReady() )
+			{
 				GKLog(trace, "setting active user's parameters for all started devices")
-				for(const auto & devID : _pDevicesManager->getStartedDevices()) {
+				for(const auto & devID : _pDevicesManager->getStartedDevices())
 					pClient->setDeviceActiveUser(devID, _pDevicesManager);
-				}
 			}
 		}
 
 		GKLog2(trace, "active users # : ", _numActive)
-		if(_numActive == 0) {
+		if(_numActive == 0)
 			_pDevicesManager->resetDevicesStates();
-		}
 
 		return true;
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	return false;
 }
 
-const bool ClientsManager::toggleClientReadyPropertie(const std::string & clientID)
+const bool ClientsManager::setClientReady(const std::string & clientID)
 {
 	GK_LOG_FUNC
 
-	try {
+	try
+	{
 		Client* pClient = _connectedClients.at(clientID);
-		pClient->toggleClientReadyPropertie();
-		if( pClient->isReady() ) {
-			if(pClient->getSessionCurrentState() == _active) {
+		pClient->setReady();
+		if( pClient->isReady() )
+		{
+			if(pClient->getSessionCurrentState() == _active)
+			{
 				GKLog(trace, "setting active user's parameters for all started devices")
-				for(const auto & devID : _pDevicesManager->getStartedDevices()) {
+				for(const auto & devID : _pDevicesManager->getStartedDevices())
 					pClient->setDeviceActiveUser(devID, _pDevicesManager);
-				}
 			}
 		}
 		return true;
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 	return false;
@@ -531,11 +605,13 @@ const bool ClientsManager::deleteDeviceConfiguration(
 		CONST_STRING_CLIENT, clientID
 	)
 
-	try {
+	try
+	{
 		Client* pClient = _connectedClients.at(clientID);
 		return pClient->deleteDevice(devID);
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
@@ -549,12 +625,14 @@ const GKDepsMap_type &
 
 	GKLog2(trace, CONST_STRING_CLIENT, clientID)
 
-	try {
+	try
+	{
 		/* just checking that provided ID is known or log error */
 		Client* pClient = _connectedClients.at(clientID);
 		pClient->isAlive(); /* to avoid warning */
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
@@ -572,34 +650,43 @@ const bool ClientsManager::stopDevice(
 		CONST_STRING_CLIENT, clientID
 	)
 
-	try {
+	try
+	{
 		Client* pClient = _connectedClients.at(clientID);
 
-		if( ! pClient->isReady() ) {
+		if( ! pClient->isReady() )
+		{
 			GKSysLogWarning("device state change not allowed while client not ready");
 			return false;
 		}
 
-		if( ! pClient->isAlive() ) {
+		if( ! pClient->isAlive() )
+		{
 			GKSysLogWarning("device state change not allowed because client not alive");
 			return false;
 		}
 
-		if(pClient->getSessionCurrentState() != _active) {
+		if(pClient->getSessionCurrentState() != _active)
+		{
 			GKSysLogWarning("only active user can change device state");
 			return false;
 		}
 
 		const bool ret = _pDevicesManager->stopDevice(devID);
-		if(ret and _enabledSignals) {
+		if(ret and _enabledSignals)
+		{
 			const std::vector<std::string> array = {devID};
-			this->sendStatusSignalArrayToClients(_connectedClients.size(), _pDBus, "DevicesStopped", array);
+			this->sendStatusSignalArrayToClients(
+				_connectedClients.size(), _pDBus, GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED, array
+			);
 		}
 		return ret;
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
+
 	return false;
 }
 
@@ -614,39 +701,50 @@ const bool ClientsManager::startDevice(
 		CONST_STRING_CLIENT, clientID
 	)
 
-	try {
+	try
+	{
 		Client* pClient = _connectedClients.at(clientID);
 
-		if( ! pClient->isReady() ) {
+		if( ! pClient->isReady() )
+		{
 			GKSysLogWarning("device state change not allowed while client not ready");
 			return false;
 		}
 
-		if( ! pClient->isAlive() ) {
+		if( ! pClient->isAlive() )
+		{
 			GKSysLogWarning("device state change not allowed because client not alive");
 			return false;
 		}
 
-		if(pClient->getSessionCurrentState() != _active) {
+		if(pClient->getSessionCurrentState() != _active)
+		{
 			GKSysLogWarning("only active user can change device state");
 			return false;
 		}
 
 		const bool ret = _pDevicesManager->startDevice(devID);
-		if( ret ) {
+		if( ret )
+		{
 			/* enable user configuration */
 			pClient->setDeviceActiveUser(devID, _pDevicesManager);
 
-			if( _enabledSignals ) {
+			if( _enabledSignals )
+			{
 				const std::vector<std::string> array = {devID};
-				this->sendStatusSignalArrayToClients(_connectedClients.size(), _pDBus, "DevicesStarted", array);
+				this->sendStatusSignalArrayToClients(
+					_connectedClients.size(), _pDBus, GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED, array
+				);
 			}
 		}
+
 		return ret;
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
+
 	return false;
 }
 
@@ -664,20 +762,27 @@ const bool ClientsManager::restartDevice(
 	_enabledSignals = false;
 	const std::vector<std::string> array = {devID};
 
-	if( this->stopDevice(clientID, devID) ) {
-
+	if( this->stopDevice(clientID, devID) )
+	{
 		GKLog(trace, "sleeping for 1000 ms")
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-		if( this->startDevice(clientID, devID) ) {
+		if( this->startDevice(clientID, devID) )
+		{
 			_enabledSignals = true;
-			this->sendStatusSignalArrayToClients(_connectedClients.size(), _pDBus, "DevicesStarted", array);
+			this->sendStatusSignalArrayToClients(
+				_connectedClients.size(), _pDBus, GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED, array
+			);
+
 			return true;
 		}
 
 		_enabledSignals = true;
-		this->sendStatusSignalArrayToClients(_connectedClients.size(), _pDBus, "DevicesStopped", array);
+		this->sendStatusSignalArrayToClients(
+			_connectedClients.size(), _pDBus, GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED, array
+		);
 		GKSysLogError("device restarting failure : start failed");
+
 		return false;
 	}
 
@@ -691,26 +796,31 @@ const bool ClientsManager::restartDevice(
 	//  * device found but driver not found (unlikely)
 	// should send signal to clients to tell them to check device status
 	GKSysLogError("device restarting failure : stop failed");
+
 	return false;
 }
 
-const std::vector<std::string>
-	ClientsManager::getStartedDevices(const std::string & clientID)
+const std::vector<std::string> ClientsManager::getStartedDevices(const std::string & clientID)
 {
 	GK_LOG_FUNC
 
 	GKLog2(trace, CONST_STRING_CLIENT, clientID)
 
-	try {
+	try
+	{
+		// FIXME c++17 [[maybe_unused]]
 		Client* pClient = _connectedClients.at(clientID);
 		pClient->isAlive(); /* to avoid warning */
+
 		return _pDevicesManager->getStartedDevices();
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	const std::vector<std::string> ret;
+
 	return ret;
 }
 
@@ -721,16 +831,21 @@ const std::vector<std::string>
 
 	GKLog2(trace, CONST_STRING_CLIENT, clientID)
 
-	try {
+	try
+	{
+		// FIXME c++17 [[maybe_unused]]
 		Client* pClient = _connectedClients.at(clientID);
 		pClient->isAlive(); /* to avoid warning */
+
 		return _pDevicesManager->getStoppedDevices();
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	const std::vector<std::string> ret;
+
 	return ret;
 }
 
@@ -745,11 +860,13 @@ const std::string ClientsManager::getDeviceStatus(
 		CONST_STRING_CLIENT, clientID
 	)
 
-	try {
+	try
+	{
 		_connectedClients.at(clientID);
 		return _pDevicesManager->getDeviceStatus(devID);
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
@@ -767,9 +884,11 @@ void ClientsManager::getDeviceProperties(
 		CONST_STRING_CLIENT, clientID
 	)
 
-	try {
+	try
+	{
 		Client* pClient = _connectedClients.at(clientID);
-		if( pClient->isAlive() ) {
+		if( pClient->isAlive() )
+		{
 			/* initialize client device object which will be used to
 			 * store properties in upcoming setDevice{Foo,Bar} calls */
 			pClient->initializeDevice(_pDevicesManager, devID);
@@ -781,7 +900,8 @@ void ClientsManager::getDeviceProperties(
 		}
 		GKSysLogWarning("getting device properties not allowed because client not alive");
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 }
@@ -797,14 +917,15 @@ const LCDPPArray_type & ClientsManager::getDeviceLCDPluginsProperties(
 		CONST_STRING_CLIENT, clientID
 	)
 
-	try {
+	try
+	{
 		Client* pClient = _connectedClients.at(clientID);
-		if( pClient->isAlive() ) {
+		if( pClient->isAlive() )
 			return _pDevicesManager->getDeviceLCDPluginsProperties(devID);
-		}
 		GKSysLogWarning("getting device LCDPluginsProperties not allowed because client not alive");
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
@@ -826,18 +947,20 @@ const bool ClientsManager::setDeviceBacklightColor(
 		"RGB bytes : ", getHexRGB(r, g, b)
 	)
 
-	try {
+	try
+	{
 		Client* pClient = _connectedClients.at(clientID);
 		return pClient->setDeviceBacklightColor(devID, r, g, b);
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
+
 	return false;
 }
 
-const MKeysIDArray_type
-	ClientsManager::getDeviceMKeysIDArray(
+const MKeysIDArray_type	ClientsManager::getDeviceMKeysIDArray(
 		const std::string & clientID,
 		const std::string & devID)
 {
@@ -848,15 +971,18 @@ const MKeysIDArray_type
 		CONST_STRING_CLIENT, clientID
 	)
 
-	try {
+	try
+	{
 		_connectedClients.at(clientID);
 		return _pDevicesManager->getDeviceMKeysIDArray(devID);
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	MKeysIDArray_type ret;
+
 	return ret;
 }
 
@@ -872,15 +998,18 @@ const GKeysIDArray_type
 		CONST_STRING_CLIENT, clientID
 	)
 
-	try {
+	try
+	{
 		_connectedClients.at(clientID);
 		return _pDevicesManager->getDeviceGKeysIDArray(devID);
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
 
 	GKeysIDArray_type ret;
+
 	return ret;
 }
 
@@ -898,13 +1027,16 @@ const bool ClientsManager::setDeviceLCDPluginsMask(
 		"maskID : ", toUInt(maskID)
 	)
 
-	try {
+	try
+	{
 		Client* pClient = _connectedClients.at(clientID);
 		return pClient->setDeviceLCDPluginsMask(devID, maskID, mask);
 	}
-	catch (const std::out_of_range& oor) {
+	catch (const std::out_of_range& oor)
+	{
 		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
 	}
+
 	return false;
 }
 

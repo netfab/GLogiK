@@ -75,7 +75,7 @@ class LCDScreenPluginsManager
 		bool _currentPluginLocked;
 
 		void stopLCDPlugins(void);
-		void dumpPBMDataIntoLCDBuffer(PixelsData & LCDBuffer, const PixelsData & PBMData);
+		void dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData);
 };
 
 } // namespace GLogiK
