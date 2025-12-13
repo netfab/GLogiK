@@ -128,7 +128,7 @@ gk_logdir = '/var/log/GLogiK'
 define_array = [
   ['PACKAGE', meson.project_name()],
   ['PACKAGE_NAME', meson.project_name()],
-  ['PACKAGE_URL', 'https://glogik.tuxfamily.org/'],
+  ['PACKAGE_URL', 'https://netfab.frama.io/pages/glogik/'],
   ['PACKAGE_VERSION', meson.project_version()],
   ['VERSION', meson.project_version()],
   ['GK_LOGDIR', gk_logdir],
