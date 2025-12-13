@@ -77,7 +77,7 @@ MainWindow::MainWindow(QWidget *parent)
 		_pid(0),
 		_ignoreNextSignal(false)
 {
-	openlog("GKcQt", LOG_PID|LOG_CONS, LOG_USER);
+	openlog(GLOGIK_QT_GUI_NAME, LOG_PID|LOG_CONS, LOG_USER);
 }
 
 MainWindow::~MainWindow()
@@ -115,7 +115,7 @@ void MainWindow::init(const int& argc, char *argv[])
 
 #if DEBUGGING_ON
 		if(GKLogging::GKDebug)
-			GKLogging::initDebugFile("GKcQt", fs::owner_read|fs::owner_write|fs::group_read);
+			GKLogging::initDebugFile(GLOGIK_QT_GUI_NAME, fs::owner_read|fs::owner_write|fs::group_read);
 #endif
 		GKLogging::initConsoleLog();
 	}
@@ -129,7 +129,7 @@ void MainWindow::init(const int& argc, char *argv[])
 	/* -- -- -- */
 	/* -- -- -- */
 
-	LOG(info) << "Starting GKcQt vers. " << VERSION;
+	LOG(info) << "Starting " << GLOGIK_QT_GUI_NAME << " vers. " << VERSION;
 
 	process::setSignalHandler(SIGINT, MainWindow::handleSignal);
 	process::setSignalHandler(SIGTERM, MainWindow::handleSignal);
@@ -397,7 +397,7 @@ void MainWindow::aboutToQuit(void)
 
 	delete _pDBus; _pDBus = nullptr;
 
-	LOG(info) << "GKcQt MainWindow process exiting, bye !";
+	LOG(info) << GLOGIK_QT_GUI_NAME << " MainWindow process exiting, bye !";
 }
 
 void MainWindow::configurationFileUpdated(const std::string & devID)
@@ -502,7 +502,10 @@ void MainWindow::aboutDialog(void)
 		about->setModal(true);
 		about->setAttribute(Qt::WA_DeleteOnClose);
 		about->setFixedSize(560, 330);
-		about->setWindowTitle("About GKcQt");
+
+		QString title("About "); title += GLOGIK_QT_GUI_NAME;
+		about->setWindowTitle(title);
+
 		about->open();
 	}
 	catch (const std::bad_alloc& e)

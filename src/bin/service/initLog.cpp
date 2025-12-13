@@ -37,7 +37,7 @@ InitLog::InitLog(const int& argc, char *argv[])
 {
 	GK_LOG_FUNC
 
-	openlog(GLOGIKS_DESKTOP_SERVICE_NAME, LOG_PID|LOG_CONS, LOG_USER);
+	openlog(GLOGIK_DESKTOP_SERVICE_NAME, LOG_PID|LOG_CONS, LOG_USER);
 
 	// initialize logging
 	try
@@ -48,7 +48,7 @@ InitLog::InitLog(const int& argc, char *argv[])
 #if DEBUGGING_ON
 		if(GKLogging::GKDebug)
 		{
-			GKLogging::initDebugFile(GLOGIKS_DESKTOP_SERVICE_NAME, fs::owner_read|fs::owner_write|fs::group_read);
+			GKLogging::initDebugFile(GLOGIK_DESKTOP_SERVICE_NAME, fs::owner_read|fs::owner_write|fs::group_read);
 		}
 #endif
 		GKLogging::initConsoleLog();

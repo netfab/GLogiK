@@ -56,7 +56,7 @@ DesktopServiceLauncher::DesktopServiceLauncher(const int& argc, char *argv[])
 {
 	GK_LOG_FUNC
 
-	openlog(DESKTOP_SERVICE_LAUNCHER_NAME, LOG_PID|LOG_CONS, LOG_USER);
+	openlog(GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME, LOG_PID|LOG_CONS, LOG_USER);
 
 	// initialize logging
 	try
@@ -66,7 +66,10 @@ DesktopServiceLauncher::DesktopServiceLauncher(const int& argc, char *argv[])
 
 #if DEBUGGING_ON
 		if(GKLogging::GKDebug)
-			GKLogging::initDebugFile(DESKTOP_SERVICE_LAUNCHER_NAME, fs::owner_read|fs::owner_write|fs::group_read);
+			GKLogging::initDebugFile(
+				GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME,
+				fs::owner_read|fs::owner_write|fs::group_read
+			);
 #endif
 
 		GKLogging::initConsoleLog();
@@ -82,7 +85,7 @@ DesktopServiceLauncher::~DesktopServiceLauncher()
 {
 	GK_LOG_FUNC
 
-	LOG(info) << DESKTOP_SERVICE_LAUNCHER_NAME << " desktop service launcher process, bye !";
+	LOG(info) << GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME << " desktop service launcher process, bye !";
 
 	closelog();
 }
@@ -95,7 +98,7 @@ int DesktopServiceLauncher::run(void)
 	/* -- -- -- */
 	/* -- -- -- */
 	{
-		LOG(info) << "Starting " << DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
+		LOG(info) << "Starting " << GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
 
 		_pid = /*NSGKUtils::*/process::detach();
 

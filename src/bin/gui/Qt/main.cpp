@@ -25,6 +25,7 @@
 #include <QApplication>
 #include <QIcon>
 
+#include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
 #include "mainWindow.hpp"
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
 		window.build();
 
 		window.setFixedSize(800, 600);
-		window.setWindowTitle("GKcQt");
+		window.setWindowTitle(GLOGIK_QT_GUI_NAME);
 
 		{
 			QString icon(DATA_DIR);

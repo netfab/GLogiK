@@ -34,7 +34,7 @@ using namespace NSGKUtils;
 desktopNotification::desktopNotification(void)
 	:	_pNotification(nullptr)
 {
-	notify_init(GLOGIKS_DESKTOP_SERVICE_NAME);
+	notify_init(GLOGIK_DESKTOP_SERVICE_NAME);
 }
 
 desktopNotification::desktopNotification(

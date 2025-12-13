@@ -24,8 +24,6 @@
 
 #include <sys/types.h>
 
-#define DESKTOP_SERVICE_LAUNCHER_NAME "GKsLauncher"
-
 namespace GLogiK
 {
 

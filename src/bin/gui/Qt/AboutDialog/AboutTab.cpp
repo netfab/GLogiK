@@ -24,6 +24,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
+#include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
 #include "AboutTab.hpp"
@@ -47,7 +48,8 @@ void AboutTab::buildTab(void)
 		vBox->addWidget( this->getHLine() );
 
 		{
-			QString mainText("GKcQt ");
+			QString mainText(GLOGIK_QT_GUI_NAME);
+			mainText += " ";
 			mainText += VERSION;
 
 			QLabel* mainLabel = new QLabel(mainText);

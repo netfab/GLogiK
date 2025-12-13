@@ -78,7 +78,7 @@ GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
 {
 	GK_LOG_FUNC
 
-	openlog(GLOGIKD_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
+	openlog(GLOGIK_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 
 	/* -- -- -- */
 
@@ -147,7 +147,7 @@ int GLogiKDaemon::run(void)
 
 	GKDepsMap_type dependencies;
 
-	std::string binaryVersion(GLOGIKD_DAEMON_NAME);
+	std::string binaryVersion(GLOGIK_DAEMON_NAME);
 	binaryVersion += " version ";
 	binaryVersion += VERSION;
 	GKSysLogInfo(binaryVersion);

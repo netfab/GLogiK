@@ -22,8 +22,6 @@
 #ifndef SRC_BIN_DAEMON_GLOGIKD_DAEMON_HPP_
 #define SRC_BIN_DAEMON_GLOGIKD_DAEMON_HPP_
 
-#define GLOGIKD_DAEMON_NAME "GLogiKd"
-
 #include <sys/types.h>
 
 #include <string>

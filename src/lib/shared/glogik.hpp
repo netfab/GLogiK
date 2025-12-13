@@ -29,12 +29,15 @@
 #include "include/base.hpp"
 #include "include/DepsMap.hpp"
 
-#define GLOGIKS_DESKTOP_SERVICE_NAME "GLogiKs"
-
 namespace GLogiK
 {
 
 typedef const char* const c_str;
+
+extern c_str GLOGIK_DAEMON_NAME;
+extern c_str GLOGIK_DESKTOP_SERVICE_NAME;
+extern c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME;
+extern c_str GLOGIK_QT_GUI_NAME;
 
 extern c_str CONST_STRING_CLIENT;
 extern c_str CONST_STRING_DEVICE;

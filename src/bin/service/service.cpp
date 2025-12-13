@@ -59,7 +59,7 @@ DesktopService::~DesktopService()
 {
 	GK_LOG_FUNC
 
-	LOG(info) << GLOGIKS_DESKTOP_SERVICE_NAME << " desktop service process exiting, bye !";
+	LOG(info) << GLOGIK_DESKTOP_SERVICE_NAME << " desktop service process exiting, bye !";
 }
 
 int DesktopService::run(void)
@@ -70,7 +70,7 @@ int DesktopService::run(void)
 
 	GKDepsMap_type dependencies;
 
-	std::string binaryVersion(GLOGIKS_DESKTOP_SERVICE_NAME);
+	std::string binaryVersion(GLOGIK_DESKTOP_SERVICE_NAME);
 	binaryVersion += " version ";
 	binaryVersion += VERSION;
 

@@ -113,7 +113,7 @@ void DBusHandler::spawnService(const uint16_t timelapse)
 
 	LOG(info)	<< "received signal: " << __func__;
 	LOG(info)	<< "sleeping " << timelapse
-				<< " milliseconds before trying to spawn " << GLOGIKS_DESKTOP_SERVICE_NAME;
+				<< " milliseconds before trying to spawn " << GLOGIK_DESKTOP_SERVICE_NAME;
 	std::this_thread::sleep_for(chr::milliseconds(timelapse));
 
 	const steady::time_point now = steady::now();
@@ -129,7 +129,7 @@ void DBusHandler::spawnService(const uint16_t timelapse)
 			args.push_back("-D");
 #endif
 
-		process::runCommand(GLOGIKS_DESKTOP_SERVICE_NAME, args);
+		process::runCommand(GLOGIK_DESKTOP_SERVICE_NAME, args);
 	}
 	else
 	{

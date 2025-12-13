@@ -40,7 +40,7 @@ VirtualKeyboard::VirtualKeyboard(void)
 {
 	GK_LOG_FUNC
 
-	std::string deviceName(GLOGIKS_DESKTOP_SERVICE_NAME);
+	std::string deviceName(GLOGIK_DESKTOP_SERVICE_NAME);
 	deviceName += " virtual keyboard";
 
 	GKLog2(trace, "initializing ", deviceName)
