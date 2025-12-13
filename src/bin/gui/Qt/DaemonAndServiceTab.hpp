@@ -24,13 +24,14 @@
 
 #include <string>
 
-#include <QPushButton>
-#include <QLabel>
 #include <QString>
 
 #include "lib/shared/deviceProperties.hpp"
 
 #include "Tab.hpp"
+
+class QLabel;
+class QPushButton;
 
 namespace GLogiK
 {

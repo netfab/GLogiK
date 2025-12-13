@@ -20,8 +20,8 @@
  */
 
 #include <QFont>
-#include <QString>
 #include <QLabel>
+#include <QString>
 #include <QVBoxLayout>
 
 #include "lib/shared/glogik.hpp"

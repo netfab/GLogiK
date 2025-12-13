@@ -23,12 +23,15 @@
 #include <string>
 
 #include <QColor>
-#include <QVariant>
-#include <QLabel>
+#include <QComboBox>
 #include <QGroupBox>
-#include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
 #include <QStandardItemModel>
+#include <QVariant>
+#include <QVBoxLayout>
 
 #include "GKeysTab.hpp"
 

@@ -30,18 +30,23 @@
 #include <functional>
 
 #include <QtGlobal>
+#include <QApplication>
+#include <QComboBox>
+#include <QFile>
+#include <QFrame>
+#include <QIcon>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QMetaObject>
+#include <QPushButton>
+#include <QStatusBar>
 #include <QString>
 #include <QStringList>
-#include <QtWidgets>
-#include <QFrame>
-#include <QVBoxLayout>
-#include <QComboBox>
 #include <QTabWidget>
-#include <QMenu>
-#include <QMetaObject>
-#include <QIcon>
-#include <QMessageBox>
-#include <QFile>
+#include <QTimer>
+#include <QVBoxLayout>
+#include <QWidget>
 
 #include <config.h>
 
@@ -54,6 +59,13 @@
 #include "include/enums.hpp"
 
 #include "AboutDialog/AboutDialog.hpp"
+
+#include "BacklightColorTab.hpp"
+#include "DaemonAndServiceTab.hpp"
+#include "DeviceControlTab.hpp"
+#include "GKeysTab.hpp"
+#include "LCDPluginsTab.hpp"
+
 #include "mainWindow.hpp"
 
 namespace po = boost::program_options;

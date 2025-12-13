@@ -19,14 +19,15 @@
  *
  */
 
-#include <QStringList>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QFrame>
-#include <QScrollArea>
-#include <QHeaderView>
-#include <QTableWidgetItem>
 #include <QCheckBox>
+#include <QFrame>
+#include <QHeaderView>
+#include <QHBoxLayout>
+#include <QScrollArea>
+#include <QStringList>
+#include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QVBoxLayout>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"

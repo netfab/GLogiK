@@ -26,8 +26,6 @@
 
 #include <QLayout>
 #include <QWidget>
-#include <QFrame>
-#include <QPushButton>
 
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/deviceProperties.hpp"
@@ -36,6 +34,9 @@
 	LOG(critical) << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
 #define LogRemoteCallGetReplyFailure \
 	LOG(error) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
+
+class QFrame;
+class QPushButton;
 
 namespace GLogiK
 {
@@ -66,7 +67,7 @@ class Tab
 
 		NSGKDBus::GKDBus* _pDBus;
 
-		QPushButton* _pApplyButton;
+		QWidget* _pApplyButton;
 
 		void prepareApplyButton(void);
 		void clearLayout(QLayout* parentLayout);

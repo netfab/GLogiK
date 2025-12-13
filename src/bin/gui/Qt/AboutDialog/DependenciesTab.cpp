@@ -20,13 +20,13 @@
  */
 
 #include <QtGlobal>
-#include <QVBoxLayout>
 #include <QFrame>
-#include <QStringList>
-#include <QScrollArea>
 #include <QHeaderView>
+#include <QScrollArea>
+#include <QStringList>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QVBoxLayout>
 
 #include "lib/utils/utils.hpp"
 

@@ -23,14 +23,14 @@
 #define SRC_BIN_GUI_QT_BACKLIGHT_COLOR_TAB_HPP_
 
 #include <QColor>
-#include <QLabel>
 #include <QString>
-#include <QPushButton>
-#include <QColorDialog>
 
 #include "lib/shared/deviceProperties.hpp"
 
 #include "Tab.hpp"
+
+class QLabel;
+class QColorDialog;
 
 namespace GLogiK
 {

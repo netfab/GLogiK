@@ -26,12 +26,12 @@
 
 #include <string>
 
-#include <QTableWidget>
-
 #include "lib/utils/utils.hpp"
 #include "lib/shared/deviceProperties.hpp"
 
 #include "Tab.hpp"
+
+class QTableWidget;
 
 namespace GLogiK
 {

@@ -27,12 +27,6 @@
 #include <string>
 
 #include <QString>
-#include <QLabel>
-#include <QLineEdit>
-#include <QComboBox>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
 
 #include "lib/shared/deviceProperties.hpp"
 #include "lib/shared/glogik.hpp"
@@ -44,6 +38,13 @@
 #include "Tab.hpp"
 
 #define GKEY_COMMAND_LINE_STRING_MAX_LENGTH 255
+
+class QHBoxLayout;
+class QComboBox;
+class QLabel;
+class QLineEdit;
+class QPushButton;
+class QVBoxLayout;
 
 namespace GLogiK
 {

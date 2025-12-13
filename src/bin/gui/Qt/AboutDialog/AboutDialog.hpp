@@ -22,11 +22,12 @@
 #ifndef SRC_BIN_GUI_QT_ABOUT_DIALOG_HPP_
 #define SRC_BIN_GUI_QT_ABOUT_DIALOG_HPP_
 
-#include <QWidget>
 #include <QDialog>
-#include <QPushButton>
 
 #include "include/DepsMap.hpp"
+
+class QPushButton;
+class QWidget;
 
 namespace GLogiK
 {

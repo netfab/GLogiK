@@ -19,17 +19,19 @@
  *
  */
 
-#include <QStyle>
-#include <QHBoxLayout>
-#include <QTabWidget>
 #include <QClipboard>
 #include <QGuiApplication>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QStyle>
+#include <QTabWidget>
+#include <QWidget>
 
 #include "lib/utils/utils.hpp"
 
 #include "AboutTab.hpp"
-#include "LicenseTab.hpp"
 #include "DependenciesTab.hpp"
+#include "LicenseTab.hpp"
 
 #include "AboutDialog.hpp"
 

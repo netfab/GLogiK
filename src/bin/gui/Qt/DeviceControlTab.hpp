@@ -24,15 +24,16 @@
 
 #include <string>
 
-#include <QFrame>
 #include <QString>
-#include <QPushButton>
-#include <QLabel>
 
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/deviceProperties.hpp"
 
 #include "Tab.hpp"
+
+class QFrame;
+class QLabel;
+class QPushButton;
 
 namespace GLogiK
 {

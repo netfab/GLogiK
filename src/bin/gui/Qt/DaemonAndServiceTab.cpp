@@ -21,12 +21,14 @@
 
 #include <string>
 
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLabel>
 #include <QPixmap>
+#include <QPushButton>
 #include <QSizePolicy>
 #include <QString>
 #include <QVBoxLayout>
-#include <QGroupBox>
-#include <QHBoxLayout>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"

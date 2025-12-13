@@ -19,8 +19,11 @@
  *
  */
 
-#include <QVBoxLayout>
+#include <QFrame>
 #include <QHBoxLayout>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"

@@ -19,8 +19,10 @@
  *
  */
 
-#include <QVBoxLayout>
+#include <QColorDialog>
 #include <QHBoxLayout>
+#include <QLabel>
+#include <QVBoxLayout>
 
 #include "lib/utils/utils.hpp"
 

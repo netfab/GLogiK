@@ -21,9 +21,9 @@
 
 #include <cstdlib>
 
-#include <QString>
 #include <QApplication>
 #include <QIcon>
+#include <QString>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"

@@ -19,12 +19,12 @@
  *
  */
 
-#include <QVBoxLayout>
-#include <QPlainTextEdit>
-#include <QFont>
-#include <QString>
-#include <QFile>
 #include <QCryptographicHash>
+#include <QFile>
+#include <QFont>
+#include <QPlainTextEdit>
+#include <QString>
+#include <QVBoxLayout>
 
 #include "lib/utils/utils.hpp"
 

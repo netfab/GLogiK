@@ -21,7 +21,9 @@
 
 #include <string>
 
+#include <QFrame>
 #include <QLayoutItem>
+#include <QPushButton>
 #include <QSpacerItem>
 
 #include "lib/utils/utils.hpp"
@@ -35,7 +37,7 @@ using namespace NSGKUtils;
 
 const QPushButton* Tab::getApplyButton(void) const
 {
-	return _pApplyButton;
+	return static_cast<QPushButton*>(_pApplyButton);
 }
 
 QFrame* Tab::getHLine(void)

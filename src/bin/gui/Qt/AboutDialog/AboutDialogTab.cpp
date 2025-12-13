@@ -19,6 +19,8 @@
  *
  */
 
+#include <QFrame>
+
 #include "lib/utils/utils.hpp"
 
 #include "AboutDialogTab.hpp"

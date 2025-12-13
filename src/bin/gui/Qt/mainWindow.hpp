@@ -27,11 +27,7 @@
 #include <string>
 #include <map>
 
-#include <QTimer>
-#include <QComboBox>
 #include <QMainWindow>
-#include <QWidget>
-#include <QTabWidget>
 
 #include <boost/filesystem.hpp>
 
@@ -41,13 +37,18 @@
 #include "include/DeviceID.hpp"
 #include "include/DepsMap.hpp"
 
-#include "DaemonAndServiceTab.hpp"
-#include "DeviceControlTab.hpp"
-#include "BacklightColorTab.hpp"
-#include "LCDPluginsTab.hpp"
-#include "GKeysTab.hpp"
-
 namespace fs = boost::filesystem;
+
+class QComboBox;
+class QTabWidget;
+class QTimer;
+class QWidget;
+
+class DaemonAndServiceTab;
+class DeviceControlTab;
+class BacklightColorTab;
+class LCDPluginsTab;
+class GKeysTab;
 
 namespace GLogiK
 {
@@ -63,7 +64,7 @@ class MainWindow
 	:	public QMainWindow
 {
 	public:
-		MainWindow(QWidget *parent = 0);
+		MainWindow(QWidget* parent = 0);
 		~MainWindow();
 
 		void init(const int& argc, char *argv[]);
