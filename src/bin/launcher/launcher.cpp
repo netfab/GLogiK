@@ -72,7 +72,7 @@ DesktopServiceLauncher::DesktopServiceLauncher(const int& argc, char *argv[])
 			);
 #endif
 
-		GKLogging::initConsoleLog();
+		GKLogging::initConsoleLog(GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME);
 	}
 	catch (const std::exception & e)
 	{

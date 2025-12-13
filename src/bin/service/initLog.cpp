@@ -51,7 +51,7 @@ InitLog::InitLog(const int& argc, char *argv[])
 			GKLogging::initDebugFile(GLOGIK_DESKTOP_SERVICE_NAME, fs::owner_read|fs::owner_write|fs::group_read);
 		}
 #endif
-		GKLogging::initConsoleLog();
+		GKLogging::initConsoleLog(GLOGIK_DESKTOP_SERVICE_NAME);
 	}
 	catch (const std::exception & e)
 	{

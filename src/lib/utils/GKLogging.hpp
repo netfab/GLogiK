@@ -64,7 +64,7 @@ class GKLogging
 		static bool GKDebug;
 		static src::severity_logger< severity_level > GKLogger;
 
-		static void initConsoleLog(void);
+		static void initConsoleLog(const std::string & baseName);
 		static void initDebugFile(
 			const std::string & baseName,
 			const fs::perms prms = fs::no_perms);

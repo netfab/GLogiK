@@ -117,7 +117,7 @@ void MainWindow::init(const int& argc, char *argv[])
 		if(GKLogging::GKDebug)
 			GKLogging::initDebugFile(GLOGIK_QT_GUI_NAME, fs::owner_read|fs::owner_write|fs::group_read);
 #endif
-		GKLogging::initConsoleLog();
+		GKLogging::initConsoleLog(GLOGIK_QT_GUI_NAME);
 	}
 	catch (const std::exception & e)
 	{

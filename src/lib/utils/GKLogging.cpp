@@ -93,7 +93,7 @@ void GKLogging::init(void)
 	GKLogging::initialized = true;
 }
 
-void GKLogging::initConsoleLog(void)
+void GKLogging::initConsoleLog(const std::string & baseName)
 {
 	if( ! GKLogging::initialized )
 		GKLogging::init();
@@ -108,6 +108,7 @@ void GKLogging::initConsoleLog(void)
 	consoleSink->set_formatter
 	(
 		expr::stream
+			<< baseName << ": "
 			<< std::hex << std::setw(8) << std::setfill('0') << line_id
 			<< std::dec << std::setfill(' ')
 			<< " - " << severity << "\t - "
