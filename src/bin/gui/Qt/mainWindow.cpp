@@ -167,10 +167,15 @@ void MainWindow::build(void)
 			QString stylepath(QT_DATA_DIR); stylepath += "/qss/stylesheet.qss";
 
 			QFile qssfile(stylepath);
-			qssfile.open(QFile::ReadOnly);
-
-			QString styleSheet = QLatin1String(qssfile.readAll());
-			qApp->setStyleSheet(styleSheet);
+			if( qssfile.open(QFile::ReadOnly) )
+			{
+				QString styleSheet = QLatin1String(qssfile.readAll());
+				qApp->setStyleSheet(styleSheet);
+			}
+			else
+			{
+				LOG(warning) << "failed to open qss stylesheet";
+			}
 		}
 
 		QFrame *frame = new QFrame(this);
