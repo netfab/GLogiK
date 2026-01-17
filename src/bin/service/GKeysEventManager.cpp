@@ -218,16 +218,71 @@ void GKeysEventManager::spawnProcess(const std::string & command)
 {
 	GK_LOG_FUNC
 
-	std::string exe;
+	if( command.empty() )
+	{
+		LOG(warning) << "empty command line";
+		return;
+	}
+
 	std::vector<std::string> args;
+	std::string exe;
+
+	auto parse_command_line = [&command, &args] (void) -> void
 	{
 		GKLog2(trace, "user command: ", command)
-		std::istringstream tmpstream(command);
-		std::string tmpstring;
-		std::getline(tmpstream, exe, ' ');
-		while(std::getline(tmpstream, tmpstring, ' '))
-			args.push_back(tmpstring);
-	}
+
+		const std::string space(" ");
+		const std::string quote("\"");
+		std::string arg;
+		bool substring = false;
+
+		for(auto it = command.begin(); it != command.end(); ++it)
+		{
+			const std::string c(1, *it);
+
+			if(!substring and (c == space))
+			{
+				if(arg.empty())
+				{
+					GKLog(trace, "skipping space")
+					continue;
+				}
+
+				args.push_back(arg);
+				arg.clear();
+				continue;
+			}
+
+			if(c == quote)
+				substring = !substring;
+
+			arg += c;
+		}
+
+		if(substring)
+		{
+			LOG(warning) << "unclosed substring (missing «\"»)";
+		}
+
+		if(! arg.empty())
+		{
+			GKLog(trace, "appending last argument")
+			args.push_back(arg);
+		}
+
+#if DEBUGGING_ON
+		if(GKLogging::GKDebug)
+			for( const auto & a : args )
+			{
+				LOG(trace) << "argument: " << a;
+			}
+#endif
+	};
+
+	parse_command_line();
+
+	exe = args[0];
+	args.erase(args.begin());
 
 	process::runCommand(exe, args);
 }
