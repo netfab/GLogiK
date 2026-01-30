@@ -60,10 +60,10 @@ class GKDBusEvents
 {
 	public:
 		void declareIntrospectableSignal(
-			const BusConnection bus,
-			const char* object,
-			const char* interface,
-			const char* name,
+			const BusConnection eventBus,
+			const char* eventObjectPath,
+			const char* eventInterface,
+			const char* eventName,
 			const std::vector<DBusMethodArgument> & args
 		);
 
@@ -93,7 +93,6 @@ class GKDBusEvents
 		GKDBusEvents(const std::string & rootNodePath);
 		~GKDBusEvents(void);
 
-		const std::string & getRootNodePath(void) const;
 		void clearDBusEvents(void) noexcept;
 
 		std::map<BusConnection,
@@ -106,9 +105,6 @@ class GKDBusEvents
 			std::map<std::string, /* object path */
 				std::map<std::string, /* interface */
 					std::vector<GKDBusIntrospectableSignal> > > > _DBusIntrospectableSignals;
-
-		std::map<BusConnection,
-			std::vector<std::string> > _DBusIntrospectableObjects;
 
 		std::set<std::string> _DBusInterfaces;
 		std::string _rootNodePath;
@@ -140,7 +136,6 @@ class GKDBusEvents
 		);
 		const std::string getObjectFromObjectPath(const std::string & objectPath);
 		const std::string introspect(const std::string & askedObjectPath);
-		const std::string introspectRootNode(void);
 
 		/*
 		void removeEvent(
@@ -150,6 +145,11 @@ class GKDBusEvents
 			const char* eventName
 		);
 		*/
+
+		void exposeIntrospectMethod(
+			const BusConnection eventBus,
+			const char* eventObjectPath
+		);
 
 		void addEvent(
 			const BusConnection eventBus,

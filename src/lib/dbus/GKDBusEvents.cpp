@@ -19,6 +19,7 @@
  *
  */
 
+#include <set>
 #include <stdexcept>
 #include <sstream>
 #include <functional>
@@ -43,20 +44,16 @@ GKDBusEvents::~GKDBusEvents()
 {
 }
 
-const std::string & GKDBusEvents::getRootNodePath(void) const
-{
-	return _rootNodePath;
-}
-
 void GKDBusEvents::declareIntrospectableSignal(
-	const BusConnection bus,
-	const char* object,
-	const char* interface,
-	const char* name,
+	const BusConnection eventBus,
+	const char* eventObjectPath,
+	const char* eventInterface,
+	const char* eventName,
 	const std::vector<DBusMethodArgument> & args)
 {
-	GKDBusIntrospectableSignal signal(name, args);
-	_DBusIntrospectableSignals[bus][object][interface].push_back(signal);
+	GKDBusIntrospectableSignal signal(eventName, args);
+	_DBusIntrospectableSignals[eventBus][eventObjectPath][eventInterface].push_back(signal);
+	this->exposeIntrospectMethod(eventBus, eventObjectPath);
 }
 
 /*
@@ -191,35 +188,6 @@ const std::string GKDBusEvents::getObjectFromObjectPath(const std::string & obje
 	return object;
 }
 
-const std::string GKDBusEvents::introspectRootNode(void)
-{
-	GK_LOG_FUNC
-
-	GKLog4(	trace, "introspecting root node: ", _rootNodePath, "on bus : ",
-			toUInt(toEnumType(GKDBusEvents::currentBus)))
-
-	std::ostringstream xml;
-
-	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
-	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
-	xml << "<node name=\"" << _rootNodePath << "\">\n";
-
-	try
-	{
-		const auto & bus = _DBusIntrospectableObjects.at(GKDBusEvents::currentBus);
-
-		for(const auto & object : bus)
-			xml << "  <node name=\"" << object << "\"/>\n";
-	}
-	catch (const std::out_of_range& oor)
-	{
-		LOG(warning) << "can't get current bus container";
-	}
-
-	xml << "</node>\n";
-	return xml.str();
-}
-
 /*
 void GKDBusEvents::removeEvent(
 	const BusConnection eventBus,
@@ -294,6 +262,43 @@ void GKDBusEvents::removeEvent(
 }
 */
 
+void GKDBusEvents::exposeIntrospectMethod(
+	const BusConnection eventBus,
+	const char* eventObjectPath)
+{
+	try
+	{
+		const auto & bus = _DBusEvents.at(eventBus);
+		const auto & objpath = bus.at(eventObjectPath);
+		objpath.at(_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE);
+	}
+	catch (const std::out_of_range& oor)
+	{
+		GKLog2(trace, "adding Introspectable object path: ", eventObjectPath)
+
+		this->Callback<SIGs2s>::exposeEvent(
+			eventBus,			/* bus */
+			nullptr,			/* sender (used only if
+								   eventType == GKDBUS_EVENT_SIGNAL below,
+								   unused here --> nullptr) */
+			eventObjectPath,	/* event object path */
+			_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE,	/* event interface */
+			"Introspect",		/* event name */
+			{	{	"s",
+					"xml_data",
+					"out",
+					"xml data representing DBus interfaces"
+				} }, 								/* event arguments */
+			std::bind(
+				&GKDBusEvents::introspect,
+				this,
+				std::placeholders::_1),				/* callback method */
+			GKDBusEventType::GKDBUS_EVENT_METHOD,	/* event type (method|signal) */
+			false									/* introspectability */
+		);
+	}
+}
+
 void GKDBusEvents::addEvent(
 	const BusConnection eventBus,
 	const char* eventSender,
@@ -304,42 +309,7 @@ void GKDBusEvents::addEvent(
 	GK_LOG_FUNC
 
 	if(event->introspectable)
-	{
-		try
-		{
-			const auto & bus = _DBusEvents.at(eventBus);
-			const auto & objpath = bus.at(eventObjectPath);
-			objpath.at(_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE);
-		}
-		catch (const std::out_of_range& oor)
-		{
-			GKLog2(trace, "adding Introspectable object path : ", eventObjectPath)
-			_DBusIntrospectableObjects[eventBus].push_back(
-				this->getObjectFromObjectPath(eventObjectPath)
-			);
-
-			this->Callback<SIGs2s>::exposeEvent(
-				eventBus,			/* bus */
-				nullptr,			/* sender (used only if
-									   eventType == GKDBUS_EVENT_SIGNAL below,
-									   unused here --> nullptr) */
-				eventObjectPath,	/* event object path */
-				_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE,	/* event interface */
-				"Introspect",		/* event name */
-				{	{	"s",
-						"xml_data",
-						"out",
-						"xml data representing DBus interfaces"
-					} }, 								/* event arguments */
-				std::bind(
-					&GKDBusEvents::introspect,
-					this,
-					std::placeholders::_1),				/* callback method */
-				GKDBusEventType::GKDBUS_EVENT_METHOD,	/* event type (method|signal) */
-				false									/* introspectability */
-			);
-		}
-	}
+		this->exposeIntrospectMethod(eventBus, eventObjectPath);
 
 	if( event->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL )
 		this->addSignalRuleMatch(eventBus, eventSender, eventInterface, event->eventName.c_str());
@@ -408,42 +378,155 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 {
 	GK_LOG_FUNC
 
-	GKLog2(trace, "object path asked : ", askedObjectPath)
+	GKLog2(trace, "asked object path: ", askedObjectPath)
 
-	if( askedObjectPath == _rootNodePath )
-		return this->introspectRootNode();
-
+	std::set<std::string> xmlNodes;
 	std::ostringstream xml;
+	std::string::size_type n;
 
 	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
 	xml << "<node name=\"" << askedObjectPath << "\">\n";
 
+	auto xml_stream = [&xml] (void) -> const std::string
+	{
+		xml << "</node>\n";
+		return xml.str();
+	};
+
+	// check that asked object path is valid
+	// https://dbus.freedesktop.org/doc/dbus-specification.html#message-protocol-marshaling-object-path
+	{
+		n = askedObjectPath.find("//");
+		const char & last = askedObjectPath.back();
+		if(( (n != std::string::npos) or (last == '/') ) and (askedObjectPath != "/"))
+		{
+			LOG(warning) << "asked object path is not valid: '" << askedObjectPath << "'";
+			return xml_stream();
+		}
+	}
+
 	for(const auto & DBusInterface : _DBusInterfaces)
 	{
+		if(DBusInterface == _FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE)
+			continue;
+
+#if DEBUG_GKDBUS
 		GKLog2(trace, "DBus Interface: ", DBusInterface)
+#endif
 
 		bool interfaceOpened = false;
+		bool aaa = false;
 
 		try
-		{
-			const auto & opMap = _DBusEvents.at(GKDBusEvents::currentBus); /* objectPath map */
-			for(const auto & [objectPath, interMap] : opMap) /* interface map */
-			{
-				/* object path must match */
-				if( askedObjectPath != objectPath )
-					continue;
-				for(const auto & [interface, pVec ] : interMap) /* vector of pointers */
+		{ // <<<
+			const auto & opMap = _DBusEvents.at(GKDBusEvents::currentBus); // objectPath map
+
+			for(const auto & [objectPath, interMap] : opMap) // interface map
+			{ // <<<
+				std::string op(objectPath);
+
+				if(askedObjectPath != objectPath)
+				{ // if this does not match ...
+					n = objectPath.find(askedObjectPath); // ... and is not a substring ...
+					if(n == std::string::npos)
+						continue; // ... then jumps to next loop iteration ...
+
+					op.erase(n, askedObjectPath.size());
+				}
+
+				for(const auto & [interface, pVec] : interMap) // vector of pointers
 				{
-					if( DBusInterface == interface  )
+					if(DBusInterface != interface)
+						continue;
+
+					//GKLog2(trace, "	object path: ", objectPath)
+					if(askedObjectPath != objectPath)
+					{ // <<< if this does not match (again) ...
+						bool skip_op = false; // skip current object path
+
+						if(askedObjectPath != "/")
+						{
+							try
+							{
+								if(op.at(0) == '/')
+									op.erase(0, 1); // erasing leading '/'
+								else
+									skip_op = true;
+							}
+							catch (const std::out_of_range& oor)
+							{
+								LOG(warning) << "logical error 1, wrong object path ?";
+								skip_op = true;
+							}
+						}
+
+						if( ! skip_op )
+						{
+							n = op.find('/'); // trying to find next '/'
+							if(n != std::string::npos)
+								op = op.substr(0, n);
+
+							if(xmlNodes.find(op) == xmlNodes.end())
+							{
+#if DEBUG_GKDBUS
+								GKLog6(trace,
+										"	DBusInterface: ", DBusInterface,
+										"objectPath: ", objectPath, "op: ", op
+								)
+#endif
+
+								skip_op = true;
+								for(const auto & DBusEvent : pVec)
+								{ // we want to find at least one method on this interface
+									if(DBusEvent->eventType == GKDBusEventType::GKDBUS_EVENT_METHOD)
+									{
+										skip_op = false;
+										break;
+									}
+								}
+
+								if( ! skip_op )
+								{
+									auto result = xmlNodes.insert(op);
+									if( ! result.second )
+									{
+										LOG(warning) << "node insertion failure: " << op;
+									}
+									else
+									{
+										xml << "	<node name=\"" << op << "\"/>\n";
+#if DEBUG_GKDBUS
+										GKLog2(trace, "		node appended: ", op)
+#endif
+									}
+								}
+#if DEBUG_GKDBUS
+								else
+								{
+									GKLog2(trace, "		node skipped (no method found): ", op)
+								}
+#endif
+							}
+#if DEBUG_GKDBUS
+							else
+							{
+								GKLog2(trace, "		node already inserted: ", op)
+							}
+#endif
+						}
+					} // >>>
+					else
 					{
+						aaa = true;
+
 						this->openXMLInterface(xml, interfaceOpened, DBusInterface);
 						for(const auto & DBusEvent : pVec)
 							this->eventToXMLMethod(xml, DBusEvent);
 					}
 				}
-			}
-		}
+			} // >>> for
+		} // >>>
 		catch (const std::out_of_range& oor)
 		{
 			GKLog2(trace,
@@ -452,40 +535,41 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 			)
 		}
 
-		try
+		if( aaa )
 		{
-			const auto & opMap =
-				_DBusIntrospectableSignals.at(GKDBusEvents::currentBus); /* objectPath map */
-			for(const auto & [objectPath, interMap] : opMap) /* interface map */
+			try
 			{
-				/* object path must match */
-				if( askedObjectPath != objectPath )
-					continue;
-				for(const auto & [interface, oVec ] : interMap) /* vector of objects */
+				const auto & opMap =
+					_DBusIntrospectableSignals.at(GKDBusEvents::currentBus); // objectPath map
+				for(const auto & [objectPath, interMap] : opMap) // interface map
 				{
-					if( DBusInterface == interface )
+					/* object path must match */
+					if(askedObjectPath != objectPath)
+						continue;
+					for(const auto & [interface, oVec] : interMap) // vector of objects
 					{
-						this->openXMLInterface(xml, interfaceOpened, DBusInterface);
-						for(const auto & signal : oVec)
-							this->signalToXMLSignal(xml, signal);
+						if(DBusInterface == interface)
+						{
+							this->openXMLInterface(xml, interfaceOpened, DBusInterface);
+							for(const auto & signal : oVec)
+								this->signalToXMLSignal(xml, signal);
+						}
 					}
 				}
 			}
-		}
-		catch (const std::out_of_range& oor)
-		{
-			GKLog2(trace,
-				"can't iterate over DBusIntrospectableSignals. No bus container: ",
-				toUInt(toEnumType(GKDBusEvents::currentBus))
-			)
+			catch (const std::out_of_range& oor)
+			{
+				GKLog2(trace,
+					"can't iterate over DBusIntrospectableSignals. No bus container: ",
+					toUInt(toEnumType(GKDBusEvents::currentBus))
+				)
+			}
 		}
 
 		this->closeXMLInterface(xml, interfaceOpened);
 	}
 
-	xml << "</node>\n";
-
-	return xml.str();
+	return xml_stream();
 }
 
 const std::string GKDBusEvents::buildSignalRuleMatch(
