@@ -35,15 +35,6 @@ using namespace NSGKUtils;
 
 thread_local BusConnection GKDBusEvents::currentBus(BusConnection::GKDBUS_SYSTEM);
 
-GKDBusEvents::GKDBusEvents(const std::string & rootNodePath)
-		: _rootNodePath(rootNodePath)
-{
-}
-
-GKDBusEvents::~GKDBusEvents()
-{
-}
-
 void GKDBusEvents::declareIntrospectableSignal(
 	const BusConnection eventBus,
 	const char* eventObjectPath,

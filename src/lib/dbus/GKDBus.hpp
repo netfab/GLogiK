@@ -81,7 +81,7 @@ class GKDBus
 		public ArgGKDepsMap
 {
 	public:
-		GKDBus(const std::string & rootNodePath);
+		GKDBus(void);
 		~GKDBus(void);
 
 		static const BusConnection SystemBus;

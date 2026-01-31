@@ -90,8 +90,8 @@ class GKDBusEvents
 		) noexcept;
 
 	protected:
-		GKDBusEvents(const std::string & rootNodePath);
-		~GKDBusEvents(void);
+		GKDBusEvents(void) = default;
+		~GKDBusEvents(void) = default;
 
 		void clearDBusEvents(void) noexcept;
 
@@ -107,7 +107,6 @@ class GKDBusEvents
 					std::vector<GKDBusIntrospectableSignal> > > > _DBusIntrospectableSignals;
 
 		std::set<std::string> _DBusInterfaces;
-		std::string _rootNodePath;
 
 	protected:
 		thread_local static BusConnection currentBus;

@@ -108,7 +108,7 @@ int DesktopServiceLauncher::run(void)
 	{
 		SessionManager session;
 
-		NSGKDBus::GKDBus DBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_ROOT_NODE_PATH);
+		NSGKDBus::GKDBus DBus;
 		DBus.init();
 
 		DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME);

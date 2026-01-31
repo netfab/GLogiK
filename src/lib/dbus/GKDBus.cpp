@@ -34,9 +34,8 @@ using namespace NSGKUtils;
 const BusConnection GKDBus::SystemBus(BusConnection::GKDBUS_SYSTEM);
 const BusConnection GKDBus::SessionBus(BusConnection::GKDBUS_SESSION);
 
-GKDBus::GKDBus(const std::string & rootNodePath)
-		:	GKDBusEvents(rootNodePath),
-			_sessionConnection(nullptr),
+GKDBus::GKDBus(void)
+		:	_sessionConnection(nullptr),
 			_systemConnection(nullptr),
 			_initDone(false)
 {

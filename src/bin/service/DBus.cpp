@@ -26,6 +26,6 @@
 namespace GLogiK
 {
 
-NSGKDBus::GKDBus DBusInst::DBus(GLOGIK_DESKTOP_SERVICE_DBUS_ROOT_NODE_PATH);
+NSGKDBus::GKDBus DBusInst::DBus;
 
 } // namespace GLogiK
