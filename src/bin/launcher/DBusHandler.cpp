@@ -61,9 +61,9 @@ DBusHandler::~DBusHandler(void)
 void DBusHandler::cleanDBusRequests(void)
 {
 	_pDBus->removeSignalsInterface(_sessionBus,
-		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE);
+		GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE);
 
 	_pDBus->removeSignalsInterface(_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
@@ -96,9 +96,9 @@ void DBusHandler::initializeGKDBusSignals(void)
 
 	_pDBus->NSGKDBus::Callback<SIGq2v>::receiveSignal(
 		_sessionBus,
-		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+		GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
 		GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
 		{ {"q", "sleep_ms", "in", "sleeping time in milliseconds before spawning service"} },
 		std::bind(&DBusHandler::spawnService, this, std::placeholders::_1)

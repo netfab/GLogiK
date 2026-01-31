@@ -295,12 +295,12 @@ c_str GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME				= "com.glogik.Client";
 c_str GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH				= "/com/glogik/Client/SessionMessageHandler";
 c_str GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE					= "com.glogik.Client.SessionMessageHandler1";
 
-/* Qt5 gui */
-c_str GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE_PATH						= "/com/glogik/qt5gui";
-c_str GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME					= "com.glogik.qt5gui";
+/* Qt gui */
+c_str GLOGIK_DESKTOP_QT_DBUS_ROOT_NODE_PATH							= "/com/glogik/QtGui";
+c_str GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME					= "com.glogik.QtGui";
 	/* -- */
-c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH					= "/com/glogik/qt5gui/GUISessionMessageHandler";
-c_str GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE						= "com.glogik.qt5gui.GUISessionMessageHandler";
+c_str GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH					= "/com/glogik/QtGui/GUISessionMessageHandler";
+c_str GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE						= "com.glogik.QtGui.GUISessionMessageHandler";
 
 /* systemd-logind */
 c_str LOGIND_DBUS_BUS_CONNECTION_NAME								= "org.freedesktop.login1";

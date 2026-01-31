@@ -128,8 +128,8 @@ void DeviceControlTab::buildTab(void)
 
 	_pDBus->declareIntrospectableSignal(
 		_sessionBus,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
 		GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST,
 		{	{"s", "device_id", "out", "device ID"},
 			{"s", "wanted_status", "out", "wanted status"}
@@ -206,8 +206,8 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 	{
 		_pDBus->initializeBroadcastSignal(
 			_sessionBus,
-			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+			GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
 			GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST
 		);
 		_pDBus->appendStringToBroadcastSignal(_devID);

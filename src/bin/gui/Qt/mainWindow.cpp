@@ -137,7 +137,7 @@ void MainWindow::init(const int& argc, char *argv[])
 
 	try
 	{
-		_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_QT5_DBUS_ROOT_NODE_PATH);
+		_pDBus = new NSGKDBus::GKDBus(GLOGIK_DESKTOP_QT_DBUS_ROOT_NODE_PATH);
 		_pDBus->init();
 	}
 	catch (const std::bad_alloc& e)
@@ -145,7 +145,7 @@ void MainWindow::init(const int& argc, char *argv[])
 		throw GLogiKBadAlloc("GKDBus bad allocation");
 	}
 
-	_pDBus->connectToSessionBus(GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME);
+	_pDBus->connectToSessionBus(GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME);
 
 	this->statusBar();
 

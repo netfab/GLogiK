@@ -174,9 +174,9 @@ void DBusHandler::cleanGKDBusEvents(void) noexcept
 
 	/* remove GUISessionMessageHandler D-Bus interface and object */
 	DBus.removeSignalsInterface(_sessionBus,
-		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE);
+		GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE);
 
 	/* remove DevicesManager D-Bus interface and object */
 	DBus.removeSignalsInterface(_systemBus,
@@ -957,9 +957,9 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 	DBus.NSGKDBus::Callback<SIGss2v>::receiveSignal(
 		_sessionBus,
-		GLOGIK_DESKTOP_QT5_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+		GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME,
+		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
 		GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST,
 		{	{"s", "device_id", "in", "device ID"},
 			{"s", "wanted_status", "in", "wanted status"}	},

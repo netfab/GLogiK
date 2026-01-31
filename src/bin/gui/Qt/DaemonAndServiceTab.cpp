@@ -128,8 +128,8 @@ void DaemonAndServiceTab::buildTab(void)
 
 			_pDBus->declareIntrospectableSignal(
 				_sessionBus,
-				GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
-				GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+				GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+				GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
 				GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
 				{ {"q", "sleep_ms", "out", "sleeping time in milliseconds before spawning service"} }
 			);
@@ -244,8 +244,8 @@ void DaemonAndServiceTab::sendServiceStartRequest(void)
 		/* asking the launcher to spawn the service after sleeping 100 ms */
 		_pDBus->initializeBroadcastSignal(
 			_sessionBus,
-			GLOGIK_DESKTOP_QT5_SESSION_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_QT5_SESSION_DBUS_INTERFACE,
+			GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+			GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
 			GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST
 		);
 		_pDBus->appendUInt16ToBroadcastSignal(100);
