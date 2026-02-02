@@ -46,7 +46,7 @@ void Callback<SIGs2s>::exposeMethod(
 		eventName,
 		args,
 		callback,
-		GKDBusEventType::GKDBUS_EVENT_METHOD,
+		DBusEventType::DBUS_METHOD_EVENT,
 		true
 	);
 }
@@ -70,7 +70,7 @@ void Callback<SIGs2s>::receiveSignal(
 		eventName,
 		args,
 		callback,
-		GKDBusEventType::GKDBUS_EVENT_SIGNAL,
+		DBusEventType::DBUS_SIGNAL_EVENT,
 		false
 	);
 }
@@ -84,7 +84,7 @@ void Callback<SIGs2s>::exposeEvent(
 		const char* eventName,
 		const std::vector<DBusMethodArgument> & args,
 		SIGs2s callback,
-		GKDBusEventType eventType,
+		DBusEventType eventType,
 		const bool introspectable)
 {
 	GKDBusEvent* event = nullptr;

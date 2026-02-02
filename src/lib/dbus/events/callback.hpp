@@ -105,7 +105,7 @@ template <typename T>
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
 			T callback,
-			GKDBusEventType t,
+			DBusEventType t,
 			const bool introspectable
 		);
 
@@ -140,7 +140,7 @@ template <typename T>
 		eventName,
 		args,
 		callback,
-		GKDBusEventType::GKDBUS_EVENT_METHOD,
+		DBusEventType::DBUS_METHOD_EVENT,
 		true
 	);
 }
@@ -165,7 +165,7 @@ template <typename T>
 		eventName,
 		args,
 		callback,
-		GKDBusEventType::GKDBUS_EVENT_SIGNAL,
+		DBusEventType::DBUS_SIGNAL_EVENT,
 		false
 	);
 }
@@ -179,7 +179,7 @@ template <typename T>
 		const char* eventName,
 		const std::vector<DBusMethodArgument> & args,
 		T callback,
-		GKDBusEventType eventType,
+		DBusEventType eventType,
 		const bool introspectable)
 {
 	GKDBusEvent* event = nullptr;
@@ -242,7 +242,7 @@ template <>
 			const char* eventName,
 			const std::vector<DBusMethodArgument> & args,
 			SIGs2s callback,
-			GKDBusEventType t,
+			DBusEventType t,
 			const bool introspectable
 		);
 

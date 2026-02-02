@@ -55,7 +55,7 @@ template <>
 	}
 
 	/* signals don't send reply */
-	if(this->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+	if(this->eventType == DBusEventType::DBUS_SIGNAL_EVENT)
 		return;
 
 	try {

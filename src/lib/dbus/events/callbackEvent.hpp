@@ -51,7 +51,7 @@ template <typename T>
 			const char* n,
 			const std::vector<DBusMethodArgument> & a,
 			T c,
-			GKDBusEventType t,
+			DBusEventType t,
 			const bool i
 			);
 		~callbackEvent() = default;
@@ -77,7 +77,7 @@ template <typename T>
 		const char* n,
 		const std::vector<DBusMethodArgument> & a,
 		T c,
-		GKDBusEventType t,
+		DBusEventType t,
 		const bool i
 	)		:	GKDBusEvent(n, a, t, i),
 				callback(c)
@@ -95,7 +95,7 @@ template <typename T>
 	using namespace NSGKUtils;
 	const char* errorString = "runCallback not implemented";
 	LOG(error) << errorString;
-	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+	if(this->eventType != DBusEventType::DBUS_SIGNAL_EVENT)
 		this->buildAndSendErrorReply(connection, message, errorString);
 }
 

@@ -35,10 +35,10 @@
 namespace NSGKDBus
 {
 
-enum class GKDBusEventType : uint8_t
+enum class DBusEventType : uint8_t
 {
-	GKDBUS_EVENT_METHOD = 0,
-	GKDBUS_EVENT_SIGNAL
+	DBUS_METHOD_EVENT = 0,
+	DBUS_SIGNAL_EVENT
 };
 
 /* structure for introspection */
@@ -57,7 +57,7 @@ class GKDBusEvent
 	public:
 		const std::string eventName;
 		std::vector<DBusMethodArgument> arguments;
-		GKDBusEventType eventType;
+		DBusEventType eventType;
 		const bool introspectable;
 
 		virtual void runCallback(
@@ -72,7 +72,7 @@ class GKDBusEvent
 		GKDBusEvent(
 			const char* n,
 			const std::vector<DBusMethodArgument> & a,
-			GKDBusEventType t,
+			DBusEventType t,
 			const bool i
 		);
 

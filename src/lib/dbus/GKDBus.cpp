@@ -247,7 +247,7 @@ void GKDBus::checkDBusMessage(
 
 				switch(event->eventType)
 				{
-					case GKDBusEventType::GKDBUS_EVENT_METHOD:
+					case DBusEventType::DBUS_METHOD_EVENT:
 					{
 						if( dbus_message_is_method_call(message, eventInterface, eventName) )
 						{
@@ -259,7 +259,7 @@ void GKDBus::checkDBusMessage(
 						}
 						break;
 					}
-					case GKDBusEventType::GKDBUS_EVENT_SIGNAL:
+					case DBusEventType::DBUS_SIGNAL_EVENT:
 					{
 						if( dbus_message_is_signal(message, eventInterface, eventName) )
 						{

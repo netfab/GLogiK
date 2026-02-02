@@ -31,7 +31,7 @@ using namespace NSGKUtils;
 GKDBusEvent::GKDBusEvent(
 	const char* n,
 	const std::vector<DBusMethodArgument> & a,
-	GKDBusEventType t,
+	DBusEventType t,
 	const bool i)
 		:	eventName(n),
 			arguments(a),
@@ -74,7 +74,7 @@ void GKDBusEvent::sendCallbackError(
 
 	LOG(error) << errorString;
 
-	if(this->eventType != GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+	if(this->eventType != DBusEventType::DBUS_SIGNAL_EVENT)
 	{ /* send error if something was wrong when running callback */
 		this->buildAndSendErrorReply(connection, message, errorString);
 	}

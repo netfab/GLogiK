@@ -129,7 +129,7 @@ void GKDBusEvents::removeInterface(
 		for(auto & event : objectPathMap[eventInterface]) /* vector<GKDBusEvent*> */
 		{
 			// if event is a signal, build and remove signal rule match
-			if(event->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+			if(event->eventType == DBusEventType::DBUS_SIGNAL_EVENT)
 				this->removeSignalRuleMatch(
 					eventBus,
 					eventSender,
@@ -231,7 +231,7 @@ void GKDBusEvents::removeEvent(
 
 		// TODO fix eventSender and check
 		auto & event = vec[index];
-		if(event->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+		if(event->eventType == DBusEventType::DBUS_SIGNAL_EVENT)
 			this->removeSignalRuleMatch(
 				eventBus,
 				eventSender,
@@ -270,7 +270,7 @@ void GKDBusEvents::exposeIntrospectMethod(
 		this->Callback<SIGs2s>::exposeEvent(
 			eventBus,			/* bus */
 			nullptr,			/* sender (used only if
-								   eventType == GKDBUS_EVENT_SIGNAL below,
+								   eventType == DBUS_SIGNAL_EVENT below,
 								   unused here --> nullptr) */
 			eventObjectPath,	/* event object path */
 			_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE,	/* event interface */
@@ -284,7 +284,7 @@ void GKDBusEvents::exposeIntrospectMethod(
 				&GKDBusEvents::introspect,
 				this,
 				std::placeholders::_1),				/* callback method */
-			GKDBusEventType::GKDBUS_EVENT_METHOD,	/* event type (method|signal) */
+			DBusEventType::DBUS_METHOD_EVENT,		/* event type (method|signal) */
 			false									/* introspectability */
 		);
 	}
@@ -302,7 +302,7 @@ void GKDBusEvents::addEvent(
 	if(event->introspectable)
 		this->exposeIntrospectMethod(eventBus, eventObjectPath);
 
-	if( event->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL )
+	if( event->eventType == DBusEventType::DBUS_SIGNAL_EVENT )
 		this->addSignalRuleMatch(eventBus, eventSender, eventInterface, event->eventName.c_str());
 
 	_DBusInterfaces.insert(eventInterface);
@@ -333,7 +333,7 @@ void GKDBusEvents::eventToXMLMethod(
 	std::ostringstream & xml,
 	const GKDBusEvent* event)
 {
-	if( event->eventType == GKDBusEventType::GKDBUS_EVENT_METHOD )
+	if( event->eventType == DBusEventType::DBUS_METHOD_EVENT )
 	{
 		xml << "    <method name=\"" << event->eventName << "\">\n";
 		for(const auto & arg : event->arguments)
@@ -470,7 +470,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 								skip_op = true;
 								for(const auto & event : pVec) // vector<GKDBusEvent*>
 								{ // we want to find at least one method on this interface
-									if(event->eventType == GKDBusEventType::GKDBUS_EVENT_METHOD)
+									if(event->eventType == DBusEventType::DBUS_METHOD_EVENT)
 									{
 										skip_op = false;
 										break;
