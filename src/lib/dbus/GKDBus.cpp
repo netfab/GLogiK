@@ -164,7 +164,7 @@ void GKDBus::exit(void) noexcept
 {
 	GK_LOG_FUNC
 
-	GKLog(trace, "disconnecting and clearing DBusEvents")
+	GKLog(trace, "disconnecting and clearing DBus events")
 
 	this->disconnectFromSystemBus();
 	this->disconnectFromSessionBus();
@@ -240,12 +240,12 @@ void GKDBus::checkDBusMessage(
 			const char* eventInterface = interface.c_str();
 			//GKLog2(trace, "checking interface : ", interface)
 
-			for(const auto & DBusEvent : pVec)
+			for(const auto & event : pVec) // vector<GKDBusEvent*>
 			{
-				const char* eventName = DBusEvent->eventName.c_str();
+				const char* eventName = event->eventName.c_str();
 				//GKLog2(trace, "checking event : ", eventName)
 
-				switch(DBusEvent->eventType)
+				switch(event->eventType)
 				{
 					case GKDBusEventType::GKDBUS_EVENT_METHOD:
 					{
@@ -253,7 +253,7 @@ void GKDBus::checkDBusMessage(
 						{
 							GKLog2(trace, "receipted DBus method call : ", eventName)
 							DBusMessage* asyncContainer = this->getAsyncContainer();
-							DBusEvent->runCallback(connection, message, asyncContainer);
+							event->runCallback(connection, message, asyncContainer);
 							this->resetAsyncContainer();
 							return;
 						}
@@ -265,7 +265,7 @@ void GKDBus::checkDBusMessage(
 						{
 							GKLog2(trace, "receipted DBus signal : ", eventName)
 							DBusMessage* asyncContainer = this->getAsyncContainer();
-							DBusEvent->runCallback(connection, message, asyncContainer);
+							event->runCallback(connection, message, asyncContainer);
 							this->resetAsyncContainer();
 							return;
 						}

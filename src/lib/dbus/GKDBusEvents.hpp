@@ -127,7 +127,7 @@ class GKDBusEvents
 		);
 		void eventToXMLMethod(
 			std::ostringstream & xml,
-			const GKDBusEvent* DBusEvent
+			const GKDBusEvent* event
 		);
 		void signalToXMLSignal(
 			std::ostringstream & xml,

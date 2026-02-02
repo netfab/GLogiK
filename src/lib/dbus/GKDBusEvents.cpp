@@ -88,8 +88,8 @@ void GKDBusEvents::clearDBusEvents(void) noexcept
 			for(const auto & [interface, pVec ] : interMap) /* vector of pointers */
 			{
 				GKLog2(trace, "interface : ", interface)
-				for(auto & DBusEvent : pVec)
-					delete DBusEvent;
+				for(auto & event : pVec) // vector<GKDBusEvent*>
+					delete event;
 			}
 		}
 	}
@@ -126,18 +126,18 @@ void GKDBusEvents::removeInterface(
 		)
 
 		auto & objectPathMap = _DBusEvents[eventBus][eventObjectPath];
-		for(auto & DBusEvent : objectPathMap[eventInterface]) /* vector of pointers */
+		for(auto & event : objectPathMap[eventInterface]) /* vector<GKDBusEvent*> */
 		{
 			// if event is a signal, build and remove signal rule match
-			if(DBusEvent->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+			if(event->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
 				this->removeSignalRuleMatch(
 					eventBus,
 					eventSender,
 					eventInterface,
-					DBusEvent->eventName.c_str()
+					event->eventName.c_str()
 				);
 
-			delete DBusEvent; DBusEvent = nullptr;
+			delete event; event = nullptr;
 		}
 		objectPathMap[eventInterface].clear();
 		objectPathMap.erase(eventInterface);
@@ -230,16 +230,16 @@ void GKDBusEvents::removeEvent(
 		auto & vec = _DBusEvents[eventBus][eventObjectPath][eventInterface];
 
 		// TODO fix eventSender and check
-		auto & DBusEvent = vec[index];
-		if(DBusEvent->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
+		auto & event = vec[index];
+		if(event->eventType == GKDBusEventType::GKDBUS_EVENT_SIGNAL)
 			this->removeSignalRuleMatch(
 				eventBus,
 				eventSender,
 				eventInterface,
-				DBusEvent->eventName.c_str()
+				event->eventName.c_str()
 			);
 
-		delete DBusEvent; DBusEvent = nullptr;
+		delete event; event = nullptr;
 		vec.erase(vec.begin() + index);
 	}
 	catch ( const GLogiKExcept & e )
@@ -331,12 +331,12 @@ void GKDBusEvents::closeXMLInterface(
 
 void GKDBusEvents::eventToXMLMethod(
 	std::ostringstream & xml,
-	const GKDBusEvent* DBusEvent)
+	const GKDBusEvent* event)
 {
-	if( DBusEvent->eventType == GKDBusEventType::GKDBUS_EVENT_METHOD )
+	if( event->eventType == GKDBusEventType::GKDBUS_EVENT_METHOD )
 	{
-		xml << "    <method name=\"" << DBusEvent->eventName << "\">\n";
-		for(const auto & arg : DBusEvent->arguments)
+		xml << "    <method name=\"" << event->eventName << "\">\n";
+		for(const auto & arg : event->arguments)
 		{
 			xml << "      <!-- " << arg.comment << " -->\n";
 			xml << "      <arg type=\"" << arg.type << "\" ";
@@ -468,9 +468,9 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 #endif
 
 								skip_op = true;
-								for(const auto & DBusEvent : pVec)
+								for(const auto & event : pVec) // vector<GKDBusEvent*>
 								{ // we want to find at least one method on this interface
-									if(DBusEvent->eventType == GKDBusEventType::GKDBUS_EVENT_METHOD)
+									if(event->eventType == GKDBusEventType::GKDBUS_EVENT_METHOD)
 									{
 										skip_op = false;
 										break;
@@ -512,8 +512,8 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 						aaa = true;
 
 						this->openXMLInterface(xml, interfaceOpened, DBusInterface);
-						for(const auto & DBusEvent : pVec)
-							this->eventToXMLMethod(xml, DBusEvent);
+						for(const auto & event : pVec) // vector<GKDBusEvent*>
+							this->eventToXMLMethod(xml, event);
 					}
 				}
 			} // >>> for
