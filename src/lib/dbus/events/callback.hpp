@@ -114,7 +114,7 @@ template <typename T>
 			const char* sender,
 			const char* objectPath,
 			const char* interface,
-			DBusEvent* event
+			GKDBusEvent* event
 		) = 0;
 };
 
@@ -182,7 +182,7 @@ template <typename T>
 		DBusEventType eventType,
 		const bool introspectable)
 {
-	DBusEvent* event = nullptr;
+	GKDBusEvent* event = nullptr;
 	try
 	{
 		event = new callbackEvent<T>(eventName, args, callback, eventType, introspectable);
@@ -252,7 +252,7 @@ template <>
 			const char* sender,
 			const char* objectPath,
 			const char* interface,
-			DBusEvent* event
+			GKDBusEvent* event
 		) = 0;
 };
 

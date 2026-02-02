@@ -47,37 +47,12 @@ DBusEvent::~DBusEvent()
 	GKLog2(trace, "destroying event : ", eventName)
 }
 
-/*
- * exception was thrown while building reply
- */
-void DBusEvent::sendReplyError(
+void DBusEvent::callback(
 	DBusConnection* const connection,
 	DBusMessage* message,
-	const char* errorString)
+	DBusMessage* asyncContainer)
 {
-	GK_LOG_FUNC
-
-	LOG(error) << "DBus reply failure : " << errorString;
-	this->abandonReply();	/* delete reply object if allocated */
-	this->buildAndSendErrorReply(connection, message, errorString);
-}
-
-/*
- * exception was thrown before or while running callback
- */
-void DBusEvent::sendCallbackError(
-	DBusConnection* const connection,
-	DBusMessage* message,
-	const char* errorString)
-{
-	GK_LOG_FUNC
-
-	LOG(error) << errorString;
-
-	if(this->eventType != DBusEventType::DBUS_SIGNAL_EVENT)
-	{ /* send error if something was wrong when running callback */
-		this->buildAndSendErrorReply(connection, message, errorString);
-	}
+	this->runCallback(connection, message, asyncContainer);
 }
 
 GKDBusIntrospectableSignal::GKDBusIntrospectableSignal(

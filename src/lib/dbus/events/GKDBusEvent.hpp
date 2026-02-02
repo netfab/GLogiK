@@ -29,9 +29,6 @@
 
 #include <dbus/dbus.h>
 
-#include "lib/dbus/messages/GKDBusReply.hpp"
-#include "lib/dbus/messages/GKDBusErrorReply.hpp"
-
 namespace NSGKDBus
 {
 
@@ -51,8 +48,6 @@ struct DBusEventArgument
 };
 
 class DBusEvent
-	:	protected GKDBusMessageReply,
-		protected GKDBusMessageErrorReply
 {
 	public:
 		const std::string eventName;
@@ -60,11 +55,11 @@ class DBusEvent
 		DBusEventType eventType;
 		const bool introspectable;
 
-		virtual void runCallback(
+		void callback(
 			DBusConnection* const connection,
 			DBusMessage* message,
 			DBusMessage* asyncContainer
-		) = 0;
+		);
 
 		virtual ~DBusEvent(void);
 
@@ -76,20 +71,33 @@ class DBusEvent
 			const bool i
 		);
 
-		void sendReplyError(
-			DBusConnection* const connection,
-			DBusMessage* message,
-			const char* errorString
-		);
-
-		void sendCallbackError(
-			DBusConnection* const connection,
-			DBusMessage* message,
-			const char* errorString
-		);
-
 	private:
 		DBusEvent(void) = delete;
+
+		virtual void runCallback(
+			DBusConnection* const connection,
+			DBusMessage* message,
+			DBusMessage* asyncContainer
+		) = 0;
+};
+
+
+class GKDBusEvent
+	:	public DBusEvent
+{
+	public:
+		~GKDBusEvent(void) = default;
+
+	protected:
+		GKDBusEvent(
+			const char* n,
+			const std::vector<DBusEventArgument> & a,
+			DBusEventType t,
+			const bool i)
+				:	DBusEvent(n, a, t, i) {}
+
+	private:
+		GKDBusEvent(void) = delete;
 };
 
 class GKDBusIntrospectableSignal

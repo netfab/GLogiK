@@ -98,7 +98,7 @@ class GKDBusEvents
 		std::map<BusConnection,
 			std::map<std::string, /* object path */
 				std::map<std::string, /* interface */
-					std::vector<DBusEvent*> > > > _DBusEvents;
+					std::vector<GKDBusEvent*> > > > _DBusEvents;
 
 	private:
 		std::map<BusConnection,
@@ -127,7 +127,7 @@ class GKDBusEvents
 		);
 		void eventToXMLMethod(
 			std::ostringstream & xml,
-			const DBusEvent* event
+			const GKDBusEvent* event
 		);
 		void signalToXMLSignal(
 			std::ostringstream & xml,
@@ -155,7 +155,7 @@ class GKDBusEvents
 			const char* eventSender,
 			const char* eventObjectPath,
 			const char* eventInterface,
-			DBusEvent* event
+			GKDBusEvent* event
 		);
 
 		const std::string buildSignalRuleMatch(

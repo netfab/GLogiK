@@ -295,7 +295,7 @@ void GKDBusEvents::addEvent(
 	const char* eventSender,
 	const char* eventObjectPath,
 	const char* eventInterface,
-	DBusEvent* event)
+	GKDBusEvent* event)
 {
 	GK_LOG_FUNC
 
@@ -331,7 +331,7 @@ void GKDBusEvents::closeXMLInterface(
 
 void GKDBusEvents::eventToXMLMethod(
 	std::ostringstream & xml,
-	const DBusEvent* event)
+	const GKDBusEvent* event)
 {
 	if( event->eventType == DBusEventType::DBUS_METHOD_EVENT )
 	{

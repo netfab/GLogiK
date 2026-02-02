@@ -253,7 +253,7 @@ void GKDBus::checkDBusMessage(
 						{
 							GKLog2(trace, "receipted DBus method call : ", eventName)
 							DBusMessage* asyncContainer = this->getAsyncContainer();
-							event->runCallback(connection, message, asyncContainer);
+							event->callback(connection, message, asyncContainer);
 							this->resetAsyncContainer();
 							return;
 						}
@@ -265,7 +265,7 @@ void GKDBus::checkDBusMessage(
 						{
 							GKLog2(trace, "receipted DBus signal : ", eventName)
 							DBusMessage* asyncContainer = this->getAsyncContainer();
-							event->runCallback(connection, message, asyncContainer);
+							event->callback(connection, message, asyncContainer);
 							this->resetAsyncContainer();
 							return;
 						}

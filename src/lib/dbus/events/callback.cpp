@@ -87,7 +87,7 @@ void Callback<SIGs2s>::exposeEvent(
 		DBusEventType eventType,
 		const bool introspectable)
 {
-	DBusEvent* event = nullptr;
+	GKDBusEvent* event = nullptr;
 	try
 	{
 		event = new callbackEvent<SIGs2s>(eventName, args, callback, eventType, introspectable);

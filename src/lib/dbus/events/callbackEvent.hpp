@@ -32,6 +32,8 @@
 
 #include "lib/dbus/ArgTypes/string.hpp"
 #include "lib/dbus/ArgTypes/uint64.hpp"
+#include "lib/dbus/messages/GKDBusReply.hpp"
+#include "lib/dbus/messages/GKDBusErrorReply.hpp"
 
 namespace NSGKDBus
 {
@@ -42,7 +44,9 @@ namespace NSGKDBus
 
 template <typename T>
 	class callbackEvent
-		:	public DBusEvent,
+		:	public GKDBusEvent,
+			private GKDBusMessageReply,
+			private GKDBusMessageErrorReply,
 			virtual private ArgString,
 			virtual private ArgUInt64
 {
@@ -53,19 +57,31 @@ template <typename T>
 			T c,
 			DBusEventType t,
 			const bool i
-			);
+		);
 		~callbackEvent() = default;
+
+	private:
+		callbackEvent() = delete;
+
+		T callback;
+
+		void sendReplyError(
+			DBusConnection* const connection,
+			DBusMessage* message,
+			const char* errorString
+		);
+
+		void sendCallbackError(
+			DBusConnection* const connection,
+			DBusMessage* message,
+			const char* errorString
+		);
 
 		void runCallback(
 			DBusConnection* const connection,
 			DBusMessage* message,
 			DBusMessage* asyncContainer
 		);
-
-	private:
-		callbackEvent() = delete;
-
-		T callback;
 };
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
@@ -79,9 +95,46 @@ template <typename T>
 		T c,
 		DBusEventType t,
 		const bool i
-	)		:	DBusEvent(n, a, t, i),
+	)		:	GKDBusEvent(n, a, t, i),
 				callback(c)
 {
+}
+
+/*
+ * exception was thrown while building reply
+ */
+template <typename T>
+	void callbackEvent<T>::sendReplyError(
+		DBusConnection* const connection,
+		DBusMessage* message,
+		const char* errorString)
+{
+	GK_LOG_FUNC
+
+	using namespace NSGKUtils;
+	LOG(error) << "DBus reply failure : " << errorString;
+	this->abandonReply();	/* delete reply object if allocated */
+	this->buildAndSendErrorReply(connection, message, errorString);
+}
+
+/*
+ * exception was thrown before or while running callback
+ */
+template <typename T>
+	void callbackEvent<T>::sendCallbackError(
+		DBusConnection* const connection,
+		DBusMessage* message,
+		const char* errorString)
+{
+	GK_LOG_FUNC
+
+	using namespace NSGKUtils;
+	LOG(error) << errorString;
+
+	if(this->eventType != DBusEventType::DBUS_SIGNAL_EVENT)
+	{ /* send error if something was wrong when running callback */
+		this->buildAndSendErrorReply(connection, message, errorString);
+	}
 }
 
 template <typename T>
