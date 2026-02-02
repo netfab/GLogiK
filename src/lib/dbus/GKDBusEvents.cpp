@@ -40,7 +40,7 @@ void GKDBusEvents::declareIntrospectableSignal(
 	const char* eventObjectPath,
 	const char* eventInterface,
 	const char* eventName,
-	const std::vector<DBusMethodArgument> & args)
+	const std::vector<DBusEventArgument> & args)
 {
 	GKDBusIntrospectableSignal signal(eventName, args);
 	_DBusIntrospectableSignals[eventBus][eventObjectPath][eventInterface].push_back(signal);
@@ -88,7 +88,7 @@ void GKDBusEvents::clearDBusEvents(void) noexcept
 			for(const auto & [interface, pVec ] : interMap) /* vector of pointers */
 			{
 				GKLog2(trace, "interface : ", interface)
-				for(auto & event : pVec) // vector<GKDBusEvent*>
+				for(auto & event : pVec) // vector<DBusEvent*>
 					delete event;
 			}
 		}
@@ -126,7 +126,7 @@ void GKDBusEvents::removeInterface(
 		)
 
 		auto & objectPathMap = _DBusEvents[eventBus][eventObjectPath];
-		for(auto & event : objectPathMap[eventInterface]) /* vector<GKDBusEvent*> */
+		for(auto & event : objectPathMap[eventInterface]) /* vector<DBusEvent*> */
 		{
 			// if event is a signal, build and remove signal rule match
 			if(event->eventType == DBusEventType::DBUS_SIGNAL_EVENT)
@@ -295,7 +295,7 @@ void GKDBusEvents::addEvent(
 	const char* eventSender,
 	const char* eventObjectPath,
 	const char* eventInterface,
-	GKDBusEvent* event)
+	DBusEvent* event)
 {
 	GK_LOG_FUNC
 
@@ -331,7 +331,7 @@ void GKDBusEvents::closeXMLInterface(
 
 void GKDBusEvents::eventToXMLMethod(
 	std::ostringstream & xml,
-	const GKDBusEvent* event)
+	const DBusEvent* event)
 {
 	if( event->eventType == DBusEventType::DBUS_METHOD_EVENT )
 	{
@@ -468,7 +468,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 #endif
 
 								skip_op = true;
-								for(const auto & event : pVec) // vector<GKDBusEvent*>
+								for(const auto & event : pVec) // vector<DBusEvent*>
 								{ // we want to find at least one method on this interface
 									if(event->eventType == DBusEventType::DBUS_METHOD_EVENT)
 									{
@@ -512,7 +512,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 						aaa = true;
 
 						this->openXMLInterface(xml, interfaceOpened, DBusInterface);
-						for(const auto & event : pVec) // vector<GKDBusEvent*>
+						for(const auto & event : pVec) // vector<DBusEvent*>
 							this->eventToXMLMethod(xml, event);
 					}
 				}

@@ -34,7 +34,7 @@ void Callback<SIGs2s>::exposeMethod(
 		const char* objectPath,
 		const char* interface,
 		const char* eventName,
-		const std::vector<DBusMethodArgument> & args,
+		const std::vector<DBusEventArgument> & args,
 		SIGs2s callback
 	)
 {
@@ -57,7 +57,7 @@ void Callback<SIGs2s>::receiveSignal(
 		const char* objectPath,
 		const char* interface,
 		const char* eventName,
-		const std::vector<DBusMethodArgument> & args,
+		const std::vector<DBusEventArgument> & args,
 		SIGs2s callback
 	)
 {
@@ -82,12 +82,12 @@ void Callback<SIGs2s>::exposeEvent(
 		const char* objectPath,
 		const char* interface,
 		const char* eventName,
-		const std::vector<DBusMethodArgument> & args,
+		const std::vector<DBusEventArgument> & args,
 		SIGs2s callback,
 		DBusEventType eventType,
 		const bool introspectable)
 {
-	GKDBusEvent* event = nullptr;
+	DBusEvent* event = nullptr;
 	try
 	{
 		event = new callbackEvent<SIGs2s>(eventName, args, callback, eventType, introspectable);

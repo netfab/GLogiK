@@ -42,14 +42,14 @@ namespace NSGKDBus
 
 template <typename T>
 	class callbackEvent
-		:	public GKDBusEvent,
+		:	public DBusEvent,
 			virtual private ArgString,
 			virtual private ArgUInt64
 {
 	public:
 		callbackEvent(
 			const char* n,
-			const std::vector<DBusMethodArgument> & a,
+			const std::vector<DBusEventArgument> & a,
 			T c,
 			DBusEventType t,
 			const bool i
@@ -75,11 +75,11 @@ template <typename T>
 template <typename T>
 	callbackEvent<T>::callbackEvent(
 		const char* n,
-		const std::vector<DBusMethodArgument> & a,
+		const std::vector<DBusEventArgument> & a,
 		T c,
 		DBusEventType t,
 		const bool i
-	)		:	GKDBusEvent(n, a, t, i),
+	)		:	DBusEvent(n, a, t, i),
 				callback(c)
 {
 }

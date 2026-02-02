@@ -240,7 +240,7 @@ void GKDBus::checkDBusMessage(
 			const char* eventInterface = interface.c_str();
 			//GKLog2(trace, "checking interface : ", interface)
 
-			for(const auto & event : pVec) // vector<GKDBusEvent*>
+			for(const auto & event : pVec) // vector<DBusEvent*>
 			{
 				const char* eventName = event->eventName.c_str();
 				//GKLog2(trace, "checking event : ", eventName)

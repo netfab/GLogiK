@@ -28,9 +28,9 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-GKDBusEvent::GKDBusEvent(
+DBusEvent::DBusEvent(
 	const char* n,
-	const std::vector<DBusMethodArgument> & a,
+	const std::vector<DBusEventArgument> & a,
 	DBusEventType t,
 	const bool i)
 		:	eventName(n),
@@ -40,7 +40,7 @@ GKDBusEvent::GKDBusEvent(
 {
 }
 
-GKDBusEvent::~GKDBusEvent()
+DBusEvent::~DBusEvent()
 {
 	GK_LOG_FUNC
 
@@ -50,7 +50,7 @@ GKDBusEvent::~GKDBusEvent()
 /*
  * exception was thrown while building reply
  */
-void GKDBusEvent::sendReplyError(
+void DBusEvent::sendReplyError(
 	DBusConnection* const connection,
 	DBusMessage* message,
 	const char* errorString)
@@ -65,7 +65,7 @@ void GKDBusEvent::sendReplyError(
 /*
  * exception was thrown before or while running callback
  */
-void GKDBusEvent::sendCallbackError(
+void DBusEvent::sendCallbackError(
 	DBusConnection* const connection,
 	DBusMessage* message,
 	const char* errorString)
@@ -82,7 +82,7 @@ void GKDBusEvent::sendCallbackError(
 
 GKDBusIntrospectableSignal::GKDBusIntrospectableSignal(
 	const char* signalName,
-	const std::vector<DBusMethodArgument> & args)
+	const std::vector<DBusEventArgument> & args)
 		:	name(signalName),
 			arguments(args)
 {

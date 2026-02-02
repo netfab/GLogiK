@@ -42,7 +42,7 @@ enum class DBusEventType : uint8_t
 };
 
 /* structure for introspection */
-struct DBusMethodArgument
+struct DBusEventArgument
 {
 	const std::string type;
 	const std::string name;
@@ -50,13 +50,13 @@ struct DBusMethodArgument
 	const std::string comment;
 };
 
-class GKDBusEvent
+class DBusEvent
 	:	protected GKDBusMessageReply,
 		protected GKDBusMessageErrorReply
 {
 	public:
 		const std::string eventName;
-		std::vector<DBusMethodArgument> arguments;
+		std::vector<DBusEventArgument> arguments;
 		DBusEventType eventType;
 		const bool introspectable;
 
@@ -66,12 +66,12 @@ class GKDBusEvent
 			DBusMessage* asyncContainer
 		) = 0;
 
-		virtual ~GKDBusEvent(void);
+		virtual ~DBusEvent(void);
 
 	protected:
-		GKDBusEvent(
+		DBusEvent(
 			const char* n,
-			const std::vector<DBusMethodArgument> & a,
+			const std::vector<DBusEventArgument> & a,
 			DBusEventType t,
 			const bool i
 		);
@@ -89,7 +89,7 @@ class GKDBusEvent
 		);
 
 	private:
-		GKDBusEvent(void) = delete;
+		DBusEvent(void) = delete;
 };
 
 class GKDBusIntrospectableSignal
@@ -97,12 +97,12 @@ class GKDBusIntrospectableSignal
 	public:
 		GKDBusIntrospectableSignal(
 			const char* name,
-			const std::vector<DBusMethodArgument> & args
+			const std::vector<DBusEventArgument> & args
 		);
 		~GKDBusIntrospectableSignal() = default;
 
 		const std::string name;
-		const std::vector<DBusMethodArgument> arguments;
+		const std::vector<DBusEventArgument> arguments;
 
 	protected:
 	private:

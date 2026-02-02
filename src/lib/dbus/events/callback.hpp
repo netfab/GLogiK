@@ -78,7 +78,7 @@ template <typename T>
 			const char* objectPath,
 			const char* interface,
 			const char* eventName,
-			const std::vector<DBusMethodArgument> & args,
+			const std::vector<DBusEventArgument> & args,
 			T callback
 		);
 
@@ -88,7 +88,7 @@ template <typename T>
 			const char* objectPath,
 			const char* interface,
 			const char* eventName,
-			const std::vector<DBusMethodArgument> & args,
+			const std::vector<DBusEventArgument> & args,
 			T callback
 		);
 
@@ -103,7 +103,7 @@ template <typename T>
 			const char* objectPath,
 			const char* interface,
 			const char* eventName,
-			const std::vector<DBusMethodArgument> & args,
+			const std::vector<DBusEventArgument> & args,
 			T callback,
 			DBusEventType t,
 			const bool introspectable
@@ -114,7 +114,7 @@ template <typename T>
 			const char* sender,
 			const char* objectPath,
 			const char* interface,
-			GKDBusEvent* event
+			DBusEvent* event
 		) = 0;
 };
 
@@ -128,7 +128,7 @@ template <typename T>
 		const char* objectPath,
 		const char* interface,
 		const char* eventName,
-		const std::vector<DBusMethodArgument> & args,
+		const std::vector<DBusEventArgument> & args,
 		T callback
 	)
 {
@@ -152,7 +152,7 @@ template <typename T>
 		const char* objectPath,
 		const char* interface,
 		const char* eventName,
-		const std::vector<DBusMethodArgument> & args,
+		const std::vector<DBusEventArgument> & args,
 		T callback
 	)
 {
@@ -177,12 +177,12 @@ template <typename T>
 		const char* objectPath,
 		const char* interface,
 		const char* eventName,
-		const std::vector<DBusMethodArgument> & args,
+		const std::vector<DBusEventArgument> & args,
 		T callback,
 		DBusEventType eventType,
 		const bool introspectable)
 {
-	GKDBusEvent* event = nullptr;
+	DBusEvent* event = nullptr;
 	try
 	{
 		event = new callbackEvent<T>(eventName, args, callback, eventType, introspectable);
@@ -215,7 +215,7 @@ template <>
 			const char* objectPath,
 			const char* interface,
 			const char* eventName,
-			const std::vector<DBusMethodArgument> & args,
+			const std::vector<DBusEventArgument> & args,
 			SIGs2s callback
 		);
 
@@ -225,7 +225,7 @@ template <>
 			const char* objectPath,
 			const char* interface,
 			const char* eventName,
-			const std::vector<DBusMethodArgument> & args,
+			const std::vector<DBusEventArgument> & args,
 			SIGs2s callback
 		);
 */
@@ -240,7 +240,7 @@ template <>
 			const char* objectPath,
 			const char* interface,
 			const char* eventName,
-			const std::vector<DBusMethodArgument> & args,
+			const std::vector<DBusEventArgument> & args,
 			SIGs2s callback,
 			DBusEventType t,
 			const bool introspectable
@@ -252,7 +252,7 @@ template <>
 			const char* sender,
 			const char* objectPath,
 			const char* interface,
-			GKDBusEvent* event
+			DBusEvent* event
 		) = 0;
 };
 
