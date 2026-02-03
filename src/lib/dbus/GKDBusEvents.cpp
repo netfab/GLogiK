@@ -358,7 +358,7 @@ void GKDBusEvents::closeXMLInterface(
 		xml << "  </interface>\n";
 }
 
-void GKDBusEvents::eventToXMLMethod(
+void GKDBusEvents::eventToXML(
 	std::ostringstream & xml,
 	const DBusEvent* event)
 {
@@ -369,29 +369,27 @@ void GKDBusEvents::eventToXMLMethod(
 		{
 			xml << "      <!-- " << arg.comment << " -->\n";
 			xml << "      <arg type=\"" << arg.type << "\" ";
-			if( ! arg.name.empty() ) /* name attribute on arguments is optional */
+			if( ! arg.name.empty() ) // name attribute on arguments is optional
 				xml << "name=\"" << arg.name << "\" ";
 			xml << "direction=\"" << arg.direction << "\" />\n";
 		}
 		xml << "    </method>\n";
 	}
-}
 
-void GKDBusEvents::signalToXMLSignal(
-	std::ostringstream & xml,
-	const DBusEvent* signal)
-{
-	xml << "    <signal name=\"" << signal->eventName << "\">\n";
-	for(const auto & arg : signal->arguments)
+	if( event->eventType == DBusEventType::DBUS_SIGNAL_EVENT )
 	{
-		xml << "      <!-- " << arg.comment << " -->\n";
-		xml << "      <arg type=\"" << arg.type << "\" ";
-		if( ! arg.name.empty() ) /* name attribute on arguments is optional */
-			xml << "name=\"" << arg.name << "\" ";
-			//xml << "direction=\"out\" />\n";
-		xml << "/>\n";
+		xml << "    <signal name=\"" << event->eventName << "\">\n";
+		for(const auto & arg : event->arguments)
+		{
+			xml << "      <!-- " << arg.comment << " -->\n";
+			xml << "      <arg type=\"" << arg.type << "\" ";
+			if( ! arg.name.empty() ) // name attribute on arguments is optional
+				xml << "name=\"" << arg.name << "\" ";
+			xml << "direction=\"out\" />\n"; // force direction to out
+			//xml << "/>\n";
+		}
+		xml << "    </signal>\n";
 	}
-	xml << "    </signal>\n";
 }
 
 const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
@@ -542,7 +540,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 
 						this->openXMLInterface(xml, interfaceOpened, DBusInterface);
 						for(const auto & event : pVec) // vector<DBusEvent*>
-							this->eventToXMLMethod(xml, event);
+							this->eventToXML(xml, event);
 					}
 				}
 			} // >>> for
@@ -573,7 +571,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 						{
 							this->openXMLInterface(xml, interfaceOpened, DBusInterface);
 							for(const auto & signal : pVec)
-								this->signalToXMLSignal(xml, signal);
+								this->eventToXML(xml, signal);
 						}
 					}
 				}

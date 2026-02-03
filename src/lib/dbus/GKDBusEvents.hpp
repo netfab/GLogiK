@@ -125,13 +125,9 @@ class GKDBusEvents
 			std::ostringstream & xml,
 			bool & interfaceOpened
 		);
-		void eventToXMLMethod(
+		void eventToXML(
 			std::ostringstream & xml,
 			const DBusEvent* event
-		);
-		void signalToXMLSignal(
-			std::ostringstream & xml,
-			const DBusEvent* signal
 		);
 		const std::string getObjectFromObjectPath(const std::string & objectPath);
 		const std::string introspect(const std::string & askedObjectPath);
