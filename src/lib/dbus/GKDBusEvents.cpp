@@ -400,7 +400,6 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 
 	std::set<std::string> xmlNodes;
 	std::ostringstream xml;
-	std::string::size_type n;
 
 	xml << "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n";
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
@@ -415,6 +414,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 	// check that asked object path is valid
 	// https://dbus.freedesktop.org/doc/dbus-specification.html#message-protocol-marshaling-object-path
 	{
+		std::string::size_type n;
 		n = askedObjectPath.find("//");
 		const char & last = askedObjectPath.back();
 		if(( (n != std::string::npos) or (last == '/') ) and (askedObjectPath != "/"))
@@ -434,156 +434,136 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 #endif
 
 		bool interfaceOpened = false;
-		bool aaa = false;
 
-		try
-		{ // <<<
-			const auto & opMap = _DBusEvents.at(GKDBusEvents::currentBus); // objectPath map
-
-			for(const auto & [objectPath, interMap] : opMap) // interface map
-			{ // <<<
-				std::string op(objectPath);
-
-				if(askedObjectPath != objectPath)
-				{ // if this does not match ...
-					n = objectPath.find(askedObjectPath); // ... and is not a substring ...
-					if(n == std::string::npos)
-						continue; // ... then jumps to next loop iteration ...
-
-					op.erase(n, askedObjectPath.size());
-				}
-
-				for(const auto & [interface, pVec] : interMap) // vector of pointers
-				{
-					if(DBusInterface != interface)
-						continue;
-
-					//GKLog2(trace, "	object path: ", objectPath)
-					if(askedObjectPath != objectPath)
-					{ // <<< if this does not match (again) ...
-						bool skip_op = false; // skip current object path
-
-						if(askedObjectPath != "/")
-						{
-							try
-							{
-								if(op.at(0) == '/')
-									op.erase(0, 1); // erasing leading '/'
-								else
-									skip_op = true;
-							}
-							catch (const std::out_of_range& oor)
-							{
-								LOG(warning) << "logical error 1, wrong object path ?";
-								skip_op = true;
-							}
-						}
-
-						if( ! skip_op )
-						{
-							n = op.find('/'); // trying to find next '/'
-							if(n != std::string::npos)
-								op = op.substr(0, n);
-
-							if(xmlNodes.find(op) == xmlNodes.end())
-							{
-#if DEBUG_GKDBUS
-								GKLog6(trace,
-										"	DBusInterface: ", DBusInterface,
-										"objectPath: ", objectPath, "op: ", op
-								)
-#endif
-
-								skip_op = true;
-								for(const auto & event : pVec) // vector<DBusEvent*>
-								{ // we want to find at least one method on this interface
-									if(event->eventType == DBusEventType::DBUS_METHOD_EVENT)
-									{
-										skip_op = false;
-										break;
-									}
-								}
-
-								if( ! skip_op )
-								{
-									auto result = xmlNodes.insert(op);
-									if( ! result.second )
-									{
-										LOG(warning) << "node insertion failure: " << op;
-									}
-									else
-									{
-										xml << "	<node name=\"" << op << "\"/>\n";
-#if DEBUG_GKDBUS
-										GKLog2(trace, "		node appended: ", op)
-#endif
-									}
-								}
-#if DEBUG_GKDBUS
-								else
-								{
-									GKLog2(trace, "		node skipped (no method found): ", op)
-								}
-#endif
-							}
-#if DEBUG_GKDBUS
-							else
-							{
-								GKLog2(trace, "		node already inserted: ", op)
-							}
-#endif
-						}
-					} // >>>
-					else
-					{
-						aaa = true;
-
-						this->openXMLInterface(xml, interfaceOpened, DBusInterface);
-						for(const auto & event : pVec) // vector<DBusEvent*>
-							this->eventToXML(xml, event);
-					}
-				}
-			} // >>> for
-		} // >>>
-		catch (const std::out_of_range& oor)
-		{
-			GKLog2(trace,
-				"can't iterate over DBusEvents. No bus container: ",
-				toUInt(toEnumType(GKDBusEvents::currentBus))
-			)
-		}
-
-		if( aaa )
+		auto build_xml_string = [&] (DBusEventsContainer & DBusEvents, const bool wantSignals)
+			-> void
 		{
 			try
-			{
-				const auto & opMap =
-					_DBusIntrospectableSignals.at(GKDBusEvents::currentBus); // objectPath map
+			{ // <<<
+				const auto & opMap = DBusEvents.at(GKDBusEvents::currentBus); // objectPath map
+
 				for(const auto & [objectPath, interMap] : opMap) // interface map
-				{
-					/* object path must match */
+				{ // <<<
+					std::string op(objectPath);
+
 					if(askedObjectPath != objectPath)
-						continue;
-					// vector<introspectableSignalEvent*>
-					for(const auto & [interface, pVec] : interMap)
+					{ // if this does not match ...
+						std::string::size_type n;
+						n = objectPath.find(askedObjectPath); // ... and is not a substring ...
+						if(n == std::string::npos)
+							continue; // ... then jumps to next loop iteration ...
+
+						op.erase(n, askedObjectPath.size());
+					}
+
+					for(const auto & [interface, pVec] : interMap) // vector of pointers
 					{
-						if(DBusInterface == interface)
+#if DEBUG_GKDBUS
+						GKLog6(trace,
+							"	interface: ", interface,
+							"objectPath: ", objectPath, "op: ", op
+						)
+#endif
+
+						if(DBusInterface != interface)
+							continue;
+
+						if(askedObjectPath != objectPath)
+						{ // <<< if this does not match (again) ...
+							bool skip_op = false; // skip current object path
+
+							if(askedObjectPath != "/")
+							{
+								try
+								{
+									if(op.at(0) == '/')
+										op.erase(0, 1); // erasing leading '/'
+									else
+										skip_op = true;
+								}
+								catch (const std::out_of_range& oor)
+								{
+									LOG(warning) << "logical error 1, wrong object path ?";
+									skip_op = true;
+								}
+							}
+
+							if( ! skip_op )
+							{ // <<< adding object path node
+								{
+									std::string::size_type n;
+									n = op.find('/'); // trying to find next '/'
+									if(n != std::string::npos)
+										op = op.substr(0, n);
+								}
+
+								if(xmlNodes.find(op) == xmlNodes.end())
+								{ // <<< adding new node
+									// may add introspectable signals to xml stream
+									skip_op = ! wantSignals;
+
+									if(skip_op)
+									{
+										for(const auto & event : pVec) // vector<DBusEvent*>
+										{ // we want to find at least one method on this interface
+											if(event->eventType == DBusEventType::DBUS_METHOD_EVENT)
+											{
+												skip_op = false;
+												break;
+											}
+										}
+									}
+
+									if( ! skip_op )
+									{
+										auto result = xmlNodes.insert(op);
+										if( ! result.second )
+										{
+											LOG(warning) << "node insertion failure: " << op;
+										}
+										else
+										{
+											xml << "	<node name=\"" << op << "\"/>\n";
+#if DEBUG_GKDBUS
+											GKLog2(trace, "		node appended: ", op)
+#endif
+										}
+									}
+#if DEBUG_GKDBUS
+									else
+									{
+										GKLog2(trace, "		node skipped (no method found): ", op)
+									}
+#endif
+								} // >>>
+#if DEBUG_GKDBUS
+								else
+								{
+									GKLog2(trace, "		node already inserted: ", op)
+								}
+#endif
+							} // >>>
+						} // >>>
+						else
 						{
-							this->openXMLInterface(xml, interfaceOpened, DBusInterface);
-							for(const auto & signal : pVec)
-								this->eventToXML(xml, signal);
+							this->openXMLInterface(xml, interfaceOpened, interface);
+							for(const auto & event : pVec) // vector<DBusEvent*>
+								this->eventToXML(xml, event);
 						}
 					}
-				}
-			}
+				} // >>> for
+			} // >>>
 			catch (const std::out_of_range& oor)
 			{
 				GKLog2(trace,
-					"can't iterate over DBusIntrospectableSignals. No bus container: ",
+					"can't iterate over DBus events container. Current bus: ",
 					toUInt(toEnumType(GKDBusEvents::currentBus))
 				)
 			}
-		}
+		};
+
+		build_xml_string(_DBusEvents, false);
+		build_xml_string(_DBusIntrospectableSignals, true);
 
 		this->closeXMLInterface(xml, interfaceOpened);
 	}

@@ -1,6 +1,8 @@
 
 0.8.24 (202x-xx-xx)
 ===================
+- Improve GKDBus introspection
+- Usual internal cleanings and improvements
 
 0.8.22 (2025-12-09)
 ===================
@@ -11,6 +13,7 @@
   status changes on sleep/resume events
 - Fix potential memory leaks in desktop service
 - Fix Qt gui potential crash on exit because of unstopped timer
+- Usual internal cleanings and improvements
 
 0.8.20 (2025-03-31)
 ===================
