@@ -58,6 +58,12 @@ class GKDBusEvents
 		public Callback<SIGssyyy2b>,
 		public Callback<SIGv2v>
 {
+	private:
+		typedef std::map<BusConnection,
+					std::map<std::string, /* object path */
+						std::map<std::string, /* interface */
+							std::vector<DBusEvent*> > > > DBusEventsContainer;
+
 	public:
 		void declareIntrospectableSignal(
 			const BusConnection eventBus,
@@ -95,16 +101,10 @@ class GKDBusEvents
 
 		void clearDBusEvents(void) noexcept;
 
-		std::map<BusConnection,
-			std::map<std::string, /* object path */
-				std::map<std::string, /* interface */
-					std::vector<DBusEvent*> > > > _DBusEvents;
+		DBusEventsContainer _DBusEvents;
 
 	private:
-		std::map<BusConnection,
-			std::map<std::string, /* object path */
-				std::map<std::string, /* interface */
-					std::vector<DBusEvent*> > > > _DBusIntrospectableSignals;
+		DBusEventsContainer _DBusIntrospectableSignals;
 
 		std::set<std::string> _DBusInterfaces;
 

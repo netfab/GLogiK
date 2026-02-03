@@ -90,42 +90,40 @@ void GKDBusEvents::clearDBusEvents(void) noexcept
 {
 	GK_LOG_FUNC
 
-	for(const auto & [bus, opMap] : _DBusEvents) /* objectPath map */
+	auto clear_events_container = [] (DBusEventsContainer & DBusEvents) -> void
 	{
-		GKLog2(trace, "current bus : ", toUInt(toEnumType(bus)))
-		for(const auto & [objectPath, interMap] : opMap) /* interface map */
+		for(const auto & [bus, opMap] : DBusEvents) // objectPath map
 		{
-			GKLog2(trace, "object path : ", objectPath)
-			for(const auto & [interface, pVec ] : interMap) /* vector of pointers */
+			GKLog2(trace, "current bus: ", toUInt(toEnumType(bus)))
+			for(const auto & [objectPath, interMap] : opMap) // interface map
 			{
-				GKLog2(trace, "interface : ", interface)
-				for(auto & event : pVec) // vector<DBusEvent*>
-					delete event;
-			}
-		}
-	}
-
-	_DBusEvents.clear();
-// TODO
-	for(const auto & [bus, opMap] : _DBusIntrospectableSignals) /* objectPath map */
-	{
-		GKLog2(trace, "current bus : ", toUInt(toEnumType(bus)))
-		for(const auto & [objectPath, interMap] : opMap) /* interface map */
-		{
-			GKLog2(trace, "object path : ", objectPath)
-			for(const auto & [interface, pVec ] : interMap) /* vector of pointers */
-			{
-				GKLog2(trace, "interface : ", interface)
-				for(auto & event : pVec) // vector<DBusEvent*>
+				GKLog2(trace, "object path: ", objectPath)
+				for(const auto & [interface, pVec] : interMap) // vector<DBusEvent*>
 				{
-					LOG(warning) << "deleting event";
-					delete event;
+					unsigned short c = 0;
+					GKLog2(trace, "interface: ", interface)
+					for(auto & event : pVec)
+					{
+						if(event != nullptr)
+						{
+							delete event;
+							c++;
+						}
+					}
+					if(c > 0)
+					{
+						LOG(warning) << c
+							<< " remaining events were freed on interface: " << interface;
+					}
 				}
 			}
 		}
-	}
 
-	_DBusIntrospectableSignals.clear();
+		DBusEvents.clear();
+	};
+
+	clear_events_container(_DBusEvents);
+	clear_events_container(_DBusIntrospectableSignals);
 }
 
 /*
