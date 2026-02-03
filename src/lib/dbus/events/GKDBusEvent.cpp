@@ -44,7 +44,12 @@ DBusEvent::~DBusEvent()
 {
 	GK_LOG_FUNC
 
-	GKLog2(trace, "destroying event : ", eventName)
+	std::string tr("destroying ");
+	tr += (this->eventType == DBusEventType::DBUS_SIGNAL_EVENT) ? "signal" : "method";
+	tr += " event: ";
+	tr += this->eventName;
+
+	GKLog(trace, tr)
 }
 
 void DBusEvent::callback(
