@@ -100,21 +100,26 @@ class GKDBusEvent
 		GKDBusEvent(void) = delete;
 };
 
-class GKDBusIntrospectableSignal
+
+class introspectableSignalEvent
+	:	public DBusEvent
 {
 	public:
-		GKDBusIntrospectableSignal(
-			const char* name,
-			const std::vector<DBusEventArgument> & args
-		);
-		~GKDBusIntrospectableSignal() = default;
-
-		const std::string name;
-		const std::vector<DBusEventArgument> arguments;
+		introspectableSignalEvent(
+			const char* n,
+			const std::vector<DBusEventArgument> & a);
+		~introspectableSignalEvent(void);
 
 	protected:
+
 	private:
-		GKDBusIntrospectableSignal(void) = delete;
+		introspectableSignalEvent(void) = delete;
+
+		void runCallback(
+			DBusConnection* const connection,
+			DBusMessage* message,
+			DBusMessage* asyncContainer
+		);
 };
 
 } // namespace NSGKDBus

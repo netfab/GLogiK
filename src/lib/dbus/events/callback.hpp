@@ -114,7 +114,7 @@ template <typename T>
 			const char* sender,
 			const char* objectPath,
 			const char* interface,
-			GKDBusEvent* event
+			DBusEvent* event
 		) = 0;
 };
 
@@ -252,7 +252,7 @@ template <>
 			const char* sender,
 			const char* objectPath,
 			const char* interface,
-			GKDBusEvent* event
+			DBusEvent* event
 		) = 0;
 };
 

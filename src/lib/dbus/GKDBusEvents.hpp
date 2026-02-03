@@ -98,13 +98,13 @@ class GKDBusEvents
 		std::map<BusConnection,
 			std::map<std::string, /* object path */
 				std::map<std::string, /* interface */
-					std::vector<GKDBusEvent*> > > > _DBusEvents;
+					std::vector<DBusEvent*> > > > _DBusEvents;
 
 	private:
 		std::map<BusConnection,
 			std::map<std::string, /* object path */
 				std::map<std::string, /* interface */
-					std::vector<GKDBusIntrospectableSignal> > > > _DBusIntrospectableSignals;
+					std::vector<DBusEvent*> > > > _DBusIntrospectableSignals;
 
 		std::set<std::string> _DBusInterfaces;
 
@@ -127,11 +127,11 @@ class GKDBusEvents
 		);
 		void eventToXMLMethod(
 			std::ostringstream & xml,
-			const GKDBusEvent* event
+			const DBusEvent* event
 		);
 		void signalToXMLSignal(
 			std::ostringstream & xml,
-			const GKDBusIntrospectableSignal & signal
+			const DBusEvent* signal
 		);
 		const std::string getObjectFromObjectPath(const std::string & objectPath);
 		const std::string introspect(const std::string & askedObjectPath);
@@ -155,7 +155,7 @@ class GKDBusEvents
 			const char* eventSender,
 			const char* eventObjectPath,
 			const char* eventInterface,
-			GKDBusEvent* event
+			DBusEvent* event
 		);
 
 		const std::string buildSignalRuleMatch(

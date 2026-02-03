@@ -42,8 +42,19 @@ void GKDBusEvents::declareIntrospectableSignal(
 	const char* eventName,
 	const std::vector<DBusEventArgument> & args)
 {
-	GKDBusIntrospectableSignal signal(eventName, args);
-	_DBusIntrospectableSignals[eventBus][eventObjectPath][eventInterface].push_back(signal);
+	introspectableSignalEvent* event = nullptr;
+
+	try
+	{
+		event = new introspectableSignalEvent(eventName, args);
+	}
+	catch (const std::bad_alloc& e)
+	{ /* handle new() failure */
+		throw NSGKUtils::GLogiKBadAlloc("DBus event bad allocation");
+	}
+
+	_DBusIntrospectableSignals[eventBus][eventObjectPath][eventInterface].push_back(event);
+	_DBusInterfaces.insert(eventInterface);
 	this->exposeIntrospectMethod(eventBus, eventObjectPath);
 }
 
@@ -95,6 +106,26 @@ void GKDBusEvents::clearDBusEvents(void) noexcept
 	}
 
 	_DBusEvents.clear();
+// TODO
+	for(const auto & [bus, opMap] : _DBusIntrospectableSignals) /* objectPath map */
+	{
+		GKLog2(trace, "current bus : ", toUInt(toEnumType(bus)))
+		for(const auto & [objectPath, interMap] : opMap) /* interface map */
+		{
+			GKLog2(trace, "object path : ", objectPath)
+			for(const auto & [interface, pVec ] : interMap) /* vector of pointers */
+			{
+				GKLog2(trace, "interface : ", interface)
+				for(auto & event : pVec) // vector<DBusEvent*>
+				{
+					LOG(warning) << "deleting event";
+					delete event;
+				}
+			}
+		}
+	}
+
+	_DBusIntrospectableSignals.clear();
 }
 
 /*
@@ -295,7 +326,7 @@ void GKDBusEvents::addEvent(
 	const char* eventSender,
 	const char* eventObjectPath,
 	const char* eventInterface,
-	GKDBusEvent* event)
+	DBusEvent* event)
 {
 	GK_LOG_FUNC
 
@@ -331,7 +362,7 @@ void GKDBusEvents::closeXMLInterface(
 
 void GKDBusEvents::eventToXMLMethod(
 	std::ostringstream & xml,
-	const GKDBusEvent* event)
+	const DBusEvent* event)
 {
 	if( event->eventType == DBusEventType::DBUS_METHOD_EVENT )
 	{
@@ -350,10 +381,10 @@ void GKDBusEvents::eventToXMLMethod(
 
 void GKDBusEvents::signalToXMLSignal(
 	std::ostringstream & xml,
-	const GKDBusIntrospectableSignal & signal)
+	const DBusEvent* signal)
 {
-	xml << "    <signal name=\"" << signal.name << "\">\n";
-	for(const auto & arg : signal.arguments)
+	xml << "    <signal name=\"" << signal->eventName << "\">\n";
+	for(const auto & arg : signal->arguments)
 	{
 		xml << "      <!-- " << arg.comment << " -->\n";
 		xml << "      <arg type=\"" << arg.type << "\" ";
@@ -537,12 +568,13 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 					/* object path must match */
 					if(askedObjectPath != objectPath)
 						continue;
-					for(const auto & [interface, oVec] : interMap) // vector of objects
+					// vector<introspectableSignalEvent*>
+					for(const auto & [interface, pVec] : interMap)
 					{
 						if(DBusInterface == interface)
 						{
 							this->openXMLInterface(xml, interfaceOpened, DBusInterface);
-							for(const auto & signal : oVec)
+							for(const auto & signal : pVec)
 								this->signalToXMLSignal(xml, signal);
 						}
 					}

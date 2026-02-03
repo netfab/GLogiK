@@ -55,14 +55,24 @@ void DBusEvent::callback(
 	this->runCallback(connection, message, asyncContainer);
 }
 
-GKDBusIntrospectableSignal::GKDBusIntrospectableSignal(
-	const char* signalName,
-	const std::vector<DBusEventArgument> & args)
-		:	name(signalName),
-			arguments(args)
+introspectableSignalEvent::introspectableSignalEvent(
+	const char* n,
+	const std::vector<DBusEventArgument> & a)
+		:	DBusEvent(n, a, DBusEventType::DBUS_SIGNAL_EVENT, true)
 {
 }
 
+introspectableSignalEvent::~introspectableSignalEvent(void)
+{
+}
+
+void introspectableSignalEvent::runCallback(
+	DBusConnection* const connection,
+	DBusMessage* message,
+	DBusMessage* asyncContainer)
+{
+	/* do nothing */
+}
 
 } // namespace NSGKDBus
 
