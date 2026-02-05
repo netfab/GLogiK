@@ -228,7 +228,7 @@ void GKDBus::disconnectFromSessionBus(void) noexcept
 	}
 }
 
-void GKDBus::checkDBusMessage(
+const bool GKDBus::checkDBusMessage(
 	DBusConnection* const connection,
 	DBusMessage* message)
 {
@@ -255,7 +255,7 @@ void GKDBus::checkDBusMessage(
 							DBusMessage* asyncContainer = this->getAsyncContainer();
 							event->callback(connection, message, asyncContainer);
 							this->resetAsyncContainer();
-							return;
+							return true;
 						}
 						break;
 					}
@@ -267,7 +267,7 @@ void GKDBus::checkDBusMessage(
 							DBusMessage* asyncContainer = this->getAsyncContainer();
 							event->callback(connection, message, asyncContainer);
 							this->resetAsyncContainer();
-							return;
+							return true;
 						}
 						break;
 					}
@@ -278,6 +278,8 @@ void GKDBus::checkDBusMessage(
 			}
 		}
 	}
+
+	return false;
 }
 
 /* -- */
@@ -320,7 +322,37 @@ void GKDBus::checkForBusMessages(
 
 		try
 		{
-			this->checkDBusMessage(connection, message);
+			if( ! this->checkDBusMessage(connection, message) )
+			{ /*
+			   * if message was not handled, check the invoked member.
+			   * in this way we can always reply to any introspection request, even if
+			   * DBusEvent container is empty (no Introspect method registered)
+			   * (typically the GLogiK Desktop Service Launcher using GKDBus only to
+			   * receive signals, but can anyway reply to any introspect request
+			   * instead of «no reply hang» timeout behavior)
+			   */
+				const std::string member = dbus_message_get_member(message);
+
+				if(member == "Introspect")
+				{
+					const std::string ret = this->getRootNodeIntrospection();
+
+					try
+					{
+						this->initializeReply(connection, message);
+						this->appendStringToReply(ret);
+						this->sendReply();
+					}
+					catch ( const GLogiKExcept & e )
+					{
+						const char* errorString = e.what();
+						LOG(error) << "DBus reply failure : " << errorString;
+						this->abandonReply();	/* delete reply object if allocated */
+						this->buildAndSendErrorReply(connection, message, errorString);
+					}
+
+				}
+			}
 		}
 		catch (const std::out_of_range& oor)
 		{

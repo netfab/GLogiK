@@ -100,6 +100,7 @@ class GKDBusEvents
 		~GKDBusEvents(void) = default;
 
 		void clearDBusEvents(void) noexcept;
+		const std::string getRootNodeIntrospection(void) noexcept;
 
 		DBusEventsContainer _DBusEvents;
 

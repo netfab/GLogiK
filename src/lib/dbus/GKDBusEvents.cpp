@@ -126,6 +126,11 @@ void GKDBusEvents::clearDBusEvents(void) noexcept
 	clear_events_container(_DBusIntrospectableSignals);
 }
 
+const std::string GKDBusEvents::getRootNodeIntrospection(void) noexcept
+{
+	return this->introspect("/");
+}
+
 /*
  * private
  */

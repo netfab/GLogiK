@@ -37,6 +37,8 @@
 #include "messages/GKDBusRemoteMethodCall.hpp"
 #include "messages/GKDBusBroadcastSignal.hpp"
 #include "messages/GKDBusAsyncContainer.hpp"
+#include "messages/GKDBusReply.hpp"
+#include "messages/GKDBusErrorReply.hpp"
 
 #include "ArgTypes/boolean.hpp"
 #include "ArgTypes/int32.hpp"
@@ -66,6 +68,8 @@ class GKDBus
 		virtual public GKDBusMessageRemoteMethodCall,
 		public GKDBusMessageBroadcastSignal,
 		public GKDBusMessageAsyncContainer,
+		private GKDBusMessageReply,
+		private GKDBusMessageErrorReply,
 		virtual public ArgString,
 		virtual public ArgStringArray,
 		public ArgBoolean,
@@ -131,7 +135,7 @@ class GKDBus
 		void disconnectFromSystemBus(void) noexcept;
 		void disconnectFromSessionBus(void) noexcept;
 
-		void checkDBusMessage(
+		const bool checkDBusMessage(
 			DBusConnection* const connection,
 			DBusMessage* message
 		);
