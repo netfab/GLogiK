@@ -426,8 +426,6 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 
 	for(const auto & DBusInterface : _DBusInterfaces)
 	{
-		if(DBusInterface == _FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE)
-			continue;
 
 #if DEBUG_GKDBUS
 		GKLog2(trace, "DBus Interface: ", DBusInterface)
