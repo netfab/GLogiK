@@ -135,6 +135,19 @@ const std::string GKDBusEvents::getRootNodeIntrospection(void) noexcept
  * private
  */
 
+const bool GKDBusEvents::findInterface(
+	DBusEventsContainer & DBusEvents,
+	const BusConnection bus,
+	const std::string & objectPath,
+	const std::string & interface) noexcept
+{
+	if(DBusEvents.count(bus) == 1)
+		if(DBusEvents[bus].count(objectPath) == 1)
+			if(DBusEvents[bus][objectPath].count(interface) == 1)
+				return true;
+	return false;
+}
+
 void GKDBusEvents::removeInterface(
 	const BusConnection eventBus,
 	const char* eventSender,
@@ -143,16 +156,7 @@ void GKDBusEvents::removeInterface(
 {
 	GK_LOG_FUNC
 
-	auto find_interface = [this, &eventBus, &eventObjectPath, &eventInterface] () -> const bool
-	{
-		if(_DBusEvents.count(eventBus) == 1)
-			if(_DBusEvents[eventBus].count(eventObjectPath) == 1)
-				if(_DBusEvents[eventBus][eventObjectPath].count(eventInterface) == 1)
-					return true;
-		return false;
-	};
-
-	if( find_interface() )
+	if( this->findInterface(_DBusEvents, eventBus, eventObjectPath, eventInterface) )
 	{
 		GKLog4(trace,
 			"removing interface : ", eventInterface,

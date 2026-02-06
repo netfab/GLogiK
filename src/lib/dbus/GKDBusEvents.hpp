@@ -175,6 +175,13 @@ class GKDBusEvents
 			const char* eventName
 		) noexcept;
 
+		const bool findInterface(
+			DBusEventsContainer & DBusEvents,
+			const BusConnection bus,
+			const std::string & objectPath,
+			const std::string & interface
+		) noexcept;
+
 		void removeInterface(
 			const BusConnection eventBus,
 			const char* sender,
