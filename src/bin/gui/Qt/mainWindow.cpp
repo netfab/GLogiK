@@ -398,6 +398,10 @@ void MainWindow::aboutToQuit(void)
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 
+	_pDBus->removeIntrospectableSignalsInterface(_sessionBus,
+		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE);
+
 	_pDBus->exit();
 
 	delete _pDBus; _pDBus = nullptr;

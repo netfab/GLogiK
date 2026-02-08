@@ -204,6 +204,10 @@ void DBusHandler::cleanGKDBusEvents(void) noexcept
 			LOG(warning) << "unknown session tracker";
 			break;
 	}
+
+	DBus.removeIntrospectableSignalsInterface(_sessionBus,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 }
 
 /*

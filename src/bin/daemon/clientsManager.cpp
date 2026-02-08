@@ -338,6 +338,9 @@ void ClientsManager::cleanDBusRequests(void) noexcept
 
 	_pDBus->removeMethodsInterface(_systemBus, CM_OP, CM_IF);
 	_pDBus->removeMethodsInterface(_systemBus, DM_OP, DM_IF);
+
+	_pDBus->removeIntrospectableSignalsInterface(_systemBus, CM_OP, CM_IF);
+	_pDBus->removeIntrospectableSignalsInterface(_systemBus, DM_OP, DM_IF);
 }
 
 void ClientsManager::waitForClientsDisconnections(void) noexcept

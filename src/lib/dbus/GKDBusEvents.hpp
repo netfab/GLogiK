@@ -83,16 +83,22 @@ class GKDBusEvents
 */
 
 		void removeMethodsInterface(
-			const BusConnection eventBus,
-			const std::string & eventObjectPath,
-			const std::string & eventInterface
+			const BusConnection bus,
+			const std::string & objectPath,
+			const std::string & interface
 		) noexcept;
 
 		void removeSignalsInterface(
-			const BusConnection eventBus,
-			const std::string & eventSender,
-			const std::string & eventObjectPath,
-			const std::string & eventInterface
+			const BusConnection bus,
+			const std::string & sender,
+			const std::string & objectPath,
+			const std::string & interface
+		) noexcept;
+
+		void removeIntrospectableSignalsInterface(
+			const BusConnection bus,
+			const std::string & objectPath,
+			const std::string & interface
 		) noexcept;
 
 	protected:

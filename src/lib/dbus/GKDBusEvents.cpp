@@ -73,20 +73,74 @@ void GKDBusEvents::removeMethod(
 */
 
 void GKDBusEvents::removeMethodsInterface(
-	const BusConnection eventBus,
-	const std::string & eventObjectPath,
-	const std::string & eventInterface) noexcept
+	const BusConnection bus,
+	const std::string & objectPath,
+	const std::string & interface) noexcept
 {
-	this->removeInterface(eventBus, "", eventObjectPath, eventInterface);
+	this->removeInterface(bus, "", objectPath, interface);
 }
 
 void GKDBusEvents::removeSignalsInterface(
-	const BusConnection eventBus,
-	const std::string & eventSender,
-	const std::string & eventObjectPath,
-	const std::string & eventInterface) noexcept
+	const BusConnection bus,
+	const std::string & sender,
+	const std::string & objectPath,
+	const std::string & interface) noexcept
 {
-	this->removeInterface(eventBus, eventSender, eventObjectPath, eventInterface);
+	this->removeInterface(bus, sender, objectPath, interface);
+}
+
+void GKDBusEvents::removeIntrospectableSignalsInterface(
+	const BusConnection bus,
+	const std::string & objectPath,
+	const std::string & interface) noexcept
+{
+	GK_LOG_FUNC
+
+	if( this->findInterface(_DBusIntrospectableSignals, bus, objectPath, interface) )
+	{
+		GKLog4(trace,
+			"removing introspectable signals interface : ", interface,
+			"from bus : ", toUInt(toEnumType(bus))
+		)
+
+		auto & opMap = _DBusIntrospectableSignals[bus][objectPath];
+		for(auto & event : opMap[interface]) /* vector<DBusEvent*> */
+		{
+			delete event; event = nullptr;
+		}
+		opMap[interface].clear();
+		opMap.erase(interface);
+
+		if( opMap.empty() )
+		{
+			GKLog2(trace, "removing empty object path : ", objectPath)
+			_DBusIntrospectableSignals[bus].erase(objectPath);
+		}
+
+		/* trying to find and remove Introspect method event on standard interface
+		 * we don't want to use ->removeInterface() directly to avoid potential
+		 * warning when interface is not found
+		 */
+		const auto & intr = _FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE;
+		if( this->findInterface(_DBusEvents, bus, objectPath, intr) )
+		{
+			auto & opMap = _DBusEvents[bus][objectPath];
+
+			if( opMap.empty() )
+			{
+				GKLog2(trace, "removing empty object path : ", objectPath)
+				_DBusEvents[bus].erase(objectPath);
+			}
+			else if( (opMap.size() == 1) and (opMap.count(intr) == 1) )
+				this->removeInterface(bus, "", objectPath, intr);
+		}
+	}
+	else
+	{
+		LOG(warning) << "Interface not found. bus : " << toUInt(toEnumType(bus))
+			<< " - object path : " << objectPath
+			<< " - interface : " << interface;
+	}
 }
 
 void GKDBusEvents::clearDBusEvents(void) noexcept
@@ -189,21 +243,15 @@ void GKDBusEvents::removeInterface(
 		opMap[interface].clear();
 		opMap.erase(interface);
 
+		/* trying to find and remove Introspect method event on standard interface */
+		const auto & intr = _FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE;
 		if( opMap.empty() )
 		{
 			GKLog2(trace, "removing empty object path : ", objectPath)
 			_DBusEvents[bus].erase(objectPath);
 		}
-		else if( (opMap.size() == 1) and
-			(opMap.count(_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE) == 1) )
-		{
-			this->removeInterface(
-				bus,
-				"",
-				objectPath,
-				_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE
-			);
-		}
+		else if( (opMap.size() == 1) and (opMap.count(intr) == 1) )
+			this->removeInterface(bus, "", objectPath, intr);
 	}
 	else
 	{
