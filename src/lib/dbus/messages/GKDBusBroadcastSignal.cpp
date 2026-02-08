@@ -32,31 +32,40 @@ using namespace NSGKUtils;
 
 GKDBusBroadcastSignal::GKDBusBroadcastSignal(
 	DBusConnection* const connection,
-	const char* destination,	/* destination, if NULL, broadcast */
-	const char* objectPath,		/* the path to the object emitting the signal */
-	const char* interface,		/* interface the signal is emitted from */
-	const char* signal)			/* name of signal */
+	const std::string & destination,	/* destination, if empty string, broadcast */
+	const std::string & objectPath,		/* the path to the object emitting the signal */
+	const std::string & interface,		/* interface the signal is emitted from */
+	const std::string & signal)			/* name of signal */
 		:	GKDBusMessage(connection)
 {
 	GK_LOG_FUNC
 
-	if( ! dbus_validate_path(objectPath, nullptr) )
+	const char* path = objectPath.c_str();
+	const char* intr = interface.c_str();
+	const char* sign = signal.c_str();
+
+	if( ! dbus_validate_path(path, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid object path");
-	if( ! dbus_validate_interface(interface, nullptr) )
+	if( ! dbus_validate_interface(intr, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid interface");
-	if( ! dbus_validate_member(signal, nullptr) )
+	if( ! dbus_validate_member(sign, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid signal name");
 
-	_message = dbus_message_new_signal(objectPath, interface, signal);
+	_message = dbus_message_new_signal(path, intr, sign);
 	if(_message == nullptr)
 		throw GKDBusMessageWrongBuild("can't allocate memory for Signal DBus message");
 
-	if( destination != nullptr )
+	if( ! destination.empty() )
 	{
 #if DEBUG_GKDBUS
 		GKLog2(trace, "prepare sending signal to ", destination)
 #endif
-		dbus_message_set_destination(_message, destination);
+		const char* dest = destination.c_str();
+
+		if( ! dbus_validate_utf8(dest, nullptr) )
+			throw GKDBusMessageWrongBuild("invalid destination");
+
+		dbus_message_set_destination(_message, dest);
 	}
 
 	/* initialize potential arguments iterator */
@@ -109,9 +118,9 @@ GKDBusMessageBroadcastSignal::~GKDBusMessageBroadcastSignal()
 
 void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 	BusConnection wantedConnection,
-	const char* objectPath,
-	const char* interface,
-	const char* signal)
+	const std::string & objectPath,
+	const std::string & interface,
+	const std::string & signal)
 {
 	this->initializeBroadcastSignal(
 		this->getDBusConnection(wantedConnection),
@@ -120,9 +129,9 @@ void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 
 void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 	DBusConnection* const connection,
-	const char* objectPath,
-	const char* interface,
-	const char* signal)
+	const std::string & objectPath,
+	const std::string & interface,
+	const std::string & signal)
 {
 	GK_LOG_FUNC
 
@@ -131,7 +140,7 @@ void GKDBusMessageBroadcastSignal::initializeBroadcastSignal(
 
 	try
 	{
-		_signal = new GKDBusBroadcastSignal(connection, nullptr, objectPath, interface, signal);
+		_signal = new GKDBusBroadcastSignal(connection, "", objectPath, interface, signal);
 	}
 	catch (const std::bad_alloc& e)
 	{ /* handle new() failure */

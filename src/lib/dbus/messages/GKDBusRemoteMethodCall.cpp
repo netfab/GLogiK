@@ -33,26 +33,31 @@ using namespace NSGKUtils;
 
 GKDBusRemoteMethodCall::GKDBusRemoteMethodCall(
 	DBusConnection* const connection,
-	const char* busName,
-	const char* objectPath,
-	const char* interface,
-	const char* method,
+	const std::string & busName,
+	const std::string & objectPath,
+	const std::string & interface,
+	const std::string & method,
 	DBusPendingCall** pending)
 		:	GKDBusMessage(connection),
 			_pendingCall(pending)
 {
 	GK_LOG_FUNC
 
-	if( ! dbus_validate_bus_name(busName, nullptr) )
+	const char* name = busName.c_str();
+	const char* path = objectPath.c_str();
+	const char* intr = interface.c_str();
+	const char* meth = method.c_str();
+
+	if( ! dbus_validate_bus_name(name, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid bus name");
-	if( ! dbus_validate_path(objectPath, nullptr) )
+	if( ! dbus_validate_path(path, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid object path");
-	if( ! dbus_validate_interface(interface, nullptr) )
+	if( ! dbus_validate_interface(intr, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid interface");
-	if( ! dbus_validate_member(method, nullptr) )
+	if( ! dbus_validate_member(meth, nullptr) )
 		throw GKDBusMessageWrongBuild("invalid method name");
 
-	_message = dbus_message_new_method_call(busName, objectPath, interface, method);
+	_message = dbus_message_new_method_call(name, path, intr, meth);
 	if(_message == nullptr)
 		throw GKDBusMessageWrongBuild("can't allocate memory for Remote Object Method Call DBus message");
 	
@@ -114,10 +119,10 @@ GKDBusMessageRemoteMethodCall::~GKDBusMessageRemoteMethodCall()
 
 void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 	BusConnection wantedConnection,
-	const char* busName,
-	const char* objectPath,
-	const char* interface,
-	const char* method)
+	const std::string & busName,
+	const std::string & objectPath,
+	const std::string & interface,
+	const std::string & method)
 {
 	this->initializeRemoteMethodCall(
 		this->getDBusConnection(wantedConnection),
@@ -126,10 +131,10 @@ void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 
 void GKDBusMessageRemoteMethodCall::initializeRemoteMethodCall(
 	DBusConnection* const connection,
-	const char* busName,
-	const char* objectPath,
-	const char* interface,
-	const char* method)
+	const std::string & busName,
+	const std::string & objectPath,
+	const std::string & interface,
+	const std::string & method)
 {
 	GK_LOG_FUNC
 

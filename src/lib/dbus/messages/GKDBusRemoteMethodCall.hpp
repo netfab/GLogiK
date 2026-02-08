@@ -44,10 +44,10 @@ class GKDBusRemoteMethodCall
 	public:
 		GKDBusRemoteMethodCall(
 			DBusConnection* wantedConnection,
-			const char* busName,
-			const char* objectPath,
-			const char* interface,
-			const char* method,
+			const std::string & busName,
+			const std::string & objectPath,
+			const std::string & interface,
+			const std::string & method,
 			DBusPendingCall** pending
 		);
 		~GKDBusRemoteMethodCall();
@@ -65,10 +65,10 @@ class GKDBusMessageRemoteMethodCall
 		/* Remote Method Call with Pending Reply */
 		void initializeRemoteMethodCall(
 			BusConnection wantedConnection,
-			const char* busName,
-			const char* objectPath,
-			const char* interface,
-			const char* method
+			const std::string & busName,
+			const std::string & objectPath,
+			const std::string & interface,
+			const std::string & method
 		);
 
 		void appendStringToRemoteMethodCall(const std::string & value);
@@ -90,10 +90,10 @@ class GKDBusMessageRemoteMethodCall
 		/* Remote Method Call with Pending Reply */
 		void initializeRemoteMethodCall(
 			DBusConnection* const connection,
-			const char* busName,
-			const char* objectPath,
-			const char* interface,
-			const char* method
+			const std::string & busName,
+			const std::string & objectPath,
+			const std::string & interface,
+			const std::string & method
 		);
 
 	private:

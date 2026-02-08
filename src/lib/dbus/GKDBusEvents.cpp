@@ -37,9 +37,9 @@ thread_local BusConnection GKDBusEvents::currentBus(BusConnection::GKDBUS_SYSTEM
 
 void GKDBusEvents::declareIntrospectableSignal(
 	const BusConnection eventBus,
-	const char* eventObjectPath,
-	const char* eventInterface,
-	const char* eventName,
+	const std::string & eventObjectPath,
+	const std::string & eventInterface,
+	const std::string & eventName,
 	const std::vector<DBusEventArgument> & args)
 {
 	introspectableSignalEvent* event = nullptr;
@@ -61,9 +61,9 @@ void GKDBusEvents::declareIntrospectableSignal(
 /*
 void GKDBusEvents::removeMethod(
 	const BusConnection eventBus,
-	const char* eventObjectPath,
-	const char* eventInterface,
-	const char* eventName)
+	const std::string & eventObjectPath,
+	const std::string & eventInterface,
+	const std::string & eventName)
 {
 	this->removeEvent(eventBus, eventObjectPath, eventInterface, eventName);
 }
@@ -71,17 +71,17 @@ void GKDBusEvents::removeMethod(
 
 void GKDBusEvents::removeMethodsInterface(
 	const BusConnection eventBus,
-	const char* eventObjectPath,
-	const char* eventInterface) noexcept
+	const std::string & eventObjectPath,
+	const std::string & eventInterface) noexcept
 {
-	this->removeInterface(eventBus, nullptr, eventObjectPath, eventInterface);
+	this->removeInterface(eventBus, "", eventObjectPath, eventInterface);
 }
 
 void GKDBusEvents::removeSignalsInterface(
 	const BusConnection eventBus,
-	const char* eventSender,
-	const char* eventObjectPath,
-	const char* eventInterface) noexcept
+	const std::string & eventSender,
+	const std::string & eventObjectPath,
+	const std::string & eventInterface) noexcept
 {
 	this->removeInterface(eventBus, eventSender, eventObjectPath, eventInterface);
 }
@@ -149,58 +149,58 @@ const bool GKDBusEvents::findInterface(
 }
 
 void GKDBusEvents::removeInterface(
-	const BusConnection eventBus,
-	const char* eventSender,
-	const char* eventObjectPath,
-	const char* eventInterface) noexcept
+	const BusConnection bus,
+	const std::string & sender,
+	const std::string & objectPath,
+	const std::string & interface) noexcept
 {
 	GK_LOG_FUNC
 
-	if( this->findInterface(_DBusEvents, eventBus, eventObjectPath, eventInterface) )
+	if( this->findInterface(_DBusEvents, bus, objectPath, interface) )
 	{
 		GKLog4(trace,
-			"removing interface : ", eventInterface,
-			"from bus : ", toUInt(toEnumType(eventBus))
+			"removing interface : ", interface,
+			"from bus : ", toUInt(toEnumType(bus))
 		)
 
-		auto & objectPathMap = _DBusEvents[eventBus][eventObjectPath];
-		for(auto & event : objectPathMap[eventInterface]) /* vector<DBusEvent*> */
+		auto & opMap = _DBusEvents[bus][objectPath];
+		for(auto & event : opMap[interface]) /* vector<DBusEvent*> */
 		{
 			// if event is a signal, build and remove signal rule match
 			if(event->eventType == DBusEventType::DBUS_SIGNAL_EVENT)
 				this->removeSignalRuleMatch(
-					eventBus,
-					eventSender,
-					eventInterface,
-					event->eventName.c_str()
+					bus,
+					sender,
+					interface,
+					event->eventName
 				);
 
 			delete event; event = nullptr;
 		}
-		objectPathMap[eventInterface].clear();
-		objectPathMap.erase(eventInterface);
+		opMap[interface].clear();
+		opMap.erase(interface);
 
-		if( objectPathMap.empty() )
+		if( opMap.empty() )
 		{
-			GKLog2(trace, "removing empty object path : ", eventObjectPath)
-			_DBusEvents[eventBus].erase(eventObjectPath);
+			GKLog2(trace, "removing empty object path: ", objectPath)
+			_DBusEvents[bus].erase(objectPath);
 		}
-		else if( (objectPathMap.size() == 1) and
-			(objectPathMap.count(_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE) == 1) )
+		else if( (opMap.size() == 1) and
+			(opMap.count(_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE) == 1) )
 		{
 			this->removeInterface(
-				eventBus,
-				nullptr,
-				eventObjectPath,
+				bus,
+				"",
+				objectPath,
 				_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE
 			);
 		}
 	}
 	else
 	{
-		LOG(warning) << "Interface not found. bus: " << toUInt(toEnumType(eventBus))
-			<< " - obj path: " << eventObjectPath
-			<< " - int: " << eventInterface;
+		LOG(warning) << "Interface not found. bus: " << toUInt(toEnumType(bus))
+			<< " - object path: " << objectPath
+			<< " - interface: " << interface;
 	}
 }
 
@@ -220,9 +220,9 @@ const std::string GKDBusEvents::getObjectFromObjectPath(const std::string & obje
 /*
 void GKDBusEvents::removeEvent(
 	const BusConnection eventBus,
-	const char* eventObjectPath,
-	const char* eventInterface,
-	const char* eventName)
+	const std::string & eventObjectPath,
+	const std::string & eventInterface,
+	const std::string & eventName)
 {
 	GK_LOG_FUNC
 
@@ -274,7 +274,7 @@ void GKDBusEvents::removeEvent(
 				eventBus,
 				eventSender,
 				eventInterface,
-				event->eventName.c_str()
+				event->eventName
 			);
 
 		delete event; event = nullptr;
@@ -293,7 +293,7 @@ void GKDBusEvents::removeEvent(
 
 void GKDBusEvents::exposeIntrospectMethod(
 	const BusConnection eventBus,
-	const char* eventObjectPath)
+	const std::string & eventObjectPath)
 {
 	try
 	{
@@ -307,10 +307,9 @@ void GKDBusEvents::exposeIntrospectMethod(
 
 		this->Callback<SIGs2s>::exposeEvent(
 			eventBus,			/* bus */
-			nullptr,			/* sender (used only if
-								   eventType == DBUS_SIGNAL_EVENT below,
-								   unused here --> nullptr) */
-			eventObjectPath,	/* event object path */
+			"",	/* sender (used only in addEvent() below
+				   if eventType == DBUS_SIGNAL_EVENT, unused here --> "") */
+			eventObjectPath.c_str(),	/* event object path */ // FIXME
 			_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE,	/* event interface */
 			"Introspect",		/* event name */
 			{	{	"s",
@@ -330,9 +329,9 @@ void GKDBusEvents::exposeIntrospectMethod(
 
 void GKDBusEvents::addEvent(
 	const BusConnection eventBus,
-	const char* eventSender,
-	const char* eventObjectPath,
-	const char* eventInterface,
+	const std::string & eventSender,
+	const std::string & eventObjectPath,
+	const std::string & eventInterface,
 	DBusEvent* event)
 {
 	GK_LOG_FUNC
@@ -341,7 +340,7 @@ void GKDBusEvents::addEvent(
 		this->exposeIntrospectMethod(eventBus, eventObjectPath);
 
 	if( event->eventType == DBusEventType::DBUS_SIGNAL_EVENT )
-		this->addSignalRuleMatch(eventBus, eventSender, eventInterface, event->eventName.c_str());
+		this->addSignalRuleMatch(eventBus, eventSender, eventInterface, event->eventName);
 
 	_DBusInterfaces.insert(eventInterface);
 	_DBusEvents[eventBus][eventObjectPath][eventInterface].push_back(event);
@@ -579,9 +578,9 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 }
 
 const std::string GKDBusEvents::buildSignalRuleMatch(
-	const char* sender,
-	const char* interface,
-	const char* eventName) noexcept
+	const std::string & sender,
+	const std::string & interface,
+	const std::string & eventName) noexcept
 {
 	std::string rule = "type='signal',sender='";
 	rule += sender;
@@ -595,9 +594,9 @@ const std::string GKDBusEvents::buildSignalRuleMatch(
 
 void GKDBusEvents::addSignalRuleMatch(
 	const BusConnection eventBus,
-	const char* sender,
-	const char* interface,
-	const char* eventName) noexcept
+	const std::string & sender,
+	const std::string & interface,
+	const std::string & eventName) noexcept
 {
 	GK_LOG_FUNC
 
@@ -622,9 +621,9 @@ void GKDBusEvents::addSignalRuleMatch(
 
 void GKDBusEvents::removeSignalRuleMatch(
 	const BusConnection eventBus,
-	const char* sender,
-	const char* interface,
-	const char* eventName) noexcept
+	const std::string & sender,
+	const std::string & interface,
+	const std::string & eventName) noexcept
 {
 	GK_LOG_FUNC
 

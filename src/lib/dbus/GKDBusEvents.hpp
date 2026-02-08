@@ -67,32 +67,32 @@ class GKDBusEvents
 	public:
 		void declareIntrospectableSignal(
 			const BusConnection eventBus,
-			const char* eventObjectPath,
-			const char* eventInterface,
-			const char* eventName,
+			const std::string & eventObjectPath,
+			const std::string & eventInterface,
+			const std::string & eventName,
 			const std::vector<DBusEventArgument> & args
 		);
 
 /*
 		void removeMethod(
 			const BusConnection eventBus,
-			const char* eventObjectPath,
-			const char* eventInterface,
-			const char* eventName
+			const std::string & eventObjectPath,
+			const std::string & eventInterface,
+			const std::string & eventName
 		);
 */
 
 		void removeMethodsInterface(
 			const BusConnection eventBus,
-			const char* eventObjectPath,
-			const char* eventInterface
+			const std::string & eventObjectPath,
+			const std::string & eventInterface
 		) noexcept;
 
 		void removeSignalsInterface(
 			const BusConnection eventBus,
-			const char* eventSender,
-			const char* eventObjectPath,
-			const char* eventInterface
+			const std::string & eventSender,
+			const std::string & eventObjectPath,
+			const std::string & eventInterface
 		) noexcept;
 
 	protected:
@@ -113,7 +113,7 @@ class GKDBusEvents
 		thread_local static BusConnection currentBus;
 
 	private:
-		const char* const _FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE =
+		const std::string _FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE =
 			"org.freedesktop.DBus.Introspectable";
 		virtual DBusConnection* const getDBusConnection(BusConnection wantedConnection) const = 0;
 
@@ -136,43 +136,43 @@ class GKDBusEvents
 		/*
 		void removeEvent(
 			const BusConnection eventBus,
-			const char* eventObjectPath,
-			const char* eventInterface,
-			const char* eventName
+			const std::string & eventObjectPath,
+			const std::string & eventInterface,
+			const std::string & eventName
 		);
 		*/
 
 		void exposeIntrospectMethod(
 			const BusConnection eventBus,
-			const char* eventObjectPath
+			const std::string & eventObjectPath
 		);
 
 		void addEvent(
 			const BusConnection eventBus,
-			const char* eventSender,
-			const char* eventObjectPath,
-			const char* eventInterface,
+			const std::string & eventSender,
+			const std::string & eventObjectPath,
+			const std::string & eventInterface,
 			DBusEvent* event
 		);
 
 		const std::string buildSignalRuleMatch(
-			const char* sender,
-			const char* interface,
-			const char* eventName
+			const std::string & sender,
+			const std::string & interface,
+			const std::string & eventName
 		) noexcept;
 
 		void addSignalRuleMatch(
 			const BusConnection eventBus,
-			const char* sender,
-			const char* interface,
-			const char* eventName
+			const std::string & sender,
+			const std::string & interface,
+			const std::string & eventName
 		) noexcept;
 
 		void removeSignalRuleMatch(
 			const BusConnection eventBus,
-			const char* sender,
-			const char* interface,
-			const char* eventName
+			const std::string & sender,
+			const std::string & interface,
+			const std::string & eventName
 		) noexcept;
 
 		const bool findInterface(
@@ -183,10 +183,10 @@ class GKDBusEvents
 		) noexcept;
 
 		void removeInterface(
-			const BusConnection eventBus,
-			const char* sender,
-			const char* eventObjectPath,
-			const char* eventInterface
+			const BusConnection bus,
+			const std::string & sender,
+			const std::string & objectPath,
+			const std::string & interface
 		) noexcept;
 };
 

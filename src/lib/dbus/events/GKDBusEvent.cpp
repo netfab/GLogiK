@@ -29,7 +29,7 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 DBusEvent::DBusEvent(
-	const char* n,
+	const std::string & n,
 	const std::vector<DBusEventArgument> & a,
 	DBusEventType t,
 	const bool i)
@@ -61,7 +61,7 @@ void DBusEvent::callback(
 }
 
 introspectableSignalEvent::introspectableSignalEvent(
-	const char* n,
+	const std::string & n,
 	const std::vector<DBusEventArgument> & a)
 		:	DBusEvent(n, a, DBusEventType::DBUS_SIGNAL_EVENT, true)
 {

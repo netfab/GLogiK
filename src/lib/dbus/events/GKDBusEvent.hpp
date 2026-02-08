@@ -65,7 +65,7 @@ class DBusEvent
 
 	protected:
 		DBusEvent(
-			const char* n,
+			const std::string & n,
 			const std::vector<DBusEventArgument> & a,
 			DBusEventType t,
 			const bool i
@@ -90,7 +90,7 @@ class GKDBusEvent
 
 	protected:
 		GKDBusEvent(
-			const char* n,
+			const std::string & n,
 			const std::vector<DBusEventArgument> & a,
 			DBusEventType t,
 			const bool i)
@@ -106,7 +106,7 @@ class introspectableSignalEvent
 {
 	public:
 		introspectableSignalEvent(
-			const char* n,
+			const std::string & n,
 			const std::vector<DBusEventArgument> & a);
 		~introspectableSignalEvent(void);
 

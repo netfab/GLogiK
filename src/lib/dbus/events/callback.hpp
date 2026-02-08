@@ -23,6 +23,7 @@
 #define SRC_LIB_DBUS_EVENTS_CALLBACK_HPP_
 
 #include <new>
+#include <string>
 #include <vector>
 
 #include "lib/utils/utils.hpp"
@@ -75,19 +76,19 @@ template <typename T>
 	public:
 		void exposeMethod(
 			const BusConnection bus,
-			const char* objectPath,
-			const char* interface,
-			const char* eventName,
+			const std::string & objectPath,
+			const std::string & interface,
+			const std::string & eventName,
 			const std::vector<DBusEventArgument> & args,
 			T callback
 		);
 
 		void receiveSignal(
 			const BusConnection bus,
-			const char* sender,
-			const char* objectPath,
-			const char* interface,
-			const char* eventName,
+			const std::string & sender,
+			const std::string & objectPath,
+			const std::string & interface,
+			const std::string & eventName,
 			const std::vector<DBusEventArgument> & args,
 			T callback
 		);
@@ -99,10 +100,10 @@ template <typename T>
 	private:
 		void exposeEvent(
 			const BusConnection bus,
-			const char* sender,
-			const char* objectPath,
-			const char* interface,
-			const char* eventName,
+			const std::string & sender,
+			const std::string & objectPath,
+			const std::string & interface,
+			const std::string & eventName,
 			const std::vector<DBusEventArgument> & args,
 			T callback,
 			DBusEventType t,
@@ -111,9 +112,9 @@ template <typename T>
 
 		virtual void addEvent(
 			const BusConnection bus,
-			const char* sender,
-			const char* objectPath,
-			const char* interface,
+			const std::string & sender,
+			const std::string & objectPath,
+			const std::string & interface,
 			DBusEvent* event
 		) = 0;
 };
@@ -125,16 +126,16 @@ template <typename T>
 template <typename T>
 	void Callback<T>::exposeMethod(
 		const BusConnection bus,
-		const char* objectPath,
-		const char* interface,
-		const char* eventName,
+		const std::string & objectPath,
+		const std::string & interface,
+		const std::string & eventName,
 		const std::vector<DBusEventArgument> & args,
 		T callback
 	)
 {
 	this->exposeEvent(
 		bus,
-		nullptr,
+		"",
 		objectPath,
 		interface,
 		eventName,
@@ -148,10 +149,10 @@ template <typename T>
 template <typename T>
 	void Callback<T>::receiveSignal(
 		const BusConnection bus,
-		const char* sender,
-		const char* objectPath,
-		const char* interface,
-		const char* eventName,
+		const std::string & sender,
+		const std::string & objectPath,
+		const std::string & interface,
+		const std::string & eventName,
 		const std::vector<DBusEventArgument> & args,
 		T callback
 	)
@@ -173,10 +174,10 @@ template <typename T>
 template <typename T>
 	void Callback<T>::exposeEvent(
 		const BusConnection bus,
-		const char* sender,
-		const char* objectPath,
-		const char* interface,
-		const char* eventName,
+		const std::string & sender,
+		const std::string & objectPath,
+		const std::string & interface,
+		const std::string & eventName,
 		const std::vector<DBusEventArgument> & args,
 		T callback,
 		DBusEventType eventType,
@@ -212,19 +213,19 @@ template <>
 /*
 		void exposeMethod(
 			const BusConnection bus,
-			const char* objectPath,
-			const char* interface,
-			const char* eventName,
+			const std::string & objectPath,
+			const std::string & interface,
+			const std::string & eventName,
 			const std::vector<DBusEventArgument> & args,
 			SIGs2s callback
 		);
 
 		void receiveSignal(
 			const BusConnection bus,
-			const char* sender,
-			const char* objectPath,
-			const char* interface,
-			const char* eventName,
+			const std::string & sender,
+			const std::string & objectPath,
+			const std::string & interface,
+			const std::string & eventName,
 			const std::vector<DBusEventArgument> & args,
 			SIGs2s callback
 		);
@@ -236,10 +237,10 @@ template <>
 
 		void exposeEvent(
 			const BusConnection bus,
-			const char* sender,
-			const char* objectPath,
-			const char* interface,
-			const char* eventName,
+			const std::string & sender,
+			const std::string & objectPath,
+			const std::string & interface,
+			const std::string & eventName,
 			const std::vector<DBusEventArgument> & args,
 			SIGs2s callback,
 			DBusEventType t,
@@ -249,9 +250,9 @@ template <>
 	private:
 		virtual void addEvent(
 			const BusConnection bus,
-			const char* sender,
-			const char* objectPath,
-			const char* interface,
+			const std::string & sender,
+			const std::string & objectPath,
+			const std::string & interface,
 			DBusEvent* event
 		) = 0;
 };

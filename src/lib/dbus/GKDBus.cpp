@@ -109,7 +109,7 @@ const std::string GKDBus::getDBusVersion(void)
 }
 
 void GKDBus::connectToSystemBus(
-	const char* connectionName,
+	const std::string & connectionName,
 	const ConnectionFlag flag)
 {
 	GK_LOG_FUNC
@@ -122,9 +122,11 @@ void GKDBus::connectToSystemBus(
 
 	GKLog(trace, "opened system bus connection")
 
+	const char* name = connectionName.c_str();
+
 	_systemName.clear();
 	int ret = dbus_bus_request_name(
-		_systemConnection, connectionName, getDBusRequestFlags(flag), &_error);
+		_systemConnection, name, getDBusRequestFlags(flag), &_error);
 	this->checkDBusError("failed to request system bus connection name");
 	_systemName = connectionName;
 
@@ -135,7 +137,7 @@ void GKDBus::connectToSystemBus(
 }
 
 void GKDBus::connectToSessionBus(
-	const char* connectionName,
+	const std::string & connectionName,
 	const ConnectionFlag flag)
 {
 	GK_LOG_FUNC
@@ -148,9 +150,11 @@ void GKDBus::connectToSessionBus(
 
 	GKLog(trace, "opened session bus connection")
 
+	const char* name = connectionName.c_str();
+
 	_sessionName.clear();
 	int ret = dbus_bus_request_name(
-			_sessionConnection, connectionName, getDBusRequestFlags(flag), &_error);
+			_sessionConnection, name, getDBusRequestFlags(flag), &_error);
 	this->checkDBusError("failed to request session bus connection name");
 	_sessionName = connectionName;
 
@@ -345,10 +349,10 @@ void GKDBus::checkForBusMessages(
 					}
 					catch ( const GLogiKExcept & e )
 					{
-						const char* errorString = e.what();
-						LOG(error) << "DBus reply failure : " << errorString;
+						const std::string errorMessage = e.what();
+						LOG(error) << "DBus reply failure : " << errorMessage;
 						this->abandonReply();	/* delete reply object if allocated */
-						this->buildAndSendErrorReply(connection, message, errorString);
+						this->buildAndSendErrorReply(connection, message, errorMessage);
 					}
 
 				}
@@ -405,12 +409,12 @@ void GKDBus::checkReleasedName(int ret) noexcept
 	}
 }
 
-void GKDBus::checkDBusError(const char* error)
+void GKDBus::checkDBusError(const std::string & errorMessage)
 {
 	if( dbus_error_is_set(&_error) )
 	{
 		std::ostringstream buffer;
-		buffer << error << " : " << _error.message;
+		buffer << errorMessage << " : " << _error.message;
 		dbus_error_free(&_error);
 		throw GLogiKExcept(buffer.str());
 	}

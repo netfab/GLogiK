@@ -22,6 +22,7 @@
 #ifndef SRC_LIB_DBUS_EVENTS_CALLBACK_EVENT_HPP_
 #define SRC_LIB_DBUS_EVENTS_CALLBACK_EVENT_HPP_
 
+#include <string>
 #include <vector>
 
 #include <dbus/dbus.h>
@@ -52,7 +53,7 @@ template <typename T>
 {
 	public:
 		callbackEvent(
-			const char* n,
+			const std::string & n,
 			const std::vector<DBusEventArgument> & a,
 			T c,
 			DBusEventType t,
@@ -68,13 +69,13 @@ template <typename T>
 		void sendReplyError(
 			DBusConnection* const connection,
 			DBusMessage* message,
-			const char* errorString
+			const std::string & errorMessage
 		);
 
 		void sendCallbackError(
 			DBusConnection* const connection,
 			DBusMessage* message,
-			const char* errorString
+			const std::string & errorMessage
 		);
 
 		void runCallback(
@@ -90,7 +91,7 @@ template <typename T>
 
 template <typename T>
 	callbackEvent<T>::callbackEvent(
-		const char* n,
+		const std::string & n,
 		const std::vector<DBusEventArgument> & a,
 		T c,
 		DBusEventType t,
@@ -107,14 +108,14 @@ template <typename T>
 	void callbackEvent<T>::sendReplyError(
 		DBusConnection* const connection,
 		DBusMessage* message,
-		const char* errorString)
+		const std::string & errorMessage)
 {
 	GK_LOG_FUNC
 
 	using namespace NSGKUtils;
-	LOG(error) << "DBus reply failure : " << errorString;
+	LOG(error) << "DBus reply failure : " << errorMessage;
 	this->abandonReply();	/* delete reply object if allocated */
-	this->buildAndSendErrorReply(connection, message, errorString);
+	this->buildAndSendErrorReply(connection, message, errorMessage.c_str());
 }
 
 /*
@@ -124,16 +125,16 @@ template <typename T>
 	void callbackEvent<T>::sendCallbackError(
 		DBusConnection* const connection,
 		DBusMessage* message,
-		const char* errorString)
+		const std::string & errorMessage)
 {
 	GK_LOG_FUNC
 
 	using namespace NSGKUtils;
-	LOG(error) << errorString;
+	LOG(error) << errorMessage;
 
 	if(this->eventType != DBusEventType::DBUS_SIGNAL_EVENT)
 	{ /* send error if something was wrong when running callback */
-		this->buildAndSendErrorReply(connection, message, errorString);
+		this->buildAndSendErrorReply(connection, message, errorMessage.c_str());
 	}
 }
 
@@ -146,10 +147,10 @@ template <typename T>
 	GK_LOG_FUNC
 
 	using namespace NSGKUtils;
-	const char* errorString = "runCallback not implemented";
-	LOG(error) << errorString;
+	const std::string & errorMessage = "runCallback not implemented";
+	LOG(error) << errorMessage;
 	if(this->eventType != DBusEventType::DBUS_SIGNAL_EVENT)
-		this->buildAndSendErrorReply(connection, message, errorString);
+		this->buildAndSendErrorReply(connection, message, errorMessage.c_str());
 }
 
 } // namespace NSGKDBus

@@ -22,6 +22,8 @@
 #ifndef SRC_LIB_DBUS_MSG_GKDBUS_ERROR_REPLY_HPP_
 #define SRC_LIB_DBUS_MSG_GKDBUS_ERROR_REPLY_HPP_
 
+#include <string>
+
 #include <dbus/dbus.h>
 
 #include "GKDBusMessage.hpp"
@@ -35,7 +37,7 @@ class GKDBusErrorReply : public GKDBusMessage
 		GKDBusErrorReply(
 			DBusConnection* const connection,
 			DBusMessage* message,
-			const char* errorMessage
+			const std::string & errorMessage
 		);
 		~GKDBusErrorReply();
 
@@ -55,14 +57,14 @@ class GKDBusMessageErrorReply
 		void initializeErrorReply(
 			DBusConnection* const connection,
 			DBusMessage* message,
-			const char* errorMessage
+			const std::string & errorMessage
 		);
 		void sendErrorReply(void);
 
 		void buildAndSendErrorReply(
 			DBusConnection* const connection,
 			DBusMessage* message,
-			const char* errorMessage
+			const std::string & errorMessage
 		);
 
 	private:

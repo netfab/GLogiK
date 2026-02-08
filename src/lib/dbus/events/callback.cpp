@@ -31,16 +31,16 @@ namespace NSGKDBus
 /*
 void Callback<SIGs2s>::exposeMethod(
 		const BusConnection bus,
-		const char* objectPath,
-		const char* interface,
-		const char* eventName,
+		const std::string & objectPath,
+		const std::string & interface,
+		const std::string & eventName,
 		const std::vector<DBusEventArgument> & args,
 		SIGs2s callback
 	)
 {
 	this->exposeEvent(
 		bus,
-		nullptr,
+		"",
 		objectPath,
 		interface,
 		eventName,
@@ -53,10 +53,10 @@ void Callback<SIGs2s>::exposeMethod(
 
 void Callback<SIGs2s>::receiveSignal(
 		const BusConnection bus,
-		const char* sender,
-		const char* objectPath,
-		const char* interface,
-		const char* eventName,
+		const std::string & sender,
+		const std::string & objectPath,
+		const std::string & interface,
+		const std::string & eventName,
 		const std::vector<DBusEventArgument> & args,
 		SIGs2s callback
 	)
@@ -78,10 +78,10 @@ void Callback<SIGs2s>::receiveSignal(
 
 void Callback<SIGs2s>::exposeEvent(
 		const BusConnection bus,
-		const char* sender,
-		const char* objectPath,
-		const char* interface,
-		const char* eventName,
+		const std::string & sender,
+		const std::string & objectPath,
+		const std::string & interface,
+		const std::string & eventName,
 		const std::vector<DBusEventArgument> & args,
 		SIGs2s callback,
 		DBusEventType eventType,

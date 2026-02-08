@@ -22,6 +22,8 @@
 #ifndef SRC_LIB_DBUS_MSG_GKDBUS_BROADCAST_SIGNAL_HPP_
 #define SRC_LIB_DBUS_MSG_GKDBUS_BROADCAST_SIGNAL_HPP_
 
+#include <string>
+
 #include <dbus/dbus.h>
 
 #include "include/base.hpp"
@@ -38,10 +40,10 @@ class GKDBusBroadcastSignal : public GKDBusMessage
 	public:
 		GKDBusBroadcastSignal(
 			DBusConnection* const connection,	/* connection to send the signal on */
-			const char* destination,	/* destination, if NULL, broadcast */
-			const char* objectPath,		/* the path to the object emitting the signal */
-			const char* interface,		/* interface the signal is emitted from */
-			const char* signal			/* name of signal */
+			const std::string & destination,	/* destination, if NULL, broadcast */
+			const std::string & objectPath,		/* the path to the object emitting the signal */
+			const std::string & interface,		/* interface the signal is emitted from */
+			const std::string & signal			/* name of signal */
 		);
 		~GKDBusBroadcastSignal();
 
@@ -55,9 +57,9 @@ class GKDBusMessageBroadcastSignal
 	public:
 		void initializeBroadcastSignal(
 			BusConnection wantedConnection,
-			const char* objectPath,
-			const char* interface,
-			const char* signal
+			const std::string & objectPath,
+			const std::string & interface,
+			const std::string & signal
 		);
 
 		void appendStringToBroadcastSignal(const std::string & value);
@@ -77,9 +79,9 @@ class GKDBusMessageBroadcastSignal
 
 		void initializeBroadcastSignal(
 			DBusConnection* const connection,
-			const char* objectPath,
-			const char* interface,
-			const char* signal
+			const std::string & objectPath,
+			const std::string & interface,
+			const std::string & signal
 		);
 
 	private:

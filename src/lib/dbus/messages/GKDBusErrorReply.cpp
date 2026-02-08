@@ -33,7 +33,7 @@ using namespace NSGKUtils;
 GKDBusErrorReply::GKDBusErrorReply(
 	DBusConnection* const connection,
 	DBusMessage* message,
-	const char* errorMessage)
+	const std::string & errorMessage)
 	:	GKDBusMessage(connection)
 {
 	GK_LOG_FUNC
@@ -43,7 +43,7 @@ GKDBusErrorReply::GKDBusErrorReply(
 		throw GKDBusMessageWrongBuild("DBus message is NULL");
 
 	/* initialize reply from message */
-	_message = dbus_message_new_error(message, DBUS_ERROR_FAILED, errorMessage);
+	_message = dbus_message_new_error(message, DBUS_ERROR_FAILED, errorMessage.c_str());
 	if(_message == nullptr)
 		throw GKDBusMessageWrongBuild("can't allocate memory for DBus reply message");
 
@@ -94,7 +94,7 @@ GKDBusMessageErrorReply::~GKDBusMessageErrorReply()
 void GKDBusMessageErrorReply::initializeErrorReply(
 	DBusConnection* const connection,
 	DBusMessage* message,
-	const char* errorMessage)
+	const std::string & errorMessage)
 {
 	GK_LOG_FUNC
 
@@ -130,7 +130,7 @@ void GKDBusMessageErrorReply::sendErrorReply(void)
 void GKDBusMessageErrorReply::buildAndSendErrorReply(
 	DBusConnection* const connection,
 	DBusMessage* message,
-	const char* errorMessage)
+	const std::string & errorMessage)
 {
 	GK_LOG_FUNC
 

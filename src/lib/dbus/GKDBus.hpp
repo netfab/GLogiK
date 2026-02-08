@@ -100,11 +100,11 @@ class GKDBus
 		}
 
 		void connectToSystemBus(
-			const char* connectionName,
+			const std::string & connectionName,
 			const ConnectionFlag flag = ConnectionFlag::GKDBUS_SINGLE
 		);
 		void connectToSessionBus(
-			const char* connectionName,
+			const std::string & connectionName,
 			const ConnectionFlag flag = ConnectionFlag::GKDBUS_SINGLE
 		);
 
@@ -144,7 +144,7 @@ class GKDBus
 			DBusConnection* const connection
 		) noexcept;
 		void checkReleasedName(int ret) noexcept;
-		void checkDBusError(const char* error);
+		void checkDBusError(const std::string & errorMessage);
 		DBusConnection* const getDBusConnection(BusConnection bus) const;
 		const unsigned int getDBusRequestFlags(const ConnectionFlag flag) noexcept;
 };
