@@ -42,6 +42,8 @@ void GKDBusEvents::declareIntrospectableSignal(
 	const std::string & eventName,
 	const std::vector<DBusEventArgument> & args)
 {
+	GK_LOG_FUNC
+
 	introspectableSignalEvent* event = nullptr;
 
 	try
@@ -53,6 +55,7 @@ void GKDBusEvents::declareIntrospectableSignal(
 		throw NSGKUtils::GLogiKBadAlloc("DBus event bad allocation");
 	}
 
+	GKLog2(trace, "adding Introspectable signal : ", eventName)
 	_DBusIntrospectableSignals[eventBus][eventObjectPath][eventInterface].push_back(event);
 	_DBusInterfaces.insert(eventInterface);
 	this->exposeIntrospectMethod(eventBus, eventObjectPath);
@@ -94,14 +97,20 @@ void GKDBusEvents::clearDBusEvents(void) noexcept
 	{
 		for(const auto & [bus, opMap] : DBusEvents) // objectPath map
 		{
-			GKLog2(trace, "current bus: ", toUInt(toEnumType(bus)))
+#if DEBUG_GKDBUS
+			GKLog2(trace, "current bus : ", toUInt(toEnumType(bus)))
+#endif
 			for(const auto & [objectPath, interMap] : opMap) // interface map
 			{
-				GKLog2(trace, "object path: ", objectPath)
+#if DEBUG_GKDBUS
+				GKLog2(trace, "object path : ", objectPath)
+#endif
 				for(const auto & [interface, pVec] : interMap) // vector<DBusEvent*>
 				{
 					unsigned short c = 0;
-					GKLog2(trace, "interface: ", interface)
+#if DEBUG_GKDBUS
+					GKLog2(trace, "interface : ", interface)
+#endif
 					for(auto & event : pVec)
 					{
 						if(event != nullptr)
@@ -182,7 +191,7 @@ void GKDBusEvents::removeInterface(
 
 		if( opMap.empty() )
 		{
-			GKLog2(trace, "removing empty object path: ", objectPath)
+			GKLog2(trace, "removing empty object path : ", objectPath)
 			_DBusEvents[bus].erase(objectPath);
 		}
 		else if( (opMap.size() == 1) and
@@ -198,9 +207,9 @@ void GKDBusEvents::removeInterface(
 	}
 	else
 	{
-		LOG(warning) << "Interface not found. bus: " << toUInt(toEnumType(bus))
-			<< " - object path: " << objectPath
-			<< " - interface: " << interface;
+		LOG(warning) << "Interface not found. bus : " << toUInt(toEnumType(bus))
+			<< " - object path : " << objectPath
+			<< " - interface : " << interface;
 	}
 }
 
@@ -295,6 +304,8 @@ void GKDBusEvents::exposeIntrospectMethod(
 	const BusConnection eventBus,
 	const std::string & eventObjectPath)
 {
+	GK_LOG_FUNC
+
 	try
 	{
 		const auto & bus = _DBusEvents.at(eventBus);
@@ -303,7 +314,7 @@ void GKDBusEvents::exposeIntrospectMethod(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKLog2(trace, "adding Introspectable object path: ", eventObjectPath)
+		GKLog2(trace, "adding Introspect method - object path : ", eventObjectPath)
 
 		this->Callback<SIGs2s>::exposeEvent(
 			eventBus,			/* bus */
@@ -404,7 +415,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 {
 	GK_LOG_FUNC
 
-	GKLog2(trace, "asked object path: ", askedObjectPath)
+	GKLog2(trace, "asked object path : ", askedObjectPath)
 
 	std::set<std::string> xmlNodes;
 	std::ostringstream xml;
@@ -436,7 +447,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 	{
 
 #if DEBUG_GKDBUS
-		GKLog2(trace, "DBus Interface: ", DBusInterface)
+		GKLog2(trace, "DBus Interface : ", DBusInterface)
 #endif
 
 		bool interfaceOpened = false;
@@ -466,8 +477,8 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 					{
 #if DEBUG_GKDBUS
 						GKLog6(trace,
-							"	interface: ", interface,
-							"objectPath: ", objectPath, "op: ", op
+							"	interface : ", interface,
+							"object path : ", objectPath, "op : ", op
 						)
 #endif
 
@@ -531,21 +542,21 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 										{
 											xml << "	<node name=\"" << op << "\"/>\n";
 #if DEBUG_GKDBUS
-											GKLog2(trace, "		node appended: ", op)
+											GKLog2(trace, "		node appended : ", op)
 #endif
 										}
 									}
 #if DEBUG_GKDBUS
 									else
 									{
-										GKLog2(trace, "		node skipped (no method found): ", op)
+										GKLog2(trace, "		node skipped (no method found) : ", op)
 									}
 #endif
 								} // >>>
 #if DEBUG_GKDBUS
 								else
 								{
-									GKLog2(trace, "		node already inserted: ", op)
+									GKLog2(trace, "		node already inserted : ", op)
 								}
 #endif
 							} // >>>
@@ -562,7 +573,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 			catch (const std::out_of_range& oor)
 			{
 				GKLog2(trace,
-					"can't iterate over DBus events container. Current bus: ",
+					"can't iterate over DBus events container. Current bus : ",
 					toUInt(toEnumType(GKDBusEvents::currentBus))
 				)
 			}
@@ -616,7 +627,7 @@ void GKDBusEvents::addSignalRuleMatch(
 	dbus_bus_add_match(connection, rule.c_str(), nullptr);
 	dbus_connection_flush(connection);
 
-	GKLog2(trace, "added DBus signal match rule : ", eventName)
+	GKLog2(trace, "added : ", eventName)
 }
 
 void GKDBusEvents::removeSignalRuleMatch(
@@ -643,7 +654,7 @@ void GKDBusEvents::removeSignalRuleMatch(
 	dbus_bus_remove_match(connection, rule.c_str(), nullptr);
 	dbus_connection_flush(connection);
 
-	GKLog2(trace, "removed DBus signal match rule : ", eventName)
+	GKLog2(trace, "removed : ", eventName)
 }
 
 /* -- */
