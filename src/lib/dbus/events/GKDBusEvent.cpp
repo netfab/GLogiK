@@ -29,14 +29,14 @@ namespace NSGKDBus
 using namespace NSGKUtils;
 
 DBusEvent::DBusEvent(
-	const std::string & n,
-	const std::vector<DBusEventArgument> & a,
-	DBusEventType t,
-	const bool i)
-		:	eventName(n),
-			arguments(a),
-			eventType(t),
-			introspectable(i)
+	const std::string & name,
+	const std::vector<DBusEventArgument> & args,
+	DBusEventType type,
+	const bool intr)
+		:	eventName(name),
+			arguments(args),
+			eventType(type),
+			introspectable(intr)
 {
 }
 
@@ -58,25 +58,6 @@ void DBusEvent::callback(
 	DBusMessage* asyncContainer)
 {
 	this->runCallback(connection, message, asyncContainer);
-}
-
-introspectableSignalEvent::introspectableSignalEvent(
-	const std::string & n,
-	const std::vector<DBusEventArgument> & a)
-		:	DBusEvent(n, a, DBusEventType::DBUS_SIGNAL_EVENT, true)
-{
-}
-
-introspectableSignalEvent::~introspectableSignalEvent(void)
-{
-}
-
-void introspectableSignalEvent::runCallback(
-	DBusConnection* const connection,
-	DBusMessage* message,
-	DBusMessage* asyncContainer)
-{
-	/* do nothing */
 }
 
 } // namespace NSGKDBus

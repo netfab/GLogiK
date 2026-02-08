@@ -65,10 +65,10 @@ class DBusEvent
 
 	protected:
 		DBusEvent(
-			const std::string & n,
-			const std::vector<DBusEventArgument> & a,
-			DBusEventType t,
-			const bool i
+			const std::string & name,
+			const std::vector<DBusEventArgument> & args,
+			DBusEventType type,
+			const bool intr
 		);
 
 	private:
@@ -90,11 +90,11 @@ class GKDBusEvent
 
 	protected:
 		GKDBusEvent(
-			const std::string & n,
-			const std::vector<DBusEventArgument> & a,
-			DBusEventType t,
-			const bool i)
-				:	DBusEvent(n, a, t, i) {}
+			const std::string & name,
+			const std::vector<DBusEventArgument> & args,
+			DBusEventType type,
+			const bool intr)
+				:	DBusEvent(name, args, type, intr) {}
 
 	private:
 		GKDBusEvent(void) = delete;
@@ -106,20 +106,21 @@ class introspectableSignalEvent
 {
 	public:
 		introspectableSignalEvent(
-			const std::string & n,
-			const std::vector<DBusEventArgument> & a);
-		~introspectableSignalEvent(void);
+			const std::string & name,
+			const std::vector<DBusEventArgument> & args)
+				:	DBusEvent(name, args, DBusEventType::DBUS_SIGNAL_EVENT, true) {}
+		~introspectableSignalEvent(void) = default;
 
 	protected:
 
 	private:
 		introspectableSignalEvent(void) = delete;
 
-		void runCallback(
+		inline void runCallback(
 			DBusConnection* const connection,
 			DBusMessage* message,
 			DBusMessage* asyncContainer
-		);
+		) {	/* do nothing */ }
 };
 
 } // namespace NSGKDBus
