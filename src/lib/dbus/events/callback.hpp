@@ -85,7 +85,7 @@ template <typename T>
 
 		void receiveSignal(
 			const BusConnection bus,
-			const std::string & sender,
+			const std::string & eventSender,
 			const std::string & objectPath,
 			const std::string & interface,
 			const std::string & eventName,
@@ -100,7 +100,7 @@ template <typename T>
 	private:
 		void exposeEvent(
 			const BusConnection bus,
-			const std::string & sender,
+			const std::string & eventSender,
 			const std::string & objectPath,
 			const std::string & interface,
 			const std::string & eventName,
@@ -112,7 +112,6 @@ template <typename T>
 
 		virtual void addEvent(
 			const BusConnection bus,
-			const std::string & sender,
 			const std::string & objectPath,
 			const std::string & interface,
 			DBusEvent* event
@@ -149,7 +148,7 @@ template <typename T>
 template <typename T>
 	void Callback<T>::receiveSignal(
 		const BusConnection bus,
-		const std::string & sender,
+		const std::string & eventSender,
 		const std::string & objectPath,
 		const std::string & interface,
 		const std::string & eventName,
@@ -160,7 +159,7 @@ template <typename T>
 	/* signals declared as events with callback functions are not introspectable */
 	this->exposeEvent(
 		bus,
-		sender,
+		eventSender,
 		objectPath,
 		interface,
 		eventName,
@@ -174,7 +173,7 @@ template <typename T>
 template <typename T>
 	void Callback<T>::exposeEvent(
 		const BusConnection bus,
-		const std::string & sender,
+		const std::string & eventSender,
 		const std::string & objectPath,
 		const std::string & interface,
 		const std::string & eventName,
@@ -186,14 +185,15 @@ template <typename T>
 	GKDBusEvent* event = nullptr;
 	try
 	{
-		event = new callbackEvent<T>(eventName, args, callback, eventType, introspectable);
+		event = new callbackEvent<T>(
+						eventName, eventSender, args, callback, eventType, introspectable);
 	}
 	catch (const std::bad_alloc& e)
 	{ /* handle new() failure */
 		throw NSGKUtils::GLogiKBadAlloc("DBus event bad allocation");
 	}
 
-	this->addEvent(bus, sender, objectPath, interface, event);
+	this->addEvent(bus, objectPath, interface, event);
 }
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- */
@@ -222,7 +222,7 @@ template <>
 
 		void receiveSignal(
 			const BusConnection bus,
-			const std::string & sender,
+			const std::string & eventSender,
 			const std::string & objectPath,
 			const std::string & interface,
 			const std::string & eventName,
@@ -237,7 +237,7 @@ template <>
 
 		void exposeEvent(
 			const BusConnection bus,
-			const std::string & sender,
+			const std::string & eventSender,
 			const std::string & objectPath,
 			const std::string & interface,
 			const std::string & eventName,
@@ -250,7 +250,6 @@ template <>
 	private:
 		virtual void addEvent(
 			const BusConnection bus,
-			const std::string & sender,
 			const std::string & objectPath,
 			const std::string & interface,
 			DBusEvent* event

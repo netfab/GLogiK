@@ -82,15 +82,8 @@ class GKDBusEvents
 		);
 */
 
-		void removeMethodsInterface(
+		void removeInterface(
 			const BusConnection bus,
-			const std::string & objectPath,
-			const std::string & interface
-		) noexcept;
-
-		void removeSignalsInterface(
-			const BusConnection bus,
-			const std::string & sender,
 			const std::string & objectPath,
 			const std::string & interface
 		) noexcept;
@@ -155,7 +148,6 @@ class GKDBusEvents
 
 		void addEvent(
 			const BusConnection eventBus,
-			const std::string & eventSender,
 			const std::string & eventObjectPath,
 			const std::string & eventInterface,
 			DBusEvent* event
@@ -188,9 +180,8 @@ class GKDBusEvents
 			const std::string & interface
 		) noexcept;
 
-		void removeInterface(
+		void removeDBusEventsInterface(
 			const BusConnection bus,
-			const std::string & sender,
 			const std::string & objectPath,
 			const std::string & interface
 		) noexcept;

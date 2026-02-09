@@ -72,21 +72,12 @@ void GKDBusEvents::removeMethod(
 }
 */
 
-void GKDBusEvents::removeMethodsInterface(
+void GKDBusEvents::removeInterface(
 	const BusConnection bus,
 	const std::string & objectPath,
 	const std::string & interface) noexcept
 {
-	this->removeInterface(bus, "", objectPath, interface);
-}
-
-void GKDBusEvents::removeSignalsInterface(
-	const BusConnection bus,
-	const std::string & sender,
-	const std::string & objectPath,
-	const std::string & interface) noexcept
-{
-	this->removeInterface(bus, sender, objectPath, interface);
+	this->removeDBusEventsInterface(bus, objectPath, interface);
 }
 
 void GKDBusEvents::removeIntrospectableSignalsInterface(
@@ -118,7 +109,7 @@ void GKDBusEvents::removeIntrospectableSignalsInterface(
 		}
 
 		/* trying to find and remove Introspect method event on standard interface
-		 * we don't want to use ->removeInterface() directly to avoid potential
+		 * we don't want to use ->removeDBusEventsInterface() directly to avoid potential
 		 * warning when interface is not found
 		 */
 		const auto & intr = _FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE;
@@ -132,7 +123,7 @@ void GKDBusEvents::removeIntrospectableSignalsInterface(
 				_DBusEvents[bus].erase(objectPath);
 			}
 			else if( (opMap.size() == 1) and (opMap.count(intr) == 1) )
-				this->removeInterface(bus, "", objectPath, intr);
+				this->removeDBusEventsInterface(bus, objectPath, intr);
 		}
 	}
 	else
@@ -211,9 +202,8 @@ const bool GKDBusEvents::findInterface(
 	return false;
 }
 
-void GKDBusEvents::removeInterface(
+void GKDBusEvents::removeDBusEventsInterface(
 	const BusConnection bus,
-	const std::string & sender,
 	const std::string & objectPath,
 	const std::string & interface) noexcept
 {
@@ -233,7 +223,7 @@ void GKDBusEvents::removeInterface(
 			if(event->eventType == DBusEventType::DBUS_SIGNAL_EVENT)
 				this->removeSignalRuleMatch(
 					bus,
-					sender,
+					event->eventSender,
 					interface,
 					event->eventName
 				);
@@ -251,7 +241,7 @@ void GKDBusEvents::removeInterface(
 			_DBusEvents[bus].erase(objectPath);
 		}
 		else if( (opMap.size() == 1) and (opMap.count(intr) == 1) )
-			this->removeInterface(bus, "", objectPath, intr);
+			this->removeDBusEventsInterface(bus, objectPath, intr);
 	}
 	else
 	{
@@ -388,7 +378,6 @@ void GKDBusEvents::exposeIntrospectMethod(
 
 void GKDBusEvents::addEvent(
 	const BusConnection eventBus,
-	const std::string & eventSender,
 	const std::string & eventObjectPath,
 	const std::string & eventInterface,
 	DBusEvent* event)
@@ -398,8 +387,8 @@ void GKDBusEvents::addEvent(
 	if(event->introspectable)
 		this->exposeIntrospectMethod(eventBus, eventObjectPath);
 
-	if( event->eventType == DBusEventType::DBUS_SIGNAL_EVENT )
-		this->addSignalRuleMatch(eventBus, eventSender, eventInterface, event->eventName);
+	if(event->eventType == DBusEventType::DBUS_SIGNAL_EVENT)
+		this->addSignalRuleMatch(eventBus, event->eventSender, eventInterface, event->eventName);
 
 	_DBusInterfaces.insert(eventInterface);
 	_DBusEvents[eventBus][eventObjectPath][eventInterface].push_back(event);

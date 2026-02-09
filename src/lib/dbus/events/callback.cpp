@@ -53,7 +53,7 @@ void Callback<SIGs2s>::exposeMethod(
 
 void Callback<SIGs2s>::receiveSignal(
 		const BusConnection bus,
-		const std::string & sender,
+		const std::string & eventSender,
 		const std::string & objectPath,
 		const std::string & interface,
 		const std::string & eventName,
@@ -64,7 +64,7 @@ void Callback<SIGs2s>::receiveSignal(
 	// signals declared as events with callback functions are not introspectable
 	this->exposeEvent(
 		bus,
-		sender,
+		eventSender,
 		objectPath,
 		interface,
 		eventName,
@@ -78,7 +78,7 @@ void Callback<SIGs2s>::receiveSignal(
 
 void Callback<SIGs2s>::exposeEvent(
 		const BusConnection bus,
-		const std::string & sender,
+		const std::string & eventSender,
 		const std::string & objectPath,
 		const std::string & interface,
 		const std::string & eventName,
@@ -90,14 +90,15 @@ void Callback<SIGs2s>::exposeEvent(
 	GKDBusEvent* event = nullptr;
 	try
 	{
-		event = new callbackEvent<SIGs2s>(eventName, args, callback, eventType, introspectable);
+		event = new callbackEvent<SIGs2s>(
+						eventName, eventSender,	args, callback, eventType, introspectable);
 	}
 	catch (const std::bad_alloc& e)
 	{ /* handle new() failure */
 		throw NSGKUtils::GLogiKBadAlloc("DBus event bad allocation");
 	}
 
-	this->addEvent(bus, sender, objectPath, interface, event);
+	this->addEvent(bus, objectPath, interface, event);
 }
 
 } // namespace NSGKDBus

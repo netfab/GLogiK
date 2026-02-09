@@ -30,11 +30,13 @@ using namespace NSGKUtils;
 
 DBusEvent::DBusEvent(
 	const std::string & name,
+	const std::string & sender,
 	const std::vector<DBusEventArgument> & args,
 	DBusEventType type,
 	const bool intr)
-		:	eventName(name),
-			arguments(args),
+		:	arguments(args),
+			eventName(name),
+			eventSender(sender),
 			eventType(type),
 			introspectable(intr)
 {

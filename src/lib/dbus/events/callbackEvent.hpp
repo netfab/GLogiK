@@ -53,11 +53,12 @@ template <typename T>
 {
 	public:
 		callbackEvent(
-			const std::string & n,
-			const std::vector<DBusEventArgument> & a,
-			T c,
-			DBusEventType t,
-			const bool i
+			const std::string & name,
+			const std::string & sender,
+			const std::vector<DBusEventArgument> & args,
+			T cb,
+			DBusEventType type,
+			const bool intr
 		);
 		~callbackEvent() = default;
 
@@ -91,13 +92,14 @@ template <typename T>
 
 template <typename T>
 	callbackEvent<T>::callbackEvent(
-		const std::string & n,
-		const std::vector<DBusEventArgument> & a,
-		T c,
-		DBusEventType t,
-		const bool i
-	)		:	GKDBusEvent(n, a, t, i),
-				callback(c)
+		const std::string & name,
+		const std::string & sender,
+		const std::vector<DBusEventArgument> & args,
+		T cb,
+		DBusEventType type,
+		const bool intr
+	)		:	GKDBusEvent(name, sender, args, type, intr),
+				callback(cb)
 {
 }
 

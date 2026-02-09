@@ -168,25 +168,22 @@ void DBusHandler::cleanGKDBusEvents(void) noexcept
 	GKLog(trace, "cleaning GKDBus configuration")
 
 	/* remove SessionMessageHandler D-Bus interface and object */
-	DBus.removeMethodsInterface(_sessionBus,
+	DBus.removeInterface(_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 
 	/* remove GUISessionMessageHandler D-Bus interface and object */
-	DBus.removeSignalsInterface(_sessionBus,
-		GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME,
+	DBus.removeInterface(_sessionBus,
 		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE);
 
 	/* remove DevicesManager D-Bus interface and object */
-	DBus.removeSignalsInterface(_systemBus,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+	DBus.removeInterface(_systemBus,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE);
 
 	/* remove ClientsManager D-Bus interface and object */
-	DBus.removeSignalsInterface(_systemBus,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+	DBus.removeInterface(_systemBus,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE);
 
@@ -195,8 +192,7 @@ void DBusHandler::cleanGKDBusEvents(void) noexcept
 	{
 		/* logind */
 		case SessionFramework::FW_LOGIND:
-			DBus.removeSignalsInterface(_systemBus,
-				LOGIND_DBUS_BUS_CONNECTION_NAME,
+			DBus.removeInterface(_systemBus,
 				_CURRENT_SESSION_DBUS_OBJECT_PATH.c_str(),
 				FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE);
 			break;

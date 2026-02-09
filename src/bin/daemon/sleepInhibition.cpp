@@ -79,8 +79,7 @@ void SleepInhibition::stopSleepInhibition(void) noexcept
 	{
 		/* logind */
 		case SessionFramework::FW_LOGIND:
-			_pDBus->removeSignalsInterface(_systemBus,
-				LOGIND_DBUS_BUS_CONNECTION_NAME,
+			_pDBus->removeInterface(_systemBus,
 				LOGIND_MANAGER_DBUS_OBJECT_PATH,
 				LOGIND_MANAGER_DBUS_INTERFACE);
 			break;

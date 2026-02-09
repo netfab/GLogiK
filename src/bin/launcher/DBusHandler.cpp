@@ -60,13 +60,11 @@ DBusHandler::~DBusHandler(void)
 
 void DBusHandler::cleanDBusRequests(void)
 {
-	_pDBus->removeSignalsInterface(_sessionBus,
-		GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME,
+	_pDBus->removeInterface(_sessionBus,
 		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE);
 
-	_pDBus->removeSignalsInterface(_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+	_pDBus->removeInterface(_sessionBus,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 }

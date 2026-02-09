@@ -336,8 +336,8 @@ void ClientsManager::cleanDBusRequests(void) noexcept
 	const auto & DM_OP = GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH;
 	const auto & DM_IF = GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE;
 
-	_pDBus->removeMethodsInterface(_systemBus, CM_OP, CM_IF);
-	_pDBus->removeMethodsInterface(_systemBus, DM_OP, DM_IF);
+	_pDBus->removeInterface(_systemBus, CM_OP, CM_IF);
+	_pDBus->removeInterface(_systemBus, DM_OP, DM_IF);
 
 	_pDBus->removeIntrospectableSignalsInterface(_systemBus, CM_OP, CM_IF);
 	_pDBus->removeIntrospectableSignalsInterface(_systemBus, DM_OP, DM_IF);

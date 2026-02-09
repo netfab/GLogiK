@@ -392,9 +392,8 @@ void MainWindow::aboutToQuit(void)
 	_DBusTimer->stop();
 	QObject::disconnect(_DBusTimer, nullptr, this, nullptr);
 
-	_pDBus->removeSignalsInterface(
+	_pDBus->removeInterface(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 

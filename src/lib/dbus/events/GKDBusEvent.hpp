@@ -50,8 +50,9 @@ struct DBusEventArgument
 class DBusEvent
 {
 	public:
-		const std::string eventName;
 		std::vector<DBusEventArgument> arguments;
+		const std::string eventName;
+		const std::string eventSender;
 		DBusEventType eventType;
 		const bool introspectable;
 
@@ -66,6 +67,7 @@ class DBusEvent
 	protected:
 		DBusEvent(
 			const std::string & name,
+			const std::string & sender,
 			const std::vector<DBusEventArgument> & args,
 			DBusEventType type,
 			const bool intr
@@ -91,10 +93,11 @@ class GKDBusEvent
 	protected:
 		GKDBusEvent(
 			const std::string & name,
+			const std::string & sender,
 			const std::vector<DBusEventArgument> & args,
 			DBusEventType type,
 			const bool intr)
-				:	DBusEvent(name, args, type, intr) {}
+				:	DBusEvent(name, sender, args, type, intr) {}
 
 	private:
 		GKDBusEvent(void) = delete;
@@ -108,7 +111,7 @@ class introspectableSignalEvent
 		introspectableSignalEvent(
 			const std::string & name,
 			const std::vector<DBusEventArgument> & args)
-				:	DBusEvent(name, args, DBusEventType::DBUS_SIGNAL_EVENT, true) {}
+				:	DBusEvent(name, "", args, DBusEventType::DBUS_SIGNAL_EVENT, true) {}
 		~introspectableSignalEvent(void) = default;
 
 	protected:
