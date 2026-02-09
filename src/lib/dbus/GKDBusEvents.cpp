@@ -358,7 +358,7 @@ void GKDBusEvents::exposeIntrospectMethod(
 			eventBus,			/* bus */
 			"",	/* sender (used only in addEvent() below
 				   if eventType == DBUS_SIGNAL_EVENT, unused here --> "") */
-			eventObjectPath.c_str(),	/* event object path */ // FIXME
+			eventObjectPath,	/* event object path */
 			_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE,	/* event interface */
 			"Introspect",		/* event name */
 			{	{	"s",
