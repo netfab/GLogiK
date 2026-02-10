@@ -110,6 +110,7 @@ int DesktopService::run(void)
 		FileSystem GKfs;
 		SessionManager session;
 
+		NSGKDBus::GKDBus DBus;
 		DBus.init();
 
 		DBus.connectToSystemBus(
@@ -134,7 +135,7 @@ int DesktopService::run(void)
 		{
 			{
 				/* DBusHandler constructor can potentially throw GLogiKExcept */
-				DBusHandler handler(_pid, &GKfs, &dependencies);
+				DBusHandler handler(_pid, &GKfs, &DBus, &dependencies);
 
 				while( session.isSessionAlive() and
 						handler.getExitStatus() )

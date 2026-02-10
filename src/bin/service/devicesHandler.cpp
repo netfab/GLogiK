@@ -46,6 +46,7 @@ using namespace NSGKUtils;
 
 DevicesHandler::DevicesHandler()
 	:	_clientID("undefined"),
+		_pDBus(nullptr),
 		_pGKfs(nullptr)
 {
 	GK_LOG_FUNC
@@ -68,9 +69,14 @@ DevicesHandler::~DevicesHandler()
 	GKLog(trace, "Devices Handler destruction")
 }
 
-void DevicesHandler::setGKfs(NSGKUtils::FileSystem* pGKfs)
+void DevicesHandler::setGKfs(NSGKUtils::FileSystem* const pGKfs)
 {
 	_pGKfs = pGKfs;
+}
+
+void DevicesHandler::setDBus(NSGKDBus::GKDBus* const pDBus)
+{
+	_pDBus = pDBus;
 }
 
 void DevicesHandler::setClientID(const std::string & id)
@@ -288,20 +294,20 @@ void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devI
 	try
 	{
 		/* send DeviceConfigurationSaved signal to GUI applications */
-		DBus.initializeBroadcastSignal(
+		_pDBus->initializeBroadcastSignal(
 			_sessionBus,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 			GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED
 		);
-		DBus.appendStringToBroadcastSignal(devID);
-		DBus.sendBroadcastSignal();
+		_pDBus->appendStringToBroadcastSignal(devID);
+		_pDBus->sendBroadcastSignal();
 
 		GKLog2(trace, devID, " sent signal on session bus : DeviceConfigurationSaved")
 	}
 	catch (const GKDBusMessageWrongBuild & e)
 	{
-		DBus.abandonBroadcastSignal();
+		_pDBus->abandonBroadcastSignal();
 		LOG(error) << devID << " failed to send signal on session bus : " << e.what();
 	}
 }
@@ -328,27 +334,27 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 
 		try
 		{
-			DBus.initializeRemoteMethodCall(
+			_pDBus->initializeRemoteMethodCall(
 				_systemBus,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
-			DBus.appendStringToRemoteMethodCall(_clientID);
-			DBus.appendStringToRemoteMethodCall(devID);
+			_pDBus->appendStringToRemoteMethodCall(_clientID);
+			_pDBus->appendStringToRemoteMethodCall(devID);
 			uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
-			DBus.appendUInt8ToRemoteMethodCall(r);
-			DBus.appendUInt8ToRemoteMethodCall(g);
-			DBus.appendUInt8ToRemoteMethodCall(b);
+			_pDBus->appendUInt8ToRemoteMethodCall(r);
+			_pDBus->appendUInt8ToRemoteMethodCall(g);
+			_pDBus->appendUInt8ToRemoteMethodCall(b);
 
-			DBus.sendRemoteMethodCall();
+			_pDBus->sendRemoteMethodCall();
 
 			try
 			{
-				DBus.waitForRemoteMethodCallReply();
+				_pDBus->waitForRemoteMethodCallReply();
 
-				const bool ret = DBus.getNextBooleanArgument();
+				const bool ret = _pDBus->getNextBooleanArgument();
 				if( ! ret )
 				{
 					LOG(error) << devID << " failed to set device backlight color : false";
@@ -365,7 +371,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 		}
 		catch (const GKDBusMessageWrongBuild & e)
 		{
-			DBus.abandonRemoteMethodCall();
+			_pDBus->abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	} // >>>
@@ -384,25 +390,25 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 			const uint8_t maskID = toEnumType(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1);
 			const uint64_t mask = device.getLCDPluginsMask1();
 
-			DBus.initializeRemoteMethodCall(
+			_pDBus->initializeRemoteMethodCall(
 				_systemBus,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
-			DBus.appendStringToRemoteMethodCall(_clientID);
-			DBus.appendStringToRemoteMethodCall(devID);
-			DBus.appendUInt8ToRemoteMethodCall(maskID);
-			DBus.appendUInt64ToRemoteMethodCall(mask);
+			_pDBus->appendStringToRemoteMethodCall(_clientID);
+			_pDBus->appendStringToRemoteMethodCall(devID);
+			_pDBus->appendUInt8ToRemoteMethodCall(maskID);
+			_pDBus->appendUInt64ToRemoteMethodCall(mask);
 
-			DBus.sendRemoteMethodCall();
+			_pDBus->sendRemoteMethodCall();
 
 			try
 			{
-				DBus.waitForRemoteMethodCallReply();
+				_pDBus->waitForRemoteMethodCallReply();
 
-				const bool ret = DBus.getNextBooleanArgument();
+				const bool ret = _pDBus->getNextBooleanArgument();
 				if( ! ret )
 				{
 					LOG(error) << devID << " failed to set device LCD Plugins Mask " << toUInt(maskID) << " : false";
@@ -419,7 +425,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 		}
 		catch (const GKDBusMessageWrongBuild & e)
 		{
-			DBus.abandonRemoteMethodCall();
+			_pDBus->abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	} // >>>
@@ -438,26 +444,26 @@ void DevicesHandler::setDeviceProperties(
 
 	try
 	{
-		DBus.initializeRemoteMethodCall(
+		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
-		DBus.appendStringToRemoteMethodCall(_clientID);
-		DBus.appendStringToRemoteMethodCall(devID);
+		_pDBus->appendStringToRemoteMethodCall(_clientID);
+		_pDBus->appendStringToRemoteMethodCall(devID);
 
-		DBus.sendRemoteMethodCall();
+		_pDBus->sendRemoteMethodCall();
 
 		try
 		{
-			DBus.waitForRemoteMethodCallReply();
+			_pDBus->waitForRemoteMethodCallReply();
 
-			const std::string vendor( DBus.getNextStringArgument() );
-			const std::string product( DBus.getNextStringArgument() );
-			const std::string name( DBus.getNextStringArgument() );
-			const uint64_t caps( DBus.getNextUInt64Argument() );
+			const std::string vendor( _pDBus->getNextStringArgument() );
+			const std::string product( _pDBus->getNextStringArgument() );
+			const std::string name( _pDBus->getNextStringArgument() );
+			const uint64_t caps( _pDBus->getNextUInt64Argument() );
 			device.setProperties( vendor, product, name, caps );
 
 			GKLog2(trace, devID, " got 4 properties")
@@ -469,7 +475,7 @@ void DevicesHandler::setDeviceProperties(
 	}
 	catch (const GKDBusMessageWrongBuild & e)
 	{
-		DBus.abandonRemoteMethodCall();
+		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
 
@@ -480,23 +486,23 @@ void DevicesHandler::setDeviceProperties(
 
 		try
 		{
-			DBus.initializeRemoteMethodCall(
+			_pDBus->initializeRemoteMethodCall(
 				_systemBus,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
-			DBus.appendStringToRemoteMethodCall(_clientID);
-			DBus.appendStringToRemoteMethodCall(devID);
+			_pDBus->appendStringToRemoteMethodCall(_clientID);
+			_pDBus->appendStringToRemoteMethodCall(devID);
 
-			DBus.sendRemoteMethodCall();
+			_pDBus->sendRemoteMethodCall();
 
 			try
 			{
-				DBus.waitForRemoteMethodCallReply();
+				_pDBus->waitForRemoteMethodCallReply();
 
-				const LCDPPArray_type array = DBus.getNextLCDPPArrayArgument();
+				const LCDPPArray_type array = _pDBus->getNextLCDPPArrayArgument();
 				device.setLCDPluginsProperties(array);
 
 				GKLog3(trace, devID, " number of LCDPluginsProperties objects : ", array.size())
@@ -508,7 +514,7 @@ void DevicesHandler::setDeviceProperties(
 		}
 		catch (const GKDBusMessageWrongBuild & e)
 		{
-			DBus.abandonRemoteMethodCall();
+			_pDBus->abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	} // >>>
@@ -732,22 +738,22 @@ void DevicesHandler::unrefDevice(const std::string & devID)
 
 		try
 		{
-			DBus.initializeRemoteMethodCall(
+			_pDBus->initializeRemoteMethodCall(
 				_systemBus,
 				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
-			DBus.appendStringToRemoteMethodCall(_clientID);
-			DBus.appendStringToRemoteMethodCall(devID);
+			_pDBus->appendStringToRemoteMethodCall(_clientID);
+			_pDBus->appendStringToRemoteMethodCall(devID);
 
-			DBus.sendRemoteMethodCall();
+			_pDBus->sendRemoteMethodCall();
 
 			try
 			{
-				DBus.waitForRemoteMethodCallReply();
-				const bool ret = DBus.getNextBooleanArgument();
+				_pDBus->waitForRemoteMethodCallReply();
+				const bool ret = _pDBus->getNextBooleanArgument();
 				if( ! ret )
 				{
 					LOG(error) << devID << " failed to delete remote device configuration : false";
@@ -764,7 +770,7 @@ void DevicesHandler::unrefDevice(const std::string & devID)
 		}
 		catch (const GKDBusMessageWrongBuild & e)
 		{
-			DBus.abandonRemoteMethodCall();
+			_pDBus->abandonRemoteMethodCall();
 			LogRemoteCallFailure
 		}
 	}
@@ -930,23 +936,23 @@ const MKeysIDArray_type DevicesHandler::getDeviceMKeysIDArray(const std::string 
 
 	try
 	{
-		DBus.initializeRemoteMethodCall(
+		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
-		DBus.appendStringToRemoteMethodCall(_clientID);
-		DBus.appendStringToRemoteMethodCall(devID);
+		_pDBus->appendStringToRemoteMethodCall(_clientID);
+		_pDBus->appendStringToRemoteMethodCall(devID);
 
-		DBus.sendRemoteMethodCall();
+		_pDBus->sendRemoteMethodCall();
 
 		try
 		{
-			DBus.waitForRemoteMethodCallReply();
+			_pDBus->waitForRemoteMethodCallReply();
 
-			MKeysIDArray = DBus.getNextMKeysIDArrayArgument();
+			MKeysIDArray = _pDBus->getNextMKeysIDArrayArgument();
 			GKLog3(trace, devID, " number of M-keys ID : ", MKeysIDArray.size())
 		}
 		catch (const GLogiKExcept & e)
@@ -956,7 +962,7 @@ const MKeysIDArray_type DevicesHandler::getDeviceMKeysIDArray(const std::string 
 	}
 	catch (const GKDBusMessageWrongBuild & e)
 	{
-		DBus.abandonRemoteMethodCall();
+		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
 
@@ -970,23 +976,23 @@ const GKeysIDArray_type DevicesHandler::getDeviceGKeysIDArray(const std::string 
 
 	try
 	{
-		DBus.initializeRemoteMethodCall(
+		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
 			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
-		DBus.appendStringToRemoteMethodCall(_clientID);
-		DBus.appendStringToRemoteMethodCall(devID);
+		_pDBus->appendStringToRemoteMethodCall(_clientID);
+		_pDBus->appendStringToRemoteMethodCall(devID);
 
-		DBus.sendRemoteMethodCall();
+		_pDBus->sendRemoteMethodCall();
 
 		try
 		{
-			DBus.waitForRemoteMethodCallReply();
+			_pDBus->waitForRemoteMethodCallReply();
 
-			GKeysIDArray = DBus.getNextGKeysIDArrayArgument();
+			GKeysIDArray = _pDBus->getNextGKeysIDArrayArgument();
 			GKLog3(trace, devID, " number of G-keys ID : ", GKeysIDArray.size())
 		}
 		catch (const GLogiKExcept & e)
@@ -996,7 +1002,7 @@ const GKeysIDArray_type DevicesHandler::getDeviceGKeysIDArray(const std::string 
 	}
 	catch (const GKDBusMessageWrongBuild & e)
 	{
-		DBus.abandonRemoteMethodCall();
+		_pDBus->abandonRemoteMethodCall();
 		LogRemoteCallFailure
 	}
 

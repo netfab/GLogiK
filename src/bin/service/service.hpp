@@ -24,13 +24,10 @@
 
 #include <sys/types.h>
 
-#include "DBus.hpp"
-
 namespace GLogiK
 {
 
 class DesktopService
-	:	public DBusInst
 {
 	public:
 		DesktopService(const bool & version);

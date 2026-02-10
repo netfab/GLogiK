@@ -38,23 +38,23 @@
 
 #include "devicesHandler.hpp"
 #include "GKeysEventManager.hpp"
-#include "DBus.hpp"
 
 namespace GLogiK
 {
 
 class DBusHandler
-	:	public DBusInst
 {
 	public:
 		DBusHandler(
 			pid_t pid,
 			NSGKUtils::FileSystem* pGKfs,
+			NSGKDBus::GKDBus* pDBus,
 			GKDepsMap_type* dependencies
 		);
 		~DBusHandler(void);
 
 		static bool WantToExit;	/* true if we want to exit */
+		static bool WantToRestart;	/* true if we want to restart */
 		static void handleSignal(int signum);
 
 		const bool getExitStatus(void) const;
@@ -75,6 +75,7 @@ class DBusHandler
 		std::string _sessionState;		/* session state */
 
 		const GKDepsMap_type* const _pDepsMap;
+		NSGKDBus::GKDBus* const _pDBus;
 
 		SessionFramework _sessionFramework;
 
@@ -101,7 +102,7 @@ class DBusHandler
 		void initializeGKDBusSignals(void);
 		void initializeGKDBusMethods(void);
 
-		static void sendServiceStartRequest(void);
+		void sendServiceStartRequest(void) const;
 		void sendDevicesUpdatedSignal(void);
 
 		/* signals from daemon */

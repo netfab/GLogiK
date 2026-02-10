@@ -41,8 +41,6 @@
 #include "include/MBank.hpp"
 #include "include/LCDPP.hpp"
 
-#include "DBus.hpp"
-
 #include <config.h>
 
 #define LogRemoteCallFailure \
@@ -56,13 +54,13 @@ namespace GLogiK
 {
 
 class DevicesHandler
-	:	public DBusInst
 {
 	public:
 		DevicesHandler(void);
 		~DevicesHandler(void);
 
-		void setGKfs(NSGKUtils::FileSystem* pGKfs);
+		void setGKfs(NSGKUtils::FileSystem* const pGKfs);
+		void setDBus(NSGKDBus::GKDBus* const pDBus);
 		void setClientID(const std::string & id);
 
 		void startDevice(
@@ -109,6 +107,7 @@ class DevicesHandler
 
 		fs::path _configurationRootDirectory;
 		std::string _clientID;
+		NSGKDBus::GKDBus* _pDBus;
 		NSGKUtils::FileSystem* _pGKfs;
 
 		typedef std::set<std::string> devIDSet;

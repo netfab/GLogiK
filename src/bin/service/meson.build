@@ -7,8 +7,6 @@ GLogiKs_sources = [
   'GKeysEventManager.hpp',
   'initLog.cpp',
   'initLog.hpp',
-  'DBus.cpp',
-  'DBus.hpp',
   'DBusHandler.cpp',
   'DBusHandler.hpp',
   'service.cpp',
