@@ -251,19 +251,6 @@ void GKDBusEvents::removeDBusEventsInterface(
 	}
 }
 
-const std::string GKDBusEvents::getObjectFromObjectPath(const std::string & objectPath)
-{
-	std::string object;
-	std::istringstream path(objectPath);
-	/* get last part of object path */
-	while(std::getline(path, object, '/')) {}
-#if 0 && DEBUGGING_ON
-	LOG(trace) << "object path: " << objectPath;
-	LOG(trace) << "     object: " << object;
-#endif
-	return object;
-}
-
 /*
 void GKDBusEvents::removeEvent(
 	const BusConnection eventBus,
