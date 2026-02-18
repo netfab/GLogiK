@@ -24,7 +24,7 @@ declare -r ABS_INSTALL_DIR="${PACKAGE_WORK_DIR}/${REL_INSTALL_DIR}"
 # ccache automatically enabled if found
 # https://mesonbuild.com/Feature-autodetection.html#ccache
 #export PATH="/usr/lib/ccache/bin:${PATH}"
-export CCACHE_DIR='/var/tmp/devccache'
+export CCACHE_DIR='/worktemp/ccache/devccache'
 
 # -- -- -- -- -- -- -- -- -- #
 

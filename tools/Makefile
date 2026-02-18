@@ -28,7 +28,7 @@ export PATH:=${QT_BIN_DIR}:${PATH}
 # --
 # enable ccache
 export PATH:=/usr/lib/ccache/bin:${PATH}
-export CCACHE_DIR:=/var/tmp/devccache
+export CCACHE_DIR:=/worktemp/ccache/devccache
 
 # --
 LANG=C
