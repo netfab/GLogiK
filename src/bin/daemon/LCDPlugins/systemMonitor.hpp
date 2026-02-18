@@ -22,6 +22,9 @@
 #ifndef SRC_BIN_DAEMON_LCDPLUGINS_SYSTEM_MONITOR_HPP_
 #define SRC_BIN_DAEMON_LCDPLUGINS_SYSTEM_MONITOR_HPP_
 
+#include <array>
+#include <string_view>
+
 #include "cpu-stats/CPUSnapshot.h"
 
 #include "LCDPlugin.hpp"
@@ -56,6 +59,8 @@ class SystemMonitor
 		std::size_t _lastRateStringSize;
 		NetDirection _currentRate;
 
+		const std::array<const std::string_view, 5> _memItems =
+			{"MemTotal", "MemFree", "MemAvailable", "Buffers", "Cached"};
 };
 
 } // namespace GLogiK

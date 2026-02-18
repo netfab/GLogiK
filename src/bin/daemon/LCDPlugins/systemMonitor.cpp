@@ -103,7 +103,7 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 	};
 
 	{
-		std::map<std::string, std::vector<std::string>> memShot;
+		std::map<const std::string, const std::string> memShot;
 
 		uint64_t freePMem = 0;
 		uint64_t totalPMem = 1;
@@ -111,30 +111,40 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 		try
 		{
 			std::ifstream meminfo("/proc/meminfo");
-			std::string line;
-			while( std::getline(meminfo, line) )
-			{
-				const char delim = ' ';
-				std::vector<std::string> words;
-				const std::vector<std::string> memItems = {"MemTotal", "MemFree", "MemAvailable", "Buffers", "Cached"};
 
-				std::stringstream ss(line);
-				std::string word;
-				while( std::getline(ss, word, delim) )
+			for( std::string line; std::getline(meminfo, line); )
+			{
+				std::istringstream iss(line);
+				std::vector<std::string> words;
+
+				for( std::string word; std::getline(iss, word, ' '); )
 					if( ! word.empty() )
 						words.push_back(word);
 
 				if( ! words.empty() )
 				{
-					for(const auto & item : memItems)
+					if( words.size() < 2 )
 					{
-						const std::string & s = words[0];
-						if( s.substr(0, s.size()-1) == item )
-							memShot.insert( std::pair<std::string, std::vector<std::string>>(item, words));
+#if DEBUGGING_ON && DEBUG_LCD_PLUGINS
+						GKLog2(warning, "problem parsing line: ", words[0])
+#endif
+						continue;
+					}
+
+					for(const auto & item : _memItems)
+					{
+						const std::string_view s(words[0]);
+						// don't want trailing ':'
+						const std::string_view::size_type count = s.size() - 1;
+
+						if( s.substr(0, count) == item )
+							memShot.insert(
+								std::pair<const std::string, const std::string>(item, words[1])
+							);
 					}
 				}
 
-				if( memShot.size() == memItems.size() )
+				if( memShot.size() == _memItems.size() )
 				{
 					//LOG(trace) << "found each item :-)";
 					break;
@@ -149,16 +159,16 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 
 		try
 		{
-			totalPMem = toULL( memShot.at("MemTotal").at(1) );
+			totalPMem = toULL( memShot.at("MemTotal") );
 
 			// Linux Kernel 3.14+
 			if( memShot.count("MemAvailable") == 1 )
-				freePMem  = toULL( memShot["MemAvailable"].at(1) );
+				freePMem  = toULL( memShot["MemAvailable"] );
 			else
 			{
-				freePMem  = toULL( memShot.at("MemFree").at(1) );
-				freePMem += toULL( memShot.at("Buffers").at(1) );
-				freePMem += toULL( memShot.at("Cached").at(1) );
+				freePMem  = toULL( memShot.at("MemFree") );
+				freePMem += toULL( memShot.at("Buffers") );
+				freePMem += toULL( memShot.at("Cached") );
 			}
 		}
 		catch (const std::out_of_range& oor)
