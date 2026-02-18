@@ -110,7 +110,8 @@ void FileSystem::createDirectory(
 	FileSystem::createDirectorySuccess = false;
 	lastDirectoryCreation = directory.string();
 
-	auto throwError = [] (
+	// lambda
+	auto throw_error = [] (
 		const std::string & error,
 		const char* what) -> void
 	{
@@ -127,11 +128,11 @@ void FileSystem::createDirectory(
 	}
 	catch (const fs::filesystem_error & e)
 	{
-		throwError("directory creation or set permissions failure", e.what());
+		throw_error("directory creation or set permissions failure", e.what());
 	}
 	catch (const std::exception & e)
 	{
-		throwError("directory creation or set permissions (allocation) failure", e.what());
+		throw_error("directory creation or set permissions (allocation) failure", e.what());
 	}
 }
 

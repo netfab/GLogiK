@@ -95,7 +95,8 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 	/* -- -- -- */
 	std::string usedPhysicalMemory("");
 
-	auto getPaddedPercentString = [] (unsigned int i) -> const std::string
+	// lambda
+	auto get_padded_percent_string = [] (unsigned int i) -> const std::string
 	{
 		std::ostringstream out("", std::ios_base::app);
 		out << std::setw(3) << std::to_string(i) << " %";
@@ -190,7 +191,7 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 		usedMem = 100 - usedMem;
 
 		this->drawProgressBarOnPBMFrame(usedMem, 24, 33);
-		usedPhysicalMemory = getPaddedPercentString(usedMem);
+		usedPhysicalMemory = get_padded_percent_string(usedMem);
 	}
 
 	/* -- -- -- */
@@ -210,13 +211,14 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 		cpuPercentTotal = std::nearbyint(cpuPercentTotal);
 
 		this->drawProgressBarOnPBMFrame(cpuPercentTotal, 24, 15);
-		usedCPUActiveTotal = getPaddedPercentString(cpuPercentTotal);
+		usedCPUActiveTotal = get_padded_percent_string(cpuPercentTotal);
 
 		_snapshot1 = s2;
 	}
 
 	/* -- -- -- */
-	auto getPaddedRateString = [] (const std::string & netRate, std::size_t & lastSize)
+	// lambda
+	auto get_padded_rate_string = [] (const std::string & netRate, std::size_t & lastSize)
 		-> const std::string
 	{
 		std::string paddedNetRateString(netRate);
@@ -257,11 +259,11 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 		}
 
 		const std::string rateString(n.getRateString(_currentRate));
-		paddedRateString = getPaddedRateString(rateString, _lastRateStringSize);
+		paddedRateString = get_padded_rate_string(rateString, _lastRateStringSize);
 	}
 	catch (const GLogiKExcept & e)
 	{
-		paddedRateString = getPaddedRateString(paddedRateString, _lastRateStringSize);
+		paddedRateString = get_padded_rate_string(paddedRateString, _lastRateStringSize);
 		GKLog2(error, "network calculations error : ", e.what());
 	}
 

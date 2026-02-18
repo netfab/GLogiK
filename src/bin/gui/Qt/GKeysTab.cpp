@@ -222,7 +222,7 @@ void GKeysTab::updateAndRedrawTab(
 	this->setApplyButtonStatus(false);
 
 	/* exceptions can be thrown from QPushButton::clicked events
-	 * see newMButton() lambda in ::redrawTab()
+	 * see new_M_button() lambda in ::redrawTab()
 	 */
 	try
 	{
@@ -548,7 +548,8 @@ void GKeysTab::switchGKeyEventType(
 
 	try
 	{
-		auto getDataEventType = [] (const QVariant & itemData) -> const GKeyEventType
+		// lambda
+		auto get_data_event_type = [] (const QVariant & itemData) -> const GKeyEventType
 		{
 			bool ok = false;
 			const uint value = itemData.toUInt(&ok);
@@ -570,7 +571,8 @@ void GKeysTab::switchGKeyEventType(
 		const GKeysEvent & event = bank.at(GKeyID);
 		const QVariant data = _GKeyEventTypeComboBox->itemData(index).value<QVariant>();
 
-		auto getApplyButtonStatus = [&] () -> const bool
+		// lambda
+		auto get_apply_button_status = [&] () -> const bool
 		{
 			bool ret = false;
 
@@ -587,9 +589,9 @@ void GKeysTab::switchGKeyEventType(
 		};
 
 		/* prepare internal variables for potential click on ApplyButton */
-		this->setGKeyEventParams(event.getCommand(), getDataEventType(data), GKeyID);
+		this->setGKeyEventParams(event.getCommand(), get_data_event_type(data), GKeyID);
 
-		this->setApplyButtonStatus( getApplyButtonStatus() );
+		this->setApplyButtonStatus( get_apply_button_status() );
 
 		/* -- -- -- */
 
@@ -625,7 +627,8 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 
 	/* -- -- -- */
 
-	auto nextLayoutName = [&layoutNum] () -> const QString
+	// lambda
+	auto next_layout_name = [&layoutNum] () -> const QString
 	{
 		QString layoutName("hBox ");
 		layoutName += std::to_string(layoutNum).c_str();
@@ -633,7 +636,8 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 		return layoutName;
 	};
 
-	auto newMButton = [this, &device] (
+	// lambda
+	auto new_M_button = [this, &device] (
 			const MKeysID & bankID,
 			const QString & keyName) -> QPushButton*
 	{
@@ -657,7 +661,8 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 		return button;
 	};
 
-	auto newGButton = [this, &device, &colorName] (mBank_type::const_iterator & it) -> QPushButton*
+	// lambda
+	auto new_G_button = [this, &device, &colorName] (mBank_type::const_iterator & it) -> QPushButton*
 	{
 		const GKeysID GKeyID = it->first;
 		const GKeyEventType eventType = (it->second).getEventType();
@@ -671,12 +676,13 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 		return button;
 	};
 
-	auto newBanksLayout = [&nextLayoutName, &newMButton] (
+	// lambda
+	auto new_banks_layout = [&next_layout_name, &new_M_button] (
 		const std::vector<MKeysID> & banks ) -> QHBoxLayout*
 	{
 		QHBoxLayout* hBox = new QHBoxLayout();
 
-		hBox->setObjectName( nextLayoutName() );
+		hBox->setObjectName( next_layout_name() );
 		GKLog2(trace, "allocated QHBoxLayout ", hBox->objectName().toStdString())
 
 		try
@@ -687,32 +693,33 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 					continue; // skip virtual M0 key
 
 				auto n = bankNames.at(id);
-				hBox->addWidget( newMButton( id, n ) );
+				hBox->addWidget( new_M_button( id, n ) );
 				GKLog2(trace, "allocated M-key bank button: ", n)
 			}
 		}
 		catch (const std::out_of_range& oor)
 		{
-			throw GLogiKExcept("newBanksLayout: id not found");
+			throw GLogiKExcept("new_banks_layout: id not found");
 		}
 
 		return hBox;
 	};
 
-	auto newGKeysLayout = [&nextLayoutName, &newGButton] (
+	// lambda
+	auto new_GKeys_layout = [&next_layout_name, &new_G_button] (
 		mBank_type::const_iterator & it1,
 		mBank_type::const_iterator & it2,
 		mBank_type::const_iterator & it3) -> QHBoxLayout*
 	{
 		QHBoxLayout* hBox = new QHBoxLayout();
 
-		hBox->setObjectName( nextLayoutName() );
+		hBox->setObjectName( next_layout_name() );
 
 		GKLog2(trace, "allocated QHBoxLayout ", hBox->objectName().toStdString())
 
-		hBox->addWidget( newGButton(it1) );
-		hBox->addWidget( newGButton(it2) );
-		hBox->addWidget( newGButton(it3) );
+		hBox->addWidget( new_G_button(it1) );
+		hBox->addWidget( new_G_button(it2) );
+		hBox->addWidget( new_G_button(it3) );
 
 		return hBox;
 	};
@@ -782,7 +789,7 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 					ids.push_back(bankID);
 				}
 
-				_pKeysBoxLayout->addLayout( newBanksLayout(ids) );
+				_pKeysBoxLayout->addLayout( new_banks_layout(ids) );
 			}
 
 			_pKeysBoxLayout->addSpacing(10);
@@ -804,7 +811,7 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 					throw GLogiKExcept("wrong third G-Key");
 
 				_pKeysBoxLayout->addLayout(
-					newGKeysLayout(it1, it2, it3)
+					new_GKeys_layout(it1, it2, it3)
 				);
 
 				if((++c % 2) == 0)

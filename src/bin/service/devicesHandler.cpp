@@ -239,7 +239,8 @@ void DevicesHandler::saveDeviceConfigurationFile(
 
 	GKLog2(trace, devID, " saving device configuration file")
 
-	auto logError = [&devID] (const std::string & msg, const std::string & what) -> void
+	// lambda
+	auto log_error = [&devID] (const std::string & msg, const std::string & what) -> void
 	{
 		LOG(error)	<< devID
 					<< " saving device configuration file failed : "
@@ -272,18 +273,18 @@ void DevicesHandler::saveDeviceConfigurationFile(
 		}
 		catch (const fs::filesystem_error & e)
 		{
-			logError("set permissions failure", e.what());
+			log_error("set permissions failure", e.what());
 		}
 		catch (const std::exception & e)
 		{
-			logError("set permissions (allocation) failure", e.what());
+			log_error("set permissions (allocation) failure", e.what());
 		}
 
 		this->sendDeviceConfigurationSavedSignal(devID);
 	}
 	catch ( const GLogiKExcept & e )
 	{
-		logError("catched exception", e.what());
+		log_error("catched exception", e.what());
 	}
 }
 

@@ -138,6 +138,7 @@ void GKDBusEvents::clearDBusEvents(void) noexcept
 {
 	GK_LOG_FUNC
 
+	// lambda
 	auto clear_events_container = [] (DBusEventsContainer & DBusEvents) -> void
 	{
 		for(const auto & [bus, opMap] : DBusEvents) // objectPath map
@@ -260,6 +261,7 @@ void GKDBusEvents::removeEvent(
 {
 	GK_LOG_FUNC
 
+	// lambda
 	auto get_index = [this, &eventBus, &eventObjectPath, &eventInterface, &eventName] ()
 		-> const std::size_t
 	{
@@ -448,6 +450,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 	xml << "		\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n";
 	xml << "<node name=\"" << askedObjectPath << "\">\n";
 
+	// lambda
 	auto xml_stream = [&xml] (void) -> const std::string
 	{
 		xml << "</node>\n";
@@ -476,6 +479,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 
 		bool interfaceOpened = false;
 
+		// lambda
 		auto build_xml_string = [&] (DBusEventsContainer & DBusEvents, const bool wantSignals)
 			-> void
 		{

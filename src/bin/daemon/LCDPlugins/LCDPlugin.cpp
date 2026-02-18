@@ -303,14 +303,16 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 	{
 		PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
 
-		auto drawHorizontalLine = [&frame] (const uint16_t index) -> void
+		// lambda
+		auto draw_horizontal_line = [&frame] (const uint16_t index) -> void
 		{
 			frame[index+12] |= 0b11111100;
 			for(uint16_t i = 0; i < 12; ++i)
 				frame[index+i] = 0b11111111;
 		};
 
-		auto drawProgressBarLine = [&frame, &percent]
+		// lambda
+		auto draw_progress_bar_line = [&frame, &percent]
 			(const uint16_t index, const uint16_t line) -> void
 		{
 			const unsigned char B10 = 0b10101010;
@@ -326,7 +328,8 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 			const unsigned char & Byte2 = (line % 2 == 1) ? B01 : B10;
 			const unsigned char & cByte = (leftShift % 2 == 1) ? Byte2 : Byte1;
 
-			auto getShiftedByte = [&leftShift]
+			// lambda
+			auto get_shifted_byte = [&leftShift]
 				(const unsigned char & b) -> unsigned char
 			{
 				return static_cast<unsigned char>( b << leftShift );
@@ -346,16 +349,16 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 			for(uint16_t i = 0; i < 12; ++i)
 			{
 				if((i == 0) and (percent < 8))
-					frame[index+i] = getShiftedByte(cByte);
+					frame[index+i] = get_shifted_byte(cByte);
 				else if(i < percentByte)
 					frame[index+i] = (i < 8) ? Byte1 : B11;
 				else if(i == percentByte)
-					frame[index+i] = (i < 8) ? getShiftedByte(cByte) : getShiftedByte(B11);
+					frame[index+i] = (i < 8) ? get_shifted_byte(cByte) : get_shifted_byte(B11);
 				else
 					frame[index+i] = 0;
 			}
 
-			frame[index+12] = (percentByte == 12) ? getShiftedByte(B11) : 0;
+			frame[index+12] = (percentByte == 12) ? get_shifted_byte(B11) : 0;
 
 			frame[index]    |= 0b10000000;	/* left border */
 			frame[index+12] |= 0b00000100;	/* right border */
@@ -376,10 +379,10 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 		 *	| * *
 		 *	------------- one horizontal line
 		 */
-		drawHorizontalLine(index);
+		draw_horizontal_line(index);
 		for(uint16_t i = 1; i < (PROGRESS_BAR_HEIGHT-1); ++i)
-			drawProgressBarLine(index + (DEFAULT_PBM_WIDTH_IN_BYTES * i), i);
-		drawHorizontalLine(index + (DEFAULT_PBM_WIDTH_IN_BYTES * (PROGRESS_BAR_HEIGHT-1)));
+			draw_progress_bar_line(index + (DEFAULT_PBM_WIDTH_IN_BYTES * i), i);
+		draw_horizontal_line(index + (DEFAULT_PBM_WIDTH_IN_BYTES * (PROGRESS_BAR_HEIGHT-1)));
 	}
 	catch (const std::out_of_range& oor)
 	{

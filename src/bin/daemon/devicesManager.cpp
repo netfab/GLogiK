@@ -648,13 +648,14 @@ void DevicesManager::searchSupportedDevices(
 			//udevDeviceProperties(dev, devss);
 #endif
 
-			auto getPropertyValue = [&dev] (const char * const key) -> const std::string
+			// lambda
+			auto get_property_value = [&dev] (const char * const key) -> const std::string
 			{
 				return toString( udev_device_get_property_value(dev, key) );
 			};
 
-			const std::string vendorID( getPropertyValue("ID_VENDOR_ID") );
-			const std::string productID( getPropertyValue("ID_MODEL_ID") );
+			const std::string vendorID( get_property_value("ID_VENDOR_ID") );
+			const std::string productID( get_property_value("ID_MODEL_ID") );
 			if( vendorID.empty() or productID.empty() )
 			{
 				udev_device_unref(dev);
@@ -680,17 +681,17 @@ void DevicesManager::searchSupportedDevices(
 							udevDeviceProperties(dev, devss);
 #endif
 
-							//const std::string vendor( getPropertyValue("ID_VENDOR") );
-							//const std::string model( getPropertyValue("ID_MODEL") );
-							const std::string serial( getPropertyValue("ID_SERIAL") );
-							const std::string usec( getPropertyValue("USEC_INITIALIZED") );
+							//const std::string vendor( get_property_value("ID_VENDOR") );
+							//const std::string model( get_property_value("ID_MODEL") );
+							const std::string serial( get_property_value("ID_SERIAL") );
+							const std::string usec( get_property_value("USEC_INITIALIZED") );
 
 							uint8_t bus, num = 0;
 
 							try
 							{
-								bus = std::stoi( getPropertyValue("BUSNUM") );
-								num = std::stoi( getPropertyValue("DEVNUM") );
+								bus = std::stoi( get_property_value("BUSNUM") );
+								num = std::stoi( get_property_value("DEVNUM") );
 							}
 							catch (const std::invalid_argument& ia)
 							{
@@ -705,7 +706,7 @@ void DevicesManager::searchSupportedDevices(
 
 							const std::string devID( USBDeviceID::getDeviceID(bus, num) );
 
-							const std::string devpath( getPropertyValue("DEVPATH") );
+							const std::string devpath( get_property_value("DEVPATH") );
 							if( devpath.empty() )
 							{
 								GKLog(trace, "filtering empty devpath event")

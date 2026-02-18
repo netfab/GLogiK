@@ -167,6 +167,7 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 	/* was MR key enabled ? */
 	const bool MR_ON = mask & toEnumType(Leds::GK_LED_MR);
 
+	// lambda
 	auto update_MxKey_mask = [&] (const Leds keyledmask, const MKeysID sMKey) -> void
 	{
 		/* was this Mx key already enabled */

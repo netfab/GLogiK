@@ -431,6 +431,7 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 
 		try
 		{
+			// lambda
 			auto get_random_clientID = [] () -> const std::string
 			{
 				RandomGenerator rand;

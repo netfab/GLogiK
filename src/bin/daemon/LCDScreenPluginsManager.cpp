@@ -362,6 +362,7 @@ void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(const PixelsData & PBMDat
 	unsigned int rowOffset = 0;
 	unsigned int PBMByte = 0;
 
+	// lambda
 	auto get_PBMByte = [&rowOffset, &PBMByte]
 		(const unsigned short i) -> const unsigned short
 	{

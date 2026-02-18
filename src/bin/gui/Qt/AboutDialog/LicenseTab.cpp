@@ -65,6 +65,7 @@ void LicenseTab::buildTab(void)
 
 		if(licenseFile.open(QIODevice::ReadOnly | QIODevice::Text))
 		{
+			// lambda
 			auto get_hash = [] (QFile & file, QCryptographicHash::Algorithm algo)
 				-> const std::string
 			{

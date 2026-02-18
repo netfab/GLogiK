@@ -227,6 +227,7 @@ void GKeysEventManager::spawnProcess(const std::string & command)
 	std::vector<std::string> args;
 	std::string exe;
 
+	// lambda
 	auto parse_command_line = [&command, &args] (void) -> void
 	{
 		GKLog2(trace, "user command: ", command)

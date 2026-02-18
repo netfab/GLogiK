@@ -267,7 +267,8 @@ void GLogiKDaemon::createPIDFile(void)
 
 	const fs::path PIDFile(_pidFileName);
 
-	auto throwError = [&PIDFile] (
+	// lambda
+	auto throw_error = [&PIDFile] (
 		const std::string & error,
 		const char* what = nullptr) -> void
 	{
@@ -285,15 +286,15 @@ void GLogiKDaemon::createPIDFile(void)
 	}
 	catch (const GLogiKExcept & e)
 	{
-		throwError(e.what());
+		throw_error(e.what());
 	}
 	catch (const fs::filesystem_error & e)
 	{
-		throwError("boost::filesystem error", e.what());
+		throw_error("boost::filesystem error", e.what());
 	}
 	catch (const std::exception & e)
 	{
-		throwError("boost::filesystem (allocation) error", e.what());
+		throw_error("boost::filesystem (allocation) error", e.what());
 	}
 
 	// if path not found reset errno
@@ -311,15 +312,15 @@ void GLogiKDaemon::createPIDFile(void)
 	}
 	catch (const std::ofstream::failure & e)
 	{
-		throwError("open failure", e.what());
+		throw_error("open failure", e.what());
 	}
 	catch (const fs::filesystem_error & e)
 	{
-		throwError("set permissions failure", e.what());
+		throw_error("set permissions failure", e.what());
 	}
 	catch (const std::exception & e)
 	{
-		throwError("set permissions (allocation) failure", e.what());
+		throw_error("set permissions (allocation) failure", e.what());
 	}
 
 	_PIDFileCreated = true;
@@ -379,7 +380,8 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[])
 
 void GLogiKDaemon::dropPrivileges(void)
 {
-	auto throwError = [] (const std::string & error) -> void
+	// lambda
+	auto throw_error = [] (const std::string & error) -> void
 	{
 		if(errno != 0)
 		{
@@ -394,16 +396,16 @@ void GLogiKDaemon::dropPrivileges(void)
 	errno = 0;
 	struct passwd * pw = getpwnam(GLOGIKD_USER);
 	if(pw == nullptr)
-		throwError("can't get password structure for GLOGIKD_USER");
+		throw_error("can't get password structure for GLOGIKD_USER");
 
 	errno = 0;
 	struct group * gr = getgrnam(GLOGIKD_GROUP);
 	if(gr == nullptr)
-		throwError("can't get group structure for GLOGIKD_GROUP");
+		throw_error("can't get group structure for GLOGIKD_GROUP");
 
 	errno = 0;
 	if(initgroups(GLOGIKD_USER, gr->gr_gid) < 0)
-		throwError("failed to initialize group access list");
+		throw_error("failed to initialize group access list");
 
 	errno = 0;
 	int ret = -1;
@@ -420,7 +422,7 @@ void GLogiKDaemon::dropPrivileges(void)
 #endif
 
 	if( ret < 0 )
-		throwError("failed to change group ID");
+		throw_error("failed to change group ID");
 
 	errno = 0;
 	ret = -1;
@@ -437,7 +439,7 @@ void GLogiKDaemon::dropPrivileges(void)
 #endif
 
 	if( ret < 0 )
-		throwError("failed to change user ID");
+		throw_error("failed to change user ID");
 }
 
 } // namespace GLogiK

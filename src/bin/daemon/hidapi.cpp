@@ -66,6 +66,7 @@ void hidapi::openUSBDevice(USBDevice & device)
 {
 	GK_LOG_FUNC
 
+	// lambda
 	auto make_hidapi_path = [&device] () -> const std::string {
 		std::ostringstream os;
 

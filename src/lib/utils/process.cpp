@@ -216,7 +216,8 @@ const pid_t process::newPID(void)
 		GKLog(trace, "detaching process")
 	}
 #endif
-	auto clearSignalMask = [] () -> void
+	// lambda
+	auto clear_signal_mask = [] () -> void
 	{
 		sigset_t new_set;
 		if(sigemptyset(&new_set) == -1)
@@ -234,7 +235,7 @@ const pid_t process::newPID(void)
 		}
 	};
 
-	clearSignalMask();
+	clear_signal_mask();
 
 	/* ignore signals */
 	process::setSignalHandler(SIGCHLD, SIG_IGN);

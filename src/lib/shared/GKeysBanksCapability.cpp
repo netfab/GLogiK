@@ -80,7 +80,8 @@ void GKeysBanksCapability::initBanks(
 				/* XXX - c++17 structured bindings */
 				typedef std::pair<mBank_type::iterator, bool> keyInsRet;
 
-				auto insertStatus = [&insertedKeys] (const keyInsRet & r) -> void
+				// lambda
+				auto insert_status = [&insertedKeys] (const keyInsRet & r) -> void
 				{
 					if(r.second)
 					{
@@ -97,7 +98,7 @@ void GKeysBanksCapability::initBanks(
 					std::pair<GKeysID, GKeysEvent>( keyID, GKeysMacro::emptyMacro )
 				);
 
-				insertStatus(insKey);
+				insert_status(insKey);
 			}
 
 			GKLog4(trace, "bank id: ", id, "number of initialized G-Keys: ", insertedKeys)
