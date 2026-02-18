@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <string>
+#include <string_view>
 #include <fstream>
 #include <stdexcept>
 #include <chrono>
@@ -118,10 +119,11 @@ const std::string NetSnapshots::getRateString(
 	}
 
 	const std::string rate(buffer.str());
-	const std::size_t pos = rate.find_first_of('.');
+	const std::string_view rate_view(rate);
+	const std::size_t pos = rate_view.find_first_of('.');
 
 	std::string out;
-	out += (pos == std::string::npos) ? rate : rate.substr(0, pos+3);
+	out += (pos == std::string::npos) ? rate : rate_view.substr(0, pos+3);
 
 	out += unit;
 	out += direction;
