@@ -22,6 +22,7 @@
 #include <cstdint>
 
 #include <string>
+#include <string_view>
 
 #include <boost/filesystem.hpp>
 
@@ -198,8 +199,10 @@ const PixelsData & Coretemp::getNextPBMFrame(
 			std::getline(infile, device.label);
 			infile.close();
 
-			device.isPkg = (device.label.substr(0, 11) == "Package id ") ? true : false;
-			device.id = (device.isPkg) ? device.label.substr(11) : device.label.substr(5);
+			const std::string_view label_view(device.label);
+
+			device.isPkg = (label_view.substr(0, 11) == "Package id ") ? true : false;
+			device.id = (device.isPkg) ? label_view.substr(11) : label_view.substr(5);
 
 			auto & s = device.fullstr;
 			s  = device.label; s += " ";
@@ -255,8 +258,11 @@ const PixelsData & Coretemp::getNextPBMFrame(
 
 		std::string temp(device.id);
 		temp += ":";
+
+		const std::string_view input_view(device.input);
+
 		/* Temperature is measured in degrees Celsius and measurement resolution is 1 degree C. */
-		temp += device.input.substr(0, (device.input.size() - 3));
+		temp += input_view.substr(0, (input_view.size() - 3));
 		temp += PBMFont::deg;
 
 		if(device.isPkg)
