@@ -22,6 +22,7 @@
 #include <set>
 #include <stdexcept>
 #include <sstream>
+#include <string_view>
 #include <functional>
 
 #include "lib/utils/utils.hpp"
@@ -536,10 +537,11 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 							if( ! skip_op )
 							{ // <<< adding object path node
 								{
-									std::string::size_type n;
-									n = op.find('/'); // trying to find next '/'
+									const std::string_view op_view(op);
+									// trying to find next '/'
+									const std::string::size_type n = op_view.find('/');
 									if(n != std::string::npos)
-										op = op.substr(0, n);
+										op = op_view.substr(0, n);
 								}
 
 								if(xmlNodes.find(op) == xmlNodes.end())
