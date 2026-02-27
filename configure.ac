@@ -247,7 +247,6 @@ AS_IF([test "x$enable_notifications" = "xyes"], [
 		AC_DEFINE([HAVE_LIBNOTIFY], [1], [libnotify enabled])
 	], [
 		AC_MSG_RESULT([no])
-		AC_DEFINE([HAVE_LIBNOTIFY], [0], [libnotify disabled])
 		AC_MSG_ERROR([notifications via D-Bus only are currently not implemented])
 	])
 ], [
