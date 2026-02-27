@@ -35,6 +35,7 @@
 #include "include/base.hpp"
 #include "include/LCDPP.hpp"
 #include "include/DepsMap.hpp"
+#include "include/DeviceID.hpp"
 
 #include "devicesHandler.hpp"
 #include "GKeysEventManager.hpp"
@@ -57,8 +58,27 @@ class DBusHandler
 		static bool WantToRestart;	/* true if we want to restart */
 		static void handleSignal(int signum);
 
-		const bool wantToStop(void) const;
 		void checkNotifyEvents(NSGKUtils::FileSystem* pGKfs);
+
+		const DevicesMap_type getDevicesMap(void);
+
+		/* return true when at least one device was updated (started/stopped/unplugged) */
+		const bool isAnyDeviceUpdated(void) const
+		{
+			return _devicesUpdatedEvent;
+		}
+
+		void resetDevicesUpdatedEvent(void);
+
+		/* exit and restart the service on next main loop iteration */
+		void restartService(void);
+
+		void startDevice(const std::string & devID);
+		void stopDevice(const std::string & devID);
+		void restartDevice(const std::string & devID);
+
+		/* return true if we want to exit on next main loop iteration */
+		const bool wantToStop(void) const;
 
 	protected:
 
@@ -79,7 +99,9 @@ class DBusHandler
 
 		SessionFramework _sessionFramework;
 
-		bool _registerStatus;		/* true == registered with daemon */
+		bool _devicesUpdatedEvent;	/* true when at least one device
+									   was updated (started/stopped/unplugged) */
+		bool _registerStatus;	/* true == registered with daemon */
 
 		/* -- -- -- */
 
@@ -136,7 +158,6 @@ class DBusHandler
 		);
 
 		/* -- */
-
 		/* signal and request from GUI  */
 		void deviceStatusChangeRequest(
 			const std::string & devID,

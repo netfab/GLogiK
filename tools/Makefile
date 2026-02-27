@@ -12,11 +12,11 @@ WANTED_QT ?= QT6
 
 ifeq ($(WANTED_QT),QT5)
 QT_BIN_DIR=/usr/lib64/qt5/bin
-QT_OPTS=--enable-qt5 --disable-qt6
+QT_OPTS=--enable-qt5 --enable-systray --disable-qt6
 else
 ifeq ($(WANTED_QT),QT6)
 QT_BIN_DIR=/usr/lib64/qt6/bin
-QT_OPTS=--disable-qt5 --enable-qt6
+QT_OPTS=--disable-qt5 --enable-systray --enable-qt6
 else
 $(error wrong Qt version)
 endif

@@ -129,6 +129,11 @@ AC_ARG_ENABLE( [hidapi],
                AS_HELP_STRING( [--enable-hidapi], [Enable hidapi API support]),
                [enable_hidapi=$enableval], [enable_hidapi=yes])
 
+dnl check for systray support
+AC_ARG_ENABLE( [systray],
+               AS_HELP_STRING( [--enable-systray], [Enable systray support]),
+               [enable_systray=$enableval], [enable_systray=yes])
+
 AC_ARG_VAR(DATA_DIR, [Directory where data files will be installed])
 AC_ARG_VAR(PBM_DATA_DIR, [Directory where pbm data files will be installed])
 
@@ -279,6 +284,19 @@ dnl Qt support requires DBus support
 GDT_OPTDEP_CHECK([Qt5 client GUI], [$enable_qt5], [D-Bus], [$enable_dbus])
 GDT_OPTDEP_CHECK([Qt6 client GUI], [$enable_qt6], [D-Bus], [$enable_dbus])
 
+dnl systray requires Qt support
+AC_MSG_CHECKING([whether we want system tray support])
+AS_IF([test "x$enable_systray" = "xyes"],
+	[
+		AC_MSG_RESULT([yes])
+		AC_DEFINE([HAVE_SYSTRAY], [1], [System tray enabled])
+		AS_IF([test "x$enable_qt5" = "xno" -a "x$enable_qt6" = "xno"],
+		AC_MSG_ERROR([Qt support is required by system tray]), [])
+	], [
+		AC_MSG_RESULT([no])
+	])
+AM_CONDITIONAL([WITH_SYSTRAY], [test "x$enable_systray" = "xyes"])
+
 dnl different Qt versions are mutually exclusive
 GDT_OPTEXCL_CHECK([Qt5 support], [$enable_qt5], [Qt6 support], [$enable_qt6])
 
@@ -346,6 +364,9 @@ AS_IF([test "x$enable_dbus" = "xyes"],
 
 		AS_IF([test "x$enable_qt6" = "xyes"],
 			[ GDT_QT_CHECK([QT], [6], [Qt6Core Qt6Gui Qt6Widgets]) ], [])
+
+		AS_IF([test "x$enable_qt5" = "xyes" -o "x$enable_qt6" = "xyes"],
+			[ AC_DEFINE([HAVE_QT], [1], [Qt enabled]) ], [])
 	], [])
 
 AX_BOOST_BASE([1.90.0], [], GDT_PKG_NOT_FOUND([boost libraries]))
@@ -442,6 +463,7 @@ AC_MSG_NOTICE([
 --------------------------------------------------------------
         with Qt5 client GUI : ${enable_qt5}
         with Qt6 client GUI : ${enable_qt6}
+               with systray : ${enable_systray}
            found Qt version : ${qmake_test_ver}
 --------------------------------------------------------------
 ---  DEBUGGING --- DEBUGGING ---- DEBUGGING --- DEBUGGING  ---

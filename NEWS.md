@@ -1,6 +1,7 @@
 
 0.8.24 (202x-xx-xx)
 ===================
+- Implemented optional Qt system tray icon into desktop service
 - Raised boost libraries minimal version to 1.90.0
      (boost::system removed)
 - Improved GKDBus introspection

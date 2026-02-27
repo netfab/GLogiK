@@ -27,20 +27,6 @@ GKcQt_sources = [
   'main.cpp',
 ]
 
-qt_dep = null_dep
-
-if enable_qt5
-  qt_dep = dependency('qt5', modules: ['Core', 'Gui', 'Widgets'])
-endif
-
-if enable_qt6
-  qt_dep = dependency('qt6', modules: ['Core', 'Gui', 'Widgets'])
-endif
-
-deps_versions_array += [
-  ['QT', qt_dep],
-]
-
 executable(
   'GKcQt',
   GKcQt_sources,

@@ -33,6 +33,16 @@
 
 #include <config.h>
 
+#if HAVE_SYSTRAY && HAVE_QT
+/* must be included before sessionManager.hpp
+ * because of conflict with X11/SM/SMlib.h
+ * #error qdatastream.h must be included before
+ * any header file that defines Status */
+#include "systray.hpp"
+#include <QApplication>
+#include <QtGlobal>
+#endif
+
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/utils/utils.hpp"
 #include "lib/shared/sessionManager.hpp"
@@ -86,6 +96,9 @@ int DesktopService::run(void)
 #else
 				{"libnotify", "-"},
 #endif
+#if HAVE_SYSTRAY && HAVE_QT
+				{"Qt", GK_DEP_QT_VERSION_STRING, qVersion()}, /* qVersion() from <QtGlobal> */
+#endif
 			};
 
 	/* -- -- -- */
@@ -107,7 +120,16 @@ int DesktopService::run(void)
 	}
 
 	{
+
+#if HAVE_SYSTRAY && HAVE_QT
+		int argc = 1;
+		char * argv[] = {(char*)GLOGIK_DESKTOP_SERVICE_NAME};
+		QApplication app(argc, argv);
+#endif
+
 		FileSystem GKfs;
+		/* SessionManager must be instantiated *after* QApplication
+		 * to take precedence over SIGINT/SIGTERM signals. */
 		SessionManager session;
 
 		NSGKDBus::GKDBus DBus;
@@ -132,13 +154,21 @@ int DesktopService::run(void)
 		fds[1].events = POLLIN;
 
 		try
-		{
+		{ // <<<
 			{
 				/* DBusHandler constructor can potentially throw GLogiKExcept */
 				DBusHandler dbusHandler(_pid, &GKfs, &DBus, &dependencies);
 
-				while( session.isAlive() and (! dbusHandler.wantToStop()) )
+#if HAVE_SYSTRAY && HAVE_QT
+				DesktopServiceSystray systray;
+				systray.hide(); // QMainWindow
+#endif
+
+				while( true )
 				{
+					if( (! session.isAlive()) or dbusHandler.wantToStop() )
+						break;
+
 					int num = poll(fds, nfds, 150);
 
 					// data to read ?
@@ -160,16 +190,69 @@ int DesktopService::run(void)
 					}
 
 					DBus.checkForMessages();
-				}
+
+#if HAVE_SYSTRAY && HAVE_QT
+					app.processEvents();
+
+					if( systray.wantToStop() )
+					{
+						LOG(info) << "process systray stop action --> bye bye";
+						break;
+					}
+					else if( systray.wantToRestart() )
+					{
+						/* on next loop iteration, send a restart request on DBus
+						 * and break the loop with dbusHandler.wantToStop() */
+						dbusHandler.restartService();
+						continue;
+					}
+
+					if( dbusHandler.isAnyDeviceUpdated() )
+					{
+						GKLog(trace, "updating systray context menu")
+						const DevicesMap_type devices = dbusHandler.getDevicesMap();
+						systray.updateContextMenu(devices); // may throw
+						dbusHandler.resetDevicesUpdatedEvent();
+					}
+
+					if( systray.deviceEventTriggered() )
+					{
+						GKLog(trace, "process systray device event")
+						const std::string & devID = systray.getDeviceID();
+						switch( systray.getDeviceEvent() )
+						{
+							case SystrayDeviceEvent::DEVICE_START:
+								dbusHandler.startDevice(devID);
+								break;
+							case SystrayDeviceEvent::DEVICE_STOP:
+								dbusHandler.stopDevice(devID);
+								break;
+							case SystrayDeviceEvent::DEVICE_RESTART:
+								dbusHandler.restartDevice(devID);
+								break;
+							default:
+								LOG(warning) << "wrong systray device event";
+								break;
+						}
+
+						systray.resetDeviceEvent();
+					}
+#endif
+				} // while(true) main loop
 			} // make sure DBusHandler object is destroyed to clean GKDBus events before exit
 
 			DBus.exit();
-		}
+		} // >>>
 		catch (const GLogiKExcept & e)
 		{
 			DBus.exit();
 			throw;
 		}
+
+#if HAVE_SYSTRAY && HAVE_QT
+		app.exit();
+#endif
+
 	}
 
 	GKLog(trace, "exiting with success")

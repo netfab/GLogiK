@@ -53,3 +53,13 @@ GLogiKs_SOURCES += \
 		%D%/desktopNotification.hpp
 endif
 
+if WITH_SYSTRAY
+if WITH_QT
+GLogiKs_CXXFLAGS += @QT_CFLAGS@
+GLogiKs_LDADD += @QT_LIBS@
+GLogiKs_SOURCES += \
+		%D%/systray.cpp \
+		%D%/systray.hpp
+endif
+endif
+

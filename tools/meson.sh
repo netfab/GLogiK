@@ -72,6 +72,7 @@ add_meson_option 'notifications' 'true'
 add_meson_option 'libnotify' 'true'
 #add_meson_option 'qt5' 'true'
 add_meson_option 'qt6' 'true'
+add_meson_option 'systray' 'true'
 
 # parsing command line parameters
 while [[ "${#}" -gt 0 ]]; do

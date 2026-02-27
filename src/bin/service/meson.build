@@ -22,6 +22,13 @@ if enable_notifications
   ]
 endif
 
+if enable_systray
+  GLogiKs_sources += [
+	'systray.cpp',
+	'systray.hpp',
+  ]
+endif
+
 libevdev_dep = dependency('libevdev')
 x11_dep = dependency('x11')
 xtst_dep = dependency('xtst')
@@ -37,6 +44,7 @@ executable(
   GLogiKs_sources,
   include_directories : inc,
   dependencies : [
+	qt_dep,
 	thread_dep,
 	boost_dep,
 	boost_filesystem_dep,

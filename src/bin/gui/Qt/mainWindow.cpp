@@ -480,10 +480,12 @@ void MainWindow::getExecutablesDependenciesMap(void)
 			_pDBus->waitForRemoteMethodCallReply();
 			_DepsMap = _pDBus->getNextGKDepsMapArgument();
 
+#if !defined(HAVE_SYSTRAY)
 			_DepsMap[GKBinary::GK_GUI_QT] =
 				{ /* qVersion() from <QtGlobal> */
 					{"Qt", GK_DEP_QT_VERSION_STRING, qVersion()},
 				};
+#endif
 		}
 		catch (const GLogiKExcept & e)
 		{

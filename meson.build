@@ -173,6 +173,7 @@ enable_notifications = get_option('notifications')
 enable_libnotify = get_option('libnotify')
 enable_qt5 = get_option('qt5')
 enable_qt6 = get_option('qt6')
+enable_systray = get_option('systray')
 
 #! ----------
 null_dep = dependency('', required: false)
@@ -245,10 +246,6 @@ else
 endif
 
 if enable_dbus
-  subdir('src/bin/service')
-  subdir('src/bin/launcher')
-  subdir('data/autostart')
-
   if enable_notifications
     subdir('data/icons')
   endif
@@ -259,7 +256,34 @@ if enable_dbus
     error('different Qt versions are mutually exclusive')
   endif
 
+  if enable_systray
+    if not enable_qt5 and not enable_qt6
+      warning('Qt support is disabled => systray is disabled')
+      enable_systray = false
+    endif
+  endif
+
+  if enable_systray
+    config_h.set('HAVE_SYSTRAY', 1)
+  endif
+
+  qt_dep = null_dep
+
   if enable_qt5 or enable_qt6
+    if enable_qt5
+      qt_dep = dependency('qt5', modules: ['Core', 'Gui', 'Widgets'])
+    endif
+
+    if enable_qt6
+      qt_dep = dependency('qt6', modules: ['Core', 'Gui', 'Widgets'])
+    endif
+
+    deps_versions_array += [
+      ['QT', qt_dep],
+    ]
+
+    config_h.set('HAVE_QT', 1)
+
 	subdir('src/bin/gui/Qt')
 	subdir('data/applications')
     subdir('data/gui')
@@ -267,6 +291,11 @@ if enable_dbus
       subdir('data/icons')
     endif
   endif
+
+  subdir('src/bin/service')
+  subdir('src/bin/launcher')
+  subdir('data/autostart')
+
 endif
 
 #! ----------
@@ -327,6 +356,7 @@ report += '     libnotify: ' + enable_libnotify.to_string() + '\n'
 report += '        hidapi: ' + enable_hidapi.to_string() + '\n'
 report += '           qt5: ' + enable_qt5.to_string() + '\n'
 report += '           qt6: ' + enable_qt6.to_string() + '\n'
+report += '       systray: ' + enable_systray.to_string() + '\n'
 report += '\nDebug options:\n'
 report += '==============\n'
 report += '             debug: ' + enable_debug.to_string() + '\n'

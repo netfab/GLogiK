@@ -29,6 +29,8 @@
 
 #include "DBusHandler.hpp"
 
+#include "lib/dbus/ArgTypes/DevicesMap.hpp"
+
 #include "include/MBank.hpp"
 
 namespace GLogiK
@@ -51,6 +53,7 @@ DBusHandler::DBusHandler(
 		_pDepsMap(dependencies),
 		_pDBus(pDBus),
 		_sessionFramework(SessionFramework::FW_UNKNOWN),
+		_devicesUpdatedEvent(false),
 		_registerStatus(false)
 {
 	GK_LOG_FUNC
@@ -136,7 +139,44 @@ void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 	}
 }
 
-/* return true if we want to exit on next main loop run */
+const DevicesMap_type DBusHandler::getDevicesMap(void)
+{
+	GK_LOG_FUNC
+
+	GKLog(trace, "building DevicesMap_type map")
+
+	const std::vector<std::string> stringArray( this->getDevicesList("reserved") );
+
+	return NSGKDBus::ArgDevicesMap::getDevicesMapFromStringArray(stringArray);
+}
+
+void DBusHandler::resetDevicesUpdatedEvent(void)
+{
+	_devicesUpdatedEvent = false;
+}
+
+void DBusHandler::restartService(void)
+{
+	DBusHandler::WantToExit = true;
+	DBusHandler::WantToRestart = true;
+}
+
+void DBusHandler::startDevice(const std::string & devID)
+{
+	this->deviceStatusChangeRequest(devID, GK_DBUS_DAEMON_METHOD_START_DEVICE);
+}
+
+void DBusHandler::stopDevice(const std::string & devID)
+{
+	this->deviceStatusChangeRequest(devID, GK_DBUS_DAEMON_METHOD_STOP_DEVICE);
+}
+
+void DBusHandler::restartDevice(const std::string & devID)
+{
+	this->deviceStatusChangeRequest(devID, GK_DBUS_DAEMON_METHOD_RESTART_DEVICE);
+}
+
+/* return true if we want to exit on next main loop iteration */
 const bool DBusHandler::wantToStop(void) const
 {
 	if(DBusHandler::WantToRestart)
@@ -1129,6 +1169,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 					GKLog2(trace, devID, " status from daemon : started")
 					_devices.startDevice(devID);
 					devicesUpdated = true;
+					_devicesUpdatedEvent = true; /* used by service main loop */
 				}
 				else
 				{
@@ -1202,6 +1243,7 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
 					GKLog2(trace, devID, " status from daemon : stopped")
 					_devices.stopDevice(devID);
 					devicesUpdated = true;
+					_devicesUpdatedEvent = true; /* used by service main loop */
 				}
 				else
 				{
@@ -1266,6 +1308,7 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 					GKLog2(trace, devID, " status from daemon : unplugged")
 					_devices.unplugDevice(devID);
 					devicesUpdated = true;
+					_devicesUpdatedEvent = true; /* used by service main loop */
 				}
 				else
 				{
