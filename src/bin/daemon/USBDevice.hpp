@@ -41,7 +41,7 @@
 
 #include <libusb-1.0/libusb.h>
 
-#if GKHIDAPI
+#if HAVE_HIDAPI
 #include <hidapi.h>
 #endif
 
@@ -62,7 +62,7 @@ class USBDevice
 
 		std::mutex					_LCDMutex;
 
-#if GKLIBUSB
+#if HAVE_LIBUSB
 	private:
 		friend class libusb;
 
@@ -75,7 +75,7 @@ class USBDevice
 
 		macro_type					_newMacro;
 
-#if GKLIBUSB
+#if HAVE_LIBUSB
 	private:
 		std::vector<int>			_toRelease;
 		std::vector<int>			_toAttach;
@@ -92,9 +92,9 @@ class USBDevice
 
 		libusb_device*				_pUSBDevice;
 
-#if GKLIBUSB
+#if HAVE_LIBUSB
 		libusb_device_handle*		_pUSBDeviceHandle;
-#elif GKHIDAPI
+#elif HAVE_HIDAPI
 		friend class hidapi;
 
 		hid_device*					_pHIDDevice;
@@ -125,7 +125,7 @@ class USBDevice
 		unsigned char				_pressedKeys[KEYS_BUFFER_LENGTH];
 		unsigned char				_previousPressedKeys[KEYS_BUFFER_LENGTH];
 
-#if GKLIBUSB
+#if HAVE_LIBUSB
 	private:
 		unsigned char				_keysEndpoint;
 		unsigned char				_LCDEndpoint;

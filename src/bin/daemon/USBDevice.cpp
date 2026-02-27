@@ -38,10 +38,10 @@ USBDevice::USBDevice(const USBDeviceID & device)
 			_pressedRKeysMask(0),
 			_LCDPluginsMask1(0),
 			_pLCDPluginsManager(nullptr),
-#if GKLIBUSB
+#if HAVE_LIBUSB
 			_pUSBDevice(nullptr),
 			_pUSBDeviceHandle(nullptr),
-#elif GKHIDAPI
+#elif HAVE_HIDAPI
 			_pHIDDevice(nullptr),
 #endif
 			_MxKeysLedsMask(0),
@@ -50,11 +50,11 @@ USBDevice::USBDevice(const USBDeviceID & device)
 			_USBRequestsStatus(true),
 			_lastKeysInterruptTransferLength(0),
 			_lastLCDInterruptTransferLength(0),
-#if GKLIBUSB
+#if HAVE_LIBUSB
 			_fatalErrors(0),
 			_keysEndpoint(0),
 			_LCDEndpoint(0),
-#elif GKHIDAPI
+#elif HAVE_HIDAPI
 			_fatalErrors(0),
 #endif
 			_GKeyID(GKeyID_INV) // invalid
@@ -128,7 +128,7 @@ void USBDevice::operator=(const USBDevice& dev)
 	_threadsStatus		= static_cast<bool>(dev._threadsStatus);
 	_USBRequestsStatus	= static_cast<bool>(dev._USBRequestsStatus);
 
-#if GKLIBUSB
+#if HAVE_LIBUSB
 	_pUSBDevice			= dev._pUSBDevice;
 	_pUSBDeviceHandle	= dev._pUSBDeviceHandle;
 
@@ -137,7 +137,7 @@ void USBDevice::operator=(const USBDevice& dev)
 
 	_toRelease			= dev._toRelease;
 	_toAttach			= dev._toAttach;
-#elif GKHIDAPI
+#elif HAVE_HIDAPI
 	_pHIDDevice			= dev._pHIDDevice;
 #endif
 }

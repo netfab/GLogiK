@@ -75,13 +75,13 @@ if hidapi_dep.found()
 	'hidapi.cpp',
 	'hidapi.hpp'
   ]
-  config_h.set('GKHIDAPI', 1)
+  config_h.set('HAVE_HIDAPI', 1)
 elif libusb_dep.found()
   GLogiKd_sources += [
 	'libusb.cpp',
 	'libusb.hpp'
   ]
-  config_h.set('GKLIBUSB', 1)
+  config_h.set('HAVE_LIBUSB', 1)
 endif
 
 #! ----------

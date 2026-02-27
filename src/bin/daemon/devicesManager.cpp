@@ -41,9 +41,9 @@
 
 #include "devicesManager.hpp"
 
-#if GKLIBUSB
+#if HAVE_LIBUSB
 #include "libusb.hpp"
-#elif GKHIDAPI
+#elif HAVE_HIDAPI
 #include "hidapi.hpp"
 #endif
 
@@ -1091,9 +1091,9 @@ void DevicesManager::startMonitoring(void)
 			try
 			{
 				KeyboardDriver* driver = nullptr;
-#if GKLIBUSB
+#if HAVE_LIBUSB
 				driver = new LogitechG510<libusb>();
-#elif GKHIDAPI
+#elif HAVE_HIDAPI
 				driver = new LogitechG510<hidapi>();
 #endif
 

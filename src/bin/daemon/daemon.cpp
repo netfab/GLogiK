@@ -49,7 +49,7 @@
 #include "daemon.hpp"
 #include "usbinit.hpp"
 
-#if GKHIDAPI
+#if HAVE_HIDAPI
 #include "hidapi.hpp"
 #endif
 
@@ -171,7 +171,7 @@ int GLogiKDaemon::run(void)
 				{"boost", boost_version},
 				{"libudev", GK_DEP_LIBUDEV_VERSION_STRING, DevicesManager::getLibudevVersion()},
 				{"libusb", GK_DEP_LIBUSB_VERSION_STRING, USBInit::getLibUSBVersion()},
-#if GKHIDAPI
+#if HAVE_HIDAPI
 				{"hidapi", GK_DEP_LIBHIDAPI_VERSION_STRING, hidapi::getHIDAPIVersion()},
 #else
 				{"hidapi", "-"},

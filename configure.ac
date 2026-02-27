@@ -239,12 +239,14 @@ dnl checking for notifcations support
 AC_MSG_CHECKING([whether we want notifications support])
 AS_IF([test "x$enable_notifications" = "xyes"], [
 	AC_MSG_RESULT([yes])
-	AC_DEFINE([HAVE_DESKTOP_NOTIFICATIONS], [1], [desktop notifications enabled])
+	AC_DEFINE([HAVE_DESKTOP_NOTIFICATIONS], [1],
+		[Define to 1 if desktop notifications support is wanted.]
+	)
 
 	AC_MSG_CHECKING([whether we want libnotify support])
 	AS_IF([test "x$enable_libnotify" = "xyes"], [
 		AC_MSG_RESULT([yes])
-		AC_DEFINE([HAVE_LIBNOTIFY], [1], [libnotify enabled])
+		AC_DEFINE([HAVE_LIBNOTIFY], [1], [Define to 1 if libnotify library support is wanted.])
 	], [
 		AC_MSG_RESULT([no])
 		AC_MSG_ERROR([notifications via D-Bus only are currently not implemented])
@@ -265,10 +267,10 @@ AC_MSG_CHECKING([whether we want hidapi support])
 AS_IF([test "x$enable_hidapi" = "xyes"],
 	[
 		AC_MSG_RESULT([yes])
-		AC_DEFINE([GKHIDAPI], [1], [GKHIDAPI enabled])
+		AC_DEFINE([HAVE_HIDAPI], [1], [Define to 1 if hidapi library support is wanted.])
 	], [
 		AC_MSG_RESULT([no])
-		AC_DEFINE([GKLIBUSB], [1], [GKLIBUSB enabled])
+		AC_DEFINE([HAVE_LIBUSB], [1], [Define to 1 if libusb library support is wanted.])
 	])
 AM_CONDITIONAL([WITH_HIDAPI], [test "x$enable_hidapi" = "xyes"])
 

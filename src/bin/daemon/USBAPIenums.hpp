@@ -26,7 +26,7 @@
 
 #include <config.h>
 
-#if GKLIBUSB
+#if HAVE_LIBUSB
 #include <libusb-1.0/libusb.h>
 #endif
 
@@ -36,9 +36,9 @@ namespace GLogiK
 enum class USBAPIKeysTransferStatus : int8_t
 {
 	TRANSFER_ERROR = -1,
-#if GKLIBUSB
+#if HAVE_LIBUSB
 	TRANSFER_TIMEOUT = LIBUSB_ERROR_TIMEOUT,
-#elif GKHIDAPI
+#elif HAVE_HIDAPI
 	TRANSFER_TIMEOUT = -7,
 #endif
 };
