@@ -121,7 +121,7 @@ int DesktopServiceLauncher::run(void)
 
 		DBusHandler handler(&DBus);
 
-		while( session.isSessionAlive() )
+		while( session.isAlive() )
 		{
 			int num = poll(fds, nfds, 150);
 

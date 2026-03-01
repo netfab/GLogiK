@@ -127,7 +127,8 @@ const int SessionManager::openConnection(void)
 	return _ICEfd;
 }
 
-const bool SessionManager::isSessionAlive(void)
+/* return true session is still alive */
+const bool SessionManager::isAlive(void) const
 {
 	return SessionManager::stillRunning;
 }

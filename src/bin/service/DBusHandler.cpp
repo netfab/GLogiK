@@ -136,13 +136,13 @@ void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 	}
 }
 
-/* return false if we want to exit on next main loop run */
-const bool DBusHandler::getExitStatus(void) const
+/* return true if we want to exit on next main loop run */
+const bool DBusHandler::wantToStop(void) const
 {
 	if(DBusHandler::WantToRestart)
 		this->sendServiceStartRequest();
 
-	return ( ! DBusHandler::WantToExit );
+	return DBusHandler::WantToExit;
 }
 
 void DBusHandler::prepareToStop(const bool notifications)

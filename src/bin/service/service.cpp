@@ -135,10 +135,9 @@ int DesktopService::run(void)
 		{
 			{
 				/* DBusHandler constructor can potentially throw GLogiKExcept */
-				DBusHandler handler(_pid, &GKfs, &DBus, &dependencies);
+				DBusHandler dbusHandler(_pid, &GKfs, &DBus, &dependencies);
 
-				while( session.isSessionAlive() and
-						handler.getExitStatus() )
+				while( session.isAlive() and (! dbusHandler.wantToStop()) )
 				{
 					int num = poll(fds, nfds, 150);
 
@@ -156,7 +155,7 @@ int DesktopService::run(void)
 							/* check if any received filesystem notification matches
 							 * any device configuration file. If yes, reload the file,
 							 * and send configuration to daemon. Can throw. */
-							handler.checkNotifyEvents(&GKfs);
+							dbusHandler.checkNotifyEvents(&GKfs);
 						}
 					}
 

@@ -57,7 +57,7 @@ class DBusHandler
 		static bool WantToRestart;	/* true if we want to restart */
 		static void handleSignal(int signum);
 
-		const bool getExitStatus(void) const;
+		const bool wantToStop(void) const;
 		void checkNotifyEvents(NSGKUtils::FileSystem* pGKfs);
 
 	protected:
