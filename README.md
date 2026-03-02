@@ -29,7 +29,7 @@ Features
 Build Dependencies
 ==================
 
- * dev-libs/boost >= 1.88.0
+ * dev-libs/boost >= 1.90.0
  * a libudev provider :
    - sys-fs/eudev
    - sys-fs/udev

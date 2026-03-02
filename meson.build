@@ -36,18 +36,12 @@ thread_dep = dependency('threads')
 #! boost deps
 #! ----------
 boost_static = false
-boost_minimal_version = '>=1.88.0'
+boost_minimal_version = '>=1.90.0'
 boost_dependency_name = 'boost'
 
 boost_dep = dependency(
   boost_dependency_name,
   version : boost_minimal_version,
-  static : boost_static
-)
-
-boost_system_dep = dependency(
-  boost_dependency_name,
-  modules : ['system'],
   static : boost_static
 )
 
@@ -141,7 +135,6 @@ define_array = [
 ]
 
 define_dep_array = [
-  ['HAVE_BOOST_SYSTEM', boost_system_dep.found()],
   ['HAVE_BOOST_FILESYSTEM', boost_filesystem_dep.found()],
   ['HAVE_BOOST_THREAD', boost_thread_dep.found()],
   ['HAVE_BOOST_LOG_SETUP', boost_log_setup_dep.found()],

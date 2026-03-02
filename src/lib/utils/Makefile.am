@@ -10,7 +10,6 @@ libGKUtils_la_LDFLAGS = \
 				@BOOST_LDFLAGS@
 
 libGKUtils_la_LIBADD = \
-				@BOOST_SYSTEM_LIB@ \
 				@BOOST_FILESYSTEM_LIB@ \
 				@BOOST_LOG_SETUP_LIB@ \
 				@BOOST_LOG_LIB@ \

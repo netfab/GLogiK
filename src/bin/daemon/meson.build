@@ -125,7 +125,6 @@ executable(
   dependencies : [
 	thread_dep,
 	boost_dep,
-	boost_system_dep,
 	boost_filesystem_dep,
 	boost_program_options_dep,
 	libudev_dep,

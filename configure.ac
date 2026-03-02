@@ -348,9 +348,8 @@ AS_IF([test "x$enable_dbus" = "xyes"],
 			[ GDT_QT_CHECK([QT], [6], [Qt6Core Qt6Gui Qt6Widgets]) ], [])
 	], [])
 
-AX_BOOST_BASE([1.88.0], [], GDT_PKG_NOT_FOUND([boost libraries]))
+AX_BOOST_BASE([1.90.0], [], GDT_PKG_NOT_FOUND([boost libraries]))
 AX_BOOST_PROGRAM_OPTIONS
-AX_BOOST_SYSTEM
 AX_BOOST_FILESYSTEM
 AX_BOOST_PROCESS
 AX_BOOST_SERIALIZATION
@@ -431,7 +430,6 @@ AC_MSG_NOTICE([
        Boost log setup LIBS : ${BOOST_LOG_SETUP_LIB}
              Boost log LIBS : ${BOOST_LOG_LIB}
           Boost thread LIBS : ${BOOST_THREAD_LIB}
-          Boost system LIBS : ${BOOST_SYSTEM_LIB}
       Boost filesystem LIBS : ${BOOST_FILESYSTEM_LIB}
  Boost program options LIBS : ${BOOST_PROGRAM_OPTIONS_LIB}
        Boost iostreams LIBS : ${BOOST_IOSTREAMS_LIB}
