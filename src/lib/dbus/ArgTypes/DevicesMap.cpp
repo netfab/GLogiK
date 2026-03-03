@@ -30,18 +30,12 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-/*
- * helper function to rebuild DevicesMap_type map from GKDBus stringArray
- */
-const GLogiK::DevicesMap_type ArgDevicesMap::getNextDevicesMapArgument(void)
+const GLogiK::DevicesMap_type ArgDevicesMap::getDevicesMapFromStringArray(
+	const std::vector<std::string> & stringArray)
 {
 	GK_LOG_FUNC
 
-	GKLog(trace, "rebuilding DevicesMap_type map from GKDBus values")
-
 	GLogiK::DevicesMap_type devicesMap;
-
-	const std::vector<std::string> stringArray( ArgStringArray::getNextStringArray() );
 
 	using Size = std::vector<std::string>::size_type;
 
@@ -77,6 +71,20 @@ const GLogiK::DevicesMap_type ArgDevicesMap::getNextDevicesMapArgument(void)
 	GKLog4(trace, "returning DevicesMap_type map size: ", devicesMap.size(),
 		"expected: ", (s / (DEVICE_ID_NUM_PROPERTIES + 1)))
 	return devicesMap;
+}
+
+/*
+ * helper function to rebuild DevicesMap_type map from GKDBus stringArray
+ */
+const GLogiK::DevicesMap_type ArgDevicesMap::getNextDevicesMapArgument(void)
+{
+	GK_LOG_FUNC
+
+	GKLog(trace, "rebuilding DevicesMap_type map from GKDBus values")
+
+	const std::vector<std::string> stringArray( ArgStringArray::getNextStringArray() );
+
+	return ArgDevicesMap::getDevicesMapFromStringArray(stringArray);
 }
 
 } // namespace NSGKDBus
