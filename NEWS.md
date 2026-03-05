@@ -1,20 +1,20 @@
 
 0.8.24 (202x-xx-xx)
 ===================
-- Raise boost libraries minimal version to 1.90.0
+- Raised boost libraries minimal version to 1.90.0
      (boost::system removed)
-- Improve GKDBus introspection
+- Improved GKDBus introspection
 - Usual internal cleanings and improvements
 
 0.8.22 (2025-12-09)
 ===================
-- Raise boost libraries minimal version to 1.88.0
+- Raised boost libraries minimal version to 1.88.0
      (boost::process::v2 migration)
-- Fix potential daemon crash when searching supported devices
-- Fix desktop service not being informed by the daemon of devices
+- Fixed potential daemon crash when searching supported devices
+- Fixed desktop service not being informed by the daemon of devices
   status changes on sleep/resume events
-- Fix potential memory leaks in desktop service
-- Fix Qt gui potential crash on exit because of unstopped timer
+- Fixed potential memory leaks in desktop service
+- Fixed Qt gui potential crash on exit because of unstopped timer
 - Usual internal cleanings and improvements
 
 0.8.20 (2025-03-31)
@@ -44,11 +44,11 @@
 
 0.8.14 (2021-12-11)
 ===================
-- Fix autoreconf warning
+- Fixed autoreconf warning
 - Support >=dev-libs/hidapi-0.11. dev-libs/libusb is now mandatory to
   determine hidapi devices paths
 - Log system is now Boost.Log
-- Add meson build system support.
+- Added meson build system support
 - Miscellaneous internal fixs and improvements
 
 0.8.12 (2021-01-22)
