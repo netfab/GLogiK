@@ -81,67 +81,97 @@ void DesktopServiceSystray::updateContextMenu(const DevicesMap_type & devices)
 		_trayIconMenu->clear();
 
 		{ /* rebuilding the menu */
-			QMenu* subMenu = _trayIconMenu->addMenu("Devices");
-
-			for(const auto & devicePair : devices)
 			{
-				auto & devID = devicePair.first;
-				auto & deviceID = devicePair.second;
+				QMenu* devicesSubmenu;
 
-				const QString QdevID = QString::fromStdString(devID);
-
-				QMenu* deviceMenu = subMenu->addMenu(QdevID);
-
-				QAction* startDevice = new QAction("start", this);
-				if(deviceID.getStatus() == "started")
-					startDevice->setEnabled(false);
-				else
 				{
-					startDevice->setData(QdevID);
-					QObject::connect(startDevice, &QAction::triggered,
-						this, &DesktopServiceSystray::startDevice);
+					QString devicesTitle("no device connected");
+					const DevicesMap_type::size_type n = devices.size();
+					if(n == 1)
+						devicesTitle = "1 device connected";
+					else if(n > 1)
+					{
+						devicesTitle.setNum(n);
+						devicesTitle += " devices connected";
+					}
+
+					devicesSubmenu = _trayIconMenu->addMenu(devicesTitle);
+					if(n == 0)
+						devicesSubmenu->setDisabled(true);
 				}
 
-				QAction* stopDevice = new QAction("stop", this);
-				if(deviceID.getStatus() == "stopped")
-					stopDevice->setEnabled(false);
-				else
-				{
-					stopDevice->setData(QdevID);
-					QObject::connect(stopDevice, &QAction::triggered,
-						this, &DesktopServiceSystray::stopDevice);
-				}
+				for(const auto & devicePair : devices)
+				{ // <<< start/restart/stop events for each device
+					auto & devID = devicePair.first;
+					auto & deviceID = devicePair.second;
 
-				QAction* restartDevice = new QAction("restart", this);
-				if(deviceID.getStatus() == "stopped")
-					restartDevice->setEnabled(false);
-				else
-				{
-					restartDevice->setData(QdevID);
-					QObject::connect(restartDevice, &QAction::triggered,
-						this, &DesktopServiceSystray::restartDevice);
-				}
+					const QString QdevID = QString::fromStdString(devID);
+					QMenu* deviceEventMenu = devicesSubmenu->addMenu(QdevID);
 
-				QString dev;
-				dev += deviceID.getVendor();
-				dev += " ";
-				dev += deviceID.getProduct();
-				dev += " ";
-				dev += deviceID.getName();
-				QAction* fullname = new QAction(dev, this);
-				fullname->setEnabled(false);
+					{ // <<< device identification
+						QString dev;
+						dev += deviceID.getVendor();
+						dev += " ";
+						dev += deviceID.getProduct();
+						dev += " ";
+						dev += deviceID.getName();
+						QAction* fullname = new QAction(dev, this);
+						fullname->setEnabled(false);
 
-				deviceMenu->addAction(fullname);
-				deviceMenu->addSeparator();
-				deviceMenu->addAction(startDevice);
-				deviceMenu->addAction(restartDevice);
-				deviceMenu->addSeparator();
-				deviceMenu->addAction(stopDevice);
+						deviceEventMenu->addAction(fullname);
+					} // >>>
+
+					deviceEventMenu->addSeparator();
+
+					{ // <<< start action
+						QAction* startDevice = new QAction("start", this);
+						if(deviceID.getStatus() == "started")
+							startDevice->setEnabled(false);
+						else
+						{
+							startDevice->setData(QdevID);
+							QObject::connect(startDevice, &QAction::triggered,
+								this, &DesktopServiceSystray::startDevice);
+						}
+
+						deviceEventMenu->addAction(startDevice);
+					} // >>>
+
+					{ // <<< restart action
+						QAction* restartDevice = new QAction("restart", this);
+						if(deviceID.getStatus() == "stopped")
+							restartDevice->setEnabled(false);
+						else
+						{
+							restartDevice->setData(QdevID);
+							QObject::connect(restartDevice, &QAction::triggered,
+								this, &DesktopServiceSystray::restartDevice);
+						}
+
+						deviceEventMenu->addAction(restartDevice);
+					} // >>>
+
+					deviceEventMenu->addSeparator();
+
+					{ // <<< stop action
+						QAction* stopDevice = new QAction("stop", this);
+						if(deviceID.getStatus() == "stopped")
+							stopDevice->setEnabled(false);
+						else
+						{
+							stopDevice->setData(QdevID);
+							QObject::connect(stopDevice, &QAction::triggered,
+								this, &DesktopServiceSystray::stopDevice);
+						}
+
+						deviceEventMenu->addAction(stopDevice);
+					} // >>>
+				} // >>>
 			} // end Devices submenu
 
 			_trayIconMenu->addSeparator();
 
-			subMenu = _trayIconMenu->addMenu("Service");
+			QMenu* serviceSubmenu = _trayIconMenu->addMenu("Service");
 
 			{
 				QAction* restart = new QAction("restart", this);
@@ -153,9 +183,9 @@ void DesktopServiceSystray::updateContextMenu(const DevicesMap_type & devices)
 				QObject::connect(stop, &QAction::triggered,
 					this, &DesktopServiceSystray::stopService);
 
-				subMenu->addAction(restart);
-				subMenu->addSeparator();
-				subMenu->addAction(stop);
+				serviceSubmenu->addAction(restart);
+				serviceSubmenu->addSeparator();
+				serviceSubmenu->addAction(stop);
 			} // end Service submenu
 		}
 
