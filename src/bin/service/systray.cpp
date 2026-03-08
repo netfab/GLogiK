@@ -42,6 +42,15 @@ DesktopServiceSystray::DesktopServiceSystray(void)
 		_wantToRestart(false),
 		_wantToStop(false)
 {
+	GK_LOG_FUNC
+
+	if( ! QSystemTrayIcon::isSystemTrayAvailable() )
+	{
+		GKLog(trace, "system tray not yet available");
+	}
+
+	GKLog(trace, "systray icon construction")
+
 	try
 	{
 		_trayIcon = new QSystemTrayIcon(this);

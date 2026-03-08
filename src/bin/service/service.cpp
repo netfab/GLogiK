@@ -162,6 +162,7 @@ int DesktopService::run(void)
 #if HAVE_SYSTRAY && HAVE_QT
 				DesktopServiceSystray systray;
 				systray.hide(); // QMainWindow
+				QApplication::setQuitOnLastWindowClosed(false);
 #endif
 
 				while( true )
