@@ -47,7 +47,7 @@ Optional Build Dependencies
  * x11-libs/libSM
  * x11-libs/libX11
  * x11-libs/libXtst
- * Qt5/Qt6 packages : qtcore, qtgui, qtwidgets
+ * Qt6 packages : qtcore, qtgui, qtwidgets
 
 Runtime Dependencies
 ====================

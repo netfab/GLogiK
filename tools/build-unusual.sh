@@ -65,12 +65,21 @@ info 'CLEAN: debug:off'
 
 # --
 
-info 'BUILD: hidapi:off QT5:on'
-env WANTED_QT='QT5' bash build.sh -A -M -d --disable-hidapi --disable-qt6 --enable-qt5
+info 'BUILD: hidapi:off systray:off'
+bash build.sh -A -M -d --disable-hidapi --enable-qt6 --disable-systray
 check_ret $?
 bash build.sh -c -A -M
 check_ret $?
-info 'CLEAN: hidapi:off QT5:on'
+info 'CLEAN: hidapi:off systray:off'
+
+# --
+
+# info 'BUILD: hidapi:off QT5:on'
+# env WANTED_QT='QT5' bash build.sh -A -M -d --disable-hidapi --disable-qt6 --enable-qt5
+# check_ret $?
+# bash build.sh -c -A -M
+# check_ret $?
+# info 'CLEAN: hidapi:off QT5:on'
 
 # --
 

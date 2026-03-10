@@ -114,11 +114,6 @@ AC_ARG_ENABLE( [libnotify],
                AS_HELP_STRING( [--enable-libnotify], [Enable libnotify support]),
                [enable_libnotify=$enableval], [enable_libnotify=yes])
 
-dnl check for Qt5 client GUI
-AC_ARG_ENABLE( [qt5],
-               AS_HELP_STRING( [--enable-qt5], [Enable Qt5 client GUI]),
-               [enable_qt5=$enableval], [enable_qt5=no])
-
 dnl check for Qt6 client GUI
 AC_ARG_ENABLE( [qt6],
                AS_HELP_STRING( [--enable-qt6], [Enable Qt6 client GUI]),
@@ -281,7 +276,6 @@ AM_CONDITIONAL([WITH_HIDAPI], [test "x$enable_hidapi" = "xyes"])
 
 dnl ---
 dnl Qt support requires DBus support
-GDT_OPTDEP_CHECK([Qt5 client GUI], [$enable_qt5], [D-Bus], [$enable_dbus])
 GDT_OPTDEP_CHECK([Qt6 client GUI], [$enable_qt6], [D-Bus], [$enable_dbus])
 
 dnl systray requires Qt support
@@ -290,7 +284,7 @@ AS_IF([test "x$enable_systray" = "xyes"],
 	[
 		AC_MSG_RESULT([yes])
 		AC_DEFINE([HAVE_SYSTRAY], [1], [System tray enabled])
-		AS_IF([test "x$enable_qt5" = "xno" -a "x$enable_qt6" = "xno"],
+		AS_IF([test "x$enable_qt6" = "xno"],
 		AC_MSG_ERROR([Qt support is required by system tray]), [])
 	], [
 		AC_MSG_RESULT([no])
@@ -298,10 +292,10 @@ AS_IF([test "x$enable_systray" = "xyes"],
 AM_CONDITIONAL([WITH_SYSTRAY], [test "x$enable_systray" = "xyes"])
 
 dnl different Qt versions are mutually exclusive
-GDT_OPTEXCL_CHECK([Qt5 support], [$enable_qt5], [Qt6 support], [$enable_qt6])
+dnl GDT_OPTEXCL_CHECK([Qt5 support], [$enable_qt5], [Qt6 support], [$enable_qt6])
 
 dnl checking for Qt GUI
-AM_CONDITIONAL([WITH_QT], [test "x$enable_qt5" = "xyes" -o "x$enable_qt6" = "xyes" ])
+AM_CONDITIONAL([WITH_QT], [test "x$enable_qt6" = "xyes" ])
 
 dnl ---
 dnl abort compilation after first error
@@ -359,13 +353,10 @@ AS_IF([test "x$enable_dbus" = "xyes"],
 		GDT_PKG_CHECK_MODULE([LIBX11], [x11])
 		GDT_PKG_CHECK_MODULE([LIBXTST], [xtst])
 
-		AS_IF([test "x$enable_qt5" = "xyes"],
-			[ GDT_QT_CHECK([QT], [5], [Qt5Core Qt5Gui Qt5Widgets]) ], [])
-
 		AS_IF([test "x$enable_qt6" = "xyes"],
 			[ GDT_QT_CHECK([QT], [6], [Qt6Core Qt6Gui Qt6Widgets]) ], [])
 
-		AS_IF([test "x$enable_qt5" = "xyes" -o "x$enable_qt6" = "xyes"],
+		AS_IF([test "x$enable_qt6" = "xyes"],
 			[ AC_DEFINE([HAVE_QT], [1], [Qt enabled]) ], [])
 	], [])
 
@@ -461,7 +452,6 @@ AC_MSG_NOTICE([
                     Qt LIBS : ${QT_LIBS}
                   Qt CFLAGS : ${QT_CFLAGS}
 --------------------------------------------------------------
-        with Qt5 client GUI : ${enable_qt5}
         with Qt6 client GUI : ${enable_qt6}
                with systray : ${enable_systray}
            found Qt version : ${qmake_test_ver}

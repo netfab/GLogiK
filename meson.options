@@ -11,7 +11,6 @@ option('docdir', type: 'string', value: 'GLogiK', description: 'documentation in
 option('hidapi', type: 'boolean', value: true, description: 'hidapi support')
 option('notifications', type: 'boolean', value: true, description: 'notifications support')
 option('libnotify', type: 'boolean', value: true, description: 'libnotify support')
-option('qt5', type: 'boolean', value: false, description: 'Qt5 Graphical User Interface')
 option('qt6', type: 'boolean', value: false, description: 'Qt6 Graphical User Interface')
 option('systray', type: 'boolean', value: false, description: 'build systray icon into service using Qt')
 option('relative_udev_rules_dir', type: 'boolean', value: false, description: 'Relative udev rules installation directory. Used only for debugging/development.')
