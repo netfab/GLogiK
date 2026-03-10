@@ -25,6 +25,7 @@
 #include <QIcon>
 
 #include "lib/utils/utils.hpp"
+#include "lib/shared/glogik.hpp"
 
 #include "systray.hpp"
 
@@ -61,6 +62,9 @@ DesktopServiceSystray::DesktopServiceSystray(void)
 		}
 
 		_trayIconMenu = new QMenu(this);
+
+		QObject::connect(_trayIcon, &QSystemTrayIcon::activated,
+			this, &DesktopServiceSystray::iconActivated);
 	}
 	catch (const std::bad_alloc& e)
 	{ /* handle new() failure */
@@ -294,4 +298,31 @@ void DesktopServiceSystray::restartDevice(void)
 
 	GKLog2(trace, "systray restarting device action: ", _deviceID)
 }
+
+void DesktopServiceSystray::iconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+	GK_LOG_FUNC
+
+	switch(reason)
+	{
+		case QSystemTrayIcon::Unknown:
+		case QSystemTrayIcon::Context:
+		case QSystemTrayIcon::DoubleClick:
+		case QSystemTrayIcon::MiddleClick:
+			GKLog2(trace, "ignoring event: ", toEnumType(reason))
+			break;
+		case QSystemTrayIcon::Trigger:
+			GKLog2(trace, "running gui: ", toEnumType(reason))
+			std::vector<std::string> args;
+
+#if DEBUGGING_ON
+			if(GKLogging::GKDebug)
+				args.push_back("-D");
+#endif
+
+			process::runDelayedCommand(GLOGIK_QT_GUI_NAME, args, 100);
+			break;
+	}
+}
+
 } // namespace GLogiK

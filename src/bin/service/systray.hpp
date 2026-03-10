@@ -99,6 +99,8 @@ class DesktopServiceSystray
 		void startDevice(void);
 		void stopDevice(void);
 		void restartDevice(void);
+
+		void iconActivated(QSystemTrayIcon::ActivationReason reason);
 };
 
 } // namespace GLogiK
