@@ -23,7 +23,6 @@
 #define SRC_BIN_LAUNCHER_DBUS_HANDLER_HPP_
 
 #include <cstdint>
-#include <chrono>
 
 #include "lib/dbus/GKDBus.hpp"
 
@@ -43,12 +42,10 @@ class DBusHandler
 	private:
 		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
 
-		const std::chrono::steady_clock::duration _tenSeconds;
-		std::chrono::steady_clock::time_point _lastCall;
 		NSGKDBus::GKDBus* _pDBus;
 
 		void initializeGKDBusSignals(void);
-		void spawnService(const uint16_t timelapse);
+		void spawnService(const uint16_t delay);
 };
 
 } // namespace GLogiK

@@ -23,6 +23,7 @@
 #include <thread>
 #include <string>
 #include <sstream>
+#include <thread>
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -50,6 +51,13 @@
 
 namespace NSGKUtils
 {
+
+namespace chr = std::chrono;
+using steady = chr::steady_clock;
+
+std::map<const std::string, steady::time_point> process::lastCalls;
+const steady::duration process::threeSeconds = chr::duration<int>(3);
+const steady::duration process::oneSecond = chr::duration<int>(1);
 
 uint8_t process::options = 0;
 
@@ -429,6 +437,42 @@ const std::string process::runCommandAndGetOutput(
 	}
 
 	return output;
+}
+
+void process::runDelayedCommand(
+	const std::string & binary,
+	const std::vector<std::string> & args,
+	const uint16_t delay)
+{
+	const steady::time_point now = steady::now();
+	const auto & minTime = process::threeSeconds;
+
+	if(process::lastCalls.find(binary) == process::lastCalls.end())
+	{
+		/* initializing first time point */
+		const steady::time_point lastCall = now - minTime - process::oneSecond;
+		process::lastCalls.insert(
+			std::pair<const std::string, steady::time_point>(binary, lastCall)
+		);
+	}
+
+	LOG(info)	<< "sleeping " << delay
+				<< " milliseconds before trying to spawn " << binary;
+	std::this_thread::sleep_for(chr::milliseconds(delay));
+
+	const steady::duration timeLapse = now - process::lastCalls[binary];
+
+	if(timeLapse > minTime)
+	{
+		process::lastCalls[binary] = now;
+		process::runCommand(binary, args);
+	}
+	else
+	{
+		double nsec = static_cast<double>(timeLapse.count()) *
+			steady::period::num / steady::period::den;
+		LOG(info) << "time lapse since last call : " << nsec << " seconds - ignoring";
+	}
 }
 
 const std::string process::getSignalAbbrev(int signum)

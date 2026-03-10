@@ -26,8 +26,10 @@
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
-#include <vector>
+#include <chrono>
+#include <map>
 #include <string>
+#include <vector>
 
 #include <cstdint>
 #include <sys/types.h>
@@ -68,12 +70,21 @@ class process
 			const std::string & binary,
 			const std::vector<std::string> & args
 		);
+		static void runDelayedCommand(
+			const std::string & binary,
+			const std::vector<std::string> & args,
+			const uint16_t delay
+		);
 
 	protected:
 
 	private:
 		process(void) = delete;
 		~process(void) = delete;
+
+		static std::map<const std::string, std::chrono::steady_clock::time_point> lastCalls;
+		static const std::chrono::steady_clock::duration threeSeconds;
+		static const std::chrono::steady_clock::duration oneSecond;
 
 		static uint8_t options;
 

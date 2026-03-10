@@ -38,17 +38,9 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 DBusHandler::DBusHandler(NSGKDBus::GKDBus* pDBus)
-	:	_tenSeconds(chr::duration<int>(10)),
-		_pDBus(pDBus)
+	:	_pDBus(pDBus)
 {
 	this->initializeGKDBusSignals();
-
-	/* initializing first time point */
-	_lastCall = chr::steady_clock::now();
-	{
-		chr::steady_clock::duration elevenSeconds(chr::duration<int>(11));
-		_lastCall -= elevenSeconds;
-	}
 
 	/* spawn desktop service on start */
 	this->spawnService(100);
@@ -103,38 +95,20 @@ void DBusHandler::initializeGKDBusSignals(void)
 	);
 }
 
-void DBusHandler::spawnService(const uint16_t timelapse)
+void DBusHandler::spawnService(const uint16_t delay)
 {
 	GK_LOG_FUNC
 
-	using steady = chr::steady_clock;
-
 	LOG(info)	<< "received signal: " << __func__;
-	LOG(info)	<< "sleeping " << timelapse
-				<< " milliseconds before trying to spawn " << GLOGIK_DESKTOP_SERVICE_NAME;
-	std::this_thread::sleep_for(chr::milliseconds(timelapse));
 
-	const steady::time_point now = steady::now();
-	const steady::duration timeLapse = now - _lastCall;
-	if(timeLapse > _tenSeconds)
-	{
-		_lastCall = now;
-
-		std::vector<std::string> args;
+	std::vector<std::string> args;
 
 #if DEBUGGING_ON
-		if(GKLogging::GKDebug)
-			args.push_back("-D");
+	if(GKLogging::GKDebug)
+		args.push_back("-D");
 #endif
 
-		process::runCommand(GLOGIK_DESKTOP_SERVICE_NAME, args);
-	}
-	else
-	{
-		double nsec = static_cast<double>(timeLapse.count()) *
-			steady::period::num / steady::period::den;
-		LOG(info) << "time lapse since last call : " << nsec << " seconds - ignoring";
-	}
+	process::runDelayedCommand(GLOGIK_DESKTOP_SERVICE_NAME, args, delay);
 }
 
 } // namespace GLogiK
