@@ -184,6 +184,10 @@ void GKDBusEvents::clearDBusEvents(void) noexcept
 
 const std::string GKDBusEvents::getRootNodeIntrospection(void) noexcept
 {
+	GK_LOG_FUNC
+
+	GKLog(trace, "introspecting root node")
+
 	return this->introspect("/");
 }
 
@@ -475,7 +479,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 	{
 
 #if DEBUG_GKDBUS
-		GKLog2(trace, "DBus Interface : ", DBusInterface)
+		GKLog2(trace, "DBus Interface: ", DBusInterface)
 #endif
 
 		bool interfaceOpened = false;
@@ -506,8 +510,8 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 					{
 #if DEBUG_GKDBUS
 						GKLog6(trace,
-							"	interface : ", interface,
-							"object path : ", objectPath, "op : ", op
+							"	interface: ", interface,
+							"object path: ", objectPath, "op: ", op
 						)
 #endif
 
@@ -602,14 +606,23 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 			} // >>>
 			catch (const std::out_of_range& oor)
 			{
+#if DEBUG_GKDBUS
 				GKLog2(trace,
-					"can't iterate over DBus events container. Current bus : ",
+					"can't iterate over DBus events container. Current bus: ",
 					toUInt(toEnumType(GKDBusEvents::currentBus))
 				)
+#endif
 			}
 		};
 
+#if DEBUG_GKDBUS
+		GKLog(trace, "iterating over DBusEvents")
+#endif
 		build_xml_string(_DBusEvents, false);
+
+#if DEBUG_GKDBUS
+		GKLog(trace, "iterating over IntrospectableSignals")
+#endif
 		build_xml_string(_DBusIntrospectableSignals, true);
 
 		this->closeXMLInterface(xml, interfaceOpened);
