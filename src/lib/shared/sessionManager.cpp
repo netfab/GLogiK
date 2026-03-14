@@ -37,7 +37,8 @@ using namespace NSGKUtils;
 bool SessionManager::stillRunning = true;
 
 SessionManager::SessionManager()
-	:	_pSMCConnexion(nullptr)
+	:	_pSMCConnexion(nullptr),
+		_pICEConnexion(nullptr)
 {
 	GK_LOG_FUNC
 
@@ -136,7 +137,8 @@ const bool SessionManager::isAlive(void) const
 
 void SessionManager::processICEMessages(void)
 {
-	SessionManager::processICEMessages(_pICEConnexion);
+	if(_pICEConnexion != nullptr)
+		SessionManager::processICEMessages(_pICEConnexion);
 }
 
 /* -- */
