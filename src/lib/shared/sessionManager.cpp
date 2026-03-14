@@ -37,6 +37,7 @@ using namespace NSGKUtils;
 bool SessionManager::stillRunning = true;
 
 SessionManager::SessionManager()
+	:	_pSMCConnexion(nullptr)
 {
 	GK_LOG_FUNC
 
