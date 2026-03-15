@@ -188,41 +188,50 @@ int GLogiKDaemon::run(void)
 	{
 #if GKDBUS
 		NSGKDBus::GKDBus DBus;
-		DBus.init();
-		DBus.connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
-#endif
-
-		DevicesManager devicesManager;
-
-#if GKDBUS
-		devicesManager.setDBus(&DBus);
-		this->startSleepInhibition(&DBus, &devicesManager);
-
-		ClientsManager clientsManager(&DBus, &devicesManager, &dependencies);
-#endif
 
 		try
-		{
-			/* potential D-Bus requests received from services will be
-			 * handled after devices initialization into startMonitoring() */
-			devicesManager.startMonitoring();
-#if GKDBUS
-			clientsManager.waitForClientsDisconnections();
-			clientsManager.cleanGKDBusEvents();
-			this->stopSleepInhibition();
-			DBus.exit();
+		{ // <<<
+			DBus.init();
+			DBus.connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
 #endif
-		}
-		catch (const GLogiKExcept & e)
-		{	// catch any monitoring failure
-			std::ostringstream buffer(std::ios_base::app);
-			buffer << "caught exception from device monitoring : " << e.what();
-			GKSysLogWarning(buffer.str());
+			DevicesManager devicesManager;
 
 #if GKDBUS
-			clientsManager.waitForClientsDisconnections();
-			clientsManager.cleanGKDBusEvents();
-			this->stopSleepInhibition();
+			devicesManager.setDBus(&DBus);
+
+			ClientsManager clientsManager(&DBus, &devicesManager, &dependencies);
+#endif
+
+			try
+			{
+				this->startSleepInhibition(&DBus, &devicesManager);
+
+				/* potential D-Bus requests received from services will be
+				 * handled after devices initialization into startMonitoring() */
+				devicesManager.startMonitoring();
+#if GKDBUS
+				clientsManager.waitForClientsDisconnections();
+				clientsManager.cleanGKDBusEvents();
+
+				this->stopSleepInhibition();
+				DBus.exit();
+#endif
+			}
+			catch (const GLogiKExcept & e)
+			{
+				GKSysLogWarning("caught exception, cleaning");
+#if GKDBUS
+				clientsManager.waitForClientsDisconnections();
+				clientsManager.cleanGKDBusEvents();
+
+				this->stopSleepInhibition();
+#endif
+				throw;
+			}
+		} // >>>
+		catch (const GLogiKExcept & e)
+		{
+#if GKDBUS
 			DBus.exit();
 #endif
 			throw;
