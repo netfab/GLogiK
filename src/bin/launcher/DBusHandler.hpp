@@ -35,8 +35,6 @@ class DBusHandler
 		DBusHandler(NSGKDBus::GKDBus* pDBus);
 		~DBusHandler(void);
 
-		void cleanDBusRequests(void);
-
 	protected:
 
 	private:
@@ -46,6 +44,8 @@ class DBusHandler
 
 		void initializeGKDBusSignals(void);
 		void spawnService(const uint16_t delay);
+
+		void cleanGKDBusEvents(void);
 };
 
 } // namespace GLogiK

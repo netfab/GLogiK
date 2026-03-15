@@ -107,38 +107,45 @@ int DesktopServiceLauncher::run(void)
 
 	{
 		SessionManager session;
-
 		NSGKDBus::GKDBus DBus;
-		DBus.init();
 
-		DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME);
+		try
+		{ // <<<
+			DBus.init(); // may throw
 
-		struct pollfd fds[1];
-		nfds_t nfds = 1;
+			// may throw
+			DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME);
 
-		fds[0].fd = session.openConnection();
-		fds[0].events = POLLIN;
+			struct pollfd fds[1];
+			nfds_t nfds = 1;
 
-		DBusHandler handler(&DBus);
+			fds[0].fd = session.openConnection(); // may throw
+			fds[0].events = POLLIN;
 
-		while( session.isAlive() )
-		{
-			int num = poll(fds, nfds, 150);
+			DBusHandler handler(&DBus); // may throw
 
-			// data to read ?
-			if( num > 0 )
+			while( session.isAlive() )
 			{
-				if( fds[0].revents & POLLIN )
+				int num = poll(fds, nfds, 150);
+
+				// data to read ?
+				if( num > 0 )
 				{
-					session.processICEMessages();
-					continue;
+					if( fds[0].revents & POLLIN )
+					{
+						session.processICEMessages();
+						continue;
+					}
 				}
+
+				DBus.checkForMessages();
 			}
-
-			DBus.checkForMessages();
+		} // >>>
+		catch (const GLogiKExcept & e)
+		{
+			DBus.exit();
+			throw;
 		}
-
-		handler.cleanDBusRequests();
 
 		DBus.exit();
 	}

@@ -48,10 +48,17 @@ DBusHandler::DBusHandler(NSGKDBus::GKDBus* pDBus)
 
 DBusHandler::~DBusHandler(void)
 {
+	GK_LOG_FUNC
+
+	this->cleanGKDBusEvents();
 }
 
-void DBusHandler::cleanDBusRequests(void)
+void DBusHandler::cleanGKDBusEvents(void)
 {
+	GK_LOG_FUNC
+
+	GKLog(trace, "cleaning GKDBus events")
+
 	_pDBus->removeInterface(_sessionBus,
 		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
 		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE);
