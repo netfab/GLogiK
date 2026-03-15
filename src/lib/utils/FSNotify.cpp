@@ -112,7 +112,8 @@ void FSNotify::removeNotifyWatch(const int wd) noexcept
 	}
 
 	const int & fd = _inotifyQueueFD;
-	auto findDescriptor = [&fd, &wd] (auto & item) -> const bool
+	// lambda
+	auto find_descriptor = [&fd, &wd] (auto & item) -> const bool
 	{
 		WatchedObject & watched = item.second;
 
@@ -137,7 +138,7 @@ void FSNotify::removeNotifyWatch(const int wd) noexcept
 		return false;
 	};
 
-	erase_if(_watchedDescriptorsMap, findDescriptor);
+	erase_if(_watchedDescriptorsMap, find_descriptor);
 }
 
 const int FSNotify::getNotifyQueueDescriptor(void) const
