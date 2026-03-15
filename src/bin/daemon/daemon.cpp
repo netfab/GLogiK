@@ -208,7 +208,7 @@ int GLogiKDaemon::run(void)
 			devicesManager.startMonitoring();
 #if GKDBUS
 			clientsManager.waitForClientsDisconnections();
-			clientsManager.cleanDBusRequests();
+			clientsManager.cleanGKDBusEvents();
 			this->stopSleepInhibition();
 			DBus.exit();
 #endif
@@ -221,7 +221,7 @@ int GLogiKDaemon::run(void)
 
 #if GKDBUS
 			clientsManager.waitForClientsDisconnections();
-			clientsManager.cleanDBusRequests();
+			clientsManager.cleanGKDBusEvents();
 			this->stopSleepInhibition();
 			DBus.exit();
 #endif

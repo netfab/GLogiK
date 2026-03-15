@@ -51,7 +51,7 @@ ClientsManager::ClientsManager(
 
 	GKLog(trace, "initializing clients manager")
 
-	this->initializeDBusRequests();
+	this->initializeGKDBusEvents();
 }
 
 ClientsManager::~ClientsManager()
@@ -76,7 +76,7 @@ ClientsManager::~ClientsManager()
 	GKLog(trace, "exiting clients manager")
 }
 
-void ClientsManager::initializeDBusRequests(void)
+void ClientsManager::initializeGKDBusEvents(void)
 {
 	using namespace std::placeholders;  // for _1, _2, _3...
 
@@ -326,7 +326,7 @@ void ClientsManager::initializeDBusRequests(void)
 	);
 }
 
-void ClientsManager::cleanDBusRequests(void) noexcept
+void ClientsManager::cleanGKDBusEvents(void) noexcept
 {
 	/* clients manager DBus object path and interface */
 	const auto & CM_OP = GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH;

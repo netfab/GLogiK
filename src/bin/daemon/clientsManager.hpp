@@ -53,7 +53,7 @@ class ClientsManager
 		);
 		~ClientsManager(void);
 
-		void cleanDBusRequests(void) noexcept;
+		void cleanGKDBusEvents(void) noexcept;
 		void waitForClientsDisconnections(void) noexcept;
 
 	protected:
@@ -78,7 +78,7 @@ class ClientsManager
 		 */
 		bool _enabledSignals; 
 
-		void initializeDBusRequests(void);
+		void initializeGKDBusEvents(void);
 
 		/* exposed over DBus */
 			/* ClientsManager D-Bus object */
