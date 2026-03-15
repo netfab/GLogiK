@@ -53,7 +53,7 @@ DBusHandler::~DBusHandler(void)
 	this->cleanGKDBusEvents();
 }
 
-void DBusHandler::cleanGKDBusEvents(void)
+void DBusHandler::cleanGKDBusEvents(void) noexcept
 {
 	GK_LOG_FUNC
 

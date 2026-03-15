@@ -45,7 +45,7 @@ class DBusHandler
 		void initializeGKDBusSignals(void);
 		void spawnService(const uint16_t delay);
 
-		void cleanGKDBusEvents(void);
+		void cleanGKDBusEvents(void) noexcept;
 };
 
 } // namespace GLogiK
