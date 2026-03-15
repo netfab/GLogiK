@@ -105,7 +105,7 @@ const std::string DevicesManager::getLibudevVersion(void)
 	}
 	catch ( const GLogiKExcept & e )
 	{
-		GKSysLogError("exception catched while trying to run udevadm process");
+		GKSysLogError("exception caught while trying to run udevadm process");
 		GKSysLogError( e.what() );
 	}
 
@@ -141,7 +141,7 @@ void DevicesManager::checkDBusMessages(void) noexcept
 
 #endif
 
-/* exceptions are catched within the function body */
+/* exceptions are caught within the function body */
 void DevicesManager::initializeDevices(
 	const USBDeviceIDContainer_type & detectedDevices,
 	const bool openDevices) noexcept
@@ -1050,7 +1050,7 @@ void DevicesManager::resetDevicesStates(void)
 
 /*
  *	Throws GLogiKExcept in many ways on udev related functions failures.
- *	USB library failures on devices start/stop are catched internally.
+ *	USB library failures on devices start/stop are caught internally.
  */
 void DevicesManager::startMonitoring(void)
 {

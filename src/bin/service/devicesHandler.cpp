@@ -284,7 +284,7 @@ void DevicesHandler::saveDeviceConfigurationFile(
 	}
 	catch ( const GLogiKExcept & e )
 	{
-		log_error("catched exception", e.what());
+		log_error("caught exception", e.what());
 	}
 }
 

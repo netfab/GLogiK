@@ -520,7 +520,7 @@ void MainWindow::aboutDialog(void)
 	}
 	catch (const std::bad_alloc& e)
 	{
-		LOG(error) << "catched bad_alloc : " << e.what();
+		LOG(error) << "caught bad_alloc: " << e.what();
 	}
 }
 

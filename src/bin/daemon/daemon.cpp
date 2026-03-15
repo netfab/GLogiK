@@ -216,7 +216,7 @@ int GLogiKDaemon::run(void)
 		catch (const GLogiKExcept & e)
 		{	// catch any monitoring failure
 			std::ostringstream buffer(std::ios_base::app);
-			buffer << "catched exception from device monitoring : " << e.what();
+			buffer << "caught exception from device monitoring : " << e.what();
 			GKSysLogWarning(buffer.str());
 
 #if GKDBUS
