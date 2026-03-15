@@ -120,7 +120,6 @@ int DesktopService::run(void)
 	}
 
 	{
-
 #if HAVE_SYSTRAY && HAVE_QT
 		int argc = 1;
 		char * argv[] = {(char*)GLOGIK_DESKTOP_SERVICE_NAME};
@@ -133,127 +132,129 @@ int DesktopService::run(void)
 		SessionManager session;
 
 		NSGKDBus::GKDBus DBus;
-		DBus.init();
 
-		DBus.connectToSystemBus(
-			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-			NSGKDBus::ConnectionFlag::GKDBUS_MULTIPLE
-		);
-		DBus.connectToSessionBus(
-			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-			NSGKDBus::ConnectionFlag::GKDBUS_MULTIPLE
-		);
-
-		struct pollfd fds[2];
-		nfds_t nfds = 2;
-
-		fds[0].fd = session.openConnection();
-		fds[0].events = POLLIN;
-
-		fds[1].fd = GKfs.getNotifyQueueDescriptor();
-		fds[1].events = POLLIN;
+		// lambda
+		auto clean_before_exit = [&] () -> void
+		{
+			DBus.exit();
+#if HAVE_SYSTRAY && HAVE_QT
+			app.exit();
+#endif
+		};
 
 		try
 		{ // <<<
-			{
-				/* DBusHandler constructor can potentially throw GLogiKExcept */
-				DBusHandler dbusHandler(_pid, &GKfs, &DBus, &dependencies);
+			DBus.init(); // may throw
+
+			DBus.connectToSystemBus( // may throw
+				GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+				NSGKDBus::ConnectionFlag::GKDBUS_MULTIPLE
+			);
+			DBus.connectToSessionBus( // may throw
+				GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+				NSGKDBus::ConnectionFlag::GKDBUS_MULTIPLE
+			);
+
+			struct pollfd fds[2];
+			nfds_t nfds = 2;
+
+			fds[0].fd = session.openConnection(); // may throw
+			fds[0].events = POLLIN;
+
+			fds[1].fd = GKfs.getNotifyQueueDescriptor();
+			fds[1].events = POLLIN;
+
+			DBusHandler dbusHandler(_pid, &GKfs, &DBus, &dependencies); // may throw
 
 #if HAVE_SYSTRAY && HAVE_QT
-				DesktopServiceSystray systray;
-				systray.hide(); // QMainWindow
-				QApplication::setQuitOnLastWindowClosed(false);
+			DesktopServiceSystray systray;
+			systray.hide(); // QMainWindow
+			QApplication::setQuitOnLastWindowClosed(false);
 #endif
 
-				while( true )
+			while( true )
+			{ // <<<
+				if( (! session.isAlive()) or dbusHandler.wantToStop() )
+					break;
+
+				int num = poll(fds, nfds, 150);
+
+				// data to read ?
+				if( num > 0 )
 				{
-					if( (! session.isAlive()) or dbusHandler.wantToStop() )
-						break;
-
-					int num = poll(fds, nfds, 150);
-
-					// data to read ?
-					if( num > 0 )
+					if( fds[0].revents & POLLIN )
 					{
-						if( fds[0].revents & POLLIN )
-						{
-							session.processICEMessages();
-							continue;
-						}
-
-						if( fds[1].revents & POLLIN )
-						{
-							/* check if any received filesystem notification matches
-							 * any device configuration file. If yes, reload the file,
-							 * and send configuration to daemon. Can throw. */
-							dbusHandler.checkNotifyEvents(&GKfs);
-						}
-					}
-
-					DBus.checkForMessages();
-
-#if HAVE_SYSTRAY && HAVE_QT
-					app.processEvents();
-
-					if( systray.wantToStop() )
-					{
-						LOG(info) << "process systray stop action --> bye bye";
-						break;
-					}
-					else if( systray.wantToRestart() )
-					{
-						/* on next loop iteration, send a restart request on DBus
-						 * and break the loop with dbusHandler.wantToStop() */
-						dbusHandler.restartService();
+						session.processICEMessages();
 						continue;
 					}
 
-					if( dbusHandler.isAnyDeviceUpdated() )
+					if( fds[1].revents & POLLIN )
 					{
-						GKLog(trace, "updating systray context menu")
-						const DevicesMap_type devices = dbusHandler.getDevicesMap();
-						systray.updateContextMenu(devices); // may throw
-						dbusHandler.resetDevicesUpdatedEvent();
+						/* check if any received filesystem notification matches
+						 * any device configuration file. If yes, reload the file,
+						 * and send configuration to daemon. Can throw. */
+						dbusHandler.checkNotifyEvents(&GKfs);
+					}
+				}
+
+				DBus.checkForMessages();
+
+#if HAVE_SYSTRAY && HAVE_QT
+				app.processEvents();
+
+				if( systray.wantToStop() )
+				{
+					LOG(info) << "process systray stop action --> bye bye";
+					break;
+				}
+				else if( systray.wantToRestart() )
+				{
+					/* on next loop iteration, send a restart request on DBus
+					 * and break the loop with dbusHandler.wantToStop() */
+					dbusHandler.restartService();
+					continue;
+				}
+
+				if( dbusHandler.isAnyDeviceUpdated() )
+				{
+					GKLog(trace, "updating systray context menu")
+					const DevicesMap_type devices = dbusHandler.getDevicesMap();
+					systray.updateContextMenu(devices); // may throw
+					dbusHandler.resetDevicesUpdatedEvent();
+				}
+
+				if( systray.deviceEventTriggered() )
+				{
+					GKLog(trace, "process systray device event")
+					const std::string & devID = systray.getDeviceID();
+					switch( systray.getDeviceEvent() )
+					{
+						case SystrayDeviceEvent::DEVICE_START:
+							dbusHandler.startDevice(devID);
+							break;
+						case SystrayDeviceEvent::DEVICE_STOP:
+							dbusHandler.stopDevice(devID);
+							break;
+						case SystrayDeviceEvent::DEVICE_RESTART:
+							dbusHandler.restartDevice(devID);
+							break;
+						default:
+							LOG(warning) << "wrong systray device event";
+							break;
 					}
 
-					if( systray.deviceEventTriggered() )
-					{
-						GKLog(trace, "process systray device event")
-						const std::string & devID = systray.getDeviceID();
-						switch( systray.getDeviceEvent() )
-						{
-							case SystrayDeviceEvent::DEVICE_START:
-								dbusHandler.startDevice(devID);
-								break;
-							case SystrayDeviceEvent::DEVICE_STOP:
-								dbusHandler.stopDevice(devID);
-								break;
-							case SystrayDeviceEvent::DEVICE_RESTART:
-								dbusHandler.restartDevice(devID);
-								break;
-							default:
-								LOG(warning) << "wrong systray device event";
-								break;
-						}
-
-						systray.resetDeviceEvent();
-					}
+					systray.resetDeviceEvent();
+				}
 #endif
-				} // while(true) main loop
-			} // make sure DBusHandler object is destroyed to clean GKDBus events before exit
-
-			DBus.exit();
+			} // >>> while(true) main loop
 		} // >>>
 		catch (const GLogiKExcept & e)
 		{
-			DBus.exit();
+			clean_before_exit();
 			throw;
 		}
 
-#if HAVE_SYSTRAY && HAVE_QT
-		app.exit();
-#endif
-
+		clean_before_exit();
 	}
 
 	GKLog(trace, "exiting with success")
