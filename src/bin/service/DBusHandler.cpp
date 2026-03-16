@@ -1142,8 +1142,6 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 
 	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
 
-	bool devicesUpdated(false);
-
 	for(const auto& devID : devicesID)
 	{
 		try
@@ -1168,8 +1166,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 				{
 					GKLog2(trace, devID, " status from daemon : started")
 					_devices.startDevice(devID);
-					devicesUpdated = true;
-					_devicesUpdatedEvent = true; /* used by service main loop */
+					this->updateSystrayContextMenu();
 				}
 				else
 				{
@@ -1189,11 +1186,8 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 		}
 	}
 
-	if(devicesUpdated)
-	{
-		/* send signal to GUI */
-		this->sendDevicesUpdatedSignal();
-	}
+	if( this->isAnyDeviceUpdated() )
+		this->sendDevicesUpdatedSignal(); /* send signal to GUI */
 
 	/*
 	 * force state update, to load active user's parameters
@@ -1215,8 +1209,6 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
 	)
 
 	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
-
-	bool devicesUpdated(false);
 
 	for(const auto& devID : devicesID)
 	{
@@ -1242,8 +1234,7 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
 				{
 					GKLog2(trace, devID, " status from daemon : stopped")
 					_devices.stopDevice(devID);
-					devicesUpdated = true;
-					_devicesUpdatedEvent = true; /* used by service main loop */
+					this->updateSystrayContextMenu();
 				}
 				else
 				{
@@ -1263,11 +1254,8 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
 		}
 	}
 
-	if(devicesUpdated)
-	{
-		/* send signal to GUI */
-		this->sendDevicesUpdatedSignal();
-	}
+	if( this->isAnyDeviceUpdated() )
+		this->sendDevicesUpdatedSignal(); /* send signal to GUI */
 }
 
 void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
@@ -1280,8 +1268,6 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 	)
 
 	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
-
-	bool devicesUpdated(false);
 
 	for(const auto& devID : devicesID)
 	{
@@ -1307,8 +1293,7 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 				{
 					GKLog2(trace, devID, " status from daemon : unplugged")
 					_devices.unplugDevice(devID);
-					devicesUpdated = true;
-					_devicesUpdatedEvent = true; /* used by service main loop */
+					this->updateSystrayContextMenu();
 				}
 				else
 				{
@@ -1328,11 +1313,8 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 		}
 	}
 
-	if(devicesUpdated)
-	{
-		/* send signal to GUI */
-		this->sendDevicesUpdatedSignal();
-	}
+	if( this->isAnyDeviceUpdated() )
+		this->sendDevicesUpdatedSignal(); /* send signal to GUI */
 }
 
 void DBusHandler::deviceMBankSwitch(

@@ -63,10 +63,7 @@ class DBusHandler
 		const DevicesMap_type getDevicesMap(void);
 
 		/* return true when at least one device was updated (started/stopped/unplugged) */
-		const bool isAnyDeviceUpdated(void) const
-		{
-			return _devicesUpdatedEvent;
-		}
+		const bool isAnyDeviceUpdated(void) const;
 
 		void resetDevicesUpdatedEvent(void);
 
@@ -104,6 +101,7 @@ class DBusHandler
 		bool _registerStatus;	/* true == registered with daemon */
 
 		/* -- -- -- */
+		void updateSystrayContextMenu(void);
 
 		void setCurrentSessionObjectPath(pid_t pid);
 		const std::string getCurrentSessionState(void);
@@ -172,6 +170,17 @@ class DBusHandler
 		);
 		const GKDepsMap_type & getExecutablesDependenciesMap(const std::string & reserved);
 };
+
+inline const bool DBusHandler::isAnyDeviceUpdated(void) const
+{
+	return _devicesUpdatedEvent;
+}
+
+inline void DBusHandler::updateSystrayContextMenu(void)
+{
+	/* used by service main loop */
+	_devicesUpdatedEvent = true;
+}
 
 } // namespace GLogiK
 
