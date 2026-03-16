@@ -197,6 +197,8 @@ void DBusHandler::prepareToStop(const bool notifications)
 		 * Anyway, devices are always initialized *after* a successful registration. */
 		_devices.clearDevices(notifications);
 
+		this->updateSystrayContextMenu();
+
 		this->unregisterWithDaemon();
 
 		/* send signal to GUI */
