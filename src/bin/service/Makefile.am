@@ -59,7 +59,16 @@ GLogiKs_CXXFLAGS += @QT_CFLAGS@
 GLogiKs_LDADD += @QT_LIBS@
 GLogiKs_SOURCES += \
 		%D%/systray.cpp \
-		%D%/systray.hpp
+		%D%/systray.hpp \
+		%D%/icons.cpp \
+		%D%/icons.hpp
+
+nodist_GLogiKs_SOURCES = resources.cpp
+
+CLEANFILES = resources.cpp
+
+resources.cpp:
+	rcc -g cpp -o resources.cpp $(srcdir)/data/icons/icons.qrc
 endif
 endif
 

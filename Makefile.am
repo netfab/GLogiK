@@ -57,6 +57,8 @@ EXTRA_DIST += \
 	%D%/data/init/meson.build \
 	%D%/data/pbm/meson.build \
 	%D%/data/udev/meson.build \
+	%D%/data/icons/GLogiK \
+	%D%/data/icons/icons.qrc \
 	%D%/data/sysusers.d/GLogiK.conf \
 	%D%/data/tmpfiles.d/GLogiK.conf
 

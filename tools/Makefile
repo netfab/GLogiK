@@ -17,6 +17,7 @@ QT_OPTS=--enable-qt5 --enable-systray --disable-qt6
 else
 ifeq ($(WANTED_QT),QT6)
 QT_BIN_DIR=/usr/lib64/qt6/bin
+QT_LIBEXEC_DIR=/usr/lib64/qt6/libexec
 #QT_OPTS=--disable-qt5 --enable-systray --enable-qt6
 QT_OPTS=--enable-systray --enable-qt6
 else
@@ -24,7 +25,7 @@ $(error wrong Qt version)
 endif
 endif
 
-export PATH:=${QT_BIN_DIR}:${PATH}
+export PATH:=${QT_LIBEXEC_DIR}:${QT_BIN_DIR}:${PATH}
 # --
 
 # --

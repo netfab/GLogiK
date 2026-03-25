@@ -268,6 +268,8 @@ if enable_dbus
   if enable_qt6
     if enable_qt6
       qt_dep = dependency('qt6', modules: ['Core', 'Gui', 'Widgets'])
+      qt6 = import('qt6')
+      res_cpp = qt6.compile_resources(name: 'resources', sources: 'data/icons/icons.qrc')
     endif
 
     deps_versions_array += [

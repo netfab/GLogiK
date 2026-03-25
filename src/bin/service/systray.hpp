@@ -33,6 +33,8 @@
 
 #include "include/DeviceID.hpp"
 
+#include "icons.hpp"
+
 namespace GLogiK
 {
 
@@ -88,6 +90,8 @@ class DesktopServiceSystray
 
 		QSystemTrayIcon* _trayIcon;
 		QMenu* _trayIconMenu;
+
+		Icons _icons;
 
 		bool _deviceEventTriggered;
 		bool _wantToRestart;

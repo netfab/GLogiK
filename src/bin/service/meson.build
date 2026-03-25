@@ -26,6 +26,9 @@ if enable_systray
   GLogiKs_sources += [
     'systray.cpp',
     'systray.hpp',
+    'icons.cpp',
+    'icons.hpp',
+    res_cpp
   ]
 endif
 

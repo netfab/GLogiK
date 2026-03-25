@@ -21,8 +21,9 @@
 
 #include <new>
 
-#include <QString>
 #include <QIcon>
+#include <QPalette>
+#include <QString>
 
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
@@ -93,6 +94,8 @@ void DesktopServiceSystray::updateContextMenu(const DevicesMap_type & devices)
 		 */
 		_trayIconMenu->clear();
 
+		const QPalette & palette = _trayIconMenu->palette();
+
 		{ /* rebuilding the menu */
 			{
 				QMenu* devicesSubmenu;
@@ -146,6 +149,7 @@ void DesktopServiceSystray::updateContextMenu(const DevicesMap_type & devices)
 							QObject::connect(startDevice, &QAction::triggered,
 								this, &DesktopServiceSystray::startDevice);
 						}
+						startDevice->setIcon( _icons.icon("play", palette) );
 
 						deviceEventMenu->addAction(startDevice);
 					} // >>>
@@ -160,6 +164,7 @@ void DesktopServiceSystray::updateContextMenu(const DevicesMap_type & devices)
 							QObject::connect(restartDevice, &QAction::triggered,
 								this, &DesktopServiceSystray::restartDevice);
 						}
+						restartDevice->setIcon( _icons.icon("refresh", palette) );
 
 						deviceEventMenu->addAction(restartDevice);
 					} // >>>
@@ -176,6 +181,7 @@ void DesktopServiceSystray::updateContextMenu(const DevicesMap_type & devices)
 							QObject::connect(stopDevice, &QAction::triggered,
 								this, &DesktopServiceSystray::stopDevice);
 						}
+						stopDevice->setIcon( _icons.icon("stop", palette) );
 
 						deviceEventMenu->addAction(stopDevice);
 					} // >>>
@@ -187,12 +193,13 @@ void DesktopServiceSystray::updateContextMenu(const DevicesMap_type & devices)
 			QMenu* serviceSubmenu = _trayIconMenu->addMenu("Service");
 
 			{
-				QAction* restart = new QAction("restart", this);
+				QAction* restart = new QAction("restart the desktop service", this);
+				restart->setIcon( _icons.icon("refresh", palette) );
 				QObject::connect(restart, &QAction::triggered,
 					this, &DesktopServiceSystray::restartService);
 
-				QAction* stop = new QAction("stop", this);
-				stop->setIcon( QIcon::fromTheme(QIcon::ThemeIcon::ApplicationExit) );
+				QAction* stop = new QAction("exit the desktop service", this);
+				stop->setIcon( _icons.icon("off", palette) );
 				QObject::connect(stop, &QAction::triggered,
 					this, &DesktopServiceSystray::stopService);
 

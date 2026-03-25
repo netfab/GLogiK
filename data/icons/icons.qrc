@@ -1,0 +1,11 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+	<qresource prefix="/glogik">
+		<file>GLogiK/index.theme</file>
+
+		<file>GLogiK/scalable/actions/off.svg</file>
+		<file>GLogiK/scalable/actions/play.svg</file>
+		<file>GLogiK/scalable/actions/refresh.svg</file>
+		<file>GLogiK/scalable/actions/stop.svg</file>
+	</qresource>
+</RCC>
