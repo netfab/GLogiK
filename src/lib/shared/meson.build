@@ -20,8 +20,8 @@ if enable_dbus
   sm_dep = dependency('sm')
 
   GKShared_sources += [
-	'sessionManager.cpp',
-	'sessionManager.hpp',
+    'sessionManager.cpp',
+    'sessionManager.hpp',
   ]
 endif
 
@@ -31,22 +31,22 @@ deps_versions_array += [
 ]
 
 GKShared_lib = library(
-	'GKShared',
-	GKShared_sources,
-	include_directories : inc,
-	dependencies : [
-		boost_dep,
-		boost_serialization_dep,
-		ice_dep,
-		sm_dep,
-		GKUtils_lib_dep,
-	],
-	version : '0.0.0',
-	soversion : '0',
-	install : true,
+  'GKShared',
+  GKShared_sources,
+  include_directories : inc,
+  dependencies : [
+    boost_dep,
+    boost_serialization_dep,
+    ice_dep,
+    sm_dep,
+    GKUtils_lib_dep,
+  ],
+  version : '0.0.0',
+  soversion : '0',
+  install : true,
 )
 
 
 GKShared_lib_dep = declare_dependency(
-	link_with: GKShared_lib
+  link_with: GKShared_lib
 )

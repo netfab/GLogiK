@@ -17,15 +17,15 @@ GLogiKs_sources = [
 
 if enable_notifications
   GLogiKs_sources += [
-	'desktopNotification.cpp',
-	'desktopNotification.hpp',
+    'desktopNotification.cpp',
+    'desktopNotification.hpp',
   ]
 endif
 
 if enable_systray
   GLogiKs_sources += [
-	'systray.cpp',
-	'systray.hpp',
+    'systray.cpp',
+    'systray.hpp',
   ]
 endif
 
@@ -44,19 +44,19 @@ executable(
   GLogiKs_sources,
   include_directories : inc,
   dependencies : [
-	qt_dep,
-	thread_dep,
-	boost_dep,
-	boost_filesystem_dep,
-	boost_program_options_dep,
-	boost_serialization_dep,
+    qt_dep,
+    thread_dep,
+    boost_dep,
+    boost_filesystem_dep,
+    boost_program_options_dep,
+    boost_serialization_dep,
     libevdev_dep,
     libnotify_dep,
-	x11_dep,
-	xtst_dep,
-	GKUtils_lib_dep,
-	GKShared_lib_dep,
-	GKDBus_lib_dep,
+    x11_dep,
+    xtst_dep,
+    GKUtils_lib_dep,
+    GKShared_lib_dep,
+    GKDBus_lib_dep,
   ],
   install : true,
   install_rpath : gk_libdir

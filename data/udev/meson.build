@@ -7,8 +7,8 @@ if udev_rules_dir == ''
   udev_rules_dir = udev_rules_dir / 'rules.d'
 
   if get_option('relative_udev_rules_dir')
-	#! make the path relative, meson will prepend the prefix at install phase
-	udev_rules_dir = udev_rules_dir.substring(1)
+    #! make the path relative, meson will prepend the prefix at install phase
+    udev_rules_dir = udev_rules_dir.substring(1)
   endif
 endif
 

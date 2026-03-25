@@ -21,26 +21,26 @@ GKUtils_sources = [
 ]
 
 GKUtils_lib = library(
-	'GKUtils',
-	GKUtils_sources,
-	include_directories : inc,
-	dependencies : [
-		boost_dep,
-		boost_thread_dep,
-		boost_log_setup_dep,
-		boost_log_dep,
-		boost_filesystem_dep,
-		boost_process_dep
-	],
-	version : '0.0.0',
-	soversion : '0',
-	install : true,
+  'GKUtils',
+  GKUtils_sources,
+  include_directories : inc,
+  dependencies : [
+    boost_dep,
+    boost_thread_dep,
+    boost_log_setup_dep,
+    boost_log_dep,
+    boost_filesystem_dep,
+    boost_process_dep
+  ],
+  version : '0.0.0',
+  soversion : '0',
+  install : true,
 )
 
 GKUtils_lib_dep = declare_dependency(
   link_with : GKUtils_lib,
   dependencies : [
-	boost_dep,
-	boost_log_dep,
+    boost_dep,
+    boost_log_dep,
   ]
 )

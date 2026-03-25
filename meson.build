@@ -2,8 +2,8 @@ project(
   'GLogiK',
   'cpp',
   default_options: [
-	'cpp_std=c++17',
-	'debug=false'
+    'cpp_std=c++17',
+    'debug=false'
   ],
   license: 'GPL-3',
   meson_version: '>=1.1',
@@ -276,8 +276,8 @@ if enable_dbus
 
     config_h.set('HAVE_QT', 1)
 
-	subdir('src/bin/gui/Qt')
-	subdir('data/applications')
+    subdir('src/bin/gui/Qt')
+    subdir('data/applications')
     subdir('data/gui')
     if(not enable_notifications)
       subdir('data/icons')

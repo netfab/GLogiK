@@ -32,12 +32,12 @@ executable(
   GKcQt_sources,
   include_directories : inc,
   dependencies : [
-	qt_dep,
-	boost_filesystem_dep,
-	boost_program_options_dep,
-	GKUtils_lib_dep,
-	GKShared_lib_dep,
-	GKDBus_lib_dep,
+    qt_dep,
+    boost_filesystem_dep,
+    boost_program_options_dep,
+    GKUtils_lib_dep,
+    GKShared_lib_dep,
+    GKDBus_lib_dep,
   ],
   install : true,
   install_rpath : gk_libdir
