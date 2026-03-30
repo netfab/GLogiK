@@ -223,10 +223,10 @@ int DesktopService::run(void)
 					dbusHandler.resetDevicesUpdatedEvent();
 				}
 
-				if( systray.deviceEventTriggered() )
+				if( systray.isDeviceEventTriggered() )
 				{
 					GKLog(trace, "process systray device event")
-					const std::string & devID = systray.getDeviceID();
+					const std::string & devID = systray.getDeviceEventID();
 					switch( systray.getDeviceEvent() )
 					{
 						case SystrayDeviceEvent::DEVICE_START:

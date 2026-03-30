@@ -52,35 +52,17 @@ class DesktopServiceSystray
 		DesktopServiceSystray(void);
 		~DesktopServiceSystray(void);
 
-		/* return true is any device event was triggered via systray (start/stop/restart) */
-		const bool deviceEventTriggered(void)
-		{
-			return _deviceEventTriggered;
-		}
-
-		const std::string & getDeviceID(void)
-		{
-			return _deviceID;
-		}
-
-		const SystrayDeviceEvent getDeviceEvent(void)
-		{
-			return _deviceEvent;
-		}
+		/* return true is any device event was triggered via systray */
+		const bool isDeviceEventTriggered(void) const;
+		const std::string & getDeviceEventID(void) const;    /* Event deviceID */
+		const SystrayDeviceEvent getDeviceEvent(void) const; /* DeviceEvent (start/stop/restart) */
 
 		void resetDeviceEvent(void);
 
 		void updateContextMenu(const DevicesMap_type & devices);
 
-		const bool wantToRestart(void) const
-		{
-			return _wantToRestart;
-		}
-
-		const bool wantToStop(void) const
-		{
-			return _wantToStop;
-		}
+		const bool wantToRestart(void) const;
+		const bool wantToStop(void) const;
 
 	protected:
 
@@ -106,6 +88,31 @@ class DesktopServiceSystray
 
 		void iconActivated(QSystemTrayIcon::ActivationReason reason);
 };
+
+inline const bool DesktopServiceSystray::isDeviceEventTriggered(void) const
+{
+	return _deviceEventTriggered;
+}
+
+inline const std::string & DesktopServiceSystray::getDeviceEventID(void) const
+{
+	return _deviceID;
+}
+
+inline const SystrayDeviceEvent DesktopServiceSystray::getDeviceEvent(void) const
+{
+	return _deviceEvent;
+}
+
+inline const bool DesktopServiceSystray::wantToRestart(void) const
+{
+	return _wantToRestart;
+}
+
+inline const bool DesktopServiceSystray::wantToStop(void) const
+{
+	return _wantToStop;
+}
 
 } // namespace GLogiK
 
