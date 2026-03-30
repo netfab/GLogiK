@@ -202,17 +202,20 @@ int DesktopService::run(void)
 #if HAVE_SYSTRAY && HAVE_QT
 				app.processEvents();
 
-				if( systray.wantToStop() )
 				{
-					LOG(info) << "process systray stop action --> bye bye";
-					break;
-				}
-				else if( systray.wantToRestart() )
-				{
-					/* on next loop iteration, send a restart request on DBus
-					 * and break the loop with dbusHandler.wantToStop() */
-					dbusHandler.restartService();
-					continue;
+					const SystrayServiceEvent event = systray.getServiceEvent();
+					if( event == SystrayServiceEvent::SERVICE_STOP )
+					{
+						LOG(info) << "process systray stop action --> bye bye";
+						break;
+					}
+					else if( event == SystrayServiceEvent::SERVICE_RESTART )
+					{
+						/* on next loop iteration, send a restart request on DBus
+						 * and break the loop with dbusHandler.wantToStop() */
+						dbusHandler.restartService();
+						continue;
+					}
 				}
 
 				if( dbusHandler.isAnyDeviceUpdated() )

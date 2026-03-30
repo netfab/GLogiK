@@ -38,11 +38,10 @@ using namespace NSGKUtils;
 DesktopServiceSystray::DesktopServiceSystray(void)
 	:	_deviceID(""),
 		_deviceEvent(SystrayDeviceEvent::DEVICE_STOP),
+		_serviceEvent(SystrayServiceEvent::SERVICE_RUN),
 		_trayIcon(nullptr),
 		_trayIconMenu(nullptr),
-		_deviceEventTriggered(false),
-		_wantToRestart(false),
-		_wantToStop(false)
+		_deviceEventTriggered(false)
 {
 	GK_LOG_FUNC
 
@@ -220,12 +219,12 @@ void DesktopServiceSystray::updateContextMenu(const DevicesMap_type & devices)
 
 void DesktopServiceSystray::restartService(void)
 {
-	_wantToRestart = true;
+	_serviceEvent = SystrayServiceEvent::SERVICE_RESTART;
 }
 
 void DesktopServiceSystray::stopService(void)
 {
-	_wantToStop = true;
+	_serviceEvent = SystrayServiceEvent::SERVICE_STOP;
 }
 
 void DesktopServiceSystray::startDevice(void)

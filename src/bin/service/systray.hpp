@@ -45,6 +45,13 @@ enum class SystrayDeviceEvent : uint8_t
 	DEVICE_RESTART
 };
 
+enum class SystrayServiceEvent : uint8_t
+{
+	SERVICE_RUN = 0,
+	SERVICE_RESTART,
+	SERVICE_STOP
+};
+
 class DesktopServiceSystray
 	:	public QMainWindow
 {
@@ -57,18 +64,18 @@ class DesktopServiceSystray
 		const std::string & getDeviceEventID(void) const;    /* Event deviceID */
 		const SystrayDeviceEvent getDeviceEvent(void) const; /* DeviceEvent (start/stop/restart) */
 
+		const SystrayServiceEvent getServiceEvent(void); /* ServiceEvent (stop/restart) */
+
 		void resetDeviceEvent(void);
 
 		void updateContextMenu(const DevicesMap_type & devices);
-
-		const bool wantToRestart(void) const;
-		const bool wantToStop(void) const;
 
 	protected:
 
 	private:
 		std::string _deviceID;
 		SystrayDeviceEvent _deviceEvent;
+		SystrayServiceEvent _serviceEvent;
 
 		QSystemTrayIcon* _trayIcon;
 		QMenu* _trayIconMenu;
@@ -76,8 +83,6 @@ class DesktopServiceSystray
 		Icons _icons;
 
 		bool _deviceEventTriggered;
-		bool _wantToRestart;
-		bool _wantToStop;
 
 		void restartService(void);
 		void stopService(void);
@@ -104,14 +109,11 @@ inline const SystrayDeviceEvent DesktopServiceSystray::getDeviceEvent(void) cons
 	return _deviceEvent;
 }
 
-inline const bool DesktopServiceSystray::wantToRestart(void) const
+inline const SystrayServiceEvent DesktopServiceSystray::getServiceEvent(void)
 {
-	return _wantToRestart;
-}
-
-inline const bool DesktopServiceSystray::wantToStop(void) const
-{
-	return _wantToStop;
+	const SystrayServiceEvent event = _serviceEvent;
+	_serviceEvent = SystrayServiceEvent::SERVICE_RUN;
+	return event;
 }
 
 } // namespace GLogiK
