@@ -39,26 +39,26 @@ endif
 include %D%/src/bin/daemon/Makefile.am
 
 EXTRA_DIST += \
-	%D%/data/tmpfiles.d/GLogiK.conf \
-	%D%/data/sysusers.d/GLogiK.conf \
 	%D%/meson.build \
 	%D%/meson.options \
 	%D%/version.sh \
-	%D%/src/lib/utils/meson.build \
-	%D%/src/lib/shared/meson.build \
 	%D%/src/lib/dbus/meson.build \
+	%D%/src/lib/shared/meson.build \
+	%D%/src/lib/utils/meson.build \
+	%D%/src/bin/daemon/meson.build \
+	%D%/src/bin/gui/Qt/meson.build \
 	%D%/src/bin/launcher/meson.build \
 	%D%/src/bin/service/meson.build \
-	%D%/src/bin/gui/Qt/meson.build \
-	%D%/src/bin/daemon/meson.build \
 	%D%/data/applications/meson.build \
-	%D%/data/udev/meson.build \
+	%D%/data/autostart/meson.build \
 	%D%/data/dbus/meson.build \
 	%D%/data/gui/meson.build \
+	%D%/data/icons/meson.build \
 	%D%/data/init/meson.build \
-	%D%/data/autostart/meson.build \
 	%D%/data/pbm/meson.build \
-	%D%/data/icons/meson.build
+	%D%/data/udev/meson.build \
+	%D%/data/sysusers.d/GLogiK.conf \
+	%D%/data/tmpfiles.d/GLogiK.conf
 
 LOCAL_LIBTOOL_FILES = \
 	$(top_srcdir)/m4/libtool.m4 \
