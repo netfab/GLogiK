@@ -1143,6 +1143,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 	)
 
 	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
+	bool devicesUpdated = false;
 
 	for(const auto& devID : devicesID)
 	{
@@ -1168,6 +1169,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 				{
 					GKLog2(trace, devID, " status from daemon : started")
 					_devices.startDevice(devID);
+					devicesUpdated = true;
 					this->updateSystrayContextMenu();
 				}
 				else
@@ -1188,7 +1190,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 		}
 	}
 
-	if( this->isAnyDeviceUpdated() )
+	if(devicesUpdated)
 		this->sendDevicesUpdatedSignal(); /* send signal to GUI */
 
 	/*
@@ -1211,6 +1213,7 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
 	)
 
 	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
+	bool devicesUpdated = false;
 
 	for(const auto& devID : devicesID)
 	{
@@ -1236,6 +1239,7 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
 				{
 					GKLog2(trace, devID, " status from daemon : stopped")
 					_devices.stopDevice(devID);
+					devicesUpdated = true;
 					this->updateSystrayContextMenu();
 				}
 				else
@@ -1256,7 +1260,7 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
 		}
 	}
 
-	if( this->isAnyDeviceUpdated() )
+	if(devicesUpdated)
 		this->sendDevicesUpdatedSignal(); /* send signal to GUI */
 }
 
@@ -1270,6 +1274,7 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 	)
 
 	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
+	bool devicesUpdated = false;
 
 	for(const auto& devID : devicesID)
 	{
@@ -1295,6 +1300,7 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 				{
 					GKLog2(trace, devID, " status from daemon : unplugged")
 					_devices.unplugDevice(devID);
+					devicesUpdated = true;
 					this->updateSystrayContextMenu();
 				}
 				else
@@ -1315,7 +1321,7 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 		}
 	}
 
-	if( this->isAnyDeviceUpdated() )
+	if(devicesUpdated)
 		this->sendDevicesUpdatedSignal(); /* send signal to GUI */
 }
 
