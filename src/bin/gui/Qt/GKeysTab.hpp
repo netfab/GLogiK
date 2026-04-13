@@ -43,7 +43,7 @@
 
 #include "Tab.hpp"
 
-#define GKEY_COMMAND_LINE_STRING_MAX_LENGTH 64
+#define GKEY_COMMAND_LINE_STRING_MAX_LENGTH 255
 
 namespace GLogiK
 {
