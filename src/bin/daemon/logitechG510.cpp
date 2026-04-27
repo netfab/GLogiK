@@ -36,65 +36,65 @@ using namespace NSGKUtils;
 
 const std::vector<RKey> G510Base::keys5BytesMap =
 {
-//	{ Keys::GK_KEY_,				3,	1 << 2 },
-	{ Keys::GK_KEY_LIGHT,			3,	1 << 3 },
-	{ Keys::GK_KEY_MR,				3,	1 << 7 },
+//	{              Keys::GK_KEY, 3, 1 << 2 },
+	{        Keys::GK_KEY_LIGHT, 3, 1 << 3 },
+	{           Keys::GK_KEY_MR, 3, 1 << 7 },
 
-	{ Keys::GK_KEY_MUTE_HEADSET,	4,	1 << 5 },
-	{ Keys::GK_KEY_MUTE_MICRO,		4,	1 << 6 },
-//	{ Keys::GK_KEY_,				4,	1 << 7 },
+	{ Keys::GK_KEY_MUTE_HEADSET, 4, 1 << 5 },
+	{   Keys::GK_KEY_MUTE_MICRO, 4, 1 << 6 },
+//	{             Keys::GK_KEY_, 4, 1 << 7 },
 };
 
 const std::vector<RKey> G510Base::MKeys5BytesMap =
 {
-	{ Keys::GK_KEY_M1,	3,	1 << 4 },
-	{ Keys::GK_KEY_M2,	3,	1 << 5 },
-	{ Keys::GK_KEY_M3,	3,	1 << 6 },
+	{ Keys::GK_KEY_M1, 3, 1 << 4 },
+	{ Keys::GK_KEY_M2, 3, 1 << 5 },
+	{ Keys::GK_KEY_M3, 3, 1 << 6 },
 };
 
 const std::vector<RKey> G510Base::GKeys5BytesMap =
 {
-	{ Keys::GK_KEY_G1,	1,	1 << 0 },
-	{ Keys::GK_KEY_G2,	1,	1 << 1 },
-	{ Keys::GK_KEY_G3,	1,	1 << 2 },
-	{ Keys::GK_KEY_G4,	1,	1 << 3 },
-	{ Keys::GK_KEY_G5,	1,	1 << 4 },
-	{ Keys::GK_KEY_G6,	1,	1 << 5 },
-	{ Keys::GK_KEY_G7,	1,	1 << 6 },
-	{ Keys::GK_KEY_G8,	1,	1 << 7 },
+	{ Keys::GK_KEY_G1 , 1, 1 << 0 },
+	{ Keys::GK_KEY_G2 , 1, 1 << 1 },
+	{ Keys::GK_KEY_G3 , 1, 1 << 2 },
+	{ Keys::GK_KEY_G4 , 1, 1 << 3 },
+	{ Keys::GK_KEY_G5 , 1, 1 << 4 },
+	{ Keys::GK_KEY_G6 , 1, 1 << 5 },
+	{ Keys::GK_KEY_G7 , 1, 1 << 6 },
+	{ Keys::GK_KEY_G8 , 1, 1 << 7 },
 
-	{ Keys::GK_KEY_G9,	2,	1 << 0 },
-	{ Keys::GK_KEY_G10,	2,	1 << 1 },
-	{ Keys::GK_KEY_G11,	2,	1 << 2 },
-	{ Keys::GK_KEY_G12,	2,	1 << 3 },
-	{ Keys::GK_KEY_G13,	2,	1 << 4 },
-	{ Keys::GK_KEY_G14,	2,	1 << 5 },
-	{ Keys::GK_KEY_G15,	2,	1 << 6 },
-	{ Keys::GK_KEY_G16,	2,	1 << 7 },
+	{ Keys::GK_KEY_G9 , 2, 1 << 0 },
+	{ Keys::GK_KEY_G10, 2, 1 << 1 },
+	{ Keys::GK_KEY_G11, 2, 1 << 2 },
+	{ Keys::GK_KEY_G12, 2, 1 << 3 },
+	{ Keys::GK_KEY_G13, 2, 1 << 4 },
+	{ Keys::GK_KEY_G14, 2, 1 << 5 },
+	{ Keys::GK_KEY_G15, 2, 1 << 6 },
+	{ Keys::GK_KEY_G16, 2, 1 << 7 },
 
-	{ Keys::GK_KEY_G17,	3,	1 << 0 },
-	{ Keys::GK_KEY_G18,	3,	1 << 1 },
+	{ Keys::GK_KEY_G17, 3, 1 << 0 },
+	{ Keys::GK_KEY_G18, 3, 1 << 1 },
 };
 
 const std::vector<RKey> G510Base::LCDKeys5BytesMap =
 {
-	{ Keys::GK_KEY_L1,	4,	1 << 0 },
-	{ Keys::GK_KEY_L2,	4,	1 << 1 },
-	{ Keys::GK_KEY_L3,	4,	1 << 2 },
-	{ Keys::GK_KEY_L4,	4,	1 << 3 },
-	{ Keys::GK_KEY_L5,	4,	1 << 4 },
+	{ Keys::GK_KEY_L1, 4, 1 << 0 },
+	{ Keys::GK_KEY_L2, 4, 1 << 1 },
+	{ Keys::GK_KEY_L3, 4, 1 << 2 },
+	{ Keys::GK_KEY_L4, 4, 1 << 3 },
+	{ Keys::GK_KEY_L5, 4, 1 << 4 },
 };
 
 const std::vector<RKey> G510Base::mediaKeys2BytesMap =
 {
-	{ Keys::GK_KEY_AUDIO_NEXT,			1,	1 << 0 },
-	{ Keys::GK_KEY_AUDIO_PREV,			1,	1 << 1 },
-	{ Keys::GK_KEY_AUDIO_STOP,			1,	1 << 2 },
-	{ Keys::GK_KEY_AUDIO_PLAY,			1,	1 << 3 },
-	{ Keys::GK_KEY_AUDIO_MUTE,			1,	1 << 4 },
-	{ Keys::GK_KEY_AUDIO_RAISE_VOLUME,	1,	1 << 5 },
-	{ Keys::GK_KEY_AUDIO_LOWER_VOLUME,	1,	1 << 6 },
-//	{ Keys::GK_KEY_,					1,	1 << 7 },
+	{         Keys::GK_KEY_AUDIO_NEXT, 1, 1 << 0 },
+	{         Keys::GK_KEY_AUDIO_PREV, 1, 1 << 1 },
+	{         Keys::GK_KEY_AUDIO_STOP, 1, 1 << 2 },
+	{         Keys::GK_KEY_AUDIO_PLAY, 1, 1 << 3 },
+	{         Keys::GK_KEY_AUDIO_MUTE, 1, 1 << 4 },
+	{ Keys::GK_KEY_AUDIO_RAISE_VOLUME, 1, 1 << 5 },
+	{ Keys::GK_KEY_AUDIO_LOWER_VOLUME, 1, 1 << 6 },
+//	{                   Keys::GK_KEY_, 1, 1 << 7 },
 };
 
 const std::vector<MKeyLed> G510Base::ledsMask =
@@ -108,43 +108,53 @@ const std::vector<MKeyLed> G510Base::ledsMask =
 const std::vector<USBDeviceID> G510Base::knownDevices =
 {
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-										{
-/*								vendor */	VENDOR_LOGITECH,
-/*								 model */	"G510s",
-/*						  product name */	"Gaming Keyboard",
-/*							 vendor ID */	VENDOR_ID_LOGITECH,
-/*							product ID */	"c22d",
-/*						  capabilities */	toEnumType(
-												Caps::GK_BACKLIGHT_COLOR |
-												Caps::GK_MACROS_KEYS |
-												Caps::GK_MEDIA_KEYS |
-												Caps::GK_LCD_SCREEN
-											),
-											1, 1, 0, 2,
-/*	(libusb) interrupt read max length */	8,
-/*			MacrosKeys transfer length */	5,
-/*			 MediaKeys transfer length */	2,
-/*			   LCDKeys transfer length */	5
-										},
+	{
+		VENDOR_LOGITECH,    /* vendor */
+		"G510s",            /* model */
+		"Gaming Keyboard",  /* product name */
+		VENDOR_ID_LOGITECH, /* vendor ID */
+		"c22d",             /* product ID */
+		toEnumType(         /* device capabilities */
+			Caps::GK_BACKLIGHT_COLOR |
+			Caps::GK_MACROS_KEYS |
+			Caps::GK_MEDIA_KEYS |
+			Caps::GK_LCD_SCREEN
+		),
+		    /* USB_INTERFACE_DESCRIPTOR */
+		1,  /* (libusb) bConfigurationValue */
+		1,  /* (libusb) bInterfaceNumber */
+		0,  /* (libusb) bAlternateSetting */
+		2,  /* (libusb) bNumEndpoints */
+		    /* -- */
+		8,  /* (libusb) interrupt read max length */
+		5,  /* MacrosKeys transfer length */
+		2,  /* MediaKeys transfer length */
+		5   /* LCDKeys transfer length */
+	},
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-										{
-/*								vendor */	VENDOR_LOGITECH,
-/*								 model */	"G510s",
-/*						  product name */	"Gaming Keyboard",
-/*							 vendor ID */	VENDOR_ID_LOGITECH,
-/*			(onboard audio) product ID */	"c22e",
-/*						  capabilities */	toEnumType(
-												Caps::GK_BACKLIGHT_COLOR |
-												Caps::GK_MACROS_KEYS |
-												Caps::GK_MEDIA_KEYS |
-												Caps::GK_LCD_SCREEN
-											),
-											1, 1, 0, 2,
-/*	(libusb) interrupt read max length */	8,
-/*			MacrosKeys transfer length */	5,
-/*			 MediaKeys transfer length */	2,
-/*			   LCDKeys transfer length */	5
-										},
+	{
+		VENDOR_LOGITECH,    /* vendor */
+		"G510s",            /* model */
+		"Gaming Keyboard",  /* product name */
+		VENDOR_ID_LOGITECH, /* vendor ID */
+		"c22e",             /* product ID (onboard audio) */
+		toEnumType(         /* device capabilities */
+			Caps::GK_BACKLIGHT_COLOR |
+			Caps::GK_MACROS_KEYS |
+			Caps::GK_MEDIA_KEYS |
+			Caps::GK_LCD_SCREEN
+		),
+		    /* USB_INTERFACE_DESCRIPTOR */
+		1,  /* (libusb) bConfigurationValue */
+		1,  /* (libusb) bInterfaceNumber */
+		0,  /* (libusb) bAlternateSetting */
+		2,  /* (libusb) bNumEndpoints */
+		    /* -- */
+		8,  /* (libusb) interrupt read max length */
+		5,  /* MacrosKeys transfer length */
+		2,  /* MediaKeys transfer length */
+		5   /* LCDKeys transfer length */
+	},
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 };
 
@@ -429,7 +439,8 @@ KeyStatus G510Base::processKeyEvent(USBDevice & device)
 			break;
 		default:
 #if DEBUGGING_ON && DEBUG_KEYS
-			GKLog3(trace, device.getID(), " not implemented : bytes : ", device.getLastKeysInterruptTransferLength())
+			GKLog3(trace, device.getID(), " not implemented : bytes : ",
+				device.getLastKeysInterruptTransferLength())
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
