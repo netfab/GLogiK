@@ -59,6 +59,8 @@ const std::string USBInit::getLibUSBVersion(void)
 
 USBInit::USBInit(void)
 {
+	GK_LOG_FUNC
+
 	if( ! USBInit::status )
 	{
 		GKLog(trace, "initializing libusb")
@@ -75,6 +77,8 @@ USBInit::USBInit(void)
 
 USBInit::~USBInit(void)
 {
+	GK_LOG_FUNC
+
 	USBInit::counter--;
 
 	if (USBInit::status and USBInit::counter == 0)
@@ -90,6 +94,8 @@ const int USBInit::getUSBDevicePortNumbers(
 	USBDevice & device,
 	USBPortNumbers_type & port_numbers)
 {
+	GK_LOG_FUNC
+
 	/* throws on failure */
 	this->seekUSBDevice(device);
 
