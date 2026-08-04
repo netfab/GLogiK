@@ -678,7 +678,8 @@ void DevicesManager::searchSupportedDevices(
 							}
 
 #if DEBUGGING_ON
-							udevDeviceProperties(dev, devss);
+							if(GKLogging::GKVerbose)
+								udevDeviceProperties(dev, devss);
 #endif
 
 							//const std::string vendor( get_property_value("ID_VENDOR") );

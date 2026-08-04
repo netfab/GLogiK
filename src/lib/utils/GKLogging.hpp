@@ -62,6 +62,7 @@ class GKLogging
 		~GKLogging(void) = delete;
 
 		static bool GKDebug;
+		static bool GKVerbose;
 		static src::severity_logger< severity_level > GKLogger;
 
 		static void initConsoleLog(const std::string & baseName);

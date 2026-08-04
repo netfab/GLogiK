@@ -341,12 +341,10 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[])
 
 	desc.add_options()
 //		("help,h", "produce help message")
-		("daemonize,d", po::bool_switch()->default_value(false),
-			"run in daemon mode")
-		("pid-file,p", po::value(&_pidFileName),
-			"define the PID file")
-		("version,v", po::bool_switch()->default_value(false),
-			"print some versions informations and exit")
+		("daemonize,d", po::bool_switch()->default_value(false), "run in daemon mode")
+		("pid-file,p", po::value(&_pidFileName), "define the PID file")
+		("verbose,V", po::bool_switch()->default_value(false), "verbose mode")
+		("version,v", po::bool_switch()->default_value(false), "print some versions informations")
 	;
 
 #if DEBUGGING_ON
@@ -378,6 +376,10 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[])
 		GLogiKDaemon::daemonized = false;
 	else if( daemonized )
 		GLogiKDaemon::daemonized = true;
+
+	bool verbose = vm.count("verbose") ? vm["verbose"].as<bool>() : false;
+	if( verbose )
+		GKLogging::GKVerbose = true;
 
 #if DEBUGGING_ON
 	bool debug = vm.count("debug") ? vm["debug"].as<bool>() : false;
