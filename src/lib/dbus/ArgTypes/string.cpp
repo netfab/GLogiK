@@ -79,7 +79,7 @@ const std::string & ArgString::getNextStringArgument(void)
 	/* ability to send empty strings,
 	 * see ArgBase::decodeArgumentFromIterator()
 	 * in ArgTypes/ArgBase.cpp */
-	const uint64_t size = ArgUInt64::getNextUInt64Argument();
+	const std::uint64_t size = ArgUInt64::getNextUInt64Argument();
 
 	if( size != 0 )
 	{

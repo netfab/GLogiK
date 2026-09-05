@@ -46,9 +46,9 @@ class ArgBase
 
 		thread_local static std::vector<std::string> stringArguments;
 		thread_local static std::vector<int32_t> int32Arguments;
-		thread_local static std::vector<uint8_t> byteArguments;
-		thread_local static std::vector<uint16_t> uint16Arguments;
-		thread_local static std::vector<uint64_t> uint64Arguments;
+		thread_local static std::vector<std::uint8_t> byteArguments;
+		thread_local static std::vector<std::uint16_t> uint16Arguments;
+		thread_local static std::vector<std::uint64_t> uint64Arguments;
 		thread_local static std::vector<bool> booleanArguments;
 
 		template<typename T, typename A>
@@ -62,9 +62,8 @@ class ArgBase
 		static void decodeArgumentFromIterator(
 			DBusMessageIter* iter,
 			const char* signature,
-			const uint16_t num
+			const std::uint16_t num
 		);
-
 };
 
 } // namespace NSGKDBus

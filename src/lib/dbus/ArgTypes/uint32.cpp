@@ -30,7 +30,7 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-void TypeUInt32::appendUInt32(const uint32_t value)
+void TypeUInt32::appendUInt32(const std::uint32_t value)
 {
 	GK_LOG_FUNC
 

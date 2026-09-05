@@ -30,14 +30,14 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-void TypeUInt64::appendUInt64(const uint64_t value)
+void TypeUInt64::appendUInt64(const std::uint64_t value)
 {
 	this->appendUInt64(&_itMessage, value);
 }
 
 void TypeUInt64::appendUInt64(
 	DBusMessageIter *iter,
-	const uint64_t value)
+	const std::uint64_t value)
 {
 	GK_LOG_FUNC
 
@@ -52,11 +52,11 @@ void TypeUInt64::appendUInt64(
 #endif
 }
 
-const uint64_t ArgUInt64::getNextUInt64Argument(void)
+const std::uint64_t ArgUInt64::getNextUInt64Argument(void)
 {
 	if( ArgBase::uint64Arguments.empty() )
 		throw EmptyContainer("missing argument : uint64");
-	const uint64_t ret = ArgBase::uint64Arguments.back();
+	const std::uint64_t ret = ArgBase::uint64Arguments.back();
 	ArgBase::uint64Arguments.pop_back();
 	return ret;
 }

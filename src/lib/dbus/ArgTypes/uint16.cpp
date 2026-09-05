@@ -30,14 +30,14 @@ namespace NSGKDBus
 
 using namespace NSGKUtils;
 
-void TypeUInt16::appendUInt16(const uint16_t value)
+void TypeUInt16::appendUInt16(const std::uint16_t value)
 {
 	this->appendUInt16(&_itMessage, value);
 }
 
 void TypeUInt16::appendUInt16(
 	DBusMessageIter *iter,
-	const uint16_t value)
+	const std::uint16_t value)
 {
 	GK_LOG_FUNC
 
@@ -52,11 +52,11 @@ void TypeUInt16::appendUInt16(
 #endif
 }
 
-const uint16_t ArgUInt16::getNextUInt16Argument(void)
+const std::uint16_t ArgUInt16::getNextUInt16Argument(void)
 {
 	if( ArgBase::uint16Arguments.empty() )
 		throw EmptyContainer("missing argument : uint16");
-	const uint16_t ret = ArgBase::uint16Arguments.back();
+	const std::uint16_t ret = ArgBase::uint16Arguments.back();
 	ArgBase::uint16Arguments.pop_back();
 	return ret;
 }

@@ -304,7 +304,7 @@ void GKDBus::checkForBusMessages(
 	GKDBusEvents::currentBus = bus; /* used on introspection */
 
 #if DEBUGGING_ON
-	uint16_t c = 0;
+	std::uint16_t c = 0;
 #endif
 
 	while( true )

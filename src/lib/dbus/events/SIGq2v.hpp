@@ -31,7 +31,7 @@
 #include "callbackEvent.hpp"
 
 
-typedef std::function<void(const uint16_t)> SIGq2v; /* uint16_t to void */
+typedef std::function<void(const std::uint16_t)> SIGq2v; /* std::uint16_t to void */
 
 namespace NSGKDBus
 {

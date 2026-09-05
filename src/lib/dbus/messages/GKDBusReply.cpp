@@ -162,7 +162,7 @@ void GKDBusMessageReply::appendGKDepsMapToReply(const GLogiK::GKDepsMap_type & d
 		_reply->appendGKDepsMap(depsMap);
 }
 
-void GKDBusMessageReply::appendUInt64ToReply(const uint64_t value)
+void GKDBusMessageReply::appendUInt64ToReply(const std::uint64_t value)
 {
 	if(_reply != nullptr) /* sanity check */
 		_reply->appendUInt64(value);

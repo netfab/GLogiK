@@ -41,9 +41,9 @@ template <>
 
 	try
 	{
-		const uint16_t arg1( ArgUInt16::getNextUInt16Argument() );
+		const std::uint16_t arg1( ArgUInt16::getNextUInt16Argument() );
 
-		/* call uint16_t to void callback */
+		/* call std::uint16_t to void callback */
 		this->callback(arg1);
 	}
 	catch ( const GLogiKExcept & e )

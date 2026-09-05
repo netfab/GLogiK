@@ -35,7 +35,7 @@ class TypeUInt32
 	:	virtual private TypeBase
 {
 	public:
-		void appendUInt32(const uint32_t value);
+		void appendUInt32(const std::uint32_t value);
 
 	protected:
 		TypeUInt32(void) = default;

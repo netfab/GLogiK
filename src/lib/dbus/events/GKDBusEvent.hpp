@@ -32,7 +32,7 @@
 namespace NSGKDBus
 {
 
-enum class DBusEventType : uint8_t
+enum class DBusEventType : std::uint8_t
 {
 	DBUS_METHOD_EVENT = 0,
 	DBUS_SIGNAL_EVENT

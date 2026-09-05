@@ -36,7 +36,7 @@ class TypeUInt64
 	:	virtual private TypeBase
 {
 	public:
-		void appendUInt64(const uint64_t value);
+		void appendUInt64(const std::uint64_t value);
 
 	protected:
 		TypeUInt64(void) = default;
@@ -44,7 +44,7 @@ class TypeUInt64
 
 		void appendUInt64(
 			DBusMessageIter *iter,
-			const uint64_t value
+			const std::uint64_t value
 		);
 
 	private:
@@ -54,7 +54,7 @@ class ArgUInt64
 	:	virtual protected ArgBase
 {
 	public:
-		static const uint64_t getNextUInt64Argument(void);
+		static const std::uint64_t getNextUInt64Argument(void);
 
 	protected:
 		ArgUInt64(void) = default;

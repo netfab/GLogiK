@@ -30,7 +30,7 @@ using namespace NSGKUtils;
 
 void TypeMKeysID::appendMKeysID(const GLogiK::MKeysID keyID)
 {
-	const uint8_t value = toEnumType(keyID);
+	const std::uint8_t value = toEnumType(keyID);
 	this->appendUInt8(value);
 }
 
@@ -46,7 +46,7 @@ const GLogiK::MKeysID ArgMKeysID::getNextMKeysIDArgument(void)
 
 	try
 	{
-		const uint8_t value = ArgUInt8::getNextByteArgument();
+		const std::uint8_t value = ArgUInt8::getNextByteArgument();
 
 		if(value > GLogiK::MKeyID_MAX)
 			throw GLogiKExcept("wrong MKeysID value");

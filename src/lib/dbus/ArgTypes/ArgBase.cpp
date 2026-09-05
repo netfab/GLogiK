@@ -30,15 +30,15 @@ using namespace NSGKUtils;
 
 thread_local std::vector<std::string> ArgBase::stringArguments = {};
 thread_local std::vector<int32_t> ArgBase::int32Arguments = {};
-thread_local std::vector<uint8_t> ArgBase::byteArguments = {};
-thread_local std::vector<uint16_t> ArgBase::uint16Arguments = {};
-thread_local std::vector<uint64_t> ArgBase::uint64Arguments = {};
+thread_local std::vector<std::uint8_t> ArgBase::byteArguments = {};
+thread_local std::vector<std::uint16_t> ArgBase::uint16Arguments = {};
+thread_local std::vector<std::uint64_t> ArgBase::uint64Arguments = {};
 thread_local std::vector<bool> ArgBase::booleanArguments = {};
 
 void ArgBase::decodeArgumentFromIterator(
 	DBusMessageIter* iter,
 	const char* signature,
-	const uint16_t num)
+	const std::uint16_t num)
 {
 	GK_LOG_FUNC
 
@@ -74,7 +74,7 @@ void ArgBase::decodeArgumentFromIterator(
 				 * ArgString::getNextStringArgument() and TypeString::appendString()
 				 * in ArgTypes/string.cpp
 				 *
-				 * for non-empty strings, uint64_t argument must be added here, else
+				 * for non-empty strings, std::uint64_t argument must be added here, else
 				 * ::decodeArgumentFromIterator() will fail to decode arguments from
 				 * DBusMessage(s) that were NOT sent using libGKDBus
 				 *
@@ -104,7 +104,7 @@ void ArgBase::decodeArgumentFromIterator(
 			break;
 		case DBUS_TYPE_ARRAY:
 			{
-				uint16_t c = 0;
+				std::uint16_t c = 0;
 				DBusMessageIter itArray;
 				dbus_message_iter_recurse(iter, &itArray);
 				/* checking that we really have an array here, else
@@ -123,7 +123,7 @@ void ArgBase::decodeArgumentFromIterator(
 			break;
 		case DBUS_TYPE_BYTE:
 			{
-				uint8_t byte = 0;
+				std::uint8_t byte = 0;
 				dbus_message_iter_get_basic(iter, &byte);
 				ArgBase::byteArguments.push_back(byte);
 				//GKLog2(trace, "uint8_t arg value : ", value)
@@ -131,7 +131,7 @@ void ArgBase::decodeArgumentFromIterator(
 			break;
 		case DBUS_TYPE_UINT16:
 			{
-				uint16_t value = 0;
+				std::uint16_t value = 0;
 				dbus_message_iter_get_basic(iter, &value);
 				ArgBase::uint16Arguments.push_back(value);
 				//GKLog2(trace, "uint16_t arg value : ", value)
@@ -139,7 +139,7 @@ void ArgBase::decodeArgumentFromIterator(
 			break;
 		case DBUS_TYPE_UINT64:
 			{
-				uint64_t value = 0;
+				std::uint64_t value = 0;
 				dbus_message_iter_get_basic(iter, &value);
 				ArgBase::uint64Arguments.push_back(value);
 				//GKLog2(trace, "uint64_t arg value : ", value)
@@ -160,7 +160,7 @@ void ArgBase::decodeArgumentFromIterator(
 			{
 				do
 				{
-					uint16_t c = 0;
+					std::uint16_t c = 0;
 					DBusMessageIter itStruct;
 					dbus_message_iter_recurse(iter, &itStruct);
 					do
@@ -177,7 +177,7 @@ void ArgBase::decodeArgumentFromIterator(
 			break;
 		case DBUS_TYPE_VARIANT:
 			{
-				uint16_t c = 0;
+				std::uint16_t c = 0;
 				DBusMessageIter itSub;
 				//GKLog(trace, "parsing variant")
 				dbus_message_iter_recurse(iter, &itSub);
@@ -210,7 +210,7 @@ void ArgBase::fillInArguments(DBusMessage* message)
 		return;
 	}
 
-	uint16_t c = 0;
+	std::uint16_t c = 0;
 	DBusMessageIter itArgument;
 
 	if( ! dbus_message_iter_init(message, &itArgument) )
@@ -246,7 +246,7 @@ const int ArgBase::decodeNextArgument(DBusMessageIter* itArgument)
 	if(currentType == DBUS_TYPE_INVALID) /* no more arguments, or struct or array */
 		return currentType;
 
-	uint16_t c = 0;
+	std::uint16_t c = 0;
 	char* signature = dbus_message_iter_get_signature(itArgument);
 	ArgBase::decodeArgumentFromIterator(itArgument, signature, c);
 	dbus_free(signature);

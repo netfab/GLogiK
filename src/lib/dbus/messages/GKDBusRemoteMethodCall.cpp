@@ -160,19 +160,19 @@ void GKDBusMessageRemoteMethodCall::appendStringToRemoteMethodCall(const std::st
 		_remoteMethodCall->appendString(value);
 }
 
-void GKDBusMessageRemoteMethodCall::appendUInt8ToRemoteMethodCall(const uint8_t value)
+void GKDBusMessageRemoteMethodCall::appendUInt8ToRemoteMethodCall(const std::uint8_t value)
 {
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendUInt8(value);
 }
 
-void GKDBusMessageRemoteMethodCall::appendUInt32ToRemoteMethodCall(const uint32_t value)
+void GKDBusMessageRemoteMethodCall::appendUInt32ToRemoteMethodCall(const std::uint32_t value)
 {
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendUInt32(value);
 }
 
-void GKDBusMessageRemoteMethodCall::appendUInt64ToRemoteMethodCall(const uint64_t value)
+void GKDBusMessageRemoteMethodCall::appendUInt64ToRemoteMethodCall(const std::uint64_t value)
 {
 	if(_remoteMethodCall != nullptr) /* sanity check */
 		_remoteMethodCall->appendUInt64(value);
@@ -228,7 +228,7 @@ void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void)
 
 	dbus_pending_call_block(_pendingCall);
 
-	uint16_t c = 0;
+	std::uint16_t c = 0;
 
 	DBusMessage* message = nullptr;
 	// TODO could set a timer between retries ?

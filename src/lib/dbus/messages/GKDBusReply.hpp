@@ -79,7 +79,7 @@ class GKDBusMessageReply
 		void appendLCDPPArrayToReply(const GLogiK::LCDPPArray_type & array);
 		void appendGKDepsMapToReply(const GLogiK::GKDepsMap_type & depsMap);
 
-		void appendUInt64ToReply(const uint64_t value);
+		void appendUInt64ToReply(const std::uint64_t value);
 
 		void appendAsyncArgsToReply(DBusMessage* asyncContainer);
 

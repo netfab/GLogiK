@@ -141,7 +141,7 @@ const GLogiK::macro_type ArgMacro::getNextMacroArgument(const unsigned int macro
 
 			e.code = ArgUInt8::getNextByteArgument();
 
-			const uint8_t value = ArgUInt8::getNextByteArgument();
+			const std::uint8_t value = ArgUInt8::getNextByteArgument();
 			if(value > GLogiK::EventValue::EVENT_KEY_UNKNOWN)
 				throw GLogiKExcept("wrong event value for enum conversion");
 

@@ -39,7 +39,7 @@ void GKDBusMessageAsyncContainer::appendAsyncString(const std::string & value)
 	this->appendString(value);
 }
 
-void GKDBusMessageAsyncContainer::appendAsyncUInt64(const uint64_t value)
+void GKDBusMessageAsyncContainer::appendAsyncUInt64(const std::uint64_t value)
 {
 	this->appendUInt64(value);
 }

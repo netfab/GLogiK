@@ -41,7 +41,7 @@ void TypeGKeysIDArray::appendGKeysIDArray(const GLogiK::GKeysIDArray_type & keys
 
 	DBusMessageIter itContainer;
 
-	const uint8_t size = keysID.size();
+	const std::uint8_t size = keysID.size();
 	this->appendUInt8(size);
 
 	if( ! dbus_message_iter_open_container(
@@ -54,7 +54,7 @@ void TypeGKeysIDArray::appendGKeysIDArray(const GLogiK::GKeysIDArray_type & keys
 
 	for(const GLogiK::GKeysID keyID : keysID)
 	{
-		const uint8_t value = toEnumType(keyID);
+		const std::uint8_t value = toEnumType(keyID);
 		if( ! dbus_message_iter_append_basic(&itContainer, DBUS_TYPE_BYTE, &value) )
 		{
 			LOG(error) << "GKeysID array append_basic failure, not enough memory";

@@ -155,13 +155,13 @@ void GKDBusMessageBroadcastSignal::appendStringToBroadcastSignal(const std::stri
 		_signal->appendString(value);
 }
 
-void GKDBusMessageBroadcastSignal::appendUInt8ToBroadcastSignal(const uint8_t value)
+void GKDBusMessageBroadcastSignal::appendUInt8ToBroadcastSignal(const std::uint8_t value)
 {
 	if(_signal != nullptr) /* sanity check */
 		_signal->appendUInt8(value);
 }
 
-void GKDBusMessageBroadcastSignal::appendUInt16ToBroadcastSignal(const uint16_t value)
+void GKDBusMessageBroadcastSignal::appendUInt16ToBroadcastSignal(const std::uint16_t value)
 {
 	if(_signal != nullptr) /* sanity check */
 		_signal->appendUInt16(value);

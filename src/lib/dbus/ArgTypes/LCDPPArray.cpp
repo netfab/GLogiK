@@ -128,7 +128,7 @@ const GLogiK::LCDPPArray_type ArgLCDPPArray::getNextLCDPPArrayArgument(void)
 
 	const std::string rebuild_failed("rebuilding LCDPluginsProperties vector failed");
 
-	const uint64_t size = ArgUInt64::getNextUInt64Argument();
+	const std::uint64_t size = ArgUInt64::getNextUInt64Argument();
 
 	using Size = GLogiK::LCDPPArray_type::size_type;
 	Size i = 0;
@@ -141,7 +141,7 @@ const GLogiK::LCDPPArray_type ArgLCDPPArray::getNextLCDPPArrayArgument(void)
 
 		while(i < size)
 		{
-			const uint64_t id = ArgUInt64::getNextUInt64Argument();
+			const std::uint64_t id = ArgUInt64::getNextUInt64Argument();
 			const std::string name = ArgString::getNextStringArgument();
 			const std::string desc = ArgString::getNextStringArgument();
 			pluginsArray.push_back({id, name, desc});

@@ -76,7 +76,7 @@ const std::vector<std::string> ArgStringArray::getNextStringArray(void)
 {
 	GK_LOG_FUNC
 
-	const uint64_t size = ArgUInt64::getNextUInt64Argument();
+	const std::uint64_t size = ArgUInt64::getNextUInt64Argument();
 	std::vector<std::string> ret;
 
 	if(size > 0)

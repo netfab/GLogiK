@@ -43,9 +43,9 @@ template <>
 	{
 		const std::string arg1( ArgString::getNextStringArgument() );
 		const std::string arg2( ArgString::getNextStringArgument() );
-		const uint8_t arg3 = ArgUInt8::getNextByteArgument();
-		const uint8_t arg4 = ArgUInt8::getNextByteArgument();
-		const uint8_t arg5 = ArgUInt8::getNextByteArgument();
+		const std::uint8_t arg3 = ArgUInt8::getNextByteArgument();
+		const std::uint8_t arg4 = ArgUInt8::getNextByteArgument();
+		const std::uint8_t arg5 = ArgUInt8::getNextByteArgument();
 
 		/* call two strings three bytes to bool callback */
 		ret = this->callback(arg1, arg2, arg3, arg4, arg5);

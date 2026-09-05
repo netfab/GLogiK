@@ -27,7 +27,7 @@
 namespace NSGKDBus
 {
 
-enum class BusConnection : uint8_t
+enum class BusConnection : std::uint8_t
 {
 	GKDBUS_SESSION = 0,
 	GKDBUS_SYSTEM,

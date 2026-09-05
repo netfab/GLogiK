@@ -32,13 +32,13 @@
 #include "callbackEvent.hpp"
 
 
-/* two strings one byte one uint64_t to bool */
+/* two strings one byte one std::uint64_t to bool */
 typedef std::function<
 	const bool(
 		const std::string&,
 		const std::string&,
-		const uint8_t,
-		const uint64_t
+		const std::uint8_t,
+		const std::uint64_t
 	) > SIGssyt2b;
 
 

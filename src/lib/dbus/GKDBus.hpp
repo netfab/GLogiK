@@ -57,7 +57,7 @@
 namespace NSGKDBus
 {
 
-enum class ConnectionFlag : uint8_t
+enum class ConnectionFlag : std::uint8_t
 {
 	GKDBUS_SINGLE = 0,
 	GKDBUS_MULTIPLE,

@@ -37,9 +37,9 @@ typedef std::function<
 			const bool(
 				const std::string&,
 				const std::string&,
-				const uint8_t,
-				const uint8_t,
-				const uint8_t
+				const std::uint8_t,
+				const std::uint8_t,
+				const std::uint8_t
 			) > SIGssyyy2b;
 
 

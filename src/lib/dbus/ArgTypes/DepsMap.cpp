@@ -205,7 +205,7 @@ const GLogiK::GKBinary ArgGKBinary::getNextGKBinaryArgument(void)
 
 	try
 	{
-		const uint8_t value = ArgUInt8::getNextByteArgument();
+		const std::uint8_t value = ArgUInt8::getNextByteArgument();
 
 		if(value > toEnumType(GLogiK::GKBinary::GK_GUI_QT))
 			throw GLogiKExcept("wrong GKBinary value");
@@ -237,16 +237,16 @@ const GLogiK::GKDepsMap_type ArgGKDepsMap::getNextGKDepsMapArgument(void)
 
 	try
 	{
-		const uint64_t depsMapSize = ArgUInt64::getNextUInt64Argument();
+		const std::uint64_t depsMapSize = ArgUInt64::getNextUInt64Argument();
 
-		uint64_t i = 0;
+		std::uint64_t i = 0;
 		while(i < depsMapSize)
 		{
 			GLogiK::GKBinary bin = ArgGKBinary::getNextGKBinaryArgument();
 			GLogiK::GKDepsArray_type depsArray;
 
-			const uint64_t depsArraySize = ArgUInt64::getNextUInt64Argument();
-			uint64_t j = 0;
+			const std::uint64_t depsArraySize = ArgUInt64::getNextUInt64Argument();
+			std::uint64_t j = 0;
 			while(j < depsArraySize)
 			{
 				const std::string dependency = ArgString::getNextStringArgument();

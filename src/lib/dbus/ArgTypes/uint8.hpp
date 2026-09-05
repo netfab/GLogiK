@@ -36,7 +36,7 @@ class TypeUInt8
 	:	virtual private TypeBase
 {
 	public:
-		void appendUInt8(const uint8_t value);
+		void appendUInt8(const std::uint8_t value);
 
 	protected:
 		TypeUInt8(void) = default;
@@ -44,7 +44,7 @@ class TypeUInt8
 
 		void appendUInt8(
 			DBusMessageIter *iter,
-			const uint8_t value
+			const std::uint8_t value
 		);
 
 	private:
@@ -54,7 +54,7 @@ class ArgUInt8
 	:	virtual protected ArgBase
 {
 	public:
-		static const uint8_t getNextByteArgument(void);
+		static const std::uint8_t getNextByteArgument(void);
 
 	protected:
 		ArgUInt8(void) = default;
