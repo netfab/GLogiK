@@ -443,7 +443,7 @@ void GKeysTab::updateInputsBox(
 		const GKeysEvent & event = bank.at(GKeyID);
 		const GKeyEventType eventType = event.getEventType();
 
-		uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
+		std::uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 		const QColor color(r, g, b);
 		const QString colorName = color.name();
 		GKLog2(trace, "got color: ", colorName.toStdString())
@@ -623,7 +623,7 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 
 	const unsigned short keysPerLine = 3;	// TODO
 
-	uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
+	std::uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 	const QColor color(r, g, b);
 	const QString colorName = color.name();
 	GKLog2(trace, "got color: ", colorName.toStdString())

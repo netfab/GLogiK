@@ -147,7 +147,7 @@ void BacklightColorTab::updateTab(const DeviceProperties & device, const std::st
 
 	GKLog2(trace, "updating BacklightColorTab, device ", devID)
 
-	uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
+	std::uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 	QColor color(r, g, b);
 
 	GKLog2(trace, "updating BacklightColorTab, color : ", color.name().toStdString())

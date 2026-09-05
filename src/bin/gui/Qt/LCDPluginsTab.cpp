@@ -240,7 +240,7 @@ void LCDPluginsTab::updateTab(
 	}
 }
 
-const uint64_t LCDPluginsTab::getAndSetNewLCDPluginsMask(void)
+const std::uint64_t LCDPluginsTab::getAndSetNewLCDPluginsMask(void)
 {
 	 _LCDPluginsMask = _newLCDPluginsMask;
 	_pApplyButton->setEnabled( !(_LCDPluginsMask == _newLCDPluginsMask) );
@@ -276,7 +276,7 @@ void LCDPluginsTab::updateNewLCDPluginsMask(int checkboxState)
 		const qulonglong id = value.toULongLong(&converted);
 		if( converted and id > 0 )
 		{
-			const uint64_t pluginID(id);
+			const std::uint64_t pluginID(id);
 			if( checkboxState == Qt::Checked )
 				_newLCDPluginsMask |= pluginID;
 			else if( checkboxState == Qt::Unchecked )

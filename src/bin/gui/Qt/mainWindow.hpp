@@ -53,7 +53,7 @@ class GKeysTab;
 namespace GLogiK
 {
 
-enum class TabApplyButton : uint8_t
+enum class TabApplyButton : std::uint8_t
 {
 	TAB_BACKLIGHT = 1,
 	TAB_LCD_PLUGINS,
