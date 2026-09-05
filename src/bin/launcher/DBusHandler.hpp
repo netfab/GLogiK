@@ -43,7 +43,7 @@ class DBusHandler
 		NSGKDBus::GKDBus* _pDBus;
 
 		void initializeGKDBusSignals(void);
-		void spawnService(const uint16_t delay);
+		void spawnService(const std::uint16_t delay);
 
 		void cleanGKDBusEvents(void) noexcept;
 };

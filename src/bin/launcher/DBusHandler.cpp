@@ -102,7 +102,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	);
 }
 
-void DBusHandler::spawnService(const uint16_t delay)
+void DBusHandler::spawnService(const std::uint16_t delay)
 {
 	GK_LOG_FUNC
 
