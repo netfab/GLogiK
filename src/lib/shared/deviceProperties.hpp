@@ -43,23 +43,23 @@ class BacklightCapability
 {
 	public:
 		void setRGBBytes(
-			const uint8_t r,
-			const uint8_t g,
-			const uint8_t b
+			const std::uint8_t r,
+			const std::uint8_t g,
+			const std::uint8_t b
 		);
 		void getRGBBytes(
-			uint8_t & r,
-			uint8_t & g,
-			uint8_t & b
+			std::uint8_t & r,
+			std::uint8_t & g,
+			std::uint8_t & b
 		) const;
 
 	protected:
 		BacklightCapability(void);
 		virtual ~BacklightCapability(void) = 0;
 
-		uint8_t _red;
-		uint8_t _green;
-		uint8_t _blue;
+		std::uint8_t _red;
+		std::uint8_t _green;
+		std::uint8_t _blue;
 
 	private:
 		friend class boost::serialization::access;
@@ -84,17 +84,17 @@ class LCDScreenCapability
 		const LCDPPArray_type & getLCDPluginsProperties(void) const;
 		void setLCDPluginsProperties(const LCDPPArray_type & props);
 
-		const uint64_t getLCDPluginsMask1(void) const;
+		const std::uint64_t getLCDPluginsMask1(void) const;
 		void setLCDPluginsMask(
-			const uint8_t maskID,
-			const uint64_t mask
+			const std::uint8_t maskID,
+			const std::uint64_t mask
 		);
 
 	protected:
 		LCDScreenCapability(void);
 		virtual ~LCDScreenCapability(void) = 0;
 
-		uint64_t _LCDPluginsMask1;
+		std::uint64_t _LCDPluginsMask1;
 
 	private:
 
@@ -120,17 +120,17 @@ class clientDevice
 		clientDevice(void);
 		~clientDevice(void);
 
-		const uint64_t getCapabilities(void) const;
+		const std::uint64_t getCapabilities(void) const;
 
 		void setProperties(
 			const std::string & vendor,
 			const std::string & product,
 			const std::string & name,
-			const uint64_t capabilities
+			const std::uint64_t capabilities
 		);
 
 	protected:
-		uint64_t _capabilities;
+		std::uint64_t _capabilities;
 
 	private:
 
@@ -163,7 +163,7 @@ class DeviceProperties
 			const std::string & vendor,
 			const std::string & product,
 			const std::string & name,
-			const uint64_t capabilities)
+			const std::uint64_t capabilities)
 		{
 			clientDevice::setProperties(vendor, product, name, capabilities);
 		}

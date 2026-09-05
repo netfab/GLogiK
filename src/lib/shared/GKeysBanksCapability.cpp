@@ -159,7 +159,7 @@ void GKeysBanksCapability::checkBanksKeys(void) noexcept
 				if(it->first == GKeyID_INV)
 					throw GLogiKExcept("invalid value");
 
-				const uint8_t id = toEnumType(it->first);
+				const std::uint8_t id = toEnumType(it->first);
 
 				if(id > GLogiK::GKeyID_MAX)
 					throw GLogiKExcept("wrong GKeyID value");
@@ -211,7 +211,7 @@ void GKeysBanksCapability::resetBank(const MKeysID bankID)
 	}
 }
 
-const MKeysID GKeysBanksCapability::getBankID(const uint8_t num) const
+const MKeysID GKeysBanksCapability::getBankID(const std::uint8_t num) const
 {
 	if(num > GLogiK::MKeyID_MAX)
 		throw GLogiKExcept("wrong bankID value");

@@ -42,9 +42,9 @@ BacklightCapability::~BacklightCapability(void)
 }
 
 void BacklightCapability::setRGBBytes(
-	const uint8_t r,
-	const uint8_t g,
-	const uint8_t b)
+	const std::uint8_t r,
+	const std::uint8_t g,
+	const std::uint8_t b)
 {
 	_red	= r & 0xFF;
 	_green	= g & 0xFF;
@@ -52,9 +52,9 @@ void BacklightCapability::setRGBBytes(
 }
 
 void BacklightCapability::getRGBBytes(
-	uint8_t & r,
-	uint8_t & g,
-	uint8_t & b) const
+	std::uint8_t & r,
+	std::uint8_t & g,
+	std::uint8_t & b) const
 {
 	r = _red;
 	g = _green;
@@ -74,14 +74,14 @@ LCDScreenCapability::~LCDScreenCapability(void)
 {
 }
 
-const uint64_t LCDScreenCapability::getLCDPluginsMask1(void) const
+const std::uint64_t LCDScreenCapability::getLCDPluginsMask1(void) const
 {
 	return _LCDPluginsMask1;
 }
 
 void LCDScreenCapability::setLCDPluginsMask(
-	const uint8_t maskID,
-	const uint64_t mask)
+	const std::uint8_t maskID,
+	const std::uint64_t mask)
 {
 	if(maskID > static_cast<unsigned int>(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1))
 		throw GLogiKExcept("wrong maskID value");
@@ -118,7 +118,7 @@ void clientDevice::setProperties(
 	const std::string & vendor,
 	const std::string & product,
 	const std::string & name,
-	const uint64_t capabilities)
+	const std::uint64_t capabilities)
 {
 	this->setVendor(vendor);
 	this->setProduct(product);
@@ -128,7 +128,7 @@ void clientDevice::setProperties(
 
 /* -- -- -- */
 
-const uint64_t clientDevice::getCapabilities(void) const
+const std::uint64_t clientDevice::getCapabilities(void) const
 {
 	return _capabilities;
 }

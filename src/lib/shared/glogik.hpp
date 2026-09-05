@@ -159,7 +159,7 @@ extern c_str LOGIND_SESSION_DBUS_INTERFACE;
 /* freedesktop standard interfaces */
 extern c_str FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE;
 
-enum class SessionFramework : uint8_t
+enum class SessionFramework : std::uint8_t
 {
 	FW_UNKNOWN = 0,
 	FW_LOGIND,

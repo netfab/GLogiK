@@ -74,7 +74,7 @@ class GKeysBanksCapability
 		banksMap_type _GKeysBanks;
 
 	private:
-		const MKeysID getBankID(const uint8_t num) const;
+		const MKeysID getBankID(const std::uint8_t num) const;
 
 		MKeysID _currentBankID;
 };
