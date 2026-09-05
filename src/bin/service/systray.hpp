@@ -38,14 +38,14 @@
 namespace GLogiK
 {
 
-enum class SystrayDeviceEvent : uint8_t
+enum class SystrayDeviceEvent : std::uint8_t
 {
 	DEVICE_START = 0,
 	DEVICE_STOP,
 	DEVICE_RESTART
 };
 
-enum class SystrayServiceEvent : uint8_t
+enum class SystrayServiceEvent : std::uint8_t
 {
 	SERVICE_RUN = 0,
 	SERVICE_RESTART,

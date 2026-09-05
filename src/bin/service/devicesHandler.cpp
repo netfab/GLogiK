@@ -344,7 +344,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
 			_pDBus->appendStringToRemoteMethodCall(devID);
-			uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
+			std::uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 			_pDBus->appendUInt8ToRemoteMethodCall(r);
 			_pDBus->appendUInt8ToRemoteMethodCall(g);
 			_pDBus->appendUInt8ToRemoteMethodCall(b);
@@ -388,8 +388,8 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 
 		try
 		{
-			const uint8_t maskID = toEnumType(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1);
-			const uint64_t mask = device.getLCDPluginsMask1();
+			const std::uint8_t maskID = toEnumType(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1);
+			const std::uint64_t mask = device.getLCDPluginsMask1();
 
 			_pDBus->initializeRemoteMethodCall(
 				_systemBus,
@@ -464,7 +464,7 @@ void DevicesHandler::setDeviceProperties(
 			const std::string vendor( _pDBus->getNextStringArgument() );
 			const std::string product( _pDBus->getNextStringArgument() );
 			const std::string name( _pDBus->getNextStringArgument() );
-			const uint64_t caps( _pDBus->getNextUInt64Argument() );
+			const std::uint64_t caps( _pDBus->getNextUInt64Argument() );
 			device.setProperties( vendor, product, name, caps );
 
 			GKLog2(trace, devID, " got 4 properties")
