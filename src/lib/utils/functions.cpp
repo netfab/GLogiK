@@ -153,9 +153,9 @@ const unsigned long long toULL(const std::string & s)
 }
 
 const std::string getHexRGB(
-	const uint8_t red,
-	const uint8_t green,
-	const uint8_t blue)
+	const std::uint8_t red,
+	const std::uint8_t green,
+	const std::uint8_t blue)
 {
 	std::ostringstream ret("", std::ios_base::app);
 	ret << std::hex << std::setfill('0')

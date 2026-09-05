@@ -97,7 +97,7 @@ const int FSNotify::addNotifyDirectoryWatch(
 		}
 	}
 
-	uint32_t mask = IN_CLOSE_WRITE | IN_DELETE_SELF | IN_MOVE_SELF | IN_ONLYDIR;
+	std::uint32_t mask = IN_CLOSE_WRITE | IN_DELETE_SELF | IN_MOVE_SELF | IN_ONLYDIR;
 	return this->addNotifyWatch(path, mask);
 }
 
@@ -256,7 +256,7 @@ void FSNotify::readNotifyEvents(DevicesFilesMap_type & filesMap)
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-const int FSNotify::addNotifyWatch(const std::string & path, const uint32_t & mask)
+const int FSNotify::addNotifyWatch(const std::string & path, const std::uint32_t & mask)
 {
 	GK_LOG_FUNC
 

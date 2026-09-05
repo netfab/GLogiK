@@ -51,7 +51,7 @@ const std::string FileSystem::getNextAvailableFileName(
 {
 	GK_LOG_FUNC
 
-	uint16_t c = 0;
+	std::uint16_t c = 0;
 
 	std::string base(baseName);
 	std::replace( base.begin(), base.end(), '/', '_');

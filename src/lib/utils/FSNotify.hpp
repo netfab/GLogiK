@@ -88,7 +88,7 @@ class FSNotify
 
 		const int addNotifyWatch(
 			const std::string & path,
-			const uint32_t & mask
+			const std::uint32_t & mask
 		);
 };
 

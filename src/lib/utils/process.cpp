@@ -59,7 +59,7 @@ std::map<const std::string, steady::time_point> process::lastCalls;
 const steady::duration process::threeSeconds = chr::duration<int>(3);
 const steady::duration process::oneSecond = chr::duration<int>(1);
 
-uint8_t process::options = 0;
+std::uint8_t process::options = 0;
 
 const pid_t process::detach(void)
 {
@@ -442,7 +442,7 @@ const std::string process::runCommandAndGetOutput(
 void process::runDelayedCommand(
 	const std::string & binary,
 	const std::vector<std::string> & args,
-	const uint16_t delay)
+	const std::uint16_t delay)
 {
 	const steady::time_point now = steady::now();
 	const auto & minTime = process::threeSeconds;

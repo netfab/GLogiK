@@ -38,12 +38,12 @@ const std::wstring toWString(const wchar_t* s);
 
 const std::string getErrnoString(const int errnum);
 
-constexpr int toInt(const uint8_t c) noexcept
+constexpr int toInt(const std::uint8_t c) noexcept
 {
 	return static_cast<int>(c);
 }
 
-constexpr unsigned int toUInt(const uint8_t c) noexcept
+constexpr unsigned int toUInt(const std::uint8_t c) noexcept
 {
 	return static_cast<unsigned int>(c);
 }
@@ -61,9 +61,9 @@ const unsigned long toUL(
 const unsigned long long toULL(const std::string & s);
 
 const std::string getHexRGB(
-	const uint8_t red,
-	const uint8_t green,
-	const uint8_t blue
+	const std::uint8_t red,
+	const std::uint8_t green,
+	const std::uint8_t blue
 );
 
 void yield_for(std::chrono::microseconds us);

@@ -44,7 +44,7 @@ class process
 	typedef void (*__signal_handler_t) (int);
 
 	public:
-		enum class mask : uint8_t
+		enum class mask : std::uint8_t
 		{
 			PROCESS_LOG_ENTRIES = 1 << 0,
 			PROCESS_CLOSE_DESCRIPTORS = 1 << 1,
@@ -73,7 +73,7 @@ class process
 		static void runDelayedCommand(
 			const std::string & binary,
 			const std::vector<std::string> & args,
-			const uint16_t delay
+			const std::uint16_t delay
 		);
 
 	protected:
@@ -86,7 +86,7 @@ class process
 		static const std::chrono::steady_clock::duration threeSeconds;
 		static const std::chrono::steady_clock::duration oneSecond;
 
-		static uint8_t options;
+		static std::uint8_t options;
 
 		static void logErrno(
 			const int errnum,
@@ -109,17 +109,17 @@ class process
 		static const std::string getSignalAbbrev(int signum);
 };
 
-inline const uint8_t operator & (
-	const uint8_t value,
+inline const std::uint8_t operator & (
+	const std::uint8_t value,
 	const process::mask option)
 {
-	uint8_t ret(value);
+	std::uint8_t ret(value);
 	ret &= toEnumType(option);
 	return ret;
 }
 
-inline uint8_t& operator |= (
-	uint8_t& value,
+inline std::uint8_t & operator |= (
+	std::uint8_t& value,
 	const process::mask option)
 {
 	return value=(value|toEnumType(option));
