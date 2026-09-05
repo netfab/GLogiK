@@ -24,10 +24,9 @@
 
 #include <string>
 
-#include "deviceProperties.hpp"
-
 namespace GLogiK
 {
+class DeviceProperties;
 
 class DeviceConfigurationFile
 {

@@ -19,17 +19,17 @@
  *
  */
 
-#include <exception>
-#include <sstream>
 #include <fstream>
+#include <sstream>
 
 #include <boost/archive/archive_exception.hpp>
-#include <boost/archive/xml_archive_exception.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+#include <boost/log/utility/string_literal.hpp>  // for basic_string_literal (GK_LOG_FUNC)
 
 #include "lib/utils/utils.hpp"
 
+#include "deviceProperties.hpp"
 #include "deviceConfigurationFile.hpp"
 
 namespace GLogiK

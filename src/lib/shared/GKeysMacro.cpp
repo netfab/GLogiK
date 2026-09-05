@@ -22,6 +22,8 @@
 #include <algorithm>
 #include <iterator>
 
+#include <boost/log/utility/string_literal.hpp>  // for basic_string_literal (GK_LOG_FUNC)
+
 #include "GKeysMacro.hpp"
 
 #include "lib/utils/utils.hpp"

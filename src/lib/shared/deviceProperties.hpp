@@ -27,14 +27,14 @@
 #include <string>
 
 #include <boost/serialization/base_object.hpp>
-#include <boost/serialization/access.hpp>
 //#include <boost/serialization/version.hpp>
 
 #include "include/DeviceID.hpp"
 #include "include/LCDPP.hpp"
 
-#include "glogik.hpp"
 #include "GKeysBanksCapability.hpp"
+
+namespace boost { namespace serialization { class access; } }
 
 namespace GLogiK
 {

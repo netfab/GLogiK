@@ -22,6 +22,8 @@
 #ifndef SRC_LIB_SHARED_GLOGIK_HPP_
 #define SRC_LIB_SHARED_GLOGIK_HPP_
 
+#include <cstdint> // std::uint8_t
+
 #include <string>
 #include <map>
 

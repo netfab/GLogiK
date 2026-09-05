@@ -19,8 +19,14 @@
  *
  */
 
+#include <map>
+#include <ostream>
 #include <stdexcept>
+#include <string>
 #include <utility>
+#include <vector>
+
+#include <boost/log/utility/string_literal.hpp>  // for basic_string_literal (GK_LOG_FUNC)
 
 #include "lib/utils/utils.hpp"
 

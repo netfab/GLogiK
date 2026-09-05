@@ -1,4 +1,3 @@
-
 /*
  *
  *	This file is part of GLogiK project.
@@ -20,8 +19,12 @@
  *
  */
 
-#include <stdexcept>
 #include <iomanip>
+#include <sstream>
+#include <stdexcept>
+#include <map>
+#include <utility>
+#include <vector>
 
 #include "lib/utils/utils.hpp"
 
@@ -247,9 +250,10 @@ void printVersionDeps(
 			<< std::setfill('-') << std::setw(38) << "-" << "\n"
 			<< std::setfill(' ');
 
-	for(const auto & x : dependencies)
+	// c++17 structured bindings
+	for(const auto & [binary, deps] : dependencies)
 	{
-		for(const auto & v : x.second)
+		for(const auto & v : deps)
 		{
 			buffer
 				<< std::setw(12) << v.getDependency()

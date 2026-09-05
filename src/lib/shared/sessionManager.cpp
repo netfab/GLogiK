@@ -20,10 +20,11 @@
  */
 
 #include <csignal>
+#include <cstdlib> // std::free
 
 #include <string>
-#include <iostream>
-#include <sstream>
+
+#include <boost/log/utility/string_literal.hpp>  // for basic_string_literal (GK_LOG_FUNC)
 
 #include "lib/utils/utils.hpp"
 
@@ -73,7 +74,7 @@ SessionManager::~SessionManager()
 	this->closeConnection();
 
 	if(_pClientID != nullptr)
-		free(_pClientID);
+		std::free(_pClientID);
 
 	GKLog(trace, "session manager destroyed")
 }

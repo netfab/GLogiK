@@ -24,15 +24,15 @@
 
 #include <cstdint>
 
-#include <vector>
-#include <map>
-
-#include <boost/serialization/access.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/map.hpp>
+// IWYU pragma: begin_keep
+#include <boost/serialization/vector.hpp> // (required macro_type into banksMap_type)
+#include <boost/serialization/map.hpp>    // (required by banksMap_type)
+// IWYU pragma: end_keep
 
 #include "include/base.hpp"
 #include "include/MBank.hpp"
+
+namespace boost { namespace serialization { class access; } }
 
 namespace GLogiK
 {
