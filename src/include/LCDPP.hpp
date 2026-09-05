@@ -36,23 +36,26 @@ class LCDPP
 			:	_ID(0),
 				_name("unknown"),
 				_desc("unknown") {};
-		LCDPP(const uint64_t i, const std::string & n, const std::string & d)
-			:	_ID(i),
-				_name(n),
-				_desc(d)
+		LCDPP(
+			const std::uint64_t i,
+			const std::string & n,
+			const std::string & d)
+				:	_ID(i),
+					_name(n),
+					_desc(d)
 			{}
 		~LCDPP(void) = default;
 
-		const uint64_t getID(void) const { return _ID; }
+		const std::uint64_t getID(void) const { return _ID; }
 		const std::string & getName(void) const { return _name; }
 		const std::string & getDesc(void) const { return _desc; }
 
-		void setID(const uint64_t id) { _ID = id; }
+		void setID(const std::uint64_t id) { _ID = id; }
 		void setName(const std::string & name) { _name = name; }
 		void setDesc(const std::string & desc) { _desc = desc; }
 
 	private:
-		uint64_t _ID;
+		std::uint64_t _ID;
 		std::string _name;
 		std::string _desc;
 };

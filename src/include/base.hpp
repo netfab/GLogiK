@@ -44,7 +44,7 @@
 namespace GLogiK
 {
 
-enum class EventValue : uint8_t
+enum class EventValue : std::uint8_t
 {
 	EVENT_KEY_RELEASE = 0,
 	EVENT_KEY_PRESS,
@@ -53,12 +53,20 @@ enum class EventValue : uint8_t
 
 struct KeyEvent {
 	public:
-		uint8_t code;
+		std::uint8_t code;
 		EventValue event;
-		uint16_t interval;
+		std::uint16_t interval;
 
-		KeyEvent(uint8_t c=KEY_UNKNOWN, EventValue e=EventValue::EVENT_KEY_UNKNOWN, uint16_t i=0)
-			: code(c), event(e), interval(i) {}
+		KeyEvent(
+			std::uint8_t c = KEY_UNKNOWN,
+			EventValue e = EventValue::EVENT_KEY_UNKNOWN,
+			std::uint16_t i = 0
+		)	:
+			code(c),
+			event(e),
+			interval(i)
+		{
+		}
 
 	private:
 		friend class boost::serialization::access;
@@ -72,7 +80,7 @@ struct KeyEvent {
 		}
 };
 
-enum class MKeysID : uint8_t
+enum class MKeysID : std::uint8_t
 {
 	MKEY_M0 = 0,
 	MKEY_M1,
@@ -80,7 +88,7 @@ enum class MKeysID : uint8_t
 	MKEY_M3,
 };
 
-enum class GKeysID : uint8_t
+enum class GKeysID : std::uint8_t
 {
 	GKEY_G0 = 0,
 	GKEY_G1,
@@ -118,7 +126,7 @@ inline std::ostream & operator << (std::ostream & stream, const EventValue & eve
 	return stream;
 }
 
-inline const bool operator > (const uint8_t value, const EventValue & event)
+inline const bool operator > (const std::uint8_t value, const EventValue & event)
 {
 	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(event)));
 }
@@ -130,7 +138,7 @@ inline std::ostream & operator << (std::ostream & stream, const GKeysID keyID)
 	return stream;
 }
 
-inline const bool operator > (const uint8_t value, const GKeysID keyID)
+inline const bool operator > (const std::uint8_t value, const GKeysID keyID)
 {
 	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(keyID)));
 }
@@ -142,7 +150,7 @@ inline std::ostream & operator << (std::ostream & stream, const MKeysID keyID)
 	return stream;
 }
 
-inline const bool operator > (const uint8_t value, const MKeysID keyID)
+inline const bool operator > (const std::uint8_t value, const MKeysID keyID)
 {
 	return ((static_cast<unsigned int>(value)) > (static_cast<unsigned int>(keyID)));
 }

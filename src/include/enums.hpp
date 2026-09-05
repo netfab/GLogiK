@@ -29,9 +29,9 @@
 namespace GLogiK
 {
 
-const uint64_t one = 1;
+const std::uint64_t one = 1;
 
-enum class Keys : uint64_t
+enum class Keys : std::uint64_t
 {
 					GK_KEY_G1	= one << 0,
 					GK_KEY_G2	= one << 1,
@@ -79,7 +79,7 @@ enum class Keys : uint64_t
 
 };
 
-enum class SpecialKeys : uint8_t
+enum class SpecialKeys : std::uint8_t
 {
 	GK_KEY_BACKLIGHT_OFF	= 1 << 2,
 	GK_KEY_HEADSET_OFF		= 1 << 3,
@@ -87,7 +87,7 @@ enum class SpecialKeys : uint8_t
 	GK_ONBOARD_AUDIO_ON		= 1 << 5,	/* this bit is on with onboard audio */
 };
 
-enum class Leds : uint8_t
+enum class Leds : std::uint8_t
 {
 	GK_LED_M1 = 1 << 0,
 	GK_LED_M2 = 1 << 1,
@@ -95,7 +95,7 @@ enum class Leds : uint8_t
 	GK_LED_MR = 1 << 3,
 };
 
-enum class Caps : uint64_t
+enum class Caps : std::uint64_t
 {
 	GK_BACKLIGHT_COLOR	= one << 0,
 	GK_MACROS_KEYS		= one << 1,
@@ -109,7 +109,7 @@ inline Caps operator | (Caps lhs, Caps rhs)
 	return (Caps)(static_cast<T>(lhs) | static_cast<T>(rhs));
 }
 
-enum class LCDScreenPlugin : uint64_t
+enum class LCDScreenPlugin : std::uint64_t
 {
 	GK_LCD_SPLASHSCREEN		= one << 0,
 	GK_LCD_SYSTEM_MONITOR	= one << 1,
@@ -121,7 +121,7 @@ enum class LCDScreenPlugin : uint64_t
 	GK_LCD_R1				= one << 63,	/* reserved 1 */
 };
 
-enum class LCDPluginsMask : uint8_t
+enum class LCDPluginsMask : std::uint8_t
 {
 	GK_LCD_PLUGINS_MASK_1 = 1,
 };

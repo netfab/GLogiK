@@ -29,7 +29,7 @@
 namespace GLogiK
 {
 
-enum class GKeyEventType : uint8_t
+enum class GKeyEventType : std::uint8_t
 {
 	GKEY_INACTIVE = 0,
 	GKEY_MACRO,
