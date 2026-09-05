@@ -26,6 +26,8 @@
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
+#include <cstddef> // std::size_t
+
 #include <vector>
 #include <string>
 #include <random>

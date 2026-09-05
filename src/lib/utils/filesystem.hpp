@@ -28,9 +28,12 @@
 
 #include <set>
 #include <string>
+
 #include <boost/filesystem.hpp>
 
 #include "FSNotify.hpp"
+
+#include "config.h"
 
 namespace fs = boost::filesystem;
 

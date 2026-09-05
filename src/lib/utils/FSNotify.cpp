@@ -22,16 +22,16 @@
 
 #include <cerrno>
 #include <cstring>
-#include <cstdint>
-#include <unistd.h>
-
-#include <set>
-#include <sstream>
+#include <sys/types.h> // ssize_t
+#include <unistd.h>    // read
 
 #include <sys/inotify.h>
 
-#include "config.h"
+#include <set>
+#include <sstream>
+#include <utility> // std::pair
 
+#include <boost/log/utility/string_literal.hpp>  // for basic_string_literal (GK_LOG_FUNC)
 
 #define UTILS_COMPILATION 1
 

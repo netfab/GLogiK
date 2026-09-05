@@ -20,13 +20,12 @@
  */
 
 #include <chrono>
-#include <thread>
 #include <string>
 #include <sstream>
 #include <thread>
 
-#include <sys/types.h>
-#include <unistd.h>
+#include <sys/types.h>  // pid_t, ssize_t
+#include <unistd.h>     // chdir, read
 #include <sys/stat.h>
 
 #include <cstdio>
@@ -35,10 +34,9 @@
 #include <cstring>
 #include <cerrno>
 
-#include "config.h"
-
 #include <boost/asio.hpp>
 #include <boost/process.hpp>
+#include <boost/log/utility/string_literal.hpp>  // for basic_string_literal (GK_LOG_FUNC)
 
 #define UTILS_COMPILATION 1
 
@@ -48,6 +46,8 @@
 #include "process.hpp"
 
 #undef UTILS_COMPILATION
+
+#include "config.h"
 
 namespace NSGKUtils
 {

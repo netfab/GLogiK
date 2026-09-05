@@ -19,14 +19,13 @@
  *
  */
 
-#include <syslog.h>
-
 #include <cstdint>
 
 #include <algorithm>
+#include <exception>
 #include <sstream>
 
-#include "config.h"
+#include <boost/log/utility/string_literal.hpp>  // for basic_string_literal (GK_LOG_FUNC)
 
 #define UTILS_COMPILATION 1
 
@@ -35,6 +34,8 @@
 #include "filesystem.hpp"
 
 #undef UTILS_COMPILATION
+
+#include "config.h"
 
 namespace NSGKUtils
 {
