@@ -48,7 +48,7 @@ class hidapi
 		void sendUSBDeviceFeatureReport(
 			USBDevice & device,
 			const unsigned char * data,
-			uint16_t wLength
+			std::uint16_t wLength
 		);
 
 		int performUSBDeviceKeysInterruptTransfer(

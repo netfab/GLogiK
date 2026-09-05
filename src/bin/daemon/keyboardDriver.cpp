@@ -148,9 +148,9 @@ void KeyboardDriver::setDeviceMxKeysLeds(USBDevice & device)
 
 void KeyboardDriver::setDeviceBacklightColor(
 	USBDevice & device,
-	const uint8_t r,
-	const uint8_t g,
-	const uint8_t b)
+	const std::uint8_t r,
+	const std::uint8_t g,
+	const std::uint8_t b)
 {
 	this->notImplemented(__func__);
 }
@@ -246,7 +246,7 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 	return mask_updated;
 }
 
-const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint16_t interval)
+const std::uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const std::uint16_t interval)
 {
 	GK_LOG_FUNC
 
@@ -255,8 +255,8 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 
 	KeyEvent e;
 	e.interval = interval;
-	uint8_t diff = 0;
-	uint8_t ret = 0;
+	std::uint8_t diff = 0;
+	std::uint8_t ret = 0;
 
 	if( device._previousPressedKeys[1] > device._pressedKeys[1] )
 	{ /* some modifier keys were released */
@@ -271,13 +271,13 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 
 	for(const auto & mKey : KeyboardDriver::modifierKeys)
 	{
-		const uint8_t modKey = toEnumType(mKey.key);
+		const std::uint8_t modKey = toEnumType(mKey.key);
 		if( diff & modKey )
 		{ /* modifier key was pressed or released */
 			diff -= modKey;
 
 			bool skipEvent = false;
-			const uint8_t size = device._newMacro.size();
+			const std::uint8_t size = device._newMacro.size();
 
 			/* Macro Size Limit - see base.hpp */
 			if(size >= MACRO_T_MAX_SIZE)
@@ -332,7 +332,7 @@ const uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const uint1
 }
 
 /* used to create macros */
-uint16_t KeyboardDriver::getTimeLapse(USBDevice & device)
+std::uint16_t KeyboardDriver::getTimeLapse(USBDevice & device)
 {
 	namespace chr = std::chrono;
 	chr::steady_clock::time_point now = chr::steady_clock::now();
@@ -347,9 +347,9 @@ void KeyboardDriver::fillStandardKeysEvents(USBDevice & device)
 
 	unsigned int i = 0;
 
-	uint16_t interval = this->getTimeLapse(device);
+	std::uint16_t interval = this->getTimeLapse(device);
 
-	const uint8_t num = this->handleModifierKeys(device, interval);
+	const std::uint8_t num = this->handleModifierKeys(device, interval);
 
 	if( num > 0 )
 	{
@@ -567,7 +567,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 			auto t1 = chr::high_resolution_clock::now();
 
 			std::string LCDKey;
-			uint64_t LCDPluginsMask1 = 0;
+			std::uint64_t LCDPluginsMask1 = 0;
 
 			{
 				yield_for(chr::microseconds(100));
@@ -618,7 +618,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 		device.getLCDPluginsManager()->unlockPlugin();
 		device.getLCDPluginsManager()->jumpToNextPlugin();
 
-		const uint64_t endscreen = toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN);
+		const std::uint64_t endscreen = toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN);
 		/* make sure endscreen plugin is loaded before using it */
 		if( device.getLCDPluginsManager()->findOneLCDScreenPlugin( endscreen ) )
 		{
@@ -893,7 +893,7 @@ void KeyboardDriver::resetDeviceState(const USBDeviceID & det)
 	}
 }
 
-void KeyboardDriver::setDeviceLCDPluginsMask(USBDevice & device, uint64_t mask)
+void KeyboardDriver::setDeviceLCDPluginsMask(USBDevice & device, std::uint64_t mask)
 {
 	GK_LOG_FUNC
 
@@ -981,10 +981,10 @@ void KeyboardDriver::joinDeviceThreads(USBDevice & device)
 /* called when setting active user's configuration */
 void KeyboardDriver::setDeviceActiveConfiguration(
 	const std::string & devID,
-	const uint8_t r,
-	const uint8_t g,
-	const uint8_t b,
-	const uint64_t LCDPluginsMask1)
+	const std::uint8_t r,
+	const std::uint8_t g,
+	const std::uint8_t b,
+	const std::uint64_t LCDPluginsMask1)
 {
 	GK_LOG_FUNC
 

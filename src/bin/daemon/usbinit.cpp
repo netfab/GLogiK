@@ -29,7 +29,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 libusb_context * USBInit::pContext = nullptr;
-uint8_t USBInit::counter = 0;
+std::uint8_t USBInit::counter = 0;
 bool USBInit::status = false;
 
 const std::string USBInit::getLibUSBVersion(void)

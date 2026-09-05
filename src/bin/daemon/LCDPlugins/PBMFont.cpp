@@ -63,12 +63,12 @@ const charactersMap_type PBMFont::defaultCharsMap =
 
 PBMFont::PBMFont(
 	const std::string & PBMName,
-	const uint16_t PBMWidth,
-	const uint16_t PBMHeight,
-	const uint16_t charWidth,
-	const uint16_t charHeight,
-	const uint16_t fontLeftShift,
-	const uint16_t extraLeftShift,
+	const std::uint16_t PBMWidth,
+	const std::uint16_t PBMHeight,
+	const std::uint16_t charWidth,
+	const std::uint16_t charHeight,
+	const std::uint16_t fontLeftShift,
+	const std::uint16_t extraLeftShift,
 	const charactersMap_type charsMap)
 	:	_fontName(PBMName),
 		_PBMWidth(PBMWidth),
@@ -110,9 +110,9 @@ PBMFont::~PBMFont()
 	GKLog2(trace, "deleting font ", _fontName)
 }
 
-const uint16_t PBMFont::getCenteredXPos(const std::string & string)
+const std::uint16_t PBMFont::getCenteredXPos(const std::string & string)
 {
-	uint16_t XPos = LCD_SCREEN_WIDTH;
+	std::uint16_t XPos = LCD_SCREEN_WIDTH;
 	for(const char & c : string)
 	{
 		XPos -= (_charWidth - _fontLeftShift);
@@ -121,21 +121,21 @@ const uint16_t PBMFont::getCenteredXPos(const std::string & string)
 			if(hackstring.find(c) == std::string::npos)
 				XPos += _extraLeftShift;
 	}
-	return static_cast<uint16_t>(XPos/2);
+	return static_cast<std::uint16_t>(XPos/2);
 }
 
-const uint16_t PBMFont::getCenteredYPos(void)
+const std::uint16_t PBMFont::getCenteredYPos(void)
 {
-	uint16_t YPos = LCD_SCREEN_HEIGHT;
+	std::uint16_t YPos = LCD_SCREEN_HEIGHT;
 	YPos -= _charHeight;
-	return static_cast<uint16_t>(YPos/2);
+	return static_cast<std::uint16_t>(YPos/2);
 }
 
 void PBMFont::printCharacterOnFrame(
 	PixelsData & frame,
 	const std::string & character,
-	uint16_t & PBMXPos,
-	const uint16_t PBMYPos)
+	std::uint16_t & PBMXPos,
+	const std::uint16_t PBMYPos)
 {
 	GK_LOG_FUNC
 
@@ -164,12 +164,12 @@ void PBMFont::printCharacterOnFrame(
 		throw GLogiKExcept( warn.str() );
 	}
 
-	uint16_t index = 0;
+	std::uint16_t index = 0;
 
-	const uint16_t xByte = PBMXPos / 8;
-	const uint16_t xModulo = PBMXPos % 8;
+	const std::uint16_t xByte = PBMXPos / 8;
+	const std::uint16_t xModulo = PBMXPos % 8;
 
-	const uint16_t xModuloComp8 = (8 - xModulo);
+	const std::uint16_t xModuloComp8 = (8 - xModulo);
 
 	/* if _shiftCharBase == 8, rightShift = xModulo */
 	const  int16_t rightShift = (_shiftCharBase - xModuloComp8);
@@ -186,8 +186,8 @@ void PBMFont::printCharacterOnFrame(
 
 	try
 	{
-		for(uint16_t i = 0; i < _charHeight; i++)
-			for(uint16_t j = 0; j < _charBytes; j++)
+		for(std::uint16_t i = 0; i < _charHeight; i++)
+			for(std::uint16_t j = 0; j < _charBytes; j++)
 			{
 				const unsigned char c = this->getCharacterLine(i, j);
 				index = (DEFAULT_PBM_WIDTH_IN_BYTES * (PBMYPos+i)) + xByte + j;
@@ -220,13 +220,13 @@ void PBMFont::printCharacterOnFrame(
 }
 
 const unsigned char PBMFont::getCharacterLine(
-	const uint16_t line,
-	const uint16_t charByte) const
+	const std::uint16_t line,
+	const std::uint16_t charByte) const
 {
 	GK_LOG_FUNC
 
 	unsigned char c = 0;
-	const uint16_t i =
+	const std::uint16_t i =
 		/* PBM_Y_line which contains the character (in bytes) */
 		(_charY * _charHeight * (_PBMWidth / 8)) +
 		/* character's PBM_X position on the PBM_Y_line (in bytes) */

@@ -65,7 +65,7 @@ class DevicesManager
 
 #if GKDBUS
 		void setDBus(NSGKDBus::GKDBus* pDBus);
-		void setNumClients(uint8_t num);
+		void setNumClients(std::uint8_t num);
 
 		void checkDBusMessages(void) noexcept;
 #endif
@@ -85,15 +85,15 @@ class DevicesManager
 		const std::string & getDeviceVendor(const std::string & devID) const;
 		const std::string & getDeviceProduct(const std::string & devID) const;
 		const std::string & getDeviceName(const std::string & devID) const;
-		const uint64_t getDeviceCapabilities(const std::string & devID) const;
+		const std::uint64_t getDeviceCapabilities(const std::string & devID) const;
 		const LCDPPArray_type & getDeviceLCDPluginsProperties(const std::string & devID) const;
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,
-			const uint8_t r,
-			const uint8_t g,
-			const uint8_t b,
-			const uint64_t LCDPluginsMask1
+			const std::uint8_t r,
+			const std::uint8_t g,
+			const std::uint8_t b,
+			const std::uint64_t LCDPluginsMask1
 		);
 
 		const MKeysIDArray_type getDeviceMKeysIDArray(const std::string & devID) const;
@@ -115,7 +115,7 @@ class DevicesManager
 
 #if GKDBUS
 		NSGKDBus::GKDBus* _pDBus;
-		uint8_t _numClients;
+		std::uint8_t _numClients;
 #endif
 
 		void searchSupportedDevices(

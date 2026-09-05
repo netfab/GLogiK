@@ -49,7 +49,7 @@ namespace GLogiK
 struct RKey
 {
 	const Keys key;
-	const uint16_t index;
+	const std::uint16_t index;
 	const unsigned char mask;
 };
 
@@ -70,7 +70,7 @@ class G510Base
 		virtual ~G510Base(void) = default;
 
 		const char* getDriverName(void) const;
-		const uint16_t getDriverID(void) const;
+		const std::uint16_t getDriverID(void) const;
 		const std::vector<USBDeviceID> & getSupportedDevices(void) const;
 		const MKeysIDArray_type getMKeysIDArray(void) const;
 		const GKeysIDArray_type getGKeysIDArray(void) const;
@@ -87,9 +87,9 @@ class G510Base
 
 		virtual void setDeviceBacklightColor(
 			USBDevice & device,
-			const uint8_t r=0xFF,
-			const uint8_t g=0xFF,
-			const uint8_t b=0xFF
+			const std::uint8_t r=0xFF,
+			const std::uint8_t g=0xFF,
+			const std::uint8_t b=0xFF
 		);
 
 		virtual void setDeviceMxKeysLeds(USBDevice & device);
@@ -109,7 +109,7 @@ class G510Base
 		virtual void sendUSBDeviceFeatureReport(
 			USBDevice & device,
 			const unsigned char * data,
-			uint16_t wLength
+			std::uint16_t wLength
 		) = 0;
 
 		virtual void fillStandardKeysEvents(USBDevice & device) = 0;
@@ -135,7 +135,7 @@ class LogitechG510
 		{
 			return G510Base::getDriverName();
 		}
-		const uint16_t getDriverID(void) const override
+		const std::uint16_t getDriverID(void) const override
 		{
 			return G510Base::getDriverID();
 		}
@@ -156,7 +156,7 @@ class LogitechG510
 		void sendUSBDeviceFeatureReport(
 			USBDevice & device,
 			const unsigned char * data,
-			uint16_t wLength
+			std::uint16_t wLength
 		) override
 		{
 			USBKeyboardDriver<USBAPI>::sendUSBDeviceFeatureReport(device, data, wLength);
@@ -164,9 +164,9 @@ class LogitechG510
 
 		void setDeviceBacklightColor(
 			USBDevice & device,
-			const uint8_t r=0xFF,
-			const uint8_t g=0xFF,
-			const uint8_t b=0xFF
+			const std::uint8_t r=0xFF,
+			const std::uint8_t g=0xFF,
+			const std::uint8_t b=0xFF
 		) override
 		{
 			G510Base::setDeviceBacklightColor(device, r, g,  b);

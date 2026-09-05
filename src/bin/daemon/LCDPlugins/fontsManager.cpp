@@ -41,7 +41,7 @@ FontsManager::~FontsManager()
 	_fonts.clear();
 }
 
-const uint16_t FontsManager::getCenteredXPos(
+const std::uint16_t FontsManager::getCenteredXPos(
 	const FontID fontID,
 	const std::string & string)
 {
@@ -56,7 +56,7 @@ const uint16_t FontsManager::getCenteredXPos(
 	}
 }
 
-const uint16_t FontsManager::getCenteredYPos(const FontID fontID)
+const std::uint16_t FontsManager::getCenteredYPos(const FontID fontID)
 {
 	try
 	{
@@ -73,8 +73,8 @@ void FontsManager::printCharacterOnFrame(
 	const FontID fontID,
 	PixelsData & frame,
 	const std::string & c,
-	uint16_t & PBMXPos,
-	const uint16_t PBMYPos)
+	std::uint16_t & PBMXPos,
+	const std::uint16_t PBMYPos)
 {
 	try
 	{

@@ -36,7 +36,7 @@ namespace GLogiK
 {
 
 typedef std::initializer_list<
-	std::pair<const std::string, std::pair<uint16_t, uint16_t>>	> charactersMap_type;
+	std::pair<const std::string, std::pair<std::uint16_t, std::uint16_t>>	> charactersMap_type;
 
 class PBMFont
 	:	virtual private PBMFile
@@ -46,50 +46,50 @@ class PBMFont
 
 		static const std::string deg;
 
-		const uint16_t getCenteredXPos(const std::string & string);
-		const uint16_t getCenteredYPos(void);
+		const std::uint16_t getCenteredXPos(const std::string & string);
+		const std::uint16_t getCenteredYPos(void);
 
 		void printCharacterOnFrame(
 			PixelsData & frame,
 			const std::string & character,
-			uint16_t & PBMXPos,
-			const uint16_t PBMYPos
+			std::uint16_t & PBMXPos,
+			const std::uint16_t PBMYPos
 		);
 
 	protected:
 		PBMFont(
 			const std::string & PBMName,
-			const uint16_t PBMWidth,
-			const uint16_t PBMHeight,
-			const uint16_t charWidth,
-			const uint16_t charHeight,
-			const uint16_t fontLeftShift = 0,
-			const uint16_t extraLeftShift = 0,
+			const std::uint16_t PBMWidth,
+			const std::uint16_t PBMHeight,
+			const std::uint16_t charWidth,
+			const std::uint16_t charHeight,
+			const std::uint16_t fontLeftShift = 0,
+			const std::uint16_t extraLeftShift = 0,
 			const charactersMap_type charsMap = PBMFont::defaultCharsMap
 		);
 
 	private:
 		PixelsData _PBMData;
 		const std::string _fontName;
-		const uint16_t _PBMWidth;
-		const uint16_t _PBMHeight;
-		const uint16_t _charWidth;
-		const uint16_t _charHeight;
-		const uint16_t _charBytes;
-		const uint16_t _shiftCharBase;
-		const uint16_t _fontLeftShift;
-		const uint16_t _extraLeftShift;
-		uint16_t _charX;
-		uint16_t _charY;
+		const std::uint16_t _PBMWidth;
+		const std::uint16_t _PBMHeight;
+		const std::uint16_t _charWidth;
+		const std::uint16_t _charHeight;
+		const std::uint16_t _charBytes;
+		const std::uint16_t _shiftCharBase;
+		const std::uint16_t _fontLeftShift;
+		const std::uint16_t _extraLeftShift;
+		std::uint16_t _charX;
+		std::uint16_t _charY;
 
-		std::map<std::string, std::pair<uint16_t, uint16_t>> _charsMap;
+		std::map<std::string, std::pair<std::uint16_t, std::uint16_t>> _charsMap;
 
 		static const charactersMap_type defaultCharsMap;
 		static const std::string hackstring;
 
 		const unsigned char getCharacterLine(
-			const uint16_t line,
-			const uint16_t charByte
+			const std::uint16_t line,
+			const std::uint16_t charByte
 		) const;
 };
 

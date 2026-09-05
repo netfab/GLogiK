@@ -129,7 +129,7 @@ void DevicesManager::setDBus(NSGKDBus::GKDBus* pDBus)
 	_pDBus = pDBus;
 }
 
-void DevicesManager::setNumClients(uint8_t num)
+void DevicesManager::setNumClients(std::uint8_t num)
 {
 	_numClients = num;
 }
@@ -687,7 +687,7 @@ void DevicesManager::searchSupportedDevices(
 							const std::string serial( get_property_value("ID_SERIAL") );
 							const std::string usec( get_property_value("USEC_INITIALIZED") );
 
-							uint8_t bus, num = 0;
+							std::uint8_t bus, num = 0;
 
 							try
 							{
@@ -812,7 +812,7 @@ const std::string & DevicesManager::getDeviceVendor(const std::string & devID) c
 	return _unknown;
 }
 
-const uint64_t DevicesManager::getDeviceCapabilities(const std::string & devID) const
+const std::uint64_t DevicesManager::getDeviceCapabilities(const std::string & devID) const
 {
 	GK_LOG_FUNC
 
@@ -935,10 +935,10 @@ const std::string DevicesManager::getDeviceStatus(const std::string & devID) con
 
 void DevicesManager::setDeviceActiveConfiguration(
 	const std::string & devID,
-	const uint8_t r,
-	const uint8_t g,
-	const uint8_t b,
-	const uint64_t LCDPluginsMask1)
+	const std::uint8_t r,
+	const std::uint8_t g,
+	const std::uint8_t b,
+	const std::uint64_t LCDPluginsMask1)
 {
 	GK_LOG_FUNC
 
@@ -1123,7 +1123,7 @@ void DevicesManager::startMonitoring(void)
 			);
 #endif
 
-			uint16_t c = 0;
+			std::uint16_t c = 0;
 
 			while( DaemonControl::isDaemonRunning() )
 			{

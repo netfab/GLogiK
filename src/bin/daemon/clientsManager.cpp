@@ -357,7 +357,7 @@ void ClientsManager::waitForClientsDisconnections(void) noexcept
 		_connectedClients.size(), _pDBus, GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING
 	);
 
-	uint16_t c = 0;
+	std::uint16_t c = 0;
 	GKLog(trace, "waiting for clients to unregister ...")
 
 	while( c++ < 40 and _connectedClients.size() > 0 )
@@ -939,9 +939,9 @@ const LCDPPArray_type & ClientsManager::getDeviceLCDPluginsProperties(
 const bool ClientsManager::setDeviceBacklightColor(
 	const std::string & clientID,
 	const std::string & devID,
-	const uint8_t r,
-	const uint8_t g,
-	const uint8_t b)
+	const std::uint8_t r,
+	const std::uint8_t g,
+	const std::uint8_t b)
 {
 	GK_LOG_FUNC
 
@@ -1020,8 +1020,8 @@ const GKeysIDArray_type
 const bool ClientsManager::setDeviceLCDPluginsMask(
 	const std::string & clientID,
 	const std::string & devID,
-	const uint8_t maskID,
-	const uint64_t mask)
+	const std::uint8_t maskID,
+	const std::uint64_t mask)
 {
 	GK_LOG_FUNC
 

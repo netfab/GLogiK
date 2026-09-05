@@ -46,16 +46,16 @@ class LCDScreenPluginsManager
 
 		const LCDPPArray_type & getLCDPluginsProperties(void) const;
 
-		const bool findOneLCDScreenPlugin(const uint64_t LCDPluginsMask1) const;
+		const bool findOneLCDScreenPlugin(const std::uint64_t LCDPluginsMask1) const;
 
 		const PixelsData & getNextLCDScreenBuffer(
 			const std::string & LCDKey,
-			const uint64_t LCDPluginsMask1
+			const std::uint64_t LCDPluginsMask1
 		);
-		const uint16_t getPluginTiming(void);
+		const std::uint16_t getPluginTiming(void);
 
 		void unlockPlugin(void);
-		const uint64_t getCurrentPluginID(void);
+		const std::uint64_t getCurrentPluginID(void);
 		void jumpToNextPlugin(void);
 
 	protected:
@@ -70,7 +70,7 @@ class LCDScreenPluginsManager
 		FontsManager _fontsManager;
 		FontsManager* const _pFonts;
 
-		uint16_t _frameCounter;
+		std::uint16_t _frameCounter;
 		bool _noPlugins;
 		bool _currentPluginLocked;
 

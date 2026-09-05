@@ -32,14 +32,14 @@ using namespace NSGKUtils;
 
 /* -- -- -- */
 
-PBMFrame::PBMFrame(const uint16_t num)
+PBMFrame::PBMFrame(const std::uint16_t num)
 	:	_numFrames(num)
 {
 	/* initialize PBM frame container */
 	_PBMData.resize( DEFAULT_PBM_DATA_IN_BYTES, 0 );
 }
 
-const bool PBMFrame::switchToNextFrame(const uint16_t currentFrameCounter)
+const bool PBMFrame::switchToNextFrame(const std::uint16_t currentFrameCounter)
 {
 	return (currentFrameCounter >= _numFrames);
 }
@@ -83,7 +83,7 @@ void LCDPlugin::resetPBMFrameIndex(void)
 	this->checkPBMFrameIndex(); /* may throw */
 }
 
-const uint64_t LCDPlugin::getPluginID(void) const
+const std::uint64_t LCDPlugin::getPluginID(void) const
 {
 	return _plugin.getID();
 }
@@ -93,18 +93,18 @@ const std::string & LCDPlugin::getPluginName(void) const
 	return _plugin.getName();
 }
 
-const uint16_t LCDPlugin::getPluginTiming(void) const
+const std::uint16_t LCDPlugin::getPluginTiming(void) const
 {
-	uint16_t timing = 0;
-	uint16_t maxFrames = 0;
+	std::uint16_t timing = 0;
+	std::uint16_t maxFrames = 0;
 	std::tie(timing, maxFrames) = this->getTempo(_pluginTempo);
 	return timing;
 }
 
-const uint16_t LCDPlugin::getPluginMaxFrames(void) const
+const std::uint16_t LCDPlugin::getPluginMaxFrames(void) const
 {
-	uint16_t timing = 0;
-	uint16_t maxFrames = 0;
+	std::uint16_t timing = 0;
+	std::uint16_t maxFrames = 0;
 	std::tie(timing, maxFrames) = this->getTempo(_pluginTempo);
 	return maxFrames;
 }
@@ -165,7 +165,7 @@ const LCDPP LCDPlugin::getPluginProperties(void) const
 void LCDPlugin::addPBMFrame(
 	const fs::path & PBMDirectory,
 	const std::string & file,
-	const uint16_t num)
+	const std::uint16_t num)
 {
 	GK_LOG_FUNC
 
@@ -181,7 +181,7 @@ void LCDPlugin::addPBMFrame(
 		DEFAULT_PBM_HEIGHT);
 }
 
-void LCDPlugin::addPBMEmptyFrame(const uint16_t num)
+void LCDPlugin::addPBMEmptyFrame(const std::uint16_t num)
 {
 	GK_LOG_FUNC
 
@@ -196,7 +196,7 @@ void LCDPlugin::addPBMEmptyFrame(const uint16_t num)
 	}
 }
 
-const uint16_t LCDPlugin::getNextPBMFrameID(void) const
+const std::uint16_t LCDPlugin::getNextPBMFrameID(void) const
 {
 	return _PBMFrameIndex;
 }
@@ -230,15 +230,15 @@ void LCDPlugin::writeStringOnPBMFrame(
 						<< " - writing string : " << string;
 		}
 #endif
-		uint16_t XPos, YPos = 0;
+		std::uint16_t XPos, YPos = 0;
 
 		XPos = (PBMXPos < 0) ? /* centered */
 				pFonts->getCenteredXPos(fontID, string) :
-				static_cast<uint16_t>(PBMXPos);
+				static_cast<std::uint16_t>(PBMXPos);
 
 		YPos = (PBMYPos < 0) ? /* centered */
 				pFonts->getCenteredYPos(fontID) :
-				static_cast<uint16_t>(PBMYPos);
+				static_cast<std::uint16_t>(PBMYPos);
 
 		for(const char & c : string)
 		{ /* for each character in the string */
@@ -282,14 +282,14 @@ void LCDPlugin::writeStringOnLastPBMFrame(
 }
 
 void LCDPlugin::drawProgressBarOnPBMFrame(
-	const uint16_t percent,
-	const uint16_t PBMXPos,
-	const uint16_t PBMYPos)
+	const std::uint16_t percent,
+	const std::uint16_t PBMXPos,
+	const std::uint16_t PBMYPos)
 {
 	GK_LOG_FUNC
 
-	const uint16_t PROGRESS_BAR_WIDTH = 102;
-	const uint16_t PROGRESS_BAR_HEIGHT = 7;
+	const std::uint16_t PROGRESS_BAR_WIDTH = 102;
+	const std::uint16_t PROGRESS_BAR_HEIGHT = 7;
 
 	if(PBMXPos + PROGRESS_BAR_WIDTH > (LCD_SCREEN_WIDTH - 1))
 	{
@@ -304,25 +304,25 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 		PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
 
 		// lambda
-		auto draw_horizontal_line = [&frame] (const uint16_t index) -> void
+		auto draw_horizontal_line = [&frame] (const std::uint16_t index) -> void
 		{
 			frame[index+12] |= 0b11111100;
-			for(uint16_t i = 0; i < 12; ++i)
+			for(std::uint16_t i = 0; i < 12; ++i)
 				frame[index+i] = 0b11111111;
 		};
 
 		// lambda
 		auto draw_progress_bar_line = [&frame, &percent]
-			(const uint16_t index, const uint16_t line) -> void
+			(const std::uint16_t index, const std::uint16_t line) -> void
 		{
 			const unsigned char B10 = 0b10101010;
 			const unsigned char B01 = 0b01010101;
 			const unsigned char B11 = 0b11111111;
 
-			const uint16_t percentByte = percent / 8;
-			const uint16_t percentModulo = percent % 8;
+			const std::uint16_t percentByte = percent / 8;
+			const std::uint16_t percentModulo = percent % 8;
 			/* -1 to consider the bar left border */
-			const uint16_t leftShift = ((8-1) - percentModulo);
+			const std::uint16_t leftShift = ((8-1) - percentModulo);
 
 			const unsigned char & Byte1 = (line % 2 == 1) ? B10 : B01;
 			const unsigned char & Byte2 = (line % 2 == 1) ? B01 : B10;
@@ -346,7 +346,7 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 			}
 #endif
 
-			for(uint16_t i = 0; i < 12; ++i)
+			for(std::uint16_t i = 0; i < 12; ++i)
 			{
 				if((i == 0) and (percent < 8))
 					frame[index+i] = get_shifted_byte(cByte);
@@ -364,8 +364,8 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 			frame[index+12] |= 0b00000100;	/* right border */
 		};
 
-		const uint16_t xByte = PBMXPos / 8;
-		const uint16_t index = (DEFAULT_PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
+		const std::uint16_t xByte = PBMXPos / 8;
+		const std::uint16_t index = (DEFAULT_PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
 
 		/* checking for out of range before progress bar drawing */
 		[[maybe_unused]] const auto & pos = frame.at(index+12);
@@ -380,7 +380,7 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 		 *	------------- one horizontal line
 		 */
 		draw_horizontal_line(index);
-		for(uint16_t i = 1; i < (PROGRESS_BAR_HEIGHT-1); ++i)
+		for(std::uint16_t i = 1; i < (PROGRESS_BAR_HEIGHT-1); ++i)
 			draw_progress_bar_line(index + (DEFAULT_PBM_WIDTH_IN_BYTES * i), i);
 		draw_horizontal_line(index + (DEFAULT_PBM_WIDTH_IN_BYTES * (PROGRESS_BAR_HEIGHT-1)));
 	}
@@ -392,11 +392,11 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 
 void LCDPlugin::drawPadlockOnPBMFrame(
 	const bool lockedPlugin,
-	const uint16_t PBMXPos,
-	const uint16_t PBMYPos)
+	const std::uint16_t PBMXPos,
+	const std::uint16_t PBMYPos)
 {
-	const uint16_t xByte = PBMXPos / 8;
-	const uint16_t index = (DEFAULT_PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
+	const std::uint16_t xByte = PBMXPos / 8;
+	const std::uint16_t index = (DEFAULT_PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
 
 	PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
 
@@ -434,18 +434,18 @@ void LCDPlugin::drawPadlockOnPBMFrame(
 }
 
 void LCDPlugin::drawVerticalLineOnPBMFrame(
-	const uint16_t PBMXPos,
-	const uint16_t PBMYPos,
-	const uint16_t size)
+	const std::uint16_t PBMXPos,
+	const std::uint16_t PBMYPos,
+	const std::uint16_t size)
 {
 	try
 	{
 		PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
 
-		const uint16_t xByte = PBMXPos / 8;
-		const uint16_t index = (DEFAULT_PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
+		const std::uint16_t xByte = PBMXPos / 8;
+		const std::uint16_t index = (DEFAULT_PBM_WIDTH_IN_BYTES * PBMYPos) + xByte;
 
-		for(uint16_t i = 1; i < size; ++i)
+		for(std::uint16_t i = 1; i < size; ++i)
 			frame[index + (DEFAULT_PBM_WIDTH_IN_BYTES * i)] |= 0b00100000;
 	}
 	catch (const std::out_of_range& oor)
@@ -483,7 +483,7 @@ void LCDPlugin::checkPBMFrameIndex(void)
 	}
 }
 
-std::tuple<uint16_t, uint16_t> LCDPlugin::getTempo(const LCDPluginTempo tempo)
+std::tuple<std::uint16_t, std::uint16_t> LCDPlugin::getTempo(const LCDPluginTempo tempo)
 {
 	if(tempo == LCDPluginTempo::TEMPO_500_20)
 		return std::make_tuple(500, 20);

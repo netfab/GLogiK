@@ -163,7 +163,7 @@ const char* G510Base::getDriverName() const
 	return "Logitech G510/G510s driver";
 }
 
-const uint16_t G510Base::getDriverID() const
+const std::uint16_t G510Base::getDriverID() const
 {
 	return GLOGIKD_DRIVER_ID_G510;
 }
@@ -488,9 +488,9 @@ void G510Base::sendUSBDeviceInitialization(USBDevice & device)
 
 void G510Base::setDeviceBacklightColor(
 	USBDevice & device,
-	const uint8_t r,
-	const uint8_t g,
-	const uint8_t b)
+	const std::uint8_t r,
+	const std::uint8_t g,
+	const std::uint8_t b)
 {
 	GK_LOG_FUNC
 

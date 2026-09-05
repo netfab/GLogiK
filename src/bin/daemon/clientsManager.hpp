@@ -151,15 +151,15 @@ class ClientsManager
 		const bool setDeviceBacklightColor(
 			const std::string & clientID,
 			const std::string & devID,
-			const uint8_t r,
-			const uint8_t g,
-			const uint8_t b
+			const std::uint8_t r,
+			const std::uint8_t g,
+			const std::uint8_t b
 		);
 		const bool setDeviceLCDPluginsMask(
 			const std::string & clientID,
 			const std::string & devID,
-			const uint8_t LCDPluginsMask,
-			const uint64_t mask
+			const std::uint8_t LCDPluginsMask,
+			const std::uint64_t mask
 		);
 
 		/* -- */

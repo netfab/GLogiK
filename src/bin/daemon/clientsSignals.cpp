@@ -33,7 +33,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 void ClientsSignals::sendSignalToClients(
-	const uint8_t numClients,
+	const std::uint8_t numClients,
 	NSGKDBus::GKDBus* pDBus,
 	const std::string & signal,
 	const bool forceSend) noexcept
@@ -83,7 +83,7 @@ void ClientsSignals::sendSignalToClients(
 }
 
 void ClientsSignals::sendStatusSignalArrayToClients(
-	const uint8_t numClients,
+	const std::uint8_t numClients,
 	NSGKDBus::GKDBus* pDBus,
 	const std::string & signal,
 	const std::vector<std::string> & devIDArray) noexcept

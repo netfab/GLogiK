@@ -137,9 +137,9 @@ const bool Client::deleteDevice(const std::string & devID)
 
 const bool Client::setDeviceBacklightColor(
 	const std::string & devID,
-	const uint8_t r,
-	const uint8_t g,
-	const uint8_t b)
+	const std::uint8_t r,
+	const std::uint8_t g,
+	const std::uint8_t b)
 {
 	GK_LOG_FUNC
 
@@ -169,7 +169,7 @@ void Client::setDeviceActiveUser(
 	{
 		const clientDevice & device = _devices.at(devID);
 
-		uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
+		std::uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 
 		GKLog2(trace, devID, " setting active configuration")
 
@@ -186,8 +186,8 @@ void Client::setDeviceActiveUser(
 
 const bool Client::setDeviceLCDPluginsMask(
 	const std::string & devID,
-	const uint8_t maskID,
-	const uint64_t mask)
+	const std::uint8_t maskID,
+	const std::uint64_t mask)
 {
 	GK_LOG_FUNC
 

@@ -125,7 +125,7 @@ const LCDPPArray_type & LCDScreenPluginsManager::getLCDPluginsProperties(void) c
 	return _pluginsPropertiesArray;
 }
 
-const uint16_t LCDScreenPluginsManager::getPluginTiming(void)
+const std::uint16_t LCDScreenPluginsManager::getPluginTiming(void)
 {
 	if(_itCurrentPlugin != _plugins.end() )
 		return (*_itCurrentPlugin)->getPluginTiming();
@@ -150,7 +150,7 @@ void LCDScreenPluginsManager::unlockPlugin(void)
 	}
 }
 
-const uint64_t LCDScreenPluginsManager::getCurrentPluginID(void)
+const std::uint64_t LCDScreenPluginsManager::getCurrentPluginID(void)
 {
 	if( ! _noPlugins )
 		if(_itCurrentPlugin != _plugins.end() )
@@ -174,7 +174,7 @@ void LCDScreenPluginsManager::jumpToNextPlugin(void)
 		}
 }
 
-const bool LCDScreenPluginsManager::findOneLCDScreenPlugin(const uint64_t LCDPluginsMask1) const
+const bool LCDScreenPluginsManager::findOneLCDScreenPlugin(const std::uint64_t LCDPluginsMask1) const
 {
 	bool ret = false;
 
@@ -196,7 +196,7 @@ const bool LCDScreenPluginsManager::findOneLCDScreenPlugin(const uint64_t LCDPlu
 
 const PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 	const std::string & LCDKey,
-	const uint64_t LCDPluginsMask1)
+	const std::uint64_t LCDPluginsMask1)
 {
 	GK_LOG_FUNC
 

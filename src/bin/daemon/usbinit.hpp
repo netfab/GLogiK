@@ -38,7 +38,7 @@ namespace GLogiK
 /* As per the USB 3.0 specs, the current maximum limit for the depth is 7. */
 const std::size_t PORT_NUMBERS_LEN = 7;
 
-typedef std::array<uint8_t, PORT_NUMBERS_LEN> USBPortNumbers_type;
+typedef std::array<std::uint8_t, PORT_NUMBERS_LEN> USBPortNumbers_type;
 
 class USBInit
 {
@@ -59,7 +59,7 @@ class USBInit
 
 	private:
 		static libusb_context * pContext;
-		static uint8_t counter;			/* initialized drivers counter */
+		static std::uint8_t counter;	/* initialized drivers counter */
 		static bool status;				/* is libusb initialized ? */
 };
 

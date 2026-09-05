@@ -82,8 +82,8 @@ class USBDevice
 #endif
 
 	public:
-		uint64_t					_pressedRKeysMask;
-		uint64_t					_LCDPluginsMask1;
+		std::uint64_t				_pressedRKeysMask;
+		std::uint64_t				_LCDPluginsMask1;
 
 	private:
 		friend class USBInit;
@@ -107,7 +107,7 @@ class USBDevice
 		std::chrono::steady_clock::time_point
 									_lastTimePoint;
 
-		std::atomic<uint8_t>		_MxKeysLedsMask;
+		std::atomic<std::uint8_t>	_MxKeysLedsMask;
 		std::atomic<bool>			_exitMacroRecordMode;
 
 	private:
@@ -117,7 +117,7 @@ class USBDevice
 		int							_lastKeysInterruptTransferLength;
 		int							_lastLCDInterruptTransferLength;
 
-		uint8_t _RGB[3];
+		std::uint8_t _RGB[3];
 
 	public:
 		unsigned int				_fatalErrors;
@@ -177,14 +177,14 @@ class USBDevice
 		}
 
 		void setRGBBytes(
-			const uint8_t r,
-			const uint8_t g,
-			const uint8_t b
+			const std::uint8_t r,
+			const std::uint8_t g,
+			const std::uint8_t b
 		);
 		void getRGBBytes(
-			uint8_t & r,
-			uint8_t & g,
-			uint8_t & b
+			std::uint8_t & r,
+			std::uint8_t & g,
+			std::uint8_t & b
 		) const;
 };
 

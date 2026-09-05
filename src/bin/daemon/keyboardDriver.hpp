@@ -52,7 +52,7 @@
 namespace GLogiK
 {
 
-enum class KeyStatus : uint8_t
+enum class KeyStatus : std::uint8_t
 {
 	S_KEY_PROCESSED = 0,
 	S_KEY_TIMEDOUT,
@@ -60,7 +60,7 @@ enum class KeyStatus : uint8_t
 	S_KEY_UNKNOWN
 };
 
-enum class GKModifierKeys : uint8_t
+enum class GKModifierKeys : std::uint8_t
 {
 	GK_KEY_LEFT_CTRL	= 1 << 0,
 	GK_KEY_LEFT_SHIFT	= 1 << 1,
@@ -73,7 +73,7 @@ enum class GKModifierKeys : uint8_t
 };
 
 struct ModifierKey {
-	const uint8_t code;			/* event code */
+	const std::uint8_t code;			/* event code */
 	const GKModifierKeys key;	/* modifier key */
 };
 
@@ -99,15 +99,15 @@ class KeyboardDriver
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,
-			const uint8_t r,
-			const uint8_t g,
-			const uint8_t b,
-			const uint64_t LCDPluginsMask1
+			const std::uint8_t r,
+			const std::uint8_t g,
+			const std::uint8_t b,
+			const std::uint64_t LCDPluginsMask1
 		);
 		const LCDPPArray_type & getDeviceLCDPluginsProperties(const std::string & devID) const;
 
 		/* --- */
-		virtual const uint16_t getDriverID() const = 0;
+		virtual const std::uint16_t getDriverID() const = 0;
 
 		virtual void initializeDevice(const USBDeviceID & det);
 		virtual void openDevice(const USBDeviceID & det);
@@ -204,13 +204,13 @@ class KeyboardDriver
 		);
 		void setDeviceLCDPluginsMask(
 			USBDevice & device,
-			uint64_t mask = 0
+			std::uint64_t mask = 0
 		);
 
-		uint16_t getTimeLapse(USBDevice & device);
-		const uint8_t handleModifierKeys(
+		std::uint16_t getTimeLapse(USBDevice & device);
+		const std::uint8_t handleModifierKeys(
 			USBDevice & device,
-			const uint16_t interval
+			const std::uint16_t interval
 		);
 
 		void checkDeviceFatalErrors(
@@ -227,9 +227,9 @@ class KeyboardDriver
 		virtual void setDeviceMxKeysLeds(USBDevice & device);
 		virtual void setDeviceBacklightColor(
 			USBDevice & device,
-			const uint8_t r=0xFF,
-			const uint8_t g=0xFF,
-			const uint8_t b=0xFF
+			const std::uint8_t r=0xFF,
+			const std::uint8_t g=0xFF,
+			const std::uint8_t b=0xFF
 		);
 		virtual const bool checkGKey(USBDevice & device) = 0;
 		virtual const bool checkMediaKey(USBDevice & device) = 0;

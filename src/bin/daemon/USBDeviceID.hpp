@@ -70,38 +70,38 @@ class USBDeviceID
 			return _usec;
 		}
 
-		const uint64_t getCapabilities(void) const
+		const std::uint64_t getCapabilities(void) const
 		{
 			return _capabilities;
 		}
 
-		const uint16_t getDriverID(void) const
+		const std::uint16_t getDriverID(void) const
 		{
 			return _driverID;
 		}
 
-		const uint8_t getBus(void) const
+		const std::uint8_t getBus(void) const
 		{
 			return _bus;
 		}
-		const uint8_t getNum(void) const
+		const std::uint8_t getNum(void) const
 		{
 			return _num;
 		}
 
-		const uint8_t getBConfigurationValue(void) const
+		const std::uint8_t getBConfigurationValue(void) const
 		{
 			return _bConfigurationValue;
 		}
-		const uint8_t getBInterfaceNumber(void) const
+		const std::uint8_t getBInterfaceNumber(void) const
 		{
 			return _bInterfaceNumber;
 		}
-		const uint8_t getBAlternateSetting(void) const
+		const std::uint8_t getBAlternateSetting(void) const
 		{
 			return _bAlternateSetting;
 		}
-		const uint8_t getBNumEndpoints(void) const
+		const std::uint8_t getBNumEndpoints(void) const
 		{
 			return _bNumEndpoints;
 		}
@@ -124,7 +124,7 @@ class USBDeviceID
 			return _LCDKeysTransferLength;
 		}
 
-		static const std::string getDeviceID(const uint8_t bus, const uint8_t num)
+		static const std::string getDeviceID(const std::uint8_t bus, const std::uint8_t num)
 		{
 			std::string devID("[b");
 			devID += std::to_string(bus);
@@ -146,11 +146,11 @@ class USBDeviceID
 			const std::string & name,
 			const std::string & vendorID,
 			const std::string & productID,
-			const uint64_t capabilities,
-			const uint8_t bConfigurationValue,
-			const uint8_t bInterfaceNumber,
-			const uint8_t bAlternateSetting,
-			const uint8_t bNumEndpoints,
+			const std::uint64_t capabilities,
+			const std::uint8_t bConfigurationValue,
+			const std::uint8_t bInterfaceNumber,
+			const std::uint8_t bAlternateSetting,
+			const std::uint8_t bNumEndpoints,
 			const int8_t bufferMaxLength,
 			const int8_t GKeysTransferLength,
 			const int8_t mediaKeysTransferLength,
@@ -162,9 +162,9 @@ class USBDeviceID
 			const std::string & devpath,
 			const std::string & serial,
 			const std::string & usec,
-			const uint16_t driverID,
-			const uint8_t bus,
-			const uint8_t num
+			const std::uint16_t driverID,
+			const std::uint8_t bus,
+			const std::uint8_t num
 		);
 		USBDeviceID(const USBDeviceID & device) = default;
 		~USBDeviceID(void) = default;
@@ -187,18 +187,18 @@ class USBDeviceID
 		std::string _serial;
 		std::string _usec;
 
-		uint64_t _capabilities;
+		std::uint64_t _capabilities;
 
-		uint16_t _driverID;
+		std::uint16_t _driverID;
 
-		uint8_t _bus;
-		uint8_t _num;
+		std::uint8_t _bus;
+		std::uint8_t _num;
 
 		/* USB_INTERFACE_DESCRIPTOR */
-		uint8_t _bConfigurationValue;
-		uint8_t _bInterfaceNumber;
-		uint8_t _bAlternateSetting;
-		uint8_t _bNumEndpoints;
+		std::uint8_t _bConfigurationValue;
+		std::uint8_t _bInterfaceNumber;
+		std::uint8_t _bAlternateSetting;
+		std::uint8_t _bNumEndpoints;
 
 		int8_t _keysInterruptBufferMaxLength;
 

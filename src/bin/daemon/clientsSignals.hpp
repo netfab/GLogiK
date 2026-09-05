@@ -41,14 +41,14 @@ class ClientsSignals
 		~ClientsSignals() = default;
 
 		void sendSignalToClients(
-			const uint8_t numClients,		/* number of connected clients */
+			const std::uint8_t numClients,		/* number of connected clients */
 			NSGKDBus::GKDBus* pDBus,
 			const std::string & signal,
 			const bool forceSend=false		/* always send signal, even if numClient == 0 */
 		) noexcept;
 
 		void sendStatusSignalArrayToClients(
-			const uint8_t numClients,
+			const std::uint8_t numClients,
 			NSGKDBus::GKDBus* pDBus,
 			const std::string & signal,
 			const std::vector<std::string> & devIDArray

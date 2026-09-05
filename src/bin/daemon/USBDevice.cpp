@@ -101,7 +101,7 @@ void USBDevice::operator=(const USBDevice& dev)
 	_keysThreadID					= dev._keysThreadID;
 	_LCDThreadID					= dev._LCDThreadID;
 	_pressedRKeysMask				= dev._pressedRKeysMask;
-	_MxKeysLedsMask					= static_cast<uint8_t>(dev._MxKeysLedsMask);
+	_MxKeysLedsMask					= static_cast<std::uint8_t>(dev._MxKeysLedsMask);
 	_exitMacroRecordMode			= static_cast<bool>(dev._exitMacroRecordMode);
 	_LCDPluginsMask1				= dev._LCDPluginsMask1;
 	std::copy(
@@ -152,9 +152,9 @@ void USBDevice::destroyLCDPluginsManager(void) noexcept
 }
 
 void USBDevice::setRGBBytes(
-	const uint8_t r,
-	const uint8_t g,
-	const uint8_t b)
+	const std::uint8_t r,
+	const std::uint8_t g,
+	const std::uint8_t b)
 {
 	_RGB[0] = r;
 	_RGB[1] = g;
@@ -162,9 +162,9 @@ void USBDevice::setRGBBytes(
 }
 
 void USBDevice::getRGBBytes(
-	uint8_t & r,
-	uint8_t & g,
-	uint8_t & b) const
+	std::uint8_t & r,
+	std::uint8_t & g,
+	std::uint8_t & b) const
 {
 	r = _RGB[0];
 	g = _RGB[1];

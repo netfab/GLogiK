@@ -96,7 +96,7 @@ void libusb::closeUSBDevice(USBDevice & device) noexcept
 void libusb::sendUSBDeviceFeatureReport(
 	USBDevice & device,
 	const unsigned char * data,
-	uint16_t wLength)
+	std::uint16_t wLength)
 {
 	GK_LOG_FUNC
 
@@ -112,8 +112,8 @@ void libusb::sendUSBDeviceFeatureReport(
 	 *		7.2.2 Set_Report Request
 	 *	https://www.usb.org/document-library/device-class-definition-hid-111
 	 */
-	const uint16_t HIDReportType = 0x03 << 8;  /* high byte - Report Type: Feature */
-	const uint16_t HIDReportID = data[0];      /* low byte  - Report ID */
+	const std::uint16_t HIDReportType = 0x03 << 8;  /* high byte - Report Type: Feature */
+	const std::uint16_t HIDReportID = data[0];      /* low byte  - Report ID */
 	// TODO - support when HIDReportID == 0
 	if( HIDReportID == 0)
 	{

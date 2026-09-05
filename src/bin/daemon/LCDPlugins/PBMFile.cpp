@@ -41,8 +41,8 @@ PBMFile::~PBMFile()
 void PBMFile::readPBM(
 	const std::string & PBMPath,
 	PixelsData & PBMData,
-	const uint16_t PBMWidth,
-	const uint16_t PBMHeight)
+	const std::uint16_t PBMWidth,
+	const std::uint16_t PBMHeight)
 {
 	GK_LOG_FUNC
 
@@ -58,7 +58,7 @@ void PBMFile::readPBM(
 			pbm.open(PBMPath, std::ifstream::in|std::ifstream::binary);
 
 			std::string magic;
-			uint16_t width, height = 0;
+			std::uint16_t width, height = 0;
 
 			PBMFile::parsePBMHeader(pbm, magic, width, height);
 
@@ -98,8 +98,8 @@ void PBMFile::closePBM(std::ifstream & pbm)
 void PBMFile::parsePBMHeader(
 	std::ifstream & pbm,
 	std::string & magic,
-	uint16_t & width,
-	uint16_t & height)
+	std::uint16_t & width,
+	std::uint16_t & height)
 {
 	GK_LOG_FUNC
 

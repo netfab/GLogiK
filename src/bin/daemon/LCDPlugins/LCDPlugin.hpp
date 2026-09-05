@@ -41,7 +41,7 @@ namespace fs = boost::filesystem;
 namespace GLogiK
 {
 
-enum class LCDPluginTempo : uint8_t
+enum class LCDPluginTempo : std::uint8_t
 {
 	TEMPO_DEFAULT	= 1 << 0,
 	TEMPO_500_20,
@@ -51,18 +51,18 @@ enum class LCDPluginTempo : uint8_t
 class PBMFrame
 {
 	public:
-		PBMFrame(const uint16_t num);
+		PBMFrame(const std::uint16_t num);
 		PBMFrame(void) = delete;
 		~PBMFrame() = default;
 
 		PixelsData _PBMData;
 
-		const bool switchToNextFrame(const uint16_t currentFrameCounter);
+		const bool switchToNextFrame(const std::uint16_t currentFrameCounter);
 
 	protected:
 
 	private:
-		const uint16_t _numFrames;
+		const std::uint16_t _numFrames;
 
 };
 
@@ -81,9 +81,9 @@ class LCDPlugin
 
 		const LCDPP getPluginProperties(void) const;
 		const std::string & getPluginName(void) const;
-		const uint64_t getPluginID(void) const;
-		const uint16_t getPluginTiming(void) const;
-		const uint16_t getPluginMaxFrames(void) const;
+		const std::uint64_t getPluginID(void) const;
+		const std::uint16_t getPluginTiming(void) const;
+		const std::uint16_t getPluginMaxFrames(void) const;
 		void resetPluginEverLocked(void);
 
 		void resetPBMFrameIndex(void);
@@ -104,12 +104,12 @@ class LCDPlugin
 		void addPBMFrame(
 			const fs::path & PBMDirectory,
 			const std::string & file,
-			const uint16_t num = 1
+			const std::uint16_t num = 1
 		);
 
-		void addPBMEmptyFrame(const uint16_t num = 1);
+		void addPBMEmptyFrame(const std::uint16_t num = 1);
 
-		const uint16_t getNextPBMFrameID(void) const;
+		const std::uint16_t getNextPBMFrameID(void) const;
 		PixelsData & getCurrentPBMFrame(void);
 
 		void writeStringOnPBMFrame(
@@ -129,33 +129,33 @@ class LCDPlugin
 		);
 
 		void drawProgressBarOnPBMFrame(
-			const uint16_t percent,
-			const uint16_t PBMXPos,
-			const uint16_t PBMYPos
+			const std::uint16_t percent,
+			const std::uint16_t PBMXPos,
+			const std::uint16_t PBMYPos
 		);
 
 		void drawPadlockOnPBMFrame(
 			const bool lockedPlugin,
-			const uint16_t PBMXPos = 1,
-			const uint16_t PBMYPos = 1
+			const std::uint16_t PBMXPos = 1,
+			const std::uint16_t PBMYPos = 1
 		);
 
 		void drawVerticalLineOnPBMFrame(
-			const uint16_t PBMXPos,
-			const uint16_t PBMYPos,
-			const uint16_t size
+			const std::uint16_t PBMXPos,
+			const std::uint16_t PBMYPos,
+			const std::uint16_t size
 		);
 
 	private:
 		bool _initialized;
 		bool _everLocked;
-		uint16_t _PBMFrameCounter;	/* frame counter */
-		uint16_t _PBMFrameIndex;	/* frame index in the container */
+		std::uint16_t _PBMFrameCounter;	/* frame counter */
+		std::uint16_t _PBMFrameIndex;	/* frame index in the container */
 		std::vector<PBMFrame> _PBMFrames;
 		std::vector<PBMFrame>::iterator _itCurrentPBMFrame;
 
 		void checkPBMFrameIndex(void);
-		static std::tuple<uint16_t, uint16_t> getTempo(const LCDPluginTempo tempo);
+		static std::tuple<std::uint16_t, std::uint16_t> getTempo(const LCDPluginTempo tempo);
 };
 
 } // namespace GLogiK

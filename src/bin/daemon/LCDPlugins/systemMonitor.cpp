@@ -106,8 +106,8 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 	{
 		std::map<const std::string, const std::string> memShot;
 
-		uint64_t freePMem = 0;
-		uint64_t totalPMem = 1;
+		std::uint64_t freePMem = 0;
+		std::uint64_t totalPMem = 1;
 
 		try
 		{
@@ -187,7 +187,7 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 		std::fesetround(FE_TONEAREST);
 		freeMem = std::nearbyint(freeMem);
 
-		uint16_t usedMem = static_cast<uint16_t>(freeMem);
+		std::uint16_t usedMem = static_cast<std::uint16_t>(freeMem);
 		usedMem = 100 - usedMem;
 
 		this->drawProgressBarOnPBMFrame(usedMem, 24, 33);
@@ -269,11 +269,12 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 
 	/* -- -- -- */
 	/* FontID::MONOSPACE85 char width is 5 pixels */
-	const uint16_t FONT_CHAR_WIDTH = 5;
+	const std::uint16_t FONT_CHAR_WIDTH = 5;
 
 	/* padded percentage string size is always 5 chars */
-	const uint16_t PERC_POS_X = (LCD_SCREEN_WIDTH - 1) - (5 * FONT_CHAR_WIDTH);
-	const uint16_t  NET_POS_X = (LCD_SCREEN_WIDTH - 1) - (paddedRateString.size() * FONT_CHAR_WIDTH);
+	const std::uint16_t PERC_POS_X = (LCD_SCREEN_WIDTH - 1) - (5 * FONT_CHAR_WIDTH);
+	const std::uint16_t  NET_POS_X =
+		(LCD_SCREEN_WIDTH - 1) - (paddedRateString.size() * FONT_CHAR_WIDTH);
 
 	/* percent - max 5 chars */
 	/* net rate - max 12 chars */

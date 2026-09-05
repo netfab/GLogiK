@@ -33,7 +33,7 @@
 namespace GLogiK
 {
 
-enum class FontID : uint8_t
+enum class FontID : std::uint8_t
 {
 			MONOSPACE85	= 1 << 0,
 			MONOSPACE86	= 1 << 1,

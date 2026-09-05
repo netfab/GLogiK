@@ -227,18 +227,18 @@ const PixelsData & Coretemp::getNextPBMFrame(
 		}
 	}
 
-	const uint16_t TEMP_POS_X = 36;
-	const uint16_t TEMP_POS_Y = 22;
+	const std::uint16_t TEMP_POS_X = 36;
+	const std::uint16_t TEMP_POS_Y = 22;
 
-	uint16_t pos_x = TEMP_POS_X;
-	uint16_t pos_y = TEMP_POS_Y;
+	std::uint16_t pos_x = TEMP_POS_X;
+	std::uint16_t pos_y = TEMP_POS_Y;
 
 	unsigned short x = 0;
 
 	auto updatedPosX = [&pos_x] () -> const auto &
 	{
-		const uint16_t MONOSPACE85_CHARACTER_WIDTH = 5;
-		const uint16_t num_chars = 6; // 0:100°
+		const std::uint16_t MONOSPACE85_CHARACTER_WIDTH = 5;
+		const std::uint16_t num_chars = 6; // 0:100°
 
 		pos_x += ((MONOSPACE85_CHARACTER_WIDTH * num_chars) + 2);
 		return pos_x;
