@@ -37,6 +37,10 @@
 #include <boost/log/attributes/scoped_attribute.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 
+#include <boost/log/sources/severity_feature.hpp>
+#include <boost/log/sources/severity_logger.hpp>
+#include <boost/log/sources/record_ostream.hpp>
+
 #define UTILS_COMPILATION 1
 
 #include "GKLogging.hpp"
@@ -49,10 +53,11 @@ namespace NSGKUtils
 
 namespace chr = std::chrono;
 
-namespace expr = boost::log::expressions;
 namespace logging = boost::log;
-namespace sinks = boost::log::sinks;
-namespace attrs = boost::log::attributes;
+namespace expr = logging::expressions;
+namespace sinks = logging::sinks;
+namespace attrs = logging::attributes;
+namespace src = logging::sources;
 
 
 BOOST_LOG_ATTRIBUTE_KEYWORD(line_id, "LineID", unsigned int)
@@ -64,7 +69,28 @@ BOOST_LOG_ATTRIBUTE_KEYWORD(thread_id, "ThreadID", attrs::current_thread_id::val
 bool GKLogging::GKDebug = false;
 bool GKLogging::GKVerbose = false;
 bool GKLogging::initialized = false;
-src::severity_logger< severity_level > GKLogging::GKLogger;
+src::severity_logger< severity_level > GKLogger;
+
+LogStream::LogStream(severity_level severity)
+    :	_severity(severity)
+{
+}
+
+LogStream::~LogStream()
+{
+	BOOST_LOG_SEV(GKLogger, _severity) << _stream.str();
+}
+
+LogStream& LogStream::operator<<(std::ostream & (*manip)(std::ostream&))
+{
+	manip(_stream);
+	return *this;
+}
+
+LogStream GKLogging::log(severity_level severity)
+{
+	return LogStream(severity);
+}
 
 // The operator puts a human-friendly representation of the severity level to the stream
 std::ostream& operator<< (std::ostream& strm, severity_level level)

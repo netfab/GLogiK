@@ -28,20 +28,17 @@
 
 #include <ios>
 #include <string>
+#include <ostream>
 #include <sstream>
 
 #include <syslog.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/log/attributes/named_scope.hpp>
-#include <boost/log/sources/severity_feature.hpp>
-#include <boost/log/sources/severity_logger.hpp>
-#include <boost/log/sources/record_ostream.hpp>
 
 #include <config.h>
 
 namespace fs = boost::filesystem;
-namespace src = boost::log::sources;
 
 namespace NSGKUtils
 {
@@ -55,6 +52,33 @@ enum severity_level
 	critical
 };
 
+class LogStream
+{
+	public:
+		explicit LogStream(severity_level severity);
+		~LogStream();
+
+		LogStream(const LogStream&) = delete;
+		LogStream& operator=(const LogStream&) = delete;
+
+		LogStream(LogStream&&) = default;
+		LogStream& operator=(LogStream&&) = default;
+
+		template<typename T>
+			LogStream& operator<<(const T& value)
+		{
+			_stream << value;
+			return *this;
+		}
+
+		// << operator for manipulators
+		LogStream& operator<<(std::ostream & (*manip)(std::ostream&));
+
+	private:
+		severity_level _severity;
+		std::ostringstream _stream;
+};
+
 class GKLogging
 {
 	public:
@@ -63,12 +87,13 @@ class GKLogging
 
 		static bool GKDebug;
 		static bool GKVerbose;
-		static src::severity_logger< severity_level > GKLogger;
 
 		static void initConsoleLog(const std::string & baseName);
 		static void initDebugFile(
 			const std::string & baseName,
 			const fs::perms prms = fs::no_perms);
+
+		static LogStream log(severity_level severity);
 
 	protected:
 
@@ -77,7 +102,7 @@ class GKLogging
 		static void init(void);
 };
 
-#define LOG(sev)	BOOST_LOG_SEV(GKLogging::GKLogger, sev)
+#define LOG(sev) 	GKLogging::log(sev)
 
 #if DEBUGGING_ON
 #define GKLog(level, m1) if(GKLogging::GKDebug) { LOG(level) << m1; }
