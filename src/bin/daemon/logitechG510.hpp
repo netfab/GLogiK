@@ -48,7 +48,7 @@ namespace GLogiK
 /* RKey - Recognized Keys */
 struct RKey
 {
-	const Keys key;
+	const RKeys key;
 	const std::uint16_t index;
 	const unsigned char mask;
 };

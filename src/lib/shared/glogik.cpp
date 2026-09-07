@@ -28,6 +28,7 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "include/RKeys.hpp"
 #include "glogik.hpp"
 
 namespace GLogiK
@@ -96,49 +97,49 @@ c_str MUTE_MICRO	= "";
 
 /* --- ---- --- */
 
-const std::map<Keys, c_str> keysNamesMap =
+const std::map<RKeys, c_str> keysNamesMap =
 {
-	{ Keys::GK_KEY_M1, M_KEY_M1 },
-	{ Keys::GK_KEY_M2, M_KEY_M2 },
-	{ Keys::GK_KEY_M3, M_KEY_M3 },
+	{ RKeys::GK_KEY_M1, M_KEY_M1 },
+	{ RKeys::GK_KEY_M2, M_KEY_M2 },
+	{ RKeys::GK_KEY_M3, M_KEY_M3 },
 	/* -- */
-	{ Keys::GK_KEY_G1, G_KEY_G1 },
-	{ Keys::GK_KEY_G2, G_KEY_G2 },
-	{ Keys::GK_KEY_G3, G_KEY_G3 },
-	{ Keys::GK_KEY_G4, G_KEY_G4 },
-	{ Keys::GK_KEY_G5, G_KEY_G5 },
-	{ Keys::GK_KEY_G6, G_KEY_G6 },
-	{ Keys::GK_KEY_G7, G_KEY_G7 },
-	{ Keys::GK_KEY_G8, G_KEY_G8 },
-	{ Keys::GK_KEY_G9, G_KEY_G9 },
-	{ Keys::GK_KEY_G10, G_KEY_G10 },
-	{ Keys::GK_KEY_G11, G_KEY_G11 },
-	{ Keys::GK_KEY_G12, G_KEY_G12 },
-	{ Keys::GK_KEY_G13, G_KEY_G13 },
-	{ Keys::GK_KEY_G14, G_KEY_G14 },
-	{ Keys::GK_KEY_G15, G_KEY_G15 },
-	{ Keys::GK_KEY_G16, G_KEY_G16 },
-	{ Keys::GK_KEY_G17, G_KEY_G17 },
-	{ Keys::GK_KEY_G18, G_KEY_G18 },
+	{ RKeys::GK_KEY_G1, G_KEY_G1 },
+	{ RKeys::GK_KEY_G2, G_KEY_G2 },
+	{ RKeys::GK_KEY_G3, G_KEY_G3 },
+	{ RKeys::GK_KEY_G4, G_KEY_G4 },
+	{ RKeys::GK_KEY_G5, G_KEY_G5 },
+	{ RKeys::GK_KEY_G6, G_KEY_G6 },
+	{ RKeys::GK_KEY_G7, G_KEY_G7 },
+	{ RKeys::GK_KEY_G8, G_KEY_G8 },
+	{ RKeys::GK_KEY_G9, G_KEY_G9 },
+	{ RKeys::GK_KEY_G10, G_KEY_G10 },
+	{ RKeys::GK_KEY_G11, G_KEY_G11 },
+	{ RKeys::GK_KEY_G12, G_KEY_G12 },
+	{ RKeys::GK_KEY_G13, G_KEY_G13 },
+	{ RKeys::GK_KEY_G14, G_KEY_G14 },
+	{ RKeys::GK_KEY_G15, G_KEY_G15 },
+	{ RKeys::GK_KEY_G16, G_KEY_G16 },
+	{ RKeys::GK_KEY_G17, G_KEY_G17 },
+	{ RKeys::GK_KEY_G18, G_KEY_G18 },
 	/* -- */
-	{ Keys::GK_KEY_L1, LCD_KEY_L1 },
-	{ Keys::GK_KEY_L2, LCD_KEY_L2 },
-	{ Keys::GK_KEY_L3, LCD_KEY_L3 },
-	{ Keys::GK_KEY_L4, LCD_KEY_L4 },
-	{ Keys::GK_KEY_L5, LCD_KEY_L5 },
+	{ RKeys::GK_KEY_L1, LCD_KEY_L1 },
+	{ RKeys::GK_KEY_L2, LCD_KEY_L2 },
+	{ RKeys::GK_KEY_L3, LCD_KEY_L3 },
+	{ RKeys::GK_KEY_L4, LCD_KEY_L4 },
+	{ RKeys::GK_KEY_L5, LCD_KEY_L5 },
 	/* -- */
-	{ Keys::GK_KEY_AUDIO_NEXT, 			XF86_AUDIO_NEXT },
-	{ Keys::GK_KEY_AUDIO_PREV, 			XF86_AUDIO_PREV },
-	{ Keys::GK_KEY_AUDIO_STOP,			XF86_AUDIO_STOP },
-	{ Keys::GK_KEY_AUDIO_PLAY,			XF86_AUDIO_PLAY },
-	{ Keys::GK_KEY_AUDIO_MUTE,			XF86_AUDIO_MUTE },
-	{ Keys::GK_KEY_AUDIO_RAISE_VOLUME,	XF86_AUDIO_RAISE_VOLUME },
-	{ Keys::GK_KEY_AUDIO_LOWER_VOLUME,	XF86_AUDIO_LOWER_VOLUME },
+	{ RKeys::GK_KEY_AUDIO_NEXT, 			XF86_AUDIO_NEXT },
+	{ RKeys::GK_KEY_AUDIO_PREV, 			XF86_AUDIO_PREV },
+	{ RKeys::GK_KEY_AUDIO_STOP,			XF86_AUDIO_STOP },
+	{ RKeys::GK_KEY_AUDIO_PLAY,			XF86_AUDIO_PLAY },
+	{ RKeys::GK_KEY_AUDIO_MUTE,			XF86_AUDIO_MUTE },
+	{ RKeys::GK_KEY_AUDIO_RAISE_VOLUME,	XF86_AUDIO_RAISE_VOLUME },
+	{ RKeys::GK_KEY_AUDIO_LOWER_VOLUME,	XF86_AUDIO_LOWER_VOLUME },
 	/* -- */
-	{ Keys::GK_KEY_LIGHT, 		KEY_LIGHT },
-	{ Keys::GK_KEY_MR, 			M_KEY_MR },
-	{ Keys::GK_KEY_MUTE_HEADSET, 	MUTE_HEADSET },
-	{ Keys::GK_KEY_MUTE_MICRO, 	MUTE_MICRO },
+	{ RKeys::GK_KEY_LIGHT, 		KEY_LIGHT },
+	{ RKeys::GK_KEY_MR, 			M_KEY_MR },
+	{ RKeys::GK_KEY_MUTE_HEADSET, 	MUTE_HEADSET },
+	{ RKeys::GK_KEY_MUTE_MICRO, 	MUTE_MICRO },
 };
 
 const std::map<GKeysID, c_str> GKeysNamesMap =
@@ -163,36 +164,36 @@ const std::map<GKeysID, c_str> GKeysNamesMap =
 	{ GKeysID::GKEY_G18, G_KEY_G18 },
 };
 
-const std::map<Keys, MKeysID> keys2MKeysIDMap =
+const std::map<RKeys, MKeysID> keys2MKeysIDMap =
 {
-	{ Keys::GK_KEY_M1, MKeysID::MKEY_M1 },
-	{ Keys::GK_KEY_M2, MKeysID::MKEY_M2 },
-	{ Keys::GK_KEY_M3, MKeysID::MKEY_M3 },
+	{ RKeys::GK_KEY_M1, MKeysID::MKEY_M1 },
+	{ RKeys::GK_KEY_M2, MKeysID::MKEY_M2 },
+	{ RKeys::GK_KEY_M3, MKeysID::MKEY_M3 },
 };
 
-const std::map<Keys, GKeysID> keys2GKeysIDMap =
+const std::map<RKeys, GKeysID> keys2GKeysIDMap =
 {
-	{ Keys::GK_KEY_G1, GKeysID::GKEY_G1 },
-	{ Keys::GK_KEY_G2, GKeysID::GKEY_G2 },
-	{ Keys::GK_KEY_G3, GKeysID::GKEY_G3 },
-	{ Keys::GK_KEY_G4, GKeysID::GKEY_G4 },
-	{ Keys::GK_KEY_G5, GKeysID::GKEY_G5 },
-	{ Keys::GK_KEY_G6, GKeysID::GKEY_G6 },
-	{ Keys::GK_KEY_G7, GKeysID::GKEY_G7 },
-	{ Keys::GK_KEY_G8, GKeysID::GKEY_G8 },
-	{ Keys::GK_KEY_G9, GKeysID::GKEY_G9 },
-	{ Keys::GK_KEY_G10, GKeysID::GKEY_G10 },
-	{ Keys::GK_KEY_G11, GKeysID::GKEY_G11 },
-	{ Keys::GK_KEY_G12, GKeysID::GKEY_G12 },
-	{ Keys::GK_KEY_G13, GKeysID::GKEY_G13 },
-	{ Keys::GK_KEY_G14, GKeysID::GKEY_G14 },
-	{ Keys::GK_KEY_G15, GKeysID::GKEY_G15 },
-	{ Keys::GK_KEY_G16, GKeysID::GKEY_G16 },
-	{ Keys::GK_KEY_G17, GKeysID::GKEY_G17 },
-	{ Keys::GK_KEY_G18, GKeysID::GKEY_G18 },
+	{ RKeys::GK_KEY_G1, GKeysID::GKEY_G1 },
+	{ RKeys::GK_KEY_G2, GKeysID::GKEY_G2 },
+	{ RKeys::GK_KEY_G3, GKeysID::GKEY_G3 },
+	{ RKeys::GK_KEY_G4, GKeysID::GKEY_G4 },
+	{ RKeys::GK_KEY_G5, GKeysID::GKEY_G5 },
+	{ RKeys::GK_KEY_G6, GKeysID::GKEY_G6 },
+	{ RKeys::GK_KEY_G7, GKeysID::GKEY_G7 },
+	{ RKeys::GK_KEY_G8, GKeysID::GKEY_G8 },
+	{ RKeys::GK_KEY_G9, GKeysID::GKEY_G9 },
+	{ RKeys::GK_KEY_G10, GKeysID::GKEY_G10 },
+	{ RKeys::GK_KEY_G11, GKeysID::GKEY_G11 },
+	{ RKeys::GK_KEY_G12, GKeysID::GKEY_G12 },
+	{ RKeys::GK_KEY_G13, GKeysID::GKEY_G13 },
+	{ RKeys::GK_KEY_G14, GKeysID::GKEY_G14 },
+	{ RKeys::GK_KEY_G15, GKeysID::GKEY_G15 },
+	{ RKeys::GK_KEY_G16, GKeysID::GKEY_G16 },
+	{ RKeys::GK_KEY_G17, GKeysID::GKEY_G17 },
+	{ RKeys::GK_KEY_G18, GKeysID::GKEY_G18 },
 };
 
-const std::string getKeyName(const Keys key)
+const std::string getKeyName(const RKeys key)
 {
 	using namespace NSGKUtils;
 
@@ -225,12 +226,12 @@ const std::string getGKeyName(const GKeysID keyID)
 	return GKey;
 }
 
-const MKeysID getMKeyID(const Keys key)
+const MKeysID getMKeyID(const RKeys key)
 {
 	return keys2MKeysIDMap.at(key);
 }
 
-const GKeysID getGKeyID(const Keys key)
+const GKeysID getGKeyID(const RKeys key)
 {
 	return keys2GKeysIDMap.at(key);
 }

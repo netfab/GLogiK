@@ -27,12 +27,13 @@
 #include <string>
 #include <map>
 
-#include "include/enums.hpp"
 #include "include/base.hpp"
 #include "include/DepsMap.hpp"
 
 namespace GLogiK
 {
+
+enum class RKeys : std::uint64_t;
 
 typedef const char* const c_str;
 
@@ -99,15 +100,15 @@ extern c_str MUTE_MICRO;
 
 /* --- ---- --- */
 
-extern const std::map<Keys, c_str> keysNamesMap;
+extern const std::map<RKeys, c_str> keysNamesMap;
 extern const std::map<GKeysID, c_str> GKeysNamesMap;
-extern const std::map<Keys, MKeysID> keys2MKeysIDMap;
-extern const std::map<Keys, GKeysID> keys2GKeysIDMap;
+extern const std::map<RKeys, MKeysID> keys2MKeysIDMap;
+extern const std::map<RKeys, GKeysID> keys2GKeysIDMap;
 
-const std::string getKeyName(const Keys key);
+const std::string getKeyName(const RKeys key);
 const std::string getGKeyName(const GKeysID keyID);
-const MKeysID getMKeyID(const Keys key);
-const GKeysID getGKeyID(const Keys key);
+const MKeysID getMKeyID(const RKeys key);
+const GKeysID getGKeyID(const RKeys key);
 
 void printVersionDeps(
 	const std::string & binaryVersion,

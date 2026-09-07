@@ -29,56 +29,6 @@
 namespace GLogiK
 {
 
-const std::uint64_t one = 1;
-
-enum class Keys : std::uint64_t
-{
-					GK_KEY_G1	= one << 0,
-					GK_KEY_G2	= one << 1,
-					GK_KEY_G3	= one << 2,
-					GK_KEY_G4	= one << 3,
-					GK_KEY_G5	= one << 4,
-					GK_KEY_G6	= one << 5,
-					GK_KEY_G7	= one << 6,
-					GK_KEY_G8	= one << 7,
-
-					GK_KEY_G9	= one << 8,
-					GK_KEY_G10	= one << 9,
-					GK_KEY_G11	= one << 10,
-					GK_KEY_G12	= one << 11,
-					GK_KEY_G13	= one << 12,
-					GK_KEY_G14	= one << 13,
-					GK_KEY_G15	= one << 14,
-					GK_KEY_G16	= one << 15,
-
-					GK_KEY_G17	= one << 16,
-					GK_KEY_G18	= one << 17,
-
-				GK_KEY_LIGHT	= one << 18,
-					GK_KEY_M1	= one << 19,
-					GK_KEY_M2	= one << 20,
-					GK_KEY_M3	= one << 21,
-					GK_KEY_MR	= one << 22,
-
-					GK_KEY_L1	= one << 23,
-					GK_KEY_L2	= one << 24,
-					GK_KEY_L3	= one << 25,
-					GK_KEY_L4	= one << 26,
-					GK_KEY_L5	= one << 27,
-
-			GK_KEY_MUTE_HEADSET	= one << 28,
-			GK_KEY_MUTE_MICRO	= one << 29,
-
-			GK_KEY_AUDIO_NEXT	= one << 30,
-			GK_KEY_AUDIO_PREV	= one << 31,
-			GK_KEY_AUDIO_STOP	= one << 32,
-			GK_KEY_AUDIO_PLAY	= one << 33,
-			GK_KEY_AUDIO_MUTE	= one << 34,
-	GK_KEY_AUDIO_RAISE_VOLUME	= one << 35,
-	GK_KEY_AUDIO_LOWER_VOLUME	= one << 36,
-
-};
-
 enum class SpecialKeys : std::uint8_t
 {
 	GK_KEY_BACKLIGHT_OFF	= 1 << 2,
@@ -97,10 +47,10 @@ enum class Leds : std::uint8_t
 
 enum class Caps : std::uint64_t
 {
-	GK_BACKLIGHT_COLOR	= one << 0,
-	GK_MACROS_KEYS		= one << 1,
-	GK_MEDIA_KEYS		= one << 2,
-	GK_LCD_SCREEN		= one << 3,
+	GK_BACKLIGHT_COLOR	= std::uint64_t{1} << 0,
+	GK_MACROS_KEYS		= std::uint64_t{1} << 1,
+	GK_MEDIA_KEYS		= std::uint64_t{1} << 2,
+	GK_LCD_SCREEN		= std::uint64_t{1} << 3,
 };
 
 inline Caps operator | (Caps lhs, Caps rhs)
@@ -111,14 +61,14 @@ inline Caps operator | (Caps lhs, Caps rhs)
 
 enum class LCDScreenPlugin : std::uint64_t
 {
-	GK_LCD_SPLASHSCREEN		= one << 0,
-	GK_LCD_SYSTEM_MONITOR	= one << 1,
-	GK_LCD_ENDSCREEN		= one << 2,
-	GK_LCD_CORETEMP			= one << 3,
-	GK_LCD_R4				= one << 60,	/* reserved 4 */
-	GK_LCD_R3				= one << 61,	/* reserved 3 */
-	GK_LCD_R2				= one << 62,	/* reserved 2 */
-	GK_LCD_R1				= one << 63,	/* reserved 1 */
+	GK_LCD_SPLASHSCREEN		= std::uint64_t{1} << 0,
+	GK_LCD_SYSTEM_MONITOR	= std::uint64_t{1} << 1,
+	GK_LCD_ENDSCREEN		= std::uint64_t{1} << 2,
+	GK_LCD_CORETEMP			= std::uint64_t{1} << 3,
+	GK_LCD_R4				= std::uint64_t{1} << 60,	/* reserved 4 */
+	GK_LCD_R3				= std::uint64_t{1} << 61,	/* reserved 3 */
+	GK_LCD_R2				= std::uint64_t{1} << 62,	/* reserved 2 */
+	GK_LCD_R1				= std::uint64_t{1} << 63,	/* reserved 1 */
 };
 
 enum class LCDPluginsMask : std::uint8_t

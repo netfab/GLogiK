@@ -30,6 +30,8 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
+#include "include/RKeys.hpp"
+
 #include "keyboardDriver.hpp"
 
 #include "daemonControl.hpp"
@@ -187,13 +189,13 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 	};
 
 	/* M1 key was pressed */
-	if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M1) )
+	if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M1) )
 		update_MxKey_mask(Leds::GK_LED_M1, MKeysID::MKEY_M1);
 	/* M2 key was pressed */
-	else if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M2) )
+	else if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M2) )
 		update_MxKey_mask(Leds::GK_LED_M2, MKeysID::MKEY_M2);
 	/* M3 key was pressed */
-	else if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M3) )
+	else if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M3) )
 		update_MxKey_mask(Leds::GK_LED_M3, MKeysID::MKEY_M3);
 
 #if GKDBUS
@@ -225,7 +227,7 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 #endif
 
 	/* MR key was pressed */
-	if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_MR) )
+	if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_MR) )
 	{
 		if(! MR_ON)
 		{ /* MR was off, enable it */
@@ -480,10 +482,10 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 			case KeyStatus::S_KEY_PROCESSED:
 			{
 				/* did we press one Mx key ? */
-				if( device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M1) or
-					device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M2) or
-					device._pressedRKeysMask & toEnumType(Keys::GK_KEY_M3) or
-					device._pressedRKeysMask & toEnumType(Keys::GK_KEY_MR) )
+				if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M1) or
+					device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M2) or
+					device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M3) or
+					device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_MR) )
 				{
 					/* exiting macro record mode */
 					exit = true;
