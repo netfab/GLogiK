@@ -51,8 +51,8 @@ class TypeStringArray
 
 class ArgStringArray
 	:	virtual protected ArgBase,
-		virtual private ArgUInt64,
-		virtual private ArgString
+		virtual protected ArgUInt64,
+		virtual protected ArgString
 {
 	public:
 		static const std::vector<std::string> getNextStringArray(void);

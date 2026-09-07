@@ -55,7 +55,7 @@ class GKDBusReply
 };
 
 class GKDBusMessageReply
-	:	virtual private ArgString,
+	:	virtual protected ArgString,
 		virtual private ArgUInt64
 {
 	public:

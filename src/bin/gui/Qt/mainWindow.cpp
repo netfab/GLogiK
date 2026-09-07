@@ -86,7 +86,6 @@ MainWindow::MainWindow(QWidget *parent)
 		_backlightColorTab(nullptr),
 		_LCDPluginsTab(nullptr),
 		_statusBarTimeout(3000),
-		_pid(0),
 		_ignoreNextSignal(false)
 {
 	openlog(GLOGIK_QT_GUI_NAME, LOG_PID|LOG_CONS, LOG_USER);

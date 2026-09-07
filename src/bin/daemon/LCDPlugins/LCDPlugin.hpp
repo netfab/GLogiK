@@ -67,7 +67,7 @@ class PBMFrame
 };
 
 class LCDPlugin
-	:	virtual private PBMFile
+	:	virtual protected PBMFile
 {
 	public:
 		virtual ~LCDPlugin(void);

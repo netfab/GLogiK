@@ -7,6 +7,7 @@
 - Raised boost libraries minimal version to 1.90.0
      (boost::system removed)
 - Improved GKDBus introspection
+- Fixed build failures with LLVM/Clang
 - Usual internal cleanings and improvements
 
 0.8.22 (2025-12-09)

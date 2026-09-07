@@ -98,7 +98,6 @@ class MainWindow
 		const GKDepsMap_type* const _pDepsMap = &_DepsMap;
 
 		int _statusBarTimeout;
-		pid_t _pid;
 
 		bool _ignoreNextSignal;
 

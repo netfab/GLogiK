@@ -21,10 +21,13 @@ declare -r ABS_BUILD_DIR="${PACKAGE_WORK_DIR}/${REL_BUILD_DIR}"
 declare -r ABS_SOURCE_DIR="${PWD%\/*}"
 declare -r ABS_INSTALL_DIR="${PACKAGE_WORK_DIR}/${REL_INSTALL_DIR}"
 
-# ccache automatically enabled if found
+# ccache automatically enabled if found when autodetecting CXX
 # https://mesonbuild.com/Feature-autodetection.html#ccache
 #export PATH="/usr/lib/ccache/bin:${PATH}"
 export CCACHE_DIR='/worktemp/ccache/devccache'
+
+#export CC="ccache clang"
+#export CXX="ccache clang++"
 
 # -- -- -- -- -- -- -- -- -- #
 

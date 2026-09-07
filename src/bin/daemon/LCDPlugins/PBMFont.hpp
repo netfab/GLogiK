@@ -39,7 +39,7 @@ typedef std::initializer_list<
 	std::pair<const std::string, std::pair<std::uint16_t, std::uint16_t>>	> charactersMap_type;
 
 class PBMFont
-	:	virtual private PBMFile
+	:	virtual protected PBMFile
 {
 	public:
 		virtual ~PBMFont(void);
@@ -72,7 +72,8 @@ class PBMFont
 		PixelsData _PBMData;
 		const std::string _fontName;
 		const std::uint16_t _PBMWidth;
-		const std::uint16_t _PBMHeight;
+		// LLVM/Clang warning -Wunused-private-field
+		[[maybe_unused]] const std::uint16_t _PBMHeight;
 		const std::uint16_t _charWidth;
 		const std::uint16_t _charHeight;
 		const std::uint16_t _charBytes;

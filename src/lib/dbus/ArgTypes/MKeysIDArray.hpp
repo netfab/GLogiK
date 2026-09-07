@@ -47,7 +47,7 @@ class TypeMKeysIDArray
 
 class ArgMKeysIDArray
 	:	virtual private ArgUInt8,
-		virtual private ArgMKeysID
+		virtual protected ArgMKeysID
 {
 	public:
 		static const GLogiK::MKeysIDArray_type getNextMKeysIDArrayArgument(void);
