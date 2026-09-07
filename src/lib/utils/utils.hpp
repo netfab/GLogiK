@@ -22,7 +22,7 @@
 #ifndef SRC_LIB_UTILS_UTILS_HPP_
 #define SRC_LIB_UTILS_UTILS_HPP_
 
-#include <config.h>
+#include "config.h"
 
 #define UTILS_INSIDE_UTILS_H 1
 

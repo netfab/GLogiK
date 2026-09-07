@@ -31,7 +31,7 @@
 #include <iostream>
 #include <sstream>
 
-#include <config.h>
+#include "config.h"
 
 #if HAVE_SYSTRAY && HAVE_QT
 /* must be included before sessionManager.hpp

@@ -24,7 +24,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include <config.h>
+#include "config.h"
 
 #include "include/enums.hpp"
 

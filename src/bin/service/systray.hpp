@@ -29,7 +29,7 @@
 #include <QMenu>
 #include <QSystemTrayIcon>
 
-#include <config.h>
+#include "config.h"
 
 #include "include/DeviceID.hpp"
 

@@ -34,7 +34,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
-#include <config.h>
+#include "config.h"
 
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"

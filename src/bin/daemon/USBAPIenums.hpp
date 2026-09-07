@@ -24,7 +24,7 @@
 
 #include <cstdint>
 
-#include <config.h>
+#include "config.h"
 
 #if HAVE_LIBUSB
 #include <libusb-1.0/libusb.h>

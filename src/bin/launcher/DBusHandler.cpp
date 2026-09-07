@@ -23,7 +23,7 @@
 #include <functional>
 #include <thread>
 
-#include <config.h>
+#include "config.h"
 
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"

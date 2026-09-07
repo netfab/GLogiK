@@ -35,7 +35,7 @@
 #include <cstring>
 #include <cerrno>
 
-#include <config.h>
+#include "config.h"
 
 #include <boost/asio.hpp>
 #include <boost/process.hpp>

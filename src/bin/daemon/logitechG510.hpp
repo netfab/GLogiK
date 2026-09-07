@@ -27,7 +27,7 @@
 #include <vector>
 #include <string>
 
-#include <config.h>
+#include "config.h"
 
 #include "keyboardDriver.hpp"
 

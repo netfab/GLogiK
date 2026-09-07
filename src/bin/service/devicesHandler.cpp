@@ -29,7 +29,7 @@
 
 #include "lib/shared/deviceConfigurationFile.hpp"
 
-#include <config.h>
+#include "config.h"
 
 #if HAVE_DESKTOP_NOTIFICATIONS
 #include "desktopNotification.hpp"

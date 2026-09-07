@@ -48,7 +48,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-#include <config.h>
+#include "config.h"
 
 #include <boost/program_options.hpp>
 

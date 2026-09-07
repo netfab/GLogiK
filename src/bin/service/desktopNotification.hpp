@@ -24,7 +24,7 @@
 
 #include <string>
 
-#include <config.h>
+#include "config.h"
 
 #if HAVE_LIBNOTIFY
 #include <libnotify/notify.h>

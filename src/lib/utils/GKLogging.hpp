@@ -36,7 +36,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/log/attributes/named_scope.hpp>
 
-#include <config.h>
+#include "config.h"
 
 namespace fs = boost::filesystem;
 

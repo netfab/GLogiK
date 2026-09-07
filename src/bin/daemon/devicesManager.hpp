@@ -28,7 +28,7 @@
 #include <map>
 #include <vector>
 
-#include <config.h>
+#include "config.h"
 
 #if GKDBUS
 #include "lib/dbus/GKDBus.hpp"

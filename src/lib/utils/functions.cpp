@@ -29,7 +29,7 @@
 #include <thread>
 #include <limits>
 
-#include <config.h>
+#include "config.h"
 
 #define UTILS_COMPILATION 1
 

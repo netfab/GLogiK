@@ -32,7 +32,7 @@
 
 #include <linux/input-event-codes.h>
 
-#include <config.h>
+#include "config.h"
 
 #if GKDBUS
 #include "lib/dbus/GKDBus.hpp"

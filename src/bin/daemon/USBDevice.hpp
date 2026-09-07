@@ -37,7 +37,7 @@
 
 #include "include/base.hpp"
 
-#include <config.h>
+#include "config.h"
 
 #include <libusb-1.0/libusb.h>
 

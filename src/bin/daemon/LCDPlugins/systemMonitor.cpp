@@ -33,7 +33,7 @@
 #include <vector>
 #include <map>
 
-#include <config.h>
+#include "config.h"
 
 #include "include/enums.hpp"
 

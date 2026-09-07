@@ -41,7 +41,7 @@
 #include "include/MBank.hpp"
 #include "include/LCDPP.hpp"
 
-#include <config.h>
+#include "config.h"
 
 #define LogRemoteCallFailure \
 	LOG(critical) << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
