@@ -157,69 +157,14 @@ void KeyboardDriver::setDeviceBacklightColor(
 	this->notImplemented(__func__);
 }
 
-/*
- * return true if leds_mask has been updated (meaning that setDeviceMxKeysLeds should be called)
- */
-const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR)
+const bool KeyboardDriver::updateDeviceMxKeysLedsMask(
+	USBDevice & device,
+	bool disableMR)
 {
-	auto & mask = device._MxKeysLedsMask;
-	bool mask_updated = false;
-	device._MKeyID = MKeysID::MKEY_M0;
-
-	/* was MR key enabled ? */
-	const bool MR_ON = mask & toEnumType(Leds::GK_LED_MR);
-
-	// lambda
-	auto update_MxKey_mask = [&] (const Leds keyledmask, const MKeysID sMKey) -> void
-	{
-		/* was this Mx key already enabled */
-		const bool Mx_ON = mask & toEnumType(keyledmask);
-
-		/* an Mx key (M1, M2, or M3) was pressed, we must reset
-		 * the mask, else two differents Mx keys LEDs could be
-		 * on at the same time; this also disables Macro Record
-		 * mode if MR LED was on */
-		mask = 0;
-		if( ! Mx_ON )
-		{ /* Mx was off, enable it */
-			mask |= toEnumType(keyledmask);
-			device._MKeyID = sMKey;
-		}
-		mask_updated = true;
-		device._MBankKeyPressed = true;
-	};
-
-	/* M1 key was pressed */
-	if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M1) )
-		update_MxKey_mask(Leds::GK_LED_M1, MKeysID::MKEY_M1);
-	/* M2 key was pressed */
-	else if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M2) )
-		update_MxKey_mask(Leds::GK_LED_M2, MKeysID::MKEY_M2);
-	/* M3 key was pressed */
-	else if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M3) )
-		update_MxKey_mask(Leds::GK_LED_M3, MKeysID::MKEY_M3);
-
-	/* MR key was pressed */
-	if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_MR) )
-	{
-		if(! MR_ON)
-		{ /* MR was off, enable it */
-			mask |= toEnumType(Leds::GK_LED_MR);
-		}
-		else
-		{ /* MR was on, disable it */
-			mask &= ~(toEnumType(Leds::GK_LED_MR));
-		}
-		mask_updated = true;
-	}
-	else if(disableMR)
-	{ /* force disable MR */
-		mask &= ~(toEnumType(Leds::GK_LED_MR));
-		mask_updated = true;
-	}
-
-	return mask_updated;
+	this->notImplemented(__func__);
+	return false;
 }
+
 
 const std::uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const std::uint16_t interval)
 {

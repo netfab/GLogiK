@@ -94,6 +94,11 @@ class G510Base
 
 		virtual void setDeviceMxKeysLeds(USBDevice & device);
 
+		virtual const bool updateDeviceMxKeysLedsMask(
+			USBDevice & device,
+			bool disableMR=false
+		);
+
 	private:
 		static const std::vector<RKey>    keys5BytesMap;
 		static const std::vector<RKey>   MKeys5BytesMap;
@@ -175,6 +180,14 @@ class LogitechG510
 		void setDeviceMxKeysLeds(USBDevice & device) override
 		{
 			G510Base::setDeviceMxKeysLeds(device);
+		}
+
+		const bool updateDeviceMxKeysLedsMask(
+			USBDevice & device,
+			bool disableMR=false
+		) override
+		{
+			return G510Base::updateDeviceMxKeysLedsMask(device, disableMR);
 		}
 
 		void sendUSBDeviceInitialization(USBDevice & device) override

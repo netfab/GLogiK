@@ -199,10 +199,6 @@ class KeyboardDriver
 
 		KeyStatus getPressedKeys(USBDevice & device);
 
-		const bool updateDeviceMxKeysLedsMask(
-			USBDevice & device,
-			bool disableMR=false
-		);
 		void setDeviceLCDPluginsMask(
 			USBDevice & device,
 			std::uint64_t mask = 0
@@ -231,6 +227,10 @@ class KeyboardDriver
 			const std::uint8_t r=0xFF,
 			const std::uint8_t g=0xFF,
 			const std::uint8_t b=0xFF
+		);
+		virtual const bool updateDeviceMxKeysLedsMask(
+			USBDevice & device,
+			bool disableMR=false
 		);
 		virtual const bool checkGKey(USBDevice & device) = 0;
 		virtual const bool checkMediaKey(USBDevice & device) = 0;
