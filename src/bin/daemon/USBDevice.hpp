@@ -134,6 +134,7 @@ class USBDevice
 #endif
 
 		GKeysID						_GKeyID; // G-Key
+		MKeysID						_MKeyID; // M-Key
 
 		/* -- -- -- */
 

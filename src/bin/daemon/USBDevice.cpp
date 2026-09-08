@@ -57,7 +57,8 @@ USBDevice::USBDevice(const USBDeviceID & device)
 #elif HAVE_HIDAPI
 			_fatalErrors(0),
 #endif
-			_GKeyID(GKeysID::GKEY_INVALID) // invalid
+			_GKeyID(GKeysID::GKEY_INVALID),
+			_MKeyID(MKeysID::MKEY_INVALID)
 {
 	std::fill_n(_pressedKeys, KEYS_BUFFER_LENGTH, 0);
 	std::fill_n(_previousPressedKeys, KEYS_BUFFER_LENGTH, 0);
@@ -115,6 +116,7 @@ void USBDevice::operator=(const USBDevice& dev)
 		std::begin(_previousPressedKeys)
 	);
 	_GKeyID				= dev._GKeyID;
+	_MKeyID				= dev._MKeyID;
 	_mediaKey			= dev._mediaKey;
 	_newMacro			= dev._newMacro;
 	_lastTimePoint		= dev._lastTimePoint;

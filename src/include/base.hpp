@@ -86,6 +86,7 @@ enum class MKeysID : std::uint8_t
 	MKEY_M1,
 	MKEY_M2,
 	MKEY_M3,
+	MKEY_INVALID,
 	MKEY_MAX = MKEY_M3
 };
 
