@@ -162,7 +162,7 @@ void GKeysBanksCapability::checkBanksKeys(void) noexcept
 		{
 			try
 			{
-				if(it->first == GKeyID_INV)
+				if(it->first == GKeysID::GKEY_INVALID)
 					throw GLogiKExcept("invalid value");
 
 				const std::uint8_t id = toEnumType(it->first);

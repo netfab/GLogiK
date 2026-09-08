@@ -90,7 +90,7 @@ enum class MKeysID : std::uint8_t
 
 enum class GKeysID : std::uint8_t
 {
-	GKEY_G0 = 0,
+	GKEY_INVALID = 0, // invalid
 	GKEY_G1,
 	GKEY_G2,
 	GKEY_G3,
@@ -111,7 +111,6 @@ enum class GKeysID : std::uint8_t
 	GKEY_G18,
 };
 
-const GKeysID GKeyID_INV = GKeysID::GKEY_G0; // invalid
 const GKeysID GKeyID_MAX = GKeysID::GKEY_G18;
 const MKeysID MKeyID_MAX = MKeysID::MKEY_M3;
 

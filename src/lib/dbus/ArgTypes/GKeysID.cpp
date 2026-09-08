@@ -42,7 +42,7 @@ const GLogiK::GKeysID ArgGKeysID::getNextGKeysIDArgument(void)
 {
 	GK_LOG_FUNC
 
-	GLogiK::GKeysID id = GLogiK::GKeyID_INV; // invalid
+	GLogiK::GKeysID id = GLogiK::GKeysID::GKEY_INVALID; // invalid
 
 	try
 	{
@@ -53,7 +53,7 @@ const GLogiK::GKeysID ArgGKeysID::getNextGKeysIDArgument(void)
 
 		id = static_cast<GLogiK::GKeysID>(value);
 
-		if(id == GLogiK::GKeyID_INV )
+		if(id == GLogiK::GKeysID::GKEY_INVALID )
 			throw GLogiKExcept("invalid GKeyID");
 	}
 	catch ( const EmptyContainer & e )

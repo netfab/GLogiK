@@ -49,7 +49,7 @@ void GKeysEventManager::runEvent(
 {
 	GK_LOG_FUNC
 
-	if(keyID == GKeyID_INV)
+	if(keyID == GKeysID::GKEY_INVALID)
 	{
 		LOG(error) << "invalid GKeyID";
 		return;
@@ -110,7 +110,7 @@ void GKeysEventManager::setMacro(
 {
 	GK_LOG_FUNC
 
-	if(keyID == GKeyID_INV)
+	if(keyID == GKeysID::GKEY_INVALID)
 	{
 		LOG(error) << "invalid GKeyID";
 		return;
@@ -129,7 +129,7 @@ const bool GKeysEventManager::clearMacro(
 {
 	GK_LOG_FUNC
 
-	if(keyID == GKeyID_INV)
+	if(keyID == GKeysID::GKEY_INVALID)
 	{
 		LOG(error) << "invalid GKeyID";
 		throw GLogiKExcept("clear macro failed");
@@ -176,7 +176,7 @@ void GKeysEventManager::setMacro(
 {
 	GK_LOG_FUNC
 
-	if(keyID == GKeyID_INV)
+	if(keyID == GKeysID::GKEY_INVALID)
 	{
 		LOG(error) << "invalid GKeyID";
 		throw GLogiKExcept("set macro failed");
