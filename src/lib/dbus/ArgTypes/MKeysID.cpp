@@ -48,7 +48,7 @@ const GLogiK::MKeysID ArgMKeysID::getNextMKeysIDArgument(void)
 	{
 		const std::uint8_t value = ArgUInt8::getNextByteArgument();
 
-		if(value > GLogiK::MKeyID_MAX)
+		if(value > GLogiK::MKeysID::MKEY_MAX)
 			throw GLogiKExcept("wrong MKeysID value");
 
 		id = static_cast<GLogiK::MKeysID>(value);

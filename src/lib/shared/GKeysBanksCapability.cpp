@@ -219,7 +219,7 @@ void GKeysBanksCapability::resetBank(const MKeysID bankID)
 
 const MKeysID GKeysBanksCapability::getBankID(const std::uint8_t num) const
 {
-	if(num > GLogiK::MKeyID_MAX)
+	if(num > GLogiK::MKeysID::MKEY_MAX)
 		throw GLogiKExcept("wrong bankID value");
 
 	const MKeysID id = static_cast<MKeysID>(num);
