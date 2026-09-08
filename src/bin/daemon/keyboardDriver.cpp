@@ -164,7 +164,7 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 {
 	auto & mask = device._MxKeysLedsMask;
 	bool mask_updated = false;
-	MKeysID pressed_MKey = MKeysID::MKEY_M0;
+	device._MKeyID = MKeysID::MKEY_M0;
 
 	/* was MR key enabled ? */
 	const bool MR_ON = mask & toEnumType(Leds::GK_LED_MR);
@@ -183,9 +183,10 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 		if( ! Mx_ON )
 		{ /* Mx was off, enable it */
 			mask |= toEnumType(keyledmask);
-			pressed_MKey = sMKey;
+			device._MKeyID = sMKey;
 		}
 		mask_updated = true;
+		device._MBankKeyPressed = true;
 	};
 
 	/* M1 key was pressed */
@@ -197,34 +198,6 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(USBDevice & device, bool d
 	/* M3 key was pressed */
 	else if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M3) )
 		update_MxKey_mask(Leds::GK_LED_M3, MKeysID::MKEY_M3);
-
-#if GKDBUS
-	if( mask_updated )
-	{ /* if a Mx key was pressed */
-		try
-		{
-			_pDBus->initializeBroadcastSignal(
-				_systemBus,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH
-			);
-
-			_pDBus->appendStringToBroadcastSignal(device.getID());
-			_pDBus->appendMKeysIDToBroadcastSignal(pressed_MKey);
-
-			_pDBus->sendBroadcastSignal();
-
-			LOG(trace)	<< device.getID() << " " << GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH
-						<<	" DBus signal sent - M" << pressed_MKey;
-		}
-		catch (const GKDBusMessageWrongBuild & e)
-		{
-			_pDBus->abandonBroadcastSignal();
-			GKSysLogWarning(e.what());
-		}
-	}
-#endif
 
 	/* MR key was pressed */
 	if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_MR) )
@@ -445,6 +418,7 @@ void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device, const std::strin
 }
 
 #if GKDBUS
+
 void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 {
 	GK_LOG_FUNC
@@ -545,6 +519,35 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 
 	GKLog2(trace, device.getID(), " exiting macro record mode")
 }
+
+void KeyboardDriver::sendDeviceMBankSwitchSignal(USBDevice & device)
+{ // an M1|M2|M3 bank key was pressed
+	device._MBankKeyPressed = false;
+
+	try
+	{
+		_pDBus->initializeBroadcastSignal(
+			_systemBus,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH
+		);
+
+		_pDBus->appendStringToBroadcastSignal(device.getID());
+		_pDBus->appendMKeysIDToBroadcastSignal(device._MKeyID);
+
+		_pDBus->sendBroadcastSignal();
+
+		LOG(trace)	<< device.getID() << " " << GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH
+					<<	" DBus signal sent - M" << device._MKeyID;
+	}
+	catch (const GKDBusMessageWrongBuild & e)
+	{
+		_pDBus->abandonBroadcastSignal();
+		GKSysLogWarning(e.what());
+	}
+}
+
 #endif
 
 void KeyboardDriver::LCDScreenLoop(const std::string & devID)
@@ -693,7 +696,11 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 						{
 							/* update mask with potential pressed keys */
 							if(this->updateDeviceMxKeysLedsMask(device))
+							{
 								this->setDeviceMxKeysLeds(device);
+								if(device._MBankKeyPressed)
+									this->sendDeviceMBankSwitchSignal(device);
+							}
 
 #if GKDBUS
 							/* is MR key enabled ? */

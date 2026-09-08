@@ -58,7 +58,8 @@ USBDevice::USBDevice(const USBDeviceID & device)
 			_fatalErrors(0),
 #endif
 			_GKeyID(GKeysID::GKEY_INVALID),
-			_MKeyID(MKeysID::MKEY_INVALID)
+			_MKeyID(MKeysID::MKEY_INVALID),
+			_MBankKeyPressed(false)
 {
 	std::fill_n(_pressedKeys, KEYS_BUFFER_LENGTH, 0);
 	std::fill_n(_previousPressedKeys, KEYS_BUFFER_LENGTH, 0);
@@ -117,6 +118,7 @@ void USBDevice::operator=(const USBDevice& dev)
 	);
 	_GKeyID				= dev._GKeyID;
 	_MKeyID				= dev._MKeyID;
+	_MBankKeyPressed	= dev._MBankKeyPressed;
 	_mediaKey			= dev._mediaKey;
 	_newMacro			= dev._newMacro;
 	_lastTimePoint		= dev._lastTimePoint;

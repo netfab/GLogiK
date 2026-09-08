@@ -136,6 +136,8 @@ class USBDevice
 		GKeysID						_GKeyID; // G-Key
 		MKeysID						_MKeyID; // M-Key
 
+		bool						_MBankKeyPressed;
+
 		/* -- -- -- */
 
 	public:

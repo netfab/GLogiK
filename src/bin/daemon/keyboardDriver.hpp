@@ -188,6 +188,7 @@ class KeyboardDriver
 
 #if GKDBUS
 		void enterMacroRecordMode(USBDevice & device);
+		void sendDeviceMBankSwitchSignal(USBDevice & device);
 #endif
 
 		void LCDScreenLoop(const std::string & devID);
