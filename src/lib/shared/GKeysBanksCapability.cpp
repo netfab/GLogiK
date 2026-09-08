@@ -167,7 +167,7 @@ void GKeysBanksCapability::checkBanksKeys(void) noexcept
 
 				const std::uint8_t id = toEnumType(it->first);
 
-				if(id > GLogiK::GKeyID_MAX)
+				if(id > GLogiK::GKeysID::GKEY_MAX)
 					throw GLogiKExcept("wrong GKeyID value");
 
 				//GKLog2(trace, "checked GKeyID: ", getGKeyName(it->first))

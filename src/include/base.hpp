@@ -109,9 +109,9 @@ enum class GKeysID : std::uint8_t
 	GKEY_G16,
 	GKEY_G17,
 	GKEY_G18,
+	GKEY_MAX = GKEY_G18
 };
 
-const GKeysID GKeyID_MAX = GKeysID::GKEY_G18;
 const MKeysID MKeyID_MAX = MKeysID::MKEY_M3;
 
 /* -- -- -- */
