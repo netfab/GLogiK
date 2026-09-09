@@ -40,26 +40,29 @@
 namespace GLogiK
 {
 
-#define GLOGIKD_DRIVER_ID_G510 ( 1 << 0 )
-
-#define	   VENDOR_LOGITECH "Logitech"
-#define	VENDOR_ID_LOGITECH "046d"
-
-/* RKey - Recognized Keys */
-struct RKey
+namespace D_G510
 {
-	const RKeys key;
-	const std::uint16_t index;
-	const unsigned char mask;
-};
 
-struct MKeyLed
+namespace detail
 {
-	const Leds led;
-	const unsigned char mask;
-};
+	/* RKey - Recognized Keys */
+	struct RKey
+	{
+		const RKeys key;
+		const std::uint16_t index;
+		const unsigned char mask;
+	};
 
+	struct MKeyLed
+	{
+		const Leds led;
+		const unsigned char mask;
+	};
 
+	constexpr std::uint16_t G510_DRIVER_ID = ( 1 << 0 );
+	constexpr char G510_VENDOR[] = "Logitech";
+	constexpr char G510_VENDOR_ID[] = "046d";
+} // namespace detail
 
 class G510Base
 {
@@ -75,7 +78,7 @@ class G510Base
 		const MKeysIDArray_type getMKeysIDArray(void) const;
 		const GKeysIDArray_type getGKeysIDArray(void) const;
 
-		static const std::vector<MKeyLed> ledsMask;
+		static const std::vector<detail::MKeyLed> ledsMask;
 
 		/* return true if any G-Key (G1-G18) was pressed  */
 		virtual const bool checkPressedAnyGKey(USBDevice & device);
@@ -105,11 +108,11 @@ class G510Base
 		);
 
 	private:
-		static const std::vector<RKey>    keys5BytesMap;
-		static const std::vector<RKey>   MKeys5BytesMap;
-		static const std::vector<RKey>   GKeys5BytesMap;
-		static const std::vector<RKey> LCDKeys5BytesMap;
-		static const std::vector<RKey> mediaKeys2BytesMap;
+		static const std::vector<detail::RKey>    keys5BytesMap;
+		static const std::vector<detail::RKey>   MKeys5BytesMap;
+		static const std::vector<detail::RKey>   GKeys5BytesMap;
+		static const std::vector<detail::RKey> LCDKeys5BytesMap;
+		static const std::vector<detail::RKey> mediaKeys2BytesMap;
 		static const std::vector<USBDeviceID> knownDevices;
 
 		void processKeyEvent2Bytes(USBDevice & device);
@@ -130,11 +133,12 @@ class G510Base
 
 };
 
+} // namespace D_G510
 
 template <typename USBAPI>
 class LogitechG510
 	:	public USBKeyboardDriver<USBAPI>,
-		public G510Base
+		public D_G510::G510Base
 {
 	public:
 		LogitechG510();

@@ -36,7 +36,10 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-const std::vector<RKey> G510Base::keys5BytesMap =
+namespace D_G510
+{
+
+const std::vector<detail::RKey> G510Base::keys5BytesMap =
 {
 //	{              RKeys::GK_KEY, 3, 1 << 2 },
 	{        RKeys::GK_KEY_LIGHT, 3, 1 << 3 },
@@ -47,14 +50,14 @@ const std::vector<RKey> G510Base::keys5BytesMap =
 //	{             RKeys::GK_KEY_, 4, 1 << 7 },
 };
 
-const std::vector<RKey> G510Base::MKeys5BytesMap =
+const std::vector<detail::RKey> G510Base::MKeys5BytesMap =
 {
 	{ RKeys::GK_KEY_M1, 3, 1 << 4 },
 	{ RKeys::GK_KEY_M2, 3, 1 << 5 },
 	{ RKeys::GK_KEY_M3, 3, 1 << 6 },
 };
 
-const std::vector<RKey> G510Base::GKeys5BytesMap =
+const std::vector<detail::RKey> G510Base::GKeys5BytesMap =
 {
 	{ RKeys::GK_KEY_G1 , 1, 1 << 0 },
 	{ RKeys::GK_KEY_G2 , 1, 1 << 1 },
@@ -78,7 +81,7 @@ const std::vector<RKey> G510Base::GKeys5BytesMap =
 	{ RKeys::GK_KEY_G18, 3, 1 << 1 },
 };
 
-const std::vector<RKey> G510Base::LCDKeys5BytesMap =
+const std::vector<detail::RKey> G510Base::LCDKeys5BytesMap =
 {
 	{ RKeys::GK_KEY_L1, 4, 1 << 0 },
 	{ RKeys::GK_KEY_L2, 4, 1 << 1 },
@@ -87,7 +90,7 @@ const std::vector<RKey> G510Base::LCDKeys5BytesMap =
 	{ RKeys::GK_KEY_L5, 4, 1 << 4 },
 };
 
-const std::vector<RKey> G510Base::mediaKeys2BytesMap =
+const std::vector<detail::RKey> G510Base::mediaKeys2BytesMap =
 {
 	{         RKeys::GK_KEY_AUDIO_NEXT, 1, 1 << 0 },
 	{         RKeys::GK_KEY_AUDIO_PREV, 1, 1 << 1 },
@@ -99,7 +102,7 @@ const std::vector<RKey> G510Base::mediaKeys2BytesMap =
 //	{                   RKeys::GK_KEY_, 1, 1 << 7 },
 };
 
-const std::vector<MKeyLed> G510Base::ledsMask =
+const std::vector<detail::MKeyLed> G510Base::ledsMask =
 {
 	{ Leds::GK_LED_M1, 1 << 7 },
 	{ Leds::GK_LED_M2, 1 << 6 },
@@ -111,12 +114,12 @@ const std::vector<USBDeviceID> G510Base::knownDevices =
 {
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 	{
-		VENDOR_LOGITECH,    /* vendor */
-		"G510s",            /* model */
-		"Gaming Keyboard",  /* product name */
-		VENDOR_ID_LOGITECH, /* vendor ID */
-		"c22d",             /* product ID */
-		toEnumType(         /* device capabilities */
+		detail::G510_VENDOR,    /* vendor */
+		"G510s",                /* model */
+		"Gaming Keyboard",      /* product name */
+		detail::G510_VENDOR_ID, /* vendor ID */
+		"c22d",                 /* product ID */
+		toEnumType(             /* device capabilities */
 			Caps::GK_BACKLIGHT_COLOR |
 			Caps::GK_MACROS_KEYS |
 			Caps::GK_MEDIA_KEYS |
@@ -135,12 +138,12 @@ const std::vector<USBDeviceID> G510Base::knownDevices =
 	},
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 	{
-		VENDOR_LOGITECH,    /* vendor */
-		"G510s",            /* model */
-		"Gaming Keyboard",  /* product name */
-		VENDOR_ID_LOGITECH, /* vendor ID */
-		"c22e",             /* product ID (onboard audio) */
-		toEnumType(         /* device capabilities */
+		detail::G510_VENDOR,    /* vendor */
+		"G510s",                /* model */
+		"Gaming Keyboard",      /* product name */
+		detail::G510_VENDOR_ID, /* vendor ID */
+		"c22e",                 /* product ID (onboard audio) */
+		toEnumType(             /* device capabilities */
 			Caps::GK_BACKLIGHT_COLOR |
 			Caps::GK_MACROS_KEYS |
 			Caps::GK_MEDIA_KEYS |
@@ -167,7 +170,8 @@ const char* G510Base::getDriverName() const
 
 const std::uint16_t G510Base::getDriverID() const
 {
-	return GLOGIKD_DRIVER_ID_G510;
+	//return GLOGIKD_DRIVER_ID_G510;
+	return detail::G510_DRIVER_ID;
 }
 
 const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const
@@ -603,6 +607,8 @@ const bool G510Base::updateDeviceMxKeysLedsMask(USBDevice & device, bool disable
 
 	return mask_updated;
 }
+
+} // namespace D_G510
 
 } // namespace GLogiK
 
