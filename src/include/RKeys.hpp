@@ -66,7 +66,7 @@ enum class RKeys : std::uint64_t
 					GK_KEY_L4	= detail::bit << 26,
 					GK_KEY_L5	= detail::bit << 27,
 
-			GK_KEY_MUTE_HEADSET	= detail::bit << 28,
+		GK_KEY_MUTE_HEADPHONES	= detail::bit << 28,
 			GK_KEY_MUTE_MICRO	= detail::bit << 29,
 
 			GK_KEY_AUDIO_NEXT	= detail::bit << 30,

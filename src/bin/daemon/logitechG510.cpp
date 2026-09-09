@@ -45,9 +45,9 @@ const std::vector<detail::RKey> G510Base::keys5BytesMap =
 	{        RKeys::GK_KEY_LIGHT, 3, 1 << 3 },
 	{           RKeys::GK_KEY_MR, 3, 1 << 7 },
 
-	{ RKeys::GK_KEY_MUTE_HEADSET, 4, 1 << 5 },
-	{   RKeys::GK_KEY_MUTE_MICRO, 4, 1 << 6 },
-//	{             RKeys::GK_KEY_, 4, 1 << 7 },
+	{ RKeys::GK_KEY_MUTE_HEADPHONES, 4, 1 << 5 },
+	{      RKeys::GK_KEY_MUTE_MICRO, 4, 1 << 6 },
+//	{                RKeys::GK_KEY_, 4, 1 << 7 },
 };
 
 const std::vector<detail::RKey> G510Base::MKeys5BytesMap =

@@ -90,10 +90,10 @@ c_str XF86_AUDIO_LOWER_VOLUME	= "XF86AudioLowerVolume";
 
 /* --- ---- --- */
 
-c_str KEY_LIGHT		= "";
-c_str M_KEY_MR		= "";
-c_str MUTE_HEADSET	= "";
-c_str MUTE_MICRO	= "";
+c_str KEY_LIGHT       = "";
+c_str M_KEY_MR        = "";
+c_str MUTE_HEADPHONES = "";
+c_str MUTE_MICRO      = "";
 
 /* --- ---- --- */
 
@@ -138,7 +138,7 @@ const std::map<RKeys, c_str> keysNamesMap =
 	/* -- */
 	{ RKeys::GK_KEY_LIGHT, 		KEY_LIGHT },
 	{ RKeys::GK_KEY_MR, 			M_KEY_MR },
-	{ RKeys::GK_KEY_MUTE_HEADSET, 	MUTE_HEADSET },
+	{ RKeys::GK_KEY_MUTE_HEADPHONES, 	MUTE_HEADPHONES },
 	{ RKeys::GK_KEY_MUTE_MICRO, 	MUTE_MICRO },
 };
 
