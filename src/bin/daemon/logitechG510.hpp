@@ -77,9 +77,12 @@ class G510Base
 
 		static const std::vector<MKeyLed> ledsMask;
 
-		virtual const bool checkGKey(USBDevice & device);
-		virtual const bool checkMediaKey(USBDevice & device);
-		virtual const bool checkLCDKey(USBDevice & device);
+		/* return true if any G-Key (G1-G18) was pressed  */
+		virtual const bool checkPressedAnyGKey(USBDevice & device);
+		/* return true if any media key was pressed */
+		virtual const bool checkPressedAnyMediaKey(USBDevice & device);
+		/* return true if any LCD key was pressed */
+		virtual const bool checkPressedAnyLCDKey(USBDevice & device);
 
 		virtual KeyStatus processKeyEvent(USBDevice & device);
 
@@ -195,17 +198,22 @@ class LogitechG510
 			return G510Base::sendUSBDeviceInitialization(device);
 		}
 
-		const bool checkGKey(USBDevice & device) override
+		/* return true if any G-Key (G1-G18) was pressed  */
+		const bool checkPressedAnyGKey(USBDevice & device) override
 		{
-			return G510Base::checkGKey(device);
+			return G510Base::checkPressedAnyGKey(device);
 		}
-		const bool checkMediaKey(USBDevice & device) override
+
+		/* return true if any media key was pressed */
+		const bool checkPressedAnyMediaKey(USBDevice & device) override
 		{
-			return G510Base::checkMediaKey(device);
+			return G510Base::checkPressedAnyMediaKey(device);
 		}
-		const bool checkLCDKey(USBDevice & device) override
+
+		/* return true if any LCD key was pressed */
+		const bool checkPressedAnyLCDKey(USBDevice & device) override
 		{
-			return G510Base::checkLCDKey(device);
+			return G510Base::checkPressedAnyLCDKey(device);
 		}
 
 		void fillStandardKeysEvents(USBDevice & device) override

@@ -232,9 +232,12 @@ class KeyboardDriver
 			USBDevice & device,
 			bool disableMR=false
 		);
-		virtual const bool checkGKey(USBDevice & device) = 0;
-		virtual const bool checkMediaKey(USBDevice & device) = 0;
-		virtual const bool checkLCDKey(USBDevice & device) = 0;
+		/* return true if any G-Key was pressed  */
+		virtual const bool checkPressedAnyGKey(USBDevice & device) = 0;
+		/* return true if any media key was pressed */
+		virtual const bool checkPressedAnyMediaKey(USBDevice & device) = 0;
+		/* return true if any LCD key was pressed */
+		virtual const bool checkPressedAnyLCDKey(USBDevice & device) = 0;
 
 	protected:
 		virtual void sendUSBDeviceInitialization(USBDevice & device);

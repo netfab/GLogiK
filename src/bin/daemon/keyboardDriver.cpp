@@ -411,7 +411,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 					continue;
 				}
 
-				if( ! this->checkGKey(device) )
+				if( ! this->checkPressedAnyGKey(device) )
 				{
 					/* continue to store standard key events
 					 * while a G-Key is not pressed */
@@ -663,7 +663,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 							}
 							else
 							{ /* check to trigger G-Key event */
-								if( this->checkGKey(device) )
+								if( this->checkPressedAnyGKey(device) )
 								{
 									try
 									{
@@ -692,7 +692,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 								}
 							}
 #else
-							if( this->checkGKey(device) )
+							if( this->checkPressedAnyGKey(device) )
 							{ /* G-Key pressed */
 								LOG(trace)	<< device.getID() << " G-Key pressed: "
 											<< getGKeyName(device._GKeyID);
@@ -714,7 +714,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 						if( device.getLastKeysInterruptTransferLength() ==
 							device.getMediaKeysTransferLength() )
 						{
-							if( this->checkMediaKey(device) )
+							if( this->checkPressedAnyMediaKey(device) )
 							{
 								LOG(trace)	<< device.getID() << " media key pressed: "
 											<< device._mediaKey;
@@ -752,7 +752,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 						if( device.getLastKeysInterruptTransferLength() ==
 							device.getLCDKeysTransferLength() )
 						{
-							if( this->checkLCDKey(device) )
+							if( this->checkPressedAnyLCDKey(device) )
 							{
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 								std::lock_guard<std::mutex> lock(device._LCDMutex);

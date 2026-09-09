@@ -239,8 +239,8 @@ const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 	return ret;
 }
 
-/* return true if any G-Key (G1-G18) is pressed  */
-const bool G510Base::checkGKey(USBDevice & device)
+/* return true if any G-Key (G1-G18) was pressed  */
+const bool G510Base::checkPressedAnyGKey(USBDevice & device)
 {
 	for( const auto & key : G510Base::GKeys5BytesMap )
 	{
@@ -253,8 +253,8 @@ const bool G510Base::checkGKey(USBDevice & device)
 	return false;
 }
 
-/* return true if any media key is pressed */
-const bool G510Base::checkMediaKey(USBDevice & device)
+/* return true if any media key was pressed */
+const bool G510Base::checkPressedAnyMediaKey(USBDevice & device)
 {
 	for( const auto & key : G510Base::mediaKeys2BytesMap )
 	{
@@ -267,8 +267,8 @@ const bool G510Base::checkMediaKey(USBDevice & device)
 	return false;
 }
 
-/* return true if any LCD key is pressed */
-const bool G510Base::checkLCDKey(USBDevice & device)
+/* return true if any LCD key was pressed */
+const bool G510Base::checkPressedAnyLCDKey(USBDevice & device)
 {
 	for( const auto & key : G510Base::LCDKeys5BytesMap )
 	{
