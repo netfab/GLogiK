@@ -100,12 +100,10 @@ extern c_str MUTE_MICRO;
 
 /* --- ---- --- */
 
-extern const std::map<RKeys, c_str> keysNamesMap;
 extern const std::map<GKeysID, c_str> GKeysNamesMap;
 extern const std::map<RKeys, MKeysID> keys2MKeysIDMap;
 extern const std::map<RKeys, GKeysID> keys2GKeysIDMap;
 
-const std::string getKeyName(const RKeys key);
 const std::string getGKeyName(const GKeysID keyID);
 const MKeysID getMKeyID(const RKeys key);
 const GKeysID getGKeyID(const RKeys key);

@@ -41,65 +41,65 @@ namespace D_G510
 
 const std::vector<detail::RKey> G510Base::keys5BytesMap =
 {
-//	{              RKeys::GK_KEY, 3, 1 << 2 },
-	{        RKeys::GK_KEY_LIGHT, 3, 1 << 3 },
-	{           RKeys::GK_KEY_MR, 3, 1 << 7 },
+//	{ "Key",             RKeys::GK_KEY_, 3, 1 << 2 },
+	{ "KeyLight",   RKeys::GK_KEY_LIGHT, 3, 1 << 3 },
+	{ "MR",            RKeys::GK_KEY_MR, 3, 1 << 7 },
 
-	{ RKeys::GK_KEY_MUTE_HEADPHONES, 4, 1 << 5 },
-	{      RKeys::GK_KEY_MUTE_MICRO, 4, 1 << 6 },
-//	{                RKeys::GK_KEY_, 4, 1 << 7 },
+	{ "MuteHeadphones", RKeys::GK_KEY_MUTE_HEADPHONES, 4, 1 << 5 },
+	{ "MuteMicro",           RKeys::GK_KEY_MUTE_MICRO, 4, 1 << 6 },
+//	{ "Key"                            RKeys::GK_KEY_, 4, 1 << 7 },
 };
 
 const std::vector<detail::RKey> G510Base::MKeys5BytesMap =
 {
-	{ RKeys::GK_KEY_M1, 3, 1 << 4 },
-	{ RKeys::GK_KEY_M2, 3, 1 << 5 },
-	{ RKeys::GK_KEY_M3, 3, 1 << 6 },
+	{ "M1", RKeys::GK_KEY_M1, 3, 1 << 4 },
+	{ "M2", RKeys::GK_KEY_M2, 3, 1 << 5 },
+	{ "M3", RKeys::GK_KEY_M3, 3, 1 << 6 },
 };
 
 const std::vector<detail::RKey> G510Base::GKeys5BytesMap =
 {
-	{ RKeys::GK_KEY_G1 , 1, 1 << 0 },
-	{ RKeys::GK_KEY_G2 , 1, 1 << 1 },
-	{ RKeys::GK_KEY_G3 , 1, 1 << 2 },
-	{ RKeys::GK_KEY_G4 , 1, 1 << 3 },
-	{ RKeys::GK_KEY_G5 , 1, 1 << 4 },
-	{ RKeys::GK_KEY_G6 , 1, 1 << 5 },
-	{ RKeys::GK_KEY_G7 , 1, 1 << 6 },
-	{ RKeys::GK_KEY_G8 , 1, 1 << 7 },
+	{ "G1",  RKeys::GK_KEY_G1 , 1, 1 << 0 },
+	{ "G2",  RKeys::GK_KEY_G2 , 1, 1 << 1 },
+	{ "G3",  RKeys::GK_KEY_G3 , 1, 1 << 2 },
+	{ "G4",  RKeys::GK_KEY_G4 , 1, 1 << 3 },
+	{ "G5",  RKeys::GK_KEY_G5 , 1, 1 << 4 },
+	{ "G6",  RKeys::GK_KEY_G6 , 1, 1 << 5 },
+	{ "G7",  RKeys::GK_KEY_G7 , 1, 1 << 6 },
+	{ "G8",  RKeys::GK_KEY_G8 , 1, 1 << 7 },
 
-	{ RKeys::GK_KEY_G9 , 2, 1 << 0 },
-	{ RKeys::GK_KEY_G10, 2, 1 << 1 },
-	{ RKeys::GK_KEY_G11, 2, 1 << 2 },
-	{ RKeys::GK_KEY_G12, 2, 1 << 3 },
-	{ RKeys::GK_KEY_G13, 2, 1 << 4 },
-	{ RKeys::GK_KEY_G14, 2, 1 << 5 },
-	{ RKeys::GK_KEY_G15, 2, 1 << 6 },
-	{ RKeys::GK_KEY_G16, 2, 1 << 7 },
+	{ "G9",  RKeys::GK_KEY_G9 , 2, 1 << 0 },
+	{ "G10", RKeys::GK_KEY_G10, 2, 1 << 1 },
+	{ "G11", RKeys::GK_KEY_G11, 2, 1 << 2 },
+	{ "G12", RKeys::GK_KEY_G12, 2, 1 << 3 },
+	{ "G13", RKeys::GK_KEY_G13, 2, 1 << 4 },
+	{ "G14", RKeys::GK_KEY_G14, 2, 1 << 5 },
+	{ "G15", RKeys::GK_KEY_G15, 2, 1 << 6 },
+	{ "G16", RKeys::GK_KEY_G16, 2, 1 << 7 },
 
-	{ RKeys::GK_KEY_G17, 3, 1 << 0 },
-	{ RKeys::GK_KEY_G18, 3, 1 << 1 },
+	{ "G17", RKeys::GK_KEY_G17, 3, 1 << 0 },
+	{ "G18", RKeys::GK_KEY_G18, 3, 1 << 1 },
 };
 
 const std::vector<detail::RKey> G510Base::LCDKeys5BytesMap =
 {
-	{ RKeys::GK_KEY_L1, 4, 1 << 0 },
-	{ RKeys::GK_KEY_L2, 4, 1 << 1 },
-	{ RKeys::GK_KEY_L3, 4, 1 << 2 },
-	{ RKeys::GK_KEY_L4, 4, 1 << 3 },
-	{ RKeys::GK_KEY_L5, 4, 1 << 4 },
+	{ "L1", RKeys::GK_KEY_L1, 4, 1 << 0 },
+	{ "L2", RKeys::GK_KEY_L2, 4, 1 << 1 },
+	{ "L3", RKeys::GK_KEY_L3, 4, 1 << 2 },
+	{ "L4", RKeys::GK_KEY_L4, 4, 1 << 3 },
+	{ "L5", RKeys::GK_KEY_L5, 4, 1 << 4 },
 };
 
 const std::vector<detail::RKey> G510Base::mediaKeys2BytesMap =
 {
-	{         RKeys::GK_KEY_AUDIO_NEXT, 1, 1 << 0 },
-	{         RKeys::GK_KEY_AUDIO_PREV, 1, 1 << 1 },
-	{         RKeys::GK_KEY_AUDIO_STOP, 1, 1 << 2 },
-	{         RKeys::GK_KEY_AUDIO_PLAY, 1, 1 << 3 },
-	{         RKeys::GK_KEY_AUDIO_MUTE, 1, 1 << 4 },
-	{ RKeys::GK_KEY_AUDIO_RAISE_VOLUME, 1, 1 << 5 },
-	{ RKeys::GK_KEY_AUDIO_LOWER_VOLUME, 1, 1 << 6 },
-//	{                   RKeys::GK_KEY_, 1, 1 << 7 },
+	{ "XF86AudioNext",        RKeys::GK_KEY_AUDIO_NEXT        , 1, 1 << 0 },
+	{ "XF86AudioPrev",        RKeys::GK_KEY_AUDIO_PREV        , 1, 1 << 1 },
+	{ "XF86AudioStop",        RKeys::GK_KEY_AUDIO_STOP        , 1, 1 << 2 },
+	{ "XF86AudioPlay",        RKeys::GK_KEY_AUDIO_PLAY        , 1, 1 << 3 },
+	{ "XF86AudioMute",        RKeys::GK_KEY_AUDIO_MUTE        , 1, 1 << 4 },
+	{ "XF86AudioRaiseVolume", RKeys::GK_KEY_AUDIO_RAISE_VOLUME, 1, 1 << 5 },
+	{ "XF86AudioLowerVolume", RKeys::GK_KEY_AUDIO_LOWER_VOLUME, 1, 1 << 6 },
+//	{ "",                  RKeys::GK_KEY_, 1, 1 << 7 },
 };
 
 const std::vector<detail::MKeyLed> G510Base::ledsMask =
@@ -264,7 +264,7 @@ const bool G510Base::checkPressedAnyMediaKey(USBDevice & device)
 	{
 		if( device._pressedRKeysMask & toEnumType(key.key) )
 		{
-			device._mediaKey = getKeyName(key.key);
+			device._mediaKey = key.name;
 			return true;
 		}
 	}
@@ -278,9 +278,8 @@ const bool G510Base::checkPressedAnyLCDKey(USBDevice & device)
 	{
 		if( device._pressedRKeysMask & toEnumType(key.key) )
 		{
-			const std::string Key(getKeyName(key.key));
 			std::lock_guard<std::mutex> lock(device._LCDMutex);
-			device._LCDKey = Key;
+			device._LCDKey = key.name;
 			return true;
 		}
 	}

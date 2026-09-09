@@ -48,6 +48,7 @@ namespace detail
 	/* RKey - Recognized Keys */
 	struct RKey
 	{
+		const std::string name;
 		const RKeys key;
 		const std::uint16_t index;
 		const unsigned char mask;

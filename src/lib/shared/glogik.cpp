@@ -97,51 +97,6 @@ c_str MUTE_MICRO      = "";
 
 /* --- ---- --- */
 
-const std::map<RKeys, c_str> keysNamesMap =
-{
-	{ RKeys::GK_KEY_M1, M_KEY_M1 },
-	{ RKeys::GK_KEY_M2, M_KEY_M2 },
-	{ RKeys::GK_KEY_M3, M_KEY_M3 },
-	/* -- */
-	{ RKeys::GK_KEY_G1, G_KEY_G1 },
-	{ RKeys::GK_KEY_G2, G_KEY_G2 },
-	{ RKeys::GK_KEY_G3, G_KEY_G3 },
-	{ RKeys::GK_KEY_G4, G_KEY_G4 },
-	{ RKeys::GK_KEY_G5, G_KEY_G5 },
-	{ RKeys::GK_KEY_G6, G_KEY_G6 },
-	{ RKeys::GK_KEY_G7, G_KEY_G7 },
-	{ RKeys::GK_KEY_G8, G_KEY_G8 },
-	{ RKeys::GK_KEY_G9, G_KEY_G9 },
-	{ RKeys::GK_KEY_G10, G_KEY_G10 },
-	{ RKeys::GK_KEY_G11, G_KEY_G11 },
-	{ RKeys::GK_KEY_G12, G_KEY_G12 },
-	{ RKeys::GK_KEY_G13, G_KEY_G13 },
-	{ RKeys::GK_KEY_G14, G_KEY_G14 },
-	{ RKeys::GK_KEY_G15, G_KEY_G15 },
-	{ RKeys::GK_KEY_G16, G_KEY_G16 },
-	{ RKeys::GK_KEY_G17, G_KEY_G17 },
-	{ RKeys::GK_KEY_G18, G_KEY_G18 },
-	/* -- */
-	{ RKeys::GK_KEY_L1, LCD_KEY_L1 },
-	{ RKeys::GK_KEY_L2, LCD_KEY_L2 },
-	{ RKeys::GK_KEY_L3, LCD_KEY_L3 },
-	{ RKeys::GK_KEY_L4, LCD_KEY_L4 },
-	{ RKeys::GK_KEY_L5, LCD_KEY_L5 },
-	/* -- */
-	{ RKeys::GK_KEY_AUDIO_NEXT, 			XF86_AUDIO_NEXT },
-	{ RKeys::GK_KEY_AUDIO_PREV, 			XF86_AUDIO_PREV },
-	{ RKeys::GK_KEY_AUDIO_STOP,			XF86_AUDIO_STOP },
-	{ RKeys::GK_KEY_AUDIO_PLAY,			XF86_AUDIO_PLAY },
-	{ RKeys::GK_KEY_AUDIO_MUTE,			XF86_AUDIO_MUTE },
-	{ RKeys::GK_KEY_AUDIO_RAISE_VOLUME,	XF86_AUDIO_RAISE_VOLUME },
-	{ RKeys::GK_KEY_AUDIO_LOWER_VOLUME,	XF86_AUDIO_LOWER_VOLUME },
-	/* -- */
-	{ RKeys::GK_KEY_LIGHT, 		KEY_LIGHT },
-	{ RKeys::GK_KEY_MR, 			M_KEY_MR },
-	{ RKeys::GK_KEY_MUTE_HEADPHONES, 	MUTE_HEADPHONES },
-	{ RKeys::GK_KEY_MUTE_MICRO, 	MUTE_MICRO },
-};
-
 const std::map<GKeysID, c_str> GKeysNamesMap =
 {
 	{ GKeysID::GKEY_G1, G_KEY_G1 },
@@ -192,23 +147,6 @@ const std::map<RKeys, GKeysID> keys2GKeysIDMap =
 	{ RKeys::GK_KEY_G17, GKeysID::GKEY_G17 },
 	{ RKeys::GK_KEY_G18, GKeysID::GKEY_G18 },
 };
-
-const std::string getKeyName(const RKeys key)
-{
-	using namespace NSGKUtils;
-
-	std::string ret("");
-	try
-	{
-		ret = keysNamesMap.at(key);
-	}
-	catch (const std::out_of_range& oor)
-	{
-		LOG(error) << "invalid key: " << toEnumType(key);
-	}
-
-	return ret;
-}
 
 const std::string getGKeyName(const GKeysID keyID)
 {
