@@ -30,8 +30,6 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
-#include "include/RKeys.hpp"
-
 #include "keyboardDriver.hpp"
 
 #include "daemonControl.hpp"
@@ -401,10 +399,7 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 			case KeyStatus::S_KEY_PROCESSED:
 			{
 				/* did we press one Mx key ? */
-				if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M1) or
-					device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M2) or
-					device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M3) or
-					device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_MR) )
+				if( this->checkPressedAnyMxKey(device) )
 				{
 					/* exiting macro record mode */
 					exit = true;

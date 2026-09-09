@@ -136,7 +136,7 @@ class USBDevice
 		GKeysID						_GKeyID; // G-Key
 		MKeysID						_MKeyID; // M-Key
 
-		bool						_MBankKeyPressed;
+		bool						_MBankKeyPressed; // only used to send DBus signal
 
 		/* -- -- -- */
 

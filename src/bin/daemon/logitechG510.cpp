@@ -283,6 +283,18 @@ const bool G510Base::checkPressedAnyLCDKey(USBDevice & device)
 	return false;
 }
 
+/* return true if any Mx key was pressed */
+const bool G510Base::checkPressedAnyMxKey(USBDevice & device)
+{
+	// MR and M1,M2,M3 keys are not in the same containers
+	if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_MR) )
+		return true;
+	for( const auto & key : G510Base::MKeys5BytesMap )
+		if( device._pressedRKeysMask & toEnumType(key.key) )
+			return true;
+	return false;
+}
+
 /*
  * When pressing backlight key, 2 events are produced :
  *  - one double 5 bytes event : RKeys::GK_KEY_LIGHT

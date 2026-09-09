@@ -83,6 +83,8 @@ class G510Base
 		virtual const bool checkPressedAnyMediaKey(USBDevice & device);
 		/* return true if any LCD key was pressed */
 		virtual const bool checkPressedAnyLCDKey(USBDevice & device);
+		/* return true if any Mx key was pressed */
+		virtual const bool checkPressedAnyMxKey(USBDevice & device);
 
 		virtual KeyStatus processKeyEvent(USBDevice & device);
 
@@ -214,6 +216,12 @@ class LogitechG510
 		const bool checkPressedAnyLCDKey(USBDevice & device) override
 		{
 			return G510Base::checkPressedAnyLCDKey(device);
+		}
+
+		/* return true if any Mx key was pressed */
+		virtual const bool checkPressedAnyMxKey(USBDevice & device) override
+		{
+			return G510Base::checkPressedAnyMxKey(device);
 		}
 
 		void fillStandardKeysEvents(USBDevice & device) override
