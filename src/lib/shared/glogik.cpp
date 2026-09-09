@@ -126,28 +126,6 @@ const std::map<RKeys, MKeysID> keys2MKeysIDMap =
 	{ RKeys::GK_KEY_M3, MKeysID::MKEY_M3 },
 };
 
-const std::map<RKeys, GKeysID> keys2GKeysIDMap =
-{
-	{ RKeys::GK_KEY_G1, GKeysID::GKEY_G1 },
-	{ RKeys::GK_KEY_G2, GKeysID::GKEY_G2 },
-	{ RKeys::GK_KEY_G3, GKeysID::GKEY_G3 },
-	{ RKeys::GK_KEY_G4, GKeysID::GKEY_G4 },
-	{ RKeys::GK_KEY_G5, GKeysID::GKEY_G5 },
-	{ RKeys::GK_KEY_G6, GKeysID::GKEY_G6 },
-	{ RKeys::GK_KEY_G7, GKeysID::GKEY_G7 },
-	{ RKeys::GK_KEY_G8, GKeysID::GKEY_G8 },
-	{ RKeys::GK_KEY_G9, GKeysID::GKEY_G9 },
-	{ RKeys::GK_KEY_G10, GKeysID::GKEY_G10 },
-	{ RKeys::GK_KEY_G11, GKeysID::GKEY_G11 },
-	{ RKeys::GK_KEY_G12, GKeysID::GKEY_G12 },
-	{ RKeys::GK_KEY_G13, GKeysID::GKEY_G13 },
-	{ RKeys::GK_KEY_G14, GKeysID::GKEY_G14 },
-	{ RKeys::GK_KEY_G15, GKeysID::GKEY_G15 },
-	{ RKeys::GK_KEY_G16, GKeysID::GKEY_G16 },
-	{ RKeys::GK_KEY_G17, GKeysID::GKEY_G17 },
-	{ RKeys::GK_KEY_G18, GKeysID::GKEY_G18 },
-};
-
 const std::string getGKeyName(const GKeysID keyID)
 {
 	using namespace NSGKUtils;
@@ -167,11 +145,6 @@ const std::string getGKeyName(const GKeysID keyID)
 const MKeysID getMKeyID(const RKeys key)
 {
 	return keys2MKeysIDMap.at(key);
-}
-
-const GKeysID getGKeyID(const RKeys key)
-{
-	return keys2GKeysIDMap.at(key);
 }
 
 void printVersionDeps(

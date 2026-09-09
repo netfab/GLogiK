@@ -24,6 +24,7 @@
 
 #include <cstdint>
 
+#include <map>
 #include <vector>
 #include <string>
 
@@ -109,6 +110,7 @@ class G510Base
 		);
 
 	private:
+		static const std::map<RKeys, GKeysID>  RKeys2GKeysIDMap;
 		static const std::vector<detail::RKey>    keys5BytesMap;
 		static const std::vector<detail::RKey>   MKeys5BytesMap;
 		static const std::vector<detail::RKey>   GKeys5BytesMap;

@@ -39,6 +39,28 @@ using namespace NSGKUtils;
 namespace D_G510
 {
 
+const std::map<RKeys, GKeysID> G510Base::RKeys2GKeysIDMap =
+{
+	{ RKeys::GK_KEY_G1, GKeysID::GKEY_G1 },
+	{ RKeys::GK_KEY_G2, GKeysID::GKEY_G2 },
+	{ RKeys::GK_KEY_G3, GKeysID::GKEY_G3 },
+	{ RKeys::GK_KEY_G4, GKeysID::GKEY_G4 },
+	{ RKeys::GK_KEY_G5, GKeysID::GKEY_G5 },
+	{ RKeys::GK_KEY_G6, GKeysID::GKEY_G6 },
+	{ RKeys::GK_KEY_G7, GKeysID::GKEY_G7 },
+	{ RKeys::GK_KEY_G8, GKeysID::GKEY_G8 },
+	{ RKeys::GK_KEY_G9, GKeysID::GKEY_G9 },
+	{ RKeys::GK_KEY_G10, GKeysID::GKEY_G10 },
+	{ RKeys::GK_KEY_G11, GKeysID::GKEY_G11 },
+	{ RKeys::GK_KEY_G12, GKeysID::GKEY_G12 },
+	{ RKeys::GK_KEY_G13, GKeysID::GKEY_G13 },
+	{ RKeys::GK_KEY_G14, GKeysID::GKEY_G14 },
+	{ RKeys::GK_KEY_G15, GKeysID::GKEY_G15 },
+	{ RKeys::GK_KEY_G16, GKeysID::GKEY_G16 },
+	{ RKeys::GK_KEY_G17, GKeysID::GKEY_G17 },
+	{ RKeys::GK_KEY_G18, GKeysID::GKEY_G18 },
+};
+
 const std::vector<detail::RKey> G510Base::keys5BytesMap =
 {
 //	{ "Key",             RKeys::GK_KEY_, 3, 1 << 2 },
@@ -213,6 +235,8 @@ const MKeysIDArray_type G510Base::getMKeysIDArray(void) const
 
 const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 {
+	GK_LOG_FUNC
+
 	GKeysIDArray_type ret;
 
 	try
@@ -223,7 +247,7 @@ const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 		{
 			try
 			{
-				ret.push_back(getGKeyID(key.key));
+				ret.push_back(G510Base::RKeys2GKeysIDMap.at(key.key));
 			}
 			catch(const std::out_of_range& oor)
 			{
@@ -246,11 +270,20 @@ const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 /* return true if any G-Key (G1-G18) was pressed  */
 const bool G510Base::checkPressedAnyGKey(USBDevice & device)
 {
+	GK_LOG_FUNC
+
 	for( const auto & key : G510Base::GKeys5BytesMap )
 	{
 		if( device._pressedRKeysMask & toEnumType(key.key) )
 		{
-			device._GKeyID = getGKeyID(key.key);
+			try
+			{
+				device._GKeyID = G510Base::RKeys2GKeysIDMap.at(key.key);
+			}
+			catch(const std::out_of_range& oor)
+			{
+				GKSysLogWarning("invalid key for GKeysID");
+			}
 			return true;
 		}
 	}
