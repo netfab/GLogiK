@@ -37,7 +37,7 @@
 #include "devicesManager.hpp"
 
 #include "daemonControl.hpp"
-#include "logitechG510.hpp"
+#include "logitech/G510/G510.hpp"
 
 #include "devicesManager.hpp"
 

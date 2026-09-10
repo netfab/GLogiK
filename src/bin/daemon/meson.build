@@ -16,10 +16,15 @@ GLogiKd_sources = [
   'USBDevice.hpp',
   'USBDeviceID.cpp',
   'USBDeviceID.hpp',
-  'logitechG510.cpp',
-  'logitechG510.hpp',
   'LCDScreenPluginsManager.cpp',
   'LCDScreenPluginsManager.hpp',
+]
+
+GLogiKd_sources += [
+  'logitech/G510/G510.hpp',
+  'logitech/G510/G510Base.cpp',
+  'logitech/G510/G510Base.hpp',
+  'logitech/G510/G510Detail.hpp',
 ]
 
 GLogiKd_sources += [

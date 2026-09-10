@@ -37,8 +37,6 @@ GLogiKd_SOURCES = \
 		%D%/USBDevice.hpp \
 		%D%/USBDeviceID.cpp \
 		%D%/USBDeviceID.hpp \
-		%D%/logitechG510.cpp \
-		%D%/logitechG510.hpp \
 		%D%/LCDScreenPluginsManager.cpp \
 		%D%/LCDScreenPluginsManager.hpp
 
@@ -75,6 +73,12 @@ GLogiKd_SOURCES += \
 		%D%/sleepInhibition.cpp \
 		%D%/sleepInhibition.hpp
 endif
+
+GLogiKd_SOURCES += \
+		%D%/logitech/G510/G510.hpp \
+		%D%/logitech/G510/G510Base.cpp \
+		%D%/logitech/G510/G510Base.hpp \
+		%D%/logitech/G510/G510Detail.hpp
 
 GLogiKd_SOURCES += \
 		%D%/LCDPlugins/PBM.hpp \

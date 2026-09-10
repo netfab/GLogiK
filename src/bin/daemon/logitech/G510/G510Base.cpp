@@ -29,15 +29,16 @@
 
 #include "include/RKeys.hpp"
 
-#include "logitechG510.hpp"
+#include "G510Base.hpp"
+#include "G510Detail.hpp"
 
 namespace GLogiK
 {
 
-using namespace NSGKUtils;
-
 namespace D_G510
 {
+
+using namespace NSGKUtils;
 
 const std::map<RKeys, GKeysID> G510Base::RKeys2GKeysIDMap =
 {
@@ -121,7 +122,6 @@ const char* G510Base::getDriverName() const
 
 const std::uint16_t G510Base::getDriverID() const
 {
-	//return GLOGIKD_DRIVER_ID_G510;
 	return detail::G510_DRIVER_ID;
 }
 
@@ -572,4 +572,3 @@ const bool G510Base::updateDeviceMxKeysLedsMask(USBDevice & device, bool disable
 } // namespace D_G510
 
 } // namespace GLogiK
-
