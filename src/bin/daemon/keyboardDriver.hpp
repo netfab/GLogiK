@@ -22,6 +22,8 @@
 #ifndef SRC_BIN_DAEMON_KEYBOARD_DRIVER_HPP_
 #define SRC_BIN_DAEMON_KEYBOARD_DRIVER_HPP_
 
+#include "config.h"
+
 #include <cstdint>
 
 #include <string>
@@ -31,8 +33,6 @@
 #include <mutex>
 
 #include <linux/input-event-codes.h>
-
-#include "config.h"
 
 #if GKDBUS
 #include "lib/dbus/GKDBus.hpp"

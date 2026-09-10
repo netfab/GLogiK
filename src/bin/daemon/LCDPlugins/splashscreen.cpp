@@ -19,12 +19,11 @@
  *
  */
 
+#include "config.h"
 
 #include <string>
 
 #include <boost/filesystem.hpp>
-
-#include "config.h"
 
 #include "include/enums.hpp"
 

@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include <cmath>
 #include <cfenv>
 
@@ -32,8 +34,6 @@
 #include <string>
 #include <vector>
 #include <map>
-
-#include "config.h"
 
 #include "include/enums.hpp"
 

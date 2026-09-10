@@ -22,13 +22,13 @@
 #ifndef SRC_BIN_DAEMON_DEVICES_MANAGER_HPP_
 #define SRC_BIN_DAEMON_DEVICES_MANAGER_HPP_
 
+#include "config.h"
+
 #include <cstdint>
 
 #include <string>
 #include <map>
 #include <vector>
-
-#include "config.h"
 
 #if GKDBUS
 #include "lib/dbus/GKDBus.hpp"

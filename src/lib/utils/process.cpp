@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include <chrono>
 #include <string>
 #include <sstream>
@@ -46,8 +48,6 @@
 #include "process.hpp"
 
 #undef UTILS_COMPILATION
-
-#include "config.h"
 
 namespace NSGKUtils
 {

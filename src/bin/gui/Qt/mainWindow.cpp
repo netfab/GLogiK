@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include <csignal>
 
 #include <syslog.h>
@@ -47,8 +49,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
-
-#include "config.h"
 
 #include <boost/program_options.hpp>
 

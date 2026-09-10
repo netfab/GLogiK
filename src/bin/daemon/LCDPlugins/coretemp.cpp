@@ -19,14 +19,14 @@
  *
  */
 
+#include "config.h"
+
 #include <cstdint>
 
 #include <string>
 #include <string_view>
 
 #include <boost/filesystem.hpp>
-
-#include "config.h"
 
 #include "include/enums.hpp"
 

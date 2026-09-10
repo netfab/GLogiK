@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include <cstdint>
 
 #include <algorithm>
@@ -34,8 +36,6 @@
 #include "filesystem.hpp"
 
 #undef UTILS_COMPILATION
-
-#include "config.h"
 
 namespace NSGKUtils
 {

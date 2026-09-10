@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
@@ -40,8 +42,6 @@
 #include <boost/version.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
-
-#include "config.h"
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"

@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include <utility>
 #include <exception>
 #include <stdexcept>
@@ -28,8 +30,6 @@
 #include <X11/extensions/XTest.h>
 
 #include "lib/shared/deviceConfigurationFile.hpp"
-
-#include "config.h"
 
 #if HAVE_DESKTOP_NOTIFICATIONS
 #include "desktopNotification.hpp"

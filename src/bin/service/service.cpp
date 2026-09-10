@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include <poll.h>
 
 #include <cstring>
@@ -30,8 +32,6 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-
-#include "config.h"
 
 #if HAVE_SYSTRAY && HAVE_QT
 /* must be included before sessionManager.hpp

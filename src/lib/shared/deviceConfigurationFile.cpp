@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include <fstream>
 #include <sstream>
 

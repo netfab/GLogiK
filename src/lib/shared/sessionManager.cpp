@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include <csignal>
 #include <cstdlib> // std::free
 

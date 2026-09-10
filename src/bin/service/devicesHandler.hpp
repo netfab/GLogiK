@@ -22,6 +22,8 @@
 #ifndef SRC_BIN_SERVICE_DEVICES_HANDLER_HPP_
 #define SRC_BIN_SERVICE_DEVICES_HANDLER_HPP_
 
+#include "config.h"
+
 #include <cstdint>
 
 #include <string>
@@ -40,8 +42,6 @@
 #include "include/base.hpp"
 #include "include/MBank.hpp"
 #include "include/LCDPP.hpp"
-
-#include "config.h"
 
 #define LogRemoteCallFailure \
 	LOG(critical) << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();

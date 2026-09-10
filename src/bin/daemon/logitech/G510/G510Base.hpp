@@ -21,12 +21,12 @@
 
 #pragma once
 
+#include "config.h"
+
 #include <cstdint>
 
 #include <vector>
 #include <string>
-
-#include "config.h"
 
 #include "src/bin/daemon/keyboardDriver.hpp"
 #include "src/bin/daemon/USBDeviceID.hpp"

@@ -22,9 +22,9 @@
 #ifndef SRC_BIN_SERVICE_DESKTOP_NOTIFICATION_HPP_
 #define SRC_BIN_SERVICE_DESKTOP_NOTIFICATION_HPP_
 
-#include <string>
-
 #include "config.h"
+
+#include <string>
 
 #if HAVE_LIBNOTIFY
 #include <libnotify/notify.h>

@@ -22,6 +22,8 @@
 #ifndef SRC_BIN_DAEMON_USB_DEVICE_HPP_
 #define SRC_BIN_DAEMON_USB_DEVICE_HPP_
 
+#include "config.h"
+
 #include <cstdint>
 
 #include <atomic>
@@ -36,8 +38,6 @@
 #include "USBDeviceID.hpp"
 
 #include "include/base.hpp"
-
-#include "config.h"
 
 #include <libusb-1.0/libusb.h>
 

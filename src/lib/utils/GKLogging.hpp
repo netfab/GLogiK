@@ -26,6 +26,8 @@
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
+#include "config.h"
+
 #include <ios>
 #include <string>
 #include <ostream>
@@ -35,8 +37,6 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/log/attributes/named_scope.hpp>
-
-#include "config.h"
 
 namespace fs = boost::filesystem;
 

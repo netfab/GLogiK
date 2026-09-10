@@ -22,14 +22,14 @@
 #ifndef SRC_BIN_SERVICE_DESKTOP_SERVICE_SYSTRAY_HPP_
 #define SRC_BIN_SERVICE_DESKTOP_SERVICE_SYSTRAY_HPP_
 
+#include "config.h"
+
 #include <string>
 
 #include <QAction>
 #include <QMainWindow>
 #include <QMenu>
 #include <QSystemTrayIcon>
-
-#include "config.h"
 
 #include "include/DeviceID.hpp"
 

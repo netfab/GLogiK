@@ -19,11 +19,11 @@
  *
  */
 
+#include "config.h"
+
 #include <chrono>
 #include <fstream>
 #include <iomanip>
-
-#include "config.h"
 
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <boost/smart_ptr/make_shared_object.hpp>
