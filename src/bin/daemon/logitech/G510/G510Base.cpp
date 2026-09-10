@@ -40,28 +40,6 @@ namespace D_G510
 
 using namespace NSGKUtils;
 
-const std::map<RKeys, GKeysID> G510Base::RKeys2GKeysIDMap =
-{
-	{ RKeys::GK_KEY_G1, GKeysID::GKEY_G1 },
-	{ RKeys::GK_KEY_G2, GKeysID::GKEY_G2 },
-	{ RKeys::GK_KEY_G3, GKeysID::GKEY_G3 },
-	{ RKeys::GK_KEY_G4, GKeysID::GKEY_G4 },
-	{ RKeys::GK_KEY_G5, GKeysID::GKEY_G5 },
-	{ RKeys::GK_KEY_G6, GKeysID::GKEY_G6 },
-	{ RKeys::GK_KEY_G7, GKeysID::GKEY_G7 },
-	{ RKeys::GK_KEY_G8, GKeysID::GKEY_G8 },
-	{ RKeys::GK_KEY_G9, GKeysID::GKEY_G9 },
-	{ RKeys::GK_KEY_G10, GKeysID::GKEY_G10 },
-	{ RKeys::GK_KEY_G11, GKeysID::GKEY_G11 },
-	{ RKeys::GK_KEY_G12, GKeysID::GKEY_G12 },
-	{ RKeys::GK_KEY_G13, GKeysID::GKEY_G13 },
-	{ RKeys::GK_KEY_G14, GKeysID::GKEY_G14 },
-	{ RKeys::GK_KEY_G15, GKeysID::GKEY_G15 },
-	{ RKeys::GK_KEY_G16, GKeysID::GKEY_G16 },
-	{ RKeys::GK_KEY_G17, GKeysID::GKEY_G17 },
-	{ RKeys::GK_KEY_G18, GKeysID::GKEY_G18 },
-};
-
 const std::vector<USBDeviceID> G510Base::knownDevices =
 {
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
@@ -170,19 +148,10 @@ const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 
 	try
 	{
-		ret.reserve(detail::GKeys5BytesMap.size());
+		ret.reserve(detail::RKeys2GKeysIDMap.size());
 
-		for(const auto & key : detail::GKeys5BytesMap)
-		{
-			try
-			{
-				ret.push_back(G510Base::RKeys2GKeysIDMap.at(key.key));
-			}
-			catch(const std::out_of_range& oor)
-			{
-				GKSysLogWarning("invalid key for GKeysID");
-			}
-		}
+		for (const auto & [RKey, GKeyID] : detail::RKeys2GKeysIDMap)
+			ret.push_back(GKeyID);
 	}
 	catch( const std::length_error & e )
 	{
@@ -201,18 +170,11 @@ const bool G510Base::checkPressedAnyGKey(USBDevice & device)
 {
 	GK_LOG_FUNC
 
-	for( const auto & key : detail::GKeys5BytesMap )
+	for (const auto & [RKey, GKeyID] : detail::RKeys2GKeysIDMap)
 	{
-		if( device._pressedRKeysMask & toEnumType(key.key) )
+		if( device._pressedRKeysMask & toEnumType(RKey) )
 		{
-			try
-			{
-				device._GKeyID = G510Base::RKeys2GKeysIDMap.at(key.key);
-			}
-			catch(const std::out_of_range& oor)
-			{
-				GKSysLogWarning("invalid key for GKeysID");
-			}
+			device._GKeyID = GKeyID;
 			return true;
 		}
 	}

@@ -146,6 +146,31 @@ namespace detail
 		}
 	};
 
+	using P = std::pair<RKeys, GKeysID>;
+
+	inline constexpr std::array RKeys2GKeysIDMap
+	{
+		P{ RKeys::GK_KEY_G1, GKeysID::GKEY_G1 },
+		P{ RKeys::GK_KEY_G2, GKeysID::GKEY_G2 },
+		P{ RKeys::GK_KEY_G3, GKeysID::GKEY_G3 },
+		P{ RKeys::GK_KEY_G4, GKeysID::GKEY_G4 },
+		P{ RKeys::GK_KEY_G5, GKeysID::GKEY_G5 },
+		P{ RKeys::GK_KEY_G6, GKeysID::GKEY_G6 },
+		P{ RKeys::GK_KEY_G7, GKeysID::GKEY_G7 },
+		P{ RKeys::GK_KEY_G8, GKeysID::GKEY_G8 },
+		P{ RKeys::GK_KEY_G9, GKeysID::GKEY_G9 },
+		P{ RKeys::GK_KEY_G10, GKeysID::GKEY_G10 },
+		P{ RKeys::GK_KEY_G11, GKeysID::GKEY_G11 },
+		P{ RKeys::GK_KEY_G12, GKeysID::GKEY_G12 },
+		P{ RKeys::GK_KEY_G13, GKeysID::GKEY_G13 },
+		P{ RKeys::GK_KEY_G14, GKeysID::GKEY_G14 },
+		P{ RKeys::GK_KEY_G15, GKeysID::GKEY_G15 },
+		P{ RKeys::GK_KEY_G16, GKeysID::GKEY_G16 },
+		P{ RKeys::GK_KEY_G17, GKeysID::GKEY_G17 },
+		P{ RKeys::GK_KEY_G18, GKeysID::GKEY_G18 },
+	};
+
+
 } // namespace detail
 
 } // namespace D_G510
