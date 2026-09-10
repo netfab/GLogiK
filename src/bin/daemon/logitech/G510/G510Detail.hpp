@@ -75,13 +75,13 @@ namespace detail
 
 	inline constexpr std::array keys5BytesMap =
 	{
-	//  R{ "Key",           RKeys::GK_KEY_, 3, 1u << 2 },
-		R{ "KeyLight",   RKeys::GK_KEY_LIGHT, 3, 1u << 3 },
-		R{ "MR",            RKeys::GK_KEY_MR, 3, 1u << 7 },
+	//	R{ "Key",            RKeys::GK_KEY_               , 3, 1u << 2 },
+		R{ "KeyLight",       RKeys::GK_KEY_LIGHT          , 3, 1u << 3 },
+		R{ "MR",             RKeys::GK_KEY_MR             , 3, 1u << 7 },
 
 		R{ "MuteHeadphones", RKeys::GK_KEY_MUTE_HEADPHONES, 4, 1u << 5 },
-		R{ "MuteMicro",           RKeys::GK_KEY_MUTE_MICRO, 4, 1u << 6 },
-	//	R{ "Key"            RKeys::GK_KEY_, 4, 1u << 7 },
+		R{ "MuteMicro",      RKeys::GK_KEY_MUTE_MICRO     , 4, 1u << 6 },
+	//	R{ "Key"             RKeys::GK_KEY_               , 4, 1u << 7 },
 	};
 
 	inline constexpr std::array MKeys5BytesMap =
