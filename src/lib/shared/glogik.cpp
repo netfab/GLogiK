@@ -79,22 +79,6 @@ c_str LCD_KEY_L3 = "L3";
 c_str LCD_KEY_L4 = "L4";
 c_str LCD_KEY_L5 = "L5";
 
-/* Media Keys */
-c_str XF86_AUDIO_NEXT			= "XF86AudioNext";
-c_str XF86_AUDIO_PREV			= "XF86AudioPrev";
-c_str XF86_AUDIO_STOP			= "XF86AudioStop";
-c_str XF86_AUDIO_PLAY			= "XF86AudioPlay";
-c_str XF86_AUDIO_MUTE			= "XF86AudioMute";
-c_str XF86_AUDIO_RAISE_VOLUME	= "XF86AudioRaiseVolume";
-c_str XF86_AUDIO_LOWER_VOLUME	= "XF86AudioLowerVolume";
-
-/* --- ---- --- */
-
-c_str KEY_LIGHT       = "";
-c_str M_KEY_MR        = "";
-c_str MUTE_HEADPHONES = "";
-c_str MUTE_MICRO      = "";
-
 /* --- ---- --- */
 
 const std::map<GKeysID, c_str> GKeysNamesMap =

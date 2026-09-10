@@ -82,22 +82,6 @@ extern c_str LCD_KEY_L3;
 extern c_str LCD_KEY_L4;
 extern c_str LCD_KEY_L5;
 
-/* Media Keys */
-extern c_str XF86_AUDIO_NEXT;
-extern c_str XF86_AUDIO_PREV;
-extern c_str XF86_AUDIO_STOP;
-extern c_str XF86_AUDIO_PLAY;
-extern c_str XF86_AUDIO_MUTE;
-extern c_str XF86_AUDIO_RAISE_VOLUME;
-extern c_str XF86_AUDIO_LOWER_VOLUME;
-
-/* --- ---- --- */
-
-extern c_str KEY_LIGHT;
-extern c_str M_KEY_MR;
-extern c_str MUTE_HEADSET;
-extern c_str MUTE_MICRO;
-
 /* --- ---- --- */
 
 extern const std::map<GKeysID, c_str> GKeysNamesMap;
