@@ -61,77 +61,6 @@ const std::map<RKeys, GKeysID> G510Base::RKeys2GKeysIDMap =
 	{ RKeys::GK_KEY_G18, GKeysID::GKEY_G18 },
 };
 
-const std::vector<detail::RKey> G510Base::keys5BytesMap =
-{
-//	{ "Key",             RKeys::GK_KEY_, 3, 1 << 2 },
-	{ "KeyLight",   RKeys::GK_KEY_LIGHT, 3, 1 << 3 },
-	{ "MR",            RKeys::GK_KEY_MR, 3, 1 << 7 },
-
-	{ "MuteHeadphones", RKeys::GK_KEY_MUTE_HEADPHONES, 4, 1 << 5 },
-	{ "MuteMicro",           RKeys::GK_KEY_MUTE_MICRO, 4, 1 << 6 },
-//	{ "Key"                            RKeys::GK_KEY_, 4, 1 << 7 },
-};
-
-const std::vector<detail::RKey> G510Base::MKeys5BytesMap =
-{
-	{ "M1", RKeys::GK_KEY_M1, 3, 1 << 4 },
-	{ "M2", RKeys::GK_KEY_M2, 3, 1 << 5 },
-	{ "M3", RKeys::GK_KEY_M3, 3, 1 << 6 },
-};
-
-const std::vector<detail::RKey> G510Base::GKeys5BytesMap =
-{
-	{ "G1",  RKeys::GK_KEY_G1 , 1, 1 << 0 },
-	{ "G2",  RKeys::GK_KEY_G2 , 1, 1 << 1 },
-	{ "G3",  RKeys::GK_KEY_G3 , 1, 1 << 2 },
-	{ "G4",  RKeys::GK_KEY_G4 , 1, 1 << 3 },
-	{ "G5",  RKeys::GK_KEY_G5 , 1, 1 << 4 },
-	{ "G6",  RKeys::GK_KEY_G6 , 1, 1 << 5 },
-	{ "G7",  RKeys::GK_KEY_G7 , 1, 1 << 6 },
-	{ "G8",  RKeys::GK_KEY_G8 , 1, 1 << 7 },
-
-	{ "G9",  RKeys::GK_KEY_G9 , 2, 1 << 0 },
-	{ "G10", RKeys::GK_KEY_G10, 2, 1 << 1 },
-	{ "G11", RKeys::GK_KEY_G11, 2, 1 << 2 },
-	{ "G12", RKeys::GK_KEY_G12, 2, 1 << 3 },
-	{ "G13", RKeys::GK_KEY_G13, 2, 1 << 4 },
-	{ "G14", RKeys::GK_KEY_G14, 2, 1 << 5 },
-	{ "G15", RKeys::GK_KEY_G15, 2, 1 << 6 },
-	{ "G16", RKeys::GK_KEY_G16, 2, 1 << 7 },
-
-	{ "G17", RKeys::GK_KEY_G17, 3, 1 << 0 },
-	{ "G18", RKeys::GK_KEY_G18, 3, 1 << 1 },
-};
-
-const std::vector<detail::RKey> G510Base::LCDKeys5BytesMap =
-{
-	{ "L1", RKeys::GK_KEY_L1, 4, 1 << 0 },
-	{ "L2", RKeys::GK_KEY_L2, 4, 1 << 1 },
-	{ "L3", RKeys::GK_KEY_L3, 4, 1 << 2 },
-	{ "L4", RKeys::GK_KEY_L4, 4, 1 << 3 },
-	{ "L5", RKeys::GK_KEY_L5, 4, 1 << 4 },
-};
-
-const std::vector<detail::RKey> G510Base::mediaKeys2BytesMap =
-{
-	{ "XF86AudioNext",        RKeys::GK_KEY_AUDIO_NEXT        , 1, 1 << 0 },
-	{ "XF86AudioPrev",        RKeys::GK_KEY_AUDIO_PREV        , 1, 1 << 1 },
-	{ "XF86AudioStop",        RKeys::GK_KEY_AUDIO_STOP        , 1, 1 << 2 },
-	{ "XF86AudioPlay",        RKeys::GK_KEY_AUDIO_PLAY        , 1, 1 << 3 },
-	{ "XF86AudioMute",        RKeys::GK_KEY_AUDIO_MUTE        , 1, 1 << 4 },
-	{ "XF86AudioRaiseVolume", RKeys::GK_KEY_AUDIO_RAISE_VOLUME, 1, 1 << 5 },
-	{ "XF86AudioLowerVolume", RKeys::GK_KEY_AUDIO_LOWER_VOLUME, 1, 1 << 6 },
-//	{ "",                  RKeys::GK_KEY_, 1, 1 << 7 },
-};
-
-const std::vector<detail::MKeyLed> G510Base::ledsMask =
-{
-	{ Leds::GK_LED_M1, 1 << 7 },
-	{ Leds::GK_LED_M2, 1 << 6 },
-	{ Leds::GK_LED_M3, 1 << 5 },
-	{ Leds::GK_LED_MR, 1 << 4 },
-};
-
 const std::vector<USBDeviceID> G510Base::knownDevices =
 {
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
@@ -207,9 +136,9 @@ const MKeysIDArray_type G510Base::getMKeysIDArray(void) const
 
 	try
 	{
-		ret.reserve(G510Base::MKeys5BytesMap.size());
+		ret.reserve(detail::MKeys5BytesMap.size());
 
-		for(const auto & key : G510Base::MKeys5BytesMap)
+		for(const auto & key : detail::MKeys5BytesMap)
 		{
 			try
 			{
@@ -241,9 +170,9 @@ const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 
 	try
 	{
-		ret.reserve(G510Base::GKeys5BytesMap.size());
+		ret.reserve(detail::GKeys5BytesMap.size());
 
-		for(const auto & key : G510Base::GKeys5BytesMap)
+		for(const auto & key : detail::GKeys5BytesMap)
 		{
 			try
 			{
@@ -272,7 +201,7 @@ const bool G510Base::checkPressedAnyGKey(USBDevice & device)
 {
 	GK_LOG_FUNC
 
-	for( const auto & key : G510Base::GKeys5BytesMap )
+	for( const auto & key : detail::GKeys5BytesMap )
 	{
 		if( device._pressedRKeysMask & toEnumType(key.key) )
 		{
@@ -293,7 +222,7 @@ const bool G510Base::checkPressedAnyGKey(USBDevice & device)
 /* return true if any media key was pressed */
 const bool G510Base::checkPressedAnyMediaKey(USBDevice & device)
 {
-	for( const auto & key : G510Base::mediaKeys2BytesMap )
+	for( const auto & key : detail::mediaKeys2BytesMap )
 	{
 		if( device._pressedRKeysMask & toEnumType(key.key) )
 		{
@@ -307,7 +236,7 @@ const bool G510Base::checkPressedAnyMediaKey(USBDevice & device)
 /* return true if any LCD key was pressed */
 const bool G510Base::checkPressedAnyLCDKey(USBDevice & device)
 {
-	for( const auto & key : G510Base::LCDKeys5BytesMap )
+	for( const auto & key : detail::LCDKeys5BytesMap )
 	{
 		if( device._pressedRKeysMask & toEnumType(key.key) )
 		{
@@ -325,7 +254,7 @@ const bool G510Base::checkPressedAnyMxKey(USBDevice & device)
 	// MR and M1,M2,M3 keys are not in the same containers
 	if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_MR) )
 		return true;
-	for( const auto & key : G510Base::MKeys5BytesMap )
+	for( const auto & key : detail::MKeys5BytesMap )
 		if( device._pressedRKeysMask & toEnumType(key.key) )
 			return true;
 	return false;
@@ -342,7 +271,7 @@ void G510Base::processKeyEvent2Bytes(USBDevice & device)
 
 	if( device._pressedKeys[0] == 0x02 )
 	{
-		for( const auto & key : G510Base::mediaKeys2BytesMap )
+		for( const auto & key : detail::mediaKeys2BytesMap )
 		{
 			if( device._pressedKeys[key.index] & key.mask )
 				device._pressedRKeysMask |= toEnumType(key.key);
@@ -403,28 +332,28 @@ void G510Base::processKeyEvent5Bytes(USBDevice & device)
 		return;
 	}
 
-	for(const auto & key : G510Base::keys5BytesMap)
+	for(const auto & key : detail::keys5BytesMap)
 	{
 		if( device._pressedKeys[key.index] & key.mask )
 			device._pressedRKeysMask |= toEnumType(key.key);
 	}
 
 	/* M Keys */
-	for(const auto & key : G510Base::MKeys5BytesMap)
+	for(const auto & key : detail::MKeys5BytesMap)
 	{
 		if( device._pressedKeys[key.index] & key.mask )
 			device._pressedRKeysMask |= toEnumType(key.key);
 	}
 
 	/* G Keys */
-	for(const auto & key : G510Base::GKeys5BytesMap)
+	for(const auto & key : detail::GKeys5BytesMap)
 	{
 		if( device._pressedKeys[key.index] & key.mask )
 			device._pressedRKeysMask |= toEnumType(key.key);
 	}
 
 	/* LCD Keys */
-	for(const auto & key : G510Base::LCDKeys5BytesMap)
+	for(const auto & key : detail::LCDKeys5BytesMap)
 	{
 		if( device._pressedKeys[key.index] & key.mask )
 			device._pressedRKeysMask |= toEnumType(key.key);
@@ -561,7 +490,7 @@ void G510Base::setDeviceMxKeysLeds(USBDevice & device)
 	GK_LOG_FUNC
 
 	unsigned char mask = 0;
-	for (const auto & led : G510Base::ledsMask )
+	for (const auto & led : detail::ledsMask )
 	{
 		if( device._MxKeysLedsMask & toEnumType(led.led) )
 			mask |= led.mask;
