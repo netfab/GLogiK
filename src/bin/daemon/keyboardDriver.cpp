@@ -462,6 +462,8 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 
 void KeyboardDriver::sendDeviceMBankSwitchSignal(USBDevice & device)
 { // an M1|M2|M3 bank key was pressed
+	GK_LOG_FUNC
+
 	device._MBankKeyPressed = false;
 
 	try
