@@ -23,6 +23,7 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "lib/utils/utils.hpp"
@@ -46,7 +47,7 @@ c_str CONST_STRING_METHOD_REPLY_FAILURE	= " method reply failure : ";
 
 /* --- ---- --- */
 
-const std::string getMKeyName(const MKeysID keyID)
+std::string_view getMKeyName(const MKeysID keyID)
 {
 	static constexpr std::array<std::pair<MKeysID, const char*>, 4> MKeysID2str =
 	{
@@ -58,15 +59,18 @@ const std::string getMKeyName(const MKeysID keyID)
 		}
 	};
 
-	std::string MKey("invalid key");
+	std::string_view MKey = "invalid key";
 	for( const auto & [MKeyID, MKeyName] : MKeysID2str )
 		if(MKeyID == keyID)
+		{
 			MKey = MKeyName;
+			break;
+		}
 
 	return MKey;
 }
 
-const std::string getGKeyName(const GKeysID keyID)
+std::string_view getGKeyName(const GKeysID keyID)
 {
 	static constexpr std::array<std::pair<GKeysID, const char*>, 18> GKeysID2str =
 	{
@@ -92,10 +96,13 @@ const std::string getGKeyName(const GKeysID keyID)
 		}
 	};
 
-	std::string GKey("invalid key");
+	std::string_view GKey = "invalid key";
 	for( const auto & [GKeyID, GKeyName] : GKeysID2str )
 		if(GKeyID == keyID)
+		{
 			GKey = GKeyName;
+			break;
+		}
 
 	return GKey;
 }

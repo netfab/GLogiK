@@ -25,6 +25,7 @@
 #include <cstdint> // std::uint8_t
 
 #include <string>
+#include <string_view>
 
 #include "include/base.hpp"
 #include "include/DepsMap.hpp"
@@ -48,8 +49,8 @@ extern c_str CONST_STRING_METHOD_REPLY_FAILURE;
 
 /* --- ---- --- */
 
-const std::string getMKeyName(const MKeysID keyID);
-const std::string getGKeyName(const GKeysID keyID);
+std::string_view getMKeyName(const MKeysID keyID);
+std::string_view getGKeyName(const GKeysID keyID);
 
 void printVersionDeps(
 	const std::string & binaryVersion,

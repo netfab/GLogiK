@@ -21,6 +21,7 @@
 
 #include <new>
 #include <string>
+#include <string_view>
 
 #include <QColor>
 #include <QComboBox>
@@ -297,7 +298,8 @@ QPushButton* GKeysTab::newGKeyButton(
 {
 	GK_LOG_FUNC
 
-	const QString buttonText(getGKeyName(GKeyID).c_str());
+	std::string_view sv = getGKeyName(GKeyID);
+	const QString buttonText( QString::fromUtf8(sv.data(), static_cast<qsizetype>(sv.size())) );
 
 	QPushButton* button = new QPushButton(buttonText);
 
@@ -405,8 +407,10 @@ void GKeysTab::prepareCommandWidget(
 	_pCommandLineEdit->setClearButtonEnabled(true);
 	_pCommandLineEdit->setMaxLength(GKEY_COMMAND_LINE_STRING_MAX_LENGTH);
 
+	std::string_view sv = getGKeyName(GKeyID);
+
 	QString cmdLabel("Command to run when pressing ");
-	cmdLabel += getGKeyName(GKeyID).c_str();
+	cmdLabel += QString::fromUtf8(sv.data(), static_cast<qsizetype>(sv.size()));
 	cmdLabel += ": ";
 
 	_pInputsBoxBodyLayout->addWidget( new QLabel(cmdLabel) );
@@ -685,10 +689,11 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 			if(id == MKeysID::MKEY_M0)
 				continue; // skip virtual M0 key
 
-			const char* const m = getMKeyName(id).c_str();
-			QString name(m);
+			std::string_view sv = getMKeyName(id);
+			const QString name( QString::fromUtf8(sv.data(), static_cast<qsizetype>(sv.size())) );
+
 			hBox->addWidget( new_M_button( id, name ) );
-			GKLog2(trace, "allocated M-key bank button: ", m)
+			GKLog2(trace, "allocated M-key bank button: ", name.toStdString())
 		}
 
 		return hBox;
