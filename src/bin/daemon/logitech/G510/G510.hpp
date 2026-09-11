@@ -130,6 +130,12 @@ class LogitechG510
 			return G510Base::checkPressedAnyMxKey(device);
 		}
 
+		/* return true if MR key is enabled */
+		virtual const bool isDeviceMRKeyEnabled(USBDevice & device) override
+		{
+			return G510Base::isDeviceMRKeyEnabled(device);
+		}
+
 		void fillStandardKeysEvents(USBDevice & device) override
 		{
 			USBKeyboardDriver<USBAPI>::fillStandardKeysEvents(device);

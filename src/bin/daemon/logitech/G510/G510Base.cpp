@@ -222,6 +222,13 @@ const bool G510Base::checkPressedAnyMxKey(USBDevice & device)
 	return false;
 }
 
+/* return true if MR key is enabled */
+const bool G510Base::isDeviceMRKeyEnabled(USBDevice & device)
+{
+	/* is MR key enabled ? */
+	return ( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) );
+}
+
 /*
  * When pressing backlight key, 2 events are produced :
  *  - one double 5 bytes event : RKeys::GK_KEY_LIGHT

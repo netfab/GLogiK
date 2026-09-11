@@ -646,7 +646,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 
 #if GKDBUS
 							/* is MR key enabled ? */
-							if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) )
+							if( this->isDeviceMRKeyEnabled(device) )
 							{
 								this->enterMacroRecordMode(device);
 
@@ -695,7 +695,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 											<< getGKeyName(device._GKeyID);
 
 								/* is MR key enabled ? */
-								if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) )
+								if( this->isDeviceMRKeyEnabled(device) )
 								{
 									/* disabling MR key */
 									if(this->updateDeviceMxKeysLedsMask(device, true))

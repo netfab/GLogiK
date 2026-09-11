@@ -240,7 +240,8 @@ class KeyboardDriver
 		virtual const bool checkPressedAnyLCDKey(USBDevice & device) = 0;
 		/* return true if any Mx key was pressed */
 		virtual const bool checkPressedAnyMxKey(USBDevice & device) = 0;
-		//virtual const bool checkPressedMxKey(USBDevice & device, const RKeys key) = 0;
+		/* return true if MR key is enabled */
+		virtual const bool isDeviceMRKeyEnabled(USBDevice & device) = 0;
 
 	protected:
 		virtual void sendUSBDeviceInitialization(USBDevice & device);
