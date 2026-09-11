@@ -19,12 +19,11 @@
  *
  */
 
+#include <array>
 #include <iomanip>
 #include <sstream>
-#include <stdexcept>
-#include <map>
+#include <string>
 #include <utility>
-#include <vector>
 
 #include "lib/utils/utils.hpp"
 
@@ -46,32 +45,6 @@ c_str CONST_STRING_UNKNOWN_DEVICE		= "unknown device : ";
 c_str CONST_STRING_METHOD_CALL_FAILURE	= " method call failure : ";
 c_str CONST_STRING_METHOD_REPLY_FAILURE	= " method reply failure : ";
 
-/* M Keys */
-c_str M_KEY_M0	= "M0"; // virtual key
-c_str M_KEY_M1	= "M1";
-c_str M_KEY_M2	= "M2";
-c_str M_KEY_M3	= "M3";
-
-/* G Keys */
-c_str G_KEY_G1	= "G1";
-c_str G_KEY_G2	= "G2";
-c_str G_KEY_G3	= "G3";
-c_str G_KEY_G4	= "G4";
-c_str G_KEY_G5	= "G5";
-c_str G_KEY_G6	= "G6";
-c_str G_KEY_G7	= "G7";
-c_str G_KEY_G8	= "G8";
-c_str G_KEY_G9	= "G9";
-c_str G_KEY_G10 = "G10";
-c_str G_KEY_G11 = "G11";
-c_str G_KEY_G12 = "G12";
-c_str G_KEY_G13 = "G13";
-c_str G_KEY_G14 = "G14";
-c_str G_KEY_G15 = "G15";
-c_str G_KEY_G16 = "G16";
-c_str G_KEY_G17 = "G17";
-c_str G_KEY_G18 = "G18";
-
 /* LCD Keys */
 c_str LCD_KEY_L1 = "L1";
 c_str LCD_KEY_L2 = "L2";
@@ -81,65 +54,57 @@ c_str LCD_KEY_L5 = "L5";
 
 /* --- ---- --- */
 
-const std::map<MKeysID, c_str> MKeysNamesMap =
-{
-	{MKeysID::MKEY_M0, M_KEY_M0},
-	{MKeysID::MKEY_M1, M_KEY_M1},
-	{MKeysID::MKEY_M2, M_KEY_M2},
-	{MKeysID::MKEY_M3, M_KEY_M3},
-};
-
-const std::map<GKeysID, c_str> GKeysNamesMap =
-{
-	{ GKeysID::GKEY_G1, G_KEY_G1 },
-	{ GKeysID::GKEY_G2, G_KEY_G2 },
-	{ GKeysID::GKEY_G3, G_KEY_G3 },
-	{ GKeysID::GKEY_G4, G_KEY_G4 },
-	{ GKeysID::GKEY_G5, G_KEY_G5 },
-	{ GKeysID::GKEY_G6, G_KEY_G6 },
-	{ GKeysID::GKEY_G7, G_KEY_G7 },
-	{ GKeysID::GKEY_G8, G_KEY_G8 },
-	{ GKeysID::GKEY_G9, G_KEY_G9 },
-	{ GKeysID::GKEY_G10, G_KEY_G10 },
-	{ GKeysID::GKEY_G11, G_KEY_G11 },
-	{ GKeysID::GKEY_G12, G_KEY_G12 },
-	{ GKeysID::GKEY_G13, G_KEY_G13 },
-	{ GKeysID::GKEY_G14, G_KEY_G14 },
-	{ GKeysID::GKEY_G15, G_KEY_G15 },
-	{ GKeysID::GKEY_G16, G_KEY_G16 },
-	{ GKeysID::GKEY_G17, G_KEY_G17 },
-	{ GKeysID::GKEY_G18, G_KEY_G18 },
-};
-
 const std::string getMKeyName(const MKeysID keyID)
 {
-	using namespace NSGKUtils;
+	static constexpr std::array<std::pair<MKeysID, const char*>, 4> MKeysID2str =
+	{
+		{
+			{ MKeysID::MKEY_M0, "M0" }, // virtual key
+			{ MKeysID::MKEY_M1, "M1" },
+			{ MKeysID::MKEY_M2, "M2" },
+			{ MKeysID::MKEY_M3, "M3" },
+		}
+	};
 
 	std::string MKey("invalid key");
-	try
-	{
-		MKey = MKeysNamesMap.at(keyID);
-	}
-	catch (const std::out_of_range& oor)
-	{
-		LOG(error) << "invalid MKeysID: " << toEnumType(keyID);
-	}
+	for( const auto & [MKeyID, MKeyName] : MKeysID2str )
+		if(MKeyID == keyID)
+			MKey = MKeyName;
+
 	return MKey;
 }
 
 const std::string getGKeyName(const GKeysID keyID)
 {
-	using namespace NSGKUtils;
+	static constexpr std::array<std::pair<GKeysID, const char*>, 18> GKeysID2str =
+	{
+		{
+			{ GKeysID::GKEY_G1 , "G1"  },
+			{ GKeysID::GKEY_G2 , "G2"  },
+			{ GKeysID::GKEY_G3 , "G3"  },
+			{ GKeysID::GKEY_G4 , "G4"  },
+			{ GKeysID::GKEY_G5 , "G5"  },
+			{ GKeysID::GKEY_G6 , "G6"  },
+			{ GKeysID::GKEY_G7 , "G7"  },
+			{ GKeysID::GKEY_G8 , "G8"  },
+			{ GKeysID::GKEY_G9 , "G9"  },
+			{ GKeysID::GKEY_G10, "G10" },
+			{ GKeysID::GKEY_G11, "G11" },
+			{ GKeysID::GKEY_G12, "G12" },
+			{ GKeysID::GKEY_G13, "G13" },
+			{ GKeysID::GKEY_G14, "G14" },
+			{ GKeysID::GKEY_G15, "G15" },
+			{ GKeysID::GKEY_G16, "G16" },
+			{ GKeysID::GKEY_G17, "G17" },
+			{ GKeysID::GKEY_G18, "G18" },
+		}
+	};
 
 	std::string GKey("invalid key");
-	try
-	{
-		GKey = GKeysNamesMap.at(keyID);
-	}
-	catch (const std::out_of_range& oor)
-	{
-		LOG(error) << "invalid GKeysID: " << toEnumType(keyID);
-	}
+	for( const auto & [GKeyID, GKeyName] : GKeysID2str )
+		if(GKeyID == keyID)
+			GKey = GKeyName;
+
 	return GKey;
 }
 
