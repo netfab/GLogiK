@@ -170,6 +170,14 @@ namespace detail
 		P{ RKeys::GK_KEY_G18, GKeysID::GKEY_G18 },
 	};
 
+	using P2 = std::pair<RKeys, MKeysID>;
+
+	inline constexpr std::array RKeys2MKeysIDMap
+	{
+		P2{ RKeys::GK_KEY_M1, MKeysID::MKEY_M1 },
+		P2{ RKeys::GK_KEY_M2, MKeysID::MKEY_M2 },
+		P2{ RKeys::GK_KEY_M3, MKeysID::MKEY_M3 },
+	};
 
 } // namespace detail
 

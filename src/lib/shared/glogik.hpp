@@ -85,10 +85,8 @@ extern c_str LCD_KEY_L5;
 /* --- ---- --- */
 
 extern const std::map<GKeysID, c_str> GKeysNamesMap;
-extern const std::map<RKeys, MKeysID> keys2MKeysIDMap;
 
 const std::string getGKeyName(const GKeysID keyID);
-const MKeysID getMKeyID(const RKeys key);
 
 void printVersionDeps(
 	const std::string & binaryVersion,

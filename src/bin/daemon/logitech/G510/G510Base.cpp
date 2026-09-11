@@ -19,7 +19,6 @@
  *
  */
 
-#include <stdexcept>
 #include <new>
 #include <algorithm>
 #include <mutex>
@@ -114,19 +113,10 @@ const MKeysIDArray_type G510Base::getMKeysIDArray(void) const
 
 	try
 	{
-		ret.reserve(detail::MKeys5BytesMap.size());
+		ret.reserve(detail::RKeys2MKeysIDMap.size());
 
-		for(const auto & key : detail::MKeys5BytesMap)
-		{
-			try
-			{
-				ret.push_back(getMKeyID(key.key));
-			}
-			catch(const std::out_of_range& oor)
-			{
-				GKSysLogWarning("invalid key for MKeysID");
-			}
-		}
+		for (const auto & [RKey, MKeyID] : detail::RKeys2MKeysIDMap)
+			ret.push_back(MKeyID);
 	}
 	catch( const std::length_error & e )
 	{

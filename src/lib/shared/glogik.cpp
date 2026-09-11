@@ -103,13 +103,6 @@ const std::map<GKeysID, c_str> GKeysNamesMap =
 	{ GKeysID::GKEY_G18, G_KEY_G18 },
 };
 
-const std::map<RKeys, MKeysID> keys2MKeysIDMap =
-{
-	{ RKeys::GK_KEY_M1, MKeysID::MKEY_M1 },
-	{ RKeys::GK_KEY_M2, MKeysID::MKEY_M2 },
-	{ RKeys::GK_KEY_M3, MKeysID::MKEY_M3 },
-};
-
 const std::string getGKeyName(const GKeysID keyID)
 {
 	using namespace NSGKUtils;
@@ -124,11 +117,6 @@ const std::string getGKeyName(const GKeysID keyID)
 		LOG(error) << "invalid GKeysID: " << toEnumType(keyID);
 	}
 	return GKey;
-}
-
-const MKeysID getMKeyID(const RKeys key)
-{
-	return keys2MKeysIDMap.at(key);
 }
 
 void printVersionDeps(
