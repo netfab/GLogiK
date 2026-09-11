@@ -136,8 +136,6 @@ class GKeysTab
 			const MKeysID bankID
 		);
 		void redrawTab(const DeviceProperties & device);
-
-		static const std::map<const MKeysID, c_str> bankNames;
 };
 
 } // namespace GLogiK

@@ -40,14 +40,6 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-const std::map<const MKeysID, c_str> GKeysTab::bankNames =
-{
-	{MKeysID::MKEY_M0, M_KEY_M0},
-	{MKeysID::MKEY_M1, M_KEY_M1},
-	{MKeysID::MKEY_M2, M_KEY_M2},
-	{MKeysID::MKEY_M3, M_KEY_M3},
-};
-
 GKeysTab::GKeysTab(
 	NSGKDBus::GKDBus* pDBus,
 	const QString & name)
@@ -688,21 +680,15 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 		hBox->setObjectName( next_layout_name() );
 		GKLog2(trace, "allocated QHBoxLayout ", hBox->objectName().toStdString())
 
-		try
+		for(const auto & id : banks)
 		{
-			for(const auto & id : banks)
-			{
-				if(id == MKeysID::MKEY_M0)
-					continue; // skip virtual M0 key
+			if(id == MKeysID::MKEY_M0)
+				continue; // skip virtual M0 key
 
-				auto n = bankNames.at(id);
-				hBox->addWidget( new_M_button( id, n ) );
-				GKLog2(trace, "allocated M-key bank button: ", n)
-			}
-		}
-		catch (const std::out_of_range& oor)
-		{
-			throw GLogiKExcept("new_banks_layout: id not found");
+			const char* const m = getMKeyName(id).c_str();
+			QString name(m);
+			hBox->addWidget( new_M_button( id, name ) );
+			GKLog2(trace, "allocated M-key bank button: ", m)
 		}
 
 		return hBox;

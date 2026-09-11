@@ -81,6 +81,14 @@ c_str LCD_KEY_L5 = "L5";
 
 /* --- ---- --- */
 
+const std::map<MKeysID, c_str> MKeysNamesMap =
+{
+	{MKeysID::MKEY_M0, M_KEY_M0},
+	{MKeysID::MKEY_M1, M_KEY_M1},
+	{MKeysID::MKEY_M2, M_KEY_M2},
+	{MKeysID::MKEY_M3, M_KEY_M3},
+};
+
 const std::map<GKeysID, c_str> GKeysNamesMap =
 {
 	{ GKeysID::GKEY_G1, G_KEY_G1 },
@@ -103,11 +111,27 @@ const std::map<GKeysID, c_str> GKeysNamesMap =
 	{ GKeysID::GKEY_G18, G_KEY_G18 },
 };
 
+const std::string getMKeyName(const MKeysID keyID)
+{
+	using namespace NSGKUtils;
+
+	std::string MKey("invalid key");
+	try
+	{
+		MKey = MKeysNamesMap.at(keyID);
+	}
+	catch (const std::out_of_range& oor)
+	{
+		LOG(error) << "invalid MKeysID: " << toEnumType(keyID);
+	}
+	return MKey;
+}
+
 const std::string getGKeyName(const GKeysID keyID)
 {
 	using namespace NSGKUtils;
 
-	std::string GKey("G0");
+	std::string GKey("invalid key");
 	try
 	{
 		GKey = GKeysNamesMap.at(keyID);
