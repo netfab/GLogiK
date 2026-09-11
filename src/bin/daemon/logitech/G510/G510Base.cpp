@@ -26,8 +26,6 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
-#include "include/RKeys.hpp"
-
 #include "G510Base.hpp"
 #include "G510Detail.hpp"
 
@@ -204,7 +202,7 @@ const bool G510Base::checkDevicePressedAnyLCDKey(USBDevice & device)
 const bool G510Base::checkDevicePressedAnyMxKey(USBDevice & device)
 {
 	// MR and M1,M2,M3 keys are not in the same containers
-	if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_MR) )
+	if( device._pressedRKeysMask & toEnumType(detail::RKeys::GK_KEY_MR) )
 		return true;
 	for( const auto & key : detail::MKeys5BytesMap )
 		if( device._pressedRKeysMask & toEnumType(key.key) )
@@ -221,7 +219,7 @@ const bool G510Base::isDeviceMRKeyEnabled(USBDevice & device)
 
 /*
  * When pressing backlight key, 2 events are produced :
- *  - one double 5 bytes event : RKeys::GK_KEY_LIGHT
+ *  - one double 5 bytes event : detail::RKeys::GK_KEY_LIGHT
  *  - one 2 bytes event with first byte equal to 0x04
  */
 void G510Base::processDeviceKeyEvent2Bytes(USBDevice & device)
@@ -497,17 +495,17 @@ const bool G510Base::updateDeviceMxKeysLedsMask(USBDevice & device, bool disable
 	};
 
 	/* M1 key was pressed */
-	if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M1) )
+	if( device._pressedRKeysMask & toEnumType(detail::RKeys::GK_KEY_M1) )
 		update_MxKey_mask(Leds::GK_LED_M1, MKeysID::MKEY_M1);
 	/* M2 key was pressed */
-	else if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M2) )
+	else if( device._pressedRKeysMask & toEnumType(detail::RKeys::GK_KEY_M2) )
 		update_MxKey_mask(Leds::GK_LED_M2, MKeysID::MKEY_M2);
 	/* M3 key was pressed */
-	else if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_M3) )
+	else if( device._pressedRKeysMask & toEnumType(detail::RKeys::GK_KEY_M3) )
 		update_MxKey_mask(Leds::GK_LED_M3, MKeysID::MKEY_M3);
 
 	/* MR key was pressed */
-	if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_MR) )
+	if( device._pressedRKeysMask & toEnumType(detail::RKeys::GK_KEY_MR) )
 	{
 		if(! MR_ON)
 		{ /* MR was off, enable it */

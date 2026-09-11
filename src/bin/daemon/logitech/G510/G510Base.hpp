@@ -33,7 +33,6 @@
 #include "src/bin/daemon/USBDevice.hpp"
 
 #include "include/base.hpp"
-#include "include/RKeys.hpp"
 
 namespace GLogiK
 {
@@ -85,7 +84,6 @@ class G510Base
 		);
 
 	private:
-		static const std::map<RKeys, GKeysID>  RKeys2GKeysIDMap;
 		static const std::vector<USBDeviceID> knownDevices;
 
 		void processDeviceKeyEvent2Bytes(USBDevice & device);

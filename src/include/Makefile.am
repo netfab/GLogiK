@@ -5,5 +5,4 @@ EXTRA_DIST = \
 	%D%/DeviceID.hpp \
 	%D%/enums.hpp \
 	%D%/LCDPP.hpp \
-	%D%/MBank.hpp \
-	%D%/RKeys.hpp
+	%D%/MBank.hpp

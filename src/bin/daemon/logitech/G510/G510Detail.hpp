@@ -27,7 +27,6 @@
 #include <string_view>
 
 #include "include/enums.hpp"
-#include "include/RKeys.hpp"
 
 namespace GLogiK
 {
@@ -37,6 +36,57 @@ namespace D_G510
 
 namespace detail
 {
+	constexpr std::uint16_t G510_DRIVER_ID = ( 1u << 0 );
+	constexpr char G510_VENDOR[] = "Logitech";
+	constexpr char G510_VENDOR_ID[] = "046d";
+	constexpr std::uint64_t bit = 1;
+
+	enum class RKeys : std::uint64_t
+	{ // Recognized Keys
+		GK_KEY_G1	= bit << 0,
+		GK_KEY_G2	= bit << 1,
+		GK_KEY_G3	= bit << 2,
+		GK_KEY_G4	= bit << 3,
+		GK_KEY_G5	= bit << 4,
+		GK_KEY_G6	= bit << 5,
+		GK_KEY_G7	= bit << 6,
+		GK_KEY_G8	= bit << 7,
+
+		GK_KEY_G9	= bit << 8,
+		GK_KEY_G10	= bit << 9,
+		GK_KEY_G11	= bit << 10,
+		GK_KEY_G12	= bit << 11,
+		GK_KEY_G13	= bit << 12,
+		GK_KEY_G14	= bit << 13,
+		GK_KEY_G15	= bit << 14,
+		GK_KEY_G16	= bit << 15,
+
+		GK_KEY_G17	= bit << 16,
+		GK_KEY_G18	= bit << 17,
+
+	GK_KEY_LIGHT	= bit << 18,
+		GK_KEY_M1	= bit << 19,
+		GK_KEY_M2	= bit << 20,
+		GK_KEY_M3	= bit << 21,
+		GK_KEY_MR	= bit << 22,
+
+		GK_KEY_L1	= bit << 23,
+		GK_KEY_L2	= bit << 24,
+		GK_KEY_L3	= bit << 25,
+		GK_KEY_L4	= bit << 26,
+		GK_KEY_L5	= bit << 27,
+
+			GK_KEY_MUTE_HEADPHONES	= bit << 28,
+				GK_KEY_MUTE_MICRO	= bit << 29,
+
+				GK_KEY_AUDIO_NEXT	= bit << 30,
+				GK_KEY_AUDIO_PREV	= bit << 31,
+				GK_KEY_AUDIO_STOP	= bit << 32,
+				GK_KEY_AUDIO_PLAY	= bit << 33,
+				GK_KEY_AUDIO_MUTE	= bit << 34,
+		GK_KEY_AUDIO_RAISE_VOLUME	= bit << 35,
+		GK_KEY_AUDIO_LOWER_VOLUME	= bit << 36,
+	};
 
 	/* RKey - Recognized Keys */
 	struct RKey
@@ -66,10 +116,6 @@ namespace detail
 		const Leds led;
 		const unsigned char mask;
 	};
-
-	constexpr std::uint16_t G510_DRIVER_ID = ( 1u << 0 );
-	constexpr char G510_VENDOR[] = "Logitech";
-	constexpr char G510_VENDOR_ID[] = "046d";
 
 	using R = RKey;
 
