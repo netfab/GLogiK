@@ -166,7 +166,7 @@ const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 }
 
 /* return true if any G-Key (G1-G18) was pressed  */
-const bool G510Base::checkPressedAnyGKey(USBDevice & device)
+const bool G510Base::checkDevicePressedAnyGKey(USBDevice & device)
 {
 	GK_LOG_FUNC
 
@@ -182,7 +182,7 @@ const bool G510Base::checkPressedAnyGKey(USBDevice & device)
 }
 
 /* return true if any media key was pressed */
-const bool G510Base::checkPressedAnyMediaKey(USBDevice & device)
+const bool G510Base::checkDevicePressedAnyMediaKey(USBDevice & device)
 {
 	for( const auto & key : detail::mediaKeys2BytesMap )
 	{
@@ -196,7 +196,7 @@ const bool G510Base::checkPressedAnyMediaKey(USBDevice & device)
 }
 
 /* return true if any LCD key was pressed */
-const bool G510Base::checkPressedAnyLCDKey(USBDevice & device)
+const bool G510Base::checkDevicePressedAnyLCDKey(USBDevice & device)
 {
 	for( const auto & key : detail::LCDKeys5BytesMap )
 	{
@@ -211,7 +211,7 @@ const bool G510Base::checkPressedAnyLCDKey(USBDevice & device)
 }
 
 /* return true if any Mx key was pressed */
-const bool G510Base::checkPressedAnyMxKey(USBDevice & device)
+const bool G510Base::checkDevicePressedAnyMxKey(USBDevice & device)
 {
 	// MR and M1,M2,M3 keys are not in the same containers
 	if( device._pressedRKeysMask & toEnumType(RKeys::GK_KEY_MR) )
@@ -234,7 +234,7 @@ const bool G510Base::isDeviceMRKeyEnabled(USBDevice & device)
  *  - one double 5 bytes event : RKeys::GK_KEY_LIGHT
  *  - one 2 bytes event with first byte equal to 0x04
  */
-void G510Base::processKeyEvent2Bytes(USBDevice & device)
+void G510Base::processDeviceKeyEvent2Bytes(USBDevice & device)
 {
 	GK_LOG_FUNC
 
@@ -291,7 +291,7 @@ void G510Base::processKeyEvent2Bytes(USBDevice & device)
 	}
 }
 
-void G510Base::processKeyEvent5Bytes(USBDevice & device)
+void G510Base::processDeviceKeyEvent5Bytes(USBDevice & device)
 {
 	GK_LOG_FUNC
 
@@ -329,7 +329,7 @@ void G510Base::processKeyEvent5Bytes(USBDevice & device)
 	}
 }
 
-void G510Base::processKeyEvent8Bytes(USBDevice & device)
+void G510Base::processDeviceKeyEvent8Bytes(USBDevice & device)
 {
 	GK_LOG_FUNC
 
@@ -339,10 +339,10 @@ void G510Base::processKeyEvent8Bytes(USBDevice & device)
 		return;
 	}
 
-	this->fillStandardKeysEvents(device);
+	this->fillDeviceStandardKeysEvents(device);
 }
 
-KeyStatus G510Base::processKeyEvent(USBDevice & device)
+KeyStatus G510Base::processDeviceKeyEvent(USBDevice & device)
 {
 	GK_LOG_FUNC
 
@@ -354,14 +354,14 @@ KeyStatus G510Base::processKeyEvent(USBDevice & device)
 #if DEBUGGING_ON && DEBUG_KEYS
 			GKLog3(trace, device.getID(), " 2 bytes : ", this->getBytes(device))
 #endif
-			this->processKeyEvent2Bytes(device);
+			this->processDeviceKeyEvent2Bytes(device);
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 5:
 #if DEBUGGING_ON && DEBUG_KEYS
 			GKLog3(trace, device.getID(), " 5 bytes : ", this->getBytes(device))
 #endif
-			this->processKeyEvent5Bytes(device);
+			this->processDeviceKeyEvent5Bytes(device);
 			if( device._pressedRKeysMask == 0 ) /* skip release key events */
 				return KeyStatus::S_KEY_SKIPPED;
 			return KeyStatus::S_KEY_PROCESSED;
@@ -374,7 +374,7 @@ KeyStatus G510Base::processKeyEvent(USBDevice & device)
 				GKLog3(trace, device.getID(), " 8 bytes : ", this->getBytes(device))
 #endif
 				/* process standard key event */
-				this->processKeyEvent8Bytes(device);
+				this->processDeviceKeyEvent8Bytes(device);
 				std::copy(
 						std::begin(device._pressedKeys), std::end(device._pressedKeys),
 						std::begin(device._previousPressedKeys));

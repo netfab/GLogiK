@@ -56,17 +56,17 @@ class G510Base
 		const GKeysIDArray_type getGKeysIDArray(void) const;
 
 		/* return true if any G-Key (G1-G18) was pressed  */
-		virtual const bool checkPressedAnyGKey(USBDevice & device);
+		virtual const bool checkDevicePressedAnyGKey(USBDevice & device);
 		/* return true if any media key was pressed */
-		virtual const bool checkPressedAnyMediaKey(USBDevice & device);
+		virtual const bool checkDevicePressedAnyMediaKey(USBDevice & device);
 		/* return true if any LCD key was pressed */
-		virtual const bool checkPressedAnyLCDKey(USBDevice & device);
+		virtual const bool checkDevicePressedAnyLCDKey(USBDevice & device);
 		/* return true if any Mx key was pressed */
-		virtual const bool checkPressedAnyMxKey(USBDevice & device);
+		virtual const bool checkDevicePressedAnyMxKey(USBDevice & device);
 		/* return true if MR key is enabled */
 		virtual const bool isDeviceMRKeyEnabled(USBDevice & device);
 
-		virtual KeyStatus processKeyEvent(USBDevice & device);
+		virtual KeyStatus processDeviceKeyEvent(USBDevice & device);
 
 		virtual void sendUSBDeviceInitialization(USBDevice & device);
 
@@ -88,9 +88,9 @@ class G510Base
 		static const std::map<RKeys, GKeysID>  RKeys2GKeysIDMap;
 		static const std::vector<USBDeviceID> knownDevices;
 
-		void processKeyEvent2Bytes(USBDevice & device);
-		void processKeyEvent5Bytes(USBDevice & device);
-		void processKeyEvent8Bytes(USBDevice & device);
+		void processDeviceKeyEvent2Bytes(USBDevice & device);
+		void processDeviceKeyEvent5Bytes(USBDevice & device);
+		void processDeviceKeyEvent8Bytes(USBDevice & device);
 
 		virtual void sendUSBDeviceFeatureReport(
 			USBDevice & device,
@@ -98,10 +98,10 @@ class G510Base
 			std::uint16_t wLength
 		) = 0;
 
-		virtual void fillStandardKeysEvents(USBDevice & device) = 0;
+		virtual void fillDeviceStandardKeysEvents(USBDevice & device) = 0;
 
 #if DEBUGGING_ON && DEBUG_KEYS
-		virtual const std::string getBytes(const USBDevice & device) const = 0;
+		virtual const std::string getDeviceBytes(const USBDevice & device) const = 0;
 #endif
 
 };

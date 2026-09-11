@@ -107,27 +107,27 @@ class LogitechG510
 		}
 
 		/* return true if any G-Key (G1-G18) was pressed  */
-		const bool checkPressedAnyGKey(USBDevice & device) override
+		const bool checkDevicePressedAnyGKey(USBDevice & device) override
 		{
-			return G510Base::checkPressedAnyGKey(device);
+			return G510Base::checkDevicePressedAnyGKey(device);
 		}
 
 		/* return true if any media key was pressed */
-		const bool checkPressedAnyMediaKey(USBDevice & device) override
+		const bool checkDevicePressedAnyMediaKey(USBDevice & device) override
 		{
-			return G510Base::checkPressedAnyMediaKey(device);
+			return G510Base::checkDevicePressedAnyMediaKey(device);
 		}
 
 		/* return true if any LCD key was pressed */
-		const bool checkPressedAnyLCDKey(USBDevice & device) override
+		const bool checkDevicePressedAnyLCDKey(USBDevice & device) override
 		{
-			return G510Base::checkPressedAnyLCDKey(device);
+			return G510Base::checkDevicePressedAnyLCDKey(device);
 		}
 
 		/* return true if any Mx key was pressed */
-		virtual const bool checkPressedAnyMxKey(USBDevice & device) override
+		virtual const bool checkDevicePressedAnyMxKey(USBDevice & device) override
 		{
-			return G510Base::checkPressedAnyMxKey(device);
+			return G510Base::checkDevicePressedAnyMxKey(device);
 		}
 
 		/* return true if MR key is enabled */
@@ -136,20 +136,20 @@ class LogitechG510
 			return G510Base::isDeviceMRKeyEnabled(device);
 		}
 
-		void fillStandardKeysEvents(USBDevice & device) override
+		void fillDeviceStandardKeysEvents(USBDevice & device) override
 		{
-			USBKeyboardDriver<USBAPI>::fillStandardKeysEvents(device);
+			USBKeyboardDriver<USBAPI>::fillDeviceStandardKeysEvents(device);
 		}
 
-		KeyStatus processKeyEvent(USBDevice & device) override
+		KeyStatus processDeviceKeyEvent(USBDevice & device) override
 		{
-			return G510Base::processKeyEvent(device);
+			return G510Base::processDeviceKeyEvent(device);
 		}
 
 #if DEBUGGING_ON && DEBUG_KEYS
-		const std::string getBytes(const USBDevice & device) const override
+		const std::string getDeviceBytes(const USBDevice & device) const override
 		{
-			return USBKeyboardDriver<USBAPI>::getBytes(device);
+			return USBKeyboardDriver<USBAPI>::getDeviceBytes(device);
 		}
 #endif
 

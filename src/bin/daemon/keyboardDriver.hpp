@@ -157,10 +157,10 @@ class KeyboardDriver
 		std::map<std::string, USBDevice> _initializedDevices;
 
 #if DEBUGGING_ON && DEBUG_KEYS
-		const std::string getBytes(const USBDevice & device) const;
+		const std::string getDeviceBytes(const USBDevice & device) const;
 #endif
 
-		void fillStandardKeysEvents(USBDevice & device);
+		void fillDeviceStandardKeysEvents(USBDevice & device);
 
 	private:
 #if GKDBUS
@@ -187,7 +187,7 @@ class KeyboardDriver
 		static const std::vector< ModifierKey > modifierKeys;
 
 #if GKDBUS
-		void enterMacroRecordMode(USBDevice & device);
+		void enterDeviceMacroRecordMode(USBDevice & device);
 		void sendDeviceMBankSwitchSignal(USBDevice & device);
 #endif
 
@@ -197,15 +197,15 @@ class KeyboardDriver
 		/* internal */
 		void notImplemented(const char* func) const;
 
-		KeyStatus getPressedKeys(USBDevice & device);
+		KeyStatus getDevicePressedKeys(USBDevice & device);
 
 		void setDeviceLCDPluginsMask(
 			USBDevice & device,
 			std::uint64_t mask = 0
 		);
 
-		std::uint16_t getTimeLapse(USBDevice & device);
-		const std::uint8_t handleModifierKeys(
+		std::uint16_t getDeviceTimeLapse(USBDevice & device);
+		const std::uint8_t handleDeviceModifierKeys(
 			USBDevice & device,
 			const std::uint16_t interval
 		);
@@ -220,7 +220,7 @@ class KeyboardDriver
 		/* --- */
 
 		/* driver instantiation */
-		virtual KeyStatus processKeyEvent(USBDevice & device) = 0;
+		virtual KeyStatus processDeviceKeyEvent(USBDevice & device) = 0;
 		virtual void setDeviceMxKeysLeds(USBDevice & device);
 		virtual void setDeviceBacklightColor(
 			USBDevice & device,
@@ -233,13 +233,13 @@ class KeyboardDriver
 			bool disableMR=false
 		);
 		/* return true if any G-Key was pressed  */
-		virtual const bool checkPressedAnyGKey(USBDevice & device) = 0;
+		virtual const bool checkDevicePressedAnyGKey(USBDevice & device) = 0;
 		/* return true if any media key was pressed */
-		virtual const bool checkPressedAnyMediaKey(USBDevice & device) = 0;
+		virtual const bool checkDevicePressedAnyMediaKey(USBDevice & device) = 0;
 		/* return true if any LCD key was pressed */
-		virtual const bool checkPressedAnyLCDKey(USBDevice & device) = 0;
+		virtual const bool checkDevicePressedAnyLCDKey(USBDevice & device) = 0;
 		/* return true if any Mx key was pressed */
-		virtual const bool checkPressedAnyMxKey(USBDevice & device) = 0;
+		virtual const bool checkDevicePressedAnyMxKey(USBDevice & device) = 0;
 		/* return true if MR key is enabled */
 		virtual const bool isDeviceMRKeyEnabled(USBDevice & device) = 0;
 

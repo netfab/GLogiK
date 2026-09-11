@@ -69,7 +69,7 @@ void KeyboardDriver::setDBus(NSGKDBus::GKDBus* pDBus)
 #endif
 
 #if DEBUGGING_ON && DEBUG_KEYS
-const std::string KeyboardDriver::getBytes(const USBDevice & device) const
+const std::string KeyboardDriver::getDeviceBytes(const USBDevice & device) const
 {
 	const unsigned int last_length = toUInt(device.getLastKeysInterruptTransferLength());
 	if( last_length == 0 )
@@ -88,7 +88,7 @@ const bool KeyboardDriver::checkDeviceCapability(const USBDeviceID & device, Cap
 	return (device.getCapabilities() & toEnumType(toCheck));
 }
 
-KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device)
+KeyStatus KeyboardDriver::getDevicePressedKeys(USBDevice & device)
 {
 	GK_LOG_FUNC
 
@@ -110,7 +110,7 @@ KeyStatus KeyboardDriver::getPressedKeys(USBDevice & device)
 								<< " xBuf[0]: " << std::hex << toUInt(device._pressedKeys[0]);
 				}
 #endif
-				return this->processKeyEvent(device);
+				return this->processDeviceKeyEvent(device);
 			}
 			break;
 		case toEnumType(USBAPIKeysTransferStatus::TRANSFER_TIMEOUT):
@@ -164,7 +164,7 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(
 }
 
 
-const std::uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const std::uint16_t interval)
+const std::uint8_t KeyboardDriver::handleDeviceModifierKeys(USBDevice & device, const std::uint16_t interval)
 {
 	GK_LOG_FUNC
 
@@ -250,7 +250,7 @@ const std::uint8_t KeyboardDriver::handleModifierKeys(USBDevice & device, const 
 }
 
 /* used to create macros */
-std::uint16_t KeyboardDriver::getTimeLapse(USBDevice & device)
+std::uint16_t KeyboardDriver::getDeviceTimeLapse(USBDevice & device)
 {
 	namespace chr = std::chrono;
 	chr::steady_clock::time_point now = chr::steady_clock::now();
@@ -259,15 +259,15 @@ std::uint16_t KeyboardDriver::getTimeLapse(USBDevice & device)
 	return (ms.count() % 1000); /* max 1 second TODO */
 }
 
-void KeyboardDriver::fillStandardKeysEvents(USBDevice & device)
+void KeyboardDriver::fillDeviceStandardKeysEvents(USBDevice & device)
 {
 	GK_LOG_FUNC
 
 	unsigned int i = 0;
 
-	std::uint16_t interval = this->getTimeLapse(device);
+	std::uint16_t interval = this->getDeviceTimeLapse(device);
 
-	const std::uint8_t num = this->handleModifierKeys(device, interval);
+	const std::uint8_t num = this->handleDeviceModifierKeys(device, interval);
 
 	if( num > 0 )
 	{
@@ -362,7 +362,7 @@ void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device, const std::strin
 
 #if GKDBUS
 
-void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
+void KeyboardDriver::enterDeviceMacroRecordMode(USBDevice & device)
 {
 	GK_LOG_FUNC
 
@@ -392,21 +392,21 @@ void KeyboardDriver::enterMacroRecordMode(USBDevice & device)
 		if( ! device.getThreadsStatus() )
 			break;
 
-		KeyStatus ret = this->getPressedKeys(device);
+		KeyStatus ret = this->getDevicePressedKeys(device);
 
 		switch( ret )
 		{
 			case KeyStatus::S_KEY_PROCESSED:
 			{
 				/* did we press one Mx key ? */
-				if( this->checkPressedAnyMxKey(device) )
+				if( this->checkDevicePressedAnyMxKey(device) )
 				{
 					/* exiting macro record mode */
 					exit = true;
 					continue;
 				}
 
-				if( ! this->checkPressedAnyGKey(device) )
+				if( ! this->checkDevicePressedAnyGKey(device) )
 				{
 					/* continue to store standard key events
 					 * while a G-Key is not pressed */
@@ -622,7 +622,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 			if( ! device.getThreadsStatus() )
 				break;
 
-			KeyStatus ret = this->getPressedKeys(device);
+			KeyStatus ret = this->getDevicePressedKeys(device);
 			switch( ret )
 			{
 				case KeyStatus::S_KEY_PROCESSED:
@@ -648,7 +648,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 							/* is MR key enabled ? */
 							if( this->isDeviceMRKeyEnabled(device) )
 							{
-								this->enterMacroRecordMode(device);
+								this->enterDeviceMacroRecordMode(device);
 
 								/* don't need to update leds status if the mask is already 0 */
 								if(device._MxKeysLedsMask != 0)
@@ -660,7 +660,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 							}
 							else
 							{ /* check to trigger G-Key event */
-								if( this->checkPressedAnyGKey(device) )
+								if( this->checkDevicePressedAnyGKey(device) )
 								{
 									try
 									{
@@ -689,7 +689,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 								}
 							}
 #else
-							if( this->checkPressedAnyGKey(device) )
+							if( this->checkDevicePressedAnyGKey(device) )
 							{ /* G-Key pressed */
 								LOG(trace)	<< device.getID() << " G-Key pressed: "
 											<< getGKeyName(device._GKeyID);
@@ -711,7 +711,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 						if( device.getLastKeysInterruptTransferLength() ==
 							device.getMediaKeysTransferLength() )
 						{
-							if( this->checkPressedAnyMediaKey(device) )
+							if( this->checkDevicePressedAnyMediaKey(device) )
 							{
 								LOG(trace)	<< device.getID() << " media key pressed: "
 											<< device._mediaKey;
@@ -749,7 +749,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 						if( device.getLastKeysInterruptTransferLength() ==
 							device.getLCDKeysTransferLength() )
 						{
-							if( this->checkPressedAnyLCDKey(device) )
+							if( this->checkDevicePressedAnyLCDKey(device) )
 							{
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
 								std::lock_guard<std::mutex> lock(device._LCDMutex);
