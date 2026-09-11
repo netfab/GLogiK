@@ -32,8 +32,6 @@
 namespace GLogiK
 {
 
-enum class RKeys : std::uint64_t;
-
 typedef const char* const c_str;
 
 extern c_str GLOGIK_DAEMON_NAME;
@@ -47,13 +45,6 @@ extern c_str CONST_STRING_UNKNOWN_CLIENT;
 extern c_str CONST_STRING_UNKNOWN_DEVICE;
 extern c_str CONST_STRING_METHOD_CALL_FAILURE;
 extern c_str CONST_STRING_METHOD_REPLY_FAILURE;
-
-/* LCD Keys */
-extern c_str LCD_KEY_L1;
-extern c_str LCD_KEY_L2;
-extern c_str LCD_KEY_L3;
-extern c_str LCD_KEY_L4;
-extern c_str LCD_KEY_L5;
 
 /* --- ---- --- */
 

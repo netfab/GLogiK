@@ -210,7 +210,7 @@ const PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 				_frameCounter++;
 
 				/* pressed locking key ? */
-				if(LCDKey == LCD_KEY_L2)
+				if(LCDKey == "L2")
 				{
 					_currentPluginLocked = ! (_currentPluginLocked);
 #if DEBUGGING_ON

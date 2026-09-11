@@ -27,7 +27,6 @@
 
 #include "lib/utils/utils.hpp"
 
-#include "include/RKeys.hpp"
 #include "glogik.hpp"
 
 namespace GLogiK
@@ -44,13 +43,6 @@ c_str CONST_STRING_UNKNOWN_CLIENT		= "unknown client : ";
 c_str CONST_STRING_UNKNOWN_DEVICE		= "unknown device : ";
 c_str CONST_STRING_METHOD_CALL_FAILURE	= " method call failure : ";
 c_str CONST_STRING_METHOD_REPLY_FAILURE	= " method reply failure : ";
-
-/* LCD Keys */
-c_str LCD_KEY_L1 = "L1";
-c_str LCD_KEY_L2 = "L2";
-c_str LCD_KEY_L3 = "L3";
-c_str LCD_KEY_L4 = "L4";
-c_str LCD_KEY_L5 = "L5";
 
 /* --- ---- --- */
 

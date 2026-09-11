@@ -240,7 +240,7 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 		NetSnapshots n;
 
 		/* pressed L5, switching network direction */
-		if(LCDKey == LCD_KEY_L5)
+		if(LCDKey == "L5")
 		{
 			if(_currentRate == NetDirection::NET_RX)
 			{
