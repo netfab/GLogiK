@@ -32,7 +32,7 @@
 #define LogRemoteCallGetReplyFailure \
 	LOG(error) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 class SleepInhibition
@@ -62,6 +62,6 @@ class SleepInhibition
 		void releaseDelayLock(void);
 };
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif

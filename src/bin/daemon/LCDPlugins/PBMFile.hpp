@@ -29,7 +29,7 @@
 
 #include "PBM.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 class PBMFile
@@ -64,6 +64,6 @@ class PBMFile
 
 };
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif

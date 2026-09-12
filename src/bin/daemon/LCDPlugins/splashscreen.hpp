@@ -26,7 +26,7 @@
 
 #include "LCDPlugin.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 class Splashscreen
@@ -47,6 +47,6 @@ class Splashscreen
 
 };
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif

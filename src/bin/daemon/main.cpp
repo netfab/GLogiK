@@ -22,7 +22,7 @@
 #include "lib/utils/utils.hpp"
 #include "daemon.hpp"
 
-using namespace GLogiK;
+using namespace GLogiK::daemon;
 
 int main(int argc, char *argv[])
 {

@@ -34,7 +34,7 @@
 
 #include "include/base.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 class Client
@@ -95,6 +95,6 @@ class Client
 		);
 };
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif

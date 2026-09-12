@@ -30,7 +30,7 @@
 #include "PBMFont.hpp"
 #include "fonts.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 class FontsManager
@@ -62,7 +62,7 @@ class FontsManager
 		void initializeFont(const FontID fontID);
 };
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif
 

@@ -35,21 +35,20 @@
 #include "lib/shared/glogik.hpp"
 
 #include "devicesManager.hpp"
+#include "LCDScreenPluginsManager.hpp"
 
 #include "daemonControl.hpp"
-#include "logitech/G510/G510.hpp"
-
-#include "devicesManager.hpp"
+#include "keyboards/logitech/G510/G510.hpp"
 
 #if HAVE_LIBUSB
-#include "libusb.hpp"
+#include "keyboards/USBAPI/libusb.hpp"
 #elif HAVE_HIDAPI
-#include "hidapi.hpp"
+#include "keyboards/USBAPI/hidapi.hpp"
 #endif
 
 #include "include/enums.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 using namespace NSGKUtils;
@@ -1093,9 +1092,9 @@ void DevicesManager::startMonitoring(void)
 			{
 				KeyboardDriver* driver = nullptr;
 #if HAVE_LIBUSB
-				driver = new LogitechG510<libusb>();
+				driver = new Logitech::LogitechG510<USBAPI::libusb>();
 #elif HAVE_HIDAPI
-				driver = new LogitechG510<hidapi>();
+				driver = new Logitech::LogitechG510<USBAPI::hidapi>();
 #endif
 
 #if GKDBUS
@@ -1212,4 +1211,4 @@ void DevicesManager::startMonitoring(void)
 	udev_unref(pUdev);
 }
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon

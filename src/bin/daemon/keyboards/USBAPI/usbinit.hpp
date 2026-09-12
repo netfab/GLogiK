@@ -19,30 +19,50 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_USBAPI_ENUMS_HPP_
-#define SRC_BIN_DAEMON_USBAPI_ENUMS_HPP_
+#pragma once
 
+#include <cstddef>
 #include <cstdint>
 
-#include "config.h"
+#include <array>
+#include <string>
 
-#if HAVE_LIBUSB
 #include <libusb-1.0/libusb.h>
-#endif
 
-namespace GLogiK
+#include "USBDevice.hpp"
+
+namespace USBAPI
 {
 
-enum class USBAPIKeysTransferStatus : int8_t
+/* As per the USB 3.0 specs, the current maximum limit for the depth is 7. */
+constexpr std::size_t PORT_NUMBERS_LEN = 7;
+
+class USBInit
 {
-	TRANSFER_ERROR = -1,
-#if HAVE_LIBUSB
-	TRANSFER_TIMEOUT = LIBUSB_ERROR_TIMEOUT,
-#elif HAVE_HIDAPI
-	TRANSFER_TIMEOUT = -7,
-#endif
+	private:
+		using USBDevice = USBAPI::device::USBDevice;
+
+	public:
+		using USBPortNumbers_type = std::array<std::uint8_t, PORT_NUMBERS_LEN>;
+
+		USBInit(void);
+		~USBInit(void);
+
+		static const std::string getLibUSBVersion(void);
+
+		const int getUSBDevicePortNumbers(
+			USBDevice & device,
+			USBPortNumbers_type & port_numbers
+		);
+
+	protected:
+		int USBError(int errorCode) noexcept;
+		void seekUSBDevice(USBDevice & device);
+
+	private:
+		static libusb_context * pContext;
+		static std::uint8_t counter;	/* initialized drivers counter */
+		static bool status;				/* is libusb initialized ? */
 };
 
-} // namespace GLogiK
-
-#endif
+} // namespace USBAPI

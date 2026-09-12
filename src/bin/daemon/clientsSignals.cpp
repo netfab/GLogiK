@@ -27,7 +27,7 @@
 
 #include "daemonControl.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 using namespace NSGKUtils;
@@ -120,5 +120,5 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 	}
 }
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 

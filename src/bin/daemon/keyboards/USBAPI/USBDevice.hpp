@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_USB_DEVICE_HPP_
-#define SRC_BIN_DAEMON_USB_DEVICE_HPP_
+#pragma once
 
 #include "config.h"
 
@@ -33,8 +32,6 @@
 #include <chrono>
 #include <mutex>
 
-#include "LCDScreenPluginsManager.hpp"
-
 #include "USBDeviceID.hpp"
 
 #include "include/base.hpp"
@@ -45,7 +42,20 @@
 #include <hidapi.h>
 #endif
 
-namespace GLogiK
+namespace GLogiK::daemon
+{
+	class LCDScreenPluginsManager;
+}
+
+namespace USBAPI
+{
+	class USBInit;
+#if HAVE_HIDAPI
+	class hidapi;
+#endif
+}
+
+namespace USBAPI::device
 {
 
 class USBDevice
@@ -53,7 +63,7 @@ class USBDevice
 {
 	public:
 		USBDevice(void) = default;
-		~USBDevice(void) = default;
+		~USBDevice(void);
 
 		USBDevice(const USBDevice & dev) = delete;
 		USBDevice(const USBDeviceID & dev);
@@ -73,7 +83,7 @@ class USBDevice
 		std::string					_mediaKey;
 		std::string					_LCDKey;
 
-		macro_type					_newMacro;
+		GLogiK::macro_type			_newMacro; // FIXME
 
 #if HAVE_LIBUSB
 	private:
@@ -86,7 +96,8 @@ class USBDevice
 		std::uint64_t				_LCDPluginsMask1;
 
 	private:
-		friend class USBInit;
+		using LCDScreenPluginsManager = GLogiK::daemon::LCDScreenPluginsManager; // FIXME
+		friend class USBAPI::USBInit;
 
 		LCDScreenPluginsManager*	_pLCDPluginsManager;
 
@@ -95,7 +106,7 @@ class USBDevice
 #if HAVE_LIBUSB
 		libusb_device_handle*		_pUSBDeviceHandle;
 #elif HAVE_HIDAPI
-		friend class hidapi;
+		friend class USBAPI::hidapi;
 
 		hid_device*					_pHIDDevice;
 #endif
@@ -133,8 +144,8 @@ class USBDevice
 	public:
 #endif
 
-		GKeysID						_GKeyID; // G-Key
-		MKeysID						_MKeyID; // M-Key
+		GLogiK::GKeysID				_GKeyID; // G-Key FIXME
+		GLogiK::MKeysID				_MKeyID; // M-Key FIXME
 
 		bool						_MBankKeyPressed; // only used to send DBus signal
 
@@ -191,6 +202,4 @@ class USBDevice
 		) const;
 };
 
-} // namespace GLogiK
-
-#endif
+} // namespace USBAPI

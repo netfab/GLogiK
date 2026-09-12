@@ -33,7 +33,7 @@
 
 namespace fs = boost::filesystem;
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 using namespace NSGKUtils;
@@ -65,5 +65,5 @@ void Endscreen::init(
 	LCDPlugin::init(pFonts, product);
 }
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 

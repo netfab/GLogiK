@@ -28,20 +28,31 @@
 #include <vector>
 #include <string>
 
-#include "src/bin/daemon/keyboardDriver.hpp"
-#include "src/bin/daemon/USBDeviceID.hpp"
-#include "src/bin/daemon/USBDevice.hpp"
+#include "bin/daemon/keyboards/USBKeyboardDriver.hpp"
+#include "bin/daemon/keyboards/KeyboardDriverDetail.hpp"
+
+#include "bin/daemon/keyboards/USBAPI/USBDeviceID.hpp"
+#include "bin/daemon/keyboards/USBAPI/USBDevice.hpp"
 
 #include "G510Base.hpp"
 
-namespace GLogiK
+namespace Logitech
 {
 
-template <typename USBAPI>
+// FIXME
+using MKeysIDArray_type = GLogiK::MKeysIDArray_type;
+using GKeysIDArray_type = GLogiK::GKeysIDArray_type;
+
+
+template <typename API>
 class LogitechG510
-	:	public USBKeyboardDriver<USBAPI>,
+	:	public USBKeyboard::USBKeyboardDriver<API>,
 		public D_G510::G510Base
 {
+	private:
+		using USBDeviceID = USBAPI::device::USBDeviceID;
+		using USBDevice = USBAPI::device::USBDevice;
+
 	public:
 		LogitechG510();
 		~LogitechG510();
@@ -75,7 +86,7 @@ class LogitechG510
 			std::uint16_t wLength
 		) override
 		{
-			USBKeyboardDriver<USBAPI>::sendUSBDeviceFeatureReport(device, data, wLength);
+			USBKeyboard::USBKeyboardDriver<API>::sendUSBDeviceFeatureReport(device, data, wLength);
 		}
 
 		void setDeviceBacklightColor(
@@ -138,8 +149,10 @@ class LogitechG510
 
 		void fillDeviceStandardKeysEvents(USBDevice & device) override
 		{
-			USBKeyboardDriver<USBAPI>::fillDeviceStandardKeysEvents(device);
+			USBKeyboard::USBKeyboardDriver<API>::fillDeviceStandardKeysEvents(device);
 		}
+
+		using KeyStatus = USBKeyboard::keyboard::detail::KeyStatus;
 
 		KeyStatus processDeviceKeyEvent(USBDevice & device) override
 		{
@@ -149,22 +162,22 @@ class LogitechG510
 #if DEBUGGING_ON && DEBUG_KEYS
 		const std::string getDeviceBytes(const USBDevice & device) const override
 		{
-			return USBKeyboardDriver<USBAPI>::getDeviceBytes(device);
+			return USBKeyboard::USBKeyboardDriver<API>::getDeviceBytes(device);
 		}
 #endif
 
 };
 
 
-template <typename USBAPI>
-LogitechG510<USBAPI>::LogitechG510()
-	:	USBKeyboardDriver<USBAPI>()
+template <typename API>
+LogitechG510<API>::LogitechG510()
+	:	USBKeyboard::USBKeyboardDriver<API>()
 {
 }
 
-template <typename USBAPI>
-LogitechG510<USBAPI>::~LogitechG510()
+template <typename API>
+LogitechG510<API>::~LogitechG510()
 {
 }
 
-} // namespace GLogiK
+} // namespace Logitech

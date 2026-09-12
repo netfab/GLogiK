@@ -19,56 +19,70 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_HIDAPI_HPP_
-#define SRC_BIN_DAEMON_HIDAPI_HPP_
+#pragma once
 
-#include <cstdint>
+#include "USBAPI/USBDevice.hpp"
 
-#include <string>
+#include "KeyboardDriver.hpp"
 
-#include "USBDevice.hpp"
-
-#include <hidapi.h>
-
-namespace GLogiK
+namespace USBKeyboard
 {
 
-class hidapi
+template <typename API>
+class USBKeyboardDriver
+	:	public API,
+		public keyboard::KeyboardDriver
 {
+	private:
+		using USBDevice = USBAPI::device::USBDevice;
+
 	public:
-		static const std::string getHIDAPIVersion(void);
+		virtual ~USBKeyboardDriver();
+
+		virtual const char* getDriverName() const = 0;
 
 	protected:
-		hidapi(void);
-		~hidapi(void);
+		USBKeyboardDriver(void);
 
-		void openUSBDevice(USBDevice & device);
-		void closeUSBDevice(USBDevice & device) noexcept;
-
-		void sendUSBDeviceFeatureReport(
-			USBDevice & device,
-			const unsigned char * data,
-			std::uint16_t wLength
-		);
-
+	private:
+		/* API */
 		int performUSBDeviceKeysInterruptTransfer(
 			USBDevice & device,
 			unsigned int timeout
-		);
+		) override {
+			return API::performUSBDeviceKeysInterruptTransfer(device, timeout);
+		}
 
 		int performUSBDeviceLCDScreenInterruptTransfer(
 			USBDevice & device,
 			const unsigned char * buffer,
 			int bufferLength,
 			unsigned int timeout
-		);
+		) override {
+			return API::performUSBDeviceLCDScreenInterruptTransfer(
+				device, buffer, bufferLength, timeout);
+		}
 
-	private:
+		void openUSBDevice(USBDevice & device) override {
+			API::openUSBDevice(device);
+		}
 
-		void logUSBDeviceHIDError(hid_device *dev) noexcept;
+		void closeUSBDevice(USBDevice & device) override {
+			device.destroyLCDPluginsManager();
 
+			API::closeUSBDevice(device);
+		}
+		/* --- */
 };
 
-} // namespace GLogiK
+template <typename API>
+USBKeyboardDriver<API>::USBKeyboardDriver(void)
+{
+}
 
-#endif
+template <typename API>
+USBKeyboardDriver<API>::~USBKeyboardDriver()
+{
+}
+
+} // namespace USBKeyboard

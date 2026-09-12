@@ -36,14 +36,14 @@
 #include "clientsSignals.hpp"
 #endif
 
-#include "keyboardDriver.hpp"
+#include "keyboards/KeyboardDriver.hpp"
 
-#include "USBDeviceID.hpp"
+#include "keyboards/USBAPI/USBDeviceID.hpp"
 
 #include "include/base.hpp"
 #include "include/LCDPP.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 #if DEBUGGING_ON
@@ -103,11 +103,14 @@ class DevicesManager
 	protected:
 
 	private:
-		typedef std::map<std::string, USBDeviceID> USBDeviceIDContainer_type;
+		using USBDeviceID = USBAPI::device::USBDeviceID;
+		using USBDeviceIDContainer_type = std::map<std::string, USBDeviceID>;
 
 		USBDeviceIDContainer_type _startedDevices;
 		USBDeviceIDContainer_type _stoppedDevices;
 		USBDeviceIDContainer_type _unpluggedDevices;
+
+		using KeyboardDriver = USBKeyboard::keyboard::KeyboardDriver;
 
 		std::vector<std::string> _sleepingDevices;
 		std::vector<KeyboardDriver*> _drivers;
@@ -131,6 +134,6 @@ class DevicesManager
 		void checkInitializedDevicesThreadsStatus(void) noexcept;
 };
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif

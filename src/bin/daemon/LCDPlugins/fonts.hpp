@@ -30,7 +30,7 @@
 #define DEFAULT_PBM_FONT_HEIGHT DEFAULT_PBM_HEIGHT
 #define  DEFAULT_PBM_FONT_WIDTH DEFAULT_PBM_WIDTH
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 enum class FontID : std::uint8_t
@@ -105,7 +105,7 @@ class FontDejaVuSansBold1616
 
 };
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif
 

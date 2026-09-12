@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LIBUSB_HPP_
-#define SRC_BIN_DAEMON_LIBUSB_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -29,7 +28,7 @@
 #include "usbinit.hpp"
 #include "USBDevice.hpp"
 
-namespace GLogiK
+namespace USBAPI
 {
 
 class libusb
@@ -71,6 +70,4 @@ class libusb
 		void attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexcept;
 };
 
-} // namespace GLogiK
-
-#endif
+} // namespace USBAPI

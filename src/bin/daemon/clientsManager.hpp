@@ -39,7 +39,7 @@
 #include "include/LCDPP.hpp"
 #include "include/DepsMap.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 class ClientsManager
@@ -165,6 +165,6 @@ class ClientsManager
 		/* -- */
 };
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif

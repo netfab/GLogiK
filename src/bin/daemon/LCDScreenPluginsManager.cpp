@@ -36,7 +36,7 @@
 
 #include "include/enums.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 using namespace NSGKUtils;
@@ -405,5 +405,5 @@ void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(const PixelsData & PBMDat
 }
 
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 

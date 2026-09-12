@@ -23,7 +23,7 @@
 
 #include "usbinit.hpp"
 
-namespace GLogiK
+namespace USBAPI
 {
 
 using namespace NSGKUtils;
@@ -161,5 +161,5 @@ void USBInit::seekUSBDevice(USBDevice & device)
 	libusb_free_device_list(list, 1);
 }
 
-} // namespace GLogiK
+} // namespace USBAPI
 

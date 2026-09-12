@@ -186,7 +186,7 @@ function compile_action() {
 	printf "${BLDRED}BUILDING WITH MESON${TXTRST}\n"
 
 	change_directory "${ABS_BUILD_DIR}"
-	meson compile --verbose || die "compile failure"
+	meson compile --verbose -j1 || die "compile failure"
 }
 
 function install_action() {

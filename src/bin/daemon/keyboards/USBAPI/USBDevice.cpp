@@ -25,13 +25,14 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "bin/daemon/LCDScreenPluginsManager.hpp"
+
 #include "USBDevice.hpp"
 
-namespace GLogiK
+namespace USBAPI::device
 {
 
 using namespace NSGKUtils;
-
 
 USBDevice::USBDevice(const USBDeviceID & device)
 		:	USBDeviceID(device),
@@ -57,14 +58,18 @@ USBDevice::USBDevice(const USBDeviceID & device)
 #elif HAVE_HIDAPI
 			_fatalErrors(0),
 #endif
-			_GKeyID(GKeysID::GKEY_INVALID),
-			_MKeyID(MKeysID::MKEY_INVALID),
+			_GKeyID(::GLogiK::GKeysID::GKEY_INVALID), // FIXME
+			_MKeyID(::GLogiK::MKeysID::MKEY_INVALID), // FIXME
 			_MBankKeyPressed(false)
 {
 	std::fill_n(_pressedKeys, KEYS_BUFFER_LENGTH, 0);
 	std::fill_n(_previousPressedKeys, KEYS_BUFFER_LENGTH, 0);
 	this->setRGBBytes(0xFF, 0xFF, 0xFF);
 	_lastTimePoint = std::chrono::steady_clock::now();
+}
+
+USBDevice::~USBDevice(void)
+{
 }
 
 void USBDevice::operator=(const USBDevice& dev)
@@ -175,5 +180,5 @@ void USBDevice::getRGBBytes(
 	b = _RGB[2];
 }
 
-} // namespace GLogiK
+} // namespace USBAPI::device
 

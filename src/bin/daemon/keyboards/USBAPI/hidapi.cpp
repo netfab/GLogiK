@@ -27,9 +27,9 @@
 #include "usbinit.hpp"
 #include "hidapi.hpp"
 
-#include "USBAPIenums.hpp"
+#include "USBAPIDetail.hpp"
 
-namespace GLogiK
+namespace USBAPI
 {
 
 using namespace NSGKUtils;
@@ -86,7 +86,7 @@ void hidapi::openUSBDevice(USBDevice & device)
 			/* 3-2:1.1 */
 			USBInit dev;
 
-			USBPortNumbers_type port_numbers{0, 0, 0, 0, 0, 0, 0};
+			USBInit::USBPortNumbers_type port_numbers{0, 0, 0, 0, 0, 0, 0};
 
 			const int num = dev.getUSBDevicePortNumbers(device, port_numbers);
 
@@ -225,14 +225,14 @@ int hidapi::performUSBDeviceKeysInterruptTransfer(
 
 	/* nothing to read, reached timeout */
 	if(ret == 0)
-		return toEnumType(USBAPIKeysTransferStatus::TRANSFER_TIMEOUT);
+		return toEnumType(detail::KeysTransferStatus::TRANSFER_TIMEOUT);
 
 	/* hid_read_timeout error */
 	if(ret == -1)
 	{
 		GKSysLogError("hid_read_timeout error");
 		this->logUSBDeviceHIDError(device._pHIDDevice);
-		return toEnumType(USBAPIKeysTransferStatus::TRANSFER_ERROR);
+		return toEnumType(detail::KeysTransferStatus::TRANSFER_ERROR);
 	}
 
 	/* actual number of bytes read */
@@ -261,7 +261,7 @@ int hidapi::performUSBDeviceLCDScreenInterruptTransfer(
 	{
 		GKSysLogError("hid_write error");
 		this->logUSBDeviceHIDError(device._pHIDDevice);
-		return toEnumType(USBAPIKeysTransferStatus::TRANSFER_ERROR);
+		return toEnumType(detail::KeysTransferStatus::TRANSFER_ERROR);
 	}
 
 	/* actual number of bytes written */
@@ -280,5 +280,5 @@ void hidapi::logUSBDeviceHIDError(hid_device *dev) noexcept
 	GKSysLogError("HIDAPI error : ", error);
 }
 
-} // namespace GLogiK
+} // namespace USBAPI
 

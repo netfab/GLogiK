@@ -27,7 +27,7 @@
 
 #include "client.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 using namespace NSGKUtils;
@@ -222,5 +222,5 @@ void Client::initializeDevices(DevicesManager* const pDevicesManager)
 	GKLog2(trace, "number of initialized devices configurations : ", _devices.size())
 }
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 

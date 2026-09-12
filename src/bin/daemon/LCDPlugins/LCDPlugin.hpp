@@ -38,7 +38,7 @@
 
 namespace fs = boost::filesystem;
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 enum class LCDPluginTempo : std::uint8_t
@@ -158,6 +158,6 @@ class LCDPlugin
 		static std::tuple<std::uint16_t, std::uint16_t> getTempo(const LCDPluginTempo tempo);
 };
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif

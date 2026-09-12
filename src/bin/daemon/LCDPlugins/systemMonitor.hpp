@@ -31,7 +31,7 @@
 
 #include "netsnap/netSnapshots.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 class SystemMonitor
@@ -63,6 +63,6 @@ class SystemMonitor
 			{"MemTotal", "MemFree", "MemAvailable", "Buffers", "Cached"};
 };
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif

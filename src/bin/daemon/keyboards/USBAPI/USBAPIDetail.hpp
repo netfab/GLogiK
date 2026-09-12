@@ -19,46 +19,27 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_NETSNAP_NET_SNAPSHOTS_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_NETSNAP_NET_SNAPSHOTS_HPP_
+#pragma once
 
-#include <string>
+#include "config.h"
 
-namespace GLogiK::daemon
-{
+#include <cstdint>
 
-enum class NetDirection
-{
-	NET_RX = 0,
-	NET_TX
-};
-
-class NetSnapshots
-{
-	public:
-		NetSnapshots(void);
-		~NetSnapshots(void);
-
-		const std::string getRateString(NetDirection direction);
-
-	protected:
-
-	private:
-		unsigned long long _rxDiff;
-		unsigned long long _txDiff;
-		std::string _defaultNetworkInterfaceName;
-		std::string _networkInterfaceName;
-		void findDefaultRouteNetworkInterfaceName(void);
-		void setBytesSnapshotValue(
-			const NetDirection d,
-			unsigned long long & value
-		);
-		const std::string getRateString(
-			const std::string & direction,
-			const unsigned long long & value
-		);
-};
-
-} // namespace GLogiK::daemon
-
+#if HAVE_LIBUSB
+#include <libusb-1.0/libusb.h>
 #endif
+
+namespace USBAPI::detail
+{
+
+enum class KeysTransferStatus : int8_t
+{
+	TRANSFER_ERROR = -1,
+#if HAVE_LIBUSB
+	TRANSFER_TIMEOUT = LIBUSB_ERROR_TIMEOUT,
+#elif HAVE_HIDAPI
+	TRANSFER_TIMEOUT = -7,
+#endif
+};
+
+} // namespace USBAPI::detail

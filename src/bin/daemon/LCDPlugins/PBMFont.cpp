@@ -29,7 +29,7 @@
 
 #include "PBMFont.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 namespace fs = boost::filesystem;
@@ -318,5 +318,5 @@ const unsigned char PBMFont::getCharacterLine(
 	return c;
 }
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 

@@ -29,7 +29,7 @@
 
 #include "lib/dbus/GKDBus.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 class ClientsSignals
@@ -59,6 +59,6 @@ class ClientsSignals
 
 };
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif

@@ -23,7 +23,7 @@
 
 #include "USBDeviceID.hpp"
 
-namespace GLogiK
+namespace USBAPI::device
 {
 
 using namespace NSGKUtils;
@@ -112,5 +112,5 @@ USBDeviceID::USBDeviceID(
 	_LCDKeysTransferLength			= device._LCDKeysTransferLength;
 }
 
-} // namespace GLogiK
+} // namespace USBAPI::device
 

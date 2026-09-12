@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include <stdexcept>
 #include <new>
 #include <iostream>
@@ -30,36 +32,25 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
-#include "keyboardDriver.hpp"
+#include "KeyboardDriver.hpp"
+#include "KeyboardDriverDetail.hpp"
 
-#include "daemonControl.hpp"
-#include "USBAPIenums.hpp"
+#include "USBAPI/USBAPIDetail.hpp"
 
-namespace GLogiK
+#include "bin/daemon/daemonControl.hpp"
+#include "bin/daemon/LCDPlugins/PBM.hpp"
+#include "bin/daemon/LCDScreenPluginsManager.hpp"
+
+
+namespace USBKeyboard::keyboard
 {
 
 using namespace NSGKUtils;
 
-
-/*
- *	KeyboardDriver
- */
-
-constexpr unsigned char KeyboardDriver::hidKeyboard[256];
-
-/* KEY_FOO from linux/input-event-codes.h */
-const std::vector< ModifierKey > KeyboardDriver::modifierKeys = {
-	{   KEY_LEFTCTRL,	GKModifierKeys::GK_KEY_LEFT_CTRL	},
-	{  KEY_LEFTSHIFT,	GKModifierKeys::GK_KEY_LEFT_SHIFT	},
-	{    KEY_LEFTALT,	GKModifierKeys::GK_KEY_LEFT_ALT		},
-	{   KEY_LEFTMETA,	GKModifierKeys::GK_KEY_LEFT_META	},
-	{  KEY_RIGHTCTRL,	GKModifierKeys::GK_KEY_RIGHT_CTRL	},
-	{ KEY_RIGHTSHIFT,	GKModifierKeys::GK_KEY_RIGHT_SHIFT	},
-	{   KEY_RIGHTALT,	GKModifierKeys::GK_KEY_RIGHT_ALT	},
-	{  KEY_RIGHTMETA,	GKModifierKeys::GK_KEY_RIGHT_META	}
-};
-
-/* -- -- -- */
+// FIXME
+#define DEVICE_LISTENING_THREAD_MAX_ERRORS 3
+using namespace GLogiK;
+using namespace GLogiK::daemon;
 
 #if GKDBUS
 void KeyboardDriver::setDBus(NSGKDBus::GKDBus* pDBus)
@@ -88,7 +79,7 @@ const bool KeyboardDriver::checkDeviceCapability(const USBDeviceID & device, Cap
 	return (device.getCapabilities() & toEnumType(toCheck));
 }
 
-KeyStatus KeyboardDriver::getDevicePressedKeys(USBDevice & device)
+detail::KeyStatus KeyboardDriver::getDevicePressedKeys(USBDevice & device)
 {
 	GK_LOG_FUNC
 
@@ -96,6 +87,7 @@ KeyStatus KeyboardDriver::getDevicePressedKeys(USBDevice & device)
 
 	int ret = this->performUSBDeviceKeysInterruptTransfer(device, 10);
 
+	using USBAPIKeysTransferStatus = USBAPI::detail::KeysTransferStatus; // FIXME
 	switch(ret)
 	{
 		case 0:
@@ -115,16 +107,16 @@ KeyStatus KeyboardDriver::getDevicePressedKeys(USBDevice & device)
 			break;
 		case toEnumType(USBAPIKeysTransferStatus::TRANSFER_TIMEOUT):
 			//GKLog(trace, "timeout reached")
-			return KeyStatus::S_KEY_TIMEDOUT;
+			return detail::KeyStatus::S_KEY_TIMEDOUT;
 			break;
 		default:
 			GKSysLogError(device.getID(), " interrupt read error");
 			device._fatalErrors++;
-			return KeyStatus::S_KEY_SKIPPED;
+			return detail::KeyStatus::S_KEY_SKIPPED;
 			break;
 	}
 
-	return KeyStatus::S_KEY_TIMEDOUT;
+	return detail::KeyStatus::S_KEY_TIMEDOUT;
 }
 
 void KeyboardDriver::notImplemented(const char* func) const
@@ -187,7 +179,7 @@ const std::uint8_t KeyboardDriver::handleDeviceModifierKeys(USBDevice & device, 
 		e.event = EventValue::EVENT_KEY_PRESS;
 	}
 
-	for(const auto & mKey : KeyboardDriver::modifierKeys)
+	for(const auto & mKey : detail::modifierKeys)
 	{
 		const std::uint8_t modKey = toEnumType(mKey.key);
 		if( diff & modKey )
@@ -312,12 +304,12 @@ void KeyboardDriver::fillDeviceStandardKeysEvents(USBDevice & device)
 
 			if( device._previousPressedKeys[i] == 0 )
 			{
-				e.code = KeyboardDriver::hidKeyboard[ device._pressedKeys[i] ];
+				e.code = detail::hidKeyboard[ device._pressedKeys[i] ];
 				e.event = EventValue::EVENT_KEY_PRESS; /* KeyPress */
 			}
 			else if( device._pressedKeys[i] == 0 )
 			{
-				e.code = KeyboardDriver::hidKeyboard[ device._previousPressedKeys[i] ];
+				e.code = detail::hidKeyboard[ device._previousPressedKeys[i] ];
 				e.event = EventValue::EVENT_KEY_RELEASE; /* KeyRelease */
 			}
 			else
@@ -392,11 +384,11 @@ void KeyboardDriver::enterDeviceMacroRecordMode(USBDevice & device)
 		if( ! device.getThreadsStatus() )
 			break;
 
-		KeyStatus ret = this->getDevicePressedKeys(device);
+		detail::KeyStatus ret = this->getDevicePressedKeys(device);
 
 		switch( ret )
 		{
-			case KeyStatus::S_KEY_PROCESSED:
+			case detail::KeyStatus::S_KEY_PROCESSED:
 			{
 				/* did we press one Mx key ? */
 				if( this->checkDevicePressedAnyMxKey(device) )
@@ -622,10 +614,10 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 			if( ! device.getThreadsStatus() )
 				break;
 
-			KeyStatus ret = this->getDevicePressedKeys(device);
+			detail::KeyStatus ret = this->getDevicePressedKeys(device);
 			switch( ret )
 			{
-				case KeyStatus::S_KEY_PROCESSED:
+				case detail::KeyStatus::S_KEY_PROCESSED:
 				{
 					if( this->checkDeviceCapability(device, Caps::GK_MACROS_KEYS) )
 					{ // <<<
@@ -1109,5 +1101,4 @@ void KeyboardDriver::closeDevice(
 	}
 }
 
-} // namespace GLogiK
-
+} // namespace USBKeyboard::keyboard

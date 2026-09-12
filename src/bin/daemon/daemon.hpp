@@ -32,7 +32,7 @@
 #include "sleepInhibition.hpp"
 #endif
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 class GLogiKDaemon
@@ -62,6 +62,6 @@ class GLogiKDaemon
 		static void handleSignal(int signum);
 };
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif

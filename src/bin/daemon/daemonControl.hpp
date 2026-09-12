@@ -24,7 +24,7 @@
 
 #include <atomic>
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 class DaemonControl
@@ -42,6 +42,6 @@ class DaemonControl
 	private:
 };
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif

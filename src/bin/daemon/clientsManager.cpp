@@ -29,9 +29,10 @@
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
+#include "LCDScreenPluginsManager.hpp"
 #include "clientsManager.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 using namespace NSGKUtils;
@@ -1044,5 +1045,5 @@ const bool ClientsManager::setDeviceLCDPluginsMask(
 	return false;
 }
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 

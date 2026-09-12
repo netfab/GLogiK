@@ -47,10 +47,10 @@
 #include "lib/utils/utils.hpp"
 
 #include "daemon.hpp"
-#include "usbinit.hpp"
+#include "keyboards/USBAPI/usbinit.hpp"
 
 #if HAVE_HIDAPI
-#include "hidapi.hpp"
+#include "keyboards/USBAPI/hidapi.hpp"
 #endif
 
 #include "devicesManager.hpp"
@@ -67,7 +67,7 @@
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 using namespace NSGKUtils;
@@ -170,9 +170,9 @@ int GLogiKDaemon::run(void)
 			{
 				{"boost", boost_version},
 				{"libudev", GK_DEP_LIBUDEV_VERSION_STRING, DevicesManager::getLibudevVersion()},
-				{"libusb", GK_DEP_LIBUSB_VERSION_STRING, USBInit::getLibUSBVersion()},
+				{"libusb", GK_DEP_LIBUSB_VERSION_STRING, USBAPI::USBInit::getLibUSBVersion()},
 #if HAVE_HIDAPI
-				{"hidapi", GK_DEP_LIBHIDAPI_VERSION_STRING, hidapi::getHIDAPIVersion()},
+				{"hidapi", GK_DEP_LIBHIDAPI_VERSION_STRING, USBAPI::hidapi::getHIDAPIVersion()},
 #else
 				{"hidapi", "-"},
 #endif

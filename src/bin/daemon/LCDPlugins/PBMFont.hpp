@@ -32,7 +32,7 @@
 #include "PBM.hpp"
 #include "PBMFile.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 typedef std::initializer_list<
@@ -94,7 +94,7 @@ class PBMFont
 		) const;
 };
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif
 

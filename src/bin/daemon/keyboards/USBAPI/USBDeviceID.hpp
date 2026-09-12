@@ -19,15 +19,14 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_USB_DEVICE_ID_HPP_
-#define SRC_BIN_DAEMON_USB_DEVICE_ID_HPP_
+#pragma once
 
 #include <cstdint>
 #include <string>
 
 #define KEYS_BUFFER_LENGTH 16
 
-namespace GLogiK
+namespace USBAPI::device
 {
 
 class USBDeviceID
@@ -207,6 +206,4 @@ class USBDeviceID
 		int8_t _LCDKeysTransferLength;
 };
 
-} // namespace GLogiK
-
-#endif
+} // namespace USBAPI::device

@@ -19,50 +19,56 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_USBINIT_HPP_
-#define SRC_BIN_DAEMON_USBINIT_HPP_
+#pragma once
 
-#include <cstddef>
 #include <cstdint>
 
-#include <array>
 #include <string>
-
-#include <libusb-1.0/libusb.h>
 
 #include "USBDevice.hpp"
 
-namespace GLogiK
+#include <hidapi.h>
+
+namespace USBAPI
 {
 
-/* As per the USB 3.0 specs, the current maximum limit for the depth is 7. */
-const std::size_t PORT_NUMBERS_LEN = 7;
-
-typedef std::array<std::uint8_t, PORT_NUMBERS_LEN> USBPortNumbers_type;
-
-class USBInit
+class hidapi
 {
+	private :
+		using USBDevice = USBAPI::device::USBDevice;
+
 	public:
-		USBInit(void);
-		~USBInit(void);
-
-		static const std::string getLibUSBVersion(void);
-
-		const int getUSBDevicePortNumbers(
-			USBDevice & device,
-			USBPortNumbers_type & port_numbers
-		);
+		static const std::string getHIDAPIVersion(void);
 
 	protected:
-		int USBError(int errorCode) noexcept;
-		void seekUSBDevice(USBDevice & device);
+		hidapi(void);
+		~hidapi(void);
+
+		void openUSBDevice(USBDevice & device);
+		void closeUSBDevice(USBDevice & device) noexcept;
+
+		void sendUSBDeviceFeatureReport(
+			USBDevice & device,
+			const unsigned char * data,
+			std::uint16_t wLength
+		);
+
+		int performUSBDeviceKeysInterruptTransfer(
+			USBDevice & device,
+			unsigned int timeout
+		);
+
+		int performUSBDeviceLCDScreenInterruptTransfer(
+			USBDevice & device,
+			const unsigned char * buffer,
+			int bufferLength,
+			unsigned int timeout
+		);
 
 	private:
-		static libusb_context * pContext;
-		static std::uint8_t counter;	/* initialized drivers counter */
-		static bool status;				/* is libusb initialized ? */
+
+		void logUSBDeviceHIDError(hid_device *dev) noexcept;
+
 };
 
-} // namespace GLogiK
-
-#endif
+} // namespace USBAPI

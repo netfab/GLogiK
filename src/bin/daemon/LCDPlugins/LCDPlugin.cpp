@@ -25,7 +25,7 @@
 
 #include "LCDPlugin.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 using namespace NSGKUtils;
@@ -493,5 +493,5 @@ std::tuple<std::uint16_t, std::uint16_t> LCDPlugin::getTempo(const LCDPluginTemp
 	return std::make_tuple(1000, 10);
 }
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 

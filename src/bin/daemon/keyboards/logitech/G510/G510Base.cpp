@@ -23,21 +23,22 @@
 #include <algorithm>
 #include <mutex>
 
+#include "src/bin/daemon/keyboards/KeyboardDriverDetail.hpp"
+
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
 #include "G510Base.hpp"
 #include "G510Detail.hpp"
 
-namespace GLogiK
-{
-
 namespace D_G510
 {
 
 using namespace NSGKUtils;
 
-const std::vector<USBDeviceID> G510Base::knownDevices =
+using namespace GLogiK; // FIXME
+
+const std::vector<USBAPI::device::USBDeviceID> G510Base::knownDevices =
 {
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 	{
@@ -100,7 +101,7 @@ const std::uint16_t G510Base::getDriverID() const
 	return detail::G510_DRIVER_ID;
 }
 
-const std::vector<USBDeviceID> & G510Base::getSupportedDevices(void) const
+const std::vector<USBAPI::device::USBDeviceID> & G510Base::getSupportedDevices(void) const
 {
 	return G510Base::knownDevices;
 }
@@ -330,7 +331,7 @@ void G510Base::processDeviceKeyEvent8Bytes(USBDevice & device)
 	this->fillDeviceStandardKeysEvents(device);
 }
 
-KeyStatus G510Base::processDeviceKeyEvent(USBDevice & device)
+auto G510Base::processDeviceKeyEvent(USBDevice & device) -> KeyStatus
 {
 	GK_LOG_FUNC
 
@@ -527,5 +528,3 @@ const bool G510Base::updateDeviceMxKeysLedsMask(USBDevice & device, bool disable
 }
 
 } // namespace D_G510
-
-} // namespace GLogiK

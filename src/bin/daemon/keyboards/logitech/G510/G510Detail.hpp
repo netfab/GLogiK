@@ -25,17 +25,15 @@
 
 #include <array>
 #include <string_view>
+#include <utility>
 
 #include "include/enums.hpp"
 
-namespace GLogiK
+namespace D_G510::detail
 {
+	// FIXME
+	using namespace GLogiK;
 
-namespace D_G510
-{
-
-namespace detail
-{
 	constexpr std::uint16_t G510_DRIVER_ID = ( 1u << 0 );
 	constexpr char G510_VENDOR[] = "Logitech";
 	constexpr char G510_VENDOR_ID[] = "046d";
@@ -225,8 +223,4 @@ namespace detail
 		P2{ RKeys::GK_KEY_M3, MKeysID::MKEY_M3 },
 	};
 
-} // namespace detail
-
-} // namespace D_G510
-
-} // namespace GLogiK
+} // D_G510::detail

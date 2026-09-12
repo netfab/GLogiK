@@ -28,20 +28,27 @@
 #include <vector>
 #include <string>
 
-#include "src/bin/daemon/keyboardDriver.hpp"
-#include "src/bin/daemon/USBDeviceID.hpp"
-#include "src/bin/daemon/USBDevice.hpp"
+#include "bin/daemon/keyboards/KeyboardDriverDetail.hpp"
+
+#include "bin/daemon/keyboards/USBAPI/USBDeviceID.hpp"
+#include "bin/daemon/keyboards/USBAPI/USBDevice.hpp"
 
 #include "include/base.hpp"
-
-namespace GLogiK
-{
 
 namespace D_G510
 {
 
+// FIXME
+using MKeysIDArray_type = GLogiK::MKeysIDArray_type;
+using GKeysIDArray_type = GLogiK::GKeysIDArray_type;
+
 class G510Base
 {
+	private:
+		using USBDeviceID = USBAPI::device::USBDeviceID;
+		using USBDevice = USBAPI::device::USBDevice;
+		using KeyStatus = USBKeyboard::keyboard::detail::KeyStatus;
+
 	public:
 
 	protected:
@@ -105,5 +112,3 @@ class G510Base
 };
 
 } // namespace D_G510
-
-} // namespace GLogiK

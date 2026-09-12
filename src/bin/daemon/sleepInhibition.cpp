@@ -23,7 +23,7 @@
 
 #include "sleepInhibition.hpp"
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 using namespace NSGKUtils;
@@ -185,4 +185,4 @@ void SleepInhibition::handleSleepEvent(const bool mode)
 	}
 }
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon

@@ -42,11 +42,11 @@
 // TODO do we need it ?
 //#define PBM_HEIGHT_IN_BYTES ((PBM_HEIGHT + ((8 - (PBM_HEIGHT % 8)) % 8)) / 8)
 
-namespace GLogiK
+namespace GLogiK::daemon
 {
 
 typedef std::vector<unsigned char> PixelsData;
 
-} // namespace GLogiK
+} // namespace GLogiK::daemon
 
 #endif
