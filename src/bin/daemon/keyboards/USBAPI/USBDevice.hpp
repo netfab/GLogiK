@@ -33,6 +33,7 @@
 #include <mutex>
 
 #include "USBDeviceID.hpp"
+#include "USBAPIDetail.hpp"
 
 #include "include/base.hpp"
 
@@ -133,8 +134,8 @@ class USBDevice
 	public:
 		unsigned int				_fatalErrors;
 
-		unsigned char				_pressedKeys[KEYS_BUFFER_LENGTH];
-		unsigned char				_previousPressedKeys[KEYS_BUFFER_LENGTH];
+		unsigned char				_pressedKeys[USBAPI::detail::KEYS_BUFFER_LENGTH];
+		unsigned char				_previousPressedKeys[USBAPI::detail::KEYS_BUFFER_LENGTH];
 
 #if HAVE_LIBUSB
 	private:

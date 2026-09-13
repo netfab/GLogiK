@@ -24,8 +24,6 @@
 #include <cstdint>
 #include <string>
 
-#define KEYS_BUFFER_LENGTH 16
-
 namespace USBAPI::device
 {
 

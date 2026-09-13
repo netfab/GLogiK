@@ -42,4 +42,6 @@ enum class KeysTransferStatus : int8_t
 #endif
 };
 
+constexpr std::int8_t KEYS_BUFFER_LENGTH = 16;
+
 } // namespace USBAPI::detail

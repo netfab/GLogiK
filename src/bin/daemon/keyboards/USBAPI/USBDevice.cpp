@@ -28,6 +28,7 @@
 #include "bin/daemon/LCDScreenPluginsManager.hpp"
 
 #include "USBDevice.hpp"
+#include "USBAPIDetail.hpp"
 
 namespace USBAPI::device
 {
@@ -62,8 +63,8 @@ USBDevice::USBDevice(const USBDeviceID & device)
 			_MKeyID(::GLogiK::MKeysID::MKEY_INVALID), // FIXME
 			_MBankKeyPressed(false)
 {
-	std::fill_n(_pressedKeys, KEYS_BUFFER_LENGTH, 0);
-	std::fill_n(_previousPressedKeys, KEYS_BUFFER_LENGTH, 0);
+	std::fill_n(_pressedKeys, USBAPI::detail::KEYS_BUFFER_LENGTH, 0);
+	std::fill_n(_previousPressedKeys, USBAPI::detail::KEYS_BUFFER_LENGTH, 0);
 	this->setRGBBytes(0xFF, 0xFF, 0xFF);
 	_lastTimePoint = std::chrono::steady_clock::now();
 }
