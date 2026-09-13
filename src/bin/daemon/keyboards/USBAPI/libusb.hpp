@@ -34,6 +34,9 @@ namespace USBAPI
 class libusb
 	:	private USBInit
 {
+	private:
+		using USBDevice = USBAPI::device::USBDevice;
+
 	public:
 
 	protected:
