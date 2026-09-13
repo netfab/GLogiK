@@ -51,7 +51,10 @@ namespace GLogiK::daemon
 namespace USBAPI
 {
 	class USBInit;
-#if HAVE_HIDAPI
+
+#if HAVE_LIBUSB
+	class libusb;
+#elif HAVE_HIDAPI
 	class hidapi;
 #endif
 }
@@ -75,7 +78,7 @@ class USBDevice
 
 #if HAVE_LIBUSB
 	private:
-		friend class libusb;
+		friend class USBAPI::libusb;
 
 		std::mutex					_libUSBMutex;
 #endif
