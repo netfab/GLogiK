@@ -638,8 +638,10 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 							if(this->updateDeviceMxKeysLedsMask(device))
 							{
 								this->setDeviceMxKeysLeds(device);
+#if GKDBUS
 								if(device._MBankKeyPressed)
 									this->sendDeviceMBankSwitchSignal(device);
+#endif
 							}
 
 #if GKDBUS
