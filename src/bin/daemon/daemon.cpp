@@ -204,7 +204,9 @@ int GLogiKDaemon::run(void)
 
 			try
 			{
+#if GKDBUS
 				this->startSleepInhibition(&DBus, &devicesManager);
+#endif
 
 				/* potential D-Bus requests received from services will be
 				 * handled after devices initialization into startMonitoring() */
