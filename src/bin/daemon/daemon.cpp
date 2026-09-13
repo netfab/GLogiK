@@ -188,12 +188,15 @@ int GLogiKDaemon::run(void)
 	{
 #if GKDBUS
 		NSGKDBus::GKDBus DBus;
+#endif
 
 		try
 		{ // <<<
+#if GKDBUS
 			DBus.init();
 			DBus.connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
 #endif
+
 			DevicesManager devicesManager;
 
 #if GKDBUS
@@ -211,6 +214,7 @@ int GLogiKDaemon::run(void)
 				/* potential D-Bus requests received from services will be
 				 * handled after devices initialization into startMonitoring() */
 				devicesManager.startMonitoring();
+
 #if GKDBUS
 				clientsManager.waitForClientsDisconnections();
 				clientsManager.cleanGKDBusEvents();
