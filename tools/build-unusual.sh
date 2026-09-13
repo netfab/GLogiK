@@ -48,7 +48,7 @@ bash build.sh -c -A -M
 # --
 
 info 'BUILD: DBus:off'
-bash build.sh -A -M -d --disable-dbus --disable-qt6
+bash build.sh -A -M -d --disable-dbus --disable-qt6 --disable-systray
 check_ret $?
 bash build.sh -c -A -M
 check_ret $?
