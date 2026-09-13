@@ -36,6 +36,8 @@
 #include "USBAPI/USBDeviceID.hpp"
 #include "USBAPI/USBDevice.hpp"
 
+#include "include/LCDPP.hpp"
+#include "include/base.hpp"
 #include "include/enums.hpp"
 
 #if GKDBUS

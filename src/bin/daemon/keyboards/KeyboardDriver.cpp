@@ -21,13 +21,18 @@
 
 #include "config.h"
 
-#include <stdexcept>
-#include <new>
-#include <iostream>
-#include <utility>
-#include <chrono>
-#include <algorithm>
-#include <sstream>
+#include <algorithm>                               // for remove_if, fill_n
+#include <array>                                   // for array
+#include <atomic>                                  // for atomic
+#include <chrono>                                  // for milliseconds, stea...
+#include <exception>                               // for exception
+#include <new>                                     // for bad_alloc
+#include <sstream>                                 // for basic_ostringstream
+#include <stdexcept>                               // for out_of_range, leng...
+#include <system_error>                            // for system_error
+#include <utility>                                 // for move
+
+#include <boost/log/utility/string_literal.hpp>    // for basic_string_literal (GK_LOG_FUNC)
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
@@ -35,6 +40,7 @@
 #include "KeyboardDriver.hpp"
 #include "KeyboardDriverDetail.hpp"
 
+#include "USBAPI/USBDevice.hpp"
 #include "USBAPI/USBAPIDetail.hpp"
 
 #include "bin/daemon/daemonControl.hpp"
