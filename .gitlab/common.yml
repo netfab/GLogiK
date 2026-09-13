@@ -1,0 +1,39 @@
+
+image: ghcr.io/netfab/debian-unstable-build:2026-09-v2
+
+stages:
+  - build
+
+# --
+
+.build_common:
+  stage: build
+
+  # automatically exported in environment
+  parallel:
+    matrix:
+      - CC: gcc-15
+        CXX: g++-15
+      - CC: clang
+        CXX: clang++
+
+  before_script:
+    - apt-get update
+    - apt list --upgradable
+
+  script:
+    - 'echo "Compiler = ${CC} / ${CXX}"'
+    - >
+      meson setup ${BUILD_DIR}-${CXX}
+      -Doptimization=2
+      -Dcpp_args="-pipe -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -Wformat=2 -Wfatal-errors"
+      -Dwerror=true
+      -Db_asneeded=true
+      -Drelative_udev_rules_dir=true
+      ${MESON_OPTIONS}
+    - meson compile -C ${BUILD_DIR}-${CXX}
+
+#  artifacts:
+#    expire_in: 1 week
+#    paths:
+#      - ${BUILD_DIR}/

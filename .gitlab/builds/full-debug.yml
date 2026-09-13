@@ -1,0 +1,19 @@
+# --
+
+build_full_debug:
+  extends: .build_common
+  variables:
+    BUILD_DIR: build_full_debug
+    MESON_OPTIONS: >
+      -Ddebug=true
+      -Ddebug-gkdbus=true
+      -Ddebug-keys=true
+      -Ddebug-lcd-plugins=true
+      -Ddebug-libusb=false
+      -Ddebug-pbmfont=true
+      -Dhidapi=true
+      -Ddbus=true
+      -Dnotifications=true
+      -Dlibnotify=true
+      -Dqt6=true
+      -Dsystray=true

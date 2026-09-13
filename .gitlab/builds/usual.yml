@@ -1,0 +1,14 @@
+# --
+
+build_usual:
+  extends: .build_common
+  variables:
+    BUILD_DIR: build_usual
+    MESON_OPTIONS: >
+      -Ddebug=false
+      -Dhidapi=true
+      -Ddbus=true
+      -Dnotifications=true
+      -Dlibnotify=true
+      -Dqt6=true
+      -Dsystray=true

@@ -1,0 +1,14 @@
+# --
+
+build_only_daemon:
+  extends: .build_common
+  variables:
+    BUILD_DIR: build_only_daemon
+    MESON_OPTIONS: >
+      -Ddebug=false
+      -Dhidapi=true
+      -Ddbus=false
+      -Dnotifications=false
+      -Dlibnotify=false
+      -Dqt6=false
+      -Dsystray=false

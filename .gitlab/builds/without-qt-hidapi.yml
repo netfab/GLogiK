@@ -1,0 +1,15 @@
+# --
+
+build_without_qt_hidapi:
+  extends: .build_common
+  variables:
+    BUILD_DIR: build_without_qt_hidapi
+    MESON_OPTIONS: >
+      -Ddebug=true
+      -Ddebug-libusb=true
+      -Dhidapi=false
+      -Ddbus=true
+      -Dnotifications=true
+      -Dlibnotify=true
+      -Dqt6=false
+      -Dsystray=false
