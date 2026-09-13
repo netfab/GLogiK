@@ -19,13 +19,22 @@
  *
  */
 
-#include <new>
-#include <algorithm>
-#include <mutex>
+#include <algorithm>                            // for copy
+#include <array>                                // for array
+#include <atomic>                               // for atomic
+#include <iterator>                             // for begin, end
+#include <mutex>                                // for mutex
+#include <new>                                  // for bad_alloc
+#include <stdexcept>                            // for length_error
+#include <utility>                              // for get
+
+#include <boost/log/utility/string_literal.hpp> // for basic_string_literal (GK_LOG_FUNC)
+
+#include "include/enums.hpp"
 
 #include "src/bin/daemon/keyboards/KeyboardDriverDetail.hpp"
+#include "src/bin/daemon/keyboards/USBAPI/USBDeviceID.hpp"
 
-#include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
 #include "G510Base.hpp"
@@ -108,6 +117,8 @@ const std::vector<USBAPI::device::USBDeviceID> & G510Base::getSupportedDevices(v
 
 const MKeysIDArray_type G510Base::getMKeysIDArray(void) const
 {
+	GK_LOG_FUNC
+
 	MKeysIDArray_type ret;
 
 	try
@@ -157,8 +168,6 @@ const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
 /* return true if any G-Key (G1-G18) was pressed  */
 const bool G510Base::checkDevicePressedAnyGKey(USBDevice & device)
 {
-	GK_LOG_FUNC
-
 	for (const auto & [RKey, GKeyID] : detail::RKeys2GKeysIDMap)
 	{
 		if( device._pressedRKeysMask & toEnumType(RKey) )
