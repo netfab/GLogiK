@@ -40,10 +40,10 @@ USBDeviceID::USBDeviceID(
 			const std::uint8_t bInterfaceNumber,
 			const std::uint8_t bAlternateSetting,
 			const std::uint8_t bNumEndpoints,
-			const int8_t bufferMaxLength,
-			const int8_t GKeysTransferLength,
-			const int8_t mediaKeysTransferLength,
-			const int8_t LCDKeysTransferLength
+			const std::int8_t bufferMaxLength,
+			const std::int8_t GKeysTransferLength,
+			const std::int8_t mediaKeysTransferLength,
+			const std::int8_t LCDKeysTransferLength
 		)	:	_vendor(vendor),
 				_product(product),
 				_name(name),

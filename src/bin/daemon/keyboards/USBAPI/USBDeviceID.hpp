@@ -103,20 +103,20 @@ class USBDeviceID
 			return _bNumEndpoints;
 		}
 
-		const int8_t getKeysInterruptBufferMaxLength(void) const
+		const std::int8_t getKeysInterruptBufferMaxLength(void) const
 		{
 			return _keysInterruptBufferMaxLength;
 		};
 
-		const int8_t getGKeysTransferLength(void) const
+		const std::int8_t getGKeysTransferLength(void) const
 		{
 			return _GKeysTransferLength;
 		}
-		const int8_t getMediaKeysTransferLength(void) const
+		const std::int8_t getMediaKeysTransferLength(void) const
 		{
 			return _MediaKeysTransferLength;
 		}
-		const int8_t getLCDKeysTransferLength(void) const
+		const std::int8_t getLCDKeysTransferLength(void) const
 		{
 			return _LCDKeysTransferLength;
 		}
@@ -148,10 +148,10 @@ class USBDeviceID
 			const std::uint8_t bInterfaceNumber,
 			const std::uint8_t bAlternateSetting,
 			const std::uint8_t bNumEndpoints,
-			const int8_t bufferMaxLength,
-			const int8_t GKeysTransferLength,
-			const int8_t mediaKeysTransferLength,
-			const int8_t LCDKeysTransferLength
+			const std::int8_t bufferMaxLength,
+			const std::int8_t GKeysTransferLength,
+			const std::int8_t mediaKeysTransferLength,
+			const std::int8_t LCDKeysTransferLength
 		);
 		USBDeviceID(
 			const USBDeviceID & device,
@@ -197,11 +197,11 @@ class USBDeviceID
 		std::uint8_t _bAlternateSetting;
 		std::uint8_t _bNumEndpoints;
 
-		int8_t _keysInterruptBufferMaxLength;
+		std::int8_t _keysInterruptBufferMaxLength;
 
-		int8_t _GKeysTransferLength;
-		int8_t _MediaKeysTransferLength;
-		int8_t _LCDKeysTransferLength;
+		std::int8_t _GKeysTransferLength;
+		std::int8_t _MediaKeysTransferLength;
+		std::int8_t _LCDKeysTransferLength;
 };
 
 } // namespace USBAPI::device

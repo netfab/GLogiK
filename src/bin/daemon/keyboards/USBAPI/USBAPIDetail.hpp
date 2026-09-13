@@ -32,7 +32,7 @@
 namespace USBAPI::detail
 {
 
-enum class KeysTransferStatus : int8_t
+enum class KeysTransferStatus : std::int8_t
 {
 	TRANSFER_ERROR = -1,
 #if HAVE_LIBUSB
