@@ -350,14 +350,14 @@ auto G510Base::processDeviceKeyEvent(USBDevice & device) -> KeyStatus
 	{
 		case 2:
 #if DEBUGGING_ON && DEBUG_KEYS
-			GKLog3(trace, device.getID(), " 2 bytes : ", this->getBytes(device))
+			GKLog3(trace, device.getID(), " 2 bytes : ", this->getDeviceBytes(device))
 #endif
 			this->processDeviceKeyEvent2Bytes(device);
 			return KeyStatus::S_KEY_PROCESSED;
 			break;
 		case 5:
 #if DEBUGGING_ON && DEBUG_KEYS
-			GKLog3(trace, device.getID(), " 5 bytes : ", this->getBytes(device))
+			GKLog3(trace, device.getID(), " 5 bytes : ", this->getDeviceBytes(device))
 #endif
 			this->processDeviceKeyEvent5Bytes(device);
 			if( device._pressedRKeysMask == 0 ) /* skip release key events */
@@ -369,7 +369,7 @@ auto G510Base::processDeviceKeyEvent(USBDevice & device) -> KeyStatus
 			if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) )
 			{
 #if DEBUGGING_ON && DEBUG_KEYS
-				GKLog3(trace, device.getID(), " 8 bytes : ", this->getBytes(device))
+				GKLog3(trace, device.getID(), " 8 bytes : ", this->getDeviceBytes(device))
 #endif
 				/* process standard key event */
 				this->processDeviceKeyEvent8Bytes(device);
@@ -379,7 +379,7 @@ auto G510Base::processDeviceKeyEvent(USBDevice & device) -> KeyStatus
 				return KeyStatus::S_KEY_PROCESSED;
 			}
 #if DEBUGGING_ON && DEBUG_KEYS
-			GKLog3(trace, device.getID(), " 8 bytes (skipped) : ", this->getBytes(device))
+			GKLog3(trace, device.getID(), " 8 bytes (skipped) : ", this->getDeviceBytes(device))
 #endif
 			return KeyStatus::S_KEY_SKIPPED;
 			break;
