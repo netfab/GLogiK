@@ -1,0 +1,63 @@
+name: Build common
+
+on:
+  workflow_call:
+    inputs:
+      build_dir:
+        required: true
+        type: string
+
+      meson_options:
+        required: true
+        type: string
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        compiler:
+          - cc: gcc-15
+            cxx: g++-15
+          - cc: clang
+            cxx: clang++
+
+    container:
+      image: ghcr.io/netfab/debian-unstable-build:2026-09-v2
+
+    env:
+      BUILD_DIR: ${{ inputs.build_dir }}
+      MESON_OPTIONS: ${{ inputs.meson_options }}
+      CC: ${{ matrix.compiler.cc }}
+      CXX: ${{ matrix.compiler.cxx }}
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Update APT
+        run: |
+          apt-get update
+          apt list --upgradable
+
+      - name: Show compiler
+        run: |
+          echo "Compiler = ${CC} / ${CXX}"
+          ${CC} --version
+          ${CXX} --version
+
+      - name: Configure
+        run: >
+          meson setup ${BUILD_DIR}-${CXX}
+          -Doptimization=2
+          -Dcpp_args="-pipe -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -Wformat=2 -Wfatal-errors"
+          -Dwerror=true
+          -Db_asneeded=true
+          -Drelative_udev_rules_dir=true
+          ${MESON_OPTIONS}
+
+      - name: Build
+        run: meson compile -C ${BUILD_DIR}-${CXX}

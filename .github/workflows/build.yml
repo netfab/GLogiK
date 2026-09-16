@@ -1,0 +1,68 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - dev
+      - test-build
+  workflow_dispatch:
+
+jobs:
+
+  build_usual:
+    uses: ./.github/workflows/build-common.yml
+    with:
+      build_dir: build_usual
+      meson_options: >-
+        -Ddebug=false
+        -Dhidapi=true
+        -Ddbus=true
+        -Dnotifications=true
+        -Dlibnotify=true
+        -Dqt6=true
+        -Dsystray=true
+
+  build_full_debug:
+    uses: ./.github/workflows/build-common.yml
+    with:
+      build_dir: build_full_debug
+      meson_options: >-
+        -Ddebug=true
+        -Ddebug-gkdbus=true
+        -Ddebug-keys=true
+        -Ddebug-lcd-plugins=true
+        -Ddebug-libusb=false
+        -Ddebug-pbmfont=true
+        -Dhidapi=true
+        -Ddbus=true
+        -Dnotifications=true
+        -Dlibnotify=true
+        -Dqt6=true
+        -Dsystray=true
+
+  build_without_qt_hidapi:
+    uses: ./.github/workflows/build-common.yml
+    with:
+      build_dir: build_without_qt_hidapi
+      meson_options: >-
+        -Ddebug=true
+        -Ddebug-libusb=true
+        -Dhidapi=false
+        -Ddbus=true
+        -Dnotifications=true
+        -Dlibnotify=true
+        -Dqt6=false
+        -Dsystray=false
+
+  build_only_daemon:
+    uses: ./.github/workflows/build-common.yml
+    with:
+      build_dir: build_only_daemon
+      meson_options: >-
+        -Ddebug=false
+        -Dhidapi=true
+        -Ddbus=false
+        -Dnotifications=false
+        -Dlibnotify=false
+        -Dqt6=false
+        -Dsystray=false
