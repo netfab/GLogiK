@@ -34,8 +34,9 @@
 
 namespace
 {
-	constexpr std::string_view CLIENT = "client : ";
-	constexpr std::string_view DEVICE = "device : ";
+	// used only in debug mode (clang warning)
+	[[maybe_unused]] constexpr std::string_view CLIENT = "client : ";
+	[[maybe_unused]] constexpr std::string_view DEVICE = "device : ";
 	constexpr std::string_view UNKNOWN_CLIENT = "unknown client : ";
 }
 
