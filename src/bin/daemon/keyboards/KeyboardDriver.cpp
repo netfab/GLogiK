@@ -44,6 +44,7 @@
 #include "bin/daemon/daemonControl.hpp"
 #include "bin/daemon/LCDPlugins/PBM.hpp"
 #include "bin/daemon/LCDScreenPluginsManager.hpp"
+#include "bin/daemon/detail.hpp"
 
 
 namespace USBKeyboard::keyboard
@@ -589,7 +590,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 	} /* try */
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		GKSysLogError(daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 	catch (const GLogiKExcept & e)
 	{
@@ -768,7 +769,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 	} /* try */
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		GKSysLogError(daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 	catch (const std::system_error& e)
 	{
@@ -790,7 +791,7 @@ const bool KeyboardDriver::getDeviceThreadsStatus(const std::string & devID) con
 	} /* try */
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		GKSysLogError(daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 
 	return false;
@@ -838,7 +839,7 @@ void KeyboardDriver::resetDeviceState(const USBDeviceID & det)
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, det.getID());
+		GKSysLogError(daemon::detail::UNKNOWN_DEVICE, det.getID());
 	}
 }
 
@@ -954,7 +955,7 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		GKSysLogError(daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 }
 
@@ -970,7 +971,7 @@ const LCDPPArray_type &
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		GKSysLogError(daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 
 	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
@@ -1073,7 +1074,7 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		GKSysLogError(daemon::detail::UNKNOWN_DEVICE, devID);
 		throw GLogiKExcept("device not initialized");
 	}
 }
@@ -1103,7 +1104,7 @@ void KeyboardDriver::closeDevice(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		GKSysLogError(daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 }
 

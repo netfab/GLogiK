@@ -36,6 +36,7 @@
 
 #include "devicesManager.hpp"
 #include "LCDScreenPluginsManager.hpp"
+#include "detail.hpp"
 
 #include "daemonControl.hpp"
 #include "keyboards/logitech/G510/G510.hpp"
@@ -804,7 +805,7 @@ const std::string & DevicesManager::getDeviceVendor(const std::string & devID) c
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+			GKSysLogError(detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -829,7 +830,7 @@ const std::uint64_t DevicesManager::getDeviceCapabilities(const std::string & de
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+			GKSysLogError(detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -854,7 +855,7 @@ const std::string & DevicesManager::getDeviceProduct(const std::string & devID) 
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+			GKSysLogError(detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -879,7 +880,7 @@ const std::string & DevicesManager::getDeviceName(const std::string & devID) con
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+			GKSysLogError(detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -913,7 +914,7 @@ const LCDPPArray_type & DevicesManager::getDeviceLCDPluginsProperties(
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+			GKSysLogError(detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -957,7 +958,7 @@ void DevicesManager::setDeviceActiveConfiguration(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		GKSysLogError(detail::UNKNOWN_DEVICE, devID);
 	}
 }
 
@@ -989,7 +990,7 @@ const MKeysIDArray_type DevicesManager::getDeviceMKeysIDArray(const std::string 
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+			GKSysLogError(detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -1025,7 +1026,7 @@ const GKeysIDArray_type DevicesManager::getDeviceGKeysIDArray(const std::string 
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+			GKSysLogError(detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 

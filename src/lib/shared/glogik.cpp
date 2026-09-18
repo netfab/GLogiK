@@ -41,10 +41,6 @@ c_str GLOGIK_DESKTOP_SERVICE_NAME			= "GLogiKs";
 c_str GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME	= "GKsLauncher";
 c_str GLOGIK_QT_GUI_NAME					= "GKcQt";
 
-c_str CONST_STRING_CLIENT				= "client : ";
-c_str CONST_STRING_DEVICE				= "device : ";
-c_str CONST_STRING_UNKNOWN_CLIENT		= "unknown client : ";
-c_str CONST_STRING_UNKNOWN_DEVICE		= "unknown device : ";
 c_str CONST_STRING_METHOD_CALL_FAILURE	= " method call failure : ";
 c_str CONST_STRING_METHOD_REPLY_FAILURE	= " method reply failure : ";
 

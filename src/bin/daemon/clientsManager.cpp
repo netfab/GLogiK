@@ -32,6 +32,13 @@
 #include "LCDScreenPluginsManager.hpp"
 #include "clientsManager.hpp"
 
+namespace
+{
+	constexpr std::string_view CLIENT = "client : ";
+	constexpr std::string_view DEVICE = "device : ";
+	constexpr std::string_view UNKNOWN_CLIENT = "unknown client : ";
+}
+
 namespace GLogiK::daemon
 {
 
@@ -507,7 +514,7 @@ const bool ClientsManager::unregisterClient(const std::string & clientID)
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 	return false;
 }
@@ -519,7 +526,7 @@ const bool ClientsManager::updateClientState(
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		CONST_STRING_CLIENT, clientID,
+		CLIENT, clientID,
 		"state : ", state
 	)
 
@@ -567,7 +574,7 @@ const bool ClientsManager::updateClientState(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
 	return false;
@@ -594,7 +601,7 @@ const bool ClientsManager::setClientReady(const std::string & clientID)
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 	return false;
 }
@@ -606,8 +613,8 @@ const bool ClientsManager::deleteDeviceConfiguration(
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID
+		DEVICE, devID,
+		CLIENT, clientID
 	)
 
 	try
@@ -617,7 +624,7 @@ const bool ClientsManager::deleteDeviceConfiguration(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
 	return false;
@@ -628,7 +635,7 @@ const GKDepsMap_type &
 {
 	GK_LOG_FUNC
 
-	GKLog2(trace, CONST_STRING_CLIENT, clientID)
+	GKLog2(trace, CLIENT, clientID)
 
 	try
 	{
@@ -638,7 +645,7 @@ const GKDepsMap_type &
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
 	return (*_pDepsMap);
@@ -651,8 +658,8 @@ const bool ClientsManager::stopDevice(
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID
+		DEVICE, devID,
+		CLIENT, clientID
 	)
 
 	try
@@ -689,7 +696,7 @@ const bool ClientsManager::stopDevice(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
 	return false;
@@ -702,8 +709,8 @@ const bool ClientsManager::startDevice(
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID
+		DEVICE, devID,
+		CLIENT, clientID
 	)
 
 	try
@@ -747,7 +754,7 @@ const bool ClientsManager::startDevice(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
 	return false;
@@ -760,8 +767,8 @@ const bool ClientsManager::restartDevice(
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID
+		DEVICE, devID,
+		CLIENT, clientID
 	)
 
 	_enabledSignals = false;
@@ -809,7 +816,7 @@ const std::vector<std::string> ClientsManager::getStartedDevices(const std::stri
 {
 	GK_LOG_FUNC
 
-	GKLog2(trace, CONST_STRING_CLIENT, clientID)
+	GKLog2(trace, CLIENT, clientID)
 
 	try
 	{
@@ -821,7 +828,7 @@ const std::vector<std::string> ClientsManager::getStartedDevices(const std::stri
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
 	const std::vector<std::string> ret;
@@ -834,7 +841,7 @@ const std::vector<std::string>
 {
 	GK_LOG_FUNC
 
-	GKLog2(trace, CONST_STRING_CLIENT, clientID)
+	GKLog2(trace, CLIENT, clientID)
 
 	try
 	{
@@ -846,7 +853,7 @@ const std::vector<std::string>
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
 	const std::vector<std::string> ret;
@@ -861,8 +868,8 @@ const std::string ClientsManager::getDeviceStatus(
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID
+		DEVICE, devID,
+		CLIENT, clientID
 	)
 
 	try
@@ -872,7 +879,7 @@ const std::string ClientsManager::getDeviceStatus(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
 	return "unknown";
@@ -885,8 +892,8 @@ void ClientsManager::getDeviceProperties(
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID
+		DEVICE, devID,
+		CLIENT, clientID
 	)
 
 	try
@@ -907,7 +914,7 @@ void ClientsManager::getDeviceProperties(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 }
 
@@ -918,8 +925,8 @@ const LCDPPArray_type & ClientsManager::getDeviceLCDPluginsProperties(
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID
+		DEVICE, devID,
+		CLIENT, clientID
 	)
 
 	try
@@ -931,7 +938,7 @@ const LCDPPArray_type & ClientsManager::getDeviceLCDPluginsProperties(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
 	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
@@ -947,8 +954,8 @@ const bool ClientsManager::setDeviceBacklightColor(
 	GK_LOG_FUNC
 
 	GKLog6(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID,
+		DEVICE, devID,
+		CLIENT, clientID,
 		"RGB bytes : ", getHexRGB(r, g, b)
 	)
 
@@ -959,7 +966,7 @@ const bool ClientsManager::setDeviceBacklightColor(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
 	return false;
@@ -972,8 +979,8 @@ const MKeysIDArray_type	ClientsManager::getDeviceMKeysIDArray(
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID
+		DEVICE, devID,
+		CLIENT, clientID
 	)
 
 	try
@@ -983,7 +990,7 @@ const MKeysIDArray_type	ClientsManager::getDeviceMKeysIDArray(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
 	MKeysIDArray_type ret;
@@ -999,8 +1006,8 @@ const GKeysIDArray_type
 	GK_LOG_FUNC
 
 	GKLog4(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID
+		DEVICE, devID,
+		CLIENT, clientID
 	)
 
 	try
@@ -1010,7 +1017,7 @@ const GKeysIDArray_type
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
 	GKeysIDArray_type ret;
@@ -1027,8 +1034,8 @@ const bool ClientsManager::setDeviceLCDPluginsMask(
 	GK_LOG_FUNC
 
 	GKLog6(trace,
-		CONST_STRING_DEVICE, devID,
-		CONST_STRING_CLIENT, clientID,
+		DEVICE, devID,
+		CLIENT, clientID,
 		"maskID : ", toUInt(maskID)
 	)
 
@@ -1039,7 +1046,7 @@ const bool ClientsManager::setDeviceLCDPluginsMask(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_CLIENT, clientID);
+		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
 	return false;

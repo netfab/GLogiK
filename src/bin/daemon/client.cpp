@@ -26,6 +26,7 @@
 #include "lib/shared/glogik.hpp"
 
 #include "client.hpp"
+#include "detail.hpp"
 
 namespace GLogiK::daemon
 {
@@ -129,7 +130,7 @@ const bool Client::deleteDevice(const std::string & devID)
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		GKSysLogError(detail::UNKNOWN_DEVICE, devID);
 	}
 
 	return false;
@@ -153,7 +154,7 @@ const bool Client::setDeviceBacklightColor(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		GKSysLogError(detail::UNKNOWN_DEVICE, devID);
 	}
 
 	return false;
@@ -180,7 +181,7 @@ void Client::setDeviceActiveUser(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		GKSysLogError(detail::UNKNOWN_DEVICE, devID);
 	}
 }
 
@@ -201,7 +202,7 @@ const bool Client::setDeviceLCDPluginsMask(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(CONST_STRING_UNKNOWN_DEVICE, devID);
+		GKSysLogError(detail::UNKNOWN_DEVICE, devID);
 	}
 	catch (const GLogiKExcept & e)
 	{
