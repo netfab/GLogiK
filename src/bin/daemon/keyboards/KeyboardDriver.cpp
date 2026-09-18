@@ -32,8 +32,6 @@
 #include <system_error>                            // for system_error
 #include <utility>                                 // for move
 
-#include <boost/log/utility/string_literal.hpp>    // for basic_string_literal (GK_LOG_FUNC)
-
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 

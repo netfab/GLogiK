@@ -38,7 +38,6 @@
 
 #include <boost/asio.hpp>
 #include <boost/process.hpp>
-#include <boost/log/utility/string_literal.hpp>  // for basic_string_literal (GK_LOG_FUNC)
 
 #define UTILS_COMPILATION 1
 

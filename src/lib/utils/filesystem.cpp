@@ -27,8 +27,6 @@
 #include <exception>
 #include <sstream>
 
-#include <boost/log/utility/string_literal.hpp>  // for basic_string_literal (GK_LOG_FUNC)
-
 #define UTILS_COMPILATION 1
 
 #include "GKLogging.hpp"

@@ -28,8 +28,6 @@
 #include <stdexcept>                            // for length_error
 #include <utility>                              // for get
 
-#include <boost/log/utility/string_literal.hpp> // for basic_string_literal (GK_LOG_FUNC)
-
 #include "include/enums.hpp"
 
 #include "src/bin/daemon/keyboards/KeyboardDriverDetail.hpp"

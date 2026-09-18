@@ -19,8 +19,6 @@
  *
  */
 
-#include "config.h"
-
 #include <cerrno>
 #include <cstring>
 #include <sys/types.h> // ssize_t
@@ -31,8 +29,6 @@
 #include <set>
 #include <sstream>
 #include <utility> // std::pair
-
-#include <boost/log/utility/string_literal.hpp>  // for basic_string_literal (GK_LOG_FUNC)
 
 #define UTILS_COMPILATION 1
 
