@@ -29,7 +29,7 @@
 #include "config.h"
 
 #include <ios>
-#include <string>
+#include <string_view>
 #include <ostream>
 #include <sstream>
 
@@ -67,7 +67,7 @@ class LogStream
 		template<typename T>
 			LogStream& operator<<(const T& value)
 		{
-			_stream << value;
+			this->_stream << value;
 			return *this;
 		}
 
@@ -88,9 +88,9 @@ class GKLogging
 		static bool GKDebug;
 		static bool GKVerbose;
 
-		static void initConsoleLog(const std::string & baseName);
+		static void initConsoleLog(std::string_view baseName);
 		static void initDebugFile(
-			const std::string & baseName,
+			std::string_view baseName,
 			const fs::perms prms = fs::no_perms);
 
 		static LogStream log(severity_level severity);
@@ -122,43 +122,47 @@ class GKLogging
 inline void GKSysLog(
 	const int priority,
 	const severity_level level,
-	const std::string & msg)
+	std::string_view msg)
 {
 	GKLog(level, msg);
-	syslog(priority, "%s", msg.c_str());
+	syslog(priority, "%.*s", static_cast<int>(msg.size()), msg.data());
 }
 
-inline void GKSysLogInfo(const std::string & msg)
+inline void GKSysLogInfo(std::string_view msg)
 {
 	GKSysLog(LOG_INFO, info, msg);
 }
 
-inline void GKSysLogWarning(const std::string & msg)
+inline void GKSysLogWarning(std::string_view msg)
 {
 	GKSysLog(LOG_WARNING, warning, msg);
 }
 
-inline void GKSysLogError(const std::string & msg)
+inline void GKSysLogError(std::string_view msg)
 {
 	GKSysLog(LOG_ERR, error, msg);
 }
 
 inline void GKSysLogWarning(
-	const std::string & msg1,
-	const std::string & msg2)
+	std::string_view msg1,
+	std::string_view msg2)
 {
-	std::ostringstream buffer(std::ios_base::app);
-	buffer << msg1 << msg2;
-	GKSysLogWarning(buffer.str());
+	GKLog2(warning, msg1, msg2);
+	syslog(LOG_WARNING, "%.*s%.*s",
+		static_cast<int>(msg1.size()), msg1.data(),
+		static_cast<int>(msg2.size()), msg2.data()
+	);
 }
 
 inline void GKSysLogError(
-	const std::string & msg1,
-	const std::string & msg2)
+	std::string_view msg1,
+	std::string_view msg2)
 {
-	std::ostringstream buffer(std::ios_base::app);
-	buffer << msg1 << msg2;
-	GKSysLogError(buffer.str());
+	GKLog2(error, msg1, msg2);
+	syslog(LOG_ERR, "%.*s%.*s",
+		static_cast<int>(msg1.size()), msg1.data(),
+		static_cast<int>(msg2.size()), msg2.data()
+	);
 }
 
 

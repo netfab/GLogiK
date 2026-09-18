@@ -24,6 +24,7 @@
 #include <chrono>
 #include <fstream>
 #include <iomanip>
+#include <string_view>
 
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <boost/smart_ptr/make_shared_object.hpp>
@@ -78,12 +79,12 @@ LogStream::LogStream(severity_level severity)
 
 LogStream::~LogStream()
 {
-	BOOST_LOG_SEV(GKLogger, _severity) << _stream.str();
+	BOOST_LOG_SEV(GKLogger, _severity) << this->_stream.str();
 }
 
 LogStream& LogStream::operator<<(std::ostream & (*manip)(std::ostream&))
 {
-	manip(_stream);
+	manip(this->_stream);
 	return *this;
 }
 
@@ -120,7 +121,7 @@ void GKLogging::init(void)
 	GKLogging::initialized = true;
 }
 
-void GKLogging::initConsoleLog(const std::string & baseName)
+void GKLogging::initConsoleLog(std::string_view baseName)
 {
 	if( ! GKLogging::initialized )
 		GKLogging::init();
@@ -149,7 +150,7 @@ void GKLogging::initConsoleLog(const std::string & baseName)
 	logging::core::get()->add_sink(consoleSink);
 }
 
-void GKLogging::initDebugFile(const std::string & baseName, const fs::perms prms)
+void GKLogging::initDebugFile(std::string_view baseName, const fs::perms prms)
 {
 	if( ! GKLogging::initialized )
 		GKLogging::init();
