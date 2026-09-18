@@ -27,11 +27,13 @@
 #include <string>
 #include <string_view>
 
-#include "include/base.hpp"
 #include "include/DepsMap.hpp"
 
 namespace GLogiK
 {
+
+enum class GKeysID : std::uint8_t;
+enum class MKeysID : std::uint8_t;
 
 typedef const char* const c_str;
 
@@ -49,8 +51,8 @@ extern c_str CONST_STRING_METHOD_REPLY_FAILURE;
 
 /* --- ---- --- */
 
-std::string_view getMKeyName(const MKeysID keyID);
 std::string_view getGKeyName(const GKeysID keyID);
+std::string_view getMKeyName(const MKeysID keyID);
 
 void printVersionDeps(
 	const std::string & binaryVersion,

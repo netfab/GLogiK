@@ -25,8 +25,11 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "lib/utils/utils.hpp"
+
+#include "include/base.hpp"
 
 #include "glogik.hpp"
 
@@ -46,29 +49,6 @@ c_str CONST_STRING_METHOD_CALL_FAILURE	= " method call failure : ";
 c_str CONST_STRING_METHOD_REPLY_FAILURE	= " method reply failure : ";
 
 /* --- ---- --- */
-
-std::string_view getMKeyName(const MKeysID keyID)
-{
-	static constexpr std::array<std::pair<MKeysID, const char*>, 4> MKeysID2str =
-	{
-		{
-			{ MKeysID::MKEY_M0, "M0" }, // virtual key
-			{ MKeysID::MKEY_M1, "M1" },
-			{ MKeysID::MKEY_M2, "M2" },
-			{ MKeysID::MKEY_M3, "M3" },
-		}
-	};
-
-	std::string_view MKey = "invalid key";
-	for( const auto & [MKeyID, MKeyName] : MKeysID2str )
-		if(MKeyID == keyID)
-		{
-			MKey = MKeyName;
-			break;
-		}
-
-	return MKey;
-}
 
 std::string_view getGKeyName(const GKeysID keyID)
 {
@@ -105,6 +85,29 @@ std::string_view getGKeyName(const GKeysID keyID)
 		}
 
 	return GKey;
+}
+
+std::string_view getMKeyName(const MKeysID keyID)
+{
+	static constexpr std::array<std::pair<MKeysID, const char*>, 4> MKeysID2str =
+	{
+		{
+			{ MKeysID::MKEY_M0, "M0" }, // virtual key
+			{ MKeysID::MKEY_M1, "M1" },
+			{ MKeysID::MKEY_M2, "M2" },
+			{ MKeysID::MKEY_M3, "M3" },
+		}
+	};
+
+	std::string_view MKey = "invalid key";
+	for( const auto & [MKeyID, MKeyName] : MKeysID2str )
+		if(MKeyID == keyID)
+		{
+			MKey = MKeyName;
+			break;
+		}
+
+	return MKey;
 }
 
 void printVersionDeps(

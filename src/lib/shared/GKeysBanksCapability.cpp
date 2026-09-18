@@ -19,10 +19,7 @@
  *
  */
 
-#include "config.h"
-
 #include <map>
-#include <ostream>
 #include <stdexcept>
 #include <string>
 #include <utility>
