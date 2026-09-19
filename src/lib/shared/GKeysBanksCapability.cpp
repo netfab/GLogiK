@@ -31,12 +31,12 @@
 #include "GKeysBanksCapability.hpp"
 #include "GKeysMacro.hpp"
 
-namespace GLogiK
+namespace LIBShared
 {
 
 using namespace NSGKUtils;
 
-const banksMap_type GKeysBanksCapability::emptyGKeysBanks = {};
+const GLogiK::banksMap_type GKeysBanksCapability::emptyGKeysBanks = {};
 
 GKeysBanksCapability::GKeysBanksCapability(void)
 	:	_currentBankID(MKeysID::MKEY_M0)
@@ -52,6 +52,10 @@ void GKeysBanksCapability::initBanks(
 	const GKeysIDArray_type & GKeysIDArray)
 {
 	GK_LOG_FUNC
+
+	using mBank_type = GLogiK::mBank_type;
+	using GKeysID = GLogiK::GKeysID;
+	using GKeysEvent = GLogiK::GKeysEvent;
 
 	GKLog4(trace, "numBanks: ", MKeysIDArray.size(), "numKeys: ", GKeysIDArray.size())
 
@@ -113,12 +117,12 @@ void GKeysBanksCapability::initBanks(
 	}
 }
 
-banksMap_type & GKeysBanksCapability::getBanks(void)
+auto GKeysBanksCapability::getBanks(void) -> banksMap_type &
 {
 	return _GKeysBanks;
 }
 
-const banksMap_type & GKeysBanksCapability::getBanks(void) const
+auto GKeysBanksCapability::getBanks(void) const -> const banksMap_type &
 {
 	return _GKeysBanks;
 }
@@ -159,12 +163,14 @@ void GKeysBanksCapability::checkBanksKeys(void) noexcept
 		{
 			try
 			{
+				using GKeysID = GLogiK::GKeysID;
+
 				if(it->first == GKeysID::GKEY_INVALID)
 					throw GLogiKExcept("invalid value");
 
 				const std::uint8_t id = toEnumType(it->first);
 
-				if(id > GLogiK::GKeysID::GKEY_MAX)
+				if(id > GKeysID::GKEY_MAX)
 					throw GLogiKExcept("wrong GKeyID value");
 
 				//GKLog2(trace, "checked GKeyID: ", getGKeyName(it->first))
@@ -190,13 +196,16 @@ void GKeysBanksCapability::setCurrentBankID(MKeysID bankID)
 	_currentBankID = bankID;
 }
 
-const MKeysID GKeysBanksCapability::getCurrentBankID(void) const
+auto GKeysBanksCapability::getCurrentBankID(void) const -> const MKeysID
 {
 	return _currentBankID;
 }
 
 void GKeysBanksCapability::resetBank(const MKeysID bankID)
 {
+	using GKeysEvent = GLogiK::GKeysEvent;
+	using GKeyEventType = GLogiK::GKeyEventType;
+
 	try
 	{
 		for(auto & keyEventPair : _GKeysBanks.at(bankID))
@@ -214,9 +223,9 @@ void GKeysBanksCapability::resetBank(const MKeysID bankID)
 	}
 }
 
-const MKeysID GKeysBanksCapability::getBankID(const std::uint8_t num) const
+auto GKeysBanksCapability::getBankID(const std::uint8_t num) const -> const MKeysID
 {
-	if(num > GLogiK::MKeysID::MKEY_MAX)
+	if(num > MKeysID::MKEY_MAX)
 		throw GLogiKExcept("wrong bankID value");
 
 	const MKeysID id = static_cast<MKeysID>(num);
@@ -224,5 +233,5 @@ const MKeysID GKeysBanksCapability::getBankID(const std::uint8_t num) const
 	return id;
 }
 
-} // namespace GLogiK
+} // namespace LIBShared
 

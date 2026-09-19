@@ -37,7 +37,7 @@ InitLog::InitLog(const int& argc, char *argv[])
 {
 	GK_LOG_FUNC
 
-	openlog(GLOGIK_DESKTOP_SERVICE_NAME, LOG_PID|LOG_CONS, LOG_USER);
+	openlog(LIBShared::GLOGIK_DESKTOP_SERVICE_NAME, LOG_PID|LOG_CONS, LOG_USER);
 
 	// initialize logging
 	try
@@ -48,10 +48,13 @@ InitLog::InitLog(const int& argc, char *argv[])
 #if DEBUGGING_ON
 		if(GKLogging::GKDebug)
 		{
-			GKLogging::initDebugFile(GLOGIK_DESKTOP_SERVICE_NAME, fs::owner_read|fs::owner_write|fs::group_read);
+			GKLogging::initDebugFile(
+				LIBShared::GLOGIK_DESKTOP_SERVICE_NAME,
+				fs::owner_read|fs::owner_write|fs::group_read
+			);
 		}
 #endif
-		GKLogging::initConsoleLog(GLOGIK_DESKTOP_SERVICE_NAME);
+		GKLogging::initConsoleLog(LIBShared::GLOGIK_DESKTOP_SERVICE_NAME);
 	}
 	catch (const std::exception & e)
 	{

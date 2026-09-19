@@ -56,7 +56,7 @@ using GKeysIDArray_type = GLogiK::GKeysIDArray_type;
 
 class KeyboardDriver
 #if GKDBUS
-	:	private GLogiK::GKeysMacro
+	:	private LIBShared::GKeysMacro
 #endif
 {
 	private:

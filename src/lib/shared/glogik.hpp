@@ -31,9 +31,12 @@
 
 namespace GLogiK
 {
+	enum class GKeysID : std::uint8_t;
+	enum class MKeysID : std::uint8_t;
+}
 
-enum class GKeysID : std::uint8_t;
-enum class MKeysID : std::uint8_t;
+namespace LIBShared
+{
 
 typedef const char* const c_str;
 
@@ -47,12 +50,12 @@ extern c_str CONST_STRING_METHOD_REPLY_FAILURE;
 
 /* --- ---- --- */
 
-std::string_view getGKeyName(const GKeysID keyID);
-std::string_view getMKeyName(const MKeysID keyID);
+std::string_view getGKeyName(const GLogiK::GKeysID keyID);
+std::string_view getMKeyName(const GLogiK::MKeysID keyID);
 
 void printVersionDeps(
 	const std::string & binaryVersion,
-	const GKDepsMap_type & dependencies
+	const GLogiK::GKDepsMap_type & dependencies
 );
 
 /* --- ---- --- */
@@ -155,6 +158,6 @@ extern c_str GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST;
 extern c_str GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED;
 extern c_str GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED;
 
-} // namespace GLogiK
+} // namespace LIBShared
 
 #endif

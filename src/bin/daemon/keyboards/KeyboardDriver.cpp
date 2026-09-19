@@ -168,6 +168,7 @@ const std::uint8_t KeyboardDriver::handleDeviceModifierKeys(USBDevice & device, 
 	if( device._previousPressedKeys[1] == device._pressedKeys[1] )
 		return 0; /* nothing changed here */
 
+	using KeyEvent = GLogiK::KeyEvent;
 	KeyEvent e;
 	e.interval = interval;
 	std::uint8_t diff = 0;
@@ -304,6 +305,7 @@ void KeyboardDriver::fillDeviceStandardKeysEvents(USBDevice & device)
 				continue;
 			}
 
+			using KeyEvent = GLogiK::KeyEvent;
 			KeyEvent e;
 			e.interval = interval;
 
@@ -414,14 +416,14 @@ void KeyboardDriver::enterDeviceMacroRecordMode(USBDevice & device)
 
 				try
 				{
-					std::string signal(GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_RECORDED);
+					std::string signal(LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_RECORDED);
 					if( device._newMacro.empty() )
-						signal = GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_CLEARED;
+						signal = LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_CLEARED;
 
 					_pDBus->initializeBroadcastSignal(
 						_systemBus,
-						GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-						GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+						LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+						LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 						signal.c_str()
 					);
 
@@ -434,6 +436,7 @@ void KeyboardDriver::enterDeviceMacroRecordMode(USBDevice & device)
 
 					_pDBus->sendBroadcastSignal();
 
+					using LIBShared::getGKeyName;
 					LOG(trace)	<< device.getID() << " sent DBus signal: "
 								<< signal << " - " << getGKeyName(device._GKeyID);
 				}
@@ -467,9 +470,9 @@ void KeyboardDriver::sendDeviceMBankSwitchSignal(USBDevice & device)
 	{
 		_pDBus->initializeBroadcastSignal(
 			_systemBus,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH
 		);
 
 		_pDBus->appendStringToBroadcastSignal(device.getID());
@@ -477,7 +480,8 @@ void KeyboardDriver::sendDeviceMBankSwitchSignal(USBDevice & device)
 
 		_pDBus->sendBroadcastSignal();
 
-		LOG(trace)	<< device.getID() << " " << GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH
+		LOG(trace)	<< device.getID() << " "
+					<< LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH
 					<<	" DBus signal sent - M" << device._MKeyID;
 	}
 	catch (const GKDBusMessageWrongBuild & e)
@@ -665,9 +669,9 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 									{
 										_pDBus->initializeBroadcastSignal(
 											_systemBus,
-											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-											GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-											GK_DBUS_SERVICE_SIGNAL_DEVICE_GKEY_EVENT
+											LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+											LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+											LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_GKEY_EVENT
 										);
 
 										_pDBus->appendStringToBroadcastSignal(devID);
@@ -675,8 +679,9 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 
 										_pDBus->sendBroadcastSignal();
 
+										using LIBShared::getGKeyName;
 										LOG(trace)	<< devID << " "
-													<< GK_DBUS_SERVICE_SIGNAL_DEVICE_GKEY_EVENT
+													<< LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_GKEY_EVENT
 													<< " DBus signal sent - "
 													<< getGKeyName(device._GKeyID);
 									}
@@ -719,9 +724,9 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 								{
 									_pDBus->initializeBroadcastSignal(
 										_systemBus,
-										GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-										GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-										GK_DBUS_SERVICE_SIGNAL_DEVICE_MEDIA_EVENT
+										LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+										LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+										LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_MEDIA_EVENT
 									);
 
 									_pDBus->appendStringToBroadcastSignal(devID);
@@ -730,7 +735,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 									_pDBus->sendBroadcastSignal();
 
 									LOG(trace)	<< devID << " "
-												<< GK_DBUS_SERVICE_SIGNAL_DEVICE_MEDIA_EVENT
+												<< LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_MEDIA_EVENT
 												<< " DBus signal sent - " << device._mediaKey;
 								}
 								catch (const GKDBusMessageWrongBuild & e)

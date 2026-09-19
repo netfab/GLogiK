@@ -57,9 +57,9 @@ void SleepInhibition::startSleepInhibition(
 		case SessionFramework::FW_LOGIND:
 			_pDBus->NSGKDBus::Callback<SIGb2v>::receiveSignal(
 				_systemBus,
-				LOGIND_DBUS_BUS_CONNECTION_NAME,
-				LOGIND_MANAGER_DBUS_OBJECT_PATH,
-				LOGIND_MANAGER_DBUS_INTERFACE,
+				LIBShared::LOGIND_DBUS_BUS_CONNECTION_NAME,
+				LIBShared::LOGIND_MANAGER_DBUS_OBJECT_PATH,
+				LIBShared::LOGIND_MANAGER_DBUS_INTERFACE,
 				"PrepareForSleep",
 				{ {"b", "", "in", "mode"} },
 				std::bind(&SleepInhibition::handleSleepEvent, this, std::placeholders::_1)
@@ -80,8 +80,8 @@ void SleepInhibition::stopSleepInhibition(void) noexcept
 		/* logind */
 		case SessionFramework::FW_LOGIND:
 			_pDBus->removeInterface(_systemBus,
-				LOGIND_MANAGER_DBUS_OBJECT_PATH,
-				LOGIND_MANAGER_DBUS_INTERFACE);
+				LIBShared::LOGIND_MANAGER_DBUS_OBJECT_PATH,
+				LIBShared::LOGIND_MANAGER_DBUS_INTERFACE);
 			break;
 		default:
 			LOG(warning) << "unknown session tracker";
@@ -100,9 +100,9 @@ void SleepInhibition::inhibitSleepState(void)
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
-			LOGIND_DBUS_BUS_CONNECTION_NAME,
-			LOGIND_MANAGER_DBUS_OBJECT_PATH,
-			LOGIND_MANAGER_DBUS_INTERFACE,
+			LIBShared::LOGIND_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::LOGIND_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::LOGIND_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 

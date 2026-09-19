@@ -27,7 +27,7 @@
 
 #define SM_ERROR_STRING_LENGTH 255
 
-namespace GLogiK
+namespace LIBShared
 {
 
 class SessionManager
@@ -92,6 +92,6 @@ class SessionManager
 		);
 };
 
-} // namespace GLogiK
+} // namespace LIBShared
 
 #endif

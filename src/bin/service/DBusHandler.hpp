@@ -94,6 +94,7 @@ class DBusHandler
 		const GKDepsMap_type* const _pDepsMap;
 		NSGKDBus::GKDBus* const _pDBus;
 
+		using SessionFramework = LIBShared::SessionFramework;
 		SessionFramework _sessionFramework;
 
 		bool _devicesUpdatedEvent;	/* true when at least one device

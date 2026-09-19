@@ -39,6 +39,9 @@ namespace GLogiK
 class DaemonAndServiceTab
 	:	public Tab
 {
+	private:
+		using DeviceProperties = LIBShared::DeviceProperties;
+
 	public:
 		DaemonAndServiceTab(
 			NSGKDBus::GKDBus* pDBus,

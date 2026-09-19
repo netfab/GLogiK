@@ -52,6 +52,9 @@ namespace GLogiK
 class GKeysTab
 	:	public Tab
 {
+	private:
+		using DeviceProperties = LIBShared::DeviceProperties;
+
 	public:
 		GKeysTab(
 			NSGKDBus::GKDBus* pDBus,

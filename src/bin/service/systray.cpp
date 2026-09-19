@@ -326,7 +326,7 @@ void DesktopServiceSystray::iconActivated(QSystemTrayIcon::ActivationReason reas
 				args.push_back("-D");
 #endif
 
-			process::runDelayedCommand(GLOGIK_QT_GUI_NAME, args, 100);
+			process::runDelayedCommand(LIBShared::GLOGIK_QT_GUI_NAME, args, 100);
 			break;
 	}
 }

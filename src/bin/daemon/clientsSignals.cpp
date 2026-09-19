@@ -49,7 +49,7 @@ void ClientsSignals::sendSignalToClients(
 	 * but DaemonIsStopping signal must always be sent
 	 */
 	if( ! DaemonControl::isDaemonRunning() )
-		if(signal != GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING)
+		if(signal != LIBShared::GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING)
 			return;
 
 	GKLog2(trace, "sending signal : ", signal)
@@ -58,8 +58,8 @@ void ClientsSignals::sendSignalToClients(
 	{
 		pDBus->initializeBroadcastSignal(
 			_systemBus,
-			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			signal.c_str()
 		);
 		pDBus->sendBroadcastSignal();
@@ -104,8 +104,8 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 	{
 		pDBus->initializeBroadcastSignal(
 			_systemBus,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			signal.c_str()
 		);
 		pDBus->appendStringArrayToBroadcastSignal(devIDArray);

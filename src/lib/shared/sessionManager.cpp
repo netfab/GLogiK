@@ -28,7 +28,7 @@
 
 #include "sessionManager.hpp"
 
-namespace GLogiK
+namespace LIBShared
 {
 
 using namespace NSGKUtils;
@@ -272,5 +272,5 @@ void SessionManager::ShutdownCancelledCallback(
 	GKLog(trace, "SM shutdown cancelled call")
 }
 
-} // namespace GLogiK
+} // namespace LIBShared
 

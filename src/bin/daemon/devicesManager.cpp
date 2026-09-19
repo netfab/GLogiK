@@ -229,9 +229,9 @@ void DevicesManager::initializeDevices(
 #if GKDBUS
 	if( initializedDevices.size() > 0 )
 	{
-		std::string signal(GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED);
+		std::string signal(LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED);
 		if(openDevices)
-			signal = GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED;
+			signal = LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED;
 
 		/* inform clients */
 		this->sendStatusSignalArrayToClients(_numClients, _pDBus, signal, initializedDevices);
@@ -359,7 +359,10 @@ void DevicesManager::startSleepingDevices(void)
 	if( toSend.size() > 0 )
 	{
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(_numClients, _pDBus, GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED, toSend);
+		this->sendStatusSignalArrayToClients(
+			_numClients, _pDBus,
+			LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED, toSend
+		);
 	}
 #endif
 
@@ -400,7 +403,10 @@ void DevicesManager::stopInitializedDevices(void)
 	if( toSend.size() > 0 )
 	{
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(_numClients, _pDBus, GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED, toSend);
+		this->sendStatusSignalArrayToClients(
+			_numClients, _pDBus,
+			LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED, toSend
+		);
 	}
 #endif
 
@@ -448,7 +454,10 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept
 	if( toSend.size() > 0 )
 	{
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(_numClients, _pDBus, GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED, toSend);
+		this->sendStatusSignalArrayToClients(
+			_numClients, _pDBus,
+			LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED, toSend
+		);
 	}
 #endif
 }
@@ -539,7 +548,10 @@ void DevicesManager::checkForUnpluggedDevices(
 	if(toSend.size() > 0)
 	{
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(_numClients, _pDBus, GK_DBUS_SERVICE_SIGNAL_DEVICES_UNPLUGGED, toSend);
+		this->sendStatusSignalArrayToClients(
+			_numClients, _pDBus,
+			LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_UNPLUGGED, toSend
+		);
 	}
 #endif
 
@@ -1119,7 +1131,7 @@ void DevicesManager::startMonitoring(void)
 			/* send signal, even if no client registered, clients could
 			 * have started before daemon */
 			this->sendSignalToClients(
-				_numClients, _pDBus, GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STARTING, true
+				_numClients, _pDBus, LIBShared::GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STARTING, true
 			);
 #endif
 

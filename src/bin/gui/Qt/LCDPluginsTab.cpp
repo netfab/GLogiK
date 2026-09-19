@@ -147,14 +147,14 @@ void LCDPluginsTab::updateTab(
 	_pPluginsTable->clearContents();
 
 	/* same method name as in daemon */
-	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES);
+	const std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES);
 	try
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_sessionBus,
-			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall(devID);

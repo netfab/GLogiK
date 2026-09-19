@@ -78,6 +78,8 @@ GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
 {
 	GK_LOG_FUNC
 
+	using LIBShared::GLOGIK_DAEMON_NAME;
+
 	openlog(GLOGIK_DAEMON_NAME, LOG_PID|LOG_CONS, LOG_DAEMON);
 
 	/* -- -- -- */
@@ -147,7 +149,7 @@ int GLogiKDaemon::run(void)
 
 	GKDepsMap_type dependencies;
 
-	std::string binaryVersion(GLOGIK_DAEMON_NAME);
+	std::string binaryVersion(LIBShared::GLOGIK_DAEMON_NAME);
 	binaryVersion += " version ";
 	binaryVersion += VERSION;
 	GKSysLogInfo(binaryVersion);
@@ -194,7 +196,7 @@ int GLogiKDaemon::run(void)
 		{ // <<<
 #if GKDBUS
 			DBus.init();
-			DBus.connectToSystemBus(GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
+			DBus.connectToSystemBus(LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
 #endif
 
 			DevicesManager devicesManager;
@@ -249,7 +251,7 @@ int GLogiKDaemon::run(void)
 		GKSysLogInfo("non-daemon mode");
 
 		if(_version)
-			printVersionDeps(binaryVersion, dependencies);
+			LIBShared::printVersionDeps(binaryVersion, dependencies);
 	}
 
 	return EXIT_SUCCESS;

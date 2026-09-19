@@ -39,6 +39,9 @@ namespace GLogiK
 class LCDPluginsTab
 	:	public Tab
 {
+	private:
+		using DeviceProperties = LIBShared::DeviceProperties;
+
 	public:
 		LCDPluginsTab(
 			NSGKDBus::GKDBus* pDBus,

@@ -38,6 +38,9 @@ namespace GLogiK
 class BacklightColorTab
 	:	public Tab
 {
+	private:
+		using DeviceProperties = LIBShared::DeviceProperties;
+
 	public:
 		BacklightColorTab(
 			NSGKDBus::GKDBus* pDBus,

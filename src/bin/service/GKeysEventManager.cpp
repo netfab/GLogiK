@@ -60,6 +60,7 @@ void GKeysEventManager::runEvent(
 		const mBank_type & bank = GKeysBanks.at(bankID);
 		try
 		{
+			using LIBShared::getGKeyName;
 			const GKeysEvent & event = bank.at(keyID);
 			GKLog4(trace, "MBank: ", bankID, "GKey: ", getGKeyName(keyID))
 
@@ -144,6 +145,7 @@ const bool GKeysEventManager::clearMacro(
 		{
 			if( ! event.getMacro().empty() )
 			{
+				using LIBShared::getGKeyName;
 				LOG(info) << "MBank: " << bankID
 					<< " - GKey: " << getGKeyName(keyID)
 					<< " - clearing macro";
@@ -188,6 +190,7 @@ void GKeysEventManager::setMacro(
 
 		try
 		{
+			using LIBShared::getGKeyName;
 			LOG(info) << "MBank: " << bankID
 				<< " - GKey: " << getGKeyName(keyID)
 				<< " - Macro Size: " << macro.size()

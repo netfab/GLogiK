@@ -60,12 +60,12 @@ void DBusHandler::cleanGKDBusEvents(void) noexcept
 	GKLog(trace, "cleaning GKDBus events")
 
 	_pDBus->removeInterface(_sessionBus,
-		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE);
+		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE);
 
 	_pDBus->removeInterface(_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 }
 
 /*
@@ -83,20 +83,20 @@ void DBusHandler::initializeGKDBusSignals(void)
 {
 	_pDBus->NSGKDBus::Callback<SIGq2v>::receiveSignal(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
 		{ {"q", "sleep_ms", "in", "sleeping time in milliseconds before spawning service"} },
 		std::bind(&DBusHandler::spawnService, this, std::placeholders::_1)
 	);
 
 	_pDBus->NSGKDBus::Callback<SIGq2v>::receiveSignal(
 		_sessionBus,
-		GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
-		GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
+		LIBShared::GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
 		{ {"q", "sleep_ms", "in", "sleeping time in milliseconds before spawning service"} },
 		std::bind(&DBusHandler::spawnService, this, std::placeholders::_1)
 	);
@@ -115,7 +115,7 @@ void DBusHandler::spawnService(const std::uint16_t delay)
 		args.push_back("-D");
 #endif
 
-	process::runDelayedCommand(GLOGIK_DESKTOP_SERVICE_NAME, args, delay);
+	process::runDelayedCommand(LIBShared::GLOGIK_DESKTOP_SERVICE_NAME, args, delay);
 }
 
 } // namespace GLogiK

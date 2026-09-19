@@ -245,6 +245,8 @@ void GKeysTab::getGKeyEventParams(
 	GKeyID  = _currentGKeyID;
 	eventType = _newEventType;
 
+	using LIBShared::getGKeyName;
+
 	GKLog4(trace, "MBank: ", _currentBankID, "GKey: ", getGKeyName(GKeyID))
 	GKLog4(trace, "eventType: ", GKeysTab::getEventTypeString(eventType), "command: ", eventCommand)
 
@@ -297,6 +299,8 @@ QPushButton* GKeysTab::newGKeyButton(
 	const QString & colorName)
 {
 	GK_LOG_FUNC
+
+	using LIBShared::getGKeyName;
 
 	std::string_view sv = getGKeyName(GKeyID);
 	const QString buttonText( QString::fromUtf8(sv.data(), static_cast<qsizetype>(sv.size())) );
@@ -390,6 +394,8 @@ void GKeysTab::setGKeyEventParams(
 	_newEventType = eventType;
 	_currentGKeyID = GKeyID;
 
+	using LIBShared::getGKeyName;
+
 	GKLog4(trace, "MBank: ", _currentBankID, "GKey: ", getGKeyName(GKeyID))
 	GKLog4(trace, "eventType: ", GKeysTab::getEventTypeString(eventType), "command: ", eventCommand)
 
@@ -406,6 +412,8 @@ void GKeysTab::prepareCommandWidget(
 	_pCommandLineEdit->setObjectName("CommandLineEdit");
 	_pCommandLineEdit->setClearButtonEnabled(true);
 	_pCommandLineEdit->setMaxLength(GKEY_COMMAND_LINE_STRING_MAX_LENGTH);
+
+	using LIBShared::getGKeyName;
 
 	std::string_view sv = getGKeyName(GKeyID);
 
@@ -689,6 +697,8 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 			if(id == MKeysID::MKEY_M0)
 				continue; // skip virtual M0 key
 
+			using LIBShared::getMKeyName;
+
 			std::string_view sv = getMKeyName(id);
 			const QString name( QString::fromUtf8(sv.data(), static_cast<qsizetype>(sv.size())) );
 
@@ -761,6 +771,7 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 
 		//for(const auto & GMacroPair : bank)
 		//{
+		//	using LIBShared::getGKeyName;
 		//	LOG(trace)	<< "key|size: " << getGKeyName(GMacroPair.first)
 		//				<< "|" << (GMacroPair.second).size();
 		//}

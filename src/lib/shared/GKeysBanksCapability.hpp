@@ -34,11 +34,17 @@
 
 namespace boost { namespace serialization { class access; } }
 
-namespace GLogiK
+namespace LIBShared
 {
 
 class GKeysBanksCapability
 {
+	private:
+		using banksMap_type = GLogiK::banksMap_type;
+		using GKeysIDArray_type = GLogiK::GKeysIDArray_type;
+		using MKeysIDArray_type = GLogiK::MKeysIDArray_type;
+		using MKeysID = GLogiK::MKeysID;
+
 	public:
 		static const banksMap_type emptyGKeysBanks;
 
@@ -79,6 +85,6 @@ class GKeysBanksCapability
 		MKeysID _currentBankID;
 };
 
-} // namespace GLogiK
+} // namespace LIBShared
 
 #endif

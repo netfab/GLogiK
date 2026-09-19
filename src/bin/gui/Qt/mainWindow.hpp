@@ -71,6 +71,8 @@ class MainWindow
 		void build(void);
 
 	private:
+		using DeviceProperties = LIBShared::DeviceProperties;
+
 		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
 
 		DeviceProperties _openedConfigurationFile;

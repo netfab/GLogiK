@@ -86,7 +86,7 @@ class Client
 	private:
 		std::string _sessionState;
 		const std::string _sessionObjectPath;
-		std::map<std::string, clientDevice> _devices;
+		std::map<std::string, LIBShared::clientDevice> _devices;
 		bool _check;
 		bool _ready;
 

@@ -36,7 +36,7 @@
 
 namespace boost { namespace serialization { class access; } }
 
-namespace GLogiK
+namespace LIBShared
 {
 
 class BacklightCapability
@@ -78,6 +78,9 @@ class BacklightCapability
 
 class LCDScreenCapability
 {
+	private:
+		using LCDPPArray_type = GLogiK::LCDPPArray_type;
+
 	public:
 		static const LCDPPArray_type _LCDPluginsPropertiesEmptyArray;
 
@@ -114,7 +117,7 @@ class LCDScreenCapability
 class clientDevice
 	:	public BacklightCapability,
 		public LCDScreenCapability,
-		public DeviceID
+		public GLogiK::DeviceID
 {
 	public:
 		clientDevice(void);
@@ -187,7 +190,7 @@ class DeviceProperties
 		}
 };
 
-} // namespace GLogiK
+} // namespace LIBShared
 
 //BOOST_CLASS_VERSION(GLogiK::DeviceProperties, 1)
 

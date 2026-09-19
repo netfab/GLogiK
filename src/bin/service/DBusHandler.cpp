@@ -163,17 +163,17 @@ void DBusHandler::restartService(void)
 
 void DBusHandler::startDevice(const std::string & devID)
 {
-	this->deviceStatusChangeRequest(devID, GK_DBUS_DAEMON_METHOD_START_DEVICE);
+	this->deviceStatusChangeRequest(devID, LIBShared::GK_DBUS_DAEMON_METHOD_START_DEVICE);
 }
 
 void DBusHandler::stopDevice(const std::string & devID)
 {
-	this->deviceStatusChangeRequest(devID, GK_DBUS_DAEMON_METHOD_STOP_DEVICE);
+	this->deviceStatusChangeRequest(devID, LIBShared::GK_DBUS_DAEMON_METHOD_STOP_DEVICE);
 }
 
 void DBusHandler::restartDevice(const std::string & devID)
 {
-	this->deviceStatusChangeRequest(devID, GK_DBUS_DAEMON_METHOD_RESTART_DEVICE);
+	this->deviceStatusChangeRequest(devID, LIBShared::GK_DBUS_DAEMON_METHOD_RESTART_DEVICE);
 }
 
 /* return true if we want to exit on next main loop iteration */
@@ -218,23 +218,23 @@ void DBusHandler::cleanGKDBusEvents(void) noexcept
 
 	/* remove SessionMessageHandler D-Bus interface and object */
 	_pDBus->removeInterface(_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 
 	/* remove GUISessionMessageHandler D-Bus interface and object */
 	_pDBus->removeInterface(_sessionBus,
-		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE);
+		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE);
 
 	/* remove DevicesManager D-Bus interface and object */
 	_pDBus->removeInterface(_systemBus,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE);
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE);
 
 	/* remove ClientsManager D-Bus interface and object */
 	_pDBus->removeInterface(_systemBus,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE);
+		LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE);
 
 	/* remove PropertyChanged signal event */
 	switch(_sessionFramework)
@@ -243,7 +243,7 @@ void DBusHandler::cleanGKDBusEvents(void) noexcept
 		case SessionFramework::FW_LOGIND:
 			_pDBus->removeInterface(_systemBus,
 				_CURRENT_SESSION_DBUS_OBJECT_PATH.c_str(),
-				FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE);
+				LIBShared::FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE);
 			break;
 		default:
 			LOG(warning) << "unknown session tracker";
@@ -251,8 +251,8 @@ void DBusHandler::cleanGKDBusEvents(void) noexcept
 	}
 
 	_pDBus->removeIntrospectableSignalsInterface(_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 }
 
 /*
@@ -298,15 +298,15 @@ void DBusHandler::registerWithDaemon(void)
 		return;
 	}
 
-	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_REGISTER_CLIENT);
+	const std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_REGISTER_CLIENT);
 
 	try
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall(_CURRENT_SESSION_DBUS_OBJECT_PATH);
@@ -380,16 +380,16 @@ void DBusHandler::unregisterWithDaemon(void)
 		return;
 	}
 
-	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_UNREGISTER_CLIENT);
+	const std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_UNREGISTER_CLIENT);
 
 	try
 	{
 		/* telling the daemon we're killing ourself */
 		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -434,15 +434,15 @@ void DBusHandler::getDaemonDependenciesMap(GKDepsMap_type* const dependencies)
 		return;
 	}
 
-	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DAEMON_DEPENDENCIES_MAP);
+	const std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_GET_DAEMON_DEPENDENCIES_MAP);
 
 	try
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -454,7 +454,7 @@ void DBusHandler::getDaemonDependenciesMap(GKDepsMap_type* const dependencies)
 
 			GKDepsMap_type daemonDeps = _pDBus->getNextGKDepsMapArgument();
 			dependencies->insert(daemonDeps.begin(), daemonDeps.end());
-			// /* debug */ printVersionDeps("daemon / service dependencies", (*dependencies));
+			// /* debug */ LIBShared::printVersionDeps("daemon / service dependencies", (*dependencies));
 			return;
 		}
 		catch (const GLogiKExcept & e)
@@ -485,9 +485,9 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
 			/* getting logind current session */
 			_pDBus->initializeRemoteMethodCall(
 				_systemBus,
-				LOGIND_DBUS_BUS_CONNECTION_NAME,
-				LOGIND_MANAGER_DBUS_OBJECT_PATH,
-				LOGIND_MANAGER_DBUS_INTERFACE,
+				LIBShared::LOGIND_DBUS_BUS_CONNECTION_NAME,
+				LIBShared::LOGIND_MANAGER_DBUS_OBJECT_PATH,
+				LIBShared::LOGIND_MANAGER_DBUS_INTERFACE,
 				"GetSessionByPID"
 			);
 			_pDBus->appendUInt32ToRemoteMethodCall(pid);
@@ -559,12 +559,12 @@ const std::string DBusHandler::getCurrentSessionState(void)
 			{
 				_pDBus->initializeRemoteMethodCall(
 					_systemBus,
-					LOGIND_DBUS_BUS_CONNECTION_NAME,
+					LIBShared::LOGIND_DBUS_BUS_CONNECTION_NAME,
 					_CURRENT_SESSION_DBUS_OBJECT_PATH.c_str(),
-					FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE,
+					LIBShared::FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE,
 					remoteMethod.c_str()
 				);
-				_pDBus->appendStringToRemoteMethodCall(LOGIND_SESSION_DBUS_INTERFACE);
+				_pDBus->appendStringToRemoteMethodCall(LIBShared::LOGIND_SESSION_DBUS_INTERFACE);
 				_pDBus->appendStringToRemoteMethodCall("State");
 				_pDBus->sendRemoteMethodCall();
 
@@ -602,15 +602,15 @@ void DBusHandler::reportChangedState(void) noexcept
 		return;
 	}
 
-	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_UPDATE_CLIENT_STATE);
+	const std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_UPDATE_CLIENT_STATE);
 
 	try
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -658,16 +658,16 @@ void DBusHandler::initializeDevices(void)
 	std::string device;
 	std::vector<std::string> devicesID;
 
-	std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_STARTED_DEVICES);
+	std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_GET_STARTED_DEVICES);
 
 	/* started devices */
 	try
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -693,16 +693,16 @@ void DBusHandler::initializeDevices(void)
 
 	devicesID.clear();
 
-	remoteMethod = GK_DBUS_DAEMON_METHOD_SET_CLIENT_READY;
+	remoteMethod = LIBShared::GK_DBUS_DAEMON_METHOD_SET_CLIENT_READY;
 
 	/* saying the daemon that we are ready */
 	try
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -733,16 +733,16 @@ void DBusHandler::initializeDevices(void)
 		LogRemoteCallFailure
 	}
 
-	remoteMethod = GK_DBUS_DAEMON_METHOD_GET_STOPPED_DEVICES;
+	remoteMethod = LIBShared::GK_DBUS_DAEMON_METHOD_GET_STOPPED_DEVICES;
 
 	/* stopped devices */
 	try
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -783,20 +783,20 @@ void DBusHandler::sendServiceStartRequest(void) const
 		 */
 		_pDBus->initializeBroadcastSignal(
 			_sessionBus,
-			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-			GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST
+			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+			LIBShared::GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST
 		);
 		_pDBus->appendUInt16ToBroadcastSignal(300);
 		_pDBus->sendBroadcastSignal();
 
-		LOG(info) << "sent signal: " << GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST;
+		LOG(info) << "sent signal: " << LIBShared::GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST;
 	}
 	catch (const GKDBusMessageWrongBuild & e)
 	{
 		_pDBus->abandonBroadcastSignal();
 		LOG(error)	<< "failed to send signal: "
-					<< GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST
+					<< LIBShared::GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST
 					<< " - " << e.what();
 	}
 }
@@ -810,19 +810,19 @@ void DBusHandler::sendDevicesUpdatedSignal(void)
 		/* send DevicesUpdated signal to GUI applications */
 		_pDBus->initializeBroadcastSignal(
 			_sessionBus,
-			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-			GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED
+			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+			LIBShared::GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED
 		);
 		_pDBus->sendBroadcastSignal();
 
-		LOG(info) << "sent signal: " << GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED;
+		LOG(info) << "sent signal: " << LIBShared::GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED;
 	}
 	catch (const GKDBusMessageWrongBuild & e)
 	{
 		_pDBus->abandonBroadcastSignal();
 		LOG(error)	<< "failed to send signal: "
-					<< GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED
+					<< LIBShared::GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED
 					<< " - " << e.what();
 	}
 }
@@ -847,9 +847,9 @@ void DBusHandler::initializeGKDBusSignals(void)
 		case SessionFramework::FW_LOGIND:
 			_pDBus->NSGKDBus::Callback<SIGv2v>::receiveSignal(
 				_systemBus,
-				LOGIND_DBUS_BUS_CONNECTION_NAME,
+				LIBShared::LOGIND_DBUS_BUS_CONNECTION_NAME,
 				_CURRENT_SESSION_DBUS_OBJECT_PATH.c_str(),
-				FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE,
+				LIBShared::FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE,
 				"PropertiesChanged",
 				{},
 				std::bind(&DBusHandler::updateSessionState, this)
@@ -871,40 +871,40 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- */
 	_pDBus->NSGKDBus::Callback<SIGas2v>::receiveSignal(
 		_systemBus,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED,
+		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED,
 		{	{"as", "", "in", "array of started devices ID strings"} },
 		std::bind(&DBusHandler::devicesStarted, this, std::placeholders::_1)
 	);
 
 	_pDBus->NSGKDBus::Callback<SIGas2v>::receiveSignal(
 		_systemBus,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED,
+		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED,
 		{	{"as", "", "in", "array of stopped devices ID strings"} },
 		std::bind(&DBusHandler::devicesStopped, this, std::placeholders::_1)
 	);
 
 	_pDBus->NSGKDBus::Callback<SIGas2v>::receiveSignal(
 		_systemBus,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_SIGNAL_DEVICES_UNPLUGGED,
+		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_UNPLUGGED,
 		{	{"as", "", "in", "array of unplugged devices ID strings"} },
 		std::bind(&DBusHandler::devicesUnplugged, this, std::placeholders::_1)
 	);
 
 	_pDBus->NSGKDBus::Callback<SIGsm2v>::receiveSignal(
 		_systemBus,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH,
+		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH,
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_bankID", "in", "macro bankID"}
 		},
@@ -915,10 +915,10 @@ void DBusHandler::initializeGKDBusSignals(void)
 
 	_pDBus->NSGKDBus::Callback<SIGsGM2v>::receiveSignal(
 		_systemBus,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_RECORDED,
+		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_RECORDED,
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_keyID", "in", "macro key ID"},
 			{"a(yyq)", "macro_array", "in", "macro array"}
@@ -930,10 +930,10 @@ void DBusHandler::initializeGKDBusSignals(void)
 
 	_pDBus->NSGKDBus::Callback<SIGsG2v>::receiveSignal(
 		_systemBus,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_CLEARED,
+		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_MACRO_CLEARED,
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_keyID", "in", "macro key ID"}
 		},
@@ -944,10 +944,10 @@ void DBusHandler::initializeGKDBusSignals(void)
 
 	_pDBus->NSGKDBus::Callback<SIGsG2v>::receiveSignal(
 		_systemBus,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_SIGNAL_DEVICE_GKEY_EVENT,
+		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_GKEY_EVENT,
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_keyID", "in", "macro key ID"}
 		},
@@ -958,10 +958,10 @@ void DBusHandler::initializeGKDBusSignals(void)
 
 	_pDBus->NSGKDBus::Callback<SIGss2v>::receiveSignal(
 		_systemBus,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_SIGNAL_DEVICE_MEDIA_EVENT,
+		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_MEDIA_EVENT,
 		{	{"s", "device_id", "in", "device ID"},
 			{"s", "media_key_event", "in", "media key event"}
 		},
@@ -975,30 +975,30 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- */
 	_pDBus->NSGKDBus::Callback<SIGv2v>::receiveSignal(
 		_systemBus,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING,
+		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING,
 		{},
 		std::bind(&DBusHandler::daemonIsStopping, this)
 	);
 
 	_pDBus->NSGKDBus::Callback<SIGv2v>::receiveSignal(
 		_systemBus,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STARTING,
+		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STARTING,
 		{},
 		std::bind(&DBusHandler::daemonIsStarting, this)
 	);
 
 	_pDBus->NSGKDBus::Callback<SIGv2v>::receiveSignal(
 		_systemBus,
-		GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
-		GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_SIGNAL_REPORT_YOURSELF,
+		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_SIGNAL_REPORT_YOURSELF,
 		{},
 		std::bind(&DBusHandler::reportChangedState, this)
 	);
@@ -1008,10 +1008,10 @@ void DBusHandler::initializeGKDBusSignals(void)
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 	_pDBus->NSGKDBus::Callback<SIGss2v>::receiveSignal(
 		_sessionBus,
-		GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST,
+		LIBShared::GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST,
 		{	{"s", "device_id", "in", "device ID"},
 			{"s", "wanted_status", "in", "wanted status"}	},
 		std::bind(&DBusHandler::deviceStatusChangeRequest, this,
@@ -1020,25 +1020,25 @@ void DBusHandler::initializeGKDBusSignals(void)
 
 	_pDBus->declareIntrospectableSignal(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
 		{ {"q", "sleep_ms", "out", "sleeping time in milliseconds before spawning service"} }
 	);
 
 	_pDBus->declareIntrospectableSignal(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED,
 		{}
 	);
 
 	_pDBus->declareIntrospectableSignal(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED,
 		{ {"s", "device_id", "out", "device ID"} }
 	);
 }
@@ -1053,27 +1053,27 @@ void DBusHandler::initializeGKDBusMethods(void)
 
 	_pDBus->NSGKDBus::Callback<SIGs2as>::exposeMethod(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_METHOD_GET_DEVICES_LIST,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_METHOD_GET_DEVICES_LIST,
 		{	{"s", r_ed, "in", r_ed},
 			{"as", "array_of_strings", "out", "array of devices ID and configuration files"} },
 		std::bind(&DBusHandler::getDevicesList, this, r_ed) );
 
 	_pDBus->NSGKDBus::Callback<SIGs2as>::exposeMethod(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_METHOD_GET_INFORMATIONS,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_METHOD_GET_INFORMATIONS,
 		{	{"s", r_ed, "in", r_ed},
 			{"as", "array_of_strings", "out", "array of informations strings"} },
 		std::bind(&DBusHandler::getInformations, this, r_ed) );
 
 	_pDBus->NSGKDBus::Callback<SIGss2aP>::exposeMethod(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES, /* same method name as in daemon */
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES, /* same method name as in daemon */
 		{	{"s", "device_id", "in", "device ID"},
 			{"s", r_ed, "in", r_ed},
 			{"a(tss)", "get_lcd_plugins_properties_array", "out", "LCDPluginsProperties array"} },
@@ -1081,9 +1081,9 @@ void DBusHandler::initializeGKDBusMethods(void)
 
 	_pDBus->NSGKDBus::Callback<SIGs2D>::exposeMethod(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_METHOD_GET_EXECUTABLES_DEPENDENCIES_MAP,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_METHOD_GET_EXECUTABLES_DEPENDENCIES_MAP,
 		{	{"s", r_ed, "in", r_ed},
 			{"a(yta(sss))", "dependencies_map", "out", "array of executable dependencies"} },
 		std::bind(&DBusHandler::getExecutablesDependenciesMap, this, r_ed) );
@@ -1142,7 +1142,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 		"number of devices : ", devicesID.size()
 	)
 
-	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
+	const std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
 	bool devicesUpdated = false;
 
 	for(const auto& devID : devicesID)
@@ -1151,9 +1151,9 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 		{
 			_pDBus->initializeRemoteMethodCall(
 				_systemBus,
-				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -1212,7 +1212,7 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
 		"number of devices : ", devicesID.size()
 	)
 
-	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
+	const std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
 	bool devicesUpdated = false;
 
 	for(const auto& devID : devicesID)
@@ -1221,9 +1221,9 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
 		{
 			_pDBus->initializeRemoteMethodCall(
 				_systemBus,
-				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -1273,7 +1273,7 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 		"number of devices : ", devicesID.size()
 	)
 
-	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
+	const std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS);
 	bool devicesUpdated = false;
 
 	for(const auto& devID : devicesID)
@@ -1282,9 +1282,9 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 		{
 			_pDBus->initializeRemoteMethodCall(
 				_systemBus,
-				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -1345,7 +1345,7 @@ void DBusHandler::deviceMBankSwitch(
 		return;
 	}
 
-	LOG(info)	<< "received signal: " << GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH
+	LOG(info)	<< "received signal: " << LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_MBANK_SWITCH
 				<< " - " << bankID;
 
 	try
@@ -1527,9 +1527,9 @@ void DBusHandler::deviceStatusChangeRequest(
 	/* request coming from GUI on session bus, but
 	 * methods names are the same as in the daemon
 	 */
-	if(	(remoteMethod !=  GK_DBUS_DAEMON_METHOD_STOP_DEVICE) and
-		(remoteMethod !=  GK_DBUS_DAEMON_METHOD_START_DEVICE) and
-		(remoteMethod !=  GK_DBUS_DAEMON_METHOD_RESTART_DEVICE) )
+	if(	(remoteMethod !=  LIBShared::GK_DBUS_DAEMON_METHOD_STOP_DEVICE) and
+		(remoteMethod !=  LIBShared::GK_DBUS_DAEMON_METHOD_START_DEVICE) and
+		(remoteMethod !=  LIBShared::GK_DBUS_DAEMON_METHOD_RESTART_DEVICE) )
 	{
 		LOG(warning) << devID << " ignoring wrong remote method : " << remoteMethod;
 		return;
@@ -1539,9 +1539,9 @@ void DBusHandler::deviceStatusChangeRequest(
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);

@@ -265,6 +265,7 @@ void DevicesHandler::saveDeviceConfigurationFile(
 			GKLog2(warning, devID, "device ID already exists in container")
 		}
 
+		using DeviceConfigurationFile = LIBShared::DeviceConfigurationFile;
 		DeviceConfigurationFile::save(filePath.string(), device);
 
 		try
@@ -297,9 +298,9 @@ void DevicesHandler::sendDeviceConfigurationSavedSignal(const std::string & devI
 		/* send DeviceConfigurationSaved signal to GUI applications */
 		_pDBus->initializeBroadcastSignal(
 			_sessionBus,
-			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-			GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED
+			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+			LIBShared::GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED
 		);
 		_pDBus->appendStringToBroadcastSignal(devID);
 		_pDBus->sendBroadcastSignal();
@@ -319,6 +320,7 @@ void DevicesHandler::loadDeviceConfigurationFile(DeviceProperties & device) noex
 	filePath /= device.getVendor();
 	filePath /= device.getConfigFilePath();
 
+	using DeviceConfigurationFile = LIBShared::DeviceConfigurationFile;
 	DeviceConfigurationFile::load(filePath.string(), device);
 }
 
@@ -331,15 +333,15 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 	if( this->checkDeviceCapability(device, Caps::GK_BACKLIGHT_COLOR) )
 	{ // <<<
 		/* set backlight color */
-		const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_SET_DEVICE_BACKLIGHT_COLOR);
+		const std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_SET_DEVICE_BACKLIGHT_COLOR);
 
 		try
 		{
 			_pDBus->initializeRemoteMethodCall(
 				_systemBus,
-				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -384,7 +386,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 
 	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) )
 	{ // <<<
-		const std::string remoteMethod = GK_DBUS_DAEMON_METHOD_SET_DEVICE_LCD_PLUGINS_MASK;
+		const std::string remoteMethod = LIBShared::GK_DBUS_DAEMON_METHOD_SET_DEVICE_LCD_PLUGINS_MASK;
 
 		try
 		{
@@ -393,9 +395,9 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 
 			_pDBus->initializeRemoteMethodCall(
 				_systemBus,
-				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -441,15 +443,15 @@ void DevicesHandler::setDeviceProperties(
 	GK_LOG_FUNC
 
 	/* initialize device properties */
-	std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_PROPERTIES);
+	std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_PROPERTIES);
 
 	try
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -483,15 +485,15 @@ void DevicesHandler::setDeviceProperties(
 	if( this->checkDeviceCapability(device, Caps::GK_LCD_SCREEN) )
 	{ // <<<
 		/* get LCD plugins properties */
-		remoteMethod = GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES;
+		remoteMethod = LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES;
 
 		try
 		{
 			_pDBus->initializeRemoteMethodCall(
 				_systemBus,
-				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-				GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+				LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -735,15 +737,15 @@ void DevicesHandler::unrefDevice(const std::string & devID)
 		_stoppedDevices.erase(devID);
 		GKLog2(trace, devID, " device erased")
 
-		std::string remoteMethod(GK_DBUS_DAEMON_METHOD_DELETE_DEVICE_CONFIGURATION);
+		std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_DELETE_DEVICE_CONFIGURATION);
 
 		try
 		{
 			_pDBus->initializeRemoteMethodCall(
 				_systemBus,
-				GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
-				GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
+				LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+				LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
+				LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 				remoteMethod.c_str()
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -933,15 +935,15 @@ const LCDPPArray_type & DevicesHandler::getDeviceLCDPluginsProperties(const std:
 const MKeysIDArray_type DevicesHandler::getDeviceMKeysIDArray(const std::string & devID)
 {
 	MKeysIDArray_type MKeysIDArray;
-	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_MKEYSID_ARRAY);
+	const std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_MKEYSID_ARRAY);
 
 	try
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
@@ -973,15 +975,15 @@ const MKeysIDArray_type DevicesHandler::getDeviceMKeysIDArray(const std::string 
 const GKeysIDArray_type DevicesHandler::getDeviceGKeysIDArray(const std::string & devID)
 {
 	GKeysIDArray_type GKeysIDArray;
-	const std::string remoteMethod(GK_DBUS_DAEMON_METHOD_GET_DEVICE_GKEYSID_ARRAY);
+	const std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_GKEYSID_ARRAY);
 
 	try
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_systemBus,
-			GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
-			GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);

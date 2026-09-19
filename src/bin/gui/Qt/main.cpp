@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 		window.build();
 
 		window.setFixedSize(800, 600);
-		window.setWindowTitle(GLOGIK_QT_GUI_NAME);
+		window.setWindowTitle(LIBShared::GLOGIK_QT_GUI_NAME);
 
 		{
 			QString icon(DATA_DIR);

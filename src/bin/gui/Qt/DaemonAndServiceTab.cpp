@@ -130,9 +130,9 @@ void DaemonAndServiceTab::buildTab(void)
 
 			_pDBus->declareIntrospectableSignal(
 				_sessionBus,
-				GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
-				GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
-				GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
+				LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+				LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
+				LIBShared::GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
 				{ {"q", "sleep_ms", "out", "sleeping time in milliseconds before spawning service"} }
 			);
 		}
@@ -169,14 +169,14 @@ void DaemonAndServiceTab::updateTab(void)
 		_pStartButton->setEnabled(false);
 	}
 
-	const std::string remoteMethod(GK_DBUS_SERVICE_METHOD_GET_INFORMATIONS);
+	const std::string remoteMethod(LIBShared::GK_DBUS_SERVICE_METHOD_GET_INFORMATIONS);
 	try
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_sessionBus,
-			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall("reserved");
@@ -246,9 +246,9 @@ void DaemonAndServiceTab::sendServiceStartRequest(void)
 		/* asking the launcher to spawn the service after sleeping 100 ms */
 		_pDBus->initializeBroadcastSignal(
 			_sessionBus,
-			GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
-			GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST
+			LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
+			LIBShared::GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST
 		);
 		_pDBus->appendUInt16ToBroadcastSignal(100);
 		_pDBus->sendBroadcastSignal();

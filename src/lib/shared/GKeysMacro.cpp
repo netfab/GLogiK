@@ -26,12 +26,12 @@
 
 #include "lib/utils/utils.hpp"
 
-namespace GLogiK
+namespace LIBShared
 {
 
 using namespace NSGKUtils;
 
-const macro_type GKeysMacro::emptyMacro = {};
+const GLogiK::macro_type GKeysMacro::emptyMacro = {};
 
 void GKeysMacro::checkMacro(macro_type & macro)
 {
@@ -42,6 +42,7 @@ void GKeysMacro::checkMacro(macro_type & macro)
 	this->fixMacroReleaseEvents(pressedEvents, releasedEvents, macro);
 
 	//// debug code
+	//using EventValue = GLogiK::EventValue;
 	//KeyEvent e1(KEY_UNKNOWN, EventValue::EVENT_KEY_PRESS, 1);
 	//KeyEvent e2(KEY_UNKNOWN, EventValue::EVENT_KEY_RELEASE, 1);
 	//for(unsigned int i = 0; i < 12; ++i)
@@ -65,6 +66,8 @@ void GKeysMacro::fillInVectors(
 	std::vector<MacroEvent> & pressedEvents,
 	std::vector<MacroEvent> & releasedEvents)
 {
+	using EventValue = GLogiK::EventValue;
+
 	for(unsigned int i = 0; i != macro.size(); ++i)
 	{
 		const auto & keyEvent = macro[i];
@@ -103,6 +106,8 @@ void GKeysMacro::fixMacroReleaseEvents(
 		}
 		if( ! found )
 		{
+			using EventValue = GLogiK::EventValue;
+
 			LOG(warning) << "missing release event for index " << toUInt(pressed.index) << " - adding event";
 			KeyEvent e = pressed.key;
 			e.event = EventValue::EVENT_KEY_RELEASE;
@@ -197,5 +202,5 @@ void GKeysMacro::fixMacroSize(
 
 }
 
-} // namespace GLogiK
+} // namespace LIBShared
 

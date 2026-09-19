@@ -69,7 +69,7 @@ DesktopService::~DesktopService()
 {
 	GK_LOG_FUNC
 
-	LOG(info) << GLOGIK_DESKTOP_SERVICE_NAME << " desktop service process exiting, bye !";
+	LOG(info) << LIBShared::GLOGIK_DESKTOP_SERVICE_NAME << " desktop service process exiting, bye !";
 }
 
 int DesktopService::run(void)
@@ -80,7 +80,7 @@ int DesktopService::run(void)
 
 	GKDepsMap_type dependencies;
 
-	std::string binaryVersion(GLOGIK_DESKTOP_SERVICE_NAME);
+	std::string binaryVersion(LIBShared::GLOGIK_DESKTOP_SERVICE_NAME);
 	binaryVersion += " version ";
 	binaryVersion += VERSION;
 
@@ -105,7 +105,7 @@ int DesktopService::run(void)
 
 	if(_version)
 	{
-		printVersionDeps(binaryVersion, dependencies);
+		LIBShared::printVersionDeps(binaryVersion, dependencies);
 		return EXIT_SUCCESS;
 	}
 
@@ -122,14 +122,14 @@ int DesktopService::run(void)
 	{
 #if HAVE_SYSTRAY && HAVE_QT
 		int argc = 1;
-		char * argv[] = {(char*)GLOGIK_DESKTOP_SERVICE_NAME};
+		char * argv[] = {(char*)LIBShared::GLOGIK_DESKTOP_SERVICE_NAME};
 		QApplication app(argc, argv);
 #endif
 
 		FileSystem GKfs;
 		/* SessionManager must be instantiated *after* QApplication
 		 * to take precedence over SIGINT/SIGTERM signals. */
-		SessionManager session;
+		LIBShared::SessionManager session;
 
 		NSGKDBus::GKDBus DBus;
 
@@ -147,11 +147,11 @@ int DesktopService::run(void)
 			DBus.init(); // may throw
 
 			DBus.connectToSystemBus( // may throw
-				GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+				LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 				NSGKDBus::ConnectionFlag::GKDBUS_MULTIPLE
 			);
 			DBus.connectToSessionBus( // may throw
-				GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+				LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 				NSGKDBus::ConnectionFlag::GKDBUS_MULTIPLE
 			);
 

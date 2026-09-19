@@ -33,8 +33,11 @@ namespace GLogiK
 {
 
 class GKeysEventManager
-	:	private GKeysMacro
+	:	private LIBShared::GKeysMacro
 {
+	private:
+		using macro_type = GLogiK::macro_type;
+
 	public:
 		GKeysEventManager(void);
 		~GKeysEventManager(void);

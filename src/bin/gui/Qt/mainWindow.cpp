@@ -88,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent)
 		_statusBarTimeout(3000),
 		_ignoreNextSignal(false)
 {
-	openlog(GLOGIK_QT_GUI_NAME, LOG_PID|LOG_CONS, LOG_USER);
+	openlog(LIBShared::GLOGIK_QT_GUI_NAME, LOG_PID|LOG_CONS, LOG_USER);
 }
 
 MainWindow::~MainWindow()
@@ -126,9 +126,12 @@ void MainWindow::init(const int& argc, char *argv[])
 
 #if DEBUGGING_ON
 		if(GKLogging::GKDebug)
-			GKLogging::initDebugFile(GLOGIK_QT_GUI_NAME, fs::owner_read|fs::owner_write|fs::group_read);
+			GKLogging::initDebugFile(
+				LIBShared::GLOGIK_QT_GUI_NAME,
+				fs::owner_read|fs::owner_write|fs::group_read
+			);
 #endif
-		GKLogging::initConsoleLog(GLOGIK_QT_GUI_NAME);
+		GKLogging::initConsoleLog(LIBShared::GLOGIK_QT_GUI_NAME);
 	}
 	catch (const std::exception & e)
 	{
@@ -140,7 +143,7 @@ void MainWindow::init(const int& argc, char *argv[])
 	/* -- -- -- */
 	/* -- -- -- */
 
-	LOG(info) << "Starting " << GLOGIK_QT_GUI_NAME << " vers. " << VERSION;
+	LOG(info) << "Starting " << LIBShared::GLOGIK_QT_GUI_NAME << " vers. " << VERSION;
 
 	process::setSignalHandler(SIGINT, MainWindow::handleSignal);
 	process::setSignalHandler(SIGTERM, MainWindow::handleSignal);
@@ -156,7 +159,7 @@ void MainWindow::init(const int& argc, char *argv[])
 		throw GLogiKBadAlloc("GKDBus bad allocation");
 	}
 
-	_pDBus->connectToSessionBus(GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME);
+	_pDBus->connectToSessionBus(LIBShared::GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME);
 
 	this->statusBar();
 
@@ -337,20 +340,20 @@ void MainWindow::build(void)
 	/* initializing GKDBus signals */
 	_pDBus->NSGKDBus::Callback<SIGv2v>::receiveSignal(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED,
 		{},
 		std::bind(&MainWindow::resetInterface, this)
 	);
 
 	_pDBus->NSGKDBus::Callback<SIGs2v>::receiveSignal(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-		GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED,
 		{ {"s", "device_id", "in", "device ID"}, },
 		std::bind(&MainWindow::configurationFileUpdated, this, std::placeholders::_1)
 	);
@@ -405,18 +408,18 @@ void MainWindow::aboutToQuit(void)
 
 	_pDBus->removeInterface(
 		_sessionBus,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE);
 
 	_pDBus->removeIntrospectableSignalsInterface(_sessionBus,
-		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE);
+		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE);
 
 	_pDBus->exit();
 
 	delete _pDBus; _pDBus = nullptr;
 
-	LOG(info) << GLOGIK_QT_GUI_NAME << " MainWindow process exiting, bye !";
+	LOG(info) << LIBShared::GLOGIK_QT_GUI_NAME << " MainWindow process exiting, bye !";
 }
 
 void MainWindow::configurationFileUpdated(const std::string & devID)
@@ -472,14 +475,14 @@ void MainWindow::getExecutablesDependenciesMap(void)
 
 	GKLog(trace, "getting executables dependencies map")
 
-	const std::string remoteMethod(GK_DBUS_SERVICE_METHOD_GET_EXECUTABLES_DEPENDENCIES_MAP);
+	const std::string remoteMethod(LIBShared::GK_DBUS_SERVICE_METHOD_GET_EXECUTABLES_DEPENDENCIES_MAP);
 	try
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_sessionBus,
-			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall("reserved");
@@ -524,7 +527,7 @@ void MainWindow::aboutDialog(void)
 		about->setAttribute(Qt::WA_DeleteOnClose);
 		about->setFixedSize(560, 330);
 
-		QString title("About "); title += GLOGIK_QT_GUI_NAME;
+		QString title("About "); title += LIBShared::GLOGIK_QT_GUI_NAME;
 		about->setWindowTitle(title);
 
 		about->open();
@@ -606,6 +609,7 @@ void MainWindow::saveConfigurationFile(const TabApplyButton tab)
 		/* desktop service will detect that configuration file was modified,
 		 * and will send us a signal. Ignore it. */
 		_ignoreNextSignal = true;
+		using DeviceConfigurationFile = LIBShared::DeviceConfigurationFile;
 		DeviceConfigurationFile::save(_configurationFilePath.string(), _openedConfigurationFile);
 
 		QString msg("Configuration file saved");
@@ -662,6 +666,7 @@ void MainWindow::updateInterface(int index)
 					_openedConfigurationFile.setProduct(device.getProduct());
 					_openedConfigurationFile.setName(device.getName());
 					_openedConfigurationFile.setConfigFilePath(device.getConfigFilePath());
+					using DeviceConfigurationFile = LIBShared::DeviceConfigurationFile;
 					DeviceConfigurationFile::load(
 						_configurationFilePath.string(), _openedConfigurationFile
 					);
@@ -718,14 +723,14 @@ void MainWindow::updateDevicesList(void)
 
 	_devices.clear();
 
-	const std::string remoteMethod(GK_DBUS_SERVICE_METHOD_GET_DEVICES_LIST);
+	const std::string remoteMethod(LIBShared::GK_DBUS_SERVICE_METHOD_GET_DEVICES_LIST);
 	try
 	{
 		_pDBus->initializeRemoteMethodCall(
 			_sessionBus,
-			GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 			remoteMethod.c_str()
 		);
 		_pDBus->appendStringToRemoteMethodCall("reserved");

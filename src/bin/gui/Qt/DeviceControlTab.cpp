@@ -131,9 +131,9 @@ void DeviceControlTab::buildTab(void)
 
 	_pDBus->declareIntrospectableSignal(
 		_sessionBus,
-		GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
-		GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
-		GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST,
+		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
+		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST,
 		{	{"s", "device_id", "out", "device ID"},
 			{"s", "wanted_status", "out", "wanted status"}
 		}
@@ -209,9 +209,9 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 	{
 		_pDBus->initializeBroadcastSignal(
 			_sessionBus,
-			GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
-			GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
-			GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST
+			LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
+			LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
+			LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST
 		);
 		_pDBus->appendStringToBroadcastSignal(_devID);
 		_pDBus->appendStringToBroadcastSignal(signal);
@@ -229,19 +229,19 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 void DeviceControlTab::startSignal(void)
 {
 	/* same method name as in daemon */
-	this->sendStatusSignal(GK_DBUS_DAEMON_METHOD_START_DEVICE);
+	this->sendStatusSignal(LIBShared::GK_DBUS_DAEMON_METHOD_START_DEVICE);
 }
 
 void DeviceControlTab::stopSignal(void)
 {
 	/* same method name as in daemon */
-	this->sendStatusSignal(GK_DBUS_DAEMON_METHOD_STOP_DEVICE);
+	this->sendStatusSignal(LIBShared::GK_DBUS_DAEMON_METHOD_STOP_DEVICE);
 }
 
 void DeviceControlTab::restartSignal(void)
 {
 	/* same method name as in daemon */
-	this->sendStatusSignal(GK_DBUS_DAEMON_METHOD_RESTART_DEVICE);
+	this->sendStatusSignal(LIBShared::GK_DBUS_DAEMON_METHOD_RESTART_DEVICE);
 }
 
 } // namespace GLogiK

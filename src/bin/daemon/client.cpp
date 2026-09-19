@@ -105,7 +105,7 @@ void Client::initializeDevice(
 	{
 		GKLog2(trace, devID, " initializing properties")
 
-		clientDevice device;
+		LIBShared::clientDevice device;
 		/* vendor, model, name, capabilities */
 		device.setProperties(
 			pDevicesManager->getDeviceVendor(devID),
@@ -148,7 +148,7 @@ const bool Client::setDeviceBacklightColor(
 
 	try
 	{
-		clientDevice & device = _devices.at(devID);
+		LIBShared::clientDevice & device = _devices.at(devID);
 		device.setRGBBytes(r, g, b);
 		return true;
 	}
@@ -168,7 +168,7 @@ void Client::setDeviceActiveUser(
 
 	try
 	{
-		const clientDevice & device = _devices.at(devID);
+		const LIBShared::clientDevice & device = _devices.at(devID);
 
 		std::uint8_t r, g, b = 0; device.getRGBBytes(r, g, b);
 
@@ -196,7 +196,7 @@ const bool Client::setDeviceLCDPluginsMask(
 
 	try
 	{
-		clientDevice & device = _devices.at(devID);
+		LIBShared::clientDevice & device = _devices.at(devID);
 		device.setLCDPluginsMask(maskID, mask);
 		ret = true;
 	}

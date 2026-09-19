@@ -24,7 +24,7 @@
 
 #include <string>
 
-namespace GLogiK
+namespace LIBShared
 {
 class DeviceProperties;
 
@@ -49,7 +49,7 @@ class DeviceConfigurationFile
 
 };
 
-} // namespace GLogiK
+} // namespace LIBShared
 
 #endif
 

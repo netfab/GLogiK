@@ -48,7 +48,7 @@ void AboutTab::buildTab(void)
 		vBox->addWidget( this->getHLine() );
 
 		{
-			QString mainText(GLOGIK_QT_GUI_NAME);
+			QString mainText(LIBShared::GLOGIK_QT_GUI_NAME);
 			mainText += " ";
 			mainText += VERSION;
 

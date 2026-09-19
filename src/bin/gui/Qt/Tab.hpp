@@ -31,9 +31,13 @@
 #include "lib/shared/deviceProperties.hpp"
 
 #define LogRemoteCallFailure \
-	LOG(critical) << remoteMethod.c_str() << CONST_STRING_METHOD_CALL_FAILURE << e.what();
+	LOG(critical) \
+		<< remoteMethod.c_str() \
+		<< LIBShared::CONST_STRING_METHOD_CALL_FAILURE << e.what();
 #define LogRemoteCallGetReplyFailure \
-	LOG(error) << remoteMethod.c_str() << CONST_STRING_METHOD_REPLY_FAILURE << e.what();
+	LOG(error) \
+		<< remoteMethod.c_str() \
+		<< LIBShared::CONST_STRING_METHOD_REPLY_FAILURE << e.what();
 
 class QFrame;
 class QPushButton;
@@ -44,6 +48,9 @@ namespace GLogiK
 class Tab
 	:	public QWidget
 {
+	private:
+		using DeviceProperties = LIBShared::DeviceProperties;
+
 	public:
 		Tab(NSGKDBus::GKDBus* pDBus)
 			:	_pDBus(pDBus),

@@ -26,11 +26,15 @@
 
 #include "include/base.hpp"
 
-namespace GLogiK
+namespace LIBShared
 {
 
 class GKeysMacro
 {
+	private:
+		using macro_type = GLogiK::macro_type;
+		using KeyEvent = GLogiK::KeyEvent;
+
 	public:
 		static const macro_type emptyMacro;
 
@@ -45,13 +49,13 @@ class GKeysMacro
 		{
 			public:
 				MacroEvent(
-					const GLogiK::KeyEvent & k,
+					const KeyEvent & k,
 					const unsigned int i)
 						:	key(k), index(i)
 				{
 				}
 
-				GLogiK::KeyEvent key;
+				KeyEvent key;
 				unsigned int index;
 
 			private:
@@ -75,6 +79,6 @@ class GKeysMacro
 		);
 };
 
-} // namespace GLogiK
+} // namespace LIBShared
 
 #endif

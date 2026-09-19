@@ -41,6 +41,9 @@ namespace GLogiK
 class DeviceControlTab
 	:	public Tab
 {
+	private:
+		using DeviceProperties = LIBShared::DeviceProperties;
+
 	public:
 		DeviceControlTab(
 			NSGKDBus::GKDBus* pDBus,

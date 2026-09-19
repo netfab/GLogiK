@@ -33,7 +33,7 @@
 
 #include "glogik.hpp"
 
-namespace GLogiK
+namespace LIBShared
 {
 
 c_str GLOGIK_DAEMON_NAME					= "GLogiKd";
@@ -46,8 +46,10 @@ c_str CONST_STRING_METHOD_REPLY_FAILURE	= " method reply failure : ";
 
 /* --- ---- --- */
 
-std::string_view getGKeyName(const GKeysID keyID)
+std::string_view getGKeyName(const GLogiK::GKeysID keyID)
 {
+	using GKeysID = GLogiK::GKeysID;
+
 	static constexpr std::array<std::pair<GKeysID, const char*>, 18> GKeysID2str =
 	{
 		{
@@ -83,8 +85,10 @@ std::string_view getGKeyName(const GKeysID keyID)
 	return GKey;
 }
 
-std::string_view getMKeyName(const MKeysID keyID)
+std::string_view getMKeyName(const GLogiK::MKeysID keyID)
 {
+	using MKeysID = GLogiK::MKeysID;
+
 	static constexpr std::array<std::pair<MKeysID, const char*>, 4> MKeysID2str =
 	{
 		{
@@ -108,7 +112,7 @@ std::string_view getMKeyName(const MKeysID keyID)
 
 void printVersionDeps(
 	const std::string & binaryVersion,
-	const GKDepsMap_type & dependencies)
+	const GLogiK::GKDepsMap_type & dependencies)
 {
 	using namespace NSGKUtils;
 
@@ -231,4 +235,4 @@ c_str GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST				= "ServiceStartRequest";
 c_str GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED						= "DevicesUpdated";
 c_str GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED				= "DeviceConfigurationSaved";
 
-} // namespace GLogiK
+} // namespace LIBShared

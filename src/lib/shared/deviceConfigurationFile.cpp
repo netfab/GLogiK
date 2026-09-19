@@ -30,7 +30,7 @@
 #include "deviceProperties.hpp"
 #include "deviceConfigurationFile.hpp"
 
-namespace GLogiK
+namespace LIBShared
 {
 
 using namespace NSGKUtils;
@@ -120,5 +120,5 @@ void DeviceConfigurationFile::save(
 	}
 }
 
-} // namespace GLogiK
+} // namespace LIBShared
 

@@ -25,7 +25,7 @@
 
 #include "deviceProperties.hpp"
 
-namespace GLogiK
+namespace LIBShared
 {
 
 using namespace NSGKUtils;
@@ -63,7 +63,7 @@ void BacklightCapability::getRGBBytes(
 
 /* -- -- -- */
 
-const LCDPPArray_type LCDScreenCapability::_LCDPluginsPropertiesEmptyArray = {};
+const GLogiK::LCDPPArray_type LCDScreenCapability::_LCDPluginsPropertiesEmptyArray = {};
 
 LCDScreenCapability::LCDScreenCapability(void)
 	:	_LCDPluginsMask1(0)
@@ -83,6 +83,8 @@ void LCDScreenCapability::setLCDPluginsMask(
 	const std::uint8_t maskID,
 	const std::uint64_t mask)
 {
+	using LCDPluginsMask = GLogiK::LCDPluginsMask;
+
 	if(maskID > static_cast<unsigned int>(LCDPluginsMask::GK_LCD_PLUGINS_MASK_1))
 		throw GLogiKExcept("wrong maskID value");
 
@@ -90,12 +92,12 @@ void LCDScreenCapability::setLCDPluginsMask(
 	_LCDPluginsMask1 = mask;
 }
 
-const LCDPPArray_type & LCDScreenCapability::getLCDPluginsProperties(void) const
+const GLogiK::LCDPPArray_type & LCDScreenCapability::getLCDPluginsProperties(void) const
 {
 	return _LCDPluginsProperties;
 }
 
-void LCDScreenCapability::setLCDPluginsProperties(const LCDPPArray_type & props)
+void LCDScreenCapability::setLCDPluginsProperties(const GLogiK::LCDPPArray_type & props)
 {
 	_LCDPluginsProperties = props;
 }
@@ -156,6 +158,8 @@ void DeviceProperties::setWatchDescriptor(int wd)
 
 void DeviceProperties::setProperties(const DeviceProperties & dev)
 {
+	using LCDScreenPlugin = GLogiK::LCDScreenPlugin;
+
 	dev.getRGBBytes(_red, _green, _blue);
 
 	_GKeysBanks			= dev._GKeysBanks;
@@ -170,5 +174,5 @@ void DeviceProperties::setProperties(const DeviceProperties & dev)
 }
 
 /* -- -- -- */
-} // namespace GLogiK
+} // namespace LIBShared
 

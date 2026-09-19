@@ -56,7 +56,7 @@ DesktopServiceLauncher::DesktopServiceLauncher(const int& argc, char *argv[])
 {
 	GK_LOG_FUNC
 
-	openlog(GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME, LOG_PID|LOG_CONS, LOG_USER);
+	openlog(LIBShared::GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME, LOG_PID|LOG_CONS, LOG_USER);
 
 	// initialize logging
 	try
@@ -67,12 +67,12 @@ DesktopServiceLauncher::DesktopServiceLauncher(const int& argc, char *argv[])
 #if DEBUGGING_ON
 		if(GKLogging::GKDebug)
 			GKLogging::initDebugFile(
-				GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME,
+				LIBShared::GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME,
 				fs::owner_read|fs::owner_write|fs::group_read
 			);
 #endif
 
-		GKLogging::initConsoleLog(GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME);
+		GKLogging::initConsoleLog(LIBShared::GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME);
 	}
 	catch (const std::exception & e)
 	{
@@ -85,7 +85,9 @@ DesktopServiceLauncher::~DesktopServiceLauncher()
 {
 	GK_LOG_FUNC
 
-	LOG(info) << GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME << " desktop service launcher process, bye !";
+	LOG(info)
+		<< LIBShared::GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME
+		<< " desktop service launcher process, bye !";
 
 	closelog();
 }
@@ -98,7 +100,9 @@ int DesktopServiceLauncher::run(void)
 	/* -- -- -- */
 	/* -- -- -- */
 	{
-		LOG(info) << "Starting " << GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME << " vers. " << VERSION;
+		LOG(info)
+			<< "Starting " << LIBShared::GLOGIK_DESKTOP_SERVICE_LAUNCHER_NAME
+			<< " vers. " << VERSION;
 
 		_pid = /*NSGKUtils::*/process::detach();
 
@@ -106,7 +110,7 @@ int DesktopServiceLauncher::run(void)
 	}
 
 	{
-		SessionManager session;
+		LIBShared::SessionManager session;
 		NSGKDBus::GKDBus DBus;
 
 		try
@@ -114,7 +118,7 @@ int DesktopServiceLauncher::run(void)
 			DBus.init(); // may throw
 
 			// may throw
-			DBus.connectToSessionBus(GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME);
+			DBus.connectToSessionBus(LIBShared::GLOGIK_DESKTOP_SERVICE_LAUNCHER_DBUS_BUS_CONNECTION_NAME);
 
 			struct pollfd fds[1];
 			nfds_t nfds = 1;
