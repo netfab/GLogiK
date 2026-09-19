@@ -30,15 +30,21 @@
 
 #include "lib/shared/deviceProperties.hpp"
 
-#include "devicesManager.hpp"
-
 #include "include/base.hpp"
 
-namespace GLogiK::daemon
+namespace Managers::Devices
+{
+	class DevicesManager;
+}
+
+namespace Managers::Clients
 {
 
 class Client
 {
+	private:
+		using DevicesManager = Managers::Devices::DevicesManager;
+
 	public:
 		Client(
 			const std::string & objectPath,
@@ -95,6 +101,6 @@ class Client
 		);
 };
 
-} // namespace GLogiK::daemon
+} // namespace Managers::Clients
 
 #endif

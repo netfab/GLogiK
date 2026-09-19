@@ -25,10 +25,12 @@
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
+#include "devicesManager.hpp"
+
 #include "client.hpp"
 #include "detail.hpp"
 
-namespace GLogiK::daemon
+namespace Managers::Clients
 {
 
 using namespace NSGKUtils;
@@ -130,7 +132,7 @@ const bool Client::deleteDevice(const std::string & devID)
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 
 	return false;
@@ -154,7 +156,7 @@ const bool Client::setDeviceBacklightColor(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 
 	return false;
@@ -181,7 +183,7 @@ void Client::setDeviceActiveUser(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 }
 
@@ -202,7 +204,7 @@ const bool Client::setDeviceLCDPluginsMask(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 	catch (const GLogiKExcept & e)
 	{
@@ -223,5 +225,5 @@ void Client::initializeDevices(DevicesManager* const pDevicesManager)
 	GKLog2(trace, "number of initialized devices configurations : ", _devices.size())
 }
 
-} // namespace GLogiK::daemon
+} // namespace Managers::Clients
 

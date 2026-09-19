@@ -87,7 +87,7 @@ class USBDevice
 		std::string					_mediaKey;
 		std::string					_LCDKey;
 
-		GLogiK::macro_type			_newMacro; // FIXME
+		GLogiK::macro_type			_newMacro;
 
 #if HAVE_LIBUSB
 	private:
@@ -100,7 +100,7 @@ class USBDevice
 		std::uint64_t				_LCDPluginsMask1;
 
 	private:
-		using LCDScreenPluginsManager = GLogiK::daemon::LCDScreenPluginsManager; // FIXME
+		using LCDScreenPluginsManager = GLogiK::daemon::LCDScreenPluginsManager;
 		friend class USBAPI::USBInit;
 
 		LCDScreenPluginsManager*	_pLCDPluginsManager;
@@ -148,8 +148,8 @@ class USBDevice
 	public:
 #endif
 
-		GLogiK::GKeysID				_GKeyID; // G-Key FIXME
-		GLogiK::MKeysID				_MKeyID; // M-Key FIXME
+		GLogiK::GKeysID				_GKeyID; // G-Key
+		GLogiK::MKeysID				_MKeyID; // M-Key
 
 		bool						_MBankKeyPressed; // only used to send DBus signal
 

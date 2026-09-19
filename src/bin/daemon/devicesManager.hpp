@@ -43,7 +43,7 @@
 #include "include/base.hpp"
 #include "include/LCDPP.hpp"
 
-namespace GLogiK::daemon
+namespace Managers::Devices
 {
 
 #if DEBUGGING_ON
@@ -52,9 +52,14 @@ void udevDeviceProperties(struct udev_device * pDevice, const std::string & subS
 
 class DevicesManager
 #if GKDBUS
-	:	public ClientsSignals
+	:	public DBus::Signals::ClientsSignals
 #endif
 {
+	private:
+		using LCDPPArray_type = GLogiK::LCDPPArray_type;
+		using GKeysIDArray_type = GLogiK::GKeysIDArray_type;
+		using MKeysIDArray_type = GLogiK::MKeysIDArray_type;
+
 	public:
 		DevicesManager(void);
 		~DevicesManager(void);
@@ -134,6 +139,6 @@ class DevicesManager
 		void checkInitializedDevicesThreadsStatus(void) noexcept;
 };
 
-} // namespace GLogiK::daemon
+} // namespace Managers::Devices
 
 #endif

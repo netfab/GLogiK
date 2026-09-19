@@ -39,12 +39,19 @@
 #include "include/LCDPP.hpp"
 #include "include/DepsMap.hpp"
 
-namespace GLogiK::daemon
+namespace Managers::Clients
 {
 
 class ClientsManager
-	:	public ClientsSignals
+	:	public DBus::Signals::ClientsSignals
 {
+	private:
+		using DevicesManager = Managers::Devices::DevicesManager;
+		using GKDepsMap_type = GLogiK::GKDepsMap_type;
+		using LCDPPArray_type = GLogiK::LCDPPArray_type;
+		using GKeysIDArray_type = GLogiK::GKeysIDArray_type;
+		using MKeysIDArray_type = GLogiK::MKeysIDArray_type;
+
 	public:
 		ClientsManager(
 			NSGKDBus::GKDBus* const pDBus,
@@ -165,6 +172,6 @@ class ClientsManager
 		/* -- */
 };
 
-} // namespace GLogiK::daemon
+} // namespace Managers::Clients
 
 #endif

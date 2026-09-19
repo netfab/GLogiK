@@ -25,8 +25,6 @@
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/glogik.hpp"
 
-#include "devicesManager.hpp"
-
 #define LogRemoteCallFailure \
 	LOG(critical) \
 		<< remoteMethod \
@@ -36,11 +34,19 @@
 		<< remoteMethod \
 		<< LIBShared::CONST_STRING_METHOD_REPLY_FAILURE << e.what();
 
+namespace Managers::Devices
+{
+	class DevicesManager;
+}
+
 namespace GLogiK::daemon
 {
 
 class SleepInhibition
 {
+	private:
+		using DevicesManager = Managers::Devices::DevicesManager;
+
 	public:
 
 	protected:

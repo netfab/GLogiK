@@ -49,7 +49,7 @@
 
 #include "include/enums.hpp"
 
-namespace GLogiK::daemon
+namespace Managers::Devices
 {
 
 using namespace NSGKUtils;
@@ -817,7 +817,7 @@ const std::string & DevicesManager::getDeviceVendor(const std::string & devID) c
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(detail::UNKNOWN_DEVICE, devID);
+			GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -842,7 +842,7 @@ const std::uint64_t DevicesManager::getDeviceCapabilities(const std::string & de
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(detail::UNKNOWN_DEVICE, devID);
+			GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -867,7 +867,7 @@ const std::string & DevicesManager::getDeviceProduct(const std::string & devID) 
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(detail::UNKNOWN_DEVICE, devID);
+			GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -892,15 +892,15 @@ const std::string & DevicesManager::getDeviceName(const std::string & devID) con
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(detail::UNKNOWN_DEVICE, devID);
+			GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
 	return _unknown;
 }
 
-const LCDPPArray_type & DevicesManager::getDeviceLCDPluginsProperties(
-	const std::string & devID) const
+auto DevicesManager::getDeviceLCDPluginsProperties(const std::string & devID) const
+	-> const LCDPPArray_type &
 {
 	GK_LOG_FUNC
 
@@ -926,11 +926,11 @@ const LCDPPArray_type & DevicesManager::getDeviceLCDPluginsProperties(
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(detail::UNKNOWN_DEVICE, devID);
+			GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
-	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
+	return GLogiK::daemon::LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
 const std::string DevicesManager::getDeviceStatus(const std::string & devID) const
@@ -970,11 +970,12 @@ void DevicesManager::setDeviceActiveConfiguration(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 }
 
-const MKeysIDArray_type DevicesManager::getDeviceMKeysIDArray(const std::string & devID) const
+auto DevicesManager::getDeviceMKeysIDArray(const std::string & devID) const
+	-> const MKeysIDArray_type
 {
 	GK_LOG_FUNC
 
@@ -983,7 +984,7 @@ const MKeysIDArray_type DevicesManager::getDeviceMKeysIDArray(const std::string 
 		const auto & device = _startedDevices.at(devID);
 		GKLog2(trace, devID, " device is started")
 
-		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) )
+		if( KeyboardDriver::checkDeviceCapability(device, GLogiK::Caps::GK_MACROS_KEYS) )
 			for(const auto & driver : _drivers)
 				if( device.getDriverID() == driver->getDriverID() )
 					return driver->getMKeysIDArray();
@@ -995,14 +996,14 @@ const MKeysIDArray_type DevicesManager::getDeviceMKeysIDArray(const std::string 
 			const auto & device = _stoppedDevices.at(devID);
 			GKLog2(trace, devID, " device is stopped")
 
-			if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) )
+			if( KeyboardDriver::checkDeviceCapability(device, GLogiK::Caps::GK_MACROS_KEYS) )
 				for(const auto & driver : _drivers)
 					if( device.getDriverID() == driver->getDriverID() )
 						return driver->getMKeysIDArray();
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(detail::UNKNOWN_DEVICE, devID);
+			GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -1010,7 +1011,8 @@ const MKeysIDArray_type DevicesManager::getDeviceMKeysIDArray(const std::string 
 	return ret;
 }
 
-const GKeysIDArray_type DevicesManager::getDeviceGKeysIDArray(const std::string & devID) const
+auto DevicesManager::getDeviceGKeysIDArray(const std::string & devID) const
+	-> const GKeysIDArray_type
 {
 	GK_LOG_FUNC
 
@@ -1019,7 +1021,7 @@ const GKeysIDArray_type DevicesManager::getDeviceGKeysIDArray(const std::string 
 		const auto & device = _startedDevices.at(devID);
 		GKLog2(trace, devID, " device is started")
 
-		if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) )
+		if( KeyboardDriver::checkDeviceCapability(device, GLogiK::Caps::GK_MACROS_KEYS) )
 			for(const auto & driver : _drivers)
 				if( device.getDriverID() == driver->getDriverID() )
 					return driver->getGKeysIDArray();
@@ -1031,14 +1033,14 @@ const GKeysIDArray_type DevicesManager::getDeviceGKeysIDArray(const std::string 
 			const auto & device = _stoppedDevices.at(devID);
 			GKLog2(trace, devID, " device is stopped")
 
-			if( KeyboardDriver::checkDeviceCapability(device, Caps::GK_MACROS_KEYS) )
+			if( KeyboardDriver::checkDeviceCapability(device, GLogiK::Caps::GK_MACROS_KEYS) )
 				for(const auto & driver : _drivers)
 					if( device.getDriverID() == driver->getDriverID() )
 						return driver->getGKeysIDArray();
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(detail::UNKNOWN_DEVICE, devID);
+			GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -1137,7 +1139,7 @@ void DevicesManager::startMonitoring(void)
 
 			std::uint16_t c = 0;
 
-			while( DaemonControl::isDaemonRunning() )
+			while( GLogiK::daemon::DaemonControl::isDaemonRunning() )
 			{
 				int ret = poll(fds, 1, 100);
 
@@ -1224,4 +1226,4 @@ void DevicesManager::startMonitoring(void)
 	udev_unref(pUdev);
 }
 
-} // namespace GLogiK::daemon
+} // namespace Managers::Devices

@@ -40,7 +40,7 @@ namespace
 	constexpr std::string_view UNKNOWN_CLIENT = "unknown client : ";
 }
 
-namespace GLogiK::daemon
+namespace Managers::Clients
 {
 
 using namespace NSGKUtils;
@@ -631,8 +631,9 @@ const bool ClientsManager::deleteDeviceConfiguration(
 	return false;
 }
 
-const GKDepsMap_type &
-	ClientsManager::getDaemonDependenciesMap(const std::string & clientID)
+
+auto ClientsManager::getDaemonDependenciesMap(const std::string & clientID)
+	-> const GKDepsMap_type &
 {
 	GK_LOG_FUNC
 
@@ -923,9 +924,10 @@ void ClientsManager::getDeviceProperties(
 	}
 }
 
-const LCDPPArray_type & ClientsManager::getDeviceLCDPluginsProperties(
+auto ClientsManager::getDeviceLCDPluginsProperties(
 		const std::string & clientID,
-		const std::string & devID)
+		const std::string & devID
+	) -> const LCDPPArray_type &
 {
 	GK_LOG_FUNC
 
@@ -946,7 +948,7 @@ const LCDPPArray_type & ClientsManager::getDeviceLCDPluginsProperties(
 		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
-	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
+	return GLogiK::daemon::LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
 const bool ClientsManager::setDeviceBacklightColor(
@@ -977,9 +979,10 @@ const bool ClientsManager::setDeviceBacklightColor(
 	return false;
 }
 
-const MKeysIDArray_type	ClientsManager::getDeviceMKeysIDArray(
+auto ClientsManager::getDeviceMKeysIDArray(
 		const std::string & clientID,
-		const std::string & devID)
+		const std::string & devID
+	) -> const MKeysIDArray_type
 {
 	GK_LOG_FUNC
 
@@ -1003,10 +1006,10 @@ const MKeysIDArray_type	ClientsManager::getDeviceMKeysIDArray(
 	return ret;
 }
 
-const GKeysIDArray_type
-	ClientsManager::getDeviceGKeysIDArray(
+auto ClientsManager::getDeviceGKeysIDArray(
 		const std::string & clientID,
-		const std::string & devID)
+		const std::string & devID
+	) -> const GKeysIDArray_type
 {
 	GK_LOG_FUNC
 
@@ -1057,5 +1060,5 @@ const bool ClientsManager::setDeviceLCDPluginsMask(
 	return false;
 }
 
-} // namespace GLogiK::daemon
+} // namespace Managers::Clients
 

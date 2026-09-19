@@ -27,7 +27,7 @@
 
 #include "daemonControl.hpp"
 
-namespace GLogiK::daemon
+namespace DBus::Signals
 {
 
 using namespace NSGKUtils;
@@ -48,7 +48,7 @@ void ClientsSignals::sendSignalToClients(
 	 * don't send signal if the daemon is about to exit,
 	 * but DaemonIsStopping signal must always be sent
 	 */
-	if( ! DaemonControl::isDaemonRunning() )
+	if( ! GLogiK::daemon::DaemonControl::isDaemonRunning() )
 		if(signal != LIBShared::GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING)
 			return;
 
@@ -95,7 +95,7 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 		return;
 
 	/* don't send signal if the daemon is about to exit */
-	if( ! DaemonControl::isDaemonRunning() )
+	if( ! GLogiK::daemon::DaemonControl::isDaemonRunning() )
 		return;
 
 	GKLog2(trace, "sending signal : ", signal)

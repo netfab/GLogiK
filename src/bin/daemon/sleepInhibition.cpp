@@ -21,6 +21,8 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "devicesManager.hpp"
+
 #include "sleepInhibition.hpp"
 
 namespace GLogiK::daemon

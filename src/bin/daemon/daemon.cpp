@@ -154,6 +154,8 @@ int GLogiKDaemon::run(void)
 	binaryVersion += VERSION;
 	GKSysLogInfo(binaryVersion);
 
+	using DevicesManager = Managers::Devices::DevicesManager;
+
 	{
 		std::string boost_version;
 		{
@@ -204,6 +206,7 @@ int GLogiKDaemon::run(void)
 #if GKDBUS
 			devicesManager.setDBus(&DBus);
 
+			using ClientsManager = Managers::Clients::ClientsManager;
 			ClientsManager clientsManager(&DBus, &devicesManager, &dependencies);
 #endif
 
