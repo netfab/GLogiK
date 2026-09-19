@@ -437,6 +437,7 @@ void KeyboardDriver::enterDeviceMacroRecordMode(USBDevice & device)
 					_pDBus->sendBroadcastSignal();
 
 					using LIBShared::getGKeyName;
+
 					LOG(trace)	<< device.getID() << " sent DBus signal: "
 								<< signal << " - " << getGKeyName(device._GKeyID);
 				}
@@ -680,6 +681,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 										_pDBus->sendBroadcastSignal();
 
 										using LIBShared::getGKeyName;
+
 										LOG(trace)	<< devID << " "
 													<< LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_GKEY_EVENT
 													<< " DBus signal sent - "
@@ -695,6 +697,8 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 #else
 							if( this->checkDevicePressedAnyGKey(device) )
 							{ /* G-Key pressed */
+								using LIBShared::getGKeyName;
+
 								LOG(trace)	<< device.getID() << " G-Key pressed: "
 											<< getGKeyName(device._GKeyID);
 

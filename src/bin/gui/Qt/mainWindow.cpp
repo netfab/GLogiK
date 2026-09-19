@@ -575,6 +575,8 @@ void MainWindow::saveConfigurationFile(const TabApplyButton tab)
 		{
 			_GKeysTab->getGKeyEventParams(bankID, keyID, eventType, eventCommand);
 
+			using LIBShared::getGKeyName;
+
 			GKLog4(trace, "MBank: ", bankID, "GKey: ", getGKeyName(keyID))
 			GKLog4(
 				trace, "eventType: ", GKeysTab::getEventTypeString(eventType),

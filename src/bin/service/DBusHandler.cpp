@@ -1365,6 +1365,8 @@ void DBusHandler::deviceMacroRecorded(
 {
 	GK_LOG_FUNC
 
+	using LIBShared::getGKeyName;
+
 	GKLog3(trace, devID, " received signal for key: ", getGKeyName(keyID))
 
 	if( ! _registerStatus )
@@ -1399,6 +1401,8 @@ void DBusHandler::deviceMacroCleared(
 	const GKeysID keyID)
 {
 	GK_LOG_FUNC
+
+	using LIBShared::getGKeyName;
 
 	GKLog3(trace, devID, " received signal for key: ", getGKeyName(keyID))
 
@@ -1456,6 +1460,8 @@ void DBusHandler::deviceGKeyEvent(
 	const GKeysID keyID)
 {
 	GK_LOG_FUNC
+
+	using LIBShared::getGKeyName;
 
 	GKLog3(trace, devID, " received signal for event: ", getGKeyName(keyID))
 
