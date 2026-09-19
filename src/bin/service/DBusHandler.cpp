@@ -307,7 +307,7 @@ void DBusHandler::registerWithDaemon(void)
 			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
+			remoteMethod
 		);
 		_pDBus->appendStringToRemoteMethodCall(_CURRENT_SESSION_DBUS_OBJECT_PATH);
 		_pDBus->sendRemoteMethodCall();
@@ -390,7 +390,7 @@ void DBusHandler::unregisterWithDaemon(void)
 			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
+			remoteMethod
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
 		_pDBus->sendRemoteMethodCall();
@@ -443,7 +443,7 @@ void DBusHandler::getDaemonDependenciesMap(GKDepsMap_type* const dependencies)
 			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
+			remoteMethod
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
 		_pDBus->sendRemoteMethodCall();
@@ -562,7 +562,7 @@ const std::string DBusHandler::getCurrentSessionState(void)
 					LIBShared::LOGIND_DBUS_BUS_CONNECTION_NAME,
 					_CURRENT_SESSION_DBUS_OBJECT_PATH.c_str(),
 					LIBShared::FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE,
-					remoteMethod.c_str()
+					remoteMethod
 				);
 				_pDBus->appendStringToRemoteMethodCall(LIBShared::LOGIND_SESSION_DBUS_INTERFACE);
 				_pDBus->appendStringToRemoteMethodCall("State");
@@ -611,7 +611,7 @@ void DBusHandler::reportChangedState(void) noexcept
 			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
+			remoteMethod
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
 		_pDBus->appendStringToRemoteMethodCall(_sessionState);
@@ -668,7 +668,7 @@ void DBusHandler::initializeDevices(void)
 			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
+			remoteMethod
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
 		_pDBus->sendRemoteMethodCall();
@@ -703,7 +703,7 @@ void DBusHandler::initializeDevices(void)
 			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
+			remoteMethod
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
 		_pDBus->sendRemoteMethodCall();
@@ -743,7 +743,7 @@ void DBusHandler::initializeDevices(void)
 			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
+			remoteMethod
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
 		_pDBus->sendRemoteMethodCall();
@@ -1154,7 +1154,7 @@ void DBusHandler::devicesStarted(const std::vector<std::string> & devicesID)
 				LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				remoteMethod.c_str()
+				remoteMethod
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
 			_pDBus->appendStringToRemoteMethodCall(devID);
@@ -1224,7 +1224,7 @@ void DBusHandler::devicesStopped(const std::vector<std::string> & devicesID)
 				LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				remoteMethod.c_str()
+				remoteMethod
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
 			_pDBus->appendStringToRemoteMethodCall(devID);
@@ -1285,7 +1285,7 @@ void DBusHandler::devicesUnplugged(const std::vector<std::string> & devicesID)
 				LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				remoteMethod.c_str()
+				remoteMethod
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
 			_pDBus->appendStringToRemoteMethodCall(devID);
@@ -1542,7 +1542,7 @@ void DBusHandler::deviceStatusChangeRequest(
 			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
+			remoteMethod
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
 		_pDBus->appendStringToRemoteMethodCall(devID);

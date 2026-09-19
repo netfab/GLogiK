@@ -103,7 +103,7 @@ void SleepInhibition::inhibitSleepState(void)
 			LIBShared::LOGIND_DBUS_BUS_CONNECTION_NAME,
 			LIBShared::LOGIND_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::LOGIND_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
+			remoteMethod
 		);
 
 		_pDBus->appendStringToRemoteMethodCall("sleep"); /* What (lock type) */

@@ -32,11 +32,11 @@
 
 #define LogRemoteCallFailure \
 	LOG(critical) \
-		<< remoteMethod.c_str() \
+		<< remoteMethod \
 		<< LIBShared::CONST_STRING_METHOD_CALL_FAILURE << e.what();
 #define LogRemoteCallGetReplyFailure \
 	LOG(error) \
-		<< remoteMethod.c_str() \
+		<< remoteMethod \
 		<< LIBShared::CONST_STRING_METHOD_REPLY_FAILURE << e.what();
 
 class QFrame;

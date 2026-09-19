@@ -155,7 +155,7 @@ void LCDPluginsTab::updateTab(
 			LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
-			remoteMethod.c_str()
+			remoteMethod
 		);
 		_pDBus->appendStringToRemoteMethodCall(devID);
 		_pDBus->appendStringToRemoteMethodCall("reserved");

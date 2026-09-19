@@ -342,7 +342,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 				LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				remoteMethod.c_str()
+				remoteMethod
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
 			_pDBus->appendStringToRemoteMethodCall(devID);
@@ -398,7 +398,7 @@ void DevicesHandler::sendDeviceConfigurationToDaemon(
 				LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				remoteMethod.c_str()
+				remoteMethod
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
 			_pDBus->appendStringToRemoteMethodCall(devID);
@@ -452,7 +452,7 @@ void DevicesHandler::setDeviceProperties(
 			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
+			remoteMethod
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
 		_pDBus->appendStringToRemoteMethodCall(devID);
@@ -494,7 +494,7 @@ void DevicesHandler::setDeviceProperties(
 				LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 				LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-				remoteMethod.c_str()
+				remoteMethod
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
 			_pDBus->appendStringToRemoteMethodCall(devID);
@@ -746,7 +746,7 @@ void DevicesHandler::unrefDevice(const std::string & devID)
 				LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 				LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 				LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-				remoteMethod.c_str()
+				remoteMethod
 			);
 			_pDBus->appendStringToRemoteMethodCall(_clientID);
 			_pDBus->appendStringToRemoteMethodCall(devID);
@@ -944,7 +944,7 @@ const MKeysIDArray_type DevicesHandler::getDeviceMKeysIDArray(const std::string 
 			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
+			remoteMethod
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
 		_pDBus->appendStringToRemoteMethodCall(devID);
@@ -984,7 +984,7 @@ const GKeysIDArray_type DevicesHandler::getDeviceGKeysIDArray(const std::string 
 			LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			remoteMethod.c_str()
+			remoteMethod
 		);
 		_pDBus->appendStringToRemoteMethodCall(_clientID);
 		_pDBus->appendStringToRemoteMethodCall(devID);
