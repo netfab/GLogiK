@@ -25,13 +25,13 @@
 
 #include "KeyboardDriver.hpp"
 
-namespace USBKeyboard
+namespace USB::Keyboard
 {
 
 template <typename API>
 class USBKeyboardDriver
 	:	public API,
-		public keyboard::KeyboardDriver
+		public Driver::KeyboardDriver
 {
 	private:
 		using USBDevice = USB::Device::USBDevice;
@@ -85,4 +85,4 @@ USBKeyboardDriver<API>::~USBKeyboardDriver()
 {
 }
 
-} // namespace USBKeyboard
+} // namespace USB::Keyboard

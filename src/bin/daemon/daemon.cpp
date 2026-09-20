@@ -67,7 +67,7 @@
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
-namespace GLogiK::daemon
+namespace GLogiK::Daemon
 {
 
 using namespace NSGKUtils;
@@ -174,9 +174,9 @@ int GLogiKDaemon::run(void)
 			{
 				{"boost", boost_version},
 				{"libudev", GK_DEP_LIBUDEV_VERSION_STRING, DevicesManager::getLibudevVersion()},
-				{"libusb", GK_DEP_LIBUSB_VERSION_STRING, USBAPI::USBInit::getLibUSBVersion()},
+				{"libusb", GK_DEP_LIBUSB_VERSION_STRING, USB::API::USBInit::getLibUSBVersion()},
 #if HAVE_HIDAPI
-				{"hidapi", GK_DEP_LIBHIDAPI_VERSION_STRING, USBAPI::hidapi::getHIDAPIVersion()},
+				{"hidapi", GK_DEP_LIBHIDAPI_VERSION_STRING, USB::API::hidapi::getHIDAPIVersion()},
 #else
 				{"hidapi", "-"},
 #endif
@@ -464,5 +464,5 @@ void GLogiKDaemon::dropPrivileges(void)
 		throw_error("failed to change user ID");
 }
 
-} // namespace GLogiK
+} // namespace GLogiK::Daemon
 

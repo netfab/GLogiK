@@ -44,12 +44,12 @@
 #include <hidapi.h>
 #endif
 
-namespace GLogiK::daemon
+namespace GLogiK::Daemon
 {
 	class LCDScreenPluginsManager;
 }
 
-namespace USBAPI
+namespace USB::API
 {
 	class USBInit;
 
@@ -79,7 +79,7 @@ class USBDevice
 
 #if HAVE_LIBUSB
 	private:
-		friend class USBAPI::libusb;
+		friend class USB::API::libusb;
 
 		std::mutex					_libUSBMutex;
 #endif
@@ -101,8 +101,8 @@ class USBDevice
 		std::uint64_t				_LCDPluginsMask1;
 
 	private:
-		using LCDScreenPluginsManager = GLogiK::daemon::LCDScreenPluginsManager;
-		friend class USBAPI::USBInit;
+		using LCDScreenPluginsManager = GLogiK::Daemon::LCDScreenPluginsManager;
+		friend class USB::API::USBInit;
 
 		LCDScreenPluginsManager*	_pLCDPluginsManager;
 
@@ -111,7 +111,7 @@ class USBDevice
 #if HAVE_LIBUSB
 		libusb_device_handle*		_pUSBDeviceHandle;
 #elif HAVE_HIDAPI
-		friend class USBAPI::hidapi;
+		friend class USB::API::hidapi;
 
 		hid_device*					_pHIDDevice;
 #endif

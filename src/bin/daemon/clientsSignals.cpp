@@ -48,7 +48,7 @@ void ClientsSignals::sendSignalToClients(
 	 * don't send signal if the daemon is about to exit,
 	 * but DaemonIsStopping signal must always be sent
 	 */
-	if( ! GLogiK::daemon::DaemonControl::isDaemonRunning() )
+	if( ! GLogiK::Daemon::DaemonControl::isDaemonRunning() )
 		if(signal != LIBShared::GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING)
 			return;
 
@@ -95,7 +95,7 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 		return;
 
 	/* don't send signal if the daemon is about to exit */
-	if( ! GLogiK::daemon::DaemonControl::isDaemonRunning() )
+	if( ! GLogiK::Daemon::DaemonControl::isDaemonRunning() )
 		return;
 
 	GKLog2(trace, "sending signal : ", signal)
@@ -120,5 +120,5 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 	}
 }
 
-} // namespace GLogiK::daemon
+} // namespace DBus::Signals
 

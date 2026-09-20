@@ -21,7 +21,7 @@
 
 #include "daemonControl.hpp"
 
-namespace GLogiK::daemon
+namespace GLogiK::Daemon
 {
 
 std::atomic<bool> DaemonControl::daemonized(false);
@@ -44,5 +44,5 @@ bool DaemonControl::isDaemonRunning()
 	return DaemonControl::daemonized;
 }
 
-} // namespace GLogiK::daemon
+} // namespace GLogiK::Daemon
 

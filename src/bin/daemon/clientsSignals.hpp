@@ -59,6 +59,6 @@ class ClientsSignals
 
 };
 
-} // namespace DBUS::signals
+} // namespace DBus::Signals
 
 #endif

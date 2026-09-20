@@ -22,15 +22,13 @@
 #include "lib/utils/utils.hpp"
 #include "daemon.hpp"
 
-using namespace GLogiK::daemon;
-
 int main(int argc, char *argv[])
 {
 	using namespace NSGKUtils;
 
 	try
 	{
-		GLogiKDaemon daemon(argc, argv);
+		GLogiK::Daemon::GLogiKDaemon daemon(argc, argv);
 		return daemon.run();
 	}
 	catch(const InitFailure & e)

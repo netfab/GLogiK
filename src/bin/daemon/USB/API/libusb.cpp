@@ -32,7 +32,7 @@
 
 #include "libusb.hpp"
 
-namespace USBAPI
+namespace USB::API
 {
 
 using namespace NSGKUtils;
@@ -734,5 +734,5 @@ void libusb::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int nu
 	}
 }
 
-} // namespace USBAPI
+} // namespace USB::API
 

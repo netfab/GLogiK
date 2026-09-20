@@ -24,7 +24,7 @@
 
 #include <string>
 
-namespace GLogiK::daemon
+namespace GLogiK::Daemon
 {
 
 enum class NetDirection
@@ -59,6 +59,6 @@ class NetSnapshots
 		);
 };
 
-} // namespace GLogiK::daemon
+} // namespace GLogiK::Daemon
 
 #endif

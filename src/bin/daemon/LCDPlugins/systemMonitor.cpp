@@ -42,7 +42,7 @@
 
 #include "systemMonitor.hpp"
 
-namespace GLogiK::daemon
+namespace GLogiK::Daemon
 {
 
 using namespace NSGKUtils;
@@ -285,5 +285,5 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 	return LCDPlugin::getCurrentPBMFrame();
 }
 
-} // namespace GLogiK::daemon
+} // namespace GLogiK::Daemon
 

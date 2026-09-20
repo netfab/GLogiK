@@ -948,7 +948,7 @@ auto ClientsManager::getDeviceLCDPluginsProperties(
 		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
-	return GLogiK::daemon::LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
+	return GLogiK::Daemon::LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
 const bool ClientsManager::setDeviceBacklightColor(

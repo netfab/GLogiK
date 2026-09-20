@@ -29,7 +29,7 @@
 
 #include <hidapi.h>
 
-namespace USBAPI
+namespace USB::API
 {
 
 class hidapi
@@ -71,4 +71,4 @@ class hidapi
 
 };
 
-} // namespace USBAPI
+} // namespace USB::API

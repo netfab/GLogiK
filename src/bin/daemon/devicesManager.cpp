@@ -817,7 +817,7 @@ const std::string & DevicesManager::getDeviceVendor(const std::string & devID) c
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+			GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -842,7 +842,7 @@ const std::uint64_t DevicesManager::getDeviceCapabilities(const std::string & de
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+			GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -867,7 +867,7 @@ const std::string & DevicesManager::getDeviceProduct(const std::string & devID) 
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+			GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -892,7 +892,7 @@ const std::string & DevicesManager::getDeviceName(const std::string & devID) con
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+			GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -926,11 +926,11 @@ auto DevicesManager::getDeviceLCDPluginsProperties(const std::string & devID) co
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+			GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
-	return GLogiK::daemon::LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
+	return GLogiK::Daemon::LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
 const std::string DevicesManager::getDeviceStatus(const std::string & devID) const
@@ -970,7 +970,7 @@ void DevicesManager::setDeviceActiveConfiguration(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 }
 
@@ -1003,7 +1003,7 @@ auto DevicesManager::getDeviceMKeysIDArray(const std::string & devID) const
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+			GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -1040,7 +1040,7 @@ auto DevicesManager::getDeviceGKeysIDArray(const std::string & devID) const
 		}
 		catch (const std::out_of_range& oor)
 		{
-			GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+			GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 		}
 	}
 
@@ -1107,9 +1107,9 @@ void DevicesManager::startMonitoring(void)
 			{
 				KeyboardDriver* driver = nullptr;
 #if HAVE_LIBUSB
-				driver = new Logitech::LogitechG510<USBAPI::libusb>();
+				driver = new Logitech::LogitechG510<USB::API::libusb>();
 #elif HAVE_HIDAPI
-				driver = new Logitech::LogitechG510<USBAPI::hidapi>();
+				driver = new Logitech::LogitechG510<USB::API::hidapi>();
 #endif
 
 #if GKDBUS
@@ -1139,7 +1139,7 @@ void DevicesManager::startMonitoring(void)
 
 			std::uint16_t c = 0;
 
-			while( GLogiK::daemon::DaemonControl::isDaemonRunning() )
+			while( GLogiK::Daemon::DaemonControl::isDaemonRunning() )
 			{
 				int ret = poll(fds, 1, 100);
 

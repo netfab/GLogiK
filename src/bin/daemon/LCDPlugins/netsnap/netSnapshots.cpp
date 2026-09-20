@@ -35,7 +35,7 @@
 
 #include "netSnapshots.hpp"
 
-namespace GLogiK::daemon
+namespace GLogiK::Daemon
 {
 
 using namespace NSGKUtils;
@@ -190,5 +190,5 @@ void NetSnapshots::setBytesSnapshotValue(
 	}
 }
 
-} // namespace GLogiK::daemon
+} // namespace GLogiK::Daemon
 

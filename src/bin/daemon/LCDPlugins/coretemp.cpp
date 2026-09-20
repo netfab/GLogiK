@@ -36,7 +36,7 @@
 
 namespace fs = boost::filesystem;
 
-namespace GLogiK::daemon
+namespace GLogiK::Daemon
 {
 
 using namespace NSGKUtils;
@@ -280,5 +280,5 @@ const PixelsData & Coretemp::getNextPBMFrame(
 	return LCDPlugin::getCurrentPBMFrame();
 }
 
-} // namespace GLogiK::daemon
+} // namespace GLogiK::Daemon
 

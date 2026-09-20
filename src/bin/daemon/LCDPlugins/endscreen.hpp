@@ -26,7 +26,7 @@
 
 #include "LCDPlugin.hpp"
 
-namespace GLogiK::daemon
+namespace GLogiK::Daemon
 {
 
 class Endscreen
@@ -47,6 +47,6 @@ class Endscreen
 
 };
 
-} // namespace GLogiK::daemon
+} // namespace GLogiK::Daemon
 
 #endif

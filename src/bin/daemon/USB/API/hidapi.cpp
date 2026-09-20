@@ -28,7 +28,7 @@
 #include "hidapi.hpp"
 #include "detail.hpp"
 
-namespace USBAPI
+namespace USB::API
 {
 
 using namespace NSGKUtils;
@@ -279,5 +279,5 @@ void hidapi::logUSBDeviceHIDError(hid_device *dev) noexcept
 	GKSysLogError("HIDAPI error : ", error);
 }
 
-} // namespace USBAPI
+} // namespace USB::API
 

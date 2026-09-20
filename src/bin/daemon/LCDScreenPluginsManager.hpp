@@ -33,7 +33,7 @@
 
 #include "include/LCDPP.hpp"
 
-namespace GLogiK::daemon
+namespace GLogiK::Daemon
 {
 
 class LCDScreenPluginsManager
@@ -78,6 +78,6 @@ class LCDScreenPluginsManager
 		void dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData);
 };
 
-} // namespace GLogiK::daemon
+} // namespace GLogiK::Daemon
 
 #endif

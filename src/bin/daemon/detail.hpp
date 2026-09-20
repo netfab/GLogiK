@@ -23,7 +23,7 @@
 
 #include <string_view>
 
-namespace GLogiK::daemon::detail
+namespace GLogiK::Daemon::detail
 {
 	inline constexpr std::string_view UNKNOWN_DEVICE = "unknown device : ";
 }

@@ -39,7 +39,7 @@ namespace Managers::Devices
 	class DevicesManager;
 }
 
-namespace GLogiK::daemon
+namespace GLogiK::Daemon
 {
 
 class SleepInhibition
@@ -74,6 +74,6 @@ class SleepInhibition
 		void releaseDelayLock(void);
 };
 
-} // namespace GLogiK::daemon
+} // namespace GLogiK::Daemon
 
 #endif

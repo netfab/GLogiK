@@ -29,7 +29,7 @@
 
 #include "LCDPlugin.hpp"
 
-namespace GLogiK::daemon
+namespace GLogiK::Daemon
 {
 
 class Coretemp
@@ -67,6 +67,6 @@ class Coretemp
 		);
 };
 
-} // namespace GLogiK::daemon
+} // namespace GLogiK::Daemon
 
 #endif

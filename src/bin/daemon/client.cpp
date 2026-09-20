@@ -132,7 +132,7 @@ const bool Client::deleteDevice(const std::string & devID)
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 
 	return false;
@@ -156,7 +156,7 @@ const bool Client::setDeviceBacklightColor(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 
 	return false;
@@ -183,7 +183,7 @@ void Client::setDeviceActiveUser(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 }
 
@@ -204,7 +204,7 @@ const bool Client::setDeviceLCDPluginsMask(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 	catch (const GLogiKExcept & e)
 	{

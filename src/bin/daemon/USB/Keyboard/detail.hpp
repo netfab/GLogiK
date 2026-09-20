@@ -27,7 +27,7 @@
 
 #include <cstdint>
 
-namespace USBKeyboard::keyboard::detail
+namespace USB::Keyboard::Driver::detail
 {
 
 enum class KeyStatus : std::uint8_t
@@ -100,4 +100,4 @@ constexpr unsigned char hidKeyboard[256] = {
 	150,158,159,128,136,177,178,176,142,152,173,140,unk,unk,unk,unk
 };
 
-} // namespace detail
+} // namespace USB::Keyboard::Driver::detail

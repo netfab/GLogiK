@@ -46,7 +46,7 @@ class G510Base
 	private:
 		using USBDeviceID = USB::Device::USBDeviceID;
 		using USBDevice = USB::Device::USBDevice;
-		using KeyStatus = USBKeyboard::keyboard::detail::KeyStatus;
+		using KeyStatus = USB::Keyboard::Driver::detail::KeyStatus;
 
 	public:
 

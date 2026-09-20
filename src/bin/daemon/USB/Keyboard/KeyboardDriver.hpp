@@ -45,7 +45,7 @@
 
 #include "detail.hpp"
 
-namespace USBKeyboard::keyboard
+namespace USB::Keyboard::Driver
 {
 
 // FIXME
@@ -120,7 +120,7 @@ class KeyboardDriver
 		NSGKDBus::GKDBus* _pDBus;
 #endif
 
-		/* USBAPI */
+		/* USB::API */
 		virtual int performUSBDeviceKeysInterruptTransfer(
 			USBDevice & device,
 			unsigned int timeout
@@ -199,4 +199,4 @@ class KeyboardDriver
 
 };
 
-} // namespace USBKeyboard::keyboard
+} // namespace USB::Keyboard::Driver

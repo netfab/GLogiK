@@ -48,7 +48,7 @@
 #include "bin/daemon/detail.hpp"
 
 
-namespace USBKeyboard::keyboard
+namespace USB::Keyboard::Driver
 {
 
 using namespace NSGKUtils;
@@ -56,7 +56,7 @@ using namespace NSGKUtils;
 // FIXME
 #define DEVICE_LISTENING_THREAD_MAX_ERRORS 3
 using namespace GLogiK;
-using namespace GLogiK::daemon;
+using namespace GLogiK::Daemon;
 
 #if GKDBUS
 void KeyboardDriver::setDBus(NSGKDBus::GKDBus* pDBus)
@@ -93,7 +93,7 @@ detail::KeyStatus KeyboardDriver::getDevicePressedKeys(USBDevice & device)
 
 	int ret = this->performUSBDeviceKeysInterruptTransfer(device, 10);
 
-	using USBAPIKeysTransferStatus = USBAPI::detail::KeysTransferStatus;
+	using KeysTransferStatus = USB::API::detail::KeysTransferStatus;
 	switch(ret)
 	{
 		case 0:
@@ -111,7 +111,7 @@ detail::KeyStatus KeyboardDriver::getDevicePressedKeys(USBDevice & device)
 				return this->processDeviceKeyEvent(device);
 			}
 			break;
-		case toEnumType(USBAPIKeysTransferStatus::TRANSFER_TIMEOUT):
+		case toEnumType(KeysTransferStatus::TRANSFER_TIMEOUT):
 			//GKLog(trace, "timeout reached")
 			return detail::KeyStatus::S_KEY_TIMEDOUT;
 			break;
@@ -596,7 +596,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 	} /* try */
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 	catch (const GLogiKExcept & e)
 	{
@@ -779,7 +779,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 	} /* try */
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 	catch (const std::system_error& e)
 	{
@@ -801,7 +801,7 @@ const bool KeyboardDriver::getDeviceThreadsStatus(const std::string & devID) con
 	} /* try */
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 
 	return false;
@@ -849,7 +849,7 @@ void KeyboardDriver::resetDeviceState(const USBDeviceID & det)
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, det.getID());
+		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, det.getID());
 	}
 }
 
@@ -965,7 +965,7 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 }
 
@@ -981,7 +981,7 @@ const LCDPPArray_type &
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 
 	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
@@ -1084,7 +1084,7 @@ void KeyboardDriver::openDevice(const USBDeviceID & det)
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 		throw GLogiKExcept("device not initialized");
 	}
 }
@@ -1114,8 +1114,8 @@ void KeyboardDriver::closeDevice(
 	}
 	catch (const std::out_of_range& oor)
 	{
-		GKSysLogError(GLogiK::daemon::detail::UNKNOWN_DEVICE, devID);
+		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 }
 
-} // namespace USBKeyboard::keyboard
+} // namespace USB::Keyboard::Driver

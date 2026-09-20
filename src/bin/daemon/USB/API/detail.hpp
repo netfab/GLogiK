@@ -29,7 +29,7 @@
 #include <libusb-1.0/libusb.h>
 #endif
 
-namespace USBAPI::detail
+namespace USB::API::detail
 {
 
 enum class KeysTransferStatus : std::int8_t
@@ -42,4 +42,4 @@ enum class KeysTransferStatus : std::int8_t
 #endif
 };
 
-} // namespace USBAPI::detail
+} // namespace USB::API::detail

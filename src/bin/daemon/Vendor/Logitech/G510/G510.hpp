@@ -45,7 +45,7 @@ using GKeysIDArray_type = GLogiK::GKeysIDArray_type;
 
 template <typename API>
 class LogitechG510
-	:	public USBKeyboard::USBKeyboardDriver<API>,
+	:	public USB::Keyboard::USBKeyboardDriver<API>,
 		public D_G510::G510Base
 {
 	private:
@@ -85,7 +85,7 @@ class LogitechG510
 			std::uint16_t wLength
 		) override
 		{
-			USBKeyboard::USBKeyboardDriver<API>::sendUSBDeviceFeatureReport(device, data, wLength);
+			USB::Keyboard::USBKeyboardDriver<API>::sendUSBDeviceFeatureReport(device, data, wLength);
 		}
 
 		void setDeviceBacklightColor(
@@ -148,10 +148,10 @@ class LogitechG510
 
 		void fillDeviceStandardKeysEvents(USBDevice & device) override
 		{
-			USBKeyboard::USBKeyboardDriver<API>::fillDeviceStandardKeysEvents(device);
+			USB::Keyboard::USBKeyboardDriver<API>::fillDeviceStandardKeysEvents(device);
 		}
 
-		using KeyStatus = USBKeyboard::keyboard::detail::KeyStatus;
+		using KeyStatus = USB::Keyboard::Driver::detail::KeyStatus;
 
 		KeyStatus processDeviceKeyEvent(USBDevice & device) override
 		{
@@ -161,7 +161,7 @@ class LogitechG510
 #if DEBUGGING_ON && DEBUG_KEYS
 		const std::string getDeviceBytes(const USBDevice & device) const override
 		{
-			return USBKeyboard::USBKeyboardDriver<API>::getDeviceBytes(device);
+			return USB::Keyboard::USBKeyboardDriver<API>::getDeviceBytes(device);
 		}
 #endif
 
@@ -170,7 +170,7 @@ class LogitechG510
 
 template <typename API>
 LogitechG510<API>::LogitechG510()
-	:	USBKeyboard::USBKeyboardDriver<API>()
+	:	USB::Keyboard::USBKeyboardDriver<API>()
 {
 }
 

@@ -114,7 +114,7 @@ class DevicesManager
 		USBDeviceIDContainer_type _stoppedDevices;
 		USBDeviceIDContainer_type _unpluggedDevices;
 
-		using KeyboardDriver = USBKeyboard::keyboard::KeyboardDriver;
+		using KeyboardDriver = USB::Keyboard::Driver::KeyboardDriver;
 
 		std::vector<std::string> _sleepingDevices;
 		std::vector<KeyboardDriver*> _drivers;

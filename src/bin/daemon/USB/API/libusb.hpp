@@ -28,7 +28,7 @@
 #include "usbinit.hpp"
 #include "bin/daemon/USB/Device/USBDevice.hpp"
 
-namespace USBAPI
+namespace USB::API
 {
 
 class libusb
@@ -73,4 +73,4 @@ class libusb
 		void attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexcept;
 };
 
-} // namespace USBAPI
+} // namespace USB::API

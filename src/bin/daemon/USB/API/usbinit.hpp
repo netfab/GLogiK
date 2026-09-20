@@ -31,7 +31,7 @@
 
 #include "bin/daemon/USB/Device/USBDevice.hpp"
 
-namespace USBAPI
+namespace USB::API
 {
 
 class USBInit
@@ -64,4 +64,4 @@ class USBInit
 		static bool status;				/* is libusb initialized ? */
 };
 
-} // namespace USBAPI
+} // namespace USB::API
