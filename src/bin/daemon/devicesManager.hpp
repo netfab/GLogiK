@@ -107,7 +107,7 @@ class DevicesManager
 	protected:
 
 	private:
-		using USBDeviceID = USBAPI::device::USBDeviceID;
+		using USBDeviceID = USB::Device::USBDeviceID;
 		using USBDeviceIDContainer_type = std::map<std::string, USBDeviceID>;
 
 		USBDeviceIDContainer_type _startedDevices;

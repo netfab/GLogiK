@@ -44,8 +44,8 @@ using GKeysIDArray_type = GLogiK::GKeysIDArray_type;
 class G510Base
 {
 	private:
-		using USBDeviceID = USBAPI::device::USBDeviceID;
-		using USBDevice = USBAPI::device::USBDevice;
+		using USBDeviceID = USB::Device::USBDeviceID;
+		using USBDevice = USB::Device::USBDevice;
 		using KeyStatus = USBKeyboard::keyboard::detail::KeyStatus;
 
 	public:

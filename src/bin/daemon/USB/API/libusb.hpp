@@ -35,7 +35,7 @@ class libusb
 	:	private USBInit
 {
 	private:
-		using USBDevice = USBAPI::device::USBDevice;
+		using USBDevice = USB::Device::USBDevice;
 
 	public:
 

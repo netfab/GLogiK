@@ -45,7 +45,7 @@ using namespace NSGKUtils;
 
 using namespace GLogiK; // FIXME
 
-const std::vector<USBAPI::device::USBDeviceID> G510Base::knownDevices =
+const std::vector<USB::Device::USBDeviceID> G510Base::knownDevices =
 {
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 	{
@@ -108,7 +108,7 @@ const std::uint16_t G510Base::getDriverID() const
 	return detail::G510_DRIVER_ID;
 }
 
-const std::vector<USBAPI::device::USBDeviceID> & G510Base::getSupportedDevices(void) const
+const std::vector<USB::Device::USBDeviceID> & G510Base::getSupportedDevices(void) const
 {
 	return G510Base::knownDevices;
 }

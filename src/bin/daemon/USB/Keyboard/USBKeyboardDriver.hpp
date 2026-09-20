@@ -34,7 +34,7 @@ class USBKeyboardDriver
 		public keyboard::KeyboardDriver
 {
 	private:
-		using USBDevice = USBAPI::device::USBDevice;
+		using USBDevice = USB::Device::USBDevice;
 
 	public:
 		virtual ~USBKeyboardDriver();

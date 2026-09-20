@@ -69,6 +69,7 @@ GLogiKd_SOURCES += \
 		%D%/USB/API/detail.hpp \
 		%D%/USB/API/usbinit.cpp \
 		%D%/USB/API/usbinit.hpp \
+		%D%/USB/Device/detail.hpp \
 		%D%/USB/Device/USBDevice.cpp \
 		%D%/USB/Device/USBDevice.hpp \
 		%D%/USB/Device/USBDeviceID.cpp \

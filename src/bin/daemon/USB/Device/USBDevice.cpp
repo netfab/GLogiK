@@ -26,11 +26,11 @@
 #include "lib/utils/utils.hpp"
 
 #include "bin/daemon/LCDScreenPluginsManager.hpp"
-#include "bin/daemon/USB/API/detail.hpp"
 
 #include "USBDevice.hpp"
+#include "detail.hpp"
 
-namespace USBAPI::device
+namespace USB::Device
 {
 
 using namespace NSGKUtils;
@@ -63,8 +63,8 @@ USBDevice::USBDevice(const USBDeviceID & device)
 			_MKeyID(::GLogiK::MKeysID::MKEY_INVALID), // FIXME
 			_MBankKeyPressed(false)
 {
-	std::fill_n(_pressedKeys, USBAPI::detail::KEYS_BUFFER_LENGTH, 0);
-	std::fill_n(_previousPressedKeys, USBAPI::detail::KEYS_BUFFER_LENGTH, 0);
+	std::fill_n(_pressedKeys, detail::KEYS_BUFFER_LENGTH, 0);
+	std::fill_n(_previousPressedKeys, detail::KEYS_BUFFER_LENGTH, 0);
 	this->setRGBBytes(0xFF, 0xFF, 0xFF);
 	_lastTimePoint = std::chrono::steady_clock::now();
 }
@@ -181,5 +181,5 @@ void USBDevice::getRGBBytes(
 	b = _RGB[2];
 }
 
-} // namespace USBAPI::device
+} // namespace USB::Device
 

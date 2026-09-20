@@ -15,6 +15,7 @@ GLogiKd_sources += [
   'USB/API/detail.hpp',
   'USB/API/usbinit.cpp',
   'USB/API/usbinit.hpp',
+  'USB/Device/detail.hpp',
   'USB/Device/USBDevice.cpp',
   'USB/Device/USBDevice.hpp',
   'USB/Device/USBDeviceID.cpp',

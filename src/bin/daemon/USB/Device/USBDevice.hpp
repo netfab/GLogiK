@@ -32,7 +32,7 @@
 #include <chrono>
 #include <mutex>
 
-#include "bin/daemon/USB/API/detail.hpp"
+#include "detail.hpp"
 
 #include "USBDeviceID.hpp"
 
@@ -60,7 +60,7 @@ namespace USBAPI
 #endif
 }
 
-namespace USBAPI::device
+namespace USB::Device
 {
 
 class USBDevice
@@ -138,8 +138,8 @@ class USBDevice
 	public:
 		unsigned int				_fatalErrors;
 
-		unsigned char				_pressedKeys[USBAPI::detail::KEYS_BUFFER_LENGTH];
-		unsigned char				_previousPressedKeys[USBAPI::detail::KEYS_BUFFER_LENGTH];
+		unsigned char				_pressedKeys[detail::KEYS_BUFFER_LENGTH];
+		unsigned char				_previousPressedKeys[detail::KEYS_BUFFER_LENGTH];
 
 #if HAVE_LIBUSB
 	private:
@@ -207,4 +207,4 @@ class USBDevice
 		) const;
 };
 
-} // namespace USBAPI
+} // namespace USB::Device

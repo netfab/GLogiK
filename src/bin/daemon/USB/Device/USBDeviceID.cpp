@@ -21,11 +21,10 @@
 
 #include "lib/utils/utils.hpp"
 
-#include "bin/daemon/USB/API/detail.hpp"
-
 #include "USBDeviceID.hpp"
+#include "detail.hpp"
 
-namespace USBAPI::device
+namespace USB::Device
 {
 
 using namespace NSGKUtils;
@@ -72,10 +71,10 @@ USBDeviceID::USBDeviceID(
 
 	_keysInterruptBufferMaxLength = bufferMaxLength;
 
-	if( bufferMaxLength > USBAPI::detail::KEYS_BUFFER_LENGTH )
+	if( bufferMaxLength > detail::KEYS_BUFFER_LENGTH )
 	{
 		GKSysLogWarning("interrupt read length too large, set it to max buffer length");
-		_keysInterruptBufferMaxLength = USBAPI::detail::KEYS_BUFFER_LENGTH;
+		_keysInterruptBufferMaxLength = detail::KEYS_BUFFER_LENGTH;
 	}
 }
 
@@ -114,5 +113,5 @@ USBDeviceID::USBDeviceID(
 	_LCDKeysTransferLength			= device._LCDKeysTransferLength;
 }
 
-} // namespace USBAPI::device
+} // namespace USB::Device
 

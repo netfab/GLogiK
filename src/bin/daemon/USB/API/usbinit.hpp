@@ -37,7 +37,7 @@ namespace USBAPI
 class USBInit
 {
 	private:
-		using USBDevice = USBAPI::device::USBDevice;
+		using USBDevice = USB::Device::USBDevice;
 		/* As per the USB 3.0 specs, the current maximum limit for the depth is 7. */
 		static constexpr std::size_t PORT_NUMBERS_LEN = 7;
 

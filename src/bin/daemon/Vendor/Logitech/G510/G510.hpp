@@ -49,8 +49,8 @@ class LogitechG510
 		public D_G510::G510Base
 {
 	private:
-		using USBDeviceID = USBAPI::device::USBDeviceID;
-		using USBDevice = USBAPI::device::USBDevice;
+		using USBDeviceID = USB::Device::USBDeviceID;
+		using USBDevice = USB::Device::USBDevice;
 
 	public:
 		LogitechG510();

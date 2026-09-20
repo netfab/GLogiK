@@ -23,52 +23,9 @@
 
 #include <cstdint>
 
-#include <string>
-
-#include "bin/daemon/USB/Device/USBDevice.hpp"
-
-#include <hidapi.h>
-
-namespace USBAPI
+namespace USB::Device::detail
 {
 
-class hidapi
-{
-	private :
-		using USBDevice = USB::Device::USBDevice;
+inline constexpr std::int8_t KEYS_BUFFER_LENGTH = 16;
 
-	public:
-		static const std::string getHIDAPIVersion(void);
-
-	protected:
-		hidapi(void);
-		~hidapi(void);
-
-		void openUSBDevice(USBDevice & device);
-		void closeUSBDevice(USBDevice & device) noexcept;
-
-		void sendUSBDeviceFeatureReport(
-			USBDevice & device,
-			const unsigned char * data,
-			std::uint16_t wLength
-		);
-
-		int performUSBDeviceKeysInterruptTransfer(
-			USBDevice & device,
-			unsigned int timeout
-		);
-
-		int performUSBDeviceLCDScreenInterruptTransfer(
-			USBDevice & device,
-			const unsigned char * buffer,
-			int bufferLength,
-			unsigned int timeout
-		);
-
-	private:
-
-		void logUSBDeviceHIDError(hid_device *dev) noexcept;
-
-};
-
-} // namespace USBAPI
+} // namespace USB::Device::detail

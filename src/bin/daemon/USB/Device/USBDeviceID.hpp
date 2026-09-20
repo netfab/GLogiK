@@ -24,7 +24,7 @@
 #include <cstdint>
 #include <string>
 
-namespace USBAPI::device
+namespace USB::Device
 {
 
 class USBDeviceID
@@ -204,4 +204,4 @@ class USBDeviceID
 		std::int8_t _LCDKeysTransferLength;
 };
 
-} // namespace USBAPI::device
+} // namespace USB::Device

@@ -60,8 +60,8 @@ class KeyboardDriver
 #endif
 {
 	private:
-		using USBDeviceID = USBAPI::device::USBDeviceID;
-		using USBDevice = USBAPI::device::USBDevice;
+		using USBDeviceID = USB::Device::USBDeviceID;
+		using USBDevice = USB::Device::USBDevice;
 
 	public:
 		virtual ~KeyboardDriver(void) = default;

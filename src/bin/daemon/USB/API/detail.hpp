@@ -32,8 +32,6 @@
 namespace USBAPI::detail
 {
 
-inline constexpr std::int8_t KEYS_BUFFER_LENGTH = 16;
-
 enum class KeysTransferStatus : std::int8_t
 {
 	TRANSFER_ERROR = -1,

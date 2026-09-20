@@ -38,8 +38,9 @@
 #include "KeyboardDriver.hpp"
 #include "detail.hpp"
 
-#include "bin/daemon/USB/Device/USBDevice.hpp"
 #include "bin/daemon/USB/API/detail.hpp"
+#include "bin/daemon/USB/Device/USBDevice.hpp"
+#include "bin/daemon/USB/Device/detail.hpp"
 
 #include "bin/daemon/daemonControl.hpp"
 #include "bin/daemon/LCDPlugins/PBM.hpp"
@@ -88,11 +89,11 @@ detail::KeyStatus KeyboardDriver::getDevicePressedKeys(USBDevice & device)
 {
 	GK_LOG_FUNC
 
-	std::fill_n(device._pressedKeys, USBAPI::detail::KEYS_BUFFER_LENGTH, 0);
+	std::fill_n(device._pressedKeys, USB::Device::detail::KEYS_BUFFER_LENGTH, 0);
 
 	int ret = this->performUSBDeviceKeysInterruptTransfer(device, 10);
 
-	using USBAPIKeysTransferStatus = USBAPI::detail::KeysTransferStatus; // FIXME
+	using USBAPIKeysTransferStatus = USBAPI::detail::KeysTransferStatus;
 	switch(ret)
 	{
 		case 0:
