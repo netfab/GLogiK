@@ -249,6 +249,8 @@ void G510Base::processDeviceKeyEvent2Bytes(USBDevice & device)
 		if( ! GKLogging::GKDebug )
 			return;
 
+		using SpecialKeys = GLogiK::SpecialKeys;
+
 		if(device._pressedKeys[1] & toEnumType(SpecialKeys::GK_KEY_BACKLIGHT_OFF))
 		{
 			LOG(trace) << "backlight off";

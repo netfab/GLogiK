@@ -39,6 +39,8 @@ void sendSignalToClients(
 {
 	GK_LOG_FUNC
 
+	using namespace NSGKUtils;
+
 	/* don't try to send signal if we know that there is no clients */
 	if( (numClients == 0 ) and (! forceSend) )
 		return;
@@ -63,14 +65,14 @@ void sendSignalToClients(
 		);
 		pDBus->sendBroadcastSignal();
 	}
-	catch (const NSGKUtils::GLogiKExcept & e)
+	catch (const GLogiKExcept & e)
 	{
 		pDBus->abandonBroadcastSignal();
 
 		/* don't warn nor syslog if we force sending the signal */
 		if(! forceSend)
 		{
-			NSGKUtils::GKSysLogWarning("DBus targets signal failure: ", e.what());
+			GKSysLogWarning("DBus targets signal failure: ", e.what());
 		}
 		else
 		{
@@ -86,6 +88,8 @@ void sendStatusSignalArrayToClients(
 	const std::vector<std::string> & devIDArray) noexcept
 {
 	GK_LOG_FUNC
+
+	using namespace NSGKUtils;
 
 	/* don't try to send signal if we know that there is no clients */
 	if( numClients == 0 )
@@ -108,10 +112,10 @@ void sendStatusSignalArrayToClients(
 		pDBus->appendStringArrayToBroadcastSignal(devIDArray);
 		pDBus->sendBroadcastSignal();
 	}
-	catch (const NSGKUtils::GLogiKExcept & e)
+	catch (const GLogiKExcept & e)
 	{
 		pDBus->abandonBroadcastSignal();
-		NSGKUtils::GKSysLogWarning("failed to send signal: ", e.what());
+		GKSysLogWarning("failed to send signal: ", e.what());
 	}
 }
 
