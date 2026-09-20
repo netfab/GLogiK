@@ -31,8 +31,9 @@
 
 namespace D_G510::detail
 {
-	// FIXME
-	using namespace GLogiK;
+	using Leds = GLogiK::Leds;
+	using GKeysID = GLogiK::GKeysID;
+	using MKeysID = GLogiK::MKeysID;
 
 	constexpr std::uint16_t G510_DRIVER_ID = ( 1u << 0 );
 	constexpr char G510_VENDOR[] = "Logitech";

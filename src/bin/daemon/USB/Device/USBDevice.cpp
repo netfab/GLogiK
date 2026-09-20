@@ -27,6 +27,8 @@
 
 #include "bin/daemon/LCDScreenPluginsManager.hpp"
 
+#include "include/base.hpp"
+
 #include "USBDevice.hpp"
 #include "detail.hpp"
 
@@ -59,8 +61,8 @@ USBDevice::USBDevice(const USBDeviceID & device)
 #elif HAVE_HIDAPI
 			_fatalErrors(0),
 #endif
-			_GKeyID(::GLogiK::GKeysID::GKEY_INVALID), // FIXME
-			_MKeyID(::GLogiK::MKeysID::MKEY_INVALID), // FIXME
+			_GKeyID(GLogiK::GKeysID::GKEY_INVALID),
+			_MKeyID(GLogiK::MKeysID::MKEY_INVALID),
 			_MBankKeyPressed(false)
 {
 	std::fill_n(_pressedKeys, detail::KEYS_BUFFER_LENGTH, 0);

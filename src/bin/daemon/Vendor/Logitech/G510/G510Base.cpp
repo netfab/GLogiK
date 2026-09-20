@@ -43,8 +43,6 @@ namespace D_G510
 
 using namespace NSGKUtils;
 
-using namespace GLogiK; // FIXME
-
 const std::vector<USB::Device::USBDeviceID> G510Base::knownDevices =
 {
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
@@ -55,10 +53,10 @@ const std::vector<USB::Device::USBDeviceID> G510Base::knownDevices =
 		detail::G510_VENDOR_ID, /* vendor ID */
 		"c22d",                 /* product ID */
 		toEnumType(             /* device capabilities */
-			Caps::GK_BACKLIGHT_COLOR |
-			Caps::GK_MACROS_KEYS |
-			Caps::GK_MEDIA_KEYS |
-			Caps::GK_LCD_SCREEN
+			GLogiK::Caps::GK_BACKLIGHT_COLOR |
+			GLogiK::Caps::GK_MACROS_KEYS |
+			GLogiK::Caps::GK_MEDIA_KEYS |
+			GLogiK::Caps::GK_LCD_SCREEN
 		),
 		    /* USB_INTERFACE_DESCRIPTOR */
 		1,  /* (libusb) bConfigurationValue */
@@ -79,10 +77,10 @@ const std::vector<USB::Device::USBDeviceID> G510Base::knownDevices =
 		detail::G510_VENDOR_ID, /* vendor ID */
 		"c22e",                 /* product ID (onboard audio) */
 		toEnumType(             /* device capabilities */
-			Caps::GK_BACKLIGHT_COLOR |
-			Caps::GK_MACROS_KEYS |
-			Caps::GK_MEDIA_KEYS |
-			Caps::GK_LCD_SCREEN
+			GLogiK::Caps::GK_BACKLIGHT_COLOR |
+			GLogiK::Caps::GK_MACROS_KEYS |
+			GLogiK::Caps::GK_MEDIA_KEYS |
+			GLogiK::Caps::GK_LCD_SCREEN
 		),
 		    /* USB_INTERFACE_DESCRIPTOR */
 		1,  /* (libusb) bConfigurationValue */
@@ -113,7 +111,8 @@ const std::vector<USB::Device::USBDeviceID> & G510Base::getSupportedDevices(void
 	return G510Base::knownDevices;
 }
 
-const MKeysIDArray_type G510Base::getMKeysIDArray(void) const
+auto G510Base::getMKeysIDArray(void) const
+	-> const MKeysIDArray_type
 {
 	GK_LOG_FUNC
 
@@ -138,7 +137,8 @@ const MKeysIDArray_type G510Base::getMKeysIDArray(void) const
 	return ret;
 }
 
-const GKeysIDArray_type G510Base::getGKeysIDArray(void) const
+auto G510Base::getGKeysIDArray(void) const
+	-> const GKeysIDArray_type
 {
 	GK_LOG_FUNC
 
@@ -222,7 +222,7 @@ const bool G510Base::checkDevicePressedAnyMxKey(USBDevice & device)
 const bool G510Base::isDeviceMRKeyEnabled(USBDevice & device)
 {
 	/* is MR key enabled ? */
-	return ( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) );
+	return ( device._MxKeysLedsMask & toEnumType(GLogiK::Leds::GK_LED_MR) );
 }
 
 /*
@@ -364,7 +364,7 @@ auto G510Base::processDeviceKeyEvent(USBDevice & device) -> KeyStatus
 			break;
 		case 8:
 			/* process those events only if Macro Record Mode on */
-			if( device._MxKeysLedsMask & toEnumType(Leds::GK_LED_MR) )
+			if( device._MxKeysLedsMask & toEnumType(GLogiK::Leds::GK_LED_MR) )
 			{
 #if DEBUGGING_ON && DEBUG_KEYS
 				GKLog3(trace, device.getID(), " 8 bytes : ", this->getDeviceBytes(device))
@@ -475,6 +475,9 @@ void G510Base::setDeviceMxKeysLeds(USBDevice & device)
  */
 const bool G510Base::updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR)
 {
+	using Leds = GLogiK::Leds;
+	using MKeysID = GLogiK::MKeysID;
+
 	auto & mask = device._MxKeysLedsMask;
 	bool mask_updated = false;
 	device._MKeyID = MKeysID::MKEY_M0;

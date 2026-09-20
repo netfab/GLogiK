@@ -48,12 +48,6 @@
 namespace USB::Keyboard::Driver
 {
 
-// FIXME
-using Caps = GLogiK::Caps;
-using LCDPPArray_type = GLogiK::LCDPPArray_type;
-using MKeysIDArray_type = GLogiK::MKeysIDArray_type;
-using GKeysIDArray_type = GLogiK::GKeysIDArray_type;
-
 class KeyboardDriver
 #if GKDBUS
 	:	private LIBShared::GKeysMacro
@@ -62,6 +56,10 @@ class KeyboardDriver
 	private:
 		using USBDeviceID = USB::Device::USBDeviceID;
 		using USBDevice = USB::Device::USBDevice;
+		using LCDPPArray_type = GLogiK::LCDPPArray_type;
+		using GKeysIDArray_type = GLogiK::GKeysIDArray_type;
+		using MKeysIDArray_type = GLogiK::MKeysIDArray_type;
+		using Caps = GLogiK::Caps;
 
 	public:
 		virtual ~KeyboardDriver(void) = default;

@@ -55,8 +55,6 @@ using namespace NSGKUtils;
 
 // FIXME
 #define DEVICE_LISTENING_THREAD_MAX_ERRORS 3
-using namespace GLogiK;
-using namespace GLogiK::Daemon;
 
 #if GKDBUS
 void KeyboardDriver::setDBus(NSGKDBus::GKDBus* pDBus)
@@ -169,7 +167,9 @@ const std::uint8_t KeyboardDriver::handleDeviceModifierKeys(USBDevice & device, 
 	if( device._previousPressedKeys[1] == device._pressedKeys[1] )
 		return 0; /* nothing changed here */
 
+	using EventValue = GLogiK::EventValue;
 	using KeyEvent = GLogiK::KeyEvent;
+
 	KeyEvent e;
 	e.interval = interval;
 	std::uint8_t diff = 0;
@@ -298,6 +298,8 @@ void KeyboardDriver::fillDeviceStandardKeysEvents(USBDevice & device)
 			continue; /* nothing here */
 		else
 		{
+			using EventValue = GLogiK::EventValue;
+
 			/* Macro Size Limit - see base.hpp */
 			if(device._newMacro.size() >= MACRO_T_MAX_SIZE )
 			{
@@ -386,7 +388,7 @@ void KeyboardDriver::enterDeviceMacroRecordMode(USBDevice & device)
 		GKSysLogError("reserve bad_alloc failure : ", e.what());
 	}
 
-	while( (! exit) and DaemonControl::isDaemonRunning() )
+	while( (! exit) and GLogiK::Daemon::DaemonControl::isDaemonRunning() )
 	{
 		this->checkDeviceFatalErrors(device, "macro record loop");
 		if( ! device.getThreadsStatus() )
@@ -506,7 +508,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 
 		GKLog3(trace, devID, " spawned LCD screen thread for ", device.getFullName())
 
-		while( DaemonControl::isDaemonRunning() )
+		while( GLogiK::Daemon::DaemonControl::isDaemonRunning() )
 		{
 			namespace chr = std::chrono;
 
@@ -530,7 +532,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 				LCDPluginsMask1 = device._LCDPluginsMask1;
 			}
 
-			const PixelsData & LCDBuffer =
+			const GLogiK::Daemon::PixelsData & LCDBuffer =
 				device.getLCDPluginsManager()->getNextLCDScreenBuffer(LCDKey, LCDPluginsMask1);
 			int ret = this->performUSBDeviceLCDScreenInterruptTransfer(
 				device,
@@ -568,11 +570,11 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 		device.getLCDPluginsManager()->unlockPlugin();
 		device.getLCDPluginsManager()->jumpToNextPlugin();
 
-		const std::uint64_t endscreen = toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN);
+		const std::uint64_t endscreen = toEnumType(GLogiK::LCDScreenPlugin::GK_LCD_ENDSCREEN);
 		/* make sure endscreen plugin is loaded before using it */
 		if( device.getLCDPluginsManager()->findOneLCDScreenPlugin( endscreen ) )
 		{
-			const PixelsData & LCDBuffer =
+			const GLogiK::Daemon::PixelsData & LCDBuffer =
 				device.getLCDPluginsManager()->getNextLCDScreenBuffer("", endscreen);
 
 			int ret = this->performUSBDeviceLCDScreenInterruptTransfer(
@@ -619,7 +621,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 
 		GKLog3(trace, devID, " spawned listening thread for ", device.getFullName())
 
-		while( DaemonControl::isDaemonRunning() )
+		while( GLogiK::Daemon::DaemonControl::isDaemonRunning() )
 		{
 			this->checkDeviceFatalErrors(device, "listen loop");
 			if( ! device.getThreadsStatus() )
@@ -859,6 +861,7 @@ void KeyboardDriver::setDeviceLCDPluginsMask(USBDevice & device, std::uint64_t m
 
 	if( mask == 0 )
 	{
+		using LCDScreenPlugin = GLogiK::LCDScreenPlugin;
 		/* default enabled plugins */
 		mask |= toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN);
 		mask |= toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR);
@@ -969,8 +972,8 @@ void KeyboardDriver::setDeviceActiveConfiguration(
 	}
 }
 
-const LCDPPArray_type &
-	KeyboardDriver::getDeviceLCDPluginsProperties(const std::string & devID) const
+auto KeyboardDriver::getDeviceLCDPluginsProperties(const std::string & devID) const
+	-> const LCDPPArray_type &
 {
 	GK_LOG_FUNC
 
@@ -984,7 +987,7 @@ const LCDPPArray_type &
 		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 
-	return LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
+	return GLogiK::Daemon::LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
 void KeyboardDriver::initializeDevice(const USBDeviceID & det)
@@ -1018,6 +1021,7 @@ void KeyboardDriver::initializeDevice(const USBDeviceID & det)
 		 * for all initialized devices (even for the stopped ones) */
 		try
 		{
+			using LCDScreenPluginsManager = GLogiK::Daemon::LCDScreenPluginsManager;
 			device.setLCDPluginsManager( new LCDScreenPluginsManager(device.getProduct()) );
 		}
 		catch (const std::bad_alloc& e)

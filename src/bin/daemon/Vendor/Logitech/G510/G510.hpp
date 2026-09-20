@@ -38,11 +38,6 @@
 namespace Logitech
 {
 
-// FIXME
-using MKeysIDArray_type = GLogiK::MKeysIDArray_type;
-using GKeysIDArray_type = GLogiK::GKeysIDArray_type;
-
-
 template <typename API>
 class LogitechG510
 	:	public USB::Keyboard::USBKeyboardDriver<API>,
@@ -51,6 +46,8 @@ class LogitechG510
 	private:
 		using USBDeviceID = USB::Device::USBDeviceID;
 		using USBDevice = USB::Device::USBDevice;
+		using MKeysIDArray_type = GLogiK::MKeysIDArray_type;
+		using GKeysIDArray_type = GLogiK::GKeysIDArray_type;
 
 	public:
 		LogitechG510();
