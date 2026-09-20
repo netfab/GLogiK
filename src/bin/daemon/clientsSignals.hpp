@@ -27,37 +27,22 @@
 #include <string>
 #include <vector>
 
-#include "lib/dbus/GKDBus.hpp"
-
 namespace DBus::Signals
 {
 
-class ClientsSignals
-{
-	public:
+void sendSignalToClients(
+	const std::uint8_t numClients, // number of connected clients
+	NSGKDBus::GKDBus* const pDBus,
+	const std::string & signal,
+	const bool forceSend=false // always send signal, even if numClient == 0
+) noexcept;
 
-	protected:
-		ClientsSignals() = default;
-		~ClientsSignals() = default;
-
-		void sendSignalToClients(
-			const std::uint8_t numClients,		/* number of connected clients */
-			NSGKDBus::GKDBus* pDBus,
-			const std::string & signal,
-			const bool forceSend=false		/* always send signal, even if numClient == 0 */
-		) noexcept;
-
-		void sendStatusSignalArrayToClients(
-			const std::uint8_t numClients,
-			NSGKDBus::GKDBus* pDBus,
-			const std::string & signal,
-			const std::vector<std::string> & devIDArray
-		) noexcept;
-
-	private:
-		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
-
-};
+void sendStatusSignalArrayToClients(
+	const std::uint8_t numClients,
+	NSGKDBus::GKDBus* const pDBus,
+	const std::string & signal,
+	const std::vector<std::string> & devIDArray
+) noexcept;
 
 } // namespace DBus::Signals
 

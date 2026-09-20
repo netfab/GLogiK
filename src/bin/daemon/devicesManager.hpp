@@ -32,8 +32,6 @@
 
 #if GKDBUS
 #include "lib/dbus/GKDBus.hpp"
-
-#include "clientsSignals.hpp"
 #endif
 
 #include "USB/Keyboard/KeyboardDriver.hpp"
@@ -50,9 +48,6 @@ void udevDeviceProperties(struct udev_device * pDevice, const std::string & subS
 #endif
 
 class DevicesManager
-#if GKDBUS
-	:	public DBus::Signals::ClientsSignals
-#endif
 {
 	private:
 		using LCDPPArray_type = GLogiK::LCDPPArray_type;

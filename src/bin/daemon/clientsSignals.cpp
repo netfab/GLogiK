@@ -20,6 +20,7 @@
  */
 
 
+#include "lib/dbus/GKDBus.hpp"
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
@@ -30,11 +31,9 @@
 namespace DBus::Signals
 {
 
-using namespace NSGKUtils;
-
-void ClientsSignals::sendSignalToClients(
+void sendSignalToClients(
 	const std::uint8_t numClients,
-	NSGKDBus::GKDBus* pDBus,
+	NSGKDBus::GKDBus* const pDBus,
 	const std::string & signal,
 	const bool forceSend) noexcept
 {
@@ -57,34 +56,32 @@ void ClientsSignals::sendSignalToClients(
 	try
 	{
 		pDBus->initializeBroadcastSignal(
-			_systemBus,
+			NSGKDBus::GKDBus::SystemBus,
 			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
-			signal.c_str()
+			signal
 		);
 		pDBus->sendBroadcastSignal();
 	}
-	catch (const GLogiKExcept & e)
+	catch (const NSGKUtils::GLogiKExcept & e)
 	{
 		pDBus->abandonBroadcastSignal();
 
-		std::string warn("DBus targets signal failure : ");
-		warn += e.what();
 		/* don't warn nor syslog if we force sending the signal */
 		if(! forceSend)
 		{
-			GKSysLogWarning(warn);
+			NSGKUtils::GKSysLogWarning("DBus targets signal failure: ", e.what());
 		}
 		else
 		{
-			GKLog(trace, warn)
+			GKLog2(trace, "DBus targets signal failure: ", e.what())
 		}
 	}
 }
 
-void ClientsSignals::sendStatusSignalArrayToClients(
+void sendStatusSignalArrayToClients(
 	const std::uint8_t numClients,
-	NSGKDBus::GKDBus* pDBus,
+	NSGKDBus::GKDBus* const pDBus,
 	const std::string & signal,
 	const std::vector<std::string> & devIDArray) noexcept
 {
@@ -103,20 +100,18 @@ void ClientsSignals::sendStatusSignalArrayToClients(
 	try
 	{
 		pDBus->initializeBroadcastSignal(
-			_systemBus,
+			NSGKDBus::GKDBus::SystemBus,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-			signal.c_str()
+			signal
 		);
 		pDBus->appendStringArrayToBroadcastSignal(devIDArray);
 		pDBus->sendBroadcastSignal();
 	}
-	catch (const GLogiKExcept & e)
+	catch (const NSGKUtils::GLogiKExcept & e)
 	{
 		pDBus->abandonBroadcastSignal();
-		std::string warn("failed to send signal : ");
-		warn += e.what();
-		GKSysLogWarning(warn);
+		NSGKUtils::GKSysLogWarning("failed to send signal: ", e.what());
 	}
 }
 

@@ -31,6 +31,7 @@
 
 #include "LCDScreenPluginsManager.hpp"
 #include "clientsManager.hpp"
+#include "clientsSignals.hpp"
 
 namespace
 {
@@ -362,7 +363,7 @@ void ClientsManager::waitForClientsDisconnections(void) noexcept
 		return;
 	}
 
-	this->sendSignalToClients(
+	DBus::Signals::sendSignalToClients(
 		_connectedClients.size(), _pDBus, LIBShared::GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING
 	);
 
@@ -413,7 +414,7 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 				for(auto & newPair : _connectedClients )
 					newPair.second->uncheck();
 
-				this->sendSignalToClients(
+				DBus::Signals::sendSignalToClients(
 					_connectedClients.size(), _pDBus, LIBShared::GK_DBUS_SERVICE_SIGNAL_REPORT_YOURSELF
 				);
 
@@ -690,7 +691,7 @@ const bool ClientsManager::stopDevice(
 		if(ret and _enabledSignals)
 		{
 			const std::vector<std::string> array = {devID};
-			this->sendStatusSignalArrayToClients(
+			DBus::Signals::sendStatusSignalArrayToClients(
 				_connectedClients.size(), _pDBus,
 				LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED, array
 			);
@@ -747,7 +748,7 @@ const bool ClientsManager::startDevice(
 			if( _enabledSignals )
 			{
 				const std::vector<std::string> array = {devID};
-				this->sendStatusSignalArrayToClients(
+				DBus::Signals::sendStatusSignalArrayToClients(
 					_connectedClients.size(), _pDBus,
 					LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED, array
 				);
@@ -786,7 +787,7 @@ const bool ClientsManager::restartDevice(
 		if( this->startDevice(clientID, devID) )
 		{
 			_enabledSignals = true;
-			this->sendStatusSignalArrayToClients(
+			DBus::Signals::sendStatusSignalArrayToClients(
 				_connectedClients.size(), _pDBus,
 				LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED, array
 			);
@@ -795,7 +796,7 @@ const bool ClientsManager::restartDevice(
 		}
 
 		_enabledSignals = true;
-		this->sendStatusSignalArrayToClients(
+		DBus::Signals::sendStatusSignalArrayToClients(
 			_connectedClients.size(), _pDBus,
 			LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED, array
 		);

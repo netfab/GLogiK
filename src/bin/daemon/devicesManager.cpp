@@ -47,6 +47,10 @@
 #include "USB/API/hidapi.hpp"
 #endif
 
+#if GKDBUS
+#include "clientsSignals.hpp"
+#endif
+
 #include "include/enums.hpp"
 
 namespace Managers::Devices
@@ -234,7 +238,7 @@ void DevicesManager::initializeDevices(
 			signal = LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED;
 
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(_numClients, _pDBus, signal, initializedDevices);
+		DBus::Signals::sendStatusSignalArrayToClients(_numClients, _pDBus, signal, initializedDevices);
 	}
 #endif
 
@@ -359,7 +363,7 @@ void DevicesManager::startSleepingDevices(void)
 	if( toSend.size() > 0 )
 	{
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(
+		DBus::Signals::sendStatusSignalArrayToClients(
 			_numClients, _pDBus,
 			LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED, toSend
 		);
@@ -403,7 +407,7 @@ void DevicesManager::stopInitializedDevices(void)
 	if( toSend.size() > 0 )
 	{
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(
+		DBus::Signals::sendStatusSignalArrayToClients(
 			_numClients, _pDBus,
 			LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED, toSend
 		);
@@ -454,7 +458,7 @@ void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept
 	if( toSend.size() > 0 )
 	{
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(
+		DBus::Signals::sendStatusSignalArrayToClients(
 			_numClients, _pDBus,
 			LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED, toSend
 		);
@@ -548,7 +552,7 @@ void DevicesManager::checkForUnpluggedDevices(
 	if(toSend.size() > 0)
 	{
 		/* inform clients */
-		this->sendStatusSignalArrayToClients(
+		DBus::Signals::sendStatusSignalArrayToClients(
 			_numClients, _pDBus,
 			LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_UNPLUGGED, toSend
 		);
@@ -1132,7 +1136,7 @@ void DevicesManager::startMonitoring(void)
 #if GKDBUS
 			/* send signal, even if no client registered, clients could
 			 * have started before daemon */
-			this->sendSignalToClients(
+			DBus::Signals::sendSignalToClients(
 				_numClients, _pDBus, LIBShared::GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STARTING, true
 			);
 #endif

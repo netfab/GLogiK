@@ -32,7 +32,6 @@
 
 #include "devicesManager.hpp"
 
-#include "clientsSignals.hpp"
 #include "client.hpp"
 
 #include "include/base.hpp"
@@ -43,7 +42,6 @@ namespace Managers::Clients
 {
 
 class ClientsManager
-	:	public DBus::Signals::ClientsSignals
 {
 	private:
 		using DevicesManager = Managers::Devices::DevicesManager;
