@@ -24,10 +24,10 @@ GLogiKd_sources += [
   'USB/Keyboard/KeyboardDriver.cpp',
   'USB/Keyboard/KeyboardDriver.hpp',
   'USB/Keyboard/USBKeyboardDriver.hpp',
+  'Vendor/Logitech/G510/detail.hpp',
   'Vendor/Logitech/G510/G510.hpp',
   'Vendor/Logitech/G510/G510Base.cpp',
   'Vendor/Logitech/G510/G510Base.hpp',
-  'Vendor/Logitech/G510/G510Detail.hpp',
 ]
 
 GLogiKd_sources += [

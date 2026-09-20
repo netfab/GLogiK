@@ -78,10 +78,10 @@ GLogiKd_SOURCES += \
 		%D%/USB/Keyboard/KeyboardDriver.hpp \
 		%D%/USB/Keyboard/KeyboardDriverDetail.hpp \
 		%D%/USB/Keyboard/USBKeyboardDriver.hpp \
+		%D%/Vendor/Logitech/G510/detail.hpp \
 		%D%/Vendor/Logitech/G510/G510.hpp \
 		%D%/Vendor/Logitech/G510/G510Base.cpp \
-		%D%/Vendor/Logitech/G510/G510Base.hpp \
-		%D%/Vendor/Logitech/G510/G510Detail.hpp
+		%D%/Vendor/Logitech/G510/G510Base.hpp
 
 GLogiKd_SOURCES += \
 		%D%/LCDPlugins/PBM.hpp \

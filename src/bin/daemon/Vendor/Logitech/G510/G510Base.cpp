@@ -36,7 +36,7 @@
 #include "lib/utils/utils.hpp"
 
 #include "G510Base.hpp"
-#include "G510Detail.hpp"
+#include "detail.hpp"
 
 namespace D_G510
 {
