@@ -48,7 +48,7 @@
 #endif
 
 #if GKDBUS
-#include "clientsSignals.hpp"
+#include "Clients/clientsSignals.hpp"
 #endif
 
 #include "include/enums.hpp"

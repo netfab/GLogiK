@@ -55,12 +55,12 @@ GLogiKd_LDADD += \
 				libGKDBus.la
 
 GLogiKd_SOURCES += \
-		%D%/clientsManager.cpp \
-		%D%/clientsManager.hpp \
-		%D%/clientsSignals.cpp \
-		%D%/clientsSignals.hpp \
-		%D%/client.cpp \
-		%D%/client.hpp \
+		%D%/Clients/client.cpp \
+		%D%/Clients/client.hpp \
+		%D%/Clients/clientsManager.cpp \
+		%D%/Clients/clientsManager.hpp \
+		%D%/Clients/clientsSignals.cpp \
+		%D%/Clients/clientsSignals.hpp \
 		%D%/sleepInhibition.cpp \
 		%D%/sleepInhibition.hpp
 endif

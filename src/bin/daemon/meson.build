@@ -59,12 +59,12 @@ GLogiKd_sources += [
 
 if enable_dbus
   GLogiKd_sources += [
-    'clientsManager.cpp',
-    'clientsManager.hpp',
-    'clientsSignals.cpp',
-    'clientsSignals.hpp',
-    'client.cpp',
-    'client.hpp',
+    'Clients/client.cpp',
+    'Clients/client.hpp',
+    'Clients/clientsManager.cpp',
+    'Clients/clientsManager.hpp',
+    'Clients/clientsSignals.cpp',
+    'Clients/clientsSignals.hpp',
     'sleepInhibition.cpp',
     'sleepInhibition.hpp',
   ]

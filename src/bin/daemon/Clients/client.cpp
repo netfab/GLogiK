@@ -25,10 +25,10 @@
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
-#include "devicesManager.hpp"
+#include "bin/daemon/devicesManager.hpp"
+#include "bin/daemon/detail.hpp"
 
 #include "client.hpp"
-#include "detail.hpp"
 
 namespace Managers::Clients
 {

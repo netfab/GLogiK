@@ -57,7 +57,7 @@
 #if GKDBUS
 #include "lib/dbus/GKDBus.hpp"
 
-#include "clientsManager.hpp"
+#include "Clients/clientsManager.hpp"
 #endif
 
 #include "include/DepsMap.hpp"

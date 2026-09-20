@@ -29,7 +29,8 @@
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
-#include "LCDScreenPluginsManager.hpp"
+#include "bin/daemon/LCDScreenPluginsManager.hpp"
+
 #include "clientsManager.hpp"
 #include "clientsSignals.hpp"
 

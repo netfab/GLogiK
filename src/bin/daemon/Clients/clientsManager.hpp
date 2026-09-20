@@ -30,7 +30,7 @@
 
 #include "lib/dbus/GKDBus.hpp"
 
-#include "devicesManager.hpp"
+#include "bin/daemon/devicesManager.hpp"
 
 #include "client.hpp"
 
@@ -81,7 +81,7 @@ class ClientsManager
 		/* boolean flag used internally to temporarly disable
 		 * signals sending when ::restartDevice() is called
 		 */
-		bool _enabledSignals; 
+		bool _enabledSignals;
 
 		void initializeGKDBusEvents(void);
 

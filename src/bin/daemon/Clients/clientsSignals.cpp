@@ -26,7 +26,7 @@
 
 #include "clientsSignals.hpp"
 
-#include "daemonControl.hpp"
+#include "bin/daemon/daemonControl.hpp"
 
 namespace DBus::Signals
 {
