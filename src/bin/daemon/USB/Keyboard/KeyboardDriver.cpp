@@ -427,7 +427,7 @@ void KeyboardDriver::enterDeviceMacroRecordMode(USBDevice & device)
 						_systemBus,
 						LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 						LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
-						signal.c_str()
+						signal
 					);
 
 					_pDBus->appendStringToBroadcastSignal(device.getID());
