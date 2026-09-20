@@ -21,8 +21,9 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "bin/daemon/USB/API/detail.hpp"
+
 #include "USBDeviceID.hpp"
-#include "USBAPIDetail.hpp"
 
 namespace USBAPI::device
 {

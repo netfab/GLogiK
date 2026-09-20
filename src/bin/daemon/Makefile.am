@@ -39,12 +39,12 @@ GLogiKd_LDADD += \
 				@LIBHIDAPI_LIBS@
 
 GLogiKd_SOURCES += \
-		%D%/keyboards/USBAPI/hidapi.cpp \
-		%D%/keyboards/USBAPI/hidapi.hpp
+		%D%/USB/API/hidapi.cpp \
+		%D%/USB/API/hidapi.hpp
 else
 GLogiKd_SOURCES += \
-		%D%/keyboards/USBAPI/libusb.cpp \
-		%D%/keyboards/USBAPI/libusb.hpp
+		%D%/USB/API/libusb.cpp \
+		%D%/USB/API/libusb.hpp
 endif
 
 if WITH_DBUS
@@ -66,21 +66,21 @@ GLogiKd_SOURCES += \
 endif
 
 GLogiKd_SOURCES += \
-		%D%/keyboards/logitech/G510/G510.hpp \
-		%D%/keyboards/logitech/G510/G510Base.cpp \
-		%D%/keyboards/logitech/G510/G510Base.hpp \
-		%D%/keyboards/logitech/G510/G510Detail.hpp \
-		%D%/keyboards/USBAPI/USBAPIDetail.hpp \
-		%D%/keyboards/USBAPI/USBDevice.cpp \
-		%D%/keyboards/USBAPI/USBDevice.hpp \
-		%D%/keyboards/USBAPI/USBDeviceID.cpp \
-		%D%/keyboards/USBAPI/USBDeviceID.hpp \
-		%D%/keyboards/USBAPI/usbinit.cpp \
-		%D%/keyboards/USBAPI/usbinit.hpp \
-		%D%/keyboards/KeyboardDriver.cpp \
-		%D%/keyboards/KeyboardDriver.hpp \
-		%D%/keyboards/KeyboardDriverDetail.hpp \
-		%D%/keyboards/USBKeyboardDriver.hpp
+		%D%/USB/API/detail.hpp \
+		%D%/USB/API/usbinit.cpp \
+		%D%/USB/API/usbinit.hpp \
+		%D%/USB/Device/USBDevice.cpp \
+		%D%/USB/Device/USBDevice.hpp \
+		%D%/USB/Device/USBDeviceID.cpp \
+		%D%/USB/Device/USBDeviceID.hpp \
+		%D%/USB/Keyboard/KeyboardDriver.cpp \
+		%D%/USB/Keyboard/KeyboardDriver.hpp \
+		%D%/USB/Keyboard/KeyboardDriverDetail.hpp \
+		%D%/USB/Keyboard/USBKeyboardDriver.hpp \
+		%D%/Vendor/Logitech/G510/G510.hpp \
+		%D%/Vendor/Logitech/G510/G510Base.cpp \
+		%D%/Vendor/Logitech/G510/G510Base.hpp \
+		%D%/Vendor/Logitech/G510/G510Detail.hpp
 
 GLogiKd_SOURCES += \
 		%D%/LCDPlugins/PBM.hpp \

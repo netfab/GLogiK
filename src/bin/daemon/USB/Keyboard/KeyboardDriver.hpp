@@ -31,10 +31,8 @@
 #include <thread>
 #include <mutex>
 
-#include "KeyboardDriverDetail.hpp"
-
-#include "USBAPI/USBDeviceID.hpp"
-#include "USBAPI/USBDevice.hpp"
+#include "bin/daemon/USB/Device/USBDeviceID.hpp"
+#include "bin/daemon/USB/Device/USBDevice.hpp"
 
 #include "include/LCDPP.hpp"
 #include "include/base.hpp"
@@ -44,6 +42,8 @@
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/GKeysMacro.hpp"
 #endif
+
+#include "detail.hpp"
 
 namespace USBKeyboard::keyboard
 {

@@ -26,9 +26,9 @@
 #include "lib/utils/utils.hpp"
 
 #include "bin/daemon/LCDScreenPluginsManager.hpp"
+#include "bin/daemon/USB/API/detail.hpp"
 
 #include "USBDevice.hpp"
-#include "USBAPIDetail.hpp"
 
 namespace USBAPI::device
 {

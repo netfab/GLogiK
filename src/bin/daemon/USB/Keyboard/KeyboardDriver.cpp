@@ -36,10 +36,10 @@
 #include "lib/utils/utils.hpp"
 
 #include "KeyboardDriver.hpp"
-#include "KeyboardDriverDetail.hpp"
+#include "detail.hpp"
 
-#include "USBAPI/USBDevice.hpp"
-#include "USBAPI/USBAPIDetail.hpp"
+#include "bin/daemon/USB/Device/USBDevice.hpp"
+#include "bin/daemon/USB/API/detail.hpp"
 
 #include "bin/daemon/daemonControl.hpp"
 #include "bin/daemon/LCDPlugins/PBM.hpp"

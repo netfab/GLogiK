@@ -28,10 +28,9 @@
 #include <vector>
 #include <string>
 
-#include "bin/daemon/keyboards/KeyboardDriverDetail.hpp"
-
-#include "bin/daemon/keyboards/USBAPI/USBDeviceID.hpp"
-#include "bin/daemon/keyboards/USBAPI/USBDevice.hpp"
+#include "bin/daemon/USB/Keyboard/detail.hpp"
+#include "bin/daemon/USB/Device/USBDeviceID.hpp"
+#include "bin/daemon/USB/Device/USBDevice.hpp"
 
 #include "include/base.hpp"
 

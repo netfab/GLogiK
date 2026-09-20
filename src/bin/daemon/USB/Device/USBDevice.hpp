@@ -32,8 +32,9 @@
 #include <chrono>
 #include <mutex>
 
+#include "bin/daemon/USB/API/detail.hpp"
+
 #include "USBDeviceID.hpp"
-#include "USBAPIDetail.hpp"
 
 #include "include/base.hpp"
 

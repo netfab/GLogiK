@@ -26,8 +26,7 @@
 
 #include "usbinit.hpp"
 #include "hidapi.hpp"
-
-#include "USBAPIDetail.hpp"
+#include "detail.hpp"
 
 namespace USBAPI
 {

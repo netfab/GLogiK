@@ -21,56 +21,68 @@
 
 #pragma once
 
-#include <cstdint>
+#include "bin/daemon/USB/Device/USBDevice.hpp"
 
-#include <libusb-1.0/libusb.h>
+#include "KeyboardDriver.hpp"
 
-#include "usbinit.hpp"
-#include "USBDevice.hpp"
-
-namespace USBAPI
+namespace USBKeyboard
 {
 
-class libusb
-	:	private USBInit
+template <typename API>
+class USBKeyboardDriver
+	:	public API,
+		public keyboard::KeyboardDriver
 {
 	private:
 		using USBDevice = USBAPI::device::USBDevice;
 
 	public:
+		virtual ~USBKeyboardDriver();
+
+		virtual const char* getDriverName() const = 0;
 
 	protected:
-		libusb(void) = default;
-		~libusb(void) = default;
+		USBKeyboardDriver(void);
 
-		void openUSBDevice(USBDevice & device);
-		void closeUSBDevice(USBDevice & device) noexcept;
-
-		void sendUSBDeviceFeatureReport(
-			USBDevice & device,
-			const unsigned char * data,
-			std::uint16_t wLength
-		);
-
+	private:
+		/* API */
 		int performUSBDeviceKeysInterruptTransfer(
 			USBDevice & device,
 			unsigned int timeout
-		);
+		) override {
+			return API::performUSBDeviceKeysInterruptTransfer(device, timeout);
+		}
 
 		int performUSBDeviceLCDScreenInterruptTransfer(
 			USBDevice & device,
 			const unsigned char * buffer,
 			int bufferLength,
 			unsigned int timeout
-		);
+		) override {
+			return API::performUSBDeviceLCDScreenInterruptTransfer(
+				device, buffer, bufferLength, timeout);
+		}
 
-	private:
-		void setUSBDeviceActiveConfiguration(USBDevice & device);
-		void findUSBDeviceInterface(USBDevice & device);
-		void releaseUSBDeviceInterfaces(USBDevice & device) noexcept;
+		void openUSBDevice(USBDevice & device) override {
+			API::openUSBDevice(device);
+		}
 
-		void detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int numInt);
-		void attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexcept;
+		void closeUSBDevice(USBDevice & device) override {
+			device.destroyLCDPluginsManager();
+
+			API::closeUSBDevice(device);
+		}
+		/* --- */
 };
 
-} // namespace USBAPI
+template <typename API>
+USBKeyboardDriver<API>::USBKeyboardDriver(void)
+{
+}
+
+template <typename API>
+USBKeyboardDriver<API>::~USBKeyboardDriver()
+{
+}
+
+} // namespace USBKeyboard

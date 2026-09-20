@@ -30,8 +30,8 @@
 
 #include "include/enums.hpp"
 
-#include "src/bin/daemon/keyboards/KeyboardDriverDetail.hpp"
-#include "src/bin/daemon/keyboards/USBAPI/USBDeviceID.hpp"
+#include "src/bin/daemon/USB/Keyboard/detail.hpp"
+#include "src/bin/daemon/USB/Device/USBDeviceID.hpp"
 
 #include "lib/utils/utils.hpp"
 

@@ -46,11 +46,10 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
-#include "daemon.hpp"
-#include "keyboards/USBAPI/usbinit.hpp"
+#include "USB/API/usbinit.hpp"
 
 #if HAVE_HIDAPI
-#include "keyboards/USBAPI/hidapi.hpp"
+#include "USB/API/hidapi.hpp"
 #endif
 
 #include "devicesManager.hpp"
@@ -63,6 +62,7 @@
 
 #include "include/DepsMap.hpp"
 
+#include "daemon.hpp"
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;

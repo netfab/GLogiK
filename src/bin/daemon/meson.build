@@ -12,21 +12,21 @@ GLogiKd_sources = [
 ]
 
 GLogiKd_sources += [
-  'keyboards/logitech/G510/G510.hpp',
-  'keyboards/logitech/G510/G510Base.cpp',
-  'keyboards/logitech/G510/G510Base.hpp',
-  'keyboards/logitech/G510/G510Detail.hpp',
-  'keyboards/USBAPI/USBAPIDetail.hpp',
-  'keyboards/USBAPI/USBDevice.cpp',
-  'keyboards/USBAPI/USBDevice.hpp',
-  'keyboards/USBAPI/USBDeviceID.cpp',
-  'keyboards/USBAPI/USBDeviceID.hpp',
-  'keyboards/USBAPI/usbinit.cpp',
-  'keyboards/USBAPI/usbinit.hpp',
-  'keyboards/KeyboardDriver.cpp',
-  'keyboards/KeyboardDriver.hpp',
-  'keyboards/KeyboardDriverDetail.hpp',
-  'keyboards/USBKeyboardDriver.hpp',
+  'USB/API/detail.hpp',
+  'USB/API/usbinit.cpp',
+  'USB/API/usbinit.hpp',
+  'USB/Device/USBDevice.cpp',
+  'USB/Device/USBDevice.hpp',
+  'USB/Device/USBDeviceID.cpp',
+  'USB/Device/USBDeviceID.hpp',
+  'USB/Keyboard/detail.hpp',
+  'USB/Keyboard/KeyboardDriver.cpp',
+  'USB/Keyboard/KeyboardDriver.hpp',
+  'USB/Keyboard/USBKeyboardDriver.hpp',
+  'Vendor/Logitech/G510/G510.hpp',
+  'Vendor/Logitech/G510/G510Base.cpp',
+  'Vendor/Logitech/G510/G510Base.hpp',
+  'Vendor/Logitech/G510/G510Detail.hpp',
 ]
 
 GLogiKd_sources += [
@@ -79,14 +79,14 @@ endif
 
 if hidapi_dep.found()
   GLogiKd_sources += [
-    'keyboards/USBAPI/hidapi.cpp',
-    'keyboards/USBAPI/hidapi.hpp',
+    'USB/API/hidapi.cpp',
+    'USB/API/hidapi.hpp',
   ]
   config_h.set('HAVE_HIDAPI', 1)
 elif libusb_dep.found()
   GLogiKd_sources += [
-    'keyboards/USBAPI/libusb.cpp',
-    'keyboards/USBAPI/libusb.hpp',
+    'USB/API/libusb.cpp',
+    'USB/API/libusb.hpp',
   ]
   config_h.set('HAVE_LIBUSB', 1)
 endif

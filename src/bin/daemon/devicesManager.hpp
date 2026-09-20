@@ -36,9 +36,8 @@
 #include "clientsSignals.hpp"
 #endif
 
-#include "keyboards/KeyboardDriver.hpp"
-
-#include "keyboards/USBAPI/USBDeviceID.hpp"
+#include "USB/Keyboard/KeyboardDriver.hpp"
+#include "USB/Device/USBDeviceID.hpp"
 
 #include "include/base.hpp"
 #include "include/LCDPP.hpp"

@@ -21,47 +21,56 @@
 
 #pragma once
 
-#include <cstddef>
 #include <cstdint>
-
-#include <array>
-#include <string>
 
 #include <libusb-1.0/libusb.h>
 
-#include "USBDevice.hpp"
+#include "usbinit.hpp"
+#include "bin/daemon/USB/Device/USBDevice.hpp"
 
 namespace USBAPI
 {
 
-class USBInit
+class libusb
+	:	private USBInit
 {
 	private:
 		using USBDevice = USBAPI::device::USBDevice;
-		/* As per the USB 3.0 specs, the current maximum limit for the depth is 7. */
-		static constexpr std::size_t PORT_NUMBERS_LEN = 7;
 
 	public:
-		using USBPortNumbers_type = std::array<std::uint8_t, PORT_NUMBERS_LEN>;
-
-		USBInit(void);
-		~USBInit(void);
-
-		static const std::string getLibUSBVersion(void);
-
-		const int getUSBDevicePortNumbers(
-			USBDevice & device,
-			USBPortNumbers_type & port_numbers
-		);
 
 	protected:
-		int USBError(int errorCode) noexcept;
-		void seekUSBDevice(USBDevice & device);
+		libusb(void) = default;
+		~libusb(void) = default;
+
+		void openUSBDevice(USBDevice & device);
+		void closeUSBDevice(USBDevice & device) noexcept;
+
+		void sendUSBDeviceFeatureReport(
+			USBDevice & device,
+			const unsigned char * data,
+			std::uint16_t wLength
+		);
+
+		int performUSBDeviceKeysInterruptTransfer(
+			USBDevice & device,
+			unsigned int timeout
+		);
+
+		int performUSBDeviceLCDScreenInterruptTransfer(
+			USBDevice & device,
+			const unsigned char * buffer,
+			int bufferLength,
+			unsigned int timeout
+		);
 
 	private:
-		static libusb_context * pContext;
-		static std::uint8_t counter;	/* initialized drivers counter */
-		static bool status;				/* is libusb initialized ? */
+		void setUSBDeviceActiveConfiguration(USBDevice & device);
+		void findUSBDeviceInterface(USBDevice & device);
+		void releaseUSBDeviceInterfaces(USBDevice & device) noexcept;
+
+		void detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int numInt);
+		void attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexcept;
 };
 
 } // namespace USBAPI

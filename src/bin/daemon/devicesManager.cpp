@@ -39,12 +39,12 @@
 #include "detail.hpp"
 
 #include "daemonControl.hpp"
-#include "keyboards/logitech/G510/G510.hpp"
+#include "Vendor/Logitech/G510/G510.hpp"
 
 #if HAVE_LIBUSB
-#include "keyboards/USBAPI/libusb.hpp"
+#include "USB/API/libusb.hpp"
 #elif HAVE_HIDAPI
-#include "keyboards/USBAPI/hidapi.hpp"
+#include "USB/API/hidapi.hpp"
 #endif
 
 #include "include/enums.hpp"
