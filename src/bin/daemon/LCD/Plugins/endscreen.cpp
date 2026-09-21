@@ -29,28 +29,29 @@
 
 #include "lib/utils/utils.hpp"
 
-#include "splashscreen.hpp"
+#include "endscreen.hpp"
 
 namespace fs = boost::filesystem;
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
 using namespace NSGKUtils;
 
-Splashscreen::Splashscreen()
+Endscreen::Endscreen()
 {
-	_plugin.setID( toEnumType(LCDScreenPlugin::GK_LCD_SPLASHSCREEN) );
-	_plugin.setName("splashscreen");
-	_plugin.setDesc("Splashscreen plugin, used when initializing a device");
-	_pluginTempo = LCDPluginTempo::TEMPO_400_15;
+	using LCDScreenPlugin = GLogiK::LCDScreenPlugin;
+	_plugin.setID( toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN) );
+	_plugin.setName("endscreen");
+	_plugin.setDesc("Endscreen plugin, used when releasing a device");
+	//_pluginTempo = LCDPluginTempo::TEMPO_DEFAULT;
 }
 
-Splashscreen::~Splashscreen()
+Endscreen::~Endscreen()
 {
 }
 
-void Splashscreen::init(
+void Endscreen::init(
 	FontsManager* const pFonts,
 	const std::string & product)
 {
@@ -58,14 +59,12 @@ void Splashscreen::init(
 	PBMDirectory /= _plugin.getName();
 
 	this->addPBMEmptyFrame();	/* frame #0 */
-	this->addPBMFrame(PBMDirectory, "splashscreen01.pbm", 1); /* #1 */
-	this->addPBMFrame(PBMDirectory, "splashscreen01.pbm", 3); /* #2 #3 #4 */
+	this->writeStringOnLastPBMFrame(pFonts, FontID::DEJAVUSANSBOLD1616, product, -1, -1);
 
-	std::string version(" version "); version += PACKAGE_VERSION;
-	this->writeStringOnLastPBMFrame(pFonts, FontID::MONOSPACE85, version, 48, 32);
+	//this->addLCDFrame(PBMDirectory, "endscreen.pbm", 1); /* frame #0 */
 
 	LCDPlugin::init(pFonts, product);
 }
 
-} // namespace GLogiK::Daemon
+} // namespace Managers::LCDPlugins::plugin
 

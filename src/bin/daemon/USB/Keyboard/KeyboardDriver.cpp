@@ -43,8 +43,8 @@
 #include "bin/daemon/USB/Device/detail.hpp"
 
 #include "bin/daemon/daemonControl.hpp"
-#include "bin/daemon/LCDPlugins/PBM.hpp"
-#include "bin/daemon/LCDScreenPluginsManager.hpp"
+#include "bin/daemon/LCD/Plugins/PBM.hpp"
+#include "bin/daemon/LCD/pluginsManager.hpp"
 #include "bin/daemon/detail.hpp"
 
 
@@ -532,7 +532,8 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 				LCDPluginsMask1 = device._LCDPluginsMask1;
 			}
 
-			const GLogiK::Daemon::PixelsData & LCDBuffer =
+			using PixelsData = Managers::LCDPlugins::plugin::PixelsData;
+			const PixelsData & LCDBuffer =
 				device.getLCDPluginsManager()->getNextLCDScreenBuffer(LCDKey, LCDPluginsMask1);
 			int ret = this->performUSBDeviceLCDScreenInterruptTransfer(
 				device,
@@ -574,7 +575,8 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 		/* make sure endscreen plugin is loaded before using it */
 		if( device.getLCDPluginsManager()->findOneLCDScreenPlugin( endscreen ) )
 		{
-			const GLogiK::Daemon::PixelsData & LCDBuffer =
+			using PixelsData = Managers::LCDPlugins::plugin::PixelsData;
+			const PixelsData & LCDBuffer =
 				device.getLCDPluginsManager()->getNextLCDScreenBuffer("", endscreen);
 
 			int ret = this->performUSBDeviceLCDScreenInterruptTransfer(
@@ -987,7 +989,7 @@ auto KeyboardDriver::getDeviceLCDPluginsProperties(const std::string & devID) co
 		GKSysLogError(GLogiK::Daemon::detail::UNKNOWN_DEVICE, devID);
 	}
 
-	return GLogiK::Daemon::LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
+	return Managers::LCDPlugins::LCDPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
 void KeyboardDriver::initializeDevice(const USBDeviceID & det)
@@ -1021,8 +1023,8 @@ void KeyboardDriver::initializeDevice(const USBDeviceID & det)
 		 * for all initialized devices (even for the stopped ones) */
 		try
 		{
-			using LCDScreenPluginsManager = GLogiK::Daemon::LCDScreenPluginsManager;
-			device.setLCDPluginsManager( new LCDScreenPluginsManager(device.getProduct()) );
+			using LCDPluginsManager = Managers::LCDPlugins::LCDPluginsManager;
+			device.setLCDPluginsManager( new LCDPluginsManager(device.getProduct()) );
 		}
 		catch (const std::bad_alloc& e)
 		{ /* handle new() failure */

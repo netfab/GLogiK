@@ -19,14 +19,13 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_ENDSCREEN_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_ENDSCREEN_HPP_
+#pragma once
 
 #include "fontsManager.hpp"
 
 #include "LCDPlugin.hpp"
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
 class Endscreen
@@ -47,6 +46,4 @@ class Endscreen
 
 };
 
-} // namespace GLogiK::Daemon
-
-#endif
+} // namespace Managers::LCDPlugins::plugin

@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_FONTS_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_FONTS_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -30,7 +29,7 @@
 #define DEFAULT_PBM_FONT_HEIGHT DEFAULT_PBM_HEIGHT
 #define  DEFAULT_PBM_FONT_WIDTH DEFAULT_PBM_WIDTH
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
 enum class FontID : std::uint8_t
@@ -105,7 +104,4 @@ class FontDejaVuSansBold1616
 
 };
 
-} // namespace GLogiK::Daemon
-
-#endif
-
+} // namespace Managers::LCDPlugins::plugin

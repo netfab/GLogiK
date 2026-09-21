@@ -19,54 +19,48 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_CORETEMP_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_CORETEMP_HPP_
+#pragma once
 
-#include <vector>
+#include <cstdint>
+
 #include <string>
+#include <fstream>
 
-#include "fontsManager.hpp"
+#include "PBM.hpp"
 
-#include "LCDPlugin.hpp"
-
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
-class Coretemp
-	:	public LCDPlugin
+class PBMFile
 {
 	public:
-		Coretemp(const std::string & coretempID);
-		Coretemp(void) = delete;
-		~Coretemp(void);
-
-		static const std::vector<std::string> & getCoretempID(void);
-
-		void init(
-			FontsManager* const pFonts,
-			const std::string & product
-		);
-
-		const PixelsData & getNextPBMFrame(
-			FontsManager* const pFonts,
-			const std::string & LCDKey,
-			const bool lockedPlugin
-		);
 
 	protected:
+		PBMFile(void);
+		~PBMFile(void);
+
+		static void readPBM(
+			const std::string & PBMPath,
+			PixelsData & PBMData,
+			const std::uint16_t PBMWidth,
+			const std::uint16_t PBMHeight
+		);
 
 	private:
-		static std::vector<std::string> coretempIDs;
-
-		std::string _coretempID;
-		std::string _hwmonID;
-
-		static const std::string seekDirectoryPath(
-			const std::string & basedir,
-			const unsigned int start = 0
+		static void parsePBMHeader(
+			std::ifstream & pbm,
+			std::string & magic,
+			std::uint16_t & width,
+			std::uint16_t & height
 		);
+
+		static void extractPBMData(
+			std::ifstream & pbm,
+			PixelsData & PBMData
+		);
+
+		static void closePBM(std::ifstream & pbm);
+
 };
 
-} // namespace GLogiK::Daemon
-
-#endif
+} // namespace Managers::LCDPlugins::plugin

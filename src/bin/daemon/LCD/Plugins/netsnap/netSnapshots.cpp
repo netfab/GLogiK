@@ -35,7 +35,7 @@
 
 #include "netSnapshots.hpp"
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
 using namespace NSGKUtils;
@@ -190,5 +190,5 @@ void NetSnapshots::setBytesSnapshotValue(
 	}
 }
 
-} // namespace GLogiK::Daemon
+} // namespace Managers::LCDPlugins::plugin
 

@@ -35,7 +35,7 @@
 #include "lib/shared/glogik.hpp"
 
 #include "devicesManager.hpp"
-#include "LCDScreenPluginsManager.hpp"
+#include "LCD/pluginsManager.hpp"
 #include "detail.hpp"
 
 #include "daemonControl.hpp"
@@ -934,7 +934,7 @@ auto DevicesManager::getDeviceLCDPluginsProperties(const std::string & devID) co
 		}
 	}
 
-	return GLogiK::Daemon::LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
+	return Managers::LCDPlugins::LCDPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
 const std::string DevicesManager::getDeviceStatus(const std::string & devID) const

@@ -42,7 +42,7 @@
 
 #include "systemMonitor.hpp"
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
 using namespace NSGKUtils;
@@ -51,6 +51,7 @@ SystemMonitor::SystemMonitor()
 	:	_lastRateStringSize(0),
 		_currentRate(NetDirection::NET_RX)
 {
+	using LCDScreenPlugin = GLogiK::LCDScreenPlugin;
 	_plugin.setID( toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR) );
 	_plugin.setName("systemMonitor");
 	_plugin.setDesc("CPU, network and memory monitoring plugin");
@@ -285,5 +286,5 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 	return LCDPlugin::getCurrentPBMFrame();
 }
 
-} // namespace GLogiK::Daemon
+} // namespace Managers::LCDPlugins::plugin
 

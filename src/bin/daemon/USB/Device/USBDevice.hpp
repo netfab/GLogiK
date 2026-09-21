@@ -44,9 +44,9 @@
 #include <hidapi.h>
 #endif
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins
 {
-	class LCDScreenPluginsManager;
+	class LCDPluginsManager;
 }
 
 namespace USB::API
@@ -101,10 +101,10 @@ class USBDevice
 		std::uint64_t				_LCDPluginsMask1;
 
 	private:
-		using LCDScreenPluginsManager = GLogiK::Daemon::LCDScreenPluginsManager;
+		using LCDPluginsManager = Managers::LCDPlugins::LCDPluginsManager;
 		friend class USB::API::USBInit;
 
-		LCDScreenPluginsManager*	_pLCDPluginsManager;
+		LCDPluginsManager*	_pLCDPluginsManager;
 
 		libusb_device*				_pUSBDevice;
 
@@ -157,14 +157,14 @@ class USBDevice
 		/* -- -- -- */
 
 	public:
-		void setLCDPluginsManager(LCDScreenPluginsManager* pLCDPluginsManager)
+		void setLCDPluginsManager(LCDPluginsManager* pLCDPluginsManager)
 		{
 			_pLCDPluginsManager = pLCDPluginsManager;
 		}
 		void destroyLCDPluginsManager(void) noexcept;
 
 		/* getters */
-		LCDScreenPluginsManager* const & getLCDPluginsManager(void) const
+		LCDPluginsManager* const & getLCDPluginsManager(void) const
 		{
 			return _pLCDPluginsManager;
 		}

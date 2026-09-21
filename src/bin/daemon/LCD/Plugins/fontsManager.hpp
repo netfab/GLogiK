@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_FONTS_MANAGER_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_FONTS_MANAGER_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -30,7 +29,7 @@
 #include "PBMFont.hpp"
 #include "fonts.hpp"
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
 class FontsManager
@@ -62,7 +61,4 @@ class FontsManager
 		void initializeFont(const FontID fontID);
 };
 
-} // namespace GLogiK::Daemon
-
-#endif
-
+} // namespace Managers::LCDPlugins::plugin

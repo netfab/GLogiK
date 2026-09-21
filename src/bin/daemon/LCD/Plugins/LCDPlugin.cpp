@@ -25,7 +25,7 @@
 
 #include "LCDPlugin.hpp"
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
 using namespace NSGKUtils;
@@ -157,7 +157,7 @@ const PixelsData & LCDPlugin::getNextPBMFrame(
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-const LCDPP LCDPlugin::getPluginProperties(void) const
+auto LCDPlugin::getPluginProperties(void) const -> const LCDPP
 {
 	return _plugin;
 }
@@ -493,5 +493,4 @@ std::tuple<std::uint16_t, std::uint16_t> LCDPlugin::getTempo(const LCDPluginTemp
 	return std::make_tuple(1000, 10);
 }
 
-} // namespace GLogiK::Daemon
-
+} // namespace Managers::LCDPlugins::plugin

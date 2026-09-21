@@ -19,28 +19,33 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCD_SCREEN_PLUGINS_MANAGER_HPP_
-#define SRC_BIN_DAEMON_LCD_SCREEN_PLUGINS_MANAGER_HPP_
+#pragma once
 
 #include <cstdint>
 
 #include <string>
 #include <vector>
 
-#include "LCDPlugins/PBM.hpp"
-#include "LCDPlugins/LCDPlugin.hpp"
-#include "LCDPlugins/fontsManager.hpp"
+#include "Plugins/PBM.hpp"
+#include "Plugins/LCDPlugin.hpp"
+#include "Plugins/fontsManager.hpp"
 
 #include "include/LCDPP.hpp"
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins
 {
 
-class LCDScreenPluginsManager
+class LCDPluginsManager
 {
+	private:
+		using LCDPPArray_type = GLogiK::LCDPPArray_type;
+		using PixelsData = plugin::PixelsData;
+		using LCDPlugin = plugin::LCDPlugin;
+		using FontsManager = plugin::FontsManager;
+
 	public:
-		LCDScreenPluginsManager(const std::string & product);
-		~LCDScreenPluginsManager(void);
+		LCDPluginsManager(const std::string & product);
+		~LCDPluginsManager(void);
 
 		static const LCDPPArray_type _LCDPluginsPropertiesEmptyArray;
 
@@ -78,6 +83,4 @@ class LCDScreenPluginsManager
 		void dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData);
 };
 
-} // namespace GLogiK::Daemon
-
-#endif
+} // namespace Managers::LCDPlugins

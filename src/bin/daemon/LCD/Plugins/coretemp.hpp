@@ -19,27 +19,27 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_SYSTEM_MONITOR_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_SYSTEM_MONITOR_HPP_
+#pragma once
 
-#include <array>
-#include <string_view>
+#include <vector>
+#include <string>
 
-#include "cpu-stats/CPUSnapshot.h"
+#include "fontsManager.hpp"
 
 #include "LCDPlugin.hpp"
 
-#include "netsnap/netSnapshots.hpp"
-
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
-class SystemMonitor
+class Coretemp
 	:	public LCDPlugin
 {
 	public:
-		SystemMonitor(void);
-		~SystemMonitor(void);
+		Coretemp(const std::string & coretempID);
+		Coretemp(void) = delete;
+		~Coretemp(void);
+
+		static const std::vector<std::string> & getCoretempID(void);
 
 		void init(
 			FontsManager* const pFonts,
@@ -55,14 +55,15 @@ class SystemMonitor
 	protected:
 
 	private:
-		CPUSnapshot _snapshot1;
-		std::size_t _lastRateStringSize;
-		NetDirection _currentRate;
+		static std::vector<std::string> coretempIDs;
 
-		const std::array<const std::string_view, 5> _memItems =
-			{"MemTotal", "MemFree", "MemAvailable", "Buffers", "Cached"};
+		std::string _coretempID;
+		std::string _hwmonID;
+
+		static const std::string seekDirectoryPath(
+			const std::string & basedir,
+			const unsigned int start = 0
+		);
 };
 
-} // namespace GLogiK::Daemon
-
-#endif
+} // namespace Managers::LCDPlugins::plugin

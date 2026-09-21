@@ -19,51 +19,31 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_PBM_FILE_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_PBM_FILE_HPP_
+#pragma once
 
-#include <cstdint>
+#include <vector>
 
-#include <string>
-#include <fstream>
+/* LCD screen real sizes in pixels */
+#define				  LCD_SCREEN_HEIGHT		43
+#define				   LCD_SCREEN_WIDTH		160
 
-#include "PBM.hpp"
+#define				 DEFAULT_PBM_HEIGHT		48
+#define				  DEFAULT_PBM_WIDTH		160
+#define		DEFAULT_PBM_HEIGHT_IN_BYTES		(DEFAULT_PBM_HEIGHT/8)
+#define		 DEFAULT_PBM_WIDTH_IN_BYTES		(DEFAULT_PBM_WIDTH/8)
 
-namespace GLogiK::Daemon
+#define		  DEFAULT_PBM_DATA_IN_BYTES		(DEFAULT_PBM_WIDTH_IN_BYTES * DEFAULT_PBM_HEIGHT)
+
+/* LCD header length */
+#define			 LCD_DATA_HEADER_OFFSET		32
+
+// formula when PBM_HEIGHT not multiple of 8
+// TODO do we need it ?
+//#define PBM_HEIGHT_IN_BYTES ((PBM_HEIGHT + ((8 - (PBM_HEIGHT % 8)) % 8)) / 8)
+
+namespace Managers::LCDPlugins::plugin
 {
 
-class PBMFile
-{
-	public:
+typedef std::vector<unsigned char> PixelsData;
 
-	protected:
-		PBMFile(void);
-		~PBMFile(void);
-
-		static void readPBM(
-			const std::string & PBMPath,
-			PixelsData & PBMData,
-			const std::uint16_t PBMWidth,
-			const std::uint16_t PBMHeight
-		);
-
-	private:
-		static void parsePBMHeader(
-			std::ifstream & pbm,
-			std::string & magic,
-			std::uint16_t & width,
-			std::uint16_t & height
-		);
-
-		static void extractPBMData(
-			std::ifstream & pbm,
-			PixelsData & PBMData
-		);
-
-		static void closePBM(std::ifstream & pbm);
-
-};
-
-} // namespace GLogiK::Daemon
-
-#endif
+} // namespace Managers::LCDPlugins::plugin

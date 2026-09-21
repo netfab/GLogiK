@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_PBM_FONT_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_PBM_FONT_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -32,7 +31,7 @@
 #include "PBM.hpp"
 #include "PBMFile.hpp"
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
 typedef std::initializer_list<
@@ -94,7 +93,4 @@ class PBMFont
 		) const;
 };
 
-} // namespace GLogiK::Daemon
-
-#endif
-
+} // namespace Managers::LCDPlugins::plugin

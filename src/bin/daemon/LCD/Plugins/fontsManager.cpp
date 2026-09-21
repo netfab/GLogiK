@@ -25,7 +25,7 @@
 
 #include "fontsManager.hpp"
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
 using namespace NSGKUtils;
@@ -119,5 +119,4 @@ void FontsManager::initializeFont(const FontID fontID)
 	_fonts[fontID] = font;
 }
 
-} // namespace GLogiK::Daemon
-
+} // namespace Managers::LCDPlugins::plugin

@@ -27,23 +27,23 @@
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
-#include "LCDScreenPluginsManager.hpp"
+#include "pluginsManager.hpp"
 
-#include "LCDPlugins/coretemp.hpp"
-#include "LCDPlugins/endscreen.hpp"
-#include "LCDPlugins/splashscreen.hpp"
-#include "LCDPlugins/systemMonitor.hpp"
+#include "Plugins/coretemp.hpp"
+#include "Plugins/endscreen.hpp"
+#include "Plugins/splashscreen.hpp"
+#include "Plugins/systemMonitor.hpp"
 
 #include "include/enums.hpp"
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins
 {
 
 using namespace NSGKUtils;
 
-const LCDPPArray_type LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray = {};
+const GLogiK::LCDPPArray_type LCDPluginsManager::_LCDPluginsPropertiesEmptyArray = {};
 
-LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
+LCDPluginsManager::LCDPluginsManager(const std::string & product)
 	:	_pFonts(&_fontsManager),
 		_frameCounter(0),
 		_noPlugins(false),
@@ -52,7 +52,7 @@ LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
 	GK_LOG_FUNC
 
 	// TODO optional build ?
-	const std::vector<std::string> coretempIDs = Coretemp::getCoretempID();
+	const std::vector<std::string> coretempIDs = plugin::Coretemp::getCoretempID();
 	if(coretempIDs.empty())
 	{
 		GKSysLogWarning("coretemp directory not found, disabling coretemp LCD plugin");
@@ -60,11 +60,11 @@ LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
 
 	try
 	{
-		_plugins.push_back( new Splashscreen() );
-		_plugins.push_back( new SystemMonitor() );
+		_plugins.push_back( new plugin::Splashscreen() );
+		_plugins.push_back( new plugin::SystemMonitor() );
 		for( const auto & ID : coretempIDs )
-			_plugins.push_back( new Coretemp(ID) );
-		_plugins.push_back( new Endscreen() );
+			_plugins.push_back( new plugin::Coretemp(ID) );
+		_plugins.push_back( new plugin::Endscreen() );
 	}
 	catch (const std::bad_alloc& e)
 	{ /* handle new() failure */
@@ -115,17 +115,17 @@ LCDScreenPluginsManager::LCDScreenPluginsManager(const std::string & product)
 	_LCDBuffer.resize( DEFAULT_PBM_DATA_IN_BYTES + LCD_DATA_HEADER_OFFSET, 0 );
 }
 
-LCDScreenPluginsManager::~LCDScreenPluginsManager()
+LCDPluginsManager::~LCDPluginsManager()
 {
 	this->stopLCDPlugins();
 }
 
-const LCDPPArray_type & LCDScreenPluginsManager::getLCDPluginsProperties(void) const
+auto LCDPluginsManager::getLCDPluginsProperties(void) const -> const LCDPPArray_type &
 {
 	return _pluginsPropertiesArray;
 }
 
-const std::uint16_t LCDScreenPluginsManager::getPluginTiming(void)
+const std::uint16_t LCDPluginsManager::getPluginTiming(void)
 {
 	if(_itCurrentPlugin != _plugins.end() )
 		return (*_itCurrentPlugin)->getPluginTiming();
@@ -133,7 +133,7 @@ const std::uint16_t LCDScreenPluginsManager::getPluginTiming(void)
 	return 1000;
 }
 
-void LCDScreenPluginsManager::unlockPlugin(void)
+void LCDPluginsManager::unlockPlugin(void)
 {
 	GK_LOG_FUNC
 
@@ -150,7 +150,7 @@ void LCDScreenPluginsManager::unlockPlugin(void)
 	}
 }
 
-const std::uint64_t LCDScreenPluginsManager::getCurrentPluginID(void)
+const std::uint64_t LCDPluginsManager::getCurrentPluginID(void)
 {
 	if( ! _noPlugins )
 		if(_itCurrentPlugin != _plugins.end() )
@@ -159,7 +159,7 @@ const std::uint64_t LCDScreenPluginsManager::getCurrentPluginID(void)
 	return 0;
 }
 
-void LCDScreenPluginsManager::jumpToNextPlugin(void)
+void LCDPluginsManager::jumpToNextPlugin(void)
 {
 	GK_LOG_FUNC
 
@@ -174,7 +174,7 @@ void LCDScreenPluginsManager::jumpToNextPlugin(void)
 		}
 }
 
-const bool LCDScreenPluginsManager::findOneLCDScreenPlugin(const std::uint64_t LCDPluginsMask1) const
+const bool LCDPluginsManager::findOneLCDScreenPlugin(const std::uint64_t LCDPluginsMask1) const
 {
 	bool ret = false;
 
@@ -194,9 +194,10 @@ const bool LCDScreenPluginsManager::findOneLCDScreenPlugin(const std::uint64_t L
 	return ret;
 }
 
-const PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
+auto LCDPluginsManager::getNextLCDScreenBuffer(
 	const std::string & LCDKey,
-	const std::uint64_t LCDPluginsMask1)
+	const std::uint64_t LCDPluginsMask1
+	) -> const PixelsData &
 {
 	GK_LOG_FUNC
 
@@ -291,7 +292,7 @@ const PixelsData & LCDScreenPluginsManager::getNextLCDScreenBuffer(
 	return _LCDBuffer;
 }
 
-void LCDScreenPluginsManager::stopLCDPlugins(void)
+void LCDPluginsManager::stopLCDPlugins(void)
 {
 	GK_LOG_FUNC
 
@@ -356,7 +357,7 @@ void LCDScreenPluginsManager::stopLCDPlugins(void)
  *	A2		pixels of the 43-pixel high display.)
  *
  */
-void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData)
+void LCDPluginsManager::dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData)
 {
 	unsigned int LCDCol = 0;
 	unsigned int rowOffset = 0;
@@ -405,5 +406,5 @@ void LCDScreenPluginsManager::dumpPBMDataIntoLCDBuffer(const PixelsData & PBMDat
 }
 
 
-} // namespace GLogiK::Daemon
+} // namespace Managers::LCDPlugins
 

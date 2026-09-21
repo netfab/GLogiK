@@ -19,34 +19,47 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_PBM_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_PBM_HPP_
+#pragma once
 
-#include <vector>
+#include <array>
+#include <string_view>
 
-/* LCD screen real sizes in pixels */
-#define				  LCD_SCREEN_HEIGHT		43
-#define				   LCD_SCREEN_WIDTH		160
+#include "cpu-stats/CPUSnapshot.h"
 
-#define				 DEFAULT_PBM_HEIGHT		48
-#define				  DEFAULT_PBM_WIDTH		160
-#define		DEFAULT_PBM_HEIGHT_IN_BYTES		(DEFAULT_PBM_HEIGHT/8)
-#define		 DEFAULT_PBM_WIDTH_IN_BYTES		(DEFAULT_PBM_WIDTH/8)
+#include "LCDPlugin.hpp"
 
-#define		  DEFAULT_PBM_DATA_IN_BYTES		(DEFAULT_PBM_WIDTH_IN_BYTES * DEFAULT_PBM_HEIGHT)
+#include "netsnap/netSnapshots.hpp"
 
-/* LCD header length */
-#define			 LCD_DATA_HEADER_OFFSET		32
-
-// formula when PBM_HEIGHT not multiple of 8
-// TODO do we need it ?
-//#define PBM_HEIGHT_IN_BYTES ((PBM_HEIGHT + ((8 - (PBM_HEIGHT % 8)) % 8)) / 8)
-
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
-typedef std::vector<unsigned char> PixelsData;
+class SystemMonitor
+	:	public LCDPlugin
+{
+	public:
+		SystemMonitor(void);
+		~SystemMonitor(void);
 
-} // namespace GLogiK::Daemon
+		void init(
+			FontsManager* const pFonts,
+			const std::string & product
+		);
 
-#endif
+		const PixelsData & getNextPBMFrame(
+			FontsManager* const pFonts,
+			const std::string & LCDKey,
+			const bool lockedPlugin
+		);
+
+	protected:
+
+	private:
+		CPUSnapshot _snapshot1;
+		std::size_t _lastRateStringSize;
+		NetDirection _currentRate;
+
+		const std::array<const std::string_view, 5> _memItems =
+			{"MemTotal", "MemFree", "MemAvailable", "Buffers", "Cached"};
+};
+
+} // namespace Managers::LCDPlugins::plugin

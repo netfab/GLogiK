@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_LCD_SCREEN_PLUGIN_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_LCD_SCREEN_PLUGIN_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -38,7 +37,7 @@
 
 namespace fs = boost::filesystem;
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
 enum class LCDPluginTempo : std::uint8_t
@@ -69,6 +68,9 @@ class PBMFrame
 class LCDPlugin
 	:	virtual protected PBMFile
 {
+	private:
+		using LCDPP = GLogiK::LCDPP;
+
 	public:
 		virtual ~LCDPlugin(void);
 
@@ -158,6 +160,4 @@ class LCDPlugin
 		static std::tuple<std::uint16_t, std::uint16_t> getTempo(const LCDPluginTempo tempo);
 };
 
-} // namespace GLogiK::Daemon
-
-#endif
+} // namespace Managers::LCDPlugins::plugin

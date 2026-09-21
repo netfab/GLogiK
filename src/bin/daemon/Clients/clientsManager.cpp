@@ -29,7 +29,7 @@
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
-#include "bin/daemon/LCDScreenPluginsManager.hpp"
+#include "bin/daemon/LCD/pluginsManager.hpp"
 
 #include "clientsManager.hpp"
 #include "clientsSignals.hpp"
@@ -950,7 +950,7 @@ auto ClientsManager::getDeviceLCDPluginsProperties(
 		GKSysLogError(UNKNOWN_CLIENT, clientID);
 	}
 
-	return GLogiK::Daemon::LCDScreenPluginsManager::_LCDPluginsPropertiesEmptyArray;
+	return Managers::LCDPlugins::LCDPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
 const bool ClientsManager::setDeviceBacklightColor(

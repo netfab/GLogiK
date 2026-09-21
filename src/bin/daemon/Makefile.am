@@ -28,8 +28,8 @@ GLogiKd_SOURCES = \
 		%D%/daemonControl.hpp \
 		%D%/devicesManager.cpp \
 		%D%/devicesManager.hpp \
-		%D%/LCDScreenPluginsManager.cpp \
-		%D%/LCDScreenPluginsManager.hpp
+		%D%/LCD/pluginsManager.cpp \
+		%D%/LCD/pluginsManager.hpp
 
 if WITH_HIDAPI
 GLogiKd_CXXFLAGS += \
@@ -84,28 +84,28 @@ GLogiKd_SOURCES += \
 		%D%/Vendor/Logitech/G510/G510Base.hpp
 
 GLogiKd_SOURCES += \
-		%D%/LCDPlugins/PBM.hpp \
-		%D%/LCDPlugins/PBMFile.cpp \
-		%D%/LCDPlugins/PBMFile.hpp \
-		%D%/LCDPlugins/PBMFont.cpp \
-		%D%/LCDPlugins/PBMFont.hpp \
-		%D%/LCDPlugins/fonts.hpp \
-		%D%/LCDPlugins/fontsManager.cpp \
-		%D%/LCDPlugins/fontsManager.hpp \
-		%D%/LCDPlugins/LCDPlugin.cpp \
-		%D%/LCDPlugins/LCDPlugin.hpp \
-		%D%/LCDPlugins/splashscreen.cpp \
-		%D%/LCDPlugins/splashscreen.hpp \
-		%D%/LCDPlugins/cpu-stats/CPUData.cpp \
-		%D%/LCDPlugins/cpu-stats/CPUData.h \
-		%D%/LCDPlugins/cpu-stats/CPUSnapshot.cpp \
-		%D%/LCDPlugins/cpu-stats/CPUSnapshot.h \
-		%D%/LCDPlugins/netsnap/netSnapshots.cpp \
-		%D%/LCDPlugins/netsnap/netSnapshots.hpp \
-		%D%/LCDPlugins/systemMonitor.cpp \
-		%D%/LCDPlugins/systemMonitor.hpp \
-		%D%/LCDPlugins/coretemp.cpp \
-		%D%/LCDPlugins/coretemp.hpp \
-		%D%/LCDPlugins/endscreen.cpp \
-		%D%/LCDPlugins/endscreen.hpp
+		%D%/LCD/Plugins/PBM.hpp \
+		%D%/LCD/Plugins/PBMFile.cpp \
+		%D%/LCD/Plugins/PBMFile.hpp \
+		%D%/LCD/Plugins/PBMFont.cpp \
+		%D%/LCD/Plugins/PBMFont.hpp \
+		%D%/LCD/Plugins/fonts.hpp \
+		%D%/LCD/Plugins/fontsManager.cpp \
+		%D%/LCD/Plugins/fontsManager.hpp \
+		%D%/LCD/Plugins/LCDPlugin.cpp \
+		%D%/LCD/Plugins/LCDPlugin.hpp \
+		%D%/LCD/Plugins/splashscreen.cpp \
+		%D%/LCD/Plugins/splashscreen.hpp \
+		%D%/LCD/Plugins/cpu-stats/CPUData.cpp \
+		%D%/LCD/Plugins/cpu-stats/CPUData.h \
+		%D%/LCD/Plugins/cpu-stats/CPUSnapshot.cpp \
+		%D%/LCD/Plugins/cpu-stats/CPUSnapshot.h \
+		%D%/LCD/Plugins/netsnap/netSnapshots.cpp \
+		%D%/LCD/Plugins/netsnap/netSnapshots.hpp \
+		%D%/LCD/Plugins/systemMonitor.cpp \
+		%D%/LCD/Plugins/systemMonitor.hpp \
+		%D%/LCD/Plugins/coretemp.cpp \
+		%D%/LCD/Plugins/coretemp.hpp \
+		%D%/LCD/Plugins/endscreen.cpp \
+		%D%/LCD/Plugins/endscreen.hpp
 

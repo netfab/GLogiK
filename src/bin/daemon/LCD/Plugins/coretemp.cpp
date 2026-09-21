@@ -36,7 +36,7 @@
 
 namespace fs = boost::filesystem;
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
 using namespace NSGKUtils;
@@ -116,6 +116,7 @@ const std::vector<std::string> & Coretemp::getCoretempID(void)
 
 Coretemp::Coretemp(const std::string & coretempID)
 {
+	using LCDScreenPlugin = GLogiK::LCDScreenPlugin;
 	_plugin.setID( toEnumType(LCDScreenPlugin::GK_LCD_CORETEMP) );
 	_plugin.setName("coretemp");
 	_plugin.setDesc("Coretemp plugin, used to get packages/cores temperatures from Intel CPUs");
@@ -280,5 +281,5 @@ const PixelsData & Coretemp::getNextPBMFrame(
 	return LCDPlugin::getCurrentPBMFrame();
 }
 
-} // namespace GLogiK::Daemon
+} // namespace Managers::LCDPlugins::plugin
 

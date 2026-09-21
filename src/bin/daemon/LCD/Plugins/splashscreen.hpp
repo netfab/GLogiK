@@ -19,46 +19,31 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_LCDPLUGINS_NETSNAP_NET_SNAPSHOTS_HPP_
-#define SRC_BIN_DAEMON_LCDPLUGINS_NETSNAP_NET_SNAPSHOTS_HPP_
+#pragma once
 
-#include <string>
+#include "fontsManager.hpp"
 
-namespace GLogiK::Daemon
+#include "LCDPlugin.hpp"
+
+namespace Managers::LCDPlugins::plugin
 {
 
-enum class NetDirection
-{
-	NET_RX = 0,
-	NET_TX
-};
-
-class NetSnapshots
+class Splashscreen
+	:	public LCDPlugin
 {
 	public:
-		NetSnapshots(void);
-		~NetSnapshots(void);
+		Splashscreen(void);
+		~Splashscreen(void);
 
-		const std::string getRateString(NetDirection direction);
+		void init(
+			FontsManager* const pFonts,
+			const std::string & product
+		);
 
 	protected:
 
 	private:
-		unsigned long long _rxDiff;
-		unsigned long long _txDiff;
-		std::string _defaultNetworkInterfaceName;
-		std::string _networkInterfaceName;
-		void findDefaultRouteNetworkInterfaceName(void);
-		void setBytesSnapshotValue(
-			const NetDirection d,
-			unsigned long long & value
-		);
-		const std::string getRateString(
-			const std::string & direction,
-			const unsigned long long & value
-		);
+
 };
 
-} // namespace GLogiK::Daemon
-
-#endif
+} // namespace Managers::LCDPlugins::plugin

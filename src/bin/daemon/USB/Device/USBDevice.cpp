@@ -25,7 +25,7 @@
 
 #include "lib/utils/utils.hpp"
 
-#include "bin/daemon/LCDScreenPluginsManager.hpp"
+#include "bin/daemon/LCD/pluginsManager.hpp"
 
 #include "include/base.hpp"
 

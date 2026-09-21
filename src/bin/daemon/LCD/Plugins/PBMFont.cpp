@@ -29,7 +29,7 @@
 
 #include "PBMFont.hpp"
 
-namespace GLogiK::Daemon
+namespace Managers::LCDPlugins::plugin
 {
 
 namespace fs = boost::filesystem;
@@ -318,5 +318,5 @@ const unsigned char PBMFont::getCharacterLine(
 	return c;
 }
 
-} // namespace GLogiK::Daemon
+} // namespace Managers::LCDPlugins::plugin
 
