@@ -21,29 +21,49 @@
 
 #pragma once
 
-#include "fontsManager.hpp"
+#include <vector>
+#include <string>
 
-#include "LCDPlugin.hpp"
+#include "bin/daemon/LCD/Plugins/LCDPlugin.hpp"
 
 namespace Managers::LCDPlugins::plugin
 {
 
-class Endscreen
+class FontsManager;
+
+class Coretemp
 	:	public LCDPlugin
 {
 	public:
-		Endscreen(void);
-		~Endscreen(void);
+		Coretemp(const std::string & coretempID);
+		Coretemp(void) = delete;
+		~Coretemp(void);
+
+		static const std::vector<std::string> & getCoretempID(void);
 
 		void init(
 			FontsManager* const pFonts,
 			const std::string & product
 		);
 
+		const PixelsData & getNextPBMFrame(
+			FontsManager* const pFonts,
+			const std::string & LCDKey,
+			const bool lockedPlugin
+		);
+
 	protected:
 
 	private:
+		static std::vector<std::string> coretempIDs;
 
+		std::string _coretempID;
+		std::string _hwmonID;
+
+		static const std::string seekDirectoryPath(
+			const std::string & basedir,
+			const unsigned int start = 0
+		);
 };
 
 } // namespace Managers::LCDPlugins::plugin

@@ -27,9 +27,7 @@ GLogiKd_SOURCES = \
 		%D%/daemonControl.cpp \
 		%D%/daemonControl.hpp \
 		%D%/devicesManager.cpp \
-		%D%/devicesManager.hpp \
-		%D%/LCD/pluginsManager.cpp \
-		%D%/LCD/pluginsManager.hpp
+		%D%/devicesManager.hpp
 
 if WITH_HIDAPI
 GLogiKd_CXXFLAGS += \
@@ -83,29 +81,4 @@ GLogiKd_SOURCES += \
 		%D%/Vendor/Logitech/G510/G510Base.cpp \
 		%D%/Vendor/Logitech/G510/G510Base.hpp
 
-GLogiKd_SOURCES += \
-		%D%/LCD/Plugins/PBM.hpp \
-		%D%/LCD/Plugins/PBMFile.cpp \
-		%D%/LCD/Plugins/PBMFile.hpp \
-		%D%/LCD/Plugins/PBMFont.cpp \
-		%D%/LCD/Plugins/PBMFont.hpp \
-		%D%/LCD/Plugins/fonts.hpp \
-		%D%/LCD/Plugins/fontsManager.cpp \
-		%D%/LCD/Plugins/fontsManager.hpp \
-		%D%/LCD/Plugins/LCDPlugin.cpp \
-		%D%/LCD/Plugins/LCDPlugin.hpp \
-		%D%/LCD/Plugins/splashscreen.cpp \
-		%D%/LCD/Plugins/splashscreen.hpp \
-		%D%/LCD/Plugins/cpu-stats/CPUData.cpp \
-		%D%/LCD/Plugins/cpu-stats/CPUData.h \
-		%D%/LCD/Plugins/cpu-stats/CPUSnapshot.cpp \
-		%D%/LCD/Plugins/cpu-stats/CPUSnapshot.h \
-		%D%/LCD/Plugins/netsnap/netSnapshots.cpp \
-		%D%/LCD/Plugins/netsnap/netSnapshots.hpp \
-		%D%/LCD/Plugins/systemMonitor.cpp \
-		%D%/LCD/Plugins/systemMonitor.hpp \
-		%D%/LCD/Plugins/coretemp.cpp \
-		%D%/LCD/Plugins/coretemp.hpp \
-		%D%/LCD/Plugins/endscreen.cpp \
-		%D%/LCD/Plugins/endscreen.hpp
-
+include %D%/LCD/Makefile.am

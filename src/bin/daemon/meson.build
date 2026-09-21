@@ -7,8 +7,6 @@ GLogiKd_sources = [
   'daemonControl.hpp',
   'devicesManager.cpp',
   'devicesManager.hpp',
-  'LCD/pluginsManager.cpp',
-  'LCD/pluginsManager.hpp',
 ]
 
 GLogiKd_sources += [
@@ -30,33 +28,6 @@ GLogiKd_sources += [
   'Vendor/Logitech/G510/G510Base.hpp',
 ]
 
-GLogiKd_sources += [
-  'LCD/Plugins/PBM.hpp',
-  'LCD/Plugins/PBMFile.cpp',
-  'LCD/Plugins/PBMFile.hpp',
-  'LCD/Plugins/PBMFont.cpp',
-  'LCD/Plugins/PBMFont.hpp',
-  'LCD/Plugins/fonts.hpp',
-  'LCD/Plugins/fontsManager.cpp',
-  'LCD/Plugins/fontsManager.hpp',
-  'LCD/Plugins/LCDPlugin.cpp',
-  'LCD/Plugins/LCDPlugin.hpp',
-  'LCD/Plugins/splashscreen.cpp',
-  'LCD/Plugins/splashscreen.hpp',
-  'LCD/Plugins/cpu-stats/CPUData.cpp',
-  'LCD/Plugins/cpu-stats/CPUData.h',
-  'LCD/Plugins/cpu-stats/CPUSnapshot.cpp',
-  'LCD/Plugins/cpu-stats/CPUSnapshot.h',
-  'LCD/Plugins/netsnap/netSnapshots.cpp',
-  'LCD/Plugins/netsnap/netSnapshots.hpp',
-  'LCD/Plugins/systemMonitor.cpp',
-  'LCD/Plugins/systemMonitor.hpp',
-  'LCD/Plugins/coretemp.cpp',
-  'LCD/Plugins/coretemp.hpp',
-  'LCD/Plugins/endscreen.cpp',
-  'LCD/Plugins/endscreen.hpp',
-]
-
 if enable_dbus
   GLogiKd_sources += [
     'Clients/client.cpp',
@@ -69,6 +40,8 @@ if enable_dbus
     'sleepInhibition.hpp',
   ]
 endif
+
+subdir('LCD')
 
 #! ----------
 

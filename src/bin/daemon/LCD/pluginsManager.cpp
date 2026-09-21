@@ -29,10 +29,10 @@
 
 #include "pluginsManager.hpp"
 
-#include "Plugins/coretemp.hpp"
-#include "Plugins/endscreen.hpp"
-#include "Plugins/splashscreen.hpp"
-#include "Plugins/systemMonitor.hpp"
+#include "Plugins/coretemp/coretemp.hpp"
+#include "Plugins/endscreen/endscreen.hpp"
+#include "Plugins/splashscreen/splashscreen.hpp"
+#include "Plugins/systemMonitor/systemMonitor.hpp"
 
 #include "include/enums.hpp"
 

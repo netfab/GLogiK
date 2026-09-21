@@ -21,45 +21,31 @@
 
 #pragma once
 
-#include <array>
-#include <string_view>
+#include <string>
 
-#include "cpu-stats/CPUSnapshot.h"
-
-#include "LCDPlugin.hpp"
-
-#include "netsnap/netSnapshots.hpp"
+#include "bin/daemon/LCD/Plugins/LCDPlugin.hpp"
 
 namespace Managers::LCDPlugins::plugin
 {
 
-class SystemMonitor
+class FontsManager;
+
+class Endscreen
 	:	public LCDPlugin
 {
 	public:
-		SystemMonitor(void);
-		~SystemMonitor(void);
+		Endscreen(void);
+		~Endscreen(void);
 
 		void init(
 			FontsManager* const pFonts,
 			const std::string & product
 		);
 
-		const PixelsData & getNextPBMFrame(
-			FontsManager* const pFonts,
-			const std::string & LCDKey,
-			const bool lockedPlugin
-		);
-
 	protected:
 
 	private:
-		CPUSnapshot _snapshot1;
-		std::size_t _lastRateStringSize;
-		NetDirection _currentRate;
 
-		const std::array<const std::string_view, 5> _memItems =
-			{"MemTotal", "MemFree", "MemAvailable", "Buffers", "Cached"};
 };
 
 } // namespace Managers::LCDPlugins::plugin
