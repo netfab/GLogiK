@@ -19,6 +19,7 @@
  *
  */
 
+#include <QChar> // required before QCryptographicHash by gcc-16
 #include <QCryptographicHash>
 #include <QFile>
 #include <QFont>
