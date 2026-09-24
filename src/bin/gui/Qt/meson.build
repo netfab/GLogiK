@@ -39,6 +39,7 @@ executable(
     GKShared_lib_dep,
     GKDBus_lib_dep,
   ],
+  cpp_args : qt6_cpp_args,
   install : true,
   install_rpath : gk_libdir
 )

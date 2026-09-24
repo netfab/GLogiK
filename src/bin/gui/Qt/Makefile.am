@@ -5,7 +5,11 @@ GKcQt_CXXFLAGS = \
 				@BOOST_CPPFLAGS@ \
 				@QT_CFLAGS@ \
 				@DBUS_CFLAGS@ \
-				@AM_CXXFLAGS@
+				@AM_CXXFLAGS@ \
+				-Wno-sfinae-incomplete
+
+# workaround warning GCC-16 / Qt 6.10(debian) Qt 6.11(gentoo)
+# a warning is emitted : failed to be complete in a SFINAE context [-Werror=sfinae-incomplete=]
 
 GKcQt_LDFLAGS = \
 				@BOOST_LDFLAGS@ \

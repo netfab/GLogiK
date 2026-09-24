@@ -172,6 +172,7 @@ enable_hidapi = get_option('hidapi')
 enable_notifications = get_option('notifications')
 enable_libnotify = get_option('libnotify')
 enable_qt6 = get_option('qt6')
+enable_qt6_flags_fix = get_option('qt6-flags-fix')
 enable_systray = get_option('systray')
 
 #! ----------
@@ -270,6 +271,13 @@ if enable_dbus
       qt_dep = dependency('qt6', modules: ['Core', 'Gui', 'Widgets'])
       qt6 = import('qt6')
       res_cpp = qt6.compile_resources(name: 'resources', sources: 'data/icons/icons.qrc')
+
+      qt6_cpp_args = []
+      #! workaround warning GCC-16 / Qt 6.10|6.11
+      #! failed to be complete in a SFINAE context [-Werror=sfinae-incomplete=]
+      if enable_qt6_flags_fix and cxx.has_argument('-Wno-sfinae-incomplete')
+        qt6_cpp_args += ['-Wno-sfinae-incomplete']
+      endif
     endif
 
     deps_versions_array += [
