@@ -3,6 +3,7 @@
 ===================
 - Fixed desktop service starting crash while user not in glogiks group
 - Dropped Qt5 support
+- Dropped Autotools build system support
 - Implemented optional Qt system tray icon into desktop service
 - Raised boost libraries minimal version to 1.90.0
      (boost::system removed)

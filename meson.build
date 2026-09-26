@@ -309,7 +309,7 @@ install_data(
   install_dir : gk_docdir)
 
 install_data(
-  ['AUTHORS', 'ChangeLog', 'COPYING', 'VERSION'],
+  ['AUTHORS', 'COPYING', 'VERSION'],
   install_dir : gk_docdir)
 
 #! ----------
