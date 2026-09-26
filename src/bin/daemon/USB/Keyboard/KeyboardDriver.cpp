@@ -43,7 +43,7 @@
 #include "bin/daemon/USB/Device/detail.hpp"
 
 #include "bin/daemon/daemonControl.hpp"
-#include "bin/daemon/LCD/Plugins/PBM.hpp"
+#include "bin/daemon/LCD/PixelsData.hpp"
 #include "bin/daemon/LCD/pluginsManager.hpp"
 #include "bin/daemon/detail.hpp"
 
@@ -532,7 +532,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 				LCDPluginsMask1 = device._LCDPluginsMask1;
 			}
 
-			using PixelsData = Managers::LCDPlugins::plugin::PixelsData;
+			using PixelsData = ::Managers::LCDPlugins::PixelsData;
 			const PixelsData & LCDBuffer =
 				device.getLCDPluginsManager()->getNextLCDScreenBuffer(LCDKey, LCDPluginsMask1);
 			int ret = this->performUSBDeviceLCDScreenInterruptTransfer(
@@ -575,7 +575,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 		/* make sure endscreen plugin is loaded before using it */
 		if( device.getLCDPluginsManager()->findOneLCDScreenPlugin( endscreen ) )
 		{
-			using PixelsData = Managers::LCDPlugins::plugin::PixelsData;
+			using PixelsData = ::Managers::LCDPlugins::PixelsData;
 			const PixelsData & LCDBuffer =
 				device.getLCDPluginsManager()->getNextLCDScreenBuffer("", endscreen);
 

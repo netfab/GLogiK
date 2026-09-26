@@ -1,5 +1,6 @@
 
 GLogiKd_sources += files(
+  'PixelsData.hpp',
   'pluginsManager.cpp',
   'pluginsManager.hpp',
 )

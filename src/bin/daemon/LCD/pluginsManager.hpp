@@ -26,9 +26,9 @@
 #include <string>
 #include <vector>
 
-#include "Plugins/PBM.hpp"
 #include "Plugins/LCDPlugin.hpp"
 #include "Plugins/fontsManager.hpp"
+#include "PixelsData.hpp"
 
 #include "include/LCDPP.hpp"
 
@@ -39,7 +39,7 @@ class LCDPluginsManager
 {
 	private:
 		using LCDPPArray_type = GLogiK::LCDPPArray_type;
-		using PixelsData = plugin::PixelsData;
+		using PixelsData = ::Managers::LCDPlugins::PixelsData;
 		using LCDPlugin = plugin::LCDPlugin;
 		using FontsManager = plugin::FontsManager;
 

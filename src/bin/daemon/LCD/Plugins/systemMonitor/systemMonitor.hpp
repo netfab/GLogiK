@@ -30,6 +30,7 @@
 #include "netsnap/netSnapshots.hpp"
 
 #include "bin/daemon/LCD/Plugins/LCDPlugin.hpp"
+#include "bin/daemon/LCD/PixelsData.hpp"
 
 namespace Managers::LCDPlugins::plugin
 {
@@ -39,6 +40,9 @@ class FontsManager;
 class SystemMonitor
 	:	public LCDPlugin
 {
+	private:
+		using PixelsData = ::Managers::LCDPlugins::PixelsData;
+
 	public:
 		SystemMonitor(void);
 		~SystemMonitor(void);

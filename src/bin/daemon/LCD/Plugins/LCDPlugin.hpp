@@ -31,6 +31,8 @@
 
 #include "include/LCDPP.hpp"
 
+#include "bin/daemon/LCD/PixelsData.hpp"
+
 #include "fontsManager.hpp"
 #include "PBM.hpp"
 #include "PBMFile.hpp"
@@ -49,6 +51,9 @@ enum class LCDPluginTempo : std::uint8_t
 
 class PBMFrame
 {
+	private:
+		using PixelsData = ::Managers::LCDPlugins::PixelsData;
+
 	public:
 		PBMFrame(const std::uint16_t num);
 		PBMFrame(void) = delete;
@@ -70,6 +75,7 @@ class LCDPlugin
 {
 	private:
 		using LCDPP = GLogiK::LCDPP;
+		using PixelsData = ::Managers::LCDPlugins::PixelsData;
 
 	public:
 		virtual ~LCDPlugin(void);

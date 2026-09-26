@@ -28,7 +28,7 @@
 #include <map>
 #include <initializer_list>
 
-#include "PBM.hpp"
+#include "bin/daemon/LCD/PixelsData.hpp"
 #include "PBMFile.hpp"
 
 namespace Managers::LCDPlugins::plugin
@@ -40,6 +40,9 @@ typedef std::initializer_list<
 class PBMFont
 	:	virtual protected PBMFile
 {
+	private:
+		using PixelsData = ::Managers::LCDPlugins::PixelsData;
+
 	public:
 		virtual ~PBMFont(void);
 

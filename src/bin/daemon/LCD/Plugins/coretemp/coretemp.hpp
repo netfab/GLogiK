@@ -25,6 +25,7 @@
 #include <string>
 
 #include "bin/daemon/LCD/Plugins/LCDPlugin.hpp"
+#include "bin/daemon/LCD/PixelsData.hpp"
 
 namespace Managers::LCDPlugins::plugin
 {
@@ -34,6 +35,9 @@ class FontsManager;
 class Coretemp
 	:	public LCDPlugin
 {
+	private:
+		using PixelsData = ::Managers::LCDPlugins::PixelsData;
+
 	public:
 		Coretemp(const std::string & coretempID);
 		Coretemp(void) = delete;

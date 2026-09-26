@@ -26,13 +26,16 @@
 #include <string>
 #include <fstream>
 
-#include "PBM.hpp"
+#include "bin/daemon/LCD/PixelsData.hpp"
 
 namespace Managers::LCDPlugins::plugin
 {
 
 class PBMFile
 {
+	private :
+		using PixelsData = ::Managers::LCDPlugins::PixelsData;
+
 	public:
 
 	protected:

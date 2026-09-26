@@ -28,6 +28,7 @@
 #include "lib/utils/utils.hpp"
 
 #include "PBMFont.hpp"
+#include "PBM.hpp"
 
 namespace Managers::LCDPlugins::plugin
 {
