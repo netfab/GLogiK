@@ -26,9 +26,6 @@
 #include "PBM.hpp"
 #include "PBMFont.hpp"
 
-#define DEFAULT_PBM_FONT_HEIGHT DEFAULT_PBM_HEIGHT
-#define  DEFAULT_PBM_FONT_WIDTH DEFAULT_PBM_WIDTH
-
 namespace Managers::LCDPlugins::plugin
 {
 
@@ -49,10 +46,10 @@ class FontMonospace85
 		FontMonospace85(void)
 			:	PBMFont(
 					"monospace85",
-					DEFAULT_PBM_FONT_WIDTH,
-					DEFAULT_PBM_FONT_HEIGHT,
-					5,
-					10
+					160,			// PBM width
+					48,				// PBM height
+					5,				// character width
+					10				// character height
 				) {};
 		~FontMonospace85() = default;
 
@@ -69,10 +66,10 @@ class FontMonospace86
 		FontMonospace86(void)
 			:	PBMFont(
 					"monospace86",
-					DEFAULT_PBM_FONT_WIDTH,
-					DEFAULT_PBM_FONT_HEIGHT,
-					6,
-					10
+					160,			// PBM width
+					48,				// PBM height
+					6,				// character width
+					10				// character height
 				) {};
 		~FontMonospace86() = default;
 

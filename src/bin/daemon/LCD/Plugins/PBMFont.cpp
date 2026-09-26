@@ -112,7 +112,9 @@ PBMFont::~PBMFont()
 
 const std::uint16_t PBMFont::getCenteredXPos(const std::string & string)
 {
-	std::uint16_t XPos = LCD_SCREEN_WIDTH;
+	namespace N_PBM = ::Managers::LCDPlugins::PBM;
+
+	std::uint16_t XPos = N_PBM::LCD_width;
 	for(const char & c : string)
 	{
 		XPos -= (_charWidth - _fontLeftShift);
@@ -126,7 +128,8 @@ const std::uint16_t PBMFont::getCenteredXPos(const std::string & string)
 
 const std::uint16_t PBMFont::getCenteredYPos(void)
 {
-	std::uint16_t YPos = LCD_SCREEN_HEIGHT;
+	namespace N_PBM = ::Managers::LCDPlugins::PBM;
+	std::uint16_t YPos = N_PBM::LCD_height;
 	YPos -= _charHeight;
 	return static_cast<std::uint16_t>(YPos/2);
 }
@@ -138,6 +141,8 @@ void PBMFont::printCharacterOnFrame(
 	const std::uint16_t PBMYPos)
 {
 	GK_LOG_FUNC
+
+	namespace N_PBM = ::Managers::LCDPlugins::PBM;
 
 	try
 	{
@@ -151,13 +156,13 @@ void PBMFont::printCharacterOnFrame(
 		throw GLogiKExcept( warn.str() );
 	}
 
-	if(PBMXPos >= (LCD_SCREEN_WIDTH - _charWidth))
+	if(PBMXPos >= (N_PBM::LCD_width - _charWidth))
 	{
 		std::ostringstream warn(_fontName, std::ios_base::app);
 		warn << " font : pre-breaking write string loop : x : " << std::to_string(PBMXPos);
 		throw GLogiKExcept( warn.str() );
 	}
-	if(PBMYPos >= (LCD_SCREEN_HEIGHT - _charHeight))
+	if(PBMYPos >= (N_PBM::LCD_height - _charHeight))
 	{
 		std::ostringstream warn(_fontName, std::ios_base::app);
 		warn << " font : pre-breaking write string loop : y : " << std::to_string(PBMYPos);
@@ -190,7 +195,7 @@ void PBMFont::printCharacterOnFrame(
 			for(std::uint16_t j = 0; j < _charBytes; j++)
 			{
 				const unsigned char c = this->getCharacterLine(i, j);
-				index = (DEFAULT_PBM_WIDTH_IN_BYTES * (PBMYPos+i)) + xByte + j;
+				index = (N_PBM::default_width_in_bytes * (PBMYPos+i)) + xByte + j;
 
 				frame.at(index) &= (0b11111111 << xModuloComp8);
 				if(rightShift > 0)

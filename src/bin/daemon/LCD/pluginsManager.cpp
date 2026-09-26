@@ -111,8 +111,9 @@ LCDPluginsManager::LCDPluginsManager(const std::string & product)
 		_noPlugins = true;
 	}
 
+	namespace N_PBM = ::Managers::LCDPlugins::PBM;
 	/* initialize LCD frame container */
-	_LCDBuffer.resize( DEFAULT_PBM_DATA_IN_BYTES + LCD_DATA_HEADER_OFFSET, 0 );
+	_LCDBuffer.resize(N_PBM::data_size_in_bytes + N_PBM::data_header_size_in_bytes, 0);
 }
 
 LCDPluginsManager::~LCDPluginsManager()
@@ -283,7 +284,8 @@ auto LCDPluginsManager::getNextLCDScreenBuffer(
 			std::fill(_LCDBuffer.begin(), _LCDBuffer.end(), 0x0);
 		}
 
-		std::fill_n(_LCDBuffer.begin(), LCD_DATA_HEADER_OFFSET, 0x0);
+		namespace N_PBM = ::Managers::LCDPlugins::PBM;
+		std::fill_n(_LCDBuffer.begin(), N_PBM::data_header_size_in_bytes, 0x0);
 	}
 
 	/* the keyboard needs this magic byte */
@@ -304,18 +306,21 @@ void LCDPluginsManager::stopLCDPlugins(void)
 }
 
 /*
+ * PBM_HEIGHT = N_PBM::default_height
+ * PBM_WIDTH_IN_BYTES = N_PBM::default_width_in_bytes
+ *
  * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
  * PBM data binary format (without header), for a set of bytes (A, B, C, ...)
  * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
  *	A7 A6 A5 A4 A3 A2 A1 A0 B7 B6 B5 B4 B3 B2 B1 B0  .  .
  *	U7 U6 U5 U4 U3 U2 U1 U0  .  .  .  .  .  .  .  .  .  . --->
- *	 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . ---> on DEFAULT_PBM_WIDTH_IN_BYTES bytes
+ *	 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . ---> on PBM_WIDTH_IN_BYTES bytes
  *	 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . --->
  *	 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
  *	                      |  |  |
  *	                       \   /
  *	                        \ /
- *	             on DEFAULT_PBM_HEIGHT bytes
+ *	                  on PBM_HEIGHT bytes
  *
  * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
  * LCD data binary format (without header). Description coming from libg15.
@@ -359,6 +364,8 @@ void LCDPluginsManager::stopLCDPlugins(void)
  */
 void LCDPluginsManager::dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData)
 {
+	namespace N_PBM = ::Managers::LCDPlugins::PBM;
+
 	unsigned int LCDCol = 0;
 	unsigned int rowOffset = 0;
 	unsigned int PBMByte = 0;
@@ -368,14 +375,14 @@ void LCDPluginsManager::dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData)
 		(const unsigned short i) -> const unsigned short
 	{
 		// max: 959
-		return (PBMByte + (DEFAULT_PBM_WIDTH_IN_BYTES * i) + rowOffset);
+		return (PBMByte + (N_PBM::default_width_in_bytes * i) + rowOffset);
 	};
 
-	for(unsigned int row = 0; row < DEFAULT_PBM_HEIGHT_IN_BYTES/*=6*/; ++row)
+	for(unsigned int row = 0; row < N_PBM::default_height_in_bytes/*=6*/; ++row)
 	{
 		LCDCol = 0;
-		rowOffset = (DEFAULT_PBM_WIDTH/*=160*/ * row);
-		for(PBMByte = 0; PBMByte < DEFAULT_PBM_WIDTH_IN_BYTES/*=20*/; ++PBMByte)
+		rowOffset = (N_PBM::default_width/*=160*/ * row);
+		for(PBMByte = 0; PBMByte < N_PBM::default_width_in_bytes/*=20*/; ++PBMByte)
 		{
 
 			for(int bit = 7; bit > -1; --bit)
@@ -389,7 +396,7 @@ void LCDPluginsManager::dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData)
 							<< " bit: " << bit << "\n";
 #endif
 
-				_LCDBuffer[LCD_DATA_HEADER_OFFSET + LCDCol + rowOffset] =
+				_LCDBuffer[N_PBM::data_header_size_in_bytes + LCDCol + rowOffset] =
 					(((PBMData[ get_PBMByte(0) ] >> bit) & 1) << 0 ) |
 					(((PBMData[ get_PBMByte(1) ] >> bit) & 1) << 1 ) |
 					(((PBMData[ get_PBMByte(2) ] >> bit) & 1) << 2 ) |

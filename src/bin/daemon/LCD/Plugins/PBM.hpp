@@ -21,25 +21,29 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include <vector>
 
-/* LCD screen real sizes in pixels */
-#define				  LCD_SCREEN_HEIGHT		43
-#define				   LCD_SCREEN_WIDTH		160
+namespace Managers::LCDPlugins::PBM
+{
+	constexpr std::uint16_t default_height = 48;
+	constexpr std::uint16_t default_width = 160;
 
-#define				 DEFAULT_PBM_HEIGHT		48
-#define				  DEFAULT_PBM_WIDTH		160
-#define		DEFAULT_PBM_HEIGHT_IN_BYTES		(DEFAULT_PBM_HEIGHT/8)
-#define		 DEFAULT_PBM_WIDTH_IN_BYTES		(DEFAULT_PBM_WIDTH/8)
+	constexpr std::uint16_t   default_height_in_bytes = default_height / 8;
+	constexpr std::uint16_t    default_width_in_bytes = default_width / 8;
+	constexpr std::uint16_t        data_size_in_bytes = default_width_in_bytes * default_height;
+	constexpr std::uint16_t data_header_size_in_bytes = 32; // LCD header length
 
-#define		  DEFAULT_PBM_DATA_IN_BYTES		(DEFAULT_PBM_WIDTH_IN_BYTES * DEFAULT_PBM_HEIGHT)
+	// formula when PBM_HEIGHT not multiple of 8
+	// TODO do we need it ?
+	//#define PBM_HEIGHT_IN_BYTES ((PBM_HEIGHT + ((8 - (PBM_HEIGHT % 8)) % 8)) / 8)
 
-/* LCD header length */
-#define			 LCD_DATA_HEADER_OFFSET		32
+	/* LCD screen real sizes in pixels */
+	constexpr std::uint16_t LCD_height = 43;
+	constexpr std::uint16_t LCD_width = 160;
 
-// formula when PBM_HEIGHT not multiple of 8
-// TODO do we need it ?
-//#define PBM_HEIGHT_IN_BYTES ((PBM_HEIGHT + ((8 - (PBM_HEIGHT % 8)) % 8)) / 8)
+} // namespace Managers::LCDPlugins::PBM
 
 namespace Managers::LCDPlugins::plugin
 {

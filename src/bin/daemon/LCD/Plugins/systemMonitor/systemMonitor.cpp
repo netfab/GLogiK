@@ -272,10 +272,12 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 	/* FontID::MONOSPACE85 char width is 5 pixels */
 	const std::uint16_t FONT_CHAR_WIDTH = 5;
 
+	namespace N_PBM = ::Managers::LCDPlugins::PBM;
+
 	/* padded percentage string size is always 5 chars */
-	const std::uint16_t PERC_POS_X = (LCD_SCREEN_WIDTH - 1) - (5 * FONT_CHAR_WIDTH);
+	const std::uint16_t PERC_POS_X = (N_PBM::LCD_width - 1) - (5 * FONT_CHAR_WIDTH);
 	const std::uint16_t  NET_POS_X =
-		(LCD_SCREEN_WIDTH - 1) - (paddedRateString.size() * FONT_CHAR_WIDTH);
+		(N_PBM::LCD_width - 1) - (paddedRateString.size() * FONT_CHAR_WIDTH);
 
 	/* percent - max 5 chars */
 	/* net rate - max 12 chars */
