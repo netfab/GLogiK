@@ -43,51 +43,51 @@ function check_ret()
 
 # --
 
-bash build.sh -c -A -M
+bash build.sh -c -M
 
 # --
 
 info 'BUILD: DBus:off'
-bash build.sh -A -M -d --disable-dbus --disable-qt6 --disable-systray
+bash build.sh -M -d --disable-dbus --disable-qt6 --disable-systray
 check_ret $?
-bash build.sh -c -A -M
+bash build.sh -c -M
 check_ret $?
 info 'CLEAN: DBus:off'
 
 # --
 
 info 'BUILD: debug:off'
-bash build.sh -A -M --disable-debug
+bash build.sh -M --disable-debug
 check_ret $?
-bash build.sh -c -A -M
+bash build.sh -c -M
 check_ret $?
 info 'CLEAN: debug:off'
 
 # --
 
 info 'BUILD: hidapi:off systray:off'
-bash build.sh -A -M -d --disable-hidapi --enable-qt6 --disable-systray
+bash build.sh -M -d --disable-hidapi --enable-qt6 --disable-systray
 check_ret $?
-bash build.sh -c -A -M
+bash build.sh -c -M
 check_ret $?
 info 'CLEAN: hidapi:off systray:off'
 
 # --
 
 # info 'BUILD: hidapi:off QT5:on'
-# env WANTED_QT='QT5' bash build.sh -A -M -d --disable-hidapi --disable-qt6 --enable-qt5
+# env WANTED_QT='QT5' bash build.sh -M -d --disable-hidapi --disable-qt6 --enable-qt5
 # check_ret $?
-# bash build.sh -c -A -M
+# bash build.sh -c -M
 # check_ret $?
 # info 'CLEAN: hidapi:off QT5:on'
 
 # --
 
 info 'BUILD: debug: all on'
-bash build.sh -A -M -d --enable-debug-gkdbus --enable-debug-keys \
-						--enable-debug-lcd-plugins --enable-debug-libusb --enable-debug-pbmfont
+bash build.sh -M -d --enable-debug-gkdbus --enable-debug-keys \
+					--enable-debug-lcd-plugins --enable-debug-libusb --enable-debug-pbmfont
 check_ret $?
-bash build.sh -c -A -M
+bash build.sh -c -M
 check_ret $?
 info 'CLEAN: debug: all on'
 
