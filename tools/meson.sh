@@ -26,10 +26,11 @@ declare -r ABS_INSTALL_DIR="${PACKAGE_WORK_DIR}/${REL_INSTALL_DIR}"
 #export PATH="/usr/lib/ccache/bin:${PATH}"
 export CCACHE_DIR='/worktemp/ccache/devccache'
 
-#export CC="ccache clang"
-#export CXX="ccache clang++"
-
 # -- -- -- -- -- -- -- -- -- #
+
+# default compiler gcc/g++
+# run with -c|--clang to switch to LLVM/Clang
+declare MY_COMPILER="gcc/g++"
 
 function die() {
 	printf " ${BLDRED}ERROR${TXTRST}: ${@}\n" >&2
@@ -46,8 +47,10 @@ function change_directory() {
 
 function print_help() {
 	printf " Known parameters:\n"
+	printf " -b|--build\n"
 	printf " -C|--configure\n"
-	printf " -c|--compile\n"
+	printf " -c|--clang\n"
+	printf " -d|--disable-ccache\n"
 	printf " -i|--install\n"
 	printf " -f|--fullclean\n"
 }
@@ -55,10 +58,11 @@ function print_help() {
 # -- -- -- -- -- -- -- -- -- #
 
 declare configure=0
-declare compile=0
+declare build=0
 declare fullclean=0
 declare install=0
 declare stripbuild=0
+declare ccache=1
 
 declare options=''
 
@@ -80,12 +84,18 @@ add_meson_option 'systray' 'true'
 # parsing command line parameters
 while [[ "${#}" -gt 0 ]]; do
 	case "${1}" in
+		-b|--build)
+			configure=1
+			build=1
+		;;
 		-C|--configure)
 			configure=1
 		;;
-		-c|--compile)
-			configure=1
-			compile=1
+		-c|--clang)
+			MY_COMPILER="LLVM/Clang"
+		;;
+		-d|--disable-ccache)
+			ccache=0
 		;;
 		-f|--fullclean)
 			fullclean=1
@@ -96,7 +106,7 @@ while [[ "${#}" -gt 0 ]]; do
 		;;
 		-i|--install)
 			configure=1
-			compile=1
+			build=1
 			install=1
 		;;
 		-s|--strip)
@@ -115,6 +125,24 @@ while [[ "${#}" -gt 0 ]]; do
 	esac
 	shift
 done
+
+if [[ "${MY_COMPILER}" = "gcc/g++" ]]; then
+	if [[ ${ccache} -eq 0 ]]; then
+		export CC="gcc"
+		export CXX="g++"
+	else
+		export CC="ccache gcc"
+		export CXX="ccache g++"
+	fi
+elif [[ "${MY_COMPILER}" = "LLVM/Clang" ]]; then
+	if [[ ${ccache} -eq 0 ]]; then
+		export CC="clang"
+		export CXX="clang++"
+	else
+		export CC="ccache clang"
+		export CXX="ccache clang++"
+	fi
+fi
 
 # -- -- -- -- -- -- -- -- -- #
 
@@ -182,11 +210,11 @@ function configure_action() {
 
 }
 
-function compile_action() {
+function build_action() {
 	printf "${BLDRED}BUILDING WITH MESON${TXTRST}\n"
 
 	change_directory "${ABS_BUILD_DIR}"
-	meson compile --verbose -j1 || die "compile failure"
+	meson compile || die "compile failure"
 }
 
 function install_action() {
@@ -207,8 +235,8 @@ if [[ ${configure} -eq 1 ]]; then
 	configure_action
 fi
 
-if [[ ${compile} -eq 1 ]]; then
-	compile_action
+if [[ ${build} -eq 1 ]]; then
+	build_action
 fi
 
 if [[ ${install} -eq 1 ]]; then
