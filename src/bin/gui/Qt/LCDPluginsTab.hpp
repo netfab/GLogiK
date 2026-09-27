@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_LCD_PLUGINS_TAB_HPP_
-#define SRC_BIN_GUI_QT_LCD_PLUGINS_TAB_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -75,5 +74,3 @@ class LCDPluginsTab
 };
 
 } // namespace GLogiK
-
-#endif

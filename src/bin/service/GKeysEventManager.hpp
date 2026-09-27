@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_SERVICE_GKEYS_EVENT_MANAGER_HPP_
-#define SRC_BIN_SERVICE_GKEYS_EVENT_MANAGER_HPP_
+#pragma once
 
 #include "lib/shared/GKeysBanksCapability.hpp"
 #include "lib/shared/GKeysMacro.hpp"
@@ -77,5 +76,3 @@ class GKeysEventManager
 };
 
 } // namespace GLogiK
-
-#endif

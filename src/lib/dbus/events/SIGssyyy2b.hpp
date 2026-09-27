@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TYPE_SIG_SSYYY2B_HPP_
-#define SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TYPE_SIG_SSYYY2B_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -54,5 +53,3 @@ template <>
 	);
 
 } // namespace NSGKDBus
-
-#endif

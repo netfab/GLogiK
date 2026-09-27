@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_STRING_HPP_
-#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_STRING_HPP_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -70,5 +69,3 @@ class ArgString
 };
 
 } // namespace NSGKDBus
-
-#endif

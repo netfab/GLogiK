@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_INCLUDE_LCD_PLUGIN_PROPERTIES_HPP_
-#define SRC_INCLUDE_LCD_PLUGIN_PROPERTIES_HPP_
+#pragma once
 
 #include <cstdint>
 #include <vector>
@@ -63,5 +62,3 @@ class LCDPP
 typedef std::vector<LCDPP> LCDPPArray_type;
 
 } // namespace GLogiK
-
-#endif

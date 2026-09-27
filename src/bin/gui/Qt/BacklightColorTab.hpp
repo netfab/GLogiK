@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_BACKLIGHT_COLOR_TAB_HPP_
-#define SRC_BIN_GUI_QT_BACKLIGHT_COLOR_TAB_HPP_
+#pragma once
 
 #include <QColor>
 #include <QString>
@@ -74,5 +73,3 @@ class BacklightColorTab
 };
 
 } // namespace GLogiK
-
-#endif

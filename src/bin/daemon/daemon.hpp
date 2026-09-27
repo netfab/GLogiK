@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_GLOGIKD_DAEMON_HPP_
-#define SRC_BIN_DAEMON_GLOGIKD_DAEMON_HPP_
+#pragma once
 
 #include <sys/types.h>
 
@@ -63,5 +62,3 @@ class GLogiKDaemon
 };
 
 } // namespace GLogiK::Daemon
-
-#endif

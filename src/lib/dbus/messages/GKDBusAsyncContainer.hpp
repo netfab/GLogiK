@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ASYNC_CONTAINER_HPP_
-#define SRC_LIB_DBUS_MSG_GKDBUS_ASYNC_CONTAINER_HPP_
+#pragma once
 
 #include <string>
 
@@ -51,5 +50,3 @@ class GKDBusMessageAsyncContainer
 };
 
 } // namespace NSGKDBus
-
-#endif

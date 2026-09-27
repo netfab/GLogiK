@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_DEPENDENCIES_TAB_HPP_
-#define SRC_BIN_GUI_QT_DEPENDENCIES_TAB_HPP_
+#pragma once
 
 #include "include/DepsMap.hpp"
 
@@ -45,5 +44,3 @@ class DependenciesTab
 };
 
 } // namespace GLogiK
-
-#endif

@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_DAEMON_AND_SERVICE_TAB_HPP_
-#define SRC_BIN_GUI_QT_DAEMON_AND_SERVICE_TAB_HPP_
+#pragma once
 
 #include <string>
 
@@ -75,5 +74,3 @@ class DaemonAndServiceTab
 };
 
 } // namespace GLogiK
-
-#endif

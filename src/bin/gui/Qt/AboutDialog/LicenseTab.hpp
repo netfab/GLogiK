@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_LICENSE_TAB_HPP_
-#define SRC_BIN_GUI_QT_LICENSE_TAB_HPP_
+#pragma once
 
 #include "AboutDialogTab.hpp"
 
@@ -43,5 +42,3 @@ class LicenseTab
 };
 
 } // namespace GLogiK
-
-#endif

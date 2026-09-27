@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_SERVICE_DBUS_HANDLER_HPP_
-#define SRC_BIN_SERVICE_DBUS_HANDLER_HPP_
+#pragma once
 
 #include <vector>
 #include <string>
@@ -184,5 +183,3 @@ inline void DBusHandler::updateSystrayContextMenu(void)
 }
 
 } // namespace GLogiK
-
-#endif

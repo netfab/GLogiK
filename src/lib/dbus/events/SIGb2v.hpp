@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TYPE_SIG_B2V_HPP_
-#define SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_TYPE_SIG_B2V_HPP_
+#pragma once
 
 #include <functional>
 
@@ -42,5 +41,3 @@ template <>
 	);
 
 } // namespace NSGKDBus
-
-#endif

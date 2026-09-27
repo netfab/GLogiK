@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_MAIN_WINDOW_HPP_
-#define SRC_BIN_GUI_QT_MAIN_WINDOW_HPP_
+#pragma once
 
 #include <sys/types.h>
 
@@ -133,6 +132,3 @@ class MainWindow
 };
 
 } // namespace GLogiK
-
-#endif
-

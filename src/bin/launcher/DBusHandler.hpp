@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_LAUNCHER_DBUS_HANDLER_HPP_
-#define SRC_BIN_LAUNCHER_DBUS_HANDLER_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -49,5 +48,3 @@ class DBusHandler
 };
 
 } // namespace GLogiK
-
-#endif

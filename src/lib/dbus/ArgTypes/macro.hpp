@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_MACRO_HPP_
-#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_MACRO_HPP_
+#pragma once
 
 #include "include/base.hpp"
 
@@ -73,5 +72,3 @@ class ArgMacro
 };
 
 } // namespace NSGKDBus
-
-#endif

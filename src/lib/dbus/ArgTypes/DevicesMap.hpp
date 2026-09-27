@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_DEVICES_MAP_HPP_
-#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_DEVICES_MAP_HPP_
+#pragma once
 
 #include "ArgBase.hpp"
 #include "stringArray.hpp"
@@ -49,5 +48,3 @@ class ArgDevicesMap
 };
 
 } // namespace NSGKDBus
-
-#endif

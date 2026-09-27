@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_SHARED_SESSION_MANAGER_HPP_
-#define SRC_LIB_SHARED_SESSION_MANAGER_HPP_
+#pragma once
 
 #include <X11/ICE/ICElib.h>
 #include <X11/SM/SMlib.h>
@@ -93,5 +92,3 @@ class SessionManager
 };
 
 } // namespace LIBShared
-
-#endif

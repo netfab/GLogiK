@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_INCLUDE_BASE_HPP_
-#define SRC_INCLUDE_BASE_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -168,5 +167,3 @@ typedef std::vector<GKeysID> GKeysIDArray_type;
 typedef std::vector<KeyEvent> macro_type;
 
 } // namespace GLogiK
-
-#endif

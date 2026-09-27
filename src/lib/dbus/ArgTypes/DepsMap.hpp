@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_ARG_GKDBUS_ARGTYPES_GKDEPS_MAP_HPP_
-#define SRC_LIB_DBUS_ARG_GKDBUS_ARGTYPES_GKDEPS_MAP_HPP_
+#pragma once
 
 #include <dbus/dbus.h>
 
@@ -87,5 +86,3 @@ class ArgGKDepsMap
 };
 
 } // namespace NSGKDBus
-
-#endif

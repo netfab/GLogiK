@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_CLIENTS_MANAGER_HPP_
-#define SRC_BIN_DAEMON_CLIENTS_MANAGER_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -171,5 +170,3 @@ class ClientsManager
 };
 
 } // namespace Managers::Clients
-
-#endif

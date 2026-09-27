@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_EVENTS_CALLBACK_EVENT_HPP_
-#define SRC_LIB_DBUS_EVENTS_CALLBACK_EVENT_HPP_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -156,6 +155,3 @@ template <typename T>
 }
 
 } // namespace NSGKDBus
-
-#endif
-

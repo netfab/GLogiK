@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_CLIENTS_SIGNALS_HPP_
-#define SRC_BIN_DAEMON_CLIENTS_SIGNALS_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -45,5 +44,3 @@ void sendStatusSignalArrayToClients(
 ) noexcept;
 
 } // namespace DBus::Signals
-
-#endif

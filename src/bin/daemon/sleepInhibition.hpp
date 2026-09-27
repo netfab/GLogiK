@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_SLEEP_INHIBITION_HPP_
-#define SRC_BIN_DAEMON_SLEEP_INHIBITION_HPP_
+#pragma once
 
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/glogik.hpp"
@@ -75,5 +74,3 @@ class SleepInhibition
 };
 
 } // namespace GLogiK::Daemon
-
-#endif

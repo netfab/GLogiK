@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_GKDBUS_HPP_
-#define SRC_LIB_DBUS_GKDBUS_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -150,5 +149,3 @@ class GKDBus
 };
 
 } // namespace NSGKDBus
-
-#endif

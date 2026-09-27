@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_UTILS_XDG_USER_DIRS_HPP_
-#define SRC_LIB_UTILS_XDG_USER_DIRS_HPP_
+#pragma once
 
 #if !defined (UTILS_INSIDE_UTILS_H) && !defined (UTILS_COMPILATION)
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
@@ -46,5 +45,3 @@ class XDGUserDirs
 };
 
 } // namespace NSGKUtils
-
-#endif

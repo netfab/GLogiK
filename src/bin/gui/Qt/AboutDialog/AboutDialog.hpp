@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_ABOUT_DIALOG_HPP_
-#define SRC_BIN_GUI_QT_ABOUT_DIALOG_HPP_
+#pragma once
 
 #include <QDialog>
 
@@ -53,5 +52,3 @@ class AboutDialog
 };
 
 } // namespace GLogiK
-
-#endif

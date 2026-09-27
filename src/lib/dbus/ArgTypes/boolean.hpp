@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_BOOLEAN_HPP_
-#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_BOOLEAN_HPP_
+#pragma once
 
 #include "TypeBase.hpp"
 #include "ArgBase.hpp"
@@ -57,5 +56,3 @@ class ArgBoolean
 };
 
 } // namespace NSGKDBus
-
-#endif

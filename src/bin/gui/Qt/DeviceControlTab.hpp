@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_DEVICE_CONTROL_TAB_HPP_
-#define SRC_BIN_GUI_QT_DEVICE_CONTROL_TAB_HPP_
+#pragma once
 
 #include <string>
 
@@ -82,5 +81,3 @@ class DeviceControlTab
 };
 
 } // namespace GLogiK
-
-#endif

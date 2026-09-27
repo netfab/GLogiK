@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_SERVICE_VIRTUAL_KEYBOARD_HPP_
-#define SRC_BIN_SERVICE_VIRTUAL_KEYBOARD_HPP_
+#pragma once
 
 #include <string>
 
@@ -53,5 +52,3 @@ class VirtualKeyboard
 };
 
 } // namespace GLogiK
-
-#endif

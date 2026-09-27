@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_SERVICE_INIT_LOG_HPP_
-#define SRC_BIN_SERVICE_INIT_LOG_HPP_
+#pragma once
 
 #include <string>
 
@@ -47,5 +46,3 @@ class InitLog
 };
 
 } // namespace GLogiK
-
-#endif

@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_DAEMON_CONTROL_HPP_
-#define SRC_BIN_DAEMON_DAEMON_CONTROL_HPP_
+#pragma once
 
 #include <atomic>
 
@@ -43,5 +42,3 @@ class DaemonControl
 };
 
 } // namespace GLogiK::Daemon
-
-#endif

@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_SHARED_DEVICE_CONFIGURATION_FILE_HPP_
-#define SRC_LIB_SHARED_DEVICE_CONFIGURATION_FILE_HPP_
+#pragma once
 
 #include <string>
 
@@ -50,6 +49,3 @@ class DeviceConfigurationFile
 };
 
 } // namespace LIBShared
-
-#endif
-

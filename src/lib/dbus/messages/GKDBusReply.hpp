@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_MSG_GKDBUS_REPLY_HPP_
-#define SRC_LIB_DBUS_MSG_GKDBUS_REPLY_HPP_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -91,5 +90,3 @@ class GKDBusMessageReply
 };
 
 } // namespace NSGKDBus
-
-#endif

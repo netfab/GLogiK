@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_CLIENT_HPP_
-#define SRC_BIN_DAEMON_CLIENT_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -102,5 +101,3 @@ class Client
 };
 
 } // namespace Managers::Clients
-
-#endif

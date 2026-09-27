@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_GKEYS_TAB_HPP_
-#define SRC_BIN_GUI_QT_GKEYS_TAB_HPP_
+#pragma once
 
 #include <vector>
 #include <map>
@@ -142,5 +141,3 @@ class GKeysTab
 };
 
 } // namespace GLogiK
-
-#endif

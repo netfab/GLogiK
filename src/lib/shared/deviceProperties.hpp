@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_SHARED_DEVICE_PROPERTIES_HPP_
-#define SRC_LIB_SHARED_DEVICE_PROPERTIES_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -193,5 +192,3 @@ class DeviceProperties
 } // namespace LIBShared
 
 //BOOST_CLASS_VERSION(GLogiK::DeviceProperties, 1)
-
-#endif

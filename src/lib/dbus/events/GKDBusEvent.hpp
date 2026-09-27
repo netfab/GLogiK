@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_HPP_
-#define SRC_LIB_DBUS_EVENTS_GKDBUS_EVENT_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -127,5 +126,3 @@ class introspectableSignalEvent
 };
 
 } // namespace NSGKDBus
-
-#endif

@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_UINT32_HPP_
-#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_UINT32_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -46,5 +45,3 @@ class TypeUInt32
 };
 
 } // namespace NSGKDBus
-
-#endif

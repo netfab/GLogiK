@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_INCLUDE_DEPENDENCIES_MAP_HPP_
-#define SRC_INCLUDE_DEPENDENCIES_MAP_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -69,5 +68,3 @@ typedef std::vector<GKDependency> GKDepsArray_type;
 typedef std::map<GKBinary, GKDepsArray_type> GKDepsMap_type;
 
 } // namespace GLogiK
-
-#endif

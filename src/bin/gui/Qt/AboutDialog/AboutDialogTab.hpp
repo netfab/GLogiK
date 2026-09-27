@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_ABOUT_DIALOG_TAB_HPP_
-#define SRC_BIN_GUI_QT_ABOUT_DIALOG_TAB_HPP_
+#pragma once
 
 #include <QWidget>
 
@@ -45,5 +44,3 @@ class AboutDialogTab
 };
 
 } // namespace GLogiK
-
-#endif

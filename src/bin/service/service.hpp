@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_SERVICE_SERVICE_HPP_
-#define SRC_BIN_SERVICE_SERVICE_HPP_
+#pragma once
 
 #include <sys/types.h>
 
@@ -43,5 +42,3 @@ class DesktopService
 };
 
 } // namespace GLogiK
-
-#endif

@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_SERVICE_DESKTOP_NOTIFICATION_HPP_
-#define SRC_BIN_SERVICE_DESKTOP_NOTIFICATION_HPP_
+#pragma once
 
 #include "config.h"
 
@@ -62,5 +61,3 @@ class desktopNotification
 };
 
 } // namespace GLogiK
-
-#endif

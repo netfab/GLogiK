@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_LAUNCHER_DESKTOP_SERVICE_LAUNCHER_HPP_
-#define SRC_BIN_LAUNCHER_DESKTOP_SERVICE_LAUNCHER_HPP_
+#pragma once
 
 #include <sys/types.h>
 
@@ -44,5 +43,3 @@ class DesktopServiceLauncher
 };
 
 } // namespace GLogiK
-
-#endif

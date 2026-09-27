@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_MSG_GKDBUS_BROADCAST_SIGNAL_HPP_
-#define SRC_LIB_DBUS_MSG_GKDBUS_BROADCAST_SIGNAL_HPP_
+#pragma once
 
 #include <string>
 
@@ -91,6 +90,3 @@ class GKDBusMessageBroadcastSignal
 };
 
 } // namespace NSGKDBus
-
-#endif
-

@@ -19,12 +19,11 @@
  *
  */
 
+#pragma once
+
 #include <cstdint>
 
 #include <type_traits>
-
-#ifndef SRC_INCLUDE_ENUMS_HPP_
-#define SRC_INCLUDE_ENUMS_HPP_
 
 namespace GLogiK
 {
@@ -77,5 +76,3 @@ enum class LCDPluginsMask : std::uint8_t
 };
 
 } // namespace GLogiK
-
-#endif

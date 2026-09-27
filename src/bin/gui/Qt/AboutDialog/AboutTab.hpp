@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_ABOUT_TAB_HPP_
-#define SRC_BIN_GUI_QT_ABOUT_TAB_HPP_
+#pragma once
 
 #include "AboutDialogTab.hpp"
 
@@ -41,5 +40,3 @@ class AboutTab
 };
 
 } // namespace GLogiK
-
-#endif

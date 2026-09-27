@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_INCLUDE_MBANK_HPP_
-#define SRC_INCLUDE_MBANK_HPP_
+#pragma once
 
 #include "base.hpp"
 
@@ -97,5 +96,3 @@ typedef std::map<GKeysID, GKeysEvent> mBank_type;
 typedef std::map<MKeysID, mBank_type> banksMap_type;
 
 } // namespace GLogiK
-
-#endif

@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_UINT8_HPP_
-#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_UINT8_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -64,5 +63,3 @@ class ArgUInt8
 };
 
 } // namespace NSGKDBus
-
-#endif

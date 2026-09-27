@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_SERVICE_DESKTOP_SERVICE_SYSTRAY_HPP_
-#define SRC_BIN_SERVICE_DESKTOP_SERVICE_SYSTRAY_HPP_
+#pragma once
 
 #include "config.h"
 
@@ -117,5 +116,3 @@ inline const SystrayServiceEvent DesktopServiceSystray::getServiceEvent(void)
 }
 
 } // namespace GLogiK
-
-#endif

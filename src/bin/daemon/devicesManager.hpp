@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_DAEMON_DEVICES_MANAGER_HPP_
-#define SRC_BIN_DAEMON_DEVICES_MANAGER_HPP_
+#pragma once
 
 #include "config.h"
 
@@ -134,5 +133,3 @@ class DevicesManager
 };
 
 } // namespace Managers::Devices
-
-#endif

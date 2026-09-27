@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_INCLUDE_DEVICE_ID_HPP_
-#define SRC_INCLUDE_DEVICE_ID_HPP_
+#pragma once
 
 #include <string>
 #include <map>
@@ -79,6 +78,3 @@ class DeviceID
 typedef std::map<std::string, DeviceID> DevicesMap_type;
 
 } // namespace GLogiK
-
-#endif
-

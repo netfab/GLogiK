@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_SHARED_GKEYS_MACRO_HPP_
-#define SRC_LIB_SHARED_GKEYS_MACRO_HPP_
+#pragma once
 
 #include <vector>
 
@@ -80,5 +79,3 @@ class GKeysMacro
 };
 
 } // namespace LIBShared
-
-#endif

@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_GKEYSID_ARRAY_HPP_
-#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_GKEYSID_ARRAY_HPP_
+#pragma once
 
 #include "TypeBase.hpp"
 #include "uint8.hpp"
@@ -60,5 +59,3 @@ class ArgGKeysIDArray
 };
 
 } // namespace NSGKDBus
-
-#endif

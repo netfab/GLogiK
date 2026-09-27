@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_SHARED_GLOGIK_HPP_
-#define SRC_LIB_SHARED_GLOGIK_HPP_
+#pragma once
 
 #include <cstdint> // std::uint8_t
 
@@ -159,5 +158,3 @@ extern c_str GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED;
 extern c_str GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED;
 
 } // namespace LIBShared
-
-#endif

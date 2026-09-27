@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_SERVICE_DEVICES_HANDLER_HPP_
-#define SRC_BIN_SERVICE_DEVICES_HANDLER_HPP_
+#pragma once
 
 #include "config.h"
 
@@ -165,5 +164,3 @@ class DevicesHandler
 };
 
 } // namespace GLogiK
-
-#endif

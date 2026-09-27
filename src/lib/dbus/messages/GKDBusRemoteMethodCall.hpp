@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_MSG_GKDBUS_REMOTE_METHOD_CALL_HPP_
-#define SRC_LIB_DBUS_MSG_GKDBUS_REMOTE_METHOD_CALL_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -104,6 +103,3 @@ class GKDBusMessageRemoteMethodCall
 };
 
 } // namespace NSGKDBus
-
-#endif
-

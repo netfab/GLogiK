@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_GKDBUS_EVENTS_HPP_
-#define SRC_LIB_DBUS_GKDBUS_EVENTS_HPP_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -187,5 +186,3 @@ class GKDBusEvents
 };
 
 } // namespace NSGKDBus
-
-#endif

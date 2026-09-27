@@ -19,6 +19,8 @@
  *
  */
 
+#pragma once
+
 #include <QHash>
 #include <QIconEngine>
 #include <QIcon>
@@ -28,9 +30,6 @@
 #include <QRect>
 #include <QSize>
 #include <QString>
-
-#ifndef SRC_BIN_SERVICE_ICONS_HPP_
-#define SRC_BIN_SERVICE_ICONS_HPP_
 
 namespace GLogiK
 {
@@ -82,5 +81,3 @@ class Icons
 };
 
 } // namespace GLogiK
-
-#endif

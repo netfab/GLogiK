@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_GKDBUS_CONNECTION_HPP_
-#define SRC_LIB_DBUS_GKDBUS_CONNECTION_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -34,5 +33,3 @@ enum class BusConnection : std::uint8_t
 };
 
 } // namespace NSGKDBus
-
-#endif

@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_UTILS_UTILS_HPP_
-#define SRC_LIB_UTILS_UTILS_HPP_
+#pragma once
 
 #include "config.h"
 
@@ -36,6 +35,3 @@
 #include "process.hpp"
 
 #undef UTILS_INSIDE_UTILS_H
-
-#endif
-

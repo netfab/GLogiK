@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_ARGBASE_HPP_
-#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_ARGBASE_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -67,5 +66,3 @@ class ArgBase
 };
 
 } // namespace NSGKDBus
-
-#endif

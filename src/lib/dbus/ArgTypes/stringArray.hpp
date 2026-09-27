@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_STRING_ARRAY_HPP_
-#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_STRING_ARRAY_HPP_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -66,5 +65,3 @@ class ArgStringArray
 };
 
 } // namespace NSGKDBus
-
-#endif

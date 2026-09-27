@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_BIN_GUI_QT_TAB_HPP_
-#define SRC_BIN_GUI_QT_TAB_HPP_
+#pragma once
 
 #include <string>
 
@@ -83,5 +82,3 @@ class Tab
 };
 
 } // namespace GLogiK
-
-#endif

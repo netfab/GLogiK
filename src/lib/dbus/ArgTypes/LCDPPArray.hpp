@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_LCDPP_ARRAY_HPP_
-#define SRC_LIB_DBUS_MSG_GKDBUS_ARGTYPES_LCDPP_ARRAY_HPP_
+#pragma once
 
 #include <dbus/dbus.h>
 
@@ -73,5 +72,3 @@ class ArgLCDPPArray
 };
 
 } // namespace NSGKDBus
-
-#endif

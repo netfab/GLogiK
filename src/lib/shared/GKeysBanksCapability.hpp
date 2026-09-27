@@ -19,8 +19,7 @@
  *
  */
 
-#ifndef SRC_LIB_SHARED_GKEYS_BANKS_CAPABILITY_HPP_
-#define SRC_LIB_SHARED_GKEYS_BANKS_CAPABILITY_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -86,5 +85,3 @@ class GKeysBanksCapability
 };
 
 } // namespace LIBShared
-
-#endif
