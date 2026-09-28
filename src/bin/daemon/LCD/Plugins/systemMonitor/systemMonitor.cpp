@@ -66,6 +66,8 @@ void SystemMonitor::init(
 	FontsManager* const pFonts,
 	const std::string & product)
 {
+	GK_LOG_FUNC
+
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _plugin.getName();
 
