@@ -60,8 +60,8 @@ void Endscreen::init(
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _plugin.getName();
 
-	this->addPBMEmptyFrame();	/* frame #0 */
-	this->writeStringOnLastPBMFrame(pFonts, FontID::DEJAVUSANSBOLD1616, product, -1, -1);
+	this->addEmptyFrame();	/* frame #0 */
+	this->writeStringOnLastFrame(pFonts, FontID::DEJAVUSANSBOLD1616, product, -1, -1);
 
 	//this->addLCDFrame(PBMDirectory, "endscreen.pbm", 1); /* frame #0 */
 

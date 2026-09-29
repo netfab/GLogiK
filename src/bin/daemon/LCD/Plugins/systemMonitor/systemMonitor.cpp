@@ -71,7 +71,7 @@ void SystemMonitor::init(
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _plugin.getName();
 
-	this->addPBMFrame(PBMDirectory, "skeleton.pbm");
+	this->addFrameFromPBM(PBMDirectory, "skeleton.pbm");
 
 	std::string host;
 	{
@@ -81,7 +81,7 @@ void SystemMonitor::init(
 		hostname[HOST_NAME_MAX-1] = '\0';
 		host.assign(hostname);
 	}
-	this->writeStringOnLastPBMFrame(pFonts, FontID::MONOSPACE85, host, 16, 1);
+	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, host, 16, 1);
 
 	LCDPlugin::init(pFonts, product);
 }
@@ -93,7 +93,7 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 {
 	GK_LOG_FUNC
 
-	this->drawPadlockOnPBMFrame(lockedPlugin);
+	this->drawPadlockOnFrame(lockedPlugin);
 
 	/* -- -- -- */
 	std::string usedPhysicalMemory("");
@@ -193,7 +193,7 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 		std::uint16_t usedMem = static_cast<std::uint16_t>(freeMem);
 		usedMem = 100 - usedMem;
 
-		this->drawProgressBarOnPBMFrame(usedMem, 24, 33);
+		this->drawProgressBarOnFrame(usedMem, 24, 33);
 		usedPhysicalMemory = get_padded_percent_string(usedMem);
 	}
 
@@ -213,7 +213,7 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 		std::fesetround(FE_TONEAREST);
 		cpuPercentTotal = std::nearbyint(cpuPercentTotal);
 
-		this->drawProgressBarOnPBMFrame(cpuPercentTotal, 24, 15);
+		this->drawProgressBarOnFrame(cpuPercentTotal, 24, 15);
 		usedCPUActiveTotal = get_padded_percent_string(cpuPercentTotal);
 
 		_snapshot1 = s2;
@@ -283,11 +283,11 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 
 	/* percent - max 5 chars */
 	/* net rate - max 12 chars */
-	this->writeStringOnPBMFrame(pFonts, FontID::MONOSPACE85, usedCPUActiveTotal, PERC_POS_X, 14);
-	this->writeStringOnPBMFrame(pFonts, FontID::MONOSPACE85, paddedRateString, NET_POS_X, 23);
-	this->writeStringOnPBMFrame(pFonts, FontID::MONOSPACE85, usedPhysicalMemory, PERC_POS_X, 32);
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, usedCPUActiveTotal, PERC_POS_X, 14);
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, paddedRateString, NET_POS_X, 23);
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, usedPhysicalMemory, PERC_POS_X, 32);
 
-	return LCDPlugin::getCurrentPBMFrame();
+	return LCDPlugin::getCurrentFrame();
 }
 
 } // namespace Managers::LCDPlugins::plugin

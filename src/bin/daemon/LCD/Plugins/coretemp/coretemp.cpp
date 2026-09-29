@@ -139,14 +139,14 @@ void Coretemp::init(
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _plugin.getName();
 
-	this->addPBMFrame(PBMDirectory, "skeleton.pbm"); /* frame #0 */
+	this->addFrameFromPBM(PBMDirectory, "skeleton.pbm"); /* frame #0 */
 
 	std::string basedir(_coretempID); basedir += "/hwmon/hwmon";
 	_hwmonID = this->seekDirectoryPath(basedir); /* may throw */
 
 	GKLog2(trace, "hwmon root directory: ", _hwmonID)
 
-	this->writeStringOnLastPBMFrame(pFonts, FontID::MONOSPACE85, "intel cpu temperatures", 16, 1);
+	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, "intel cpu temperatures", 16, 1);
 
 	LCDPlugin::init(pFonts, product);
 }
@@ -158,7 +158,7 @@ const PixelsData & Coretemp::getNextPBMFrame(
 {
 	GK_LOG_FUNC
 
-	this->drawPadlockOnPBMFrame(lockedPlugin);
+	this->drawPadlockOnFrame(lockedPlugin);
 
 	struct dev
 	{
@@ -250,7 +250,7 @@ const PixelsData & Coretemp::getNextPBMFrame(
 		if((x > 0) and (x % 2) == 0)
 		{
 			pos_y = TEMP_POS_Y;
-			this->drawVerticalLineOnPBMFrame(updatedPosX(), (TEMP_POS_Y - 2), 23);
+			this->drawVerticalLineOnFrame(updatedPosX(), (TEMP_POS_Y - 2), 23);
 		}
 
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
@@ -267,18 +267,18 @@ const PixelsData & Coretemp::getNextPBMFrame(
 		temp += PBMFont::deg;
 
 		if(device.isPkg)
-			this->writeStringOnPBMFrame(pFonts, FontID::MONOSPACE85, temp, 1, 22);
+			this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, temp, 1, 22);
 		else
 		{
-			this->writeStringOnPBMFrame(pFonts, FontID::MONOSPACE85, temp, pos_x, pos_y);
+			this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, temp, pos_x, pos_y);
 			pos_y += 9;
 			x++;
 		}
 	}
 
-	this->drawVerticalLineOnPBMFrame(updatedPosX(), (TEMP_POS_Y - 2), 23);
+	this->drawVerticalLineOnFrame(updatedPosX(), (TEMP_POS_Y - 2), 23);
 
-	return LCDPlugin::getCurrentPBMFrame();
+	return LCDPlugin::getCurrentFrame();
 }
 
 } // namespace Managers::LCDPlugins::plugin

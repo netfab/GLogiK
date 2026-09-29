@@ -49,15 +49,15 @@ enum class LCDPluginTempo : std::uint8_t
 	TEMPO_400_15,
 };
 
-class PBMFrame
+class pluginFrame
 {
 	private:
 		using PixelsData = ::Managers::LCDPlugins::PixelsData;
 
 	public:
-		PBMFrame(const std::uint16_t num);
-		PBMFrame(void) = delete;
-		~PBMFrame() = default;
+		explicit pluginFrame(const std::uint16_t num);
+		pluginFrame() = delete;
+		~pluginFrame() = default;
 
 		PixelsData _PBMData;
 
@@ -78,49 +78,49 @@ class LCDPlugin
 		using PixelsData = ::Managers::LCDPlugins::PixelsData;
 
 	public:
-		virtual ~LCDPlugin(void);
+		virtual ~LCDPlugin();
 
 		virtual void init(
 			FontsManager* const pFonts,
 			const std::string & product
 		) = 0;
 
-		const bool isInitialized(void) const;
+		const bool isInitialized() const;
 
-		const LCDPP getPluginProperties(void) const;
-		const std::string & getPluginName(void) const;
-		const std::uint64_t getPluginID(void) const;
-		const std::uint16_t getPluginTiming(void) const;
-		const std::uint16_t getPluginMaxFrames(void) const;
-		void resetPluginEverLocked(void);
+		const LCDPP getPluginProperties() const;
+		const std::string & getPluginName() const;
+		const std::uint64_t getPluginID() const;
+		const std::uint16_t getPluginTiming() const;
+		const std::uint16_t getPluginMaxFrames() const;
+		void resetPluginEverLocked();
 
-		void resetPBMFrameIndex(void);
-		void prepareNextPBMFrame(void);
+		void resetFrameIndex();
+		void prepareNextFrame();
 
-		virtual const PixelsData & getNextPBMFrame(
+		virtual const PixelsData & getNextFrame(
 			FontsManager* const pFonts,
 			const std::string & LCDKey,
 			const bool lockedPlugin
 		);
 
 	protected:
-		LCDPlugin(void);
+		LCDPlugin();
 
 		LCDPP _plugin;
 		LCDPluginTempo _pluginTempo;
 
-		void addPBMFrame(
+		void addFrameFromPBM(
 			const fs::path & PBMDirectory,
 			const std::string & file,
 			const std::uint16_t num = 1
 		);
 
-		void addPBMEmptyFrame(const std::uint16_t num = 1);
+		void addEmptyFrame(const std::uint16_t num = 1);
 
-		const std::uint16_t getNextPBMFrameID(void) const;
-		PixelsData & getCurrentPBMFrame(void);
+		const std::uint16_t getNextFrameID() const;
+		PixelsData & getCurrentFrame();
 
-		void writeStringOnPBMFrame(
+		void writeStringOnFrame(
 			FontsManager* const pFonts,
 			const FontID fontID,
 			const std::string & string,
@@ -128,7 +128,7 @@ class LCDPlugin
 			const int16_t PBMYPos
 		);
 
-		void writeStringOnLastPBMFrame(
+		void writeStringOnLastFrame(
 			FontsManager* const pFonts,
 			const FontID fontID,
 			const std::string & string,
@@ -136,19 +136,19 @@ class LCDPlugin
 			const int16_t PBMYPos
 		);
 
-		void drawProgressBarOnPBMFrame(
+		void drawProgressBarOnFrame(
 			const std::uint16_t percent,
 			const std::uint16_t PBMXPos,
 			const std::uint16_t PBMYPos
 		);
 
-		void drawPadlockOnPBMFrame(
+		void drawPadlockOnFrame(
 			const bool lockedPlugin,
 			const std::uint16_t PBMXPos = 1,
 			const std::uint16_t PBMYPos = 1
 		);
 
-		void drawVerticalLineOnPBMFrame(
+		void drawVerticalLineOnFrame(
 			const std::uint16_t PBMXPos,
 			const std::uint16_t PBMYPos,
 			const std::uint16_t size
@@ -157,12 +157,12 @@ class LCDPlugin
 	private:
 		bool _initialized;
 		bool _everLocked;
-		std::uint16_t _PBMFrameCounter;	/* frame counter */
-		std::uint16_t _PBMFrameIndex;	/* frame index in the container */
-		std::vector<PBMFrame> _PBMFrames;
-		std::vector<PBMFrame>::iterator _itCurrentPBMFrame;
+		std::uint16_t _frameCounter; /* frame counter */
+		std::uint16_t _frameIndex;   /* frame index in the container */
+		std::vector<pluginFrame> _frames;
+		std::vector<pluginFrame>::iterator _itCurrentFrame;
 
-		void checkPBMFrameIndex(void);
+		void checkFrameIndex();
 		static std::tuple<std::uint16_t, std::uint16_t> getTempo(const LCDPluginTempo tempo);
 };
 

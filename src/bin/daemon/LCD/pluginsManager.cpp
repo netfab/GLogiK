@@ -256,17 +256,17 @@ auto LCDPluginsManager::getNextLCDScreenBuffer(
 						}
 					}
 
-					/* reset PBM frame to beginning */
-					(*_itCurrentPlugin)->resetPBMFrameIndex();
+					/* reset to first frame */
+					(*_itCurrentPlugin)->resetFrameIndex();
 					_frameCounter = 0;
 				}
 			}
 
 			if(_itCurrentPlugin != _plugins.end() )
 			{
-				(*_itCurrentPlugin)->prepareNextPBMFrame();
+				(*_itCurrentPlugin)->prepareNextFrame();
 				this->dumpPBMDataIntoLCDBuffer(
-					(*_itCurrentPlugin)->getNextPBMFrame(_pFonts, LCDKey, _currentPluginLocked)
+					(*_itCurrentPlugin)->getNextFrame(_pFonts, LCDKey, _currentPluginLocked)
 				);
 			}
 			else

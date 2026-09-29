@@ -60,12 +60,12 @@ void Splashscreen::init(
 	fs::path PBMDirectory(PBM_DATA_DIR);
 	PBMDirectory /= _plugin.getName();
 
-	this->addPBMEmptyFrame();	/* frame #0 */
-	this->addPBMFrame(PBMDirectory, "splashscreen01.pbm", 1); /* #1 */
-	this->addPBMFrame(PBMDirectory, "splashscreen01.pbm", 3); /* #2 #3 #4 */
+	this->addEmptyFrame();	/* frame #0 */
+	this->addFrameFromPBM(PBMDirectory, "splashscreen01.pbm", 1); /* #1 */
+	this->addFrameFromPBM(PBMDirectory, "splashscreen01.pbm", 3); /* #2 #3 #4 */
 
 	std::string version(" version "); version += PACKAGE_VERSION;
-	this->writeStringOnLastPBMFrame(pFonts, FontID::MONOSPACE85, version, 48, 32);
+	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, version, 48, 32);
 
 	LCDPlugin::init(pFonts, product);
 }

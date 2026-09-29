@@ -33,7 +33,7 @@ using namespace NSGKUtils;
 
 /* -- -- -- */
 
-PBMFrame::PBMFrame(const std::uint16_t num)
+pluginFrame::pluginFrame(const std::uint16_t num)
 	:	_numFrames(num)
 {
 	namespace N_PBM = ::Managers::LCDPlugins::PBM;
@@ -41,7 +41,7 @@ PBMFrame::PBMFrame(const std::uint16_t num)
 	_PBMData.resize(N_PBM::data_size_in_bytes, 0);
 }
 
-const bool PBMFrame::switchToNextFrame(const std::uint16_t currentFrameCounter)
+const bool pluginFrame::switchToNextFrame(const std::uint16_t currentFrameCounter)
 {
 	return (currentFrameCounter >= _numFrames);
 }
@@ -52,8 +52,8 @@ LCDPlugin::LCDPlugin()
 	:	_pluginTempo(LCDPluginTempo::TEMPO_DEFAULT),
 		_initialized(false),
 		_everLocked(false),
-		_PBMFrameCounter(0),
-		_PBMFrameIndex(0)
+		_frameCounter(0),
+		_frameIndex(0)
 {
 }
 
@@ -74,28 +74,28 @@ LCDPlugin::~LCDPlugin()
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-const bool LCDPlugin::isInitialized(void) const
+const bool LCDPlugin::isInitialized() const
 {
 	return _initialized;
 }
 
-void LCDPlugin::resetPBMFrameIndex(void)
+void LCDPlugin::resetFrameIndex()
 {
-	_itCurrentPBMFrame = _PBMFrames.end();
-	this->checkPBMFrameIndex(); /* may throw */
+	_itCurrentFrame = _frames.end();
+	this->checkFrameIndex(); /* may throw */
 }
 
-const std::uint64_t LCDPlugin::getPluginID(void) const
+const std::uint64_t LCDPlugin::getPluginID() const
 {
 	return _plugin.getID();
 }
 
-const std::string & LCDPlugin::getPluginName(void) const
+const std::string & LCDPlugin::getPluginName() const
 {
 	return _plugin.getName();
 }
 
-const std::uint16_t LCDPlugin::getPluginTiming(void) const
+const std::uint16_t LCDPlugin::getPluginTiming() const
 {
 	std::uint16_t timing = 0;
 	std::uint16_t maxFrames = 0;
@@ -103,7 +103,7 @@ const std::uint16_t LCDPlugin::getPluginTiming(void) const
 	return timing;
 }
 
-const std::uint16_t LCDPlugin::getPluginMaxFrames(void) const
+const std::uint16_t LCDPlugin::getPluginMaxFrames() const
 {
 	std::uint16_t timing = 0;
 	std::uint16_t maxFrames = 0;
@@ -111,23 +111,23 @@ const std::uint16_t LCDPlugin::getPluginMaxFrames(void) const
 	return maxFrames;
 }
 
-void LCDPlugin::prepareNextPBMFrame(void)
+void LCDPlugin::prepareNextFrame()
 {
 	GK_LOG_FUNC
 
 	/* update internal frame counter and iterator to allow the plugin
-	 * to have multiples PBM loaded and simulate animation */
-	if( (*_itCurrentPBMFrame).switchToNextFrame(_PBMFrameCounter) )
+	 * to have multiples frames loaded and simulate animation */
+	if( (*_itCurrentFrame).switchToNextFrame(_frameCounter) )
 	{
-		_itCurrentPBMFrame++;
-		this->checkPBMFrameIndex(); /* may throw */
-		_PBMFrameIndex = (_itCurrentPBMFrame - _PBMFrames.begin());
-		_PBMFrameCounter = 0;
+		_itCurrentFrame++;
+		this->checkFrameIndex(); /* may throw */
+		_frameIndex = (_itCurrentFrame - _frames.begin());
+		_frameCounter = 0;
 	}
 
-	_PBMFrameCounter++; /* for next call */
+	_frameCounter++; /* for next call */
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-	GKLog3(trace, this->getPluginName(), " - frameCount #", _PBMFrameCounter)
+	GKLog3(trace, this->getPluginName(), " - frameCount #", _frameCounter)
 #endif
 }
 
@@ -135,18 +135,18 @@ void LCDPlugin::init(FontsManager* const pFonts, const std::string & product)
 {
 	GK_LOG_FUNC
 
-	this->resetPBMFrameIndex();
+	this->resetFrameIndex();
 	GKLog2(trace, "initialized LCD plugin: ", this->getPluginName())
 	_initialized = true;
 }
 
-const PixelsData & LCDPlugin::getNextPBMFrame(
+const PixelsData & LCDPlugin::getNextFrame(
 	FontsManager* const pFonts,
 	const std::string & LCDKey,
 	const bool lockedPlugin)
 {
-	this->drawPadlockOnPBMFrame(lockedPlugin);
-	return this->getCurrentPBMFrame();
+	this->drawPadlockOnFrame(lockedPlugin);
+	return this->getCurrentFrame();
 }
 
 /*
@@ -159,12 +159,12 @@ const PixelsData & LCDPlugin::getNextPBMFrame(
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-auto LCDPlugin::getPluginProperties(void) const -> const LCDPP
+auto LCDPlugin::getPluginProperties() const -> const LCDPP
 {
 	return _plugin;
 }
 
-void LCDPlugin::addPBMFrame(
+void LCDPlugin::addFrameFromPBM(
 	const fs::path & PBMDirectory,
 	const std::string & file,
 	const std::uint16_t num)
@@ -174,49 +174,49 @@ void LCDPlugin::addPBMFrame(
 	fs::path filePath(PBMDirectory);
 	filePath /= file;
 
-	this->addPBMEmptyFrame(num);
+	this->addEmptyFrame(num);
 
 	namespace N_PBM = ::Managers::LCDPlugins::PBM;
 
 	this->readPBM(
 		filePath.string(),
-		_PBMFrames.back()._PBMData,
+		_frames.back()._PBMData,
 		N_PBM::default_width,
 		N_PBM::default_height
 	);
 }
 
-void LCDPlugin::addPBMEmptyFrame(const std::uint16_t num)
+void LCDPlugin::addEmptyFrame(const std::uint16_t num)
 {
 	GK_LOG_FUNC
 
 	try
 	{
-		_PBMFrames.emplace_back(num);
+		_frames.emplace_back(num);
 	}
 	catch (const std::exception & e)
 	{
-		// PBMFrame constructor vector resize exception ?
-		throw GLogiKExcept("failed to initialize PBM empty frame");
+		// pluginFrame constructor vector resize exception ?
+		throw GLogiKExcept("failed to initialize empty frame");
 	}
 }
 
-const std::uint16_t LCDPlugin::getNextPBMFrameID(void) const
+const std::uint16_t LCDPlugin::getNextFrameID() const
 {
-	return _PBMFrameIndex;
+	return _frameIndex;
 }
 
-PixelsData & LCDPlugin::getCurrentPBMFrame(void)
+PixelsData & LCDPlugin::getCurrentFrame()
 {
 	GK_LOG_FUNC
 
 #if DEBUGGING_ON && DEBUG_LCD_PLUGINS
-	GKLog3(trace, this->getPluginName(), " - PBMFrameindex: ", _PBMFrameIndex)
+	GKLog3(trace, this->getPluginName(), " - Frameindex: ", _frameIndex)
 #endif
-	return (*_itCurrentPBMFrame)._PBMData;
+	return (*_itCurrentFrame)._PBMData;
 }
 
-void LCDPlugin::writeStringOnPBMFrame(
+void LCDPlugin::writeStringOnFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
 	const std::string & string,
@@ -231,8 +231,8 @@ void LCDPlugin::writeStringOnPBMFrame(
 		if(GKLogging::GKDebug)
 		{
 			LOG(trace)	<< this->getPluginName()
-						<< " - PBMFrameindex: " << _PBMFrameIndex
-						<< " - writing string : " << string;
+						<< " - frameIndex: " << _frameIndex
+						<< " - writing string: " << string;
 		}
 #endif
 		std::uint16_t XPos, YPos = 0;
@@ -250,7 +250,7 @@ void LCDPlugin::writeStringOnPBMFrame(
 			const std::string character(1, c);
 			pFonts->printCharacterOnFrame(
 				fontID,
-				(*_itCurrentPBMFrame)._PBMData,
+				(*_itCurrentFrame)._PBMData,
 				character,
 				XPos,
 				YPos);
@@ -262,7 +262,7 @@ void LCDPlugin::writeStringOnPBMFrame(
 	}
 }
 
-void LCDPlugin::writeStringOnLastPBMFrame(
+void LCDPlugin::writeStringOnLastFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
 	const std::string & string,
@@ -273,12 +273,12 @@ void LCDPlugin::writeStringOnLastPBMFrame(
 
 	try
 	{
-		if( _PBMFrames.empty() )
+		if( _frames.empty() )
 			throw GLogiKExcept("accessing last element on empty container");
-		_itCurrentPBMFrame = --(_PBMFrames.end());
-		_PBMFrameIndex = (_itCurrentPBMFrame - _PBMFrames.begin());
+		_itCurrentFrame = --(_frames.end());
+		_frameIndex = (_itCurrentFrame - _frames.begin());
 
-		this->writeStringOnPBMFrame(pFonts, fontID, string, PBMXPos, PBMYPos);
+		this->writeStringOnFrame(pFonts, fontID, string, PBMXPos, PBMYPos);
 	}
 	catch (const GLogiKExcept & e)
 	{
@@ -286,7 +286,7 @@ void LCDPlugin::writeStringOnLastPBMFrame(
 	}
 }
 
-void LCDPlugin::drawProgressBarOnPBMFrame(
+void LCDPlugin::drawProgressBarOnFrame(
 	const std::uint16_t percent,
 	const std::uint16_t PBMXPos,
 	const std::uint16_t PBMYPos)
@@ -308,7 +308,7 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 
 	try
 	{
-		PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
+		PixelsData & frame = (*_itCurrentFrame)._PBMData;
 
 		// lambda
 		auto draw_horizontal_line = [&frame] (const std::uint16_t index) -> void
@@ -397,7 +397,7 @@ void LCDPlugin::drawProgressBarOnPBMFrame(
 	}
 }
 
-void LCDPlugin::drawPadlockOnPBMFrame(
+void LCDPlugin::drawPadlockOnFrame(
 	const bool lockedPlugin,
 	const std::uint16_t PBMXPos,
 	const std::uint16_t PBMYPos)
@@ -407,7 +407,7 @@ void LCDPlugin::drawPadlockOnPBMFrame(
 	const std::uint16_t xByte = PBMXPos / 8;
 	const std::uint16_t index = (N_PBM::default_width_in_bytes * PBMYPos) + xByte;
 
-	PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
+	PixelsData & frame = (*_itCurrentFrame)._PBMData;
 
 	if( lockedPlugin )
 	{
@@ -442,7 +442,7 @@ void LCDPlugin::drawPadlockOnPBMFrame(
 	}
 }
 
-void LCDPlugin::drawVerticalLineOnPBMFrame(
+void LCDPlugin::drawVerticalLineOnFrame(
 	const std::uint16_t PBMXPos,
 	const std::uint16_t PBMYPos,
 	const std::uint16_t size)
@@ -451,7 +451,7 @@ void LCDPlugin::drawVerticalLineOnPBMFrame(
 	{
 		namespace N_PBM = ::Managers::LCDPlugins::PBM;
 
-		PixelsData & frame = (*_itCurrentPBMFrame)._PBMData;
+		PixelsData & frame = (*_itCurrentFrame)._PBMData;
 
 		const std::uint16_t xByte = PBMXPos / 8;
 		const std::uint16_t index = (N_PBM::default_width_in_bytes * PBMYPos) + xByte;
@@ -465,7 +465,7 @@ void LCDPlugin::drawVerticalLineOnPBMFrame(
 	}
 }
 
-void LCDPlugin::resetPluginEverLocked(void)
+void LCDPlugin::resetPluginEverLocked()
 {
 	_everLocked = false;
 }
@@ -480,17 +480,17 @@ void LCDPlugin::resetPluginEverLocked(void)
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void LCDPlugin::checkPBMFrameIndex(void)
+void LCDPlugin::checkFrameIndex()
 {
-	if( _itCurrentPBMFrame == _PBMFrames.end() )
+	if( _itCurrentFrame == _frames.end() )
 	{
-		_itCurrentPBMFrame = _PBMFrames.begin();
+		_itCurrentFrame = _frames.begin();
 
-		if( _itCurrentPBMFrame == _PBMFrames.end() )
+		if( _itCurrentFrame == _frames.end() )
 			throw GLogiKExcept("plugin frame iterator exception");
 
-		_PBMFrameCounter = 0;
-		_PBMFrameIndex = 0;
+		_frameCounter = 0;
+		_frameIndex = 0;
 	}
 }
 
