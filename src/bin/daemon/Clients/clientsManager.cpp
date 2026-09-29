@@ -87,7 +87,7 @@ ClientsManager::~ClientsManager()
 	GKLog(trace, "exiting clients manager")
 }
 
-void ClientsManager::initializeGKDBusEvents(void)
+void ClientsManager::initializeGKDBusEvents()
 {
 	using namespace std::placeholders;  // for _1, _2, _3...
 
@@ -337,7 +337,7 @@ void ClientsManager::initializeGKDBusEvents(void)
 	);
 }
 
-void ClientsManager::cleanGKDBusEvents(void) noexcept
+void ClientsManager::cleanGKDBusEvents() noexcept
 {
 	/* clients manager DBus object path and interface */
 	const auto & CM_OP = LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH;
@@ -354,7 +354,7 @@ void ClientsManager::cleanGKDBusEvents(void) noexcept
 	_pDBus->removeIntrospectableSignalsInterface(_systemBus, DM_OP, DM_IF);
 }
 
-void ClientsManager::waitForClientsDisconnections(void) noexcept
+void ClientsManager::waitForClientsDisconnections() noexcept
 {
 	GK_LOG_FUNC
 

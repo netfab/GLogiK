@@ -41,13 +41,13 @@ class DeviceID
 				_vendor(vendor), _product(product), _name(name),
 				_status(status), _filePath(path)
 			{}
-		~DeviceID(void) = default;
+		~DeviceID() = default;
 
-		const std::string & getVendor(void) const { return _vendor; };
-		const std::string & getProduct(void) const { return _product; };
-		const std::string & getName(void) const { return _name; };
-		const std::string & getStatus(void) const { return _status; };
-		const std::string & getConfigFilePath(void) const { return _filePath; };
+		const std::string & getVendor() const { return _vendor; };
+		const std::string & getProduct() const { return _product; };
+		const std::string & getName() const { return _name; };
+		const std::string & getStatus() const { return _status; };
+		const std::string & getConfigFilePath() const { return _filePath; };
 
 		void setVendor(const std::string & vendor) { _vendor = vendor; };
 		void setProduct(const std::string & product) { _product = product; };

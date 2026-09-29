@@ -66,7 +66,7 @@ class GKDBusMessage
 			DBusConnection* const connection,
 			const bool check=false
 		);
-		~GKDBusMessage(void);
+		~GKDBusMessage();
 
 		DBusConnection* _connection;
 		DBusMessage* _message;

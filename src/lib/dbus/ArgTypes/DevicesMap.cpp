@@ -76,7 +76,7 @@ const GLogiK::DevicesMap_type ArgDevicesMap::getDevicesMapFromStringArray(
 /*
  * helper function to rebuild DevicesMap_type map from GKDBus stringArray
  */
-const GLogiK::DevicesMap_type ArgDevicesMap::getNextDevicesMapArgument(void)
+const GLogiK::DevicesMap_type ArgDevicesMap::getNextDevicesMapArgument()
 {
 	GK_LOG_FUNC
 

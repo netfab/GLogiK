@@ -58,15 +58,15 @@ class Tab
 		virtual ~Tab() = default;
 		Tab() = delete;
 
-		virtual void buildTab(void) = 0;
+		virtual void buildTab() = 0;
 		virtual void updateTab(
 			const DeviceProperties & device,
 			const std::string & devID
 		) = 0;
 
-		QFrame* getHLine(void);
-		QFrame* getVLine(void);
-		const QPushButton* getApplyButton(void) const;
+		QFrame* getHLine();
+		QFrame* getVLine();
+		const QPushButton* getApplyButton() const;
 
 	protected:
 		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
@@ -75,7 +75,7 @@ class Tab
 
 		QWidget* _pApplyButton;
 
-		void prepareApplyButton(void);
+		void prepareApplyButton();
 		void clearLayout(QLayout* parentLayout);
 
 	private:

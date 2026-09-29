@@ -36,7 +36,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-VirtualKeyboard::VirtualKeyboard(void)
+VirtualKeyboard::VirtualKeyboard()
 {
 	GK_LOG_FUNC
 
@@ -79,7 +79,7 @@ VirtualKeyboard::VirtualKeyboard(void)
 	}
 }
 
-VirtualKeyboard::~VirtualKeyboard(void)
+VirtualKeyboard::~VirtualKeyboard()
 {
 	GK_LOG_FUNC
 

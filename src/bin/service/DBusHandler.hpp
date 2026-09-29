@@ -51,7 +51,7 @@ class DBusHandler
 			NSGKDBus::GKDBus* pDBus,
 			GKDepsMap_type* dependencies
 		);
-		~DBusHandler(void);
+		~DBusHandler();
 
 		static bool WantToExit;	/* true if we want to exit */
 		static bool WantToRestart;	/* true if we want to restart */
@@ -59,22 +59,22 @@ class DBusHandler
 
 		void checkNotifyEvents(NSGKUtils::FileSystem* pGKfs);
 
-		const DevicesMap_type getDevicesMap(void);
+		const DevicesMap_type getDevicesMap();
 
 		/* return true when at least one device was updated (started/stopped/unplugged) */
-		const bool isAnyDeviceUpdated(void) const;
+		const bool isAnyDeviceUpdated() const;
 
-		void resetDevicesUpdatedEvent(void);
+		void resetDevicesUpdatedEvent();
 
 		/* exit and restart the service on next main loop iteration */
-		void restartService(void);
+		void restartService();
 
 		void startDevice(const std::string & devID);
 		void stopDevice(const std::string & devID);
 		void restartDevice(const std::string & devID);
 
 		/* return true if we want to exit on next main loop iteration */
-		const bool wantToStop(void) const;
+		const bool wantToStop() const;
 
 	protected:
 
@@ -101,33 +101,33 @@ class DBusHandler
 		bool _registerStatus;	/* true == registered with daemon */
 
 		/* -- -- -- */
-		void updateSystrayContextMenu(void);
+		void updateSystrayContextMenu();
 
 		void setCurrentSessionObjectPath(pid_t pid);
-		const std::string getCurrentSessionState(void);
+		const std::string getCurrentSessionState();
 
-		void updateSessionState(void);
+		void updateSessionState();
 
-		void registerWithDaemon(void);
-		void unregisterWithDaemon(void);
+		void registerWithDaemon();
+		void unregisterWithDaemon();
 
 		void getDaemonDependenciesMap(GKDepsMap_type* const dependencies);
 
-		void cleanGKDBusEvents(void) noexcept;
+		void cleanGKDBusEvents() noexcept;
 		void prepareToStop(const bool notifications = true);
 
-		void reportChangedState(void) noexcept;
+		void reportChangedState() noexcept;
 
-		void initializeDevices(void);
-		void initializeGKDBusSignals(void);
-		void initializeGKDBusMethods(void);
+		void initializeDevices();
+		void initializeGKDBusSignals();
+		void initializeGKDBusMethods();
 
-		void sendServiceStartRequest(void) const;
-		void sendDevicesUpdatedSignal(void);
+		void sendServiceStartRequest() const;
+		void sendDevicesUpdatedSignal();
 
 		/* signals from daemon */
-		void daemonIsStopping(void);
-		void daemonIsStarting(void);
+		void daemonIsStopping();
+		void daemonIsStarting();
 
 		void devicesStarted(const std::vector<std::string> & devicesID);
 		void devicesStopped(const std::vector<std::string> & devicesID);
@@ -171,12 +171,12 @@ class DBusHandler
 		const GKDepsMap_type & getExecutablesDependenciesMap(const std::string & reserved);
 };
 
-inline const bool DBusHandler::isAnyDeviceUpdated(void) const
+inline const bool DBusHandler::isAnyDeviceUpdated() const
 {
 	return _devicesUpdatedEvent;
 }
 
-inline void DBusHandler::updateSystrayContextMenu(void)
+inline void DBusHandler::updateSystrayContextMenu()
 {
 	/* used by service main loop */
 	_devicesUpdatedEvent = true;

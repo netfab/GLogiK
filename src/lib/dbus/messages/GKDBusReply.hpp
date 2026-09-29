@@ -82,8 +82,8 @@ class GKDBusMessageReply
 
 		void appendAsyncArgsToReply(DBusMessage* asyncContainer);
 
-		void sendReply(void);
-		void abandonReply(void);
+		void sendReply();
+		void abandonReply();
 
 	private:
 		GKDBusReply* _reply;

@@ -34,8 +34,8 @@ class TypeBoolean
 		void appendBoolean(const bool value);
 
 	protected:
-		TypeBoolean(void) = default;
-		~TypeBoolean(void) = default;
+		TypeBoolean() = default;
+		~TypeBoolean() = default;
 
 	private:
 };
@@ -45,11 +45,11 @@ class ArgBoolean
 	:	virtual protected ArgBase
 {
 	public:
-		static const bool getNextBooleanArgument(void);
+		static const bool getNextBooleanArgument();
 
 	protected:
-		ArgBoolean(void) = default;
-		~ArgBoolean(void) = default;
+		ArgBoolean() = default;
+		~ArgBoolean() = default;
 
 	private:
 

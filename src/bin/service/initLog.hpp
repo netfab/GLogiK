@@ -34,7 +34,7 @@ class InitLog
 {
 	public:
 		InitLog(const int& argc, char *argv[]);
-		~InitLog(void);
+		~InitLog();
 
 		const bool getBooleanOption(const std::string & optstr) const;
 

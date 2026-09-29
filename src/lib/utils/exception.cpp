@@ -33,11 +33,11 @@ GLogiKExcept::GLogiKExcept( const std::string& msg )
 {
 }
 
-GLogiKExcept::~GLogiKExcept( void ) throw()
+GLogiKExcept::~GLogiKExcept() throw()
 {
 }
 
-const char* GLogiKExcept::what( void ) const throw()
+const char* GLogiKExcept::what() const throw()
 {
     return message.c_str();
 }

@@ -52,7 +52,7 @@ void TypeInt32::appendInt32(
 #endif
 }
 
-const int32_t ArgInt32::getNextInt32Argument(void)
+const int32_t ArgInt32::getNextInt32Argument()
 {
 	if( ArgBase::int32Arguments.empty() )
 		throw EmptyContainer("missing argument : int32");

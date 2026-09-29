@@ -32,7 +32,7 @@ class DBusHandler
 {
 	public:
 		DBusHandler(NSGKDBus::GKDBus* pDBus);
-		~DBusHandler(void);
+		~DBusHandler();
 
 	protected:
 
@@ -41,10 +41,10 @@ class DBusHandler
 
 		NSGKDBus::GKDBus* _pDBus;
 
-		void initializeGKDBusSignals(void);
+		void initializeGKDBusSignals();
 		void spawnService(const std::uint16_t delay);
 
-		void cleanGKDBusEvents(void) noexcept;
+		void cleanGKDBusEvents() noexcept;
 };
 
 } // namespace GLogiK

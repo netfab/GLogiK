@@ -38,8 +38,8 @@ class GKeysMacro
 		static const macro_type emptyMacro;
 
 	protected:
-		GKeysMacro(void) = default;
-		~GKeysMacro(void) = default;
+		GKeysMacro() = default;
+		~GKeysMacro() = default;
 
 		void checkMacro(macro_type & macro);
 
@@ -58,7 +58,7 @@ class GKeysMacro
 				unsigned int index;
 
 			private:
-				MacroEvent(void) = delete;
+				MacroEvent() = delete;
 		};
 
 		void fillInVectors(

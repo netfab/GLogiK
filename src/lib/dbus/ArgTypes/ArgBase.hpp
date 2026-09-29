@@ -37,8 +37,8 @@ class ArgBase
 	public:
 
 	protected:
-		ArgBase(void) = default;
-		~ArgBase(void) = default;
+		ArgBase() = default;
+		~ArgBase() = default;
 
 		static void fillInArguments(DBusMessage* message);
 		static const int decodeNextArgument(DBusMessageIter* itArgument);

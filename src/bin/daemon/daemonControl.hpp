@@ -29,13 +29,13 @@ namespace GLogiK::Daemon
 class DaemonControl
 {
 	public:
-		static bool isDaemonRunning(void);
+		static bool isDaemonRunning();
 
 	protected:
-		DaemonControl(void);
-		~DaemonControl(void);
+		DaemonControl();
+		~DaemonControl();
 
-		static void exitDaemon(void);
+		static void exitDaemon();
 
 		static std::atomic<bool> daemonized;
 	private:

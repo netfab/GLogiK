@@ -34,11 +34,11 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-GKeysEventManager::GKeysEventManager(void)
+GKeysEventManager::GKeysEventManager()
 {
 }
 
-GKeysEventManager::~GKeysEventManager(void)
+GKeysEventManager::~GKeysEventManager()
 {
 }
 
@@ -231,7 +231,7 @@ void GKeysEventManager::spawnProcess(const std::string & command)
 	std::string exe;
 
 	// lambda
-	auto parse_command_line = [&command, &args] (void) -> void
+	auto parse_command_line = [&command, &args] () -> void
 	{
 		GKLog2(trace, "user command: ", command)
 

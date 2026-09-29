@@ -37,8 +37,8 @@ class TypeUInt32
 		void appendUInt32(const std::uint32_t value);
 
 	protected:
-		TypeUInt32(void) = default;
-		~TypeUInt32(void) = default;
+		TypeUInt32() = default;
+		~TypeUInt32() = default;
 
 
 	private:

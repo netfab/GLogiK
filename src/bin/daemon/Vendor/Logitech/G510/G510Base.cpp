@@ -106,12 +106,12 @@ const std::uint16_t G510Base::getDriverID() const
 	return detail::G510_DRIVER_ID;
 }
 
-const std::vector<USB::Device::USBDeviceID> & G510Base::getSupportedDevices(void) const
+const std::vector<USB::Device::USBDeviceID> & G510Base::getSupportedDevices() const
 {
 	return G510Base::knownDevices;
 }
 
-auto G510Base::getMKeysIDArray(void) const
+auto G510Base::getMKeysIDArray() const
 	-> const MKeysIDArray_type
 {
 	GK_LOG_FUNC
@@ -137,7 +137,7 @@ auto G510Base::getMKeysIDArray(void) const
 	return ret;
 }
 
-auto G510Base::getGKeysIDArray(void) const
+auto G510Base::getGKeysIDArray() const
 	-> const GKeysIDArray_type
 {
 	GK_LOG_FUNC

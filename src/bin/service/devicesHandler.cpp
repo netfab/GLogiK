@@ -102,7 +102,7 @@ void DevicesHandler::clearDevices(const bool notifications)
 	_stoppedDevices.clear();
 }
 
-const DevicesFilesMap_type DevicesHandler::getDevicesFilesMap(void)
+const DevicesFilesMap_type DevicesHandler::getDevicesFilesMap()
 {
 	DevicesFilesMap_type ret;
 	for(const auto & dev : _startedDevices)
@@ -114,7 +114,7 @@ const DevicesFilesMap_type DevicesHandler::getDevicesFilesMap(void)
 	return ret;
 }
 
-const std::vector<std::string> DevicesHandler::getDevicesList(void)
+const std::vector<std::string> DevicesHandler::getDevicesList()
 {
 	std::vector<std::string> ret;
 

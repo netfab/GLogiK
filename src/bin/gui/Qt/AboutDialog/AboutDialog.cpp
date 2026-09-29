@@ -134,7 +134,7 @@ void AboutDialog::buildDialog(const GKDepsMap_type* const pDepsMap)
 	}
 }
 
-void AboutDialog::closeDialog(void)
+void AboutDialog::closeDialog()
 {
 	this->close();
 }

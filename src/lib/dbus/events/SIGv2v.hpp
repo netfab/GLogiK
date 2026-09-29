@@ -28,7 +28,7 @@
 #include "callbackEvent.hpp"
 
 
-typedef std::function<void(void)> SIGv2v; /* void to void */
+typedef std::function<void()> SIGv2v; /* void to void */
 
 namespace NSGKDBus
 {

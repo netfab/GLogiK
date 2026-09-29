@@ -55,10 +55,10 @@ class ClientsManager
 			DevicesManager* const pDevicesManager,
 			GKDepsMap_type* const pDepsMap
 		);
-		~ClientsManager(void);
+		~ClientsManager();
 
-		void cleanGKDBusEvents(void) noexcept;
-		void waitForClientsDisconnections(void) noexcept;
+		void cleanGKDBusEvents() noexcept;
+		void waitForClientsDisconnections() noexcept;
 
 	protected:
 
@@ -82,7 +82,7 @@ class ClientsManager
 		 */
 		bool _enabledSignals;
 
-		void initializeGKDBusEvents(void);
+		void initializeGKDBusEvents();
 
 		/* exposed over DBus */
 			/* ClientsManager D-Bus object */

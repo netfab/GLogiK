@@ -48,7 +48,7 @@ BacklightColorTab::~BacklightColorTab()
 {
 }
 
-void BacklightColorTab::buildTab(void)
+void BacklightColorTab::buildTab()
 {
 	GK_LOG_FUNC
 
@@ -129,14 +129,14 @@ void BacklightColorTab::buildTab(void)
 	}
 }
 
-const QColor & BacklightColorTab::getAndSetNewColor(void)
+const QColor & BacklightColorTab::getAndSetNewColor()
 {
 	this->setCurrentColorLabel(_newColor);
 	_pApplyButton->setEnabled( ! (_newColor == _currentColor) );
 	return _newColor;
 }
 
-void BacklightColorTab::disableApplyButton(void)
+void BacklightColorTab::disableApplyButton()
 {
 	_pApplyButton->setEnabled(false);
 }

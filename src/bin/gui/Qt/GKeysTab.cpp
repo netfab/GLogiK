@@ -87,7 +87,7 @@ const char* GKeysTab::getEventTypeString(const GKeyEventType eventType)
 }
 #endif
 
-void GKeysTab::buildTab(void)
+void GKeysTab::buildTab()
 {
 	GK_LOG_FUNC
 
@@ -281,7 +281,7 @@ void GKeysTab::updateApplyButtonStatus(const QString & newString)
 	this->setApplyButtonStatus( ! newString.isEmpty() );
 }
 
-QPushButton* GKeysTab::newBlankButton(void)
+QPushButton* GKeysTab::newBlankButton()
 {
 	QPushButton* button = new QPushButton("");
 
@@ -328,7 +328,7 @@ QPushButton* GKeysTab::newGKeyButton(
 	return button;
 }
 
-void GKeysTab::clearInputsBoxHeaderLayout(void)
+void GKeysTab::clearInputsBoxHeaderLayout()
 {
 	GK_LOG_FUNC
 
@@ -348,7 +348,7 @@ void GKeysTab::clearInputsBoxHeaderLayout(void)
 	_GKeyEventTypeComboBox = nullptr;
 }
 
-void GKeysTab::clearInputsBoxBodyLayout(void)
+void GKeysTab::clearInputsBoxBodyLayout()
 {
 	GK_LOG_FUNC
 
@@ -363,7 +363,7 @@ void GKeysTab::clearInputsBoxBodyLayout(void)
 	_pCommandLineEdit = nullptr;
 }
 
-void GKeysTab::clearKeysBoxLayout(void)
+void GKeysTab::clearKeysBoxLayout()
 {
 	GK_LOG_FUNC
 

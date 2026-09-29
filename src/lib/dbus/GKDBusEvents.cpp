@@ -135,7 +135,7 @@ void GKDBusEvents::removeIntrospectableSignalsInterface(
 	}
 }
 
-void GKDBusEvents::clearDBusEvents(void) noexcept
+void GKDBusEvents::clearDBusEvents() noexcept
 {
 	GK_LOG_FUNC
 
@@ -182,7 +182,7 @@ void GKDBusEvents::clearDBusEvents(void) noexcept
 	clear_events_container(_DBusIntrospectableSignals);
 }
 
-const std::string GKDBusEvents::getRootNodeIntrospection(void) noexcept
+const std::string GKDBusEvents::getRootNodeIntrospection() noexcept
 {
 	GK_LOG_FUNC
 
@@ -456,7 +456,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 	xml << "<node name=\"" << askedObjectPath << "\">\n";
 
 	// lambda
-	auto xml_stream = [&xml] (void) -> const std::string
+	auto xml_stream = [&xml] () -> const std::string
 	{
 		xml << "</node>\n";
 		return xml.str();

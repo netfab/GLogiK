@@ -52,7 +52,7 @@ void TypeUInt16::appendUInt16(
 #endif
 }
 
-const std::uint16_t ArgUInt16::getNextUInt16Argument(void)
+const std::uint16_t ArgUInt16::getNextUInt16Argument()
 {
 	if( ArgBase::uint16Arguments.empty() )
 		throw EmptyContainer("missing argument : uint16");

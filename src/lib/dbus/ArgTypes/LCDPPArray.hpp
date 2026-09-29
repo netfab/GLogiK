@@ -43,8 +43,8 @@ class TypeLCDPPArray
 		void appendLCDPPArray(const GLogiK::LCDPPArray_type & pluginsArray);
 
 	protected:
-		TypeLCDPPArray(void) = default;
-		~TypeLCDPPArray(void) = default;
+		TypeLCDPPArray() = default;
+		~TypeLCDPPArray() = default;
 
 		void appendLCDPPArray(
 			DBusMessageIter *iter,
@@ -61,11 +61,11 @@ class ArgLCDPPArray
 		virtual private ArgString
 {
 	public:
-		static const GLogiK::LCDPPArray_type getNextLCDPPArrayArgument(void);
+		static const GLogiK::LCDPPArray_type getNextLCDPPArrayArgument();
 
 	protected:
-		ArgLCDPPArray(void) = default;
-		~ArgLCDPPArray(void) = default;
+		ArgLCDPPArray() = default;
+		~ArgLCDPPArray() = default;
 
 	private:
 

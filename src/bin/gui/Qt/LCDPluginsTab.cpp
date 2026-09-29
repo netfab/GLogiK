@@ -56,7 +56,7 @@ LCDPluginsTab::~LCDPluginsTab()
 {
 }
 
-void LCDPluginsTab::buildTab(void)
+void LCDPluginsTab::buildTab()
 {
 	GK_LOG_FUNC
 
@@ -240,7 +240,7 @@ void LCDPluginsTab::updateTab(
 	}
 }
 
-const std::uint64_t LCDPluginsTab::getAndSetNewLCDPluginsMask(void)
+const std::uint64_t LCDPluginsTab::getAndSetNewLCDPluginsMask()
 {
 	 _LCDPluginsMask = _newLCDPluginsMask;
 	_pApplyButton->setEnabled( !(_LCDPluginsMask == _newLCDPluginsMask) );

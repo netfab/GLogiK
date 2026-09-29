@@ -31,14 +31,14 @@ namespace NSGKDBus
 class TypeBase
 {
 	public:
-		void abandon(void);
+		void abandon();
 		static const std::string appendFailure;
 
 	protected:
-		TypeBase(void)
+		TypeBase()
 			:	_hosedMessage(false)
 			{}
-		~TypeBase(void) = default;
+		~TypeBase() = default;
 
 		DBusMessageIter _itMessage;
 		bool _hosedMessage;

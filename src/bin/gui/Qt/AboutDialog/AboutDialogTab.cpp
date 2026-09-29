@@ -30,7 +30,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-QFrame* AboutDialogTab::getHLine(void)
+QFrame* AboutDialogTab::getHLine()
 {
 	GK_LOG_FUNC
 

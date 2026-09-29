@@ -32,10 +32,10 @@ class LicenseTab
 	:	public AboutDialogTab
 {
 	public:
-		LicenseTab(void) = default;
-		~LicenseTab(void) = default;
+		LicenseTab() = default;
+		~LicenseTab() = default;
 
-		void buildTab(void);
+		void buildTab();
 
 	protected:
 	private:

@@ -30,14 +30,14 @@ namespace LIBShared
 
 using namespace NSGKUtils;
 
-BacklightCapability::BacklightCapability(void)
+BacklightCapability::BacklightCapability()
 	:	_red(0xFF),
 		_green(0xFF),
 		_blue(0xFF)
 {
 }
 
-BacklightCapability::~BacklightCapability(void)
+BacklightCapability::~BacklightCapability()
 {
 }
 
@@ -65,16 +65,16 @@ void BacklightCapability::getRGBBytes(
 
 const GLogiK::LCDPPArray_type LCDScreenCapability::_LCDPluginsPropertiesEmptyArray = {};
 
-LCDScreenCapability::LCDScreenCapability(void)
+LCDScreenCapability::LCDScreenCapability()
 	:	_LCDPluginsMask1(0)
 {
 }
 
-LCDScreenCapability::~LCDScreenCapability(void)
+LCDScreenCapability::~LCDScreenCapability()
 {
 }
 
-const std::uint64_t LCDScreenCapability::getLCDPluginsMask1(void) const
+const std::uint64_t LCDScreenCapability::getLCDPluginsMask1() const
 {
 	return _LCDPluginsMask1;
 }
@@ -92,7 +92,7 @@ void LCDScreenCapability::setLCDPluginsMask(
 	_LCDPluginsMask1 = mask;
 }
 
-const GLogiK::LCDPPArray_type & LCDScreenCapability::getLCDPluginsProperties(void) const
+const GLogiK::LCDPPArray_type & LCDScreenCapability::getLCDPluginsProperties() const
 {
 	return _LCDPluginsProperties;
 }
@@ -130,23 +130,23 @@ void clientDevice::setProperties(
 
 /* -- -- -- */
 
-const std::uint64_t clientDevice::getCapabilities(void) const
+const std::uint64_t clientDevice::getCapabilities() const
 {
 	return _capabilities;
 }
 
 /* -- -- -- */
 
-DeviceProperties::DeviceProperties(void)
+DeviceProperties::DeviceProperties()
 	:	_watchedDescriptor(-1)
 {
 }
 
-DeviceProperties::~DeviceProperties(void)
+DeviceProperties::~DeviceProperties()
 {
 }
 
-const int DeviceProperties::getWatchDescriptor(void) const
+const int DeviceProperties::getWatchDescriptor() const
 {
 	return _watchedDescriptor;
 }

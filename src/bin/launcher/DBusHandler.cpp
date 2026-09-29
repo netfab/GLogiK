@@ -46,14 +46,14 @@ DBusHandler::DBusHandler(NSGKDBus::GKDBus* pDBus)
 	this->spawnService(100);
 }
 
-DBusHandler::~DBusHandler(void)
+DBusHandler::~DBusHandler()
 {
 	GK_LOG_FUNC
 
 	this->cleanGKDBusEvents();
 }
 
-void DBusHandler::cleanGKDBusEvents(void) noexcept
+void DBusHandler::cleanGKDBusEvents() noexcept
 {
 	GK_LOG_FUNC
 
@@ -79,7 +79,7 @@ void DBusHandler::cleanGKDBusEvents(void) noexcept
  *
  */
 
-void DBusHandler::initializeGKDBusSignals(void)
+void DBusHandler::initializeGKDBusSignals()
 {
 	_pDBus->NSGKDBus::Callback<SIGq2v>::receiveSignal(
 		_sessionBus,

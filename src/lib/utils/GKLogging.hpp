@@ -81,8 +81,8 @@ class LogStream
 class GKLogging
 {
 	public:
-		GKLogging(void) = delete;
-		~GKLogging(void) = delete;
+		GKLogging() = delete;
+		~GKLogging() = delete;
 
 		static bool GKDebug;
 		static bool GKVerbose;
@@ -98,7 +98,7 @@ class GKLogging
 
 	private:
 		static bool initialized;
-		static void init(void);
+		static void init();
 };
 
 #define LOG(sev) 	GKLogging::log(sev)

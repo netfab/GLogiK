@@ -92,7 +92,7 @@ DevicesManager::~DevicesManager()
 	GKLog(trace, "exiting devices manager")
 }
 
-const std::string DevicesManager::getLibudevVersion(void)
+const std::string DevicesManager::getLibudevVersion()
 {
 	GK_LOG_FUNC
 
@@ -138,7 +138,7 @@ void DevicesManager::setNumClients(std::uint8_t num)
 	_numClients = num;
 }
 
-void DevicesManager::checkDBusMessages(void) noexcept
+void DevicesManager::checkDBusMessages() noexcept
 {
 	_pDBus->checkForMessages();
 }
@@ -335,7 +335,7 @@ const bool DevicesManager::stopDevice(
 	return false;
 }
 
-void DevicesManager::startSleepingDevices(void)
+void DevicesManager::startSleepingDevices()
 {
 	GK_LOG_FUNC
 
@@ -373,7 +373,7 @@ void DevicesManager::startSleepingDevices(void)
 	_sleepingDevices.clear();
 }
 
-void DevicesManager::stopInitializedDevices(void)
+void DevicesManager::stopInitializedDevices()
 {
 	GK_LOG_FUNC
 
@@ -417,7 +417,7 @@ void DevicesManager::stopInitializedDevices(void)
 	_startedDevices.clear();
 }
 
-void DevicesManager::checkInitializedDevicesThreadsStatus(void) noexcept
+void DevicesManager::checkInitializedDevicesThreadsStatus() noexcept
 {
 	GK_LOG_FUNC
 
@@ -783,7 +783,7 @@ void DevicesManager::searchSupportedDevices(
 	GKLog2(trace, "number of found device(s) : ", detectedDevices.size())
 }
 
-const std::vector<std::string> DevicesManager::getStartedDevices(void) const
+const std::vector<std::string> DevicesManager::getStartedDevices() const
 {
 	std::vector<std::string> ret;
 
@@ -793,7 +793,7 @@ const std::vector<std::string> DevicesManager::getStartedDevices(void) const
 	return ret;
 }
 
-const std::vector<std::string> DevicesManager::getStoppedDevices(void) const
+const std::vector<std::string> DevicesManager::getStoppedDevices() const
 {
 	std::vector<std::string> ret;
 
@@ -1052,7 +1052,7 @@ auto DevicesManager::getDeviceGKeysIDArray(const std::string & devID) const
 	return ret;
 }
 
-void DevicesManager::resetDevicesStates(void)
+void DevicesManager::resetDevicesStates()
 {
 	GK_LOG_FUNC
 
@@ -1071,7 +1071,7 @@ void DevicesManager::resetDevicesStates(void)
  *	Throws GLogiKExcept in many ways on udev related functions failures.
  *	USB library failures on devices start/stop are caught internally.
  */
-void DevicesManager::startMonitoring(void)
+void DevicesManager::startMonitoring()
 {
 	GK_LOG_FUNC
 

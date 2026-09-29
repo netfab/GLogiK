@@ -58,7 +58,7 @@ class GKDBusMessageErrorReply
 			DBusMessage* message,
 			const std::string & errorMessage
 		);
-		void sendErrorReply(void);
+		void sendErrorReply();
 
 		void buildAndSendErrorReply(
 			DBusConnection* const connection,

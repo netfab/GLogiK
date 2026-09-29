@@ -38,8 +38,8 @@ class TypeUInt16
 		void appendUInt16(const std::uint16_t value);
 
 	protected:
-		TypeUInt16(void) = default;
-		~TypeUInt16(void) = default;
+		TypeUInt16() = default;
+		~TypeUInt16() = default;
 
 		void appendUInt16(
 			DBusMessageIter *iter,
@@ -53,11 +53,11 @@ class ArgUInt16
 	:	virtual protected ArgBase
 {
 	public:
-		static const std::uint16_t getNextUInt16Argument(void);
+		static const std::uint16_t getNextUInt16Argument();
 
 	protected:
-		ArgUInt16(void) = default;
-		~ArgUInt16(void) = default;
+		ArgUInt16() = default;
+		~ArgUInt16() = default;
 
 	private:
 

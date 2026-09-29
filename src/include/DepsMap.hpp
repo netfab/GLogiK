@@ -50,12 +50,12 @@ class GKDependency
 				_runTimeVersion(runTimeVersion)
 		{
 		}
-		GKDependency(void) = delete;
-		~GKDependency(void) = default;
+		GKDependency() = delete;
+		~GKDependency() = default;
 
-		const std::string & getDependency(void) const { return _dependency; }
-		const std::string & getCompileTimeVersion(void) const { return _compileTimeVersion; }
-		const std::string & getRunTimeVersion(void) const { return _runTimeVersion; }
+		const std::string & getDependency() const { return _dependency; }
+		const std::string & getCompileTimeVersion() const { return _compileTimeVersion; }
+		const std::string & getRunTimeVersion() const { return _runTimeVersion; }
 
 	protected:
 	private:

@@ -48,7 +48,7 @@ class DaemonAndServiceTab
 		);
 		~DaemonAndServiceTab();
 
-		void buildTab(void);
+		void buildTab();
 
 		void updateTab(
 			const DeviceProperties & device,
@@ -56,10 +56,10 @@ class DaemonAndServiceTab
 		{
 			this->updateTab();
 		}
-		void updateTab(void);
+		void updateTab();
 
-		const bool isServiceRegistered(void) const;
-		void sendServiceStartRequest(void);
+		const bool isServiceRegistered() const;
+		void sendServiceStartRequest();
 
 	private:
 		DaemonAndServiceTab() = delete;

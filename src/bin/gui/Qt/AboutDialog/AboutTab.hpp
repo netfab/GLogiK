@@ -30,10 +30,10 @@ class AboutTab
 	:	public AboutDialogTab
 {
 	public:
-		AboutTab(void) = default;
-		~AboutTab(void) = default;
+		AboutTab() = default;
+		~AboutTab() = default;
 
-		void buildTab(void);
+		void buildTab();
 
 	protected:
 	private:

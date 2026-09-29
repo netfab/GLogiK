@@ -56,7 +56,7 @@ DaemonAndServiceTab::~DaemonAndServiceTab()
 {
 }
 
-void DaemonAndServiceTab::buildTab(void)
+void DaemonAndServiceTab::buildTab()
 {
 	GK_LOG_FUNC
 
@@ -146,12 +146,12 @@ void DaemonAndServiceTab::buildTab(void)
 	}
 }
 
-const bool DaemonAndServiceTab::isServiceRegistered(void) const
+const bool DaemonAndServiceTab::isServiceRegistered() const
 {
 	return _serviceRegistered;
 }
 
-void DaemonAndServiceTab::updateTab(void)
+void DaemonAndServiceTab::updateTab()
 {
 	GK_LOG_FUNC
 
@@ -234,7 +234,7 @@ void DaemonAndServiceTab::updateTab(void)
 	}
 }
 
-void DaemonAndServiceTab::sendServiceStartRequest(void)
+void DaemonAndServiceTab::sendServiceStartRequest()
 {
 	GK_LOG_FUNC
 

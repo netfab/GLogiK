@@ -57,12 +57,12 @@ Client::~Client()
 	GKLog(trace, "destroying client")
 }
 
-const std::string & Client::getSessionObjectPath(void) const
+const std::string & Client::getSessionObjectPath() const
 {
 	return _sessionObjectPath;
 }
 
-const std::string & Client::getSessionCurrentState(void) const
+const std::string & Client::getSessionCurrentState() const
 {
 	return _sessionState;
 }
@@ -73,22 +73,22 @@ void Client::updateSessionState(const std::string & newState)
 	_check = true;
 }
 
-void Client::uncheck(void)
+void Client::uncheck()
 {
 	_check = false;
 }
 
-const bool Client::isAlive(void) const
+const bool Client::isAlive() const
 {
 	return _check;
 }
 
-const bool Client::isReady(void) const
+const bool Client::isReady() const
 {
 	return _ready;
 }
 
-void Client::setReady(void)
+void Client::setReady()
 {
 	_ready = true;
 }

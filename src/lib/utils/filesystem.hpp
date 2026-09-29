@@ -43,8 +43,8 @@ class FileSystem
 	:	public FSNotify
 {
 	public:
-		FileSystem(void) = default;
-		~FileSystem(void) = default;
+		FileSystem() = default;
+		~FileSystem() = default;
 
 		static void createDirectory(
 			const fs::path & directory,
@@ -52,7 +52,7 @@ class FileSystem
 		);
 
 #if DEBUGGING_ON
-		static void traceLastDirectoryCreation(void) noexcept;
+		static void traceLastDirectoryCreation() noexcept;
 #endif
 
 		const std::string getNextAvailableFileName(

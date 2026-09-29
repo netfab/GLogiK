@@ -54,23 +54,23 @@ class LogitechG510
 		~LogitechG510();
 
 	protected:
-		const char* getDriverName(void) const override
+		const char* getDriverName() const override
 		{
 			return G510Base::getDriverName();
 		}
-		const std::uint16_t getDriverID(void) const override
+		const std::uint16_t getDriverID() const override
 		{
 			return G510Base::getDriverID();
 		}
-		const std::vector<USBDeviceID> & getSupportedDevices(void) const override
+		const std::vector<USBDeviceID> & getSupportedDevices() const override
 		{
 			return G510Base::getSupportedDevices();
 		}
-		const MKeysIDArray_type getMKeysIDArray(void) const override
+		const MKeysIDArray_type getMKeysIDArray() const override
 		{
 			return G510Base::getMKeysIDArray();
 		}
-		const GKeysIDArray_type getGKeysIDArray(void) const override
+		const GKeysIDArray_type getGKeysIDArray() const override
 		{
 			return G510Base::getGKeysIDArray();
 		}

@@ -39,8 +39,8 @@ class PBMFile
 	public:
 
 	protected:
-		PBMFile(void);
-		~PBMFile(void);
+		PBMFile() = default;
+		~PBMFile() = default;
 
 		static void readPBM(
 			const std::string & PBMPath,

@@ -49,8 +49,8 @@ class process
 			PROCESS_CLOSE_DESCRIPTORS = 1 << 1,
 		};
 
-		static const pid_t detach(void);
-		static const pid_t deamonize(void);
+		static const pid_t detach();
+		static const pid_t deamonize();
 		static void setSignalHandler(
 			int signum,
 			__signal_handler_t __handler
@@ -78,8 +78,8 @@ class process
 	protected:
 
 	private:
-		process(void) = delete;
-		~process(void) = delete;
+		process() = delete;
+		~process() = delete;
 
 		static std::map<const std::string, std::chrono::steady_clock::time_point> lastCalls;
 		static const std::chrono::steady_clock::duration threeSeconds;
@@ -100,11 +100,11 @@ class process
 			const int message
 		);
 		static const int waitForChildNotification(int pipefd[]);
-		static void newSessionID(void);
+		static void newSessionID();
 
 		static void forkProcess(const bool newSessionID=false);
 
-		static const pid_t newPID(void);
+		static const pid_t newPID();
 		static const std::string getSignalAbbrev(int signum);
 };
 

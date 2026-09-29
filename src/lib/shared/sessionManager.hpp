@@ -32,12 +32,12 @@ namespace LIBShared
 class SessionManager
 {
 	public:
-		SessionManager(void);
-		virtual ~SessionManager(void);
+		SessionManager();
+		virtual ~SessionManager();
 
-		const int openConnection(void);
-		const bool isAlive(void) const;
-		void processICEMessages(void);
+		const int openConnection();
+		const bool isAlive() const;
+		void processICEMessages();
 
 	protected:
 
@@ -54,7 +54,7 @@ class SessionManager
 		char* _pClientID = nullptr;
 		char  _errorString[SM_ERROR_STRING_LENGTH+1] = { 0 };
 
-		void closeConnection(void);
+		void closeConnection();
 
 		static bool stillRunning;
 		static void handleSignal(int signum);

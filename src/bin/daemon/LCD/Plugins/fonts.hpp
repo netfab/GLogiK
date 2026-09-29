@@ -43,7 +43,7 @@ class FontMonospace85
 	:	public PBMFont
 {
 	public:
-		FontMonospace85(void)
+		FontMonospace85()
 			:	PBMFont(
 					"monospace85",
 					160,			// PBM width
@@ -63,7 +63,7 @@ class FontMonospace86
 	:	public PBMFont
 {
 	public:
-		FontMonospace86(void)
+		FontMonospace86()
 			:	PBMFont(
 					"monospace86",
 					160,			// PBM width
@@ -83,7 +83,7 @@ class FontDejaVuSansBold1616
 	:	public PBMFont
 {
 	public:
-		FontDejaVuSansBold1616(void)
+		FontDejaVuSansBold1616()
 			:	PBMFont(
 					"DejaVuSansBold1616",	// font name
 					416,					// PBM width

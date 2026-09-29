@@ -44,12 +44,12 @@ class PBMFont
 		using PixelsData = ::Managers::LCDPlugins::PixelsData;
 
 	public:
-		virtual ~PBMFont(void);
+		virtual ~PBMFont();
 
 		static const std::string deg;
 
 		const std::uint16_t getCenteredXPos(const std::string & string);
-		const std::uint16_t getCenteredYPos(void);
+		const std::uint16_t getCenteredYPos();
 
 		void printCharacterOnFrame(
 			PixelsData & frame,

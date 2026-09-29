@@ -69,8 +69,8 @@ class GKDBusMessageBroadcastSignal
 		void appendStringArrayToBroadcastSignal(const std::vector<std::string> & list);
 		void appendMacroToBroadcastSignal(const GLogiK::macro_type & macro);
 
-		void sendBroadcastSignal(void);
-		void abandonBroadcastSignal(void);
+		void sendBroadcastSignal();
+		void abandonBroadcastSignal();
 
 	protected:
 		GKDBusMessageBroadcastSignal();

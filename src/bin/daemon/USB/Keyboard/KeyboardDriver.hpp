@@ -62,7 +62,7 @@ class KeyboardDriver
 		using Caps = GLogiK::Caps;
 
 	public:
-		virtual ~KeyboardDriver(void) = default;
+		virtual ~KeyboardDriver() = default;
 
 #if GKDBUS
 		void setDBus(NSGKDBus::GKDBus* pDBus);
@@ -94,12 +94,12 @@ class KeyboardDriver
 			const bool skipUSBRequests = false
 		) noexcept;
 
-		virtual const std::vector<USBDeviceID> & getSupportedDevices(void) const = 0;
-		virtual const MKeysIDArray_type getMKeysIDArray(void) const = 0;
-		virtual const GKeysIDArray_type getGKeysIDArray(void) const = 0;
+		virtual const std::vector<USBDeviceID> & getSupportedDevices() const = 0;
+		virtual const MKeysIDArray_type getMKeysIDArray() const = 0;
+		virtual const GKeysIDArray_type getGKeysIDArray() const = 0;
 
 	protected:
-		KeyboardDriver(void) = default;
+		KeyboardDriver() = default;
 
 		std::mutex _threadsMutex;
 

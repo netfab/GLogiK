@@ -32,7 +32,7 @@ libusb_context * USBInit::pContext = nullptr;
 std::uint8_t USBInit::counter = 0;
 bool USBInit::status = false;
 
-const std::string USBInit::getLibUSBVersion(void)
+const std::string USBInit::getLibUSBVersion()
 {
 	const struct libusb_version* version = libusb_get_version();
 
@@ -57,7 +57,7 @@ const std::string USBInit::getLibUSBVersion(void)
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-USBInit::USBInit(void)
+USBInit::USBInit()
 {
 	GK_LOG_FUNC
 
@@ -75,7 +75,7 @@ USBInit::USBInit(void)
 	USBInit::counter++;
 }
 
-USBInit::~USBInit(void)
+USBInit::~USBInit()
 {
 	GK_LOG_FUNC
 

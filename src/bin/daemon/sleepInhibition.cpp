@@ -30,7 +30,7 @@ namespace GLogiK::Daemon
 
 using namespace NSGKUtils;
 
-SleepInhibition::SleepInhibition(void)
+SleepInhibition::SleepInhibition()
 	:	_pDBus(nullptr),
 		_pDevicesManager(nullptr),
 		_sessionFramework(SessionFramework::FW_UNKNOWN),
@@ -38,7 +38,7 @@ SleepInhibition::SleepInhibition(void)
 {
 }
 
-SleepInhibition::~SleepInhibition(void)
+SleepInhibition::~SleepInhibition()
 {
 }
 
@@ -73,7 +73,7 @@ void SleepInhibition::startSleepInhibition(
 	}
 }
 
-void SleepInhibition::stopSleepInhibition(void) noexcept
+void SleepInhibition::stopSleepInhibition() noexcept
 {
 	GK_LOG_FUNC
 
@@ -93,7 +93,7 @@ void SleepInhibition::stopSleepInhibition(void) noexcept
 	this->releaseDelayLock();
 }
 
-void SleepInhibition::inhibitSleepState(void)
+void SleepInhibition::inhibitSleepState()
 {
 	GK_LOG_FUNC
 
@@ -147,7 +147,7 @@ void SleepInhibition::inhibitSleepState(void)
 	}
 }
 
-void SleepInhibition::releaseDelayLock(void)
+void SleepInhibition::releaseDelayLock()
 {
 	GK_LOG_FUNC
 

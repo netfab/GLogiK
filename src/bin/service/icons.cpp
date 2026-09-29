@@ -93,18 +93,18 @@ QPixmap AdaptiveIconEngine::pixmap(
 	return QPixmap::fromImage(img, Qt::ImageConversionFlag::NoFormatConversion);
 }
 
-QIconEngine* AdaptiveIconEngine::clone(void) const
+QIconEngine* AdaptiveIconEngine::clone() const
 {
 	return new AdaptiveIconEngine(_baseIcon, {});
 }
 
-Icons::Icons(void)
+Icons::Icons()
 {
 	QIcon::setThemeSearchPaths(QStringList{":/glogik"} << QIcon::themeSearchPaths());
 	QIcon::setThemeName("GLogiK");
 }
 
-Icons::~Icons(void)
+Icons::~Icons()
 {
 }
 

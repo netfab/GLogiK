@@ -34,7 +34,7 @@ DaemonControl::~DaemonControl()
 {
 }
 
-void DaemonControl::exitDaemon( void )
+void DaemonControl::exitDaemon()
 {
 	DaemonControl::daemonized = false;
 }

@@ -72,7 +72,7 @@ DesktopService::~DesktopService()
 	LOG(info) << LIBShared::GLOGIK_DESKTOP_SERVICE_NAME << " desktop service process exiting, bye !";
 }
 
-int DesktopService::run(void)
+int DesktopService::run()
 {
 	GK_LOG_FUNC
 

@@ -190,7 +190,7 @@ void GKDBusMessageRemoteMethodCall::appendMKeysIDToRemoteMethodCall(const GLogiK
 		_remoteMethodCall->appendMKeysID(bankID);
 }
 
-void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall(void)
+void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall()
 {
 	GK_LOG_FUNC
 
@@ -206,7 +206,7 @@ void GKDBusMessageRemoteMethodCall::sendRemoteMethodCall(void)
 	}
 }
 
-void GKDBusMessageRemoteMethodCall::abandonRemoteMethodCall(void)
+void GKDBusMessageRemoteMethodCall::abandonRemoteMethodCall()
 {
 	GK_LOG_FUNC
 
@@ -222,7 +222,7 @@ void GKDBusMessageRemoteMethodCall::abandonRemoteMethodCall(void)
 	}
 }
 
-void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply(void)
+void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply()
 {
 	GK_LOG_FUNC
 

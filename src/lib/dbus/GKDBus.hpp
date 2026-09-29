@@ -84,16 +84,16 @@ class GKDBus
 		public ArgGKDepsMap
 {
 	public:
-		GKDBus(void);
-		~GKDBus(void);
+		GKDBus();
+		~GKDBus();
 
 		static const BusConnection SystemBus;
 		static const BusConnection SessionBus;
-		static const std::string getDBusVersion(void);
+		static const std::string getDBusVersion();
 
-		void init(void);
+		void init();
 
-		const std::string & getBuiltAgainstDBusVersion(void)
+		const std::string & getBuiltAgainstDBusVersion()
 		{
 			return _builtAgainstDBusVersion;
 		}
@@ -107,9 +107,9 @@ class GKDBus
 			const ConnectionFlag flag = ConnectionFlag::GKDBUS_SINGLE
 		);
 
-		void exit(void) noexcept;
+		void exit() noexcept;
 
-		void checkForMessages(void) noexcept;
+		void checkForMessages() noexcept;
 
 	protected:
 
@@ -131,8 +131,8 @@ class GKDBus
 
 		bool _initDone;
 
-		void disconnectFromSystemBus(void) noexcept;
-		void disconnectFromSessionBus(void) noexcept;
+		void disconnectFromSystemBus() noexcept;
+		void disconnectFromSessionBus() noexcept;
 
 		const bool checkDBusMessage(
 			DBusConnection* const connection,

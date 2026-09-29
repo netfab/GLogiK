@@ -54,7 +54,7 @@ struct WatchedObject
 		const int wd;
 		unsigned int count;
 
-		WatchedObject(void) = delete;
+		WatchedObject() = delete;
 		WatchedObject(const int num) : wd(num), count(1) {}
 		~WatchedObject() = default;
 
@@ -73,14 +73,14 @@ class FSNotify
 		);
 		void removeNotifyWatch(const int wd) noexcept;
 
-		const int getNotifyQueueDescriptor(void) const;
+		const int getNotifyQueueDescriptor() const;
 
 		void readNotifyEvents(DevicesFilesMap_type & filesMap);
 
 
 	protected:
-		FSNotify(void);
-		~FSNotify(void);
+		FSNotify();
+		~FSNotify();
 
 	private:
 		std::map<std::string, WatchedObject> _watchedDescriptorsMap;

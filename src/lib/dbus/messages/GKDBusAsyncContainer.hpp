@@ -38,15 +38,15 @@ class GKDBusMessageAsyncContainer
 		void appendAsyncUInt64(const std::uint64_t value);
 
 	protected:
-		GKDBusMessageAsyncContainer(void);
-		~GKDBusMessageAsyncContainer(void);
+		GKDBusMessageAsyncContainer();
+		~GKDBusMessageAsyncContainer();
 
-		void resetAsyncContainer(void);
-		DBusMessage* getAsyncContainer(void) const;
+		void resetAsyncContainer();
+		DBusMessage* getAsyncContainer() const;
 
 	private:
-		void newAsyncContainer(void);
-		void freeAsyncContainer(void);
+		void newAsyncContainer();
+		void freeAsyncContainer();
 };
 
 } // namespace NSGKDBus

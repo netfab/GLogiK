@@ -112,7 +112,7 @@ void GKDBusMessageErrorReply::initializeErrorReply(
 	}
 }
 
-void GKDBusMessageErrorReply::sendErrorReply(void)
+void GKDBusMessageErrorReply::sendErrorReply()
 {
 	GK_LOG_FUNC
 

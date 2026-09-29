@@ -40,10 +40,10 @@ class Coretemp
 
 	public:
 		Coretemp(const std::string & coretempID);
-		Coretemp(void) = delete;
-		~Coretemp(void);
+		Coretemp() = delete;
+		~Coretemp() = default;
 
-		static const std::vector<std::string> & getCoretempID(void);
+		static const std::vector<std::string> & getCoretempID();
 
 		void init(
 			FontsManager* const pFonts,

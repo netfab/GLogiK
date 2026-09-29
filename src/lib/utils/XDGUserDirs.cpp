@@ -33,7 +33,7 @@
 namespace NSGKUtils
 {
 
-const fs::path XDGUserDirs::getConfigurationRootDirectory(void) {
+const fs::path XDGUserDirs::getConfigurationRootDirectory() {
 	const std::string home = toString( getenv("HOME") );
 	if(home == "")
 		throw GLogiKExcept("can't get HOME environment variable");

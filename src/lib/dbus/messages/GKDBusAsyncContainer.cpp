@@ -48,24 +48,24 @@ void GKDBusMessageAsyncContainer::appendAsyncUInt64(const std::uint64_t value)
 /*  protected  */
 /* --- --- --- */
 
-GKDBusMessageAsyncContainer::GKDBusMessageAsyncContainer(void)
+GKDBusMessageAsyncContainer::GKDBusMessageAsyncContainer()
 	:	GKDBusMessage(nullptr, true)
 {
 	this->newAsyncContainer();
 }
 
-GKDBusMessageAsyncContainer::~GKDBusMessageAsyncContainer(void)
+GKDBusMessageAsyncContainer::~GKDBusMessageAsyncContainer()
 {
 	this->freeAsyncContainer();
 }
 
-void GKDBusMessageAsyncContainer::resetAsyncContainer(void)
+void GKDBusMessageAsyncContainer::resetAsyncContainer()
 {
 	this->freeAsyncContainer();
 	this->newAsyncContainer();
 }
 
-DBusMessage* GKDBusMessageAsyncContainer::getAsyncContainer(void) const
+DBusMessage* GKDBusMessageAsyncContainer::getAsyncContainer() const
 {
 	return _message;
 }
@@ -74,7 +74,7 @@ DBusMessage* GKDBusMessageAsyncContainer::getAsyncContainer(void) const
 /*   private   */
 /* --- --- --- */
 
-void GKDBusMessageAsyncContainer::newAsyncContainer(void)
+void GKDBusMessageAsyncContainer::newAsyncContainer()
 {
 	GK_LOG_FUNC
 
@@ -96,7 +96,7 @@ void GKDBusMessageAsyncContainer::newAsyncContainer(void)
 #endif
 }
 
-void GKDBusMessageAsyncContainer::freeAsyncContainer(void)
+void GKDBusMessageAsyncContainer::freeAsyncContainer()
 {
 	GK_LOG_FUNC
 

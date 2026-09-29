@@ -32,11 +32,11 @@ class DependenciesTab
 	:	public AboutDialogTab
 {
 	public:
-		DependenciesTab(void) = delete;
+		DependenciesTab() = delete;
 		DependenciesTab(const GKDepsMap_type* const pDepsMap);
-		~DependenciesTab(void) = default;
+		~DependenciesTab() = default;
 
-		void buildTab(void);
+		void buildTab();
 
 	protected:
 	private:

@@ -67,8 +67,8 @@ class USBDevice
 	:	public USBDeviceID
 {
 	public:
-		USBDevice(void) = default;
-		~USBDevice(void);
+		USBDevice() = default;
+		~USBDevice();
 
 		USBDevice(const USBDevice & dev) = delete;
 		USBDevice(const USBDeviceID & dev);
@@ -161,36 +161,36 @@ class USBDevice
 		{
 			_pLCDPluginsManager = pLCDPluginsManager;
 		}
-		void destroyLCDPluginsManager(void) noexcept;
+		void destroyLCDPluginsManager() noexcept;
 
 		/* getters */
-		LCDPluginsManager* const & getLCDPluginsManager(void) const
+		LCDPluginsManager* const & getLCDPluginsManager() const
 		{
 			return _pLCDPluginsManager;
 		}
-		const bool getThreadsStatus(void) const
+		const bool getThreadsStatus() const
 		{
 			return _threadsStatus;
 		}
-		const bool getUSBRequestsStatus(void) const
+		const bool getUSBRequestsStatus() const
 		{
 			return _USBRequestsStatus;
 		}
-		const int getLastKeysInterruptTransferLength(void) const
+		const int getLastKeysInterruptTransferLength() const
 		{
 			return _lastKeysInterruptTransferLength;
 		}
-		const int getLastLCDInterruptTransferLength(void) const
+		const int getLastLCDInterruptTransferLength() const
 		{
 			return _lastLCDInterruptTransferLength;
 		}
 		/* -- -- -- */
 
-		void stopThreads(void) noexcept
+		void stopThreads() noexcept
 		{
 			_threadsStatus = false;
 		}
-		void skipUSBRequests(void) noexcept
+		void skipUSBRequests() noexcept
 		{
 			_USBRequestsStatus = false;
 		}

@@ -169,7 +169,7 @@ void MainWindow::init(const int& argc, char *argv[])
 	/* -- -- -- */
 }
 
-void MainWindow::build(void)
+void MainWindow::build()
 {
 	GK_LOG_FUNC
 
@@ -397,7 +397,7 @@ void MainWindow::parseCommandLine(const int& argc, char *argv[])
 #endif
 }
 
-void MainWindow::aboutToQuit(void)
+void MainWindow::aboutToQuit()
 {
 	GK_LOG_FUNC
 
@@ -469,7 +469,7 @@ void MainWindow::configurationFileUpdated(const std::string & devID)
 	}
 }
 
-void MainWindow::getExecutablesDependenciesMap(void)
+void MainWindow::getExecutablesDependenciesMap()
 {
 	GK_LOG_FUNC
 
@@ -515,7 +515,7 @@ void MainWindow::getExecutablesDependenciesMap(void)
 	}
 }
 
-void MainWindow::aboutDialog(void)
+void MainWindow::aboutDialog()
 {
 	GK_LOG_FUNC
 
@@ -717,7 +717,7 @@ void MainWindow::saveConfigurationFileAndUpdateInterface(const TabApplyButton ta
 	this->updateInterface( _devicesComboBox->currentIndex() );
 }
 
-void MainWindow::updateDevicesList(void)
+void MainWindow::updateDevicesList()
 {
 	GK_LOG_FUNC
 
@@ -766,7 +766,7 @@ void MainWindow::updateDevicesList(void)
 	}
 }
 
-void MainWindow::resetInterface(void)
+void MainWindow::resetInterface()
 {
 	GK_LOG_FUNC
 
@@ -879,7 +879,7 @@ void MainWindow::setCurrentTab(const std::string & name)
 	}
 }
 
-void MainWindow::checkDBusMessages(void)
+void MainWindow::checkDBusMessages()
 {
 	if(_pDBus)
 		_pDBus->checkForMessages();

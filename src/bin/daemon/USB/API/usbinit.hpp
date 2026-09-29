@@ -44,10 +44,10 @@ class USBInit
 	public:
 		using USBPortNumbers_type = std::array<std::uint8_t, PORT_NUMBERS_LEN>;
 
-		USBInit(void);
-		~USBInit(void);
+		USBInit();
+		~USBInit();
 
-		static const std::string getLibUSBVersion(void);
+		static const std::string getLibUSBVersion();
 
 		const int getUSBDevicePortNumbers(
 			USBDevice & device,

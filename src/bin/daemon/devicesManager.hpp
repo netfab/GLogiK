@@ -54,31 +54,31 @@ class DevicesManager
 		using MKeysIDArray_type = GLogiK::MKeysIDArray_type;
 
 	public:
-		DevicesManager(void);
-		~DevicesManager(void);
+		DevicesManager();
+		~DevicesManager();
 
-		static const std::string getLibudevVersion(void);
+		static const std::string getLibudevVersion();
 
-		void startMonitoring(void);
+		void startMonitoring();
 
 #if GKDBUS
 		void setDBus(NSGKDBus::GKDBus* pDBus);
 		void setNumClients(std::uint8_t num);
 
-		void checkDBusMessages(void) noexcept;
+		void checkDBusMessages() noexcept;
 #endif
 
-		void startSleepingDevices(void);
-		void stopInitializedDevices(void);
+		void startSleepingDevices();
+		void stopInitializedDevices();
 
-		void resetDevicesStates(void);
+		void resetDevicesStates();
 		const bool startDevice(const std::string & devID);
 		const bool stopDevice(
 			const std::string & devID,
 			const bool skipUSBRequests = false
 		) noexcept;
-		const std::vector<std::string> getStartedDevices(void) const;
-		const std::vector<std::string> getStoppedDevices(void) const;
+		const std::vector<std::string> getStartedDevices() const;
+		const std::vector<std::string> getStoppedDevices() const;
 
 		const std::string & getDeviceVendor(const std::string & devID) const;
 		const std::string & getDeviceProduct(const std::string & devID) const;
@@ -129,7 +129,7 @@ class DevicesManager
 		) noexcept;
 		void checkForUnpluggedDevices(const USBDeviceIDContainer_type & detectedDevices) noexcept;
 
-		void checkInitializedDevicesThreadsStatus(void) noexcept;
+		void checkInitializedDevicesThreadsStatus() noexcept;
 };
 
 } // namespace Managers::Devices

@@ -34,8 +34,8 @@ class Splashscreen
 	:	public LCDPlugin
 {
 	public:
-		Splashscreen(void);
-		~Splashscreen(void);
+		Splashscreen();
+		~Splashscreen();
 
 		void init(
 			FontsManager* const pFonts,

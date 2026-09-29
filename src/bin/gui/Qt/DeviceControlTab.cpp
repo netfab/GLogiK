@@ -53,7 +53,7 @@ DeviceControlTab::~DeviceControlTab()
 {
 }
 
-void DeviceControlTab::buildTab(void)
+void DeviceControlTab::buildTab()
 {
 	GK_LOG_FUNC
 
@@ -142,14 +142,14 @@ void DeviceControlTab::buildTab(void)
 	this->disableAndHide();
 }
 
-void DeviceControlTab::disableButtons(void)
+void DeviceControlTab::disableButtons()
 {
 	_pStartButton->setEnabled(false);
 	_pStopButton->setEnabled(false);
 	_pRestartButton->setEnabled(false);
 }
 
-void DeviceControlTab::disableAndHide(void)
+void DeviceControlTab::disableAndHide()
 {
 	this->disableButtons();
 
@@ -226,19 +226,19 @@ void DeviceControlTab::sendStatusSignal(const std::string & signal)
 	this->disableButtons();
 }
 
-void DeviceControlTab::startSignal(void)
+void DeviceControlTab::startSignal()
 {
 	/* same method name as in daemon */
 	this->sendStatusSignal(LIBShared::GK_DBUS_DAEMON_METHOD_START_DEVICE);
 }
 
-void DeviceControlTab::stopSignal(void)
+void DeviceControlTab::stopSignal()
 {
 	/* same method name as in daemon */
 	this->sendStatusSignal(LIBShared::GK_DBUS_DAEMON_METHOD_STOP_DEVICE);
 }
 
-void DeviceControlTab::restartSignal(void)
+void DeviceControlTab::restartSignal()
 {
 	/* same method name as in daemon */
 	this->sendStatusSignal(LIBShared::GK_DBUS_DAEMON_METHOD_RESTART_DEVICE);

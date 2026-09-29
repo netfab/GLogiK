@@ -127,7 +127,7 @@ const std::uint16_t PBMFont::getCenteredXPos(const std::string & string)
 	return static_cast<std::uint16_t>(XPos/2);
 }
 
-const std::uint16_t PBMFont::getCenteredYPos(void)
+const std::uint16_t PBMFont::getCenteredYPos()
 {
 	namespace N_PBM = ::Managers::LCDPlugins::PBM;
 	std::uint16_t YPos = N_PBM::LCD_height;

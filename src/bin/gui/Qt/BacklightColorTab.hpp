@@ -47,14 +47,14 @@ class BacklightColorTab
 		);
 		~BacklightColorTab();
 
-		void buildTab(void);
+		void buildTab();
 		void updateTab(
 			const DeviceProperties & device,
 			const std::string & devID
 		);
 
-		const QColor & getAndSetNewColor(void);
-		void disableApplyButton(void);
+		const QColor & getAndSetNewColor();
+		void disableApplyButton();
 
 	private:
 		BacklightColorTab() = delete;

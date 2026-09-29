@@ -72,7 +72,7 @@ void TypeStringArray::appendStringArray(const std::vector<std::string> & stringA
 #endif
 }
 
-const std::vector<std::string> ArgStringArray::getNextStringArray(void)
+const std::vector<std::string> ArgStringArray::getNextStringArray()
 {
 	GK_LOG_FUNC
 

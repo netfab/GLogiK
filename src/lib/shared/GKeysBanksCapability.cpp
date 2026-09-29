@@ -38,12 +38,12 @@ using namespace NSGKUtils;
 
 const GLogiK::banksMap_type GKeysBanksCapability::emptyGKeysBanks = {};
 
-GKeysBanksCapability::GKeysBanksCapability(void)
+GKeysBanksCapability::GKeysBanksCapability()
 	:	_currentBankID(MKeysID::MKEY_M0)
 {
 }
 
-GKeysBanksCapability::~GKeysBanksCapability(void)
+GKeysBanksCapability::~GKeysBanksCapability()
 {
 }
 
@@ -117,12 +117,12 @@ void GKeysBanksCapability::initBanks(
 	}
 }
 
-auto GKeysBanksCapability::getBanks(void) -> banksMap_type &
+auto GKeysBanksCapability::getBanks() -> banksMap_type &
 {
 	return _GKeysBanks;
 }
 
-auto GKeysBanksCapability::getBanks(void) const -> const banksMap_type &
+auto GKeysBanksCapability::getBanks() const -> const banksMap_type &
 {
 	return _GKeysBanks;
 }
@@ -136,7 +136,7 @@ void GKeysBanksCapability::setBanks(const banksMap_type & GKeysBanks)
 	_GKeysBanks = GKeysBanks;
 }
 
-void GKeysBanksCapability::checkBanksKeys(void) noexcept
+void GKeysBanksCapability::checkBanksKeys() noexcept
 {
 	for(auto bankIt = _GKeysBanks.begin(); bankIt != _GKeysBanks.end();)
 	{
@@ -196,7 +196,7 @@ void GKeysBanksCapability::setCurrentBankID(MKeysID bankID)
 	_currentBankID = bankID;
 }
 
-auto GKeysBanksCapability::getCurrentBankID(void) const -> const MKeysID
+auto GKeysBanksCapability::getCurrentBankID() const -> const MKeysID
 {
 	return _currentBankID;
 }

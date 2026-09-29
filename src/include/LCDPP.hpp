@@ -31,7 +31,7 @@ namespace GLogiK
 class LCDPP
 {
 	public:
-		LCDPP(void)
+		LCDPP()
 			:	_ID(0),
 				_name("unknown"),
 				_desc("unknown") {};
@@ -43,11 +43,11 @@ class LCDPP
 					_name(n),
 					_desc(d)
 			{}
-		~LCDPP(void) = default;
+		~LCDPP() = default;
 
-		const std::uint64_t getID(void) const { return _ID; }
-		const std::string & getName(void) const { return _name; }
-		const std::string & getDesc(void) const { return _desc; }
+		const std::uint64_t getID() const { return _ID; }
+		const std::string & getName() const { return _name; }
+		const std::string & getDesc() const { return _desc; }
 
 		void setID(const std::uint64_t id) { _ID = id; }
 		void setName(const std::string & name) { _name = name; }

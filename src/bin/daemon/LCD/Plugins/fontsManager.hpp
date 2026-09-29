@@ -35,8 +35,8 @@ namespace Managers::LCDPlugins::plugin
 class FontsManager
 {
 	public:
-		FontsManager(void);
-		~FontsManager(void);
+		FontsManager();
+		~FontsManager();
 
 		const std::uint16_t getCenteredXPos(
 			const FontID fontID,

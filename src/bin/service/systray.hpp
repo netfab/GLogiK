@@ -55,17 +55,17 @@ class DesktopServiceSystray
 	:	public QMainWindow
 {
 	public:
-		DesktopServiceSystray(void);
-		~DesktopServiceSystray(void);
+		DesktopServiceSystray();
+		~DesktopServiceSystray();
 
 		/* return true is any device event was triggered via systray */
-		const bool isDeviceEventTriggered(void) const;
-		const std::string & getDeviceEventID(void) const;    /* Event deviceID */
-		const SystrayDeviceEvent getDeviceEvent(void) const; /* DeviceEvent (start/stop/restart) */
+		const bool isDeviceEventTriggered() const;
+		const std::string & getDeviceEventID() const;    /* Event deviceID */
+		const SystrayDeviceEvent getDeviceEvent() const; /* DeviceEvent (start/stop/restart) */
 
-		const SystrayServiceEvent getServiceEvent(void); /* ServiceEvent (stop/restart) */
+		const SystrayServiceEvent getServiceEvent(); /* ServiceEvent (stop/restart) */
 
-		void resetDeviceEvent(void);
+		void resetDeviceEvent();
 
 		void updateContextMenu(const DevicesMap_type & devices);
 
@@ -83,32 +83,32 @@ class DesktopServiceSystray
 
 		bool _deviceEventTriggered;
 
-		void restartService(void);
-		void stopService(void);
+		void restartService();
+		void stopService();
 
-		void startDevice(void);
-		void stopDevice(void);
-		void restartDevice(void);
+		void startDevice();
+		void stopDevice();
+		void restartDevice();
 
 		void iconActivated(QSystemTrayIcon::ActivationReason reason);
 };
 
-inline const bool DesktopServiceSystray::isDeviceEventTriggered(void) const
+inline const bool DesktopServiceSystray::isDeviceEventTriggered() const
 {
 	return _deviceEventTriggered;
 }
 
-inline const std::string & DesktopServiceSystray::getDeviceEventID(void) const
+inline const std::string & DesktopServiceSystray::getDeviceEventID() const
 {
 	return _deviceID;
 }
 
-inline const SystrayDeviceEvent DesktopServiceSystray::getDeviceEvent(void) const
+inline const SystrayDeviceEvent DesktopServiceSystray::getDeviceEvent() const
 {
 	return _deviceEvent;
 }
 
-inline const SystrayServiceEvent DesktopServiceSystray::getServiceEvent(void)
+inline const SystrayServiceEvent DesktopServiceSystray::getServiceEvent()
 {
 	const SystrayServiceEvent event = _serviceEvent;
 	_serviceEvent = SystrayServiceEvent::SERVICE_RUN;

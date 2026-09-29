@@ -38,8 +38,8 @@ class TypeMKeysIDArray
 		void appendMKeysIDArray(const GLogiK::MKeysIDArray_type & keysID);
 
 	protected:
-		TypeMKeysIDArray(void) = default;
-		~TypeMKeysIDArray(void) = default;
+		TypeMKeysIDArray() = default;
+		~TypeMKeysIDArray() = default;
 
 	private:
 };
@@ -49,11 +49,11 @@ class ArgMKeysIDArray
 		virtual protected ArgMKeysID
 {
 	public:
-		static const GLogiK::MKeysIDArray_type getNextMKeysIDArrayArgument(void);
+		static const GLogiK::MKeysIDArray_type getNextMKeysIDArrayArgument();
 
 	protected:
-		ArgMKeysIDArray(void) = default;
-		~ArgMKeysIDArray(void) = default;
+		ArgMKeysIDArray() = default;
+		~ArgMKeysIDArray() = default;
 
 	private:
 };

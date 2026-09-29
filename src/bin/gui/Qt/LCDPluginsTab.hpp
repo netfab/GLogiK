@@ -48,13 +48,13 @@ class LCDPluginsTab
 		);
 		~LCDPluginsTab();
 
-		void buildTab(void);
+		void buildTab();
 		void updateTab(
 			const DeviceProperties & device,
 			const std::string & devID
 		);
 
-		const std::uint64_t getAndSetNewLCDPluginsMask(void);
+		const std::uint64_t getAndSetNewLCDPluginsMask();
 
 	protected:
 	private:

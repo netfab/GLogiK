@@ -121,12 +121,12 @@ LCDPluginsManager::~LCDPluginsManager()
 	this->stopLCDPlugins();
 }
 
-auto LCDPluginsManager::getLCDPluginsProperties(void) const -> const LCDPPArray_type &
+auto LCDPluginsManager::getLCDPluginsProperties() const -> const LCDPPArray_type &
 {
 	return _pluginsPropertiesArray;
 }
 
-const std::uint16_t LCDPluginsManager::getPluginTiming(void)
+const std::uint16_t LCDPluginsManager::getPluginTiming()
 {
 	if(_itCurrentPlugin != _plugins.end() )
 		return (*_itCurrentPlugin)->getPluginTiming();
@@ -134,7 +134,7 @@ const std::uint16_t LCDPluginsManager::getPluginTiming(void)
 	return 1000;
 }
 
-void LCDPluginsManager::unlockPlugin(void)
+void LCDPluginsManager::unlockPlugin()
 {
 	GK_LOG_FUNC
 
@@ -151,7 +151,7 @@ void LCDPluginsManager::unlockPlugin(void)
 	}
 }
 
-const std::uint64_t LCDPluginsManager::getCurrentPluginID(void)
+const std::uint64_t LCDPluginsManager::getCurrentPluginID()
 {
 	if( ! _noPlugins )
 		if(_itCurrentPlugin != _plugins.end() )
@@ -160,7 +160,7 @@ const std::uint64_t LCDPluginsManager::getCurrentPluginID(void)
 	return 0;
 }
 
-void LCDPluginsManager::jumpToNextPlugin(void)
+void LCDPluginsManager::jumpToNextPlugin()
 {
 	GK_LOG_FUNC
 
@@ -294,7 +294,7 @@ auto LCDPluginsManager::getNextLCDScreenBuffer(
 	return _LCDBuffer;
 }
 
-void LCDPluginsManager::stopLCDPlugins(void)
+void LCDPluginsManager::stopLCDPlugins()
 {
 	GK_LOG_FUNC
 

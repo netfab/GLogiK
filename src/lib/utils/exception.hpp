@@ -37,8 +37,8 @@ class GLogiKExcept
 	public :
 		GLogiKExcept( const std::string& msg = "" );
 
-		virtual ~GLogiKExcept( void ) throw();
-		virtual const char* what( void ) const throw();
+		virtual ~GLogiKExcept() throw();
+		virtual const char* what() const throw();
 
 	protected :
 		std::string message;
@@ -50,7 +50,7 @@ class InitFailure
 	public:
 		InitFailure(const std::string& msg = "object initialization failure")
 			:	GLogiKExcept(msg) {};
-		virtual ~InitFailure( void ) throw() {};
+		virtual ~InitFailure() throw() {};
 };
 
 class EmptyContainer
@@ -59,7 +59,7 @@ class EmptyContainer
 	public:
 		EmptyContainer( const std::string& msg = "" )
 			:	GLogiKExcept(msg) {};
-		virtual ~EmptyContainer( void ) throw() {};
+		virtual ~EmptyContainer() throw() {};
 };
 
 class GKDBusRemoteCallNoReply
@@ -68,7 +68,7 @@ class GKDBusRemoteCallNoReply
 	public:
 		GKDBusRemoteCallNoReply( const std::string& msg = "" )
 			:	GLogiKExcept(msg) {};
-		virtual ~GKDBusRemoteCallNoReply( void ) throw() {};
+		virtual ~GKDBusRemoteCallNoReply() throw() {};
 };
 
 class GKDBusMessageWrongBuild
@@ -77,7 +77,7 @@ class GKDBusMessageWrongBuild
 	public:
 		GKDBusMessageWrongBuild( const std::string& msg = "" )
 			:	GLogiKExcept(msg) {};
-		virtual ~GKDBusMessageWrongBuild( void ) throw() {};
+		virtual ~GKDBusMessageWrongBuild() throw() {};
 };
 
 class GLogiKBadAlloc
@@ -86,7 +86,7 @@ class GLogiKBadAlloc
 	public:
 		GLogiKBadAlloc(const std::string & msg = "caught bad_alloc, do not like that")
 			:	GLogiKExcept(msg) {};
-		virtual ~GLogiKBadAlloc( void ) throw() {};
+		virtual ~GLogiKBadAlloc() throw() {};
 };
 
 } // namespace NSGKUtils

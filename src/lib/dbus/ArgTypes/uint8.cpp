@@ -50,7 +50,7 @@ void TypeUInt8::appendUInt8(
 #endif
 }
 
-const std::uint8_t ArgUInt8::getNextByteArgument(void)
+const std::uint8_t ArgUInt8::getNextByteArgument()
 {
 	if( ArgBase::byteArguments.empty() )
 		throw EmptyContainer("missing argument : byte");

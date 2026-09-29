@@ -35,7 +35,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-void LicenseTab::buildTab(void)
+void LicenseTab::buildTab()
 {
 	GK_LOG_FUNC
 

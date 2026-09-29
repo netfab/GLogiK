@@ -30,14 +30,6 @@ namespace Managers::LCDPlugins::plugin
 
 using namespace NSGKUtils;
 
-PBMFile::PBMFile()
-{
-}
-
-PBMFile::~PBMFile()
-{
-}
-
 void PBMFile::readPBM(
 	const std::string & PBMPath,
 	PixelsData & PBMData,

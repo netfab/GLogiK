@@ -40,8 +40,8 @@ class libusb
 	public:
 
 	protected:
-		libusb(void) = default;
-		~libusb(void) = default;
+		libusb() = default;
+		~libusb() = default;
 
 		void openUSBDevice(USBDevice & device);
 		void closeUSBDevice(USBDevice & device) noexcept;

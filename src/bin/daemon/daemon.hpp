@@ -44,9 +44,9 @@ class GLogiKDaemon
 {
 	public:
 		GLogiKDaemon(const int& argc,char *argv[]);
-		~GLogiKDaemon(void);
+		~GLogiKDaemon();
 
-		int run(void);
+		int run();
 
 	protected:
 	private:
@@ -55,8 +55,8 @@ class GLogiKDaemon
 		bool _version;
 		bool _PIDFileCreated;
 
-		void createPIDFile(void);
-		void dropPrivileges(void);
+		void createPIDFile();
+		void dropPrivileges();
 		void parseCommandLine(const int& argc, char *argv[]);
 		static void handleSignal(int signum);
 };

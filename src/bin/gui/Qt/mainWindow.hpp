@@ -67,7 +67,7 @@ class MainWindow
 		~MainWindow();
 
 		void init(const int& argc, char *argv[]);
-		void build(void);
+		void build();
 
 	private:
 		using DeviceProperties = LIBShared::DeviceProperties;
@@ -116,15 +116,15 @@ class MainWindow
 		);
 		void setCurrentTab(const std::string & name);
 
-		void getExecutablesDependenciesMap(void);
-		void aboutDialog(void);
+		void getExecutablesDependenciesMap();
+		void aboutDialog();
 
-		void aboutToQuit(void);
+		void aboutToQuit();
 
-		void updateDevicesList(void);
-		void resetInterface(void);
+		void updateDevicesList();
+		void resetInterface();
 		void updateInterface(int index);
-		void checkDBusMessages(void);
+		void checkDBusMessages();
 		void saveConfigurationFile(const TabApplyButton tab);
 		void saveConfigurationFileAndUpdateInterface(const TabApplyButton tab);
 

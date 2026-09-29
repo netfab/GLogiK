@@ -30,7 +30,7 @@ using namespace NSGKUtils;
 
 const std::string TypeBase::appendFailure("message append failure");
 
-void TypeBase::abandon(void)
+void TypeBase::abandon()
 {
 	GK_LOG_FUNC
 

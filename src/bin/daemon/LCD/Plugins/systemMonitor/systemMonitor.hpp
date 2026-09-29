@@ -44,8 +44,8 @@ class SystemMonitor
 		using PixelsData = ::Managers::LCDPlugins::PixelsData;
 
 	public:
-		SystemMonitor(void);
-		~SystemMonitor(void);
+		SystemMonitor();
+		~SystemMonitor();
 
 		void init(
 			FontsManager* const pFonts,

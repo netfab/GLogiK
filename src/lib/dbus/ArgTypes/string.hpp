@@ -41,8 +41,8 @@ class TypeString
 		void appendString(const std::string & value);
 
 	protected:
-		TypeString(void) = default;
-		~TypeString(void) = default;
+		TypeString() = default;
+		~TypeString() = default;
 
 		void appendString(
 			DBusMessageIter *iter,
@@ -57,11 +57,11 @@ class ArgString
 		virtual private ArgUInt64
 {
 	public:
-		static const std::string & getNextStringArgument(void);
+		static const std::string & getNextStringArgument();
 
 	protected:
-		ArgString(void) = default;
-		~ArgString(void) = default;
+		ArgString() = default;
+		~ArgString() = default;
 
 	private:
 		thread_local static std::string currentString;

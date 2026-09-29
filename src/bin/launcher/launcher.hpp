@@ -30,9 +30,9 @@ class DesktopServiceLauncher
 {
 	public:
 		DesktopServiceLauncher(const int& argc, char *argv[]);
-		~DesktopServiceLauncher(void);
+		~DesktopServiceLauncher();
 
-		int run(void);
+		int run();
 
 	protected:
 

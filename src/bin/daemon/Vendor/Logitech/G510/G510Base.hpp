@@ -49,14 +49,14 @@ class G510Base
 	public:
 
 	protected:
-		G510Base(void) = default;
-		virtual ~G510Base(void) = default;
+		G510Base() = default;
+		virtual ~G510Base() = default;
 
-		const char* getDriverName(void) const;
-		const std::uint16_t getDriverID(void) const;
-		const std::vector<USBDeviceID> & getSupportedDevices(void) const;
-		const MKeysIDArray_type getMKeysIDArray(void) const;
-		const GKeysIDArray_type getGKeysIDArray(void) const;
+		const char* getDriverName() const;
+		const std::uint16_t getDriverID() const;
+		const std::vector<USBDeviceID> & getSupportedDevices() const;
+		const MKeysIDArray_type getMKeysIDArray() const;
+		const GKeysIDArray_type getGKeysIDArray() const;
 
 		/* return true if any G-Key (G1-G18) was pressed  */
 		virtual const bool checkDevicePressedAnyGKey(USBDevice & device);

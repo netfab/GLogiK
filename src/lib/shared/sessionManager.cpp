@@ -82,7 +82,7 @@ SessionManager::~SessionManager()
  *	public
  */
 
-const int SessionManager::openConnection(void)
+const int SessionManager::openConnection()
 {
 	GK_LOG_FUNC
 
@@ -129,12 +129,12 @@ const int SessionManager::openConnection(void)
 }
 
 /* return true session is still alive */
-const bool SessionManager::isAlive(void) const
+const bool SessionManager::isAlive() const
 {
 	return SessionManager::stillRunning;
 }
 
-void SessionManager::processICEMessages(void)
+void SessionManager::processICEMessages()
 {
 	if(_pICEConnexion != nullptr)
 		SessionManager::processICEMessages(_pICEConnexion);
@@ -145,7 +145,7 @@ void SessionManager::processICEMessages(void)
  *	private
  */
 
-void SessionManager::closeConnection(void)
+void SessionManager::closeConnection()
 {
 	GK_LOG_FUNC
 

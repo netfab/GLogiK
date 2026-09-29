@@ -30,93 +30,93 @@ namespace USB::Device
 class USBDeviceID
 {
 	public:
-		const std::string & getVendor(void) const
+		const std::string & getVendor() const
 		{
 			return _vendor;
 		}
-		const std::string & getProduct(void) const
+		const std::string & getProduct() const
 		{
 			return _product;
 		}
-		const std::string & getName(void) const
+		const std::string & getName() const
 		{
 			return _name;
 		}
-		const std::string & getFullName(void) const
+		const std::string & getFullName() const
 		{
 			return _fullname;
 		};
-		const std::string & getVendorID(void) const
+		const std::string & getVendorID() const
 		{
 			return _vendorID;
 		}
-		const std::string & getProductID(void) const
+		const std::string & getProductID() const
 		{
 			return _productID;
 		}
-		const std::string & getDevnode(void) const
+		const std::string & getDevnode() const
 		{
 			return _devnode;
 		}
-		const std::string & getDevpath(void) const
+		const std::string & getDevpath() const
 		{
 			return _devpath;
 		}
-		const std::string & getUSec(void) const
+		const std::string & getUSec() const
 		{
 			return _usec;
 		}
 
-		const std::uint64_t getCapabilities(void) const
+		const std::uint64_t getCapabilities() const
 		{
 			return _capabilities;
 		}
 
-		const std::uint16_t getDriverID(void) const
+		const std::uint16_t getDriverID() const
 		{
 			return _driverID;
 		}
 
-		const std::uint8_t getBus(void) const
+		const std::uint8_t getBus() const
 		{
 			return _bus;
 		}
-		const std::uint8_t getNum(void) const
+		const std::uint8_t getNum() const
 		{
 			return _num;
 		}
 
-		const std::uint8_t getBConfigurationValue(void) const
+		const std::uint8_t getBConfigurationValue() const
 		{
 			return _bConfigurationValue;
 		}
-		const std::uint8_t getBInterfaceNumber(void) const
+		const std::uint8_t getBInterfaceNumber() const
 		{
 			return _bInterfaceNumber;
 		}
-		const std::uint8_t getBAlternateSetting(void) const
+		const std::uint8_t getBAlternateSetting() const
 		{
 			return _bAlternateSetting;
 		}
-		const std::uint8_t getBNumEndpoints(void) const
+		const std::uint8_t getBNumEndpoints() const
 		{
 			return _bNumEndpoints;
 		}
 
-		const std::int8_t getKeysInterruptBufferMaxLength(void) const
+		const std::int8_t getKeysInterruptBufferMaxLength() const
 		{
 			return _keysInterruptBufferMaxLength;
 		};
 
-		const std::int8_t getGKeysTransferLength(void) const
+		const std::int8_t getGKeysTransferLength() const
 		{
 			return _GKeysTransferLength;
 		}
-		const std::int8_t getMediaKeysTransferLength(void) const
+		const std::int8_t getMediaKeysTransferLength() const
 		{
 			return _MediaKeysTransferLength;
 		}
-		const std::int8_t getLCDKeysTransferLength(void) const
+		const std::int8_t getLCDKeysTransferLength() const
 		{
 			return _LCDKeysTransferLength;
 		}
@@ -131,12 +131,12 @@ class USBDeviceID
 			return devID;
 		};
 
-		const std::string & getID(void) const
+		const std::string & getID() const
 		{
 			return _devID;
 		}
 
-		USBDeviceID(void) = default;
+		USBDeviceID() = default;
 		USBDeviceID(
 			const std::string & vendor,
 			const std::string & product,
@@ -164,7 +164,7 @@ class USBDeviceID
 			const std::uint8_t num
 		);
 		USBDeviceID(const USBDeviceID & device) = default;
-		~USBDeviceID(void) = default;
+		~USBDeviceID() = default;
 
 	protected:
 

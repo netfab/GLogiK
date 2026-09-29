@@ -38,8 +38,8 @@ class GKeysEventManager
 		using macro_type = GLogiK::macro_type;
 
 	public:
-		GKeysEventManager(void);
-		~GKeysEventManager(void);
+		GKeysEventManager();
+		~GKeysEventManager();
 
 		void runEvent(
 			const banksMap_type & GKeysBanks,

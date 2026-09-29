@@ -55,7 +55,7 @@ hidapi::~hidapi()
 	}
 }
 
-const std::string hidapi::getHIDAPIVersion(void)
+const std::string hidapi::getHIDAPIVersion()
 {
 	std::string ret(hid_version_str());
 	return ret;

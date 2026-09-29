@@ -37,13 +37,13 @@ namespace GLogiK
 class desktopNotification
 {
 	public:
-		desktopNotification(void);
+		desktopNotification();
 		desktopNotification(
 			const std::string & summary,
 			const std::string & body,
 			const std::string & icon
 		);
-		~desktopNotification(void);
+		~desktopNotification();
 
 	protected:
 
@@ -57,7 +57,7 @@ class desktopNotification
 			const std::string & body,
 			const std::string & icon
 		);
-		void show(void);
+		void show();
 };
 
 } // namespace GLogiK

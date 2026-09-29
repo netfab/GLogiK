@@ -34,7 +34,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-void AboutTab::buildTab(void)
+void AboutTab::buildTab()
 {
 	GK_LOG_FUNC
 

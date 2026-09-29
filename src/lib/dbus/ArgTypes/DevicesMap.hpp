@@ -37,11 +37,11 @@ class ArgDevicesMap
 		static const GLogiK::DevicesMap_type getDevicesMapFromStringArray(
 			const std::vector<std::string> & stringArray
 		);
-		static const GLogiK::DevicesMap_type getNextDevicesMapArgument(void);
+		static const GLogiK::DevicesMap_type getNextDevicesMapArgument();
 
 	protected:
-		ArgDevicesMap(void) = default;
-		~ArgDevicesMap(void) = default;
+		ArgDevicesMap() = default;
+		~ArgDevicesMap() = default;
 
 	private:
 

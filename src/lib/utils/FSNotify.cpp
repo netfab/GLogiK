@@ -138,7 +138,7 @@ void FSNotify::removeNotifyWatch(const int wd) noexcept
 	erase_if(_watchedDescriptorsMap, find_descriptor);
 }
 
-const int FSNotify::getNotifyQueueDescriptor(void) const
+const int FSNotify::getNotifyQueueDescriptor() const
 {
 	return _inotifyQueueFD;
 }

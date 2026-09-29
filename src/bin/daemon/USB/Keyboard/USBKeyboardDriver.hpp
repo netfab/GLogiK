@@ -42,7 +42,7 @@ class USBKeyboardDriver
 		virtual const char* getDriverName() const = 0;
 
 	protected:
-		USBKeyboardDriver(void);
+		USBKeyboardDriver();
 
 	private:
 		/* API */
@@ -76,7 +76,7 @@ class USBKeyboardDriver
 };
 
 template <typename API>
-USBKeyboardDriver<API>::USBKeyboardDriver(void)
+USBKeyboardDriver<API>::USBKeyboardDriver()
 {
 }
 

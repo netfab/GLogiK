@@ -71,7 +71,7 @@ USBDevice::USBDevice(const USBDeviceID & device)
 	_lastTimePoint = std::chrono::steady_clock::now();
 }
 
-USBDevice::~USBDevice(void)
+USBDevice::~USBDevice()
 {
 }
 
@@ -154,7 +154,7 @@ void USBDevice::operator=(const USBDevice& dev)
 #endif
 }
 
-void USBDevice::destroyLCDPluginsManager(void) noexcept
+void USBDevice::destroyLCDPluginsManager() noexcept
 {
 	if( _pLCDPluginsManager )
 	{

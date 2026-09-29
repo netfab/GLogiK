@@ -59,8 +59,8 @@ namespace GLogiK
 class DevicesHandler
 {
 	public:
-		DevicesHandler(void);
-		~DevicesHandler(void);
+		DevicesHandler();
+		~DevicesHandler();
 
 		void setGKfs(NSGKUtils::FileSystem* const pGKfs);
 		void setDBus(NSGKDBus::GKDBus* const pDBus);
@@ -95,8 +95,8 @@ class DevicesHandler
 			const std::string & mediaKeyEvent
 		);
 
-		const DevicesFilesMap_type getDevicesFilesMap(void);
-		const std::vector<std::string> getDevicesList(void);
+		const DevicesFilesMap_type getDevicesFilesMap();
+		const std::vector<std::string> getDevicesList();
 		const LCDPPArray_type & getDeviceLCDPluginsProperties(const std::string & devID);
 
 		void reloadDeviceConfigurationFile(const std::string & devID) noexcept;

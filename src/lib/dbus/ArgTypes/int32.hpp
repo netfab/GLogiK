@@ -38,8 +38,8 @@ class TypeInt32
 		void appendInt32(const int32_t value);
 
 	protected:
-		TypeInt32(void) = default;
-		~TypeInt32(void) = default;
+		TypeInt32() = default;
+		~TypeInt32() = default;
 
 		void appendInt32(
 			DBusMessageIter *iter,
@@ -53,11 +53,11 @@ class ArgInt32
 	:	virtual protected ArgBase
 {
 	public:
-		static const int32_t getNextInt32Argument(void);
+		static const int32_t getNextInt32Argument();
 
 	protected:
-		ArgInt32(void) = default;
-		~ArgInt32(void) = default;
+		ArgInt32() = default;
+		~ArgInt32() = default;
 
 	private:
 

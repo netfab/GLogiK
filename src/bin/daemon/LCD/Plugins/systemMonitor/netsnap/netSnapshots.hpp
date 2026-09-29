@@ -35,8 +35,8 @@ enum class NetDirection
 class NetSnapshots
 {
 	public:
-		NetSnapshots(void);
-		~NetSnapshots(void);
+		NetSnapshots();
+		~NetSnapshots();
 
 		const std::string getRateString(NetDirection direction);
 
@@ -47,7 +47,7 @@ class NetSnapshots
 		unsigned long long _txDiff;
 		std::string _defaultNetworkInterfaceName;
 		std::string _networkInterfaceName;
-		void findDefaultRouteNetworkInterfaceName(void);
+		void findDefaultRouteNetworkInterfaceName();
 		void setBytesSnapshotValue(
 			const NetDirection d,
 			unsigned long long & value

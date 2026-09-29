@@ -113,7 +113,7 @@ std::ostream& operator<< (std::ostream& strm, severity_level level)
 	return strm;
 }
 
-void GKLogging::init(void)
+void GKLogging::init()
 {
 	// Add attributes
 	logging::add_common_attributes();

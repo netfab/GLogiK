@@ -38,8 +38,8 @@ class TypeMKeysID
 		void appendMKeysID(const GLogiK::MKeysID keyID);
 
 	protected:
-		TypeMKeysID(void) = default;
-		~TypeMKeysID(void) = default;
+		TypeMKeysID() = default;
+		~TypeMKeysID() = default;
 
 	private:
 };
@@ -48,11 +48,11 @@ class ArgMKeysID
 	:	virtual private ArgUInt8
 {
 	public:
-		static const GLogiK::MKeysID getNextMKeysIDArgument(void);
+		static const GLogiK::MKeysID getNextMKeysIDArgument();
 
 	protected:
-		ArgMKeysID(void) = default;
-		~ArgMKeysID(void) = default;
+		ArgMKeysID() = default;
+		~ArgMKeysID() = default;
 
 	private:
 

@@ -42,8 +42,8 @@ class TypeStringArray
 		void appendStringArray(const std::vector<std::string> & stringArray);
 
 	protected:
-		TypeStringArray(void) = default;
-		~TypeStringArray(void) = default;
+		TypeStringArray() = default;
+		~TypeStringArray() = default;
 
 	private:
 };
@@ -54,11 +54,11 @@ class ArgStringArray
 		virtual protected ArgString
 {
 	public:
-		static const std::vector<std::string> getNextStringArray(void);
+		static const std::vector<std::string> getNextStringArray();
 
 	protected:
-		ArgStringArray(void) = default;
-		~ArgStringArray(void) = default;
+		ArgStringArray() = default;
+		~ArgStringArray() = default;
 
 	private:
 

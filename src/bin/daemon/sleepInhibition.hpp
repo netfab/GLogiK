@@ -49,14 +49,14 @@ class SleepInhibition
 	public:
 
 	protected:
-		SleepInhibition(void);
-		~SleepInhibition(void);
+		SleepInhibition();
+		~SleepInhibition();
 
 		void startSleepInhibition(
 			NSGKDBus::GKDBus* const pDBus,
 			DevicesManager* const pDevicesManager
 		);
-		void stopSleepInhibition(void) noexcept;
+		void stopSleepInhibition() noexcept;
 
 	private:
 		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
@@ -68,9 +68,9 @@ class SleepInhibition
 		SessionFramework _sessionFramework;
 		int32_t _delayLockPID;
 
-		void inhibitSleepState(void);
+		void inhibitSleepState();
 		void handleSleepEvent(const bool mode);
-		void releaseDelayLock(void);
+		void releaseDelayLock();
 };
 
 } // namespace GLogiK::Daemon

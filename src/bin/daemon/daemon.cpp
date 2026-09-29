@@ -141,7 +141,7 @@ GLogiKDaemon::~GLogiKDaemon()
 	closelog();
 }
 
-int GLogiKDaemon::run(void)
+int GLogiKDaemon::run()
 {
 	GK_LOG_FUNC
 
@@ -281,7 +281,7 @@ void GLogiKDaemon::handleSignal(int signum)
 	}
 }
 
-void GLogiKDaemon::createPIDFile(void)
+void GLogiKDaemon::createPIDFile()
 {
 	GK_LOG_FUNC
 
@@ -400,7 +400,7 @@ void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[])
 #endif
 }
 
-void GLogiKDaemon::dropPrivileges(void)
+void GLogiKDaemon::dropPrivileges()
 {
 	// lambda
 	auto throw_error = [] (const std::string & error) -> void

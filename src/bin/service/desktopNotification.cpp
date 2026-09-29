@@ -31,7 +31,7 @@ using namespace NSGKUtils;
 
 #if HAVE_LIBNOTIFY
 
-desktopNotification::desktopNotification(void)
+desktopNotification::desktopNotification()
 	:	_pNotification(nullptr)
 {
 	notify_init(LIBShared::GLOGIK_DESKTOP_SERVICE_NAME);
@@ -45,7 +45,7 @@ desktopNotification::desktopNotification(
 	this->setParameters(summary, body, icon);
 }
 
-desktopNotification::~desktopNotification(void)
+desktopNotification::~desktopNotification()
 {
 	if(_pNotification)
 		this->show();
@@ -64,7 +64,7 @@ void desktopNotification::setParameters(
 	//notify_notification_set_timeout(_pNotification, 10000); // 10 seconds
 }
 
-void desktopNotification::show(void)
+void desktopNotification::show()
 {
 	GError *notifyError = nullptr;
 

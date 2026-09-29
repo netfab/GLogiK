@@ -38,7 +38,7 @@ void TypeMKeysID::appendMKeysID(const GLogiK::MKeysID keyID)
  * helper function to get MKeysID
  * see also TypeMKeysID::appendMKeysID
  */
-const GLogiK::MKeysID ArgMKeysID::getNextMKeysIDArgument(void)
+const GLogiK::MKeysID ArgMKeysID::getNextMKeysIDArgument()
 {
 	GK_LOG_FUNC
 

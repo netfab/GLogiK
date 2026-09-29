@@ -60,13 +60,13 @@ const steady::duration process::oneSecond = chr::duration<int>(1);
 
 std::uint8_t process::options = 0;
 
-const pid_t process::detach(void)
+const pid_t process::detach()
 {
 	process::options |= process::mask::PROCESS_LOG_ENTRIES;
 	return process::newPID();
 }
 
-const pid_t process::deamonize(void)
+const pid_t process::deamonize()
 {	/* main process is daemonized before opening debug file --> no log entries */
 	process::options |= process::mask::PROCESS_CLOSE_DESCRIPTORS;
 	return process::newPID();
@@ -150,7 +150,7 @@ const int process::waitForChildNotification(int pipefd[])
 	return static_cast<const int>(buf);
 }
 
-void process::newSessionID(void)
+void process::newSessionID()
 {
 	GK_LOG_FUNC
 
@@ -213,7 +213,7 @@ void process::forkProcess(const bool newSessionID)
 	}
 }
 
-const pid_t process::newPID(void)
+const pid_t process::newPID()
 {
 	GK_LOG_FUNC
 

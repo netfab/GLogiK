@@ -39,7 +39,7 @@ enum class GKeyEventType : std::uint8_t
 class GKeysEvent
 {
 	public:
-		GKeysEvent(void) :
+		GKeysEvent() :
 			_GKeyMacro({}),
 			_GKeyCommand(""),
 			_GKeyEventType(GKeyEventType::GKEY_INACTIVE)
@@ -55,22 +55,22 @@ class GKeysEvent
 				_GKeyEventType = GKeyEventType::GKEY_INACTIVE;
 		}
 
-		const GKeyEventType getEventType(void) const { return _GKeyEventType; }
+		const GKeyEventType getEventType() const { return _GKeyEventType; }
 		void setEventType(const GKeyEventType eventType) { _GKeyEventType = eventType; }
 
-		void clearMacro(void) {
+		void clearMacro() {
 			_GKeyMacro.clear();
 		}
-		const macro_type & getMacro(void) const { return _GKeyMacro; }
+		const macro_type & getMacro() const { return _GKeyMacro; }
 
-		const std::string & getCommand(void) const { return _GKeyCommand; };
+		const std::string & getCommand() const { return _GKeyCommand; };
 		void setCommand(const std::string & command) {
 			if( ! command.empty() ) {
 				_GKeyCommand = command;
 			}
 			else this->clearCommand();
 		};
-		void clearCommand(void) {
+		void clearCommand() {
 			_GKeyCommand.clear();
 		}
 

@@ -136,7 +136,7 @@ void FileSystem::createDirectory(
 }
 
 #if DEBUGGING_ON
-void FileSystem::traceLastDirectoryCreation(void) noexcept
+void FileSystem::traceLastDirectoryCreation() noexcept
 {
 	GK_LOG_FUNC
 

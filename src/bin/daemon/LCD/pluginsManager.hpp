@@ -45,11 +45,11 @@ class LCDPluginsManager
 
 	public:
 		LCDPluginsManager(const std::string & product);
-		~LCDPluginsManager(void);
+		~LCDPluginsManager();
 
 		static const LCDPPArray_type _LCDPluginsPropertiesEmptyArray;
 
-		const LCDPPArray_type & getLCDPluginsProperties(void) const;
+		const LCDPPArray_type & getLCDPluginsProperties() const;
 
 		const bool findOneLCDScreenPlugin(const std::uint64_t LCDPluginsMask1) const;
 
@@ -57,11 +57,11 @@ class LCDPluginsManager
 			const std::string & LCDKey,
 			const std::uint64_t LCDPluginsMask1
 		);
-		const std::uint16_t getPluginTiming(void);
+		const std::uint16_t getPluginTiming();
 
-		void unlockPlugin(void);
-		const std::uint64_t getCurrentPluginID(void);
-		void jumpToNextPlugin(void);
+		void unlockPlugin();
+		const std::uint64_t getCurrentPluginID();
+		void jumpToNextPlugin();
 
 	protected:
 
@@ -79,7 +79,7 @@ class LCDPluginsManager
 		bool _noPlugins;
 		bool _currentPluginLocked;
 
-		void stopLCDPlugins(void);
+		void stopLCDPlugins();
 		void dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData);
 };
 

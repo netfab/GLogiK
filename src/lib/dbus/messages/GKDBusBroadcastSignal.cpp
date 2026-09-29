@@ -191,7 +191,7 @@ void GKDBusMessageBroadcastSignal::appendMacroToBroadcastSignal(const GLogiK::ma
 		_signal->appendMacro(macro);
 }
 
-void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void)
+void GKDBusMessageBroadcastSignal::sendBroadcastSignal()
 {
 	GK_LOG_FUNC
 
@@ -207,7 +207,7 @@ void GKDBusMessageBroadcastSignal::sendBroadcastSignal(void)
 	}
 }
 
-void GKDBusMessageBroadcastSignal::abandonBroadcastSignal(void)
+void GKDBusMessageBroadcastSignal::abandonBroadcastSignal()
 {
 	GK_LOG_FUNC
 

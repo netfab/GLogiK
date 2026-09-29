@@ -35,7 +35,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DesktopServiceSystray::DesktopServiceSystray(void)
+DesktopServiceSystray::DesktopServiceSystray()
 	:	_deviceID(""),
 		_deviceEvent(SystrayDeviceEvent::DEVICE_STOP),
 		_serviceEvent(SystrayServiceEvent::SERVICE_RUN),
@@ -72,11 +72,11 @@ DesktopServiceSystray::DesktopServiceSystray(void)
 	}
 }
 
-DesktopServiceSystray::~DesktopServiceSystray(void)
+DesktopServiceSystray::~DesktopServiceSystray()
 {
 }
 
-void DesktopServiceSystray::resetDeviceEvent(void)
+void DesktopServiceSystray::resetDeviceEvent()
 {
 	_deviceEventTriggered = false;
 }
@@ -217,17 +217,17 @@ void DesktopServiceSystray::updateContextMenu(const DevicesMap_type & devices)
 	}
 }
 
-void DesktopServiceSystray::restartService(void)
+void DesktopServiceSystray::restartService()
 {
 	_serviceEvent = SystrayServiceEvent::SERVICE_RESTART;
 }
 
-void DesktopServiceSystray::stopService(void)
+void DesktopServiceSystray::stopService()
 {
 	_serviceEvent = SystrayServiceEvent::SERVICE_STOP;
 }
 
-void DesktopServiceSystray::startDevice(void)
+void DesktopServiceSystray::startDevice()
 {
 	GK_LOG_FUNC
 
@@ -253,7 +253,7 @@ void DesktopServiceSystray::startDevice(void)
 	GKLog2(trace, "systray starting device action: ", _deviceID)
 }
 
-void DesktopServiceSystray::stopDevice(void)
+void DesktopServiceSystray::stopDevice()
 {
 	GK_LOG_FUNC
 
@@ -279,7 +279,7 @@ void DesktopServiceSystray::stopDevice(void)
 	GKLog2(trace, "systray stopping device action: ", _deviceID)
 }
 
-void DesktopServiceSystray::restartDevice(void)
+void DesktopServiceSystray::restartDevice()
 {
 	GK_LOG_FUNC
 

@@ -92,7 +92,7 @@ DesktopServiceLauncher::~DesktopServiceLauncher()
 	closelog();
 }
 
-int DesktopServiceLauncher::run(void)
+int DesktopServiceLauncher::run()
 {
 	GK_LOG_FUNC
 

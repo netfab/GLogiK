@@ -223,7 +223,7 @@ void GKDBusMessageReply::appendAsyncArgsToReply(DBusMessage* asyncContainer)
 	}
 }
 
-void GKDBusMessageReply::sendReply(void)
+void GKDBusMessageReply::sendReply()
 {
 	GK_LOG_FUNC
 
@@ -237,7 +237,7 @@ void GKDBusMessageReply::sendReply(void)
 	_reply = nullptr;
 }
 
-void GKDBusMessageReply::abandonReply(void)
+void GKDBusMessageReply::abandonReply()
 {
 	GK_LOG_FUNC
 

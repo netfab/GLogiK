@@ -83,7 +83,7 @@ const std::string Coretemp::seekDirectoryPath(
 	return out;
 }
 
-const std::vector<std::string> & Coretemp::getCoretempID(void)
+const std::vector<std::string> & Coretemp::getCoretempID()
 {
 	GK_LOG_FUNC
 	
@@ -122,10 +122,6 @@ Coretemp::Coretemp(const std::string & coretempID)
 	_plugin.setDesc("Coretemp plugin, used to get packages/cores temperatures from Intel CPUs");
 	_pluginTempo = LCDPluginTempo::TEMPO_500_20;
 	_coretempID = coretempID;
-}
-
-Coretemp::~Coretemp()
-{
 }
 
 void Coretemp::init(

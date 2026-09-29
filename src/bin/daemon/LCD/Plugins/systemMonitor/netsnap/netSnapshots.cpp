@@ -130,7 +130,7 @@ const std::string NetSnapshots::getRateString(
 	return out;
 }
 
-void NetSnapshots::findDefaultRouteNetworkInterfaceName(void)
+void NetSnapshots::findDefaultRouteNetworkInterfaceName()
 {
 	GK_LOG_FUNC
 

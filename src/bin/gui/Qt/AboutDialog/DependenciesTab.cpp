@@ -42,7 +42,7 @@ DependenciesTab::DependenciesTab(const GKDepsMap_type* const pDepsMap)
 {
 }
 
-void DependenciesTab::buildTab(void)
+void DependenciesTab::buildTab()
 {
 	GK_LOG_FUNC
 

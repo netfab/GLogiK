@@ -50,15 +50,15 @@ class DeviceControlTab
 		);
 		~DeviceControlTab();
 
-		void disableButtons(void);
+		void disableButtons();
 
-		void buildTab(void);
+		void buildTab();
 		void updateTab(
 			const DeviceProperties & device,
 			const std::string & devID
 		);
 
-		void disableAndHide(void);
+		void disableAndHide();
 
 	private:
 		DeviceControlTab() = delete;
@@ -74,9 +74,9 @@ class DeviceControlTab
 
 		void setVisibility(const bool visibility);
 
-		void startSignal(void);
-		void stopSignal(void);
-		void restartSignal(void);
+		void startSignal();
+		void stopSignal();
+		void restartSignal();
 		void sendStatusSignal(const std::string & signal);
 };
 

@@ -34,7 +34,7 @@ using namespace NSGKUtils;
 const BusConnection GKDBus::SystemBus(BusConnection::GKDBUS_SYSTEM);
 const BusConnection GKDBus::SessionBus(BusConnection::GKDBUS_SESSION);
 
-GKDBus::GKDBus(void)
+GKDBus::GKDBus()
 		:	_sessionConnection(nullptr),
 			_systemConnection(nullptr),
 			_initDone(false)
@@ -45,7 +45,7 @@ GKDBus::~GKDBus()
 {
 }
 
-void GKDBus::init(void)
+void GKDBus::init()
 {
 	GK_LOG_FUNC
 
@@ -81,7 +81,7 @@ void GKDBus::init(void)
 	_initDone = true;
 }
 
-const std::string GKDBus::getDBusVersion(void)
+const std::string GKDBus::getDBusVersion()
 {
 	struct DBusVersion
 	{
@@ -164,7 +164,7 @@ void GKDBus::connectToSessionBus(
 		throw GLogiKExcept("failed to request session bus connection name : not owner");
 }
 
-void GKDBus::exit(void) noexcept
+void GKDBus::exit() noexcept
 {
 	GK_LOG_FUNC
 
@@ -175,7 +175,7 @@ void GKDBus::exit(void) noexcept
 	this->clearDBusEvents();
 }
 
-void GKDBus::checkForMessages(void) noexcept
+void GKDBus::checkForMessages() noexcept
 {
 	std::lock_guard<std::mutex> lock(_lockMutex);
 
@@ -196,7 +196,7 @@ void GKDBus::checkForMessages(void) noexcept
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void GKDBus::disconnectFromSystemBus(void) noexcept
+void GKDBus::disconnectFromSystemBus() noexcept
 {
 	GK_LOG_FUNC
 
@@ -214,7 +214,7 @@ void GKDBus::disconnectFromSystemBus(void) noexcept
 	}
 }
 
-void GKDBus::disconnectFromSessionBus(void) noexcept
+void GKDBus::disconnectFromSessionBus() noexcept
 {
 	GK_LOG_FUNC
 

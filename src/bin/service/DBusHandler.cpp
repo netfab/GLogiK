@@ -139,7 +139,7 @@ void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 	}
 }
 
-const DevicesMap_type DBusHandler::getDevicesMap(void)
+const DevicesMap_type DBusHandler::getDevicesMap()
 {
 	GK_LOG_FUNC
 
@@ -150,12 +150,12 @@ const DevicesMap_type DBusHandler::getDevicesMap(void)
 	return NSGKDBus::ArgDevicesMap::getDevicesMapFromStringArray(stringArray);
 }
 
-void DBusHandler::resetDevicesUpdatedEvent(void)
+void DBusHandler::resetDevicesUpdatedEvent()
 {
 	_devicesUpdatedEvent = false;
 }
 
-void DBusHandler::restartService(void)
+void DBusHandler::restartService()
 {
 	DBusHandler::WantToExit = true;
 	DBusHandler::WantToRestart = true;
@@ -177,7 +177,7 @@ void DBusHandler::restartDevice(const std::string & devID)
 }
 
 /* return true if we want to exit on next main loop iteration */
-const bool DBusHandler::wantToStop(void) const
+const bool DBusHandler::wantToStop() const
 {
 	if(DBusHandler::WantToRestart)
 		this->sendServiceStartRequest();
@@ -210,7 +210,7 @@ void DBusHandler::prepareToStop(const bool notifications)
 	}
 }
 
-void DBusHandler::cleanGKDBusEvents(void) noexcept
+void DBusHandler::cleanGKDBusEvents() noexcept
 {
 	GK_LOG_FUNC
 
@@ -288,7 +288,7 @@ void DBusHandler::handleSignal(int signum)
 /*
  * register against the daemon, throws on failure
  */
-void DBusHandler::registerWithDaemon(void)
+void DBusHandler::registerWithDaemon()
 {
 	GK_LOG_FUNC
 
@@ -370,7 +370,7 @@ void DBusHandler::registerWithDaemon(void)
 	}
 }
 
-void DBusHandler::unregisterWithDaemon(void)
+void DBusHandler::unregisterWithDaemon()
 {
 	GK_LOG_FUNC
 
@@ -526,7 +526,7 @@ void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
 	throw GLogiKExcept("unable to contact a session manager");
 }
 
-void DBusHandler::updateSessionState(void)
+void DBusHandler::updateSessionState()
 {
 	GK_LOG_FUNC
 
@@ -545,7 +545,7 @@ void DBusHandler::updateSessionState(void)
  *  - online
  *  - closing
  */
-const std::string DBusHandler::getCurrentSessionState(void)
+const std::string DBusHandler::getCurrentSessionState()
 {
 	GK_LOG_FUNC
 
@@ -592,7 +592,7 @@ const std::string DBusHandler::getCurrentSessionState(void)
 	throw GLogiKExcept("unable to get session state");
 }
 
-void DBusHandler::reportChangedState(void) noexcept
+void DBusHandler::reportChangedState() noexcept
 {
 	GK_LOG_FUNC
 
@@ -643,7 +643,7 @@ void DBusHandler::reportChangedState(void) noexcept
 	}
 }
 
-void DBusHandler::initializeDevices(void)
+void DBusHandler::initializeDevices()
 {
 	GK_LOG_FUNC
 
@@ -767,7 +767,7 @@ void DBusHandler::initializeDevices(void)
 	}
 }
 
-void DBusHandler::sendServiceStartRequest(void) const
+void DBusHandler::sendServiceStartRequest() const
 {
 	GK_LOG_FUNC
 
@@ -801,7 +801,7 @@ void DBusHandler::sendServiceStartRequest(void) const
 	}
 }
 
-void DBusHandler::sendDevicesUpdatedSignal(void)
+void DBusHandler::sendDevicesUpdatedSignal()
 {
 	GK_LOG_FUNC
 
@@ -838,7 +838,7 @@ void DBusHandler::sendDevicesUpdatedSignal(void)
  *
  */
 
-void DBusHandler::initializeGKDBusSignals(void)
+void DBusHandler::initializeGKDBusSignals()
 {
 	/* update session state when PropertyChanged signal receipted */
 	switch(_sessionFramework)
@@ -1043,7 +1043,7 @@ void DBusHandler::initializeGKDBusSignals(void)
 	);
 }
 
-void DBusHandler::initializeGKDBusMethods(void)
+void DBusHandler::initializeGKDBusMethods()
 {
 	const std::string r_ed("reserved");
 
@@ -1089,7 +1089,7 @@ void DBusHandler::initializeGKDBusMethods(void)
 		std::bind(&DBusHandler::getExecutablesDependenciesMap, this, r_ed) );
 }
 
-void DBusHandler::daemonIsStopping(void)
+void DBusHandler::daemonIsStopping()
 {
 	GK_LOG_FUNC
 
@@ -1098,7 +1098,7 @@ void DBusHandler::daemonIsStopping(void)
 	this->prepareToStop();
 }
 
-void DBusHandler::daemonIsStarting(void)
+void DBusHandler::daemonIsStarting()
 {
 	GK_LOG_FUNC
 

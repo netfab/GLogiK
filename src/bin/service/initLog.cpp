@@ -63,7 +63,7 @@ InitLog::InitLog(const int& argc, char *argv[])
 	}
 }
 
-InitLog::~InitLog(void)
+InitLog::~InitLog()
 {
 	//closelog();
 }

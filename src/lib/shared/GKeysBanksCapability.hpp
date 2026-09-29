@@ -52,19 +52,19 @@ class GKeysBanksCapability
 			const GKeysIDArray_type & GKeysIDArray
 		);
 
-		banksMap_type & getBanks(void);
-		const banksMap_type & getBanks(void) const;
+		banksMap_type & getBanks();
+		const banksMap_type & getBanks() const;
 		void setBanks(const banksMap_type & GKeysBanks);
-		void checkBanksKeys(void) noexcept;
+		void checkBanksKeys() noexcept;
 
 		void setCurrentBankID(MKeysID bankID);
-		const MKeysID getCurrentBankID(void) const;
+		const MKeysID getCurrentBankID() const;
 
 		void resetBank(const MKeysID bankID);
 
 	protected:
-		GKeysBanksCapability(void);
-		virtual ~GKeysBanksCapability(void) = 0;
+		GKeysBanksCapability();
+		virtual ~GKeysBanksCapability() = 0;
 
 		friend class boost::serialization::access;
 

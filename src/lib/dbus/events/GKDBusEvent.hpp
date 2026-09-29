@@ -61,7 +61,7 @@ class DBusEvent
 			DBusMessage* asyncContainer
 		);
 
-		virtual ~DBusEvent(void);
+		virtual ~DBusEvent();
 
 	protected:
 		DBusEvent(
@@ -73,7 +73,7 @@ class DBusEvent
 		);
 
 	private:
-		DBusEvent(void) = delete;
+		DBusEvent() = delete;
 
 		virtual void runCallback(
 			DBusConnection* const connection,
@@ -87,7 +87,7 @@ class GKDBusEvent
 	:	public DBusEvent
 {
 	public:
-		~GKDBusEvent(void) = default;
+		~GKDBusEvent() = default;
 
 	protected:
 		GKDBusEvent(
@@ -99,7 +99,7 @@ class GKDBusEvent
 				:	DBusEvent(name, sender, args, type, intr) {}
 
 	private:
-		GKDBusEvent(void) = delete;
+		GKDBusEvent() = delete;
 };
 
 
@@ -111,12 +111,12 @@ class introspectableSignalEvent
 			const std::string & name,
 			const std::vector<DBusEventArgument> & args)
 				:	DBusEvent(name, "", args, DBusEventType::DBUS_SIGNAL_EVENT, true) {}
-		~introspectableSignalEvent(void) = default;
+		~introspectableSignalEvent() = default;
 
 	protected:
 
 	private:
-		introspectableSignalEvent(void) = delete;
+		introspectableSignalEvent() = delete;
 
 		inline void runCallback(
 			DBusConnection* const connection,

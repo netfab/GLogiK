@@ -38,11 +38,11 @@ class hidapi
 		using USBDevice = USB::Device::USBDevice;
 
 	public:
-		static const std::string getHIDAPIVersion(void);
+		static const std::string getHIDAPIVersion();
 
 	protected:
-		hidapi(void);
-		~hidapi(void);
+		hidapi();
+		~hidapi();
 
 		void openUSBDevice(USBDevice & device);
 		void closeUSBDevice(USBDevice & device) noexcept;

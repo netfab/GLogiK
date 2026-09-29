@@ -43,8 +43,8 @@ class TypeMacro
 		void appendMacro(const GLogiK::macro_type & macro);
 
 	protected:
-		TypeMacro(void) = default;
-		~TypeMacro(void) = default;
+		TypeMacro() = default;
+		~TypeMacro() = default;
 
 		void appendMacro(
 			DBusMessageIter *iter,
@@ -64,8 +64,8 @@ class ArgMacro
 		static const GLogiK::macro_type getNextMacroArgument(const unsigned int macroSize = 0);
 
 	protected:
-		ArgMacro(void) = default;
-		~ArgMacro(void) = default;
+		ArgMacro() = default;
+		~ArgMacro() = default;
 
 	private:
 

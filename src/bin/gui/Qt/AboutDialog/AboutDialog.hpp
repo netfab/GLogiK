@@ -45,7 +45,7 @@ class AboutDialog
 	private:
 		QPushButton* _pCopyButton;
 
-		void closeDialog(void);
+		void closeDialog();
 		void setCopyButtonVisibility(int index);
 		void copyToClipboard(const GKDepsMap_type* const pDepsMap);
 

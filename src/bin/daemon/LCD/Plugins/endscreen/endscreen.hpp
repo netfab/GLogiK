@@ -34,8 +34,8 @@ class Endscreen
 	:	public LCDPlugin
 {
 	public:
-		Endscreen(void);
-		~Endscreen(void);
+		Endscreen();
+		~Endscreen();
 
 		void init(
 			FontsManager* const pFonts,

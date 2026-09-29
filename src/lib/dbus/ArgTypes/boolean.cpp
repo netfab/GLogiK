@@ -46,7 +46,7 @@ void TypeBoolean::appendBoolean(const bool value)
 #endif
 }
 
-const bool ArgBoolean::getNextBooleanArgument(void)
+const bool ArgBoolean::getNextBooleanArgument()
 {
 	if( ArgBase::booleanArguments.empty() )
 		throw EmptyContainer("missing argument : boolean");

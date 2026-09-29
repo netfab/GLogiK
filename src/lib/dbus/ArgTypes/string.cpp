@@ -70,7 +70,7 @@ void TypeString::appendString(
 
 thread_local std::string ArgString::currentString("");
 
-const std::string & ArgString::getNextStringArgument(void)
+const std::string & ArgString::getNextStringArgument()
 {
 	GK_LOG_FUNC
 

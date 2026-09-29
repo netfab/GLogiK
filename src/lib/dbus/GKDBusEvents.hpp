@@ -94,11 +94,11 @@ class GKDBusEvents
 		) noexcept;
 
 	protected:
-		GKDBusEvents(void) = default;
-		~GKDBusEvents(void) = default;
+		GKDBusEvents() = default;
+		~GKDBusEvents() = default;
 
-		void clearDBusEvents(void) noexcept;
-		const std::string getRootNodeIntrospection(void) noexcept;
+		void clearDBusEvents() noexcept;
+		const std::string getRootNodeIntrospection() noexcept;
 
 		DBusEventsContainer _DBusEvents;
 

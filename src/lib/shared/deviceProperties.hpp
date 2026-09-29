@@ -53,8 +53,8 @@ class BacklightCapability
 		) const;
 
 	protected:
-		BacklightCapability(void);
-		virtual ~BacklightCapability(void) = 0;
+		BacklightCapability();
+		virtual ~BacklightCapability() = 0;
 
 		std::uint8_t _red;
 		std::uint8_t _green;
@@ -83,18 +83,18 @@ class LCDScreenCapability
 	public:
 		static const LCDPPArray_type _LCDPluginsPropertiesEmptyArray;
 
-		const LCDPPArray_type & getLCDPluginsProperties(void) const;
+		const LCDPPArray_type & getLCDPluginsProperties() const;
 		void setLCDPluginsProperties(const LCDPPArray_type & props);
 
-		const std::uint64_t getLCDPluginsMask1(void) const;
+		const std::uint64_t getLCDPluginsMask1() const;
 		void setLCDPluginsMask(
 			const std::uint8_t maskID,
 			const std::uint64_t mask
 		);
 
 	protected:
-		LCDScreenCapability(void);
-		virtual ~LCDScreenCapability(void) = 0;
+		LCDScreenCapability();
+		virtual ~LCDScreenCapability() = 0;
 
 		std::uint64_t _LCDPluginsMask1;
 
@@ -119,10 +119,10 @@ class clientDevice
 		public GLogiK::DeviceID
 {
 	public:
-		clientDevice(void);
-		~clientDevice(void);
+		clientDevice();
+		~clientDevice();
 
-		const std::uint64_t getCapabilities(void) const;
+		const std::uint64_t getCapabilities() const;
 
 		void setProperties(
 			const std::string & vendor,
@@ -155,10 +155,10 @@ class DeviceProperties
 		public GKeysBanksCapability
 {
 	public:
-		DeviceProperties(void);
-		~DeviceProperties(void);
+		DeviceProperties();
+		~DeviceProperties();
 
-		const int getWatchDescriptor(void) const;
+		const int getWatchDescriptor() const;
 		void setWatchDescriptor(int wd);
 
 		void setProperties(

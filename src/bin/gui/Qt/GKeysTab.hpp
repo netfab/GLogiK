@@ -65,7 +65,7 @@ class GKeysTab
 		static const char* getEventTypeString(const GKeyEventType eventType);
 #endif
 
-		void buildTab(void);
+		void buildTab();
 		void updateTab(
 			const DeviceProperties & device,
 			const std::string & devID
@@ -103,16 +103,16 @@ class GKeysTab
 		void setApplyButtonStatus(const bool status);
 		void updateApplyButtonStatus(const QString & newString);
 
-		QPushButton* newBlankButton(void);
+		QPushButton* newBlankButton();
 		QPushButton* newGKeyButton(
 			const GKeysID GKeyID,
 			const GKeyEventType eventType,
 			const QString & colorName = "#RRGGBB"
 		);
 
-		void clearInputsBoxHeaderLayout(void);
-		void clearInputsBoxBodyLayout(void);
-		void clearKeysBoxLayout(void);
+		void clearInputsBoxHeaderLayout();
+		void clearInputsBoxBodyLayout();
+		void clearKeysBoxLayout();
 
 		void setGKeyEventParams(
 			const std::string & eventCommand,

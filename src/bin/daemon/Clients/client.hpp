@@ -49,17 +49,17 @@ class Client
 			const std::string & objectPath,
 			DevicesManager* const pDevicesManager
 		);
-		~Client(void);
+		~Client();
 
-		const std::string & getSessionObjectPath(void) const;
-		const std::string & getSessionCurrentState(void) const;
+		const std::string & getSessionObjectPath() const;
+		const std::string & getSessionCurrentState() const;
 		void updateSessionState(
 			const std::string & newState
 		);
-		void uncheck(void);
-		const bool isAlive(void) const;
-		const bool isReady(void) const;
-		void setReady(void);
+		void uncheck();
+		const bool isAlive() const;
+		const bool isReady() const;
+		void setReady();
 
 		void initializeDevice(
 			DevicesManager* const pDevicesManager,

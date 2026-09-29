@@ -38,8 +38,8 @@ class TypeGKeysIDArray
 		void appendGKeysIDArray(const GLogiK::GKeysIDArray_type & keysID);
 
 	protected:
-		TypeGKeysIDArray(void) = default;
-		~TypeGKeysIDArray(void) = default;
+		TypeGKeysIDArray() = default;
+		~TypeGKeysIDArray() = default;
 
 	private:
 };
@@ -49,11 +49,11 @@ class ArgGKeysIDArray
 		virtual protected ArgGKeysID
 {
 	public:
-		static const GLogiK::GKeysIDArray_type getNextGKeysIDArrayArgument(void);
+		static const GLogiK::GKeysIDArray_type getNextGKeysIDArrayArgument();
 
 	protected:
-		ArgGKeysIDArray(void) = default;
-		~ArgGKeysIDArray(void) = default;
+		ArgGKeysIDArray() = default;
+		~ArgGKeysIDArray() = default;
 
 	private:
 };

@@ -35,12 +35,12 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-const QPushButton* Tab::getApplyButton(void) const
+const QPushButton* Tab::getApplyButton() const
 {
 	return static_cast<QPushButton*>(_pApplyButton);
 }
 
-QFrame* Tab::getHLine(void)
+QFrame* Tab::getHLine()
 {
 	GK_LOG_FUNC
 
@@ -52,7 +52,7 @@ QFrame* Tab::getHLine(void)
 	return line;
 }
 
-QFrame* Tab::getVLine(void)
+QFrame* Tab::getVLine()
 {
 	GK_LOG_FUNC
 
@@ -64,7 +64,7 @@ QFrame* Tab::getVLine(void)
 	return line;
 }
 
-void Tab::prepareApplyButton(void)
+void Tab::prepareApplyButton()
 {
 	GK_LOG_FUNC
 

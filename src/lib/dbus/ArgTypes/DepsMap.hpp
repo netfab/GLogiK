@@ -44,8 +44,8 @@ class TypeGKDepsMap
 		void appendGKDepsMap(const GLogiK::GKDepsMap_type & depsMap);
 
 	protected:
-		TypeGKDepsMap(void) = default;
-		~TypeGKDepsMap(void) = default;
+		TypeGKDepsMap() = default;
+		~TypeGKDepsMap() = default;
 
 		void appendGKDepsMap(
 			DBusMessageIter *iter,
@@ -59,11 +59,11 @@ class ArgGKBinary
 	:	virtual private ArgUInt8
 {
 	public:
-		static const GLogiK::GKBinary getNextGKBinaryArgument(void);
+		static const GLogiK::GKBinary getNextGKBinaryArgument();
 
 	protected:
-		ArgGKBinary(void) = default;
-		~ArgGKBinary(void) = default;
+		ArgGKBinary() = default;
+		~ArgGKBinary() = default;
 
 	private:
 
@@ -76,11 +76,11 @@ class ArgGKDepsMap
 		virtual private ArgString
 {
 	public:
-		static const GLogiK::GKDepsMap_type getNextGKDepsMapArgument(void);
+		static const GLogiK::GKDepsMap_type getNextGKDepsMapArgument();
 
 	protected:
-		ArgGKDepsMap(void) = default;
-		~ArgGKDepsMap(void) = default;
+		ArgGKDepsMap() = default;
+		~ArgGKDepsMap() = default;
 
 	private:
 };

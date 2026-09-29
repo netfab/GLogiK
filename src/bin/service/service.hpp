@@ -30,9 +30,9 @@ class DesktopService
 {
 	public:
 		DesktopService(const bool & version);
-		~DesktopService(void);
+		~DesktopService();
 
-		int run(void);
+		int run();
 
 	protected:
 

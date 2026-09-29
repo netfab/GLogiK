@@ -32,12 +32,12 @@ class AboutDialogTab
 	:	public QWidget
 {
 	public:
-		AboutDialogTab(void) = default;
-		virtual ~AboutDialogTab(void) = default;
+		AboutDialogTab() = default;
+		virtual ~AboutDialogTab() = default;
 
-		virtual void buildTab(void) = 0;
+		virtual void buildTab() = 0;
 
-		QFrame* getHLine(void);
+		QFrame* getHLine();
 
 	protected:
 	private:

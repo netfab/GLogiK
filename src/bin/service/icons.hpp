@@ -56,7 +56,7 @@ class AdaptiveIconEngine
 			QIcon::State state
 		) override;
 
-		QIconEngine* clone(void) const override;
+		QIconEngine* clone() const override;
 
 	private:
 		QIcon _baseIcon;
@@ -66,8 +66,8 @@ class AdaptiveIconEngine
 class Icons
 {
 	public:
-		Icons(void);
-		~Icons(void);
+		Icons();
+		~Icons();
 
 		QIcon icon(
 			const QString & name,

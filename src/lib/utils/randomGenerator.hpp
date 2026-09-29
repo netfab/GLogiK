@@ -38,7 +38,7 @@ class RandomGenerator
 {
 	public:
 		RandomGenerator(const std::vector<char> & charset = RandomGenerator::defaultCharset);
-		~RandomGenerator(void);
+		~RandomGenerator();
 
 		const std::string getString(std::size_t length);
 

@@ -77,10 +77,10 @@ class GKDBusMessageRemoteMethodCall
 		void appendGKeysIDToRemoteMethodCall(const GLogiK::GKeysID keyID);
 		void appendMKeysIDToRemoteMethodCall(const GLogiK::MKeysID bankID);
 
-		void sendRemoteMethodCall(void);
-		void abandonRemoteMethodCall(void);
+		void sendRemoteMethodCall();
+		void abandonRemoteMethodCall();
 
-		void waitForRemoteMethodCallReply(void);
+		void waitForRemoteMethodCallReply();
 
 	protected:
 		GKDBusMessageRemoteMethodCall();
