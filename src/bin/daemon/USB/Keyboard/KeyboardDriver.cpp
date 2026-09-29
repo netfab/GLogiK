@@ -56,7 +56,7 @@ using namespace NSGKUtils;
 // FIXME
 #define DEVICE_LISTENING_THREAD_MAX_ERRORS 3
 
-#if GKDBUS
+#if HAVE_GKDBUS
 void KeyboardDriver::setDBus(NSGKDBus::GKDBus* pDBus)
 {
 	_pDBus = pDBus;
@@ -362,7 +362,7 @@ void KeyboardDriver::checkDeviceFatalErrors(USBDevice & device, const std::strin
 	}
 }
 
-#if GKDBUS
+#if HAVE_GKDBUS
 
 void KeyboardDriver::enterDeviceMacroRecordMode(USBDevice & device)
 {
@@ -647,13 +647,13 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 							if(this->updateDeviceMxKeysLedsMask(device))
 							{
 								this->setDeviceMxKeysLeds(device);
-#if GKDBUS
+#if HAVE_GKDBUS
 								if(device._MBankKeyPressed)
 									this->sendDeviceMBankSwitchSignal(device);
 #endif
 							}
 
-#if GKDBUS
+#if HAVE_GKDBUS
 							/* is MR key enabled ? */
 							if( this->isDeviceMRKeyEnabled(device) )
 							{
@@ -728,7 +728,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 							{
 								LOG(trace)	<< device.getID() << " media key pressed: "
 											<< device._mediaKey;
-#if GKDBUS
+#if HAVE_GKDBUS
 								try
 								{
 									_pDBus->initializeBroadcastSignal(

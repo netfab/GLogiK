@@ -54,7 +54,7 @@
 
 #include "devicesManager.hpp"
 
-#if GKDBUS
+#if HAVE_GKDBUS
 #include "lib/dbus/GKDBus.hpp"
 
 #include "Clients/clientsManager.hpp"
@@ -180,7 +180,7 @@ int GLogiKDaemon::run()
 #else
 				{"hidapi", "-"},
 #endif
-#if GKDBUS
+#if HAVE_GKDBUS
 				{"DBus", GK_DEP_DBUS_VERSION_STRING, NSGKDBus::GKDBus::getDBusVersion()},
 #else
 				{"DBus", "-"},
@@ -190,20 +190,20 @@ int GLogiKDaemon::run()
 
 	if( GLogiKDaemon::isDaemonRunning() )
 	{
-#if GKDBUS
+#if HAVE_GKDBUS
 		NSGKDBus::GKDBus DBus;
 #endif
 
 		try
 		{ // <<<
-#if GKDBUS
+#if HAVE_GKDBUS
 			DBus.init();
 			DBus.connectToSystemBus(LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME);
 #endif
 
 			DevicesManager devicesManager;
 
-#if GKDBUS
+#if HAVE_GKDBUS
 			devicesManager.setDBus(&DBus);
 
 			using ClientsManager = Managers::Clients::ClientsManager;
@@ -212,7 +212,7 @@ int GLogiKDaemon::run()
 
 			try
 			{
-#if GKDBUS
+#if HAVE_GKDBUS
 				this->startSleepInhibition(&DBus, &devicesManager);
 #endif
 
@@ -220,7 +220,7 @@ int GLogiKDaemon::run()
 				 * handled after devices initialization into startMonitoring() */
 				devicesManager.startMonitoring();
 
-#if GKDBUS
+#if HAVE_GKDBUS
 				clientsManager.waitForClientsDisconnections();
 				clientsManager.cleanGKDBusEvents();
 
@@ -231,7 +231,7 @@ int GLogiKDaemon::run()
 			catch (const GLogiKExcept & e)
 			{
 				GKSysLogWarning("caught exception, cleaning");
-#if GKDBUS
+#if HAVE_GKDBUS
 				clientsManager.waitForClientsDisconnections();
 				clientsManager.cleanGKDBusEvents();
 
@@ -242,7 +242,7 @@ int GLogiKDaemon::run()
 		} // >>>
 		catch (const GLogiKExcept & e)
 		{
-#if GKDBUS
+#if HAVE_GKDBUS
 			DBus.exit();
 #endif
 			throw;

@@ -27,7 +27,7 @@
 
 #include "daemonStatus.hpp"
 
-#if GKDBUS
+#if HAVE_GKDBUS
 #include "sleepInhibition.hpp"
 #endif
 
@@ -35,7 +35,7 @@ namespace GLogiK::Daemon
 {
 
 class GLogiKDaemon
-#if GKDBUS
+#if HAVE_GKDBUS
 	:	public DaemonStatus,
 		private SleepInhibition
 #else

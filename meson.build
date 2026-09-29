@@ -329,7 +329,7 @@ endforeach
 
 #! ----------
 
-config_h.set10('GKDBUS', dbus_dep.found())
+config_h.set10('HAVE_GKDBUS', dbus_dep.found())
 
 #! ----------
 

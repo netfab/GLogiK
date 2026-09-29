@@ -47,7 +47,7 @@
 #include "USB/API/hidapi.hpp"
 #endif
 
-#if GKDBUS
+#if HAVE_GKDBUS
 #include "Clients/clientsSignals.hpp"
 #endif
 
@@ -58,7 +58,7 @@ namespace Managers::Devices
 
 using namespace NSGKUtils;
 
-#if GKDBUS
+#if HAVE_GKDBUS
 DevicesManager::DevicesManager()
 	:	_unknown("unknown"),
 		_pDBus(nullptr),
@@ -127,7 +127,7 @@ const std::string DevicesManager::getLibudevVersion()
 	return ret;
 }
 
-#if GKDBUS
+#if HAVE_GKDBUS
 void DevicesManager::setDBus(NSGKDBus::GKDBus* pDBus)
 {
 	_pDBus = pDBus;
@@ -230,7 +230,7 @@ void DevicesManager::initializeDevices(
 		} // for : _drivers
 	} // for : detectedDevices
 
-#if GKDBUS
+#if HAVE_GKDBUS
 	if( initializedDevices.size() > 0 )
 	{
 		std::string signal(LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED);
@@ -341,7 +341,7 @@ void DevicesManager::startSleepingDevices()
 
 	GKLog(trace, "starting sleeping devices")
 
-#if GKDBUS
+#if HAVE_GKDBUS
 	std::vector<std::string> toSend;
 #endif
 
@@ -353,13 +353,13 @@ void DevicesManager::startSleepingDevices()
 			buffer << devID << " failed to start device";
 			GKSysLogWarning(buffer.str());
 		}
-#if GKDBUS
+#if HAVE_GKDBUS
 		else
 			toSend.push_back(devID);
 #endif
 	}
 
-#if GKDBUS
+#if HAVE_GKDBUS
 	if( toSend.size() > 0 )
 	{
 		/* inform clients */
@@ -379,7 +379,7 @@ void DevicesManager::stopInitializedDevices()
 
 	GKLog(trace, "stopping initialized devices")
 
-#if GKDBUS
+#if HAVE_GKDBUS
 	std::vector<std::string> toSend;
 #endif
 
@@ -397,13 +397,13 @@ void DevicesManager::stopInitializedDevices()
 			buffer << devID << " failed to stop device";
 			GKSysLogWarning(buffer.str());
 		}
-#if GKDBUS
+#if HAVE_GKDBUS
 		else
 			toSend.push_back(devID);
 #endif
 	}
 
-#if GKDBUS
+#if HAVE_GKDBUS
 	if( toSend.size() > 0 )
 	{
 		/* inform clients */
@@ -423,7 +423,7 @@ void DevicesManager::checkInitializedDevicesThreadsStatus() noexcept
 
 	//GKLog(trace, "checking initialized devices threads status")
 
-#if GKDBUS
+#if HAVE_GKDBUS
 	std::vector<std::string> toSend;
 #endif
 
@@ -446,7 +446,7 @@ void DevicesManager::checkInitializedDevicesThreadsStatus() noexcept
 					GKSysLogWarning("You will get libusb warnings/errors if you do this.");
 
 					this->stopDevice(devID, true);
-#if GKDBUS
+#if HAVE_GKDBUS
 					toSend.push_back(devID);
 #endif
 				}
@@ -454,7 +454,7 @@ void DevicesManager::checkInitializedDevicesThreadsStatus() noexcept
 		}
 	}
 
-#if GKDBUS
+#if HAVE_GKDBUS
 	if( toSend.size() > 0 )
 	{
 		/* inform clients */
@@ -473,7 +473,7 @@ void DevicesManager::checkForUnpluggedDevices(
 
 	GKLog(trace, "checking for unplugged devices")
 
-#if GKDBUS
+#if HAVE_GKDBUS
 	std::vector<std::string> toSend;
 #endif
 
@@ -505,7 +505,7 @@ void DevicesManager::checkForUnpluggedDevices(
 				const auto & device = _stoppedDevices.at(devID);
 				_unpluggedDevices[devID] = device;
 				_stoppedDevices.erase(devID);
-#if GKDBUS
+#if HAVE_GKDBUS
 				toSend.push_back(devID);
 #endif
 			}
@@ -533,7 +533,7 @@ void DevicesManager::checkForUnpluggedDevices(
 			const auto & device = _stoppedDevices.at(devID);
 			_unpluggedDevices[devID] = device;
 			_stoppedDevices.erase(devID);
-#if GKDBUS
+#if HAVE_GKDBUS
 			toSend.push_back(devID);
 #endif
 		}
@@ -546,7 +546,7 @@ void DevicesManager::checkForUnpluggedDevices(
 	}
 	toClean.clear();
 
-#if GKDBUS
+#if HAVE_GKDBUS
 	GKLog2(trace, "number of unplugged devices : ", toSend.size())
 
 	if(toSend.size() > 0)
@@ -1116,7 +1116,7 @@ void DevicesManager::startMonitoring()
 				driver = new Logitech::LogitechG510<USB::API::hidapi>();
 #endif
 
-#if GKDBUS
+#if HAVE_GKDBUS
 				driver->setDBus(_pDBus);
 #endif
 
@@ -1133,7 +1133,7 @@ void DevicesManager::startMonitoring()
 			this->searchSupportedDevices(detectedDevices, pUdev);
 			this->initializeDevices(detectedDevices, true);
 
-#if GKDBUS
+#if HAVE_GKDBUS
 			/* send signal, even if no client registered, clients could
 			 * have started before daemon */
 			DBus::Signals::sendSignalToClients(
@@ -1201,7 +1201,7 @@ void DevicesManager::startMonitoring()
 					udev_device_unref(dev);
 				}
 
-#if GKDBUS
+#if HAVE_GKDBUS
 				this->checkDBusMessages();
 #endif
 				if(c++ >= 10)

@@ -29,7 +29,7 @@
 #include <map>
 #include <vector>
 
-#if GKDBUS
+#if HAVE_GKDBUS
 #include "lib/dbus/GKDBus.hpp"
 #endif
 
@@ -61,7 +61,7 @@ class DevicesManager
 
 		void startMonitoring();
 
-#if GKDBUS
+#if HAVE_GKDBUS
 		void setDBus(NSGKDBus::GKDBus* pDBus);
 		void setNumClients(std::uint8_t num);
 
@@ -114,7 +114,7 @@ class DevicesManager
 		std::vector<KeyboardDriver*> _drivers;
 		const std::string _unknown;
 
-#if GKDBUS
+#if HAVE_GKDBUS
 		NSGKDBus::GKDBus* _pDBus;
 		std::uint8_t _numClients;
 #endif

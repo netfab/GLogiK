@@ -38,7 +38,7 @@
 #include "include/base.hpp"
 #include "include/enums.hpp"
 
-#if GKDBUS
+#if HAVE_GKDBUS
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/GKeysMacro.hpp"
 #endif
@@ -49,7 +49,7 @@ namespace USB::Keyboard::Driver
 {
 
 class KeyboardDriver
-#if GKDBUS
+#if HAVE_GKDBUS
 	:	private LIBShared::GKeysMacro
 #endif
 {
@@ -64,7 +64,7 @@ class KeyboardDriver
 	public:
 		virtual ~KeyboardDriver() = default;
 
-#if GKDBUS
+#if HAVE_GKDBUS
 		void setDBus(NSGKDBus::GKDBus* pDBus);
 #endif
 
@@ -113,7 +113,7 @@ class KeyboardDriver
 		void fillDeviceStandardKeysEvents(USBDevice & device);
 
 	private:
-#if GKDBUS
+#if HAVE_GKDBUS
 		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
 		NSGKDBus::GKDBus* _pDBus;
 #endif
@@ -134,7 +134,7 @@ class KeyboardDriver
 		virtual void closeUSBDevice(USBDevice & device) = 0;
 		/* --- */
 
-#if GKDBUS
+#if HAVE_GKDBUS
 		void enterDeviceMacroRecordMode(USBDevice & device);
 		void sendDeviceMBankSwitchSignal(USBDevice & device);
 #endif
