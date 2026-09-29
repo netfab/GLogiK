@@ -32,7 +32,7 @@
 /* two strings to string */
 typedef std::function<const std::string(const std::string &, const std::string &)> SIGss2s;
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 template <>
@@ -42,4 +42,4 @@ template <>
 		DBusMessage* asyncContainer
 	);
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

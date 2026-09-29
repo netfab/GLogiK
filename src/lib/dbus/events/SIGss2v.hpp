@@ -32,7 +32,7 @@
 /* two strings to void */
 typedef std::function<void(const std::string &, const std::string&)> SIGss2v;
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 template <>
@@ -42,4 +42,4 @@ template <>
 		DBusMessage* asyncContainer
 	);
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

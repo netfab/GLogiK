@@ -39,7 +39,7 @@ typedef std::function<
 	) > SIGss2aP;
 
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 template <>
@@ -49,4 +49,4 @@ template <>
 		DBusMessage* asyncContainer
 	);
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

@@ -26,7 +26,7 @@
 
 #include "include/DeviceID.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 class ArgDevicesMap
@@ -47,4 +47,4 @@ class ArgDevicesMap
 
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

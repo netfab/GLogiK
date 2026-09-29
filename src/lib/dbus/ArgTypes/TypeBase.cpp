@@ -23,7 +23,7 @@
 
 #include "TypeBase.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -38,5 +38,5 @@ void TypeBase::abandon()
 	_hosedMessage = true;
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types
 

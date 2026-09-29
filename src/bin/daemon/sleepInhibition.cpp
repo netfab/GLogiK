@@ -43,7 +43,7 @@ SleepInhibition::~SleepInhibition()
 }
 
 void SleepInhibition::startSleepInhibition(
-	NSGKDBus::GKDBus* const pDBus,
+	GKDBUS::GKDBus* const pDBus,
 	DevicesManager* const pDevicesManager)
 {
 	GK_LOG_FUNC
@@ -57,7 +57,7 @@ void SleepInhibition::startSleepInhibition(
 	{
 		/* logind */
 		case SessionFramework::FW_LOGIND:
-			_pDBus->NSGKDBus::Callback<SIGb2v>::receiveSignal(
+			_pDBus->GKDBUS::Events::Callback<SIGb2v>::receiveSignal(
 				_systemBus,
 				LIBShared::LOGIND_DBUS_BUS_CONNECTION_NAME,
 				LIBShared::LOGIND_MANAGER_DBUS_OBJECT_PATH,

@@ -62,7 +62,7 @@ class DevicesManager
 		void startMonitoring();
 
 #if HAVE_GKDBUS
-		void setDBus(NSGKDBus::GKDBus* pDBus);
+		void setDBus(GKDBUS::GKDBus* pDBus);
 		void setNumClients(std::uint8_t num);
 
 		void checkDBusMessages() noexcept;
@@ -115,7 +115,7 @@ class DevicesManager
 		const std::string _unknown;
 
 #if HAVE_GKDBUS
-		NSGKDBus::GKDBus* _pDBus;
+		GKDBUS::GKDBus* _pDBus;
 		std::uint8_t _numClients;
 #endif
 

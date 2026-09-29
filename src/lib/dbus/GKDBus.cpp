@@ -26,7 +26,7 @@
 #include "messages/GKDBusMessage.hpp"
 #include "GKDBus.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS
 {
 
 using namespace NSGKUtils;
@@ -249,6 +249,8 @@ const bool GKDBus::checkDBusMessage(
 				const char* eventName = event->eventName.c_str();
 				//GKLog2(trace, "checking event : ", eventName)
 
+				using DBusEventType = GKDBUS::Events::DBusEventType;
+
 				switch(event->eventType)
 				{
 					case DBusEventType::DBUS_METHOD_EVENT:
@@ -455,5 +457,5 @@ const unsigned int GKDBus::getDBusRequestFlags(const ConnectionFlag flag) noexce
 	return ret;
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS
 

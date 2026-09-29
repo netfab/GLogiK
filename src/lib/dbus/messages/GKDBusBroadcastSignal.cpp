@@ -25,7 +25,7 @@
 
 #include "GKDBusBroadcastSignal.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Messages
 {
 
 using namespace NSGKUtils;
@@ -223,5 +223,5 @@ void GKDBusMessageBroadcastSignal::abandonBroadcastSignal()
 	}
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Messages
 

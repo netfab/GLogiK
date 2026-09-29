@@ -29,7 +29,7 @@
 
 #include "MKeysIDArray.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -124,4 +124,4 @@ const GLogiK::MKeysIDArray_type ArgMKeysIDArray::getNextMKeysIDArrayArgument()
 	return ret;
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

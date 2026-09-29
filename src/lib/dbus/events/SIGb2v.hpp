@@ -30,7 +30,7 @@
 
 typedef std::function<void(const bool)> SIGb2v; /* bool to void */
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 template <>
@@ -40,4 +40,4 @@ template <>
 		DBusMessage* asyncContainer
 	);
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

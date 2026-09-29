@@ -31,7 +31,7 @@
 
 #include "GKDBusMessage.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Messages
 {
 
 class GKDBusBroadcastSignal : public GKDBusMessage
@@ -53,6 +53,9 @@ class GKDBusBroadcastSignal : public GKDBusMessage
 
 class GKDBusMessageBroadcastSignal
 {
+	private:
+		using BusConnection = GKDBUS::BusConnection;
+
 	public:
 		void initializeBroadcastSignal(
 			BusConnection wantedConnection,
@@ -89,4 +92,4 @@ class GKDBusMessageBroadcastSignal
 		virtual DBusConnection* const getDBusConnection(BusConnection wantedConnection) const = 0;
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Messages

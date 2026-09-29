@@ -25,7 +25,7 @@
 
 #include "GKDBusReply.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Messages
 {
 
 using namespace NSGKUtils;
@@ -253,5 +253,5 @@ void GKDBusMessageReply::abandonReply()
 	}
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Messages
 

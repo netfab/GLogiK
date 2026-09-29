@@ -181,7 +181,7 @@ int GLogiKDaemon::run()
 				{"hidapi", "-"},
 #endif
 #if HAVE_GKDBUS
-				{"DBus", GK_DEP_DBUS_VERSION_STRING, NSGKDBus::GKDBus::getDBusVersion()},
+				{"DBus", GK_DEP_DBUS_VERSION_STRING, GKDBUS::GKDBus::getDBusVersion()},
 #else
 				{"DBus", "-"},
 #endif
@@ -191,7 +191,7 @@ int GLogiKDaemon::run()
 	if( GLogiKDaemon::isDaemonRunning() )
 	{
 #if HAVE_GKDBUS
-		NSGKDBus::GKDBus DBus;
+		GKDBUS::GKDBus DBus;
 #endif
 
 		try

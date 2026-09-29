@@ -40,7 +40,7 @@ typedef std::function<
 			) > SIGsGM2v;
 
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 template <>
@@ -50,4 +50,4 @@ template <>
 		DBusMessage* asyncContainer
 	);
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

@@ -29,7 +29,7 @@
 
 #include "GKDBusEvents.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 using namespace NSGKUtils;
@@ -702,5 +702,5 @@ void GKDBusEvents::removeSignalRuleMatch(
 
 /* -- */
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events
 

@@ -28,7 +28,7 @@
 #include "TypeBase.hpp"
 #include "ArgBase.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 class TypeUInt8
@@ -62,4 +62,4 @@ class ArgUInt8
 	private:
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

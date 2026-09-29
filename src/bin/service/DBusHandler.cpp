@@ -44,7 +44,7 @@ bool DBusHandler::WantToRestart = false;
 DBusHandler::DBusHandler(
 	pid_t pid,
 	NSGKUtils::FileSystem* pGKfs,
-	NSGKDBus::GKDBus* pDBus,
+	GKDBUS::GKDBus* pDBus,
 	GKDepsMap_type* dependencies)
 	:	_clientID("undefined"),
 		_daemonVersion("unknown"),
@@ -147,7 +147,7 @@ const DevicesMap_type DBusHandler::getDevicesMap()
 
 	const std::vector<std::string> stringArray( this->getDevicesList("reserved") );
 
-	return NSGKDBus::ArgDevicesMap::getDevicesMapFromStringArray(stringArray);
+	return GKDBUS::Types::ArgDevicesMap::getDevicesMapFromStringArray(stringArray);
 }
 
 void DBusHandler::resetDevicesUpdatedEvent()
@@ -845,7 +845,7 @@ void DBusHandler::initializeGKDBusSignals()
 	{
 		/* logind */
 		case SessionFramework::FW_LOGIND:
-			_pDBus->NSGKDBus::Callback<SIGv2v>::receiveSignal(
+			_pDBus->GKDBUS::Events::Callback<SIGv2v>::receiveSignal(
 				_systemBus,
 				LIBShared::LOGIND_DBUS_BUS_CONNECTION_NAME,
 				_CURRENT_SESSION_DBUS_OBJECT_PATH.c_str(),
@@ -869,7 +869,7 @@ void DBusHandler::initializeGKDBusSignals()
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  DevicesManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
-	_pDBus->NSGKDBus::Callback<SIGas2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGas2v>::receiveSignal(
 		_systemBus,
 		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -879,7 +879,7 @@ void DBusHandler::initializeGKDBusSignals()
 		std::bind(&DBusHandler::devicesStarted, this, std::placeholders::_1)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGas2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGas2v>::receiveSignal(
 		_systemBus,
 		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -889,7 +889,7 @@ void DBusHandler::initializeGKDBusSignals()
 		std::bind(&DBusHandler::devicesStopped, this, std::placeholders::_1)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGas2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGas2v>::receiveSignal(
 		_systemBus,
 		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -899,7 +899,7 @@ void DBusHandler::initializeGKDBusSignals()
 		std::bind(&DBusHandler::devicesUnplugged, this, std::placeholders::_1)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGsm2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGsm2v>::receiveSignal(
 		_systemBus,
 		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -913,7 +913,7 @@ void DBusHandler::initializeGKDBusSignals()
 		)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGsGM2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGsGM2v>::receiveSignal(
 		_systemBus,
 		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -928,7 +928,7 @@ void DBusHandler::initializeGKDBusSignals()
 		)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGsG2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGsG2v>::receiveSignal(
 		_systemBus,
 		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -942,7 +942,7 @@ void DBusHandler::initializeGKDBusSignals()
 		)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGsG2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGsG2v>::receiveSignal(
 		_systemBus,
 		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -956,7 +956,7 @@ void DBusHandler::initializeGKDBusSignals()
 		)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGss2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGss2v>::receiveSignal(
 		_systemBus,
 		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
@@ -973,7 +973,7 @@ void DBusHandler::initializeGKDBusSignals()
 	/* -- -- -- -- -- -- -- -- -- -- */
 	/*  ClientsManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
-	_pDBus->NSGKDBus::Callback<SIGv2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGv2v>::receiveSignal(
 		_systemBus,
 		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
@@ -983,7 +983,7 @@ void DBusHandler::initializeGKDBusSignals()
 		std::bind(&DBusHandler::daemonIsStopping, this)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGv2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGv2v>::receiveSignal(
 		_systemBus,
 		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
@@ -993,7 +993,7 @@ void DBusHandler::initializeGKDBusSignals()
 		std::bind(&DBusHandler::daemonIsStarting, this)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGv2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGv2v>::receiveSignal(
 		_systemBus,
 		LIBShared::GLOGIK_DAEMON_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
@@ -1006,7 +1006,7 @@ void DBusHandler::initializeGKDBusSignals()
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 	/*   GUISessionMessageHandler GUI requests D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	_pDBus->NSGKDBus::Callback<SIGss2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGss2v>::receiveSignal(
 		_sessionBus,
 		LIBShared::GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,
@@ -1051,7 +1051,7 @@ void DBusHandler::initializeGKDBusMethods()
 	/*  SessionMessageHandler D-Bus object */
 	/* -- -- -- -- -- -- -- -- -- -- -- -- */
 
-	_pDBus->NSGKDBus::Callback<SIGs2as>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGs2as>::exposeMethod(
 		_sessionBus,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -1060,7 +1060,7 @@ void DBusHandler::initializeGKDBusMethods()
 			{"as", "array_of_strings", "out", "array of devices ID and configuration files"} },
 		std::bind(&DBusHandler::getDevicesList, this, r_ed) );
 
-	_pDBus->NSGKDBus::Callback<SIGs2as>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGs2as>::exposeMethod(
 		_sessionBus,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -1069,7 +1069,7 @@ void DBusHandler::initializeGKDBusMethods()
 			{"as", "array_of_strings", "out", "array of informations strings"} },
 		std::bind(&DBusHandler::getInformations, this, r_ed) );
 
-	_pDBus->NSGKDBus::Callback<SIGss2aP>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGss2aP>::exposeMethod(
 		_sessionBus,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
@@ -1079,7 +1079,7 @@ void DBusHandler::initializeGKDBusMethods()
 			{"a(tss)", "get_lcd_plugins_properties_array", "out", "LCDPluginsProperties array"} },
 		std::bind(&DBusHandler::getDeviceLCDPluginsProperties, this, std::placeholders::_1, r_ed) );
 
-	_pDBus->NSGKDBus::Callback<SIGs2D>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGs2D>::exposeMethod(
 		_sessionBus,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,

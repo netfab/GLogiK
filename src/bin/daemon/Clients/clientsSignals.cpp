@@ -33,7 +33,7 @@ namespace DBus::Signals
 
 void sendSignalToClients(
 	const std::uint8_t numClients,
-	NSGKDBus::GKDBus* const pDBus,
+	GKDBUS::GKDBus* const pDBus,
 	const std::string & signal,
 	const bool forceSend) noexcept
 {
@@ -58,7 +58,7 @@ void sendSignalToClients(
 	try
 	{
 		pDBus->initializeBroadcastSignal(
-			NSGKDBus::GKDBus::SystemBus,
+			GKDBUS::GKDBus::SystemBus,
 			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 			signal
@@ -83,7 +83,7 @@ void sendSignalToClients(
 
 void sendStatusSignalArrayToClients(
 	const std::uint8_t numClients,
-	NSGKDBus::GKDBus* const pDBus,
+	GKDBUS::GKDBus* const pDBus,
 	const std::string & signal,
 	const std::vector<std::string> & devIDArray) noexcept
 {
@@ -104,7 +104,7 @@ void sendStatusSignalArrayToClients(
 	try
 	{
 		pDBus->initializeBroadcastSignal(
-			NSGKDBus::GKDBus::SystemBus,
+			GKDBUS::GKDBus::SystemBus,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_OBJECT_PATH,
 			LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 			signal

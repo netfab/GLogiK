@@ -28,7 +28,7 @@
 
 #include <dbus/dbus.h>
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 enum class DBusEventType : std::uint8_t
@@ -125,4 +125,4 @@ class introspectableSignalEvent
 		) {	/* do nothing */ }
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

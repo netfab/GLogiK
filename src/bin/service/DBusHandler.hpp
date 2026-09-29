@@ -48,7 +48,7 @@ class DBusHandler
 		DBusHandler(
 			pid_t pid,
 			NSGKUtils::FileSystem* pGKfs,
-			NSGKDBus::GKDBus* pDBus,
+			GKDBUS::GKDBus* pDBus,
 			GKDepsMap_type* dependencies
 		);
 		~DBusHandler();
@@ -79,8 +79,8 @@ class DBusHandler
 	protected:
 
 	private:
-		static constexpr NSGKDBus::BusConnection const & _sessionBus = NSGKDBus::GKDBus::SessionBus;
-		static constexpr NSGKDBus::BusConnection const & _systemBus = NSGKDBus::GKDBus::SystemBus;
+		static constexpr GKDBUS::BusConnection const & _sessionBus = GKDBUS::GKDBus::SessionBus;
+		static constexpr GKDBUS::BusConnection const & _systemBus = GKDBUS::GKDBus::SystemBus;
 
 		GKeysEventManager _GKeysEvent;
 		DevicesHandler _devices;
@@ -91,7 +91,7 @@ class DBusHandler
 		std::string _sessionState;		/* session state */
 
 		const GKDepsMap_type* const _pDepsMap;
-		NSGKDBus::GKDBus* const _pDBus;
+		GKDBUS::GKDBus* const _pDBus;
 
 		using SessionFramework = LIBShared::SessionFramework;
 		SessionFramework _sessionFramework;

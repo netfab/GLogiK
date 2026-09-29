@@ -43,7 +43,7 @@ class LCDPluginsTab
 
 	public:
 		LCDPluginsTab(
-			NSGKDBus::GKDBus* pDBus,
+			GKDBUS::GKDBus* pDBus,
 			const QString & name
 		);
 		~LCDPluginsTab();

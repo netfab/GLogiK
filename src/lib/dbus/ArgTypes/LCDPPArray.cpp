@@ -27,7 +27,7 @@
 
 #include "LCDPPArray.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -169,5 +169,5 @@ const GLogiK::LCDPPArray_type ArgLCDPPArray::getNextLCDPPArrayArgument()
 	return pluginsArray;
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types
 

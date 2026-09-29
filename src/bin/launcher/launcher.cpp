@@ -111,7 +111,7 @@ int DesktopServiceLauncher::run()
 
 	{
 		LIBShared::SessionManager session;
-		NSGKDBus::GKDBus DBus;
+		GKDBUS::GKDBus DBus;
 
 		try
 		{ // <<<

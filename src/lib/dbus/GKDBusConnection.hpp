@@ -23,7 +23,7 @@
 
 #include <cstdint>
 
-namespace NSGKDBus
+namespace GKDBUS
 {
 
 enum class BusConnection : std::uint8_t
@@ -32,4 +32,4 @@ enum class BusConnection : std::uint8_t
 	GKDBUS_SYSTEM,
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS

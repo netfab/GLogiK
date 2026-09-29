@@ -23,7 +23,7 @@
 
 #include "ArgBase.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -254,5 +254,5 @@ const int ArgBase::decodeNextArgument(DBusMessageIter* itArgument)
 	return currentType;
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types
 

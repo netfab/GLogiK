@@ -131,7 +131,7 @@ int DesktopService::run()
 		 * to take precedence over SIGINT/SIGTERM signals. */
 		LIBShared::SessionManager session;
 
-		NSGKDBus::GKDBus DBus;
+		GKDBUS::GKDBus DBus;
 
 		// lambda
 		auto clean_before_exit = [&] () -> void
@@ -148,11 +148,11 @@ int DesktopService::run()
 
 			DBus.connectToSystemBus( // may throw
 				LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-				NSGKDBus::ConnectionFlag::GKDBUS_MULTIPLE
+				GKDBUS::ConnectionFlag::GKDBUS_MULTIPLE
 			);
 			DBus.connectToSessionBus( // may throw
 				LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
-				NSGKDBus::ConnectionFlag::GKDBUS_MULTIPLE
+				GKDBUS::ConnectionFlag::GKDBUS_MULTIPLE
 			);
 
 			struct pollfd fds[2];

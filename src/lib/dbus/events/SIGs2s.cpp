@@ -24,7 +24,7 @@
 #include "SIGs2s.hpp"
 
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 using namespace NSGKUtils;
@@ -48,7 +48,7 @@ template <>
 		else
 		{
 			ArgBase::fillInArguments(message);
-			arg = ArgString::getNextStringArgument();
+			arg = Types::ArgString::getNextStringArgument();
 		}
 
 		/* call string to string callback */
@@ -82,5 +82,5 @@ template <>
 	this->sendReply();
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events
 

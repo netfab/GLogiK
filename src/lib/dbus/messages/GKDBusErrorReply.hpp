@@ -27,7 +27,7 @@
 
 #include "GKDBusMessage.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Messages
 {
 
 class GKDBusErrorReply : public GKDBusMessage
@@ -71,4 +71,4 @@ class GKDBusMessageErrorReply
 
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Messages

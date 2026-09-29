@@ -23,7 +23,7 @@
 
 #include "GKDBusEvent.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 using namespace NSGKUtils;
@@ -62,5 +62,5 @@ void DBusEvent::callback(
 	this->runCallback(connection, message, asyncContainer);
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events
 

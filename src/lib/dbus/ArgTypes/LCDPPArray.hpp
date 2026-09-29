@@ -31,7 +31,7 @@
 
 #include "include/LCDPP.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 class TypeLCDPPArray
@@ -71,4 +71,4 @@ class ArgLCDPPArray
 
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

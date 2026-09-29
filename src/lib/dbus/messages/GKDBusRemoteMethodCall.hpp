@@ -34,7 +34,7 @@
 
 #include "GKDBusMessage.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Messages
 {
 
 class GKDBusRemoteMethodCall
@@ -58,8 +58,11 @@ class GKDBusRemoteMethodCall
 };
 
 class GKDBusMessageRemoteMethodCall
-	:	virtual private ArgString
+	:	virtual private Types::ArgString
 {
+	private:
+		using BusConnection = GKDBUS::BusConnection;
+
 	public:
 		/* Remote Method Call with Pending Reply */
 		void initializeRemoteMethodCall(
@@ -102,4 +105,4 @@ class GKDBusMessageRemoteMethodCall
 		virtual DBusConnection* const getDBusConnection(BusConnection wantedConnection) const = 0;
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Messages

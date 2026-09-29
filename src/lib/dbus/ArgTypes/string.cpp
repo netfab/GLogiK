@@ -23,7 +23,7 @@
 
 #include "string.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -101,4 +101,4 @@ const std::string & ArgString::getNextStringArgument()
 	return ArgString::currentString;
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

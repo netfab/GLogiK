@@ -66,7 +66,7 @@
 #include "SIGssyyy2b.hpp" // two strings three bytes to bool
 #include "SIGv2v.hpp"     //                    void to void
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 template <typename T>
@@ -255,4 +255,4 @@ template <>
 		) = 0;
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

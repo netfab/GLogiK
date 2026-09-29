@@ -34,7 +34,7 @@
 /* string to GKDepsMap_type */
 typedef std::function<const GLogiK::GKDepsMap_type(const std::string &)> SIGs2D;
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 template <>
@@ -44,4 +44,4 @@ template <>
 		DBusMessage* asyncContainer
 	);
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

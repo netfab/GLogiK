@@ -63,7 +63,7 @@ class DevicesHandler
 		~DevicesHandler();
 
 		void setGKfs(NSGKUtils::FileSystem* const pGKfs);
-		void setDBus(NSGKDBus::GKDBus* const pDBus);
+		void setDBus(GKDBUS::GKDBus* const pDBus);
 		void setClientID(const std::string & id);
 
 		void startDevice(
@@ -107,12 +107,12 @@ class DevicesHandler
 	private:
 		using DeviceProperties = LIBShared::DeviceProperties;
 
-		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
-		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
+		const GKDBUS::BusConnection & _systemBus = GKDBUS::GKDBus::SystemBus;
+		const GKDBUS::BusConnection & _sessionBus = GKDBUS::GKDBus::SessionBus;
 
 		fs::path _configurationRootDirectory;
 		std::string _clientID;
-		NSGKDBus::GKDBus* _pDBus;
+		GKDBUS::GKDBus* _pDBus;
 		NSGKUtils::FileSystem* _pGKfs;
 
 		typedef std::set<std::string> devIDSet;

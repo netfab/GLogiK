@@ -21,7 +21,7 @@
 
 #include "callback.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 /*
@@ -101,5 +101,5 @@ void Callback<SIGs2s>::exposeEvent(
 	this->addEvent(bus, objectPath, interface, event);
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events
 

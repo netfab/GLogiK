@@ -27,7 +27,7 @@
 
 #include "stringArray.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -100,5 +100,5 @@ const std::vector<std::string> ArgStringArray::getNextStringArray()
 	return ret;
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types
 

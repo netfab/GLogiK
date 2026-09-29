@@ -26,7 +26,7 @@
 #include "SIGsm2v.hpp"
 
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 using namespace NSGKUtils;
@@ -43,8 +43,8 @@ template <>
 	bool ret = false;
 
 	try {
-		const std::string arg1( ArgString::getNextStringArgument() );
-		const GLogiK::MKeysID arg2 = ArgMKeysID::getNextMKeysIDArgument();
+		const std::string arg1( Types::ArgString::getNextStringArgument() );
+		const GLogiK::MKeysID arg2 = Types::ArgMKeysID::getNextMKeysIDArgument();
 
 		/* call DBusHandler::deviceMBankSwitch callback */
 		this->callback(arg1, arg2);
@@ -74,5 +74,5 @@ template <>
 	this->sendReply();
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events
 

@@ -24,7 +24,7 @@
 #include "TypeBase.hpp"
 #include "ArgBase.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 class TypeBoolean
@@ -55,4 +55,4 @@ class ArgBoolean
 
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

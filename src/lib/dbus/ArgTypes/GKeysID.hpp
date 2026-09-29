@@ -27,7 +27,7 @@
 
 #include "include/base.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 class TypeGKeysID
@@ -58,4 +58,4 @@ class ArgGKeysID
 
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

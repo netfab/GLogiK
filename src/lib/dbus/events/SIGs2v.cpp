@@ -24,7 +24,7 @@
 #include "SIGs2v.hpp"
 
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 using namespace NSGKUtils;
@@ -71,5 +71,5 @@ template <>
 	this->sendReply();
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events
 

@@ -74,7 +74,7 @@ void DevicesHandler::setGKfs(NSGKUtils::FileSystem* const pGKfs)
 	_pGKfs = pGKfs;
 }
 
-void DevicesHandler::setDBus(NSGKDBus::GKDBus* const pDBus)
+void DevicesHandler::setDBus(GKDBUS::GKDBus* const pDBus)
 {
 	_pDBus = pDBus;
 }

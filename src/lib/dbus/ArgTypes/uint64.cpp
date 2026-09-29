@@ -25,7 +25,7 @@
 
 #include "uint64.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -61,5 +61,5 @@ const std::uint64_t ArgUInt64::getNextUInt64Argument()
 	return ret;
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types
 

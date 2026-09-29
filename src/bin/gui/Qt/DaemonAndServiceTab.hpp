@@ -43,7 +43,7 @@ class DaemonAndServiceTab
 
 	public:
 		DaemonAndServiceTab(
-			NSGKDBus::GKDBus* pDBus,
+			GKDBUS::GKDBus* pDBus,
 			const QString & name
 		);
 		~DaemonAndServiceTab();

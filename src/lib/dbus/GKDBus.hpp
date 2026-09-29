@@ -53,7 +53,7 @@
 #include "ArgTypes/LCDPPArray.hpp"
 #include "ArgTypes/DepsMap.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS
 {
 
 enum class ConnectionFlag : std::uint8_t
@@ -63,26 +63,29 @@ enum class ConnectionFlag : std::uint8_t
 };
 
 class GKDBus
-	:	public GKDBusEvents,
-		virtual public GKDBusMessageRemoteMethodCall,
-		public GKDBusMessageBroadcastSignal,
-		public GKDBusMessageAsyncContainer,
-		private GKDBusMessageReply,
-		private GKDBusMessageErrorReply,
-		virtual public ArgString,
-		virtual public ArgStringArray,
-		public ArgBoolean,
-		virtual public ArgInt32,
-		virtual public ArgUInt8,
-		virtual public ArgUInt16,
-		virtual public ArgUInt64,
-		public ArgMacro,
-		public ArgDevicesMap,
-		public ArgGKeysIDArray,
-		public ArgMKeysIDArray,
-		public ArgLCDPPArray,
-		public ArgGKDepsMap
+	:	public GKDBUS::Events::GKDBusEvents,
+		virtual public GKDBUS::Messages::GKDBusMessageRemoteMethodCall,
+		public GKDBUS::Messages::GKDBusMessageBroadcastSignal,
+		public GKDBUS::Messages::GKDBusMessageAsyncContainer,
+		private GKDBUS::Messages::GKDBusMessageReply,
+		private GKDBUS::Messages::GKDBusMessageErrorReply,
+		virtual public Types::ArgString,
+		virtual public Types::ArgStringArray,
+		public Types::ArgBoolean,
+		virtual public Types::ArgInt32,
+		virtual public Types::ArgUInt8,
+		virtual public Types::ArgUInt16,
+		virtual public Types::ArgUInt64,
+		public Types::ArgMacro,
+		public Types::ArgDevicesMap,
+		public Types::ArgGKeysIDArray,
+		public Types::ArgMKeysIDArray,
+		public Types::ArgLCDPPArray,
+		public Types::ArgGKDepsMap
 {
+	private:
+		using BusConnection = GKDBUS::BusConnection;
+
 	public:
 		GKDBus();
 		~GKDBus();
@@ -148,4 +151,4 @@ class GKDBus
 		const unsigned int getDBusRequestFlags(const ConnectionFlag flag) noexcept;
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS

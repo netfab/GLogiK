@@ -35,7 +35,7 @@
 typedef std::function<void(const std::string&, const GLogiK::MKeysID) > SIGsm2v;
 
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 template <>
@@ -45,4 +45,4 @@ template <>
 		DBusMessage* asyncContainer
 	);
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

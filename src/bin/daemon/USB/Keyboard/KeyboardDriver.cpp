@@ -57,7 +57,7 @@ using namespace NSGKUtils;
 #define DEVICE_LISTENING_THREAD_MAX_ERRORS 3
 
 #if HAVE_GKDBUS
-void KeyboardDriver::setDBus(NSGKDBus::GKDBus* pDBus)
+void KeyboardDriver::setDBus(GKDBUS::GKDBus* pDBus)
 {
 	_pDBus = pDBus;
 }

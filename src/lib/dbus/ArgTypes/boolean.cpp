@@ -25,7 +25,7 @@
 
 #include "boolean.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -55,5 +55,5 @@ const bool ArgBoolean::getNextBooleanArgument()
 	return ret;
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types
 

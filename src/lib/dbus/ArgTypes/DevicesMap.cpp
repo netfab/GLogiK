@@ -25,7 +25,7 @@
 
 #include "DevicesMap.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -87,4 +87,4 @@ const GLogiK::DevicesMap_type ArgDevicesMap::getNextDevicesMapArgument()
 	return ArgDevicesMap::getDevicesMapFromStringArray(stringArray);
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

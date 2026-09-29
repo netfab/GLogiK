@@ -31,7 +31,7 @@
 
 #include "include/DepsMap.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 class TypeGKDepsMap
@@ -85,4 +85,4 @@ class ArgGKDepsMap
 	private:
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

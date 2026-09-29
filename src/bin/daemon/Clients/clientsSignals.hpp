@@ -31,14 +31,14 @@ namespace DBus::Signals
 
 void sendSignalToClients(
 	const std::uint8_t numClients, // number of connected clients
-	NSGKDBus::GKDBus* const pDBus,
+	GKDBUS::GKDBus* const pDBus,
 	const std::string & signal,
 	const bool forceSend=false // always send signal, even if numClient == 0
 ) noexcept;
 
 void sendStatusSignalArrayToClients(
 	const std::uint8_t numClients,
-	NSGKDBus::GKDBus* const pDBus,
+	GKDBUS::GKDBus* const pDBus,
 	const std::string & signal,
 	const std::vector<std::string> & devIDArray
 ) noexcept;

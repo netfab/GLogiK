@@ -31,7 +31,7 @@
 
 typedef std::function<const bool(const std::string &)> SIGs2b; /* string to bool */
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 template <>
@@ -41,4 +41,4 @@ template <>
 		DBusMessage* asyncContainer
 	);
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

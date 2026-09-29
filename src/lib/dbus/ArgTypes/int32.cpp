@@ -25,7 +25,7 @@
 
 #include "int32.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -61,5 +61,5 @@ const int32_t ArgInt32::getNextInt32Argument()
 	return ret;
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types
 

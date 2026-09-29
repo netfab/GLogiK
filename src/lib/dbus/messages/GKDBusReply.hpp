@@ -34,7 +34,7 @@
 #include "lib/dbus/ArgTypes/string.hpp"
 #include "lib/dbus/ArgTypes/uint64.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Messages
 {
 
 class GKDBusReply
@@ -54,8 +54,8 @@ class GKDBusReply
 };
 
 class GKDBusMessageReply
-	:	virtual protected ArgString,
-		virtual private ArgUInt64
+	:	virtual protected Types::ArgString,
+		virtual private Types::ArgUInt64
 {
 	public:
 
@@ -89,4 +89,4 @@ class GKDBusMessageReply
 		GKDBusReply* _reply;
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Messages

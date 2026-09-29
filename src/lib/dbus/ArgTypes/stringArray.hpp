@@ -30,7 +30,7 @@
 #include "uint64.hpp"
 #include "string.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 class TypeStringArray
@@ -64,4 +64,4 @@ class ArgStringArray
 
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

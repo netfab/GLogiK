@@ -32,7 +32,7 @@
 
 typedef std::function<void(const std::uint16_t)> SIGq2v; /* std::uint16_t to void */
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 template <>
@@ -42,4 +42,4 @@ template <>
 		DBusMessage* asyncContainer
 	);
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

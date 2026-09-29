@@ -27,7 +27,7 @@
 #include "SIGsGM2v.hpp"
 
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 using namespace NSGKUtils;
@@ -42,9 +42,9 @@ template <>
 	ArgBase::fillInArguments(message);
 
 	try {
-		const std::string arg1( ArgString::getNextStringArgument() );
-		const GLogiK::GKeysID arg2 = ArgGKeysID::getNextGKeysIDArgument();
-		const GLogiK::macro_type arg3 = ArgMacro::getNextMacroArgument();
+		const std::string arg1( Types::ArgString::getNextStringArgument() );
+		const GLogiK::GKeysID arg2 = Types::ArgGKeysID::getNextGKeysIDArgument();
+		const GLogiK::macro_type arg3 = Types::ArgMacro::getNextMacroArgument();
 
 		/* call DBusHandler::deviceMacroRecorded callback */
 		this->callback(arg1, arg2, arg3);
@@ -73,5 +73,5 @@ template <>
 	this->sendReply();
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events
 

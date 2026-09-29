@@ -35,7 +35,7 @@
 #include "lib/dbus/messages/GKDBusReply.hpp"
 #include "lib/dbus/messages/GKDBusErrorReply.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 /* -- -- -- -- -- -- -- -- -- -- -- */
@@ -45,10 +45,10 @@ namespace NSGKDBus
 template <typename T>
 	class callbackEvent
 		:	public GKDBusEvent,
-			private GKDBusMessageReply,
-			private GKDBusMessageErrorReply,
-			virtual private ArgString,
-			virtual private ArgUInt64
+			private Messages::GKDBusMessageReply,
+			private Messages::GKDBusMessageErrorReply,
+			virtual private Types::ArgString,
+			virtual private Types::ArgUInt64
 {
 	public:
 		callbackEvent(
@@ -154,4 +154,4 @@ template <typename T>
 		this->buildAndSendErrorReply(connection, message, errorMessage.c_str());
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

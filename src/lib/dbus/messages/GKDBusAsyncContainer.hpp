@@ -27,7 +27,7 @@
 
 #include "GKDBusMessage.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Messages
 {
 
 class GKDBusMessageAsyncContainer
@@ -49,4 +49,4 @@ class GKDBusMessageAsyncContainer
 		void freeAsyncContainer();
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Messages

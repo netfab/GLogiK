@@ -24,7 +24,7 @@
 #include "SIGb2v.hpp"
 
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 using namespace NSGKUtils;
@@ -39,7 +39,7 @@ template <>
 
 	try
 	{
-		const bool arg1( ArgBoolean::getNextBooleanArgument() );
+		const bool arg1( Types::ArgBoolean::getNextBooleanArgument() );
 
 		/* call bool to void callback */
 		this->callback(arg1);
@@ -71,5 +71,5 @@ template <>
 	this->sendReply();
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events
 

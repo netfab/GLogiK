@@ -39,25 +39,25 @@
 #include "lib/dbus/ArgTypes/LCDPPArray.hpp"
 #include "lib/dbus/ArgTypes/DepsMap.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Messages
 {
 
 class GKDBusMessage
-	:	virtual public TypeBase,
-		public TypeBoolean,
-		virtual public TypeString,
-		public TypeStringArray,
-		virtual public TypeUInt64,
-		virtual public TypeUInt8,
-		virtual public TypeUInt16,
-		public TypeUInt32,
-		public TypeGKeysID,
-		public TypeGKeysIDArray,
-		public TypeMKeysID,
-		public TypeMKeysIDArray,
-		public TypeMacro,
-		public TypeLCDPPArray,
-		public TypeGKDepsMap
+	:	virtual public Types::TypeBase,
+		public Types::TypeBoolean,
+		virtual public Types::TypeString,
+		public Types::TypeStringArray,
+		virtual public Types::TypeUInt64,
+		virtual public Types::TypeUInt8,
+		virtual public Types::TypeUInt16,
+		public Types::TypeUInt32,
+		public Types::TypeGKeysID,
+		public Types::TypeGKeysIDArray,
+		public Types::TypeMKeysID,
+		public Types::TypeMKeysIDArray,
+		public Types::TypeMacro,
+		public Types::TypeLCDPPArray,
+		public Types::TypeGKDepsMap
 {
 	public:
 
@@ -75,4 +75,4 @@ class GKDBusMessage
 
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Messages

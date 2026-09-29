@@ -33,7 +33,7 @@
 /* array of string to void */
 typedef std::function<void(const std::vector<std::string>)> SIGas2v;
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 template <>
@@ -43,4 +43,4 @@ template <>
 		DBusMessage* asyncContainer
 	);
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

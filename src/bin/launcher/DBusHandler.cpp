@@ -37,7 +37,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DBusHandler::DBusHandler(NSGKDBus::GKDBus* pDBus)
+DBusHandler::DBusHandler(GKDBUS::GKDBus* pDBus)
 	:	_pDBus(pDBus)
 {
 	this->initializeGKDBusSignals();
@@ -81,7 +81,7 @@ void DBusHandler::cleanGKDBusEvents() noexcept
 
 void DBusHandler::initializeGKDBusSignals()
 {
-	_pDBus->NSGKDBus::Callback<SIGq2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGq2v>::receiveSignal(
 		_sessionBus,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
@@ -91,7 +91,7 @@ void DBusHandler::initializeGKDBusSignals()
 		std::bind(&DBusHandler::spawnService, this, std::placeholders::_1)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGq2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGq2v>::receiveSignal(
 		_sessionBus,
 		LIBShared::GLOGIK_DESKTOP_QT_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_OBJECT_PATH,

@@ -151,7 +151,7 @@ void MainWindow::init(const int& argc, char *argv[])
 
 	try
 	{
-		_pDBus = new NSGKDBus::GKDBus();
+		_pDBus = new GKDBUS::GKDBus();
 		_pDBus->init();
 	}
 	catch (const std::bad_alloc& e)
@@ -338,7 +338,7 @@ void MainWindow::build()
 	GKLog(trace, "Qt signals connected to slots")
 
 	/* initializing GKDBus signals */
-	_pDBus->NSGKDBus::Callback<SIGv2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGv2v>::receiveSignal(
 		_sessionBus,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,
@@ -348,7 +348,7 @@ void MainWindow::build()
 		std::bind(&MainWindow::resetInterface, this)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGs2v>::receiveSignal(
+	_pDBus->GKDBUS::Events::Callback<SIGs2v>::receiveSignal(
 		_sessionBus,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_OBJECT_PATH,

@@ -26,7 +26,7 @@
 
 #include "GKDBusRemoteMethodCall.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Messages
 {
 
 using namespace NSGKUtils;
@@ -268,5 +268,5 @@ void GKDBusMessageRemoteMethodCall::waitForRemoteMethodCallReply()
 	dbus_message_unref(message);
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Messages
 

@@ -51,7 +51,7 @@ class Tab
 		using DeviceProperties = LIBShared::DeviceProperties;
 
 	public:
-		Tab(NSGKDBus::GKDBus* pDBus)
+		Tab(GKDBUS::GKDBus* pDBus)
 			:	_pDBus(pDBus),
 				_pApplyButton(nullptr)
 			{};
@@ -69,9 +69,9 @@ class Tab
 		const QPushButton* getApplyButton() const;
 
 	protected:
-		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
+		const GKDBUS::BusConnection & _sessionBus = GKDBUS::GKDBus::SessionBus;
 
-		NSGKDBus::GKDBus* _pDBus;
+		GKDBUS::GKDBus* _pDBus;
 
 		QWidget* _pApplyButton;
 

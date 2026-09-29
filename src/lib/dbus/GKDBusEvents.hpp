@@ -31,9 +31,8 @@
 
 #include "events/callback.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
-
 
 class GKDBusEvents
 	:	public Callback<SIGas2v>,
@@ -58,6 +57,8 @@ class GKDBusEvents
 		public Callback<SIGv2v>
 {
 	private:
+		using BusConnection = GKDBUS::BusConnection;
+
 		typedef std::map<BusConnection,
 					std::map<std::string, /* object path */
 						std::map<std::string, /* interface */
@@ -185,4 +186,4 @@ class GKDBusEvents
 		) noexcept;
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

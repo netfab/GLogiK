@@ -65,7 +65,7 @@ class KeyboardDriver
 		virtual ~KeyboardDriver() = default;
 
 #if HAVE_GKDBUS
-		void setDBus(NSGKDBus::GKDBus* pDBus);
+		void setDBus(GKDBUS::GKDBus* pDBus);
 #endif
 
 		static const bool checkDeviceCapability(const USBDeviceID & device, Caps toCheck);
@@ -114,8 +114,8 @@ class KeyboardDriver
 
 	private:
 #if HAVE_GKDBUS
-		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
-		NSGKDBus::GKDBus* _pDBus;
+		const GKDBUS::BusConnection & _systemBus = GKDBUS::GKDBus::SystemBus;
+		GKDBUS::GKDBus* _pDBus;
 #endif
 
 		/* USB::API */

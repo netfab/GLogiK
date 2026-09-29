@@ -42,7 +42,7 @@ typedef std::function<
 
 
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 template <>
@@ -52,4 +52,4 @@ template <>
 		DBusMessage* asyncContainer
 	);
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

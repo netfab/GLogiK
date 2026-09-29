@@ -26,7 +26,7 @@
 #include "SIGq2v.hpp"
 
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 using namespace NSGKUtils;
@@ -41,7 +41,7 @@ template <>
 
 	try
 	{
-		const std::uint16_t arg1( ArgUInt16::getNextUInt16Argument() );
+		const std::uint16_t arg1( Types::ArgUInt16::getNextUInt16Argument() );
 
 		/* call std::uint16_t to void callback */
 		this->callback(arg1);
@@ -73,5 +73,5 @@ template <>
 	this->sendReply();
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events
 

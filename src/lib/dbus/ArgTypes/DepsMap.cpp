@@ -23,7 +23,7 @@
 
 #include "DepsMap.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -271,4 +271,4 @@ const GLogiK::GKDepsMap_type ArgGKDepsMap::getNextGKDepsMapArgument()
 	return depsMap;
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

@@ -27,7 +27,7 @@
 
 #include "TypeBase.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 class TypeUInt32
@@ -44,4 +44,4 @@ class TypeUInt32
 	private:
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

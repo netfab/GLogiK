@@ -48,7 +48,7 @@ namespace Managers::Clients
 using namespace NSGKUtils;
 
 ClientsManager::ClientsManager(
-	NSGKDBus::GKDBus* const pDBus,
+	GKDBUS::GKDBus* const pDBus,
 	DevicesManager* const pDevicesManager,
 	GKDepsMap_type* const pDepsMap)
 	:	_pDBus(pDBus),
@@ -108,7 +108,7 @@ void ClientsManager::initializeGKDBusEvents()
 	/*  ClientsManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
 
-	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGs2b>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_REGISTER_CLIENT,
 		{	{"s", "client_session_object_path", dIN, "client session object path"},
 			{"b", "did_register_succeeded", dOUT, rValueComment},
@@ -117,14 +117,14 @@ void ClientsManager::initializeGKDBusEvents()
 		}, std::bind(&ClientsManager::registerClient, this, _1)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGs2b>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_UNREGISTER_CLIENT,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"b", "did_unregister_succeeded", dOUT, rValueComment}
 		}, std::bind(&ClientsManager::unregisterClient, this, _1)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGss2b>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_UPDATE_CLIENT_STATE,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "client_new_state", dIN, "client new state"},
@@ -132,14 +132,14 @@ void ClientsManager::initializeGKDBusEvents()
 		}, std::bind(&ClientsManager::updateClientState, this, _1, _2)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGs2b>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGs2b>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_SET_CLIENT_READY,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"b", "did_method_succeeded", dOUT, rValueComment}
 		}, std::bind(&ClientsManager::setClientReady, this, _1)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGss2b>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_DELETE_DEVICE_CONFIGURATION,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
@@ -147,7 +147,7 @@ void ClientsManager::initializeGKDBusEvents()
 		}, std::bind(&ClientsManager::deleteDeviceConfiguration, this, _1, _2)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGs2D>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGs2D>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_GET_DAEMON_DEPENDENCIES_MAP,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"a(yta(sss))", "dependencies_map", dOUT, "array of executable dependencies"}
@@ -158,7 +158,7 @@ void ClientsManager::initializeGKDBusEvents()
 	/*  DevicesManager D-Bus object  */
 	/* -- -- -- -- -- -- -- -- -- -- */
 
-	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGss2b>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_STOP_DEVICE,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
@@ -166,7 +166,7 @@ void ClientsManager::initializeGKDBusEvents()
 		}, std::bind(&ClientsManager::stopDevice, this, _1, _2)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGss2b>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_START_DEVICE,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStoppedDevices"},
@@ -174,7 +174,7 @@ void ClientsManager::initializeGKDBusEvents()
 		}, std::bind(&ClientsManager::startDevice, this, _1, _2)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGss2b>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGss2b>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_RESTART_DEVICE,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
@@ -186,21 +186,21 @@ void ClientsManager::initializeGKDBusEvents()
 		/* methods used to initialize devices on service-side */
 		/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
 
-	_pDBus->NSGKDBus::Callback<SIGs2as>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGs2as>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_GET_STARTED_DEVICES,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"as", "array_of_strings", dOUT, "array of started devices ID strings"}
 		}, std::bind(&ClientsManager::getStartedDevices, this, _1)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGs2as>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGs2as>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_GET_STOPPED_DEVICES,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"as", "array_of_strings", dOUT, "array of stopped devices ID strings"}
 		}, std::bind(&ClientsManager::getStoppedDevices, this, _1)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGss2s>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGss2s>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_STATUS,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID"},
@@ -208,7 +208,7 @@ void ClientsManager::initializeGKDBusEvents()
 		}, std::bind(&ClientsManager::getDeviceStatus, this, _1, _2)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGss2v>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGss2v>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_PROPERTIES,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
@@ -216,7 +216,7 @@ void ClientsManager::initializeGKDBusEvents()
 		}, std::bind(&ClientsManager::getDeviceProperties, this, _1, _2)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGss2aP>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGss2aP>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
@@ -224,7 +224,7 @@ void ClientsManager::initializeGKDBusEvents()
 		}, std::bind(&ClientsManager::getDeviceLCDPluginsProperties, this, _1, _2)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGss2aG>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGss2aG>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_GKEYSID_ARRAY,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
@@ -232,7 +232,7 @@ void ClientsManager::initializeGKDBusEvents()
 		}, std::bind(&ClientsManager::getDeviceGKeysIDArray, this, _1, _2)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGss2am>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGss2am>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_MKEYSID_ARRAY,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
@@ -240,7 +240,7 @@ void ClientsManager::initializeGKDBusEvents()
 		}, std::bind(&ClientsManager::getDeviceMKeysIDArray, this, _1, _2)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGssyyy2b>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGssyyy2b>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_SET_DEVICE_BACKLIGHT_COLOR,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
@@ -251,7 +251,7 @@ void ClientsManager::initializeGKDBusEvents()
 		}, std::bind(&ClientsManager::setDeviceBacklightColor, this, _1, _2, _3, _4, _5)
 	);
 
-	_pDBus->NSGKDBus::Callback<SIGssyt2b>::exposeMethod(
+	_pDBus->GKDBUS::Events::Callback<SIGssyt2b>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_SET_DEVICE_LCD_PLUGINS_MASK,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},

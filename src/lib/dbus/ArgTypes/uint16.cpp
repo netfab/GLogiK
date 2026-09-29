@@ -25,7 +25,7 @@
 
 #include "uint16.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -61,5 +61,5 @@ const std::uint16_t ArgUInt16::getNextUInt16Argument()
 	return ret;
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types
 

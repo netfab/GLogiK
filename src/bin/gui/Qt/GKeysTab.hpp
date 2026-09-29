@@ -56,7 +56,7 @@ class GKeysTab
 
 	public:
 		GKeysTab(
-			NSGKDBus::GKDBus* pDBus,
+			GKDBUS::GKDBus* pDBus,
 			const QString & name
 		);
 		~GKeysTab();

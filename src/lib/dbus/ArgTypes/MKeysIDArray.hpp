@@ -27,7 +27,7 @@
 
 #include "include/base.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 class TypeMKeysIDArray
@@ -58,4 +58,4 @@ class ArgMKeysIDArray
 	private:
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

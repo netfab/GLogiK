@@ -34,7 +34,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 BacklightColorTab::BacklightColorTab(
-	NSGKDBus::GKDBus* pDBus,
+	GKDBUS::GKDBus* pDBus,
 	const QString & name)
 	:	Tab(pDBus),
 		_pCurrentColorLabel(nullptr),

@@ -29,7 +29,7 @@
 
 #include <dbus/dbus.h>
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 class ArgBase
@@ -65,4 +65,4 @@ class ArgBase
 		);
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

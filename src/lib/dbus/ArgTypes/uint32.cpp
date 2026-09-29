@@ -25,7 +25,7 @@
 
 #include "uint32.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -46,5 +46,5 @@ void TypeUInt32::appendUInt32(const std::uint32_t value)
 #endif
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types
 

@@ -72,7 +72,7 @@ class MainWindow
 	private:
 		using DeviceProperties = LIBShared::DeviceProperties;
 
-		const NSGKDBus::BusConnection & _sessionBus = NSGKDBus::GKDBus::SessionBus;
+		const GKDBUS::BusConnection & _sessionBus = GKDBUS::GKDBus::SessionBus;
 
 		DeviceProperties _openedConfigurationFile;
 
@@ -84,7 +84,7 @@ class MainWindow
 		DevicesMap_type _devices;
 		GKDepsMap_type _DepsMap;
 
-		NSGKDBus::GKDBus* _pDBus;
+		GKDBUS::GKDBus* _pDBus;
 
 		QTimer* _DBusTimer;
 		QComboBox* _devicesComboBox;

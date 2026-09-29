@@ -32,7 +32,7 @@
 /* two strings to bool */
 typedef std::function<const bool(const std::string &, const std::string &)> SIGss2b;
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 template <>
@@ -42,4 +42,4 @@ template <>
 		DBusMessage* asyncContainer
 	);
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events

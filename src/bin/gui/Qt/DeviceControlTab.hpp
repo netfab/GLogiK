@@ -45,7 +45,7 @@ class DeviceControlTab
 
 	public:
 		DeviceControlTab(
-			NSGKDBus::GKDBus* pDBus,
+			GKDBUS::GKDBus* pDBus,
 			const QString & name
 		);
 		~DeviceControlTab();

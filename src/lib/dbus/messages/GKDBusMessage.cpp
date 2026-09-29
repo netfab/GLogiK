@@ -23,7 +23,7 @@
 
 #include "GKDBusMessage.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Messages
 {
 
 using namespace NSGKUtils;
@@ -43,5 +43,5 @@ GKDBusMessage::~GKDBusMessage()
 {
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Messages
 

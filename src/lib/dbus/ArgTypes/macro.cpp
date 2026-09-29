@@ -27,7 +27,7 @@
 
 #include "macro.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -179,4 +179,4 @@ const GLogiK::macro_type ArgMacro::getNextMacroArgument(const unsigned int macro
 	return macro;
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types

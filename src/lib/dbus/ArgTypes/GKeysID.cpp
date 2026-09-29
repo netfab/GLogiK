@@ -23,7 +23,7 @@
 
 #include "GKeysID.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 using namespace NSGKUtils;
@@ -65,5 +65,5 @@ const GLogiK::GKeysID ArgGKeysID::getNextGKeysIDArgument()
 	return id;
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types
 

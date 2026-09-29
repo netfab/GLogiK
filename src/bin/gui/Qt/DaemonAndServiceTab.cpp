@@ -41,7 +41,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 DaemonAndServiceTab::DaemonAndServiceTab(
-	NSGKDBus::GKDBus* pDBus,
+	GKDBUS::GKDBus* pDBus,
 	const QString & name
 )	:	Tab(pDBus),
 		_daemonVersionLabel(nullptr),

@@ -36,7 +36,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 DeviceControlTab::DeviceControlTab(
-	NSGKDBus::GKDBus* pDBus,
+	GKDBUS::GKDBus* pDBus,
 	const QString & name)
 	:	Tab(pDBus),
 		_deviceStatusLabel(nullptr),

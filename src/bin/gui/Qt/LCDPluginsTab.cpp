@@ -42,7 +42,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 LCDPluginsTab::LCDPluginsTab(
-	NSGKDBus::GKDBus* pDBus,
+	GKDBUS::GKDBus* pDBus,
 	const QString & name)
 	:	Tab(pDBus),
 		_LCDPluginsMask(0),

@@ -53,14 +53,14 @@ class SleepInhibition
 		~SleepInhibition();
 
 		void startSleepInhibition(
-			NSGKDBus::GKDBus* const pDBus,
+			GKDBUS::GKDBus* const pDBus,
 			DevicesManager* const pDevicesManager
 		);
 		void stopSleepInhibition() noexcept;
 
 	private:
-		const NSGKDBus::BusConnection & _systemBus = NSGKDBus::GKDBus::SystemBus;
-		NSGKDBus::GKDBus* _pDBus;
+		const GKDBUS::BusConnection & _systemBus = GKDBUS::GKDBus::SystemBus;
+		GKDBUS::GKDBus* _pDBus;
 		DevicesManager* _pDevicesManager;
 
 		using SessionFramework = LIBShared::SessionFramework;

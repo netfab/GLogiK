@@ -24,7 +24,7 @@
 #include "SIGas2v.hpp"
 
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 using namespace NSGKUtils;
@@ -41,7 +41,7 @@ template <>
 
 	try
 	{
-		const std::vector<std::string> arg( ArgStringArray::getNextStringArray() );
+		const std::vector<std::string> arg( Types::ArgStringArray::getNextStringArray() );
 
 		/* call array of string to void callback */
 		this->callback(arg);
@@ -54,5 +54,5 @@ template <>
 	/* don't need to send a reply */
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events
 

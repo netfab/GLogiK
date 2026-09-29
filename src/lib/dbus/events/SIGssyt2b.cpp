@@ -24,7 +24,7 @@
 #include "SIGssyt2b.hpp"
 
 
-namespace NSGKDBus
+namespace GKDBUS::Events
 {
 
 using namespace NSGKUtils;
@@ -40,10 +40,10 @@ template <>
 
 	try
 	{
-		const std::string arg1( ArgString::getNextStringArgument() );
-		const std::string arg2( ArgString::getNextStringArgument() );
-		const std::uint8_t arg3 = ArgUInt8::getNextByteArgument();
-		const std::uint64_t arg4 = ArgUInt64::getNextUInt64Argument();
+		const std::string arg1( Types::ArgString::getNextStringArgument() );
+		const std::string arg2( Types::ArgString::getNextStringArgument() );
+		const std::uint8_t arg3 = Types::ArgUInt8::getNextByteArgument();
+		const std::uint64_t arg4 = Types::ArgUInt64::getNextUInt64Argument();
 
 		/* call two strings one byte one UInt64_t to bool callback */
 		ret = this->callback(arg1, arg2, arg3, arg4);
@@ -76,5 +76,5 @@ template <>
 	this->sendReply();
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Events
 

@@ -42,7 +42,7 @@ class BacklightColorTab
 
 	public:
 		BacklightColorTab(
-			NSGKDBus::GKDBus* pDBus,
+			GKDBUS::GKDBus* pDBus,
 			const QString & name
 		);
 		~BacklightColorTab();

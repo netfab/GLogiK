@@ -25,7 +25,7 @@
 
 #include "GKDBusErrorReply.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Messages
 {
 
 using namespace NSGKUtils;
@@ -147,5 +147,5 @@ void GKDBusMessageErrorReply::buildAndSendErrorReply(
 	this->sendErrorReply();
 }
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Messages
 

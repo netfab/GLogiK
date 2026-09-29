@@ -31,7 +31,7 @@
 #include "uint8.hpp"
 #include "uint16.hpp"
 
-namespace NSGKDBus
+namespace GKDBUS::Types
 {
 
 class TypeMacro
@@ -71,4 +71,4 @@ class ArgMacro
 
 };
 
-} // namespace NSGKDBus
+} // namespace GKDBUS::Types
