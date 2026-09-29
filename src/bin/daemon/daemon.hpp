@@ -25,7 +25,7 @@
 
 #include <string>
 
-#include "daemonControl.hpp"
+#include "daemonStatus.hpp"
 
 #if GKDBUS
 #include "sleepInhibition.hpp"
@@ -36,10 +36,10 @@ namespace GLogiK::Daemon
 
 class GLogiKDaemon
 #if GKDBUS
-	:	public DaemonControl,
+	:	public DaemonStatus,
 		private SleepInhibition
 #else
-	:	public DaemonControl
+	:	public DaemonStatus
 #endif
 {
 	public:

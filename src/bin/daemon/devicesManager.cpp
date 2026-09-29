@@ -38,7 +38,7 @@
 #include "LCD/pluginsManager.hpp"
 #include "detail.hpp"
 
-#include "daemonControl.hpp"
+#include "daemonStatus.hpp"
 #include "Vendor/Logitech/G510/G510.hpp"
 
 #if HAVE_LIBUSB
@@ -1143,7 +1143,7 @@ void DevicesManager::startMonitoring()
 
 			std::uint16_t c = 0;
 
-			while( GLogiK::Daemon::DaemonControl::isDaemonRunning() )
+			while( GLogiK::Daemon::DaemonStatus::isDaemonRunning() )
 			{
 				int ret = poll(fds, 1, 100);
 

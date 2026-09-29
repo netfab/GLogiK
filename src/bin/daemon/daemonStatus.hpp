@@ -26,14 +26,14 @@
 namespace GLogiK::Daemon
 {
 
-class DaemonControl
+class DaemonStatus
 {
 	public:
-		static bool isDaemonRunning();
+		static const bool isDaemonRunning();
 
 	protected:
-		DaemonControl();
-		~DaemonControl();
+		DaemonStatus() = default;
+		~DaemonStatus() = default;
 
 		static void exitDaemon();
 

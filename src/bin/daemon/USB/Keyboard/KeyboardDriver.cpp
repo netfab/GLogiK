@@ -42,7 +42,7 @@
 #include "bin/daemon/USB/Device/USBDevice.hpp"
 #include "bin/daemon/USB/Device/detail.hpp"
 
-#include "bin/daemon/daemonControl.hpp"
+#include "bin/daemon/daemonStatus.hpp"
 #include "bin/daemon/LCD/PixelsData.hpp"
 #include "bin/daemon/LCD/pluginsManager.hpp"
 #include "bin/daemon/detail.hpp"
@@ -388,7 +388,7 @@ void KeyboardDriver::enterDeviceMacroRecordMode(USBDevice & device)
 		GKSysLogError("reserve bad_alloc failure : ", e.what());
 	}
 
-	while( (! exit) and GLogiK::Daemon::DaemonControl::isDaemonRunning() )
+	while( (! exit) and GLogiK::Daemon::DaemonStatus::isDaemonRunning() )
 	{
 		this->checkDeviceFatalErrors(device, "macro record loop");
 		if( ! device.getThreadsStatus() )
@@ -508,7 +508,7 @@ void KeyboardDriver::LCDScreenLoop(const std::string & devID)
 
 		GKLog3(trace, devID, " spawned LCD screen thread for ", device.getFullName())
 
-		while( GLogiK::Daemon::DaemonControl::isDaemonRunning() )
+		while( GLogiK::Daemon::DaemonStatus::isDaemonRunning() )
 		{
 			namespace chr = std::chrono;
 
@@ -623,7 +623,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 
 		GKLog3(trace, devID, " spawned listening thread for ", device.getFullName())
 
-		while( GLogiK::Daemon::DaemonControl::isDaemonRunning() )
+		while( GLogiK::Daemon::DaemonStatus::isDaemonRunning() )
 		{
 			this->checkDeviceFatalErrors(device, "listen loop");
 			if( ! device.getThreadsStatus() )

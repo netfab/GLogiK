@@ -19,29 +19,21 @@
  *
  */
 
-#include "daemonControl.hpp"
+#include "daemonStatus.hpp"
 
 namespace GLogiK::Daemon
 {
 
-std::atomic<bool> DaemonControl::daemonized(false);
+std::atomic<bool> DaemonStatus::daemonized(false);
 
-DaemonControl::DaemonControl()
+void DaemonStatus::exitDaemon()
 {
+	DaemonStatus::daemonized = false;
 }
 
-DaemonControl::~DaemonControl()
+const bool DaemonStatus::isDaemonRunning()
 {
-}
-
-void DaemonControl::exitDaemon()
-{
-	DaemonControl::daemonized = false;
-}
-
-bool DaemonControl::isDaemonRunning()
-{
-	return DaemonControl::daemonized;
+	return DaemonStatus::daemonized;
 }
 
 } // namespace GLogiK::Daemon
