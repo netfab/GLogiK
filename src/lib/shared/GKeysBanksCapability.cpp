@@ -102,7 +102,7 @@ void GKeysBanksCapability::initBanks(
 				};
 
 				keyInsRet insKey = _GKeysBanks[id].insert(
-					std::pair<GKeysID, GKeysEvent>( keyID, GKeysMacro::emptyMacro )
+					std::pair<GKeysID, GKeysEvent>(keyID, {})
 				);
 
 				insert_status(insKey);

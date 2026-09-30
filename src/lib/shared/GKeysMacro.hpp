@@ -34,9 +34,6 @@ class GKeysMacro
 		using macro_type = GLogiK::macro_type;
 		using KeyEvent = GLogiK::KeyEvent;
 
-	public:
-		static const macro_type emptyMacro;
-
 	protected:
 		GKeysMacro() = default;
 		~GKeysMacro() = default;

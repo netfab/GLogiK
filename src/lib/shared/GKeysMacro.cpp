@@ -31,8 +31,6 @@ namespace LIBShared
 
 using namespace NSGKUtils;
 
-const GLogiK::macro_type GKeysMacro::emptyMacro = {};
-
 void GKeysMacro::checkMacro(macro_type & macro)
 {
 	std::vector<MacroEvent> pressedEvents;
