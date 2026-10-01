@@ -20,6 +20,7 @@
  */
 
 #include <new>
+#include <string_view>
 
 #include "lib/utils/utils.hpp"
 
@@ -46,7 +47,7 @@ FontsManager::~FontsManager()
 
 const std::uint16_t FontsManager::getCenteredXPos(
 	const FontID fontID,
-	const std::string & string)
+	std::string_view string)
 {
 	try
 	{
@@ -75,7 +76,7 @@ const std::uint16_t FontsManager::getCenteredYPos(const FontID fontID)
 void FontsManager::printCharacterOnFrame(
 	const FontID fontID,
 	PixelsData & frame,
-	const std::string & c,
+	std::string_view c,
 	std::uint16_t & PBMXPos,
 	const std::uint16_t PBMYPos)
 {

@@ -23,19 +23,14 @@
 
 #include <cstdint>
 
-#include <utility>
 #include <string>
-#include <map>
-#include <initializer_list>
+#include <string_view>
 
 #include "bin/daemon/LCD/PixelsData.hpp"
 #include "PBMFile.hpp"
 
 namespace Managers::LCDPlugins::plugin
 {
-
-typedef std::initializer_list<
-	std::pair<const std::string, std::pair<std::uint16_t, std::uint16_t>>	> charactersMap_type;
 
 class PBMFont
 	:	virtual protected PBMFile
@@ -46,14 +41,14 @@ class PBMFont
 	public:
 		virtual ~PBMFont();
 
-		static const std::string deg;
+		static const std::size_t characterLength(std::string_view sv, std::size_t pos);
 
-		const std::uint16_t getCenteredXPos(const std::string & string);
+		const std::uint16_t getCenteredXPos(std::string_view sv);
 		const std::uint16_t getCenteredYPos();
 
 		void printCharacterOnFrame(
 			PixelsData & frame,
-			const std::string & character,
+			std::string_view character,
 			std::uint16_t & PBMXPos,
 			const std::uint16_t PBMYPos
 		);
@@ -66,8 +61,7 @@ class PBMFont
 			const std::uint16_t charWidth,
 			const std::uint16_t charHeight,
 			const std::uint16_t fontLeftShift = 0,
-			const std::uint16_t extraLeftShift = 0,
-			const charactersMap_type charsMap = PBMFont::defaultCharsMap
+			const std::uint16_t extraLeftShift = 0
 		);
 
 	private:
@@ -85,11 +79,41 @@ class PBMFont
 		std::uint16_t _charX;
 		std::uint16_t _charY;
 
-		std::map<std::string, std::pair<std::uint16_t, std::uint16_t>> _charsMap;
+		struct Point {
+			std::uint16_t x;
+			std::uint16_t y;
+		};
 
-		static const charactersMap_type defaultCharsMap;
-		static const std::string hackstring;
+		struct CharMapping {
+			std::string_view character;
+			Point point;
+		};
 
+		static constexpr CharMapping charactersMap[] =
+		{
+			/* -- */
+			{"a", {0,0} },  {"b", {1,0} },  {"c", {2,0} },  {"d", {3,0} },  {"e", {4,0} },
+			{"f", {5,0} },  {"g", {6,0} },  {"h", {7,0} },  {"i", {8,0} },  {"j", {9,0} },
+			{"k", {10,0} }, {"l", {11,0} }, {"m", {12,0} }, {"n", {13,0} }, {"o", {14,0} },
+			{"p", {15,0} }, {"q", {16,0} }, {"r", {17,0} }, {"s", {18,0} }, {"t", {19,0} },
+			{"u", {20,0} }, {"v", {21,0} }, {"w", {22,0} }, {"x", {23,0} }, {"y", {24,0} },
+			{"z", {25,0} },
+			/* -- */
+			{"A", {0,1} },  {"B", {1,1} },  {"C", {2,1} },  {"D", {3,1} },  {"E", {4,1} },
+			{"F", {5,1} },  {"G", {6,1} },  {"H", {7,1} },  {"I", {8,1} },  {"J", {9,1} },
+			{"K", {10,1} }, {"L", {11,1} }, {"M", {12,1} }, {"N", {13,1} }, {"O", {14,1} },
+			{"P", {15,1} }, {"Q", {16,1} }, {"R", {17,1} }, {"S", {18,1} }, {"T", {19,1} },
+			{"U", {20,1} }, {"V", {21,1} }, {"W", {22,1} }, {"X", {23,1} }, {"Y", {24,1} },
+			{"Z", {25,1} },
+			/* -- */
+			{"1", {0,2} },  {"2", {1,2} },  {"3", {2,2} },  {"4", {3,2} },  {"5", {4,2} },
+			{"6", {5,2} },  {"7", {6,2} },  {"8", {7,2} },  {"9", {8,2} },  {"0", {9,2} },
+			{" ", {10,2} }, {".", {11,2} }, {":", {12,2} }, {"?", {13,2} }, {"!", {14,2} },
+			{";", {15,2} }, {"/", {16,2} }, {"-", {17,2} }, {"%", {18,2} }, {"°", {19,2} },
+		};
+		static constexpr std::string_view hackstring = "mGMW%";
+
+		static const Point* findCharacter(std::string_view character);
 		const unsigned char getCharacterLine(
 			const std::uint16_t line,
 			const std::uint16_t charByte

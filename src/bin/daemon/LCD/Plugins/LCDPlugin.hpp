@@ -26,6 +26,7 @@
 #include <tuple>
 #include <vector>
 #include <string>
+#include <string_view>
 
 #include <boost/filesystem.hpp>
 
@@ -121,17 +122,17 @@ class LCDPlugin
 		PixelsData & getCurrentFrame();
 
 		void writeStringOnFrame(
-			FontsManager* const pFonts,
-			const FontID fontID,
-			const std::string & string,
-			const int16_t PBMXPos,
-			const int16_t PBMYPos
+			FontsManager* const pFonts, // pointer to fontsManager
+			const FontID fontID,        // font we want to use
+			std::string_view sv,        // string to write
+			const int16_t PBMXPos,      // xPos, -1 means centered horizontally
+			const int16_t PBMYPos       // yPos, -1 means centered vertically
 		);
 
 		void writeStringOnLastFrame(
 			FontsManager* const pFonts,
 			const FontID fontID,
-			const std::string & string,
+			std::string_view sv,
 			const int16_t PBMXPos,
 			const int16_t PBMYPos
 		);

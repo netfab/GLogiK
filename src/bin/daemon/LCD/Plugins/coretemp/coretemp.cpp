@@ -260,7 +260,7 @@ const PixelsData & Coretemp::getNextFrame(
 
 		/* Temperature is measured in degrees Celsius and measurement resolution is 1 degree C. */
 		temp += input_view.substr(0, (input_view.size() - 3));
-		temp += PBMFont::deg;
+		temp += "°";
 
 		if(device.isPkg)
 			this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, temp, 1, 22);

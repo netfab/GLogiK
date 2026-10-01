@@ -20,8 +20,10 @@
  */
 
 //#include <bitset>
+//#include <iomanip> // XXX see debug code
 #include <sstream>
 #include <stdexcept>
+#include <string_view>
 
 #include <boost/filesystem.hpp>
 
@@ -36,32 +38,6 @@ namespace Managers::LCDPlugins::plugin
 namespace fs = boost::filesystem;
 using namespace NSGKUtils;
 
-const std::string PBMFont::deg("\xB0"); // degree symbol °
-const std::string PBMFont::hackstring("mGMW%");
-
-const charactersMap_type PBMFont::defaultCharsMap =
-	{
-		/* -- */
-		{"a", {0,0} },  {"b", {1,0} },  {"c", {2,0} },  {"d", {3,0} },  {"e", {4,0} },
-		{"f", {5,0} },  {"g", {6,0} },  {"h", {7,0} },  {"i", {8,0} },  {"j", {9,0} },
-		{"k", {10,0} }, {"l", {11,0} }, {"m", {12,0} }, {"n", {13,0} }, {"o", {14,0} },
-		{"p", {15,0} }, {"q", {16,0} }, {"r", {17,0} }, {"s", {18,0} }, {"t", {19,0} },
-		{"u", {20,0} }, {"v", {21,0} }, {"w", {22,0} }, {"x", {23,0} }, {"y", {24,0} },
-		{"z", {25,0} },
-		/* -- */
-		{"A", {0,1} },  {"B", {1,1} },  {"C", {2,1} },  {"D", {3,1} },  {"E", {4,1} },
-		{"F", {5,1} },  {"G", {6,1} },  {"H", {7,1} },  {"I", {8,1} },  {"J", {9,1} },
-		{"K", {10,1} }, {"L", {11,1} }, {"M", {12,1} }, {"N", {13,1} }, {"O", {14,1} },
-		{"P", {15,1} }, {"Q", {16,1} }, {"R", {17,1} }, {"S", {18,1} }, {"T", {19,1} },
-		{"U", {20,1} }, {"V", {21,1} }, {"W", {22,1} }, {"X", {23,1} }, {"Y", {24,1} },
-		{"Z", {25,1} },
-		/* -- */
-		{"1", {0,2} },  {"2", {1,2} },  {"3", {2,2} },  {"4", {3,2} },  {"5", {4,2} },
-		{"6", {5,2} },  {"7", {6,2} },  {"8", {7,2} },  {"9", {8,2} },  {"0", {9,2} },
-		{" ", {10,2} }, {".", {11,2} }, {":", {12,2} }, {"?", {13,2} }, {"!", {14,2} },
-		{";", {15,2} }, {"/", {16,2} }, {"-", {17,2} }, {"%", {18,2} }, {PBMFont::deg, {19,2} },
-	};
-
 PBMFont::PBMFont(
 	const std::string & PBMName,
 	const std::uint16_t PBMWidth,
@@ -69,8 +45,7 @@ PBMFont::PBMFont(
 	const std::uint16_t charWidth,
 	const std::uint16_t charHeight,
 	const std::uint16_t fontLeftShift,
-	const std::uint16_t extraLeftShift,
-	const charactersMap_type charsMap)
+	const std::uint16_t extraLeftShift)
 	:	_fontName(PBMName),
 		_PBMWidth(PBMWidth),
 		_PBMHeight(PBMHeight),
@@ -81,8 +56,7 @@ PBMFont::PBMFont(
 		_fontLeftShift(fontLeftShift),
 		_extraLeftShift(extraLeftShift),
 		_charX(0),
-		_charY(0),
-		_charsMap(charsMap)
+		_charY(0)
 {
 	GK_LOG_FUNC
 
@@ -111,19 +85,42 @@ PBMFont::~PBMFont()
 	GKLog2(trace, "deleting font ", _fontName)
 }
 
-const std::uint16_t PBMFont::getCenteredXPos(const std::string & string)
+const std::size_t PBMFont::characterLength(std::string_view sv, std::size_t pos)
+{
+	// ° in UTF-8 = C2 B0
+	// TODO : see utfcpp library
+	if( static_cast<unsigned char>(sv[pos]) == 0xC2 &&
+		pos + 1 < sv.size() &&
+		static_cast<unsigned char>(sv[pos + 1]) == 0xB0)
+		return 2;
+
+	return 1;
+}
+
+const std::uint16_t PBMFont::getCenteredXPos(std::string_view sv)
 {
 	namespace N_PBM = ::Managers::LCDPlugins::PBM;
 
 	std::uint16_t XPos = N_PBM::LCD_width;
-	for(const char & c : string)
+	std::size_t pos = 0;
+
+	while( pos < sv.size() )
 	{
+		const std::size_t length = PBMFont::characterLength(sv, pos);
+
 		XPos -= (_charWidth - _fontLeftShift);
 		// XXX
 		if(_extraLeftShift > 0)
-			if(hackstring.find(c) == std::string::npos)
+		{
+			std::string_view character = sv.substr(pos, length);
+
+			if(hackstring.find(character) == std::string::npos)
 				XPos += _extraLeftShift;
+		}
+
+		pos += length;
 	}
+
 	return static_cast<std::uint16_t>(XPos/2);
 }
 
@@ -137,7 +134,7 @@ const std::uint16_t PBMFont::getCenteredYPos()
 
 void PBMFont::printCharacterOnFrame(
 	PixelsData & frame,
-	const std::string & character,
+	std::string_view character,
 	std::uint16_t & PBMXPos,
 	const std::uint16_t PBMYPos)
 {
@@ -145,12 +142,12 @@ void PBMFont::printCharacterOnFrame(
 
 	namespace N_PBM = ::Managers::LCDPlugins::PBM;
 
-	try
+	if(const Point* point = PBMFont::findCharacter(character))
 	{
-		_charX = _charsMap.at(character).first;
-		_charY = _charsMap[character].second;
+		_charX = point->x;
+		_charY = point->y;
 	}
-	catch (const std::out_of_range& oor)
+	else
 	{
 		std::ostringstream warn(_fontName, std::ios_base::app);
 		warn << " font : unknown character : " << character;
@@ -223,6 +220,32 @@ void PBMFont::printCharacterOnFrame(
 	if(_extraLeftShift > 0)
 		if(hackstring.find(character) == std::string::npos)
 			PBMXPos -= _extraLeftShift;
+}
+
+auto PBMFont::findCharacter(std::string_view character) -> const Point*
+{
+    for (const auto & mapping : PBMFont::charactersMap)
+	{
+		/* XXX debug code
+		if (mapping.character == "°" || character == "°")
+		{
+			LOG(trace)	<< "mapping: size=" << mapping.character.size()
+						<< ", character: size=" << character.size();
+			LOG(trace) << "mapping bytes: ";
+			for (unsigned char c : mapping.character)
+				LOG(trace) << std::hex << static_cast<int>(c) << ' ';
+
+			LOG(trace) << "character bytes: ";
+			for (unsigned char c : character)
+				LOG(trace) << std::hex << static_cast<int>(c) << ' ';
+		}
+		*/
+
+		if (mapping.character == character)
+			return &mapping.point;
+	}
+
+	return nullptr;
 }
 
 const unsigned char PBMFont::getCharacterLine(

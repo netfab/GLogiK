@@ -24,6 +24,7 @@
 #include <cstdint>
 
 #include <string>
+#include <string_view>
 #include <map>
 
 #include "PBMFont.hpp"
@@ -40,7 +41,7 @@ class FontsManager
 
 		const std::uint16_t getCenteredXPos(
 			const FontID fontID,
-			const std::string & string
+			std::string_view string
 		);
 
 		const std::uint16_t getCenteredYPos(const FontID fontID);
@@ -48,7 +49,7 @@ class FontsManager
 		void printCharacterOnFrame(
 			const FontID fontID,
 			PixelsData & frame,
-			const std::string & c,
+			std::string_view c,
 			std::uint16_t & PBMXPos,
 			const std::uint16_t PBMYPos
 		);

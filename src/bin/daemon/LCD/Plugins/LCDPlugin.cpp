@@ -20,6 +20,7 @@
  */
 
 #include <sstream>
+#include <string_view>
 
 #include "lib/utils/utils.hpp"
 
@@ -219,7 +220,7 @@ PixelsData & LCDPlugin::getCurrentFrame()
 void LCDPlugin::writeStringOnFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
-	const std::string & string,
+	std::string_view sv,
 	const int16_t PBMXPos,
 	const int16_t PBMYPos)
 {
@@ -232,28 +233,29 @@ void LCDPlugin::writeStringOnFrame(
 		{
 			LOG(trace)	<< this->getPluginName()
 						<< " - frameIndex: " << _frameIndex
-						<< " - writing string: " << string;
+						<< " - writing string: " << sv;
 		}
 #endif
 		std::uint16_t XPos, YPos = 0;
 
 		XPos = (PBMXPos < 0) ? /* centered */
-				pFonts->getCenteredXPos(fontID, string) :
+				pFonts->getCenteredXPos(fontID, sv) :
 				static_cast<std::uint16_t>(PBMXPos);
 
 		YPos = (PBMYPos < 0) ? /* centered */
 				pFonts->getCenteredYPos(fontID) :
 				static_cast<std::uint16_t>(PBMYPos);
 
-		for(const char & c : string)
-		{ /* for each character in the string */
-			const std::string character(1, c);
-			pFonts->printCharacterOnFrame(
-				fontID,
-				(*_itCurrentFrame)._PBMData,
-				character,
-				XPos,
-				YPos);
+		std::size_t pos = 0;
+		while( pos < sv.size() )
+		{
+			// length of the next character. Usually , length is 1 for ASCII characters
+			// but for characters encoded in UTF-8, like "°", length is 2
+			std::size_t length = PBMFont::characterLength(sv, pos);
+			std::string_view nc = std::string_view(sv.data() + pos, length);
+
+			pFonts->printCharacterOnFrame(fontID, (*_itCurrentFrame)._PBMData, nc, XPos, YPos);
+			pos += length;
 		}
 	}
 	catch (const GLogiKExcept & e)
@@ -265,7 +267,7 @@ void LCDPlugin::writeStringOnFrame(
 void LCDPlugin::writeStringOnLastFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
-	const std::string & string,
+	std::string_view sv,
 	const int16_t PBMXPos,
 	const int16_t PBMYPos)
 {
@@ -278,7 +280,7 @@ void LCDPlugin::writeStringOnLastFrame(
 		_itCurrentFrame = --(_frames.end());
 		_frameIndex = (_itCurrentFrame - _frames.begin());
 
-		this->writeStringOnFrame(pFonts, fontID, string, PBMXPos, PBMYPos);
+		this->writeStringOnFrame(pFonts, fontID, sv, PBMXPos, PBMYPos);
 	}
 	catch (const GLogiKExcept & e)
 	{
