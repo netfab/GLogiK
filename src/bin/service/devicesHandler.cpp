@@ -105,12 +105,15 @@ void DevicesHandler::clearDevices(const bool notifications)
 const DevicesFilesMap_type DevicesHandler::getDevicesFilesMap()
 {
 	DevicesFilesMap_type ret;
-	for(const auto & dev : _startedDevices)
-		ret.insert( std::pair<std::string, const std::string>(
-						dev.first, dev.second.getConfigFilePath() ) );
-	for(const auto & dev : _stoppedDevices)
-		ret.insert( std::pair<std::string, const std::string>(
-						dev.first, dev.second.getConfigFilePath() ) );
+
+	using p = std::pair<std::string, const std::string>;
+
+	//  const auto & [std::string, DeviceProperties]
+	for(const auto & [devID, device] : _startedDevices)
+		ret.insert( p{devID, device.getConfigFilePath()} );
+	for(const auto & [devID, device] : _stoppedDevices)
+		ret.insert( p{devID, device.getConfigFilePath()} );
+
 	return ret;
 }
 
@@ -135,11 +138,9 @@ const std::vector<std::string> DevicesHandler::getDevicesList()
 		GKSysLogError("reserve bad_alloc failure : ", e.what());
 	}
 
-	for(const auto & dev : _startedDevices)
+	//  const auto & [std::string, DeviceProperties]
+	for(const auto & [devID, device] : _startedDevices)
 	{
-		const auto & devID = dev.first;
-		const auto & device = dev.second;
-
 		ret.push_back(devID);
 		ret.push_back("started"); // status
 		ret.push_back(device.getVendor());
@@ -147,11 +148,10 @@ const std::vector<std::string> DevicesHandler::getDevicesList()
 		ret.push_back(device.getName());
 		ret.push_back(device.getConfigFilePath());
 	}
-	for(const auto & dev : _stoppedDevices)
-	{
-		const auto & devID = dev.first;
-		const auto & device = dev.second;
 
+	//  const auto & [std::string, DeviceProperties]
+	for(const auto & [devID, device] : _stoppedDevices)
+	{
 		ret.push_back(devID);
 		ret.push_back("stopped"); // status
 		ret.push_back(device.getVendor());
@@ -258,9 +258,8 @@ void DevicesHandler::saveDeviceConfigurationFile(
 		/* ignore next filesystem notification for this device, this will
 		 * abort next reloadDeviceConfigurationFile call for this devID
 		 */
-		typedef std::pair<devIDSet::iterator, bool> ignoredInsRet;
-		ignoredInsRet ret = _ignoredFSNotifications.insert(devID);
-		if( ! ret.second )
+		const auto [iter, success] = _ignoredFSNotifications.insert(devID);
+		if( ! success )
 		{
 			GKLog2(warning, devID, "device ID already exists in container")
 		}
@@ -541,10 +540,11 @@ void DevicesHandler::setDeviceProperties(
 
 	std::set<std::string> alreadyUsed;
 	{
-		for(const auto & dev : _startedDevices)
-			alreadyUsed.insert( dev.second.getConfigFilePath() );
-		for(const auto & dev : _stoppedDevices)
-			alreadyUsed.insert( dev.second.getConfigFilePath() );
+		//  const auto & [std::string, DeviceProperties]
+		for(const auto & [devID, device] : _startedDevices)
+			alreadyUsed.insert( device.getConfigFilePath() );
+		for(const auto & [devID, device] : _stoppedDevices)
+			alreadyUsed.insert( device.getConfigFilePath() );
 	}
 
 	try

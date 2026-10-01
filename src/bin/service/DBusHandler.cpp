@@ -122,13 +122,14 @@ void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 	/* can thow */
 	pGKfs->readNotifyEvents( devicesMap );
 
-	for( const auto & device : devicesMap )
+	//  const auto & [std::string, const std::string]
+	for(const auto & [devID, devFile] : devicesMap)
 	{
 		GKLog4(trace,
-			device.first, " filesystem notification event",
-			"reloading file : ", device.second
+			devID, " filesystem notification event",
+			"reloading file : ", devFile
 		)
-		_devices.reloadDeviceConfigurationFile(device.first);
+		_devices.reloadDeviceConfigurationFile(devID);
 
 		/*
 		 * force state update, to load active user's parameters

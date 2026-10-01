@@ -158,10 +158,9 @@ void AboutDialog::copyToClipboard(const GKDepsMap_type* const pDepsMap)
 	const int pad = 8;
 	QString text = QString("%1 %2 %3\n").arg("", 10).arg("built", pad).arg("run", pad);
 
-	for(const auto & depPair : (*pDepsMap))
+	//  const auto & [GKBinary, GKDepsArray_type]
+	for(const auto & [GKBin, GKDeps] : (*pDepsMap))
 	{
-		//const auto & GKBin = depPair.first;
-		const auto & GKDeps = depPair.second;
 		for(const auto & GKDep : GKDeps)
 		{
 			const char* d  = GKDep.getDependency().c_str();

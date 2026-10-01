@@ -53,10 +53,6 @@ void GKeysBanksCapability::initBanks(
 {
 	GK_LOG_FUNC
 
-	using mBank_type = GLogiK::mBank_type;
-	using GKeysID = GLogiK::GKeysID;
-	using GKeysEvent = GLogiK::GKeysEvent;
-
 	GKLog4(trace, "numBanks: ", MKeysIDArray.size(), "numKeys: ", GKeysIDArray.size())
 
 	if( MKeysIDArray.empty() )
@@ -68,51 +64,36 @@ void GKeysBanksCapability::initBanks(
 	MKeysIDArray_type MKeysIDArr(MKeysIDArray);
 	MKeysIDArr.emplace(MKeysIDArr.begin(), MKeysID::MKEY_M0);
 
-	for(const MKeysID & id : MKeysIDArr)
+	for(const MKeysID & bankID : MKeysIDArr)
 	{
 		try
 		{
 			{
-				/* XXX - c++17 structured bindings */
-				typedef std::pair<banksMap_type::iterator, bool> bankInsRet;
-				bankInsRet ret = _GKeysBanks.insert( std::pair<const MKeysID, mBank_type>(id, {}) );
-				if( ! ret.second )
+				using mBank_type = GLogiK::mBank_type;
+				const auto [iter, success] = _GKeysBanks.insert( {bankID, mBank_type{}} );
+				if(! success)
 					throw GLogiKExcept("bank insert failure");
 			}
 
-			unsigned short insertedKeys = 0;
-
-			for(const auto & keyID : GKeysIDArray)
+			for(const auto & GKeyID : GKeysIDArray)
 			{
-				/* XXX - c++17 structured bindings */
-				typedef std::pair<mBank_type::iterator, bool> keyInsRet;
-
-				// lambda
-				auto insert_status = [&insertedKeys] (const keyInsRet & r) -> void
+				using GKeysEvent = GLogiK::GKeysEvent;
+				const auto [iter, success] = _GKeysBanks[bankID].try_emplace(GKeyID, GKeysEvent{});
+				if(! success)
 				{
-					if(r.second)
-					{
-						insertedKeys++;
-						//GKLog2(trace, "inserted key: ", getGKeyName(r.first->first))
-					}
-					else
-					{
-						LOG(error) << "failed to insert key: " << getGKeyName(r.first->first);
-					}
-				};
-
-				keyInsRet insKey = _GKeysBanks[id].insert(
-					std::pair<GKeysID, GKeysEvent>(keyID, {})
-				);
-
-				insert_status(insKey);
+					LOG(error) << "failed to insert key: " << getGKeyName(GKeyID);
+				}
 			}
 
-			GKLog4(trace, "bank id: ", id, "number of initialized G-Keys: ", insertedKeys)
+			GKLog4(trace,
+				"bank: ", getMKeyName(bankID),
+				"number of initialized G-Keys: ", _GKeysBanks[bankID].size()
+			)
 		}
 		catch(const GLogiKExcept & e)
 		{
-			LOG(error) << "bank id: " << id << " - failed to initialize: " << e.what();
+			LOG(error)	<< "bank: " << getMKeyName(bankID)
+						<< " - failed to initialize: " << e.what();
 		}
 	}
 }
@@ -203,16 +184,15 @@ auto GKeysBanksCapability::getCurrentBankID() const -> const MKeysID
 
 void GKeysBanksCapability::resetBank(const MKeysID bankID)
 {
-	using GKeysEvent = GLogiK::GKeysEvent;
 	using GKeyEventType = GLogiK::GKeyEventType;
 
 	try
 	{
-		for(auto & keyEventPair : _GKeysBanks.at(bankID))
+		//  auto & [GKeysID, GKeysEvent]
+		for(auto & [GKeyID, GKeyEvent] : _GKeysBanks.at(bankID))
 		{
-			GKeysEvent & event = keyEventPair.second;
-			event.clearMacro();
-			event.setEventType(GKeyEventType::GKEY_INACTIVE);
+			GKeyEvent.clearMacro();
+			GKeyEvent.setEventType(GKeyEventType::GKEY_INACTIVE);
 			// FIXME reset command ?
 		}
 	}

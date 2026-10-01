@@ -115,11 +115,9 @@ void DesktopServiceSystray::updateContextMenu(const DevicesMap_type & devices)
 						devicesSubmenu->setDisabled(true);
 				}
 
-				for(const auto & devicePair : devices)
+				//  const auto & [std::string, DeviceID]
+				for(const auto & [devID, deviceID] : devices)
 				{ // <<< start/restart/stop events for each device
-					auto & devID = devicePair.first;
-					auto & deviceID = devicePair.second;
-
 					const QString QdevID = QString::fromStdString(devID);
 					QMenu* deviceEventMenu = devicesSubmenu->addMenu(QdevID);
 

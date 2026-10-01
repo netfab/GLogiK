@@ -793,15 +793,16 @@ void MainWindow::resetInterface()
 
 		{
 			QStringList items = {""}; // index 0
-			for(const auto & devicePair : _devices)
+			//  const auto & [std::string, DeviceID]
+			for(const auto & [devID, deviceID] : _devices)
 			{
-				std::string item( devicePair.first );
+				std::string item( devID );
 				item += " ";
-				item += devicePair.second.getVendor();
+				item += deviceID.getVendor();
 				item += " ";
-				item += devicePair.second.getProduct();
+				item += deviceID.getProduct();
 				item += " ";
-				item += devicePair.second.getName();
+				item += deviceID.getName();
 				std::replace( item.begin(), item.end(), '_', ' ');
 				items << item.c_str();
 			}

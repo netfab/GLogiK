@@ -36,8 +36,11 @@ FontsManager::FontsManager()
 
 FontsManager::~FontsManager()
 {
-	for(const auto & font_pair : _fonts)
-		delete font_pair.second;
+	//  auto & [FontID, PBMFont*]
+	for(auto & [fontID, pFont] : _fonts)
+	{
+		delete pFont; pFont = nullptr;
+	}
 	_fonts.clear();
 }
 

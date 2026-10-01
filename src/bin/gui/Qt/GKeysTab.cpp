@@ -769,11 +769,12 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 			}
 		}
 
-		//for(const auto & GMacroPair : bank)
+		////  const auto & [GKeysID, GKeysEvent]
+		//for(const auto & [GKey, event] : bank)
 		//{
 		//	using LIBShared::getGKeyName;
-		//	LOG(trace)	<< "key|size: " << getGKeyName(GMacroPair.first)
-		//				<< "|" << (GMacroPair.second).size();
+		//	LOG(trace)	<< "key|size: " << getGKeyName(GKey)
+		//				<< "|" << event.getMacro().size();
 		//}
 
 		if( (bank.size() % keysPerLine) != 0 )

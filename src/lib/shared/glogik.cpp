@@ -125,7 +125,7 @@ void printVersionDeps(
 			<< std::setfill('-') << std::setw(38) << "-" << "\n"
 			<< std::setfill(' ');
 
-	// c++17 structured bindings
+	//  const auto & [GKBinary, GKDepsArray_type]
 	for(const auto & [binary, deps] : dependencies)
 	{
 		for(const auto & v : deps)

@@ -66,11 +66,9 @@ void TypeGKDepsMap::appendGKDepsMap(
 
 	try
 	{
-		for(const auto & x : depsMap)
+		//  const auto & [GKBinary, GKDepsArray_type]
+		for(const auto & [binary, deps] : depsMap)
 		{
-			const auto & bin = x.first;   // GLogiK::GKBinary
-			const auto & deps = x.second; // GLogiK::GKDepsArray_type
-
 			DBusMessageIter itStruct_1;
 
 			/*
@@ -85,7 +83,7 @@ void TypeGKDepsMap::appendGKDepsMap(
 				throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 			}
 
-			this->appendUInt8(&itStruct_1, toEnumType(bin));
+			this->appendUInt8(&itStruct_1, toEnumType(binary));
 			this->appendUInt64(&itStruct_1, deps.size()); // vector size
 
 			try

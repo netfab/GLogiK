@@ -71,13 +71,13 @@ ClientsManager::~ClientsManager()
 
 	GKLog(trace, "destroying clients manager")
 
-	for( auto & clientPair : _connectedClients )
+	//  auto & [std::string, Client*]
+	for(auto & [clientID, pClient] : _connectedClients)
 	{
-		Client* pClient = clientPair.second;
 		if( pClient != nullptr )
 		{ /* sanity check */
 			std::ostringstream buffer(std::ios_base::app);
-			buffer << "destroying unfreed client : " << clientPair.first;
+			buffer << "destroying unfreed client : " << clientID;
 			GKSysLogWarning(buffer.str());
 			delete pClient; pClient = nullptr;
 		}
@@ -387,11 +387,9 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 	{
 		std::vector<std::string> toUnregister;
 
-		for(const auto & clientPair : _connectedClients )
+		//  const auto & [std::string, Client*]
+		for(const auto & [clientID, pClient] : _connectedClients)
 		{
-			const std::string & clientID = clientPair.first;
-			Client* pClient = clientPair.second;
-
 			/* unresponsive client */
 			if( ! pClient->isAlive() )
 			{
@@ -412,8 +410,8 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 				/* process to check if registered clients are still alives, registered
 				 * clients will have 5 seconds to update their session state, else they
 				 * will be considered as crashed on next registerClient call */
-				for(auto & newPair : _connectedClients )
-					newPair.second->uncheck();
+				for(auto & [id, client] : _connectedClients )
+					client->uncheck();
 
 				DBus::Signals::sendSignalToClients(
 					_connectedClients.size(), _pDBus, LIBShared::GK_DBUS_SERVICE_SIGNAL_REPORT_YOURSELF

@@ -567,8 +567,8 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 
 									if( ! skip_op )
 									{
-										auto result = xmlNodes.insert(op);
-										if( ! result.second )
+										const auto [iter, success] = xmlNodes.insert(op);
+										if( ! success )
 										{
 											LOG(warning) << "node insertion failure: " << op;
 										}

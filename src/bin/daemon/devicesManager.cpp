@@ -156,11 +156,9 @@ void DevicesManager::initializeDevices(
 
 	std::vector<std::string> initializedDevices;
 
-	for(const auto & devicePair : detectedDevices)
+	//  const auto & [std::string, USBDeviceID]
+	for(const auto & [devID, device] : detectedDevices)
 	{
-		const auto & devID = devicePair.first;
-		const auto & device = devicePair.second;
-
 		if(_startedDevices.count(devID) == 1)
 		{
 #if DEBUGGING_ON
@@ -1058,9 +1056,9 @@ void DevicesManager::resetDevicesStates()
 
 	GKLog(trace, "resetting initialized devices states")
 
-	for(const auto & devicePair : _startedDevices)
+	//  const auto & [std::string, USBDeviceID]
+	for(const auto & [devID, device] : _startedDevices)
 	{
-		const auto & device = devicePair.second;
 		for(const auto & driver : _drivers)
 			if( device.getDriverID() == driver->getDriverID() )
 				driver->resetDeviceState( device );
