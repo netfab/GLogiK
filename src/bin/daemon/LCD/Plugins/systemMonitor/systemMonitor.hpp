@@ -65,7 +65,7 @@ class SystemMonitor
 		std::size_t _lastRateStringSize;
 		NetDirection _currentRate;
 
-		const std::array<const std::string_view, 5> _memItems =
+		static constexpr std::array<std::string_view, 5> memItems =
 			{"MemTotal", "MemFree", "MemAvailable", "Buffers", "Cached"};
 };
 

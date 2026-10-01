@@ -135,7 +135,7 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 						continue;
 					}
 
-					for(const auto & item : _memItems)
+					for(const auto & item : SystemMonitor::memItems)
 					{
 						const std::string_view s(words[0]);
 						// don't want trailing ':'
@@ -148,7 +148,7 @@ const PixelsData & SystemMonitor::getNextPBMFrame(
 					}
 				}
 
-				if( memShot.size() == _memItems.size() )
+				if( memShot.size() == SystemMonitor::memItems.size() )
 				{
 					//LOG(trace) << "found each item :-)";
 					break;
