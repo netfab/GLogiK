@@ -86,7 +86,7 @@ void SystemMonitor::init(
 	LCDPlugin::init(pFonts, product);
 }
 
-const PixelsData & SystemMonitor::getNextPBMFrame(
+const PixelsData & SystemMonitor::getNextFrame(
 	FontsManager* const pFonts,
 	const std::string & LCDKey,
 	const bool lockedPlugin)

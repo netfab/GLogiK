@@ -147,7 +147,7 @@ void Coretemp::init(
 	LCDPlugin::init(pFonts, product);
 }
 
-const PixelsData & Coretemp::getNextPBMFrame(
+const PixelsData & Coretemp::getNextFrame(
 	FontsManager* const pFonts,
 	const std::string & LCDKey,
 	const bool lockedPlugin)
