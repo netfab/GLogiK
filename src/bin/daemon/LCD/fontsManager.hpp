@@ -27,11 +27,13 @@
 #include <string_view>
 #include <map>
 
-#include "PBMFont.hpp"
-#include "fonts.hpp"
+#include "Fonts/fonts.hpp"
+#include "PixelsData.hpp"
 
-namespace Managers::LCDPlugins::plugin
+namespace Managers::LCDPlugins::Fonts
 {
+
+class PBMFont;
 
 class FontsManager
 {
@@ -41,7 +43,7 @@ class FontsManager
 
 		const std::uint16_t getCenteredXPos(
 			const FontID fontID,
-			std::string_view string
+			std::string_view sv
 		);
 
 		const std::uint16_t getCenteredYPos(const FontID fontID);
@@ -49,7 +51,7 @@ class FontsManager
 		void printCharacterOnFrame(
 			const FontID fontID,
 			PixelsData & frame,
-			std::string_view c,
+			std::string_view sv,
 			std::uint16_t & PBMXPos,
 			const std::uint16_t PBMYPos
 		);
@@ -62,4 +64,4 @@ class FontsManager
 		void initializeFont(const FontID fontID);
 };
 
-} // namespace Managers::LCDPlugins::plugin
+} // namespace Managers::LCDPlugins::Fonts

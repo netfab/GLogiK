@@ -26,11 +26,15 @@
 #include <string>
 #include <vector>
 
-#include "Plugins/LCDPlugin.hpp"
-#include "Plugins/fontsManager.hpp"
+#include "fontsManager.hpp"
 #include "PixelsData.hpp"
 
 #include "include/LCDPP.hpp"
+
+namespace Managers::LCDPlugins::plugin
+{
+class LCDPlugin;
+}
 
 namespace Managers::LCDPlugins
 {
@@ -38,10 +42,9 @@ namespace Managers::LCDPlugins
 class LCDPluginsManager
 {
 	private:
-		using LCDPPArray_type = GLogiK::LCDPPArray_type;
-		using PixelsData = ::Managers::LCDPlugins::PixelsData;
+		using LCDPPArray_type = ::GLogiK::LCDPPArray_type;
 		using LCDPlugin = plugin::LCDPlugin;
-		using FontsManager = plugin::FontsManager;
+		using FontsManager = Fonts::FontsManager;
 
 	public:
 		LCDPluginsManager(const std::string & product);

@@ -25,14 +25,20 @@
 
 #include "bin/daemon/LCD/Plugins/LCDPlugin.hpp"
 
+namespace Managers::LCDPlugins::Fonts
+{
+class FontsManager;
+}
+
 namespace Managers::LCDPlugins::plugin
 {
-
-class FontsManager;
 
 class Splashscreen
 	:	public LCDPlugin
 {
+	private:
+		using FontsManager = Fonts::FontsManager;
+
 	public:
 		Splashscreen();
 		~Splashscreen();

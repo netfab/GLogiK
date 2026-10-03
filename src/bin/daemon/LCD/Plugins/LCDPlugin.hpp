@@ -34,11 +34,16 @@
 
 #include "bin/daemon/LCD/PixelsData.hpp"
 
-#include "fontsManager.hpp"
-#include "PBM.hpp"
-#include "PBMFile.hpp"
+#include "bin/daemon/LCD/PBM/PBM.hpp"
+#include "bin/daemon/LCD/PBM/PBMFile.hpp"
 
 namespace fs = boost::filesystem;
+
+namespace Managers::LCDPlugins::Fonts
+{
+enum class FontID : std::uint8_t;
+class FontsManager;
+}
 
 namespace Managers::LCDPlugins::plugin
 {
@@ -53,7 +58,7 @@ enum class LCDPluginTempo : std::uint8_t
 class pluginFrame
 {
 	private:
-		using PixelsData = ::Managers::LCDPlugins::PixelsData;
+		using PixelsData = LCDPlugins::PixelsData;
 
 	public:
 		explicit pluginFrame(const std::uint16_t num);
@@ -72,11 +77,13 @@ class pluginFrame
 };
 
 class LCDPlugin
-	:	virtual protected PBMFile
+	:	virtual protected Managers::LCDPlugins::PBM::PBMFile
 {
 	private:
-		using LCDPP = GLogiK::LCDPP;
-		using PixelsData = ::Managers::LCDPlugins::PixelsData;
+		using FontID = Fonts::FontID;
+		using FontsManager = Fonts::FontsManager;
+		using LCDPP = ::GLogiK::LCDPP;
+		using PixelsData = LCDPlugins::PixelsData;
 
 	public:
 		virtual ~LCDPlugin();

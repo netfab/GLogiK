@@ -23,10 +23,9 @@
 
 #include <cstdint>
 
-#include "PBM.hpp"
 #include "PBMFont.hpp"
 
-namespace Managers::LCDPlugins::plugin
+namespace Managers::LCDPlugins::Fonts
 {
 
 enum class FontID : std::uint8_t
@@ -101,4 +100,4 @@ class FontDejaVuSansBold1616
 
 };
 
-} // namespace Managers::LCDPlugins::plugin
+} // namespace Managers::LCDPlugins::Fonts

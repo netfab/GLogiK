@@ -27,14 +27,14 @@
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
-#include "pluginsManager.hpp"
+#include "include/enums.hpp"
 
 #include "Plugins/coretemp/coretemp.hpp"
 #include "Plugins/endscreen/endscreen.hpp"
 #include "Plugins/splashscreen/splashscreen.hpp"
 #include "Plugins/systemMonitor/systemMonitor.hpp"
 
-#include "include/enums.hpp"
+#include "pluginsManager.hpp"
 
 namespace Managers::LCDPlugins
 {
@@ -111,9 +111,8 @@ LCDPluginsManager::LCDPluginsManager(const std::string & product)
 		_noPlugins = true;
 	}
 
-	namespace N_PBM = ::Managers::LCDPlugins::PBM;
 	/* initialize LCD frame container */
-	_LCDBuffer.resize(N_PBM::data_size_in_bytes + N_PBM::data_header_size_in_bytes, 0);
+	_LCDBuffer.resize(PBM::data_size_in_bytes + PBM::data_header_size_in_bytes, 0);
 }
 
 LCDPluginsManager::~LCDPluginsManager()
@@ -284,8 +283,7 @@ auto LCDPluginsManager::getNextLCDScreenBuffer(
 			std::fill(_LCDBuffer.begin(), _LCDBuffer.end(), 0x0);
 		}
 
-		namespace N_PBM = ::Managers::LCDPlugins::PBM;
-		std::fill_n(_LCDBuffer.begin(), N_PBM::data_header_size_in_bytes, 0x0);
+		std::fill_n(_LCDBuffer.begin(), PBM::data_header_size_in_bytes, 0x0);
 	}
 
 	/* the keyboard needs this magic byte */
@@ -306,8 +304,8 @@ void LCDPluginsManager::stopLCDPlugins()
 }
 
 /*
- * PBM_HEIGHT = N_PBM::default_height
- * PBM_WIDTH_IN_BYTES = N_PBM::default_width_in_bytes
+ * PBM_HEIGHT = PBM::default_height
+ * PBM_WIDTH_IN_BYTES = PBM::default_width_in_bytes
  *
  * -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
  * PBM data binary format (without header), for a set of bytes (A, B, C, ...)
@@ -364,8 +362,6 @@ void LCDPluginsManager::stopLCDPlugins()
  */
 void LCDPluginsManager::dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData)
 {
-	namespace N_PBM = ::Managers::LCDPlugins::PBM;
-
 	unsigned int LCDCol = 0;
 	unsigned int rowOffset = 0;
 	unsigned int PBMByte = 0;
@@ -375,14 +371,14 @@ void LCDPluginsManager::dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData)
 		(const unsigned short i) -> const unsigned short
 	{
 		// max: 959
-		return (PBMByte + (N_PBM::default_width_in_bytes * i) + rowOffset);
+		return (PBMByte + (PBM::default_width_in_bytes * i) + rowOffset);
 	};
 
-	for(unsigned int row = 0; row < N_PBM::default_height_in_bytes/*=6*/; ++row)
+	for(unsigned int row = 0; row < PBM::default_height_in_bytes/*=6*/; ++row)
 	{
 		LCDCol = 0;
-		rowOffset = (N_PBM::default_width/*=160*/ * row);
-		for(PBMByte = 0; PBMByte < N_PBM::default_width_in_bytes/*=20*/; ++PBMByte)
+		rowOffset = (PBM::default_width/*=160*/ * row);
+		for(PBMByte = 0; PBMByte < PBM::default_width_in_bytes/*=20*/; ++PBMByte)
 		{
 
 			for(int bit = 7; bit > -1; --bit)
@@ -396,7 +392,7 @@ void LCDPluginsManager::dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData)
 							<< " bit: " << bit << "\n";
 #endif
 
-				_LCDBuffer[N_PBM::data_header_size_in_bytes + LCDCol + rowOffset] =
+				_LCDBuffer[PBM::data_header_size_in_bytes + LCDCol + rowOffset] =
 					(((PBMData[ get_PBMByte(0) ] >> bit) & 1) << 0 ) |
 					(((PBMData[ get_PBMByte(1) ] >> bit) & 1) << 1 ) |
 					(((PBMData[ get_PBMByte(2) ] >> bit) & 1) << 2 ) |

@@ -40,6 +40,7 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
+#include "bin/daemon/LCD/Fonts/fonts.hpp"
 #include "systemMonitor.hpp"
 
 namespace Managers::LCDPlugins::plugin
@@ -51,7 +52,7 @@ SystemMonitor::SystemMonitor()
 	:	_lastRateStringSize(0),
 		_currentRate(NetDirection::NET_RX)
 {
-	using LCDScreenPlugin = GLogiK::LCDScreenPlugin;
+	using LCDScreenPlugin = ::GLogiK::LCDScreenPlugin;
 	_plugin.setID( toEnumType(LCDScreenPlugin::GK_LCD_SYSTEM_MONITOR) );
 	_plugin.setName("systemMonitor");
 	_plugin.setDesc("CPU, network and memory monitoring plugin");
@@ -81,6 +82,8 @@ void SystemMonitor::init(
 		hostname[HOST_NAME_MAX-1] = '\0';
 		host.assign(hostname);
 	}
+
+	using FontID = Fonts::FontID;
 	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, host, 16, 1);
 
 	LCDPlugin::init(pFonts, product);
@@ -274,12 +277,12 @@ const PixelsData & SystemMonitor::getNextFrame(
 	/* FontID::MONOSPACE85 char width is 5 pixels */
 	const std::uint16_t FONT_CHAR_WIDTH = 5;
 
-	namespace N_PBM = ::Managers::LCDPlugins::PBM;
-
 	/* padded percentage string size is always 5 chars */
-	const std::uint16_t PERC_POS_X = (N_PBM::LCD_width - 1) - (5 * FONT_CHAR_WIDTH);
+	const std::uint16_t PERC_POS_X = (PBM::LCD_width - 1) - (5 * FONT_CHAR_WIDTH);
 	const std::uint16_t  NET_POS_X =
-		(N_PBM::LCD_width - 1) - (paddedRateString.size() * FONT_CHAR_WIDTH);
+		(PBM::LCD_width - 1) - (paddedRateString.size() * FONT_CHAR_WIDTH);
+
+	using FontID = Fonts::FontID;
 
 	/* percent - max 5 chars */
 	/* net rate - max 12 chars */

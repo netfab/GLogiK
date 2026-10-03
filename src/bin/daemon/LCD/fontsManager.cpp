@@ -26,7 +26,7 @@
 
 #include "fontsManager.hpp"
 
-namespace Managers::LCDPlugins::plugin
+namespace Managers::LCDPlugins::Fonts
 {
 
 using namespace NSGKUtils;
@@ -47,16 +47,16 @@ FontsManager::~FontsManager()
 
 const std::uint16_t FontsManager::getCenteredXPos(
 	const FontID fontID,
-	std::string_view string)
+	std::string_view sv)
 {
 	try
 	{
-		return _fonts.at(fontID)->getCenteredXPos(string);
+		return _fonts.at(fontID)->getCenteredXPos(sv);
 	}
 	catch (const std::out_of_range& oor)
 	{
 		this->initializeFont(fontID);
-		return _fonts.at(fontID)->getCenteredXPos(string);
+		return _fonts.at(fontID)->getCenteredXPos(sv);
 	}
 }
 
@@ -76,18 +76,18 @@ const std::uint16_t FontsManager::getCenteredYPos(const FontID fontID)
 void FontsManager::printCharacterOnFrame(
 	const FontID fontID,
 	PixelsData & frame,
-	std::string_view c,
+	std::string_view sv,
 	std::uint16_t & PBMXPos,
 	const std::uint16_t PBMYPos)
 {
 	try
 	{
-		_fonts.at(fontID)->printCharacterOnFrame(frame, c, PBMXPos, PBMYPos);
+		_fonts.at(fontID)->printCharacterOnFrame(frame, sv, PBMXPos, PBMYPos);
 	}
 	catch (const std::out_of_range& oor)
 	{
 		this->initializeFont(fontID);
-		_fonts.at(fontID)->printCharacterOnFrame(frame, c, PBMXPos, PBMYPos);
+		_fonts.at(fontID)->printCharacterOnFrame(frame, sv, PBMXPos, PBMYPos);
 	}
 }
 
@@ -123,4 +123,4 @@ void FontsManager::initializeFont(const FontID fontID)
 	_fonts[fontID] = font;
 }
 
-} // namespace Managers::LCDPlugins::plugin
+} // namespace Managers::LCDPlugins::Fonts

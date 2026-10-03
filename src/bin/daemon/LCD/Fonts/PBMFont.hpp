@@ -27,17 +27,14 @@
 #include <string_view>
 
 #include "bin/daemon/LCD/PixelsData.hpp"
-#include "PBMFile.hpp"
+#include "bin/daemon/LCD/PBM/PBMFile.hpp"
 
-namespace Managers::LCDPlugins::plugin
+namespace Managers::LCDPlugins::Fonts
 {
 
 class PBMFont
-	:	virtual protected PBMFile
+	:	virtual protected PBM::PBMFile
 {
-	private:
-		using PixelsData = ::Managers::LCDPlugins::PixelsData;
-
 	public:
 		virtual ~PBMFont();
 
@@ -48,7 +45,7 @@ class PBMFont
 
 		void printCharacterOnFrame(
 			PixelsData & frame,
-			std::string_view character,
+			std::string_view sv,
 			std::uint16_t & PBMXPos,
 			const std::uint16_t PBMYPos
 		);
@@ -113,11 +110,11 @@ class PBMFont
 		};
 		static constexpr std::string_view hackstring = "mGMW%";
 
-		static const Point* findCharacter(std::string_view character);
+		static const Point* findCharacter(std::string_view sv);
 		const unsigned char getCharacterLine(
 			const std::uint16_t line,
 			const std::uint16_t charByte
 		) const;
 };
 
-} // namespace Managers::LCDPlugins::plugin
+} // namespace Managers::LCDPlugins::Fonts

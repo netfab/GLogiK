@@ -32,6 +32,7 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "bin/daemon/LCD/Fonts/fonts.hpp"
 #include "coretemp.hpp"
 
 namespace fs = boost::filesystem;
@@ -116,7 +117,7 @@ const std::vector<std::string> & Coretemp::getCoretempID()
 
 Coretemp::Coretemp(const std::string & coretempID)
 {
-	using LCDScreenPlugin = GLogiK::LCDScreenPlugin;
+	using LCDScreenPlugin = ::GLogiK::LCDScreenPlugin;
 	_plugin.setID( toEnumType(LCDScreenPlugin::GK_LCD_CORETEMP) );
 	_plugin.setName("coretemp");
 	_plugin.setDesc("Coretemp plugin, used to get packages/cores temperatures from Intel CPUs");
@@ -141,6 +142,8 @@ void Coretemp::init(
 	_hwmonID = this->seekDirectoryPath(basedir); /* may throw */
 
 	GKLog2(trace, "hwmon root directory: ", _hwmonID)
+
+	using FontID = Fonts::FontID;
 
 	this->writeStringOnLastFrame(pFonts, FontID::MONOSPACE85, "intel cpu temperatures", 16, 1);
 
@@ -261,6 +264,8 @@ const PixelsData & Coretemp::getNextFrame(
 		/* Temperature is measured in degrees Celsius and measurement resolution is 1 degree C. */
 		temp += input_view.substr(0, (input_view.size() - 3));
 		temp += "°";
+
+		using FontID = Fonts::FontID;
 
 		if(device.isPkg)
 			this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, temp, 1, 22);

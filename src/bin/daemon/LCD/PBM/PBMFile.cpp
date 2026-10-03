@@ -25,7 +25,7 @@
 
 #include "PBMFile.hpp"
 
-namespace Managers::LCDPlugins::plugin
+namespace Managers::LCDPlugins::PBM
 {
 
 using namespace NSGKUtils;
@@ -152,5 +152,4 @@ void PBMFile::extractPBMData(
 		throw GLogiKExcept("EoF NOT reached, that is unexpected");
 }
 
-} // namespace Managers::LCDPlugins::plugin
-
+} // namespace Managers::LCDPlugins::PBM

@@ -28,14 +28,11 @@
 
 #include "bin/daemon/LCD/PixelsData.hpp"
 
-namespace Managers::LCDPlugins::plugin
+namespace Managers::LCDPlugins::PBM
 {
 
 class PBMFile
 {
-	private :
-		using PixelsData = ::Managers::LCDPlugins::PixelsData;
-
 	public:
 
 	protected:
@@ -66,4 +63,4 @@ class PBMFile
 
 };
 
-} // namespace Managers::LCDPlugins::plugin
+} // namespace Managers::LCDPlugins::PBM

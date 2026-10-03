@@ -29,6 +29,7 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "bin/daemon/LCD/Fonts/fonts.hpp"
 #include "endscreen.hpp"
 
 namespace fs = boost::filesystem;
@@ -40,7 +41,7 @@ using namespace NSGKUtils;
 
 Endscreen::Endscreen()
 {
-	using LCDScreenPlugin = GLogiK::LCDScreenPlugin;
+	using LCDScreenPlugin = ::GLogiK::LCDScreenPlugin;
 	_plugin.setID( toEnumType(LCDScreenPlugin::GK_LCD_ENDSCREEN) );
 	_plugin.setName("endscreen");
 	_plugin.setDesc("Endscreen plugin, used when releasing a device");
@@ -55,6 +56,8 @@ void Endscreen::init(
 	FontsManager* const pFonts,
 	const std::string & product)
 {
+	using FontID = Fonts::FontID;
+
 	GK_LOG_FUNC
 
 	fs::path PBMDirectory(PBM_DATA_DIR);

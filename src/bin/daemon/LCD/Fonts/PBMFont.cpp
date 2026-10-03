@@ -29,10 +29,10 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "bin/daemon/LCD/PBM/PBM.hpp"
 #include "PBMFont.hpp"
-#include "PBM.hpp"
 
-namespace Managers::LCDPlugins::plugin
+namespace Managers::LCDPlugins::Fonts
 {
 
 namespace fs = boost::filesystem;
@@ -99,9 +99,7 @@ const std::size_t PBMFont::characterLength(std::string_view sv, std::size_t pos)
 
 const std::uint16_t PBMFont::getCenteredXPos(std::string_view sv)
 {
-	namespace N_PBM = ::Managers::LCDPlugins::PBM;
-
-	std::uint16_t XPos = N_PBM::LCD_width;
+	std::uint16_t XPos = PBM::LCD_width;
 	std::size_t pos = 0;
 
 	while( pos < sv.size() )
@@ -126,23 +124,20 @@ const std::uint16_t PBMFont::getCenteredXPos(std::string_view sv)
 
 const std::uint16_t PBMFont::getCenteredYPos()
 {
-	namespace N_PBM = ::Managers::LCDPlugins::PBM;
-	std::uint16_t YPos = N_PBM::LCD_height;
+	std::uint16_t YPos = PBM::LCD_height;
 	YPos -= _charHeight;
 	return static_cast<std::uint16_t>(YPos/2);
 }
 
 void PBMFont::printCharacterOnFrame(
 	PixelsData & frame,
-	std::string_view character,
+	std::string_view sv,
 	std::uint16_t & PBMXPos,
 	const std::uint16_t PBMYPos)
 {
 	GK_LOG_FUNC
 
-	namespace N_PBM = ::Managers::LCDPlugins::PBM;
-
-	if(const Point* point = PBMFont::findCharacter(character))
+	if(const Point* point = PBMFont::findCharacter(sv))
 	{
 		_charX = point->x;
 		_charY = point->y;
@@ -150,17 +145,17 @@ void PBMFont::printCharacterOnFrame(
 	else
 	{
 		std::ostringstream warn(_fontName, std::ios_base::app);
-		warn << " font : unknown character : " << character;
+		warn << " font : unknown character : " << sv;
 		throw GLogiKExcept( warn.str() );
 	}
 
-	if(PBMXPos >= (N_PBM::LCD_width - _charWidth))
+	if(PBMXPos >= (PBM::LCD_width - _charWidth))
 	{
 		std::ostringstream warn(_fontName, std::ios_base::app);
 		warn << " font : pre-breaking write string loop : x : " << std::to_string(PBMXPos);
 		throw GLogiKExcept( warn.str() );
 	}
-	if(PBMYPos >= (N_PBM::LCD_height - _charHeight))
+	if(PBMYPos >= (PBM::LCD_height - _charHeight))
 	{
 		std::ostringstream warn(_fontName, std::ios_base::app);
 		warn << " font : pre-breaking write string loop : y : " << std::to_string(PBMYPos);
@@ -193,7 +188,7 @@ void PBMFont::printCharacterOnFrame(
 			for(std::uint16_t j = 0; j < _charBytes; j++)
 			{
 				const unsigned char c = this->getCharacterLine(i, j);
-				index = (N_PBM::default_width_in_bytes * (PBMYPos+i)) + xByte + j;
+				index = (PBM::default_width_in_bytes * (PBMYPos+i)) + xByte + j;
 
 				frame.at(index) &= (0b11111111 << xModuloComp8);
 				if(rightShift > 0)
@@ -218,30 +213,30 @@ void PBMFont::printCharacterOnFrame(
 	// applying another leftshift, except for those characters
 	// which are very wide compared to others
 	if(_extraLeftShift > 0)
-		if(hackstring.find(character) == std::string::npos)
+		if(hackstring.find(sv) == std::string::npos)
 			PBMXPos -= _extraLeftShift;
 }
 
-auto PBMFont::findCharacter(std::string_view character) -> const Point*
+auto PBMFont::findCharacter(std::string_view sv) -> const Point*
 {
     for (const auto & mapping : PBMFont::charactersMap)
 	{
 		/* XXX debug code
-		if (mapping.character == "°" || character == "°")
+		if (mapping.character == "°" || sv == "°")
 		{
 			LOG(trace)	<< "mapping: size=" << mapping.character.size()
-						<< ", character: size=" << character.size();
+						<< ", character: size=" << sv.size();
 			LOG(trace) << "mapping bytes: ";
 			for (unsigned char c : mapping.character)
 				LOG(trace) << std::hex << static_cast<int>(c) << ' ';
 
 			LOG(trace) << "character bytes: ";
-			for (unsigned char c : character)
+			for (unsigned char c : sv)
 				LOG(trace) << std::hex << static_cast<int>(c) << ' ';
 		}
 		*/
 
-		if (mapping.character == character)
+		if (mapping.character == sv)
 			return &mapping.point;
 	}
 
@@ -347,5 +342,5 @@ const unsigned char PBMFont::getCharacterLine(
 	return c;
 }
 
-} // namespace Managers::LCDPlugins::plugin
+} // namespace Managers::LCDPlugins::Fonts
 

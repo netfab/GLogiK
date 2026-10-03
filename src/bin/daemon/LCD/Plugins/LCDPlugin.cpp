@@ -24,8 +24,9 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "bin/daemon/LCD/fontsManager.hpp"
+#include "bin/daemon/LCD/PBM/PBM.hpp"
 #include "LCDPlugin.hpp"
-#include "PBM.hpp"
 
 namespace Managers::LCDPlugins::plugin
 {
@@ -37,9 +38,8 @@ using namespace NSGKUtils;
 pluginFrame::pluginFrame(const std::uint16_t num)
 	:	_numFrames(num)
 {
-	namespace N_PBM = ::Managers::LCDPlugins::PBM;
 	/* initialize PBM frame container */
-	_PBMData.resize(N_PBM::data_size_in_bytes, 0);
+	_PBMData.resize(PBM::data_size_in_bytes, 0);
 }
 
 const bool pluginFrame::switchToNextFrame(const std::uint16_t currentFrameCounter)
@@ -177,13 +177,11 @@ void LCDPlugin::addFrameFromPBM(
 
 	this->addEmptyFrame(num);
 
-	namespace N_PBM = ::Managers::LCDPlugins::PBM;
-
 	this->readPBM(
 		filePath.string(),
 		_frames.back()._PBMData,
-		N_PBM::default_width,
-		N_PBM::default_height
+		PBM::default_width,
+		PBM::default_height
 	);
 }
 
@@ -249,6 +247,8 @@ void LCDPlugin::writeStringOnFrame(
 		std::size_t pos = 0;
 		while( pos < sv.size() )
 		{
+			using PBMFont = Fonts::PBMFont;
+
 			// length of the next character. Usually , length is 1 for ASCII characters
 			// but for characters encoded in UTF-8, like "°", length is 2
 			std::size_t length = PBMFont::characterLength(sv, pos);
@@ -295,12 +295,10 @@ void LCDPlugin::drawProgressBarOnFrame(
 {
 	GK_LOG_FUNC
 
-	namespace N_PBM = ::Managers::LCDPlugins::PBM;
-
 	const std::uint16_t PROGRESS_BAR_WIDTH = 102;
 	const std::uint16_t PROGRESS_BAR_HEIGHT = 7;
 
-	if(PBMXPos + PROGRESS_BAR_WIDTH > (N_PBM::LCD_width - 1))
+	if(PBMXPos + PROGRESS_BAR_WIDTH > (PBM::LCD_width - 1))
 	{
 		std::ostringstream buffer(std::ios_base::app);
 		buffer << "wrong progress bar X position : " << PBMXPos;
@@ -374,7 +372,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 		};
 
 		const std::uint16_t xByte = PBMXPos / 8;
-		const std::uint16_t index = (N_PBM::default_width_in_bytes * PBMYPos) + xByte;
+		const std::uint16_t index = (PBM::default_width_in_bytes * PBMYPos) + xByte;
 
 		/* checking for out of range before progress bar drawing */
 		[[maybe_unused]] const auto & pos = frame.at(index+12);
@@ -390,8 +388,8 @@ void LCDPlugin::drawProgressBarOnFrame(
 		 */
 		draw_horizontal_line(index);
 		for(std::uint16_t i = 1; i < (PROGRESS_BAR_HEIGHT-1); ++i)
-			draw_progress_bar_line(index + (N_PBM::default_width_in_bytes * i), i);
-		draw_horizontal_line(index + (N_PBM::default_width_in_bytes * (PROGRESS_BAR_HEIGHT-1)));
+			draw_progress_bar_line(index + (PBM::default_width_in_bytes * i), i);
+		draw_horizontal_line(index + (PBM::default_width_in_bytes * (PROGRESS_BAR_HEIGHT-1)));
 	}
 	catch (const std::out_of_range& oor)
 	{
@@ -404,42 +402,40 @@ void LCDPlugin::drawPadlockOnFrame(
 	const std::uint16_t PBMXPos,
 	const std::uint16_t PBMYPos)
 {
-	namespace N_PBM = ::Managers::LCDPlugins::PBM;
-
 	const std::uint16_t xByte = PBMXPos / 8;
-	const std::uint16_t index = (N_PBM::default_width_in_bytes * PBMYPos) + xByte;
+	const std::uint16_t index = (PBM::default_width_in_bytes * PBMYPos) + xByte;
 
 	PixelsData & frame = (*_itCurrentFrame)._PBMData;
 
 	if( lockedPlugin )
 	{
 		_everLocked = true;
-		frame[index+(N_PBM::default_width_in_bytes * 0)] = 0b00000000;
-		frame[index+(N_PBM::default_width_in_bytes * 1)] = 0b00110000;
-		frame[index+(N_PBM::default_width_in_bytes * 2)] = 0b01001000;
-		frame[index+(N_PBM::default_width_in_bytes * 3)] = 0b01111000;
-		frame[index+(N_PBM::default_width_in_bytes * 4)] = 0b01111000;
-		frame[index+(N_PBM::default_width_in_bytes * 5)] = 0b01111000;
+		frame[index+(PBM::default_width_in_bytes * 0)] = 0b00000000;
+		frame[index+(PBM::default_width_in_bytes * 1)] = 0b00110000;
+		frame[index+(PBM::default_width_in_bytes * 2)] = 0b01001000;
+		frame[index+(PBM::default_width_in_bytes * 3)] = 0b01111000;
+		frame[index+(PBM::default_width_in_bytes * 4)] = 0b01111000;
+		frame[index+(PBM::default_width_in_bytes * 5)] = 0b01111000;
 	}
 	else
 	{
 		if( _everLocked )
 		{
-			frame[index+(N_PBM::default_width_in_bytes * 0)] = 0b00000110;
-			frame[index+(N_PBM::default_width_in_bytes * 1)] = 0b00001001;
-			frame[index+(N_PBM::default_width_in_bytes * 2)] = 0b00001000;
-			frame[index+(N_PBM::default_width_in_bytes * 3)] = 0b01111000;
-			frame[index+(N_PBM::default_width_in_bytes * 4)] = 0b01111000;
-			frame[index+(N_PBM::default_width_in_bytes * 5)] = 0b01111000;
+			frame[index+(PBM::default_width_in_bytes * 0)] = 0b00000110;
+			frame[index+(PBM::default_width_in_bytes * 1)] = 0b00001001;
+			frame[index+(PBM::default_width_in_bytes * 2)] = 0b00001000;
+			frame[index+(PBM::default_width_in_bytes * 3)] = 0b01111000;
+			frame[index+(PBM::default_width_in_bytes * 4)] = 0b01111000;
+			frame[index+(PBM::default_width_in_bytes * 5)] = 0b01111000;
 		}
 		else
 		{
-			frame[index+(N_PBM::default_width_in_bytes * 0)] = 0;
-			frame[index+(N_PBM::default_width_in_bytes * 1)] = 0;
-			frame[index+(N_PBM::default_width_in_bytes * 2)] = 0;
-			frame[index+(N_PBM::default_width_in_bytes * 3)] = 0;
-			frame[index+(N_PBM::default_width_in_bytes * 4)] = 0;
-			frame[index+(N_PBM::default_width_in_bytes * 5)] = 0;
+			frame[index+(PBM::default_width_in_bytes * 0)] = 0;
+			frame[index+(PBM::default_width_in_bytes * 1)] = 0;
+			frame[index+(PBM::default_width_in_bytes * 2)] = 0;
+			frame[index+(PBM::default_width_in_bytes * 3)] = 0;
+			frame[index+(PBM::default_width_in_bytes * 4)] = 0;
+			frame[index+(PBM::default_width_in_bytes * 5)] = 0;
 		}
 	}
 }
@@ -451,15 +447,13 @@ void LCDPlugin::drawVerticalLineOnFrame(
 {
 	try
 	{
-		namespace N_PBM = ::Managers::LCDPlugins::PBM;
-
 		PixelsData & frame = (*_itCurrentFrame)._PBMData;
 
 		const std::uint16_t xByte = PBMXPos / 8;
-		const std::uint16_t index = (N_PBM::default_width_in_bytes * PBMYPos) + xByte;
+		const std::uint16_t index = (PBM::default_width_in_bytes * PBMYPos) + xByte;
 
 		for(std::uint16_t i = 1; i < size; ++i)
-			frame[index + (N_PBM::default_width_in_bytes * i)] |= 0b00100000;
+			frame[index + (PBM::default_width_in_bytes * i)] |= 0b00100000;
 	}
 	catch (const std::out_of_range& oor)
 	{

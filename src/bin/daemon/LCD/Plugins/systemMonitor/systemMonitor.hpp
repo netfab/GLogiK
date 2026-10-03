@@ -32,16 +32,20 @@
 #include "bin/daemon/LCD/Plugins/LCDPlugin.hpp"
 #include "bin/daemon/LCD/PixelsData.hpp"
 
+namespace Managers::LCDPlugins::Fonts
+{
+class FontsManager;
+}
+
 namespace Managers::LCDPlugins::plugin
 {
-
-class FontsManager;
 
 class SystemMonitor
 	:	public LCDPlugin
 {
 	private:
-		using PixelsData = ::Managers::LCDPlugins::PixelsData;
+		using FontsManager = Fonts::FontsManager;
+		using PixelsData = LCDPlugins::PixelsData;
 
 	public:
 		SystemMonitor();
