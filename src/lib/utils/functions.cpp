@@ -27,7 +27,6 @@
 #include <sstream>
 #include <chrono>
 #include <thread>
-#include <limits>
 
 #define UTILS_COMPILATION 1
 
@@ -92,62 +91,19 @@ const std::string getErrnoString(const int errnum)
 	return ret;
 }
 
-const unsigned int toUInt(const std::string & s)
+const std::uint16_t toUInt16(const std::string& s, int base)
 {
-	unsigned long ret = toUL(s);
-
-	if(ret > std::numeric_limits<unsigned int>::max() )
-		throw GLogiKExcept("UINT_MAX out of range");
-
-	return static_cast<unsigned int>(ret);
+	return toInteger<std::uint16_t>(s, base);
 }
 
-const unsigned short toUShort(const std::string & s, int base)
+//const std::uint32_t toUInt32(const std::string& s, int base)
+//{
+//	return toInteger<std::uint32_t>(s, base);
+//}
+
+const std::uint64_t toUInt64(const std::string& s, int base)
 {
-	unsigned long ret = toUL(s, base);
-
-	if(ret > std::numeric_limits<unsigned short>::max() )
-		throw GLogiKExcept("USHRT_MAX out of range");
-
-	return static_cast<unsigned short>(ret);
-}
-
-const unsigned long toUL(const std::string & s, int base)
-{
-	unsigned long ret = 0;
-	try
-	{
-		ret = std::stoul(s, nullptr, base);
-	}
-	catch (const std::invalid_argument& ia)
-	{
-		throw GLogiKExcept("stoul invalid argument");
-	}
-	catch (const std::out_of_range& oor)
-	{
-		throw GLogiKExcept("stoul out of range");
-	}
-
-	return ret;
-}
-
-const unsigned long long toULL(const std::string & s)
-{
-	unsigned long long ret = 0;
-	try
-	{
-		ret = std::stoull(s);
-	}
-	catch (const std::invalid_argument& ia)
-	{
-		throw GLogiKExcept("stoull invalid argument");
-	}
-	catch (const std::out_of_range& oor)
-	{
-		throw GLogiKExcept("stoull out of range");
-	}
-
-	return ret;
+	return toInteger<std::uint64_t>(s, base);
 }
 
 const std::string getHexRGB(

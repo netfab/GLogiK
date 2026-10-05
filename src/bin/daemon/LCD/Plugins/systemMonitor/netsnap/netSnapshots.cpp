@@ -181,7 +181,7 @@ void NetSnapshots::setBytesSnapshotValue(
 		std::ifstream snapshotFile( file.string() );
 		std::string line;
 		std::getline(snapshotFile, line);
-		value = toULL(line);
+		value = toUInt64(line);
 	}
 	catch (const std::ifstream::failure & e)
 	{

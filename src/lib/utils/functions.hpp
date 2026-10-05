@@ -25,9 +25,13 @@
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
+#include <charconv>
 #include <cstdint>
 #include <string>
+#include <system_error>
 #include <chrono>
+
+#include "exception.hpp"
 
 namespace NSGKUtils
 {
@@ -47,17 +51,27 @@ constexpr unsigned int toUInt(const std::uint8_t c) noexcept
 	return static_cast<unsigned int>(c);
 }
 
-const unsigned int toUInt(const std::string & s);
-const unsigned short toUShort(
-	const std::string & s,
-	int base = 10
-);
+template <typename T>
+const T toInteger(const std::string & s, const int base = 10)
+{
+	T value{};
 
-const unsigned long toUL(
-	const std::string & s,
-	int base = 10
-);
-const unsigned long long toULL(const std::string & s);
+	const auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), value, base);
+
+	if (ec == std::errc::invalid_argument)
+		throw GLogiKExcept("std::from_chars invalid argument");
+	if (ec == std::errc::result_out_of_range)
+		throw GLogiKExcept("std::from_chars out of range");
+
+	if (ptr != s.data() + s.size())
+		throw GLogiKExcept("std::from_chars invalid character");
+
+	return value;
+}
+
+const std::uint16_t toUInt16(const std::string & s, const int base = 10);
+//const std::uint32_t toUInt32(const std::string & s, const int base = 10);
+const std::uint64_t toUInt64(const std::string & s, const int base = 10);
 
 const std::string getHexRGB(
 	const std::uint8_t red,

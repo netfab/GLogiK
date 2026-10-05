@@ -110,8 +110,8 @@ void hidapi::openUSBDevice(USBDevice & device)
 	GKLog2(trace, "searched path : ", searchedPath)
 
 	/* getVendorID() and getProductID() return strings in hexadecimal format */
-	const unsigned short vendor_id  = toUShort( device.getVendorID(),  16 );
-	const unsigned short product_id = toUShort( device.getProductID(), 16 );
+	const unsigned short vendor_id  = toUInt16( device.getVendorID(),  16 );
+	const unsigned short product_id = toUInt16( device.getProductID(), 16 );
 
 	struct hid_device_info *devs, *cur_dev = nullptr;
 

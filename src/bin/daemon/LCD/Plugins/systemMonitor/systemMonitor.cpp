@@ -166,16 +166,16 @@ const PixelsData & SystemMonitor::getNextFrame(
 
 		try
 		{
-			totalPMem = toULL( memShot.at("MemTotal") );
+			totalPMem = toUInt64( memShot.at("MemTotal") );
 
 			// Linux Kernel 3.14+
 			if( memShot.count("MemAvailable") == 1 )
-				freePMem  = toULL( memShot["MemAvailable"] );
+				freePMem  = toUInt64( memShot["MemAvailable"] );
 			else
 			{
-				freePMem  = toULL( memShot.at("MemFree") );
-				freePMem += toULL( memShot.at("Buffers") );
-				freePMem += toULL( memShot.at("Cached") );
+				freePMem  = toUInt64( memShot.at("MemFree") );
+				freePMem += toUInt64( memShot.at("Buffers") );
+				freePMem += toUInt64( memShot.at("Cached") );
 			}
 		}
 		catch (const std::out_of_range& oor)

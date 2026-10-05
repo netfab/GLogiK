@@ -119,9 +119,9 @@ void PBMFile::parsePBMHeader(
 	}
 
 	std::getline(pbm, ex, space);
-	width = toUInt(ex);
+	width = toUInt16(ex);
 	std::getline(pbm, ex, white);
-	height = toUInt(ex);
+	height = toUInt16(ex);
 
 #if DEBUGGING_ON
 	if(GKLogging::GKDebug)
