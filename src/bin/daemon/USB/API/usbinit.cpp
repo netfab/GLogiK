@@ -99,7 +99,9 @@ const int USBInit::getUSBDevicePortNumbers(
 	/* throws on failure */
 	this->seekUSBDevice(device);
 
-	int num_ports = libusb_get_port_numbers(device._pUSBDevice, &port_numbers[0], port_numbers.size());
+	int num_ports = libusb_get_port_numbers(
+		device._pUSBDevice, &port_numbers[0], static_cast<int>(USBInit::PORT_NUMBERS_LEN)
+	);
 
 	if(num_ports == LIBUSB_ERROR_OVERFLOW)
 		throw GLogiKExcept("array overflow error");
