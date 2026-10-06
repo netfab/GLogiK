@@ -705,18 +705,14 @@ void DevicesManager::searchSupportedDevices(
 
 							try
 							{
-								bus = std::stoi( get_property_value("BUSNUM") );
-								num = std::stoi( get_property_value("DEVNUM") );
+								bus = toUInt8( get_property_value("BUSNUM") );
+								num = toUInt8( get_property_value("DEVNUM") );
 							}
-							catch (const std::invalid_argument& ia)
+							catch ( const GLogiKExcept & e )
 							{
 								udev_device_unref(dev);
-								throw GLogiKExcept("stoi invalid argument");
-							}
-							catch (const std::out_of_range& oor)
-							{
-								udev_device_unref(dev);
-								throw GLogiKExcept("stoi out of range");
+								GKSysLogWarning("bus or num cast problem");
+								throw;
 							}
 
 							const std::string devID( USBDeviceID::getDeviceID(bus, num) );
