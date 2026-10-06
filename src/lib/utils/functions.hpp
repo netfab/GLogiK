@@ -64,7 +64,7 @@ void checkSizeMax(const Container& container, std::string_view typeName)
 }
 
 template <typename T>
-const T toInteger(const std::string & s, const int base = 10)
+const T toInteger(const std::string & s, int base = 10)
 {
 	T value{};
 
@@ -81,9 +81,10 @@ const T toInteger(const std::string & s, const int base = 10)
 	return value;
 }
 
-const std::uint16_t toUInt16(const std::string & s, const int base = 10);
-//const std::uint32_t toUInt32(const std::string & s, const int base = 10);
-const std::uint64_t toUInt64(const std::string & s, const int base = 10);
+const std::uint8_t toUInt8(const std::string & s, int base = 10);
+const std::uint16_t toUInt16(const std::string & s, int base = 10);
+//const std::uint32_t toUInt32(const std::string & s, int base = 10);
+const std::uint64_t toUInt64(const std::string & s, int base = 10);
 
 const std::string getHexRGB(
 	const std::uint8_t red,

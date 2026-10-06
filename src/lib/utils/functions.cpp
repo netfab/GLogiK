@@ -91,6 +91,11 @@ const std::string getErrnoString(const int errnum)
 	return ret;
 }
 
+const std::uint8_t toUInt8(const std::string & s, int base)
+{
+	return toInteger<std::uint8_t>(s, base);
+}
+
 const std::uint16_t toUInt16(const std::string& s, int base)
 {
 	return toInteger<std::uint16_t>(s, base);
