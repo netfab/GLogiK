@@ -263,9 +263,11 @@ std::uint16_t KeyboardDriver::getDeviceTimeLapse(USBDevice & device)
 {
 	namespace chr = std::chrono;
 	chr::steady_clock::time_point now = chr::steady_clock::now();
+	device._lastTimePoint = now;
 	chr::milliseconds ms = chr::duration_cast<chr::milliseconds>(now - device._lastTimePoint);
-	device._lastTimePoint = chr::steady_clock::now();
-	return (ms.count() % 1000); /* max 1 second TODO */
+	if(ms.count() > 5000)
+		ms = chr::milliseconds(5000);
+	return static_cast<std::uint16_t>(ms.count() % 1000);
 }
 
 void KeyboardDriver::fillDeviceStandardKeysEvents(USBDevice & device)
