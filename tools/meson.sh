@@ -63,6 +63,8 @@ declare fullclean=0
 declare install=0
 declare stripbuild=0
 declare ccache=1
+declare Wconversion=0
+declare parallel_builds=1
 
 declare options=''
 
@@ -97,6 +99,9 @@ while [[ "${#}" -gt 0 ]]; do
 		-d|--disable-ccache)
 			ccache=0
 		;;
+		-D|--disable-parallel-builds)
+			parallel_builds=0
+		;;
 		-f|--fullclean)
 			fullclean=1
 		;;
@@ -111,6 +116,9 @@ while [[ "${#}" -gt 0 ]]; do
 		;;
 		-s|--strip)
 			stripbuild=1
+		;;
+		-W|--enable-Wconversion)
+			Wconversion=1
 		;;
 		--enable-*)
 			add_meson_option "${1}" 'true'
@@ -173,12 +181,15 @@ function clean_action() {
 
 function configure_action() {
 	printf "${BLDRED}CONFIGURING WITH MESON${TXTRST}\n"
-
+	local CPPARGS="-pipe -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -Wformat=2 -Wfatal-errors -Wall"
+	if [[ ${Wconversion} -eq 1 ]]; then
+		CPPARGS+=" -Wconversion"
+	fi
 	# https://mesonbuild.com/Builtin-options.html#build-type-options
 	local mesonconfigure=(
 		meson setup
 		-Doptimization=2
-		-Dcpp_args="-pipe -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -Wformat=2 -Wfatal-errors"
+		-Dcpp_args="${CPPARGS}"
 		-Dwerror=true
 		-Db_asneeded=true
 		-Drelative_udev_rules_dir=true
@@ -213,8 +224,12 @@ function configure_action() {
 function build_action() {
 	printf "${BLDRED}BUILDING WITH MESON${TXTRST}\n"
 
+	local numbuilds=
+	if [[ ${parallel_builds} -eq 0 ]]; then
+		numbuilds="-j1"
+	fi
 	change_directory "${ABS_BUILD_DIR}"
-	meson compile || die "compile failure"
+	meson compile ${numbuilds} || die "compile failure"
 }
 
 function install_action() {
