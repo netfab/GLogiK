@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include <vector>
 
 #include "include/base.hpp"
@@ -46,13 +48,13 @@ class GKeysMacro
 			public:
 				MacroEvent(
 					const KeyEvent & k,
-					const unsigned int i)
+					const std::size_t i)
 						:	key(k), index(i)
 				{
 				}
 
 				KeyEvent key;
-				unsigned int index;
+				std::size_t index;
 
 			private:
 				MacroEvent() = delete;

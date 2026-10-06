@@ -19,6 +19,8 @@
  *
  */
 
+#include <cstddef>
+
 #include <algorithm>
 #include <iterator>
 
@@ -66,7 +68,7 @@ void GKeysMacro::fillInVectors(
 {
 	using EventValue = GLogiK::EventValue;
 
-	for(unsigned int i = 0; i != macro.size(); ++i)
+	for(std::size_t i = 0; i != macro.size(); ++i)
 	{
 		const auto & keyEvent = macro[i];
 		MacroEvent e(keyEvent, i);
@@ -106,7 +108,7 @@ void GKeysMacro::fixMacroReleaseEvents(
 		{
 			using EventValue = GLogiK::EventValue;
 
-			LOG(warning) << "missing release event for index " << toUInt(pressed.index) << " - adding event";
+			LOG(warning) << "missing release event for index " << pressed.index << " - adding event";
 			KeyEvent e = pressed.key;
 			e.event = EventValue::EVENT_KEY_RELEASE;
 			e.interval = 1;
@@ -123,7 +125,7 @@ void GKeysMacro::fixMacroReleaseEvents(
 
 		for(const auto & redundant : releasedEvents)
 		{
-			GKLog2(trace, "erasing redundant release event at index : ", toUInt(redundant.index))
+			GKLog2(trace, "erasing redundant release event at index : ", redundant.index)
 
 			auto it = std::next(macro.begin(), redundant.index);
 			macro.erase(it);
@@ -147,7 +149,7 @@ void GKeysMacro::fixMacroSize(
 		LOG(warning) << "pressed: " << pressedEvents.size() << " - released: " << releasedEvents.size();
 	}
 
-	std::vector<unsigned int> indexes;
+	std::vector<std::size_t> indexes;
 
 	for(const auto & pressed : pressedEvents)
 	{
