@@ -27,9 +27,12 @@
 
 #include <charconv>
 #include <cstdint>
+#include <stdexcept>
 #include <string>
+#include <string_view>
 #include <system_error>
 #include <chrono>
+#include <limits>
 
 #include "exception.hpp"
 
@@ -49,6 +52,15 @@ constexpr int toInt(const std::uint8_t c) noexcept
 constexpr unsigned int toUInt(const std::uint8_t c) noexcept
 {
 	return static_cast<unsigned int>(c);
+}
+
+template <typename Integer, typename Container>
+void checkSizeMax(const Container& container, std::string_view typeName)
+{
+	if(container.size() > static_cast<std::size_t>(std::numeric_limits<Integer>::max()))
+		throw std::overflow_error(
+			"container size exceeds maximum value for " + std::string(typeName)
+		);
 }
 
 template <typename T>
