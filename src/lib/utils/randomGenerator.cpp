@@ -19,6 +19,8 @@
  *
  */
 
+#include <cstddef> // std::size_t
+
 #include <algorithm>
 
 #define UTILS_COMPILATION 1
@@ -31,22 +33,13 @@
 namespace NSGKUtils
 {
 
-const std::vector<char> RandomGenerator::defaultCharset =
+RandomGenerator::RandomGenerator()
+	:	_rng(std::random_device{}())
 {
-	'0','1','2','3','4','5','6','7','8','9',
-	'a','b','c','d','e','f','g','h','i','j',
-	'k','l','m','n','o','p','q','r','s','t',
-	'u','v','w','x','y','z'
-};
+	if(RandomGenerator::defaultCharset.empty())
+		throw GLogiKExcept("RandomGenerator : charset array is empty !");
 
-RandomGenerator::RandomGenerator(const std::vector<char> & charset)
-	: _rng(std::random_device{}())
-{
-	if(charset.empty())
-		throw GLogiKExcept("RandomGenerator : charset vector is empty !");
-
-	_charset = charset;
-	std::uniform_int_distribution<std::size_t> dist(0, charset.size()-1);
+	std::uniform_int_distribution<std::size_t> dist(0, RandomGenerator::defaultCharset.size()-1);
 	_dist = dist;
 }
 
@@ -57,11 +50,15 @@ RandomGenerator::~RandomGenerator()
 const std::string RandomGenerator::getString(std::size_t length)
 {
 	std::string ret(length,0);
-	auto & c = _charset;
-	auto & d = _dist;
-	auto & r = _rng;
-	auto randChar = [ c, &d, &r ](){ return c[d(r)]; };
+
+	// lambda
+	auto randChar = [this]()
+	{
+		return RandomGenerator::defaultCharset[_dist(_rng)];
+	};
+
 	std::generate_n(ret.begin(), length, randChar);
+
 	return ret;
 }
 

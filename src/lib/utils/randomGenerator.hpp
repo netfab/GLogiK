@@ -27,7 +27,7 @@
 
 #include <cstddef> // std::size_t
 
-#include <vector>
+#include <array>
 #include <string>
 #include <random>
 
@@ -37,7 +37,7 @@ namespace NSGKUtils
 class RandomGenerator
 {
 	public:
-		RandomGenerator(const std::vector<char> & charset = RandomGenerator::defaultCharset);
+		RandomGenerator();
 		~RandomGenerator();
 
 		const std::string getString(std::size_t length);
@@ -45,11 +45,16 @@ class RandomGenerator
 	protected:
 
 	private:
-		std::vector<char> _charset;
 		std::default_random_engine _rng;
 		std::uniform_int_distribution<std::size_t> _dist;
 
-		static const std::vector<char> defaultCharset;
+		static constexpr std::array<char, 36> defaultCharset =
+		{
+			'0','1','2','3','4','5','6','7','8','9',
+			'a','b','c','d','e','f','g','h','i','j',
+			'k','l','m','n','o','p','q','r','s','t',
+			'u','v','w','x','y','z'
+		};
 };
 
 } // namespace NSGKUtils
