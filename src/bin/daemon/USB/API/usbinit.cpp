@@ -19,6 +19,8 @@
  *
  */
 
+#include <sys/types.h>
+
 #include "lib/utils/utils.hpp"
 
 #include "usbinit.hpp"
@@ -133,14 +135,14 @@ int USBInit::USBError(int errorCode) noexcept
 void USBInit::seekUSBDevice(USBDevice & device)
 {
 	libusb_device **list;
-	int numDevices = libusb_get_device_list(USBInit::pContext, &(list));
+	ssize_t numDevices = libusb_get_device_list(USBInit::pContext, &(list));
 	if( numDevices < 0 )
 	{
-		this->USBError(numDevices);
+		this->USBError(static_cast<int>(numDevices));
 		throw GLogiKExcept("error getting USB devices list");
 	}
 
-	for (int i = 0; i < numDevices; ++i)
+	for(ssize_t i = 0; i < numDevices; ++i)
 	{
 		device._pUSBDevice = list[i];
 		if( libusb_get_bus_number(device._pUSBDevice) == device.getBus() and
