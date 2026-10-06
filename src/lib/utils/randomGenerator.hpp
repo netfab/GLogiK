@@ -47,7 +47,7 @@ class RandomGenerator
 	private:
 		std::vector<char> _charset;
 		std::default_random_engine _rng;
-		std::uniform_int_distribution<> _dist;
+		std::uniform_int_distribution<std::size_t> _dist;
 
 		static const std::vector<char> defaultCharset;
 };

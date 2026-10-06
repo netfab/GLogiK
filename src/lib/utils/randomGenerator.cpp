@@ -42,13 +42,11 @@ const std::vector<char> RandomGenerator::defaultCharset =
 RandomGenerator::RandomGenerator(const std::vector<char> & charset)
 	: _rng(std::random_device{}())
 {
-	const std::size_t size = charset.size();
-
-	if( size < 1 )
+	if(charset.empty())
 		throw GLogiKExcept("RandomGenerator : charset vector is empty !");
 
 	_charset = charset;
-	std::uniform_int_distribution<> dist(0, size-1);
+	std::uniform_int_distribution<std::size_t> dist(0, charset.size()-1);
 	_dist = dist;
 }
 
