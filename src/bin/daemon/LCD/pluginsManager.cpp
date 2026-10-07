@@ -368,7 +368,7 @@ void LCDPluginsManager::dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData)
 
 	// lambda
 	auto get_PBMByte = [&rowOffset, &PBMByte]
-		(const unsigned short i) -> const unsigned short
+		(const unsigned int i) -> const unsigned int
 	{
 		// max: 959
 		return (PBMByte + (PBM::default_width_in_bytes * i) + rowOffset);
@@ -393,14 +393,16 @@ void LCDPluginsManager::dumpPBMDataIntoLCDBuffer(const PixelsData & PBMData)
 #endif
 
 				_LCDBuffer[PBM::data_header_size_in_bytes + LCDCol + rowOffset] =
-					(((PBMData[ get_PBMByte(0) ] >> bit) & 1) << 0 ) |
-					(((PBMData[ get_PBMByte(1) ] >> bit) & 1) << 1 ) |
-					(((PBMData[ get_PBMByte(2) ] >> bit) & 1) << 2 ) |
-					(((PBMData[ get_PBMByte(3) ] >> bit) & 1) << 3 ) |
-					(((PBMData[ get_PBMByte(4) ] >> bit) & 1) << 4 ) |
-					(((PBMData[ get_PBMByte(5) ] >> bit) & 1) << 5 ) |
-					(((PBMData[ get_PBMByte(6) ] >> bit) & 1) << 6 ) |
-					(((PBMData[ get_PBMByte(7) ] >> bit) & 1) << 7 ) ;
+					static_cast<unsigned char>(
+						(((PBMData[ get_PBMByte(0) ] >> bit) & 1) << 0 ) |
+						(((PBMData[ get_PBMByte(1) ] >> bit) & 1) << 1 ) |
+						(((PBMData[ get_PBMByte(2) ] >> bit) & 1) << 2 ) |
+						(((PBMData[ get_PBMByte(3) ] >> bit) & 1) << 3 ) |
+						(((PBMData[ get_PBMByte(4) ] >> bit) & 1) << 4 ) |
+						(((PBMData[ get_PBMByte(5) ] >> bit) & 1) << 5 ) |
+						(((PBMData[ get_PBMByte(6) ] >> bit) & 1) << 6 ) |
+						(((PBMData[ get_PBMByte(7) ] >> bit) & 1) << 7 )
+					);
 
 				LCDCol++;
 			}
