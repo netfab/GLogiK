@@ -32,6 +32,7 @@
 
 #include "exception.hpp"
 #include "functions.hpp"
+#include "templates.hpp"
 
 #undef UTILS_COMPILATION
 

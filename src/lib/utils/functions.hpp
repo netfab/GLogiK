@@ -25,16 +25,9 @@
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
-#include <charconv>
 #include <cstdint>
-#include <stdexcept>
 #include <string>
-#include <string_view>
-#include <system_error>
 #include <chrono>
-#include <limits>
-
-#include "exception.hpp"
 
 namespace NSGKUtils
 {
@@ -52,33 +45,6 @@ constexpr int toInt(const std::uint8_t c) noexcept
 constexpr unsigned int toUInt(const std::uint8_t c) noexcept
 {
 	return static_cast<unsigned int>(c);
-}
-
-template <typename Integer, typename Container>
-void checkSizeMax(const Container& container, std::string_view typeName)
-{
-	if(container.size() > static_cast<std::size_t>(std::numeric_limits<Integer>::max()))
-		throw std::overflow_error(
-			"container size exceeds maximum value for " + std::string(typeName)
-		);
-}
-
-template <typename T>
-const T toInteger(const std::string & s, int base = 10)
-{
-	T value{};
-
-	const auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), value, base);
-
-	if (ec == std::errc::invalid_argument)
-		throw GLogiKExcept("std::from_chars invalid argument");
-	if (ec == std::errc::result_out_of_range)
-		throw GLogiKExcept("std::from_chars out of range");
-
-	if (ptr != s.data() + s.size())
-		throw GLogiKExcept("std::from_chars invalid character");
-
-	return value;
 }
 
 const std::uint8_t toUInt8(const std::string & s, int base = 10);

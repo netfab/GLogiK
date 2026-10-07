@@ -26,8 +26,16 @@
 #endif
 
 #include <cstddef>
+#include <cstdint>
 
+#include <charconv>
+#include <limits>
+#include <stdexcept>
+#include <string_view>
+#include <system_error>
 #include <type_traits>
+
+#include "exception.hpp"
 
 namespace NSGKUtils
 {
@@ -50,6 +58,49 @@ const std::size_t safeAdvance(Iterator & it, const Iterator & end, const std::si
 	}
 	//GKLog2(trace, "undone steps: ", (n - i))
 	return (n - i);
+}
+
+template <typename IntegerType>
+constexpr std::string_view getTypeName()
+{
+	if constexpr (std::is_same_v<IntegerType, std::uint8_t>)
+		return "std::uint8_t";
+	else if constexpr (std::is_same_v<IntegerType, std::uint16_t>)
+		return "std::uint16_t";
+	else if constexpr (std::is_same_v<IntegerType, std::uint32_t>)
+		return "std::uint32_t";
+	else if constexpr (std::is_same_v<IntegerType, std::uint64_t>)
+		return "std::uint64_t";
+	return "unknown";
+}
+
+template <typename IntegerType, typename Container>
+const IntegerType castContainerSizeToInteger(const Container & container)
+{
+	auto size = container.size();
+	if(size > static_cast<std::size_t>(std::numeric_limits<IntegerType>::max()))
+		throw std::overflow_error(
+			"container size exceeds maximum value for " + std::string(getTypeName<IntegerType>())
+		);
+	return static_cast<IntegerType>(size);
+}
+
+template <typename T>
+const T toInteger(const std::string & s, int base = 10)
+{
+	T value{};
+
+	const auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), value, base);
+
+	if (ec == std::errc::invalid_argument)
+		throw GLogiKExcept("std::from_chars invalid argument");
+	if (ec == std::errc::result_out_of_range)
+		throw GLogiKExcept("std::from_chars out of range");
+
+	if (ptr != s.data() + s.size())
+		throw GLogiKExcept("std::from_chars invalid character");
+
+	return value;
 }
 
 } // namespace NSGKUtils

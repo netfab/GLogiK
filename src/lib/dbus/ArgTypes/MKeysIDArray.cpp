@@ -40,9 +40,11 @@ void TypeMKeysIDArray::appendMKeysIDArray(const GLogiK::MKeysIDArray_type & keys
 
 	DBusMessageIter itContainer;
 
+	std::uint8_t size = 0;
+
 	try
 	{
-		checkSizeMax<std::uint8_t>(keysID, "uint8_t");
+		size = castContainerSizeToInteger<std::uint8_t>(keysID);
 	}
 	catch(const std::overflow_error & e)
 	{
@@ -50,7 +52,7 @@ void TypeMKeysIDArray::appendMKeysIDArray(const GLogiK::MKeysIDArray_type & keys
 		throw GKDBusMessageWrongBuild(TypeBase::appendFailure);
 	}
 
-	this->appendUInt8( static_cast<std::uint8_t>(keysID.size()) );
+	this->appendUInt8(size);
 
 	if( ! dbus_message_iter_open_container(
 		&_itMessage, DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE_AS_STRING, &itContainer) )

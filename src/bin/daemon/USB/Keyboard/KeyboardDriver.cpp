@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+#include <cstddef>
+
 #include <algorithm>                               // for remove_if, fill_n
 #include <array>                                   // for array
 #include <atomic>                                  // for atomic
@@ -194,17 +196,8 @@ const std::uint8_t KeyboardDriver::handleDeviceModifierKeys(USBDevice & device, 
 			diff -= modKey;
 
 			bool skipEvent = false;
-			try
-			{
-				checkSizeMax<std::uint8_t>(device._newMacro, "uint8_t");
-			}
-			catch(const std::overflow_error & e)
-			{
-				GKSysLogError("newMacro container: ", e.what());
-				return 0;
-			}
 
-			const std::uint8_t size = static_cast<std::uint8_t>(device._newMacro.size());
+			const std::size_t size = device._newMacro.size();
 
 			/* Macro Size Limit - see base.hpp */
 			if(size >= MACRO_T_MAX_SIZE)
