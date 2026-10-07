@@ -21,6 +21,8 @@
 
 #include <unistd.h>
 
+#include <cstddef>
+
 #include <new>
 #include <sstream>
 #include <iostream>
@@ -133,7 +135,7 @@ void DevicesManager::setDBus(GKDBUS::GKDBus* pDBus)
 	_pDBus = pDBus;
 }
 
-void DevicesManager::setNumClients(std::uint8_t num)
+void DevicesManager::setNumClients(std::size_t num)
 {
 	_numClients = num;
 }

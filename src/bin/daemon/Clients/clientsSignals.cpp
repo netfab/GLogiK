@@ -32,7 +32,7 @@ namespace DBus::Signals
 {
 
 void sendSignalToClients(
-	const std::uint8_t numClients,
+	const std::size_t numClients,
 	GKDBUS::GKDBus* const pDBus,
 	const std::string & signal,
 	const bool forceSend) noexcept
@@ -82,7 +82,7 @@ void sendSignalToClients(
 }
 
 void sendStatusSignalArrayToClients(
-	const std::uint8_t numClients,
+	const std::size_t numClients,
 	GKDBUS::GKDBus* const pDBus,
 	const std::string & signal,
 	const std::vector<std::string> & devIDArray) noexcept

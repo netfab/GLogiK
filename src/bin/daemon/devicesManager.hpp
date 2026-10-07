@@ -23,6 +23,7 @@
 
 #include "config.h"
 
+#include <cstddef>
 #include <cstdint>
 
 #include <string>
@@ -63,7 +64,7 @@ class DevicesManager
 
 #if HAVE_GKDBUS
 		void setDBus(GKDBUS::GKDBus* pDBus);
-		void setNumClients(std::uint8_t num);
+		void setNumClients(std::size_t num);
 
 		void checkDBusMessages() noexcept;
 #endif
@@ -116,7 +117,7 @@ class DevicesManager
 
 #if HAVE_GKDBUS
 		GKDBUS::GKDBus* _pDBus;
-		std::uint8_t _numClients;
+		std::size_t _numClients;
 #endif
 
 		void searchSupportedDevices(

@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include <cstdint>
+#include <cstddef>
 
 #include <string>
 #include <vector>
@@ -30,14 +30,14 @@ namespace DBus::Signals
 {
 
 void sendSignalToClients(
-	const std::uint8_t numClients, // number of connected clients
+	const std::size_t numClients, // number of connected clients
 	GKDBUS::GKDBus* const pDBus,
 	const std::string & signal,
 	const bool forceSend=false // always send signal, even if numClient == 0
 ) noexcept;
 
 void sendStatusSignalArrayToClients(
-	const std::uint8_t numClients,
+	const std::size_t numClients,
 	GKDBUS::GKDBus* const pDBus,
 	const std::string & signal,
 	const std::vector<std::string> & devIDArray
