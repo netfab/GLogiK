@@ -24,6 +24,8 @@
  *		(search for «extra parsing» string in this file)
  */
 
+#include <cstddef>
+
 #include <bitset>
 #include <mutex>
 #include <sstream>
@@ -190,7 +192,7 @@ int libusb::performUSBDeviceKeysInterruptTransfer(
 int libusb::performUSBDeviceLCDScreenInterruptTransfer(
 	USBDevice & device,
 	const unsigned char * buffer,
-	int bufferLength,
+	std::size_t bufferLength,
 	unsigned int timeout)
 {
 	GK_LOG_FUNC

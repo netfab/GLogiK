@@ -23,6 +23,7 @@
 
 #include "config.h"
 
+#include <cstddef>
 #include <cstdint>
 
 #include <string>
@@ -126,7 +127,7 @@ class KeyboardDriver
 		virtual int performUSBDeviceLCDScreenInterruptTransfer(
 			USBDevice & device,
 			const unsigned char * buffer,
-			int bufferLength,
+			std::size_t bufferLength,
 			unsigned int timeout
 		) = 0;
 

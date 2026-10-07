@@ -19,6 +19,8 @@
  *
  */
 
+#include <cstddef>
+
 #include <sstream>
 #include <iomanip>
 
@@ -242,7 +244,7 @@ int hidapi::performUSBDeviceKeysInterruptTransfer(
 int hidapi::performUSBDeviceLCDScreenInterruptTransfer(
 	USBDevice & device,
 	const unsigned char * buffer,
-	int bufferLength,
+	std::size_t bufferLength,
 	unsigned int timeout)
 {
 	GK_LOG_FUNC

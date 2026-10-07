@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include "bin/daemon/USB/Device/USBDevice.hpp"
 
 #include "KeyboardDriver.hpp"
@@ -56,7 +58,7 @@ class USBKeyboardDriver
 		int performUSBDeviceLCDScreenInterruptTransfer(
 			USBDevice & device,
 			const unsigned char * buffer,
-			int bufferLength,
+			std::size_t bufferLength,
 			unsigned int timeout
 		) override {
 			return API::performUSBDeviceLCDScreenInterruptTransfer(

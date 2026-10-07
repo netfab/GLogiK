@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 #include <libusb-1.0/libusb.h>
@@ -60,7 +61,7 @@ class libusb
 		int performUSBDeviceLCDScreenInterruptTransfer(
 			USBDevice & device,
 			const unsigned char * buffer,
-			int bufferLength,
+			std::size_t bufferLength,
 			unsigned int timeout
 		);
 
