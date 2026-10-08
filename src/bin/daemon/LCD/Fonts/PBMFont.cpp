@@ -104,7 +104,7 @@ const std::size_t PBMFont::characterLength(std::string_view sv, std::size_t pos)
 
 const std::uint16_t PBMFont::getCenteredXPos(std::string_view sv)
 {
-	std::uint16_t XPos = PBM::LCD_width;
+	unsigned int XPos = PBM::LCD_width;
 	std::size_t pos = 0;
 
 	while( pos < sv.size() )
@@ -175,7 +175,7 @@ void PBMFont::printCharacterOnFrame(
 	const std::uint16_t xModuloComp8 = (8 - xModulo);
 
 	/* if _shiftCharBase == 8, rightShift = xModulo */
-	const  int16_t rightShift = (_shiftCharBase - xModuloComp8);
+	const int16_t rightShift = static_cast<int16_t>(_shiftCharBase - xModuloComp8);
 
 #if DEBUG_PBMFONT
 	if(GKLogging::GKDebug)
@@ -193,7 +193,8 @@ void PBMFont::printCharacterOnFrame(
 			for(std::uint16_t j = 0; j < _charBytes; j++)
 			{
 				const unsigned char c = this->getCharacterLine(i, j);
-				index = (PBM::default_width_in_bytes * (PBMYPos+i)) + xByte + j;
+				unsigned int t = (PBM::default_width_in_bytes * (PBMYPos+i)) + xByte + j;
+				index = static_cast<uint16_t>(t);
 
 				frame.at(index) &= (0b11111111 << xModuloComp8);
 				if(rightShift > 0)
@@ -212,7 +213,7 @@ void PBMFont::printCharacterOnFrame(
 		throw GLogiKExcept( warn.str() );
 	}
 
-	PBMXPos += (_charWidth - _fontLeftShift);
+	PBMXPos += static_cast<uint16_t>(_charWidth - _fontLeftShift);
 
 	// XXX ugly hack
 	// applying another leftshift, except for those characters
@@ -255,13 +256,14 @@ const unsigned char PBMFont::getCharacterLine(
 	GK_LOG_FUNC
 
 	unsigned char c = 0;
-	const std::uint16_t i =
+	const std::uint16_t i = static_cast<std::uint16_t>(
 		/* PBM_Y_line which contains the character (in bytes) */
 		(_charY * _charHeight * (_PBMWidth / 8)) +
 		/* character's PBM_X position on the PBM_Y_line (in bytes) */
 		( (_charX * _charWidth) / 8 ) +
 		/* line in the selected character (in bytes) */
-		line * (_PBMWidth / 8);
+		line * (_PBMWidth / 8)
+	);
 
 #if 0 && DEBUGGING_ON
 	LOG(trace)	<< "charX: " << _charX
