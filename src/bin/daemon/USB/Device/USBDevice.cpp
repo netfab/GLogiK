@@ -154,15 +154,6 @@ void USBDevice::operator=(const USBDevice& dev)
 #endif
 }
 
-void USBDevice::destroyLCDPluginsManager() noexcept
-{
-	if( _pLCDPluginsManager )
-	{
-		delete _pLCDPluginsManager;
-		_pLCDPluginsManager = nullptr;
-	}
-}
-
 void USBDevice::setRGBBytes(
 	const std::uint8_t r,
 	const std::uint8_t g,

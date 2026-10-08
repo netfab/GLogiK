@@ -70,8 +70,6 @@ class USBKeyboardDriver
 		}
 
 		void closeUSBDevice(USBDevice & device) override {
-			device.destroyLCDPluginsManager();
-
 			API::closeUSBDevice(device);
 		}
 		/* --- */

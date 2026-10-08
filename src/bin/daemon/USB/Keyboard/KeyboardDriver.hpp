@@ -34,6 +34,7 @@
 
 #include "bin/daemon/USB/Device/USBDeviceID.hpp"
 #include "bin/daemon/USB/Device/USBDevice.hpp"
+#include "bin/daemon/LCD/pluginsManager.hpp"
 
 #include "include/LCDPP.hpp"
 #include "include/base.hpp"
@@ -55,6 +56,7 @@ class KeyboardDriver
 #endif
 {
 	private:
+		using LCDPluginsManager = Managers::LCDPlugins::LCDPluginsManager;
 		using USBDeviceID = USB::Device::USBDeviceID;
 		using USBDevice = USB::Device::USBDevice;
 		using LCDPPArray_type = GLogiK::LCDPPArray_type;
@@ -98,6 +100,9 @@ class KeyboardDriver
 		virtual const std::vector<USBDeviceID> & getSupportedDevices() const = 0;
 		virtual const MKeysIDArray_type getMKeysIDArray() const = 0;
 		virtual const GKeysIDArray_type getGKeysIDArray() const = 0;
+
+	private:
+		LCDPluginsManager _pluginManager;
 
 	protected:
 		KeyboardDriver() = default;

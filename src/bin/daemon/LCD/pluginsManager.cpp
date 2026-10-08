@@ -43,11 +43,20 @@ using namespace NSGKUtils;
 
 const GLogiK::LCDPPArray_type LCDPluginsManager::_LCDPluginsPropertiesEmptyArray = {};
 
-LCDPluginsManager::LCDPluginsManager(const std::string & product)
+LCDPluginsManager::LCDPluginsManager()
 	:	_pFonts(&_fontsManager),
 		_frameCounter(0),
 		_noPlugins(false),
 		_currentPluginLocked(false)
+{
+}
+
+LCDPluginsManager::~LCDPluginsManager()
+{
+	this->stopLCDPlugins();
+}
+
+void LCDPluginsManager::init(const std::string & product)
 {
 	GK_LOG_FUNC
 
@@ -113,11 +122,6 @@ LCDPluginsManager::LCDPluginsManager(const std::string & product)
 
 	/* initialize LCD frame container */
 	_LCDBuffer.resize(PBM::data_size_in_bytes + PBM::data_header_size_in_bytes, 0);
-}
-
-LCDPluginsManager::~LCDPluginsManager()
-{
-	this->stopLCDPlugins();
 }
 
 auto LCDPluginsManager::getLCDPluginsProperties() const -> const LCDPPArray_type &

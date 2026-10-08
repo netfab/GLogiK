@@ -161,7 +161,6 @@ class USBDevice
 		{
 			_pLCDPluginsManager = pLCDPluginsManager;
 		}
-		void destroyLCDPluginsManager() noexcept;
 
 		/* getters */
 		LCDPluginsManager* getLCDPluginsManager() const

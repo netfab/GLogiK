@@ -1026,18 +1026,8 @@ void KeyboardDriver::initializeDevice(const USBDeviceID & det)
 	{
 		/* plugins manager pointer is required in ->getDeviceLCDPluginsProperties()
 		 * for all initialized devices (even for the stopped ones) */
-		try
-		{
-			using LCDPluginsManager = Managers::LCDPlugins::LCDPluginsManager;
-			device.setLCDPluginsManager( new LCDPluginsManager(device.getProduct()) );
-		}
-		catch (const std::bad_alloc& e)
-		{ /* handle new() failure */
-			std::ostringstream buffer(std::ios_base::app);
-			buffer << devID << " LCD Plugins manager allocation failure";
-			GKSysLogError(buffer.str());
-			return;
-		}
+		_pluginManager.init( device.getProduct() );
+		device.setLCDPluginsManager( &_pluginManager );
 	}
 
 	_initializedDevices[ device.getID() ] = device;

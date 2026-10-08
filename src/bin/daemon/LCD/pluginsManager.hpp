@@ -47,8 +47,10 @@ class LCDPluginsManager
 		using FontsManager = Fonts::FontsManager;
 
 	public:
-		LCDPluginsManager(const std::string & product);
+		LCDPluginsManager();
 		~LCDPluginsManager();
+
+		void init(const std::string & product);
 
 		static const LCDPPArray_type _LCDPluginsPropertiesEmptyArray;
 
