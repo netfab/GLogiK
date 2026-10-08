@@ -29,6 +29,7 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "bin/daemon/LCD/PBM/PBMFile.hpp"
 #include "bin/daemon/LCD/PBM/PBM.hpp"
 #include "PBMFont.hpp"
 
@@ -69,7 +70,7 @@ PBMFont::PBMFont(
 	{
 		/* initialize PBM container */
 		_PBMData.resize( (PBMWidth / 8) * PBMHeight, 0 );
-		this->readPBM(fullpath.string(), _PBMData, PBMWidth, PBMHeight);
+		PBM::PBMFile::readPBM(fullpath.string(), _PBMData, PBMWidth, PBMHeight);
 	}
 	catch (const std::exception & e)
 	{

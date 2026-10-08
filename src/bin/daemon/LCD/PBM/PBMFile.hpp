@@ -34,17 +34,16 @@ namespace Managers::LCDPlugins::PBM
 class PBMFile
 {
 	public:
-
-	protected:
-		PBMFile() = default;
-		~PBMFile() = default;
-
 		static void readPBM(
 			const std::string & PBMPath,
 			PixelsData & PBMData,
 			const std::uint16_t PBMWidth,
 			const std::uint16_t PBMHeight
 		);
+
+	protected:
+		PBMFile() = default;
+		~PBMFile() = default;
 
 	private:
 		static void parsePBMHeader(

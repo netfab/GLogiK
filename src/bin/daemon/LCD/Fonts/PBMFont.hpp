@@ -27,13 +27,11 @@
 #include <string_view>
 
 #include "bin/daemon/LCD/PixelsData.hpp"
-#include "bin/daemon/LCD/PBM/PBMFile.hpp"
 
 namespace Managers::LCDPlugins::Fonts
 {
 
 class PBMFont
-	:	virtual protected PBM::PBMFile
 {
 	public:
 		virtual ~PBMFont();

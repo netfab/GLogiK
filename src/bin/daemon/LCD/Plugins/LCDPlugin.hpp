@@ -33,9 +33,7 @@
 #include "include/LCDPP.hpp"
 
 #include "bin/daemon/LCD/PixelsData.hpp"
-
 #include "bin/daemon/LCD/PBM/PBM.hpp"
-#include "bin/daemon/LCD/PBM/PBMFile.hpp"
 
 namespace fs = boost::filesystem;
 
@@ -77,7 +75,6 @@ class pluginFrame
 };
 
 class LCDPlugin
-	:	virtual protected Managers::LCDPlugins::PBM::PBMFile
 {
 	private:
 		using FontID = Fonts::FontID;

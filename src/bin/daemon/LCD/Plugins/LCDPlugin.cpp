@@ -25,6 +25,7 @@
 #include "lib/utils/utils.hpp"
 
 #include "bin/daemon/LCD/fontsManager.hpp"
+#include "bin/daemon/LCD/PBM/PBMFile.hpp"
 #include "bin/daemon/LCD/PBM/PBM.hpp"
 #include "LCDPlugin.hpp"
 
@@ -177,7 +178,7 @@ void LCDPlugin::addFrameFromPBM(
 
 	this->addEmptyFrame(num);
 
-	this->readPBM(
+	PBM::PBMFile::readPBM(
 		filePath.string(),
 		_frames.back()._PBMData,
 		PBM::default_width,
