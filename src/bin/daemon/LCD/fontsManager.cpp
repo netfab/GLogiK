@@ -19,7 +19,6 @@
  *
  */
 
-#include <new>
 #include <string_view>
 
 #include "lib/utils/utils.hpp"
@@ -37,40 +36,18 @@ FontsManager::FontsManager()
 
 FontsManager::~FontsManager()
 {
-	//  auto & [FontID, PBMFont*]
-	for(auto & [fontID, pFont] : _fonts)
-	{
-		delete pFont; pFont = nullptr;
-	}
-	_fonts.clear();
 }
 
 const std::uint16_t FontsManager::getCenteredXPos(
 	const FontID fontID,
 	std::string_view sv)
 {
-	try
-	{
-		return _fonts.at(fontID)->getCenteredXPos(sv);
-	}
-	catch (const std::out_of_range& oor)
-	{
-		this->initializeFont(fontID);
-		return _fonts.at(fontID)->getCenteredXPos(sv);
-	}
+	return this->getFont(fontID)->getCenteredXPos(sv);
 }
 
 const std::uint16_t FontsManager::getCenteredYPos(const FontID fontID)
 {
-	try
-	{
-		return _fonts.at(fontID)->getCenteredYPos();
-	}
-	catch (const std::out_of_range& oor)
-	{
-		this->initializeFont(fontID);
-		return _fonts.at(fontID)->getCenteredYPos();
-	}
+	return this->getFont(fontID)->getCenteredYPos();
 }
 
 void FontsManager::printCharacterOnFrame(
@@ -80,47 +57,12 @@ void FontsManager::printCharacterOnFrame(
 	std::uint16_t & PBMXPos,
 	const std::uint16_t PBMYPos)
 {
-	try
-	{
-		_fonts.at(fontID)->printCharacterOnFrame(frame, sv, PBMXPos, PBMYPos);
-	}
-	catch (const std::out_of_range& oor)
-	{
-		this->initializeFont(fontID);
-		_fonts.at(fontID)->printCharacterOnFrame(frame, sv, PBMXPos, PBMYPos);
-	}
+	this->getFont(fontID)->printCharacterOnFrame(frame, sv, PBMXPos, PBMYPos);
 }
 
-void FontsManager::initializeFont(const FontID fontID)
+inline PBMFont* FontsManager::getFont(FontID fontID) const
 {
-	GK_LOG_FUNC
-
-	GKLog2(trace, "initializing font ", toUInt(toEnumType(fontID)))
-
-	PBMFont* font = nullptr;
-	try
-	{
-		switch(fontID)
-		{
-			case FontID::MONOSPACE85:
-				font = new FontMonospace85();
-				break;
-			case FontID::MONOSPACE86:
-				font = new FontMonospace86();
-				break;
-			case FontID::DEJAVUSANSBOLD1616:
-				font = new FontDejaVuSansBold1616();
-				break;
-			default:
-				throw GLogiKExcept("unknown font ID");
-		}
-	}
-	catch (const std::bad_alloc& e)
-	{ /* handle new() failure */
-		throw GLogiKBadAlloc("font bad allocation");
-	}
-
-	_fonts[fontID] = font;
+	return _fonts[static_cast<std::size_t>(fontID)];
 }
 
 } // namespace Managers::LCDPlugins::Fonts

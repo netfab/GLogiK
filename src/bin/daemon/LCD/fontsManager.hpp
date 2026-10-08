@@ -23,9 +23,7 @@
 
 #include <cstdint>
 
-#include <string>
 #include <string_view>
-#include <map>
 
 #include "Fonts/fonts.hpp"
 #include "PixelsData.hpp"
@@ -59,9 +57,18 @@ class FontsManager
 	protected:
 
 	private:
-		std::map<FontID, PBMFont*> _fonts;
+		FontMonospace85 _font1;
+		FontMonospace86 _font2;
+		FontDejaVuSansBold1616 _font3;
 
-		void initializeFont(const FontID fontID);
+		std::array<PBMFont* const, static_cast<std::size_t>(FontID::Count)> _fonts
+		{
+			&_font1,
+			&_font2,
+			&_font3
+		};
+
+		PBMFont* getFont(FontID fontID) const;
 };
 
 } // namespace Managers::LCDPlugins::Fonts

@@ -30,9 +30,10 @@ namespace Managers::LCDPlugins::Fonts
 
 enum class FontID : std::uint8_t
 {
-			MONOSPACE85	= 1 << 0,
-			MONOSPACE86	= 1 << 1,
-	 DEJAVUSANSBOLD1616	= 1 << 2,
+	MONOSPACE85        = 0,
+	MONOSPACE86        = 1,
+	DEJAVUSANSBOLD1616 = 2,
+	Count
 };
 
 /* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
