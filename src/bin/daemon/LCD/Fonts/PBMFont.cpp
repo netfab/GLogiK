@@ -88,11 +88,15 @@ PBMFont::~PBMFont()
 
 const std::size_t PBMFont::characterLength(std::string_view sv, std::size_t pos)
 {
+	// lambda
+	auto check_char = [&sv] (std::size_t p, unsigned char c) -> bool
+	{
+		return (static_cast<unsigned char>(sv[p]) == c);
+	};
+
 	// ° in UTF-8 = C2 B0
 	// TODO : see utfcpp library
-	if( static_cast<unsigned char>(sv[pos]) == 0xC2 &&
-		pos + 1 < sv.size() &&
-		static_cast<unsigned char>(sv[pos + 1]) == 0xB0)
+	if( pos + 1 < sv.size() && check_char(pos, 0xC2) && check_char(pos+1, 0xB0) )
 		return 2;
 
 	return 1;
