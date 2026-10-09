@@ -104,7 +104,7 @@ const std::string NetSnapshots::getRateString(
 	}
 	else
 	{
-		float kB = value / 1024.f;
+		float kB = static_cast<float>(value) / 1024.f;
 		if(kB < 1024)
 		{
 			buffer << std::setw(7) << std::fixed << kB;
@@ -112,7 +112,7 @@ const std::string NetSnapshots::getRateString(
 		}
 		else
 		{
-			float mB = kB / 1024.f;
+			float mB = static_cast<float>(kB) / 1024.f;
 			buffer << std::setw(7) << std::fixed << mB;
 			unit = " mB/s";
 		}
