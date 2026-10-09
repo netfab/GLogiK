@@ -189,7 +189,7 @@ const PixelsData & SystemMonitor::getNextFrame(
 			freePMem = 0;
 		}
 
-		float freeMem = 100 * freePMem / totalPMem;
+		double freeMem = static_cast<double>(freePMem) / static_cast<double>(totalPMem) * 100.0;
 		std::fesetround(FE_TONEAREST);
 		freeMem = std::nearbyint(freeMem);
 
@@ -201,14 +201,14 @@ const PixelsData & SystemMonitor::getNextFrame(
 	}
 
 	/* -- -- -- */
-	std::string usedCPUActiveTotal("");
+	std::string usedCPUActive("");
 
 	{
 		CPUSnapshot s2;
 
 		/* see cpu-stat - CPUStatsPrinter::GetPercActiveTotal() */
-		const float ACTIVE_TIME		= s2.GetActiveTimeTotal() - _snapshot1.GetActiveTimeTotal();
-		const float IDLE_TIME		= s2.GetIdleTimeTotal() - _snapshot1.GetIdleTimeTotal();
+		const float ACTIVE_TIME		= static_cast<float>(s2.GetActiveTimeTotal() - _snapshot1.GetActiveTimeTotal());
+		const float IDLE_TIME		= static_cast<float>(s2.GetIdleTimeTotal() - _snapshot1.GetIdleTimeTotal());
 		const float TOTAL_TIME		= ACTIVE_TIME + IDLE_TIME;
 
 		float cpuPercentTotal = 100.f * ACTIVE_TIME / TOTAL_TIME;
@@ -216,8 +216,10 @@ const PixelsData & SystemMonitor::getNextFrame(
 		std::fesetround(FE_TONEAREST);
 		cpuPercentTotal = std::nearbyint(cpuPercentTotal);
 
-		this->drawProgressBarOnFrame(cpuPercentTotal, 24, 15);
-		usedCPUActiveTotal = get_padded_percent_string(cpuPercentTotal);
+		std::uint16_t cpuPercent = static_cast<std::uint16_t>(cpuPercentTotal);
+
+		this->drawProgressBarOnFrame(cpuPercent, 24, 15);
+		usedCPUActive = get_padded_percent_string(cpuPercent);
 
 		_snapshot1 = s2;
 	}
@@ -274,19 +276,24 @@ const PixelsData & SystemMonitor::getNextFrame(
 	}
 
 	/* -- -- -- */
-	/* FontID::MONOSPACE85 char width is 5 pixels */
-	const std::uint16_t FONT_CHAR_WIDTH = 5;
+	// lambda
+	auto get_posX = [] (unsigned int size) -> std::int16_t
+	{
+		/* FontID::MONOSPACE85 char width is 5 pixels */
+		const unsigned int FONT_CHAR_WIDTH = 5;
+		const unsigned int base = (PBM::LCD_width - 1);
+		return static_cast<std::int16_t>(base - (size * FONT_CHAR_WIDTH));
+	};
 
 	/* padded percentage string size is always 5 chars */
-	const std::uint16_t PERC_POS_X = (PBM::LCD_width - 1) - (5 * FONT_CHAR_WIDTH);
-	const std::uint16_t  NET_POS_X =
-		(PBM::LCD_width - 1) - (paddedRateString.size() * FONT_CHAR_WIDTH);
+	const std::int16_t PERC_POS_X = get_posX(5);
+	const std::int16_t  NET_POS_X = get_posX( static_cast<unsigned int>(paddedRateString.size()) );
 
 	using FontID = Fonts::FontID;
 
 	/* percent - max 5 chars */
 	/* net rate - max 12 chars */
-	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, usedCPUActiveTotal, PERC_POS_X, 14);
+	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, usedCPUActive, PERC_POS_X, 14);
 	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, paddedRateString, NET_POS_X, 23);
 	this->writeStringOnFrame(pFonts, FontID::MONOSPACE85, usedPhysicalMemory, PERC_POS_X, 32);
 
