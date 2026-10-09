@@ -167,7 +167,7 @@ void LCDPluginsTab::updateTab(
 			_pDBus->waitForRemoteMethodCallReply();
 			const LCDPPArray_type array = _pDBus->getNextLCDPPArrayArgument();
 
-			_pPluginsTable->setRowCount( array.size() );
+			_pPluginsTable->setRowCount( static_cast<int>(array.size()) );
 
 			int c = 0;
 			_LCDPluginsMask = device.getLCDPluginsMask1();
