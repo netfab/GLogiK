@@ -278,19 +278,31 @@ const unsigned char PBMFont::getCharacterLine(
 			switch( (_charX % 4) )
 			{
 				case 0 :
-					c = (_PBMData.at(i) >> 2);
-					break;
+					{
+						const unsigned int value = (_PBMData.at(i) >> 2);
+						c = static_cast<unsigned char>(value);
+						break;
+					}
 				case 1 :
-					c = (_PBMData.at(i+1) >> 4);
-					c |= ((_PBMData[i] & 0b00000011) << 4);
-					break;
+					{
+						const unsigned int value =
+							( (_PBMData.at(i+1) >> 4) | ((_PBMData[i] & 0b00000011) << 4) );
+						c = static_cast<unsigned char>(value);
+						break;
+					}
 				case 2 :
-					c = (_PBMData.at(i+1) >> 6);
-					c |= ((_PBMData[i] & 0b00001111) << 2);
-					break;
+					{
+						const unsigned int value =
+							( (_PBMData.at(i+1) >> 6) | ((_PBMData[i] & 0b00001111) << 2) );
+						c = static_cast<unsigned char>(value);
+						break;
+					}
 				case 3 :
-					c = (_PBMData.at(i) & 0b00111111);
-					break;
+					{
+						const unsigned int value = (_PBMData.at(i) & 0b00111111);
+						c = static_cast<unsigned char>(value);
+						break;
+					}
 			}
 		}
 		else if(_charWidth == 5)
@@ -298,39 +310,64 @@ const unsigned char PBMFont::getCharacterLine(
 			switch( (_charX % 8) )
 			{
 				case 0:
-					c = (_PBMData.at(i) >> 3);
-					break;
+					{
+						const unsigned int value = (_PBMData.at(i) >> 3);
+						c = static_cast<unsigned char>(value);
+						break;
+					}
 				case 1:
-					c = (_PBMData.at(i+1) >> 6);
-					c |= ((_PBMData[i] & 0b00000111) << 2);
-					break;
+					{
+						const unsigned int value =
+							( (_PBMData.at(i+1) >> 6) | ((_PBMData[i] & 0b00000111) << 2) );
+						c = static_cast<unsigned char>(value);
+						break;
+					}
 				case 2:
-					c = ((_PBMData.at(i) & 0b00111110) >> 1);
-					break;
+					{
+						const unsigned int value = ( (_PBMData.at(i) & 0b00111110) >> 1 );
+						c = static_cast<unsigned char>(value);
+						break;
+					}
 				case 3:
-					c = (_PBMData.at(i+1) >> 4);
-					c |= ((_PBMData[i] & 0b00000001) << 4);
-					break;
+					{
+						const unsigned int value =
+							( (_PBMData.at(i+1) >> 4) | ((_PBMData[i] & 0b00000001) << 4) );
+						c = static_cast<unsigned char>(value);
+						break;
+					}
 				case 4:
-					c = (_PBMData.at(i+1) >> 7);
-					c |= ((_PBMData[i] & 0b00001111) << 1);
-					break;
+					{
+						const unsigned int value =
+							( (_PBMData.at(i+1) >> 7) | ((_PBMData[i] & 0b00001111) << 1) );
+						c = static_cast<unsigned char>(value);
+						break;
+					}
 				case 5:
-					c = ((_PBMData.at(i) & 0b01111100) >> 2);
-					break;
+					{
+						const unsigned int value = ( (_PBMData.at(i) & 0b01111100) >> 2 );
+						c = static_cast<unsigned char>(value);
+						break;
+					}
 				case 6:
-					c = (_PBMData.at(i+1) >> 5);
-					c |= ((_PBMData[i] & 0b00000011) << 3);
-					break;
+					{
+						const unsigned int value =
+							( (_PBMData.at(i+1) >> 5) | ((_PBMData[i] & 0b00000011) << 3) );
+						c = static_cast<unsigned char>(value);
+						break;
+					}
 				case 7:
-					c = (_PBMData.at(i) & 0b00011111);
-					break;
+					{
+						const unsigned int value = (_PBMData.at(i) & 0b00011111);
+						c = static_cast<unsigned char>(value);
+						break;
+					}
 			}
 		}
 		else if((_charWidth % 8) == 0)
 		{
 			/* charByte modifier when _charWidth multiple of 8 */
-			c = (_PBMData.at(i + charByte));
+			const unsigned int value = (_PBMData.at(i + charByte));
+			c = static_cast<unsigned char>(value);
 		}
 	}
 	catch (const std::out_of_range& oor)
