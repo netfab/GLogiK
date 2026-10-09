@@ -89,7 +89,7 @@ void DependenciesTab::buildTab()
 			for(const auto & [GKBin, GKDeps] : (*_pDepsMap))
 			{
 				/* increasing rows */
-				depsTable->setRowCount( (depsTable->rowCount() + GKDeps.size()) );
+				depsTable->setRowCount( (depsTable->rowCount() + static_cast<int>(GKDeps.size())) );
 
 				for(const auto & GKDep : GKDeps)
 				{
