@@ -19,6 +19,8 @@
  *
  */
 
+#include <cstddef>
+
 #include <sstream>
 #include <string_view>
 
@@ -307,7 +309,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 		PixelsData & frame = (*_itCurrentFrame)._PBMData;
 
 		// lambda
-		auto draw_horizontal_line = [&frame] (const std::uint16_t index) -> void
+		auto draw_horizontal_line = [&frame] (const std::size_t index) -> void
 		{
 			frame[index+12] |= 0b11111100;
 			for(std::uint16_t i = 0; i < 12; ++i)
@@ -316,7 +318,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 
 		// lambda
 		auto draw_progress_bar_line = [&frame, &percent]
-			(const std::uint16_t index, const std::uint16_t line) -> void
+			(const std::size_t index, const int line) -> void
 		{
 			const unsigned char B10 = 0b10101010;
 			const unsigned char B01 = 0b01010101;
@@ -349,7 +351,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 			}
 #endif
 
-			for(std::uint16_t i = 0; i < 12; ++i)
+			for(int i = 0; i < 12; ++i)
 			{
 				if((i == 0) and (percent < 8))
 					frame[index+i] = get_shifted_byte(cByte);
@@ -368,7 +370,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 		};
 
 		const std::uint16_t xByte = PBMXPos / 8;
-		const std::uint16_t index = (PBM::default_width_in_bytes * PBMYPos) + xByte;
+		const std::size_t index = (PBM::default_width_in_bytes * PBMYPos) + xByte;
 
 		/* checking for out of range before progress bar drawing */
 		[[maybe_unused]] const auto & pos = frame.at(index+12);
@@ -383,7 +385,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 		 *	------------- one horizontal line
 		 */
 		draw_horizontal_line(index);
-		for(std::uint16_t i = 1; i < (PROGRESS_BAR_HEIGHT-1); ++i)
+		for(int i = 1; i < (PROGRESS_BAR_HEIGHT-1); ++i)
 			draw_progress_bar_line(index + (PBM::default_width_in_bytes * i), i);
 		draw_horizontal_line(index + (PBM::default_width_in_bytes * (PROGRESS_BAR_HEIGHT-1)));
 	}
@@ -399,7 +401,7 @@ void LCDPlugin::drawPadlockOnFrame(
 	const std::uint16_t PBMYPos)
 {
 	const std::uint16_t xByte = PBMXPos / 8;
-	const std::uint16_t index = (PBM::default_width_in_bytes * PBMYPos) + xByte;
+	const std::size_t index = (PBM::default_width_in_bytes * PBMYPos) + xByte;
 
 	PixelsData & frame = (*_itCurrentFrame)._PBMData;
 
@@ -446,7 +448,7 @@ void LCDPlugin::drawVerticalLineOnFrame(
 		PixelsData & frame = (*_itCurrentFrame)._PBMData;
 
 		const std::uint16_t xByte = PBMXPos / 8;
-		const std::uint16_t index = (PBM::default_width_in_bytes * PBMYPos) + xByte;
+		const std::size_t index = (PBM::default_width_in_bytes * PBMYPos) + xByte;
 
 		for(std::uint16_t i = 1; i < size; ++i)
 			frame[index + (PBM::default_width_in_bytes * i)] |= 0b00100000;
