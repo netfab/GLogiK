@@ -549,7 +549,11 @@ void MainWindow::saveConfigurationFile(const TabApplyButton tab)
 		int r, g, b = 255;
 		_backlightColorTab->getAndSetNewColor().getRgb(&r, &g, &b);
 		/* setting color */
-		_openedConfigurationFile.setRGBBytes(r, g, b);
+		_openedConfigurationFile.setRGBBytes(
+				static_cast<std::uint8_t>(r),
+				static_cast<std::uint8_t>(g),
+				static_cast<std::uint8_t>(b)
+		);
 		dosave = true;
 
 		GKLog(trace, "backlight color updated")
