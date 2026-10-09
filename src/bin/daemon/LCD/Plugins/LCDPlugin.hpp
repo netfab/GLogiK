@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 #include <tuple>
@@ -122,7 +123,6 @@ class LCDPlugin
 
 		void addEmptyFrame(const std::uint16_t num = 1);
 
-		const std::uint16_t getNextFrameID() const;
 		PixelsData & getCurrentFrame();
 
 		void writeStringOnFrame(
@@ -163,11 +163,15 @@ class LCDPlugin
 		bool _initialized;
 		bool _everLocked;
 		std::uint16_t _frameCounter; /* frame counter */
-		std::uint16_t _frameIndex;   /* frame index in the container */
+		std::size_t _frameIndex;   /* frame index in the container */
 		std::vector<pluginFrame> _frames;
 		std::vector<pluginFrame>::iterator _itCurrentFrame;
 
 		void checkFrameIndex();
+		void updateFrameIndex()
+		{
+			_frameIndex = static_cast<std::size_t>(_itCurrentFrame - _frames.begin());
+		}
 		static std::tuple<std::uint16_t, std::uint16_t> getTempo(const LCDPluginTempo tempo);
 };
 

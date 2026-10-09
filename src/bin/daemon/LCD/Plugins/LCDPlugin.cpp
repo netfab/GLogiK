@@ -123,7 +123,7 @@ void LCDPlugin::prepareNextFrame()
 	{
 		_itCurrentFrame++;
 		this->checkFrameIndex(); /* may throw */
-		_frameIndex = (_itCurrentFrame - _frames.begin());
+		this->updateFrameIndex();
 		_frameCounter = 0;
 	}
 
@@ -201,11 +201,6 @@ void LCDPlugin::addEmptyFrame(const std::uint16_t num)
 	}
 }
 
-const std::uint16_t LCDPlugin::getNextFrameID() const
-{
-	return _frameIndex;
-}
-
 PixelsData & LCDPlugin::getCurrentFrame()
 {
 	GK_LOG_FUNC
@@ -279,7 +274,7 @@ void LCDPlugin::writeStringOnLastFrame(
 		if( _frames.empty() )
 			throw GLogiKExcept("accessing last element on empty container");
 		_itCurrentFrame = --(_frames.end());
-		_frameIndex = (_itCurrentFrame - _frames.begin());
+		this->updateFrameIndex();
 
 		this->writeStringOnFrame(pFonts, fontID, sv, PBMXPos, PBMYPos);
 	}
