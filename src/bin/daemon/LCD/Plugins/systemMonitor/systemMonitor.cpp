@@ -31,7 +31,9 @@
 #include <iomanip>
 #include <sstream>
 #include <fstream>
+#include <limits>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <map>
 
@@ -110,7 +112,7 @@ const PixelsData & SystemMonitor::getNextFrame(
 	};
 
 	{
-		std::map<const std::string, const std::string> memShot;
+		std::map<std::string_view, const std::uint64_t> memShot;
 
 		std::uint64_t freePMem = 0;
 		std::uint64_t totalPMem = 1;
@@ -138,16 +140,24 @@ const PixelsData & SystemMonitor::getNextFrame(
 						continue;
 					}
 
-					for(const auto & item : SystemMonitor::memItems)
+					for(const std::string_view & item : SystemMonitor::memItems)
 					{
 						const std::string_view s(words[0]);
 						// don't want trailing ':'
 						const std::string_view::size_type count = s.size() - 1;
 
+
 						if( s.substr(0, count) == item )
-							memShot.insert(
-								std::pair<const std::string, const std::string>(item, words[1])
-							);
+						{
+							try
+							{
+								memShot.emplace(item, toUInt64(words[1]));
+							}
+							catch (const GLogiKExcept & e)
+							{
+								GKSysLogWarning("meminfo item conversion failure : ", e.what());
+							}
+						}
 					}
 				}
 
@@ -166,26 +176,30 @@ const PixelsData & SystemMonitor::getNextFrame(
 
 		try
 		{
-			totalPMem = toUInt64( memShot.at("MemTotal") );
+			totalPMem = memShot.at("MemTotal");
 
 			// Linux Kernel 3.14+
 			if( memShot.count("MemAvailable") == 1 )
-				freePMem  = toUInt64( memShot["MemAvailable"] );
+				freePMem  = memShot["MemAvailable"];
 			else
 			{
-				freePMem  = toUInt64( memShot.at("MemFree") );
-				freePMem += toUInt64( memShot.at("Buffers") );
-				freePMem += toUInt64( memShot.at("Cached") );
+				// lambda
+				auto add = [&freePMem](std::uint64_t value) -> void
+				{
+					constexpr auto max = std::numeric_limits<std::uint64_t>::max();
+					if(freePMem > max - value)
+						throw GLogiKExcept("sum overflow");
+					freePMem += value;
+				};
+
+				add( memShot.at("MemFree") );
+				add( memShot.at("Buffers") );
+				add( memShot.at("Cached") );
 			}
 		}
 		catch (const std::out_of_range& oor)
 		{
 			GKSysLogWarning("meminfo parsing problem : ", oor.what());
-			freePMem = 0;
-		}
-		catch (const GLogiKExcept & e)
-		{
-			GKSysLogWarning("meminfo conversion failure : ", e.what());
 			freePMem = 0;
 		}
 
