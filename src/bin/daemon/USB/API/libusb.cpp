@@ -213,7 +213,7 @@ int libusb::performUSBDeviceLCDScreenInterruptTransfer(
 			device._pUSBDeviceHandle,
 			device._LCDEndpoint,
 			const_cast<unsigned char *>(buffer),
-			bufferLength,
+			static_cast<int>(bufferLength),
 			&(device._lastLCDInterruptTransferLength),
 			timeout
 		);
@@ -318,7 +318,7 @@ void libusb::setUSBDeviceActiveConfiguration(USBDevice & device)
 	if ( this->USBError(ret) )
 		throw GLogiKExcept("libusb get_device_descriptor failure");
 
-	for(unsigned int i = 0; i < toUInt(deviceDescriptor.bNumConfigurations); i++)
+	for(std::uint8_t i = 0; i < deviceDescriptor.bNumConfigurations; i++)
 	{
 		/* configuration descriptor */
 		libusb_config_descriptor * configDescriptor = nullptr;
@@ -326,7 +326,7 @@ void libusb::setUSBDeviceActiveConfiguration(USBDevice & device)
 		if ( this->USBError(ret) )
 		{
 			std::ostringstream buffer(std::ios_base::app);
-			buffer << "get_config_descriptor failure with index : " << i;
+			buffer << "get_config_descriptor failure with index : " << toUInt(i);
 			GKSysLogError(buffer.str());
 			continue;
 		}
@@ -335,7 +335,7 @@ void libusb::setUSBDeviceActiveConfiguration(USBDevice & device)
 		{
 			const libusb_interface *iface = &(configDescriptor->interface[j]);
 
-			for (unsigned int k = 0; k < toUInt(iface->num_altsetting); k++)
+			for(unsigned int k = 0; k < static_cast<unsigned int>(iface->num_altsetting); k++)
 			{
 				/* interface alt_setting descriptor */
 				const libusb_interface_descriptor * asDescriptor = &(iface->altsetting[k]);
@@ -390,14 +390,14 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 		LOG(trace) << "--";
 		LOG(trace) << "bLength            : " << toUInt(deviceDescriptor.bLength);
 		LOG(trace) << "bDescriptorType    : " << toUInt(deviceDescriptor.bDescriptorType);
-		LOG(trace) << "bcdUSB             : " << std::bitset<16>( toUInt(deviceDescriptor.bcdUSB) ).to_string();
+		LOG(trace) << "bcdUSB             : " << std::bitset<16>(deviceDescriptor.bcdUSB).to_string();
 		LOG(trace) << "bDeviceClass       : " << toUInt(deviceDescriptor.bDeviceClass);
 		LOG(trace) << "bDeviceSubClass    : " << toUInt(deviceDescriptor.bDeviceSubClass);
 		LOG(trace) << "bDeviceProtocol    : " << toUInt(deviceDescriptor.bDeviceProtocol);
 		LOG(trace) << "bMaxPacketSize0    : " << toUInt(deviceDescriptor.bMaxPacketSize0);
-		LOG(trace) << "idVendor           : " << std::hex << toUInt(deviceDescriptor.idVendor);
-		LOG(trace) << "idProduct          : " << std::hex << toUInt(deviceDescriptor.idProduct);
-		LOG(trace) << "bcdDevice          : " << std::bitset<16>( toUInt(deviceDescriptor.bcdDevice) ).to_string();
+		LOG(trace) << "idVendor           : " << std::hex << deviceDescriptor.idVendor;
+		LOG(trace) << "idProduct          : " << std::hex << deviceDescriptor.idProduct;
+		LOG(trace) << "bcdDevice          : " << std::bitset<16>(deviceDescriptor.bcdDevice).to_string();
 		LOG(trace) << "iManufacturer      : " << toUInt(deviceDescriptor.iManufacturer);
 		LOG(trace) << "iProduct           : " << toUInt(deviceDescriptor.iProduct);
 		LOG(trace) << "iSerialNumber      : " << toUInt(deviceDescriptor.iSerialNumber);
@@ -407,14 +407,14 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 	}
 #endif
 
-	for (unsigned int i = 0; i < toUInt(deviceDescriptor.bNumConfigurations); i++)
+	for(std::uint8_t i = 0; i < deviceDescriptor.bNumConfigurations; i++)
 	{
 		libusb_config_descriptor * configDescriptor = nullptr;
 		ret = libusb_get_config_descriptor(device._pUSBDevice, i, &configDescriptor);
 		if ( this->USBError(ret) )
 		{
 			std::ostringstream buffer(std::ios_base::app);
-			buffer << "get_config_descriptor failure with index : " << i;
+			buffer << "get_config_descriptor failure with index : " << toUInt(i);
 			GKSysLogError(buffer.str());
 			continue;
 		}
@@ -431,7 +431,7 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 			LOG(trace) << "--";
 			LOG(trace) << "bLength             : " << toUInt(configDescriptor->bLength);
 			LOG(trace) << "bDescriptorType     : " << toUInt(configDescriptor->bDescriptorType);
-			LOG(trace) << "wTotalLength        : " << toUInt(configDescriptor->wTotalLength);
+			LOG(trace) << "wTotalLength        : " << configDescriptor->wTotalLength;
 			LOG(trace) << "bNumInterfaces      : " << toUInt(configDescriptor->bNumInterfaces);
 			LOG(trace) << "bConfigurationValue : " << toUInt(configDescriptor->bConfigurationValue);
 			LOG(trace) << "iConfiguration      : " << toUInt(configDescriptor->iConfiguration);
@@ -461,7 +461,7 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 			}
 #endif
 
-			for (unsigned int k = 0; k < toUInt(iface->num_altsetting); k++)
+			for(unsigned int k = 0; k < static_cast<unsigned int>(iface->num_altsetting); k++)
 			{
 				const libusb_interface_descriptor * asDescriptor = &(iface->altsetting[k]);
 
@@ -595,7 +595,7 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 								if(GKLogging::GKDebug)
 								{
 									LOG(trace)	<< "found [Keys] endpoint, address 0x" << std::hex << addr
-												<< " MaxPacketSize " << toUInt(ep->wMaxPacketSize);
+												<< " MaxPacketSize " << ep->wMaxPacketSize;
 								}
 #endif
 								device._keysEndpoint = addr & 0xff;
@@ -615,7 +615,7 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 								if(GKLogging::GKDebug)
 								{
 									LOG(trace)	<< "found [LCD] endpoint, address 0x" << std::hex << addr
-												<< " MaxPacketSize " << toUInt(ep->wMaxPacketSize);
+												<< " MaxPacketSize " << ep->wMaxPacketSize;
 								}
 #endif
 								device._LCDEndpoint = addr & 0xff;
@@ -636,7 +636,7 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 							LOG(trace) << "bDescriptorType  : " << toUInt(ep->bDescriptorType);
 							LOG(trace) << "bEndpointAddress : " << toUInt(ep->bEndpointAddress);
 							LOG(trace) << "bmAttributes     : " << toUInt(ep->bmAttributes);
-							LOG(trace) << "wMaxPacketSize   : " << toUInt(ep->wMaxPacketSize);
+							LOG(trace) << "wMaxPacketSize   : " << ep->wMaxPacketSize;
 							LOG(trace) << "bInterval        : " << toUInt(ep->bInterval);
 							LOG(trace) << "bRefresh         : " << toUInt(ep->bRefresh);
 							LOG(trace) << "bSynchAddress    : " << toUInt(ep->bSynchAddress);

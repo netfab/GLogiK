@@ -19,10 +19,13 @@
  *
  */
 
-#include <vector>
-#include <string>
+#include <cstddef>
+
 #include <algorithm>
+#include <limits>
 #include <new>
+#include <string>
+#include <vector>
 
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
@@ -119,6 +122,13 @@ void LCDPluginsManager::init(const std::string & product)
 		GKSysLogWarning("no LCD screen plugin initialized");
 		_noPlugins = true;
 	}
+
+	// see libusb::performUSBDeviceLCDScreenInterruptTransfer()
+	static_assert(
+		PBM::data_size_in_bytes + PBM::data_header_size_in_bytes <=
+		static_cast<std::size_t>(std::numeric_limits<int>::max()),
+		"LCDBuffer too large for libusb"
+	);
 
 	/* initialize LCD frame container */
 	_LCDBuffer.resize(PBM::data_size_in_bytes + PBM::data_header_size_in_bytes, 0);
