@@ -57,7 +57,7 @@ void libusb::openUSBDevice(USBDevice & device)
 	this->seekUSBDevice(device);
 
 	int ret = libusb_open( device._pUSBDevice, &(device._pUSBDeviceHandle) );
-	if( this->USBError(ret) )
+	if(this->USBError(ret))
 		throw GLogiKExcept("opening device failure");
 
 	GKLog2(trace, device.getID(), " opened USB device")
@@ -78,7 +78,7 @@ void libusb::closeUSBDevice(USBDevice & device) noexcept
 {
 	GK_LOG_FUNC
 
-	if( device.getUSBRequestsStatus() )
+	if(device.getUSBRequestsStatus())
 	{
 		/* if we ever claimed or detached some interfaces, set them back
 		 * to the same state in which we found them */
@@ -102,7 +102,7 @@ void libusb::sendUSBDeviceFeatureReport(
 {
 	GK_LOG_FUNC
 
-	if( ! device.getUSBRequestsStatus() )
+	if(! device.getUSBRequestsStatus())
 	{
 		GKSysLogWarning("skip device feature report sending, would probably fail");
 		return;
@@ -117,7 +117,7 @@ void libusb::sendUSBDeviceFeatureReport(
 	const std::uint16_t HIDReportType = 0x03 << 8;  /* high byte - Report Type: Feature */
 	const std::uint16_t HIDReportID = data[0];      /* low byte  - Report ID */
 	// TODO - support when HIDReportID == 0
-	if( HIDReportID == 0)
+	if(HIDReportID == 0)
 	{
 		GKSysLogError("HIDReportID 0 not implemented");
 		return;
@@ -138,7 +138,7 @@ void libusb::sendUSBDeviceFeatureReport(
 			1000
 		);
 	}
-	if( ret < 0 )
+	if(ret < 0)
 	{
 		GKSysLogError("error sending control request");
 		this->USBError(ret);
@@ -162,7 +162,7 @@ int libusb::performUSBDeviceKeysInterruptTransfer(
 {
 	GK_LOG_FUNC
 
-	if( ! device.getUSBRequestsStatus() )
+	if(! device.getUSBRequestsStatus())
 	{
 		GKSysLogWarning("skip device interrupt transfer read, would probably fail");
 		return 0;
@@ -197,7 +197,7 @@ int libusb::performUSBDeviceLCDScreenInterruptTransfer(
 {
 	GK_LOG_FUNC
 
-	if( ! device.getUSBRequestsStatus() )
+	if(! device.getUSBRequestsStatus())
 	{
 		GKSysLogWarning("skip device interrupt transfer write, would probably fail");
 		return 0;
@@ -228,7 +228,7 @@ int libusb::performUSBDeviceLCDScreenInterruptTransfer(
 	}
 #endif
 
-	if( ret < 0 )
+	if(ret < 0)
 		this->USBError(ret);
 
 	return ret;
@@ -256,7 +256,7 @@ void libusb::releaseUSBDeviceInterfaces(USBDevice & device) noexcept
 		GKLog3(trace, device.getID(), " releasing claimed interface : ", numInt)
 
 		ret = libusb_release_interface(device._pUSBDeviceHandle, numInt); /* release */
-		if( this->USBError(ret) )
+		if(this->USBError(ret))
 		{
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "failed to release interface : " << numInt;
@@ -292,17 +292,17 @@ void libusb::setUSBDeviceActiveConfiguration(USBDevice & device)
 
 	GKLog2(trace, device.getID(), " setting up usb device configuration")
 
-	int b = toInt( device.getBConfigurationValue() );
+	int b = toInt(device.getBConfigurationValue());
 
 	{
 		int bConfigurationValue = -1;
 		ret = libusb_get_configuration(device._pUSBDeviceHandle, &bConfigurationValue);
-		if ( this->USBError(ret) )
+		if(this->USBError(ret))
 			throw GLogiKExcept("libusb get_configuration error");
 
 		GKLog3(trace, device.getID(), " current active configuration value : ", bConfigurationValue)
 
-		if( bConfigurationValue == b )
+		if(bConfigurationValue == b)
 		{
 			GKLog2(info, device.getID(), " current active configuration value matches the wanted value, skipping configuration")
 			return;
@@ -315,7 +315,7 @@ void libusb::setUSBDeviceActiveConfiguration(USBDevice & device)
 
 	libusb_device_descriptor deviceDescriptor;
 	ret = libusb_get_device_descriptor(device._pUSBDevice, &deviceDescriptor);
-	if ( this->USBError(ret) )
+	if(this->USBError(ret))
 		throw GLogiKExcept("libusb get_device_descriptor failure");
 
 	for(std::uint8_t i = 0; i < deviceDescriptor.bNumConfigurations; i++)
@@ -323,7 +323,7 @@ void libusb::setUSBDeviceActiveConfiguration(USBDevice & device)
 		/* configuration descriptor */
 		libusb_config_descriptor * configDescriptor = nullptr;
 		ret = libusb_get_config_descriptor(device._pUSBDevice, i, &configDescriptor);
-		if ( this->USBError(ret) )
+		if(this->USBError(ret))
 		{
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "get_config_descriptor failure with index : " << toUInt(i);
@@ -347,20 +347,20 @@ void libusb::setUSBDeviceActiveConfiguration(USBDevice & device)
 				}
 				catch ( const GLogiKExcept & e )
 				{
-					libusb_free_config_descriptor( configDescriptor ); /* free */
+					libusb_free_config_descriptor(configDescriptor); /* free */
 					throw;
 				}
 			} /* for ->num_altsetting */
 		} /* for ->bNumInterfaces */
 
-		libusb_free_config_descriptor( configDescriptor ); /* free */
+		libusb_free_config_descriptor(configDescriptor); /* free */
 	} /* for .bNumConfigurations */
 
 	/* trying to set configuration */
 	GKLog2(trace, device.getID(), " setting device active configuration")
 
 	ret = libusb_set_configuration(device._pUSBDeviceHandle, b);
-	if ( this->USBError(ret) )
+	if(this->USBError(ret))
 		throw GLogiKExcept("libusb set_configuration failure");
 
 	this->attachUSBDeviceInterfacesToKernelDrivers(device);
@@ -376,7 +376,7 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 
 	libusb_device_descriptor deviceDescriptor;
 	ret = libusb_get_device_descriptor(device._pUSBDevice, &deviceDescriptor);
-	if( this->USBError(ret) )
+	if(this->USBError(ret))
 		throw GLogiKExcept("libusb get_device_descriptor failure");
 
 #if DEBUGGING_ON
@@ -411,7 +411,7 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 	{
 		libusb_config_descriptor * configDescriptor = nullptr;
 		ret = libusb_get_config_descriptor(device._pUSBDevice, i, &configDescriptor);
-		if ( this->USBError(ret) )
+		if(this->USBError(ret))
 		{
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "get_config_descriptor failure with index : " << toUInt(i);
@@ -444,13 +444,13 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 		}
 #endif
 
-		if ( configDescriptor->bConfigurationValue != device.getBConfigurationValue() )
+		if(configDescriptor->bConfigurationValue != device.getBConfigurationValue())
 		{
-			libusb_free_config_descriptor( configDescriptor ); /* free */
+			libusb_free_config_descriptor(configDescriptor); /* free */
 			continue; /* skip non expected configuration */
 		}
 
-		for (unsigned int j = 0; j < toUInt(configDescriptor->bNumInterfaces); j++)
+		for(unsigned int j = 0; j < toUInt(configDescriptor->bNumInterfaces); j++)
 		{
 			const libusb_interface *iface = &(configDescriptor->interface[j]);
 #if DEBUGGING_ON
@@ -491,13 +491,13 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 				}
 #endif
 
-				if ( asDescriptor->bInterfaceNumber != device.getBInterfaceNumber() )
+				if(asDescriptor->bInterfaceNumber != device.getBInterfaceNumber())
 					continue; /* skip non expected interface */
 
-				if ( asDescriptor->bAlternateSetting != device.getBAlternateSetting() )
+				if(asDescriptor->bAlternateSetting != device.getBAlternateSetting())
 					continue; /* skip non expected alternate setting */
 
-				if( asDescriptor->bInterfaceClass != LIBUSB_CLASS_HID )
+				if(asDescriptor->bInterfaceClass != LIBUSB_CLASS_HID)
 				{
 					std::ostringstream buffer(std::ios_base::app);
 					buffer	<< device.getID() << " interface " << j
@@ -507,7 +507,7 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 					continue; /* sanity check */
 				}
 
-				if ( asDescriptor->bNumEndpoints != device.getBNumEndpoints() )
+				if(asDescriptor->bNumEndpoints != device.getBNumEndpoints())
 				{
 					std::ostringstream buffer(std::ios_base::app);
 					buffer	<< device.getID() << " skipping settings. numEndpoints : "
@@ -515,7 +515,7 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 							<< " expected : " << toUInt(device.getBNumEndpoints());
 					GKSysLogWarning(buffer.str());
 
-					libusb_free_config_descriptor( configDescriptor ); /* free */
+					libusb_free_config_descriptor(configDescriptor); /* free */
 					throw GLogiKExcept("num_endpoints does not match");
 				}
 
@@ -527,9 +527,9 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 				{
 					this->detachKernelDriverFromUSBDeviceInterface(device, numInt);
 				}
-				catch ( const GLogiKExcept & e )
+				catch ( const GLogiKExcept & e)
 				{
-					libusb_free_config_descriptor( configDescriptor ); /* free */
+					libusb_free_config_descriptor(configDescriptor); /* free */
 					throw;
 				}
 
@@ -537,9 +537,9 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 				GKLog3(trace, device.getID(), " claiming interface : ", numInt)
 
 				ret = libusb_claim_interface(device._pUSBDeviceHandle, numInt);	/* claiming */
-				if( this->USBError(ret) )
+				if(this->USBError(ret))
 				{
-					libusb_free_config_descriptor( configDescriptor ); /* free */
+					libusb_free_config_descriptor(configDescriptor); /* free */
 					throw GLogiKExcept("failed to claim interface");
 				}
 				device._toRelease.push_back(numInt);	/* claimed */
@@ -550,17 +550,17 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 
 					int bConfigurationValue = -1;
 					ret = libusb_get_configuration(device._pUSBDeviceHandle, &bConfigurationValue);
-					if ( this->USBError(ret) )
+					if(this->USBError(ret))
 					{
-						libusb_free_config_descriptor( configDescriptor ); /* free */
+						libusb_free_config_descriptor(configDescriptor); /* free */
 						throw GLogiKExcept("libusb get_configuration error");
 					}
 
 					GKLog3(trace, device.getID(), " current active configuration value : ", bConfigurationValue)
 
-					if ( bConfigurationValue != toInt( device.getBConfigurationValue() ) )
+					if(bConfigurationValue != toInt(device.getBConfigurationValue()))
 					{
-						libusb_free_config_descriptor( configDescriptor ); /* free */
+						libusb_free_config_descriptor(configDescriptor); /* free */
 
 						std::ostringstream buffer(std::ios_base::app);
 						buffer << "wrong configuration value : " << bConfigurationValue;
@@ -570,18 +570,18 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 					}
 				}
 
-				for (unsigned int l = 0; l < toUInt(asDescriptor->bNumEndpoints); l++)
+				for(unsigned int l = 0; l < toUInt(asDescriptor->bNumEndpoints); l++)
 				{
 					const libusb_endpoint_descriptor * ep = &(asDescriptor->endpoint[l]);
 
 					/* check transfer type */
-					if( (toUInt(ep->bmAttributes) & LIBUSB_TRANSFER_TYPE_MASK)
-							== LIBUSB_TRANSFER_TYPE_INTERRUPT )
+					if((toUInt(ep->bmAttributes) & LIBUSB_TRANSFER_TYPE_MASK)
+							== LIBUSB_TRANSFER_TYPE_INTERRUPT)
 					{
 
 						const unsigned int addr = toUInt(ep->bEndpointAddress);
 
-						if( (addr & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_IN )
+						if((addr & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_IN)
 						{
 							/* In: device-to-host */
 
@@ -601,7 +601,7 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 								device._keysEndpoint = addr & 0xff;
 							}
 						}
-						else if( (addr & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_OUT )
+						else if((addr & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_OUT)
 						{
 							/* Out: host-to-device */
 
@@ -651,7 +651,7 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 
 				if(device._keysEndpoint == 0)
 				{
-					libusb_free_config_descriptor( configDescriptor ); /* free */
+					libusb_free_config_descriptor(configDescriptor); /* free */
 					const std::string err("[Keys] endpoint not found");
 					GKSysLogError(err);
 					throw GLogiKExcept(err);
@@ -659,7 +659,7 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 
 				if(device._LCDEndpoint == 0)
 				{
-					libusb_free_config_descriptor( configDescriptor ); /* free */
+					libusb_free_config_descriptor(configDescriptor); /* free */
 					const std::string err("[LCD] endpoint not found");
 					GKSysLogError(err);
 					throw GLogiKExcept(err);
@@ -678,7 +678,7 @@ void libusb::findUSBDeviceInterface(USBDevice & device)
 			} /* for ->num_altsetting */
 		} /* for ->bNumInterfaces */
 
-		libusb_free_config_descriptor( configDescriptor ); /* free */
+		libusb_free_config_descriptor(configDescriptor); /* free */
 	} /* for .bNumConfigurations */
 }
 
@@ -694,7 +694,7 @@ void libusb::attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexce
 		GKLog3(trace, device.getID(), " attaching kernel driver to interface : ", numInt)
 
 		ret = libusb_attach_kernel_driver(device._pUSBDeviceHandle, numInt); /* attaching */
-		if( this->USBError(ret) )
+		if(this->USBError(ret))
 		{
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "failed to attach kernel driver to interface " << numInt;
@@ -710,17 +710,17 @@ void libusb::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int nu
 	GK_LOG_FUNC
 
 	int ret = libusb_kernel_driver_active(device._pUSBDeviceHandle, numInt);
-	if( ret < 0 )
+	if(ret < 0)
 	{
 		this->USBError(ret);
 		throw GLogiKExcept("libusb kernel_driver_active error");
 	}
-	if( ret )
+	if(ret)
 	{
 		GKLog3(trace, device.getID(), " detaching kernel driver from interface : ", numInt)
 
 		ret = libusb_detach_kernel_driver(device._pUSBDeviceHandle, numInt); /* detaching */
-		if( this->USBError(ret) )
+		if(this->USBError(ret))
 		{
 			std::ostringstream buffer(std::ios_base::app);
 			buffer << "failed to detach kernel driver from USB interface " << numInt;
