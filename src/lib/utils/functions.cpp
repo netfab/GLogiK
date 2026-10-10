@@ -25,6 +25,8 @@
 #include <stdexcept>
 #include <iomanip>
 #include <sstream>
+#include <string>
+#include <string_view>
 #include <chrono>
 #include <thread>
 
@@ -92,22 +94,22 @@ const std::string getErrnoString(const int errnum)
 	return ret;
 }
 
-const std::uint8_t toUInt8(const std::string & s, int base)
+const std::uint8_t toUInt8(std::string_view s, int base)
 {
 	return toInteger<std::uint8_t>(s, base);
 }
 
-const std::uint16_t toUInt16(const std::string& s, int base)
+const std::uint16_t toUInt16(std::string_view s, int base)
 {
 	return toInteger<std::uint16_t>(s, base);
 }
 
-//const std::uint32_t toUInt32(const std::string& s, int base)
+//const std::uint32_t toUInt32(std::string_view s, int base)
 //{
 //	return toInteger<std::uint32_t>(s, base);
 //}
 
-const std::uint64_t toUInt64(const std::string& s, int base)
+const std::uint64_t toUInt64(std::string_view s, int base)
 {
 	return toInteger<std::uint64_t>(s, base);
 }

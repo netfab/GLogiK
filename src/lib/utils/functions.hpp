@@ -27,6 +27,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <chrono>
 
 namespace NSGKUtils
@@ -47,10 +48,10 @@ constexpr unsigned int toUInt(const std::uint8_t c) noexcept
 	return static_cast<unsigned int>(c);
 }
 
-const std::uint8_t toUInt8(const std::string & s, int base = 10);
-const std::uint16_t toUInt16(const std::string & s, int base = 10);
-//const std::uint32_t toUInt32(const std::string & s, int base = 10);
-const std::uint64_t toUInt64(const std::string & s, int base = 10);
+const std::uint8_t toUInt8(std::string_view s, int base = 10);
+const std::uint16_t toUInt16(std::string_view s, int base = 10);
+//const std::uint32_t toUInt32(std::string_view s, int base = 10);
+const std::uint64_t toUInt64(std::string_view s, int base = 10);
 
 const std::string getHexRGB(
 	const std::uint8_t red,

@@ -86,7 +86,7 @@ const IntegerType castContainerSizeToInteger(const Container & container)
 }
 
 template <typename T>
-const T toInteger(const std::string & s, int base = 10)
+const T toInteger(std::string_view s, int base = 10)
 {
 	T value{};
 
