@@ -48,14 +48,14 @@ class FileSystem
 
 		static void createDirectory(
 			const fs::path & directory,
-			const fs::perms prms = fs::no_perms
+			fs::perms prms = fs::no_perms
 		);
 
 #if DEBUGGING_ON
 		static void traceLastDirectoryCreation() noexcept;
 #endif
 
-		const std::string getNextAvailableFileName(
+		std::string getNextAvailableFileName(
 			const std::set<std::string> & toSkip,
 			const fs::path & directory,
 			const std::string & baseName,

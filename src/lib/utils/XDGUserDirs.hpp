@@ -35,7 +35,7 @@ namespace NSGKUtils
 class XDGUserDirs
 {
 	public:
-		static const fs::path getConfigurationRootDirectory();
+		static fs::path getConfigurationRootDirectory();
 
 	protected:
 		XDGUserDirs() = default;

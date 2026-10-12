@@ -55,7 +55,7 @@ struct WatchedObject
 		unsigned int count;
 
 		WatchedObject() = delete;
-		WatchedObject(const int num) : wd(num), count(1) {}
+		WatchedObject(int num) : wd(num), count(1) {}
 		~WatchedObject() = default;
 
 	protected:
@@ -67,13 +67,13 @@ struct WatchedObject
 class FSNotify
 {
 	public:
-		const int addNotifyDirectoryWatch(
+		int addNotifyDirectoryWatch(
 			const std::string & path,
-			const bool checkIfAlreadyWatched=false
+			bool checkIfAlreadyWatched=false
 		);
-		void removeNotifyWatch(const int wd) noexcept;
+		void removeNotifyWatch(int wd) noexcept;
 
-		const int getNotifyQueueDescriptor() const;
+		int getNotifyQueueDescriptor() const;
 
 		void readNotifyEvents(DevicesFilesMap_type & filesMap);
 
@@ -87,9 +87,9 @@ class FSNotify
 
 		int _inotifyQueueFD;
 
-		const int addNotifyWatch(
+		int addNotifyWatch(
 			const std::string & path,
-			const std::uint32_t & mask
+			std::uint32_t mask
 		);
 };
 

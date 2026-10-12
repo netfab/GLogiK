@@ -41,7 +41,7 @@
 namespace NSGKUtils
 {
 
-const std::string toString(const char* s)
+std::string toString(const char* s)
 {
 	if(s == nullptr)
 		return "";
@@ -63,7 +63,7 @@ const std::string toString(const char* s)
 	}
 }
 
-const std::wstring toWString(const wchar_t* s)
+std::wstring toWString(const wchar_t* s)
 {
 	if(s == nullptr)
 		return std::wstring();
@@ -85,7 +85,7 @@ const std::wstring toWString(const wchar_t* s)
 	}
 }
 
-const std::string getErrnoString(const int errnum)
+std::string getErrnoString(const int errnum)
 {
 	std::string ret;
 	ret += toString(strerrorname_np(errnum));
@@ -94,27 +94,27 @@ const std::string getErrnoString(const int errnum)
 	return ret;
 }
 
-const std::uint8_t toUInt8(std::string_view s, int base)
+std::uint8_t toUInt8(const std::string_view s, const int base)
 {
 	return toInteger<std::uint8_t>(s, base);
 }
 
-const std::uint16_t toUInt16(std::string_view s, int base)
+std::uint16_t toUInt16(const std::string_view s, const int base)
 {
 	return toInteger<std::uint16_t>(s, base);
 }
 
-//const std::uint32_t toUInt32(std::string_view s, int base)
+//std::uint32_t toUInt32(const std::string_view s, const int base)
 //{
 //	return toInteger<std::uint32_t>(s, base);
 //}
 
-const std::uint64_t toUInt64(std::string_view s, int base)
+std::uint64_t toUInt64(const std::string_view s, const int base)
 {
 	return toInteger<std::uint64_t>(s, base);
 }
 
-const std::string getHexRGB(
+std::string getHexRGB(
 	const std::uint8_t red,
 	const std::uint8_t green,
 	const std::uint8_t blue)
@@ -127,7 +127,7 @@ const std::string getHexRGB(
 	return ret.str();
 }
 
-void yield_for(std::chrono::microseconds us)
+void yield_for(const std::chrono::microseconds us)
 {
 	auto start = std::chrono::high_resolution_clock::now();
 	auto end = start + us;
@@ -138,6 +138,4 @@ void yield_for(std::chrono::microseconds us)
 	while (std::chrono::high_resolution_clock::now() < end);
 }
 
-
 } // namespace NSGKUtils
-

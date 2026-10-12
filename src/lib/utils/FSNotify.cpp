@@ -76,7 +76,7 @@ FSNotify::~FSNotify()
 }
 
 /* make sure path is readable before calling this one */
-const int FSNotify::addNotifyDirectoryWatch(
+int FSNotify::addNotifyDirectoryWatch(
 	const std::string & path,
 	const bool checkIfAlreadyWatched)
 {
@@ -138,7 +138,7 @@ void FSNotify::removeNotifyWatch(const int wd) noexcept
 	erase_if(_watchedDescriptorsMap, find_descriptor);
 }
 
-const int FSNotify::getNotifyQueueDescriptor() const
+int FSNotify::getNotifyQueueDescriptor() const
 {
 	return _inotifyQueueFD;
 }
@@ -253,7 +253,7 @@ void FSNotify::readNotifyEvents(DevicesFilesMap_type & filesMap)
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-const int FSNotify::addNotifyWatch(const std::string & path, const std::uint32_t & mask)
+int FSNotify::addNotifyWatch(const std::string & path, const std::uint32_t mask)
 {
 	GK_LOG_FUNC
 

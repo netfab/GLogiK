@@ -61,13 +61,13 @@ const steady::duration process::oneSecond = chr::duration<int>(1);
 
 std::uint8_t process::options = 0;
 
-const pid_t process::detach()
+pid_t process::detach()
 {
 	process::options |= process::mask::PROCESS_LOG_ENTRIES;
 	return process::newPID();
 }
 
-const pid_t process::deamonize()
+pid_t process::deamonize()
 {	/* main process is daemonized before opening debug file --> no log entries */
 	process::options |= process::mask::PROCESS_CLOSE_DESCRIPTORS;
 	return process::newPID();
@@ -81,7 +81,7 @@ void process::logErrno(
 }
 
 void process::closeFD(
-	int fd,
+	const int fd,
 	const std::string & tracestr)
 {
 	const int ret = close(fd);
@@ -151,7 +151,7 @@ int process::waitForChildNotification_impl(
 		throw GLogiKExcept("end of file reached while trying to read pipe");
 
 	// received one byte
-	return static_cast<const int>(buf);
+	return static_cast<int>(buf);
 }
 
 void process::newSessionID()
@@ -217,7 +217,7 @@ void process::forkProcess(const bool newSessionID)
 	}
 }
 
-const pid_t process::newPID()
+pid_t process::newPID()
 {
 	GK_LOG_FUNC
 
@@ -296,7 +296,7 @@ const pid_t process::newPID()
 }
 
 void process::setSignalHandler(
-	int signum,
+	const int signum,
 	__signal_handler_t __handler)
 {
 	GK_LOG_FUNC
@@ -335,13 +335,13 @@ void process::setSignalHandler(
 	}
 }
 
-void process::resetSignalHandler(int signum)
+void process::resetSignalHandler(const int signum)
 {
 	process::setSignalHandler(signum, SIG_DFL);
 }
 
-const std::string process::getSignalHandlingDesc(
-	const int & signum,
+std::string process::getSignalHandlingDesc(
+	const int signum,
 	const std::string & desc)
 {
 	const std::string sigdesc( process::getSignalAbbrev(signum) );
@@ -383,7 +383,7 @@ void process::runCommand(
 	proc.detach();
 }
 
-const std::string process::runCommandAndGetOutput(
+std::string process::runCommandAndGetOutput(
 	const std::string & binary,
 	const std::vector<std::string> & args)
 {
@@ -478,7 +478,7 @@ void process::runDelayedCommand(
 	}
 }
 
-const std::string process::getSignalAbbrev(int signum)
+std::string process::getSignalAbbrev(const int signum)
 {
 	GK_LOG_FUNC
 

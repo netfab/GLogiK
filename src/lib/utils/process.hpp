@@ -52,15 +52,15 @@ class process
 			PROCESS_CLOSE_DESCRIPTORS = 1 << 1,
 		};
 
-		static const pid_t detach();
-		static const pid_t deamonize();
+		static pid_t detach();
+		static pid_t deamonize();
 		static void setSignalHandler(
 			int signum,
 			__signal_handler_t __handler
 		);
 		static void resetSignalHandler(int signum);
-		static const std::string getSignalHandlingDesc(
-			const int & signum,
+		static std::string getSignalHandlingDesc(
+			int signum,
 			const std::string & desc
 		);
 
@@ -68,14 +68,14 @@ class process
 			const std::string & binary,
 			const std::vector<std::string> & args
 		);
-		static const std::string runCommandAndGetOutput(
+		static std::string runCommandAndGetOutput(
 			const std::string & binary,
 			const std::vector<std::string> & args
 		);
 		static void runDelayedCommand(
 			const std::string & binary,
 			const std::vector<std::string> & args,
-			const std::uint16_t delay
+			std::uint16_t delay
 		);
 
 	protected:
@@ -91,20 +91,19 @@ class process
 		static std::uint8_t options;
 
 		static void logErrno(
-			const int errnum,
+			int errnum,
 			const std::string & errstr
 		);
 		static void closeFD(
 			int fd,
 			const std::string & tracestr
 		);
-
 		static void newSessionID();
 
-		static void forkProcess(const bool newSessionID=false);
+		static void forkProcess(bool newSessionID=false);
 
-		static const pid_t newPID();
-		static const std::string getSignalAbbrev(int signum);
+		static pid_t newPID();
+		static std::string getSignalAbbrev(int signum);
 
 		static void notifyParentProcess_impl(int read_end, int write_end, int message);
 		static int waitForChildNotification_impl(int read_end, int write_end);
@@ -134,8 +133,8 @@ class process
 };
 
 inline const std::uint8_t operator & (
-	const std::uint8_t value,
-	const process::mask option)
+	std::uint8_t value,
+	process::mask option)
 {
 	std::uint8_t ret(value);
 	ret &= toEnumType(option);
@@ -143,8 +142,8 @@ inline const std::uint8_t operator & (
 }
 
 inline std::uint8_t & operator |= (
-	std::uint8_t& value,
-	const process::mask option)
+	std::uint8_t & value,
+	process::mask option)
 {
 	return value=(value|toEnumType(option));
 }

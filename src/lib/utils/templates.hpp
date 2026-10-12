@@ -47,7 +47,7 @@ constexpr typename std::underlying_type<T>::type toEnumType(T obj) noexcept
 }
 
 template <typename Iterator>
-const std::size_t safeAdvance(Iterator & it, const Iterator & end, const std::size_t n)
+std::size_t safeAdvance(Iterator & it, const Iterator & end, std::size_t n)
 {
 	std::size_t i = 0;
 	for(; i != n ; ++i)
@@ -75,7 +75,7 @@ constexpr std::string_view getTypeName()
 }
 
 template <typename IntegerType, typename Container>
-const IntegerType castContainerSizeToInteger(const Container & container)
+IntegerType castContainerSizeToInteger(const Container & container)
 {
 	auto size = container.size();
 	if(size > static_cast<std::size_t>(std::numeric_limits<IntegerType>::max()))
@@ -86,7 +86,7 @@ const IntegerType castContainerSizeToInteger(const Container & container)
 }
 
 template <typename T>
-const T toInteger(std::string_view s, int base = 10)
+T toInteger(std::string_view s, int base = 10)
 {
 	T value{};
 

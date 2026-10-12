@@ -47,7 +47,7 @@ RandomGenerator::~RandomGenerator()
 {
 }
 
-const std::string RandomGenerator::getString(std::size_t length)
+std::string RandomGenerator::getString(const std::size_t length)
 {
 	std::string ret(length,0);
 

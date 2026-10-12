@@ -41,12 +41,12 @@ namespace NSGKUtils
 bool FileSystem::createDirectorySuccess = false;
 std::string FileSystem::lastDirectoryCreation;
 
-const std::string FileSystem::getNextAvailableFileName(
+std::string FileSystem::getNextAvailableFileName(
 	const std::set<std::string> & toSkip,
 	const fs::path & directory,
 	const std::string & baseName,
 	const std::string & extension,
-	bool mustExist)
+	const bool mustExist)
 {
 	GK_LOG_FUNC
 

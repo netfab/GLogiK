@@ -33,30 +33,30 @@
 namespace NSGKUtils
 {
 
-const std::string toString(const char* s);
-const std::wstring toWString(const wchar_t* s);
+std::string toString(const char* s);
+std::wstring toWString(const wchar_t* s);
 
-const std::string getErrnoString(const int errnum);
+std::string getErrnoString(int errnum);
 
-constexpr int toInt(const std::uint8_t c) noexcept
+constexpr int toInt(std::uint8_t c) noexcept
 {
 	return static_cast<int>(c);
 }
 
-constexpr unsigned int toUInt(const std::uint8_t c) noexcept
+constexpr unsigned int toUInt(std::uint8_t c) noexcept
 {
 	return static_cast<unsigned int>(c);
 }
 
-const std::uint8_t toUInt8(std::string_view s, int base = 10);
-const std::uint16_t toUInt16(std::string_view s, int base = 10);
-//const std::uint32_t toUInt32(std::string_view s, int base = 10);
-const std::uint64_t toUInt64(std::string_view s, int base = 10);
+std::uint8_t toUInt8(std::string_view s, int base = 10);
+std::uint16_t toUInt16(std::string_view s, int base = 10);
+//std::uint32_t toUInt32(std::string_view s, int base = 10);
+std::uint64_t toUInt64(std::string_view s, int base = 10);
 
-const std::string getHexRGB(
-	const std::uint8_t red,
-	const std::uint8_t green,
-	const std::uint8_t blue
+std::string getHexRGB(
+	std::uint8_t red,
+	std::uint8_t green,
+	std::uint8_t blue
 );
 
 void yield_for(std::chrono::microseconds us);
