@@ -21,6 +21,7 @@
 
 #include "config.h"
 
+#include <array>
 #include <chrono>
 #include <string>
 #include <sstream>
@@ -96,20 +97,21 @@ void process::closeFD(
 #endif
 }
 
-void process::notifyParentProcess(
-	int pipefd[],
+void process::notifyParentProcess_impl(
+	const int read_end,
+	const int write_end,
 	const int message)
 {
 	GK_LOG_FUNC
 
 	/* close unused read-end */
-	process::closeFD(pipefd[0], "unused read-end");
+	process::closeFD(read_end, "unused read-end");
 
 	const char byte = static_cast<const char>(message);
-	const ssize_t bytes_written = write(pipefd[1], &byte, 1);
+	const ssize_t bytes_written = write(write_end, &byte, 1);
 	const int write_errno = errno;
 
-	process::closeFD(pipefd[1], "remaining write-end");
+	process::closeFD(write_end, "remaining write-end");
 
 	if(bytes_written == -1)
 	{
@@ -125,18 +127,20 @@ void process::notifyParentProcess(
 	}
 }
 
-const int process::waitForChildNotification(int pipefd[])
+int process::waitForChildNotification_impl(
+	const int read_end,
+	const int write_end)
 {
 	GK_LOG_FUNC
 
 	/* close unused write-end */
-	process::closeFD(pipefd[1], "unused write-end");
+	process::closeFD(write_end, "unused write-end");
 
 	char buf = -1;
-	const ssize_t bytes_read = read(pipefd[0], &buf, 1);
+	const ssize_t bytes_read = read(read_end, &buf, 1);
 	const int read_errno = errno;
 
-	process::closeFD(pipefd[0], "remaining read-end");
+	process::closeFD(read_end, "remaining read-end");
 
 	if(bytes_read == -1)
 	{
@@ -170,11 +174,11 @@ void process::forkProcess(const bool newSessionID)
 {
 	GK_LOG_FUNC
 
-	int pipefd[2];
+	pipeArray pipefd{};
 	pid_t pid;
 
 	/* create data channel before forking */
-	if(pipe(pipefd) == -1)
+	if(pipe(pipefd.data()) == -1)
 		throw GLogiKExcept("failed to create pipe");
 
 	pid = fork();

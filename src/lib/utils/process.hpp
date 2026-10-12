@@ -25,6 +25,9 @@
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
+#include <cstddef>
+
+#include <array>
 #include <chrono>
 #include <map>
 #include <string>
@@ -95,17 +98,39 @@ class process
 			int fd,
 			const std::string & tracestr
 		);
-		static void notifyParentProcess(
-			int pipefd[],
-			const int message
-		);
-		static const int waitForChildNotification(int pipefd[]);
+
 		static void newSessionID();
 
 		static void forkProcess(const bool newSessionID=false);
 
 		static const pid_t newPID();
 		static const std::string getSignalAbbrev(int signum);
+
+		static void notifyParentProcess_impl(int read_end, int write_end, int message);
+		static int waitForChildNotification_impl(int read_end, int write_end);
+
+		template<std::size_t I, typename T, std::size_t N>
+		static constexpr T getFD(const std::array<T, N> & arr)
+		{
+			static_assert(I < N, "out-of-bounds access");
+			return arr[I];
+		}
+
+		using pipeArray = std::array<int, 2>;
+
+		static void notifyParentProcess(const pipeArray & pipefd, int message)
+		{
+			const int  read_end = process::getFD<0>(pipefd);
+			const int write_end = process::getFD<1>(pipefd);
+			process::notifyParentProcess_impl(read_end, write_end, message);
+		}
+
+		static int waitForChildNotification(const pipeArray & pipefd)
+		{
+			const int  read_end = process::getFD<0>(pipefd);
+			const int write_end = process::getFD<1>(pipefd);
+			return process::waitForChildNotification_impl(read_end, write_end);
+		}
 };
 
 inline const std::uint8_t operator & (
