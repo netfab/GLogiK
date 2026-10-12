@@ -168,7 +168,7 @@ void GKeysBanksCapability::checkBanksKeys() noexcept
 	}
 }
 
-void GKeysBanksCapability::setCurrentBankID(MKeysID bankID)
+void GKeysBanksCapability::setCurrentBankID(const MKeysID bankID)
 {
 	GK_LOG_FUNC
 
@@ -177,7 +177,7 @@ void GKeysBanksCapability::setCurrentBankID(MKeysID bankID)
 	_currentBankID = bankID;
 }
 
-auto GKeysBanksCapability::getCurrentBankID() const -> const MKeysID
+auto GKeysBanksCapability::getCurrentBankID() const -> MKeysID
 {
 	return _currentBankID;
 }
@@ -203,7 +203,7 @@ void GKeysBanksCapability::resetBank(const MKeysID bankID)
 	}
 }
 
-auto GKeysBanksCapability::getBankID(const std::uint8_t num) const -> const MKeysID
+auto GKeysBanksCapability::getBankID(const std::uint8_t num) const -> MKeysID
 {
 	if(num > MKeysID::MKEY_MAX)
 		throw GLogiKExcept("wrong bankID value");

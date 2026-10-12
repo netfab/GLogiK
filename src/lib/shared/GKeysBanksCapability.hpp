@@ -58,9 +58,9 @@ class GKeysBanksCapability
 		void checkBanksKeys() noexcept;
 
 		void setCurrentBankID(MKeysID bankID);
-		const MKeysID getCurrentBankID() const;
+		MKeysID getCurrentBankID() const;
 
-		void resetBank(const MKeysID bankID);
+		void resetBank(MKeysID bankID);
 
 	protected:
 		GKeysBanksCapability();
@@ -79,7 +79,7 @@ class GKeysBanksCapability
 		banksMap_type _GKeysBanks;
 
 	private:
-		const MKeysID getBankID(const std::uint8_t num) const;
+		MKeysID getBankID(std::uint8_t num) const;
 
 		MKeysID _currentBankID;
 };

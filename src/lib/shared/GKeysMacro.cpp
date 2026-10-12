@@ -203,4 +203,3 @@ void GKeysMacro::fixMacroSize(
 }
 
 } // namespace LIBShared
-

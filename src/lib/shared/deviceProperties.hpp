@@ -42,9 +42,9 @@ class BacklightCapability
 {
 	public:
 		void setRGBBytes(
-			const std::uint8_t r,
-			const std::uint8_t g,
-			const std::uint8_t b
+			std::uint8_t r,
+			std::uint8_t g,
+			std::uint8_t b
 		);
 		void getRGBBytes(
 			std::uint8_t & r,
@@ -86,10 +86,10 @@ class LCDScreenCapability
 		const LCDPPArray_type & getLCDPluginsProperties() const;
 		void setLCDPluginsProperties(const LCDPPArray_type & props);
 
-		const std::uint64_t getLCDPluginsMask1() const;
+		std::uint64_t getLCDPluginsMask1() const;
 		void setLCDPluginsMask(
-			const std::uint8_t maskID,
-			const std::uint64_t mask
+			std::uint8_t maskID,
+			std::uint64_t mask
 		);
 
 	protected:
@@ -122,13 +122,13 @@ class clientDevice
 		clientDevice();
 		~clientDevice();
 
-		const std::uint64_t getCapabilities() const;
+		std::uint64_t getCapabilities() const;
 
 		void setProperties(
 			const std::string & vendor,
 			const std::string & product,
 			const std::string & name,
-			const std::uint64_t capabilities
+			std::uint64_t capabilities
 		);
 
 	protected:
@@ -158,14 +158,14 @@ class DeviceProperties
 		DeviceProperties();
 		~DeviceProperties();
 
-		const int getWatchDescriptor() const;
+		int getWatchDescriptor() const;
 		void setWatchDescriptor(int wd);
 
 		void setProperties(
 			const std::string & vendor,
 			const std::string & product,
 			const std::string & name,
-			const std::uint64_t capabilities)
+			std::uint64_t capabilities)
 		{
 			clientDevice::setProperties(vendor, product, name, capabilities);
 		}

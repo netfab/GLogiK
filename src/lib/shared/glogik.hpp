@@ -49,8 +49,8 @@ extern c_str CONST_STRING_METHOD_REPLY_FAILURE;
 
 /* --- ---- --- */
 
-std::string_view getGKeyName(const GLogiK::GKeysID keyID);
-std::string_view getMKeyName(const GLogiK::MKeysID keyID);
+std::string_view getGKeyName(GLogiK::GKeysID keyID);
+std::string_view getMKeyName(GLogiK::MKeysID keyID);
 
 void printVersionDeps(
 	const std::string & binaryVersion,

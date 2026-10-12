@@ -82,7 +82,7 @@ SessionManager::~SessionManager()
  *	public
  */
 
-const int SessionManager::openConnection()
+int SessionManager::openConnection()
 {
 	GK_LOG_FUNC
 
@@ -129,7 +129,7 @@ const int SessionManager::openConnection()
 }
 
 /* return true session is still alive */
-const bool SessionManager::isAlive() const
+bool SessionManager::isAlive() const
 {
 	return SessionManager::stillRunning;
 }
@@ -168,11 +168,11 @@ void SessionManager::closeConnection()
 
 }
 
-void SessionManager::handleSignal(int signum)
+void SessionManager::handleSignal(const int signum)
 {
 	GK_LOG_FUNC
 
-	switch( signum )
+	switch(signum)
 	{
 		case SIGINT:
 		case SIGTERM:

@@ -74,7 +74,7 @@ LCDScreenCapability::~LCDScreenCapability()
 {
 }
 
-const std::uint64_t LCDScreenCapability::getLCDPluginsMask1() const
+std::uint64_t LCDScreenCapability::getLCDPluginsMask1() const
 {
 	return _LCDPluginsMask1;
 }
@@ -120,7 +120,7 @@ void clientDevice::setProperties(
 	const std::string & vendor,
 	const std::string & product,
 	const std::string & name,
-	const std::uint64_t capabilities)
+	std::uint64_t capabilities)
 {
 	this->setVendor(vendor);
 	this->setProduct(product);
@@ -130,7 +130,7 @@ void clientDevice::setProperties(
 
 /* -- -- -- */
 
-const std::uint64_t clientDevice::getCapabilities() const
+std::uint64_t clientDevice::getCapabilities() const
 {
 	return _capabilities;
 }
@@ -146,12 +146,12 @@ DeviceProperties::~DeviceProperties()
 {
 }
 
-const int DeviceProperties::getWatchDescriptor() const
+int DeviceProperties::getWatchDescriptor() const
 {
 	return _watchedDescriptor;
 }
 
-void DeviceProperties::setWatchDescriptor(int wd)
+void DeviceProperties::setWatchDescriptor(const int wd)
 {
 	_watchedDescriptor = wd;
 }

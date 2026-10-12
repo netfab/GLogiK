@@ -35,8 +35,8 @@ class SessionManager
 		SessionManager();
 		virtual ~SessionManager();
 
-		const int openConnection();
-		const bool isAlive() const;
+		int openConnection();
+		bool isAlive() const;
 		void processICEMessages();
 
 	protected:
