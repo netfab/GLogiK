@@ -240,14 +240,14 @@ void LCDPluginsTab::updateTab(
 	}
 }
 
-const std::uint64_t LCDPluginsTab::getAndSetNewLCDPluginsMask()
+std::uint64_t LCDPluginsTab::getAndSetNewLCDPluginsMask()
 {
 	 _LCDPluginsMask = _newLCDPluginsMask;
 	_pApplyButton->setEnabled( !(_LCDPluginsMask == _newLCDPluginsMask) );
 	return _newLCDPluginsMask;
 }
 
-void LCDPluginsTab::toggleCheckbox(int row, int column)
+void LCDPluginsTab::toggleCheckbox(const int row, const int column)
 {
 	GK_LOG_FUNC
 
@@ -263,7 +263,7 @@ void LCDPluginsTab::toggleCheckbox(int row, int column)
 	}
 }
 
-void LCDPluginsTab::updateNewLCDPluginsMask(int checkboxState)
+void LCDPluginsTab::updateNewLCDPluginsMask(const int checkboxState)
 {
 	GK_LOG_FUNC
 

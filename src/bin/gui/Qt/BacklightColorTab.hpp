@@ -67,7 +67,7 @@ class BacklightColorTab
 
 		QColorDialog* _colorDialog;
 
-		const QString getBlackBorderedStyleSheetColor(const QColor & color) const;
+		QString getBlackBorderedStyleSheetColor(const QColor & color) const;
 		void setCurrentColorLabel(const QColor & color);
 		void setNewColorLabel(const QColor & color);
 };

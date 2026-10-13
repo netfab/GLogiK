@@ -146,7 +146,7 @@ void DaemonAndServiceTab::buildTab()
 	}
 }
 
-const bool DaemonAndServiceTab::isServiceRegistered() const
+bool DaemonAndServiceTab::isServiceRegistered() const
 {
 	return _serviceRegistered;
 }

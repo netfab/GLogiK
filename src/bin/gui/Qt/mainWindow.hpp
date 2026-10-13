@@ -66,7 +66,7 @@ class MainWindow
 		MainWindow(QWidget* parent = 0);
 		~MainWindow();
 
-		void init(const int& argc, char *argv[]);
+		void init(int argc, char *argv[]);
 		void build();
 
 	private:
@@ -108,11 +108,11 @@ class MainWindow
 
 		QWidget* getTabbedWidget(const std::string & name);
 
-		void parseCommandLine(const int& argc, char *argv[]);
+		void parseCommandLine(int argc, char *argv[]);
 
 		void setTabEnabled(
 			const std::string & name,
-			const bool status
+			bool status
 		);
 		void setCurrentTab(const std::string & name);
 
@@ -125,8 +125,8 @@ class MainWindow
 		void resetInterface();
 		void updateInterface(int index);
 		void checkDBusMessages();
-		void saveConfigurationFile(const TabApplyButton tab);
-		void saveConfigurationFileAndUpdateInterface(const TabApplyButton tab);
+		void saveConfigurationFile(TabApplyButton tab);
+		void saveConfigurationFileAndUpdateInterface(TabApplyButton tab);
 
 		void configurationFileUpdated(const std::string & devID);
 };

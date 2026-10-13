@@ -72,7 +72,7 @@ class DeviceControlTab
 		QFrame* _HLineFrame2;
 		QFrame* _HLineFrame3;
 
-		void setVisibility(const bool visibility);
+		void setVisibility(bool visibility);
 
 		void startSignal();
 		void stopSignal();

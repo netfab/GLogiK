@@ -58,7 +58,7 @@ class DaemonAndServiceTab
 		}
 		void updateTab();
 
-		const bool isServiceRegistered() const;
+		bool isServiceRegistered() const;
 		void sendServiceStartRequest();
 
 	private:

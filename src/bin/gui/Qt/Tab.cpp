@@ -35,7 +35,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-const QPushButton* Tab::getApplyButton() const
+QPushButton* Tab::getApplyButton() const
 {
 	return static_cast<QPushButton*>(_pApplyButton);
 }

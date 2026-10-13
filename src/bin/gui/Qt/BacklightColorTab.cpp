@@ -156,7 +156,7 @@ void BacklightColorTab::updateTab(const DeviceProperties & device, const std::st
 	_colorDialog->setCurrentColor(color);
 }
 
-const QString BacklightColorTab::getBlackBorderedStyleSheetColor(const QColor & color) const
+QString BacklightColorTab::getBlackBorderedStyleSheetColor(const QColor & color) const
 {
 	QString style("border:1px solid black;");
 	style += " background-color:" + color.name() + ";";

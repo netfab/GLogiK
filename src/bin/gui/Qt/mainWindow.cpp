@@ -106,7 +106,7 @@ MainWindow::~MainWindow()
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void MainWindow::handleSignal(int signum)
+void MainWindow::handleSignal(const int signum)
 {
 	GK_LOG_FUNC
 
@@ -114,7 +114,7 @@ void MainWindow::handleSignal(int signum)
 	QMetaObject::invokeMethod(qApp, "quit", Qt::QueuedConnection);
 }
 
-void MainWindow::init(const int& argc, char *argv[])
+void MainWindow::init(const int argc, char *argv[])
 {
 	GK_LOG_FUNC
 
@@ -371,7 +371,7 @@ void MainWindow::build()
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void MainWindow::parseCommandLine(const int& argc, char *argv[])
+void MainWindow::parseCommandLine(const int argc, char *argv[])
 {
 	GK_LOG_FUNC
 

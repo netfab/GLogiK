@@ -62,7 +62,7 @@ class GKeysTab
 		~GKeysTab();
 
 #if DEBUGGING_ON
-		static const char* getEventTypeString(const GKeyEventType eventType);
+		static const char* getEventTypeString(GKeyEventType eventType);
 #endif
 
 		void buildTab();
@@ -100,13 +100,13 @@ class GKeysTab
 
 		bool _updateGKeyEvent;
 
-		void setApplyButtonStatus(const bool status);
+		void setApplyButtonStatus(bool status);
 		void updateApplyButtonStatus(const QString & newString);
 
 		QPushButton* newBlankButton();
 		QPushButton* newGKeyButton(
-			const GKeysID GKeyID,
-			const GKeyEventType eventType,
+			GKeysID GKeyID,
+			GKeyEventType eventType,
 			const QString & colorName = "#RRGGBB"
 		);
 
@@ -116,26 +116,26 @@ class GKeysTab
 
 		void setGKeyEventParams(
 			const std::string & eventCommand,
-			const GKeyEventType eventType,
-			const GKeysID GKeyID
+			GKeyEventType eventType,
+			GKeysID GKeyID
 		);
 		void prepareCommandWidget(
 			const GKeysEvent & GKeyEvent,
-			const GKeysID GKeyID
+			GKeysID GKeyID
 		);
 
 		void updateInputsBox(
 			const DeviceProperties & device,
-			const GKeysID GKeyID
+			GKeysID GKeyID
 		);
 		void switchGKeyEventType(
 			const DeviceProperties & device,
-			const GKeysID GKeyID
+			GKeysID GKeyID
 		);
 
 		void updateAndRedrawTab(
 			const DeviceProperties & device,
-			const MKeysID bankID
+			MKeysID bankID
 		);
 		void redrawTab(const DeviceProperties & device);
 };

@@ -139,7 +139,7 @@ void AboutDialog::closeDialog()
 	this->close();
 }
 
-void AboutDialog::setCopyButtonVisibility(int index)
+void AboutDialog::setCopyButtonVisibility(const int index)
 {
 	GK_LOG_FUNC
 

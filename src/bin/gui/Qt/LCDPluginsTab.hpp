@@ -54,7 +54,7 @@ class LCDPluginsTab
 			const std::string & devID
 		);
 
-		const std::uint64_t getAndSetNewLCDPluginsMask();
+		std::uint64_t getAndSetNewLCDPluginsMask();
 
 	protected:
 	private:

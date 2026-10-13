@@ -66,7 +66,7 @@ class Tab
 
 		QFrame* getHLine();
 		QFrame* getVLine();
-		const QPushButton* getApplyButton() const;
+		QPushButton* getApplyButton() const;
 
 	protected:
 		const GKDBUS::BusConnection & _sessionBus = GKDBUS::GKDBus::SessionBus;
