@@ -68,22 +68,22 @@ class DevicesHandler
 
 		void startDevice(
 			const std::string & devID,
-			const bool notifications = true
+			bool notifications = true
 		);
 		void stopDevice(
 			const std::string & devID,
-			const bool notifications = true
+			bool notifications = true
 		);
 		void unplugDevice(
 			const std::string & devID,
-			const bool notifications = true
+			bool notifications = true
 		);
 
-		void clearDevices(const bool notifications);
+		void clearDevices(bool notifications);
 
 		void setDeviceCurrentBankID(
 			const std::string & devID,
-			const MKeysID bankID
+			MKeysID bankID
 		);
 		banksMap_type & getDeviceBanks(
 			const std::string & devID,
@@ -95,8 +95,8 @@ class DevicesHandler
 			const std::string & mediaKeyEvent
 		);
 
-		const DevicesFilesMap_type getDevicesFilesMap();
-		const std::vector<std::string> getDevicesList();
+		DevicesFilesMap_type getDevicesFilesMap();
+		std::vector<std::string> getDevicesList();
 		const LCDPPArray_type & getDeviceLCDPluginsProperties(const std::string & devID);
 
 		void reloadDeviceConfigurationFile(const std::string & devID) noexcept;
@@ -143,7 +143,7 @@ class DevicesHandler
 		) noexcept;
 		void initializeConfigurationDirectory(
 			DeviceProperties & device,
-			const bool check=true
+			bool check=true
 		) noexcept;
 
 		void sendDeviceConfigurationToDaemon(
@@ -154,13 +154,13 @@ class DevicesHandler
 
 		void unrefDevice(const std::string & devID);
 
-		const bool checkDeviceCapability(
+		bool checkDeviceCapability(
 			const DeviceProperties & device,
 			Caps toCheck
 		);
 
-		const MKeysIDArray_type getDeviceMKeysIDArray(const std::string & devID);
-		const GKeysIDArray_type getDeviceGKeysIDArray(const std::string & devID);
+		MKeysIDArray_type getDeviceMKeysIDArray(const std::string & devID);
+		GKeysIDArray_type getDeviceGKeysIDArray(const std::string & devID);
 };
 
 } // namespace GLogiK

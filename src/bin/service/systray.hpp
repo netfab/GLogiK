@@ -59,11 +59,11 @@ class DesktopServiceSystray
 		~DesktopServiceSystray();
 
 		/* return true is any device event was triggered via systray */
-		const bool isDeviceEventTriggered() const;
-		const std::string & getDeviceEventID() const;    /* Event deviceID */
-		const SystrayDeviceEvent getDeviceEvent() const; /* DeviceEvent (start/stop/restart) */
+		bool isDeviceEventTriggered() const;
+		const std::string & getDeviceEventID() const; /* Event deviceID */
+		SystrayDeviceEvent getDeviceEvent() const;    /* DeviceEvent (start/stop/restart) */
 
-		const SystrayServiceEvent getServiceEvent(); /* ServiceEvent (stop/restart) */
+		SystrayServiceEvent getServiceEvent(); /* ServiceEvent (stop/restart) */
 
 		void resetDeviceEvent();
 
@@ -93,7 +93,7 @@ class DesktopServiceSystray
 		void iconActivated(QSystemTrayIcon::ActivationReason reason);
 };
 
-inline const bool DesktopServiceSystray::isDeviceEventTriggered() const
+inline bool DesktopServiceSystray::isDeviceEventTriggered() const
 {
 	return _deviceEventTriggered;
 }
@@ -103,12 +103,12 @@ inline const std::string & DesktopServiceSystray::getDeviceEventID() const
 	return _deviceID;
 }
 
-inline const SystrayDeviceEvent DesktopServiceSystray::getDeviceEvent() const
+inline SystrayDeviceEvent DesktopServiceSystray::getDeviceEvent() const
 {
 	return _deviceEvent;
 }
 
-inline const SystrayServiceEvent DesktopServiceSystray::getServiceEvent()
+inline SystrayServiceEvent DesktopServiceSystray::getServiceEvent()
 {
 	const SystrayServiceEvent event = _serviceEvent;
 	_serviceEvent = SystrayServiceEvent::SERVICE_RUN;

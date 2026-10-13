@@ -33,7 +33,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-InitLog::InitLog(const int& argc, char *argv[])
+InitLog::InitLog(const int argc, char *argv[])
 {
 	GK_LOG_FUNC
 
@@ -73,7 +73,7 @@ const bool InitLog::getBooleanOption(const std::string & optstr) const
 	return (_vm.count(optstr) ? _vm[optstr].as<bool>() : false);
 }
 
-void InitLog::parseCommandLine(const int& argc, char *argv[])
+void InitLog::parseCommandLine(const int argc, char *argv[])
 {
 	GK_LOG_FUNC
 

@@ -123,7 +123,7 @@ void GKeysEventManager::setMacro(
 }
 
 /* return true if macro was not empty and has been cleared */
-const bool GKeysEventManager::clearMacro(
+bool GKeysEventManager::clearMacro(
 	banksMap_type & GKeysBanks,
 	const MKeysID bankID,
 	const GKeysID keyID)

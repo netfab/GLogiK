@@ -140,7 +140,7 @@ void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
 	}
 }
 
-const DevicesMap_type DBusHandler::getDevicesMap()
+DevicesMap_type DBusHandler::getDevicesMap()
 {
 	GK_LOG_FUNC
 
@@ -178,7 +178,7 @@ void DBusHandler::restartDevice(const std::string & devID)
 }
 
 /* return true if we want to exit on next main loop iteration */
-const bool DBusHandler::wantToStop() const
+bool DBusHandler::wantToStop() const
 {
 	if(DBusHandler::WantToRestart)
 		this->sendServiceStartRequest();
@@ -266,7 +266,7 @@ void DBusHandler::cleanGKDBusEvents() noexcept
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void DBusHandler::handleSignal(int signum)
+void DBusHandler::handleSignal(const int signum)
 {
 	GK_LOG_FUNC
 
@@ -473,7 +473,7 @@ void DBusHandler::getDaemonDependenciesMap(GKDepsMap_type* const dependencies)
 	throw GLogiKExcept("unable to get daemon dependencies map");
 }
 
-void DBusHandler::setCurrentSessionObjectPath(pid_t pid)
+void DBusHandler::setCurrentSessionObjectPath(const pid_t pid)
 {
 	GK_LOG_FUNC
 
@@ -546,7 +546,7 @@ void DBusHandler::updateSessionState()
  *  - online
  *  - closing
  */
-const std::string DBusHandler::getCurrentSessionState()
+std::string DBusHandler::getCurrentSessionState()
 {
 	GK_LOG_FUNC
 
@@ -1491,12 +1491,12 @@ void DBusHandler::deviceGKeyEvent(
 	}
 };
 
-const std::vector<std::string> DBusHandler::getDevicesList(const std::string & reserved)
+std::vector<std::string> DBusHandler::getDevicesList(const std::string & reserved)
 {
 	return _devices.getDevicesList();
 }
 
-const std::vector<std::string> DBusHandler::getInformations(const std::string & reserved)
+std::vector<std::string> DBusHandler::getInformations(const std::string & reserved)
 {
 	std::vector<std::string> ret;
 	ret.push_back(_daemonVersion);

@@ -43,21 +43,21 @@ class GKeysEventManager
 
 		void runEvent(
 			const banksMap_type & GKeysBanks,
-			const MKeysID bankID,
-			const GKeysID keyID
+			MKeysID bankID,
+			GKeysID keyID
 		);
 
 		void setMacro(
 			banksMap_type & GKeysBanks,
 			macro_type macro,
-			const MKeysID bankID,
-			const GKeysID keyID
+			MKeysID bankID,
+			GKeysID keyID
 		);
 
-		const bool clearMacro(
+		bool clearMacro(
 			banksMap_type & GKeysBanks,
-			const MKeysID bankID,
-			const GKeysID keyID
+			MKeysID bankID,
+			GKeysID keyID
 		);
 
 	protected:
@@ -67,8 +67,8 @@ class GKeysEventManager
 
 		void setMacro(
 			banksMap_type & GKeysBanks,
-			const MKeysID bankID,
-			const GKeysID keyID,
+			MKeysID bankID,
+			GKeysID keyID,
 			const macro_type & macro
 		);
 

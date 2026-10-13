@@ -59,7 +59,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DesktopService::DesktopService(const bool & version)
+DesktopService::DesktopService(const bool version)
 	:	_pid(0),
 		_version(version)
 {

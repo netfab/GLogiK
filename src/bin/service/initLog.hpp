@@ -33,7 +33,7 @@ namespace GLogiK
 class InitLog
 {
 	public:
-		InitLog(const int& argc, char *argv[]);
+		InitLog(int argc, char *argv[]);
 		~InitLog();
 
 		const bool getBooleanOption(const std::string & optstr) const;
@@ -42,7 +42,7 @@ class InitLog
 	private:
 		po::variables_map _vm;
 
-		void parseCommandLine(const int& argc, char *argv[]);
+		void parseCommandLine(int argc, char *argv[]);
 };
 
 } // namespace GLogiK

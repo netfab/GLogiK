@@ -59,10 +59,10 @@ class DBusHandler
 
 		void checkNotifyEvents(NSGKUtils::FileSystem* pGKfs);
 
-		const DevicesMap_type getDevicesMap();
+		DevicesMap_type getDevicesMap();
 
 		/* return true when at least one device was updated (started/stopped/unplugged) */
-		const bool isAnyDeviceUpdated() const;
+		bool isAnyDeviceUpdated() const;
 
 		void resetDevicesUpdatedEvent();
 
@@ -74,7 +74,7 @@ class DBusHandler
 		void restartDevice(const std::string & devID);
 
 		/* return true if we want to exit on next main loop iteration */
-		const bool wantToStop() const;
+		bool wantToStop() const;
 
 	protected:
 
@@ -104,7 +104,7 @@ class DBusHandler
 		void updateSystrayContextMenu();
 
 		void setCurrentSessionObjectPath(pid_t pid);
-		const std::string getCurrentSessionState();
+		std::string getCurrentSessionState();
 
 		void updateSessionState();
 
@@ -114,7 +114,7 @@ class DBusHandler
 		void getDaemonDependenciesMap(GKDepsMap_type* const dependencies);
 
 		void cleanGKDBusEvents() noexcept;
-		void prepareToStop(const bool notifications = true);
+		void prepareToStop(bool notifications = true);
 
 		void reportChangedState() noexcept;
 
@@ -139,20 +139,20 @@ class DBusHandler
 		);
 		void deviceGKeyEvent(
 			const std::string & devID,
-			const GKeysID keyID
+			GKeysID keyID
 		);
 		void deviceMBankSwitch(
 			const std::string & devID,
-			const MKeysID bankID
+			MKeysID bankID
 		);
 		void deviceMacroRecorded(
 			const std::string & devID,
-			const GKeysID keyID,
+			GKeysID keyID,
 			const macro_type & macro
 		);
 		void deviceMacroCleared(
 			const std::string & devID,
-			const GKeysID keyID
+			GKeysID keyID
 		);
 
 		/* -- */
@@ -162,8 +162,8 @@ class DBusHandler
 			const std::string & remoteMethod
 		);
 
-		const std::vector<std::string> getDevicesList(const std::string & reserved);
-		const std::vector<std::string> getInformations(const std::string & reserved);
+		std::vector<std::string> getDevicesList(const std::string & reserved);
+		std::vector<std::string> getInformations(const std::string & reserved);
 		const LCDPPArray_type & getDeviceLCDPluginsProperties(
 			const std::string & devID,
 			const std::string & reserved
@@ -171,7 +171,7 @@ class DBusHandler
 		const GKDepsMap_type & getExecutablesDependenciesMap(const std::string & reserved);
 };
 
-inline const bool DBusHandler::isAnyDeviceUpdated() const
+inline bool DBusHandler::isAnyDeviceUpdated() const
 {
 	return _devicesUpdatedEvent;
 }

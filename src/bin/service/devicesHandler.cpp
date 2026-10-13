@@ -102,7 +102,7 @@ void DevicesHandler::clearDevices(const bool notifications)
 	_stoppedDevices.clear();
 }
 
-const DevicesFilesMap_type DevicesHandler::getDevicesFilesMap()
+DevicesFilesMap_type DevicesHandler::getDevicesFilesMap()
 {
 	DevicesFilesMap_type ret;
 
@@ -117,7 +117,7 @@ const DevicesFilesMap_type DevicesHandler::getDevicesFilesMap()
 	return ret;
 }
 
-const std::vector<std::string> DevicesHandler::getDevicesList()
+std::vector<std::string> DevicesHandler::getDevicesList()
 {
 	std::vector<std::string> ret;
 
@@ -163,9 +163,9 @@ const std::vector<std::string> DevicesHandler::getDevicesList()
 	return ret;
 }
 
-const bool DevicesHandler::checkDeviceCapability(
+bool DevicesHandler::checkDeviceCapability(
 	const DeviceProperties & device,
-	Caps toCheck)
+	const Caps toCheck)
 {
 	return (device.getCapabilities() & toEnumType(toCheck));
 }
@@ -932,7 +932,7 @@ const LCDPPArray_type & DevicesHandler::getDeviceLCDPluginsProperties(const std:
 	return DeviceProperties::_LCDPluginsPropertiesEmptyArray;
 }
 
-const MKeysIDArray_type DevicesHandler::getDeviceMKeysIDArray(const std::string & devID)
+MKeysIDArray_type DevicesHandler::getDeviceMKeysIDArray(const std::string & devID)
 {
 	MKeysIDArray_type MKeysIDArray;
 	const std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_MKEYSID_ARRAY);
@@ -972,7 +972,7 @@ const MKeysIDArray_type DevicesHandler::getDeviceMKeysIDArray(const std::string 
 	return MKeysIDArray;
 }
 
-const GKeysIDArray_type DevicesHandler::getDeviceGKeysIDArray(const std::string & devID)
+GKeysIDArray_type DevicesHandler::getDeviceGKeysIDArray(const std::string & devID)
 {
 	GKeysIDArray_type GKeysIDArray;
 	const std::string remoteMethod(LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_GKEYSID_ARRAY);

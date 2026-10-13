@@ -29,7 +29,7 @@ namespace GLogiK
 class DesktopService
 {
 	public:
-		DesktopService(const bool & version);
+		DesktopService(bool version);
 		~DesktopService();
 
 		int run();
