@@ -35,7 +35,7 @@ class GKDBusMessageAsyncContainer
 {
 	public:
 		void appendAsyncString(const std::string & value);
-		void appendAsyncUInt64(const std::uint64_t value);
+		void appendAsyncUInt64(std::uint64_t value);
 
 	protected:
 		GKDBusMessageAsyncContainer();

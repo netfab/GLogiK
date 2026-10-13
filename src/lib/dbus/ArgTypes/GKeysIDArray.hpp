@@ -49,7 +49,7 @@ class ArgGKeysIDArray
 		virtual protected ArgGKeysID
 {
 	public:
-		static const GLogiK::GKeysIDArray_type getNextGKeysIDArrayArgument();
+		static GLogiK::GKeysIDArray_type getNextGKeysIDArrayArgument();
 
 	protected:
 		ArgGKeysIDArray() = default;

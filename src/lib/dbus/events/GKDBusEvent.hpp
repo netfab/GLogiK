@@ -69,7 +69,7 @@ class DBusEvent
 			const std::string & sender,
 			const std::vector<DBusEventArgument> & args,
 			DBusEventType type,
-			const bool intr
+			bool intr
 		);
 
 	private:
@@ -95,7 +95,7 @@ class GKDBusEvent
 			const std::string & sender,
 			const std::vector<DBusEventArgument> & args,
 			DBusEventType type,
-			const bool intr)
+			bool intr)
 				:	DBusEvent(name, sender, args, type, intr) {}
 
 	private:

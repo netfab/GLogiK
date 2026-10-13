@@ -74,11 +74,11 @@ class GKDBusMessageRemoteMethodCall
 		);
 
 		void appendStringToRemoteMethodCall(const std::string & value);
-		void appendUInt8ToRemoteMethodCall(const std::uint8_t value);
-		void appendUInt32ToRemoteMethodCall(const std::uint32_t value);
-		void appendUInt64ToRemoteMethodCall(const std::uint64_t value);
-		void appendGKeysIDToRemoteMethodCall(const GLogiK::GKeysID keyID);
-		void appendMKeysIDToRemoteMethodCall(const GLogiK::MKeysID bankID);
+		void appendUInt8ToRemoteMethodCall(std::uint8_t value);
+		void appendUInt32ToRemoteMethodCall(std::uint32_t value);
+		void appendUInt64ToRemoteMethodCall(std::uint64_t value);
+		void appendGKeysIDToRemoteMethodCall(GLogiK::GKeysID keyID);
+		void appendMKeysIDToRemoteMethodCall(GLogiK::MKeysID bankID);
 
 		void sendRemoteMethodCall();
 		void abandonRemoteMethodCall();

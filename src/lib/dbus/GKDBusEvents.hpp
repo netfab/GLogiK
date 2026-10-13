@@ -66,7 +66,7 @@ class GKDBusEvents
 
 	public:
 		void declareIntrospectableSignal(
-			const BusConnection eventBus,
+			BusConnection eventBus,
 			const std::string & eventObjectPath,
 			const std::string & eventInterface,
 			const std::string & eventName,
@@ -75,7 +75,7 @@ class GKDBusEvents
 
 /*
 		void removeMethod(
-			const BusConnection eventBus,
+			BusConnection eventBus,
 			const std::string & eventObjectPath,
 			const std::string & eventInterface,
 			const std::string & eventName
@@ -83,13 +83,13 @@ class GKDBusEvents
 */
 
 		void removeInterface(
-			const BusConnection bus,
+			BusConnection bus,
 			const std::string & objectPath,
 			const std::string & interface
 		) noexcept;
 
 		void removeIntrospectableSignalsInterface(
-			const BusConnection bus,
+			BusConnection bus,
 			const std::string & objectPath,
 			const std::string & interface
 		) noexcept;
@@ -99,7 +99,7 @@ class GKDBusEvents
 		~GKDBusEvents() = default;
 
 		void clearDBusEvents() noexcept;
-		const std::string getRootNodeIntrospection() noexcept;
+		std::string getRootNodeIntrospection() noexcept;
 
 		DBusEventsContainer _DBusEvents;
 
@@ -129,11 +129,11 @@ class GKDBusEvents
 			std::ostringstream & xml,
 			const DBusEvent* event
 		);
-		const std::string introspect(const std::string & askedObjectPath);
+		std::string introspect(const std::string & askedObjectPath);
 
 		/*
 		void removeEvent(
-			const BusConnection eventBus,
+			BusConnection eventBus,
 			const std::string & eventObjectPath,
 			const std::string & eventInterface,
 			const std::string & eventName
@@ -141,46 +141,46 @@ class GKDBusEvents
 		*/
 
 		void exposeIntrospectMethod(
-			const BusConnection eventBus,
+			BusConnection eventBus,
 			const std::string & eventObjectPath
 		);
 
 		void addEvent(
-			const BusConnection eventBus,
+			BusConnection eventBus,
 			const std::string & eventObjectPath,
 			const std::string & eventInterface,
 			DBusEvent* event
 		);
 
-		const std::string buildSignalRuleMatch(
+		std::string buildSignalRuleMatch(
 			const std::string & sender,
 			const std::string & interface,
 			const std::string & eventName
 		) noexcept;
 
 		void addSignalRuleMatch(
-			const BusConnection eventBus,
+			BusConnection eventBus,
 			const std::string & sender,
 			const std::string & interface,
 			const std::string & eventName
 		) noexcept;
 
 		void removeSignalRuleMatch(
-			const BusConnection eventBus,
+			BusConnection eventBus,
 			const std::string & sender,
 			const std::string & interface,
 			const std::string & eventName
 		) noexcept;
 
-		const bool findInterface(
+		bool findInterface(
 			DBusEventsContainer & DBusEvents,
-			const BusConnection bus,
+			BusConnection bus,
 			const std::string & objectPath,
 			const std::string & interface
 		) noexcept;
 
 		void removeDBusEventsInterface(
-			const BusConnection bus,
+			BusConnection bus,
 			const std::string & objectPath,
 			const std::string & interface
 		) noexcept;

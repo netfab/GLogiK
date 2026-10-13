@@ -33,11 +33,11 @@
 
 /* two strings one byte one std::uint64_t to bool */
 typedef std::function<
-	const bool(
-		const std::string&,
-		const std::string&,
-		const std::uint8_t,
-		const std::uint64_t
+	bool(
+		const std::string &,
+		const std::string &,
+		std::uint8_t,
+		std::uint64_t
 	) > SIGssyt2b;
 
 

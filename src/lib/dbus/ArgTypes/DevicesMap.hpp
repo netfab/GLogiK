@@ -34,10 +34,10 @@ class ArgDevicesMap
 		virtual private ArgStringArray
 {
 	public:
-		static const GLogiK::DevicesMap_type getDevicesMapFromStringArray(
+		static GLogiK::DevicesMap_type getDevicesMapFromStringArray(
 			const std::vector<std::string> & stringArray
 		);
-		static const GLogiK::DevicesMap_type getNextDevicesMapArgument();
+		static GLogiK::DevicesMap_type getNextDevicesMapArgument();
 
 	protected:
 		ArgDevicesMap() = default;

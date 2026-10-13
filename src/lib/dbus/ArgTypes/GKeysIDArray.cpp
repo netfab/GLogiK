@@ -91,7 +91,7 @@ void TypeGKeysIDArray::appendGKeysIDArray(const GLogiK::GKeysIDArray_type & keys
  * helper function to rebuild GKeysIDArray
  * see also TypeGKeysIDArray::appendGKeysIDArray
  */
-const GLogiK::GKeysIDArray_type ArgGKeysIDArray::getNextGKeysIDArrayArgument()
+GLogiK::GKeysIDArray_type ArgGKeysIDArray::getNextGKeysIDArrayArgument()
 {
 	GK_LOG_FUNC
 

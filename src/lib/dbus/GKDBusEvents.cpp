@@ -182,7 +182,7 @@ void GKDBusEvents::clearDBusEvents() noexcept
 	clear_events_container(_DBusIntrospectableSignals);
 }
 
-const std::string GKDBusEvents::getRootNodeIntrospection() noexcept
+std::string GKDBusEvents::getRootNodeIntrospection() noexcept
 {
 	GK_LOG_FUNC
 
@@ -195,7 +195,7 @@ const std::string GKDBusEvents::getRootNodeIntrospection() noexcept
  * private
  */
 
-const bool GKDBusEvents::findInterface(
+bool GKDBusEvents::findInterface(
 	DBusEventsContainer & DBusEvents,
 	const BusConnection bus,
 	const std::string & objectPath,
@@ -442,7 +442,7 @@ void GKDBusEvents::eventToXML(
 	}
 }
 
-const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
+std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 {
 	GK_LOG_FUNC
 
@@ -631,7 +631,7 @@ const std::string GKDBusEvents::introspect(const std::string & askedObjectPath)
 	return xml_stream();
 }
 
-const std::string GKDBusEvents::buildSignalRuleMatch(
+std::string GKDBusEvents::buildSignalRuleMatch(
 	const std::string & sender,
 	const std::string & interface,
 	const std::string & eventName) noexcept
@@ -703,4 +703,3 @@ void GKDBusEvents::removeSignalRuleMatch(
 /* -- */
 
 } // namespace GKDBUS::Events
-

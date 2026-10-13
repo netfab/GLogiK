@@ -120,7 +120,7 @@ void TypeLCDPPArray::appendLCDPPArray(
 /*
  * helper function to rebuild LCDPPArray_type array
  */
-const GLogiK::LCDPPArray_type ArgLCDPPArray::getNextLCDPPArrayArgument()
+GLogiK::LCDPPArray_type ArgLCDPPArray::getNextLCDPPArrayArgument()
 {
 	GK_LOG_FUNC
 

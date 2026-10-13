@@ -35,7 +35,7 @@ class TypeGKeysID
 		virtual private TypeUInt8
 {
 	public:
-		void appendGKeysID(const GLogiK::GKeysID keyID);
+		void appendGKeysID(GLogiK::GKeysID keyID);
 
 	protected:
 		TypeGKeysID() = default;
@@ -48,7 +48,7 @@ class ArgGKeysID
 	:	virtual private ArgUInt8
 {
 	public:
-		static const GLogiK::GKeysID getNextGKeysIDArgument();
+		static GLogiK::GKeysID getNextGKeysIDArgument();
 
 	protected:
 		ArgGKeysID() = default;

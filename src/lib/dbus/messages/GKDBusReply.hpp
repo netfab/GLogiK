@@ -68,7 +68,7 @@ class GKDBusMessageReply
 			DBusMessage* message
 		);
 
-		void appendBooleanToReply(const bool value);
+		void appendBooleanToReply(bool value);
 		void appendStringToReply(const std::string & value);
 		void appendStringArrayToReply(const std::vector<std::string> & list);
 
@@ -78,7 +78,7 @@ class GKDBusMessageReply
 		void appendLCDPPArrayToReply(const GLogiK::LCDPPArray_type & array);
 		void appendGKDepsMapToReply(const GLogiK::GKDepsMap_type & depsMap);
 
-		void appendUInt64ToReply(const std::uint64_t value);
+		void appendUInt64ToReply(std::uint64_t value);
 
 		void appendAsyncArgsToReply(DBusMessage* asyncContainer);
 

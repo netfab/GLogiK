@@ -74,7 +74,7 @@ template <typename T>
 {
 	public:
 		void exposeMethod(
-			const BusConnection bus,
+			BusConnection bus,
 			const std::string & objectPath,
 			const std::string & interface,
 			const std::string & eventName,
@@ -83,7 +83,7 @@ template <typename T>
 		);
 
 		void receiveSignal(
-			const BusConnection bus,
+			BusConnection bus,
 			const std::string & eventSender,
 			const std::string & objectPath,
 			const std::string & interface,
@@ -98,7 +98,7 @@ template <typename T>
 
 	private:
 		void exposeEvent(
-			const BusConnection bus,
+			BusConnection bus,
 			const std::string & eventSender,
 			const std::string & objectPath,
 			const std::string & interface,
@@ -110,7 +110,7 @@ template <typename T>
 		);
 
 		virtual void addEvent(
-			const BusConnection bus,
+			BusConnection bus,
 			const std::string & objectPath,
 			const std::string & interface,
 			DBusEvent* event

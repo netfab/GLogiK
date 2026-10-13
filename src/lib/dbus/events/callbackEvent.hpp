@@ -57,7 +57,7 @@ template <typename T>
 			const std::vector<DBusEventArgument> & args,
 			T cb,
 			DBusEventType type,
-			const bool intr
+			bool intr
 		);
 		~callbackEvent() = default;
 

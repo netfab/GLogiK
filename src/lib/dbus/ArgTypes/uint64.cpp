@@ -52,7 +52,7 @@ void TypeUInt64::appendUInt64(
 #endif
 }
 
-const std::uint64_t ArgUInt64::getNextUInt64Argument()
+std::uint64_t ArgUInt64::getNextUInt64Argument()
 {
 	if( ArgBase::uint64Arguments.empty() )
 		throw EmptyContainer("missing argument : uint64");

@@ -81,7 +81,7 @@ void GKDBus::init()
 	_initDone = true;
 }
 
-const std::string GKDBus::getDBusVersion()
+std::string GKDBus::getDBusVersion()
 {
 	struct DBusVersion
 	{
@@ -232,7 +232,7 @@ void GKDBus::disconnectFromSessionBus() noexcept
 	}
 }
 
-const bool GKDBus::checkDBusMessage(
+bool GKDBus::checkDBusMessage(
 	DBusConnection* const connection,
 	DBusMessage* message)
 {
@@ -379,7 +379,7 @@ void GKDBus::checkForBusMessages(
 	}
 }
 
-void GKDBus::checkReleasedName(int ret) noexcept
+void GKDBus::checkReleasedName(const int ret) noexcept
 {
 	GK_LOG_FUNC
 
@@ -422,7 +422,7 @@ void GKDBus::checkDBusError(const std::string & errorMessage)
 	}
 }
 
-DBusConnection* const GKDBus::getDBusConnection(BusConnection bus) const
+DBusConnection* const GKDBus::getDBusConnection(const BusConnection bus) const
 {
 	switch(bus)
 	{
@@ -442,7 +442,7 @@ DBusConnection* const GKDBus::getDBusConnection(BusConnection bus) const
 	}
 }
 
-const unsigned int GKDBus::getDBusRequestFlags(const ConnectionFlag flag) noexcept
+unsigned int GKDBus::getDBusRequestFlags(const ConnectionFlag flag) noexcept
 {
 	unsigned int ret = 0;
 	switch(flag)

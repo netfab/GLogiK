@@ -33,9 +33,9 @@
 
 /* two strings to array of M-KeysID */
 typedef std::function<
-	const GLogiK::MKeysIDArray_type(
-		const std::string&,
-		const std::string&
+	GLogiK::MKeysIDArray_type(
+		const std::string &,
+		const std::string &
 	) > SIGss2am;
 
 

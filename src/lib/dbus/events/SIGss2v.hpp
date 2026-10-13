@@ -30,7 +30,7 @@
 
 
 /* two strings to void */
-typedef std::function<void(const std::string &, const std::string&)> SIGss2v;
+typedef std::function<void(const std::string &, const std::string &)> SIGss2v;
 
 namespace GKDBUS::Events
 {

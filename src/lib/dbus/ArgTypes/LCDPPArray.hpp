@@ -61,7 +61,7 @@ class ArgLCDPPArray
 		virtual private ArgString
 {
 	public:
-		static const GLogiK::LCDPPArray_type getNextLCDPPArrayArgument();
+		static GLogiK::LCDPPArray_type getNextLCDPPArrayArgument();
 
 	protected:
 		ArgLCDPPArray() = default;

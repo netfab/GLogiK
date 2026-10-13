@@ -31,7 +31,7 @@
 
 
 /* string to array of string */
-typedef std::function<const std::vector<std::string>(const std::string&) > SIGs2as;
+typedef std::function<std::vector<std::string>(const std::string &) > SIGs2as;
 
 
 namespace GKDBUS::Events

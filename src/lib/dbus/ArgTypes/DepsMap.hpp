@@ -59,7 +59,7 @@ class ArgGKBinary
 	:	virtual private ArgUInt8
 {
 	public:
-		static const GLogiK::GKBinary getNextGKBinaryArgument();
+		static GLogiK::GKBinary getNextGKBinaryArgument();
 
 	protected:
 		ArgGKBinary() = default;
@@ -76,7 +76,7 @@ class ArgGKDepsMap
 		virtual private ArgString
 {
 	public:
-		static const GLogiK::GKDepsMap_type getNextGKDepsMapArgument();
+		static GLogiK::GKDepsMap_type getNextGKDepsMapArgument();
 
 	protected:
 		ArgGKDepsMap() = default;

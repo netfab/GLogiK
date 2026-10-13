@@ -61,7 +61,7 @@ class ArgMacro
 		virtual private ArgUInt16
 {
 	public:
-		static const GLogiK::macro_type getNextMacroArgument(const unsigned int macroSize = 0);
+		static GLogiK::macro_type getNextMacroArgument(unsigned int macroSize = 0);
 
 	protected:
 		ArgMacro() = default;

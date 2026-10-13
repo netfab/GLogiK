@@ -92,7 +92,7 @@ class GKDBus
 
 		static const BusConnection SystemBus;
 		static const BusConnection SessionBus;
-		static const std::string getDBusVersion();
+		static std::string getDBusVersion();
 
 		void init();
 
@@ -103,11 +103,11 @@ class GKDBus
 
 		void connectToSystemBus(
 			const std::string & connectionName,
-			const ConnectionFlag flag = ConnectionFlag::GKDBUS_SINGLE
+			ConnectionFlag flag = ConnectionFlag::GKDBUS_SINGLE
 		);
 		void connectToSessionBus(
 			const std::string & connectionName,
-			const ConnectionFlag flag = ConnectionFlag::GKDBUS_SINGLE
+			ConnectionFlag flag = ConnectionFlag::GKDBUS_SINGLE
 		);
 
 		void exit() noexcept;
@@ -137,18 +137,18 @@ class GKDBus
 		void disconnectFromSystemBus() noexcept;
 		void disconnectFromSessionBus() noexcept;
 
-		const bool checkDBusMessage(
+		bool checkDBusMessage(
 			DBusConnection* const connection,
 			DBusMessage* message
 		);
 		void checkForBusMessages(
-			const BusConnection bus,
+			BusConnection bus,
 			DBusConnection* const connection
 		) noexcept;
 		void checkReleasedName(int ret) noexcept;
 		void checkDBusError(const std::string & errorMessage);
 		DBusConnection* const getDBusConnection(BusConnection bus) const;
-		const unsigned int getDBusRequestFlags(const ConnectionFlag flag) noexcept;
+		unsigned int getDBusRequestFlags(ConnectionFlag flag) noexcept;
 };
 
 } // namespace GKDBUS

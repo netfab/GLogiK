@@ -29,7 +29,7 @@
 #include "callbackEvent.hpp"
 
 
-typedef std::function<const std::string(const std::string &)> SIGs2s; /* string to string */
+typedef std::function<std::string(const std::string &)> SIGs2s; /* string to string */
 
 namespace GKDBUS::Events
 {

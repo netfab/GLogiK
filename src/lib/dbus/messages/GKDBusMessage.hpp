@@ -64,7 +64,7 @@ class GKDBusMessage
 	protected:
 		GKDBusMessage(
 			DBusConnection* const connection,
-			const bool check=false
+			bool check=false
 		);
 		~GKDBusMessage();
 

@@ -32,7 +32,7 @@
 
 
 /* one string one MKeysID to bool */
-typedef std::function<void(const std::string&, const GLogiK::MKeysID) > SIGsm2v;
+typedef std::function<void(const std::string &, GLogiK::MKeysID) > SIGsm2v;
 
 
 namespace GKDBUS::Events

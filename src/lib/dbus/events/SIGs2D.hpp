@@ -32,7 +32,7 @@
 
 
 /* string to GKDepsMap_type */
-typedef std::function<const GLogiK::GKDepsMap_type(const std::string &)> SIGs2D;
+typedef std::function<GLogiK::GKDepsMap_type(const std::string &)> SIGs2D;
 
 namespace GKDBUS::Events
 {

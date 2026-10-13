@@ -61,7 +61,7 @@ class ArgBase
 		static void decodeArgumentFromIterator(
 			DBusMessageIter* iter,
 			const char* signature,
-			const std::uint16_t num
+			std::uint16_t num
 		);
 };
 

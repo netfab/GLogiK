@@ -195,7 +195,7 @@ void TypeGKDepsMap::appendGKDepsMap(
 /*
  * helper function to get GKBinary
  */
-const GLogiK::GKBinary ArgGKBinary::getNextGKBinaryArgument()
+GLogiK::GKBinary ArgGKBinary::getNextGKBinaryArgument()
 {
 	GK_LOG_FUNC
 
@@ -225,7 +225,7 @@ const GLogiK::GKBinary ArgGKBinary::getNextGKBinaryArgument()
 /*
  * helper function to rebuild GKDepsMap_type map
  */
-const GLogiK::GKDepsMap_type ArgGKDepsMap::getNextGKDepsMapArgument()
+GLogiK::GKDepsMap_type ArgGKDepsMap::getNextGKDepsMapArgument()
 {
 	GK_LOG_FUNC
 

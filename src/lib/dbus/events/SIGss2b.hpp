@@ -30,7 +30,7 @@
 
 
 /* two strings to bool */
-typedef std::function<const bool(const std::string &, const std::string &)> SIGss2b;
+typedef std::function<bool(const std::string &, const std::string &)> SIGss2b;
 
 namespace GKDBUS::Events
 {

@@ -125,7 +125,7 @@ void TypeMacro::appendMacro(
  * helper function to  rebuild macro_type vector
  * see also TypeMacro::appendMacro
  */
-const GLogiK::macro_type ArgMacro::getNextMacroArgument(const unsigned int macroSize)
+GLogiK::macro_type ArgMacro::getNextMacroArgument(const unsigned int macroSize)
 {
 	GK_LOG_FUNC
 

@@ -54,7 +54,7 @@ class ArgStringArray
 		virtual protected ArgString
 {
 	public:
-		static const std::vector<std::string> getNextStringArray();
+		static std::vector<std::string> getNextStringArray();
 
 	protected:
 		ArgStringArray() = default;

@@ -34,8 +34,8 @@
 /* one string one GKeyID to void */
 typedef std::function<
 			void(
-				const std::string&,
-				const GLogiK::GKeysID
+				const std::string &,
+				GLogiK::GKeysID
 			) > SIGsG2v;
 
 

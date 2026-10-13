@@ -33,9 +33,9 @@
 
 /* two strings to array of LCD Plugins Properties */
 typedef std::function<
-	const GLogiK::LCDPPArray_type (
-		const std::string&,
-		const std::string&
+	GLogiK::LCDPPArray_type (
+		const std::string &,
+		const std::string &
 	) > SIGss2aP;
 
 

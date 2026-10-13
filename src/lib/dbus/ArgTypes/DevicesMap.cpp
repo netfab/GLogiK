@@ -30,7 +30,7 @@ namespace GKDBUS::Types
 
 using namespace NSGKUtils;
 
-const GLogiK::DevicesMap_type ArgDevicesMap::getDevicesMapFromStringArray(
+GLogiK::DevicesMap_type ArgDevicesMap::getDevicesMapFromStringArray(
 	const std::vector<std::string> & stringArray)
 {
 	GK_LOG_FUNC
@@ -76,7 +76,7 @@ const GLogiK::DevicesMap_type ArgDevicesMap::getDevicesMapFromStringArray(
 /*
  * helper function to rebuild DevicesMap_type map from GKDBus stringArray
  */
-const GLogiK::DevicesMap_type ArgDevicesMap::getNextDevicesMapArgument()
+GLogiK::DevicesMap_type ArgDevicesMap::getNextDevicesMapArgument()
 {
 	GK_LOG_FUNC
 

@@ -90,7 +90,7 @@ void TypeMKeysIDArray::appendMKeysIDArray(const GLogiK::MKeysIDArray_type & keys
  * helper function to rebuild MKeysIDArray
  * see also TypeMKeysIDArray::appendMKeysIDArray
  */
-const GLogiK::MKeysIDArray_type ArgMKeysIDArray::getNextMKeysIDArrayArgument()
+GLogiK::MKeysIDArray_type ArgMKeysIDArray::getNextMKeysIDArrayArgument()
 {
 	GK_LOG_FUNC
 
