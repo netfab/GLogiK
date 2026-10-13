@@ -31,7 +31,7 @@
 
 
 /* array of string to void */
-typedef std::function<void(const std::vector<std::string>)> SIGas2v;
+typedef std::function<void(const std::vector<std::string> &)> SIGas2v;
 
 namespace GKDBUS::Events
 {
