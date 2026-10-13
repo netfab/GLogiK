@@ -36,7 +36,7 @@ typedef std::function<
 			void(
 				const std::string&,
 				const GLogiK::GKeysID,
-				const GLogiK::macro_type
+				const GLogiK::macro_type &
 			) > SIGsGM2v;
 
 
