@@ -42,7 +42,7 @@ class DBusHandler
 		GKDBUS::GKDBus* _pDBus;
 
 		void initializeGKDBusSignals();
-		void spawnService(const std::uint16_t delay);
+		void spawnService(std::uint16_t delay);
 
 		void cleanGKDBusEvents() noexcept;
 };

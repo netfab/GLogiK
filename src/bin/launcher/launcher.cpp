@@ -51,7 +51,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DesktopServiceLauncher::DesktopServiceLauncher(const int& argc, char *argv[])
+DesktopServiceLauncher::DesktopServiceLauncher(const int argc, char *argv[])
 	:	_pid(0)
 {
 	GK_LOG_FUNC
@@ -159,7 +159,7 @@ int DesktopServiceLauncher::run()
 	return EXIT_SUCCESS;
 }
 
-void DesktopServiceLauncher::parseCommandLine(const int& argc, char *argv[])
+void DesktopServiceLauncher::parseCommandLine(const int argc, char *argv[])
 {
 	GK_LOG_FUNC
 

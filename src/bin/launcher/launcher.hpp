@@ -29,7 +29,7 @@ namespace GLogiK
 class DesktopServiceLauncher
 {
 	public:
-		DesktopServiceLauncher(const int& argc, char *argv[]);
+		DesktopServiceLauncher(int argc, char *argv[]);
 		~DesktopServiceLauncher();
 
 		int run();
@@ -39,7 +39,7 @@ class DesktopServiceLauncher
 	private:
 		pid_t _pid;
 
-		void parseCommandLine(const int& argc, char *argv[]);
+		void parseCommandLine(int argc, char *argv[]);
 };
 
 } // namespace GLogiK
