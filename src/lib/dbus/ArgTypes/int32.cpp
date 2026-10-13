@@ -30,14 +30,14 @@ namespace GKDBUS::Types
 
 using namespace NSGKUtils;
 
-void TypeInt32::appendInt32(const int32_t value)
+void TypeInt32::appendInt32(const std::int32_t value)
 {
 	this->appendInt32(&_itMessage, value);
 }
 
 void TypeInt32::appendInt32(
 	DBusMessageIter *iter,
-	const int32_t value)
+	const std::int32_t value)
 {
 	GK_LOG_FUNC
 
@@ -52,11 +52,11 @@ void TypeInt32::appendInt32(
 #endif
 }
 
-const int32_t ArgInt32::getNextInt32Argument()
+const std::int32_t ArgInt32::getNextInt32Argument()
 {
 	if( ArgBase::int32Arguments.empty() )
 		throw EmptyContainer("missing argument : int32");
-	const int32_t ret = ArgBase::int32Arguments.back();
+	const std::int32_t ret = ArgBase::int32Arguments.back();
 	ArgBase::int32Arguments.pop_back();
 	return ret;
 }

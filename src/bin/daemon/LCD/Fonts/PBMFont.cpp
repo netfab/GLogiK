@@ -175,7 +175,7 @@ void PBMFont::printCharacterOnFrame(
 	const std::uint16_t xModuloComp8 = (8 - xModulo);
 
 	/* if _shiftCharBase == 8, rightShift = xModulo */
-	const int16_t rightShift = static_cast<int16_t>(_shiftCharBase - xModuloComp8);
+	const std::int16_t rightShift = static_cast<std::int16_t>(_shiftCharBase - xModuloComp8);
 
 #if DEBUG_PBMFONT
 	if(GKLogging::GKDebug)
@@ -194,7 +194,7 @@ void PBMFont::printCharacterOnFrame(
 			{
 				const unsigned char c = this->getCharacterLine(i, j);
 				unsigned int t = (PBM::default_width_in_bytes * (PBMYPos+i)) + xByte + j;
-				index = static_cast<uint16_t>(t);
+				index = static_cast<std::uint16_t>(t);
 
 				frame.at(index) &= (0b11111111 << xModuloComp8);
 				if(rightShift > 0)
@@ -213,7 +213,7 @@ void PBMFont::printCharacterOnFrame(
 		throw GLogiKExcept( warn.str() );
 	}
 
-	PBMXPos += static_cast<uint16_t>(_charWidth - _fontLeftShift);
+	PBMXPos += static_cast<std::uint16_t>(_charWidth - _fontLeftShift);
 
 	// XXX ugly hack
 	// applying another leftshift, except for those characters

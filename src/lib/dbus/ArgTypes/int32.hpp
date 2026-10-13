@@ -35,7 +35,7 @@ class TypeInt32
 	:	virtual private TypeBase
 {
 	public:
-		void appendInt32(const int32_t value);
+		void appendInt32(const std::int32_t value);
 
 	protected:
 		TypeInt32() = default;
@@ -43,7 +43,7 @@ class TypeInt32
 
 		void appendInt32(
 			DBusMessageIter *iter,
-			const int32_t value
+			const std::int32_t value
 		);
 
 	private:
@@ -53,7 +53,7 @@ class ArgInt32
 	:	virtual protected ArgBase
 {
 	public:
-		static const int32_t getNextInt32Argument();
+		static const std::int32_t getNextInt32Argument();
 
 	protected:
 		ArgInt32() = default;

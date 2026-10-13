@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/glogik.hpp"
 
@@ -66,7 +68,7 @@ class SleepInhibition
 		using SessionFramework = LIBShared::SessionFramework;
 
 		SessionFramework _sessionFramework;
-		int32_t _delayLockPID;
+		std::int32_t _delayLockPID;
 
 		void inhibitSleepState();
 		void handleSleepEvent(const bool mode);

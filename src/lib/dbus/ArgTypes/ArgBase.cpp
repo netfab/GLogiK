@@ -29,7 +29,7 @@ namespace GKDBUS::Types
 using namespace NSGKUtils;
 
 thread_local std::vector<std::string> ArgBase::stringArguments = {};
-thread_local std::vector<int32_t> ArgBase::int32Arguments = {};
+thread_local std::vector<std::int32_t> ArgBase::int32Arguments = {};
 thread_local std::vector<std::uint8_t> ArgBase::byteArguments = {};
 thread_local std::vector<std::uint16_t> ArgBase::uint16Arguments = {};
 thread_local std::vector<std::uint64_t> ArgBase::uint64Arguments = {};
@@ -150,7 +150,7 @@ void ArgBase::decodeArgumentFromIterator(
 #if SIZEOF_INT != 4
 #error "wrong int size, please report bug"
 #endif
-				int32_t value = -1;
+				std::int32_t value = -1;
 				dbus_message_iter_get_basic(iter, &value);
 				ArgBase::int32Arguments.push_back(value);
 				//GKLog2(trace, "int32_t arg value : ", value)

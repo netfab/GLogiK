@@ -217,8 +217,8 @@ void LCDPlugin::writeStringOnFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
 	std::string_view sv,
-	const int16_t PBMXPos,
-	const int16_t PBMYPos)
+	const std::int16_t PBMXPos,
+	const std::int16_t PBMYPos)
 {
 	GK_LOG_FUNC
 
@@ -266,8 +266,8 @@ void LCDPlugin::writeStringOnLastFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
 	std::string_view sv,
-	const int16_t PBMXPos,
-	const int16_t PBMYPos)
+	const std::int16_t PBMXPos,
+	const std::int16_t PBMYPos)
 {
 	GK_LOG_FUNC
 
