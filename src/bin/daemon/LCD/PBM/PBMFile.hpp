@@ -37,8 +37,8 @@ class PBMFile
 		static void readPBM(
 			const std::string & PBMPath,
 			PixelsData & PBMData,
-			const std::uint16_t PBMWidth,
-			const std::uint16_t PBMHeight
+			std::uint16_t PBMWidth,
+			std::uint16_t PBMHeight
 		);
 
 	protected:

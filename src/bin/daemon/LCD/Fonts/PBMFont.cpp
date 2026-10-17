@@ -86,7 +86,7 @@ PBMFont::~PBMFont()
 	GKLog2(trace, "deleting font ", _fontName)
 }
 
-const std::size_t PBMFont::characterLength(std::string_view sv, std::size_t pos)
+std::size_t PBMFont::characterLength(const std::string_view sv, const std::size_t pos)
 {
 	// lambda
 	auto check_char = [&sv] (std::size_t p, unsigned char c) -> bool
@@ -102,7 +102,7 @@ const std::size_t PBMFont::characterLength(std::string_view sv, std::size_t pos)
 	return 1;
 }
 
-const std::uint16_t PBMFont::getCenteredXPos(std::string_view sv)
+std::uint16_t PBMFont::getCenteredXPos(const std::string_view sv)
 {
 	unsigned int XPos = PBM::LCD_width;
 	std::size_t pos = 0;
@@ -127,7 +127,7 @@ const std::uint16_t PBMFont::getCenteredXPos(std::string_view sv)
 	return static_cast<std::uint16_t>(XPos/2);
 }
 
-const std::uint16_t PBMFont::getCenteredYPos()
+std::uint16_t PBMFont::getCenteredYPos()
 {
 	std::uint16_t YPos = PBM::LCD_height;
 	YPos -= _charHeight;
@@ -136,7 +136,7 @@ const std::uint16_t PBMFont::getCenteredYPos()
 
 void PBMFont::printCharacterOnFrame(
 	PixelsData & frame,
-	std::string_view sv,
+	const std::string_view sv,
 	std::uint16_t & PBMXPos,
 	const std::uint16_t PBMYPos)
 {
@@ -223,7 +223,7 @@ void PBMFont::printCharacterOnFrame(
 			PBMXPos -= _extraLeftShift;
 }
 
-auto PBMFont::findCharacter(std::string_view sv) -> const Point*
+auto PBMFont::findCharacter(const std::string_view sv) -> const Point*
 {
     for (const auto & mapping : PBMFont::charactersMap)
 	{
@@ -249,7 +249,7 @@ auto PBMFont::findCharacter(std::string_view sv) -> const Point*
 	return nullptr;
 }
 
-const unsigned char PBMFont::getCharacterLine(
+unsigned char PBMFont::getCharacterLine(
 	const std::uint16_t line,
 	const std::uint16_t charByte) const
 {

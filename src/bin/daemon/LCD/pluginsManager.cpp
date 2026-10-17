@@ -139,7 +139,7 @@ auto LCDPluginsManager::getLCDPluginsProperties() const -> const LCDPPArray_type
 	return _pluginsPropertiesArray;
 }
 
-const std::uint16_t LCDPluginsManager::getPluginTiming()
+std::uint16_t LCDPluginsManager::getPluginTiming()
 {
 	if(_itCurrentPlugin != _plugins.end() )
 		return (*_itCurrentPlugin)->getPluginTiming();
@@ -164,7 +164,7 @@ void LCDPluginsManager::unlockPlugin()
 	}
 }
 
-const std::uint64_t LCDPluginsManager::getCurrentPluginID()
+std::uint64_t LCDPluginsManager::getCurrentPluginID()
 {
 	if( ! _noPlugins )
 		if(_itCurrentPlugin != _plugins.end() )
@@ -188,7 +188,7 @@ void LCDPluginsManager::jumpToNextPlugin()
 		}
 }
 
-const bool LCDPluginsManager::findOneLCDScreenPlugin(const std::uint64_t LCDPluginsMask1) const
+bool LCDPluginsManager::findOneLCDScreenPlugin(const std::uint64_t LCDPluginsMask1) const
 {
 	bool ret = false;
 

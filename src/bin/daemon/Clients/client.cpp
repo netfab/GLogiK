@@ -78,12 +78,12 @@ void Client::uncheck()
 	_check = false;
 }
 
-const bool Client::isAlive() const
+bool Client::isAlive() const
 {
 	return _check;
 }
 
-const bool Client::isReady() const
+bool Client::isReady() const
 {
 	return _ready;
 }
@@ -119,7 +119,7 @@ void Client::initializeDevice(
 	}
 }
 
-const bool Client::deleteDevice(const std::string & devID)
+bool Client::deleteDevice(const std::string & devID)
 {
 	GK_LOG_FUNC
 
@@ -138,7 +138,7 @@ const bool Client::deleteDevice(const std::string & devID)
 	return false;
 }
 
-const bool Client::setDeviceBacklightColor(
+bool Client::setDeviceBacklightColor(
 	const std::string & devID,
 	const std::uint8_t r,
 	const std::uint8_t g,
@@ -187,7 +187,7 @@ void Client::setDeviceActiveUser(
 	}
 }
 
-const bool Client::setDeviceLCDPluginsMask(
+bool Client::setDeviceLCDPluginsMask(
 	const std::string & devID,
 	const std::uint8_t maskID,
 	const std::uint64_t mask)

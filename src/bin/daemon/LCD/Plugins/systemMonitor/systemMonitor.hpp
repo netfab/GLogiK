@@ -59,7 +59,7 @@ class SystemMonitor
 		const PixelsData & getNextFrame(
 			FontsManager* const pFonts,
 			const std::string & LCDKey,
-			const bool lockedPlugin
+			bool lockedPlugin
 		);
 
 	protected:

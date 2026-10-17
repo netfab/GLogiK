@@ -58,7 +58,7 @@ class DevicesManager
 		DevicesManager();
 		~DevicesManager();
 
-		static const std::string getLibudevVersion();
+		static std::string getLibudevVersion();
 
 		void startMonitoring();
 
@@ -73,31 +73,31 @@ class DevicesManager
 		void stopInitializedDevices();
 
 		void resetDevicesStates();
-		const bool startDevice(const std::string & devID);
-		const bool stopDevice(
+		bool startDevice(const std::string & devID);
+		bool stopDevice(
 			const std::string & devID,
-			const bool skipUSBRequests = false
+			bool skipUSBRequests = false
 		) noexcept;
-		const std::vector<std::string> getStartedDevices() const;
-		const std::vector<std::string> getStoppedDevices() const;
+		std::vector<std::string> getStartedDevices() const;
+		std::vector<std::string> getStoppedDevices() const;
 
 		const std::string & getDeviceVendor(const std::string & devID) const;
 		const std::string & getDeviceProduct(const std::string & devID) const;
 		const std::string & getDeviceName(const std::string & devID) const;
-		const std::uint64_t getDeviceCapabilities(const std::string & devID) const;
+		std::uint64_t getDeviceCapabilities(const std::string & devID) const;
 		const LCDPPArray_type & getDeviceLCDPluginsProperties(const std::string & devID) const;
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,
-			const std::uint8_t r,
-			const std::uint8_t g,
-			const std::uint8_t b,
-			const std::uint64_t LCDPluginsMask1
+			std::uint8_t r,
+			std::uint8_t g,
+			std::uint8_t b,
+			std::uint64_t LCDPluginsMask1
 		);
 
-		const MKeysIDArray_type getDeviceMKeysIDArray(const std::string & devID) const;
-		const GKeysIDArray_type getDeviceGKeysIDArray(const std::string & devID) const;
-		const std::string getDeviceStatus(const std::string & devID) const;
+		MKeysIDArray_type getDeviceMKeysIDArray(const std::string & devID) const;
+		GKeysIDArray_type getDeviceGKeysIDArray(const std::string & devID) const;
+		std::string getDeviceStatus(const std::string & devID) const;
 
 	protected:
 
@@ -126,7 +126,7 @@ class DevicesManager
 		);
 		void initializeDevices(
 			const USBDeviceIDContainer_type & detectedDevices,
-			const bool openDevices
+			bool openDevices
 		) noexcept;
 		void checkForUnpluggedDevices(const USBDeviceIDContainer_type & detectedDevices) noexcept;
 

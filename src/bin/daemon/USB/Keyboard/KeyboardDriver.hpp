@@ -71,35 +71,35 @@ class KeyboardDriver
 		void setDBus(GKDBUS::GKDBus* pDBus);
 #endif
 
-		static const bool checkDeviceCapability(const USBDeviceID & device, Caps toCheck);
+		static bool checkDeviceCapability(const USBDeviceID & device, Caps toCheck);
 
 		/* --- */
-		const bool getDeviceThreadsStatus(const std::string & devID) const;
+		bool getDeviceThreadsStatus(const std::string & devID) const;
 
 		void resetDeviceState(const USBDeviceID & det);
 
 		void setDeviceActiveConfiguration(
 			const std::string & devID,
-			const std::uint8_t r,
-			const std::uint8_t g,
-			const std::uint8_t b,
-			const std::uint64_t LCDPluginsMask1
+			std::uint8_t r,
+			std::uint8_t g,
+			std::uint8_t b,
+			std::uint64_t LCDPluginsMask1
 		);
 		const LCDPPArray_type & getDeviceLCDPluginsProperties(const std::string & devID) const;
 
 		/* --- */
-		virtual const std::uint16_t getDriverID() const = 0;
+		virtual std::uint16_t getDriverID() const = 0;
 
 		virtual void initializeDevice(const USBDeviceID & det);
 		virtual void openDevice(const USBDeviceID & det);
 		virtual void closeDevice(
 			const USBDeviceID & det,
-			const bool skipUSBRequests = false
+			bool skipUSBRequests = false
 		) noexcept;
 
 		virtual const std::vector<USBDeviceID> & getSupportedDevices() const = 0;
-		virtual const MKeysIDArray_type getMKeysIDArray() const = 0;
-		virtual const GKeysIDArray_type getGKeysIDArray() const = 0;
+		virtual MKeysIDArray_type getMKeysIDArray() const = 0;
+		virtual GKeysIDArray_type getGKeysIDArray() const = 0;
 
 	private:
 		LCDPluginsManager _pluginManager;
@@ -113,7 +113,7 @@ class KeyboardDriver
 		std::map<std::string, USBDevice> _initializedDevices;
 
 #if DEBUGGING_ON && DEBUG_KEYS
-		const std::string getDeviceBytes(const USBDevice & device) const;
+		std::string getDeviceBytes(const USBDevice & device) const;
 #endif
 
 		void fillDeviceStandardKeysEvents(USBDevice & device);
@@ -159,9 +159,9 @@ class KeyboardDriver
 		);
 
 		std::uint16_t getDeviceTimeLapse(USBDevice & device);
-		const std::uint8_t handleDeviceModifierKeys(
+		std::uint8_t handleDeviceModifierKeys(
 			USBDevice & device,
-			const std::uint16_t interval
+			std::uint16_t interval
 		);
 
 		void checkDeviceFatalErrors(
@@ -178,24 +178,24 @@ class KeyboardDriver
 		virtual void setDeviceMxKeysLeds(USBDevice & device);
 		virtual void setDeviceBacklightColor(
 			USBDevice & device,
-			const std::uint8_t r=0xFF,
-			const std::uint8_t g=0xFF,
-			const std::uint8_t b=0xFF
+			std::uint8_t r=0xFF,
+			std::uint8_t g=0xFF,
+			std::uint8_t b=0xFF
 		);
-		virtual const bool updateDeviceMxKeysLedsMask(
+		virtual bool updateDeviceMxKeysLedsMask(
 			USBDevice & device,
 			bool disableMR=false
 		);
 		/* return true if any G-Key was pressed  */
-		virtual const bool checkDevicePressedAnyGKey(USBDevice & device) = 0;
+		virtual bool checkDevicePressedAnyGKey(USBDevice & device) = 0;
 		/* return true if any media key was pressed */
-		virtual const bool checkDevicePressedAnyMediaKey(USBDevice & device) = 0;
+		virtual bool checkDevicePressedAnyMediaKey(USBDevice & device) = 0;
 		/* return true if any LCD key was pressed */
-		virtual const bool checkDevicePressedAnyLCDKey(USBDevice & device) = 0;
+		virtual bool checkDevicePressedAnyLCDKey(USBDevice & device) = 0;
 		/* return true if any Mx key was pressed */
-		virtual const bool checkDevicePressedAnyMxKey(USBDevice & device) = 0;
+		virtual bool checkDevicePressedAnyMxKey(USBDevice & device) = 0;
 		/* return true if MR key is enabled */
-		virtual const bool isDeviceMRKeyEnabled(USBDevice & device) = 0;
+		virtual bool isDeviceMRKeyEnabled(USBDevice & device) = 0;
 
 	protected:
 		virtual void sendUSBDeviceInitialization(USBDevice & device);

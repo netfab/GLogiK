@@ -167,19 +167,19 @@ class USBDevice
 		{
 			return _pLCDPluginsManager;
 		}
-		const bool getThreadsStatus() const
+		bool getThreadsStatus() const
 		{
 			return _threadsStatus;
 		}
-		const bool getUSBRequestsStatus() const
+		bool getUSBRequestsStatus() const
 		{
 			return _USBRequestsStatus;
 		}
-		const int getLastKeysInterruptTransferLength() const
+		int getLastKeysInterruptTransferLength() const
 		{
 			return _lastKeysInterruptTransferLength;
 		}
-		const int getLastLCDInterruptTransferLength() const
+		int getLastLCDInterruptTransferLength() const
 		{
 			return _lastLCDInterruptTransferLength;
 		}
@@ -195,9 +195,9 @@ class USBDevice
 		}
 
 		void setRGBBytes(
-			const std::uint8_t r,
-			const std::uint8_t g,
-			const std::uint8_t b
+			std::uint8_t r,
+			std::uint8_t g,
+			std::uint8_t b
 		);
 		void getRGBBytes(
 			std::uint8_t & r,

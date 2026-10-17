@@ -31,7 +31,7 @@ void DaemonStatus::exitDaemon()
 	DaemonStatus::daemonized = false;
 }
 
-const bool DaemonStatus::isDaemonRunning()
+bool DaemonStatus::isDaemonRunning()
 {
 	return DaemonStatus::daemonized;
 }

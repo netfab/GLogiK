@@ -72,7 +72,7 @@ namespace GLogiK::Daemon
 
 using namespace NSGKUtils;
 
-GLogiKDaemon::GLogiKDaemon(const int& argc, char *argv[])
+GLogiKDaemon::GLogiKDaemon(const int argc, char *argv[])
 	:	_version(false),
 		_PIDFileCreated(false)
 {
@@ -260,7 +260,7 @@ int GLogiKDaemon::run()
 	return EXIT_SUCCESS;
 }
 
-void GLogiKDaemon::handleSignal(int signum)
+void GLogiKDaemon::handleSignal(const int signum)
 {
 	GK_LOG_FUNC
 
@@ -346,7 +346,7 @@ void GLogiKDaemon::createPIDFile()
 	_PIDFileCreated = true;
 }
 
-void GLogiKDaemon::parseCommandLine(const int& argc, char *argv[])
+void GLogiKDaemon::parseCommandLine(const int argc, char *argv[])
 {
 	po::options_description desc("Allowed options");
 

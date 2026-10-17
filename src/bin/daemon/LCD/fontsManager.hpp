@@ -39,19 +39,19 @@ class FontsManager
 		FontsManager();
 		~FontsManager();
 
-		const std::uint16_t getCenteredXPos(
+		std::uint16_t getCenteredXPos(
 			const FontID fontID,
 			std::string_view sv
 		);
 
-		const std::uint16_t getCenteredYPos(const FontID fontID);
+		std::uint16_t getCenteredYPos(FontID fontID);
 
 		void printCharacterOnFrame(
-			const FontID fontID,
+			FontID fontID,
 			PixelsData & frame,
 			std::string_view sv,
 			std::uint16_t & PBMXPos,
-			const std::uint16_t PBMYPos
+			std::uint16_t PBMYPos
 		);
 
 	protected:

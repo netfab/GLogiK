@@ -45,7 +45,7 @@ using namespace NSGKUtils;
 
 std::vector<std::string> Coretemp::coretempIDs;
 
-const std::string Coretemp::seekDirectoryPath(
+std::string Coretemp::seekDirectoryPath(
 	const std::string & basedir,
 	const unsigned int start)
 {

@@ -56,16 +56,16 @@ class LCDPluginsManager
 
 		const LCDPPArray_type & getLCDPluginsProperties() const;
 
-		const bool findOneLCDScreenPlugin(const std::uint64_t LCDPluginsMask1) const;
+		bool findOneLCDScreenPlugin(std::uint64_t LCDPluginsMask1) const;
 
 		const PixelsData & getNextLCDScreenBuffer(
 			const std::string & LCDKey,
-			const std::uint64_t LCDPluginsMask1
+			std::uint64_t LCDPluginsMask1
 		);
-		const std::uint16_t getPluginTiming();
+		std::uint16_t getPluginTiming();
 
 		void unlockPlugin();
-		const std::uint64_t getCurrentPluginID();
+		std::uint64_t getCurrentPluginID();
 		void jumpToNextPlugin();
 
 	protected:

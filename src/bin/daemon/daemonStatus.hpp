@@ -29,7 +29,7 @@ namespace GLogiK::Daemon
 class DaemonStatus
 {
 	public:
-		static const bool isDaemonRunning();
+		static bool isDaemonRunning();
 
 	protected:
 		DaemonStatus() = default;

@@ -57,7 +57,7 @@ class Coretemp
 		const PixelsData & getNextFrame(
 			FontsManager* const pFonts,
 			const std::string & LCDKey,
-			const bool lockedPlugin
+			bool lockedPlugin
 		);
 
 	protected:
@@ -68,9 +68,9 @@ class Coretemp
 		std::string _coretempID;
 		std::string _hwmonID;
 
-		static const std::string seekDirectoryPath(
+		static std::string seekDirectoryPath(
 			const std::string & basedir,
-			const unsigned int start = 0
+			unsigned int start = 0
 		);
 };
 

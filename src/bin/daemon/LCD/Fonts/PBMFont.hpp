@@ -36,27 +36,27 @@ class PBMFont
 	public:
 		virtual ~PBMFont();
 
-		static const std::size_t characterLength(std::string_view sv, std::size_t pos);
+		static std::size_t characterLength(std::string_view sv, std::size_t pos);
 
-		const std::uint16_t getCenteredXPos(std::string_view sv);
-		const std::uint16_t getCenteredYPos();
+		std::uint16_t getCenteredXPos(std::string_view sv);
+		std::uint16_t getCenteredYPos();
 
 		void printCharacterOnFrame(
 			PixelsData & frame,
 			std::string_view sv,
 			std::uint16_t & PBMXPos,
-			const std::uint16_t PBMYPos
+			std::uint16_t PBMYPos
 		);
 
 	protected:
 		PBMFont(
 			const std::string & PBMName,
-			const std::uint16_t PBMWidth,
-			const std::uint16_t PBMHeight,
-			const std::uint16_t charWidth,
-			const std::uint16_t charHeight,
-			const std::uint16_t fontLeftShift = 0,
-			const std::uint16_t extraLeftShift = 0
+			std::uint16_t PBMWidth,
+			std::uint16_t PBMHeight,
+			std::uint16_t charWidth,
+			std::uint16_t charHeight,
+			std::uint16_t fontLeftShift = 0,
+			std::uint16_t extraLeftShift = 0
 		);
 
 	private:
@@ -74,12 +74,14 @@ class PBMFont
 		std::uint16_t _charX;
 		std::uint16_t _charY;
 
-		struct Point {
+		struct Point
+		{
 			std::uint16_t x;
 			std::uint16_t y;
 		};
 
-		struct CharMapping {
+		struct CharMapping
+		{
 			std::string_view character;
 			Point point;
 		};
@@ -109,9 +111,9 @@ class PBMFont
 		static constexpr std::string_view hackstring = "mGMW%";
 
 		static const Point* findCharacter(std::string_view sv);
-		const unsigned char getCharacterLine(
-			const std::uint16_t line,
-			const std::uint16_t charByte
+		unsigned char getCharacterLine(
+			std::uint16_t line,
+			std::uint16_t charByte
 		) const;
 };
 

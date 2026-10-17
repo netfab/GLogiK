@@ -47,9 +47,9 @@ class USBInit
 		USBInit();
 		~USBInit();
 
-		static const std::string getLibUSBVersion();
+		static std::string getLibUSBVersion();
 
-		const int getUSBDevicePortNumbers(
+		int getUSBDevicePortNumbers(
 			USBDevice & device,
 			USBPortNumbers_type & port_numbers
 		);

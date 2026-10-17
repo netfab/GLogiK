@@ -86,21 +86,21 @@ class ClientsManager
 
 		/* exposed over DBus */
 			/* ClientsManager D-Bus object */
-		const bool registerClient(
+		bool registerClient(
 			const std::string & clientSessionObjectPath
 		);
-		const bool unregisterClient(
+		bool unregisterClient(
 			const std::string & clientID
 		);
-		const bool setClientReady(
+		bool setClientReady(
 			const std::string & clientID
 		);
-		const bool updateClientState(
+		bool updateClientState(
 			const std::string & clientID,
 			const std::string & state
 		);
 
-		const bool deleteDeviceConfiguration(
+		bool deleteDeviceConfiguration(
 			const std::string & clientID,
 			const std::string & devID
 		);
@@ -111,27 +111,27 @@ class ClientsManager
 		/* -- */
 			/* DevicesManager D-Bus object */
 
-		const bool stopDevice(
+		bool stopDevice(
 			const std::string & clientID,
 			const std::string & devID
 		);
-		const bool startDevice(
+		bool startDevice(
 			const std::string & clientID,
 			const std::string & devID
 		);
-		const bool restartDevice(
+		bool restartDevice(
 			const std::string & clientID,
 			const std::string & devID
 		);
 
-		const std::vector<std::string> getStartedDevices(
+		std::vector<std::string> getStartedDevices(
 			const std::string & clientID
 		);
-		const std::vector<std::string> getStoppedDevices(
+		std::vector<std::string> getStoppedDevices(
 			const std::string & clientID
 		);
 
-		const std::string getDeviceStatus(
+		std::string getDeviceStatus(
 			const std::string & clientID,
 			const std::string & devID
 		);
@@ -143,27 +143,27 @@ class ClientsManager
 			const std::string & clientID,
 			const std::string & devID
 		);
-		const MKeysIDArray_type getDeviceMKeysIDArray(
+		MKeysIDArray_type getDeviceMKeysIDArray(
 			const std::string & clientID,
 			const std::string & devID
 		);
-		const GKeysIDArray_type getDeviceGKeysIDArray(
+		GKeysIDArray_type getDeviceGKeysIDArray(
 			const std::string & clientID,
 			const std::string & devID
 		);
 
-		const bool setDeviceBacklightColor(
+		bool setDeviceBacklightColor(
 			const std::string & clientID,
 			const std::string & devID,
-			const std::uint8_t r,
-			const std::uint8_t g,
-			const std::uint8_t b
+			std::uint8_t r,
+			std::uint8_t g,
+			std::uint8_t b
 		);
-		const bool setDeviceLCDPluginsMask(
+		bool setDeviceLCDPluginsMask(
 			const std::string & clientID,
 			const std::string & devID,
-			const std::uint8_t LCDPluginsMask,
-			const std::uint64_t mask
+			std::uint8_t LCDPluginsMask,
+			std::uint64_t mask
 		);
 
 		/* -- */

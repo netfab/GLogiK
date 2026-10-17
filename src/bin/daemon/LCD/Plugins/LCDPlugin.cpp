@@ -45,7 +45,7 @@ pluginFrame::pluginFrame(const std::uint16_t num)
 	_PBMData.resize(PBM::data_size_in_bytes, 0);
 }
 
-const bool pluginFrame::switchToNextFrame(const std::uint16_t currentFrameCounter)
+bool pluginFrame::switchToNextFrame(const std::uint16_t currentFrameCounter)
 {
 	return (currentFrameCounter >= _numFrames);
 }
@@ -78,7 +78,7 @@ LCDPlugin::~LCDPlugin()
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-const bool LCDPlugin::isInitialized() const
+bool LCDPlugin::isInitialized() const
 {
 	return _initialized;
 }
@@ -89,7 +89,7 @@ void LCDPlugin::resetFrameIndex()
 	this->checkFrameIndex(); /* may throw */
 }
 
-const std::uint64_t LCDPlugin::getPluginID() const
+std::uint64_t LCDPlugin::getPluginID() const
 {
 	return _plugin.getID();
 }
@@ -99,7 +99,7 @@ const std::string & LCDPlugin::getPluginName() const
 	return _plugin.getName();
 }
 
-const std::uint16_t LCDPlugin::getPluginTiming() const
+std::uint16_t LCDPlugin::getPluginTiming() const
 {
 	std::uint16_t timing = 0;
 	std::uint16_t maxFrames = 0;
@@ -107,7 +107,7 @@ const std::uint16_t LCDPlugin::getPluginTiming() const
 	return timing;
 }
 
-const std::uint16_t LCDPlugin::getPluginMaxFrames() const
+std::uint16_t LCDPlugin::getPluginMaxFrames() const
 {
 	std::uint16_t timing = 0;
 	std::uint16_t maxFrames = 0;
@@ -163,7 +163,7 @@ const PixelsData & LCDPlugin::getNextFrame(
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-auto LCDPlugin::getPluginProperties() const -> const LCDPP
+auto LCDPlugin::getPluginProperties() const -> LCDPP
 {
 	return _plugin;
 }
@@ -216,7 +216,7 @@ PixelsData & LCDPlugin::getCurrentFrame()
 void LCDPlugin::writeStringOnFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
-	std::string_view sv,
+	const std::string_view sv,
 	const std::int16_t PBMXPos,
 	const std::int16_t PBMYPos)
 {
@@ -265,7 +265,7 @@ void LCDPlugin::writeStringOnFrame(
 void LCDPlugin::writeStringOnLastFrame(
 	FontsManager* const pFonts,
 	const FontID fontID,
-	std::string_view sv,
+	const std::string_view sv,
 	const std::int16_t PBMXPos,
 	const std::int16_t PBMYPos)
 {

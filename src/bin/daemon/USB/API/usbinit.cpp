@@ -34,7 +34,7 @@ libusb_context * USBInit::pContext = nullptr;
 std::uint8_t USBInit::counter = 0;
 bool USBInit::status = false;
 
-const std::string USBInit::getLibUSBVersion()
+std::string USBInit::getLibUSBVersion()
 {
 	const struct libusb_version* version = libusb_get_version();
 
@@ -92,7 +92,7 @@ USBInit::~USBInit()
 	}
 }
 
-const int USBInit::getUSBDevicePortNumbers(
+int USBInit::getUSBDevicePortNumbers(
 	USBDevice & device,
 	USBPortNumbers_type & port_numbers)
 {

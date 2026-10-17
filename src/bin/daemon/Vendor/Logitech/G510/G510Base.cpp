@@ -101,7 +101,7 @@ const char* G510Base::getDriverName() const
 	return "Logitech G510/G510s driver";
 }
 
-const std::uint16_t G510Base::getDriverID() const
+std::uint16_t G510Base::getDriverID() const
 {
 	return detail::G510_DRIVER_ID;
 }
@@ -111,8 +111,7 @@ const std::vector<USB::Device::USBDeviceID> & G510Base::getSupportedDevices() co
 	return G510Base::knownDevices;
 }
 
-auto G510Base::getMKeysIDArray() const
-	-> const MKeysIDArray_type
+auto G510Base::getMKeysIDArray() const -> MKeysIDArray_type
 {
 	GK_LOG_FUNC
 
@@ -137,8 +136,7 @@ auto G510Base::getMKeysIDArray() const
 	return ret;
 }
 
-auto G510Base::getGKeysIDArray() const
-	-> const GKeysIDArray_type
+auto G510Base::getGKeysIDArray() const -> GKeysIDArray_type
 {
 	GK_LOG_FUNC
 
@@ -164,7 +162,7 @@ auto G510Base::getGKeysIDArray() const
 }
 
 /* return true if any G-Key (G1-G18) was pressed  */
-const bool G510Base::checkDevicePressedAnyGKey(USBDevice & device)
+bool G510Base::checkDevicePressedAnyGKey(USBDevice & device)
 {
 	for (const auto & [RKey, GKeyID] : detail::RKeys2GKeysIDMap)
 	{
@@ -178,7 +176,7 @@ const bool G510Base::checkDevicePressedAnyGKey(USBDevice & device)
 }
 
 /* return true if any media key was pressed */
-const bool G510Base::checkDevicePressedAnyMediaKey(USBDevice & device)
+bool G510Base::checkDevicePressedAnyMediaKey(USBDevice & device)
 {
 	for( const auto & key : detail::mediaKeys2BytesMap )
 	{
@@ -192,7 +190,7 @@ const bool G510Base::checkDevicePressedAnyMediaKey(USBDevice & device)
 }
 
 /* return true if any LCD key was pressed */
-const bool G510Base::checkDevicePressedAnyLCDKey(USBDevice & device)
+bool G510Base::checkDevicePressedAnyLCDKey(USBDevice & device)
 {
 	for( const auto & key : detail::LCDKeys5BytesMap )
 	{
@@ -207,7 +205,7 @@ const bool G510Base::checkDevicePressedAnyLCDKey(USBDevice & device)
 }
 
 /* return true if any Mx key was pressed */
-const bool G510Base::checkDevicePressedAnyMxKey(USBDevice & device)
+bool G510Base::checkDevicePressedAnyMxKey(USBDevice & device)
 {
 	// MR and M1,M2,M3 keys are not in the same containers
 	if( device._pressedRKeysMask & toEnumType(detail::RKeys::GK_KEY_MR) )
@@ -219,7 +217,7 @@ const bool G510Base::checkDevicePressedAnyMxKey(USBDevice & device)
 }
 
 /* return true if MR key is enabled */
-const bool G510Base::isDeviceMRKeyEnabled(USBDevice & device)
+bool G510Base::isDeviceMRKeyEnabled(USBDevice & device)
 {
 	/* is MR key enabled ? */
 	return ( device._MxKeysLedsMask & toEnumType(GLogiK::Leds::GK_LED_MR) );
@@ -475,7 +473,7 @@ void G510Base::setDeviceMxKeysLeds(USBDevice & device)
 /*
  * return true if leds_mask has been updated (meaning that setDeviceMxKeysLeds should be called)
  */
-const bool G510Base::updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR)
+bool G510Base::updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR)
 {
 	using Leds = GLogiK::Leds;
 	using MKeysID = GLogiK::MKeysID;

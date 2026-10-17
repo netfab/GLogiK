@@ -57,22 +57,22 @@ class Client
 			const std::string & newState
 		);
 		void uncheck();
-		const bool isAlive() const;
-		const bool isReady() const;
+		bool isAlive() const;
+		bool isReady() const;
 		void setReady();
 
 		void initializeDevice(
 			DevicesManager* const pDevicesManager,
 			const std::string & devID
 		);
-		const bool deleteDevice(
+		bool deleteDevice(
 			const std::string & devID
 		);
-		const bool setDeviceBacklightColor(
+		bool setDeviceBacklightColor(
 			const std::string & devID,
-			const std::uint8_t r,
-			const std::uint8_t g,
-			const std::uint8_t b
+			std::uint8_t r,
+			std::uint8_t g,
+			std::uint8_t b
 		);
 
 		void setDeviceActiveUser(
@@ -80,10 +80,10 @@ class Client
 			DevicesManager* const pDevicesManager
 		);
 
-		const bool setDeviceLCDPluginsMask(
+		bool setDeviceLCDPluginsMask(
 			const std::string & devID,
-			const std::uint8_t maskID,
-			const std::uint64_t mask
+			std::uint8_t maskID,
+			std::uint64_t mask
 		);
 
 	protected:

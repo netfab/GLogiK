@@ -57,7 +57,7 @@ hidapi::~hidapi()
 	}
 }
 
-const std::string hidapi::getHIDAPIVersion()
+std::string hidapi::getHIDAPIVersion()
 {
 	std::string ret(hid_version_str());
 	return ret;
@@ -68,7 +68,7 @@ void hidapi::openUSBDevice(USBDevice & device)
 	GK_LOG_FUNC
 
 	// lambda
-	auto make_hidapi_path = [&device] () -> const std::string
+	auto make_hidapi_path = [&device] () -> std::string
 	{
 		std::ostringstream os;
 
@@ -174,7 +174,7 @@ void hidapi::closeUSBDevice(USBDevice & device) noexcept
 void hidapi::sendUSBDeviceFeatureReport(
 	USBDevice & device,
 	const unsigned char * data,
-	std::uint16_t wLength)
+	const std::uint16_t wLength)
 {
 	GK_LOG_FUNC
 
@@ -205,7 +205,7 @@ void hidapi::sendUSBDeviceFeatureReport(
 
 int hidapi::performUSBDeviceKeysInterruptTransfer(
 	USBDevice & device,
-	unsigned int timeout)
+	const unsigned int timeout)
 {
 	GK_LOG_FUNC
 
@@ -244,8 +244,8 @@ int hidapi::performUSBDeviceKeysInterruptTransfer(
 int hidapi::performUSBDeviceLCDScreenInterruptTransfer(
 	USBDevice & device,
 	const unsigned char * buffer,
-	std::size_t bufferLength,
-	unsigned int timeout)
+	const std::size_t bufferLength,
+	const unsigned int timeout)
 {
 	GK_LOG_FUNC
 

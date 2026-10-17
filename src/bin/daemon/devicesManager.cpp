@@ -94,7 +94,7 @@ DevicesManager::~DevicesManager()
 	GKLog(trace, "exiting devices manager")
 }
 
-const std::string DevicesManager::getLibudevVersion()
+std::string DevicesManager::getLibudevVersion()
 {
 	GK_LOG_FUNC
 
@@ -135,7 +135,7 @@ void DevicesManager::setDBus(GKDBUS::GKDBus* pDBus)
 	_pDBus = pDBus;
 }
 
-void DevicesManager::setNumClients(std::size_t num)
+void DevicesManager::setNumClients(const std::size_t num)
 {
 	_numClients = num;
 }
@@ -245,7 +245,7 @@ void DevicesManager::initializeDevices(
 	GKLog2(info, "device(s) initialized: ", initializedDevices.size())
 }
 
-const bool DevicesManager::startDevice(const std::string & devID)
+bool DevicesManager::startDevice(const std::string & devID)
 {
 	GK_LOG_FUNC
 
@@ -292,7 +292,7 @@ const bool DevicesManager::startDevice(const std::string & devID)
 	return false;
 }
 
-const bool DevicesManager::stopDevice(
+bool DevicesManager::stopDevice(
 	const std::string & devID,
 	const bool skipUSBRequests) noexcept
 {
@@ -779,7 +779,7 @@ void DevicesManager::searchSupportedDevices(
 	GKLog2(trace, "number of found device(s) : ", detectedDevices.size())
 }
 
-const std::vector<std::string> DevicesManager::getStartedDevices() const
+std::vector<std::string> DevicesManager::getStartedDevices() const
 {
 	std::vector<std::string> ret;
 
@@ -789,7 +789,7 @@ const std::vector<std::string> DevicesManager::getStartedDevices() const
 	return ret;
 }
 
-const std::vector<std::string> DevicesManager::getStoppedDevices() const
+std::vector<std::string> DevicesManager::getStoppedDevices() const
 {
 	std::vector<std::string> ret;
 
@@ -824,7 +824,7 @@ const std::string & DevicesManager::getDeviceVendor(const std::string & devID) c
 	return _unknown;
 }
 
-const std::uint64_t DevicesManager::getDeviceCapabilities(const std::string & devID) const
+std::uint64_t DevicesManager::getDeviceCapabilities(const std::string & devID) const
 {
 	GK_LOG_FUNC
 
@@ -933,7 +933,7 @@ auto DevicesManager::getDeviceLCDPluginsProperties(const std::string & devID) co
 	return Managers::LCDPlugins::LCDPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
-const std::string DevicesManager::getDeviceStatus(const std::string & devID) const
+std::string DevicesManager::getDeviceStatus(const std::string & devID) const
 {
 	std::string ret(_unknown);
 	if(_startedDevices.count(devID) == 1)
@@ -975,7 +975,7 @@ void DevicesManager::setDeviceActiveConfiguration(
 }
 
 auto DevicesManager::getDeviceMKeysIDArray(const std::string & devID) const
-	-> const MKeysIDArray_type
+	-> MKeysIDArray_type
 {
 	GK_LOG_FUNC
 
@@ -1012,7 +1012,7 @@ auto DevicesManager::getDeviceMKeysIDArray(const std::string & devID) const
 }
 
 auto DevicesManager::getDeviceGKeysIDArray(const std::string & devID) const
-	-> const GKeysIDArray_type
+	-> GKeysIDArray_type
 {
 	GK_LOG_FUNC
 

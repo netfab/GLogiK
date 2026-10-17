@@ -98,7 +98,7 @@ void libusb::closeUSBDevice(USBDevice & device) noexcept
 void libusb::sendUSBDeviceFeatureReport(
 	USBDevice & device,
 	const unsigned char * data,
-	std::uint16_t wLength)
+	const std::uint16_t wLength)
 {
 	GK_LOG_FUNC
 
@@ -158,7 +158,7 @@ void libusb::sendUSBDeviceFeatureReport(
 
 int libusb::performUSBDeviceKeysInterruptTransfer(
 	USBDevice & device,
-	unsigned int timeout)
+	const unsigned int timeout)
 {
 	GK_LOG_FUNC
 
@@ -192,8 +192,8 @@ int libusb::performUSBDeviceKeysInterruptTransfer(
 int libusb::performUSBDeviceLCDScreenInterruptTransfer(
 	USBDevice & device,
 	const unsigned char * buffer,
-	std::size_t bufferLength,
-	unsigned int timeout)
+	const std::size_t bufferLength,
+	const unsigned int timeout)
 {
 	GK_LOG_FUNC
 
@@ -705,7 +705,7 @@ void libusb::attachUSBDeviceInterfacesToKernelDrivers(USBDevice & device) noexce
 	device._toAttach.clear();
 }
 
-void libusb::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, int numInt)
+void libusb::detachKernelDriverFromUSBDeviceInterface(USBDevice & device, const int numInt)
 {
 	GK_LOG_FUNC
 

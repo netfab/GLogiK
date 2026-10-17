@@ -43,7 +43,7 @@ class GLogiKDaemon
 #endif
 {
 	public:
-		GLogiKDaemon(const int& argc,char *argv[]);
+		GLogiKDaemon(int argc, char *argv[]);
 		~GLogiKDaemon();
 
 		int run();
@@ -57,7 +57,7 @@ class GLogiKDaemon
 
 		void createPIDFile();
 		void dropPrivileges();
-		void parseCommandLine(const int& argc, char *argv[]);
+		void parseCommandLine(int argc, char *argv[]);
 		static void handleSignal(int signum);
 };
 

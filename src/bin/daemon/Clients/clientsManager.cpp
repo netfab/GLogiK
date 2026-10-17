@@ -379,7 +379,7 @@ void ClientsManager::waitForClientsDisconnections() noexcept
 	}
 }
 
-const bool ClientsManager::registerClient(const std::string & clientSessionObjectPath)
+bool ClientsManager::registerClient(const std::string & clientSessionObjectPath)
 {
 	GK_LOG_FUNC
 
@@ -487,7 +487,7 @@ const bool ClientsManager::registerClient(const std::string & clientSessionObjec
 	return false;
 }
 
-const bool ClientsManager::unregisterClient(const std::string & clientID)
+bool ClientsManager::unregisterClient(const std::string & clientID)
 {
 	GK_LOG_FUNC
 
@@ -520,7 +520,7 @@ const bool ClientsManager::unregisterClient(const std::string & clientID)
 	return false;
 }
 
-const bool ClientsManager::updateClientState(
+bool ClientsManager::updateClientState(
 	const std::string & clientID,
 	const std::string & state)
 {
@@ -581,7 +581,7 @@ const bool ClientsManager::updateClientState(
 	return false;
 }
 
-const bool ClientsManager::setClientReady(const std::string & clientID)
+bool ClientsManager::setClientReady(const std::string & clientID)
 {
 	GK_LOG_FUNC
 
@@ -607,7 +607,7 @@ const bool ClientsManager::setClientReady(const std::string & clientID)
 	return false;
 }
 
-const bool ClientsManager::deleteDeviceConfiguration(
+bool ClientsManager::deleteDeviceConfiguration(
 	const std::string & clientID,
 	const std::string & devID)
 {
@@ -653,7 +653,7 @@ auto ClientsManager::getDaemonDependenciesMap(const std::string & clientID)
 	return (*_pDepsMap);
 }
 
-const bool ClientsManager::stopDevice(
+bool ClientsManager::stopDevice(
 	const std::string & clientID,
 	const std::string & devID)
 {
@@ -705,7 +705,7 @@ const bool ClientsManager::stopDevice(
 	return false;
 }
 
-const bool ClientsManager::startDevice(
+bool ClientsManager::startDevice(
 	const std::string & clientID,
 	const std::string & devID)
 {
@@ -764,7 +764,7 @@ const bool ClientsManager::startDevice(
 	return false;
 }
 
-const bool ClientsManager::restartDevice(
+bool ClientsManager::restartDevice(
 	const std::string & clientID,
 	const std::string & devID)
 {
@@ -818,7 +818,7 @@ const bool ClientsManager::restartDevice(
 	return false;
 }
 
-const std::vector<std::string> ClientsManager::getStartedDevices(const std::string & clientID)
+std::vector<std::string> ClientsManager::getStartedDevices(const std::string & clientID)
 {
 	GK_LOG_FUNC
 
@@ -842,8 +842,7 @@ const std::vector<std::string> ClientsManager::getStartedDevices(const std::stri
 	return ret;
 }
 
-const std::vector<std::string>
-	ClientsManager::getStoppedDevices(const std::string & clientID)
+std::vector<std::string> ClientsManager::getStoppedDevices(const std::string & clientID)
 {
 	GK_LOG_FUNC
 
@@ -867,7 +866,7 @@ const std::vector<std::string>
 	return ret;
 }
 
-const std::string ClientsManager::getDeviceStatus(
+std::string ClientsManager::getDeviceStatus(
 	const std::string & clientID,
 	const std::string & devID)
 {
@@ -951,7 +950,7 @@ auto ClientsManager::getDeviceLCDPluginsProperties(
 	return Managers::LCDPlugins::LCDPluginsManager::_LCDPluginsPropertiesEmptyArray;
 }
 
-const bool ClientsManager::setDeviceBacklightColor(
+bool ClientsManager::setDeviceBacklightColor(
 	const std::string & clientID,
 	const std::string & devID,
 	const std::uint8_t r,
@@ -982,7 +981,7 @@ const bool ClientsManager::setDeviceBacklightColor(
 auto ClientsManager::getDeviceMKeysIDArray(
 		const std::string & clientID,
 		const std::string & devID
-	) -> const MKeysIDArray_type
+	) -> MKeysIDArray_type
 {
 	GK_LOG_FUNC
 
@@ -1009,7 +1008,7 @@ auto ClientsManager::getDeviceMKeysIDArray(
 auto ClientsManager::getDeviceGKeysIDArray(
 		const std::string & clientID,
 		const std::string & devID
-	) -> const GKeysIDArray_type
+	) -> GKeysIDArray_type
 {
 	GK_LOG_FUNC
 
@@ -1033,7 +1032,7 @@ auto ClientsManager::getDeviceGKeysIDArray(
 	return ret;
 }
 
-const bool ClientsManager::setDeviceLCDPluginsMask(
+bool ClientsManager::setDeviceLCDPluginsMask(
 	const std::string & clientID,
 	const std::string & devID,
 	const std::uint8_t maskID,

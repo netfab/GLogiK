@@ -38,7 +38,7 @@ class NetSnapshots
 		NetSnapshots();
 		~NetSnapshots();
 
-		const std::string getRateString(NetDirection direction);
+		std::string getRateString(NetDirection direction);
 
 	protected:
 
@@ -52,9 +52,9 @@ class NetSnapshots
 			const NetDirection d,
 			unsigned long long & value
 		);
-		const std::string getRateString(
+		std::string getRateString(
 			const std::string & direction,
-			const unsigned long long & value
+			const unsigned long long value
 		);
 };
 

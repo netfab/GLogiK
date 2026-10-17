@@ -60,13 +60,13 @@ class pluginFrame
 		using PixelsData = LCDPlugins::PixelsData;
 
 	public:
-		explicit pluginFrame(const std::uint16_t num);
+		explicit pluginFrame(std::uint16_t num);
 		pluginFrame() = delete;
 		~pluginFrame() = default;
 
 		PixelsData _PBMData;
 
-		const bool switchToNextFrame(const std::uint16_t currentFrameCounter);
+		bool switchToNextFrame(std::uint16_t currentFrameCounter);
 
 	protected:
 
@@ -91,13 +91,13 @@ class LCDPlugin
 			const std::string & product
 		) = 0;
 
-		const bool isInitialized() const;
+		bool isInitialized() const;
 
-		const LCDPP getPluginProperties() const;
+		LCDPP getPluginProperties() const;
 		const std::string & getPluginName() const;
-		const std::uint64_t getPluginID() const;
-		const std::uint16_t getPluginTiming() const;
-		const std::uint16_t getPluginMaxFrames() const;
+		std::uint64_t getPluginID() const;
+		std::uint16_t getPluginTiming() const;
+		std::uint16_t getPluginMaxFrames() const;
 		void resetPluginEverLocked();
 
 		void resetFrameIndex();
@@ -106,7 +106,7 @@ class LCDPlugin
 		virtual const PixelsData & getNextFrame(
 			FontsManager* const pFonts,
 			const std::string & LCDKey,
-			const bool lockedPlugin
+			bool lockedPlugin
 		);
 
 	protected:
@@ -118,45 +118,45 @@ class LCDPlugin
 		void addFrameFromPBM(
 			const fs::path & PBMDirectory,
 			const std::string & file,
-			const std::uint16_t num = 1
+			std::uint16_t num = 1
 		);
 
-		void addEmptyFrame(const std::uint16_t num = 1);
+		void addEmptyFrame(std::uint16_t num = 1);
 
 		PixelsData & getCurrentFrame();
 
 		void writeStringOnFrame(
 			FontsManager* const pFonts, // pointer to fontsManager
-			const FontID fontID,        // font we want to use
+			FontID fontID,        		// font we want to use
 			std::string_view sv,        // string to write
-			const std::int16_t PBMXPos, // xPos, -1 means centered horizontally
-			const std::int16_t PBMYPos  // yPos, -1 means centered vertically
+			std::int16_t PBMXPos,       // xPos, -1 means centered horizontally
+			std::int16_t PBMYPos        // yPos, -1 means centered vertically
 		);
 
 		void writeStringOnLastFrame(
 			FontsManager* const pFonts,
-			const FontID fontID,
+			FontID fontID,
 			std::string_view sv,
-			const std::int16_t PBMXPos,
-			const std::int16_t PBMYPos
+			std::int16_t PBMXPos,
+			std::int16_t PBMYPos
 		);
 
 		void drawProgressBarOnFrame(
-			const std::uint16_t percent,
-			const std::uint16_t PBMXPos,
-			const std::uint16_t PBMYPos
+			std::uint16_t percent,
+			std::uint16_t PBMXPos,
+			std::uint16_t PBMYPos
 		);
 
 		void drawPadlockOnFrame(
-			const bool lockedPlugin,
-			const std::uint16_t PBMXPos = 1,
-			const std::uint16_t PBMYPos = 1
+			bool lockedPlugin,
+			std::uint16_t PBMXPos = 1,
+			std::uint16_t PBMYPos = 1
 		);
 
 		void drawVerticalLineOnFrame(
-			const std::uint16_t PBMXPos,
-			const std::uint16_t PBMYPos,
-			const std::uint16_t size
+			std::uint16_t PBMXPos,
+			std::uint16_t PBMYPos,
+			std::uint16_t size
 		);
 
 	private:

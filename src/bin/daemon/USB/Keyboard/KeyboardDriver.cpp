@@ -66,7 +66,7 @@ void KeyboardDriver::setDBus(GKDBUS::GKDBus* pDBus)
 #endif
 
 #if DEBUGGING_ON && DEBUG_KEYS
-const std::string KeyboardDriver::getDeviceBytes(const USBDevice & device) const
+std::string KeyboardDriver::getDeviceBytes(const USBDevice & device) const
 {
 	const unsigned int last_length = toUInt(device.getLastKeysInterruptTransferLength());
 	if( last_length == 0 )
@@ -80,7 +80,7 @@ const std::string KeyboardDriver::getDeviceBytes(const USBDevice & device) const
 #endif
 
 
-const bool KeyboardDriver::checkDeviceCapability(const USBDeviceID & device, Caps toCheck)
+bool KeyboardDriver::checkDeviceCapability(const USBDeviceID & device, Caps toCheck)
 {
 	return (device.getCapabilities() & toEnumType(toCheck));
 }
@@ -153,7 +153,7 @@ void KeyboardDriver::setDeviceBacklightColor(
 	this->notImplemented(__func__);
 }
 
-const bool KeyboardDriver::updateDeviceMxKeysLedsMask(
+bool KeyboardDriver::updateDeviceMxKeysLedsMask(
 	USBDevice & device,
 	bool disableMR)
 {
@@ -162,7 +162,7 @@ const bool KeyboardDriver::updateDeviceMxKeysLedsMask(
 }
 
 
-const std::uint8_t KeyboardDriver::handleDeviceModifierKeys(USBDevice & device, const std::uint16_t interval)
+std::uint8_t KeyboardDriver::handleDeviceModifierKeys(USBDevice & device, const std::uint16_t interval)
 {
 	GK_LOG_FUNC
 
@@ -800,7 +800,7 @@ void KeyboardDriver::listenLoop(const std::string & devID)
 	}
 }
 
-const bool KeyboardDriver::getDeviceThreadsStatus(const std::string & devID) const
+bool KeyboardDriver::getDeviceThreadsStatus(const std::string & devID) const
 {
 	GK_LOG_FUNC
 

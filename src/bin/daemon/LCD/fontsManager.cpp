@@ -38,14 +38,14 @@ FontsManager::~FontsManager()
 {
 }
 
-const std::uint16_t FontsManager::getCenteredXPos(
+std::uint16_t FontsManager::getCenteredXPos(
 	const FontID fontID,
-	std::string_view sv)
+	const std::string_view sv)
 {
 	return this->getFont(fontID)->getCenteredXPos(sv);
 }
 
-const std::uint16_t FontsManager::getCenteredYPos(const FontID fontID)
+std::uint16_t FontsManager::getCenteredYPos(const FontID fontID)
 {
 	return this->getFont(fontID)->getCenteredYPos();
 }
@@ -53,7 +53,7 @@ const std::uint16_t FontsManager::getCenteredYPos(const FontID fontID)
 void FontsManager::printCharacterOnFrame(
 	const FontID fontID,
 	PixelsData & frame,
-	std::string_view sv,
+	const std::string_view sv,
 	std::uint16_t & PBMXPos,
 	const std::uint16_t PBMYPos)
 {

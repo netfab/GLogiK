@@ -58,7 +58,7 @@ class LogitechG510
 		{
 			return G510Base::getDriverName();
 		}
-		const std::uint16_t getDriverID() const override
+		std::uint16_t getDriverID() const override
 		{
 			return G510Base::getDriverID();
 		}
@@ -66,11 +66,11 @@ class LogitechG510
 		{
 			return G510Base::getSupportedDevices();
 		}
-		const MKeysIDArray_type getMKeysIDArray() const override
+		MKeysIDArray_type getMKeysIDArray() const override
 		{
 			return G510Base::getMKeysIDArray();
 		}
-		const GKeysIDArray_type getGKeysIDArray() const override
+		GKeysIDArray_type getGKeysIDArray() const override
 		{
 			return G510Base::getGKeysIDArray();
 		}
@@ -78,7 +78,7 @@ class LogitechG510
 	private:
 		void sendUSBDeviceFeatureReport(
 			USBDevice & device,
-			const unsigned char * data,
+			const unsigned char* data,
 			std::uint16_t wLength
 		) override
 		{
@@ -87,9 +87,9 @@ class LogitechG510
 
 		void setDeviceBacklightColor(
 			USBDevice & device,
-			const std::uint8_t r=0xFF,
-			const std::uint8_t g=0xFF,
-			const std::uint8_t b=0xFF
+			std::uint8_t r=0xFF,
+			std::uint8_t g=0xFF,
+			std::uint8_t b=0xFF
 		) override
 		{
 			G510Base::setDeviceBacklightColor(device, r, g,  b);
@@ -100,7 +100,7 @@ class LogitechG510
 			G510Base::setDeviceMxKeysLeds(device);
 		}
 
-		const bool updateDeviceMxKeysLedsMask(
+		bool updateDeviceMxKeysLedsMask(
 			USBDevice & device,
 			bool disableMR=false
 		) override
@@ -114,31 +114,31 @@ class LogitechG510
 		}
 
 		/* return true if any G-Key (G1-G18) was pressed  */
-		const bool checkDevicePressedAnyGKey(USBDevice & device) override
+		bool checkDevicePressedAnyGKey(USBDevice & device) override
 		{
 			return G510Base::checkDevicePressedAnyGKey(device);
 		}
 
 		/* return true if any media key was pressed */
-		const bool checkDevicePressedAnyMediaKey(USBDevice & device) override
+		bool checkDevicePressedAnyMediaKey(USBDevice & device) override
 		{
 			return G510Base::checkDevicePressedAnyMediaKey(device);
 		}
 
 		/* return true if any LCD key was pressed */
-		const bool checkDevicePressedAnyLCDKey(USBDevice & device) override
+		bool checkDevicePressedAnyLCDKey(USBDevice & device) override
 		{
 			return G510Base::checkDevicePressedAnyLCDKey(device);
 		}
 
 		/* return true if any Mx key was pressed */
-		const bool checkDevicePressedAnyMxKey(USBDevice & device) override
+		bool checkDevicePressedAnyMxKey(USBDevice & device) override
 		{
 			return G510Base::checkDevicePressedAnyMxKey(device);
 		}
 
 		/* return true if MR key is enabled */
-		const bool isDeviceMRKeyEnabled(USBDevice & device) override
+		bool isDeviceMRKeyEnabled(USBDevice & device) override
 		{
 			return G510Base::isDeviceMRKeyEnabled(device);
 		}
@@ -156,7 +156,7 @@ class LogitechG510
 		}
 
 #if DEBUGGING_ON && DEBUG_KEYS
-		const std::string getDeviceBytes(const USBDevice & device) const override
+		std::string getDeviceBytes(const USBDevice & device) const override
 		{
 			return USB::Keyboard::USBKeyboardDriver<API>::getDeviceBytes(device);
 		}

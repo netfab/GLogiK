@@ -71,7 +71,7 @@ class SleepInhibition
 		std::int32_t _delayLockPID;
 
 		void inhibitSleepState();
-		void handleSleepEvent(const bool mode);
+		void handleSleepEvent(bool mode);
 		void releaseDelayLock();
 };
 

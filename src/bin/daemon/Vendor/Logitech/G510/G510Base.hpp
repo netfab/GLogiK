@@ -53,21 +53,21 @@ class G510Base
 		virtual ~G510Base() = default;
 
 		const char* getDriverName() const;
-		const std::uint16_t getDriverID() const;
+		std::uint16_t getDriverID() const;
 		const std::vector<USBDeviceID> & getSupportedDevices() const;
-		const MKeysIDArray_type getMKeysIDArray() const;
-		const GKeysIDArray_type getGKeysIDArray() const;
+		MKeysIDArray_type getMKeysIDArray() const;
+		GKeysIDArray_type getGKeysIDArray() const;
 
 		/* return true if any G-Key (G1-G18) was pressed  */
-		virtual const bool checkDevicePressedAnyGKey(USBDevice & device);
+		virtual bool checkDevicePressedAnyGKey(USBDevice & device);
 		/* return true if any media key was pressed */
-		virtual const bool checkDevicePressedAnyMediaKey(USBDevice & device);
+		virtual bool checkDevicePressedAnyMediaKey(USBDevice & device);
 		/* return true if any LCD key was pressed */
-		virtual const bool checkDevicePressedAnyLCDKey(USBDevice & device);
+		virtual bool checkDevicePressedAnyLCDKey(USBDevice & device);
 		/* return true if any Mx key was pressed */
-		virtual const bool checkDevicePressedAnyMxKey(USBDevice & device);
+		virtual bool checkDevicePressedAnyMxKey(USBDevice & device);
 		/* return true if MR key is enabled */
-		virtual const bool isDeviceMRKeyEnabled(USBDevice & device);
+		virtual bool isDeviceMRKeyEnabled(USBDevice & device);
 
 		virtual KeyStatus processDeviceKeyEvent(USBDevice & device);
 
@@ -75,14 +75,14 @@ class G510Base
 
 		virtual void setDeviceBacklightColor(
 			USBDevice & device,
-			const std::uint8_t r=0xFF,
-			const std::uint8_t g=0xFF,
-			const std::uint8_t b=0xFF
+			std::uint8_t r=0xFF,
+			std::uint8_t g=0xFF,
+			std::uint8_t b=0xFF
 		);
 
 		virtual void setDeviceMxKeysLeds(USBDevice & device);
 
-		virtual const bool updateDeviceMxKeysLedsMask(
+		virtual bool updateDeviceMxKeysLedsMask(
 			USBDevice & device,
 			bool disableMR=false
 		);
@@ -103,7 +103,7 @@ class G510Base
 		virtual void fillDeviceStandardKeysEvents(USBDevice & device) = 0;
 
 #if DEBUGGING_ON && DEBUG_KEYS
-		virtual const std::string getDeviceBytes(const USBDevice & device) const = 0;
+		virtual std::string getDeviceBytes(const USBDevice & device) const = 0;
 #endif
 
 };
