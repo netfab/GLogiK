@@ -65,9 +65,9 @@ class G510Base
 		/* return true if any LCD key was pressed */
 		virtual bool checkDevicePressedAnyLCDKey(USBDevice & device);
 		/* return true if any Mx key was pressed */
-		virtual bool checkDevicePressedAnyMxKey(USBDevice & device);
+		virtual bool checkDevicePressedAnyMxKey(const USBDevice & device);
 		/* return true if MR key is enabled */
-		virtual bool isDeviceMRKeyEnabled(USBDevice & device);
+		virtual bool isDeviceMRKeyEnabled(const USBDevice & device);
 
 		virtual KeyStatus processDeviceKeyEvent(USBDevice & device);
 

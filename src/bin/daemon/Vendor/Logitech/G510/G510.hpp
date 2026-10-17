@@ -132,13 +132,13 @@ class LogitechG510
 		}
 
 		/* return true if any Mx key was pressed */
-		bool checkDevicePressedAnyMxKey(USBDevice & device) override
+		bool checkDevicePressedAnyMxKey(const USBDevice & device) override
 		{
 			return G510Base::checkDevicePressedAnyMxKey(device);
 		}
 
 		/* return true if MR key is enabled */
-		bool isDeviceMRKeyEnabled(USBDevice & device) override
+		bool isDeviceMRKeyEnabled(const USBDevice & device) override
 		{
 			return G510Base::isDeviceMRKeyEnabled(device);
 		}

@@ -193,9 +193,9 @@ class KeyboardDriver
 		/* return true if any LCD key was pressed */
 		virtual bool checkDevicePressedAnyLCDKey(USBDevice & device) = 0;
 		/* return true if any Mx key was pressed */
-		virtual bool checkDevicePressedAnyMxKey(USBDevice & device) = 0;
+		virtual bool checkDevicePressedAnyMxKey(const USBDevice & device) = 0;
 		/* return true if MR key is enabled */
-		virtual bool isDeviceMRKeyEnabled(USBDevice & device) = 0;
+		virtual bool isDeviceMRKeyEnabled(const USBDevice & device) = 0;
 
 	protected:
 		virtual void sendUSBDeviceInitialization(USBDevice & device);

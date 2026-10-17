@@ -205,7 +205,7 @@ bool G510Base::checkDevicePressedAnyLCDKey(USBDevice & device)
 }
 
 /* return true if any Mx key was pressed */
-bool G510Base::checkDevicePressedAnyMxKey(USBDevice & device)
+bool G510Base::checkDevicePressedAnyMxKey(const USBDevice & device)
 {
 	// MR and M1,M2,M3 keys are not in the same containers
 	if( device._pressedRKeysMask & toEnumType(detail::RKeys::GK_KEY_MR) )
@@ -217,7 +217,7 @@ bool G510Base::checkDevicePressedAnyMxKey(USBDevice & device)
 }
 
 /* return true if MR key is enabled */
-bool G510Base::isDeviceMRKeyEnabled(USBDevice & device)
+bool G510Base::isDeviceMRKeyEnabled(const USBDevice & device)
 {
 	/* is MR key enabled ? */
 	return ( device._MxKeysLedsMask & toEnumType(GLogiK::Leds::GK_LED_MR) );
