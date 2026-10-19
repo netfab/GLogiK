@@ -21,11 +21,11 @@
 
 #include "config.h"
 
-#include <array>
 #include <chrono>
 #include <string>
 #include <sstream>
 #include <thread>
+#include <utility>
 
 #include <sys/types.h>  // pid_t, ssize_t
 #include <unistd.h>     // chdir, read
@@ -454,9 +454,7 @@ void process::runDelayedCommand(
 	{
 		/* initializing first time point */
 		const steady::time_point lastCall = now - minTime - process::oneSecond;
-		process::lastCalls.insert(
-			std::pair<const std::string, steady::time_point>(binary, lastCall)
-		);
+		process::lastCalls.insert(std::make_pair(binary, lastCall));
 	}
 
 	LOG(info)	<< "sleeping " << delay
