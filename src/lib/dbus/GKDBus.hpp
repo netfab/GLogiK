@@ -21,14 +21,14 @@
 
 #pragma once
 
+#include "config.h"
+
 #include <cstdint>
 
 #include <string>
 #include <mutex>
 
 #include <dbus/dbus.h>
-
-#include "lib/utils/utils.hpp"
 
 #include "GKDBusConnection.hpp"
 #include "GKDBusEvents.hpp"

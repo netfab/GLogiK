@@ -21,15 +21,52 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
 #include <map>
 #include <set>
 #include <sstream>
+#include <string>
+#include <vector>
 
-#include "lib/dbus/GKDBusConnection.hpp"
+#include <dbus/dbus.h> // DBusConnection
+
+// "s" - string
+// "a" - array of
+// "v" - void
+// "b" - bool
+// "y" - byte
+// "t" - uint64_t
+// "m" - M-KeyID
+// "G" - G-KeyID
+// "M" - Macro
+// "B" - Bank (mBank_type)
+// "P" - LCD Plugins Properties
+// "D" - GKDepsMap_type
 
 #include "events/callback.hpp"
+#include "events/GKDBusEvent.hpp"
+
+#include "events/SIGas2v.hpp"    //         array of string to void
+#include "events/SIGb2v.hpp"     //                    bool to void
+#include "events/SIGq2v.hpp"     //                uint16_t to void
+#include "events/SIGs2as.hpp"    //       string to array of string
+#include "events/SIGs2b.hpp"     //                  string to bool
+#include "events/SIGs2D.hpp"     //        string to GKDepsMap_type
+#include "events/SIGs2s.hpp"     //                string to string
+#include "events/SIGs2v.hpp"     //                  string to void
+#include "events/SIGsG2v.hpp"    // one string one G-KeyID to void
+#include "events/SIGsGM2v.hpp"   // one string one G-KeyID one macro to void
+#include "events/SIGsm2v.hpp"    // one string one M-KeyID to void
+#include "events/SIGss2aG.hpp"   //  two strings to array of G-KeyID
+#include "events/SIGss2am.hpp"   //  two strings to array of M-KeyID
+#include "events/SIGss2aP.hpp"   //  two strings to array of LCD Plugins Properties
+#include "events/SIGss2b.hpp"    //             two strings to bool
+#include "events/SIGss2s.hpp"    //           two strings to string
+#include "events/SIGss2v.hpp"    //             two strings to void
+#include "events/SIGssyt2b.hpp"  // two strings one byte one uint64_t to bool
+#include "events/SIGssyyy2b.hpp" // two strings three bytes to bool
+#include "events/SIGv2v.hpp"     //                    void to void
+
+#include "GKDBusConnection.hpp"
 
 namespace GKDBUS::Events
 {

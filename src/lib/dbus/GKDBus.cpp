@@ -19,11 +19,18 @@
  *
  */
 
-#include <new>
-#include <algorithm>
+#include <map>
+#include <stdexcept> // oor
+#include <sstream>
+#include <utility> // std::pair, std::get (used by structured bindings)
 #include <vector>
 
-#include "messages/GKDBusMessage.hpp"
+#include "dbus/dbus-shared.h" // DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER
+
+#include "lib/utils/utils.hpp"
+
+#include "events/GKDBusEvent.hpp"
+
 #include "GKDBus.hpp"
 
 namespace GKDBUS

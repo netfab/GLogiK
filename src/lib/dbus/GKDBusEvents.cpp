@@ -19,14 +19,19 @@
  *
  */
 
-#include <set>
-#include <stdexcept>
-#include <sstream>
-#include <string_view>
+#include "config.h"
+
 #include <functional>
+#include <new> // bad_alloc
+#include <set>
+#include <sstream>
+#include <stdexcept>
+#include <string_view>
+#include <utility> // std::pair, std::get (used by structured bindings)
 
 #include "lib/utils/utils.hpp"
 
+#include "GKDBusConnection.hpp"
 #include "GKDBusEvents.hpp"
 
 namespace GKDBUS::Events
