@@ -165,7 +165,8 @@ config_h.set('SIZEOF_INT', int_size)
 
 #! ----------
 
-inc = include_directories('.', 'src')
+build_inc = include_directories('.')
+inc = include_directories('src')
 
 enable_dbus = get_option('dbus')
 enable_hidapi = get_option('hidapi')

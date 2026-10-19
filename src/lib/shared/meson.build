@@ -33,7 +33,8 @@ deps_versions_array += [
 GKShared_lib = library(
   'GKShared',
   GKShared_sources,
-  include_directories : inc,
+  include_directories : [build_inc, inc],
+  implicit_include_directories: false,
   dependencies : [
     boost_dep,
     boost_serialization_dep,

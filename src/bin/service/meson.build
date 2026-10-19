@@ -45,7 +45,8 @@ deps_versions_array += [
 executable(
   'GLogiKs',
   GLogiKs_sources,
-  include_directories : inc,
+  include_directories : [build_inc, inc],
+  implicit_include_directories: false,
   dependencies : [
     qt_dep,
     thread_dep,

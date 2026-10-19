@@ -23,7 +23,8 @@ GKUtils_sources = [
 GKUtils_lib = library(
   'GKUtils',
   GKUtils_sources,
-  include_directories : inc,
+  include_directories : [build_inc, inc],
+  implicit_include_directories: false,
   dependencies : [
     boost_dep,
     boost_thread_dep,

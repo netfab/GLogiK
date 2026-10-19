@@ -11,7 +11,8 @@ GKsLauncher_sources = [
 executable(
   'GKsLauncher',
   GKsLauncher_sources,
-  include_directories : inc,
+  include_directories : [build_inc, inc],
+  implicit_include_directories: false,
   dependencies : [
     thread_dep,
     boost_dep,

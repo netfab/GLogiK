@@ -30,7 +30,8 @@ GKcQt_sources = [
 executable(
   'GKcQt',
   GKcQt_sources,
-  include_directories : inc,
+  include_directories : [build_inc, inc],
+  implicit_include_directories: false,
   dependencies : [
     qt_dep,
     boost_filesystem_dep,

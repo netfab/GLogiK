@@ -103,7 +103,8 @@ GKDBus_sources = [
 GKDBus_lib = library(
   'GKDBus',
   GKDBus_sources,
-  include_directories : inc,
+  include_directories : [build_inc, inc],
+  implicit_include_directories: false,
   dependencies : [
     dbus_dep,
     GKUtils_lib_dep,

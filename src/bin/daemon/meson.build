@@ -102,7 +102,8 @@ endforeach
 executable(
   'GLogiKd',
   GLogiKd_sources,
-  include_directories : inc,
+  include_directories : [build_inc, inc],
+  implicit_include_directories: false,
   dependencies : [
     thread_dep,
     boost_dep,
