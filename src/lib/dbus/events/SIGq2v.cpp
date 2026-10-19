@@ -19,12 +19,17 @@
  *
  */
 
+#include <string>
+
+#include "lib/dbus/ArgTypes/ArgBase.hpp" // ArgBase
+#include "lib/dbus/ArgTypes/uint16.hpp"  // ArgUInt16
+
 #include "lib/utils/utils.hpp"
 
-#include "lib/dbus/ArgTypes/uint16.hpp"
+#include "GKDBusEvent.hpp" // DBusEventType
+#include "callbackEvent.hpp"
 
 #include "SIGq2v.hpp"
-
 
 namespace GKDBUS::Events
 {

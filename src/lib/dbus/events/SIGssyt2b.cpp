@@ -19,10 +19,17 @@
  *
  */
 
+#include "lib/dbus/ArgTypes/ArgBase.hpp" // ArgBase
+#include "lib/dbus/ArgTypes/string.hpp"  // ArgString
+#include "lib/dbus/ArgTypes/uint64.hpp"  // ArgUInt64
+#include "lib/dbus/ArgTypes/uint8.hpp"   // ArgUInt8
+
 #include "lib/utils/utils.hpp"
 
-#include "SIGssyt2b.hpp"
+#include "GKDBusEvent.hpp" // DBusEventType
+#include "callbackEvent.hpp"
 
+#include "SIGssyt2b.hpp"
 
 namespace GKDBUS::Events
 {

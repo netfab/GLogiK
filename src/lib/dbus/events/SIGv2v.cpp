@@ -21,8 +21,9 @@
 
 #include "lib/utils/utils.hpp"
 
-#include "SIGv2v.hpp"
+#include "callbackEvent.hpp"
 
+#include "SIGv2v.hpp"
 
 namespace GKDBUS::Events
 {

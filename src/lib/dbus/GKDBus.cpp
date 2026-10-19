@@ -31,6 +31,8 @@
 
 #include "events/GKDBusEvent.hpp"
 
+#include "GKDBusConnection.hpp"
+#include "GKDBusEvents.hpp"
 #include "GKDBus.hpp"
 
 namespace GKDBUS

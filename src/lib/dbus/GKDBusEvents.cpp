@@ -31,6 +31,10 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "events/callback.hpp"
+#include "events/GKDBusEvent.hpp"
+#include "events/SIGs2s.hpp"
+
 #include "GKDBusConnection.hpp"
 #include "GKDBusEvents.hpp"
 

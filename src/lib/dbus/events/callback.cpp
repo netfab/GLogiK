@@ -19,7 +19,16 @@
  *
  */
 
+#include "SIGs2s.hpp" // SIGs2s
+
+#include "GKDBusEvent.hpp"   // DBusEventArgument
+#include "callbackEvent.hpp"
 #include "callback.hpp"
+
+namespace GKDBUS
+{
+enum class BusConnection : std::uint8_t;
+}
 
 namespace GKDBUS::Events
 {

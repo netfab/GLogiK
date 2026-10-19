@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include <new>
 #include <string>
 #include <vector>
@@ -32,7 +34,10 @@
 
 #include "SIGs2s.hpp"     // string to string
 
-#include "lib/dbus/GKDBusConnection.hpp"
+namespace GKDBUS
+{
+enum class BusConnection : std::uint8_t;
+}
 
 namespace GKDBUS::Events
 {
