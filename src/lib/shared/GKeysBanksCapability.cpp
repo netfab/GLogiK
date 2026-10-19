@@ -29,7 +29,6 @@
 
 #include "glogik.hpp"
 #include "GKeysBanksCapability.hpp"
-#include "GKeysMacro.hpp"
 
 namespace LIBShared
 {
