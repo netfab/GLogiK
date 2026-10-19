@@ -21,12 +21,15 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include <string>
 #include <vector>
 
 #include <dbus/dbus.h>
 
 #include "include/base.hpp"
+#include "include/DepsMap.hpp"
 #include "include/LCDPP.hpp"
 
 #include "GKDBusMessage.hpp"

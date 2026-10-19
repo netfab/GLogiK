@@ -19,6 +19,8 @@
  *
  */
 
+#include <string>
+
 #include "lib/utils/utils.hpp"
 
 #include "GKDBusMessage.hpp"

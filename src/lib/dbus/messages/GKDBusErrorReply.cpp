@@ -19,10 +19,15 @@
  *
  */
 
+#include "config.h"
+
 #include <new>
 
 #include "lib/utils/utils.hpp"
 
+#include <dbus/dbus-protocol.h> // DBUS_ERROR_FAILED
+
+#include "GKDBusMessage.hpp"
 #include "GKDBusErrorReply.hpp"
 
 namespace GKDBUS::Messages

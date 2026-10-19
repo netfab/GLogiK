@@ -19,10 +19,13 @@
  *
  */
 
-#include <new>
+#include "config.h"
+
+#include <dbus/dbus-protocol.h> // DBUS_MESSAGE_TYPE_ERROR
 
 #include "lib/utils/utils.hpp"
 
+#include "GKDBusMessage.hpp"
 #include "GKDBusAsyncContainer.hpp"
 
 namespace GKDBUS::Messages

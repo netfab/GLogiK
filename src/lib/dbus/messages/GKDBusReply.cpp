@@ -19,10 +19,19 @@
  *
  */
 
+#include "config.h"
+
 #include <new>
+
+#include <dbus/dbus-protocol.h> // DBUS_TYPE_INVALID and friends
+
+#include "lib/dbus/ArgTypes/ArgBase.hpp" // ArgBase
+#include "lib/dbus/ArgTypes/string.hpp"  // ArgString
+#include "lib/dbus/ArgTypes/uint64.hpp"  // ArgUInt64
 
 #include "lib/utils/utils.hpp"
 
+#include "GKDBusMessage.hpp"
 #include "GKDBusReply.hpp"
 
 namespace GKDBUS::Messages

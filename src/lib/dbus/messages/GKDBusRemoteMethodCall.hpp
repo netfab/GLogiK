@@ -27,12 +27,16 @@
 
 #include <dbus/dbus.h>
 
-#include "include/base.hpp"
-#include "include/MBank.hpp"
 #include "lib/dbus/GKDBusConnection.hpp"
 #include "lib/dbus/ArgTypes/string.hpp"
 
 #include "GKDBusMessage.hpp"
+
+namespace GLogiK
+{
+enum class GKeysID : std::uint8_t;
+enum class MKeysID : std::uint8_t;
+}
 
 namespace GKDBUS::Messages
 {

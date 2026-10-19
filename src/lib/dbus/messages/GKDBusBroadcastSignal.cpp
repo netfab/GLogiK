@@ -19,10 +19,13 @@
  *
  */
 
+#include "config.h"
+
 #include <new>
 
 #include "lib/utils/utils.hpp"
 
+#include "GKDBusMessage.hpp"
 #include "GKDBusBroadcastSignal.hpp"
 
 namespace GKDBUS::Messages

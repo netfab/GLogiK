@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include <string>
 
 #include <dbus/dbus.h>

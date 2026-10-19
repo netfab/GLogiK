@@ -19,12 +19,25 @@
  *
  */
 
+#include "config.h"
+
 #include <new>
 #include <sstream>
 
+#include <dbus/dbus-protocol.h> // DBUS_MESSAGE_TYPE_ERROR
+
+#include "lib/dbus/ArgTypes/string.hpp" // ArgString
+
 #include "lib/utils/utils.hpp"
 
+#include "GKDBusMessage.hpp"
 #include "GKDBusRemoteMethodCall.hpp"
+
+namespace GLogiK
+{
+enum class GKeysID : std::uint8_t;
+enum class MKeysID : std::uint8_t;
+}
 
 namespace GKDBUS::Messages
 {
