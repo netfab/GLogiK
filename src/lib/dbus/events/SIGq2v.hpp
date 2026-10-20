@@ -29,8 +29,8 @@
 
 #include "callbackEvent.hpp"
 
-
-typedef std::function<void(std::uint16_t)> SIGq2v; /* std::uint16_t to void */
+/* std::uint16_t to void */
+using SIGq2v = std::function<void(std::uint16_t)>;
 
 namespace GKDBUS::Events
 {

@@ -28,9 +28,8 @@
 
 #include "callbackEvent.hpp"
 
-
 /* two strings to void */
-typedef std::function<void(const std::string &, const std::string &)> SIGss2v;
+using SIGss2v = std::function<void(const std::string &, const std::string &)>;
 
 namespace GKDBUS::Events
 {

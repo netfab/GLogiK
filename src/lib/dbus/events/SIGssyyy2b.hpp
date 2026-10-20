@@ -30,17 +30,10 @@
 
 #include "callbackEvent.hpp"
 
-
 /* two strings three bytes to bool */
-typedef std::function<
-			bool(
-				const std::string &,
-				const std::string &,
-				std::uint8_t,
-				std::uint8_t,
-				std::uint8_t
-			) > SIGssyyy2b;
-
+using SIGssyyy2b = std::function<
+		bool(const std::string &, const std::string &, std::uint8_t, std::uint8_t, std::uint8_t)
+	>;
 
 namespace GKDBUS::Events
 {

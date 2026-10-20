@@ -29,9 +29,8 @@
 
 #include "callbackEvent.hpp"
 
-
 /* array of string to void */
-typedef std::function<void(const std::vector<std::string> &)> SIGas2v;
+using SIGas2v = std::function<void(const std::vector<std::string> &)>;
 
 namespace GKDBUS::Events
 {

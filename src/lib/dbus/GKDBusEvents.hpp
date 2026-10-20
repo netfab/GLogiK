@@ -96,10 +96,14 @@ class GKDBusEvents
 	private:
 		using BusConnection = GKDBUS::BusConnection;
 
-		typedef std::map<BusConnection,
-					std::map<std::string, /* object path */
-						std::map<std::string, /* interface */
-							std::vector<DBusEvent*> > > > DBusEventsContainer;
+		using DBusEventsContainer =
+			std::map<BusConnection,
+				std::map<std::string, /* object path */
+					std::map<std::string, /* interface */
+						std::vector<DBusEvent*>
+					>
+				>
+			>;
 
 	public:
 		void declareIntrospectableSignal(

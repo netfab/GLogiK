@@ -28,8 +28,8 @@
 
 #include "callbackEvent.hpp"
 
-
-typedef std::function<bool(const std::string &)> SIGs2b; /* string to bool */
+/* string to bool */
+using SIGs2b = std::function<bool(const std::string &)>;
 
 namespace GKDBUS::Events
 {

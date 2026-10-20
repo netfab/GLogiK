@@ -30,9 +30,8 @@
 
 #include "callbackEvent.hpp"
 
-
 /* string to GKDepsMap_type */
-typedef std::function<GLogiK::GKDepsMap_type(const std::string &)> SIGs2D;
+using SIGs2D = std::function<GLogiK::GKDepsMap_type(const std::string &)>;
 
 namespace GKDBUS::Events
 {

@@ -30,14 +30,8 @@
 
 #include "callbackEvent.hpp"
 
-
 /* two strings to array of LCD Plugins Properties */
-typedef std::function<
-	GLogiK::LCDPPArray_type (
-		const std::string &,
-		const std::string &
-	) > SIGss2aP;
-
+using SIGss2aP = std::function<GLogiK::LCDPPArray_type(const std::string &, const std::string &)>;
 
 namespace GKDBUS::Events
 {

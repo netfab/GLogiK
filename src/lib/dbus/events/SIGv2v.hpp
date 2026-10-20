@@ -27,8 +27,8 @@
 
 #include "callbackEvent.hpp"
 
-
-typedef std::function<void()> SIGv2v; /* void to void */
+/* void to void */
+using SIGv2v = std::function<void()>;
 
 namespace GKDBUS::Events
 {

@@ -30,15 +30,10 @@
 
 #include "callbackEvent.hpp"
 
-
 /* one string one GKeyID one macro to void */
-typedef std::function<
-			void(
-				const std::string &,
-				GLogiK::GKeysID,
-				const GLogiK::macro_type &
-			) > SIGsGM2v;
-
+using SIGsGM2v = std::function<
+		void(const std::string &, GLogiK::GKeysID, const GLogiK::macro_type &)
+	>;
 
 namespace GKDBUS::Events
 {

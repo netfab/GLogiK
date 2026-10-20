@@ -30,14 +30,8 @@
 
 #include "callbackEvent.hpp"
 
-
 /* one string one GKeyID to void */
-typedef std::function<
-			void(
-				const std::string &,
-				GLogiK::GKeysID
-			) > SIGsG2v;
-
+using SIGsG2v = std::function<void(const std::string &, GLogiK::GKeysID)>;
 
 namespace GKDBUS::Events
 {

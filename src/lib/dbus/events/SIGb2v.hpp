@@ -28,7 +28,8 @@
 #include "callbackEvent.hpp"
 
 
-typedef std::function<void(bool)> SIGb2v; /* bool to void */
+/* bool to void */
+using SIGb2v = std::function<void(bool)>;
 
 namespace GKDBUS::Events
 {

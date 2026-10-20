@@ -29,10 +29,8 @@
 
 #include "callbackEvent.hpp"
 
-
 /* string to array of string */
-typedef std::function<std::vector<std::string>(const std::string &) > SIGs2as;
-
+using SIGs2as = std::function<std::vector<std::string>(const std::string &)>;
 
 namespace GKDBUS::Events
 {

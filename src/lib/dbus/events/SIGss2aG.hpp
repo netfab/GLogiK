@@ -30,14 +30,8 @@
 
 #include "callbackEvent.hpp"
 
-
 /* two strings to array of G-KeysID */
-typedef std::function<
-	GLogiK::GKeysIDArray_type(
-		const std::string &,
-		const std::string &
-	) > SIGss2aG;
-
+using SIGss2aG = std::function<GLogiK::GKeysIDArray_type(const std::string &, const std::string &)>;
 
 namespace GKDBUS::Events
 {
