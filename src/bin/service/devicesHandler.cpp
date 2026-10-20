@@ -106,13 +106,11 @@ DevicesFilesMap_type DevicesHandler::getDevicesFilesMap()
 {
 	DevicesFilesMap_type ret;
 
-	using p = std::pair<std::string, const std::string>;
-
 	//  const auto & [std::string, DeviceProperties]
 	for(const auto & [devID, device] : _startedDevices)
-		ret.insert( p{devID, device.getConfigFilePath()} );
+		ret.insert(std::make_pair(devID, device.getConfigFilePath()));
 	for(const auto & [devID, device] : _stoppedDevices)
-		ret.insert( p{devID, device.getConfigFilePath()} );
+		ret.insert(std::make_pair(devID, device.getConfigFilePath()));
 
 	return ret;
 }
