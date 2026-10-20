@@ -24,11 +24,11 @@
 #include <string>
 #include <vector>
 
-#include "TypeBase.hpp"
 #include "ArgBase.hpp"
+#include "TypeBase.hpp"
 
-#include "uint64.hpp"
 #include "string.hpp"
+#include "uint64.hpp"
 
 namespace GKDBUS::Types
 {

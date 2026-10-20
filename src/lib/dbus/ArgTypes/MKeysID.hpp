@@ -22,7 +22,6 @@
 #pragma once
 
 #include "TypeBase.hpp"
-#include "ArgBase.hpp"
 #include "uint8.hpp"
 
 #include "include/base.hpp"

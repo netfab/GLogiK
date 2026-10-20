@@ -19,13 +19,23 @@
  *
  */
 
-#include <stdexcept>
-#include <new>
-#include <string>
+#include "config.h"
 
+#include <cstdint>
+
+#include <new>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+#include <dbus/dbus-protocol.h> // DBUS_TYPE_* friends
 #include <dbus/dbus.h>
 
 #include "lib/utils/utils.hpp"
+
+#include "MKeysID.hpp"  // ArgMKeysID
+#include "TypeBase.hpp" // TypeBase
+#include "uint8.hpp"    // for ArgUInt8
 
 #include "MKeysIDArray.hpp"
 

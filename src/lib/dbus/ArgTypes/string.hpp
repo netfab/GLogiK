@@ -22,12 +22,11 @@
 #pragma once
 
 #include <string>
-#include <vector>
 
 #include <dbus/dbus.h>
 
-#include "TypeBase.hpp"
 #include "ArgBase.hpp"
+#include "TypeBase.hpp"
 #include "uint64.hpp"
 
 namespace GKDBUS::Types

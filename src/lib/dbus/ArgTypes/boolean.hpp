@@ -21,8 +21,8 @@
 
 #pragma once
 
-#include "TypeBase.hpp"
 #include "ArgBase.hpp"
+#include "TypeBase.hpp"
 
 namespace GKDBUS::Types
 {

@@ -19,7 +19,13 @@
  *
  */
 
+#include <cstdint>
+
+#include <string>
+
 #include "lib/utils/utils.hpp"
+
+#include "uint8.hpp" // ArgUInt8
 
 #include "MKeysID.hpp"
 

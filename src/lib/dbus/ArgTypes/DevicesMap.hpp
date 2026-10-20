@@ -21,6 +21,9 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include "ArgBase.hpp"
 #include "stringArray.hpp"
 

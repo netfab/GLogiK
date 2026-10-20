@@ -23,11 +23,11 @@
 
 #include <dbus/dbus.h>
 
-#include "TypeBase.hpp"
 #include "ArgBase.hpp"
-#include "uint8.hpp"
-#include "uint64.hpp"
+#include "TypeBase.hpp"
 #include "string.hpp"
+#include "uint64.hpp"
+#include "uint8.hpp"
 
 #include "include/DepsMap.hpp"
 
@@ -36,9 +36,9 @@ namespace GKDBUS::Types
 
 class TypeGKDepsMap
 	:	virtual private TypeBase,
-		virtual private TypeUInt8,
+		virtual private TypeString,
 		virtual private TypeUInt64,
-		virtual private TypeString
+		virtual private TypeUInt8
 {
 	public:
 		void appendGKDepsMap(const GLogiK::GKDepsMap_type & depsMap);

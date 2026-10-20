@@ -23,11 +23,11 @@
 
 #include <dbus/dbus.h>
 
-#include "TypeBase.hpp"
 #include "ArgBase.hpp"
+#include "TypeBase.hpp"
 
-#include "uint64.hpp"
 #include "string.hpp"
+#include "uint64.hpp"
 
 #include "include/LCDPP.hpp"
 
@@ -36,8 +36,8 @@ namespace GKDBUS::Types
 
 class TypeLCDPPArray
 	:	virtual private TypeBase,
-		virtual private TypeUInt64,
-		virtual private TypeString
+		virtual private TypeString,
+		virtual private TypeUInt64
 {
 	public:
 		void appendLCDPPArray(const GLogiK::LCDPPArray_type & pluginsArray);

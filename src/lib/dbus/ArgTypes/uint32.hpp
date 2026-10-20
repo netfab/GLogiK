@@ -23,8 +23,6 @@
 
 #include <cstdint>
 
-#include <dbus/dbus.h>
-
 #include "TypeBase.hpp"
 
 namespace GKDBUS::Types

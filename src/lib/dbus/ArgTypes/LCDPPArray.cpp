@@ -19,11 +19,23 @@
  *
  */
 
-#include <stdexcept>
+#include "config.h"
+
+#include <cstdint>
+
 #include <new>
+#include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "lib/utils/utils.hpp"
+
+#include <dbus/dbus-protocol.h> // DBUS_TYPE_* friends
+#include <dbus/dbus.h>
+
+#include "TypeBase.hpp" // TypeBase
+#include "string.hpp"   // ArgString
+#include "uint64.hpp"   // ArgUInt64
 
 #include "LCDPPArray.hpp"
 

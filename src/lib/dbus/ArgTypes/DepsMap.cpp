@@ -19,7 +19,21 @@
  *
  */
 
+#include <cstdint>
+
+#include <string>
+#include <utility>
+#include <vector>
+
+#include <dbus/dbus-protocol.h> // DBUS_TYPE_* friends
+#include <dbus/dbus.h>
+
 #include "lib/utils/utils.hpp"
+
+#include "TypeBase.hpp" // TypeBase
+#include "string.hpp"   // ArgString
+#include "uint64.hpp"   // ArgUInt64
+#include "uint8.hpp"    // ArgUInt8
 
 #include "DepsMap.hpp"
 

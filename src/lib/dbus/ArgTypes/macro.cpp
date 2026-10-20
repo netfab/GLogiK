@@ -19,11 +19,21 @@
  *
  */
 
+#include "config.h"
+
 #include <cstdint>
 
+#include <string>
+#include <vector>
+
+#include <dbus/dbus-protocol.h> // DBUS_TYPE_* friends
 #include <dbus/dbus.h>
 
 #include "lib/utils/utils.hpp"
+
+#include "TypeBase.hpp" // TypeBase
+#include "uint16.hpp"   // ArgUInt16
+#include "uint8.hpp"    // ArgUInt8
 
 #include "macro.hpp"
 

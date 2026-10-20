@@ -25,19 +25,19 @@
 
 #include <dbus/dbus.h>
 
-#include "TypeBase.hpp"
 #include "ArgBase.hpp"
+#include "TypeBase.hpp"
 
-#include "uint8.hpp"
 #include "uint16.hpp"
+#include "uint8.hpp"
 
 namespace GKDBUS::Types
 {
 
 class TypeMacro
 	:	virtual private TypeBase,
-		virtual private TypeUInt8,
-		virtual private TypeUInt16
+		virtual private TypeUInt16,
+		virtual private TypeUInt8
 {
 	public:
 		void appendMacro(const GLogiK::macro_type & macro);

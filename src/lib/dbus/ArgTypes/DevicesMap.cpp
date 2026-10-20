@@ -23,6 +23,8 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "stringArray.hpp" // ArgStringArray
+
 #include "DevicesMap.hpp"
 
 namespace GKDBUS::Types

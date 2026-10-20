@@ -25,8 +25,8 @@
 
 #include <dbus/dbus.h>
 
-#include "TypeBase.hpp"
 #include "ArgBase.hpp"
+#include "TypeBase.hpp"
 
 namespace GKDBUS::Types
 {

@@ -19,9 +19,17 @@
  *
  */
 
+#include "config.h"
+
+#include <string>
+#include <vector>
+
+#include <dbus/dbus-protocol.h> // DBUS_TYPE_* friends
 #include <dbus/dbus.h>
 
 #include "lib/utils/utils.hpp"
+
+#include "ArgBase.hpp"  // ArgBase
 
 #include "uint64.hpp"
 
