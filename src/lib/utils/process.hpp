@@ -43,7 +43,8 @@ namespace NSGKUtils
 
 class process
 {
-	typedef void (*__signal_handler_t) (int);
+	private:
+		using __signal_handler_t = void (*)(int);
 
 	public:
 		enum class mask : std::uint8_t

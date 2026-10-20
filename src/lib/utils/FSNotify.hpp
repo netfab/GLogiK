@@ -25,12 +25,12 @@
 #error "Only "utils/utils.hpp" can be included directly, this file may disappear or change contents."
 #endif
 
-#include <cstdint> // std::uint32_t
+#include <cstdint>
 
 #include <map>
 #include <string>
 
-typedef std::map<std::string, const std::string> DevicesFilesMap_type;
+using DevicesFilesMap_type = std::map<std::string, const std::string>;
 
 namespace NSGKUtils
 {
