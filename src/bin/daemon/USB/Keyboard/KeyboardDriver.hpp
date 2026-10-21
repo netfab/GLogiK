@@ -127,7 +127,7 @@ class KeyboardDriver
 		/* USB::API */
 		virtual int performUSBDeviceKeysInterruptTransfer(
 			USBDevice & device,
-			unsigned int timeout
+			int timeout
 		) = 0;
 		virtual int performUSBDeviceLCDScreenInterruptTransfer(
 			USBDevice & device,

@@ -50,7 +50,7 @@ class USBKeyboardDriver
 		/* API */
 		int performUSBDeviceKeysInterruptTransfer(
 			USBDevice & device,
-			unsigned int timeout
+			int timeout
 		) override {
 			return API::performUSBDeviceKeysInterruptTransfer(device, timeout);
 		}

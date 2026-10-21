@@ -55,7 +55,7 @@ class libusb
 
 		int performUSBDeviceKeysInterruptTransfer(
 			USBDevice & device,
-			unsigned int timeout
+			int timeout
 		);
 
 		int performUSBDeviceLCDScreenInterruptTransfer(

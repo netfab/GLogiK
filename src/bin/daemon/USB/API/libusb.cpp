@@ -158,7 +158,7 @@ void libusb::sendUSBDeviceFeatureReport(
 
 int libusb::performUSBDeviceKeysInterruptTransfer(
 	USBDevice & device,
-	const unsigned int timeout)
+	const int timeout)
 {
 	GK_LOG_FUNC
 
@@ -179,7 +179,7 @@ int libusb::performUSBDeviceKeysInterruptTransfer(
 			static_cast<unsigned char*>(device._pressedKeys),
 			device.getKeysInterruptBufferMaxLength(),
 			&(device._lastKeysInterruptTransferLength),
-			timeout
+			static_cast<unsigned int>(timeout)
 		);
 	}
 

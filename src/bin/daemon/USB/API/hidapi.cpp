@@ -96,7 +96,7 @@ void hidapi::openUSBDevice(USBDevice & device)
 
 			os << toUInt(device.getBus()) << "-" << toUInt(port_numbers[0]);
 
-			for(int i = 1; i < num; i++)
+			for(unsigned int i = 1; i < static_cast<unsigned int>(num); i++)
 			{
 				os << "." << toUInt(port_numbers[i]);
 			}
@@ -205,7 +205,7 @@ void hidapi::sendUSBDeviceFeatureReport(
 
 int hidapi::performUSBDeviceKeysInterruptTransfer(
 	USBDevice & device,
-	const unsigned int timeout)
+	const int timeout)
 {
 	GK_LOG_FUNC
 
@@ -220,7 +220,7 @@ int hidapi::performUSBDeviceKeysInterruptTransfer(
 	int ret = hid_read_timeout(
 		device._pHIDDevice,
 		static_cast<unsigned char*>(device._pressedKeys),
-		device.getKeysInterruptBufferMaxLength(),
+		static_cast<std::size_t>(device.getKeysInterruptBufferMaxLength()),
 		timeout
 	);
 
