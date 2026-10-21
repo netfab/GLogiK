@@ -24,6 +24,7 @@
 #include <cstdint>
 
 #include <algorithm>
+#include <type_traits>
 
 #include <dbus/dbus-protocol.h> // DBUS_TYPE_* friends
 #include <dbus/dbus.h>
@@ -97,7 +98,8 @@ std::vector<std::string> ArgStringArray::getNextStringArray()
 			throw GLogiKExcept("wrong string array size");
 		}
 
-		ret.assign(x.end() - size, x.end());
+		using difference_type = std::remove_reference_t<decltype(x)>::difference_type;
+		ret.assign(x.end() -  static_cast<difference_type>(size), x.end());
 		x.resize(x.size() - size);
 
 		if( ! ret.empty() )
