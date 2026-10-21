@@ -139,7 +139,7 @@ void PBMFile::extractPBMData(
 {
 	GK_LOG_FUNC
 
-	pbm.read(reinterpret_cast<char*>(&PBMData.front()), PBMData.size());
+	pbm.read(reinterpret_cast<char*>(PBMData.data()), static_cast<std::streamsize>(PBMData.size()));
 
 	GKLog4(trace, "extracted bytes : ", pbm.gcount(), "expected : ", PBMData.size())
 
