@@ -167,7 +167,7 @@ void PBMFont::printCharacterOnFrame(
 		throw GLogiKExcept( warn.str() );
 	}
 
-	std::uint16_t index = 0;
+	std::size_t index = 0;
 
 	const std::uint16_t xByte = PBMXPos / 8;
 	const std::uint16_t xModulo = PBMXPos % 8;
@@ -193,8 +193,8 @@ void PBMFont::printCharacterOnFrame(
 			for(std::uint16_t j = 0; j < _charBytes; j++)
 			{
 				const unsigned char c = this->getCharacterLine(i, j);
-				unsigned int t = (PBM::default_width_in_bytes * (PBMYPos+i)) + xByte + j;
-				index = static_cast<std::uint16_t>(t);
+				index = static_cast<std::size_t>(PBM::default_width_in_bytes) *
+						static_cast<std::size_t>(PBMYPos+i) + xByte + j;
 
 				frame.at(index) &= (0b11111111 << xModuloComp8);
 				if(rightShift > 0)
