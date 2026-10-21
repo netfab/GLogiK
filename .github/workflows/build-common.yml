@@ -38,6 +38,7 @@ jobs:
         -D_FORTIFY_SOURCE=2
         -Wformat=2
         -Wfatal-errors
+        -Wconversion
 
     steps:
 
