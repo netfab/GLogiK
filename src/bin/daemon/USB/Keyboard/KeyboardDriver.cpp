@@ -267,8 +267,6 @@ void KeyboardDriver::fillDeviceStandardKeysEvents(USBDevice & device)
 {
 	GK_LOG_FUNC
 
-	unsigned int i = 0;
-
 	std::uint16_t interval = this->getDeviceTimeLapse(device);
 
 	const std::uint8_t num = this->handleDeviceModifierKeys(device, interval);
@@ -289,7 +287,7 @@ void KeyboardDriver::fillDeviceStandardKeysEvents(USBDevice & device)
 	}
 #endif
 
-	for(i = device.getKeysInterruptBufferMaxLength()-1; i >= 2; --i)
+	for(int i = device.getKeysInterruptBufferMaxLength()-1; i >= 2; --i)
 	{
 #if DEBUGGING_ON
 		if(GKLogging::GKDebug)
