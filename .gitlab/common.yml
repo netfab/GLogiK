@@ -1,5 +1,5 @@
 
-image: ghcr.io/netfab/debian-unstable-build:2026-09-v2
+image: ghcr.io/netfab/debian-testing-slim-forky:2026-10-v1
 
 stages:
   - build
@@ -12,8 +12,8 @@ stages:
   # automatically exported in environment
   parallel:
     matrix:
-      - CC: gcc-15
-        CXX: g++-15
+      - CC: gcc-16
+        CXX: g++-16
       - CC: clang
         CXX: clang++
 

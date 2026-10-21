@@ -19,13 +19,13 @@ jobs:
     strategy:
       matrix:
         compiler:
-          - cc: gcc-15
-            cxx: g++-15
+          - cc: gcc-16
+            cxx: g++-16
           - cc: clang
             cxx: clang++
 
     container:
-      image: ghcr.io/netfab/debian-unstable-build:2026-09-v2
+      image: ghcr.io/netfab/debian-testing-slim-forky:2026-10-v1
 
     env:
       BUILD_DIR: ${{ inputs.build_dir }}
