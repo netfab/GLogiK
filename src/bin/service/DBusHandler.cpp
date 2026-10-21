@@ -491,7 +491,7 @@ void DBusHandler::setCurrentSessionObjectPath(const pid_t pid)
 				LIBShared::LOGIND_MANAGER_DBUS_INTERFACE,
 				"GetSessionByPID"
 			);
-			_pDBus->appendUInt32ToRemoteMethodCall(pid);
+			_pDBus->appendUInt32ToRemoteMethodCall(static_cast<std::uint32_t>(pid));
 			_pDBus->sendRemoteMethodCall();
 
 			try
