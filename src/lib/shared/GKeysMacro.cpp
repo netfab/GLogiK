@@ -123,11 +123,13 @@ void GKeysMacro::fixMacroReleaseEvents(
 
 		std::reverse(releasedEvents.begin(), releasedEvents.end());
 
+		using difference_type = macro_type::difference_type;
+
 		for(const auto & redundant : releasedEvents)
 		{
 			GKLog2(trace, "erasing redundant release event at index : ", redundant.index)
 
-			auto it = std::next(macro.begin(), redundant.index);
+			auto it = std::next(macro.begin(), static_cast<difference_type>(redundant.index));
 			macro.erase(it);
 		}
 	}
@@ -172,9 +174,11 @@ void GKeysMacro::fixMacroSize(
 
 	GKLog2(trace, "indexes size : ", indexes.size())
 
+	using difference_type = macro_type::difference_type;
+
 	while( (indexes.size() > 1) and (macro.size() >= MACRO_T_MAX_SIZE) )
 	{
-		auto & index = indexes.back();
+		auto index = static_cast<difference_type>(indexes.back());
 
 		GKLog2(trace, "erasing index : ", index)
 
@@ -182,7 +186,7 @@ void GKeysMacro::fixMacroSize(
 		macro.erase(it);
 		indexes.pop_back();
 
-		index = indexes.back();
+		index = static_cast<difference_type>(indexes.back());
 
 		GKLog2(trace, "erasing index : ", index)
 
