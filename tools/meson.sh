@@ -183,7 +183,7 @@ function configure_action() {
 	printf "${BLDRED}CONFIGURING WITH MESON${TXTRST}\n"
 	local CPPARGS="-pipe -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -Wformat=2 -Wfatal-errors -Wall"
 	if [[ ${Wconversion} -eq 1 ]]; then
-		CPPARGS+=" -Wconversion"
+		CPPARGS+=" -Wconversion -Wsign-conversion"
 	fi
 	# https://mesonbuild.com/Builtin-options.html#build-type-options
 	local mesonconfigure=(
