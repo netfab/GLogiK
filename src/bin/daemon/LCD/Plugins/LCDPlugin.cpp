@@ -318,7 +318,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 
 		// lambda
 		auto draw_progress_bar_line = [&frame, &percent]
-			(const std::size_t index, const int line) -> void
+			(const std::size_t index, const unsigned int line) -> void
 		{
 			const unsigned char B10 = 0b10101010;
 			const unsigned char B01 = 0b01010101;
@@ -351,7 +351,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 			}
 #endif
 
-			for(int i = 0; i < 12; ++i)
+			for(unsigned int i = 0; i < 12; ++i)
 			{
 				if((i == 0) and (percent < 8))
 					frame[index+i] = get_shifted_byte(cByte);
@@ -370,7 +370,8 @@ void LCDPlugin::drawProgressBarOnFrame(
 		};
 
 		const std::uint16_t xByte = PBMXPos / 8;
-		const std::size_t index = (PBM::default_width_in_bytes * PBMYPos) + xByte;
+		const std::size_t index =
+			static_cast<std::size_t>(PBM::default_width_in_bytes) * PBMYPos + xByte;
 
 		/* checking for out of range before progress bar drawing */
 		[[maybe_unused]] const auto & pos = frame.at(index+12);
@@ -385,7 +386,7 @@ void LCDPlugin::drawProgressBarOnFrame(
 		 *	------------- one horizontal line
 		 */
 		draw_horizontal_line(index);
-		for(int i = 1; i < (PROGRESS_BAR_HEIGHT-1); ++i)
+		for(unsigned int i = 1; i < (PROGRESS_BAR_HEIGHT-1); ++i)
 			draw_progress_bar_line(index + (PBM::default_width_in_bytes * i), i);
 		draw_horizontal_line(index + (PBM::default_width_in_bytes * (PROGRESS_BAR_HEIGHT-1)));
 	}
@@ -401,7 +402,8 @@ void LCDPlugin::drawPadlockOnFrame(
 	const std::uint16_t PBMYPos)
 {
 	const std::uint16_t xByte = PBMXPos / 8;
-	const std::size_t index = (PBM::default_width_in_bytes * PBMYPos) + xByte;
+	const std::size_t index =
+		static_cast<std::size_t>(PBM::default_width_in_bytes) * PBMYPos + xByte;
 
 	PixelsData & frame = (*_itCurrentFrame)._PBMData;
 
@@ -448,7 +450,8 @@ void LCDPlugin::drawVerticalLineOnFrame(
 		PixelsData & frame = (*_itCurrentFrame)._PBMData;
 
 		const std::uint16_t xByte = PBMXPos / 8;
-		const std::size_t index = (PBM::default_width_in_bytes * PBMYPos) + xByte;
+		const std::size_t index =
+			static_cast<std::size_t>(PBM::default_width_in_bytes) * PBMYPos + xByte;
 
 		for(std::uint16_t i = 1; i < size; ++i)
 			frame[index + (PBM::default_width_in_bytes * i)] |= 0b00100000;
