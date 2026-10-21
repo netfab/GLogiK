@@ -6,6 +6,14 @@ stages:
 
 # --
 
+variables:
+  CPP_ARGS: >-
+    -pipe
+    -U_FORTIFY_SOURCE
+    -D_FORTIFY_SOURCE=2
+    -Wformat=2
+    -Wfatal-errors
+
 .build_common:
   stage: build
 
@@ -26,7 +34,7 @@ stages:
     - >
       meson setup ${BUILD_DIR}-${CXX}
       -Doptimization=2
-      -Dcpp_args="-pipe -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -Wformat=2 -Wfatal-errors"
+      -Dcpp_args="${CPP_ARGS}"
       -Dwerror=true
       -Db_asneeded=true
       -Drelative_udev_rules_dir=true
