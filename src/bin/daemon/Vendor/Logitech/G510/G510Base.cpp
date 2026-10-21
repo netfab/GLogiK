@@ -515,6 +515,13 @@ bool G510Base::updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR)
 	else if( device._pressedRKeysMask & toEnumType(detail::RKeys::GK_KEY_M3) )
 		update_MxKey_mask(Leds::GK_LED_M3, MKeysID::MKEY_M3);
 
+	// lambda
+	auto clear_bit_mask = [] (Leds key) -> std::uint8_t
+	{
+		// std::uint8_t --> type of « mask » reference
+		return static_cast<std::uint8_t>( ~(toEnumType(key)) );
+	};
+
 	/* MR key was pressed */
 	if( device._pressedRKeysMask & toEnumType(detail::RKeys::GK_KEY_MR) )
 	{
@@ -524,13 +531,13 @@ bool G510Base::updateDeviceMxKeysLedsMask(USBDevice & device, bool disableMR)
 		}
 		else
 		{ /* MR was on, disable it */
-			mask &= ~(toEnumType(Leds::GK_LED_MR));
+			mask &= clear_bit_mask(Leds::GK_LED_MR);
 		}
 		mask_updated = true;
 	}
 	else if(disableMR)
 	{ /* force disable MR */
-		mask &= ~(toEnumType(Leds::GK_LED_MR));
+		mask &= clear_bit_mask(Leds::GK_LED_MR);
 		mask_updated = true;
 	}
 
