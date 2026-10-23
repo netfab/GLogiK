@@ -63,7 +63,6 @@ declare fullclean=0
 declare install=0
 declare stripbuild=0
 declare ccache=1
-declare Wconversion=0
 declare parallel_builds=1
 
 declare options=''
@@ -116,9 +115,6 @@ while [[ "${#}" -gt 0 ]]; do
 		;;
 		-s|--strip)
 			stripbuild=1
-		;;
-		-W|--enable-Wconversion)
-			Wconversion=1
 		;;
 		--enable-*)
 			add_meson_option "${1}" 'true'
@@ -182,9 +178,7 @@ function clean_action() {
 function configure_action() {
 	printf "${BLDRED}CONFIGURING WITH MESON${TXTRST}\n"
 	local CPPARGS="-pipe -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -Wformat=2 -Wfatal-errors -Wall"
-	if [[ ${Wconversion} -eq 1 ]]; then
-		CPPARGS+=" -Wconversion -Wsign-conversion"
-	fi
+	CPPARGS+=" -Wconversion -Wsign-conversion"
 	# https://mesonbuild.com/Builtin-options.html#build-type-options
 	local mesonconfigure=(
 		meson setup
