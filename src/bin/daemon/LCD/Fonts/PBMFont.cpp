@@ -199,7 +199,7 @@ void PBMFont::printCharacterOnFrame(
 				frame.at(index) &= (0b11111111 << xModuloComp8);
 				if(rightShift > 0)
 				{
-					frame.at(index+1) = (c << (8 - rightShift));
+					frame.at(index+1) = static_cast<unsigned char>(c << (8 - rightShift));
 					frame[index] |= (c >> rightShift);
 				}
 				else
@@ -285,15 +285,17 @@ unsigned char PBMFont::getCharacterLine(
 					}
 				case 1 :
 					{
-						const unsigned int value =
-							( (_PBMData.at(i+1) >> 4) | ((_PBMData[i] & 0b00000011) << 4) );
+						const unsigned int value = static_cast<unsigned int>(
+							(_PBMData.at(i+1) >> 4) |
+							((_PBMData[i] & 0b00000011) << 4) );
 						c = static_cast<unsigned char>(value);
 						break;
 					}
 				case 2 :
 					{
-						const unsigned int value =
-							( (_PBMData.at(i+1) >> 6) | ((_PBMData[i] & 0b00001111) << 2) );
+						const unsigned int value = static_cast<unsigned int>(
+							(_PBMData.at(i+1) >> 6) |
+							((_PBMData[i] & 0b00001111) << 2) );
 						c = static_cast<unsigned char>(value);
 						break;
 					}
@@ -317,8 +319,9 @@ unsigned char PBMFont::getCharacterLine(
 					}
 				case 1:
 					{
-						const unsigned int value =
-							( (_PBMData.at(i+1) >> 6) | ((_PBMData[i] & 0b00000111) << 2) );
+						const unsigned int value = static_cast<unsigned int>(
+							(_PBMData.at(i+1) >> 6) |
+							((_PBMData[i] & 0b00000111) << 2) );
 						c = static_cast<unsigned char>(value);
 						break;
 					}
@@ -330,15 +333,17 @@ unsigned char PBMFont::getCharacterLine(
 					}
 				case 3:
 					{
-						const unsigned int value =
-							( (_PBMData.at(i+1) >> 4) | ((_PBMData[i] & 0b00000001) << 4) );
+						const unsigned int value = static_cast<unsigned int>(
+							(_PBMData.at(i+1) >> 4) |
+							((_PBMData[i] & 0b00000001) << 4) );
 						c = static_cast<unsigned char>(value);
 						break;
 					}
 				case 4:
 					{
-						const unsigned int value =
-							( (_PBMData.at(i+1) >> 7) | ((_PBMData[i] & 0b00001111) << 1) );
+						const unsigned int value = static_cast<unsigned int>(
+							(_PBMData.at(i+1) >> 7) |
+							((_PBMData[i] & 0b00001111) << 1) );
 						c = static_cast<unsigned char>(value);
 						break;
 					}
@@ -350,8 +355,9 @@ unsigned char PBMFont::getCharacterLine(
 					}
 				case 6:
 					{
-						const unsigned int value =
-							( (_PBMData.at(i+1) >> 5) | ((_PBMData[i] & 0b00000011) << 3) );
+						const unsigned int value = static_cast<unsigned int>(
+							(_PBMData.at(i+1) >> 5) |
+							((_PBMData[i] & 0b00000011) << 3) );
 						c = static_cast<unsigned char>(value);
 						break;
 					}
