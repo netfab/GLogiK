@@ -68,12 +68,12 @@ void KeyboardDriver::setDBus(GKDBUS::GKDBus* pDBus)
 #if DEBUGGING_ON && DEBUG_KEYS
 std::string KeyboardDriver::getDeviceBytes(const USBDevice & device) const
 {
-	const unsigned int last_length = toUInt(device.getLastKeysInterruptTransferLength());
+	const int last_length = device.getLastKeysInterruptTransferLength();
 	if( last_length == 0 )
 		return "";
 	std::ostringstream s;
 	s << std::hex << toUInt(device._pressedKeys[0]);
-	for(unsigned int x = 1; x < last_length; x++)
+	for(int x = 1; x < last_length; x++)
 		s << ", " << std::hex << toUInt(device._pressedKeys[x]);
 	return s.str();
 }
