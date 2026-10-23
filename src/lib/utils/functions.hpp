@@ -38,6 +38,11 @@ std::wstring toWString(const wchar_t* s);
 
 std::string getErrnoString(int errnum);
 
+constexpr int toInt(std::int8_t c) noexcept
+{
+	return static_cast<int>(c);
+}
+
 constexpr int toInt(std::uint8_t c) noexcept
 {
 	return static_cast<int>(c);
