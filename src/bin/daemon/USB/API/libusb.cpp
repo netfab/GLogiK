@@ -129,7 +129,9 @@ void libusb::sendUSBDeviceFeatureReport(
 		std::lock_guard<std::mutex> lock(device._libUSBMutex);
 		ret = libusb_control_transfer(
 			device._pUSBDeviceHandle,
-			LIBUSB_ENDPOINT_OUT|LIBUSB_REQUEST_TYPE_CLASS|LIBUSB_RECIPIENT_INTERFACE,
+			static_cast<unsigned int>(LIBUSB_ENDPOINT_OUT) |
+			static_cast<unsigned int>(LIBUSB_REQUEST_TYPE_CLASS) |
+			static_cast<unsigned int>(LIBUSB_RECIPIENT_INTERFACE),
 			0x09,                           /* bRequest - SET_REPORT */
 			(HIDReportType | HIDReportID),  /* wValue - Report Type and ReportID */
 			device.getBInterfaceNumber(),   /* wIndex - interface */
