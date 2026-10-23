@@ -210,6 +210,11 @@ function configure_action() {
 
 	if [[ ${#options} -ne 0 ]]; then
 		mesonconfigure+=(
+			#-Ddebug-gkdbus=true
+			#-Ddebug-keys=true
+			#-Ddebug-lcd-plugins=true
+			#-Ddebug-libusb=true
+			#-Ddebug-pbmfont=true
 			${options}
 		)
 	fi
