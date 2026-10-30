@@ -193,7 +193,7 @@ int DesktopService::run()
 						/* check if any received filesystem notification matches
 						 * any device configuration file. If yes, reload the file,
 						 * and send configuration to daemon. Can throw. */
-						dbusHandler.checkNotifyEvents(&GKfs);
+						dbusHandler.checkNotifyEvents();
 					}
 				}
 

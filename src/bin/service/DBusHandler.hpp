@@ -57,7 +57,7 @@ class DBusHandler
 		static bool WantToRestart;	/* true if we want to restart */
 		static void handleSignal(int signum);
 
-		void checkNotifyEvents(NSGKUtils::FileSystem* pGKfs);
+		void checkNotifyEvents();
 
 		DevicesMap_type getDevicesMap();
 
@@ -92,6 +92,7 @@ class DBusHandler
 
 		const GKDepsMap_type* const _pDepsMap;
 		GKDBUS::GKDBus* const _pDBus;
+		NSGKUtils::FileSystem* const _pGKfs;
 
 		using SessionFramework = LIBShared::SessionFramework;
 		SessionFramework _sessionFramework;

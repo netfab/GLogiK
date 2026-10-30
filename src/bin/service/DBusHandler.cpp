@@ -52,6 +52,7 @@ DBusHandler::DBusHandler(
 		_sessionState(""),
 		_pDepsMap(dependencies),
 		_pDBus(pDBus),
+		_pGKfs(pGKfs),
 		_sessionFramework(SessionFramework::FW_UNKNOWN),
 		_devicesUpdatedEvent(false),
 		_registerStatus(false)
@@ -113,14 +114,14 @@ DBusHandler::~DBusHandler()
  * --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
  */
 
-void DBusHandler::checkNotifyEvents(NSGKUtils::FileSystem* pGKfs)
+void DBusHandler::checkNotifyEvents()
 {
 	GK_LOG_FUNC
 
 	DevicesFilesMap_type devicesMap = _devices.getDevicesFilesMap();
 
 	/* can thow */
-	pGKfs->readNotifyEvents( devicesMap );
+	_pGKfs->readNotifyEvents(devicesMap);
 
 	//  const auto & [std::string, const std::string]
 	for(const auto & [devID, devFile] : devicesMap)
