@@ -120,7 +120,7 @@ class KeyboardDriver
 
 	private:
 #if HAVE_GKDBUS
-		const GKDBUS::BusConnection & _systemBus = GKDBUS::GKDBus::SystemBus;
+		static constexpr GKDBUS::BusConnection _systemBus = GKDBUS::GKDBus::SystemBus;
 		GKDBUS::GKDBus* _pDBus;
 #endif
 

@@ -63,7 +63,7 @@ class ClientsManager
 	protected:
 
 	private:
-		const GKDBUS::BusConnection & _systemBus = GKDBUS::GKDBus::SystemBus;
+		static constexpr GKDBUS::BusConnection _systemBus = GKDBUS::GKDBus::SystemBus;
 
 		GKDBUS::GKDBus* const _pDBus;
 		DevicesManager* const _pDevicesManager;

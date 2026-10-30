@@ -40,9 +40,6 @@ namespace GKDBUS
 
 using namespace NSGKUtils;
 
-const BusConnection GKDBus::SystemBus(BusConnection::GKDBUS_SYSTEM);
-const BusConnection GKDBus::SessionBus(BusConnection::GKDBUS_SESSION);
-
 GKDBus::GKDBus()
 		:	_sessionConnection(nullptr),
 			_systemConnection(nullptr),

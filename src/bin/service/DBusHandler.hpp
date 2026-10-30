@@ -79,8 +79,8 @@ class DBusHandler
 	protected:
 
 	private:
-		static constexpr GKDBUS::BusConnection const & _sessionBus = GKDBUS::GKDBus::SessionBus;
-		static constexpr GKDBUS::BusConnection const & _systemBus = GKDBUS::GKDBus::SystemBus;
+		static constexpr GKDBUS::BusConnection const _sessionBus = GKDBUS::GKDBus::SessionBus;
+		static constexpr GKDBUS::BusConnection const  _systemBus = GKDBUS::GKDBus::SystemBus;
 
 		GKeysEventManager _GKeysEvent;
 		DevicesHandler _devices;

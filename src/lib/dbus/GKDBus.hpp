@@ -90,8 +90,8 @@ class GKDBus
 		GKDBus();
 		~GKDBus();
 
-		static const BusConnection SystemBus;
-		static const BusConnection SessionBus;
+		static constexpr BusConnection  SystemBus = BusConnection::GKDBUS_SYSTEM;
+		static constexpr BusConnection SessionBus = BusConnection::GKDBUS_SESSION;
 		static std::string getDBusVersion();
 
 		void init();

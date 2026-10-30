@@ -37,7 +37,7 @@ class DBusHandler
 	protected:
 
 	private:
-		const GKDBUS::BusConnection & _sessionBus = GKDBUS::GKDBus::SessionBus;
+		static constexpr GKDBUS::BusConnection _sessionBus = GKDBUS::GKDBus::SessionBus;
 
 		GKDBUS::GKDBus* _pDBus;
 

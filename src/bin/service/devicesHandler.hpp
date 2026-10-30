@@ -107,8 +107,8 @@ class DevicesHandler
 	private:
 		using DeviceProperties = LIBShared::DeviceProperties;
 
-		const GKDBUS::BusConnection & _systemBus = GKDBUS::GKDBus::SystemBus;
-		const GKDBUS::BusConnection & _sessionBus = GKDBUS::GKDBus::SessionBus;
+		static constexpr GKDBUS::BusConnection  _systemBus = GKDBUS::GKDBus::SystemBus;
+		static constexpr GKDBUS::BusConnection _sessionBus = GKDBUS::GKDBus::SessionBus;
 
 		fs::path _configurationRootDirectory;
 		std::string _clientID;

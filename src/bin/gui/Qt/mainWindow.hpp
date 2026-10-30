@@ -72,7 +72,7 @@ class MainWindow
 	private:
 		using DeviceProperties = LIBShared::DeviceProperties;
 
-		const GKDBUS::BusConnection & _sessionBus = GKDBUS::GKDBus::SessionBus;
+		static constexpr GKDBUS::BusConnection _sessionBus = GKDBUS::GKDBus::SessionBus;
 
 		DeviceProperties _openedConfigurationFile;
 

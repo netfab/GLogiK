@@ -61,7 +61,7 @@ class SleepInhibition
 		void stopSleepInhibition() noexcept;
 
 	private:
-		const GKDBUS::BusConnection & _systemBus = GKDBUS::GKDBus::SystemBus;
+		static constexpr GKDBUS::BusConnection _systemBus = GKDBUS::GKDBus::SystemBus;
 		GKDBUS::GKDBus* _pDBus;
 		DevicesManager* _pDevicesManager;
 
