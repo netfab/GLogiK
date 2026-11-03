@@ -22,13 +22,9 @@
 #pragma once
 
 #include <QHash>
-#include <QIconEngine>
 #include <QIcon>
-#include <QPainter>
+#include <QIconEngine>
 #include <QPalette>
-#include <QPixmap>
-#include <QRect>
-#include <QSize>
 #include <QString>
 
 namespace GLogiK

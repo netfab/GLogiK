@@ -21,15 +21,13 @@
 
 #pragma once
 
-#include <string>
-
-#include <libevdev/libevdev.h>
-#include <libevdev/libevdev-uinput.h>
-
-#include "include/base.hpp"
+struct libevdev;
+struct libevdev_uinput;
 
 namespace GLogiK
 {
+
+struct KeyEvent;
 
 class VirtualKeyboard
 {
@@ -41,8 +39,8 @@ class VirtualKeyboard
 
 	protected:
 	private:
-		libevdev *_pDevice;
-		libevdev_uinput *_pUInputDevice;
+		libevdev* _pDevice;
+		libevdev_uinput* _pUInputDevice;
 
 		void enableEventType(unsigned int type);
 		void enableEventCode(

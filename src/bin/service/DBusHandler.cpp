@@ -19,15 +19,24 @@
  *
  */
 
-#include <sstream>
-#include <new>
-#include <functional>
-#include <stdexcept>
+#include "config.h"
+
 #include <csignal>
+#include <cstdint>
+
+#include <functional>
+#include <map>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "lib/shared/glogik.hpp"
+#include "lib/utils/utils.hpp"
 
+#include "devicesHandler.hpp"
 #include "DBusHandler.hpp"
+#include "GKeysEventManager.hpp"
 
 #include "lib/dbus/ArgTypes/DevicesMap.hpp"
 

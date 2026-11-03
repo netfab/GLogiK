@@ -19,6 +19,12 @@
  *
  */
 
+#include <cstdlib>
+
+#include <string>
+
+#include <syslog.h>
+
 #include "lib/utils/utils.hpp"
 
 #include "initLog.hpp"

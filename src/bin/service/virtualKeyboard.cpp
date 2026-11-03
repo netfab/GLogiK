@@ -19,12 +19,20 @@
  *
  */
 
-#include <sstream>
-#include <iostream>
-#include <thread>
-#include <chrono>
+#include "config.h"
 
 #include <cstring>
+
+#include <chrono>
+#include <sstream>
+#include <string>
+#include <thread>
+
+#include <libevdev/libevdev.h>
+#include <libevdev/libevdev-uinput.h>
+#include <linux/input-event-codes.h>
+
+#include "include/base.hpp"
 
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"

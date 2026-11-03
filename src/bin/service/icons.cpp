@@ -19,7 +19,17 @@
  *
  */
 
+#include <utility>
+
 #include <QImage>
+#include <QList>
+#include <QPaintDevice>
+#include <QPainter>
+#include <QPixmap>
+#include <QRect>
+#include <QSize>
+#include <QStringList>
+#include <Qt>
 
 #include "lib/utils/utils.hpp"
 
@@ -47,7 +57,8 @@ void AdaptiveIconEngine::paint(
 	GK_LOG_FUNC
 
 	// Temporary image canvas to ensure that the background is transparent and alpha blending works.
-	auto scale = painter->device()->devicePixelRatioF();
+	QPaintDevice* device = painter->device();
+	auto scale = device->devicePixelRatioF();
 	QImage img(rect.size() * scale, QImage::Format_ARGB32_Premultiplied);
 	img.fill(0);
 	QPainter p(&img);

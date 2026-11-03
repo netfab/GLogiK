@@ -22,15 +22,17 @@
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
-#include "desktopNotification.hpp"
 #if HAVE_LIBNOTIFY
 #include <libnotify/notify.h>
 #if HAVE_GLIB_2_0
 #include <glib.h>
+#include <glib-object.h>
 #endif
 #else
 #error "notifications via D-Bus only are currently not implemented" // TODO
 #endif
+
+#include "desktopNotification.hpp"
 
 namespace GLogiK
 {

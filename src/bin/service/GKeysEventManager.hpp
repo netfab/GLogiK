@@ -21,7 +21,8 @@
 
 #pragma once
 
-#include "lib/shared/GKeysBanksCapability.hpp"
+#include <string>
+
 #include "lib/shared/GKeysMacro.hpp"
 #include "virtualKeyboard.hpp"
 

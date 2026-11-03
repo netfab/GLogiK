@@ -21,18 +21,18 @@
 
 #pragma once
 
-#include "config.h"
+#include <cstdint>
 
 #include <string>
 
-#include <QAction>
 #include <QMainWindow>
-#include <QMenu>
 #include <QSystemTrayIcon>
 
 #include "include/DeviceID.hpp"
 
 #include "icons.hpp"
+
+class QMenu;
 
 namespace GLogiK
 {

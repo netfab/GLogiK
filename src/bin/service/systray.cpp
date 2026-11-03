@@ -19,16 +19,27 @@
  *
  */
 
-#include <new>
+#include "config.h"
 
+#include <new>
+#include <ostream>
+#include <utility>
+#include <vector>
+
+#include <QAction>
 #include <QIcon>
-#include <QPalette>
+#include <QMenu>
+#include <QObject>
 #include <QString>
+#include <QVariant>
 
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
+#include "icons.hpp"
 #include "systray.hpp"
+
+class QPalette;
 
 namespace GLogiK
 {
@@ -123,11 +134,11 @@ void DesktopServiceSystray::updateContextMenu(const DevicesMap_type & devices)
 
 					{ // <<< device identification
 						QString dev;
-						dev += deviceID.getVendor();
+						dev += QString::fromStdString(deviceID.getVendor());
 						dev += " ";
-						dev += deviceID.getProduct();
+						dev += QString::fromStdString(deviceID.getProduct());
 						dev += " ";
-						dev += deviceID.getName();
+						dev += QString::fromStdString(deviceID.getName());
 						QAction* fullname = new QAction(dev, this);
 						fullname->setEnabled(false);
 

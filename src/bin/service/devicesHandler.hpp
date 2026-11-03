@@ -37,7 +37,6 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/shared/deviceProperties.hpp"
 
-#include "include/enums.hpp"
 #include "include/base.hpp"
 #include "include/MBank.hpp"
 #include "include/LCDPP.hpp"
@@ -53,8 +52,15 @@
 
 namespace fs = boost::filesystem;
 
+namespace GKDBUS
+{
+enum class BusConnection : std::uint8_t;
+}
+
 namespace GLogiK
 {
+
+enum class Caps : std::uint64_t;
 
 class DevicesHandler
 {

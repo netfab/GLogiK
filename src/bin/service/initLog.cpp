@@ -19,7 +19,13 @@
  *
  */
 
+#include "config.h"
+
+#include <exception>
+
 #include <boost/filesystem.hpp>
+
+#include <syslog.h>
 
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"

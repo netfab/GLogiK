@@ -19,7 +19,10 @@
  *
  */
 
+#include "config.h"
+
 #include <string>
+#include <string_view>
 #include <vector>
 #include <sstream>
 #include <stdexcept>
@@ -27,6 +30,7 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
+#include "virtualKeyboard.hpp"
 #include "GKeysEventManager.hpp"
 
 namespace GLogiK

@@ -21,13 +21,20 @@
 
 #include "config.h"
 
-#include <utility>
-#include <exception>
-#include <stdexcept>
-#include <new>
+#include <cstdint>
 
+#include <exception>
+#include <new>
+#include <ostream>
+#include <stdexcept>
+#include <utility>
+
+#include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/extensions/XTest.h>
+
+#include "include/DeviceID.hpp"
+#include "include/enums.hpp"
 
 #include "lib/shared/deviceConfigurationFile.hpp"
 
@@ -36,8 +43,6 @@
 #endif
 
 #include "devicesHandler.hpp"
-
-#include "include/DeviceID.hpp"
 
 namespace GLogiK
 {
@@ -863,7 +868,7 @@ void DevicesHandler::doDeviceFakeKeyEvent(
 	{
 		_startedDevices.at(devID);
 
-		Display* dpy = XOpenDisplay(NULL);
+		Display* dpy = XOpenDisplay(nullptr);
 		if(dpy == nullptr)
 			throw GLogiKExcept("XOpenDisplay failure");
 

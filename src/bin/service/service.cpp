@@ -23,15 +23,10 @@
 
 #include <poll.h>
 
-#include <cstring>
 #include <cstdlib>
 
-#include <syslog.h>
-
-#include <new>
-#include <fstream>
-#include <iostream>
-#include <sstream>
+#include <string>
+#include <vector>
 
 #if HAVE_SYSTRAY && HAVE_QT
 /* must be included before sessionManager.hpp
@@ -40,7 +35,7 @@
  * any header file that defines Status */
 #include "systray.hpp"
 #include <QApplication>
-#include <QtGlobal>
+#include <QtVersion>
 #endif
 
 #include "lib/dbus/GKDBus.hpp"
@@ -53,6 +48,7 @@
 #include "service.hpp"
 
 #include "include/DepsMap.hpp"
+#include "include/DeviceID.hpp"
 
 namespace GLogiK
 {

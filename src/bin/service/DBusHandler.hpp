@@ -21,15 +21,15 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include <vector>
 #include <string>
 
-#include <cstdint>
-
 #include <sys/types.h>
 
-#include "lib/utils/utils.hpp"
 #include "lib/dbus/GKDBus.hpp"
+#include "lib/shared/glogik.hpp"
 
 #include "include/base.hpp"
 #include "include/LCDPP.hpp"
@@ -38,6 +38,16 @@
 
 #include "devicesHandler.hpp"
 #include "GKeysEventManager.hpp"
+
+namespace GKDBUS
+{
+enum class BusConnection : std::uint8_t;
+}
+
+namespace NSGKUtils
+{
+class FileSystem;
+}
 
 namespace GLogiK
 {
