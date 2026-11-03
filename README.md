@@ -42,6 +42,7 @@ Optional Build Dependencies
  * dev-libs/hidapi (libusb backend) >= 0.10.0
  * sys-apps/dbus >= 1.10.18
  * dev-libs/libevdev >= 1.5.7
+ * dev-libs/glib >= 2.88.2
  * x11-libs/libnotify >= 0.8.1
  * x11-libs/libICE
  * x11-libs/libSM

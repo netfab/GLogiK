@@ -1,6 +1,7 @@
 
 0.8.24 (202x-xx-xx)
 ===================
+- Added explicitly dev-libs/glib >= 2.88.2 optional dependency
 - Fixed desktop service starting crash while user not in glogiks group
 - Dropped Qt5 support
 - Dropped Autotools build system support

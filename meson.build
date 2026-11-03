@@ -178,6 +178,7 @@ enable_systray = get_option('systray')
 #! ----------
 null_dep = dependency('', required: false)
 dbus_dep = null_dep
+glib_dep = null_dep
 libnotify_dep = null_dep
 GKDBus_lib_dep = null_dep
 
@@ -233,6 +234,8 @@ if enable_notifications
   if enable_libnotify
     libnotify_dep = dependency('libnotify', version: '>= 0.8.1')
     config_h.set('HAVE_LIBNOTIFY', 1)
+    glib_dep = dependency('glib-2.0', version: '>=2.88.2')
+    config_h.set('HAVE_GLIB_2_0', 1)
   else
     error('notifications via D-Bus only are currently not implemented')
   endif
@@ -309,6 +312,7 @@ install_data(
 
 deps_versions_array += [
   ['DBUS', dbus_dep],
+  ['GLIB_2_0', glib_dep],
   ['LIBNOTIFY', libnotify_dep],
 ]
 

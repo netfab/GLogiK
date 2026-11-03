@@ -92,8 +92,10 @@ int DesktopService::run()
 				{"libX11", GK_DEP_LIBX11_VERSION_STRING},
 				{"libXtst", GK_DEP_LIBXTST_VERSION_STRING},
 #if HAVE_DESKTOP_NOTIFICATIONS
+				{"glib-2.0", GK_DEP_GLIB_2_0_VERSION_STRING},
 				{"libnotify", GK_DEP_LIBNOTIFY_VERSION_STRING},
 #else
+				{"glib-2.0", "-"},
 				{"libnotify", "-"},
 #endif
 #if HAVE_SYSTRAY && HAVE_QT

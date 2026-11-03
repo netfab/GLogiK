@@ -55,6 +55,7 @@ executable(
     boost_program_options_dep,
     boost_serialization_dep,
     libevdev_dep,
+    glib_dep,
     libnotify_dep,
     x11_dep,
     xtst_dep,
