@@ -34,12 +34,16 @@ endif
 
 libevdev_dep = dependency('libevdev')
 x11_dep = dependency('x11')
+xproto_dep = dependency('xproto')
 xtst_dep = dependency('xtst')
+
+cxx.has_header('X11/X.h', required: true)
 
 deps_versions_array += [
   ['LIBEVDEV', libevdev_dep],
   ['LIBX11', x11_dep],
   ['LIBXTST', xtst_dep],
+  ['XORG_PROTO', xproto_dep],
 ]
 
 executable(
