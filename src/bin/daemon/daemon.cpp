@@ -273,7 +273,7 @@ void GLogiKDaemon::handleSignal(const int signum)
 			process::resetSignalHandler(SIGINT);
 			process::resetSignalHandler(SIGTERM);
 
-			GLogiKDaemon::exitDaemon();
+			GLogiKDaemon::exit();
 			break;
 		default:
 			GKSysLogWarning( process::getSignalHandlingDesc(signum, " --> unhandled") );
@@ -384,9 +384,9 @@ void GLogiKDaemon::parseCommandLine(const int argc, char *argv[])
 */
 
 	if(_version) /* disable daemon mode */
-		GLogiKDaemon::daemonized = false;
+		GLogiKDaemon::exit();
 	else if(daemonize)
-		GLogiKDaemon::daemonized = true;
+		GLogiKDaemon::daemonize();
 
 	bool verbose = vm.count("verbose") ? vm["verbose"].as<bool>() : false;
 	if( verbose )

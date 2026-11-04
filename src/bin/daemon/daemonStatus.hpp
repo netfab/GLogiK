@@ -29,16 +29,27 @@ namespace GLogiK::Daemon
 class DaemonStatus
 {
 	public:
-		static bool isDaemonRunning();
+		static bool isDaemonRunning()
+		{
+			return DaemonStatus::daemonized;
+		}
 
 	protected:
 		DaemonStatus() = default;
 		~DaemonStatus() = default;
 
-		static void exitDaemon();
+		void daemonize()
+		{
+			DaemonStatus::daemonized = true;
+		}
 
-		static std::atomic<bool> daemonized;
+		static void exit()
+		{
+			DaemonStatus::daemonized = false;
+		}
+
 	private:
+		inline static std::atomic<bool> daemonized{false};
 };
 
 } // namespace GLogiK::Daemon

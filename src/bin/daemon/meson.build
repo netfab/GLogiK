@@ -3,7 +3,6 @@ GLogiKd_sources = [
   'main.cpp',
   'daemon.cpp',
   'daemon.hpp',
-  'daemonStatus.cpp',
   'daemonStatus.hpp',
   'devicesManager.cpp',
   'devicesManager.hpp',
