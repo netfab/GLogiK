@@ -370,7 +370,7 @@ void GLogiKDaemon::parseCommandLine(const int argc, char *argv[])
 
 	po::notify(vm);
 
-	bool daemonized = vm.count("daemonize") ? vm["daemonize"].as<bool>() : false;
+	bool daemonize = vm.count("daemonize") ? vm["daemonize"].as<bool>() : false;
 	_version = vm.count("version") ? vm["version"].as<bool>() : false;
 
 /*
@@ -383,9 +383,9 @@ void GLogiKDaemon::parseCommandLine(const int argc, char *argv[])
 	}
 */
 
-	if( _version ) /* disable daemon mode */
+	if(_version) /* disable daemon mode */
 		GLogiKDaemon::daemonized = false;
-	else if( daemonized )
+	else if(daemonize)
 		GLogiKDaemon::daemonized = true;
 
 	bool verbose = vm.count("verbose") ? vm["verbose"].as<bool>() : false;
