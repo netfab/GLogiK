@@ -19,19 +19,19 @@
  *
  */
 
-#include <algorithm>                            // for copy
-#include <array>                                // for array
-#include <atomic>                               // for atomic
-#include <iterator>                             // for begin, end
-#include <mutex>                                // for mutex
-#include <new>                                  // for bad_alloc
-#include <stdexcept>                            // for length_error
-#include <utility>                              // for get
+#include <algorithm>
+#include <array>
+#include <atomic>
+#include <iterator>
+#include <mutex>
+#include <new>
+#include <stdexcept>
+#include <utility>
 
 #include "include/enums.hpp"
 
-#include "src/bin/daemon/USB/Keyboard/detail.hpp"
-#include "src/bin/daemon/USB/Device/USBDeviceID.hpp"
+#include "bin/daemon/USB/Keyboard/detail.hpp"
+#include "bin/daemon/USB/Device/USBDeviceID.hpp"
 
 #include "lib/utils/utils.hpp"
 
