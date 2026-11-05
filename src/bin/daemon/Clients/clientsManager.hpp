@@ -43,6 +43,8 @@ namespace Managers::Clients
 class ClientsManager
 {
 	private:
+		using BusConnection = GKDBUS::BusConnection;
+		using GKDBus = GKDBUS::GKDBus;
 		using DevicesManager = Managers::Devices::DevicesManager;
 		using GKDepsMap_type = GLogiK::GKDepsMap_type;
 		using LCDPPArray_type = GLogiK::LCDPPArray_type;
@@ -51,7 +53,7 @@ class ClientsManager
 
 	public:
 		ClientsManager(
-			GKDBUS::GKDBus* const pDBus,
+			GKDBus* const pDBus,
 			DevicesManager* const pDevicesManager,
 			GKDepsMap_type* const pDepsMap
 		);
@@ -63,9 +65,9 @@ class ClientsManager
 	protected:
 
 	private:
-		static constexpr GKDBUS::BusConnection _systemBus = GKDBUS::GKDBus::SystemBus;
+		static constexpr BusConnection _systemBus = GKDBus::SystemBus;
 
-		GKDBUS::GKDBus* const _pDBus;
+		GKDBus* const _pDBus;
 		DevicesManager* const _pDevicesManager;
 		const GKDepsMap_type* const _pDepsMap;
 

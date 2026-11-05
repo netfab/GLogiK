@@ -56,6 +56,8 @@ class KeyboardDriver
 #endif
 {
 	private:
+		using BusConnection = GKDBUS::BusConnection;
+		using GKDBus = GKDBUS::GKDBus;
 		using LCDPluginsManager = Managers::LCDPlugins::LCDPluginsManager;
 		using USBDeviceID = USB::Device::USBDeviceID;
 		using USBDevice = USB::Device::USBDevice;
@@ -68,7 +70,7 @@ class KeyboardDriver
 		virtual ~KeyboardDriver() = default;
 
 #if HAVE_GKDBUS
-		void setDBus(GKDBUS::GKDBus* pDBus);
+		void setDBus(GKDBus* pDBus);
 #endif
 
 		static bool checkDeviceCapability(const USBDeviceID & device, Caps toCheck);
@@ -120,8 +122,8 @@ class KeyboardDriver
 
 	private:
 #if HAVE_GKDBUS
-		static constexpr GKDBUS::BusConnection _systemBus = GKDBUS::GKDBus::SystemBus;
-		GKDBUS::GKDBus* _pDBus;
+		static constexpr BusConnection _systemBus = GKDBus::SystemBus;
+		GKDBus* _pDBus;
 #endif
 
 		/* USB::API */

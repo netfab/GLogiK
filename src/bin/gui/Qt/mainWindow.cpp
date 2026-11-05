@@ -151,7 +151,7 @@ void MainWindow::init(const int argc, char *argv[])
 
 	try
 	{
-		_pDBus = new GKDBUS::GKDBus();
+		_pDBus = new GKDBus();
 		_pDBus->init();
 	}
 	catch (const std::bad_alloc& e)

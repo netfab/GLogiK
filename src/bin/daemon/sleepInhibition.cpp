@@ -43,7 +43,7 @@ SleepInhibition::~SleepInhibition()
 }
 
 void SleepInhibition::startSleepInhibition(
-	GKDBUS::GKDBus* const pDBus,
+	GKDBus* const pDBus,
 	DevicesManager* const pDevicesManager)
 {
 	GK_LOG_FUNC

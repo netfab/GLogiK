@@ -30,16 +30,20 @@ namespace GLogiK
 
 class DBusHandler
 {
+	private:
+		using BusConnection = GKDBUS::BusConnection;
+		using GKDBus = GKDBUS::GKDBus;
+
 	public:
-		DBusHandler(GKDBUS::GKDBus* pDBus);
+		DBusHandler(GKDBus* pDBus);
 		~DBusHandler();
 
 	protected:
 
 	private:
-		static constexpr GKDBUS::BusConnection _sessionBus = GKDBUS::GKDBus::SessionBus;
+		static constexpr BusConnection _sessionBus = GKDBus::SessionBus;
 
-		GKDBUS::GKDBus* _pDBus;
+		GKDBus* _pDBus;
 
 		void initializeGKDBusSignals();
 		void spawnService(std::uint16_t delay);

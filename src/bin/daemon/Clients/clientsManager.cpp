@@ -48,7 +48,7 @@ namespace Managers::Clients
 using namespace NSGKUtils;
 
 ClientsManager::ClientsManager(
-	GKDBUS::GKDBus* const pDBus,
+	GKDBus* const pDBus,
 	DevicesManager* const pDevicesManager,
 	GKDepsMap_type* const pDepsMap)
 	:	_pDBus(pDBus),

@@ -44,8 +44,9 @@ namespace GLogiK
 class DBusHandler
 {
 	private:
-		using FileSystem = NSGKUtils::FileSystem;
+		using BusConnection = GKDBUS::BusConnection;
 		using GKDBus = GKDBUS::GKDBus;
+		using FileSystem = NSGKUtils::FileSystem;
 
 	public:
 		DBusHandler(
@@ -82,8 +83,8 @@ class DBusHandler
 	protected:
 
 	private:
-		static constexpr GKDBUS::BusConnection const _sessionBus = GKDBus::SessionBus;
-		static constexpr GKDBUS::BusConnection const  _systemBus = GKDBus::SystemBus;
+		static constexpr BusConnection const _sessionBus = GKDBus::SessionBus;
+		static constexpr BusConnection const  _systemBus = GKDBus::SystemBus;
 
 		GKeysEventManager _GKeysEvent;
 		DevicesHandler _devices;

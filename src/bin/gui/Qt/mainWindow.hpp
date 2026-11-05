@@ -71,8 +71,10 @@ class MainWindow
 
 	private:
 		using DeviceProperties = LIBShared::DeviceProperties;
+		using BusConnection = GKDBUS::BusConnection;
+		using GKDBus = GKDBUS::GKDBus;
 
-		static constexpr GKDBUS::BusConnection _sessionBus = GKDBUS::GKDBus::SessionBus;
+		static constexpr BusConnection _sessionBus = GKDBus::SessionBus;
 
 		DeviceProperties _openedConfigurationFile;
 
@@ -84,7 +86,7 @@ class MainWindow
 		DevicesMap_type _devices;
 		GKDepsMap_type _DepsMap;
 
-		GKDBUS::GKDBus* _pDBus;
+		GKDBus* _pDBus;
 
 		QTimer* _DBusTimer;
 		QComboBox* _devicesComboBox;

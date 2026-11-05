@@ -59,12 +59,17 @@ enum class Caps : std::uint64_t;
 
 class DevicesHandler
 {
+	private:
+		using BusConnection = GKDBUS::BusConnection;
+		using GKDBus = GKDBUS::GKDBus;
+		using FileSystem = NSGKUtils::FileSystem;
+
 	public:
 		DevicesHandler();
 		~DevicesHandler();
 
-		void setGKfs(NSGKUtils::FileSystem* const pGKfs);
-		void setDBus(GKDBUS::GKDBus* const pDBus);
+		void setGKfs(FileSystem* const pGKfs);
+		void setDBus(GKDBus* const pDBus);
 		void setClientID(const std::string & id);
 
 		void startDevice(
@@ -108,13 +113,13 @@ class DevicesHandler
 	private:
 		using DeviceProperties = LIBShared::DeviceProperties;
 
-		static constexpr GKDBUS::BusConnection  _systemBus = GKDBUS::GKDBus::SystemBus;
-		static constexpr GKDBUS::BusConnection _sessionBus = GKDBUS::GKDBus::SessionBus;
+		static constexpr BusConnection  _systemBus = GKDBus::SystemBus;
+		static constexpr BusConnection _sessionBus = GKDBus::SessionBus;
 
 		fs::path _configurationRootDirectory;
 		std::string _clientID;
-		GKDBUS::GKDBus* _pDBus;
-		NSGKUtils::FileSystem* _pGKfs;
+		GKDBus* _pDBus;
+		FileSystem* _pGKfs;
 
 		typedef std::set<std::string> devIDSet;
 

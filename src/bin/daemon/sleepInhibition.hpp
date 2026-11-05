@@ -46,6 +46,8 @@ namespace GLogiK::Daemon
 class SleepInhibition
 {
 	private:
+		using BusConnection = GKDBUS::BusConnection;
+		using GKDBus = GKDBUS::GKDBus;
 		using DevicesManager = Managers::Devices::DevicesManager;
 
 	public:
@@ -55,14 +57,14 @@ class SleepInhibition
 		~SleepInhibition();
 
 		void startSleepInhibition(
-			GKDBUS::GKDBus* const pDBus,
+			GKDBus* const pDBus,
 			DevicesManager* const pDevicesManager
 		);
 		void stopSleepInhibition() noexcept;
 
 	private:
-		static constexpr GKDBUS::BusConnection _systemBus = GKDBUS::GKDBus::SystemBus;
-		GKDBUS::GKDBus* _pDBus;
+		static constexpr BusConnection _systemBus = GKDBus::SystemBus;
+		GKDBus* _pDBus;
 		DevicesManager* _pDevicesManager;
 
 		using SessionFramework = LIBShared::SessionFramework;

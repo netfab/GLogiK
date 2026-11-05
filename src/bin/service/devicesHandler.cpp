@@ -74,12 +74,12 @@ DevicesHandler::~DevicesHandler()
 	GKLog(trace, "Devices Handler destruction")
 }
 
-void DevicesHandler::setGKfs(NSGKUtils::FileSystem* const pGKfs)
+void DevicesHandler::setGKfs(FileSystem* const pGKfs)
 {
 	_pGKfs = pGKfs;
 }
 
-void DevicesHandler::setDBus(GKDBUS::GKDBus* const pDBus)
+void DevicesHandler::setDBus(GKDBus* const pDBus)
 {
 	_pDBus = pDBus;
 }

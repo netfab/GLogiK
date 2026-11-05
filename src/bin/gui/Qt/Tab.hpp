@@ -48,10 +48,12 @@ class Tab
 	:	public QWidget
 {
 	private:
+		using BusConnection = GKDBUS::BusConnection;
+		using GKDBus = GKDBUS::GKDBus;
 		using DeviceProperties = LIBShared::DeviceProperties;
 
 	public:
-		Tab(GKDBUS::GKDBus* pDBus)
+		Tab(GKDBus* pDBus)
 			:	_pDBus(pDBus),
 				_pApplyButton(nullptr)
 			{};
@@ -69,9 +71,9 @@ class Tab
 		QPushButton* getApplyButton() const;
 
 	protected:
-		static constexpr GKDBUS::BusConnection _sessionBus = GKDBUS::GKDBus::SessionBus;
+		static constexpr BusConnection _sessionBus = GKDBus::SessionBus;
 
-		GKDBUS::GKDBus* _pDBus;
+		GKDBus* _pDBus;
 
 		QWidget* _pApplyButton;
 

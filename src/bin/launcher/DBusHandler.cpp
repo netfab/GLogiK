@@ -37,7 +37,7 @@ namespace GLogiK
 
 using namespace NSGKUtils;
 
-DBusHandler::DBusHandler(GKDBUS::GKDBus* pDBus)
+DBusHandler::DBusHandler(GKDBus* pDBus)
 	:	_pDBus(pDBus)
 {
 	this->initializeGKDBusSignals();
