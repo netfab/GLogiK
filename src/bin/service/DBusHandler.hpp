@@ -21,8 +21,6 @@
 
 #pragma once
 
-#include <cstdint>
-
 #include <vector>
 #include <string>
 
@@ -30,6 +28,7 @@
 
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/glogik.hpp"
+#include "lib/utils/utils.hpp"
 
 #include "include/base.hpp"
 #include "include/LCDPP.hpp"
@@ -39,26 +38,20 @@
 #include "devicesHandler.hpp"
 #include "GKeysEventManager.hpp"
 
-namespace GKDBUS
-{
-enum class BusConnection : std::uint8_t;
-}
-
-namespace NSGKUtils
-{
-class FileSystem;
-}
-
 namespace GLogiK
 {
 
 class DBusHandler
 {
+	private:
+		using FileSystem = NSGKUtils::FileSystem;
+		using GKDBus = GKDBUS::GKDBus;
+
 	public:
 		DBusHandler(
 			pid_t pid,
-			NSGKUtils::FileSystem* pGKfs,
-			GKDBUS::GKDBus* pDBus,
+			FileSystem* pGKfs,
+			GKDBus* pDBus,
 			GKDepsMap_type* dependencies
 		);
 		~DBusHandler();
@@ -89,8 +82,8 @@ class DBusHandler
 	protected:
 
 	private:
-		static constexpr GKDBUS::BusConnection const _sessionBus = GKDBUS::GKDBus::SessionBus;
-		static constexpr GKDBUS::BusConnection const  _systemBus = GKDBUS::GKDBus::SystemBus;
+		static constexpr GKDBUS::BusConnection const _sessionBus = GKDBus::SessionBus;
+		static constexpr GKDBUS::BusConnection const  _systemBus = GKDBus::SystemBus;
 
 		GKeysEventManager _GKeysEvent;
 		DevicesHandler _devices;
@@ -101,8 +94,8 @@ class DBusHandler
 		std::string _sessionState;		/* session state */
 
 		const GKDepsMap_type* const _pDepsMap;
-		GKDBUS::GKDBus* const _pDBus;
-		NSGKUtils::FileSystem* const _pGKfs;
+		GKDBus* const _pDBus;
+		FileSystem* const _pGKfs;
 
 		using SessionFramework = LIBShared::SessionFramework;
 		SessionFramework _sessionFramework;

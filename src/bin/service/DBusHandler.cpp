@@ -52,8 +52,8 @@ bool DBusHandler::WantToRestart = false;
 
 DBusHandler::DBusHandler(
 	pid_t pid,
-	NSGKUtils::FileSystem* pGKfs,
-	GKDBUS::GKDBus* pDBus,
+	FileSystem* pGKfs,
+	GKDBus* pDBus,
 	GKDepsMap_type* dependencies)
 	:	_clientID("undefined"),
 		_daemonVersion("unknown"),

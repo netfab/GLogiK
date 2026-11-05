@@ -52,11 +52,6 @@
 
 namespace fs = boost::filesystem;
 
-namespace GKDBUS
-{
-enum class BusConnection : std::uint8_t;
-}
-
 namespace GLogiK
 {
 
