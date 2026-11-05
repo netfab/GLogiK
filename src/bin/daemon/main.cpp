@@ -19,6 +19,10 @@
  *
  */
 
+#include <cstdlib>
+
+#include <syslog.h>
+
 #include "lib/utils/utils.hpp"
 #include "daemon.hpp"
 

@@ -23,6 +23,7 @@
 
 #include <cstdint>
 
+#include <exception>
 #include <fstream>
 #include <string>
 #include <string_view>

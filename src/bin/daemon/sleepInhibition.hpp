@@ -23,8 +23,11 @@
 
 #include <cstdint>
 
+#include <string>
+
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/glogik.hpp"
+#include "lib/utils/utils.hpp"
 
 #define LogRemoteCallFailure \
 	LOG(critical) \

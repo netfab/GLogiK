@@ -21,8 +21,9 @@
 
 #include "config.h"
 
+#include <unistd.h>
+
 #include <cerrno>
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <csignal>
@@ -32,12 +33,11 @@
 
 #include <syslog.h>
 
-#include <new>
+#include <exception>
 #include <string>
 #include <sstream>
 #include <fstream>
-#include <iostream>
-#include <stdexcept>
+#include <vector>
 
 #include <boost/version.hpp>
 #include <boost/filesystem.hpp>

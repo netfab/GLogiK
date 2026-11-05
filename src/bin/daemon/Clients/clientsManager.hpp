@@ -31,14 +31,14 @@
 
 #include "bin/daemon/devicesManager.hpp"
 
-#include "client.hpp"
-
 #include "include/base.hpp"
 #include "include/LCDPP.hpp"
 #include "include/DepsMap.hpp"
 
 namespace Managers::Clients
 {
+
+class Client;
 
 class ClientsManager
 {

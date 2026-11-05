@@ -30,15 +30,16 @@
 #include <map>
 #include <vector>
 
-#if HAVE_GKDBUS
-#include "lib/dbus/GKDBus.hpp"
-#endif
-
 #include "USB/Keyboard/KeyboardDriver.hpp"
 #include "USB/Device/USBDeviceID.hpp"
 
 #include "include/base.hpp"
 #include "include/LCDPP.hpp"
+
+namespace GKDBUS
+{
+class GKDBus;
+}
 
 namespace Managers::Devices
 {

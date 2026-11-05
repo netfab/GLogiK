@@ -20,10 +20,9 @@
  */
 
 #include <stdexcept>
-#include <iostream>
+#include <vector>
 
 #include "lib/utils/utils.hpp"
-#include "lib/shared/glogik.hpp"
 
 #include "bin/daemon/devicesManager.hpp"
 #include "bin/daemon/detail.hpp"

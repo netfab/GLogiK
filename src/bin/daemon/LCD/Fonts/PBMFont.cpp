@@ -19,8 +19,11 @@
  *
  */
 
+#include "config.h"
+
 //#include <bitset>
 //#include <iomanip> // XXX see debug code
+#include <exception>
 #include <sstream>
 #include <stdexcept>
 #include <string_view>

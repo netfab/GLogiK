@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include <sstream>
 
 #include "lib/utils/utils.hpp"

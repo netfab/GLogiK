@@ -19,6 +19,15 @@
  *
  */
 
+#include <unistd.h>
+
+#include <cerrno>
+
+#include <chrono>
+#include <functional>
+#include <thread>
+#include <vector>
+
 #include "lib/utils/utils.hpp"
 
 #include "devicesManager.hpp"
@@ -63,7 +72,7 @@ void SleepInhibition::startSleepInhibition(
 				LIBShared::LOGIND_MANAGER_DBUS_OBJECT_PATH,
 				LIBShared::LOGIND_MANAGER_DBUS_INTERFACE,
 				"PrepareForSleep",
-				{ {"b", "", "in", "mode"} },
+				{ {"b", "", "in", "mode"} }, // std::vector
 				std::bind(&SleepInhibition::handleSleepEvent, this, std::placeholders::_1)
 			);
 			break;

@@ -26,11 +26,14 @@
 #include <cstdint>
 
 #include <atomic>
-#include <vector>
 #include <string>
 #include <thread>
 #include <chrono>
 #include <mutex>
+
+#if HAVE_LIBUSB
+#include <vector>
+#endif
 
 #include "detail.hpp"
 

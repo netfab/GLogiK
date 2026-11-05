@@ -21,28 +21,36 @@
 
 #include "config.h"
 
+#include <bits/local_lim.h>
+
 #include <cmath>
 #include <cfenv>
 
 #include <unistd.h>
 #include <cstdint>
-#include <climits>
 
 #include <iomanip>
 #include <sstream>
 #include <fstream>
 #include <limits>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
 #include <map>
 
+#include <boost/filesystem.hpp>
+
 #include "include/enums.hpp"
 
-#include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
 #include "bin/daemon/LCD/Fonts/fonts.hpp"
+#include "bin/daemon/LCD/PBM/PBM.hpp"
+
+#include "cpu-stats/CPUSnapshot.h"
+#include "netsnap/netSnapshots.hpp"
+
 #include "systemMonitor.hpp"
 
 namespace Managers::LCDPlugins::plugin

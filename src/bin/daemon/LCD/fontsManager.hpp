@@ -21,8 +21,10 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
+#include <array>
 #include <string_view>
 
 #include "Fonts/fonts.hpp"

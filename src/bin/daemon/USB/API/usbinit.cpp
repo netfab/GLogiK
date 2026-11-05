@@ -21,6 +21,10 @@
 
 #include <sys/types.h>
 
+#include <sstream>
+
+#include <libusb-1.0/libusb.h>
+
 #include "lib/utils/utils.hpp"
 
 #include "usbinit.hpp"

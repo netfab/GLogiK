@@ -19,16 +19,23 @@
  *
  */
 
+#include "config.h"
+
 #include <cstddef>
 
+#include <exception>
 #include <sstream>
+#include <stdexcept>
 #include <string_view>
 
 #include "lib/utils/utils.hpp"
 
-#include "bin/daemon/LCD/fontsManager.hpp"
+#include "bin/daemon/LCD/Fonts/PBMFont.hpp"
 #include "bin/daemon/LCD/PBM/PBMFile.hpp"
 #include "bin/daemon/LCD/PBM/PBM.hpp"
+
+#include "bin/daemon/LCD/fontsManager.hpp"
+
 #include "LCDPlugin.hpp"
 
 namespace Managers::LCDPlugins::plugin

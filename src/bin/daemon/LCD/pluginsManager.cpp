@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include <cstddef>
 
 #include <algorithm>
@@ -28,15 +30,16 @@
 #include <vector>
 
 #include "lib/utils/utils.hpp"
-#include "lib/shared/glogik.hpp"
 
-#include "include/enums.hpp"
+#include "PBM/PBM.hpp"
 
+#include "Plugins/LCDPlugin.hpp"
 #include "Plugins/coretemp/coretemp.hpp"
 #include "Plugins/endscreen/endscreen.hpp"
 #include "Plugins/splashscreen/splashscreen.hpp"
 #include "Plugins/systemMonitor/systemMonitor.hpp"
 
+#include "PixelsData.hpp"
 #include "pluginsManager.hpp"
 
 namespace Managers::LCDPlugins

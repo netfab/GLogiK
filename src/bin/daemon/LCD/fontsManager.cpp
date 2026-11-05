@@ -23,10 +23,15 @@
 
 #include "lib/utils/utils.hpp"
 
+#include "Fonts/PBMFont.hpp"
+
+#include "PixelsData.hpp"
 #include "fontsManager.hpp"
 
 namespace Managers::LCDPlugins::Fonts
 {
+
+enum class FontID : std::uint8_t;
 
 using namespace NSGKUtils;
 

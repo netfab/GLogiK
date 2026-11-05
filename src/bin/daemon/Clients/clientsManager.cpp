@@ -19,18 +19,23 @@
  *
  */
 
+#include "config.h"
+
 #include <new>
 #include <functional>
 #include <sstream>
 #include <thread>
 #include <chrono>
 #include <stdexcept>
+#include <string_view>
+#include <utility>
 
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
 #include "bin/daemon/LCD/pluginsManager.hpp"
 
+#include "client.hpp"
 #include "clientsManager.hpp"
 #include "clientsSignals.hpp"
 

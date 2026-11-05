@@ -24,12 +24,9 @@
 #include <cstdint>
 
 #include <string>
-#include <vector>
 #include <map>
 
 #include "lib/shared/deviceProperties.hpp"
-
-#include "include/base.hpp"
 
 namespace Managers::Devices
 {

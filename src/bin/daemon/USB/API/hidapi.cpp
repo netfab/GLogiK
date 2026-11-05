@@ -19,10 +19,14 @@
  *
  */
 
+#include "config.h"
+
 #include <cstddef>
 
 #include <sstream>
 #include <iomanip>
+
+#include <hidapi.h>
 
 #include "lib/utils/utils.hpp"
 

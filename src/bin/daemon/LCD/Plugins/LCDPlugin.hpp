@@ -34,7 +34,6 @@
 #include "include/LCDPP.hpp"
 
 #include "bin/daemon/LCD/PixelsData.hpp"
-#include "bin/daemon/LCD/PBM/PBM.hpp"
 
 namespace fs = boost::filesystem;
 

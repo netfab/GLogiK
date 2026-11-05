@@ -19,16 +19,13 @@
  *
  */
 
-#include <unistd.h>
-
 #include <cstddef>
 
 #include <new>
 #include <sstream>
-#include <iostream>
 #include <stdexcept>
 #include <string>
-#include <thread>
+#include <utility>
 
 #include <poll.h>
 #include <libudev.h>
@@ -49,7 +46,11 @@
 #include "USB/API/hidapi.hpp"
 #endif
 
+#include "USB/Device/USBDeviceID.hpp"
+#include "USB/Keyboard/KeyboardDriver.hpp"
+
 #if HAVE_GKDBUS
+#include "lib/dbus/GKDBus.hpp"
 #include "Clients/clientsSignals.hpp"
 #endif
 

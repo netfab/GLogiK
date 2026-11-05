@@ -21,15 +21,13 @@
 
 #include <iterator>
 #include <algorithm>
-#include <new>
 
 #include "lib/utils/utils.hpp"
-
-#include "bin/daemon/LCD/pluginsManager.hpp"
 
 #include "include/base.hpp"
 
 #include "USBDevice.hpp"
+#include "USBDeviceID.hpp"
 #include "detail.hpp"
 
 namespace USB::Device
