@@ -21,23 +21,17 @@
 
 #pragma once
 
-#include <cstdint>
-
 #include <new>
 #include <string>
 #include <vector>
 
+#include "lib/dbus/GKDBusConnection.hpp"
 #include "lib/utils/utils.hpp"
 
 #include "GKDBusEvent.hpp"
 #include "callbackEvent.hpp"
 
 #include "SIGs2s.hpp"     // string to string
-
-namespace GKDBUS
-{
-enum class BusConnection : std::uint8_t;
-}
 
 namespace GKDBUS::Events
 {

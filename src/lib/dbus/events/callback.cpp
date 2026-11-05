@@ -25,11 +25,6 @@
 #include "callbackEvent.hpp"
 #include "callback.hpp"
 
-namespace GKDBUS
-{
-enum class BusConnection : std::uint8_t;
-}
-
 namespace GKDBUS::Events
 {
 
