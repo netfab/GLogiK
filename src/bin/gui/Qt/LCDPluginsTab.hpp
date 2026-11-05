@@ -40,10 +40,11 @@ class LCDPluginsTab
 {
 	private:
 		using DeviceProperties = LIBShared::DeviceProperties;
+		using GKDBus = GKDBUS::GKDBus;
 
 	public:
 		LCDPluginsTab(
-			GKDBUS::GKDBus* pDBus,
+			GKDBus* pDBus,
 			const QString & name
 		);
 		~LCDPluginsTab();

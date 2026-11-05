@@ -42,10 +42,11 @@ class DeviceControlTab
 {
 	private:
 		using DeviceProperties = LIBShared::DeviceProperties;
+		using GKDBus = GKDBUS::GKDBus;
 
 	public:
 		DeviceControlTab(
-			GKDBUS::GKDBus* pDBus,
+			GKDBus* pDBus,
 			const QString & name
 		);
 		~DeviceControlTab();

@@ -50,6 +50,9 @@ void udevDeviceProperties(struct udev_device * pDevice, const std::string & subS
 class DevicesManager
 {
 	private:
+#if HAVE_GKDBUS
+		using GKDBus = GKDBUS::GKDBus;
+#endif
 		using LCDPPArray_type = GLogiK::LCDPPArray_type;
 		using GKeysIDArray_type = GLogiK::GKeysIDArray_type;
 		using MKeysIDArray_type = GLogiK::MKeysIDArray_type;
@@ -63,7 +66,7 @@ class DevicesManager
 		void startMonitoring();
 
 #if HAVE_GKDBUS
-		void setDBus(GKDBUS::GKDBus* pDBus);
+		void setDBus(GKDBus* pDBus);
 		void setNumClients(std::size_t num);
 
 		void checkDBusMessages() noexcept;
@@ -116,7 +119,7 @@ class DevicesManager
 		const std::string _unknown;
 
 #if HAVE_GKDBUS
-		GKDBUS::GKDBus* _pDBus;
+		GKDBus* _pDBus;
 		std::size_t _numClients;
 #endif
 

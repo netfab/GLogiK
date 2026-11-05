@@ -39,10 +39,11 @@ class BacklightColorTab
 {
 	private:
 		using DeviceProperties = LIBShared::DeviceProperties;
+		using GKDBus = GKDBUS::GKDBus;
 
 	public:
 		BacklightColorTab(
-			GKDBUS::GKDBus* pDBus,
+			GKDBus* pDBus,
 			const QString & name
 		);
 		~BacklightColorTab();

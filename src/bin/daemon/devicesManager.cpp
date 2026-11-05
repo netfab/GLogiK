@@ -130,7 +130,7 @@ std::string DevicesManager::getLibudevVersion()
 }
 
 #if HAVE_GKDBUS
-void DevicesManager::setDBus(GKDBUS::GKDBus* pDBus)
+void DevicesManager::setDBus(GKDBus* pDBus)
 {
 	_pDBus = pDBus;
 }

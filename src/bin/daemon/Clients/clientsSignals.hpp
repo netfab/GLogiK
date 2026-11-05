@@ -26,19 +26,26 @@
 #include <string>
 #include <vector>
 
+namespace GKDBUS
+{
+	class GKDBus;
+}
+
 namespace DBus::Signals
 {
 
+using GKDBus = GKDBUS::GKDBus;
+
 void sendSignalToClients(
 	std::size_t numClients, // number of connected clients
-	GKDBUS::GKDBus* const pDBus,
+	GKDBus* const pDBus,
 	const std::string & signal,
 	bool forceSend=false // always send signal, even if numClient == 0
 ) noexcept;
 
 void sendStatusSignalArrayToClients(
 	std::size_t numClients,
-	GKDBUS::GKDBus* const pDBus,
+	GKDBus* const pDBus,
 	const std::string & signal,
 	const std::vector<std::string> & devIDArray
 ) noexcept;

@@ -42,7 +42,7 @@ namespace GLogiK
 using namespace NSGKUtils;
 
 GKeysTab::GKeysTab(
-	GKDBUS::GKDBus* pDBus,
+	GKDBus* pDBus,
 	const QString & name)
 	:	Tab(pDBus),
 		_pKeysBoxLayout(nullptr),

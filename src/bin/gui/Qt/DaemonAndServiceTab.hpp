@@ -40,10 +40,11 @@ class DaemonAndServiceTab
 {
 	private:
 		using DeviceProperties = LIBShared::DeviceProperties;
+		using GKDBus = GKDBUS::GKDBus;
 
 	public:
 		DaemonAndServiceTab(
-			GKDBUS::GKDBus* pDBus,
+			GKDBus* pDBus,
 			const QString & name
 		);
 		~DaemonAndServiceTab();
