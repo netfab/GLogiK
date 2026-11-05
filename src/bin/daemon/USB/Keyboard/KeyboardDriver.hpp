@@ -56,8 +56,10 @@ class KeyboardDriver
 #endif
 {
 	private:
+#if HAVE_GKDBUS
 		using BusConnection = GKDBUS::BusConnection;
 		using GKDBus = GKDBUS::GKDBus;
+#endif
 		using LCDPluginsManager = Managers::LCDPlugins::LCDPluginsManager;
 		using USBDeviceID = USB::Device::USBDeviceID;
 		using USBDevice = USB::Device::USBDevice;
