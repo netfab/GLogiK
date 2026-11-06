@@ -23,22 +23,20 @@
 
 #include <poll.h>
 
-#include <cstring>
 #include <cstdlib>
 
-#include <syslog.h>
+#include <exception>
+#include <string>
 
-#include <new>
-#include <fstream>
-#include <iostream>
-#include <sstream>
+#include <syslog.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
-#include "lib/utils/utils.hpp"
+#include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/glogik.hpp"
 #include "lib/shared/sessionManager.hpp"
+#include "lib/utils/utils.hpp"
 
 #include "DBusHandler.hpp"
 #include "launcher.hpp"

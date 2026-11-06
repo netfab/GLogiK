@@ -21,16 +21,14 @@
 
 #include "config.h"
 
-#include <new>
 #include <functional>
-#include <thread>
+#include <string>
+#include <vector>
 
 #include "lib/utils/utils.hpp"
 #include "lib/shared/glogik.hpp"
 
 #include "DBusHandler.hpp"
-
-namespace chr = std::chrono;
 
 namespace GLogiK
 {
