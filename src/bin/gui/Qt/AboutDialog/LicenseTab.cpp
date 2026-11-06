@@ -19,6 +19,15 @@
  *
  */
 
+#include "config.h"
+
+#include <new>
+#include <string>
+
+#include <QByteArray>
+#include <QFrame>
+#include <QIODevice>
+
 #include <QCryptographicHash>
 #include <QFile>
 #include <QFont>
@@ -92,7 +101,7 @@ void LicenseTab::buildTab()
 			/* found license file */
 			if( sha1 == LICENSE_FILE_SHA1 )
 			{
-				QByteArray data(licenseFile.readAll());
+				QByteArray data(licenseFile.readAll()); // QByteArray
 				licenseWidget->setPlainText(QString(data));
 			}
 			else

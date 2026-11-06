@@ -19,13 +19,22 @@
  *
  */
 
+#include <cstdint>
+
+#include <new>
+
 #include <QColorDialog>
+#include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QObject>
+#include <Qt>
 #include <QVBoxLayout>
+#include <QWidget>
 
 #include "lib/utils/utils.hpp"
 
+#include "Tab.hpp"
 #include "BacklightColorTab.hpp"
 
 namespace GLogiK
@@ -60,7 +69,7 @@ void BacklightColorTab::buildTab()
 		this->setLayout(vBox);
 
 		/* -- -- -- */
-		vBox->addWidget( this->getHLine() );
+		vBox->addWidget(this->getHLine()); // QFrame*
 		/* -- -- -- */
 
 		_colorDialog = new QColorDialog();
@@ -77,7 +86,7 @@ void BacklightColorTab::buildTab()
 		vBox->addStretch();
 
 		/* -- -- -- */
-		vBox->addWidget( this->getHLine() );
+		vBox->addWidget(this->getHLine()); // QFrame*
 		/* -- -- -- */
 
 		{
@@ -114,7 +123,7 @@ void BacklightColorTab::buildTab()
 		}
 
 		/* -- -- -- */
-		vBox->addWidget( this->getHLine() );
+		vBox->addWidget(this->getHLine()); // QFrame*
 		/* -- -- -- */
 
 		QObject::connect(

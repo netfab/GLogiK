@@ -19,11 +19,15 @@
  *
  */
 
+#include "config.h"
+
 #include <cstdlib>
 
 #include <QApplication>
 #include <QIcon>
 #include <QString>
+
+#include <syslog.h>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"

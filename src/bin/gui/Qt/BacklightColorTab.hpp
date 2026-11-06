@@ -21,9 +21,12 @@
 
 #pragma once
 
+#include <string>
+
 #include <QColor>
 #include <QString>
 
+#include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/deviceProperties.hpp"
 
 #include "Tab.hpp"

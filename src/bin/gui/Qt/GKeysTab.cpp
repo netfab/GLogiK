@@ -19,21 +19,41 @@
  *
  */
 
+#include <cstdint>
+
+#include <functional>
 #include <new>
+#include <ostream>
+#include <stdexcept>
 #include <string>
 #include <string_view>
+#include <utility>
 
+#include <qtypes.h>
+#include <QAbstractItemModel>
 #include <QColor>
 #include <QComboBox>
+#include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QObject>
+#include <QOverload>
 #include <QPushButton>
+#include <QStandardItem>
 #include <QStandardItemModel>
-#include <QVariant>
 #include <QVBoxLayout>
+#include <QVariant>
+#include <QWidget>
+#include <Qt>
 
+#include "include/base.hpp"
+
+#include "lib/shared/glogik.hpp"
+#include "lib/utils/utils.hpp"
+
+#include "Tab.hpp"
 #include "GKeysTab.hpp"
 
 namespace GLogiK

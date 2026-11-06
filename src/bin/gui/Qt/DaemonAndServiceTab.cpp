@@ -19,11 +19,17 @@
  *
  */
 
-#include <string>
+#include "config.h"
 
+#include <new>
+#include <string>
+#include <vector>
+
+#include <QFrame>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QObject>
 #include <QPixmap>
 #include <QPushButton>
 #include <QSizePolicy>
@@ -33,6 +39,7 @@
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
+#include "Tab.hpp"
 #include "DaemonAndServiceTab.hpp"
 
 namespace GLogiK

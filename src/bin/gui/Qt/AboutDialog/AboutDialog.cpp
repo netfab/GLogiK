@@ -19,13 +19,22 @@
  *
  */
 
+#include <functional>
+#include <new>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <QClipboard>
 #include <QGuiApplication>
 #include <QHBoxLayout>
+#include <QIcon>
+#include <QObject>
 #include <QPushButton>
+#include <QString>
 #include <QStyle>
 #include <QTabWidget>
-#include <QWidget>
+#include <QVBoxLayout>
 
 #include "lib/utils/utils.hpp"
 

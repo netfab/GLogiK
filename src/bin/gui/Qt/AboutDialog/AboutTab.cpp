@@ -19,10 +19,16 @@
  *
  */
 
+#include "config.h"
+
+#include <new>
+
+#include <QFrame>
 #include <QFont>
 #include <QLabel>
 #include <QString>
 #include <QVBoxLayout>
+#include <Qt>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"

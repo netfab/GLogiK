@@ -19,15 +19,20 @@
  *
  */
 
+#include <new>
+#include <vector>
+
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QObject>
 #include <QPushButton>
 #include <QVBoxLayout>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
+#include "Tab.hpp"
 #include "DeviceControlTab.hpp"
 
 namespace GLogiK

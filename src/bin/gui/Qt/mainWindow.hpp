@@ -21,10 +21,9 @@
 
 #pragma once
 
-#include <sys/types.h>
+#include <cstdint>
 
 #include <string>
-#include <map>
 
 #include <QMainWindow>
 
@@ -43,14 +42,14 @@ class QTabWidget;
 class QTimer;
 class QWidget;
 
-class DaemonAndServiceTab;
-class DeviceControlTab;
-class BacklightColorTab;
-class LCDPluginsTab;
-class GKeysTab;
-
 namespace GLogiK
 {
+
+class BacklightColorTab;
+class DaemonAndServiceTab;
+class DeviceControlTab;
+class GKeysTab;
+class LCDPluginsTab;
 
 enum class TabApplyButton : std::uint8_t
 {

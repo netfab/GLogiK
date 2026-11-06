@@ -21,15 +21,16 @@
 
 #pragma once
 
+#include "config.h"
+
 #include <vector>
-#include <map>
 #include <string>
 
 #include <QString>
 
+#include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/deviceProperties.hpp"
 #include "lib/shared/glogik.hpp"
-#include "lib/utils/utils.hpp"
 
 #include "include/base.hpp"
 #include "include/MBank.hpp"

@@ -19,21 +19,34 @@
  *
  */
 
+#include <new>
+#include <vector>
+
+#include <qdebug.h>
+#include <qtversionchecks.h>
+#include <qtypes.h>
+#include <QAbstractItemView>
 #include <QCheckBox>
 #include <QFrame>
 #include <QHeaderView>
 #include <QHBoxLayout>
+#include <QList>
+#include <QObject>
 #include <QScrollArea>
 #include <QStringList>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QVariant>
 #include <QVBoxLayout>
+#include <QWidget>
+#include <Qt>
 
 #include "lib/shared/glogik.hpp"
 #include "lib/utils/utils.hpp"
 
 #include "include/LCDPP.hpp"
 
+#include "Tab.hpp"
 #include "LCDPluginsTab.hpp"
 
 namespace GLogiK

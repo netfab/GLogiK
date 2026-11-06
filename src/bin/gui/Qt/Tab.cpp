@@ -22,9 +22,10 @@
 #include <string>
 
 #include <QFrame>
+#include <QLayout>
 #include <QLayoutItem>
 #include <QPushButton>
-#include <QSpacerItem>
+#include <QString>
 
 #include "lib/utils/utils.hpp"
 

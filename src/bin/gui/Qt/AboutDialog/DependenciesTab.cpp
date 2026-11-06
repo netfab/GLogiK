@@ -19,14 +19,23 @@
  *
  */
 
-#include <QtGlobal>
+#include <new>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include <qtversionchecks.h>
+#include <QAbstractItemView>
 #include <QFrame>
 #include <QHeaderView>
+#include <QList>
 #include <QScrollArea>
+#include <QString>
 #include <QStringList>
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QVBoxLayout>
+#include <Qt>
 
 #include "lib/utils/utils.hpp"
 

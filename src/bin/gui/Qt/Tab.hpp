@@ -23,11 +23,11 @@
 
 #include <string>
 
-#include <QLayout>
 #include <QWidget>
 
 #include "lib/dbus/GKDBus.hpp"
 #include "lib/shared/deviceProperties.hpp"
+#include "lib/utils/utils.hpp"
 
 #define LogRemoteCallFailure \
 	LOG(critical) \
@@ -39,6 +39,7 @@
 		<< LIBShared::CONST_STRING_METHOD_REPLY_FAILURE << e.what();
 
 class QFrame;
+class QLayout;
 class QPushButton;
 
 namespace GLogiK

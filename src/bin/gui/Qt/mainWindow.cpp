@@ -25,22 +25,34 @@
 
 #include <syslog.h>
 
+#include <algorithm>
+#include <chrono>
+#include <exception>
+#include <functional>
 #include <new>
+#include <ostream>
 #include <stdexcept>
 #include <thread>
-#include <chrono>
-#include <functional>
+#include <utility>
+#include <vector>
 
-#include <QtGlobal>
+#include <QAction>
 #include <QApplication>
+#include <QByteArray>
+#include <QColor>
 #include <QComboBox>
+#include <QCoreApplication>
 #include <QFile>
 #include <QFrame>
 #include <QIcon>
+#include <QLatin1String>
+#include <QList>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QMetaObject>
+#include <QObject>
+#include <QOverload>
 #include <QPushButton>
 #include <QStatusBar>
 #include <QString>
@@ -49,6 +61,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <Qt>
 
 #include <boost/program_options.hpp>
 
@@ -57,9 +70,11 @@
 #include "lib/utils/utils.hpp"
 
 #include "include/enums.hpp"
+#include "include/MBank.hpp"
 
 #include "AboutDialog/AboutDialog.hpp"
 
+#include "Tab.hpp"
 #include "BacklightColorTab.hpp"
 #include "DaemonAndServiceTab.hpp"
 #include "DeviceControlTab.hpp"
@@ -183,7 +198,7 @@ void MainWindow::build()
 			QFile qssfile(stylepath);
 			if( qssfile.open(QFile::ReadOnly) )
 			{
-				QString styleSheet = QLatin1String(qssfile.readAll());
+				QString styleSheet = QLatin1String(qssfile.readAll()); // QByteArray
 				qApp->setStyleSheet(styleSheet);
 			}
 			else
