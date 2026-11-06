@@ -2,6 +2,8 @@
 
 #include <fstream>
 
+#include "CPUData.h"
+
 const std::vector<CPUData>::size_type CPUSnapshot::INDEX_TOT = 0;
 
 // == PUBLIC FUNCTIONS ==
