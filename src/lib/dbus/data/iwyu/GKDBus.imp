@@ -1,0 +1,170 @@
+[
+	{
+		"include": [
+			"\"lib/dbus/events/callback.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/GKDBusEvent.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGas2v.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGb2v.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGq2v.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGs2as.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGs2b.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGs2D.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGs2v.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGsG2v.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGsGM2v.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGsm2v.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGss2aG.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGss2am.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGss2aP.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGss2b.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGss2s.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGss2v.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGssyt2b.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGssyyy2b.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	},
+	{
+		"include": [
+			"\"lib/dbus/events/SIGv2v.hpp\"",
+			"private",
+			"\"lib/dbus/GKDBus.hpp\"",
+			"public"
+		]
+	}
+]
