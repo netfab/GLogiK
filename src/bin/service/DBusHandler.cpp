@@ -24,7 +24,6 @@
 #include <csignal>
 #include <cstdint>
 
-#include <functional>
 #include <map>
 #include <sstream>
 #include <string>
@@ -863,7 +862,11 @@ void DBusHandler::initializeGKDBusSignals()
 				LIBShared::FREEDESKTOP_DBUS_PROPERTIES_STANDARD_INTERFACE,
 				"PropertiesChanged",
 				{},
-				std::bind(&DBusHandler::updateSessionState, this)
+				// lambda
+				[this]() -> void
+				{
+					this->updateSessionState();
+				}
 			);
 			break;
 		default:
@@ -887,7 +890,12 @@ void DBusHandler::initializeGKDBusSignals()
 		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STARTED,
 		{	{"as", "", "in", "array of started devices ID strings"} },
-		std::bind(&DBusHandler::devicesStarted, this, std::placeholders::_1)
+		// lambda
+		[this](const std::vector<std::string> & devicesID)
+			-> void
+		{
+			this->devicesStarted(devicesID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGas2v>::receiveSignal(
@@ -897,7 +905,12 @@ void DBusHandler::initializeGKDBusSignals()
 		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_STOPPED,
 		{	{"as", "", "in", "array of stopped devices ID strings"} },
-		std::bind(&DBusHandler::devicesStopped, this, std::placeholders::_1)
+		// lambda
+		[this](const std::vector<std::string> & devicesID)
+			-> void
+		{
+			this->devicesStopped(devicesID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGas2v>::receiveSignal(
@@ -907,7 +920,12 @@ void DBusHandler::initializeGKDBusSignals()
 		LIBShared::GLOGIK_DAEMON_DEVICES_MANAGER_DBUS_INTERFACE,
 		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICES_UNPLUGGED,
 		{	{"as", "", "in", "array of unplugged devices ID strings"} },
-		std::bind(&DBusHandler::devicesUnplugged, this, std::placeholders::_1)
+		// lambda
+		[this](const std::vector<std::string> & devicesID)
+			-> void
+		{
+			this->devicesUnplugged(devicesID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGsm2v>::receiveSignal(
@@ -919,9 +937,14 @@ void DBusHandler::initializeGKDBusSignals()
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_bankID", "in", "macro bankID"}
 		},
-		std::bind(&DBusHandler::deviceMBankSwitch, this,
-			std::placeholders::_1, std::placeholders::_2
-		)
+		// lambda
+		[this](
+			const std::string & devID,
+			const MKeysID bankID
+		) -> void
+		{
+			this->deviceMBankSwitch(devID, bankID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGsGM2v>::receiveSignal(
@@ -934,9 +957,15 @@ void DBusHandler::initializeGKDBusSignals()
 			{"y", "macro_keyID", "in", "macro key ID"},
 			{"a(yyq)", "macro_array", "in", "macro array"}
 		},
-		std::bind(&DBusHandler::deviceMacroRecorded, this,
-			std::placeholders::_1, std::placeholders::_2, std::placeholders::_3
-		)
+		// lambda
+		[this](
+			const std::string & devID,
+			const GKeysID keyID,
+			const macro_type & macro
+		) -> void
+		{
+			this->deviceMacroRecorded(devID, keyID, macro);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGsG2v>::receiveSignal(
@@ -948,9 +977,14 @@ void DBusHandler::initializeGKDBusSignals()
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_keyID", "in", "macro key ID"}
 		},
-		std::bind(&DBusHandler::deviceMacroCleared, this,
-			std::placeholders::_1, std::placeholders::_2
-		)
+		// lambda
+		[this](
+			const std::string & devID,
+			const GKeysID keyID
+		) -> void
+		{
+			this->deviceMacroCleared(devID, keyID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGsG2v>::receiveSignal(
@@ -962,9 +996,14 @@ void DBusHandler::initializeGKDBusSignals()
 		{	{"s", "device_id", "in", "device ID"},
 			{"y", "macro_keyID", "in", "macro key ID"}
 		},
-		std::bind(&DBusHandler::deviceGKeyEvent, this,
-			std::placeholders::_1, std::placeholders::_2
-		)
+		// lambda
+		[this](
+			const std::string & devID,
+			const GKeysID keyID
+		) -> void
+		{
+			this->deviceGKeyEvent(devID, keyID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGss2v>::receiveSignal(
@@ -976,9 +1015,14 @@ void DBusHandler::initializeGKDBusSignals()
 		{	{"s", "device_id", "in", "device ID"},
 			{"s", "media_key_event", "in", "media key event"}
 		},
-		std::bind(&DBusHandler::deviceMediaEvent, this,
-			std::placeholders::_1, std::placeholders::_2
-		)
+		// lambda
+		[this](
+			const std::string & devID,
+			const std::string & mediaKeyEvent
+		) -> void
+		{
+			this->deviceMediaEvent(devID, mediaKeyEvent);
+		}
 	);
 
 	/* -- -- -- -- -- -- -- -- -- -- */
@@ -991,7 +1035,11 @@ void DBusHandler::initializeGKDBusSignals()
 		LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STOPPING,
 		{},
-		std::bind(&DBusHandler::daemonIsStopping, this)
+		// lambda
+		[this]() -> void
+		{
+			this->daemonIsStopping();
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGv2v>::receiveSignal(
@@ -1001,7 +1049,11 @@ void DBusHandler::initializeGKDBusSignals()
 		LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEAMON_IS_STARTING,
 		{},
-		std::bind(&DBusHandler::daemonIsStarting, this)
+		// lambda
+		[this]() -> void
+		{
+			this->daemonIsStarting();
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGv2v>::receiveSignal(
@@ -1011,7 +1063,11 @@ void DBusHandler::initializeGKDBusSignals()
 		LIBShared::GLOGIK_DAEMON_CLIENTS_MANAGER_DBUS_INTERFACE,
 		LIBShared::GK_DBUS_SERVICE_SIGNAL_REPORT_YOURSELF,
 		{},
-		std::bind(&DBusHandler::reportChangedState, this)
+		// lambda
+		[this]() -> void
+		{
+			this->reportChangedState();
+		}
 	);
 
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
@@ -1025,8 +1081,14 @@ void DBusHandler::initializeGKDBusSignals()
 		LIBShared::GK_DBUS_SERVICE_SIGNAL_DEVICE_STATUS_CHANGE_REQUEST,
 		{	{"s", "device_id", "in", "device ID"},
 			{"s", "wanted_status", "in", "wanted status"}	},
-		std::bind(&DBusHandler::deviceStatusChangeRequest, this,
-		std::placeholders::_1, std::placeholders::_2)
+		// lambda
+		[this](
+			const std::string & devID,
+			const std::string & remoteMethod
+		) -> void
+		{
+			this->deviceStatusChangeRequest(devID, remoteMethod);
+		}
 	);
 
 	_pDBus->declareIntrospectableSignal(
@@ -1068,8 +1130,15 @@ void DBusHandler::initializeGKDBusMethods()
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		LIBShared::GK_DBUS_SERVICE_METHOD_GET_DEVICES_LIST,
 		{	{"s", r_ed, "in", r_ed},
-			{"as", "array_of_strings", "out", "array of devices ID and configuration files"} },
-		std::bind(&DBusHandler::getDevicesList, this, r_ed) );
+			{"as", "array_of_strings", "out", "array of devices ID and configuration files"}
+		},
+		// lambda
+		[this, r_ed](const std::string & reserved)
+			-> std::vector<std::string>
+		{
+			return this->getDevicesList(r_ed);
+		}
+	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGs2as>::exposeMethod(
 		_sessionBus,
@@ -1077,8 +1146,15 @@ void DBusHandler::initializeGKDBusMethods()
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		LIBShared::GK_DBUS_SERVICE_METHOD_GET_INFORMATIONS,
 		{	{"s", r_ed, "in", r_ed},
-			{"as", "array_of_strings", "out", "array of informations strings"} },
-		std::bind(&DBusHandler::getInformations, this, r_ed) );
+			{"as", "array_of_strings", "out", "array of informations strings"}
+		},
+		// lambda
+		[this, r_ed](const std::string & reserved)
+			-> std::vector<std::string>
+		{
+			return this->getInformations(r_ed);
+		}
+	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGss2aP>::exposeMethod(
 		_sessionBus,
@@ -1087,8 +1163,17 @@ void DBusHandler::initializeGKDBusMethods()
 		LIBShared::GK_DBUS_DAEMON_METHOD_GET_DEVICE_LCD_PLUGINS_PROPERTIES, /* same method name as in daemon */
 		{	{"s", "device_id", "in", "device ID"},
 			{"s", r_ed, "in", r_ed},
-			{"a(tss)", "get_lcd_plugins_properties_array", "out", "LCDPluginsProperties array"} },
-		std::bind(&DBusHandler::getDeviceLCDPluginsProperties, this, std::placeholders::_1, r_ed) );
+			{"a(tss)", "get_lcd_plugins_properties_array", "out", "LCDPluginsProperties array"}
+		},
+		// lambda
+		[this, r_ed](
+			const std::string & devID,
+			const std::string & reserved
+		) -> const LCDPPArray_type &
+		{
+			return this->getDeviceLCDPluginsProperties(devID, r_ed);
+		}
+	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGs2D>::exposeMethod(
 		_sessionBus,
@@ -1096,8 +1181,15 @@ void DBusHandler::initializeGKDBusMethods()
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		LIBShared::GK_DBUS_SERVICE_METHOD_GET_EXECUTABLES_DEPENDENCIES_MAP,
 		{	{"s", r_ed, "in", r_ed},
-			{"a(yta(sss))", "dependencies_map", "out", "array of executable dependencies"} },
-		std::bind(&DBusHandler::getExecutablesDependenciesMap, this, r_ed) );
+			{"a(yta(sss))", "dependencies_map", "out", "array of executable dependencies"}
+		},
+		// lambda
+		[this, r_ed](const std::string & reserved)
+			-> const GKDepsMap_type &
+		{
+			return this->getExecutablesDependenciesMap(r_ed);
+		}
+	);
 }
 
 void DBusHandler::daemonIsStopping()
