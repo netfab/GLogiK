@@ -24,7 +24,6 @@
 #include <cerrno>
 
 #include <chrono>
-#include <functional>
 #include <thread>
 #include <vector>
 
@@ -73,7 +72,11 @@ void SleepInhibition::startSleepInhibition(
 				LIBShared::LOGIND_MANAGER_DBUS_INTERFACE,
 				"PrepareForSleep",
 				{ {"b", "", "in", "mode"} }, // std::vector
-				std::bind(&SleepInhibition::handleSleepEvent, this, std::placeholders::_1)
+				// lambda
+				[this](const bool mode) -> void
+				{
+					this->handleSleepEvent(mode);
+				}
 			);
 			break;
 		default:

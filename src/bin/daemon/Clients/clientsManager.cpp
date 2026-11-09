@@ -22,7 +22,6 @@
 #include "config.h"
 
 #include <new>
-#include <functional>
 #include <sstream>
 #include <thread>
 #include <chrono>
@@ -119,14 +118,24 @@ void ClientsManager::initializeGKDBusEvents()
 			{"b", "did_register_succeeded", dOUT, rValueComment},
 			{"s", "failure_reason_or_client_id", dOUT,
 			"if register success (bool==true), unique client ID, else (bool=false) failure reason"}
-		}, std::bind(&ClientsManager::registerClient, this, _1)
+		},
+		// lambda
+		[this](const std::string & op) -> bool
+		{
+			return this->registerClient(op);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGs2b>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_UNREGISTER_CLIENT,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"b", "did_unregister_succeeded", dOUT, rValueComment}
-		}, std::bind(&ClientsManager::unregisterClient, this, _1)
+		},
+		// lambda
+		[this](const std::string & clientID) -> bool
+		{
+			return this->unregisterClient(clientID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGss2b>::exposeMethod(
@@ -134,14 +143,27 @@ void ClientsManager::initializeGKDBusEvents()
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "client_new_state", dIN, "client new state"},
 			{"b", "did_updateclientstate_succeeded", dOUT, rValueComment}
-		}, std::bind(&ClientsManager::updateClientState, this, _1, _2)
+		},
+		// lambda
+		[this](
+			const std::string & clientID,
+			const std::string & state
+		) -> bool
+		{
+			return this->updateClientState(clientID, state);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGs2b>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_SET_CLIENT_READY,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"b", "did_method_succeeded", dOUT, rValueComment}
-		}, std::bind(&ClientsManager::setClientReady, this, _1)
+		},
+		// lambda
+		[this](const std::string & clientID) -> bool
+		{
+			return this->setClientReady(clientID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGss2b>::exposeMethod(
@@ -149,14 +171,27 @@ void ClientsManager::initializeGKDBusEvents()
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"b", "did_deletedeviceconfiguration_succeeded", dOUT, rValueComment}
-		}, std::bind(&ClientsManager::deleteDeviceConfiguration, this, _1, _2)
+		},
+		// lambda
+		[this](
+			const std::string & clientID,
+			const std::string & devID
+		) -> bool
+		{
+			return this->deleteDeviceConfiguration(clientID, devID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGs2D>::exposeMethod(
 		_systemBus, CM_OP, CM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_GET_DAEMON_DEPENDENCIES_MAP,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"a(yta(sss))", "dependencies_map", dOUT, "array of executable dependencies"}
-		}, std::bind(&ClientsManager::getDaemonDependenciesMap, this, _1)
+		},
+		// lambda
+		[this](const std::string & clientID) -> const GKDepsMap_type &
+		{
+			return this->getDaemonDependenciesMap(clientID);
+		}
 	);
 
 	/* -- -- -- -- -- -- -- -- -- -- */
@@ -168,7 +203,15 @@ void ClientsManager::initializeGKDBusEvents()
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
 			{"b", "did_stop_succeeded", dOUT, rValueComment}
-		}, std::bind(&ClientsManager::stopDevice, this, _1, _2)
+		},
+		// lambda
+		[this](
+			const std::string & clientID,
+			const std::string & devID
+		) -> bool
+		{
+			return this->stopDevice(clientID, devID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGss2b>::exposeMethod(
@@ -176,7 +219,15 @@ void ClientsManager::initializeGKDBusEvents()
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStoppedDevices"},
 			{"b", "did_start_succeeded", dOUT, rValueComment}
-		}, std::bind(&ClientsManager::startDevice, this, _1, _2)
+		},
+		// lambda
+		[this](
+			const std::string & clientID,
+			const std::string & devID
+		) -> bool
+		{
+			return this->startDevice(clientID, devID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGss2b>::exposeMethod(
@@ -184,7 +235,15 @@ void ClientsManager::initializeGKDBusEvents()
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices"},
 			{"b", "did_restart_succeeded", dOUT, rValueComment}
-		}, std::bind(&ClientsManager::restartDevice, this, _1, _2)
+		},
+		// lambda
+		[this](
+			const std::string & clientID,
+			const std::string & devID
+		) -> bool
+		{
+			return this->restartDevice(clientID, devID);
+		}
 	);
 
 		/* -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
@@ -195,14 +254,24 @@ void ClientsManager::initializeGKDBusEvents()
 		_systemBus, DM_OP, DM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_GET_STARTED_DEVICES,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"as", "array_of_strings", dOUT, "array of started devices ID strings"}
-		}, std::bind(&ClientsManager::getStartedDevices, this, _1)
+		},
+		// lambda
+		[this](const std::string & clientID) -> std::vector<std::string>
+		{
+			return this->getStartedDevices(clientID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGs2as>::exposeMethod(
 		_systemBus, DM_OP, DM_IF, LIBShared::GK_DBUS_DAEMON_METHOD_GET_STOPPED_DEVICES,
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"as", "array_of_strings", dOUT, "array of stopped devices ID strings"}
-		}, std::bind(&ClientsManager::getStoppedDevices, this, _1)
+		},
+		// lambda
+		[this](const std::string & clientID) -> std::vector<std::string>
+		{
+			return this->getStoppedDevices(clientID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGss2s>::exposeMethod(
@@ -210,7 +279,15 @@ void ClientsManager::initializeGKDBusEvents()
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID"},
 			{"s", "device status", dOUT, "string representing the device status"}
-		}, std::bind(&ClientsManager::getDeviceStatus, this, _1, _2)
+		},
+		// lambda
+		[this](
+			const std::string & clientID,
+			const std::string & devID
+		) -> std::string
+		{
+			return this->getDeviceStatus(clientID, devID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGss2v>::exposeMethod(
@@ -218,7 +295,15 @@ void ClientsManager::initializeGKDBusEvents()
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"sst", "get_device_properties", dOUT, "device properties"}
-		}, std::bind(&ClientsManager::getDeviceProperties, this, _1, _2)
+		},
+		// lambda
+		[this](
+			const std::string & clientID,
+			const std::string & devID
+		) -> void
+		{
+			this->getDeviceProperties(clientID, devID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGss2aP>::exposeMethod(
@@ -226,7 +311,15 @@ void ClientsManager::initializeGKDBusEvents()
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"a(tss)", "get_lcd_plugins_properties_array", dOUT, "LCDPluginsProperties array"}
-		}, std::bind(&ClientsManager::getDeviceLCDPluginsProperties, this, _1, _2)
+		},
+		// lambda
+		[this](
+			const std::string & clientID,
+			const std::string & devID
+		) -> const LCDPPArray_type &
+		{
+			return this->getDeviceLCDPluginsProperties(clientID, devID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGss2aG>::exposeMethod(
@@ -234,7 +327,15 @@ void ClientsManager::initializeGKDBusEvents()
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"ay", "array_of_keys_id", dOUT, "array of G-keys ID for the device"}
-		}, std::bind(&ClientsManager::getDeviceGKeysIDArray, this, _1, _2)
+		},
+		// lambda
+		[this](
+			const std::string & clientID,
+			const std::string & devID
+		) -> GKeysIDArray_type
+		{
+			return this->getDeviceGKeysIDArray(clientID, devID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGss2am>::exposeMethod(
@@ -242,7 +343,15 @@ void ClientsManager::initializeGKDBusEvents()
 		{	{"s", "client_unique_id", dIN, "must be a valid client ID"},
 			{"s", "device_id", dIN, "device ID coming from GetStartedDevices or GetStoppedDevices"},
 			{"ay", "array_of_keys_id", dOUT, "array of M-keys ID for the device"}
-		}, std::bind(&ClientsManager::getDeviceMKeysIDArray, this, _1, _2)
+		},
+		// lambda
+		[this](
+			const std::string & clientID,
+			const std::string & devID
+		) -> MKeysIDArray_type
+		{
+			return this->getDeviceMKeysIDArray(clientID, devID);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGssyyy2b>::exposeMethod(
@@ -253,7 +362,18 @@ void ClientsManager::initializeGKDBusEvents()
 			{"y", "green_byte", dIN, "green byte for the RGB color model"},
 			{"y", "blue_byte", dIN, "blue byte for the RGB color model"},
 			{"b", "did_setcolor_succeeded", dOUT, rValueComment}
-		}, std::bind(&ClientsManager::setDeviceBacklightColor, this, _1, _2, _3, _4, _5)
+		},
+		// lambda
+		[this](
+			const std::string & clientID,
+			const std::string & devID,
+			const std::uint8_t r,
+			const std::uint8_t g,
+			const std::uint8_t b
+		) -> bool
+		{
+			return this->setDeviceBacklightColor(clientID, devID, r, g, b);
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGssyt2b>::exposeMethod(
@@ -263,7 +383,17 @@ void ClientsManager::initializeGKDBusEvents()
 			{"y", "LCD_Plugins_Mask_ID", dIN, "LCD plugins mask ID"},
 			{"t", "LCD_Plugins_Mask", dIN, "LCD plugins mask"},
 			{"b", "did_setmask_succeeded", dOUT, rValueComment}
-		}, std::bind(&ClientsManager::setDeviceLCDPluginsMask, this, _1, _2, _3, _4)
+		},
+		// lambda
+		[this](
+			const std::string & clientID,
+			const std::string & devID,
+			const std::uint8_t maskID,
+			const std::uint64_t mask
+		) -> bool
+		{
+			return this->setDeviceLCDPluginsMask(clientID, devID, maskID, mask);
+		}
 	);
 
 	/* -- -- -- -- -- -- -- -- -- -- -- -- -- */
