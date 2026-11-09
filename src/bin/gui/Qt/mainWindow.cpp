@@ -28,7 +28,6 @@
 #include <algorithm>
 #include <chrono>
 #include <exception>
-#include <functional>
 #include <new>
 #include <ostream>
 #include <stdexcept>
@@ -327,27 +326,27 @@ void MainWindow::build()
 	);
 	QObject::connect(
 		_backlightColorTab->getApplyButton(), &QPushButton::clicked,
-		std::bind(
-			&MainWindow::saveConfigurationFileAndUpdateInterface,
-			this,
-			TabApplyButton::TAB_BACKLIGHT
-		)
+		// lambda
+		[this]() -> void
+		{
+			this->saveConfigurationFileAndUpdateInterface(TabApplyButton::TAB_BACKLIGHT);
+		}
 	);
 	QObject::connect(
 		_LCDPluginsTab->getApplyButton(), &QPushButton::clicked,
-		std::bind(
-			&MainWindow::saveConfigurationFileAndUpdateInterface,
-			this,
-			TabApplyButton::TAB_LCD_PLUGINS
-		)
+		// lambda
+		[this]() -> void
+		{
+			this->saveConfigurationFileAndUpdateInterface(TabApplyButton::TAB_LCD_PLUGINS);
+		}
 	);
 	QObject::connect(
 		_GKeysTab->getApplyButton(), &QPushButton::clicked,
-		std::bind(
-			&MainWindow::saveConfigurationFileAndUpdateInterface,
-			this,
-			TabApplyButton::TAB_GKEYS
-		)
+		// lambda
+		[this]() -> void
+		{
+			this->saveConfigurationFileAndUpdateInterface(TabApplyButton::TAB_GKEYS);
+		}
 	);
 
 	GKLog(trace, "Qt signals connected to slots")
@@ -360,7 +359,11 @@ void MainWindow::build()
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		LIBShared::GK_DBUS_GUI_SIGNAL_DEVICES_UPDATED,
 		{},
-		std::bind(&MainWindow::resetInterface, this)
+		// lambda
+		[this]() -> void
+		{
+			this->resetInterface();
+		}
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGs2v>::receiveSignal(
@@ -370,7 +373,11 @@ void MainWindow::build()
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		LIBShared::GK_DBUS_GUI_SIGNAL_DEVICE_CONFIGURATION_SAVED,
 		{ {"s", "device_id", "in", "device ID"}, },
-		std::bind(&MainWindow::configurationFileUpdated, this, std::placeholders::_1)
+		// lambda
+		[this](const std::string & devID) -> void
+		{
+			this->configurationFileUpdated(devID);
+		}
 	);
 
 	QObject::connect(qApp, &QCoreApplication::aboutToQuit, this, &MainWindow::aboutToQuit);

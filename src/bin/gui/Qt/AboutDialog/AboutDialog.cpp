@@ -19,7 +19,6 @@
  *
  */
 
-#include <functional>
 #include <new>
 #include <string>
 #include <utility>
@@ -133,8 +132,15 @@ void AboutDialog::buildDialog(const GKDepsMap_type* const pDepsMap)
 		/* -- -- */
 
 		/* connect event to toggle copy button visibility */
-		QObject::connect(tabbedWidgets, &QTabWidget::currentChanged, this, &AboutDialog::setCopyButtonVisibility);
-		QObject::connect(_pCopyButton, &QPushButton::clicked, std::bind(&AboutDialog::copyToClipboard, this, pDepsMap));
+		QObject::connect(
+			tabbedWidgets, &QTabWidget::currentChanged,
+			this, &AboutDialog::setCopyButtonVisibility
+		);
+		QObject::connect(
+			_pCopyButton, &QPushButton::clicked,
+			// lambda
+			[this, pDepsMap]() -> void { this->copyToClipboard(pDepsMap); }
+		);
 	}
 	catch (const std::bad_alloc& e)
 	{

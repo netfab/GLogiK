@@ -21,7 +21,6 @@
 
 #include <cstdint>
 
-#include <functional>
 #include <new>
 #include <ostream>
 #include <stdexcept>
@@ -550,7 +549,12 @@ void GKeysTab::updateInputsBox(
 
 		QObject::connect(
 			_GKeyEventTypeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-			std::bind(&GKeysTab::switchGKeyEventType, this, device, GKeyID)
+			// lambda
+			[this, &device, GKeyID]()
+				-> void
+			{
+				this->switchGKeyEventType(device, GKeyID);
+			}
 		);
 	}
 	catch (const std::bad_alloc& e)
@@ -680,7 +684,12 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 
 		QObject::connect(
 			button, &QPushButton::clicked,
-			std::bind(&GKeysTab::updateAndRedrawTab, this, device, bankID)
+			// lambda
+			[this, &device, bankID]()
+				-> void
+			{
+				this->updateAndRedrawTab(device, bankID);
+			}
 		);
 		_buttonsSignalsToClear.push_back(button);
 
@@ -697,7 +706,12 @@ void GKeysTab::redrawTab(const DeviceProperties & device)
 		QPushButton* button = this->newGKeyButton(GKeyID, eventType, colorName);
 		QObject::connect(
 			button, &QPushButton::clicked,
-			std::bind(&GKeysTab::updateInputsBox, this, device, GKeyID)
+			// lambda
+			[this, &device, GKeyID]()
+				-> void
+			{
+				this->updateInputsBox(device, GKeyID);
+			}
 		);
 		_buttonsSignalsToClear.push_back(button);
 		return button;
