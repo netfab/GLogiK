@@ -356,25 +356,24 @@ void GKDBusEvents::exposeIntrospectMethod(
 	{
 		GKLog2(trace, "adding Introspect method - object path : ", eventObjectPath)
 
+		/*
+		 * sender is "", because it is only used in addEvent() below when
+		 * eventType == DBUS_SIGNAL_EVENT, but here eventType = DBUS_METHOD_EVENT,
+		 * so sender will be unused
+		 */
 		this->Callback<SIGs2s>::exposeEvent(
-			eventBus,			/* bus */
-			"",	/* sender (used only in addEvent() below
-				   if eventType == DBUS_SIGNAL_EVENT, unused here --> "") */
-			eventObjectPath,	/* event object path */
-			_FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE,	/* event interface */
-			"Introspect",		/* event name */
-			{	{	"s",
-					"xml_data",
-					"out",
-					"xml data representing DBus interfaces"
-				} }, 								/* event arguments */
-				// lambda
-				[this](const std::string & op) -> std::string
-				{
-					return this->introspect(op);
-				}, /* callback method */
-			DBusEventType::DBUS_METHOD_EVENT,		/* event type (method|signal) */
-			false									/* introspectability */
+/*               bus */ eventBus,
+/*            sender */ "",
+/*       object path */ eventObjectPath,
+/*   event interface */ _FREEDESKTOP_DBUS_INTROSPECTABLE_STANDARD_INTERFACE,
+/*        event name */ "Introspect",
+/*   event arguments */ { { "s", "xml_data", "out", "xml data representing DBus interfaces" } },
+/*   callback method */ [this](const std::string & op) -> std::string /* lambda */
+/*                   */ {
+/*                   */ 	return this->introspect(op);
+/*                   */ },
+/*        event type */ DBusEventType::DBUS_METHOD_EVENT, /* (method|signal) */
+/* introspectability */ false
 		);
 	}
 }
