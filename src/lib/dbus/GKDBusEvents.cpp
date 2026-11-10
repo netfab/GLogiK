@@ -21,7 +21,6 @@
 
 #include "config.h"
 
-#include <functional>
 #include <new> // bad_alloc
 #include <set>
 #include <sstream>
@@ -369,10 +368,11 @@ void GKDBusEvents::exposeIntrospectMethod(
 					"out",
 					"xml data representing DBus interfaces"
 				} }, 								/* event arguments */
-			std::bind(
-				&GKDBusEvents::introspect,
-				this,
-				std::placeholders::_1),				/* callback method */
+				// lambda
+				[this](const std::string & op) -> std::string
+				{
+					return this->introspect(op);
+				}, /* callback method */
 			DBusEventType::DBUS_METHOD_EVENT,		/* event type (method|signal) */
 			false									/* introspectability */
 		);
