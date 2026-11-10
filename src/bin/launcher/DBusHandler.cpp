@@ -21,7 +21,6 @@
 
 #include "config.h"
 
-#include <functional>
 #include <string>
 #include <vector>
 
@@ -79,6 +78,12 @@ void DBusHandler::cleanGKDBusEvents() noexcept
 
 void DBusHandler::initializeGKDBusSignals()
 {
+	// lambda
+	auto spawn_service = [this] (const std::uint16_t delay) -> void
+	{
+		this->spawnService(delay);
+	};
+
 	_pDBus->GKDBUS::Events::Callback<SIGq2v>::receiveSignal(
 		_sessionBus,
 		LIBShared::GLOGIK_DESKTOP_SERVICE_DBUS_BUS_CONNECTION_NAME,
@@ -86,7 +91,7 @@ void DBusHandler::initializeGKDBusSignals()
 		LIBShared::GLOGIK_DESKTOP_SERVICE_SESSION_DBUS_INTERFACE,
 		LIBShared::GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
 		{ {"q", "sleep_ms", "in", "sleeping time in milliseconds before spawning service"} },
-		std::bind(&DBusHandler::spawnService, this, std::placeholders::_1)
+		spawn_service
 	);
 
 	_pDBus->GKDBUS::Events::Callback<SIGq2v>::receiveSignal(
@@ -96,7 +101,7 @@ void DBusHandler::initializeGKDBusSignals()
 		LIBShared::GLOGIK_DESKTOP_QT_SESSION_DBUS_INTERFACE,
 		LIBShared::GK_DBUS_LAUNCHER_SIGNAL_SERVICE_START_REQUEST,
 		{ {"q", "sleep_ms", "in", "sleeping time in milliseconds before spawning service"} },
-		std::bind(&DBusHandler::spawnService, this, std::placeholders::_1)
+		spawn_service
 	);
 }
 
